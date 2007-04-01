@@ -4,7 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 
 use QDRDBMS::GSTV;
-use QDRDBMS::AST;
 
 ###########################################################################
 ###########################################################################
@@ -50,7 +49,7 @@ sub new {
     # A package may be loaded due to it being embedded in a non-excl file.
     if (!do {
             no strict 'refs';
-            return defined %{$engine_name . '::'};
+            defined %{$engine_name . '::'};
         }) {
         # Note: We have to invoke this 'require' in an eval string
         # because we need the bareword semantics, where 'require'
@@ -65,14 +64,14 @@ sub new {
                 . q{ errors, it did not declare the same-named package.}
             if !do {
                 no strict 'refs';
-                return defined %{$engine_name . '::'};
+                defined %{$engine_name . '::'};
             };
     }
     confess qq{new(): The QDRDBMS Engine class '$engine_name' does not}
             . q{ provide the new_dbms() constructor function.}
         if !$engine_name->can( 'new_dbms' );
     $self->{$ATTR_DBMS_ENGINE} = eval {
-        return $engine_name->new_dbms({ 'dbms_config' => $dbms_config });
+        $engine_name->new_dbms({ 'dbms_config' => $dbms_config });
     };
     if (my $err = $@) {
         confess qq{new(): The QDRDBMS Engine class '$engine_name' threw an}

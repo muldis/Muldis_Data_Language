@@ -5,19 +5,11 @@ use warnings FATAL => 'all';
 
 use Test::More;
 
-plan( 'tests' => 14 );
+plan( 'tests' => 10 );
 
-use_ok( 'QDRDBMS::Util' );
-is( $QDRDBMS::Util::VERSION, 0.000,
-    'QDRDBMS::Util is the correct version' );
-
-use_ok( 'QDRDBMS::Value' );
-is( $QDRDBMS::Value::VERSION, 0.000,
-    'QDRDBMS::Value is the correct version' );
-
-use_ok( 'QDRDBMS::Model' );
-is( $QDRDBMS::Model::VERSION, 0.000,
-    'QDRDBMS::Model is the correct version' );
+use_ok( 'QDRDBMS::GSTV' );
+is( $QDRDBMS::GSTV::VERSION, 0.000,
+    'QDRDBMS::GSTV is the correct version' );
 
 use_ok( 'QDRDBMS' );
 is( $QDRDBMS::VERSION, 0.000,

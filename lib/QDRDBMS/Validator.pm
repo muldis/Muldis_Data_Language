@@ -28,11 +28,14 @@ sub main {
 
     plan( 'tests' => 1 );
 
+    print "#### QDRDBMS::Validator starting test of $engine_name ####\n";
+
     # Instantiate a QDRDBMS DBMS / virtual machine.
     my $dbms = QDRDBMS::Interface::DBMS->new({
         'engine_name' => $engine_name, 'dbms_config' => $dbms_config });
+    isa_ok( $dbms, 'QDRDBMS::Interface::DBMS' );
 
-
+    print "#### QDRDBMS::Validator finished test of $engine_name ####\n";
 }
 
 ###########################################################################
