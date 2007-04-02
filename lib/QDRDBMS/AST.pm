@@ -105,13 +105,13 @@ I<This documentation is pending.>
 
 =head1 AUTHOR
 
-Darren R. Duncan (C<perl@DarrenDuncan.net>)
+Darren Duncan (C<perl@DarrenDuncan.net>)
 
 =head1 LICENCE AND COPYRIGHT
 
 This file is part of the QDRDBMS framework.
 
-QDRDBMS is Copyright (c) 2002-2007, Darren R. Duncan.
+QDRDBMS is Copyright © 2002-2007, Darren Duncan.
 
 See the LICENCE AND COPYRIGHT of L<QDRDBMS> for details.
 

@@ -412,7 +412,7 @@ Darren Duncan (C<perl@DarrenDuncan.net>)
 
 This file is part of the QDRDBMS framework.
 
-QDRDBMS is Copyright (c) 2002-2007, Darren Duncan.  All rights reserved.
+QDRDBMS is Copyright © 2002-2007, Darren Duncan.  All rights reserved.
 
 QDRDBMS is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License (GPL) as published by the Free
@@ -453,18 +453,18 @@ None yet.
 =head1 FORUMS
 
 Several public email-based forums for QDRDBMS now exist, all of which you
-can reach via L<http://mm.darrenduncan.net/mailman/listinfo>; go there to
+can reach via L<http://mm.DarrenDuncan.net/mailman/listinfo>; go there to
 manage your subscriptions to, or view the archives of, the following:
 
 =over
 
-=item C<qdrdbms-announce@mm.darrenduncan.net>
+=item C<qdrdbms-announce@mm.DarrenDuncan.net>
 
 This low-volume list is mainly for official announcements from the QDRDBMS
 developers, though developers of QDRDBMS extensions can also post their
 announcements here.  This is not a discussion list.
 
-=item C<qdrdbms-users@mm.darrenduncan.net>
+=item C<qdrdbms-users@mm.DarrenDuncan.net>
 
 This list is for general discussion among people who are using QDRDBMS,
 which is not concerned with the implementation of QDRDBMS itself.  This is
@@ -473,7 +473,7 @@ machine or to make it do what you want.  You could also submit feature
 requests or report perceived bugs here, if you don't want to use CPAN's RT
 system.
 
-=item C<qdrdbms-devel@mm.darrenduncan.net>
+=item C<qdrdbms-devel@mm.DarrenDuncan.net>
 
 This list is for discussion among people who are designing or implementing
 the QDRDBMS core API (including QDRDBMS D language design), or who are
@@ -486,6 +486,6 @@ said.
 An official IRC channel for QDRDBMS is also intended, but not yet started.
 
 Alternately, you can purchase more advanced commercial support for QDRDBMS
-from its author; contact C<darren@darrenduncan.net> for details.
+from its author; contact C<perl@DarrenDuncan.net> for details.
 
 =cut
