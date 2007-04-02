@@ -4,7 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use QDRDBMS;
-use Encode;
+use QDRDBMS::Engine::Example::PhysType;
 
 ###########################################################################
 ###########################################################################
