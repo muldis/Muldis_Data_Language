@@ -3,7 +3,6 @@ use utf8;
 use strict;
 use warnings FATAL => 'all';
 
-use QDRDBMS::GSTV;
 use QDRDBMS::AST;
 
 ###########################################################################
@@ -17,6 +16,16 @@ my $EMPTY_STR = q{};
 { package QDRDBMS; # package
     our $VERSION = 0.000;
     # Note: This given version applies to all of this file's packages.
+
+###########################################################################
+
+sub new_dbms {
+    my (undef, $args) = @_;
+    return QDRDBMS::Interface::DBMS->new( $args );
+}
+
+###########################################################################
+
 } # package QDRDBMS
 
 ###########################################################################
@@ -27,7 +36,7 @@ my $EMPTY_STR = q{};
     use Carp;
     use Scalar::Util qw( blessed );
 
-    my $ATTR_DBMS_ENGINE = 'dbms_engine';
+    my $ATTR_DBMS_ENG = 'dbms_eng';
 
 ###########################################################################
 
@@ -37,11 +46,17 @@ sub new {
     my ($engine_name, $dbms_config)
         = @{$args}{'engine_name', 'dbms_config'};
 
-    confess q{new(): Bad $engine_name arg; it is undefined or empty.}
-        if !defined $engine_name or $engine_name eq $EMPTY_STR;
+    confess q{new(): Bad $engine_name arg; it is not an object of a}
+            . q{ QDRDBMS::GSTV::Str-doing class.}
+        if !blessed $engine_name
+            or !$engine_name->isa( 'QDRDBMS::GSTV::Str' );
+    $engine_name = ${$engine_name};
+
     if (defined $dbms_config) {
-        confess q{new(): Bad $dbms_config arg; it is not a Hash.}
-            if ref $dbms_config ne 'HASH';
+        confess q{new(): Bad $dbms_config arg; it is not an object of a}
+                . q{ QDRDBMS::GSTV::Hash-doing class.}
+            if !blessed $dbms_config
+                or !$dbms_config->isa( 'QDRDBMS::GSTV::Hash' );
     }
     else {
         $dbms_config = {};
@@ -71,15 +86,43 @@ sub new {
     confess qq{new(): The QDRDBMS Engine class '$engine_name' does not}
             . q{ provide the new_dbms() constructor function.}
         if !$engine_name->can( 'new_dbms' );
-    $self->{$ATTR_DBMS_ENGINE} = eval {
+    my $dbms_eng = eval {
         $engine_name->new_dbms({ 'dbms_config' => $dbms_config });
     };
     if (my $err = $@) {
         confess qq{new(): The QDRDBMS Engine class '$engine_name' threw an}
             . qq{ exception during its new_dbms() execution: $err}
     }
+    confess q{new(): The new_dbms() constructor function of the QDRDBMS}
+            . qq{ Engine class '$engine_name' did not return an object}
+            . q{ to serve as a DBMS Engine.}
+        if !blessed $dbms_eng;
+    my $dbms_eng_class = blessed $dbms_eng;
+
+    confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class' does}
+            . q{ not provide the prepare_routine() method.}
+        if !$dbms_eng->can( 'prepare_routine' );
+    confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class' does}
+            . q{ not provide the new_variable() method.}
+        if !$dbms_eng->can( 'new_variable' );
+
+    $self->{$ATTR_DBMS_ENG} = $dbms_eng;
 
     return $self;
+}
+
+###########################################################################
+
+sub prepare_routine {
+    my ($self, $args) = @_;
+    $args = {%{$args}, 'dbms' => $self};
+    return QDRDBMS::Interface::Routine->new( $args );
+}
+
+sub new_variable {
+    my ($self, $args) = @_;
+    $args = {%{$args}, 'dbms' => $self};
+    return QDRDBMS::Interface::Variable->new( $args );
 }
 
 ###########################################################################
@@ -89,43 +132,151 @@ sub new {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Interface::Command; # class
+{ package QDRDBMS::Interface::Routine; # class
 
+    use Carp;
+    use Scalar::Util qw( blessed );
 
+    my $ATTR_DBMS_INTF = 'dbms_intf';
+    my $ATTR_RTN_AST   = 'rtn_ast';
+    my $ATTR_RTN_ENG   = 'rtn_eng';
 
-###########################################################################
-
-
-
-###########################################################################
-
-} # class QDRDBMS::Interface::Command
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::Interface::Value; # class
-
-
+    my $DBMS_ATTR_DBMS_ENG = 'dbms_eng';
+    my $VAR_ATTR_VAR_ENG   = 'var_eng';
 
 ###########################################################################
 
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($dbms_intf, $rtn_ast) = @{$args}{'dbms', 'routine'};
 
+    confess q{new(): Bad $dbms arg; it is not an object of a}
+            . q{ QDRDBMS::Interface::DBMS-doing class.}
+        if !blessed $dbms_intf
+            or !$dbms_intf->isa( 'QDRDBMS::Interface::DBMS' );
+    my $dbms_eng = $dbms_intf->{$DBMS_ATTR_DBMS_ENG};
+    my $dbms_eng_class = blessed $dbms_eng;
+
+    confess q{new(): Bad $dbms arg; it is not an object of a}
+            . q{ QDRDBMS::AST::Routine-doing class.}
+        if !blessed $rtn_ast or !$rtn_ast->isa( 'QDRDBMS::AST::Routine' );
+
+    my $rtn_eng = eval {
+        $dbms_eng->prepare_routine({ 'routine' => $rtn_ast });
+    };
+    if (my $err = $@) {
+        confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class'}
+            . q{ threw an exception during its prepare_routine()}
+            . qq{ execution: $err}
+    }
+    confess q{new(): The prepare_routine() method of the QDRDBMS}
+            . qq{ DBMS class '$dbms_eng_class' did not return an object}
+            . q{ to serve as a Routine Engine.}
+        if !blessed $rtn_eng;
+    my $rtn_eng_class = blessed $rtn_eng;
+
+    confess qq{new(): The QDRDBMS Routine Engine class '$rtn_eng_class'}
+            . q{ does not provide the bind_variables() method.}
+        if !$rtn_eng->can( 'bind_variables' );
+    confess qq{new(): The QDRDBMS Routine Engine class '$rtn_eng_class'}
+            . q{ does not provide the execute() method.}
+        if !$rtn_eng->can( 'execute' );
+
+    $self->{$ATTR_DBMS_INTF} = $dbms_intf;
+    $self->{$ATTR_RTN_AST}   = $rtn_ast;
+    $self->{$ATTR_RTN_ENG}   = $rtn_eng;
+
+    return $self;
+}
 
 ###########################################################################
 
-} # class QDRDBMS::Interface::Value
+sub bind_variables {
+    my ($self, $args) = @_;
+    my ($var_intfs) = @{$args}{'variables'};
+
+    confess q{new(): Bad $variables arg; it is not an object of a}
+            . q{ QDRDBMS::GSTV::Hash-doing class.}
+        if !blessed $var_intfs
+            or !$var_intfs->isa( 'QDRDBMS::GSTV::Hash' );
+
+    my $var_engs = {};
+    for my $var_name (keys %{$var_intfs}) {
+        my $var_intf = $var_intfs->{$var_name};
+        confess q{new(): Bad $var_value arg elem; it is not an object of a}
+                . q{ QDRDBMS::Interface::Variable-doing class.}
+            if !blessed $var_intf
+                or !$var_intf->isa( 'QDRDBMS::Interface::Variable' );
+        $var_engs->{$var_name} = $var_intf->{$VAR_ATTR_VAR_ENG};
+    }
+
+    $self->{$ATTR_RTN_ENG}->bind_variables({ 'variables' => $var_engs });
+    return;
+}
+
+###########################################################################
+
+sub execute {
+    my ($self, undef) = @_;
+    $self->{$ATTR_RTN_ENG}->execute();
+    return;
+}
+
+###########################################################################
+
+} # class QDRDBMS::Interface::Routine
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::Interface::Variable; # class
 
+    use Carp;
+    use Scalar::Util qw( blessed );
 
+    my $ATTR_DBMS_INTF = 'dbms_intf';
+    my $ATTR_VAR_ENG   = 'var_eng';
+
+    my $DBMS_ATTR_DBMS_ENG = 'dbms_eng';
 
 ###########################################################################
 
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($dbms_intf) = @{$args}{'dbms'};
 
+    confess q{new(): Bad $dbms arg; it is not an object of a}
+            . q{ QDRDBMS::Interface::DBMS-doing class.}
+        if !blessed $dbms_intf
+            or !$dbms_intf->isa( 'QDRDBMS::Interface::DBMS' );
+    my $dbms_eng = $dbms_intf->{$DBMS_ATTR_DBMS_ENG};
+    my $dbms_eng_class = blessed $dbms_eng;
+
+    my $var_eng = eval {
+        $dbms_eng->new_variable({});
+    };
+    if (my $err = $@) {
+        confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class'}
+            . q{ threw an exception during its new_variable()}
+            . qq{ execution: $err}
+    }
+    confess q{new(): The prepare_routine() method of the QDRDBMS}
+            . qq{ DBMS class '$dbms_eng_class' did not return an object}
+            . q{ to serve as a Routine Engine.}
+        if !blessed $var_eng;
+    my $var_eng_class = blessed $var_eng;
+
+#    confess qq{new(): The QDRDBMS Variable Engine class '$var_eng_class'}
+#            . q{ does not provide the ...() method.}
+#        if !$var_eng->can( '...' );
+
+    $self->{$ATTR_DBMS_INTF} = $dbms_intf;
+    $self->{$ATTR_VAR_ENG} = $var_eng;
+
+    return $self;
+}
 
 ###########################################################################
 
@@ -151,9 +302,8 @@ A fully-featured truly relational DBMS in Perl
 This document describes QDRDBMS version 0.0.0.
 
 It also describes the same-number versions of QDRDBMS::Interface::DBMS
-("DBMS"), QDRDBMS::Interface::Exception ("Exception"),
-QDRDBMS::Interface::Command ("Command"), QDRDBMS::Interface::Value
-("Value"), and QDRDBMS::Interface::Variable ("Variable").
+("DBMS"), QDRDBMS::Interface::Routine ("Routine"), and
+QDRDBMS::Interface::Variable ("Variable").
 
 I<Note that the "QDRDBMS" package serves only as the name-sake
 representative for this whole file, which can be referenced as a unit by
@@ -163,11 +313,13 @@ code; instead refer to other above-named packages in this file.>
 
 =head1 SYNOPSIS
 
-    use QDRDBMS; # also loads QDRDBMS::GSTV and QDRDBMS::AST
+    use QDRDBMS::GSTV qw( Str );
+
+    use QDRDBMS;
 
     # Instantiate a QDRDBMS DBMS / virtual machine.
-    my $dbms = QDRDBMS::Interface::DBMS->new({
-        'engine_name' => 'QDRDBMS::Engine::Example' });
+    my $dbms = QDRDBMS->new_dbms({
+        'engine_name' => Str('QDRDBMS::Engine::Example') });
 
     # TODO: Create or connect to a repository and work with it.
 
@@ -348,15 +500,7 @@ undefined.
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::Interface::Exception Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::Interface::Command Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::Interface::Value Class
+=head2 The QDRDBMS::Interface::Routine Class
 
 I<This documentation is pending.>
 

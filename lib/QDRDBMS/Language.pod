@@ -358,8 +358,9 @@ Within this analogy, the role of the PC's user, that feeds it through
 standard input and accepts its standard output, is fulfilled by the
 application that is driving the QDRDBMS DBMS; similarly, the application
 itself will activate the virtual machine when wanting to use it (done in
-this distribution by instantiating a new QDRDBMS::Interface::DBMS object),
-and deactivate the virtual machine when done (letting that object expire).
+this distribution by instantiating a new C<QDRDBMS::Interface::DBMS>
+object), and deactivate the virtual machine when done (letting that object
+expire).
 
 When a new virtual machine is activated, the virtual machine has a default
 state where the CPU is ready to accept user-input commands to process, and
@@ -515,11 +516,11 @@ constraints.
 
 A C<gateway> is an anonymous procedure that can not be invoked by any other
 routine and exists in the limbo between the DBMS and the application that
-is driving it; the application holds a C<QDRDBMS::Routine> object to
-reference it by (the result of a QDRDBMS object's "prepare" or "compile"
-method), and it exists only so long as that object doesn't go out of scope.
-A C<gateway> is mostly like a C<procedure> in every other way.  Main
-differences are that the only C<gateway> routines are ones that users
+is driving it; the application holds a C<QDRDBMS::Interface::Routine>
+object to reference it by (the result of a QDRDBMS object's "prepare" or
+"compile" method), and it exists only so long as that object doesn't go out
+of scope.  A C<gateway> is mostly like a C<procedure> in every other way.
+Main differences are that the only C<gateway> routines are ones that users
 define, and that they are the only routines allowed to have explicit
 isolated transaction initiation and termination statements (for optional
 use in a parent-most transaction); all other updating routine types have
@@ -531,7 +532,7 @@ Note that QDRDBMS currently has no direct support for the concept of a
 trigger-routine that can update a database; updating virtual relvars or
 invoking C<procedure> are recommended instead.  As for non-updating
 trigger-routines, the state/transition constraint routines already perform
-that feature.
+that feature.  I<The feature in question may be directly supported later?>
 
 I<This documentation is pending.>
 
@@ -1298,7 +1299,7 @@ of being a little more verbose.
 QDRDBMS D has closely corresponding representations between its 3 main
 variants, which are catalog relations (what routines inside the DBMS see),
 hierarchical AST nodes (what the application driving the DBMS typically
-sees, ala QDRDBMS::AST), and string-form QDRDBMS D code that users
+sees, ala L<QDRDBMS::AST>), and string-form QDRDBMS D code that users
 interacting with QDRDBMS via a shell interface would use.  The string-form
 would be parsed into the AST, and the AST be flattened into the relations;
 similarly, the relations can be unflattened into the AST, and string-form

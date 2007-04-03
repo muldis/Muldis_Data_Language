@@ -17,6 +17,7 @@ my $EMPTY_STR = q{};
     our $VERSION = 0.000;
     # Note: This given version applies to all of this file's packages.
 
+    use QDRDBMS::GSTV qw( Bool Str Blob Int Num Hash );
     use Test::More;
 
 ###########################################################################
@@ -31,7 +32,7 @@ sub main {
     print "#### QDRDBMS::Validator starting test of $engine_name ####\n";
 
     # Instantiate a QDRDBMS DBMS / virtual machine.
-    my $dbms = QDRDBMS::Interface::DBMS->new({
+    my $dbms = QDRDBMS->new_dbms({
         'engine_name' => $engine_name, 'dbms_config' => $dbms_config });
     isa_ok( $dbms, 'QDRDBMS::Interface::DBMS' );
 
@@ -71,13 +72,15 @@ QDRDBMS Engine distribution:
     use strict;
     use warnings FATAL => 'all';
 
+    use QDRDBMS::GSTV qw( Str Hash );
+
     # Load the test suite.
     use QDRDBMS::Validator;
 
     # Run the test suite.
     QDRDBMS::Validator::main({
-            'engine_name'   => 'QDRDBMS::Engine::Example',
-            'engine_config' => {},
+            'engine_name'   => Str('QDRDBMS::Engine::Example'),
+            'engine_config' => Hash({}),
         });
 
     1;
@@ -139,7 +142,8 @@ I<This documentation is pending.>
 This file requires any version of Perl 5.x.y that is at least 5.8.1.
 
 It also requires these Perl 5 classes that are in the current distribution:
-L<QDRDBMS-0.0.0|QDRDBMS>.
+L<QDRDBMS::GSTV-(0.0.0)|QDRDBMS::GSTV>,
+L<QDRDBMS::AST-(0.0.0)|QDRDBMS::AST>, L<QDRDBMS-0.0.0|QDRDBMS>.
 
 =head1 INCOMPATIBILITIES
 

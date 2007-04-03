@@ -33,6 +33,9 @@ sub new_dbms {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::DBMS; # class
+
+    use Carp;
+
     my $ATTR_DBMS_CONFIG = 'dbms_config';
 
 ###########################################################################
@@ -49,22 +52,97 @@ sub new {
 
 ###########################################################################
 
+sub prepare_routine {
+    my ($self, $args) = @_;
+    $args = {%{$args}, 'dbms' => $self};
+    return QDRDBMS::Engine::Example::Routine->new( $args );
+}
+
+sub new_variable {
+    my ($self, $args) = @_;
+    $args = {%{$args}, 'dbms' => $self};
+    return QDRDBMS::Engine::Example::Variable->new( $args );
+}
+
+###########################################################################
+
 } # class QDRDBMS::Engine::Example::DBMS
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::Command; # class
+{ package QDRDBMS::Engine::Example::Routine; # class
 
+    use Carp;
 
+    my $ATTR_DBMS_ENG   = 'dbms_eng';
+    my $ATTR_RTN_AST    = 'rtn_ast';
+    my $ATTR_PREP_RTN   = 'prep_rtn';
+    my $ATTR_BOUND_VARS = 'bound_vars';
 
 ###########################################################################
 
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($dbms_eng, $rtn_ast) = @{$args}{'dbms', 'routine'};
 
+    my $prep_rtn = sub { 1; }; # TODO; the real thing.
+
+    $self->{$ATTR_DBMS_ENG}   = $dbms_eng;
+    $self->{$ATTR_RTN_AST}    = $rtn_ast;
+    $self->{$ATTR_PREP_RTN}   = $prep_rtn;
+    $self->{$ATTR_BOUND_VARS} = {};
+
+    return $self;
+}
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::Command
+sub bind_variables {
+    my ($self, $args) = @_;
+    my ($var_engs) = @{$args}{'variables'};
+    $self->{$ATTR_BOUND_VARS}
+        = {%{$self->{$ATTR_BOUND_VARS}}, %{$var_engs}};
+    return;
+}
+
+###########################################################################
+
+sub execute {
+    my ($self, undef) = @_;
+    $self->{$ATTR_PREP_RTN}->( $self->{$ATTR_BOUND_VARS} );
+    return;
+}
+
+###########################################################################
+
+} # class QDRDBMS::Engine::Example::Routine
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::Engine::Example::Variable; # class
+
+    use Carp;
+
+    my $ATTR_DBMS_ENG = 'dbms_eng';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($dbms_eng) = @{$args}{'dbms'};
+
+    $self->{$ATTR_DBMS_ENG} = $dbms_eng;
+
+    return $self;
+}
+
+###########################################################################
+
+} # class QDRDBMS::Engine::Example::Variable
 
 ###########################################################################
 ###########################################################################
@@ -80,21 +158,6 @@ sub new {
 ###########################################################################
 
 } # class QDRDBMS::Engine::Example::Value
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::Engine::Example::Variable; # class
-
-
-
-###########################################################################
-
-
-
-###########################################################################
-
-} # class QDRDBMS::Engine::Example::Variable
 
 ###########################################################################
 ###########################################################################
