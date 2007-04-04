@@ -438,8 +438,7 @@ databases before, especially given that the Perl DBI purports to provide
 "Database Independence".  However, the level of DBI's provided independence
 is I<Database Driver Independence>, and not I<Database Language
 Independence>.  To further demonstrate the difference, it is useful to
-compare the DBI and QDRDBMS.  See the file L<QDRDBMS::Overview>
-documentation in this distribution for that comparison.
+compare the DBI and QDRDBMS.  I<Such documentation is currently absent.>
 
 =head1 FEATURE SUPPORT VALIDATION
 
@@ -529,6 +528,12 @@ L<QDRDBMS::AST-(0.0.0)|QDRDBMS::AST>.
 None reported.
 
 =head1 SEE ALSO
+
+These documentation files are included in the QDRDBMS distribution:
+L<QDRDBMS::Language>.
+
+The Perl 5 module L<QDRDBMS::Validator> is bundled with QDRDBMS and can be
+used to test QDRDBMS Engines.
 
 The Perl 5 package L<QDRDBMS::Engine::Example> is bundled with QDRDBMS and
 implements a self-contained reference implementation of a QDRDBMS Engine.
