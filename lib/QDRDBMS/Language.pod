@@ -823,7 +823,10 @@ match), but that a C<Relation> data type still has its own corresponding
 heading (attribute names and declared data types) even when it consists of
 zero tuples.  Its default value is a zero-attribute and zero-tuple
 relation.  Matters of its cardinality are generally the same as for
-C<Tuple>.
+C<Tuple>.  A Relation data type can also have (unique) keys each defined
+over a subset of its attributes, which constrain its set of values relative
+to there being no explicit keys, but having the keys won't turn an infinite
+Relation type into a finite one.
 
 =item C<sys.type.Database>
 
@@ -832,34 +835,35 @@ are Relation-typed; it is otherwise the same.
 
 =item C<sys.type.Set>
 
-A C<Set> is a proper subtype of C<Relation> that has 1 attribute named
-C<value>; it can be of any declared type.  A C<Set> subtype is normally
-used by any system-defined N-ary operators where the order of their
-argument elements or result is not significant, and that duplicate values
-are not significant.  Its default value has zero tuples.
+A C<Set> is a proper subtype of C<Relation> that has 1 attribute, and its
+name is C<value>; it can be of any declared type.  A C<Set> subtype is
+normally used by any system-defined N-ary operators where the order of
+their argument elements or result is not significant, and that duplicate
+values are not significant.  Its default value has zero tuples.
 
 =item C<sys.type.Sequence>
 
-An C<Sequence> is a proper subtype of C<Relation> that has 2 attributes
-named C<index> and C<value> where C<index> is a unary key and its declared
-type is an C<UInt> subtype (C<value> can be non-unique and of any declared
-type).  A Sequence is considered dense, and all C<index> values in one are
-numbered consecutively from 0 to 1 less than the count of tuples, like
-array indices in typical programming languages.  A C<Sequence> subtype is
-normally used by any system-defined N-ary operators where the order of
-their argument elements or result is significant (and duplicate values are
-significant); specifically, C<index> defines an explicit ordering for
-C<values>.  Its default value has zero tuples.
+An C<Sequence> is a proper subtype of C<Relation> that has 2 attributes,
+and their names are C<index> and C<value>, where C<index> is a unary key
+and its declared type is an C<UInt> subtype (C<value> can be non-unique and
+of any declared type).  A Sequence is considered dense, and all C<index>
+values in one are numbered consecutively from 0 to 1 less than the count of
+tuples, like array indices in typical programming languages.  A C<Sequence>
+subtype is normally used by any system-defined N-ary operators where the
+order of their argument elements or result is significant (and duplicate
+values are significant); specifically, C<index> defines an explicit
+ordering for C<values>.  Its default value has zero tuples.
 
 =item C<sys.type.Bag>
 
-A C<Bag> is a proper subtype of C<Relation> that has 2 attributes named
-C<value> and C<count> where C<value> is a unary key (that can have any
-declared type) and C<count> is a C<PInt> subtype.  A C<Bag> subtype is
-normally used by any system-defined N-ary operators where the order of
-their argument elements or result is not significant, but that duplicate
-values are significant; specifically, C<count> defines an explicit count of
-occurrances for C<values>.  Its default value has zero tuples.
+A C<Bag> is a proper subtype of C<Relation> that has 2 attributes, and
+their names are C<value> and C<count>, where C<value> is a unary key (that
+can have any declared type) and C<count> is a C<PInt> subtype.  A C<Bag>
+subtype is normally used by any system-defined N-ary operators where the
+order of their argument elements or result is not significant, but that
+duplicate values are significant; specifically, C<count> defines an
+explicit count of occurrances for C<values>.  Its default value has zero
+tuples.
 
 =back
 
@@ -876,18 +880,18 @@ variables are system-defined.
 A C<Cat.DeclEntityName> is a declared name of a DBMS entity, or the
 declared name of an attribute thereof, that either is defined with.  This
 declared name is conceptually multi-part, with the parts forming a sequence
-of 1..N C<NEText>, ordered from greatest to least significance; names of
+of 1..N C<Text>, ordered from greatest to least significance; names of
 attributes typically have just 1 part and so are conceptually just a
-C<NEText>, though often database attribute names, which are its component
+C<Text>, though often database attribute names, which are its component
 relation names, are multi-part (extra parts being for "schema" name-spaces
 and such); names of data types and operators are typically 3-4 parts, where
 C<sys> is an example of part 1. C<Cat.DeclEntityName> has multiple
-possreps; one is a C<Sequence(1..N) of NEText>; one is a specially encoded
-C<NEText> where parts are ordered from greatest to least signficance, and
+possreps; one is a C<Sequence(1..N) of Text>; one is a specially encoded
+C<Text> where parts are ordered from greatest to least signficance, and
 adjacent parts are separated with a single "period" character, and any
-literal period or backslash characters in parts are backslash-escaped (no
-other characters are escaped).  Its default value consists of a single part
-where that part is a single space character.
+literal period or backslash characters in parts are backslash-escaped as
+C<\[pd]> and C<\[bh]> respectively (no other characters are escaped).  Its
+default value consists of a single part that is the empty string.
 
 =item C<sys.type.Cat.InvokEntityName>
 
