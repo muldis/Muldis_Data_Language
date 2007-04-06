@@ -3,10 +3,24 @@ use utf8;
 use strict;
 use warnings FATAL => 'all';
 
+use QDRDBMS::GSTV qw( Bool Str Blob Int Num Hash );
+
 ###########################################################################
 ###########################################################################
 
-my $EMPTY_STR = q{};
+my $LITERAL_TYPE_MAP = {
+    'QDRDBMS::GSTV::Bool'
+        => QDRDBMS::AST::TypeRef->new({ 'text' => Str('sys.type.Bool') }),
+    'QDRDBMS::GSTV::Str'
+        => QDRDBMS::AST::TypeRef->new({ 'text' => Str('sys.type.Text') }),
+    'QDRDBMS::GSTV::Blob'
+        => QDRDBMS::AST::TypeRef->new({ 'text' => Str('sys.type.Blob') }),
+    'QDRDBMS::GSTV::Int'
+        => QDRDBMS::AST::TypeRef->new({ 'text' => Str('sys.type.Int') }),
+    'QDRDBMS::GSTV::Num'
+        => QDRDBMS::AST::TypeRef->new({
+            'text' => Str('sys.type.Num.Rat') }),
+};
 
 ###########################################################################
 ###########################################################################
@@ -17,14 +31,258 @@ my $EMPTY_STR = q{};
 
     use base 'Exporter';
     our @EXPORT_OK = qw(
+        TypeRef FuncRef ProcRef VarRef
+        Expr Stmt Func Proc
     );
 
 ###########################################################################
 
+sub TypeRef {
+    return QDRDBMS::AST::TypeRef->new( @_ );
+}
+
+sub FuncRef {
+    return QDRDBMS::AST::FuncRef->new( @_ );
+}
+
+sub ProcRef {
+    return QDRDBMS::AST::ProcRef->new( @_ );
+}
+
+sub VarRef {
+    return QDRDBMS::AST::VarRef->new( @_ );
+}
+
+sub Expr {
+    return QDRDBMS::AST::Expr->new( @_ );
+}
+
+sub Stmt {
+    return QDRDBMS::AST::Stmt->new( @_ );
+}
+
+sub Func {
+    return QDRDBMS::AST::Func->new( @_ );
+}
+
+sub Proc {
+    return QDRDBMS::AST::Proc->new( @_ );
+}
 
 ###########################################################################
 
 } # module QDRDBMS::AST
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::_EntityRef; # role
+
+    use Carp;
+    use Scalar::Util qw( blessed );
+
+    my $ATTR_TEXT_POSSREP;
+    BEGIN { $ATTR_TEXT_POSSREP = 'text_possrep'; }
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($text) = @{$args}{'text'};
+
+    confess q{new(): Bad $text arg; it is not a valid object}
+            . q{ of a QDRDBMS::GSTV::Str-doing class.}
+        if !blessed $text or !$text->isa( 'QDRDBMS::GSTV::Str' );
+
+    $self->{$ATTR_TEXT_POSSREP} = $text;
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_text {
+    my ($self) = @_;
+    return $self->{$ATTR_TEXT_POSSREP};
+}
+
+###########################################################################
+
+} # role QDRDBMS::AST::_EntityRef
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::TypeRef; # class
+    use base 'QDRDBMS::AST::_EntityRef';
+} # class QDRDBMS::AST::TypeRef
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::FuncRef; # class
+    use base 'QDRDBMS::AST::_EntityRef';
+} # class QDRDBMS::AST::FuncRef
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::ProcRef; # class
+    use base 'QDRDBMS::AST::_EntityRef';
+} # class QDRDBMS::AST::ProcRef
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::VarRef; # class
+    use base 'QDRDBMS::AST::_EntityRef';
+} # class QDRDBMS::AST::VarRef
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::Expr; # class
+
+    use Carp;
+    use Scalar::Util qw( blessed );
+
+    my $ATTR_KIND = 'kind';
+    my $ATTR_LIT_VAL = 'lit_val';
+    my $ATTR_LIT_TYPE = 'lit_type';
+    my $ATTR_VAR_NAME = 'var_name';
+    my $ATTR_FUNC_NAME = 'func_name';
+    my $ATTR_FUNC_ARGS_AOA = 'func_args_aoa';
+    my $ATTR_FUNC_ARGS_HASH = 'func_args_hash';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($lit_val, $var_ref, $func_ref, $func_args)
+        = @{$args}{'lit', 'var', 'func', 'func_args'};
+
+    if (defined $lit_val) {
+        $self->{$ATTR_KIND} = 'lit';
+        confess q{new(): The args $var, $func, $func_args}
+                . q{ can not be set when the $lit arg is set.}
+            if defined $var_ref or defined $func_ref or defined $func_args;
+        my $lit_class = blessed $lit_val;
+        confess q{new(): Bad $var arg; it is not an object.}
+            if !$lit_class;
+        if (my $lit_type = $LITERAL_TYPE_MAP->{$lit_class}) {
+            $self->{$ATTR_LIT_VAL} = $lit_val;
+            $self->{$ATTR_LIT_TYPE} = $lit_type;
+        }
+        else {
+            confess q{new(): Bad $lit arg; it is not an object of a}
+                . q{ QDRDBMS::GSTV::(Bool|Str|Blob|Int|Num) class.};
+        }
+    }
+
+    elsif (defined $var_ref) {
+        $self->{$ATTR_KIND} = 'var';
+        confess q{new(): The args $lit, $func, $func_args}
+                . q{ can not be set when the $var arg is set.}
+            if defined $func_ref or defined $func_args;
+        confess q{new(): Bad $var arg; it is not a valid object}
+                . q{ of a QDRDBMS::AST::VarRef-doing class.}
+            if !blessed $var_ref
+                or !$var_ref->isa( 'QDRDBMS::AST::VarRef' );
+        $self->{$ATTR_VAR_NAME} = $var_ref;
+    }
+
+    elsif (defined $func_ref) {
+        $self->{$ATTR_KIND} = 'func';
+        confess q{new(): Bad $func arg; it is not a valid object}
+                . q{ of a QDRDBMS::AST::FuncRef-doing class.}
+            if !blessed $func_ref
+                or !$func_ref->isa( 'QDRDBMS::AST::FuncRef' );
+        $self->{$ATTR_FUNC_NAME} = $func_ref;
+        if (!defined $func_args) {
+            $self->{$ATTR_FUNC_ARGS_AOA}  = [];
+            $self->{$ATTR_FUNC_ARGS_HASH} = {};
+        }
+        elsif (ref $func_args eq 'ARRAY') {
+            # TODO.
+        }
+        elsif (ref $func_args eq 'HASH') {
+            # TODO.
+        }
+        else {
+            confess q{new(): Bad $func_args arg; its not a Array|Hash.};
+        }
+    }
+
+    else {
+        confess q{new(): None of the args $lit, $var, $func}
+            . q{ were set, but one of those must be.};
+    }
+
+    return $self;
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::Expr
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::Stmt; # class
+
+    use Carp;
+    use Scalar::Util qw( blessed );
+
+
+
+###########################################################################
+
+
+
+
+###########################################################################
+
+} # class QDRDBMS::AST::Stmt
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::Func; # class
+
+    use Carp;
+    use Scalar::Util qw( blessed );
+
+
+
+###########################################################################
+
+
+
+
+###########################################################################
+
+} # class QDRDBMS::AST::Func
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::Proc; # class
+
+    use Carp;
+    use Scalar::Util qw( blessed );
+
+
+
+###########################################################################
+
+
+
+
+###########################################################################
+
+} # class QDRDBMS::AST::Proc
 
 ###########################################################################
 ###########################################################################
