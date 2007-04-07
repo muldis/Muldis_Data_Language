@@ -32,6 +32,8 @@ sub main {
     isa_ok( $dbms, 'QDRDBMS::Interface::DBMS' );
 
     print "#### QDRDBMS::Validator finished test of $engine_name ####\n";
+
+    return;
 }
 
 ###########################################################################
@@ -74,8 +76,8 @@ QDRDBMS Engine distribution:
 
     # Run the test suite.
     QDRDBMS::Validator::main({
-            'engine_name'   => Str('QDRDBMS::Engine::Example'),
-            'engine_config' => Hash({}),
+            'engine_name' => Str('QDRDBMS::Engine::Example'),
+            'dbms_config' => Hash({}),
         });
 
     1;

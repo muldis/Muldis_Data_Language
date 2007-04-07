@@ -32,7 +32,7 @@ my $LITERAL_TYPE_MAP = {
     use base 'Exporter';
     our @EXPORT_OK = qw(
         TypeRef FuncRef ProcRef VarRef
-        Expr Stmt Func Proc
+        LitDefExpr VarRefExpr FuncInvExpr Stmt Func Proc
     );
 
 ###########################################################################
@@ -53,8 +53,16 @@ sub VarRef {
     return QDRDBMS::AST::VarRef->new( @_ );
 }
 
-sub Expr {
-    return QDRDBMS::AST::Expr->new( @_ );
+sub LitDefExpr {
+    return QDRDBMS::AST::LitDefExpr->new( @_ );
+}
+
+sub VarRefExpr {
+    return QDRDBMS::AST::VarRefExpr->new( @_ );
+}
+
+sub FuncInvExpr {
+    return QDRDBMS::AST::FuncInvExpr->new( @_ );
 }
 
 sub Stmt {
@@ -142,15 +150,78 @@ sub as_text {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Expr; # class
+{ package QDRDBMS::AST::LitDefExpr; # class
 
     use Carp;
     use Scalar::Util qw( blessed );
 
-    my $ATTR_KIND = 'kind';
     my $ATTR_LIT_VAL = 'lit_val';
     my $ATTR_LIT_TYPE = 'lit_type';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($lit_val) = @{$args}{'lit'};
+
+    my $lit_class = blessed $lit_val;
+    confess q{new(): Bad $lit arg; it is not an object.}
+        if !$lit_class;
+    if (my $lit_type = $LITERAL_TYPE_MAP->{$lit_class}) {
+        $self->{$ATTR_LIT_VAL} = $lit_val;
+        $self->{$ATTR_LIT_TYPE} = $lit_type;
+    }
+    else {
+        confess q{new(): Bad $lit arg; it is not an object of a}
+            . q{ QDRDBMS::GSTV::(Bool|Str|Blob|Int|Num) class.};
+    }
+
+    return $self;
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::LitDefExpr
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::VarRefExpr; # class
+
+    use Carp;
+    use Scalar::Util qw( blessed );
+
     my $ATTR_VAR_NAME = 'var_name';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($var_ref) = @{$args}{'var'};
+
+    confess q{new(): Bad $var arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::VarRef-doing class.}
+        if !blessed $var_ref
+            or !$var_ref->isa( 'QDRDBMS::AST::VarRef' );
+    $self->{$ATTR_VAR_NAME} = $var_ref;
+
+    return $self;
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::VarRefExpr
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::FuncInvExpr; # class
+
+    use Carp;
+    use Scalar::Util qw( blessed );
+
     my $ATTR_FUNC_NAME = 'func_name';
     my $ATTR_FUNC_ARGS_AOA = 'func_args_aoa';
     my $ATTR_FUNC_ARGS_HASH = 'func_args_hash';
@@ -160,64 +231,25 @@ sub as_text {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($lit_val, $var_ref, $func_ref, $func_args)
-        = @{$args}{'lit', 'var', 'func', 'func_args'};
+    my ($func_ref, $func_args) = @{$args}{'func', 'func_args'};
 
-    if (defined $lit_val) {
-        $self->{$ATTR_KIND} = 'lit';
-        confess q{new(): The args $var, $func, $func_args}
-                . q{ can not be set when the $lit arg is set.}
-            if defined $var_ref or defined $func_ref or defined $func_args;
-        my $lit_class = blessed $lit_val;
-        confess q{new(): Bad $var arg; it is not an object.}
-            if !$lit_class;
-        if (my $lit_type = $LITERAL_TYPE_MAP->{$lit_class}) {
-            $self->{$ATTR_LIT_VAL} = $lit_val;
-            $self->{$ATTR_LIT_TYPE} = $lit_type;
-        }
-        else {
-            confess q{new(): Bad $lit arg; it is not an object of a}
-                . q{ QDRDBMS::GSTV::(Bool|Str|Blob|Int|Num) class.};
-        }
+    confess q{new(): Bad $func arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::FuncRef-doing class.}
+        if !blessed $func_ref
+            or !$func_ref->isa( 'QDRDBMS::AST::FuncRef' );
+    $self->{$ATTR_FUNC_NAME} = $func_ref;
+    if (!defined $func_args) {
+        $self->{$ATTR_FUNC_ARGS_AOA}  = [];
+        $self->{$ATTR_FUNC_ARGS_HASH} = {};
     }
-
-    elsif (defined $var_ref) {
-        $self->{$ATTR_KIND} = 'var';
-        confess q{new(): The args $lit, $func, $func_args}
-                . q{ can not be set when the $var arg is set.}
-            if defined $func_ref or defined $func_args;
-        confess q{new(): Bad $var arg; it is not a valid object}
-                . q{ of a QDRDBMS::AST::VarRef-doing class.}
-            if !blessed $var_ref
-                or !$var_ref->isa( 'QDRDBMS::AST::VarRef' );
-        $self->{$ATTR_VAR_NAME} = $var_ref;
+    elsif (ref $func_args eq 'ARRAY') {
+        # TODO.
     }
-
-    elsif (defined $func_ref) {
-        $self->{$ATTR_KIND} = 'func';
-        confess q{new(): Bad $func arg; it is not a valid object}
-                . q{ of a QDRDBMS::AST::FuncRef-doing class.}
-            if !blessed $func_ref
-                or !$func_ref->isa( 'QDRDBMS::AST::FuncRef' );
-        $self->{$ATTR_FUNC_NAME} = $func_ref;
-        if (!defined $func_args) {
-            $self->{$ATTR_FUNC_ARGS_AOA}  = [];
-            $self->{$ATTR_FUNC_ARGS_HASH} = {};
-        }
-        elsif (ref $func_args eq 'ARRAY') {
-            # TODO.
-        }
-        elsif (ref $func_args eq 'HASH') {
-            # TODO.
-        }
-        else {
-            confess q{new(): Bad $func_args arg; its not a Array|Hash.};
-        }
+    elsif (ref $func_args eq 'HASH') {
+        # TODO.
     }
-
     else {
-        confess q{new(): None of the args $lit, $var, $func}
-            . q{ were set, but one of those must be.};
+        confess q{new(): Bad $func_args arg; its not a Array|Hash.};
     }
 
     return $self;
@@ -225,7 +257,7 @@ sub new {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::Expr
+} # class QDRDBMS::AST::FuncInvExpr
 
 ###########################################################################
 ###########################################################################

@@ -47,15 +47,10 @@ sub new {
             or !$engine_name->isa( 'QDRDBMS::GSTV::Str' );
     $engine_name = ${$engine_name};
 
-    if (defined $dbms_config) {
-        confess q{new(): Bad $dbms_config arg; it is not an object of a}
-                . q{ QDRDBMS::GSTV::Hash-doing class.}
-            if !blessed $dbms_config
-                or !$dbms_config->isa( 'QDRDBMS::GSTV::Hash' );
-    }
-    else {
-        $dbms_config = {};
-    }
+    confess q{new(): Bad $dbms_config arg; it is not an object of a}
+            . q{ QDRDBMS::GSTV::Hash-doing class.}
+        if !blessed $dbms_config
+            or !$dbms_config->isa( 'QDRDBMS::GSTV::Hash' );
 
     # A package may be loaded due to it being embedded in a non-excl file.
     if (!do {
@@ -154,8 +149,8 @@ sub new {
     my $dbms_eng_class = blessed $dbms_eng;
 
     confess q{new(): Bad $dbms arg; it is not an object of a}
-            . q{ QDRDBMS::AST::Routine-doing class.}
-        if !blessed $rtn_ast or !$rtn_ast->isa( 'QDRDBMS::AST::Routine' );
+            . q{ QDRDBMS::AST::Proc-doing class.}
+        if !blessed $rtn_ast or !$rtn_ast->isa( 'QDRDBMS::AST::Proc' );
 
     my $rtn_eng = eval {
         $dbms_eng->prepare_routine({ 'routine' => $rtn_ast });
@@ -308,13 +303,15 @@ code; instead refer to other above-named packages in this file.>
 
 =head1 SYNOPSIS
 
-    use QDRDBMS::GSTV qw( Str );
+    use QDRDBMS::GSTV qw( Str Hash );
 
     use QDRDBMS;
 
     # Instantiate a QDRDBMS DBMS / virtual machine.
     my $dbms = QDRDBMS->new_dbms({
-        'engine_name' => Str('QDRDBMS::Engine::Example') });
+            'engine_name' => Str('QDRDBMS::Engine::Example'),
+            'dbms_config' => Hash({}),
+        });
 
     # TODO: Create or connect to a repository and work with it.
 

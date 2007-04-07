@@ -106,7 +106,7 @@ sub Hash {
 
     confess q{Hash(): Bad constructor arg; Perl 5 does not consider}
             . q{ it to be a Hash.}
-        if ref $v ne 'Hash';
+        if ref $v ne 'HASH';
 
     for my $key (keys %{$v}) {
         my $val = $v->{$key};
