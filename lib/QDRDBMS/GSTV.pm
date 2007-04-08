@@ -26,7 +26,7 @@ my $SCALAR_OVERLOAD_SETUP_ARGS = {
 ###########################################################################
 
 { package QDRDBMS::GSTV; # module
-    our $VERSION = 0.000;
+    our $VERSION = 0.000000;
     # Note: This given version applies to all of this file's packages.
 
     use base 'Exporter';

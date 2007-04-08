@@ -8,20 +8,23 @@ use QDRDBMS::AST;
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS; # package
-    our $VERSION = 0.000;
+{ package QDRDBMS; # module
+    our $VERSION = 0.000000;
     # Note: This given version applies to all of this file's packages.
 
 ###########################################################################
 
 sub new_dbms {
     my ($args) = @_;
-    return QDRDBMS::Interface::DBMS->new( $args );
+    my ($engine_name, $dbms_config)
+        = @{$args}{'engine_name', 'dbms_config'};
+    return QDRDBMS::Interface::DBMS->new({
+        'engine_name' => $engine_name, 'dbms_config' => $dbms_config });
 }
 
 ###########################################################################
 
-} # package QDRDBMS
+} # module QDRDBMS
 
 ###########################################################################
 ###########################################################################
@@ -52,39 +55,40 @@ sub new {
         if !blessed $dbms_config
             or !$dbms_config->isa( 'QDRDBMS::GSTV::Hash' );
 
-    # A package may be loaded due to it being embedded in a non-excl file.
+    # A module may be loaded due to it being embedded in a non-excl file.
     if (!do {
             no strict 'refs';
             defined %{$engine_name . '::'};
         }) {
         # Note: We have to invoke this 'require' in an eval string
         # because we need the bareword semantics, where 'require'
-        # will munge the package name into file system paths.
+        # will munge the module name into file system paths.
         eval "require $engine_name;";
         if (my $err = $@) {
-            confess q{new(): Could not load QDRDBMS Engine class}
+            confess q{new(): Could not load QDRDBMS Engine module}
                 . qq{ '$engine_name': $err};
         }
-        confess qq{new(): Could not load QDRDBMS Engine class}
+        confess qq{new(): Could not load QDRDBMS Engine module}
                 . qq{ '$engine_name': while that file did compile without}
-                . q{ errors, it did not declare the same-named package.}
+                . q{ errors, it did not declare the same-named module.}
             if !do {
                 no strict 'refs';
                 defined %{$engine_name . '::'};
             };
     }
-    confess qq{new(): The QDRDBMS Engine class '$engine_name' does not}
+    confess qq{new(): The QDRDBMS Engine module '$engine_name' does not}
             . q{ provide the new_dbms() constructor function.}
         if !$engine_name->can( 'new_dbms' );
     my $dbms_eng = eval {
-        $engine_name->new_dbms({ 'dbms_config' => $dbms_config });
+        &{$engine_name->can( 'new_dbms' )}({
+            'dbms_config' => $dbms_config });
     };
     if (my $err = $@) {
-        confess qq{new(): The QDRDBMS Engine class '$engine_name' threw an}
-            . qq{ exception during its new_dbms() execution: $err}
+        confess qq{new(): The QDRDBMS Engine module '$engine_name' threw}
+            . qq{ an exception during its new_dbms() execution: $err}
     }
     confess q{new(): The new_dbms() constructor function of the QDRDBMS}
-            . qq{ Engine class '$engine_name' did not return an object}
+            . qq{ Engine module '$engine_name' did not return an object}
             . q{ to serve as a DBMS Engine.}
         if !blessed $dbms_eng;
     my $dbms_eng_class = blessed $dbms_eng;
@@ -105,14 +109,14 @@ sub new {
 
 sub prepare_routine {
     my ($self, $args) = @_;
-    $args = {%{$args}, 'dbms' => $self};
-    return QDRDBMS::Interface::Routine->new( $args );
+    my ($rtn_ast) = @{$args}{'routine'};
+    return QDRDBMS::Interface::Routine->new({
+        'dbms' => $self, 'routine' => $rtn_ast });
 }
 
 sub new_variable {
-    my ($self, $args) = @_;
-    $args = {%{$args}, 'dbms' => $self};
-    return QDRDBMS::Interface::Variable->new( $args );
+    my ($self) = @_;
+    return QDRDBMS::Interface::Variable->new({ 'dbms' => $self });
 }
 
 ###########################################################################
@@ -208,7 +212,7 @@ sub bind_variables {
 ###########################################################################
 
 sub execute {
-    my ($self, undef) = @_;
+    my ($self) = @_;
     $self->{$ATTR_RTN_ENG}->execute();
     return;
 }
@@ -294,12 +298,6 @@ This document describes QDRDBMS version 0.0.0.
 It also describes the same-number versions of QDRDBMS::Interface::DBMS
 ("DBMS"), QDRDBMS::Interface::Routine ("Routine"), and
 QDRDBMS::Interface::Variable ("Variable").
-
-I<Note that the "QDRDBMS" package serves only as the name-sake
-representative for this whole file, which can be referenced as a unit by
-documentation or 'use' statements or Perl archive indexes.  Aside from
-'use' statements, you should never refer directly to "QDRDBMS" in your
-code; instead refer to other above-named packages in this file.>
 
 =head1 SYNOPSIS
 
@@ -527,7 +525,7 @@ L<QDRDBMS::Language>.
 The Perl 5 module L<QDRDBMS::Validator> is bundled with QDRDBMS and can be
 used to test QDRDBMS Engines.
 
-The Perl 5 package L<QDRDBMS::Engine::Example> is bundled with QDRDBMS and
+The Perl 5 module L<QDRDBMS::Engine::Example> is bundled with QDRDBMS and
 implements a self-contained reference implementation of a QDRDBMS Engine.
 
 Go to the L<QDRDBMS::SeeAlso> file for the majority of external references.

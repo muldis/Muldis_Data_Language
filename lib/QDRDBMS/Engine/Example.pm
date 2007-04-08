@@ -9,20 +9,22 @@ use QDRDBMS::Engine::Example::PhysType;
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example; # package
-    our $VERSION = 0.000;
+{ package QDRDBMS::Engine::Example; # module
+    our $VERSION = 0.000000;
     # Note: This given version applies to all of this file's packages.
 
 ###########################################################################
 
 sub new_dbms {
-    my (undef, $args) = @_;
-    return QDRDBMS::Engine::Example::DBMS->new( $args );
+    my ($args) = @_;
+    my ($dbms_config) = @{$args}{'dbms_config'};
+    return QDRDBMS::Engine::Example::DBMS->new({
+        'dbms_config' => $dbms_config });
 }
 
 ###########################################################################
 
-} # package QDRDBMS::Engine::Example
+} # module QDRDBMS::Engine::Example
 
 ###########################################################################
 ###########################################################################
@@ -49,14 +51,14 @@ sub new {
 
 sub prepare_routine {
     my ($self, $args) = @_;
-    $args = {%{$args}, 'dbms' => $self};
-    return QDRDBMS::Engine::Example::Routine->new( $args );
+    my ($rtn_ast) = @{$args}{'routine'};
+    return QDRDBMS::Engine::Example::Routine->new({
+        'dbms' => $self, 'routine' => $rtn_ast });
 }
 
 sub new_variable {
-    my ($self, $args) = @_;
-    $args = {%{$args}, 'dbms' => $self};
-    return QDRDBMS::Engine::Example::Variable->new( $args );
+    my ($self) = @_;
+    return QDRDBMS::Engine::Example::Variable->new({ 'dbms' => $self });
 }
 
 ###########################################################################
@@ -105,7 +107,7 @@ sub bind_variables {
 ###########################################################################
 
 sub execute {
-    my ($self, undef) = @_;
+    my ($self) = @_;
     $self->{$ATTR_PREP_RTN}->( $self->{$ATTR_BOUND_VARS} );
     return;
 }
