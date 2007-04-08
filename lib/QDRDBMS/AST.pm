@@ -38,43 +38,58 @@ my $LITERAL_TYPE_MAP = {
 ###########################################################################
 
 sub TypeRef {
-    return QDRDBMS::AST::TypeRef->new( @_ );
+    my ($args) = @_;
+    my ($text) = @{$args}{'text'};
+    return QDRDBMS::AST::TypeRef->new({ 'text' => $text });
 }
 
 sub FuncRef {
-    return QDRDBMS::AST::FuncRef->new( @_ );
+    my ($args) = @_;
+    my ($text) = @{$args}{'text'};
+    return QDRDBMS::AST::FuncRef->new({ 'text' => $text });
 }
 
 sub ProcRef {
-    return QDRDBMS::AST::ProcRef->new( @_ );
+    my ($args) = @_;
+    my ($text) = @{$args}{'text'};
+    return QDRDBMS::AST::ProcRef->new({ 'text' => $text });
 }
 
 sub VarRef {
-    return QDRDBMS::AST::VarRef->new( @_ );
+    my ($args) = @_;
+    my ($text) = @{$args}{'text'};
+    return QDRDBMS::AST::VarRef->new({ 'text' => $text });
 }
 
 sub LitDefExpr {
-    return QDRDBMS::AST::LitDefExpr->new( @_ );
+    my ($args) = @_;
+    my ($lit) = @{$args}{'lit'};
+    return QDRDBMS::AST::LitDefExpr->new({ 'lit' => $lit });
 }
 
 sub VarRefExpr {
-    return QDRDBMS::AST::VarRefExpr->new( @_ );
+    my ($args) = @_;
+    my ($var) = @{$args}{'var'};
+    return QDRDBMS::AST::VarRefExpr->new({ 'var' => $var });
 }
 
 sub FuncInvExpr {
-    return QDRDBMS::AST::FuncInvExpr->new( @_ );
+    my ($args) = @_;
+    my ($func, $func_args) = @{$args}{'func', 'func_args'};
+    return QDRDBMS::AST::FuncInvExpr->new({
+        'func' => $func, 'func_args' => $func_args });
 }
 
 sub Stmt {
-    return QDRDBMS::AST::Stmt->new( @_ );
+    return QDRDBMS::AST::Stmt->new();
 }
 
 sub Func {
-    return QDRDBMS::AST::Func->new( @_ );
+    return QDRDBMS::AST::Func->new();
 }
 
 sub Proc {
-    return QDRDBMS::AST::Proc->new( @_ );
+    return QDRDBMS::AST::Proc->new();
 }
 
 ###########################################################################

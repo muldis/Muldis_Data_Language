@@ -27,43 +27,54 @@ my $TRUE  = (1 == 1);
 ###########################################################################
 
 sub Bool {
-    return QDRDBMS::Engine::Example::PhysType::Bool->new( @_ );
+    my ($scalar) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Bool->new( $scalar );
 }
 
 sub Text {
-    return QDRDBMS::Engine::Example::PhysType::Text->new( @_ );
+    my ($scalar) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Text->new( $scalar );
 }
 
 sub Blob {
-    return QDRDBMS::Engine::Example::PhysType::Blob->new( @_ );
+    my ($scalar) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Blob->new( $scalar );
 }
 
 sub Int {
-    return QDRDBMS::Engine::Example::PhysType::Int->new( @_ );
+    my ($scalar) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Int->new( $scalar );
 }
 
 sub TextKeyedMap {
-    return QDRDBMS::Engine::Example::PhysType::TextKeyedMap->new( @_ );
+    my ($map) = @_;
+    return QDRDBMS::Engine::Example::PhysType::TextKeyedMap->new( $map );
 }
 
 sub Heading {
-    return QDRDBMS::Engine::Example::PhysType::Heading->new( @_ );
+    my ($attr_defs_aoa) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Heading->new(
+        $attr_defs_aoa );
 }
 
 sub Tuple {
-    return QDRDBMS::Engine::Example::PhysType::Tuple->new( @_ );
+    my ($heading, $body) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Tuple->new(
+        $heading, $body );
 }
 
 sub Relation {
-    return QDRDBMS::Engine::Example::PhysType::Relation->new( @_ );
+    my ($heading, $body, $key_defs_aoh, $index_defs_aoh) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Relation->new(
+        $heading, $body, $key_defs_aoh, $index_defs_aoh );
 }
 
 sub Cat_DeclEntityName {
-    return QDRDBMS::Engine::Example::PhysType::Cat_DeclEntityName->new( @_ );
+    return QDRDBMS::Engine::Example::PhysType::Cat_DeclEntityName->new();
 }
 
 sub Cat_InvokEntityName {
-    return QDRDBMS::Engine::Example::PhysType::Cat_InvokEntityName->new( @_ );
+    return QDRDBMS::Engine::Example::PhysType::Cat_InvokEntityName->new();
 }
 
 ###########################################################################
