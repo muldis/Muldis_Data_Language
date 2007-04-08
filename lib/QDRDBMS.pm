@@ -15,7 +15,7 @@ use QDRDBMS::AST;
 ###########################################################################
 
 sub new_dbms {
-    my (undef, $args) = @_;
+    my ($args) = @_;
     return QDRDBMS::Interface::DBMS->new( $args );
 }
 
@@ -41,13 +41,13 @@ sub new {
     my ($engine_name, $dbms_config)
         = @{$args}{'engine_name', 'dbms_config'};
 
-    confess q{new(): Bad $engine_name arg; it is not an object of a}
+    confess q{new(): Bad :$engine_name arg; it is not an object of a}
             . q{ QDRDBMS::GSTV::Str-doing class.}
         if !blessed $engine_name
             or !$engine_name->isa( 'QDRDBMS::GSTV::Str' );
     $engine_name = ${$engine_name};
 
-    confess q{new(): Bad $dbms_config arg; it is not an object of a}
+    confess q{new(): Bad :$dbms_config arg; it is not an object of a}
             . q{ QDRDBMS::GSTV::Hash-doing class.}
         if !blessed $dbms_config
             or !$dbms_config->isa( 'QDRDBMS::GSTV::Hash' );
@@ -141,14 +141,14 @@ sub new {
     my $self = bless {}, $class;
     my ($dbms_intf, $rtn_ast) = @{$args}{'dbms', 'routine'};
 
-    confess q{new(): Bad $dbms arg; it is not an object of a}
+    confess q{new(): Bad :$dbms arg; it is not an object of a}
             . q{ QDRDBMS::Interface::DBMS-doing class.}
         if !blessed $dbms_intf
             or !$dbms_intf->isa( 'QDRDBMS::Interface::DBMS' );
     my $dbms_eng = $dbms_intf->{$DBMS_ATTR_DBMS_ENG};
     my $dbms_eng_class = blessed $dbms_eng;
 
-    confess q{new(): Bad $dbms arg; it is not an object of a}
+    confess q{new(): Bad :$dbms arg; it is not an object of a}
             . q{ QDRDBMS::AST::Proc-doing class.}
         if !blessed $rtn_ast or !$rtn_ast->isa( 'QDRDBMS::AST::Proc' );
 
@@ -186,7 +186,7 @@ sub bind_variables {
     my ($self, $args) = @_;
     my ($var_intfs) = @{$args}{'variables'};
 
-    confess q{new(): Bad $variables arg; it is not an object of a}
+    confess q{new(): Bad :$variables arg; it is not an object of a}
             . q{ QDRDBMS::GSTV::Hash-doing class.}
         if !blessed $var_intfs
             or !$var_intfs->isa( 'QDRDBMS::GSTV::Hash' );
@@ -194,7 +194,7 @@ sub bind_variables {
     my $var_engs = {};
     for my $var_name (keys %{$var_intfs}) {
         my $var_intf = $var_intfs->{$var_name};
-        confess q{new(): Bad $var_value arg elem; it is not an object of a}
+        confess q{new(): Bad :$var_value arg elem; it is not an object of a}
                 . q{ QDRDBMS::Interface::Variable-doing class.}
             if !blessed $var_intf
                 or !$var_intf->isa( 'QDRDBMS::Interface::Variable' );
@@ -237,7 +237,7 @@ sub new {
     my $self = bless {}, $class;
     my ($dbms_intf) = @{$args}{'dbms'};
 
-    confess q{new(): Bad $dbms arg; it is not an object of a}
+    confess q{new(): Bad :$dbms arg; it is not an object of a}
             . q{ QDRDBMS::Interface::DBMS-doing class.}
         if !blessed $dbms_intf
             or !$dbms_intf->isa( 'QDRDBMS::Interface::DBMS' );
@@ -263,7 +263,7 @@ sub new {
 #        if !$var_eng->can( '...' );
 
     $self->{$ATTR_DBMS_INTF} = $dbms_intf;
-    $self->{$ATTR_VAR_ENG} = $var_eng;
+    $self->{$ATTR_VAR_ENG}   = $var_eng;
 
     return $self;
 }
@@ -308,7 +308,7 @@ code; instead refer to other above-named packages in this file.>
     use QDRDBMS;
 
     # Instantiate a QDRDBMS DBMS / virtual machine.
-    my $dbms = QDRDBMS->new_dbms({
+    my $dbms = QDRDBMS::new_dbms({
             'engine_name' => Str('QDRDBMS::Engine::Example'),
             'dbms_config' => Hash({}),
         });

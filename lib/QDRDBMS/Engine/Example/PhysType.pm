@@ -58,6 +58,14 @@ sub Relation {
     return QDRDBMS::Engine::Example::PhysType::Relation->new( @_ );
 }
 
+sub Cat_DeclEntityName {
+    return QDRDBMS::Engine::Example::PhysType::Cat_DeclEntityName->new( @_ );
+}
+
+sub Cat_InvokEntityName {
+    return QDRDBMS::Engine::Example::PhysType::Cat_InvokEntityName->new( @_ );
+}
+
 ###########################################################################
 
 } # module QDRDBMS::Engine::Example::PhysType

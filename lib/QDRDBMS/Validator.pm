@@ -27,7 +27,7 @@ sub main {
     print "#### QDRDBMS::Validator starting test of $engine_name ####\n";
 
     # Instantiate a QDRDBMS DBMS / virtual machine.
-    my $dbms = QDRDBMS->new_dbms({
+    my $dbms = QDRDBMS::new_dbms({
         'engine_name' => $engine_name, 'dbms_config' => $dbms_config });
     isa_ok( $dbms, 'QDRDBMS::Interface::DBMS' );
 

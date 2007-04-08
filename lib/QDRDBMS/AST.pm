@@ -99,7 +99,7 @@ sub new {
     my $self = bless {}, $class;
     my ($text) = @{$args}{'text'};
 
-    confess q{new(): Bad $text arg; it is not a valid object}
+    confess q{new(): Bad :$text arg; it is not a valid object}
             . q{ of a QDRDBMS::GSTV::Str-doing class.}
         if !blessed $text or !$text->isa( 'QDRDBMS::GSTV::Str' );
 
@@ -155,7 +155,7 @@ sub as_text {
     use Carp;
     use Scalar::Util qw( blessed );
 
-    my $ATTR_LIT_VAL = 'lit_val';
+    my $ATTR_LIT_VAL  = 'lit_val';
     my $ATTR_LIT_TYPE = 'lit_type';
 
 ###########################################################################
@@ -166,14 +166,14 @@ sub new {
     my ($lit_val) = @{$args}{'lit'};
 
     my $lit_class = blessed $lit_val;
-    confess q{new(): Bad $lit arg; it is not an object.}
+    confess q{new(): Bad :$lit arg; it is not an object.}
         if !$lit_class;
     if (my $lit_type = $LITERAL_TYPE_MAP->{$lit_class}) {
-        $self->{$ATTR_LIT_VAL} = $lit_val;
+        $self->{$ATTR_LIT_VAL}  = $lit_val;
         $self->{$ATTR_LIT_TYPE} = $lit_type;
     }
     else {
-        confess q{new(): Bad $lit arg; it is not an object of a}
+        confess q{new(): Bad :$lit arg; it is not an object of a}
             . q{ QDRDBMS::GSTV::(Bool|Str|Blob|Int|Num) class.};
     }
 
@@ -201,7 +201,7 @@ sub new {
     my $self = bless {}, $class;
     my ($var_ref) = @{$args}{'var'};
 
-    confess q{new(): Bad $var arg; it is not a valid object}
+    confess q{new(): Bad :$var arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::VarRef-doing class.}
         if !blessed $var_ref
             or !$var_ref->isa( 'QDRDBMS::AST::VarRef' );
@@ -222,8 +222,8 @@ sub new {
     use Carp;
     use Scalar::Util qw( blessed );
 
-    my $ATTR_FUNC_NAME = 'func_name';
-    my $ATTR_FUNC_ARGS_AOA = 'func_args_aoa';
+    my $ATTR_FUNC_NAME      = 'func_name';
+    my $ATTR_FUNC_ARGS_AOA  = 'func_args_aoa';
     my $ATTR_FUNC_ARGS_HASH = 'func_args_hash';
 
 ###########################################################################
@@ -233,7 +233,7 @@ sub new {
     my $self = bless {}, $class;
     my ($func_ref, $func_args) = @{$args}{'func', 'func_args'};
 
-    confess q{new(): Bad $func arg; it is not a valid object}
+    confess q{new(): Bad :$func arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::FuncRef-doing class.}
         if !blessed $func_ref
             or !$func_ref->isa( 'QDRDBMS::AST::FuncRef' );
@@ -249,7 +249,7 @@ sub new {
         # TODO.
     }
     else {
-        confess q{new(): Bad $func_args arg; its not a Array|Hash.};
+        confess q{new(): Bad :$func_args arg; its not a Array|Hash.};
     }
 
     return $self;
