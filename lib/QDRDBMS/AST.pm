@@ -348,7 +348,7 @@ Abstract syntax tree for the QDRDBMS D language
 
 =head1 VERSION
 
-This document describes QDRDBMS::AST version 0.0.0.
+This document describes QDRDBMS::AST version 0.0.0 for Perl 5.
 
 It also describes the same-number versions of [...].
 

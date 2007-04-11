@@ -185,11 +185,12 @@ Generic Strong Typed Value - a basic Perl 6 feature brought to Perl 5
 
 =head1 VERSION
 
-This document describes QDRDBMS::GSTV ("GSTV") version 0.0.0.
+This document describes QDRDBMS::GSTV ("GSTV") version 0.0.0 for Perl 5.
 
-It also describes the same-number versions of QDRDBMS::GSTV::Bool ("Bool")
-and QDRDBMS::GSTV::Str ("Str") and QDRDBMS::GSTV::Blob ("Blob") and
-QDRDBMS::GSTV::Int ("Int") and QDRDBMS::GSTV::Num ("Num").
+It also describes the same-number versions for Perl 5 of
+QDRDBMS::GSTV::Bool ("Bool") and QDRDBMS::GSTV::Str ("Str") and
+QDRDBMS::GSTV::Blob ("Blob") and QDRDBMS::GSTV::Int ("Int") and
+QDRDBMS::GSTV::Num ("Num").
 
 =head1 SYNOPSIS
 

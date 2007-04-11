@@ -173,7 +173,7 @@ Self-contained reference implementation of a QDRDBMS Engine
 
 =head1 VERSION
 
-This document describes QDRDBMS::Engine::Example version 0.0.0.
+This document describes QDRDBMS::Engine::Example version 0.0.0 for Perl 5.
 
 =head1 SYNOPSIS
 

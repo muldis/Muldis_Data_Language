@@ -57,7 +57,7 @@ A common comprehensive test suite to run against all Engines
 
 =head1 VERSION
 
-This document describes QDRDBMS::Validator version 0.0.0.
+This document describes QDRDBMS::Validator version 0.0.0 for Perl 5.
 
 =head1 SYNOPSIS
 
