@@ -84,9 +84,41 @@ sub Cat_InvokEntityName {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::_Base; # class
-
-    my $ATTR_WHICH = '_Base::which';
+{ package QDRDBMS::Engine::Example::PhysType::Value; # role
+    my $ATTR_ROOT_TYPE = 'Value::root_type';
+        # QDRDBMS::Engine::Example::PhysType::TypeRef.
+        # This is the fundamental QDRDBMS D data type that this ::Value
+        # object's implementation sees it as a generic member of, and which
+        # generally determines what operators can be used with it.
+        # It is a supertype of the declared type.
+    my $ATTR_DECL_TYPE = 'Value::decl_type';
+        # QDRDBMS::Engine::Example::PhysType::TypeRef.
+        # This is the QDRDBMS D data type that the ::Value was declared to
+        # be a member of when the ::Value object was created.
+    my $ATTR_LAST_KNOWN_MST = 'Value::last_known_mst';
+        # QDRDBMS::Engine::Example::PhysType::TypeRef.
+        # This is the QDRDBMS data type that is the most specific type of
+        # this ::Value, as it was last determined.
+        # It is a subtype of the declared type.
+        # Since calculating a value's mst may be expensive, this object
+        # attribute may either be unset or be out of date with respect to
+        # the current type system, that is, not be automatically updated at
+        # the same time that a new subtype of its old mst is declared.
+    my $ATTR_WHICH = 'Value::which';
+        # Str.
+        # This is a unique identifier for the value that this object
+        # represents that should compare correctly with the corresponding
+        # identifiers of all ::Value-doing objects.
+        # It is a text string of format "<tnl>_<tn>_<vll>_<vl>" where:
+        #   1. <tn> is the value's root type name (fully qualified)
+        #   2. <tnl> is the character-length of <tn>
+        #   3. <vl> is the (class-determined) stringified value itself
+        #   4. <vll> is the character-length of <vl>
+        # This identifier is mainly used when a ::Value needs to be used as
+        # a key to index the ::Value with, not necessarily when comparing
+        # 2 values for equality.
+        # This identifier can be expensive to calculate, so it will be done
+        # only when actually required; eg, by the which() method.
 
 ###########################################################################
 
@@ -113,13 +145,13 @@ sub which {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::PhysType::_Base
+} # role QDRDBMS::Engine::Example::PhysType::Value
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::PhysType::Bool; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::_Base';
+    use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
     my $ATTR_SCALAR = 'scalar';
         # A p5 Scalar that equals $FALSE|$TRUE.
@@ -146,7 +178,7 @@ sub _calc_parts_of_self_which {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::PhysType::Text; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::_Base';
+    use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
     my $ATTR_SCALAR = 'scalar';
         # A p5 Scalar that is a text-mode string;
@@ -174,7 +206,7 @@ sub _calc_parts_of_self_which {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::PhysType::Blob; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::_Base';
+    use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
     my $ATTR_SCALAR = 'scalar';
         # A p5 Scalar that is a byte-mode string; it has false utf8 flag.
@@ -201,7 +233,7 @@ sub _calc_parts_of_self_which {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::PhysType::Int; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::_Base';
+    use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
     use bigint; # this is experimental
 
@@ -230,7 +262,7 @@ sub _calc_parts_of_self_which {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::PhysType::TextKeyedMap; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::_Base';
+    use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
     my $ATTR_MAP = 'map';
         # A p5 Hash with 0..N elements:
@@ -279,7 +311,7 @@ sub pairs {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::PhysType::Heading; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::_Base';
+    use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
     my $ATTR_ATTR_DEFS_BY_NAME = 'attr_defs_by_name';
         # A p5 Hash with 0..N elements:
@@ -335,7 +367,7 @@ sub get_attr_attr_defs_ordered {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::PhysType::Tuple; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::_Base';
+    use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
     my $ATTR_HEADING = 'heading';
         # A Heading.
@@ -367,7 +399,7 @@ sub _calc_parts_of_self_which {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::PhysType::Relation; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::_Base';
+    use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
     my $ATTR_HEADING    = 'heading';
         # A Heading.
