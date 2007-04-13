@@ -159,6 +159,7 @@ sub which {
 sub _build {
     my ($self, $v) = @_;
     $self->{$ATTR_V} = $v;
+    return;
 }
 
 ###########################################################################
@@ -198,6 +199,7 @@ sub which {
 sub _build {
     my ($self, $v) = @_;
     $self->{$ATTR_V} = $v;
+    return;
 }
 
 ###########################################################################
@@ -236,6 +238,7 @@ sub which {
 sub _build {
     my ($self, $v) = @_;
     $self->{$ATTR_V} = $v;
+    return;
 }
 
 ###########################################################################
@@ -276,6 +279,7 @@ sub which {
 sub _build {
     my ($self, $v) = @_;
     $self->{$ATTR_V} = $v;
+    return;
 }
 
 ###########################################################################
@@ -316,6 +320,7 @@ sub which {
 sub _build {
     my ($self, $map) = @_;
     $self->{$ATTR_MAP} = $map;
+    return;
 }
 
 ###########################################################################
@@ -390,6 +395,7 @@ sub _build {
     $self->{$ATTR_ATTR_DEFS_ORDERED}
         = [map { $attr_defs_by_name->{$_} }
             sort keys %{$attr_defs_by_name}];
+    return;
 }
 
 ###########################################################################
@@ -445,6 +451,7 @@ sub _build {
     my ($self, $heading, $body) = @_;
     $self->{$ATTR_HEADING} = $heading;
     $self->{$ATTR_BODY}    = $body;
+    return;
 }
 
 ###########################################################################
@@ -513,6 +520,7 @@ sub _build {
     $self->{$ATTR_BODY}       = $body;
     $self->{$ATTR_KEY_DEFS}   = $key_defs;
     $self->{$ATTR_INDEX_DEFS} = $index_defs;
+    return;
 }
 
 ###########################################################################
