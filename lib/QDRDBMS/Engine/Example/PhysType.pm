@@ -21,29 +21,28 @@ my $TRUE  = (1 == 1);
     use base 'Exporter';
     our @EXPORT_OK = qw(
         Bool Text Blob Int TextKeyedMap Heading Tuple Relation
-        Cat_DeclEntityName Cat_InvokEntityName
     );
 
 ###########################################################################
 
 sub Bool {
-    my ($scalar) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Bool->new( $scalar );
+    my ($v) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Bool->new( $v );
 }
 
 sub Text {
-    my ($scalar) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Text->new( $scalar );
+    my ($v) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Text->new( $v );
 }
 
 sub Blob {
-    my ($scalar) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Blob->new( $scalar );
+    my ($v) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Blob->new( $v );
 }
 
 sub Int {
-    my ($scalar) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Int->new( $scalar );
+    my ($v) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Int->new( $v );
 }
 
 sub TextKeyedMap {
@@ -69,14 +68,6 @@ sub Relation {
         $heading, $body, $key_defs_aoh, $index_defs_aoh );
 }
 
-sub Cat_DeclEntityName {
-    return QDRDBMS::Engine::Example::PhysType::Cat_DeclEntityName->new();
-}
-
-sub Cat_InvokEntityName {
-    return QDRDBMS::Engine::Example::PhysType::Cat_InvokEntityName->new();
-}
-
 ###########################################################################
 
 } # module QDRDBMS::Engine::Example::PhysType
@@ -85,17 +76,17 @@ sub Cat_InvokEntityName {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::PhysType::Value; # role
-    my $ATTR_ROOT_TYPE = 'Value::root_type';
+#    my $ATTR_ROOT_TYPE = 'Value::root_type';
         # QDRDBMS::Engine::Example::PhysType::TypeRef.
         # This is the fundamental QDRDBMS D data type that this ::Value
         # object's implementation sees it as a generic member of, and which
         # generally determines what operators can be used with it.
         # It is a supertype of the declared type.
-    my $ATTR_DECL_TYPE = 'Value::decl_type';
+#    my $ATTR_DECL_TYPE = 'Value::decl_type';
         # QDRDBMS::Engine::Example::PhysType::TypeRef.
         # This is the QDRDBMS D data type that the ::Value was declared to
         # be a member of when the ::Value object was created.
-    my $ATTR_LAST_KNOWN_MST = 'Value::last_known_mst';
+#    my $ATTR_LAST_KNOWN_MST = 'Value::last_known_mst';
         # QDRDBMS::Engine::Example::PhysType::TypeRef.
         # This is the QDRDBMS data type that is the most specific type of
         # this ::Value, as it was last determined.
@@ -104,12 +95,13 @@ sub Cat_InvokEntityName {
         # attribute may either be unset or be out of date with respect to
         # the current type system, that is, not be automatically updated at
         # the same time that a new subtype of its old mst is declared.
-    my $ATTR_WHICH = 'Value::which';
+
+#    my $ATTR_WHICH = 'Value::which';
         # Str.
         # This is a unique identifier for the value that this object
         # represents that should compare correctly with the corresponding
         # identifiers of all ::Value-doing objects.
-        # It is a text string of format "<tnl>_<tn>_<vll>_<vl>" where:
+        # It is a text string of format "<tnl> <tn> <vll> <vl>" where:
         #   1. <tn> is the value's root type name (fully qualified)
         #   2. <tnl> is the character-length of <tn>
         #   3. <vl> is the (class-determined) stringified value itself
@@ -125,22 +117,26 @@ sub Cat_InvokEntityName {
 sub new {
     my ($class, @args) = @_;
     my $self = bless {}, $class;
-    return $self->_build( @args );
+    $self->_build( @args );
+    return $self;
 }
 
 ###########################################################################
 
+sub root_type {
+    die "not implemented by subclass\n";
+}
+
+sub declared_type {
+    die "not implemented by subclass\n";
+}
+
+sub most_specific_type {
+    die "not implemented by subclass\n";
+}
+
 sub which {
-    my ($self) = @_;
-    if (!exists $self->{$ATTR_WHICH}) {
-        my ($cls_nm_unq_part, $scalarified_value)
-            = $self->_calc_parts_of_self_which();
-        my $len_cnup = length $cls_nm_unq_part;
-        my $len_sv = length $scalarified_value;
-        $self->{$ATTR_WHICH} = '8 PhysType'
-            . " $len_cnup $cls_nm_unq_part $len_sv $scalarified_value";
-    }
-    return $self->{$ATTR_WHICH};
+    die "not implemented by subclass\n";
 }
 
 ###########################################################################
@@ -153,21 +149,32 @@ sub which {
 { package QDRDBMS::Engine::Example::PhysType::Bool; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
-    my $ATTR_SCALAR = 'scalar';
+    my $ATTR_V = 'v';
         # A p5 Scalar that equals $FALSE|$TRUE.
+
+    my $ATTR_WHICH = 'which';
 
 ###########################################################################
 
 sub _build {
-    my ($self, $scalar) = @_;
-    $self->{$ATTR_SCALAR} = $scalar;
+    my ($self, $v) = @_;
+    $self->{$ATTR_V} = $v;
 }
 
 ###########################################################################
 
-sub _calc_parts_of_self_which {
+sub root_type {
+    return 'sys.type.Bool';
+}
+
+sub which {
     my ($self) = @_;
-    return ('Bool', $self->{$ATTR_SCALAR});
+    if (!defined $self->{$ATTR_WHICH}) {
+        my $s = ''.$self->{$ATTR_V};
+        my $len_s = length $s;
+        $self->{$ATTR_WHICH} = "13 sys.type.Bool $len_s $s";
+    }
+    return $self->{$ATTR_WHICH};
 }
 
 ###########################################################################
@@ -180,22 +187,33 @@ sub _calc_parts_of_self_which {
 { package QDRDBMS::Engine::Example::PhysType::Text; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
-    my $ATTR_SCALAR = 'scalar';
+    my $ATTR_V = 'v';
         # A p5 Scalar that is a text-mode string;
         # it either has true utf8 flag or is only 7-bit bytes.
+
+    my $ATTR_WHICH = 'which';
 
 ###########################################################################
 
 sub _build {
-    my ($self, $scalar) = @_;
-    $self->{$ATTR_SCALAR} = $scalar;
+    my ($self, $v) = @_;
+    $self->{$ATTR_V} = $v;
 }
 
 ###########################################################################
 
-sub _calc_parts_of_self_which {
+sub root_type {
+    return 'sys.type.Text';
+}
+
+sub which {
     my ($self) = @_;
-    return ('Text', $self->{$ATTR_SCALAR});
+    if (!defined $self->{$ATTR_WHICH}) {
+        my $s = $self->{$ATTR_V};
+        my $len_s = length $s;
+        $self->{$ATTR_WHICH} = "13 sys.type.Text $len_s $s";
+    }
+    return $self->{$ATTR_WHICH};
 }
 
 ###########################################################################
@@ -208,21 +226,32 @@ sub _calc_parts_of_self_which {
 { package QDRDBMS::Engine::Example::PhysType::Blob; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
-    my $ATTR_SCALAR = 'scalar';
+    my $ATTR_V = 'v';
         # A p5 Scalar that is a byte-mode string; it has false utf8 flag.
+
+    my $ATTR_WHICH = 'which';
 
 ###########################################################################
 
 sub _build {
-    my ($self, $scalar) = @_;
-    $self->{$ATTR_SCALAR} = $scalar;
+    my ($self, $v) = @_;
+    $self->{$ATTR_V} = $v;
 }
 
 ###########################################################################
 
-sub _calc_parts_of_self_which {
+sub root_type {
+    return 'sys.type.Blob';
+}
+
+sub which {
     my ($self) = @_;
-    return ('Blob', $self->{$ATTR_SCALAR});
+    if (!defined $self->{$ATTR_WHICH}) {
+        my $s = $self->{$ATTR_V};
+        my $len_s = length $s;
+        $self->{$ATTR_WHICH} = "13 sys.type.Blob $len_s $s";
+    }
+    return $self->{$ATTR_WHICH};
 }
 
 ###########################################################################
@@ -237,21 +266,32 @@ sub _calc_parts_of_self_which {
 
     use bigint; # this is experimental
 
-    my $ATTR_SCALAR = 'scalar';
+    my $ATTR_V = 'v';
         # A p5 Scalar that is a Perl integer or BigInt or canonical string.
+
+    my $ATTR_WHICH = 'which';
 
 ###########################################################################
 
 sub _build {
-    my ($self, $scalar) = @_;
-    $self->{$ATTR_SCALAR} = $scalar;
+    my ($self, $v) = @_;
+    $self->{$ATTR_V} = $v;
 }
 
 ###########################################################################
 
-sub _calc_parts_of_self_which {
+sub root_type {
+    return 'sys.type.Int';
+}
+
+sub which {
     my ($self) = @_;
-    return ('Int', $self->{$ATTR_SCALAR});
+    if (!defined $self->{$ATTR_WHICH}) {
+        my $s = ''.$self->{$ATTR_V};
+        my $len_s = length $s;
+        $self->{$ATTR_WHICH} = "12 sys.type.Int $len_s $s";
+    }
+    return $self->{$ATTR_WHICH};
 }
 
 ###########################################################################
@@ -269,6 +309,8 @@ sub _calc_parts_of_self_which {
             # Each Hash key is a p5 text-mode string.
             # Each Hash value is a ::Example::* value of some kind.
 
+    my $ATTR_WHICH = 'which';
+
 ###########################################################################
 
 sub _build {
@@ -278,14 +320,23 @@ sub _build {
 
 ###########################################################################
 
-sub _calc_parts_of_self_which {
+sub root_type {
+    return 'sys.type._TextKeyedMap';
+}
+
+sub which {
     my ($self) = @_;
-    my $map = $self->{$ATTR_MAP};
-    return ('TextKeyedMap', join ' ', map {
-            my $mk = (length $_) . ' ' . $_;
-            my $mv = $map->{$_}->which();
-            "K $mk V $mv";
-        } sort keys %{$map});
+    if (!defined $self->{$ATTR_WHICH}) {
+        my $map = $self->{$ATTR_MAP};
+        my $s = map {
+                my $mk = (length $_) . q{ } . $_;
+                my $mv = $map->{$_}->which();
+                "K $mk V $mv";
+            } sort keys %{$map};
+        my $len_s = length $s;
+        $self->{$ATTR_WHICH} = "22 sys.type._TextKeyedMap $len_s $s";
+    }
+    return $self->{$ATTR_WHICH};
 }
 
 ###########################################################################
@@ -327,6 +378,8 @@ sub pairs {
         # A p5 Array with 0..N elements; its elements are all of the Hash
         # values of $!attr_defs_by_name, sorted by the attr-name/Hash key.
 
+    my $ATTR_WHICH = 'which';
+
 ###########################################################################
 
 sub _build {
@@ -341,15 +394,24 @@ sub _build {
 
 ###########################################################################
 
-sub _calc_parts_of_self_which {
+sub root_type {
+    return 'sys.type._Heading';
+}
+
+sub which {
     my ($self) = @_;
-    my $defs = $self->{$ATTR_ATTR_DEFS_ORDERED};
-    return ('Heading', join ' ', map {
-            my ($atnm, $mjtp, $mntp) = @{$_};
-            'ATNM ' . (length $atnm) . ' ' . $atnm
-                . ' MJTP ' . (length $mjtp) . ' ' . $mjtp
-                . ' MNTP ' . $mntp->which();
-        } @{$defs});
+    if (!defined $self->{$ATTR_WHICH}) {
+        my $defs = $self->{$ATTR_ATTR_DEFS_ORDERED};
+        my $s = join q{ }, map {
+                my ($atnm, $mjtp, $mntp) = @{$_};
+                'ATNM ' . (length $atnm) . q{ } . $atnm
+                    . ' MJTP ' . (length $mjtp) . q{ } . $mjtp
+                    . ' MNTP ' . $mntp->which();
+            } @{$defs};
+        my $len_s = length $s;
+        $self->{$ATTR_WHICH} = "17 sys.type._Heading $len_s $s";
+    }
+    return $self->{$ATTR_WHICH};
 }
 
 ###########################################################################
@@ -375,6 +437,8 @@ sub get_attr_attr_defs_ordered {
         # A TextKeyedMap whose keys match the attribute names in $!heading,
         # and whose values are of the types specified in $!heading.
 
+    my $ATTR_WHICH = 'which';
+
 ###########################################################################
 
 sub _build {
@@ -385,10 +449,19 @@ sub _build {
 
 ###########################################################################
 
-sub _calc_parts_of_self_which {
+sub root_type {
+    return 'sys.type.Tuple';
+}
+
+sub which {
     my ($self) = @_;
-    return ('Tuple H ', $self->{$ATTR_HEADING}->which()
-        . ' B ' . $self->{$ATTR_BODY}->which());
+    if (!defined $self->{$ATTR_WHICH}) {
+        my $s = 'H ' . $self->{$ATTR_HEADING}->which()
+            . ' B ' . $self->{$ATTR_BODY}->which();
+        my $len_s = length $s;
+        $self->{$ATTR_WHICH} = "14 sys.type.Tuple $len_s $s";
+    }
+    return $self->{$ATTR_WHICH};
 }
 
 ###########################################################################
@@ -414,6 +487,8 @@ sub _calc_parts_of_self_which {
         # A p5 Hash with 0..N elements
     my $ATTR_INDEX_DATA = 'index_data';
 
+    my $ATTR_WHICH = 'which';
+
 ###########################################################################
 
 sub _build {
@@ -425,7 +500,8 @@ sub _build {
     my $attr_defs_ordered = $heading->get_attr_attr_defs_ordered();
     if (scalar keys %{$key_defs_aoh} == 0) {
         # There is no explicit key, so make an implicit one over all attrs.
-        push @{$key_defs_aoh}, map { $_ => undef } @{$attr_defs_ordered};
+        push @{$key_defs_aoh},
+            {map { $_->[0] => undef } @{$attr_defs_ordered}};
     }
     my $key_defs = {};
     my $index_defs = {};
@@ -441,11 +517,20 @@ sub _build {
 
 ###########################################################################
 
-sub _calc_parts_of_self_which {
+sub root_type {
+    return 'sys.type.Relation';
+}
+
+sub which {
     my ($self) = @_;
-    return ('Relation H ', $self->{$ATTR_HEADING}->which()
-        . ' B ' . (join ' ',
-            sort map { $_->which() } @{$self->{$ATTR_BODY}}));
+    if (!defined $self->{$ATTR_WHICH}) {
+        my $s = 'H ' . $self->{$ATTR_HEADING}->which()
+            . ' B ' . (join q{ },
+                sort map { $_->which() } @{$self->{$ATTR_BODY}});
+        my $len_s = length $s;
+        $self->{$ATTR_WHICH} = "17 sys.type.Relation $len_s $s";
+    }
+    return $self->{$ATTR_WHICH};
 }
 
 ###########################################################################
