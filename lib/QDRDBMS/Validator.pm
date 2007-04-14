@@ -10,7 +10,6 @@ use QDRDBMS;
 
 { package QDRDBMS::Validator; # module
     our $VERSION = 0.000000;
-    # Note: This given version applies to all of this file's packages.
 
     use QDRDBMS::GSTV qw( Bool Str Blob Int Num Hash );
     use Test::More;

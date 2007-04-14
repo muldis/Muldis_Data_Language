@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 
 use Test::More;
 
-plan( 'tests' => 12 );
+plan( 'tests' => 14 );
 
 use_ok( 'QDRDBMS::GSTV' );
 is( $QDRDBMS::GSTV::VERSION, 0.000,
@@ -26,6 +26,10 @@ is( $QDRDBMS::Validator::VERSION, 0.000,
 use_ok( 'QDRDBMS::Engine::Example::PhysType' );
 is( $QDRDBMS::Engine::Example::PhysType::VERSION, 0.000,
     'QDRDBMS::Engine::Example::PhysType is the correct version' );
+
+use_ok( 'QDRDBMS::Engine::Example::Operators' );
+is( $QDRDBMS::Engine::Example::Operators::VERSION, 0.000,
+    'QDRDBMS::Engine::Example::Operators is the correct version' );
 
 use_ok( 'QDRDBMS::Engine::Example' );
 is( $QDRDBMS::Engine::Example::VERSION, 0.000,

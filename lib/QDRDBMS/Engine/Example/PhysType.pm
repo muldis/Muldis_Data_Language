@@ -20,49 +20,49 @@ my $TRUE  = (1 == 1);
 
     use base 'Exporter';
     our @EXPORT_OK = qw(
-        Bool Text Blob Int TextKeyedMap Heading Tuple Relation
+        dBool dText dBlob dInt dTextKeyedMap dHeading dTuple dRelation
     );
 
 ###########################################################################
 
-sub Bool {
+sub dBool {
     my ($v) = @_;
     return QDRDBMS::Engine::Example::PhysType::Bool->new( $v );
 }
 
-sub Text {
+sub dText {
     my ($v) = @_;
     return QDRDBMS::Engine::Example::PhysType::Text->new( $v );
 }
 
-sub Blob {
+sub dBlob {
     my ($v) = @_;
     return QDRDBMS::Engine::Example::PhysType::Blob->new( $v );
 }
 
-sub Int {
+sub dInt {
     my ($v) = @_;
     return QDRDBMS::Engine::Example::PhysType::Int->new( $v );
 }
 
-sub TextKeyedMap {
+sub dTextKeyedMap {
     my ($map) = @_;
     return QDRDBMS::Engine::Example::PhysType::TextKeyedMap->new( $map );
 }
 
-sub Heading {
+sub dHeading {
     my ($attr_defs_aoa) = @_;
     return QDRDBMS::Engine::Example::PhysType::Heading->new(
         $attr_defs_aoa );
 }
 
-sub Tuple {
+sub dTuple {
     my ($heading, $body) = @_;
     return QDRDBMS::Engine::Example::PhysType::Tuple->new(
         $heading, $body );
 }
 
-sub Relation {
+sub dRelation {
     my ($heading, $body, $key_defs_aoh, $index_defs_aoh) = @_;
     return QDRDBMS::Engine::Example::PhysType::Relation->new(
         $heading, $body, $key_defs_aoh, $index_defs_aoh );
@@ -180,6 +180,13 @@ sub which {
 
 ###########################################################################
 
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
+
 } # class QDRDBMS::Engine::Example::PhysType::Bool
 
 ###########################################################################
@@ -216,6 +223,13 @@ sub which {
         $self->{$ATTR_WHICH} = "13 sys.type.Text $len_s $s";
     }
     return $self->{$ATTR_WHICH};
+}
+
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
 }
 
 ###########################################################################
@@ -259,6 +273,13 @@ sub which {
 
 ###########################################################################
 
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
+
 } # class QDRDBMS::Engine::Example::PhysType::Blob
 
 ###########################################################################
@@ -296,6 +317,13 @@ sub which {
         $self->{$ATTR_WHICH} = "12 sys.type.Int $len_s $s";
     }
     return $self->{$ATTR_WHICH};
+}
+
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
 }
 
 ###########################################################################
