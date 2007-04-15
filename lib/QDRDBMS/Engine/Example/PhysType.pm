@@ -84,17 +84,17 @@ sub dCat_EntityName {
 
 { package QDRDBMS::Engine::Example::PhysType::Value; # role
 #    my $ATTR_ROOT_TYPE = 'Value::root_type';
-        # QDRDBMS::Engine::Example::PhysType::TypeRef.
+        # QDRDBMS::Engine::Example::PhysType::Cat_EntityName.
         # This is the fundamental QDRDBMS D data type that this ::Value
         # object's implementation sees it as a generic member of, and which
         # generally determines what operators can be used with it.
         # It is a supertype of the declared type.
 #    my $ATTR_DECL_TYPE = 'Value::decl_type';
-        # QDRDBMS::Engine::Example::PhysType::TypeRef.
+        # QDRDBMS::Engine::Example::PhysType::Cat_EntityName.
         # This is the QDRDBMS D data type that the ::Value was declared to
         # be a member of when the ::Value object was created.
 #    my $ATTR_LAST_KNOWN_MST = 'Value::last_known_mst';
-        # QDRDBMS::Engine::Example::PhysType::TypeRef.
+        # QDRDBMS::Engine::Example::PhysType::Cat_EntityName.
         # This is the QDRDBMS data type that is the most specific type of
         # this ::Value, as it was last determined.
         # It is a subtype of the declared type.
