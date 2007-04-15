@@ -10,15 +10,19 @@ use QDRDBMS::GSTV qw( Bool Str Blob Int Num Hash );
 
 my $LITERAL_TYPE_MAP = {
     'QDRDBMS::GSTV::Bool'
-        => QDRDBMS::AST::TypeRef->new({ 'text' => Str('sys.type.Bool') }),
+        => QDRDBMS::AST::EntityName->new({
+            'text' => Str('sys.type.Bool') }),
     'QDRDBMS::GSTV::Str'
-        => QDRDBMS::AST::TypeRef->new({ 'text' => Str('sys.type.Text') }),
+        => QDRDBMS::AST::EntityName->new({
+            'text' => Str('sys.type.Text') }),
     'QDRDBMS::GSTV::Blob'
-        => QDRDBMS::AST::TypeRef->new({ 'text' => Str('sys.type.Blob') }),
+        => QDRDBMS::AST::EntityName->new({
+            'text' => Str('sys.type.Blob') }),
     'QDRDBMS::GSTV::Int'
-        => QDRDBMS::AST::TypeRef->new({ 'text' => Str('sys.type.Int') }),
+        => QDRDBMS::AST::EntityName->new({
+            'text' => Str('sys.type.Int') }),
     'QDRDBMS::GSTV::Num'
-        => QDRDBMS::AST::TypeRef->new({
+        => QDRDBMS::AST::EntityName->new({
             'text' => Str('sys.type.Num.Rat') }),
 };
 
@@ -31,34 +35,18 @@ my $LITERAL_TYPE_MAP = {
 
     use base 'Exporter';
     our @EXPORT_OK = qw(
-        TypeRef FuncRef ProcRef VarRef
-        LitDefExpr VarRefExpr FuncInvExpr Stmt Func Proc
+        EntityName
+        LitDefExpr VarNameExpr FuncInvoExpr
+        ControlStmt ProcInvoStmt MultiProcInvoStmt
+        Func Proc
     );
 
 ###########################################################################
 
-sub TypeRef {
+sub EntityName {
     my ($args) = @_;
     my ($text) = @{$args}{'text'};
-    return QDRDBMS::AST::TypeRef->new({ 'text' => $text });
-}
-
-sub FuncRef {
-    my ($args) = @_;
-    my ($text) = @{$args}{'text'};
-    return QDRDBMS::AST::FuncRef->new({ 'text' => $text });
-}
-
-sub ProcRef {
-    my ($args) = @_;
-    my ($text) = @{$args}{'text'};
-    return QDRDBMS::AST::ProcRef->new({ 'text' => $text });
-}
-
-sub VarRef {
-    my ($args) = @_;
-    my ($text) = @{$args}{'text'};
-    return QDRDBMS::AST::VarRef->new({ 'text' => $text });
+    return QDRDBMS::AST::EntityName->new({ 'text' => $text });
 }
 
 sub LitDefExpr {
@@ -67,21 +55,29 @@ sub LitDefExpr {
     return QDRDBMS::AST::LitDefExpr->new({ 'lit' => $lit });
 }
 
-sub VarRefExpr {
+sub VarNameExpr {
     my ($args) = @_;
     my ($var) = @{$args}{'var'};
-    return QDRDBMS::AST::VarRefExpr->new({ 'var' => $var });
+    return QDRDBMS::AST::VarNameExpr->new({ 'var' => $var });
 }
 
-sub FuncInvExpr {
+sub FuncInvoExpr {
     my ($args) = @_;
     my ($func, $func_args) = @{$args}{'func', 'func_args'};
-    return QDRDBMS::AST::FuncInvExpr->new({
+    return QDRDBMS::AST::FuncInvoExpr->new({
         'func' => $func, 'func_args' => $func_args });
 }
 
-sub Stmt {
-    return QDRDBMS::AST::Stmt->new();
+sub ControlStmt {
+    return QDRDBMS::AST::ControlStmt->new();
+}
+
+sub ProcInvoStmt {
+    return QDRDBMS::AST::ProcInvoStmt->new();
+}
+
+sub MultiProcInvoStmt {
+    return QDRDBMS::AST::MultiProcInvoStmt->new();
 }
 
 sub Func {
@@ -99,7 +95,7 @@ sub Proc {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::_EntityRef; # role
+{ package QDRDBMS::AST::EntityName; # class
 
     use Carp;
     use Scalar::Util qw( blessed );
@@ -132,40 +128,18 @@ sub as_text {
 
 ###########################################################################
 
-} # role QDRDBMS::AST::_EntityRef
+} # class QDRDBMS::AST::EntityName
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::TypeRef; # class
-    use base 'QDRDBMS::AST::_EntityRef';
-} # class QDRDBMS::AST::TypeRef
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::FuncRef; # class
-    use base 'QDRDBMS::AST::_EntityRef';
-} # class QDRDBMS::AST::FuncRef
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::ProcRef; # class
-    use base 'QDRDBMS::AST::_EntityRef';
-} # class QDRDBMS::AST::ProcRef
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::VarRef; # class
-    use base 'QDRDBMS::AST::_EntityRef';
-} # class QDRDBMS::AST::VarRef
+{ package QDRDBMS::AST::Expr; sub _dummy {} }
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::LitDefExpr; # class
+    use base 'QDRDBMS::AST::Expr';
 
     use Carp;
     use Scalar::Util qw( blessed );
@@ -202,7 +176,8 @@ sub new {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::VarRefExpr; # class
+{ package QDRDBMS::AST::VarNameExpr; # class
+    use base 'QDRDBMS::AST::Expr';
 
     use Carp;
     use Scalar::Util qw( blessed );
@@ -214,25 +189,26 @@ sub new {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($var_ref) = @{$args}{'var'};
+    my ($var_name) = @{$args}{'var'};
 
     confess q{new(): Bad :$var arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::VarRef-doing class.}
-        if !blessed $var_ref
-            or !$var_ref->isa( 'QDRDBMS::AST::VarRef' );
-    $self->{$ATTR_VAR_NAME} = $var_ref;
+            . q{ of a QDRDBMS::AST::EntityName-doing class.}
+        if !blessed $var_name
+            or !$var_name->isa( 'QDRDBMS::AST::EntityName' );
+    $self->{$ATTR_VAR_NAME} = $var_name;
 
     return $self;
 }
 
 ###########################################################################
 
-} # class QDRDBMS::AST::VarRefExpr
+} # class QDRDBMS::AST::VarNameExpr
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::FuncInvExpr; # class
+{ package QDRDBMS::AST::FuncInvoExpr; # class
+    use base 'QDRDBMS::AST::Expr';
 
     use Carp;
     use Scalar::Util qw( blessed );
@@ -246,13 +222,13 @@ sub new {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($func_ref, $func_args) = @{$args}{'func', 'func_args'};
+    my ($func_name, $func_args) = @{$args}{'func', 'func_args'};
 
     confess q{new(): Bad :$func arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::FuncRef-doing class.}
-        if !blessed $func_ref
-            or !$func_ref->isa( 'QDRDBMS::AST::FuncRef' );
-    $self->{$ATTR_FUNC_NAME} = $func_ref;
+            . q{ of a QDRDBMS::AST::EntityName-doing class.}
+        if !blessed $func_name
+            or !$func_name->isa( 'QDRDBMS::AST::EntityName' );
+    $self->{$ATTR_FUNC_NAME} = $func_name;
     if (!defined $func_args) {
         $self->{$ATTR_FUNC_ARGS_AOA}  = [];
         $self->{$ATTR_FUNC_ARGS_HASH} = {};
@@ -272,12 +248,18 @@ sub new {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::FuncInvExpr
+} # class QDRDBMS::AST::FuncInvoExpr
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Stmt; # class
+{ package QDRDBMS::AST::Stmt; sub _dummy {} }
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::ControlStmt; # class
+    use base 'QDRDBMS::AST::Stmt';
 
     use Carp;
     use Scalar::Util qw( blessed );
@@ -291,7 +273,47 @@ sub new {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::Stmt
+} # class QDRDBMS::AST::ControlStmt
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::ProcInvoStmt; # class
+    use base 'QDRDBMS::AST::Stmt';
+
+    use Carp;
+    use Scalar::Util qw( blessed );
+
+
+
+###########################################################################
+
+
+
+
+###########################################################################
+
+} # class QDRDBMS::AST::ProcInvoStmt
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::MultiProcInvoStmt; # class
+    use base 'QDRDBMS::AST::Stmt';
+
+    use Carp;
+    use Scalar::Util qw( blessed );
+
+
+
+###########################################################################
+
+
+
+
+###########################################################################
+
+} # class QDRDBMS::AST::MultiProcInvoStmt
 
 ###########################################################################
 ###########################################################################
@@ -350,7 +372,7 @@ Abstract syntax tree for the QDRDBMS D language
 
 This document describes QDRDBMS::AST version 0.0.0 for Perl 5.
 
-It also describes the same-number versions of [...].
+It also describes the same-number versions for Perl 5 of [...].
 
 =head1 SYNOPSIS
 

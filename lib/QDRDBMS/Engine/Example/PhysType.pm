@@ -21,6 +21,7 @@ my $TRUE  = (1 == 1);
     use base 'Exporter';
     our @EXPORT_OK = qw(
         dBool dText dBlob dInt dTextKeyedMap dHeading dTuple dRelation
+        dCat_EntityName
     );
 
 ###########################################################################
@@ -66,6 +67,12 @@ sub dRelation {
     my ($heading, $body, $key_defs_aoh, $index_defs_aoh) = @_;
     return QDRDBMS::Engine::Example::PhysType::Relation->new(
         $heading, $body, $key_defs_aoh, $index_defs_aoh );
+}
+
+sub dCat_EntityName {
+    my ($text) = @_;
+    return QDRDBMS::Engine::Example::PhysType::Cat_EntityName->new(
+        $text );
 }
 
 ###########################################################################
@@ -572,6 +579,54 @@ sub which {
 ###########################################################################
 
 } # class QDRDBMS::Engine::Example::PhysType::Relation
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::Engine::Example::PhysType::Cat_EntityName; # class
+    use base 'QDRDBMS::Engine::Example::PhysType::Value';
+
+    my $ATTR_TEXT = 'text';
+        # A p5 Scalar that is a text-mode string;
+        # it either has true utf8 flag or is only 7-bit bytes.
+        # The Text possrep of this Cat.EntityName.
+
+    my $ATTR_WHICH = 'which';
+
+###########################################################################
+
+sub _build {
+    my ($self, $text) = @_;
+    $self->{$ATTR_TEXT} = $text;
+    return;
+}
+
+###########################################################################
+
+sub root_type {
+    return 'sys.type.Cat.EntityName';
+}
+
+sub which {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_WHICH}) {
+        my $s = $self->{$ATTR_TEXT};
+        my $len_s = length $s;
+        $self->{$ATTR_WHICH} = "23 sys.type.Cat.EntityName $len_s $s";
+    }
+    return $self->{$ATTR_WHICH};
+}
+
+###########################################################################
+
+sub text {
+    my ($self) = @_;
+    return $self->{$ATTR_TEXT};
+}
+
+###########################################################################
+
+} # class QDRDBMS::Engine::Example::PhysType::Cat_EntityName
 
 ###########################################################################
 ###########################################################################
