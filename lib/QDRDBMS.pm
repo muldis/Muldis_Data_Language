@@ -62,7 +62,7 @@ sub new {
                 . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
             if !blessed $elem_name
                 or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $elem_name_text = $elem_name->text();
+        my $elem_name_text = ${$elem_name->text()};
         confess q{new(): Bad :$dbms_config arg elem; its first elem is not}
                 . q{ distinct between the arg elems.}
             if exists $seen_config_elem_names->{$elem_name_text};
@@ -111,11 +111,11 @@ sub new {
     my $dbms_eng_class = blessed $dbms_eng;
 
     confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class' does}
-            . q{ not provide the prepare_routine() method.}
-        if !$dbms_eng->can( 'prepare_routine' );
+            . q{ not provide the prepare() method.}
+        if !$dbms_eng->can( 'prepare' );
     confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class' does}
-            . q{ not provide the new_variable() method.}
-        if !$dbms_eng->can( 'new_variable' );
+            . q{ not provide the new_var() method.}
+        if !$dbms_eng->can( 'new_var' );
 
     $self->{$ATTR_DBMS_ENG} = $dbms_eng;
 
@@ -124,14 +124,14 @@ sub new {
 
 ###########################################################################
 
-sub prepare_routine {
+sub prepare {
     my ($self, $args) = @_;
     my ($rtn_ast) = @{$args}{'routine'};
     return QDRDBMS::Interface::Routine->new({
         'dbms' => $self, 'routine' => $rtn_ast });
 }
 
-sub new_variable {
+sub new_var {
     my ($self) = @_;
     return QDRDBMS::Interface::Variable->new({ 'dbms' => $self });
 }
@@ -174,22 +174,21 @@ sub new {
         if !blessed $rtn_ast or !$rtn_ast->isa( 'QDRDBMS::AST::Proc' );
 
     my $rtn_eng = eval {
-        $dbms_eng->prepare_routine({ 'routine' => $rtn_ast });
+        $dbms_eng->prepare({ 'routine' => $rtn_ast });
     };
     if (my $err = $@) {
         confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class'}
-            . q{ threw an exception during its prepare_routine()}
-            . qq{ execution: $err}
+            . qq{ threw an exception during its prepare() execution: $err}
     }
-    confess q{new(): The prepare_routine() method of the QDRDBMS}
+    confess q{new(): The prepare() method of the QDRDBMS}
             . qq{ DBMS class '$dbms_eng_class' did not return an object}
             . q{ to serve as a Routine Engine.}
         if !blessed $rtn_eng;
     my $rtn_eng_class = blessed $rtn_eng;
 
     confess qq{new(): The QDRDBMS Routine Engine class '$rtn_eng_class'}
-            . q{ does not provide the bind_variables() method.}
-        if !$rtn_eng->can( 'bind_variables' );
+            . q{ does not provide the bind_host_params() method.}
+        if !$rtn_eng->can( 'bind_host_params' );
     confess qq{new(): The QDRDBMS Routine Engine class '$rtn_eng_class'}
             . q{ does not provide the execute() method.}
         if !$rtn_eng->can( 'execute' );
@@ -203,36 +202,36 @@ sub new {
 
 ###########################################################################
 
-sub bind_variables {
+sub bind_host_params {
     my ($self, $args) = @_;
-    my ($var_intfs) = @{$args}{'variables'};
+    my ($var_intfs) = @{$args}{'vars'};
 
-    confess q{new(): Bad :$variables arg; it is not an Array.}
+    confess q{new(): Bad :$vars arg; it is not an Array.}
         if ref $var_intfs ne 'ARRAY';
-    my $seen_var_names = {};
+    my $seen_param_names = {};
     my $var_engs = [];
     foreach my $elem (@{$var_intfs}) {
-        confess q{new(): Bad :$variables arg elem;}
+        confess q{new(): Bad :$vars arg elem;}
                 . q{ it is not a 2-element Array.}
             if ref $elem ne 'ARRAY' or @{$elem} != 2;
-        my ($var_name, $var_intf) = @{$elem};
-        confess q{new(): Bad :$variables arg elem; its first elem is not}
+        my ($param_name, $var_intf) = @{$elem};
+        confess q{new(): Bad :$vars arg elem; its first elem is not}
                 . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
-            if !blessed $var_name
-                or !$var_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $var_name_text = $var_name->text();
-        confess q{new(): Bad :$variables arg elem; its first elem is not}
+            if !blessed $param_name
+                or !$param_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $param_name_text = ${$param_name->text()};
+        confess q{new(): Bad :$vars arg elem; its first elem is not}
                 . q{ distinct between the arg elems.}
-            if exists $seen_var_names->{$var_name_text};
-        $seen_var_names->{$var_name_text} = 1;
-        confess q{new(): Bad :$variables arg elem; its second elem is not}
-                . q{ an object of a QDRDBMS::Interface::Variable-doing class.}
+            if exists $seen_param_names->{$param_name_text};
+        $seen_param_names->{$param_name_text} = 1;
+        confess q{new(): Bad :$vars arg elem; its second elem is not an}
+                . q{ object of a QDRDBMS::Interface::Variable-doing class.}
             if !blessed $var_intf
                 or !$var_intf->isa( 'QDRDBMS::Interface::Variable' );
-        push @{$var_engs}, [$var_name, $var_intf->{$VAR_ATTR_VAR_ENG}];
+        push @{$var_engs}, [$param_name, $var_intf->{$VAR_ATTR_VAR_ENG}];
     }
 
-    $self->{$ATTR_RTN_ENG}->bind_variables({ 'variables' => $var_engs });
+    $self->{$ATTR_RTN_ENG}->bind_host_params({ 'vars' => $var_engs });
     return;
 }
 
@@ -276,14 +275,14 @@ sub new {
     my $dbms_eng_class = blessed $dbms_eng;
 
     my $var_eng = eval {
-        $dbms_eng->new_variable({});
+        $dbms_eng->new_var({});
     };
     if (my $err = $@) {
         confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class'}
-            . q{ threw an exception during its new_variable()}
+            . q{ threw an exception during its new_var()}
             . qq{ execution: $err}
     }
-    confess q{new(): The new_variable() method of the QDRDBMS}
+    confess q{new(): The new_var() method of the QDRDBMS}
             . qq{ DBMS class '$dbms_eng_class' did not return an object}
             . q{ to serve as a Variable Engine.}
         if !blessed $var_eng;

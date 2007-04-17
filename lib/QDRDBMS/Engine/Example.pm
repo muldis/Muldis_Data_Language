@@ -49,14 +49,14 @@ sub new {
 
 ###########################################################################
 
-sub prepare_routine {
+sub prepare {
     my ($self, $args) = @_;
     my ($rtn_ast) = @{$args}{'routine'};
     return QDRDBMS::Engine::Example::Routine->new({
         'dbms' => $self, 'routine' => $rtn_ast });
 }
 
-sub new_variable {
+sub new_var {
     my ($self) = @_;
     return QDRDBMS::Engine::Example::Variable->new({ 'dbms' => $self });
 }
@@ -96,9 +96,9 @@ sub new {
 
 ###########################################################################
 
-sub bind_variables {
+sub bind_host_params {
     my ($self, $args) = @_;
-    my ($var_engs) = @{$args}{'variables'};
+    my ($var_engs) = @{$args}{'vars'};
     push @{$self->{$ATTR_BOUND_VARS}}, @{$var_engs};
     return;
 }
@@ -184,7 +184,8 @@ I<This documentation is pending.>
 
 =head1 INTERFACE
 
-I<This documentation is pending; this section may also be split into several.>
+I<This documentation is pending; this section may also be split into
+several.>
 
 =head1 DIAGNOSTICS
 
