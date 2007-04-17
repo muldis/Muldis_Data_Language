@@ -70,7 +70,10 @@ sub ControlStmt {
 }
 
 sub ProcInvoStmt {
-    return QDRDBMS::AST::ProcInvoStmt->new();
+    my ($args) = @_;
+    my ($proc, $proc_args) = @{$args}{'proc', 'proc_args'};
+    return QDRDBMS::AST::ProcInvoStmt->new({
+        'proc' => $proc, 'proc_args' => $proc_args });
 }
 
 sub MultiProcInvoStmt {
@@ -243,7 +246,6 @@ sub var {
     my $ATTR_FUNC_ARGS_HOA = 'func_args_hoa';
 
 ###########################################################################
-=pod
 
 sub new {
     my ($class, $args) = @_;
@@ -256,44 +258,55 @@ sub new {
             or !$func_name->isa( 'QDRDBMS::AST::EntityName' );
     $self->{$ATTR_FUNC_NAME} = $func_name;
 
-    confess q{new(): Bad :$func_args arg; it is not a valid object}
-            . q{ of an Array-doing class.}
-        if !blessed $func_name
-            or !$func_name->isa( 'QDRDBMS::AST::EntityName' );
-
-
-    if (!defined $func_args) {
-        $self->{$ATTR_FUNC_ARGS_AOA}  = [];
-        $self->{$ATTR_FUNC_ARGS_HASH} = {};
+    confess q{new(): Bad :$func_args arg; it is not an Array.}
+        if ref $func_args ne 'ARRAY';
+    my $func_args_aoa = [];
+    my $func_args_hoa = {};
+    foreach my $elem (@{$func_args}) {
+        confess q{new(): Bad :$func_args arg elem;}
+                . q{ it is not a 2-element Array.}
+            if ref $elem ne 'ARRAY' or @{$elem} != 2;
+        my ($param_name, $expr_ast) = @{$elem};
+        confess q{new(): Bad :$func_args arg elem; its first elem is not}
+                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+            if !blessed $param_name
+                or !$param_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $param_name_text = ${$param_name->text()};
+        confess q{new(): Bad :$func_args arg elem; its first elem is not}
+                . q{ distinct between the arg elems.}
+            if exists $func_args_hoa->{$param_name_text};
+        confess q{new(): Bad :$func_args arg elem; its second elem is not}
+                . q{ an object of a QDRDBMS::AST::Expr-doing class.}
+            if !blessed $expr_ast
+                or !$expr_ast->isa( 'QDRDBMS::AST::Expr' );
+        my $elem_cpy = [$param_name, $expr_ast];
+        push @{$func_args_aoa}, $elem_cpy;
+        $func_args_hoa->{$param_name_text} = $elem_cpy;
     }
-    elsif (ref $func_args eq 'ARRAY') {
-        # TODO.
-    }
-    elsif (ref $func_args eq 'HASH') {
-        # TODO.
-    }
-    else {
-        confess q{new(): Bad :$func_args arg; its not a Array|Hash.};
-    }
+    $self->{$ATTR_FUNC_ARGS_AOA} = $func_args_aoa;
+    $self->{$ATTR_FUNC_ARGS_HOA} = $func_args_hoa;
 
     return $self;
 }
 
 ###########################################################################
 
-sub v {
+sub func {
     my ($self) = @_;
-    return $self->{$ATTR_V};
+    return $self->{$ATTR_FUNC_NAME};
 }
 
-###########################################################################
-
-sub v {
+sub func_args {
     my ($self) = @_;
-    return $self->{$ATTR_V};
+    return [map { [@{$_}] } @{$self->{$ATTR_FUNC_ARGS_AOA}}];
 }
 
-=cut
+sub func_args_hoa {
+    my ($self) = @_;
+    my $h = $self->{$ATTR_FUNC_ARGS_HOA};
+    return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
+}
+
 ###########################################################################
 
 } # class QDRDBMS::AST::FuncInvoExpr
@@ -332,12 +345,71 @@ sub v {
     use Carp;
     use Scalar::Util qw( blessed );
 
-
+    my $ATTR_PROC_NAME     = 'proc_name';
+    my $ATTR_PROC_ARGS_AOA = 'proc_args_aoa';
+    my $ATTR_PROC_ARGS_HOA = 'proc_args_hoa';
 
 ###########################################################################
 
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($proc_name, $proc_args) = @{$args}{'proc', 'proc_args'};
 
+    confess q{new(): Bad :$proc arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::EntityName-doing class.}
+        if !blessed $proc_name
+            or !$proc_name->isa( 'QDRDBMS::AST::EntityName' );
+    $self->{$ATTR_PROC_NAME} = $proc_name;
 
+    confess q{new(): Bad :$proc_args arg; it is not an Array.}
+        if ref $proc_args ne 'ARRAY';
+    my $proc_args_aoa = [];
+    my $proc_args_hoa = {};
+    foreach my $elem (@{$proc_args}) {
+        confess q{new(): Bad :$proc_args arg elem;}
+                . q{ it is not a 2-element Array.}
+            if ref $elem ne 'ARRAY' or @{$elem} != 2;
+        my ($param_name, $expr_ast) = @{$elem};
+        confess q{new(): Bad :$proc_args arg elem; its first elem is not}
+                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+            if !blessed $param_name
+                or !$param_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $param_name_text = ${$param_name->text()};
+        confess q{new(): Bad :$proc_args arg elem; its first elem is not}
+                . q{ distinct between the arg elems.}
+            if exists $proc_args_hoa->{$param_name_text};
+        confess q{new(): Bad :$proc_args arg elem; its second elem is not}
+                . q{ an object of a QDRDBMS::AST::Expr-doing class.}
+            if !blessed $expr_ast
+                or !$expr_ast->isa( 'QDRDBMS::AST::Expr' );
+        my $elem_cpy = [$param_name, $expr_ast];
+        push @{$proc_args_aoa}, $elem_cpy;
+        $proc_args_hoa->{$param_name_text} = $elem_cpy;
+    }
+    $self->{$ATTR_PROC_ARGS_AOA} = $proc_args_aoa;
+    $self->{$ATTR_PROC_ARGS_HOA} = $proc_args_hoa;
+
+    return $self;
+}
+
+###########################################################################
+
+sub proc {
+    my ($self) = @_;
+    return $self->{$ATTR_PROC_NAME};
+}
+
+sub proc_args {
+    my ($self) = @_;
+    return [map { [@{$_}] } @{$self->{$ATTR_PROC_ARGS_AOA}}];
+}
+
+sub proc_args_hoa {
+    my ($self) = @_;
+    my $h = $self->{$ATTR_PROC_ARGS_HOA};
+    return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
+}
 
 ###########################################################################
 

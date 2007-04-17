@@ -53,6 +53,7 @@ sub new {
     confess q{new(): Bad :$dbms_config arg; it is not an Array.}
         if ref $dbms_config ne 'ARRAY';
     my $seen_config_elem_names = {};
+    my $dbms_config_cpy = [];
     foreach my $elem (@{$dbms_config}) {
         confess q{new(): Bad :$dbms_config arg elem;}
                 . q{ it is not a 2-element Array.}
@@ -70,6 +71,7 @@ sub new {
         confess q{new(): Bad :$dbms_config arg elem;}
                 . q{ its second elem is not defined.}
             if !defined $elem_value;
+        push @{$dbms_config_cpy}, [$elem_name, $elem_value];
     }
 
     # A module may be loaded due to it being embedded in a non-excl file.
@@ -98,7 +100,7 @@ sub new {
         if !$engine_name->can( 'new_dbms' );
     my $dbms_eng = eval {
         &{$engine_name->can( 'new_dbms' )}({
-            'dbms_config' => $dbms_config });
+            'dbms_config' => $dbms_config_cpy });
     };
     if (my $err = $@) {
         confess qq{new(): The QDRDBMS Engine module '$engine_name' threw}
@@ -126,9 +128,9 @@ sub new {
 
 sub prepare {
     my ($self, $args) = @_;
-    my ($rtn_ast) = @{$args}{'routine'};
+    my ($rtn_ast) = @{$args}{'rtn_ast'};
     return QDRDBMS::Interface::Routine->new({
-        'dbms' => $self, 'routine' => $rtn_ast });
+        'dbms' => $self, 'rtn_ast' => $rtn_ast });
 }
 
 sub new_var {
@@ -160,7 +162,7 @@ sub new_var {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($dbms_intf, $rtn_ast) = @{$args}{'dbms', 'routine'};
+    my ($dbms_intf, $rtn_ast) = @{$args}{'dbms', 'rtn_ast'};
 
     confess q{new(): Bad :$dbms arg; it is not an object of a}
             . q{ QDRDBMS::Interface::DBMS-doing class.}
@@ -174,7 +176,7 @@ sub new {
         if !blessed $rtn_ast or !$rtn_ast->isa( 'QDRDBMS::AST::Proc' );
 
     my $rtn_eng = eval {
-        $dbms_eng->prepare({ 'routine' => $rtn_ast });
+        $dbms_eng->prepare({ 'rtn_ast' => $rtn_ast });
     };
     if (my $err = $@) {
         confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class'}
@@ -211,8 +213,7 @@ sub bind_host_params {
     my $seen_param_names = {};
     my $var_engs = [];
     foreach my $elem (@{$var_intfs}) {
-        confess q{new(): Bad :$vars arg elem;}
-                . q{ it is not a 2-element Array.}
+        confess q{new(): Bad :$vars arg elem; it is not a 2-element Array.}
             if ref $elem ne 'ARRAY' or @{$elem} != 2;
         my ($param_name, $var_intf) = @{$elem};
         confess q{new(): Bad :$vars arg elem; its first elem is not}
@@ -232,6 +233,7 @@ sub bind_host_params {
     }
 
     $self->{$ATTR_RTN_ENG}->bind_host_params({ 'vars' => $var_engs });
+
     return;
 }
 

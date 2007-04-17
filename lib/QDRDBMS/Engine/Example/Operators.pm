@@ -44,6 +44,13 @@ use warnings FATAL => 'all';
     return dBool( $v1->v() != $v2->v() );
 },
 
+'sys.rtn.Int.assign' => sub {
+    my ($args) = @_;
+    my ($target, $v) = @{$args}{'target', 'v'};
+    $target->set( $v->get() );
+    return;
+},
+
 'sys.rtn.Int.sum' => sub {
     my ($args) = @_;
     my ($v1, $v2) = @{$args}{'v1', 'v2'};

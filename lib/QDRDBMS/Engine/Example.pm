@@ -51,9 +51,9 @@ sub new {
 
 sub prepare {
     my ($self, $args) = @_;
-    my ($rtn_ast) = @{$args}{'routine'};
+    my ($rtn_ast) = @{$args}{'rtn_ast'};
     return QDRDBMS::Engine::Example::Routine->new({
-        'dbms' => $self, 'routine' => $rtn_ast });
+        'dbms' => $self, 'rtn_ast' => $rtn_ast });
 }
 
 sub new_var {
@@ -82,7 +82,7 @@ sub new_var {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($dbms_eng, $rtn_ast) = @{$args}{'dbms', 'routine'};
+    my ($dbms_eng, $rtn_ast) = @{$args}{'dbms', 'rtn_ast'};
 
     my $prep_rtn = sub { 1; }; # TODO; the real thing.
 
