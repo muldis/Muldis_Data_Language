@@ -30,7 +30,7 @@ my $SCALAR_OVERLOAD_SETUP_ARGS = {
     # Note: This given version applies to all of this file's packages.
 
     use base 'Exporter';
-    our @EXPORT_OK = qw( Bool Str Blob Int Num Hash );
+    our @EXPORT_OK = qw( Bool Str Blob Int Num );
 
     use Carp;
     use Scalar::Util qw( looks_like_number );
@@ -99,30 +99,6 @@ sub Num {
     return bless \$v, 'QDRDBMS::GSTV::Num';
 }
 
-sub Hash {
-    my ($v) = @_;
-    confess q{Hash(): Bad constructor arg; it is undefined.}
-        if !defined $v;
-
-    confess q{Hash(): Bad constructor arg; Perl 5 does not consider}
-            . q{ it to be a Hash.}
-        if ref $v ne 'HASH';
-
-    for my $key (keys %{$v}) {
-        my $val = $v->{$key};
-
-        confess q{Hash(): Bad constructor arg key;}
-                . q{ Perl 5 does not consider it to be a character string.}
-            if !Encode::is_utf8( $key ) and $key =~ m/[^\x00-\x7F]/xs;
-
-        confess q{Hash(): Bad constructor arg val for key '$key';}
-                . q{ it is undefined.}
-            if !defined $val;
-    }
-
-    return bless {%{$v}}, 'QDRDBMS::GSTV::Hash';
-}
-
 ###########################################################################
 
 } # module QDRDBMS::GSTV
@@ -165,12 +141,6 @@ sub Hash {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::GSTV::Hash; # class
-} # class QDRDBMS::GSTV::Hash
-
-###########################################################################
-###########################################################################
-
 1; # Magic true value required at end of a reuseable file's code.
 __END__
 
@@ -194,7 +164,7 @@ QDRDBMS::GSTV::Num ("Num").
 
 =head1 SYNOPSIS
 
-    use QDRDBMS::GSTV qw( Bool Str Blob Int Num Hash );
+    use QDRDBMS::GSTV qw( Bool Str Blob Int Num );
 
     my $truth_value = Bool( 2 + 2 == 4 );
     my $planetoid = Str('Ceres');
@@ -214,9 +184,6 @@ QDRDBMS::GSTV::Num ("Num").
     Int(3.7); # dies
     Num('Perl'); # ditto
     # ... and so on
-
-    my $map = Hash({ 'foo' => 'fuzz', 'bar' => 42 });
-    # ... then use $map as a hash ref, which it is
 
 =head1 DESCRIPTION
 
@@ -276,12 +243,6 @@ The objects created by this module are of classes like QDRDBMS::GSTV::Bool,
 which have zero normal methods, but are all have overload behaviour set for
 string and numeric and boolean contexts; each will behave as it normally
 does in Perl 5 when used in said contexts.
-
-QDRDBMS::GSTV also declares the function Hash() which takes a Perl 5 hash
-argument, checks that its keys are 'Str'-valid Perl 5 strings, and that its
-values are defined; the function then clones the hash into a new hash
-reference, (which is directly blessed as a ::Hash object); it is otherwise
-the same as the above.
 
 I<Currently, you can also retrieve the payload value by
 scalar-dereferencing any object, such as with C< ${$obj} >, and this may

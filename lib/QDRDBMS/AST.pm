@@ -3,7 +3,7 @@ use utf8;
 use strict;
 use warnings FATAL => 'all';
 
-use QDRDBMS::GSTV qw( Bool Str Blob Int Num Hash );
+use QDRDBMS::GSTV qw( Bool Str Blob Int Num );
 
 ###########################################################################
 ###########################################################################
@@ -21,9 +21,6 @@ my $LITERAL_TYPE_MAP = {
     'QDRDBMS::GSTV::Int'
         => QDRDBMS::AST::EntityName->new({
             'text' => Str('sys.type.Int') }),
-    'QDRDBMS::GSTV::Num'
-        => QDRDBMS::AST::EntityName->new({
-            'text' => Str('sys.type.Num.Rat') }),
 };
 
 ###########################################################################
@@ -102,6 +99,7 @@ sub Proc {
 
     my $ATTR_TEXT_POSSREP;
     BEGIN { $ATTR_TEXT_POSSREP = 'text_possrep'; }
+#    my $ATTR_SEQ_POSSREP = 'seq_possrep';
 
 ###########################################################################
 
@@ -121,9 +119,15 @@ sub new {
 
 ###########################################################################
 
-sub as_text {
+sub text {
     my ($self) = @_;
     return $self->{$ATTR_TEXT_POSSREP};
+}
+
+###########################################################################
+
+sub seq {
+    confess q{not implemented};
 }
 
 ###########################################################################
@@ -163,10 +167,24 @@ sub new {
     }
     else {
         confess q{new(): Bad :$lit arg; it is not an object of a}
-            . q{ QDRDBMS::GSTV::(Bool|Str|Blob|Int|Num) class.};
+            . q{ QDRDBMS::GSTV::(Bool|Str|Blob|Int) class.};
     }
 
     return $self;
+}
+
+###########################################################################
+
+sub lit {
+    my ($self) = @_;
+    return $self->{$ATTR_LIT_VAL};
+}
+
+###########################################################################
+
+sub lit_type {
+    my ($self) = @_;
+    return $self->{$ATTR_LIT_TYPE};
 }
 
 ###########################################################################
@@ -202,6 +220,13 @@ sub new {
 
 ###########################################################################
 
+sub var {
+    my ($self) = @_;
+    return $self->{$ATTR_VAR_NAME};
+}
+
+###########################################################################
+
 } # class QDRDBMS::AST::VarNameExpr
 
 ###########################################################################
@@ -213,11 +238,12 @@ sub new {
     use Carp;
     use Scalar::Util qw( blessed );
 
-    my $ATTR_FUNC_NAME      = 'func_name';
-    my $ATTR_FUNC_ARGS_AOA  = 'func_args_aoa';
-    my $ATTR_FUNC_ARGS_HASH = 'func_args_hash';
+    my $ATTR_FUNC_NAME     = 'func_name';
+    my $ATTR_FUNC_ARGS_AOA = 'func_args_aoa';
+    my $ATTR_FUNC_ARGS_HOA = 'func_args_hoa';
 
 ###########################################################################
+=pod
 
 sub new {
     my ($class, $args) = @_;
@@ -229,6 +255,13 @@ sub new {
         if !blessed $func_name
             or !$func_name->isa( 'QDRDBMS::AST::EntityName' );
     $self->{$ATTR_FUNC_NAME} = $func_name;
+
+    confess q{new(): Bad :$func_args arg; it is not a valid object}
+            . q{ of an Array-doing class.}
+        if !blessed $func_name
+            or !$func_name->isa( 'QDRDBMS::AST::EntityName' );
+
+
     if (!defined $func_args) {
         $self->{$ATTR_FUNC_ARGS_AOA}  = [];
         $self->{$ATTR_FUNC_ARGS_HASH} = {};
@@ -246,6 +279,21 @@ sub new {
     return $self;
 }
 
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+=cut
 ###########################################################################
 
 } # class QDRDBMS::AST::FuncInvoExpr

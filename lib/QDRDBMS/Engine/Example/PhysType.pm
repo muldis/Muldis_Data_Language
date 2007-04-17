@@ -83,6 +83,9 @@ sub dCat_EntityName {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::PhysType::Value; # role
+
+    use Carp;
+
 #    my $ATTR_ROOT_TYPE = 'Value::root_type';
         # QDRDBMS::Engine::Example::PhysType::Cat_EntityName.
         # This is the fundamental QDRDBMS D data type that this ::Value
@@ -131,19 +134,19 @@ sub new {
 ###########################################################################
 
 sub root_type {
-    die "not implemented by subclass\n";
+    confess q{not implemented by subclass};
 }
 
 sub declared_type {
-    die "not implemented by subclass\n";
+    confess q{not implemented by subclass};
 }
 
 sub most_specific_type {
-    die "not implemented by subclass\n";
+    confess q{not implemented by subclass};
 }
 
 sub which {
-    die "not implemented by subclass\n";
+    confess q{not implemented by subclass};
 }
 
 ###########################################################################

@@ -11,7 +11,7 @@ use QDRDBMS;
 { package QDRDBMS::Validator; # module
     our $VERSION = 0.000000;
 
-    use QDRDBMS::GSTV qw( Bool Str Blob Int Num Hash );
+    use QDRDBMS::GSTV qw( Bool Str Blob Int Num );
     use Test::More;
 
 ###########################################################################
@@ -68,7 +68,7 @@ QDRDBMS Engine distribution:
     use strict;
     use warnings FATAL => 'all';
 
-    use QDRDBMS::GSTV qw( Str Hash );
+    use QDRDBMS::GSTV qw( Str );
 
     # Load the test suite.
     use QDRDBMS::Validator;
@@ -76,7 +76,7 @@ QDRDBMS Engine distribution:
     # Run the test suite.
     QDRDBMS::Validator::main({
             'engine_name' => Str('QDRDBMS::Engine::Example'),
-            'dbms_config' => Hash({}),
+            'dbms_config' => [],
         });
 
     1;

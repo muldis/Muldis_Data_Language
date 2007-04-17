@@ -99,8 +99,7 @@ sub new {
 sub bind_variables {
     my ($self, $args) = @_;
     my ($var_engs) = @{$args}{'variables'};
-    $self->{$ATTR_BOUND_VARS}
-        = {%{$self->{$ATTR_BOUND_VARS}}, %{$var_engs}};
+    push @{$self->{$ATTR_BOUND_VARS}}, @{$var_engs};
     return;
 }
 

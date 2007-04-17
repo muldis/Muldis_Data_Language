@@ -50,10 +50,27 @@ sub new {
             or !$engine_name->isa( 'QDRDBMS::GSTV::Str' );
     $engine_name = ${$engine_name};
 
-    confess q{new(): Bad :$dbms_config arg; it is not an object of a}
-            . q{ QDRDBMS::GSTV::Hash-doing class.}
-        if !blessed $dbms_config
-            or !$dbms_config->isa( 'QDRDBMS::GSTV::Hash' );
+    confess q{new(): Bad :$dbms_config arg; it is not an Array.}
+        if ref $dbms_config ne 'ARRAY';
+    my $seen_config_elem_names = {};
+    foreach my $elem (@{$dbms_config}) {
+        confess q{new(): Bad :$dbms_config arg elem;}
+                . q{ it is not a 2-element Array.}
+            if ref $elem ne 'ARRAY' or @{$elem} != 2;
+        my ($elem_name, $elem_value) = @{$elem};
+        confess q{new(): Bad :$dbms_config arg elem; its first elem is not}
+                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+            if !blessed $elem_name
+                or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $elem_name_text = $elem_name->text();
+        confess q{new(): Bad :$dbms_config arg elem; its first elem is not}
+                . q{ distinct between the arg elems.}
+            if exists $seen_config_elem_names->{$elem_name_text};
+        $seen_config_elem_names->{$elem_name_text} = 1;
+        confess q{new(): Bad :$dbms_config arg elem;}
+                . q{ its second elem is not defined.}
+            if !defined $elem_value;
+    }
 
     # A module may be loaded due to it being embedded in a non-excl file.
     if (!do {
@@ -190,19 +207,29 @@ sub bind_variables {
     my ($self, $args) = @_;
     my ($var_intfs) = @{$args}{'variables'};
 
-    confess q{new(): Bad :$variables arg; it is not an object of a}
-            . q{ QDRDBMS::GSTV::Hash-doing class.}
-        if !blessed $var_intfs
-            or !$var_intfs->isa( 'QDRDBMS::GSTV::Hash' );
-
-    my $var_engs = {};
-    for my $var_name (keys %{$var_intfs}) {
-        my $var_intf = $var_intfs->{$var_name};
-        confess q{new(): Bad :$var_value arg elem; it is not an object of a}
-                . q{ QDRDBMS::Interface::Variable-doing class.}
+    confess q{new(): Bad :$variables arg; it is not an Array.}
+        if ref $var_intfs ne 'ARRAY';
+    my $seen_var_names = {};
+    my $var_engs = [];
+    foreach my $elem (@{$var_intfs}) {
+        confess q{new(): Bad :$variables arg elem;}
+                . q{ it is not a 2-element Array.}
+            if ref $elem ne 'ARRAY' or @{$elem} != 2;
+        my ($var_name, $var_intf) = @{$elem};
+        confess q{new(): Bad :$variables arg elem; its first elem is not}
+                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+            if !blessed $var_name
+                or !$var_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $var_name_text = $var_name->text();
+        confess q{new(): Bad :$variables arg elem; its first elem is not}
+                . q{ distinct between the arg elems.}
+            if exists $seen_var_names->{$var_name_text};
+        $seen_var_names->{$var_name_text} = 1;
+        confess q{new(): Bad :$variables arg elem; its second elem is not}
+                . q{ an object of a QDRDBMS::Interface::Variable-doing class.}
             if !blessed $var_intf
                 or !$var_intf->isa( 'QDRDBMS::Interface::Variable' );
-        $var_engs->{$var_name} = $var_intf->{$VAR_ATTR_VAR_ENG};
+        push @{$var_engs}, [$var_name, $var_intf->{$VAR_ATTR_VAR_ENG}];
     }
 
     $self->{$ATTR_RTN_ENG}->bind_variables({ 'variables' => $var_engs });
@@ -256,9 +283,9 @@ sub new {
             . q{ threw an exception during its new_variable()}
             . qq{ execution: $err}
     }
-    confess q{new(): The prepare_routine() method of the QDRDBMS}
+    confess q{new(): The new_variable() method of the QDRDBMS}
             . qq{ DBMS class '$dbms_eng_class' did not return an object}
-            . q{ to serve as a Routine Engine.}
+            . q{ to serve as a Variable Engine.}
         if !blessed $var_eng;
     my $var_eng_class = blessed $var_eng;
 
@@ -301,14 +328,14 @@ and QDRDBMS::Interface::Variable ("Variable").
 
 =head1 SYNOPSIS
 
-    use QDRDBMS::GSTV qw( Str Hash );
+    use QDRDBMS::GSTV qw( Str );
 
     use QDRDBMS;
 
     # Instantiate a QDRDBMS DBMS / virtual machine.
     my $dbms = QDRDBMS::new_dbms({
             'engine_name' => Str('QDRDBMS::Engine::Example'),
-            'dbms_config' => Hash({}),
+            'dbms_config' => [],
         });
 
     # TODO: Create or connect to a repository and work with it.
