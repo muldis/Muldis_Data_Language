@@ -44,35 +44,11 @@ sub new {
     my ($engine_name, $dbms_config)
         = @{$args}{'engine_name', 'dbms_config'};
 
-    confess q{new(): Bad :$engine_name arg; it is not an object of a}
-            . q{ QDRDBMS::GSTV::Str-doing class.}
-        if !blessed $engine_name
-            or !$engine_name->isa( 'QDRDBMS::GSTV::Str' );
-    $engine_name = ${$engine_name};
-
-    confess q{new(): Bad :$dbms_config arg; it is not an Array.}
-        if ref $dbms_config ne 'ARRAY';
-    my $seen_config_elem_names = {};
-    my $dbms_config_cpy = [];
-    foreach my $elem (@{$dbms_config}) {
-        confess q{new(): Bad :$dbms_config arg elem;}
-                . q{ it is not a 2-element Array.}
-            if ref $elem ne 'ARRAY' or @{$elem} != 2;
-        my ($elem_name, $elem_value) = @{$elem};
-        confess q{new(): Bad :$dbms_config arg elem; its first elem is not}
-                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
-            if !blessed $elem_name
-                or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $elem_name_text = ${$elem_name->text()};
-        confess q{new(): Bad :$dbms_config arg elem; its first elem is not}
-                . q{ distinct between the arg elems.}
-            if exists $seen_config_elem_names->{$elem_name_text};
-        $seen_config_elem_names->{$elem_name_text} = 1;
-        confess q{new(): Bad :$dbms_config arg elem;}
-                . q{ its second elem is not defined.}
-            if !defined $elem_value;
-        push @{$dbms_config_cpy}, [$elem_name, $elem_value];
-    }
+    confess q{new(): Bad :$engine_name arg; Perl 5 does not consider}
+            . q{ it to be a character string, or it is the empty string.}
+        if !defined $engine_name or $engine_name eq q{}
+            or (!Encode::is_utf8( $engine_name )
+                and $engine_name =~ m/[^\x00-\x7F]/xs);
 
     # A module may be loaded due to it being embedded in a non-excl file.
     if (!do {
@@ -100,7 +76,7 @@ sub new {
         if !$engine_name->can( 'new_dbms' );
     my $dbms_eng = eval {
         &{$engine_name->can( 'new_dbms' )}({
-            'dbms_config' => $dbms_config_cpy });
+            'dbms_config' => $dbms_config });
     };
     if (my $err = $@) {
         confess qq{new(): The QDRDBMS Engine module '$engine_name' threw}
@@ -329,14 +305,12 @@ and QDRDBMS::Interface::Variable ("Variable").
 
 =head1 SYNOPSIS
 
-    use QDRDBMS::GSTV qw( Str );
-
     use QDRDBMS;
 
     # Instantiate a QDRDBMS DBMS / virtual machine.
     my $dbms = QDRDBMS::new_dbms({
-            'engine_name' => Str('QDRDBMS::Engine::Example'),
-            'dbms_config' => [],
+            'engine_name' => 'QDRDBMS::Engine::Example',
+            'dbms_config' => {},
         });
 
     # TODO: Create or connect to a repository and work with it.
