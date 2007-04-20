@@ -12,20 +12,15 @@ use warnings FATAL => 'all';
 
     use base 'Exporter';
     our @EXPORT_OK = qw(
-        EntityName
         LitBool LitText LitBlob LitInt
+        SetSel SeqSel BagSel
+        EntityName
         VarNameExpr FuncInvoExpr
         ControlStmt ProcInvoStmt MultiProcInvoStmt
         Func Proc
     );
 
 ###########################################################################
-
-sub EntityName {
-    my ($args) = @_;
-    my ($text) = @{$args}{'text'};
-    return QDRDBMS::AST::EntityName->new({ 'text' => $text });
-}
 
 sub LitBool {
     my ($args) = @_;
@@ -49,6 +44,30 @@ sub LitInt {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::LitInt->new({ 'v' => $v });
+}
+
+sub SetSel {
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return QDRDBMS::AST::SetSel->new({ 'v' => $v });
+}
+
+sub SeqSel {
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return QDRDBMS::AST::SeqSel->new({ 'v' => $v });
+}
+
+sub BagSel {
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return QDRDBMS::AST::BagSel->new({ 'v' => $v });
+}
+
+sub EntityName {
+    my ($args) = @_;
+    my ($text) = @{$args}{'text'};
+    return QDRDBMS::AST::EntityName->new({ 'text' => $text });
 }
 
 sub VarNameExpr {
@@ -94,52 +113,14 @@ sub Proc {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::EntityName; # class
-
-    use Carp;
-    use Encode qw(is_utf8);
-
-    my $ATTR_TEXT_POSSREP = 'text_possrep';
-#    my $ATTR_SEQ_POSSREP  = 'seq_possrep';
-
-###########################################################################
-
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
-    my ($text) = @{$args}{'text'};
-
-    confess q{new(): Bad :$text arg; Perl 5 does not consider}
-            . q{ it to be a canonical character string value.}
-        if !defined $text
-            or (!is_utf8 $text and $text =~ m/[^\x00-\x7F]/xs);
-
-    $self->{$ATTR_TEXT_POSSREP} = $text;
-
-    return $self;
-}
-
-###########################################################################
-
-sub text {
-    my ($self) = @_;
-    return $self->{$ATTR_TEXT_POSSREP};
-}
-
-###########################################################################
-
-sub seq {
-    confess q{not implemented};
-}
-
-###########################################################################
-
-} # class QDRDBMS::AST::EntityName
+{ package QDRDBMS::AST::Value; sub _dummy {} } # role
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Expr; sub _dummy {} }
+{ package QDRDBMS::AST::Expr; # role
+    use base 'QDRDBMS::AST::Value';
+} # role QDRDBMS::AST::Expr
 
 ###########################################################################
 ###########################################################################
@@ -274,6 +255,114 @@ sub seq {
     }
 
 } # class QDRDBMS::AST::LitInt
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::ListSel; # role
+    use base 'QDRDBMS::AST::Expr';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_V = 'v';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($v) = @{$args}{'v'};
+
+    confess q{new(): Bad :$v arg; it is not an Array.}
+        if ref $v ne 'ARRAY';
+    foreach my $ve (@{$v}) {
+        confess q{new(): Bad :$v arg elem; it is not}
+                . q{ an object of a QDRDBMS::AST::Expr-doing class.}
+            if !blessed $ve or !$ve->isa( 'QDRDBMS::AST::Expr' );
+    }
+
+    $self->{$ATTR_V} = [@{$v}];
+
+    return $self;
+}
+
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return [@{$self->{$ATTR_V}}];
+}
+
+###########################################################################
+
+} # role QDRDBMS::AST::ListSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::SetSel; # class
+    use base 'QDRDBMS::AST::ListSel';
+} # class QDRDBMS::AST::SetSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::SeqSel; # class
+    use base 'QDRDBMS::AST::ListSel';
+} # class QDRDBMS::AST::SeqSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::BagSel; # class
+    use base 'QDRDBMS::AST::ListSel';
+} # class QDRDBMS::AST::BagSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::EntityName; # class
+
+    use Carp;
+    use Encode qw(is_utf8);
+
+    my $ATTR_TEXT_POSSREP = 'text_possrep';
+#    my $ATTR_SEQ_POSSREP  = 'seq_possrep';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($text) = @{$args}{'text'};
+
+    confess q{new(): Bad :$text arg; Perl 5 does not consider}
+            . q{ it to be a canonical character string value.}
+        if !defined $text
+            or (!is_utf8 $text and $text =~ m/[^\x00-\x7F]/xs);
+
+    $self->{$ATTR_TEXT_POSSREP} = $text;
+
+    return $self;
+}
+
+###########################################################################
+
+sub text {
+    my ($self) = @_;
+    return $self->{$ATTR_TEXT_POSSREP};
+}
+
+###########################################################################
+
+sub seq {
+    confess q{not implemented};
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::EntityName
 
 ###########################################################################
 ###########################################################################
