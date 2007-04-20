@@ -66,8 +66,9 @@ sub BagSel {
 
 sub EntityName {
     my ($args) = @_;
-    my ($text) = @{$args}{'text'};
-    return QDRDBMS::AST::EntityName->new({ 'text' => $text });
+    my ($text, $seq) = @{$args}{'text', 'seq'};
+    return QDRDBMS::AST::EntityName->new({
+        'text' => $text, 'seq' => $seq });
 }
 
 sub VarNameExpr {
@@ -113,13 +114,13 @@ sub Proc {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Value; sub _dummy {} } # role
+{ package QDRDBMS::AST::Node; sub _dummy {} } # role
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::Expr; # role
-    use base 'QDRDBMS::AST::Value';
+    use base 'QDRDBMS::AST::Node';
 } # role QDRDBMS::AST::Expr
 
 ###########################################################################
@@ -325,24 +326,55 @@ sub v {
 { package QDRDBMS::AST::EntityName; # class
 
     use Carp;
-    use Encode qw(is_utf8);
 
     my $ATTR_TEXT_POSSREP = 'text_possrep';
-#    my $ATTR_SEQ_POSSREP  = 'seq_possrep';
+    my $ATTR_SEQ_POSSREP  = 'seq_possrep';
 
 ###########################################################################
 
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($text) = @{$args}{'text'};
+    my ($text, $seq) = @{$args}{'text', 'seq'};
 
-    confess q{new(): Bad :$text arg; Perl 5 does not consider}
-            . q{ it to be a canonical character string value.}
-        if !defined $text
-            or (!is_utf8 $text and $text =~ m/[^\x00-\x7F]/xs);
+    die q{new(): Exactly 1 of the args (:$text|:$seq) must be defined.}
+        if !(defined $text xor defined $seq);
 
-    $self->{$ATTR_TEXT_POSSREP} = $text;
+    if (defined $text) {
+        die q{new(): Bad :$text arg; it is not a valid object}
+                . q{ of a QDRDBMS::AST::LitText-doing class.}
+            if !$text->isa( 'QDRDBMS::AST::LitText' );
+        $self->{$ATTR_TEXT_POSSREP} = $text;
+        $self->{$ATTR_SEQ_POSSREP} = QDRDBMS::AST::SeqSel->new({ 'v' => (
+                [map {
+                        my $s = $_;
+                        $s =~ s/ \\ \[pd\] /./xsg;
+                        $s =~ s/ \\ \[bh\] /\\/xsg;
+                        QDRDBMS::AST::LitText->new({ 'v' => $s });
+                    } split /\./, $text->v()]
+            ) });
+    }
+
+    else { # defined $seq
+        die q{new(): Bad :$v arg; it is not an object of a}
+                . q{ QDRDBMS::AST::SeqSel-doing class.}
+            if !$seq->isa( 'QDRDBMS::AST::SeqSel' );
+        my $seq_elems = $seq.v();
+        for my $seq_e (@{$seq_elems}) {
+            die q{new(): Bad :$seq arg elem; it is not}
+                    . q{ an object of a QDRDBMS::AST::LitText-doing class.}
+                if !$seq_e->isa( 'QDRDBMS::AST::LitText' );
+        }
+        $self->{$ATTR_TEXT_POSSREP} = QDRDBMS::AST::LitText->new({ 'v' => (
+                join q{.}, map {
+                        my $s = $_->v();
+                        $s =~ s/ \\ /\\[bh]/xsg;
+                        $s =~ s/ \. /\\[pd]/xsg;
+                        $s;
+                    } @{$seq_elems}
+            ) });
+        $self->{$ATTR_SEQ_POSSREP} = $seq;
+    }
 
     return $self;
 }
@@ -357,7 +389,8 @@ sub text {
 ###########################################################################
 
 sub seq {
-    confess q{not implemented};
+    my ($self) = @_;
+    return $self->{$ATTR_SEQ_POSSREP};
 }
 
 ###########################################################################
