@@ -136,7 +136,6 @@ I<This documentation is pending.>
 This file requires any version of Perl 5.x.y that is at least 5.8.1.
 
 It also requires these Perl 5 classes that are in the current distribution:
-L<QDRDBMS::GSTV-(0.0.0)|QDRDBMS::GSTV>,
 L<QDRDBMS::AST-(0.0.0)|QDRDBMS::AST>, L<QDRDBMS-0.0.0|QDRDBMS>.
 
 =head1 INCOMPATIBILITIES

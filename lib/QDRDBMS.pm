@@ -32,7 +32,7 @@ sub new_dbms {
 { package QDRDBMS::Interface::DBMS; # class
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Scalar::Util qw(blessed);
 
     my $ATTR_DBMS_ENG = 'dbms_eng';
 
@@ -124,7 +124,7 @@ sub new_var {
 { package QDRDBMS::Interface::Routine; # class
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Scalar::Util qw(blessed);
 
     my $ATTR_DBMS_INTF = 'dbms_intf';
     my $ATTR_RTN_AST   = 'rtn_ast';
@@ -231,7 +231,7 @@ sub execute {
 { package QDRDBMS::Interface::Variable; # class
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Scalar::Util qw(blessed);
 
     my $ATTR_DBMS_INTF = 'dbms_intf';
     my $ATTR_VAR_ENG   = 'var_eng';
@@ -512,7 +512,6 @@ I<This documentation is pending.>
 This file requires any version of Perl 5.x.y that is at least 5.8.1.
 
 It also requires these Perl 5 classes that are in the current distribution:
-L<QDRDBMS::GSTV-(0.0.0)|QDRDBMS::GSTV>,
 L<QDRDBMS::AST-(0.0.0)|QDRDBMS::AST>.
 
 =head1 INCOMPATIBILITIES

@@ -14,8 +14,7 @@ use warnings FATAL => 'all';
     use Carp;
 
     use QDRDBMS::Engine::Example::PhysType
-        qw( dBool dText dBlob dInt
-            dTextKeyedMap dHeading dTuple dRelation );
+        qw(dBool dText dBlob dInt dTextKeyedMap dHeading dTuple dRelation);
 
     my $OPS = { # Hash
 

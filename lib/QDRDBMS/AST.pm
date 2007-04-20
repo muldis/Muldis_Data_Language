@@ -3,26 +3,6 @@ use utf8;
 use strict;
 use warnings FATAL => 'all';
 
-use QDRDBMS::GSTV qw( Bool Str Blob Int Num );
-
-###########################################################################
-###########################################################################
-
-my $LITERAL_TYPE_MAP = {
-    'QDRDBMS::GSTV::Bool'
-        => QDRDBMS::AST::EntityName->new({
-            'text' => Str('sys.type.Bool') }),
-    'QDRDBMS::GSTV::Str'
-        => QDRDBMS::AST::EntityName->new({
-            'text' => Str('sys.type.Text') }),
-    'QDRDBMS::GSTV::Blob'
-        => QDRDBMS::AST::EntityName->new({
-            'text' => Str('sys.type.Blob') }),
-    'QDRDBMS::GSTV::Int'
-        => QDRDBMS::AST::EntityName->new({
-            'text' => Str('sys.type.Int') }),
-};
-
 ###########################################################################
 ###########################################################################
 
@@ -33,7 +13,8 @@ my $LITERAL_TYPE_MAP = {
     use base 'Exporter';
     our @EXPORT_OK = qw(
         EntityName
-        LitDefExpr VarNameExpr FuncInvoExpr
+        LitBool LitText LitBlob LitInt
+        VarNameExpr FuncInvoExpr
         ControlStmt ProcInvoStmt MultiProcInvoStmt
         Func Proc
     );
@@ -46,10 +27,28 @@ sub EntityName {
     return QDRDBMS::AST::EntityName->new({ 'text' => $text });
 }
 
-sub LitDefExpr {
+sub LitBool {
     my ($args) = @_;
-    my ($lit) = @{$args}{'lit'};
-    return QDRDBMS::AST::LitDefExpr->new({ 'lit' => $lit });
+    my ($v) = @{$args}{'v'};
+    return QDRDBMS::AST::LitBool->new({ 'v' => $v });
+}
+
+sub LitText {
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return QDRDBMS::AST::LitText->new({ 'v' => $v });
+}
+
+sub LitBlob {
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return QDRDBMS::AST::LitBlob->new({ 'v' => $v });
+}
+
+sub LitInt {
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return QDRDBMS::AST::LitInt->new({ 'v' => $v });
 }
 
 sub VarNameExpr {
@@ -98,11 +97,10 @@ sub Proc {
 { package QDRDBMS::AST::EntityName; # class
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Encode qw(is_utf8);
 
-    my $ATTR_TEXT_POSSREP;
-    BEGIN { $ATTR_TEXT_POSSREP = 'text_possrep'; }
-#    my $ATTR_SEQ_POSSREP = 'seq_possrep';
+    my $ATTR_TEXT_POSSREP = 'text_possrep';
+#    my $ATTR_SEQ_POSSREP  = 'seq_possrep';
 
 ###########################################################################
 
@@ -111,9 +109,10 @@ sub new {
     my $self = bless {}, $class;
     my ($text) = @{$args}{'text'};
 
-    confess q{new(): Bad :$text arg; it is not a valid object}
-            . q{ of a QDRDBMS::GSTV::Str-doing class.}
-        if !blessed $text or !$text->isa( 'QDRDBMS::GSTV::Str' );
+    confess q{new(): Bad :$text arg; Perl 5 does not consider}
+            . q{ it to be a canonical character string value.}
+        if !defined $text
+            or (!is_utf8 $text and $text =~ m/[^\x00-\x7F]/xs);
 
     $self->{$ATTR_TEXT_POSSREP} = $text;
 
@@ -145,54 +144,136 @@ sub seq {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::LitDefExpr; # class
+{ package QDRDBMS::AST::LitBool; # class
     use base 'QDRDBMS::AST::Expr';
 
     use Carp;
-    use Scalar::Util qw( blessed );
 
-    my $ATTR_LIT_VAL  = 'lit_val';
-    my $ATTR_LIT_TYPE = 'lit_type';
+    my $FALSE = (1 == 0);
+    my $TRUE  = (1 == 1);
 
-###########################################################################
+    my $ATTR_V = 'v';
+        # A p5 Scalar that equals $FALSE|$TRUE.
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
-    my ($lit_val) = @{$args}{'lit'};
+    sub new {
+        my ($class, $args) = @_;
+        my $self = bless {}, $class;
+        my ($v) = @{$args}{'v'};
 
-    my $lit_class = blessed $lit_val;
-    confess q{new(): Bad :$lit arg; it is not an object.}
-        if !$lit_class;
-    if (my $lit_type = $LITERAL_TYPE_MAP->{$lit_class}) {
-        $self->{$ATTR_LIT_VAL}  = $lit_val;
-        $self->{$ATTR_LIT_TYPE} = $lit_type;
-    }
-    else {
-        confess q{new(): Bad :$lit arg; it is not an object of a}
-            . q{ QDRDBMS::GSTV::(Bool|Str|Blob|Int) class.};
+        confess q{new(): Bad :$v arg; Perl 5 does not consider}
+                . q{ it to be a canonical boolean value.}
+            if !defined $v or ($v ne $FALSE and $v ne $TRUE);
+
+        $self->{$ATTR_V} = $v;
+
+        return $self;
     }
 
-    return $self;
-}
+    sub v {
+        my ($self) = @_;
+        return $self->{$ATTR_V};
+    }
+
+} # class QDRDBMS::AST::LitBool
 
 ###########################################################################
-
-sub lit {
-    my ($self) = @_;
-    return $self->{$ATTR_LIT_VAL};
-}
-
 ###########################################################################
 
-sub lit_type {
-    my ($self) = @_;
-    return $self->{$ATTR_LIT_TYPE};
-}
+{ package QDRDBMS::AST::LitText; # class
+    use base 'QDRDBMS::AST::Expr';
+
+    use Carp;
+    use Encode qw(is_utf8);
+
+    my $ATTR_V = 'v';
+        # A p5 Scalar that is a text-mode string;
+        # it either has true utf8 flag or is only 7-bit bytes.
+
+    sub new {
+        my ($class, $args) = @_;
+        my $self = bless {}, $class;
+        my ($v) = @{$args}{'v'};
+
+        confess q{new(): Bad :$v arg; Perl 5 does not consider}
+                . q{ it to be a canonical character string value.}
+            if !defined $v or (!is_utf8 $v and $v =~ m/[^\x00-\x7F]/xs);
+
+        $self->{$ATTR_V} = $v;
+
+        return $self;
+    }
+
+    sub v {
+        my ($self) = @_;
+        return $self->{$ATTR_V};
+    }
+
+} # class QDRDBMS::AST::LitText
 
 ###########################################################################
+###########################################################################
 
-} # class QDRDBMS::AST::LitDefExpr
+{ package QDRDBMS::AST::LitBlob; # class
+    use base 'QDRDBMS::AST::Expr';
+
+    use Carp;
+    use Encode qw(is_utf8);
+
+    my $ATTR_V = 'v';
+        # A p5 Scalar that is a byte-mode string; it has false utf8 flag.
+
+    sub new {
+        my ($class, $args) = @_;
+        my $self = bless {}, $class;
+        my ($v) = @{$args}{'v'};
+
+        confess q{new(): Bad :$v arg; Perl 5 does not consider}
+                . q{ it to be a canonical byte string value.}
+            if !defined $v or is_utf8 $v;
+
+        $self->{$ATTR_V} = $v;
+
+        return $self;
+    }
+
+    sub v {
+        my ($self) = @_;
+        return $self->{$ATTR_V};
+    }
+
+} # class QDRDBMS::AST::LitBlob
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::LitInt; # class
+    use base 'QDRDBMS::AST::Expr';
+
+    use Carp;
+
+    my $ATTR_V = 'v';
+        # A p5 Scalar that is a Perl integer or BigInt or canonical string.
+
+    sub new {
+        my ($class, $args) = @_;
+        my $self = bless {}, $class;
+        my ($v) = @{$args}{'v'};
+
+        confess q{new(): Bad :$v arg; Perl 5 does not consider}
+                . q{ it to be a canonical integer value.}
+            if !defined $v or $v !~ m/(0|-?[1-9][0-9]*)/xs;
+
+        $self->{$ATTR_V} = $v;
+
+        return $self;
+    }
+
+    sub v {
+        my ($self) = @_;
+        return $self->{$ATTR_V};
+    }
+
+} # class QDRDBMS::AST::LitInt
 
 ###########################################################################
 ###########################################################################
@@ -201,7 +282,7 @@ sub lit_type {
     use base 'QDRDBMS::AST::Expr';
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Scalar::Util qw(blessed);
 
     my $ATTR_VAR_NAME = 'var_name';
 
@@ -239,7 +320,7 @@ sub var {
     use base 'QDRDBMS::AST::Expr';
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Scalar::Util qw(blessed);
 
     my $ATTR_FUNC_NAME     = 'func_name';
     my $ATTR_FUNC_ARGS_AOA = 'func_args_aoa';
@@ -323,7 +404,7 @@ sub func_args_hoa {
     use base 'QDRDBMS::AST::Stmt';
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Scalar::Util qw(blessed);
 
 
 
@@ -343,7 +424,7 @@ sub func_args_hoa {
     use base 'QDRDBMS::AST::Stmt';
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Scalar::Util qw(blessed);
 
     my $ATTR_PROC_NAME     = 'proc_name';
     my $ATTR_PROC_ARGS_AOA = 'proc_args_aoa';
@@ -422,7 +503,7 @@ sub proc_args_hoa {
     use base 'QDRDBMS::AST::Stmt';
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Scalar::Util qw(blessed);
 
 
 
@@ -441,7 +522,7 @@ sub proc_args_hoa {
 { package QDRDBMS::AST::Func; # class
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Scalar::Util qw(blessed);
 
 
 
@@ -460,7 +541,7 @@ sub proc_args_hoa {
 { package QDRDBMS::AST::Proc; # class
 
     use Carp;
-    use Scalar::Util qw( blessed );
+    use Scalar::Util qw(blessed);
 
 
 
@@ -498,6 +579,15 @@ It also describes the same-number versions for Perl 5 of [...].
 
 I<This documentation is pending.>
 
+    use QDRDBMS::AST qw(LitBool LitText LitBlob LitInt);
+
+    my $truth_value = LitBool({ 'v' => (2 + 2 == 4) });
+    my $planetoid = LitText({ 'v' => 'Ceres' });
+    my $package = LitBlob({ 'v' => (pack 'H2', 'P') });
+    my $answer = LitInt({ 'v' => 42 });
+
+I<This documentation is pending.>
+
 =head1 DESCRIPTION
 
 I<This documentation is pending.>
@@ -525,9 +615,6 @@ I<This documentation is pending.>
 =head1 DEPENDENCIES
 
 This file requires any version of Perl 5.x.y that is at least 5.8.1.
-
-It also requires these Perl 5 classes that are in the current distribution:
-L<QDRDBMS::GSTV-(0.0.0)|QDRDBMS::GSTV>.
 
 =head1 INCOMPATIBILITIES
 

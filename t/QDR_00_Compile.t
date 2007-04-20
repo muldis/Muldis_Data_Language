@@ -5,11 +5,7 @@ use warnings FATAL => 'all';
 
 use Test::More;
 
-plan( 'tests' => 14 );
-
-use_ok( 'QDRDBMS::GSTV' );
-is( $QDRDBMS::GSTV::VERSION, 0.000,
-    'QDRDBMS::GSTV is the correct version' );
+plan( 'tests' => 12 );
 
 use_ok( 'QDRDBMS::AST' );
 is( $QDRDBMS::AST::VERSION, 0.000,
