@@ -243,7 +243,7 @@ sub Proc {
 
         confess q{new(): Bad :$v arg; Perl 5 does not consider}
                 . q{ it to be a canonical integer value.}
-            if !defined $v or $v !~ m/(0|-?[1-9][0-9]*)/xs;
+            if !defined $v or $v !~ m/\A (0|-?[1-9][0-9]*) \z/xs;
 
         $self->{$ATTR_V} = $v;
 
@@ -324,6 +324,7 @@ sub v {
 ###########################################################################
 
 { package QDRDBMS::AST::EntityName; # class
+    use base 'QDRDBMS::AST::Node';
 
     use Carp;
 
@@ -517,7 +518,9 @@ sub func_args_hoa {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Stmt; sub _dummy {} }
+{ package QDRDBMS::AST::Stmt; # role
+    use base 'QDRDBMS::AST::Node';
+} # role QDRDBMS::AST::Stmt
 
 ###########################################################################
 ###########################################################################

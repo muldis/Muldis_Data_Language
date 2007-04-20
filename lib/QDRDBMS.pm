@@ -32,6 +32,7 @@ sub new_dbms {
 { package QDRDBMS::Interface::DBMS; # class
 
     use Carp;
+    use Encode qw(is_utf8);
     use Scalar::Util qw(blessed);
 
     my $ATTR_DBMS_ENG = 'dbms_eng';
@@ -47,7 +48,7 @@ sub new {
     confess q{new(): Bad :$engine_name arg; Perl 5 does not consider}
             . q{ it to be a character string, or it is the empty string.}
         if !defined $engine_name or $engine_name eq q{}
-            or (!Encode::is_utf8( $engine_name )
+            or (!is_utf8 $engine_name
                 and $engine_name =~ m/[^\x00-\x7F]/xs);
 
     # A module may be loaded due to it being embedded in a non-excl file.
