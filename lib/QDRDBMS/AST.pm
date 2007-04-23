@@ -14,10 +14,11 @@ use warnings FATAL => 'all';
     our @EXPORT_OK = qw(
         LitBool LitText LitBlob LitInt
         SetSel SeqSel BagSel
-        EntityName
-        VarNameExpr FuncInvoExpr
-        ControlStmt ProcInvoStmt MultiProcInvoStmt
-        Func Proc
+        EntityName ExprDict
+        VarInvo FuncInvo
+        ProcInvo MultiProcInvo
+        FuncReturn ProcReturn
+        FuncDecl ProcDecl
     );
 
 ###########################################################################
@@ -71,40 +72,50 @@ sub EntityName {
         'text' => $text, 'seq' => $seq });
 }
 
-sub VarNameExpr {
+sub ExprDict {
     my ($args) = @_;
-    my ($var) = @{$args}{'var'};
-    return QDRDBMS::AST::VarNameExpr->new({ 'var' => $var });
+    my ($map) = @{$args}{'map'};
+    return QDRDBMS::AST::ExprDict->new({ 'map' => $map });
 }
 
-sub FuncInvoExpr {
+sub VarInvo {
     my ($args) = @_;
-    my ($func, $func_args) = @{$args}{'func', 'func_args'};
-    return QDRDBMS::AST::FuncInvoExpr->new({
-        'func' => $func, 'func_args' => $func_args });
+    my ($v) = @{$args}{'v'};
+    return QDRDBMS::AST::VarInvo->new({ 'v' => $v });
 }
 
-sub ControlStmt {
-    return QDRDBMS::AST::ControlStmt->new();
-}
-
-sub ProcInvoStmt {
+sub FuncInvo {
     my ($args) = @_;
-    my ($proc, $proc_args) = @{$args}{'proc', 'proc_args'};
-    return QDRDBMS::AST::ProcInvoStmt->new({
-        'proc' => $proc, 'proc_args' => $proc_args });
+    my ($func, $ro_args) = @{$args}{'func', 'ro_args'};
+    return QDRDBMS::AST::FuncInvo->new({
+        'func' => $func, 'ro_args' => $ro_args });
 }
 
-sub MultiProcInvoStmt {
-    return QDRDBMS::AST::MultiProcInvoStmt->new();
+sub ProcInvo {
+    my ($args) = @_;
+    my ($proc, $ro_args) = @{$args}{'proc', 'ro_args'};
+    return QDRDBMS::AST::ProcInvo->new({
+        'proc' => $proc, 'ro_args' => $ro_args });
 }
 
-sub Func {
-    return QDRDBMS::AST::Func->new();
+sub MultiProcInvo {
+    return QDRDBMS::AST::MultiProcInvo->new();
 }
 
-sub Proc {
-    return QDRDBMS::AST::Proc->new();
+sub FuncReturn {
+    return QDRDBMS::AST::FuncReturn->new();
+}
+
+sub ProcReturn {
+    return QDRDBMS::AST::ProcReturn->new();
+}
+
+sub FuncDecl {
+    return QDRDBMS::AST::FuncDecl->new();
+}
+
+sub ProcDecl {
+    return QDRDBMS::AST::ProcDecl->new();
 }
 
 ###########################################################################
@@ -405,94 +416,141 @@ sub seq {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::VarNameExpr; # class
-    use base 'QDRDBMS::AST::Expr';
+{ package QDRDBMS::AST::ExprDict; # class
+    use base 'QDRDBMS::AST::Node';
 
     use Carp;
     use Scalar::Util qw(blessed);
 
-    my $ATTR_VAR_NAME = 'var_name';
+    my $ATTR_MAP_AOA = 'map_aoa';
+    my $ATTR_MAP_HOA = 'map_hoa';
+
+    # Note: This type is specific such that values are always some ::Expr,
+    # but this type may be later generalized to hold ::Node instead.
 
 ###########################################################################
 
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($var_name) = @{$args}{'var'};
+    my ($map) = @{$args}{'map'};
 
-    confess q{new(): Bad :$var arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::EntityName-doing class.}
-        if !blessed $var_name
-            or !$var_name->isa( 'QDRDBMS::AST::EntityName' );
-    $self->{$ATTR_VAR_NAME} = $var_name;
+    confess q{new(): Bad :$map arg; it is not an Array.}
+        if ref $map ne 'ARRAY';
+    my $map_aoa = [];
+    my $map_hoa = {};
+    foreach my $elem (@{$map}) {
+        confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
+            if ref $elem ne 'ARRAY' or @{$elem} != 2;
+        my ($entity_name, $expr) = @{$elem};
+        confess q{new(): Bad :$map arg elem; its first elem is not}
+                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+            if !blessed $entity_name
+                or !$entity_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $entity_name_text_v = $entity_name->text()->v();
+        confess q{new(): Bad :$map arg elem; its first elem is not}
+                . q{ distinct between the arg elems.}
+            if exists $map_hoa->{$entity_name_text_v};
+        confess q{new(): Bad :$map arg elem; its second elem is not}
+                . q{ an object of a QDRDBMS::AST::Expr-doing class.}
+            if !blessed $expr or !$expr->isa( 'QDRDBMS::AST::Expr' );
+        my $elem_cpy = [$entity_name, $expr];
+        push @{$map_aoa}, $elem_cpy;
+        $map_hoa->{$entity_name_text_v} = $elem_cpy;
+    }
+    $self->{$ATTR_MAP_AOA} = $map_aoa;
+    $self->{$ATTR_MAP_HOA} = $map_hoa;
 
     return $self;
 }
 
 ###########################################################################
 
-sub var {
+sub map {
     my ($self) = @_;
-    return $self->{$ATTR_VAR_NAME};
+    return [map { [@{$_}] } @{$self->{$ATTR_MAP_AOA}}];
+}
+
+sub map_hoa {
+    my ($self) = @_;
+    my $h = $self->{$ATTR_MAP_HOA};
+    return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
+}
+
+sub exprs {
+    my ($self) = @_;
+    return [map { $_->[1] } @{$self->{$ATTR_MAP_AOA}}];
 }
 
 ###########################################################################
 
-} # class QDRDBMS::AST::VarNameExpr
+} # class QDRDBMS::AST::ExprDict
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::FuncInvoExpr; # class
+{ package QDRDBMS::AST::VarInvo; # class
     use base 'QDRDBMS::AST::Expr';
 
     use Carp;
     use Scalar::Util qw(blessed);
 
-    my $ATTR_FUNC_NAME     = 'func_name';
-    my $ATTR_FUNC_ARGS_AOA = 'func_args_aoa';
-    my $ATTR_FUNC_ARGS_HOA = 'func_args_hoa';
+    my $ATTR_V = 'v';
 
 ###########################################################################
 
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($func_name, $func_args) = @{$args}{'func', 'func_args'};
+    my ($v) = @{$args}{'v'};
+
+    confess q{new(): Bad :$v arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::EntityName-doing class.}
+        if !blessed $v or !$v->isa( 'QDRDBMS::AST::EntityName' );
+    $self->{$ATTR_V} = $v;
+
+    return $self;
+}
+
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::VarInvo
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::FuncInvo; # class
+    use base 'QDRDBMS::AST::Expr';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_FUNC    = 'func';
+    my $ATTR_RO_ARGS = 'ro_args';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($func, $ro_args) = @{$args}{'func', 'ro_args'};
 
     confess q{new(): Bad :$func arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::EntityName-doing class.}
-        if !blessed $func_name
-            or !$func_name->isa( 'QDRDBMS::AST::EntityName' );
-    $self->{$ATTR_FUNC_NAME} = $func_name;
+        if !blessed $func or !$func->isa( 'QDRDBMS::AST::EntityName' );
+    $self->{$ATTR_FUNC} = $func;
 
-    confess q{new(): Bad :$func_args arg; it is not an Array.}
-        if ref $func_args ne 'ARRAY';
-    my $func_args_aoa = [];
-    my $func_args_hoa = {};
-    foreach my $elem (@{$func_args}) {
-        confess q{new(): Bad :$func_args arg elem;}
-                . q{ it is not a 2-element Array.}
-            if ref $elem ne 'ARRAY' or @{$elem} != 2;
-        my ($param_name, $expr_ast) = @{$elem};
-        confess q{new(): Bad :$func_args arg elem; its first elem is not}
-                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
-            if !blessed $param_name
-                or !$param_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $param_name_text = ${$param_name->text()};
-        confess q{new(): Bad :$func_args arg elem; its first elem is not}
-                . q{ distinct between the arg elems.}
-            if exists $func_args_hoa->{$param_name_text};
-        confess q{new(): Bad :$func_args arg elem; its second elem is not}
-                . q{ an object of a QDRDBMS::AST::Expr-doing class.}
-            if !blessed $expr_ast
-                or !$expr_ast->isa( 'QDRDBMS::AST::Expr' );
-        my $elem_cpy = [$param_name, $expr_ast];
-        push @{$func_args_aoa}, $elem_cpy;
-        $func_args_hoa->{$param_name_text} = $elem_cpy;
-    }
-    $self->{$ATTR_FUNC_ARGS_AOA} = $func_args_aoa;
-    $self->{$ATTR_FUNC_ARGS_HOA} = $func_args_hoa;
+    confess q{new(): Bad :$ro_args arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::ExprDict-doing class.}
+        if !blessed $ro_args or !$ro_args->isa( 'QDRDBMS::AST::ExprDict' );
+    $self->{$ATTR_RO_ARGS} = $ro_args;
 
     return $self;
 }
@@ -501,23 +559,17 @@ sub new {
 
 sub func {
     my ($self) = @_;
-    return $self->{$ATTR_FUNC_NAME};
+    return $self->{$ATTR_FUNC};
 }
 
-sub func_args {
+sub ro_args {
     my ($self) = @_;
-    return [map { [@{$_}] } @{$self->{$ATTR_FUNC_ARGS_AOA}}];
-}
-
-sub func_args_hoa {
-    my ($self) = @_;
-    my $h = $self->{$ATTR_FUNC_ARGS_HOA};
-    return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
+    return $self->{$ATTR_RO_ARGS};
 }
 
 ###########################################################################
 
-} # class QDRDBMS::AST::FuncInvoExpr
+} # class QDRDBMS::AST::FuncInvo
 
 ###########################################################################
 ###########################################################################
@@ -529,76 +581,43 @@ sub func_args_hoa {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::ControlStmt; # class
+{ package QDRDBMS::AST::ProcInvo; # class
     use base 'QDRDBMS::AST::Stmt';
 
     use Carp;
     use Scalar::Util qw(blessed);
 
-
-
-###########################################################################
-
-
-
-
-###########################################################################
-
-} # class QDRDBMS::AST::ControlStmt
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::ProcInvoStmt; # class
-    use base 'QDRDBMS::AST::Stmt';
-
-    use Carp;
-    use Scalar::Util qw(blessed);
-
-    my $ATTR_PROC_NAME     = 'proc_name';
-    my $ATTR_PROC_ARGS_AOA = 'proc_args_aoa';
-    my $ATTR_PROC_ARGS_HOA = 'proc_args_hoa';
+    my $ATTR_FUNC     = 'proc';
+    my $ATTR_UPD_ARGS = 'upd_args';
+    my $ATTR_RO_ARGS  = 'ro_args';
 
 ###########################################################################
 
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($proc_name, $proc_args) = @{$args}{'proc', 'proc_args'};
+    my ($proc, $upd_args, $ro_args)
+        = @{$args}{'proc', 'upd_args', 'ro_args'};
 
     confess q{new(): Bad :$proc arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::EntityName-doing class.}
-        if !blessed $proc_name
-            or !$proc_name->isa( 'QDRDBMS::AST::EntityName' );
-    $self->{$ATTR_PROC_NAME} = $proc_name;
+        if !blessed $proc or !$proc->isa( 'QDRDBMS::AST::EntityName' );
+    $self->{$ATTR_FUNC} = $proc;
 
-    confess q{new(): Bad :$proc_args arg; it is not an Array.}
-        if ref $proc_args ne 'ARRAY';
-    my $proc_args_aoa = [];
-    my $proc_args_hoa = {};
-    foreach my $elem (@{$proc_args}) {
-        confess q{new(): Bad :$proc_args arg elem;}
-                . q{ it is not a 2-element Array.}
-            if ref $elem ne 'ARRAY' or @{$elem} != 2;
-        my ($param_name, $expr_ast) = @{$elem};
-        confess q{new(): Bad :$proc_args arg elem; its first elem is not}
-                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
-            if !blessed $param_name
-                or !$param_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $param_name_text = ${$param_name->text()};
-        confess q{new(): Bad :$proc_args arg elem; its first elem is not}
-                . q{ distinct between the arg elems.}
-            if exists $proc_args_hoa->{$param_name_text};
-        confess q{new(): Bad :$proc_args arg elem; its second elem is not}
-                . q{ an object of a QDRDBMS::AST::Expr-doing class.}
-            if !blessed $expr_ast
-                or !$expr_ast->isa( 'QDRDBMS::AST::Expr' );
-        my $elem_cpy = [$param_name, $expr_ast];
-        push @{$proc_args_aoa}, $elem_cpy;
-        $proc_args_hoa->{$param_name_text} = $elem_cpy;
+    confess q{new(): Bad :$upd_args arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::ExprDict-doing class.}
+        if !blessed $upd_args or !$upd_args->isa( 'QDRDBMS::AST::ExprDict' );
+    for my $var_names (@{$upd_args->exprs()}) {
+        die q{new(): Bad :$upd_args arg elem expr; it is not}
+                . q{ an object of a QDRDBMS::AST::VarInvo-doing class.}
+            if !$var_names->isa( 'QDRDBMS::AST::VarInvo' );
     }
-    $self->{$ATTR_PROC_ARGS_AOA} = $proc_args_aoa;
-    $self->{$ATTR_PROC_ARGS_HOA} = $proc_args_hoa;
+    $self->{$ATTR_UPD_ARGS} = $ro_args;
+
+    confess q{new(): Bad :$ro_args arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::ExprDict-doing class.}
+        if !blessed $ro_args or !$ro_args->isa( 'QDRDBMS::AST::ExprDict' );
+    $self->{$ATTR_RO_ARGS} = $ro_args;
 
     return $self;
 }
@@ -607,28 +626,27 @@ sub new {
 
 sub proc {
     my ($self) = @_;
-    return $self->{$ATTR_PROC_NAME};
+    return $self->{$ATTR_FUNC};
 }
 
-sub proc_args {
+sub upd_args {
     my ($self) = @_;
-    return [map { [@{$_}] } @{$self->{$ATTR_PROC_ARGS_AOA}}];
+    return $self->{$ATTR_UPD_ARGS};
 }
 
-sub proc_args_hoa {
+sub ro_args {
     my ($self) = @_;
-    my $h = $self->{$ATTR_PROC_ARGS_HOA};
-    return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
+    return $self->{$ATTR_RO_ARGS};
 }
 
 ###########################################################################
 
-} # class QDRDBMS::AST::ProcInvoStmt
+} # class QDRDBMS::AST::ProcInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::MultiProcInvoStmt; # class
+{ package QDRDBMS::AST::MultiProcInvo; # class
     use base 'QDRDBMS::AST::Stmt';
 
     use Carp;
@@ -643,12 +661,13 @@ sub proc_args_hoa {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::MultiProcInvoStmt
+} # class QDRDBMS::AST::MultiProcInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Func; # class
+{ package QDRDBMS::AST::FuncReturn; # class
+    use base 'QDRDBMS::AST::Stmt';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -662,12 +681,13 @@ sub proc_args_hoa {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::Func
+} # class QDRDBMS::AST::FuncReturn
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Proc; # class
+{ package QDRDBMS::AST::ProcReturn; # class
+    use base 'QDRDBMS::AST::Stmt';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -681,7 +701,45 @@ sub proc_args_hoa {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::Proc
+} # class QDRDBMS::AST::ProcReturn
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::FuncDecl; # class
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+
+
+###########################################################################
+
+
+
+
+###########################################################################
+
+} # class QDRDBMS::AST::FuncDecl
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::ProcDecl; # class
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+
+
+###########################################################################
+
+
+
+
+###########################################################################
+
+} # class QDRDBMS::AST::ProcDecl
 
 ###########################################################################
 ###########################################################################

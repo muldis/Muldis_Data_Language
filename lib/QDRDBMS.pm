@@ -149,8 +149,8 @@ sub new {
     my $dbms_eng_class = blessed $dbms_eng;
 
     confess q{new(): Bad :$dbms arg; it is not an object of a}
-            . q{ QDRDBMS::AST::Proc-doing class.}
-        if !blessed $rtn_ast or !$rtn_ast->isa( 'QDRDBMS::AST::Proc' );
+            . q{ QDRDBMS::AST::ProcDecl-doing class.}
+        if !blessed $rtn_ast or !$rtn_ast->isa( 'QDRDBMS::AST::ProcDecl' );
 
     my $rtn_eng = eval {
         $dbms_eng->prepare({ 'rtn_ast' => $rtn_ast });
