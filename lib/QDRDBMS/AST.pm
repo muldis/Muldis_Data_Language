@@ -345,14 +345,18 @@ sub new {
         die q{new(): Bad :$text arg; it is not a valid object}
                 . q{ of a QDRDBMS::AST::LitText-doing class.}
             if !$text->isa( 'QDRDBMS::AST::LitText' );
+        my $text_v = $text->v();
+        die q{new(): Bad :$text arg; it contains character sequences that}
+                . q{ are invalid within the Text possrep of an EntityName.}
+            if $text_v =~ m/ \\ \z/xs or $text_v =~ m/ \\ [^bp] /xs;
         $self->{$ATTR_TEXT_POSSREP} = $text;
         $self->{$ATTR_SEQ_POSSREP} = QDRDBMS::AST::SeqSel->new({ 'v' => (
                 [map {
                         my $s = $_;
-                        $s =~ s/ \\ \[pd\] /./xsg;
-                        $s =~ s/ \\ \[bh\] /\\/xsg;
+                        $s =~ s/ \\ p /./xsg;
+                        $s =~ s/ \\ b /\\/xsg;
                         QDRDBMS::AST::LitText->new({ 'v' => $s });
-                    } split /\./, $text->v()]
+                    } split /\./, $text_v]
             ) });
     }
 
@@ -369,8 +373,8 @@ sub new {
         $self->{$ATTR_TEXT_POSSREP} = QDRDBMS::AST::LitText->new({ 'v' => (
                 join q{.}, map {
                         my $s = $_->v();
-                        $s =~ s/ \\ /\\[bh]/xsg;
-                        $s =~ s/ \. /\\[pd]/xsg;
+                        $s =~ s/ \\ /\\b/xsg;
+                        $s =~ s/ \. /\\p/xsg;
                         $s;
                     } @{$seq_elems}
             ) });
