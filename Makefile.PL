@@ -18,7 +18,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME' => 'QDRDBMS',
     'VERSION_FROM' => 'lib/QDRDBMS.pm', # finds $VERSION
-    'ABSTRACT' => 'A fully-featured truly relational DBMS in Perl',
+    'ABSTRACT' => 'Full-featured truly relational DBMS in Perl',
     'AUTHOR' => 'Darren Duncan <perl@DarrenDuncan.net>',
 #    'LICENSE' => 'gpl',
     'PREREQ_PM' => {
