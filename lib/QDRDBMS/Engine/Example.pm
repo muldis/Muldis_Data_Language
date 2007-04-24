@@ -49,16 +49,16 @@ sub new {
 
 ###########################################################################
 
+sub new_var {
+    my ($self) = @_;
+    return QDRDBMS::Engine::Example::HostGateVar->new({ 'dbms' => $self });
+}
+
 sub prepare {
     my ($self, $args) = @_;
     my ($rtn_ast) = @{$args}{'rtn_ast'};
-    return QDRDBMS::Engine::Example::Routine->new({
+    return QDRDBMS::Engine::Example::HostGateRtn->new({
         'dbms' => $self, 'rtn_ast' => $rtn_ast });
-}
-
-sub new_var {
-    my ($self) = @_;
-    return QDRDBMS::Engine::Example::Variable->new({ 'dbms' => $self });
 }
 
 ###########################################################################
@@ -68,7 +68,32 @@ sub new_var {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::Routine; # class
+{ package QDRDBMS::Engine::Example::HostGateVar; # class
+
+    use Carp;
+
+    my $ATTR_DBMS_ENG = 'dbms_eng';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($dbms_eng) = @{$args}{'dbms'};
+
+    $self->{$ATTR_DBMS_ENG} = $dbms_eng;
+
+    return $self;
+}
+
+###########################################################################
+
+} # class QDRDBMS::Engine::Example::HostGateVar
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::Engine::Example::HostGateRtn; # class
 
     use Carp;
 
@@ -113,32 +138,7 @@ sub execute {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::Routine
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::Engine::Example::Variable; # class
-
-    use Carp;
-
-    my $ATTR_DBMS_ENG = 'dbms_eng';
-
-###########################################################################
-
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
-    my ($dbms_eng) = @{$args}{'dbms'};
-
-    $self->{$ATTR_DBMS_ENG} = $dbms_eng;
-
-    return $self;
-}
-
-###########################################################################
-
-} # class QDRDBMS::Engine::Example::Variable
+} # class QDRDBMS::Engine::Example::HostGateRtn
 
 ###########################################################################
 ###########################################################################

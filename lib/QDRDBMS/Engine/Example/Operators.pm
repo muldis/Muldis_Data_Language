@@ -46,7 +46,7 @@ use warnings FATAL => 'all';
 'sys.rtn.Int.assign' => sub {
     my ($args) = @_;
     my ($target, $v) = @{$args}{'target', 'v'};
-    $target->set( $v->get() );
+    $target->set( $v );
     return;
 },
 
