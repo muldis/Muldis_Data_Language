@@ -14,11 +14,12 @@ use warnings FATAL => 'all';
     our @EXPORT_OK = qw(
         LitBool LitText LitBlob LitInt
         SetSel SeqSel BagSel
-        EntityName ExprDict
+        EntityName ExprDict TypeDict
         VarInvo FuncInvo
         ProcInvo
         FuncReturn ProcReturn
         FuncDecl ProcDecl
+        HostGateRtn
     );
 
 ###########################################################################
@@ -78,6 +79,12 @@ sub ExprDict {
     return QDRDBMS::AST::ExprDict->new({ 'map' => $map });
 }
 
+sub TypeDict {
+    my ($args) = @_;
+    my ($map) = @{$args}{'map'};
+    return QDRDBMS::AST::TypeDict->new({ 'map' => $map });
+}
+
 sub VarInvo {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
@@ -115,6 +122,14 @@ sub FuncDecl {
 
 sub ProcDecl {
     return QDRDBMS::AST::ProcDecl->new();
+}
+
+sub HostGateRtn {
+    my ($args) = @_;
+    my ($upd_params, $ro_params, $stmts)
+        = @{$args}{'upd_params', 'ro_params', 'stmts'};
+    return QDRDBMS::AST::HostGateRtn->new({ 'upd_params' => $upd_params,
+        'ro_params' => $ro_params, 'stmts' => $stmts });
 }
 
 ###########################################################################
@@ -488,6 +503,77 @@ sub map_hoa {
 ###########################################################################
 ###########################################################################
 
+{ package QDRDBMS::AST::TypeDict; # class
+    use base 'QDRDBMS::AST::Node';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_MAP_AOA = 'map_aoa';
+    my $ATTR_MAP_HOA = 'map_hoa';
+
+    # Note: This type may be generalized later to allow ::TypeDict values
+    # and not just EntityName values; also, the latter will probably be
+    # made more strict, to just be type names.
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($map) = @{$args}{'map'};
+
+    confess q{new(): Bad :$map arg; it is not an Array.}
+        if ref $map ne 'ARRAY';
+    my $map_aoa = [];
+    my $map_hoa = {};
+    foreach my $elem (@{$map}) {
+        confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
+            if ref $elem ne 'ARRAY' or @{$elem} != 2;
+        my ($entity_name, $type_name) = @{$elem};
+        confess q{new(): Bad :$map arg elem; its first elem is not}
+                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+            if !blessed $entity_name
+                or !$entity_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $entity_name_text_v = $entity_name->text()->v();
+        confess q{new(): Bad :$map arg elem; its first elem is not}
+                . q{ distinct between the arg elems.}
+            if exists $map_hoa->{$entity_name_text_v};
+        confess q{new(): Bad :$map arg elem; its second elem is not}
+                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+            if !blessed $type_name
+                or !$type_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $elem_cpy = [$entity_name, $type_name];
+        push @{$map_aoa}, $elem_cpy;
+        $map_hoa->{$entity_name_text_v} = $elem_cpy;
+    }
+
+    $self->{$ATTR_MAP_AOA} = $map_aoa;
+    $self->{$ATTR_MAP_HOA} = $map_hoa;
+
+    return $self;
+}
+
+###########################################################################
+
+sub map {
+    my ($self) = @_;
+    return [map { [@{$_}] } @{$self->{$ATTR_MAP_AOA}}];
+}
+
+sub map_hoa {
+    my ($self) = @_;
+    my $h = $self->{$ATTR_MAP_HOA};
+    return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::TypeDict
+
+###########################################################################
+###########################################################################
+
 { package QDRDBMS::AST::VarInvo; # class
     use base 'QDRDBMS::AST::Expr';
 
@@ -588,7 +674,7 @@ sub ro_args {
     use Carp;
     use Scalar::Util qw(blessed);
 
-    my $ATTR_FUNC     = 'proc';
+    my $ATTR_PROC     = 'proc';
     my $ATTR_UPD_ARGS = 'upd_args';
     my $ATTR_RO_ARGS  = 'ro_args';
 
@@ -625,8 +711,8 @@ sub new {
                 exists $upd_args_map_hoa->{$_}
             } keys %{$ro_args->{$EXPRDICT_ATTR_MAP_HOA}};
 
-    $self->{$ATTR_FUNC}     = $proc;
-    $self->{$ATTR_UPD_ARGS} = $ro_args;
+    $self->{$ATTR_PROC}     = $proc;
+    $self->{$ATTR_UPD_ARGS} = $upd_args;
     $self->{$ATTR_RO_ARGS}  = $ro_args;
 
     return $self;
@@ -636,7 +722,7 @@ sub new {
 
 sub proc {
     my ($self) = @_;
-    return $self->{$ATTR_FUNC};
+    return $self->{$ATTR_PROC};
 }
 
 sub upd_args {
@@ -706,16 +792,16 @@ sub v {
 ###########################################################################
 
 { package QDRDBMS::AST::FuncDecl; # class
+    use base 'QDRDBMS::AST::Node';
 
     use Carp;
     use Scalar::Util qw(blessed);
 
-
-
 ###########################################################################
 
-
-
+sub new {
+    confess q{not implemented};
+}
 
 ###########################################################################
 
@@ -725,20 +811,94 @@ sub v {
 ###########################################################################
 
 { package QDRDBMS::AST::ProcDecl; # class
+    use base 'QDRDBMS::AST::Node';
 
     use Carp;
     use Scalar::Util qw(blessed);
 
-
-
 ###########################################################################
 
-
-
+sub new {
+    confess q{not implemented};
+}
 
 ###########################################################################
 
 } # class QDRDBMS::AST::ProcDecl
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::HostGateRtn; # class
+    use base 'QDRDBMS::AST::Node';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_UPD_PARAMS = 'upd_params';
+    my $ATTR_RO_PARAMS  = 'ro_params';
+    my $ATTR_STMTS      = 'stmts';
+
+    my $TYPEDICT_ATTR_MAP_HOA = 'map_hoa';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($upd_params, $ro_params, $stmts)
+        = @{$args}{'upd_params', 'ro_params', 'stmts'};
+
+    confess q{new(): Bad :$upd_params arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::TypeDict-doing class.}
+        if !blessed $upd_params
+            or !$upd_params->isa( 'QDRDBMS::AST::TypeDict' );
+    confess q{new(): Bad :$ro_params arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::TypeDict-doing class.}
+        if !blessed $ro_params
+            or !$ro_params->isa( 'QDRDBMS::AST::TypeDict' );
+    my $upd_params_map_hoa = $upd_params->{$TYPEDICT_ATTR_MAP_HOA};
+    confess q{new(): Bad :$upd_params or :$ro_params arg;}
+            . q{ they both reference at least 1 same stmtsedure param.}
+        if grep {
+                exists $upd_params_map_hoa->{$_}
+            } keys %{$ro_params->{$TYPEDICT_ATTR_MAP_HOA}};
+
+    confess q{new(): Bad :$stmts arg; it is not an Array.}
+        if ref $stmts ne 'ARRAY';
+    foreach my $stmt (@{$stmts}) {
+        confess q{new(): Bad :$stmts arg elem; it is not}
+                . q{ an object of a QDRDBMS::AST::Stmt-doing class.}
+            if !blessed $stmt or !$stmt->isa( 'QDRDBMS::AST::Stmt' );
+    }
+
+    $self->{$ATTR_UPD_PARAMS} = $upd_params;
+    $self->{$ATTR_RO_PARAMS}  = $ro_params;
+    $self->{$ATTR_STMTS}      = [@{$stmts}];
+
+    return $self;
+}
+
+###########################################################################
+
+sub upd_params {
+    my ($self) = @_;
+    return $self->{$ATTR_UPD_PARAMS};
+}
+
+sub ro_params {
+    my ($self) = @_;
+    return $self->{$ATTR_RO_PARAMS};
+}
+
+sub stmts {
+    my ($self) = @_;
+    return [@{$self->{$ATTR_STMTS}}];
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::HostGateRtn
 
 ###########################################################################
 ###########################################################################
@@ -765,7 +925,9 @@ It also describes the same-number versions for Perl 5 of [...].
 
 I<This documentation is pending.>
 
-    use QDRDBMS::AST qw(LitBool LitText LitBlob LitInt);
+    use QDRDBMS::AST qw(LitBool LitText LitBlob LitInt SetSel SeqSel BagSel
+        EntityName ExprDict TypeDict VarInvo FuncInvo ProcInvo FuncReturn
+        ProcReturn FuncDecl ProcDecl HostGateRtn);
 
     my $truth_value = LitBool({ 'v' => (2 + 2 == 4) });
     my $planetoid = LitText({ 'v' => 'Ceres' });
