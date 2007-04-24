@@ -16,7 +16,7 @@ use warnings FATAL => 'all';
         SetSel SeqSel BagSel
         EntityName ExprDict
         VarInvo FuncInvo
-        ProcInvo MultiProcInvo
+        ProcInvo
         FuncReturn ProcReturn
         FuncDecl ProcDecl
     );
@@ -93,17 +93,16 @@ sub FuncInvo {
 
 sub ProcInvo {
     my ($args) = @_;
-    my ($proc, $ro_args) = @{$args}{'proc', 'ro_args'};
+    my ($proc, $upd_args, $ro_args)
+        = @{$args}{'proc', 'upd_args', 'ro_args'};
     return QDRDBMS::AST::ProcInvo->new({
-        'proc' => $proc, 'ro_args' => $ro_args });
-}
-
-sub MultiProcInvo {
-    return QDRDBMS::AST::MultiProcInvo->new();
+        'proc' => $proc, 'upd_args' => $upd_args, 'ro_args' => $ro_args });
 }
 
 sub FuncReturn {
-    return QDRDBMS::AST::FuncReturn->new();
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return QDRDBMS::AST::FuncReturn->new({ 'v' => $v });
 }
 
 sub ProcReturn {
@@ -342,6 +341,8 @@ sub v {
     my $ATTR_TEXT_POSSREP = 'text_possrep';
     my $ATTR_SEQ_POSSREP  = 'seq_possrep';
 
+    my $LISTSEL_ATTR_V = 'v';
+
 ###########################################################################
 
 sub new {
@@ -360,6 +361,7 @@ sub new {
         die q{new(): Bad :$text arg; it contains character sequences that}
                 . q{ are invalid within the Text possrep of an EntityName.}
             if $text_v =~ m/ \\ \z/xs or $text_v =~ m/ \\ [^bp] /xs;
+
         $self->{$ATTR_TEXT_POSSREP} = $text;
         $self->{$ATTR_SEQ_POSSREP} = QDRDBMS::AST::SeqSel->new({ 'v' => (
                 [map {
@@ -375,12 +377,13 @@ sub new {
         die q{new(): Bad :$v arg; it is not an object of a}
                 . q{ QDRDBMS::AST::SeqSel-doing class.}
             if !$seq->isa( 'QDRDBMS::AST::SeqSel' );
-        my $seq_elems = $seq.v();
+        my $seq_elems = $seq->{$LISTSEL_ATTR_V};
         for my $seq_e (@{$seq_elems}) {
             die q{new(): Bad :$seq arg elem; it is not}
                     . q{ an object of a QDRDBMS::AST::LitText-doing class.}
                 if !$seq_e->isa( 'QDRDBMS::AST::LitText' );
         }
+
         $self->{$ATTR_TEXT_POSSREP} = QDRDBMS::AST::LitText->new({ 'v' => (
                 join q{.}, map {
                         my $s = $_->v();
@@ -458,6 +461,7 @@ sub new {
         push @{$map_aoa}, $elem_cpy;
         $map_hoa->{$entity_name_text_v} = $elem_cpy;
     }
+
     $self->{$ATTR_MAP_AOA} = $map_aoa;
     $self->{$ATTR_MAP_HOA} = $map_hoa;
 
@@ -475,11 +479,6 @@ sub map_hoa {
     my ($self) = @_;
     my $h = $self->{$ATTR_MAP_HOA};
     return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
-}
-
-sub exprs {
-    my ($self) = @_;
-    return [map { $_->[1] } @{$self->{$ATTR_MAP_AOA}}];
 }
 
 ###########################################################################
@@ -507,6 +506,7 @@ sub new {
     confess q{new(): Bad :$v arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::EntityName-doing class.}
         if !blessed $v or !$v->isa( 'QDRDBMS::AST::EntityName' );
+
     $self->{$ATTR_V} = $v;
 
     return $self;
@@ -545,11 +545,12 @@ sub new {
     confess q{new(): Bad :$func arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::EntityName-doing class.}
         if !blessed $func or !$func->isa( 'QDRDBMS::AST::EntityName' );
-    $self->{$ATTR_FUNC} = $func;
 
     confess q{new(): Bad :$ro_args arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::ExprDict-doing class.}
         if !blessed $ro_args or !$ro_args->isa( 'QDRDBMS::AST::ExprDict' );
+
+    $self->{$ATTR_FUNC}    = $func;
     $self->{$ATTR_RO_ARGS} = $ro_args;
 
     return $self;
@@ -591,6 +592,8 @@ sub ro_args {
     my $ATTR_UPD_ARGS = 'upd_args';
     my $ATTR_RO_ARGS  = 'ro_args';
 
+    my $EXPRDICT_ATTR_MAP_HOA = 'map_hoa';
+
 ###########################################################################
 
 sub new {
@@ -602,22 +605,29 @@ sub new {
     confess q{new(): Bad :$proc arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::EntityName-doing class.}
         if !blessed $proc or !$proc->isa( 'QDRDBMS::AST::EntityName' );
-    $self->{$ATTR_FUNC} = $proc;
 
     confess q{new(): Bad :$upd_args arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::ExprDict-doing class.}
-        if !blessed $upd_args or !$upd_args->isa( 'QDRDBMS::AST::ExprDict' );
-    for my $var_names (@{$upd_args->exprs()}) {
-        die q{new(): Bad :$upd_args arg elem expr; it is not}
-                . q{ an object of a QDRDBMS::AST::VarInvo-doing class.}
-            if !$var_names->isa( 'QDRDBMS::AST::VarInvo' );
-    }
-    $self->{$ATTR_UPD_ARGS} = $ro_args;
-
+        if !blessed $upd_args
+            or !$upd_args->isa( 'QDRDBMS::AST::ExprDict' );
     confess q{new(): Bad :$ro_args arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::ExprDict-doing class.}
         if !blessed $ro_args or !$ro_args->isa( 'QDRDBMS::AST::ExprDict' );
-    $self->{$ATTR_RO_ARGS} = $ro_args;
+    my $upd_args_map_hoa = $upd_args->{$EXPRDICT_ATTR_MAP_HOA};
+    for my $an_and_vn (values %{$upd_args_map_hoa}) {
+        die q{new(): Bad :$upd_args arg elem expr; it is not}
+                . q{ an object of a QDRDBMS::AST::VarInvo-doing class.}
+            if !$an_and_vn->[1]->isa( 'QDRDBMS::AST::VarInvo' );
+    }
+    confess q{new(): Bad :$upd_args or :$ro_args arg;}
+            . q{ they both reference at least 1 same procedure param.}
+        if grep {
+                exists $upd_args_map_hoa->{$_}
+            } keys %{$ro_args->{$EXPRDICT_ATTR_MAP_HOA}};
+
+    $self->{$ATTR_FUNC}     = $proc;
+    $self->{$ATTR_UPD_ARGS} = $ro_args;
+    $self->{$ATTR_RO_ARGS}  = $ro_args;
 
     return $self;
 }
@@ -646,38 +656,36 @@ sub ro_args {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::MultiProcInvo; # class
-    use base 'QDRDBMS::AST::Stmt';
-
-    use Carp;
-    use Scalar::Util qw(blessed);
-
-
-
-###########################################################################
-
-
-
-
-###########################################################################
-
-} # class QDRDBMS::AST::MultiProcInvo
-
-###########################################################################
-###########################################################################
-
 { package QDRDBMS::AST::FuncReturn; # class
     use base 'QDRDBMS::AST::Stmt';
 
     use Carp;
     use Scalar::Util qw(blessed);
 
-
+    my $ATTR_V = 'v';
 
 ###########################################################################
 
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($v) = @{$args}{'v'};
 
+    confess q{new(): Bad :$v arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::Expr-doing class.}
+        if !blessed $v or !$v->isa( 'QDRDBMS::AST::Expr' );
 
+    $self->{$ATTR_V} = $v;
+
+    return $self;
+}
+
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
 
 ###########################################################################
 
@@ -688,19 +696,10 @@ sub ro_args {
 
 { package QDRDBMS::AST::ProcReturn; # class
     use base 'QDRDBMS::AST::Stmt';
-
-    use Carp;
-    use Scalar::Util qw(blessed);
-
-
-
-###########################################################################
-
-
-
-
-###########################################################################
-
+    sub new {
+        my ($class) = @_;
+        return bless {}, $class;
+    }
 } # class QDRDBMS::AST::ProcReturn
 
 ###########################################################################
