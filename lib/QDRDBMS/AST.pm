@@ -126,10 +126,10 @@ sub ProcDecl {
 
 sub HostGateRtn {
     my ($args) = @_;
-    my ($upd_params, $ro_params, $stmts)
-        = @{$args}{'upd_params', 'ro_params', 'stmts'};
+    my ($upd_params, $ro_params, $vars, $stmts)
+        = @{$args}{'upd_params', 'ro_params', 'vars', 'stmts'};
     return QDRDBMS::AST::HostGateRtn->new({ 'upd_params' => $upd_params,
-        'ro_params' => $ro_params, 'stmts' => $stmts });
+        'ro_params' => $ro_params, 'vars' => $vars, 'stmts' => $stmts });
 }
 
 ###########################################################################
@@ -837,6 +837,7 @@ sub new {
 
     my $ATTR_UPD_PARAMS = 'upd_params';
     my $ATTR_RO_PARAMS  = 'ro_params';
+    my $ATTR_VARS       = 'vars';
     my $ATTR_STMTS      = 'stmts';
 
     my $TYPEDICT_ATTR_MAP_HOA = 'map_hoa';
@@ -846,8 +847,8 @@ sub new {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($upd_params, $ro_params, $stmts)
-        = @{$args}{'upd_params', 'ro_params', 'stmts'};
+    my ($upd_params, $ro_params, $vars, $stmts)
+        = @{$args}{'upd_params', 'ro_params', 'vars', 'stmts'};
 
     confess q{new(): Bad :$upd_params arg; it is not a valid object}
             . q{ of a QDRDBMS::AST::TypeDict-doing class.}
@@ -864,6 +865,10 @@ sub new {
                 exists $upd_params_map_hoa->{$_}
             } keys %{$ro_params->{$TYPEDICT_ATTR_MAP_HOA}};
 
+    confess q{new(): Bad :$vars arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::TypeDict-doing class.}
+        if !blessed $vars or !$vars->isa( 'QDRDBMS::AST::TypeDict' );
+
     confess q{new(): Bad :$stmts arg; it is not an Array.}
         if ref $stmts ne 'ARRAY';
     foreach my $stmt (@{$stmts}) {
@@ -874,6 +879,7 @@ sub new {
 
     $self->{$ATTR_UPD_PARAMS} = $upd_params;
     $self->{$ATTR_RO_PARAMS}  = $ro_params;
+    $self->{$ATTR_VARS}       = $vars;
     $self->{$ATTR_STMTS}      = [@{$stmts}];
 
     return $self;
@@ -889,6 +895,11 @@ sub upd_params {
 sub ro_params {
     my ($self) = @_;
     return $self->{$ATTR_RO_PARAMS};
+}
+
+sub vars {
+    my ($self) = @_;
+    return $self->{$ATTR_VARS};
 }
 
 sub stmts {
@@ -937,6 +948,88 @@ I<This documentation is pending.>
 I<This documentation is pending.>
 
 =head1 DESCRIPTION
+
+The native command language of a L<QDRDBMS> DBMS (database management
+system) / virtual machine is called B<QDRDBMS D>; see L<QDRDBMS::Language>
+for the language's human readable authoritative design document.
+
+QDRDBMS D has 3 closely corresponding main representation formats, which
+are catalog relations (what routines inside the DBMS see), hierarchical AST
+(abstract syntax tree) nodes (what the application driving the DBMS
+typically sees), and string-form QDRDBMS D code that users interacting with
+QDRDBMS via a shell interface would use.  The string-form would be parsed
+into the AST, and the AST be flattened into the relations; similarly, the
+relations can be unflattened into the AST, and string-form code be
+generated from the AST if desired.
+
+This library, QDRDBMS::AST ("AST"), provides a few dozen container classes
+which collectively implement the AST representation format of QDRDBMS D;
+each class is called an I<AST node type> or I<node type>, and an object of
+one of these classes is called an I<AST node> or I<node>.
+
+These are all of the roles and classes that QDRDBMS::AST defines (more will
+be added in the future), which are visually arranged here in their "does"
+or "isa" hierarchy, children indented under parents:
+
+    QDRDBMS::AST::Node (dummy role)
+        QDRDBMS::AST::EntityName
+        QDRDBMS::AST::ExprDict
+        QDRDBMS::AST::TypeDict
+        QDRDBMS::AST::Expr (dummy role)
+            QDRDBMS::AST::LitBool
+            QDRDBMS::AST::LitText
+            QDRDBMS::AST::LitBlob
+            QDRDBMS::AST::LitInt
+            QDRDBMS::AST::ListSel (implementing role)
+                QDRDBMS::AST::SetSel
+                QDRDBMS::AST::SeqSel
+                QDRDBMS::AST::BagSel
+            QDRDBMS::AST::VarInvo
+            QDRDBMS::AST::FuncInvo
+        QDRDBMS::AST::Stmt (dummy role)
+            QDRDBMS::AST::ProcInvo
+            QDRDBMS::AST::FuncReturn
+            QDRDBMS::AST::ProcReturn
+            # more control-flow statement types would go here
+        QDRDBMS::AST::FuncDecl
+        QDRDBMS::AST::ProcDecl
+        # more routine declaration types would go here
+        QDRDBMS::AST::HostGateRtn
+
+All QDRDBMS D abstract syntax trees are such in the compositional sense;
+that is, every AST node is composed primarily of zero or more other AST
+nodes, and so a node is a child of another iff the former is composed into
+the latter.  All AST nodes are immutable objects; their values are
+determined at construction time, and they can't be changed afterwards.
+Therefore, constructing a tree is a bottom-up process, such that all child
+objects have to be constructed prior to, and be passed in as constructor
+arguments of, their parents.  The process is like declaring an entire
+multi-dimensional Perl data structure at the time the variable holding it
+is declared; the data structure is actually built from the inside to the
+outside.  A consequence of the immutability is that it is feasible to
+reuse AST nodes many times, since they won't change out from under you.
+
+An AST node denotes an arbitrarily complex value, that value being defined
+by the type of the node and what its attributes are (some of which are
+themselves nodes, and some of which aren't).  A node can denote either a
+scalar value, or a collection value, or an expression that would evaluate
+into a value, or a statement or routine definition that could be later
+executed to either return a value or have some side effect.  For all
+intents and purposes, a node is a program, and can represent anything that
+program code can represent, both values and actions.
+
+The QDRDBMS framework uses QDRDBMS AST nodes for the dual purpose of
+defining routines to execute and defining values to use as arguments to and
+return values from the execution of said routines.  The C<prepare()> method
+of a C<QDRDBMS::Interface::DBMS> object, and by extension the
+C<QDRDBMS::Interface::HostGateRtn->new()> constructor function, takes a
+C<QDRDBMS::AST::HostGateRtn> node as its primary argument, such that the
+AST object defines the source code that is compiled to become the Interface
+object.  The C<fetch_ast()> and C<store_ast()> methods of a
+C<QDRDBMS::Interface::HostGateVar> object will get or set that object's
+primary value attribute, which is any C<QDRDBMS::AST::Node>.  The C<Var>
+objects are bound to C<Rtn> objects, and they are the means by which an
+executed routine obtains input or returns output at C<execute()> time.
 
 I<This documentation is pending.>
 
