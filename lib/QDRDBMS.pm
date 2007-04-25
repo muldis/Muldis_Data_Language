@@ -601,11 +601,11 @@ Go to the L<QDRDBMS::SeeAlso> file for the majority of external references.
 
 =head1 BUGS AND LIMITATIONS
 
-The QDRDBMS Perl-5 framework has been built according to certain old-school
+The QDRDBMS framework for Perl 5 is built according to certain old-school
 or traditional Perl-5-land design principles, including that there are no
 explicit attempts in code to enforce privacy of the framework's internals,
-besides not documenting them as part of the public API.  (The Perl 6
-version of QDRDBMS will be different.)  That said, you should still respect
+besides not documenting them as part of the public API.  (The QDRDBMS
+framework for Perl 6 is different.)  That said, you should still respect
 that privacy and just use the public API that QDRDBMS provides.  If you
 bypass the public API anyway, as Perl 5 allows, you do so at your own
 peril.
