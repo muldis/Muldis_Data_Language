@@ -104,8 +104,10 @@ sub new {
 ###########################################################################
 
 sub new_var {
-    my ($self) = @_;
-    return QDRDBMS::Interface::HostGateVar->new({ 'dbms' => $self });
+    my ($self, $args) = @_;
+    my ($decl_type) = @{$args}{'decl_type'};
+    return QDRDBMS::Interface::HostGateVar->new({
+        'dbms' => $self, 'decl_type' => $decl_type });
 }
 
 sub prepare {
@@ -137,7 +139,7 @@ sub prepare {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($dbms) = @{$args}{'dbms'};
+    my ($dbms, $decl_type) = @{$args}{'dbms', 'decl_type'};
 
     confess q{new(): Bad :$dbms arg; it is not an object of a}
             . q{ QDRDBMS::Interface::DBMS-doing class.}
@@ -145,8 +147,13 @@ sub new {
     my $dbms_eng = $dbms->{$DBMS_ATTR_DBMS_ENG};
     my $dbms_eng_class = blessed $dbms_eng;
 
+    confess q{new(): Bad :$decl_type arg; it is not an object of a}
+            . q{ QDRDBMS::AST::EntityName-doing class.}
+        if !blessed $decl_type
+            or !$decl_type->isa( 'QDRDBMS::AST::EntityName' );
+
     my $var_eng = eval {
-        $dbms_eng->new_var({});
+        $dbms_eng->new_var({ 'decl_type' => $decl_type });
     };
     if (my $err = $@) {
         confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class'}
@@ -159,14 +166,60 @@ sub new {
         if !blessed $var_eng;
     my $var_eng_class = blessed $var_eng;
 
-#    confess qq{new(): The QDRDBMS HostGateVar Engine class}
-#            . q{ '$var_eng_class' does not provide the ...() method.}
-#        if !$var_eng->can( '...' );
+    confess qq{new(): The QDRDBMS HostGateVar Engine class}
+            . q{ '$var_eng_class' does not provide the fetch_ast() method.}
+        if !$var_eng->can( 'fetch_ast' );
+    confess qq{new(): The QDRDBMS HostGateVar Engine class}
+            . q{ '$var_eng_class' does not provide the store_ast() method.}
+        if !$var_eng->can( 'store_ast' );
 
     $self->{$ATTR_DBMS}    = $dbms;
     $self->{$ATTR_VAR_ENG} = $var_eng;
 
     return $self;
+}
+
+###########################################################################
+
+sub fetch_ast {
+    my ($self) = @_;
+
+    my $var_eng = $self->{$ATTR_VAR_ENG};
+    my $val_ast = eval {
+        $var_eng->fetch_ast();
+    };
+    if (my $err = $@) {
+        my $var_eng_class = blessed $var_eng;
+        confess q{fetch_ast(): The QDRDBMS HostGateVar Engine}
+            . qq{ class '$var_eng_class' threw an exception during its}
+            . qq{ fetch_ast() execution: $err};
+    }
+
+    return $val_ast;
+}
+
+###########################################################################
+
+sub store_ast {
+    my ($self, $args) = @_;
+    my ($val_ast) = @{$args}{'val_ast'};
+
+    confess q{store_ast(): Bad :$val_ast arg; it is not an object of a}
+            . q{ QDRDBMS::AST::Node-doing class.}
+        if !blessed $val_ast or !$val_ast->isa( 'QDRDBMS::AST::Node' );
+
+    my $var_eng = $self->{$ATTR_VAR_ENG};
+    eval {
+        $var_eng->store_ast({ 'val_ast' => $val_ast });
+    };
+    if (my $err = $@) {
+        my $var_eng_class = blessed $var_eng;
+        confess q{store_ast(): The QDRDBMS HostGateVar Engine}
+            . qq{ class '$var_eng_class' threw an exception during its}
+            . qq{ store_ast() execution: $err};
+    }
+
+    return;
 }
 
 ###########################################################################
@@ -204,7 +257,7 @@ sub new {
     my $dbms_eng = $dbms->{$DBMS_ATTR_DBMS_ENG};
     my $dbms_eng_class = blessed $dbms_eng;
 
-    confess q{new(): Bad :$dbms arg; it is not an object of a}
+    confess q{new(): Bad :$rtn_ast arg; it is not an object of a}
             . q{ QDRDBMS::AST::HostGateRtn-doing class.}
         if !blessed $rtn_ast
             or !$rtn_ast->isa( 'QDRDBMS::AST::HostGateRtn' );
@@ -313,12 +366,12 @@ sub bind_host_params {
     }
 
     my $rtn_eng = $self->{$ATTR_RTN_ENG};
-    my $rtn_eng_class = blessed $rtn_eng;
     eval {
         $rtn_eng->bind_host_params({
             'upd_args' => $upd_arg_engs, 'ro_args' => $ro_arg_engs });
     };
     if (my $err = $@) {
+        my $rtn_eng_class = blessed $rtn_eng;
         confess q{bind_host_params(): The QDRDBMS HostGateRtn Engine}
             . qq{ class '$rtn_eng_class' threw an exception during its}
             . qq{ bind_host_params() execution: $err};
@@ -332,11 +385,11 @@ sub bind_host_params {
 sub execute {
     my ($self) = @_;
     my $rtn_eng = $self->{$ATTR_RTN_ENG};
-    my $rtn_eng_class = blessed $rtn_eng;
     eval {
         $rtn_eng->execute();
     };
     if (my $err = $@) {
+        my $rtn_eng_class = blessed $rtn_eng;
         confess q{execute(): The QDRDBMS HostGateRtn Engine}
             . qq{ class '$rtn_eng_class' threw an exception during its}
             . qq{ execute() execution: $err};

@@ -50,8 +50,10 @@ sub new {
 ###########################################################################
 
 sub new_var {
-    my ($self) = @_;
-    return QDRDBMS::Engine::Example::HostGateVar->new({ 'dbms' => $self });
+    my ($self, $args) = @_;
+    my ($decl_type) = @{$args}{'decl_type'};
+    return QDRDBMS::Engine::Example::HostGateVar->new({
+        'dbms' => $self, 'decl_type' => $decl_type });
 }
 
 sub prepare {
@@ -72,18 +74,40 @@ sub prepare {
 
     use Carp;
 
-    my $ATTR_DBMS = 'dbms';
+    my $ATTR_DBMS      = 'dbms';
+    my $ATTR_DECL_TYPE = 'decl_type';
+    my $ATTR_VAL_AST   = 'val_ast';
 
 ###########################################################################
 
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($dbms) = @{$args}{'dbms'};
+    my ($dbms, $decl_type) = @{$args}{'dbms', 'decl_type'};
 
-    $self->{$ATTR_DBMS} = $dbms;
+    $self->{$ATTR_DBMS}      = $dbms;
+    $self->{$ATTR_DECL_TYPE} = $decl_type;
+    $self->{$ATTR_VAL_AST}   = undef; # TODO: make default val of decl type
 
     return $self;
+}
+
+###########################################################################
+
+sub fetch_ast {
+    my ($self) = @_;
+    return $self->{$ATTR_VAL_AST};
+}
+
+###########################################################################
+
+sub store_ast {
+    my ($self, $args) = @_;
+    my ($val_ast) = @{$args}{'val_ast'};
+
+    $self->{$ATTR_VAL_AST} = $val_ast;
+
+    return;
 }
 
 ###########################################################################
@@ -102,6 +126,8 @@ sub new {
     my $ATTR_PREP_RTN       = 'prep_rtn';
     my $ATTR_BOUND_UPD_ARGS = 'bound_upd_args';
     my $ATTR_BOUND_RO_ARGS  = 'bound_ro_args';
+
+    my $VAR_ATTR_DECL_TYPE = 'decl_type';
 
 ###########################################################################
 
@@ -128,6 +154,8 @@ sub bind_host_params {
     my ($upd_args, $ro_args) = @{$args}{'upd_args', 'ro_args'};
     my $bound_upd_args = $self->{$ATTR_BOUND_UPD_ARGS};
     my $bound_ro_args = $self->{$ATTR_BOUND_RO_ARGS};
+    # TODO: Compare declared type of each routine param and the variable
+    # we are trying to bind to it, that they are of compatible types.
     foreach my $elem (@{$upd_args}) {
         $bound_upd_args->{$elem->[0]->text()} = $elem->[1];
     }
