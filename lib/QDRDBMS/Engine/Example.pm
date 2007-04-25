@@ -72,16 +72,16 @@ sub prepare {
 
     use Carp;
 
-    my $ATTR_DBMS_ENG = 'dbms_eng';
+    my $ATTR_DBMS = 'dbms';
 
 ###########################################################################
 
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($dbms_eng) = @{$args}{'dbms'};
+    my ($dbms) = @{$args}{'dbms'};
 
-    $self->{$ATTR_DBMS_ENG} = $dbms_eng;
+    $self->{$ATTR_DBMS} = $dbms;
 
     return $self;
 }
@@ -97,24 +97,26 @@ sub new {
 
     use Carp;
 
-    my $ATTR_DBMS_ENG   = 'dbms_eng';
-    my $ATTR_RTN_AST    = 'rtn_ast';
-    my $ATTR_PREP_RTN   = 'prep_rtn';
-    my $ATTR_BOUND_VARS = 'bound_vars';
+    my $ATTR_DBMS           = 'dbms';
+    my $ATTR_RTN_AST        = 'rtn_ast';
+    my $ATTR_PREP_RTN       = 'prep_rtn';
+    my $ATTR_BOUND_UPD_ARGS = 'bound_upd_args';
+    my $ATTR_BOUND_RO_ARGS  = 'bound_ro_args';
 
 ###########################################################################
 
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($dbms_eng, $rtn_ast) = @{$args}{'dbms', 'rtn_ast'};
+    my ($dbms, $rtn_ast) = @{$args}{'dbms', 'rtn_ast'};
 
     my $prep_rtn = sub { 1; }; # TODO; the real thing.
 
-    $self->{$ATTR_DBMS_ENG}   = $dbms_eng;
-    $self->{$ATTR_RTN_AST}    = $rtn_ast;
-    $self->{$ATTR_PREP_RTN}   = $prep_rtn;
-    $self->{$ATTR_BOUND_VARS} = {};
+    $self->{$ATTR_DBMS}           = $dbms;
+    $self->{$ATTR_RTN_AST}        = $rtn_ast;
+    $self->{$ATTR_PREP_RTN}       = $prep_rtn;
+    $self->{$ATTR_BOUND_UPD_ARGS} = {};
+    $self->{$ATTR_BOUND_RO_ARGS}  = {};
 
     return $self;
 }
@@ -123,8 +125,15 @@ sub new {
 
 sub bind_host_params {
     my ($self, $args) = @_;
-    my ($var_engs) = @{$args}{'vars'};
-    push @{$self->{$ATTR_BOUND_VARS}}, @{$var_engs};
+    my ($upd_args, $ro_args) = @{$args}{'upd_args', 'ro_args'};
+    my $bound_upd_args = $self->{$ATTR_BOUND_UPD_ARGS};
+    my $bound_ro_args = $self->{$ATTR_BOUND_RO_ARGS};
+    foreach my $elem (@{$upd_args}) {
+        $bound_upd_args->{$elem->[0]->text()} = $elem->[1];
+    }
+    foreach my $elem (@{$ro_args}) {
+        $bound_ro_args->{$elem->[0]->text()} = $elem->[1];
+    }
     return;
 }
 
@@ -132,7 +141,8 @@ sub bind_host_params {
 
 sub execute {
     my ($self) = @_;
-    $self->{$ATTR_PREP_RTN}->( $self->{$ATTR_BOUND_VARS} );
+    $self->{$ATTR_PREP_RTN}->({ %{$self->{$ATTR_BOUND_UPD_ARGS}},
+        %{$self->{$ATTR_BOUND_RO_ARGS}} });
     return;
 }
 
