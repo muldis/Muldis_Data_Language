@@ -139,7 +139,12 @@ sub HostGateRtn {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Node; sub _dummy {} } # role
+{ package QDRDBMS::AST::Node;
+    use Carp;
+    sub as_perl {
+        confess q{not implemented by subclass};
+    }
+} # role QDRDBMS::AST::Node
 
 ###########################################################################
 ###########################################################################
@@ -159,27 +164,50 @@ sub HostGateRtn {
     my $FALSE = (1 == 0);
     my $TRUE  = (1 == 1);
 
+    my $FALSE_AS_PERL = qq{'$FALSE'};
+    my $TRUE_AS_PERL  = qq{'$TRUE'};
+
     my $ATTR_V = 'v';
         # A p5 Scalar that equals $FALSE|$TRUE.
 
-    sub new {
-        my ($class, $args) = @_;
-        my $self = bless {}, $class;
-        my ($v) = @{$args}{'v'};
+    my $ATTR_AS_PERL = 'as_perl';
 
-        confess q{new(): Bad :$v arg; Perl 5 does not consider}
-                . q{ it to be a canonical boolean value.}
-            if !defined $v or ($v ne $FALSE and $v ne $TRUE);
+###########################################################################
 
-        $self->{$ATTR_V} = $v;
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($v) = @{$args}{'v'};
 
-        return $self;
+    confess q{new(): Bad :$v arg; Perl 5 does not consider}
+            . q{ it to be a canonical boolean value.}
+        if !defined $v or ($v ne $FALSE and $v ne $TRUE);
+
+    $self->{$ATTR_V} = $v;
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = $self->{$ATTR_V} ? $TRUE_AS_PERL : $FALSE_AS_PERL;
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::LitBool->new({ 'v' => $s });";
     }
+    return $self->{$ATTR_AS_PERL};
+}
 
-    sub v {
-        my ($self) = @_;
-        return $self->{$ATTR_V};
-    }
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
 
 } # class QDRDBMS::AST::LitBool
 
@@ -196,24 +224,46 @@ sub HostGateRtn {
         # A p5 Scalar that is a text-mode string;
         # it either has true utf8 flag or is only 7-bit bytes.
 
-    sub new {
-        my ($class, $args) = @_;
-        my $self = bless {}, $class;
-        my ($v) = @{$args}{'v'};
+    my $ATTR_AS_PERL = 'as_perl';
 
-        confess q{new(): Bad :$v arg; Perl 5 does not consider}
-                . q{ it to be a canonical character string value.}
-            if !defined $v or (!is_utf8 $v and $v =~ m/[^\x00-\x7F]/xs);
+###########################################################################
 
-        $self->{$ATTR_V} = $v;
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($v) = @{$args}{'v'};
 
-        return $self;
+    confess q{new(): Bad :$v arg; Perl 5 does not consider}
+            . q{ it to be a canonical character string value.}
+        if !defined $v or (!is_utf8 $v and $v =~ m/[^\x00-\x7F]/xs);
+
+    $self->{$ATTR_V} = $v;
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = $self->{$ATTR_V};
+        $s =~ s/'/\\'/xs;
+        $s = q{'} . $s . q{'};
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::LitText->new({ 'v' => $s });";
     }
+    return $self->{$ATTR_AS_PERL};
+}
 
-    sub v {
-        my ($self) = @_;
-        return $self->{$ATTR_V};
-    }
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
 
 } # class QDRDBMS::AST::LitText
 
@@ -229,24 +279,49 @@ sub HostGateRtn {
     my $ATTR_V = 'v';
         # A p5 Scalar that is a byte-mode string; it has false utf8 flag.
 
-    sub new {
-        my ($class, $args) = @_;
-        my $self = bless {}, $class;
-        my ($v) = @{$args}{'v'};
+    my $ATTR_AS_PERL = 'as_perl';
 
-        confess q{new(): Bad :$v arg; Perl 5 does not consider}
-                . q{ it to be a canonical byte string value.}
-            if !defined $v or is_utf8 $v;
+###########################################################################
 
-        $self->{$ATTR_V} = $v;
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($v) = @{$args}{'v'};
 
-        return $self;
+    confess q{new(): Bad :$v arg; Perl 5 does not consider}
+            . q{ it to be a canonical byte string value.}
+        if !defined $v or is_utf8 $v;
+
+    $self->{$ATTR_V} = $v;
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        # TODO: A proper job of encoding/decoding the bit string payload.
+        # What you see below is more symbolic of what to do than correct.
+        my $hex_digit_text = join q{}, map { unpack 'H2', $_ }
+            split q{}, $self->{$ATTR_V};
+        my $s = q[(join q{}, map { pack 'H2', $_ }
+            split q{}, ] . $hex_digit_text . q[)];
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::LitBlob->new({ 'v' => $s });";
     }
+    return $self->{$ATTR_AS_PERL};
+}
 
-    sub v {
-        my ($self) = @_;
-        return $self->{$ATTR_V};
-    }
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
 
 } # class QDRDBMS::AST::LitBlob
 
@@ -261,24 +336,44 @@ sub HostGateRtn {
     my $ATTR_V = 'v';
         # A p5 Scalar that is a Perl integer or BigInt or canonical string.
 
-    sub new {
-        my ($class, $args) = @_;
-        my $self = bless {}, $class;
-        my ($v) = @{$args}{'v'};
+    my $ATTR_AS_PERL = 'as_perl';
 
-        confess q{new(): Bad :$v arg; Perl 5 does not consider}
-                . q{ it to be a canonical integer value.}
-            if !defined $v or $v !~ m/\A (0|-?[1-9][0-9]*) \z/xs;
+###########################################################################
 
-        $self->{$ATTR_V} = $v;
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($v) = @{$args}{'v'};
 
-        return $self;
+    confess q{new(): Bad :$v arg; Perl 5 does not consider}
+            . q{ it to be a canonical integer value.}
+        if !defined $v or $v !~ m/\A (0|-?[1-9][0-9]*) \z/xs;
+
+    $self->{$ATTR_V} = $v;
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = q{'} . $self->{$ATTR_V} . q{'};
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::LitInt->new({ 'v' => $s });";
     }
+    return $self->{$ATTR_AS_PERL};
+}
 
-    sub v {
-        my ($self) = @_;
-        return $self->{$ATTR_V};
-    }
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
 
 } # class QDRDBMS::AST::LitInt
 
@@ -292,6 +387,8 @@ sub HostGateRtn {
     use Scalar::Util qw(blessed);
 
     my $ATTR_V = 'v';
+
+    my $ATTR_AS_PERL = 'as_perl';
 
 ###########################################################################
 
@@ -357,6 +454,8 @@ sub v {
     my $ATTR_SEQ_POSSREP  = 'seq_possrep';
 
     my $LISTSEL_ATTR_V = 'v';
+
+    my $ATTR_AS_PERL = 'as_perl';
 
 ###########################################################################
 
@@ -446,6 +545,8 @@ sub seq {
     # Note: This type is specific such that values are always some ::Expr,
     # but this type may be later generalized to hold ::Node instead.
 
+    my $ATTR_AS_PERL = 'as_perl';
+
 ###########################################################################
 
 sub new {
@@ -516,6 +617,8 @@ sub map_hoa {
     # and not just EntityName values; also, the latter will probably be
     # made more strict, to just be type names.
 
+    my $ATTR_AS_PERL = 'as_perl';
+
 ###########################################################################
 
 sub new {
@@ -582,6 +685,8 @@ sub map_hoa {
 
     my $ATTR_V = 'v';
 
+    my $ATTR_AS_PERL = 'as_perl';
+
 ###########################################################################
 
 sub new {
@@ -620,6 +725,8 @@ sub v {
 
     my $ATTR_FUNC    = 'func';
     my $ATTR_RO_ARGS = 'ro_args';
+
+    my $ATTR_AS_PERL = 'as_perl';
 
 ###########################################################################
 
@@ -677,6 +784,8 @@ sub ro_args {
     my $ATTR_PROC     = 'proc';
     my $ATTR_UPD_ARGS = 'upd_args';
     my $ATTR_RO_ARGS  = 'ro_args';
+
+    my $ATTR_AS_PERL = 'as_perl';
 
     my $EXPRDICT_ATTR_MAP_HOA = 'map_hoa';
 
@@ -749,6 +858,8 @@ sub ro_args {
     use Scalar::Util qw(blessed);
 
     my $ATTR_V = 'v';
+
+    my $ATTR_AS_PERL = 'as_perl';
 
 ###########################################################################
 
@@ -839,6 +950,8 @@ sub new {
     my $ATTR_RO_PARAMS  = 'ro_params';
     my $ATTR_VARS       = 'vars';
     my $ATTR_STMTS      = 'stmts';
+
+    my $ATTR_AS_PERL = 'as_perl';
 
     my $TYPEDICT_ATTR_MAP_HOA = 'map_hoa';
 
