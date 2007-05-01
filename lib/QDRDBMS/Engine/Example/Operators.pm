@@ -31,13 +31,13 @@ use warnings FATAL => 'all';
 
 ## sys.type.Int ##
 
-'sys.rtn.Int.eq' => sub {
+'sys.rtn.Int.equal' => sub {
     my ($args) = @_;
     my ($v1, $v2) = @{$args}{'v1', 'v2'};
     return dBool( $v1->v() == $v2->v() );
 },
 
-'sys.rtn.Int.ne' => sub {
+'sys.rtn.Int.not_equal' => sub {
     my ($args) = @_;
     my ($v1, $v2) = @{$args}{'v1', 'v2'};
     return dBool( $v1->v() != $v2->v() );
