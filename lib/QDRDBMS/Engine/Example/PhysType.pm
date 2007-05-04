@@ -85,6 +85,7 @@ sub dCat_EntityName {
 { package QDRDBMS::Engine::Example::PhysType::Value; # role
 
     use Carp;
+    use Scalar::Util qw(blessed);
 
 #    my $ATTR_ROOT_TYPE = 'Value::root_type';
         # QDRDBMS::Engine::Example::PhysType::Cat_EntityName.
@@ -134,19 +135,23 @@ sub new {
 ###########################################################################
 
 sub root_type {
-    confess q{not implemented by subclass};
+    my ($self) = @_;
+    confess q{not implemented by subclass } . (blessed $self);
 }
 
 sub declared_type {
-    confess q{not implemented by subclass};
+    my ($self) = @_;
+    confess q{not implemented by subclass } . (blessed $self);
 }
 
 sub most_specific_type {
-    confess q{not implemented by subclass};
+    my ($self) = @_;
+    confess q{not implemented by subclass } . (blessed $self);
 }
 
 sub which {
-    confess q{not implemented by subclass};
+    my ($self) = @_;
+    confess q{not implemented by subclass } . (blessed $self);
 }
 
 ###########################################################################
@@ -349,7 +354,7 @@ sub v {
     my $ATTR_MAP = 'map';
         # A p5 Hash with 0..N elements:
             # Each Hash key is a p5 text-mode string.
-            # Each Hash value is a ::Example::* value of some kind.
+            # Each Hash value is a ::Example::\w+ value of some kind.
 
     my $ATTR_WHICH = 'which';
 

@@ -9,14 +9,16 @@ use QDRDBMS::Engine::Example::Operators;
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example; # module
+{ package QDRDBMS::Engine::Example; # class
     our $VERSION = 0.000000;
     # Note: This given version applies to all of this file's packages.
+
+    use base 'QDRDBMS::Engine::Role';
 
 ###########################################################################
 
 sub new_dbms {
-    my ($args) = @_;
+    my ($class, $args) = @_;
     my ($dbms_config) = @{$args}{'dbms_config'};
     return QDRDBMS::Engine::Example::DBMS->new({
         'dbms_config' => $dbms_config });
@@ -24,12 +26,13 @@ sub new_dbms {
 
 ###########################################################################
 
-} # module QDRDBMS::Engine::Example
+} # class QDRDBMS::Engine::Example
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::DBMS; # class
+    use base 'QDRDBMS::Engine::Role::DBMS';
 
     use Carp;
 
@@ -71,6 +74,7 @@ sub prepare {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::HostGateVar; # class
+    use base 'QDRDBMS::Engine::Role::HostGateVar';
 
     use Carp;
 
@@ -118,6 +122,7 @@ sub store_ast {
 ###########################################################################
 
 { package QDRDBMS::Engine::Example::HostGateRtn; # class
+    use base 'QDRDBMS::Engine::Role::HostGateRtn';
 
     use Carp;
 

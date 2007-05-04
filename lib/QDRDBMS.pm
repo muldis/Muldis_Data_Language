@@ -51,7 +51,7 @@ sub new {
             or (!is_utf8 $engine_name
                 and $engine_name =~ m/[^\x00-\x7F]/xs);
 
-    # A module may be loaded due to it being embedded in a non-excl file.
+    # A class may be loaded due to it being embedded in a non-excl file.
     if (!do {
             no strict 'refs';
             defined %{$engine_name . '::'};
@@ -61,40 +61,32 @@ sub new {
         # will munge the module name into file system paths.
         eval "require $engine_name;";
         if (my $err = $@) {
-            confess q{new(): Could not load QDRDBMS Engine module}
+            confess q{new(): Could not load QDRDBMS Engine class}
                 . qq{ '$engine_name': $err};
         }
-        confess qq{new(): Could not load QDRDBMS Engine module}
+        confess qq{new(): Could not load QDRDBMS Engine class}
                 . qq{ '$engine_name': while that file did compile without}
-                . q{ errors, it did not declare the same-named module.}
+                . q{ errors, it did not declare the same-named class.}
             if !do {
                 no strict 'refs';
                 defined %{$engine_name . '::'};
             };
     }
-    confess qq{new(): The QDRDBMS Engine module '$engine_name' does not}
-            . q{ provide the new_dbms() constructor function.}
-        if !$engine_name->can( 'new_dbms' );
+    confess qq{new(): The QDRDBMS root Engine class '$engine_name' is not}
+            . q{ a QDRDBMS::Engine::Role-doing class.}
+        if !$engine_name->isa( 'QDRDBMS::Engine::Role' );
     my $dbms_eng = eval {
-        &{$engine_name->can( 'new_dbms' )}({
-            'dbms_config' => $dbms_config });
+        $engine_name->new_dbms({ 'dbms_config' => $dbms_config });
     };
     if (my $err = $@) {
-        confess qq{new(): The QDRDBMS Engine module '$engine_name' threw}
+        confess qq{new(): The QDRDBMS Engine class '$engine_name' threw}
             . qq{ an exception during its new_dbms() execution: $err};
     }
-    confess q{new(): The new_dbms() constructor function of the QDRDBMS}
-            . qq{ Engine module '$engine_name' did not return an object}
-            . q{ to serve as a DBMS Engine.}
-        if !blessed $dbms_eng;
-    my $dbms_eng_class = blessed $dbms_eng;
-
-    confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class' does}
-            . q{ not provide the new_var() method.}
-        if !$dbms_eng->can( 'new_var' );
-    confess qq{new(): The QDRDBMS DBMS Engine class '$dbms_eng_class' does}
-            . q{ not provide the prepare() method.}
-        if !$dbms_eng->can( 'prepare' );
+    confess q{new(): The new_dbms() constructor submethod of the QDRDBMS}
+            . qq{ root Engine class '$engine_name' did not return an}
+            . q{ object of a QDRDBMS::Engine::Role::DBMS-doing class.}
+        if !blessed $dbms_eng
+            or !$dbms_eng->isa( 'QDRDBMS::Engine::Role::DBMS' );
 
     $self->{$ATTR_DBMS_ENG} = $dbms_eng;
 
@@ -162,16 +154,9 @@ sub new {
     }
     confess q{new(): The new_var() method of the QDRDBMS}
             . qq{ DBMS class '$dbms_eng_class' did not return an object}
-            . q{ to serve as a HostGateVar Engine.}
-        if !blessed $var_eng;
-    my $var_eng_class = blessed $var_eng;
-
-    confess qq{new(): The QDRDBMS HostGateVar Engine class}
-            . q{ '$var_eng_class' does not provide the fetch_ast() method.}
-        if !$var_eng->can( 'fetch_ast' );
-    confess qq{new(): The QDRDBMS HostGateVar Engine class}
-            . q{ '$var_eng_class' does not provide the store_ast() method.}
-        if !$var_eng->can( 'store_ast' );
+            . q{ of a QDRDBMS::Engine::Role::HostGateVar-doing class.}
+        if !blessed $var_eng
+            or !$var_eng->isa( 'QDRDBMS::Engine::Role::HostGateVar' );
 
     $self->{$ATTR_DBMS}    = $dbms;
     $self->{$ATTR_VAR_ENG} = $var_eng;
@@ -271,17 +256,9 @@ sub new {
     }
     confess q{new(): The prepare() method of the QDRDBMS}
             . qq{ DBMS class '$dbms_eng_class' did not return an object}
-            . q{ to serve as a HostGateRtn Engine.}
-        if !blessed $rtn_eng;
-    my $rtn_eng_class = blessed $rtn_eng;
-
-    confess q{new(): The QDRDBMS HostGateRtn Engine class}
-            . qq{ '$rtn_eng_class' does not provide the bind_host_params()}
-            . q{ method.}
-        if !$rtn_eng->can( 'bind_host_params' );
-    confess q{new(): The QDRDBMS HostGateRtn Engine class}
-            . qq{ '$rtn_eng_class' does not provide the execute() method.}
-        if !$rtn_eng->can( 'execute' );
+            . q{ of a QDRDBMS::Engine::Role::HostGateRtn-doing class.}
+        if !blessed $rtn_eng
+            or !$rtn_eng->isa( 'QDRDBMS::Engine::Role::HostGateRtn' );
 
     $self->{$ATTR_DBMS}    = $dbms;
     $self->{$ATTR_RTN_AST} = $rtn_ast;
@@ -404,6 +381,76 @@ sub execute {
 ###########################################################################
 ###########################################################################
 
+{ package QDRDBMS::Engine::Role; # role
+    use Carp;
+
+    sub new_dbms {
+        my ($class) = @_;
+        confess q{not implemented by subclass } . $class;
+    }
+
+} # role QDRDBMS::Engine::Role
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::Engine::Role::DBMS; # role
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    sub new_var {
+        my ($self) = @_;
+        confess q{not implemented by subclass } . (blessed $self);
+    }
+
+    sub prepare {
+        my ($self) = @_;
+        confess q{not implemented by subclass } . (blessed $self);
+    }
+
+} # role QDRDBMS::Engine::Role::DBMS
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::Engine::Role::HostGateVar; # role
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    sub fetch_ast {
+        my ($self) = @_;
+        confess q{not implemented by subclass } . (blessed $self);
+    }
+
+    sub store_ast {
+        my ($self) = @_;
+        confess q{not implemented by subclass } . (blessed $self);
+    }
+
+} # role QDRDBMS::Engine::Role::HostGateVar
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::Engine::Role::HostGateRtn; # role
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    sub bind_host_params {
+        my ($self) = @_;
+        confess q{not implemented by subclass } . (blessed $self);
+    }
+
+    sub execute {
+        my ($self) = @_;
+        confess q{not implemented by subclass } . (blessed $self);
+    }
+
+} # role QDRDBMS::Engine::Role::HostGateRtn
+
+###########################################################################
+###########################################################################
+
 1; # Magic true value required at end of a reuseable file's code.
 __END__
 
@@ -427,6 +474,14 @@ QDRDBMS::Interface::DBMS ("DBMS"), QDRDBMS::Interface::HostGateVar
 It also describes the same-number versions for Perl 5 of
 QDRDBMS::Engine::Role, QDRDBMS::Engine::Role::DBMS,
 QDRDBMS::Engine::Role::HostGateVar, and QDRDBMS::Engine::Role::HostGateRtn.
+
+I<Warning:  The C<QDRDBMS> name was intentionally picked to be temporary
+(it should evoke "QDOS"), since the current release is a prototype.  In the
+future, when QDRDBMS has matured significantly, it is expected that it will
+be renamed again to a permanent long-term name, so you should take
+appropriate precautions that would ease your migration later.  This is
+guaranteed to happen prior to it reaching version 1.0.0.  See the README
+file of the QDRDBMS distribution for more information.>
 
 =head1 SYNOPSIS
 

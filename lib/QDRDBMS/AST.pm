@@ -141,13 +141,16 @@ sub HostGateRtn {
 
 { package QDRDBMS::AST::Node;
     use Carp;
+    use Scalar::Util qw(blessed);
 
     sub as_perl {
-        confess q{not implemented by subclass};
+        my ($self) = @_;
+        confess q{not implemented by subclass } . (blessed $self);
     }
 
     sub equal_repr {
-        confess q{not implemented by subclass};
+        my ($self) = @_;
+        confess q{not implemented by subclass } . (blessed $self);
     }
 
 } # role QDRDBMS::AST::Node
