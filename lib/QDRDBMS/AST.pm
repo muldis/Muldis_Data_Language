@@ -6,6 +6,12 @@ use warnings FATAL => 'all';
 ###########################################################################
 ###########################################################################
 
+my $FALSE = (1 == 0);
+my $TRUE  = (1 == 1);
+
+###########################################################################
+###########################################################################
+
 { package QDRDBMS::AST; # module
     our $VERSION = 0.000000;
     # Note: This given version applies to all of this file's packages.
@@ -170,9 +176,6 @@ sub HostGateRtn {
 
     use Carp;
 
-    my $FALSE = (1 == 0);
-    my $TRUE  = (1 == 1);
-
     my $FALSE_AS_PERL = qq{'$FALSE'};
     my $TRUE_AS_PERL  = qq{'$TRUE'};
 
@@ -207,6 +210,14 @@ sub as_perl {
             = "QDRDBMS::AST::LitBool->new({ 'v' => $s });";
     }
     return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub equal_repr {
+    my ($self, $args) = @_;
+    my ($other) = @{$args}{'other'};
+    return $other->{$ATTR_V} eq $self->{$ATTR_V};
 }
 
 ###########################################################################
@@ -263,6 +274,14 @@ sub as_perl {
             = "QDRDBMS::AST::LitText->new({ 'v' => $s });";
     }
     return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub equal_repr {
+    my ($self, $args) = @_;
+    my ($other) = @{$args}{'other'};
+    return $other->{$ATTR_V} eq $self->{$ATTR_V};
 }
 
 ###########################################################################
@@ -325,6 +344,14 @@ sub as_perl {
 
 ###########################################################################
 
+sub equal_repr {
+    my ($self, $args) = @_;
+    my ($other) = @{$args}{'other'};
+    return $other->{$ATTR_V} eq $self->{$ATTR_V};
+}
+
+###########################################################################
+
 sub v {
     my ($self) = @_;
     return $self->{$ATTR_V};
@@ -377,6 +404,14 @@ sub as_perl {
 
 ###########################################################################
 
+sub equal_repr {
+    my ($self, $args) = @_;
+    my ($other) = @{$args}{'other'};
+    return $other->{$ATTR_V} eq $self->{$ATTR_V};
+}
+
+###########################################################################
+
 sub v {
     my ($self) = @_;
     return $self->{$ATTR_V};
@@ -417,6 +452,36 @@ sub new {
     $self->{$ATTR_V} = [@{$v}];
 
     return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $self_class = blessed $self;
+        my $s = q{[} . (join q{, }, map {
+                $_->as_perl()
+            } @{$self->{$ATTR_V}}) . q{]};
+        $self->{$ATTR_AS_PERL} = "$self_class->new({ 'v' => $s });";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub equal_repr {
+    my ($self, $args) = @_;
+    my ($other) = @{$args}{'other'};
+    my $v1 = $self->{$ATTR_V};
+    my $v2 = $other->{$ATTR_V};
+    return $FALSE
+        if @{$v2} != @{$v1};
+    for my $i (0..$#{$v1}) {
+        return $FALSE
+            if !$v1->[$i]->equal_repr({ 'other' => $v2->[$i] });
+    }
+    return $TRUE;
 }
 
 ###########################################################################
