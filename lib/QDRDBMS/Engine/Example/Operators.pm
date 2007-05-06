@@ -34,13 +34,13 @@ use warnings FATAL => 'all';
 'sys.rtn.Int.equal' => sub {
     my ($args) = @_;
     my ($v1, $v2) = @{$args}{'v1', 'v2'};
-    return dBool( $v1->v() == $v2->v() );
+    return dBool( $v1->equal( $v2 ) );
 },
 
 'sys.rtn.Int.not_equal' => sub {
     my ($args) = @_;
     my ($v1, $v2) = @{$args}{'v1', 'v2'};
-    return dBool( $v1->v() != $v2->v() );
+    return dBool( !$v1->equal( $v2 ) );
 },
 
 'sys.rtn.Int.assign' => sub {

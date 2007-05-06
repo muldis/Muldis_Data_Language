@@ -149,15 +149,35 @@ sub HostGateRtn {
     use Carp;
     use Scalar::Util qw(blessed);
 
-    sub as_perl {
-        my ($self) = @_;
-        confess q{not implemented by subclass } . (blessed $self);
-    }
+###########################################################################
 
-    sub equal_repr {
-        my ($self) = @_;
-        confess q{not implemented by subclass } . (blessed $self);
-    }
+sub as_perl {
+    my ($self) = @_;
+    confess q{not implemented by subclass } . (blessed $self);
+}
+
+###########################################################################
+
+sub equal_repr {
+    my ($self, $args) = @_;
+    my ($other) = @{$args}{'other'};
+
+    confess q{equal_repr(): Bad :$other arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::Node-doing class.}
+        if !blessed $other or !$other->isa( 'QDRDBMS::AST::Node' );
+
+    return $FALSE
+        if blessed $other ne blessed $self;
+
+    return $self->_equal_repr( $other );
+}
+
+sub _equal_repr {
+    my ($self) = @_;
+    confess q{not implemented by subclass } . (blessed $self);
+}
+
+###########################################################################
 
 } # role QDRDBMS::AST::Node
 
@@ -214,9 +234,8 @@ sub as_perl {
 
 ###########################################################################
 
-sub equal_repr {
-    my ($self, $args) = @_;
-    my ($other) = @{$args}{'other'};
+sub _equal_repr {
+    my ($self, $other) = @_;
     return $other->{$ATTR_V} eq $self->{$ATTR_V};
 }
 
@@ -278,9 +297,8 @@ sub as_perl {
 
 ###########################################################################
 
-sub equal_repr {
-    my ($self, $args) = @_;
-    my ($other) = @{$args}{'other'};
+sub _equal_repr {
+    my ($self, $other) = @_;
     return $other->{$ATTR_V} eq $self->{$ATTR_V};
 }
 
@@ -344,9 +362,8 @@ sub as_perl {
 
 ###########################################################################
 
-sub equal_repr {
-    my ($self, $args) = @_;
-    my ($other) = @{$args}{'other'};
+sub _equal_repr {
+    my ($self, $other) = @_;
     return $other->{$ATTR_V} eq $self->{$ATTR_V};
 }
 
@@ -404,9 +421,8 @@ sub as_perl {
 
 ###########################################################################
 
-sub equal_repr {
-    my ($self, $args) = @_;
-    my ($other) = @{$args}{'other'};
+sub _equal_repr {
+    my ($self, $other) = @_;
     return $other->{$ATTR_V} eq $self->{$ATTR_V};
 }
 
@@ -470,9 +486,8 @@ sub as_perl {
 
 ###########################################################################
 
-sub equal_repr {
-    my ($self, $args) = @_;
-    my ($other) = @{$args}{'other'};
+sub _equal_repr {
+    my ($self, $other) = @_;
     my $v1 = $self->{$ATTR_V};
     my $v2 = $other->{$ATTR_V};
     return $FALSE

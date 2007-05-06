@@ -156,6 +156,20 @@ sub which {
 
 ###########################################################################
 
+sub as_ast {
+    my ($self) = @_;
+    confess q{not implemented by subclass } . (blessed $self);
+}
+
+###########################################################################
+
+sub equal {
+    my ($self) = @_;
+    confess q{not implemented by subclass } . (blessed $self);
+}
+
+###########################################################################
+
 } # role QDRDBMS::Engine::Example::PhysType::Value
 
 ###########################################################################
@@ -163,6 +177,8 @@ sub which {
 
 { package QDRDBMS::Engine::Example::PhysType::Bool; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
+
+    use QDRDBMS::AST qw(LitBool);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that equals $FALSE|$TRUE.
@@ -195,6 +211,20 @@ sub which {
 
 ###########################################################################
 
+sub as_ast {
+    my ($self) = @_;
+    return LitBool({ 'v' => $self->{$ATTR_V} });
+}
+
+###########################################################################
+
+sub equal {
+    my ($self, $other) = @_;
+    return $other->{$ATTR_V} eq $self->{$ATTR_V};
+}
+
+###########################################################################
+
 sub v {
     my ($self) = @_;
     return $self->{$ATTR_V};
@@ -209,6 +239,8 @@ sub v {
 
 { package QDRDBMS::Engine::Example::PhysType::Text; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
+
+    use QDRDBMS::AST qw(LitText);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that is a text-mode string;
@@ -242,6 +274,20 @@ sub which {
 
 ###########################################################################
 
+sub as_ast {
+    my ($self) = @_;
+    return LitText({ 'v' => $self->{$ATTR_V} });
+}
+
+###########################################################################
+
+sub equal {
+    my ($self, $other) = @_;
+    return $other->{$ATTR_V} eq $self->{$ATTR_V};
+}
+
+###########################################################################
+
 sub v {
     my ($self) = @_;
     return $self->{$ATTR_V};
@@ -256,6 +302,8 @@ sub v {
 
 { package QDRDBMS::Engine::Example::PhysType::Blob; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
+
+    use QDRDBMS::AST qw(LitBlob);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that is a byte-mode string; it has false utf8 flag.
@@ -288,6 +336,20 @@ sub which {
 
 ###########################################################################
 
+sub as_ast {
+    my ($self) = @_;
+    return LitBlob({ 'v' => $self->{$ATTR_V} });
+}
+
+###########################################################################
+
+sub equal {
+    my ($self, $other) = @_;
+    return $other->{$ATTR_V} eq $self->{$ATTR_V};
+}
+
+###########################################################################
+
 sub v {
     my ($self) = @_;
     return $self->{$ATTR_V};
@@ -302,6 +364,8 @@ sub v {
 
 { package QDRDBMS::Engine::Example::PhysType::Int; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
+
+    use QDRDBMS::AST qw(LitInt);
 
     use bigint; # this is experimental
 
@@ -332,6 +396,20 @@ sub which {
         $self->{$ATTR_WHICH} = "12 sys.type.Int $len_s $s";
     }
     return $self->{$ATTR_WHICH};
+}
+
+###########################################################################
+
+sub as_ast {
+    my ($self) = @_;
+    return LitInt({ 'v' => $self->{$ATTR_V} });
+}
+
+###########################################################################
+
+sub equal {
+    my ($self, $other) = @_;
+    return $other->{$ATTR_V} == $self->{$ATTR_V};
 }
 
 ###########################################################################
