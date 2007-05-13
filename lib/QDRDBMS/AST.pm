@@ -227,7 +227,7 @@ sub as_perl {
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $s = $self->{$ATTR_V} ? $TRUE_AS_PERL : $FALSE_AS_PERL;
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::LitBool->new({ 'v' => $s });";
+            = "QDRDBMS::AST::LitBool->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -290,7 +290,7 @@ sub as_perl {
         $s =~ s/'/\\'/xs;
         $s = q{'} . $s . q{'};
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::LitText->new({ 'v' => $s });";
+            = "QDRDBMS::AST::LitText->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -355,7 +355,7 @@ sub as_perl {
         my $s = q[(join q{}, map { pack 'H2', $_ }
             split q{}, ] . $hex_digit_text . q[)];
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::LitBlob->new({ 'v' => $s });";
+            = "QDRDBMS::AST::LitBlob->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -414,7 +414,7 @@ sub as_perl {
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $s = q{'} . $self->{$ATTR_V} . q{'};
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::LitInt->new({ 'v' => $s });";
+            = "QDRDBMS::AST::LitInt->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -479,7 +479,7 @@ sub as_perl {
         my $s = q{[} . (join q{, }, map {
                 $_->as_perl()
             } @{$self->{$ATTR_V}}) . q{]};
-        $self->{$ATTR_AS_PERL} = "$self_class->new({ 'v' => $s });";
+        $self->{$ATTR_AS_PERL} = "$self_class->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -603,6 +603,26 @@ sub new {
 
 ###########################################################################
 
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = $self->{$ATTR_TEXT_POSSREP}->as_perl();
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::EntityName->new({ 'text' => $s })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $self->{$ATTR_TEXT_POSSREP}->equal_repr({
+        'other' => $other->{$ATTR_TEXT_POSSREP} });
+}
+
+###########################################################################
+
 sub text {
     my ($self) = @_;
     return $self->{$ATTR_TEXT_POSSREP};
@@ -671,6 +691,39 @@ sub new {
     $self->{$ATTR_MAP_HOA} = $map_hoa;
 
     return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = q{[} . (join q{, }, map {
+                q{[} . $_->[0]->as_perl()
+                    . q{, } . $_->[1]->as_perl() . q{]}
+            } @{$self->{$ATTR_MAP_AOA}}) . q{]};
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::ExprDict->new({ 'map' => $s })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $FALSE
+        if @{$other->{$ATTR_MAP_AOA}} != @{$self->{$ATTR_MAP_AOA}};
+    my $v1 = $self->{$ATTR_MAP_HOA};
+    my $v2 = $other->{$ATTR_MAP_HOA};
+    for my $ek (keys %{$v1}) {
+        return $FALSE
+            if !exists $v2->{$ek};
+        return $FALSE
+            if !$v1->{$ek}->[1]->equal_repr({
+                'other' => $v2->[1]->{$ek} });
+    }
+    return $TRUE;
 }
 
 ###########################################################################
@@ -748,6 +801,39 @@ sub new {
 
 ###########################################################################
 
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = q{[} . (join q{, }, map {
+                q{[} . $_->[0]->as_perl()
+                    . q{, } . $_->[1]->as_perl() . q{]}
+            } @{$self->{$ATTR_MAP_AOA}}) . q{]};
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::TypeDict->new({ 'map' => $s })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $FALSE
+        if @{$other->{$ATTR_MAP_AOA}} != @{$self->{$ATTR_MAP_AOA}};
+    my $v1 = $self->{$ATTR_MAP_HOA};
+    my $v2 = $other->{$ATTR_MAP_HOA};
+    for my $ek (keys %{$v1}) {
+        return $FALSE
+            if !exists $v2->{$ek};
+        return $FALSE
+            if !$v1->{$ek}->[1]->equal_repr({
+                'other' => $v2->[1]->{$ek} });
+    }
+    return $TRUE;
+}
+
+###########################################################################
+
 sub map {
     my ($self) = @_;
     return [map { [@{$_}] } @{$self->{$ATTR_MAP_AOA}}];
@@ -794,6 +880,25 @@ sub new {
 
 ###########################################################################
 
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = $self->{$ATTR_V}->as_perl();
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::VarInvo->new({ 'v' => $s })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $self->{$ATTR_V}->equal_repr({ 'other' => $other->{$ATTR_V} });
+}
+
+###########################################################################
+
 sub v {
     my ($self) = @_;
     return $self->{$ATTR_V};
@@ -836,6 +941,30 @@ sub new {
     $self->{$ATTR_RO_ARGS} = $ro_args;
 
     return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $sf = $self->{$ATTR_FUNC}->as_perl();
+        my $sra = $self->{$ATTR_RO_ARGS}->as_perl();
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::FuncInvo->new({"
+                . " 'func' => $sf, 'ro_args' => $sra })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $self->{$ATTR_FUNC}->equal_repr({
+            'other' => $other->{$ATTR_FUNC} })
+        and $self->{$ATTR_RO_ARGS}->equal_repr({
+            'other' => $other->{$ATTR_RO_ARGS} });
 }
 
 ###########################################################################
@@ -918,6 +1047,33 @@ sub new {
 
 ###########################################################################
 
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $sp = $self->{$ATTR_PROC}->as_perl();
+        my $sua = $self->{$ATTR_UPD_ARGS}->as_perl();
+        my $sra = $self->{$ATTR_RO_ARGS}->as_perl();
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::ProcInvo->new({ 'proc' => $sp"
+                . ", 'upd_args' => $sua, 'ro_args' => $sra })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $self->{$ATTR_PROC}->equal_repr({
+            'other' => $other->{$ATTR_PROC} })
+        and $self->{$ATTR_UPD_ARGS}->equal_repr({
+            'other' => $other->{$ATTR_UPD_ARGS} })
+        and $self->{$ATTR_RO_ARGS}->equal_repr({
+            'other' => $other->{$ATTR_RO_ARGS} });
+}
+
+###########################################################################
+
 sub proc {
     my ($self) = @_;
     return $self->{$ATTR_PROC};
@@ -968,6 +1124,25 @@ sub new {
 
 ###########################################################################
 
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = $self->{$ATTR_V}->as_perl();
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::FuncReturn->new({ 'v' => $s })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $self->{$ATTR_V}->equal_repr({ 'other' => $other->{$ATTR_V} });
+}
+
+###########################################################################
+
 sub v {
     my ($self) = @_;
     return $self->{$ATTR_V};
@@ -982,10 +1157,28 @@ sub v {
 
 { package QDRDBMS::AST::ProcReturn; # class
     use base 'QDRDBMS::AST::Stmt';
-    sub new {
-        my ($class) = @_;
-        return bless {}, $class;
-    }
+
+###########################################################################
+
+sub new {
+    my ($class) = @_;
+    return bless {}, $class;
+}
+
+###########################################################################
+
+sub as_perl {
+    return 'QDRDBMS::AST::ProcReturn->new()';
+}
+
+###########################################################################
+
+sub _equal_repr {
+    return $TRUE;
+}
+
+###########################################################################
+
 } # class QDRDBMS::AST::ProcReturn
 
 ###########################################################################
@@ -1085,6 +1278,47 @@ sub new {
     $self->{$ATTR_STMTS}      = [@{$stmts}];
 
     return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $sup = $self->{$ATTR_UPD_PARAMS}->as_perl();
+        my $srp = $self->{$ATTR_RO_PARAMS}->as_perl();
+        my $sv = $self->{$ATTR_VARS}->as_perl();
+        my $ss = q{[} . (join q{, }, map {
+                $_->as_perl()
+            } @{$self->{$ATTR_STMTS}}) . q{]};
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::HostGateRtn->new({"
+                . ", 'upd_params' => $sup, 'ro_params' => $srp"
+                . ", 'vars' => $sv, 'stmts' => $ss })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $FALSE
+        if !$self->{$ATTR_UPD_PARAMS}->equal_repr({
+                'other' => $other->{$ATTR_UPD_PARAMS} })
+            or !$self->{$ATTR_RO_PARAMS}->equal_repr({
+                'other' => $other->{$ATTR_RO_PARAMS} })
+            or !$self->{$ATTR_VARS}->equal_repr({
+                'other' => $other->{$ATTR_VARS} });
+    my $v1 = $self->{$ATTR_STMTS};
+    my $v2 = $other->{$ATTR_STMTS};
+    return $FALSE
+        if @{$v2} != @{$v1};
+    for my $i (0..$#{$v1}) {
+        return $FALSE
+            if !$v1->[$i]->equal_repr({ 'other' => $v2->[$i] });
+    }
+    return $TRUE;
 }
 
 ###########################################################################
