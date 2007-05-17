@@ -52,20 +52,40 @@ use warnings FATAL => 'all';
 
 'sys.rtn.Int.sum' => sub {
     my ($args) = @_;
-    my ($v1, $v2) = @{$args}{'v1', 'v2'};
-    return dInt( $v1->v() + $v2->v() );
+    my ($addend1, $addend2) = @{$args}{'addend1', 'addend2'};
+    return dInt( $addend1->v() + $addend2->v() );
+},
+
+'sys.rtn.Int.nary_sum' => sub {
+    my ($args) = @_;
+    my ($addends) = @{$args}{'addends'};
+    my $sum = 0;
+    for my $addend (@{$addends}) {
+        $sum += $addend->v();
+    }
+    return dInt( $sum );
 },
 
 'sys.rtn.Int.difference' => sub {
     my ($args) = @_;
-    my ($start, $remove) = @{$args}{'start', 'remove'};
-    return dInt( $start->v() - $remove->v() );
+    my ($minuend, $subtrahend) = @{$args}{'minuend', 'subtrahend'};
+    return dInt( $minuend->v() - $subtrahend->v() );
 },
 
 'sys.rtn.Int.product' => sub {
     my ($args) = @_;
-    my ($v1, $v2) = @{$args}{'v1', 'v2'};
-    return dInt( $v1->v() * $v2->v() );
+    my ($factor1, $factor2) = @{$args}{'factor1', 'factor2'};
+    return dInt( $factor1->v() * $factor2->v() );
+},
+
+'sys.rtn.Int.nary_product' => sub {
+    my ($args) = @_;
+    my ($factors) = @{$args}{'factors'};
+    my $product = 1;
+    for my $factor (@{$factors}) {
+        $product *= $factor->v();
+    }
+    return dInt( $product );
 },
 
 'sys.rtn.Int.quotient' => sub {
