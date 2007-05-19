@@ -459,7 +459,7 @@ sub new {
 
     confess q{new(): Bad :$v arg; it is not an Array.}
         if ref $v ne 'ARRAY';
-    foreach my $ve (@{$v}) {
+    for my $ve (@{$v}) {
         confess q{new(): Bad :$v arg elem; it is not}
                 . q{ an object of a QDRDBMS::AST::Expr-doing class.}
             if !blessed $ve or !$ve->isa( 'QDRDBMS::AST::Expr' );
@@ -667,7 +667,7 @@ sub new {
         if ref $map ne 'ARRAY';
     my $map_aoa = [];
     my $map_hoa = {};
-    foreach my $elem (@{$map}) {
+    for my $elem (@{$map}) {
         confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
             if ref $elem ne 'ARRAY' or @{$elem} != 2;
         my ($entity_name, $expr) = @{$elem};
@@ -772,7 +772,7 @@ sub new {
         if ref $map ne 'ARRAY';
     my $map_aoa = [];
     my $map_hoa = {};
-    foreach my $elem (@{$map}) {
+    for my $elem (@{$map}) {
         confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
             if ref $elem ne 'ARRAY' or @{$elem} != 2;
         my ($entity_name, $type_name) = @{$elem};
@@ -1266,7 +1266,7 @@ sub new {
 
     confess q{new(): Bad :$stmts arg; it is not an Array.}
         if ref $stmts ne 'ARRAY';
-    foreach my $stmt (@{$stmts}) {
+    for my $stmt (@{$stmts}) {
         confess q{new(): Bad :$stmts arg elem; it is not}
                 . q{ an object of a QDRDBMS::AST::Stmt-doing class.}
             if !blessed $stmt or !$stmt->isa( 'QDRDBMS::AST::Stmt' );

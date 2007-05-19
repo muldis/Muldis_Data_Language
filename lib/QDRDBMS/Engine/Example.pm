@@ -161,10 +161,10 @@ sub bind_host_params {
     my $bound_ro_args = $self->{$ATTR_BOUND_RO_ARGS};
     # TODO: Compare declared type of each routine param and the variable
     # we are trying to bind to it, that they are of compatible types.
-    foreach my $elem (@{$upd_args}) {
+    for my $elem (@{$upd_args}) {
         $bound_upd_args->{$elem->[0]->text()} = $elem->[1];
     }
-    foreach my $elem (@{$ro_args}) {
+    for my $elem (@{$ro_args}) {
         $bound_ro_args->{$elem->[0]->text()} = $elem->[1];
     }
     return;

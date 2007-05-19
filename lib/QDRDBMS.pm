@@ -282,7 +282,7 @@ sub bind_host_params {
         if ref $upd_args ne 'ARRAY';
     my $seen_upd_param_names = {};
     my $upd_arg_engs = [];
-    foreach my $elem (@{$upd_args}) {
+    for my $elem (@{$upd_args}) {
         confess q{bind_host_params(): Bad :$upd_args arg elem; it is not a}
                 . q{ 2-element Array.}
             if ref $elem ne 'ARRAY' or @{$elem} != 2;
@@ -314,7 +314,7 @@ sub bind_host_params {
         if ref $ro_args ne 'ARRAY';
     my $seen_ro_param_names = {};
     my $ro_arg_engs = [];
-    foreach my $elem (@{$ro_args}) {
+    for my $elem (@{$ro_args}) {
         confess q{bind_host_params(): Bad :$ro_args arg elem; it is not a}
                 . q{ 2-element Array.}
             if ref $elem ne 'ARRAY' or @{$elem} != 2;
