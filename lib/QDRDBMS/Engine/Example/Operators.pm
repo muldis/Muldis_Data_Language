@@ -52,15 +52,9 @@ use warnings FATAL => 'all';
 
 'sys.rtn.Int.sum' => sub {
     my ($args) = @_;
-    my ($addend1, $addend2) = @{$args}{'addend1', 'addend2'};
-    return dInt( $addend1->v() + $addend2->v() );
-},
-
-'sys.rtn.Int.nary_sum' => sub {
-    my ($args) = @_;
     my ($addends) = @{$args}{'addends'};
     my $sum = 0;
-    for my $addend (@{$addends}) {
+    for my $addend (@{$addends->array_from_value_attr()}) {
         $sum += $addend->v();
     }
     return dInt( $sum );
@@ -74,15 +68,9 @@ use warnings FATAL => 'all';
 
 'sys.rtn.Int.product' => sub {
     my ($args) = @_;
-    my ($factor1, $factor2) = @{$args}{'factor1', 'factor2'};
-    return dInt( $factor1->v() * $factor2->v() );
-},
-
-'sys.rtn.Int.nary_product' => sub {
-    my ($args) = @_;
     my ($factors) = @{$args}{'factors'};
     my $product = 1;
-    for my $factor (@{$factors}) {
+    for my $factor (@{$factors->array_from_value_attr()}) {
         $product *= $factor->v();
     }
     return dInt( $product );
