@@ -18,111 +18,112 @@ my $TRUE  = (1 == 1);
 
     use base 'Exporter';
     our @EXPORT_OK = qw(
-        LitBool LitText LitBlob LitInt
-        SetSel SeqSel BagSel QuasiSetSel QuasiSeqSel QuasiBagSel
-        EntityName ExprDict TypeDict
-        VarInvo FuncInvo
-        ProcInvo
-        FuncReturn ProcReturn
-        FuncDecl ProcDecl
-        HostGateRtn
+        newLitBool newLitText newLitBlob newLitInt
+        newSetSel newSeqSel newBagSel
+        newQuasiSetSel newQuasiSeqSel newQuasiBagSel
+        newEntityName newExprDict newTypeDict
+        newVarInvo newFuncInvo
+        newProcInvo
+        newFuncReturn newProcReturn
+        newFuncDecl newProcDecl
+        newHostGateRtn
     );
 
 ###########################################################################
 
-sub LitBool {
+sub newLitBool {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::LitBool->new({ 'v' => $v });
 }
 
-sub LitText {
+sub newLitText {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::LitText->new({ 'v' => $v });
 }
 
-sub LitBlob {
+sub newLitBlob {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::LitBlob->new({ 'v' => $v });
 }
 
-sub LitInt {
+sub newLitInt {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::LitInt->new({ 'v' => $v });
 }
 
-sub SetSel {
+sub newSetSel {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::SetSel->new({ 'v' => $v });
 }
 
-sub SeqSel {
+sub newSeqSel {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::SeqSel->new({ 'v' => $v });
 }
 
-sub BagSel {
+sub newBagSel {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::BagSel->new({ 'v' => $v });
 }
 
-sub QuasiSetSel {
+sub newQuasiSetSel {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::QuasiSetSel->new({ 'v' => $v });
 }
 
-sub QuasiSeqSel {
+sub newQuasiSeqSel {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::QuasiSeqSel->new({ 'v' => $v });
 }
 
-sub QuasiBagSel {
+sub newQuasiBagSel {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::QuasiBagSel->new({ 'v' => $v });
 }
 
-sub EntityName {
+sub newEntityName {
     my ($args) = @_;
     my ($text, $seq) = @{$args}{'text', 'seq'};
     return QDRDBMS::AST::EntityName->new({
         'text' => $text, 'seq' => $seq });
 }
 
-sub ExprDict {
+sub newExprDict {
     my ($args) = @_;
     my ($map) = @{$args}{'map'};
     return QDRDBMS::AST::ExprDict->new({ 'map' => $map });
 }
 
-sub TypeDict {
+sub newTypeDict {
     my ($args) = @_;
     my ($map) = @{$args}{'map'};
     return QDRDBMS::AST::TypeDict->new({ 'map' => $map });
 }
 
-sub VarInvo {
+sub newVarInvo {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::VarInvo->new({ 'v' => $v });
 }
 
-sub FuncInvo {
+sub newFuncInvo {
     my ($args) = @_;
     my ($func, $ro_args) = @{$args}{'func', 'ro_args'};
     return QDRDBMS::AST::FuncInvo->new({
         'func' => $func, 'ro_args' => $ro_args });
 }
 
-sub ProcInvo {
+sub newProcInvo {
     my ($args) = @_;
     my ($proc, $upd_args, $ro_args)
         = @{$args}{'proc', 'upd_args', 'ro_args'};
@@ -130,25 +131,25 @@ sub ProcInvo {
         'proc' => $proc, 'upd_args' => $upd_args, 'ro_args' => $ro_args });
 }
 
-sub FuncReturn {
+sub newFuncReturn {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::FuncReturn->new({ 'v' => $v });
 }
 
-sub ProcReturn {
+sub newProcReturn {
     return QDRDBMS::AST::ProcReturn->new();
 }
 
-sub FuncDecl {
+sub newFuncDecl {
     return QDRDBMS::AST::FuncDecl->new();
 }
 
-sub ProcDecl {
+sub newProcDecl {
     return QDRDBMS::AST::ProcDecl->new();
 }
 
-sub HostGateRtn {
+sub newHostGateRtn {
     my ($args) = @_;
     my ($upd_params, $ro_params, $vars, $stmts)
         = @{$args}{'upd_params', 'ro_params', 'vars', 'stmts'};
@@ -623,7 +624,7 @@ sub new {
     }
 
     else { # defined $seq
-        die q{new(): Bad :$v arg; it is not an object of a}
+        die q{new(): Bad :$seq arg; it is not an object of a}
                 . q{ QDRDBMS::AST::SeqSel-doing class, or it has < 1 elem.}
             if !$seq->isa( 'QDRDBMS::AST::SeqSel' )
                 or $seq->repr_elem_count() == 0;
@@ -1419,15 +1420,16 @@ It also describes the same-number versions for Perl 5 of [...].
 
 I<This documentation is pending.>
 
-    use QDRDBMS::AST qw(LitBool LitText LitBlob LitInt SetSel SeqSel BagSel
-        QuasiSetSel QuasiSeqSel QuasiBagSel EntityName ExprDict TypeDict
-        VarInvo FuncInvo ProcInvo FuncReturn ProcReturn FuncDecl ProcDecl
-        HostGateRtn);
+    use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt
+        newSetSel newSeqSel newBagSel newQuasiSetSel newQuasiSeqSel
+        newQuasiBagSel newEntityName newExprDict newTypeDict newVarInvo
+        newFuncInvo newProcInvo newFuncReturn newProcReturn newFuncDecl
+        newProcDecl newHostGateRtn);
 
-    my $truth_value = LitBool({ 'v' => (2 + 2 == 4) });
-    my $planetoid = LitText({ 'v' => 'Ceres' });
-    my $package = LitBlob({ 'v' => (pack 'H2', 'P') });
-    my $answer = LitInt({ 'v' => 42 });
+    my $truth_value = newLitBool({ 'v' => (2 + 2 == 4) });
+    my $planetoid = newLitText({ 'v' => 'Ceres' });
+    my $package = newLitBlob({ 'v' => (pack 'H2', 'P') });
+    my $answer = newLitInt({ 'v' => 42 });
 
 I<This documentation is pending.>
 
