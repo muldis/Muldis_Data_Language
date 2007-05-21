@@ -5,11 +5,7 @@ use warnings FATAL => 'all';
 
 use Test::More;
 
-use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt
-    newSetSel newSeqSel newBagSel newQuasiSetSel newQuasiSeqSel
-    newQuasiBagSel newEntityName newExprDict newTypeDict newVarInvo
-    newFuncInvo newProcInvo newFuncReturn newProcReturn newFuncDecl
-    newProcDecl newHostGateRtn);
+use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt);
 
 main();
 
@@ -19,20 +15,23 @@ sub main {
 
     plan( 'tests' => 62 ); # 17 more than Perl 6 version, which has 45
 
-    print "#### Starting test of QDRDBMS::AST ####\n";
+    print "#### Starting test of QDRDBMS::AST Literals ####\n";
 
-    simple_literals();
+    test_LitBool();
+    test_LitText();
+    test_LitBlob();
+    test_LitInt();
 
-    print "#### Finished test of QDRDBMS::AST ####\n";
+    print "#### Finished test of QDRDBMS::AST Literals ####\n";
+
+    return;
 }
 
 ######################################################################
 
-sub simple_literals {
+sub test_LitBool {
 
     my ($in, $node, $out);
-
-    # LitBool
 
     $in = undef;
     eval {
@@ -66,7 +65,14 @@ sub simple_literals {
     };
     ok( $@, q{LitBool rejects invalid payload 42} );
 
-    # LitText
+    return;
+}
+
+######################################################################
+
+sub test_LitText {
+
+    my ($in, $node, $out);
 
     $in = undef;
     eval {
@@ -101,7 +107,14 @@ sub simple_literals {
     };
     ok( $@, q{LitText rejects invalid payload pack 'H2', '\xCC'} );
 
-    # LitBlob
+    return;
+}
+
+######################################################################
+
+sub test_LitBlob {
+
+    my ($in, $node, $out);
 
     $in = undef;
     eval {
@@ -136,7 +149,14 @@ sub simple_literals {
     $out = $node->v();
     is( $out, $in, q{LitBlob preserves valid payload} );
 
-    # LitInt
+    return;
+}
+
+######################################################################
+
+sub test_LitInt {
+
+    my ($in, $node, $out);
 
     $in = undef;
     eval {
