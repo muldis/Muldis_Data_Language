@@ -24,7 +24,10 @@ my $TRUE  = (1 == 1);
         newVarInvo newFuncInvo
         newProcInvo
         newFuncReturn newProcReturn
-        newEntityName newTypeDict newExprDict
+        newEntityName
+        newTypeInvoNQ newTypeInvoAQ
+        newTypeDictNQ newTypeDictAQ
+        newExprDict
         newFuncDecl newProcDecl
         newHostGateRtn
     );
@@ -129,10 +132,30 @@ sub newEntityName {
         'text' => $text, 'seq' => $seq });
 }
 
-sub newTypeDict {
+sub newTypeInvoNQ {
+    my ($args) = @_;
+    my ($kind, $spec) = @{$args}{'kind', 'spec'};
+    return QDRDBMS::AST::TypeInvoNQ->new({
+        'kind' => $kind, 'spec' => $spec });
+}
+
+sub newTypeInvoAQ {
+    my ($args) = @_;
+    my ($kind, $spec) = @{$args}{'kind', 'spec'};
+    return QDRDBMS::AST::TypeInvoAQ->new({
+        'kind' => $kind, 'spec' => $spec });
+}
+
+sub newTypeDictNQ {
     my ($args) = @_;
     my ($map) = @{$args}{'map'};
-    return QDRDBMS::AST::TypeDict->new({ 'map' => $map });
+    return QDRDBMS::AST::TypeDictNQ->new({ 'map' => $map });
+}
+
+sub newTypeDictAQ {
+    my ($args) = @_;
+    my ($map) = @{$args}{'map'};
+    return QDRDBMS::AST::TypeDictAQ->new({ 'map' => $map });
 }
 
 sub newExprDict {
@@ -210,8 +233,15 @@ sub _equal_repr {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::LitBool; # class
+{ package QDRDBMS::AST::Lit; # role
     use base 'QDRDBMS::AST::Expr';
+} # role QDRDBMS::AST::Lit
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::LitBool; # class
+    use base 'QDRDBMS::AST::Lit';
 
     use Carp;
 
@@ -273,7 +303,7 @@ sub v {
 ###########################################################################
 
 { package QDRDBMS::AST::LitText; # class
-    use base 'QDRDBMS::AST::Expr';
+    use base 'QDRDBMS::AST::Lit';
 
     use Carp;
     use Encode qw(is_utf8);
@@ -336,7 +366,7 @@ sub v {
 ###########################################################################
 
 { package QDRDBMS::AST::LitBlob; # class
-    use base 'QDRDBMS::AST::Expr';
+    use base 'QDRDBMS::AST::Lit';
 
     use Carp;
     use Encode qw(is_utf8);
@@ -401,7 +431,7 @@ sub v {
 ###########################################################################
 
 { package QDRDBMS::AST::LitInt; # class
-    use base 'QDRDBMS::AST::Expr';
+    use base 'QDRDBMS::AST::Lit';
 
     use Carp;
 
@@ -1022,7 +1052,135 @@ sub seq {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::TypeDict; # class
+{ package QDRDBMS::AST::TypeInvo; # role
+    use base 'QDRDBMS::AST::Node';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_KIND = 'kind';
+    my $ATTR_SPEC = 'spec';
+
+    my $ATTR_AS_PERL = 'as_perl';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($kind, $spec) = @{$args}{'kind', 'spec'};
+
+    confess q{new(): Bad :$kind arg; it is undefined.}
+        if !defined $kind;
+
+    if ($kind eq 'S') {
+        confess q{new(): Bad :$spec arg; it needs to be a valid object}
+                . q{ of a QDRDBMS::AST::EntityName-doing class}
+                . q{ when the :$kind arg is 'S'.}
+            if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::EntityName' );
+    }
+
+    elsif ($kind eq 'T' or $kind eq 'R') {
+        confess q{new(): Bad :$spec arg; it needs to be a valid object}
+                . q{ of a QDRDBMS::AST::TypeDictNQ-doing class}
+                . q{ when the :$kind arg is 'T'|'R'.}
+            if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeDictNQ' );
+    }
+
+    elsif (!$self->_allows_quasi()) {
+        confess q{new(): Bad :$kind arg; it needs to be 'S'|'T'|'R'.};
+    }
+
+    elsif ($kind eq 'QT' or $kind eq 'QR') {
+        confess q{new(): Bad :$spec arg; it needs to be a valid object}
+                . q{ of a QDRDBMS::AST::TypeDictAQ-doing class}
+                . q{ when the :$kind arg is 'QT'|'QR'.}
+            if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeDictAQ' );
+    }
+
+    elsif ($kind eq 'A') {
+        confess q{new(): Bad :$spec arg; it needs to be one of}
+                . q{ 'T'|'R'|'QT'|'QR'|'U' when the :$kind arg is 'A'.}
+            if !defined $spec or $spec !~ m/\A (T|R|QT|QR|U) \z/xs;
+    }
+
+    else {
+        confess q{new(): Bad :$kind arg; it needs to be}
+            . q{ 'S'|'T'|'R'|'QT'|'QR'|'A'.};
+    }
+
+    $self->{$ATTR_KIND} = $kind;
+    $self->{$ATTR_SPEC} = $spec;
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $self_class = blessed $self;
+        my $kind = $self->{$ATTR_KIND};
+        my $spec = $self->{$ATTR_SPEC};
+        my $sk = q{'} . $kind . q{'};
+        my $ss = $kind eq 'A' ? q{'} . $spec . q{'} : $spec->as_perl();
+        $self->{$ATTR_AS_PERL}
+            = "$self_class->new({ 'kind' => $sk, 'spec' => $ss })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    my $kind = $self->{$ATTR_KIND};
+    my $spec = $self->{$ATTR_SPEC};
+    return $FALSE
+        if $other->{$ATTR_KIND} ne $kind;
+    return $kind eq 'A' ? $other->{$ATTR_SPEC} eq $spec
+        : $spec->equal_repr({ 'other' => $other->{$ATTR_SPEC} });
+}
+
+###########################################################################
+
+sub kind {
+    my ($self) = @_;
+    return $self->{$ATTR_KIND};
+}
+
+###########################################################################
+
+sub spec {
+    my ($self) = @_;
+    return $self->{$ATTR_SPEC};
+}
+
+###########################################################################
+
+} # role QDRDBMS::AST::TypeInvo
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::TypeInvoNQ; # class
+    use base 'QDRDBMS::AST::TypeInvo';
+    sub _allows_quasi { return $FALSE; }
+} # class QDRDBMS::AST::TypeInvoNQ
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::TypeInvoAQ; # class
+    use base 'QDRDBMS::AST::TypeInvo';
+    sub _allows_quasi { return $TRUE; }
+} # class QDRDBMS::AST::TypeInvoAQ
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::TypeDict; # role
     use base 'QDRDBMS::AST::Node';
 
     use Carp;
@@ -1030,10 +1188,6 @@ sub seq {
 
     my $ATTR_MAP_AOA = 'map_aoa';
     my $ATTR_MAP_HOA = 'map_hoa';
-
-    # Note: This type may be generalized later to allow ::TypeDict values
-    # and not just EntityName values; also, the latter will probably be
-    # made more strict, to just be type names.
 
     my $ATTR_AS_PERL = 'as_perl';
 
@@ -1044,6 +1198,8 @@ sub new {
     my $self = bless {}, $class;
     my ($map) = @{$args}{'map'};
 
+    my $allows_quasi = $self->_allows_quasi();
+
     confess q{new(): Bad :$map arg; it is not an Array.}
         if ref $map ne 'ARRAY';
     my $map_aoa = [];
@@ -1051,7 +1207,7 @@ sub new {
     for my $elem (@{$map}) {
         confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
             if ref $elem ne 'ARRAY' or @{$elem} != 2;
-        my ($entity_name, $type_name) = @{$elem};
+        my ($entity_name, $type_invo) = @{$elem};
         confess q{new(): Bad :$map arg elem; its first elem is not}
                 . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
             if !blessed $entity_name
@@ -1060,11 +1216,19 @@ sub new {
         confess q{new(): Bad :$map arg elem; its first elem is not}
                 . q{ distinct between the arg elems.}
             if exists $map_hoa->{$entity_name_text_v};
-        confess q{new(): Bad :$map arg elem; its second elem is not}
-                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
-            if !blessed $type_name
-                or !$type_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $elem_cpy = [$entity_name, $type_name];
+        if ($allows_quasi) {
+            confess q{new(): Bad :$map arg elem; its second elem is not an}
+                    . q{ object of a QDRDBMS::AST::TypeInvoAQ-doing class.}
+                if !blessed $type_invo
+                    or !$type_invo->isa( 'QDRDBMS::AST::TypeInvoAQ' );
+        }
+        else {
+            confess q{new(): Bad :$map arg elem; its second elem is not an}
+                    . q{ object of a QDRDBMS::AST::TypeInvoNQ-doing class.}
+                if !blessed $type_invo
+                    or !$type_invo->isa( 'QDRDBMS::AST::TypeInvoNQ' );
+        }
+        my $elem_cpy = [$entity_name, $type_invo];
         push @{$map_aoa}, $elem_cpy;
         $map_hoa->{$entity_name_text_v} = $elem_cpy;
     }
@@ -1123,7 +1287,23 @@ sub map_hoa {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::TypeDict
+} # role QDRDBMS::AST::TypeDict
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::TypeDictNQ; # class
+    use base 'QDRDBMS::AST::TypeDict';
+    sub _allows_quasi { return $FALSE; }
+} # class QDRDBMS::AST::TypeDictNQ
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::TypeDictAQ; # class
+    use base 'QDRDBMS::AST::TypeDict';
+    sub _allows_quasi { return $TRUE; }
+} # class QDRDBMS::AST::TypeDictAQ
 
 ###########################################################################
 ###########################################################################
@@ -1339,10 +1519,9 @@ sub as_perl {
         my $ss = q{[} . (join q{, }, map {
                 $_->as_perl()
             } @{$self->{$ATTR_STMTS}}) . q{]};
-        $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::HostGateRtn->new({"
-                . ", 'upd_params' => $sup, 'ro_params' => $srp"
-                . ", 'vars' => $sv, 'stmts' => $ss })";
+        $self->{$ATTR_AS_PERL} = "QDRDBMS::AST::HostGateRtn->new({"
+            . " 'upd_params' => $sup, 'ro_params' => $srp"
+            . ", 'vars' => $sv, 'stmts' => $ss })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -1423,8 +1602,9 @@ I<This documentation is pending.>
     use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt
         newSetSel newSeqSel newBagSel newQuasiSetSel newQuasiSeqSel
         newQuasiBagSel newVarInvo newFuncInvo newProcInvo newFuncReturn
-        newProcReturn newEntityName newTypeDict newExprDict newFuncDecl
-        newProcDecl newHostGateRtn);
+        newProcReturn newEntityName newTypeInvoNQ newTypeInvoAQ
+        newTypeDictNQ newTypeDictAQ newExprDict newFuncDecl newProcDecl
+        newHostGateRtn);
 
     my $truth_value = newLitBool({ 'v' => (2 + 2 == 4) });
     my $planetoid = newLitText({ 'v' => 'Ceres' });
@@ -1459,10 +1639,11 @@ or "isa" hierarchy, children indented under parents:
 
     QDRDBMS::AST::Node (dummy role)
         QDRDBMS::AST::Expr (dummy role)
-            QDRDBMS::AST::LitBool
-            QDRDBMS::AST::LitText
-            QDRDBMS::AST::LitBlob
-            QDRDBMS::AST::LitInt
+            QDRDBMS::AST::Lit (dummy role)
+                QDRDBMS::AST::LitBool
+                QDRDBMS::AST::LitText
+                QDRDBMS::AST::LitBlob
+                QDRDBMS::AST::LitInt
             QDRDBMS::AST::ListSel (implementing role)
                 QDRDBMS::AST::SetSel
                 QDRDBMS::AST::SeqSel
@@ -1478,7 +1659,12 @@ or "isa" hierarchy, children indented under parents:
             QDRDBMS::AST::ProcReturn
             # more control-flow statement types would go here
         QDRDBMS::AST::EntityName
-        QDRDBMS::AST::TypeDict
+        QDRDBMS::AST::TypeInvo (implementing role)
+            QDRDBMS::AST::TypeInvoNQ
+            QDRDBMS::AST::TypeInvoAQ
+        QDRDBMS::AST::TypeDict (implementing role)
+            QDRDBMS::AST::TypeDictNQ
+            QDRDBMS::AST::TypeDictAQ
         QDRDBMS::AST::ExprDict
         QDRDBMS::AST::FuncDecl
         QDRDBMS::AST::ProcDecl
@@ -1669,7 +1855,19 @@ I<This documentation is pending.>
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::TypeDict Class
+=head2 The QDRDBMS::AST::TypeInvoNQ Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::TypeInvoAQ Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::TypeDictNQ Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::TypeDictAQ Class
 
 I<This documentation is pending.>
 
