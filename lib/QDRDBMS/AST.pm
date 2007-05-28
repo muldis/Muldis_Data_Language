@@ -21,10 +21,10 @@ my $TRUE  = (1 == 1);
         newLitBool newLitText newLitBlob newLitInt
         newSetSel newSeqSel newBagSel
         newQuasiSetSel newQuasiSeqSel newQuasiBagSel
-        newEntityName newExprDict newTypeDict
         newVarInvo newFuncInvo
         newProcInvo
         newFuncReturn newProcReturn
+        newEntityName newTypeDict newExprDict
         newFuncDecl newProcDecl
         newHostGateRtn
     );
@@ -91,25 +91,6 @@ sub newQuasiBagSel {
     return QDRDBMS::AST::QuasiBagSel->new({ 'v' => $v });
 }
 
-sub newEntityName {
-    my ($args) = @_;
-    my ($text, $seq) = @{$args}{'text', 'seq'};
-    return QDRDBMS::AST::EntityName->new({
-        'text' => $text, 'seq' => $seq });
-}
-
-sub newExprDict {
-    my ($args) = @_;
-    my ($map) = @{$args}{'map'};
-    return QDRDBMS::AST::ExprDict->new({ 'map' => $map });
-}
-
-sub newTypeDict {
-    my ($args) = @_;
-    my ($map) = @{$args}{'map'};
-    return QDRDBMS::AST::TypeDict->new({ 'map' => $map });
-}
-
 sub newVarInvo {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
@@ -139,6 +120,25 @@ sub newFuncReturn {
 
 sub newProcReturn {
     return QDRDBMS::AST::ProcReturn->new();
+}
+
+sub newEntityName {
+    my ($args) = @_;
+    my ($text, $seq) = @{$args}{'text', 'seq'};
+    return QDRDBMS::AST::EntityName->new({
+        'text' => $text, 'seq' => $seq });
+}
+
+sub newTypeDict {
+    my ($args) = @_;
+    my ($map) = @{$args}{'map'};
+    return QDRDBMS::AST::TypeDict->new({ 'map' => $map });
+}
+
+sub newExprDict {
+    my ($args) = @_;
+    my ($map) = @{$args}{'map'};
+    return QDRDBMS::AST::ExprDict->new({ 'map' => $map });
 }
 
 sub newFuncDecl {
@@ -581,325 +581,6 @@ sub repr_elem_count {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::EntityName; # class
-    use base 'QDRDBMS::AST::Node';
-
-    use Carp;
-
-    my $ATTR_TEXT_POSSREP = 'text_possrep';
-    my $ATTR_SEQ_POSSREP  = 'seq_possrep';
-
-    my $LISTSEL_ATTR_V = 'v';
-
-    my $ATTR_AS_PERL = 'as_perl';
-
-###########################################################################
-
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
-    my ($text, $seq) = @{$args}{'text', 'seq'};
-
-    die q{new(): Exactly 1 of the args (:$text|:$seq) must be defined.}
-        if !(defined $text xor defined $seq);
-
-    if (defined $text) {
-        die q{new(): Bad :$text arg; it is not a valid object}
-                . q{ of a QDRDBMS::AST::LitText-doing class.}
-            if !$text->isa( 'QDRDBMS::AST::LitText' );
-        my $text_v = $text->v();
-        die q{new(): Bad :$text arg; it contains character sequences that}
-                . q{ are invalid within the Text possrep of an EntityName.}
-            if $text_v =~ m/ \\ \z/xs or $text_v =~ m/ \\ [^bp] /xs;
-
-        $self->{$ATTR_TEXT_POSSREP} = $text;
-        $self->{$ATTR_SEQ_POSSREP} = QDRDBMS::AST::SeqSel->new({ 'v' => (
-                [map {
-                        my $s = $_;
-                        $s =~ s/ \\ p /./xsg;
-                        $s =~ s/ \\ b /\\/xsg;
-                        QDRDBMS::AST::LitText->new({ 'v' => $s });
-                    } split /\./, $text_v]
-            ) });
-    }
-
-    else { # defined $seq
-        die q{new(): Bad :$seq arg; it is not an object of a}
-                . q{ QDRDBMS::AST::SeqSel-doing class, or it has < 1 elem.}
-            if !$seq->isa( 'QDRDBMS::AST::SeqSel' )
-                or $seq->repr_elem_count() == 0;
-        my $seq_elems = $seq->{$LISTSEL_ATTR_V};
-        for my $seq_e (@{$seq_elems}) {
-            die q{new(): Bad :$seq arg elem; it is not}
-                    . q{ an object of a QDRDBMS::AST::LitText-doing class.}
-                if !$seq_e->isa( 'QDRDBMS::AST::LitText' );
-        }
-
-        $self->{$ATTR_TEXT_POSSREP} = QDRDBMS::AST::LitText->new({ 'v' => (
-                join q{.}, map {
-                        my $s = $_->v();
-                        $s =~ s/ \\ /\\b/xsg;
-                        $s =~ s/ \. /\\p/xsg;
-                        $s;
-                    } @{$seq_elems}
-            ) });
-        $self->{$ATTR_SEQ_POSSREP} = $seq;
-    }
-
-    return $self;
-}
-
-###########################################################################
-
-sub as_perl {
-    my ($self) = @_;
-    if (!defined $self->{$ATTR_AS_PERL}) {
-        my $s = $self->{$ATTR_TEXT_POSSREP}->as_perl();
-        $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::EntityName->new({ 'text' => $s })";
-    }
-    return $self->{$ATTR_AS_PERL};
-}
-
-###########################################################################
-
-sub _equal_repr {
-    my ($self, $other) = @_;
-    return $self->{$ATTR_TEXT_POSSREP}->equal_repr({
-        'other' => $other->{$ATTR_TEXT_POSSREP} });
-}
-
-###########################################################################
-
-sub text {
-    my ($self) = @_;
-    return $self->{$ATTR_TEXT_POSSREP};
-}
-
-###########################################################################
-
-sub seq {
-    my ($self) = @_;
-    return $self->{$ATTR_SEQ_POSSREP};
-}
-
-###########################################################################
-
-} # class QDRDBMS::AST::EntityName
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::ExprDict; # class
-    use base 'QDRDBMS::AST::Node';
-
-    use Carp;
-    use Scalar::Util qw(blessed);
-
-    my $ATTR_MAP_AOA = 'map_aoa';
-    my $ATTR_MAP_HOA = 'map_hoa';
-
-    # Note: This type is specific such that values are always some ::Expr,
-    # but this type may be later generalized to hold ::Node instead.
-
-    my $ATTR_AS_PERL = 'as_perl';
-
-###########################################################################
-
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
-    my ($map) = @{$args}{'map'};
-
-    confess q{new(): Bad :$map arg; it is not an Array.}
-        if ref $map ne 'ARRAY';
-    my $map_aoa = [];
-    my $map_hoa = {};
-    for my $elem (@{$map}) {
-        confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
-            if ref $elem ne 'ARRAY' or @{$elem} != 2;
-        my ($entity_name, $expr) = @{$elem};
-        confess q{new(): Bad :$map arg elem; its first elem is not}
-                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
-            if !blessed $entity_name
-                or !$entity_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $entity_name_text_v = $entity_name->text()->v();
-        confess q{new(): Bad :$map arg elem; its first elem is not}
-                . q{ distinct between the arg elems.}
-            if exists $map_hoa->{$entity_name_text_v};
-        confess q{new(): Bad :$map arg elem; its second elem is not}
-                . q{ an object of a QDRDBMS::AST::Expr-doing class.}
-            if !blessed $expr or !$expr->isa( 'QDRDBMS::AST::Expr' );
-        my $elem_cpy = [$entity_name, $expr];
-        push @{$map_aoa}, $elem_cpy;
-        $map_hoa->{$entity_name_text_v} = $elem_cpy;
-    }
-
-    $self->{$ATTR_MAP_AOA} = $map_aoa;
-    $self->{$ATTR_MAP_HOA} = $map_hoa;
-
-    return $self;
-}
-
-###########################################################################
-
-sub as_perl {
-    my ($self) = @_;
-    if (!defined $self->{$ATTR_AS_PERL}) {
-        my $s = q{[} . (join q{, }, map {
-                q{[} . $_->[0]->as_perl()
-                    . q{, } . $_->[1]->as_perl() . q{]}
-            } @{$self->{$ATTR_MAP_AOA}}) . q{]};
-        $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::ExprDict->new({ 'map' => $s })";
-    }
-    return $self->{$ATTR_AS_PERL};
-}
-
-###########################################################################
-
-sub _equal_repr {
-    my ($self, $other) = @_;
-    return $FALSE
-        if @{$other->{$ATTR_MAP_AOA}} != @{$self->{$ATTR_MAP_AOA}};
-    my $v1 = $self->{$ATTR_MAP_HOA};
-    my $v2 = $other->{$ATTR_MAP_HOA};
-    for my $ek (keys %{$v1}) {
-        return $FALSE
-            if !exists $v2->{$ek};
-        return $FALSE
-            if !$v1->{$ek}->[1]->equal_repr({
-                'other' => $v2->[1]->{$ek} });
-    }
-    return $TRUE;
-}
-
-###########################################################################
-
-sub map {
-    my ($self) = @_;
-    return [map { [@{$_}] } @{$self->{$ATTR_MAP_AOA}}];
-}
-
-sub map_hoa {
-    my ($self) = @_;
-    my $h = $self->{$ATTR_MAP_HOA};
-    return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
-}
-
-###########################################################################
-
-} # class QDRDBMS::AST::ExprDict
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::TypeDict; # class
-    use base 'QDRDBMS::AST::Node';
-
-    use Carp;
-    use Scalar::Util qw(blessed);
-
-    my $ATTR_MAP_AOA = 'map_aoa';
-    my $ATTR_MAP_HOA = 'map_hoa';
-
-    # Note: This type may be generalized later to allow ::TypeDict values
-    # and not just EntityName values; also, the latter will probably be
-    # made more strict, to just be type names.
-
-    my $ATTR_AS_PERL = 'as_perl';
-
-###########################################################################
-
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
-    my ($map) = @{$args}{'map'};
-
-    confess q{new(): Bad :$map arg; it is not an Array.}
-        if ref $map ne 'ARRAY';
-    my $map_aoa = [];
-    my $map_hoa = {};
-    for my $elem (@{$map}) {
-        confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
-            if ref $elem ne 'ARRAY' or @{$elem} != 2;
-        my ($entity_name, $type_name) = @{$elem};
-        confess q{new(): Bad :$map arg elem; its first elem is not}
-                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
-            if !blessed $entity_name
-                or !$entity_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $entity_name_text_v = $entity_name->text()->v();
-        confess q{new(): Bad :$map arg elem; its first elem is not}
-                . q{ distinct between the arg elems.}
-            if exists $map_hoa->{$entity_name_text_v};
-        confess q{new(): Bad :$map arg elem; its second elem is not}
-                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
-            if !blessed $type_name
-                or !$type_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $elem_cpy = [$entity_name, $type_name];
-        push @{$map_aoa}, $elem_cpy;
-        $map_hoa->{$entity_name_text_v} = $elem_cpy;
-    }
-
-    $self->{$ATTR_MAP_AOA} = $map_aoa;
-    $self->{$ATTR_MAP_HOA} = $map_hoa;
-
-    return $self;
-}
-
-###########################################################################
-
-sub as_perl {
-    my ($self) = @_;
-    if (!defined $self->{$ATTR_AS_PERL}) {
-        my $s = q{[} . (join q{, }, map {
-                q{[} . $_->[0]->as_perl()
-                    . q{, } . $_->[1]->as_perl() . q{]}
-            } @{$self->{$ATTR_MAP_AOA}}) . q{]};
-        $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::TypeDict->new({ 'map' => $s })";
-    }
-    return $self->{$ATTR_AS_PERL};
-}
-
-###########################################################################
-
-sub _equal_repr {
-    my ($self, $other) = @_;
-    return $FALSE
-        if @{$other->{$ATTR_MAP_AOA}} != @{$self->{$ATTR_MAP_AOA}};
-    my $v1 = $self->{$ATTR_MAP_HOA};
-    my $v2 = $other->{$ATTR_MAP_HOA};
-    for my $ek (keys %{$v1}) {
-        return $FALSE
-            if !exists $v2->{$ek};
-        return $FALSE
-            if !$v1->{$ek}->[1]->equal_repr({
-                'other' => $v2->[1]->{$ek} });
-    }
-    return $TRUE;
-}
-
-###########################################################################
-
-sub map {
-    my ($self) = @_;
-    return [map { [@{$_}] } @{$self->{$ATTR_MAP_AOA}}];
-}
-
-sub map_hoa {
-    my ($self) = @_;
-    my $h = $self->{$ATTR_MAP_HOA};
-    return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
-}
-
-###########################################################################
-
-} # class QDRDBMS::AST::TypeDict
-
-###########################################################################
-###########################################################################
-
 { package QDRDBMS::AST::VarInvo; # class
     use base 'QDRDBMS::AST::Expr';
 
@@ -1232,6 +913,325 @@ sub _equal_repr {
 ###########################################################################
 ###########################################################################
 
+{ package QDRDBMS::AST::EntityName; # class
+    use base 'QDRDBMS::AST::Node';
+
+    use Carp;
+
+    my $ATTR_TEXT_POSSREP = 'text_possrep';
+    my $ATTR_SEQ_POSSREP  = 'seq_possrep';
+
+    my $LISTSEL_ATTR_V = 'v';
+
+    my $ATTR_AS_PERL = 'as_perl';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($text, $seq) = @{$args}{'text', 'seq'};
+
+    die q{new(): Exactly 1 of the args (:$text|:$seq) must be defined.}
+        if !(defined $text xor defined $seq);
+
+    if (defined $text) {
+        die q{new(): Bad :$text arg; it is not a valid object}
+                . q{ of a QDRDBMS::AST::LitText-doing class.}
+            if !$text->isa( 'QDRDBMS::AST::LitText' );
+        my $text_v = $text->v();
+        die q{new(): Bad :$text arg; it contains character sequences that}
+                . q{ are invalid within the Text possrep of an EntityName.}
+            if $text_v =~ m/ \\ \z/xs or $text_v =~ m/ \\ [^bp] /xs;
+
+        $self->{$ATTR_TEXT_POSSREP} = $text;
+        $self->{$ATTR_SEQ_POSSREP} = QDRDBMS::AST::SeqSel->new({ 'v' => (
+                [map {
+                        my $s = $_;
+                        $s =~ s/ \\ p /./xsg;
+                        $s =~ s/ \\ b /\\/xsg;
+                        QDRDBMS::AST::LitText->new({ 'v' => $s });
+                    } split /\./, $text_v]
+            ) });
+    }
+
+    else { # defined $seq
+        die q{new(): Bad :$seq arg; it is not an object of a}
+                . q{ QDRDBMS::AST::SeqSel-doing class, or it has < 1 elem.}
+            if !$seq->isa( 'QDRDBMS::AST::SeqSel' )
+                or $seq->repr_elem_count() == 0;
+        my $seq_elems = $seq->{$LISTSEL_ATTR_V};
+        for my $seq_e (@{$seq_elems}) {
+            die q{new(): Bad :$seq arg elem; it is not}
+                    . q{ an object of a QDRDBMS::AST::LitText-doing class.}
+                if !$seq_e->isa( 'QDRDBMS::AST::LitText' );
+        }
+
+        $self->{$ATTR_TEXT_POSSREP} = QDRDBMS::AST::LitText->new({ 'v' => (
+                join q{.}, map {
+                        my $s = $_->v();
+                        $s =~ s/ \\ /\\b/xsg;
+                        $s =~ s/ \. /\\p/xsg;
+                        $s;
+                    } @{$seq_elems}
+            ) });
+        $self->{$ATTR_SEQ_POSSREP} = $seq;
+    }
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = $self->{$ATTR_TEXT_POSSREP}->as_perl();
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::EntityName->new({ 'text' => $s })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $self->{$ATTR_TEXT_POSSREP}->equal_repr({
+        'other' => $other->{$ATTR_TEXT_POSSREP} });
+}
+
+###########################################################################
+
+sub text {
+    my ($self) = @_;
+    return $self->{$ATTR_TEXT_POSSREP};
+}
+
+###########################################################################
+
+sub seq {
+    my ($self) = @_;
+    return $self->{$ATTR_SEQ_POSSREP};
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::EntityName
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::TypeDict; # class
+    use base 'QDRDBMS::AST::Node';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_MAP_AOA = 'map_aoa';
+    my $ATTR_MAP_HOA = 'map_hoa';
+
+    # Note: This type may be generalized later to allow ::TypeDict values
+    # and not just EntityName values; also, the latter will probably be
+    # made more strict, to just be type names.
+
+    my $ATTR_AS_PERL = 'as_perl';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($map) = @{$args}{'map'};
+
+    confess q{new(): Bad :$map arg; it is not an Array.}
+        if ref $map ne 'ARRAY';
+    my $map_aoa = [];
+    my $map_hoa = {};
+    for my $elem (@{$map}) {
+        confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
+            if ref $elem ne 'ARRAY' or @{$elem} != 2;
+        my ($entity_name, $type_name) = @{$elem};
+        confess q{new(): Bad :$map arg elem; its first elem is not}
+                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+            if !blessed $entity_name
+                or !$entity_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $entity_name_text_v = $entity_name->text()->v();
+        confess q{new(): Bad :$map arg elem; its first elem is not}
+                . q{ distinct between the arg elems.}
+            if exists $map_hoa->{$entity_name_text_v};
+        confess q{new(): Bad :$map arg elem; its second elem is not}
+                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+            if !blessed $type_name
+                or !$type_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $elem_cpy = [$entity_name, $type_name];
+        push @{$map_aoa}, $elem_cpy;
+        $map_hoa->{$entity_name_text_v} = $elem_cpy;
+    }
+
+    $self->{$ATTR_MAP_AOA} = $map_aoa;
+    $self->{$ATTR_MAP_HOA} = $map_hoa;
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = q{[} . (join q{, }, map {
+                q{[} . $_->[0]->as_perl()
+                    . q{, } . $_->[1]->as_perl() . q{]}
+            } @{$self->{$ATTR_MAP_AOA}}) . q{]};
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::TypeDict->new({ 'map' => $s })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $FALSE
+        if @{$other->{$ATTR_MAP_AOA}} != @{$self->{$ATTR_MAP_AOA}};
+    my $v1 = $self->{$ATTR_MAP_HOA};
+    my $v2 = $other->{$ATTR_MAP_HOA};
+    for my $ek (keys %{$v1}) {
+        return $FALSE
+            if !exists $v2->{$ek};
+        return $FALSE
+            if !$v1->{$ek}->[1]->equal_repr({
+                'other' => $v2->[1]->{$ek} });
+    }
+    return $TRUE;
+}
+
+###########################################################################
+
+sub map {
+    my ($self) = @_;
+    return [map { [@{$_}] } @{$self->{$ATTR_MAP_AOA}}];
+}
+
+sub map_hoa {
+    my ($self) = @_;
+    my $h = $self->{$ATTR_MAP_HOA};
+    return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::TypeDict
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::ExprDict; # class
+    use base 'QDRDBMS::AST::Node';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_MAP_AOA = 'map_aoa';
+    my $ATTR_MAP_HOA = 'map_hoa';
+
+    # Note: This type is specific such that values are always some ::Expr,
+    # but this type may be later generalized to hold ::Node instead.
+
+    my $ATTR_AS_PERL = 'as_perl';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($map) = @{$args}{'map'};
+
+    confess q{new(): Bad :$map arg; it is not an Array.}
+        if ref $map ne 'ARRAY';
+    my $map_aoa = [];
+    my $map_hoa = {};
+    for my $elem (@{$map}) {
+        confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
+            if ref $elem ne 'ARRAY' or @{$elem} != 2;
+        my ($entity_name, $expr) = @{$elem};
+        confess q{new(): Bad :$map arg elem; its first elem is not}
+                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+            if !blessed $entity_name
+                or !$entity_name->isa( 'QDRDBMS::AST::EntityName' );
+        my $entity_name_text_v = $entity_name->text()->v();
+        confess q{new(): Bad :$map arg elem; its first elem is not}
+                . q{ distinct between the arg elems.}
+            if exists $map_hoa->{$entity_name_text_v};
+        confess q{new(): Bad :$map arg elem; its second elem is not}
+                . q{ an object of a QDRDBMS::AST::Expr-doing class.}
+            if !blessed $expr or !$expr->isa( 'QDRDBMS::AST::Expr' );
+        my $elem_cpy = [$entity_name, $expr];
+        push @{$map_aoa}, $elem_cpy;
+        $map_hoa->{$entity_name_text_v} = $elem_cpy;
+    }
+
+    $self->{$ATTR_MAP_AOA} = $map_aoa;
+    $self->{$ATTR_MAP_HOA} = $map_hoa;
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = q{[} . (join q{, }, map {
+                q{[} . $_->[0]->as_perl()
+                    . q{, } . $_->[1]->as_perl() . q{]}
+            } @{$self->{$ATTR_MAP_AOA}}) . q{]};
+        $self->{$ATTR_AS_PERL}
+            = "QDRDBMS::AST::ExprDict->new({ 'map' => $s })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $FALSE
+        if @{$other->{$ATTR_MAP_AOA}} != @{$self->{$ATTR_MAP_AOA}};
+    my $v1 = $self->{$ATTR_MAP_HOA};
+    my $v2 = $other->{$ATTR_MAP_HOA};
+    for my $ek (keys %{$v1}) {
+        return $FALSE
+            if !exists $v2->{$ek};
+        return $FALSE
+            if !$v1->{$ek}->[1]->equal_repr({
+                'other' => $v2->[1]->{$ek} });
+    }
+    return $TRUE;
+}
+
+###########################################################################
+
+sub map {
+    my ($self) = @_;
+    return [map { [@{$_}] } @{$self->{$ATTR_MAP_AOA}}];
+}
+
+sub map_hoa {
+    my ($self) = @_;
+    my $h = $self->{$ATTR_MAP_HOA};
+    return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::ExprDict
+
+###########################################################################
+###########################################################################
+
 { package QDRDBMS::AST::FuncDecl; # class
     use base 'QDRDBMS::AST::Node';
 
@@ -1422,8 +1422,8 @@ I<This documentation is pending.>
 
     use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt
         newSetSel newSeqSel newBagSel newQuasiSetSel newQuasiSeqSel
-        newQuasiBagSel newEntityName newExprDict newTypeDict newVarInvo
-        newFuncInvo newProcInvo newFuncReturn newProcReturn newFuncDecl
+        newQuasiBagSel newVarInvo newFuncInvo newProcInvo newFuncReturn
+        newProcReturn newEntityName newTypeDict newExprDict newFuncDecl
         newProcDecl newHostGateRtn);
 
     my $truth_value = newLitBool({ 'v' => (2 + 2 == 4) });
@@ -1458,9 +1458,6 @@ be added in the future), which are visually arranged here in their "does"
 or "isa" hierarchy, children indented under parents:
 
     QDRDBMS::AST::Node (dummy role)
-        QDRDBMS::AST::EntityName
-        QDRDBMS::AST::ExprDict
-        QDRDBMS::AST::TypeDict
         QDRDBMS::AST::Expr (dummy role)
             QDRDBMS::AST::LitBool
             QDRDBMS::AST::LitText
@@ -1480,6 +1477,9 @@ or "isa" hierarchy, children indented under parents:
             QDRDBMS::AST::FuncReturn
             QDRDBMS::AST::ProcReturn
             # more control-flow statement types would go here
+        QDRDBMS::AST::EntityName
+        QDRDBMS::AST::TypeDict
+        QDRDBMS::AST::ExprDict
         QDRDBMS::AST::FuncDecl
         QDRDBMS::AST::ProcDecl
         # more routine declaration types would go here
@@ -1645,18 +1645,6 @@ I<This documentation is pending.>
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::EntityName Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::ExprDict Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::TypeDict Class
-
-I<This documentation is pending.>
-
 =head2 The QDRDBMS::AST::VarInvo Class
 
 I<This documentation is pending.>
@@ -1674,6 +1662,18 @@ I<This documentation is pending.>
 I<This documentation is pending.>
 
 =head2 The QDRDBMS::AST::ProcReturn Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::EntityName Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::TypeDict Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::ExprDict Class
 
 I<This documentation is pending.>
 
