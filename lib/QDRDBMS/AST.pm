@@ -1084,16 +1084,17 @@ sub new {
             if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeDictNQ' );
     }
 
-    elsif ($kind eq 'Set' or $kind eq 'Seq' or $kind eq 'Bag') {
+    elsif ($kind eq 'Set' or $kind eq 'Seq' or $kind eq 'Bag'
+            or $kind eq 'Maybe') {
         confess q{new(): Bad :$spec arg; it needs to be a valid object}
                 . q{ of a QDRDBMS::AST::TypeInvoNQ-doing class}
-                . q{ when the :$kind arg is 'Set'|'Seq'|'Bag'.}
+                . q{ when the :$kind arg is 'Set'|'Seq'|'Bag'|'Maybe'.}
             if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeInvoNQ' );
     }
 
     elsif (!$self->_allows_quasi()) {
         confess q{new(): Bad :$kind arg; it needs to be one of}
-            . q{ 'Scalar'|'Tuple'|'Relation'|'Set'|'Seq'|'Bag'.};
+            . q{ 'Scalar'|'Tuple'|'Relation'|'Set'|'Seq'|'Bag'|'Maybe'.};
     }
 
     elsif ($kind eq 'QTuple' or $kind eq 'QRelation') {
@@ -1103,27 +1104,30 @@ sub new {
             if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeDictAQ' );
     }
 
-    elsif ($kind eq 'QSet' or $kind eq 'QSeq' or $kind eq 'QBag') {
+    elsif ($kind eq 'QSet' or $kind eq 'QSeq' or $kind eq 'QBag'
+            or $kind eq 'QMaybe') {
         confess q{new(): Bad :$spec arg; it needs to be a valid object}
                 . q{ of a QDRDBMS::AST::TypeInvoAQ-doing class}
-                . q{ when the :$kind arg is 'QSet'|'QSeq'|'QBag'.}
+                . q{ when the :$kind arg is 'QSet'|'QSeq'|'QBag'|'QMaybe'.}
             if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeInvoAQ' );
     }
 
     elsif ($kind eq 'Any') {
         confess q{new(): Bad :$spec arg; it needs to be one of}
-                . q{ 'Tuple'|'Relation'|'Set'|'Seq'|'Bag'}
-                . q{|'QTuple'|'QRelation'|'QSet'|'QSeq'|'QBag'|'Universal'}
-                . q{ when the :$kind arg is 'Any'.}
+                . q{ 'Tuple'|'Relation'|'Set'|'Seq'|'Bag'|'Maybe'}
+                . q{|'QTuple'|'QRelation'|'QSet'|'QSeq'|'QBag'|'QMaybe'}
+                . q{|'Universal' when the :$kind arg is 'Any'.}
             if !defined $spec
-                or $spec !~ m/\A (Tuple|Relation|Set|Seq|Bag
-                    |QTuple|QRelation|QSet|QSeq|QBag|Universal) \z/xs;
+                or $spec !~ m/\A (Tuple|Relation|Set|Seq|Bag|Maybe
+                    |QTuple|QRelation|QSet|QSeq|QBag|QMaybe
+                    |Universal) \z/xs;
     }
 
     else {
         confess q{new(): Bad :$kind arg; it needs to be}
-            . q{ 'Scalar'|'Tuple'|'Relation'|'Set'|'Seq'|'Bag'}
-            . q{|'QTuple'|'QRelation'|'QSet'|'QSeq'|'QBag'|'Any'.};
+            . q{ 'Scalar'|'Tuple'|'Relation'|'Set'|'Seq'|'Bag'|'Maybe'}
+            . q{|'QTuple'|'QRelation'|'QSet'|'QSeq'|'QBag'|'QMaybe'}
+            . q{|'Any'.};
     }
 
     $self->{$ATTR_KIND} = $kind;
