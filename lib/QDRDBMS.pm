@@ -140,9 +140,9 @@ sub new {
     my $dbms_eng_class = blessed $dbms_eng;
 
     confess q{new(): Bad :$decl_type arg; it is not an object of a}
-            . q{ QDRDBMS::AST::EntityName-doing class.}
+            . q{ QDRDBMS::AST::TypeInvo-doing class.}
         if !blessed $decl_type
-            or !$decl_type->isa( 'QDRDBMS::AST::EntityName' );
+            or !$decl_type->isa( 'QDRDBMS::AST::TypeInvo' );
 
     my $var_eng = eval {
         $dbms_eng->new_var({ 'decl_type' => $decl_type });

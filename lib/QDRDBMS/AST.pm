@@ -489,7 +489,7 @@ sub v {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::ListSel; # role
+{ package QDRDBMS::AST::_FlatColl; # role
     use base 'QDRDBMS::AST::Expr';
 
     use Carp;
@@ -564,48 +564,48 @@ sub repr_elem_count {
 
 ###########################################################################
 
-} # role QDRDBMS::AST::ListSel
+} # role QDRDBMS::AST::_FlatColl
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::SetSel; # class
-    use base 'QDRDBMS::AST::ListSel';
+    use base 'QDRDBMS::AST::_FlatColl';
 } # class QDRDBMS::AST::SetSel
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::SeqSel; # class
-    use base 'QDRDBMS::AST::ListSel';
+    use base 'QDRDBMS::AST::_FlatColl';
 } # class QDRDBMS::AST::SeqSel
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::BagSel; # class
-    use base 'QDRDBMS::AST::ListSel';
+    use base 'QDRDBMS::AST::_FlatColl';
 } # class QDRDBMS::AST::BagSel
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::QuasiSetSel; # class
-    use base 'QDRDBMS::AST::ListSel';
+    use base 'QDRDBMS::AST::_FlatColl';
 } # class QDRDBMS::AST::QuasiSetSel
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::QuasiSeqSel; # class
-    use base 'QDRDBMS::AST::ListSel';
+    use base 'QDRDBMS::AST::_FlatColl';
 } # class QDRDBMS::AST::QuasiSeqSel
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::QuasiBagSel; # class
-    use base 'QDRDBMS::AST::ListSel';
+    use base 'QDRDBMS::AST::_FlatColl';
 } # class QDRDBMS::AST::QuasiBagSel
 
 ###########################################################################
@@ -787,7 +787,7 @@ sub new {
         if !blessed $ro_args or !$ro_args->isa( 'QDRDBMS::AST::ExprDict' );
     my $upd_args_map_hoa = $upd_args->{$EXPRDICT_ATTR_MAP_HOA};
     for my $an_and_vn (values %{$upd_args_map_hoa}) {
-        die q{new(): Bad :$upd_args arg elem expr; it is not}
+        confess q{new(): Bad :$upd_args arg elem expr; it is not}
                 . q{ an object of a QDRDBMS::AST::VarInvo-doing class.}
             if !$an_and_vn->[1]->isa( 'QDRDBMS::AST::VarInvo' );
     }
@@ -947,11 +947,13 @@ sub _equal_repr {
     use base 'QDRDBMS::AST::Node';
 
     use Carp;
+    use Encode qw(is_utf8);
 
     my $ATTR_TEXT_POSSREP = 'text_possrep';
+        # A p5 Scalar that is a text-mode string;
+        # it either has true utf8 flag or is only 7-bit bytes.
     my $ATTR_SEQ_POSSREP  = 'seq_possrep';
-
-    my $LISTSEL_ATTR_V = 'v';
+        # A p5 Array whose elements are p5 Scalar as per the text possrep.
 
     my $ATTR_AS_PERL = 'as_perl';
 
@@ -962,50 +964,44 @@ sub new {
     my $self = bless {}, $class;
     my ($text, $seq) = @{$args}{'text', 'seq'};
 
-    die q{new(): Exactly 1 of the args (:$text|:$seq) must be defined.}
+    confess q{new(): Exactly 1 of the args (:$text|:$seq) must be defined.}
         if !(defined $text xor defined $seq);
 
     if (defined $text) {
-        die q{new(): Bad :$text arg; it is not a valid object}
-                . q{ of a QDRDBMS::AST::LitText-doing class.}
-            if !$text->isa( 'QDRDBMS::AST::LitText' );
-        my $text_v = $text->v();
-        die q{new(): Bad :$text arg; it contains character sequences that}
+        confess q{new(): Bad :$text arg; Perl 5 does not consider}
+                . q{ it to be a canonical character string value.}
+            if !is_utf8 $text and $text =~ m/[^\x00-\x7F]/xs;
+        confess q{new(): Bad :$text arg; it contains charac sequences that}
                 . q{ are invalid within the Text possrep of an EntityName.}
-            if $text_v =~ m/ \\ \z/xs or $text_v =~ m/ \\ [^bp] /xs;
+            if $text =~ m/ \\ \z/xs or $text =~ m/ \\ [^bp] /xs;
 
         $self->{$ATTR_TEXT_POSSREP} = $text;
-        $self->{$ATTR_SEQ_POSSREP} = QDRDBMS::AST::SeqSel->new({ 'v' => (
-                [map {
-                        my $s = $_;
-                        $s =~ s/ \\ p /./xsg;
-                        $s =~ s/ \\ b /\\/xsg;
-                        QDRDBMS::AST::LitText->new({ 'v' => $s });
-                    } split /\./, $text_v]
-            ) });
+        $self->{$ATTR_SEQ_POSSREP} = [map {
+                my $s = $_;
+                $s =~ s/ \\ p /./xsg;
+                $s =~ s/ \\ b /\\/xsg;
+                $s;
+            } split /\./, $text];
     }
 
     else { # defined $seq
-        die q{new(): Bad :$seq arg; it is not an object of a}
-                . q{ QDRDBMS::AST::SeqSel-doing class, or it has < 1 elem.}
-            if !$seq->isa( 'QDRDBMS::AST::SeqSel' )
-                or $seq->repr_elem_count() == 0;
-        my $seq_elems = $seq->{$LISTSEL_ATTR_V};
-        for my $seq_e (@{$seq_elems}) {
-            die q{new(): Bad :$seq arg elem; it is not}
-                    . q{ an object of a QDRDBMS::AST::LitText-doing class.}
-                if !$seq_e->isa( 'QDRDBMS::AST::LitText' );
+        confess q{new(): Bad :$seq arg; it is not an Array}
+                . q{, or it has < 1 elem.}
+            if ref $seq ne 'ARRAY' or @{$seq} == 0;
+        for my $seq_e (@{$seq}) {
+            confess q{new(): Bad :$seq arg elem; Perl 5 does not consider}
+                    . q{ it to be a canonical character string value.}
+                if !defined $seq_e
+                    or (!is_utf8 $seq_e and $seq_e =~ m/[^\x00-\x7F]/xs);
         }
 
-        $self->{$ATTR_TEXT_POSSREP} = QDRDBMS::AST::LitText->new({ 'v' => (
-                join q{.}, map {
-                        my $s = $_->v();
-                        $s =~ s/ \\ /\\b/xsg;
-                        $s =~ s/ \. /\\p/xsg;
-                        $s;
-                    } @{$seq_elems}
-            ) });
-        $self->{$ATTR_SEQ_POSSREP} = $seq;
+        $self->{$ATTR_TEXT_POSSREP} = join q{.}, map {
+                my $s = $_;
+                $s =~ s/ \\ /\\b/xsg;
+                $s =~ s/ \. /\\p/xsg;
+                $s;
+            } @{$seq};
+        $self->{$ATTR_SEQ_POSSREP} = [@{$seq}];
     }
 
     return $self;
@@ -1016,7 +1012,9 @@ sub new {
 sub as_perl {
     my ($self) = @_;
     if (!defined $self->{$ATTR_AS_PERL}) {
-        my $s = $self->{$ATTR_TEXT_POSSREP}->as_perl();
+        my $s = $self->{$ATTR_TEXT_POSSREP};
+        $s =~ s/'/\\'/xs;
+        $s = q{'} . $s . q{'};
         $self->{$ATTR_AS_PERL}
             = "QDRDBMS::AST::EntityName->new({ 'text' => $s })";
     }
@@ -1027,8 +1025,7 @@ sub as_perl {
 
 sub _equal_repr {
     my ($self, $other) = @_;
-    return $self->{$ATTR_TEXT_POSSREP}->equal_repr({
-        'other' => $other->{$ATTR_TEXT_POSSREP} });
+    return $other->{$ATTR_TEXT_POSSREP} eq $self->{$ATTR_TEXT_POSSREP};
 }
 
 ###########################################################################
@@ -1042,7 +1039,7 @@ sub text {
 
 sub seq {
     my ($self) = @_;
-    return $self->{$ATTR_SEQ_POSSREP};
+    return [@{$self->{$ATTR_SEQ_POSSREP}}];
 }
 
 ###########################################################################
@@ -1073,40 +1070,60 @@ sub new {
     confess q{new(): Bad :$kind arg; it is undefined.}
         if !defined $kind;
 
-    if ($kind eq 'S') {
+    if ($kind eq 'Scalar') {
         confess q{new(): Bad :$spec arg; it needs to be a valid object}
                 . q{ of a QDRDBMS::AST::EntityName-doing class}
-                . q{ when the :$kind arg is 'S'.}
+                . q{ when the :$kind arg is 'Scalar'.}
             if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::EntityName' );
     }
 
-    elsif ($kind eq 'T' or $kind eq 'R') {
+    elsif ($kind eq 'Tuple' or $kind eq 'Relation') {
         confess q{new(): Bad :$spec arg; it needs to be a valid object}
                 . q{ of a QDRDBMS::AST::TypeDictNQ-doing class}
-                . q{ when the :$kind arg is 'T'|'R'.}
+                . q{ when the :$kind arg is 'Tuple'|'Relation'.}
             if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeDictNQ' );
     }
 
-    elsif (!$self->_allows_quasi()) {
-        confess q{new(): Bad :$kind arg; it needs to be 'S'|'T'|'R'.};
+    elsif ($kind eq 'Set' or $kind eq 'Seq' or $kind eq 'Bag') {
+        confess q{new(): Bad :$spec arg; it needs to be a valid object}
+                . q{ of a QDRDBMS::AST::TypeInvoNQ-doing class}
+                . q{ when the :$kind arg is 'Set'|'Seq'|'Bag'.}
+            if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeInvoNQ' );
     }
 
-    elsif ($kind eq 'QT' or $kind eq 'QR') {
+    elsif (!$self->_allows_quasi()) {
+        confess q{new(): Bad :$kind arg; it needs to be one of}
+            . q{ 'Scalar'|'Tuple'|'Relation'|'Set'|'Seq'|'Bag'.};
+    }
+
+    elsif ($kind eq 'QTuple' or $kind eq 'QRelation') {
         confess q{new(): Bad :$spec arg; it needs to be a valid object}
                 . q{ of a QDRDBMS::AST::TypeDictAQ-doing class}
-                . q{ when the :$kind arg is 'QT'|'QR'.}
+                . q{ when the :$kind arg is 'QTuple'|'QRelation'.}
             if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeDictAQ' );
     }
 
-    elsif ($kind eq 'A') {
+    elsif ($kind eq 'QSet' or $kind eq 'QSeq' or $kind eq 'QBag') {
+        confess q{new(): Bad :$spec arg; it needs to be a valid object}
+                . q{ of a QDRDBMS::AST::TypeInvoAQ-doing class}
+                . q{ when the :$kind arg is 'QSet'|'QSeq'|'QBag'.}
+            if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeInvoAQ' );
+    }
+
+    elsif ($kind eq 'Any') {
         confess q{new(): Bad :$spec arg; it needs to be one of}
-                . q{ 'T'|'R'|'QT'|'QR'|'U' when the :$kind arg is 'A'.}
-            if !defined $spec or $spec !~ m/\A (T|R|QT|QR|U) \z/xs;
+                . q{ 'Tuple'|'Relation'|'Set'|'Seq'|'Bag'}
+                . q{|'QTuple'|'QRelation'|'QSet'|'QSeq'|'QBag'|'Universal'}
+                . q{ when the :$kind arg is 'Any'.}
+            if !defined $spec
+                or $spec !~ m/\A (Tuple|Relation|Set|Seq|Bag
+                    |QTuple|QRelation|QSet|QSeq|QBag|Universal) \z/xs;
     }
 
     else {
         confess q{new(): Bad :$kind arg; it needs to be}
-            . q{ 'S'|'T'|'R'|'QT'|'QR'|'A'.};
+            . q{ 'Scalar'|'Tuple'|'Relation'|'Set'|'Seq'|'Bag'}
+            . q{|'QTuple'|'QRelation'|'QSet'|'QSeq'|'QBag'|'Any'.};
     }
 
     $self->{$ATTR_KIND} = $kind;
@@ -1124,7 +1141,7 @@ sub as_perl {
         my $kind = $self->{$ATTR_KIND};
         my $spec = $self->{$ATTR_SPEC};
         my $sk = q{'} . $kind . q{'};
-        my $ss = $kind eq 'A' ? q{'} . $spec . q{'} : $spec->as_perl();
+        my $ss = $kind eq 'Any' ? q{'} . $spec . q{'} : $spec->as_perl();
         $self->{$ATTR_AS_PERL}
             = "$self_class->new({ 'kind' => $sk, 'spec' => $ss })";
     }
@@ -1139,7 +1156,7 @@ sub _equal_repr {
     my $spec = $self->{$ATTR_SPEC};
     return $FALSE
         if $other->{$ATTR_KIND} ne $kind;
-    return $kind eq 'A' ? $other->{$ATTR_SPEC} eq $spec
+    return $kind eq 'Any' ? $other->{$ATTR_SPEC} eq $spec
         : $spec->equal_repr({ 'other' => $other->{$ATTR_SPEC} });
 }
 
@@ -1644,7 +1661,7 @@ or "isa" hierarchy, children indented under parents:
                 QDRDBMS::AST::LitText
                 QDRDBMS::AST::LitBlob
                 QDRDBMS::AST::LitInt
-            QDRDBMS::AST::ListSel (implementing role)
+            QDRDBMS::AST::_FlatColl (implementing role)
                 QDRDBMS::AST::SetSel
                 QDRDBMS::AST::SeqSel
                 QDRDBMS::AST::BagSel
