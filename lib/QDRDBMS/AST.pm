@@ -21,8 +21,9 @@ my $TRUE  = (1 == 1);
         newLitBool newLitText newLitBlob newLitInt
         newTupleSel newQuasiTupleSel
         newRelationSel newQuasiRelationSel
-        newSetSel newSeqSel newBagSel
-        newQuasiSetSel newQuasiSeqSel newQuasiBagSel
+        newSetSel newQuasiSetSel
+        newSeqSel newQuasiSeqSel
+        newBagSel newQuasiBagSel
         newVarInvo newFuncInvo
         newProcInvo
         newFuncReturn newProcReturn
@@ -90,38 +91,44 @@ sub newQuasiRelationSel {
 
 sub newSetSel {
     my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::SetSel->new({ 'v' => $v });
-}
-
-sub newSeqSel {
-    my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::SeqSel->new({ 'v' => $v });
-}
-
-sub newBagSel {
-    my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::BagSel->new({ 'v' => $v });
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::SetSel->new({
+        'heading' => $heading, 'body' => $body });
 }
 
 sub newQuasiSetSel {
     my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::QuasiSetSel->new({ 'v' => $v });
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::QuasiSetSel->new({
+        'heading' => $heading, 'body' => $body });
+}
+
+sub newSeqSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::SeqSel->new({
+        'heading' => $heading, 'body' => $body });
 }
 
 sub newQuasiSeqSel {
     my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::QuasiSeqSel->new({ 'v' => $v });
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::QuasiSeqSel->new({
+        'heading' => $heading, 'body' => $body });
+}
+
+sub newBagSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::BagSel->new({
+        'heading' => $heading, 'body' => $body });
 }
 
 sub newQuasiBagSel {
     my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::QuasiBagSel->new({ 'v' => $v });
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::QuasiBagSel->new({
+        'heading' => $heading, 'body' => $body });
 }
 
 sub newVarInvo {
@@ -761,7 +768,8 @@ sub body {
     use Carp;
     use Scalar::Util qw(blessed);
 
-    my $ATTR_V = 'v';
+    my $ATTR_HEADING = 'heading';
+    my $ATTR_BODY    = 'body';
 
     my $ATTR_AS_PERL = 'as_perl';
 
@@ -770,17 +778,31 @@ sub body {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
-    my ($v) = @{$args}{'v'};
+    my ($heading, $body) = @{$args}{'heading', 'body'};
 
-    confess q{new(): Bad :$v arg; it is not an Array.}
-        if ref $v ne 'ARRAY';
-    for my $ve (@{$v}) {
-        confess q{new(): Bad :$v arg elem; it is not}
-                . q{ an object of a QDRDBMS::AST::Expr-doing class.}
-            if !blessed $ve or !$ve->isa( 'QDRDBMS::AST::Expr' );
+    if ($self->_allows_quasi()) {
+        confess q{new(): Bad :$heading arg; it is not a valid object}
+                . q{ of a QDRDBMS::AST::TypeInvoAQ-doing class.}
+            if !blessed $heading
+                or !$heading->isa( 'QDRDBMS::AST::TypeInvoAQ' );
+    }
+    else {
+        confess q{new(): Bad :$heading arg; it is not a valid object}
+                . q{ of a QDRDBMS::AST::TypeInvoNQ-doing class.}
+            if !blessed $heading
+                or !$heading->isa( 'QDRDBMS::AST::TypeInvoNQ' );
     }
 
-    $self->{$ATTR_V} = [@{$v}];
+    confess q{new(): Bad :$body arg; it is not an Array.}
+        if ref $body ne 'ARRAY';
+    for my $tupb (@{$body}) {
+        confess q{new(): Bad :$body arg elem; it is not an object of}
+                . q{ a QDRDBMS::AST::Expr-doing class.}
+            if !blessed $tupb or !$tupb->isa( 'QDRDBMS::AST::Expr' );
+    }
+
+    $self->{$ATTR_HEADING} = $heading;
+    $self->{$ATTR_BODY}    = [@{$body}];
 
     return $self;
 }
@@ -791,10 +813,12 @@ sub as_perl {
     my ($self) = @_;
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $self_class = blessed $self;
-        my $s = q{[} . (join q{, }, map {
+        my $sh = $self->{$ATTR_HEADING}->as_perl();
+        my $sb = q{[} . (join q{, }, map {
                 $_->as_perl()
-            } @{$self->{$ATTR_V}}) . q{]};
-        $self->{$ATTR_AS_PERL} = "$self_class->new({ 'v' => $s })";
+            } @{$self->{$ATTR_BODY}}) . q{]};
+        $self->{$ATTR_AS_PERL}
+            = "$self_class->new({ 'heading' => $sh, 'body' => $sb })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -803,8 +827,11 @@ sub as_perl {
 
 sub _equal_repr {
     my ($self, $other) = @_;
-    my $v1 = $self->{$ATTR_V};
-    my $v2 = $other->{$ATTR_V};
+    return $FALSE
+        if !$self->{$ATTR_HEADING}->equal_repr({
+            'other' => $other->{$ATTR_HEADING} });
+    my $v1 = $self->{$ATTR_BODY};
+    my $v2 = $other->{$ATTR_BODY};
     return $FALSE
         if @{$v2} != @{$v1};
     for my $i (0..$#{$v1}) {
@@ -816,16 +843,23 @@ sub _equal_repr {
 
 ###########################################################################
 
-sub v {
+sub heading {
     my ($self) = @_;
-    return [@{$self->{$ATTR_V}}];
+    return $self->{$ATTR_HEADING};
+}
+
+###########################################################################
+
+sub body {
+    my ($self) = @_;
+    return [@{$self->{$ATTR_BODY}}];
 }
 
 ###########################################################################
 
 sub repr_elem_count {
     my ($self) = @_;
-    return 0 + @{$self->{$ATTR_V}};
+    return 0 + @{$self->{$ATTR_BODY}};
 }
 
 ###########################################################################
@@ -837,41 +871,47 @@ sub repr_elem_count {
 
 { package QDRDBMS::AST::SetSel; # class
     use base 'QDRDBMS::AST::_FlatColl';
+    sub _allows_quasi { return $FALSE; }
 } # class QDRDBMS::AST::SetSel
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::SeqSel; # class
-    use base 'QDRDBMS::AST::_FlatColl';
-} # class QDRDBMS::AST::SeqSel
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::BagSel; # class
-    use base 'QDRDBMS::AST::_FlatColl';
-} # class QDRDBMS::AST::BagSel
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::QuasiSetSel; # class
     use base 'QDRDBMS::AST::_FlatColl';
+    sub _allows_quasi { return $TRUE; }
 } # class QDRDBMS::AST::QuasiSetSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::SeqSel; # class
+    use base 'QDRDBMS::AST::_FlatColl';
+    sub _allows_quasi { return $FALSE; }
+} # class QDRDBMS::AST::SeqSel
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::QuasiSeqSel; # class
     use base 'QDRDBMS::AST::_FlatColl';
+    sub _allows_quasi { return $TRUE; }
 } # class QDRDBMS::AST::QuasiSeqSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::BagSel; # class
+    use base 'QDRDBMS::AST::_FlatColl';
+    sub _allows_quasi { return $FALSE; }
+} # class QDRDBMS::AST::BagSel
 
 ###########################################################################
 ###########################################################################
 
 { package QDRDBMS::AST::QuasiBagSel; # class
     use base 'QDRDBMS::AST::_FlatColl';
+    sub _allows_quasi { return $TRUE; }
 } # class QDRDBMS::AST::QuasiBagSel
 
 ###########################################################################
@@ -1888,7 +1928,7 @@ I<This documentation is pending.>
 
     use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt
         newTupleSel newQuasiTupleSel newRelationSel newQuasiRelationSel
-        newSetSel newSeqSel newBagSel newQuasiSetSel newQuasiSeqSel
+        newSetSel newQuasiSetSel newSeqSel newQuasiSeqSel newBagSel
         newQuasiBagSel newVarInvo newFuncInvo newProcInvo newFuncReturn
         newProcReturn newEntityName newTypeInvoNQ newTypeInvoAQ
         newTypeDictNQ newTypeDictAQ newExprDict newFuncDecl newProcDecl
@@ -1940,10 +1980,10 @@ or "isa" hierarchy, children indented under parents:
                 QDRDBMS::AST::QuasiRelationSel
             QDRDBMS::AST::_FlatColl (implementing role)
                 QDRDBMS::AST::SetSel
-                QDRDBMS::AST::SeqSel
-                QDRDBMS::AST::BagSel
                 QDRDBMS::AST::QuasiSetSel
+                QDRDBMS::AST::SeqSel
                 QDRDBMS::AST::QuasiSeqSel
+                QDRDBMS::AST::BagSel
                 QDRDBMS::AST::QuasiBagSel
             QDRDBMS::AST::VarInvo
             QDRDBMS::AST::FuncInvo
@@ -2121,19 +2161,19 @@ I<This documentation is pending.>
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::SeqSel Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::BagSel Class
-
-I<This documentation is pending.>
-
 =head2 The QDRDBMS::AST::QuasiSetSel Class
 
 I<This documentation is pending.>
 
+=head2 The QDRDBMS::AST::SeqSel Class
+
+I<This documentation is pending.>
+
 =head2 The QDRDBMS::AST::QuasiSeqSel Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::BagSel Class
 
 I<This documentation is pending.>
 
