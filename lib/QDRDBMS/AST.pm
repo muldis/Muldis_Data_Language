@@ -21,10 +21,6 @@ my $TRUE  = (1 == 1);
         newLitBool newLitText newLitBlob newLitInt
         newTupleSel newQuasiTupleSel
         newRelationSel newQuasiRelationSel
-        newSetSel newQuasiSetSel
-        newSeqSel newQuasiSeqSel
-        newBagSel newQuasiBagSel
-        newMaybeSel newQuasiMaybeSel
         newVarInvo newFuncInvo
         newProcInvo
         newFuncReturn newProcReturn
@@ -87,62 +83,6 @@ sub newQuasiRelationSel {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
     return QDRDBMS::AST::QuasiRelationSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newSetSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::SetSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newQuasiSetSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::QuasiSetSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newSeqSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::SeqSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newQuasiSeqSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::QuasiSeqSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newBagSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::BagSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newQuasiBagSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::QuasiBagSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newMaybeSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::MaybeSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newQuasiMaybeSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::QuasiMaybeSel->new({
         'heading' => $heading, 'body' => $body });
 }
 
@@ -777,185 +717,6 @@ sub body {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::_FlatColl; # role
-    use base 'QDRDBMS::AST::Expr';
-
-    use Carp;
-    use Scalar::Util qw(blessed);
-
-    my $ATTR_HEADING = 'heading';
-    my $ATTR_BODY    = 'body';
-
-    my $ATTR_AS_PERL = 'as_perl';
-
-###########################################################################
-
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-
-    if ($self->_allows_quasi()) {
-        confess q{new(): Bad :$heading arg; it is not a valid object}
-                . q{ of a QDRDBMS::AST::TypeInvoAQ-doing class.}
-            if !blessed $heading
-                or !$heading->isa( 'QDRDBMS::AST::TypeInvoAQ' );
-    }
-    else {
-        confess q{new(): Bad :$heading arg; it is not a valid object}
-                . q{ of a QDRDBMS::AST::TypeInvoNQ-doing class.}
-            if !blessed $heading
-                or !$heading->isa( 'QDRDBMS::AST::TypeInvoNQ' );
-    }
-
-    confess q{new(): Bad :$body arg; it is not an Array.}
-        if ref $body ne 'ARRAY';
-    if ($self->_max_one_elem()) {
-        confess q{new(): Bad :$body arg; a Maybe may only have 0..1 elems.}
-            if @{$body} > 1;
-    }
-    for my $tupb (@{$body}) {
-        confess q{new(): Bad :$body arg elem; it is not an object of}
-                . q{ a QDRDBMS::AST::Expr-doing class.}
-            if !blessed $tupb or !$tupb->isa( 'QDRDBMS::AST::Expr' );
-    }
-
-    $self->{$ATTR_HEADING} = $heading;
-    $self->{$ATTR_BODY}    = [@{$body}];
-
-    return $self;
-}
-
-sub _max_one_elem { return $FALSE; } # defa unless overridden
-
-###########################################################################
-
-sub as_perl {
-    my ($self) = @_;
-    if (!defined $self->{$ATTR_AS_PERL}) {
-        my $self_class = blessed $self;
-        my $sh = $self->{$ATTR_HEADING}->as_perl();
-        my $sb = q{[} . (join q{, }, map {
-                $_->as_perl()
-            } @{$self->{$ATTR_BODY}}) . q{]};
-        $self->{$ATTR_AS_PERL}
-            = "$self_class->new({ 'heading' => $sh, 'body' => $sb })";
-    }
-    return $self->{$ATTR_AS_PERL};
-}
-
-###########################################################################
-
-sub _equal_repr {
-    my ($self, $other) = @_;
-    return $FALSE
-        if !$self->{$ATTR_HEADING}->equal_repr({
-            'other' => $other->{$ATTR_HEADING} });
-    my $v1 = $self->{$ATTR_BODY};
-    my $v2 = $other->{$ATTR_BODY};
-    return $FALSE
-        if @{$v2} != @{$v1};
-    for my $i (0..$#{$v1}) {
-        return $FALSE
-            if !$v1->[$i]->equal_repr({ 'other' => $v2->[$i] });
-    }
-    return $TRUE;
-}
-
-###########################################################################
-
-sub heading {
-    my ($self) = @_;
-    return $self->{$ATTR_HEADING};
-}
-
-###########################################################################
-
-sub body {
-    my ($self) = @_;
-    return [@{$self->{$ATTR_BODY}}];
-}
-
-###########################################################################
-
-sub repr_elem_count {
-    my ($self) = @_;
-    return 0 + @{$self->{$ATTR_BODY}};
-}
-
-###########################################################################
-
-} # role QDRDBMS::AST::_FlatColl
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::SetSel; # class
-    use base 'QDRDBMS::AST::_FlatColl';
-    sub _allows_quasi { return $FALSE; }
-} # class QDRDBMS::AST::SetSel
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::QuasiSetSel; # class
-    use base 'QDRDBMS::AST::_FlatColl';
-    sub _allows_quasi { return $TRUE; }
-} # class QDRDBMS::AST::QuasiSetSel
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::SeqSel; # class
-    use base 'QDRDBMS::AST::_FlatColl';
-    sub _allows_quasi { return $FALSE; }
-} # class QDRDBMS::AST::SeqSel
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::QuasiSeqSel; # class
-    use base 'QDRDBMS::AST::_FlatColl';
-    sub _allows_quasi { return $TRUE; }
-} # class QDRDBMS::AST::QuasiSeqSel
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::BagSel; # class
-    use base 'QDRDBMS::AST::_FlatColl';
-    sub _allows_quasi { return $FALSE; }
-} # class QDRDBMS::AST::BagSel
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::QuasiBagSel; # class
-    use base 'QDRDBMS::AST::_FlatColl';
-    sub _allows_quasi { return $TRUE; }
-} # class QDRDBMS::AST::QuasiBagSel
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::MaybeSel; # class
-    use base 'QDRDBMS::AST::_FlatColl';
-    sub _allows_quasi { return $FALSE; }
-    sub _max_one_elem { return $TRUE; }
-} # class QDRDBMS::AST::MaybeSel
-
-###########################################################################
-###########################################################################
-
-{ package QDRDBMS::AST::QuasiMaybeSel; # class
-    use base 'QDRDBMS::AST::_FlatColl';
-    sub _allows_quasi { return $TRUE; }
-    sub _max_one_elem { return $TRUE; }
-} # class QDRDBMS::AST::QuasiMaybeSel
-
-###########################################################################
-###########################################################################
-
 { package QDRDBMS::AST::VarInvo; # class
     use base 'QDRDBMS::AST::Expr';
 
@@ -1429,17 +1190,9 @@ sub new {
             if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeDictNQ' );
     }
 
-    elsif ($kind eq 'Set' or $kind eq 'Seq' or $kind eq 'Bag'
-            or $kind eq 'Maybe') {
-        confess q{new(): Bad :$spec arg; it needs to be a valid object}
-                . q{ of a QDRDBMS::AST::TypeInvoNQ-doing class}
-                . q{ when the :$kind arg is 'Set'|'Seq'|'Bag'|'Maybe'.}
-            if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeInvoNQ' );
-    }
-
     elsif (!$self->_allows_quasi()) {
         confess q{new(): Bad :$kind arg; it needs to be one of}
-            . q{ 'Scalar'|'Tuple'|'Relation'|'Set'|'Seq'|'Bag'|'Maybe'.};
+            . q{ 'Scalar'|'Tuple'|'Relation'.};
     }
 
     elsif ($kind eq 'QTuple' or $kind eq 'QRelation') {
@@ -1449,30 +1202,18 @@ sub new {
             if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeDictAQ' );
     }
 
-    elsif ($kind eq 'QSet' or $kind eq 'QSeq' or $kind eq 'QBag'
-            or $kind eq 'QMaybe') {
-        confess q{new(): Bad :$spec arg; it needs to be a valid object}
-                . q{ of a QDRDBMS::AST::TypeInvoAQ-doing class}
-                . q{ when the :$kind arg is 'QSet'|'QSeq'|'QBag'|'QMaybe'.}
-            if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeInvoAQ' );
-    }
-
     elsif ($kind eq 'Any') {
         confess q{new(): Bad :$spec arg; it needs to be one of}
-                . q{ 'Tuple'|'Relation'|'Set'|'Seq'|'Bag'|'Maybe'}
-                . q{|'QTuple'|'QRelation'|'QSet'|'QSeq'|'QBag'|'QMaybe'}
-                . q{|'Universal' when the :$kind arg is 'Any'.}
+                . q{ 'Tuple'|'Relation'|'QTuple'|'QRelation'|'Universal'}
+                . q{ when the :$kind arg is 'Any'.}
             if !defined $spec
-                or $spec !~ m/\A (Tuple|Relation|Set|Seq|Bag|Maybe
-                    |QTuple|QRelation|QSet|QSeq|QBag|QMaybe
-                    |Universal) \z/xs;
+                or $spec !~ m/\A (Tuple|Relation
+                    |QTuple|QRelation|Universal) \z/xs;
     }
 
     else {
         confess q{new(): Bad :$kind arg; it needs to be}
-            . q{ 'Scalar'|'Tuple'|'Relation'|'Set'|'Seq'|'Bag'|'Maybe'}
-            . q{|'QTuple'|'QRelation'|'QSet'|'QSeq'|'QBag'|'QMaybe'}
-            . q{|'Any'.};
+            . q{ 'Scalar'|'Tuple'|'Relation'|'QTuple'|'QRelation'|'Any'.};
     }
 
     $self->{$ATTR_KIND} = $kind;
@@ -1967,11 +1708,9 @@ I<This documentation is pending.>
 
     use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt
         newTupleSel newQuasiTupleSel newRelationSel newQuasiRelationSel
-        newSetSel newQuasiSetSel newSeqSel newQuasiSeqSel newBagSel
-        newQuasiBagSel newMaybeSel newQuasiMaybeSel newVarInvo newFuncInvo
-        newProcInvo newFuncReturn newProcReturn newEntityName newTypeInvoNQ
-        newTypeInvoAQ newTypeDictNQ newTypeDictAQ newExprDict newFuncDecl
-        newProcDecl newHostGateRtn);
+        newVarInvo newFuncInvo newProcInvo newFuncReturn newProcReturn
+        newEntityName newTypeInvoNQ newTypeInvoAQ newTypeDictNQ
+        newTypeDictAQ newExprDict newFuncDecl newProcDecl newHostGateRtn);
 
     my $truth_value = newLitBool({ 'v' => (2 + 2 == 4) });
     my $planetoid = newLitText({ 'v' => 'Ceres' });
@@ -2017,15 +1756,6 @@ or "isa" hierarchy, children indented under parents:
             QDRDBMS::AST::_Relation (implementing role)
                 QDRDBMS::AST::RelationSel
                 QDRDBMS::AST::QuasiRelationSel
-            QDRDBMS::AST::_FlatColl (implementing role)
-                QDRDBMS::AST::SetSel
-                QDRDBMS::AST::QuasiSetSel
-                QDRDBMS::AST::SeqSel
-                QDRDBMS::AST::QuasiSeqSel
-                QDRDBMS::AST::BagSel
-                QDRDBMS::AST::QuasiBagSel
-                QDRDBMS::AST::MaybeSel
-                QDRDBMS::AST::QuasiMaybeSel
             QDRDBMS::AST::VarInvo
             QDRDBMS::AST::FuncInvo
         QDRDBMS::AST::Stmt (dummy role)
@@ -2195,38 +1925,6 @@ I<This documentation is pending.>
 I<This documentation is pending.>
 
 =head2 The QDRDBMS::AST::QuasiRelationSel Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::SetSel Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::QuasiSetSel Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::SeqSel Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::QuasiSeqSel Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::BagSel Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::QuasiBagSel Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::MaybeSel Class
-
-I<This documentation is pending.>
-
-=head2 The QDRDBMS::AST::QuasiMaybeSel Class
 
 I<This documentation is pending.>
 
