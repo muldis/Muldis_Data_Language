@@ -296,7 +296,7 @@ sub bind_host_params {
         confess q{bind_host_params(): Bad :$upd_args arg elem; its first}
                 . q{ element does not match the name of a}
                 . q{ subject-to-update routine param.}
-            if exists $exp_upd_args_map_hoa->{$param_name_text};
+            if !exists $exp_upd_args_map_hoa->{$param_name_text};
         confess q{bind_host_params(): Bad :$vars arg elem; its first elem}
                 . q{ is not distinct between the arg elems.}
             if exists $seen_upd_param_names->{$param_name_text};
@@ -328,7 +328,7 @@ sub bind_host_params {
         confess q{bind_host_params(): Bad :$ro_args arg elem; its first}
                 . q{ element does not match the name of a}
                 . q{ read-only routine param.}
-            if exists $exp_ro_args_map_hoa->{$param_name_text};
+            if !exists $exp_ro_args_map_hoa->{$param_name_text};
         confess q{bind_host_params(): Bad :$vars arg elem; its first elem}
                 . q{ is not distinct between the arg elems.}
             if exists $seen_ro_param_names->{$param_name_text};

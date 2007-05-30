@@ -19,6 +19,8 @@ my $TRUE  = (1 == 1);
     use base 'Exporter';
     our @EXPORT_OK = qw(
         newLitBool newLitText newLitBlob newLitInt
+        newTupleSel newQuasiTupleSel
+        newRelationSel newQuasiRelationSel
         newSetSel newSeqSel newBagSel
         newQuasiSetSel newQuasiSeqSel newQuasiBagSel
         newVarInvo newFuncInvo
@@ -56,6 +58,34 @@ sub newLitInt {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
     return QDRDBMS::AST::LitInt->new({ 'v' => $v });
+}
+
+sub newTupleSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::TupleSel->new({
+        'heading' => $heading, 'body' => $body });
+}
+
+sub newQuasiTupleSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::QuasiTupleSel->new({
+        'heading' => $heading, 'body' => $body });
+}
+
+sub newRelationSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::RelationSel->new({
+        'heading' => $heading, 'body' => $body });
+}
+
+sub newQuasiRelationSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::QuasiRelationSel->new({
+        'heading' => $heading, 'body' => $body });
 }
 
 sub newSetSel {
@@ -485,6 +515,242 @@ sub v {
 ###########################################################################
 
 } # class QDRDBMS::AST::LitInt
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::_Tuple; # role
+    use base 'QDRDBMS::AST::Expr';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_HEADING = 'heading';
+    my $ATTR_BODY    = 'body';
+
+    my $ATTR_AS_PERL = 'as_perl';
+
+    my $TYPEDICT_ATTR_MAP_HOA  = 'map_hoa';
+    my $EXPRDICT_ATTR_MAP_HOA  = 'map_hoa';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    if ($self->_allows_quasi()) {
+        confess q{new(): Bad :$heading arg; it is not a valid object}
+                . q{ of a QDRDBMS::AST::TypeDictAQ-doing class.}
+            if !blessed $heading
+                or !$heading->isa( 'QDRDBMS::AST::TypeDictAQ' );
+    }
+    else {
+        confess q{new(): Bad :$heading arg; it is not a valid object}
+                . q{ of a QDRDBMS::AST::TypeDictNQ-doing class.}
+            if !blessed $heading
+                or !$heading->isa( 'QDRDBMS::AST::TypeDictNQ' );
+    }
+    my $heading_attrs_map_hoa = $heading->{$TYPEDICT_ATTR_MAP_HOA};
+
+    confess q{new(): Bad :$body arg; it is not a valid object}
+            . q{ of a QDRDBMS::AST::ExprDict-doing class.}
+        if !blessed $body or !$body->isa( 'QDRDBMS::AST::ExprDict' );
+    for my $attr_name_text (keys %{$body->{$EXPRDICT_ATTR_MAP_HOA}}) {
+        confess q{new(): Bad :$body arg; at least one its attrs}
+                . q{ does not have a corresponding attr in :$heading.}
+            if !exists $heading_attrs_map_hoa->{$attr_name_text};
+    }
+
+    $self->{$ATTR_HEADING} = $heading;
+    $self->{$ATTR_BODY}    = $body;
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $self_class = blessed $self;
+        my $sh = $self->{$ATTR_HEADING}->as_perl();
+        my $sb = $self->{$ATTR_BODY}->as_perl();
+        $self->{$ATTR_AS_PERL}
+            = "$self_class->new({ 'heading' => $sh, 'body' => $sb })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return ($self->{$ATTR_HEADING}->equal_repr({
+            'other' => $other->{$ATTR_HEADING} })
+        and $self->{$ATTR_BODY}->equal_repr({
+            'other' => $other->{$ATTR_BODY} }));
+}
+
+###########################################################################
+
+sub heading {
+    my ($self) = @_;
+    return $self->{$ATTR_HEADING};
+}
+
+###########################################################################
+
+sub body {
+    my ($self) = @_;
+    return $self->{$ATTR_BODY};
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::_Tuple
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::TupleSel; # class
+    use base 'QDRDBMS::AST::_Tuple';
+    sub _allows_quasi { return $FALSE; }
+} # class QDRDBMS::AST::TupleSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::QuasiTupleSel; # class
+    use base 'QDRDBMS::AST::_Tuple';
+    sub _allows_quasi { return $TRUE; }
+} # class QDRDBMS::AST::QuasiTupleSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::_Relation; # role
+    use base 'QDRDBMS::AST::Expr';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_HEADING = 'heading';
+    my $ATTR_BODY    = 'body';
+
+    my $ATTR_AS_PERL = 'as_perl';
+
+    my $TYPEDICT_ATTR_MAP_HOA  = 'map_hoa';
+    my $EXPRDICT_ATTR_MAP_HOA  = 'map_hoa';
+
+###########################################################################
+
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    if ($self->_allows_quasi()) {
+        confess q{new(): Bad :$heading arg; it is not a valid object}
+                . q{ of a QDRDBMS::AST::TypeDictAQ-doing class.}
+            if !blessed $heading
+                or !$heading->isa( 'QDRDBMS::AST::TypeDictAQ' );
+    }
+    else {
+        confess q{new(): Bad :$heading arg; it is not a valid object}
+                . q{ of a QDRDBMS::AST::TypeDictNQ-doing class.}
+            if !blessed $heading
+                or !$heading->isa( 'QDRDBMS::AST::TypeDictNQ' );
+    }
+    my $heading_attrs_map_hoa = $heading->{$TYPEDICT_ATTR_MAP_HOA};
+
+    confess q{new(): Bad :$body arg; it is not an Array.}
+        if ref $body ne 'ARRAY';
+    for my $tupb (@{$body}) {
+        confess q{new(): Bad :$body arg elem; it is not a valid object}
+                . q{ of a QDRDBMS::AST::ExprDict-doing class.}
+            if !blessed $tupb or !$tupb->isa( 'QDRDBMS::AST::ExprDict' );
+        for my $attr_name_text (keys %{$tupb->{$EXPRDICT_ATTR_MAP_HOA}}) {
+            confess q{new(): Bad :$body arg elem; at least one its attrs}
+                    . q{ does not have a corresponding attr in :$heading.}
+                if !exists $heading_attrs_map_hoa->{$attr_name_text};
+        }
+    }
+
+    $self->{$ATTR_HEADING} = $heading;
+    $self->{$ATTR_BODY}    = [@{$body}];
+
+    return $self;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $self_class = blessed $self;
+        my $sh = $self->{$ATTR_HEADING}->as_perl();
+        my $sb = q{[} . (join q{, }, map {
+                $_->as_perl()
+            } @{$self->{$ATTR_BODY}}) . q{]};
+        $self->{$ATTR_AS_PERL}
+            = "$self_class->new({ 'heading' => $sh, 'body' => $sb })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $FALSE
+        if !$self->{$ATTR_HEADING}->equal_repr({
+            'other' => $other->{$ATTR_HEADING} });
+    my $v1 = $self->{$ATTR_BODY};
+    my $v2 = $other->{$ATTR_BODY};
+    return $FALSE
+        if @{$v2} != @{$v1};
+    for my $i (0..$#{$v1}) {
+        return $FALSE
+            if !$v1->[$i]->equal_repr({ 'other' => $v2->[$i] });
+    }
+    return $TRUE;
+}
+
+###########################################################################
+
+sub heading {
+    my ($self) = @_;
+    return $self->{$ATTR_HEADING};
+}
+
+###########################################################################
+
+sub body {
+    my ($self) = @_;
+    return [@{$self->{$ATTR_BODY}}];
+}
+
+###########################################################################
+
+} # class QDRDBMS::AST::_Relation
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::RelationSel; # class
+    use base 'QDRDBMS::AST::_Relation';
+    sub _allows_quasi { return $FALSE; }
+} # class QDRDBMS::AST::RelationSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::QuasiRelationSel; # class
+    use base 'QDRDBMS::AST::_Relation';
+    sub _allows_quasi { return $TRUE; }
+} # class QDRDBMS::AST::QuasiRelationSel
 
 ###########################################################################
 ###########################################################################
@@ -1621,6 +1887,7 @@ It also describes the same-number versions for Perl 5 of [...].
 I<This documentation is pending.>
 
     use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt
+        newTupleSel newQuasiTupleSel newRelationSel newQuasiRelationSel
         newSetSel newSeqSel newBagSel newQuasiSetSel newQuasiSeqSel
         newQuasiBagSel newVarInvo newFuncInvo newProcInvo newFuncReturn
         newProcReturn newEntityName newTypeInvoNQ newTypeInvoAQ
@@ -1665,6 +1932,12 @@ or "isa" hierarchy, children indented under parents:
                 QDRDBMS::AST::LitText
                 QDRDBMS::AST::LitBlob
                 QDRDBMS::AST::LitInt
+            QDRDBMS::AST::_Tuple (implementing role)
+                QDRDBMS::AST::TupleSel
+                QDRDBMS::AST::QuasiTupleSel
+            QDRDBMS::AST::_Relation (implementing role)
+                QDRDBMS::AST::RelationSel
+                QDRDBMS::AST::QuasiRelationSel
             QDRDBMS::AST::_FlatColl (implementing role)
                 QDRDBMS::AST::SetSel
                 QDRDBMS::AST::SeqSel
@@ -1825,6 +2098,22 @@ I<This documentation is pending.>
 I<This documentation is pending.>
 
 =head2 The QDRDBMS::AST::LitInt Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::TupleSel Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::QuasiTupleSel Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::RelationSel Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::QuasiRelationSel Class
 
 I<This documentation is pending.>
 
