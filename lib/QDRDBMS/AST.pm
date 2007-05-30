@@ -24,6 +24,7 @@ my $TRUE  = (1 == 1);
         newSetSel newQuasiSetSel
         newSeqSel newQuasiSeqSel
         newBagSel newQuasiBagSel
+        newMaybeSel newQuasiMaybeSel
         newVarInvo newFuncInvo
         newProcInvo
         newFuncReturn newProcReturn
@@ -128,6 +129,20 @@ sub newQuasiBagSel {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
     return QDRDBMS::AST::QuasiBagSel->new({
+        'heading' => $heading, 'body' => $body });
+}
+
+sub newMaybeSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::MaybeSel->new({
+        'heading' => $heading, 'body' => $body });
+}
+
+sub newQuasiMaybeSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return QDRDBMS::AST::QuasiMaybeSel->new({
         'heading' => $heading, 'body' => $body });
 }
 
@@ -795,6 +810,10 @@ sub new {
 
     confess q{new(): Bad :$body arg; it is not an Array.}
         if ref $body ne 'ARRAY';
+    if ($self->_max_one_elem()) {
+        confess q{new(): Bad :$body arg; a Maybe may only have 0..1 elems.}
+            if @{$body} > 1;
+    }
     for my $tupb (@{$body}) {
         confess q{new(): Bad :$body arg elem; it is not an object of}
                 . q{ a QDRDBMS::AST::Expr-doing class.}
@@ -806,6 +825,8 @@ sub new {
 
     return $self;
 }
+
+sub _max_one_elem { return $FALSE; } # defa unless overridden
 
 ###########################################################################
 
@@ -913,6 +934,24 @@ sub repr_elem_count {
     use base 'QDRDBMS::AST::_FlatColl';
     sub _allows_quasi { return $TRUE; }
 } # class QDRDBMS::AST::QuasiBagSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::MaybeSel; # class
+    use base 'QDRDBMS::AST::_FlatColl';
+    sub _allows_quasi { return $FALSE; }
+    sub _max_one_elem { return $TRUE; }
+} # class QDRDBMS::AST::MaybeSel
+
+###########################################################################
+###########################################################################
+
+{ package QDRDBMS::AST::QuasiMaybeSel; # class
+    use base 'QDRDBMS::AST::_FlatColl';
+    sub _allows_quasi { return $TRUE; }
+    sub _max_one_elem { return $TRUE; }
+} # class QDRDBMS::AST::QuasiMaybeSel
 
 ###########################################################################
 ###########################################################################
@@ -1929,10 +1968,10 @@ I<This documentation is pending.>
     use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt
         newTupleSel newQuasiTupleSel newRelationSel newQuasiRelationSel
         newSetSel newQuasiSetSel newSeqSel newQuasiSeqSel newBagSel
-        newQuasiBagSel newVarInvo newFuncInvo newProcInvo newFuncReturn
-        newProcReturn newEntityName newTypeInvoNQ newTypeInvoAQ
-        newTypeDictNQ newTypeDictAQ newExprDict newFuncDecl newProcDecl
-        newHostGateRtn);
+        newQuasiBagSel newMaybeSel newQuasiMaybeSel newVarInvo newFuncInvo
+        newProcInvo newFuncReturn newProcReturn newEntityName newTypeInvoNQ
+        newTypeInvoAQ newTypeDictNQ newTypeDictAQ newExprDict newFuncDecl
+        newProcDecl newHostGateRtn);
 
     my $truth_value = newLitBool({ 'v' => (2 + 2 == 4) });
     my $planetoid = newLitText({ 'v' => 'Ceres' });
@@ -1985,6 +2024,8 @@ or "isa" hierarchy, children indented under parents:
                 QDRDBMS::AST::QuasiSeqSel
                 QDRDBMS::AST::BagSel
                 QDRDBMS::AST::QuasiBagSel
+                QDRDBMS::AST::MaybeSel
+                QDRDBMS::AST::QuasiMaybeSel
             QDRDBMS::AST::VarInvo
             QDRDBMS::AST::FuncInvo
         QDRDBMS::AST::Stmt (dummy role)
@@ -2178,6 +2219,14 @@ I<This documentation is pending.>
 I<This documentation is pending.>
 
 =head2 The QDRDBMS::AST::QuasiBagSel Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::MaybeSel Class
+
+I<This documentation is pending.>
+
+=head2 The QDRDBMS::AST::QuasiMaybeSel Class
 
 I<This documentation is pending.>
 
