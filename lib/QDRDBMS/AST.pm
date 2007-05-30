@@ -1319,10 +1319,10 @@ sub new {
                 . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
             if !blessed $entity_name
                 or !$entity_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $entity_name_text_v = $entity_name->text()->v();
+        my $entity_name_text = $entity_name->text();
         confess q{new(): Bad :$map arg elem; its first elem is not}
                 . q{ distinct between the arg elems.}
-            if exists $map_hoa->{$entity_name_text_v};
+            if exists $map_hoa->{$entity_name_text};
         if ($allows_quasi) {
             confess q{new(): Bad :$map arg elem; its second elem is not an}
                     . q{ object of a QDRDBMS::AST::TypeInvoAQ-doing class.}
@@ -1337,7 +1337,7 @@ sub new {
         }
         my $elem_cpy = [$entity_name, $type_invo];
         push @{$map_aoa}, $elem_cpy;
-        $map_hoa->{$entity_name_text_v} = $elem_cpy;
+        $map_hoa->{$entity_name_text} = $elem_cpy;
     }
 
     $self->{$ATTR_MAP_AOA} = $map_aoa;
@@ -1448,16 +1448,16 @@ sub new {
                 . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
             if !blessed $entity_name
                 or !$entity_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $entity_name_text_v = $entity_name->text()->v();
+        my $entity_name_text = $entity_name->text();
         confess q{new(): Bad :$map arg elem; its first elem is not}
                 . q{ distinct between the arg elems.}
-            if exists $map_hoa->{$entity_name_text_v};
+            if exists $map_hoa->{$entity_name_text};
         confess q{new(): Bad :$map arg elem; its second elem is not}
                 . q{ an object of a QDRDBMS::AST::Expr-doing class.}
             if !blessed $expr or !$expr->isa( 'QDRDBMS::AST::Expr' );
         my $elem_cpy = [$entity_name, $expr];
         push @{$map_aoa}, $elem_cpy;
-        $map_hoa->{$entity_name_text_v} = $elem_cpy;
+        $map_hoa->{$entity_name_text} = $elem_cpy;
     }
 
     $self->{$ATTR_MAP_AOA} = $map_aoa;
