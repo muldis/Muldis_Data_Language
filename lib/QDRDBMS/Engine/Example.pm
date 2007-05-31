@@ -78,6 +78,8 @@ sub prepare {
 
     use Carp;
 
+    use QDRDBMS::AST qw(newLitBool);
+
     my $ATTR_DBMS      = 'dbms';
     my $ATTR_DECL_TYPE = 'decl_type';
     my $ATTR_VAL_AST   = 'val_ast';
@@ -91,7 +93,8 @@ sub new {
 
     $self->{$ATTR_DBMS}      = $dbms;
     $self->{$ATTR_DECL_TYPE} = $decl_type;
-    $self->{$ATTR_VAL_AST}   = undef; # TODO: make default val of decl type
+    $self->{$ATTR_VAL_AST}   = newLitBool({ 'v' => (1 == 0) });
+        # TODO: make default val of decl type
 
     return $self;
 }
@@ -174,8 +177,9 @@ sub bind_host_params {
 
 sub execute {
     my ($self) = @_;
-    $self->{$ATTR_PREP_RTN}->({ %{$self->{$ATTR_BOUND_UPD_ARGS}},
-        %{$self->{$ATTR_BOUND_RO_ARGS}} });
+    # TODO: Fix this!
+#    $self->{$ATTR_PREP_RTN}->({ %{$self->{$ATTR_BOUND_UPD_ARGS}},
+#        %{$self->{$ATTR_BOUND_RO_ARGS}} });
     return;
 }
 

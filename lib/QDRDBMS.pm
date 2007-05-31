@@ -292,7 +292,7 @@ sub bind_host_params {
                 . q{ QDRDBMS::AST::EntityName-doing class.}
             if !blessed $param_name
                 or !$param_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $param_name_text = ${$param_name->text()};
+        my $param_name_text = $param_name->text();
         confess q{bind_host_params(): Bad :$upd_args arg elem; its first}
                 . q{ element does not match the name of a}
                 . q{ subject-to-update routine param.}
@@ -324,7 +324,7 @@ sub bind_host_params {
                 . q{ QDRDBMS::AST::EntityName-doing class.}
             if !blessed $param_name
                 or !$param_name->isa( 'QDRDBMS::AST::EntityName' );
-        my $param_name_text = ${$param_name->text()};
+        my $param_name_text = $param_name->text();
         confess q{bind_host_params(): Bad :$ro_args arg elem; its first}
                 . q{ element does not match the name of a}
                 . q{ read-only routine param.}
