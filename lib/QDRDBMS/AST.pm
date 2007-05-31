@@ -18,7 +18,7 @@ my $TRUE  = (1 == 1);
 
     use base 'Exporter';
     our @EXPORT_OK = qw(
-        newLitBool newLitText newLitBlob newLitInt
+        newBoolLit newTextLit newBlobLit newIntLit
         newTupleSel newQuasiTupleSel
         newRelationSel newQuasiRelationSel
         newVarInvo newFuncInvo
@@ -34,28 +34,28 @@ my $TRUE  = (1 == 1);
 
 ###########################################################################
 
-sub newLitBool {
+sub newBoolLit {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::LitBool->new({ 'v' => $v });
+    return QDRDBMS::AST::BoolLit->new({ 'v' => $v });
 }
 
-sub newLitText {
+sub newTextLit {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::LitText->new({ 'v' => $v });
+    return QDRDBMS::AST::TextLit->new({ 'v' => $v });
 }
 
-sub newLitBlob {
+sub newBlobLit {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::LitBlob->new({ 'v' => $v });
+    return QDRDBMS::AST::BlobLit->new({ 'v' => $v });
 }
 
-sub newLitInt {
+sub newIntLit {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::LitInt->new({ 'v' => $v });
+    return QDRDBMS::AST::IntLit->new({ 'v' => $v });
 }
 
 sub newTupleSel {
@@ -232,7 +232,7 @@ sub _equal_repr {
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::LitBool; # class
+{ package QDRDBMS::AST::BoolLit; # class
     use base 'QDRDBMS::AST::Lit';
 
     use Carp;
@@ -268,7 +268,7 @@ sub as_perl {
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $s = $self->{$ATTR_V} ? $TRUE_AS_PERL : $FALSE_AS_PERL;
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::LitBool->new({ 'v' => $s })";
+            = "QDRDBMS::AST::BoolLit->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -289,12 +289,12 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::LitBool
+} # class QDRDBMS::AST::BoolLit
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::LitText; # class
+{ package QDRDBMS::AST::TextLit; # class
     use base 'QDRDBMS::AST::Lit';
 
     use Carp;
@@ -331,7 +331,7 @@ sub as_perl {
         $s =~ s/'/\\'/xs;
         $s = q{'} . $s . q{'};
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::LitText->new({ 'v' => $s })";
+            = "QDRDBMS::AST::TextLit->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -352,12 +352,12 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::LitText
+} # class QDRDBMS::AST::TextLit
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::LitBlob; # class
+{ package QDRDBMS::AST::BlobLit; # class
     use base 'QDRDBMS::AST::Lit';
 
     use Carp;
@@ -396,7 +396,7 @@ sub as_perl {
         my $s = q[(join q{}, map { pack 'H2', $_ }
             split q{}, ] . $hex_digit_text . q[)];
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::LitBlob->new({ 'v' => $s })";
+            = "QDRDBMS::AST::BlobLit->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -417,12 +417,12 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::LitBlob
+} # class QDRDBMS::AST::BlobLit
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::LitInt; # class
+{ package QDRDBMS::AST::IntLit; # class
     use base 'QDRDBMS::AST::Lit';
 
     use Carp;
@@ -455,7 +455,7 @@ sub as_perl {
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $s = q{'} . $self->{$ATTR_V} . q{'};
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::LitInt->new({ 'v' => $s })";
+            = "QDRDBMS::AST::IntLit->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -476,7 +476,7 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::LitInt
+} # class QDRDBMS::AST::IntLit
 
 ###########################################################################
 ###########################################################################
@@ -1706,16 +1706,16 @@ It also describes the same-number versions for Perl 5 of [...].
 
 I<This documentation is pending.>
 
-    use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt
+    use QDRDBMS::AST qw(newBoolLit newTextLit newBlobLit newIntLit
         newTupleSel newQuasiTupleSel newRelationSel newQuasiRelationSel
         newVarInvo newFuncInvo newProcInvo newFuncReturn newProcReturn
         newEntityName newTypeInvoNQ newTypeInvoAQ newTypeDictNQ
         newTypeDictAQ newExprDict newFuncDecl newProcDecl newHostGateRtn);
 
-    my $truth_value = newLitBool({ 'v' => (2 + 2 == 4) });
-    my $planetoid = newLitText({ 'v' => 'Ceres' });
-    my $package = newLitBlob({ 'v' => (pack 'H2', 'P') });
-    my $answer = newLitInt({ 'v' => 42 });
+    my $truth_value = newBoolLit({ 'v' => (2 + 2 == 4) });
+    my $planetoid = newTextLit({ 'v' => 'Ceres' });
+    my $package = newBlobLit({ 'v' => (pack 'H2', 'P') });
+    my $answer = newIntLit({ 'v' => 42 });
 
 I<This documentation is pending.>
 
@@ -1746,10 +1746,10 @@ or "isa" hierarchy, children indented under parents:
     QDRDBMS::AST::Node (dummy role)
         QDRDBMS::AST::Expr (dummy role)
             QDRDBMS::AST::Lit (dummy role)
-                QDRDBMS::AST::LitBool
-                QDRDBMS::AST::LitText
-                QDRDBMS::AST::LitBlob
-                QDRDBMS::AST::LitInt
+                QDRDBMS::AST::BoolLit
+                QDRDBMS::AST::TextLit
+                QDRDBMS::AST::BlobLit
+                QDRDBMS::AST::IntLit
             QDRDBMS::AST::_Tuple (implementing role)
                 QDRDBMS::AST::TupleSel
                 QDRDBMS::AST::QuasiTupleSel
@@ -1855,7 +1855,7 @@ to unserialize, is guaranteed to preserve the representation, so
 C<equal_repr> will work as expected in that situation.
 
 As an exception to the general case about nodes, the node classes
-[C<LitBool>, C<LitText>, C<LitBlob>, C<LitInt>, C<EntityName>, C<VarInvo>,
+[C<BoolLit>, C<TextLit>, C<BlobLit>, C<IntLit>, C<EntityName>, C<VarInvo>,
 C<ProcReturn>] are guaranteed to only ever have a single representation per
 value, and so C<equal_repr> is guaranteed to indicate value equality of 2
 nodes of those types.  In fact, to assist the consequence this point, these
@@ -1863,7 +1863,7 @@ node classes also have the C<equal_value> method which is an alias for
 C<equal_repr>, so you can use C<equal_value> in your use code to make it
 better self documenting; C<equal_repr> is still available for all node
 types to assist automated use code that wants to treat all node types the
-same.  It should also be noted that a C<LitBool> node can only possibly be
+same.  It should also be noted that a C<BoolLit> node can only possibly be
 of one of 2 values, and C<ProcReturn> is a singleton.
 
 It is expected that multiple third party utility modules will become
@@ -1896,19 +1896,19 @@ exception; most often this is due to invalid input.  If an invoked routine
 simply returns, you can assume that it has succeeded, even if the return
 value is undefined.
 
-=head2 The QDRDBMS::AST::LitBool Class
+=head2 The QDRDBMS::AST::BoolLit Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::LitText Class
+=head2 The QDRDBMS::AST::TextLit Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::LitBlob Class
+=head2 The QDRDBMS::AST::BlobLit Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::LitInt Class
+=head2 The QDRDBMS::AST::IntLit Class
 
 I<This documentation is pending.>
 

@@ -178,7 +178,7 @@ sub equal {
 { package QDRDBMS::Engine::Example::PhysType::Bool; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
-    use QDRDBMS::AST qw(newLitBool);
+    use QDRDBMS::AST qw(newBoolLit);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that equals $FALSE|$TRUE.
@@ -213,7 +213,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newLitBool({ 'v' => $self->{$ATTR_V} });
+    return newBoolLit({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -240,7 +240,7 @@ sub v {
 { package QDRDBMS::Engine::Example::PhysType::Text; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
-    use QDRDBMS::AST qw(newLitText);
+    use QDRDBMS::AST qw(newTextLit);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that is a text-mode string;
@@ -276,7 +276,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newLitText({ 'v' => $self->{$ATTR_V} });
+    return newTextLit({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -303,7 +303,7 @@ sub v {
 { package QDRDBMS::Engine::Example::PhysType::Blob; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
-    use QDRDBMS::AST qw(newLitBlob);
+    use QDRDBMS::AST qw(newBlobLit);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that is a byte-mode string; it has false utf8 flag.
@@ -338,7 +338,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newLitBlob({ 'v' => $self->{$ATTR_V} });
+    return newBlobLit({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -365,7 +365,7 @@ sub v {
 { package QDRDBMS::Engine::Example::PhysType::Int; # class
     use base 'QDRDBMS::Engine::Example::PhysType::Value';
 
-    use QDRDBMS::AST qw(newLitInt);
+    use QDRDBMS::AST qw(newIntLit);
 
     use bigint; # this is experimental
 
@@ -402,7 +402,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newLitInt({ 'v' => $self->{$ATTR_V} });
+    return newIntLit({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################

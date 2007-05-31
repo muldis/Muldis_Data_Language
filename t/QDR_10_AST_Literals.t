@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 
 use Test::More;
 
-use QDRDBMS::AST qw(newLitBool newLitText newLitBlob newLitInt);
+use QDRDBMS::AST qw(newBoolLit newTextLit newBlobLit newIntLit);
 
 main();
 
@@ -17,10 +17,10 @@ sub main {
 
     print "#### Starting test of QDRDBMS::AST Literals ####\n";
 
-    test_LitBool();
-    test_LitText();
-    test_LitBlob();
-    test_LitInt();
+    test_BoolLit();
+    test_TextLit();
+    test_BlobLit();
+    test_IntLit();
 
     print "#### Finished test of QDRDBMS::AST Literals ####\n";
 
@@ -29,243 +29,243 @@ sub main {
 
 ######################################################################
 
-sub test_LitBool {
+sub test_BoolLit {
 
     my ($in, $node, $out);
 
     $in = undef;
     eval {
-        $node = newLitBool({ 'v' => $in });
+        $node = newBoolLit({ 'v' => $in });
     };
-    ok( $@, q{LitBool rejects invalid payload undef} );
+    ok( $@, q{BoolLit rejects invalid payload undef} );
 
     $in = (2 + 2 == 3);
-    $node = newLitBool({ 'v' => $in });
-    pass( q{LitBool accepts valid payload Bool:False} );
-    isa_ok( $node, 'QDRDBMS::AST::LitBool' );
+    $node = newBoolLit({ 'v' => $in });
+    pass( q{BoolLit accepts valid payload Bool:False} );
+    isa_ok( $node, 'QDRDBMS::AST::BoolLit' );
     $out = $node->v();
-    is( $out, $in, q{LitBool preserves valid payload} );
+    is( $out, $in, q{BoolLit preserves valid payload} );
 
     $in = (2 + 2 == 4);
-    $node = newLitBool({ 'v' => $in });
-    pass( q{LitBool accepts valid payload Bool:True} );
-    isa_ok( $node, 'QDRDBMS::AST::LitBool' );
+    $node = newBoolLit({ 'v' => $in });
+    pass( q{BoolLit accepts valid payload Bool:True} );
+    isa_ok( $node, 'QDRDBMS::AST::BoolLit' );
     $out = $node->v();
-    is( $out, $in, q{LitBool preserves valid payload} );
+    is( $out, $in, q{BoolLit preserves valid payload} );
 
     $in = 'foo';
     eval {
-        $node = newLitBool({ 'v' => $in });
+        $node = newBoolLit({ 'v' => $in });
     };
-    ok( $@, q{LitBool rejects invalid payload 'foo'} );
+    ok( $@, q{BoolLit rejects invalid payload 'foo'} );
 
     $in = 42;
     eval {
-        $node = newLitBool({ 'v' => $in });
+        $node = newBoolLit({ 'v' => $in });
     };
-    ok( $@, q{LitBool rejects invalid payload 42} );
+    ok( $@, q{BoolLit rejects invalid payload 42} );
 
     return;
 }
 
 ######################################################################
 
-sub test_LitText {
+sub test_TextLit {
 
     my ($in, $node, $out);
 
     $in = undef;
     eval {
-        $node = newLitText({ 'v' => $in });
+        $node = newTextLit({ 'v' => $in });
     };
-    ok( $@, q{LitText rejects invalid payload undef} );
+    ok( $@, q{TextLit rejects invalid payload undef} );
 
     $in = '';
-    $node = newLitText({ 'v' => $in });
-    pass( q{LitText accepts valid payload ''} );
-    isa_ok( $node, 'QDRDBMS::AST::LitText' );
+    $node = newTextLit({ 'v' => $in });
+    pass( q{TextLit accepts valid payload ''} );
+    isa_ok( $node, 'QDRDBMS::AST::TextLit' );
     $out = $node->v();
-    is( $out, $in, q{LitText preserves valid payload} );
+    is( $out, $in, q{TextLit preserves valid payload} );
 
     $in = 'Ceres';
-    $node = newLitText({ 'v' => $in });
-    pass( q{LitText accepts valid payload ASCII 'Ceres'} );
-    isa_ok( $node, 'QDRDBMS::AST::LitText' );
+    $node = newTextLit({ 'v' => $in });
+    pass( q{TextLit accepts valid payload ASCII 'Ceres'} );
+    isa_ok( $node, 'QDRDBMS::AST::TextLit' );
     $out = $node->v();
-    is( $out, $in, q{LitText preserves valid payload} );
+    is( $out, $in, q{TextLit preserves valid payload} );
 
     $in = 'サンプル';
-    $node = newLitText({ 'v' => $in });
-    pass( q{LitText accepts valid payload Unicode 'サンプル'} );
-    isa_ok( $node, 'QDRDBMS::AST::LitText' );
+    $node = newTextLit({ 'v' => $in });
+    pass( q{TextLit accepts valid payload Unicode 'サンプル'} );
+    isa_ok( $node, 'QDRDBMS::AST::TextLit' );
     $out = $node->v();
-    is( $out, $in, q{LitText preserves valid payload} );
+    is( $out, $in, q{TextLit preserves valid payload} );
 
     $in = pack 'H2', '\xCC';
     eval {
-        $node = newLitText({ 'v' => $in });
+        $node = newTextLit({ 'v' => $in });
     };
-    ok( $@, q{LitText rejects invalid payload pack 'H2', '\xCC'} );
+    ok( $@, q{TextLit rejects invalid payload pack 'H2', '\xCC'} );
 
     return;
 }
 
 ######################################################################
 
-sub test_LitBlob {
+sub test_BlobLit {
 
     my ($in, $node, $out);
 
     $in = undef;
     eval {
-        $node = newLitBlob({ 'v' => $in });
+        $node = newBlobLit({ 'v' => $in });
     };
-    ok( $@, q{LitBlob rejects invalid payload undef} );
+    ok( $@, q{BlobLit rejects invalid payload undef} );
 
     $in = '';
-    $node = newLitBlob({ 'v' => $in });
-    pass( q{LitBlob accepts valid payload ''} );
-    isa_ok( $node, 'QDRDBMS::AST::LitBlob' );
+    $node = newBlobLit({ 'v' => $in });
+    pass( q{BlobLit accepts valid payload ''} );
+    isa_ok( $node, 'QDRDBMS::AST::BlobLit' );
     $out = $node->v();
-    is( $out, $in, q{LitBlob preserves valid payload} );
+    is( $out, $in, q{BlobLit preserves valid payload} );
 
     $in = 'Ceres';
-    $node = newLitBlob({ 'v' => $in });
-    pass( q{LitBlob accepts valid payload ASCII 'Ceres'} );
-    isa_ok( $node, 'QDRDBMS::AST::LitBlob' );
+    $node = newBlobLit({ 'v' => $in });
+    pass( q{BlobLit accepts valid payload ASCII 'Ceres'} );
+    isa_ok( $node, 'QDRDBMS::AST::BlobLit' );
     $out = $node->v();
-    is( $out, $in, q{LitBlob preserves valid payload} );
+    is( $out, $in, q{BlobLit preserves valid payload} );
 
     $in = 'サンプル';
     eval {
-        $node = newLitBlob({ 'v' => $in });
+        $node = newBlobLit({ 'v' => $in });
     };
-    ok( $@, q{LitBlob rejects invalid payload Unicode 'サンプル'} );
+    ok( $@, q{BlobLit rejects invalid payload Unicode 'サンプル'} );
 
     $in = pack 'H2', '\xCC';
-    $node = newLitBlob({ 'v' => $in });
-    pass( q{LitBlob accepts valid payload pack 'H2', '\xCC'} );
-    isa_ok( $node, 'QDRDBMS::AST::LitBlob' );
+    $node = newBlobLit({ 'v' => $in });
+    pass( q{BlobLit accepts valid payload pack 'H2', '\xCC'} );
+    isa_ok( $node, 'QDRDBMS::AST::BlobLit' );
     $out = $node->v();
-    is( $out, $in, q{LitBlob preserves valid payload} );
+    is( $out, $in, q{BlobLit preserves valid payload} );
 
     return;
 }
 
 ######################################################################
 
-sub test_LitInt {
+sub test_IntLit {
 
     my ($in, $node, $out);
 
     $in = undef;
     eval {
-        $node = newLitInt({ 'v' => $in });
+        $node = newIntLit({ 'v' => $in });
     };
-    ok( $@, q{LitInt rejects invalid payload undef} );
+    ok( $@, q{IntLit rejects invalid payload undef} );
 
     $in = '';
     eval {
-        $node = newLitInt({ 'v' => $in });
+        $node = newIntLit({ 'v' => $in });
     };
-    ok( $@, q{LitInt rejects invalid payload ''} );
+    ok( $@, q{IntLit rejects invalid payload ''} );
 
     $in = 0;
-    $node = newLitInt({ 'v' => $in });
-    pass( q{LitInt accepts valid payload 0} );
-    isa_ok( $node, 'QDRDBMS::AST::LitInt' );
+    $node = newIntLit({ 'v' => $in });
+    pass( q{IntLit accepts valid payload 0} );
+    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
     $out = $node->v();
-    is( $out, $in, q{LitInt preserves valid payload} );
+    is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = '0';
-    $node = newLitInt({ 'v' => $in });
-    pass( q{LitInt accepts valid payload '0'} );
-    isa_ok( $node, 'QDRDBMS::AST::LitInt' );
+    $node = newIntLit({ 'v' => $in });
+    pass( q{IntLit accepts valid payload '0'} );
+    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
     $out = $node->v();
-    is( $out, $in, q{LitInt preserves valid payload} );
+    is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = '0.0';
     eval {
-        $node = newLitInt({ 'v' => $in });
+        $node = newIntLit({ 'v' => $in });
     };
-    ok( $@, q{LitInt rejects invalid payload '0.0'} );
+    ok( $@, q{IntLit rejects invalid payload '0.0'} );
 
     $in = '00';
     eval {
-        $node = newLitInt({ 'v' => $in });
+        $node = newIntLit({ 'v' => $in });
     };
-    ok( $@, q{LitInt rejects invalid payload '00'} );
+    ok( $@, q{IntLit rejects invalid payload '00'} );
 
     $in = '-0';
     eval {
-        $node = newLitInt({ 'v' => $in });
+        $node = newIntLit({ 'v' => $in });
     };
-    ok( $@, q{LitInt rejects invalid payload '-0'} );
+    ok( $@, q{IntLit rejects invalid payload '-0'} );
 
     $in = 42;
-    $node = newLitInt({ 'v' => $in });
-    pass( q{LitInt accepts valid payload 42} );
-    isa_ok( $node, 'QDRDBMS::AST::LitInt' );
+    $node = newIntLit({ 'v' => $in });
+    pass( q{IntLit accepts valid payload 42} );
+    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
     $out = $node->v();
-    is( $out, $in, q{LitInt preserves valid payload} );
+    is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = '42';
-    $node = newLitInt({ 'v' => $in });
-    pass( q{LitInt accepts valid payload '42'} );
-    isa_ok( $node, 'QDRDBMS::AST::LitInt' );
+    $node = newIntLit({ 'v' => $in });
+    pass( q{IntLit accepts valid payload '42'} );
+    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
     $out = $node->v();
-    is( $out, $in, q{LitInt preserves valid payload} );
+    is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = -42;
-    $node = newLitInt({ 'v' => $in });
-    pass( q{LitInt accepts valid payload 42} );
-    isa_ok( $node, 'QDRDBMS::AST::LitInt' );
+    $node = newIntLit({ 'v' => $in });
+    pass( q{IntLit accepts valid payload 42} );
+    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
     $out = $node->v();
-    is( $out, $in, q{LitInt preserves valid payload} );
+    is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = '-42';
-    $node = newLitInt({ 'v' => $in });
-    pass( q{LitInt accepts valid payload '-42'} );
-    isa_ok( $node, 'QDRDBMS::AST::LitInt' );
+    $node = newIntLit({ 'v' => $in });
+    pass( q{IntLit accepts valid payload '-42'} );
+    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
     $out = $node->v();
-    is( $out, $in, q{LitInt preserves valid payload} );
+    is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = '042';
     eval {
-        $node = newLitInt({ 'v' => $in });
+        $node = newIntLit({ 'v' => $in });
     };
-    ok( $@, q{LitInt rejects invalid payload '042'} );
+    ok( $@, q{IntLit rejects invalid payload '042'} );
 
     $in = '420';
-    $node = newLitInt({ 'v' => $in });
-    pass( q{LitInt accepts valid payload '420'} );
-    isa_ok( $node, 'QDRDBMS::AST::LitInt' );
+    $node = newIntLit({ 'v' => $in });
+    pass( q{IntLit accepts valid payload '420'} );
+    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
     $out = $node->v();
-    is( $out, $in, q{LitInt preserves valid payload} );
+    is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = 'foo';
     eval {
-        $node = newLitInt({ 'v' => $in });
+        $node = newIntLit({ 'v' => $in });
     };
-    ok( $@, q{LitInt rejects invalid payload 'foo'} );
+    ok( $@, q{IntLit rejects invalid payload 'foo'} );
 
     $in = ' 3';
     eval {
-        $node = newLitInt({ 'v' => $in });
+        $node = newIntLit({ 'v' => $in });
     };
-    ok( $@, q{LitInt rejects invalid payload ' 3'} );
+    ok( $@, q{IntLit rejects invalid payload ' 3'} );
 
     $in = 4.5;
     eval {
-        $node = newLitInt({ 'v' => $in });
+        $node = newIntLit({ 'v' => $in });
     };
-    ok( $@, q{LitInt rejects invalid payload 4.5} );
+    ok( $@, q{IntLit rejects invalid payload 4.5} );
 
     $in = '4.5';
     eval {
-        $node = newLitInt({ 'v' => $in });
+        $node = newIntLit({ 'v' => $in });
     };
-    ok( $@, q{LitInt rejects invalid payload '4.5'} );
+    ok( $@, q{IntLit rejects invalid payload '4.5'} );
 
     return;
 }

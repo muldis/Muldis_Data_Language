@@ -78,7 +78,7 @@ sub prepare {
 
     use Carp;
 
-    use QDRDBMS::AST qw(newLitBool);
+    use QDRDBMS::AST qw(newBoolLit);
 
     my $ATTR_DBMS      = 'dbms';
     my $ATTR_DECL_TYPE = 'decl_type';
@@ -93,7 +93,7 @@ sub new {
 
     $self->{$ATTR_DBMS}      = $dbms;
     $self->{$ATTR_DECL_TYPE} = $decl_type;
-    $self->{$ATTR_VAL_AST}   = newLitBool({ 'v' => (1 == 0) });
+    $self->{$ATTR_VAL_AST}   = newBoolLit({ 'v' => (1 == 0) });
         # TODO: make default val of decl type
 
     return $self;
