@@ -31,4 +31,4 @@ use_ok( 'QDRDBMS::Engine::Example' );
 is( $QDRDBMS::Engine::Example::VERSION, 0.000000,
     'QDRDBMS::Engine::Example is the correct version' );
 
-1; # Magic true value required at end of a reuseable file's code.
+1; # Magic true value required at end of a reusable file's code.

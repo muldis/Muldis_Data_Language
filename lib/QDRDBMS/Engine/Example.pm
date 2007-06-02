@@ -205,7 +205,7 @@ sub execute {
 ###########################################################################
 ###########################################################################
 
-1; # Magic true value required at end of a reuseable file's code.
+1; # Magic true value required at end of a reusable file's code.
 __END__
 
 =pod
