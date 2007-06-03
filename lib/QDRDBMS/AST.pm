@@ -562,11 +562,34 @@ sub heading {
     return $self->{$ATTR_HEADING};
 }
 
-###########################################################################
-
 sub body {
     my ($self) = @_;
     return $self->{$ATTR_BODY};
+}
+
+###########################################################################
+
+sub attr_count {
+    my ($self) = @_;
+    return $self->{$ATTR_HEADING}->elem_count();
+}
+
+sub attr_exists {
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return $self->{$ATTR_HEADING}->elem_exists();
+}
+
+sub attr_type {
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return $self->{$ATTR_HEADING}->elem_value();
+}
+
+sub attr_value {
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return $self->{$ATTR_BODY}->elem_value();
 }
 
 ###########################################################################
@@ -687,11 +710,34 @@ sub heading {
     return $self->{$ATTR_HEADING};
 }
 
-###########################################################################
-
 sub body {
     my ($self) = @_;
     return [@{$self->{$ATTR_BODY}}];
+}
+
+###########################################################################
+
+sub attr_count {
+    my ($self) = @_;
+    return $self->{$ATTR_HEADING}->elem_count();
+}
+
+sub attr_exists {
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return $self->{$ATTR_HEADING}->elem_exists();
+}
+
+sub attr_type {
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return $self->{$ATTR_HEADING}->elem_value();
+}
+
+sub attr_values {
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return [map { $_->elem_value() } @{$self->{$ATTR_BODY}}];
 }
 
 ###########################################################################
@@ -1141,8 +1187,6 @@ sub text {
     return $self->{$ATTR_TEXT_POSSREP};
 }
 
-###########################################################################
-
 sub seq {
     my ($self) = @_;
     return [@{$self->{$ATTR_SEQ_POSSREP}}];
@@ -1256,8 +1300,6 @@ sub kind {
     my ($self) = @_;
     return $self->{$ATTR_KIND};
 }
-
-###########################################################################
 
 sub spec {
     my ($self) = @_;
@@ -1394,6 +1436,37 @@ sub map_hoa {
 
 ###########################################################################
 
+sub elem_count {
+    my ($self) = @_;
+    return 0 + @{$self->{$ATTR_MAP_AOA}};
+}
+
+sub elem_exists {
+    my ($self, $args) = @_;
+    my ($elem_name) = @{$args}{'elem_name'};
+
+    confess q{elem_exists(): Bad :$elem_name arg; it is not an object of a}
+            . q{ QDRDBMS::AST::EntityName-doing class.}
+        if !blessed $elem_name
+            or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
+
+    return exists $self->{$ATTR_MAP_HOA}->{$elem_name->text()};
+}
+
+sub elem_value {
+    my ($self, $args) = @_;
+    my ($elem_name) = @{$args}{'elem_name'};
+
+    confess q{elem_value(): Bad :$elem_name arg; it is not an object of a}
+            . q{ QDRDBMS::AST::EntityName-doing class.}
+        if !blessed $elem_name
+            or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
+
+    return $self->{$ATTR_MAP_HOA}->{$elem_name->text()};
+}
+
+###########################################################################
+
 } # role QDRDBMS::AST::TypeDict
 
 ###########################################################################
@@ -1510,6 +1583,37 @@ sub map_hoa {
     my ($self) = @_;
     my $h = $self->{$ATTR_MAP_HOA};
     return {map { $_ => [@{$h->{$_}}] } keys %{$h}};
+}
+
+###########################################################################
+
+sub elem_count {
+    my ($self) = @_;
+    return 0 + @{$self->{$ATTR_MAP_AOA}};
+}
+
+sub elem_exists {
+    my ($self, $args) = @_;
+    my ($elem_name) = @{$args}{'elem_name'};
+
+    confess q{elem_exists(): Bad :$elem_name arg; it is not an object of a}
+            . q{ QDRDBMS::AST::EntityName-doing class.}
+        if !blessed $elem_name
+            or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
+
+    return exists $self->{$ATTR_MAP_HOA}->{$elem_name->text()};
+}
+
+sub elem_value {
+    my ($self, $args) = @_;
+    my ($elem_name) = @{$args}{'elem_name'};
+
+    confess q{elem_value(): Bad :$elem_name arg; it is not an object of a}
+            . q{ QDRDBMS::AST::EntityName-doing class.}
+        if !blessed $elem_name
+            or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
+
+    return $self->{$ATTR_MAP_HOA}->{$elem_name->text()};
 }
 
 ###########################################################################
