@@ -3,36 +3,36 @@ use utf8;
 use strict;
 use warnings FATAL => 'all';
 
-use QDRDBMS;
-use QDRDBMS::Engine::Example::Operators;
+use Muldis::DB;
+use Muldis::DB::Engine::Example::Operators;
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example; # class
+{ package Muldis::DB::Engine::Example; # class
     our $VERSION = 0.000000;
     # Note: This given version applies to all of this file's packages.
 
-    use base 'QDRDBMS::Engine::Role';
+    use base 'Muldis::DB::Engine::Role';
 
 ###########################################################################
 
 sub new_dbms {
     my ($class, $args) = @_;
     my ($dbms_config) = @{$args}{'dbms_config'};
-    return QDRDBMS::Engine::Example::DBMS->new({
+    return Muldis::DB::Engine::Example::DBMS->new({
         'dbms_config' => $dbms_config });
 }
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example
+} # class Muldis::DB::Engine::Example
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::DBMS; # class
-    use base 'QDRDBMS::Engine::Role::DBMS';
+{ package Muldis::DB::Engine::Example::DBMS; # class
+    use base 'Muldis::DB::Engine::Role::DBMS';
 
     use Carp;
 
@@ -55,30 +55,30 @@ sub new {
 sub new_var {
     my ($self, $args) = @_;
     my ($decl_type) = @{$args}{'decl_type'};
-    return QDRDBMS::Engine::Example::HostGateVar->new({
+    return Muldis::DB::Engine::Example::HostGateVar->new({
         'dbms' => $self, 'decl_type' => $decl_type });
 }
 
 sub prepare {
     my ($self, $args) = @_;
     my ($rtn_ast) = @{$args}{'rtn_ast'};
-    return QDRDBMS::Engine::Example::HostGateRtn->new({
+    return Muldis::DB::Engine::Example::HostGateRtn->new({
         'dbms' => $self, 'rtn_ast' => $rtn_ast });
 }
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::DBMS
+} # class Muldis::DB::Engine::Example::DBMS
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::HostGateVar; # class
-    use base 'QDRDBMS::Engine::Role::HostGateVar';
+{ package Muldis::DB::Engine::Example::HostGateVar; # class
+    use base 'Muldis::DB::Engine::Role::HostGateVar';
 
     use Carp;
 
-    use QDRDBMS::AST qw(newBoolLit);
+    use Muldis::DB::AST qw(newBoolLit);
 
     my $ATTR_DBMS      = 'dbms';
     my $ATTR_DECL_TYPE = 'decl_type';
@@ -119,13 +119,13 @@ sub store_ast {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::HostGateVar
+} # class Muldis::DB::Engine::Example::HostGateVar
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::HostGateRtn; # class
-    use base 'QDRDBMS::Engine::Role::HostGateRtn';
+{ package Muldis::DB::Engine::Example::HostGateRtn; # class
+    use base 'Muldis::DB::Engine::Role::HostGateRtn';
 
     use Carp;
 
@@ -185,22 +185,22 @@ sub execute {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::HostGateRtn
+} # class Muldis::DB::Engine::Example::HostGateRtn
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::Value; # class
-
-
-
-###########################################################################
+{ package Muldis::DB::Engine::Example::Value; # class
 
 
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::Value
+
+
+###########################################################################
+
+} # class Muldis::DB::Engine::Example::Value
 
 ###########################################################################
 ###########################################################################
@@ -214,12 +214,13 @@ __END__
 
 =head1 NAME
 
-QDRDBMS::Engine::Example -
-Self-contained reference implementation of a QDRDBMS Engine
+Muldis::DB::Engine::Example -
+Self-contained reference implementation of a Muldis::DB Engine
 
 =head1 VERSION
 
-This document describes QDRDBMS::Engine::Example version 0.0.0 for Perl 5.
+This document describes Muldis::DB::Engine::Example version 0.0.0 for Perl
+5.
 
 =head1 SYNOPSIS
 
@@ -247,7 +248,7 @@ I<This documentation is pending.>
 This file requires any version of Perl 5.x.y that is at least 5.8.1.
 
 It also requires these Perl 5 classes that are in the current distribution:
-L<QDRDBMS-0.0.0|QDRDBMS>.
+L<Muldis::DB-0.0.0|Muldis::DB>.
 
 =head1 INCOMPATIBILITIES
 
@@ -255,8 +256,9 @@ None reported.
 
 =head1 SEE ALSO
 
-Go to L<QDRDBMS> for the majority of distribution-internal references, and
-L<QDRDBMS::SeeAlso> for the majority of distribution-external references.
+Go to L<Muldis::DB> for the majority of distribution-internal references,
+and L<Muldis::DB::SeeAlso> for the majority of distribution-external
+references.
 
 =head1 BUGS AND LIMITATIONS
 
@@ -268,14 +270,14 @@ Darren Duncan (C<perl@DarrenDuncan.net>)
 
 =head1 LICENSE AND COPYRIGHT
 
-This file is part of the QDRDBMS framework.
+This file is part of the Muldis::DB framework.
 
-QDRDBMS is Copyright © 2002-2007, Darren Duncan.
+Muldis::DB is Copyright © 2002-2007, Darren Duncan.
 
-See the LICENSE AND COPYRIGHT of L<QDRDBMS> for details.
+See the LICENSE AND COPYRIGHT of L<Muldis::DB> for details.
 
 =head1 ACKNOWLEDGEMENTS
 
-The ACKNOWLEDGEMENTS in L<QDRDBMS> apply to this file too.
+The ACKNOWLEDGEMENTS in L<Muldis::DB> apply to this file too.
 
 =cut

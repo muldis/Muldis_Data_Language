@@ -12,7 +12,7 @@ my $TRUE  = (1 == 1);
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST; # module
+{ package Muldis::DB::AST; # module
     our $VERSION = 0.000000;
     # Note: This given version applies to all of this file's packages.
 
@@ -37,65 +37,65 @@ my $TRUE  = (1 == 1);
 sub newBoolLit {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::BoolLit->new({ 'v' => $v });
+    return Muldis::DB::AST::BoolLit->new({ 'v' => $v });
 }
 
 sub newTextLit {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::TextLit->new({ 'v' => $v });
+    return Muldis::DB::AST::TextLit->new({ 'v' => $v });
 }
 
 sub newBlobLit {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::BlobLit->new({ 'v' => $v });
+    return Muldis::DB::AST::BlobLit->new({ 'v' => $v });
 }
 
 sub newIntLit {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::IntLit->new({ 'v' => $v });
+    return Muldis::DB::AST::IntLit->new({ 'v' => $v });
 }
 
 sub newTupleSel {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::TupleSel->new({
+    return Muldis::DB::AST::TupleSel->new({
         'heading' => $heading, 'body' => $body });
 }
 
 sub newQuasiTupleSel {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::QuasiTupleSel->new({
+    return Muldis::DB::AST::QuasiTupleSel->new({
         'heading' => $heading, 'body' => $body });
 }
 
 sub newRelationSel {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::RelationSel->new({
+    return Muldis::DB::AST::RelationSel->new({
         'heading' => $heading, 'body' => $body });
 }
 
 sub newQuasiRelationSel {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
-    return QDRDBMS::AST::QuasiRelationSel->new({
+    return Muldis::DB::AST::QuasiRelationSel->new({
         'heading' => $heading, 'body' => $body });
 }
 
 sub newVarInvo {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::VarInvo->new({ 'v' => $v });
+    return Muldis::DB::AST::VarInvo->new({ 'v' => $v });
 }
 
 sub newFuncInvo {
     my ($args) = @_;
     my ($func, $ro_args) = @{$args}{'func', 'ro_args'};
-    return QDRDBMS::AST::FuncInvo->new({
+    return Muldis::DB::AST::FuncInvo->new({
         'func' => $func, 'ro_args' => $ro_args });
 }
 
@@ -103,83 +103,83 @@ sub newProcInvo {
     my ($args) = @_;
     my ($proc, $upd_args, $ro_args)
         = @{$args}{'proc', 'upd_args', 'ro_args'};
-    return QDRDBMS::AST::ProcInvo->new({
+    return Muldis::DB::AST::ProcInvo->new({
         'proc' => $proc, 'upd_args' => $upd_args, 'ro_args' => $ro_args });
 }
 
 sub newFuncReturn {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return QDRDBMS::AST::FuncReturn->new({ 'v' => $v });
+    return Muldis::DB::AST::FuncReturn->new({ 'v' => $v });
 }
 
 sub newProcReturn {
-    return QDRDBMS::AST::ProcReturn->new();
+    return Muldis::DB::AST::ProcReturn->new();
 }
 
 sub newEntityName {
     my ($args) = @_;
     my ($text, $seq) = @{$args}{'text', 'seq'};
-    return QDRDBMS::AST::EntityName->new({
+    return Muldis::DB::AST::EntityName->new({
         'text' => $text, 'seq' => $seq });
 }
 
 sub newTypeInvoNQ {
     my ($args) = @_;
     my ($kind, $spec) = @{$args}{'kind', 'spec'};
-    return QDRDBMS::AST::TypeInvoNQ->new({
+    return Muldis::DB::AST::TypeInvoNQ->new({
         'kind' => $kind, 'spec' => $spec });
 }
 
 sub newTypeInvoAQ {
     my ($args) = @_;
     my ($kind, $spec) = @{$args}{'kind', 'spec'};
-    return QDRDBMS::AST::TypeInvoAQ->new({
+    return Muldis::DB::AST::TypeInvoAQ->new({
         'kind' => $kind, 'spec' => $spec });
 }
 
 sub newTypeDictNQ {
     my ($args) = @_;
     my ($map) = @{$args}{'map'};
-    return QDRDBMS::AST::TypeDictNQ->new({ 'map' => $map });
+    return Muldis::DB::AST::TypeDictNQ->new({ 'map' => $map });
 }
 
 sub newTypeDictAQ {
     my ($args) = @_;
     my ($map) = @{$args}{'map'};
-    return QDRDBMS::AST::TypeDictAQ->new({ 'map' => $map });
+    return Muldis::DB::AST::TypeDictAQ->new({ 'map' => $map });
 }
 
 sub newExprDict {
     my ($args) = @_;
     my ($map) = @{$args}{'map'};
-    return QDRDBMS::AST::ExprDict->new({ 'map' => $map });
+    return Muldis::DB::AST::ExprDict->new({ 'map' => $map });
 }
 
 sub newFuncDecl {
-    return QDRDBMS::AST::FuncDecl->new();
+    return Muldis::DB::AST::FuncDecl->new();
 }
 
 sub newProcDecl {
-    return QDRDBMS::AST::ProcDecl->new();
+    return Muldis::DB::AST::ProcDecl->new();
 }
 
 sub newHostGateRtn {
     my ($args) = @_;
     my ($upd_params, $ro_params, $vars, $stmts)
         = @{$args}{'upd_params', 'ro_params', 'vars', 'stmts'};
-    return QDRDBMS::AST::HostGateRtn->new({ 'upd_params' => $upd_params,
+    return Muldis::DB::AST::HostGateRtn->new({ 'upd_params' => $upd_params,
         'ro_params' => $ro_params, 'vars' => $vars, 'stmts' => $stmts });
 }
 
 ###########################################################################
 
-} # module QDRDBMS::AST
+} # module Muldis::DB::AST
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Node;
+{ package Muldis::DB::AST::Node;
     use Carp;
     use Scalar::Util qw(blessed);
 
@@ -197,8 +197,8 @@ sub equal_repr {
     my ($other) = @{$args}{'other'};
 
     confess q{equal_repr(): Bad :$other arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::Node-doing class.}
-        if !blessed $other or !$other->isa( 'QDRDBMS::AST::Node' );
+            . q{ of a Muldis::DB::AST::Node-doing class.}
+        if !blessed $other or !$other->isa( 'Muldis::DB::AST::Node' );
 
     return $FALSE
         if blessed $other ne blessed $self;
@@ -213,27 +213,27 @@ sub _equal_repr {
 
 ###########################################################################
 
-} # role QDRDBMS::AST::Node
+} # role Muldis::DB::AST::Node
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Expr; # role
-    use base 'QDRDBMS::AST::Node';
-} # role QDRDBMS::AST::Expr
+{ package Muldis::DB::AST::Expr; # role
+    use base 'Muldis::DB::AST::Node';
+} # role Muldis::DB::AST::Expr
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Lit; # role
-    use base 'QDRDBMS::AST::Expr';
-} # role QDRDBMS::AST::Lit
+{ package Muldis::DB::AST::Lit; # role
+    use base 'Muldis::DB::AST::Expr';
+} # role Muldis::DB::AST::Lit
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::BoolLit; # class
-    use base 'QDRDBMS::AST::Lit';
+{ package Muldis::DB::AST::BoolLit; # class
+    use base 'Muldis::DB::AST::Lit';
 
     use Carp;
 
@@ -268,7 +268,7 @@ sub as_perl {
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $s = $self->{$ATTR_V} ? $TRUE_AS_PERL : $FALSE_AS_PERL;
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::BoolLit->new({ 'v' => $s })";
+            = "Muldis::DB::AST::BoolLit->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -289,13 +289,13 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::BoolLit
+} # class Muldis::DB::AST::BoolLit
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::TextLit; # class
-    use base 'QDRDBMS::AST::Lit';
+{ package Muldis::DB::AST::TextLit; # class
+    use base 'Muldis::DB::AST::Lit';
 
     use Carp;
     use Encode qw(is_utf8);
@@ -331,7 +331,7 @@ sub as_perl {
         $s =~ s/'/\\'/xs;
         $s = q{'} . $s . q{'};
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::TextLit->new({ 'v' => $s })";
+            = "Muldis::DB::AST::TextLit->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -352,13 +352,13 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::TextLit
+} # class Muldis::DB::AST::TextLit
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::BlobLit; # class
-    use base 'QDRDBMS::AST::Lit';
+{ package Muldis::DB::AST::BlobLit; # class
+    use base 'Muldis::DB::AST::Lit';
 
     use Carp;
     use Encode qw(is_utf8);
@@ -396,7 +396,7 @@ sub as_perl {
         my $s = q[(join q{}, map { pack 'H2', $_ }
             split q{}, ] . $hex_digit_text . q[)];
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::BlobLit->new({ 'v' => $s })";
+            = "Muldis::DB::AST::BlobLit->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -417,13 +417,13 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::BlobLit
+} # class Muldis::DB::AST::BlobLit
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::IntLit; # class
-    use base 'QDRDBMS::AST::Lit';
+{ package Muldis::DB::AST::IntLit; # class
+    use base 'Muldis::DB::AST::Lit';
 
     use Carp;
 
@@ -455,7 +455,7 @@ sub as_perl {
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $s = q{'} . $self->{$ATTR_V} . q{'};
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::IntLit->new({ 'v' => $s })";
+            = "Muldis::DB::AST::IntLit->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -476,13 +476,13 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::IntLit
+} # class Muldis::DB::AST::IntLit
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::_Tuple; # role
-    use base 'QDRDBMS::AST::Expr';
+{ package Muldis::DB::AST::_Tuple; # role
+    use base 'Muldis::DB::AST::Expr';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -504,21 +504,21 @@ sub new {
 
     if ($self->_allows_quasi()) {
         confess q{new(): Bad :$heading arg; it is not a valid object}
-                . q{ of a QDRDBMS::AST::TypeDictAQ-doing class.}
+                . q{ of a Muldis::DB::AST::TypeDictAQ-doing class.}
             if !blessed $heading
-                or !$heading->isa( 'QDRDBMS::AST::TypeDictAQ' );
+                or !$heading->isa( 'Muldis::DB::AST::TypeDictAQ' );
     }
     else {
         confess q{new(): Bad :$heading arg; it is not a valid object}
-                . q{ of a QDRDBMS::AST::TypeDictNQ-doing class.}
+                . q{ of a Muldis::DB::AST::TypeDictNQ-doing class.}
             if !blessed $heading
-                or !$heading->isa( 'QDRDBMS::AST::TypeDictNQ' );
+                or !$heading->isa( 'Muldis::DB::AST::TypeDictNQ' );
     }
     my $heading_attrs_map_hoa = $heading->{$TYPEDICT_ATTR_MAP_HOA};
 
     confess q{new(): Bad :$body arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::ExprDict-doing class.}
-        if !blessed $body or !$body->isa( 'QDRDBMS::AST::ExprDict' );
+            . q{ of a Muldis::DB::AST::ExprDict-doing class.}
+        if !blessed $body or !$body->isa( 'Muldis::DB::AST::ExprDict' );
     for my $attr_name_text (keys %{$body->{$EXPRDICT_ATTR_MAP_HOA}}) {
         confess q{new(): Bad :$body arg; at least one its attrs}
                 . q{ does not have a corresponding attr in :$heading.}
@@ -594,29 +594,29 @@ sub attr_value {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::_Tuple
+} # class Muldis::DB::AST::_Tuple
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::TupleSel; # class
-    use base 'QDRDBMS::AST::_Tuple';
+{ package Muldis::DB::AST::TupleSel; # class
+    use base 'Muldis::DB::AST::_Tuple';
     sub _allows_quasi { return $FALSE; }
-} # class QDRDBMS::AST::TupleSel
+} # class Muldis::DB::AST::TupleSel
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::QuasiTupleSel; # class
-    use base 'QDRDBMS::AST::_Tuple';
+{ package Muldis::DB::AST::QuasiTupleSel; # class
+    use base 'Muldis::DB::AST::_Tuple';
     sub _allows_quasi { return $TRUE; }
-} # class QDRDBMS::AST::QuasiTupleSel
+} # class Muldis::DB::AST::QuasiTupleSel
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::_Relation; # role
-    use base 'QDRDBMS::AST::Expr';
+{ package Muldis::DB::AST::_Relation; # role
+    use base 'Muldis::DB::AST::Expr';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -638,15 +638,15 @@ sub new {
 
     if ($self->_allows_quasi()) {
         confess q{new(): Bad :$heading arg; it is not a valid object}
-                . q{ of a QDRDBMS::AST::TypeDictAQ-doing class.}
+                . q{ of a Muldis::DB::AST::TypeDictAQ-doing class.}
             if !blessed $heading
-                or !$heading->isa( 'QDRDBMS::AST::TypeDictAQ' );
+                or !$heading->isa( 'Muldis::DB::AST::TypeDictAQ' );
     }
     else {
         confess q{new(): Bad :$heading arg; it is not a valid object}
-                . q{ of a QDRDBMS::AST::TypeDictNQ-doing class.}
+                . q{ of a Muldis::DB::AST::TypeDictNQ-doing class.}
             if !blessed $heading
-                or !$heading->isa( 'QDRDBMS::AST::TypeDictNQ' );
+                or !$heading->isa( 'Muldis::DB::AST::TypeDictNQ' );
     }
     my $heading_attrs_map_hoa = $heading->{$TYPEDICT_ATTR_MAP_HOA};
 
@@ -654,8 +654,9 @@ sub new {
         if ref $body ne 'ARRAY';
     for my $tupb (@{$body}) {
         confess q{new(): Bad :$body arg elem; it is not a valid object}
-                . q{ of a QDRDBMS::AST::ExprDict-doing class.}
-            if !blessed $tupb or !$tupb->isa( 'QDRDBMS::AST::ExprDict' );
+                . q{ of a Muldis::DB::AST::ExprDict-doing class.}
+            if !blessed $tupb
+                or !$tupb->isa( 'Muldis::DB::AST::ExprDict' );
         for my $attr_name_text (keys %{$tupb->{$EXPRDICT_ATTR_MAP_HOA}}) {
             confess q{new(): Bad :$body arg elem; at least one its attrs}
                     . q{ does not have a corresponding attr in :$heading.}
@@ -742,29 +743,29 @@ sub attr_values {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::_Relation
+} # class Muldis::DB::AST::_Relation
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::RelationSel; # class
-    use base 'QDRDBMS::AST::_Relation';
+{ package Muldis::DB::AST::RelationSel; # class
+    use base 'Muldis::DB::AST::_Relation';
     sub _allows_quasi { return $FALSE; }
-} # class QDRDBMS::AST::RelationSel
+} # class Muldis::DB::AST::RelationSel
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::QuasiRelationSel; # class
-    use base 'QDRDBMS::AST::_Relation';
+{ package Muldis::DB::AST::QuasiRelationSel; # class
+    use base 'Muldis::DB::AST::_Relation';
     sub _allows_quasi { return $TRUE; }
-} # class QDRDBMS::AST::QuasiRelationSel
+} # class Muldis::DB::AST::QuasiRelationSel
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::VarInvo; # class
-    use base 'QDRDBMS::AST::Expr';
+{ package Muldis::DB::AST::VarInvo; # class
+    use base 'Muldis::DB::AST::Expr';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -781,8 +782,8 @@ sub new {
     my ($v) = @{$args}{'v'};
 
     confess q{new(): Bad :$v arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::EntityName-doing class.}
-        if !blessed $v or !$v->isa( 'QDRDBMS::AST::EntityName' );
+            . q{ of a Muldis::DB::AST::EntityName-doing class.}
+        if !blessed $v or !$v->isa( 'Muldis::DB::AST::EntityName' );
 
     $self->{$ATTR_V} = $v;
 
@@ -796,7 +797,7 @@ sub as_perl {
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $s = $self->{$ATTR_V}->as_perl();
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::VarInvo->new({ 'v' => $s })";
+            = "Muldis::DB::AST::VarInvo->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -817,13 +818,13 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::VarInvo
+} # class Muldis::DB::AST::VarInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::FuncInvo; # class
-    use base 'QDRDBMS::AST::Expr';
+{ package Muldis::DB::AST::FuncInvo; # class
+    use base 'Muldis::DB::AST::Expr';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -841,12 +842,13 @@ sub new {
     my ($func, $ro_args) = @{$args}{'func', 'ro_args'};
 
     confess q{new(): Bad :$func arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::EntityName-doing class.}
-        if !blessed $func or !$func->isa( 'QDRDBMS::AST::EntityName' );
+            . q{ of a Muldis::DB::AST::EntityName-doing class.}
+        if !blessed $func or !$func->isa( 'Muldis::DB::AST::EntityName' );
 
     confess q{new(): Bad :$ro_args arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::ExprDict-doing class.}
-        if !blessed $ro_args or !$ro_args->isa( 'QDRDBMS::AST::ExprDict' );
+            . q{ of a Muldis::DB::AST::ExprDict-doing class.}
+        if !blessed $ro_args
+            or !$ro_args->isa( 'Muldis::DB::AST::ExprDict' );
 
     $self->{$ATTR_FUNC}    = $func;
     $self->{$ATTR_RO_ARGS} = $ro_args;
@@ -862,7 +864,7 @@ sub as_perl {
         my $sf = $self->{$ATTR_FUNC}->as_perl();
         my $sra = $self->{$ATTR_RO_ARGS}->as_perl();
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::FuncInvo->new({"
+            = "Muldis::DB::AST::FuncInvo->new({"
                 . " 'func' => $sf, 'ro_args' => $sra })";
     }
     return $self->{$ATTR_AS_PERL};
@@ -892,20 +894,20 @@ sub ro_args {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::FuncInvo
+} # class Muldis::DB::AST::FuncInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::Stmt; # role
-    use base 'QDRDBMS::AST::Node';
-} # role QDRDBMS::AST::Stmt
+{ package Muldis::DB::AST::Stmt; # role
+    use base 'Muldis::DB::AST::Node';
+} # role Muldis::DB::AST::Stmt
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::ProcInvo; # class
-    use base 'QDRDBMS::AST::Stmt';
+{ package Muldis::DB::AST::ProcInvo; # class
+    use base 'Muldis::DB::AST::Stmt';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -927,21 +929,22 @@ sub new {
         = @{$args}{'proc', 'upd_args', 'ro_args'};
 
     confess q{new(): Bad :$proc arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::EntityName-doing class.}
-        if !blessed $proc or !$proc->isa( 'QDRDBMS::AST::EntityName' );
+            . q{ of a Muldis::DB::AST::EntityName-doing class.}
+        if !blessed $proc or !$proc->isa( 'Muldis::DB::AST::EntityName' );
 
     confess q{new(): Bad :$upd_args arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::ExprDict-doing class.}
+            . q{ of a Muldis::DB::AST::ExprDict-doing class.}
         if !blessed $upd_args
-            or !$upd_args->isa( 'QDRDBMS::AST::ExprDict' );
+            or !$upd_args->isa( 'Muldis::DB::AST::ExprDict' );
     confess q{new(): Bad :$ro_args arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::ExprDict-doing class.}
-        if !blessed $ro_args or !$ro_args->isa( 'QDRDBMS::AST::ExprDict' );
+            . q{ of a Muldis::DB::AST::ExprDict-doing class.}
+        if !blessed $ro_args
+            or !$ro_args->isa( 'Muldis::DB::AST::ExprDict' );
     my $upd_args_map_hoa = $upd_args->{$EXPRDICT_ATTR_MAP_HOA};
     for my $an_and_vn (values %{$upd_args_map_hoa}) {
         confess q{new(): Bad :$upd_args arg elem expr; it is not}
-                . q{ an object of a QDRDBMS::AST::VarInvo-doing class.}
-            if !$an_and_vn->[1]->isa( 'QDRDBMS::AST::VarInvo' );
+                . q{ an object of a Muldis::DB::AST::VarInvo-doing class.}
+            if !$an_and_vn->[1]->isa( 'Muldis::DB::AST::VarInvo' );
     }
     confess q{new(): Bad :$upd_args or :$ro_args arg;}
             . q{ they both reference at least 1 same procedure param.}
@@ -965,7 +968,7 @@ sub as_perl {
         my $sua = $self->{$ATTR_UPD_ARGS}->as_perl();
         my $sra = $self->{$ATTR_RO_ARGS}->as_perl();
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::ProcInvo->new({ 'proc' => $sp"
+            = "Muldis::DB::AST::ProcInvo->new({ 'proc' => $sp"
                 . ", 'upd_args' => $sua, 'ro_args' => $sra })";
     }
     return $self->{$ATTR_AS_PERL};
@@ -1002,13 +1005,13 @@ sub ro_args {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::ProcInvo
+} # class Muldis::DB::AST::ProcInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::FuncReturn; # class
-    use base 'QDRDBMS::AST::Stmt';
+{ package Muldis::DB::AST::FuncReturn; # class
+    use base 'Muldis::DB::AST::Stmt';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -1025,8 +1028,8 @@ sub new {
     my ($v) = @{$args}{'v'};
 
     confess q{new(): Bad :$v arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::Expr-doing class.}
-        if !blessed $v or !$v->isa( 'QDRDBMS::AST::Expr' );
+            . q{ of a Muldis::DB::AST::Expr-doing class.}
+        if !blessed $v or !$v->isa( 'Muldis::DB::AST::Expr' );
 
     $self->{$ATTR_V} = $v;
 
@@ -1040,7 +1043,7 @@ sub as_perl {
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $s = $self->{$ATTR_V}->as_perl();
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::FuncReturn->new({ 'v' => $s })";
+            = "Muldis::DB::AST::FuncReturn->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -1061,13 +1064,13 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::FuncReturn
+} # class Muldis::DB::AST::FuncReturn
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::ProcReturn; # class
-    use base 'QDRDBMS::AST::Stmt';
+{ package Muldis::DB::AST::ProcReturn; # class
+    use base 'Muldis::DB::AST::Stmt';
 
 ###########################################################################
 
@@ -1079,7 +1082,7 @@ sub new {
 ###########################################################################
 
 sub as_perl {
-    return 'QDRDBMS::AST::ProcReturn->new()';
+    return 'Muldis::DB::AST::ProcReturn->new()';
 }
 
 ###########################################################################
@@ -1090,13 +1093,13 @@ sub _equal_repr {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::ProcReturn
+} # class Muldis::DB::AST::ProcReturn
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::EntityName; # class
-    use base 'QDRDBMS::AST::Node';
+{ package Muldis::DB::AST::EntityName; # class
+    use base 'Muldis::DB::AST::Node';
 
     use Carp;
     use Encode qw(is_utf8);
@@ -1168,7 +1171,7 @@ sub as_perl {
         $s =~ s/'/\\'/xs;
         $s = q{'} . $s . q{'};
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::EntityName->new({ 'text' => $s })";
+            = "Muldis::DB::AST::EntityName->new({ 'text' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -1194,13 +1197,13 @@ sub seq {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::EntityName
+} # class Muldis::DB::AST::EntityName
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::TypeInvo; # role
-    use base 'QDRDBMS::AST::Node';
+{ package Muldis::DB::AST::TypeInvo; # role
+    use base 'Muldis::DB::AST::Node';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -1222,16 +1225,18 @@ sub new {
 
     if ($kind eq 'Scalar') {
         confess q{new(): Bad :$spec arg; it needs to be a valid object}
-                . q{ of a QDRDBMS::AST::EntityName-doing class}
+                . q{ of a Muldis::DB::AST::EntityName-doing class}
                 . q{ when the :$kind arg is 'Scalar'.}
-            if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::EntityName' );
+            if !blessed $spec
+                or !$spec->isa( 'Muldis::DB::AST::EntityName' );
     }
 
     elsif ($kind eq 'Tuple' or $kind eq 'Relation') {
         confess q{new(): Bad :$spec arg; it needs to be a valid object}
-                . q{ of a QDRDBMS::AST::TypeDictNQ-doing class}
+                . q{ of a Muldis::DB::AST::TypeDictNQ-doing class}
                 . q{ when the :$kind arg is 'Tuple'|'Relation'.}
-            if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeDictNQ' );
+            if !blessed $spec
+                or !$spec->isa( 'Muldis::DB::AST::TypeDictNQ' );
     }
 
     elsif (!$self->_allows_quasi()) {
@@ -1241,9 +1246,10 @@ sub new {
 
     elsif ($kind eq 'QTuple' or $kind eq 'QRelation') {
         confess q{new(): Bad :$spec arg; it needs to be a valid object}
-                . q{ of a QDRDBMS::AST::TypeDictAQ-doing class}
+                . q{ of a Muldis::DB::AST::TypeDictAQ-doing class}
                 . q{ when the :$kind arg is 'QTuple'|'QRelation'.}
-            if !blessed $spec or !$spec->isa( 'QDRDBMS::AST::TypeDictAQ' );
+            if !blessed $spec
+                or !$spec->isa( 'Muldis::DB::AST::TypeDictAQ' );
     }
 
     elsif ($kind eq 'Any') {
@@ -1308,29 +1314,29 @@ sub spec {
 
 ###########################################################################
 
-} # role QDRDBMS::AST::TypeInvo
+} # role Muldis::DB::AST::TypeInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::TypeInvoNQ; # class
-    use base 'QDRDBMS::AST::TypeInvo';
+{ package Muldis::DB::AST::TypeInvoNQ; # class
+    use base 'Muldis::DB::AST::TypeInvo';
     sub _allows_quasi { return $FALSE; }
-} # class QDRDBMS::AST::TypeInvoNQ
+} # class Muldis::DB::AST::TypeInvoNQ
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::TypeInvoAQ; # class
-    use base 'QDRDBMS::AST::TypeInvo';
+{ package Muldis::DB::AST::TypeInvoAQ; # class
+    use base 'Muldis::DB::AST::TypeInvo';
     sub _allows_quasi { return $TRUE; }
-} # class QDRDBMS::AST::TypeInvoAQ
+} # class Muldis::DB::AST::TypeInvoAQ
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::TypeDict; # role
-    use base 'QDRDBMS::AST::Node';
+{ package Muldis::DB::AST::TypeDict; # role
+    use base 'Muldis::DB::AST::Node';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -1357,25 +1363,27 @@ sub new {
         confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
             if ref $elem ne 'ARRAY' or @{$elem} != 2;
         my ($entity_name, $type_invo) = @{$elem};
-        confess q{new(): Bad :$map arg elem; its first elem is not}
-                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+        confess q{new(): Bad :$map arg elem; its first elem is not an}
+                . q{ object of a Muldis::DB::AST::EntityName-doing class.}
             if !blessed $entity_name
-                or !$entity_name->isa( 'QDRDBMS::AST::EntityName' );
+                or !$entity_name->isa( 'Muldis::DB::AST::EntityName' );
         my $entity_name_text = $entity_name->text();
         confess q{new(): Bad :$map arg elem; its first elem is not}
                 . q{ distinct between the arg elems.}
             if exists $map_hoa->{$entity_name_text};
         if ($allows_quasi) {
             confess q{new(): Bad :$map arg elem; its second elem is not an}
-                    . q{ object of a QDRDBMS::AST::TypeInvoAQ-doing class.}
+                    . q{ object of a Muldis::DB::AST::TypeInvoAQ-doing}
+                    . q{ class.}
                 if !blessed $type_invo
-                    or !$type_invo->isa( 'QDRDBMS::AST::TypeInvoAQ' );
+                    or !$type_invo->isa( 'Muldis::DB::AST::TypeInvoAQ' );
         }
         else {
             confess q{new(): Bad :$map arg elem; its second elem is not an}
-                    . q{ object of a QDRDBMS::AST::TypeInvoNQ-doing class.}
+                    . q{ object of a Muldis::DB::AST::TypeInvoNQ-doing}
+                    . q{ class.}
                 if !blessed $type_invo
-                    or !$type_invo->isa( 'QDRDBMS::AST::TypeInvoNQ' );
+                    or !$type_invo->isa( 'Muldis::DB::AST::TypeInvoNQ' );
         }
         my $elem_cpy = [$entity_name, $type_invo];
         push @{$map_aoa}, $elem_cpy;
@@ -1398,7 +1406,7 @@ sub as_perl {
                     . q{, } . $_->[1]->as_perl() . q{]}
             } @{$self->{$ATTR_MAP_AOA}}) . q{]};
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::TypeDict->new({ 'map' => $s })";
+            = "Muldis::DB::AST::TypeDict->new({ 'map' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -1446,9 +1454,9 @@ sub elem_exists {
     my ($elem_name) = @{$args}{'elem_name'};
 
     confess q{elem_exists(): Bad :$elem_name arg; it is not an object of a}
-            . q{ QDRDBMS::AST::EntityName-doing class.}
+            . q{ Muldis::DB::AST::EntityName-doing class.}
         if !blessed $elem_name
-            or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
+            or !$elem_name->isa( 'Muldis::DB::AST::EntityName' );
 
     return exists $self->{$ATTR_MAP_HOA}->{$elem_name->text()};
 }
@@ -1458,38 +1466,38 @@ sub elem_value {
     my ($elem_name) = @{$args}{'elem_name'};
 
     confess q{elem_value(): Bad :$elem_name arg; it is not an object of a}
-            . q{ QDRDBMS::AST::EntityName-doing class.}
+            . q{ Muldis::DB::AST::EntityName-doing class.}
         if !blessed $elem_name
-            or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
+            or !$elem_name->isa( 'Muldis::DB::AST::EntityName' );
 
     return $self->{$ATTR_MAP_HOA}->{$elem_name->text()};
 }
 
 ###########################################################################
 
-} # role QDRDBMS::AST::TypeDict
+} # role Muldis::DB::AST::TypeDict
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::TypeDictNQ; # class
-    use base 'QDRDBMS::AST::TypeDict';
+{ package Muldis::DB::AST::TypeDictNQ; # class
+    use base 'Muldis::DB::AST::TypeDict';
     sub _allows_quasi { return $FALSE; }
-} # class QDRDBMS::AST::TypeDictNQ
+} # class Muldis::DB::AST::TypeDictNQ
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::TypeDictAQ; # class
-    use base 'QDRDBMS::AST::TypeDict';
+{ package Muldis::DB::AST::TypeDictAQ; # class
+    use base 'Muldis::DB::AST::TypeDict';
     sub _allows_quasi { return $TRUE; }
-} # class QDRDBMS::AST::TypeDictAQ
+} # class Muldis::DB::AST::TypeDictAQ
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::ExprDict; # class
-    use base 'QDRDBMS::AST::Node';
+{ package Muldis::DB::AST::ExprDict; # class
+    use base 'Muldis::DB::AST::Node';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -1517,17 +1525,17 @@ sub new {
         confess q{new(): Bad :$map arg elem; it is not a 2-element Array.}
             if ref $elem ne 'ARRAY' or @{$elem} != 2;
         my ($entity_name, $expr) = @{$elem};
-        confess q{new(): Bad :$map arg elem; its first elem is not}
-                . q{ an object of a QDRDBMS::AST::EntityName-doing class.}
+        confess q{new(): Bad :$map arg elem; its first elem is not an}
+                . q{ object of a Muldis::DB::AST::EntityName-doing class.}
             if !blessed $entity_name
-                or !$entity_name->isa( 'QDRDBMS::AST::EntityName' );
+                or !$entity_name->isa( 'Muldis::DB::AST::EntityName' );
         my $entity_name_text = $entity_name->text();
         confess q{new(): Bad :$map arg elem; its first elem is not}
                 . q{ distinct between the arg elems.}
             if exists $map_hoa->{$entity_name_text};
         confess q{new(): Bad :$map arg elem; its second elem is not}
-                . q{ an object of a QDRDBMS::AST::Expr-doing class.}
-            if !blessed $expr or !$expr->isa( 'QDRDBMS::AST::Expr' );
+                . q{ an object of a Muldis::DB::AST::Expr-doing class.}
+            if !blessed $expr or !$expr->isa( 'Muldis::DB::AST::Expr' );
         my $elem_cpy = [$entity_name, $expr];
         push @{$map_aoa}, $elem_cpy;
         $map_hoa->{$entity_name_text} = $elem_cpy;
@@ -1549,7 +1557,7 @@ sub as_perl {
                     . q{, } . $_->[1]->as_perl() . q{]}
             } @{$self->{$ATTR_MAP_AOA}}) . q{]};
         $self->{$ATTR_AS_PERL}
-            = "QDRDBMS::AST::ExprDict->new({ 'map' => $s })";
+            = "Muldis::DB::AST::ExprDict->new({ 'map' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -1597,9 +1605,9 @@ sub elem_exists {
     my ($elem_name) = @{$args}{'elem_name'};
 
     confess q{elem_exists(): Bad :$elem_name arg; it is not an object of a}
-            . q{ QDRDBMS::AST::EntityName-doing class.}
+            . q{ Muldis::DB::AST::EntityName-doing class.}
         if !blessed $elem_name
-            or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
+            or !$elem_name->isa( 'Muldis::DB::AST::EntityName' );
 
     return exists $self->{$ATTR_MAP_HOA}->{$elem_name->text()};
 }
@@ -1609,22 +1617,22 @@ sub elem_value {
     my ($elem_name) = @{$args}{'elem_name'};
 
     confess q{elem_value(): Bad :$elem_name arg; it is not an object of a}
-            . q{ QDRDBMS::AST::EntityName-doing class.}
+            . q{ Muldis::DB::AST::EntityName-doing class.}
         if !blessed $elem_name
-            or !$elem_name->isa( 'QDRDBMS::AST::EntityName' );
+            or !$elem_name->isa( 'Muldis::DB::AST::EntityName' );
 
     return $self->{$ATTR_MAP_HOA}->{$elem_name->text()};
 }
 
 ###########################################################################
 
-} # class QDRDBMS::AST::ExprDict
+} # class Muldis::DB::AST::ExprDict
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::FuncDecl; # class
-    use base 'QDRDBMS::AST::Node';
+{ package Muldis::DB::AST::FuncDecl; # class
+    use base 'Muldis::DB::AST::Node';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -1637,13 +1645,13 @@ sub new {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::FuncDecl
+} # class Muldis::DB::AST::FuncDecl
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::ProcDecl; # class
-    use base 'QDRDBMS::AST::Node';
+{ package Muldis::DB::AST::ProcDecl; # class
+    use base 'Muldis::DB::AST::Node';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -1656,13 +1664,13 @@ sub new {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::ProcDecl
+} # class Muldis::DB::AST::ProcDecl
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::AST::HostGateRtn; # class
-    use base 'QDRDBMS::AST::Node';
+{ package Muldis::DB::AST::HostGateRtn; # class
+    use base 'Muldis::DB::AST::Node';
 
     use Carp;
     use Scalar::Util qw(blessed);
@@ -1685,13 +1693,13 @@ sub new {
         = @{$args}{'upd_params', 'ro_params', 'vars', 'stmts'};
 
     confess q{new(): Bad :$upd_params arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::TypeDict-doing class.}
+            . q{ of a Muldis::DB::AST::TypeDict-doing class.}
         if !blessed $upd_params
-            or !$upd_params->isa( 'QDRDBMS::AST::TypeDict' );
+            or !$upd_params->isa( 'Muldis::DB::AST::TypeDict' );
     confess q{new(): Bad :$ro_params arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::TypeDict-doing class.}
+            . q{ of a Muldis::DB::AST::TypeDict-doing class.}
         if !blessed $ro_params
-            or !$ro_params->isa( 'QDRDBMS::AST::TypeDict' );
+            or !$ro_params->isa( 'Muldis::DB::AST::TypeDict' );
     my $upd_params_map_hoa = $upd_params->{$TYPEDICT_ATTR_MAP_HOA};
     confess q{new(): Bad :$upd_params or :$ro_params arg;}
             . q{ they both reference at least 1 same stmtsedure param.}
@@ -1700,15 +1708,15 @@ sub new {
             } keys %{$ro_params->{$TYPEDICT_ATTR_MAP_HOA}};
 
     confess q{new(): Bad :$vars arg; it is not a valid object}
-            . q{ of a QDRDBMS::AST::TypeDict-doing class.}
-        if !blessed $vars or !$vars->isa( 'QDRDBMS::AST::TypeDict' );
+            . q{ of a Muldis::DB::AST::TypeDict-doing class.}
+        if !blessed $vars or !$vars->isa( 'Muldis::DB::AST::TypeDict' );
 
     confess q{new(): Bad :$stmts arg; it is not an Array.}
         if ref $stmts ne 'ARRAY';
     for my $stmt (@{$stmts}) {
         confess q{new(): Bad :$stmts arg elem; it is not}
-                . q{ an object of a QDRDBMS::AST::Stmt-doing class.}
-            if !blessed $stmt or !$stmt->isa( 'QDRDBMS::AST::Stmt' );
+                . q{ an object of a Muldis::DB::AST::Stmt-doing class.}
+            if !blessed $stmt or !$stmt->isa( 'Muldis::DB::AST::Stmt' );
     }
 
     $self->{$ATTR_UPD_PARAMS} = $upd_params;
@@ -1730,7 +1738,7 @@ sub as_perl {
         my $ss = q{[} . (join q{, }, map {
                 $_->as_perl()
             } @{$self->{$ATTR_STMTS}}) . q{]};
-        $self->{$ATTR_AS_PERL} = "QDRDBMS::AST::HostGateRtn->new({"
+        $self->{$ATTR_AS_PERL} = "Muldis::DB::AST::HostGateRtn->new({"
             . " 'upd_params' => $sup, 'ro_params' => $srp"
             . ", 'vars' => $sv, 'stmts' => $ss })";
     }
@@ -1783,7 +1791,7 @@ sub stmts {
 
 ###########################################################################
 
-} # class QDRDBMS::AST::HostGateRtn
+} # class Muldis::DB::AST::HostGateRtn
 
 ###########################################################################
 ###########################################################################
@@ -1797,12 +1805,12 @@ __END__
 
 =head1 NAME
 
-QDRDBMS::AST -
-Abstract syntax tree for the QDRDBMS D language
+Muldis::DB::AST -
+Abstract syntax tree for the Muldis D language
 
 =head1 VERSION
 
-This document describes QDRDBMS::AST version 0.0.0 for Perl 5.
+This document describes Muldis::DB::AST version 0.0.0 for Perl 5.
 
 It also describes the same-number versions for Perl 5 of [...].
 
@@ -1810,7 +1818,7 @@ It also describes the same-number versions for Perl 5 of [...].
 
 I<This documentation is pending.>
 
-    use QDRDBMS::AST qw(newBoolLit newTextLit newBlobLit newIntLit
+    use Muldis::DB::AST qw(newBoolLit newTextLit newBlobLit newIntLit
         newTupleSel newQuasiTupleSel newRelationSel newQuasiRelationSel
         newVarInvo newFuncInvo newProcInvo newFuncReturn newProcReturn
         newEntityName newTypeInvoNQ newTypeInvoAQ newTypeDictNQ
@@ -1825,62 +1833,63 @@ I<This documentation is pending.>
 
 =head1 DESCRIPTION
 
-The native command language of a L<QDRDBMS> DBMS (database management
-system) / virtual machine is called B<QDRDBMS D>; see L<QDRDBMS::Language>
-for the language's human readable authoritative design document.
+The native command language of a L<Muldis::DB> DBMS (database management
+system) / virtual machine is called B<Muldis D>; see
+L<Muldis::DB::Language> for the language's human readable authoritative
+design document.
 
-QDRDBMS D has 3 closely corresponding main representation formats, which
-are catalog relations (what routines inside the DBMS see), hierarchical AST
+Muldis D has 3 closely corresponding main representation formats, which are
+catalog relations (what routines inside the DBMS see), hierarchical AST
 (abstract syntax tree) nodes (what the application driving the DBMS
-typically sees), and string-form QDRDBMS D code that users interacting with
-QDRDBMS via a shell interface would use.  The string-form would be parsed
-into the AST, and the AST be flattened into the relations; similarly, the
-relations can be unflattened into the AST, and string-form code be
-generated from the AST if desired.
+typically sees), and string-form Muldis D code that users interacting with
+Muldis::DB via a shell interface would use.  The string-form would be
+parsed into the AST, and the AST be flattened into the relations;
+similarly, the relations can be unflattened into the AST, and string-form
+code be generated from the AST if desired.
 
-This library, QDRDBMS::AST ("AST"), provides a few dozen container classes
-which collectively implement the AST representation format of QDRDBMS D;
-each class is called an I<AST node type> or I<node type>, and an object of
-one of these classes is called an I<AST node> or I<node>.
+This library, Muldis::DB::AST ("AST"), provides a few dozen container
+classes which collectively implement the AST representation format of
+Muldis D; each class is called an I<AST node type> or I<node type>, and an
+object of one of these classes is called an I<AST node> or I<node>.
 
-These are all of the roles and classes that QDRDBMS::AST defines (more will
-be added in the future), which are visually arranged here in their "does"
-or "isa" hierarchy, children indented under parents:
+These are all of the roles and classes that Muldis::DB::AST defines (more
+will be added in the future), which are visually arranged here in their
+"does" or "isa" hierarchy, children indented under parents:
 
-    QDRDBMS::AST::Node (dummy role)
-        QDRDBMS::AST::Expr (dummy role)
-            QDRDBMS::AST::Lit (dummy role)
-                QDRDBMS::AST::BoolLit
-                QDRDBMS::AST::TextLit
-                QDRDBMS::AST::BlobLit
-                QDRDBMS::AST::IntLit
-            QDRDBMS::AST::_Tuple (implementing role)
-                QDRDBMS::AST::TupleSel
-                QDRDBMS::AST::QuasiTupleSel
-            QDRDBMS::AST::_Relation (implementing role)
-                QDRDBMS::AST::RelationSel
-                QDRDBMS::AST::QuasiRelationSel
-            QDRDBMS::AST::VarInvo
-            QDRDBMS::AST::FuncInvo
-        QDRDBMS::AST::Stmt (dummy role)
-            QDRDBMS::AST::ProcInvo
-            QDRDBMS::AST::FuncReturn
-            QDRDBMS::AST::ProcReturn
+    Muldis::DB::AST::Node (dummy role)
+        Muldis::DB::AST::Expr (dummy role)
+            Muldis::DB::AST::Lit (dummy role)
+                Muldis::DB::AST::BoolLit
+                Muldis::DB::AST::TextLit
+                Muldis::DB::AST::BlobLit
+                Muldis::DB::AST::IntLit
+            Muldis::DB::AST::_Tuple (implementing role)
+                Muldis::DB::AST::TupleSel
+                Muldis::DB::AST::QuasiTupleSel
+            Muldis::DB::AST::_Relation (implementing role)
+                Muldis::DB::AST::RelationSel
+                Muldis::DB::AST::QuasiRelationSel
+            Muldis::DB::AST::VarInvo
+            Muldis::DB::AST::FuncInvo
+        Muldis::DB::AST::Stmt (dummy role)
+            Muldis::DB::AST::ProcInvo
+            Muldis::DB::AST::FuncReturn
+            Muldis::DB::AST::ProcReturn
             # more control-flow statement types would go here
-        QDRDBMS::AST::EntityName
-        QDRDBMS::AST::TypeInvo (implementing role)
-            QDRDBMS::AST::TypeInvoNQ
-            QDRDBMS::AST::TypeInvoAQ
-        QDRDBMS::AST::TypeDict (implementing role)
-            QDRDBMS::AST::TypeDictNQ
-            QDRDBMS::AST::TypeDictAQ
-        QDRDBMS::AST::ExprDict
-        QDRDBMS::AST::FuncDecl
-        QDRDBMS::AST::ProcDecl
+        Muldis::DB::AST::EntityName
+        Muldis::DB::AST::TypeInvo (implementing role)
+            Muldis::DB::AST::TypeInvoNQ
+            Muldis::DB::AST::TypeInvoAQ
+        Muldis::DB::AST::TypeDict (implementing role)
+            Muldis::DB::AST::TypeDictNQ
+            Muldis::DB::AST::TypeDictAQ
+        Muldis::DB::AST::ExprDict
+        Muldis::DB::AST::FuncDecl
+        Muldis::DB::AST::ProcDecl
         # more routine declaration types would go here
-        QDRDBMS::AST::HostGateRtn
+        Muldis::DB::AST::HostGateRtn
 
-All QDRDBMS D abstract syntax trees are such in the compositional sense;
+All Muldis D abstract syntax trees are such in the compositional sense;
 that is, every AST node is composed primarily of zero or more other AST
 nodes, and so a node is a child of another iff the former is composed into
 the latter.  All AST nodes are immutable objects; their values are
@@ -1902,23 +1911,23 @@ executed to either return a value or have some side effect.  For all
 intents and purposes, a node is a program, and can represent anything that
 program code can represent, both values and actions.
 
-The QDRDBMS framework uses QDRDBMS AST nodes for the dual purpose of
+The Muldis::DB framework uses Muldis::DB AST nodes for the dual purpose of
 defining routines to execute and defining values to use as arguments to and
 return values from the execution of said routines.  The C<prepare()> method
-of a C<QDRDBMS::Interface::DBMS> object, and by extension the
-C<QDRDBMS::Interface::HostGateRtn->new()> constructor function, takes a
-C<QDRDBMS::AST::HostGateRtn> node as its primary argument, such that the
+of a C<Muldis::DB::Interface::DBMS> object, and by extension the
+C<Muldis::DB::Interface::HostGateRtn->new()> constructor function, takes a
+C<Muldis::DB::AST::HostGateRtn> node as its primary argument, such that the
 AST object defines the source code that is compiled to become the Interface
 object.  The C<fetch_ast()> and C<store_ast()> methods of a
-C<QDRDBMS::Interface::HostGateVar> object will get or set that object's
-primary value attribute, which is any C<QDRDBMS::AST::Node>.  The C<Var>
+C<Muldis::DB::Interface::HostGateVar> object will get or set that object's
+primary value attribute, which is any C<Muldis::DB::AST::Node>.  The C<Var>
 objects are bound to C<Rtn> objects, and they are the means by which an
 executed routine accepts input or provides output at C<execute()> time.
 
 =head2 AST Node Values Versus Representations
 
-In the general case, QDRDBMS AST nodes do not maintain canonical
-representations of all QDRDBMS D values, meaning that it is possible and
+In the general case, Muldis::DB AST nodes do not maintain canonical
+representations of all Muldis D values, meaning that it is possible and
 common to have 2 given AST nodes that logically denote the same value, but
 they have different actual compositions.  (Some node types are special
 cases for which the aforementioned isn't true; see below.)
@@ -1928,26 +1937,26 @@ representations, each of which is an expression that evaluates to the
 number 5 (such as [C<5>, C<2+3>, C<10/2>]).  Another example is a node
 whose value is the set C<{3,5,7}>; it can be represented, for example,
 either by C<Set(5,3,7,7,7)> or C<Union(Set(3,5),Set(5,7))> or
-C<Set(7,5,3)>.  I<These examples aren't actual QDRDBMS AST syntax.>
+C<Set(7,5,3)>.  I<These examples aren't actual Muldis::DB AST syntax.>
 
-For various reasons, the QDRDBMS::AST classes themselves do not do any node
-refactoring, and their representations differ little if any from the format
-of their constructor arguments, which can contain extra information that is
-not logically significant in determining the node value.  One reason is
-that this allows a semblance of maintaining the actual syntax that the user
-specified, which is useful for their debugging purposes.  Another reason is
-the desire to keep this library as light-weight as possible, such that it
-just implements the essentials; doing refactoring can require a code size
-and complexity that is orders of magnitude larger than these essentials,
-and that work isn't always helpful.  It should also be noted that any nodes
-having references to externally user-defined entities can't be fully
-refactored as each of those represents a free variable that a static node
-analysis can't decompose; only nodes consisting of just system-defined or
-literal entities (meaning zero free variables) can be fully refactored in a
-static node analysis (though there are a fair number of those in practice,
-particularly as C<Var> values).
+For various reasons, the Muldis::DB::AST classes themselves do not do any
+node refactoring, and their representations differ little if any from the
+format of their constructor arguments, which can contain extra information
+that is not logically significant in determining the node value.  One
+reason is that this allows a semblance of maintaining the actual syntax
+that the user specified, which is useful for their debugging purposes.
+Another reason is the desire to keep this library as light-weight as
+possible, such that it just implements the essentials; doing refactoring
+can require a code size and complexity that is orders of magnitude larger
+than these essentials, and that work isn't always helpful.  It should also
+be noted that any nodes having references to externally user-defined
+entities can't be fully refactored as each of those represents a free
+variable that a static node analysis can't decompose; only nodes consisting
+of just system-defined or literal entities (meaning zero free variables)
+can be fully refactored in a static node analysis (though there are a fair
+number of those in practice, particularly as C<Var> values).
 
-A consequence of this is that the QDRDBMS::AST classes in general do not
+A consequence of this is that the Muldis::DB::AST classes in general do not
 include do not include any methods for comparing that 2 nodes denote the
 same value; to reliably do that, you will have to use means not provided by
 this library.  However, each class I<does> provide a C<equal_repr> method,
@@ -1971,122 +1980,122 @@ same.  It should also be noted that a C<BoolLit> node can only possibly be
 of one of 2 values, and C<ProcReturn> is a singleton.
 
 It is expected that multiple third party utility modules will become
-available over time whose purpose is to refactor a QDRDBMS AST node, either
-as part of a static analysis that considers only the node in isolation (and
-any user-defined entity references have to be treated as free variables and
-not generally be factored out), or as part of an Engine implementation that
-also considers the current virtual machine environment and what
-user-defined entities exist there (and depending on the context,
+available over time whose purpose is to refactor a Muldis::DB AST node,
+either as part of a static analysis that considers only the node in
+isolation (and any user-defined entity references have to be treated as
+free variables and not generally be factored out), or as part of an Engine
+implementation that also considers the current virtual machine environment
+and what user-defined entities exist there (and depending on the context,
 user-defined entity references don't have to be free variables).
 
 =head1 INTERFACE
 
-The interface of QDRDBMS::AST is fundamentally object-oriented; you use it
-by creating objects from its member classes, usually invoking C<new()> on
-the appropriate class name, and then invoking methods on those objects.
+The interface of Muldis::DB::AST is fundamentally object-oriented; you use
+it by creating objects from its member classes, usually invoking C<new()>
+on the appropriate class name, and then invoking methods on those objects.
 All of their attributes are private, so you must use accessor methods.
 
-QDRDBMS::AST also provides wrapper subroutines for all member class
+Muldis::DB::AST also provides wrapper subroutines for all member class
 constructors, 1 per each, where each subroutine has identical parameters to
 the constructor it wraps, and the name of each subroutine is equal to the
 trailing part of the class name, specifically the C<Foo> of
-C<QDRDBMS::AST::Foo>, but with a C<new> prefix (so that Perl doesn't
+C<Muldis::DB::AST::Foo>, but with a C<new> prefix (so that Perl doesn't
 confuse a fully-qualified sub name with a class name).  All of these
 subroutines are exportable, but are not exported by default, and exist
 solely as syntactic sugar to allow user code to have more brevity.  I<TODO:
- Reimplement these as lexical aliases or compile-time macros instead, to
+Reimplement these as lexical aliases or compile-time macros instead, to
 avoid the overhead of extra routine calls.>
 
-The usual way that QDRDBMS::AST indicates a failure is to throw an
+The usual way that Muldis::DB::AST indicates a failure is to throw an
 exception; most often this is due to invalid input.  If an invoked routine
 simply returns, you can assume that it has succeeded, even if the return
 value is undefined.
 
-=head2 The QDRDBMS::AST::BoolLit Class
+=head2 The Muldis::DB::AST::BoolLit Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::TextLit Class
+=head2 The Muldis::DB::AST::TextLit Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::BlobLit Class
+=head2 The Muldis::DB::AST::BlobLit Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::IntLit Class
+=head2 The Muldis::DB::AST::IntLit Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::TupleSel Class
+=head2 The Muldis::DB::AST::TupleSel Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::QuasiTupleSel Class
+=head2 The Muldis::DB::AST::QuasiTupleSel Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::RelationSel Class
+=head2 The Muldis::DB::AST::RelationSel Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::QuasiRelationSel Class
+=head2 The Muldis::DB::AST::QuasiRelationSel Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::VarInvo Class
+=head2 The Muldis::DB::AST::VarInvo Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::FuncInvo Class
+=head2 The Muldis::DB::AST::FuncInvo Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::ProcInvo Class
+=head2 The Muldis::DB::AST::ProcInvo Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::FuncReturn Class
+=head2 The Muldis::DB::AST::FuncReturn Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::ProcReturn Class
+=head2 The Muldis::DB::AST::ProcReturn Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::EntityName Class
+=head2 The Muldis::DB::AST::EntityName Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::TypeInvoNQ Class
+=head2 The Muldis::DB::AST::TypeInvoNQ Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::TypeInvoAQ Class
+=head2 The Muldis::DB::AST::TypeInvoAQ Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::TypeDictNQ Class
+=head2 The Muldis::DB::AST::TypeDictNQ Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::TypeDictAQ Class
+=head2 The Muldis::DB::AST::TypeDictAQ Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::ExprDict Class
+=head2 The Muldis::DB::AST::ExprDict Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::FuncDecl Class
+=head2 The Muldis::DB::AST::FuncDecl Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::ProcDecl Class
+=head2 The Muldis::DB::AST::ProcDecl Class
 
 I<This documentation is pending.>
 
-=head2 The QDRDBMS::AST::HostGateRtn Class
+=head2 The Muldis::DB::AST::HostGateRtn Class
 
 I<This documentation is pending.>
 
@@ -2108,14 +2117,15 @@ None reported.
 
 =head1 SEE ALSO
 
-Go to L<QDRDBMS> for the majority of distribution-internal references, and
-L<QDRDBMS::SeeAlso> for the majority of distribution-external references.
+Go to L<Muldis::DB> for the majority of distribution-internal references,
+and L<Muldis::DB::SeeAlso> for the majority of distribution-external
+references.
 
 =head1 BUGS AND LIMITATIONS
 
 For design simplicity in the short term, all AST arguments that are
 applicable must be explicitly defined by the user, even if it might be
-reasonable for QDRDBMS to figure out a default value for them, such as
+reasonable for Muldis::DB to figure out a default value for them, such as
 "same as self".  This limitation will probably be removed in the future.
 All that said, a few arguments may be exempted from this limitation.
 
@@ -2127,14 +2137,14 @@ Darren Duncan (C<perl@DarrenDuncan.net>)
 
 =head1 LICENSE AND COPYRIGHT
 
-This file is part of the QDRDBMS framework.
+This file is part of the Muldis::DB framework.
 
-QDRDBMS is Copyright © 2002-2007, Darren Duncan.
+Muldis::DB is Copyright © 2002-2007, Darren Duncan.
 
-See the LICENSE AND COPYRIGHT of L<QDRDBMS> for details.
+See the LICENSE AND COPYRIGHT of L<Muldis::DB> for details.
 
 =head1 ACKNOWLEDGEMENTS
 
-The ACKNOWLEDGEMENTS in L<QDRDBMS> apply to this file too.
+The ACKNOWLEDGEMENTS in L<Muldis::DB> apply to this file too.
 
 =cut

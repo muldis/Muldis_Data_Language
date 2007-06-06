@@ -14,7 +14,7 @@ my $TRUE  = (1 == 1);
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType; # module
+{ package Muldis::DB::Engine::Example::PhysType; # module
     our $VERSION = 0.000000;
     # Note: This given version applies to all of this file's packages.
 
@@ -28,79 +28,80 @@ my $TRUE  = (1 == 1);
 
 sub dBool {
     my ($v) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Bool->new( $v );
+    return Muldis::DB::Engine::Example::PhysType::Bool->new( $v );
 }
 
 sub dText {
     my ($v) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Text->new( $v );
+    return Muldis::DB::Engine::Example::PhysType::Text->new( $v );
 }
 
 sub dBlob {
     my ($v) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Blob->new( $v );
+    return Muldis::DB::Engine::Example::PhysType::Blob->new( $v );
 }
 
 sub dInt {
     my ($v) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Int->new( $v );
+    return Muldis::DB::Engine::Example::PhysType::Int->new( $v );
 }
 
 sub dTextKeyedMap {
     my ($map) = @_;
-    return QDRDBMS::Engine::Example::PhysType::TextKeyedMap->new( $map );
+    return
+        Muldis::DB::Engine::Example::PhysType::TextKeyedMap->new( $map );
 }
 
 sub dHeading {
     my ($attr_defs_aoa) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Heading->new(
+    return Muldis::DB::Engine::Example::PhysType::Heading->new(
         $attr_defs_aoa );
 }
 
 sub dTuple {
     my ($heading, $body) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Tuple->new(
+    return Muldis::DB::Engine::Example::PhysType::Tuple->new(
         $heading, $body );
 }
 
 sub dRelation {
     my ($heading, $body, $key_defs_aoh, $index_defs_aoh) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Relation->new(
+    return Muldis::DB::Engine::Example::PhysType::Relation->new(
         $heading, $body, $key_defs_aoh, $index_defs_aoh );
 }
 
 sub dCat_EntityName {
     my ($text) = @_;
-    return QDRDBMS::Engine::Example::PhysType::Cat_EntityName->new(
+    return Muldis::DB::Engine::Example::PhysType::Cat_EntityName->new(
         $text );
 }
 
 ###########################################################################
 
-} # module QDRDBMS::Engine::Example::PhysType
+} # module Muldis::DB::Engine::Example::PhysType
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::Value; # role
+{ package Muldis::DB::Engine::Example::PhysType::Value; # role
 
     use Carp;
     use Scalar::Util qw(blessed);
 
 #    my $ATTR_ROOT_TYPE = 'Value::root_type';
-        # QDRDBMS::Engine::Example::PhysType::Cat_EntityName.
-        # This is the fundamental QDRDBMS D data type that this ::Value
+        # Muldis::DB::Engine::Example::PhysType::Cat_EntityName.
+        # This is the fundamental Muldis D data type that this ::Value
         # object's implementation sees it as a generic member of, and which
         # generally determines what operators can be used with it.
         # It is a supertype of the declared type.
 #    my $ATTR_DECL_TYPE = 'Value::decl_type';
-        # QDRDBMS::Engine::Example::PhysType::Cat_EntityName.
-        # This is the QDRDBMS D data type that the ::Value was declared to
+        # Muldis::DB::Engine::Example::PhysType::Cat_EntityName.
+        # This is the Muldis D data type that the ::Value was declared to
         # be a member of when the ::Value object was created.
 #    my $ATTR_LAST_KNOWN_MST = 'Value::last_known_mst';
-        # QDRDBMS::Engine::Example::PhysType::Cat_EntityName.
-        # This is the QDRDBMS data type that is the most specific type of
-        # this ::Value, as it was last determined.
+        # Muldis::DB::Engine::Example::PhysType::Cat_EntityName.
+        # This is the Muldis::DB data type that is the most specific type
+        # of this ::Value, as it was last determined.
         # It is a subtype of the declared type.
         # Since calculating a value's mst may be expensive, this object
         # attribute may either be unset or be out of date with respect to
@@ -170,15 +171,15 @@ sub equal {
 
 ###########################################################################
 
-} # role QDRDBMS::Engine::Example::PhysType::Value
+} # role Muldis::DB::Engine::Example::PhysType::Value
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::Bool; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::Value';
+{ package Muldis::DB::Engine::Example::PhysType::Bool; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
-    use QDRDBMS::AST qw(newBoolLit);
+    use Muldis::DB::AST qw(newBoolLit);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that equals $FALSE|$TRUE.
@@ -232,15 +233,15 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::PhysType::Bool
+} # class Muldis::DB::Engine::Example::PhysType::Bool
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::Text; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::Value';
+{ package Muldis::DB::Engine::Example::PhysType::Text; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
-    use QDRDBMS::AST qw(newTextLit);
+    use Muldis::DB::AST qw(newTextLit);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that is a text-mode string;
@@ -295,15 +296,15 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::PhysType::Text
+} # class Muldis::DB::Engine::Example::PhysType::Text
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::Blob; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::Value';
+{ package Muldis::DB::Engine::Example::PhysType::Blob; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
-    use QDRDBMS::AST qw(newBlobLit);
+    use Muldis::DB::AST qw(newBlobLit);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that is a byte-mode string; it has false utf8 flag.
@@ -357,15 +358,15 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::PhysType::Blob
+} # class Muldis::DB::Engine::Example::PhysType::Blob
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::Int; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::Value';
+{ package Muldis::DB::Engine::Example::PhysType::Int; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
-    use QDRDBMS::AST qw(newIntLit);
+    use Muldis::DB::AST qw(newIntLit);
 
     use bigint; # this is experimental
 
@@ -421,13 +422,13 @@ sub v {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::PhysType::Int
+} # class Muldis::DB::Engine::Example::PhysType::Int
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::TextKeyedMap; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::Value';
+{ package Muldis::DB::Engine::Example::PhysType::TextKeyedMap; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
     my $ATTR_MAP = 'map';
         # A p5 Hash with 0..N elements:
@@ -482,13 +483,13 @@ sub pairs {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::PhysType::TextKeyedMap
+} # class Muldis::DB::Engine::Example::PhysType::TextKeyedMap
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::Heading; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::Value';
+{ package Muldis::DB::Engine::Example::PhysType::Heading; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
     my $ATTR_ATTR_DEFS_BY_NAME = 'attr_defs_by_name';
         # A p5 Hash with 0..N elements:
@@ -550,13 +551,13 @@ sub get_attr_attr_defs_ordered {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::PhysType::Heading
+} # class Muldis::DB::Engine::Example::PhysType::Heading
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::Tuple; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::Value';
+{ package Muldis::DB::Engine::Example::PhysType::Tuple; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
     my $ATTR_HEADING = 'heading';
         # A Heading.
@@ -594,13 +595,13 @@ sub which {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::PhysType::Tuple
+} # class Muldis::DB::Engine::Example::PhysType::Tuple
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::Relation; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::Value';
+{ package Muldis::DB::Engine::Example::PhysType::Relation; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
     my $ATTR_HEADING    = 'heading';
         # A Heading.
@@ -664,13 +665,13 @@ sub which {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::PhysType::Relation
+} # class Muldis::DB::Engine::Example::PhysType::Relation
 
 ###########################################################################
 ###########################################################################
 
-{ package QDRDBMS::Engine::Example::PhysType::Cat_EntityName; # class
-    use base 'QDRDBMS::Engine::Example::PhysType::Value';
+{ package Muldis::DB::Engine::Example::PhysType::Cat_EntityName; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
     my $ATTR_TEXT = 'text';
         # A p5 Scalar that is a text-mode string;
@@ -712,7 +713,7 @@ sub text {
 
 ###########################################################################
 
-} # class QDRDBMS::Engine::Example::PhysType::Cat_EntityName
+} # class Muldis::DB::Engine::Example::PhysType::Cat_EntityName
 
 ###########################################################################
 ###########################################################################
@@ -726,12 +727,12 @@ __END__
 
 =head1 NAME
 
-QDRDBMS::Engine::Example::PhysType -
+Muldis::DB::Engine::Example::PhysType -
 Physical representations of all core data types
 
 =head1 VERSION
 
-This document describes QDRDBMS::Engine::Example::PhysType version 0.0.0
+This document describes Muldis::DB::Engine::Example::PhysType version 0.0.0
 for Perl 5.
 
 It also describes the same-number versions for Perl 5 of ::Bool, ::Text,
@@ -739,22 +740,22 @@ It also describes the same-number versions for Perl 5 of ::Bool, ::Text,
 
 =head1 DESCRIPTION
 
-This file is used internally by L<QDRDBMS::Engine::Example>; it is not
+This file is used internally by L<Muldis::DB::Engine::Example>; it is not
 intended to be used directly in user code.
 
 It provides physical representations of data types that this Example Engine
-uses to implement QDRDBMS D.  The API of these is expressly not intended to
+uses to implement Muldis D.  The API of these is expressly not intended to
 match the API that the language itself specifies as possible
 representations for system-defined data types.
 
 Specifically, this file represents the core system-defined data types that
-all QDRDBMS D implementations must have, namely: Bool, Text, Blob, Int,
+all Muldis D implementations must have, namely: Bool, Text, Blob, Int,
 Tuple, Relation, and the Cat.* types.
 
 By contrast, the optional data types are given physical representations by
-other files: L<QDRDBMS::Engine::Example::PhysType::Num>,
-L<QDRDBMS::Engine::Example::PhysType::Temporal>,
-L<QDRDBMS::Engine::Example::PhysType::Spatial>.
+other files: L<Muldis::DB::Engine::Example::PhysType::Num>,
+L<Muldis::DB::Engine::Example::PhysType::Temporal>,
+L<Muldis::DB::Engine::Example::PhysType::Spatial>.
 
 =head1 BUGS AND LIMITATIONS
 
@@ -773,10 +774,10 @@ Darren Duncan (C<perl@DarrenDuncan.net>)
 
 =head1 LICENSE AND COPYRIGHT
 
-This file is part of the QDRDBMS framework.
+This file is part of the Muldis::DB framework.
 
-QDRDBMS is Copyright © 2002-2007, Darren Duncan.
+Muldis::DB is Copyright © 2002-2007, Darren Duncan.
 
-See the LICENSE AND COPYRIGHT of L<QDRDBMS> for details.
+See the LICENSE AND COPYRIGHT of L<Muldis::DB> for details.
 
 =cut

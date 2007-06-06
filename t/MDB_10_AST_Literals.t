@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 
 use Test::More;
 
-use QDRDBMS::AST qw(newBoolLit newTextLit newBlobLit newIntLit);
+use Muldis::DB::AST qw(newBoolLit newTextLit newBlobLit newIntLit);
 
 main();
 
@@ -15,14 +15,14 @@ sub main {
 
     plan( 'tests' => 62 ); # 17 more than Perl 6 version, which has 45
 
-    print "#### Starting test of QDRDBMS::AST Literals ####\n";
+    print "#### Starting test of Muldis::DB::AST Literals ####\n";
 
     test_BoolLit();
     test_TextLit();
     test_BlobLit();
     test_IntLit();
 
-    print "#### Finished test of QDRDBMS::AST Literals ####\n";
+    print "#### Finished test of Muldis::DB::AST Literals ####\n";
 
     return;
 }
@@ -42,14 +42,14 @@ sub test_BoolLit {
     $in = (2 + 2 == 3);
     $node = newBoolLit({ 'v' => $in });
     pass( q{BoolLit accepts valid payload Bool:False} );
-    isa_ok( $node, 'QDRDBMS::AST::BoolLit' );
+    isa_ok( $node, 'Muldis::DB::AST::BoolLit' );
     $out = $node->v();
     is( $out, $in, q{BoolLit preserves valid payload} );
 
     $in = (2 + 2 == 4);
     $node = newBoolLit({ 'v' => $in });
     pass( q{BoolLit accepts valid payload Bool:True} );
-    isa_ok( $node, 'QDRDBMS::AST::BoolLit' );
+    isa_ok( $node, 'Muldis::DB::AST::BoolLit' );
     $out = $node->v();
     is( $out, $in, q{BoolLit preserves valid payload} );
 
@@ -83,21 +83,21 @@ sub test_TextLit {
     $in = '';
     $node = newTextLit({ 'v' => $in });
     pass( q{TextLit accepts valid payload ''} );
-    isa_ok( $node, 'QDRDBMS::AST::TextLit' );
+    isa_ok( $node, 'Muldis::DB::AST::TextLit' );
     $out = $node->v();
     is( $out, $in, q{TextLit preserves valid payload} );
 
     $in = 'Ceres';
     $node = newTextLit({ 'v' => $in });
     pass( q{TextLit accepts valid payload ASCII 'Ceres'} );
-    isa_ok( $node, 'QDRDBMS::AST::TextLit' );
+    isa_ok( $node, 'Muldis::DB::AST::TextLit' );
     $out = $node->v();
     is( $out, $in, q{TextLit preserves valid payload} );
 
     $in = 'サンプル';
     $node = newTextLit({ 'v' => $in });
     pass( q{TextLit accepts valid payload Unicode 'サンプル'} );
-    isa_ok( $node, 'QDRDBMS::AST::TextLit' );
+    isa_ok( $node, 'Muldis::DB::AST::TextLit' );
     $out = $node->v();
     is( $out, $in, q{TextLit preserves valid payload} );
 
@@ -125,14 +125,14 @@ sub test_BlobLit {
     $in = '';
     $node = newBlobLit({ 'v' => $in });
     pass( q{BlobLit accepts valid payload ''} );
-    isa_ok( $node, 'QDRDBMS::AST::BlobLit' );
+    isa_ok( $node, 'Muldis::DB::AST::BlobLit' );
     $out = $node->v();
     is( $out, $in, q{BlobLit preserves valid payload} );
 
     $in = 'Ceres';
     $node = newBlobLit({ 'v' => $in });
     pass( q{BlobLit accepts valid payload ASCII 'Ceres'} );
-    isa_ok( $node, 'QDRDBMS::AST::BlobLit' );
+    isa_ok( $node, 'Muldis::DB::AST::BlobLit' );
     $out = $node->v();
     is( $out, $in, q{BlobLit preserves valid payload} );
 
@@ -145,7 +145,7 @@ sub test_BlobLit {
     $in = pack 'H2', '\xCC';
     $node = newBlobLit({ 'v' => $in });
     pass( q{BlobLit accepts valid payload pack 'H2', '\xCC'} );
-    isa_ok( $node, 'QDRDBMS::AST::BlobLit' );
+    isa_ok( $node, 'Muldis::DB::AST::BlobLit' );
     $out = $node->v();
     is( $out, $in, q{BlobLit preserves valid payload} );
 
@@ -173,14 +173,14 @@ sub test_IntLit {
     $in = 0;
     $node = newIntLit({ 'v' => $in });
     pass( q{IntLit accepts valid payload 0} );
-    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
+    isa_ok( $node, 'Muldis::DB::AST::IntLit' );
     $out = $node->v();
     is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = '0';
     $node = newIntLit({ 'v' => $in });
     pass( q{IntLit accepts valid payload '0'} );
-    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
+    isa_ok( $node, 'Muldis::DB::AST::IntLit' );
     $out = $node->v();
     is( $out, $in, q{IntLit preserves valid payload} );
 
@@ -205,28 +205,28 @@ sub test_IntLit {
     $in = 42;
     $node = newIntLit({ 'v' => $in });
     pass( q{IntLit accepts valid payload 42} );
-    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
+    isa_ok( $node, 'Muldis::DB::AST::IntLit' );
     $out = $node->v();
     is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = '42';
     $node = newIntLit({ 'v' => $in });
     pass( q{IntLit accepts valid payload '42'} );
-    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
+    isa_ok( $node, 'Muldis::DB::AST::IntLit' );
     $out = $node->v();
     is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = -42;
     $node = newIntLit({ 'v' => $in });
     pass( q{IntLit accepts valid payload 42} );
-    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
+    isa_ok( $node, 'Muldis::DB::AST::IntLit' );
     $out = $node->v();
     is( $out, $in, q{IntLit preserves valid payload} );
 
     $in = '-42';
     $node = newIntLit({ 'v' => $in });
     pass( q{IntLit accepts valid payload '-42'} );
-    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
+    isa_ok( $node, 'Muldis::DB::AST::IntLit' );
     $out = $node->v();
     is( $out, $in, q{IntLit preserves valid payload} );
 
@@ -239,7 +239,7 @@ sub test_IntLit {
     $in = '420';
     $node = newIntLit({ 'v' => $in });
     pass( q{IntLit accepts valid payload '420'} );
-    isa_ok( $node, 'QDRDBMS::AST::IntLit' );
+    isa_ok( $node, 'Muldis::DB::AST::IntLit' );
     $out = $node->v();
     is( $out, $in, q{IntLit preserves valid payload} );
 

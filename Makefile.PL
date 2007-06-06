@@ -16,8 +16,8 @@ sleep 3;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    'NAME' => 'QDRDBMS',
-    'VERSION_FROM' => 'lib/QDRDBMS.pm', # finds $VERSION
+    'NAME' => 'Muldis::DB',
+    'VERSION' => '0.0.0',
     'ABSTRACT' => 'Full-featured truly relational DBMS in Perl',
     'AUTHOR' => 'Darren Duncan <perl@DarrenDuncan.net>',
 #    'LICENSE' => 'gpl',
