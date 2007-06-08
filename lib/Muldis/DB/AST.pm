@@ -9,6 +9,20 @@ use warnings FATAL => 'all';
 my $FALSE = (1 == 0);
 my $TRUE  = (1 == 1);
 
+my $TYNM_UINT
+    = Muldis::DB::AST::EntityName->new({ 'text' => 'sys.type.UInt' });
+my $TYNM_PINT
+    = Muldis::DB::AST::EntityName->new({ 'text' => 'sys.type.PInt' });
+
+my $ATNM_VALUE = Muldis::DB::AST::EntityName->new({ 'text' => 'value' });
+my $ATNM_INDEX = Muldis::DB::AST::EntityName->new({ 'text' => 'index' });
+my $ATNM_COUNT = Muldis::DB::AST::EntityName->new({ 'text' => 'count' });
+
+my $SCA_TYPE_UINT = Muldis::DB::AST::TypeInvoNQ->new({
+    'kind' => 'Scalar', 'spec' => $TYNM_UINT });
+my $SCA_TYPE_PINT = Muldis::DB::AST::TypeInvoNQ->new({
+    'kind' => 'Scalar', 'spec' => $TYNM_PINT });
+
 ###########################################################################
 ###########################################################################
 
@@ -30,7 +44,13 @@ my $TRUE  = (1 == 1);
         newExprDict
         newFuncDecl newProcDecl
         newHostGateRtn
+        newSetSel newQuasiSetSel
+        newSeqSel newQuasiSeqSel
+        newBagSel newQuasiBagSel
+        newMaybeSel newQuasiMaybeSel
     );
+
+    use Carp;
 
 ###########################################################################
 
@@ -170,6 +190,176 @@ sub newHostGateRtn {
         = @{$args}{'upd_params', 'ro_params', 'vars', 'stmts'};
     return Muldis::DB::AST::HostGateRtn->new({ 'upd_params' => $upd_params,
         'ro_params' => $ro_params, 'vars' => $vars, 'stmts' => $stmts });
+}
+
+###########################################################################
+
+sub newSetSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    confess q{new(): Bad :$body arg; it is not an Array.}
+        if ref $body ne 'ARRAY';
+
+    return Muldis::DB::AST::RelationSel->new({
+        'heading' => Muldis::DB::AST::TypeDictNQ->new({ 'map' => [
+            [$ATNM_VALUE, $heading],
+        ] }),
+        'body' => [map {
+            Muldis::DB::AST::ExprDict->new({ 'map' => [
+                [$ATNM_VALUE, $_],
+            ] }),
+        } @{$body}],
+    });
+}
+
+sub newQuasiSetSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    confess q{new(): Bad :$body arg; it is not an Array.}
+        if ref $body ne 'ARRAY';
+
+    return Muldis::DB::AST::QuasiRelationSel->new({
+        'heading' => Muldis::DB::AST::TypeDictAQ->new({ 'map' => [
+            [$ATNM_VALUE, $heading],
+        ] }),
+        'body' => [map {
+            Muldis::DB::AST::ExprDict->new({ 'map' => [
+                [$ATNM_VALUE, $_],
+            ] }),
+        } @{$body}],
+    });
+}
+
+sub newSeqSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    confess q{new(): Bad :$body arg; it is not an Array.}
+        if ref $body ne 'ARRAY';
+    for my $tbody (@{$body}) {
+        confess q{new(): Bad :$body arg elem; it is not a 2-element Array.}
+            if ref $tbody ne 'ARRAY' or @{$tbody} != 2;
+    }
+
+    return Muldis::DB::AST::RelationSel->new({
+        'heading' => Muldis::DB::AST::TypeDictNQ->new({ 'map' => [
+            [$ATNM_INDEX, $SCA_TYPE_UINT],
+            [$ATNM_VALUE, $heading],
+        ] }),
+        'body' => [map {
+            Muldis::DB::AST::ExprDict->new({ 'map' => [
+                [$ATNM_INDEX, $_->[0]],
+                [$ATNM_VALUE, $_->[1]],
+            ] }),
+        } @{$body}],
+    });
+}
+
+sub newQuasiSeqSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    confess q{new(): Bad :$body arg; it is not an Array.}
+        if ref $body ne 'ARRAY';
+    for my $tbody (@{$body}) {
+        confess q{new(): Bad :$body arg elem; it is not a 2-element Array.}
+            if ref $tbody ne 'ARRAY' or @{$tbody} != 2;
+    }
+
+    return Muldis::DB::AST::QuasiRelationSel->new({
+        'heading' => Muldis::DB::AST::TypeDictAQ->new({ 'map' => [
+            [$ATNM_INDEX, $SCA_TYPE_UINT],
+            [$ATNM_VALUE, $heading],
+        ] }),
+        'body' => [map {
+            Muldis::DB::AST::ExprDict->new({ 'map' => [
+                [$ATNM_INDEX, $_->[0]],
+                [$ATNM_VALUE, $_->[1]],
+            ] }),
+        } @{$body}],
+    });
+}
+
+sub newBagSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    confess q{new(): Bad :$body arg; it is not an Array.}
+        if ref $body ne 'ARRAY';
+    for my $tbody (@{$body}) {
+        confess q{new(): Bad :$body arg elem; it is not a 2-element Array.}
+            if ref $tbody ne 'ARRAY' or @{$tbody} != 2;
+    }
+
+    return Muldis::DB::AST::RelationSel->new({
+        'heading' => Muldis::DB::AST::TypeDictNQ->new({ 'map' => [
+            [$ATNM_VALUE, $heading],
+            [$ATNM_COUNT, $SCA_TYPE_PINT],
+        ] }),
+        'body' => [map {
+            Muldis::DB::AST::ExprDict->new({ 'map' => [
+                [$ATNM_VALUE, $_->[0]],
+                [$ATNM_COUNT, $_->[1]],
+            ] }),
+        } @{$body}],
+    });
+}
+
+sub newQuasiBagSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    confess q{new(): Bad :$body arg; it is not an Array.}
+        if ref $body ne 'ARRAY';
+    for my $tbody (@{$body}) {
+        confess q{new(): Bad :$body arg elem; it is not a 2-element Array.}
+            if ref $tbody ne 'ARRAY' or @{$tbody} != 2;
+    }
+
+    return Muldis::DB::AST::QuasiRelationSel->new({
+        'heading' => Muldis::DB::AST::TypeDictAQ->new({ 'map' => [
+            [$ATNM_VALUE, $heading],
+            [$ATNM_COUNT, $SCA_TYPE_PINT],
+        ] }),
+        'body' => [map {
+            Muldis::DB::AST::ExprDict->new({ 'map' => [
+                [$ATNM_VALUE, $_->[0]],
+                [$ATNM_COUNT, $_->[1]],
+            ] }),
+        } @{$body}],
+    });
+}
+
+sub newMaybeSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return Muldis::DB::AST::RelationSel->new({
+        'heading' => Muldis::DB::AST::TypeDictNQ->new({ 'map' => [
+            [$ATNM_VALUE, $heading],
+        ] }),
+        'body' => [
+            Muldis::DB::AST::ExprDict->new({ 'map' => [
+                [$ATNM_VALUE, $body],
+            ] }),
+        ],
+    });
+}
+
+sub newQuasiMaybeSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return Muldis::DB::AST::QuasiRelationSel->new({
+        'heading' => Muldis::DB::AST::TypeDictAQ->new({ 'map' => [
+            [$ATNM_VALUE, $heading],
+        ] }),
+        'body' => [
+            Muldis::DB::AST::ExprDict->new({ 'map' => [
+                [$ATNM_VALUE, $body],
+            ] }),
+        ],
+    });
 }
 
 ###########################################################################
@@ -1104,10 +1294,12 @@ sub _equal_repr {
     use Carp;
     use Encode qw(is_utf8);
 
-    my $ATTR_TEXT_POSSREP = 'text_possrep';
+    my $ATTR_TEXT_POSSREP;
+    BEGIN { $ATTR_TEXT_POSSREP = 'text_possrep'; }
         # A p5 Scalar that is a text-mode string;
         # it either has true utf8 flag or is only 7-bit bytes.
-    my $ATTR_SEQ_POSSREP  = 'seq_possrep';
+    my $ATTR_SEQ_POSSREP;
+    BEGIN { $ATTR_SEQ_POSSREP = 'seq_possrep'; }
         # A p5 Array whose elements are p5 Scalar as per the text possrep.
 
     my $ATTR_AS_PERL = 'as_perl';
@@ -1208,8 +1400,10 @@ sub seq {
     use Carp;
     use Scalar::Util qw(blessed);
 
-    my $ATTR_KIND = 'kind';
-    my $ATTR_SPEC = 'spec';
+    my $ATTR_KIND;
+    BEGIN { $ATTR_KIND = 'kind'; }
+    my $ATTR_SPEC;
+    BEGIN { $ATTR_SPEC = 'spec'; }
 
     my $ATTR_AS_PERL = 'as_perl';
 
@@ -1822,7 +2016,9 @@ I<This documentation is pending.>
         newTupleSel newQuasiTupleSel newRelationSel newQuasiRelationSel
         newVarInvo newFuncInvo newProcInvo newFuncReturn newProcReturn
         newEntityName newTypeInvoNQ newTypeInvoAQ newTypeDictNQ
-        newTypeDictAQ newExprDict newFuncDecl newProcDecl newHostGateRtn);
+        newTypeDictAQ newExprDict newFuncDecl newProcDecl newHostGateRtn
+        newSetSel newQuasiSetSel newSeqSel newQuasiSeqSel newBagSel
+        newQuasiBagSel newMaybeSel newQuasiMaybeSel);
 
     my $truth_value = newBoolLit({ 'v' => (2 + 2 == 4) });
     my $planetoid = newTextLit({ 'v' => 'Ceres' });
