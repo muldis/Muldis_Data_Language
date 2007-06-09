@@ -335,30 +335,38 @@ sub newQuasiBagSel {
 sub newMaybeSel {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    confess q{new(): Bad :$body arg; it is not a 0..1-element Array.}
+        if ref $body ne 'ARRAY' or @{$body} > 1;
+
     return Muldis::DB::AST::RelationSel->new({
         'heading' => Muldis::DB::AST::TypeDictNQ->new({ 'map' => [
             [$ATNM_VALUE, $heading],
         ] }),
-        'body' => [
+        'body' => [map {
             Muldis::DB::AST::ExprDict->new({ 'map' => [
-                [$ATNM_VALUE, $body],
+                [$ATNM_VALUE, $_],
             ] }),
-        ],
+        } @{$body}],
     });
 }
 
 sub newQuasiMaybeSel {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    confess q{new(): Bad :$body arg; it is not a 0..1-element Array.}
+        if ref $body ne 'ARRAY' or @{$body} > 1;
+
     return Muldis::DB::AST::QuasiRelationSel->new({
         'heading' => Muldis::DB::AST::TypeDictAQ->new({ 'map' => [
             [$ATNM_VALUE, $heading],
         ] }),
-        'body' => [
+        'body' => [map {
             Muldis::DB::AST::ExprDict->new({ 'map' => [
-                [$ATNM_VALUE, $body],
+                [$ATNM_VALUE, $_],
             ] }),
-        ],
+        } @{$body}],
     });
 }
 
@@ -767,19 +775,21 @@ sub attr_count {
 sub attr_exists {
     my ($self, $args) = @_;
     my ($attr_name) = @{$args}{'attr_name'};
-    return $self->{$ATTR_HEADING}->elem_exists();
+    return $self->{$ATTR_HEADING}->elem_exists({
+        'elem_name' => $attr_name });
 }
 
 sub attr_type {
     my ($self, $args) = @_;
     my ($attr_name) = @{$args}{'attr_name'};
-    return $self->{$ATTR_HEADING}->elem_value();
+    return $self->{$ATTR_HEADING}->elem_value({
+        'elem_name' => $attr_name });
 }
 
 sub attr_value {
     my ($self, $args) = @_;
     my ($attr_name) = @{$args}{'attr_name'};
-    return $self->{$ATTR_BODY}->elem_value();
+    return $self->{$ATTR_BODY}->elem_value({ 'elem_name' => $attr_name });
 }
 
 ###########################################################################
@@ -908,6 +918,13 @@ sub body {
 
 ###########################################################################
 
+sub body_repr_elem_count {
+    my ($self) = @_;
+    return 0 + @{$self->{$ATTR_BODY}};
+}
+
+###########################################################################
+
 sub attr_count {
     my ($self) = @_;
     return $self->{$ATTR_HEADING}->elem_count();
@@ -916,19 +933,61 @@ sub attr_count {
 sub attr_exists {
     my ($self, $args) = @_;
     my ($attr_name) = @{$args}{'attr_name'};
-    return $self->{$ATTR_HEADING}->elem_exists();
+    return $self->{$ATTR_HEADING}->elem_exists({
+        'elem_name' => $attr_name });
 }
 
 sub attr_type {
     my ($self, $args) = @_;
     my ($attr_name) = @{$args}{'attr_name'};
-    return $self->{$ATTR_HEADING}->elem_value();
+    return $self->{$ATTR_HEADING}->elem_value({
+        'elem_name' => $attr_name });
 }
 
 sub attr_values {
     my ($self, $args) = @_;
     my ($attr_name) = @{$args}{'attr_name'};
-    return [map { $_->elem_value() } @{$self->{$ATTR_BODY}}];
+    return [map {
+            $_->elem_value({ 'elem_name' => $attr_name })
+        } @{$self->{$ATTR_BODY}}];
+}
+
+###########################################################################
+
+sub heading_of_SSBM {
+    my ($self) = @_;
+    return $self->{$ATTR_HEADING}->elem_value({
+        'elem_name' => $ATNM_VALUE });
+}
+
+sub body_of_Set {
+    my ($self) = @_;
+    return [map {
+            $_->elem_value({ 'elem_name' => $ATNM_VALUE })
+        } @{$self->{$ATTR_BODY}}];
+}
+
+sub body_of_Seq {
+    my ($self) = @_;
+    return [map { [
+            $_->elem_value({ 'elem_name' => $ATNM_INDEX }),
+            $_->elem_value({ 'elem_name' => $ATNM_VALUE }),
+        ] } @{$self->{$ATTR_BODY}}];
+}
+
+sub body_of_Bag {
+    my ($self) = @_;
+    return [map { [
+            $_->elem_value({ 'elem_name' => $ATNM_VALUE }),
+            $_->elem_value({ 'elem_name' => $ATNM_COUNT }),
+        ] } @{$self->{$ATTR_BODY}}];
+}
+
+sub body_of_Maybe {
+    my ($self) = @_;
+    return [map {
+            $_->elem_value({ 'elem_name' => $ATNM_VALUE })
+        } @{$self->{$ATTR_BODY}}];
 }
 
 ###########################################################################
@@ -1663,8 +1722,12 @@ sub elem_value {
             . q{ Muldis::DB::AST::EntityName-doing class.}
         if !blessed $elem_name
             or !$elem_name->isa( 'Muldis::DB::AST::EntityName' );
+    my $elem_name_text = $elem_name->text();
 
-    return $self->{$ATTR_MAP_HOA}->{$elem_name->text()};
+    confess q{elem_value(): Bad :$elem_name arg; it matches no dict elem.}
+        if !exists $self->{$ATTR_MAP_HOA}->{$elem_name_text};
+
+    return $self->{$ATTR_MAP_HOA}->{$elem_name_text};
 }
 
 ###########################################################################
@@ -1814,8 +1877,12 @@ sub elem_value {
             . q{ Muldis::DB::AST::EntityName-doing class.}
         if !blessed $elem_name
             or !$elem_name->isa( 'Muldis::DB::AST::EntityName' );
+    my $elem_name_text = $elem_name->text();
 
-    return $self->{$ATTR_MAP_HOA}->{$elem_name->text()};
+    confess q{elem_value(): Bad :$elem_name arg; it matches no dict elem.}
+        if !exists $self->{$ATTR_MAP_HOA}->{$elem_name_text};
+
+    return $self->{$ATTR_MAP_HOA}->{$elem_name_text};
 }
 
 ###########################################################################
