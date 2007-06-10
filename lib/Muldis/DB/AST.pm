@@ -383,6 +383,19 @@ sub newQuasiMaybeSel {
 
 ###########################################################################
 
+sub new {
+    my ($class, $args) = @_;
+    my $self = bless {}, $class;
+    $self->_build( $args );
+    return $self;
+}
+
+sub _build {
+    return; # default for any classes having no attributes
+}
+
+###########################################################################
+
 sub as_perl {
     my ($self) = @_;
     confess q{not implemented by subclass } . (blessed $self);
@@ -445,9 +458,8 @@ sub _equal_repr {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($v) = @{$args}{'v'};
 
     confess q{new(): Bad :$v arg; Perl 5 does not consider}
@@ -456,7 +468,7 @@ sub new {
 
     $self->{$ATTR_V} = $v;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -506,9 +518,8 @@ sub v {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($v) = @{$args}{'v'};
 
     confess q{new(): Bad :$v arg; Perl 5 does not consider}
@@ -517,7 +528,7 @@ sub new {
 
     $self->{$ATTR_V} = $v;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -568,9 +579,8 @@ sub v {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($v) = @{$args}{'v'};
 
     confess q{new(): Bad :$v arg; Perl 5 does not consider}
@@ -579,7 +589,7 @@ sub new {
 
     $self->{$ATTR_V} = $v;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -632,9 +642,8 @@ sub v {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($v) = @{$args}{'v'};
 
     confess q{new(): Bad :$v arg; Perl 5 does not consider}
@@ -643,7 +652,7 @@ sub new {
 
     $self->{$ATTR_V} = $v;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -695,9 +704,8 @@ sub v {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
 
     if ($self->_allows_quasi()) {
@@ -726,7 +734,7 @@ sub new {
     $self->{$ATTR_HEADING} = $heading;
     $self->{$ATTR_BODY}    = $body;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -831,9 +839,8 @@ sub attr_value {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
 
     if ($self->_allows_quasi()) {
@@ -867,7 +874,7 @@ sub new {
     $self->{$ATTR_HEADING} = $heading;
     $self->{$ATTR_BODY}    = [@{$body}];
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -1025,9 +1032,8 @@ sub body_of_Maybe {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($v) = @{$args}{'v'};
 
     confess q{new(): Bad :$v arg; it is not a valid object}
@@ -1036,7 +1042,7 @@ sub new {
 
     $self->{$ATTR_V} = $v;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -1085,9 +1091,8 @@ sub v {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($func, $ro_args) = @{$args}{'func', 'ro_args'};
 
     confess q{new(): Bad :$func arg; it is not a valid object}
@@ -1102,7 +1107,7 @@ sub new {
     $self->{$ATTR_FUNC}    = $func;
     $self->{$ATTR_RO_ARGS} = $ro_args;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -1171,9 +1176,8 @@ sub ro_args {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($proc, $upd_args, $ro_args)
         = @{$args}{'proc', 'upd_args', 'ro_args'};
 
@@ -1205,7 +1209,7 @@ sub new {
     $self->{$ATTR_UPD_ARGS} = $upd_args;
     $self->{$ATTR_RO_ARGS}  = $ro_args;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -1271,9 +1275,8 @@ sub ro_args {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($v) = @{$args}{'v'};
 
     confess q{new(): Bad :$v arg; it is not a valid object}
@@ -1282,7 +1285,7 @@ sub new {
 
     $self->{$ATTR_V} = $v;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -1323,13 +1326,6 @@ sub v {
 
 ###########################################################################
 
-sub new {
-    my ($class) = @_;
-    return bless {}, $class;
-}
-
-###########################################################################
-
 sub as_perl {
     return 'Muldis::DB::AST::ProcReturn->new()';
 }
@@ -1365,9 +1361,8 @@ sub _equal_repr {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($text, $seq) = @{$args}{'text', 'seq'};
 
     confess q{new(): Exactly 1 of the args (:$text|:$seq) must be defined.}
@@ -1410,7 +1405,7 @@ sub new {
         $self->{$ATTR_SEQ_POSSREP} = [@{$seq}];
     }
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -1468,9 +1463,8 @@ sub seq {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($kind, $spec) = @{$args}{'kind', 'spec'};
 
     confess q{new(): Bad :$kind arg; it is undefined.}
@@ -1522,7 +1516,7 @@ sub new {
     $self->{$ATTR_KIND} = $kind;
     $self->{$ATTR_SPEC} = $spec;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -1601,9 +1595,8 @@ sub spec {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($map) = @{$args}{'map'};
 
     my $allows_quasi = $self->_allows_quasi();
@@ -1646,7 +1639,7 @@ sub new {
     $self->{$ATTR_MAP_AOA} = $map_aoa;
     $self->{$ATTR_MAP_HOA} = $map_hoa;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -1769,9 +1762,8 @@ sub elem_value {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($map) = @{$args}{'map'};
 
     confess q{new(): Bad :$map arg; it is not an Array.}
@@ -1801,7 +1793,7 @@ sub new {
     $self->{$ATTR_MAP_AOA} = $map_aoa;
     $self->{$ATTR_MAP_HOA} = $map_hoa;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -1900,7 +1892,7 @@ sub elem_value {
 
 ###########################################################################
 
-sub new {
+sub _build {
     confess q{not implemented};
 }
 
@@ -1919,7 +1911,7 @@ sub new {
 
 ###########################################################################
 
-sub new {
+sub _build {
     confess q{not implemented};
 }
 
@@ -1947,9 +1939,8 @@ sub new {
 
 ###########################################################################
 
-sub new {
-    my ($class, $args) = @_;
-    my $self = bless {}, $class;
+sub _build {
+    my ($self, $args) = @_;
     my ($upd_params, $ro_params, $vars, $stmts)
         = @{$args}{'upd_params', 'ro_params', 'vars', 'stmts'};
 
@@ -1985,7 +1976,7 @@ sub new {
     $self->{$ATTR_VARS}       = $vars;
     $self->{$ATTR_STMTS}      = [@{$stmts}];
 
-    return $self;
+    return;
 }
 
 ###########################################################################

@@ -43,11 +43,17 @@ sub new_dbms {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
+    $self->_build( $args );
+    return $self;
+}
+
+sub _build {
+    my ($self, $args) = @_;
     my ($dbms_config) = @{$args}{'dbms_config'};
 
     $self->{$ATTR_DBMS_CONFIG} = $dbms_config;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -89,6 +95,12 @@ sub prepare {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
+    $self->_build( $args );
+    return $self;
+}
+
+sub _build {
+    my ($self, $args) = @_;
     my ($dbms, $decl_type) = @{$args}{'dbms', 'decl_type'};
 
     $self->{$ATTR_DBMS}      = $dbms;
@@ -96,7 +108,7 @@ sub new {
     $self->{$ATTR_VAL_AST}   = newBoolLit({ 'v' => (1 == 0) });
         # TODO: make default val of decl type
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -142,6 +154,12 @@ sub store_ast {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
+    $self->_build( $args );
+    return $self;
+}
+
+sub _build {
+    my ($self, $args) = @_;
     my ($dbms, $rtn_ast) = @{$args}{'dbms', 'rtn_ast'};
 
     my $prep_rtn = sub { 1; }; # TODO; the real thing.
@@ -152,7 +170,7 @@ sub new {
     $self->{$ATTR_BOUND_UPD_ARGS} = {};
     $self->{$ATTR_BOUND_RO_ARGS}  = {};
 
-    return $self;
+    return;
 }
 
 ###########################################################################

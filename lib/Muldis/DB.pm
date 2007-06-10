@@ -42,6 +42,12 @@ sub new_dbms {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
+    $self->_build( $args );
+    return $self;
+}
+
+sub _build {
+    my ($self, $args) = @_;
     my ($engine_name, $dbms_config)
         = @{$args}{'engine_name', 'dbms_config'};
 
@@ -90,7 +96,7 @@ sub new {
 
     $self->{$ATTR_DBMS_ENG} = $dbms_eng;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -131,6 +137,12 @@ sub prepare {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
+    $self->_build( $args );
+    return $self;
+}
+
+sub _build {
+    my ($self, $args) = @_;
     my ($dbms, $decl_type) = @{$args}{'dbms', 'decl_type'};
 
     confess q{new(): Bad :$dbms arg; it is not an object of a}
@@ -161,7 +173,7 @@ sub new {
     $self->{$ATTR_DBMS}    = $dbms;
     $self->{$ATTR_VAR_ENG} = $var_eng;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
@@ -234,6 +246,12 @@ sub store_ast {
 sub new {
     my ($class, $args) = @_;
     my $self = bless {}, $class;
+    $self->_build( $args );
+    return $self;
+}
+
+sub _build {
+    my ($self, $args) = @_;
     my ($dbms, $rtn_ast) = @{$args}{'dbms', 'rtn_ast'};
 
     confess q{new(): Bad :$dbms arg; it is not an object of a}
@@ -264,7 +282,7 @@ sub new {
     $self->{$ATTR_RTN_AST} = $rtn_ast;
     $self->{$ATTR_RTN_ENG} = $rtn_eng;
 
-    return $self;
+    return;
 }
 
 ###########################################################################
