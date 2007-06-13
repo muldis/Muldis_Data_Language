@@ -53,8 +53,8 @@ sub _scenario_foods_suppliers_shipments {
 
     # Declare our example executable code as Muldis::DB ASTs.
 
-    my $tynm_Text     = newEntityName({ 'text' => 'sys.type.Text' });
-    my $tynm_UInt     = newEntityName({ 'text' => 'sys.type.UInt' });
+    my $tynm_Text = newEntityName({ 'text' => 'sys.type.Text' });
+    my $tynm_UInt = newEntityName({ 'text' => 'sys.type.UInt' });
 
     my $atnm_colour  = newEntityName({ 'text' => 'colour' });
     my $atnm_country = newEntityName({ 'text' => 'country' });

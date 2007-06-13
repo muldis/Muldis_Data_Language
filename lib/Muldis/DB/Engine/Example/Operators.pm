@@ -33,27 +33,28 @@ use warnings FATAL => 'all';
 ## sys.type.Int ##
 
 'sys.rtn.Int.equal' => sub {
-    my ($args) = @_;
-    my ($v1, $v2) = @{$args}{'v1', 'v2'};
+    my ($ro_args) = @_;
+    my ($v1, $v2) = @{$ro_args}{'v1', 'v2'};
     return ptBool( $v1->equal( $v2 ) );
 },
 
 'sys.rtn.Int.not_equal' => sub {
-    my ($args) = @_;
-    my ($v1, $v2) = @{$args}{'v1', 'v2'};
+    my ($ro_args) = @_;
+    my ($v1, $v2) = @{$ro_args}{'v1', 'v2'};
     return ptBool( !$v1->equal( $v2 ) );
 },
 
 'sys.rtn.Int.assign' => sub {
-    my ($args) = @_;
-    my ($target, $v) = @{$args}{'target', 'v'};
+    my ($upd_args, $ro_args) = @_;
+    my ($target) = @{$upd_args}{'target'};
+    my ($v) = @{$ro_args}{'v'};
     $target->set( $v );
     return;
 },
 
 'sys.rtn.Int.sum' => sub {
-    my ($args) = @_;
-    my ($addends) = @{$args}{'addends'};
+    my ($ro_args) = @_;
+    my ($addends) = @{$ro_args}{'addends'};
     my $sum = 0;
     for my $addend (@{$addends->array_from_value_attr()}) {
         $sum += $addend->v();
@@ -62,14 +63,14 @@ use warnings FATAL => 'all';
 },
 
 'sys.rtn.Int.difference' => sub {
-    my ($args) = @_;
-    my ($minuend, $subtrahend) = @{$args}{'minuend', 'subtrahend'};
+    my ($ro_args) = @_;
+    my ($minuend, $subtrahend) = @{$ro_args}{'minuend', 'subtrahend'};
     return ptInt( $minuend->v() - $subtrahend->v() );
 },
 
 'sys.rtn.Int.product' => sub {
-    my ($args) = @_;
-    my ($factors) = @{$args}{'factors'};
+    my ($ro_args) = @_;
+    my ($factors) = @{$ro_args}{'factors'};
     my $product = 1;
     for my $factor (@{$factors->array_from_value_attr()}) {
         $product *= $factor->v();
@@ -78,8 +79,8 @@ use warnings FATAL => 'all';
 },
 
 'sys.rtn.Int.quotient' => sub {
-    my ($args) = @_;
-    my ($dividend, $divisor) = @{$args}{'dividend', 'divisor'};
+    my ($ro_args) = @_;
+    my ($dividend, $divisor) = @{$ro_args}{'dividend', 'divisor'};
     my $divisor_v = $divisor->v();
     confess q{sys.rtn.Int.quotient(): Arg :$divisor is zero.}
         if $divisor_v == 0;
@@ -93,8 +94,8 @@ use warnings FATAL => 'all';
 },
 
 'sys.rtn.Int.remainder' => sub {
-    my ($args) = @_;
-    my ($dividend, $divisor) = @{$args}{'dividend', 'divisor'};
+    my ($ro_args) = @_;
+    my ($dividend, $divisor) = @{$ro_args}{'dividend', 'divisor'};
     my $divisor_v = $divisor->v();
     confess q{sys.rtn.Int.remainder(): Arg :$divisor is zero.}
         if $divisor_v == 0;
@@ -102,14 +103,14 @@ use warnings FATAL => 'all';
 },
 
 'sys.rtn.Int.abs' => sub {
-    my ($args) = @_;
-    my ($v) = @{$args}{'v'};
+    my ($ro_args) = @_;
+    my ($v) = @{$ro_args}{'v'};
     return ptInt( abs $v->v() );
 },
 
 'sys.rtn.Int.power' => sub {
-    my ($args) = @_;
-    my ($radix, $exponent) = @{$args}{'radix', 'exponent'};
+    my ($ro_args) = @_;
+    my ($radix, $exponent) = @{$ro_args}{'radix', 'exponent'};
     return ptInt( $radix->v() ** $exponent->v() );
 },
 
