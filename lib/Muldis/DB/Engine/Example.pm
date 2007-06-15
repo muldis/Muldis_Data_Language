@@ -208,17 +208,50 @@ sub execute {
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::Value; # class
+{ package Muldis::DB::Engine::Example::Var; # class
 
-
-
-###########################################################################
-
-
+    my $ATTR_DECL_TYPE = 'decl_type';
+    my $ATTR_PAYLOAD   = 'payload';
 
 ###########################################################################
 
-} # class Muldis::DB::Engine::Example::Value
+sub new {
+    my ($class, @args) = @_;
+    my $self = bless {}, $class;
+    $self->_build( @args );
+    return $self;
+}
+
+sub _build {
+    my ($self, $decl_type) = @_;
+
+    my $payload = newBoolLit({ 'v' => (1 == 0) });
+        # TODO: make default val of decl type
+
+    $self->{$ATTR_DECL_TYPE} = $decl_type;
+    $self->{$ATTR_PAYLOAD}   = $payload;
+
+    return;
+}
+
+###########################################################################
+
+sub fetch {
+    my ($self) = @_;
+    return $self->{$ATTR_PAYLOAD};
+}
+
+###########################################################################
+
+sub store {
+    my ($self, $payload) = @_;
+    $self->{$ATTR_PAYLOAD} = $payload;
+    return;
+}
+
+###########################################################################
+
+} # class Muldis::DB::Engine::Example::Var
 
 ###########################################################################
 ###########################################################################

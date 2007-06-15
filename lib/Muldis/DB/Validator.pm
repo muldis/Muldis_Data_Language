@@ -15,11 +15,12 @@ use Muldis::DB;
 
     use Muldis::DB::AST qw(newBoolLit newTextLit newBlobLit newIntLit
         newTupleSel newQuasiTupleSel newRelationSel newQuasiRelationSel
-        newVarInvo newFuncInvo newProcInvo newFuncReturn newProcReturn
-        newEntityName newTypeInvoNQ newTypeInvoAQ newTypeDictNQ
-        newTypeDictAQ newExprDict newFuncDecl newProcDecl newHostGateRtn
-        newSetSel newQuasiSetSel newSeqSel newQuasiSeqSel newBagSel
-        newQuasiBagSel newMaybeSel newQuasiMaybeSel);
+        newDefault newTreat newVarInvo newFuncInvo newProcInvo
+        newFuncReturn newProcReturn newEntityName newTypeInvoNQ
+        newTypeInvoAQ newTypeDictNQ newTypeDictAQ newExprDict newFuncDecl
+        newProcDecl newHostGateRtn newSetSel newQuasiSetSel newSeqSel
+        newQuasiSeqSel newBagSel newQuasiBagSel newMaybeSel
+        newQuasiMaybeSel);
 
 ###########################################################################
 

@@ -35,6 +35,7 @@ my $SCA_TYPE_PINT = Muldis::DB::AST::TypeInvoNQ->new({
         newBoolLit newTextLit newBlobLit newIntLit
         newTupleSel newQuasiTupleSel
         newRelationSel newQuasiRelationSel
+        newDefault newTreat
         newVarInvo newFuncInvo
         newProcInvo
         newFuncReturn newProcReturn
@@ -104,6 +105,18 @@ sub newQuasiRelationSel {
     my ($heading, $body) = @{$args}{'heading', 'body'};
     return Muldis::DB::AST::QuasiRelationSel->new({
         'heading' => $heading, 'body' => $body });
+}
+
+sub newDefault {
+    my ($args) = @_;
+    my ($of) = @{$args}{'of'};
+    return Muldis::DB::AST::Default->new({ 'of' => $of });
+}
+
+sub newTreat {
+    my ($args) = @_;
+    my ($as, $v) = @{$args}{'as', 'v'};
+    return Muldis::DB::AST::Treat->new({ 'as' => $as, 'v' => $v });
 }
 
 sub newVarInvo {
@@ -720,11 +733,15 @@ sub _build {
             if !blessed $heading
                 or !$heading->isa( 'Muldis::DB::AST::TypeDictNQ' );
     }
+    my $heading_attrs_count = $heading->elem_count();
     my $heading_attrs_map_hoa = $heading->{$TYPEDICT_ATTR_MAP_HOA};
 
     confess q{new(): Bad :$body arg; it is not a valid object}
             . q{ of a Muldis::DB::AST::ExprDict-doing class.}
         if !blessed $body or !$body->isa( 'Muldis::DB::AST::ExprDict' );
+    confess q{new(): Bad :$body arg; it does not have the}
+            . q{ same attr count as :$heading.}
+        if $body->elem_count() != $heading_attrs_count;
     for my $attr_name_text (keys %{$body->{$EXPRDICT_ATTR_MAP_HOA}}) {
         confess q{new(): Bad :$body arg; at least one its attrs}
                 . q{ does not have a corresponding attr in :$heading.}
@@ -802,7 +819,7 @@ sub attr_value {
 
 ###########################################################################
 
-} # class Muldis::DB::AST::_Tuple
+} # role Muldis::DB::AST::_Tuple
 
 ###########################################################################
 ###########################################################################
@@ -855,6 +872,7 @@ sub _build {
             if !blessed $heading
                 or !$heading->isa( 'Muldis::DB::AST::TypeDictNQ' );
     }
+    my $heading_attrs_count = $heading->elem_count();
     my $heading_attrs_map_hoa = $heading->{$TYPEDICT_ATTR_MAP_HOA};
 
     confess q{new(): Bad :$body arg; it is not an Array.}
@@ -864,6 +882,9 @@ sub _build {
                 . q{ of a Muldis::DB::AST::ExprDict-doing class.}
             if !blessed $tupb
                 or !$tupb->isa( 'Muldis::DB::AST::ExprDict' );
+        confess q{new(): Bad :$body arg elem; it does not have the}
+                . q{ same attr count as :$heading.}
+            if $tupb->elem_count() != $heading_attrs_count;
         for my $attr_name_text (keys %{$tupb->{$EXPRDICT_ATTR_MAP_HOA}}) {
             confess q{new(): Bad :$body arg elem; at least one its attrs}
                     . q{ does not have a corresponding attr in :$heading.}
@@ -999,7 +1020,7 @@ sub body_of_Maybe {
 
 ###########################################################################
 
-} # class Muldis::DB::AST::_Relation
+} # role Muldis::DB::AST::_Relation
 
 ###########################################################################
 ###########################################################################
@@ -1016,6 +1037,138 @@ sub body_of_Maybe {
     use base 'Muldis::DB::AST::_Relation';
     sub _allows_quasi { return $TRUE; }
 } # class Muldis::DB::AST::QuasiRelationSel
+
+###########################################################################
+###########################################################################
+
+{ package Muldis::DB::AST::Default; # class
+    use base 'Muldis::DB::AST::Expr';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_OF = 'of';
+
+    my $ATTR_AS_PERL = 'as_perl';
+
+###########################################################################
+
+sub _build {
+    my ($self, $args) = @_;
+    my ($of) = @{$args}{'of'};
+
+    confess q{new(): Bad :$of arg; it is not a valid object}
+            . q{ of a Muldis::DB::AST::TypeInvo-doing class.}
+        if !blessed $of or !$of->isa( 'Muldis::DB::AST::TypeInvo' );
+
+    $self->{$ATTR_OF} = $of;
+
+    return;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $so = $self->{$ATTR_OF}->as_perl();
+        $self->{$ATTR_AS_PERL}
+            = "Muldis::DB::AST::Default->new({ 'of' => $so })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $self->{$ATTR_OF}->equal_repr({
+        'other' => $other->{$ATTR_OF} });
+}
+
+###########################################################################
+
+sub of {
+    my ($self) = @_;
+    return $self->{$ATTR_OF};
+}
+
+###########################################################################
+
+} # class Muldis::DB::AST::Default
+
+###########################################################################
+###########################################################################
+
+{ package Muldis::DB::AST::Treat; # class
+    use base 'Muldis::DB::AST::Expr';
+
+    use Carp;
+    use Scalar::Util qw(blessed);
+
+    my $ATTR_AS = 'as';
+    my $ATTR_V  = 'v';
+
+    my $ATTR_AS_PERL = 'as_perl';
+
+###########################################################################
+
+sub _build {
+    my ($self, $args) = @_;
+    my ($as, $v) = @{$args}{'as', 'v'};
+
+    confess q{new(): Bad :$as arg; it is not a valid object}
+            . q{ of a Muldis::DB::AST::TypeInvo-doing class.}
+        if !blessed $as or !$as->isa( 'Muldis::DB::AST::TypeInvo' );
+
+    confess q{new(): Bad :$v arg; it is not a valid object}
+            . q{ of a Muldis::DB::AST::Expr-doing class.}
+        if !blessed $v or !$v->isa( 'Muldis::DB::AST::Expr' );
+
+    $self->{$ATTR_AS} = $as;
+    $self->{$ATTR_V}  = $v;
+
+    return;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $sa = $self->{$ATTR_AS}->as_perl();
+        my $sv = $self->{$ATTR_V}->as_perl();
+        $self->{$ATTR_AS_PERL}
+            = "Muldis::DB::AST::Treat->new({ 'as' => $sa, 'v' => $sv })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return ($self->{$ATTR_AS}->equal_repr({
+            'other' => $other->{$ATTR_AS} })
+        and $self->{$ATTR_V}->equal_repr({
+            'other' => $other->{$ATTR_V} }));
+}
+
+###########################################################################
+
+sub as {
+    my ($self) = @_;
+    return $self->{$ATTR_AS};
+}
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
+
+} # class Muldis::DB::AST::Treat
 
 ###########################################################################
 ###########################################################################
@@ -2072,11 +2225,12 @@ I<This documentation is pending.>
 
     use Muldis::DB::AST qw(newBoolLit newTextLit newBlobLit newIntLit
         newTupleSel newQuasiTupleSel newRelationSel newQuasiRelationSel
-        newVarInvo newFuncInvo newProcInvo newFuncReturn newProcReturn
-        newEntityName newTypeInvoNQ newTypeInvoAQ newTypeDictNQ
-        newTypeDictAQ newExprDict newFuncDecl newProcDecl newHostGateRtn
-        newSetSel newQuasiSetSel newSeqSel newQuasiSeqSel newBagSel
-        newQuasiBagSel newMaybeSel newQuasiMaybeSel);
+        newDefault newTreat newVarInvo newFuncInvo newProcInvo
+        newFuncReturn newProcReturn newEntityName newTypeInvoNQ
+        newTypeInvoAQ newTypeDictNQ newTypeDictAQ newExprDict newFuncDecl
+        newProcDecl newHostGateRtn newSetSel newQuasiSetSel newSeqSel
+        newQuasiSeqSel newBagSel newQuasiBagSel newMaybeSel
+        newQuasiMaybeSel);
 
     my $truth_value = newBoolLit({ 'v' => (2 + 2 == 4) });
     my $planetoid = newTextLit({ 'v' => 'Ceres' });
@@ -2123,6 +2277,8 @@ will be added in the future), which are visually arranged here in their
             Muldis::DB::AST::_Relation (implementing role)
                 Muldis::DB::AST::RelationSel
                 Muldis::DB::AST::QuasiRelationSel
+            Muldis::DB::AST::Default
+            Muldis::DB::AST::Treat
             Muldis::DB::AST::VarInvo
             Muldis::DB::AST::FuncInvo
         Muldis::DB::AST::Stmt (dummy role)
@@ -2294,6 +2450,14 @@ I<This documentation is pending.>
 I<This documentation is pending.>
 
 =head2 The Muldis::DB::AST::QuasiRelationSel Class
+
+I<This documentation is pending.>
+
+=head2 The Muldis::DB::AST::Default Class
+
+I<This documentation is pending.>
+
+=head2 The Muldis::DB::AST::Treat Class
 
 I<This documentation is pending.>
 

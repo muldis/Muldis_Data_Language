@@ -48,7 +48,7 @@ use warnings FATAL => 'all';
     my ($upd_args, $ro_args) = @_;
     my ($target) = @{$upd_args}{'target'};
     my ($v) = @{$ro_args}{'v'};
-    $target->set( $v );
+    $target->store( $v );
     return;
 },
 
