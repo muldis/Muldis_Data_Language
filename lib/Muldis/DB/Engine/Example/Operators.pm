@@ -35,13 +35,13 @@ use warnings FATAL => 'all';
 'sys.rtn.Int.equal' => sub {
     my ($ro_args) = @_;
     my ($v1, $v2) = @{$ro_args}{'v1', 'v2'};
-    return ptBool( $v1->equal( $v2 ) );
+    return ptBool({ 'v' => $v1->equal( $v2 ) });
 },
 
 'sys.rtn.Int.not_equal' => sub {
     my ($ro_args) = @_;
     my ($v1, $v2) = @{$ro_args}{'v1', 'v2'};
-    return ptBool( !$v1->equal( $v2 ) );
+    return ptBool({ 'v' => !$v1->equal( $v2 ) });
 },
 
 'sys.rtn.Int.assign' => sub {
@@ -59,13 +59,13 @@ use warnings FATAL => 'all';
     for my $addend (@{$addends->array_from_value_attr()}) {
         $sum += $addend->v();
     }
-    return ptInt( $sum );
+    return ptInt({ 'v' => $sum });
 },
 
 'sys.rtn.Int.difference' => sub {
     my ($ro_args) = @_;
     my ($minuend, $subtrahend) = @{$ro_args}{'minuend', 'subtrahend'};
-    return ptInt( $minuend->v() - $subtrahend->v() );
+    return ptInt({ 'v' => $minuend->v() - $subtrahend->v() });
 },
 
 'sys.rtn.Int.product' => sub {
@@ -75,7 +75,7 @@ use warnings FATAL => 'all';
     for my $factor (@{$factors->array_from_value_attr()}) {
         $product *= $factor->v();
     }
-    return ptInt( $product );
+    return ptInt({ 'v' => $product });
 },
 
 'sys.rtn.Int.quotient' => sub {
@@ -90,7 +90,7 @@ use warnings FATAL => 'all';
         : $p5_num > 0            ? int $p5_num     # floor(2.3)  ->  2
         :                          int $p5_num - 1 # floor(-2.3) -> -3
         ;
-    return ptInt( $p5_int );
+    return ptInt({ 'v' => $p5_int });
 },
 
 'sys.rtn.Int.remainder' => sub {
@@ -99,19 +99,19 @@ use warnings FATAL => 'all';
     my $divisor_v = $divisor->v();
     confess q{sys.rtn.Int.remainder(): Arg :$divisor is zero.}
         if $divisor_v == 0;
-    return ptInt( $dividend->v() % $divisor_v );
+    return ptInt({ 'v' => $dividend->v() % $divisor_v });
 },
 
 'sys.rtn.Int.abs' => sub {
     my ($ro_args) = @_;
     my ($v) = @{$ro_args}{'v'};
-    return ptInt( abs $v->v() );
+    return ptInt({ 'v' => abs $v->v() });
 },
 
 'sys.rtn.Int.power' => sub {
     my ($ro_args) = @_;
     my ($radix, $exponent) = @{$ro_args}{'radix', 'exponent'};
-    return ptInt( $radix->v() ** $exponent->v() );
+    return ptInt({ 'v' => $radix->v() ** $exponent->v() });
 },
 
 ## sys.type.Tuple ##

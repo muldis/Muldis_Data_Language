@@ -31,79 +31,97 @@ my $TRUE  = (1 == 1);
 ###########################################################################
 
 sub ptBool {
-    my ($v) = @_;
-    return Muldis::DB::Engine::Example::PhysType::Bool->new( $v );
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return Muldis::DB::Engine::Example::PhysType::Bool->new({ 'v' => $v });
 }
 
 sub ptText {
-    my ($v) = @_;
-    return Muldis::DB::Engine::Example::PhysType::Text->new( $v );
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return Muldis::DB::Engine::Example::PhysType::Text->new({ 'v' => $v });
 }
 
 sub ptBlob {
-    my ($v) = @_;
-    return Muldis::DB::Engine::Example::PhysType::Blob->new( $v );
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return Muldis::DB::Engine::Example::PhysType::Blob->new({ 'v' => $v });
 }
 
 sub ptInt {
-    my ($v) = @_;
-    return Muldis::DB::Engine::Example::PhysType::Int->new( $v );
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return Muldis::DB::Engine::Example::PhysType::Int->new({ 'v' => $v });
 }
 
 sub ptTuple {
-    my ($heading, $body) = @_;
-    return Muldis::DB::Engine::Example::PhysType::Tuple->new(
-        $heading, $body );
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return Muldis::DB::Engine::Example::PhysType::Tuple->new({
+        'heading' => $heading, 'body' => $body });
 }
 
 sub ptQuasiTuple {
-    my ($heading, $body) = @_;
-    return Muldis::DB::Engine::Example::PhysType::QuasiTuple->new(
-        $heading, $body );
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return Muldis::DB::Engine::Example::PhysType::QuasiTuple->new({
+        'heading' => $heading, 'body' => $body });
 }
 
 sub ptRelation {
-    my ($heading, $body) = @_;
-    return Muldis::DB::Engine::Example::PhysType::Relation->new(
-        $heading, $body );
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return Muldis::DB::Engine::Example::PhysType::Relation->new({
+        'heading' => $heading, 'body' => $body });
 }
 
 sub ptQuasiRelation {
-    my ($heading, $body) = @_;
-    return Muldis::DB::Engine::Example::PhysType::QuasiRelation->new(
-        $heading, $body );
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+    return Muldis::DB::Engine::Example::PhysType::QuasiRelation->new({
+        'heading' => $heading, 'body' => $body });
 }
 
 sub ptTypeInvoNQ {
-    my ($kind, $spec) = @_;
-    return Muldis::DB::Engine::Example::PhysType::TypeInvoNQ->new(
-        $kind, $spec );
+    my ($args) = @_;
+    my ($kind, $spec) = @{$args}{'kind', 'spec'};
+    return Muldis::DB::Engine::Example::PhysType::TypeInvoNQ->new({
+        'kind' => $kind, 'spec' => $spec });
 }
 
 sub ptTypeInvoAQ {
-    my ($kind, $spec) = @_;
-    return Muldis::DB::Engine::Example::PhysType::TypeInvoAQ->new(
-        $kind, $spec );
+    my ($args) = @_;
+    my ($kind, $spec) = @{$args}{'kind', 'spec'};
+    return Muldis::DB::Engine::Example::PhysType::TypeInvoAQ->new({
+        'kind' => $kind, 'spec' => $spec });
 }
 
 sub ptTypeDictNQ {
-    my ($map) = @_;
-    return Muldis::DB::Engine::Example::PhysType::TypeDictNQ->new( $map );
+    my ($args) = @_;
+    my ($map) = @{$args}{'map'};
+    return Muldis::DB::Engine::Example::PhysType::TypeDictNQ->new({
+        'map' => $map });
 }
 
 sub ptTypeDictAQ {
-    my ($map) = @_;
-    return Muldis::DB::Engine::Example::PhysType::TypeDictAQ->new( $map );
+    my ($args) = @_;
+    my ($map) = @{$args}{'map'};
+    return Muldis::DB::Engine::Example::PhysType::TypeDictAQ->new({
+        'map' => $map });
 }
 
 sub ptValueDictNQ {
-    my ($map) = @_;
-    return Muldis::DB::Engine::Example::PhysType::ValueDictNQ->new( $map );
+    my ($args) = @_;
+    my ($map) = @{$args}{'map'};
+    return Muldis::DB::Engine::Example::PhysType::ValueDictNQ->new({
+        'map' => $map });
 }
 
 sub ptValueDictAQ {
-    my ($map) = @_;
-    return Muldis::DB::Engine::Example::PhysType::ValueDictAQ->new( $map );
+    my ($args) = @_;
+    my ($map) = @{$args}{'map'};
+    return Muldis::DB::Engine::Example::PhysType::ValueDictAQ->new({
+        'map' => $map });
 }
 
 ###########################################################################
@@ -157,10 +175,14 @@ sub ptValueDictAQ {
 ###########################################################################
 
 sub new {
-    my ($class, @args) = @_;
+    my ($class, $args) = @_;
     my $self = bless {}, $class;
-    $self->_build( @args );
+    $self->_build( $args );
     return $self;
+}
+
+sub _build {
+    return; # default for any classes having no attributes
 }
 
 ###########################################################################
@@ -195,7 +217,8 @@ sub as_ast {
 ###########################################################################
 
 sub equal {
-    my ($self, $other) = @_;
+    my ($self, $args) = @_;
+    my ($other) = @{$args}{'other'};
     return $FALSE
         if blessed $other ne blessed $self;
     return $self->_equal( $other );
@@ -226,7 +249,8 @@ sub _equal {
 ###########################################################################
 
 sub _build {
-    my ($self, $v) = @_;
+    my ($self, $args) = @_;
+    my ($v) = @{$args}{'v'};
     $self->{$ATTR_V} = $v;
     return;
 }
@@ -289,7 +313,8 @@ sub v {
 ###########################################################################
 
 sub _build {
-    my ($self, $v) = @_;
+    my ($self, $args) = @_;
+    my ($v) = @{$args}{'v'};
     $self->{$ATTR_V} = $v;
     return;
 }
@@ -351,7 +376,8 @@ sub v {
 ###########################################################################
 
 sub _build {
-    my ($self, $v) = @_;
+    my ($self, $args) = @_;
+    my ($v) = @{$args}{'v'};
     $self->{$ATTR_V} = $v;
     return;
 }
@@ -415,7 +441,8 @@ sub v {
 ###########################################################################
 
 sub _build {
-    my ($self, $v) = @_;
+    my ($self, $args) = @_;
+    my ($v) = @{$args}{'v'};
     $self->{$ATTR_V} = $v;
     return;
 }
@@ -480,7 +507,8 @@ sub v {
 ###########################################################################
 
 sub _build {
-    my ($self, $heading, $body) = @_;
+    my ($self, $args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
     $self->{$ATTR_HEADING} = $heading;
     $self->{$ATTR_BODY}    = $body;
     return;
@@ -521,8 +549,10 @@ sub as_ast {
 
 sub _equal {
     my ($self, $other) = @_;
-    return ($self->{$ATTR_HEADING}->equal( $other->{$ATTR_HEADING} )
-        and $self->{$ATTR_BODY}->equal( $other->{$ATTR_BODY} ));
+    return ($self->{$ATTR_HEADING}->equal({
+            'other' => $other->{$ATTR_HEADING} })
+        and $self->{$ATTR_BODY}->equal({
+            'other' => $other->{$ATTR_BODY} }));
 }
 
 ###########################################################################
@@ -545,18 +575,23 @@ sub attr_count {
 }
 
 sub attr_exists {
-    my ($self, $attr_name) = @_;
-    return $self->{$ATTR_HEADING}->elem_exists( $attr_name );
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return $self->{$ATTR_HEADING}->elem_exists({
+        'elem_name' => $attr_name });
 }
 
 sub attr_type {
-    my ($self, $attr_name) = @_;
-    return $self->{$ATTR_HEADING}->elem_value( $attr_name );
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return $self->{$ATTR_HEADING}->elem_value({
+        'elem_name' => $attr_name });
 }
 
 sub attr_value {
-    my ($self, $attr_name) = @_;
-    return $self->{$ATTR_BODY}->elem_value( $attr_name );
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return $self->{$ATTR_BODY}->elem_value({ 'elem_name' => $attr_name });
 }
 
 ###########################################################################
@@ -599,7 +634,8 @@ sub attr_value {
 ###########################################################################
 
 sub _build {
-    my ($self, $heading, $body) = @_;
+    my ($self, $args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
 
     my $key_over_all = {map { $_->which() => $_ } @{$body}}; # elim dup tpl
 
@@ -647,7 +683,8 @@ sub as_ast {
 sub _equal {
     my ($self, $other) = @_;
     return $FALSE
-        if !$self->{$ATTR_HEADING}->equal( $other->{$ATTR_HEADING} );
+        if !$self->{$ATTR_HEADING}->equal({
+            'other' => $other->{$ATTR_HEADING} });
     return $FALSE
         if @{$other->{$ATTR_BODY}} != @{$self->{$ATTR_BODY}};
     my $v1 = $self->{$ATTR_KEY_OVER_ALL};
@@ -686,18 +723,25 @@ sub attr_count {
 }
 
 sub attr_exists {
-    my ($self, $attr_name) = @_;
-    return $self->{$ATTR_HEADING}->elem_exists( $attr_name );
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return $self->{$ATTR_HEADING}->elem_exists({
+        'elem_name' => $attr_name });
 }
 
 sub attr_type {
-    my ($self, $attr_name) = @_;
-    return $self->{$ATTR_HEADING}->elem_value( $attr_name );
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return $self->{$ATTR_HEADING}->elem_value({
+        'elem_name' => $attr_name });
 }
 
 sub attr_values {
-    my ($self, $attr_name) = @_;
-    return [map { $_->elem_value( $attr_name ) } @{$self->{$ATTR_BODY}}];
+    my ($self, $args) = @_;
+    my ($attr_name) = @{$args}{'attr_name'};
+    return [map {
+            $_->elem_value({ 'elem_name' => $attr_name })
+        } @{$self->{$ATTR_BODY}}];
 }
 
 ###########################################################################
@@ -739,7 +783,8 @@ sub attr_values {
 ###########################################################################
 
 sub _build {
-    my ($self, $kind, $spec) = @_;
+    my ($self, $args) = @_;
+    my ($kind, $spec) = @{$args}{'kind', 'spec'};
     $self->{$ATTR_KIND} = $kind;
     $self->{$ATTR_SPEC} = $spec;
     return;
@@ -790,7 +835,7 @@ sub _equal {
     return $FALSE
         if $other->{$ATTR_KIND} ne $kind;
     return $kind eq 'Any' ? $other->{$ATTR_SPEC} eq $spec
-        : $spec->equal( $other->{$ATTR_SPEC} );
+        : $spec->equal({ 'other' => $other->{$ATTR_SPEC} });
 }
 
 ###########################################################################
@@ -846,7 +891,8 @@ sub spec {
 ###########################################################################
 
 sub _build {
-    my ($self, $map) = @_;
+    my ($self, $args) = @_;
+    my ($map) = @{$args}{'map'};
     $self->{$ATTR_MAP} = $map;
     return;
 }
@@ -899,7 +945,7 @@ sub _equal {
         return $FALSE
             if !exists $v2->{$ek};
         return $FALSE
-            if !$v1->{$ek}->equal( $v2->{$ek} );
+            if !$v1->{$ek}->equal({ 'other' => $v2->{$ek} });
     }
     return $TRUE;
 }
@@ -919,12 +965,14 @@ sub elem_count {
 }
 
 sub elem_exists {
-    my ($self, $elem_name) = @_;
+    my ($self, $args) = @_;
+    my ($elem_name) = @{$args}{'elem_name'};
     return exists $self->{$ATTR_MAP}->{$elem_name};
 }
 
 sub elem_value {
-    my ($self, $elem_name) = @_;
+    my ($self, $args) = @_;
+    my ($elem_name) = @{$args}{'elem_name'};
     return $self->{$ATTR_MAP}->{$elem_name};
 }
 
@@ -966,7 +1014,8 @@ sub elem_value {
 ###########################################################################
 
 sub _build {
-    my ($self, $map) = @_;
+    my ($self, $args) = @_;
+    my ($map) = @{$args}{'map'};
     $self->{$ATTR_MAP} = $map;
     return;
 }
@@ -1017,7 +1066,7 @@ sub _equal {
         return $FALSE
             if !exists $v2->{$ek};
         return $FALSE
-            if !$v1->{$ek}->equal( $v2->{$ek} );
+            if !$v1->{$ek}->equal({ 'other' => $v2->{$ek} });
     }
     return $TRUE;
 }
@@ -1037,12 +1086,14 @@ sub elem_count {
 }
 
 sub elem_exists {
-    my ($self, $elem_name) = @_;
+    my ($self, $args) = @_;
+    my ($elem_name) = @{$args}{'elem_name'};
     return exists $self->{$ATTR_MAP}->{$elem_name};
 }
 
 sub elem_value {
-    my ($self, $elem_name) = @_;
+    my ($self, $args) = @_;
+    my ($elem_name) = @{$args}{'elem_name'};
     return $self->{$ATTR_MAP}->{$elem_name};
 }
 

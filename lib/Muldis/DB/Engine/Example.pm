@@ -216,14 +216,15 @@ sub execute {
 ###########################################################################
 
 sub new {
-    my ($class, @args) = @_;
+    my ($class, $args) = @_;
     my $self = bless {}, $class;
-    $self->_build( @args );
+    $self->_build( $args );
     return $self;
 }
 
 sub _build {
-    my ($self, $decl_type) = @_;
+    my ($self, $args) = @_;
+    my ($decl_type) = @{$args}{'decl_type'};
 
     my $payload = newBoolLit({ 'v' => (1 == 0) });
         # TODO: make default val of decl type
