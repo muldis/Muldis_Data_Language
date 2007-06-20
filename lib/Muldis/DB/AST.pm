@@ -550,7 +550,8 @@ sub as_perl {
     my ($self) = @_;
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $s = $self->{$ATTR_V};
-        $s =~ s/'/\\'/xs;
+        $s =~ s/\\/\\\\/xsg;
+        $s =~ s/'/\\'/xsg;
         $s = q{'} . $s . q{'};
         $self->{$ATTR_AS_PERL}
             = "Muldis::DB::AST::TextLit->new({ 'v' => $s })";
@@ -1567,7 +1568,8 @@ sub as_perl {
     my ($self) = @_;
     if (!defined $self->{$ATTR_AS_PERL}) {
         my $s = $self->{$ATTR_TEXT_POSSREP};
-        $s =~ s/'/\\'/xs;
+        $s =~ s/\\/\\\\/xsg;
+        $s =~ s/'/\\'/xsg;
         $s = q{'} . $s . q{'};
         $self->{$ATTR_AS_PERL}
             = "Muldis::DB::AST::EntityName->new({ 'text' => $s })";

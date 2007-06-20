@@ -773,7 +773,7 @@ sub attr_values {
     use Carp;
     use Scalar::Util qw(blessed);
 
-    use Muldis::DB::AST qw(newTypeInvoNQ newTypeInvoAQ);
+    use Muldis::DB::AST qw(newEntityName newTypeInvoNQ newTypeInvoAQ);
 
     my $ATTR_KIND = 'kind';
     my $ATTR_SPEC = 'spec';
@@ -805,7 +805,7 @@ sub which {
         my $kind = $self->{$ATTR_KIND};
         my $spec = $self->{$ATTR_SPEC};
         my $sk = (length $kind) . q{ } . $kind;
-        my $ss = $kind eq 'Any'
+        my $ss = ($kind eq 'Any' or $kind eq 'Scalar')
             ? (length $spec) . q{ } . $spec : $spec->which();
         my $s = "KIND $sk SPEC $ss";
         my $len_s = length $s;
@@ -821,7 +821,9 @@ sub as_ast {
     my $kind = $self->{$ATTR_KIND};
     my $spec = $self->{$ATTR_SPEC};
     my $call_args = { 'kind' => $kind,
-        'spec' => ($kind eq 'Any' ? $spec : $spec->as_ast()) };
+        'spec' => ($kind eq 'Any' ? $spec
+            : $kind eq 'Scalar' ? newEntityName({ 'text' => $spec })
+            : $spec->as_ast()) };
     return $self->_allows_quasi()
         ? newTypeInvoAQ( $call_args ) : newTypeInvoNQ( $call_args );
 }
@@ -834,7 +836,8 @@ sub _equal {
     my $spec = $self->{$ATTR_SPEC};
     return $FALSE
         if $other->{$ATTR_KIND} ne $kind;
-    return $kind eq 'Any' ? $other->{$ATTR_SPEC} eq $spec
+    return ($kind eq 'Any' or $kind eq 'Scalar')
+            ? $other->{$ATTR_SPEC} eq $spec
         : $spec->equal({ 'other' => $other->{$ATTR_SPEC} });
 }
 
@@ -910,7 +913,7 @@ sub which {
         my $tpwl = '20 sys.type._TypeDict'
             . ($self->_allows_quasi() ? 'AQ' : 'NQ');
         my $map = $self->{$ATTR_MAP};
-        my $s = map {
+        my $s = join q{ }, map {
                 my $mk = (length $_) . q{ } . $_;
                 my $mv = $map->{$_}->which();
                 "K $mk V $mv";
@@ -1033,7 +1036,7 @@ sub which {
         my $tpwl = '20 sys.type._ValueDict'
             . ($self->_allows_quasi() ? 'AQ' : 'NQ');
         my $map = $self->{$ATTR_MAP};
-        my $s = map {
+        my $s = join q{ }, map {
                 my $mk = (length $_) . q{ } . $_;
                 my $mv = $map->{$_}->which();
                 "K $mk V $mv";
