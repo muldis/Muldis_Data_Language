@@ -9,7 +9,7 @@ use Muldis::DB;
 ###########################################################################
 
 { package Muldis::DB::Validator; # module
-    our $VERSION = 0.000000;
+    our $VERSION = 0.000001;
 
     use Test::More;
 
@@ -347,7 +347,7 @@ A common comprehensive test suite to run against all Engines
 
 =head1 VERSION
 
-This document describes Muldis::DB::Validator version 0.0.0 for Perl 5.
+This document describes Muldis::DB::Validator version 0.0.1 for Perl 5.
 
 =head1 SYNOPSIS
 
@@ -429,7 +429,7 @@ I<This documentation is pending.>
 This file requires any version of Perl 5.x.y that is at least 5.8.1.
 
 It also requires these Perl 5 classes that are in the current distribution:
-L<Muldis::DB::AST-(0.0.0)|Muldis::DB::AST>, L<Muldis::DB-0.0.0|Muldis::DB>.
+L<Muldis::DB::AST-(0.0.1)|Muldis::DB::AST>, L<Muldis::DB-0.0.1|Muldis::DB>.
 
 =head1 INCOMPATIBILITIES
 
