@@ -6,8 +6,12 @@ use warnings FATAL => 'all';
 ###########################################################################
 ###########################################################################
 
-my $FALSE = (1 == 0);
-my $TRUE  = (1 == 1);
+my $BOOL_FALSE = (1 == 0);
+my $BOOL_TRUE  = (1 == 1);
+
+my $ORDER_INCREASE = (1 <=> 2);
+my $ORDER_SAME     = (1 <=> 1);
+my $ORDER_DECREASE = (2 <=> 1);
 
 my $TYNM_UINT
     = Muldis::DB::AST::EntityName->new({ 'text' => 'sys.type.UInt' });
@@ -32,7 +36,7 @@ my $SCA_TYPE_PINT = Muldis::DB::AST::TypeInvoNQ->new({
 
     use base 'Exporter';
     our @EXPORT_OK = qw(
-        newBoolLit newTextLit newBlobLit newIntLit
+        newBoolLit newOrderLit newIntLit newBlobLit newTextLit
         newTupleSel newQuasiTupleSel
         newRelationSel newQuasiRelationSel
         newDefault newTreat
@@ -46,9 +50,9 @@ my $SCA_TYPE_PINT = Muldis::DB::AST::TypeInvoNQ->new({
         newFuncDecl newProcDecl
         newHostGateRtn
         newSetSel newQuasiSetSel
+        newMaybeSel newQuasiMaybeSel
         newSeqSel newQuasiSeqSel
         newBagSel newQuasiBagSel
-        newMaybeSel newQuasiMaybeSel
     );
 
     use Carp;
@@ -61,10 +65,16 @@ sub newBoolLit {
     return Muldis::DB::AST::BoolLit->new({ 'v' => $v });
 }
 
-sub newTextLit {
+sub newOrderLit {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return Muldis::DB::AST::TextLit->new({ 'v' => $v });
+    return Muldis::DB::AST::OrderLit->new({ 'v' => $v });
+}
+
+sub newIntLit {
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return Muldis::DB::AST::IntLit->new({ 'v' => $v });
 }
 
 sub newBlobLit {
@@ -73,10 +83,10 @@ sub newBlobLit {
     return Muldis::DB::AST::BlobLit->new({ 'v' => $v });
 }
 
-sub newIntLit {
+sub newTextLit {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return Muldis::DB::AST::IntLit->new({ 'v' => $v });
+    return Muldis::DB::AST::TextLit->new({ 'v' => $v });
 }
 
 sub newTupleSel {
@@ -245,6 +255,44 @@ sub newQuasiSetSel {
     });
 }
 
+sub newMaybeSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    confess q{new(): Bad :$body arg; it is not a 0..1-element Array.}
+        if ref $body ne 'ARRAY' or @{$body} > 1;
+
+    return Muldis::DB::AST::RelationSel->new({
+        'heading' => Muldis::DB::AST::TypeDictNQ->new({ 'map' => [
+            [$ATNM_VALUE, $heading],
+        ] }),
+        'body' => [map {
+            Muldis::DB::AST::ExprDict->new({ 'map' => [
+                [$ATNM_VALUE, $_],
+            ] }),
+        } @{$body}],
+    });
+}
+
+sub newQuasiMaybeSel {
+    my ($args) = @_;
+    my ($heading, $body) = @{$args}{'heading', 'body'};
+
+    confess q{new(): Bad :$body arg; it is not a 0..1-element Array.}
+        if ref $body ne 'ARRAY' or @{$body} > 1;
+
+    return Muldis::DB::AST::QuasiRelationSel->new({
+        'heading' => Muldis::DB::AST::TypeDictAQ->new({ 'map' => [
+            [$ATNM_VALUE, $heading],
+        ] }),
+        'body' => [map {
+            Muldis::DB::AST::ExprDict->new({ 'map' => [
+                [$ATNM_VALUE, $_],
+            ] }),
+        } @{$body}],
+    });
+}
+
 sub newSeqSel {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
@@ -345,44 +393,6 @@ sub newQuasiBagSel {
     });
 }
 
-sub newMaybeSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-
-    confess q{new(): Bad :$body arg; it is not a 0..1-element Array.}
-        if ref $body ne 'ARRAY' or @{$body} > 1;
-
-    return Muldis::DB::AST::RelationSel->new({
-        'heading' => Muldis::DB::AST::TypeDictNQ->new({ 'map' => [
-            [$ATNM_VALUE, $heading],
-        ] }),
-        'body' => [map {
-            Muldis::DB::AST::ExprDict->new({ 'map' => [
-                [$ATNM_VALUE, $_],
-            ] }),
-        } @{$body}],
-    });
-}
-
-sub newQuasiMaybeSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-
-    confess q{new(): Bad :$body arg; it is not a 0..1-element Array.}
-        if ref $body ne 'ARRAY' or @{$body} > 1;
-
-    return Muldis::DB::AST::QuasiRelationSel->new({
-        'heading' => Muldis::DB::AST::TypeDictAQ->new({ 'map' => [
-            [$ATNM_VALUE, $heading],
-        ] }),
-        'body' => [map {
-            Muldis::DB::AST::ExprDict->new({ 'map' => [
-                [$ATNM_VALUE, $_],
-            ] }),
-        } @{$body}],
-    });
-}
-
 ###########################################################################
 
 } # module Muldis::DB::AST
@@ -424,7 +434,7 @@ sub equal_repr {
             . q{ of a Muldis::DB::AST::Node-doing class.}
         if !blessed $other or !$other->isa( 'Muldis::DB::AST::Node' );
 
-    return $FALSE
+    return $BOOL_FALSE
         if blessed $other ne blessed $self;
 
     return $self->_equal_repr( $other );
@@ -461,11 +471,11 @@ sub _equal_repr {
 
     use Carp;
 
-    my $FALSE_AS_PERL = qq{'$FALSE'};
-    my $TRUE_AS_PERL  = qq{'$TRUE'};
+    my $FALSE_AS_PERL = qq{'$BOOL_FALSE'};
+    my $TRUE_AS_PERL  = qq{'$BOOL_TRUE'};
 
     my $ATTR_V = 'v';
-        # A p5 Scalar that equals $FALSE|$TRUE.
+        # A p5 Scalar that equals $BOOL_FALSE|$BOOL_TRUE.
 
     my $ATTR_AS_PERL = 'as_perl';
 
@@ -477,7 +487,7 @@ sub _build {
 
     confess q{new(): Bad :$v arg; Perl 5 does not consider}
             . q{ it to be a canonical boolean value.}
-        if !defined $v or ($v ne $FALSE and $v ne $TRUE);
+        if !defined $v or ($v ne $BOOL_FALSE and $v ne $BOOL_TRUE);
 
     $self->{$ATTR_V} = $v;
 
@@ -517,15 +527,13 @@ sub v {
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::AST::TextLit; # class
+{ package Muldis::DB::AST::OrderLit; # class
     use base 'Muldis::DB::AST::Lit';
 
     use Carp;
-    use Encode qw(is_utf8);
 
     my $ATTR_V = 'v';
-        # A p5 Scalar that is a text-mode string;
-        # it either has true utf8 flag or is only 7-bit bytes.
+        # A p5 Scalar that equals $ORDER_(INCREASE|SAME|DECREASE).
 
     my $ATTR_AS_PERL = 'as_perl';
 
@@ -536,8 +544,9 @@ sub _build {
     my ($v) = @{$args}{'v'};
 
     confess q{new(): Bad :$v arg; Perl 5 does not consider}
-            . q{ it to be a canonical character string value.}
-        if !defined $v or (!is_utf8 $v and $v =~ m/[^\x00-\x7F]/xs);
+            . q{ it to be a canonical order value.}
+        if !defined $v or ($v ne $ORDER_INCREASE
+            and $v ne $ORDER_SAME and $v ne $ORDER_DECREASE);
 
     $self->{$ATTR_V} = $v;
 
@@ -549,12 +558,9 @@ sub _build {
 sub as_perl {
     my ($self) = @_;
     if (!defined $self->{$ATTR_AS_PERL}) {
-        my $s = $self->{$ATTR_V};
-        $s =~ s/\\/\\\\/xsg;
-        $s =~ s/'/\\'/xsg;
-        $s = q{'} . $s . q{'};
+        my $s = q{'} . $self->{$ATTR_V} . q{'};
         $self->{$ATTR_AS_PERL}
-            = "Muldis::DB::AST::TextLit->new({ 'v' => $s })";
+            = "Muldis::DB::AST::OrderLit->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -575,7 +581,65 @@ sub v {
 
 ###########################################################################
 
-} # class Muldis::DB::AST::TextLit
+} # class Muldis::DB::AST::OrderLit
+
+###########################################################################
+###########################################################################
+
+{ package Muldis::DB::AST::IntLit; # class
+    use base 'Muldis::DB::AST::Lit';
+
+    use Carp;
+
+    my $ATTR_V = 'v';
+        # A p5 Scalar that is a Perl integer or BigInt or canonical string.
+
+    my $ATTR_AS_PERL = 'as_perl';
+
+###########################################################################
+
+sub _build {
+    my ($self, $args) = @_;
+    my ($v) = @{$args}{'v'};
+
+    confess q{new(): Bad :$v arg; Perl 5 does not consider}
+            . q{ it to be a canonical integer value.}
+        if !defined $v or $v !~ m/\A (0|-?[1-9][0-9]*) \z/xs;
+
+    $self->{$ATTR_V} = $v;
+
+    return;
+}
+
+###########################################################################
+
+sub as_perl {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_AS_PERL}) {
+        my $s = q{'} . $self->{$ATTR_V} . q{'};
+        $self->{$ATTR_AS_PERL}
+            = "Muldis::DB::AST::IntLit->new({ 'v' => $s })";
+    }
+    return $self->{$ATTR_AS_PERL};
+}
+
+###########################################################################
+
+sub _equal_repr {
+    my ($self, $other) = @_;
+    return $other->{$ATTR_V} eq $self->{$ATTR_V};
+}
+
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
+
+} # class Muldis::DB::AST::IntLit
 
 ###########################################################################
 ###########################################################################
@@ -644,13 +708,15 @@ sub v {
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::AST::IntLit; # class
+{ package Muldis::DB::AST::TextLit; # class
     use base 'Muldis::DB::AST::Lit';
 
     use Carp;
+    use Encode qw(is_utf8);
 
     my $ATTR_V = 'v';
-        # A p5 Scalar that is a Perl integer or BigInt or canonical string.
+        # A p5 Scalar that is a text-mode string;
+        # it either has true utf8 flag or is only 7-bit bytes.
 
     my $ATTR_AS_PERL = 'as_perl';
 
@@ -661,8 +727,8 @@ sub _build {
     my ($v) = @{$args}{'v'};
 
     confess q{new(): Bad :$v arg; Perl 5 does not consider}
-            . q{ it to be a canonical integer value.}
-        if !defined $v or $v !~ m/\A (0|-?[1-9][0-9]*) \z/xs;
+            . q{ it to be a canonical character string value.}
+        if !defined $v or (!is_utf8 $v and $v =~ m/[^\x00-\x7F]/xs);
 
     $self->{$ATTR_V} = $v;
 
@@ -674,9 +740,12 @@ sub _build {
 sub as_perl {
     my ($self) = @_;
     if (!defined $self->{$ATTR_AS_PERL}) {
-        my $s = q{'} . $self->{$ATTR_V} . q{'};
+        my $s = $self->{$ATTR_V};
+        $s =~ s/\\/\\\\/xsg;
+        $s =~ s/'/\\'/xsg;
+        $s = q{'} . $s . q{'};
         $self->{$ATTR_AS_PERL}
-            = "Muldis::DB::AST::IntLit->new({ 'v' => $s })";
+            = "Muldis::DB::AST::TextLit->new({ 'v' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -697,7 +766,7 @@ sub v {
 
 ###########################################################################
 
-} # class Muldis::DB::AST::IntLit
+} # class Muldis::DB::AST::TextLit
 
 ###########################################################################
 ###########################################################################
@@ -827,7 +896,7 @@ sub attr_value {
 
 { package Muldis::DB::AST::TupleSel; # class
     use base 'Muldis::DB::AST::_Tuple';
-    sub _allows_quasi { return $FALSE; }
+    sub _allows_quasi { return $BOOL_FALSE; }
 } # class Muldis::DB::AST::TupleSel
 
 ###########################################################################
@@ -835,7 +904,7 @@ sub attr_value {
 
 { package Muldis::DB::AST::QuasiTupleSel; # class
     use base 'Muldis::DB::AST::_Tuple';
-    sub _allows_quasi { return $TRUE; }
+    sub _allows_quasi { return $BOOL_TRUE; }
 } # class Muldis::DB::AST::QuasiTupleSel
 
 ###########################################################################
@@ -919,18 +988,18 @@ sub as_perl {
 
 sub _equal_repr {
     my ($self, $other) = @_;
-    return $FALSE
+    return $BOOL_FALSE
         if !$self->{$ATTR_HEADING}->equal_repr({
             'other' => $other->{$ATTR_HEADING} });
     my $v1 = $self->{$ATTR_BODY};
     my $v2 = $other->{$ATTR_BODY};
-    return $FALSE
+    return $BOOL_FALSE
         if @{$v2} != @{$v1};
     for my $i (0..$#{$v1}) {
-        return $FALSE
+        return $BOOL_FALSE
             if !$v1->[$i]->equal_repr({ 'other' => $v2->[$i] });
     }
-    return $TRUE;
+    return $BOOL_TRUE;
 }
 
 ###########################################################################
@@ -1028,7 +1097,7 @@ sub body_of_Maybe {
 
 { package Muldis::DB::AST::RelationSel; # class
     use base 'Muldis::DB::AST::_Relation';
-    sub _allows_quasi { return $FALSE; }
+    sub _allows_quasi { return $BOOL_FALSE; }
 } # class Muldis::DB::AST::RelationSel
 
 ###########################################################################
@@ -1036,7 +1105,7 @@ sub body_of_Maybe {
 
 { package Muldis::DB::AST::QuasiRelationSel; # class
     use base 'Muldis::DB::AST::_Relation';
-    sub _allows_quasi { return $TRUE; }
+    sub _allows_quasi { return $BOOL_TRUE; }
 } # class Muldis::DB::AST::QuasiRelationSel
 
 ###########################################################################
@@ -1487,7 +1556,7 @@ sub as_perl {
 ###########################################################################
 
 sub _equal_repr {
-    return $TRUE;
+    return $BOOL_TRUE;
 }
 
 ###########################################################################
@@ -1696,7 +1765,7 @@ sub _equal_repr {
     my ($self, $other) = @_;
     my $kind = $self->{$ATTR_KIND};
     my $spec = $self->{$ATTR_SPEC};
-    return $FALSE
+    return $BOOL_FALSE
         if $other->{$ATTR_KIND} ne $kind;
     return $kind eq 'Any' ? $other->{$ATTR_SPEC} eq $spec
         : $spec->equal_repr({ 'other' => $other->{$ATTR_SPEC} });
@@ -1723,7 +1792,7 @@ sub spec {
 
 { package Muldis::DB::AST::TypeInvoNQ; # class
     use base 'Muldis::DB::AST::TypeInvo';
-    sub _allows_quasi { return $FALSE; }
+    sub _allows_quasi { return $BOOL_FALSE; }
 } # class Muldis::DB::AST::TypeInvoNQ
 
 ###########################################################################
@@ -1731,7 +1800,7 @@ sub spec {
 
 { package Muldis::DB::AST::TypeInvoAQ; # class
     use base 'Muldis::DB::AST::TypeInvo';
-    sub _allows_quasi { return $TRUE; }
+    sub _allows_quasi { return $BOOL_TRUE; }
 } # class Muldis::DB::AST::TypeInvoAQ
 
 ###########################################################################
@@ -1816,18 +1885,18 @@ sub as_perl {
 
 sub _equal_repr {
     my ($self, $other) = @_;
-    return $FALSE
+    return $BOOL_FALSE
         if @{$other->{$ATTR_MAP_AOA}} != @{$self->{$ATTR_MAP_AOA}};
     my $v1 = $self->{$ATTR_MAP_HOA};
     my $v2 = $other->{$ATTR_MAP_HOA};
     for my $ek (keys %{$v1}) {
-        return $FALSE
+        return $BOOL_FALSE
             if !exists $v2->{$ek};
-        return $FALSE
+        return $BOOL_FALSE
             if !$v1->{$ek}->[1]->equal_repr({
                 'other' => $v2->[1]->{$ek} });
     }
-    return $TRUE;
+    return $BOOL_TRUE;
 }
 
 ###########################################################################
@@ -1887,7 +1956,7 @@ sub elem_value {
 
 { package Muldis::DB::AST::TypeDictNQ; # class
     use base 'Muldis::DB::AST::TypeDict';
-    sub _allows_quasi { return $FALSE; }
+    sub _allows_quasi { return $BOOL_FALSE; }
 } # class Muldis::DB::AST::TypeDictNQ
 
 ###########################################################################
@@ -1895,7 +1964,7 @@ sub elem_value {
 
 { package Muldis::DB::AST::TypeDictAQ; # class
     use base 'Muldis::DB::AST::TypeDict';
-    sub _allows_quasi { return $TRUE; }
+    sub _allows_quasi { return $BOOL_TRUE; }
 } # class Muldis::DB::AST::TypeDictAQ
 
 ###########################################################################
@@ -1970,18 +2039,18 @@ sub as_perl {
 
 sub _equal_repr {
     my ($self, $other) = @_;
-    return $FALSE
+    return $BOOL_FALSE
         if @{$other->{$ATTR_MAP_AOA}} != @{$self->{$ATTR_MAP_AOA}};
     my $v1 = $self->{$ATTR_MAP_HOA};
     my $v2 = $other->{$ATTR_MAP_HOA};
     for my $ek (keys %{$v1}) {
-        return $FALSE
+        return $BOOL_FALSE
             if !exists $v2->{$ek};
-        return $FALSE
+        return $BOOL_FALSE
             if !$v1->{$ek}->[1]->equal_repr({
                 'other' => $v2->[1]->{$ek} });
     }
-    return $TRUE;
+    return $BOOL_TRUE;
 }
 
 ###########################################################################
@@ -2156,7 +2225,7 @@ sub as_perl {
 
 sub _equal_repr {
     my ($self, $other) = @_;
-    return $FALSE
+    return $BOOL_FALSE
         if !$self->{$ATTR_UPD_PARAMS}->equal_repr({
                 'other' => $other->{$ATTR_UPD_PARAMS} })
             or !$self->{$ATTR_RO_PARAMS}->equal_repr({
@@ -2165,13 +2234,13 @@ sub _equal_repr {
                 'other' => $other->{$ATTR_VARS} });
     my $v1 = $self->{$ATTR_STMTS};
     my $v2 = $other->{$ATTR_STMTS};
-    return $FALSE
+    return $BOOL_FALSE
         if @{$v2} != @{$v1};
     for my $i (0..$#{$v1}) {
-        return $FALSE
+        return $BOOL_FALSE
             if !$v1->[$i]->equal_repr({ 'other' => $v2->[$i] });
     }
-    return $TRUE;
+    return $BOOL_TRUE;
 }
 
 ###########################################################################
@@ -2225,19 +2294,20 @@ It also describes the same-number versions for Perl 5 of [...].
 
 I<This documentation is pending.>
 
-    use Muldis::DB::AST qw(newBoolLit newTextLit newBlobLit newIntLit
-        newTupleSel newQuasiTupleSel newRelationSel newQuasiRelationSel
-        newDefault newTreat newVarInvo newFuncInvo newProcInvo
-        newFuncReturn newProcReturn newEntityName newTypeInvoNQ
+    use Muldis::DB::AST qw(newBoolLit newOrderLit newIntLit newBlobLit
+        newTextLit newTupleSel newQuasiTupleSel newRelationSel
+        newQuasiRelationSel newDefault newTreat newVarInvo newFuncInvo
+        newProcInvo newFuncReturn newProcReturn newEntityName newTypeInvoNQ
         newTypeInvoAQ newTypeDictNQ newTypeDictAQ newExprDict newFuncDecl
-        newProcDecl newHostGateRtn newSetSel newQuasiSetSel newSeqSel
-        newQuasiSeqSel newBagSel newQuasiBagSel newMaybeSel
-        newQuasiMaybeSel);
+        newProcDecl newHostGateRtn newSetSel newQuasiSetSel newMaybeSel
+        newQuasiMaybeSel newSeqSel newQuasiSeqSel newBagSel
+        newQuasiBagSel);
 
     my $truth_value = newBoolLit({ 'v' => (2 + 2 == 4) });
-    my $planetoid = newTextLit({ 'v' => 'Ceres' });
-    my $package = newBlobLit({ 'v' => (pack 'H2', 'P') });
+    my $direction = newOrderLit({ 'v' => (5 <=> 7) });
     my $answer = newIntLit({ 'v' => 42 });
+    my $package = newBlobLit({ 'v' => (pack 'H2', 'P') });
+    my $planetoid = newTextLit({ 'v' => 'Ceres' });
 
 I<This documentation is pending.>
 
@@ -2261,9 +2331,10 @@ will be added in the future), which are visually arranged here in their
         Muldis::DB::AST::Expr (dummy role)
             Muldis::DB::AST::Lit (dummy role)
                 Muldis::DB::AST::BoolLit
-                Muldis::DB::AST::TextLit
-                Muldis::DB::AST::BlobLit
+                Muldis::DB::AST::OrderLit
                 Muldis::DB::AST::IntLit
+                Muldis::DB::AST::BlobLit
+                Muldis::DB::AST::TextLit
             Muldis::DB::AST::_Tuple (implementing role)
                 Muldis::DB::AST::TupleSel
                 Muldis::DB::AST::QuasiTupleSel
@@ -2418,7 +2489,11 @@ value is undefined.
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::AST::TextLit Class
+=head2 The Muldis::DB::AST::OrderLit Class
+
+I<This documentation is pending.>
+
+=head2 The Muldis::DB::AST::IntLit Class
 
 I<This documentation is pending.>
 
@@ -2426,7 +2501,7 @@ I<This documentation is pending.>
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::AST::IntLit Class
+=head2 The Muldis::DB::AST::TextLit Class
 
 I<This documentation is pending.>
 

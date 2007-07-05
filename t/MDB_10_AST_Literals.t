@@ -5,7 +5,8 @@ use warnings FATAL => 'all';
 
 use Test::More;
 
-use Muldis::DB::AST qw(newBoolLit newTextLit newBlobLit newIntLit);
+use Muldis::DB::AST
+    qw(newBoolLit newOrderLit newIntLit newBlobLit newTextLit);
 
 main();
 
@@ -18,9 +19,10 @@ sub main {
     print "#### Starting test of Muldis::DB::AST Literals ####\n";
 
     test_BoolLit();
-    test_TextLit();
-    test_BlobLit();
+    test_OrderLit();
     test_IntLit();
+    test_BlobLit();
+    test_TextLit();
 
     print "#### Finished test of Muldis::DB::AST Literals ####\n";
 
@@ -70,85 +72,7 @@ sub test_BoolLit {
 
 ######################################################################
 
-sub test_TextLit {
-
-    my ($in, $node, $out);
-
-    $in = undef;
-    eval {
-        $node = newTextLit({ 'v' => $in });
-    };
-    ok( $@, q{TextLit rejects invalid payload undef} );
-
-    $in = '';
-    $node = newTextLit({ 'v' => $in });
-    pass( q{TextLit accepts valid payload ''} );
-    isa_ok( $node, 'Muldis::DB::AST::TextLit' );
-    $out = $node->v();
-    is( $out, $in, q{TextLit preserves valid payload} );
-
-    $in = 'Ceres';
-    $node = newTextLit({ 'v' => $in });
-    pass( q{TextLit accepts valid payload ASCII 'Ceres'} );
-    isa_ok( $node, 'Muldis::DB::AST::TextLit' );
-    $out = $node->v();
-    is( $out, $in, q{TextLit preserves valid payload} );
-
-    $in = 'サンプル';
-    $node = newTextLit({ 'v' => $in });
-    pass( q{TextLit accepts valid payload Unicode 'サンプル'} );
-    isa_ok( $node, 'Muldis::DB::AST::TextLit' );
-    $out = $node->v();
-    is( $out, $in, q{TextLit preserves valid payload} );
-
-    $in = pack 'H2', '\xCC';
-    eval {
-        $node = newTextLit({ 'v' => $in });
-    };
-    ok( $@, q{TextLit rejects invalid payload pack 'H2', '\xCC'} );
-
-    return;
-}
-
-######################################################################
-
-sub test_BlobLit {
-
-    my ($in, $node, $out);
-
-    $in = undef;
-    eval {
-        $node = newBlobLit({ 'v' => $in });
-    };
-    ok( $@, q{BlobLit rejects invalid payload undef} );
-
-    $in = '';
-    $node = newBlobLit({ 'v' => $in });
-    pass( q{BlobLit accepts valid payload ''} );
-    isa_ok( $node, 'Muldis::DB::AST::BlobLit' );
-    $out = $node->v();
-    is( $out, $in, q{BlobLit preserves valid payload} );
-
-    $in = 'Ceres';
-    $node = newBlobLit({ 'v' => $in });
-    pass( q{BlobLit accepts valid payload ASCII 'Ceres'} );
-    isa_ok( $node, 'Muldis::DB::AST::BlobLit' );
-    $out = $node->v();
-    is( $out, $in, q{BlobLit preserves valid payload} );
-
-    $in = 'サンプル';
-    eval {
-        $node = newBlobLit({ 'v' => $in });
-    };
-    ok( $@, q{BlobLit rejects invalid payload Unicode 'サンプル'} );
-
-    $in = pack 'H2', '\xCC';
-    $node = newBlobLit({ 'v' => $in });
-    pass( q{BlobLit accepts valid payload pack 'H2', '\xCC'} );
-    isa_ok( $node, 'Muldis::DB::AST::BlobLit' );
-    $out = $node->v();
-    is( $out, $in, q{BlobLit preserves valid payload} );
-
+sub test_OrderLit {
     return;
 }
 
@@ -266,6 +190,90 @@ sub test_IntLit {
         $node = newIntLit({ 'v' => $in });
     };
     ok( $@, q{IntLit rejects invalid payload '4.5'} );
+
+    return;
+}
+
+######################################################################
+
+sub test_BlobLit {
+
+    my ($in, $node, $out);
+
+    $in = undef;
+    eval {
+        $node = newBlobLit({ 'v' => $in });
+    };
+    ok( $@, q{BlobLit rejects invalid payload undef} );
+
+    $in = '';
+    $node = newBlobLit({ 'v' => $in });
+    pass( q{BlobLit accepts valid payload ''} );
+    isa_ok( $node, 'Muldis::DB::AST::BlobLit' );
+    $out = $node->v();
+    is( $out, $in, q{BlobLit preserves valid payload} );
+
+    $in = 'Ceres';
+    $node = newBlobLit({ 'v' => $in });
+    pass( q{BlobLit accepts valid payload ASCII 'Ceres'} );
+    isa_ok( $node, 'Muldis::DB::AST::BlobLit' );
+    $out = $node->v();
+    is( $out, $in, q{BlobLit preserves valid payload} );
+
+    $in = 'サンプル';
+    eval {
+        $node = newBlobLit({ 'v' => $in });
+    };
+    ok( $@, q{BlobLit rejects invalid payload Unicode 'サンプル'} );
+
+    $in = pack 'H2', '\xCC';
+    $node = newBlobLit({ 'v' => $in });
+    pass( q{BlobLit accepts valid payload pack 'H2', '\xCC'} );
+    isa_ok( $node, 'Muldis::DB::AST::BlobLit' );
+    $out = $node->v();
+    is( $out, $in, q{BlobLit preserves valid payload} );
+
+    return;
+}
+
+######################################################################
+
+sub test_TextLit {
+
+    my ($in, $node, $out);
+
+    $in = undef;
+    eval {
+        $node = newTextLit({ 'v' => $in });
+    };
+    ok( $@, q{TextLit rejects invalid payload undef} );
+
+    $in = '';
+    $node = newTextLit({ 'v' => $in });
+    pass( q{TextLit accepts valid payload ''} );
+    isa_ok( $node, 'Muldis::DB::AST::TextLit' );
+    $out = $node->v();
+    is( $out, $in, q{TextLit preserves valid payload} );
+
+    $in = 'Ceres';
+    $node = newTextLit({ 'v' => $in });
+    pass( q{TextLit accepts valid payload ASCII 'Ceres'} );
+    isa_ok( $node, 'Muldis::DB::AST::TextLit' );
+    $out = $node->v();
+    is( $out, $in, q{TextLit preserves valid payload} );
+
+    $in = 'サンプル';
+    $node = newTextLit({ 'v' => $in });
+    pass( q{TextLit accepts valid payload Unicode 'サンプル'} );
+    isa_ok( $node, 'Muldis::DB::AST::TextLit' );
+    $out = $node->v();
+    is( $out, $in, q{TextLit preserves valid payload} );
+
+    $in = pack 'H2', '\xCC';
+    eval {
+        $node = newTextLit({ 'v' => $in });
+    };
+    ok( $@, q{TextLit rejects invalid payload pack 'H2', '\xCC'} );
 
     return;
 }

@@ -13,9 +13,10 @@ use warnings FATAL => 'all';
 
     use Carp;
 
-    use Muldis::DB::Engine::Example::PhysType qw(ptBool ptText ptBlob ptInt
-        ptTuple ptQuasiTuple ptRelation ptQuasiRelation ptTypeInvoNQ
-        ptTypeInvoAQ ptTypeDictNQ ptTypeDictAQ ptValueDictNQ ptTypeDictAQ);
+    use Muldis::DB::Engine::Example::PhysType qw(ptBool ptOrder ptInt
+        ptBlob ptText ptTuple ptQuasiTuple ptRelation ptQuasiRelation
+        ptTypeInvoNQ ptTypeInvoAQ ptTypeDictNQ ptTypeDictAQ ptValueDictNQ
+        ptTypeDictAQ);
 
     my $OPS = { # Hash
 
@@ -24,10 +25,7 @@ use warnings FATAL => 'all';
 ## sys.type.Bool ##
 
 
-## sys.type.Text ##
-
-
-## sys.type.Blob ##
+## sys.type.Order ##
 
 
 ## sys.type.Int ##
@@ -113,6 +111,12 @@ use warnings FATAL => 'all';
     my ($radix, $exponent) = @{$ro_args}{'radix', 'exponent'};
     return ptInt({ 'v' => $radix->v() ** $exponent->v() });
 },
+
+## sys.type.Blob ##
+
+
+## sys.type.Text ##
+
 
 ## sys.type.Tuple ##
 

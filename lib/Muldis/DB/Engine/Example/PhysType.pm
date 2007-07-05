@@ -6,10 +6,14 @@ use warnings FATAL => 'all';
 ###########################################################################
 ###########################################################################
 
-my $EMPTY_STR = q{};
+my $BOOL_FALSE = (1 == 0);
+my $BOOL_TRUE  = (1 == 1);
 
-my $FALSE = (1 == 0);
-my $TRUE  = (1 == 1);
+my $ORDER_INCREASE = (1 <=> 2);
+my $ORDER_SAME     = (1 <=> 1);
+my $ORDER_DECREASE = (2 <=> 1);
+
+my $EMPTY_STR = q{};
 
 ###########################################################################
 ###########################################################################
@@ -20,7 +24,7 @@ my $TRUE  = (1 == 1);
 
     use base 'Exporter';
     our @EXPORT_OK = qw(
-        ptBool ptText ptBlob ptInt
+        ptBool ptOrder ptInt ptBlob ptText
         ptTuple ptQuasiTuple
         ptRelation ptQuasiRelation
         ptTypeInvoNQ ptTypeInvoAQ
@@ -36,10 +40,16 @@ sub ptBool {
     return Muldis::DB::Engine::Example::PhysType::Bool->new({ 'v' => $v });
 }
 
-sub ptText {
+sub ptOrder {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return Muldis::DB::Engine::Example::PhysType::Text->new({ 'v' => $v });
+    return Muldis::DB::Engine::Example::PhysType::Order->new({ 'v' => $v });
+}
+
+sub ptInt {
+    my ($args) = @_;
+    my ($v) = @{$args}{'v'};
+    return Muldis::DB::Engine::Example::PhysType::Int->new({ 'v' => $v });
 }
 
 sub ptBlob {
@@ -48,10 +58,10 @@ sub ptBlob {
     return Muldis::DB::Engine::Example::PhysType::Blob->new({ 'v' => $v });
 }
 
-sub ptInt {
+sub ptText {
     my ($args) = @_;
     my ($v) = @{$args}{'v'};
-    return Muldis::DB::Engine::Example::PhysType::Int->new({ 'v' => $v });
+    return Muldis::DB::Engine::Example::PhysType::Text->new({ 'v' => $v });
 }
 
 sub ptTuple {
@@ -219,7 +229,7 @@ sub as_ast {
 sub equal {
     my ($self, $args) = @_;
     my ($other) = @{$args}{'other'};
-    return $FALSE
+    return $BOOL_FALSE
         if blessed $other ne blessed $self;
     return $self->_equal( $other );
 }
@@ -242,7 +252,7 @@ sub _equal {
     use Muldis::DB::AST qw(newBoolLit);
 
     my $ATTR_V = 'v';
-        # A p5 Scalar that equals $FALSE|$TRUE.
+        # A p5 Scalar that equals $BOOL_FALSE|$BOOL_TRUE.
 
     my $ATTR_WHICH = 'which';
 
@@ -299,14 +309,13 @@ sub v {
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::Text; # class
+{ package Muldis::DB::Engine::Example::PhysType::Order; # class
     use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
-    use Muldis::DB::AST qw(newTextLit);
+    use Muldis::DB::AST qw(newOrderLit);
 
     my $ATTR_V = 'v';
-        # A p5 Scalar that is a text-mode string;
-        # it either has true utf8 flag or is only 7-bit bytes.
+        # A p5 Scalar that equals $ORDER_(INCREASE|SAME|DECREASE).
 
     my $ATTR_WHICH = 'which';
 
@@ -322,15 +331,15 @@ sub _build {
 ###########################################################################
 
 sub root_type {
-    return 'sys.type.Text';
+    return 'sys.type.Order';
 }
 
 sub which {
     my ($self) = @_;
     if (!defined $self->{$ATTR_WHICH}) {
-        my $s = $self->{$ATTR_V};
+        my $s = ''.$self->{$ATTR_V};
         my $len_s = length $s;
-        $self->{$ATTR_WHICH} = "13 sys.type.Text $len_s $s";
+        $self->{$ATTR_WHICH} = "14 sys.type.Order $len_s $s";
     }
     return $self->{$ATTR_WHICH};
 }
@@ -339,7 +348,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newTextLit({ 'v' => $self->{$ATTR_V} });
+    return newOrderLit({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -358,7 +367,72 @@ sub v {
 
 ###########################################################################
 
-} # class Muldis::DB::Engine::Example::PhysType::Text
+} # class Muldis::DB::Engine::Example::PhysType::Order
+
+###########################################################################
+###########################################################################
+
+{ package Muldis::DB::Engine::Example::PhysType::Int; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::Value';
+
+    use Muldis::DB::AST qw(newIntLit);
+
+    use bigint; # this is experimental
+
+    my $ATTR_V = 'v';
+        # A p5 Scalar that is a Perl integer or BigInt or canonical string.
+
+    my $ATTR_WHICH = 'which';
+
+###########################################################################
+
+sub _build {
+    my ($self, $args) = @_;
+    my ($v) = @{$args}{'v'};
+    $self->{$ATTR_V} = $v;
+    return;
+}
+
+###########################################################################
+
+sub root_type {
+    return 'sys.type.Int';
+}
+
+sub which {
+    my ($self) = @_;
+    if (!defined $self->{$ATTR_WHICH}) {
+        my $s = ''.$self->{$ATTR_V};
+        my $len_s = length $s;
+        $self->{$ATTR_WHICH} = "12 sys.type.Int $len_s $s";
+    }
+    return $self->{$ATTR_WHICH};
+}
+
+###########################################################################
+
+sub as_ast {
+    my ($self) = @_;
+    return newIntLit({ 'v' => $self->{$ATTR_V} });
+}
+
+###########################################################################
+
+sub _equal {
+    my ($self, $other) = @_;
+    return $other->{$ATTR_V} == $self->{$ATTR_V};
+}
+
+###########################################################################
+
+sub v {
+    my ($self) = @_;
+    return $self->{$ATTR_V};
+}
+
+###########################################################################
+
+} # class Muldis::DB::Engine::Example::PhysType::Int
 
 ###########################################################################
 ###########################################################################
@@ -426,15 +500,14 @@ sub v {
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::Int; # class
+{ package Muldis::DB::Engine::Example::PhysType::Text; # class
     use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
-    use Muldis::DB::AST qw(newIntLit);
-
-    use bigint; # this is experimental
+    use Muldis::DB::AST qw(newTextLit);
 
     my $ATTR_V = 'v';
-        # A p5 Scalar that is a Perl integer or BigInt or canonical string.
+        # A p5 Scalar that is a text-mode string;
+        # it either has true utf8 flag or is only 7-bit bytes.
 
     my $ATTR_WHICH = 'which';
 
@@ -450,15 +523,15 @@ sub _build {
 ###########################################################################
 
 sub root_type {
-    return 'sys.type.Int';
+    return 'sys.type.Text';
 }
 
 sub which {
     my ($self) = @_;
     if (!defined $self->{$ATTR_WHICH}) {
-        my $s = ''.$self->{$ATTR_V};
+        my $s = $self->{$ATTR_V};
         my $len_s = length $s;
-        $self->{$ATTR_WHICH} = "12 sys.type.Int $len_s $s";
+        $self->{$ATTR_WHICH} = "13 sys.type.Text $len_s $s";
     }
     return $self->{$ATTR_WHICH};
 }
@@ -467,14 +540,14 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newIntLit({ 'v' => $self->{$ATTR_V} });
+    return newTextLit({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
 
 sub _equal {
     my ($self, $other) = @_;
-    return $other->{$ATTR_V} == $self->{$ATTR_V};
+    return $other->{$ATTR_V} eq $self->{$ATTR_V};
 }
 
 ###########################################################################
@@ -486,7 +559,7 @@ sub v {
 
 ###########################################################################
 
-} # class Muldis::DB::Engine::Example::PhysType::Int
+} # class Muldis::DB::Engine::Example::PhysType::Text
 
 ###########################################################################
 ###########################################################################
@@ -603,7 +676,7 @@ sub attr_value {
 
 { package Muldis::DB::Engine::Example::PhysType::Tuple; # class
     use base 'Muldis::DB::Engine::Example::PhysType::_Tuple';
-    sub _allows_quasi { return $FALSE; }
+    sub _allows_quasi { return $BOOL_FALSE; }
 } # class Muldis::DB::Engine::Example::PhysType::Tuple
 
 ###########################################################################
@@ -611,7 +684,7 @@ sub attr_value {
 
 { package Muldis::DB::Engine::Example::PhysType::QuasiTuple; # class
     use base 'Muldis::DB::Engine::Example::PhysType::_Tuple';
-    sub _allows_quasi { return $TRUE; }
+    sub _allows_quasi { return $BOOL_TRUE; }
 } # class Muldis::DB::Engine::Example::PhysType::QuasiTuple
 
 ###########################################################################
@@ -682,18 +755,18 @@ sub as_ast {
 
 sub _equal {
     my ($self, $other) = @_;
-    return $FALSE
+    return $BOOL_FALSE
         if !$self->{$ATTR_HEADING}->equal({
             'other' => $other->{$ATTR_HEADING} });
-    return $FALSE
+    return $BOOL_FALSE
         if @{$other->{$ATTR_BODY}} != @{$self->{$ATTR_BODY}};
     my $v1 = $self->{$ATTR_KEY_OVER_ALL};
     my $v2 = $other->{$ATTR_KEY_OVER_ALL};
     for my $ek (keys %{$v1}) {
-        return $FALSE
+        return $BOOL_FALSE
             if !exists $v2->{$ek};
     }
-    return $TRUE;
+    return $BOOL_TRUE;
 }
 
 ###########################################################################
@@ -753,7 +826,7 @@ sub attr_values {
 
 { package Muldis::DB::Engine::Example::PhysType::Relation; # class
     use base 'Muldis::DB::Engine::Example::PhysType::_Relation';
-    sub _allows_quasi { return $FALSE; }
+    sub _allows_quasi { return $BOOL_FALSE; }
 } # class Muldis::DB::Engine::Example::PhysType::Relation
 
 ###########################################################################
@@ -761,7 +834,7 @@ sub attr_values {
 
 { package Muldis::DB::Engine::Example::PhysType::QuasiRelation; # class
     use base 'Muldis::DB::Engine::Example::PhysType::_Relation';
-    sub _allows_quasi { return $TRUE; }
+    sub _allows_quasi { return $BOOL_TRUE; }
 } # class Muldis::DB::Engine::Example::PhysType::QuasiRelation
 
 ###########################################################################
@@ -834,7 +907,7 @@ sub _equal {
     my ($self, $other) = @_;
     my $kind = $self->{$ATTR_KIND};
     my $spec = $self->{$ATTR_SPEC};
-    return $FALSE
+    return $BOOL_FALSE
         if $other->{$ATTR_KIND} ne $kind;
     return ($kind eq 'Any' or $kind eq 'Scalar')
             ? $other->{$ATTR_SPEC} eq $spec
@@ -862,7 +935,7 @@ sub spec {
 
 { package Muldis::DB::Engine::Example::PhysType::TypeInvoNQ; # class
     use base 'Muldis::DB::Engine::Example::PhysType::TypeInvo';
-    sub _allows_quasi { return $FALSE; }
+    sub _allows_quasi { return $BOOL_FALSE; }
 } # class Muldis::DB::Engine::Example::PhysType::TypeInvoNQ
 
 ###########################################################################
@@ -870,7 +943,7 @@ sub spec {
 
 { package Muldis::DB::Engine::Example::PhysType::TypeInvoAQ; # class
     use base 'Muldis::DB::Engine::Example::PhysType::TypeInvo';
-    sub _allows_quasi { return $TRUE; }
+    sub _allows_quasi { return $BOOL_TRUE; }
 } # class Muldis::DB::Engine::Example::PhysType::TypeInvoAQ
 
 ###########################################################################
@@ -942,15 +1015,15 @@ sub _equal {
     my ($self, $other) = @_;
     my $v1 = $self->{$ATTR_MAP};
     my $v2 = $other->{$ATTR_MAP};
-    return $FALSE
+    return $BOOL_FALSE
         if keys %{$v2} != keys %{$v1};
     for my $ek (keys %{$v1}) {
-        return $FALSE
+        return $BOOL_FALSE
             if !exists $v2->{$ek};
-        return $FALSE
+        return $BOOL_FALSE
             if !$v1->{$ek}->equal({ 'other' => $v2->{$ek} });
     }
-    return $TRUE;
+    return $BOOL_TRUE;
 }
 
 ###########################################################################
@@ -988,7 +1061,7 @@ sub elem_value {
 
 { package Muldis::DB::Engine::Example::PhysType::TypeDictNQ; # class
     use base 'Muldis::DB::Engine::Example::PhysType::TypeDict';
-    sub _allows_quasi { return $FALSE; }
+    sub _allows_quasi { return $BOOL_FALSE; }
 } # class Muldis::DB::Engine::Example::PhysType::TypeDictNQ
 
 ###########################################################################
@@ -996,7 +1069,7 @@ sub elem_value {
 
 { package Muldis::DB::Engine::Example::PhysType::TypeDictAQ; # class
     use base 'Muldis::DB::Engine::Example::PhysType::TypeDict';
-    sub _allows_quasi { return $TRUE; }
+    sub _allows_quasi { return $BOOL_TRUE; }
 } # class Muldis::DB::Engine::Example::PhysType::TypeDictAQ
 
 ###########################################################################
@@ -1063,15 +1136,15 @@ sub _equal {
     my ($self, $other) = @_;
     my $v1 = $self->{$ATTR_MAP};
     my $v2 = $other->{$ATTR_MAP};
-    return $FALSE
+    return $BOOL_FALSE
         if keys %{$v2} != keys %{$v1};
     for my $ek (keys %{$v1}) {
-        return $FALSE
+        return $BOOL_FALSE
             if !exists $v2->{$ek};
-        return $FALSE
+        return $BOOL_FALSE
             if !$v1->{$ek}->equal({ 'other' => $v2->{$ek} });
     }
-    return $TRUE;
+    return $BOOL_TRUE;
 }
 
 ###########################################################################
@@ -1109,7 +1182,7 @@ sub elem_value {
 
 { package Muldis::DB::Engine::Example::PhysType::ValueDictNQ; # class
     use base 'Muldis::DB::Engine::Example::PhysType::ValueDict';
-    sub _allows_quasi { return $FALSE; }
+    sub _allows_quasi { return $BOOL_FALSE; }
 } # class Muldis::DB::Engine::Example::PhysType::ValueDictNQ
 
 ###########################################################################
@@ -1117,7 +1190,7 @@ sub elem_value {
 
 { package Muldis::DB::Engine::Example::PhysType::ValueDictAQ; # class
     use base 'Muldis::DB::Engine::Example::PhysType::ValueDict';
-    sub _allows_quasi { return $TRUE; }
+    sub _allows_quasi { return $BOOL_TRUE; }
 } # class Muldis::DB::Engine::Example::PhysType::ValueDictAQ
 
 ###########################################################################
