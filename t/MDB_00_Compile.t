@@ -11,9 +11,9 @@ use_ok( 'Muldis::DB::Literal' );
 is( $Muldis::DB::Literal::VERSION, 0.001000,
     'Muldis::DB::Literal is the correct version' );
 
-use_ok( 'Muldis::DB' );
-is( $Muldis::DB::VERSION, 0.001000,
-    'Muldis::DB is the correct version' );
+use_ok( 'Muldis::DB::Interface' );
+is( $Muldis::DB::Interface::VERSION, 0.001000,
+    'Muldis::DB::Interface is the correct version' );
 
 use_ok( 'Muldis::DB::Validator' );
 is( $Muldis::DB::Validator::VERSION, 0.001000,

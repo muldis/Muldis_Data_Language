@@ -3,7 +3,7 @@ use utf8;
 use strict;
 use warnings FATAL => 'all';
 
-use Muldis::DB;
+use Muldis::DB::Interface;
 
 ###########################################################################
 ###########################################################################
@@ -28,7 +28,7 @@ sub main {
         "#### Muldis::DB::Validator starting test of $engine_name ####\n";
 
     # Instantiate a Muldis::DB DBMS / virtual machine.
-    my $dbms = Muldis::DB::new_dbms({
+    my $dbms = Muldis::DB::Interface::new_dbms({
         'engine_name' => $engine_name, 'dbms_config' => $dbms_config });
     isa_ok( $dbms, 'Muldis::DB::Interface::DBMS' );
 
