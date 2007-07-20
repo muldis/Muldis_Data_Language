@@ -101,7 +101,7 @@ sub _build {
 
     $self->{$ATTR_DBMS}      = $dbms;
     $self->{$ATTR_DECL_TYPE} = $decl_type;
-    $self->{$ATTR_VAL_AST}   = Muldis::DB::AST::BoolLit->new({ 'v' => (1 == 0) });
+    $self->{$ATTR_VAL_AST}   = Muldis::DB::Literal::Bool->new({ 'v' => (1 == 0) });
         # TODO: make default val of decl type
 
     return;

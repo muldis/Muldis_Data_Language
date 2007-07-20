@@ -3,7 +3,7 @@ use utf8;
 use strict;
 use warnings FATAL => 'all';
 
-use Muldis::DB::AST;
+use Muldis::DB::Literal;
 
 ###########################################################################
 ###########################################################################
@@ -285,7 +285,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return Muldis::DB::AST::BoolLit->new({ 'v' => $self->{$ATTR_V} });
+    return Muldis::DB::Literal::Bool->new({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -346,7 +346,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return Muldis::DB::AST::OrderLit->new({ 'v' => $self->{$ATTR_V} });
+    return Muldis::DB::Literal::Order->new({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -409,7 +409,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return Muldis::DB::AST::IntLit->new({ 'v' => $self->{$ATTR_V} });
+    return Muldis::DB::Literal::Int->new({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -470,7 +470,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return Muldis::DB::AST::BlobLit->new({ 'v' => $self->{$ATTR_V} });
+    return Muldis::DB::Literal::Blob->new({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -532,7 +532,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return Muldis::DB::AST::TextLit->new({ 'v' => $self->{$ATTR_V} });
+    return Muldis::DB::Literal::Text->new({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -605,7 +605,7 @@ sub as_ast {
     my $call_args = { 'heading' => $self->{$ATTR_HEADING}->as_ast(),
         'body' => $self->{$ATTR_BODY}->as_ast() };
     return $self->_allows_quasi()
-        ? Muldis::DB::AST::QuasiTupleSel->new( $call_args ) : Muldis::DB::AST::TupleSel->new( $call_args );
+        ? Muldis::DB::Literal::QuasiTupleSel->new( $call_args ) : Muldis::DB::Literal::TupleSel->new( $call_args );
 }
 
 ###########################################################################
@@ -736,7 +736,7 @@ sub as_ast {
     my $call_args = { 'heading' => $self->{$ATTR_HEADING}->as_ast(),
         'body' => [map { $_->as_ast() } @{$self->{$ATTR_BODY}}] };
     return $self->_allows_quasi()
-        ? Muldis::DB::AST::QuasiRelationSel->new( $call_args ) : Muldis::DB::AST::RelationSel->new( $call_args );
+        ? Muldis::DB::Literal::QuasiRelationSel->new( $call_args ) : Muldis::DB::Literal::RelationSel->new( $call_args );
 }
 
 ###########################################################################
@@ -881,10 +881,10 @@ sub as_ast {
     my $spec = $self->{$ATTR_SPEC};
     my $call_args = { 'kind' => $kind,
         'spec' => ($kind eq 'Any' ? $spec
-            : $kind eq 'Scalar' ? Muldis::DB::AST::EntityName->new({ 'text' => $spec })
+            : $kind eq 'Scalar' ? Muldis::DB::Literal::EntityName->new({ 'text' => $spec })
             : $spec->as_ast()) };
     return $self->_allows_quasi()
-        ? Muldis::DB::AST::TypeInvoAQ->new( $call_args ) : Muldis::DB::AST::TypeInvoNQ->new( $call_args );
+        ? Muldis::DB::Literal::TypeInvoAQ->new( $call_args ) : Muldis::DB::Literal::TypeInvoNQ->new( $call_args );
 }
 
 ###########################################################################
@@ -987,10 +987,10 @@ sub as_ast {
     my ($self) = @_;
     my $map = $self->{$ATTR_MAP};
     my $call_args = { 'map' => [map {
-            [Muldis::DB::AST::EntityName->new({ 'text' => $_ }), $map->{$_}->as_ast()],
+            [Muldis::DB::Literal::EntityName->new({ 'text' => $_ }), $map->{$_}->as_ast()],
         } keys %{$map}] };
     return $self->_allows_quasi()
-        ? Muldis::DB::AST::TypeDictAQ->new( $call_args ) : Muldis::DB::AST::TypeDictNQ->new( $call_args );
+        ? Muldis::DB::Literal::TypeDictAQ->new( $call_args ) : Muldis::DB::Literal::TypeDictNQ->new( $call_args );
 }
 
 ###########################################################################
@@ -1107,8 +1107,8 @@ sub which {
 sub as_ast {
     my ($self) = @_;
     my $map = $self->{$ATTR_MAP};
-    return Muldis::DB::AST::ExprDict->new({ 'map' => [map {
-            [Muldis::DB::AST::EntityName->new({ 'text' => $_ }), $map->{$_}->as_ast()],
+    return Muldis::DB::Literal::ExprDict->new({ 'map' => [map {
+            [Muldis::DB::Literal::EntityName->new({ 'text' => $_ }), $map->{$_}->as_ast()],
         } keys %{$map}] });
 }
 
