@@ -82,8 +82,6 @@ sub prepare {
 
     use Carp;
 
-    use Muldis::DB::AST qw(newBoolLit);
-
     my $ATTR_DBMS      = 'dbms';
     my $ATTR_DECL_TYPE = 'decl_type';
     my $ATTR_VAL_AST   = 'val_ast';
@@ -103,7 +101,7 @@ sub _build {
 
     $self->{$ATTR_DBMS}      = $dbms;
     $self->{$ATTR_DECL_TYPE} = $decl_type;
-    $self->{$ATTR_VAL_AST}   = newBoolLit({ 'v' => (1 == 0) });
+    $self->{$ATTR_VAL_AST}   = Muldis::DB::AST::BoolLit->new({ 'v' => (1 == 0) });
         # TODO: make default val of decl type
 
     return;

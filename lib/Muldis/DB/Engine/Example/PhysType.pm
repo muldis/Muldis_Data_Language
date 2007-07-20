@@ -3,6 +3,8 @@ use utf8;
 use strict;
 use warnings FATAL => 'all';
 
+use Muldis::DB::AST;
+
 ###########################################################################
 ###########################################################################
 
@@ -249,8 +251,6 @@ sub _equal {
 { package Muldis::DB::Engine::Example::PhysType::Bool; # class
     use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
-    use Muldis::DB::AST qw(newBoolLit);
-
     my $ATTR_V = 'v';
         # A p5 Scalar that equals $BOOL_FALSE|$BOOL_TRUE.
 
@@ -285,7 +285,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newBoolLit({ 'v' => $self->{$ATTR_V} });
+    return Muldis::DB::AST::BoolLit->new({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -311,8 +311,6 @@ sub v {
 
 { package Muldis::DB::Engine::Example::PhysType::Order; # class
     use base 'Muldis::DB::Engine::Example::PhysType::Value';
-
-    use Muldis::DB::AST qw(newOrderLit);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that equals $ORDER_(INCREASE|SAME|DECREASE).
@@ -348,7 +346,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newOrderLit({ 'v' => $self->{$ATTR_V} });
+    return Muldis::DB::AST::OrderLit->new({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -374,8 +372,6 @@ sub v {
 
 { package Muldis::DB::Engine::Example::PhysType::Int; # class
     use base 'Muldis::DB::Engine::Example::PhysType::Value';
-
-    use Muldis::DB::AST qw(newIntLit);
 
     use bigint; # this is experimental
 
@@ -413,7 +409,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newIntLit({ 'v' => $self->{$ATTR_V} });
+    return Muldis::DB::AST::IntLit->new({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -439,8 +435,6 @@ sub v {
 
 { package Muldis::DB::Engine::Example::PhysType::Blob; # class
     use base 'Muldis::DB::Engine::Example::PhysType::Value';
-
-    use Muldis::DB::AST qw(newBlobLit);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that is a byte-mode string; it has false utf8 flag.
@@ -476,7 +470,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newBlobLit({ 'v' => $self->{$ATTR_V} });
+    return Muldis::DB::AST::BlobLit->new({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -502,8 +496,6 @@ sub v {
 
 { package Muldis::DB::Engine::Example::PhysType::Text; # class
     use base 'Muldis::DB::Engine::Example::PhysType::Value';
-
-    use Muldis::DB::AST qw(newTextLit);
 
     my $ATTR_V = 'v';
         # A p5 Scalar that is a text-mode string;
@@ -540,7 +532,7 @@ sub which {
 
 sub as_ast {
     my ($self) = @_;
-    return newTextLit({ 'v' => $self->{$ATTR_V} });
+    return Muldis::DB::AST::TextLit->new({ 'v' => $self->{$ATTR_V} });
 }
 
 ###########################################################################
@@ -569,8 +561,6 @@ sub v {
 
     use Carp;
     use Scalar::Util qw(blessed);
-
-    use Muldis::DB::AST qw(newTupleSel newQuasiTupleSel);
 
     my $ATTR_HEADING = 'heading';
     my $ATTR_BODY    = 'body';
@@ -615,7 +605,7 @@ sub as_ast {
     my $call_args = { 'heading' => $self->{$ATTR_HEADING}->as_ast(),
         'body' => $self->{$ATTR_BODY}->as_ast() };
     return $self->_allows_quasi()
-        ? newQuasiTupleSel( $call_args ) : newTupleSel( $call_args );
+        ? Muldis::DB::AST::QuasiTupleSel->new( $call_args ) : Muldis::DB::AST::TupleSel->new( $call_args );
 }
 
 ###########################################################################
@@ -696,8 +686,6 @@ sub attr_value {
     use Carp;
     use Scalar::Util qw(blessed);
 
-    use Muldis::DB::AST qw(newRelationSel newQuasiRelationSel);
-
     my $ATTR_HEADING      = 'heading';
     my $ATTR_BODY         = 'body';
     my $ATTR_KEY_OVER_ALL = 'key_over_all';
@@ -748,7 +736,7 @@ sub as_ast {
     my $call_args = { 'heading' => $self->{$ATTR_HEADING}->as_ast(),
         'body' => [map { $_->as_ast() } @{$self->{$ATTR_BODY}}] };
     return $self->_allows_quasi()
-        ? newQuasiRelationSel( $call_args ) : newRelationSel( $call_args );
+        ? Muldis::DB::AST::QuasiRelationSel->new( $call_args ) : Muldis::DB::AST::RelationSel->new( $call_args );
 }
 
 ###########################################################################
@@ -846,8 +834,6 @@ sub attr_values {
     use Carp;
     use Scalar::Util qw(blessed);
 
-    use Muldis::DB::AST qw(newEntityName newTypeInvoNQ newTypeInvoAQ);
-
     my $ATTR_KIND = 'kind';
     my $ATTR_SPEC = 'spec';
 
@@ -895,10 +881,10 @@ sub as_ast {
     my $spec = $self->{$ATTR_SPEC};
     my $call_args = { 'kind' => $kind,
         'spec' => ($kind eq 'Any' ? $spec
-            : $kind eq 'Scalar' ? newEntityName({ 'text' => $spec })
+            : $kind eq 'Scalar' ? Muldis::DB::AST::EntityName->new({ 'text' => $spec })
             : $spec->as_ast()) };
     return $self->_allows_quasi()
-        ? newTypeInvoAQ( $call_args ) : newTypeInvoNQ( $call_args );
+        ? Muldis::DB::AST::TypeInvoAQ->new( $call_args ) : Muldis::DB::AST::TypeInvoNQ->new( $call_args );
 }
 
 ###########################################################################
@@ -955,8 +941,6 @@ sub spec {
     use Carp;
     use Scalar::Util qw(blessed);
 
-    use Muldis::DB::AST qw(newEntityName newTypeDictNQ newTypeDictAQ);
-
     my $ATTR_MAP = 'map';
         # A p5 Hash with 0..N elements:
             # Each Hash key is a p5 text-mode string; an attr name.
@@ -1003,10 +987,10 @@ sub as_ast {
     my ($self) = @_;
     my $map = $self->{$ATTR_MAP};
     my $call_args = { 'map' => [map {
-            [newEntityName({ 'text' => $_ }), $map->{$_}->as_ast()],
+            [Muldis::DB::AST::EntityName->new({ 'text' => $_ }), $map->{$_}->as_ast()],
         } keys %{$map}] };
     return $self->_allows_quasi()
-        ? newTypeDictAQ( $call_args ) : newTypeDictNQ( $call_args );
+        ? Muldis::DB::AST::TypeDictAQ->new( $call_args ) : Muldis::DB::AST::TypeDictNQ->new( $call_args );
 }
 
 ###########################################################################
@@ -1081,8 +1065,6 @@ sub elem_value {
     use Carp;
     use Scalar::Util qw(blessed);
 
-    use Muldis::DB::AST qw(newEntityName newExprDict);
-
     my $ATTR_MAP = 'map';
 
     my $ATTR_WHICH = 'which';
@@ -1125,8 +1107,8 @@ sub which {
 sub as_ast {
     my ($self) = @_;
     my $map = $self->{$ATTR_MAP};
-    return newExprDict({ 'map' => [map {
-            [newEntityName({ 'text' => $_ }), $map->{$_}->as_ast()],
+    return Muldis::DB::AST::ExprDict->new({ 'map' => [map {
+            [Muldis::DB::AST::EntityName->new({ 'text' => $_ }), $map->{$_}->as_ast()],
         } keys %{$map}] });
 }
 

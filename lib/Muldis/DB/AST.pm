@@ -36,19 +36,6 @@ my $SCA_TYPE_PINT = Muldis::DB::AST::TypeInvoNQ->new({
 
     use base 'Exporter';
     our @EXPORT_OK = qw(
-        newBoolLit newOrderLit newIntLit newBlobLit newTextLit
-        newTupleSel newQuasiTupleSel
-        newRelationSel newQuasiRelationSel
-        newDefault newTreat
-        newVarInvo newFuncInvo
-        newProcInvo
-        newFuncReturn newProcReturn
-        newEntityName
-        newTypeInvoNQ newTypeInvoAQ
-        newTypeDictNQ newTypeDictAQ
-        newExprDict
-        newFuncDecl newProcDecl
-        newHostGateRtn
         newSetSel newQuasiSetSel
         newMaybeSel newQuasiMaybeSel
         newSeqSel newQuasiSeqSel
@@ -56,164 +43,6 @@ my $SCA_TYPE_PINT = Muldis::DB::AST::TypeInvoNQ->new({
     );
 
     use Carp;
-
-###########################################################################
-
-sub newBoolLit {
-    my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return Muldis::DB::AST::BoolLit->new({ 'v' => $v });
-}
-
-sub newOrderLit {
-    my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return Muldis::DB::AST::OrderLit->new({ 'v' => $v });
-}
-
-sub newIntLit {
-    my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return Muldis::DB::AST::IntLit->new({ 'v' => $v });
-}
-
-sub newBlobLit {
-    my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return Muldis::DB::AST::BlobLit->new({ 'v' => $v });
-}
-
-sub newTextLit {
-    my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return Muldis::DB::AST::TextLit->new({ 'v' => $v });
-}
-
-sub newTupleSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return Muldis::DB::AST::TupleSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newQuasiTupleSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return Muldis::DB::AST::QuasiTupleSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newRelationSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return Muldis::DB::AST::RelationSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newQuasiRelationSel {
-    my ($args) = @_;
-    my ($heading, $body) = @{$args}{'heading', 'body'};
-    return Muldis::DB::AST::QuasiRelationSel->new({
-        'heading' => $heading, 'body' => $body });
-}
-
-sub newDefault {
-    my ($args) = @_;
-    my ($of) = @{$args}{'of'};
-    return Muldis::DB::AST::Default->new({ 'of' => $of });
-}
-
-sub newTreat {
-    my ($args) = @_;
-    my ($as, $v) = @{$args}{'as', 'v'};
-    return Muldis::DB::AST::Treat->new({ 'as' => $as, 'v' => $v });
-}
-
-sub newVarInvo {
-    my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return Muldis::DB::AST::VarInvo->new({ 'v' => $v });
-}
-
-sub newFuncInvo {
-    my ($args) = @_;
-    my ($func, $ro_args) = @{$args}{'func', 'ro_args'};
-    return Muldis::DB::AST::FuncInvo->new({
-        'func' => $func, 'ro_args' => $ro_args });
-}
-
-sub newProcInvo {
-    my ($args) = @_;
-    my ($proc, $upd_args, $ro_args)
-        = @{$args}{'proc', 'upd_args', 'ro_args'};
-    return Muldis::DB::AST::ProcInvo->new({
-        'proc' => $proc, 'upd_args' => $upd_args, 'ro_args' => $ro_args });
-}
-
-sub newFuncReturn {
-    my ($args) = @_;
-    my ($v) = @{$args}{'v'};
-    return Muldis::DB::AST::FuncReturn->new({ 'v' => $v });
-}
-
-sub newProcReturn {
-    return Muldis::DB::AST::ProcReturn->new();
-}
-
-sub newEntityName {
-    my ($args) = @_;
-    my ($text, $seq) = @{$args}{'text', 'seq'};
-    return Muldis::DB::AST::EntityName->new({
-        'text' => $text, 'seq' => $seq });
-}
-
-sub newTypeInvoNQ {
-    my ($args) = @_;
-    my ($kind, $spec) = @{$args}{'kind', 'spec'};
-    return Muldis::DB::AST::TypeInvoNQ->new({
-        'kind' => $kind, 'spec' => $spec });
-}
-
-sub newTypeInvoAQ {
-    my ($args) = @_;
-    my ($kind, $spec) = @{$args}{'kind', 'spec'};
-    return Muldis::DB::AST::TypeInvoAQ->new({
-        'kind' => $kind, 'spec' => $spec });
-}
-
-sub newTypeDictNQ {
-    my ($args) = @_;
-    my ($map) = @{$args}{'map'};
-    return Muldis::DB::AST::TypeDictNQ->new({ 'map' => $map });
-}
-
-sub newTypeDictAQ {
-    my ($args) = @_;
-    my ($map) = @{$args}{'map'};
-    return Muldis::DB::AST::TypeDictAQ->new({ 'map' => $map });
-}
-
-sub newExprDict {
-    my ($args) = @_;
-    my ($map) = @{$args}{'map'};
-    return Muldis::DB::AST::ExprDict->new({ 'map' => $map });
-}
-
-sub newFuncDecl {
-    return Muldis::DB::AST::FuncDecl->new();
-}
-
-sub newProcDecl {
-    return Muldis::DB::AST::ProcDecl->new();
-}
-
-sub newHostGateRtn {
-    my ($args) = @_;
-    my ($upd_params, $ro_params, $vars, $stmts)
-        = @{$args}{'upd_params', 'ro_params', 'vars', 'stmts'};
-    return Muldis::DB::AST::HostGateRtn->new({ 'upd_params' => $upd_params,
-        'ro_params' => $ro_params, 'vars' => $vars, 'stmts' => $stmts });
-}
 
 ###########################################################################
 
@@ -2294,20 +2123,13 @@ It also describes the same-number versions for Perl 5 of [...].
 
 I<This documentation is pending.>
 
-    use Muldis::DB::AST qw(newBoolLit newOrderLit newIntLit newBlobLit
-        newTextLit newTupleSel newQuasiTupleSel newRelationSel
-        newQuasiRelationSel newDefault newTreat newVarInvo newFuncInvo
-        newProcInvo newFuncReturn newProcReturn newEntityName newTypeInvoNQ
-        newTypeInvoAQ newTypeDictNQ newTypeDictAQ newExprDict newFuncDecl
-        newProcDecl newHostGateRtn newSetSel newQuasiSetSel newMaybeSel
-        newQuasiMaybeSel newSeqSel newQuasiSeqSel newBagSel
-        newQuasiBagSel);
+    use Muldis::DB::AST;
 
-    my $truth_value = newBoolLit({ 'v' => (2 + 2 == 4) });
-    my $direction = newOrderLit({ 'v' => (5 <=> 7) });
-    my $answer = newIntLit({ 'v' => 42 });
-    my $package = newBlobLit({ 'v' => (pack 'H2', 'P') });
-    my $planetoid = newTextLit({ 'v' => 'Ceres' });
+    my $truth_value = Muldis::DB::AST::BoolLit->new({ 'v' => (2 + 2 == 4) });
+    my $direction = Muldis::DB::AST::OrderLit->new({ 'v' => (5 <=> 7) });
+    my $answer = Muldis::DB::AST::IntLit->new({ 'v' => 42 });
+    my $package = Muldis::DB::AST::BlobLit->new({ 'v' => (pack 'H2', 'P') });
+    my $planetoid = Muldis::DB::AST::TextLit->new({ 'v' => 'Ceres' });
 
 I<This documentation is pending.>
 
