@@ -9,7 +9,7 @@ use Muldis::DB::Literal;
 ###########################################################################
 
 { package Muldis::DB::Interface; # module
-    our $VERSION = 0.001000;
+    our $VERSION = 0.002000;
     # Note: This given version applies to all of this file's packages.
 
 ###########################################################################
@@ -483,7 +483,7 @@ Common public API for Muldis::DB Engines
 
 =head1 VERSION
 
-This document describes Muldis::DB::Interface version 0.1.0 for Perl 5.
+This document describes Muldis::DB::Interface version 0.2.0 for Perl 5.
 
 It also describes the same-number versions for Perl 5 of
 Muldis::DB::Interface::DBMS ("DBMS"), Muldis::DB::Interface::HostGateVar
@@ -585,7 +585,7 @@ I<This documentation is pending.>
 This file requires any version of Perl 5.x.y that is at least 5.8.1.
 
 It also requires these Perl 5 classes that are in the current distribution:
-L<Muldis::DB::Literal-(0.1.0)|Muldis::DB::Literal>.
+L<Muldis::DB::Literal-(0.2.0)|Muldis::DB::Literal>.
 
 =head1 INCOMPATIBILITIES
 

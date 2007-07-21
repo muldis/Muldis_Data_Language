@@ -21,7 +21,7 @@ my $EMPTY_STR = q{};
 ###########################################################################
 
 { package Muldis::DB::Engine::Example::PhysType; # module
-    our $VERSION = 0.001000;
+    our $VERSION = 0.002000;
     # Note: This given version applies to all of this file's packages.
 
     use base 'Exporter';
@@ -1192,7 +1192,7 @@ Physical representations of all core data types
 
 =head1 VERSION
 
-This document describes Muldis::DB::Engine::Example::PhysType version 0.1.0
+This document describes Muldis::DB::Engine::Example::PhysType version 0.2.0
 for Perl 5.
 
 It also describes the same-number versions for Perl 5 of [...].
