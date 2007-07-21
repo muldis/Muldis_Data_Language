@@ -152,9 +152,9 @@ sub _build {
     my $dbms_eng_class = blessed $dbms_eng;
 
     confess q{new(): Bad :$decl_type arg; it is not an object of a}
-            . q{ Muldis::DB::Literal::TypeInvo-doing class.}
+            . q{ Muldis::DB::Literal::_TypeInvo-doing class.}
         if !blessed $decl_type
-            or !$decl_type->isa( 'Muldis::DB::Literal::TypeInvo' );
+            or !$decl_type->isa( 'Muldis::DB::Literal::_TypeInvo' );
 
     my $var_eng = eval {
         $dbms_eng->new_var({ 'decl_type' => $decl_type });
@@ -522,7 +522,7 @@ methods.
 
 Muldis::DB::Interface also provides the not-exportable wrapper subroutine
 C<Muldis::DB::new_dbms> for the C<Muldis::DB::Interface::DBMS> constructor,
-which has identical parameters, and exists solely as syntactic sugar. 
+which has identical parameters, and exists solely as syntactic sugar.
 Similarly, the C<DBMS> methods C<new_var> and C<prepare> exist purely as
 syntactic sugar over the C<HostGateVar> and C<HostGateRtn> constructors.
 I<TODO: Reimplement these as lexical aliases or compile-time macros

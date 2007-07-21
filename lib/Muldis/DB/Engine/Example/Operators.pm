@@ -15,8 +15,8 @@ use warnings FATAL => 'all';
 
     use Muldis::DB::Engine::Example::PhysType qw(ptBool ptOrder ptInt
         ptBlob ptText ptTuple ptQuasiTuple ptRelation ptQuasiRelation
-        ptTypeInvoNQ ptTypeInvoAQ ptTypeDictNQ ptTypeDictAQ ptValueDictNQ
-        ptTypeDictAQ);
+        ptTypeInvo ptQuasiTypeInvo ptTypeDict ptQuasiTypeDict ptValueDict
+        ptQuasiTypeDict);
 
     my $OPS = { # Hash
 

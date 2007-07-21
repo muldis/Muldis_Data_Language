@@ -29,9 +29,9 @@ my $EMPTY_STR = q{};
         ptBool ptOrder ptInt ptBlob ptText
         ptTuple ptQuasiTuple
         ptRelation ptQuasiRelation
-        ptTypeInvoNQ ptTypeInvoAQ
-        ptTypeDictNQ ptTypeDictAQ
-        ptValueDictNQ ptTypeDictAQ
+        ptTypeInvo ptQuasiTypeInvo
+        ptTypeDict ptQuasiTypeDict
+        ptValueDict ptQuasiTypeDict
     );
 
 ###########################################################################
@@ -94,45 +94,45 @@ sub ptQuasiRelation {
         'heading' => $heading, 'body' => $body });
 }
 
-sub ptTypeInvoNQ {
+sub ptTypeInvo {
     my ($args) = @_;
     my ($kind, $spec) = @{$args}{'kind', 'spec'};
-    return Muldis::DB::Engine::Example::PhysType::TypeInvoNQ->new({
+    return Muldis::DB::Engine::Example::PhysType::TypeInvo->new({
         'kind' => $kind, 'spec' => $spec });
 }
 
-sub ptTypeInvoAQ {
+sub ptQuasiTypeInvo {
     my ($args) = @_;
     my ($kind, $spec) = @{$args}{'kind', 'spec'};
-    return Muldis::DB::Engine::Example::PhysType::TypeInvoAQ->new({
+    return Muldis::DB::Engine::Example::PhysType::QuasiTypeInvo->new({
         'kind' => $kind, 'spec' => $spec });
 }
 
-sub ptTypeDictNQ {
+sub ptTypeDict {
     my ($args) = @_;
     my ($map) = @{$args}{'map'};
-    return Muldis::DB::Engine::Example::PhysType::TypeDictNQ->new({
+    return Muldis::DB::Engine::Example::PhysType::TypeDict->new({
         'map' => $map });
 }
 
-sub ptTypeDictAQ {
+sub ptQuasiTypeDict {
     my ($args) = @_;
     my ($map) = @{$args}{'map'};
-    return Muldis::DB::Engine::Example::PhysType::TypeDictAQ->new({
+    return Muldis::DB::Engine::Example::PhysType::QuasiTypeDict->new({
         'map' => $map });
 }
 
-sub ptValueDictNQ {
+sub ptValueDict {
     my ($args) = @_;
     my ($map) = @{$args}{'map'};
-    return Muldis::DB::Engine::Example::PhysType::ValueDictNQ->new({
+    return Muldis::DB::Engine::Example::PhysType::ValueDict->new({
         'map' => $map });
 }
 
-sub ptValueDictAQ {
+sub ptQuasiValueDict {
     my ($args) = @_;
     my ($map) = @{$args}{'map'};
-    return Muldis::DB::Engine::Example::PhysType::ValueDictAQ->new({
+    return Muldis::DB::Engine::Example::PhysType::QuasiValueDict->new({
         'map' => $map });
 }
 
@@ -605,7 +605,7 @@ sub as_ast {
     my $call_args = { 'heading' => $self->{$ATTR_HEADING}->as_ast(),
         'body' => $self->{$ATTR_BODY}->as_ast() };
     return $self->_allows_quasi()
-        ? Muldis::DB::Literal::QuasiTupleSel->new( $call_args ) : Muldis::DB::Literal::TupleSel->new( $call_args );
+        ? Muldis::DB::Literal::QuasiTuple->new( $call_args ) : Muldis::DB::Literal::Tuple->new( $call_args );
 }
 
 ###########################################################################
@@ -736,7 +736,7 @@ sub as_ast {
     my $call_args = { 'heading' => $self->{$ATTR_HEADING}->as_ast(),
         'body' => [map { $_->as_ast() } @{$self->{$ATTR_BODY}}] };
     return $self->_allows_quasi()
-        ? Muldis::DB::Literal::QuasiRelationSel->new( $call_args ) : Muldis::DB::Literal::RelationSel->new( $call_args );
+        ? Muldis::DB::Literal::QuasiRelation->new( $call_args ) : Muldis::DB::Literal::Relation->new( $call_args );
 }
 
 ###########################################################################
@@ -828,7 +828,7 @@ sub attr_values {
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::TypeInvo; # role
+{ package Muldis::DB::Engine::Example::PhysType::_TypeInvo; # role
     use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
     use Carp;
@@ -884,7 +884,7 @@ sub as_ast {
             : $kind eq 'Scalar' ? Muldis::DB::Literal::EntityName->new({ 'text' => $spec })
             : $spec->as_ast()) };
     return $self->_allows_quasi()
-        ? Muldis::DB::Literal::TypeInvoAQ->new( $call_args ) : Muldis::DB::Literal::TypeInvoNQ->new( $call_args );
+        ? Muldis::DB::Literal::QuasiTypeInvo->new( $call_args ) : Muldis::DB::Literal::TypeInvo->new( $call_args );
 }
 
 ###########################################################################
@@ -914,28 +914,28 @@ sub spec {
 
 ###########################################################################
 
-} # role Muldis::DB::Engine::Example::PhysType::TypeInvo
+} # role Muldis::DB::Engine::Example::PhysType::_TypeInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::TypeInvoNQ; # class
-    use base 'Muldis::DB::Engine::Example::PhysType::TypeInvo';
+{ package Muldis::DB::Engine::Example::PhysType::TypeInvo; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::_TypeInvo';
     sub _allows_quasi { return $BOOL_FALSE; }
-} # class Muldis::DB::Engine::Example::PhysType::TypeInvoNQ
+} # class Muldis::DB::Engine::Example::PhysType::TypeInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::TypeInvoAQ; # class
-    use base 'Muldis::DB::Engine::Example::PhysType::TypeInvo';
+{ package Muldis::DB::Engine::Example::PhysType::QuasiTypeInvo; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::_TypeInvo';
     sub _allows_quasi { return $BOOL_TRUE; }
-} # class Muldis::DB::Engine::Example::PhysType::TypeInvoAQ
+} # class Muldis::DB::Engine::Example::PhysType::QuasiTypeInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::TypeDict; # role
+{ package Muldis::DB::Engine::Example::PhysType::_TypeDict; # role
     use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
     use Carp;
@@ -990,7 +990,7 @@ sub as_ast {
             [Muldis::DB::Literal::EntityName->new({ 'text' => $_ }), $map->{$_}->as_ast()],
         } keys %{$map}] };
     return $self->_allows_quasi()
-        ? Muldis::DB::Literal::TypeDictAQ->new( $call_args ) : Muldis::DB::Literal::TypeDictNQ->new( $call_args );
+        ? Muldis::DB::Literal::QuasiTypeDict->new( $call_args ) : Muldis::DB::Literal::TypeDict->new( $call_args );
 }
 
 ###########################################################################
@@ -1038,28 +1038,28 @@ sub elem_value {
 
 ###########################################################################
 
-} # role Muldis::DB::Engine::Example::PhysType::TypeDict
+} # role Muldis::DB::Engine::Example::PhysType::_TypeDict
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::TypeDictNQ; # class
-    use base 'Muldis::DB::Engine::Example::PhysType::TypeDict';
+{ package Muldis::DB::Engine::Example::PhysType::TypeDict; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::_TypeDict';
     sub _allows_quasi { return $BOOL_FALSE; }
-} # class Muldis::DB::Engine::Example::PhysType::TypeDictNQ
+} # class Muldis::DB::Engine::Example::PhysType::TypeDict
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::TypeDictAQ; # class
-    use base 'Muldis::DB::Engine::Example::PhysType::TypeDict';
+{ package Muldis::DB::Engine::Example::PhysType::QuasiTypeDict; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::_TypeDict';
     sub _allows_quasi { return $BOOL_TRUE; }
-} # class Muldis::DB::Engine::Example::PhysType::TypeDictAQ
+} # class Muldis::DB::Engine::Example::PhysType::QuasiTypeDict
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::ValueDict; # role
+{ package Muldis::DB::Engine::Example::PhysType::_ValueDict; # role
     use base 'Muldis::DB::Engine::Example::PhysType::Value';
 
     use Carp;
@@ -1107,7 +1107,7 @@ sub which {
 sub as_ast {
     my ($self) = @_;
     my $map = $self->{$ATTR_MAP};
-    return Muldis::DB::Literal::ExprDict->new({ 'map' => [map {
+    return Muldis::DB::Literal::_ExprDict->new({ 'map' => [map {
             [Muldis::DB::Literal::EntityName->new({ 'text' => $_ }), $map->{$_}->as_ast()],
         } keys %{$map}] });
 }
@@ -1157,23 +1157,23 @@ sub elem_value {
 
 ###########################################################################
 
-} # role Muldis::DB::Engine::Example::PhysType::ValueDict
+} # role Muldis::DB::Engine::Example::PhysType::_ValueDict
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::ValueDictNQ; # class
-    use base 'Muldis::DB::Engine::Example::PhysType::ValueDict';
+{ package Muldis::DB::Engine::Example::PhysType::ValueDict; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::_ValueDict';
     sub _allows_quasi { return $BOOL_FALSE; }
-} # class Muldis::DB::Engine::Example::PhysType::ValueDictNQ
+} # class Muldis::DB::Engine::Example::PhysType::ValueDict
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Engine::Example::PhysType::ValueDictAQ; # class
-    use base 'Muldis::DB::Engine::Example::PhysType::ValueDict';
+{ package Muldis::DB::Engine::Example::PhysType::QuasiValueDict; # class
+    use base 'Muldis::DB::Engine::Example::PhysType::_ValueDict';
     sub _allows_quasi { return $BOOL_TRUE; }
-} # class Muldis::DB::Engine::Example::PhysType::ValueDictAQ
+} # class Muldis::DB::Engine::Example::PhysType::QuasiValueDict
 
 ###########################################################################
 ###########################################################################

@@ -22,9 +22,9 @@ my $ATNM_VALUE = Muldis::DB::Literal::EntityName->new({ 'text' => 'value' });
 my $ATNM_INDEX = Muldis::DB::Literal::EntityName->new({ 'text' => 'index' });
 my $ATNM_COUNT = Muldis::DB::Literal::EntityName->new({ 'text' => 'count' });
 
-my $SCA_TYPE_UINT = Muldis::DB::Literal::TypeInvoNQ->new({
+my $SCA_TYPE_UINT = Muldis::DB::Literal::TypeInvo->new({
     'kind' => 'Scalar', 'spec' => $TYNM_UINT });
-my $SCA_TYPE_PINT = Muldis::DB::Literal::TypeInvoNQ->new({
+my $SCA_TYPE_PINT = Muldis::DB::Literal::TypeInvo->new({
     'kind' => 'Scalar', 'spec' => $TYNM_PINT });
 
 ###########################################################################
@@ -36,93 +36,93 @@ my $SCA_TYPE_PINT = Muldis::DB::Literal::TypeInvoNQ->new({
 
     use base 'Exporter';
     our @EXPORT_OK = qw(
-        newSetSel newQuasiSetSel
-        newMaybeSel newQuasiMaybeSel
-        newSeqSel newQuasiSeqSel
-        newBagSel newQuasiBagSel
+        newSet newQuasiSet
+        newMaybe newQuasiMaybe
+        newSeq newQuasiSeq
+        newBag newQuasiBag
     );
 
     use Carp;
 
 ###########################################################################
 
-sub newSetSel {
+sub newSet {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
 
     confess q{new(): Bad :$body arg; it is not an Array.}
         if ref $body ne 'ARRAY';
 
-    return Muldis::DB::Literal::RelationSel->new({
-        'heading' => Muldis::DB::Literal::TypeDictNQ->new({ 'map' => [
+    return Muldis::DB::Literal::Relation->new({
+        'heading' => Muldis::DB::Literal::TypeDict->new({ 'map' => [
             [$ATNM_VALUE, $heading],
         ] }),
         'body' => [map {
-            Muldis::DB::Literal::ExprDict->new({ 'map' => [
+            Muldis::DB::Literal::_ExprDict->new({ 'map' => [
                 [$ATNM_VALUE, $_],
             ] }),
         } @{$body}],
     });
 }
 
-sub newQuasiSetSel {
+sub newQuasiSet {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
 
     confess q{new(): Bad :$body arg; it is not an Array.}
         if ref $body ne 'ARRAY';
 
-    return Muldis::DB::Literal::QuasiRelationSel->new({
-        'heading' => Muldis::DB::Literal::TypeDictAQ->new({ 'map' => [
+    return Muldis::DB::Literal::QuasiRelation->new({
+        'heading' => Muldis::DB::Literal::QuasiTypeDict->new({ 'map' => [
             [$ATNM_VALUE, $heading],
         ] }),
         'body' => [map {
-            Muldis::DB::Literal::ExprDict->new({ 'map' => [
+            Muldis::DB::Literal::_ExprDict->new({ 'map' => [
                 [$ATNM_VALUE, $_],
             ] }),
         } @{$body}],
     });
 }
 
-sub newMaybeSel {
+sub newMaybe {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
 
     confess q{new(): Bad :$body arg; it is not a 0..1-element Array.}
         if ref $body ne 'ARRAY' or @{$body} > 1;
 
-    return Muldis::DB::Literal::RelationSel->new({
-        'heading' => Muldis::DB::Literal::TypeDictNQ->new({ 'map' => [
+    return Muldis::DB::Literal::Relation->new({
+        'heading' => Muldis::DB::Literal::TypeDict->new({ 'map' => [
             [$ATNM_VALUE, $heading],
         ] }),
         'body' => [map {
-            Muldis::DB::Literal::ExprDict->new({ 'map' => [
+            Muldis::DB::Literal::_ExprDict->new({ 'map' => [
                 [$ATNM_VALUE, $_],
             ] }),
         } @{$body}],
     });
 }
 
-sub newQuasiMaybeSel {
+sub newQuasiMaybe {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
 
     confess q{new(): Bad :$body arg; it is not a 0..1-element Array.}
         if ref $body ne 'ARRAY' or @{$body} > 1;
 
-    return Muldis::DB::Literal::QuasiRelationSel->new({
-        'heading' => Muldis::DB::Literal::TypeDictAQ->new({ 'map' => [
+    return Muldis::DB::Literal::QuasiRelation->new({
+        'heading' => Muldis::DB::Literal::QuasiTypeDict->new({ 'map' => [
             [$ATNM_VALUE, $heading],
         ] }),
         'body' => [map {
-            Muldis::DB::Literal::ExprDict->new({ 'map' => [
+            Muldis::DB::Literal::_ExprDict->new({ 'map' => [
                 [$ATNM_VALUE, $_],
             ] }),
         } @{$body}],
     });
 }
 
-sub newSeqSel {
+sub newSeq {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
 
@@ -133,13 +133,13 @@ sub newSeqSel {
             if ref $tbody ne 'ARRAY' or @{$tbody} != 2;
     }
 
-    return Muldis::DB::Literal::RelationSel->new({
-        'heading' => Muldis::DB::Literal::TypeDictNQ->new({ 'map' => [
+    return Muldis::DB::Literal::Relation->new({
+        'heading' => Muldis::DB::Literal::TypeDict->new({ 'map' => [
             [$ATNM_INDEX, $SCA_TYPE_UINT],
             [$ATNM_VALUE, $heading],
         ] }),
         'body' => [map {
-            Muldis::DB::Literal::ExprDict->new({ 'map' => [
+            Muldis::DB::Literal::_ExprDict->new({ 'map' => [
                 [$ATNM_INDEX, $_->[0]],
                 [$ATNM_VALUE, $_->[1]],
             ] }),
@@ -147,7 +147,7 @@ sub newSeqSel {
     });
 }
 
-sub newQuasiSeqSel {
+sub newQuasiSeq {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
 
@@ -158,13 +158,13 @@ sub newQuasiSeqSel {
             if ref $tbody ne 'ARRAY' or @{$tbody} != 2;
     }
 
-    return Muldis::DB::Literal::QuasiRelationSel->new({
-        'heading' => Muldis::DB::Literal::TypeDictAQ->new({ 'map' => [
+    return Muldis::DB::Literal::QuasiRelation->new({
+        'heading' => Muldis::DB::Literal::QuasiTypeDict->new({ 'map' => [
             [$ATNM_INDEX, $SCA_TYPE_UINT],
             [$ATNM_VALUE, $heading],
         ] }),
         'body' => [map {
-            Muldis::DB::Literal::ExprDict->new({ 'map' => [
+            Muldis::DB::Literal::_ExprDict->new({ 'map' => [
                 [$ATNM_INDEX, $_->[0]],
                 [$ATNM_VALUE, $_->[1]],
             ] }),
@@ -172,7 +172,7 @@ sub newQuasiSeqSel {
     });
 }
 
-sub newBagSel {
+sub newBag {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
 
@@ -183,13 +183,13 @@ sub newBagSel {
             if ref $tbody ne 'ARRAY' or @{$tbody} != 2;
     }
 
-    return Muldis::DB::Literal::RelationSel->new({
-        'heading' => Muldis::DB::Literal::TypeDictNQ->new({ 'map' => [
+    return Muldis::DB::Literal::Relation->new({
+        'heading' => Muldis::DB::Literal::TypeDict->new({ 'map' => [
             [$ATNM_VALUE, $heading],
             [$ATNM_COUNT, $SCA_TYPE_PINT],
         ] }),
         'body' => [map {
-            Muldis::DB::Literal::ExprDict->new({ 'map' => [
+            Muldis::DB::Literal::_ExprDict->new({ 'map' => [
                 [$ATNM_VALUE, $_->[0]],
                 [$ATNM_COUNT, $_->[1]],
             ] }),
@@ -197,7 +197,7 @@ sub newBagSel {
     });
 }
 
-sub newQuasiBagSel {
+sub newQuasiBag {
     my ($args) = @_;
     my ($heading, $body) = @{$args}{'heading', 'body'};
 
@@ -208,13 +208,13 @@ sub newQuasiBagSel {
             if ref $tbody ne 'ARRAY' or @{$tbody} != 2;
     }
 
-    return Muldis::DB::Literal::QuasiRelationSel->new({
-        'heading' => Muldis::DB::Literal::TypeDictAQ->new({ 'map' => [
+    return Muldis::DB::Literal::QuasiRelation->new({
+        'heading' => Muldis::DB::Literal::QuasiTypeDict->new({ 'map' => [
             [$ATNM_VALUE, $heading],
             [$ATNM_COUNT, $SCA_TYPE_PINT],
         ] }),
         'body' => [map {
-            Muldis::DB::Literal::ExprDict->new({ 'map' => [
+            Muldis::DB::Literal::_ExprDict->new({ 'map' => [
                 [$ATNM_VALUE, $_->[0]],
                 [$ATNM_COUNT, $_->[1]],
             ] }),
@@ -622,22 +622,22 @@ sub _build {
 
     if ($self->_allows_quasi()) {
         confess q{new(): Bad :$heading arg; it is not a valid object}
-                . q{ of a Muldis::DB::Literal::TypeDictAQ-doing class.}
+                . q{ of a Muldis::DB::Literal::QuasiTypeDict-doing class.}
             if !blessed $heading
-                or !$heading->isa( 'Muldis::DB::Literal::TypeDictAQ' );
+                or !$heading->isa( 'Muldis::DB::Literal::QuasiTypeDict' );
     }
     else {
         confess q{new(): Bad :$heading arg; it is not a valid object}
-                . q{ of a Muldis::DB::Literal::TypeDictNQ-doing class.}
+                . q{ of a Muldis::DB::Literal::TypeDict-doing class.}
             if !blessed $heading
-                or !$heading->isa( 'Muldis::DB::Literal::TypeDictNQ' );
+                or !$heading->isa( 'Muldis::DB::Literal::TypeDict' );
     }
     my $heading_attrs_count = $heading->elem_count();
     my $heading_attrs_map_hoa = $heading->{$TYPEDICT_ATTR_MAP_HOA};
 
     confess q{new(): Bad :$body arg; it is not a valid object}
-            . q{ of a Muldis::DB::Literal::ExprDict-doing class.}
-        if !blessed $body or !$body->isa( 'Muldis::DB::Literal::ExprDict' );
+            . q{ of a Muldis::DB::Literal::_ExprDict-doing class.}
+        if !blessed $body or !$body->isa( 'Muldis::DB::Literal::_ExprDict' );
     confess q{new(): Bad :$body arg; it does not have the}
             . q{ same attr count as :$heading.}
         if $body->elem_count() != $heading_attrs_count;
@@ -723,18 +723,18 @@ sub attr_value {
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::TupleSel; # class
+{ package Muldis::DB::Literal::Tuple; # class
     use base 'Muldis::DB::Literal::_Tuple';
     sub _allows_quasi { return $BOOL_FALSE; }
-} # class Muldis::DB::Literal::TupleSel
+} # class Muldis::DB::Literal::Tuple
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::QuasiTupleSel; # class
+{ package Muldis::DB::Literal::QuasiTuple; # class
     use base 'Muldis::DB::Literal::_Tuple';
     sub _allows_quasi { return $BOOL_TRUE; }
-} # class Muldis::DB::Literal::QuasiTupleSel
+} # class Muldis::DB::Literal::QuasiTuple
 
 ###########################################################################
 ###########################################################################
@@ -761,15 +761,15 @@ sub _build {
 
     if ($self->_allows_quasi()) {
         confess q{new(): Bad :$heading arg; it is not a valid object}
-                . q{ of a Muldis::DB::Literal::TypeDictAQ-doing class.}
+                . q{ of a Muldis::DB::Literal::QuasiTypeDict-doing class.}
             if !blessed $heading
-                or !$heading->isa( 'Muldis::DB::Literal::TypeDictAQ' );
+                or !$heading->isa( 'Muldis::DB::Literal::QuasiTypeDict' );
     }
     else {
         confess q{new(): Bad :$heading arg; it is not a valid object}
-                . q{ of a Muldis::DB::Literal::TypeDictNQ-doing class.}
+                . q{ of a Muldis::DB::Literal::TypeDict-doing class.}
             if !blessed $heading
-                or !$heading->isa( 'Muldis::DB::Literal::TypeDictNQ' );
+                or !$heading->isa( 'Muldis::DB::Literal::TypeDict' );
     }
     my $heading_attrs_count = $heading->elem_count();
     my $heading_attrs_map_hoa = $heading->{$TYPEDICT_ATTR_MAP_HOA};
@@ -778,9 +778,9 @@ sub _build {
         if ref $body ne 'ARRAY';
     for my $tupb (@{$body}) {
         confess q{new(): Bad :$body arg elem; it is not a valid object}
-                . q{ of a Muldis::DB::Literal::ExprDict-doing class.}
+                . q{ of a Muldis::DB::Literal::_ExprDict-doing class.}
             if !blessed $tupb
-                or !$tupb->isa( 'Muldis::DB::Literal::ExprDict' );
+                or !$tupb->isa( 'Muldis::DB::Literal::_ExprDict' );
         confess q{new(): Bad :$body arg elem; it does not have the}
                 . q{ same attr count as :$heading.}
             if $tupb->elem_count() != $heading_attrs_count;
@@ -924,18 +924,18 @@ sub body_of_Maybe {
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::RelationSel; # class
+{ package Muldis::DB::Literal::Relation; # class
     use base 'Muldis::DB::Literal::_Relation';
     sub _allows_quasi { return $BOOL_FALSE; }
-} # class Muldis::DB::Literal::RelationSel
+} # class Muldis::DB::Literal::Relation
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::QuasiRelationSel; # class
+{ package Muldis::DB::Literal::QuasiRelation; # class
     use base 'Muldis::DB::Literal::_Relation';
     sub _allows_quasi { return $BOOL_TRUE; }
-} # class Muldis::DB::Literal::QuasiRelationSel
+} # class Muldis::DB::Literal::QuasiRelation
 
 ###########################################################################
 ###########################################################################
@@ -957,8 +957,8 @@ sub _build {
     my ($of) = @{$args}{'of'};
 
     confess q{new(): Bad :$of arg; it is not a valid object}
-            . q{ of a Muldis::DB::Literal::TypeInvo-doing class.}
-        if !blessed $of or !$of->isa( 'Muldis::DB::Literal::TypeInvo' );
+            . q{ of a Muldis::DB::Literal::_TypeInvo-doing class.}
+        if !blessed $of or !$of->isa( 'Muldis::DB::Literal::_TypeInvo' );
 
     $self->{$ATTR_OF} = $of;
 
@@ -1017,8 +1017,8 @@ sub _build {
     my ($as, $v) = @{$args}{'as', 'v'};
 
     confess q{new(): Bad :$as arg; it is not a valid object}
-            . q{ of a Muldis::DB::Literal::TypeInvo-doing class.}
-        if !blessed $as or !$as->isa( 'Muldis::DB::Literal::TypeInvo' );
+            . q{ of a Muldis::DB::Literal::_TypeInvo-doing class.}
+        if !blessed $as or !$as->isa( 'Muldis::DB::Literal::_TypeInvo' );
 
     confess q{new(): Bad :$v arg; it is not a valid object}
             . q{ of a Muldis::DB::Literal::Expr-doing class.}
@@ -1152,9 +1152,9 @@ sub _build {
         if !blessed $func or !$func->isa( 'Muldis::DB::Literal::EntityName' );
 
     confess q{new(): Bad :$ro_args arg; it is not a valid object}
-            . q{ of a Muldis::DB::Literal::ExprDict-doing class.}
+            . q{ of a Muldis::DB::Literal::_ExprDict-doing class.}
         if !blessed $ro_args
-            or !$ro_args->isa( 'Muldis::DB::Literal::ExprDict' );
+            or !$ro_args->isa( 'Muldis::DB::Literal::_ExprDict' );
 
     $self->{$ATTR_FUNC}    = $func;
     $self->{$ATTR_RO_ARGS} = $ro_args;
@@ -1238,13 +1238,13 @@ sub _build {
         if !blessed $proc or !$proc->isa( 'Muldis::DB::Literal::EntityName' );
 
     confess q{new(): Bad :$upd_args arg; it is not a valid object}
-            . q{ of a Muldis::DB::Literal::ExprDict-doing class.}
+            . q{ of a Muldis::DB::Literal::_ExprDict-doing class.}
         if !blessed $upd_args
-            or !$upd_args->isa( 'Muldis::DB::Literal::ExprDict' );
+            or !$upd_args->isa( 'Muldis::DB::Literal::_ExprDict' );
     confess q{new(): Bad :$ro_args arg; it is not a valid object}
-            . q{ of a Muldis::DB::Literal::ExprDict-doing class.}
+            . q{ of a Muldis::DB::Literal::_ExprDict-doing class.}
         if !blessed $ro_args
-            or !$ro_args->isa( 'Muldis::DB::Literal::ExprDict' );
+            or !$ro_args->isa( 'Muldis::DB::Literal::_ExprDict' );
     my $upd_args_map_hoa = $upd_args->{$EXPRDICT_ATTR_MAP_HOA};
     for my $an_and_vn (values %{$upd_args_map_hoa}) {
         confess q{new(): Bad :$upd_args arg elem expr; it is not}
@@ -1501,7 +1501,7 @@ sub seq {
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::TypeInvo; # role
+{ package Muldis::DB::Literal::_TypeInvo; # role
     use base 'Muldis::DB::Literal::Node';
 
     use Carp;
@@ -1533,10 +1533,10 @@ sub _build {
 
     elsif ($kind eq 'Tuple' or $kind eq 'Relation') {
         confess q{new(): Bad :$spec arg; it needs to be a valid object}
-                . q{ of a Muldis::DB::Literal::TypeDictNQ-doing class}
+                . q{ of a Muldis::DB::Literal::TypeDict-doing class}
                 . q{ when the :$kind arg is 'Tuple'|'Relation'.}
             if !blessed $spec
-                or !$spec->isa( 'Muldis::DB::Literal::TypeDictNQ' );
+                or !$spec->isa( 'Muldis::DB::Literal::TypeDict' );
     }
 
     elsif (!$self->_allows_quasi()) {
@@ -1546,10 +1546,10 @@ sub _build {
 
     elsif ($kind eq 'QTuple' or $kind eq 'QRelation') {
         confess q{new(): Bad :$spec arg; it needs to be a valid object}
-                . q{ of a Muldis::DB::Literal::TypeDictAQ-doing class}
+                . q{ of a Muldis::DB::Literal::QuasiTypeDict-doing class}
                 . q{ when the :$kind arg is 'QTuple'|'QRelation'.}
             if !blessed $spec
-                or !$spec->isa( 'Muldis::DB::Literal::TypeDictAQ' );
+                or !$spec->isa( 'Muldis::DB::Literal::QuasiTypeDict' );
     }
 
     elsif ($kind eq 'Any') {
@@ -1614,28 +1614,28 @@ sub spec {
 
 ###########################################################################
 
-} # role Muldis::DB::Literal::TypeInvo
+} # role Muldis::DB::Literal::_TypeInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::TypeInvoNQ; # class
-    use base 'Muldis::DB::Literal::TypeInvo';
+{ package Muldis::DB::Literal::TypeInvo; # class
+    use base 'Muldis::DB::Literal::_TypeInvo';
     sub _allows_quasi { return $BOOL_FALSE; }
-} # class Muldis::DB::Literal::TypeInvoNQ
+} # class Muldis::DB::Literal::TypeInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::TypeInvoAQ; # class
-    use base 'Muldis::DB::Literal::TypeInvo';
+{ package Muldis::DB::Literal::QuasiTypeInvo; # class
+    use base 'Muldis::DB::Literal::_TypeInvo';
     sub _allows_quasi { return $BOOL_TRUE; }
-} # class Muldis::DB::Literal::TypeInvoAQ
+} # class Muldis::DB::Literal::QuasiTypeInvo
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::TypeDict; # role
+{ package Muldis::DB::Literal::_TypeDict; # role
     use base 'Muldis::DB::Literal::Node';
 
     use Carp;
@@ -1672,17 +1672,17 @@ sub _build {
             if exists $map_hoa->{$entity_name_text};
         if ($allows_quasi) {
             confess q{new(): Bad :$map arg elem; its second elem is not an}
-                    . q{ object of a Muldis::DB::Literal::TypeInvoAQ-doing}
+                    . q{ object of a Muldis::DB::Literal::QuasiTypeInvo-doing}
                     . q{ class.}
                 if !blessed $type_invo
-                    or !$type_invo->isa( 'Muldis::DB::Literal::TypeInvoAQ' );
+                    or !$type_invo->isa( 'Muldis::DB::Literal::QuasiTypeInvo' );
         }
         else {
             confess q{new(): Bad :$map arg elem; its second elem is not an}
-                    . q{ object of a Muldis::DB::Literal::TypeInvoNQ-doing}
+                    . q{ object of a Muldis::DB::Literal::TypeInvo-doing}
                     . q{ class.}
                 if !blessed $type_invo
-                    or !$type_invo->isa( 'Muldis::DB::Literal::TypeInvoNQ' );
+                    or !$type_invo->isa( 'Muldis::DB::Literal::TypeInvo' );
         }
         my $elem_cpy = [$entity_name, $type_invo];
         push @{$map_aoa}, $elem_cpy;
@@ -1705,7 +1705,7 @@ sub as_perl {
                     . q{, } . $_->[1]->as_perl() . q{]}
             } @{$self->{$ATTR_MAP_AOA}}) . q{]};
         $self->{$ATTR_AS_PERL}
-            = "Muldis::DB::Literal::TypeDict->new({ 'map' => $s })";
+            = "Muldis::DB::Literal::_TypeDict->new({ 'map' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -1778,28 +1778,28 @@ sub elem_value {
 
 ###########################################################################
 
-} # role Muldis::DB::Literal::TypeDict
+} # role Muldis::DB::Literal::_TypeDict
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::TypeDictNQ; # class
-    use base 'Muldis::DB::Literal::TypeDict';
+{ package Muldis::DB::Literal::TypeDict; # class
+    use base 'Muldis::DB::Literal::_TypeDict';
     sub _allows_quasi { return $BOOL_FALSE; }
-} # class Muldis::DB::Literal::TypeDictNQ
+} # class Muldis::DB::Literal::TypeDict
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::TypeDictAQ; # class
-    use base 'Muldis::DB::Literal::TypeDict';
+{ package Muldis::DB::Literal::QuasiTypeDict; # class
+    use base 'Muldis::DB::Literal::_TypeDict';
     sub _allows_quasi { return $BOOL_TRUE; }
-} # class Muldis::DB::Literal::TypeDictAQ
+} # class Muldis::DB::Literal::QuasiTypeDict
 
 ###########################################################################
 ###########################################################################
 
-{ package Muldis::DB::Literal::ExprDict; # class
+{ package Muldis::DB::Literal::_ExprDict; # class
     use base 'Muldis::DB::Literal::Node';
 
     use Carp;
@@ -1859,7 +1859,7 @@ sub as_perl {
                     . q{, } . $_->[1]->as_perl() . q{]}
             } @{$self->{$ATTR_MAP_AOA}}) . q{]};
         $self->{$ATTR_AS_PERL}
-            = "Muldis::DB::Literal::ExprDict->new({ 'map' => $s })";
+            = "Muldis::DB::Literal::_ExprDict->new({ 'map' => $s })";
     }
     return $self->{$ATTR_AS_PERL};
 }
@@ -1932,7 +1932,7 @@ sub elem_value {
 
 ###########################################################################
 
-} # class Muldis::DB::Literal::ExprDict
+} # class Muldis::DB::Literal::_ExprDict
 
 ###########################################################################
 ###########################################################################
@@ -1998,13 +1998,13 @@ sub _build {
         = @{$args}{'upd_params', 'ro_params', 'vars', 'stmts'};
 
     confess q{new(): Bad :$upd_params arg; it is not a valid object}
-            . q{ of a Muldis::DB::Literal::TypeDict-doing class.}
+            . q{ of a Muldis::DB::Literal::_TypeDict-doing class.}
         if !blessed $upd_params
-            or !$upd_params->isa( 'Muldis::DB::Literal::TypeDict' );
+            or !$upd_params->isa( 'Muldis::DB::Literal::_TypeDict' );
     confess q{new(): Bad :$ro_params arg; it is not a valid object}
-            . q{ of a Muldis::DB::Literal::TypeDict-doing class.}
+            . q{ of a Muldis::DB::Literal::_TypeDict-doing class.}
         if !blessed $ro_params
-            or !$ro_params->isa( 'Muldis::DB::Literal::TypeDict' );
+            or !$ro_params->isa( 'Muldis::DB::Literal::_TypeDict' );
     my $upd_params_map_hoa = $upd_params->{$TYPEDICT_ATTR_MAP_HOA};
     confess q{new(): Bad :$upd_params or :$ro_params arg;}
             . q{ they both reference at least 1 same stmtsedure param.}
@@ -2013,8 +2013,8 @@ sub _build {
             } keys %{$ro_params->{$TYPEDICT_ATTR_MAP_HOA}};
 
     confess q{new(): Bad :$vars arg; it is not a valid object}
-            . q{ of a Muldis::DB::Literal::TypeDict-doing class.}
-        if !blessed $vars or !$vars->isa( 'Muldis::DB::Literal::TypeDict' );
+            . q{ of a Muldis::DB::Literal::_TypeDict-doing class.}
+        if !blessed $vars or !$vars->isa( 'Muldis::DB::Literal::_TypeDict' );
 
     confess q{new(): Bad :$stmts arg; it is not an Array.}
         if ref $stmts ne 'ARRAY';
@@ -2158,11 +2158,11 @@ will be added in the future), which are visually arranged here in their
                 Muldis::DB::Literal::Blob
                 Muldis::DB::Literal::Text
             Muldis::DB::Literal::_Tuple (implementing role)
-                Muldis::DB::Literal::TupleSel
-                Muldis::DB::Literal::QuasiTupleSel
+                Muldis::DB::Literal::Tuple
+                Muldis::DB::Literal::QuasiTuple
             Muldis::DB::Literal::_Relation (implementing role)
-                Muldis::DB::Literal::RelationSel
-                Muldis::DB::Literal::QuasiRelationSel
+                Muldis::DB::Literal::Relation
+                Muldis::DB::Literal::QuasiRelation
             Muldis::DB::Literal::Default
             Muldis::DB::Literal::Treat
             Muldis::DB::Literal::VarInvo
@@ -2173,13 +2173,13 @@ will be added in the future), which are visually arranged here in their
             Muldis::DB::Literal::ProcReturn
             # more control-flow statement types would go here
         Muldis::DB::Literal::EntityName
-        Muldis::DB::Literal::TypeInvo (implementing role)
-            Muldis::DB::Literal::TypeInvoNQ
-            Muldis::DB::Literal::TypeInvoAQ
-        Muldis::DB::Literal::TypeDict (implementing role)
-            Muldis::DB::Literal::TypeDictNQ
-            Muldis::DB::Literal::TypeDictAQ
-        Muldis::DB::Literal::ExprDict
+        Muldis::DB::Literal::_TypeInvo (implementing role)
+            Muldis::DB::Literal::TypeInvo
+            Muldis::DB::Literal::QuasiTypeInvo
+        Muldis::DB::Literal::_TypeDict (implementing role)
+            Muldis::DB::Literal::TypeDict
+            Muldis::DB::Literal::QuasiTypeDict
+        Muldis::DB::Literal::_ExprDict
         Muldis::DB::Literal::FuncDecl
         Muldis::DB::Literal::ProcDecl
         # more routine declaration types would go here
@@ -2327,19 +2327,19 @@ I<This documentation is pending.>
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::Literal::TupleSel Class
+=head2 The Muldis::DB::Literal::Tuple Class
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::Literal::QuasiTupleSel Class
+=head2 The Muldis::DB::Literal::QuasiTuple Class
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::Literal::RelationSel Class
+=head2 The Muldis::DB::Literal::Relation Class
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::Literal::QuasiRelationSel Class
+=head2 The Muldis::DB::Literal::QuasiRelation Class
 
 I<This documentation is pending.>
 
@@ -2375,23 +2375,23 @@ I<This documentation is pending.>
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::Literal::TypeInvoNQ Class
+=head2 The Muldis::DB::Literal::TypeInvo Class
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::Literal::TypeInvoAQ Class
+=head2 The Muldis::DB::Literal::QuasiTypeInvo Class
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::Literal::TypeDictNQ Class
+=head2 The Muldis::DB::Literal::TypeDict Class
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::Literal::TypeDictAQ Class
+=head2 The Muldis::DB::Literal::QuasiTypeDict Class
 
 I<This documentation is pending.>
 
-=head2 The Muldis::DB::Literal::ExprDict Class
+=head2 The Muldis::DB::Literal::_ExprDict Class
 
 I<This documentation is pending.>
 
