@@ -16,9 +16,9 @@ sleep 3;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    'NAME' => 'Muldis::DB',
-    'VERSION' => '0.2.0',
-    'ABSTRACT' => 'Full-featured truly relational DBMS in Perl',
+    'NAME' => 'Language::MuldisD',
+    'VERSION' => '0.3.0',
+    'ABSTRACT' => 'Formal spec of Muldis D relational DBMS lang',
     'AUTHOR' => 'Darren Duncan <perl@DarrenDuncan.net>',
 #    'LICENSE' => 'gpl',
     'PREREQ_PM' => {
