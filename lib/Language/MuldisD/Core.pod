@@ -185,67 +185,77 @@ default value is C<Bool:false>.  The cardinality of this type is infinity.
 A C<Bool> is an enumeration consisting of the 2 values C<Bool:false> and
 C<Bool:true>.  It represents a truth value, and is the result type of any
 C<equal> or C<not_equal> routine; it is the only essential scalar data type
-of a B<D> language.  Its default value is C<Bool:false>.  The cardinality
-of this type is 2.
+of a B<D> language.  Its default and minimum value is C<Bool:false>; its
+maximum value is C<Bool.true>.  The cardinality of this type is 2.
 
 =item C<sys.type.Order>
 
 A C<Order> is an enumeration consisting of the 3 values C<Order:increase>,
 C<Order:same>, C<Order:decrease>.  It is the result type of any C<compare>
 routine that is used on 2 values of a C<sys.type.Ordinal> subtype.  Its
-default value is C<Order:same>.  The cardinality of this type is 3.
+default value is C<Order:same>; its minimum and maximum values are,
+respectively, C<Order.increase> and C<Order.decrease>.  The cardinality of
+this type is 3.
 
 =item C<sys.type.Int>
 
 An C<Int> is a single integral number of any magnitude.  Its default value
-is zero.  The cardinality of this type is infinity; to define a
-most-generalized finite C<Int> subtype, you must specify the 2 integer
-end-points of the inclusive range that all its values are in.
+is zero; its minimum and maximum values are conceptually infinities and
+practically impossible.  The cardinality of this type is infinity; to
+define a most-generalized finite C<Int> subtype, you must specify the 2
+integer end-points of the inclusive range that all its values are in.
 
 =item C<sys.type.UInt>
 
 A C<UInt> (unsigned integer) is a proper subtype of C<Int> where all member
-values are non-negative / greater than or equal to zero.
+values are non-negative / greater than or equal to zero.  Its minimum value
+is zero.
 
 =item C<sys.type.PInt>
 
 A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
-member values are positive / greater than or equal to one.  Its default
-value is 1.
+member values are positive / greater than or equal to one.  Its default and
+minimum value is 1.
 
 =item C<sys.type.PInt2_36>
 
 A C<PInt2_36> is a proper subtype of C<PInt> where all member values are
 between 2 and 36.  (The significance of the number 36 is 10 digits plus 26
-letters.)  Its default value is 2.  The cardinality of this type is 35.
+letters.)  Its default and minimum value is 2; its maximum value is 36.
+The cardinality of this type is 35.
 
 =item C<sys.type.Blob>
 
-A C<Blob> is an undifferentiated string of bits.  Its default value is the
-empty string.  The cardinality of this type is infinity; to define a
-most-generalized finite C<Blob> subtype, you must specify a maximum length
-in bits that the subtype's strings are.
+A C<Blob> is an undifferentiated string of bits.  Its default and minimum
+value is the empty string; its maximum value is an infinite-length string
+and practically impossible.  The cardinality of this type is infinity; to
+define a most-generalized finite C<Blob> subtype, you must specify a
+maximum length in bits that the subtype's strings are.
 
 =item C<sys.type.NEBlob>
 
 A C<NEBlob> (non-empty blob) is a proper subtype of C<Blob> where its
 length in bits must be at least 1; it can be any C<Blob> except for the
-empty string.  Its default value is a single zero bit.
+empty string.  Its default and minimum value is a single zero bit.
 
 =item C<sys.type.Text>
 
-A C<Text> is a string of characters.  Its default value is the empty
-string.  Note that there is only one system-defined character repertoire
-for C<Text> types, which is the newest Unicode repertoire (5.0.0).  The
-cardinality of this type is infinity; to define a most-generalized finite
-C<Text> subtype, you must specify a maximum length in characters (that is,
-eg, in NFC graphemes) that the subtype's strings are.
+A C<Text> is a string of characters.  Its default and minimum value is the
+empty string; its maximum value is an infinite-length string and
+practically impossible.  Note that there is only one system-defined
+character repertoire for C<Text> types, which is the newest Unicode
+repertoire (5.0.0).  The cardinality of this type is infinity; to define a
+most-generalized finite C<Text> subtype, you must specify a maximum length
+in characters (that is, eg, in NFC graphemes) that the subtype's strings
+are.
 
 =item C<sys.type.NEText>
 
 A C<NEText> (non-empty text) is a proper subtype of C<Text> where its
 length in characters must be more than zero; it can be any C<Text> except
-for the empty string.  Its default value is a single "space" character.
+for the empty string.  Its default value is a single "space" character; its
+minimum value has one character, but which character that is depends on the
+default or current collation.
 
 =back
 
@@ -489,24 +499,35 @@ This function results in C<Bool:true> iff C<sys.rtn.Ordinal.compare> would
 result in C<Order:decrease> when given the same arguments, and
 C<Bool:false> otherwise.
 
-=item C<sys.rtn.Ordinal.min of Maybe{Some.Ordinal} (RO: Set{Some.Ordinal}
-$v)>
+=item C<sys.rtn.Ordinal.min of Some.Ordinal (RO: Set{Some.Ordinal} $v)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and picks the minimum of the 2 (a process which
-is both commutative and associative) until just one is left, a C<Maybe>
-whose single element is which is the function's result.  If C<$v> has zero
-values, then C<min> results in a same-typed C<Maybe> with zero elements.
-I<Note that, while C<min> could conceivably have been defined instead to
-not result in a C<Maybe>, but rather to result in the appropriate ordinal
-type's concept of negative infinity, this option is avoided for now citing
-practical concerns in the face of infinite (especially non-numeric) types.>
+is both commutative and associative) until just one is left, which is the
+function's result.  If C<$v> has zero values, then C<min> results in the
+result type's concept of positive infinity, which is the identity value for
+I<min>.  This function will fail on a C<$v> of zero values if the result
+type's concept of positive infinity is impossible or impractically large to
+represent, such as with the infinite C<Text> type.
 
-=item C<sys.rtn.Ordinal.max of Maybe{Some.Ordinal} (RO: Set{Some.Ordinal}
-$v)>
+=item C<sys.rtn.Ordinal.max of Some.Ordinal (RO: Set{Some.Ordinal} $v)>
 
-This function is exactly the same as C<sys.rtn.Ordinal.max> except that it
-results in the maximum input element value rather than the minimum one.
+This function is exactly the same as C<sys.rtn.Ordinal.min> except that it
+results in the maximum input element value rather than the minimum one, and
+its identity value is the result type's concept of negative infinity.
+
+=item C<sys.rtn.Ordinal.maybe_min of Maybe{Some.Ordinal} (RO:
+Set{Some.Ordinal} $v)>
+
+This function is exactly the same as C<sys.rtn.Ordinal.min> except that it
+results in a C<Maybe> of what is otherwise the result type, and that result
+has zero elements if the argument has zero elements.
+
+=item C<sys.rtn.Ordinal.maybe_max of Maybe{Some.Ordinal} (RO:
+Set{Some.Ordinal} $v)>
+
+This function is to C<sys.rtn.Ordinal.max> as C<sys.rtn.Ordinal.maybe_min>
+is to C<sys.rtn.Ordinal.min>.
 
 =back
 
@@ -747,39 +768,27 @@ its additional constraint doesn't apply.
 
 This function results in the bitwise I<not> of its argument.
 
-=item C<sys.rtn.Blob.and of Maybe{Blob} (RO: Set{Blob} $v)>
+=item C<sys.rtn.Blob.and of Blob (RO: Set{Blob} $v)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a bitwise I<and> (which is both
-commutative and associative) on them until just one is left, a C<Maybe>
-whose single element is which is the function's result.  This function will
-fail if not all input values are of the same length in bits.  If C<$v> has
-zero values, then C<and> results in a same-typed C<Maybe> with zero
-elements.  I<Note that, while C<and> could conceivably have been defined
-instead to not result in a C<Maybe>, but rather to result in the
-appropriate string of identity-valued bits, this option is avoided for now
-citing practical concerns in the face of infinite blob types; also, a
-default empty string result is being avoided.>
+commutative and associative) on them until just one is left, which is the
+function's result.  This function's argument values must all be of the same
+length in bits, that length being part of the argument's declared type
+(that is, C<Blob> subtype) definition, and that is also the length in bits
+of the function's result.  If C<$v> has zero values, then C<and> will
+result in an appropriate-length string of identity/1 valued bits.
 
-=item C<sys.rtn.Blob.or of Maybe{Blob} (RO: Set{Blob} $v)>
+=item C<sys.rtn.Blob.or of Blob (RO: Set{Blob} $v)>
 
-This function is a reduction operator that recursively takes each pair of
-its N input element values and does a bitwise inclusive-or (which is both
-commutative and associative) on them until just one is left, a C<Maybe>
-whose single element is which is the function's result.  This function will
-fail if not all input values are of the same length in bits.  If C<$v> has
-zero values, then C<or> results in a same-typed C<Maybe> with zero
-elements.  I<The note for C<and> applies to C<or> too.>
+This function is the same as C<sys.rtn.Blob.and> but that it recursively
+does a bitwise inclusive-or rather than a bitwise I<and>, and its identity
+value is composed of zero valued bits.
 
-=item C<sys.rtn.Blob.xor of Maybe{Blob} (RO: Bag{Blob} $v)>
+=item C<sys.rtn.Blob.xor of Blob (RO: Bag{Blob} $v)>
 
-This function is a reduction operator that recursively takes each pair of
-its N input element values and does a bitwise exclusive-or (which is both
-commutative and associative) on them until just one is left, a C<Maybe>
-whose single element is which is the function's result.  This function will
-fail if not all input values are of the same length in bits.  If C<$v> has
-zero values, then C<xor> results in a same-typed C<Maybe> with zero
-elements.  I<The note for C<and> applies to C<xor> too.>
+This function is the same as C<sys.rtn.Blob.or> but that it recursively
+does a bitwise exclusive-or rather than a bitwise inclusive-or.
 
 =back
 
@@ -1037,6 +1046,18 @@ doesn't exist in C<$r>, then the result is just C<$r>.
 This function results in a C<Relation> that has the same heading as its
 argument, but with an empty body.
 
+=item C<sys.rtn.Relation.not of Relation (RO: Relation $v)>
+
+This function results in the relational I<not> of its argument.  The result
+relation has the same heading as its argument, and its body contains all of
+the tuples that are in the universal relation of the same heading (that is,
+the relation having all the tuples that could ever exist in a relation with
+that heading) and that are not in the argument; that is, the result is the
+relational difference when the argument is subtracted from said universal
+relation.  This function will fail if said universal relation is impossible
+or impractically large to represent, such as when any attributes are of
+infinite types.
+
 =item C<sys.rtn.Relation.rename of Relation (RO: Relation $v,
 Cat.AttrRenameMap $map)>
 
@@ -1159,13 +1180,17 @@ each pair of input values and relationally intersects (which is both
 commutative and associative) them together until just one is left, which is
 the result.  The result relation has the same heading as all of its inputs,
 and its body contains only the tuples that are in every one of the input
-relations.  If C<$v> has zero values, then C<union> results in the empty
-relation with the same heading, which is the per-distinct-heading identity
-value for relational intersection.  Note that this I<intersection> operator
-is conceptually a special case of C<join>, applicable when the headings of
-the inputs are the same, and the other will produce the same result as this
-when given the same inputs, but with the exception that I<intersection> has
-a different identity value when given zero inputs.
+relations.  If C<$v> has zero values, then C<intersection> results in the
+universal relation with the same heading (that is, the relation having all
+the tuples that could ever exist in a relation with that heading), which is
+the per-distinct-heading identity value for relational intersection.  Note
+that this I<intersection> operator is conceptually a special case of
+C<join>, applicable when the headings of the inputs are the same, and the
+other will produce the same result as this when given the same inputs, but
+with the exception that I<intersection> has a different identity value when
+given zero inputs.  This function will fail on a C<$v> of zero values if
+the result type's universal relation is impossible or impractically large
+to represent, such as when any attributes are of infinite types.
 
 =item C<sys.rtn.Relation.difference of Relation (RO: Relation $source,
 Relation $filter)>
