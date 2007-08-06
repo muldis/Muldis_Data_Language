@@ -5,8 +5,10 @@ use warnings FATAL => 'all';
 
 use Test::More;
 
-plan( 'tests' => 1 );
+plan( 'tests' => 2 );
 
-pass "dummy test so CPAN testers doesn't complain about no tests";
+use_ok( 'Language::MuldisD' );
+is( $Language::MuldisD::VERSION, 0.003000,
+    'Language::MuldisD is the correct version' );
 
 1; # Magic true value required at end of a reusable file's code.

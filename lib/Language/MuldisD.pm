@@ -1,3 +1,23 @@
+use 5.008001;
+use utf8;
+use strict;
+use warnings FATAL => 'all';
+
+###########################################################################
+###########################################################################
+
+{ package Language::MuldisD; # package
+    our $VERSION = 0.003000;
+    # Note that Perl code only exists at all in this file in order to help
+    # the CPAN indexer handle the distribution properly.
+} # package Language::MuldisD
+
+###########################################################################
+###########################################################################
+
+1; # Magic true value required at end of a reusable file's code.
+__END__
+
 =pod
 
 =encoding utf8
@@ -18,7 +38,7 @@ This distribution is the formal specification of the Muldis D language.
 I<This documentation is pending.>
 
 For one manner of introduction to it, see the included
-L<Language::MuldisD::Language> file, which has the start of the
+L<Language::MuldisD::Basics> file, which has the start of the
 specification itself.
 
 For another manner of introduction, see the separately distributed
