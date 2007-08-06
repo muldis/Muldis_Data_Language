@@ -19,29 +19,47 @@
     Num.pod and Temporal.pod 0.4.0.  The other versioned files are
     unchanged. TODO: ACTUALLY UPDATE THOSE VNUMS.
 
-    * In Core.pod and Num.pod and Temporal.pod, updated each of the ordinal
-    data types to specify what their minimum and maximum values are, or
-    whether said are infinities.
+    * (Basics.pod)  Introduced complete vs parameterized types.
 
-    * In Core.pod, redefined the Maybe-returning N-ary functions
+    * (Basics.pod)  Every data type is now named and is referred to by that
+    name, the change being that only scalar types used to have names.  This
+    said, the actual identities of types haven't changed, so 2
+    differently-named declarations of types that aren't scalar and have the
+    same structure will still be considered to be the same actual type; the
+    names for types that aren't scalars are simply aliases for this
+    identity.  This change was made to greatly simplify (and reduce errors
+    in) the process of declaring data types, particularly hierarchical
+    types, and declaring nonscalar values.
+
+    * (Core.pod)  Added new operators
+    Universal.(is_value_of_type|treat|default).
+
+    * (Core.pod)  Renamed each of the operators Universal.(equal|not_equal)
+    and Relation.(empty|not_empty) to prepend an "is_".
+
+    * (Core.pod, Num.pod, Temporal.pod)  Updated each of the ordinal data
+    types to specify what their minimum and maximum values are, or whether
+    said are infinities.
+
+    * (Core.pod)  Redefined the Maybe-returning N-ary functions
     Ordinal.(min|max) with versions that instead try to return that
     functions' identity value when given zero argument values, and
     fails/dies in just specific situations where said identity is
     impossibly or impractically large to handle.  Also added 2 new
     functions Ordinal.maybe_(min|max) that provide the old behaviour.
 
-    * In Core.pod, redefined the N-ary functions Blob.(and|or|xor) from
-    returning Maybes to returning identity values on zero inputs.  Also
-    corrected the Relation.intersection function definition such that its
-    identity value is actually the universal relation for its heading, not
-    the empty relation; depending how big that is, the function may now
+    * (Core.pod)  Redefined the N-ary functions Blob.(and|or|xor) from
+    resulting in Maybes to resulting in identity values on zero inputs.
+    Also corrected the Relation.intersection function definition such that
+    its identity value is actually the universal relation for its heading,
+    not the empty relation; depending how big that is, the function may now
     possibly fail on zero input values.  Also added new function
     Relation.not, which results in its argument subtracted from the
     universal relation for the same heading; this may possibly fail if that
     is too big a value.
 
-    * In Temporal.pod, restricted the Temporal.Duration(|OfDays) types to
-    be specific to data with time zone offsets, and added 2 more types
+    * (Temporal.pod)  Restricted the Temporal.Duration(|OfDays) types to be
+    specific to data with time zone offsets, and added 2 more types
     Temporal.Duration(|OfDays)NoTZ to handle the other possibility; the
     idea is that the former should be considered more accurate than the
     latter, as per DateTime vs DateTimeNoTZ.  Also updated all 4 to permit

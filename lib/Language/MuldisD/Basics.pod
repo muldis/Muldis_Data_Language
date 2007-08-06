@@ -581,6 +581,17 @@ I<possreps> (possible representations) have declared types.  I<Perhaps it
 should be said that all root types are defined by this last sentence?>  A
 I<leaf type> is a data type that has no proper subtypes save for C<Empty>.
 
+A I<complete type> is a data type that is fully defined, and for which it
+would be possible to have values that are of just that data type, if it
+didn't have proper subtypes.  An I<incomplete type> or I<parameterized
+type> is a data type that is not fully defined, but serves as a template by
+which complete types can be defined; there can never be values that are
+just of a parameterized type.  The most important complete types are
+C<Bool>, C<Int>, C<Blob>, C<Text>; the most important incomplete types are
+C<Tuple>, C<Relation>.  For that matter, any implicit supertypes such as
+C<Universal> and C<Scalar> could be considered incomplete types, but that
+they are not parameterized.
+
 =head2 Type Identification
 
 All values in the Muldis D type system are broadly categorized into 5
@@ -626,6 +637,12 @@ A quasi-nonscalar type is the same as a nonscalar type as far as the means
 of identifying it go (by its structure, not by its name), but that
 particular kinds of components are permitted in quasi-nonscalar types that
 aren't permitted in nonscalar types (and aren't permitted in scalar types).
+
+To keep things simpler, every data type in Muldis D has a name by which it
+is referenced, even nonscalar and quasi-nonscalar types; however, the names
+of types that are not scalar types are simply convenient aliases for their
+true identities, which are their structures (the convenience allows various
+Muldis D catalog features to be designed and implemented more easily).
 
 =head2 Scalar Types
 
@@ -864,8 +881,8 @@ defining user chose.
 Muldis D is universally polymorphic to at least a small degree, such that
 every data type without exception has both an C<assign> update operator
 (for assigning a value of that type to a variable of that type) and an
-C<equal> function for testing 2 values of that type for equality (as well
-as C<not_equal>, for inequality).  Moreover, these operators exist
+C<is_equal> function for testing 2 values of that type for equality (as
+well as C<is_not_equal>, for inequality).  Moreover, these operators exist
 implicitly, so when one defines the initial possrep of a new type, they get
 those operators for the type at no extra cost.
 
@@ -1254,7 +1271,7 @@ Note that the following namespaces assume that a program that is written in
 Muldis D executes possibly either standalone or a peer-to-peer process
 that can have its global variables made visible to other processes, or have
 others' made visible to it.  Or in other words, the program can both manage
-its own database and be a DBMS client, and the program can either just use
+its own dbvars and be a DBMS client, and the program can either just use
 the DBMS itself or be a server of it.
 
 =over

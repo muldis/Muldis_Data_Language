@@ -184,9 +184,10 @@ default value is C<Bool:false>.  The cardinality of this type is infinity.
 
 A C<Bool> is an enumeration consisting of the 2 values C<Bool:false> and
 C<Bool:true>.  It represents a truth value, and is the result type of any
-C<equal> or C<not_equal> routine; it is the only essential scalar data type
-of a B<D> language.  Its default and minimum value is C<Bool:false>; its
-maximum value is C<Bool.true>.  The cardinality of this type is 2.
+C<is_equal> or C<is_not_equal> routine; it is the only essential scalar
+data type of a B<D> language.  Its default and minimum value is
+C<Bool:false>; its maximum value is C<Bool.true>.  The cardinality of this
+type is 2.
 
 =item C<sys.type.Order>
 
@@ -413,7 +414,7 @@ These functions are applicable to values of any data type at all.
 
 =over
 
-=item C<sys.rtn.Universal.equal of Bool (RO: Some.Universal $v1,
+=item C<sys.rtn.Universal.is_equal of Bool (RO: Some.Universal $v1,
 Some.Universal $v2)>
 
 This function results in C<Bool:true> iff its 2 arguments are exactly the
@@ -426,11 +427,49 @@ same headings; 3. at least one type is a generic (eg-C<Universal>) or
 incomplete (eg-C<Seq>) type, and it is a supertype of the other.  This
 function is commutative.
 
-=item C<sys.rtn.Universal.not_equal of Bool (RO: Some.Universal $v1,
+=item C<sys.rtn.Universal.is_not_equal of Bool (RO: Some.Universal $v1,
 Some.Universal $v2)>
 
-This function is exactly the same as C<sys.rtn.Universal.equal> except that
-it results in the opposite boolean value when given the same arguments.
+This function is exactly the same as C<sys.rtn.Universal.is_equal> except
+that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<sys.rtn.Universal.is_value_of_type of Bool (RO: Cat.LongName $type,
+Universal $v)>
+
+This function results in C<Bool:true> iff the value of its C<$v> argument
+is a member of the data type whose name is given in the C<$type> argument,
+and C<Bool:false> otherwise.  As trivial cases, this function always
+results in C<Bool:true> if the named type is C<Universal>, and
+C<Bool:false> if it is C<Empty>.  This function will fail if the named type
+doesn't exist in the virtual machine.
+
+=item C<sys.rtn.Universal.treat of Some.Universal (RO: Cat.LongName $as,
+Some.Universal $v)>
+
+This function results in the value of its C<$v> argument, but that the
+declared type of the result is the not-C<Empty> data type whose name is
+given in the C<$as> argument.  This function will fail if the named type
+doesn't exist in the virtual machine, or if C<$v> isn't a member of the
+named type.  The purpose of C<treat> is to permit taking values from a
+context having a more generic declared type, and using them in a context
+having a more specific declared type; such an action would otherwise be
+blocked at compile time due to a type-mismatch error; C<treat> causes the
+type-mismatch validation, and possible failure, to happen at runtime
+instead, on the actual value rather than declared value.  For example, if
+you are storing an C<Int> value in a C<Scalar>-typed variable, using
+C<treat> will cause the compiler to let you use that variable as an
+argument to C<Int.sum>, which it otherwise wouldn't.
+
+=item C<sys.rtn.Universal.default of Some.Universal (RO: Cat.LongName $of)>
+
+This function results in the default value of the not-C<Empty> data type
+whose name is given in the C<$of> argument, and the declared type of the
+result is that same type.  This function will fail if the named type
+doesn't exist in the virtual machine, either at compile or runtime
+depending whether the type is in the system or user namespace.  This
+function is conceptually implicitly used to provide default values for
+variables, so they always hold valid values of their declared type.
 
 =back
 
@@ -993,20 +1032,20 @@ attributes it has).
 This function results in the cardinality of its argument (that is, the
 count of tuples its body has).
 
-=item C<sys.rtn.Relation.empty of Bool (RO: Relation $v)>
+=item C<sys.rtn.Relation.is_empty of Bool (RO: Relation $v)>
 
 This function results in C<Bool:true> iff its argument has zero tuples, and
 C<Bool:false> otherwise.  Note that if you are using a C<Maybe> to
 represent a sparse data item, analagously to a SQL nullable context, then
-testing the C<Maybe> with C<empty> is analagous to testing a SQL nullable
-with C<is null>.
+testing the C<Maybe> with C<is_empty> is analagous to testing a SQL
+nullable with C<is null>.
 
-=item C<sys.rtn.Relation.not_empty of Bool (RO: Relation $v)>
+=item C<sys.rtn.Relation.is_not_empty of Bool (RO: Relation $v)>
 
 This function is exactly the same as C<sys.rtn.Relation.empty> except that
 it results in the opposite boolean value when given the same argument.  And
-following the analogy with C<empty>, C<not_empty> is analagous to SQL's
-C<is not null>.
+following the analogy with C<is_empty>, C<is_not_empty> is analagous to
+SQL's C<is not null>.
 
 =item C<sys.rtn.Relation.exists of Bool (RO: Relation $r, Tuple $t)>
 
