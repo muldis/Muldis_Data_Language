@@ -7,7 +7,7 @@ use warnings FATAL => 'all';
 ###########################################################################
 
 { package Language::MuldisD; # package
-    our $VERSION = 0.003000;
+    our $VERSION = 0.004000;
     # Note that Perl code only exists at all in this file in order to help
     # the CPAN indexer handle the distribution properly.
 } # package Language::MuldisD
@@ -29,7 +29,7 @@ Formal spec of Muldis D relational DBMS lang
 
 =head1 VERSION
 
-This document is Language::MuldisD version 0.3.0.
+This document is Language::MuldisD version 0.4.0.
 
 =head1 DESCRIPTION
 
