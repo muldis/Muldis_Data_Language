@@ -476,6 +476,162 @@ Examples:
         },
     ] ]
 
+=head2 sys.type.Set
+
+This node type represents a set value.  It has 3 elements:
+
+=over
+
+=item Node type: the Perl C<Str> value C<Set>.
+
+=item Type name; a Perl C<Str> value (or char-mode Perl scalar).
+
+=item The payload; a Perl C<Array|Seq|Set|KeySet> value.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.type.Set> value whose heading
+was predefined, as a set data type, for referencing now by the type name,
+and whose body is defined now by the payload.  Each element of the payload
+defines a unary tuple of the new set; each element is a PHMD node that
+defines the C<value> attribute of the tuple.
+
+Examples:
+
+    [ 'Set', 'nat.type.account.country_name', [
+        [ 'Text', 'Canada' ],
+        [ 'Text', 'Spain' ],
+        [ 'Text', 'Jordan' ],
+        [ 'Text', 'Thailand' ],
+    ] ]
+
+    [ 'Set', 'nat.type.stats.some_ages', [
+        [ 'Int', 'perl_int', 3 ],
+        [ 'Int', 'perl_int', 16 ],
+        [ 'Int', 'perl_int', 85 ],
+    ] ]
+
+=head2 sys.type.Maybe
+
+This node type represents a maybe value; it is interpreted as a Muldis D
+C<sys.type.Maybe>.  Its format is the same as for C<sys.type.Set> but that
+the node type is 'Maybe', and the payload must have at most 1 element.
+
+Examples:
+
+    [ 'Maybe', 'nat.type.gene.person_death_date', [] ]
+
+    [ 'Maybe', 'nat.type.gene.person_death_date', [
+        [ 'Text', '2003.07.24' ],
+    ] ]
+
+=head2 sys.type.Seq
+
+This node type represents a sequence value.  It has 3 elements:
+
+=over
+
+=item Node type: the Perl C<Str> value C<Seq>.
+
+=item Type name; a Perl C<Str> value (or char-mode Perl scalar).
+
+=item The payload; a Perl C<Array|Seq> value.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.type.Seq> value whose heading
+was predefined, as a sequence data type, for referencing now by the type
+name, and whose body is defined now by the payload.  Each element of the
+payload defines a binary tuple of the new sequence; the element value is a
+PHMD node that defines the C<value> attribute of the tuple, and the element
+index is used as the C<index> attribute o the tuple.
+
+Examples:
+
+    [ 'Seq', 'nat.type.gene.sorted_person_name', [
+        [ 'Text', 'Alphonse' ],
+        [ 'Text', 'Edward' ],
+        [ 'Text', 'Winry' ],
+    ] ]
+
+    [ 'Seq', 'nat.type.stats.samples_by_order', [
+        [ 'Int', 'perl_int', 57 ],
+        [ 'Int', 'perl_int', 45 ],
+        [ 'Int', 'perl_int', 63 ],
+        [ 'Int', 'perl_int', 61 ],
+    ] ]
+
+=head2 sys.type.Bag
+
+This node type represents a bag value.  It has 3 elements:
+
+=over
+
+=item Node type: the Perl C<Str> value C<Bag>.
+
+=item Type name; a Perl C<Str> value (or char-mode Perl scalar).
+
+=item Format; one of: C<aoa_counted>, C<array_repeated>, C<perl_bag> (p6).
+
+=item The payload; a Perl C<Bag|KeyBag> value or C<Array|Seq> or
+C<Array|Seq> of C<Array|Seq>.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.type.Bag> value whose heading
+was predefined, as a bag data type, for referencing now by the type name,
+and whose body is defined now by the payload.  The payload is interpreted
+as follows:
+
+=over
+
+=item If the format is C<aoa_counted>, then the payload must be a Perl
+C<Array|Seq>, and each element of the payload defines a binary tuple of the
+new bag; the element is a 2-element C<Array|Seq>, and those 2 elements, by
+index order, are PHMD nodes that define the C<value> and C<count>
+attributes of the tuple; the count must be a positive integer.
+
+=item If the format is C<array_repeated>, then the payload must be a Perl
+C<Array|Seq>, and each element of the payload contributes to a binary tuple
+of the new bag; the element value is a PHMD node that defines the C<value>
+attribute of the tuple.  The bag has 1 tuple for every distinct (after
+format normalization) element value in the payload, and the C<count>
+attribute of that tuple says how many instances of said element were in the
+payload.
+
+=item If the format is C<perl_bag>, then the payload must be a Perl 6
+(there is no Perl 5 analogy) C<Bag|KeyBag> value; the payload elements are
+PHMD nodes corresponding to the C<value> attribute of the new bag's tuples,
+and the mapping is as you should expect.
+
+=back
+
+Examples:
+
+    [ 'Bag', 'nat.type.inventory.fruit', 'aoa_counted', [
+        [
+            [ 'Text', 'Apple' ],
+            [ 'PInt', 'perl_uint', 500 ],
+        ],
+        [
+            [ 'Text', 'Orange' ],
+            [ 'PInt', 'perl_uint', 300 ],
+        ],
+        [
+            [ 'Text', 'Banana' ],
+            [ 'PInt', 'perl_uint', 400 ],
+        ],
+    ] ]
+
+    [ 'Bag', 'nat.type.inventory.whatsits', 'array_repeated', [
+        [ 'Text', 'Foo' ],
+        [ 'Text', 'Quux' ],
+        [ 'Text', 'Foo' ],
+        [ 'Text', 'Bar' ],
+        [ 'Text', 'Baz' ],
+        [ 'Text', 'Baz' ],
+    ] ]
+
 =head1 SEE ALSO
 
 Go to L<Language::MuldisD> for the majority of distribution-internal
