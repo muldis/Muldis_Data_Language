@@ -377,7 +377,7 @@ Examples:
 
 =head2 sys.type.Tuple
 
-This node type represents a tuple value.  It has 4 elements:
+This node type represents a tuple value.  It has 3 elements:
 
 =over
 
@@ -385,48 +385,34 @@ This node type represents a tuple value.  It has 4 elements:
 
 =item Type name; a Perl C<Str> value (or char-mode Perl scalar).
 
-=item Format; one of: C<perl_hash>, C<perl_aoa>.
-
-=item The payload.
+=item The payload; a Perl C<Hash|Mapping> value.
 
 =back
 
-This node is interpreted as a Muldis D C<sys.type.Tuple> value as follows:
-
-=over
-
-=item If the format is C<perl_hash>, then the payload must be a Perl
-C<Hash>, each key+value pair of which defines a named attribute of the new
-tuple; the pair's key and value are, respectively, a Perl C<Str> that
-specifies the attribute name, and a PHMD node that specifies the attribute
-value.
-
-=item If the format is C<perl_aoa>, then the payload must be a Perl
-C<Array>, each element of which is a 2-element Perl C<Array> that defines a
-named attribute of the new tuple; the 2 sub-array elements are, in order, a
-Perl C<Str> that specifies the attribute name, and a PHMD node that
-specifies the attribute value.
-
-=back
-
-The list of named values in the payload must correspond to the attribute
-names and types declared by the tuple type named by the tuple PHMD node
-type name; each attribute type may be any.
+This node is interpreted as a Muldis D C<sys.type.Tuple> value whose
+heading was predefined, as a tuple data type, for referencing now by the
+type name, and whose body is defined now by the payload.  Each key+value
+pair of the payload defines a named attribute of the new tuple; the pair's
+key and value are, respectively, a Perl C<Str> that specifies the attribute
+name, and a PHMD node that specifies the attribute value.  The tuple body
+defined by the payload must correspond to the tuple heading named by the
+type name; that is, they must have the same degree, same attribute names,
+and compatible types.
 
 Examples:
 
-    [ 'Tuple', 'sys.type.Tuple.D0', 'perl_hash', {} ]
+    [ 'Tuple', 'sys.type.Tuple.D0', {} ]
 
-    [ 'Tuple', 'nat.type.account.user.t', 'perl_hash', {
+    [ 'Tuple', 'nat.type.account.user.t', {
         'login_name' => [ 'Text', 'hartmark' ],
         'login_pass' => [ 'Text', 'letmein' ],
         'is_special' => [ 'Bool', 'md_enum', 'true' ],
     } ]
 
-    [ 'Tuple', 'nat.type.gene.person.t', 'perl_aoa', [
-        [ 'name', [ 'Text', 'Michelle' ] ],
-        [ 'age' , [ 'Int', 'perl_int', 17 ] ],
-    ] ]
+    [ 'Tuple', 'nat.type.gene.person.t', {
+        'name' => [ 'Text', 'Michelle' ],
+        'age'  => [ 'Int', 'perl_int', 17 ],
+    } ]
 
 =head2 sys.type.Database
 
@@ -438,19 +424,19 @@ relation types.
 
 Examples:
 
-    [ 'Database', 'sys.type.Database.D0', 'perl_hash', {} ]
+    [ 'Database', 'sys.type.Database.D0', {} ]
 
-    [ 'Database', 'nat.type.account', 'perl_hash', {
+    [ 'Database', 'nat.type.account', {
         'user' => [ 'Relation', 'nat.type.account.user.r', ... ],
     } ]
 
-    [ 'Database', 'nat.type.gene', 'perl_aoa', [
-        'person', [ 'Relation', 'nat.type.gene.person.r', ... ],
-    ] ]
+    [ 'Database', 'nat.type.gene', {
+        'person' => [ 'Relation', 'nat.type.gene.person.r', ... ],
+    } ]
 
 =head2 sys.type.Relation
 
-This node type represents a relation value.  It has 4 elements:
+This node type represents a relation value.  It has 3 elements:
 
 =over
 
@@ -458,40 +444,24 @@ This node type represents a relation value.  It has 4 elements:
 
 =item Type name; a Perl C<Str> value (or char-mode Perl scalar).
 
-=item Format; one of: C<perl_aoh>, C<perl_aoaoa>.
-
-=item The payload.
+=item The payload; a Perl C<Array|Seq|Set|KeySet> of C<Hash|Mapping> value.
 
 =back
 
-This node is interpreted as a Muldis D C<sys.type.Relation> value as
-follows:
-
-=over
-
-=item If the format is C<perl_aoh>, then the payload must be a Perl
-C<Array>, of which each element defines a tuple of the new relation; each
-element is a Perl C<Hash>, as per the payload of a tuple-defining PHMD node
-whose format is C<perl_hash>.
-
-=item If the format is C<perl_aoaoa>, then the payload must be a Perl
-C<Array>, of which each element defines a tuple of the new relation; each
-element is a Perl C<Array>, as per the payload of a tuple-defining PHMD
-node whose format is C<perl_aoa>.
-
-=back
-
-All of the payload elements must be of the same degree and must declare the
-same attribute names and compatible types, each payload element as per the
-payload of a tuple-defining PHMD.
+This node is interpreted as a Muldis D C<sys.type.Relation> value whose
+heading was predefined, as a relation data type, for referencing now by the
+type name, and whose body is defined now by the payload.  Each element of
+the payload defines a tuple of the new relation; each element is as per the
+payload of a tuple-defining PHMD node, including the need to correspond to
+the relation heading, which is common to all tuples in it.
 
 Examples:
 
-    [ 'Relation', 'sys.type.Relation.D0C0', 'perl_hash', [] ]
+    [ 'Relation', 'sys.type.Relation.D0C0', [] ]
 
-    [ 'Relation', 'sys.type.Relation.D0C1', 'perl_hash', [ {} ] ]
+    [ 'Relation', 'sys.type.Relation.D0C1', [ {} ] ]
 
-    [ 'Relation', 'nat.type.account.user.r', 'perl_hash', [
+    [ 'Relation', 'nat.type.account.user.r', [
         {
             'login_name' => [ 'Text', 'hartmark' ],
             'login_pass' => [ 'Text', 'letmein' ],
@@ -499,11 +469,11 @@ Examples:
         },
     ] ]
 
-    [ 'Relation', 'nat.type.gene.person.r', 'perl_aoa', [
-        [
-            [ 'name', [ 'Text', 'Michelle' ] ],
-            [ 'age' , [ 'Int', 'perl_int', 17 ] ],
-        ],
+    [ 'Relation', 'nat.type.gene.person.r', [
+        {
+            'name' => [ 'Text', 'Michelle' ],
+            'age'  => [ 'Int', 'perl_int', 17 ],
+        },
     ] ]
 
 =head1 SEE ALSO
