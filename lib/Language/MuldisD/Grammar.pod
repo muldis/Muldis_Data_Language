@@ -150,7 +150,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
     token just_a_tuple {
         (Tuple)
         <spec_sep>
-        <sys_type_name>
+        <type_name>
         <spec_sep>
         <tuple_body>
     }
@@ -158,14 +158,14 @@ correctly.  Any remaining errors should be corrected as soon as possible.
     token database {
         (Database)
         <spec_sep>
-        <sys_type_name>
+        <type_name>
         <spec_sep>
         <list_open>
             (((<relation_typed_attr>) <list_sep>)*)
         <list_close>
     }
 
-    token relation_typed_attr { <cat_short_name> <pair_sep> <relation> }
+    token relation_typed_attr { <attr_name> <pair_sep> <relation> }
 
     token relation {
           <just_a_relation>
@@ -178,7 +178,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
     token just_a_relation {
         (Relation)
         <spec_sep>
-        <sys_type_name>
+        <type_name>
         <spec_sep>
         <list_open>
             (((<tuple_body>) <list_sep>)*)
@@ -191,12 +191,14 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         <list_close>
     }
 
-    token attr { <cat_short_name> <pair_sep> <literal> }
+    token attr { <attr_name> <pair_sep> <literal> }
+
+    token attr_name { <quoted_text_str> }
 
     token set {
         (Set)
         <spec_sep>
-        <sys_type_name>
+        <type_name>
         <spec_sep>
         <list_open>
             (((<literal>) <list_sep>)*)
@@ -206,7 +208,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
     token maybe {
         (Maybe)
         <spec_sep>
-        <sys_type_name>
+        <type_name>
         <spec_sep>
         <list_open>
             (<literal>?)
@@ -223,7 +225,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         <spec_sep>
         (index)
         <spec_sep>
-        <sys_type_name>
+        <type_name>
         <spec_sep>
         <list_open>
             (((<index>) <pair_sep> (<literal>) <list_sep>)*)
@@ -237,7 +239,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         <spec_sep>
         (order)
         <spec_sep>
-        <sys_type_name>
+        <type_name>
         <spec_sep>
         <list_open>
             (((<literal>) <list_sep>)*)
@@ -254,7 +256,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         <spec_sep>
         (count)
         <spec_sep>
-        <sys_type_name>
+        <type_name>
         <spec_sep>
         <list_open>
             (((<literal>) <pair_sep> (<count>) <list_sep>)*)
@@ -268,7 +270,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         <spec_sep>
         (repeat)
         <spec_sep>
-        <sys_type_name>
+        <type_name>
         <spec_sep>
         <list_open>
             (((<literal>) <list_sep>)*)
@@ -283,7 +285,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
 
     token pair_sep { \s+ '=>' \s+ }
 
-    token sys_type_name { <quoted_text_str> }
+    token type_name { <quoted_text_str> }
 
     token cat_short_name {
         (CatShortName)
@@ -358,6 +360,48 @@ The following are fragments of actual Concrete Muldis D code.
     Text:''
 
     NEText:'Perl'
+
+    Tuple:'sys.type.Tuple.D0':{}
+
+    Tuple:'nat.type.account.user.t':{
+        'login_name' => Text:'hartmark',
+        'login_pass' => Text:'letmein',
+        'is_special' => Bool:true,
+    }
+
+    Tuple:'nat.type.gene.person.t':{
+        'name' => Text:'Michelle',
+        'age'  => Int:9:17,
+    }
+
+    Database:'sys.type.Database.D0':{}
+    
+    Database:'nat.type.account':{
+        'user' => Relation:'nat.type.account.user.r':{ ... },
+    }
+    
+    Database:'nat.type.gene':{
+        'person' => Relation:'nat.type.gene.person.r':{ ... },
+    }
+
+    Relation:'sys.type.Relation.D0C0':{}
+
+    Relation:'sys.type.Relation.D0C1':{ {}, }
+
+    Relation:'nat.type.account.user.r':{
+        {
+            'login_name' => Text:'hartmark',
+            'login_pass' => Text:'letmein',
+            'is_special' => Bool:true,
+        },
+    }
+    
+    Relation:'nat.type.gene.person.r':{
+        {
+            'name' => Text:'Michelle',
+            'age'  => Int:9:17,
+        },
+    }
 
 =head1 SEE ALSO
 

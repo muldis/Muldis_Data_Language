@@ -81,15 +81,17 @@ C<MuldisD> for this spec.
 single Perl C<Str> value, or as a Perl C<Array> value containing separate
 values for the language version and authority.
 
-=item The payload, which is a Perl C<Array>, and is any other PHMD node.
+=item The payload is any other PHMD node.
 
 =back
 
 Examples of a root node:
 
-    [ 'MuldisD', [ '1.2.3', 'cpan:DUNCAND' ], [...] ]
+    [ 'MuldisD', [ '1.2.3', 'cpan:DUNCAND' ],
+        [ 'Bool', 'md_enum', 'false' ] ]
 
-    [ 'MuldisD', ':ver<1.2.3>:auth<cpan:DUNCAND>', [...] ]
+    [ 'MuldisD', ':ver<1.2.3>:auth<cpan:DUNCAND>',
+        [ 'Bool', 'md_enum', 'false' ] ]
 
 Both the payload node under the root node and every other node is a Perl
 C<Array> with usually 2+ elements, where the first element is a Perl C<Str>
@@ -207,7 +209,7 @@ This node is interpreted as a Muldis D C<sys.type.Int> value as follows:
 
 =over
 
-=item If the format is C<md_enum>, then the max-col-val must be a Perl
+=item If the format is C<md_int>, then the max-col-val must be a Perl
 C<Str> composed of a single C<[1-9A-Z]> character, and the payload must be
 a Perl C<Str> of the format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z]>* >>.  This
 format specifically is what the Concrete Muldis D grammar uses, and is the
@@ -370,6 +372,139 @@ be the empty string.
 Examples:
 
     [ 'NEText', 'Perl' ]
+
+=head1 NONSCALAR VALUES
+
+=head2 sys.type.Tuple
+
+This node type represents a tuple value.  It has 4 elements:
+
+=over
+
+=item Node type: the Perl C<Str> value C<Tuple>.
+
+=item Type name; a Perl C<Str> value (or char-mode Perl scalar).
+
+=item Format; one of: C<perl_hash>, C<perl_aoa>.
+
+=item The payload.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.type.Tuple> value as follows:
+
+=over
+
+=item If the format is C<perl_hash>, then the payload must be a Perl
+C<Hash>, each key+value pair of which defines a named attribute of the new
+tuple; the pair's key and value are, respectively, a Perl C<Str> that
+specifies the attribute name, and a PHMD node that specifies the attribute
+value.
+
+=item If the format is C<perl_aoa>, then the payload must be a Perl
+C<Array>, each element of which is a 2-element Perl C<Array> that defines a
+named attribute of the new tuple; the 2 sub-array elements are, in order, a
+Perl C<Str> that specifies the attribute name, and a PHMD node that
+specifies the attribute value.
+
+=back
+
+The list of named values in the payload must correspond to the attribute
+names and types declared by the tuple type named by the tuple PHMD node
+type name; each attribute type may be any.
+
+Examples:
+
+    [ 'Tuple', 'sys.type.Tuple.D0', 'perl_hash', {} ]
+
+    [ 'Tuple', 'nat.type.account.user.t', 'perl_hash', {
+        'login_name' => [ 'Text', 'hartmark' ],
+        'login_pass' => [ 'Text', 'letmein' ],
+        'is_special' => [ 'Bool', 'md_enum', 'true' ],
+    } ]
+
+    [ 'Tuple', 'nat.type.gene.person.t', 'perl_aoa', [
+        [ 'name', [ 'Text', 'Michelle' ] ],
+        [ 'age' , [ 'Int', 'perl_int', 17 ] ],
+    ] ]
+
+=head2 sys.type.Database
+
+This node type represents a database value; it is interpreted as a Muldis D
+C<sys.type.Database>.  Its format is the same as for C<sys.type.Tuple> but
+that the node type is 'Database', the type name must be of a database type
+rather than just a tuple type, and all payload PHMD values must be of
+relation types.
+
+Examples:
+
+    [ 'Database', 'sys.type.Database.D0', 'perl_hash', {} ]
+
+    [ 'Database', 'nat.type.account', 'perl_hash', {
+        'user' => [ 'Relation', 'nat.type.account.user.r', ... ],
+    } ]
+
+    [ 'Database', 'nat.type.gene', 'perl_aoa', [
+        'person', [ 'Relation', 'nat.type.gene.person.r', ... ],
+    ] ]
+
+=head2 sys.type.Relation
+
+This node type represents a relation value.  It has 4 elements:
+
+=over
+
+=item Node type: the Perl C<Str> value C<Relation>.
+
+=item Type name; a Perl C<Str> value (or char-mode Perl scalar).
+
+=item Format; one of: C<perl_aoh>, C<perl_aoaoa>.
+
+=item The payload.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.type.Relation> value as
+follows:
+
+=over
+
+=item If the format is C<perl_aoh>, then the payload must be a Perl
+C<Array>, of which each element defines a tuple of the new relation; each
+element is a Perl C<Hash>, as per the payload of a tuple-defining PHMD node
+whose format is C<perl_hash>.
+
+=item If the format is C<perl_aoaoa>, then the payload must be a Perl
+C<Array>, of which each element defines a tuple of the new relation; each
+element is a Perl C<Array>, as per the payload of a tuple-defining PHMD
+node whose format is C<perl_aoa>.
+
+=back
+
+All of the payload elements must be of the same degree and must declare the
+same attribute names and compatible types, each payload element as per the
+payload of a tuple-defining PHMD.
+
+Examples:
+
+    [ 'Relation', 'sys.type.Relation.D0C0', 'perl_hash', [] ]
+
+    [ 'Relation', 'sys.type.Relation.D0C1', 'perl_hash', [ {} ] ]
+
+    [ 'Relation', 'nat.type.account.user.r', 'perl_hash', [
+        {
+            'login_name' => [ 'Text', 'hartmark' ],
+            'login_pass' => [ 'Text', 'letmein' ],
+            'is_special' => [ 'Bool', 'md_enum', 'true' ],
+        },
+    ] ]
+
+    [ 'Relation', 'nat.type.gene.person.r', 'perl_aoa', [
+        [
+            [ 'name', [ 'Text', 'Michelle' ] ],
+            [ 'age' , [ 'Int', 'perl_int', 17 ] ],
+        ],
+    ] ]
 
 =head1 SEE ALSO
 
