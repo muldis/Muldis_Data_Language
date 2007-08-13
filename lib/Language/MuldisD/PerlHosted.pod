@@ -9,7 +9,7 @@ How to format Perl hosted Abstract Muldis D
 
 =head1 VERSION
 
-This document is Language::MuldisD::PerlHosted version 0.0.0.
+This document is Language::MuldisD::PerlHosted version 0.0.1.
 
 =head1 PREFACE
 
@@ -74,14 +74,20 @@ The root Perl C<Array> of a PHMD value has 3 elements, which are:
 
 =over
 
-=item The AST language/schema name, specifically the Perl C<Str> value
+=item *
+
+The AST language/schema name, specifically the Perl C<Str> value
 C<MuldisD> for this spec.
 
-=item The AST language/schema version plus authority, encoded either as a
+=item *
+
+The AST language/schema version plus authority, encoded either as a
 single Perl C<Str> value, or as a Perl C<Array> value containing separate
 values for the language version and authority.
 
-=item The payload is any other PHMD node.
+=item *
+
+The payload is any other PHMD node.
 
 =back
 
@@ -110,11 +116,17 @@ This node type represents a logical boolean value.  It has 3 elements:
 
 =over
 
-=item Node type: the Perl C<Str> value C<Bool>.
+=item *
 
-=item Format; one of: C<md_enum>, C<perl_bool>, C<any_perl>.
+Node type: the Perl C<Str> value C<Bool>.
 
-=item The payload.
+=item *
+
+Format; one of: C<md_enum>, C<perl_bool>, C<any_perl>.
+
+=item *
+
+The payload.
 
 =back
 
@@ -122,17 +134,23 @@ This node is interpreted as a Muldis D C<sys.type.Bool> value as follows:
 
 =over
 
-=item If the format is C<md_enum>, then the payload must be a Perl C<Str>
+=item *
+
+If the format is C<md_enum>, then the payload must be a Perl C<Str>
 having one of the values C<false>, C<true>.  This format specifically is
 what the Concrete Muldis D grammar uses, and is the result of parsing it.
 
-=item If the format is C<perl_bool>, then:  Under Perl 6, the payload must
+=item *
+
+If the format is C<perl_bool>, then:  Under Perl 6, the payload must
 be a Perl C<Bool>, and so C<Bool::False> and C<Bool::True> are mapped
 directly.  Under Perl 5, the payload must be just the specific result of a
 Perl 5 logical expression, such as C<(1 == 0)> or C<(1 == 1)>, and nothing
 else; said values are probably the empty string and number 1, respectively.
 
-=item If the format is C<any_perl>, then the payload may be any Perl value,
+=item *
+
+If the format is C<any_perl>, then the payload may be any Perl value,
 and it is simply coerced into a boolean context as per Perl's own
 semantics; typically for built-in scalars, the empty string and number zero
 are considered false, and everything else true.
@@ -155,11 +173,17 @@ This node type represents an order-determination.  It has 3 elements:
 
 =over
 
-=item Node type: the Perl C<Str> value C<Order>.
+=item *
 
-=item Format; one of: C<md_enum>, C<perl_order>.
+Node type: the Perl C<Str> value C<Order>.
 
-=item The payload.
+=item *
+
+Format; one of: C<md_enum>, C<perl_order>.
+
+=item *
+
+The payload.
 
 =back
 
@@ -167,12 +191,16 @@ This node is interpreted as a Muldis D C<sys.type.Order> value as follows:
 
 =over
 
-=item If the format is C<md_enum>, then the payload must be a Perl C<Str>
+=item *
+
+If the format is C<md_enum>, then the payload must be a Perl C<Str>
 having one of the values C<increase>, C<same>, C<decrease>.  This format
 specifically is what the Concrete Muldis D grammar uses, and is the result
 of parsing it.
 
-=item If the format is C<perl_order>, then:  Under Perl 6, the payload must
+=item *
+
+If the format is C<perl_order>, then:  Under Perl 6, the payload must
 be a Perl C<Order>, and so C<Order::Increase> and C<Order::Same> and
 C<Order::Decrease> are mapped directly.  Under Perl 5, the payload must be
 just the specific result of a Perl 5 order-determining expression, such as
@@ -195,13 +223,21 @@ This node type represents an integer value.  It has 3-4 elements:
 
 =over
 
-=item Node type: the Perl C<Str> value C<Int>.
+=item *
 
-=item Format; one of: C<md_int>, C<perl_int>, C<any_perl>.
+Node type: the Perl C<Str> value C<Int>.
 
-=item Only when format is C<md_int>; the max-col-val.
+=item *
 
-=item The payload.
+Format; one of: C<md_int>, C<perl_int>, C<any_perl>.
+
+=item *
+
+Only when format is C<md_int>; the max-col-val.
+
+=item *
+
+The payload.
 
 =back
 
@@ -209,7 +245,9 @@ This node is interpreted as a Muldis D C<sys.type.Int> value as follows:
 
 =over
 
-=item If the format is C<md_int>, then the max-col-val must be a Perl
+=item *
+
+If the format is C<md_int>, then the max-col-val must be a Perl
 C<Str> composed of a single C<[1-9A-Z]> character, and the payload must be
 a Perl C<Str> of the format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z]>* >>.  This
 format specifically is what the Concrete Muldis D grammar uses, and is the
@@ -219,11 +257,15 @@ possible value of I<N> to use.  Assuming all column values are between zero
 and I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
 specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].
 
-=item If the format is C<perl_int>, then:  Under Perl 6, the payload must
+=item *
+
+If the format is C<perl_int>, then:  Under Perl 6, the payload must
 be a Perl C<Int>, which is mapped directly.  Under Perl 5, the payload must
 be just a canonical integer value according to Perl.
 
-=item If the format is C<any_perl>, then the payload may be any Perl value,
+=item *
+
+If the format is C<any_perl>, then the payload may be any Perl value,
 and it is simply coerced into an integer context as per Perl's own
 semantics, meaning base-10 where applicable.  If something doesn't look
 numeric, it becomes zero; if something looks like a fractional number, it
@@ -283,13 +325,21 @@ This node type represents a bit string.  It has 3-4 elements:
 
 =over
 
-=item Node type: the Perl C<Str> value C<Blob>.
+=item *
 
-=item Format; one of: C<md_blob>, C<perl_blob>.
+Node type: the Perl C<Str> value C<Blob>.
 
-=item Only when format is C<md_blob>; the max-col-val.
+=item *
 
-=item The payload.
+Format; one of: C<md_blob>, C<perl_blob>.
+
+=item *
+
+Only when format is C<md_blob>; the max-col-val.
+
+=item *
+
+The payload.
 
 =back
 
@@ -297,14 +347,18 @@ This node is interpreted as a Muldis D C<sys.type.Blob> value as follows:
 
 =over
 
-=item If the format is C<md_blob>, then the max-col-val must be a Perl
+=item *
+
+If the format is C<md_blob>, then the max-col-val must be a Perl
 C<Str> composed of a single C<[137F]> character, and the payload must be a
 Perl C<Str> of the format C<< <[0-9A-F]>* >>.  This format specifically is
 what the Concrete Muldis D grammar uses, and is the result of parsing it.
 Each column of the payload specifies a sequence of one of [1,2,3,4] bits,
 depending on whether max-col-val is [1,3,7,F].
 
-=item If the format is C<perl_blob>, then:  Under Perl 6, the payload must
+=item *
+
+If the format is C<perl_blob>, then:  Under Perl 6, the payload must
 be a Perl C<Blob>, which is mapped directly.  Under Perl 5, the payload
 must be just a canonical Perl bit string, which is a scalar whose utf-8
 flag is false.
@@ -340,19 +394,23 @@ This node type represents a bit string.  It has 2 elements:
 
 =over
 
-=item Node type: the Perl C<Str> value C<Text>.
+=item *
 
-=item The payload.
+Node type: the Perl C<Str> value C<Text>.
+
+=item *
+
+The payload.
 
 =back
 
 This node is interpreted as a Muldis D C<sys.type.Text> value by directly
 mapping the payload.  Note that, while Concrete Muldis D may contain a few
 escape sequences, those would be replaced with what they represent prior to
-making a PHMD node.  Under Perl 6, the payload must be a Perl C<Text>,
-which is mapped directly.  Under Perl 5, the payload must be just a
-canonical Perl character string, which is a scalar whose utf-8 flag is
-true, or that doesn't contain any octets with a C<1>-valued highest bit.
+making a PHMD node.  Under Perl 6, the payload must be a Perl C<Str>, which
+is mapped directly.  Under Perl 5, the payload must be just a canonical
+Perl character string, which is a scalar whose utf-8 flag is true, or that
+doesn't contain any octets with a C<1>-valued highest bit.
 
 Examples:
 
@@ -381,11 +439,17 @@ This node type represents a tuple value.  It has 3 elements:
 
 =over
 
-=item Node type: the Perl C<Str> value C<Tuple>.
+=item *
 
-=item Type name; a Perl C<Str> value (or char-mode Perl scalar).
+Node type: the Perl C<Str> value C<Tuple>.
 
-=item The payload; a Perl C<Hash|Mapping> value.
+=item *
+
+Type name; a Perl C<Str> value (or char-mode Perl scalar).
+
+=item *
+
+The payload; a Perl C<Hash|Mapping> value.
 
 =back
 
@@ -440,11 +504,17 @@ This node type represents a relation value.  It has 3 elements:
 
 =over
 
-=item Node type: the Perl C<Str> value C<Relation>.
+=item *
 
-=item Type name; a Perl C<Str> value (or char-mode Perl scalar).
+Node type: the Perl C<Str> value C<Relation>.
 
-=item The payload; a Perl C<Array|Seq|Set|KeySet> of C<Hash|Mapping> value.
+=item *
+
+Type name; a Perl C<Str> value (or char-mode Perl scalar).
+
+=item *
+
+The payload; a Perl C<Array|Seq|Set|KeySet> of C<Hash|Mapping> value.
 
 =back
 
@@ -482,11 +552,17 @@ This node type represents a set value.  It has 3 elements:
 
 =over
 
-=item Node type: the Perl C<Str> value C<Set>.
+=item *
 
-=item Type name; a Perl C<Str> value (or char-mode Perl scalar).
+Node type: the Perl C<Str> value C<Set>.
 
-=item The payload; a Perl C<Array|Seq|Set|KeySet> value.
+=item *
+
+Type name; a Perl C<Str> value (or char-mode Perl scalar).
+
+=item *
+
+The payload; a Perl C<Array|Seq|Set|KeySet> value.
 
 =back
 
@@ -531,11 +607,17 @@ This node type represents a sequence value.  It has 3 elements:
 
 =over
 
-=item Node type: the Perl C<Str> value C<Seq>.
+=item *
 
-=item Type name; a Perl C<Str> value (or char-mode Perl scalar).
+Node type: the Perl C<Str> value C<Seq>.
 
-=item The payload; a Perl C<Array|Seq> value.
+=item *
+
+Type name; a Perl C<Str> value (or char-mode Perl scalar).
+
+=item *
+
+The payload; a Perl C<Array|Seq> value.
 
 =back
 
@@ -567,13 +649,21 @@ This node type represents a bag value.  It has 3 elements:
 
 =over
 
-=item Node type: the Perl C<Str> value C<Bag>.
+=item *
 
-=item Type name; a Perl C<Str> value (or char-mode Perl scalar).
+Node type: the Perl C<Str> value C<Bag>.
 
-=item Format; one of: C<aoa_counted>, C<array_repeated>, C<perl_bag> (p6).
+=item *
 
-=item The payload; a Perl C<Bag|KeyBag> value or C<Array|Seq> or
+Type name; a Perl C<Str> value (or char-mode Perl scalar).
+
+=item *
+
+Format; one of: C<aoa_counted>, C<array_repeated>, C<perl_bag> (p6).
+
+=item *
+
+The payload; a Perl C<Bag|KeyBag> value or C<Array|Seq> or
 C<Array|Seq> of C<Array|Seq>.
 
 =back
@@ -585,13 +675,17 @@ as follows:
 
 =over
 
-=item If the format is C<aoa_counted>, then the payload must be a Perl
+=item *
+
+If the format is C<aoa_counted>, then the payload must be a Perl
 C<Array|Seq>, and each element of the payload defines a binary tuple of the
 new bag; the element is a 2-element C<Array|Seq>, and those 2 elements, by
 index order, are PHMD nodes that define the C<value> and C<count>
 attributes of the tuple; the count must be a positive integer.
 
-=item If the format is C<array_repeated>, then the payload must be a Perl
+=item *
+
+If the format is C<array_repeated>, then the payload must be a Perl
 C<Array|Seq>, and each element of the payload contributes to a binary tuple
 of the new bag; the element value is a PHMD node that defines the C<value>
 attribute of the tuple.  The bag has 1 tuple for every distinct (after
@@ -599,7 +693,9 @@ format normalization) element value in the payload, and the C<count>
 attribute of that tuple says how many instances of said element were in the
 payload.
 
-=item If the format is C<perl_bag>, then the payload must be a Perl 6
+=item *
+
+If the format is C<perl_bag>, then the payload must be a Perl 6
 (there is no Perl 5 analogy) C<Bag|KeyBag> value; the payload elements are
 PHMD nodes corresponding to the C<value> attribute of the new bag's tuples,
 and the mapping is as you should expect.
