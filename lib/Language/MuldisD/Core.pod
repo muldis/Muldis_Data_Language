@@ -63,7 +63,6 @@ relationships:
                 sys.type.Int
                     sys.type.UInt
                         sys.type.PInt
-                            sys.type.PInt2_36
                 sys.type.Blob
                     sys.type.NEBlob
                 sys.type.Text
@@ -93,6 +92,81 @@ relationships:
 Note that C<sys.type.Empty> is a proper subtype of all of the other types
 in this graph, but every other type has only one immediate supertype shown,
 and hence the graph of them is a simple hierarchy.
+
+These system-defined subtypes have also been defined for convenience, as
+they are anticipated to be frequently used; in fact, most of them are used
+as the declared parameter types of various core operators; but they are not
+specific to defining the system catalog:
+
+    sys.type.Universal
+
+        sys.type.Empty
+
+        sys.type.Scalar
+            sys.type.Ordinal
+                sys.type.Int
+                    sys.type.UInt
+                        sys.type.PInt
+
+                            # The following are all finite integer types.
+
+                            sys.type.PInt1_4
+                            sys.type.PInt2_36
+
+        sys.type.Relation
+            sys.type.Set
+
+                # The following are all regular set types.
+
+                sys.type.SetOfBool
+                sys.type.SetOfInt
+                sys.type.SetOfBlob
+                sys.type.SetOfText
+
+                # The following are all nonscalar type factories.
+
+                sys.type.SetOfRelation
+
+                sys.type.Maybe
+
+                    # The following are all regular maybe types.
+
+                    sys.type.MaybeOfBool
+                    sys.type.MaybeOfInt
+                    sys.type.MaybeOfBlob
+                    sys.type.MaybeOfText
+
+            sys.type.Seq
+
+                # The following are all regular sequence types.
+
+                sys.type.SeqOfBool
+                sys.type.SeqOfInt
+                sys.type.SeqOfBlob
+                sys.type.SeqOfText
+
+            sys.type.Bag
+
+                # The following are all regular bag types.
+
+                sys.type.BagOfBool
+                sys.type.BagOfInt
+                sys.type.BagOfBlob
+                sys.type.BagOfText
+
+                # The following are all nonscalar type factories.
+
+                sys.type.BagOfRelation
+
+        sys.type.QuasiRelation
+            sys.type.QuasiSet
+
+                # The following are all quasi-nonscalar type factories.
+
+                sys.type.QuasiSetOfRelation
+
+Note that, in later operator documentation, if you see something like
+C<Foo{Bar}> as a declared type, it corresponds to C<sys.type.FooOfBar>.
 
 =head1 SYSTEM-DEFINED CORE MAXIMAL AND MINIMAL DATA TYPES
 
@@ -187,7 +261,7 @@ A C<Bool> is an enumeration consisting of the 2 values C<Bool:false> and
 C<Bool:true>.  It represents a truth value, and is the result type of any
 C<is_equal> or C<is_not_equal> routine; it is the only essential scalar
 data type of a B<D> language.  Its default and minimum value is
-C<Bool:false>; its maximum value is C<Bool.true>.  The cardinality of this
+C<Bool:false>; its maximum value is C<Bool:true>.  The cardinality of this
 type is 2.
 
 =item C<sys.type.Order>
@@ -196,7 +270,7 @@ A C<Order> is an enumeration consisting of the 3 values C<Order:increase>,
 C<Order:same>, C<Order:decrease>.  It is the result type of any C<compare>
 routine that is used on 2 values of a C<sys.type.Ordinal> subtype.  Its
 default value is C<Order:same>; its minimum and maximum values are,
-respectively, C<Order.increase> and C<Order.decrease>.  The cardinality of
+respectively, C<Order:increase> and C<Order:decrease>.  The cardinality of
 this type is 3.
 
 =item C<sys.type.Int>
@@ -218,13 +292,6 @@ is zero.
 A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
 member values are positive / greater than or equal to one.  Its default and
 minimum value is 1.
-
-=item C<sys.type.PInt2_36>
-
-A C<PInt2_36> is a proper subtype of C<PInt> where all member values are
-between 2 and 36.  (The significance of the number 36 is 10 digits plus 26
-letters.)  Its default and minimum value is 2; its maximum value is 36.
-The cardinality of this type is 35.
 
 =item C<sys.type.Blob>
 
@@ -275,10 +342,12 @@ nonscalar types are defined as union types over all actual types derived
 from them, and are proper supertypes of said.
 
 Some actual nonscalar data types are system-defined, for use in defining
-the Muldis D system catalog / meta-model (see
-L<Language::MuldisD::Catalog> for more details), but all other actual
-nonscalar data types are user-defined.  Users can also define their own
-incomplete nonscalar data types that are tuple or relation types.
+the Muldis D system catalog / meta-model (see L<Language::MuldisD::Catalog>
+for more details), and some others are system-defined for convenience since
+they are the types of many core operators (see further below in the current
+document), but all other actual nonscalar data types are user-defined.
+Users can also define their own incomplete nonscalar data types that are
+tuple or relation types.
 
 =over
 
@@ -406,6 +475,49 @@ infinite.
 A C<QuasiBag> is a proper subtype of C<QuasiRelation> in the corresponding
 manner to C<Bag> being a proper subtype of C<Relation>.  Its cardinality is
 infinite.
+
+=back
+
+=head1 SYSTEM-DEFINED CORE SPECIALIZED SUBTYPES
+
+These types are proper subtypes of other core types, and they are
+system-defined for convenience, as they are anticipated to be frequently
+used; in fact, most of them are used as the declared parameter types of
+various core operators; but they are not specific to defining the system
+catalog.
+
+=over
+
+=item C<sys.type.PInt1_4>
+
+A C<PInt1_4> is a proper subtype of C<PInt> where all member values are
+between 1 and 4.  Its maximum value is 4.  The cardinality of this type is
+4.
+
+=item C<sys.type.PInt2_36>
+
+A C<PInt2_36> is a proper subtype of C<PInt> where all member values are
+between 2 and 36.  (The significance of the number 36 is 10 digits plus 26
+letters.)  Its default and minimum value is 2; its maximum value is 36.
+The cardinality of this type is 35.
+
+=item C<sys.type.(Set|Maybe|Seq|Bag)Of(Bool|Int|Blob|Text)>
+
+A C<(Set|Maybe|Seq|Bag)Of(Bool|Int|Blob|Text)> is a completely defined
+proper subtype of C<(Set|Maybe|Seq|Bag)> whose C<value> attribute has a
+declared type of a C<(Bool|Int|Blob|Text)> subtype.
+
+=item C<sys.type.(Set|Bag)OfRelation>
+
+A C<(Set|Bag)OfRelation is an incompletely defined proper subtype of
+C<Set|Bag> whose C<value> attribute has a declared type of a C<Relation>
+subtype.
+
+=item C<sys.type.QuasiSetOfRelation>
+
+A C<QuasiSetOfRelation> is an incompletely defined proper subtype of
+C<QuasiSet> whose C<value> attribute has a declared type of C<Relation>;
+this is the parameter type of the N-ary relational C<join> operator.
 
 =back
 
@@ -715,7 +827,7 @@ representations of integers as character strings.
 
 =over
 
-=item C<sys.rtn.Int.Int_from_Text of Int (RO: NEText $text, PInt2_36
+=item C<sys.rtn.Int.Int_from_NEText of Int (RO: NEText $text, PInt2_36
 $radix)>
 
 This selector function results in the C<Int> value that its C<$text>
@@ -725,10 +837,10 @@ base-10, base-16], this function supports base-2 through base-36; to get
 the latter, the characters 0-9 and A-Z represent values in 0-35.  This
 function will fail if C<$text> can't be mapped as specified.
 
-=item C<sys.rtn.Int.Text_from_Int of NEText (RO: Int $int, PInt2_36
+=item C<sys.rtn.Int.NEText_from_Int of NEText (RO: Int $int, PInt2_36
 $radix)>
 
-This selector function results in the C<Text> value where its C<$int>
+This selector function results in the C<NEText> value where its C<$int>
 argument is formatted as a base-C<$radix> integer.
 
 =back
@@ -837,25 +949,25 @@ representations of binary strings as character strings.
 
 =over
 
-=item C<sys.rtn.Blob.Blob_from_Text_2 of Blob (RO: Text $text)>
+=item C<sys.rtn.Blob.Blob_from_Text of Blob (RO: Text $text, PInt1_4
+$size)>
 
-This selector function results in the C<Blob> value that its argument maps
-to when each input character is a [0-1] and represents a bit.
+This selector function results in the C<Blob> value that its C<$text>
+argument maps to when each input character represents a sequence of 1-4
+bits, the number of bits per character being determined by the C<$size>
+argument; for example, if C<$size> is 1, then each input character is a
+[0-1] and represents a bit; or, if C<$size> is 4, then each input character
+is a [0-9A-F] and represents 4 bits.  This function will fail if C<$text>
+can't be mapped as specified.
 
-=item C<sys.rtn.Blob.Text_from_Blob_2 of Text (RO: Blob $blob)>
-
-This selector function results in the C<Text> value where its argument is
-encoded using a [0-1] character for each bit.
-
-=item C<sys.rtn.Blob.Blob_from_Text_16 of Blob (RO: Text $text)>
-
-This selector function results in the C<Blob> value that its argument maps
-to when each input character is a [0-9A-F] and represents a hex digit.
-
-=item C<sys.rtn.Blob.Text_from_Blob_16 of Text (RO: Blob $blob)>
+=item C<sys.rtn.Blob.Text_from_Blob of Text (RO: Blob $blob, PInt1_4
+$size)>
 
 This selector function results in the C<Text> value where its argument is
-encoded using a [0-9A-F] character for each bit.
+encoded using a character for each sequence of 1-4 bits, the number of bits
+per character being determined by the C<$size> argument.  This function
+will fail if C<$blob> doesn't have a length in bits which is a multiple of
+C<$size>.
 
 =back
 
@@ -1156,9 +1268,25 @@ complete paths.  The C<tclose> function is intended to support recursive
 queries, such as in connection with the "part explosion problem" (the
 problem of finding all components, at all levels, of some specified part).
 
-=item C<sys.rtn.Relation.restrict>
+=item C<sys.rtn.Relation.restrict of Relation (RO: Relation $source,
+Cat.LongName $filter, Tuple $assuming)>
 
-I<TODO.>
+This function results in the relational restriction of its C<$source>
+argument as determined by applying the C<Bool>-returning function named in
+its C<$filter> argument when the latter function is curried by its
+C<$assuming> argument.  The result relation has the same heading as
+C<$source>, and its body contains the subset of C<$source> tuples where,
+for each tuple, the function named by C<$filter> results in C<Bool:true>
+when passed the tuple as its C<$topic> argument and C<$assuming> as its
+C<$assuming> argument.  As a trivial case, if C<$filter> is defined to
+unconditionally result in C<Bool:true>, then this function results simply
+in C<$source>; or, for an unconditional C<Bool:false>, this function
+results in the empty relation with the same heading.  Note that this
+operation is also legitimately known as I<where>.  Note that
+C<sys.rtn.Relation.semijoin> is recommended for use instead of
+C<sys.rtn.Relation.restrict> to implement some common kinds of relational
+restrictions (those composed simply of anded or ored tests for attribute
+value equality), due to the former's greater simplicity.
 
 =item C<sys.rtn.Relation.extend>
 

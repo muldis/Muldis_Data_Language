@@ -969,15 +969,17 @@ necessary, quasi-nonscalar) typed parameter.
 A C<function> is an explicitly invokable read-only operator whose
 invocation both results in and represents a value of a specific data type
 (that is the function's I<result type> or I<declared type>; this invocation
-can only exist as part of a value-expression of another routine.  A
-C<function> is pure and deterministic in the functional-language sense,
-such that all of its 0..N parameters are read-only / not subject to update,
-and that it can only see or influence its own lexical variables, if it has
-any (no globals), and that it can only invoke C<function> and
-C<update_operator> routines.  The vast majority of invokable system-defined
-routines are C<function>; they include all value selectors, and the typical
-numeric, string, and relational operators, such that you would compose a
-typical database "select" query out of.
+can only exist as part of a value-expression of another routine; the body
+of a function is also itself a single value-expression (though its parts
+can be named for internal reuse).  A C<function> is pure and deterministic
+in the functional-language sense, such that all of its 0..N parameters are
+read-only / not subject to update, it has no lexical variables at all, and
+that it can only see its own parameters, if it has any; it can not see any
+global variables of any kind, and that it can only invoke C<function>
+routines.  The vast majority of invokable system-defined routines are
+C<function>; they include all value selectors, and the typical numeric,
+string, and relational operators, such that you would compose a typical
+database "select" query out of.
 
 =item C<update_operator>
 
@@ -989,8 +991,8 @@ C<update_operator> can only invoke C<function> and C<update_operator>
 routines, and it is much like a C<function>, including being deterministic,
 but that its result value is via a parameter.  Most non C<function>
 system-defined routines are C<update_operator>; they include all C<assign>
-operators, plus some relational-assignment short-hands such as "insert",
-"update", "delete".
+operators, plus some relational-assignment short-hands such as
+"assign_insert", "assign_update", "assign_delete".
 
 =item C<system_service>
 
@@ -1000,7 +1002,7 @@ environment in order to do non-deterministic things (besides working with
 depots), such as to initiate I/O of various kinds, or fetch the current
 date and time, or generate a random number.  Given the nature of this
 beast, users can not define their own C<system_service> functions but by
-updating the Muldis D DBMS source code itself.  Invoking a
+updating the Muldis D implementation's source code itself.  Invoking a
 C<system_service> function can have side-effects outside of the DBMS, but
 it will not alter anything inside the DBMS aside from any of its
 subject-to-update parameters.
@@ -1010,14 +1012,14 @@ subject-to-update parameters.
 A C<procedure> is an explicitly invokable routine with 0..N parameters that
 can see and update global variables, and can invoke any kind of invokable
 routine; it can only be invoked as the root part of a statement in another
-routine.  The C<procedure> and C<host_gate> are the only explicitly
-invokable routines that can directly reference global containers, whether
-catalog or data.  The vast majority of C<procedure> that exist will be
-user-defined.  But some system-defined routines that would otherwise be
-C<function> or C<update_operator> are C<procedure> instead solely because
-they are non-deterministic; an example is an operator that derives a tuple
-sequence from a relation without fully sorting the tuples, because the
-result is fundamentally random and non-repeatable.
+routine.  The C<procedure> is the only explicitly invokable routine that
+can directly reference global containers, whether catalog or data (the
+non-invokable C<main> can too).  The vast majority of C<procedure> that
+exist will be user-defined.  But some system-defined routines that would
+otherwise be C<function> or C<update_operator> are C<procedure> instead
+solely because they are non-deterministic; an example is an operator that
+derives a tuple sequence from a relation without fully sorting the tuples,
+because the result is fundamentally random and non-repeatable.
 
 =item C<type_constraint>
 
@@ -1057,20 +1059,36 @@ results in a Bool.  The DBMS responds as per a state constraint.
 Conceptually speaking, a C<transition_constraint> will execute after all
 other kinds of constraints.
 
-=item C<host_gate>
+=item C<main>
 
-A C<host_gate> is an anonymous procedure that can not be invoked by any
-other routine, and that can not live in any depot.  In a pure Muldis D
-application, this is the type of the single "main" routine; assuming it is
-Concrete Muldis D, said routine is actually the only content of the program
-file, and its body defines any other routines or causes them to be loaded
-from depots, for subsequent invocation.  In a mixed-language application,
-where Muldis D code is invoked by another host language, a C<host_gate> is
-defined and injected into the DBMS by the host language, and only the host
-language can invoke it; moreover, a C<host_gate> is the I<only> kind of
-routine that a host language may directly invoke, hence its name.  Aside
-from not being invokable by any other Muldis D routine, a C<host_gate> is
-the same as a C<procedure>.
+A C<main> is the single anonymous procedure that is the "main program" of a
+Muldis D virtual machine; it must always be defined (but sometimes
+implicitly), and its execution begins simultaneously with the startup of
+the virtual machine, and its end of execution coincides with the shutdown
+of the virtual machine.  A C<main> is the same as a C<procedure>, but that
+it can not be invoked by any other Muldis D routine, it can not live in any
+depot, and it can not have any parameters.  In a non-hosted Concrete Muldis
+D application, this is fairly normal and straightforward; also, said
+routine is actually the only content of the program file, and its body
+defines any other routines or causes them to be loaded from depots, for
+subsequent invocation.  In a mixed-language application, where Muldis D
+code is invoked by another host language, the Muldis D C<main> is akin to a
+coroutine (with some limitations) whose execution is interleaved with the
+host language's routines; more specifically, there is an implicit default
+C<main> per virtual machine, having no statements in its body, and the host
+language explicitly defines, injects, and has executed its component
+statements on an ad-hoc basis (several can be done as a unit); the orders
+to execute by the host language of these statements constitutes the actual
+running of the C<main> routine, and the same statements can be re-run
+without repeated compilation.  A host language can not invoke a named
+Muldis D routine directly, but must go by way of a C<main> statement.
+Similarly to statements, the host language can declare lexical variables of
+the C<main>, and these can optionally be bound to host language variables;
+in fact, using such bound variables is the only canonical way to pass data
+directly between the virtual machine and the host language.  A C<main>
+lexical variable can't be un-declared without shutting down the virtual
+machine, though its memory footprint can be lessened by setting it to a
+small value, such as the default value for its type.
 
 =back
 
@@ -1216,7 +1234,7 @@ Similarly, every C<function> and C<\w+_constraint> has an implicit
 transaction, though since these never update anything, all that really
 means is that they see a consistent view of their environment.
 
-By contrast, every C<procedure> and C<host_gate> is neither implicitly a
+By contrast, every C<procedure> and C<main> is neither implicitly a
 transaction nor atomic (except for portions wherein that have explicit
 I<try> blocks), so you can use a procedure to define an operation where you
 want to keep partial results of a failure.
@@ -1353,14 +1371,26 @@ or actually stores all of its transient and persistent data in.
 Under here are all lexical entities whose invokability or life exists
 solely within the scope of an executing routine; the definitions of those
 entities are part of the C<*.cat> that defines the routines themselves.
-The C<lex.*> namespace is further subdivided the same way as C<nat.*> is,
-into C<type|rtn|cat|data>, with behaviour being the same but that the
-effects are lexically scoped.  Most of the time, only C<lex.data.*> are
-actually used, but the others permit one to generate new variables and
-operators etc at runtime, which only exist in a temporary lexical scope.
-I<Note that, it may turn out later that lexically scoped data types are a
-bad idea, in which case we may make them just global (though temporary) ...
-or maybe this won't be a problem at all ... still needs thinking.>
+
+=item C<lex.param.*>
+
+These are the invocation names within a routine of that routine's
+parameters, both its read-only and updatable ones.
+
+=item C<lex.expr.*>
+
+These are the invocation names within a routine of that routine's
+internally reusable value-expressions.
+
+=item C<lex.var.*>
+
+These are the invocation names within a routine of that routine's lexical
+data variables and constants which are not parameters.
+
+=item C<lex.block.*>
+
+I<TODO:  Some namespace like this for statements or blocks of statements
+that are scoped by if/else, or loops, or try/catch, etc.>
 
 =item C<mnt>
 
