@@ -33,15 +33,15 @@ elsewhere by the system; these are documented in the
 L<Language::MuldisD::Catalog> document; all the other core entities are
 described in the current C<Core> document.  TODO: EDIT THIS PARAGRAPH.
 
-This current C<Core> document features the boolean, order, integer, bit
-string, and character string types and operators, plus the tuple and
-relation type constructors (and quasi- variants) and operators, plus the
-type system minimal and maximal types, and the polymorphic operators that
-all types, or some types including core types, have defined over them.
+This current C<Core> document features the boolean, order, integer,
+rational numeric, floating-point numeric, bit string, and character string
+types and operators, plus the tuple and relation type constructors (and
+quasi- variants) and operators, plus the type system minimal and maximal
+types, and the polymorphic operators that all types, or some types
+including core types, have defined over them.
 
-Extensions are in these other documents: L<Language::MuldisD::Ext::Num>,
-L<Language::MuldisD::Ext::Temporal>,
-L<Language::MuldisD::Ext::Spatial>.
+Extensions are in these other documents:
+L<Language::MuldisD::Ext::Temporal>, L<Language::MuldisD::Ext::Spatial>.
 
 =head1 TYPE SUMMARY
 
@@ -63,6 +63,12 @@ relationships:
                 sys.type.Int
                     sys.type.UInt
                         sys.type.PInt
+                sys.type.Num.Rat
+                    sys.type.Num.RatI
+                    sys.type.Num.RatB
+                    sys.type.Num.RatD
+                sys.type.Num.FloatB32
+                sys.type.Num.FloatB64
                 sys.type.Blob
                     sys.type.NEBlob
                 sys.type.Text
@@ -293,6 +299,54 @@ A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
 member values are positive / greater than or equal to one.  Its default and
 minimum value is 1.
 
+=item C<sys.type.Num.Rat>
+
+A C<Num.Rat> is a single rational exact real number of any magnitude.  It
+is conceptually an C<Int> (numerator) divided by a C<PInt> (denominator).
+Its default value is zero; its minimum and maximum values are conceptually
+infinities and practically impossible.  The cardinality of this type is
+infinity; to define a most-generalized finite C<Num.Rat> subtype, you must
+specify the greatest magnitude positive integer denominator that its values
+have, plus the the 2 integer end-points of the inclusive range of the
+numerator that all its values have.  Common subtypes specify maximum
+denominators that are powers of either 2 or 10.
+
+=item C<sys.type.Num.RatI>
+
+A C<Num.RatI> (rational: integer) is a proper subtype of C<Num.Rat> where
+the denominator is 1; every value of this type maps to exactly 1 C<Int>
+value and vice-versa, so it is conceptually like an integer, without being
+disjoint to C<Num.Rat>.
+
+=item C<sys.type.Num.RatB>
+
+A C<Num.RatB> (rational: binary) is a proper subtype of C<Num.Rat> where
+the denominator is a power of 2; it is the best option to exactly represent
+non-integers that are conceptually binary or octal or hexadecimal.
+
+=item C<sys.type.Num.RatD>
+
+A C<Num.RatD> (rational: decimal) is a proper subtype of C<Num.Rat> where
+the denominator is a power of 10; it is the best option to exactly
+represent non-integers that are conceptually the decimal numbers that
+lay-people work with.
+
+=item C<sys.type.Num.FloatB32>
+
+A C<Num.FloatB32> implements a 32-bit binary floating-point numeric as
+specified in IEEE 754, having 1 bit for sign, 8 bits for exponent, and 23
+bits for mantissa.  As per the standard, most of its values are ordinary
+real numbers, but it has distinct representations for +/- zero, +/-
+infinity, and various kinds of NaNs.  Its default value is positive zero;
+its minimum and maximum values are, respectively, negative and positive
+infinity.  The cardinality of this type is approximately 2**32.
+
+=item C<sys.type.Num.FloatB64>
+
+A C<Num.FloatB64> is the same as C<Num.FloatB32> but for its precision; it
+has 1 bit for sign, 11 bits for exponent, and 52 bits for mantissa.  The
+cardinality of this type is approximately 2**64.
+
 =item C<sys.type.Blob>
 
 A C<Blob> is an undifferentiated string of bits.  Its default and minimum
@@ -509,7 +563,7 @@ declared type of a C<(Bool|Int|Blob|Text)> subtype.
 
 =item C<sys.type.(Set|Bag)OfRelation>
 
-A C<(Set|Bag)OfRelation is an incompletely defined proper subtype of
+A C<(Set|Bag)OfRelation> is an incompletely defined proper subtype of
 C<Set|Bag> whose C<value> attribute has a declared type of a C<Relation>
 subtype.
 
