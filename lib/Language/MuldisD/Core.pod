@@ -33,12 +33,12 @@ elsewhere by the system; these are documented in the
 L<Language::MuldisD::Catalog> document; all the other core entities are
 described in the current C<Core> document.  TODO: EDIT THIS PARAGRAPH.
 
-This current C<Core> document features the boolean, order, integer,
-rational numeric, floating-point numeric, bit string, and character string
-types and operators, plus the tuple and relation type constructors (and
-quasi- variants) and operators, plus the type system minimal and maximal
-types, and the polymorphic operators that all types, or some types
-including core types, have defined over them.
+This current C<Core> document features the boolean, order, exact numeric
+(integer, rational, floating-point), bit string, and character string types
+and operators, plus the tuple and relation type constructors (and quasi-
+variants) and operators, plus the type system minimal and maximal types,
+and the polymorphic operators that all types, or some types including core
+types, have defined over them.
 
 Extensions are in these other documents:
 L<Language::MuldisD::Ext::Temporal>, L<Language::MuldisD::Ext::Spatial>.
@@ -63,12 +63,14 @@ relationships:
                 sys.type.Int
                     sys.type.UInt
                         sys.type.PInt
-                sys.type.Num.Rat
-                    sys.type.Num.RatI
-                    sys.type.Num.RatB
-                    sys.type.Num.RatD
-                sys.type.Num.FloatB32
-                sys.type.Num.FloatB64
+                sys.type.Rat
+                    sys.type.RatI
+                    sys.type.RatB
+                    sys.type.RatD
+                sys.type.Float
+                    sys.type.FloatI
+                    sys.type.FloatB
+                    sys.type.FloatD
                 sys.type.Blob
                     sys.type.NEBlob
                 sys.type.Text
@@ -281,9 +283,9 @@ this type is 3.
 
 =item C<sys.type.Int>
 
-An C<Int> is a single integral number of any magnitude.  Its default value
-is zero; its minimum and maximum values are conceptually infinities and
-practically impossible.  The cardinality of this type is infinity; to
+An C<Int> is a single exact integral number of any magnitude.  Its default
+value is zero; its minimum and maximum values are conceptually infinities
+and practically impossible.  The cardinality of this type is infinity; to
 define a most-generalized finite C<Int> subtype, you must specify the 2
 integer end-points of the inclusive range that all its values are in.
 
@@ -299,53 +301,76 @@ A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
 member values are positive / greater than or equal to one.  Its default and
 minimum value is 1.
 
-=item C<sys.type.Num.Rat>
+=item C<sys.type.Rat>
 
-A C<Num.Rat> is a single rational exact real number of any magnitude.  It
-is conceptually an C<Int> (numerator) divided by a C<PInt> (denominator).
+A C<Rat> is a single exact rational number of any magnitude.  It is
+conceptually a I<numerator> (C<Int>) divided by a I<denominator> (<PInt>).
 Its default value is zero; its minimum and maximum values are conceptually
 infinities and practically impossible.  The cardinality of this type is
-infinity; to define a most-generalized finite C<Num.Rat> subtype, you must
-specify the greatest magnitude positive integer denominator that its values
-have, plus the the 2 integer end-points of the inclusive range of the
-numerator that all its values have.  Common subtypes specify maximum
-denominators that are powers of either 2 or 10.
+infinity; to define a most-generalized finite C<Rat> subtype, you must
+specify the greatest magnitude value denominator, plus the the 2 integer
+end-points of the inclusive range of the value numerator.  Common subtypes
+specify maximum denominators that are powers of either 2 or 10.
 
-=item C<sys.type.Num.RatI>
+=item C<sys.type.RatI>
 
-A C<Num.RatI> (rational: integer) is a proper subtype of C<Num.Rat> where
-the denominator is 1; every value of this type maps to exactly 1 C<Int>
-value and vice-versa, so it is conceptually like an integer, without being
-disjoint to C<Num.Rat>.
+A C<RatI> (rational: integer) is a proper subtype of C<Rat> where the
+denominator is 1; every value of this type maps to exactly 1 C<Int> value
+and vice-versa, so it is conceptually like an integer, without being
+disjoint to C<Rat>.
 
-=item C<sys.type.Num.RatB>
+=item C<sys.type.RatB>
 
-A C<Num.RatB> (rational: binary) is a proper subtype of C<Num.Rat> where
-the denominator is a power of 2; it is the best option to exactly represent
-non-integers that are conceptually binary or octal or hexadecimal.
+A C<RatB> (rational: binary) is a proper subtype of C<Rat> where the
+denominator is a power of 2; it is the best option to exactly represent
+rational numbers that are conceptually binary or octal or hexadecimal.
 
-=item C<sys.type.Num.RatD>
+=item C<sys.type.RatD>
 
-A C<Num.RatD> (rational: decimal) is a proper subtype of C<Num.Rat> where
-the denominator is a power of 10; it is the best option to exactly
-represent non-integers that are conceptually the decimal numbers that
-lay-people work with.
+A C<RatD> (rational: decimal) is a proper subtype of C<Rat> where the
+denominator is a power of 10; it is the best option to exactly represent
+rational numbers that are conceptually the decimal numbers that lay-people
+work with.
 
-=item C<sys.type.Num.FloatB32>
+=item C<sys.type.Float>
 
-A C<Num.FloatB32> implements a 32-bit binary floating-point numeric as
-specified in IEEE 754, having 1 bit for sign, 8 bits for exponent, and 23
-bits for mantissa.  As per the standard, most of its values are ordinary
-real numbers, but it has distinct representations for +/- zero, +/-
-infinity, and various kinds of NaNs.  Its default value is positive zero;
-its minimum and maximum values are, respectively, negative and positive
-infinity.  The cardinality of this type is approximately 2**32.
+A C<Float> is a single exact floating-point number of any magnitude.  It is
+conceptually the result of a mantissa (C<Int>) multiplied by the result of
+a radix (C<PInt>) raised to the power of an exponent (C<Int>), where the
+mantissa's absolute value is a multiple of the radix.  Its default value is
+zero; its minimum and maximum values are conceptually infinities and
+practically impossible.  The cardinality of this type is infinity; to
+define a most-generalized finite C<Float> subtype, you must specify the
+greatest magnitude value radix, the greatest magnitude value mantissa, plus
+the the 2 integer end-points of the inclusive range of the value exponent.
+Common subtypes specify radixes that are either 2 or 10.
 
-=item C<sys.type.Num.FloatB64>
+=item C<sys.type.FloatI>
 
-A C<Num.FloatB64> is the same as C<Num.FloatB32> but for its precision; it
-has 1 bit for sign, 11 bits for exponent, and 52 bits for mantissa.  The
-cardinality of this type is approximately 2**64.
+A C<FloatI> (float: integer) is a proper subtype of C<Float> where the
+radix is 1, or the exponent is zero; every value of this type maps to
+exactly 1 C<Int> value and vice-versa, so it is conceptually like an
+integer, without being disjoint to C<Float>.
+
+=item C<sys.type.FloatB>
+
+A C<FloatB> (float: binary) is a proper subtype of C<Float> where the radix
+is 2; it is the best option to exactly represent floating-point numbers
+that are conceptually binary or octal or hexadecimal.  Note that the
+domains of the IEEE 754 standard binary floating-point numerics are roughly
+the same as C<FloatB> subtypes, aside from C<Float> not having separate +/-
+zero, nor infinities, nor NaNs; for the 32-bit version, specify a greatest
+mantissa of 2^23 (24 bits) and exponent range of -128..127 (8 bits); for
+the 64-bit version, specify a greatest mantissa of 2^52 (53 bits) and
+exponent range of -1024..1023 (11 bits).  I<Note: some or all details of
+what maps to an IEEE 754 float should be reviewed and corrected.>
+
+=item C<sys.type.FloatD>
+
+A C<FloatD> (float: decimal) is a proper subtype of C<Float> where the
+radix is 10; it is the best option to exactly represent floating-point
+numbers that are conceptually the decimal numbers that lay-people work
+with.
 
 =item C<sys.type.Blob>
 
