@@ -54,9 +54,9 @@ relationships:
         sys.type.Empty
 
         sys.type.Scalar
-            sys.type.Ordinal
+            sys.type.Ordered
 
-                # The following are all regular ordinal scalar types.
+                # The following are all regular ordered scalar types.
 
                 sys.type.Bool
                 sys.type.Order
@@ -109,7 +109,7 @@ specific to defining the system catalog:
         sys.type.Empty
 
         sys.type.Scalar
-            sys.type.Ordinal
+            sys.type.Ordered
                 sys.type.Int
                     sys.type.UInt
                         sys.type.PInt
@@ -219,10 +219,10 @@ for users to define more types of this nature.
 Contexts defined by the C<Some.Universal> pseudo-type accept values of
 potentially any type of C<Universal>.
 
-=item C<sys.type.Some.Ordinal>
+=item C<sys.type.Some.Ordered>
 
-Contexts defined by the C<Some.Ordinal> pseudo-type accept values of
-potentially any type of C<Ordinal>.
+Contexts defined by the C<Some.Ordered> pseudo-type accept values of
+potentially any type of C<Ordered>.
 
 =back
 
@@ -251,14 +251,14 @@ type is implicitly a proper subtype of C<Scalar>, and C<Scalar> is
 implicitly a union type over all other scalar types.  Its default value is
 C<Bool:false>.  The cardinality of this type is infinity.
 
-=item C<sys.type.Ordinal>
+=item C<sys.type.Ordered>
 
-The C<Ordinal> type is a proper subtype of C<Scalar> that is a proper
-supertype of all scalar types that are considered ordinal.  Any scalar
-types which consider themselves ordinal, which happens to include every
+The C<Ordered> type is a proper subtype of C<Scalar> that is a proper
+supertype of all scalar types that are considered ordered.  Any scalar
+types which consider themselves ordered, which happens to include every
 system-defined core scalar root type, will explicitly declare themselves as
-subtypes of C<Ordinal> in their type definitions; the definition of
-C<Ordinal> does not specify what other types it is a union over.  Its
+subtypes of C<Ordered> in their type definitions; the definition of
+C<Ordered> does not specify what other types it is a union over.  Its
 default value is C<Bool:false>.  The cardinality of this type is infinity.
 
 =item C<sys.type.Bool>
@@ -274,7 +274,7 @@ type is 2.
 
 A C<Order> is an enumeration consisting of the 3 values C<Order:increase>,
 C<Order:same>, C<Order:decrease>.  It is the result type of any C<compare>
-routine that is used on 2 values of a C<sys.type.Ordinal> subtype.  Its
+routine that is used on 2 values of a C<sys.type.Ordered> subtype.  Its
 default value is C<Order:same>; its minimum and maximum values are,
 respectively, C<Order:increase> and C<Order:decrease>.  The cardinality of
 this type is 3.
@@ -649,12 +649,12 @@ variables, so they always hold valid values of their declared type.
 
 =back
 
-=head1 SYSTEM-DEFINED GENERIC ORDINAL FUNCTIONS
+=head1 SYSTEM-DEFINED GENERIC ORDERED FUNCTIONS
 
 These functions are applicable to values of any data type which is a
-subtype of C<Ordinal>.  They provide a common syntax for sort-related
+subtype of C<Ordered>.  They provide a common syntax for sort-related
 functionality, though technically every type having these functions is
-re-implementing its own version.  If values of an ordinal data type can
+re-implementing its own version.  If values of an ordered data type can
 conceivably be sorted using multiple criteria (such as different text
 collations), then these functions just represent the default criteria; any
 additional criteria are represented by additional functions declared for
@@ -662,8 +662,8 @@ just the types they apply to.
 
 =over
 
-=item C<sys.rtn.Ordinal.compare of Order (RO: Some.Ordinal $v1,
-Some.Ordinal $v2)>
+=item C<sys.rtn.Ordered.compare of Order (RO: Some.Ordered $v1,
+Some.Ordered $v2)>
 
 This function results in C<Order:same> iff its 2 arguments are exactly the
 same value, and otherwise it results in C<Order:increase> if the value of
@@ -672,33 +672,33 @@ type) over the value of the C<$v1> argument, and otherwise it results in
 C<Order:decrease> as the reverse of the last condition would be true.  This
 function's arguments must be of compatible declared types; in this case, 2
 declared types are compatible iff they are both subtypes of a common scalar
-type that declares itself an C<Ordinal> subtype.  Note that C<compare> is
-considered the only fundamental ordinal-specific operator, and all others
+type that declares itself an C<Ordered> subtype.  Note that C<compare> is
+considered the only fundamental ordered-specific operator, and all others
 are defined over it.
 
-=item C<sys.rtn.Ordinal.reverse_compare of Order (RO: Some.Ordinal $v1,
-Some.Ordinal $v2)>
+=item C<sys.rtn.Ordered.reverse_compare of Order (RO: Some.Ordered $v1,
+Some.Ordered $v2)>
 
-This function is exactly the same as C<sys.rtn.Ordinal.compare> except that
+This function is exactly the same as C<sys.rtn.Ordered.compare> except that
 it results in the reverse value when given the same arguments.  It is a
 short-hand for applying C<sys.rtn.Order.reverse> to the result of
-C<sys.rtn.Ordinal.compare> with the same arguments.
+C<sys.rtn.Ordered.compare> with the same arguments.
 
-=item C<sys.rtn.Ordinal.is_increase of Bool (RO: Some.Ordinal $v1,
-Some.Ordinal $v2)>
+=item C<sys.rtn.Ordered.is_increase of Bool (RO: Some.Ordered $v1,
+Some.Ordered $v2)>
 
-This function results in C<Bool:true> iff C<sys.rtn.Ordinal.compare> would
+This function results in C<Bool:true> iff C<sys.rtn.Ordered.compare> would
 result in C<Order:increase> when given the same arguments, and
 C<Bool:false> otherwise.
 
-=item C<sys.rtn.Ordinal.is_decrease of Bool (RO: Some.Ordinal $v1,
-Some.Ordinal $v2)>
+=item C<sys.rtn.Ordered.is_decrease of Bool (RO: Some.Ordered $v1,
+Some.Ordered $v2)>
 
-This function results in C<Bool:true> iff C<sys.rtn.Ordinal.compare> would
+This function results in C<Bool:true> iff C<sys.rtn.Ordered.compare> would
 result in C<Order:decrease> when given the same arguments, and
 C<Bool:false> otherwise.
 
-=item C<sys.rtn.Ordinal.min of Some.Ordinal (RO: Set{Some.Ordinal} $topic)>
+=item C<sys.rtn.Ordered.min of Some.Ordered (RO: Set{Some.Ordered} $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and picks the minimum of the 2 (a process which
@@ -709,24 +709,24 @@ for I<min>.  This function will fail on a C<$topic> of zero values if the
 result type's concept of positive infinity is impossible or impractically
 large to represent, such as with the infinite C<Text> type.
 
-=item C<sys.rtn.Ordinal.max of Some.Ordinal (RO: Set{Some.Ordinal} $topic)>
+=item C<sys.rtn.Ordered.max of Some.Ordered (RO: Set{Some.Ordered} $topic)>
 
-This function is exactly the same as C<sys.rtn.Ordinal.min> except that it
+This function is exactly the same as C<sys.rtn.Ordered.min> except that it
 results in the maximum input element value rather than the minimum one, and
 its identity value is the result type's concept of negative infinity.
 
-=item C<sys.rtn.Ordinal.maybe_min of Maybe{Some.Ordinal} (RO:
-Set{Some.Ordinal} $topic)>
+=item C<sys.rtn.Ordered.maybe_min of Maybe{Some.Ordered} (RO:
+Set{Some.Ordered} $topic)>
 
-This function is exactly the same as C<sys.rtn.Ordinal.min> except that it
+This function is exactly the same as C<sys.rtn.Ordered.min> except that it
 results in a C<Maybe> of what is otherwise the result type, and that result
 has zero elements if the argument has zero elements.
 
-=item C<sys.rtn.Ordinal.maybe_max of Maybe{Some.Ordinal} (RO:
-Set{Some.Ordinal} $topic)>
+=item C<sys.rtn.Ordered.maybe_max of Maybe{Some.Ordered} (RO:
+Set{Some.Ordered} $topic)>
 
-This function is to C<sys.rtn.Ordinal.max> as C<sys.rtn.Ordinal.maybe_min>
-is to C<sys.rtn.Ordinal.min>.
+This function is to C<sys.rtn.Ordered.max> as C<sys.rtn.Ordered.maybe_min>
+is to C<sys.rtn.Ordered.min>.
 
 =back
 
