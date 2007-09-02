@@ -33,12 +33,12 @@ elsewhere by the system; these are documented in the
 L<Language::MuldisD::Catalog> document; all the other core entities are
 described in the current C<Core> document.  TODO: EDIT THIS PARAGRAPH.
 
-This current C<Core> document features the boolean, order, exact numeric
-(integer, rational, floating-point), bit string, and character string types
-and operators, plus the tuple and relation type constructors (and quasi-
-variants) and operators, plus the type system minimal and maximal types,
-and the polymorphic operators that all types, or some types including core
-types, have defined over them.
+This current C<Core> document features the boolean, order, integer,
+rational, bit string, and character string types and operators, plus the
+tuple and relation type constructors (and quasi- variants) and operators,
+plus the type system minimal and maximal types, and the polymorphic
+operators that all types, or some types including core types, have defined
+over them.
 
 Extensions are in these other documents:
 L<Language::MuldisD::Ext::Temporal>, L<Language::MuldisD::Ext::Spatial>.
@@ -66,9 +66,6 @@ relationships:
                 sys.type.Rat
                     sys.type.BRat
                     sys.type.DRat
-                sys.type.Float
-                    sys.type.BFloat
-                    sys.type.DFloat
                 sys.type.Blob
                     sys.type.NEBlob
                 sys.type.Text
@@ -308,53 +305,23 @@ infinities and practically impossible.  The cardinality of this type is
 infinity; to define a most-generalized finite C<Rat> subtype, you must
 specify the greatest magnitude value denominator, plus the the 2 integer
 end-points of the inclusive range of the value numerator.  Common subtypes
-specify maximum denominators that are powers of either 2 or 10.
+specify both that all numerators are multiples of a particular I<radix>
+(<PInt>), and that all denominators are positive powers of that same radix,
+where the radix is usually either 2 or 10; types such as these will easily
+map exactly to common human or physical numeric representations, so they
+tend to perform better.
 
 =item C<sys.type.BRat>
 
-A C<BRat> (binary rational) is a proper subtype of C<Rat> where the
-denominator is a power of 2; it is the best option to exactly represent
-rational numbers that are conceptually binary or octal or hexadecimal.
+A C<BRat> (binary rational) is a proper subtype of C<Rat> where the radix
+is 2; it is the best option to exactly represent rational numbers that are
+conceptually binary or octal or hexadecimal.
 
 =item C<sys.type.DRat>
 
-A C<DRat> (decimal rational) is a proper subtype of C<Rat> where the
-denominator is a power of 10; it is the best option to exactly represent
-rational numbers that are conceptually the decimal numbers that lay-people
-work with.
-
-=item C<sys.type.Float>
-
-A C<Float> is a single exact floating-point number of any magnitude.  It is
-conceptually the result of a I<mantissa> (C<Int>) multiplied by the result
-of a I<radix> (C<PInt>) raised to the power of an I<exponent> (C<Int>),
-where the mantissa's absolute value is a multiple of the radix.  Its
-default value is zero; its minimum and maximum values are conceptually
-infinities and practically impossible.  The cardinality of this type is
-infinity; to define a most-generalized finite C<Float> subtype, you must
-specify the greatest magnitude value radix, the greatest magnitude value
-mantissa, plus the the 2 integer end-points of the inclusive range of the
-value exponent.  Common subtypes specify radixes that are either 2 or 10.
-
-=item C<sys.type.BFloat>
-
-A C<BFloat> (binary float) is a proper subtype of C<Float> where the radix
-is 2; it is the best option to exactly represent floating-point numbers
-that are conceptually binary or octal or hexadecimal.  Note that the
-domains of the IEEE 754 standard binary floating-point numerics are roughly
-the same as C<BFloat> subtypes, aside from C<Float> not having separate +/-
-zero, nor infinities, nor NaNs; for the 32-bit version, specify a greatest
-mantissa of 2^23 (24 bits) and exponent range of -128..127 (8 bits); for
-the 64-bit version, specify a greatest mantissa of 2^52 (53 bits) and
-exponent range of -1024..1023 (11 bits).  I<Note: some or all details of
-what maps to an IEEE 754 float should be reviewed and corrected.>
-
-=item C<sys.type.DFloat>
-
-A C<DFloat> (decimal float) is a proper subtype of C<Float> where the
-radix is 10; it is the best option to exactly represent floating-point
-numbers that are conceptually the decimal numbers that lay-people work
-with.
+A C<DRat> (decimal rational) is a proper subtype of C<Rat> where the radix
+is 10; it is the best option to exactly represent rational numbers that are
+conceptually the decimal numbers that humans typically work with.
 
 =item C<sys.type.Blob>
 
