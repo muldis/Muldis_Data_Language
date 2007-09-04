@@ -64,6 +64,8 @@ relationships:
                     sys.type.UInt
                         sys.type.PInt
                 sys.type.Rat
+                    sys.type.URat
+                        sys.type.PRat
                     sys.type.BRat
                     sys.type.DRat
                 sys.type.Blob
@@ -123,6 +125,7 @@ specific to defining the system catalog:
 
                 sys.type.SetOfBool
                 sys.type.SetOfInt
+                sys.type.SetOfRat
                 sys.type.SetOfBlob
                 sys.type.SetOfText
 
@@ -136,6 +139,7 @@ specific to defining the system catalog:
 
                     sys.type.MaybeOfBool
                     sys.type.MaybeOfInt
+                    sys.type.MaybeOfRat
                     sys.type.MaybeOfBlob
                     sys.type.MaybeOfText
 
@@ -145,6 +149,7 @@ specific to defining the system catalog:
 
                 sys.type.SeqOfBool
                 sys.type.SeqOfInt
+                sys.type.SeqOfRat
                 sys.type.SeqOfBlob
                 sys.type.SeqOfText
 
@@ -154,6 +159,7 @@ specific to defining the system catalog:
 
                 sys.type.BagOfBool
                 sys.type.BagOfInt
+                sys.type.BagOfRat
                 sys.type.BagOfBlob
                 sys.type.BagOfText
 
@@ -286,15 +292,14 @@ integer end-points of the inclusive range that all its values are in.
 
 =item C<sys.type.UInt>
 
-A C<UInt> (unsigned integer) is a proper subtype of C<Int> where all member
-values are non-negative / greater than or equal to zero.  Its minimum value
-is zero.
+A C<UInt> (unsigned / non-negative integer) is a proper subtype of C<Int>
+where all member values are greater than or equal to zero.  Its minimum
+value is zero.
 
 =item C<sys.type.PInt>
 
 A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
-member values are positive / greater than or equal to one.  Its default and
-minimum value is 1.
+member values are greater than zero.  Its default and minimum value is 1.
 
 =item C<sys.type.Rat>
 
@@ -309,6 +314,17 @@ specify that all denominators are positive powers of a particular I<radix>
 (<PInt>), where the radix is usually either 2 or 10; types such as these
 will easily map exactly to common human or physical numeric
 representations, so they tend to perform better.
+
+=item C<sys.type.URat>
+
+A C<URat> (unsigned / non-negative rational) is a proper subtype of C<Rat>
+where all member values are greater than or equal to zero.  Its minimum
+value is zero.
+
+=item C<sys.type.PRat>
+
+A C<PRat> (positive integer) is a proper subtype of C<URat> where all
+member values are greater than zero.  Its default value is 1.
 
 =item C<sys.type.BRat>
 
@@ -530,11 +546,11 @@ between 2 and 36.  (The significance of the number 36 is 10 digits plus 26
 letters.)  Its default and minimum value is 2; its maximum value is 36.
 The cardinality of this type is 35.
 
-=item C<sys.type.(Set|Maybe|Seq|Bag)Of(Bool|Int|Blob|Text)>
+=item C<sys.type.(Set|Maybe|Seq|Bag)Of(Bool|Int|Rat|Blob|Text)>
 
-A C<(Set|Maybe|Seq|Bag)Of(Bool|Int|Blob|Text)> is a completely defined
+A C<(Set|Maybe|Seq|Bag)Of(Bool|Int|Rat|Blob|Text)> is a completely defined
 proper subtype of C<(Set|Maybe|Seq|Bag)> whose C<value> attribute has a
-declared type of a C<(Bool|Int|Blob|Text)> subtype.
+declared type of a C<(Bool|Int|Rat|Blob|Text)> subtype.
 
 =item C<sys.type.(Set|Bag)OfRelation>
 
@@ -785,9 +801,13 @@ the two; an C<Order:same> argument results in C<Order:same>.
 
 =head2 Functions for sys.type.Int
 
-These functions implement commonly used integer operations.
+These functions implement commonly used integer numeric operations.
 
 =over
+
+=item C<sys.rtn.Int.abs of UInt (RO: Int $topic)>
+
+This function results in the absolute value of its argument.
 
 =item C<sys.rtn.Int.sum of Int (RO: Bag{Int} $addends)>
 
@@ -838,14 +858,34 @@ This function is exactly the same as C<sys.rtn.Int.remainder> except that
 it results in a C<Maybe> of what is otherwise the result, and that result
 has zero elements if C<$divisor> is zero.
 
-=item C<sys.rtn.Int.abs of UInt (RO: Int $topic)>
+=item C<sys.rtn.Int.range of Int (RO: Set{Int} $topic)>
 
-This function results in the absolute value of its argument.
+This function results in the difference between the lowest and highest
+element values of its argument.  If C<$topic> has zero values, then
+C<range> results in the integer zero.
 
-=item C<sys.rtn.Int.power of Int (RO: Int $radix, PInt $exponent)>
+=item C<sys.rtn.Int.median of Set{Int} (RO: Bag{Int} $topic)>
+
+This function results in the 1 or 2 median values of the N element values
+of its argument; they are returned as a set.  It is equivalent to first
+arranging the input values from least to greatest, and then taking the
+single middle value, if the count of input values is odd, or taking the 2
+middle values, if the count of input values is even.  If C<$topic> has zero
+values, then the result set is empty.
+
+=item C<sys.rtn.Int.mode of Set{Int} (RO: Bag{Int} $topic)>
+
+This function results in the mode of the N element values of its argument;
+it is the set of values that appear the most often as input elements, and
+all have the same count of occurrances.  As a trivial case, if all input
+elements have the same count of occurrances, then they will all be in the
+output.  If C<$topic> has zero values, then the result set is empty.
+
+=item C<sys.rtn.Int.power of Int (RO: Int $radix, UInt $exponent)>
 
 This function results in its C<$radix> argument taken to the power of its
-(positive integer) C<$exponent> argument.
+(unsigned integer) C<$exponent> argument.  This function will fail if
+C<$radix> and C<$exponent> are both zero.
 
 =back
 
@@ -906,6 +946,235 @@ does unsigned integers.
 
 This function is the same as C<sys.rtn.Int.Blob_S_VBE_from_Int> but that it
 does unsigned integers.
+
+=back
+
+=head2 Functions for sys.type.Rat
+
+These functions are essentially selectors and attribute extractors for the
+conceptual possrep of a rational in terms of an integral numerator plus
+denominator.
+
+=over
+
+=item C<sys.rtn.Rat.Rat_from_Int_pair of Rat (RO: Int $numerator, PInt
+$denominator)>
+
+This selector function results in the C<Rat> value that its C<$numerator>
+and C<$denominator> arguments map to when collectively interpreted in the
+appropriate fashion, as if there were a possrep for the C<Rat> type that
+was composed of such 2 attributes, but keeping in mind that multiple
+distinct argument pairs can map to each same C<Rat> value, since the
+arguments don't have to be a canonical pair.
+
+=item C<sys.rtn.Rat.numerator of Int (RO: Rat $topic)>
+
+This function results in the canonical numerator of its argument, which
+assumes said rational is represented with the pair of smallest possible
+integers.
+
+=item C<sys.rtn.Rat.denominator of PInt (RO: Rat $topic)>
+
+This function results in the canonical denominator of its argument, which
+assumes said rational is represented with the pair of smallest possible
+integers.
+
+=back
+
+These functions implement commonly used rational numeric operations.
+
+=over
+
+=item C<sys.rtn.Rat.abs of URat (RO: Rat $topic)>
+
+This function results in the absolute value of its argument.
+
+=item C<sys.rtn.Rat.sum of Rat (RO: Bag{Rat} $addends)>
+
+This function results in the sum of the N element values of its argument;
+it is a reduction operator that recursively takes each pair of input values
+and adds (which is both commutative and associative) them together until
+just one is left, which is the result.  If C<$addends> has zero values,
+then C<sum> results in the rational zero, which is the identity value for
+addition.
+
+=item C<sys.rtn.Rat.difference of Rat (RO: Rat $minuend, Rat $subtrahend)>
+
+This function results in the difference when its C<$subtrahend> argument is
+subtracted from its C<$minuend> argument.
+
+=item C<sys.rtn.Rat.product of Rat (RO: Bag{Rat} $factors)>
+
+This function results in the product of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and multiplies (which is both commutative and associative)
+them together until just one is left, which is the result.  If C<$factors>
+has zero values, then C<product> results in the rational 1, which is the
+identity value for multiplication.
+
+=item C<sys.rtn.Rat.quotient of Rat (RO: Rat $dividend, Rat $divisor)>
+
+This function results in the quotient when its C<$dividend> argument is
+divided by its C<$divisor> argument using rational division.  This function
+will fail if C<$divisor> is zero.
+
+=item C<sys.rtn.Rat.maybe_quotient of Maybe{Rat} (RO: Rat $dividend, Rat
+$divisor)>
+
+This function is exactly the same as C<sys.rtn.Rat.quotient> except that it
+results in a C<Maybe> of what is otherwise the result, and that result has
+zero elements if C<$divisor> is zero.
+
+=item C<sys.rtn.Rat.range of Rat (RO: Set{Rat} $topic)>
+
+This function results in the difference between the lowest and highest
+element values of its argument.  If C<$topic> has zero values, then
+C<range> results in the rational zero.
+
+=item C<sys.rtn.Rat.mean of Rat (RO: Bag{Rat} $topic)>
+
+This function results in the mean or arithmetic average of the N element
+values of its argument.  It is equivalent to first taking the sum of the
+input values, and dividing that sum by the count of the input values.  If
+C<$topic> has zero values, then this function will fail.
+
+=item C<sys.rtn.Rat.maybe_mean of Maybe{Rat} (RO: Bag{Rat} $topic)>
+
+This function is exactly the same as C<sys.rtn.Rat.mean> except that it
+results in a C<Maybe> of what is otherwise the result, and that result has
+zero elements if C<$topic> has zero values.
+
+=item C<sys.rtn.Rat.median of Set{Rat} (RO: Bag{Rat} $topic)>
+
+This function results in the 1 or 2 median values of the N element values
+of its argument; they are returned as a set.  It is equivalent to first
+arranging the input values from least to greatest, and then taking the
+single middle value, if the count of input values is odd, or taking the 2
+middle values, if the count of input values is even.  If C<$topic> has zero
+values, then the result set is empty.
+
+=item C<sys.rtn.Rat.mean_of_median of Rat (RO: Bag{Rat} $topic)>
+
+This function is a wrapper over C<sys.rtn.Rat.median> that will return the
+mean of its result elements; it will fail if there are zero elements.
+
+=item C<sys.rtn.Rat.mode of Set{Rat} (RO: Bag{Rat} $topic)>
+
+This function results in the mode of the N element values of its argument;
+it is the set of values that appear the most often as input elements, and
+all have the same count of occurrances.  As a trivial case, if all input
+elements have the same count of occurrances, then they will all be in the
+output.  If C<$topic> has zero values, then the result set is empty.
+
+=item C<sys.rtn.Rat.power of PRat (RO: PRat $radix, Rat $exponent)>
+
+This function results in its (positive rational) C<$radix> argument taken
+to the power of its C<$exponent> argument.  Note that, while this function
+might conceptually have multiple real number results for some negative
+C<$exponent>, it will always only return the one that is positive.
+
+=item C<sys.rtn.Rat.log of Rat (RO: PRat $topic, PRat $radix, PInt
+$rebase_radix, PInt $rebase_max_denom, Cat.RoundMeth $rebase_round)>
+
+This function results in the logarithm of its C<$topic> argument to the
+base given in its (positive rational) C<$radix> argument.  Since the result
+would be an irrational number in the general case, the additional 3
+C<$rebase_\w+> parameters specify how to coerce the conceptual result into
+a rational number that is the actual result; see also the similarly named
+parameters of the C<sys.rtn.Rat.rebase> function.
+
+=item C<sys.rtn.Rat.natural_power of PRat (RO: Rat $exponent, PInt
+$rebase_radix, PInt $rebase_max_denom, Cat.RoundMeth $rebase_round)>
+
+This function results in the special mathematical constant I<e> (which is
+the base of the natural logarithm) taken to the power of its C<$exponent>
+argument.  The 3 C<$rebase_\w+> parameters are as per C<log>.
+
+=item C<sys.rtn.Rat.natural_log of Rat (RO: PRat $topic, PInt
+$rebase_radix, PInt $rebase_max_denom, Cat.RoundMeth $rebase_round)>
+
+This function results in the natural logarithm of its C<$topic> argument.
+The 3 C<$rebase_\w+> parameters are as per C<log>.
+
+=back
+
+These functions convert between C<Rat> values and canonically formatted
+representations of rationals as character strings.
+
+=over
+
+=item C<sys.rtn.Rat.Rat_from_NEText of Rat (RO: NEText $text, PInt2_36
+$radix)>
+
+This selector function results in the C<Rat> value that its C<$text>
+argument maps to when the whole character string is evaluated as a
+base-C<$radix> rational.  Extending the typical formats of [base-2, base-8,
+base-10, base-16], this function supports base-2 through base-36; to get
+the latter, the characters 0-9 and A-Z represent values in 0-35.  This
+function will fail if C<$text> can't be mapped as specified.
+
+=item C<sys.rtn.Rat.NEText_from_Rat of NEText (RO: Rat $rat, PInt2_36
+$radix)>
+
+This selector function results in the C<NEText> value where its C<$rat>
+argument is formatted as a base-C<$radix> rational.
+
+=back
+
+These functions convert between C<Rat> values and equal or nearly equal
+C<Int> values.
+
+=over
+
+=item C<sys.rtn.Rat.Rat_from_Int of Rat (RO: Int $int)>
+
+This selector function results in the C<Rat> value that is conceptually
+equal to its C<Int> argument.
+
+=item C<sys.rtn.Rat.round_half_up of Int (RO: Rat $topic)>
+
+This rounding function results in the integer that is nearest to its
+argument, but that if the argument is exactly half-way between 2 integers,
+it is rounded upwards.  This is the most commonly used method of rounding.
+
+=item C<sys.rtn.Rat.round_to_even of Int (RO: Rat $topic)>
+
+This rounding function results in the integer that is nearest to its
+argument, but that if the argument is exactly half-way between 2 integers,
+it is rounded to the one that is even.  Note that this operation is also
+legitimately known as: I<unbiased rounding>, I<convergent rounding>,
+I<statistician's rounding>, I<bankers' rounding>.
+
+=item C<sys.rtn.Rat.round_to_floor of Int (RO: Rat $topic)>
+
+This rounding function results in the integer that is either equal to its
+argument or that is the nearest integer that is above the argument.
+
+=item C<sys.rtn.Rat.round_to_ceiling of Int (RO: Rat $topic)>
+
+This rounding function results in the integer that is either equal to its
+argument or that is the nearest integer that is below the argument.
+
+=item C<sys.rtn.Rat.round_to_zero of Int (RO: Rat $topic)>
+
+This rounding function results in the integer that is either equal to its
+argument or that is the nearest integer to the argument that is closer to
+zero.  Note that this operation is also legitimately known as I<truncate>.
+
+=back
+
+These functions round and/or truncate rational values to make them easier
+to deal with in various contexts.
+
+=over
+
+=item C<sys.rtn.Rat.rebase of Rat (RO: Rat $topic, PInt $radix, PInt
+$max_denom, Cat.RoundMeth $round)>
+
+This function results in the rational that is as close as possible to
+C<$topic> but that its denominator is a positive power of C<$radix> and
+said denominator is not larger than C<$max_denom>; if rounding is needed,
+then C<$round> dictates the rounding method.
 
 =back
 
