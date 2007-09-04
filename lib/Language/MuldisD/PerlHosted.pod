@@ -319,6 +319,107 @@ Examples:
 
     [ 'PInt', 'perl_pint', 101 ]
 
+=head2 sys.type.Rat
+
+This node type represents a rational value.  It has 3-4 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<Rat>.
+
+=item *
+
+Format; one of: C<md_rat>, C<perl_rat>, C<any_perl>.
+
+=item *
+
+Only when format is C<md_rat>; the max-col-val.
+
+=item *
+
+The payload.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.type.Rat> value as follows:
+
+=over
+
+=item *
+
+If the format is C<md_rat>, then the max-col-val must be a Perl C<Str>
+composed of a single C<[1-9A-Z]> character, and the payload must be a Perl
+C<Str> of the format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>* >>.
+This format specifically is what the Concrete Muldis D grammar uses, and
+is the result of parsing it.  The payload is interpreted as a base-I<N>
+rational where I<N> might be between 2 and 36, and the given max-col-val
+says which possible value of I<N> to use.  Assuming all column values are
+between zero and I<N>-minus-one, the max-col-val contains that
+I<N>-minus-one.  So to specify, eg, bases [2,8,10,16], use max-col-val of
+[1,7,9,F].
+
+=item *
+
+If the format is C<perl_rat>, then:  Under Perl 6, the payload must be a
+Perl C<Rat> (or C<Num>), which is mapped directly.  Under Perl 5, the
+payload must be just a canonical rational or numeric value according to
+Perl.
+
+=item *
+
+If the format is C<any_perl>, then the payload may be any Perl value,
+and it is simply coerced into a numeric context as per Perl's own
+semantics, meaning base-10 where applicable.  If something doesn't look
+numeric, it becomes zero.
+
+=back
+
+Examples:
+
+    [ 'Rat', 'md_rat', '1', '-1.1' ]
+
+    [ 'Rat', 'md_rat', '9', '-1.5' ] # same val as prev
+
+    [ 'Rat', 'md_rat', '9', '3.14159' ]
+
+    [ 'Rat', 'md_rat', 'A', '0.0' ]
+
+    [ 'Rat', 'md_rat', 'F', 'DEADBEEF.FACE' ]
+
+    [ 'Rat', 'md_rat', 'Z', '0.000AZE' ]
+
+    [ 'Rat', 'perl_rat', 21.003 ]
+
+    [ 'Rat', 'any_perl', ' 54.67 ' ]
+
+=head2 sys.type.URat
+
+This node type represents a unsigned / non-negative rational value; it is
+interpreted as a Muldis D C<sys.type.URat>.  Its format is the same as for
+C<sys.type.Rat> but that the node type is 'URat', its formats are
+respectively named for 'urat', and the payload may not have a leading C<->.
+
+Examples:
+
+    [ 'URat', 'md_urat', '6', '500.001' ]
+
+    [ 'URat', 'perl_urat', 0.01 ]
+
+=head2 sys.type.PRat
+
+This node type represents a positive rational value; it is interpreted as a
+Muldis D C<sys.type.PRat>.  Its format is the same as for C<sys.type.URat>
+but that the node type is 'PRat', formats 'prat', and the payload may not
+be C<0>.
+
+Examples:
+
+    [ 'PRat', 'md_prat', 'B', 'A09.B' ]
+
+    [ 'PRat', 'perl_prat', 0.101 ]
+
 =head2 sys.type.Blob
 
 This node type represents a bit string.  It has 3-4 elements:
