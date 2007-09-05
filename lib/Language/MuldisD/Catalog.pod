@@ -53,6 +53,11 @@ context, and aren't re-described here):
         sys.type.Empty
 
         sys.type.Scalar
+
+            # The following is actually a union over many scalar types.
+
+            sys.type.Cat.ScalarLiteral
+
             sys.type.Ordered
 
                 # The following are all regular ordered scalar types.
@@ -62,24 +67,27 @@ context, and aren't re-described here):
 
             # The following are all regular non-ordered scalar types.
 
-            # TODO
+            sys.type.Cat.E.EK
 
         sys.type.Tuple
 
             # The following are all regular tuple types.
 
-            # TODO
+            sys.type.Cat.Expr
 
         sys.type.Relation
+
+            # The following are all regular relation types.
+
+            sys.type.Cat.ShortNameMap
+            sys.type.Cat.BiDiShortNameMap
+
             sys.type.Set
 
                 # The following are all regular set types.
 
-                sys.type.Cat.ShortNameSet
-
-            # The following are all regular relation types.
-
-            sys.type.Cat.AttrRenameMap
+                sys.type.Cat.SetOfShortName
+                sys.type.Cat.SetOfShortNameMap
 
 I<This documentation is pending.>
 
@@ -90,9 +98,18 @@ L<Language::MuldisD::Core>) are more special-purpose in nature and are
 intended for use in defining or working with the system catalog, which is
 mainly composed of nonscalar types built using these.
 
-=over
+=head2 C<sys.type.Cat.ScalarLiteral>
 
-=item C<sys.type.Cat.ShortName>
+A C<Cat.ScalarLiteral> is a union type over all the system-defined scalar
+types that are allowed to be used directly as hard-coded literal values in
+Muldis D expressions; 'directly' meaning not by way of explicitly invoking
+a selector function.  Generally speaking, this union type includes all of
+the core scalar types that aren't themselves defined as union types.  The
+full list that C<Cat.ScalarLiteral> unions is: C<Bool>, C<Order>, C<Int>,
+C<Rat>, C<Blob>, C<Text>, C<Cat.ShortName>, C<Cat.LongName>, C<Cat.E.EK>,
+...
+
+=head2 C<sys.type.Cat.ShortName>
 
 A C<Cat.ShortName> is a canonical name for some DBMS entities (others use
 C<Cat.LongName>), such as the declared names of attributes of scalar
@@ -101,7 +118,7 @@ parameters, and for the invocation names of the same.  It is the same as
 C<Text> in all ways but that it is specifically intended for use in naming
 DBMS entities rather than being normal data.
 
-=item C<sys.type.Cat.LongName>
+=head2 C<sys.type.Cat.LongName>
 
 A C<Cat.LongName> is a canonical name for some DBMS entities (others use
 C<Cat.ShortName>), such as the invocation names of types, routines, and
@@ -111,29 +128,146 @@ elements being ordered from greatest to least significance.  Its default
 value is a single element that is the default value of C<Cat.ShortName>,
 the empty string.
 
-=back
+=head2 C<sys.type.Cat.E.EK>
 
-=head1 SYSTEM-DEFINED CORE CATALOG NONSCALAR DATA TYPES
+A C<Cat.E.EK> (expression kind) is an enumeration consisting of the 7
+values C<Cat.E.EK:func> (result of function invocation, or inlining of
+function body), C<Cat.E.EK:param> (value of function parameter),
+C<Cat.E.EK:(scalar|tuple|relation|quasi_tuple|quasi_relation)> (hard-coded
+literal scalar|tuple|relation|quasi-tuple|quasi-relation value).  Its
+default value is C<Cat.E.EK:scalar>.
 
-These nonscalar data types, essentially all of the system-defined nonscalar
+=head1 SYSTEM-DEFINED CORE CATALOG TUPLE DATA TYPES
+
+These tuple data types, essentially all of the system-defined tuple
 types are special-purpose in nature and are intended for use in defining or
-working with the system catalog.
+working with the system catalog.  They are all completely defined types.
+
+I<To keep things simpler for now, most constraint definitions for these
+types are missing, or just defined informally.>
+
+=head2 C<sys.type.Cat.Expr>
+
+A C<Cat.Expr> is a C<Tuple>.  It specifies a named expression node, which
+is the majority component of functional Muldis D code.  All arbitrarily
+complex Muldis D expression trees, including relational queries, are
+composed of just C<Cat.Expr>, either directly, or indirectly by way of
+function invocations, as each function body is itself composed entirely of
+a single expression tree.  Only functions may contain C<Cat.Expr>, so for
+any procedures that would conceptually include them, those portions of the
+procedures need to be separated out and encapsulated by named functions.
+
+A C<Cat.Expr> has these 9 attributes:
 
 =over
 
-=item C<sys.type.Cat.ShortNameSet>
+=item C<name> - C<Cat.ShortName>
 
-A C<Cat.ShortNameSet> is a C<Set> of C<Cat.ShortName>.
+This is the declared name of the expression node; other Muldis D code that
+is composing this expression node into their own definitions would
+reference it with this name.
 
-=item C<sys.type.Cat.AttrRenameMap>
+=item C<type> - C<Cat.LongName>
 
-A C<Cat.AttrRenameMap> is a specification for how to rename attributes of a
-relation.  It is a binary C<Relation> whose 2 attributes are named
-C<before> and C<after>, and both attributes have declared types of
-C<Cat.ShortName> and each attribute is a unary key.  Its default value has
-zero tuples.
+This is the declared result data type of the expression node.  If the
+expression node represents a literal value, this is often necessary for
+properly interpreting the details of that literal, particularly for
+literals that are not scalar.  Otherwise, although the result type of an
+expression can sometimes be inferred from context, such as from the result
+type of a function it is an invocation of, this redundancy helps make
+static analysis of Muldis D code easier, so it is easier to validate and
+optimize in isolation from the other routines it interacts with.  Moreover,
+this type declaration provides a terse way to use the C<treat> function
+frequently in code, so that the programmer and compiler knows that some
+generic routines are actually supposed to be returning a subtype of their
+normal result types.
+
+=item C<kind> - C<Cat.E.EK>
+
+This is the declared kind of expression that this node is; it says how to
+interpret the rest of the attributes and/or which of them have significant
+values.
+
+=item C<func> - C<Cat.LongName>
+
+Iff C<kind> is C<Cat.E.EK:func>, then the expression represents the result
+of invoking a named function with specific arguments, and this the name of
+that function.
+
+=item C<func_args> - C<Cat.ShortNameMap>
+
+Iff C<func> is used, then these are the arguments for the function
+invocation.  Each element defines one argument value, with the element
+C<key> matching the parameter name, and the element C<value> naming another
+local C<Cat.Expr> which defines the value.
+
+=item C<param> - C<Cat.ShortName>
+
+Iff C<kind> is C<Cat.E.EK.param>, then the expression represents the value
+of the containing function's parameter which this names.
+
+=item C<s_lit> - C<Cat.ScalarLiteral>
+
+Iff C<kind> is C<Cat.E.EK.scalar>, then the expression represents a
+hard-coded scalar literal of one of a certain collection of system-defined
+core scalar types (or subtype thereof), and this is that literal value.
+
+=item C<t_attrs> - C<Cat.ShortNameMap>
+
+Iff C<kind> is C<Cat.E.EK.tuple|quasi_tuple>, then the expression
+represents a tuple or quasi-tuple literal, and these are the values of its
+attributes.  Each element defines one attribute value, with the element
+C<key> matching the attribute name, and the element C<value> naming another
+local C<Cat.Expr> which defines the value.
+
+=item C<r_tuples> - C<Cat.SetOfShortNameMap>
+
+Iff C<kind> is C<Cat.E.EK.relation|quasi_relation>, then the expression
+represents a relation or quasi-relation literal, and these are the values
+of its tuples.  Each element defines the attribute values of one tuple, as
+per C<t_attrs>.
 
 =back
+
+Note that whenever a C<Cat.Expr> attribute isn't significant, given the
+expression type, and should be ignored, its value is the default for its
+type.
+
+The default value of C<Cat.Expr> represents the literal scalar value
+C<Bool:false>.
+
+=head1 SYSTEM-DEFINED CORE CATALOG RELATION DATA TYPES
+
+These relation data types, essentially all of the system-defined relation
+types are special-purpose in nature and are intended for use in defining or
+working with the system catalog.  They are all completely defined types.
+
+I<To keep things simpler for now, most constraint definitions for these
+types are missing, or just defined informally.>
+
+=head2 C<sys.type.Cat.ShortNameMap>
+
+A C<Cat.ShortNameMap> specifies a map of short entity names to other short
+entity names.  It is a binary C<Relation> whose 2 attributes are named
+C<key> and C<value>, and both attributes have declared types of
+C<Cat.ShortName>; the C<key> attribute is a unary key.  Its default value
+has zero tuples.
+
+=head2 C<sys.type.Cat.BiDiShortNameMap>
+
+A C<Cat.BiDiShortNameMap> is a proper subtype of C<Cat.ShortNameMap> where
+its C<value> attribute is also a unary key.  It is used as a specification
+for how to rename attributes of a relation.
+
+=head2 C<sys.type.Cat.SetOfShortName>
+
+A C<Cat.SetOfShortName> is a C<(Set)> whose C<value> attribute has a
+declared type of C<Cat.ShortName>.
+
+=head2 C<sys.type.Cat.SetOfShortNameMap>
+
+A C<Cat.SetOfShortNameMap> is a C<(Set)> whose C<value> attribute has a
+declared type of C<Cat.ShortNameMap>.
 
 =head1 CATALOGS
 
