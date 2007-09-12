@@ -45,7 +45,7 @@ relationships:
 
     sys.Core.Universal.Universal
 
-        sys.Core.Empty.Empty
+        sys.Core.Universal.Empty
 
         sys.Core.Scalar.Scalar
             sys.Core.Ordered.Ordered
@@ -70,27 +70,27 @@ relationships:
         # The following are all nonscalar type factories.
 
         sys.Core.Tuple.Tuple
-            sys.Core.Database.Database
+            sys.Core.Tuple.Database
 
         sys.Core.Relation.Relation
-            sys.Core.Set.Set
-                sys.Core.Maybe.Maybe
-            sys.Core.Seq.Seq
-            sys.Core.Bag.Bag
+            sys.Core.Relation.Set
+                sys.Core.Relation.Maybe
+            sys.Core.Relation.Seq
+            sys.Core.Relation.Bag
 
         # The following are all quasi-nonscalar type factories.
 
         sys.Core.QuasiTuple.QuasiTuple
 
         sys.Core.QuasiRelation.QuasiRelation
-            sys.Core.QuasiSet.QuasiSet
-                sys.Core.QuasiMaybe.QuasiMaybe
-            sys.Core.QuasiSeq.QuasiSeq
-            sys.Core.QuasiBag.QuasiBag
+            sys.Core.QuasiRelation.QuasiSet
+                sys.Core.QuasiRelation.QuasiMaybe
+            sys.Core.QuasiRelation.QuasiSeq
+            sys.Core.QuasiRelation.QuasiBag
 
-Note that C<sys.Core.Empty.Empty> is a proper subtype of all of the other
-types in this graph, but every other type has only one immediate supertype
-shown, and hence the graph of them is a simple hierarchy.
+Note that C<sys.Core.Universal.Empty> is a proper subtype of all of the
+other types in this graph, but every other type has only one immediate
+supertype shown, and hence the graph of them is a simple hierarchy.
 
 These system-defined subtypes have also been defined for convenience, as
 they are anticipated to be frequently used; in fact, most of them are used
@@ -99,7 +99,7 @@ specific to defining the system catalog:
 
     sys.Core.Universal.Universal
 
-        sys.Core.Empty.Empty
+        sys.Core.Universal.Empty
 
         sys.Core.Scalar.Scalar
             sys.Core.Ordered.Ordered
@@ -113,7 +113,7 @@ specific to defining the system catalog:
                             sys.Core.Spec.PInt2_36
 
         sys.Core.Relation.Relation
-            sys.Core.Set.Set
+            sys.Core.Relation.Set
 
                 # The following are all regular set types.
 
@@ -127,7 +127,7 @@ specific to defining the system catalog:
 
                 sys.Core.Spec.SetOfRelation
 
-                sys.Core.Maybe.Maybe
+                sys.Core.Relation.Maybe
 
                     # The following are all regular maybe types.
 
@@ -137,7 +137,7 @@ specific to defining the system catalog:
                     sys.Core.Spec.MaybeOfBlob
                     sys.Core.Spec.MaybeOfText
 
-            sys.Core.Seq.Seq
+            sys.Core.Relation.Seq
 
                 # The following are all regular sequence types.
 
@@ -147,7 +147,7 @@ specific to defining the system catalog:
                 sys.Core.Spec.SeqOfBlob
                 sys.Core.Spec.SeqOfText
 
-            sys.Core.Bag.Bag
+            sys.Core.Relation.Bag
 
                 # The following are all regular bag types.
 
@@ -162,7 +162,7 @@ specific to defining the system catalog:
                 sys.Core.Spec.BagOfRelation
 
         sys.Core.QuasiRelation.QuasiRelation
-            sys.Core.QuasiSet.QuasiSet
+            sys.Core.QuasiRelation.QuasiSet
 
                 # The following are all quasi-nonscalar type factories.
 
@@ -176,7 +176,7 @@ These system-defined subtypes are specific to defining the system catalog:
 
     sys.Core.Universal.Universal
 
-        sys.Core.Empty.Empty
+        sys.Core.Universal.Empty
 
         sys.Core.Scalar.Scalar
             sys.Core.Ordered.Ordered
@@ -197,7 +197,7 @@ These system-defined subtypes are specific to defining the system catalog:
             # TODO
 
         sys.Core.Relation.Relation
-            sys.Core.Set.Set
+            sys.Core.Relation.Set
 
                 # The following are all regular set types.
 
@@ -224,7 +224,7 @@ is implicitly a proper subtype of C<Universal>, and C<Universal> is
 implicitly a union type over all other types.  Its default value is
 C<Bool:false>.  The cardinality of this type is infinity.
 
-=item C<sys.Core.Empty.Empty>
+=item C<sys.Core.Universal.Empty>
 
 The C<Empty> type is the minimal type of the entire Muldis D type system,
 and is the only type that contains exactly zero values.  Every other type
@@ -440,7 +440,7 @@ type is equal to the product of the number of permutations drawable from
 the values of each of its attributes' declared data types; for a C<Tuple>
 subtype to be finite, all of its attribute types must be.
 
-=item C<sys.Core.Database.Database>
+=item C<sys.Core.Tuple.Database>
 
 A C<Database> is a proper subtype of C<Tuple> where all of its attributes
 are each of relation types or of database types (the leaves of this
@@ -462,7 +462,7 @@ of its attributes, which constrain its set of values relative to there
 being no explicit keys, but having the keys won't turn an infinite relation
 type into a finite one.
 
-=item C<sys.Core.Set.Set>
+=item C<sys.Core.Relation.Set>
 
 A C<Set> is a proper subtype of C<Relation> that has 1 attribute, and its
 name is C<value>; it can be of any declared type.  A C<Set> subtype is
@@ -470,7 +470,7 @@ normally used by any system-defined N-ary operators where the order of
 their argument elements or result is not significant, and that duplicate
 values are not significant.  Its default value has zero tuples.
 
-=item C<sys.Core.Maybe.Maybe>
+=item C<sys.Core.Relation.Maybe>
 
 A C<Maybe> is a proper subtype of C<Set> that may have at most one element;
 that is, it is a unary C<Relation> with a nullary key.  Operators that work
@@ -480,7 +480,7 @@ close to SQL's nullable types without actually having 3-valued logic; it
 would probably be convenient for code that round-trips SQL by way of
 Muldis D to use the C<Maybe> type.  Its default value has zero tuples.
 
-=item C<sys.Core.Seq.Seq>
+=item C<sys.Core.Relation.Seq>
 
 An C<Seq> is a proper subtype of C<Relation> that has 2 attributes,
 and their names are C<index> and C<value>, where C<index> is a unary key
@@ -493,7 +493,7 @@ order of their argument elements or result is significant (and duplicate
 values are significant); specifically, C<index> defines an explicit
 ordering for C<values>.  Its default value has zero tuples.
 
-=item C<sys.Core.Bag.Bag>
+=item C<sys.Core.Relation.Bag>
 
 A C<Bag> is a proper subtype of C<Relation> that has 2 attributes, and
 their names are C<value> and C<count>, where C<value> is a unary key (that
@@ -528,25 +528,25 @@ attributes can be anything at all.  Its cardinality is infinite.
 A C<QuasiRelation> is like a C<Relation> but that the declared types of its
 attributes can be anything at all.  Its cardinality is infinite.
 
-=item C<sys.Core.QuasiSet.QuasiSet>
+=item C<sys.Core.QuasiRelation.QuasiSet>
 
 A C<QuasiSet> is a proper subtype of C<QuasiRelation> in the corresponding
 manner to C<Set> being a proper subtype of C<Relation>.  Its cardinality is
 infinite.
 
-=item C<sys.Core.QuasiMaybe.QuasiMaybe>
+=item C<sys.Core.QuasiRelation.QuasiMaybe>
 
 A C<QuasiMaybe> is a proper subtype of C<QuasiRelation> in the
 corresponding manner to C<Maybe> being a proper subtype of C<Relation>.
 Its cardinality is infinite.
 
-=item C<sys.Core.QuasiSeq.QuasiSeq>
+=item C<sys.Core.QuasiRelation.QuasiSeq>
 
 A C<QuasiSeq> is a proper subtype of C<QuasiRelation> in the corresponding
 manner to C<Seq> being a proper subtype of C<Relation>.  Its cardinality is
 infinite.
 
-=item C<sys.Core.QuasiBag.QuasiBag>
+=item C<sys.Core.QuasiRelation.QuasiBag>
 
 A C<QuasiBag> is a proper subtype of C<QuasiRelation> in the corresponding
 manner to C<Bag> being a proper subtype of C<Relation>.  Its cardinality is
