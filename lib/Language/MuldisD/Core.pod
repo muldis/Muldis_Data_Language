@@ -55,17 +55,17 @@ relationships:
                 sys.Core.Bool.Bool
                 sys.Core.Order.Order
                 sys.Core.Int.Int
-                    sys.Core.UInt.UInt
-                        sys.Core.PInt.PInt
+                    sys.Core.Int.UInt
+                        sys.Core.Int.PInt
                 sys.Core.Rat.Rat
-                    sys.Core.URat.URat
-                        sys.Core.PRat.PRat
-                    sys.Core.BRat.BRat
-                    sys.Core.DRat.DRat
+                    sys.Core.Rat.URat
+                        sys.Core.Rat.PRat
+                    sys.Core.Rat.BRat
+                    sys.Core.Rat.DRat
                 sys.Core.Blob.Blob
-                    sys.Core.NEBlob.NEBlob
+                    sys.Core.Blob.NEBlob
                 sys.Core.Text.Text
-                    sys.Core.NEText.NEText
+                    sys.Core.Text.NEText
 
         # The following are all nonscalar type factories.
 
@@ -104,72 +104,72 @@ specific to defining the system catalog:
         sys.Core.Scalar.Scalar
             sys.Core.Ordered.Ordered
                 sys.Core.Int.Int
-                    sys.Core.UInt.UInt
-                        sys.Core.PInt.PInt
+                    sys.Core.Int.UInt
+                        sys.Core.Int.PInt
 
                             # The following are all finite integer types.
 
-                            sys.Core.PInt.PInt1_4
-                            sys.Core.PInt.PInt2_36
+                            sys.Core.Spec.PInt1_4
+                            sys.Core.Spec.PInt2_36
 
         sys.Core.Relation.Relation
             sys.Core.Set.Set
 
                 # The following are all regular set types.
 
-                sys.Core.SetOfBool.SetOfBool
-                sys.Core.SetOfInt.SetOfInt
-                sys.Core.SetOfRat.SetOfRat
-                sys.Core.SetOfBlob.SetOfBlob
-                sys.Core.SetOfText.SetOfText
+                sys.Core.Spec.SetOfBool
+                sys.Core.Spec.SetOfInt
+                sys.Core.Spec.SetOfRat
+                sys.Core.Spec.SetOfBlob
+                sys.Core.Spec.SetOfText
 
                 # The following are all nonscalar type factories.
 
-                sys.Core.SetOfRelation.SetOfRelation
+                sys.Core.Spec.SetOfRelation
 
                 sys.Core.Maybe.Maybe
 
                     # The following are all regular maybe types.
 
-                    sys.Core.MaybeOfBool.MaybeOfBool
-                    sys.Core.MaybeOfInt.MaybeOfInt
-                    sys.Core.MaybeOfRat.MaybeOfRat
-                    sys.Core.MaybeOfBlob.MaybeOfBlob
-                    sys.Core.MaybeOfText.MaybeOfText
+                    sys.Core.Spec.MaybeOfBool
+                    sys.Core.Spec.MaybeOfInt
+                    sys.Core.Spec.MaybeOfRat
+                    sys.Core.Spec.MaybeOfBlob
+                    sys.Core.Spec.MaybeOfText
 
             sys.Core.Seq.Seq
 
                 # The following are all regular sequence types.
 
-                sys.Core.SeqOfBool.SeqOfBool
-                sys.Core.SeqOfInt.SeqOfInt
-                sys.Core.SeqOfRat.SeqOfRat
-                sys.Core.SeqOfBlob.SeqOfBlob
-                sys.Core.SeqOfText.SeqOfText
+                sys.Core.Spec.SeqOfBool
+                sys.Core.Spec.SeqOfInt
+                sys.Core.Spec.SeqOfRat
+                sys.Core.Spec.SeqOfBlob
+                sys.Core.Spec.SeqOfText
 
             sys.Core.Bag.Bag
 
                 # The following are all regular bag types.
 
-                sys.Core.BagOfBool.BagOfBool
-                sys.Core.BagOfInt.BagOfInt
-                sys.Core.BagOfRat.BagOfRat
-                sys.Core.BagOfBlob.BagOfBlob
-                sys.Core.BagOfText.BagOfText
+                sys.Core.Spec.BagOfBool
+                sys.Core.Spec.BagOfInt
+                sys.Core.Spec.BagOfRat
+                sys.Core.Spec.BagOfBlob
+                sys.Core.Spec.BagOfText
 
                 # The following are all nonscalar type factories.
 
-                sys.Core.BagOfRelation.BagOfRelation
+                sys.Core.Spec.BagOfRelation
 
         sys.Core.QuasiRelation.QuasiRelation
             sys.Core.QuasiSet.QuasiSet
 
                 # The following are all quasi-nonscalar type factories.
 
-                sys.Core.QuasiSetOfRelation.QuasiSetOfRelation
+                sys.Core.Spec.QuasiSetOfRelation
 
 Note that, in later operator documentation, if you see something like
-C<Foo{Bar}> as a declared type, it corresponds to C<sys.Core.FooOfBar.FooOfBar>.
+C<Foo{Bar}> as a declared type, it corresponds to C<sys.Core.Spec.FooOfBar>.
 
 These system-defined subtypes are specific to defining the system catalog:
 
@@ -246,12 +246,12 @@ for users to define more types of this nature.
 
 =over
 
-=item C<sys.Core.Some.Some.Universal>
+=item C<sys.Core.Some.Universal>
 
 Contexts defined by the C<Some.Universal> pseudo-type accept values of
 potentially any type of C<Universal>.
 
-=item C<sys.Core.Some.Some.Ordered>
+=item C<sys.Core.Some.Ordered>
 
 Contexts defined by the C<Some.Ordered> pseudo-type accept values of
 potentially any type of C<Ordered>.
@@ -319,13 +319,13 @@ and practically impossible.  The cardinality of this type is infinity; to
 define a most-generalized finite C<Int> subtype, you must specify the 2
 integer end-points of the inclusive range that all its values are in.
 
-=item C<sys.Core.UInt.UInt>
+=item C<sys.Core.Int.UInt>
 
 A C<UInt> (unsigned / non-negative integer) is a proper subtype of C<Int>
 where all member values are greater than or equal to zero.  Its minimum
 value is zero.
 
-=item C<sys.Core.PInt.PInt>
+=item C<sys.Core.Int.PInt>
 
 A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
 member values are greater than zero.  Its default and minimum value is 1.
@@ -344,24 +344,24 @@ specify that all denominators are positive powers of a particular I<radix>
 will easily map exactly to common human or physical numeric
 representations, so they tend to perform better.
 
-=item C<sys.Core.URat.URat>
+=item C<sys.Core.Rat.URat>
 
 A C<URat> (unsigned / non-negative rational) is a proper subtype of C<Rat>
 where all member values are greater than or equal to zero.  Its minimum
 value is zero.
 
-=item C<sys.Core.PRat.PRat>
+=item C<sys.Core.Rat.PRat>
 
 A C<PRat> (positive integer) is a proper subtype of C<URat> where all
 member values are greater than zero.  Its default value is 1.
 
-=item C<sys.Core.BRat.BRat>
+=item C<sys.Core.Rat.BRat>
 
 A C<BRat> (binary rational) is a proper subtype of C<Rat> where the radix
 is 2; it is the best option to exactly represent rational numbers that are
 conceptually binary or octal or hexadecimal.
 
-=item C<sys.Core.DRat.DRat>
+=item C<sys.Core.Rat.DRat>
 
 A C<DRat> (decimal rational) is a proper subtype of C<Rat> where the radix
 is 10; it is the best option to exactly represent rational numbers that are
@@ -375,7 +375,7 @@ and practically impossible.  The cardinality of this type is infinity; to
 define a most-generalized finite C<Blob> subtype, you must specify a
 maximum length in bits that the subtype's strings are.
 
-=item C<sys.Core.NEBlob.NEBlob>
+=item C<sys.Core.Blob.NEBlob>
 
 A C<NEBlob> (non-empty blob) is a proper subtype of C<Blob> where its
 length in bits must be at least 1; it can be any C<Blob> except for the
@@ -392,7 +392,7 @@ most-generalized finite C<Text> subtype, you must specify a maximum length
 in characters (that is, eg, in NFC graphemes) that the subtype's strings
 are.
 
-=item C<sys.Core.NEText.NEText>
+=item C<sys.Core.Text.NEText>
 
 A C<NEText> (non-empty text) is a proper subtype of C<Text> where its
 length in characters must be more than zero; it can be any C<Text> except
@@ -563,32 +563,32 @@ catalog.
 
 =over
 
-=item C<sys.Core.PInt.PInt1_4>
+=item C<sys.Core.Spec.PInt1_4>
 
 A C<PInt1_4> is a proper subtype of C<PInt> where all member values are
 between 1 and 4.  Its maximum value is 4.  The cardinality of this type is
 4.
 
-=item C<sys.Core.PInt.PInt2_36>
+=item C<sys.Core.Spec.PInt2_36>
 
 A C<PInt2_36> is a proper subtype of C<PInt> where all member values are
 between 2 and 36.  (The significance of the number 36 is 10 digits plus 26
 letters.)  Its default and minimum value is 2; its maximum value is 36.
 The cardinality of this type is 35.
 
-=item C<sys.type.(Set|Maybe|Seq|Bag)Of(Bool|Int|Rat|Blob|Text)>
+=item C<sys.Core.Spec.(Set|Maybe|Seq|Bag)Of(Bool|Int|Rat|Blob|Text)>
 
 A C<(Set|Maybe|Seq|Bag)Of(Bool|Int|Rat|Blob|Text)> is a completely defined
 proper subtype of C<(Set|Maybe|Seq|Bag)> whose C<value> attribute has a
 declared type of a C<(Bool|Int|Rat|Blob|Text)> subtype.
 
-=item C<sys.type.(Set|Bag)OfRelation>
+=item C<sys.Core.Spec.(Set|Bag)OfRelation>
 
 A C<(Set|Bag)OfRelation> is an incompletely defined proper subtype of
 C<Set|Bag> whose C<value> attribute has a declared type of a C<Relation>
 subtype.
 
-=item C<sys.Core.QuasiSetOfRelation.QuasiSetOfRelation>
+=item C<sys.Core.Spec.QuasiSetOfRelation>
 
 A C<QuasiSetOfRelation> is an incompletely defined proper subtype of
 C<QuasiSet> whose C<value> attribute has a declared type of C<Relation>;

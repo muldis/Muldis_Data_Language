@@ -53,16 +53,16 @@ and aren't re-described here):
 
                 # The following are all regular ordered scalar types.
 
-                sys.Temporal.Temporal.DateTime
-                sys.Temporal.Temporal.Date
-                sys.Temporal.Temporal.Time
-                sys.Temporal.Temporal.Duration
-                sys.Temporal.Temporal.DurationOfDays
-                sys.Temporal.Temporal.DateTimeNoTZ
-                sys.Temporal.Temporal.DateNoTZ
-                sys.Temporal.Temporal.TimeNoTZ
-                sys.Temporal.Temporal.DurationNoTZ
-                sys.Temporal.Temporal.DurationOfDaysNoTZ
+                sys.Temporal.WithTZ.DateTime
+                sys.Temporal.WithTZ.Date
+                sys.Temporal.WithTZ.Time
+                sys.Temporal.WithTZ.Duration
+                sys.Temporal.WithTZ.DurationOfDays
+                sys.Temporal.NoTZ.DateTime
+                sys.Temporal.NoTZ.Date
+                sys.Temporal.NoTZ.Time
+                sys.Temporal.NoTZ.Duration
+                sys.Temporal.NoTZ.DurationOfDays
 
 I<This documentation is pending.>
 
@@ -77,98 +77,98 @@ revised or rewritten.>
 
 =over
 
-=item C<sys.Temporal.Temporal.DateTime>
+=item C<sys.Temporal.WithTZ.DateTime>
 
-A C<Temporal.DateTime> is a single specific time on a specific date, with
+A C<WithTZ.DateTime> is a single specific time on a specific date, with
 precision to arbitrary fractions of a second.  It I<does> incorporate an
 explicit terrestrial time-zone offset (relative to UTC), so you use it when
 you I<do know> the time-zone and it is significant (which is usually).  It
 is conceptually calendar-agnostic.  The default value of
-C<Temporal.DateTime> is the Perl 6 epoch, namely 2000-1-1T0:0:0 in the
+C<WithTZ.DateTime> is the Perl 6 epoch, namely 2000-1-1T0:0:0 in the
 Gregorian calendar, with a time-zone offset of zero.  This type's minimum
 and maximum values are some kind of infinities.  The cardinality of this
-type is infinity; to define a most-generalized finite C<Temporal.DateTime>
+type is infinity; to define a most-generalized finite C<WithTZ.DateTime>
 subtype, you must specify the earliest and latest datetimes it includes,
 and also its least magnitude fraction of a second.
 
-=item C<sys.Temporal.Temporal.Date>
+=item C<sys.Temporal.WithTZ.Date>
 
-A C<Temporal.Date> is the same as C<Temporal.DateTime> in all respects but
+A C<WithTZ.Date> is the same as C<WithTZ.DateTime> in all respects but
 that its precision is only to the whole terrestrial day.  Its default value
 is 2000-1-1 in the Gregorian calendar.  The cardinality of this type is
-infinity; to define a most-generalized finite C<Temporal.Date> subtype, you
+infinity; to define a most-generalized finite C<WithTZ.Date> subtype, you
 must specify the earliest and latest dates it includes.
 
-=item C<sys.Temporal.Temporal.Time>
+=item C<sys.Temporal.WithTZ.Time>
 
-A C<Temporal.Time> is a single specific time that isn't on any day in
+A C<WithTZ.Time> is a single specific time that isn't on any day in
 particular, and isn't part of any calendar in particular, with a precision
 to arbitrary fractions of a second; its allowed range is between zero
 seconds (inclusive) and 1 terrestrial day (exclusive).  It does incorporate
-an explicit time-zone offset interval as per C<Temporal.DateTime>.  Its
+an explicit time-zone offset interval as per C<WithTZ.DateTime>.  Its
 default and minimum value is 0:0:0; its maximum value is 1 terrestrial day
 in actuality, due to rounding from something slightly less than that.  The
 cardinality of this type is infinity; to define a most-generalized finite
-C<Temporal.Time> subtype, you must specify its least magnitude fraction of
+C<WithTZ.Time> subtype, you must specify its least magnitude fraction of
 a second.
 
-=item C<sys.Temporal.Temporal.Duration>
+=item C<sys.Temporal.WithTZ.Duration>
 
-A C<Temporal.Duration> is a single amount of time, with precision to
+A C<WithTZ.Duration> is a single amount of time, with precision to
 arbitrary fractions of a second.  It is not fixed to any date or time and
 is agnostic to the calendar.  It is the result type of taking the
-difference between two C<Temporal.DateTime> values, and is likewise assumed
+difference between two C<WithTZ.DateTime> values, and is likewise assumed
 to be as unambiguous as when you know the time-zone offsets are known.  Its
 default value is zero; its minimum and maximum values are some kind of
 infinities.  The cardinality of this type is infinity; to define a
-most-generalized finite C<Temporal.Duration> subtype, you must specify the
+most-generalized finite C<WithTZ.Duration> subtype, you must specify the
 minimum and maximum amount of time that its values may be, plus the
 granularity of the type in fractions of a second.
 
-=item C<sys.Temporal.Temporal.DurationOfDays>
+=item C<sys.Temporal.WithTZ.DurationOfDays>
 
-A C<Temporal.DurationOfDays> is the same as C<Temporal.Duration> in all
+A C<WithTZ.DurationOfDays> is the same as C<WithTZ.Duration> in all
 respects but that its precision is only to the whole terrestrial day.  The
 cardinality of this type is infinity; to define a most-generalized finite
-C<Temporal.DurationOfDays> subtype, you must specify the minimum and
+C<WithTZ.DurationOfDays> subtype, you must specify the minimum and
 maximum amount of time that its values may be.
 
-=item C<sys.Temporal.Temporal.DateTimeNoTZ>
+=item C<sys.Temporal.NoTZ.DateTime>
 
-A C<Temporal.DateTimeNoTZ> is the same as C<Temporal.DateTime> in its
+A C<NoTZ.DateTime> is the same as C<WithTZ.DateTime> in its
 precision, but it I<does not> incorporate an explicit terrestrial time-zone
 offset interval, and so it is conceptually ambiguous within an interval of
 about 25 hours; you use it when you I<do not know> the time-zone or it is
 not significant (which is not usually).  Its default value is
 2000-1-1T0:0:0 in the Gregorian calendar.  Matters of its cardinality are
-the same as for C<Temporal.DateTime>.
+the same as for C<WithTZ.DateTime>.
 
-=item C<sys.Temporal.Temporal.DateNoTZ>
+=item C<sys.Temporal.NoTZ.Date>
 
-A C<Temporal.DateNoTZ> is the same as C<Temporal.Date> in all respects but
+A C<NoTZ.Date> is the same as C<WithTZ.Date> in all respects but
 that its differences correspond to the differences between
-C<Temporal.DateTime> and C<Temporal.DateTimeNoTZ>.  Matters of its
-cardinality are the same as for C<Temporal.Date>.
+C<WithTZ.DateTime> and C<NoTZ.DateTime>.  Matters of its
+cardinality are the same as for C<WithTZ.Date>.
 
-=item C<sys.Temporal.Temporal.TimeNoTZ>
+=item C<sys.Temporal.NoTZ.Time>
 
-A C<Temporal.TimeNoTZ> is the same as C<Temporal.Time> in all respects but
+A C<NoTZ.Time> is the same as C<WithTZ.Time> in all respects but
 that its differences correspond to the differences between
-C<Temporal.DateTime> and C<Temporal.DateTimeNoTZ>.  Matters of its
-cardinality are the same as for C<Temporal.Time>.
+C<WithTZ.DateTime> and C<NoTZ.DateTime>.  Matters of its
+cardinality are the same as for C<WithTZ.Time>.
 
-=item C<sys.Temporal.Temporal.DurationNoTZ>
+=item C<sys.Temporal.NoTZ.Duration>
 
-A C<Temporal.DurationNoTZ> is the same as C<Temporal.Duration> in all
+A C<NoTZ.Duration> is the same as C<WithTZ.Duration> in all
 respects but that it is considered ambiguous within a 50 hour interval, and
 it is the result type of taking the difference between two
-C<Temporal.DateTimeNoTZ> values.  Matters of its cardinality are the same
-as for C<Temporal.Duration>.
+C<NoTZ.DateTime> values.  Matters of its cardinality are the same
+as for C<WithTZ.Duration>.
 
-=item C<sys.Temporal.Temporal.DurationOfDaysNoTZ>
+=item C<sys.Temporal.NoTZ.DurationOfDays>
 
-A C<Temporal.DurationOfDaysNoTZ> is to C<Temporal.DurationOfDays> what
-C<Temporal.DurationNoTZ> is to C<Temporal.Duration>.
+A C<NoTZ.DurationOfDays> is to C<WithTZ.DurationOfDays> what
+C<NoTZ.Duration> is to C<WithTZ.Duration>.
 
 =back
 
