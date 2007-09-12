@@ -14,9 +14,9 @@
     CATALOG (|NON-)SCALAR DATA TYPES sections were moved into Core.pod, at
     the end of all the type definitions.
 
-    * New file versions are: Core.pod 0.7.0 and Basics.pod 0.6.0 and
-    PerlHosted.pod 0.1.1.  The other pre-existing
-    versioned files are unchanged.
+    * New file versions are: Core.pod 0.7.0 and Basics.pod and Grammar.pod
+    0.6.0 and Temporal.pod and Spatial.pod 0.5.0 and PerlHosted.pod 0.2.0.
+    The other pre-existing versioned files are unchanged.
 
     * (Basics.pod)  Chopped the 'main' routine kind down so that it is now
     only applicable to a non-hosted Muldis D application; hosted (eg, by
@@ -27,6 +27,38 @@
     this recursion are all relations); the reason for this was to provide a
     more elegant way to represent the common convention of dividing a
     relational database into schemas for better entity management.
+
+    * (Basics.pod)  Started rewrite of the ENTITY NAMES documentation; for
+    now there is just the addition of a new namespace hierarchy.  The new
+    hierarchy has the following 8 top-level names: cat, sys, app, glo, dep,
+    sch, pkg, lex.  The old namespaces map to the new ones as follows:
+    sys.cat -> cat.system ; nat.cat -> cat.native ; mnt -> cat.mount ;
+    foreign -> cat.foreign ; interp -> cat.interp ; sys.(type|rtn).* ->
+    sys.(Core|<extension>).<package>.* ; nat.(data|type|rtn).* ->
+    (app|glo.<depot>).* ; lex.* -> lex.* .  The top-level names [dep, sch,
+    pkg] are context-sensitive aliases for something under 'app' and/or
+    'glo', so entities can tersely and portably refer to their own
+    depot|schema|package, sort of like 'lex' (lexical) allows.  Notably,
+    the type of entity, data|type|rtn, is no longer included in the long
+    name of most entities, and entities of different types now clearly
+    share the same namespace, as per is typical with SQL DBMSs where both
+    tables and stored procedures are in the same schema object namespaces.
+
+    * (Core.pod, Grammar.pod, PerlHosted.pod, Temporal.pod, Spatial.pod)
+    Renamed all the system-defined types and operators to fit into the new
+    namespace hierarchy.  The operators saw less drastic changes, as
+    roughly speaking, their 'rtn' name component was simply changed to
+    'Core' (it would have been different for temporal/spatial operators,
+    but none of those were defined yet).  The types saw more drastic
+    changes; roughly speaking, all 'type' were renamed to one of
+    Core|Temporal|Spatial, and for non-catalog core types, the unique part
+    of each name was replaced with 2 instances of itself.  Roughly
+    speaking, what used to be a type name now doubles as a type name and a
+    package name for both that type and for its operators.  Following this,
+    the new system-defined packages were then either consolidated or split
+    as appropriate, grouping most similar entities and separating less
+    similar ones.  For example, all generic 'Int' types were grouped under
+    one package, and the 'Temporal' types were split into several.
 
 2007-09-03   Darren Duncan <perl@DarrenDuncan.net>
 
