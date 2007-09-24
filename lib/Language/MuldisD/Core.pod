@@ -628,7 +628,7 @@ a single expression tree.  Only functions may contain C<Cat.Expr>, so for
 any procedures that would conceptually include them, those portions of the
 procedures need to be separated out and encapsulated by named functions.
 
-A C<Expr> has these 8 attributes:
+A C<Cat.Expr> has these 8 attributes:
 
 =over
 
@@ -661,13 +661,13 @@ values.
 
 =item C<scal_lit> - C<Cat.ScalarLiteral>
 
-Iff C<kind> is C<Cat.E_EK.scalar>, then the expression represents a
+Iff C<kind> is C<Cat.E_EK:scalar>, then the expression represents a
 hard-coded scalar literal of one of a certain collection of system-defined
 core scalar types (or subtype thereof), and this is that literal value.
 
 =item C<coll_lit> - C<Cat.SetOfShortNameMap>
 
-Iff C<kind> is C<Cat.E_EK.(|quasi_)(tuple|relation)>, then the expression
+Iff C<kind> is C<Cat.E_EK:(|quasi_)(tuple|relation)>, then the expression
 represents a collection literal, and these are the values of its
 components.  Each element defines one tuple, and each sub-element of that
 element defines one attribute value for one tuple, with the sub-element
@@ -679,7 +679,7 @@ or quasi-relation.
 
 =item C<param> - C<Cat.ShortName>
 
-Iff C<kind> is C<Cat.E_EK.param>, then the expression represents the value
+Iff C<kind> is C<Cat.E_EK:param>, then the expression represents the value
 of the containing function's parameter which this names.
 
 =item C<func> - C<Cat.LongName>
@@ -939,13 +939,9 @@ These functions select values of the C<Bool> enumeration.
 
 =over
 
-=item C<sys.Core.Bool.false of Bool ()>
+=item C<sys.Core.Bool.(false|true) of Bool ()>
 
-This selector function results in the C<Bool:false> value.
-
-=item C<sys.Core.Bool.true of Bool ()>
-
-This selector function results in the C<Bool:true> value.
+This selector function results in the C<Bool:(false|true)> value.
 
 =back
 
@@ -989,17 +985,10 @@ These functions select values of the C<Order> enumeration.
 
 =over
 
-=item C<sys.Core.Order.increase of Order ()>
+=item C<sys.Core.Order.(increase|same|decrease) of Order ()>
 
-This selector function results in the C<Order:increase> value.
-
-=item C<sys.Core.Order.same of Order ()>
-
-This selector function results in the C<Order:same> value.
-
-=item C<sys.Core.Order.decrease of Order ()>
-
-This selector function results in the C<Order:decrease> value.
+This selector function results in the C<Order:(increase|same|decrease)>
+value.
 
 =back
 
@@ -1086,8 +1075,9 @@ This function results in the 1 or 2 median values of the N element values
 of its argument; they are returned as a set.  It is equivalent to first
 arranging the input values from least to greatest, and then taking the
 single middle value, if the count of input values is odd, or taking the 2
-middle values, if the count of input values is even.  If C<$topic> has zero
-values, then the result set is empty.
+middle values, if the count of input values is even (but if the 2 middle
+values are the same value, the output has one element).  If C<$topic> has
+zero values, then the result set is empty.
 
 =item C<sys.Core.Int.mode of Set{Int} (RO: Bag{Int} $topic)>
 
@@ -1266,8 +1256,9 @@ This function results in the 1 or 2 median values of the N element values
 of its argument; they are returned as a set.  It is equivalent to first
 arranging the input values from least to greatest, and then taking the
 single middle value, if the count of input values is odd, or taking the 2
-middle values, if the count of input values is even.  If C<$topic> has zero
-values, then the result set is empty.
+middle values, if the count of input values is even (but if the 2 middle
+values are the same value, the output has one element).  If C<$topic> has
+zero values, then the result set is empty.
 
 =item C<sys.Core.Rat.mean_of_median of Rat (RO: Bag{Rat} $topic)>
 
