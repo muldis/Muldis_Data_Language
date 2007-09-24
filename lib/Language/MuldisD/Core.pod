@@ -485,21 +485,21 @@ that is, it is a unary C<Relation> with a nullary key.  Operators that work
 specifically with C<Maybe> subtypes can provide a syntactic shorthand for
 working with sparse data; so Muldis D has something which is conceptually
 close to SQL's nullable types without actually having 3-valued logic; it
-would probably be convenient for code that round-trips SQL by way of
-Muldis D to use the C<Maybe> type.  Its default value has zero tuples.
+would probably be convenient for code that round-trips SQL by way of Muldis
+D to use the C<Maybe> type.  Its default value has zero tuples.
 
 =item C<sys.Core.Relation.Seq>
 
-An C<Seq> is a proper subtype of C<Relation> that has 2 attributes,
-and their names are C<index> and C<value>, where C<index> is a unary key
-and its declared type is an C<UInt> subtype (C<value> can be non-unique and
-of any declared type).  A Seq is considered dense, and all C<index>
-values in one are numbered consecutively from 0 to 1 less than the count of
-tuples, like array indices in typical programming languages.  A C<Seq>
-subtype is normally used by any system-defined N-ary operators where the
-order of their argument elements or result is significant (and duplicate
-values are significant); specifically, C<index> defines an explicit
-ordering for C<values>.  Its default value has zero tuples.
+An C<Seq> is a proper subtype of C<Relation> that has 2 attributes, and
+their names are C<index> and C<value>, where C<index> is a unary key and
+its declared type is an C<UInt> subtype (C<value> can be non-unique and of
+any declared type).  A Seq is considered dense, and all C<index> values in
+one are numbered consecutively from 0 to 1 less than the count of tuples,
+like array indices in typical programming languages.  A C<Seq> subtype is
+normally used by any system-defined N-ary operators where the order of
+their argument elements or result is significant (and duplicate values are
+significant); specifically, C<index> defines an explicit ordering for
+C<values>.  Its default value has zero tuples.
 
 =item C<sys.Core.Relation.Bag>
 
@@ -610,8 +610,8 @@ body).  Its default value is C<Cat.E_EK:scalar>.
 
 =head1 SYSTEM-DEFINED CORE CATALOG TUPLE DATA TYPES
 
-These tuple data types, essentially all of the system-defined tuple
-types are special-purpose in nature and are intended for use in defining or
+These tuple data types, essentially all of the system-defined tuple types
+are special-purpose in nature and are intended for use in defining or
 working with the system catalog.  They are all completely defined types.
 
 I<To keep things simpler for now, most constraint definitions for these
@@ -785,7 +785,7 @@ These functions are applicable to values of any data type at all.
 
 =over
 
-=item C<sys.Core.Universal.is_equal of Bool (RO: Some.Universal $v1,
+=item C<sys.Core.Universal.is_equal of Bool (Some.Universal $v1,
 Some.Universal $v2)>
 
 This function results in C<Bool:true> iff its 2 arguments are exactly the
@@ -798,15 +798,15 @@ same headings; 3. at least one type is a generic (eg-C<Universal>) or
 incomplete (eg-C<Seq>) type, and it is a supertype of the other.  This
 function is commutative.
 
-=item C<sys.Core.Universal.is_not_equal of Bool (RO: Some.Universal $v1,
+=item C<sys.Core.Universal.is_not_equal of Bool (Some.Universal $v1,
 Some.Universal $v2)>
 
 This function is exactly the same as C<sys.Core.Universal.is_equal> except
 that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<sys.Core.Universal.is_value_of_type of Bool (RO: Cat.LongName
-$type, Universal $v)>
+=item C<sys.Core.Universal.is_value_of_type of Bool (Cat.LongName $type,
+Universal $v)>
 
 This function results in C<Bool:true> iff the value of its C<$v> argument
 is a member of the data type whose name is given in the C<$type> argument,
@@ -815,7 +815,7 @@ results in C<Bool:true> if the named type is C<Universal>, and
 C<Bool:false> if it is C<Empty>.  This function will fail if the named type
 doesn't exist in the virtual machine.
 
-=item C<sys.Core.Universal.treat of Some.Universal (RO: Cat.LongName $as,
+=item C<sys.Core.Universal.treat of Some.Universal (Cat.LongName $as,
 Some.Universal $v)>
 
 This function results in the value of its C<$v> argument, but that the
@@ -832,8 +832,7 @@ you are storing an C<Int> value in a C<Scalar>-typed variable, using
 C<treat> will cause the compiler to let you use that variable as an
 argument to C<Int.sum>, which it otherwise wouldn't.
 
-=item C<sys.Core.Universal.default of Some.Universal (RO: Cat.LongName
-$of)>
+=item C<sys.Core.Universal.default of Some.Universal (Cat.LongName $of)>
 
 This function results in the default value of the not-C<Empty> data type
 whose name is given in the C<$of> argument, and the declared type of the
@@ -858,8 +857,8 @@ just the types they apply to.
 
 =over
 
-=item C<sys.Core.Ordered.compare of Order (RO: Some.Ordered $v1,
-Some.Ordered $v2)>
+=item C<sys.Core.Ordered.compare of Order (Some.Ordered $v1, Some.Ordered
+$v2)>
 
 This function results in C<Order:same> iff its 2 arguments are exactly the
 same value, and otherwise it results in C<Order:increase> if the value of
@@ -872,7 +871,7 @@ type that declares itself an C<Ordered> subtype.  Note that C<compare> is
 considered the only fundamental ordered-specific operator, and all others
 are defined over it.
 
-=item C<sys.Core.Ordered.reverse_compare of Order (RO: Some.Ordered $v1,
+=item C<sys.Core.Ordered.reverse_compare of Order (Some.Ordered $v1,
 Some.Ordered $v2)>
 
 This function is exactly the same as C<sys.Core.Ordered.compare> except
@@ -880,22 +879,21 @@ that it results in the reverse value when given the same arguments.  It is
 a short-hand for applying C<sys.Core.Order.reverse> to the result of
 C<sys.Core.Ordered.compare> with the same arguments.
 
-=item C<sys.Core.Ordered.is_increase of Bool (RO: Some.Ordered $v1,
+=item C<sys.Core.Ordered.is_increase of Bool (Some.Ordered $v1,
 Some.Ordered $v2)>
 
 This function results in C<Bool:true> iff C<sys.Core.Ordered.compare> would
 result in C<Order:increase> when given the same arguments, and
 C<Bool:false> otherwise.
 
-=item C<sys.Core.Ordered.is_decrease of Bool (RO: Some.Ordered $v1,
+=item C<sys.Core.Ordered.is_decrease of Bool (Some.Ordered $v1,
 Some.Ordered $v2)>
 
 This function results in C<Bool:true> iff C<sys.Core.Ordered.compare> would
 result in C<Order:decrease> when given the same arguments, and
 C<Bool:false> otherwise.
 
-=item C<sys.Core.Ordered.min of Some.Ordered (RO: Set{Some.Ordered}
-$topic)>
+=item C<sys.Core.Ordered.min of Some.Ordered (Set{Some.Ordered} $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and picks the minimum of the 2 (a process which
@@ -906,22 +904,21 @@ for I<min>.  This function will fail on a C<$topic> of zero values if the
 result type's concept of positive infinity is impossible or impractically
 large to represent, such as with the infinite C<Text> type.
 
-=item C<sys.Core.Ordered.max of Some.Ordered (RO: Set{Some.Ordered}
-$topic)>
+=item C<sys.Core.Ordered.max of Some.Ordered (Set{Some.Ordered} $topic)>
 
 This function is exactly the same as C<sys.Core.Ordered.min> except that it
 results in the maximum input element value rather than the minimum one, and
 its identity value is the result type's concept of negative infinity.
 
-=item C<sys.Core.Ordered.maybe_min of Maybe{Some.Ordered} (RO:
-Set{Some.Ordered} $topic)>
+=item C<sys.Core.Ordered.maybe_min of Maybe{Some.Ordered}
+(Set{Some.Ordered} $topic)>
 
 This function is exactly the same as C<sys.Core.Ordered.min> except that it
 results in a C<Maybe> of what is otherwise the result type, and that result
 has zero elements if the argument has zero elements.
 
-=item C<sys.Core.Ordered.maybe_max of Maybe{Some.Ordered} (RO:
-Set{Some.Ordered} $topic)>
+=item C<sys.Core.Ordered.maybe_max of Maybe{Some.Ordered}
+(Set{Some.Ordered} $topic)>
 
 This function is to C<sys.Core.Ordered.max> as
 C<sys.Core.Ordered.maybe_min> is to C<sys.Core.Ordered.min>.
@@ -949,11 +946,11 @@ These functions implement commonly used boolean operations.
 
 =over
 
-=item C<sys.Core.Bool.not of Bool (RO: Bool $topic)>
+=item C<sys.Core.Bool.not of Bool (Bool $topic)>
 
 This function results in the logical I<not> of its argument.
 
-=item C<sys.Core.Bool.and of Bool (RO: Set{Bool} $topic)>
+=item C<sys.Core.Bool.and of Bool (Set{Bool} $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical I<and> (which is both
@@ -961,7 +958,7 @@ commutative and associative) on them until just one is left, which is the
 function's result.  If C<$topic> has zero values, then C<and> results in
 C<Bool:true>, which is the identity value for logical I<and>.
 
-=item C<sys.Core.Bool.or of Bool (RO: Set{Bool} $topic)>
+=item C<sys.Core.Bool.or of Bool (Set{Bool} $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical inclusive-or (which is both
@@ -969,7 +966,7 @@ commutative and associative) on them until just one is left, which is the
 function's result.  If C<$topic> has zero values, then C<or> results in
 C<Bool:false>, which is the identity value for logical inclusive-or.
 
-=item C<sys.Core.Bool.xor of Bool (RO: Bag{Bool} $topic)>
+=item C<sys.Core.Bool.xor of Bool (Bag{Bool} $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical exclusive-or (which is both
@@ -996,7 +993,7 @@ These functions implement commonly used order-enumeration operations.
 
 =over
 
-=item C<sys.Core.Order.reverse of Order (RO: Order $topic)>
+=item C<sys.Core.Order.reverse of Order (Order $topic)>
 
 This function results in the reverse value of its argument; an
 C<Order:increase> or C<Order:decrease> argument results in the other one of
@@ -1010,11 +1007,11 @@ These functions implement commonly used integer numeric operations.
 
 =over
 
-=item C<sys.Core.Int.abs of UInt (RO: Int $topic)>
+=item C<sys.Core.Int.abs of UInt (Int $topic)>
 
 This function results in the absolute value of its argument.
 
-=item C<sys.Core.Int.sum of Int (RO: Bag{Int} $addends)>
+=item C<sys.Core.Int.sum of Int (Bag{Int} $addends)>
 
 This function results in the sum of the N element values of its argument;
 it is a reduction operator that recursively takes each pair of input values
@@ -1023,12 +1020,12 @@ just one is left, which is the result.  If C<$addends> has zero values,
 then C<sum> results in the integer zero, which is the identity value for
 addition.
 
-=item C<sys.Core.Int.difference of Int (RO: Int $minuend, Int $subtrahend)>
+=item C<sys.Core.Int.difference of Int (Int $minuend, Int $subtrahend)>
 
 This function results in the difference when its C<$subtrahend> argument is
 subtracted from its C<$minuend> argument.
 
-=item C<sys.Core.Int.product of Int (RO: Bag{Int} $factors)>
+=item C<sys.Core.Int.product of Int (Bag{Int} $factors)>
 
 This function results in the product of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -1037,39 +1034,39 @@ them together until just one is left, which is the result.  If C<$factors>
 has zero values, then C<product> results in the integer 1, which is the
 identity value for multiplication.
 
-=item C<sys.Core.Int.quotient of Int (RO: Int $dividend, Int $divisor)>
+=item C<sys.Core.Int.quotient of Int (Int $dividend, Int $divisor)>
 
 This function results in the quotient when its C<$dividend> argument is
 divided by its C<$divisor> argument using integer division.  This function
 will fail if C<$divisor> is zero.
 
-=item C<sys.Core.Int.remainder of UInt (RO: Int $dividend, Int $divisor)>
+=item C<sys.Core.Int.remainder of UInt (Int $dividend, Int $divisor)>
 
 This function results in the remainder when its C<$dividend> argument is
 divided by its C<$divisor> argument using integer division.  This function
 will fail if C<$divisor> is zero.
 
-=item C<sys.Core.Int.maybe_quotient of Maybe{Int} (RO: Int $dividend, Int
+=item C<sys.Core.Int.maybe_quotient of Maybe{Int} (Int $dividend, Int
 $divisor)>
 
 This function is exactly the same as C<sys.Core.Int.quotient> except that
 it results in a C<Maybe> of what is otherwise the result, and that result
 has zero elements if C<$divisor> is zero.
 
-=item C<sys.Core.Int.maybe_remainder of Maybe{UInt} (RO: Int $dividend, Int
+=item C<sys.Core.Int.maybe_remainder of Maybe{UInt} (Int $dividend, Int
 $divisor)>
 
 This function is exactly the same as C<sys.Core.Int.remainder> except that
 it results in a C<Maybe> of what is otherwise the result, and that result
 has zero elements if C<$divisor> is zero.
 
-=item C<sys.Core.Int.range of Int (RO: Set{Int} $topic)>
+=item C<sys.Core.Int.range of Int (Set{Int} $topic)>
 
 This function results in the difference between the lowest and highest
 element values of its argument.  If C<$topic> has zero values, then
 C<range> results in the integer zero.
 
-=item C<sys.Core.Int.median of Set{Int} (RO: Bag{Int} $topic)>
+=item C<sys.Core.Int.median of Set{Int} (Bag{Int} $topic)>
 
 This function results in the 1 or 2 median values of the N element values
 of its argument; they are returned as a set.  It is equivalent to first
@@ -1079,7 +1076,7 @@ middle values, if the count of input values is even (but if the 2 middle
 values are the same value, the output has one element).  If C<$topic> has
 zero values, then the result set is empty.
 
-=item C<sys.Core.Int.mode of Set{Int} (RO: Bag{Int} $topic)>
+=item C<sys.Core.Int.mode of Set{Int} (Bag{Int} $topic)>
 
 This function results in the mode of the N element values of its argument;
 it is the set of values that appear the most often as input elements, and
@@ -1087,7 +1084,7 @@ all have the same count of occurrances.  As a trivial case, if all input
 elements have the same count of occurrances, then they will all be in the
 output.  If C<$topic> has zero values, then the result set is empty.
 
-=item C<sys.Core.Int.power of Int (RO: Int $radix, UInt $exponent)>
+=item C<sys.Core.Int.power of Int (Int $radix, UInt $exponent)>
 
 This function results in its C<$radix> argument taken to the power of its
 (unsigned integer) C<$exponent> argument.  This function will fail if
@@ -1100,7 +1097,7 @@ representations of integers as character strings.
 
 =over
 
-=item C<sys.Core.Int.Int_from_NEText of Int (RO: NEText $text, PInt2_36
+=item C<sys.Core.Int.Int_from_NEText of Int (NEText $text, PInt2_36
 $radix)>
 
 This selector function results in the C<Int> value that its C<$text>
@@ -1110,8 +1107,7 @@ base-10, base-16], this function supports base-2 through base-36; to get
 the latter, the characters 0-9 and A-Z represent values in 0-35.  This
 function will fail if C<$text> can't be mapped as specified.
 
-=item C<sys.Core.Int.NEText_from_Int of NEText (RO: Int $int, PInt2_36
-$radix)>
+=item C<sys.Core.Int.NEText_from_Int of NEText (Int $int, PInt2_36 $radix)>
 
 This selector function results in the C<NEText> value where its C<$int>
 argument is formatted as a base-C<$radix> integer.
@@ -1126,7 +1122,7 @@ would be appropriate instead.  Or maybe both kinds are necessary.>
 
 =over
 
-=item C<sys.Core.Int.Int_from_Blob_S_VBE of Int (RO: NEBlob $blob)>
+=item C<sys.Core.Int.Int_from_Blob_S_VBE of Int (NEBlob $blob)>
 
 This selector function results in the C<Int> value that its C<$blob>
 argument maps to when the whole bit string is treated literally as a
@@ -1136,19 +1132,19 @@ provide greater precision than the -1 thru 0 range.  The bit string is
 assumed to be big-endian, since it may not be possible to use little-endian
 in situations where the bit length isn't a multiple of 8.
 
-=item C<sys.Core.Int.Blob_S_VBE_from_Int of NEBlob (RO: Int $int)>
+=item C<sys.Core.Int.Blob_S_VBE_from_Int of NEBlob (Int $int)>
 
 This selector function results in the C<Blob> value where its C<$int>
 argument is formatted as a variable-length binary (two's complement) signed
 integer of 1 or more bits in length; the smallest number of bits necessary
 to store C<$int> is used.
 
-=item C<sys.Core.Int.Int_from_Blob_U_VBE of UInt (RO: NEBlob $blob)>
+=item C<sys.Core.Int.Int_from_Blob_U_VBE of UInt (NEBlob $blob)>
 
 This function is the same as C<sys.Core.Int.Int_from_Blob_S_VBE> but that
 it does unsigned integers.
 
-=item C<sys.Core.Int.Blob_U_VBE_from_Int of UInt (RO: NEBlob $blob)>
+=item C<sys.Core.Int.Blob_U_VBE_from_Int of UInt (NEBlob $blob)>
 
 This function is the same as C<sys.Core.Int.Blob_S_VBE_from_Int> but that
 it does unsigned integers.
@@ -1163,7 +1159,7 @@ denominator.
 
 =over
 
-=item C<sys.Core.Rat.Rat_from_Int_pair of Rat (RO: Int $numerator, PInt
+=item C<sys.Core.Rat.Rat_from_Int_pair of Rat (Int $numerator, PInt
 $denominator)>
 
 This selector function results in the C<Rat> value that its C<$numerator>
@@ -1173,13 +1169,13 @@ was composed of such 2 attributes, but keeping in mind that multiple
 distinct argument pairs can map to each same C<Rat> value, since the
 arguments don't have to be a canonical pair.
 
-=item C<sys.Core.Rat.numerator of Int (RO: Rat $topic)>
+=item C<sys.Core.Rat.numerator of Int (Rat $topic)>
 
 This function results in the canonical numerator of its argument, which
 assumes said rational is represented with the pair of smallest possible
 integers.
 
-=item C<sys.Core.Rat.denominator of PInt (RO: Rat $topic)>
+=item C<sys.Core.Rat.denominator of PInt (Rat $topic)>
 
 This function results in the canonical denominator of its argument, which
 assumes said rational is represented with the pair of smallest possible
@@ -1191,11 +1187,11 @@ These functions implement commonly used rational numeric operations.
 
 =over
 
-=item C<sys.Core.Rat.abs of URat (RO: Rat $topic)>
+=item C<sys.Core.Rat.abs of URat (Rat $topic)>
 
 This function results in the absolute value of its argument.
 
-=item C<sys.Core.Rat.sum of Rat (RO: Bag{Rat} $addends)>
+=item C<sys.Core.Rat.sum of Rat (Bag{Rat} $addends)>
 
 This function results in the sum of the N element values of its argument;
 it is a reduction operator that recursively takes each pair of input values
@@ -1204,12 +1200,12 @@ just one is left, which is the result.  If C<$addends> has zero values,
 then C<sum> results in the rational zero, which is the identity value for
 addition.
 
-=item C<sys.Core.Rat.difference of Rat (RO: Rat $minuend, Rat $subtrahend)>
+=item C<sys.Core.Rat.difference of Rat (Rat $minuend, Rat $subtrahend)>
 
 This function results in the difference when its C<$subtrahend> argument is
 subtracted from its C<$minuend> argument.
 
-=item C<sys.Core.Rat.product of Rat (RO: Bag{Rat} $factors)>
+=item C<sys.Core.Rat.product of Rat (Bag{Rat} $factors)>
 
 This function results in the product of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -1218,39 +1214,39 @@ them together until just one is left, which is the result.  If C<$factors>
 has zero values, then C<product> results in the rational 1, which is the
 identity value for multiplication.
 
-=item C<sys.Core.Rat.quotient of Rat (RO: Rat $dividend, Rat $divisor)>
+=item C<sys.Core.Rat.quotient of Rat (Rat $dividend, Rat $divisor)>
 
 This function results in the quotient when its C<$dividend> argument is
 divided by its C<$divisor> argument using rational division.  This function
 will fail if C<$divisor> is zero.
 
-=item C<sys.Core.Rat.maybe_quotient of Maybe{Rat} (RO: Rat $dividend, Rat
+=item C<sys.Core.Rat.maybe_quotient of Maybe{Rat} (Rat $dividend, Rat
 $divisor)>
 
 This function is exactly the same as C<sys.Core.Rat.quotient> except that
 it results in a C<Maybe> of what is otherwise the result, and that result
 has zero elements if C<$divisor> is zero.
 
-=item C<sys.Core.Rat.range of Rat (RO: Set{Rat} $topic)>
+=item C<sys.Core.Rat.range of Rat (Set{Rat} $topic)>
 
 This function results in the difference between the lowest and highest
 element values of its argument.  If C<$topic> has zero values, then
 C<range> results in the rational zero.
 
-=item C<sys.Core.Rat.mean of Rat (RO: Bag{Rat} $topic)>
+=item C<sys.Core.Rat.mean of Rat (Bag{Rat} $topic)>
 
 This function results in the mean or arithmetic average of the N element
 values of its argument.  It is equivalent to first taking the sum of the
 input values, and dividing that sum by the count of the input values.  If
 C<$topic> has zero values, then this function will fail.
 
-=item C<sys.Core.Rat.maybe_mean of Maybe{Rat} (RO: Bag{Rat} $topic)>
+=item C<sys.Core.Rat.maybe_mean of Maybe{Rat} (Bag{Rat} $topic)>
 
 This function is exactly the same as C<sys.Core.Rat.mean> except that it
 results in a C<Maybe> of what is otherwise the result, and that result has
 zero elements if C<$topic> has zero values.
 
-=item C<sys.Core.Rat.median of Set{Rat} (RO: Bag{Rat} $topic)>
+=item C<sys.Core.Rat.median of Set{Rat} (Bag{Rat} $topic)>
 
 This function results in the 1 or 2 median values of the N element values
 of its argument; they are returned as a set.  It is equivalent to first
@@ -1260,12 +1256,12 @@ middle values, if the count of input values is even (but if the 2 middle
 values are the same value, the output has one element).  If C<$topic> has
 zero values, then the result set is empty.
 
-=item C<sys.Core.Rat.mean_of_median of Rat (RO: Bag{Rat} $topic)>
+=item C<sys.Core.Rat.mean_of_median of Rat (Bag{Rat} $topic)>
 
 This function is a wrapper over C<sys.Core.Rat.median> that will return the
 mean of its result elements; it will fail if there are zero elements.
 
-=item C<sys.Core.Rat.mode of Set{Rat} (RO: Bag{Rat} $topic)>
+=item C<sys.Core.Rat.mode of Set{Rat} (Bag{Rat} $topic)>
 
 This function results in the mode of the N element values of its argument;
 it is the set of values that appear the most often as input elements, and
@@ -1273,14 +1269,14 @@ all have the same count of occurrances.  As a trivial case, if all input
 elements have the same count of occurrances, then they will all be in the
 output.  If C<$topic> has zero values, then the result set is empty.
 
-=item C<sys.Core.Rat.power of PRat (RO: PRat $radix, Rat $exponent)>
+=item C<sys.Core.Rat.power of PRat (PRat $radix, Rat $exponent)>
 
 This function results in its (positive rational) C<$radix> argument taken
 to the power of its C<$exponent> argument.  Note that, while this function
 might conceptually have multiple real number results for some negative
 C<$exponent>, it will always only return the one that is positive.
 
-=item C<sys.Core.Rat.log of Rat (RO: PRat $topic, PRat $radix, PInt
+=item C<sys.Core.Rat.log of Rat (PRat $topic, PRat $radix, PInt
 $rebase_radix, PInt $rebase_max_denom, Cat.RoundMeth $rebase_round)>
 
 This function results in the logarithm of its C<$topic> argument to the
@@ -1290,15 +1286,15 @@ C<$rebase_\w+> parameters specify how to coerce the conceptual result into
 a rational number that is the actual result; see also the similarly named
 parameters of the C<sys.Core.Rat.rebase> function.
 
-=item C<sys.Core.Rat.natural_power of PRat (RO: Rat $exponent, PInt
+=item C<sys.Core.Rat.natural_power of PRat (Rat $exponent, PInt
 $rebase_radix, PInt $rebase_max_denom, Cat.RoundMeth $rebase_round)>
 
 This function results in the special mathematical constant I<e> (which is
 the base of the natural logarithm) taken to the power of its C<$exponent>
 argument.  The 3 C<$rebase_\w+> parameters are as per C<log>.
 
-=item C<sys.Core.Rat.natural_log of Rat (RO: PRat $topic, PInt
-$rebase_radix, PInt $rebase_max_denom, Cat.RoundMeth $rebase_round)>
+=item C<sys.Core.Rat.natural_log of Rat (PRat $topic, PInt $rebase_radix,
+PInt $rebase_max_denom, Cat.RoundMeth $rebase_round)>
 
 This function results in the natural logarithm of its C<$topic> argument.
 The 3 C<$rebase_\w+> parameters are as per C<log>.
@@ -1310,7 +1306,7 @@ representations of rationals as character strings.
 
 =over
 
-=item C<sys.Core.Rat.Rat_from_NEText of Rat (RO: NEText $text, PInt2_36
+=item C<sys.Core.Rat.Rat_from_NEText of Rat (NEText $text, PInt2_36
 $radix)>
 
 This selector function results in the C<Rat> value that its C<$text>
@@ -1320,8 +1316,7 @@ base-10, base-16], this function supports base-2 through base-36; to get
 the latter, the characters 0-9 and A-Z represent values in 0-35.  This
 function will fail if C<$text> can't be mapped as specified.
 
-=item C<sys.Core.Rat.NEText_from_Rat of NEText (RO: Rat $rat, PInt2_36
-$radix)>
+=item C<sys.Core.Rat.NEText_from_Rat of NEText (Rat $rat, PInt2_36 $radix)>
 
 This selector function results in the C<NEText> value where its C<$rat>
 argument is formatted as a base-C<$radix> rational.
@@ -1333,18 +1328,18 @@ C<Int> values.
 
 =over
 
-=item C<sys.Core.Rat.Rat_from_Int of Rat (RO: Int $int)>
+=item C<sys.Core.Rat.Rat_from_Int of Rat (Int $int)>
 
 This selector function results in the C<Rat> value that is conceptually
 equal to its C<Int> argument.
 
-=item C<sys.Core.Rat.round_half_up of Int (RO: Rat $topic)>
+=item C<sys.Core.Rat.round_half_up of Int (Rat $topic)>
 
 This rounding function results in the integer that is nearest to its
 argument, but that if the argument is exactly half-way between 2 integers,
 it is rounded upwards.  This is the most commonly used method of rounding.
 
-=item C<sys.Core.Rat.round_to_even of Int (RO: Rat $topic)>
+=item C<sys.Core.Rat.round_to_even of Int (Rat $topic)>
 
 This rounding function results in the integer that is nearest to its
 argument, but that if the argument is exactly half-way between 2 integers,
@@ -1352,17 +1347,17 @@ it is rounded to the one that is even.  Note that this operation is also
 legitimately known as: I<unbiased rounding>, I<convergent rounding>,
 I<statistician's rounding>, I<bankers' rounding>.
 
-=item C<sys.Core.Rat.round_to_floor of Int (RO: Rat $topic)>
+=item C<sys.Core.Rat.round_to_floor of Int (Rat $topic)>
 
 This rounding function results in the integer that is either equal to its
 argument or that is the nearest integer that is above the argument.
 
-=item C<sys.Core.Rat.round_to_ceiling of Int (RO: Rat $topic)>
+=item C<sys.Core.Rat.round_to_ceiling of Int (Rat $topic)>
 
 This rounding function results in the integer that is either equal to its
 argument or that is the nearest integer that is below the argument.
 
-=item C<sys.Core.Rat.round_to_zero of Int (RO: Rat $topic)>
+=item C<sys.Core.Rat.round_to_zero of Int (Rat $topic)>
 
 This rounding function results in the integer that is either equal to its
 argument or that is the nearest integer to the argument that is closer to
@@ -1375,7 +1370,7 @@ to deal with in various contexts.
 
 =over
 
-=item C<sys.Core.Rat.rebase of Rat (RO: Rat $topic, PInt $radix, PInt
+=item C<sys.Core.Rat.rebase of Rat (Rat $topic, PInt $radix, PInt
 $max_denom, Cat.RoundMeth $round)>
 
 This function results in the rational that is as close as possible to
@@ -1391,7 +1386,7 @@ These functions implement commonly used binary string operations.
 
 =over
 
-=item C<sys.Core.Blob.catenate of Blob (RO: Seq{Blob} $topic)>
+=item C<sys.Core.Blob.catenate of Blob (Seq{Blob} $topic)>
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
@@ -1400,17 +1395,17 @@ together until just one is left, which is the result.  If C<$topic> has
 zero values, then C<catenate> results in the empty string value, which is
 the identity value for catenate.
 
-=item C<sys.Core.Blob.repeat of Blob (RO: Blob $topic, UInt $count)>
+=item C<sys.Core.Blob.repeat of Blob (Blob $topic, UInt $count)>
 
 This function results in the catenation of C<$count> instances of
 C<$topic>.
 
-=item C<sys.Core.Blob.length_in_bits of UInt (RO: Blob $topic)>
+=item C<sys.Core.Blob.length_in_bits of UInt (Blob $topic)>
 
 This function results in the length of its argument in bits.
 
-=item C<sys.Core.Blob.contains of Bool (RO: Blob $look_in, Blob $look_for,
-Bool $fixed_start, Bool $fixed_end)>
+=item C<sys.Core.Blob.contains of Bool (Blob $look_in, Blob $look_for, Bool
+$fixed_start, Bool $fixed_end)>
 
 This function results in C<Bool:true> iff its C<$look_for> argument is a
 substring of its C<$look_in> argument as per the optional C<$fixed_start>
@@ -1420,11 +1415,11 @@ occur right at the start or end, respectively, of C<$look_in> in order for
 C<contains> to results in C<Bool:true>; if either flag is C<Bool:false>,
 its additional constraint doesn't apply.
 
-=item C<sys.Core.Blob.not of Blob (RO: Blob $topic)>
+=item C<sys.Core.Blob.not of Blob (Blob $topic)>
 
 This function results in the bitwise I<not> of its argument.
 
-=item C<sys.Core.Blob.and of Blob (RO: Set{Blob} $topic)>
+=item C<sys.Core.Blob.and of Blob (Set{Blob} $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a bitwise I<and> (which is both
@@ -1435,13 +1430,13 @@ length in bits, that length being part of the argument's declared type
 of the function's result.  If C<$topic> has zero values, then C<and> will
 result in an appropriate-length string of identity/1 valued bits.
 
-=item C<sys.Core.Blob.or of Blob (RO: Set{Blob} $topic)>
+=item C<sys.Core.Blob.or of Blob (Set{Blob} $topic)>
 
 This function is the same as C<sys.Core.Blob.and> but that it recursively
 does a bitwise inclusive-or rather than a bitwise I<and>, and its identity
 value is composed of zero valued bits.
 
-=item C<sys.Core.Blob.xor of Blob (RO: Bag{Blob} $topic)>
+=item C<sys.Core.Blob.xor of Blob (Bag{Blob} $topic)>
 
 This function is the same as C<sys.Core.Blob.or> but that it recursively
 does a bitwise exclusive-or rather than a bitwise inclusive-or.
@@ -1453,8 +1448,7 @@ representations of binary strings as character strings.
 
 =over
 
-=item C<sys.Core.Blob.Blob_from_Text of Blob (RO: Text $text, PInt1_4
-$size)>
+=item C<sys.Core.Blob.Blob_from_Text of Blob (Text $text, PInt1_4 $size)>
 
 This selector function results in the C<Blob> value that its C<$text>
 argument maps to when each input character represents a sequence of 1-4
@@ -1464,8 +1458,7 @@ argument; for example, if C<$size> is 1, then each input character is a
 is a [0-9A-F] and represents 4 bits.  This function will fail if C<$text>
 can't be mapped as specified.
 
-=item C<sys.Core.Blob.Text_from_Blob of Text (RO: Blob $blob, PInt1_4
-$size)>
+=item C<sys.Core.Blob.Text_from_Blob of Text (Blob $blob, PInt1_4 $size)>
 
 This selector function results in the C<Text> value where its argument is
 encoded using a character for each sequence of 1-4 bits, the number of bits
@@ -1481,7 +1474,7 @@ These functions implement commonly used character string operations.
 
 =over
 
-=item C<sys.Core.Text.catenate of Text (RO: Seq{Text} $topic)>
+=item C<sys.Core.Text.catenate of Text (Seq{Text} $topic)>
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
@@ -1490,33 +1483,33 @@ together until just one is left, which is the result.  If C<$topic> has
 zero values, then C<catenate> results in the empty string value, which is
 the identity value for catenate.
 
-=item C<sys.Core.Text.repeat of Text (RO: Text $topic, UInt $count)>
+=item C<sys.Core.Text.repeat of Text (Text $topic, UInt $count)>
 
 This function results in the catenation of C<$count> instances of
 C<$topic>.
 
-=item C<sys.Core.Text.length_in_nfd_graphs of UInt (RO: Text $topic)>
+=item C<sys.Core.Text.length_in_nfd_graphs of UInt (Text $topic)>
 
 This function results in the length of its argument in Unicode
 Normalization Form D graphemes.
 
-=item C<sys.Core.Text.length_in_nfc_graphs of UInt (RO: Text $topic)>
+=item C<sys.Core.Text.length_in_nfc_graphs of UInt (Text $topic)>
 
 This function results in the length of its argument in Unicode
 Normalization Form C graphemes.
 
-=item C<sys.Core.Text.length_in_nfd_codes of UInt (RO: Text $topic)>
+=item C<sys.Core.Text.length_in_nfd_codes of UInt (Text $topic)>
 
 This function results in the length of its argument in Unicode
 Normalization Form D code points.
 
-=item C<sys.Core.Text.length_in_nfc_codes of UInt (RO: Text $topic)>
+=item C<sys.Core.Text.length_in_nfc_codes of UInt (Text $topic)>
 
 This function results in the length of its argument in Unicode
 Normalization Form C code points.
 
-=item C<sys.Core.Text.contains of Bool (RO: Text $look_in, Text $look_for,
-Bool $fixed_start, Bool $fixed_end)>
+=item C<sys.Core.Text.contains of Bool (Text $look_in, Text $look_for, Bool
+$fixed_start, Bool $fixed_end)>
 
 This function results in C<Bool:true> iff its C<$look_for> argument is a
 substring of its C<$look_in> argument as per the optional C<$fixed_start>
@@ -1526,17 +1519,17 @@ occur right at the start or end, respectively, of C<$look_in> in order for
 C<contains> to result in C<Bool:true>; if either flag is C<Bool:false>, its
 additional constraint doesn't apply.
 
-=item C<sys.Core.Text.fold_case_to_upper (RO: Text $topic)>
+=item C<sys.Core.Text.fold_case_to_upper (Text $topic)>
 
 This function results in the transformation of its argument where any Latin
 letters are folded to (capital) uppercase.
 
-=item C<sys.Core.Text.fold_case_to_lower (RO: Text $topic)>
+=item C<sys.Core.Text.fold_case_to_lower (Text $topic)>
 
 This function results in the transformation of its argument where any Latin
 letters are folded to (small) lowercase.
 
-=item C<sys.Core.Text.trim_whitespace (RO: Text $topic)>
+=item C<sys.Core.Text.trim_whitespace (Text $topic)>
 
 This function results in the value of its argument but that any leading or
 trailing whitespace characters are trimmed.
@@ -1552,27 +1545,27 @@ in that they typically work with any nonscalar types.
 
 =over
 
-=item C<sys.Core.Tuple.degree of UInt (RO: Tuple $topic)>
+=item C<sys.Core.Tuple.degree of UInt (Tuple $topic)>
 
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
-=item C<sys.Core.Tuple.rename of Tuple (RO: Tuple $topic,
-Cat.BiDiShortNameMap $map)>
+=item C<sys.Core.Tuple.rename of Tuple (Tuple $topic, Cat.BiDiShortNameMap
+$map)>
 
 This function results in a C<Tuple> value that is the same as its C<$topic>
 argument but that some of its attributes have different names.  Each tuple
 of the argument C<$map> specifies how to rename one C<$topic> attribute,
-with the C<key> and C<value> attributes of a C<$map> tuple representing
-the old and new names of a C<$topic> attribute, respectively.  As a trivial
+with the C<key> and C<value> attributes of a C<$map> tuple representing the
+old and new names of a C<$topic> attribute, respectively.  As a trivial
 case, this function's result is C<$topic> if C<$map> has no tuples.  This
 function supports renaming attributes to each others' names.  This function
 will fail if C<$map> specifies any old names that C<$topic> doesn't have,
 or any new names that are the same as C<$topic> attributes that aren't
 being renamed.
 
-=item C<sys.Core.Tuple.project of Tuple (RO: Tuple $topic,
-Cat.SetOfShortName $attrs)>
+=item C<sys.Core.Tuple.project of Tuple (Tuple $topic, Cat.SetOfShortName
+$attrs)>
 
 This function results in the projection of its C<$topic> argument that has
 just the subset of attributes of C<$topic> which are named in its C<$attrs>
@@ -1581,14 +1574,14 @@ C<$attrs> lists all attributes of C<$topic>; or, it is the nullary tuple if
 C<$attrs> is empty.  This function will fail if C<$attrs> specifies any
 attribute names that C<$topic> doesn't have.
 
-=item C<sys.Core.Tuple.remove of Tuple (RO: Tuple $topic,
-Cat.SetOfShortName $attrs)>
+=item C<sys.Core.Tuple.remove of Tuple (Tuple $topic, Cat.SetOfShortName
+$attrs)>
 
 This function is the same as C<project> but that it results in the
 complementary subset of attributes of C<$topic> when given the same
 arguments.
 
-=item C<sys.Core.Tuple.wrap of Tuple (RO: Tuple $topic, Cat.SetOfShortName
+=item C<sys.Core.Tuple.wrap of Tuple (Tuple $topic, Cat.SetOfShortName
 $inner, Cat.ShortName $outer)>
 
 This function results in a C<Tuple> value that is the same as its C<$topic>
@@ -1605,7 +1598,7 @@ being wrapped into it.  This function will fail if C<$inner> specifies any
 attribute names that C<$topic> doesn't have, or if C<$outer> is the same as
 C<$topic> attributes that aren't being wrapped.
 
-=item C<sys.Core.Tuple.unwrap of Tuple (RO: Tuple $topic, Cat.ShortName
+=item C<sys.Core.Tuple.unwrap of Tuple (Tuple $topic, Cat.ShortName
 $outer)>
 
 This function is the inverse of C<sys.Core.Tuple.wrap>, such that it will
@@ -1620,7 +1613,7 @@ attribute.
 
 =over
 
-=item C<sys.Core.Tuple.product of Tuple (RO: QuasiSet{Tuple} $topic)>
+=item C<sys.Core.Tuple.product of Tuple (QuasiSet{Tuple} $topic)>
 
 This function is similar to C<sys.Core.Relation.product> but that it works
 with tuples rather than relations.  This function is mainly intended for
@@ -1634,17 +1627,17 @@ Relations
 
 =over
 
-=item C<sys.Core.Relation.degree of UInt (RO: Relation $topic)>
+=item C<sys.Core.Relation.degree of UInt (Relation $topic)>
 
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
-=item C<sys.Core.Relation.cardinality of UInt (RO: Relation $topic)>
+=item C<sys.Core.Relation.cardinality of UInt (Relation $topic)>
 
 This function results in the cardinality of its argument (that is, the
 count of tuples its body has).
 
-=item C<sys.Core.Relation.is_empty of Bool (RO: Relation $topic)>
+=item C<sys.Core.Relation.is_empty of Bool (Relation $topic)>
 
 This function results in C<Bool:true> iff its argument has zero tuples, and
 C<Bool:false> otherwise.  Note that if you are using a C<Maybe> to
@@ -1652,14 +1645,14 @@ represent a sparse data item, analagously to a SQL nullable context, then
 testing the C<Maybe> with C<is_empty> is analagous to testing a SQL
 nullable with C<is null>.
 
-=item C<sys.Core.Relation.is_not_empty of Bool (RO: Relation $topic)>
+=item C<sys.Core.Relation.is_not_empty of Bool (Relation $topic)>
 
 This function is exactly the same as C<sys.Core.Relation.empty> except that
 it results in the opposite boolean value when given the same argument.  And
 following the analogy with C<is_empty>, C<is_not_empty> is analagous to
 SQL's C<is not null>.
 
-=item C<sys.Core.Relation.exists of Bool (RO: Relation $r, Tuple $t)>
+=item C<sys.Core.Relation.exists of Bool (Relation $r, Tuple $t)>
 
 This function results in C<Bool:true> iff its C<$t> argument matches a
 tuple of its C<$r> argument, and C<Bool:false> otherwise.  This function is
@@ -1667,39 +1660,37 @@ like C<sys.Core.Relation.contains> except that the tuple being looked for
 doesn't have to be wrapped in a relation.  This function will fail if the 2
 arguments don't have the same heading.
 
-=item C<sys.Core.Relation.Tuple_from_Relation of Tuple (RO: Relation
-$topic)>
+=item C<sys.Core.Relation.Tuple_from_Relation of Tuple (Relation $topic)>
 
 This function results in the C<Tuple> that is the sole member tuple of its
 argument.  This function will fail if its argument does not have exactly
 one tuple.
 
-=item C<sys.Core.Relation.Relation_from_Tuple of Relation (RO: Tuple
-$topic)>
+=item C<sys.Core.Relation.Relation_from_Tuple of Relation (Tuple $topic)>
 
 This function results in the C<Relation> value those body has just the one
 C<Tuple> that is its argument.
 
-=item C<sys.Core.Relation.insert of Relation (RO: Relation $r, Tuple $t)>
+=item C<sys.Core.Relation.insert of Relation (Relation $r, Tuple $t)>
 
 This function results in a C<Relation> that is the relational union of
 C<$r> and a relation whose sole tuple is C<$t>; that is, conceptually the
 result is C<$t> inserted into C<$r>.  As a trivial case, if C<$t> already
 exists in C<$r>, then the result is just C<$r>.
 
-=item C<sys.Core.Relation.delete of Relation (RO: Relation $r, Tuple $t)>
+=item C<sys.Core.Relation.delete of Relation (Relation $r, Tuple $t)>
 
 This function results in a C<Relation> that is the relational difference of
 a relation whose sole tuple is C<$t> and C<$r>; that is, conceptually the
 result is C<$t> deleted from C<$r>.  As a trivial case, if C<$t> already
 doesn't exist in C<$r>, then the result is just C<$r>.
 
-=item C<sys.Core.Relation.evacuate of Relation (RO: Relation $topic)>
+=item C<sys.Core.Relation.evacuate of Relation (Relation $topic)>
 
 This function results in a C<Relation> that has the same heading as its
 argument, but with an empty body.
 
-=item C<sys.Core.Relation.not of Relation (RO: Relation $topic)>
+=item C<sys.Core.Relation.not of Relation (Relation $topic)>
 
 This function results in the relational I<not> of its argument.  The result
 relation has the same heading as its argument, and its body contains all of
@@ -1711,13 +1702,13 @@ relation.  This function will fail if said universal relation is impossible
 or impractically large to represent, such as when any attributes are of
 infinite types.
 
-=item C<sys.Core.Relation.rename of Relation (RO: Relation $topic,
+=item C<sys.Core.Relation.rename of Relation (Relation $topic,
 Cat.BiDiShortNameMap $map)>
 
 This function is the same as C<sys.Core.Tuple.rename> but that it operates
 on and results in a C<Relation> rather than a C<Tuple>.
 
-=item C<sys.Core.Relation.project of Relation (RO: Relation $topic,
+=item C<sys.Core.Relation.project of Relation (Relation $topic,
 Cat.SetOfShortName $attrs)>
 
 This function is the same as C<sys.Core.Tuple.project> but that it operates
@@ -1725,36 +1716,36 @@ on and results in a C<Relation> rather than a C<Tuple>.  But note that the
 result relation will have fewer tuples than C<$topic> if any C<$topic>
 tuples were non-distinct for just the projected attributes.
 
-=item C<sys.Core.Relation.remove of Relation (RO: Relation $topic,
+=item C<sys.Core.Relation.remove of Relation (Relation $topic,
 Cat.SetOfShortName $attrs)>
 
 This function is the same as C<sys.Core.Tuple.remove> but that it operates
 on and results in a C<Relation> rather than a C<Tuple>.
 
-=item C<sys.Core.Relation.wrap of Relation (RO: Relation $topic,
+=item C<sys.Core.Relation.wrap of Relation (Relation $topic,
 Cat.SetOfShortName $inner, Cat.ShortName $outer)>
 
 This function is the same as C<sys.Core.Tuple.wrap> but that it operates on
 and results in a C<Relation> rather than a C<Tuple>, where each of its
 member tuples was transformed as per C<sys.Core.Tuple.wrap>.
 
-=item C<sys.Core.Relation.unwrap of Relation (RO: Relation $topic,
+=item C<sys.Core.Relation.unwrap of Relation (Relation $topic,
 Cat.ShortName $outer)>
 
 This function is the inverse of C<sys.Core.Relation.wrap> as
 C<sys.Core.Tuple.unwrap> is to C<sys.Core.Tuple.wrap>.
 
-=item C<sys.Core.Relation.group of Relation (RO: Relation $topic,
+=item C<sys.Core.Relation.group of Relation (Relation $topic,
 Cat.SetOfShortName $inner, Cat.ShortName $outer)>
 
 I<TODO.>
 
-=item C<sys.Core.Relation.ungroup of Relation (RO: Relation $topic,
+=item C<sys.Core.Relation.ungroup of Relation (Relation $topic,
 Cat.ShortName $outer)>
 
 I<TODO.>
 
-=item C<sys.Core.Relation.tclose of Relation (RO: Relation $topic)>
+=item C<sys.Core.Relation.tclose of Relation (Relation $topic)>
 
 This function results in the transitive closure of its argument.  The
 argument is a binary relation whose attributes are both of the same
@@ -1769,7 +1760,7 @@ complete paths.  The C<tclose> function is intended to support recursive
 queries, such as in connection with the "part explosion problem" (the
 problem of finding all components, at all levels, of some specified part).
 
-=item C<sys.Core.Relation.restrict of Relation (RO: Relation $topic,
+=item C<sys.Core.Relation.restrict of Relation (Relation $topic,
 Cat.LongName $func, Tuple $assuming)>
 
 This function results in the relational restriction of its C<$topic>
@@ -1789,8 +1780,8 @@ C<sys.Core.Relation.restrict> to implement some common kinds of relational
 restrictions (those composed simply of anded or ored tests for attribute
 value equality), due to the former's greater simplicity.
 
-=item C<sys.Core.Relation.extend of Relation (RO: Relation $topic,
-Cat.LongName $func, Tuple $assuming)>
+=item C<sys.Core.Relation.extend of Relation (Relation $topic, Cat.LongName
+$func, Tuple $assuming)>
 
 This function results in a relation that is the same as its C<$topic>
 argument, but that it has zero or more additional attributes, as determined
@@ -1820,7 +1811,7 @@ Relations
 
 =over
 
-=item C<sys.Core.Relation.contains of Bool (RO: Relation $look_in, Relation
+=item C<sys.Core.Relation.contains of Bool (Relation $look_in, Relation
 $look_for)>
 
 This function results in C<Bool:true> iff the set of tuples comprising
@@ -1828,19 +1819,19 @@ C<$look_for> is a subset of the set of tuples comprising C<$look_in>, and
 C<Bool:false> otherwise.  This function will fail if the 2 arguments don't
 have the same heading.
 
-=item C<sys.Core.Relation.union of Relation (RO: Set{Relation} $topic)>
+=item C<sys.Core.Relation.union of Relation (Set{Relation} $topic)>
 
 This function results in the relational union/inclusive-or of the N element
 values of its argument; it is a reduction operator that recursively takes
 each pair of input values and relationally unions (which is both
 commutative and associative) them together until just one is left, which is
 the result.  The result relation has the same heading as all of its inputs,
-and its body contains every tuple that is in any of the input relations. If
-C<$topic> has zero values, then C<union> results in the empty relation with
-the same heading, which is the per-distinct-heading identity value for
+and its body contains every tuple that is in any of the input relations.
+If C<$topic> has zero values, then C<union> results in the empty relation
+with the same heading, which is the per-distinct-heading identity value for
 relational union.
 
-=item C<sys.Core.Relation.exclusion of Relation (RO: Bag{Relation} $topic)>
+=item C<sys.Core.Relation.exclusion of Relation (Bag{Relation} $topic)>
 
 This function results in the relational exclusion/exclusive-or of the N
 element values of its argument; it is a reduction operator that recursively
@@ -1854,8 +1845,7 @@ per-distinct-heading identity value for relational exclusion.  Note that
 this operation is also legitimately known as I<symmetric difference>, or
 I<disjoint union>.
 
-=item C<sys.Core.Relation.intersection of Relation (RO: Set{Relation}
-$topic)>
+=item C<sys.Core.Relation.intersection of Relation (Set{Relation} $topic)>
 
 This function results in the relational intersection/and of the N element
 values of its argument; it is a reduction operator that recursively takes
@@ -1876,7 +1866,7 @@ C<$topic> of zero values if the result type's universal relation is
 impossible or impractically large to represent, such as when any attributes
 are of infinite types.
 
-=item C<sys.Core.Relation.difference of Relation (RO: Relation $source,
+=item C<sys.Core.Relation.difference of Relation (Relation $source,
 Relation $filter)>
 
 This function results in the relational difference when its C<$filter>
@@ -1887,15 +1877,15 @@ will fail if its 2 arguments do not have the same heading.  Note that this
 I<difference> operator is conceptually a special case of I<semidifference>,
 applicable when the headings of the inputs are the same.
 
-=item C<sys.Core.Relation.semidifference of Relation (RO: Relation $source,
+=item C<sys.Core.Relation.semidifference of Relation (Relation $source,
 Relation $filter)>
 
 This function is the same as C<semijoin> but that it results in the
 complementary subset of tuples of C<$source> when given the same arguments.
 Note that this operation is also legitimately known as I<antijoin>.
 
-=item C<sys.Core.Relation.semijoin of Relation (RO: Relation $source,
-Relation $filter)>
+=item C<sys.Core.Relation.semijoin of Relation (Relation $source, Relation
+$filter)>
 
 This function results in the relational semijoin of its C<$source> and
 C<$filter> arguments.  The result relation has the same heading as
@@ -1906,16 +1896,16 @@ between its 2 arguments, and then performing a relational projection on all
 of the attributes that just C<$source> has.  This function will fail any
 time that C<join> would fail on the same 2 input relations.
 
-=item C<sys.Core.Relation.join of Relation (RO: QuasiSet{Relation} $topic)>
+=item C<sys.Core.Relation.join of Relation (QuasiSet{Relation} $topic)>
 
 This function results in the relational join of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
 input values and relationally joins (which is both commutative and
-associative) them together until just one is left, which is the result. The
-result relation has a heading that is a union of all of the headings of its
-inputs, and its body is the result of first pairwise-matching every tuple
-of each input relation with every tuple of each other input relation, then
-where each member of a tuple pair has attribute names in common,
+associative) them together until just one is left, which is the result.
+The result relation has a heading that is a union of all of the headings of
+its inputs, and its body is the result of first pairwise-matching every
+tuple of each input relation with every tuple of each other input relation,
+then where each member of a tuple pair has attribute names in common,
 eliminating pairs where the values of those attributes differ and unioning
 the remaining said tuple pairs, then eliminating any result tuples that
 duplicate others.  If C<$topic> has zero values, then C<join> results in
@@ -1932,8 +1922,7 @@ latter.  This function will fail if any input relations have attributes
 with common names but different/incompatible declared types.  Note that
 this operation is also legitimately known as I<natural inner join>.
 
-=item C<sys.Core.Relation.product of Relation (RO: QuasiSet{Relation}
-$topic)>
+=item C<sys.Core.Relation.product of Relation (QuasiSet{Relation} $topic)>
 
 This function results in the relational cartesian/cross product of the N
 element values of its argument; it is conceptually a special case of
@@ -1942,8 +1931,7 @@ unlike C<join>, C<product> will fail if any inputs have attribute names in
 common.  Note that this operation is also legitimately known as
 I<cartesian/cross join>.
 
-=item C<sys.Core.Relation.compose of Relation (RO: Relation $r1, Relation
-$r2)>
+=item C<sys.Core.Relation.compose of Relation (Relation $r1, Relation $r2)>
 
 This function results in the relational composition of its 2 arguments.  It
 is conceptually a short-hand for first doing an ordinary relational join
@@ -1953,7 +1941,7 @@ has all of and just the attributes that were not involved in matching the
 tuples of the 2 arguments.  This function will fail any time that C<join>
 would fail on the same 2 input relations.
 
-=item C<sys.Core.Relation.quotient of Relation (RO: Relation $dividend,
+=item C<sys.Core.Relation.quotient of Relation (Relation $dividend,
 Relation $divisor)>
 
 This function results in the quotient when its C<$dividend> argument is
