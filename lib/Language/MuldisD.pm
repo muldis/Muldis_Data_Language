@@ -49,6 +49,21 @@ document and this one, then either the other document is in error, or the
 developers were negligent in updating it before this one, so you can yell
 at them.
 
+The fully-qualified name of this multi-part document and the language
+specification it contains is C<MuldisD:'cpan:DUNCAND':'0.8.1'>.  It is the
+official/original (not embraced and extended) Muldis D language
+specification by the authority Darren Duncan (C<cpan:DUNCAND>), version
+C<0.8.1> (this number matches the VERSION pod in this file).  Any modified
+versions of this Muldis D language specification that are released by
+someone else must have a long name with at least a different authority
+(middle) portion, to assist users and maintainers in distinguishing them
+from official releases.  Furthermore, all code written in any
+representation format of Muldis D should specify the long name of the
+language specification that it is written in, to make it unambiguous to
+both human and machine (eg, implementing) readers of the code.  (The
+L<Language::MuldisD::Grammar> and L<Language::MuldisD::PerlHosted>
+documents say how to do this for their language representation formats.)
+
 Muldis D is a computationally / Turing complete (and industrial strength)
 high-level programming language with fully integrated database
 functionality; you can use it to define, query, and update relational

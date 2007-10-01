@@ -70,7 +70,7 @@ supplying a Perl undef will result in an error.  If you genuinely want to
 represent that a value is unknown, then the C<Maybe> node type is provided
 as one way you can explicitly say so.  I<This policy may be reconsidered.>
 
-The root Perl C<Array> of a PHMD value has 3 elements, which are:
+The root Perl C<Array> of a PHMD value has 4 elements, which are:
 
 =over
 
@@ -81,9 +81,28 @@ C<MuldisD> for this spec.
 
 =item *
 
-The AST language/schema version plus authority, encoded either as a
-single Perl C<Str> value, or as a Perl C<Array> value containing separate
-values for the language version and authority.
+The AST language/schema authority, encoded as a Perl C<Str> value.  The
+authority string is interpreted within the context of the language/schema
+name, which for the C<MuldisD> spec is the range of authority string
+formats permitted for the long names of Perl 6 packages, such as a CPAN
+identifier or an http url, although what's allowed may be open-ended.  For
+the official/original Muldis D language spec by Darren Duncan, that string
+is always C<cpan:DUNCAND> during the foreseeable future.  If someone else
+wants to I<embrace and extend> Muldis D, such as to include proprietary
+extensions, or incompatible changes, then they must use something other
+than C<cpan:DUNCAND> for the authority, (and optionally, change the name
+from C<MuldisD> as well if that seems appropriate), to prevent ambiguity.
+
+=item *
+
+The AST language/schema version, encoded as a Perl C<Str> value.  The
+version string is interpreted within the context of both the
+language/schema name and language/schema authority, which for the
+C<MuldisD> plus C<cpan:DUNCAND> spec is the normal 3-integer-parts
+(C<X.Y.Z>) version format normal for the long names of Perl 6 packages and
+many other versioned projects in general.  At the present time, the
+official spec version to use is shown in the VERSION and DESCRIPTION of the
+C<MuldisD.pm> file, when corresponding to the spec containing that file.
 
 =item *
 
@@ -93,11 +112,7 @@ The payload is any other PHMD node.
 
 Examples of a root node:
 
-    [ 'MuldisD', [ '1.2.3', 'cpan:DUNCAND' ],
-        [ 'Bool', 'md_enum', 'false' ] ]
-
-    [ 'MuldisD', ':ver<1.2.3>:auth<cpan:DUNCAND>',
-        [ 'Bool', 'md_enum', 'false' ] ]
+    [ 'MuldisD', 'cpan:DUNCAND', '1.2.3', [ 'Bool', 'md_enum', 'false' ] ]
 
 Both the payload node under the root node and every other node is a Perl
 C<Array> with usually 2+ elements, where the first element is a Perl C<Str>
