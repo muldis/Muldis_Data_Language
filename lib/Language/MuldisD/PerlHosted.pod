@@ -76,7 +76,7 @@ The root Perl C<Array> of a PHMD value has 4 elements, which are:
 
 =item *
 
-The AST language/schema name, specifically the Perl C<Str> value
+The AST language/schema base name, specifically the Perl C<Str> value
 C<MuldisD> for this spec.
 
 =item *
@@ -95,14 +95,15 @@ from C<MuldisD> as well if that seems appropriate), to prevent ambiguity.
 
 =item *
 
-The AST language/schema version, encoded as a Perl C<Str> value.  The
-version string is interpreted within the context of both the
+The AST language/schema version number, encoded as a Perl C<Str> value.
+The version number string is interpreted within the context of both the
 language/schema name and language/schema authority, which for the
 C<MuldisD> plus C<cpan:DUNCAND> spec is the normal 3-integer-parts
 (C<X.Y.Z>) version format normal for the long names of Perl 6 packages and
 many other versioned projects in general.  At the present time, the
-official spec version to use is shown in the VERSION and DESCRIPTION of the
-C<MuldisD.pm> file, when corresponding to the spec containing that file.
+official spec version number to use is shown in the VERSION and DESCRIPTION
+of the C<MuldisD.pm> file, when corresponding to the spec containing that
+file.
 
 =item *
 
@@ -122,6 +123,21 @@ give extra meta-data to specify which of possibly several representation
 formats the payload is, so that it is correctly interpreted.  Typically
 speaking, only the payload element might be a Perl collection type, and
 typically all the other elements are Perl scalars.
+
+Note that a Hosted Abstract Muldis D implementation may eschew the above
+4-element Array as the root PHMD node for all PHMD trees, and instead have
+a separate virtual machine configuration step taking just the first 3
+elements (base name, authority, version number), to provide a context for
+subsequent use of PHMD trees that consist of just what would otherwise be
+the 4th (payload) element.
+
+Examples; at VM config time:
+
+    [ 'MuldisD', 'cpan:DUNCAND', '1.2.3' ]
+
+Then later, just:
+
+    [ 'Bool', 'md_enum', 'false' ]
 
 =head1 SCALAR VALUES
 
