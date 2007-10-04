@@ -6,9 +6,9 @@
     * Language::MuldisD version 0.9.0 is released on CPAN as
     Language-MuldisD-0.9.0.tar.gz.
 
-    * New file versions are: MuldisD.pm 0.9.0 and Basics.pod 0.7.1 and
-    Grammar.pod 0.7.0 and PerlHosted.pod 0.4.0.  The other pre-existing
-    versioned files are unchanged.
+    * New file versions are: MuldisD.pm and Core.pod 0.9.0 and Basics.pod
+    0.8.0 and Grammar.pod 0.7.0 and PerlHosted.pod 0.4.0.  The other
+    pre-existing versioned files are unchanged.
 
     * (MuldisD.pm, Grammar.pod, PerlHosted.pod)  Added a paragraph to the
     DESCRIPTION of MuldisD.pm that gives the fully-qualified name of the
@@ -23,6 +23,34 @@
     string, the version number, and the payload; PerlHosted.pod also gives
     an alternative 3 parts version for up-front VM config, rather than
     repeating it with every payload later.
+
+    * (Basics.pod)  Overhauled what kinds of Muldis D routines there are,
+    and consequences thereof; the largest updates were to the ROUTINES
+    section.  A hierarchical diagram was added to ROUTINES to group the
+    kinds by similarity.  The 3 kinds function|update_operator|procedure
+    gained inner_\w+ counterparts, which are the same but soley live within
+    and comprise the definitions of other routines, while the initial 3 are
+    now strictly not so.  All kinds of constraint routines are now pure
+    deterministic functions (that don't see globals), like just the
+    type_constraint used to be, which is fine since entire databases are
+    defined as being types or variables (so now only procedure|main can see
+    globals).  The distinct state_constraint is now gone, merged into
+    type_constraint, each of which is tied to a data type definition and
+    runs at value selection time.  Now, a transition_constraint is tied to
+    a variable and runs when it is updated, it has 2 arguments holding the
+    before|after state.  Updated ENTITY NAMES to split the 'lex' namespace
+    into itself and 'inn', the latter being used to invoke inner routines,
+    and the former being just for true lexicals.  Also updated TRANSACTIONS
+    AND CONCURRENCY.
+
+    * (Basics.pod, Core.pod)  In Core.pod, added a new SYSTEM-DEFINED CORE
+    PROCEDURES section, and its first 2 entries,
+    sys.Core.Control.(fail|try_catch), the use of which is now how you
+    generally do explicit transactions; appropriate parts of Basics.pod
+    were updated to mention/explain this.
+
+    * (Core.pod)  Added new data type 'sys.Core.Cat.Exception' which holds
+    the details of a thrown exception.
 
     * (Basics.pod)  Renamed the CATALOGS section to TEMP OLD CATALOGS DOCS.
 

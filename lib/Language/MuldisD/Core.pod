@@ -120,6 +120,7 @@ more or less:
 
             # The following are all regular tuple types.
 
+            sys.Core.Cat.Exception
             sys.Core.Cat.Expr
 
         sys.Core.Relation.Relation
@@ -616,6 +617,10 @@ working with the system catalog.  They are all completely defined types.
 
 I<To keep things simpler for now, most constraint definitions for these
 types are missing, or just defined informally.>
+
+=head2 C<sys.Core.Cat.Exception>
+
+I<TODO.>
 
 =head2 C<sys.Core.Cat.Expr>
 
@@ -2000,6 +2005,39 @@ These system services are applicable to just one or more specific
 system-defined core scalar data type.
 
 I<This documentation is pending.>
+
+=head1 SYSTEM-DEFINED CORE PROCEDURES
+
+=head2 Generic Control-Flow Procedures
+
+These procedures are applicable to use in all kinds of procedures.
+
+=over
+
+=item C<sys.Core.Control.fail (RO: Cat.Exception $topic)>
+
+This procedure will throw the exception given as its argument; this results
+in the call stack unwinding, and transaction rollbacks, until it is caught.
+
+=item C<sys.Core.Control.try_catch (UPD: Tuple $try_updating, Tuple
+$catch_updating ; RO: Cat.LongName $try, Cat.LongName $catch, Tuple
+$try_assuming, Tuple $catch_assuming)>
+
+This procedure invokes the procedure named in its C<$try> argument, giving
+it the arguments C<$try_updating> and C<$try_assuming> as its C<$updating>
+and C<$assuming> arguments, respectively.  If the C<$try> procedure throws
+an exception, then any state changes it made roll back (but changes made
+before that don't), and the call stack unwinds to the C<try_catch> itself;
+then the procedure named by C<$catch> is invoked similarly to C<$try> was,
+with corresponding arguments, but with the extra read-only argument
+C<$topic> whose value is a C<Cat.Exception>; if the C<$catch> procedure
+also throws an exception (such as to say its not handling the thrown one),
+then that one is not caught and the call stack unwinding plus applicable
+transaction rollback carries on to the caller of the C<try_catch>.  If the
+C<$try> procedure succeeds (doesn't throw an exception), then the C<$catch>
+procedure is not called.
+
+=back
 
 =head1 SEE ALSO
 
