@@ -109,8 +109,9 @@ more or less:
 
                 # The following are all regular ordered scalar types.
 
-                sys.Core.Cat.ShortName
-                sys.Core.Cat.LongName
+                sys.Core.Cat.Name
+                sys.Core.Cat.NameChain
+                sys.Core.Cat.FlattenedNameChain
 
             # The following are all regular non-ordered scalar types.
 
@@ -127,15 +128,21 @@ more or less:
 
             # The following are all regular relation types.
 
-            sys.Core.Cat.ShortNameMap
-            sys.Core.Cat.BiDiShortNameMap
+            sys.Core.Cat.NameMap
+            sys.Core.Cat.BiDiNameMap
 
             sys.Core.Relation.Set
 
                 # The following are all regular set types.
 
-                sys.Core.Cat.SetOfShortName
-                sys.Core.Cat.SetOfShortNameMap
+                sys.Core.Cat.SetOfName
+                sys.Core.Cat.SetOfNameMap
+
+            sys.Core.Relation.Seq
+
+                # The following are all regular sequence types.
+
+                sys.Core.Cat.NESeqOfName
 
 These system-defined subtypes have also been defined for convenience, as
 they are anticipated to be frequently used; in fact, most of them are used
@@ -577,27 +584,38 @@ Muldis D expressions; 'directly' meaning not by way of explicitly invoking
 a selector function.  Generally speaking, this union type includes all of
 the core scalar types that aren't themselves defined as union types.  The
 full list that C<ScalarLiteral> unions is: C<Bool>, C<Order>, C<Int>,
-C<Rat>, C<Blob>, C<Text>, C<Cat.ShortName>, C<Cat.LongName>, C<Cat.E_EK>,
+C<Rat>, C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.E_EK>,
 ...
 
-=head2 C<sys.Core.Cat.ShortName>
+=head2 C<sys.Core.Cat.Name>
 
-A C<Cat.ShortName> is a canonical name for some DBMS entities (others use
-C<Cat.LongName>), such as the declared names of attributes of scalar
-possreps or collection types, and for the declared names of routine
-parameters, and for the invocation names of the same.  It is the same as
-C<Text> in all ways but that it is specifically intended for use in naming
-DBMS entities rather than being normal data.
+A C<Cat.Name> is a canonical short name for any kind of DBMS entity (or
+named component) when declaring it; this short name is sufficient to
+identify the entity within its immediate namespace.  Similarly, a DBMS
+entity can often be invoked or referred to using just its C<Cat.Name>,
+depending on the context; other times, a C<Cat.NameChain> must be used
+instead to also qualify the reference with a namespace.  C<Cat.Name> is the
+same as C<NEText> in all ways but that it is specifically intended for use
+in naming DBMS entities rather than being normal data.
 
-=head2 C<sys.Core.Cat.LongName>
+=head2 C<sys.Core.Cat.NameChain>
 
-A C<Cat.LongName> is a canonical name for some DBMS entities (others use
-C<Cat.ShortName>), such as the invocation names of types, routines, and
-variables, and it is typically used for the declared names of the same.  A
-C<Cat.LongName> consists of a sequence (1..N) of C<Cat.ShortName>, the
-elements being ordered from greatest to least significance.  Its default
-value is a single element that is the default value of C<Cat.ShortName>,
-the empty string.
+A C<Cat.NameChain> is a canonical long name for invoking or referring to a
+DBMS entity, when its name needs to be qualified with a namespace.  A
+C<Cat.NameChain> has 2 possreps; one possrep is a sequence of 1..N
+C<Cat.Name> (represented by a C<Cat.NESeqOfName>), the 1..N elements being
+ordered from parent-most to child-most component name; the other possrep is
+a character string (represented by a C<Cat.FlattenedNameChain>) like when
+the elements of the first possrep are catenated (in order with the first
+element at the start of the string), with a period (C<.>) between the
+parts, and each part escaped such that backslashes, single-quotes, and
+periods are escaped as C<\b>, C<\q> and C<\p> respectively.
+
+=head2 C<sys.Core.Cat.FlattenedNameChain>
+
+The C<Cat.FlattenedNameChain> type is used as the definition of the
+character string possrep of a C<Cat.NameChain> (see that type for details);
+while being a character string like C<Cat.Name>, the two are disjoint.
 
 =head2 C<sys.Core.Cat.E_EK>
 
@@ -637,13 +655,13 @@ A C<Cat.Expr> has these 8 attributes:
 
 =over
 
-=item C<name> - C<Cat.ShortName>
+=item C<name> - C<Cat.Name>
 
 This is the declared name of the expression node; other Muldis D code that
 is composing this expression node into their own definitions would
 reference it with this name.
 
-=item C<type> - C<Cat.LongName>
+=item C<type> - C<Cat.NameChain>
 
 This is the declared result data type of the expression node.  If the
 expression node represents a literal value, this is often necessary for
@@ -670,7 +688,7 @@ Iff C<kind> is C<Cat.E_EK:scalar>, then the expression represents a
 hard-coded scalar literal of one of a certain collection of system-defined
 core scalar types (or subtype thereof), and this is that literal value.
 
-=item C<coll_lit> - C<Cat.SetOfShortNameMap>
+=item C<coll_lit> - C<Cat.SetOfNameMap>
 
 Iff C<kind> is C<Cat.E_EK:(|quasi_)(tuple|relation)>, then the expression
 represents a collection literal, and these are the values of its
@@ -682,18 +700,18 @@ C<coll_lit> defines exactly one tuple when C<kind> specifies a tuple or
 quasi-tuple, and it defines 0..N tuples when C<kind> specifies a relation
 or quasi-relation.
 
-=item C<param> - C<Cat.ShortName>
+=item C<param> - C<Cat.Name>
 
 Iff C<kind> is C<Cat.E_EK:param>, then the expression represents the value
 of the containing function's parameter which this names.
 
-=item C<func> - C<Cat.LongName>
+=item C<func> - C<Cat.NameChain>
 
 Iff C<kind> is C<Cat.E_EK:func>, then the expression represents the result
 of invoking a named function with specific arguments, and this the name of
 that function.
 
-=item C<func_args> - C<Cat.ShortNameMap>
+=item C<func_args> - C<Cat.NameMap>
 
 Iff C<func> is used, then these are the arguments for the function
 invocation.  Each element defines one argument value, with the element
@@ -718,29 +736,36 @@ working with the system catalog.  They are all completely defined types.
 I<To keep things simpler for now, most constraint definitions for these
 types are missing, or just defined informally.>
 
-=head2 C<sys.Core.Cat.ShortNameMap>
+=head2 C<sys.Core.Cat.NameMap>
 
-A C<Cat.ShortNameMap> specifies a map of short entity names to other short
+A C<Cat.NameMap> specifies a map of short entity names to other short
 entity names.  It is a binary C<Relation> whose 2 attributes are named
 C<key> and C<value>, and both attributes have declared types of
-C<Cat.ShortName>; the C<key> attribute is a unary key.  Its default value
+C<Cat.Name>; the C<key> attribute is a unary key.  Its default value
 has zero tuples.
 
-=head2 C<sys.Core.Cat.BiDiShortNameMap>
+=head2 C<sys.Core.Cat.BiDiNameMap>
 
-A C<Cat.BiDiShortNameMap> is a proper subtype of C<Cat.ShortNameMap> where
+A C<Cat.BiDiNameMap> is a proper subtype of C<Cat.NameMap> where
 its C<value> attribute is also a unary key.  It is used as a specification
 for how to rename attributes of a relation.
 
-=head2 C<sys.Core.Cat.SetOfShortName>
+=head2 C<sys.Core.Cat.SetOfName>
 
-A C<Cat.SetOfShortName> is a C<(Set)> whose C<value> attribute has a
-declared type of C<Cat.ShortName>.
+A C<Cat.SetOfName> is a C<(Set)> whose C<value> attribute has a
+declared type of C<Cat.Name>.
 
-=head2 C<sys.Core.Cat.SetOfShortNameMap>
+=head2 C<sys.Core.Cat.SetOfNameMap>
 
-A C<Cat.SetOfShortNameMap> is a C<(Set)> whose C<value> attribute has a
-declared type of C<Cat.ShortNameMap>.
+A C<Cat.SetOfNameMap> is a C<(Set)> whose C<value> attribute has a
+declared type of C<Cat.NameMap>.
+
+=head2 C<sys.Core.Cat.NESeqOfName>
+
+A C<Cat.NESeqOfName> is a C<(Seq)> whose C<value> attribute has a declared
+type of C<Cat.Name> and that must have at least 1 element; this type is
+used as the definition of the sequence possrep of a C<Cat.NameChain> (see
+that type for details).
 
 =head1 SYSTEM-DEFINED CORE SPECIALIZED SUBTYPES
 
@@ -810,7 +835,7 @@ This function is exactly the same as C<sys.Core.Universal.is_equal> except
 that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<sys.Core.Universal.is_value_of_type of Bool (Cat.LongName $type,
+=item C<sys.Core.Universal.is_value_of_type of Bool (Cat.NameChain $type,
 Universal $v)>
 
 This function results in C<Bool:true> iff the value of its C<$v> argument
@@ -820,7 +845,7 @@ results in C<Bool:true> if the named type is C<Universal>, and
 C<Bool:false> if it is C<Empty>.  This function will fail if the named type
 doesn't exist in the virtual machine.
 
-=item C<sys.Core.Universal.treat of Some.Universal (Cat.LongName $as,
+=item C<sys.Core.Universal.treat of Some.Universal (Cat.NameChain $as,
 Some.Universal $v)>
 
 This function results in the value of its C<$v> argument, but that the
@@ -837,7 +862,7 @@ you are storing an C<Int> value in a C<Scalar>-typed variable, using
 C<treat> will cause the compiler to let you use that variable as an
 argument to C<Int.sum>, which it otherwise wouldn't.
 
-=item C<sys.Core.Universal.default of Some.Universal (Cat.LongName $of)>
+=item C<sys.Core.Universal.default of Some.Universal (Cat.NameChain $of)>
 
 This function results in the default value of the not-C<Empty> data type
 whose name is given in the C<$of> argument, and the declared type of the
@@ -1555,7 +1580,7 @@ in that they typically work with any nonscalar types.
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
-=item C<sys.Core.Tuple.rename of Tuple (Tuple $topic, Cat.BiDiShortNameMap
+=item C<sys.Core.Tuple.rename of Tuple (Tuple $topic, Cat.BiDiNameMap
 $map)>
 
 This function results in a C<Tuple> value that is the same as its C<$topic>
@@ -1569,7 +1594,7 @@ will fail if C<$map> specifies any old names that C<$topic> doesn't have,
 or any new names that are the same as C<$topic> attributes that aren't
 being renamed.
 
-=item C<sys.Core.Tuple.project of Tuple (Tuple $topic, Cat.SetOfShortName
+=item C<sys.Core.Tuple.project of Tuple (Tuple $topic, Cat.SetOfName
 $attrs)>
 
 This function results in the projection of its C<$topic> argument that has
@@ -1579,15 +1604,15 @@ C<$attrs> lists all attributes of C<$topic>; or, it is the nullary tuple if
 C<$attrs> is empty.  This function will fail if C<$attrs> specifies any
 attribute names that C<$topic> doesn't have.
 
-=item C<sys.Core.Tuple.remove of Tuple (Tuple $topic, Cat.SetOfShortName
+=item C<sys.Core.Tuple.remove of Tuple (Tuple $topic, Cat.SetOfName
 $attrs)>
 
 This function is the same as C<project> but that it results in the
 complementary subset of attributes of C<$topic> when given the same
 arguments.
 
-=item C<sys.Core.Tuple.wrap of Tuple (Tuple $topic, Cat.SetOfShortName
-$inner, Cat.ShortName $outer)>
+=item C<sys.Core.Tuple.wrap of Tuple (Tuple $topic, Cat.SetOfName
+$inner, Cat.Name $outer)>
 
 This function results in a C<Tuple> value that is the same as its C<$topic>
 argument but that some of its attributes have been wrapped up into a new
@@ -1603,7 +1628,7 @@ being wrapped into it.  This function will fail if C<$inner> specifies any
 attribute names that C<$topic> doesn't have, or if C<$outer> is the same as
 C<$topic> attributes that aren't being wrapped.
 
-=item C<sys.Core.Tuple.unwrap of Tuple (Tuple $topic, Cat.ShortName
+=item C<sys.Core.Tuple.unwrap of Tuple (Tuple $topic, Cat.Name
 $outer)>
 
 This function is the inverse of C<sys.Core.Tuple.wrap>, such that it will
@@ -1708,13 +1733,13 @@ or impractically large to represent, such as when any attributes are of
 infinite types.
 
 =item C<sys.Core.Relation.rename of Relation (Relation $topic,
-Cat.BiDiShortNameMap $map)>
+Cat.BiDiNameMap $map)>
 
 This function is the same as C<sys.Core.Tuple.rename> but that it operates
 on and results in a C<Relation> rather than a C<Tuple>.
 
 =item C<sys.Core.Relation.project of Relation (Relation $topic,
-Cat.SetOfShortName $attrs)>
+Cat.SetOfName $attrs)>
 
 This function is the same as C<sys.Core.Tuple.project> but that it operates
 on and results in a C<Relation> rather than a C<Tuple>.  But note that the
@@ -1722,31 +1747,31 @@ result relation will have fewer tuples than C<$topic> if any C<$topic>
 tuples were non-distinct for just the projected attributes.
 
 =item C<sys.Core.Relation.remove of Relation (Relation $topic,
-Cat.SetOfShortName $attrs)>
+Cat.SetOfName $attrs)>
 
 This function is the same as C<sys.Core.Tuple.remove> but that it operates
 on and results in a C<Relation> rather than a C<Tuple>.
 
 =item C<sys.Core.Relation.wrap of Relation (Relation $topic,
-Cat.SetOfShortName $inner, Cat.ShortName $outer)>
+Cat.SetOfName $inner, Cat.Name $outer)>
 
 This function is the same as C<sys.Core.Tuple.wrap> but that it operates on
 and results in a C<Relation> rather than a C<Tuple>, where each of its
 member tuples was transformed as per C<sys.Core.Tuple.wrap>.
 
 =item C<sys.Core.Relation.unwrap of Relation (Relation $topic,
-Cat.ShortName $outer)>
+Cat.Name $outer)>
 
 This function is the inverse of C<sys.Core.Relation.wrap> as
 C<sys.Core.Tuple.unwrap> is to C<sys.Core.Tuple.wrap>.
 
 =item C<sys.Core.Relation.group of Relation (Relation $topic,
-Cat.SetOfShortName $inner, Cat.ShortName $outer)>
+Cat.SetOfName $inner, Cat.Name $outer)>
 
 I<TODO.>
 
 =item C<sys.Core.Relation.ungroup of Relation (Relation $topic,
-Cat.ShortName $outer)>
+Cat.Name $outer)>
 
 I<TODO.>
 
@@ -1766,7 +1791,7 @@ queries, such as in connection with the "part explosion problem" (the
 problem of finding all components, at all levels, of some specified part).
 
 =item C<sys.Core.Relation.restrict of Relation (Relation $topic,
-Cat.LongName $func, Tuple $assuming)>
+Cat.NameChain $func, Tuple $assuming)>
 
 This function results in the relational restriction of its C<$topic>
 argument as determined by applying the C<Bool>-returning function named in
@@ -1785,8 +1810,8 @@ C<sys.Core.Relation.restrict> to implement some common kinds of relational
 restrictions (those composed simply of anded or ored tests for attribute
 value equality), due to the former's greater simplicity.
 
-=item C<sys.Core.Relation.extend of Relation (Relation $topic, Cat.LongName
-$func, Tuple $assuming)>
+=item C<sys.Core.Relation.extend of Relation (Relation $topic,
+Cat.NameChain $func, Tuple $assuming)>
 
 This function results in a relation that is the same as its C<$topic>
 argument, but that it has zero or more additional attributes, as determined
@@ -2020,7 +2045,7 @@ This procedure will throw the exception given as its argument; this results
 in the call stack unwinding, and transaction rollbacks, until it is caught.
 
 =item C<sys.Core.Control.try_catch (UPD: Tuple $try_updating, Tuple
-$catch_updating ; RO: Cat.LongName $try, Cat.LongName $catch, Tuple
+$catch_updating ; RO: Cat.NameChain $try, Cat.NameChain $catch, Tuple
 $try_assuming, Tuple $catch_assuming)>
 
 This procedure invokes the procedure named in its C<$try> argument, giving

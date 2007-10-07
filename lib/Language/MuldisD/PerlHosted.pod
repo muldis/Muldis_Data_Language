@@ -527,7 +527,7 @@ Examples:
 
 =head2 sys.Core.Text.Text
 
-This node type represents a bit string.  It has 2 elements:
+This node type represents a character string.  It has 2 elements:
 
 =over
 
@@ -559,10 +559,10 @@ Examples:
 
 =head2 sys.Core.Text.NEText
 
-This node type represents a non-empty bit-string value; it is interpreted
-as a Muldis D C<sys.Core.Text.NEText>.  Its format is the same as for
-C<sys.Core.Text.Text> but that the node type is 'Text', and the payload may
-not be the empty string.
+This node type represents a non-empty character string value; it is
+interpreted as a Muldis D C<sys.Core.Text.NEText>.  Its format is the same
+as for C<sys.Core.Text.Text> but that the node type is 'Text', and the
+payload may not be the empty string.
 
 Examples:
 
@@ -582,7 +582,7 @@ Node type: the Perl C<Str> value C<Tuple>.
 
 =item *
 
-Type name; a Perl C<Str> value (or char-mode Perl scalar).
+Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
 
 =item *
 
@@ -647,7 +647,7 @@ Node type: the Perl C<Str> value C<Relation>.
 
 =item *
 
-Type name; a Perl C<Str> value (or char-mode Perl scalar).
+Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
 
 =item *
 
@@ -695,7 +695,7 @@ Node type: the Perl C<Str> value C<Set>.
 
 =item *
 
-Type name; a Perl C<Str> value (or char-mode Perl scalar).
+Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
 
 =item *
 
@@ -751,7 +751,7 @@ Node type: the Perl C<Str> value C<Seq>.
 
 =item *
 
-Type name; a Perl C<Str> value (or char-mode Perl scalar).
+Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
 
 =item *
 
@@ -793,7 +793,7 @@ Node type: the Perl C<Str> value C<Bag>.
 
 =item *
 
-Type name; a Perl C<Str> value (or char-mode Perl scalar).
+Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
 
 =item *
 
@@ -865,6 +865,83 @@ Examples:
         [ 'Text', 'Baz' ],
         [ 'Text', 'Baz' ],
     ] ]
+
+=head1 CATALOG SCALAR VALUES
+
+=head2 sys.Core.Cat.Name
+
+This node type represents a canonical short name for any kind of DBMS
+entity when declaring it; it is a non-empty character string type, that is
+disjoint from C<Text>.  It has 2 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<Cat.Name>.
+
+=item *
+
+The payload.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.Core.Cat.Name> value by
+directly mapping the payload.  Note that, while Concrete Muldis D may
+contain a few escape sequences, those would be replaced with what they
+represent prior to making a PHMD node.  They payload must be as per a
+C<NEText> PHMD node.
+
+Examples:
+
+    [ 'Cat.Name', 'login_pass' ]
+
+    [ 'Cat.Name', 'First Name' ]
+
+=head2 sys.Core.Cat.NameChain
+
+This node type represents a canonical long name for invoking some a DBMS
+entity in some contexts; it is conceptually a sequence of entity short
+names.  It has 2 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<Cat.NameChain>.
+
+=item *
+
+The payload; a Perl C<Array|Seq> value or C<Str> (char-mode scalar) value.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.Core.Cat.NameChain> value as
+follows:
+
+=over
+
+=item *
+
+If the payload is an C<Array|Seq>, then it must have at least 1 element,
+and every element must be a valid payload for a C<Cat.Name> PHMD node (that
+is, any non-empty Perl character string).  Each element of the payload, in
+order, defines an element of the sequence possrep of a C<Cat.NameChain>.
+
+=item *
+
+If the payload is a C<Str>, then it must be formatted as a catenation
+(using period (C<.>) separators) of at least 1 part, where each part is
+escaped such that backslashes, single-quotes, and periods are escaped as
+C<\b>, C<\q> and C<\p> respectively.
+
+=back
+
+Examples:
+
+    [ 'Cat.NameChain', ['glo','the_db','gene','sorted_person_name'] ]
+
+    [ 'Cat.NameChain', 'glo.the_db.stats.samples_by_order' ]
 
 =head1 SEE ALSO
 

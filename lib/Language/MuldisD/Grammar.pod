@@ -73,8 +73,8 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         | <text>
         | <tuple>
         | <relation>
-        | <cat_short_name>
-        | <cat_long_name>
+        | <cat_name>
+        | <cat_name_chain>
     }
 
     token bool { (Bool) <spec_sep> (false|true) }
@@ -322,18 +322,18 @@ correctly.  Any remaining errors should be corrected as soon as possible.
 
     token pair_sep { \s+ '=>' \s+ }
 
-    token type_name { <quoted_text_str> }
+    token type_name { <quoted_name_chain_str> }
 
-    token cat_short_name {
-        (Cat.ShortName)
+    token cat_name {
+        (Cat.Name)
         <spec_sep>
-        <quoted_text_str>
+        <quoted_ne_text_str>
     }
 
-    token cat_long_name {
-        (Cat.LongName)
+    token cat_name_chain {
+        (Cat.NameChain)
         <spec_sep>
-        <quoted_text_str>
+        <quoted_name_chain_str>
     }
 
     token spec_sep { ':' }
@@ -350,9 +350,19 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         <text_delim>
     }
 
+    token quoted_name_chain_str {
+        <text_delim>
+            ((<nc_elem_char>+) (<nc_elem_sep> (<nc_elem_char>+))*)
+        <text_delim>
+    }
+
     token text_delim { <[']> }
 
     token text_char { ['\b'|'\q'|<-[\\\']>] }
+
+    token nc_elem_sep { '.' }
+
+    token nc_elem_char { ['\b'|'\q'|'\p'|<-[\\\'\.]>] }
 
 =head1 EXAMPLES
 
@@ -502,6 +512,14 @@ The following are fragments of actual Concrete Muldis D code.
         Text:'Baz',
         Text:'Baz',
     }
+
+    Cat.Name:'login_pass'
+
+    Cat.Name:'First Name'
+
+    Cat.NameChain:'glo.the_db.gene.sorted_person_name'
+
+    Cat.NameChain:'glo.the_db.stats.samples_by_order'
 
 =head1 SEE ALSO
 
