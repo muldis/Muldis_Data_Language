@@ -521,13 +521,19 @@ used to select it.
 A I<union type> is a data type that has at least 2 immediate subtypes, and
 every one of its values is also a value of an immediate subtype; that is,
 the MST of every value in a union type is not that type.  An I<intersection
-type> is a data type that has at least 2 immediate supertypes.  A
-I<difference type> is a data type that has exactly 1 immediate supertype,
+type> is a data type that has at least 2 immediate supertypes.  In this
+way, C<Universal> is a union type of all other types, and C<Empty> is an
+intersection type of all other types.
+
+A I<difference type> is a data type that has exactly 1 immediate supertype,
 and that supertype is a union type such that the difference type and
 another peer subtype of that union type are complementary with respect to
 the union type; every union type value is in either the difference type or
-its complement, but not both.  In this way, C<Universal> is a union type of
-all other types, and C<Empty> is an intersection type of all other types.
+its complement, but not both.  An I<exclusion type> is like a I<union> type
+except that it only consists of the values that are members of exactly an
+odd number of its immediate subtypes.  A I<negation type> is a type that
+consists of only the values that aren't members of a single other type; it
+is like a difference type where the common supertype is C<Universal>.
 
 A I<root type> is a data type for which all of its values can be selected
 by the same single selector, and which has no proper supertype that is a
@@ -567,14 +573,21 @@ which serve as maximal data types for each category, respectively.  The 5
 types are all mutually disjoint, and C<Universal> is a union type over all
 of them.
 
-To keep things simpler, every data type (save C<Universal> and C<Empty>)
-must be a proper subtype of exactly 1 of the 5 categories, and can not
-include values from several of them.  Therefore, every data type is said to
-be either a I<scalar type>, a I<tuple type>, a I<relation type>, a
-I<quasi-tuple type>, or a I<quasi-relation type>, depending which category
-all of its values come from.  In similar fashion, a I<nonscalar type> is
-generally any type that is not a scalar type, if we ignored quasi-nonscalar
-types, meaning it is either a tuple type or a relation type.
+Most data types each consist exclusively of values from exactly one of the
+above 5 categories, and each such type does not include values from several
+of them.  Therefore, every such data type is said to be either a I<scalar
+type>, a I<tuple type>, a I<relation type>, a I<quasi-tuple type>, or a
+I<quasi-relation type>, depending which category all of its values come
+from.  In similar fashion, a I<nonscalar type> is generally any type that
+is not a scalar type, if we ignored quasi-nonscalar types, meaning it is
+either a tuple type or a relation type.
+
+A I<remnant type> is any type having at least 2 values, where at least 2 of
+the values are not allowed to be in a same single type of one of the other
+5 categories, according to their type definition rules.  The remnant
+category is the complement category to all the others in that every
+possible proper subset of the values of C<Universal> can now be represented
+by a type that fits in one of the 6 categories, save C<Empty> itself.
 
 The identity of every scalar type is defined by its name alone, and every
 scalar type must have a distinct name that is explicitly defined, either by
@@ -599,6 +612,12 @@ A quasi-nonscalar type is the same as a nonscalar type as far as the means
 of identifying it go (by its structure, not by its name), but that
 particular kinds of components are permitted in quasi-nonscalar types that
 aren't permitted in nonscalar types (and aren't permitted in scalar types).
+
+A remnant type is always defined in terms of one or more other types, and
+it can never be a root type with defined components.  The identity of every
+remnant type is defined only in terms of it being, directly or indirectly,
+a union or negation of other non-remnant types.  As per with nonscalars,
+several independently defined remnant types can be considered the same one.
 
 To keep things simpler, every data type in Muldis D has a name by which it
 is referenced, even nonscalar and quasi-nonscalar types; however, the names
@@ -728,28 +747,29 @@ same-named attribute of the tuple or relation supertype.
 =head2 Quasi-Tuple Types and Quasi-Relation Types
 
 The union types C<Universal>, C<Tuple>, C<Relation> (and the system-defined
-subtypes of the latter 2) can be used as the declared types of such as
-variables and routine parameters, but they can not be used as the declared
-types of scalar possrep or nonscalar (tuple or relation) attributes.  The
-declared type of each of the latter must be either a scalar type, or a
-specific tuple or relation subtype (meaning tuple or relation types that
-have specific attribute sets defined for them).
+subtypes of the latter 2), and remnant types, can be used as the declared
+types of such as variables and routine parameters, but they can not be used
+as the declared types of scalar possrep or nonscalar (tuple or relation)
+attributes.  The declared type of each of the latter must be either a
+scalar type, or a specific tuple or relation subtype (meaning tuple or
+relation types that have specific attribute sets defined for them).
 
 If all data types were scalar or nonscalar, then it would not be possible
 to define operators with N-ary parameters whose declared types are any of
-the aforementioned 3 union types.  That is, an N-ary parameter is usually
-relation-typed, such that the multiplicity of values that the parameter can
-take are each provided as a tuple of said relation; however, as relation
-attributes can not have said union types as their declared types, it would
-not be possible to implement an N-ary relational join operator, for
-example, since each relation being joined would probably have a different
-heading than the others.
+the aforementioned 3 union types plus the remnant types.  That is, an N-ary
+parameter is usually relation-typed, such that the multiplicity of values
+that the parameter can take are each provided as a tuple of said relation;
+however, as relation attributes can not have said union types as their
+declared types, it would not be possible to implement an N-ary relational
+join operator, for example, since each relation being joined would probably
+have a different heading than the others.
 
 Quasi-tuple types and quasi-relation types exist as a solution to this
 problem, such that the I<quasi-heading> of one is allowed to include
 attributes whose declared types are any type at all, including the union
 types C<Universal>, C<Tuple>, C<Relation>, C<QuasiTuple>, C<QuasiRelation>,
-and subtypes of tuple and relation without specific attribute sets.
+and subtypes of tuple and relation without specific attribute sets, and
+remnant types.
 
 This said, the situations in which quasi-nonscalar types may be used are
 limited; only quasi-nonscalar types may have quasi-nonscalar types as
@@ -760,6 +780,16 @@ corresponding nonscalar type operators, partly because the former are not
 intended to replace the latter for the majority of use cases, and partly
 because some of them are simply impossible to implement for
 quasi-nonscalars: C<unwrap>, C<ungroup>.
+
+=head2 Remnant Types
+
+Generally speaking, a remnant type is what results when one defines a union
+type over 2 other types whose values are mutually incompatible for use in
+the same relation attribute, such as 2 relation types with different
+degrees or attribute names.  Generally speaking, a remnant type is the
+declared type of each attribute of a quasi-nonscalar type, when said
+attribute isn't one of the special system-defined maximal types.  A remnant
+type also results from defining a negation type over a non-remnant type.
 
 =head2 Finite Types and Infinite Types
 
