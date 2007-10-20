@@ -1343,8 +1343,8 @@ I<This documentation is pending.>
 All entities that exist at some given time within a DBMS environment can be
 explicitly referenced in some manner for definition and/or use; there are
 no orphans.  At the very least, every kind of DBMS entity is defined in one
-or more catalog relvars; its interface and/or implementation can be
-observed and possibly updated therein.
+or more catalog relvars or relcons; its interface and/or implementation can
+be observed and possibly updated therein.
 
 Note that the following namespaces assume that a program that is written in
 Muldis D executes possibly either standalone or a peer-to-peer process
@@ -1417,6 +1417,74 @@ This is the hierarchy of invocation namespaces of DBMS entities:
         lex.param.<param>
         lex.expr.<expr>
         lex.var.<var>
+
+Further details of each namespace follow below.
+
+=head2 Standard System-Defined Entities
+
+The standard Muldis D language includes a complement of data types and
+routines that should be hardwired into every implementation of Muldis D as
+globally visible and invokable system-defined entities.  Even if an
+implementation can't provide the whole complement, the subset that it does
+should carry identical semantics so user entities that just use the
+provided subset are still portable.
+
+Each standard system-defined type and routine exists under the C<sys>
+primary namespace, and its fully qualified name has 3 parts besides the
+C<sys>.  The most fundamental standard types and routines, those that are
+ideally the least that every Muldis D implementation would provide, are
+further under the C<Core> secondary namespace; less fundamental but still
+standard types and routines are grouped under various other secondary
+"extension" namespaces, with each secondary namespace conceptually
+representing a dynamically loadable plug-in library.  Finally, each of the
+C<Core> and any other extensions has a 2-level namespace, where closely
+related types and routines are grouped under common package names.  For
+system-defined entities, package names are simply a convenience, routines
+that work with particular types don't have to be grouped with said types'
+declarations.
+
+The catalog namespace C<cat.system> is where all the relcons that describe,
+in a machine-readable way, all of the standard system-defined entities just
+discussed, as well as themselves, reside; the definitions of the standard
+data types of these relcons are also reflected by the same relcons.
+
+=head2 Implementation Specific System-Defined Entities
+
+Each implementation of Muldis D may want to embrace and extend the language
+with a further complement of data types and routines, which are
+non-standard and fundamentally just useable with that implementation.
+Minimally speaking, the structure and contents of the catalog namespaces
+C<cat.(mount|foreign|interp)> are expected to be implementation specific
+anyway, and so the (typically named nonscalar) types in terms of which they
+are defined would also have to be implementation specific.  While adhering
+to that minimum purpose for non-standard additions would be the best in
+terms of portability, it is realistic to assume that some implementations
+will intend some of their additions to be used for user data as well.  But
+even then, ideally such additions would be to serve specialized niches
+only, rather than being intended for general use.  Or ideally these would
+be deprecated in favor of support of the niche coming into the standard
+language as an elegantly designed extension.
+
+The C<imp> primary namespace is for the hardwired non-standard /
+implementation specific system-defined types and routines in the same way
+that C<sys> is for the standard system-defined types and routines.  Keeping
+this separate namespace now allows for implementations to continue
+supporting an evolving standard without becoming conflicted with their own
+legacy extensions.  Non-standard system-defined entities have fully
+qualified names with at least 2 parts besides the C<imp>.  The secondary
+namespace is always some authority-like identifier which could alternately
+be an implementation name.  If some implementation ended up supporting not
+only its own extensions, but also the extensions of other implementations,
+then the secondary namespace would say who declared the entity in question;
+or, that is still useful for external processors of the extended Muldis D
+code.  Finally, the depth of the namespace under the authority-like level
+is purely implementation specific, and is at least 1 level.
+
+The catalog namespace C<cat.impl> corresponds to C<cat.system>.  The two
+being separated also results in the value of the C<cat.system> catalog
+constant being exactly the same for all implementations.
+
+=head2 User-Defined Entities
 
 I<This documentation is pending.>
 
