@@ -1420,6 +1420,47 @@ This is the hierarchy of invocation namespaces of DBMS entities:
 
 Further details of each namespace follow below.
 
+=head2 User Data Variables and System Catalog Variables
+
+All globally visible Muldis D variables can be grouped into two main kinds,
+which are system catalog variables (some of which are actually constants)
+and user data variables; the former all exist under the C<cat> primary
+namespace, and the latter live under half of the other primary namespaces,
+specifically C<app|glo|dep|sch>.  All non-global variables are just of the
+user data variety, and use the C<lex> primary namespace.
+
+The purpose of user data variables is hold user data, and are what gets
+read or updated by database users the vast majority of the time; working
+with these is termed I<data manipulation>.  These variables are typically
+all user-defined.  They are all non-magical, in that updating them has no
+side-effects, assuming they are not defined virtual.
+
+The purpose of system catalog variables is to reflect and (where
+appropriate) empower modification to the Muldis D I<meta-model>, which is
+the active machine readable definition of all DBMS entities in the current
+virtual machine, both system-defined (read-only) and user-defined
+(updateable); working with these is termed I<data definition>.  They are
+all magical, as updating them has immediate side-effects on the visibility
+of or existence of or structure of or constraints on some other, typically
+user-defined, entities.
+
+Note that magicalness is always associated with variables, not data types,
+so users can define their own variables of catalog data types, but updating
+those would have no meta-model affecting side effects like with system
+catalog variables.
+
+As an exception to the above, users can define virtual variables that alias
+one or more other variables (sometimes by way of a function), where
+updating the virtual variables is akin to updating the other variables; if
+the other variables are system catalog variables, then effectively so are
+the user defined virtual ones; this is the only way users can effectively
+define magical variables, which otherwise isn't possible.
+
+The C<cat> primary namespace of Muldis D can be considered analogous to the
+"information schema" of SQL, but that the latter is just read-only.
+
+The secondary namespaces under C<cat> are described in other sections.
+
 =head2 Standard System-Defined Entities
 
 The standard Muldis D language includes a complement of data types and
@@ -1485,6 +1526,147 @@ being separated also results in the value of the C<cat.system> catalog
 constant being exactly the same for all implementations.
 
 =head2 User-Defined Entities
+
+Users of Muldis D can define their own data types, routines, and variables,
+and each of these either exists in a I<depot>, which is the means provided
+by Muldis D for persistence, or does not exist in a depot, meaning Muldis D
+won't persist it.  To be more clear, a depot is the native perception by
+the application / virtual machine environment of some conceptually external
+storage system, such as a disk file or a database server; a depot
+conceptually will outlast any particular execution of the application /
+virtual machine and represents long term data storage.  By contrast,
+database entities that do not exist in a depot will conceptually exist only
+while the application / virtual machine is executing; when the virtual
+machine restarts, these entities will need to be re-created.  Put another
+way, a depot is sort of like a dynamically loadable pre-defined or
+persistent library of Muldis D code, at least with respect to the types and
+routines it contains, but that it also can hold data, and any contents are
+potentially mutable (those not expected to be mutated may be mounted
+read-only).  By contrast, types or routines not in depots will have to be
+redefined external to the virtual machine and injected into it at runtime,
+data likewise.
+
+The C<app> primary namespace is for all user-defined entities (types,
+routines, variables) that I<do not> live in any depots.  Types and routines
+can exist either standalone or as parts of packages, and otherwise go
+straight under C<app>, so their names are either 2 or 3 parts total.  By
+contrast, variables can't go in packages and so their names are always 2
+parts; variables under C<app> may be of any data types at all, including of
+database types.  Variables in C<app> are not considered "part of the
+database", but rather part of the temporary working memory of the
+application.  (It is possible but not necessarily the case that tasks
+analogous to SQL's "create temporary foo" would place the "foo" under
+C<app>.)
+
+The C<glo> primary namespace is for all user-defined entities that I<do>
+live in depots.  Entities under C<glo> are organized similarly to C<app>
+but that there are extra namespace levels, and also all variables may only
+be relation typed (because relational databases are composed fundamentally
+of just relations).  Beneath C<glo>, each secondary namespace is the name
+that a depot is mounted with in the virtual machine, and there is one
+distinct second-level name per depot, and often there is just one of those
+at a time.  Under each depot name is an optional tree of namespaces, adding
+0..N name parts, each of which we refer to as a I<schema>.  After that we
+have the aforementioned arrangement like C<app> has.
+
+Entities declared in a depot are recommended to refer to other entities
+within the same depot using the localizing primary namespace C<dep>, which
+for them substitutes for C<glo> plus their mounting name; this allows depot
+entities to be coded in a portable way, not having to know too much about
+how they would be used (eg, not knowing what name they are mounted with).
+
+Similarly, the primary namespace C<sch> is for self-references between
+entities in a common schema; if there are 2 or more layers of schema, then
+this is specifically to the most immediate one of the referencer; if there
+are zero layers of schema, then this is an alias for C<dep>.
+
+Similarly, the primary namespaces C<pkg|inn|lex> refer to entities within
+the same private scope as the referencer; except for a subset of what is
+seen under C<pkg>, these items are not referenceable globally.
+
+=head2 Conceptions and Requirements
+
+Practically speaking, the conceptions of some namespaces for user-defined
+entities are as follows.
+
+The entire virtual machine as a whole is tied with respect to transactions;
+all depots mounted at the same time must be collectively atomic, and commit
+or rollback as one, such as if they are all managed by the same actual DBMS
+or DBMS cluster.  (Also, generally speaking, no depot may be mounted or
+unmounted while an explicit transaction is active.)  If this is not
+possible for an implementation to handle, then only one depot should be
+allowed to mount at a time.  Also, the virtual machine as a whole
+represents the application working environment itself, and there is no
+database-level user login/authentication for the virtual machine itself, as
+it doesn't make sense for an application to login to its own working state.
+
+Each individual depot is the maximum scope of entity definition
+dependencies.  All entities in a depot must be fully definable using only
+system-defined entities and/or user-defined entities in the same depot (so,
+for example, any foreign key constraints can only be between relvars in the
+same depot).  This allows each depot to maintain an independent existence
+as far as its interpretability and integrity goes.  If the storage
+mechanism is based on files (eg, SQLite), and each file can exist
+separately, but several can optionally be used at the same time, then each
+file should be represented by a separate depot.  If the storage mechanism
+is represented by a SQL database server (eg, PostgreSQL, Oracle), then
+probably everything defined for it within a common SQL catalog should be
+represented by one depot.  If a database user authentication is applicable
+to access the storage system, then a depot might include everything visible
+within the context of one login (in any event, user login/authentication
+can only be applied at the per-depot level, unless a more fine-grained
+approach is reasonable).  Technically, a depot can represent a narrower
+scope than this, but it should never represent a wider scope than what is
+considered a single independent unit.
+
+The division of a depot into multiple schemas is optional, and this
+construct is provided to allow a perception of the storage system that is
+as reasonably unabstracted as possible; the native namespace hierarchy of
+the storage system can be exploited with little difficulty.  Assuming the
+previously described meaning of a depot is adhered to, there will typically
+be either zero (SQLite) or one (PostgreSQL, Oracle) layers of schemas, but
+N layers are provided by Muldis D "just in case".  This said, all entities
+that are directly under a schema namespace should all be considered public
+or globally referenceable (database user privileges notwithstanding).  If
+fine-grained user ownership or privileges are applicable, they would
+typically be applied either at the schema level or to other individual
+entities under depots.
+
+Each individual package should be interpreted as an integrated collection
+of type and routine definitions where some parts of the collection are
+private and just a subset are public.  This is analogous to a class
+definition with public and private elements, or to C .h vs .c files, or to
+an Oracle DBMS' "package".  That said, for now at least, a package may only
+contain types and routines, and not package-level variables, because all
+non-lexical variables in a database must be public relvars.
+
+The concept of "inner routines" in Muldis D exists mainly to deal with the
+design decision where type and routine definitions are expressly fixed
+depth trees (because they are represented by components in a relational
+catalog database), rather than N-depth trees like in a typical programming
+language.  So when a conceptually N-depth syntax tree of another language
+is converted to Muldis D, the nodes in that tree are all given distinct
+names and then turned into a flat list, where each list item is, loosely
+speaking, a 2-level tree declaring its own name as a root and declaring its
+direct children in a set.  The primary namespace C<inn> is used for
+individual nodes to refer to other nodes within the common conceptual
+single routine, and all of these are private.  The only time some other
+host language might map directly to this concept is if it allows named
+types or routines to be declared within the lexical scope of other
+routines.  There are no variables under C<inn>, but each inner routine
+can have its own variables, or parameters, where applicable.
+
+The primary namespace C<lex> is for entities that would commonly be
+considered lexical parameters or variables in a routine; these would
+typically map directly to their counterparts for a routine definition
+translated to or from some other language.  That said, some kinds of
+routines (eg, functions) expressly don't have actual variables, and instead
+have pseudo-variables which are named expression nodes; these would
+typically either be turned into actual expression trees or actual
+variables, or sometimes use native equivalents if the other language is
+pure functional.
+
+=head1 SYSTEM CATALOG
 
 I<This documentation is pending.>
 
