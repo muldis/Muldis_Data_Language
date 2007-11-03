@@ -375,7 +375,7 @@ The language is rigorously defined and requires users to be explicit, which
 leaves little room for ambiguity and related bugs.  When something is
 specified in Muldis D, its semantics should be well known and fully
 portable (not implementation dependent).  If a conforming implementation
-(usually a Muldis DB Engine class) can't provide a specified behaviour,
+(such as a Muldis DB Engine class) can't provide a specified behaviour,
 code using it will refuse to run at all, rather than silently changing its
 semantics; this also helps users to avoid bugs.  Moreover, Muldis D
 generally disallows any details of an implementation's "physical
@@ -1383,32 +1383,37 @@ This is the hierarchy of invocation namespaces of DBMS entities:
         app.<type>
         app.<routine>
         app.<package>
+            app.<package>.<var>
             app.<package>.<type>
             app.<package>.<routine>
-    glo  # global namespace to group currently mounted depots w mount names
-        glo.<depot>(.<schema>){0,}
-            glo.<depot>(.<schema>){0,}.<relvar>
-            glo.<depot>(.<schema>){0,}.<type>
-            glo.<depot>(.<schema>){0,}.<routine>
-            glo.<depot>(.<schema>){0,}.<package>
-                glo.<depot>(.<schema>){0,}.<package>.<type>
-                glo.<depot>(.<schema>){0,}.<package>.<routine>
-    dep  # entities in a depot ref their own depot with this
-        dep(.<schema>){0,}
-            dep(.<schema>){0,}.<relvar>
-            dep(.<schema>){0,}.<type>
-            dep(.<schema>){0,}.<routine>
-            dep(.<schema>){0,}.<package>
-                dep(.<schema>){0,}.<package>.<type>
-                dep(.<schema>){0,}.<package>.<routine>
-    sch  # entities in a schema ref their own schema with this
-        sch.<relvar>
-        sch.<type>
-        sch.<routine>
-        sch.<package>
-            sch.<package>.<type>
-            sch.<package>.<routine>
-    pkg  # entities in a package ref their own package with this
+    fed  # the transac-synced federation of curr mounted depots w mount nms
+        fed.<depot>(.<namespace>){0,}
+            fed.<depot>(.<namespace>){0,}.<relvar>
+            fed.<depot>(.<namespace>){0,}.<type>
+            fed.<depot>(.<namespace>){0,}.<routine>
+            fed.<depot>(.<namespace>){0,}.<package>
+                fed.<depot>(.<namespace>){0,}.<package>.<relvar>
+                fed.<depot>(.<namespace>){0,}.<package>.<type>
+                fed.<depot>(.<namespace>){0,}.<package>.<routine>
+    dep  # entities in a self-sufficient depot ref their own depot w this
+        dep(.<namespace>){0,}
+            dep(.<namespace>){0,}.<relvar>
+            dep(.<namespace>){0,}.<type>
+            dep(.<namespace>){0,}.<routine>
+            dep(.<namespace>){0,}.<package>
+                dep(.<namespace>){0,}.<package>.<relvar>
+                dep(.<namespace>){0,}.<package>.<type>
+                dep(.<namespace>){0,}.<package>.<routine>
+    nsp  # entities in a generic public namespace ref their own nsp w this
+        nsp.<relvar>
+        nsp.<type>
+        nsp.<routine>
+        nsp.<package>
+            nsp.<package>.<relvar>
+            nsp.<package>.<type>
+            nsp.<package>.<routine>
+    pkg  # entities in a package (priv nsp) ref their own package with this
+        pkg.<relvar>
         pkg.<type>
         pkg.<routine>
     inn  # entities in a main|inner routine ref child|sib rtns with this
@@ -1425,9 +1430,9 @@ Further details of each namespace follow below.
 All globally visible Muldis D variables can be grouped into two main kinds,
 which are system catalog variables (some of which are actually constants)
 and user data variables; the former all exist under the C<cat> primary
-namespace, and the latter live under half of the other primary namespaces,
-specifically C<app|glo|dep|sch>.  All non-global variables are just of the
-user data variety, and use the C<lex> primary namespace.
+namespace, and the latter live under some of the other primary namespaces,
+specifically C<app|fed|dep|nsp>.  All non-global variables are just of the
+user data variety, and use the C<pkg|lex> primary namespaces.
 
 The purpose of user data variables is hold user data, and are what gets
 read or updated by database users the vast majority of the time; working
@@ -1547,90 +1552,104 @@ redefined external to the virtual machine and injected into it at runtime,
 data likewise.
 
 The C<app> primary namespace is for all user-defined entities (types,
-routines, variables) that I<do not> live in any depots.  Types and routines
-can exist either standalone or as parts of packages, and otherwise go
-straight under C<app>, so their names are either 2 or 3 parts total.  By
-contrast, variables can't go in packages and so their names are always 2
-parts; variables under C<app> may be of any data types at all, including of
-database types.  Variables in C<app> are not considered "part of the
+routines, variables) that I<do not> live in any depots.  Variables, types
+and routines can exist either standalone or as parts of packages, and
+otherwise go straight under C<app>, so their names are either 2 or 3 parts
+total.  Variables under C<app> may be of any data types at all, including
+of database types.  Variables in C<app> are not considered "part of the
 database", but rather part of the temporary working memory of the
-application.  (It is possible but not necessarily the case that tasks
-analogous to SQL's "create temporary foo" would place the "foo" under
-C<app>.)
+application.
 
-The C<glo> primary namespace is for all user-defined entities that I<do>
-live in depots.  Entities under C<glo> are organized similarly to C<app>
+The C<fed> primary namespace is for all user-defined entities that I<do>
+live in depots.  Entities under C<fed> are organized similarly to C<app>
 but that there are extra namespace levels, and also all variables may only
 be relation typed (because relational databases are composed fundamentally
-of just relations).  Beneath C<glo>, each secondary namespace is the name
+of just relations).  Beneath C<fed>, each secondary namespace is the name
 that a depot is mounted with in the virtual machine, and there is one
 distinct second-level name per depot, and often there is just one of those
-at a time.  Under each depot name is an optional tree of namespaces, adding
-0..N name parts, each of which we refer to as a I<schema>.  After that we
-have the aforementioned arrangement like C<app> has.
+at a time.  Under each depot name is an optional tree of generic
+namespaces, adding 0..N name parts, each of which we refer to simply as a
+I<generic public namespace>.  After that we have the aforementioned
+arrangement like C<app> has.
 
 Entities declared in a depot are recommended to refer to other entities
 within the same depot using the localizing primary namespace C<dep>, which
-for them substitutes for C<glo> plus their mounting name; this allows depot
+for them substitutes for C<fed> plus their mounting name; this allows depot
 entities to be coded in a portable way, not having to know too much about
 how they would be used (eg, not knowing what name they are mounted with).
 
-Similarly, the primary namespace C<sch> is for self-references between
-entities in a common schema; if there are 2 or more layers of schema, then
-this is specifically to the most immediate one of the referencer; if there
-are zero layers of schema, then this is an alias for C<dep>.
+Similarly, the primary namespace C<nsp> is for self-references between
+entities in a common generic namespace; if there are 2 or more layers of
+generic namespace, then this is specifically to the most immediate one of
+the referencer; if there are zero layers of generic namespace, then this is
+an alias for C<dep>.
 
 Similarly, the primary namespaces C<pkg|inn|lex> refer to entities within
 the same private scope as the referencer; except for a subset of what is
-seen under C<pkg>, these items are not referenceable globally.
+seen under C<pkg>, these items are not referenceable globally; a package
+could be referred to as a I<generic privatizable namespace>.  Variables
+under C<lex> only are allowed to be of any data type, not just be relvars.
 
 =head2 Conceptions and Requirements
 
 Practically speaking, the conceptions of some namespaces for user-defined
 entities are as follows.
 
-The entire virtual machine as a whole is tied with respect to transactions;
-all depots mounted at the same time must be collectively atomic, and commit
-or rollback as one, such as if they are all managed by the same actual DBMS
-or DBMS cluster.  (Also, generally speaking, no depot may be mounted or
-unmounted while an explicit transaction is active.)  If this is not
-possible for an implementation to handle, then only one depot should be
-allowed to mount at a time.  Also, the virtual machine as a whole
-represents the application working environment itself, and there is no
-database-level user login/authentication for the virtual machine itself, as
-it doesn't make sense for an application to login to its own working state.
+The entire virtual machine as a whole is synchronized with respect to
+transactions; all depots mounted at the same time are a I<federation> whose
+updates must be collectively atomic, and commit or rollback as one, such as
+if they are all managed by the same actual DBMS or DBMS cluster.  (Also,
+generally speaking, no depot may be mounted or unmounted while an explicit
+transaction is active.)  If this is not possible for an implementation to
+handle, then only one depot should be allowed to mount at a time, meaning
+the implementation is always a non-federated DBMS.  Also, the virtual
+machine as a whole represents the application working environment itself,
+and there is no database-level user login/authentication for the virtual
+machine itself, as it doesn't make sense for an application to login to its
+own working state.
 
-Each individual depot is the maximum scope of entity definition
-dependencies.  All entities in a depot must be fully definable using only
-system-defined entities and/or user-defined entities in the same depot (so,
-for example, any foreign key constraints can only be between relvars in the
-same depot).  This allows each depot to maintain an independent existence
-as far as its interpretability and integrity goes.  If the storage
-mechanism is based on files (eg, SQLite), and each file can exist
-separately, but several can optionally be used at the same time, then each
-file should be represented by a separate depot.  If the storage mechanism
-is represented by a SQL database server (eg, PostgreSQL, Oracle), then
-probably everything defined for it within a common SQL catalog should be
-represented by one depot.  If a database user authentication is applicable
-to access the storage system, then a depot might include everything visible
-within the context of one login (in any event, user login/authentication
-can only be applied at the per-depot level, unless a more fine-grained
-approach is reasonable).  Technically, a depot can represent a narrower
-scope than this, but it should never represent a wider scope than what is
-considered a single independent unit.
+Each individual depot is the maximum scope of self-sufficiency.  All
+entities in a depot must be fully definable using only system-defined
+entities and/or user-defined entities in the same depot (so, for example,
+any foreign key constraints can only be between relvars in the same depot).
+This allows each depot to maintain an independent existence as far as its
+interpretability and integrity goes.  If the storage mechanism is based on
+files (eg, SQLite), and each file can exist separately, but several can
+optionally be used at the same time, then each file should be represented
+by a separate depot.  If the storage mechanism is represented by a SQL
+database server (eg, PostgreSQL, Oracle), then probably everything defined
+for it within a common SQL catalog should be represented by one depot.  If
+a database user authentication is applicable to access the storage system,
+then a depot might include everything visible within the context of one
+login (in any event, user login/authentication can only be applied at the
+per-depot level, unless a more fine-grained approach is reasonable). 
+Technically, a depot can represent a narrower scope than this, but it
+should never represent a wider scope than what is considered a single
+independent unit.
 
-The division of a depot into multiple schemas is optional, and this
-construct is provided to allow a perception of the storage system that is
-as reasonably unabstracted as possible; the native namespace hierarchy of
-the storage system can be exploited with little difficulty.  Assuming the
-previously described meaning of a depot is adhered to, there will typically
-be either zero (SQLite) or one (PostgreSQL, Oracle) layers of schemas, but
-N layers are provided by Muldis D "just in case".  This said, all entities
-that are directly under a schema namespace should all be considered public
+If the self-sufficient-entities criteria of a depot is to be strictly
+adhered to, then nothing in a depot is allowed to reference other depots,
+and therefore any routines that would do cross-depot queries must exist
+somewhere else; so the C<app> namespace is provided to be their home.  But
+since the C<app> namespace requires runtime definition of its entities,
+such as by the C<main> routine or a host-language routine, that solution
+makes it more difficult to manage large amounts of cross-database-query
+code, so a better solution may need to be developed for this task.
+
+The division of a depot into multiple generic public namespaces is
+optional, and this construct is provided to allow a perception of the
+storage system that is as reasonably unabstracted as possible; the native
+namespace hierarchy of the storage system can be exploited with little
+difficulty.  Assuming the previously described meaning of a depot is
+adhered to, there will typically be either zero (SQLite) or one
+(PostgreSQL, Oracle) layers of generic namespaces; where there is one, it
+typically corresponds to the storage system's concept of a I<schema>; but N
+layers are provided by Muldis D "just in case".  This said, all entities
+that are directly under a generic namespace should all be considered public
 or globally referenceable (database user privileges notwithstanding).  If
 fine-grained user ownership or privileges are applicable, they would
-typically be applied either at the schema level or to other individual
-entities under depots.
+typically be applied either at the generic namespace level or to other
+individual entities under depots.
 
 Each individual package should be interpreted as an integrated collection
 of type and routine definitions where some parts of the collection are
