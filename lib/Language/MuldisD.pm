@@ -95,12 +95,8 @@ Muldis D also incorporates design aspects and constructs that are taken
 from or influenced by Perl 6, other general-purpose languages (particularly
 functional ones like Haskell), B<Tutorial D>, various B<D> implementations,
 and various SQL implementations (see the L<Language::MuldisD::SeeAlso>
-file).  I<It has also been suggested that some of the Muldis D design is
-like that of the Ada language, which I didn't really know anything about
-before writing it; this bears further investigation.  Moreover, it has also
-been suggested by a different person that the Lua language design is very
-similar, in different ways, and from a glance, it certainly seems to be
-so.>
+file).  It also appears in retrospect that Muldis D has some designs in
+common with FoxPro or xBase, and with the Ada and Lua languages.
 
 In any event, the Muldis D documentation will be focusing mainly on how
 Muldis D itself works, and will spend little time in providing rationale;

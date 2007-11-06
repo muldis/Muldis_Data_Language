@@ -139,7 +139,9 @@ stored with and used with the database.
 A I<depot> or I<repository> is a local abstraction of a typically external
 storage system which holds 1 database variable and 1 associated catalog,
 plus perhaps other details that assist the mapping of the abstraction to
-the actuality.
+the actuality.  All user-defined non-lexical code and data lives in one or
+more depots, and those are generally persisted.  A depot can also have just
+code, in which case it is essentially a dynamically loaded library.
 
 =item DBMS / RDBMS
 
@@ -1353,6 +1355,124 @@ not automatically expire when transactions end; or maybe they do; this
 feature has to be thought out more.>
 
 I<This documentation is pending.>
+
+=head1 RESOURCE MODULARITY AND PERSISTENCE
+
+The architecture of Muldis D is based on collections of highly structured
+resources, where resources can be executable code (that is, data type and
+routine definitions) and/or user data.  Muldis D provides facilities to
+introspect all kinds of resources, whether system-defined or user-defined,
+and it allows users to update the latter.  Resources typically have names
+within the DBMS environment, and are referred to as I<entities>.
+
+=head2 System-Defined Resources
+
+The standard Muldis D language includes a complement of data types and
+routines that should be hardwired into every implementation of Muldis D as
+globally visible and invokable system-defined entities.  Even if an
+implementation can't provide the whole complement, the subset that it does
+should carry identical semantics so user entities that just use the
+provided subset are still portable.
+
+System-defined types and routines are grouped into multiple dynamically
+loadable libraries.  One of these libraries, named C<Core>, is loaded by
+default at DBMS startup, and provides the most fundamental resources that
+everything else needs.  Other system-defined libraries will load
+automatically when something in them is referenced by user code; users
+never explicitly ask to use a system-defined extension, or at least not
+from within Muldis D code.  It is up to each Muldis D implementation to
+choose whether any particular system-defined entities are implemented at a
+low level using platform-specific primitives, or at a higher level over
+other Muldis D types and routines.  Users generally may only introspect the
+public interface of system-defined resources, not their implementations, so
+they won't know any different.
+
+Each implementation of Muldis D may want to embrace and extend the language
+with a further complement of data types and routines, which are
+non-standard and fundamentally just useable with that implementation.  They
+are implemented in the same way as standard system-defined entities, but
+they live under a different DBMS top-level namespace than the standard
+entities, so that later enhancements to the standard don't have to worry
+about name collisions with unofficial extensions.  
+
+=head2 User-Defined Resources
+
+All user-defined resources in Muldis D are actually data, even those that
+look like code, and these are all exist in one or more I<depots>, which are
+the normal means provided by Muldis D for persistence.  A depot is a
+completely self-sufficient storage system for normal user data and includes
+all the meta-data (type definitions) required to understand the structure
+of, and the business rules / constraints for, that normal data; the depot
+typically also includes all the user-defined routines for querying or
+manipulating that data.  All the entities in a single depot must be fully
+definable using only system-defined entities and/or user-defined entities
+in the same depot; this allows a depot to maintain an independent existence
+as far as its interpretability and integrity goes.  Depots are normally
+updateable within a DBMS at runtime, but they can alternately be used
+read-only.  If a depot doesn't contain normal data, but rather just data
+type and/or routine definitions, it is essentially a code library; in fact,
+all user-defined Muldis D code libraries are implemented as depots.
+
+A depot is the native perception by the application / virtual machine
+environment of some conceptually external storage system, such as a disk
+file or a database server; a depot conceptually will outlast any particular
+execution of the application / virtual machine and represents long term
+data storage.  That said, the depot doesn't actually have to be persistent;
+one could be defined as a temporary space in the computer's working memory,
+that will not outlast a DBMS execution.
+
+If the storage mechanism for depots is based on files (eg, SQLite), and
+each file can exist separately, but several can optionally be used at the
+same time, then each file should be represented in the DBMS environment by
+a separate depot.  If the storage mechanism is represented by a SQL
+database server (eg, PostgreSQL, Oracle), then probably everything defined
+for it within a common SQL catalog should be represented by one depot.  If
+a database user authentication is applicable to access the storage system,
+then a depot might include everything visible within the context of one
+login (in any event, user login/authentication can only be applied at the
+per-depot level, unless a more fine-grained approach is reasonable). 
+Technically, a depot can represent a narrower scope than this, but it
+should never represent a wider scope than what is considered a single
+independent unit.
+
+At DBMS startup, there are no depots mounted.  The only user-defined Muldis
+D code that doesn't live in a depot is the "main program" of a non-hosted
+Concrete Muldis D application, and the only job of that code is to mount
+one or more depots that contain the rest of the program code (as libraries)
+and invoke their high-level routines; or it creates and populates said
+depots if necessary.  In a mixed-language application, where Muldis D code
+is invoked by another host language, this depot-external code doesn't exist
+at all, since it would be redundant with the job of host language routines.
+
+All depots mounted at the same time are a I<federation> whose updates must
+be collectively atomic, and commit or rollback as one, such as if they are
+all managed by the same actual DBMS or DBMS cluster.  Although depots have
+independent definitions, procedures defined in them are allowed to invoke
+or reference resources stored in others under certain situations.  For
+example, one might want to perform cross-database queries or multi-updates,
+or they may want to migrate an older depot's schema or data to a newer one.
+To assist this, resources of multiple depots can be mapped to each other
+on a transient (while both are mounted) basis, so that the DBMS knows, for
+example, that their necessarily redundant data type definitions are
+supposed to be treated as being the same data types.
+
+Now, most of the time, the code for a Muldis D application would just be
+collected in a single depot, matters of reusability between multiple
+database-sharing applications aside.  Each depot is designed to accommodate
+its own collections of resources according to various good practices.  A
+depot fundamentally consists a collection of packages (under a potentially
+multi-level namespace), into which everything else is grouped.  Each
+package declares its own public interface, consisting of the types,
+routines, and relvars that are allowed to be directly invoked or referenced
+from outside of the package, and it can also have more types, routines, and
+relvars which are private to the package.  This is analogous to a class
+definition with public and private elements, or to C .h vs .c files, or to
+an Oracle DBMS' "package".  Unlike with a typical supporting SQL DBMS that
+gives users a choice, Muldis D requires all depot entities to be in
+packages for simplicity; but making all package members public has the
+effect of negating package encapsulation.  All non-lexical data variables
+in a depot may only be relation typed, because relational databases are
+composed fundamentally of just relations.
 
 =head1 ENTITY NAMES
 
