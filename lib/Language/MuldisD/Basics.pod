@@ -1393,7 +1393,7 @@ non-standard and fundamentally just useable with that implementation.  They
 are implemented in the same way as standard system-defined entities, but
 they live under a different DBMS top-level namespace than the standard
 entities, so that later enhancements to the standard don't have to worry
-about name collisions with unofficial extensions.  
+about name collisions with unofficial extensions.
 
 =head2 User-Defined Resources
 
@@ -1430,7 +1430,7 @@ for it within a common SQL catalog should be represented by one depot.  If
 a database user authentication is applicable to access the storage system,
 then a depot might include everything visible within the context of one
 login (in any event, user login/authentication can only be applied at the
-per-depot level, unless a more fine-grained approach is reasonable). 
+per-depot level, unless a more fine-grained approach is reasonable).
 Technically, a depot can represent a narrower scope than this, but it
 should never represent a wider scope than what is considered a single
 independent unit.
@@ -1476,11 +1476,276 @@ composed fundamentally of just relations.
 
 =head1 ENTITY NAMES
 
-I<This documentation is pending.>
+All entities that exist at some given time within a DBMS environment can be
+explicitly referenced in some manner for definition and/or use; there are
+no orphans.  At the very least, every kind of DBMS entity is defined in one
+or more catalog relvars or relcons; its interface and/or implementation can
+be observed and possibly updated therein.
 
-=head1 SYSTEM CATALOG
+Note that the following namespaces assume that a program that is written in
+Muldis D executes possibly either standalone or a peer-to-peer process
+that can have its global variables made visible to other processes, or have
+others' made visible to it.  Or in other words, the program can both manage
+its own dbvars and be a DBMS client, and the program can either just use
+the DBMS itself or be a server of it.
 
-I<This documentation is pending.>
+I<Note that all entity names in Muldis D are case-sensitive, as with
+character strings in general.  Implementations should take special care to
+compensate for any case-insensitive storage system they might use.>
+
+This is the hierarchy of invocation namespaces of DBMS entities:
+
+    cat  # system catalog desc everything; all but .system|impl updateable
+        cat.system
+        cat.impl
+        cat.native
+            cat.native.fed
+            cat.native.dep
+            cat.native.sdp
+            cat.native.pkg
+        cat.mount
+        cat.foreign
+        cat.interp
+    sys  # system-defined types and routines defined by standard Muldis D
+        sys.Core
+            sys.Core.<package>
+                sys.Core.<package>.<type>
+                sys.Core.<package>.<routine>
+        sys.<extension>
+            sys.<extension>.<package>
+                sys.<extension>.<package>.<type>
+                sys.<extension>.<package>.<routine>
+    imp  # sys-def types and routines added by, specific to implementations
+        imp.<authority-or-impl-name>
+            imp.<authority-or-impl-name>(.<namespace>){0,}
+                imp.<authority-or-impl-name>(.<namespace>){0,}.<type>
+                imp.<authority-or-impl-name>(.<namespace>){0,}.<routine>
+    fed  # the transac-synced federation of curr mounted depots w mount nms
+        fed.<depot>
+            fed.<depot>(.<subdepot>){0,}
+                fed.<depot>(.<subdepot>){0,}.<package>
+                    fed.<depot>(.<subdepot>){0,}.<package>.<relvar>
+                    fed.<depot>(.<subdepot>){0,}.<package>.<type>
+                    fed.<depot>(.<subdepot>){0,}.<package>.<routine>
+    dep  # entities in a self-sufficient depot ref their own depot w this
+        dep(.<subdepot>){0,}
+            dep(.<subdepot>){0,}.<package>
+                dep(.<subdepot>){0,}.<package>.<relvar>
+                dep(.<subdepot>){0,}.<package>.<type>
+                dep(.<subdepot>){0,}.<package>.<routine>
+    sdp  # entities in a subdepot (public gen nsp) ref their own sdp w this
+        sdp.<package>
+            sdp.<package>.<relvar>
+            sdp.<package>.<type>
+            sdp.<package>.<routine>
+    pkg  # entities in a package (priv nsp) ref their own package with this
+        pkg.<relvar>
+        pkg.<type>
+        pkg.<routine>
+    inn  # entities in a main|inner routine ref child|sib rtns with this
+        inn.<routine>
+    lex  # entities in a rtn ref own lexical params|exprs|vars with this
+        lex.param.<param>
+        lex.expr.<expr>
+        lex.var.<var>
+
+Further details of each namespace follow below.
+
+=head2 User Data Variables and System Catalog Variables
+
+All globally visible Muldis D variables can be grouped into two main kinds,
+which are system catalog variables (some of which are actually constants)
+and user data variables; the former all exist under the C<cat> primary
+namespace, and the latter live under some of the other primary namespaces,
+specifically C<fed|dep|sdp|pkg>.  All non-global variables are just of the
+user data variety, and use the C<pkg|lex> primary namespaces (yes, C<pkg>
+has both public and private variables).
+
+The purpose of user data variables is hold user data, and are what gets
+read or updated by database users the vast majority of the time; working
+with these is termed I<data manipulation>.  These variables are typically
+all user-defined.  They are all non-magical, in that updating them has no
+side-effects, assuming they are not defined virtual.
+
+The purpose of system catalog variables is to reflect and (where
+appropriate) empower modification to the Muldis D I<meta-model>, which is
+the active machine readable definition of all DBMS entities in the current
+virtual machine, both system-defined (read-only) and user-defined
+(updateable); working with these is termed I<data definition>.  They are
+all magical, as updating them has immediate side-effects on the visibility
+of or existence of or structure of or constraints on some other, typically
+user-defined, entities.
+
+Note that magicalness is always associated with variables, not data types,
+so users can define their own variables of catalog data types, but updating
+those would have no meta-model affecting side effects like with system
+catalog variables.
+
+As an exception to the above, users can define virtual variables that alias
+one or more other variables (sometimes by way of a function), where
+updating the virtual variables is akin to updating the other variables; if
+the other variables are system catalog variables, then effectively so are
+the user defined virtual ones; this is the only way users can effectively
+define magical variables, which otherwise isn't possible.
+
+The C<cat> primary namespace of Muldis D can be considered analogous to the
+"information schema" of SQL, but that the latter is just read-only.
+
+The secondary namespaces under C<cat> are described in other sections.
+
+=head2 Standard System-Defined Entities
+
+All system-defined data types and routines are globally visible and
+invokable.
+
+Each standard system-defined type and routine exists under the C<sys>
+primary namespace, and its fully qualified name has 3 parts besides the
+C<sys>.  The most fundamental standard types and routines, those that are
+ideally the least that every Muldis D implementation would provide, are
+further under the C<Core> secondary namespace; less fundamental but still
+standard types and routines are grouped under various other secondary
+"extension" namespaces, with each secondary namespace conceptually
+representing a dynamically loadable plug-in library.  Finally, each of the
+C<Core> and any other extensions has a 2-level namespace, where closely
+related types and routines are grouped under common package names.  For
+system-defined entities, package names are simply a convenience, routines
+that work with particular types don't have to be grouped with said types'
+declarations.
+
+The catalog namespace C<cat.system> is where all the relcons that describe,
+in a machine-readable way, all of the standard system-defined entities just
+discussed, as well as themselves, reside; the definitions of the standard
+data types of these relcons are also reflected by the same relcons.
+
+=head2 Implementation Specific System-Defined Entities
+
+Minimally speaking, the structure and contents of the catalog namespaces
+C<cat.(mount|foreign|interp)> are expected to be implementation specific,
+and so the (typically named nonscalar) types in terms of which they are
+defined would also have to be implementation specific.  While adhering to
+that minimum purpose for non-standard additions would be the best in terms
+of portability, it is realistic to assume that some implementations will
+intend some of their additions to be used for user data as well.  But even
+then, ideally such additions would be to serve specialized niches only,
+rather than being intended for general use.  Or ideally these would be
+deprecated in favor of support of the niche coming into the standard
+language as an elegantly designed extension.
+
+The C<imp> primary namespace is for the hardwired non-standard /
+implementation specific system-defined types and routines in the same way
+that C<sys> is for the standard system-defined types and routines.  Keeping
+this separate namespace now allows for implementations to continue
+supporting an evolving standard without becoming conflicted with their own
+legacy extensions.  Non-standard system-defined entities have fully
+qualified names with at least 2 parts besides the C<imp>.  The secondary
+namespace is always some authority-like identifier which could alternately
+be an implementation name.  If some implementation ended up supporting not
+only its own extensions, but also the extensions of other implementations,
+then the secondary namespace would say who declared the entity in question;
+or, that is still useful for external processors of the extended Muldis D
+code.  Finally, the depth of the namespace under the authority-like level
+is purely implementation specific, and is at least 1 level.
+
+The catalog namespace C<cat.impl> corresponds to C<cat.system>.  The two
+being separated also results in the value of the C<cat.system> catalog
+constant being exactly the same for all implementations.
+
+=head2 User-Defined Entities
+
+Users of Muldis D can define their own data types, routines, and variables,
+and each of these exists in a I<depot>, which is the means provided by
+Muldis D for persistence.
+
+The C<fed> primary namespace is for all non-lexical user-defined entities.
+Beneath C<fed>, each secondary namespace is the name that a depot is
+mounted with in the virtual machine, and there is one distinct second-level
+name per depot, and often there is just one of those at a time.  Under each
+depot name is an optional tree of generic namespaces, adding 0..N name
+parts, each of which we refer to simply as a I<subdepot>.  After that we
+have 1 layer that are package names.  After that, we have the lowest layer,
+which are globally addressable relvar, type, and routine unqualified names.
+So the fullly-qualified names of most user-defined entities by way of
+C<fed> are 4-5 parts.
+
+Entities declared in a depot are recommended to refer to other entities
+within the same depot using the localizing primary namespace C<dep>, which
+for them substitutes for C<fed> plus their mounting name; this allows depot
+entities to be coded in a portable way, not having to know too much about
+how they would be used (eg, not knowing what name they are mounted with).
+In fact, nothing is allowed to directly refer to entities using C<fed>
+except procedures, or the C<main> if it exists, or the host language if it
+exists.
+
+Similarly, the primary namespace C<sdp> is for self-references between
+entities in a common subdepot; if there are 2 or more layers of
+subdepot, then this is specifically to the most immediate one of
+the referencer; if there are zero layers of subdepot, then this is
+an alias for C<dep>.
+
+Similarly, the primary namespaces C<pkg|inn|lex> refer to entities within
+the same private scope as the referencer; except for a subset of what is
+seen under C<pkg>, these items are not referenceable globally; a package
+could be referred to as a I<generic privatizable namespace>.  Variables
+under C<lex> only are allowed to be of any data type, not just be relvars.
+
+=head2 Conceptions and Requirements
+
+Practically speaking, the conceptions of some namespaces for user-defined
+entities are as follows.
+
+The entire virtual machine as a whole is synchronized with respect to
+transactions.  (Also, generally speaking, no depot may be mounted or
+unmounted while an explicit transaction is active.)  If this is not
+possible for an implementation to handle, then only one depot should be
+allowed to mount at a time, meaning the implementation is always a
+non-federated DBMS.  Also, the virtual machine as a whole represents the
+application working environment itself, and there is no database-level user
+login/authentication for the virtual machine itself, as it doesn't make
+sense for an application to login to its own working state.
+
+The division of a depot into multiple subdepots is optional, and this
+construct is provided to allow a perception of the storage system that is
+as reasonably unabstracted as possible; the native namespace hierarchy of
+the storage system can be exploited with little difficulty.  Assuming the
+previously described meaning of a depot is adhered to, there will typically
+be either zero (SQLite) or one (PostgreSQL, Oracle) layers of generic
+namespaces; where there is one, it typically corresponds to the storage
+system's concept of a I<schema>; but N layers are provided by Muldis D
+"just in case".  This said, all entities that are directly under a generic
+namespace should all be considered public or globally referenceable
+(database user privileges notwithstanding).  If fine-grained user ownership
+or privileges are applicable, they would typically be applied either at the
+generic namespace level or to other individual entities under depots.
+
+Each individual package should be interpreted as an integrated collection
+of type and routine definitions where some parts of the collection are
+private and just a subset are public.
+
+The concept of "inner routines" in Muldis D exists mainly to deal with the
+design decision where type and routine definitions are expressly fixed
+depth trees (because they are represented by components in a relational
+catalog database), rather than N-depth trees like in a typical programming
+language.  So when a conceptually N-depth syntax tree of another language
+is converted to Muldis D, the nodes in that tree are all given distinct
+names and then turned into a flat list, where each list item is, loosely
+speaking, a 2-level tree declaring its own name as a root and declaring its
+direct children in a set.  The primary namespace C<inn> is used for
+individual nodes to refer to other nodes within the common conceptual
+single routine, and all of these are private.  The only time some other
+host language might map directly to this concept is if it allows named
+types or routines to be declared within the lexical scope of other
+routines.  There are no variables under C<inn>, but each inner routine
+can have its own variables, or parameters, where applicable.
+
+The primary namespace C<lex> is for entities that would commonly be
+considered lexical parameters or variables in a routine; these would
+typically map directly to their counterparts for a routine definition
+translated to or from some other language.  That said, some kinds of
+routines (eg, functions) expressly don't have actual variables, and instead
+have pseudo-variables which are named expression nodes; these would
+typically either be turned into actual expression trees or actual
+variables, or sometimes use native equivalents if the other language is
+pure functional.
 
 =head1 SEE ALSO
 
