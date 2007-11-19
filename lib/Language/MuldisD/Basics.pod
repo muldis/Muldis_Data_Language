@@ -904,8 +904,8 @@ channel, persistent read-only memory (ROM), volatile read-write memory
 
 I<TODO: Update this outdated section to account for applications that are
 entirely Muldis D, where the user really is just the user, and also account
-for multiple parallel processes in the same virtual machine (which update
-different depots), and/or autonomous transactions as applicable.>
+for multiple parallel processes / autonomous transactions in the same
+virtual machine.>
 
 Within this analogy, the role of the PC's user, that feeds it through
 standard input and accepts its standard output, is fulfilled by the
@@ -1233,23 +1233,24 @@ implementation is still following all the Muldis D safety rules, and hence
 should be relatively safe to use, even if it lacks Muldis D features.>
 
 Each individual instance of the Muldis D DBMS is conceptually a multiple
-concurrent process (multi-threaded) virtual machine, and conceptually there
+concurrent process / multi-threaded virtual machine, and conceptually there
 may be several things happening in it simultaneously.  This design helps a
 Muldis D implementation use a computer's resources more efficiency when
 multiple hardware CPUs are available, or when multiple autonomous tasks
-need doing in the DBMS that shouldn't necessarily block each other.  Users
-may explicitly specify distinct processes for particular high-level
-statements when appropriate.  Moreover, many system-defined functions will
-automatically use multiple threads to do their work, which is often highly
-symmetrical and order-independent, as set based or relational operations
-often are.  This said, Muldis D has a high level of isolation between any
-concurrent processes so to reduce the complexity of using them and avoid
-the common pitfalls of concurrency; in particular, there is generally no
-data sharing between processes, and any access to common updateable
-resources, typically repositories, is serialized by the system; for
-example, only one process at a time may hold a for-update transaction on a
-atomitized depot group.  Speaking in terms of SQL, the Muldis D DBMS
-supports only the serializable transaction isolation level.
+need doing in the DBMS that don't necessarily need doing in a specific
+order, nor depend on each other, and either should be able to commit even
+if the other doesn't.  Users may explicitly specify distinct processes for
+particular high-level statements when appropriate.  Moreover, many
+system-defined functions will automatically use multiple threads to do
+their work, which is often highly symmetrical and order-independent, as set
+based or relational operations often are.  This said, Muldis D has a high
+level of isolation between any concurrent processes so to reduce the
+complexity of using them and avoid the common pitfalls of concurrency; in
+particular, there is generally no data sharing between processes, and any
+access to common updateable resources, typically repositories, is
+serialized by the system; for example, only one process at a time may hold
+a for-update transaction on the same depot.  Speaking in terms of SQL, the
+Muldis D DBMS supports only the serializable transaction isolation level.
 
 Within each thread of execution, conceptually only one thing is happening
 in it at a time; each individual Muldis D statement executes in sequence,
@@ -1291,7 +1292,8 @@ can still be wrapped in an explicit transaction for atomicity.
 Transactions can be nested, by starting a new one before concluding a
 previous one, and the parent-most transaction has the final say on whether
 all of its committed children actually have a final committed effect or
-not.  Transactions related in this way are not considered autonomous.
+not.  There are no mutually autonomous transactions within the same process
+of a DBMS.
 
 Transactions in Muldis D come in both implicit and explicit varieties, but
 the implicit transactions only exist (that is, only have an effect) when
@@ -1313,9 +1315,8 @@ re-throws) an exception, that is not caught here.  In a pure Muldis D
 application, this lexically-scoped exception handling mechanism is the
 I<only> kind of generalized explicit transaction.
 
-I<TODO:  How do we specify that explicit transactions operate on a specific
-mount federation; also some way to specify when to start a new thread or
-message with service threads (eg, that log errors, do sequences.>
+I<TODO:  How do we specify when to start a new thread or message with
+service threads (eg, that log errors, do sequences).>
 
 In a mixed-language application, when Muldis D routines are invoked by a
 host language, the host language is allowed to specify further parent-most
@@ -1359,17 +1360,17 @@ Muldis D application will have exited, and a mixed-language application
 will have either exited or caught an exception in a host-language I<try>
 block.
 
-All current repository mounts (persistent and temporary both) are divided
-into one or more atomicity groups with respect to transactions, where each
-group's members are joined at the hip; a commit or rollback is performed on
-all of them simultaneously, and a commit either succeeds for all or fails
-for all (a repository suddenly becoming inaccessible counts as a failure).
-I<Note that if a Muldis D implementation can not guarantee such atomicity
-between multiple repositories, then it must refuse to mount more than one
-repository at a time under the same group (users can still employ multiple
-virtual machines, that are not synchronized); by doing one of those two
-actions, a less capable implementation can still be considered reliable and
-recommendable.>
+All current repository mounts (persistent and temporary both) by the same
+in-DBMS process/thread are joined at the hip with respect to transactions;
+a commit or rollback is performed on all of them simultaneously, and a
+commit either succeeds for all or fails for all (a repository suddenly
+becoming inaccessible counts as a failure). I<Note that if a Muldis D
+implementation can not guarantee such atomicity between multiple
+repositories, then it must refuse to mount more than one repository at a
+time under the same process (users can still employ multiple depots each
+under multiple in-DBMS processes, that are not synchronized); by doing one
+of those two actions, a less capable implementation can still be considered
+reliable and recommendable.>
 
 Some Muldis D commands can not be executed within the context of a parent
 transaction; in other words, they can only be executed directly by a
@@ -1485,18 +1486,18 @@ increment a sequence generator whose state is persisted in one autonomous
 transaction and use sequence values in another, so the sequence generator
 doesn't give repeat values if the transaction using it rolls back.
 
-All concurrent depot mounts are divided into one or more groups, where each
-group is called a I<federation>, and updates to all members of a federation
-must be collectively atomic, and commit or rollback as one, such as if they
-are all managed by the same actual DBMS or DBMS cluster.  Although depots
-have independent definitions, procedures defined in them are allowed to
-invoke or reference resources stored in others under certain situations.
-For example, one might want to perform cross-database queries or
-multi-updates, or they may want to migrate an older depot's schema or data
-to a newer one.  To assist this, resources of multiple depots can be mapped
-to each other on a transient (while both are mounted) basis, so that the
-DBMS knows, for example, that their necessarily redundant data type
-definitions are supposed to be treated as being the same data types.
+All concurrent depot mounts under the same in-DBMS process are a
+I<federation> whose updates must be collectively atomic, and commit or
+rollback as one, such as if they are all managed by the same actual DBMS or
+DBMS cluster.  Although depots have independent definitions, procedures
+defined in them are allowed to invoke or reference resources stored in
+others under certain situations. For example, one might want to perform
+cross-database queries or multi-updates, or they may want to migrate an
+older depot's schema or data to a newer one.  To assist this, resources of
+multiple depots can be mapped to each other on a transient (while both are
+mounted) basis, so that the DBMS knows, for example, that their necessarily
+redundant data type definitions are supposed to be treated as being the
+same data types.
 
 Now, most of the time, the code for a Muldis D application would just be
 collected in a single depot, matters of reusability between multiple
@@ -1531,6 +1532,11 @@ others' made visible to it.  Or in other words, the program can both manage
 its own dbvars and be a DBMS client, and the program can either just use
 the DBMS itself or be a server of it.
 
+Since all in-DBMS processes/threads are isolated from each other and
+effectively have their own environment, the following namespaces are
+generally specific to the context of a single process; so, for example,
+each process has only a single depot mount federation.
+
 I<Note that all entity names in Muldis D are case-sensitive, as with
 character strings in general.  Implementations should take special care to
 compensate for any case-insensitive storage system they might use.>
@@ -1541,7 +1547,6 @@ This is the hierarchy of invocation namespaces of DBMS entities:
         cat.system
         cat.impl
         cat.native
-            cat.native.usr
             cat.native.fed
             cat.native.dep
             cat.native.sdp
@@ -1563,12 +1568,13 @@ This is the hierarchy of invocation namespaces of DBMS entities:
             imp.<authority-or-impl-name>(.<namespace>){0,}
                 imp.<authority-or-impl-name>(.<namespace>){0,}.<type>
                 imp.<authority-or-impl-name>(.<namespace>){0,}.<routine>
-    usr  # all globally-visible user-defined entities
-        usr.<federation>
-            # children are as per fed.* where fed.* <-> usr.<federation>.*
-    fed  # ent in federation of transac-sync depot mnts ref own fed w this
+    fed  # the transac-synced federation of curr mounted depots w mount nms
         fed.<depot>
-            # children are as per dep.* where dep.* <-> fed.<depot>.*
+            fed.<depot>(.<subdepot>){0,}
+                fed.<depot>(.<subdepot>){0,}.<package>
+                    fed.<depot>(.<subdepot>){0,}.<package>.<relvar>
+                    fed.<depot>(.<subdepot>){0,}.<package>.<type>
+                    fed.<depot>(.<subdepot>){0,}.<package>.<routine>
     dep  # entities in a self-sufficient depot ref their own depot w this
         dep(.<subdepot>){0,}
             dep(.<subdepot>){0,}.<package>
@@ -1599,9 +1605,9 @@ All globally visible Muldis D variables can be grouped into two main kinds,
 which are system catalog variables (some of which are actually constants)
 and user data variables; the former all exist under the C<cat> primary
 namespace, and the latter live under some of the other primary namespaces,
-specifically C<usr|fed|dep|sdp|pkg>.  All non-global variables are just of
-the user data variety, and use the C<pkg|lex> primary namespaces (yes,
-C<pkg> has both public and private variables).
+specifically C<fed|dep|sdp|pkg>.  All non-global variables are just of the
+user data variety, and use the C<pkg|lex> primary namespaces (yes, C<pkg>
+has both public and private variables).
 
 The purpose of user data variables is hold user data, and are what gets
 read or updated by database users the vast majority of the time; working
@@ -1698,29 +1704,26 @@ Users of Muldis D can define their own data types, routines, and variables,
 and each of these exists in a I<depot>, which is the means provided by
 Muldis D for persistence.
 
-The C<usr> primary namespace is for all non-lexical user-defined entities.
-Beneath C<usr>, each secondary namespace is the name of a I<federation>,
-which provides a grouping for the scope of one transaction; beneath that,
-each tertiary namespace is the name that a depot is mounted with in the
-virtual machine, and there is one distinct third-level name per depot per
-federation, and often there is just one of those at a time.  Under each
-depot name is an optional tree of generic namespaces, adding 0..N name
-parts, each of which we refer to simply as a I<subdepot>.  After that we
-have 1 layer that are package names.  After that, we have the lowest layer,
-which are globally addressable relvar, type, and routine unqualified names.
-So the fullly-qualified names of most user-defined entities by way of
-C<usr> are 5-6 parts.
+The C<fed> primary namespace is for all non-lexical user-defined entities.
+Beneath C<fed>, each secondary namespace is the name that a depot is
+mounted with by the current process/thread in the virtual machine, and
+there is one distinct second-level name per depot, and often there is just
+one of those at a time.  Under each depot name is an optional tree of
+generic namespaces, adding 0..N name parts, each of which we refer to
+simply as a I<subdepot>.  After that we have 1 layer that are package
+names.  After that, we have the lowest layer, which are globally
+addressable relvar, type, and routine unqualified names.  So the
+fullly-qualified names of most user-defined entities by way of C<fed> are
+4-5 parts.
 
 Entities declared in a depot are recommended to refer to other entities
 within the same depot using the localizing primary namespace C<dep>, which
-for them substitutes for C<usr> plus their mounting name and mount
-federation name; this allows depot entities to be coded in a portable way,
-not having to know too much about how they would be used (eg, not knowing
-what name they are mounted with). In fact, nothing is allowed to directly
-refer to entities using C<usr> except procedures, or the C<main> if it
-exists, or the host language if it exists.  Similarly, the localizing
-primary namespace C<fed> is for referring within a mount federation rather
-than using C<usr> plus the mount federation name.
+for them substitutes for C<fed> plus their mounting name; this allows depot
+entities to be coded in a portable way, not having to know too much about
+how they would be used (eg, not knowing what name they are mounted with).
+In fact, nothing is allowed to directly refer to entities using C<fed>
+except procedures, or the C<main> if it exists, or the host language if it
+exists.
 
 Similarly, the primary namespace C<sdp> is for self-references between
 entities in a common subdepot; if there are 2 or more layers of
@@ -1739,20 +1742,17 @@ under C<lex> only are allowed to be of any data type, not just be relvars.
 Practically speaking, the conceptions of some namespaces for user-defined
 entities are as follows.
 
-The entire virtual machine supports multiple concurrent autonomous
-transactions, and the division of non-lexical user-defined entities into
-federations will define the limits of each autonomous transaction; no two
-concurrent autonomous transactions may read from or update depot mounts in
-the same mount federation.  All depot mounts in a mount federation, as a
-whole, are synchronized with respect to transactions.  (Also, generally
-speaking, no depot may be mounted or unmounted while an explicit
-transaction is active.)  If this is not possible for an implementation to
-handle, then only one depot should be allowed to mount at a time, meaning
-the implementation is always a non-federated DBMS.  Also, the virtual
-machine as a whole represents the application working environment itself,
-and there is no database-level user login/authentication for the virtual
-machine itself, as it doesn't make sense for an application to login to its
-own working state.
+A single virtual machine contains 0..N concurrent processes that are each
+autonomous, and generally isolated from each other.  All depot mounts held
+by a process are as a whole synchronized with respect to transactions.
+(Also, generally speaking, no depot may be mounted or unmounted while an
+explicit transaction is active.)  If this is not possible for an
+implementation to handle, then only one depot should be allowed to mount at
+a time, meaning the implementation is always a non-federated DBMS.  Also,
+the virtual machine as a whole represents the application working
+environment itself, and there is no database-level user
+login/authentication for the virtual machine itself, as it doesn't make
+sense for an application to login to its own working state.
 
 The division of a depot into multiple subdepots is optional, and this
 construct is provided to allow a perception of the storage system that is
