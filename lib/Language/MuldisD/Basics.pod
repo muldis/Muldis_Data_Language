@@ -898,59 +898,47 @@ I<This documentation is pending.>
 
 The Muldis D DBMS / virtual machine, which by definition is the
 environment in which Muldis D executes, conceptually resembles a hardware
-PC, having a command processor (CPU), standard user input and output
-channel, persistent read-only memory (ROM), volatile read-write memory
+PC, having command processors (CPUs), standard user input and output
+channels, persistent read-only memory (ROM), volatile read-write memory
 (RAM), and persistent read-write disk or network storage.
 
-I<TODO: Update this outdated section to account for applications that are
-entirely Muldis D, where the user really is just the user, and also account
-for multiple parallel processes / autonomous transactions in the same
-virtual machine.>
-
-Within this analogy, the role of the PC's user, that feeds it through
-standard input and accepts its standard output, is fulfilled by the
-application that is driving the Muldis D DBMS; similarly, the application
-itself will activate the virtual machine when wanting to use it (done in
-this distribution by instantiating a new C<Muldis::DB::Interface::DBMS>
-object), and deactivate the virtual machine when done (letting that object
-expire).
-
 When a new virtual machine is activated, the virtual machine has a default
-state where the CPU is ready to accept user-input commands to process, and
-there is a built-in (to the ROM) set of system-defined entities (data
+state where the CPUs are ready to accept user-input commands to process,
+and there is a built-in (to the ROM) set of system-defined entities (data
 types, operators, variables, etc) which are ready to be used to define or
 be invoked by said user-input commands; the RAM starts out effectively
 empty and the persistent disk or network storage is ignored.
 
 Following this activation, the virtual machine is mostly idle except when
-executing Muldis D commands that it receives via the standard input (done
-in this distribution by invoking methods on the DBMS object).  The virtual
-machine effectively handles just one command at a time, and executes each
-separately and in the order received; any results or side-effects of each
-command provide a context for the next command.
+executing Muldis D commands that it receives via the standard inputs.  The
+virtual machine effectively has multiple concurrent processes, where each
+process effectively handles just one (possibly complex) command at a time,
+and executes each separately and in the order received; any results or
+side-effects of each command provide a context for the next command, both
+in the current process and, where applicable, in other processes.
 
 At some point in time, as the result of appropriate commands, data
 repositories, or "depots" (either newly created or previously existing)
-that live in the persistent disk or network storage will be mounted within
-the virtual machine, at which point subsequent commands can read or update
-them, then later unmount them when done.  Speaking in the terms of a
-typical database access solution like the Perl DBI, this mounting and
-unmounting of a repository usually corresponds to connecting to and
-disconnecting from a database.  Speaking in the terms of a typical disk
-file system, this is mounting or unmounting a logical volume.
+that live in the persistent disk or network storage, or volatile memory,
+will be mounted within the virtual machine, at which point subsequent
+commands can read or update them, then later unmount them when done.
+Speaking in the terms of a typical database access solution like the Perl
+DBI, this mounting and unmounting of a repository usually corresponds to
+connecting to and disconnecting from a database.  Speaking in the terms of
+a typical disk file system, this is mounting or unmounting a logical
+volume.
 
-Any mounted persistent depot, as well as the temporary "application" depot
-which is most of the conceptual PC's RAM, is home to all user-defined data
-variables, data types, operators, constraints, packages, and routines; they
-collectively are the database that the Muldis D DBMS is managing.  Most
-commands against the DBMS would typically involve reading and updating the
-data variables, which in typical database terms is performing queries and
-data manipulation.  Much less frequently, you would also see "data
-definition" changes, namely what user-defined variables, types, etceteras
-exist, done fundamentally by data-updating special system-defined "catalog"
-variables.  Any updates to a persistent depot will usually last
-between multiple activations of the virtual machine, while any updates to
-the temporary "application" depot are lost when the machine deactivates.
+Any mounted depot is home to all user-defined data variables, data types,
+operators, constraints, packages, and routines; they collectively are the
+database that the Muldis D DBMS is managing.  Most commands against the
+DBMS would typically involve reading and updating the data variables, which
+in typical database terms is performing queries and data manipulation. Much
+less frequently, you would also see "data definition" changes, namely what
+user-defined variables, types, etceteras exist, done fundamentally by
+data-updating special system-defined "catalog" variables.  Any updates to a
+persistent depot will usually last between multiple activations of the
+virtual machine, while any updates to a temporary depot are lost when the
+machine deactivates.
 
 All virtual machine commands are subject to a collection of both
 system-defined and user-defined constraints (also known as business rules),
@@ -961,7 +949,7 @@ is a large part of what makes the Muldis D DBMS a reliable modeler of
 anything in reality, since it only stores values that are reasonable.
 
 Note that in practice, the aforementioned concept of "commands" is realized
-by "statements" (which are grouped into "routines").
+by "statements" or "routines".
 
 =head1 ROUTINES
 
@@ -1517,6 +1505,24 @@ effect of negating package encapsulation.  All non-lexical data variables
 in a depot may only be relation typed, because relational databases are
 composed fundamentally of just relations.
 
+When a DBMS starts up, it only contains one auto-started process, which is
+the root process; the root process is defined either by the non-hosted
+Muldis D "main program" (it runs at DBMS startup, and the DBMS shuts down
+when it ends), or host language routines (the DBMS exists for the life of
+some host language object that represents it), as applicable.  This root
+process can start other processes, which are its direct child processes,
+and other processes can start yet others, thus forming a process hierarchy;
+no process may exit until all of its children do.  Generally speaking, a
+process can only communicate directly with its own parent or child
+processes, through something akin to an inter-process message pipe.  Any
+process that wasn't created to autothread a function can communicate with
+the DBMS-external user, which includes the root process and/or host
+language routines, though typically where there is a host language, all
+user interaction is done there.  If a Muldis D DBMS is being used to
+implement a multi-client server, then multiple in-DBMS processes may
+typically be started directly by the server request listener, so each
+client typically is autonomous from others, shared depot contention aside.
+
 =head1 ENTITY NAMES
 
 All entities that exist at some given time within a DBMS environment can be
@@ -1525,17 +1531,22 @@ no orphans.  At the very least, every kind of DBMS entity is defined in one
 or more catalog relvars or relcons; its interface and/or implementation can
 be observed and possibly updated therein.
 
+All entity names are generally context specific, with each context
+generally being provided by a routine or other entity; all entity names are
+generally relative to the definition location of a routine or other
+user-defined DBMS entity.
+
+Since all in-DBMS processes/threads are isolated from each other and
+effectively have their own environment, the following namespaces are
+generally specific to the context of a single process; so, for example,
+each process has only a single depot mount federation.
+
 Note that the following namespaces assume that a program that is written in
 Muldis D executes possibly either standalone or a peer-to-peer process
 that can have its global variables made visible to other processes, or have
 others' made visible to it.  Or in other words, the program can both manage
 its own dbvars and be a DBMS client, and the program can either just use
 the DBMS itself or be a server of it.
-
-Since all in-DBMS processes/threads are isolated from each other and
-effectively have their own environment, the following namespaces are
-generally specific to the context of a single process; so, for example,
-each process has only a single depot mount federation.
 
 I<Note that all entity names in Muldis D are case-sensitive, as with
 character strings in general.  Implementations should take special care to
