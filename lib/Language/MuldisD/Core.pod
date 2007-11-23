@@ -637,6 +637,28 @@ C<Cat.E_EK:param> (value of expression-containing function parameter),
 C<Cat.E_EK:func> (result of function invocation, or inlining of function
 body).  Its default value is C<Cat.E_EK:scalar>.
 
+=head2 sys.Core.Cat.E_RM
+
+A C<Cat.E_RM> (rounding method) is an enumeration consisting of the 5
+values C<Cat.E_EK:half_up>, C<Cat.E_EK:to_even>, C<Cat.E_EK:to_floor>,
+C<Cat.E_EK:to_ceiling>, C<Cat.E_EK:to_zero>.  When a value of some ordered
+type needs to be mapped into a proper subtype that doesn't contain that
+value, such as when mapping an arbitrary number to one with less precision,
+some rounding method is applied to determine which value of the subtype is
+to be mapped to while most accurately reflecting the original value.  The
+C<Cat.E_RM> type enumerates the rounding methods that Muldis D operators
+can typically apply.  With C<half_up> and C<to_even> (aka I<unbiased
+rounding>, I<convergent rounding>, I<statistician's rounding>, or
+I<bankers' rounding>), the original value will be mapped to the single
+target value that it is closest to, if there is one; otherwise, if it is
+exactly half-way between 2 adjacent target values, then C<half_up> will
+round upwards, and C<to_even> will round towards the nearest "even" one. 
+With C<to_floor>, C<to_ceiling>, C<to_zero> (aka I<truncate>), the original
+value will always be mapped to the single adjacent value that is lower than
+it, or higher than it, or towards "zero" from it, respectively.  The
+default value of C<Cat.E_RM> is C<Cat.E_RM:half_up>, since that is the most
+commonly used method of rounding.
+
 =head1 SYSTEM-DEFINED CORE CATALOG TUPLE DATA TYPES
 
 These tuple data types, essentially all of the system-defined tuple types
@@ -1461,7 +1483,7 @@ might conceptually have multiple real number results for some negative
 C<$exponent>, it will always only return the one that is positive.
 
 =item C<sys.Core.Rat.log of Rat (PRat $topic, PRat $radix, PInt
-$rebase_radix, PInt $rebase_max_denom, Cat.RoundMeth $rebase_round)>
+$rebase_radix, PInt $rebase_max_denom, Cat.E_RM $rebase_round)>
 
 This function results in the logarithm of its C<$topic> argument to the
 base given in its (positive rational) C<$radix> argument.  Since the result
@@ -1471,14 +1493,14 @@ a rational number that is the actual result; see also the similarly named
 parameters of the C<sys.Core.Rat.rebase> function.
 
 =item C<sys.Core.Rat.natural_power of PRat (Rat $exponent, PInt
-$rebase_radix, PInt $rebase_max_denom, Cat.RoundMeth $rebase_round)>
+$rebase_radix, PInt $rebase_max_denom, Cat.E_RM $rebase_round)>
 
 This function results in the special mathematical constant I<e> (which is
 the base of the natural logarithm) taken to the power of its C<$exponent>
 argument.  The 3 C<$rebase_\w+> parameters are as per C<log>.
 
 =item C<sys.Core.Rat.natural_log of Rat (PRat $topic, PInt $rebase_radix,
-PInt $rebase_max_denom, Cat.RoundMeth $rebase_round)>
+PInt $rebase_max_denom, Cat.E_RM $rebase_round)>
 
 This function results in the natural logarithm of its C<$topic> argument.
 The 3 C<$rebase_\w+> parameters are as per C<log>.
@@ -1517,35 +1539,11 @@ C<Int> values.
 This selector function results in the C<Rat> value that is conceptually
 equal to its C<Int> argument.
 
-=item C<sys.Core.Rat.round_half_up of Int (Rat $topic)>
+=item C<sys.Core.Rat.Int_from_Rat of Int (Rat $rat, Cat.E_RM $round)>
 
-This rounding function results in the integer that is nearest to its
-argument, but that if the argument is exactly half-way between 2 integers,
-it is rounded upwards.  This is the most commonly used method of rounding.
-
-=item C<sys.Core.Rat.round_to_even of Int (Rat $topic)>
-
-This rounding function results in the integer that is nearest to its
-argument, but that if the argument is exactly half-way between 2 integers,
-it is rounded to the one that is even.  Note that this operation is also
-legitimately known as: I<unbiased rounding>, I<convergent rounding>,
-I<statistician's rounding>, I<bankers' rounding>.
-
-=item C<sys.Core.Rat.round_to_floor of Int (Rat $topic)>
-
-This rounding function results in the integer that is either equal to its
-argument or that is the nearest integer that is below the argument.
-
-=item C<sys.Core.Rat.round_to_ceiling of Int (Rat $topic)>
-
-This rounding function results in the integer that is either equal to its
-argument or that is the nearest integer that is above the argument.
-
-=item C<sys.Core.Rat.round_to_zero of Int (Rat $topic)>
-
-This rounding function results in the integer that is either equal to its
-argument or that is the nearest integer to the argument that is closer to
-zero.  Note that this operation is also legitimately known as I<truncate>.
+This selector function results in the C<Int> value that is conceptually
+equal to or otherwise nearest to its C<$rat> argument, where the nearest is
+determined by the rounding method specified by the C<$round> argument.
 
 =back
 
@@ -1555,7 +1553,7 @@ to deal with in various contexts.
 =over
 
 =item C<sys.Core.Rat.rebase of Rat (Rat $topic, PInt $radix, PInt
-$max_denom, Cat.RoundMeth $round)>
+$max_denom, Cat.E_RM $round)>
 
 This function results in the rational that is as close as possible to
 C<$topic> but that its denominator is a positive power of C<$radix> and
