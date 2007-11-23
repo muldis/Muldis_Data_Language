@@ -57,6 +57,7 @@ relationships:
                 sys.Core.Int.Int
                     sys.Core.Int.UInt
                         sys.Core.Int.PInt
+                            sys.Core.Int.PInt2_N
                 sys.Core.Rat.Rat
                     sys.Core.Rat.URat
                         sys.Core.Rat.PRat
@@ -115,6 +116,7 @@ more or less:
 
             # The following are all regular non-ordered scalar types.
 
+            sys.Core.Cat.E_RM
             sys.Core.Cat.E_TK
             sys.Core.Cat.E_TDM
             sys.Core.Cat.E_EK
@@ -123,6 +125,7 @@ more or less:
 
             # The following are all regular tuple types.
 
+            sys.Core.Cat.RatRoundRule
             sys.Core.Cat.Type
             sys.Core.Cat.Expr
             sys.Core.Cat.Exception
@@ -163,11 +166,15 @@ as the declared parameter types of various core operators:
                 sys.Core.Int.Int
                     sys.Core.Int.UInt
                         sys.Core.Int.PInt
+                            sys.Core.Int.PInt2_N
 
-                            # The following are all finite integer types.
+                                # These are all finite integer types > 1.
+
+                                sys.Core.Spec.PInt2_36
+
+                            # These are all finite integer types > 0.
 
                             sys.Core.Spec.PInt1_4
-                            sys.Core.Spec.PInt2_36
 
         sys.Core.Relation.Relation
             sys.Core.Relation.Set
@@ -342,6 +349,11 @@ value is zero.
 
 A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
 member values are greater than zero.  Its default and minimum value is 1.
+
+=head2 sys.Core.Int.PInt2_N
+
+A C<PInt2_N> is a proper subtype of C<PInt> where all member values are
+greater than 1.  Its default and minimum value is 2.
 
 =head2 sys.Core.Rat.Rat
 
@@ -573,8 +585,8 @@ Muldis D expressions; 'directly' meaning not by way of explicitly invoking
 a selector function.  Generally speaking, this union type includes all of
 the core scalar types that aren't themselves defined as union types.  The
 full list that C<ScalarLiteral> unions is: C<Bool>, C<Order>, C<Int>,
-C<Rat>, C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.E_TK>,
-C<Cat.E_TDM>, C<Cat.E_EK>, ...
+C<Rat>, C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.E_RM>,
+C<Cat.E_TK>, C<Cat.E_TDM>, C<Cat.E_EK>, ...
 
 =head2 sys.Core.Cat.Name
 
@@ -605,6 +617,28 @@ periods are escaped as C<\b>, C<\q> and C<\p> respectively.
 The C<Cat.FlattenedNameChain> type is used as the definition of the
 character string possrep of a C<Cat.NameChain> (see that type for details);
 while being a character string like C<Cat.Name>, the two are disjoint.
+
+=head2 sys.Core.Cat.E_RM
+
+A C<Cat.E_RM> (rounding method) is an enumeration consisting of the 5
+values C<Cat.E_EK:half_up>, C<Cat.E_EK:to_even>, C<Cat.E_EK:to_floor>,
+C<Cat.E_EK:to_ceiling>, C<Cat.E_EK:to_zero>.  When a value of some ordered
+type needs to be mapped into a proper subtype that doesn't contain that
+value, such as when mapping an arbitrary number to one with less precision,
+some rounding method is applied to determine which value of the subtype is
+to be mapped to while most accurately reflecting the original value.  The
+C<Cat.E_RM> type enumerates the rounding methods that Muldis D operators
+can typically apply.  With C<half_up> and C<to_even> (aka I<unbiased
+rounding>, I<convergent rounding>, I<statistician's rounding>, or
+I<bankers' rounding>), the original value will be mapped to the single
+target value that it is closest to, if there is one; otherwise, if it is
+exactly half-way between 2 adjacent target values, then C<half_up> will
+round upwards, and C<to_even> will round towards the nearest "even" one.
+With C<to_floor>, C<to_ceiling>, C<to_zero> (aka I<truncate>), the original
+value will always be mapped to the single adjacent value that is lower than
+it, or higher than it, or towards "zero" from it, respectively.  The
+default value of C<Cat.E_RM> is C<Cat.E_RM:half_up>, since that is the most
+commonly used method of rounding.
 
 =head2 sys.Core.Cat.E_TK
 
@@ -637,28 +671,6 @@ C<Cat.E_EK:param> (value of expression-containing function parameter),
 C<Cat.E_EK:func> (result of function invocation, or inlining of function
 body).  Its default value is C<Cat.E_EK:scalar>.
 
-=head2 sys.Core.Cat.E_RM
-
-A C<Cat.E_RM> (rounding method) is an enumeration consisting of the 5
-values C<Cat.E_EK:half_up>, C<Cat.E_EK:to_even>, C<Cat.E_EK:to_floor>,
-C<Cat.E_EK:to_ceiling>, C<Cat.E_EK:to_zero>.  When a value of some ordered
-type needs to be mapped into a proper subtype that doesn't contain that
-value, such as when mapping an arbitrary number to one with less precision,
-some rounding method is applied to determine which value of the subtype is
-to be mapped to while most accurately reflecting the original value.  The
-C<Cat.E_RM> type enumerates the rounding methods that Muldis D operators
-can typically apply.  With C<half_up> and C<to_even> (aka I<unbiased
-rounding>, I<convergent rounding>, I<statistician's rounding>, or
-I<bankers' rounding>), the original value will be mapped to the single
-target value that it is closest to, if there is one; otherwise, if it is
-exactly half-way between 2 adjacent target values, then C<half_up> will
-round upwards, and C<to_even> will round towards the nearest "even" one. 
-With C<to_floor>, C<to_ceiling>, C<to_zero> (aka I<truncate>), the original
-value will always be mapped to the single adjacent value that is lower than
-it, or higher than it, or towards "zero" from it, respectively.  The
-default value of C<Cat.E_RM> is C<Cat.E_RM:half_up>, since that is the most
-commonly used method of rounding.
-
 =head1 SYSTEM-DEFINED CORE CATALOG TUPLE DATA TYPES
 
 These tuple data types, essentially all of the system-defined tuple types
@@ -675,6 +687,25 @@ should be ignored, its value is the default for its type.
 
 I<To keep things simpler for now, most constraint definitions for these
 types are missing, or just defined informally.>
+
+=head2 sys.Core.Cat.RatRoundRule
+
+A C<Cat.RatRoundRule> is a C<Tuple>.  It specifies a controlled (and
+typically degrading) coercion of a real number into a rational number
+having a specific radix and precision.  It is mainly used to
+deterministically massage an operation, whose conceptual result is
+generally an irrational number, so that its actual result is a best
+approximating rational number.  It is also used to define a generic
+rounding operation on a rational number that derives a typically less
+precise rational.  A C<Cat.RatRoundRule> has these 3 attributes: C<radix>
+(a C<PInt2_N>), C<max_denom> (a C<PInt>), and C<round_meth> (a
+C<Cat.E_RM>).  The rational resulting from the operation is as close as
+possible to the conceptual result but that its denominator is a
+non-negative power of C<radix> and said denominator is not larger than
+C<max_denom>; if rounding is needed, then C<round> dictates the rounding
+method.  The default value of C<Cat.RatRoundRule> specifies a coersion to a
+whole number using the C<Cat.E_RM:half_up> rounding method (its radix is 2
+and its max denom is 1).
 
 =head2 sys.Core.Cat.Type
 
@@ -1475,35 +1506,41 @@ all have the same count of occurrances.  As a trivial case, if all input
 elements have the same count of occurrances, then they will all be in the
 output.  If C<$topic> has zero values, then the result set is empty.
 
+=item C<sys.Core.Rat.round of Rat (Rat $topic, Cat.RatRoundRule
+$round_rule)>
+
+This function results in the rational that is equal to or otherwise nearest
+to its C<$topic> argument, where the nearest is determined by the rational
+rounding rule specified by the C<$round_rule> argument.
+
 =item C<sys.Core.Rat.power of PRat (PRat $radix, Rat $exponent)>
 
 This function results in its (positive rational) C<$radix> argument taken
 to the power of its C<$exponent> argument.  Note that, while this function
-might conceptually have multiple real number results for some negative
+might conceptually have multiple real number results for some fractional
 C<$exponent>, it will always only return the one that is positive.
 
-=item C<sys.Core.Rat.log of Rat (PRat $topic, PRat $radix, PInt
-$rebase_radix, PInt $rebase_max_denom, Cat.E_RM $rebase_round)>
+=item C<sys.Core.Rat.log of Rat (PRat $topic, PRat $radix, Cat.RatRoundRule
+$round_rule)>
 
 This function results in the logarithm of its C<$topic> argument to the
 base given in its (positive rational) C<$radix> argument.  Since the result
-would be an irrational number in the general case, the additional 3
-C<$rebase_\w+> parameters specify how to coerce the conceptual result into
-a rational number that is the actual result; see also the similarly named
-parameters of the C<sys.Core.Rat.rebase> function.
+would be an irrational number in the general case, the C<$round_rule>
+argument specifies how to coerce the conceptual result into a rational
+number that is the actual result.
 
-=item C<sys.Core.Rat.natural_power of PRat (Rat $exponent, PInt
-$rebase_radix, PInt $rebase_max_denom, Cat.E_RM $rebase_round)>
+=item C<sys.Core.Rat.natural_power of PRat (Rat $exponent, Cat.RatRoundRule
+$round_rule)>
 
 This function results in the special mathematical constant I<e> (which is
 the base of the natural logarithm) taken to the power of its C<$exponent>
-argument.  The 3 C<$rebase_\w+> parameters are as per C<log>.
+argument.  The C<$round_rule> parameter is as per C<log>.
 
-=item C<sys.Core.Rat.natural_log of Rat (PRat $topic, PInt $rebase_radix,
-PInt $rebase_max_denom, Cat.E_RM $rebase_round)>
+=item C<sys.Core.Rat.natural_log of Rat (PRat $topic, Cat.RatRoundRule
+$round_rule)>
 
 This function results in the natural logarithm of its C<$topic> argument.
-The 3 C<$rebase_\w+> parameters are as per C<log>.
+The C<$round_rule> parameter is as per C<log>.
 
 =back
 
@@ -1539,26 +1576,11 @@ C<Int> values.
 This selector function results in the C<Rat> value that is conceptually
 equal to its C<Int> argument.
 
-=item C<sys.Core.Rat.Int_from_Rat of Int (Rat $rat, Cat.E_RM $round)>
+=item C<sys.Core.Rat.Int_from_Rat of Int (Rat $rat, Cat.E_RM $round_meth)>
 
 This selector function results in the C<Int> value that is conceptually
 equal to or otherwise nearest to its C<$rat> argument, where the nearest is
-determined by the rounding method specified by the C<$round> argument.
-
-=back
-
-These functions round and/or truncate rational values to make them easier
-to deal with in various contexts.
-
-=over
-
-=item C<sys.Core.Rat.rebase of Rat (Rat $topic, PInt $radix, PInt
-$max_denom, Cat.E_RM $round)>
-
-This function results in the rational that is as close as possible to
-C<$topic> but that its denominator is a positive power of C<$radix> and
-said denominator is not larger than C<$max_denom>; if rounding is needed,
-then C<$round> dictates the rounding method.
+determined by the rounding method specified by the C<$round_meth> argument.
 
 =back
 
