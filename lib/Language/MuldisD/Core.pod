@@ -1608,8 +1608,8 @@ C<$topic>.
 
 This function results in the length of its argument in bits.
 
-=item C<sys.Core.Blob.contains of Bool (Blob $look_in, Blob $look_for, Bool
-$fixed_start, Bool $fixed_end)>
+=item C<sys.Core.Blob.is_substr of Bool (Blob $look_in, Blob $look_for,
+Bool $fixed_start, Bool $fixed_end)>
 
 This function results in C<Bool:true> iff its C<$look_for> argument is a
 substring of its C<$look_in> argument as per the optional C<$fixed_start>
@@ -1618,6 +1618,12 @@ C<$fixed_start> or C<$fixed_end> are C<Bool:true>, then C<$look_for> must
 occur right at the start or end, respectively, of C<$look_in> in order for
 C<contains> to results in C<Bool:true>; if either flag is C<Bool:false>,
 its additional constraint doesn't apply.
+
+=item C<sys.Core.Blob.is_not_substr of Bool (Blob $look_in, Blob $look_for,
+Bool $fixed_start, Bool $fixed_end)>
+
+This function is exactly the same as C<sys.Core.Blob.is_substr> except that
+it results in the opposite boolean value when given the same arguments.
 
 =item C<sys.Core.Blob.not of Blob (Blob $topic)>
 
@@ -1712,8 +1718,8 @@ Normalization Form D code points.
 This function results in the length of its argument in Unicode
 Normalization Form C code points.
 
-=item C<sys.Core.Text.contains of Bool (Text $look_in, Text $look_for, Bool
-$fixed_start, Bool $fixed_end)>
+=item C<sys.Core.Text.is_substr of Bool (Text $look_in, Text $look_for,
+Bool $fixed_start, Bool $fixed_end)>
 
 This function results in C<Bool:true> iff its C<$look_for> argument is a
 substring of its C<$look_in> argument as per the optional C<$fixed_start>
@@ -1722,6 +1728,12 @@ C<$fixed_start> or C<$fixed_end> are C<Bool:true>, then C<$look_for> must
 occur right at the start or end, respectively, of C<$look_in> in order for
 C<contains> to result in C<Bool:true>; if either flag is C<Bool:false>, its
 additional constraint doesn't apply.
+
+=item C<sys.Core.Text.is_not_substr of Bool (Text $look_in, Text $look_for,
+Bool $fixed_start, Bool $fixed_end)>
+
+This function is exactly the same as C<sys.Core.Text.is_substr> except that
+it results in the opposite boolean value when given the same arguments.
 
 =item C<sys.Core.Text.fold_case_to_upper (Text $topic)>
 
@@ -1860,7 +1872,7 @@ SQL's C<is not null>.
 
 This function results in C<Bool:true> iff its C<$t> argument matches a
 tuple of its C<$r> argument, and C<Bool:false> otherwise.  This function is
-like C<sys.Core.Relation.contains> except that the tuple being looked for
+like C<sys.Core.Relation.is_subset> except that the tuple being looked for
 doesn't have to be wrapped in a relation.  This function will fail if the 2
 arguments don't have the same heading.
 
@@ -2015,13 +2027,20 @@ Relations
 
 =over
 
-=item C<sys.Core.Relation.contains of Bool (Relation $look_in, Relation
+=item C<sys.Core.Relation.is_subset of Bool (Relation $look_in, Relation
 $look_for)>
 
 This function results in C<Bool:true> iff the set of tuples comprising
 C<$look_for> is a subset of the set of tuples comprising C<$look_in>, and
 C<Bool:false> otherwise.  This function will fail if the 2 arguments don't
 have the same heading.
+
+=item C<sys.Core.Relation.is_not_subset of Bool (Relation $look_in,
+Relation $look_for)>
+
+This function is exactly the same as C<sys.Core.Relation.is_subset> except
+that it results in the opposite boolean value when given the same
+arguments.
 
 =item C<sys.Core.Relation.union of Relation (Set{Relation} $topic)>
 
