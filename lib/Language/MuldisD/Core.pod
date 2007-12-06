@@ -325,11 +325,11 @@ type is 2.
 =head2 sys.Core.Order.Order
 
 An C<Order> is an enumeration consisting of the 3 values C<Order:increase>,
-C<Order:same>, C<Order:decrease>.  It is the result type of any C<compare>
-routine that is used on 2 values of a C<sys.Core.Ordered.Ordered> subtype.
-Its default value is C<Order:same>; its minimum and maximum values are,
-respectively, C<Order:increase> and C<Order:decrease>.  The cardinality of
-this type is 3.
+C<Order:same>, C<Order:decrease>.  It is the result type of any
+C<comparison> routine that is used on 2 values of a
+C<sys.Core.Ordered.Ordered> subtype.  Its default value is C<Order:same>;
+its minimum and maximum values are, respectively, C<Order:increase> and
+C<Order:decrease>.  The cardinality of this type is 3.
 
 =head2 sys.Core.Int.Int
 
@@ -654,7 +654,7 @@ A C<Cat.E_TDM> (type definition method) is an enumeration consisting of the
 best fit in other categories, and all parameterized types; users can not
 define the latter for now), C<Cat.E_TDM:root> (complete root type defined
 in terms of explicit attribute collection; all are fully defined, not
-parameterized), C<Cat.E_TDM:restrict> (defined as "explicit other-type
+parameterized), C<Cat.E_TDM:restriction> (defined as "explicit other-type
 where condition"), C<Cat.E_TDM:alias> (so the same one type can have
 multiple names), C<Cat.E_TDM:(union|intersection|exclusion)> (defined as
 explicit union|intersection|exclusion of other types),
@@ -739,8 +739,8 @@ C<types> lists all/most of those types.  Iff C<tdm> is C<Cat.E_TDM:alias>,
 then the data type is just a symbolic reference for some other data type
 (as far as the type system is concerned, they are the same data type,
 invokable by an extra name), and C<types> has one element that is the name
-of that type.  Iff C<tdm> is C<Cat.E_TDM:restrict>, then the data type is
-defined as an explicit subtype of another type by way of an explicit
+of that type.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then the data type
+is defined as an explicit subtype of another type by way of an explicit
 further type constraint applied to it, and C<types> has one element that is
 the name of that supertype.  Iff C<tdm> is
 C<Cat.E_TDM:(union|intersection|exclusion)>, then the data type is defined
@@ -795,9 +795,9 @@ more than one tuple.
 Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
 fundamentally in terms of an explicit attribute collection, and
 C<constraint> defines/names a generalized type constraint that validates
-the collection as a whole.  Iff C<tdm> is C<Cat.E_TDM:restrict>, then the
-data type is defined as an explicit subtype of another type by way of an
-explicit further type constraint applied to it, and C<constraint>
+the collection as a whole.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then
+the data type is defined as an explicit subtype of another type by way of
+an explicit further type constraint applied to it, and C<constraint>
 defines/names that further constraint.
 
 =back
@@ -1074,8 +1074,8 @@ just the types they apply to.
 
 =over
 
-=item C<sys.Core.Ordered.compare of Order (Some.Ordered $v1, Some.Ordered
-$v2)>
+=item C<sys.Core.Ordered.comparison of Order (Some.Ordered $v1,
+Some.Ordered $v2)>
 
 This function results in C<Order:same> iff its 2 arguments are exactly the
 same value, and otherwise it results in C<Order:increase> if the value of
@@ -1084,30 +1084,30 @@ type) over the value of the C<$v1> argument, and otherwise it results in
 C<Order:decrease> as the reverse of the last condition would be true.  This
 function's arguments must be of compatible declared types; in this case, 2
 declared types are compatible iff they are both subtypes of a common scalar
-type that declares itself an C<Ordered> subtype.  Note that C<compare> is
-considered the only fundamental ordered-specific operator, and all others
-are defined over it.
+type that declares itself an C<Ordered> subtype.  Note that C<comparison>
+is considered the only fundamental ordered-specific operator, and all
+others are defined over it.
 
-=item C<sys.Core.Ordered.reverse_compare of Order (Some.Ordered $v1,
+=item C<sys.Core.Ordered.reverse_comparison of Order (Some.Ordered $v1,
 Some.Ordered $v2)>
 
-This function is exactly the same as C<sys.Core.Ordered.compare> except
+This function is exactly the same as C<sys.Core.Ordered.comparison> except
 that it results in the reverse value when given the same arguments.  It is
 a short-hand for applying C<sys.Core.Order.reverse> to the result of
-C<sys.Core.Ordered.compare> with the same arguments.
+C<sys.Core.Ordered.comparison> with the same arguments.
 
 =item C<sys.Core.Ordered.is_increase of Bool (Some.Ordered $v1,
 Some.Ordered $v2)>
 
-This function results in C<Bool:true> iff C<sys.Core.Ordered.compare> would
-result in C<Order:increase> when given the same arguments, and
+This function results in C<Bool:true> iff C<sys.Core.Ordered.comparison>
+would result in C<Order:increase> when given the same arguments, and
 C<Bool:false> otherwise.
 
 =item C<sys.Core.Ordered.is_decrease of Bool (Some.Ordered $v1,
 Some.Ordered $v2)>
 
-This function results in C<Bool:true> iff C<sys.Core.Ordered.compare> would
-result in C<Order:decrease> when given the same arguments, and
+This function results in C<Bool:true> iff C<sys.Core.Ordered.comparison>
+would result in C<Order:decrease> when given the same arguments, and
 C<Bool:false> otherwise.
 
 =item C<sys.Core.Ordered.is_inside_range of Bool (Some.Ordered $topic,
@@ -1119,7 +1119,7 @@ the range whose bounds are defined by its C<$min> and C<$max> arguments. If
 C<$min_is_inside> or C<$max_is_inside> are C<Bool:true>, then C<$topic> is
 considered to be within the range if it is equal to C<$min> or C<$max>,
 respectively.  This function's arguments must be of compatible declared
-types as per C<sys.Core.Ordered.compare>.  This function will fail if
+types as per C<sys.Core.Ordered.comparison>.  This function will fail if
 C<$min> is an increase over C<$max>.
 
 =item C<sys.Core.Ordered.is_outside_range of Bool (Some.Ordered $topic,
@@ -1590,7 +1590,7 @@ These functions implement commonly used binary string operations.
 
 =over
 
-=item C<sys.Core.Blob.catenate of Blob (Seq{Blob} $topic)>
+=item C<sys.Core.Blob.catenation of Blob (Seq{Blob} $topic)>
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
@@ -1684,7 +1684,7 @@ These functions implement commonly used character string operations.
 
 =over
 
-=item C<sys.Core.Text.catenate of Text (Seq{Text} $topic)>
+=item C<sys.Core.Text.catenation of Text (Seq{Text} $topic)>
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
@@ -1735,17 +1735,19 @@ Bool $fixed_start, Bool $fixed_end)>
 This function is exactly the same as C<sys.Core.Text.is_substr> except that
 it results in the opposite boolean value when given the same arguments.
 
-=item C<sys.Core.Text.fold_case_to_upper (Text $topic)>
+=item C<sys.Core.Text.case_folded_to_upper (Text $topic)>
 
-This function results in the transformation of its argument where any Latin
-letters are folded to (capital) uppercase.
+This function results in the transformation of its argument where any
+letters considered to be (small) lowercase are folded to (capital)
+uppercase.
 
-=item C<sys.Core.Text.fold_case_to_lower (Text $topic)>
+=item C<sys.Core.Text.case_folded_to_lower (Text $topic)>
 
-This function results in the transformation of its argument where any Latin
-letters are folded to (small) lowercase.
+This function results in the transformation of its argument where any
+letters considered to be (capital) uppercase are folded to (small)
+lowercase.
 
-=item C<sys.Core.Text.trim_whitespace (Text $topic)>
+=item C<sys.Core.Text.whitespace_trimmed (Text $topic)>
 
 This function results in the value of its argument but that any leading or
 trailing whitespace characters are trimmed.
@@ -1780,7 +1782,7 @@ will fail if C<$map> specifies any old names that C<$topic> doesn't have,
 or any new names that are the same as C<$topic> attributes that aren't
 being renamed.
 
-=item C<sys.Core.Tuple.project of Tuple (Tuple $topic, Cat.SetOfName
+=item C<sys.Core.Tuple.projection of Tuple (Tuple $topic, Cat.SetOfName
 $attrs)>
 
 This function results in the projection of its C<$topic> argument that has
@@ -1790,10 +1792,10 @@ C<$attrs> lists all attributes of C<$topic>; or, it is the nullary tuple if
 C<$attrs> is empty.  This function will fail if C<$attrs> specifies any
 attribute names that C<$topic> doesn't have.
 
-=item C<sys.Core.Tuple.remove of Tuple (Tuple $topic, Cat.SetOfName
-$attrs)>
+=item C<sys.Core.Tuple.cmpl_projection of Tuple (Tuple $topic,
+Cat.SetOfName $attrs)>
 
-This function is the same as C<project> but that it results in the
+This function is the same as C<projection> but that it results in the
 complementary subset of attributes of C<$topic> when given the same
 arguments.
 
@@ -1863,18 +1865,25 @@ nullable with C<is null>.
 
 =item C<sys.Core.Relation.is_not_empty of Bool (Relation $topic)>
 
-This function is exactly the same as C<sys.Core.Relation.empty> except that
-it results in the opposite boolean value when given the same argument.  And
-following the analogy with C<is_empty>, C<is_not_empty> is analagous to
+This function is exactly the same as C<sys.Core.Relation.is_empty> except
+that it results in the opposite boolean value when given the same argument.
+And following the analogy with C<is_empty>, C<is_not_empty> is analagous to
 SQL's C<is not null>.
 
-=item C<sys.Core.Relation.exists of Bool (Relation $r, Tuple $t)>
+=item C<sys.Core.Relation.is_member of Bool (Relation $r, Tuple $t)>
 
 This function results in C<Bool:true> iff its C<$t> argument matches a
-tuple of its C<$r> argument, and C<Bool:false> otherwise.  This function is
-like C<sys.Core.Relation.is_subset> except that the tuple being looked for
+tuple of its C<$r> argument (that is, iff conceptually C<$t> is a member of
+C<$r>), and C<Bool:false> otherwise.  This function is like
+C<sys.Core.Relation.is_subset> except that the tuple being looked for
 doesn't have to be wrapped in a relation.  This function will fail if the 2
 arguments don't have the same heading.
+
+=item C<sys.Core.Relation.is_not_member of Bool (Relation $r, Tuple $t)>
+
+This function is exactly the same as C<sys.Core.Relation.is_member> except
+that it results in the opposite boolean value when given the same
+arguments.
 
 =item C<sys.Core.Relation.Tuple_from_Relation of Tuple (Relation $topic)>
 
@@ -1887,36 +1896,42 @@ one tuple.
 This function results in the C<Relation> value those body has just the one
 C<Tuple> that is its argument.
 
-=item C<sys.Core.Relation.insert of Relation (Relation $r, Tuple $t)>
+=item C<sys.Core.Relation.insertion of Relation (Relation $r, Tuple $t)>
 
 This function results in a C<Relation> that is the relational union of
 C<$r> and a relation whose sole tuple is C<$t>; that is, conceptually the
 result is C<$t> inserted into C<$r>.  As a trivial case, if C<$t> already
 exists in C<$r>, then the result is just C<$r>.
 
-=item C<sys.Core.Relation.delete of Relation (Relation $r, Tuple $t)>
+=item C<sys.Core.Relation.deletion of Relation (Relation $r, Tuple $t)>
 
 This function results in a C<Relation> that is the relational difference of
 a relation whose sole tuple is C<$t> and C<$r>; that is, conceptually the
 result is C<$t> deleted from C<$r>.  As a trivial case, if C<$t> already
 doesn't exist in C<$r>, then the result is just C<$r>.
 
-=item C<sys.Core.Relation.evacuate of Relation (Relation $topic)>
+=item C<sys.Core.Relation.empty of Relation (Relation $topic)>
 
-This function results in a C<Relation> that has the same heading as its
-argument, but with an empty body.
+This function results in the empty relation of the same heading of its
+argument; it has zero tuples.
+
+=item C<sys.Core.Relation.universal of Relation (Relation $topic)>
+
+This function results in the universal relation of the same heading of its
+argument; that is, the relation having all the tuples that could ever exist
+in a relation with that heading.  This function will fail if said universal
+relation is impossible or impractically large to represent, such as when
+any attributes are of infinite types.
 
 =item C<sys.Core.Relation.negation of Relation (Relation $topic)>
 
 This function results in the relational negation/not of its argument.  The
 result relation has the same heading as its argument, and its body contains
 all of the tuples that are in the universal relation of the same heading
-(that is, the relation having all the tuples that could ever exist in a
-relation with that heading) and that are not in the argument; that is, the
-result is the relational difference when the argument is subtracted from
-said universal relation.  This function will fail if said universal
-relation is impossible or impractically large to represent, such as when
-any attributes are of infinite types.
+and that are not in the argument; that is, the result is the relational
+difference when the argument is subtracted from said universal relation.
+This function will fail on any argument that C<sys.Core.Relation.universal>
+would fail on.
 
 =item C<sys.Core.Relation.rename of Relation (Relation $topic,
 Cat.BiDiNameMap $map)>
@@ -1924,19 +1939,19 @@ Cat.BiDiNameMap $map)>
 This function is the same as C<sys.Core.Tuple.rename> but that it operates
 on and results in a C<Relation> rather than a C<Tuple>.
 
-=item C<sys.Core.Relation.project of Relation (Relation $topic,
+=item C<sys.Core.Relation.projection of Relation (Relation $topic,
 Cat.SetOfName $attrs)>
 
-This function is the same as C<sys.Core.Tuple.project> but that it operates
-on and results in a C<Relation> rather than a C<Tuple>.  But note that the
-result relation will have fewer tuples than C<$topic> if any C<$topic>
-tuples were non-distinct for just the projected attributes.
+This function is the same as C<sys.Core.Tuple.projection> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>.  But note
+that the result relation will have fewer tuples than C<$topic> if any
+C<$topic> tuples were non-distinct for just the projected attributes.
 
-=item C<sys.Core.Relation.remove of Relation (Relation $topic,
+=item C<sys.Core.Relation.cmpl_projection of Relation (Relation $topic,
 Cat.SetOfName $attrs)>
 
-This function is the same as C<sys.Core.Tuple.remove> but that it operates
-on and results in a C<Relation> rather than a C<Tuple>.
+This function is the same as C<sys.Core.Tuple.cmpl_projection> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>.
 
 =item C<sys.Core.Relation.wrap of Relation (Relation $topic,
 Cat.SetOfName $inner, Cat.Name $outer)>
@@ -1961,22 +1976,23 @@ Cat.Name $outer)>
 
 I<TODO.>
 
-=item C<sys.Core.Relation.tclose of Relation (Relation $topic)>
+=item C<sys.Core.Relation.transitive_closure of Relation (Relation $topic)>
 
 This function results in the transitive closure of its argument.  The
 argument is a binary relation whose attributes are both of the same
 declared type, and the result is a relation having the same heading and a
 body which is a superset of the argument's tuples.  Assuming that the
 argument represents all of the node pairs in a directed graph that have an
-arc between them, and so each argument tuple represents an arc, C<tclose>
-will determine all of the node pairs in that graph which have a path
-between them (a recursive operation), so each tuple of the result
-represents a path.  The result is a superset since all arcs are also
-complete paths.  The C<tclose> function is intended to support recursive
-queries, such as in connection with the "part explosion problem" (the
-problem of finding all components, at all levels, of some specified part).
+arc between them, and so each argument tuple represents an arc,
+C<transitive_closure> will determine all of the node pairs in that graph
+which have a path between them (a recursive operation), so each tuple of
+the result represents a path.  The result is a superset since all arcs are
+also complete paths.  The C<transitive_closure> function is intended to
+support recursive queries, such as in connection with the "part explosion
+problem" (the problem of finding all components, at all levels, of some
+specified part).
 
-=item C<sys.Core.Relation.restrict of Relation (Relation $topic,
+=item C<sys.Core.Relation.restriction of Relation (Relation $topic,
 Cat.NameChain $func, Tuple $assuming)>
 
 This function results in the relational restriction of its C<$topic>
@@ -1992,31 +2008,36 @@ in C<$topic>; or, for an unconditional C<Bool:false>, this function results
 in the empty relation with the same heading.  Note that this operation is
 also legitimately known as I<where>.  Note that
 C<sys.Core.Relation.semijoin> is recommended for use instead of
-C<sys.Core.Relation.restrict> to implement some common kinds of relational
-restrictions (those composed simply of anded or ored tests for attribute
-value equality), due to the former's greater simplicity.
+C<sys.Core.Relation.restriction> to implement some common kinds of
+relational restrictions (those composed simply of anded or ored tests for
+attribute value equality), due to the former's greater simplicity.
 
-=item C<sys.Core.Relation.extend of Relation (Relation $topic,
+=item C<sys.Core.Relation.cmpl_restriction of Relation (Relation
+$topic, Cat.NameChain $func, Tuple $assuming)>
+
+This function is the same as C<restriction> but that it results in the
+complementary subset of tuples of C<$topic> when given the same arguments.
+
+=item C<sys.Core.Relation.extension of Relation (Relation $topic,
 Cat.NameChain $func, Tuple $assuming)>
 
-This function results in a relation that is the same as its C<$topic>
-argument, but that it has zero or more additional attributes, as determined
-by applying the C<Tuple>-returning function named in its C<$func> argument
-when the latter function is curried by its C<$assuming> argument.  The
-result relation has a heading that is a superset of that of C<$topic>, and
-its body contains the same number of tuples, with all attribute values of
-C<$topic> retained, and possibly extra present, determined as follows; for
-each C<$topic> tuple, the function named by C<$func> results in a second
-tuple when passed the first tuple as its C<$topic> argument and
-C<$assuming> as its C<$assuming> argument; the first and second tuples have
-no attribute names in common, and the result tuple is derived by joining
-the tuples together.
+This function results in the relational extension of its C<$topic> argument
+as determined by applying the C<Tuple>-returning function named in its
+C<$func> argument when the latter function is curried by its C<$assuming>
+argument.  The result relation has a heading that is a superset of that of
+C<$topic>, and its body contains the same number of tuples, with all
+attribute values of C<$topic> retained, and possibly extra present,
+determined as follows; for each C<$topic> tuple, the function named by
+C<$func> results in a second tuple when passed the first tuple as its
+C<$topic> argument and C<$assuming> as its C<$assuming> argument; the first
+and second tuples have no attribute names in common, and the result tuple
+is derived by joining the tuples together.
 
-=item C<sys.Core.Relation.summarize>
+=item C<sys.Core.Relation.summarization>
 
 I<TODO.>
 
-=item C<sys.Core.Relation.substitute>
+=item C<sys.Core.Relation.substitution>
 
 I<TODO.>
 
@@ -2154,7 +2175,8 @@ unlike C<join>, C<product> will fail if any inputs have attribute names in
 common.  Note that this operation is also legitimately known as
 I<cartesian/cross join>.
 
-=item C<sys.Core.Relation.compose of Relation (Relation $r1, Relation $r2)>
+=item C<sys.Core.Relation.composition of Relation (Relation $r1, Relation
+$r2)>
 
 This function results in the relational composition of its 2 arguments.  It
 is conceptually a short-hand for first doing an ordinary relational join
