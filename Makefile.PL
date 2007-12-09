@@ -22,6 +22,8 @@ WriteMakefile(
     'AUTHOR' => 'Darren Duncan <perl@DarrenDuncan.net>',
 #    'LICENSE' => 'gpl',
     'PREREQ_PM' => {
+        # These are bundled with Perls 5.10.x but not Perls 5.8.x.
+        'version' => 0,
     },
 );
 

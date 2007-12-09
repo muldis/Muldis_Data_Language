@@ -7,7 +7,7 @@ use warnings FATAL => 'all';
 ###########################################################################
 
 { package Language::MuldisD; # package
-    our $VERSION = 0.012000;
+    use version; our $VERSION = qv('0.12.0');
     # Note that Perl code only exists at all in this file in order to help
     # the CPAN indexer handle the distribution properly.
 } # package Language::MuldisD
