@@ -20,7 +20,7 @@ WriteMakefile(
     'VERSION' => '0.13.0',
     'ABSTRACT' => 'Formal spec of Muldis D relational DBMS lang',
     'AUTHOR' => 'Darren Duncan <perl@DarrenDuncan.net>',
-#    'LICENSE' => 'gpl',
+    'LICENSE' => 'gpl',
     'PREREQ_PM' => {
         # These are bundled with Perls 5.10.x but not Perls 5.8.x.
         'version' => 0,
