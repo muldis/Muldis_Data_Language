@@ -1003,10 +1003,12 @@ read-only / not subject to update, it has no lexical variables at all, and
 that it can only see its own parameters, if it has any; it can not see any
 global variables of any kind, and that it can only invoke C<function> (and
 local C<inner_function>) routines.  A C<function> invocation is trivially
-atomic, since it doesn't conceptually update anything.  The vast majority
-of invokable system-defined routines are C<function>; they include all
-value selectors, and the typical numeric, string, and relational operators,
-such that you would compose a typical database "select" query out of.
+atomic, since it doesn't conceptually update anything.  A C<function> does
+not have any side-effects at all, either inside of or outside of the
+current in-DBMS process.  The vast majority of invokable system-defined
+routines are C<function>; they include all value selectors, and the typical
+numeric, string, and relational operators, such that you would compose a
+typical database "select" query out of.
 
 =item C<inner_function>
 
@@ -1021,10 +1023,11 @@ technical / language design reasons.
 =item C<type_constraint>
 
 A C<type_constraint> is the same as a C<inner_function>, but that it is
-part of the definition of a data type (every data type composes exactly one
-of these) rather than a routine, it is invoked automatically by the DBMS
-when a value of that type is being selected, and it always results in a
-C<Bool>.  The parameters of a C<type_constraint> carry information about
+part of the definition of a data type (every data type composes 0..N
+explicit ones of these, plus an implicit one that always results in
+C<Bool:true>) rather than a routine, it is invoked automatically by the
+DBMS when a value of that type is being selected, and it always results in
+a C<Bool>.  The parameters of a C<type_constraint> carry information about
 the value selection attempt, and the C<type_constraint> results in either
 C<Bool:true> if the described value would be a member of the data type, or
 C<Bool:false> if not; in the latter case, the DBMS would then throw a
@@ -1048,23 +1051,23 @@ the environment.
 =item C<transition_constraint>
 
 A C<transition_constraint> is the same as a C<type_constraint> except that
-it is part of the definition of a variable rather than of a data type, and
-it is invoked automatically by the DBMS when that variable is being
-updated.  A C<transition_constraint> takes exactly 2 parameters, whose
-names are C<before> and C<after>, and whose declared types are both the
-same as that of the variable; it returns C<Bool:true> if the variable is
-allowed (according to current business rules) to transition directly from
-the C<before> state to the C<after> state, or C<Bool:false> if not; in the
-latter case, the DBMS would then throw a transition-constraint-violation
-exception (resulting in a transaction rollback of at least the statement
-that attempted the update), or in the former case, it would consider the
-update a success (barring other causes for failure).  Conceptually
-speaking, a C<transition_constraint> will execute as the ending part of a
-statement, right at the moment of trying to update any variable's state,
-with the result of a value expression or otherwise; in the case of a
-multi-update statement, all the updates would happen simultaneously, so a
-transition failure for any update would prevent all that statement's
-updates from occurring.
+it is part of the definition of a variable (or pseudo-variable) rather than
+of a data type, and it is invoked automatically by the DBMS when that
+variable is being updated.  A C<transition_constraint> takes exactly 2
+parameters, whose names are C<before> and C<after>, and whose declared
+types are both the same as that of the variable; it returns C<Bool:true> if
+the variable is allowed (according to current business rules) to transition
+directly from the C<before> state to the C<after> state, or C<Bool:false>
+if not; in the latter case, the DBMS would then throw a
+transition-constraint-violation exception (resulting in a transaction
+rollback of at least the statement that attempted the update), or in the
+former case, it would consider the update a success (barring other causes
+for failure).  Conceptually speaking, a C<transition_constraint> will
+execute as the ending part of a statement, right at the moment of trying to
+update any variable's state, with the result of a value expression or
+otherwise; in the case of a multi-update statement, all the updates would
+happen simultaneously, so a transition failure for any update would prevent
+all that statement's updates from occurring.
 
 =item C<update_operator>
 
@@ -1098,7 +1101,7 @@ C<inner_function> is to a C<function>.
 =item C<system_service>
 
 A C<system_service> is an explicitly invokable system-defined procedure
-with 0..N parameters that can reach outside of the deterministic DBMS
+with 0..N parameters that can reach outside of the more deterministic DBMS
 environment in order to do non-deterministic things (besides working with
 depots), such as to initiate I/O of various kinds, or fetch the current
 date and time, or generate a random number.  Given the nature of this
