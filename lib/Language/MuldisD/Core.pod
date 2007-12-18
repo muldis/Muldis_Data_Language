@@ -140,7 +140,7 @@ more or less:
 
             sys.Core.Cat.NameTypeMap
             sys.Core.Cat.NameMap
-            sys.Core.Cat.BiDiNameMap
+                sys.Core.Cat.BiDiNameMap
 
             sys.Core.Relation.Set
 
@@ -865,8 +865,8 @@ static analysis of Muldis D code easier, so it is easier to validate and
 optimize in isolation from the other routines it interacts with.  Moreover,
 this type declaration provides a terse way to use the C<treat> function
 frequently in code, so that the programmer and compiler knows that some
-generic routines are actually supposed to be returning a subtype of their
-normal result types.
+generic routines are actually supposed to be resulting in a subtype of
+their normal result types.
 
 =item C<kind> - C<Cat.E_EK>
 
@@ -1523,8 +1523,8 @@ zero values, then the result set is empty.
 
 =item C<sys.Core.Rat.mean_of_median of Rat (Bag{Rat} $topic)>
 
-This function is a wrapper over C<sys.Core.Rat.median> that will return the
-mean of its result elements; it will fail if there are zero elements.
+This function is a wrapper over C<sys.Core.Rat.median> that will result in
+the mean of its result elements; it will fail if there are zero elements.
 
 =item C<sys.Core.Rat.mode of Set{Rat} (Bag{Rat} $topic)>
 
@@ -1546,7 +1546,7 @@ rounding rule specified by the C<$round_rule> argument.
 This function results in its (positive rational) C<$radix> argument taken
 to the power of its C<$exponent> argument.  Note that, while this function
 might conceptually have multiple real number results for some fractional
-C<$exponent>, it will always only return the one that is positive.
+C<$exponent>, it will always only result in the one that is positive.
 
 =item C<sys.Core.Rat.log of Rat (PRat $topic, PRat $radix, Cat.RatRoundRule
 $round_rule)>
@@ -1795,6 +1795,36 @@ in that they typically work with any nonscalar types.
 
 This function results in the degree of its argument (that is, the count of
 attributes it has).
+
+=item C<sys.Core.Tuple.attr_from_Tuple of Some.Universal (Tuple $topic)>
+
+This function results in the scalar or nonscalar value of the sole
+attribute of its argument.  This function will fail if its argument is not
+of degree 1.
+
+=item C<sys.Core.Tuple.Tuple_from_attr of Tuple (Cat.Name $name,
+Some.Universal $value)>
+
+This function results in the C<Tuple> value which has just one attribute
+whose name is given by C<$name> and whose value is given by C<$value>; the
+attribute's declared type is the same as that of C<$value>.  This function
+will fail if its argument is not of a scalar or nonscalar type.
+
+=item C<sys.Core.Tuple.extract_attr of Some.Universal (Tuple $topic,
+Cat.Name $name)>
+
+This function results in the scalar or nonscalar value of the attribute of
+C<$topic> whose name is given by C<$name>.  This function will fail if
+C<$name> specifies an attribute name that C<$topic> doesn't have.
+
+=item C<sys.Core.Tuple.update_attr of Tuple (Tuple $topic, Cat.Name $name,
+Some.Universal $value)>
+
+This function results in a C<Tuple> value that is the same as its C<$topic>
+argument but that its attribute whose name is C<$name> has been updated
+with a new scalar or nonscalar value given by C<$value>.  This function
+will fail if C<$name> specifies an attribute name that C<$topic> doesn't
+have.
 
 =item C<sys.Core.Tuple.rename of Tuple (Tuple $topic, Cat.BiDiNameMap
 $map)>
@@ -2074,7 +2104,7 @@ specified part).
 Cat.NameChain $func, Tuple $assuming)>
 
 This function results in the relational restriction of its C<$topic>
-argument as determined by applying the C<Bool>-returning function named in
+argument as determined by applying the C<Bool>-resulting function named in
 its C<$func> argument when the latter function is curried by its
 C<$assuming> argument.  The result relation has the same heading as
 C<$topic>, and its body contains the subset of C<$topic> tuples where, for
@@ -2100,7 +2130,7 @@ complementary subset of tuples of C<$topic> when given the same arguments.
 Cat.NameChain $func, Tuple $assuming)>
 
 This function results in the relational extension of its C<$topic> argument
-as determined by applying the C<Tuple>-returning function named in its
+as determined by applying the C<Tuple>-resulting function named in its
 C<$func> argument when the latter function is curried by its C<$assuming>
 argument.  The result relation has a heading that is a superset of that of
 C<$topic>, and its body contains the same number of tuples, with all
@@ -2108,14 +2138,64 @@ attribute values of C<$topic> retained, and possibly extra present,
 determined as follows; for each C<$topic> tuple, the function named by
 C<$func> results in a second tuple when passed the first tuple as its
 C<$topic> argument and C<$assuming> as its C<$assuming> argument; the first
-and second tuples have no attribute names in common, and the result tuple
-is derived by joining the tuples together.
+and second tuples must have no attribute names in common, and the result
+tuple is derived by joining the tuples together.  As a trivial case, if
+C<$func> is defined to unconditionally result in the degree-zero tuple,
+then this function results simply in C<$topic>.
 
-=item C<sys.Core.Relation.summary>
+=item C<sys.Core.Relation.substitution of Relation (Relation $topic,
+Cat.NameChain $func, Tuple $assuming)>
 
-I<TODO.>
+This function is similar to C<extension> except that it substitutes values
+of existing relation attributes rather than adding new attributes.  The
+result relation has the same heading as C<$topic>.  The result tuple of the
+function named in C<$func> must have a heading that is a subset of the
+heading of C<$topic>; corresponding values resulting from the function
+named in C<$func> will replace the values of the tuples of C<$topic>.  The
+result relation has a cardinality that is the same as that of C<$topic>,
+unless the result of any substitutions was redundant tuples, in which case
+the result has appropriately fewer tuples.  As a trivial case, if C<$func>
+is defined to unconditionally result in either the degree-zero tuple or in
+the same tuple as its own C<$topic> argument, then this function results
+simply in C<$topic>; or, if C<$func> is defined to have a static result and
+it replaces all attributes, then this function's result will have just 0..1
+tuples.
 
-=item C<sys.Core.Relation.substitution>
+=item C<sys.Core.Relation.substitution_in_restriction of Relation (Relation
+$topic, Cat.NameChain $restr_func, Tuple $restr_assuming, Cat.NameChain
+$subst_func, Tuple $subst_assuming)>
+
+This function is like C<substitution> except that it only transforms a
+subset of the tuples of C<$topic> rather than all of them.  It is a
+short-hand for first separating the tuples of C<$topic> into 2 groups where
+those passed by a relational restriction (defined by C<$restr_func> and
+C<$restr_assuming>) are then transformed (defined by C<$subst_func> and
+C<$subst_assuming>), then the result of the substitution is unioned with
+the un-transformed group.  Note that the C<substitution_in_semijoin>
+function is recommended to be used instead for many common substitutions.
+
+=item C<sys.Core.Relation.map of Relation (Relation $topic, Cat.NameChain
+$func, Tuple $assuming)>
+
+This function provides a convenient one-place generalization of per-tuple
+transformations that otherwise would require the chaining of up to a
+half-dozen other operators like restriction, extension, and rename.  This
+function results in a relation each of whose tuples is the result of
+applying, to each of the tuples of its C<$topic> argument, the
+C<Tuple>-resulting function named in its C<$func> argument when the latter
+function is curried by its C<$assuming> argument.  There is no restriction
+on what attributes the result tuple of C<$func> may have (except that all
+tuples from C<$func> must have compatible headings); this tuple from
+C<$func> would completely replace the original tuple from C<$topic>.  The
+result relation has a cardinality that is the same as that of C<$topic>,
+unless the result of C<$func> was redundant tuples, in which case the
+result has appropriately fewer tuples. As a trivial case, if C<$func> is
+defined to unconditionally result in the same tuple as its own C<$topic>
+argument, then this function results simply in C<$topic>; or, if C<$func>
+is defined to have a static result, then this function's result will have
+just 0..1 tuples.
+
+=item C<sys.Core.Relation.summary of Relation>
 
 I<TODO.>
 
@@ -2276,6 +2356,14 @@ C<{X}> (so the result and C<$divisor> headings are both complementary
 subsets of the C<$dividend> heading); the result has all tuples C<{X}> such
 that a tuple C<{X,Y}> appears in C<A> for all tuples C<{Y}> appearing in
 C<B>; that is, C<A / B> is shorthand for C<A{X} - ((A{X} join B) - A){X}>.
+
+=item C<sys.Core.Relation.substitution_in_semijoin of Relation (Relation
+$topic, Relation $restr, Cat.NameChain $subst_func, Tuple $subst_assuming)>
+
+This function is like C<substitution_in_restriction> except that the subset
+of the tuples of C<$topic> to be transformed is determined by those matched
+by a semijoin with C<$restr> rather than those that pass a generic
+relational restriction.
 
 =back
 
