@@ -2095,10 +2095,10 @@ names that C<$topic> doesn't have, or if C<$outer> is the same as C<$topic>
 attributes that aren't being grouped.
 
 =item C<sys.Core.Relation.cmpl_group of Relation (Relation $topic,
-Cat.SetOfName $cmpl_inner, Cat.Name $outer)>
+Cat.SetOfName $group_per, Cat.Name $outer)>
 
 This function is the same as C<group> but that it groups the complementary
-subset of attributes of C<$topic> to those specified by C<$cmpl_inner>.
+subset of attributes of C<$topic> to those specified by C<$group_per>.
 
 =item C<sys.Core.Relation.ungroup of Relation (Relation $topic,
 Cat.Name $outer)>
@@ -2219,15 +2219,37 @@ tuples from C<$func> must have compatible headings); this tuple from
 C<$func> would completely replace the original tuple from C<$topic>.  The
 result relation has a cardinality that is the same as that of C<$topic>,
 unless the result of C<$func> was redundant tuples, in which case the
-result has appropriately fewer tuples. As a trivial case, if C<$func> is
+result has appropriately fewer tuples.  As a trivial case, if C<$func> is
 defined to unconditionally result in the same tuple as its own C<$topic>
 argument, then this function results simply in C<$topic>; or, if C<$func>
 is defined to have a static result, then this function's result will have
 just 0..1 tuples.
 
-=item C<sys.Core.Relation.summary of Relation>
+=item C<sys.Core.Relation.summary of Relation (Relation $topic,
+Cat.SetOfName $group_per, Cat.NameChain $summ_func, Tuple $summ_assuming)>
 
-I<TODO.>
+This function provides a convenient context for using aggregate functions
+to derive a per-group summary relation, which is its result, from another
+relation, which is its C<$topic> argument.  This function first performs a
+C<cmpl_group> on C<$topic> using C<$group_per> to specify which attributes
+get grouped into a new relation-valued attribute and which don't; those
+that don't instead get wrapped into a tuple-valued attribute.  Then, per
+tuple in the main relation, this function applies the C<Tuple>-resulting
+function named in its C<$summ_func> argument when the latter function is
+curried by its C<$summ_assuming> argument (passed to it as just
+C<$assuming>); the curried function has, rather than the typical 1
+C<$topic> varying parameter, 2 varying parameters named C<$summarize> and
+C<$per>, which are valued with the relation-valued attribute and
+tuple-valued attribute, respectively.  As per a function that C<map>
+applies, the function named by C<$summ_func> effectively takes a whole
+post-grouping input tuple and results in a whole tuple; the applied
+function would directly invoke any N-ary / aggregate operators, and extract
+their inputs from (or calculate) C<$summarize> as it sees fit.  Note that
+C<summary> is not intended to be used to summarize an entire C<$topic>
+relation at once (except by chance of it resolving to 1 group); you should
+instead invoke your summarize-all C<$func> directly, or inline it, rather
+than by way of C<summary>, especially if you want a single-tuple result on
+an empty C<$topic> (which C<summary>) won't do.
 
 =back
 
