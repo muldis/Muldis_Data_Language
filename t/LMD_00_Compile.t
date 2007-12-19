@@ -10,7 +10,7 @@ use Test::More;
 plan( 'tests' => 2 );
 
 use_ok( 'Language::MuldisD' );
-is( $Language::MuldisD::VERSION, qv('0.13.0'),
+is( $Language::MuldisD::VERSION, qv('0.14.0'),
     'Language::MuldisD is the correct version' );
 
 1; # Magic true value required at end of a reusable file's code.
