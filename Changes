@@ -6,6 +6,10 @@
     * Language::MuldisD version 0.14.0 is released on CPAN as
     Language-MuldisD-0.14.0.tar.gz.
 
+    * This release coincides with the 20th birthday of Perl; Larry Wall
+    released Perl 1 to the public on 1987 December 18th.  Moreover, on this
+    20th birthday is the general/stable release of Perl 5.10, its best yet.
+
     * New file versions are: MuldisD.pm 0.14.0 and Basics.pod 0.10.2 and
     Core.pod 0.12.0 and Grammar.pod 0.7.2 and PerlHosted.pod 0.4.2.  The
     other pre-existing versioned files are unchanged.
@@ -17,14 +21,20 @@
     were previously referenced but not defined; also corrected any
     references that said 'D0C(0|1)' to just say'D0'.
 
-    * (Core.pod)  Added 2 new tuple functions 'attr_from_Tuple' and
-    'Tuple_from_attr', which work with degree-one tuples; they are
-    analagous to the 2 "(T|R) from (R|T)" relation functions that work with
-    cardinality-one relations.  Also added 2 new tuple functions
-    'extract_attr' and 'update_attr', which read or write an attribute in
-    an arbitrary tuple.
+    * (Core.pod)  Added new pseudo-type sys.Core.Some.ScaTupRel, which is
+    essentially a union type over Scalar|Tuple|Relation; it is for tersely
+    refering to the general type of a scalar|tuple|relation attribute.
 
-    * (Core.pod)  Added descriptions to the relation functions
+    * (Core.pod)  Added 3 new Int functions, 'increase' and 'decrease'
+    (meaning '++' and '--'), and 'factorial'.
+
+    * (Core.pod)  Added 2 new Tuple functions 'attr_from_Tuple' and
+    'Tuple_from_attr', which work with degree-one tuples; they are
+    analagous to the 2 "(T|R) from (R|T)" Relation functions that work with
+    cardinality-one relations.  Also added 2 new Tuple functions 'attr' and
+    'update_attr', which read or write an attribute in an arbitrary tuple.
+
+    * (Core.pod)  Added descriptions to the Relation functions
     group|ungroup, updated those of tuple wrap|unwrap.  Added 3 new
     complementary tuple|relation functions cmpl_wrap|cmpl_group.
 
@@ -34,10 +44,46 @@
     transform all tuples unconditionally, the 2 new 'in' functions let one
     keep the substitutions within a subset of the tuples.
 
-    * (Core.pod)  Added new relation function 'map', which provides a
+    * (Core.pod)  Added new Relation function 'map', which provides a
     convenient one-place generalization of per-tuple transformations that
-    otherwise would require the chaining of up to a half-dozen other
-    operators like restriction, extension, and rename; like Perl's "map".
+    otherwise might require the chaining of up to a half-dozen other
+    operators like restriction, extension, and rename; like Perl's "map",
+    or SQL's generic select-list.
+
+    * (Core.pod)  Added new Relation function 'power_set', which results in
+    a Set of all subsets of its Relation argument (which could itself be
+    just a Set).  (Note: Not sure whether or not this is actually useful.)
+
+    * (Core.pod)  Added 2 new Relation functions 'is_(|not_)proper_subset'.
+
+    * (Core.pod)  Added initial complement of 6 Set-specific functions:
+    'is_member', 'is_not_member', 'insertion', 'deletion', 'Set_from_wrap',
+    'Set_from_attr'.  The first 4 are just short-hands for their Relation
+    counterparts, having tuple attribute values as parameters rather than
+    whole tuples.  The 'Set_from_attr' is intended to be the most
+    convenient way to pull out values from an attribute for feeding to an
+    aggregate function; it is short-hand for simple relational operations.
+    The 'Set_from_wrap' ought to be convenient for other reasons, or if not
+    then its counterparts under Bag or Seq perhaps will be.
+
+    * (Core.pod)  Added initial complement of 2 Maybe-specific functions:
+    'attr_or_default', 'attr_or_value'.  They are intended to be like
+    Perl's defined-or functions, resulting in their only/main argument's
+    content if it isn't empty, or a default value / second argument if it
+    is; alternately these are like SQL's 2-argument COALESCE or NVL or
+    IF_NULL etc; these should be useful in defining outer-joins.
+
+    * (Core.pod)  Added initial complement of 17 Bag-specific functions:
+    'is_member', 'is_not_member', 'insertion', 'deletion', 'Bag_from_wrap',
+    'Bag_from_attr', 'cardinality', 'is_subset', 'is_not_subset',
+    'is_proper_subset', 'is_not_proper_subset', 'union', 'intersection',
+    'difference', 'count', 'Set_from_Bag', 'Bag_from_Set'.  The first 6 are
+    as per the 6 set-specific functions.  The next 8 are as per the
+    same-named Relation functions but that they have special semantics that
+    take > 1 multiplicity of values into account; the Relation ones work as
+    is for Set, but not as typically desired for Bag.  Then 'count' says
+    how many occurrances (which may be zero) of a value are in a Bag.  The
+    last 2 are short-hands for moving data between Set and Bag types.
 
     * (Core.pod)  Other minor updates.
 

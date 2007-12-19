@@ -23,7 +23,7 @@ WriteMakefile(
     'LICENSE' => 'gpl',
     'PREREQ_PM' => {
         # These are bundled with Perls 5.10.x but not Perls 5.8.x.
-        'version' => 0,
+        'version' => 0.74,
     },
 );
 
