@@ -1279,11 +1279,11 @@ These functions implement commonly used integer numeric operations.
 
 =item C<sys.Core.Int.increase of Int (Int $topic)>
 
-This function results in the argument increased by 1.
+This function results in its argument increased by 1.
 
 =item C<sys.Core.Int.decrease of Int (Int $topic)>
 
-This function results in the argument decreased by 1.
+This function results in its argument decreased by 1.
 
 =item C<sys.Core.Int.abs of UInt (Int $topic)>
 
@@ -1838,12 +1838,11 @@ C<$name> specifies an attribute name that C<$topic> doesn't have.
 =item C<sys.Core.Tuple.update_attr of Tuple (Tuple $topic, Cat.Name $name,
 Some.ScaTupRel $value)>
 
-This function results in a C<Tuple> value that is the same as its C<$topic>
-argument but that its attribute whose name is C<$name> has been updated
-with a new scalar or nonscalar value given by C<$value>.  This function
-will fail if C<$name> specifies an attribute name that C<$topic> doesn't
-have, or if the declared type of C<$value> isn't a subtype of the declared
-type of the attribute.
+This function results in its C<$topic> argument but that its attribute
+whose name is C<$name> has been updated with a new scalar or nonscalar
+value given by C<$value>.  This function will fail if C<$name> specifies an
+attribute name that C<$topic> doesn't have, or if the declared type of
+C<$value> isn't a subtype of the declared type of the attribute.
 
 =item C<sys.Core.Tuple.rename of Tuple (Tuple $topic, Cat.BiDiNameMap
 $map)>
@@ -2466,7 +2465,7 @@ C<$value>; that is, conceptually the result is C<$value> deleted from
 C<$set>.  As a trivial case, if C<$value> already doesn't exist in C<$set>,
 then the result is just C<$set>.
 
-=item C<sys.Core.Set.Set_from_wrap of Set (Relation $topic)>
+=item C<sys.Core.Set.Set_from_wrap of Set{Tuple} (Relation $topic)>
 
 This function results in a C<Set> whose sole attribute is tuple-typed and
 the attribute values are all the tuples of C<$topic>; is a short-hand for a
@@ -2505,7 +2504,95 @@ C<$value> isn't a subtype of the declared type of the attribute.
 
 =head2 Functions for sys.Core.Relation.Seq
 
-I<TODO.>
+=over
+
+=item C<sys.Core.Seq.value of Some.ScaTupRel (Seq $topic, UInt $index)>
+
+This function results in the scalar or nonscalar C<value> attribute of the
+tuple of C<$topic> whose C<index> attribute is C<$index>.  This function
+will fail if no tuple exists in C<$topic> with the specified index.
+
+=item C<sys.Core.Seq.update_value of Seq (Seq $topic, UInt $index,
+Some.ScaTupRel $value)>
+
+This function results in its C<$topic> argument but that the C<value>
+attribute of the tuple of C<$topic> whose C<index> attribute is C<$index>
+has been updated with a new scalar or nonscalar value given by C<$value>.
+This function will fail if no tuple exists in C<$topic> with the specified
+index, or if the declared type of C<$value> isn't a subtype of the declared
+type of the C<value> attribute.
+
+=item C<sys.Core.Seq.insertion of Seq (Seq $topic, UInt $index,
+Some.ScaTupRel $value)>
+
+This function results in its C<$topic> argument but that a new tuple has
+been inserted whose C<index> is C<$index> and whose C<value> is C<$value>;
+any existing tuples with C<index> values greater than or equal to C<$index>
+had theirs increased by 1.  As a trivial case, if C<$index> is equal to
+zero or is equal to the cardinality of C<$topic>, then C<$value> has become
+the new first or last (or only) element, respectively.  This function will
+fail if C<$index> is greater than the cardinality of C<$topic>, or if the
+declared type of C<$value> isn't a subtype of the declared type of the
+C<value> attribute.
+
+=item C<sys.Core.Seq.deletion of Seq (Seq $topic, UInt $index)>
+
+This function results in its C<$topic> argument but that a tuple has been
+deleted whose C<index> is C<$index>; any existing tuples with C<index>
+values greater than or equal to C<$index> had theirs decreased by 1.  This
+function will fail if no tuple exists in C<$topic> with the specified
+index.
+
+=item C<sys.Core.Seq.is_element of Bool (Seq $topic, Some.ScaTupRel
+$value)>
+
+This function results in C<Bool:true> iff its C<$value> argument matches
+the C<value> attribute of at least one tuple of its C<$topic> argument
+(that is, iff conceptually C<$value> is an element of C<$topic>), and
+C<Bool:false> otherwise.  This function will fail if the declared type of
+C<$value> isn't a subtype of the declared type of that attribute.
+
+=item C<sys.Core.Seq.is_not_element of Bool (Seq $topic, Some.ScaTupRel
+$value)>
+
+This function is exactly the same as C<sys.Core.Seq.is_element> except that
+it results in the opposite boolean value when given the same arguments.
+
+=item C<sys.Core.Seq.catenation of Seq (Seq{Seq} $topic)>
+
+This function results in the catenation of the N element values of its
+argument; it is a reduction operator that recursively takes each
+consecutive pair of input values and catenates (which is associative) them
+together until just one is left, which is the result.  To catenate 2 C<Seq>
+means to union their tuples after first increasing all the C<index> values
+of the second one by the cardinality of the first one.  If C<$topic> has
+zero values, then C<catenate> results in the empty sequence value, which is
+the identity value for catenate.
+
+=item C<sys.Core.Seq.repeat of Seq (Seq $topic, UInt $count)>
+
+This function results in the catenation of C<$count> instances of
+C<$topic>.
+
+=item C<sys.Core.Seq.reverse of Seq (Seq $topic)>
+
+This function results in its argument but that the order of its elements
+has been reversed.  For example, the input C<{ 0=>'a', 1=>'b', 2=>'c',
+3=>'d'}> results in C<{ 0=>'d', 1=>'c', 2=>'b', 3=>'a' }>.
+
+=item C<sys.Core.Seq.is_subseq of Bool (Seq $look_in, Seq $look_for)>
+
+This function results in C<Bool:true> iff the sequence of values comprising
+C<$look_for> is a sub-sequence of the sequence of values C<$look_in>, and
+C<Bool:false> otherwise.  This function will fail if the 2 arguments don't
+have the same heading.
+
+=item C<sys.Core.Seq.is_not_subseq of Bool (Seq $look_in, Seq $look_for)>
+
+This function is exactly the same as C<sys.Core.Seq.is_subseq> except that
+it results in the opposite boolean value when given the same arguments.
+
+=back
 
 =head2 Functions for sys.Core.Relation.Bag
 
@@ -2562,7 +2649,7 @@ attribute of its C<Bag> argument.
 This function results in the C<Bag> that is the extension of its C<Set>
 argument with a new C<count> attribute whose value for every tuple is 1.
 
-=item C<sys.Core.Bag.Bag_from_wrap of Bag (Relation $topic)>
+=item C<sys.Core.Bag.Bag_from_wrap of Bag{Tuple} (Relation $topic)>
 
 This function results in a C<Bag> whose C<value> attribute is tuple-typed
 and that attribute's values are all the tuples of C<$topic>; is a
