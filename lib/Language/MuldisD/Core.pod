@@ -2614,6 +2614,31 @@ C<$value>; that is, conceptually the result is C<$value> deleted from
 C<$set>.  As a trivial case, if C<$value> already doesn't exist in C<$set>,
 then the result is just C<$set>.
 
+=item C<sys.Core.Set.reduce of Some.ScaTupRel (Set $topic, Cat.NameChain
+$func, Tuple $assuming, Some.ScaTupRel $identity)>
+
+This function is a generic reduction operator that recursively takes each
+pair of input values in C<$topic> and applies an argument-specified scalar
+or nonscalar value-resulting function (which is both commutative and
+associative) to the pair until just one input value is left, which is the
+result.  The function to apply is named in the C<$func> argument, and that
+function must have 3 arguments named C<$v1>, C<$v2>, C<$assuming>; the last
+parameter is curried with the same-named argument of C<reduce>, and the
+first 2 parameters are the 2 input scalar or nonscalar values for an
+invocation.  If C<$topic> has zero values, then C<reduce> results in the
+value given in C<$identity>.  I<Note that C<$identity> may be changed to
+take a function name rather than a value, for consistency with C<$func>.>
+This function will fail if the declared type of C<$identity> isn't a
+subtype of the declared type of the sole attribute of C<$topic>.
+
+=item C<sys.Core.Set.maybe_reduce of Some.ScaTupRel (Set $topic,
+Cat.NameChain $func, Tuple $assuming)>
+
+This function is exactly the same as C<sys.Core.Set.reduce> except that it
+does not take a C<$assuming> argument, and it results in a C<Maybe> of what
+is otherwise the result type, and that result has zero elements if the
+argument has zero elements.
+
 =item C<sys.Core.Set.Set_from_wrap of Set{Tuple} (Relation $topic)>
 
 This function results in a C<Set> whose sole attribute is tuple-typed and
@@ -2707,6 +2732,20 @@ $value)>
 This function is exactly the same as C<sys.Core.Seq.is_element> except that
 it results in the opposite boolean value when given the same arguments.
 
+=item C<sys.Core.Seq.reduce of Some.ScaTupRel (Seq $topic, Cat.NameChain
+$func, Tuple $assuming, Some.ScaTupRel $identity)>
+
+This function is the same as C<sys.Core.Set.reduce>, including that input
+values for the reduction come from the C<value> attribute of C<$topic>,
+except that it works with a C<Seq> rather than a C<Set>.  Also, the
+function named in C<$func> is only associative, and I<not> commutative.
+
+=item C<sys.Core.Seq.maybe_reduce of Some.ScaTupRel (Seq $topic,
+Cat.NameChain $func, Tuple $assuming)>
+
+This function is to C<sys.Core.Set.maybe_reduce> as C<sys.Core.Seq.reduce>
+is to C<sys.Core.Set.reduce>.
+
 =item C<sys.Core.Seq.catenation of Seq (Seq{Seq} $topic)>
 
 This function results in the catenation of the N element values of its
@@ -2787,6 +2826,19 @@ but that its result differs depending on what the C<count> for any tuple
 matching C<$value> that already exists in C<$bag> is; if the C<count> is
 greater than 1, then it is decreased by 1; if it is equal to 1, then the
 tuple whose C<value> is C<$value> is deleted.
+
+=item C<sys.Core.Bag.reduce of Some.ScaTupRel (Bag $topic, Cat.NameChain
+$func, Tuple $assuming, Some.ScaTupRel $identity)>
+
+This function is the same as C<sys.Core.Set.reduce>, including that input
+values for the reduction come from the C<value> attribute of C<$topic>,
+except that it works with a C<Bag> rather than a C<Set>.
+
+=item C<sys.Core.Bag.maybe_reduce of Some.ScaTupRel (Bag $topic,
+Cat.NameChain $func, Tuple $assuming)>
+
+This function is to C<sys.Core.Set.maybe_reduce> as C<sys.Core.Bag.reduce>
+is to C<sys.Core.Set.reduce>.
 
 =item C<sys.Core.Bag.Set_from_Bag of Set (Bag $topic)>
 
