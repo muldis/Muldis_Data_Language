@@ -2278,6 +2278,30 @@ support recursive queries, such as in connection with the "part explosion
 problem" (the problem of finding all components, at all levels, of some
 specified part).
 
+=item C<sys.Core.Relation.reduction of Tuple (Relation $topic,
+Cat.NameChain $func, Tuple $assuming, Tuple $identity)>
+
+This function is a generic reduction operator that recursively takes each
+pair of tuples in C<$topic> and applies an argument-specified tuple
+value-resulting function (which is both commutative and associative) to the
+pair until just one input tuple is left, which is the result.  The function
+to apply is named in the C<$func> argument, and that function must have 3
+arguments named C<$v1>, C<$v2>, C<$assuming>; the last parameter is curried
+with the same-named argument of C<reduction>, and the first 2 parameters
+are the 2 input tuples for an invocation.  If C<$topic> has zero tuples,
+then C<reduction> results in the tuple given in C<$identity>.  I<Note that
+C<$identity> may be changed to take a function name rather than a value,
+for consistency with C<$func>.>  This function will fail if the declared
+headings of C<$identity> and C<$topic> aren't compatible.
+
+=item C<sys.Core.Relation.maybe_reduction of Maybe{Tuple} (Relation $topic,
+Cat.NameChain $func, Tuple $assuming)>
+
+This function is exactly the same as C<sys.Core.Relation.reduction> except
+that it does not take an C<$assuming> argument, and it results in a
+C<Maybe> of what is otherwise the result type, and that result has zero
+elements if the argument has zero elements.
+
 =item C<sys.Core.Relation.restriction of Relation (Relation $topic,
 Cat.NameChain $func, Tuple $assuming)>
 
@@ -2631,11 +2655,11 @@ take a function name rather than a value, for consistency with C<$func>.>
 This function will fail if the declared type of C<$identity> isn't a
 subtype of the declared type of the sole attribute of C<$topic>.
 
-=item C<sys.Core.Set.maybe_reduction of Some.ScaTupRel (Set $topic,
-Cat.NameChain $func, Tuple $assuming)>
+=item C<sys.Core.Set.maybe_reduction of Maybe (Set $topic, Cat.NameChain
+$func, Tuple $assuming)>
 
 This function is exactly the same as C<sys.Core.Set.reduction> except that
-it does not take a C<$assuming> argument, and it results in a C<Maybe> of
+it does not take an C<$assuming> argument, and it results in a C<Maybe> of
 what is otherwise the result type, and that result has zero elements if the
 argument has zero elements.
 
@@ -2738,10 +2762,13 @@ $func, Tuple $assuming, Some.ScaTupRel $identity)>
 This function is the same as C<sys.Core.Set.reduction>, including that
 input values for the reduction come from the C<value> attribute of
 C<$topic>, except that it works with a C<Seq> rather than a C<Set>.  Also,
-the function named in C<$func> is only associative, and I<not> commutative.
+the function named in C<$func> is only associative, and I<not> commutative;
+the arguments to C<$v1> and C<$v2> of C<$func> are guaranteed to be
+consecutive input elements, with the result returning to their place in
+sequence beween the other input elements.
 
-=item C<sys.Core.Seq.maybe_reduction of Some.ScaTupRel (Seq $topic,
-Cat.NameChain $func, Tuple $assuming)>
+=item C<sys.Core.Seq.maybe_reduction of Maybe (Seq $topic, Cat.NameChain
+$func, Tuple $assuming)>
 
 This function is to C<sys.Core.Set.maybe_reduction> as
 C<sys.Core.Seq.reduction> is to C<sys.Core.Set.reduction>.
@@ -2832,10 +2859,12 @@ $func, Tuple $assuming, Some.ScaTupRel $identity)>
 
 This function is the same as C<sys.Core.Set.reduction>, including that
 input values for the reduction come from the C<value> attribute of
-C<$topic>, except that it works with a C<Bag> rather than a C<Set>.
+C<$topic>, except that it works with a C<Bag> rather than a C<Set>;
+C<$func> is invoked extra times, where both its C<$v1> and C<$v2> arguments
+might be different instances of the same value having >= 2 multiplicity.
 
-=item C<sys.Core.Bag.maybe_reduction of Some.ScaTupRel (Bag $topic,
-Cat.NameChain $func, Tuple $assuming)>
+=item C<sys.Core.Bag.maybe_reduction of Maybe (Bag $topic, Cat.NameChain
+$func, Tuple $assuming)>
 
 This function is to C<sys.Core.Set.maybe_reduction> as
 C<sys.Core.Bag.reduction> is to C<sys.Core.Set.reduction>.
