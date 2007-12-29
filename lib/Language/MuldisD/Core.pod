@@ -139,6 +139,9 @@ more or less:
             sys.Core.Cat.ExprNode
             sys.Core.Cat.InnerFunc
             sys.Core.Cat.Func
+            sys.Core.Cat.UpdateStmt
+            sys.Core.Cat.InnerUpdateOper
+            sys.Core.Cat.UpdateOper
             sys.Core.Cat.Exception
 
         sys.Core.Relation.Relation
@@ -148,9 +151,13 @@ more or less:
             sys.Core.Cat.NameTypeMap
             sys.Core.Cat.NameMap
                 sys.Core.Cat.BiDiNameMap
-            sys.Core.Cat.ExprTree
+            sys.Core.Cat.ExprSet
+                sys.Core.Cat.ExprTree
             sys.Core.Cat.InnerFuncSet
                 sys.Core.Cat.InnerFuncTree
+            sys.Core.Cat.MultiUpdateStmt
+            sys.Core.Cat.InnerUpdateOperSet
+                sys.Core.Cat.InnerUpdateOperTree
 
             sys.Core.Relation.Set
 
@@ -722,11 +729,14 @@ C<Cat.E_TDM:negation> (defined as explicit negation of another type).
 
 =head2 sys.Core.Cat.E_EK
 
-A C<Cat.E_EK> (expression kind) is an enumeration consisting of the 8
-values C<Cat.E_EK:default> (default value of expression's type),
+A C<Cat.E_EK> (expression kind) is an enumeration consisting of the 10
+values C<Cat.E_EK:default> (default value of expression's declared type),
 C<Cat.E_EK:(scalar|tuple|relation|quasi_tuple|quasi_relation)> (hard-coded
 literal scalar|tuple|relation|quasi-tuple|quasi-relation value),
 C<Cat.E_EK:param> (value of expression-containing function parameter),
+C<Cat.E_EK:upd_param> (on-entry value of expression-containing update
+operator subject-to-update parameter), C<Cat.E_EK:ro_param> (value of
+expression-containing update operator read-only parameter),
 C<Cat.E_EK:func> (result of function invocation, or inlining of function
 body).  Its default value is C<Cat.E_EK:scalar>.
 
@@ -849,7 +859,7 @@ for a key to consist of zero attributes; in this case, that key is the only
 key of the q/relation type, and values of the type may each consist of no
 more than one tuple.
 
-=item C<constraint> - C<Cat.TypeConstraint> ... default one always ret True
+=item C<constraint> - C<Cat.TypeConstraint> ... default one always res True
 
 Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
 fundamentally in terms of an explicit attribute collection, and
@@ -870,10 +880,17 @@ which is the majority component of functional Muldis D code.  All
 arbitrarily complex Muldis D expression trees, including relational
 queries, are composed of just C<Cat.ExprNode>, either directly, or
 indirectly by way of function invocations, as each function body is itself
-composed entirely of a single expression tree.  Only functions may contain
-C<Cat.ExprNode>, so for any procedures that would conceptually include
-them, those portions of the procedures need to be separated out and
-encapsulated by named functions or inner-functions.
+composed entirely of a single expression tree (of at least 1 node).  Only
+functions and update operators may contain C<Cat.ExprNode>, so for any
+procedures that would conceptually include them, those portions of the
+procedures need to be separated out and encapsulated by named functions or
+inner-functions or update operators or inner-update-operators.  Note that,
+while the general case has expression trees simply denoting a value, in
+some cases they may instead define a pseudo-variable / virtual variable;
+that only happens in update operators where the expression is used as an
+argument for a subject-to-update parameter of an update operator call; in
+that case the leaf nodes / only node of the expression must map to a
+subject-to-update parameter of the containing update operator.
 
 A C<Cat.ExprNode> has these 9 attributes:
 
@@ -936,7 +953,10 @@ or quasi-relation.
 =item C<param> - C<Cat.Name>
 
 Iff C<kind> is C<Cat.E_EK:param>, then the expression represents the value
-of the containing function's parameter which this names.
+of the containing function's parameter which this names.  Or, if C<kind> is
+C<Cat.E_EK:upd_param> or C<Cat.E_EK:ro_param>, then the expression
+represents the on-entry value or value of the containing update operator's
+subject-to-update or read-only parameter, respectively.
 
 =item C<func> - C<Cat.NameChain>
 
@@ -965,7 +985,7 @@ plus more when it would conceptually be using anonymous inline function
 definitions (to pass to function-valued function arguments), or when it
 would conceptually have self-referencing/cyclic expressions.
 
-A C<Cat.InnerFunc> has these 4 attributes:
+A C<Cat.InnerFunc> has these 5 attributes:
 
 =over
 
@@ -990,6 +1010,11 @@ that this may be changed later, or the attribute simply be eliminated.>
 This is the declared parameter list of the inner function, which has 0..N
 named and typed parameters.
 
+=item C<root_expr> - C<Cat.Name>
+
+This indicates which of the expression nodes comprising this inner function
+is its root node, the result of which is the result of the inner function.
+
 =item C<expr> - C<Cat.ExprTree>
 
 This defines the entire body of the inner function, which is composed of
@@ -1007,15 +1032,14 @@ A C<Cat.Func> is a C<Tuple>.  It specifies a named C<function> routine,
 which is conceptually a non-anonymous function that is generally invokable
 by the public (unless its parent package says otherwise).
 
-A C<Cat.InnerFunc> has these 3 attributes:
+A C<Cat.Func> has these 3 attributes:
 
 =over
 
 =item C<name> - C<Cat.Name>
 
-This is the declared name of the inner function within its parent complete
-function; other Muldis D code within said complete function would reference
-it with this name.
+This is the declared name of the function; other Muldis D code would
+reference it with this name.
 
 =item C<root_inner_func> - C<Cat.Name>
 
@@ -1033,6 +1057,141 @@ which is defined by one of those.
 
 The default value of C<Cat.Func> unconditionally results in the literal
 scalar value C<Bool:false> as per the default of C<Cat.InnerFunc>.
+
+=head2 sys.Core.Cat.UpdateStmt
+
+A C<Cat.UpdateStmt> is a C<Tuple>.  It specifies a single update statement
+(of 1..N variables), which is the most fundamental component of procedural
+Muldis D code, and is what the body of an update operator routine is
+composed of.  The variables being updated are accessed via the host
+routine's subject-to-update parameters.  All arbitrarily complex Muldis D
+value assignments, including relational assignments, are composed of just
+C<Cat.UpdateStmt>, either directly, or indirectly by way of update operator
+invocations, as each update operator body is itself composed entirely of
+1 or more update statements (grouped as 1 multi-update).  Only update
+operators may contain C<Cat.UpdateStmt>, so for any procedures that would
+conceptually include them, those portions of the procedures need to be
+separated out and encapsulated by named update operators or
+inner-update-operators.
+
+A C<Cat.UpdateStmt> has these 3 attributes:
+
+=over
+
+=item C<update_oper> - C<Cat.NameChain>
+
+Every update statement is an invocation of some other update operator (or
+inner-update-operator), either a user-defined or system-defined one (the
+latter generally being the end of the call chain); this is the name of that
+update operator.
+
+=item C<upd_args> - C<Cat.NameMap>
+
+These are the 1..N subject-to-update arguments to the update operator
+invocation, as-per C<ro_args>.  But since each expression tree in
+C<upd_args> is binding to a subject-to-update parameter, the expression
+tree actually is defining a pseudo-variable / virtual-variable over 1..N
+containing routine subject-to-update parameters; in the most trivial (and
+common) case, such an expression tree is a single node that represents said
+parameter without any indirection at all.
+
+=item C<ro_args> - C<Cat.NameMap>
+
+These are the 0..N read-only arguments to the update operator invocation.
+Each element defines one argument value, with the element C<key> matching
+the parameter name, and the element C<value> naming a local C<ExprNode>
+which defines the value.
+
+=back
+
+The default value of C<Cat.UpdateStmt> will unconditionally update 1
+subject-to-update operator of name C<$topic> with the value C<Bool:false>.
+
+=head2 sys.Core.Cat.InnerUpdateOper
+
+A C<Cat.InnerUpdateOper> is a C<Tuple>.  It specifies a named
+C<update_operator> routine, which is the main component type of a complete
+implicitly atomic procedural routine; a complete update operator consists
+of at least one inner update operator, which is its main body, likely plus
+more when it would conceptually be code refactored.
+
+A C<Cat.InnerUpdateOper> has these 6 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the inner update operator within its parent
+complete update operator; other Muldis D code within said complete update
+operator would reference it with this name.
+
+=item C<is_recursive> - C<Bool>
+
+This is C<Bool:true> if the inner update operator might possibly invoke
+itself, either directly or indirectly; it is C<Bool:false> if it promises
+to never be recursive.  I<Note that this attribute may be eliminated.>
+
+=item C<upd_params> - C<Cat.NameTypeMap>
+
+This is the declared subject-to-update parameter list of the inner update
+operator, which has 1..N named and typed such parameters.  It must have at
+least 1 element.
+
+=item C<ro_params> - C<Cat.NameTypeMap>
+
+This is the declared read-only parameter list of the inner update operator,
+which has 0..N named and typed such parameters.  There is a distributed
+(unique) key over the C<name> attributes of C<upd_params> and C<ro_params>.
+
+=item C<exprs> - C<Cat.ExprSet>
+
+This defines the expression trees that are arguments to the update
+operators that C<stmt> invokes.  These expression trees must reference all
+of the parameters that the inner update operator has.
+
+=item C<stmt> - C<Cat.MultiUpdateStmt>
+
+This defines the entire body of the inner update operator, which is
+composed of a single multi-update statement.  This multi-update statement
+must reference all of the parameters that the inner update operator has.
+
+=back
+
+The default value of C<Cat.InnerUpdateOper> has 1 subject-to-update
+operator named C<$topic> and declared type C<Bool> and will unconditionally
+update it to the value C<Bool:false>; it has zero read-only parameters.
+
+=head2 sys.Core.Cat.UpdateOper
+
+A C<Cat.UpdateOper> is a C<Tuple>.  It specifies a named C<update operator>
+routine, which is conceptually a non-anonymous update operator that is
+generally invokable by the public (unless its parent package says
+otherwise).
+
+A C<Cat.UpdateOper> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the update operator; other Muldis D code would
+reference it with this name.
+
+=item C<root_inner_update_oper> - C<Cat.Name>
+
+This indicates which of the inner update operators comprising this update
+operator defines its public interface / parameter list and main body.
+
+=item C<inner_update_opers> - C<Cat.InnerUpdateOperTree>
+
+This defines the entire body of the update operator, which is composed of
+one or more inner update operators, plus its public interface / parameter
+list, which is defined by one of those.
+
+=back
+
+The default value of C<Cat.UpdateOper> is as per the default of
+C<Cat.InnerUpdateOper>.
 
 =head2 sys.Core.Cat.Exception
 
@@ -1074,6 +1233,14 @@ A C<Cat.BiDiNameMap> is a proper subtype of C<Cat.NameMap> where
 its C<value> attribute is also a unary key.  It is used as a specification
 for how to rename attributes of a relation.
 
+=head2 sys.Core.Cat.ExprSet
+
+A C<Cat.ExprSet> is the same as a C<Cat.ExprTree> except that it can
+represent multiple trees rather than one; this is realized in that more
+than one (rather than exactly one) member may have none of its peers as a
+parent node.  It so happens then that C<Cat.ExprTree> is a proper subtype
+of C<Cat.ExprSet>.
+
 =head2 sys.Core.Cat.ExprTree
 
 A C<Cat.ExprTree> is a C<Relation> with the same heading as
@@ -1105,29 +1272,58 @@ conceptually the tree root (main function if applicable).  The default
 value of C<Cat.InnerFuncTree> has one tuple that is the default value of
 C<Cat.InnerFunc>.
 
+=head2 sys.Core.Cat.MultiUpdateStmt
+
+A C<Cat.MultiUpdateStmt> is a C<Relation> with the same heading as
+C<Cat.UpdateStmt>; it is a multi-update statement, which is the narrowest
+scope implicitly atomic component of procedural Muldis D code.  One value
+of this type comprises the entire body of an update operator (or
+inner-update-operator).  It must have at least 1 member tuple.  The default
+value of C<Cat.MultiUpdateStmt> has one tuple that is the default value of
+C<Cat.UpdateStmt>.
+
+=head2 sys.Core.Cat.InnerUpdateOperSet
+
+A C<Cat.InnerUpdateOperSet> is a C<Relation> with the same heading as
+C<Cat.InnerUpdateOper>; it specifies a set of inner update operators (that
+comprise parts of the same complete routine), which are its tuples.  It has
+a unary (unique) key on the C<name> attribute.  Its default value is empty,
+which may be applicable if the complete routine is not an update operator.
+
+=head2 sys.Core.Cat.InnerUpdateOperTree
+
+A C<Cat.InnerUpdateOperTree> is a proper subtype of
+C<Cat.InnerUpdateOperSet> which is likely to only be applicable if the
+complete routine is a update operator.  It must have at least 1 member
+tuple.  All member tuples must define a single invocation tree but that
+cycles are allowed, including that invoke what is conceptually the tree
+root (main update operator if applicable).  The default value of
+C<Cat.InnerUpdateOperTree> has one tuple that is the default value of
+C<Cat.InnerUpdateOper>.
+
 =head2 sys.Core.Cat.SetOfName
 
-A C<Cat.SetOfName> is a C<(Set)> whose C<value> attribute has a
-declared type of C<Cat.Name>.
+A C<Cat.SetOfName> is a C<Set> whose C<value> attribute has a declared type
+of C<Cat.Name>.
 
 =head2 sys.Core.Cat.SetOfSetOfName
 
-A C<Cat.SetOfSetOfName> is a C<(Set)> whose C<value> attribute has a
-declared type of C<Cat.SetOfName>.
+A C<Cat.SetOfSetOfName> is a C<Set> whose C<value> attribute has a declared
+type of C<Cat.SetOfName>.
 
 =head2 sys.Core.Cat.SetOfNameMap
 
-A C<Cat.SetOfNameMap> is a C<(Set)> whose C<value> attribute has a
-declared type of C<Cat.NameMap>.
+A C<Cat.SetOfNameMap> is a C<Set> whose C<value> attribute has a declared
+type of C<Cat.NameMap>.
 
 =head2 sys.Core.Cat.SetOfNameChain
 
-A C<Cat.SetOfNameChain> is a C<(Set)> whose C<value> attribute has a
-declared type of C<Cat.NameChain>.
+A C<Cat.SetOfNameChain> is a C<Set> whose C<value> attribute has a declared
+type of C<Cat.NameChain>.
 
 =head2 sys.Core.Cat.NESeqOfName
 
-A C<Cat.NESeqOfName> is a C<(Seq)> whose C<value> attribute has a declared
+A C<Cat.NESeqOfName> is a C<Seq> whose C<value> attribute has a declared
 type of C<Cat.Name> and that must have at least 1 element; this type is
 used as the definition of the sequence possrep of a C<Cat.NameChain> (see
 that type for details).
