@@ -128,7 +128,8 @@ more or less:
             sys.Core.Cat.E_RM
             sys.Core.Cat.E_TK
             sys.Core.Cat.E_TDM
-            sys.Core.Cat.E_EK
+            sys.Core.Cat.E_ENK
+            sys.Core.Cat.E_PSAK
 
         sys.Core.Tuple.Tuple
 
@@ -142,6 +143,10 @@ more or less:
             sys.Core.Cat.UpdateStmt
             sys.Core.Cat.InnerUpdateOper
             sys.Core.Cat.UpdateOper
+            sys.Core.Cat.ProcStmtArg
+            sys.Core.Cat.ProcStmt
+            sys.Core.Cat.InnerProc
+            sys.Core.Cat.Proc
             sys.Core.Cat.Exception
 
         sys.Core.Relation.Relation
@@ -158,6 +163,8 @@ more or less:
             sys.Core.Cat.MultiUpdateStmt
             sys.Core.Cat.InnerUpdateOperSet
                 sys.Core.Cat.InnerUpdateOperTree
+            sys.Core.Cat.ProcStmtArgSet
+            sys.Core.Cat.InnerProcTree
 
             sys.Core.Relation.Set
 
@@ -173,6 +180,7 @@ more or less:
                 # The following are all regular sequence types.
 
                 sys.Core.Cat.NESeqOfName
+                sys.Core.Cat.SeqOfProcStmt
 
 These system-defined subtypes have also been defined for convenience, as
 they are anticipated to be frequently used; in fact, most of them are used
@@ -652,7 +660,7 @@ a selector function.  Generally speaking, this union type includes all of
 the core scalar types that aren't themselves defined as union types.  The
 full list that C<ScalarLiteral> unions is: C<Bool>, C<Order>, C<Int>,
 C<Rat>, C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.E_RM>,
-C<Cat.E_TK>, C<Cat.E_TDM>, C<Cat.E_EK>, ...
+C<Cat.E_TK>, C<Cat.E_TDM>, C<Cat.E_ENK>, C<Cat.E_PSAK>, ...
 
 =head2 sys.Core.Cat.Name
 
@@ -687,8 +695,8 @@ while being a character string like C<Cat.Name>, the two are disjoint.
 =head2 sys.Core.Cat.E_RM
 
 A C<Cat.E_RM> (rounding method) is an enumeration consisting of the 5
-values C<Cat.E_EK:half_up>, C<Cat.E_EK:to_even>, C<Cat.E_EK:to_floor>,
-C<Cat.E_EK:to_ceiling>, C<Cat.E_EK:to_zero>.  When a value of some ordered
+values C<Cat.E_RM:half_up>, C<Cat.E_RM:to_even>, C<Cat.E_RM:to_floor>,
+C<Cat.E_RM:to_ceiling>, C<Cat.E_RM:to_zero>.  When a value of some ordered
 type needs to be mapped into a proper subtype that doesn't contain that
 value, such as when mapping an arbitrary number to one with less precision,
 some rounding method is applied to determine which value of the subtype is
@@ -727,18 +735,34 @@ explicit union|intersection|exclusion of other types),
 C<Cat.E_TDM:difference> (defined as explicit difference of 2 other types),
 C<Cat.E_TDM:negation> (defined as explicit negation of another type).
 
-=head2 sys.Core.Cat.E_EK
+=head2 sys.Core.Cat.E_ENK
 
-A C<Cat.E_EK> (expression kind) is an enumeration consisting of the 10
-values C<Cat.E_EK:default> (default value of expression's declared type),
-C<Cat.E_EK:(scalar|tuple|relation|quasi_tuple|quasi_relation)> (hard-coded
-literal scalar|tuple|relation|quasi-tuple|quasi-relation value),
-C<Cat.E_EK:param> (value of expression-containing function parameter),
-C<Cat.E_EK:upd_param> (on-entry value of expression-containing update
-operator subject-to-update parameter), C<Cat.E_EK:ro_param> (value of
-expression-containing update operator read-only parameter),
-C<Cat.E_EK:func> (result of function invocation, or inlining of function
-body).  Its default value is C<Cat.E_EK:scalar>.
+A C<Cat.E_ENK> (expression node kind) is an enumeration consisting of the
+10 values C<Cat.E_ENK:default> (default value of expression's declared
+type), C<Cat.E_ENK:(scalar|tuple|relation|quasi_tuple|quasi_relation)>
+(hard-coded literal scalar|tuple|relation|quasi-tuple|quasi-relation
+value), C<Cat.E_ENK:param> (value of expression-containing function
+parameter), C<Cat.E_ENK:upd_param> (on-entry value of expression-containing
+update operator subject-to-update parameter), C<Cat.E_ENK:ro_param> (value
+of expression-containing update operator read-only parameter),
+C<Cat.E_ENK:func> (result of function invocation, or inlining of function
+body).  Note that only C<upd_param> and C<func> (over C<upd_param>) can be
+used for a subject-to-update argument of an update operator, but all of
+these can be used elsewhere.  Its default value is C<Cat.E_ENK:scalar>.
+
+=head2 sys.Core.Cat.E_PSAK
+
+A C<Cat.E_PSAK> (procedural statement argument kind) is an enumeration
+consisting of the 5 values C<Cat.E_PSAK:default> (default value of
+argument's declared type), C<Cat.E_PSAK:upd_param> (current value of
+statement-containing procedure subject-to-update parameter),
+C<Cat.E_PSAK:ro_param> (value of statement-containing procedure read-only
+parameter), C<Cat.E_PSAK:inner_var> (current value of statement-containing
+procedure lexical variable, not param), C<Cat.E_PSAK:outer_var> (current
+value of a non-lexical variable).  Note that only C<upd_param> and
+C<(inner|outer)_var> can be used for a subject-to-update argument, but all
+of these can be used with a read-only argument.  Its default value is
+C<Cat.E_PSAK:ro_param>.
 
 =head1 SYSTEM-DEFINED CORE CATALOG TUPLE DATA TYPES
 
@@ -782,6 +806,8 @@ A C<Cat.Type> is a C<Tuple>.  It defines a data type, which can either be
 (sometimes) invoked directly for values, or be invoked by or embedded into
 other type definitions.  C<Cat.Type> is used in the catalogs for defining
 both system and user types (just the interfaces in the former case).
+
+I<TODO:  The catalog types for type definitions need an overhaul.>
 
 A C<Cat.Type> has these 7 attributes:
 
@@ -926,7 +952,7 @@ frequently in code, so that the programmer and compiler knows that some
 generic routines are actually supposed to be resulting in a subtype of
 their normal result types.
 
-=item C<kind> - C<Cat.E_EK>
+=item C<kind> - C<Cat.E_ENK>
 
 This is the declared kind of expression that this node is; it says how to
 interpret the rest of the attributes and/or which of them have significant
@@ -934,13 +960,13 @@ values.
 
 =item C<scal_lit> - C<Cat.ScalarLiteral>
 
-Iff C<kind> is C<Cat.E_EK:scalar>, then the expression represents a
+Iff C<kind> is C<Cat.E_ENK:scalar>, then the expression represents a
 hard-coded scalar literal of one of a certain collection of system-defined
 core scalar types (or subtype thereof), and this is that literal value.
 
 =item C<coll_lit> - C<Cat.SetOfNameExprMap>
 
-Iff C<kind> is C<Cat.E_EK:(|quasi_)(tuple|relation)>, then the expression
+Iff C<kind> is C<Cat.E_ENK:(|quasi_)(tuple|relation)>, then the expression
 represents a collection literal, and these are the values of its
 components.  Each element defines one tuple, and each sub-element of that
 element defines one attribute value for one tuple, with the sub-element
@@ -952,15 +978,15 @@ or quasi-relation.
 
 =item C<param> - C<Cat.Name>
 
-Iff C<kind> is C<Cat.E_EK:param>, then the expression represents the value
+Iff C<kind> is C<Cat.E_ENK:param>, then the expression represents the value
 of the containing function's parameter which this names.  Or, if C<kind> is
-C<Cat.E_EK:upd_param> or C<Cat.E_EK:ro_param>, then the expression
+C<Cat.E_ENK:upd_param> or C<Cat.E_ENK:ro_param>, then the expression
 represents the on-entry value or value of the containing update operator's
 subject-to-update or read-only parameter, respectively.
 
 =item C<func> - C<Cat.NameChain>
 
-Iff C<kind> is C<Cat.E_EK:func>, then the expression represents the result
+Iff C<kind> is C<Cat.E_ENK:func>, then the expression represents the result
 of invoking a named function with specific arguments, and this the name of
 that function.
 
@@ -1105,7 +1131,7 @@ which defines the value.
 =back
 
 The default value of C<Cat.UpdateStmt> will unconditionally update 1
-subject-to-update operator of name C<$topic> with the value C<Bool:false>.
+subject-to-update parameter of name C<$topic> with the value C<Bool:false>.
 
 =head2 sys.Core.Cat.InnerUpdateOper
 
@@ -1158,8 +1184,9 @@ must reference all of the parameters that the inner update operator has.
 =back
 
 The default value of C<Cat.InnerUpdateOper> has 1 subject-to-update
-operator named C<$topic> and declared type C<Bool> and will unconditionally
-update it to the value C<Bool:false>; it has zero read-only parameters.
+parameter named C<$topic> and declared type C<Bool> and will
+unconditionally update it to the value C<Bool:false>; it has zero read-only
+parameters.
 
 =head2 sys.Core.Cat.UpdateOper
 
@@ -1168,7 +1195,7 @@ routine, which is conceptually a non-anonymous update operator that is
 generally invokable by the public (unless its parent package says
 otherwise).
 
-A C<Cat.UpdateOper> has these 3 attributes:
+A C<Cat.UpdateOper> has these 4 attributes:
 
 =over
 
@@ -1184,14 +1211,194 @@ operator defines its public interface / parameter list and main body.
 
 =item C<inner_update_opers> - C<Cat.InnerUpdateOperTree>
 
-This defines the entire body of the update operator, which is composed of
-one or more inner update operators, plus its public interface / parameter
-list, which is defined by one of those.
+This (save for C<inner_funcs>) defines the entire body of the update
+operator, which is composed of one or more inner update operators, plus its
+public interface / parameter list, which is defined by one of those.
+
+=item C<inner_funcs> - C<Cat.InnerFuncSet>
+
+This also contributes to the body of the update operator.
 
 =back
 
 The default value of C<Cat.UpdateOper> is as per the default of
 C<Cat.InnerUpdateOper>.
+
+=head2 sys.Core.Cat.ProcStmtArg
+
+A C<Cat.ProcStmtArg> is a C<Tuple>.  It specifies a named argument for a
+procedural routine invocation done as a procedure statement, and is
+composed into the C<Cat.ProcStmt> definition of said statement.
+
+A C<Cat.ProcStmtArg> has these 7 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the invoked procedural routine's parameter
+(either subject-to-update or read-only) that this argument is binding to.
+
+=item C<tk> - C<Cat.E_TK>
+
+This is as per the C<tk> attribute of a C<Cat.ExprNode>, but applying to
+the declared data type of the argument.
+
+=item C<type> - C<Cat.NameChain>
+
+This is as per the C<type> attribute of a C<Cat.ExprNode>, but applying to
+the declared data type of the argument.
+
+=item C<kind> - C<Cat.E_PSAK>
+
+This is the declared kind of value that this argument is; it says how to
+interpret the rest of the attributes and/or which of them have significant
+values.
+
+=item C<param> - C<Cat.Name>
+
+Iff C<kind> is C<Cat.E_PSAK:upd_param> or C<Cat.E_PSAK:ro_param>, then the
+argument is the current value or value of the containing procedure's
+subject-to-update or read-only parameter, respectively.
+
+=item C<inner_var> - C<Cat.Name>
+
+Iff C<kind> is C<Cat.E_PSAK:inner_var>, then the argument is the current
+value of a lexical variable that isn't a parameter.
+
+=item C<outer_var> - C<Cat.NameChain>
+
+Iff C<kind> is C<Cat.E_PSAK:outer_var>, then the argument is the current
+value of a non-lexical variable.
+
+=back
+
+The default value of C<Cat.ProcStmtArg> will bind to a read-only parameter
+of name C<$topic> with a value of the containing procedure's read-only
+parameter named C<$topic>.
+
+=head2 sys.Core.Cat.ProcStmt
+
+A C<Cat.ProcStmt> is a C<Tuple>.  It specifies a generic statement from
+which non-implicitly-atomic procedural Muldis D code is composed.  Only
+procedures (or inner procedures) may contain C<Cat.ProcStmt>.
+
+A C<Cat.ProcStmt> has these 3 attributes:
+
+=over
+
+=item C<proc> - C<Cat.NameChain>
+
+Every procedure statement is an invocation of some other procedural routine
+(eg, procedure, update operator, system service), either user-defined or
+system-defined; this is the name of that routine.
+
+=item C<upd_args> - C<Cat.ProcStmtArgSet>
+
+These are the 0..N subject-to-update arguments to the routine invocation,
+as-per C<ro_args>.
+
+=item C<ro_args> - C<Cat.ProcStmtArgSet>
+
+These are the 0..N read-only arguments to the routine invocation.  There is
+a distributed (unique) key over the C<name> attributes of C<upd_params> and
+C<ro_params>.
+
+=back
+
+The default value of C<Cat.ProcStmt> will invoke
+C<sys.Core.Universal.assign>, giving it arguments from same-named and typed
+parameters.
+
+=head2 sys.Core.Cat.InnerProc
+
+A C<Cat.InnerProc> is a C<Tuple>.  It specifies a named C<procedure>
+routine, which is the main component type of a complete procedure; a
+complete procedure consists of at least one inner procedure, which is its
+main body, likely plus more when it would conceptually be code refactored.
+
+A C<Cat.InnerProc> has these 6 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the inner procedure within its parent complete
+procedure; other Muldis D code within said complete procedure would
+reference it with this name.
+
+=item C<is_recursive> - C<Bool>
+
+This is C<Bool:true> if the inner procedure might possibly invoke
+itself, either directly or indirectly; it is C<Bool:false> if it promises
+to never be recursive.  I<Note that this attribute may be eliminated.>
+
+=item C<upd_params> - C<Cat.NameTypeMap>
+
+This is the declared subject-to-update parameter list of the inner
+procedure, which has 0..N named and typed such parameters.
+
+=item C<ro_params> - C<Cat.NameTypeMap>
+
+This is the declared read-only parameter list of the inner procedure,
+which has 0..N named and typed such parameters.  There is a distributed
+(unique) key over the C<name> attributes of C<upd_params> and C<ro_params>.
+
+=item C<vars> - C<Cat.NameTypeMap>
+
+This defines the 0..N (non-parameter) lexical variables of the inner
+procedure; they initialize to the default values of their declared types.
+
+=item C<stmts> - C<Cat.SeqOfProcStmt>
+
+This defines the entire main body of the inner procedure, which is composed
+of 0..N procedure statements.  These statements must reference all of the
+parameters and lexical variables that the inner procedure has.
+
+=back
+
+The default value of C<Cat.InnerProc> is a no-op; its C<name> has the
+default value of C<Cat.Name>, it has zero parameters, zero variables, and
+zero statements.
+
+=head2 sys.Core.Cat.Proc
+
+A C<Cat.Proc> is a C<Tuple>.  It specifies a named C<procedure> routine,
+which is conceptually a non-anonymous procedure that is generally invokable
+by the public (unless its parent package says otherwise).
+
+A C<Cat.Proc> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the procedure; other Muldis D code would
+reference it with this name.
+
+=item C<root_inner_proc> - C<Cat.Name>
+
+This indicates which of the inner procedures comprising this update
+operator defines its public interface / parameter list and main body.
+
+=item C<inner_procs> - C<Cat.InnerProcTree>
+
+This (save for C<inner_update_opers> and C<inner_funcs>) defines the entire
+body of the procedure, which is composed of one or more inner procedures,
+plus its public interface / parameter list, which is defined by one of
+those.
+
+=item C<inner_update_opers> - C<Cat.InnerUpdateOperTree>
+
+This also contributes to the body of the update operator.
+
+=item C<inner_funcs> - C<Cat.InnerFuncSet>
+
+This also contributes to the body of the update operator.
+
+=back
+
+The default value of C<Cat.Proc> is as per the default of C<Cat.InnerProc>.
 
 =head2 sys.Core.Cat.Exception
 
@@ -1306,6 +1513,18 @@ root (main update operator if applicable).  The default value of
 C<Cat.InnerUpdateOperTree> has one tuple that is the default value of
 C<Cat.InnerUpdateOper>.
 
+=head2 sys.Core.Cat.ProcStmtArgSet
+
+A C<Cat.ProcStmtArgSet> is a C<Relation> with the same heading as
+C<Cat.ProcStmtArg>; it specifies a set of arguments to an invocation of a
+procedural routine.  It has a unary (unique) key on the C<name> attribute.
+Its default value is empty.
+
+=head2 sys.Core.Cat.InnerProcTree
+
+A C<Cat.InnerProcTree> is to C<Cat.InnerProc> what
+C<Cat.InnerUpdateOperTree> is to C<Cat.InnerUpdateOper>.
+
 =head2 sys.Core.Cat.SetOfName
 
 A C<Cat.SetOfName> is a C<Set> whose C<value> attribute has a declared type
@@ -1332,6 +1551,11 @@ A C<Cat.NESeqOfName> is a C<Seq> whose C<value> attribute has a declared
 type of C<Cat.Name> and that must have at least 1 element; this type is
 used as the definition of the sequence possrep of a C<Cat.NameChain> (see
 that type for details).
+
+=head2 sys.Core.Cat.SeqOfProcStmt
+
+A C<Cat.SeqOfProcStmt> is a C<Seq> whose C<value> attribute has a declared
+type of C<Cat.ProcStmt>.
 
 =head1 SYSTEM-DEFINED CORE SPECIALIZED SUBTYPES
 
