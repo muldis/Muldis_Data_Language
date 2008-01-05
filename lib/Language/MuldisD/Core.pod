@@ -211,6 +211,7 @@ as the declared parameter types of various core operators:
 
                 # The following are all regular set types.
 
+                sys.Core.Spec.SetOfOrdered
                 sys.Core.Spec.SetOfBool
                 sys.Core.Spec.SetOfInt
                 sys.Core.Spec.SetOfRat
@@ -219,32 +220,46 @@ as the declared parameter types of various core operators:
 
                 # The following are all nonscalar type factories.
 
+                sys.Core.Spec.SetOfTuple
                 sys.Core.Spec.SetOfRelation
+                    sys.Core.Spec.SetOfBag
 
                 sys.Core.Relation.Maybe
 
                     # The following are all regular maybe types.
 
+                    sys.Core.Spec.MaybeOfOrdered
                     sys.Core.Spec.MaybeOfBool
                     sys.Core.Spec.MaybeOfInt
+                        sys.Core.Spec.MaybeOfUInt
                     sys.Core.Spec.MaybeOfRat
                     sys.Core.Spec.MaybeOfBlob
                     sys.Core.Spec.MaybeOfText
+
+                    # The following are all nonscalar type factories.
+
+                    sys.Core.Spec.MaybeOfTuple
 
             sys.Core.Relation.Seq
 
                 # The following are all regular sequence types.
 
+                sys.Core.Spec.SeqOfOrdered
                 sys.Core.Spec.SeqOfBool
                 sys.Core.Spec.SeqOfInt
                 sys.Core.Spec.SeqOfRat
                 sys.Core.Spec.SeqOfBlob
                 sys.Core.Spec.SeqOfText
 
+                # The following are all nonscalar type factories.
+
+                sys.Core.Spec.SeqOfSeq
+
             sys.Core.Relation.Bag
 
                 # The following are all regular bag types.
 
+                sys.Core.Spec.BagOfOrdered
                 sys.Core.Spec.BagOfBool
                 sys.Core.Spec.BagOfInt
                 sys.Core.Spec.BagOfRat
@@ -253,6 +268,7 @@ as the declared parameter types of various core operators:
 
                 # The following are all nonscalar type factories.
 
+                sys.Core.Spec.BagOfTuple
                 sys.Core.Spec.BagOfRelation
 
         sys.Core.QuasiRelation.QuasiRelation
@@ -260,11 +276,8 @@ as the declared parameter types of various core operators:
 
                 # The following are all quasi-nonscalar type factories.
 
+                sys.Core.Spec.QuasiSetOfTuple
                 sys.Core.Spec.QuasiSetOfRelation
-
-Note that, in later operator documentation, if you see something like
-C<Foo{Bar}> as a declared type, it corresponds to
-C<sys.Core.Spec.FooOfBar>.
 
 =head1 SYSTEM-DEFINED CORE MAXIMAL AND MINIMAL DATA TYPES
 
@@ -1722,7 +1735,7 @@ This function is exactly the same as C<sys.Core.Ordered.is_inside_range>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<sys.Core.Ordered.min of Ordered (Set{Ordered} $topic)>
+=item C<sys.Core.Ordered.min of Ordered (SetOfOrdered $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and picks the minimum of the 2 (a process which
@@ -1733,19 +1746,19 @@ for I<min>.  This function will fail on a C<$topic> of zero values if the
 result type's concept of positive infinity is impossible or impractically
 large to represent, such as with the infinite C<Text> type.
 
-=item C<sys.Core.Ordered.max of Ordered (Set{Ordered} $topic)>
+=item C<sys.Core.Ordered.max of Ordered (SetOfOrdered $topic)>
 
 This function is exactly the same as C<sys.Core.Ordered.min> except that it
 results in the maximum input element value rather than the minimum one, and
 its identity value is the result type's concept of negative infinity.
 
-=item C<sys.Core.Ordered.maybe_min of Maybe{Ordered} (Set{Ordered} $topic)>
+=item C<sys.Core.Ordered.maybe_min of MaybeOfOrdered (SetOfOrdered $topic)>
 
 This function is exactly the same as C<sys.Core.Ordered.min> except that it
 results in a C<Maybe> of what is otherwise the result type, and that result
 has zero elements if the argument has zero elements.
 
-=item C<sys.Core.Ordered.maybe_max of Maybe{Ordered} (Set{Ordered} $topic)>
+=item C<sys.Core.Ordered.maybe_max of MaybeOfOrdered (SetOfOrdered $topic)>
 
 This function is to C<sys.Core.Ordered.max> as
 C<sys.Core.Ordered.maybe_min> is to C<sys.Core.Ordered.min>.
@@ -1777,7 +1790,7 @@ These functions implement commonly used boolean operations.
 
 This function results in the logical I<not> of its argument.
 
-=item C<sys.Core.Bool.and of Bool (Set{Bool} $topic)>
+=item C<sys.Core.Bool.and of Bool (SetOfBool $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical I<and> (which is both
@@ -1785,7 +1798,7 @@ commutative and associative) on them until just one is left, which is the
 function's result.  If C<$topic> has zero values, then C<and> results in
 C<Bool:true>, which is the identity value for logical I<and>.
 
-=item C<sys.Core.Bool.or of Bool (Set{Bool} $topic)>
+=item C<sys.Core.Bool.or of Bool (SetOfBool $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical inclusive-or (which is both
@@ -1793,7 +1806,7 @@ commutative and associative) on them until just one is left, which is the
 function's result.  If C<$topic> has zero values, then C<or> results in
 C<Bool:false>, which is the identity value for logical inclusive-or.
 
-=item C<sys.Core.Bool.xor of Bool (Bag{Bool} $topic)>
+=item C<sys.Core.Bool.xor of Bool (BagOfBool $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical exclusive-or (which is both
@@ -1846,7 +1859,7 @@ This function results in its argument decreased by 1.
 
 This function results in the absolute value of its argument.
 
-=item C<sys.Core.Int.sum of Int (Bag{Int} $addends)>
+=item C<sys.Core.Int.sum of Int (BagOfInt $addends)>
 
 This function results in the sum of the N element values of its argument;
 it is a reduction operator that recursively takes each pair of input values
@@ -1860,7 +1873,7 @@ addition.
 This function results in the difference when its C<$subtrahend> argument is
 subtracted from its C<$minuend> argument.
 
-=item C<sys.Core.Int.product of Int (Bag{Int} $factors)>
+=item C<sys.Core.Int.product of Int (BagOfInt $factors)>
 
 This function results in the product of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -1881,27 +1894,27 @@ This function results in the remainder when its C<$dividend> argument is
 divided by its C<$divisor> argument using integer division.  This function
 will fail if C<$divisor> is zero.
 
-=item C<sys.Core.Int.maybe_quotient of Maybe{Int} (Int $dividend, Int
+=item C<sys.Core.Int.maybe_quotient of MaybeOfInt (Int $dividend, Int
 $divisor)>
 
 This function is exactly the same as C<sys.Core.Int.quotient> except that
 it results in a C<Maybe> of what is otherwise the result, and that result
 has zero elements if C<$divisor> is zero.
 
-=item C<sys.Core.Int.maybe_remainder of Maybe{UInt} (Int $dividend, Int
+=item C<sys.Core.Int.maybe_remainder of MaybeOfUInt (Int $dividend, Int
 $divisor)>
 
 This function is exactly the same as C<sys.Core.Int.remainder> except that
 it results in a C<Maybe> of what is otherwise the result, and that result
 has zero elements if C<$divisor> is zero.
 
-=item C<sys.Core.Int.range of Int (Set{Int} $topic)>
+=item C<sys.Core.Int.range of Int (SetOfInt $topic)>
 
 This function results in the difference between the lowest and highest
 element values of its argument.  If C<$topic> has zero values, then
 C<range> results in the integer zero.
 
-=item C<sys.Core.Int.median of Set{Int} (Bag{Int} $topic)>
+=item C<sys.Core.Int.median of SetOfInt (BagOfInt $topic)>
 
 This function results in the 1 or 2 median values of the N element values
 of its argument; they are returned as a set.  It is equivalent to first
@@ -1911,7 +1924,7 @@ middle values, if the count of input values is even (but if the 2 middle
 values are the same value, the output has one element).  If C<$topic> has
 zero values, then the result set is empty.
 
-=item C<sys.Core.Int.mode of Set{Int} (Bag{Int} $topic)>
+=item C<sys.Core.Int.mode of SetOfInt (BagOfInt $topic)>
 
 This function results in the mode of the N element values of its argument;
 it is the set of values that appear the most often as input elements, and
@@ -2032,7 +2045,7 @@ These functions implement commonly used rational numeric operations.
 
 This function results in the absolute value of its argument.
 
-=item C<sys.Core.Rat.sum of Rat (Bag{Rat} $addends)>
+=item C<sys.Core.Rat.sum of Rat (BagOfRat $addends)>
 
 This function results in the sum of the N element values of its argument;
 it is a reduction operator that recursively takes each pair of input values
@@ -2046,7 +2059,7 @@ addition.
 This function results in the difference when its C<$subtrahend> argument is
 subtracted from its C<$minuend> argument.
 
-=item C<sys.Core.Rat.product of Rat (Bag{Rat} $factors)>
+=item C<sys.Core.Rat.product of Rat (BagOfRat $factors)>
 
 This function results in the product of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -2061,33 +2074,33 @@ This function results in the quotient when its C<$dividend> argument is
 divided by its C<$divisor> argument using rational division.  This function
 will fail if C<$divisor> is zero.
 
-=item C<sys.Core.Rat.maybe_quotient of Maybe{Rat} (Rat $dividend, Rat
+=item C<sys.Core.Rat.maybe_quotient of MaybeOfRat (Rat $dividend, Rat
 $divisor)>
 
 This function is exactly the same as C<sys.Core.Rat.quotient> except that
 it results in a C<Maybe> of what is otherwise the result, and that result
 has zero elements if C<$divisor> is zero.
 
-=item C<sys.Core.Rat.range of Rat (Set{Rat} $topic)>
+=item C<sys.Core.Rat.range of Rat (SetOfRat $topic)>
 
 This function results in the difference between the lowest and highest
 element values of its argument.  If C<$topic> has zero values, then
 C<range> results in the rational zero.
 
-=item C<sys.Core.Rat.mean of Rat (Bag{Rat} $topic)>
+=item C<sys.Core.Rat.mean of Rat (BagOfRat $topic)>
 
 This function results in the mean or arithmetic average of the N element
 values of its argument.  It is equivalent to first taking the sum of the
 input values, and dividing that sum by the count of the input values.  If
 C<$topic> has zero values, then this function will fail.
 
-=item C<sys.Core.Rat.maybe_mean of Maybe{Rat} (Bag{Rat} $topic)>
+=item C<sys.Core.Rat.maybe_mean of MaybeOfRat (BagOfRat $topic)>
 
 This function is exactly the same as C<sys.Core.Rat.mean> except that it
 results in a C<Maybe> of what is otherwise the result, and that result has
 zero elements if C<$topic> has zero values.
 
-=item C<sys.Core.Rat.median of Set{Rat} (Bag{Rat} $topic)>
+=item C<sys.Core.Rat.median of SetOfRat (BagOfRat $topic)>
 
 This function results in the 1 or 2 median values of the N element values
 of its argument; they are returned as a set.  It is equivalent to first
@@ -2097,12 +2110,12 @@ middle values, if the count of input values is even (but if the 2 middle
 values are the same value, the output has one element).  If C<$topic> has
 zero values, then the result set is empty.
 
-=item C<sys.Core.Rat.mean_of_median of Rat (Bag{Rat} $topic)>
+=item C<sys.Core.Rat.mean_of_median of Rat (BagOfRat $topic)>
 
 This function is a wrapper over C<sys.Core.Rat.median> that will result in
 the mean of its result elements; it will fail if there are zero elements.
 
-=item C<sys.Core.Rat.mode of Set{Rat} (Bag{Rat} $topic)>
+=item C<sys.Core.Rat.mode of SetOfRat (BagOfRat $topic)>
 
 This function results in the mode of the N element values of its argument;
 it is the set of values that appear the most often as input elements, and
@@ -2194,7 +2207,7 @@ These functions implement commonly used binary string operations.
 
 =over
 
-=item C<sys.Core.Blob.catenation of Blob (Seq{Blob} $topic)>
+=item C<sys.Core.Blob.catenation of Blob (SeqOfBlob $topic)>
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
@@ -2233,7 +2246,7 @@ it results in the opposite boolean value when given the same arguments.
 
 This function results in the bitwise I<not> of its argument.
 
-=item C<sys.Core.Blob.and of Blob (Set{Blob} $topic)>
+=item C<sys.Core.Blob.and of Blob (SetOfBlob $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a bitwise I<and> (which is both
@@ -2244,13 +2257,13 @@ length in bits, that length being part of the argument's declared type
 of the function's result.  If C<$topic> has zero values, then C<and> will
 result in an appropriate-length string of identity/1 valued bits.
 
-=item C<sys.Core.Blob.or of Blob (Set{Blob} $topic)>
+=item C<sys.Core.Blob.or of Blob (SetOfBlob $topic)>
 
 This function is the same as C<sys.Core.Blob.and> but that it recursively
 does a bitwise inclusive-or rather than a bitwise I<and>, and its identity
 value is composed of zero valued bits.
 
-=item C<sys.Core.Blob.xor of Blob (Bag{Blob} $topic)>
+=item C<sys.Core.Blob.xor of Blob (BagOfBlob $topic)>
 
 This function is the same as C<sys.Core.Blob.or> but that it recursively
 does a bitwise exclusive-or rather than a bitwise inclusive-or.
@@ -2288,7 +2301,7 @@ These functions implement commonly used character string operations.
 
 =over
 
-=item C<sys.Core.Text.catenation of Text (Seq{Text} $topic)>
+=item C<sys.Core.Text.catenation of Text (SeqOfText $topic)>
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
@@ -2468,7 +2481,7 @@ C<$topic> attribute.
 
 =over
 
-=item C<sys.Core.Tuple.product of Tuple (QuasiSet{Tuple} $topic)>
+=item C<sys.Core.Tuple.product of Tuple (QuasiSetOfTuple $topic)>
 
 This function is similar to C<sys.Core.Relation.product> but that it works
 with tuples rather than relations.  This function is mainly intended for
@@ -2560,7 +2573,7 @@ in a relation with that heading.  This function will fail if said universal
 relation is impossible or impractically large to represent, such as when
 any attributes are of infinite types.
 
-=item C<sys.Core.Relation.power_set of Set{Relation} (Relation $topic)>
+=item C<sys.Core.Relation.power_set of SetOfRelation (Relation $topic)>
 
 This function results in the power set of its argument.  The result is a
 C<Set> whose sole attribute is C<Relation>-typed (its type is nominally the
@@ -2701,7 +2714,7 @@ C<$identity> may be changed to take a function name rather than a value,
 for consistency with C<$func>.>  This function will fail if the declared
 headings of C<$identity> and C<$topic> aren't compatible.
 
-=item C<sys.Core.Relation.maybe_reduction of Maybe{Tuple} (Relation $topic,
+=item C<sys.Core.Relation.maybe_reduction of MaybeOfTuple (Relation $topic,
 Cat.NameChain $func, Tuple $assuming)>
 
 This function is exactly the same as C<sys.Core.Relation.reduction> except
@@ -2865,7 +2878,7 @@ This function is exactly the same as C<sys.Core.Relation.is_proper_subset>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<sys.Core.Relation.union of Relation (Set{Relation} $topic)>
+=item C<sys.Core.Relation.union of Relation (SetOfRelation $topic)>
 
 This function results in the relational union/inclusive-or of the N element
 values of its argument; it is a reduction operator that recursively takes
@@ -2877,7 +2890,7 @@ If C<$topic> has zero values, then C<union> results in the empty relation
 with the same heading, which is the per-distinct-heading identity value for
 relational union.
 
-=item C<sys.Core.Relation.exclusion of Relation (Bag{Relation} $topic)>
+=item C<sys.Core.Relation.exclusion of Relation (BagOfRelation $topic)>
 
 This function results in the relational exclusion/exclusive-or of the N
 element values of its argument; it is a reduction operator that recursively
@@ -2891,7 +2904,7 @@ per-distinct-heading identity value for relational exclusion.  Note that
 this operation is also legitimately known as I<symmetric difference>, or
 I<disjoint union>.
 
-=item C<sys.Core.Relation.intersection of Relation (Set{Relation} $topic)>
+=item C<sys.Core.Relation.intersection of Relation (SetOfRelation $topic)>
 
 This function results in the relational intersection/and of the N element
 values of its argument; it is a reduction operator that recursively takes
@@ -2942,7 +2955,7 @@ between its 2 arguments, and then performing a relational projection on all
 of the attributes that just C<$source> has.  This function will fail any
 time that C<join> would fail on the same 2 input relations.
 
-=item C<sys.Core.Relation.join of Relation (QuasiSet{Relation} $topic)>
+=item C<sys.Core.Relation.join of Relation (QuasiSetOfRelation $topic)>
 
 This function results in the relational join of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -2968,7 +2981,7 @@ latter.  This function will fail if any input relations have attributes
 with common names but different/incompatible declared types.  Note that
 this operation is also legitimately known as I<natural inner join>.
 
-=item C<sys.Core.Relation.product of Relation (QuasiSet{Relation} $topic)>
+=item C<sys.Core.Relation.product of Relation (QuasiSetOfRelation $topic)>
 
 This function results in the relational cartesian/cross product of the N
 element values of its argument; it is conceptually a special case of
@@ -3069,7 +3082,7 @@ it does not take an C<$assuming> argument, and it results in a C<Maybe> of
 what is otherwise the result type, and that result has zero elements if the
 argument has zero elements.
 
-=item C<sys.Core.Set.Set_from_wrap of Set{Tuple} (Relation $topic)>
+=item C<sys.Core.Set.Set_from_wrap of SetOfTuple (Relation $topic)>
 
 This function results in a C<Set> whose sole attribute is tuple-typed and
 the attribute values are all the tuples of C<$topic>; is a short-hand for a
@@ -3177,7 +3190,7 @@ $func, Tuple $assuming)>
 This function is to C<sys.Core.Set.maybe_reduction> as
 C<sys.Core.Seq.reduction> is to C<sys.Core.Set.reduction>.
 
-=item C<sys.Core.Seq.catenation of Seq (Seq{Seq} $topic)>
+=item C<sys.Core.Seq.catenation of Seq (SeqOfSeq $topic)>
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
@@ -3282,7 +3295,7 @@ attribute of its C<Bag> argument.
 This function results in the C<Bag> that is the extension of its C<Set>
 argument with a new C<count> attribute whose value for every tuple is 1.
 
-=item C<sys.Core.Bag.Bag_from_wrap of Bag{Tuple} (Relation $topic)>
+=item C<sys.Core.Bag.Bag_from_wrap of BagOfTuple (Relation $topic)>
 
 This function results in a C<Bag> whose C<value> attribute is tuple-typed
 and that attribute's values are all the tuples of C<$topic>; is a
@@ -3327,7 +3340,7 @@ $look_for)>
 This function is like C<sys.Core.Relation.is_not_proper_subset> as per
 C<is_subset>.  I<TODO: What is its definition?>
 
-=item C<sys.Core.Bag.union of Bag (Set{Bag} $topic)>
+=item C<sys.Core.Bag.union of Bag (SetOfBag $topic)>
 
 This function is like C<sys.Core.Relation.union> but that it just looks at
 the C<value> attribute of its argument elements when determining what
@@ -3335,7 +3348,7 @@ element tuples correspond; then for each tuple in the result, its C<count>
 attribute value is the maximum of the C<count> attribute values of its
 corresponding input element tuples.
 
-=item C<sys.Core.Bag.intersection of Bag (Set{Bag} $topic)>
+=item C<sys.Core.Bag.intersection of Bag (SetOfBag $topic)>
 
 This function is like C<sys.Core.Relation.intersection> as C<union> is like
 C<sys.Core.Relation.union>; the minimum of C<count> attribute values is
