@@ -98,6 +98,10 @@ relationships:
             sys.Core.QuasiRelation.QuasiSeq
             sys.Core.QuasiRelation.QuasiBag
 
+        # The following are all remnant types.
+
+        sys.Core.Remnant.ScaTupRel
+
 Note that C<sys.Core.Universal.Empty> is a proper subtype of all of the
 other types in this graph, but every other type has only one immediate
 supertype shown, and hence the graph of them is a simple hierarchy.
@@ -284,32 +288,6 @@ and is the only type that contains exactly zero values.  Every other type
 is implicitly a proper supertype of C<Empty> and C<Empty> is implicitly an
 intersection type over all other types.  It has no default value.  The
 cardinality of this type is zero.
-
-=head1 SYSTEM-DEFINED CORE PSEUDO-TYPES
-
-These are pseudo-types (that is, they aren't types at all) which represent
-generic contexts that could accept a multiplicity of types, but are not the
-same as contexts named after some actual types.  For example, they are used
-as the declared parameter types of some dyadic polymorphic operators to
-refer to, per instance, 2 given types that need to be compatible, but the
-compatibility isn't simply defined by a "are any 2 subtypes of" such as is
-true with most operators.  They are all system-defined and it is impossible
-for users to define more types of this nature.
-
-=head2 sys.Core.Some.Universal
-
-Contexts defined by the C<Some.Universal> pseudo-type accept values of
-potentially any type of C<Universal>.
-
-=head2 sys.Core.Some.ScaTupRel
-
-Contexts defined by the C<Some.ScaTupRel> pseudo-type accept values of
-potentially any type of C<Scalar> or C<Tuple> or C<Relation>.
-
-=head2 sys.Core.Some.Ordered
-
-Contexts defined by the C<Some.Ordered> pseudo-type accept values of
-potentially any type of C<Ordered>.
 
 =head1 SYSTEM-DEFINED CORE SCALAR DATA TYPES
 
@@ -644,6 +622,19 @@ infinite.
 A C<QuasiBag> is a proper subtype of C<QuasiRelation> in the corresponding
 manner to C<Bag> being a proper subtype of C<Relation>.  Its cardinality is
 infinite.
+
+=head1 SYSTEM-DEFINED REMNANT TYPES
+
+These core data types are mainly for use with the definitions of some
+polymorphic operators whose range of possibly acceptable values may be
+mutually incompatible, and they aren't appropriate to group into other type
+categories or namespaces.
+
+=head2 sys.Core.Remnant.ScaTupRel
+
+The C<ScaTupRel> type is a union type over C<Scalar>, C<Tuple> and
+C<Relation>; it is mainly useful in describing the possible range of types
+of attributes of scalar possreps or tuples or relations.
 
 =head1 SYSTEM-DEFINED CORE CATALOG SCALAR DATA TYPES
 
@@ -1609,8 +1600,7 @@ These functions are applicable to values of any data type at all.
 
 =over
 
-=item C<sys.Core.Universal.is_equal of Bool (Some.Universal $v1,
-Some.Universal $v2)>
+=item C<sys.Core.Universal.is_equal of Bool (Universal $v1, Universal $v2)>
 
 This function results in C<Bool:true> iff its 2 arguments are exactly the
 same value, and C<Bool:false> otherwise.  This function's arguments must be
@@ -1622,8 +1612,8 @@ same headings; 3. at least one type is a generic (eg-C<Universal>) or
 incomplete (eg-C<Seq>) type, and it is a supertype of the other.  This
 function is commutative.
 
-=item C<sys.Core.Universal.is_not_equal of Bool (Some.Universal $v1,
-Some.Universal $v2)>
+=item C<sys.Core.Universal.is_not_equal of Bool (Universal $v1,
+Universal $v2)>
 
 This function is exactly the same as C<sys.Core.Universal.is_equal> except
 that it results in the opposite boolean value when given the same
@@ -1639,8 +1629,8 @@ results in C<Bool:true> if the named type is C<Universal>, and
 C<Bool:false> if it is C<Empty>.  This function will fail if the named type
 doesn't exist in the virtual machine.
 
-=item C<sys.Core.Universal.treat of Some.Universal (Cat.NameChain $as,
-Some.Universal $v)>
+=item C<sys.Core.Universal.treat of Universal (Cat.NameChain $as,
+Universal $v)>
 
 This function results in the value of its C<$v> argument, but that the
 declared type of the result is the not-C<Empty> data type whose name is
@@ -1656,7 +1646,7 @@ you are storing an C<Int> value in a C<Scalar>-typed variable, using
 C<treat> will cause the compiler to let you use that variable as an
 argument to C<Int.sum>, which it otherwise wouldn't.
 
-=item C<sys.Core.Universal.default of Some.Universal (Cat.NameChain $of)>
+=item C<sys.Core.Universal.default of Universal (Cat.NameChain $of)>
 
 This function results in the default value of the not-C<Empty> data type
 whose name is given in the C<$of> argument, and the declared type of the
@@ -1681,8 +1671,7 @@ just the types they apply to.
 
 =over
 
-=item C<sys.Core.Ordered.comparison of Order (Some.Ordered $v1,
-Some.Ordered $v2)>
+=item C<sys.Core.Ordered.comparison of Order (Ordered $v1, Ordered $v2)>
 
 This function results in C<Order:same> iff its 2 arguments are exactly the
 same value, and otherwise it results in C<Order:increase> if the value of
@@ -1695,31 +1684,28 @@ type that declares itself an C<Ordered> subtype.  Note that C<comparison>
 is considered the only fundamental ordered-specific operator, and all
 others are defined over it.
 
-=item C<sys.Core.Ordered.reverse_comparison of Order (Some.Ordered $v1,
-Some.Ordered $v2)>
+=item C<sys.Core.Ordered.reverse_comparison of Order (Ordered $v1, Ordered
+$v2)>
 
 This function is exactly the same as C<sys.Core.Ordered.comparison> except
 that it results in the reverse value when given the same arguments.  It is
 a short-hand for applying C<sys.Core.Order.reverse> to the result of
 C<sys.Core.Ordered.comparison> with the same arguments.
 
-=item C<sys.Core.Ordered.is_increase of Bool (Some.Ordered $v1,
-Some.Ordered $v2)>
+=item C<sys.Core.Ordered.is_increase of Bool (Ordered $v1, Ordered $v2)>
 
 This function results in C<Bool:true> iff C<sys.Core.Ordered.comparison>
 would result in C<Order:increase> when given the same arguments, and
 C<Bool:false> otherwise.
 
-=item C<sys.Core.Ordered.is_decrease of Bool (Some.Ordered $v1,
-Some.Ordered $v2)>
+=item C<sys.Core.Ordered.is_decrease of Bool (Ordered $v1, Ordered $v2)>
 
 This function results in C<Bool:true> iff C<sys.Core.Ordered.comparison>
 would result in C<Order:decrease> when given the same arguments, and
 C<Bool:false> otherwise.
 
-=item C<sys.Core.Ordered.is_inside_range of Bool (Some.Ordered $topic,
-Some.Ordered $min, Some.Ordered $max, Bool $min_is_inside, Bool
-$max_is_inside)>
+=item C<sys.Core.Ordered.is_inside_range of Bool (Ordered $topic, Ordered
+$min, Ordered $max, Bool $min_is_inside, Bool $max_is_inside)>
 
 This function results in C<Bool:true> iff its C<$topic> argument is within
 the range whose bounds are defined by its C<$min> and C<$max> arguments. If
@@ -1729,15 +1715,14 @@ respectively.  This function's arguments must be of compatible declared
 types as per C<sys.Core.Ordered.comparison>.  This function will fail if
 C<$min> is an increase over C<$max>.
 
-=item C<sys.Core.Ordered.is_outside_range of Bool (Some.Ordered $topic,
-Some.Ordered $min, Some.Ordered $max, Bool $min_is_inside, Bool
-$max_is_inside)>
+=item C<sys.Core.Ordered.is_outside_range of Bool (Ordered $topic, Ordered
+$min, Ordered $max, Bool $min_is_inside, Bool $max_is_inside)>
 
 This function is exactly the same as C<sys.Core.Ordered.is_inside_range>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<sys.Core.Ordered.min of Some.Ordered (Set{Some.Ordered} $topic)>
+=item C<sys.Core.Ordered.min of Ordered (Set{Ordered} $topic)>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and picks the minimum of the 2 (a process which
@@ -1748,21 +1733,19 @@ for I<min>.  This function will fail on a C<$topic> of zero values if the
 result type's concept of positive infinity is impossible or impractically
 large to represent, such as with the infinite C<Text> type.
 
-=item C<sys.Core.Ordered.max of Some.Ordered (Set{Some.Ordered} $topic)>
+=item C<sys.Core.Ordered.max of Ordered (Set{Ordered} $topic)>
 
 This function is exactly the same as C<sys.Core.Ordered.min> except that it
 results in the maximum input element value rather than the minimum one, and
 its identity value is the result type's concept of negative infinity.
 
-=item C<sys.Core.Ordered.maybe_min of Maybe{Some.Ordered}
-(Set{Some.Ordered} $topic)>
+=item C<sys.Core.Ordered.maybe_min of Maybe{Ordered} (Set{Ordered} $topic)>
 
 This function is exactly the same as C<sys.Core.Ordered.min> except that it
 results in a C<Maybe> of what is otherwise the result type, and that result
 has zero elements if the argument has zero elements.
 
-=item C<sys.Core.Ordered.maybe_max of Maybe{Some.Ordered}
-(Set{Some.Ordered} $topic)>
+=item C<sys.Core.Ordered.maybe_max of Maybe{Ordered} (Set{Ordered} $topic)>
 
 This function is to C<sys.Core.Ordered.max> as
 C<sys.Core.Ordered.maybe_min> is to C<sys.Core.Ordered.min>.
@@ -2389,28 +2372,27 @@ in that they typically work with any nonscalar types.
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
-=item C<sys.Core.Tuple.attr_from_Tuple of Some.ScaTupRel (Tuple $topic)>
+=item C<sys.Core.Tuple.attr_from_Tuple of ScaTupRel (Tuple $topic)>
 
 This function results in the scalar or nonscalar value of the sole
 attribute of its argument.  This function will fail if its argument is not
 of degree 1.
 
-=item C<sys.Core.Tuple.Tuple_from_attr of Tuple (Cat.Name $name,
-Some.ScaTupRel $value)>
+=item C<sys.Core.Tuple.Tuple_from_attr of Tuple (Cat.Name $name, ScaTupRel
+$value)>
 
 This function results in the C<Tuple> value which has just one attribute
 whose name is given by C<$name> and whose value is given by C<$value>; the
 attribute's declared type is the same as that of C<$value>.
 
-=item C<sys.Core.Tuple.attr of Some.ScaTupRel (Tuple $topic, Cat.Name
-$name)>
+=item C<sys.Core.Tuple.attr of ScaTupRel (Tuple $topic, Cat.Name $name)>
 
 This function results in the scalar or nonscalar value of the attribute of
 C<$topic> whose name is given by C<$name>.  This function will fail if
 C<$name> specifies an attribute name that C<$topic> doesn't have.
 
 =item C<sys.Core.Tuple.update_attr of Tuple (Tuple $topic, Cat.Name $name,
-Some.ScaTupRel $value)>
+ScaTupRel $value)>
 
 This function results in its C<$topic> argument but that its attribute
 whose name is C<$name> has been updated with a new scalar or nonscalar
@@ -3033,7 +3015,7 @@ relational restriction.
 
 =over
 
-=item C<sys.Core.Set.is_member of Bool (Set $set, Some.ScaTupRel $value)>
+=item C<sys.Core.Set.is_member of Bool (Set $set, ScaTupRel $value)>
 
 This function results in C<Bool:true> iff its C<$value> argument matches
 the sole attribute of a tuple of its C<$set> argument (that is, iff
@@ -3041,13 +3023,12 @@ conceptually C<$value> is a member of C<$set>), and C<Bool:false>
 otherwise.  This function will fail if the declared type of C<$value> isn't
 a subtype of the declared type of the attribute.
 
-=item C<sys.Core.Set.is_not_member of Bool (Set $set, Some.ScaTupRel
-$value)>
+=item C<sys.Core.Set.is_not_member of Bool (Set $set, ScaTupRel $value)>
 
 This function is exactly the same as C<sys.Core.Set.is_member> except that
 it results in the opposite boolean value when given the same arguments.
 
-=item C<sys.Core.Set.insertion of Set (Set $set, Some.ScaTupRel $value)>
+=item C<sys.Core.Set.insertion of Set (Set $set, ScaTupRel $value)>
 
 This function results in a C<Set> that is the relational union of C<$set>
 and a Set whose sole tuple has the sole attribute value of C<$value>; that
@@ -3055,7 +3036,7 @@ is, conceptually the result is C<$value> inserted into C<$set>.  As a
 trivial case, if C<$value> already exists in C<$set>, then the result is
 just C<$set>.
 
-=item C<sys.Core.Set.deletion of Set (Set $set, Some.ScaTupRel $value)>
+=item C<sys.Core.Set.deletion of Set (Set $set, ScaTupRel $value)>
 
 This function results in a C<Set> that is the relational difference from
 C<$set> of a Set whose sole tuple has the sole attribute value of
@@ -3063,8 +3044,8 @@ C<$value>; that is, conceptually the result is C<$value> deleted from
 C<$set>.  As a trivial case, if C<$value> already doesn't exist in C<$set>,
 then the result is just C<$set>.
 
-=item C<sys.Core.Set.reduction of Some.ScaTupRel (Set $topic, Cat.NameChain
-$func, Tuple $assuming, Some.ScaTupRel $identity)>
+=item C<sys.Core.Set.reduction of ScaTupRel (Set $topic, Cat.NameChain
+$func, Tuple $assuming, ScaTupRel $identity)>
 
 This function is a generic reduction operator that recursively takes each
 pair of input values in C<$topic> and applies an argument-specified scalar
@@ -3108,15 +3089,15 @@ projection of just the named attribute plus its renaming to C<value>.
 
 =over
 
-=item C<sys.Core.Maybe.attr_or_default of Some.ScaTupRel (Tuple $topic)>
+=item C<sys.Core.Maybe.attr_or_default of ScaTupRel (Tuple $topic)>
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of its argument, if said tuple exists;
 otherwise, it results in the default value of the declared type of the said
 attribute.
 
-=item C<sys.Core.Maybe.attr_or_value of Some.ScaTupRel (Tuple $topic,
-Some.ScaTupRel $value)>
+=item C<sys.Core.Maybe.attr_or_value of ScaTupRel (Tuple $topic, ScaTupRel
+$value)>
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of C<$topic>, if said tuple exists; otherwise,
@@ -3129,14 +3110,14 @@ C<$value> isn't a subtype of the declared type of the attribute.
 
 =over
 
-=item C<sys.Core.Seq.value of Some.ScaTupRel (Seq $topic, UInt $index)>
+=item C<sys.Core.Seq.value of ScaTupRel (Seq $topic, UInt $index)>
 
 This function results in the scalar or nonscalar C<value> attribute of the
 tuple of C<$topic> whose C<index> attribute is C<$index>.  This function
 will fail if no tuple exists in C<$topic> with the specified index.
 
 =item C<sys.Core.Seq.update_value of Seq (Seq $topic, UInt $index,
-Some.ScaTupRel $value)>
+ScaTupRel $value)>
 
 This function results in its C<$topic> argument but that the C<value>
 attribute of the tuple of C<$topic> whose C<index> attribute is C<$index>
@@ -3145,8 +3126,8 @@ This function will fail if no tuple exists in C<$topic> with the specified
 index, or if the declared type of C<$value> isn't a subtype of the declared
 type of the C<value> attribute.
 
-=item C<sys.Core.Seq.insertion of Seq (Seq $topic, UInt $index,
-Some.ScaTupRel $value)>
+=item C<sys.Core.Seq.insertion of Seq (Seq $topic, UInt $index, ScaTupRel
+$value)>
 
 This function results in its C<$topic> argument but that a new tuple has
 been inserted whose C<index> is C<$index> and whose C<value> is C<$value>;
@@ -3166,8 +3147,7 @@ values greater than or equal to C<$index> had theirs decreased by 1.  This
 function will fail if no tuple exists in C<$topic> with the specified
 index.
 
-=item C<sys.Core.Seq.is_element of Bool (Seq $topic, Some.ScaTupRel
-$value)>
+=item C<sys.Core.Seq.is_element of Bool (Seq $topic, ScaTupRel $value)>
 
 This function results in C<Bool:true> iff its C<$value> argument matches
 the C<value> attribute of at least one tuple of its C<$topic> argument
@@ -3175,14 +3155,13 @@ the C<value> attribute of at least one tuple of its C<$topic> argument
 C<Bool:false> otherwise.  This function will fail if the declared type of
 C<$value> isn't a subtype of the declared type of that attribute.
 
-=item C<sys.Core.Seq.is_not_element of Bool (Seq $topic, Some.ScaTupRel
-$value)>
+=item C<sys.Core.Seq.is_not_element of Bool (Seq $topic, ScaTupRel $value)>
 
 This function is exactly the same as C<sys.Core.Seq.is_element> except that
 it results in the opposite boolean value when given the same arguments.
 
-=item C<sys.Core.Seq.reduction of Some.ScaTupRel (Seq $topic, Cat.NameChain
-$func, Tuple $assuming, Some.ScaTupRel $identity)>
+=item C<sys.Core.Seq.reduction of ScaTupRel (Seq $topic, Cat.NameChain
+$func, Tuple $assuming, ScaTupRel $identity)>
 
 This function is the same as C<sys.Core.Set.reduction>, including that
 input values for the reduction come from the C<value> attribute of
@@ -3244,26 +3223,25 @@ This function is like C<sys.Core.Relation.cardinality> but that it accounts
 for the greater-than-one multiplicity of values in its argument; it results
 in the sum of the C<count> attribute of its argument.
 
-=item C<sys.Core.Bag.is_member of Bool (Bag $bag, Some.ScaTupRel $value)>
+=item C<sys.Core.Bag.is_member of Bool (Bag $bag, ScaTupRel $value)>
 
 This function is the same as C<sys.Core.Set.is_member>, including that
 matching of C<$value> is done against the C<value> attribute, except that
 it works with a C<Bag> rather than a C<Set>.
 
-=item C<sys.Core.Bag.is_not_member of Bool (Bag $bag, Some.ScaTupRel
-$value)>
+=item C<sys.Core.Bag.is_not_member of Bool (Bag $bag, ScaTupRel $value)>
 
 This function is exactly the same as C<sys.Core.Bag.is_member> except that
 it results in the opposite boolean value when given the same arguments.
 
-=item C<sys.Core.Bag.count of UInt (Bag $bag, Some.ScaTupRel $value)>
+=item C<sys.Core.Bag.count of UInt (Bag $bag, ScaTupRel $value)>
 
 This function results in the multiplicity / count of occurrances of
 C<$value> in C<$bag>; if a tuple exists in C<$bag> whose C<value> attribute
 is C<$value>, then the result is its C<count> attribute; otherwise the
 result is zero.
 
-=item C<sys.Core.Bag.insertion of Bag (Bag $bag, Some.ScaTupRel $value)>
+=item C<sys.Core.Bag.insertion of Bag (Bag $bag, ScaTupRel $value)>
 
 This function is the same as C<sys.Core.Set.insertion> as per C<is_member>
 but that its result differs depending on whether C<$value> already exists
@@ -3271,7 +3249,7 @@ in C<$bag>; if it does, then no new tuple is added, but the C<count>
 attribute for the matching tuple is increased by 1; if it does not, then a
 new tuple is added where its C<value> is C<$value> and its C<count> is 1.
 
-=item C<sys.Core.Bag.deletion of Bag (Bag $bag, Some.ScaTupRel $value)>
+=item C<sys.Core.Bag.deletion of Bag (Bag $bag, ScaTupRel $value)>
 
 This function is the same as C<sys.Core.Set.deletion> as per C<is_member>
 but that its result differs depending on what the C<count> for any tuple
@@ -3279,8 +3257,8 @@ matching C<$value> that already exists in C<$bag> is; if the C<count> is
 greater than 1, then it is decreased by 1; if it is equal to 1, then the
 tuple whose C<value> is C<$value> is deleted.
 
-=item C<sys.Core.Bag.reduction of Some.ScaTupRel (Bag $topic, Cat.NameChain
-$func, Tuple $assuming, Some.ScaTupRel $identity)>
+=item C<sys.Core.Bag.reduction of ScaTupRel (Bag $topic, Cat.NameChain
+$func, Tuple $assuming, ScaTupRel $identity)>
 
 This function is the same as C<sys.Core.Set.reduction>, including that
 input values for the reduction come from the C<value> attribute of
@@ -3385,8 +3363,8 @@ These update operators are applicable to values of any data type at all.
 
 =over
 
-=item C<sys.Core.Universal.assign (UPD: Some.Universal $target ; RO:
-Some.Universal $v)>
+=item C<sys.Core.Universal.assign (UPD: Universal $target ; RO: Universal
+$v)>
 
 This update operator will update the variable supplied as its C<$target>
 argument so that it holds the value supplied as its C<$v> argument.  This
