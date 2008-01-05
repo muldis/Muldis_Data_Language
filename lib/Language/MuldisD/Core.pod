@@ -53,7 +53,6 @@ relationships:
                 # The following are all regular ordered scalar types.
 
                 sys.Core.Bool.Bool
-                sys.Core.Order.Order
                 sys.Core.Int.Int
                     sys.Core.Int.UInt
                         sys.Core.Int.PInt
@@ -126,6 +125,7 @@ more or less:
                 sys.Core.Cat.Name
                 sys.Core.Cat.NameChain
                 sys.Core.Cat.FlattenedNameChain
+                sys.Core.Cat.Order
 
             # The following are all regular non-ordered scalar types.
 
@@ -343,15 +343,6 @@ C<is_equal> or C<is_not_equal> routine; it is the only essential scalar
 data type of a B<D> language.  Its default and minimum value is
 C<Bool:false>; its maximum value is C<Bool:true>.  The cardinality of this
 type is 2.
-
-=head2 sys.Core.Order.Order
-
-An C<Order> is an enumeration consisting of the 3 values C<Order:increase>,
-C<Order:same>, C<Order:decrease>.  It is the result type of any
-C<comparison> routine that is used on 2 values of a
-C<sys.Core.Ordered.Ordered> subtype.  Its default value is C<Order:same>;
-its minimum and maximum values are, respectively, C<Order:increase> and
-C<Order:decrease>.  The cardinality of this type is 3.
 
 =head2 sys.Core.Int.Int
 
@@ -662,8 +653,8 @@ types that are allowed to be used directly as hard-coded literal values in
 Muldis D expressions; 'directly' meaning not by way of explicitly invoking
 a selector function.  Generally speaking, this union type includes all of
 the core scalar types that aren't themselves defined as union types.  The
-full list that C<ScalarLiteral> unions is: C<Bool>, C<Order>, C<Int>,
-C<Rat>, C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.E_RM>,
+full list that C<ScalarLiteral> unions is: C<Bool>, C<Int>, C<Rat>,
+C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.Order>, C<Cat.E_RM>,
 C<Cat.E_TK>, C<Cat.E_TDM>, C<Cat.E_ENK>, C<Cat.E_PSAK>, ...
 
 =head2 sys.Core.Cat.Name
@@ -695,6 +686,16 @@ periods are escaped as C<\b>, C<\q> and C<\p> respectively.
 The C<Cat.FlattenedNameChain> type is used as the definition of the
 character string possrep of a C<Cat.NameChain> (see that type for details);
 while being a character string like C<Cat.Name>, the two are disjoint.
+
+=head2 sys.Core.Cat.Order
+
+A C<Cat.Order> is an enumeration consisting of the 3 values
+C<Cat.Order:increase>, C<Cat.Order:same>, C<Cat.Order:decrease>.  It is the
+result type of any C<comparison> routine that is used on 2 values of a
+C<sys.Core.Ordered.Ordered> subtype.  Its default value is
+C<Cat.Order:same>; its minimum and maximum values are, respectively,
+C<Cat.Order:increase> and C<Cat.Order:decrease>.  The cardinality of this
+type is 3.
 
 =head2 sys.Core.Cat.E_RM
 
@@ -1684,46 +1685,47 @@ just the types they apply to.
 
 =over
 
-=item C<sys.Core.Ordered.comparison of Order (Ordered $v1, Ordered $v2)>
-
-This function results in C<Order:same> iff its 2 arguments are exactly the
-same value, and otherwise it results in C<Order:increase> if the value of
-the C<$v2> argument is considered to be an increase (as defined by the
-type) over the value of the C<$v1> argument, and otherwise it results in
-C<Order:decrease> as the reverse of the last condition would be true.  This
-function's arguments must be of compatible declared types; in this case, 2
-declared types are compatible iff they are both subtypes of a common scalar
-type that declares itself an C<Ordered> subtype.  Note that C<comparison>
-is considered the only fundamental ordered-specific operator, and all
-others are defined over it.
-
-=item C<sys.Core.Ordered.reverse_comparison of Order (Ordered $v1, Ordered
+=item C<sys.Core.Ordered.comparison of Cat.Order (Ordered $v1, Ordered
 $v2)>
+
+This function results in C<Cat.Order:same> iff its 2 arguments are exactly
+the same value, and otherwise it results in C<Cat.Order:increase> if the
+value of the C<$v2> argument is considered to be an increase (as defined by
+the type) over the value of the C<$v1> argument, and otherwise it results
+in C<Cat.Order:decrease> as the reverse of the last condition would be
+true.  This function's arguments must be of compatible declared types; in
+this case, 2 declared types are compatible iff they are both subtypes of a
+common scalar type that declares itself an C<Ordered> subtype.  Note that
+C<comparison> is considered the only fundamental ordered-specific operator,
+and all others are defined over it.
+
+=item C<sys.Core.Ordered.reverse_comparison of Cat.Order (Ordered $v1,
+Ordered $v2)>
 
 This function is exactly the same as C<sys.Core.Ordered.comparison> except
 that it results in the reverse value when given the same arguments.  It is
-a short-hand for applying C<sys.Core.Order.reverse> to the result of
+a short-hand for applying C<sys.Core.Cat.Order_reverse> to the result of
 C<sys.Core.Ordered.comparison> with the same arguments.
 
 =item C<sys.Core.Ordered.is_increase of Bool (Ordered $v1, Ordered $v2)>
 
 This function results in C<Bool:true> iff C<sys.Core.Ordered.comparison>
-would result in C<Order:increase> when given the same arguments, and
+would result in C<Cat.Order:increase> when given the same arguments, and
 C<Bool:false> otherwise.
 
 =item C<sys.Core.Ordered.is_decrease of Bool (Ordered $v1, Ordered $v2)>
 
 This function results in C<Bool:true> iff C<sys.Core.Ordered.comparison>
-would result in C<Order:decrease> when given the same arguments, and
+would result in C<Cat.Order:decrease> when given the same arguments, and
 C<Bool:false> otherwise.
 
 =item C<sys.Core.Ordered.is_inside_range of Bool (Ordered $topic, Ordered
 $min, Ordered $max, Bool $min_is_inside, Bool $max_is_inside)>
 
 This function results in C<Bool:true> iff its C<$topic> argument is within
-the range whose bounds are defined by its C<$min> and C<$max> arguments. If
-C<$min_is_inside> or C<$max_is_inside> are C<Bool:true>, then C<$topic> is
-considered to be within the range if it is equal to C<$min> or C<$max>,
+the range whose bounds are defined by its C<$min> and C<$max> arguments.
+If C<$min_is_inside> or C<$max_is_inside> are C<Bool:true>, then C<$topic>
+is considered to be within the range if it is equal to C<$min> or C<$max>,
 respectively.  This function's arguments must be of compatible declared
 types as per C<sys.Core.Ordered.comparison>.  This function will fail if
 C<$min> is an increase over C<$max>.
@@ -1813,31 +1815,6 @@ its N input element values and does a logical exclusive-or (which is both
 commutative and associative) on them until just one is left, which is the
 function's result.  If C<$topic> has zero values, then C<xor> results in
 C<Bool:false>, which is the identity value for logical exclusive-or.
-
-=back
-
-=head2 Functions for sys.Core.Order.Order
-
-These functions select values of the C<Order> enumeration.
-
-=over
-
-=item C<sys.Core.Order.(increase|same|decrease) of Order ()>
-
-This selector function results in the C<Order:(increase|same|decrease)>
-value.
-
-=back
-
-These functions implement commonly used order-enumeration operations.
-
-=over
-
-=item C<sys.Core.Order.reverse of Order (Order $topic)>
-
-This function results in the reverse value of its argument; an
-C<Order:increase> or C<Order:decrease> argument results in the other one of
-the two; an C<Order:same> argument results in itself.
 
 =back
 
@@ -3368,6 +3345,33 @@ the result tuple is the difference of those two.
 
 I<This documentation is pending.>
 
+=head1 SYSTEM-DEFINED CORE CATALOG FUNCTIONS
+
+=head2 Functions for sys.Core.Cat.Order
+
+These functions select values of the C<Cat.Order> enumeration.
+
+=over
+
+=item C<sys.Core.Cat.Order_(increase|same|decrease) of Cat.Order ()>
+
+This selector function results in the C<Cat.Order:(increase|same|decrease)>
+value.
+
+=back
+
+These functions implement commonly used order-enumeration operations.
+
+=over
+
+=item C<sys.Core.Cat.Order_reverse of Cat.Order (Cat.Order $topic)>
+
+This function results in the reverse value of its argument; an
+C<Cat.Order:increase> or C<Cat.Order:decrease> argument results in the other one of
+the two; an C<Cat.Order:same> argument results in itself.
+
+=back
+
 =head1 SYSTEM-DEFINED CORE UPDATE OPERATORS
 
 =head2 Generic Universal
@@ -3385,22 +3389,6 @@ update operator's arguments must be of compatible declared types; in this
 case, C<$v> must be a subtype of C<$target>.
 
 =back
-
-=head2 Scalar
-
-These update operators are applicable to just one or more specific
-system-defined core scalar data type.
-
-I<This documentation is pending.>
-
-=head2 Nonscalar
-
-These update operators are applicable to mainly nonscalar types, but are
-generic in that they typically work with any nonscalar types.
-
-=head2 Quasi-Nonscalar
-
-I<This documentation is pending.>
 
 =head1 SYSTEM-DEFINED CORE SYSTEM SERVICES
 
