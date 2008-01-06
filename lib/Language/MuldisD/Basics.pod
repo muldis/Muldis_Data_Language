@@ -972,8 +972,8 @@ substitutability:
             transition_constraint
         imperative
             deterministic
-                update_operator
-                inner_update_operator
+                updater
+                inner_updater
             nondeterministic
                 system_service
                 procedure
@@ -986,7 +986,7 @@ those; the non-leaf nodes are not routine kinds.
 
 Note that, in an environment where Muldis D is being hosted under another
 language, the other language may only directly invoke these 4 kinds of
-routines: C<function>, C<update_operator>, C<system_service>, C<procedure>.
+routines: C<function>, C<updater>, C<system_service>, C<procedure>.
 
 =over
 
@@ -1072,33 +1072,32 @@ otherwise; in the case of a multi-update statement, all the updates would
 happen simultaneously, so a transition failure for any update would prevent
 all that statement's updates from occurring.
 
-=item C<update_operator>
+=item C<updater>
 
-An C<update_operator> is the same as a C<function>, but that it is
-imperative rather than functional (its invocation does not result in or
+An C<updater> (update operator) is the same as a C<function>, but that it
+is imperative rather than functional (its invocation does not result in or
 represent a value, and it is invoked as the root part of another routine's
 statement rather than in an expression), and it has at least one parameter
 which is subject to update; any result that it produces is returned by
 updating said parameters.  The body of an updater is a single statement
-(plus any support expressions) that invokes one or more C<update_operator>
+(plus any support expressions) that invokes one or more C<updater>
 (recursively down to some system-defined variable assignment operator); if
-invoking several, it is a multi-update statement.  An C<update_operator>
-can only invoke C<function> and C<update_operator> (and local
-C<inner_(function|update_operator)>) routines.  Despite being imperative,
-an C<update_operator> has no lexical variables save for its
-subject-to-update parameters, and it just assigns to those as its last/only
-action; but like functions, it does have named expression nodes whose use
-can ease program writing like lexical variables would have.  An
-C<update_operator> invocation is implicitly atomic, and a failure in the
-middle of one will at least rollback any partial update that it may
-conceptually have done.  Most invokable system-defined imperative routines
-are C<update_operator>; they include all C<assign> operators, plus some
+invoking several, it is a multi-update statement.  An C<updater> can only
+invoke C<function> and C<updater> (and local C<inner_(function|updater)>)
+routines.  Despite being imperative, an C<updater> has no lexical variables
+save for its subject-to-update parameters, and it just assigns to those as
+its last/only action; but like functions, it does have named expression
+nodes whose use can ease program writing like lexical variables would have.
+An C<updater> invocation is implicitly atomic, and a failure in the middle
+of one will at least rollback any partial update that it may conceptually
+have done.  Most invokable system-defined imperative routines are
+C<updater>; they include all C<assign> operators, plus some
 relational-assignment short-hands such as "assign_insert", "assign_update",
 "assign_delete".
 
-=item C<inner_update_operator>
+=item C<inner_updater>
 
-A C<inner_update_operator> is to an C<update_operator> what a
+A C<inner_updater> (inner update operator) is to an C<updater> what a
 C<inner_function> is to a C<function>.
 
 =item C<system_service>
@@ -1136,10 +1135,10 @@ C<inner_procedure>, and then that is invoked indirectly by way of a new
 statement in the first procedure that invokes the system-defined
 C<try_catch> procedure.  The vast majority of C<procedure> that exist will
 be user-defined.  But some system-defined routines that would otherwise be
-C<function> or C<update_operator> are C<procedure> instead solely because
-they are non-deterministic; an example is an operator that derives a tuple
-sequence from a relation without fully sorting the tuples, because the
-result is fundamentally random and non-repeatable.
+C<function> or C<updater> are C<procedure> instead solely because they are
+non-deterministic; an example is an operator that derives a tuple sequence
+from a relation without fully sorting the tuples, because the result is
+fundamentally random and non-repeatable.
 
 =item C<inner_procedure>
 
@@ -1324,15 +1323,15 @@ host language code will associate the invocation of said statements with
 its own lexical scopes, such as its own I<try-catch> constructs.
 
 An implicit transaction is associated with the lexical scope of every
-Muldis D C<update_operator> and C<system_service>, and by extension, every
-Muldis D statement that is an invocation of said.  Or more accurately, an
-update operation (including a multi-update operation) is implicitly atomic,
-and will either succeed and commit as a whole, or fail and rollback as a
-whole.  This is as if every update operator invocation was surrounded by
-its own I<try> block, except that any thrown exceptions are not caught.
-Similarly, every C<function> and C<\w+_constraint> is trivially a
-transaction, though since these never update anything, all that really
-means is that they see a consistent view of their environment.
+Muldis D C<updater> and C<system_service>, and by extension, every Muldis D
+statement that is an invocation of said.  Or more accurately, an update
+operation (including a multi-update operation) is implicitly atomic, and
+will either succeed and commit as a whole, or fail and rollback as a whole.
+This is as if every update operator invocation was surrounded by its own
+I<try> block, except that any thrown exceptions are not caught.  Similarly,
+every C<function> and C<\w+_constraint> is trivially a transaction, though
+since these never update anything, all that really means is that they see a
+consistent view of their environment.
 
 By contrast, every C<procedure> (and C<inner_procedure>) and C<main> is
 neither implicitly a transaction nor atomic (except when externally wrapped

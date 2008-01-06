@@ -154,9 +154,9 @@ more or less:
             sys.Core.Cat.ExprNode
             sys.Core.Cat.InnerFunc
             sys.Core.Cat.Func
-            sys.Core.Cat.UpdateStmt
-            sys.Core.Cat.InnerUpdateOper
-            sys.Core.Cat.UpdateOper
+            sys.Core.Cat.UpdStmt
+            sys.Core.Cat.InnerUpdater
+            sys.Core.Cat.Updater
             sys.Core.Cat.ProcStmtArg
             sys.Core.Cat.ProcStmt
             sys.Core.Cat.InnerProc
@@ -174,9 +174,9 @@ more or less:
                 sys.Core.Cat.ExprTree
             sys.Core.Cat.InnerFuncSet
                 sys.Core.Cat.InnerFuncTree
-            sys.Core.Cat.MultiUpdateStmt
-            sys.Core.Cat.InnerUpdateOperSet
-                sys.Core.Cat.InnerUpdateOperTree
+            sys.Core.Cat.MultiUpdStmt
+            sys.Core.Cat.InnerUpdaterSet
+                sys.Core.Cat.InnerUpdaterTree
             sys.Core.Cat.ProcStmtArgSet
             sys.Core.Cat.InnerProcTree
 
@@ -1130,27 +1130,27 @@ which is defined by one of those.
 The default value of C<Cat.Func> unconditionally results in the literal
 scalar value C<Bool:false> as per the default of C<Cat.InnerFunc>.
 
-=head2 sys.Core.Cat.UpdateStmt
+=head2 sys.Core.Cat.UpdStmt
 
-A C<Cat.UpdateStmt> is a C<Tuple>.  It specifies a single update statement
-(of 1..N variables), which is the most fundamental component of procedural
+A C<Cat.UpdStmt> is a C<Tuple>.  It specifies a single update statement (of
+1..N variables), which is the most fundamental component of procedural
 Muldis D code, and is what the body of an update operator routine is
 composed of.  The variables being updated are accessed via the host
 routine's subject-to-update parameters.  All arbitrarily complex Muldis D
 value assignments, including relational assignments, are composed of just
-C<Cat.UpdateStmt>, either directly, or indirectly by way of update operator
-invocations, as each update operator body is itself composed entirely of
-1 or more update statements (grouped as 1 multi-update).  Only update
-operators may contain C<Cat.UpdateStmt>, so for any procedures that would
+C<Cat.UpdStmt>, either directly, or indirectly by way of update operator
+invocations, as each update operator body is itself composed entirely of 1
+or more update statements (grouped as 1 multi-update).  Only update
+operators may contain C<Cat.UpdStmt>, so for any procedures that would
 conceptually include them, those portions of the procedures need to be
 separated out and encapsulated by named update operators or
 inner-update-operators.
 
-A C<Cat.UpdateStmt> has these 3 attributes:
+A C<Cat.UpdStmt> has these 3 attributes:
 
 =over
 
-=item C<update_oper> - C<Cat.NameChain>
+=item C<updater> - C<Cat.NameChain>
 
 Every update statement is an invocation of some other update operator (or
 inner-update-operator), either a user-defined or system-defined one (the
@@ -1176,18 +1176,18 @@ which defines the value.
 
 =back
 
-The default value of C<Cat.UpdateStmt> will unconditionally update 1
+The default value of C<Cat.UpdStmt> will unconditionally update 1
 subject-to-update parameter of name C<$topic> with the value C<Bool:false>.
 
-=head2 sys.Core.Cat.InnerUpdateOper
+=head2 sys.Core.Cat.InnerUpdater
 
-A C<Cat.InnerUpdateOper> is a C<Tuple>.  It specifies a named
-C<update_operator> routine, which is the main component type of a complete
-implicitly atomic procedural routine; a complete update operator consists
-of at least one inner update operator, which is its main body, likely plus
-more when it would conceptually be code refactored.
+A C<Cat.InnerUpdater> is a C<Tuple>.  It specifies a named C<updater>
+routine, which is the main component type of a complete implicitly atomic
+procedural routine; a complete update operator consists of at least one
+inner update operator, which is its main body, likely plus more when it
+would conceptually be code refactored.
 
-A C<Cat.InnerUpdateOper> has these 6 attributes:
+A C<Cat.InnerUpdater> has these 6 attributes:
 
 =over
 
@@ -1221,7 +1221,7 @@ This defines the expression trees that are arguments to the update
 operators that C<stmt> invokes.  These expression trees must reference all
 of the parameters that the inner update operator has.
 
-=item C<stmt> - C<Cat.MultiUpdateStmt>
+=item C<stmt> - C<Cat.MultiUpdStmt>
 
 This defines the entire body of the inner update operator, which is
 composed of a single multi-update statement.  This multi-update statement
@@ -1229,19 +1229,18 @@ must reference all of the parameters that the inner update operator has.
 
 =back
 
-The default value of C<Cat.InnerUpdateOper> has 1 subject-to-update
-parameter named C<$topic> and declared type C<Bool> and will
-unconditionally update it to the value C<Bool:false>; it has zero read-only
-parameters.
+The default value of C<Cat.InnerUpdater> has 1 subject-to-update parameter
+named C<$topic> and declared type C<Bool> and will unconditionally update
+it to the value C<Bool:false>; it has zero read-only parameters.
 
-=head2 sys.Core.Cat.UpdateOper
+=head2 sys.Core.Cat.Updater
 
-A C<Cat.UpdateOper> is a C<Tuple>.  It specifies a named C<update operator>
+A C<Cat.Updater> is a C<Tuple>.  It specifies a named C<update operator>
 routine, which is conceptually a non-anonymous update operator that is
 generally invokable by the public (unless its parent package says
 otherwise).
 
-A C<Cat.UpdateOper> has these 4 attributes:
+A C<Cat.Updater> has these 4 attributes:
 
 =over
 
@@ -1250,12 +1249,12 @@ A C<Cat.UpdateOper> has these 4 attributes:
 This is the declared name of the update operator; other Muldis D code would
 reference it with this name.
 
-=item C<root_inner_update_oper> - C<Cat.Name>
+=item C<root_inner_updater> - C<Cat.Name>
 
 This indicates which of the inner update operators comprising this update
 operator defines its public interface / parameter list and main body.
 
-=item C<inner_update_opers> - C<Cat.InnerUpdateOperTree>
+=item C<inner_updaters> - C<Cat.InnerUpdaterTree>
 
 This (save for C<inner_funcs>) defines the entire body of the update
 operator, which is composed of one or more inner update operators, plus its
@@ -1267,8 +1266,8 @@ This also contributes to the body of the update operator.
 
 =back
 
-The default value of C<Cat.UpdateOper> is as per the default of
-C<Cat.InnerUpdateOper>.
+The default value of C<Cat.Updater> is as per the default of
+C<Cat.InnerUpdater>.
 
 =head2 sys.Core.Cat.ProcStmtArg
 
@@ -1429,12 +1428,12 @@ operator defines its public interface / parameter list and main body.
 
 =item C<inner_procs> - C<Cat.InnerProcTree>
 
-This (save for C<inner_update_opers> and C<inner_funcs>) defines the entire
+This (save for C<inner_updaters> and C<inner_funcs>) defines the entire
 body of the procedure, which is composed of one or more inner procedures,
 plus its public interface / parameter list, which is defined by one of
 those.
 
-=item C<inner_update_opers> - C<Cat.InnerUpdateOperTree>
+=item C<inner_updaters> - C<Cat.InnerUpdaterTree>
 
 This also contributes to the body of the update operator.
 
@@ -1530,34 +1529,33 @@ conceptually the tree root (main function if applicable).  The default
 value of C<Cat.InnerFuncTree> has one tuple that is the default value of
 C<Cat.InnerFunc>.
 
-=head2 sys.Core.Cat.MultiUpdateStmt
+=head2 sys.Core.Cat.MultiUpdStmt
 
-A C<Cat.MultiUpdateStmt> is a C<Relation> with the same heading as
-C<Cat.UpdateStmt>; it is a multi-update statement, which is the narrowest
+A C<Cat.MultiUpdStmt> is a C<Relation> with the same heading as
+C<Cat.UpdStmt>; it is a multi-update statement, which is the narrowest
 scope implicitly atomic component of procedural Muldis D code.  One value
 of this type comprises the entire body of an update operator (or
 inner-update-operator).  It must have at least 1 member tuple.  The default
-value of C<Cat.MultiUpdateStmt> has one tuple that is the default value of
-C<Cat.UpdateStmt>.
+value of C<Cat.MultiUpdStmt> has one tuple that is the default value of
+C<Cat.UpdStmt>.
 
-=head2 sys.Core.Cat.InnerUpdateOperSet
+=head2 sys.Core.Cat.InnerUpdaterSet
 
-A C<Cat.InnerUpdateOperSet> is a C<Relation> with the same heading as
-C<Cat.InnerUpdateOper>; it specifies a set of inner update operators (that
+A C<Cat.InnerUpdaterSet> is a C<Relation> with the same heading as
+C<Cat.InnerUpdater>; it specifies a set of inner update operators (that
 comprise parts of the same complete routine), which are its tuples.  It has
 a unary (unique) key on the C<name> attribute.  Its default value is empty,
 which may be applicable if the complete routine is not an update operator.
 
-=head2 sys.Core.Cat.InnerUpdateOperTree
+=head2 sys.Core.Cat.InnerUpdaterTree
 
-A C<Cat.InnerUpdateOperTree> is a proper subtype of
-C<Cat.InnerUpdateOperSet> which is likely to only be applicable if the
-complete routine is a update operator.  It must have at least 1 member
-tuple.  All member tuples must define a single invocation tree but that
-cycles are allowed, including that invoke what is conceptually the tree
-root (main update operator if applicable).  The default value of
-C<Cat.InnerUpdateOperTree> has one tuple that is the default value of
-C<Cat.InnerUpdateOper>.
+A C<Cat.InnerUpdaterTree> is a proper subtype of C<Cat.InnerUpdaterSet>
+which is likely to only be applicable if the complete routine is a update
+operator.  It must have at least 1 member tuple.  All member tuples must
+define a single invocation tree but that cycles are allowed, including that
+invoke what is conceptually the tree root (main update operator if
+applicable).  The default value of C<Cat.InnerUpdaterTree> has one tuple
+that is the default value of C<Cat.InnerUpdater>.
 
 =head2 sys.Core.Cat.ProcStmtArgSet
 
@@ -1568,8 +1566,8 @@ Its default value is empty.
 
 =head2 sys.Core.Cat.InnerProcTree
 
-A C<Cat.InnerProcTree> is to C<Cat.InnerProc> what
-C<Cat.InnerUpdateOperTree> is to C<Cat.InnerUpdateOper>.
+A C<Cat.InnerProcTree> is to C<Cat.InnerProc> what C<Cat.InnerUpdaterTree>
+is to C<Cat.InnerUpdater>.
 
 =head2 sys.Core.Cat.SetOfName
 
