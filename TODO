@@ -75,6 +75,28 @@ dialects.
 Other dialects would be a lot more terse and DWIMmy, and not be constrained
 to match the system catalog nor the structure of a tuple|relation.
 
+The current Grammar.pod and PerlHosted.pod *may* potentially be split up,
+with the 'catalog' versions having stripped from them the
+Database|Set|Maybe|Seq|Bag node types, and retaining only the
+Tuple|Relation nonscalar types, and only the corresponding files for other
+terser dialects would have those.  In fact, those may have never actually
+been useable in the definition of catalog tuple|relation values that all
+Muldis D code is; or I could be wrong about that.  On a similar note, the
+'catalog' versions may lose UInt|PInt etc as distinct node types, keeping
+only scalar root types ... or root types period ... so the only node types
+are 'Tuple', 'Relation', and the types that Cat.ScalarLiteral unions.
+
+Oh, oh!  Here's a thought:  Have distinct dialects for Muldis DB's 2
+distinct uses of PHMD inputs, which are Muldis D routine definitions and
+user data value definitions.  The former would only express user data in
+the form of generic Tuple|Relation PHMD nodes that are fixed depth and
+typed as Cat.ExprNodeTree values that use their scal_lit|coll_lit|func
+attributes ... so the ExprNode 'type' attr would say what more restrictive
+subtype the values are even if the PHMD main node kind does not say UInt
+etc.  Only the latter could use additional PHMD node types or have
+variable/N depth PHMD node trees, in so far as that actually works.  Only
+the former would be called the 'catalog' dialect.
+
 Some dialects may be string-form only or AST-based under a particular host
 language only.  At least 1, or perhaps all, of the other dialects will be
 designed such that Muldis D code can be round-tripped between them and the
