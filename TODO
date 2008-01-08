@@ -45,6 +45,58 @@ packages, leaving the current root-type specific packages to just contain
 their operators.  Maybe group the mains under 'Scalar', 'Nonscalar' etc, or
 come up with some new name for those.
 
+* Consider splitting Core.pod into 2+ parts, such as Types.pod and
+Routines.pod.  Or add a ::Core folder/namespace to hold the parts, and then
+it could be split up further, such as into types overview, generic types,
+catalog types, universal routines, scalar routines, nonscalar routines,
+catalog routines, functions vs non-functions, types used to compose the
+catalog vs types that aren't, root types vs non-root types.  Or just keep
+it together, keep it together, keep it together.  Regardless, each
+extension under Ext/ can choose for itself whether to split up or not, but
+if it does, a new folder under Ext/ is made for it.
+
+* Add a folder/namespace or 3 and move Grammar.pod and PerlHosted.pod into
+it/them, renaming at least the first in the process.  The new namespace
+could be named ::Dialect or ::Grammar.  Maybe multiple new namespaces are
+useful because some issues about dialects are orthogonal to each other, eg
+stringform vs ast on one axis and relation-based (constant-depth and
+optional attributes given anyway) vs quasi-relation-based (variable/N-depth
+and optional attributes omitted) on another axis.
+
+Have multiple official Muldis D dialects.
+
+One could be named the 'catalog' dialect and would exactly match the
+structure of the Muldis D system catalog, meaning constant-depth and
+explicitly give everything; the 'catalog' dialect alone could have a
+PerlHosted, FooHosted et al plus 1 or more stringform all to itself; it is
+likely that the 'catalog' dialect would be the most verbose of all official
+dialects.
+
+Other dialects would be a lot more terse and DWIMmy, and not be constrained
+to match the system catalog nor the structure of a tuple|relation.
+
+Some dialects may be string-form only or AST-based under a particular host
+language only.  At least 1, or perhaps all, of the other dialects will be
+designed such that Muldis D code can be round-tripped between them and the
+catalog dialect with no loss of information.
+
+All dialects period will translate to the catalog dialect without loss, but
+some may lose details supported by the catalog; these would be for more
+specific use rather than general use, or they would have a pass-thru mode
+to specify parts of code in a different more complete dialect than
+themselves.
+
+Every dialect should be orthogonal to any kind of extension to the core, so
+any could be used with any, though some dialects may have special syntax
+specific to specific extension features.
+
+Consider adding some new quasi-nonscalar or remnant data types to the core
+just for use by a variable/N-depth dialect that is like the catalog one
+save for DWIMmyness though fully round-trippable et al.  Or don't do this,
+meaning other dialects can't be processed by Muldis D code as easily,
+meaning support for other dialects is just done by the parser portion of
+the Muldis D implementation, which translates it to the catalog dialect.
+
 * Overhaul the temporal data types, provide operators for them.
 
 * Likewise with spatial data types.
