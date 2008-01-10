@@ -110,12 +110,6 @@ correctly.  Any remaining errors should be corrected as soon as possible.
     }
 
     token rat {
-          <just_an_rat>
-        | <urat>
-        | <prat>
-    }
-
-    token just_an_rat {
         (Rat)
         <spec_sep>
         (<[1-9A-Z]>)
@@ -123,28 +117,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         (0|\-?<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>*)
     }
 
-    token urat {
-        (URat)
-        <spec_sep>
-        (<[1-9A-Z]>)
-        <spec_sep>
-        (0|<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>*)
-    }
-
-    token prat {
-        (PRat)
-        <spec_sep>
-        (<[1-9A-Z]>)
-        <spec_sep>
-        (<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>*)
-    }
-
     token blob {
-          <just_a_blob>
-        | <ne_blob>
-    }
-
-    token just_a_blob {
         (Blob)
         <spec_sep>
         (<[137F]>)
@@ -152,55 +125,19 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         (<[0-9A-F]>*)
     }
 
-    token ne_blob {
-        (NEBlob)
-        <spec_sep>
-        (<[137F]>)
-        <spec_sep>
-        (<[0-9A-F]>+)
-    }
-
     token text {
-          <just_a_text>
-        | <ne_text>
-    }
-
-    token just_a_text {
         (Text)
         <spec_sep>
         <quoted_text_str>
     }
 
-    token ne_text {
-        (NEText)
-        <spec_sep>
-        <quoted_ne_text_str>
-    }
-
     token tuple {
-          <just_a_tuple>
-        | <database>
-    }
-
-    token just_a_tuple {
         (Tuple)
         <spec_sep>
         <type_name>
         <spec_sep>
         <tuple_body>
     }
-
-    token database {
-        (Database)
-        <spec_sep>
-        <type_name>
-        <spec_sep>
-        <list_open>
-            (((<relation_typed_attr>) <list_sep>)*)
-        <list_close>
-    }
-
-    token relation_typed_attr { <attr_name> <pair_sep> <relation> }
 
     token relation {
           <just_a_relation>
@@ -344,12 +281,6 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         <text_delim>
     }
 
-    token quoted_ne_text_str {
-        <text_delim>
-            (<text_char>+)
-        <text_delim>
-    }
-
     token quoted_name_chain_str {
         <text_delim>
             ((<nc_elem_char>+) (<nc_elem_sep> (<nc_elem_char>+))*)
@@ -402,9 +333,9 @@ The following are fragments of actual Concrete Muldis D code.
 
     Rat:Z:0.000AZE
 
-    URat:6:500.001
+    Rat:6:500.001
 
-    PRat:B:A09.B
+    Rat:B:A09.B
 
     Blob:1:00101110100010
 
@@ -412,7 +343,7 @@ The following are fragments of actual Concrete Muldis D code.
 
     Blob:F:A705E
 
-    NEBlob:7:523504376
+    Blob:7:523504376
 
     Text:'Ceres'
 
@@ -420,7 +351,7 @@ The following are fragments of actual Concrete Muldis D code.
 
     Text:''
 
-    NEText:'Perl'
+    Text:'Perl'
 
     Tuple:'sys.Core.Tuple.D0':{}
 
@@ -435,13 +366,11 @@ The following are fragments of actual Concrete Muldis D code.
         'age'  => Int:9:17,
     }
 
-    Database:'sys.Core.Tuple.D0':{}
-
-    Database:'fed.the_db.account':{
+    Tuple:'fed.the_db.account':{
         'user' => Relation:'fed.the_db.account.user_r':{ ... },
     }
 
-    Database:'fed.the_db.gene':{
+    Tuple:'fed.the_db.gene':{
         'person' => Relation:'fed.the_db.gene.person_r':{ ... },
     }
 
