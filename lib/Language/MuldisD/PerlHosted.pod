@@ -314,11 +314,12 @@ Node type: the Perl C<Str> value C<Rat>.
 
 =item *
 
-Format; one of: C<md_rat>, C<perl_rat>, C<any_perl>.
+Format; one of: C<md_radix>, C<md_pair>, C<perl_rat>, C<perl_int_pair>,
+C<any_perl>, C<any_perl_pair>.
 
 =item *
 
-Only when format is C<md_rat>; the max-col-val.
+Only when format is C<md_radix>|C<md_pair>; the max-col-val.
 
 =item *
 
@@ -333,16 +334,29 @@ follows:
 
 =item *
 
-If the format is C<md_rat>, then the max-col-val must be a Perl C<Str>
+If the format is C<md_radix>, then the max-col-val must be a Perl C<Str>
 composed of a single C<[1-9A-Z]> character, and the payload must be a Perl
 C<Str> of the format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>* >>.
-This format specifically is what the Concrete Muldis D grammar uses, and
-is the result of parsing it.  The payload is interpreted as a base-I<N>
-rational where I<N> might be between 2 and 36, and the given max-col-val
-says which possible value of I<N> to use.  Assuming all column values are
-between zero and I<N>-minus-one, the max-col-val contains that
-I<N>-minus-one.  So to specify, eg, bases [2,8,10,16], use max-col-val of
-[1,7,9,F].
+This format specifically is what the Concrete Muldis D grammar uses
+('radix' option), and is the result of parsing it.  The payload is
+interpreted as a base-I<N> rational where I<N> might be between 2 and 36,
+and the given max-col-val says which possible value of I<N> to use.
+Assuming all column values are between zero and I<N>-minus-one, the
+max-col-val contains that I<N>-minus-one.  So to specify, eg, bases
+[2,8,10,16], use max-col-val of [1,7,9,F].
+
+=item *
+
+If the format is C<md_pair>, then the max-col-val must be as per
+C<md_radix>, and the payload must be a 2-element C<Array|Seq> where the
+first element is a Perl C<Str> of the format C<0> or C<<
+\-?<[1-9A-Z]><[0-9A-Z]>* >> (an integer) and the second element is a Perl
+C<Str> of the format C<< <[1-9A-Z]><[0-9A-Z]>* >> (a positive integer).
+The payload is interpreted as per C<md_radix> but that its value comes from
+the first element divided by the second.  Note that while the C<md_radix>
+format is limited to representing rationals whose denominator is a power of
+some I<N> between 2 and 36, the C<md_pair> format can represent those with
+any I<N> that is greater than or equal to 2, such as 1/43.
 
 =item *
 
@@ -353,38 +367,52 @@ Perl.
 
 =item *
 
+If the format is C<perl_int_pair>, then the payload must a 2-element
+C<Array|Seq> where each element must be a canonical integer (or positive
+integer, respectively) to Perl as per defining a C<perl_int>; the
+rational's value is interpreted as the first element divided by the second.
+
+=item *
+
 If the format is C<any_perl>, then the payload may be any Perl value,
 and it is simply coerced into a numeric context as per Perl's own
 semantics, meaning base-10 where applicable.  If something doesn't look
 numeric, it becomes zero.
 
+=item *
+
+If the format is C<any_perl_pair>, then the payload is as per
+C<perl_int_pair> but that each array element is simply coerced into an
+integer context.  If Perl's coercion of the denominator produces an integer
+less than 1, it becomes a 1.  I<This may be revised to fail instead.>
+
 =back
 
 Examples:
 
-    [ 'Rat', 'md_rat', '1', '-1.1' ]
+    [ 'Rat', 'md_radix', '1', '-1.1' ]
 
-    [ 'Rat', 'md_rat', '9', '-1.5' ] # same val as prev
+    [ 'Rat', 'md_radix', '9', '-1.5' ] # same val as prev
 
-    [ 'Rat', 'md_rat', '9', '3.14159' ]
+    [ 'Rat', 'md_radix', '9', '3.14159' ]
 
-    [ 'Rat', 'md_rat', 'A', '0.0' ]
+    [ 'Rat', 'md_radix', 'A', '0.0' ]
 
-    [ 'Rat', 'md_rat', 'F', 'DEADBEEF.FACE' ]
+    [ 'Rat', 'md_radix', 'F', 'DEADBEEF.FACE' ]
 
-    [ 'Rat', 'md_rat', 'Z', '0.000AZE' ]
+    [ 'Rat', 'md_radix', 'Z', '0.000AZE' ]
 
     [ 'Rat', 'perl_rat', 21.003 ]
 
     [ 'Rat', 'any_perl', ' 54.67 ' ]
 
-    [ 'Rat', 'md_rat', '6', '500.001' ]
+    [ 'Rat', 'md_pair', '6', [ '500001', '1000' ] ]
 
-    [ 'Rat', 'perl_rat', 0.01 ]
+    [ 'Rat', 'md_pair', 'B', [ 'A09B', '10' ] ]
 
-    [ 'Rat', 'md_rat', 'B', 'A09.B' ]
+    [ 'Rat', 'perl_int_pair', [ 1, 43 ] ]
 
-    [ 'Rat', 'perl_rat', 0.101 ]
+    [ 'Rat', 'any_perl_pair', [ ' 57 ', ' 71 ' ] ]
 
 =head2 sys.Core.Blob.Blob
 
@@ -684,7 +712,7 @@ Examples:
 
 =head2 sys.Core.Relation.Bag
 
-This node type represents a bag value.  It has 3 elements:
+This node type represents a bag value.  It has 4 elements:
 
 =over
 
