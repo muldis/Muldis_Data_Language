@@ -75,6 +75,11 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         | <cat_name>
         | <cat_name_chain>
         | <cat_order>
+        | <cat_e_rm>
+        | <cat_e_tk>
+        | <cat_e_tdm>
+        | <cat_e_enk>
+        | <cat_e_psak>
     }
 
     token bool { (Bool) <spec_sep> (false|true) }
@@ -276,20 +281,6 @@ correctly.  Any remaining errors should be corrected as soon as possible.
 
     token type_name { <quoted_name_chain_str> }
 
-    token cat_name {
-        (Cat.Name)
-        <spec_sep>
-        <quoted_text_str>
-    }
-
-    token cat_name_chain {
-        (Cat.NameChain)
-        <spec_sep>
-        <quoted_name_chain_str>
-    }
-
-    token cat_order { (Cat.Order) <spec_sep> (increase|same|decrease) }
-
     token spec_sep { ':' }
 
     token quoted_text_str {
@@ -311,6 +302,52 @@ correctly.  Any remaining errors should be corrected as soon as possible.
     token nc_elem_sep { '.' }
 
     token nc_elem_char { ['\b'|'\q'|'\p'|<-[\\\'\.]>] }
+
+    token cat_name {
+        (Cat.Name)
+        <spec_sep>
+        <quoted_text_str>
+    }
+
+    token cat_name_chain {
+        (Cat.NameChain)
+        <spec_sep>
+        <quoted_name_chain_str>
+    }
+
+    token cat_order { (Cat.Order) <spec_sep> (increase|same|decrease) }
+
+    token cat_e_rm {
+        (Cat.E_RM)
+        <spec_sep>
+        (half_up|to_even|to_floor|to_ceiling|to_zero)
+    }
+
+    token cat_e_tk {
+        (Cat.E_TK)
+        <spec_sep>
+        (special|scalar|tuple|relation|quasi_tuple|quasi_relation|remnant)
+    }
+
+    token cat_e_tdm {
+        (Cat.E_TDM)
+        <spec_sep>
+        (special|root|restriction|alias
+            |union|intersection|exclusion|difference|negation)
+    }
+
+    token cat_e_enk {
+        (Cat.E_ENK)
+        <spec_sep>
+        (default|scalar|tuple|relation|quasi_tuple|quasi_relation
+            |param|upd_param|ro_param|func)
+    }
+
+    token cat_e_psak {
+        (Cat.E_PSAK)
+        <spec_sep>
+        (default|upd_param|ro_param|inner_var|outer_var)
+    }
 
 =head1 EXAMPLES
 
@@ -466,6 +503,16 @@ The following are fragments of actual Concrete Muldis D code.
     Cat.NameChain:'fed.the_db.stats.samples_by_order'
 
     Cat.Order:same
+
+    Cat.E_RM:half_up
+
+    Cat.E_TK:scalar
+
+    Cat.E_TDM:alias
+
+    Cat.E_ENK:default
+
+    Cat.E_PSAK:ro_param
 
 =head1 SEE ALSO
 
