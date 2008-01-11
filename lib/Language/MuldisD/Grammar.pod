@@ -85,33 +85,11 @@ correctly.  Any remaining errors should be corrected as soon as possible.
     token bool { (Bool) <spec_sep> (false|true) }
 
     token int {
-          <just_an_int>
-        | <uint>
-        | <pint>
-    }
-
-    token just_an_int {
         (Int)
         <spec_sep>
         (<[1-9A-Z]>)
         <spec_sep>
         (0|\-?<[1-9A-Z]><[0-9A-Z]>*)
-    }
-
-    token uint {
-        (UInt)
-        <spec_sep>
-        (<[1-9A-Z]>)
-        <spec_sep>
-        (0|<[1-9A-Z]><[0-9A-Z]>*)
-    }
-
-    token pint {
-        (PInt)
-        <spec_sep>
-        (<[1-9A-Z]>)
-        <spec_sep>
-        (<[1-9A-Z]><[0-9A-Z]>*)
     }
 
     token rat {
@@ -210,28 +188,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
     }
 
     token seq {
-          seq_indexed_values
-        | seq_ordered_values
-    }
-
-    token seq_indexed_values {
         (Seq)
-        <spec_sep>
-        (index)
-        <spec_sep>
-        <type_name>
-        <spec_sep>
-        <list_open>
-            (((<index>) <pair_sep> (<literal>) <list_sep>)*)
-        <list_close>
-    }
-
-    token index { <uint> }
-
-    token seq_ordered_values {
-        (Seq)
-        <spec_sep>
-        (order)
         <spec_sep>
         <type_name>
         <spec_sep>
@@ -257,7 +214,11 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         <list_close>
     }
 
-    token count { <pint> }
+    token count {
+        (<[1-9A-Z]>)
+        <spec_sep>
+        (<[1-9A-Z]><[0-9A-Z]>*)
+    }
 
     token bag_repeated_values {
         (Bag)
@@ -371,9 +332,9 @@ The following are fragments of actual Concrete Muldis D code.
 
     Int:Z:-HELLOWORLD
 
-    UInt:3:301
+    Int:3:301
 
-    PInt:B:A09B
+    Int:B:A09B
 
     Rat:radix:1:-1.1
 
@@ -466,13 +427,13 @@ The following are fragments of actual Concrete Muldis D code.
         Text:'2003.07.24',
     }
 
-    Seq:index:'fed.the_db.gene.sorted_person_name':{
-        UInt:9:0 => Text:'Alphonse',
-        UInt:9:1 => Text:'Edward',
-        UInt:9:2 => Text:'Winry',
+    Seq:'fed.the_db.gene.sorted_person_name':{
+        Text:'Alphonse',
+        Text:'Edward',
+        Text:'Winry',
     }
 
-    Seq:order:'fed.the_db.stats.samples_by_order':{
+    Seq:'fed.the_db.stats.samples_by_order':{
         Int:9:57,
         Int:9:45,
         Int:9:63,
@@ -480,9 +441,9 @@ The following are fragments of actual Concrete Muldis D code.
     }
 
     Bag:count:'fed.the_db.inventory.fruit':{
-        Text:'Apple'  => PInt:9:500,
-        Text:'Orange' => PInt:9:300,
-        Text:'Banana' => PInt:9:400,
+        Text:'Apple'  => 9:500,
+        Text:'Orange' => 9:300,
+        Text:'Banana' => 9:400,
     }
 
     Bag:repeat:'fed.the_db.inventory.whatsits':{
