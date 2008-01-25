@@ -1040,8 +1040,8 @@ local C<ExprNode> which defines the value.
 
 =back
 
-The default value of C<Cat.ExprNode> represents the literal scalar value
-C<Bool:false>.
+The default value of C<Cat.ExprNode> has an empty name and represents the
+literal scalar value C<Bool:false>.
 
 =head2 sys.Core.Cat.InnerFunc
 
@@ -1052,7 +1052,7 @@ plus more when it would conceptually be using anonymous inline function
 definitions (to pass to function-valued function arguments), or when it
 would conceptually have self-referencing/cyclic expressions.
 
-A C<Cat.InnerFunc> has these 6 attributes:
+A C<Cat.InnerFunc> has these 5 attributes:
 
 =over
 
@@ -1081,21 +1081,17 @@ that this may be changed later, or the attribute simply be eliminated.>
 This is the declared parameter list of the inner function, which has 0..N
 named and typed parameters.
 
-=item C<root_expr> - C<Cat.Name>
-
-This indicates which of the expression nodes comprising this inner function
-is its root node, the result of which is the result of the inner function.
-
 =item C<expr> - C<Cat.ExprTree>
 
-This defines the entire body of the inner function, which is composed of
-a single expression tree.  This expression tree must reference all of the
-parameters that the inner function has.
+This defines the entire body of the inner function, which is composed of a
+single expression tree, whose root node's name is the empty string.  This
+expression tree must reference all of the parameters that the inner
+function has.
 
 =back
 
-The default value of C<Cat.InnerFunc> unconditionally results in the
-literal scalar value C<Bool:false>.
+The default value of C<Cat.InnerFunc> has an empty name and unconditionally
+results in the literal scalar value C<Bool:false>.
 
 =head2 sys.Core.Cat.Func
 
@@ -1103,7 +1099,7 @@ A C<Cat.Func> is a C<Tuple>.  It specifies a named C<function> routine,
 which is conceptually a non-anonymous function that is generally invokable
 by the public (unless its parent package says otherwise).
 
-A C<Cat.Func> has these 3 attributes:
+A C<Cat.Func> has these 2 attributes:
 
 =over
 
@@ -1112,17 +1108,13 @@ A C<Cat.Func> has these 3 attributes:
 This is the declared name of the function; other Muldis D code would
 reference it with this name.
 
-=item C<root_inner_func> - C<Cat.Name>
-
-This indicates which of the inner functions comprising this function
-defines its public interface / parameter list and main body.
-
 =item C<inner_funcs> - C<Cat.InnerFuncTree>
 
 This defines the entire body of the function (both its main body plus any
 conceptually expression-inlined anonymous functions), which is composed of
 one or more inner functions, plus its public interface / parameter list,
-which is defined by one of those.
+which is defined by one of those.  The inner function defining the outer
+function's main body has the empty string as its name.
 
 =back
 
@@ -1228,9 +1220,10 @@ must reference all of the parameters that the inner update operator has.
 
 =back
 
-The default value of C<Cat.InnerUpdater> has 1 subject-to-update parameter
-named C<topic> and declared type C<Bool> and will unconditionally update
-it to the value C<Bool:false>; it has zero read-only parameters.
+The default value of C<Cat.InnerUpdater> has an empty name and has 1
+subject-to-update parameter named C<topic> and declared type C<Bool> and
+will unconditionally update it to the value C<Bool:false>; it has zero
+read-only parameters.
 
 =head2 sys.Core.Cat.Updater
 
@@ -1239,7 +1232,7 @@ routine, which is conceptually a non-anonymous update operator that is
 generally invokable by the public (unless its parent package says
 otherwise).
 
-A C<Cat.Updater> has these 4 attributes:
+A C<Cat.Updater> has these 3 attributes:
 
 =over
 
@@ -1248,16 +1241,13 @@ A C<Cat.Updater> has these 4 attributes:
 This is the declared name of the update operator; other Muldis D code would
 reference it with this name.
 
-=item C<root_inner_updater> - C<Cat.Name>
-
-This indicates which of the inner update operators comprising this update
-operator defines its public interface / parameter list and main body.
-
 =item C<inner_updaters> - C<Cat.InnerUpdaterTree>
 
 This (save for C<inner_funcs>) defines the entire body of the update
 operator, which is composed of one or more inner update operators, plus its
-public interface / parameter list, which is defined by one of those.
+public interface / parameter list, which is defined by one of those.  The
+inner updater defining the outer updater's main body has the empty string
+as its name.
 
 =item C<inner_funcs> - C<Cat.InnerFuncSet>
 
@@ -1396,9 +1386,9 @@ parameters and lexical variables that the inner procedure has.
 
 =back
 
-The default value of C<Cat.InnerProc> is a no-op; its C<name> has the
-default value of C<Cat.Name>, it has zero parameters, zero variables, and
-zero statements.
+The default value of C<Cat.InnerProc> has an empty name and is a no-op; its
+C<name> has the default value of C<Cat.Name>, it has zero parameters, zero
+variables, and zero statements.
 
 =head2 sys.Core.Cat.Proc
 
@@ -1406,7 +1396,7 @@ A C<Cat.Proc> is a C<Tuple>.  It specifies a named C<procedure> routine,
 which is conceptually a non-anonymous procedure that is generally invokable
 by the public (unless its parent package says otherwise).
 
-A C<Cat.Proc> has these 5 attributes:
+A C<Cat.Proc> has these 4 attributes:
 
 =over
 
@@ -1415,25 +1405,21 @@ A C<Cat.Proc> has these 5 attributes:
 This is the declared name of the procedure; other Muldis D code would
 reference it with this name.
 
-=item C<root_inner_proc> - C<Cat.Name>
-
-This indicates which of the inner procedures comprising this update
-operator defines its public interface / parameter list and main body.
-
 =item C<inner_procs> - C<Cat.InnerProcTree>
 
 This (save for C<inner_updaters> and C<inner_funcs>) defines the entire
 body of the procedure, which is composed of one or more inner procedures,
 plus its public interface / parameter list, which is defined by one of
-those.
+those.  The inner procedure defining the outer procedure's main body has
+the empty string as its name.
 
-=item C<inner_updaters> - C<Cat.InnerUpdaterTree>
+=item C<inner_updaters> - C<Cat.InnerUpdaterSet>
 
-This also contributes to the body of the update operator.
+This also contributes to the body of the procedure.
 
 =item C<inner_funcs> - C<Cat.InnerFuncSet>
 
-This also contributes to the body of the update operator.
+This also contributes to the body of the procedure.
 
 =back
 
@@ -1487,7 +1473,8 @@ each of those being a unary key.  Its default value has zero tuples.
 =head2 sys.Core.Cat.ExprSet
 
 A C<Cat.ExprSet> is the same as a C<Cat.ExprTree> except that it can
-represent multiple trees rather than one; this is realized in that more
+represent multiple trees rather than one, and there is no requirement for
+any node to be named with the empty string; this is realized in that more
 than one (rather than exactly one) member may have none of its peers as a
 parent node.  It so happens then that C<Cat.ExprTree> is a proper subtype
 of C<Cat.ExprSet>.
@@ -1499,11 +1486,12 @@ C<Cat.ExprNode>; it specifies a simple tree of named expression nodes,
 which are its tuples.  It has a unary (unique) key on the C<name>
 attribute, and it must have at least 1 member tuple.  All member tuples
 must define a simple expression node tree, such that every member except
-one has one of its peers as a parent node, and no direct cycles between
-members are permitted (only indirect cycles based on function /
-inner-function invocations are allowed).  The default value of
-C<Cat.ExprTree> has one tuple that is the default value of C<Cat.ExprNode>;
-the tree represents the literal scalar value C<Bool:false>.
+one (which is the root node) has one of its peers as a parent node, and no
+direct cycles between members are permitted (only indirect cycles based on
+function / inner-function invocations are allowed); the name of the root
+node must be the empty string.  The default value of C<Cat.ExprTree> has
+one tuple that is the default value of C<Cat.ExprNode>; the tree represents
+the literal scalar value C<Bool:false>.
 
 =head2 sys.Core.Cat.InnerFuncSet
 
@@ -1518,9 +1506,10 @@ may be applicable if the complete routine is not a function.
 A C<Cat.InnerFuncTree> is a proper subtype of C<Cat.InnerFuncSet> which is
 likely to only be applicable if the complete routine is a function.  It
 must have at least 1 member tuple.  All member tuples must define a single
-invocation tree but that cycles are allowed, including that invoke what is
-conceptually the tree root (main function if applicable).  The default
-value of C<Cat.InnerFuncTree> has one tuple that is the default value of
+invocation tree but that cycles are allowed, including any cycles that
+invoke what is conceptually the tree root (main function if applicable);
+the name of the root node must be the empty string.  The default value of
+C<Cat.InnerFuncTree> has one tuple that is the default value of
 C<Cat.InnerFunc>.
 
 =head2 sys.Core.Cat.MultiUpdStmt
@@ -1546,10 +1535,11 @@ which may be applicable if the complete routine is not an update operator.
 A C<Cat.InnerUpdaterTree> is a proper subtype of C<Cat.InnerUpdaterSet>
 which is likely to only be applicable if the complete routine is a update
 operator.  It must have at least 1 member tuple.  All member tuples must
-define a single invocation tree but that cycles are allowed, including that
-invoke what is conceptually the tree root (main update operator if
-applicable).  The default value of C<Cat.InnerUpdaterTree> has one tuple
-that is the default value of C<Cat.InnerUpdater>.
+define a single invocation tree but that cycles are allowed, including any
+cycles that invoke what is conceptually the tree root (main update operator
+if applicable); the name of the root node must be the empty string.  The
+default value of C<Cat.InnerUpdaterTree> has one tuple that is the default
+value of C<Cat.InnerUpdater>.
 
 =head2 sys.Core.Cat.ProcStmtArgSet
 
