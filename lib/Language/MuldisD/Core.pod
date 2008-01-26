@@ -66,7 +66,7 @@ relationships:
                 sys.Core.Text.Text
                     sys.Core.Text.NEText
 
-        # The following are all nonscalar type factories.
+        # The following are mostly nonscalar type factories.
 
         sys.Core.Tuple.Tuple
             sys.Core.Tuple.D0
@@ -79,6 +79,8 @@ relationships:
             sys.Core.Relation.D0
             sys.Core.Relation.Set
                 sys.Core.Relation.Maybe
+                    sys.Core.Relation.Nothing
+                    sys.Core.Relation.Just
             sys.Core.Relation.Seq
             sys.Core.Relation.Bag
 
@@ -87,7 +89,7 @@ relationships:
         sys.Core.QuasiScalar.QuasiScalar
             sys.Core.QuasiScalar.E_D
 
-        # The following are all quasi-nonscalar type factories.
+        # The following are mostly quasi-nonscalar type factories.
 
         sys.Core.QuasiTuple.QuasiTuple
             sys.Core.QuasiTuple.D0
@@ -99,6 +101,8 @@ relationships:
             sys.Core.QuasiRelation.D0
             sys.Core.QuasiRelation.QuasiSet
                 sys.Core.QuasiRelation.QuasiMaybe
+                    sys.Core.QuasiRelation.QuasiNothing
+                    sys.Core.QuasiRelation.QuasiJust
             sys.Core.QuasiRelation.QuasiSeq
             sys.Core.QuasiRelation.QuasiBag
 
@@ -483,6 +487,9 @@ document), but all other actual nonscalar data types are user-defined.
 Users can also define their own incomplete nonscalar data types that are
 tuple or relation types.
 
+As exceptions to the above 2 paragraphs, the C<Nothing> type and the 2
+C<D0> types are actually complete types, despite being listed here.
+
 =head2 sys.Core.Tuple.Tuple
 
 The C<Tuple> type is the maximal type of all Muldis D tuple (nonscalar)
@@ -563,6 +570,25 @@ working with sparse data; so Muldis D has something which is conceptually
 close to SQL's nullable types without actually having 3-valued logic; it
 would probably be convenient for code that round-trips SQL by way of Muldis
 D to use the C<Maybe> type.  Its default value has zero tuples.
+
+=head2 sys.Core.Relation.Nothing
+
+A C<Nothing> is a proper subtype of C<Maybe> that has exactly zero
+elements; its cardinality is 1 and its only value is its default.  The
+single C<Nothing> value, which is a relation with zero tuples and a single
+attribute named C<value>, is Muldis D's answer to the SQL NULL and is
+intended to be used for the same purposes; that is, a special marker for
+missing or inapplicable information, that does not typically equal any
+normal/scalar value; however, in Muldis D, C<Nothing> I<is a value>, and it
+I<is> equal to itself.
+
+=head2 sys.Core.Relation.Just
+
+A C<Just> is a proper subtype of C<Maybe> that has exactly 1 element.  Its
+default value's only tuple's only element has the value C<Bool:false>.  The
+C<Just> type is complementary to the C<Nothing> type under C<Maybe>;
+C<Nothing> consists of exactly 1 of C<Maybe>'s values, and C<Just> consists
+of all of C<Maybe>'s other values.
 
 =head2 sys.Core.Relation.Seq
 
@@ -664,9 +690,21 @@ infinite.
 
 =head2 sys.Core.QuasiRelation.QuasiMaybe
 
-A C<QuasiMaybe> is a proper subtype of C<QuasiRelation> in the
-corresponding manner to C<Maybe> being a proper subtype of C<Relation>.
-Its cardinality is infinite.
+A C<QuasiMaybe> is a proper subtype of C<QuasiSet> in the corresponding
+manner to C<Maybe> being a proper subtype of C<Set>. Its cardinality is
+infinite.
+
+=head2 sys.Core.QuasiRelation.QuasiNothing
+
+A C<QuasiNothing> is a proper subtype of C<QuasiMaybe> in the corresponding
+manner to C<Nothing> being a proper subtype of C<Maybe>.  Its cardinality
+is 1.
+
+=head2 sys.Core.QuasiRelation.QuasiJust
+
+A C<QuasiJust> is a proper subtype of C<QuasiMaybe> in the corresponding
+manner to C<Just> being a proper subtype of C<Maybe>.  Its cardinality is
+infinite.
 
 =head2 sys.Core.QuasiRelation.QuasiSeq
 

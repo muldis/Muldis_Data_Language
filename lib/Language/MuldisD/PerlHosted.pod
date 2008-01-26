@@ -67,8 +67,9 @@ It should be emphasized that no Perl undefined values are allowed anywhere
 in a PHMD value; you must use only defined values instead.  This
 documentation also assumes that only defined values are used, and that
 supplying a Perl undef will result in an error.  If you genuinely want to
-represent that a value is unknown, then the C<Maybe> node type is provided
-as one way you can explicitly say so.  I<This policy may be reconsidered.>
+represent that a value is unknown or inapplicable, then the C<Nothing> node
+type is provided as one way you can explicitly say so.  I<This policy may
+be reconsidered.>
 
 The root Perl C<Array> of a PHMD value has 4 elements, which are:
 
@@ -635,20 +636,46 @@ Examples:
         [ 'Int', 'perl_int', 85 ],
     ] ]
 
-=head2 sys.Core.Relation.Maybe
+=head2 sys.Core.Relation.Nothing
 
-This node type represents a maybe value; it is interpreted as a Muldis D
-C<sys.Core.Relation.Maybe>.  Its format is the same as for
-C<sys.Core.Relation.Set> but that the node type is 'Maybe', and the payload
-must have at most 1 element.
+This node type represents a 'nothing' value; it is interpreted as a Muldis D
+C<sys.Core.Relation.Nothing>.  It has 1 element, which is the Perl C<Str>
+value C<Nothing>.
 
 Examples:
 
-    [ 'Maybe', 'fed.the_db.gene.person_death_date', [] ]
+    [ 'Nothing' ]
 
-    [ 'Maybe', 'fed.the_db.gene.person_death_date', [
-        [ 'Text', '2003.07.24' ],
-    ] ]
+=head2 sys.Core.Relation.Just
+
+This node type represents a 'just' value.  It has 3 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<Just>.
+
+=item *
+
+Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
+
+=item *
+
+The payload; a PHMD node that defines a single scalar or nonscalar value.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.Core.Relation.Just> value
+whose heading was predefined, as a 'maybe' data type, for referencing now
+by the type name, and whose body is defined now by the payload.  The
+payload is a PHMD node that defines the C<value> attribute of the single
+tuple of the new 'just'.
+
+Examples:
+
+    [ 'Just', 'fed.the_db.gene.person_death_date',
+        [ 'Text', '2003.07.24' ] ]
 
 =head2 sys.Core.Relation.Seq
 

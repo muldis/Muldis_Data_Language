@@ -778,6 +778,33 @@ attributes in each heading have a valid subtype/supertype relationship;
 each attribute of a tuple or relation subtype is a subtype of the
 same-named attribute of the tuple or relation supertype.
 
+The most specific type (MST) of a tuple value is determined by the MSTs of
+all of its attributes' values; what the heading of that tuple says for each
+of its attributes is that its data type is the MST of the value of that
+attribute in the tuple's body.
+
+The MST of a relation value is similarly based on the attribute values in
+its member tuples; for each relation attribute, its MST is the most
+specific common supertype of the MSTs of the tuple values for that
+attribute.  If a relation value has zero tuples, then the MST of every one
+of its attributes is simply C<Empty>, regardless of whether that attribute
+would otherwise be scalar or tuple or relation valued.  A consequence of
+this is that 2 relation values with zero tuples are always identical if
+just their degree and the names of their attributes match, and regardless
+of the declared types of the attributes.  A corollary to this is that if
+the declared type of an attribute of a relation type is C<Empty>, then that
+type can only consist of exactly 1 value, which is the zero-tuple relation
+having those attribute names (and their types are all C<Empty>.  This
+quality is reserved for relation (and quasi-relation) types alone; no
+scalar possrep or tuple (or quasi- variants) may use C<Empty> as a declared
+attribute type because their attributes can't contain zero values.
+
+A consequence of these identity matters is that a Muldis D implementation
+can choose to keep all the actual type information of a nonscalar (and
+quasi-nonscalar) value's attributes in the body, leaving the heading to
+keep nothing but the names of the attributes.  An empty relation (or
+quasi-relation) body does not mean that any important meta-data is lost.
+
 =head2 Quasi- Types
 
 The union types C<Universal>, C<Tuple>, C<Relation> (and the system-defined
