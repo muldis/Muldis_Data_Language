@@ -520,17 +520,33 @@ I<T2>, and I<T2> is an I<immediate subtype> of I<T1>.  Note that the
 Muldis D type system supports multiple inheritance, so types can form a
 lattice rather than a tree.
 
-Every value has exactly one I<most specific type> (or I<MST>), which is
-cited as the general answer to the question "what is this value's type".
-The MST of a value is the data type containing that value which has no
-proper subtypes that also contain that value.  Moreover, to enforce the
+Every value conceptually has exactly one I<most specific type> (or I<MST>),
+which is cited as the general answer to the question "what is this value's
+type".  The MST of a value is the data type containing that value which has
+no proper subtypes that also contain that value.  A value will conceptually
+always implicitly assume the most specific type that exists which contains
+it, even if a selector for a less specific type was explicitly used to
+select it (although some use of explicit C<treat> may be required in code
+to assist its compilation).  With a generic B<D> language, to enforce the
 "exactly one" requirement, which keeps answering the question a simple
-affair, it is mandatory in Muldis D that when any 2 data types have values
-in common, there must exist a data type which contains only the values that
-they have in common, and hence is a subtype of both.  Note that a value
-will always implicitly assume the most specific type that exists which
-contains it, even if a selector for a less specific type was explicitly
-used to select it.
+affair, it would be mandatory that when any 2 data types have values in
+common, there must exist a data type which contains only the values that
+they have in common, and hence is a subtype of both; the main intent of
+that B<D> requirement is to support polymorphism where multiple distinct
+operators that have the same name but different semantics can dispatch
+correctly based on the MST of their operands.  However, in practice, such a
+requirement would place a gratuitous large and error-prone burden on users,
+where when they want to define a new type (typically a proper subtype of
+another), they may have to define many explicit subtypes of their new type
+to account for every overlap of their useful type with pre-existing system
+or user defined types.  Moreover, Muldis D uses distinct fully-qualified
+names for all operators, so no 2 operators would exist with the same name
+but different semantics, so that user trouble would be for naught in
+practice.  Therefore, Muldis D does not enforce single MSTs for values in
+general, but it might in specific (as yet unknown) future situations where
+there is ambiguity that needs resolving.  I<To keep documentation simpler,
+any reference to most-specific-types/MSTs elsewhere will assume each value
+has just one of them.>
 
 A I<union type> is a data type that has at least 2 immediate subtypes, and
 every one of its values is also a value of an immediate subtype; that is,
