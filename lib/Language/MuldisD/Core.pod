@@ -82,6 +82,11 @@ relationships:
             sys.Core.Relation.Seq
             sys.Core.Relation.Bag
 
+        # The following is filler, to group possible user-def types.
+
+        sys.Core.QuasiScalar.QuasiScalar
+            sys.Core.QuasiScalar.E_D
+
         # The following are all quasi-nonscalar type factories.
 
         sys.Core.QuasiTuple.QuasiTuple
@@ -99,7 +104,8 @@ relationships:
 
         # The following are all remnant types.
 
-        sys.Core.Remnant.ScaTupRel
+        sys.Core.Remnant.Remnant
+            sys.Core.Remnant.ScaTupRel
 
 Note that C<sys.Core.Universal.Empty> is a proper subtype of all of the
 other types in this graph, but every other type has only one immediate
@@ -582,6 +588,30 @@ significant, but that duplicate values are significant; specifically,
 C<count> defines an explicit count of occurrences for C<value>, also known
 as that value's I<multiplicity>.  Its default value has zero tuples.
 
+=head1 SYSTEM-DEFINED CORE QUASI-SCALAR DATA TYPES
+
+There are no system-defined normal quasi-scalar types; the only reason the
+following exist is to provide a maximal type of any user-defined ones that
+may come to exist.
+
+=over
+
+=item C<sys.Core.QuasiScalar.QuasiScalar>
+
+The C<QuasiScalar> type is the maximal type of all Muldis D quasi-scalar
+types, and contains every quasi-scalar value that can possibly exist.  Its
+default value is C<QuasiScalar.E_D:default>.  The cardinality of this type
+is infinity.
+
+=item C<sys.Core.QuasiScalar.E_D>
+
+A C<QuasiScalar.E_D> is an enumeration consisting of the 1 value
+C<QuasiScalar.E_D:default>, which is also its default value.  The only
+reason it exists is to provide a default value for the QuasiScalar union
+type.  The cardinality of this type is 1.
+
+=back
+
 =head1 SYSTEM-DEFINED CORE QUASI-NONSCALAR PARAMETERIZED DATA TYPES
 
 These quasi-nonscalar incomplete data type definitions correspond to their
@@ -656,6 +686,12 @@ These core data types are mainly for use with the definitions of some
 polymorphic operators whose range of possibly acceptable values may be
 mutually incompatible, and they aren't appropriate to group into other type
 categories or namespaces.
+
+=head2 sys.Core.Remnant.Remnant
+
+The C<Remnant> type is a partially redundant maximal type of all Muldis D
+remnant types.  Its default value is C<Bool:false> by way of its
+C<ScaTupRel> subtype.  The cardinality of this type is infinity.
 
 =head2 sys.Core.Remnant.ScaTupRel
 
@@ -764,11 +800,12 @@ commonly used method of rounding.
 
 =head2 sys.Core.Cat.E_TK
 
-A C<Cat.E_TK> (type kind) is an enumeration consisting of the 7 values
+A C<Cat.E_TK> (type kind) is an enumeration consisting of the 8 values
 C<Cat.E_TK:special> (mainly for system-defined implicit supertypes),
 C<Cat.E_TK:scalar>, C<Cat.E_TK:tuple>, C<Cat.E_TK:relation>,
-C<Cat.E_TK:quasi_tuple>, C<Cat.E_TK:quasi_relation>, C<Cat.E_TK:remnant>.
-Its default value is C<Cat.E_TK:scalar>.
+C<Cat.E_TK:quasi_scalar>, C<Cat.E_TK:quasi_tuple>,
+C<Cat.E_TK:quasi_relation>, C<Cat.E_TK:remnant>.  Its default value is
+C<Cat.E_TK:scalar>.
 
 =head2 sys.Core.Cat.E_TDM
 
@@ -788,13 +825,15 @@ default value is C<Cat.E_TDM:alias>.
 =head2 sys.Core.Cat.E_ENK
 
 A C<Cat.E_ENK> (expression node kind) is an enumeration consisting of the
-10 values C<Cat.E_ENK:default> (default value of expression's declared
-type), C<Cat.E_ENK:(scalar|tuple|relation|quasi_tuple|quasi_relation)>
-(hard-coded literal scalar|tuple|relation|quasi-tuple|quasi-relation
-value), C<Cat.E_ENK:param> (value of expression-containing function
-parameter), C<Cat.E_ENK:upd_param> (on-entry value of expression-containing
-update operator subject-to-update parameter), C<Cat.E_ENK:ro_param> (value
-of expression-containing update operator read-only parameter),
+11 values C<Cat.E_ENK:default> (default value of expression's declared
+type),
+C<Cat.E_ENK:(scalar|tuple|relation|quasi_scalar|quasi_tuple|quasi_relation)
+> (hard-coded literal
+scalar|tuple|relation|quasi-scalar|quasi-tuple|quasi-relation value),
+C<Cat.E_ENK:param> (value of expression-containing function parameter),
+C<Cat.E_ENK:upd_param> (on-entry value of expression-containing update
+operator subject-to-update parameter), C<Cat.E_ENK:ro_param> (value of
+expression-containing update operator read-only parameter),
 C<Cat.E_ENK:func> (result of function invocation, or inlining of function
 body).  Note that only C<upd_param> and C<func> (over C<upd_param>) can be
 used for a subject-to-update argument of an update operator, but all of
@@ -911,10 +950,11 @@ subtrahend type.
 Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
 fundamentally in terms of an explicit attribute collection, and C<attrs>
 defines the names and declared types of those attributes.  Iff additionally
-C<tk> is C<Cat.E_TK:scalar>, then C<attrs> specifically defines the
-attributes of just the core/initial/only possrep; otherwise, C<attrs>
-defines the heading of the tuple or relation etc type.  It is valid to have
-zero attributes; in this case, the type consists of exactly one value.
+C<tk> is C<Cat.E_TK:(scalar|quasi_scalar)>, then C<attrs> specifically
+defines the attributes of just the core/initial/only possrep; otherwise,
+C<attrs> defines the heading of the tuple or relation etc type.  It is
+valid to have zero attributes; in this case, the type consists of exactly
+one value.
 
 =item C<keys> - C<Cat.SetOfSetOfName>
 
