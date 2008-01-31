@@ -27,12 +27,12 @@ any entities outside the core, called I<Muldis D extensions>, are
 non-mandatory and are defined in terms of the core or each other, but the
 reverse isn't true.
 
-This current C<Core> document features the boolean, order, integer,
-rational, bit string, and character string types and operators, plus the
-tuple and relation type constructors (and quasi- variants) and operators,
-plus the type system minimal and maximal types, plus the special types used
-to define the system catalog, and the polymorphic operators that all types,
-or some types including core types, have defined over them.
+This current C<Core> document features the boolean, integer, rational, bit
+string, and character string types and operators, plus the tuple and
+relation type constructors (and quasi- variants) and operators, plus the
+type system minimal and maximal types, plus the special types used to
+define the system catalog, and the polymorphic operators that all types, or
+some types including core types, have defined over them.
 
 Extensions are in these other documents:
 L<Language::MuldisD::Ext::Temporal>, L<Language::MuldisD::Ext::Spatial>.
@@ -80,7 +80,7 @@ relationships:
             sys.Core.Relation.Set
                 sys.Core.Relation.Maybe
                     sys.Core.Relation.Nothing
-                    sys.Core.Relation.Just
+                    sys.Core.Relation.Single
             sys.Core.Relation.Seq
             sys.Core.Relation.Bag
 
@@ -102,7 +102,7 @@ relationships:
             sys.Core.QuasiRelation.QuasiSet
                 sys.Core.QuasiRelation.QuasiMaybe
                     sys.Core.QuasiRelation.QuasiNothing
-                    sys.Core.QuasiRelation.QuasiJust
+                    sys.Core.QuasiRelation.QuasiSingle
             sys.Core.QuasiRelation.QuasiSeq
             sys.Core.QuasiRelation.QuasiBag
 
@@ -135,7 +135,6 @@ more or less:
                 sys.Core.Cat.Name
                 sys.Core.Cat.NameChain
                 sys.Core.Cat.FlattenedNameChain
-                sys.Core.Cat.Order
 
                 sys.Core.Int.Int
                     sys.Core.Int.UInt
@@ -372,8 +371,8 @@ default value is C<Bool:false>.  The cardinality of this type is infinity.
 
 A C<Bool> is an enumeration consisting of the 2 values C<Bool:false> and
 C<Bool:true>.  It represents a truth value, and is the result type of any
-C<is_equal> or C<is_not_equal> routine; it is the only essential scalar
-data type of a B<D> language.  Its default and minimum value is
+C<is_identical> or C<is_not_identical> routine; it is the only essential
+scalar data type of a B<D> language.  Its default and minimum value is
 C<Bool:false>; its maximum value is C<Bool:true>.  The cardinality of this
 type is 2.
 
@@ -582,13 +581,13 @@ missing or inapplicable information, that does not typically equal any
 normal/scalar value; however, in Muldis D, C<Nothing> I<is a value>, and it
 I<is> equal to itself.
 
-=head2 sys.Core.Relation.Just
+=head2 sys.Core.Relation.Single
 
-A C<Just> is a proper subtype of C<Maybe> that has exactly 1 element.  Its
-default value's only tuple's only element has the value C<Bool:false>.  The
-C<Just> type is complementary to the C<Nothing> type under C<Maybe>;
-C<Nothing> consists of exactly 1 of C<Maybe>'s values, and C<Just> consists
-of all of C<Maybe>'s other values.
+A C<Single> is a proper subtype of C<Maybe> that has exactly 1 element.
+Its default value's only tuple's only element has the value C<Bool:false>.
+The C<Single> type is complementary to the C<Nothing> type under C<Maybe>;
+C<Nothing> consists of exactly 1 of C<Maybe>'s values, and C<Single>
+consists of all of C<Maybe>'s other values.
 
 =head2 sys.Core.Relation.Seq
 
@@ -700,10 +699,10 @@ A C<QuasiNothing> is a proper subtype of C<QuasiMaybe> in the corresponding
 manner to C<Nothing> being a proper subtype of C<Maybe>.  Its cardinality
 is 1.
 
-=head2 sys.Core.QuasiRelation.QuasiJust
+=head2 sys.Core.QuasiRelation.QuasiSingle
 
-A C<QuasiJust> is a proper subtype of C<QuasiMaybe> in the corresponding
-manner to C<Just> being a proper subtype of C<Maybe>.  Its cardinality is
+A C<QuasiSingle> is a proper subtype of C<QuasiMaybe> in the corresponding
+manner to C<Single> being a proper subtype of C<Maybe>.  Its cardinality is
 infinite.
 
 =head2 sys.Core.QuasiRelation.QuasiSeq
@@ -752,9 +751,9 @@ Muldis D expressions; 'directly' meaning not by way of explicitly invoking
 a selector function.  Generally speaking, this union type includes all of
 the core scalar types that aren't themselves defined as union types.  The
 full list that C<ScalarLiteral> unions is: C<Bool>, C<Int>, C<Rat>,
-C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.Order>, C<Cat.E_RM>,
-C<Cat.E_TK>, C<Cat.E_TDM>, C<Cat.E_ENK>, C<Cat.E_PSAK>.  Its default value
-is C<Bool:false>.
+C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.E_RM>, C<Cat.E_TK>,
+C<Cat.E_TDM>, C<Cat.E_ENK>, C<Cat.E_PSAK>.  Its default value is
+C<Bool:false>.
 
 =head2 sys.Core.Cat.Name
 
@@ -785,16 +784,6 @@ periods are escaped as C<\b>, C<\q> and C<\p> respectively.
 The C<Cat.FlattenedNameChain> type is used as the definition of the
 character string possrep of a C<Cat.NameChain> (see that type for details);
 while being a character string like C<Cat.Name>, the two are disjoint.
-
-=head2 sys.Core.Cat.Order
-
-A C<Cat.Order> is an enumeration consisting of the 3 values
-C<Cat.Order:increase>, C<Cat.Order:same>, C<Cat.Order:decrease>.  It is the
-result type of any C<comparison> routine that is used on 2 values of a
-C<sys.Core.Ordered.Ordered> subtype.  Its default value is
-C<Cat.Order:same>; its minimum and maximum values are, respectively,
-C<Cat.Order:increase> and C<Cat.Order:decrease>.  The cardinality of this
-type is 3.
 
 =head2 sys.Core.Cat.PInt1_4
 
@@ -1739,8 +1728,8 @@ These functions are applicable to values of any data type at all.
 
 =over
 
-=item C<function sys.Core.Universal.is_equal result Bool params {
-v1(Universal), v2(Universal) }>
+=item C<function sys.Core.Universal.is_identical result Bool params {
+topic(Universal), other(Universal) }>
 
 This function results in C<Bool:true> iff its 2 arguments are exactly the
 same value, and C<Bool:false> otherwise.  This function's arguments must be
@@ -1750,13 +1739,13 @@ common scalar root type; 2. they are both subtypes of a common
 non-incomplete tuple or relation type, that is they essentially have the
 same headings; 3. at least one type is a generic (eg-C<Universal>) or
 incomplete (eg-C<Seq>) type, and it is a supertype of the other.  This
-function is commutative.
+function's 2 parameters are mutually commutative.
 
-=item C<function sys.Core.Universal.is_not_equal result Bool params {
-v1(Universal), v2(Universal) }>
+=item C<function sys.Core.Universal.is_not_identical result Bool params {
+topic(Universal), other(Universal) }>
 
-This function is exactly the same as C<sys.Core.Universal.is_equal> except
-that it results in the opposite boolean value when given the same
+This function is exactly the same as C<sys.Core.Universal.is_identical>
+except that it results in the opposite boolean value when given the same
 arguments.
 
 =item C<function sys.Core.Universal.is_value_of_type result Bool params {
@@ -1812,55 +1801,25 @@ just the types they apply to.
 
 =over
 
-=item C<function sys.Core.Ordered.comparison result Cat.Order params {
-v1(Ordered), v2(Ordered) }>
+=item C<function sys.Core.Ordered.is_before result Bool params {
+topic(Ordered), other(Ordered) }>
 
-This function results in C<Cat.Order:same> iff its 2 arguments are exactly
-the same value, and otherwise it results in C<Cat.Order:increase> if the
-value of the C<v2> argument is considered to be an increase (as defined by
-the type) over the value of the C<v1> argument, and otherwise it results in
-C<Cat.Order:decrease> as the reverse of the last condition would be true.
-This function's arguments must be of compatible declared types; in this
-case, 2 declared types are compatible iff they are both subtypes of a
-common scalar type that declares itself an C<Ordered> subtype.  Note that
-C<comparison> is considered the only fundamental ordered-specific operator,
-and all others are defined over it.
+This function results in C<Bool:true> iff its 2 arguments are non-identical
+and the value of the C<topic> argument is considered to come before the
+value of the C<other> argument when the 2 values are arranged in order (as
+defined by the type); it results in C<Bool:false> otherwise.  This
+function's arguments must be of compatible declared types; in this case, 2
+declared types are compatible iff they are both subtypes of a common scalar
+type that declares itself an C<Ordered> subtype.  Note that C<is_before> is
+considered the only fundamental ordered-specific operator, and all others
+are defined over it plus C<is_identical>.
 
-=item C<function sys.Core.Ordered.reverse_comparison result Cat.Order
-params { v1(Ordered), v2(Ordered) }>
+=item C<function sys.Core.Ordered.is_not_before result Bool params {
+topic(Ordered), other(Ordered) }>
 
-This function is exactly the same as C<sys.Core.Ordered.comparison> except
-that it results in the reverse value when given the same arguments.  It is
-a short-hand for applying C<sys.Core.Cat.Order_reverse> to the result of
-C<sys.Core.Ordered.comparison> with the same arguments.
-
-=item C<function sys.Core.Ordered.is_increase result Bool params {
-v1(Ordered), v2(Ordered) }>
-
-This function results in C<Bool:true> iff C<sys.Core.Ordered.comparison>
-would result in C<Cat.Order:increase> when given the same arguments, and
-C<Bool:false> otherwise.
-
-=item C<function sys.Core.Ordered.is_decrease result Bool params {
-v1(Ordered), v2(Ordered) }>
-
-This function results in C<Bool:true> iff C<sys.Core.Ordered.comparison>
-would result in C<Cat.Order:decrease> when given the same arguments, and
-C<Bool:false> otherwise.
-
-=item C<function sys.Core.Ordered.is_increase_or_same result Bool params {
-v1(Ordered), v2(Ordered) }>
-
-This function is exactly the same as C<sys.Core.Ordered.is_decrease> except
+This function is exactly the same as C<sys.Core.Ordered.is_before> except
 that it results in the opposite boolean value when given the same
-arguments.
-
-=item C<function sys.Core.Ordered.is_decrease_or_same result Bool params {
-v1(Ordered), v2(Ordered) }>
-
-This function is exactly the same as C<sys.Core.Ordered.is_increase> except
-that it results in the opposite boolean value when given the same
-arguments.
+arguments.  (It could alternately be called "is after or is identical".)
 
 =item C<function sys.Core.Ordered.is_inside_range result Bool params {
 topic(Ordered), min(Ordered), max(Ordered), min_is_inside(Bool),
@@ -1872,7 +1831,7 @@ C<min_is_inside> or C<max_is_inside> are C<Bool:true>, then C<topic> is
 considered to be within the range if it is equal to C<min> or C<max>,
 respectively.  This function's arguments must be of compatible declared
 types as per C<sys.Core.Ordered.comparison>.  This function will fail if
-C<min> is an increase over C<max>.
+C<max> is before C<min>.
 
 =item C<function sys.Core.Ordered.is_outside_range result Bool params {
 topic(Ordered), min(Ordered), max(Ordered), min_is_inside(Bool),
@@ -1973,13 +1932,13 @@ These functions implement commonly used integer numeric operations.
 
 =over
 
-=item C<function sys.Core.Int.increase result Int params { topic(Int) }>
+=item C<function sys.Core.Int.increment result Int params { topic(Int) }>
 
-This function results in its argument increased by 1.
+This function results in its argument incremented by 1.
 
-=item C<function sys.Core.Int.decrease result Int params { topic(Int) }>
+=item C<function sys.Core.Int.decrement result Int params { topic(Int) }>
 
-This function results in its argument decreased by 1.
+This function results in its argument decremented by 1.
 
 =item C<function sys.Core.Int.abs result UInt params { topic(Int) }>
 
@@ -3312,18 +3271,18 @@ projection of just the named attribute plus its renaming to C<value>.
 
 This selector function results in the only zero-tuple Maybe value.
 
-=item C<function sys.Core.Maybe.just result Just params { value(ScaTupRel)
-}>
+=item C<function sys.Core.Maybe.single result Single params {
+value(ScaTupRel) }>
 
 This selector function results in the Maybe value with a single tuple whose
 C<value> attribute's value is the C<value> argument.
 
-=item C<function sys.Core.Maybe.attr result ScaTupRel params { topic(Just)
-}>
+=item C<function sys.Core.Maybe.attr result ScaTupRel params {
+topic(Single) }>
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of its argument, which always exists when the
-argument is a C<Just>.
+argument is a C<Single>.
 
 =item C<function sys.Core.Maybe.attr_or_default result ScaTupRel params {
 topic(Maybe) }>
@@ -3370,19 +3329,19 @@ index(UInt), value(ScaTupRel) }>
 This function results in its C<topic> argument but that a new tuple has
 been inserted whose C<index> is C<index> and whose C<value> is C<value>;
 any existing tuples with C<index> values greater than or equal to C<index>
-had theirs increased by 1.  As a trivial case, if C<index> is equal to zero
-or is equal to the cardinality of C<topic>, then C<value> has become the
-new first or last (or only) element, respectively.  This function will fail
-if C<index> is greater than the cardinality of C<topic>, or if the declared
-type of C<value> isn't a subtype of the declared type of the C<value>
-attribute.
+had theirs incremented by 1.  As a trivial case, if C<index> is equal to
+zero or is equal to the cardinality of C<topic>, then C<value> has become
+the new first or last (or only) element, respectively.  This function will
+fail if C<index> is greater than the cardinality of C<topic>, or if the
+declared type of C<value> isn't a subtype of the declared type of the
+C<value> attribute.
 
 =item C<function sys.Core.Seq.deletion result Seq params { topic(Seq),
 index(UInt) }>
 
 This function results in its C<topic> argument but that a tuple has been
 deleted whose C<index> is C<index>; any existing tuples with C<index>
-values greater than or equal to C<index> had theirs decreased by 1.  This
+values greater than or equal to C<index> had theirs decremented by 1.  This
 function will fail if no tuple exists in C<topic> with the specified index.
 
 =item C<function sys.Core.Seq.is_element result Bool params { topic(Seq),
@@ -3494,8 +3453,8 @@ value(ScaTupRel) }>
 This function is the same as C<sys.Core.Set.insertion> as per C<is_member>
 but that its result differs depending on whether C<value> already exists in
 C<bag>; if it does, then no new tuple is added, but the C<count> attribute
-for the matching tuple is increased by 1; if it does not, then a new tuple
-is added where its C<value> is C<value> and its C<count> is 1.
+for the matching tuple is incremented by 1; if it does not, then a new
+tuple is added where its C<value> is C<value> and its C<count> is 1.
 
 =item C<function sys.Core.Bag.deletion result Bag params { bag(Bag),
 value(ScaTupRel) }>
@@ -3503,7 +3462,7 @@ value(ScaTupRel) }>
 This function is the same as C<sys.Core.Set.deletion> as per C<is_member>
 but that its result differs depending on what the C<count> for any tuple
 matching C<value> that already exists in C<bag> is; if the C<count> is
-greater than 1, then it is decreased by 1; if it is equal to 1, then the
+greater than 1, then it is decremented by 1; if it is equal to 1, then the
 tuple whose C<value> is C<value> is deleted.
 
 =item C<function sys.Core.Bag.reduction result ScaTupRel params {
@@ -3613,32 +3572,7 @@ I<This documentation is pending.>
 
 =head1 SYSTEM-DEFINED CORE CATALOG FUNCTIONS
 
-=head2 Functions for sys.Core.Cat.Order
-
-These functions select values of the C<Cat.Order> enumeration.
-
-=over
-
-=item C<function sys.Core.Cat.Order_(increase|same|decrease) result
-Cat.Order params {}>
-
-This selector function results in the C<Cat.Order:(increase|same|decrease)>
-value.
-
-=back
-
-These functions implement commonly used order-enumeration operations.
-
-=over
-
-=item C<function sys.Core.Cat.Order_reverse result Cat.Order params {
-topic(Cat.Order) }>
-
-This function results in the reverse value of its argument; an
-C<Cat.Order:increase> or C<Cat.Order:decrease> argument results in the
-other one of the two; an C<Cat.Order:same> argument results in itself.
-
-=back
+I<This documentation is pending.>
 
 =head1 SYSTEM-DEFINED CORE UPDATERS
 
