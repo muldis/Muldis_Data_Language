@@ -584,10 +584,10 @@ I<is> equal to itself.
 =head2 sys.Core.Relation.Single
 
 A C<Single> is a proper subtype of C<Maybe> that has exactly 1 element.
-Its default value's only tuple's only element has the value C<Bool:false>.
-The C<Single> type is complementary to the C<Nothing> type under C<Maybe>;
-C<Nothing> consists of exactly 1 of C<Maybe>'s values, and C<Single>
-consists of all of C<Maybe>'s other values.
+Its default value's only tuple's only attribute has the value
+C<Bool:false>.  The C<Single> type is complementary to the C<Nothing> type
+under C<Maybe>; C<Nothing> consists of exactly 1 of C<Maybe>'s values, and
+C<Single> consists of all of C<Maybe>'s other values.
 
 =head2 sys.Core.Relation.Seq
 
@@ -3093,7 +3093,8 @@ source(Relation), filter(Relation) }>
 
 This function is the same as C<semijoin> but that it results in the
 complementary subset of tuples of C<source> when given the same arguments.
-Note that this operation is also legitimately known as I<antijoin>.
+Note that this operation is also legitimately known as I<antijoin> or
+I<anti-semijoin>.
 
 =item C<function sys.Core.Relation.semijoin result Relation params {
 source(Relation), filter(Relation) }>
@@ -3176,6 +3177,73 @@ This function is like C<substitution_in_restriction> except that the subset
 of the tuples of C<topic> to be transformed is determined by those matched
 by a semijoin with C<restr> rather than those that pass a generic
 relational restriction.
+
+=item C<function sys.Core.Relation.join_with_group result Relation params {
+primary(Relation), secondary(Relation), group_attr(Cat.Name) }>
+
+This function is a short-hand for first taking a (natural inner) C<join> of
+its C<primary> and C<secondary> arguments, and then taking a C<group> on
+all of the attributes that only the C<secondary> argument had, such that
+the attribute resulting from the group has the name C<group_attr>.  The
+result has 1 tuple for every tuple of C<primary> where at least 1 matching
+tuple exists in C<secondary>.  This function will fail if C<group_attr> is
+the same name as any source attribute that wasn't grouped.  This function
+is a convenient tool for gathering both parent and child records from a
+database using a single query while avoiding duplication of the parent
+record values.
+
+=item C<function sys.Core.Relation.outer_join_with_group result Relation
+params { primary(Relation), secondary(Relation), group_attr(Cat.Name) }>
+
+This function is the same as C<sys.Core.Relation.join_with_group> except
+that it results in a half-outer natural join rather than an inner natural
+join; every tuple of C<primary> has exactly 1 corresponding tuple in the
+result, but where there were no matching C<secondary> tuples, the result
+attribute named by C<group_attr> contains zero tuples rather than 1+.
+
+=item C<function sys.Core.Relation.outer_join_with_maybes result
+Relation params { primary(Relation), secondary(Relation) }>
+
+This function results in a plain half-outer natural join of its C<primary>
+and C<secondary> arguments where all the result attributes that come from
+just C<secondary> are C<Maybe>-typed; for result tuples from matched source
+tuples, each C<secondary> attribute value is a C<Single>; for result tuples
+from non-matched C<primary> tuples, each C<secondary> attribute value is a
+C<Nothing>.  The C<outer_join_with_maybes> function is Muldis D's answer to
+the SQL LEFT OUTER JOIN where SQL NULL is implicitly used in result rows
+that were a non-match.
+
+=item C<function sys.Core.Relation.outer_join_with_defaults result
+Relation params { primary(Relation), secondary(Relation) }>
+
+This function is the same as C<sys.Core.Relation.outer_join_with_maybes>
+but that C<secondary>-sourced result attributes are not converted to
+C<Maybe>; rather, for result tuples from non-matches, the declared types of
+the C<secondary> attributes are considered, and the default values of those
+types are used to fill in missing result values.
+
+=item C<function sys.Core.Relation.outer_join_with_product result
+Relation params { primary(Relation), secondary(Relation), filler(Tuple) }>
+
+This function is the same as C<sys.Core.Relation.outer_join_with_defaults>
+but that missing values are provided explicitly from the C<filler>
+argument, which is a tuple whose heading matches the projection of
+C<secondary>'s attributes that aren't in common with C<primary>, and whose
+body is the literal values to use for those missing attribute values.  This
+function gets its name in that conceptually the result tuples from
+non-matches are the result of performing a relational cross-product between
+the un-matched C<primary> tuples and the single C<filler> tuple.
+
+=item C<function sys.Core.Relation.outer_join_with_extension result
+Relation params { primary(Relation), secondary(Relation),
+exten_func(Cat.NameChain), exten_assuming(Tuple) }>
+
+This function is the same as C<sys.Core.Relation.outer_join_with_product>
+but that the result tuples from non-matches are the result of performing a
+relational extension on the un-matched C<primary> tuples such that each
+said result tuple is determined by applying the function named in
+C<exten_func> to each said C<primary> tuple when the named function is
+curried using the C<exten_assuming> argument.
 
 =back
 
