@@ -52,7 +52,7 @@ at them.
 
 The fully-qualified name of this multi-part document and the language
 specification it contains (as a single composition) is
-C<MuldisD:'cpan:DUNCAND':'0.19.0'>.  It is the official/original (not
+C<Muldis_D:'cpan:DUNCAND':'0.19.0'>.  It is the official/original (not
 embraced and extended) Muldis D language specification by the authority
 Darren Duncan (C<cpan:DUNCAND>), version C<0.19.0> (this number matches the
 VERSION pod in this file).  This multi-part document is named and organized
@@ -160,7 +160,7 @@ D code is written here by way of writing code in the host language.
 =head2 Base Name
 
 The first element of the Muldis D language name is simply the character
-string C<MuldisD>.  Any language which wants to claim to be a variant of
+string C<Muldis_D>.  Any language which wants to claim to be a variant of
 Muldis D should have this exact first element; only have some other value
 if you don't want to claim a connection to Muldis D at all, and in that
 case feel free to just ignore everything else in this multi-document.
