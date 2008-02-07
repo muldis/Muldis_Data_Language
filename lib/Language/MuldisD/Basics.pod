@@ -424,45 +424,49 @@ one or more "statements", and in executing these, all work is done.
 
 =head2 Representation
 
-Muldis D has 2 closely corresponding main representation formats, which are
-called I<Concrete Muldis D> and I<Abstract Muldis D>; these are analogous
-to the natural code strings of a typical programming language, and the
-abstract syntax trees that they naturally parse into, respectively.
+Muldis D has multiple official representation formats, each of which is
+referred to by this multi-part document as a I<dialect>.  Each official
+Muldis D dialect has its own syntax rules, but all of them are capable of
+representing the same code; that is, they can all represent code that has
+the same behaviour, and Muldis D code can be translated between any 2 of
+these dialects without changing its behaviour.
 
-Concrete Muldis D is the natural form that one would code in if they were
-writing a self-contained application (or component) in Muldis D which was
-compiled using a separate process into its own executable (or library),
-which includes situations where Muldis D is its own Parrot
-(L<http://www.parrotcode.org/>) hosted language (a prospect which is
-desired to be implemented in the near future).  Concrete Muldis D would
-also be used by an interactive shell interface over the Muldis DB
-(specifically L<Muldis::DB::Interface>) implementation of Muldis D, when
-users submit commands at runtime, or in any other situation where it makes
-sense to take input in that form.
+Some dialects maintain more non-critical explicit meta-data than others, so
+translating code from a dialect with more to a dialect with less will lose
+explicit information, and translating the other way will require automatic
+generation of that information, so round tripping code starting and ending
+at the 'more' end will likely change it; however the changes won't be
+behaviour-changing ones.  An example of non-critical meta-data is the names
+of intermediate values in multi-part value-determining expressions; some
+dialects require you to explicitly name these intermediate values, and
+others don't always have names for them at all.  Another example of
+non-critical is code comments.  By contrast, some given pairs of dialects
+maintain all of the same non-critical meta-data, and simply have different
+syntaxes; round-tripping code between these is guaranteed to result in
+everything that was started with, non-criticals included.
 
-Abstract Muldis D is the natural form that one would code in if they were
-primarily writing their application in a separate host language, such as
-Perl, and any Muldis D code was being specified in terms of host language
-code, such as Perl arrays, hashes, and scalars.  Abstract Muldis D code
-consists of quasi-hierarchical but actually relational collection values,
-typically catalog tuples.  Abstract Muldis D is the only representation
-format used by the API the Muldis DB (specifically
-L<Muldis::DB::Interface>) implementation of Muldis D, and is what any Perl
-code typically should be using.  When generating Muldis D code from
-arbitrary Perl data structures (which includes the work of, eg, SQL DBMS
-emulators), the Abstract form is the easiest to use and the least error
-prone since no values have to be escaped or stitched together as strings,
-which prevents many injection security holes. Abstract Muldis D is also
-what is used when Muldis D code is defined to generate/prepare and execute
-other Muldis D code at runtime (by reading or updating the meta-model /
-system catalog), which is "data definition".
+Generally speaking, every Muldis D dialect belongs to one of just 2 groups,
+which are I<non-hosted plain-text> and I<hosted data>; any Muldis D dialect
+will go by the abstract names I<Plain Text Muldis D> (I<PTMD>), and
+I<Hosted Data Muldis D> (I<HDMD>), respectively.  With all Plain Text
+dialects, the Muldis D code is represented by an (ordered) string/sequence
+of characters like with most normal programming languages.  With all Hosted
+Data dialects, the Muldis D code is represented by collection-typed values
+that are of some native type of some other programming language (eg, Perl)
+which is the host of Muldis D.  The Muldis D code is written here by way of
+writing code in the host language.
 
-See L<Language::MuldisD::Core> first for details of the Muldis D
-meta-model, which is also the grammar of Abstract Muldis D; see
-L<Language::MuldisD::Grammar> for the grammar of Concrete Muldis D; the
-latter document says how to parse Concrete Muldis D into Abstract Muldis D;
-the former document explains the meaning of both in terms of the Abstract;
-see L<Language::MuldisD::PerlHosted> for Perl Hosted Abstract Muldis D.
+Some official Muldis D dialects have their specifications bundled with the
+current multi-document: L<Language::MuldisD::Dialect::PTMD_Tiny>,
+L<Language::MuldisD::Dialect::HDMD_Perl_Tiny>,
+L<Language::MuldisD::Hierarchical>.  Other, unofficial Muldis D dialects
+may be made by third parties in the future, but none are currently known.
+
+The other parts of the current multi-document generally focus on the
+behaviours and semantic features of Muldis D, rather than its syntax, and
+what they describe is generally common to all Muldis D dialects.  The most
+important of those parts are the current B<Basics> file and the
+L<Language::MuldisD::Core> file.
 
 =head1 TYPE SYSTEM
 
@@ -1204,7 +1208,7 @@ C<function>.
 =item C<main>
 
 A C<main> is the single anonymous procedure that is the "main program" of a
-non-hosted Concrete Muldis D application.  A C<main> is the same as a
+non-hosted Plain Text Muldis D application.  A C<main> is the same as a
 C<procedure>, but that it can not be invoked by any other Muldis D routine,
 it does not live in any depot, it can not directly see or update any global
 variables, and it can not have any parameters.  Fundamentally, the only
@@ -1515,7 +1519,7 @@ independent unit.
 
 At DBMS startup, there are no depots mounted.  The only user-defined Muldis
 D code that doesn't live in a depot is the "main program" of a non-hosted
-Concrete Muldis D application, and the only job of that code is to mount
+Plain Text Muldis D application, and the only job of that code is to mount
 one or more depots that contain the rest of the program code (as libraries)
 and invoke their high-level routines; or it creates and populates said
 depots if necessary.  In a mixed-language application, where Muldis D code

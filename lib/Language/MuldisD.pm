@@ -37,7 +37,8 @@ This is the root document of the Muldis D language specification; the
 documents that comprise the remaining parts of the specification, in their
 suggested reading order (but that all follow the root), are:
 L<Language::MuldisD::Basics>, L<Language::MuldisD::Core>,
-L<Language::MuldisD::Grammar>, L<Language::MuldisD::PerlHosted>,
+L<Language::MuldisD::Dialect::PTMD_Tiny>,
+L<Language::MuldisD::Dialect::HDMD_Perl_Tiny>,
 L<Language::MuldisD::Hierarchical>, L<Language::MuldisD::Conventions>,
 L<Language::MuldisD::Ext::Temporal>, L<Language::MuldisD::Ext::Spatial>.
 
@@ -246,8 +247,10 @@ dialect needs to be translatable to a standard dialect without changing
 the code's behavior.
 
 See the following parts of the current multi-document for descriptions of
-bundled dialects (subject to change): L<Language::MuldisD::Grammar>,
-L<Language::MuldisD::PerlHosted>, L<Language::MuldisD::Hierarchical>.
+bundled dialects (names subject to change):
+L<Language::MuldisD::Dialect::PTMD_Tiny>,
+L<Language::MuldisD::Dialect::HDMD_Perl_Tiny>,
+L<Language::MuldisD::Hierarchical>.
 
 =head2 Extensions
 

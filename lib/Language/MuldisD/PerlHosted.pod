@@ -4,12 +4,12 @@
 
 =head1 NAME
 
-Language::MuldisD::PerlHosted -
-How to format Perl Hosted Abstract Muldis D
+Language::MuldisD::Dialect::HDMD_Perl_Tiny -
+How to format Perl Hosted Data Muldis D
 
 =head1 VERSION
 
-This document is Language::MuldisD::PerlHosted version 0.8.0.
+This document is Language::MuldisD::Dialect::HDMD_Perl_Tiny version 0.8.0.
 
 =head1 PREFACE
 
@@ -19,9 +19,9 @@ before you read this one, which provides subservient details.
 
 =head1 DESCRIPTION
 
-This document outlines the specification of I<Abstract Muldis D> as hosted
-in either Perl 5 or Perl 6, and as composed of just|mainly core Perl types;
-for brevity, the term I<PHMD> will be used to refer to this spec.
+This document outlines the specification of I<Hosted Data Muldis D> as
+hosted in either Perl 5 or Perl 6, and as composed of just|mainly core Perl
+types; for brevity, the term I<PHMD> will be used to refer to this spec.
 
 Where Perl 5 and 6 differ, the terminology and examples in this
 documentation specifically uses Perl 6 terminology and examples by default,
@@ -53,6 +53,23 @@ or this document can be used as a point of departure for documenting some
 alternative AST for that purpose.
 
 I<This documentation is pending.>
+
+Hosted Data Muldis D is the natural form that one would code in if they
+were primarily writing their application in a separate host language, such
+as Perl, and any Muldis D code was being specified in terms of host
+language code, such as Perl arrays, hashes, and scalars.  Hosted Data
+Muldis D code consists of quasi-hierarchical but actually relational
+collection values, typically catalog tuples.  Hosted Data Muldis D is the
+only representation format used by the API the Muldis DB (specifically
+L<Muldis::DB::Interface>) implementation of Muldis D, and is what any Perl
+code typically should be using.  When generating Muldis D code from
+arbitrary Perl data structures (which includes the work of, eg, SQL DBMS
+emulators), the Hosted Data form is the easiest to use and the least error
+prone since no values have to be escaped or stitched together as strings,
+which prevents many injection security holes. Hosted Data Muldis D is also
+what is used when Muldis D code is defined to generate/prepare and execute
+other Muldis D code at runtime (by reading or updating the meta-model /
+system catalog), which is "data definition".
 
 =head1 GENERAL STRUCTURE
 
@@ -127,7 +144,7 @@ formats the payload is, so that it is correctly interpreted.  Typically
 speaking, only the payload element might be a Perl collection type, and
 typically all the other elements are Perl scalars.
 
-Note that a Hosted Abstract Muldis D implementation may eschew the above
+Note that a Hosted Data Muldis D implementation may eschew the above
 4-element Array as the root PHMD node for all PHMD trees, and instead have
 a separate virtual machine configuration step taking just the first 3
 elements (base name, authority, version number), to provide a context for
@@ -173,7 +190,7 @@ follows:
 
 If the format is C<md_enum>, then the payload must be a Perl C<Str>
 having one of the values C<false>, C<true>.  This format specifically is
-what the Concrete Muldis D grammar uses, and is the result of parsing it.
+what the Plain Text Muldis D grammar uses, and is the result of parsing it.
 
 =item *
 
@@ -233,10 +250,10 @@ follows:
 
 =item *
 
-If the format is C<md_int>, then the max-col-val must be a Perl
-C<Str> composed of a single C<[1-9A-Z]> character, and the payload must be
-a Perl C<Str> of the format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z]>* >>.  This
-format specifically is what the Concrete Muldis D grammar uses, and is the
+If the format is C<md_int>, then the max-col-val must be a Perl C<Str>
+composed of a single C<[1-9A-Z]> character, and the payload must be a Perl
+C<Str> of the format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z]>* >>.  This format
+specifically is what the Plain Text Muldis D grammar uses, and is the
 result of parsing it.  The payload is interpreted as a base-I<N> integer
 where I<N> might be between 2 and 36, and the given max-col-val says which
 possible value of I<N> to use.  Assuming all column values are between zero
@@ -322,7 +339,7 @@ follows:
 If the format is C<md_radix>, then the max-col-val must be a Perl C<Str>
 composed of a single C<[1-9A-Z]> character, and the payload must be a Perl
 C<Str> of the format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>* >>.
-This format specifically is what the Concrete Muldis D grammar uses
+This format specifically is what the Plain Text Muldis D grammar uses
 ('radix' option), and is the result of parsing it.  The payload is
 interpreted as a base-I<N> rational where I<N> might be between 2 and 36,
 and the given max-col-val says which possible value of I<N> to use.
@@ -433,7 +450,7 @@ follows:
 If the format is C<md_blob>, then the max-col-val must be a Perl
 C<Str> composed of a single C<[137F]> character, and the payload must be a
 Perl C<Str> of the format C<< <[0-9A-F]>* >>.  This format specifically is
-what the Concrete Muldis D grammar uses, and is the result of parsing it.
+what the Plain Text Muldis D grammar uses, and is the result of parsing it.
 Each column of the payload specifies a sequence of one of [1,2,3,4] bits,
 depending on whether max-col-val is [1,3,7,F].
 
@@ -477,7 +494,7 @@ The payload.
 =back
 
 This node is interpreted as a Muldis D C<sys.Core.Text.Text> value by
-directly mapping the payload.  Note that, while Concrete Muldis D may
+directly mapping the payload.  Note that, while Plain Text Muldis D may
 contain a few escape sequences, those would be replaced with what they
 represent prior to making a PHMD node.  Under Perl 6, the payload must be a
 Perl C<Str>, which is mapped directly.  Under Perl 5, the payload must be
@@ -792,10 +809,10 @@ probably the most often used node type, and moreover this change allows for
 simplifying other parts of the grammar.
 
 This node is interpreted as a Muldis D C<sys.Core.Cat.Name> value by
-directly mapping itself / the payload.  Note that, while Concrete Muldis D
-may contain a few escape sequences, those would be replaced with what they
-represent prior to making a PHMD node.  The node / its payload must be as
-per a C<Text> PHMD node.
+directly mapping itself / the payload.  Note that, while Plain Text Muldis
+D may contain a few escape sequences, those would be replaced with what
+they represent prior to making a PHMD node.  The node / its payload must be
+as per a C<Text> PHMD node.
 
 Examples:
 
