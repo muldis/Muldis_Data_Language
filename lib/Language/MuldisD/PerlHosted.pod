@@ -61,7 +61,9 @@ Array is a tree node.  The elements of each node/Array include typically a
 native Perl payload value, which may be a PHMD value itself, plus meta-data
 for that payload, that meta-data typically including the analogy of a class
 name, were PHMD nodes instead represented by a tree of PHMD-specific
-objects.
+objects.  As an exception, one kind of PHMD node is not a Perl Array, but
+just a Perl C<Str>; if you see a C<Str> where you expect a PHMD node,
+assume it is a C<Cat.Name> node; this exception is for huffmanizing.
 
 It should be emphasized that no Perl undefined values are allowed anywhere
 in a PHMD value; you must use only defined values instead.  This
@@ -496,7 +498,7 @@ Examples:
 
 =head2 sys.Core.Tuple.Tuple
 
-This node type represents a tuple value.  It has 3 elements:
+This node type represents a tuple value.  It has 2 elements:
 
 =over
 
@@ -506,50 +508,34 @@ Node type: the Perl C<Str> value C<Tuple>.
 
 =item *
 
-Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
-
-=item *
-
 The payload; a Perl C<Hash|Mapping> value.
 
 =back
 
 This node is interpreted as a Muldis D C<sys.Core.Tuple.Tuple> value whose
-heading was predefined, as a tuple data type, for referencing now by the
-type name, and whose body is defined now by the payload.  Each key+value
-pair of the payload defines a named attribute of the new tuple; the pair's
-key and value are, respectively, a Perl C<Str> that specifies the attribute
-name, and a PHMD node that specifies the attribute value.  The tuple body
-defined by the payload must correspond to the tuple heading named by the
-type name; that is, they must have the same degree, same attribute names,
-and compatible types.
+attributes are defined by the payload.  Each key+value pair of the payload
+defines a named attribute of the new tuple; the pair's key and value are,
+respectively, a Perl C<Str> that specifies the attribute name, and a PHMD
+node that specifies the attribute value.
 
 Examples:
 
-    [ 'Tuple', 'sys.Core.Tuple.D0', {} ]
+    [ 'Tuple', {} ]
 
-    [ 'Tuple', 'fed.the_db.account.user_t', {
+    [ 'Tuple', {
         'login_name' => [ 'Text', 'hartmark' ],
         'login_pass' => [ 'Text', 'letmein' ],
         'is_special' => [ 'Bool', 'md_enum', 'true' ],
     } ]
 
-    [ 'Tuple', 'fed.the_db.gene.person_t', {
+    [ 'Tuple', {
         'name' => [ 'Text', 'Michelle' ],
         'age'  => [ 'Int', 'perl_int', 17 ],
     } ]
 
-    [ 'Tuple', 'fed.the_db.account', {
-        'user' => [ 'Relation', 'fed.the_db.account.user_r', ... ],
-    } ]
-
-    [ 'Tuple', 'fed.the_db.gene', {
-        'person' => [ 'Relation', 'fed.the_db.gene.person_r', ... ],
-    } ]
-
 =head2 sys.Core.Relation.Relation
 
-This node type represents a relation value.  It has 3 elements:
+This node type represents a relation value.  It has 2 elements:
 
 =over
 
@@ -559,28 +545,35 @@ Node type: the Perl C<Str> value C<Relation>.
 
 =item *
 
-Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
-
-=item *
-
-The payload; a Perl C<Array|Seq|Set|KeySet> of C<Hash|Mapping> value.
+The payload; a Perl C<Array|Seq|Set|KeySet> of C<Str|Hash|Mapping> value.
 
 =back
 
 This node is interpreted as a Muldis D C<sys.Core.Relation.Relation> value
-whose heading was predefined, as a relation data type, for referencing now
-by the type name, and whose body is defined now by the payload.  Each
-element of the payload defines a tuple of the new relation; each element is
-as per the payload of a tuple-defining PHMD node, including the need to
-correspond to the relation heading, which is common to all tuples in it.
+whose tuples and attribute names are defined by the payload.  Iff the
+payload has zero elements, then it defines the only relation value having
+zero attributes and zero tuples.  If the payload has elements, then either
+the elements must all be C<Str>, or they must all be C<Hash|Mapping>, but
+not both kinds in the same payload.  Iff a payload's elements are each
+C<Str>, then the payload defines the attribute names of a relation having
+zero tuples; each element must be as per the payload of a
+C<Cat.Name>-defining PHMD node.  Iff a payload's elements are each
+C<Hash|Mapping>, then each element of the payload defines a tuple of the
+new relation; each element is as per the payload of a tuple-defining PHMD
+node; every tuple-defining element of the payload must be of the same
+degree and have the same attribute names as its sibling elements; these are
+the degree and attribute names of the relation as a whole, which is its
+heading for the current purposes.
 
 Examples:
 
-    [ 'Relation', 'sys.Core.Relation.D0', [] ]
+    [ 'Relation', [] ]
 
-    [ 'Relation', 'sys.Core.Relation.D0', [ {} ] ]
+    [ 'Relation', [ {}, ] ]
 
-    [ 'Relation', 'fed.the_db.account.user_r', [
+    [ 'Relation', [ 'x', 'y', 'z', ] ]
+
+    [ 'Relation', [
         {
             'login_name' => [ 'Text', 'hartmark' ],
             'login_pass' => [ 'Text', 'letmein' ],
@@ -588,7 +581,7 @@ Examples:
         },
     ] ]
 
-    [ 'Relation', 'fed.the_db.gene.person_r', [
+    [ 'Relation', [
         {
             'name' => [ 'Text', 'Michelle' ],
             'age'  => [ 'Int', 'perl_int', 17 ],
@@ -597,7 +590,7 @@ Examples:
 
 =head2 sys.Core.Relation.Set
 
-This node type represents a set value.  It has 3 elements:
+This node type represents a set value.  It has 2 elements:
 
 =over
 
@@ -607,30 +600,25 @@ Node type: the Perl C<Str> value C<Set>.
 
 =item *
 
-Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
-
-=item *
-
 The payload; a Perl C<Array|Seq|Set|KeySet> value.
 
 =back
 
 This node is interpreted as a Muldis D C<sys.Core.Relation.Set> value whose
-heading was predefined, as a set data type, for referencing now by the type
-name, and whose body is defined now by the payload.  Each element of the
-payload defines a unary tuple of the new set; each element is a PHMD node
-that defines the C<value> attribute of the tuple.
+elements are defined by the payload.  Each element of the payload defines a
+unary tuple of the new set; each element is a PHMD node that defines the
+C<value> attribute of the tuple.
 
 Examples:
 
-    [ 'Set', 'fed.the_db.account.country_name', [
+    [ 'Set', [
         [ 'Text', 'Canada' ],
         [ 'Text', 'Spain' ],
         [ 'Text', 'Jordan' ],
         [ 'Text', 'Thailand' ],
     ] ]
 
-    [ 'Set', 'fed.the_db.stats.some_ages', [
+    [ 'Set', [
         [ 'Int', 'perl_int', 3 ],
         [ 'Int', 'perl_int', 16 ],
         [ 'Int', 'perl_int', 85 ],
@@ -648,7 +636,7 @@ Examples:
 
 =head2 sys.Core.Relation.Single
 
-This node type represents a 'single' value.  It has 3 elements:
+This node type represents a 'single' value.  It has 2 elements:
 
 =over
 
@@ -658,28 +646,21 @@ Node type: the Perl C<Str> value C<Single>.
 
 =item *
 
-Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
-
-=item *
-
 The payload; a PHMD node that defines a single scalar or nonscalar value.
 
 =back
 
 This node is interpreted as a Muldis D C<sys.Core.Relation.Single> value
-whose heading was predefined, as a 'maybe' data type, for referencing now
-by the type name, and whose body is defined now by the payload.  The
-payload is a PHMD node that defines the C<value> attribute of the single
-tuple of the new 'single'.
+whose element is defined by the payload.  The payload is a PHMD node that
+defines the C<value> attribute of the single tuple of the new 'single'.
 
 Examples:
 
-    [ 'Single', 'fed.the_db.gene.person_death_date',
-        [ 'Text', '2003.07.24' ] ]
+    [ 'Single', [ 'Text', '2003.07.24' ] ]
 
 =head2 sys.Core.Relation.Seq
 
-This node type represents a sequence value.  It has 3 elements:
+This node type represents a sequence value.  It has 2 elements:
 
 =over
 
@@ -689,30 +670,25 @@ Node type: the Perl C<Str> value C<Seq>.
 
 =item *
 
-Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
-
-=item *
-
 The payload; a Perl C<Array|Seq> value.
 
 =back
 
 This node is interpreted as a Muldis D C<sys.Core.Relation.Seq> value whose
-heading was predefined, as a sequence data type, for referencing now by the
-type name, and whose body is defined now by the payload.  Each element of
-the payload defines a binary tuple of the new sequence; the element value
-is a PHMD node that defines the C<value> attribute of the tuple, and the
-element index is used as the C<index> attribute of the tuple.
+elements are defined by the payload.  Each element of the payload defines a
+binary tuple of the new sequence; the element value is a PHMD node that
+defines the C<value> attribute of the tuple, and the element index is used
+as the C<index> attribute of the tuple.
 
 Examples:
 
-    [ 'Seq', 'fed.the_db.gene.sorted_person_name', [
+    [ 'Seq', [
         [ 'Text', 'Alphonse' ],
         [ 'Text', 'Edward' ],
         [ 'Text', 'Winry' ],
     ] ]
 
-    [ 'Seq', 'fed.the_db.stats.samples_by_order', [
+    [ 'Seq', [
         [ 'Int', 'perl_int', 57 ],
         [ 'Int', 'perl_int', 45 ],
         [ 'Int', 'perl_int', 63 ],
@@ -721,17 +697,13 @@ Examples:
 
 =head2 sys.Core.Relation.Bag
 
-This node type represents a bag value.  It has 4 elements:
+This node type represents a bag value.  It has 3 elements:
 
 =over
 
 =item *
 
 Node type: the Perl C<Str> value C<Bag>.
-
-=item *
-
-Type name; any C<Array|Str> that is a valid payload for a C<Cat.NameChain>.
 
 =item *
 
@@ -745,9 +717,8 @@ C<Array|Seq> of C<Array|Seq>.
 =back
 
 This node is interpreted as a Muldis D C<sys.Core.Relation.Bag> value whose
-heading was predefined, as a bag data type, for referencing now by the type
-name, and whose body is defined now by the payload.  The payload is
-interpreted as follows:
+elements are defined by the payload.  The payload is interpreted as
+follows:
 
 =over
 
@@ -782,7 +753,7 @@ and the mapping is as you should expect.
 
 Examples:
 
-    [ 'Bag', 'fed.the_db.inventory.fruit', 'aoa_counted', [
+    [ 'Bag', 'aoa_counted', [
         [
             [ 'Text', 'Apple' ],
             [ 'md_int', '9', '500' ],
@@ -797,7 +768,7 @@ Examples:
         ],
     ] ]
 
-    [ 'Bag', 'fed.the_db.inventory.whatsits', 'array_repeated', [
+    [ 'Bag', 'array_repeated', [
         [ 'Text', 'Foo' ],
         [ 'Text', 'Quux' ],
         [ 'Text', 'Foo' ],
@@ -812,31 +783,25 @@ Examples:
 
 This node type represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a non-empty character string type, that is
-disjoint from C<Text>.  It has 2 elements:
+disjoint from C<Text>.
 
-=over
-
-=item *
-
-Node type: the Perl C<Str> value C<Cat.Name>.
-
-=item *
-
-The payload.
-
-=back
+Unlike every other PHMD node type, a canonical short name is simply a Perl
+C<Str> value, which is its payload; it is not encapsulated in a Perl Array;
+this difference is done for huffmanizing reasons, since a short name is
+probably the most often used node type, and moreover this change allows for
+simplifying other parts of the grammar.
 
 This node is interpreted as a Muldis D C<sys.Core.Cat.Name> value by
-directly mapping the payload.  Note that, while Concrete Muldis D may
-contain a few escape sequences, those would be replaced with what they
-represent prior to making a PHMD node.  They payload must be as per a
-C<Text> PHMD node.
+directly mapping itself / the payload.  Note that, while Concrete Muldis D
+may contain a few escape sequences, those would be replaced with what they
+represent prior to making a PHMD node.  The node / its payload must be as
+per a C<Text> PHMD node.
 
 Examples:
 
-    [ 'Cat.Name', 'login_pass' ]
+    'login_pass'
 
-    [ 'Cat.Name', 'First Name' ]
+    'First Name'
 
 =head2 sys.Core.Cat.NameChain
 
@@ -865,7 +830,7 @@ follows:
 
 If the payload is an C<Array|Seq>, then it must have at least 1 element,
 and every element must be a valid payload for a C<Cat.Name> PHMD node (that
-is, any non-empty Perl character string).  Each element of the payload, in
+is, any Perl character string).  Each element of the payload, in
 order, defines an element of the sequence possrep of a C<Cat.NameChain>.
 
 =item *

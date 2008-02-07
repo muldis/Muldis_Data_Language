@@ -133,13 +133,12 @@ correctly.  Any remaining errors should be corrected as soon as possible.
     token tuple {
         (Tuple)
         <spec_sep>
-        <type_name>
-        <spec_sep>
         <tuple_body>
     }
 
     token relation {
-          <just_a_relation>
+          <generic_relation_empty_body>
+        | <generic_relation_with_tuples>
         | <set>
         | <nothing>
         | <single>
@@ -147,10 +146,16 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         | <bag>
     }
 
-    token just_a_relation {
+    token generic_relation_empty_body {
         (Relation)
         <spec_sep>
-        <type_name>
+        <list_open>
+            (((<cat_name>) <list_sep>)*)
+        <list_close>
+    }
+
+    token generic_relation_with_tuples {
+        (Relation)
         <spec_sep>
         <list_open>
             (((<tuple_body>) <list_sep>)*)
@@ -159,18 +164,12 @@ correctly.  Any remaining errors should be corrected as soon as possible.
 
     token tuple_body {
         <list_open>
-            (((<attr>) <list_sep>)*)
+            (((<cat_name> <pair_sep> <literal>) <list_sep>)*)
         <list_close>
     }
 
-    token attr { <attr_name> <pair_sep> <literal> }
-
-    token attr_name { <quoted_text_str> }
-
     token set {
         (Set)
-        <spec_sep>
-        <type_name>
         <spec_sep>
         <list_open>
             (((<literal>) <list_sep>)*)
@@ -182,8 +181,6 @@ correctly.  Any remaining errors should be corrected as soon as possible.
     token single {
         (Single)
         <spec_sep>
-        <type_name>
-        <spec_sep>
         <list_open>
             (<literal>)
         <list_close>
@@ -191,8 +188,6 @@ correctly.  Any remaining errors should be corrected as soon as possible.
 
     token seq {
         (Seq)
-        <spec_sep>
-        <type_name>
         <spec_sep>
         <list_open>
             (((<literal>) <list_sep>)*)
@@ -208,8 +203,6 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         (Bag)
         <spec_sep>
         (count)
-        <spec_sep>
-        <type_name>
         <spec_sep>
         <list_open>
             (((<literal>) <pair_sep> (<count>) <list_sep>)*)
@@ -227,22 +220,18 @@ correctly.  Any remaining errors should be corrected as soon as possible.
         <spec_sep>
         (repeat)
         <spec_sep>
-        <type_name>
-        <spec_sep>
         <list_open>
             (((<literal>) <list_sep>)*)
         <list_close>
     }
 
-    token list_open { '{' \s+ }
+    token list_open { '{' \s* }
 
-    token list_close { \s+ '}' }
+    token list_close { \s* '}' }
 
-    token list_sep { ',' \s+ }
+    token list_sep { ',' \s* }
 
-    token pair_sep { \s+ '=>' \s+ }
-
-    token type_name { <quoted_name_chain_str> }
+    token pair_sep { \s* '=>' \s* }
 
     token spec_sep { ':' }
 
@@ -254,7 +243,7 @@ correctly.  Any remaining errors should be corrected as soon as possible.
 
     token quoted_name_chain_str {
         <text_delim>
-            ((<nc_elem_char>+) (<nc_elem_sep> (<nc_elem_char>+))*)
+            (<nc_char>*)
         <text_delim>
     }
 
@@ -264,15 +253,22 @@ correctly.  Any remaining errors should be corrected as soon as possible.
 
     token nc_elem_sep { '.' }
 
-    token nc_elem_char { ['\b'|'\q'|'\p'|<-[\\\'\.]>] }
+    token nc_char { ['\b'|'\q'|'\p'|<-[\\\']>] }
 
-    token cat_name {
-        (Cat.Name)
-        <spec_sep>
-        <quoted_text_str>
-    }
+    token cat_name { <quoted_text_str> }
 
     token cat_name_chain {
+          nc_sequence
+        | nc_flattened
+    }
+
+    token nc_sequence {
+        (Cat.NameChain)
+        <spec_sep>
+        ((<cat_name>) (<nc_elem_sep> <cat_name>)*)
+    }
+
+    token nc_flattened {
         (Cat.NameChain)
         <spec_sep>
         <quoted_name_chain_str>
@@ -370,32 +366,26 @@ The following are fragments of actual Concrete Muldis D code.
 
     Text:'Perl'
 
-    Tuple:'sys.Core.Tuple.D0':{}
+    Tuple:{}
 
-    Tuple:'fed.the_db.account.user_t':{
+    Tuple:{
         'login_name' => Text:'hartmark',
         'login_pass' => Text:'letmein',
         'is_special' => Bool:true,
     }
 
-    Tuple:'fed.the_db.gene.person_t':{
+    Tuple:{
         'name' => Text:'Michelle',
         'age'  => Int:9:17,
     }
 
-    Tuple:'fed.the_db.account':{
-        'user' => Relation:'fed.the_db.account.user_r':{ ... },
-    }
+    Relation:{}
 
-    Tuple:'fed.the_db.gene':{
-        'person' => Relation:'fed.the_db.gene.person_r':{ ... },
-    }
+    Relation:{ {}, }
 
-    Relation:'sys.Core.Relation.D0':{}
+    Relation:{ 'x', 'y', 'z', }
 
-    Relation:'sys.Core.Relation.D0':{ {}, }
-
-    Relation:'fed.the_db.account.user_r':{
+    Relation:{
         {
             'login_name' => Text:'hartmark',
             'login_pass' => Text:'letmein',
@@ -403,21 +393,21 @@ The following are fragments of actual Concrete Muldis D code.
         },
     }
 
-    Relation:'fed.the_db.gene.person_r':{
+    Relation:{
         {
             'name' => Text:'Michelle',
             'age'  => Int:9:17,
         },
     }
 
-    Set:'fed.the_db.account.country_name':{
+    Set:{
         Text:'Canada',
         Text:'Spain',
         Text:'Jordan',
         Text:'Thailand',
     }
 
-    Set:'fed.the_db.stats.some_ages':{
+    Set:{
         Int:9:3,
         Int:9:16,
         Int:9:85,
@@ -425,28 +415,28 @@ The following are fragments of actual Concrete Muldis D code.
 
     Nothing
 
-    Single:'fed.the_db.gene.person_death_date':{ Text:'2003.07.24' }
+    Single:{ Text:'2003.07.24' }
 
-    Seq:'fed.the_db.gene.sorted_person_name':{
+    Seq:{
         Text:'Alphonse',
         Text:'Edward',
         Text:'Winry',
     }
 
-    Seq:'fed.the_db.stats.samples_by_order':{
+    Seq:{
         Int:9:57,
         Int:9:45,
         Int:9:63,
         Int:9:61,
     }
 
-    Bag:count:'fed.the_db.inventory.fruit':{
+    Bag:count:{
         Text:'Apple'  => 9:500,
         Text:'Orange' => 9:300,
         Text:'Banana' => 9:400,
     }
 
-    Bag:repeat:'fed.the_db.inventory.whatsits':{
+    Bag:repeat:{
         Text:'Foo',
         Text:'Quux',
         Text:'Foo',
@@ -455,11 +445,11 @@ The following are fragments of actual Concrete Muldis D code.
         Text:'Baz',
     }
 
-    Cat.Name:'login_pass'
+    'login_pass'
 
-    Cat.Name:'First Name'
+    'First Name'
 
-    Cat.NameChain:'fed.the_db.gene.sorted_person_name'
+    Cat.NameChain:'fed'.'the_db'.'gene'.'sorted_person_name'
 
     Cat.NameChain:'fed.the_db.stats.samples_by_order'
 
