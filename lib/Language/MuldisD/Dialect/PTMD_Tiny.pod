@@ -19,61 +19,113 @@ before you read this one, which provides subservient details.
 
 =head1 DESCRIPTION
 
-This document outlines the grammar of I<Plain Text Muldis D>.  This grammar
-is extremely simple such that any program or routine is simply a tuple
-literal, which is composed of relation and tuple and scalar literals.
-Whether or not these literals are valid is up to the I<Hosted Data Muldis D>
-compiler, whose input is the AST resulting from parsing I<Plain Text Muldis
-D>.  This grammar primarily tests for well-formedness.
+This document outlines the grammar of the I<Plain Text Muldis D> dialect
+named C<PTMD_Tiny>.  The fully-qualified name of this Muldis D dialect, in
+combination with the base language spec it is bundled with, is
+C<Muldis_D:'cpan:DUNCAND':'N.N.N':'PTMD_Tiny'> (when the bundled base
+language version is substituted for the C<N.N.N>).
 
-See also, for example, L<Language::MuldisD::Dialect::HDMD_Perl_Tiny> for
-a description of the core Perl data structures that you would probably
-use instead of the grammar below when using a Muldis D implementation in
-a Perl application; moreover, that other document is necessary to
-understand the meaning of some parts of this PTMD_Tiny document.
+This dialect is designed to exactly match the Muldis D system catalog (the
+possible representation of Muldis D code that is visible to or updateable
+by Muldis D programs at runtime) as to what non-critical meta-data it
+explicitly stores; so code in the C<PTMD_Tiny> dialect should be
+round-trippable with the system catalog with the result maintaining all the
+details that were started with.  Since it matches the system catalog, this
+dialect should be able to exactly represent all possible Muldis D base
+language code (and probably all extensions too), rather than a subset of
+it.  This dialect similarly matches the C<HDMD_Perl_Tiny> dialect, which is
+documented at L<Language::MuldisD::Dialect::HDMD_Perl_Tiny>.
 
-I<This documentation is pending.>
+This dialect is designed to be as small as possible while meeting the above
+criteria, and is designed such that a parser that handles all of this
+dialect can be tiny, hence the dialect's C<Tiny> name.  Likewise, a code
+generator for this dialect from the system catalog can be tiny.
 
-Plain Text Muldis D is the natural form that one would code in if they were
-writing a self-contained application (or component) in Muldis D which was
-compiled using a separate process into its own executable (or library),
-which includes situations where Muldis D is its own Parrot
-(L<http://www.parrotcode.org/>) hosted language (a prospect which is
-desired to be implemented in the near future).  Plain Text Muldis D would
-also be used by an interactive shell interface over the Muldis DB
-(specifically L<Muldis::DB::Interface>) implementation of Muldis D, when
-users submit commands at runtime, or in any other situation where it makes
-sense to take input in that form.
+This document mainly just specifies a way to represent Muldis D values as
+character strings.  Since the fundamental way to do data definition in
+Muldis D is to update catalog (information schema) variables, aka the
+Muldis D meta-model, which are themselves just data, then this document
+only needs to tell you how to define values to put in the catalog
+variables.  Defining data types or routines are done by defining catalog
+values describing them.
 
-=head1 GRAMMAR OF CONCRETE MULDIS D
+See instead L<Language::MuldisD::Core> for how to actually define the
+tuples and relations that define your data types and routines and queries
+and so forth.
+
+See also L<Language::MuldisD::Dialect::HDMD_Perl_Tiny> and look up its
+syntax for representing Muldis D literal values, each syntax item typically
+corresponds to a syntax item in the current document; the other document
+helps explain the meaning of and further constraints on value
+specifications than this current document does.  The syntax given in the
+current document primarily tests for well-formedness, not that code is
+otherwise valid.
+
+Keeping in mind that any Plain Text Muldis D code file has to actually
+consist of a Muldis D C<main> routine (something that Hosted Data code does
+not), the following grammar is actually the grammar to parse a C<main>
+routine, which is simply a series of procedure calls, where earlier
+procedure calls are to system-defined data-definition routines (their
+arguments are values to put in the system catalog), and later ones are then
+to user-defined routines that the earlier statements either loaded or
+defined.  The current grammar assumes that the C<main> does not have any
+lexical variables, and that all parameters of routines it calls are
+read-only parameters.
+
+=head1 GRAMMAR OF TINY PLAIN TEXT MULDIS D
 
 This grammar is formatted as a Perl 6 grammar which could be used to parse
 it.  That said, it is only meant to be illustrative, as only some Muldis D
 implementations would actually be written in Perl 6 or understand Perl 6
 grammars.  The following Perl 6 code does successfully compile using the
-current Perl6::Pugs, though it has not yet been tested to execute
-correctly.  Any remaining errors should be corrected as soon as possible.
+current Perl6::Pugs, though it has not yet been tested for correct
+execution.  Any remaining errors should be corrected as soon as possible.
 
     use v6-alpha;
 
-    # grammar Muldis_D:auth<cpan:DUNCAND>:ver<0.11.0>;
-    grammar Muldis_D-0.11.0-cpan:DUNCAND;
+    # grammar Muldis_D_PTMD_Tiny:auth<cpan:DUNCAND>:ver<0.11.0>;
+    grammar Muldis_D_PTMD_Tiny-0.11.0-cpan:DUNCAND;
 
     token start {
-        (Muldis_D)
-        <spec_sep>
-        <authority>
-        <spec_sep>
-        <version>
-        <spec_sep>
-        <list_open>
-            (<literal>)
-        <list_close>
+        (<language_name>)
+        (<procedure_call>*)
     }
 
-    token authority { <quoted_text_str> }
+    token language_name {
+        (Muldis_D)
+        <spec_sep>
+        <ln_authority>
+        <spec_sep>
+        <ln_version>
+        <spec_sep>
+        <ln_dialect>
+        <spec_sep>
+        <ln_extensions>
+        <statement_end>
+    }
 
-    token version { <quoted_text_str> }
+    token ln_authority { <quoted_text_str> }
+
+    token ln_version { <quoted_text_str> }
+
+    token ln_dialect { <text_delim> (PTMD_Tiny) <text_delim> }
+
+    token ln_extensions { <tuple_body> }
+
+    token procedure_call {
+        (Call)
+        <spec_sep>
+        <procedure_name>
+        <spec_sep>
+        <procedure_args>
+        <statement_end>
+    }
+
+    token procedure_name { <quoted_name_chain_str> }
+
+    token procedure_args { <tuple_body> }
+
+    token statement_end { ';' \s* }
 
     token literal {
           <bool>
@@ -323,7 +375,9 @@ correctly.  Any remaining errors should be corrected as soon as possible.
 
 The following are fragments of actual Plain Text Muldis D code.
 
-    Muldis_D:'cpan:DUNCAND':'1.2.3':{ Bool:false }
+    Muldis_D:'cpan:DUNCAND':'1.2.3':'PTMD_Tiny':{}
+
+    Call:'sys.Core.Cat.create_public_relvar':{ ... }
 
     Bool:true
 

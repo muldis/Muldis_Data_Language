@@ -19,13 +19,33 @@ before you read this one, which provides subservient details.
 
 =head1 DESCRIPTION
 
-This document outlines the specification of I<Hosted Data Muldis D> as
-hosted in either Perl 5 or Perl 6, and as composed of just|mainly core Perl
-types; for brevity, the term I<PHMD> will be used to refer to this spec.
+This document outlines the grammar of the I<Hosted Data Muldis D> dialect
+named C<HDMD_Perl_Tiny>.  The fully-qualified name of this Muldis D
+dialect, in combination with the base language spec it is bundled with, is
+C<Muldis_D:'cpan:DUNCAND':'N.N.N':'HDMD_Perl_Tiny'> (when the bundled base
+language version is substituted for the C<N.N.N>).
 
-Where Perl 5 and 6 differ, the terminology and examples in this
-documentation specifically uses Perl 6 terminology and examples by default,
-and adds analogous Perl 5 terminology as necessary.
+This dialect is designed to exactly match the Muldis D system catalog (the
+possible representation of Muldis D code that is visible to or updateable
+by Muldis D programs at runtime) as to what non-critical meta-data it
+explicitly stores; so code in the C<HDMD_Perl_Tiny> dialect should be
+round-trippable with the system catalog with the result maintaining all the
+details that were started with.  Since it matches the system catalog, this
+dialect should be able to exactly represent all possible Muldis D base
+language code (and probably all extensions too), rather than a subset of
+it.  This dialect similarly matches the C<PTMD_Tiny> dialect, which is
+documented at L<Language::MuldisD::Dialect::PTMD_Tiny>.
+
+This dialect is designed to be as small as possible while meeting the above
+criteria, and is designed such that a parser that handles all of this
+dialect can be tiny, hence the dialect's C<Tiny> name.  Likewise, a code
+generator for this dialect from the system catalog can be tiny.
+
+The C<HDMD_Perl_Tiny> dialect is defined to be hosted in either Perl 5 or
+Perl 6, and as composed of just|mainly core Perl types.  Where Perl 5 and 6
+differ, the terminology and examples in this documentation specifically
+uses Perl 6 terminology and examples by default, and adds analogous Perl 5
+terminology as necessary.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl 5 or 6 native scalar and collection
@@ -45,31 +65,8 @@ See instead L<Language::MuldisD::Core> for how to actually define the
 tuples and relations that define your data types and routines and queries
 and so forth.
 
-Note that this document (along with the aforementioned) is also intended to
-serve as a proposal for a generic portable AST that various Perl
-applications and components can use to represent their database schemas and
-queries, regardless of whether a native Muldis D implementation is in use;
-or this document can be used as a point of departure for documenting some
-alternative AST for that purpose.
-
-I<This documentation is pending.>
-
-Hosted Data Muldis D is the natural form that one would code in if they
-were primarily writing their application in a separate host language, such
-as Perl, and any Muldis D code was being specified in terms of host
-language code, such as Perl arrays, hashes, and scalars.  Hosted Data
-Muldis D code consists of quasi-hierarchical but actually relational
-collection values, typically catalog tuples.  Hosted Data Muldis D is the
-only representation format used by the API the Muldis DB (specifically
-L<Muldis::DB::Interface>) implementation of Muldis D, and is what any Perl
-code typically should be using.  When generating Muldis D code from
-arbitrary Perl data structures (which includes the work of, eg, SQL DBMS
-emulators), the Hosted Data form is the easiest to use and the least error
-prone since no values have to be escaped or stitched together as strings,
-which prevents many injection security holes. Hosted Data Muldis D is also
-what is used when Muldis D code is defined to generate/prepare and execute
-other Muldis D code at runtime (by reading or updating the meta-model /
-system catalog), which is "data definition".
+For the present, this document will use the term I<PHMD> (I<Perl Hosted
+Muldis D>) for brevity when referring to aspects of the Perl-Tiny dialect.
 
 =head1 GENERAL STRUCTURE
 
@@ -90,74 +87,47 @@ represent that a value is unknown or inapplicable, then the C<Nothing> node
 type is provided as one way you can explicitly say so.  I<This policy may
 be reconsidered.>
 
-The root Perl C<Array> of a PHMD value has 4 elements, which are:
+=head1 LANGUAGE NAME
+
+As per the VERSIONING pod section of L<Language::MuldisD>, code written in
+Muldis D must start by declaring the fully-qualified Muldis D language name
+it is written in.  The C<HDMD_Perl_Tiny> dialect formats this name as a
+PHMD node having the following 5 elements:
 
 =over
 
 =item *
 
-The AST language/schema base name, specifically the Perl C<Str> value
-C<Muldis_D> for this spec.
+Node type / language base name: the Perl C<Str> value C<Muldis_D>.
 
 =item *
 
-The AST language/schema authority, encoded as a Perl C<Str> value.  The
-authority string is interpreted within the context of the language/schema
-name, which for the C<Muldis_D> spec is the range of authority string
-formats permitted for the long names of Perl 6 packages, such as a CPAN
-identifier or an http url, although what's allowed may be open-ended.  For
-the official/original Muldis D language spec by Darren Duncan, that string
-is always C<cpan:DUNCAND> during the foreseeable future.  If someone else
-wants to I<embrace and extend> Muldis D, such as to include proprietary
-extensions, or incompatible changes, then they must use something other
-than C<cpan:DUNCAND> for the authority, (and optionally, change the name
-from C<Muldis_D> as well if that seems appropriate), to prevent ambiguity.
+Base authority: a Perl C<Str> as per the payload of a C<Text> node;
+typically the Perl C<Str> value C<cpan:DUNCAND>.
 
 =item *
 
-The AST language/schema version number, encoded as a Perl C<Str> value.
-The version number string is interpreted within the context of both the
-language/schema name and language/schema authority, which for the
-C<Muldis_D> plus C<cpan:DUNCAND> spec is the normal 3-integer-parts
-(C<X.Y.Z>) version format normal for the long names of Perl 6 packages and
-many other versioned projects in general.  At the present time, the
-official spec version number to use is shown in the VERSION and DESCRIPTION
-of the C<MuldisD.pm> file, when corresponding to the spec containing that
-file.
+Base version number: a Perl C<Str> as per the payload of a C<Text> node;
+typically a Perl C<Str> value like C<1.2.3>.
 
 =item *
 
-The payload is any other PHMD node.
+Dialect: the Perl C<Str> value C<HDMD_Perl_Tiny>.
+
+=item *
+
+Extensions: a Perl C<Hash|Mapping> as per the payload of a C<Tuple> node.
 
 =back
 
-Examples of a root node:
+Examples:
 
-    [ 'Muldis_D', 'cpan:DUNCAND', '1.2.3', [ 'Bool', 'md_enum', 'false' ] ]
+    [ 'Muldis_D', 'cpan:DUNCAND', '1.2.3', 'HDMD_Perl_Tiny', {} ]
 
-Both the payload node under the root node and every other node is a Perl
-C<Array> with usually 2+ elements, where the first element is a Perl C<Str>
-saying what kind of node it is, and the last element is the
-typically-single payload, and any sometimes-optional intermediate elements
-give extra meta-data to specify which of possibly several representation
-formats the payload is, so that it is correctly interpreted.  Typically
-speaking, only the payload element might be a Perl collection type, and
-typically all the other elements are Perl scalars.
-
-Note that a Hosted Data Muldis D implementation may eschew the above
-4-element Array as the root PHMD node for all PHMD trees, and instead have
-a separate virtual machine configuration step taking just the first 3
-elements (base name, authority, version number), to provide a context for
-subsequent use of PHMD trees that consist of just what would otherwise be
-the 4th (payload) element.
-
-Examples; at VM config time:
-
-    [ 'Muldis_D', 'cpan:DUNCAND', '1.2.3' ]
-
-Then later, just:
-
-    [ 'Bool', 'md_enum', 'false' ]
+More specifically, a language name PHMD node like the above would generally
+be the input for a Perl Hosted Muldis D implementating virtual machine's
+configuration step, which provides a context for subsequent feeding of
+other PHMD trees to said virtual machine.
 
 =head1 SCALAR VALUES
 
@@ -643,8 +613,8 @@ Examples:
 
 =head2 sys.Core.Relation.Nothing
 
-This node type represents a 'nothing' value; it is interpreted as a Muldis D
-C<sys.Core.Relation.Nothing>.  It has 1 element, which is the Perl C<Str>
+This node type represents a 'nothing' value; it is interpreted as a Muldis
+D C<sys.Core.Relation.Nothing>.  It has 1 element, which is the Perl C<Str>
 value C<Nothing>.
 
 Examples:
@@ -799,8 +769,8 @@ Examples:
 =head2 sys.Core.Cat.Name
 
 This node type represents a canonical short name for any kind of DBMS
-entity when declaring it; it is a non-empty character string type, that is
-disjoint from C<Text>.
+entity when declaring it; it is a character string type, that is disjoint
+from C<Text>.
 
 Unlike every other PHMD node type, a canonical short name is simply a Perl
 C<Str> value, which is its payload; it is not encapsulated in a Perl Array;
@@ -812,7 +782,7 @@ This node is interpreted as a Muldis D C<sys.Core.Cat.Name> value by
 directly mapping itself / the payload.  Note that, while Plain Text Muldis
 D may contain a few escape sequences, those would be replaced with what
 they represent prior to making a PHMD node.  The node / its payload must be
-as per a C<Text> PHMD node.
+as per the payload of a C<Text> PHMD node.
 
 Examples:
 
