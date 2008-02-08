@@ -121,7 +121,7 @@ execution.  Any remaining errors should be corrected as soon as possible.
         <statement_end>
     }
 
-    token procedure_name { <quoted_name_chain_str> }
+    token procedure_name { <cat_name_chain_body> }
 
     token procedure_args { <tuple_body> }
 
@@ -304,38 +304,36 @@ execution.  Any remaining errors should be corrected as soon as possible.
         <text_delim>
     }
 
-    token quoted_name_chain_str {
-        <text_delim>
-            (<nc_char>*)
-        <text_delim>
-    }
-
     token text_delim { <[']> }
 
     token text_char { ['\b'|'\q'|<-[\\\']>] }
 
-    token nc_elem_sep { '.' }
-
-    token nc_char { ['\b'|'\q'|'\p'|<-[\\\']>] }
-
     token cat_name { <quoted_text_str> }
 
     token cat_name_chain {
+        (Cat.NameChain)
+        <spec_sep>
+        <cat_name_chain_body>
+    }
+
+    token cat_name_chain_body {
           nc_sequence
         | nc_flattened
     }
 
     token nc_sequence {
-        (Cat.NameChain)
-        <spec_sep>
         ((<cat_name>) (<nc_elem_sep> <cat_name>)*)
     }
 
     token nc_flattened {
-        (Cat.NameChain)
-        <spec_sep>
-        <quoted_name_chain_str>
+        <text_delim>
+            (<nc_char>*)
+        <text_delim>
     }
+
+    token nc_elem_sep { '.' }
+
+    token nc_char { ['\b'|'\q'|'\p'|<-[\\\']>] }
 
     token cat_e_rm {
         (Cat.E_RM)
