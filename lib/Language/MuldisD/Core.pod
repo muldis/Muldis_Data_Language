@@ -498,10 +498,13 @@ C<Tuple> is an unordered heterogeneous collection of 0..N named attributes
 are mutually distinct, and each attribute may be of distinct types; the
 mapping of a tuple's attribute names and their declared data types is
 called the tuple's I<heading>.  Its default value is the sole value of the
-sole tuple data type that has zero attributes.  The cardinality of this
-type is equal to the product of the number of permutations drawable from
-the values of each of its attributes' declared data types; for a C<Tuple>
-subtype to be finite, all of its attribute types must be.
+sole tuple data type that has zero attributes.  The cardinality of a
+I<complete> C<Tuple> type (if it has no type constraints other than those
+of its constituent attribute types) is equal to the product of the N-ary
+multiplication where there is an input to that multiplication for each
+attribute of the tuple and the value of the input is the cardinality of the
+declared type of the attribute; for a C<Tuple> subtype to be finite, all of
+its attribute types must be.
 
 =head2 sys.Core.Tuple.D0
 
@@ -537,11 +540,13 @@ corresponding declared data types match), but that a C<Relation> data type
 still has its own corresponding heading (attribute names and declared data
 types) even when it consists of zero tuples.  Its default value is the
 zero-tuple value of the sole relation data type that has zero attributes.
-Matters of its cardinality are generally the same as for C<Tuple>.  A
-relation data type can also have (unique) keys each defined over a subset
-of its attributes, which constrain its set of values relative to there
-being no explicit keys, but having the keys won't turn an infinite relation
-type into a finite one.
+The cardinality of a I<complete> C<Relation> type (if it has no type
+constraints other than those of its constituent attribute types) is equal
+to 2 raised to the power of the cardinality of the I<complete> C<Tuple>
+type with the same heading.  A relation data type can also have (unique)
+keys each defined over a subset of its attributes, which constrain its set
+of values relative to there being no explicit keys, but having the keys
+won't turn an infinite relation type into a finite one.
 
 =head2 sys.Core.Relation.D0
 
@@ -556,9 +561,9 @@ name is C<value>; it can be of any declared type.  A C<Set> subtype is
 normally used by any system-defined N-ary operators where the order of
 their argument elements or result is not significant, and that duplicate
 values are not significant.  Its default value has zero tuples.  Note that,
-for any given I<complete> Set subtype, C<Foo>, where its C<value> attribute
-has a declared type of C<Bar>, the type C<Foo> can be considered the
-I<power set> of the type C<Bar>.
+for any given I<complete> C<Set> subtype, C<Foo>, where its C<value>
+attribute has a declared type of C<Bar>, the type C<Foo> can be considered
+the I<power set> of the type C<Bar>.
 
 =head2 sys.Core.Relation.Maybe
 
