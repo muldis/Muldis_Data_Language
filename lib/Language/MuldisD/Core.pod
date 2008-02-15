@@ -2540,6 +2540,32 @@ by C<value>.  This function will fail if C<name> specifies an attribute
 name that C<topic> doesn't have, or if the declared type of C<value> isn't
 a subtype of the declared type of the attribute.
 
+=item C<function sys.Core.Tuple.multi_update result Tuple params {
+topic(Tuple), attrs(Tuple) }>
+
+This function is like C<sys.Core.Tuple.update_attr> except that it handles
+N tuple attributes at once rather than just 1.  The heading of the C<attrs>
+argument must be a subset of the heading of the C<topic> argument; this
+function's result is C<topic> with all the attribute values of C<attrs>
+substituted into it.  This function could alternately be named
+I<sys.Core.Tuple.static_substitution>.
+
+=item C<function sys.Core.Tuple.substitution_in_default result Tuple params
+{ of(Cat.NameChain), subst(Tuple) }>
+
+This function results in the tuple value that is the default value of the
+tuple data type whose name is given in the C<of> argument, but that zero or
+more of its attribute values have been substituted by values given in the
+C<subst> argument.  This function is a short-hand for
+C<sys.Core.Tuple.multi_update> on the result of
+C<sys.Core.Universal.default>.  This function will fail if either
+C<default> would fail for the same C<of> argument, or if its result isn't a
+tuple type, or if the heading of C<subst> isn't a subset of the heading of
+the default.  The purpose of this function is to support greater brevity in
+Muldis D coding such that users can define just part of a desired tuple
+value and have the remainder filled in from defaults for them; particularly
+useful with tuples that conceptually have some optional attributes.
+
 =item C<function sys.Core.Tuple.rename result Tuple params { topic(Tuple),
 map(Cat.AttrRenameMap) }>
 
@@ -2778,10 +2804,17 @@ operates on and results in a C<Relation> rather than a C<Tuple>, where each
 of its member tuples was transformed as per C<sys.Core.Tuple.cmpl_wrap>.
 
 =item C<function sys.Core.Relation.unwrap result Relation params {
-topic(Relation), outer(Cat.Name) }>
+topic(Relation), outer(Cat.Name), inner(Cat.SetOfName) }>
 
 This function is the inverse of C<sys.Core.Relation.wrap> as
-C<sys.Core.Tuple.unwrap> is to C<sys.Core.Tuple.wrap>.
+C<sys.Core.Tuple.unwrap> is to C<sys.Core.Tuple.wrap>.  But unlike the
+C<Tuple> variant of C<unwrap>, this current function requires the extra
+C<inner> argument to prevent ambiguity in the general case where C<topic>
+might have zero tuples, because in that situation the most-specific-type of
+C<topic{outer}> would be C<Empty>, and the names of the attributes to add
+to C<topic> in place of C<topic{outer}> are not known.  This function will
+fail if C<topic> has at least 1 tuple and C<inner> does not match the names
+of the attributes of C<topic{outer}>.
 
 =item C<function sys.Core.Relation.group result Relation params {
 topic(Relation), inner(Cat.SetOfName), outer(Cat.Name) }>
@@ -2818,7 +2851,7 @@ This function is the same as C<group> but that it groups the complementary
 subset of attributes of C<topic> to those specified by C<group_per>.
 
 =item C<function sys.Core.Relation.ungroup result Relation params {
-topic(Relation), outer(Cat.Name) }>
+topic(Relation), outer(Cat.Name), inner(Cat.SetOfName) }>
 
 This function is the inverse of C<sys.Core.Relation.group> as
 C<sys.Core.Relation.unwrap> is to C<sys.Core.Relation.wrap>; it will
@@ -2886,17 +2919,17 @@ trivial case, if C<func> is defined to unconditionally result in
 C<Bool:true>, then this function results simply in C<topic>; or, for an
 unconditional C<Bool:false>, this function results in the empty relation
 with the same heading.  Note that this operation is also legitimately known
-as I<where>.  Note that C<sys.Core.Relation.semijoin> is recommended for
-use instead of C<sys.Core.Relation.restriction> to implement some common
-kinds of relational restrictions (those composed simply of anded or ored
-tests for attribute value equality), due to the former's greater
-simplicity.
+as I<where>.  See also the C<sys.Core.Relation.semijoin> function, which is
+a simpler-syntax alternative for C<sys.Core.Relation.restriction> in its
+typical usage where restrictions are composed simply of anded or ored tests
+for attribute value equality.
 
 =item C<function sys.Core.Relation.cmpl_restriction result Relation params
 { topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
 
 This function is the same as C<restriction> but that it results in the
 complementary subset of tuples of C<topic> when given the same arguments.
+See also the C<sys.Core.Relation.semidifference> function.
 
 =item C<function sys.Core.Relation.extension result Relation params {
 topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
@@ -2911,9 +2944,19 @@ determined as follows; for each C<topic> tuple, the function named by
 C<func> results in a second tuple when passed the first tuple as its
 C<topic> argument and C<assuming> as its C<assuming> argument; the first
 and second tuples must have no attribute names in common, and the result
-tuple is derived by joining the tuples together.  As a trivial case, if
-C<func> is defined to unconditionally result in the degree-zero tuple, then
-this function results simply in C<topic>.
+tuple is derived by joining (cross-product) the tuples together.  As a
+trivial case, if C<func> is defined to unconditionally result in the
+degree-zero tuple, then this function results simply in C<topic>.
+
+=item C<function sys.Core.Relation.static_extension result Relation params
+{ topic(Relation), attrs(Tuple) }>
+
+This function is a simpler-syntax alternative to both
+C<sys.Core.Relation.extension> and C<sys.Core.Relation.product> in the
+typical scenario of extending a relation, given in the C<topic> argument,
+such that every tuple has mutually identical values for each of the new
+attributes; the new attribute names and common values are given in the
+C<attrs> argument.
 
 =item C<function sys.Core.Relation.substitution result Relation params {
 topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
@@ -2932,6 +2975,15 @@ tuple as its own C<topic> argument, then this function results simply in
 C<topic>; or, if C<func> is defined to have a static result and it replaces
 all attributes, then this function's result will have just 0..1 tuples.
 
+=item C<function sys.Core.Relation.static_substitution result Relation
+params { topic(Relation), attrs(Tuple) }>
+
+This function is a simpler-syntax alternative to
+C<sys.Core.Relation.substitution> in the typical scenario where every tuple
+of a relation, given in the C<topic> argument, is updated with identical
+values for the same attributes; the new attribute values are given in the
+C<attrs> argument.
+
 =item C<function sys.Core.Relation.substitution_in_restriction result
 Relation params { topic(Relation), restr_func(Cat.NameChain),
 restr_assuming(Tuple), subst_func(Cat.NameChain), subst_assuming(Tuple) }>
@@ -2942,8 +2994,19 @@ short-hand for first separating the tuples of C<topic> into 2 groups where
 those passed by a relational restriction (defined by C<restr_func> and
 C<restr_assuming>) are then transformed (defined by C<subst_func> and
 C<subst_assuming>), then the result of the substitution is unioned with the
-un-transformed group.  Note that the C<substitution_in_semijoin> function
-is recommended to be used instead for many common substitutions.
+un-transformed group.  See also the C<substitution_in_semijoin> function,
+which is a simpler-syntax alternative for C<substitution_in_restriction> in
+its typical usage where restrictions are composed simply of anded or ored
+tests for attribute value equality.
+
+=item C<function sys.Core.Relation.static_substitution_in_restriction
+result Relation params { topic(Relation), restr_func(Cat.NameChain),
+restr_assuming(Tuple), subst(Tuple) }>
+
+This function is to C<sys.Core.Relation.substitution_in_restriction> what
+C<sys.Core.Relation.static_substitution> is to
+C<sys.Core.Relation.substitution>.  See also the
+C<static_substitution_in_semijoin> function.
 
 =item C<function sys.Core.Relation.map result Relation params {
 topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
@@ -3183,6 +3246,13 @@ of the tuples of C<topic> to be transformed is determined by those matched
 by a semijoin with C<restr> rather than those that pass a generic
 relational restriction.
 
+=item C<function sys.Core.Relation.static_substitution_in_semijoin result
+Relation params { topic(Relation), restr(Relation), subst(Tuple) }>
+
+This function is to C<sys.Core.Relation.substitution_in_semijoin> what
+C<sys.Core.Relation.static_substitution> is to
+C<sys.Core.Relation.substitution>.
+
 =item C<function sys.Core.Relation.join_with_group result Relation params {
 primary(Relation), secondary(Relation), group_attr(Cat.Name) }>
 
@@ -3237,7 +3307,8 @@ C<secondary>'s attributes that aren't in common with C<primary>, and whose
 body is the literal values to use for those missing attribute values.  This
 function gets its name in that conceptually the result tuples from
 non-matches are the result of performing a relational cross-product between
-the un-matched C<primary> tuples and the single C<filler> tuple.
+the un-matched C<primary> tuples and the single C<filler> tuple.  This
+function could alternately be named I<outer_join_with_static_extension>.
 
 =item C<function sys.Core.Relation.outer_join_with_extension result
 Relation params { primary(Relation), secondary(Relation),
