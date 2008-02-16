@@ -135,6 +135,7 @@ more or less:
                 sys.Core.Cat.Name
                 sys.Core.Cat.NameChain
                 sys.Core.Cat.FlattenedNameChain
+                sys.Core.Cat.Comment
 
                 sys.Core.Int.Int
                     sys.Core.Int.UInt
@@ -756,9 +757,9 @@ Muldis D expressions; 'directly' meaning not by way of explicitly invoking
 a selector function.  Generally speaking, this union type includes all of
 the core scalar types that aren't themselves defined as union types.  The
 full list that C<ScalarLiteral> unions is: C<Bool>, C<Int>, C<Rat>,
-C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.E_RM>, C<Cat.E_TK>,
-C<Cat.E_TDM>, C<Cat.E_ENK>, C<Cat.E_PSAK>.  Its default value is
-C<Bool:false>.
+C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.Comment>,
+C<Cat.E_RM>, C<Cat.E_TK>, C<Cat.E_TDM>, C<Cat.E_ENK>, C<Cat.E_PSAK>.  Its
+default value is C<Bool:false>.
 
 =head2 sys.Core.Cat.Name
 
@@ -789,6 +790,17 @@ periods are escaped as C<\b>, C<\q> and C<\p> respectively.
 The C<Cat.FlattenedNameChain> type is used as the definition of the
 character string possrep of a C<Cat.NameChain> (see that type for details);
 while being a character string like C<Cat.Name>, the two are disjoint.
+
+=head2 sys.Core.Cat.Comment
+
+A C<Cat.Comment> is the text of a Muldis D code comment, which programmers
+can populate as an attribute of several catalog data types, such as whole
+routines or statements or expression nodes.  C<Cat.Comment> is the same as
+C<Text>, and C<Name>, in all ways but that it is specifically intended for
+use in commenting Muldis D code rather than being normal data; they are
+disjoint.  One main intended use of this type is to help preserve comments
+in code translated to or from other languages; though only a subset of
+those (FoxPro?) keep comments in the AST rather than discarding them.
 
 =head2 sys.Core.Cat.PInt1_4
 
@@ -930,7 +942,7 @@ both system and user types (just the interfaces in the former case).
 
 I<TODO:  The catalog types for type definitions need an overhaul.>
 
-A C<Cat.Type> has these 7 attributes:
+A C<Cat.Type> has these 8 attributes:
 
 =over
 
@@ -1017,6 +1029,10 @@ the data type is defined as an explicit subtype of another type by way of
 an explicit further type constraint applied to it, and C<constraint>
 defines/names that further constraint.
 
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the data type.
+
 =back
 
 The default value of C<Cat.Type> is an alias of C<Empty>.
@@ -1040,7 +1056,7 @@ argument for a subject-to-update parameter of an update operator call; in
 that case the leaf nodes / only node of the expression must map to a
 subject-to-update parameter of the containing update operator.
 
-A C<Cat.ExprNode> has these 8 attributes:
+A C<Cat.ExprNode> has these 9 attributes:
 
 =over
 
@@ -1110,6 +1126,11 @@ invocation.  Each element defines one argument value, with the element
 C<name> matching the parameter name, and the element C<expr> naming another
 local C<ExprNode> which defines the value.
 
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
 =back
 
 The default value of C<Cat.ExprNode> has an empty name and represents the
@@ -1124,7 +1145,7 @@ plus more when it would conceptually be using anonymous inline function
 definitions (to pass to function-valued function arguments), or when it
 would conceptually have self-referencing/cyclic expressions.
 
-A C<Cat.InnerFunc> has these 5 attributes:
+A C<Cat.InnerFunc> has these 6 attributes:
 
 =over
 
@@ -1160,6 +1181,10 @@ single expression tree, whose root node's name is the empty string.  This
 expression tree must reference all of the parameters that the inner
 function has.
 
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the inner function as a whole.
+
 =back
 
 The default value of C<Cat.InnerFunc> has an empty name and unconditionally
@@ -1171,7 +1196,7 @@ A C<Cat.Func> is a C<Tuple>.  It specifies a named C<function> routine,
 which is conceptually a non-anonymous function that is generally invokable
 by the public (unless its parent package says otherwise).
 
-A C<Cat.Func> has these 2 attributes:
+A C<Cat.Func> has these 3 attributes:
 
 =over
 
@@ -1187,6 +1212,10 @@ conceptually expression-inlined anonymous functions), which is composed of
 one or more inner functions, plus its public interface / parameter list,
 which is defined by one of those.  The inner function defining the outer
 function's main body has the empty string as its name.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the function as a whole.
 
 =back
 
@@ -1209,7 +1238,7 @@ conceptually include them, those portions of the procedures need to be
 separated out and encapsulated by named update operators or
 inner-update-operators.
 
-A C<Cat.UpdStmt> has these 3 attributes:
+A C<Cat.UpdStmt> has these 4 attributes:
 
 =over
 
@@ -1237,6 +1266,11 @@ Each element defines one argument value, with the element C<name> matching
 the parameter name, and the element C<expr> naming a local C<ExprNode>
 which defines the value.
 
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the update statement as a
+whole.
+
 =back
 
 The default value of C<Cat.UpdStmt> will unconditionally update 1
@@ -1250,7 +1284,7 @@ procedural routine; a complete update operator consists of at least one
 inner update operator, which is its main body, likely plus more when it
 would conceptually be code refactored.
 
-A C<Cat.InnerUpdater> has these 6 attributes:
+A C<Cat.InnerUpdater> has these 7 attributes:
 
 =over
 
@@ -1290,6 +1324,10 @@ This defines the entire body of the inner update operator, which is
 composed of a single multi-update statement.  This multi-update statement
 must reference all of the parameters that the inner update operator has.
 
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the inner updater as a whole.
+
 =back
 
 The default value of C<Cat.InnerUpdater> has an empty name and has 1
@@ -1304,7 +1342,7 @@ routine, which is conceptually a non-anonymous update operator that is
 generally invokable by the public (unless its parent package says
 otherwise).
 
-A C<Cat.Updater> has these 3 attributes:
+A C<Cat.Updater> has these 4 attributes:
 
 =over
 
@@ -1325,6 +1363,10 @@ as its name.
 
 This also contributes to the body of the update operator.
 
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the updater as a whole.
+
 =back
 
 The default value of C<Cat.Updater> is as per the default of
@@ -1336,7 +1378,7 @@ A C<Cat.ProcStmtArg> is a C<Tuple>.  It specifies a named argument for a
 procedural routine invocation done as a procedure statement, and is
 composed into the C<Cat.ProcStmt> definition of said statement.
 
-A C<Cat.ProcStmtArg> has these 6 attributes:
+A C<Cat.ProcStmtArg> has these 7 attributes:
 
 =over
 
@@ -1372,6 +1414,10 @@ value of a lexical variable that isn't a parameter.
 Iff C<kind> is C<Cat.E_PSAK:outer_var>, then the argument is the current
 value of a non-lexical variable.
 
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the statement argument.
+
 =back
 
 The default value of C<Cat.ProcStmtArg> will bind to a read-only parameter
@@ -1384,7 +1430,7 @@ A C<Cat.ProcStmt> is a C<Tuple>.  It specifies a generic statement from
 which non-implicitly-atomic procedural Muldis D code is composed.  Only
 procedures (or inner procedures) may contain C<Cat.ProcStmt>.
 
-A C<Cat.ProcStmt> has these 3 attributes:
+A C<Cat.ProcStmt> has these 4 attributes:
 
 =over
 
@@ -1405,6 +1451,10 @@ These are the 0..N read-only arguments to the routine invocation.  There is
 a distributed (unique) key over the C<name> attributes of C<upd_params> and
 C<ro_params>.
 
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the statement as a whole.
+
 =back
 
 The default value of C<Cat.ProcStmt> will invoke
@@ -1418,7 +1468,7 @@ routine, which is the main component type of a complete procedure; a
 complete procedure consists of at least one inner procedure, which is its
 main body, likely plus more when it would conceptually be code refactored.
 
-A C<Cat.InnerProc> has these 6 attributes:
+A C<Cat.InnerProc> has these 7 attributes:
 
 =over
 
@@ -1456,6 +1506,11 @@ This defines the entire main body of the inner procedure, which is composed
 of 0..N procedure statements.  These statements must reference all of the
 parameters and lexical variables that the inner procedure has.
 
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the inner procedure as a
+whole.
+
 =back
 
 The default value of C<Cat.InnerProc> has an empty name and is a no-op; its
@@ -1468,7 +1523,7 @@ A C<Cat.Proc> is a C<Tuple>.  It specifies a named C<procedure> routine,
 which is conceptually a non-anonymous procedure that is generally invokable
 by the public (unless its parent package says otherwise).
 
-A C<Cat.Proc> has these 4 attributes:
+A C<Cat.Proc> has these 5 attributes:
 
 =over
 
@@ -1492,6 +1547,10 @@ This also contributes to the body of the procedure.
 =item C<inner_funcs> - C<Cat.InnerFuncSet>
 
 This also contributes to the body of the procedure.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the procedure as a whole.
 
 =back
 
