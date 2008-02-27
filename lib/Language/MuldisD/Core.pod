@@ -398,40 +398,71 @@ member values are greater than zero.  Its default and minimum value is 1.
 
 =head2 sys.Core.Rat.Rat
 
-A C<Rat> is a single exact rational number of any magnitude.  It is
-conceptually a I<numerator> (C<Int>) divided by a I<denominator> (C<PInt>).
-Its default value is zero; its minimum and maximum values are conceptually
-infinities and practically impossible.  The cardinality of this type is
-infinity; to define a most-generalized finite C<Rat> subtype, you must
-specify the greatest magnitude value denominator, plus the the 2 integer
-end-points of the inclusive range of the value numerator.  Common subtypes
-specify that all denominators are positive powers of a particular I<radix>
-(C<PInt>), where the radix is usually either 2 or 10; types such as these
-will easily map exactly to common human or physical numeric
-representations, so they tend to perform better.
+A C<Rat> is a single exact rational number of any magnitude and precision.
+It is conceptually a composite type with 2 main system-defined possreps,
+called C<ratio> and C<float>, both of which are defined over several
+C<Int>.
+
+The C<ratio> possrep consists of 2 attributes: C<numerator> (an C<Int>),
+C<denominator> (a C<PInt>); the conceptual value of a C<Rat> is the result
+of rational-dividing its C<numerator> by its C<denominator>.  Because in
+the general case there are an infinite set of [C<numerator>,C<denominator>]
+integer pairs that denote the same rational value, the C<ratio> possrep
+carries the normalization constraint that C<numerator> and C<denominator
+must be coprime, that is, they have no common integer factors other than 1.
+
+The C<float> possrep consists of 3 attributes: C<mantissa> (an C<Int>),
+C<radix> (a C<Cat.PInt2_N>), C<exponent> (an C<Int>); the conceptual value
+of a C<Rat> is the result of multiplying its C<mantissa> by the result of
+taking its C<radix> to the power of its C<exponent>.  The C<float> possrep
+carries the normalization constraint that among all the
+[C<mantissa>,C<radix>,C<exponent>] triples which would denote the same
+rational value, the only allowed triple is the one having both the C<radix>
+with the lowest value (that is closest to or equal to 2) and the
+C<exponent> with the highest value (that is closest to positive infinity).
+I<Note: this constraint could stand to be rephrased for simplification or
+correction, eg if somehow the sets of candidate triples sharing the lowest
+radix and sharing the highest exponent have an empty intersection.>
+
+The default value of C<Rat> is zero; its minimum and maximum values are
+conceptually infinities and practically impossible.  The cardinality of
+this type is infinity; to define a most-generalized finite C<Rat> subtype,
+you must specify the greatest magnitude value denominator, plus the the 2
+integer end-points of the inclusive range of the value numerator; or
+alternately you must specify the greatest magnitude value mantissa (the
+I<maximum precision> of the number), and specify the greatest magnitude
+value radix, plus the the 2 integer end-points of the inclusive range of
+the value exponent (the I<maximum scale> of the number).  Common subtypes
+specify that the normalized radixes of all their values are either 2 or 10;
+types such as these will easily map exactly to common human or physical
+numeric representations, so they tend to perform better.
 
 =head2 sys.Core.Rat.URat
 
 A C<URat> (unsigned / non-negative rational) is a proper subtype of C<Rat>
-where all member values are greater than or equal to zero.  Its minimum
+where all member values are greater than or equal to zero (that is, the
+C<numerator>|C<mantissa> is greater than or equal to zero).  Its minimum
 value is zero.
 
 =head2 sys.Core.Rat.PRat
 
 A C<PRat> (positive rational) is a proper subtype of C<URat> where all
-member values are greater than zero.  Its default value is 1.
+member values are greater than zero (that is, the C<numerator>|C<mantissa>
+is greater than zero).  Its default value is 1.
 
 =head2 sys.Core.Rat.BRat
 
-A C<BRat> (binary rational) is a proper subtype of C<Rat> where the radix
-is 2; it is the best option to exactly represent rational numbers that are
-conceptually binary or octal or hexadecimal.
+A C<BRat> (binary rational) is a proper subtype of C<Rat> where the
+C<radix> is 2; it is the best option to exactly represent rational numbers
+that are conceptually binary or octal or hexadecimal.
 
 =head2 sys.Core.Rat.DRat
 
-A C<DRat> (decimal rational) is a proper subtype of C<Rat> where the radix
-is 10; it is the best option to exactly represent rational numbers that are
-conceptually the decimal numbers that humans typically work with.
+A C<DRat> (decimal rational) is a proper subtype of C<Rat> where the
+C<radix> is 10 (or if it could be without the C<float> possrep
+normalization constraint); it is the best option to exactly represent
+rational numbers that are conceptually the decimal numbers that humans
+typically work with.
 
 =head2 sys.Core.Blob.Blob
 
@@ -822,25 +853,28 @@ type is 35.
 
 =head2 sys.Core.Cat.E_RM
 
-A C<Cat.E_RM> (rounding method) is an enumeration consisting of the 5
-values C<Cat.E_RM:half_up>, C<Cat.E_RM:to_even>, C<Cat.E_RM:to_floor>,
-C<Cat.E_RM:to_ceiling>, C<Cat.E_RM:to_zero>.  When a value of some ordered
-type needs to be mapped into a proper subtype that doesn't contain that
-value, such as when mapping an arbitrary number to one with less precision,
-some rounding method is applied to determine which value of the subtype is
-to be mapped to while most accurately reflecting the original value.  The
-C<Cat.E_RM> type enumerates the rounding methods that Muldis D operators
-can typically apply.  With C<half_up> and C<to_even> (aka I<unbiased
+A C<Cat.E_RM> (rounding method) is an enumeration consisting of the 7
+values C<Cat.E_RM:half_down>, C<Cat.E_RM:half_up>, C<Cat.E_RM:half_even>,
+C<Cat.E_RM:to_floor>, C<Cat.E_RM:to_ceiling>, C<Cat.E_RM:to_zero>,
+C<Cat.E_RM:to_inf>.  When a value of some ordered type needs to be mapped
+into a proper subtype that doesn't contain that value, such as when mapping
+an arbitrary number to one with less precision, some rounding method is
+applied to determine which value of the subtype is to be mapped to while
+most accurately reflecting the original value.  The C<Cat.E_RM> type
+enumerates the rounding methods that Muldis D operators can typically
+apply.  With C<half_down>, C<half_up>, and C<half_even> (aka I<unbiased
 rounding>, I<convergent rounding>, I<statistician's rounding>, or
 I<bankers' rounding>), the original value will be mapped to the single
 target value that it is closest to, if there is one; otherwise, if it is
-exactly half-way between 2 adjacent target values, then C<half_up> will
-round upwards, and C<to_even> will round towards the nearest "even" one.
-With C<to_floor>, C<to_ceiling>, C<to_zero> (aka I<truncate>), the original
-value will always be mapped to the single adjacent value that is lower than
-it, or higher than it, or towards "zero" from it, respectively.  The
-default value of C<Cat.E_RM> is C<Cat.E_RM:half_up>, since that is the most
-commonly used method of rounding.
+exactly half-way between 2 adjacent target values, then C<half_down> will
+round towards negative infinity, C<half_up> will round towards positive
+infinity, and C<half_even> will round towards the nearest "even" target.
+With C<to_floor>, C<to_ceiling>, C<to_zero> (aka I<truncate>), C<to_inf>,
+the original value will always be mapped to the single adjacent value that
+is lower than it, or higher than it, or towards "zero" from it, or towards
+the nearer infinity from it, respectively.  The default value of
+C<Cat.E_RM> is C<Cat.E_RM:half_up>, since that is the most commonly used
+method of rounding.
 
 =head2 sys.Core.Cat.E_TK
 
@@ -2177,25 +2211,34 @@ denominator.
 =item C<function sys.Core.Rat.Rat_from_Int_pair result Rat params {
 numerator(Int), denominator(PInt) }>
 
-This selector function results in the C<Rat> value that its C<numerator>
-and C<denominator> arguments map to when collectively interpreted in the
-appropriate fashion, as if there were a possrep for the C<Rat> type that
-was composed of such 2 attributes, but keeping in mind that multiple
-distinct argument pairs can map to each same C<Rat> value, since the
-arguments don't have to be a canonical pair.
+This selector function results in the C<Rat> value that arguments
+collectively map to as the attributes of the result's C<ratio> possrep;
+however, the arguments do not have to be the canonical/normalized attribute
+values, but constitute any other pair that denotes the same rational value.
 
-=item C<function sys.Core.Rat.numerator result Int params { topic(Rat) }>
+=item C<function sys.Core.Rat.Rat_from_Int_triple result Rat params {
+mantissa(Int), radix(Cat.PInt2_N), exponent(Int) }>
 
-This function results in the canonical numerator of its argument, which
-assumes said rational is represented with the pair of smallest possible
-integers.
+This selector function results in the C<Rat> value that arguments
+collectively map to as the attributes of the result's C<float> possrep;
+however, the arguments do not have to be the canonical/normalized attribute
+values, but constitute any other triple that denotes the same rational.
+
+=item C<function sys.Core.Rat.(numerator|mantissa|exponent) result Int
+params { topic(Rat) }>
+
+This function results in the canonical C<numerator|mantissa|exponent> of
+its argument.
 
 =item C<function sys.Core.Rat.denominator result PInt params { topic(Rat)
 }>
 
-This function results in the canonical denominator of its argument, which
-assumes said rational is represented with the pair of smallest possible
-integers.
+This function results in the canonical C<denominator> of its argument.
+
+=item C<function sys.Core.Rat.radix result Cat.PInt2_N params { topic(Rat)
+}>
+
+This function results in the canonical C<radix> of its argument.
 
 =back
 

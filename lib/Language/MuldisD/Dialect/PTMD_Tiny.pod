@@ -157,7 +157,8 @@ execution.  Any remaining errors should be corrected as soon as possible.
 
     token rat {
           rat_with_radix
-        | rat_as_int_pair
+        | rat_as_ratio
+        | rat_as_float
     }
 
     token rat_with_radix {
@@ -170,14 +171,28 @@ execution.  Any remaining errors should be corrected as soon as possible.
         (0|\-?<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>*)
     }
 
-    token rat_as_int_pair {
+    token rat_as_ratio {
         (Rat)
         <spec_sep>
-        (pair)
+        (ratio)
         <spec_sep>
         (<[1-9A-Z]>)
         <spec_sep>
         ((0|\-?<[1-9A-Z]><[0-9A-Z]>*)\/(<[1-9A-Z]><[0-9A-Z]>*))
+    }
+
+    token rat_as_float {
+        (Rat)
+        <spec_sep>
+        (float)
+        <spec_sep>
+        (<[1-9A-Z]>)
+        <spec_sep>
+        ((0|\-?<[1-9A-Z]><[0-9A-Z]>*)
+        \*
+        (<[2-9A-Z]><[0-9A-Z]>*)
+        \^
+        (0|\-?<[1-9A-Z]><[0-9A-Z]>*))
     }
 
     token blob {
@@ -345,7 +360,7 @@ execution.  Any remaining errors should be corrected as soon as possible.
     token cat_e_rm {
         (Cat.E_RM)
         <spec_sep>
-        (half_up|to_even|to_floor|to_ceiling|to_zero)
+        (half_down|half_up|half_even|to_floor|to_ceiling|to_zero|to_inf)
     }
 
     token cat_e_tk {
@@ -416,9 +431,13 @@ The following are fragments of actual Plain Text Muldis D code.
 
     Rat:radix:Z:0.000AZE
 
-    Rat:pair:6:500001/1000
+    Rat:ratio:6:500001/1000
 
-    Rat:pair:B:A09B/10
+    Rat:ratio:B:A09B/A
+
+    Rat:float:1:1011101101*10^-11011
+
+    Rat:float:9:45207196*10^37
 
     Blob:1:00101110100010
 

@@ -952,6 +952,57 @@ identical (as well as C<is_not_identical>, for nonidentical).  Moreover,
 these operators exist implicitly, so when one defines the initial possrep
 of a new type, they get those operators for the type at no extra cost.
 
+=head2 Numeric Types
+
+Conceptually speaking, the Muldis D language core has just a single numeric
+data type, which consists of every possible real rational number.  This
+data type is a "bignum", and will exactly represent a rational number with
+any arbitrary magnitude and precision, limited only by the amount of
+available system memory.  This type does not include multiple zeros, nor
+any special non-numeric values such as NaNs, infinities, over|underflows,
+nor any symbolic irrationals or complex/imaginary numbers etc; any core
+language operation that might have produced such will either fail or
+(explicitly) round to a nearby rational as is applicable.
+
+This numeric type is exact, not approximate, and every figure
+(bit|digit|etc) is significant; no 2 distinct values will ever compare as
+equal as there is never any implicit rounding; there is no tracking of
+significant figures, and there is no fuzzy logic.  Every one of this type's
+member values can be described in terms of 3 integers; the value is the
+result of multiplying a I<mantissa> (any integer) by the result of a
+I<radix> (any integer greater than one) raised to the power of an
+I<exponent> (any integer).  Or alternately, every value can be described
+using 2 integers; the value is the result of dividing a I<numerator> by a
+I<denominator>.  This numeric type is truly radix-independent; although it
+is most common for the radix to be 2 or 10, any other radix can be used
+instead, such as to represent the value four-thirds exactly.
+
+If you want to represent any numeric or numeric-related value in Muldis D
+other than the aforementioned core-supported ones, you will need to do it
+with some non-core language type, either some system-defined extension or
+some user-defined type.  For example, if you want division by zero to
+produce a special infinity value rather than fail / throw an exception,
+you'll need a non-core type.  Or likewise if you want your math to process
+approximate/measured numbers with proper significant figure handling.
+
+On the other hand, if you want to have something that's just like either a
+traditional 32-bit integer or 64-bit IEEE-754 float sans special values,
+you can have that as a simple proper subtype of the core numeric type.
+
+Now, the Muldis D language core actually has 2 numeric data types which are
+disjoint: C<Int> and C<Rat>.  The latter one is equal to the conceptual
+single numeric type as to what numeric values it can represent; the first
+one by contrast is conceptually a proper subtype which just contains all
+the integers, that is the values where the conceptual I<exponent> is zero
+(or I<denominator> is 1) and so the I<mantissa> (or I<numerator>) by itself
+is the value.  The reason that Muldis D has these 2 types disjoint is to
+assist ease of use and implementation; moreover, C<Int> is conceptually a
+lot simpler, and C<Rat> is conceptually defined in terms of C<Int>.
+
+Note that only the C<Int> type is required for bootstrapping the Muldis D
+language core and must always be provided; but the C<Rat> type may be left
+out of a minimal Muldis D implementation if it isn't needed for user data.
+
 I<This documentation is pending.>
 
 =head1 ENVIRONMENT

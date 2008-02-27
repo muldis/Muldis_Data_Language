@@ -286,12 +286,13 @@ Node type: the Perl C<Str> value C<Rat>.
 
 =item *
 
-Format; one of: C<md_radix>, C<md_pair>, C<perl_rat>, C<perl_int_pair>,
-C<any_perl>, C<any_perl_pair>.
+Format; one of: C<md_radix>, C<md_ratio>, C<md_float>, C<perl_rat>,
+C<perl_float>, C<perl_int_ratio>, C<perl_int_float>, C<any_perl>,
+C<any_perl_ratio>, C<any_perl_float>.
 
 =item *
 
-Only when format is C<md_radix>|C<md_pair>; the max-col-val.
+Only when format is C<md_radix>|C<md_ratio>|C<md_float>; the max-col-val.
 
 =item *
 
@@ -319,16 +320,33 @@ max-col-val contains that I<N>-minus-one.  So to specify, eg, bases
 
 =item *
 
-If the format is C<md_pair>, then the max-col-val must be as per
+If the format is C<md_ratio>, then the max-col-val must be as per
 C<md_radix>, and the payload must be a 2-element C<Array|Seq> where the
 first element is a Perl C<Str> of the format C<0> or C<<
 \-?<[1-9A-Z]><[0-9A-Z]>* >> (an integer) and the second element is a Perl
-C<Str> of the format C<< <[1-9A-Z]><[0-9A-Z]>* >> (a positive integer).
-The payload is interpreted as per C<md_radix> but that its value comes from
-the first element divided by the second.  Note that while the C<md_radix>
-format is limited to representing rationals whose denominator is a power of
-some I<N> between 2 and 36, the C<md_pair> format can represent those with
-any I<N> that is greater than or equal to 2, such as 1/43.
+C<Str> of the format C<< <[1-9A-Z]><[0-9A-Z]>* >> (a positive integer). The
+payload is interpreted as per C<md_radix> but that its value comes from the
+first element (a numerator) divided by the second (a denominator).  Note
+that while the C<md_radix> format is limited to representing rationals
+whose denominator is a power of some I<N> between 2 and 36, the C<md_ratio>
+format can represent those with any I<N> that is greater than or equal to
+2, such as 1/43.
+
+=item *
+
+If the format is C<md_float>, then the max-col-val must be as per
+C<md_radix>, and the payload must be a 3-element C<Array|Seq> where the
+first element is a Perl C<Str> of the format C<0> or C<<
+\-?<[1-9A-Z]><[0-9A-Z]>* >> (an integer) and the second element is a Perl
+C<Str> of the format C<< <[2-9A-Z]><[0-9A-Z]>* >> (an integer greater than
+1) and the third element is as per the first (an integer).  The payload is
+interpreted as per C<md_radix> but that its value comes from the first
+element (a mantissa) multiplied by the result of the second element (a
+radix) taken to the power of the third (an exponent).  Note that while the
+C<md_ratio> format can represent all rationals, the very large or very
+small ones would be quite verbose written in that format, and so the
+C<md_float> format allows writing those values in a more terse fashion,
+such as 1.56*10^37.
 
 =item *
 
@@ -339,10 +357,26 @@ Perl.
 
 =item *
 
-If the format is C<perl_int_pair>, then the payload must a 2-element
+If the format is C<perl_float>, then:  Under Perl 6, the payload must be a
+Perl C<Float> (or C<Num>), which is mapped directly.  Under Perl 5, the
+payload must be just a canonical floating-point or numeric value according
+to Perl.
+
+=item *
+
+If the format is C<perl_int_ratio>, then the payload must a 2-element
 C<Array|Seq> where each element must be a canonical integer (or positive
 integer, respectively) to Perl as per defining a C<perl_int>; the
 rational's value is interpreted as the first element divided by the second.
+
+=item *
+
+If the format is C<perl_int_float>, then the payload must a 3-element
+C<Array|Seq> where each element must be a canonical integer (or integer
+greater than 2, or integer, respectively) to Perl as per defining a
+C<perl_int>; the rational's value is interpreted as the first element
+multiplied by the result of the second element taken to the power of the
+third.
 
 =item *
 
@@ -353,10 +387,17 @@ numeric, it becomes zero.
 
 =item *
 
-If the format is C<any_perl_pair>, then the payload is as per
-C<perl_int_pair> but that each array element is simply coerced into an
+If the format is C<any_perl_ratio>, then the payload is as per
+C<perl_int_ratio> but that each array element is simply coerced into an
 integer context.  If Perl's coercion of the denominator produces an integer
 less than 1, it becomes a 1.  I<This may be revised to fail instead.>
+
+=item *
+
+If the format is C<any_perl_float>, then the payload is as per
+C<perl_int_float> but that each array element is simply coerced into an
+integer context.  If Perl's coercion of the radix produces an integer
+less than 2, it becomes a 2.  I<This may be revised to fail instead.>
 
 =back
 
@@ -374,17 +415,27 @@ Examples:
 
     [ 'Rat', 'md_radix', 'Z', '0.000AZE' ]
 
+    [ 'Rat', 'md_ratio', '6', [ '500001', '1000' ] ]
+
+    [ 'Rat', 'md_ratio', 'B', [ 'A09B', 'A' ] ]
+
+    [ 'Rat', 'md_float', '1', [ '1011101101', '10', '-11011' ] ]
+
+    [ 'Rat', 'md_float', '9', [ '45207196', '10', '37' ] ]
+
     [ 'Rat', 'perl_rat', 21.003 ]
+
+    [ 'Rat', 'perl_float', 5.428**295 ]
+
+    [ 'Rat', 'perl_int_ratio', [ 1, 43 ] ]
+
+    [ 'Rat', 'perl_int_float', [ 314159, 10, -5 ] ]
 
     [ 'Rat', 'any_perl', ' 54.67 ' ]
 
-    [ 'Rat', 'md_pair', '6', [ '500001', '1000' ] ]
+    [ 'Rat', 'any_perl_ratio', [ ' 57 ', ' 71 ' ] ]
 
-    [ 'Rat', 'md_pair', 'B', [ 'A09B', '10' ] ]
-
-    [ 'Rat', 'perl_int_pair', [ 1, 43 ] ]
-
-    [ 'Rat', 'any_perl_pair', [ ' 57 ', ' 71 ' ] ]
+    [ 'Rat', 'any_perl_float', [ ' 656573456 ', ' 8 ', ' 243323 ' ] ]
 
 =head2 sys.Core.Blob.Blob
 
@@ -895,9 +946,9 @@ The payload.
 =back
 
 This node is interpreted as a Muldis D C<sys.Core.Cat.E_RM> value by
-directly mapping the payload.  The payload must be a Perl C<Str>
-having one of the 5 values C<half_up>, C<to_even>, C<to_floor>,
-C<to_ceiling>, C<to_zero>.
+directly mapping the payload.  The payload must be a Perl C<Str> having one
+of the 7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
+C<to_ceiling>, C<to_zero>, C<to_inf>.
 
 Examples:
 
