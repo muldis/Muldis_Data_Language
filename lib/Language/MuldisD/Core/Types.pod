@@ -1,0 +1,3904 @@
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Language::MuldisD::Core -
+Muldis D core data types and operators
+
+=head1 VERSION
+
+This document is Language::MuldisD::Core version 0.19.0.
+
+=head1 PREFACE
+
+This document is part of the Muldis D language specification, whose root
+document is L<Language::MuldisD>; you should read that root document
+before you read this one, which provides subservient details.
+
+=head1 DESCRIPTION
+
+Muldis D has a mandatory core set of system-defined (eternally available)
+entities, which is referred to as the I<Muldis D core> or the I<core>; they
+are the minimal entities that all Muldis D implementations need to provide;
+they are mutually self-describing and are used to bootstrap the language;
+any entities outside the core, called I<Muldis D extensions>, are
+non-mandatory and are defined in terms of the core or each other, but the
+reverse isn't true.
+
+This current C<Core> document features the boolean, integer, rational, bit
+string, and character string types and operators, plus the tuple and
+relation type constructors (and quasi- variants) and operators, plus the
+type system minimal and maximal types, plus the special types used to
+define the system catalog, and the polymorphic operators that all types, or
+some types including core types, have defined over them.
+
+Extensions are in these other documents:
+L<Language::MuldisD::Ext::Temporal>, L<Language::MuldisD::Ext::Spatial>.
+
+=head1 TYPE SUMMARY
+
+Following are all the data types and data type factories described in this
+document, arranged in a type graph according to their proper sub|supertype
+relationships:
+
+    sys.Core.Universal.Universal
+
+        sys.Core.Universal.Empty
+
+        sys.Core.Scalar.Scalar
+            sys.Core.Ordered.Ordered
+
+                # The following are all regular ordered scalar types.
+
+                sys.Core.Bool.Bool
+                sys.Core.Int.Int
+                    sys.Core.Int.UInt
+                        sys.Core.Int.PInt
+                sys.Core.Rat.Rat
+                    sys.Core.Rat.URat
+                        sys.Core.Rat.PRat
+                    sys.Core.Rat.BRat
+                    sys.Core.Rat.DRat
+                sys.Core.Blob.Blob
+                    sys.Core.Blob.NEBlob
+                sys.Core.Text.Text
+                    sys.Core.Text.NEText
+
+        # The following are mostly nonscalar type factories.
+
+        sys.Core.Tuple.Tuple
+            sys.Core.Tuple.D0
+            sys.Core.Tuple.SetElem
+            sys.Core.Tuple.SeqElem
+            sys.Core.Tuple.BagElem
+            sys.Core.Tuple.Database
+
+        sys.Core.Relation.Relation
+            sys.Core.Relation.D0
+            sys.Core.Relation.Set
+                sys.Core.Relation.Maybe
+                    sys.Core.Relation.Nothing
+                    sys.Core.Relation.Single
+            sys.Core.Relation.Seq
+            sys.Core.Relation.Bag
+
+        # The following is filler, to group possible user-def types.
+
+        sys.Core.QuasiScalar.QuasiScalar
+            sys.Core.QuasiScalar.E_D
+
+        # The following are mostly quasi-nonscalar type factories.
+
+        sys.Core.QuasiTuple.QuasiTuple
+            sys.Core.QuasiTuple.D0
+            sys.Core.QuasiTuple.QuasiSetElem
+            sys.Core.QuasiTuple.QuasiSeqElem
+            sys.Core.QuasiTuple.QuasiBagElem
+
+        sys.Core.QuasiRelation.QuasiRelation
+            sys.Core.QuasiRelation.D0
+            sys.Core.QuasiRelation.QuasiSet
+                sys.Core.QuasiRelation.QuasiMaybe
+                    sys.Core.QuasiRelation.QuasiNothing
+                    sys.Core.QuasiRelation.QuasiSingle
+            sys.Core.QuasiRelation.QuasiSeq
+            sys.Core.QuasiRelation.QuasiBag
+
+        # The following are all remnant types.
+
+        sys.Core.Remnant.Remnant
+            sys.Core.Remnant.ScaTupRel
+
+Note that C<sys.Core.Universal.Empty> is a proper subtype of all of the
+other types in this graph, but every other type has only one immediate
+supertype shown, and hence the graph of them is a simple hierarchy.
+
+These system-defined subtypes are specific to defining the system catalog,
+more or less:
+
+    sys.Core.Universal.Universal
+
+        sys.Core.Universal.Empty
+
+        sys.Core.Scalar.Scalar
+
+            # The following is actually a union over many scalar types.
+
+            sys.Core.Cat.ScalarLiteral
+
+            sys.Core.Ordered.Ordered
+
+                # The following are all regular ordered scalar types.
+
+                sys.Core.Cat.Name
+                sys.Core.Cat.NameChain
+                sys.Core.Cat.FlattenedNameChain
+                sys.Core.Cat.Comment
+
+                sys.Core.Int.Int
+                    sys.Core.Int.UInt
+                        sys.Core.Int.PInt
+
+                            # These are all finite integer types.
+
+                            sys.Core.Cat.PInt1_4
+                            sys.Core.Cat.PInt2_N
+                                sys.Core.Cat.PInt2_36
+
+            # The following are all regular non-ordered scalar types.
+
+            sys.Core.Cat.E_RM
+            sys.Core.Cat.E_TK
+            sys.Core.Cat.E_TDM
+            sys.Core.Cat.E_ENK
+            sys.Core.Cat.E_PSAK
+
+        sys.Core.Tuple.Tuple
+
+            # The following are all regular tuple types.
+
+            sys.Core.Cat.RatRoundRule
+            sys.Core.Cat.Type
+            sys.Core.Cat.ExprNode
+            sys.Core.Cat.InnerFunc
+            sys.Core.Cat.Func
+            sys.Core.Cat.UpdStmt
+            sys.Core.Cat.InnerUpdater
+            sys.Core.Cat.Updater
+            sys.Core.Cat.ProcStmtArg
+            sys.Core.Cat.ProcStmt
+            sys.Core.Cat.InnerProc
+            sys.Core.Cat.Proc
+            sys.Core.Cat.Exception
+
+        sys.Core.Relation.Relation
+
+            # The following are all regular relation types.
+
+            sys.Core.Cat.NameTypeMap
+            sys.Core.Cat.NameExprMap
+            sys.Core.Cat.AttrRenameMap
+            sys.Core.Cat.ExprSet
+                sys.Core.Cat.ExprTree
+            sys.Core.Cat.InnerFuncSet
+                sys.Core.Cat.InnerFuncTree
+            sys.Core.Cat.MultiUpdStmt
+            sys.Core.Cat.InnerUpdaterSet
+                sys.Core.Cat.InnerUpdaterTree
+            sys.Core.Cat.ProcStmtArgSet
+            sys.Core.Cat.InnerProcTree
+
+            sys.Core.Relation.Set
+
+                # The following are all regular set types.
+
+                sys.Core.Cat.SetOfName
+                sys.Core.Cat.SetOfSetOfName
+                sys.Core.Cat.SetOfNameExprMap
+                sys.Core.Cat.SetOfNameChain
+
+            sys.Core.Relation.Seq
+
+                # The following are all regular sequence types.
+
+                sys.Core.Cat.NESeqOfName
+                sys.Core.Cat.SeqOfProcStmt
+
+These system-defined subtypes are used as the declared types of some
+parameters of some system-defined N-ary routines, but they are not used in
+defining the system catalog itself; it is not anticipated that they would
+be used for user data:
+
+    sys.Core.Universal.Universal
+
+        sys.Core.Universal.Empty
+
+        sys.Core.Relation.Relation
+            sys.Core.Relation.Set
+
+                # The following are all nonscalar type factories.
+
+                sys.Core.QuasiCat.SetOfTuple
+                sys.Core.QuasiCat.SetOfRelation
+                    sys.Core.QuasiCat.SetOfBag
+
+                sys.Core.Relation.Maybe
+
+                    # The following are all nonscalar type factories.
+
+                    sys.Core.QuasiCat.MaybeOfTuple
+
+            sys.Core.Relation.Seq
+
+                # The following are all nonscalar type factories.
+
+                sys.Core.QuasiCat.SeqOfSeq
+
+            sys.Core.Relation.Bag
+
+                # The following are all nonscalar type factories.
+
+                sys.Core.QuasiCat.BagOfTuple
+                sys.Core.QuasiCat.BagOfRelation
+
+        sys.Core.QuasiRelation.QuasiRelation
+            sys.Core.QuasiRelation.QuasiSet
+
+                # The following are all quasi-nonscalar type factories.
+
+                sys.Core.QuasiCat.QuasiSetOfTuple
+                sys.Core.QuasiCat.QuasiSetOfRelation
+
+These system-defined subtypes have also been defined for convenience, as
+they are anticipated to be frequently used; moreover, many system-defined
+routines use them as parameter declared types:
+
+    sys.Core.Universal.Universal
+
+        sys.Core.Universal.Empty
+
+        sys.Core.Relation.Relation
+            sys.Core.Relation.Set
+
+                # The following are all regular set types.
+
+                sys.Core.Spec.SetOfScalar
+                    sys.Core.Spec.SetOfOrdered
+                        sys.Core.Spec.SetOfBool
+                        sys.Core.Spec.SetOfInt
+                            sys.Core.Spec.SetOfUInt
+                        sys.Core.Spec.SetOfRat
+                        sys.Core.Spec.SetOfBlob
+                        sys.Core.Spec.SetOfText
+
+                sys.Core.Relation.Maybe
+
+                    # The following are all regular maybe types.
+
+                    sys.Core.Spec.MaybeOfScalar
+                        sys.Core.Spec.MaybeOfOrdered
+                            sys.Core.Spec.MaybeOfBool
+                            sys.Core.Spec.MaybeOfInt
+                                sys.Core.Spec.MaybeOfUInt
+                            sys.Core.Spec.MaybeOfRat
+                            sys.Core.Spec.MaybeOfBlob
+                            sys.Core.Spec.MaybeOfText
+
+            sys.Core.Relation.Seq
+
+                # The following are all regular sequence types.
+
+                sys.Core.Spec.SeqOfScalar
+                    sys.Core.Spec.SeqOfOrdered
+                        sys.Core.Spec.SeqOfBool
+                        sys.Core.Spec.SeqOfInt
+                            sys.Core.Spec.SeqOfUInt
+                        sys.Core.Spec.SeqOfRat
+                        sys.Core.Spec.SeqOfBlob
+                        sys.Core.Spec.SeqOfText
+
+            sys.Core.Relation.Bag
+
+                # The following are all regular bag types.
+
+                sys.Core.Spec.BagOfScalar
+                    sys.Core.Spec.BagOfOrdered
+                        sys.Core.Spec.BagOfBool
+                        sys.Core.Spec.BagOfInt
+                            sys.Core.Spec.BagOfUInt
+                        sys.Core.Spec.BagOfRat
+                        sys.Core.Spec.BagOfBlob
+                        sys.Core.Spec.BagOfText
+
+=head1 SYSTEM-DEFINED CORE MAXIMAL AND MINIMAL DATA TYPES
+
+These core data types are special and are the only Muldis D types that are
+neither scalar nor nonscalar nor quasi-nonscalar types.  They are all
+system-defined and it is impossible for users to define more types of this
+nature.
+
+=head2 sys.Core.Universal.Universal
+
+The C<Universal> type is the maximal type of the entire Muldis D type
+system, and contains every value that can possibly exist.  Every other type
+is implicitly a proper subtype of C<Universal>, and C<Universal> is
+implicitly a union type over all other types.  Its default value is
+C<Bool:false>.  The cardinality of this type is infinity.
+
+=head2 sys.Core.Universal.Empty
+
+The C<Empty> type is the minimal type of the entire Muldis D type system,
+and is the only type that contains exactly zero values.  Every other type
+is implicitly a proper supertype of C<Empty> and C<Empty> is implicitly an
+intersection type over all other types.  It has no default value.  The
+cardinality of this type is zero.
+
+=head1 SYSTEM-DEFINED CORE SCALAR DATA TYPES
+
+These core scalar data types are the most fundamental Muldis D types.  Each
+one has zero possreps, and hence has no named components that can be
+referenced.  Plain Text Muldis D provides a specific syntax per type to
+select a value of one of these types, which does not look like a routine
+invocation, but rather like a scalar literal in a typical programming
+language; details of that syntax are not given here, but in
+L<Language::MuldisD::Dialect::PTMD_Tiny>.  Hosted Data Muldis D as hosted
+in another language will essentially use literals of corresponding host
+language types, whatever they use for eg booleans and integers and
+character strings, but tagged with extra meta-data if the host language is
+more weakly typed or lacks one-to-one type correspondence; see
+L<Language::MuldisD::Dialect::HDMD_Perl_Tiny> for a Perl-based example.
+
+=head2 sys.Core.Scalar.Scalar
+
+The C<Scalar> type is the maximal type of all Muldis D scalar types, and
+contains every scalar value that can possibly exist.  Every other scalar
+type is implicitly a proper subtype of C<Scalar>, and C<Scalar> is
+implicitly a union type over all other scalar types.  Its default value is
+C<Bool:false>.  The cardinality of this type is infinity.
+
+=head2 sys.Core.Ordered.Ordered
+
+The C<Ordered> type is a proper subtype of C<Scalar> that is a proper
+supertype of all scalar types that are considered ordered.  Any scalar
+types which consider themselves ordered, which happens to include every
+system-defined core scalar root type, will explicitly declare themselves as
+subtypes of C<Ordered> in their type definitions; the definition of
+C<Ordered> does not specify what other types it is a union over.  Its
+default value is C<Bool:false>.  The cardinality of this type is infinity.
+
+=head2 sys.Core.Bool.Bool
+
+A C<Bool> is an enumeration consisting of the 2 values C<Bool:false> and
+C<Bool:true>.  It represents a truth value, and is the result type of any
+C<is_identical> or C<is_not_identical> routine; it is the only essential
+scalar data type of a B<D> language.  Its default and minimum value is
+C<Bool:false>; its maximum value is C<Bool:true>.  The cardinality of this
+type is 2.
+
+=head2 sys.Core.Int.Int
+
+An C<Int> is a single exact integral number of any magnitude.  Its default
+value is zero; its minimum and maximum values are conceptually infinities
+and practically impossible.  The cardinality of this type is infinity; to
+define a most-generalized finite C<Int> subtype, you must specify the 2
+integer end-points of the inclusive range that all its values are in.
+
+=head2 sys.Core.Int.UInt
+
+A C<UInt> (unsigned / non-negative integer) is a proper subtype of C<Int>
+where all member values are greater than or equal to zero.  Its minimum
+value is zero.
+
+=head2 sys.Core.Int.PInt
+
+A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
+member values are greater than zero.  Its default and minimum value is 1.
+
+=head2 sys.Core.Rat.Rat
+
+A C<Rat> is a single exact rational number of any magnitude and precision.
+It is conceptually a composite type with 2 main system-defined possreps,
+called C<ratio> and C<float>, both of which are defined over several
+C<Int>.
+
+The C<ratio> possrep consists of 2 attributes: C<numerator> (an C<Int>),
+C<denominator> (a C<PInt>); the conceptual value of a C<Rat> is the result
+of rational-dividing its C<numerator> by its C<denominator>.  Because in
+the general case there are an infinite set of [C<numerator>,C<denominator>]
+integer pairs that denote the same rational value, the C<ratio> possrep
+carries the normalization constraint that C<numerator> and C<denominator>
+must be coprime, that is, they have no common integer factors other than 1.
+
+The C<float> possrep consists of 3 attributes: C<mantissa> (an C<Int>),
+C<radix> (a C<Cat.PInt2_N>), C<exponent> (an C<Int>); the conceptual value
+of a C<Rat> is the result of multiplying its C<mantissa> by the result of
+taking its C<radix> to the power of its C<exponent>.  The C<float> possrep
+carries the normalization constraint that among all the
+[C<mantissa>,C<radix>,C<exponent>] triples which would denote the same
+rational value, the only allowed triple is the one having both the C<radix>
+with the lowest value (that is closest to or equal to 2) and the
+C<exponent> with the highest value (that is closest to positive infinity).
+I<Note: this constraint could stand to be rephrased for simplification or
+correction, eg if somehow the sets of candidate triples sharing the lowest
+radix and sharing the highest exponent have an empty intersection.>
+
+The default value of C<Rat> is zero; its minimum and maximum values are
+conceptually infinities and practically impossible.  The cardinality of
+this type is infinity; to define a most-generalized finite C<Rat> subtype,
+you must specify the greatest magnitude value denominator, plus the the 2
+integer end-points of the inclusive range of the value numerator; or
+alternately you must specify the greatest magnitude value mantissa (the
+I<maximum precision> of the number), and specify the greatest magnitude
+value radix, plus the the 2 integer end-points of the inclusive range of
+the value exponent (the I<maximum scale> of the number).  Common subtypes
+specify that the normalized radixes of all their values are either 2 or 10;
+types such as these will easily map exactly to common human or physical
+numeric representations, so they tend to perform better.
+
+=head2 sys.Core.Rat.URat
+
+A C<URat> (unsigned / non-negative rational) is a proper subtype of C<Rat>
+where all member values are greater than or equal to zero (that is, the
+C<numerator>|C<mantissa> is greater than or equal to zero).  Its minimum
+value is zero.
+
+=head2 sys.Core.Rat.PRat
+
+A C<PRat> (positive rational) is a proper subtype of C<URat> where all
+member values are greater than zero (that is, the C<numerator>|C<mantissa>
+is greater than zero).  Its default value is 1.
+
+=head2 sys.Core.Rat.BRat
+
+A C<BRat> (binary rational) is a proper subtype of C<Rat> where the
+C<radix> is 2; it is the best option to exactly represent rational numbers
+that are conceptually binary or octal or hexadecimal.
+
+=head2 sys.Core.Rat.DRat
+
+A C<DRat> (decimal rational) is a proper subtype of C<Rat> where the
+C<radix> is 10 (or if it could be without the C<float> possrep
+normalization constraint); it is the best option to exactly represent
+rational numbers that are conceptually the decimal numbers that humans
+typically work with.
+
+=head2 sys.Core.Blob.Blob
+
+A C<Blob> is an undifferentiated string of bits.  Its default and minimum
+value is the empty string; its maximum value is an infinite-length string
+and practically impossible.  The cardinality of this type is infinity; to
+define a most-generalized finite C<Blob> subtype, you must specify a
+maximum length in bits that the subtype's strings are.
+
+=head2 sys.Core.Blob.NEBlob
+
+A C<NEBlob> (non-empty blob) is a proper subtype of C<Blob> where its
+length in bits must be at least 1; it can be any C<Blob> except for the
+empty string.  Its default and minimum value is a single zero bit.
+
+=head2 sys.Core.Text.Text
+
+A C<Text> is a string of characters.  Its default and minimum value is the
+empty string; its maximum value is an infinite-length string and
+practically impossible.  Note that there is only one system-defined
+character repertoire for C<Text> types, which is the newest Unicode
+repertoire (5.0.0).  The cardinality of this type is infinity; to define a
+most-generalized finite C<Text> subtype, you must specify a maximum length
+in characters (that is, eg, in NFC graphemes) that the subtype's strings
+are.
+
+=head2 sys.Core.Text.NEText
+
+A C<NEText> (non-empty text) is a proper subtype of C<Text> where its
+length in characters must be more than zero; it can be any C<Text> except
+for the empty string.  Its default value is a single "space" character; its
+minimum value has one character, but which character that is depends on the
+default or current collation.
+
+=head1 SYSTEM-DEFINED CORE NONSCALAR PARAMETERIZED DATA TYPES
+
+These are only called nonscalar data types in a loose sense, because by
+themselves they are incomplete type definitions.  Actual nonscalar data
+type definitions are derived from these by supplying the balance of the
+type definitions, such as what their attributes are and/or what their
+attribute types are.  Associated with these incomplete type definitions are
+a set of system-defined routines that can be applied to values of any
+actual nonscalar types derived from them; such are called I<generic
+nonscalar operators>.  In the Muldis D type system, these incomplete
+nonscalar types are defined as union types over all actual types derived
+from them, and are proper supertypes of said.
+
+Some actual nonscalar data types are system-defined, for use in defining
+the Muldis D system catalog / meta-model (see further below in the current
+document), and some others are system-defined for convenience since they
+are the types of many core operators (see further below in the current
+document), but all other actual nonscalar data types are user-defined.
+Users can also define their own incomplete nonscalar data types that are
+tuple or relation types.
+
+As exceptions to the above 2 paragraphs, the C<Nothing> type and the 2
+C<D0> types are actually complete types, despite being listed here.
+
+=head2 sys.Core.Tuple.Tuple
+
+The C<Tuple> type is the maximal type of all Muldis D tuple (nonscalar)
+types, and contains every tuple value that could possibly exist.  A
+C<Tuple> is an unordered heterogeneous collection of 0..N named attributes
+(the count of attributes being its I<degree>), where all attribute names
+are mutually distinct, and each attribute may be of distinct types; the
+mapping of a tuple's attribute names and their declared data types is
+called the tuple's I<heading>.  Its default value is the sole value of the
+sole tuple data type that has zero attributes.  The cardinality of a
+I<complete> C<Tuple> type (if it has no type constraints other than those
+of its constituent attribute types) is equal to the product of the N-ary
+multiplication where there is an input to that multiplication for each
+attribute of the tuple and the value of the input is the cardinality of the
+declared type of the attribute; for a C<Tuple> subtype to be finite, all of
+its attribute types must be.
+
+=head2 sys.Core.Tuple.D0
+
+A C<Tuple.D0> is a proper subtype of C<Tuple> that has zero attributes; its
+cardinality is 1, and its only value is also the default value of C<Tuple>.
+
+=head2 sys.Core.Tuple.SetElem
+
+A C<SetElem> is a C<Tuple> with the same heading as C<Set>.
+
+=head2 sys.Core.Tuple.SeqElem
+
+A C<SeqElem> is a C<Tuple> with the same heading as C<Seq>.
+
+=head2 sys.Core.Tuple.BagElem
+
+A C<BagElem> is a C<Tuple> with the same heading as C<Bag>.
+
+=head2 sys.Core.Tuple.Database
+
+A C<Database> is a proper subtype of C<Tuple> where all of its attributes
+are each of relation types or of database types (the leaves of this
+recursion are all relation types); it is otherwise the same.  It is also
+trivially a proper supertype of C<Tuple.D0>.
+
+=head2 sys.Core.Relation.Relation
+
+The C<Relation> type is the maximal type of all Muldis D relation
+(nonscalar) types, and contains every relation value that could possibly
+exist.  A C<Relation> is analogous to a set of 0..N tuples where all tuples
+have the same heading (the degrees match and all attribute names and
+corresponding declared data types match), but that a C<Relation> data type
+still has its own corresponding heading (attribute names and declared data
+types) even when it consists of zero tuples.  Its default value is the
+zero-tuple value of the sole relation data type that has zero attributes.
+The cardinality of a I<complete> C<Relation> type (if it has no type
+constraints other than those of its constituent attribute types) is equal
+to 2 raised to the power of the cardinality of the I<complete> C<Tuple>
+type with the same heading.  A relation data type can also have (unique)
+keys each defined over a subset of its attributes, which constrain its set
+of values relative to there being no explicit keys, but having the keys
+won't turn an infinite relation type into a finite one.
+
+=head2 sys.Core.Relation.D0
+
+A C<Relation.D0> is a proper subtype of C<Relation> that has 0 attributes;
+its cardinality is 2, and its default value is the same as that of
+C<Relation>.
+
+=head2 sys.Core.Relation.Set
+
+A C<Set> is a proper subtype of C<Relation> that has 1 attribute, and its
+name is C<value>; it can be of any declared type.  A C<Set> subtype is
+normally used by any system-defined N-ary operators where the order of
+their argument elements or result is not significant, and that duplicate
+values are not significant.  Its default value has zero tuples.  Note that,
+for any given I<complete> C<Set> subtype, C<Foo>, where its C<value>
+attribute has a declared type of C<Bar>, the type C<Foo> can be considered
+the I<power set> of the type C<Bar>.
+
+=head2 sys.Core.Relation.Maybe
+
+A C<Maybe> is a proper subtype of C<Set> that may have at most one element;
+that is, it is a unary C<Relation> with a nullary key.  Operators that work
+specifically with C<Maybe> subtypes can provide a syntactic shorthand for
+working with sparse data; so Muldis D has something which is conceptually
+close to SQL's nullable types without actually having 3-valued logic; it
+would probably be convenient for code that round-trips SQL by way of Muldis
+D to use the C<Maybe> type.  Its default value has zero tuples.
+
+=head2 sys.Core.Relation.Nothing
+
+A C<Nothing> is a proper subtype of C<Maybe> that has exactly zero
+elements; its cardinality is 1 and its only value is its default.  The
+single C<Nothing> value, which is a relation with zero tuples and a single
+attribute named C<value>, is Muldis D's answer to the SQL NULL and is
+intended to be used for the same purposes; that is, a special marker for
+missing or inapplicable information, that does not typically equal any
+normal/scalar value; however, in Muldis D, C<Nothing> I<is a value>, and it
+I<is> equal to itself.
+
+=head2 sys.Core.Relation.Single
+
+A C<Single> is a proper subtype of C<Maybe> that has exactly 1 element.
+Its default value's only tuple's only attribute has the value
+C<Bool:false>.  The C<Single> type is complementary to the C<Nothing> type
+under C<Maybe>; C<Nothing> consists of exactly 1 of C<Maybe>'s values, and
+C<Single> consists of all of C<Maybe>'s other values.
+
+=head2 sys.Core.Relation.Seq
+
+A C<Seq> is a proper subtype of C<Relation> that has 2 attributes, and
+their names are C<index> and C<value>, where C<index> is a unary key and
+its declared type is a C<UInt> subtype (C<value> can be non-unique and of
+any declared type).  A Seq is considered dense, and all C<index> values in
+one are numbered consecutively from 0 to 1 less than the count of tuples,
+like array indices in typical programming languages.  A C<Seq> subtype is
+normally used by any system-defined N-ary operators where the order of
+their argument elements or result is significant (and duplicate values are
+significant); specifically, C<index> defines an explicit ordering for
+C<value>.  Its default value has zero tuples.
+
+=head2 sys.Core.Relation.Bag
+
+A C<Bag> (or I<multiset>) is a proper subtype of C<Relation> that has 2
+attributes, and their names are C<value> and C<count>, where C<value> is a
+unary key (that can have any declared type) and C<count> is a C<PInt>
+subtype.  A C<Bag> subtype is normally used by any system-defined N-ary
+operators where the order of their argument elements or result is not
+significant, but that duplicate values are significant; specifically,
+C<count> defines an explicit count of occurrences for C<value>, also known
+as that value's I<multiplicity>.  Its default value has zero tuples.
+
+=head1 SYSTEM-DEFINED CORE QUASI-SCALAR DATA TYPES
+
+There are no system-defined normal quasi-scalar types; the only reason the
+following exist is to provide a maximal type of any user-defined ones that
+may come to exist.
+
+=over
+
+=item C<sys.Core.QuasiScalar.QuasiScalar>
+
+The C<QuasiScalar> type is the maximal type of all Muldis D quasi-scalar
+types, and contains every quasi-scalar value that can possibly exist.  Its
+default value is C<QuasiScalar.E_D:default>.  The cardinality of this type
+is infinity.
+
+=item C<sys.Core.QuasiScalar.E_D>
+
+A C<QuasiScalar.E_D> is an enumeration consisting of the 1 value
+C<QuasiScalar.E_D:default>, which is also its default value.  The only
+reason it exists is to provide a default value for the QuasiScalar union
+type.  The cardinality of this type is 1.
+
+=back
+
+=head1 SYSTEM-DEFINED CORE QUASI-NONSCALAR PARAMETERIZED DATA TYPES
+
+These quasi-nonscalar incomplete data type definitions correspond to their
+similarly-named (differing only by the C<Quasi>) nonscalar data types, and
+their use is intended to be limited to the few situations where the
+corresponding nonscalar data types can't be used.  It should be noted in
+particular that there is no "QuasiDatabase" type, since all normal data or
+catalog databases should be composed of normal relations only; but all of
+the other nonscalar incomplete types have counterparts here.
+
+=head2 sys.Core.QuasiTuple.QuasiTuple
+
+A C<QuasiTuple> is like a C<Tuple> but that the declared types of its
+attributes can be anything at all.  Its cardinality is infinite.
+
+=head2 sys.Core.QuasiTuple.D0
+
+A C<QuasiTuple.D0> is a proper subtype of C<QuasiTuple> in the
+corresponding manner to C<Tuple.D0> being a proper subtype of C<Tuple>.
+Its cardinality is 1.
+
+=head2 sys.Core.QuasiTuple.QuasiSetElem
+
+A C<QuasiSetElem> is a C<QuasiTuple> with the same heading as C<QuasiSet>.
+
+=head2 sys.Core.QuasiTuple.QuasiSeqElem
+
+A C<QuasiSeqElem> is a C<QuasiTuple> with the same heading as C<QuasiSeq>.
+
+=head2 sys.Core.QuasiTuple.QuasiBagElem
+
+A C<QuasiBagElem> is a C<QuasiTuple> with the same heading as C<QuasiBag>.
+
+=head2 sys.Core.QuasiRelation.QuasiRelation
+
+A C<QuasiRelation> is like a C<Relation> but that the declared types of its
+attributes can be anything at all.  Its cardinality is infinite.
+
+=head2 sys.Core.QuasiRelation.D0
+
+A C<QuasiRelation.D0> is a proper subtype of C<QuasiRelation> in the
+corresponding manner to C<Relation.D0> being a proper subtype of
+C<Relation>.  Its cardinality is 2.
+
+=head2 sys.Core.QuasiRelation.QuasiSet
+
+A C<QuasiSet> is a proper subtype of C<QuasiRelation> in the corresponding
+manner to C<Set> being a proper subtype of C<Relation>.  Its cardinality is
+infinite.
+
+=head2 sys.Core.QuasiRelation.QuasiMaybe
+
+A C<QuasiMaybe> is a proper subtype of C<QuasiSet> in the corresponding
+manner to C<Maybe> being a proper subtype of C<Set>. Its cardinality is
+infinite.
+
+=head2 sys.Core.QuasiRelation.QuasiNothing
+
+A C<QuasiNothing> is a proper subtype of C<QuasiMaybe> in the corresponding
+manner to C<Nothing> being a proper subtype of C<Maybe>.  Its cardinality
+is 1.
+
+=head2 sys.Core.QuasiRelation.QuasiSingle
+
+A C<QuasiSingle> is a proper subtype of C<QuasiMaybe> in the corresponding
+manner to C<Single> being a proper subtype of C<Maybe>.  Its cardinality is
+infinite.
+
+=head2 sys.Core.QuasiRelation.QuasiSeq
+
+A C<QuasiSeq> is a proper subtype of C<QuasiRelation> in the corresponding
+manner to C<Seq> being a proper subtype of C<Relation>.  Its cardinality is
+infinite.
+
+=head2 sys.Core.QuasiRelation.QuasiBag
+
+A C<QuasiBag> is a proper subtype of C<QuasiRelation> in the corresponding
+manner to C<Bag> being a proper subtype of C<Relation>.  Its cardinality is
+infinite.
+
+=head1 SYSTEM-DEFINED REMNANT TYPES
+
+These core data types are mainly for use with the definitions of some
+polymorphic operators whose range of possibly acceptable values may be
+mutually incompatible, and they aren't appropriate to group into other type
+categories or namespaces.
+
+=head2 sys.Core.Remnant.Remnant
+
+The C<Remnant> type is a partially redundant maximal type of all Muldis D
+remnant types.  Its default value is C<Bool:false> by way of its
+C<ScaTupRel> subtype.  The cardinality of this type is infinity.
+
+=head2 sys.Core.Remnant.ScaTupRel
+
+The C<ScaTupRel> type is a union type over C<Scalar>, C<Tuple> and
+C<Relation>; it is mainly useful in describing the possible range of types
+of attributes of scalar possreps or tuples or relations.  Its default value
+is C<Bool:false>.
+
+=head1 SYSTEM-DEFINED CORE CATALOG SCALAR DATA TYPES
+
+These core scalar data types are more special-purpose in nature and are
+intended for use in defining or working with the system catalog, which is
+mainly composed of nonscalar types built using these.
+
+=head2 sys.Core.Cat.ScalarLiteral
+
+A C<Cat.ScalarLiteral> is a union type over all the system-defined scalar
+types that are allowed to be used directly as hard-coded literal values in
+Muldis D expressions; 'directly' meaning not by way of explicitly invoking
+a selector function.  Generally speaking, this union type includes all of
+the core scalar types that aren't themselves defined as union types.  The
+full list that C<ScalarLiteral> unions is: C<Bool>, C<Int>, C<Rat>,
+C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.Comment>,
+C<Cat.E_RM>, C<Cat.E_TK>, C<Cat.E_TDM>, C<Cat.E_ENK>, C<Cat.E_PSAK>.  Its
+default value is C<Bool:false>.
+
+=head2 sys.Core.Cat.Name
+
+A C<Cat.Name> is a canonical short name for any kind of DBMS entity (or
+named component) when declaring it; this short name is sufficient to
+identify the entity within its immediate namespace.  Similarly, a DBMS
+entity can often be invoked or referred to using just its C<Cat.Name>,
+depending on the context; other times, a C<Cat.NameChain> must be used
+instead to also qualify the reference with a namespace.  C<Cat.Name> is the
+same as C<Text> in all ways but that it is specifically intended for use in
+naming DBMS entities rather than being normal data.
+
+=head2 sys.Core.Cat.NameChain
+
+A C<Cat.NameChain> is a canonical long name for invoking or referring to a
+DBMS entity, when its name needs to be qualified with a namespace.  A
+C<Cat.NameChain> has 2 possreps; one possrep is a sequence of 1..N
+C<Cat.Name> (represented by a C<Cat.NESeqOfName>), the 1..N elements being
+ordered from parent-most to child-most component name; the other possrep is
+a character string (represented by a C<Cat.FlattenedNameChain>) like when
+the elements of the first possrep are catenated (in order with the first
+element at the start of the string), with a period (C<.>) between the
+parts, and each part escaped such that backslashes, single-quotes, and
+periods are escaped as C<\b>, C<\q> and C<\p> respectively.
+
+=head2 sys.Core.Cat.FlattenedNameChain
+
+The C<Cat.FlattenedNameChain> type is used as the definition of the
+character string possrep of a C<Cat.NameChain> (see that type for details);
+while being a character string like C<Cat.Name>, the two are disjoint.
+
+=head2 sys.Core.Cat.Comment
+
+A C<Cat.Comment> is the text of a Muldis D code comment, which programmers
+can populate as an attribute of several catalog data types, such as whole
+routines or statements or expression nodes.  C<Cat.Comment> is the same as
+C<Text>, and C<Name>, in all ways but that it is specifically intended for
+use in commenting Muldis D code rather than being normal data; they are
+disjoint.  One main intended use of this type is to help preserve comments
+in code translated to or from other languages; though only a subset of
+those (FoxPro?) keep comments in the AST rather than discarding them.
+
+=head2 sys.Core.Cat.PInt1_4
+
+A C<Cat.PInt1_4> is a proper subtype of C<PInt> where all member values are
+between 1 and 4.  Its maximum value is 4.  The cardinality of this type is
+4.
+
+=head2 sys.Core.Cat.PInt2_N
+
+A C<Cat.PInt2_N> is a proper subtype of C<PInt> where all member values are
+greater than 1.  Its default and minimum value is 2.
+
+=head2 sys.Core.Cat.PInt2_36
+
+A C<Cat.PInt2_36> is a proper subtype of C<Cat.PInt2_N> where all member
+values are between 2 and 36.  (The significance of the number 36 is 10
+digits plus 26 letters.)  Its maximum value is 36.  The cardinality of this
+type is 35.
+
+=head2 sys.Core.Cat.E_RM
+
+A C<Cat.E_RM> (rounding method) is an enumeration consisting of the 7
+values C<Cat.E_RM:half_down>, C<Cat.E_RM:half_up>, C<Cat.E_RM:half_even>,
+C<Cat.E_RM:to_floor>, C<Cat.E_RM:to_ceiling>, C<Cat.E_RM:to_zero>,
+C<Cat.E_RM:to_inf>.  When a value of some ordered type needs to be mapped
+into a proper subtype that doesn't contain that value, such as when mapping
+an arbitrary number to one with less precision, some rounding method is
+applied to determine which value of the subtype is to be mapped to while
+most accurately reflecting the original value.  The C<Cat.E_RM> type
+enumerates the rounding methods that Muldis D operators can typically
+apply.  With C<half_down>, C<half_up>, and C<half_even> (aka I<unbiased
+rounding>, I<convergent rounding>, I<statistician's rounding>, or
+I<bankers' rounding>), the original value will be mapped to the single
+target value that it is closest to, if there is one; otherwise, if it is
+exactly half-way between 2 adjacent target values, then C<half_down> will
+round towards negative infinity, C<half_up> will round towards positive
+infinity, and C<half_even> will round towards the nearest "even" target.
+With C<to_floor>, C<to_ceiling>, C<to_zero> (aka I<truncate>), C<to_inf>,
+the original value will always be mapped to the single adjacent value that
+is lower than it, or higher than it, or towards "zero" from it, or towards
+the nearer infinity from it, respectively.  The default value of
+C<Cat.E_RM> is C<Cat.E_RM:half_up>, since that is the most commonly used
+method of rounding.
+
+=head2 sys.Core.Cat.E_TK
+
+A C<Cat.E_TK> (type kind) is an enumeration consisting of the 8 values
+C<Cat.E_TK:special> (mainly for system-defined implicit supertypes),
+C<Cat.E_TK:scalar>, C<Cat.E_TK:tuple>, C<Cat.E_TK:relation>,
+C<Cat.E_TK:quasi_scalar>, C<Cat.E_TK:quasi_tuple>,
+C<Cat.E_TK:quasi_relation>, C<Cat.E_TK:remnant>.  Its default value is
+C<Cat.E_TK:scalar>.
+
+=head2 sys.Core.Cat.E_TDM
+
+A C<Cat.E_TDM> (type definition method) is an enumeration consisting of the
+9 values C<Cat.E_TDM:special> (for some system-defined types that don't
+best fit in other categories, and all parameterized types; users can not
+define the latter for now), C<Cat.E_TDM:root> (complete root type defined
+in terms of explicit attribute collection; all are fully defined, not
+parameterized), C<Cat.E_TDM:restriction> (defined as "explicit other-type
+where condition"), C<Cat.E_TDM:alias> (so the same one type can have
+multiple names), C<Cat.E_TDM:(union|intersection|exclusion)> (defined as
+explicit union|intersection|exclusion of other types),
+C<Cat.E_TDM:difference> (defined as explicit difference of 2 other types),
+C<Cat.E_TDM:negation> (defined as explicit negation of another type).  Its
+default value is C<Cat.E_TDM:alias>.
+
+=head2 sys.Core.Cat.E_ENK
+
+A C<Cat.E_ENK> (expression node kind) is an enumeration consisting of the
+11 values C<Cat.E_ENK:default> (default value of expression's declared
+type),
+C<Cat.E_ENK:(scalar|tuple|relation|quasi_scalar|quasi_tuple|quasi_relation)
+> (hard-coded literal
+scalar|tuple|relation|quasi-scalar|quasi-tuple|quasi-relation value),
+C<Cat.E_ENK:param> (value of expression-containing function parameter),
+C<Cat.E_ENK:upd_param> (on-entry value of expression-containing update
+operator subject-to-update parameter), C<Cat.E_ENK:ro_param> (value of
+expression-containing update operator read-only parameter),
+C<Cat.E_ENK:func> (result of function invocation, or inlining of function
+body).  Note that only C<upd_param> and C<func> (over C<upd_param>) can be
+used for a subject-to-update argument of an update operator, but all of
+these can be used elsewhere.  Its default value is C<Cat.E_ENK:scalar>.
+
+=head2 sys.Core.Cat.E_PSAK
+
+A C<Cat.E_PSAK> (procedural statement argument kind) is an enumeration
+consisting of the 5 values C<Cat.E_PSAK:default> (default value of
+argument's declared type), C<Cat.E_PSAK:upd_param> (current value of
+statement-containing procedure subject-to-update parameter),
+C<Cat.E_PSAK:ro_param> (value of statement-containing procedure read-only
+parameter), C<Cat.E_PSAK:inner_var> (current value of statement-containing
+procedure lexical variable, not param), C<Cat.E_PSAK:outer_var> (current
+value of a non-lexical variable).  Note that only C<upd_param> and
+C<(inner|outer)_var> can be used for a subject-to-update argument, but all
+of these can be used with a read-only argument.  Its default value is
+C<Cat.E_PSAK:ro_param>.
+
+=head1 SYSTEM-DEFINED CORE CATALOG TUPLE DATA TYPES
+
+These tuple data types, essentially all of the system-defined tuple types
+are special-purpose in nature and are intended for use in defining or
+working with the system catalog.  They are all completely defined types.
+
+Note that many of these types might conceptually have C<name> attributes,
+but those would actually be provided by any larger types in which they are
+embedded, rather than by these types themselves.
+
+Note that whenever an attribute of one of these types isn't significant,
+given the context (determined by other attributes of the same type), and
+should be ignored, its value is the default for its type.
+
+I<To keep things simpler for now, most constraint definitions for these
+types are missing, or just defined informally.>
+
+=head2 sys.Core.Cat.RatRoundRule
+
+A C<Cat.RatRoundRule> is a C<Tuple>.  It specifies a controlled (and
+typically degrading) coercion of a real number into a rational number
+having a specific radix and precision.  It is mainly used to
+deterministically massage an operation, whose conceptual result is
+generally an irrational number, so that its actual result is a best
+approximating rational number.  It is also used to define a generic
+rounding operation on a rational number that derives a typically less
+precise rational.  A C<Cat.RatRoundRule> has these 3 attributes: C<radix>
+(a C<Cat.PInt2_N>), C<max_denom> (a C<PInt>), and C<round_meth> (a
+C<Cat.E_RM>).  The rational resulting from the operation is as close as
+possible to the conceptual result but that its denominator is a
+non-negative power of C<radix> and said denominator is not larger than
+C<max_denom>; if rounding is needed, then C<round> dictates the rounding
+method.  The default value of C<Cat.RatRoundRule> specifies a coersion to a
+whole number using the C<Cat.E_RM:half_up> rounding method (its radix is 2
+and its max denom is 1).
+
+=head2 sys.Core.Cat.Type
+
+A C<Cat.Type> is a C<Tuple>.  It defines a data type, which can either be
+(sometimes) invoked directly for values, or be invoked by or embedded into
+other type definitions.  C<Cat.Type> is used in the catalogs for defining
+both system and user types (just the interfaces in the former case).
+
+I<TODO:  The catalog types for type definitions need an overhaul.>
+
+A C<Cat.Type> has these 8 attributes:
+
+=over
+
+=item C<tk> - C<Cat.E_TK>
+
+This broadly declares what kind of type this is (eg,
+scalar|tuple|relation); it partially says how to interpret the rest of the
+attributes and/or which of them have significant values.
+
+=item C<tdm> - C<Cat.E_TDM>
+
+This is the type definition method for the type; it partially says how to
+interpret the rest of the attributes and/or which of them have significant
+values.  If C<tk> is C<Cat.E_TK:special>, then C<tdm> must be
+C<Cat.E_TDM:special>; C<tdm> can be special at other times too.
+
+=item C<types> - C<Cat.SetOfNameChain>
+
+For some values of C<tdm>, the data type is defined at least partially in
+terms of other data types not by way of attribute definitions, and then
+C<types> lists all/most of those types.  Iff C<tdm> is C<Cat.E_TDM:alias>,
+then the data type is just a symbolic reference for some other data type
+(as far as the type system is concerned, they are the same data type,
+invokable by an extra name), and C<types> has one element that is the name
+of that type.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then the data type
+is defined as an explicit subtype of another type by way of an explicit
+further type constraint applied to it, and C<types> has one element that is
+the name of that supertype.  Iff C<tdm> is
+C<Cat.E_TDM:(union|intersection|exclusion)>, then the data type is defined
+as an explicit union|intersection|exclusion of N other types, and C<types>
+lists their names, one per element; 2+ elements is the norm; just 1 element
+means that the data type is a simple alias for the named element; zero
+elements means the data type is a simple alias for, respectively, the type
+C<Empty>, C<Universal>, or C<Empty>.  Iff C<tdm> is
+C<Cat.E_TDM.difference>, then the data type is defined as the difference of
+2 other types, and C<types> has one element that is the name of the minuend
+type.  Iff C<tdm> is C<Cat.E_TDM.negation>, then the data type is defined
+as the negation of some other type, and C<types> has one element that is
+the name of that type.
+
+=item C<subtr_type> - C<Cat.NameChain>
+
+Iff C<tdm> is C<Cat.E_TDM.difference>, then the data type is defined as the
+difference of 2 other types, and C<subtr_type> is the name of the
+subtrahend type.
+
+=item C<attrs> - C<Cat.NameTypeMap>
+
+Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
+fundamentally in terms of an explicit attribute collection, and C<attrs>
+defines the names and declared types of those attributes.  Iff additionally
+C<tk> is C<Cat.E_TK:(scalar|quasi_scalar)>, then C<attrs> specifically
+defines the attributes of just the core/initial/only possrep; otherwise,
+C<attrs> defines the heading of the tuple or relation etc type.  It is
+valid to have zero attributes; in this case, the type consists of exactly
+one value.
+
+=item C<keys> - C<Cat.SetOfSetOfName>
+
+Iff C<tk> is C<Cat.E_TK:(relation|quasi_relation)> and C<tdm> is not
+C<Cat.E_TDM:special>, then the data type is or resembles a relation type
+and can have explicit keys (duality of unique key constraints and terser
+unique identifiers for the q/relation's member q/tuples) defined over its
+attributes, and C<keys> defines those keys in the canonical simplest form
+(in contrast with using C<constraint> instead).  Each element of C<keys>
+defines one key of the q/relation, and that element is a set of the
+attribute names comprising that key.  For q/relation types, if no keys are
+explicitly defined, then it implicitly has a single key comprising all of
+its attributes.  If any explicit keys are defined, then every one must be
+over a distinct proper subset of the type's attributes, and moreover no
+key's attributes may be a proper subset of any other key's attributes; if 2
+such candidates appear, just use the one that has the subset.  It is valid
+for a key to consist of zero attributes; in this case, that key is the only
+key of the q/relation type, and values of the type may each consist of no
+more than one tuple.
+
+=item C<constraint> - C<Cat.TypeConstraint> ... default one always res True
+
+Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
+fundamentally in terms of an explicit attribute collection, and
+C<constraint> defines/names a generalized type constraint that validates
+the collection as a whole.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then
+the data type is defined as an explicit subtype of another type by way of
+an explicit further type constraint applied to it, and C<constraint>
+defines/names that further constraint.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the data type.
+
+=back
+
+The default value of C<Cat.Type> is an alias of C<Empty>.
+
+=head2 sys.Core.Cat.ExprNode
+
+A C<Cat.ExprNode> is a C<Tuple>.  It specifies a named expression node,
+which is the majority component of functional Muldis D code.  All
+arbitrarily complex Muldis D expression trees, including relational
+queries, are composed of just C<Cat.ExprNode>, either directly, or
+indirectly by way of function invocations, as each function body is itself
+composed entirely of a single expression tree (of at least 1 node).  Only
+functions and update operators may contain C<Cat.ExprNode>, so for any
+procedures that would conceptually include them, those portions of the
+procedures need to be separated out and encapsulated by named functions or
+inner-functions or update operators or inner-update-operators.  Note that,
+while the general case has expression trees simply denoting a value, in
+some cases they may instead define a pseudo-variable / virtual variable;
+that only happens in update operators where the expression is used as an
+argument for a subject-to-update parameter of an update operator call; in
+that case the leaf nodes / only node of the expression must map to a
+subject-to-update parameter of the containing update operator.
+
+A C<Cat.ExprNode> has these 9 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the expression node; other Muldis D code that
+is composing this expression node into their own definitions would
+reference it with this name.
+
+=item C<type> - C<Cat.NameChain>
+
+This is the declared result data type of the expression node.  If the
+expression node represents a literal value, this is often necessary for
+properly interpreting the details of that literal, particularly for
+literals that are not scalar.  Otherwise, although the result type of an
+expression can sometimes be inferred from context, such as from the result
+type of a function it is an invocation of, this redundancy helps make
+static analysis of Muldis D code easier, so it is easier to validate and
+optimize in isolation from the other routines it interacts with.  Moreover,
+this type declaration provides a terse way to use the C<treated> function
+frequently in code, so that the programmer and compiler knows that some
+generic routines are actually supposed to be resulting in a subtype of
+their normal result types.
+
+=item C<kind> - C<Cat.E_ENK>
+
+This is the declared kind of expression that this node is; it says how to
+interpret the rest of the attributes and/or which of them have significant
+values.
+
+=item C<scal_lit> - C<Cat.ScalarLiteral>
+
+Iff C<kind> is C<Cat.E_ENK:scalar>, then the expression represents a
+hard-coded scalar literal of one of a certain collection of system-defined
+core scalar types (or subtype thereof), and this is that literal value.
+
+=item C<coll_lit> - C<Cat.SetOfNameExprMap>
+
+Iff C<kind> is C<Cat.E_ENK:(|quasi_)(tuple|relation)>, then the expression
+represents a collection literal, and these are the values of its
+components.  Each element defines one tuple, and each sub-element of that
+element defines one attribute value for one tuple, with the sub-element
+C<name> matching the attribute name, and the sub-element C<expr> naming
+another local C<Cat.ExprNode> which defines the value.  The value of
+C<coll_lit> defines exactly one tuple when C<kind> specifies a tuple or
+quasi-tuple, and it defines 0..N tuples when C<kind> specifies a relation
+or quasi-relation.
+
+=item C<param> - C<Cat.Name>
+
+Iff C<kind> is C<Cat.E_ENK:param>, then the expression represents the value
+of the containing function's parameter which this names.  Or, if C<kind> is
+C<Cat.E_ENK:upd_param> or C<Cat.E_ENK:ro_param>, then the expression
+represents the on-entry value or value of the containing update operator's
+subject-to-update or read-only parameter, respectively.
+
+=item C<func> - C<Cat.NameChain>
+
+Iff C<kind> is C<Cat.E_ENK:func>, then the expression represents the result
+of invoking a named function with specific arguments, and this the name of
+that function.
+
+=item C<func_args> - C<Cat.NameExprMap>
+
+Iff C<func> is used, then these are the arguments for the function
+invocation.  Each element defines one argument value, with the element
+C<name> matching the parameter name, and the element C<expr> naming another
+local C<ExprNode> which defines the value.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=back
+
+The default value of C<Cat.ExprNode> has an empty name and represents the
+literal scalar value C<Bool:false>.
+
+=head2 sys.Core.Cat.InnerFunc
+
+A C<Cat.InnerFunc> is a C<Tuple>.  It specifies a named C<inner_function>
+routine, which is the main component type of a complete routine; a complete
+function consists of at least one inner function, which is its main body,
+plus more when it would conceptually be using anonymous inline function
+definitions (to pass to function-valued function arguments), or when it
+would conceptually have self-referencing/cyclic expressions.
+
+A C<Cat.InnerFunc> has these 6 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the inner function within its parent complete
+function; other Muldis D code within said complete function would reference
+it with this name.
+
+=item C<result_type> - C<Cat.NameChain>
+
+This is the declared result data type of the inner function as a whole.
+
+=item C<is_recursive> - C<Bool>
+
+This is C<Bool:true> if the inner function might possibly invoke itself,
+either directly or indirectly; it is C<Bool:false> if it promises to never
+be recursive.  Note that the C<is_recursive> attribute does not make any
+claims regarding the actions of any anonymous functions that it is passed
+as function-valued arguments, which may cause this inner function to be
+involved in a recursion even if C<is_recursive> is C<Bool:false>.  I<Note
+that this may be changed later, or the attribute simply be eliminated.>
+
+=item C<params> - C<Cat.NameTypeMap>
+
+This is the declared parameter list of the inner function, which has 0..N
+named and typed parameters.
+
+=item C<expr> - C<Cat.ExprTree>
+
+This defines the entire body of the inner function, which is composed of a
+single expression tree, whose root node's name is the empty string.  This
+expression tree must reference all of the parameters that the inner
+function has.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the inner function as a whole.
+
+=back
+
+The default value of C<Cat.InnerFunc> has an empty name and unconditionally
+results in the literal scalar value C<Bool:false>.
+
+=head2 sys.Core.Cat.Func
+
+A C<Cat.Func> is a C<Tuple>.  It specifies a named C<function> routine,
+which is conceptually a non-anonymous function that is generally invokable
+by the public (unless its parent package says otherwise).
+
+A C<Cat.Func> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the function; other Muldis D code would
+reference it with this name.
+
+=item C<inner_funcs> - C<Cat.InnerFuncTree>
+
+This defines the entire body of the function (both its main body plus any
+conceptually expression-inlined anonymous functions), which is composed of
+one or more inner functions, plus its public interface / parameter list,
+which is defined by one of those.  The inner function defining the outer
+function's main body has the empty string as its name.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the function as a whole.
+
+=back
+
+The default value of C<Cat.Func> unconditionally results in the literal
+scalar value C<Bool:false> as per the default of C<Cat.InnerFunc>.
+
+=head2 sys.Core.Cat.UpdStmt
+
+A C<Cat.UpdStmt> is a C<Tuple>.  It specifies a single update statement (of
+1..N variables), which is the most fundamental component of procedural
+Muldis D code, and is what the body of an update operator routine is
+composed of.  The variables being updated are accessed via the host
+routine's subject-to-update parameters.  All arbitrarily complex Muldis D
+value assignments, including relational assignments, are composed of just
+C<Cat.UpdStmt>, either directly, or indirectly by way of update operator
+invocations, as each update operator body is itself composed entirely of 1
+or more update statements (grouped as 1 multi-update).  Only update
+operators may contain C<Cat.UpdStmt>, so for any procedures that would
+conceptually include them, those portions of the procedures need to be
+separated out and encapsulated by named update operators or
+inner-update-operators.
+
+A C<Cat.UpdStmt> has these 4 attributes:
+
+=over
+
+=item C<updater> - C<Cat.NameChain>
+
+Every update statement is an invocation of some other update operator (or
+inner-update-operator), either a user-defined or system-defined one (the
+latter generally being the end of the call chain); this is the name of that
+update operator.
+
+=item C<upd_args> - C<Cat.NameExprMap>
+
+These are the 1..N subject-to-update arguments to the update operator
+invocation, as-per C<ro_args>.  But since each expression tree in
+C<upd_args> is binding to a subject-to-update parameter, the expression
+tree actually is defining a pseudo-variable / virtual-variable over 1..N
+containing routine subject-to-update parameters; in the most trivial (and
+common) case, such an expression tree is a single node that represents said
+parameter without any indirection at all.
+
+=item C<ro_args> - C<Cat.NameExprMap>
+
+These are the 0..N read-only arguments to the update operator invocation.
+Each element defines one argument value, with the element C<name> matching
+the parameter name, and the element C<expr> naming a local C<ExprNode>
+which defines the value.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the update statement as a
+whole.
+
+=back
+
+The default value of C<Cat.UpdStmt> will unconditionally update 1
+subject-to-update parameter of name C<topic> with the value C<Bool:false>.
+
+=head2 sys.Core.Cat.InnerUpdater
+
+A C<Cat.InnerUpdater> is a C<Tuple>.  It specifies a named C<updater>
+routine, which is the main component type of a complete implicitly atomic
+procedural routine; a complete update operator consists of at least one
+inner update operator, which is its main body, likely plus more when it
+would conceptually be code refactored.
+
+A C<Cat.InnerUpdater> has these 7 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the inner update operator within its parent
+complete update operator; other Muldis D code within said complete update
+operator would reference it with this name.
+
+=item C<is_recursive> - C<Bool>
+
+This is C<Bool:true> if the inner update operator might possibly invoke
+itself, either directly or indirectly; it is C<Bool:false> if it promises
+to never be recursive.  I<Note that this attribute may be eliminated.>
+
+=item C<upd_params> - C<Cat.NameTypeMap>
+
+This is the declared subject-to-update parameter list of the inner update
+operator, which has 1..N named and typed such parameters.  It must have at
+least 1 element.
+
+=item C<ro_params> - C<Cat.NameTypeMap>
+
+This is the declared read-only parameter list of the inner update operator,
+which has 0..N named and typed such parameters.  There is a distributed
+(unique) key over the C<name> attributes of C<upd_params> and C<ro_params>.
+
+=item C<exprs> - C<Cat.ExprSet>
+
+This defines the expression trees that are arguments to the update
+operators that C<stmt> invokes.  These expression trees must reference all
+of the parameters that the inner update operator has.
+
+=item C<stmt> - C<Cat.MultiUpdStmt>
+
+This defines the entire body of the inner update operator, which is
+composed of a single multi-update statement.  This multi-update statement
+must reference all of the parameters that the inner update operator has.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the inner updater as a whole.
+
+=back
+
+The default value of C<Cat.InnerUpdater> has an empty name and has 1
+subject-to-update parameter named C<topic> and declared type C<Bool> and
+will unconditionally update it to the value C<Bool:false>; it has zero
+read-only parameters.
+
+=head2 sys.Core.Cat.Updater
+
+A C<Cat.Updater> is a C<Tuple>.  It specifies a named C<update operator>
+routine, which is conceptually a non-anonymous update operator that is
+generally invokable by the public (unless its parent package says
+otherwise).
+
+A C<Cat.Updater> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the update operator; other Muldis D code would
+reference it with this name.
+
+=item C<inner_updaters> - C<Cat.InnerUpdaterTree>
+
+This (save for C<inner_funcs>) defines the entire body of the update
+operator, which is composed of one or more inner update operators, plus its
+public interface / parameter list, which is defined by one of those.  The
+inner updater defining the outer updater's main body has the empty string
+as its name.
+
+=item C<inner_funcs> - C<Cat.InnerFuncSet>
+
+This also contributes to the body of the update operator.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the updater as a whole.
+
+=back
+
+The default value of C<Cat.Updater> is as per the default of
+C<Cat.InnerUpdater>.
+
+=head2 sys.Core.Cat.ProcStmtArg
+
+A C<Cat.ProcStmtArg> is a C<Tuple>.  It specifies a named argument for a
+procedural routine invocation done as a procedure statement, and is
+composed into the C<Cat.ProcStmt> definition of said statement.
+
+A C<Cat.ProcStmtArg> has these 7 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the invoked procedural routine's parameter
+(either subject-to-update or read-only) that this argument is binding to.
+
+=item C<type> - C<Cat.NameChain>
+
+This is as per the C<type> attribute of a C<Cat.ExprNode>, but applying to
+the declared data type of the argument.
+
+=item C<kind> - C<Cat.E_PSAK>
+
+This is the declared kind of value that this argument is; it says how to
+interpret the rest of the attributes and/or which of them have significant
+values.
+
+=item C<param> - C<Cat.Name>
+
+Iff C<kind> is C<Cat.E_PSAK:upd_param> or C<Cat.E_PSAK:ro_param>, then the
+argument is the current value or value of the containing procedure's
+subject-to-update or read-only parameter, respectively.
+
+=item C<inner_var> - C<Cat.Name>
+
+Iff C<kind> is C<Cat.E_PSAK:inner_var>, then the argument is the current
+value of a lexical variable that isn't a parameter.
+
+=item C<outer_var> - C<Cat.NameChain>
+
+Iff C<kind> is C<Cat.E_PSAK:outer_var>, then the argument is the current
+value of a non-lexical variable.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the statement argument.
+
+=back
+
+The default value of C<Cat.ProcStmtArg> will bind to a read-only parameter
+of name C<topic> with a value of the containing procedure's read-only
+parameter named C<topic>.
+
+=head2 sys.Core.Cat.ProcStmt
+
+A C<Cat.ProcStmt> is a C<Tuple>.  It specifies a generic statement from
+which non-implicitly-atomic procedural Muldis D code is composed.  Only
+procedures (or inner procedures) may contain C<Cat.ProcStmt>.
+
+A C<Cat.ProcStmt> has these 4 attributes:
+
+=over
+
+=item C<proc> - C<Cat.NameChain>
+
+Every procedure statement is an invocation of some other procedural routine
+(eg, procedure, update operator, system service), either user-defined or
+system-defined; this is the name of that routine.
+
+=item C<upd_args> - C<Cat.ProcStmtArgSet>
+
+These are the 0..N subject-to-update arguments to the routine invocation,
+as-per C<ro_args>.
+
+=item C<ro_args> - C<Cat.ProcStmtArgSet>
+
+These are the 0..N read-only arguments to the routine invocation.  There is
+a distributed (unique) key over the C<name> attributes of C<upd_params> and
+C<ro_params>.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the statement as a whole.
+
+=back
+
+The default value of C<Cat.ProcStmt> will invoke
+C<sys.Core.Universal.assign>, giving it arguments from same-named and typed
+parameters.
+
+=head2 sys.Core.Cat.InnerProc
+
+A C<Cat.InnerProc> is a C<Tuple>.  It specifies a named C<procedure>
+routine, which is the main component type of a complete procedure; a
+complete procedure consists of at least one inner procedure, which is its
+main body, likely plus more when it would conceptually be code refactored.
+
+A C<Cat.InnerProc> has these 7 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the inner procedure within its parent complete
+procedure; other Muldis D code within said complete procedure would
+reference it with this name.
+
+=item C<is_recursive> - C<Bool>
+
+This is C<Bool:true> if the inner procedure might possibly invoke
+itself, either directly or indirectly; it is C<Bool:false> if it promises
+to never be recursive.  I<Note that this attribute may be eliminated.>
+
+=item C<upd_params> - C<Cat.NameTypeMap>
+
+This is the declared subject-to-update parameter list of the inner
+procedure, which has 0..N named and typed such parameters.
+
+=item C<ro_params> - C<Cat.NameTypeMap>
+
+This is the declared read-only parameter list of the inner procedure,
+which has 0..N named and typed such parameters.  There is a distributed
+(unique) key over the C<name> attributes of C<upd_params> and C<ro_params>.
+
+=item C<vars> - C<Cat.NameTypeMap>
+
+This defines the 0..N (non-parameter) lexical variables of the inner
+procedure; they initialize to the default values of their declared types.
+
+=item C<stmts> - C<Cat.SeqOfProcStmt>
+
+This defines the entire main body of the inner procedure, which is composed
+of 0..N procedure statements.  These statements must reference all of the
+parameters and lexical variables that the inner procedure has.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the inner procedure as a
+whole.
+
+=back
+
+The default value of C<Cat.InnerProc> has an empty name and is a no-op; its
+C<name> has the default value of C<Cat.Name>, it has zero parameters, zero
+variables, and zero statements.
+
+=head2 sys.Core.Cat.Proc
+
+A C<Cat.Proc> is a C<Tuple>.  It specifies a named C<procedure> routine,
+which is conceptually a non-anonymous procedure that is generally invokable
+by the public (unless its parent package says otherwise).
+
+A C<Cat.Proc> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the procedure; other Muldis D code would
+reference it with this name.
+
+=item C<inner_procs> - C<Cat.InnerProcTree>
+
+This (save for C<inner_updaters> and C<inner_funcs>) defines the entire
+body of the procedure, which is composed of one or more inner procedures,
+plus its public interface / parameter list, which is defined by one of
+those.  The inner procedure defining the outer procedure's main body has
+the empty string as its name.
+
+=item C<inner_updaters> - C<Cat.InnerUpdaterSet>
+
+This also contributes to the body of the procedure.
+
+=item C<inner_funcs> - C<Cat.InnerFuncSet>
+
+This also contributes to the body of the procedure.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the procedure as a whole.
+
+=back
+
+The default value of C<Cat.Proc> is as per the default of C<Cat.InnerProc>.
+
+=head2 sys.Core.Cat.Exception
+
+I<TODO.>
+
+=head1 SYSTEM-DEFINED CORE CATALOG RELATION DATA TYPES
+
+These relation data types, essentially all of the system-defined relation
+types are special-purpose in nature and are intended for use in defining or
+working with the system catalog.  They are all completely defined types.
+
+I<To keep things simpler for now, most constraint definitions for these
+types are missing, or just defined informally.>
+
+=head2 sys.Core.Cat.NameTypeMap
+
+A C<Cat.NameTypeMap> is a C<Relation>.  It defines a basic component list,
+meaning a set of names, with a declared data type name for each.  It forms
+the foundation for most componentized type definitions, including all tuple
+and relation types (for which it is named I<heading>), and it is used also
+for the components list of a scalar possrep.  It is also used to define
+parameter lists for routines.  A C<Cat.NameTypeMap> has 2 attributes,
+C<name> (a C<Cat.Name>) and C<type> (a C<Cat.NameChain>); the C<name> is
+the declared name of the attribute or parameter, and comprises a unary key;
+the C<type> is the declared data type of the attribute or parameter.  Its
+default value has zero tuples.
+
+=head2 sys.Core.Cat.NameExprMap
+
+A C<Cat.NameExprMap> is a C<Relation>.  It defines a basic component-values
+list, meaning a set of names, with a declared local expression node name
+for each.  It is used to define collection literals; one C<Cat.NameExprMap>
+defines a whole C<Tuple> value.  It is also used to define argument lists
+for routine invocations.  A C<Cat.NameExprMap> has 2 attributes, C<name>
+and C<expr>, each of those being a C<Cat.Name>; the C<name> is the name of
+the tuple/etc attribute or routine argument, and comprises a unary key; the
+C<expr> is the declared local name of the expression node which defines the
+value for the attribute or argument.  Its default value has zero tuples.
+
+=head2 sys.Core.Cat.AttrRenameMap
+
+A C<Cat.AttrRenameMap> is a C<Relation>.  It is used as a specification for
+how to rename attributes of some collection.  A C<Cat.AttrRenameMap> has 2
+attributes, C<before> and C<after>, each of those being a C<Cat.Name>, and
+each of those being a unary key.  Its default value has zero tuples.
+
+=head2 sys.Core.Cat.ExprSet
+
+A C<Cat.ExprSet> is the same as a C<Cat.ExprTree> except that it can
+represent multiple trees rather than one, and there is no requirement for
+any node to be named with the empty string; this is realized in that more
+than one (rather than exactly one) member may have none of its peers as a
+parent node.  It so happens then that C<Cat.ExprTree> is a proper subtype
+of C<Cat.ExprSet>.
+
+=head2 sys.Core.Cat.ExprTree
+
+A C<Cat.ExprTree> is a C<Relation> with the same heading as
+C<Cat.ExprNode>; it specifies a simple tree of named expression nodes,
+which are its tuples.  It has a unary (unique) key on the C<name>
+attribute, and it must have at least 1 member tuple.  All member tuples
+must define a simple expression node tree, such that every member except
+one (which is the root node) has one of its peers as a parent node, and no
+direct cycles between members are permitted (only indirect cycles based on
+function / inner-function invocations are allowed); the name of the root
+node must be the empty string.  The default value of C<Cat.ExprTree> has
+one tuple that is the default value of C<Cat.ExprNode>; the tree represents
+the literal scalar value C<Bool:false>.
+
+=head2 sys.Core.Cat.InnerFuncSet
+
+A C<Cat.InnerFuncSet> is a C<Relation> with the same heading as
+C<Cat.InnerFunc>; it specifies a set of inner functions (that comprise
+parts of the same complete routine), which are its tuples.  It has a unary
+(unique) key on the C<name> attribute.  Its default value is empty, which
+may be applicable if the complete routine is not a function.
+
+=head2 sys.Core.Cat.InnerFuncTree
+
+A C<Cat.InnerFuncTree> is a proper subtype of C<Cat.InnerFuncSet> which is
+likely to only be applicable if the complete routine is a function.  It
+must have at least 1 member tuple.  All member tuples must define a single
+invocation tree but that cycles are allowed, including any cycles that
+invoke what is conceptually the tree root (main function if applicable);
+the name of the root node must be the empty string.  The default value of
+C<Cat.InnerFuncTree> has one tuple that is the default value of
+C<Cat.InnerFunc>.
+
+=head2 sys.Core.Cat.MultiUpdStmt
+
+A C<Cat.MultiUpdStmt> is a C<Relation> with the same heading as
+C<Cat.UpdStmt>; it is a multi-update statement, which is the narrowest
+scope implicitly atomic component of procedural Muldis D code.  One value
+of this type comprises the entire body of an update operator (or
+inner-update-operator).  It must have at least 1 member tuple.  The default
+value of C<Cat.MultiUpdStmt> has one tuple that is the default value of
+C<Cat.UpdStmt>.
+
+=head2 sys.Core.Cat.InnerUpdaterSet
+
+A C<Cat.InnerUpdaterSet> is a C<Relation> with the same heading as
+C<Cat.InnerUpdater>; it specifies a set of inner update operators (that
+comprise parts of the same complete routine), which are its tuples.  It has
+a unary (unique) key on the C<name> attribute.  Its default value is empty,
+which may be applicable if the complete routine is not an update operator.
+
+=head2 sys.Core.Cat.InnerUpdaterTree
+
+A C<Cat.InnerUpdaterTree> is a proper subtype of C<Cat.InnerUpdaterSet>
+which is likely to only be applicable if the complete routine is a update
+operator.  It must have at least 1 member tuple.  All member tuples must
+define a single invocation tree but that cycles are allowed, including any
+cycles that invoke what is conceptually the tree root (main update operator
+if applicable); the name of the root node must be the empty string.  The
+default value of C<Cat.InnerUpdaterTree> has one tuple that is the default
+value of C<Cat.InnerUpdater>.
+
+=head2 sys.Core.Cat.ProcStmtArgSet
+
+A C<Cat.ProcStmtArgSet> is a C<Relation> with the same heading as
+C<Cat.ProcStmtArg>; it specifies a set of arguments to an invocation of a
+procedural routine.  It has a unary (unique) key on the C<name> attribute.
+Its default value is empty.
+
+=head2 sys.Core.Cat.InnerProcTree
+
+A C<Cat.InnerProcTree> is to C<Cat.InnerProc> what C<Cat.InnerUpdaterTree>
+is to C<Cat.InnerUpdater>.
+
+=head2 sys.Core.Cat.SetOfName
+
+A C<Cat.SetOfName> is a C<Set> whose C<value> attribute has a declared type
+of C<Cat.Name>.
+
+=head2 sys.Core.Cat.SetOfSetOfName
+
+A C<Cat.SetOfSetOfName> is a C<Set> whose C<value> attribute has a declared
+type of C<Cat.SetOfName>.
+
+=head2 sys.Core.Cat.SetOfNameExprMap
+
+A C<Cat.SetOfNameExprMap> is a C<Set> whose C<value> attribute has a
+declared type of C<Cat.NameExprMap>.
+
+=head2 sys.Core.Cat.SetOfNameChain
+
+A C<Cat.SetOfNameChain> is a C<Set> whose C<value> attribute has a declared
+type of C<Cat.NameChain>.
+
+=head2 sys.Core.Cat.NESeqOfName
+
+A C<Cat.NESeqOfName> is a C<Seq> whose C<value> attribute has a declared
+type of C<Cat.Name> and that must have at least 1 element; this type is
+used as the definition of the sequence possrep of a C<Cat.NameChain> (see
+that type for details).
+
+=head2 sys.Core.Cat.SeqOfProcStmt
+
+A C<Cat.SeqOfProcStmt> is a C<Seq> whose C<value> attribute has a declared
+type of C<Cat.ProcStmt>.
+
+=head1 SYSTEM-DEFINED CORE QUASI-CATALOG PARAMETERIZED TYPES
+
+These types are incomplete proper subtypes of other core incomplete types,
+and generally speaking their sole purpose is to be the declared data types
+of several system-defined N-ary tuple|relation operator parameters which
+are collections of generic nonscalar values.  They are called quasi-catalog
+because they are not generally expected to be used for user data, but they
+also are not used to compose the system catalog either.
+
+=over
+
+=item C<sys.Core.QuasiCat.(Set|Bag)Of(Tuple|Relation)>
+
+A C<(Set|Bag)OfRelation> is an incompletely defined proper subtype of
+C<Set|Bag> whose C<value> attribute has a declared type of a
+C<Tuple|Relation> subtype; this is the parameter type of several N-ary
+relational operators.
+
+=item C<sys.Core.QuasiCat.SetOfBag>
+
+A C<SetOfBag> is an incompletely defined proper subtype of C<Set> whose
+C<value> attribute has a declared type of a C<Bag> subtype; this is the
+parameter type of several N-ary relational operators that work with C<Bag>
+values.
+
+=item C<sys.Core.QuasiCat.MaybeOfTuple>
+
+A C<MaybeOfTuple> is an incompletely defined proper subtype of C<Maybe>
+whose C<value> attribute has a declared type of a C<Tuple> subtype; this is
+the parameter type of the C<sys.Core.Relation.maybe_reduction> operator.
+
+=item C<sys.Core.QuasiCat.SeqOfSeq>
+
+A C<SeqOfSeq> is an incompletely defined proper subtype of C<Seq> whose
+C<value> attribute has a declared type of a C<Seq> subtype; this is the
+parameter type of the N-ary C<sys.Core.Seq.catenation> operator.
+
+=item C<sys.Core.QuasiCat.QuasiSetOf(Tuple|Relation)>
+
+A C<QuasiSetOfRelation> is an incompletely defined proper subtype of
+C<QuasiSet> whose C<value> attribute has a declared type of
+C<Tuple|Relation>; these are the parameter types of the N-ary
+C<sys.Core.Tuple.product> and C<sys.Core.Relation.(join|product)>
+operators.
+
+=back
+
+=head1 SYSTEM-DEFINED CORE SPECIALIZED SUBTYPES
+
+These types are proper subtypes of other core types, and they are
+system-defined for convenience, as they are anticipated to be frequently
+used; in fact, most of them are used as the declared parameter types of
+various core operators.
+
+=over
+
+=item C<sys.Core.Spec.(Set|Maybe|Seq|Bag)Of(Scalar|Ordered)>
+
+A C<(Set|Maybe|Seq|Bag)Of(Scalar|Ordered)> is a completely defined proper
+subtype of C<(Set|Maybe|Seq|Bag)> whose C<value> attribute has a declared
+type of a C<(Scalar|Ordered)> subtype.
+
+=item C<sys.Core.Spec.(Set|Maybe|Seq|Bag)Of(Bool|Int|UInt|Rat|Blob|Text)>
+
+A C<(Set|Maybe|Seq|Bag)Of(Bool|Int|UInt|Rat|Blob|Text)> is a completely
+defined proper subtype of C<(Set|Maybe|Seq|Bag)> whose C<value> attribute
+has a declared type of a C<(Bool|Int|UInt|Rat|Blob|Text)> subtype.
+
+=back
+
+=head1 SYSTEM-DEFINED GENERIC UNIVERSAL FUNCTIONS
+
+These functions are applicable to values of any data type at all.
+
+=over
+
+=item C<function sys.Core.Universal.is_identical result Bool params {
+topic(Universal), other(Universal) }>
+
+This function results in C<Bool:true> iff its 2 arguments are exactly the
+same value, and C<Bool:false> otherwise.  This function's arguments must be
+of compatible declared types; in this case, 2 declared types are compatible
+iff at least one of the following is true: 1. they are both subtypes of a
+common scalar root type; 2. they are both subtypes of a common
+non-incomplete tuple or relation type, that is they essentially have the
+same headings; 3. at least one type is a generic (eg-C<Universal>) or
+incomplete (eg-C<Seq>) type, and it is a supertype of the other.  This
+function's 2 parameters are mutually commutative.
+
+=item C<function sys.Core.Universal.is_not_identical result Bool params {
+topic(Universal), other(Universal) }>
+
+This function is exactly the same as C<sys.Core.Universal.is_identical>
+except that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<function sys.Core.Universal.is_value_of_type result Bool params {
+topic(Universal), type(Cat.NameChain) }>
+
+This function results in C<Bool:true> iff the value of its C<topic>
+argument is a member of the data type whose name is given in the C<type>
+argument, and C<Bool:false> otherwise.  As trivial cases, this function
+always results in C<Bool:true> if the named type is C<Universal>, and
+C<Bool:false> if it is C<Empty>.  This function will fail if the named type
+doesn't exist in the virtual machine.
+
+=item C<function sys.Core.Universal.treated result Universal params {
+topic(Universal), as(Cat.NameChain) }>
+
+This function results in the value of its C<topic> argument, but that the
+declared type of the result is the not-C<Empty> data type whose name is
+given in the C<as> argument.  This function will fail if the named type
+doesn't exist in the virtual machine, or if C<topic> isn't a member of the
+named type.  The purpose of C<treated> is to permit taking values from a
+context having a more generic declared type, and using them in a context
+having a more specific declared type; such an action would otherwise be
+blocked at compile time due to a type-mismatch error; C<treated> causes the
+type-mismatch validation, and possible failure, to happen at runtime
+instead, on the actual value rather than declared value.  For example, if
+you are storing an C<Int> value in a C<Scalar>-typed variable, using
+C<treated> will cause the compiler to let you use that variable as an
+argument to C<Int.sum>, which it otherwise wouldn't.
+
+=item C<function sys.Core.Universal.default result Universal params {
+of(Cat.NameChain) }>
+
+This function results in the default value of the not-C<Empty> data type
+whose name is given in the C<of> argument, and the declared type of the
+result is that same type.  This function will fail if the named type
+doesn't exist in the virtual machine, either at compile or runtime
+depending whether the type is in the system or user namespace.  This
+function is conceptually implicitly used to provide default values for
+variables, so they always hold valid values of their declared type.
+
+=back
+
+=head1 SYSTEM-DEFINED GENERIC ORDERED FUNCTIONS
+
+These functions are applicable to values of any data type which is a
+subtype of C<Ordered>.  They provide a common syntax for sort-related
+functionality, though technically every type having these functions is
+re-implementing its own version.  If values of an ordered data type can
+conceivably be sorted using multiple criteria (such as different text
+collations), then these functions just represent the default criteria; any
+additional criteria are represented by additional functions declared for
+just the types they apply to.
+
+=over
+
+=item C<function sys.Core.Ordered.is_before result Bool params {
+topic(Ordered), other(Ordered) }>
+
+This function results in C<Bool:true> iff its 2 arguments are non-identical
+and the value of the C<topic> argument is considered to come before the
+value of the C<other> argument when the 2 values are arranged in order (as
+defined by the type); it results in C<Bool:false> otherwise.  This
+function's arguments must be of compatible declared types; in this case, 2
+declared types are compatible iff they are both subtypes of a common scalar
+type that declares itself an C<Ordered> subtype.  Note that C<is_before> is
+considered the only fundamental ordered-specific operator, and all others
+are defined over it plus C<is_identical>.
+
+=item C<function sys.Core.Ordered.is_not_before result Bool params {
+topic(Ordered), other(Ordered) }>
+
+This function is exactly the same as C<sys.Core.Ordered.is_before> except
+that it results in the opposite boolean value when given the same
+arguments.  (It could alternately be called "is after or is identical".)
+
+=item C<function sys.Core.Ordered.is_inside_range result Bool params {
+topic(Ordered), min(Ordered), max(Ordered), min_is_inside(Bool),
+max_is_inside(Bool) }>
+
+This function results in C<Bool:true> iff its C<topic> argument is within
+the range whose bounds are defined by its C<min> and C<max> arguments.  If
+C<min_is_inside> or C<max_is_inside> are C<Bool:true>, then C<topic> is
+considered to be within the range if it is equal to C<min> or C<max>,
+respectively.  This function's arguments must be of compatible declared
+types as per C<sys.Core.Ordered.comparison>.  This function will fail if
+C<max> is before C<min>.
+
+=item C<function sys.Core.Ordered.is_outside_range result Bool params {
+topic(Ordered), min(Ordered), max(Ordered), min_is_inside(Bool),
+max_is_inside(Bool) }>
+
+This function is exactly the same as C<sys.Core.Ordered.is_inside_range>
+except that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<function sys.Core.Ordered.min result Ordered params {
+topic(SetOfOrdered) }>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and picks the minimum of the 2 (a process which
+is both commutative and associative) until just one is left, which is the
+function's result.  If C<topic> has zero values, then C<min> results in the
+result type's concept of positive infinity, which is the identity value for
+I<min>.  This function will fail on a C<topic> of zero values if the result
+type's concept of positive infinity is impossible or impractically large to
+represent, such as with the infinite C<Text> type.
+
+=item C<function sys.Core.Ordered.max result Ordered params {
+topic(SetOfOrdered) }>
+
+This function is exactly the same as C<sys.Core.Ordered.min> except that it
+results in the maximum input element value rather than the minimum one, and
+its identity value is the result type's concept of negative infinity.
+
+=item C<function sys.Core.Ordered.maybe_min result MaybeOfOrdered params {
+topic(SetOfOrdered) }>
+
+This function is exactly the same as C<sys.Core.Ordered.min> except that it
+results in a C<Maybe> of what is otherwise the result type, and that result
+has zero elements if the argument has zero elements.
+
+=item C<function sys.Core.Ordered.maybe_max result MaybeOfOrdered params {
+topic(SetOfOrdered) }>
+
+This function is to C<sys.Core.Ordered.max> as
+C<sys.Core.Ordered.maybe_min> is to C<sys.Core.Ordered.min>.
+
+=back
+
+=head1 SYSTEM-DEFINED CORE SCALAR FUNCTIONS
+
+These functions are applicable to just one or more specific system-defined
+core scalar data type.
+
+=head2 Functions for sys.Core.Bool.Bool
+
+These functions select values of the C<Bool> enumeration.
+
+=over
+
+=item C<function sys.Core.Bool.(false|true) result Bool params {}>
+
+This selector function results in the C<Bool:(false|true)> value.
+
+=back
+
+These functions implement commonly used boolean operations.
+
+=over
+
+=item C<function sys.Core.Bool.not result Bool params { topic(Bool) }>
+
+This function results in the logical I<not> of its argument.
+
+=item C<function sys.Core.Bool.and result Bool params { topic(SetOfBool) }>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and does a logical I<and> (which is both
+commutative and associative) on them until just one is left, which is the
+function's result.  If C<topic> has zero values, then C<and> results in
+C<Bool:true>, which is the identity value for logical I<and>.
+
+=item C<function sys.Core.Bool.or result Bool params { topic(SetOfBool) }>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and does a logical inclusive-or (which is both
+commutative and associative) on them until just one is left, which is the
+function's result.  If C<topic> has zero values, then C<or> results in
+C<Bool:false>, which is the identity value for logical inclusive-or.
+
+=item C<function sys.Core.Bool.xor result Bool params { topic(BagOfBool) }>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and does a logical exclusive-or (which is both
+commutative and associative) on them until just one is left, which is the
+function's result.  If C<topic> has zero values, then C<xor> results in
+C<Bool:false>, which is the identity value for logical exclusive-or.
+
+=back
+
+=head2 Functions for sys.Core.Int.Int
+
+These functions implement commonly used integer numeric operations.
+
+=over
+
+=item C<function sys.Core.Int.increment result Int params { topic(Int) }>
+
+This function results in its argument incremented by 1.
+
+=item C<function sys.Core.Int.decrement result Int params { topic(Int) }>
+
+This function results in its argument decremented by 1.
+
+=item C<function sys.Core.Int.abs result UInt params { topic(Int) }>
+
+This function results in the absolute value of its argument.
+
+=item C<function sys.Core.Int.sum result Int params { addends(BagOfInt) }>
+
+This function results in the sum of the N element values of its argument;
+it is a reduction operator that recursively takes each pair of input values
+and adds (which is both commutative and associative) them together until
+just one is left, which is the result.  If C<addends> has zero values, then
+C<sum> results in the integer zero, which is the identity value for
+addition.
+
+=item C<function sys.Core.Int.difference result Int params { minuend(Int),
+subtrahend(Int) }>
+
+This function results in the difference when its C<subtrahend> argument is
+subtracted from its C<minuend> argument.
+
+=item C<function sys.Core.Int.product result Int params { factors(BagOfInt)
+}>
+
+This function results in the product of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and multiplies (which is both commutative and associative)
+them together until just one is left, which is the result.  If C<factors>
+has zero values, then C<product> results in the integer 1, which is the
+identity value for multiplication.
+
+=item C<function sys.Core.Int.quotient result Int params { dividend(Int),
+divisor(Int) }>
+
+This function results in the quotient when its C<dividend> argument is
+divided by its C<divisor> argument using integer division.  This function
+will fail if C<divisor> is zero.
+
+=item C<function sys.Core.Int.remainder result UInt params { dividend(Int),
+divisor(Int) }>
+
+This function results in the remainder when its C<dividend> argument is
+divided by its C<divisor> argument using integer division.  This function
+will fail if C<divisor> is zero.
+
+=item C<function sys.Core.Int.maybe_quotient result MaybeOfInt params {
+dividend(Int), divisor(Int) }>
+
+This function is exactly the same as C<sys.Core.Int.quotient> except that
+it results in a C<Maybe> of what is otherwise the result, and that result
+has zero elements if C<divisor> is zero.
+
+=item C<function sys.Core.Int.maybe_remainder result MaybeOfUInt params {
+dividend(Int), divisor(Int) }>
+
+This function is exactly the same as C<sys.Core.Int.remainder> except that
+it results in a C<Maybe> of what is otherwise the result, and that result
+has zero elements if C<divisor> is zero.
+
+=item C<function sys.Core.Int.range result Int params { topic(SetOfInt) }>
+
+This function results in the difference between the lowest and highest
+element values of its argument.  If C<topic> has zero values, then C<range>
+results in the integer zero.
+
+=item C<function sys.Core.Int.median result SetOfInt params {
+topic(BagOfInt) }>
+
+This function results in the 1 or 2 median values of the N element values
+of its argument; they are returned as a set.  It is equivalent to first
+arranging the input values from least to greatest, and then taking the
+single middle value, if the count of input values is odd, or taking the 2
+middle values, if the count of input values is even (but if the 2 middle
+values are the same value, the output has one element).  If C<topic> has
+zero values, then the result set is empty.
+
+=item C<function sys.Core.Int.mode result SetOfInt params { topic(BagOfInt)
+}>
+
+This function results in the mode of the N element values of its argument;
+it is the set of values that appear the most often as input elements, and
+all have the same count of occurrances.  As a trivial case, if all input
+elements have the same count of occurrances, then they will all be in the
+output.  If C<topic> has zero values, then the result set is empty.
+
+=item C<function sys.Core.Int.power result Int params { radix(Int),
+exponent(UInt) }>
+
+This function results in its C<radix> argument taken to the power of its
+(unsigned integer) C<exponent> argument.  This function will fail if
+C<radix> and C<exponent> are both zero.
+
+=item C<function sys.Core.Int.factorial result PInt params { topic(UInt) }>
+
+This function results in the factorial of its argument (it is defined for
+an argument of zero to result in 1, as per the identity value for
+multiplication of an empty set).
+
+=back
+
+These functions convert between C<Int> values and canonically formatted
+representations of integers as character strings.
+
+=over
+
+=item C<function sys.Core.Int.Int_from_NEText result Int params {
+text(NEText), radix(Cat.PInt2_36) }>
+
+This selector function results in the C<Int> value that its C<text>
+argument maps to when the whole character string is evaluated as a
+base-C<radix> integer.  Extending the typical formats of [base-2, base-8,
+base-10, base-16], this function supports base-2 through base-36; to get
+the latter, the characters 0-9 and A-Z represent values in 0-35.  This
+function will fail if C<text> can't be mapped as specified.
+
+=item C<function sys.Core.Int.NEText_from_Int result NEText params {
+int(Int), radix(Cat.PInt2_36) }>
+
+This selector function results in the C<NEText> value where its C<int>
+argument is formatted as a base-C<radix> integer.
+
+=back
+
+These functions convert between C<Int> values and canonically formatted
+representations of integers as binary strings.  I<Conjecture: These may not
+actually be useful, and perhaps only operators that take an argument
+specifying a fixed-length field size, with big and little endian versions,
+would be appropriate instead.  Or maybe both kinds are necessary.>
+
+=over
+
+=item C<function sys.Core.Int.Int_from_Blob_S_VBE result Int params {
+blob(NEBlob) }>
+
+This selector function results in the C<Int> value that its C<blob>
+argument maps to when the whole bit string is treated literally as a
+variable-length binary (two's complement) signed integer of 1 or more bits
+in length.  The first bit is taken as the sign bit, and any other bits
+provide greater precision than the -1 thru 0 range.  The bit string is
+assumed to be big-endian, since it may not be possible to use little-endian
+in situations where the bit length isn't a multiple of 8.
+
+=item C<function sys.Core.Int.Blob_S_VBE_from_Int result NEBlob params {
+int(Int) }>
+
+This selector function results in the C<Blob> value where its C<int>
+argument is formatted as a variable-length binary (two's complement) signed
+integer of 1 or more bits in length; the smallest number of bits necessary
+to store C<int> is used.
+
+=item C<function sys.Core.Int.Int_from_Blob_U_VBE result UInt params {
+blob(NEBlob) }>
+
+This function is the same as C<sys.Core.Int.Int_from_Blob_S_VBE> but that
+it does unsigned integers.
+
+=item C<function sys.Core.Int.Blob_U_VBE_from_Int result UInt params {
+blob(NEBlob) }>
+
+This function is the same as C<sys.Core.Int.Blob_S_VBE_from_Int> but that
+it does unsigned integers.
+
+=back
+
+=head2 Functions for sys.Core.Rat.Rat
+
+These functions are essentially selectors and attribute extractors for the
+conceptual possrep of a rational in terms of an integral numerator plus
+denominator.
+
+=over
+
+=item C<function sys.Core.Rat.Rat_from_Int_pair result Rat params {
+numerator(Int), denominator(PInt) }>
+
+This selector function results in the C<Rat> value that arguments
+collectively map to as the attributes of the result's C<ratio> possrep;
+however, the arguments do not have to be the canonical/normalized attribute
+values, but constitute any other pair that denotes the same rational value.
+
+=item C<function sys.Core.Rat.Rat_from_Int_triple result Rat params {
+mantissa(Int), radix(Cat.PInt2_N), exponent(Int) }>
+
+This selector function results in the C<Rat> value that arguments
+collectively map to as the attributes of the result's C<float> possrep;
+however, the arguments do not have to be the canonical/normalized attribute
+values, but constitute any other triple that denotes the same rational.
+
+=item C<function sys.Core.Rat.(numerator|mantissa|exponent) result Int
+params { topic(Rat) }>
+
+This function results in the canonical C<numerator|mantissa|exponent> of
+its argument.
+
+=item C<function sys.Core.Rat.denominator result PInt params { topic(Rat)
+}>
+
+This function results in the canonical C<denominator> of its argument.
+
+=item C<function sys.Core.Rat.radix result Cat.PInt2_N params { topic(Rat)
+}>
+
+This function results in the canonical C<radix> of its argument.
+
+=back
+
+These functions implement commonly used rational numeric operations.
+
+=over
+
+=item C<function sys.Core.Rat.abs result URat params { topic(Rat) }>
+
+This function results in the absolute value of its argument.
+
+=item C<function sys.Core.Rat.sum result Rat params { addends(BagOfRat) }>
+
+This function results in the sum of the N element values of its argument;
+it is a reduction operator that recursively takes each pair of input values
+and adds (which is both commutative and associative) them together until
+just one is left, which is the result.  If C<addends> has zero values, then
+C<sum> results in the rational zero, which is the identity value for
+addition.
+
+=item C<function sys.Core.Rat.difference result Rat params { minuend(Rat),
+subtrahend(Rat) }>
+
+This function results in the difference when its C<subtrahend> argument is
+subtracted from its C<minuend> argument.
+
+=item C<function sys.Core.Rat.product result Rat params { factors(BagOfRat)
+}>
+
+This function results in the product of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and multiplies (which is both commutative and associative)
+them together until just one is left, which is the result.  If C<factors>
+has zero values, then C<product> results in the rational 1, which is the
+identity value for multiplication.
+
+=item C<function sys.Core.Rat.quotient result Rat params { dividend(Rat),
+divisor(Rat) }>
+
+This function results in the quotient when its C<dividend> argument is
+divided by its C<divisor> argument using rational division.  This function
+will fail if C<divisor> is zero.
+
+=item C<function sys.Core.Rat.maybe_quotient result MaybeOfRat params {
+dividend(Rat), divisor(Rat) }>
+
+This function is exactly the same as C<sys.Core.Rat.quotient> except that
+it results in a C<Maybe> of what is otherwise the result, and that result
+has zero elements if C<divisor> is zero.
+
+=item C<function sys.Core.Rat.range result Rat params { topic(SetOfRat) }>
+
+This function results in the difference between the lowest and highest
+element values of its argument.  If C<topic> has zero values, then C<range>
+results in the rational zero.
+
+=item C<function sys.Core.Rat.mean result Rat params { topic(BagOfRat) }>
+
+This function results in the mean or arithmetic average of the N element
+values of its argument.  It is equivalent to first taking the sum of the
+input values, and dividing that sum by the count of the input values.  If
+C<topic> has zero values, then this function will fail.
+
+=item C<function sys.Core.Rat.maybe_mean result MaybeOfRat params {
+topic(BagOfRat) }>
+
+This function is exactly the same as C<sys.Core.Rat.mean> except that it
+results in a C<Maybe> of what is otherwise the result, and that result has
+zero elements if C<topic> has zero values.
+
+=item C<function sys.Core.Rat.median result SetOfRat params {
+topic(BagOfRat) }>
+
+This function results in the 1 or 2 median values of the N element values
+of its argument; they are returned as a set.  It is equivalent to first
+arranging the input values from least to greatest, and then taking the
+single middle value, if the count of input values is odd, or taking the 2
+middle values, if the count of input values is even (but if the 2 middle
+values are the same value, the output has one element).  If C<topic> has
+zero values, then the result set is empty.
+
+=item C<function sys.Core.Rat.mean_of_median result Rat params {
+topic(BagOfRat) }>
+
+This function is a wrapper over C<sys.Core.Rat.median> that will result in
+the mean of its result elements; it will fail if there are zero elements.
+
+=item C<function sys.Core.Rat.mode result SetOfRat params { topic(BagOfRat)
+}>
+
+This function results in the mode of the N element values of its argument;
+it is the set of values that appear the most often as input elements, and
+all have the same count of occurrances.  As a trivial case, if all input
+elements have the same count of occurrances, then they will all be in the
+output.  If C<topic> has zero values, then the result set is empty.
+
+=item C<function sys.Core.Rat.round result Rat params { topic(Rat),
+round_rule(Cat.RatRoundRule) }>
+
+This function results in the rational that is equal to or otherwise nearest
+to its C<topic> argument, where the nearest is determined by the rational
+rounding rule specified by the C<round_rule> argument.
+
+=item C<function sys.Core.Rat.power result PRat params { radix(PRat),
+exponent(Rat) }>
+
+This function results in its (positive rational) C<radix> argument taken to
+the power of its C<exponent> argument.  Note that, while this function
+might conceptually have multiple real number results for some fractional
+C<exponent>, it will always only result in the one that is positive.
+
+=item C<function sys.Core.Rat.log result Rat params { topic(PRat),
+radix(PRat), round_rule(Cat.RatRoundRule) }>
+
+This function results in the logarithm of its C<topic> argument to the base
+given in its (positive rational) C<radix> argument.  Since the result would
+be an irrational number in the general case, the C<round_rule> argument
+specifies how to coerce the conceptual result into a rational number that
+is the actual result.
+
+=item C<function sys.Core.Rat.natural_power result PRat params {
+exponent(Rat), round_rule(Cat.RatRoundRule) }>
+
+This function results in the special mathematical constant I<e> (which is
+the base of the natural logarithm) taken to the power of its C<exponent>
+argument.  The C<round_rule> parameter is as per C<log>.
+
+=item C<function sys.Core.Rat.natural_log result Rat params { topic(PRat),
+round_rule(Cat.RatRoundRule) }>
+
+This function results in the natural logarithm of its C<topic> argument.
+The C<round_rule> parameter is as per C<log>.
+
+=back
+
+These functions convert between C<Rat> values and canonically formatted
+representations of rationals as character strings.
+
+=over
+
+=item C<function sys.Core.Rat.Rat_from_NEText result Rat params {
+text(NEText), radix(Cat.PInt2_36) }>
+
+This selector function results in the C<Rat> value that its C<text>
+argument maps to when the whole character string is evaluated as a
+base-C<radix> rational.  Extending the typical formats of [base-2, base-8,
+base-10, base-16], this function supports base-2 through base-36; to get
+the latter, the characters 0-9 and A-Z represent values in 0-35.  This
+function will fail if C<text> can't be mapped as specified.
+
+=item C<function sys.Core.Rat.NEText_from_Rat result NEText params {
+rat(Rat), radix(Cat.PInt2_36) }>
+
+This selector function results in the C<NEText> value where its C<rat>
+argument is formatted as a base-C<radix> rational.
+
+=back
+
+These functions convert between C<Rat> values and equal or nearly equal
+C<Int> values.
+
+=over
+
+=item C<function sys.Core.Rat.Rat_from_Int result Rat params { int(Int) }>
+
+This selector function results in the C<Rat> value that is conceptually
+equal to its C<Int> argument.
+
+=item C<function sys.Core.Rat.Int_from_Rat result Int params { rat(Rat),
+round_meth(Cat.E_RM) }>
+
+This selector function results in the C<Int> value that is conceptually
+equal to or otherwise nearest to its C<rat> argument, where the nearest is
+determined by the rounding method specified by the C<round_meth> argument.
+
+=back
+
+=head2 Functions for sys.Core.Blob.Blob
+
+These functions implement commonly used binary string operations.
+
+=over
+
+=item C<function sys.Core.Blob.catenation result Blob params {
+topic(SeqOfBlob) }>
+
+This function results in the catenation of the N element values of its
+argument; it is a reduction operator that recursively takes each
+consecutive pair of input values and catenates (which is associative) them
+together until just one is left, which is the result.  If C<topic> has zero
+values, then C<catenate> results in the empty string value, which is the
+identity value for catenate.
+
+=item C<function sys.Core.Blob.repeat result Blob params { topic(Blob),
+count(UInt) }>
+
+This function results in the catenation of C<count> instances of C<topic>.
+
+=item C<function sys.Core.Blob.length_in_bits result UInt params {
+topic(Blob) }>
+
+This function results in the length of its argument in bits.
+
+=item C<function sys.Core.Blob.is_substr result Bool params {
+look_in(Blob), look_for(Blob), fixed_start(Bool), fixed_end(Bool) }>
+
+This function results in C<Bool:true> iff its C<look_for> argument is a
+substring of its C<look_in> argument as per the optional C<fixed_start> and
+C<fixed_end> constraints, and C<Bool:false> otherwise.  If C<fixed_start>
+or C<fixed_end> are C<Bool:true>, then C<look_for> must occur right at the
+start or end, respectively, of C<look_in> in order for C<contains> to
+results in C<Bool:true>; if either flag is C<Bool:false>, its additional
+constraint doesn't apply.
+
+=item C<function sys.Core.Blob.is_not_substr result Bool params {
+look_in(Blob), look_for(Blob), fixed_start(Bool), fixed_end(Bool) }>
+
+This function is exactly the same as C<sys.Core.Blob.is_substr> except that
+it results in the opposite boolean value when given the same arguments.
+
+=item C<function sys.Core.Blob.not result Blob params { topic(Blob) }>
+
+This function results in the bitwise I<not> of its argument.
+
+=item C<function sys.Core.Blob.and result Blob params { topic(SetOfBlob) }>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and does a bitwise I<and> (which is both
+commutative and associative) on them until just one is left, which is the
+function's result.  This function's argument values must all be of the same
+length in bits, that length being part of the argument's declared type
+(that is, C<Blob> subtype) definition, and that is also the length in bits
+of the function's result.  If C<topic> has zero values, then C<and> will
+result in an appropriate-length string of identity/1 valued bits.
+
+=item C<function sys.Core.Blob.or result Blob params { topic(SetOfBlob) }>
+
+This function is the same as C<sys.Core.Blob.and> but that it recursively
+does a bitwise inclusive-or rather than a bitwise I<and>, and its identity
+value is composed of zero valued bits.
+
+=item C<function sys.Core.Blob.xor result Blob params { topic(BagOfBlob) }>
+
+This function is the same as C<sys.Core.Blob.or> but that it recursively
+does a bitwise exclusive-or rather than a bitwise inclusive-or.
+
+=back
+
+These functions convert between C<Blob> values and canonically formatted
+representations of binary strings as character strings.
+
+=over
+
+=item C<function sys.Core.Blob.Blob_from_Text result Blob params {
+text(Text), size(Cat.PInt1_4) }>
+
+This selector function results in the C<Blob> value that its C<text>
+argument maps to when each input character represents a sequence of 1-4
+bits, the number of bits per character being determined by the C<size>
+argument; for example, if C<size> is 1, then each input character is a
+[0-1] and represents a bit; or, if C<size> is 4, then each input character
+is a [0-9A-F] and represents 4 bits.  This function will fail if C<text>
+can't be mapped as specified.
+
+=item C<function sys.Core.Blob.Text_from_Blob result Text params {
+blob(Blob), size(Cat.PInt1_4) }>
+
+This selector function results in the C<Text> value where its argument is
+encoded using a character for each sequence of 1-4 bits, the number of bits
+per character being determined by the C<size> argument.  This function will
+fail if C<blob> doesn't have a length in bits which is a multiple of
+C<size>.
+
+=back
+
+=head2 Functions for sys.Core.Text.Text
+
+These functions implement commonly used character string operations.
+
+=over
+
+=item C<function sys.Core.Text.catenation result Text params {
+topic(SeqOfText) }>
+
+This function results in the catenation of the N element values of its
+argument; it is a reduction operator that recursively takes each
+consecutive pair of input values and catenates (which is associative) them
+together until just one is left, which is the result.  If C<topic> has zero
+values, then C<catenate> results in the empty string value, which is the
+identity value for catenate.
+
+=item C<function sys.Core.Text.repeat result Text params { topic(Text),
+count(UInt) }>
+
+This function results in the catenation of C<count> instances of C<topic>.
+
+=item C<function sys.Core.Text.length_in_nfd_graphs result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form D graphemes.
+
+=item C<function sys.Core.Text.length_in_nfc_graphs result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form C graphemes.
+
+=item C<function sys.Core.Text.length_in_nfd_codes result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form D code points.
+
+=item C<function sys.Core.Text.length_in_nfc_codes result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form C code points.
+
+=item C<function sys.Core.Text.is_substr result Bool params {
+look_in(Text), look_for(Text), fixed_start(Bool), fixed_end(Bool) }>
+
+This function results in C<Bool:true> iff its C<look_for> argument is a
+substring of its C<look_in> argument as per the optional C<fixed_start> and
+C<fixed_end> constraints, and C<Bool:false> otherwise.  If C<fixed_start>
+or C<fixed_end> are C<Bool:true>, then C<look_for> must occur right at the
+start or end, respectively, of C<look_in> in order for C<contains> to
+result in C<Bool:true>; if either flag is C<Bool:false>, its additional
+constraint doesn't apply.
+
+=item C<function sys.Core.Text.is_not_substr result Bool params {
+look_in(Text), look_for(Text), fixed_start(Bool), fixed_end(Bool) }>
+
+This function is exactly the same as C<sys.Core.Text.is_substr> except that
+it results in the opposite boolean value when given the same arguments.
+
+=item C<function sys.Core.Text.case_folded_to_upper result Text {
+topic(Text) }>
+
+This function results in the transformation of its argument where any
+letters considered to be (small) lowercase are folded to (capital)
+uppercase.
+
+=item C<function sys.Core.Text.case_folded_to_lower result Text {
+topic(Text) }>
+
+This function results in the transformation of its argument where any
+letters considered to be (capital) uppercase are folded to (small)
+lowercase.
+
+=item C<function sys.Core.Text.whitespace_trimmed result Text { topic(Text)
+}>
+
+This function results in the value of its argument but that any leading or
+trailing whitespace characters are trimmed.
+
+=back
+
+=head1 SYSTEM-DEFINED CORE GENERIC NONSCALAR FUNCTIONS
+
+These functions are applicable to mainly nonscalar types, but are generic
+in that they typically work with any nonscalar types.
+
+=head2 Functions for sys.Core.Tuple.Tuple Having Single Input Tuples
+
+=over
+
+=item C<function sys.Core.Tuple.degree result UInt params { topic(Tuple) }>
+
+This function results in the degree of its argument (that is, the count of
+attributes it has).
+
+=item C<function sys.Core.Tuple.attr_from_Tuple result ScaTupRel params {
+topic(Tuple) }>
+
+This function results in the scalar or nonscalar value of the sole
+attribute of its argument.  This function will fail if its argument is not
+of degree 1.
+
+=item C<function sys.Core.Tuple.Tuple_from_attr result Tuple params {
+name(Cat.Name), value(ScaTupRel) }>
+
+This function results in the C<Tuple> value which has just one attribute
+whose name is given by C<name> and whose value is given by C<value>; the
+attribute's declared type is the same as that of C<value>.
+
+=item C<function sys.Core.Tuple.attr result ScaTupRel params {
+topic(Tuple), name(Cat.Name) }>
+
+This function results in the scalar or nonscalar value of the attribute of
+C<topic> whose name is given by C<name>.  This function will fail if
+C<name> specifies an attribute name that C<topic> doesn't have.
+
+=item C<function sys.Core.Tuple.update_attr result Tuple params {
+topic(Tuple), name(Cat.Name), value(ScaTupRel) }>
+
+This function results in its C<topic> argument but that its attribute whose
+name is C<name> has been updated with a new scalar or nonscalar value given
+by C<value>.  This function will fail if C<name> specifies an attribute
+name that C<topic> doesn't have, or if the declared type of C<value> isn't
+a subtype of the declared type of the attribute.
+
+=item C<function sys.Core.Tuple.multi_update result Tuple params {
+topic(Tuple), attrs(Tuple) }>
+
+This function is like C<sys.Core.Tuple.update_attr> except that it handles
+N tuple attributes at once rather than just 1.  The heading of the C<attrs>
+argument must be a subset of the heading of the C<topic> argument; this
+function's result is C<topic> with all the attribute values of C<attrs>
+substituted into it.  This function could alternately be named
+I<sys.Core.Tuple.static_substitution>.
+
+=item C<function sys.Core.Tuple.substitution_in_default result Tuple params
+{ of(Cat.NameChain), subst(Tuple) }>
+
+This function results in the tuple value that is the default value of the
+tuple data type whose name is given in the C<of> argument, but that zero or
+more of its attribute values have been substituted by values given in the
+C<subst> argument.  This function is a short-hand for
+C<sys.Core.Tuple.multi_update> on the result of
+C<sys.Core.Universal.default>.  This function will fail if either
+C<default> would fail for the same C<of> argument, or if its result isn't a
+tuple type, or if the heading of C<subst> isn't a subset of the heading of
+the default.  The purpose of this function is to support greater brevity in
+Muldis D coding such that users can define just part of a desired tuple
+value and have the remainder filled in from defaults for them; particularly
+useful with tuples that conceptually have some optional attributes.
+
+=item C<function sys.Core.Tuple.rename result Tuple params { topic(Tuple),
+map(Cat.AttrRenameMap) }>
+
+This function results in a C<Tuple> value that is the same as its C<topic>
+argument but that some of its attributes have different names.  Each tuple
+of the argument C<map> specifies how to rename one C<topic> attribute, with
+the C<before> and C<after> attributes of a C<map> tuple representing the
+old and new names of a C<topic> attribute, respectively.  As a trivial
+case, this function's result is C<topic> if C<map> has no tuples.  This
+function supports renaming attributes to each others' names.  This function
+will fail if C<map> specifies any old names that C<topic> doesn't have, or
+any new names that are the same as C<topic> attributes that aren't being
+renamed.
+
+=item C<function sys.Core.Tuple.projection result Tuple params {
+topic(Tuple), attrs(Cat.SetOfName) }>
+
+This function results in the projection of its C<topic> argument that has
+just the subset of attributes of C<topic> which are named in its C<attrs>
+argument.  As a trivial case, this function's result is C<topic> if
+C<attrs> lists all attributes of C<topic>; or, it is the nullary tuple if
+C<attrs> is empty.  This function will fail if C<attrs> specifies any
+attribute names that C<topic> doesn't have.
+
+=item C<function sys.Core.Tuple.cmpl_projection result Tuple params {
+topic(Tuple), attrs(Cat.SetOfName) }>
+
+This function is the same as C<projection> but that it results in the
+complementary subset of attributes of C<topic> when given the same
+arguments.
+
+=item C<function sys.Core.Tuple.wrap result Tuple params { topic(Tuple),
+inner(Cat.SetOfName), outer(Cat.Name) }>
+
+This function results in a C<Tuple> value that is the same as its C<topic>
+argument but that some of its attributes have been wrapped up into a new
+C<Tuple>-typed attribute, which exists in place of the original attributes.
+The C<inner> argument specifies which C<topic> attributes are to be removed
+and wrapped up, and the C<outer> argument specifies the name of their
+replacement attribute.  As a trivial case, if C<inner> is empty, then the
+result has all the same attributes as before plus a new tuple-typed
+attribute of degree zero; or, if C<inner> lists all attributes of C<topic>,
+then the result has a single attribute whose value is the same as C<topic>.
+ This function supports the new attribute having the same name as an old
+one being wrapped into it.  This function will fail if C<inner> specifies
+any attribute names that C<topic> doesn't have, or if C<outer> is the same
+as C<topic> attributes that aren't being wrapped.
+
+=item C<function sys.Core.Tuple.cmpl_wrap result Tuple params {
+topic(Tuple), cmpl_inner(Cat.SetOfName), outer(Cat.Name) }>
+
+This function is the same as C<wrap> but that it wraps the complementary
+subset of attributes of C<topic> to those specified by C<cmpl_inner>.
+
+=item C<function sys.Core.Tuple.unwrap result Tuple params { topic(Tuple),
+outer(Cat.Name) }>
+
+This function is the inverse of C<sys.Core.Tuple.wrap>, such that it will
+unwrap a C<Tuple>-type attribute into its member attributes.  This function
+will fail if C<outer> specifies any attribute name that C<topic> doesn't
+have, or if an attribute of C<topic{outer}> is the same as another C<topic>
+attribute.
+
+=back
+
+=head2 Functions for sys.Core.Tuple.Tuple Having Multiple Input Tuples
+
+=over
+
+=item C<function sys.Core.Tuple.product result Tuple params {
+topic(QuasiSetOfTuple) }>
+
+This function is similar to C<sys.Core.Relation.product> but that it works
+with tuples rather than relations.  This function is mainly intended for
+use in connecting tuples that have all disjoint headings, such as for
+extending one tuple with additional attributes.
+
+=back
+
+=head2 Functions for sys.Core.Relation.Relation Having Single Input
+Relations
+
+=over
+
+=item C<function sys.Core.Relation.degree result UInt params {
+topic(Relation) }>
+
+This function results in the degree of its argument (that is, the count of
+attributes it has).
+
+=item C<function sys.Core.Relation.cardinality result UInt params {
+topic(Relation) }>
+
+This function results in the cardinality of its argument (that is, the
+count of tuples its body has).
+
+=item C<function sys.Core.Relation.is_empty result Bool params {
+topic(Relation) }>
+
+This function results in C<Bool:true> iff its argument has zero tuples, and
+C<Bool:false> otherwise.  Note that if you are using a C<Maybe> to
+represent a sparse data item, analagously to a SQL nullable context, then
+testing the C<Maybe> with C<is_empty> is analagous to testing a SQL
+nullable with C<is null>.
+
+=item C<function sys.Core.Relation.is_not_empty result Bool params {
+topic(Relation) }>
+
+This function is exactly the same as C<sys.Core.Relation.is_empty> except
+that it results in the opposite boolean value when given the same argument.
+And following the analogy with C<is_empty>, C<is_not_empty> is analagous to
+SQL's C<is not null>.
+
+=item C<function sys.Core.Relation.is_member result Bool params {
+r(Relation), t(Tuple) }>
+
+This function results in C<Bool:true> iff its C<t> argument matches a tuple
+of its C<r> argument (that is, iff conceptually C<t> is a member of C<r>),
+and C<Bool:false> otherwise.  This function is like
+C<sys.Core.Relation.is_subset> except that the tuple being looked for
+doesn't have to be wrapped in a relation.  This function will fail if the 2
+arguments don't have the same heading.
+
+=item C<function sys.Core.Relation.is_not_member result Bool params {
+r(Relation), t(Tuple) }>
+
+This function is exactly the same as C<sys.Core.Relation.is_member> except
+that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<function sys.Core.Relation.Tuple_from_Relation result Tuple params
+{ topic(Relation) }>
+
+This function results in the C<Tuple> that is the sole member tuple of its
+argument.  This function will fail if its argument does not have exactly
+one tuple.
+
+=item C<function sys.Core.Relation.Relation_from_Tuple result Relation
+params { topic(Tuple) }>
+
+This function results in the C<Relation> value those body has just the one
+C<Tuple> that is its argument.
+
+=item C<function sys.Core.Relation.insertion result Relation params {
+r(Relation), t(Tuple) }>
+
+This function results in a C<Relation> that is the relational union of C<r>
+and a relation whose sole tuple is C<t>; that is, conceptually the result
+is C<t> inserted into C<r>.  As a trivial case, if C<t> already exists in
+C<r>, then the result is just C<r>.
+
+=item C<function sys.Core.Relation.disjoint_insertion result Relation
+params { r(Relation), t(Tuple) }>
+
+This function is exactly the same as C<sys.Core.Relation.insertion> except
+that it will fail if C<t> already exists in C<r>.
+
+=item C<function sys.Core.Relation.deletion result Relation params {
+r(Relation), t(Tuple) }>
+
+This function results in a C<Relation> that is the relational difference
+from C<r> of a relation whose sole tuple is C<t>; that is, conceptually the
+result is C<t> deleted from C<r>.  As a trivial case, if C<t> already
+doesn't exist in C<r>, then the result is just C<r>.
+
+=item C<function sys.Core.Relation.empty result Relation params {
+topic(Relation) }>
+
+This function results in the empty relation of the same heading of its
+argument; it has zero tuples.
+
+=item C<function sys.Core.Relation.universal result Relation params {
+topic(Relation) }>
+
+This function results in the universal relation of the same heading of its
+argument; that is, the relation having all the tuples that could ever exist
+in a relation with that heading.  This function will fail if said universal
+relation is impossible or impractically large to represent, such as when
+any attributes are of infinite types.
+
+=item C<function sys.Core.Relation.power_set result SetOfRelation params {
+topic(Relation) }>
+
+This function results in the power set of its argument.  The result is a
+C<Set> whose sole attribute is C<Relation>-typed (its type is nominally the
+same as that of the argument) and which has a tuple for every distinct
+subset of tuples in the argument.  The cardinality of the result is equal
+to 2 raised to the power of the cardinality of the argument (which may
+easily lead to a very large result, so use this function with care).  Note
+that the N-ary relational union of the power set of some relation is that
+relation; the N-ary intersection of any power set is the empty relation.
+
+=item C<function sys.Core.Relation.negation result Relation params {
+topic(Relation) }>
+
+This function results in the relational negation/not of its argument.  The
+result relation has the same heading as its argument, and its body contains
+all of the tuples that are in the universal relation of the same heading
+and that are not in the argument; that is, the result is the relational
+difference when the argument is subtracted from said universal relation.
+This function will fail on any argument that C<sys.Core.Relation.universal>
+would fail on.
+
+=item C<function sys.Core.Relation.rename result Relation params {
+topic(Relation), map(Cat.AttrRenameMap) }>
+
+This function is the same as C<sys.Core.Tuple.rename> but that it operates
+on and results in a C<Relation> rather than a C<Tuple>.
+
+=item C<function sys.Core.Relation.projection result Relation params {
+topic(Relation), attrs(Cat.SetOfName) }>
+
+This function is the same as C<sys.Core.Tuple.projection> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>.  But note
+that the result relation will have fewer tuples than C<topic> if any
+C<topic> tuples were non-distinct for just the projected attributes.
+
+=item C<function sys.Core.Relation.cmpl_projection result Relation params {
+topic(Relation), attrs(Cat.SetOfName) }>
+
+This function is the same as C<sys.Core.Tuple.cmpl_projection> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>.
+
+=item C<function sys.Core.Relation.wrap result Relation params {
+topic(Relation), inner(Cat.SetOfName), outer(Cat.Name) }>
+
+This function is the same as C<sys.Core.Tuple.wrap> but that it operates on
+and results in a C<Relation> rather than a C<Tuple>, where each of its
+member tuples was transformed as per C<sys.Core.Tuple.wrap>.
+
+=item C<function sys.Core.Relation.cmpl_wrap result Relation params {
+topic(Relation), cmpl_inner(Cat.SetOfName), outer(Cat.Name) }>
+
+This function is the same as C<sys.Core.Tuple.cmpl_wrap> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>, where each
+of its member tuples was transformed as per C<sys.Core.Tuple.cmpl_wrap>.
+
+=item C<function sys.Core.Relation.unwrap result Relation params {
+topic(Relation), outer(Cat.Name), inner(Cat.SetOfName) }>
+
+This function is the inverse of C<sys.Core.Relation.wrap> as
+C<sys.Core.Tuple.unwrap> is to C<sys.Core.Tuple.wrap>.  But unlike the
+C<Tuple> variant of C<unwrap>, this current function requires the extra
+C<inner> argument to prevent ambiguity in the general case where C<topic>
+might have zero tuples, because in that situation the most-specific-type of
+C<topic{outer}> would be C<Empty>, and the names of the attributes to add
+to C<topic> in place of C<topic{outer}> are not known.  This function will
+fail if C<topic> has at least 1 tuple and C<inner> does not match the names
+of the attributes of C<topic{outer}>.
+
+=item C<function sys.Core.Relation.group result Relation params {
+topic(Relation), inner(Cat.SetOfName), outer(Cat.Name) }>
+
+This function is similar to C<sys.Core.Relation.wrap> but that the C<topic>
+attribute-wrapping transformations result in new C<Relation>-typed
+attributes rather than new C<Tuple>-typed attributes, and moreover multiple
+C<topic> tuples may be combined into fewer tuples whose new
+C<Relation>-typed attributes have multiple tuples.  This function takes a
+relation of N tuples and divides the tuples into M groups where all the
+tuples in a group have the same values in the attributes which aren't being
+grouped (and distinct values in the attributes that are being grouped); it
+then results in a new relation of M tuples where the new relation-valued
+attribute of the result has the tuples of the M groups.  A grouped relation
+contains all of the information in the original relation, but it has less
+redundancy due to redundant non-grouped attributes now just being
+represented in one tuple per the multiple tuples whose grouped attributes
+had them in common.  A relation having relation-valued attributes like this
+is a common way to group so-called child tuples under their parents.  As a
+trivial case, if C<inner> is empty, then the result has all the same tuples
+and attributes as before plus a new relation-typed attribute of degree zero
+whose value per tuple is of cardinality one; or, if C<inner> lists all
+attributes of C<topic>, then the result has a single tuple of a single
+attribute whose value is the same as C<topic>.  This function supports the
+new attribute having the same name as an old one being grouped into it.
+This function will fail if C<inner> specifies any attribute names that
+C<topic> doesn't have, or if C<outer> is the same as C<topic> attributes
+that aren't being grouped.
+
+=item C<function sys.Core.Relation.cmpl_group result Relation params {
+topic(Relation), group_per(Cat.SetOfName), outer(Cat.Name) }>
+
+This function is the same as C<group> but that it groups the complementary
+subset of attributes of C<topic> to those specified by C<group_per>.
+
+=item C<function sys.Core.Relation.ungroup result Relation params {
+topic(Relation), outer(Cat.Name), inner(Cat.SetOfName) }>
+
+This function is the inverse of C<sys.Core.Relation.group> as
+C<sys.Core.Relation.unwrap> is to C<sys.Core.Relation.wrap>; it will
+ungroup a C<Relation>-type attribute into its member attributes and tuples.
+A relation can be first grouped and then that result ungrouped to produce
+the original relation, with no data loss.  However, the ungroup of a
+relation on a relation-valued attribute will lose the information in any
+outer relation tuples whose inner relation value has zero tuples; a group
+on this result won't bring them back.  This function will fail if C<outer>
+specifies any attribute name that C<topic> doesn't have, or if an attribute
+of C<topic{outer}> is the same as another C<topic> attribute.
+
+=item C<function sys.Core.Relation.transitive_closure result Relation
+params { topic(Relation) }>
+
+This function results in the transitive closure of its argument.  The
+argument is a binary relation whose attributes are both of the same
+declared type, and the result is a relation having the same heading and a
+body which is a superset of the argument's tuples.  Assuming that the
+argument represents all of the node pairs in a directed graph that have an
+arc between them, and so each argument tuple represents an arc,
+C<transitive_closure> will determine all of the node pairs in that graph
+which have a path between them (a recursive operation), so each tuple of
+the result represents a path.  The result is a superset since all arcs are
+also complete paths.  The C<transitive_closure> function is intended to
+support recursive queries, such as in connection with the "part explosion
+problem" (the problem of finding all components, at all levels, of some
+specified part).
+
+=item C<function sys.Core.Relation.reduction result Tuple params {
+topic(Relation), func(Cat.NameChain), assuming(Tuple), identity(Tuple) }>
+
+This function is a generic reduction operator that recursively takes each
+pair of tuples in C<topic> and applies an argument-specified tuple
+value-resulting function (which is both commutative and associative) to the
+pair until just one input tuple is left, which is the result.  The function
+to apply is named in the C<func> argument, and that function must have 3
+arguments named C<v1>, C<v2>, C<assuming>; the last parameter is curried
+with the same-named argument of C<reduction>, and the first 2 parameters
+are the 2 input tuples for an invocation.  If C<topic> has zero tuples,
+then C<reduction> results in the tuple given in C<identity>.  I<Note that
+C<identity> may be changed to take a function name rather than a value, for
+consistency with C<func>.>  This function will fail if the declared
+headings of C<identity> and C<topic> aren't compatible.
+
+=item C<function sys.Core.Relation.maybe_reduction result MaybeOfTuple
+params { topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+
+This function is exactly the same as C<sys.Core.Relation.reduction> except
+that it does not take an C<assuming> argument, and it results in a C<Maybe>
+of what is otherwise the result type, and that result has zero elements if
+the argument has zero elements.
+
+=item C<function sys.Core.Relation.restriction result Relation params {
+topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+
+This function results in the relational restriction of its C<topic>
+argument as determined by applying the C<Bool>-resulting function named in
+its C<func> argument when the latter function is curried by its C<assuming>
+argument.  The result relation has the same heading as C<topic>, and its
+body contains the subset of C<topic> tuples where, for each tuple, the
+function named by C<func> results in C<Bool:true> when passed the tuple as
+its C<topic> argument and C<assuming> as its C<assuming> argument.  As a
+trivial case, if C<func> is defined to unconditionally result in
+C<Bool:true>, then this function results simply in C<topic>; or, for an
+unconditional C<Bool:false>, this function results in the empty relation
+with the same heading.  Note that this operation is also legitimately known
+as I<where>.  See also the C<sys.Core.Relation.semijoin> function, which is
+a simpler-syntax alternative for C<sys.Core.Relation.restriction> in its
+typical usage where restrictions are composed simply of anded or ored tests
+for attribute value equality.
+
+=item C<function sys.Core.Relation.cmpl_restriction result Relation params
+{ topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+
+This function is the same as C<restriction> but that it results in the
+complementary subset of tuples of C<topic> when given the same arguments.
+See also the C<sys.Core.Relation.semidifference> function.
+
+=item C<function sys.Core.Relation.extension result Relation params {
+topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+
+This function results in the relational extension of its C<topic> argument
+as determined by applying the C<Tuple>-resulting function named in its
+C<func> argument when the latter function is curried by its C<assuming>
+argument.  The result relation has a heading that is a superset of that of
+C<topic>, and its body contains the same number of tuples, with all
+attribute values of C<topic> retained, and possibly extra present,
+determined as follows; for each C<topic> tuple, the function named by
+C<func> results in a second tuple when passed the first tuple as its
+C<topic> argument and C<assuming> as its C<assuming> argument; the first
+and second tuples must have no attribute names in common, and the result
+tuple is derived by joining (cross-product) the tuples together.  As a
+trivial case, if C<func> is defined to unconditionally result in the
+degree-zero tuple, then this function results simply in C<topic>.
+
+=item C<function sys.Core.Relation.static_extension result Relation params
+{ topic(Relation), attrs(Tuple) }>
+
+This function is a simpler-syntax alternative to both
+C<sys.Core.Relation.extension> and C<sys.Core.Relation.product> in the
+typical scenario of extending a relation, given in the C<topic> argument,
+such that every tuple has mutually identical values for each of the new
+attributes; the new attribute names and common values are given in the
+C<attrs> argument.
+
+=item C<function sys.Core.Relation.substitution result Relation params {
+topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+
+This function is similar to C<extension> except that it substitutes values
+of existing relation attributes rather than adding new attributes.  The
+result relation has the same heading as C<topic>.  The result tuple of the
+function named in C<func> must have a heading that is a subset of the
+heading of C<topic>; corresponding values resulting from the function named
+in C<func> will replace the values of the tuples of C<topic>.  The result
+relation has a cardinality that is the same as that of C<topic>, unless the
+result of any substitutions was redundant tuples, in which case the result
+has appropriately fewer tuples.  As a trivial case, if C<func> is defined
+to unconditionally result in either the degree-zero tuple or in the same
+tuple as its own C<topic> argument, then this function results simply in
+C<topic>; or, if C<func> is defined to have a static result and it replaces
+all attributes, then this function's result will have just 0..1 tuples.
+
+=item C<function sys.Core.Relation.static_substitution result Relation
+params { topic(Relation), attrs(Tuple) }>
+
+This function is a simpler-syntax alternative to
+C<sys.Core.Relation.substitution> in the typical scenario where every tuple
+of a relation, given in the C<topic> argument, is updated with identical
+values for the same attributes; the new attribute values are given in the
+C<attrs> argument.
+
+=item C<function sys.Core.Relation.substitution_in_restriction result
+Relation params { topic(Relation), restr_func(Cat.NameChain),
+restr_assuming(Tuple), subst_func(Cat.NameChain), subst_assuming(Tuple) }>
+
+This function is like C<substitution> except that it only transforms a
+subset of the tuples of C<topic> rather than all of them.  It is a
+short-hand for first separating the tuples of C<topic> into 2 groups where
+those passed by a relational restriction (defined by C<restr_func> and
+C<restr_assuming>) are then transformed (defined by C<subst_func> and
+C<subst_assuming>), then the result of the substitution is unioned with the
+un-transformed group.  See also the C<substitution_in_semijoin> function,
+which is a simpler-syntax alternative for C<substitution_in_restriction> in
+its typical usage where restrictions are composed simply of anded or ored
+tests for attribute value equality.
+
+=item C<function sys.Core.Relation.static_substitution_in_restriction
+result Relation params { topic(Relation), restr_func(Cat.NameChain),
+restr_assuming(Tuple), subst(Tuple) }>
+
+This function is to C<sys.Core.Relation.substitution_in_restriction> what
+C<sys.Core.Relation.static_substitution> is to
+C<sys.Core.Relation.substitution>.  See also the
+C<static_substitution_in_semijoin> function.
+
+=item C<function sys.Core.Relation.map result Relation params {
+topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+
+This function provides a convenient one-place generalization of per-tuple
+transformations that otherwise might require the chaining of up to a
+half-dozen other operators like restriction, extension, and rename.  This
+function results in a relation each of whose tuples is the result of
+applying, to each of the tuples of its C<topic> argument, the
+C<Tuple>-resulting function named in its C<func> argument when the latter
+function is curried by its C<assuming> argument.  There is no restriction
+on what attributes the result tuple of C<func> may have (except that all
+tuples from C<func> must have compatible headings); this tuple from C<func>
+would completely replace the original tuple from C<topic>.  The result
+relation has a cardinality that is the same as that of C<topic>, unless the
+result of C<func> was redundant tuples, in which case the result has
+appropriately fewer tuples.  As a trivial case, if C<func> is defined to
+unconditionally result in the same tuple as its own C<topic> argument, then
+this function results simply in C<topic>; or, if C<func> is defined to have
+a static result, then this function's result will have just 0..1 tuples.
+
+=item C<function sys.Core.Relation.summary result Relation params {
+topic(Relation), group_per(Cat.SetOfName), summ_func(Cat.NameChain),
+summ_assuming(Tuple) }>
+
+This function provides a convenient context for using aggregate functions
+to derive a per-group summary relation, which is its result, from another
+relation, which is its C<topic> argument.  This function first performs a
+C<cmpl_group> on C<topic> using C<group_per> to specify which attributes
+get grouped into a new relation-valued attribute and which don't; those
+that don't instead get wrapped into a tuple-valued attribute.  Then, per
+tuple in the main relation, this function applies the C<Tuple>-resulting
+function named in its C<summ_func> argument when the latter function is
+curried by its C<summ_assuming> argument (passed to it as just
+C<assuming>); the curried function has, rather than the typical 1 C<topic>
+varying parameter, 2 varying parameters named C<summarize> and C<per>,
+which are valued with the relation-valued attribute and tuple-valued
+attribute, respectively.  As per a function that C<map> applies, the
+function named by C<summ_func> effectively takes a whole post-grouping
+input tuple and results in a whole tuple; the applied function would
+directly invoke any N-ary / aggregate operators, and extract their inputs
+from (or calculate) C<summarize> as it sees fit.  Note that C<summary> is
+not intended to be used to summarize an entire C<topic> relation at once
+(except by chance of it resolving to 1 group); you should instead invoke
+your summarize-all C<func> directly, or inline it, rather than by way of
+C<summary>, especially if you want a single-tuple result on an empty
+C<topic> (which C<summary>) won't do.
+
+=back
+
+=head2 Functions for sys.Core.Relation.Relation Having Multiple Input
+Relations
+
+=over
+
+=item C<function sys.Core.Relation.is_subset result Bool params {
+look_in(Relation), look_for(Relation) }>
+
+This function results in C<Bool:true> iff the set of tuples comprising
+C<look_for> is a subset of the set of tuples comprising C<look_in>, and
+C<Bool:false> otherwise.  This function will fail if the 2 arguments don't
+have the same heading.
+
+=item C<function sys.Core.Relation.is_not_subset result Bool params {
+look_in(Relation), look_for(Relation) }>
+
+This function is exactly the same as C<sys.Core.Relation.is_subset> except
+that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<function sys.Core.Relation.is_proper_subset result Bool params {
+look_in(Relation), look_for(Relation) }>
+
+This function is exactly the same as C<sys.Core.Relation.is_subset> except
+that it results in C<Bool:false> if its 2 arguments are equal.
+
+=item C<function sys.Core.Relation.is_not_proper_subset result Bool params
+{ look_in(Relation), look_for(Relation) }>
+
+This function is exactly the same as C<sys.Core.Relation.is_proper_subset>
+except that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<function sys.Core.Relation.union result Relation params {
+topic(SetOfRelation) }>
+
+This function results in the relational union/inclusive-or of the N element
+values of its argument; it is a reduction operator that recursively takes
+each pair of input values and relationally unions (which is both
+commutative and associative) them together until just one is left, which is
+the result.  The result relation has the same heading as all of its inputs,
+and its body contains every tuple that is in any of the input relations.
+If C<topic> has zero values, then C<union> results in the empty relation
+with the same heading, which is the per-distinct-heading identity value for
+relational union.
+
+=item C<function sys.Core.Relation.disjoint_union result Relation params {
+topic(SetOfRelation) }>
+
+This function is exactly the same as C<sys.Core.Relation.union> except that
+it will fail if any 2 input values have a tuple in common.
+
+=item C<function sys.Core.Relation.exclusion result Relation params {
+topic(BagOfRelation) }>
+
+This function results in the relational exclusion/exclusive-or of the N
+element values of its argument; it is a reduction operator that recursively
+takes each pair of input values and relationally excludes (which is both
+commutative and associative) them together until just one is left, which is
+the result.  The result relation has the same heading as all of its inputs,
+and its body contains every tuple that is in just an odd number of the
+input relations.  If C<topic> has zero values, then C<exclusion> results in
+the empty relation with the same heading, which is the per-distinct-heading
+identity value for relational exclusion.  Note that this operation is also
+legitimately known as I<symmetric difference>.
+
+=item C<function sys.Core.Relation.intersection result Relation params {
+topic(SetOfRelation) }>
+
+This function results in the relational intersection/and of the N element
+values of its argument; it is a reduction operator that recursively takes
+each pair of input values and relationally intersects (which is both
+commutative and associative) them together until just one is left, which is
+the result.  The result relation has the same heading as all of its inputs,
+and its body contains only the tuples that are in every one of the input
+relations.  If C<topic> has zero values, then C<intersection> results in
+the universal relation with the same heading (that is, the relation having
+all the tuples that could ever exist in a relation with that heading),
+which is the per-distinct-heading identity value for relational
+intersection.  Note that this I<intersection> operator is conceptually a
+special case of C<join>, applicable when the headings of the inputs are the
+same, and the other will produce the same result as this when given the
+same inputs, but with the exception that I<intersection> has a different
+identity value when given zero inputs.  This function will fail on a
+C<topic> of zero values if the result type's universal relation is
+impossible or impractically large to represent, such as when any attributes
+are of infinite types.
+
+=item C<function sys.Core.Relation.difference result Relation params {
+source(Relation), filter(Relation) }>
+
+This function results in the relational difference when its C<filter>
+argument is subtracted from its C<source> argument.  The result relation
+has the same heading as both of its arguments, and its body contains only
+the tuples that are in C<source> and are not in C<filter>.  This function
+will fail if its 2 arguments do not have the same heading.  Note that this
+I<difference> operator is conceptually a special case of I<semidifference>,
+applicable when the headings of the inputs are the same.
+
+=item C<function sys.Core.Relation.semidifference result Relation params {
+source(Relation), filter(Relation) }>
+
+This function is the same as C<semijoin> but that it results in the
+complementary subset of tuples of C<source> when given the same arguments.
+Note that this operation is also legitimately known as I<antijoin> or
+I<anti-semijoin>.
+
+=item C<function sys.Core.Relation.semijoin result Relation params {
+source(Relation), filter(Relation) }>
+
+This function results in the relational semijoin of its C<source> and
+C<filter> arguments.  The result relation has the same heading as
+C<source>, and its body contains the subset of C<source> tuples that match
+those of C<filter> as per C<join>.  Note that relational semijoin is
+conceptually a short-hand for first doing an ordinary relational join
+between its 2 arguments, and then performing a relational projection on all
+of the attributes that just C<source> has.  This function will fail any
+time that C<join> would fail on the same 2 input relations.
+
+=item C<function sys.Core.Relation.join result Relation params {
+topic(QuasiSetOfRelation) }>
+
+This function results in the relational join of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and relationally joins (which is both commutative and
+associative) them together until just one is left, which is the result.
+The result relation has a heading that is a union of all of the headings of
+its inputs, and its body is the result of first pairwise-matching every
+tuple of each input relation with every tuple of each other input relation,
+then where each member of a tuple pair has attribute names in common,
+eliminating pairs where the values of those attributes differ and unioning
+the remaining said tuple pairs, then eliminating any result tuples that
+duplicate others.  If C<topic> has zero values, then C<join> results in the
+nullary relation with one tuple, which is the identity value for relational
+join.  As a trivial case, if any input relation has zero tuples, then the
+function's result will too; or, if any input is the nullary relation with
+one tuple, that input can be ignored (see identity value); or, if any 2
+inputs have no attribute names in common, then the join of just those 2 is
+a cartesian product; or, if any 2 inputs have all attribute names in
+common, then the join of just those 2 is an intersection; or, if for 2
+inputs, one's set of attribute names is a proper subset of another's, then
+the join of just those to is a semijoin with the former filtering the
+latter.  This function will fail if any input relations have attributes
+with common names but different/incompatible declared types.  Note that
+this operation is also legitimately known as I<natural inner join>.
+
+=item C<function sys.Core.Relation.product result Relation params {
+topic(QuasiSetOfRelation) }>
+
+This function results in the relational cartesian/cross product of the N
+element values of its argument; it is conceptually a special case of
+C<join> where all input relations have mutually distinct attribute names;
+unlike C<join>, C<product> will fail if any inputs have attribute names in
+common.  Note that this operation is also legitimately known as
+I<cartesian/cross join>.
+
+=item C<function sys.Core.Relation.composition result Relation params {
+r1(Relation), r2(Relation) }>
+
+This function results in the relational composition of its 2 arguments.  It
+is conceptually a short-hand for first doing an ordinary relational join
+between its 2 arguments, and then performing a relational projection on all
+of the attributes that only one of the arguments has; that is, the result
+has all of and just the attributes that were not involved in matching the
+tuples of the 2 arguments.  This function will fail any time that C<join>
+would fail on the same 2 input relations.
+
+=item C<function sys.Core.Relation.quotient result Relation params {
+dividend(Relation), divisor(Relation) }>
+
+This function results in the quotient when its C<dividend> argument is
+divided by its C<divisor> argument using relational division.  Speaking
+informally, say the relations C<dividend> and C<divisor> are called C<A>
+and C<B>, and their attribute sets are respectively named C<{X,Y}> and
+C<{Y}>, then the result relation has a heading composed of attributes
+C<{X}> (so the result and C<divisor> headings are both complementary
+subsets of the C<dividend> heading); the result has all tuples C<{X}> such
+that a tuple C<{X,Y}> appears in C<A> for all tuples C<{Y}> appearing in
+C<B>; that is, C<A / B> is shorthand for C<A{X} - ((A{X} join B) - A){X}>.
+
+=item C<function sys.Core.Relation.substitution_in_semijoin result Relation
+params { topic(Relation), restr(Relation), subst_func(Cat.NameChain),
+subst_assuming(Tuple) }>
+
+This function is like C<substitution_in_restriction> except that the subset
+of the tuples of C<topic> to be transformed is determined by those matched
+by a semijoin with C<restr> rather than those that pass a generic
+relational restriction.
+
+=item C<function sys.Core.Relation.static_substitution_in_semijoin result
+Relation params { topic(Relation), restr(Relation), subst(Tuple) }>
+
+This function is to C<sys.Core.Relation.substitution_in_semijoin> what
+C<sys.Core.Relation.static_substitution> is to
+C<sys.Core.Relation.substitution>.
+
+=item C<function sys.Core.Relation.join_with_group result Relation params {
+primary(Relation), secondary(Relation), group_attr(Cat.Name) }>
+
+This function is a short-hand for first taking a (natural inner) C<join> of
+its C<primary> and C<secondary> arguments, and then taking a C<group> on
+all of the attributes that only the C<secondary> argument had, such that
+the attribute resulting from the group has the name C<group_attr>.  The
+result has 1 tuple for every tuple of C<primary> where at least 1 matching
+tuple exists in C<secondary>.  This function will fail if C<group_attr> is
+the same name as any source attribute that wasn't grouped.  This function
+is a convenient tool for gathering both parent and child records from a
+database using a single query while avoiding duplication of the parent
+record values.
+
+=item C<function sys.Core.Relation.outer_join_with_group result Relation
+params { primary(Relation), secondary(Relation), group_attr(Cat.Name) }>
+
+This function is the same as C<sys.Core.Relation.join_with_group> except
+that it results in a half-outer natural join rather than an inner natural
+join; every tuple of C<primary> has exactly 1 corresponding tuple in the
+result, but where there were no matching C<secondary> tuples, the result
+attribute named by C<group_attr> contains zero tuples rather than 1+.
+
+=item C<function sys.Core.Relation.outer_join_with_maybes result
+Relation params { primary(Relation), secondary(Relation) }>
+
+This function results in a plain half-outer natural join of its C<primary>
+and C<secondary> arguments where all the result attributes that come from
+just C<secondary> are C<Maybe>-typed; for result tuples from matched source
+tuples, each C<secondary> attribute value is a C<Single>; for result tuples
+from non-matched C<primary> tuples, each C<secondary> attribute value is a
+C<Nothing>.  The C<outer_join_with_maybes> function is Muldis D's answer to
+the SQL LEFT OUTER JOIN where SQL NULL is implicitly used in result rows
+that were a non-match.
+
+=item C<function sys.Core.Relation.outer_join_with_defaults result
+Relation params { primary(Relation), secondary(Relation) }>
+
+This function is the same as C<sys.Core.Relation.outer_join_with_maybes>
+but that C<secondary>-sourced result attributes are not converted to
+C<Maybe>; rather, for result tuples from non-matches, the declared types of
+the C<secondary> attributes are considered, and the default values of those
+types are used to fill in missing result values.
+
+=item C<function sys.Core.Relation.outer_join_with_product result
+Relation params { primary(Relation), secondary(Relation), filler(Tuple) }>
+
+This function is the same as C<sys.Core.Relation.outer_join_with_defaults>
+but that missing values are provided explicitly from the C<filler>
+argument, which is a tuple whose heading matches the projection of
+C<secondary>'s attributes that aren't in common with C<primary>, and whose
+body is the literal values to use for those missing attribute values.  This
+function gets its name in that conceptually the result tuples from
+non-matches are the result of performing a relational cross-product between
+the un-matched C<primary> tuples and the single C<filler> tuple.  This
+function could alternately be named I<outer_join_with_static_extension>.
+
+=item C<function sys.Core.Relation.outer_join_with_extension result
+Relation params { primary(Relation), secondary(Relation),
+exten_func(Cat.NameChain), exten_assuming(Tuple) }>
+
+This function is the same as C<sys.Core.Relation.outer_join_with_product>
+but that the result tuples from non-matches are the result of performing a
+relational extension on the un-matched C<primary> tuples such that each
+said result tuple is determined by applying the function named in
+C<exten_func> to each said C<primary> tuple when the named function is
+curried using the C<exten_assuming> argument.
+
+=back
+
+=head2 Functions for sys.Core.Relation.Set
+
+=over
+
+=item C<function sys.Core.Set.is_member result Bool params { set(Set),
+value(ScaTupRel) }>
+
+This function results in C<Bool:true> iff its C<value> argument matches the
+sole attribute of a tuple of its C<set> argument (that is, iff conceptually
+C<value> is a member of C<set>), and C<Bool:false> otherwise.  This
+function will fail if the declared type of C<value> isn't a subtype of the
+declared type of the attribute.
+
+=item C<function sys.Core.Set.is_not_member result Bool params { set(Set),
+value(ScaTupRel) }>
+
+This function is exactly the same as C<sys.Core.Set.is_member> except that
+it results in the opposite boolean value when given the same arguments.
+
+=item C<function sys.Core.Set.insertion result Set params { set(Set),
+value(ScaTupRel) }>
+
+This function results in a C<Set> that is the relational union of C<set>
+and a Set whose sole tuple has the sole attribute value of C<value>; that
+is, conceptually the result is C<value> inserted into C<set>.  As a trivial
+case, if C<value> already exists in C<set>, then the result is just C<set>.
+
+=item C<function sys.Core.Set.disjoint_insertion result Set params {
+set(Set), value(ScaTupRel) }>
+
+This function is exactly the same as C<sys.Core.Set.insertion> except that
+it will fail if C<value> already exists in C<set>.
+
+=item C<function sys.Core.Set.deletion result Set params { set(Set),
+value(ScaTupRel) }>
+
+This function results in a C<Set> that is the relational difference from
+C<set> of a Set whose sole tuple has the sole attribute value of C<value>;
+that is, conceptually the result is C<value> deleted from C<set>.  As a
+trivial case, if C<value> already doesn't exist in C<set>, then the result
+is just C<set>.
+
+=item C<function sys.Core.Set.reduction result ScaTupRel params {
+topic(Set), func(Cat.NameChain), assuming(Tuple), identity(ScaTupRel) }>
+
+This function is a generic reduction operator that recursively takes each
+pair of input values in C<topic> and applies an argument-specified scalar
+or nonscalar value-resulting function (which is both commutative and
+associative) to the pair until just one input value is left, which is the
+result.  The function to apply is named in the C<func> argument, and that
+function must have 3 arguments named C<v1>, C<v2>, C<assuming>; the last
+parameter is curried with the same-named argument of C<reduction>, and the
+first 2 parameters are the 2 input scalar or nonscalar values for an
+invocation.  If C<topic> has zero values, then C<reduction> results in the
+value given in C<identity>.  I<Note that C<identity> may be changed to take
+a function name rather than a value, for consistency with C<func>.> This
+function will fail if the declared type of C<identity> isn't a subtype of
+the declared type of the sole attribute of C<topic>.
+
+=item C<function sys.Core.Set.maybe_reduction result Maybe params {
+topic(Set), func(Cat.NameChain), assuming(Tuple) }>
+
+This function is exactly the same as C<sys.Core.Set.reduction> except that
+it does not take an C<assuming> argument, and it results in a C<Maybe> of
+what is otherwise the result type, and that result has zero elements if the
+argument has zero elements.
+
+=item C<function sys.Core.Set.Set_from_wrap result SetOfTuple params {
+topic(Relation) }>
+
+This function results in a C<Set> whose sole attribute is tuple-typed and
+the attribute values are all the tuples of C<topic>; is a short-hand for a
+relational wrap of all attributes of C<topic> such that the new
+tuple-valued attribute is named C<value>.
+
+=item C<function sys.Core.Set.Set_from_attr result Set params {
+topic(Relation), name(Cat.Name) }>
+
+This function results in a C<Set> consisting of all the values of the
+attribute of C<topic> named by C<name>.  It is a short-hand for a unary
+projection of just the named attribute plus its renaming to C<value>.
+
+=back
+
+=head2 Functions for sys.Core.Relation.Maybe
+
+=over
+
+=item C<function sys.Core.Maybe.nothing result Nothing params {}>
+
+This selector function results in the only zero-tuple Maybe value.
+
+=item C<function sys.Core.Maybe.single result Single params {
+value(ScaTupRel) }>
+
+This selector function results in the Maybe value with a single tuple whose
+C<value> attribute's value is the C<value> argument.
+
+=item C<function sys.Core.Maybe.attr result ScaTupRel params {
+topic(Single) }>
+
+This function results in the scalar or nonscalar value of the sole
+attribute of the sole tuple of its argument, which always exists when the
+argument is a C<Single>.
+
+=item C<function sys.Core.Maybe.attr_or_default result ScaTupRel params {
+topic(Maybe) }>
+
+This function results in the scalar or nonscalar value of the sole
+attribute of the sole tuple of its argument, if said tuple exists;
+otherwise, it results in the default value of the declared type of the said
+attribute.
+
+=item C<function sys.Core.Maybe.attr_or_value result ScaTupRel params {
+topic(Maybe), value(ScaTupRel) }>
+
+This function results in the scalar or nonscalar value of the sole
+attribute of the sole tuple of C<topic>, if said tuple exists; otherwise,
+it results in C<value>.  This function will fail if the declared type of
+C<value> isn't a subtype of the declared type of the attribute.
+
+=back
+
+=head2 Functions for sys.Core.Relation.Seq
+
+=over
+
+=item C<function sys.Core.Seq.value result ScaTupRel params { topic(Seq),
+index(UInt) }>
+
+This function results in the scalar or nonscalar C<value> attribute of the
+tuple of C<topic> whose C<index> attribute is C<index>.  This function will
+fail if no tuple exists in C<topic> with the specified index.
+
+=item C<function sys.Core.Seq.update_value result Seq params { topic(Seq),
+index(UInt), value(ScaTupRel) }>
+
+This function results in its C<topic> argument but that the C<value>
+attribute of the tuple of C<topic> whose C<index> attribute is C<index> has
+been updated with a new scalar or nonscalar value given by C<value>. This
+function will fail if no tuple exists in C<topic> with the specified index,
+or if the declared type of C<value> isn't a subtype of the declared type of
+the C<value> attribute.
+
+=item C<function sys.Core.Seq.insertion result Seq params { topic(Seq),
+index(UInt), value(ScaTupRel) }>
+
+This function results in its C<topic> argument but that a new tuple has
+been inserted whose C<index> is C<index> and whose C<value> is C<value>;
+any existing tuples with C<index> values greater than or equal to C<index>
+had theirs incremented by 1.  As a trivial case, if C<index> is equal to
+zero or is equal to the cardinality of C<topic>, then C<value> has become
+the new first or last (or only) element, respectively.  This function will
+fail if C<index> is greater than the cardinality of C<topic>, or if the
+declared type of C<value> isn't a subtype of the declared type of the
+C<value> attribute.
+
+=item C<function sys.Core.Seq.deletion result Seq params { topic(Seq),
+index(UInt) }>
+
+This function results in its C<topic> argument but that a tuple has been
+deleted whose C<index> is C<index>; any existing tuples with C<index>
+values greater than or equal to C<index> had theirs decremented by 1.  This
+function will fail if no tuple exists in C<topic> with the specified index.
+
+=item C<function sys.Core.Seq.is_element result Bool params { topic(Seq),
+value(ScaTupRel) }>
+
+This function results in C<Bool:true> iff its C<value> argument matches the
+C<value> attribute of at least one tuple of its C<topic> argument (that is,
+iff conceptually C<value> is an element of C<topic>), and C<Bool:false>
+otherwise.  This function will fail if the declared type of C<value> isn't
+a subtype of the declared type of that attribute.
+
+=item C<function sys.Core.Seq.is_not_element result Bool params {
+topic(Seq), value(ScaTupRel) }>
+
+This function is exactly the same as C<sys.Core.Seq.is_element> except that
+it results in the opposite boolean value when given the same arguments.
+
+=item C<function sys.Core.Seq.reduction result ScaTupRel params {
+topic(Seq), func(Cat.NameChain), assuming(Tuple), identity(ScaTupRel) }>
+
+This function is the same as C<sys.Core.Set.reduction>, including that
+input values for the reduction come from the C<value> attribute of
+C<topic>, except that it works with a C<Seq> rather than a C<Set>.  Also,
+the function named in C<func> is only associative, and I<not> commutative;
+the arguments to C<v1> and C<v2> of C<func> are guaranteed to be
+consecutive input elements, with the result returning to their place in
+sequence beween the other input elements.
+
+=item C<function sys.Core.Seq.maybe_reduction result Maybe params {
+topic(Seq), func(Cat.NameChain), assuming(Tuple) }>
+
+This function is to C<sys.Core.Set.maybe_reduction> as
+C<sys.Core.Seq.reduction> is to C<sys.Core.Set.reduction>.
+
+=item C<function sys.Core.Seq.catenation result Seq params {
+topic(SeqOfSeq) }>
+
+This function results in the catenation of the N element values of its
+argument; it is a reduction operator that recursively takes each
+consecutive pair of input values and catenates (which is associative) them
+together until just one is left, which is the result.  To catenate 2 C<Seq>
+means to union their tuples after first increasing all the C<index> values
+of the second one by the cardinality of the first one.  If C<topic> has
+zero values, then C<catenate> results in the empty sequence value, which is
+the identity value for catenate.
+
+=item C<function sys.Core.Seq.repeat result Seq params { topic(Seq),
+count(UInt) }>
+
+This function results in the catenation of C<count> instances of C<topic>.
+
+=item C<function sys.Core.Seq.reverse result Seq params { topic(Seq) }>
+
+This function results in its argument but that the order of its elements
+has been reversed.  For example, the input C<< { 0=>'a', 1=>'b', 2=>'c',
+3=>'d'} >> results in C<< { 0=>'d', 1=>'c', 2=>'b', 3=>'a' } >>.
+
+=item C<function sys.Core.Seq.is_subseq result Bool params { look_in(Seq),
+look_for(Seq) }>
+
+This function results in C<Bool:true> iff the sequence of values comprising
+C<look_for> is a sub-sequence of the sequence of values C<look_in>, and
+C<Bool:false> otherwise.  This function will fail if the 2 arguments don't
+have the same heading.
+
+=item C<function sys.Core.Seq.is_not_subseq result Bool params {
+look_in(Seq), look_for(Seq) }>
+
+This function is exactly the same as C<sys.Core.Seq.is_subseq> except that
+it results in the opposite boolean value when given the same arguments.
+
+=back
+
+=head2 Functions for sys.Core.Relation.Bag
+
+=over
+
+=item C<function sys.Core.Bag.cardinality result UInt params { topic(Bag)
+}>
+
+This function is like C<sys.Core.Relation.cardinality> but that it accounts
+for the greater-than-one multiplicity of values in its argument; it results
+in the sum of the C<count> attribute of its argument.
+
+=item C<function sys.Core.Bag.is_member result Bool params { bag(Bag),
+value(ScaTupRel) }>
+
+This function is the same as C<sys.Core.Set.is_member>, including that
+matching of C<value> is done against the C<value> attribute, except that it
+works with a C<Bag> rather than a C<Set>.
+
+=item C<function sys.Core.Bag.is_not_member result Bool params { bag(Bag),
+value(ScaTupRel) }>
+
+This function is exactly the same as C<sys.Core.Bag.is_member> except that
+it results in the opposite boolean value when given the same arguments.
+
+=item C<function sys.Core.Bag.count result UInt params { bag(Bag),
+value(ScaTupRel) }>
+
+This function results in the multiplicity / count of occurrances of
+C<value> in C<bag>; if a tuple exists in C<bag> whose C<value> attribute is
+C<value>, then the result is its C<count> attribute; otherwise the result
+is zero.
+
+=item C<function sys.Core.Bag.insertion result Bag params { bag(Bag),
+value(ScaTupRel) }>
+
+This function is the same as C<sys.Core.Set.insertion> as per C<is_member>
+but that its result differs depending on whether C<value> already exists in
+C<bag>; if it does, then no new tuple is added, but the C<count> attribute
+for the matching tuple is incremented by 1; if it does not, then a new
+tuple is added where its C<value> is C<value> and its C<count> is 1.
+
+=item C<function sys.Core.Bag.deletion result Bag params { bag(Bag),
+value(ScaTupRel) }>
+
+This function is the same as C<sys.Core.Set.deletion> as per C<is_member>
+but that its result differs depending on what the C<count> for any tuple
+matching C<value> that already exists in C<bag> is; if the C<count> is
+greater than 1, then it is decremented by 1; if it is equal to 1, then the
+tuple whose C<value> is C<value> is deleted.
+
+=item C<function sys.Core.Bag.reduction result ScaTupRel params {
+topic(Bag), func(Cat.NameChain), assuming(Tuple), identity(ScaTupRel) }>
+
+This function is the same as C<sys.Core.Set.reduction>, including that
+input values for the reduction come from the C<value> attribute of
+C<topic>, except that it works with a C<Bag> rather than a C<Set>; C<func>
+is invoked extra times, where both its C<v1> and C<v2> arguments might be
+different instances of the same value having >= 2 multiplicity.
+
+=item C<function sys.Core.Bag.maybe_reduction result Maybe params {
+topic(Bag), func(Cat.NameChain), assuming(Tuple) }>
+
+This function is to C<sys.Core.Set.maybe_reduction> as
+C<sys.Core.Bag.reduction> is to C<sys.Core.Set.reduction>.
+
+=item C<function sys.Core.Bag.Set_from_Bag result Set params { topic(Bag)
+}>
+
+This function results in the C<Set> that is the projection of the C<value>
+attribute of its C<Bag> argument.
+
+=item C<function sys.Core.Bag.Bag_from_Set result Bag params { topic(Set)
+}>
+
+This function results in the C<Bag> that is the extension of its C<Set>
+argument with a new C<count> attribute whose value for every tuple is 1.
+
+=item C<function sys.Core.Bag.Bag_from_wrap result BagOfTuple params {
+topic(Relation) }>
+
+This function results in a C<Bag> whose C<value> attribute is tuple-typed
+and that attribute's values are all the tuples of C<topic>; is a short-hand
+for a relational wrap of all attributes of C<topic> such that the new
+tuple-valued attribute is named C<value>, and then that result is extended
+with a C<count> attribute whose value for every tuple is 1.
+
+=item C<function sys.Core.Bag.Bag_from_attr result Bag params {
+topic(Relation), name(Cat.Name) }>
+
+This function results in a C<Bag> consisting of all the values of the
+attribute of C<topic> named by C<name>.  It is a short-hand for first doing
+a relational group on all attributes of C<topic> besides C<name> to produce
+a new relation-typed attribute, and then extending the result of the group
+with a new positive integer attribute whose values are the cardinality of
+the relation-valued attribute's values, and then doing a binary projection
+of the named attribute and the new integer attribute plus their renaming to
+C<value> and C<count> respectively.
+
+=item C<function sys.Core.Bag.is_subset result Bool params { look_in(Bag),
+look_for(Bag) }>
+
+This function is like C<sys.Core.Relation.is_subset> but that it accounts
+for the greater-than-one multiplicity of values in its arguments; this
+function returns C<Bool:true> iff the multiplicity of each C<look_for>
+value is less than or equal to the multiplicity of its counterpart
+C<look_in> value.
+
+=item C<function sys.Core.Bag.is_not_subset result Bool params {
+look_in(Bag), look_for(Bag) }>
+
+This function is like C<sys.Core.Relation.is_not_subset> as per
+C<is_subset>.
+
+=item C<function sys.Core.Bag.is_proper_subset result Bool params {
+look_in(Bag), look_for(Bag) }>
+
+This function is like C<sys.Core.Relation.is_proper_subset> as per
+C<is_subset>.  I<TODO: What is its definition?>
+
+=item C<function sys.Core.Bag.is_not_proper_subset result Bool params {
+look_in(Bag), look_for(Bag) }>
+
+This function is like C<sys.Core.Relation.is_not_proper_subset> as per
+C<is_subset>.  I<TODO: What is its definition?>
+
+=item C<function sys.Core.Bag.union result Bag params { topic(SetOfBag) }>
+
+This function is like C<sys.Core.Relation.union> but that it just looks at
+the C<value> attribute of its argument elements when determining what
+element tuples correspond; then for each tuple in the result, its C<count>
+attribute value is the maximum of the C<count> attribute values of its
+corresponding input element tuples.
+
+=item C<function sys.Core.Bag.intersection result Bag params {
+topic(SetOfBag) }>
+
+This function is like C<sys.Core.Relation.intersection> as C<union> is like
+C<sys.Core.Relation.union>; the minimum of C<count> attribute values is
+used rather than the maximum.
+
+=item C<function sys.Core.Bag.difference result Bag params { source(Bag),
+filter(Bag) }>
+
+This function is like C<sys.Core.Relation.difference> as C<union> is like
+C<sys.Core.Relation.union>; for corresponding input tuples, the result only
+has a tuple with the same C<value> if the C<count> of the C<source> tuple
+is greater than the C<count> of the C<filter> tuple, and the C<count> of
+the result tuple is the difference of those two.
+
+=back
+
+=head1 SYSTEM-DEFINED CORE GENERIC QUASI- FUNCTIONS
+
+I<This documentation is pending.>
+
+=head1 SYSTEM-DEFINED CORE CATALOG FUNCTIONS
+
+I<This documentation is pending.>
+
+=head1 SYSTEM-DEFINED CORE UPDATERS
+
+=head2 Generic Universal
+
+These update operators are applicable to values of any data type at all.
+
+=over
+
+=item C<updater sys.Core.Universal.assign update { target(Universal) } read
+{ v(Universal) }>
+
+This update operator will update the variable supplied as its C<target>
+argument so that it holds the value supplied as its C<v> argument.  This
+update operator's arguments must be of compatible declared types; in this
+case, C<v> must be a subtype of C<target>.
+
+=back
+
+=head1 SYSTEM-DEFINED CORE SYSTEM SERVICES
+
+These system services are applicable to just one or more specific
+system-defined core scalar data type.
+
+I<This documentation is pending.>
+
+=head1 SYSTEM-DEFINED CORE PROCEDURES
+
+=head2 Generic Control-Flow Procedures
+
+These procedures are applicable to use in all kinds of procedures.
+
+=over
+
+=item C<procedure sys.Core.Control.fail update {} read {
+topic(Cat.Exception) }>
+
+This procedure will throw the exception given as its argument; this results
+in the call stack unwinding, and transaction rollbacks, until it is caught.
+
+=item C<procedure sys.Core.Control.try_catch update { try_updating(Tuple),
+catch_updating(Tuple) } read { try(Cat.NameChain), catch(Cat.NameChain),
+try_assuming(Tuple), catch_assuming(Tuple) }>
+
+This procedure invokes the procedure named in its C<try> argument, giving
+it the arguments C<try_updating> and C<try_assuming> as its C<updating> and
+C<assuming> arguments, respectively.  If the C<try> procedure throws an
+exception, then any state changes it made roll back (but changes made
+before that don't), and the call stack unwinds to the C<try_catch> itself;
+then the procedure named by C<catch> is invoked similarly to C<try> was,
+with corresponding arguments, but with the extra read-only argument
+C<topic> whose value is a C<Cat.Exception>; if the C<catch> procedure also
+throws an exception (such as to say its not handling the thrown one), then
+that one is not caught and the call stack unwinding plus applicable
+transaction rollback carries on to the caller of the C<try_catch>.  If the
+C<try> procedure succeeds (doesn't throw an exception), then the C<catch>
+procedure is not called.
+
+=back
+
+=head1 SEE ALSO
+
+Go to L<Language::MuldisD> for the majority of distribution-internal
+references, and L<Language::MuldisD::SeeAlso> for the majority of
+distribution-external references.
+
+=head1 AUTHOR
+
+Darren Duncan (C<perl@DarrenDuncan.net>)
+
+=head1 LICENSE AND COPYRIGHT
+
+This file is part of the formal specification of the Muldis D language.
+
+Muldis D is Copyright © 2002-2008, Darren Duncan.
+
+See the LICENSE AND COPYRIGHT of L<Language::MuldisD> for details.
+
+=head1 ACKNOWLEDGEMENTS
+
+The ACKNOWLEDGEMENTS in L<Language::MuldisD> apply to this file too.
+
+=cut
