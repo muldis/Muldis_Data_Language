@@ -1,0 +1,270 @@
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Language::MuldisD::Core::Routines -
+Muldis D general purpose routines
+
+=head1 VERSION
+
+This document is Language::MuldisD::Core::Routines version 0.19.0.
+
+=head1 PREFACE
+
+This document is part of the Muldis D language specification, whose root
+document is L<Language::MuldisD>; you should read that root document before
+you read this one, which provides subservient details.  Moreover, you
+should read the L<Language::MuldisD::Core> document before this current
+document, as that forms its own tree beneath a root document branch.
+
+=head1 DESCRIPTION
+
+This document contains one or more sections that were moved here from
+L<Language::MuldisD::Core> so that that other document would not be too
+large.
+
+=head1 SYSTEM-DEFINED GENERIC UNIVERSAL FUNCTIONS
+
+These functions are applicable to values of any data type at all.
+
+=over
+
+=item C<function sys.Core.Universal.is_identical result Bool params {
+topic(Universal), other(Universal) }>
+
+This function results in C<Bool:true> iff its 2 arguments are exactly the
+same value, and C<Bool:false> otherwise.  This function's arguments must be
+of compatible declared types; in this case, 2 declared types are compatible
+iff at least one of the following is true: 1. they are both subtypes of a
+common scalar root type; 2. they are both subtypes of a common
+non-incomplete tuple or relation type, that is they essentially have the
+same headings; 3. at least one type is a generic (eg-C<Universal>) or
+incomplete (eg-C<Seq>) type, and it is a supertype of the other.  This
+function's 2 parameters are mutually commutative.
+
+=item C<function sys.Core.Universal.is_not_identical result Bool params {
+topic(Universal), other(Universal) }>
+
+This function is exactly the same as C<sys.Core.Universal.is_identical>
+except that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<function sys.Core.Universal.is_value_of_type result Bool params {
+topic(Universal), type(Cat.NameChain) }>
+
+This function results in C<Bool:true> iff the value of its C<topic>
+argument is a member of the data type whose name is given in the C<type>
+argument, and C<Bool:false> otherwise.  As trivial cases, this function
+always results in C<Bool:true> if the named type is C<Universal>, and
+C<Bool:false> if it is C<Empty>.  This function will fail if the named type
+doesn't exist in the virtual machine.
+
+=item C<function sys.Core.Universal.treated result Universal params {
+topic(Universal), as(Cat.NameChain) }>
+
+This function results in the value of its C<topic> argument, but that the
+declared type of the result is the not-C<Empty> data type whose name is
+given in the C<as> argument.  This function will fail if the named type
+doesn't exist in the virtual machine, or if C<topic> isn't a member of the
+named type.  The purpose of C<treated> is to permit taking values from a
+context having a more generic declared type, and using them in a context
+having a more specific declared type; such an action would otherwise be
+blocked at compile time due to a type-mismatch error; C<treated> causes the
+type-mismatch validation, and possible failure, to happen at runtime
+instead, on the actual value rather than declared value.  For example, if
+you are storing an C<Int> value in a C<Scalar>-typed variable, using
+C<treated> will cause the compiler to let you use that variable as an
+argument to C<Int.sum>, which it otherwise wouldn't.
+
+=item C<function sys.Core.Universal.default result Universal params {
+of(Cat.NameChain) }>
+
+This function results in the default value of the not-C<Empty> data type
+whose name is given in the C<of> argument, and the declared type of the
+result is that same type.  This function will fail if the named type
+doesn't exist in the virtual machine, either at compile or runtime
+depending whether the type is in the system or user namespace.  This
+function is conceptually implicitly used to provide default values for
+variables, so they always hold valid values of their declared type.
+
+=back
+
+=head1 SYSTEM-DEFINED GENERIC ORDERED FUNCTIONS
+
+These functions are applicable to values of any data type which is a
+subtype of C<Ordered>.  They provide a common syntax for sort-related
+functionality, though technically every type having these functions is
+re-implementing its own version.  If values of an ordered data type can
+conceivably be sorted using multiple criteria (such as different text
+collations), then these functions just represent the default criteria; any
+additional criteria are represented by additional functions declared for
+just the types they apply to.
+
+=over
+
+=item C<function sys.Core.Ordered.is_before result Bool params {
+topic(Ordered), other(Ordered) }>
+
+This function results in C<Bool:true> iff its 2 arguments are non-identical
+and the value of the C<topic> argument is considered to come before the
+value of the C<other> argument when the 2 values are arranged in order (as
+defined by the type); it results in C<Bool:false> otherwise.  This
+function's arguments must be of compatible declared types; in this case, 2
+declared types are compatible iff they are both subtypes of a common scalar
+type that declares itself an C<Ordered> subtype.  Note that C<is_before> is
+considered the only fundamental ordered-specific operator, and all others
+are defined over it plus C<is_identical>.
+
+=item C<function sys.Core.Ordered.is_not_before result Bool params {
+topic(Ordered), other(Ordered) }>
+
+This function is exactly the same as C<sys.Core.Ordered.is_before> except
+that it results in the opposite boolean value when given the same
+arguments.  (It could alternately be called "is after or is identical".)
+
+=item C<function sys.Core.Ordered.is_inside_range result Bool params {
+topic(Ordered), min(Ordered), max(Ordered), min_is_inside(Bool),
+max_is_inside(Bool) }>
+
+This function results in C<Bool:true> iff its C<topic> argument is within
+the range whose bounds are defined by its C<min> and C<max> arguments.  If
+C<min_is_inside> or C<max_is_inside> are C<Bool:true>, then C<topic> is
+considered to be within the range if it is equal to C<min> or C<max>,
+respectively.  This function's arguments must be of compatible declared
+types as per C<sys.Core.Ordered.comparison>.  This function will fail if
+C<max> is before C<min>.
+
+=item C<function sys.Core.Ordered.is_outside_range result Bool params {
+topic(Ordered), min(Ordered), max(Ordered), min_is_inside(Bool),
+max_is_inside(Bool) }>
+
+This function is exactly the same as C<sys.Core.Ordered.is_inside_range>
+except that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<function sys.Core.Ordered.min result Ordered params {
+topic(SetOfOrdered) }>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and picks the minimum of the 2 (a process which
+is both commutative and associative) until just one is left, which is the
+function's result.  If C<topic> has zero values, then C<min> results in the
+result type's concept of positive infinity, which is the identity value for
+I<min>.  This function will fail on a C<topic> of zero values if the result
+type's concept of positive infinity is impossible or impractically large to
+represent, such as with the infinite C<Text> type.
+
+=item C<function sys.Core.Ordered.max result Ordered params {
+topic(SetOfOrdered) }>
+
+This function is exactly the same as C<sys.Core.Ordered.min> except that it
+results in the maximum input element value rather than the minimum one, and
+its identity value is the result type's concept of negative infinity.
+
+=item C<function sys.Core.Ordered.maybe_min result MaybeOfOrdered params {
+topic(SetOfOrdered) }>
+
+This function is exactly the same as C<sys.Core.Ordered.min> except that it
+results in a C<Maybe> of what is otherwise the result type, and that result
+has zero elements if the argument has zero elements.
+
+=item C<function sys.Core.Ordered.maybe_max result MaybeOfOrdered params {
+topic(SetOfOrdered) }>
+
+This function is to C<sys.Core.Ordered.max> as
+C<sys.Core.Ordered.maybe_min> is to C<sys.Core.Ordered.min>.
+
+=back
+
+=head1 SYSTEM-DEFINED CORE GENERIC QUASI- FUNCTIONS
+
+I<This documentation is pending.>
+
+=head1 SYSTEM-DEFINED CORE CATALOG FUNCTIONS
+
+I<This documentation is pending.>
+
+=head1 SYSTEM-DEFINED CORE UPDATERS
+
+=head2 Generic Universal
+
+These update operators are applicable to values of any data type at all.
+
+=over
+
+=item C<updater sys.Core.Universal.assign update { target(Universal) } read
+{ v(Universal) }>
+
+This update operator will update the variable supplied as its C<target>
+argument so that it holds the value supplied as its C<v> argument.  This
+update operator's arguments must be of compatible declared types; in this
+case, C<v> must be a subtype of C<target>.
+
+=back
+
+=head1 SYSTEM-DEFINED CORE SYSTEM SERVICES
+
+These system services are applicable to just one or more specific
+system-defined core scalar data type.
+
+I<This documentation is pending.>
+
+=head1 SYSTEM-DEFINED CORE PROCEDURES
+
+=head2 Generic Control-Flow Procedures
+
+These procedures are applicable to use in all kinds of procedures.
+
+=over
+
+=item C<procedure sys.Core.Control.fail update {} read {
+topic(Cat.Exception) }>
+
+This procedure will throw the exception given as its argument; this results
+in the call stack unwinding, and transaction rollbacks, until it is caught.
+
+=item C<procedure sys.Core.Control.try_catch update { try_updating(Tuple),
+catch_updating(Tuple) } read { try(Cat.NameChain), catch(Cat.NameChain),
+try_assuming(Tuple), catch_assuming(Tuple) }>
+
+This procedure invokes the procedure named in its C<try> argument, giving
+it the arguments C<try_updating> and C<try_assuming> as its C<updating> and
+C<assuming> arguments, respectively.  If the C<try> procedure throws an
+exception, then any state changes it made roll back (but changes made
+before that don't), and the call stack unwinds to the C<try_catch> itself;
+then the procedure named by C<catch> is invoked similarly to C<try> was,
+with corresponding arguments, but with the extra read-only argument
+C<topic> whose value is a C<Cat.Exception>; if the C<catch> procedure also
+throws an exception (such as to say its not handling the thrown one), then
+that one is not caught and the call stack unwinding plus applicable
+transaction rollback carries on to the caller of the C<try_catch>.  If the
+C<try> procedure succeeds (doesn't throw an exception), then the C<catch>
+procedure is not called.
+
+=back
+
+=head1 SEE ALSO
+
+Go to L<Language::MuldisD> for the majority of distribution-internal
+references, and L<Language::MuldisD::SeeAlso> for the majority of
+distribution-external references.
+
+=head1 AUTHOR
+
+Darren Duncan (C<perl@DarrenDuncan.net>)
+
+=head1 LICENSE AND COPYRIGHT
+
+This file is part of the formal specification of the Muldis D language.
+
+Muldis D is Copyright © 2002-2008, Darren Duncan.
+
+See the LICENSE AND COPYRIGHT of L<Language::MuldisD> for details.
+
+=head1 ACKNOWLEDGEMENTS
+
+The ACKNOWLEDGEMENTS in L<Language::MuldisD> apply to this file too.
+
+=cut

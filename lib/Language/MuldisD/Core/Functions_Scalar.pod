@@ -1,0 +1,675 @@
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Language::MuldisD::Core::Functions_Scalar -
+Muldis D general purpose scalar functions
+
+=head1 VERSION
+
+This document is Language::MuldisD::Core::Functions_Scalar version 0.19.0.
+
+=head1 PREFACE
+
+This document is part of the Muldis D language specification, whose root
+document is L<Language::MuldisD>; you should read that root document before
+you read this one, which provides subservient details.  Moreover, you
+should read the L<Language::MuldisD::Core> document before this current
+document, as that forms its own tree beneath a root document branch.
+
+=head1 DESCRIPTION
+
+This document contains one or more sections that were moved here from
+L<Language::MuldisD::Core> so that that other document would not be too
+large.
+
+=head1 SYSTEM-DEFINED CORE SCALAR FUNCTIONS
+
+These functions are applicable to just one or more specific system-defined
+core scalar data type.
+
+=head2 Functions for sys.Core.Bool.Bool
+
+These functions select values of the C<Bool> enumeration.
+
+=over
+
+=item C<function sys.Core.Bool.(false|true) result Bool params {}>
+
+This selector function results in the C<Bool:(false|true)> value.
+
+=back
+
+These functions implement commonly used boolean operations.
+
+=over
+
+=item C<function sys.Core.Bool.not result Bool params { topic(Bool) }>
+
+This function results in the logical I<not> of its argument.
+
+=item C<function sys.Core.Bool.and result Bool params { topic(SetOfBool) }>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and does a logical I<and> (which is both
+commutative and associative) on them until just one is left, which is the
+function's result.  If C<topic> has zero values, then C<and> results in
+C<Bool:true>, which is the identity value for logical I<and>.
+
+=item C<function sys.Core.Bool.or result Bool params { topic(SetOfBool) }>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and does a logical inclusive-or (which is both
+commutative and associative) on them until just one is left, which is the
+function's result.  If C<topic> has zero values, then C<or> results in
+C<Bool:false>, which is the identity value for logical inclusive-or.
+
+=item C<function sys.Core.Bool.xor result Bool params { topic(BagOfBool) }>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and does a logical exclusive-or (which is both
+commutative and associative) on them until just one is left, which is the
+function's result.  If C<topic> has zero values, then C<xor> results in
+C<Bool:false>, which is the identity value for logical exclusive-or.
+
+=back
+
+=head2 Functions for sys.Core.Int.Int
+
+These functions implement commonly used integer numeric operations.
+
+=over
+
+=item C<function sys.Core.Int.increment result Int params { topic(Int) }>
+
+This function results in its argument incremented by 1.
+
+=item C<function sys.Core.Int.decrement result Int params { topic(Int) }>
+
+This function results in its argument decremented by 1.
+
+=item C<function sys.Core.Int.abs result UInt params { topic(Int) }>
+
+This function results in the absolute value of its argument.
+
+=item C<function sys.Core.Int.sum result Int params { addends(BagOfInt) }>
+
+This function results in the sum of the N element values of its argument;
+it is a reduction operator that recursively takes each pair of input values
+and adds (which is both commutative and associative) them together until
+just one is left, which is the result.  If C<addends> has zero values, then
+C<sum> results in the integer zero, which is the identity value for
+addition.
+
+=item C<function sys.Core.Int.difference result Int params { minuend(Int),
+subtrahend(Int) }>
+
+This function results in the difference when its C<subtrahend> argument is
+subtracted from its C<minuend> argument.
+
+=item C<function sys.Core.Int.product result Int params { factors(BagOfInt)
+}>
+
+This function results in the product of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and multiplies (which is both commutative and associative)
+them together until just one is left, which is the result.  If C<factors>
+has zero values, then C<product> results in the integer 1, which is the
+identity value for multiplication.
+
+=item C<function sys.Core.Int.quotient result Int params { dividend(Int),
+divisor(Int) }>
+
+This function results in the quotient when its C<dividend> argument is
+divided by its C<divisor> argument using integer division.  This function
+will fail if C<divisor> is zero.
+
+=item C<function sys.Core.Int.remainder result UInt params { dividend(Int),
+divisor(Int) }>
+
+This function results in the remainder when its C<dividend> argument is
+divided by its C<divisor> argument using integer division.  This function
+will fail if C<divisor> is zero.
+
+=item C<function sys.Core.Int.maybe_quotient result MaybeOfInt params {
+dividend(Int), divisor(Int) }>
+
+This function is exactly the same as C<sys.Core.Int.quotient> except that
+it results in a C<Maybe> of what is otherwise the result, and that result
+has zero elements if C<divisor> is zero.
+
+=item C<function sys.Core.Int.maybe_remainder result MaybeOfUInt params {
+dividend(Int), divisor(Int) }>
+
+This function is exactly the same as C<sys.Core.Int.remainder> except that
+it results in a C<Maybe> of what is otherwise the result, and that result
+has zero elements if C<divisor> is zero.
+
+=item C<function sys.Core.Int.range result Int params { topic(SetOfInt) }>
+
+This function results in the difference between the lowest and highest
+element values of its argument.  If C<topic> has zero values, then C<range>
+results in the integer zero.
+
+=item C<function sys.Core.Int.median result SetOfInt params {
+topic(BagOfInt) }>
+
+This function results in the 1 or 2 median values of the N element values
+of its argument; they are returned as a set.  It is equivalent to first
+arranging the input values from least to greatest, and then taking the
+single middle value, if the count of input values is odd, or taking the 2
+middle values, if the count of input values is even (but if the 2 middle
+values are the same value, the output has one element).  If C<topic> has
+zero values, then the result set is empty.
+
+=item C<function sys.Core.Int.mode result SetOfInt params { topic(BagOfInt)
+}>
+
+This function results in the mode of the N element values of its argument;
+it is the set of values that appear the most often as input elements, and
+all have the same count of occurrances.  As a trivial case, if all input
+elements have the same count of occurrances, then they will all be in the
+output.  If C<topic> has zero values, then the result set is empty.
+
+=item C<function sys.Core.Int.power result Int params { radix(Int),
+exponent(UInt) }>
+
+This function results in its C<radix> argument taken to the power of its
+(unsigned integer) C<exponent> argument.  This function will fail if
+C<radix> and C<exponent> are both zero.
+
+=item C<function sys.Core.Int.factorial result PInt params { topic(UInt) }>
+
+This function results in the factorial of its argument (it is defined for
+an argument of zero to result in 1, as per the identity value for
+multiplication of an empty set).
+
+=back
+
+These functions convert between C<Int> values and canonically formatted
+representations of integers as character strings.
+
+=over
+
+=item C<function sys.Core.Int.Int_from_NEText result Int params {
+text(NEText), radix(Cat.PInt2_36) }>
+
+This selector function results in the C<Int> value that its C<text>
+argument maps to when the whole character string is evaluated as a
+base-C<radix> integer.  Extending the typical formats of [base-2, base-8,
+base-10, base-16], this function supports base-2 through base-36; to get
+the latter, the characters 0-9 and A-Z represent values in 0-35.  This
+function will fail if C<text> can't be mapped as specified.
+
+=item C<function sys.Core.Int.NEText_from_Int result NEText params {
+int(Int), radix(Cat.PInt2_36) }>
+
+This selector function results in the C<NEText> value where its C<int>
+argument is formatted as a base-C<radix> integer.
+
+=back
+
+These functions convert between C<Int> values and canonically formatted
+representations of integers as binary strings.  I<Conjecture: These may not
+actually be useful, and perhaps only operators that take an argument
+specifying a fixed-length field size, with big and little endian versions,
+would be appropriate instead.  Or maybe both kinds are necessary.>
+
+=over
+
+=item C<function sys.Core.Int.Int_from_Blob_S_VBE result Int params {
+blob(NEBlob) }>
+
+This selector function results in the C<Int> value that its C<blob>
+argument maps to when the whole bit string is treated literally as a
+variable-length binary (two's complement) signed integer of 1 or more bits
+in length.  The first bit is taken as the sign bit, and any other bits
+provide greater precision than the -1 thru 0 range.  The bit string is
+assumed to be big-endian, since it may not be possible to use little-endian
+in situations where the bit length isn't a multiple of 8.
+
+=item C<function sys.Core.Int.Blob_S_VBE_from_Int result NEBlob params {
+int(Int) }>
+
+This selector function results in the C<Blob> value where its C<int>
+argument is formatted as a variable-length binary (two's complement) signed
+integer of 1 or more bits in length; the smallest number of bits necessary
+to store C<int> is used.
+
+=item C<function sys.Core.Int.Int_from_Blob_U_VBE result UInt params {
+blob(NEBlob) }>
+
+This function is the same as C<sys.Core.Int.Int_from_Blob_S_VBE> but that
+it does unsigned integers.
+
+=item C<function sys.Core.Int.Blob_U_VBE_from_Int result UInt params {
+blob(NEBlob) }>
+
+This function is the same as C<sys.Core.Int.Blob_S_VBE_from_Int> but that
+it does unsigned integers.
+
+=back
+
+=head2 Functions for sys.Core.Rat.Rat
+
+These functions are essentially selectors and attribute extractors for the
+conceptual possrep of a rational in terms of an integral numerator plus
+denominator.
+
+=over
+
+=item C<function sys.Core.Rat.Rat_from_Int_pair result Rat params {
+numerator(Int), denominator(PInt) }>
+
+This selector function results in the C<Rat> value that arguments
+collectively map to as the attributes of the result's C<ratio> possrep;
+however, the arguments do not have to be the canonical/normalized attribute
+values, but constitute any other pair that denotes the same rational value.
+
+=item C<function sys.Core.Rat.Rat_from_Int_triple result Rat params {
+mantissa(Int), radix(Cat.PInt2_N), exponent(Int) }>
+
+This selector function results in the C<Rat> value that arguments
+collectively map to as the attributes of the result's C<float> possrep;
+however, the arguments do not have to be the canonical/normalized attribute
+values, but constitute any other triple that denotes the same rational.
+
+=item C<function sys.Core.Rat.(numerator|mantissa|exponent) result Int
+params { topic(Rat) }>
+
+This function results in the canonical C<numerator|mantissa|exponent> of
+its argument.
+
+=item C<function sys.Core.Rat.denominator result PInt params { topic(Rat)
+}>
+
+This function results in the canonical C<denominator> of its argument.
+
+=item C<function sys.Core.Rat.radix result Cat.PInt2_N params { topic(Rat)
+}>
+
+This function results in the canonical C<radix> of its argument.
+
+=back
+
+These functions implement commonly used rational numeric operations.
+
+=over
+
+=item C<function sys.Core.Rat.abs result URat params { topic(Rat) }>
+
+This function results in the absolute value of its argument.
+
+=item C<function sys.Core.Rat.sum result Rat params { addends(BagOfRat) }>
+
+This function results in the sum of the N element values of its argument;
+it is a reduction operator that recursively takes each pair of input values
+and adds (which is both commutative and associative) them together until
+just one is left, which is the result.  If C<addends> has zero values, then
+C<sum> results in the rational zero, which is the identity value for
+addition.
+
+=item C<function sys.Core.Rat.difference result Rat params { minuend(Rat),
+subtrahend(Rat) }>
+
+This function results in the difference when its C<subtrahend> argument is
+subtracted from its C<minuend> argument.
+
+=item C<function sys.Core.Rat.product result Rat params { factors(BagOfRat)
+}>
+
+This function results in the product of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and multiplies (which is both commutative and associative)
+them together until just one is left, which is the result.  If C<factors>
+has zero values, then C<product> results in the rational 1, which is the
+identity value for multiplication.
+
+=item C<function sys.Core.Rat.quotient result Rat params { dividend(Rat),
+divisor(Rat) }>
+
+This function results in the quotient when its C<dividend> argument is
+divided by its C<divisor> argument using rational division.  This function
+will fail if C<divisor> is zero.
+
+=item C<function sys.Core.Rat.maybe_quotient result MaybeOfRat params {
+dividend(Rat), divisor(Rat) }>
+
+This function is exactly the same as C<sys.Core.Rat.quotient> except that
+it results in a C<Maybe> of what is otherwise the result, and that result
+has zero elements if C<divisor> is zero.
+
+=item C<function sys.Core.Rat.range result Rat params { topic(SetOfRat) }>
+
+This function results in the difference between the lowest and highest
+element values of its argument.  If C<topic> has zero values, then C<range>
+results in the rational zero.
+
+=item C<function sys.Core.Rat.mean result Rat params { topic(BagOfRat) }>
+
+This function results in the mean or arithmetic average of the N element
+values of its argument.  It is equivalent to first taking the sum of the
+input values, and dividing that sum by the count of the input values.  If
+C<topic> has zero values, then this function will fail.
+
+=item C<function sys.Core.Rat.maybe_mean result MaybeOfRat params {
+topic(BagOfRat) }>
+
+This function is exactly the same as C<sys.Core.Rat.mean> except that it
+results in a C<Maybe> of what is otherwise the result, and that result has
+zero elements if C<topic> has zero values.
+
+=item C<function sys.Core.Rat.median result SetOfRat params {
+topic(BagOfRat) }>
+
+This function results in the 1 or 2 median values of the N element values
+of its argument; they are returned as a set.  It is equivalent to first
+arranging the input values from least to greatest, and then taking the
+single middle value, if the count of input values is odd, or taking the 2
+middle values, if the count of input values is even (but if the 2 middle
+values are the same value, the output has one element).  If C<topic> has
+zero values, then the result set is empty.
+
+=item C<function sys.Core.Rat.mean_of_median result Rat params {
+topic(BagOfRat) }>
+
+This function is a wrapper over C<sys.Core.Rat.median> that will result in
+the mean of its result elements; it will fail if there are zero elements.
+
+=item C<function sys.Core.Rat.mode result SetOfRat params { topic(BagOfRat)
+}>
+
+This function results in the mode of the N element values of its argument;
+it is the set of values that appear the most often as input elements, and
+all have the same count of occurrances.  As a trivial case, if all input
+elements have the same count of occurrances, then they will all be in the
+output.  If C<topic> has zero values, then the result set is empty.
+
+=item C<function sys.Core.Rat.round result Rat params { topic(Rat),
+round_rule(Cat.RatRoundRule) }>
+
+This function results in the rational that is equal to or otherwise nearest
+to its C<topic> argument, where the nearest is determined by the rational
+rounding rule specified by the C<round_rule> argument.
+
+=item C<function sys.Core.Rat.power result PRat params { radix(PRat),
+exponent(Rat) }>
+
+This function results in its (positive rational) C<radix> argument taken to
+the power of its C<exponent> argument.  Note that, while this function
+might conceptually have multiple real number results for some fractional
+C<exponent>, it will always only result in the one that is positive.
+
+=item C<function sys.Core.Rat.log result Rat params { topic(PRat),
+radix(PRat), round_rule(Cat.RatRoundRule) }>
+
+This function results in the logarithm of its C<topic> argument to the base
+given in its (positive rational) C<radix> argument.  Since the result would
+be an irrational number in the general case, the C<round_rule> argument
+specifies how to coerce the conceptual result into a rational number that
+is the actual result.
+
+=item C<function sys.Core.Rat.natural_power result PRat params {
+exponent(Rat), round_rule(Cat.RatRoundRule) }>
+
+This function results in the special mathematical constant I<e> (which is
+the base of the natural logarithm) taken to the power of its C<exponent>
+argument.  The C<round_rule> parameter is as per C<log>.
+
+=item C<function sys.Core.Rat.natural_log result Rat params { topic(PRat),
+round_rule(Cat.RatRoundRule) }>
+
+This function results in the natural logarithm of its C<topic> argument.
+The C<round_rule> parameter is as per C<log>.
+
+=back
+
+These functions convert between C<Rat> values and canonically formatted
+representations of rationals as character strings.
+
+=over
+
+=item C<function sys.Core.Rat.Rat_from_NEText result Rat params {
+text(NEText), radix(Cat.PInt2_36) }>
+
+This selector function results in the C<Rat> value that its C<text>
+argument maps to when the whole character string is evaluated as a
+base-C<radix> rational.  Extending the typical formats of [base-2, base-8,
+base-10, base-16], this function supports base-2 through base-36; to get
+the latter, the characters 0-9 and A-Z represent values in 0-35.  This
+function will fail if C<text> can't be mapped as specified.
+
+=item C<function sys.Core.Rat.NEText_from_Rat result NEText params {
+rat(Rat), radix(Cat.PInt2_36) }>
+
+This selector function results in the C<NEText> value where its C<rat>
+argument is formatted as a base-C<radix> rational.
+
+=back
+
+These functions convert between C<Rat> values and equal or nearly equal
+C<Int> values.
+
+=over
+
+=item C<function sys.Core.Rat.Rat_from_Int result Rat params { int(Int) }>
+
+This selector function results in the C<Rat> value that is conceptually
+equal to its C<Int> argument.
+
+=item C<function sys.Core.Rat.Int_from_Rat result Int params { rat(Rat),
+round_meth(Cat.E_RM) }>
+
+This selector function results in the C<Int> value that is conceptually
+equal to or otherwise nearest to its C<rat> argument, where the nearest is
+determined by the rounding method specified by the C<round_meth> argument.
+
+=back
+
+=head2 Functions for sys.Core.Blob.Blob
+
+These functions implement commonly used binary string operations.
+
+=over
+
+=item C<function sys.Core.Blob.catenation result Blob params {
+topic(SeqOfBlob) }>
+
+This function results in the catenation of the N element values of its
+argument; it is a reduction operator that recursively takes each
+consecutive pair of input values and catenates (which is associative) them
+together until just one is left, which is the result.  If C<topic> has zero
+values, then C<catenate> results in the empty string value, which is the
+identity value for catenate.
+
+=item C<function sys.Core.Blob.repeat result Blob params { topic(Blob),
+count(UInt) }>
+
+This function results in the catenation of C<count> instances of C<topic>.
+
+=item C<function sys.Core.Blob.length_in_bits result UInt params {
+topic(Blob) }>
+
+This function results in the length of its argument in bits.
+
+=item C<function sys.Core.Blob.is_substr result Bool params {
+look_in(Blob), look_for(Blob), fixed_start(Bool), fixed_end(Bool) }>
+
+This function results in C<Bool:true> iff its C<look_for> argument is a
+substring of its C<look_in> argument as per the optional C<fixed_start> and
+C<fixed_end> constraints, and C<Bool:false> otherwise.  If C<fixed_start>
+or C<fixed_end> are C<Bool:true>, then C<look_for> must occur right at the
+start or end, respectively, of C<look_in> in order for C<contains> to
+results in C<Bool:true>; if either flag is C<Bool:false>, its additional
+constraint doesn't apply.
+
+=item C<function sys.Core.Blob.is_not_substr result Bool params {
+look_in(Blob), look_for(Blob), fixed_start(Bool), fixed_end(Bool) }>
+
+This function is exactly the same as C<sys.Core.Blob.is_substr> except that
+it results in the opposite boolean value when given the same arguments.
+
+=item C<function sys.Core.Blob.not result Blob params { topic(Blob) }>
+
+This function results in the bitwise I<not> of its argument.
+
+=item C<function sys.Core.Blob.and result Blob params { topic(SetOfBlob) }>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and does a bitwise I<and> (which is both
+commutative and associative) on them until just one is left, which is the
+function's result.  This function's argument values must all be of the same
+length in bits, that length being part of the argument's declared type
+(that is, C<Blob> subtype) definition, and that is also the length in bits
+of the function's result.  If C<topic> has zero values, then C<and> will
+result in an appropriate-length string of identity/1 valued bits.
+
+=item C<function sys.Core.Blob.or result Blob params { topic(SetOfBlob) }>
+
+This function is the same as C<sys.Core.Blob.and> but that it recursively
+does a bitwise inclusive-or rather than a bitwise I<and>, and its identity
+value is composed of zero valued bits.
+
+=item C<function sys.Core.Blob.xor result Blob params { topic(BagOfBlob) }>
+
+This function is the same as C<sys.Core.Blob.or> but that it recursively
+does a bitwise exclusive-or rather than a bitwise inclusive-or.
+
+=back
+
+These functions convert between C<Blob> values and canonically formatted
+representations of binary strings as character strings.
+
+=over
+
+=item C<function sys.Core.Blob.Blob_from_Text result Blob params {
+text(Text), size(Cat.PInt1_4) }>
+
+This selector function results in the C<Blob> value that its C<text>
+argument maps to when each input character represents a sequence of 1-4
+bits, the number of bits per character being determined by the C<size>
+argument; for example, if C<size> is 1, then each input character is a
+[0-1] and represents a bit; or, if C<size> is 4, then each input character
+is a [0-9A-F] and represents 4 bits.  This function will fail if C<text>
+can't be mapped as specified.
+
+=item C<function sys.Core.Blob.Text_from_Blob result Text params {
+blob(Blob), size(Cat.PInt1_4) }>
+
+This selector function results in the C<Text> value where its argument is
+encoded using a character for each sequence of 1-4 bits, the number of bits
+per character being determined by the C<size> argument.  This function will
+fail if C<blob> doesn't have a length in bits which is a multiple of
+C<size>.
+
+=back
+
+=head2 Functions for sys.Core.Text.Text
+
+These functions implement commonly used character string operations.
+
+=over
+
+=item C<function sys.Core.Text.catenation result Text params {
+topic(SeqOfText) }>
+
+This function results in the catenation of the N element values of its
+argument; it is a reduction operator that recursively takes each
+consecutive pair of input values and catenates (which is associative) them
+together until just one is left, which is the result.  If C<topic> has zero
+values, then C<catenate> results in the empty string value, which is the
+identity value for catenate.
+
+=item C<function sys.Core.Text.repeat result Text params { topic(Text),
+count(UInt) }>
+
+This function results in the catenation of C<count> instances of C<topic>.
+
+=item C<function sys.Core.Text.length_in_nfd_graphs result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form D graphemes.
+
+=item C<function sys.Core.Text.length_in_nfc_graphs result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form C graphemes.
+
+=item C<function sys.Core.Text.length_in_nfd_codes result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form D code points.
+
+=item C<function sys.Core.Text.length_in_nfc_codes result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form C code points.
+
+=item C<function sys.Core.Text.is_substr result Bool params {
+look_in(Text), look_for(Text), fixed_start(Bool), fixed_end(Bool) }>
+
+This function results in C<Bool:true> iff its C<look_for> argument is a
+substring of its C<look_in> argument as per the optional C<fixed_start> and
+C<fixed_end> constraints, and C<Bool:false> otherwise.  If C<fixed_start>
+or C<fixed_end> are C<Bool:true>, then C<look_for> must occur right at the
+start or end, respectively, of C<look_in> in order for C<contains> to
+result in C<Bool:true>; if either flag is C<Bool:false>, its additional
+constraint doesn't apply.
+
+=item C<function sys.Core.Text.is_not_substr result Bool params {
+look_in(Text), look_for(Text), fixed_start(Bool), fixed_end(Bool) }>
+
+This function is exactly the same as C<sys.Core.Text.is_substr> except that
+it results in the opposite boolean value when given the same arguments.
+
+=item C<function sys.Core.Text.case_folded_to_upper result Text {
+topic(Text) }>
+
+This function results in the transformation of its argument where any
+letters considered to be (small) lowercase are folded to (capital)
+uppercase.
+
+=item C<function sys.Core.Text.case_folded_to_lower result Text {
+topic(Text) }>
+
+This function results in the transformation of its argument where any
+letters considered to be (capital) uppercase are folded to (small)
+lowercase.
+
+=item C<function sys.Core.Text.whitespace_trimmed result Text { topic(Text)
+}>
+
+This function results in the value of its argument but that any leading or
+trailing whitespace characters are trimmed.
+
+=back
+
+=head1 SEE ALSO
+
+Go to L<Language::MuldisD> for the majority of distribution-internal
+references, and L<Language::MuldisD::SeeAlso> for the majority of
+distribution-external references.
+
+=head1 AUTHOR
+
+Darren Duncan (C<perl@DarrenDuncan.net>)
+
+=head1 LICENSE AND COPYRIGHT
+
+This file is part of the formal specification of the Muldis D language.
+
+Muldis D is Copyright © 2002-2008, Darren Duncan.
+
+See the LICENSE AND COPYRIGHT of L<Language::MuldisD> for details.
+
+=head1 ACKNOWLEDGEMENTS
+
+The ACKNOWLEDGEMENTS in L<Language::MuldisD> apply to this file too.
+
+=cut
