@@ -25,6 +25,21 @@ This document contains one or more sections that were moved here from
 L<Language::MuldisD::Core> so that that other document would not be too
 large.
 
+These core data types are more special-purpose in nature and are intended
+for use in defining or working with the system catalog.  Those types that
+are nonscalar are completely defined types.
+
+Note that whenever an attribute of one of the tuple types isn't
+significant, given the context (determined by other attributes of the same
+type), and should be ignored, its value is the default for its type.
+
+Note that many of the tuple types might conceptually have C<name>
+attributes, but those would actually be provided by any larger types in
+which they are embedded, rather than by these types themselves.
+
+I<To keep things simpler for now, most constraint definitions for these
+types are missing, or just defined informally.>
+
 =head1 TYPE SUMMARY
 
 These system-defined subtypes are specific to defining the system catalog,
@@ -163,64 +178,75 @@ be used for user data:
                 sys.Core.QuasiCat.QuasiSetOfTuple
                 sys.Core.QuasiCat.QuasiSetOfRelation
 
-=head1 SYSTEM-DEFINED CORE CATALOG SCALAR DATA TYPES
-
-These core scalar data types are more special-purpose in nature and are
-intended for use in defining or working with the system catalog, which is
-mainly composed of nonscalar types built using these.
+=head1 SCALAR UNION TYPES
 
 =head2 sys.Core.Cat.ScalarLiteral
 
-A C<Cat.ScalarLiteral> is a union type over all the system-defined scalar
-types that are allowed to be used directly as hard-coded literal values in
-Muldis D expressions; 'directly' meaning not by way of explicitly invoking
-a selector function.  Generally speaking, this union type includes all of
-the core scalar types that aren't themselves defined as union types.  The
-full list that C<ScalarLiteral> unions is: C<Bool>, C<Int>, C<Rat>,
-C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.Comment>,
+A C<Cat.ScalarLiteral> is a scalar union type over all the system-defined
+scalar types that are allowed to be used directly as hard-coded literal
+values in Muldis D expressions; 'directly' meaning not by way of explicitly
+invoking a selector function.  Generally speaking, this union type includes
+all of the core scalar types that aren't themselves defined as union types.
+The full type list that C<ScalarLiteral> unions is: C<Bool>, C<Int>,
+C<Rat>, C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.Comment>,
 C<Cat.E_RM>, C<Cat.E_TK>, C<Cat.E_TDM>, C<Cat.E_ENK>, C<Cat.E_PSAK>.  Its
 default value is C<Bool:false>.
 
+=head1 ENTITY NAME DEFINING TYPES
+
 =head2 sys.Core.Cat.Name
 
-A C<Cat.Name> is a canonical short name for any kind of DBMS entity (or
-named component) when declaring it; this short name is sufficient to
-identify the entity within its immediate namespace.  Similarly, a DBMS
-entity can often be invoked or referred to using just its C<Cat.Name>,
-depending on the context; other times, a C<Cat.NameChain> must be used
-instead to also qualify the reference with a namespace.  C<Cat.Name> is the
-same as C<Text> in all ways but that it is specifically intended for use in
-naming DBMS entities rather than being normal data.
+A C<Cat.Name> (scalar) is a canonical short name for any kind of DBMS
+entity (or named component) when declaring it; this short name is
+sufficient to identify the entity within its immediate namespace.
+Similarly, a DBMS entity can often be invoked or referred to using just its
+C<Cat.Name>, depending on the context; other times, a C<Cat.NameChain> must
+be used instead to also qualify the reference with a namespace.
+C<Cat.Name> is the same as C<Text> in all ways but that it is specifically
+intended for use in naming DBMS entities rather than being normal data.
 
 =head2 sys.Core.Cat.NameChain
 
-A C<Cat.NameChain> is a canonical long name for invoking or referring to a
-DBMS entity, when its name needs to be qualified with a namespace.  A
-C<Cat.NameChain> has 2 possreps; one possrep is a sequence of 1..N
-C<Cat.Name> (represented by a C<Cat.NESeqOfName>), the 1..N elements being
-ordered from parent-most to child-most component name; the other possrep is
-a character string (represented by a C<Cat.FlattenedNameChain>) like when
-the elements of the first possrep are catenated (in order with the first
-element at the start of the string), with a period (C<.>) between the
-parts, and each part escaped such that backslashes, single-quotes, and
+A C<Cat.NameChain> (scalar) is a canonical long name for invoking or
+referring to a DBMS entity, when its name needs to be qualified with a
+namespace.  A C<Cat.NameChain> has 2 possreps; one possrep is a sequence of
+1..N C<Cat.Name> (represented by a C<Cat.NESeqOfName>), the 1..N elements
+being ordered from parent-most to child-most component name; the other
+possrep is a character string (represented by a C<Cat.FlattenedNameChain>)
+like when the elements of the first possrep are catenated (in order with
+the first element at the start of the string), with a period (C<.>) between
+the parts, and each part escaped such that backslashes, single-quotes, and
 periods are escaped as C<\b>, C<\q> and C<\p> respectively.
 
 =head2 sys.Core.Cat.FlattenedNameChain
 
-The C<Cat.FlattenedNameChain> type is used as the definition of the
-character string possrep of a C<Cat.NameChain> (see that type for details);
-while being a character string like C<Cat.Name>, the two are disjoint.
+The C<Cat.FlattenedNameChain> (scalar) type is used as the definition of
+the character string possrep of a C<Cat.NameChain> (see that type for
+details); while being a character string like C<Cat.Name>, the two are
+disjoint.
+
+=head2 sys.Core.Cat.NESeqOfName
+
+A C<Cat.NESeqOfName> is a C<Seq> whose C<value> attribute has a declared
+type of C<Cat.Name> and that must have at least 1 element; this type is
+used as the definition of the sequence possrep of a C<Cat.NameChain> (see
+that type for details).
+
+=head1 CODE COMMENT DEFINING TYPES
 
 =head2 sys.Core.Cat.Comment
 
-A C<Cat.Comment> is the text of a Muldis D code comment, which programmers
-can populate as an attribute of several catalog data types, such as whole
-routines or statements or expression nodes.  C<Cat.Comment> is the same as
-C<Text>, and C<Name>, in all ways but that it is specifically intended for
-use in commenting Muldis D code rather than being normal data; they are
-disjoint.  One main intended use of this type is to help preserve comments
-in code translated to or from other languages; though only a subset of
-those (FoxPro?) keep comments in the AST rather than discarding them.
+A C<Cat.Comment> (scalar) is the text of a Muldis D code comment, which
+programmers can populate as an attribute of several catalog data types,
+such as whole routines or statements or expression nodes.  C<Cat.Comment>
+is the same as C<Text>, and C<Name>, in all ways but that it is
+specifically intended for use in commenting Muldis D code rather than being
+normal data; they are disjoint.  One main intended use of this type is to
+help preserve comments in code translated to or from other languages;
+though only a subset of those (FoxPro?) keep comments in the AST rather
+than discarding them.
+
+=head1 NUMBER CONCERNING TYPES
 
 =head2 sys.Core.Cat.PInt1_4
 
@@ -242,7 +268,7 @@ type is 35.
 
 =head2 sys.Core.Cat.E_RM
 
-A C<Cat.E_RM> (rounding method) is an enumeration consisting of the 7
+A C<Cat.E_RM> (rounding method) is a scalar enumeration consisting of the 7
 values C<Cat.E_RM:half_down>, C<Cat.E_RM:half_up>, C<Cat.E_RM:half_even>,
 C<Cat.E_RM:to_floor>, C<Cat.E_RM:to_ceiling>, C<Cat.E_RM:to_zero>,
 C<Cat.E_RM:to_inf>.  When a value of some ordered type needs to be mapped
@@ -265,78 +291,6 @@ the nearer infinity from it, respectively.  The default value of
 C<Cat.E_RM> is C<Cat.E_RM:half_up>, since that is the most commonly used
 method of rounding.
 
-=head2 sys.Core.Cat.E_TK
-
-A C<Cat.E_TK> (type kind) is an enumeration consisting of the 8 values
-C<Cat.E_TK:special> (mainly for system-defined implicit supertypes),
-C<Cat.E_TK:scalar>, C<Cat.E_TK:tuple>, C<Cat.E_TK:relation>,
-C<Cat.E_TK:quasi_scalar>, C<Cat.E_TK:quasi_tuple>,
-C<Cat.E_TK:quasi_relation>, C<Cat.E_TK:remnant>.  Its default value is
-C<Cat.E_TK:scalar>.
-
-=head2 sys.Core.Cat.E_TDM
-
-A C<Cat.E_TDM> (type definition method) is an enumeration consisting of the
-9 values C<Cat.E_TDM:special> (for some system-defined types that don't
-best fit in other categories, and all parameterized types; users can not
-define the latter for now), C<Cat.E_TDM:root> (complete root type defined
-in terms of explicit attribute collection; all are fully defined, not
-parameterized), C<Cat.E_TDM:restriction> (defined as "explicit other-type
-where condition"), C<Cat.E_TDM:alias> (so the same one type can have
-multiple names), C<Cat.E_TDM:(union|intersection|exclusion)> (defined as
-explicit union|intersection|exclusion of other types),
-C<Cat.E_TDM:difference> (defined as explicit difference of 2 other types),
-C<Cat.E_TDM:negation> (defined as explicit negation of another type).  Its
-default value is C<Cat.E_TDM:alias>.
-
-=head2 sys.Core.Cat.E_ENK
-
-A C<Cat.E_ENK> (expression node kind) is an enumeration consisting of the
-11 values C<Cat.E_ENK:default> (default value of expression's declared
-type),
-C<Cat.E_ENK:(scalar|tuple|relation|quasi_scalar|quasi_tuple|quasi_relation)
-> (hard-coded literal
-scalar|tuple|relation|quasi-scalar|quasi-tuple|quasi-relation value),
-C<Cat.E_ENK:param> (value of expression-containing function parameter),
-C<Cat.E_ENK:upd_param> (on-entry value of expression-containing update
-operator subject-to-update parameter), C<Cat.E_ENK:ro_param> (value of
-expression-containing update operator read-only parameter),
-C<Cat.E_ENK:func> (result of function invocation, or inlining of function
-body).  Note that only C<upd_param> and C<func> (over C<upd_param>) can be
-used for a subject-to-update argument of an update operator, but all of
-these can be used elsewhere.  Its default value is C<Cat.E_ENK:scalar>.
-
-=head2 sys.Core.Cat.E_PSAK
-
-A C<Cat.E_PSAK> (procedural statement argument kind) is an enumeration
-consisting of the 5 values C<Cat.E_PSAK:default> (default value of
-argument's declared type), C<Cat.E_PSAK:upd_param> (current value of
-statement-containing procedure subject-to-update parameter),
-C<Cat.E_PSAK:ro_param> (value of statement-containing procedure read-only
-parameter), C<Cat.E_PSAK:inner_var> (current value of statement-containing
-procedure lexical variable, not param), C<Cat.E_PSAK:outer_var> (current
-value of a non-lexical variable).  Note that only C<upd_param> and
-C<(inner|outer)_var> can be used for a subject-to-update argument, but all
-of these can be used with a read-only argument.  Its default value is
-C<Cat.E_PSAK:ro_param>.
-
-=head1 SYSTEM-DEFINED CORE CATALOG TUPLE DATA TYPES
-
-These tuple data types, essentially all of the system-defined tuple types
-are special-purpose in nature and are intended for use in defining or
-working with the system catalog.  They are all completely defined types.
-
-Note that many of these types might conceptually have C<name> attributes,
-but those would actually be provided by any larger types in which they are
-embedded, rather than by these types themselves.
-
-Note that whenever an attribute of one of these types isn't significant,
-given the context (determined by other attributes of the same type), and
-should be ignored, its value is the default for its type.
-
-I<To keep things simpler for now, most constraint definitions for these
-types are missing, or just defined informally.>
-
 =head2 sys.Core.Cat.RatRoundRule
 
 A C<Cat.RatRoundRule> is a C<Tuple>.  It specifies a controlled (and
@@ -356,109 +310,38 @@ method.  The default value of C<Cat.RatRoundRule> specifies a coersion to a
 whole number using the C<Cat.E_RM:half_up> rounding method (its radix is 2
 and its max denom is 1).
 
-=head2 sys.Core.Cat.Type
+=head1 ROUTINE DEFINING TYPES
 
-A C<Cat.Type> is a C<Tuple>.  It defines a data type, which can either be
-(sometimes) invoked directly for values, or be invoked by or embedded into
-other type definitions.  C<Cat.Type> is used in the catalogs for defining
-both system and user types (just the interfaces in the former case).
+=head2 sys.Core.Cat.E_ENK
 
-I<TODO:  The catalog types for type definitions need an overhaul.>
+A C<Cat.E_ENK> (expression node kind) is a scalar enumeration consisting of
+the 11 values C<Cat.E_ENK:default> (default value of expression's declared
+type),
+C<Cat.E_ENK:(scalar|tuple|relation|quasi_scalar|quasi_tuple|quasi_relation)
+> (hard-coded literal
+scalar|tuple|relation|quasi-scalar|quasi-tuple|quasi-relation value),
+C<Cat.E_ENK:param> (value of expression-containing function parameter),
+C<Cat.E_ENK:upd_param> (on-entry value of expression-containing update
+operator subject-to-update parameter), C<Cat.E_ENK:ro_param> (value of
+expression-containing update operator read-only parameter),
+C<Cat.E_ENK:func> (result of function invocation, or inlining of function
+body).  Note that only C<upd_param> and C<func> (over C<upd_param>) can be
+used for a subject-to-update argument of an update operator, but all of
+these can be used elsewhere.  Its default value is C<Cat.E_ENK:scalar>.
 
-A C<Cat.Type> has these 8 attributes:
+=head2 sys.Core.Cat.E_PSAK
 
-=over
-
-=item C<tk> - C<Cat.E_TK>
-
-This broadly declares what kind of type this is (eg,
-scalar|tuple|relation); it partially says how to interpret the rest of the
-attributes and/or which of them have significant values.
-
-=item C<tdm> - C<Cat.E_TDM>
-
-This is the type definition method for the type; it partially says how to
-interpret the rest of the attributes and/or which of them have significant
-values.  If C<tk> is C<Cat.E_TK:special>, then C<tdm> must be
-C<Cat.E_TDM:special>; C<tdm> can be special at other times too.
-
-=item C<types> - C<Cat.SetOfNameChain>
-
-For some values of C<tdm>, the data type is defined at least partially in
-terms of other data types not by way of attribute definitions, and then
-C<types> lists all/most of those types.  Iff C<tdm> is C<Cat.E_TDM:alias>,
-then the data type is just a symbolic reference for some other data type
-(as far as the type system is concerned, they are the same data type,
-invokable by an extra name), and C<types> has one element that is the name
-of that type.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then the data type
-is defined as an explicit subtype of another type by way of an explicit
-further type constraint applied to it, and C<types> has one element that is
-the name of that supertype.  Iff C<tdm> is
-C<Cat.E_TDM:(union|intersection|exclusion)>, then the data type is defined
-as an explicit union|intersection|exclusion of N other types, and C<types>
-lists their names, one per element; 2+ elements is the norm; just 1 element
-means that the data type is a simple alias for the named element; zero
-elements means the data type is a simple alias for, respectively, the type
-C<Empty>, C<Universal>, or C<Empty>.  Iff C<tdm> is
-C<Cat.E_TDM.difference>, then the data type is defined as the difference of
-2 other types, and C<types> has one element that is the name of the minuend
-type.  Iff C<tdm> is C<Cat.E_TDM.negation>, then the data type is defined
-as the negation of some other type, and C<types> has one element that is
-the name of that type.
-
-=item C<subtr_type> - C<Cat.NameChain>
-
-Iff C<tdm> is C<Cat.E_TDM.difference>, then the data type is defined as the
-difference of 2 other types, and C<subtr_type> is the name of the
-subtrahend type.
-
-=item C<attrs> - C<Cat.NameTypeMap>
-
-Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
-fundamentally in terms of an explicit attribute collection, and C<attrs>
-defines the names and declared types of those attributes.  Iff additionally
-C<tk> is C<Cat.E_TK:(scalar|quasi_scalar)>, then C<attrs> specifically
-defines the attributes of just the core/initial/only possrep; otherwise,
-C<attrs> defines the heading of the tuple or relation etc type.  It is
-valid to have zero attributes; in this case, the type consists of exactly
-one value.
-
-=item C<keys> - C<Cat.SetOfSetOfName>
-
-Iff C<tk> is C<Cat.E_TK:(relation|quasi_relation)> and C<tdm> is not
-C<Cat.E_TDM:special>, then the data type is or resembles a relation type
-and can have explicit keys (duality of unique key constraints and terser
-unique identifiers for the q/relation's member q/tuples) defined over its
-attributes, and C<keys> defines those keys in the canonical simplest form
-(in contrast with using C<constraint> instead).  Each element of C<keys>
-defines one key of the q/relation, and that element is a set of the
-attribute names comprising that key.  For q/relation types, if no keys are
-explicitly defined, then it implicitly has a single key comprising all of
-its attributes.  If any explicit keys are defined, then every one must be
-over a distinct proper subset of the type's attributes, and moreover no
-key's attributes may be a proper subset of any other key's attributes; if 2
-such candidates appear, just use the one that has the subset.  It is valid
-for a key to consist of zero attributes; in this case, that key is the only
-key of the q/relation type, and values of the type may each consist of no
-more than one tuple.
-
-=item C<constraint> - C<Cat.TypeConstraint> ... default one always res True
-
-Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
-fundamentally in terms of an explicit attribute collection, and
-C<constraint> defines/names a generalized type constraint that validates
-the collection as a whole.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then
-the data type is defined as an explicit subtype of another type by way of
-an explicit further type constraint applied to it, and C<constraint>
-defines/names that further constraint.
-
-=item C<comment> - C<Cat.Comment>
-
-This is an optional programmer comment about the data type.
-
-=back
-
-The default value of C<Cat.Type> is an alias of C<Empty>.
+A C<Cat.E_PSAK> (procedural statement argument kind) is a scalar
+enumeration consisting of the 5 values C<Cat.E_PSAK:default> (default value
+of argument's declared type), C<Cat.E_PSAK:upd_param> (current value of
+statement-containing procedure subject-to-update parameter),
+C<Cat.E_PSAK:ro_param> (value of statement-containing procedure read-only
+parameter), C<Cat.E_PSAK:inner_var> (current value of statement-containing
+procedure lexical variable, not param), C<Cat.E_PSAK:outer_var> (current
+value of a non-lexical variable).  Note that only C<upd_param> and
+C<(inner|outer)_var> can be used for a subject-to-update argument, but all
+of these can be used with a read-only argument.  Its default value is
+C<Cat.E_PSAK:ro_param>.
 
 =head2 sys.Core.Cat.ExprNode
 
@@ -979,19 +862,6 @@ This is an optional programmer comment about the procedure as a whole.
 
 The default value of C<Cat.Proc> is as per the default of C<Cat.InnerProc>.
 
-=head2 sys.Core.Cat.Exception
-
-I<TODO.>
-
-=head1 SYSTEM-DEFINED CORE CATALOG RELATION DATA TYPES
-
-These relation data types, essentially all of the system-defined relation
-types are special-purpose in nature and are intended for use in defining or
-working with the system catalog.  They are all completely defined types.
-
-I<To keep things simpler for now, most constraint definitions for these
-types are missing, or just defined informally.>
-
 =head2 sys.Core.Cat.NameTypeMap
 
 A C<Cat.NameTypeMap> is a C<Relation>.  It defines a basic component list,
@@ -1112,32 +982,161 @@ is to C<Cat.InnerUpdater>.
 A C<Cat.SetOfName> is a C<Set> whose C<value> attribute has a declared type
 of C<Cat.Name>.
 
-=head2 sys.Core.Cat.SetOfSetOfName
-
-A C<Cat.SetOfSetOfName> is a C<Set> whose C<value> attribute has a declared
-type of C<Cat.SetOfName>.
-
 =head2 sys.Core.Cat.SetOfNameExprMap
 
 A C<Cat.SetOfNameExprMap> is a C<Set> whose C<value> attribute has a
 declared type of C<Cat.NameExprMap>.
+
+=head2 sys.Core.Cat.SeqOfProcStmt
+
+A C<Cat.SeqOfProcStmt> is a C<Seq> whose C<value> attribute has a declared
+type of C<Cat.ProcStmt>.
+
+=head1 DATA TYPE DEFINING TYPES
+
+=head2 sys.Core.Cat.E_TK
+
+A C<Cat.E_TK> (type kind) is a scalar enumeration consisting of the 8
+values C<Cat.E_TK:special> (mainly for system-defined implicit supertypes),
+C<Cat.E_TK:scalar>, C<Cat.E_TK:tuple>, C<Cat.E_TK:relation>,
+C<Cat.E_TK:quasi_scalar>, C<Cat.E_TK:quasi_tuple>,
+C<Cat.E_TK:quasi_relation>, C<Cat.E_TK:remnant>.  Its default value is
+C<Cat.E_TK:scalar>.
+
+=head2 sys.Core.Cat.E_TDM
+
+A C<Cat.E_TDM> (type definition method) is a scalar enumeration consisting
+of the 9 values C<Cat.E_TDM:special> (for some system-defined types that
+don't best fit in other categories, and all parameterized types; users can
+not define the latter for now), C<Cat.E_TDM:root> (complete root type
+defined in terms of explicit attribute collection; all are fully defined,
+not parameterized), C<Cat.E_TDM:restriction> (defined as "explicit
+other-type where condition"), C<Cat.E_TDM:alias> (so the same one type can
+have multiple names), C<Cat.E_TDM:(union|intersection|exclusion)> (defined
+as explicit union|intersection|exclusion of other types),
+C<Cat.E_TDM:difference> (defined as explicit difference of 2 other types),
+C<Cat.E_TDM:negation> (defined as explicit negation of another type).  Its
+default value is C<Cat.E_TDM:alias>.
+
+=head2 sys.Core.Cat.Type
+
+A C<Cat.Type> is a C<Tuple>.  It defines a data type, which can either be
+(sometimes) invoked directly for values, or be invoked by or embedded into
+other type definitions.  C<Cat.Type> is used in the catalogs for defining
+both system and user types (just the interfaces in the former case).
+
+I<TODO:  The catalog types for type definitions need an overhaul.>
+
+A C<Cat.Type> has these 8 attributes:
+
+=over
+
+=item C<tk> - C<Cat.E_TK>
+
+This broadly declares what kind of type this is (eg,
+scalar|tuple|relation); it partially says how to interpret the rest of the
+attributes and/or which of them have significant values.
+
+=item C<tdm> - C<Cat.E_TDM>
+
+This is the type definition method for the type; it partially says how to
+interpret the rest of the attributes and/or which of them have significant
+values.  If C<tk> is C<Cat.E_TK:special>, then C<tdm> must be
+C<Cat.E_TDM:special>; C<tdm> can be special at other times too.
+
+=item C<types> - C<Cat.SetOfNameChain>
+
+For some values of C<tdm>, the data type is defined at least partially in
+terms of other data types not by way of attribute definitions, and then
+C<types> lists all/most of those types.  Iff C<tdm> is C<Cat.E_TDM:alias>,
+then the data type is just a symbolic reference for some other data type
+(as far as the type system is concerned, they are the same data type,
+invokable by an extra name), and C<types> has one element that is the name
+of that type.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then the data type
+is defined as an explicit subtype of another type by way of an explicit
+further type constraint applied to it, and C<types> has one element that is
+the name of that supertype.  Iff C<tdm> is
+C<Cat.E_TDM:(union|intersection|exclusion)>, then the data type is defined
+as an explicit union|intersection|exclusion of N other types, and C<types>
+lists their names, one per element; 2+ elements is the norm; just 1 element
+means that the data type is a simple alias for the named element; zero
+elements means the data type is a simple alias for, respectively, the type
+C<Empty>, C<Universal>, or C<Empty>.  Iff C<tdm> is
+C<Cat.E_TDM.difference>, then the data type is defined as the difference of
+2 other types, and C<types> has one element that is the name of the minuend
+type.  Iff C<tdm> is C<Cat.E_TDM.negation>, then the data type is defined
+as the negation of some other type, and C<types> has one element that is
+the name of that type.
+
+=item C<subtr_type> - C<Cat.NameChain>
+
+Iff C<tdm> is C<Cat.E_TDM.difference>, then the data type is defined as the
+difference of 2 other types, and C<subtr_type> is the name of the
+subtrahend type.
+
+=item C<attrs> - C<Cat.NameTypeMap>
+
+Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
+fundamentally in terms of an explicit attribute collection, and C<attrs>
+defines the names and declared types of those attributes.  Iff additionally
+C<tk> is C<Cat.E_TK:(scalar|quasi_scalar)>, then C<attrs> specifically
+defines the attributes of just the core/initial/only possrep; otherwise,
+C<attrs> defines the heading of the tuple or relation etc type.  It is
+valid to have zero attributes; in this case, the type consists of exactly
+one value.
+
+=item C<keys> - C<Cat.SetOfSetOfName>
+
+Iff C<tk> is C<Cat.E_TK:(relation|quasi_relation)> and C<tdm> is not
+C<Cat.E_TDM:special>, then the data type is or resembles a relation type
+and can have explicit keys (duality of unique key constraints and terser
+unique identifiers for the q/relation's member q/tuples) defined over its
+attributes, and C<keys> defines those keys in the canonical simplest form
+(in contrast with using C<constraint> instead).  Each element of C<keys>
+defines one key of the q/relation, and that element is a set of the
+attribute names comprising that key.  For q/relation types, if no keys are
+explicitly defined, then it implicitly has a single key comprising all of
+its attributes.  If any explicit keys are defined, then every one must be
+over a distinct proper subset of the type's attributes, and moreover no
+key's attributes may be a proper subset of any other key's attributes; if 2
+such candidates appear, just use the one that has the subset.  It is valid
+for a key to consist of zero attributes; in this case, that key is the only
+key of the q/relation type, and values of the type may each consist of no
+more than one tuple.
+
+=item C<constraint> - C<Cat.TypeConstraint> ... default one always res True
+
+Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
+fundamentally in terms of an explicit attribute collection, and
+C<constraint> defines/names a generalized type constraint that validates
+the collection as a whole.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then
+the data type is defined as an explicit subtype of another type by way of
+an explicit further type constraint applied to it, and C<constraint>
+defines/names that further constraint.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the data type.
+
+=back
+
+The default value of C<Cat.Type> is an alias of C<Empty>.
+
+=head2 sys.Core.Cat.SetOfSetOfName
+
+A C<Cat.SetOfSetOfName> is a C<Set> whose C<value> attribute has a declared
+type of C<Cat.SetOfName>.
 
 =head2 sys.Core.Cat.SetOfNameChain
 
 A C<Cat.SetOfNameChain> is a C<Set> whose C<value> attribute has a declared
 type of C<Cat.NameChain>.
 
-=head2 sys.Core.Cat.NESeqOfName
+=head1 EXCEPTION DEFINING TYPES
 
-A C<Cat.NESeqOfName> is a C<Seq> whose C<value> attribute has a declared
-type of C<Cat.Name> and that must have at least 1 element; this type is
-used as the definition of the sequence possrep of a C<Cat.NameChain> (see
-that type for details).
+=head2 sys.Core.Cat.Exception
 
-=head2 sys.Core.Cat.SeqOfProcStmt
-
-A C<Cat.SeqOfProcStmt> is a C<Seq> whose C<value> attribute has a declared
-type of C<Cat.ProcStmt>.
+I<TODO.>
 
 =head1 SYSTEM-DEFINED CORE QUASI-CATALOG PARAMETERIZED TYPES
 
