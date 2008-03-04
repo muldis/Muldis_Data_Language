@@ -51,28 +51,22 @@ more or less:
 
         sys.Core.Scalar.Scalar
 
-            # The following is actually a union over many scalar types.
+            # The following are all regular ordered scalar types.
 
-            sys.Core.Cat.ScalarLiteral
+            sys.Core.Cat.Name
+            sys.Core.Cat.NameChain
+            sys.Core.Cat.FlattenedNameChain
+            sys.Core.Cat.Comment
 
-            sys.Core.Ordered.Ordered
+            sys.Core.Int.Int
+                sys.Core.Int.UInt
+                    sys.Core.Int.PInt
 
-                # The following are all regular ordered scalar types.
+                        # These are all finite integer types.
 
-                sys.Core.Cat.Name
-                sys.Core.Cat.NameChain
-                sys.Core.Cat.FlattenedNameChain
-                sys.Core.Cat.Comment
-
-                sys.Core.Int.Int
-                    sys.Core.Int.UInt
-                        sys.Core.Int.PInt
-
-                            # These are all finite integer types.
-
-                            sys.Core.Cat.PInt1_4
-                            sys.Core.Cat.PInt2_N
-                                sys.Core.Cat.PInt2_36
+                        sys.Core.Cat.PInt1_4
+                        sys.Core.Cat.PInt2_N
+                            sys.Core.Cat.PInt2_36
 
             # The following are all regular non-ordered scalar types.
 
@@ -177,20 +171,6 @@ be used for user data:
 
                 sys.Core.QuasiCat.QuasiSetOfTuple
                 sys.Core.QuasiCat.QuasiSetOfRelation
-
-=head1 SCALAR UNION TYPES
-
-=head2 sys.Core.Cat.ScalarLiteral
-
-A C<Cat.ScalarLiteral> is a scalar union type over all the system-defined
-scalar types that are allowed to be used directly as hard-coded literal
-values in Muldis D expressions; 'directly' meaning not by way of explicitly
-invoking a selector function.  Generally speaking, this union type includes
-all of the core scalar types that aren't themselves defined as union types.
-The full type list that C<ScalarLiteral> unions is: C<Bool>, C<Int>,
-C<Rat>, C<Blob>, C<Text>, C<Cat.Name>, C<Cat.NameChain>, C<Cat.Comment>,
-C<Cat.E_RM>, C<Cat.E_TK>, C<Cat.E_TDM>, C<Cat.E_ENK>, C<Cat.E_PSAK>.  Its
-default value is C<Bool:false>.
 
 =head1 ENTITY NAME DEFINING TYPES
 
@@ -393,11 +373,14 @@ This is the declared kind of expression that this node is; it says how to
 interpret the rest of the attributes and/or which of them have significant
 values.
 
-=item C<scal_lit> - C<Cat.ScalarLiteral>
+=item C<scal_lit> - C<Scalar>
 
 Iff C<kind> is C<Cat.E_ENK:scalar>, then the expression represents a
 hard-coded scalar literal of one of a certain collection of system-defined
 core scalar types (or subtype thereof), and this is that literal value.
+I<That is, any Scalar value could be used here, but in practice that is
+either dialect-defined (what literals are supported), and possibly
+implementation defined/limited.>
 
 =item C<coll_lit> - C<Cat.SetOfNameExprMap>
 

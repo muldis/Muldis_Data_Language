@@ -93,19 +93,19 @@ variables, so they always hold valid values of their declared type.
 
 =head1 SYSTEM-DEFINED GENERIC ORDERED FUNCTIONS
 
-These functions are applicable to values of any data type which is a
-subtype of C<Ordered>.  They provide a common syntax for sort-related
-functionality, though technically every type having these functions is
-re-implementing its own version.  If values of an ordered data type can
-conceivably be sorted using multiple criteria (such as different text
-collations), then these functions just represent the default criteria; any
-additional criteria are represented by additional functions declared for
-just the types they apply to.
+These functions are applicable to values of potentially any data type,
+those which have a C<comparison> or such function defined for them.  They
+provide a common syntax for sort-related functionality, though technically
+every type having these functions is re-implementing its own version.  If
+values of an ordered data type can conceivably be sorted using multiple
+criteria (such as different text collations), then these functions just
+represent the default criteria; any additional criteria are represented by
+additional functions declared for just the types they apply to.
 
 =over
 
 =item C<function sys.Core.Ordered.is_before result Bool params {
-topic(Ordered), other(Ordered) }>
+topic(Universal), other(Universal) }>
 
 This function results in C<Bool:true> iff its 2 arguments are non-identical
 and the value of the C<topic> argument is considered to come before the
@@ -113,19 +113,19 @@ value of the C<other> argument when the 2 values are arranged in order (as
 defined by the type); it results in C<Bool:false> otherwise.  This
 function's arguments must be of compatible declared types; in this case, 2
 declared types are compatible iff they are both subtypes of a common scalar
-type that declares itself an C<Ordered> subtype.  Note that C<is_before> is
-considered the only fundamental ordered-specific operator, and all others
-are defined over it plus C<is_identical>.
+type that declares a C<comparison> function for itself.  Note that
+C<is_before> is considered the only fundamental ordered-specific operator,
+and all others are defined over it plus C<is_identical>.
 
 =item C<function sys.Core.Ordered.is_not_before result Bool params {
-topic(Ordered), other(Ordered) }>
+topic(Universal), other(Universal) }>
 
 This function is exactly the same as C<sys.Core.Ordered.is_before> except
 that it results in the opposite boolean value when given the same
 arguments.  (It could alternately be called "is after or is identical".)
 
 =item C<function sys.Core.Ordered.is_inside_range result Bool params {
-topic(Ordered), min(Ordered), max(Ordered), min_is_inside(Bool),
+topic(Universal), min(Universal), max(Universal), min_is_inside(Bool),
 max_is_inside(Bool) }>
 
 This function results in C<Bool:true> iff its C<topic> argument is within
@@ -133,19 +133,19 @@ the range whose bounds are defined by its C<min> and C<max> arguments.  If
 C<min_is_inside> or C<max_is_inside> are C<Bool:true>, then C<topic> is
 considered to be within the range if it is equal to C<min> or C<max>,
 respectively.  This function's arguments must be of compatible declared
-types as per C<sys.Core.Ordered.comparison>.  This function will fail if
+types as per C<sys.Core.Ordered.is_before>.  This function will fail if
 C<max> is before C<min>.
 
 =item C<function sys.Core.Ordered.is_outside_range result Bool params {
-topic(Ordered), min(Ordered), max(Ordered), min_is_inside(Bool),
+topic(Universal), min(Universal), max(Universal), min_is_inside(Bool),
 max_is_inside(Bool) }>
 
 This function is exactly the same as C<sys.Core.Ordered.is_inside_range>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.Core.Ordered.min result Ordered params {
-topic(SetOfOrdered) }>
+=item C<function sys.Core.Ordered.min result Universal params {
+topic(Set) }>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and picks the minimum of the 2 (a process which
@@ -156,22 +156,22 @@ I<min>.  This function will fail on a C<topic> of zero values if the result
 type's concept of positive infinity is impossible or impractically large to
 represent, such as with the infinite C<Text> type.
 
-=item C<function sys.Core.Ordered.max result Ordered params {
-topic(SetOfOrdered) }>
+=item C<function sys.Core.Ordered.max result Universal params {
+topic(Set) }>
 
 This function is exactly the same as C<sys.Core.Ordered.min> except that it
 results in the maximum input element value rather than the minimum one, and
 its identity value is the result type's concept of negative infinity.
 
-=item C<function sys.Core.Ordered.maybe_min result MaybeOfOrdered params {
-topic(SetOfOrdered) }>
+=item C<function sys.Core.Ordered.maybe_min result Maybe params {
+topic(Set) }>
 
 This function is exactly the same as C<sys.Core.Ordered.min> except that it
 results in a C<Maybe> of what is otherwise the result type, and that result
 has zero elements if the argument has zero elements.
 
-=item C<function sys.Core.Ordered.maybe_max result MaybeOfOrdered params {
-topic(SetOfOrdered) }>
+=item C<function sys.Core.Ordered.maybe_max result Maybe params {
+topic(Set) }>
 
 This function is to C<sys.Core.Ordered.max> as
 C<sys.Core.Ordered.maybe_min> is to C<sys.Core.Ordered.min>.
