@@ -65,12 +65,10 @@ more or less:
                         # These are all finite integer types.
 
                         sys.Core.Cat.PInt1_4
-                        sys.Core.Cat.PInt2_N
-                            sys.Core.Cat.PInt2_36
+                        sys.Core.Cat.PInt2_36
 
             # The following are all regular non-ordered scalar types.
 
-            sys.Core.Cat.E_RM
             sys.Core.Cat.E_TK
             sys.Core.Cat.E_TDM
             sys.Core.Cat.E_ENK
@@ -80,7 +78,6 @@ more or less:
 
             # The following are all regular tuple types.
 
-            sys.Core.Cat.RatRoundRule
             sys.Core.Cat.Type
             sys.Core.Cat.ExprNode
             sys.Core.Cat.InnerFunc
@@ -234,61 +231,12 @@ A C<Cat.PInt1_4> is a proper subtype of C<PInt> where all member values are
 between 1 and 4.  Its maximum value is 4.  The cardinality of this type is
 4.
 
-=head2 sys.Core.Cat.PInt2_N
-
-A C<Cat.PInt2_N> is a proper subtype of C<PInt> where all member values are
-greater than 1.  Its default and minimum value is 2.
-
 =head2 sys.Core.Cat.PInt2_36
 
 A C<Cat.PInt2_36> is a proper subtype of C<Cat.PInt2_N> where all member
 values are between 2 and 36.  (The significance of the number 36 is 10
 digits plus 26 letters.)  Its maximum value is 36.  The cardinality of this
 type is 35.
-
-=head2 sys.Core.Cat.E_RM
-
-A C<Cat.E_RM> (rounding method) is a scalar enumeration consisting of the 7
-values C<Cat.E_RM:half_down>, C<Cat.E_RM:half_up>, C<Cat.E_RM:half_even>,
-C<Cat.E_RM:to_floor>, C<Cat.E_RM:to_ceiling>, C<Cat.E_RM:to_zero>,
-C<Cat.E_RM:to_inf>.  When a value of some ordered type needs to be mapped
-into a proper subtype that doesn't contain that value, such as when mapping
-an arbitrary number to one with less precision, some rounding method is
-applied to determine which value of the subtype is to be mapped to while
-most accurately reflecting the original value.  The C<Cat.E_RM> type
-enumerates the rounding methods that Muldis D operators can typically
-apply.  With C<half_down>, C<half_up>, and C<half_even> (aka I<unbiased
-rounding>, I<convergent rounding>, I<statistician's rounding>, or
-I<bankers' rounding>), the original value will be mapped to the single
-target value that it is closest to, if there is one; otherwise, if it is
-exactly half-way between 2 adjacent target values, then C<half_down> will
-round towards negative infinity, C<half_up> will round towards positive
-infinity, and C<half_even> will round towards the nearest "even" target.
-With C<to_floor>, C<to_ceiling>, C<to_zero> (aka I<truncate>), C<to_inf>,
-the original value will always be mapped to the single adjacent value that
-is lower than it, or higher than it, or towards "zero" from it, or towards
-the nearer infinity from it, respectively.  The default value of
-C<Cat.E_RM> is C<Cat.E_RM:half_up>, since that is the most commonly used
-method of rounding.
-
-=head2 sys.Core.Cat.RatRoundRule
-
-A C<Cat.RatRoundRule> is a C<Tuple>.  It specifies a controlled (and
-typically degrading) coercion of a real number into a rational number
-having a specific radix and precision.  It is mainly used to
-deterministically massage an operation, whose conceptual result is
-generally an irrational number, so that its actual result is a best
-approximating rational number.  It is also used to define a generic
-rounding operation on a rational number that derives a typically less
-precise rational.  A C<Cat.RatRoundRule> has these 3 attributes: C<radix>
-(a C<Cat.PInt2_N>), C<max_denom> (a C<PInt>), and C<round_meth> (a
-C<Cat.E_RM>).  The rational resulting from the operation is as close as
-possible to the conceptual result but that its denominator is a
-non-negative power of C<radix> and said denominator is not larger than
-C<max_denom>; if rounding is needed, then C<round> dictates the rounding
-method.  The default value of C<Cat.RatRoundRule> specifies a coersion to a
-whole number using the C<Cat.E_RM:half_up> rounding method (its radix is 2
-and its max denom is 1).
 
 =head1 ROUTINE DEFINING TYPES
 

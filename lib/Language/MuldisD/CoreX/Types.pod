@@ -43,11 +43,6 @@ relationships:
             sys.Core.Int.Int
                 sys.Core.Int.UInt
                     sys.Core.Int.PInt
-            sys.Core.Rat.Rat
-                sys.Core.Rat.URat
-                    sys.Core.Rat.PRat
-                sys.Core.Rat.BRat
-                sys.Core.Rat.DRat
             sys.Core.Blob.Blob
                 sys.Core.Blob.NEBlob
             sys.Core.Text.Text
@@ -119,7 +114,6 @@ routines use them as parameter declared types:
                     sys.Core.Spec.SetOfBool
                     sys.Core.Spec.SetOfInt
                         sys.Core.Spec.SetOfUInt
-                    sys.Core.Spec.SetOfRat
                     sys.Core.Spec.SetOfBlob
                     sys.Core.Spec.SetOfText
 
@@ -131,7 +125,6 @@ routines use them as parameter declared types:
                         sys.Core.Spec.MaybeOfBool
                         sys.Core.Spec.MaybeOfInt
                             sys.Core.Spec.MaybeOfUInt
-                        sys.Core.Spec.MaybeOfRat
                         sys.Core.Spec.MaybeOfBlob
                         sys.Core.Spec.MaybeOfText
 
@@ -143,7 +136,6 @@ routines use them as parameter declared types:
                     sys.Core.Spec.SeqOfBool
                     sys.Core.Spec.SeqOfInt
                         sys.Core.Spec.SeqOfUInt
-                    sys.Core.Spec.SeqOfRat
                     sys.Core.Spec.SeqOfBlob
                     sys.Core.Spec.SeqOfText
 
@@ -155,7 +147,6 @@ routines use them as parameter declared types:
                     sys.Core.Spec.BagOfBool
                     sys.Core.Spec.BagOfInt
                         sys.Core.Spec.BagOfUInt
-                    sys.Core.Spec.BagOfRat
                     sys.Core.Spec.BagOfBlob
                     sys.Core.Spec.BagOfText
 
@@ -232,74 +223,6 @@ value is zero.
 
 A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
 member values are greater than zero.  Its default and minimum value is 1.
-
-=head2 sys.Core.Rat.Rat
-
-A C<Rat> is a single exact rational number of any magnitude and precision.
-It is conceptually a composite type with 2 main system-defined possreps,
-called C<ratio> and C<float>, both of which are defined over several
-C<Int>.
-
-The C<ratio> possrep consists of 2 attributes: C<numerator> (an C<Int>),
-C<denominator> (a C<PInt>); the conceptual value of a C<Rat> is the result
-of rational-dividing its C<numerator> by its C<denominator>.  Because in
-the general case there are an infinite set of [C<numerator>,C<denominator>]
-integer pairs that denote the same rational value, the C<ratio> possrep
-carries the normalization constraint that C<numerator> and C<denominator>
-must be coprime, that is, they have no common integer factors other than 1.
-
-The C<float> possrep consists of 3 attributes: C<mantissa> (an C<Int>),
-C<radix> (a C<Cat.PInt2_N>), C<exponent> (an C<Int>); the conceptual value
-of a C<Rat> is the result of multiplying its C<mantissa> by the result of
-taking its C<radix> to the power of its C<exponent>.  The C<float> possrep
-carries the normalization constraint that among all the
-[C<mantissa>,C<radix>,C<exponent>] triples which would denote the same
-rational value, the only allowed triple is the one having both the C<radix>
-with the lowest value (that is closest to or equal to 2) and the
-C<exponent> with the highest value (that is closest to positive infinity).
-I<Note: this constraint could stand to be rephrased for simplification or
-correction, eg if somehow the sets of candidate triples sharing the lowest
-radix and sharing the highest exponent have an empty intersection.>
-
-The default value of C<Rat> is zero; its minimum and maximum values are
-conceptually infinities and practically impossible.  The cardinality of
-this type is infinity; to define a most-generalized finite C<Rat> subtype,
-you must specify the greatest magnitude value denominator, plus the the 2
-integer end-points of the inclusive range of the value numerator; or
-alternately you must specify the greatest magnitude value mantissa (the
-I<maximum precision> of the number), and specify the greatest magnitude
-value radix, plus the the 2 integer end-points of the inclusive range of
-the value exponent (the I<maximum scale> of the number).  Common subtypes
-specify that the normalized radixes of all their values are either 2 or 10;
-types such as these will easily map exactly to common human or physical
-numeric representations, so they tend to perform better.
-
-=head2 sys.Core.Rat.URat
-
-A C<URat> (unsigned / non-negative rational) is a proper subtype of C<Rat>
-where all member values are greater than or equal to zero (that is, the
-C<numerator>|C<mantissa> is greater than or equal to zero).  Its minimum
-value is zero.
-
-=head2 sys.Core.Rat.PRat
-
-A C<PRat> (positive rational) is a proper subtype of C<URat> where all
-member values are greater than zero (that is, the C<numerator>|C<mantissa>
-is greater than zero).  Its default value is 1.
-
-=head2 sys.Core.Rat.BRat
-
-A C<BRat> (binary rational) is a proper subtype of C<Rat> where the
-C<radix> is 2; it is the best option to exactly represent rational numbers
-that are conceptually binary or octal or hexadecimal.
-
-=head2 sys.Core.Rat.DRat
-
-A C<DRat> (decimal rational) is a proper subtype of C<Rat> where the
-C<radix> is 10 (or if it could be without the C<float> possrep
-normalization constraint); it is the best option to exactly represent
-rational numbers that are conceptually the decimal numbers that humans
-typically work with.
 
 =head2 sys.Core.Blob.Blob
 
@@ -626,11 +549,11 @@ A C<(Set|Maybe|Seq|Bag)OfScalar> is a completely defined proper
 subtype of C<(Set|Maybe|Seq|Bag)> whose C<value> attribute has a declared
 type of a C<Scalar> subtype.
 
-=item C<sys.Core.Spec.(Set|Maybe|Seq|Bag)Of(Bool|Int|UInt|Rat|Blob|Text)>
+=item C<sys.Core.Spec.(Set|Maybe|Seq|Bag)Of(Bool|Int|UInt|Blob|Text)>
 
-A C<(Set|Maybe|Seq|Bag)Of(Bool|Int|UInt|Rat|Blob|Text)> is a completely
+A C<(Set|Maybe|Seq|Bag)Of(Bool|Int|UInt|Blob|Text)> is a completely
 defined proper subtype of C<(Set|Maybe|Seq|Bag)> whose C<value> attribute
-has a declared type of a C<(Bool|Int|UInt|Rat|Blob|Text)> subtype.
+has a declared type of a C<(Bool|Int|UInt|Blob|Text)> subtype.
 
 =back
 
