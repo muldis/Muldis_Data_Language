@@ -1,0 +1,161 @@
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Language::MuldisD::Ext::Text -
+Muldis D extension for character string data types and operators
+
+=head1 VERSION
+
+This document is Language::MuldisD::Ext::Text version 0.19.1.
+
+=head1 PREFACE
+
+This document is part of the Muldis D language specification, whose root
+document is L<Language::MuldisD>; you should read that root document
+before you read this one, which provides subservient details.
+
+=head1 DESCRIPTION
+
+Muldis D has a mandatory core set of system-defined (eternally available)
+entities, which is referred to as the I<Muldis D core> or the I<core>; they
+are the minimal entities that all Muldis D implementations need to provide;
+they are mutually self-describing and are used to bootstrap the language;
+any entities outside the core, called I<Muldis D extensions>, are
+non-mandatory and are defined in terms of the core or each other, but the
+reverse isn't true.
+
+This current C<Text> document describes the system-defined I<Muldis D Text
+Extension>, which consists of character string data types and operators,
+essentially all the generic ones that a typical programming language should
+have, but for the bare minimum needed for bootstrapping Muldis D, which are
+defined in the language core instead.
+
+This current document does not describe the polymorphic operators that all
+types, or some types including core types, have defined over them; said
+operators are defined once for all types in L<Language::MuldisD::Core>.
+
+I<This documentation is pending.>
+
+=head1 TYPE SUMMARY
+
+Also for convenience are the regular set|maybe|seq|bag types
+C<sys.Text.Spec.(Set|Maybe|Seq|Bag)OfText>.
+
+=head1 SYSTEM-DEFINED TEXT-CONCERNING DATA TYPES
+
+=item C<sys.Text.Spec.(Set|Maybe|Seq|Bag)OfText>
+
+A C<(Set|Maybe|Seq|Bag)OfText> is a completely defined proper subtype of
+C<(Set|Maybe|Seq|Bag)> whose C<value> attribute has a declared type of a
+C<Text> subtype.
+
+=head1 SYSTEM-DEFINED TEXT-CONCERNING FUNCTIONS
+
+These functions implement commonly used character string operations.
+
+=over
+
+=item C<function sys.Core.Text.catenation result Text params {
+topic(SeqOfText) }>
+
+This function results in the catenation of the N element values of its
+argument; it is a reduction operator that recursively takes each
+consecutive pair of input values and catenates (which is associative) them
+together until just one is left, which is the result.  If C<topic> has zero
+values, then C<catenate> results in the empty string value, which is the
+identity value for catenate.
+
+=item C<function sys.Core.Text.repeat result Text params { topic(Text),
+count(UInt) }>
+
+This function results in the catenation of C<count> instances of C<topic>.
+
+=item C<function sys.Core.Text.length_in_nfd_graphs result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form D graphemes.
+
+=item C<function sys.Core.Text.length_in_nfc_graphs result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form C graphemes.
+
+=item C<function sys.Core.Text.length_in_nfd_codes result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form D code points.
+
+=item C<function sys.Core.Text.length_in_nfc_codes result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in Unicode
+Normalization Form C code points.
+
+=item C<function sys.Core.Text.is_substr result Bool params {
+look_in(Text), look_for(Text), fixed_start(Bool), fixed_end(Bool) }>
+
+This function results in C<Bool:true> iff its C<look_for> argument is a
+substring of its C<look_in> argument as per the optional C<fixed_start> and
+C<fixed_end> constraints, and C<Bool:false> otherwise.  If C<fixed_start>
+or C<fixed_end> are C<Bool:true>, then C<look_for> must occur right at the
+start or end, respectively, of C<look_in> in order for C<contains> to
+result in C<Bool:true>; if either flag is C<Bool:false>, its additional
+constraint doesn't apply.
+
+=item C<function sys.Core.Text.is_not_substr result Bool params {
+look_in(Text), look_for(Text), fixed_start(Bool), fixed_end(Bool) }>
+
+This function is exactly the same as C<sys.Core.Text.is_substr> except that
+it results in the opposite boolean value when given the same arguments.
+
+=item C<function sys.Core.Text.case_folded_to_upper result Text {
+topic(Text) }>
+
+This function results in the transformation of its argument where any
+letters considered to be (small) lowercase are folded to (capital)
+uppercase.
+
+=item C<function sys.Core.Text.case_folded_to_lower result Text {
+topic(Text) }>
+
+This function results in the transformation of its argument where any
+letters considered to be (capital) uppercase are folded to (small)
+lowercase.
+
+=item C<function sys.Core.Text.whitespace_trimmed result Text { topic(Text)
+}>
+
+This function results in the value of its argument but that any leading or
+trailing whitespace characters are trimmed.
+
+=back
+
+=head1 SEE ALSO
+
+Go to L<Language::MuldisD> for the majority of distribution-internal
+references, and L<Language::MuldisD::SeeAlso> for the majority of
+distribution-external references.
+
+=head1 AUTHOR
+
+Darren Duncan (C<perl@DarrenDuncan.net>)
+
+=head1 LICENSE AND COPYRIGHT
+
+This file is part of the formal specification of the Muldis D language.
+
+Muldis D is Copyright © 2002-2008, Darren Duncan.
+
+See the LICENSE AND COPYRIGHT of L<Language::MuldisD> for details.
+
+=head1 ACKNOWLEDGEMENTS
+
+The ACKNOWLEDGEMENTS in L<Language::MuldisD> apply to this file too.
+
+=cut

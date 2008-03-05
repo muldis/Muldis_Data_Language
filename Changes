@@ -6,38 +6,61 @@
     * Language::MuldisD version 0.23.0 is released on CPAN as
     Language-MuldisD-0.23.0.tar.gz.
 
-    * This release mainly serves to first recombine the 6 Core(|/\w+).pod
-    files back into Core.pod, and then re-split them into a different set
-    of new files, all of which are at version 0.20.0: Core.pod,
-    Ext/Ordered.pod, Ext/Rational.pod.
+    * Reverted the only change made in version 0.22.1, by recombining the 6
+    files Core(|/\w+).pod back into the single file Core.pod; it would then
+    be split apart again but in a different way.  For simplicity of
+    documentation, the rest of the version 0.23.0 change items are written
+    from the point of view of starting with the combined Core.pod.
 
-    * New file versions are: MuldisD.pm 0.23.0 and Core.pod and Types.pod
-    and Types_Catalog.pod and Routines.pod and Functions_Scalar.pod and
-    Ordered.pod and Rational.pod 0.20.0 and Temporal.pod 0.5.3.  The other
-    pre-existing versioned files are unchanged.
+    * Pulled apart Core.pod to turn as much of it as possible into language
+    extensions, leaving the remaining core as minimalist as possible, such
+    that it contains barely more than what is needed to both bootstrap the
+    Muldis D language and satisfy the mandatory parts of "The Third
+    Manifesto".  The minimized core still provides the full system catalog
+    complexity, but has relatively few system-defined generic data types
+    and system-defined operators.  There were 5 new Ext/\w+.pod files
+    created out of the reductions: Ordered.pod, Integer.pod, Rational.pod,
+    Blob.pod, Text.pod.  Details of what each contains appear below.
 
-    * (Types.pod, Routines.pod, Types_Catalog.pod, Temporal.pod)  Removed
-    the Ordered union type; from now on, any type is potentialy orderable
-    based on what functions exist for it, not by its type declaration.
-    Also removed the 4 Spec.\w+ofOrdered types.  Any routine declarations
-    that used Ordered before now use Universal instead.
+    * New file versions are: MuldisD.pm 0.23.0 and Core.pod and Ordered.pod
+    and Integer.pod and Rational.pod and Blob.pod and Text.pod 0.20.0 and
+    Temporal.pod 0.5.3.  The other pre-existing versioned files are
+    unchanged.
 
-    * (Types_Catalog.pod)  Removed the Cat.ScalarLiteral type; from now on,
-    the limitations of what values can be used for the scal_lit attribute
-    of Cat.ExprNode are either dialect-defined or implementation-defined;
-    all others can still be defined using the 'func' attribute.
+    * (Core.pod, Temporal.pod)  Removed the Ordered union type; from now
+    on, any type is potentialy orderable based on what functions exist for
+    it, not by its type declaration. Also removed the 4 Spec.\w+ofOrdered
+    types.  Any routine declarations that used Ordered before now use
+    Universal instead.
 
-    * (Ordered.pod, Routines.pod)  Moved all sys.Core.Ordered.\w+ operators
-    to Ordered.pod from Routines.pod, renaming them to sys.Ordered.Ord.\w+.
+    * (Core.pod)  Removed the Cat.ScalarLiteral type; from now on, the
+    limitations of what values can be used for the scal_lit attribute of
+    Cat.ExprNode are either dialect-defined or implementation-defined; all
+    others can still be defined using the 'func' attribute.
 
-    * (Rational.pod, Types.pod, Types_Catalog.pod, Functions_Scalar.pod)
-    Moved all sys.Core.Rat.\w+ types (plus the sys.Core.Spec\w+ofRat types)
-    and operators to Rational.pod from Types.pod and Functions_Scalar.pod,
-    respectively, renaming the 'Core' to 'Rational'.  Also moved the 3
-    rational-specific catalog types [PInt2_N, E_RM, RatRoundRule] to
-    Rational.pod from Types_Catalog.pod, with the same renaming.
+    * (Ordered.pod, Core.pod)  Moved all sys.Core.Ordered.\w+ operators
+    to Ordered.pod from Core.pod, renaming them to sys.Ordered.Ord.\w+.
 
-    * (Types_Catalog.pod)  Reorganized the type definitions into new
+    * (Rational.pod, Core.pod) Moved all sys.Core.Rat.\w+ types (plus the
+    sys.Core.Spec\w+ofRat types) and operators to Rational.pod from
+    Core.pod, renaming the 'Core' to 'Rational'.  Likewise moved and
+    renamed the 3 rational-specific catalog types [PInt2_N, E_RM,
+    RatRoundRule].
+
+    * (Integer.pod, Core.pod) Moved all sys.Core.Int.\w+ operators (plus
+    the sys.Core.Spec\w+of(Int|UInt) types) to Integer.pod from Core.pod,
+    renaming the 'Core' to 'Integer'.
+
+    * (Blob.pod, Core.pod) Moved all sys.Core.Blob.\w+ operators (plus the
+    sys.Core.Spec\w+ofBlob types) to Blob.pod from Core.pod, renaming the
+    'Core' to 'Blob'.  Likewise moved and renamed the blob-specific catalog
+    type PInt1_4.
+
+    * (Text.pod, Core.pod) Moved all sys.Core.Text.\w+ operators (plus the
+    sys.Core.Spec\w+ofText types) to Text.pod from Core.pod, renaming the
+    'Core' to 'Text'.
+
+    * (Core.pod)  Reorganized the catalog type definitions into new
     groupings based more on purpose than type inheritence.
 
     Temp renamed all Core/* to CoreX/* ... large reorg in progress

@@ -1,0 +1,283 @@
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Language::MuldisD::Ext::Integer -
+Muldis D extension for integer data types and operators
+
+=head1 VERSION
+
+This document is Language::MuldisD::Ext::Integer version 0.19.1.
+
+=head1 PREFACE
+
+This document is part of the Muldis D language specification, whose root
+document is L<Language::MuldisD>; you should read that root document
+before you read this one, which provides subservient details.
+
+=head1 DESCRIPTION
+
+Muldis D has a mandatory core set of system-defined (eternally available)
+entities, which is referred to as the I<Muldis D core> or the I<core>; they
+are the minimal entities that all Muldis D implementations need to provide;
+they are mutually self-describing and are used to bootstrap the language;
+any entities outside the core, called I<Muldis D extensions>, are
+non-mandatory and are defined in terms of the core or each other, but the
+reverse isn't true.
+
+This current C<Integer> document describes the system-defined I<Muldis D
+Integer Extension>, which consists of integer data types and operators,
+essentially all the generic ones that a typical programming language should
+have, but for the bare minimum needed for bootstrapping Muldis D, which are
+defined in the language core instead.
+
+This current document does not describe the polymorphic operators that all
+types, or some types including core types, have defined over them; said
+operators are defined once for all types in L<Language::MuldisD::Core>.
+
+I<This documentation is pending.>
+
+=head1 TYPE SUMMARY
+
+Following are all the data types described in this document, arranged in a
+type graph according to their proper sub|supertype relationships (but that
+a few of them just reappear from the core set to provide a similar context,
+and aren't re-described here):
+
+    sys.Core.Universal.Universal
+
+        sys.Core.Universal.Empty
+
+        sys.Core.Scalar.Scalar
+
+            # The following are all regular ordered scalar types.
+
+            sys.Core.Int.Int
+                sys.Core.Int.UInt
+                    sys.Core.Int.PInt
+
+                        # These are all integer types.
+
+
+            # The following are all regular non-ordered scalar types.
+
+
+        sys.Core.Tuple.Tuple
+
+            # The following are all regular tuple types.
+
+
+Also for convenience are the regular set|maybe|seq|bag types
+C<sys.Integer.Spec.(Set|Maybe|Seq|Bag)Of(Int|UInt)>.
+
+I<This documentation is pending.>
+
+=head1 SYSTEM-DEFINED INTEGER-CONCERNING DATA TYPES
+
+=item C<sys.Integer.Spec.(Set|Maybe|Seq|Bag)Of(Int|UInt)>
+
+A C<(Set|Maybe|Seq|Bag)Of(Int|UInt)> is a completely defined proper subtype
+of C<(Set|Maybe|Seq|Bag)> whose C<value> attribute has a declared type of a
+C<(Int|UInt)> subtype.
+
+=head1 SYSTEM-DEFINED INTEGER-CONCERNING FUNCTIONS
+
+These functions implement commonly used integer numeric operations.
+
+=over
+
+=item C<function sys.Core.Int.increment result Int params { topic(Int) }>
+
+This function results in its argument incremented by 1.
+
+=item C<function sys.Core.Int.decrement result Int params { topic(Int) }>
+
+This function results in its argument decremented by 1.
+
+=item C<function sys.Core.Int.abs result UInt params { topic(Int) }>
+
+This function results in the absolute value of its argument.
+
+=item C<function sys.Core.Int.sum result Int params { addends(BagOfInt) }>
+
+This function results in the sum of the N element values of its argument;
+it is a reduction operator that recursively takes each pair of input values
+and adds (which is both commutative and associative) them together until
+just one is left, which is the result.  If C<addends> has zero values, then
+C<sum> results in the integer zero, which is the identity value for
+addition.
+
+=item C<function sys.Core.Int.difference result Int params { minuend(Int),
+subtrahend(Int) }>
+
+This function results in the difference when its C<subtrahend> argument is
+subtracted from its C<minuend> argument.
+
+=item C<function sys.Core.Int.product result Int params { factors(BagOfInt)
+}>
+
+This function results in the product of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and multiplies (which is both commutative and associative)
+them together until just one is left, which is the result.  If C<factors>
+has zero values, then C<product> results in the integer 1, which is the
+identity value for multiplication.
+
+=item C<function sys.Core.Int.quotient result Int params { dividend(Int),
+divisor(Int) }>
+
+This function results in the quotient when its C<dividend> argument is
+divided by its C<divisor> argument using integer division.  This function
+will fail if C<divisor> is zero.
+
+=item C<function sys.Core.Int.remainder result UInt params { dividend(Int),
+divisor(Int) }>
+
+This function results in the remainder when its C<dividend> argument is
+divided by its C<divisor> argument using integer division.  This function
+will fail if C<divisor> is zero.
+
+=item C<function sys.Core.Int.maybe_quotient result MaybeOfInt params {
+dividend(Int), divisor(Int) }>
+
+This function is exactly the same as C<sys.Core.Int.quotient> except that
+it results in a C<Maybe> of what is otherwise the result, and that result
+has zero elements if C<divisor> is zero.
+
+=item C<function sys.Core.Int.maybe_remainder result MaybeOfUInt params {
+dividend(Int), divisor(Int) }>
+
+This function is exactly the same as C<sys.Core.Int.remainder> except that
+it results in a C<Maybe> of what is otherwise the result, and that result
+has zero elements if C<divisor> is zero.
+
+=item C<function sys.Core.Int.range result Int params { topic(SetOfInt) }>
+
+This function results in the difference between the lowest and highest
+element values of its argument.  If C<topic> has zero values, then C<range>
+results in the integer zero.
+
+=item C<function sys.Core.Int.median result SetOfInt params {
+topic(BagOfInt) }>
+
+This function results in the 1 or 2 median values of the N element values
+of its argument; they are returned as a set.  It is equivalent to first
+arranging the input values from least to greatest, and then taking the
+single middle value, if the count of input values is odd, or taking the 2
+middle values, if the count of input values is even (but if the 2 middle
+values are the same value, the output has one element).  If C<topic> has
+zero values, then the result set is empty.
+
+=item C<function sys.Core.Int.mode result SetOfInt params { topic(BagOfInt)
+}>
+
+This function results in the mode of the N element values of its argument;
+it is the set of values that appear the most often as input elements, and
+all have the same count of occurrances.  As a trivial case, if all input
+elements have the same count of occurrances, then they will all be in the
+output.  If C<topic> has zero values, then the result set is empty.
+
+=item C<function sys.Core.Int.power result Int params { radix(Int),
+exponent(UInt) }>
+
+This function results in its C<radix> argument taken to the power of its
+(unsigned integer) C<exponent> argument.  This function will fail if
+C<radix> and C<exponent> are both zero.
+
+=item C<function sys.Core.Int.factorial result PInt params { topic(UInt) }>
+
+This function results in the factorial of its argument (it is defined for
+an argument of zero to result in 1, as per the identity value for
+multiplication of an empty set).
+
+=back
+
+These functions convert between C<Int> values and canonically formatted
+representations of integers as character strings.
+
+=over
+
+=item C<function sys.Core.Int.Int_from_NEText result Int params {
+text(NEText), radix(Cat.PInt2_36) }>
+
+This selector function results in the C<Int> value that its C<text>
+argument maps to when the whole character string is evaluated as a
+base-C<radix> integer.  Extending the typical formats of [base-2, base-8,
+base-10, base-16], this function supports base-2 through base-36; to get
+the latter, the characters 0-9 and A-Z represent values in 0-35.  This
+function will fail if C<text> can't be mapped as specified.
+
+=item C<function sys.Core.Int.NEText_from_Int result NEText params {
+int(Int), radix(Cat.PInt2_36) }>
+
+This selector function results in the C<NEText> value where its C<int>
+argument is formatted as a base-C<radix> integer.
+
+=back
+
+These functions convert between C<Int> values and canonically formatted
+representations of integers as binary strings.  I<Conjecture: These may not
+actually be useful, and perhaps only operators that take an argument
+specifying a fixed-length field size, with big and little endian versions,
+would be appropriate instead.  Or maybe both kinds are necessary.>
+
+=over
+
+=item C<function sys.Core.Int.Int_from_Blob_S_VBE result Int params {
+blob(NEBlob) }>
+
+This selector function results in the C<Int> value that its C<blob>
+argument maps to when the whole bit string is treated literally as a
+variable-length binary (two's complement) signed integer of 1 or more bits
+in length.  The first bit is taken as the sign bit, and any other bits
+provide greater precision than the -1 thru 0 range.  The bit string is
+assumed to be big-endian, since it may not be possible to use little-endian
+in situations where the bit length isn't a multiple of 8.
+
+=item C<function sys.Core.Int.Blob_S_VBE_from_Int result NEBlob params {
+int(Int) }>
+
+This selector function results in the C<Blob> value where its C<int>
+argument is formatted as a variable-length binary (two's complement) signed
+integer of 1 or more bits in length; the smallest number of bits necessary
+to store C<int> is used.
+
+=item C<function sys.Core.Int.Int_from_Blob_U_VBE result UInt params {
+blob(NEBlob) }>
+
+This function is the same as C<sys.Core.Int.Int_from_Blob_S_VBE> but that
+it does unsigned integers.
+
+=item C<function sys.Core.Int.Blob_U_VBE_from_Int result UInt params {
+blob(NEBlob) }>
+
+This function is the same as C<sys.Core.Int.Blob_S_VBE_from_Int> but that
+it does unsigned integers.
+
+=back
+
+=head1 SEE ALSO
+
+Go to L<Language::MuldisD> for the majority of distribution-internal
+references, and L<Language::MuldisD::SeeAlso> for the majority of
+distribution-external references.
+
+=head1 AUTHOR
+
+Darren Duncan (C<perl@DarrenDuncan.net>)
+
+=head1 LICENSE AND COPYRIGHT
+
+This file is part of the formal specification of the Muldis D language.
+
+Muldis D is Copyright © 2002-2008, Darren Duncan.
+
+See the LICENSE AND COPYRIGHT of L<Language::MuldisD> for details.
+
+=head1 ACKNOWLEDGEMENTS
+
+The ACKNOWLEDGEMENTS in L<Language::MuldisD> apply to this file too.
+
+=cut
