@@ -1,0 +1,186 @@
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Language::MuldisD::Ext::Set -
+Muldis D extension for Set and Maybe specific operators
+
+=head1 VERSION
+
+This document is Language::MuldisD::Ext::Set version 0.19.1.
+
+=head1 PREFACE
+
+This document is part of the Muldis D language specification, whose root
+document is L<Language::MuldisD>; you should read that root document
+before you read this one, which provides subservient details.
+
+=head1 DESCRIPTION
+
+Muldis D has a mandatory core set of system-defined (eternally available)
+entities, which is referred to as the I<Muldis D core> or the I<core>; they
+are the minimal entities that all Muldis D implementations need to provide;
+they are mutually self-describing and are used to bootstrap the language;
+any entities outside the core, called I<Muldis D extensions>, are
+non-mandatory and are defined in terms of the core or each other, but the
+reverse isn't true.
+
+This current C<Set> document describes the system-defined I<Muldis D
+Set Extension>, which consists of generic operators that are specific to the
+C<Set> and C<Maybe> parameterized relation types, and said operators are
+short-hands for generic relational operators in the language core.
+
+This current document does not describe the polymorphic operators that all
+types, or some types including core types, have defined over them; said
+operators are defined once for all types in L<Language::MuldisD::Core>.
+
+I<This documentation is pending.>
+
+=head1 SYSTEM-DEFINED SET-CONCERNING FUNCTIONS
+
+=over
+
+=item C<function sys.Set.Set.is_member result Bool params { set(Set),
+value(ScaTupRel) }>
+
+This function results in C<Bool:true> iff its C<value> argument matches the
+sole attribute of a tuple of its C<set> argument (that is, iff conceptually
+C<value> is a member of C<set>), and C<Bool:false> otherwise.  This
+function will fail if the declared type of C<value> isn't a subtype of the
+declared type of the attribute.
+
+=item C<function sys.Set.Set.is_not_member result Bool params { set(Set),
+value(ScaTupRel) }>
+
+This function is exactly the same as C<sys.Set.Set.is_member> except that
+it results in the opposite boolean value when given the same arguments.
+
+=item C<function sys.Set.Set.insertion result Set params { set(Set),
+value(ScaTupRel) }>
+
+This function results in a C<Set> that is the relational union of C<set>
+and a Set whose sole tuple has the sole attribute value of C<value>; that
+is, conceptually the result is C<value> inserted into C<set>.  As a trivial
+case, if C<value> already exists in C<set>, then the result is just C<set>.
+
+=item C<function sys.Set.Set.disjoint_insertion result Set params {
+set(Set), value(ScaTupRel) }>
+
+This function is exactly the same as C<sys.Set.Set.insertion> except that
+it will fail if C<value> already exists in C<set>.
+
+=item C<function sys.Set.Set.deletion result Set params { set(Set),
+value(ScaTupRel) }>
+
+This function results in a C<Set> that is the relational difference from
+C<set> of a Set whose sole tuple has the sole attribute value of C<value>;
+that is, conceptually the result is C<value> deleted from C<set>.  As a
+trivial case, if C<value> already doesn't exist in C<set>, then the result
+is just C<set>.
+
+=item C<function sys.Set.Set.reduction result ScaTupRel params {
+topic(Set), func(Cat.NameChain), assuming(Tuple), identity(ScaTupRel) }>
+
+This function is a generic reduction operator that recursively takes each
+pair of input values in C<topic> and applies an argument-specified scalar
+or nonscalar value-resulting function (which is both commutative and
+associative) to the pair until just one input value is left, which is the
+result.  The function to apply is named in the C<func> argument, and that
+function must have 3 arguments named C<v1>, C<v2>, C<assuming>; the last
+parameter is curried with the same-named argument of C<reduction>, and the
+first 2 parameters are the 2 input scalar or nonscalar values for an
+invocation.  If C<topic> has zero values, then C<reduction> results in the
+value given in C<identity>.  I<Note that C<identity> may be changed to take
+a function name rather than a value, for consistency with C<func>.> This
+function will fail if the declared type of C<identity> isn't a subtype of
+the declared type of the sole attribute of C<topic>.
+
+=item C<function sys.Set.Set.maybe_reduction result Maybe params {
+topic(Set), func(Cat.NameChain), assuming(Tuple) }>
+
+This function is exactly the same as C<sys.Set.Set.reduction> except that
+it does not take an C<assuming> argument, and it results in a C<Maybe> of
+what is otherwise the result type, and that result has zero elements if the
+argument has zero elements.
+
+=item C<function sys.Set.Set.Set_from_wrap result SetOfTuple params {
+topic(Relation) }>
+
+This function results in a C<Set> whose sole attribute is tuple-typed and
+the attribute values are all the tuples of C<topic>; is a short-hand for a
+relational wrap of all attributes of C<topic> such that the new
+tuple-valued attribute is named C<value>.
+
+=item C<function sys.Set.Set.Set_from_attr result Set params {
+topic(Relation), name(Cat.Name) }>
+
+This function results in a C<Set> consisting of all the values of the
+attribute of C<topic> named by C<name>.  It is a short-hand for a unary
+projection of just the named attribute plus its renaming to C<value>.
+
+=back
+
+=head1 SYSTEM-DEFINED MAYBE-CONCERNING FUNCTIONS
+
+=over
+
+=item C<function sys.Set.Maybe.nothing result Nothing params {}>
+
+This selector function results in the only zero-tuple Maybe value.
+
+=item C<function sys.Set.Maybe.single result Single params {
+value(ScaTupRel) }>
+
+This selector function results in the Maybe value with a single tuple whose
+C<value> attribute's value is the C<value> argument.
+
+=item C<function sys.Set.Maybe.attr result ScaTupRel params {
+topic(Single) }>
+
+This function results in the scalar or nonscalar value of the sole
+attribute of the sole tuple of its argument, which always exists when the
+argument is a C<Single>.
+
+=item C<function sys.Set.Maybe.attr_or_default result ScaTupRel params {
+topic(Maybe) }>
+
+This function results in the scalar or nonscalar value of the sole
+attribute of the sole tuple of its argument, if said tuple exists;
+otherwise, it results in the default value of the declared type of the said
+attribute.
+
+=item C<function sys.Set.Maybe.attr_or_value result ScaTupRel params {
+topic(Maybe), value(ScaTupRel) }>
+
+This function results in the scalar or nonscalar value of the sole
+attribute of the sole tuple of C<topic>, if said tuple exists; otherwise,
+it results in C<value>.  This function will fail if the declared type of
+C<value> isn't a subtype of the declared type of the attribute.
+
+=back
+
+=head1 SEE ALSO
+
+Go to L<Language::MuldisD> for the majority of distribution-internal
+references, and L<Language::MuldisD::SeeAlso> for the majority of
+distribution-external references.
+
+=head1 AUTHOR
+
+Darren Duncan (C<perl@DarrenDuncan.net>)
+
+=head1 LICENSE AND COPYRIGHT
+
+This file is part of the formal specification of the Muldis D language.
+
+Muldis D is Copyright © 2002-2008, Darren Duncan.
+
+See the LICENSE AND COPYRIGHT of L<Language::MuldisD> for details.
+
+=head1 ACKNOWLEDGEMENTS
+
+The ACKNOWLEDGEMENTS in L<Language::MuldisD> apply to this file too.
+
+=cut
