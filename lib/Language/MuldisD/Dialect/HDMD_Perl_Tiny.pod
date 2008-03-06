@@ -129,7 +129,7 @@ be the input for a Perl Hosted Muldis D implementating virtual machine's
 configuration step, which provides a context for subsequent feeding of
 other PHMD trees to said virtual machine.
 
-=head1 SCALAR VALUES
+=head1 CORE GENERIC SCALAR VALUES
 
 =head2 sys.Core.Scalar.Bool
 
@@ -274,169 +274,6 @@ Examples:
 
     [ 'Int', 'perl_int', 101 ]
 
-=head2 sys.Core.Rat.Rat
-
-This node type represents a rational value.  It has 3-4 elements:
-
-=over
-
-=item *
-
-Node type: the Perl C<Str> value C<Rat>.
-
-=item *
-
-Format; one of: C<md_radix>, C<md_ratio>, C<md_float>, C<perl_rat>,
-C<perl_float>, C<perl_int_ratio>, C<perl_int_float>, C<any_perl>,
-C<any_perl_ratio>, C<any_perl_float>.
-
-=item *
-
-Only when format is C<md_radix>|C<md_ratio>|C<md_float>; the max-col-val.
-
-=item *
-
-The payload.
-
-=back
-
-This node is interpreted as a Muldis D C<sys.Core.Rat.Rat> value as
-follows:
-
-=over
-
-=item *
-
-If the format is C<md_radix>, then the max-col-val must be a Perl C<Str>
-composed of a single C<[1-9A-Z]> character, and the payload must be a Perl
-C<Str> of the format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>* >>.
-This format specifically is what the Plain Text Muldis D grammar uses
-('radix' option), and is the result of parsing it.  The payload is
-interpreted as a base-I<N> rational where I<N> might be between 2 and 36,
-and the given max-col-val says which possible value of I<N> to use.
-Assuming all column values are between zero and I<N>-minus-one, the
-max-col-val contains that I<N>-minus-one.  So to specify, eg, bases
-[2,8,10,16], use max-col-val of [1,7,9,F].
-
-=item *
-
-If the format is C<md_ratio>, then the max-col-val must be as per
-C<md_radix>, and the payload must be a 2-element C<Array|Seq> where the
-first element is a Perl C<Str> of the format C<0> or C<<
-\-?<[1-9A-Z]><[0-9A-Z]>* >> (an integer) and the second element is a Perl
-C<Str> of the format C<< <[1-9A-Z]><[0-9A-Z]>* >> (a positive integer). The
-payload is interpreted as per C<md_radix> but that its value comes from the
-first element (a numerator) divided by the second (a denominator).  Note
-that while the C<md_radix> format is limited to representing rationals
-whose denominator is a power of some I<N> between 2 and 36, the C<md_ratio>
-format can represent those with any I<N> that is greater than or equal to
-2, such as 1/43.
-
-=item *
-
-If the format is C<md_float>, then the max-col-val must be as per
-C<md_radix>, and the payload must be a 3-element C<Array|Seq> where the
-first element is a Perl C<Str> of the format C<0> or C<<
-\-?<[1-9A-Z]><[0-9A-Z]>* >> (an integer) and the second element is a Perl
-C<Str> of the format C<< <[2-9A-Z]><[0-9A-Z]>* >> (an integer greater than
-1) and the third element is as per the first (an integer).  The payload is
-interpreted as per C<md_radix> but that its value comes from the first
-element (a mantissa) multiplied by the result of the second element (a
-radix) taken to the power of the third (an exponent).  Note that while the
-C<md_ratio> format can represent all rationals, the very large or very
-small ones would be quite verbose written in that format, and so the
-C<md_float> format allows writing those values in a more terse fashion,
-such as 1.56*10^37.
-
-=item *
-
-If the format is C<perl_rat>, then:  Under Perl 6, the payload must be a
-Perl C<Rat> (or C<Num>), which is mapped directly.  Under Perl 5, the
-payload must be just a canonical rational or numeric value according to
-Perl.
-
-=item *
-
-If the format is C<perl_float>, then:  Under Perl 6, the payload must be a
-Perl C<Float> (or C<Num>), which is mapped directly.  Under Perl 5, the
-payload must be just a canonical floating-point or numeric value according
-to Perl.
-
-=item *
-
-If the format is C<perl_int_ratio>, then the payload must a 2-element
-C<Array|Seq> where each element must be a canonical integer (or positive
-integer, respectively) to Perl as per defining a C<perl_int>; the
-rational's value is interpreted as the first element divided by the second.
-
-=item *
-
-If the format is C<perl_int_float>, then the payload must a 3-element
-C<Array|Seq> where each element must be a canonical integer (or integer
-greater than 2, or integer, respectively) to Perl as per defining a
-C<perl_int>; the rational's value is interpreted as the first element
-multiplied by the result of the second element taken to the power of the
-third.
-
-=item *
-
-If the format is C<any_perl>, then the payload may be any Perl value,
-and it is simply coerced into a numeric context as per Perl's own
-semantics, meaning base-10 where applicable.  If something doesn't look
-numeric, it becomes zero.
-
-=item *
-
-If the format is C<any_perl_ratio>, then the payload is as per
-C<perl_int_ratio> but that each array element is simply coerced into an
-integer context.  If Perl's coercion of the denominator produces an integer
-less than 1, it becomes a 1.  I<This may be revised to fail instead.>
-
-=item *
-
-If the format is C<any_perl_float>, then the payload is as per
-C<perl_int_float> but that each array element is simply coerced into an
-integer context.  If Perl's coercion of the radix produces an integer
-less than 2, it becomes a 2.  I<This may be revised to fail instead.>
-
-=back
-
-Examples:
-
-    [ 'Rat', 'md_radix', '1', '-1.1' ]
-
-    [ 'Rat', 'md_radix', '9', '-1.5' ] # same val as prev
-
-    [ 'Rat', 'md_radix', '9', '3.14159' ]
-
-    [ 'Rat', 'md_radix', 'A', '0.0' ]
-
-    [ 'Rat', 'md_radix', 'F', 'DEADBEEF.FACE' ]
-
-    [ 'Rat', 'md_radix', 'Z', '0.000AZE' ]
-
-    [ 'Rat', 'md_ratio', '6', [ '500001', '1000' ] ]
-
-    [ 'Rat', 'md_ratio', 'B', [ 'A09B', 'A' ] ]
-
-    [ 'Rat', 'md_float', '1', [ '1011101101', '10', '-11011' ] ]
-
-    [ 'Rat', 'md_float', '9', [ '45207196', '10', '37' ] ]
-
-    [ 'Rat', 'perl_rat', 21.003 ]
-
-    [ 'Rat', 'perl_float', 5.428**295 ]
-
-    [ 'Rat', 'perl_int_ratio', [ 1, 43 ] ]
-
-    [ 'Rat', 'perl_int_float', [ 314159, 10, -5 ] ]
-
-    [ 'Rat', 'any_perl', ' 54.67 ' ]
-
-    [ 'Rat', 'any_perl_ratio', [ ' 57 ', ' 71 ' ] ]
-
-    [ 'Rat', 'any_perl_float', [ ' 656573456 ', ' 8 ', ' 243323 ' ] ]
-
 =head2 sys.Core.Scalar.Blob
 
 This node type represents a bit string.  It has 3-4 elements:
@@ -532,7 +369,7 @@ Examples:
 
     [ 'Text', 'Perl' ]
 
-=head1 NONSCALAR VALUES
+=head1 CORE GENERIC NONSCALAR VALUES
 
 =head2 sys.Core.Tuple.Tuple
 
@@ -929,31 +766,6 @@ Examples:
 
     [ 'Comment', 'This does something.' ]
 
-=head2 sys.Core.Cat.E_RM
-
-This node type represents a rounding method.  It has 2 elements:
-
-=over
-
-=item *
-
-Node type: the Perl C<Str> value C<Cat.E_RM>.
-
-=item *
-
-The payload.
-
-=back
-
-This node is interpreted as a Muldis D C<sys.Core.Cat.E_RM> value by
-directly mapping the payload.  The payload must be a Perl C<Str> having one
-of the 7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
-C<to_ceiling>, C<to_zero>, C<to_inf>.
-
-Examples:
-
-    [ 'Cat.E_RM', 'half_up' ]
-
 =head2 sys.Core.Cat.E_TK
 
 This node type represents a type kind.  It has 2 elements:
@@ -1055,6 +867,196 @@ C<outer_var>.
 Examples:
 
     [ 'Cat.E_PSAK', 'ro_param' ]
+
+=head1 RATIONAL EXTENSION SCALAR VALUES
+
+=head2 sys.Rational.Rat.Rat
+
+This node type represents a rational value.  It has 3-4 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<Rat>.
+
+=item *
+
+Format; one of: C<md_radix>, C<md_ratio>, C<md_float>, C<perl_rat>,
+C<perl_float>, C<perl_int_ratio>, C<perl_int_float>, C<any_perl>,
+C<any_perl_ratio>, C<any_perl_float>.
+
+=item *
+
+Only when format is C<md_radix>|C<md_ratio>|C<md_float>; the max-col-val.
+
+=item *
+
+The payload.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.Rational.Rat.Rat> value as
+follows:
+
+=over
+
+=item *
+
+If the format is C<md_radix>, then the max-col-val must be a Perl C<Str>
+composed of a single C<[1-9A-Z]> character, and the payload must be a Perl
+C<Str> of the format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>* >>.
+This format specifically is what the Plain Text Muldis D grammar uses
+('radix' option), and is the result of parsing it.  The payload is
+interpreted as a base-I<N> rational where I<N> might be between 2 and 36,
+and the given max-col-val says which possible value of I<N> to use.
+Assuming all column values are between zero and I<N>-minus-one, the
+max-col-val contains that I<N>-minus-one.  So to specify, eg, bases
+[2,8,10,16], use max-col-val of [1,7,9,F].
+
+=item *
+
+If the format is C<md_ratio>, then the max-col-val must be as per
+C<md_radix>, and the payload must be a 2-element C<Array|Seq> where the
+first element is a Perl C<Str> of the format C<0> or C<<
+\-?<[1-9A-Z]><[0-9A-Z]>* >> (an integer) and the second element is a Perl
+C<Str> of the format C<< <[1-9A-Z]><[0-9A-Z]>* >> (a positive integer). The
+payload is interpreted as per C<md_radix> but that its value comes from the
+first element (a numerator) divided by the second (a denominator).  Note
+that while the C<md_radix> format is limited to representing rationals
+whose denominator is a power of some I<N> between 2 and 36, the C<md_ratio>
+format can represent those with any I<N> that is greater than or equal to
+2, such as 1/43.
+
+=item *
+
+If the format is C<md_float>, then the max-col-val must be as per
+C<md_radix>, and the payload must be a 3-element C<Array|Seq> where the
+first element is a Perl C<Str> of the format C<0> or C<<
+\-?<[1-9A-Z]><[0-9A-Z]>* >> (an integer) and the second element is a Perl
+C<Str> of the format C<< <[2-9A-Z]><[0-9A-Z]>* >> (an integer greater than
+1) and the third element is as per the first (an integer).  The payload is
+interpreted as per C<md_radix> but that its value comes from the first
+element (a mantissa) multiplied by the result of the second element (a
+radix) taken to the power of the third (an exponent).  Note that while the
+C<md_ratio> format can represent all rationals, the very large or very
+small ones would be quite verbose written in that format, and so the
+C<md_float> format allows writing those values in a more terse fashion,
+such as 1.56*10^37.
+
+=item *
+
+If the format is C<perl_rat>, then:  Under Perl 6, the payload must be a
+Perl C<Rat> (or C<Num>), which is mapped directly.  Under Perl 5, the
+payload must be just a canonical rational or numeric value according to
+Perl.
+
+=item *
+
+If the format is C<perl_float>, then:  Under Perl 6, the payload must be a
+Perl C<Float> (or C<Num>), which is mapped directly.  Under Perl 5, the
+payload must be just a canonical floating-point or numeric value according
+to Perl.
+
+=item *
+
+If the format is C<perl_int_ratio>, then the payload must a 2-element
+C<Array|Seq> where each element must be a canonical integer (or positive
+integer, respectively) to Perl as per defining a C<perl_int>; the
+rational's value is interpreted as the first element divided by the second.
+
+=item *
+
+If the format is C<perl_int_float>, then the payload must a 3-element
+C<Array|Seq> where each element must be a canonical integer (or integer
+greater than 2, or integer, respectively) to Perl as per defining a
+C<perl_int>; the rational's value is interpreted as the first element
+multiplied by the result of the second element taken to the power of the
+third.
+
+=item *
+
+If the format is C<any_perl>, then the payload may be any Perl value,
+and it is simply coerced into a numeric context as per Perl's own
+semantics, meaning base-10 where applicable.  If something doesn't look
+numeric, it becomes zero.
+
+=item *
+
+If the format is C<any_perl_ratio>, then the payload is as per
+C<perl_int_ratio> but that each array element is simply coerced into an
+integer context.  If Perl's coercion of the denominator produces an integer
+less than 1, it becomes a 1.  I<This may be revised to fail instead.>
+
+=item *
+
+If the format is C<any_perl_float>, then the payload is as per
+C<perl_int_float> but that each array element is simply coerced into an
+integer context.  If Perl's coercion of the radix produces an integer
+less than 2, it becomes a 2.  I<This may be revised to fail instead.>
+
+=back
+
+Examples:
+
+    [ 'Rat', 'md_radix', '1', '-1.1' ]
+
+    [ 'Rat', 'md_radix', '9', '-1.5' ] # same val as prev
+
+    [ 'Rat', 'md_radix', '9', '3.14159' ]
+
+    [ 'Rat', 'md_radix', 'A', '0.0' ]
+
+    [ 'Rat', 'md_radix', 'F', 'DEADBEEF.FACE' ]
+
+    [ 'Rat', 'md_radix', 'Z', '0.000AZE' ]
+
+    [ 'Rat', 'md_ratio', '6', [ '500001', '1000' ] ]
+
+    [ 'Rat', 'md_ratio', 'B', [ 'A09B', 'A' ] ]
+
+    [ 'Rat', 'md_float', '1', [ '1011101101', '10', '-11011' ] ]
+
+    [ 'Rat', 'md_float', '9', [ '45207196', '10', '37' ] ]
+
+    [ 'Rat', 'perl_rat', 21.003 ]
+
+    [ 'Rat', 'perl_float', 5.428**295 ]
+
+    [ 'Rat', 'perl_int_ratio', [ 1, 43 ] ]
+
+    [ 'Rat', 'perl_int_float', [ 314159, 10, -5 ] ]
+
+    [ 'Rat', 'any_perl', ' 54.67 ' ]
+
+    [ 'Rat', 'any_perl_ratio', [ ' 57 ', ' 71 ' ] ]
+
+    [ 'Rat', 'any_perl_float', [ ' 656573456 ', ' 8 ', ' 243323 ' ] ]
+
+=head2 sys.Rational.Cat.E_RM
+
+This node type represents a rounding method.  It has 2 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<Cat.E_RM>.
+
+=item *
+
+The payload.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.Rational.Cat.E_RM> value by
+directly mapping the payload.  The payload must be a Perl C<Str> having one
+of the 7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
+C<to_ceiling>, C<to_zero>, C<to_inf>.
+
+Examples:
+
+    [ 'Cat.E_RM', 'half_up' ]
 
 =head1 SEE ALSO
 

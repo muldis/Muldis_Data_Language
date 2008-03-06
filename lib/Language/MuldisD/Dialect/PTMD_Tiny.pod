@@ -130,7 +130,6 @@ execution.  Any remaining errors should be corrected as soon as possible.
     token literal {
           <bool>
         | <int>
-        | <rat>
         | <blob>
         | <text>
         | <tuple_or_qv>
@@ -138,11 +137,12 @@ execution.  Any remaining errors should be corrected as soon as possible.
         | <cat_name>
         | <cat_name_chain>
         | <cat_comment>
-        | <cat_e_rm>
         | <cat_e_tk>
         | <cat_e_tdm>
         | <cat_e_enk>
         | <cat_e_psak>
+        | <rat>
+        | <cat_e_rm>
     }
 
     token bool { (Bool) <spec_sep> (false|true) }
@@ -153,46 +153,6 @@ execution.  Any remaining errors should be corrected as soon as possible.
         (<[1-9A-Z]>)
         <spec_sep>
         (0|\-?<[1-9A-Z]><[0-9A-Z]>*)
-    }
-
-    token rat {
-          rat_with_radix
-        | rat_as_ratio
-        | rat_as_float
-    }
-
-    token rat_with_radix {
-        (Rat)
-        <spec_sep>
-        (radix)
-        <spec_sep>
-        (<[1-9A-Z]>)
-        <spec_sep>
-        (0|\-?<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>*)
-    }
-
-    token rat_as_ratio {
-        (Rat)
-        <spec_sep>
-        (ratio)
-        <spec_sep>
-        (<[1-9A-Z]>)
-        <spec_sep>
-        ((0|\-?<[1-9A-Z]><[0-9A-Z]>*)\/(<[1-9A-Z]><[0-9A-Z]>*))
-    }
-
-    token rat_as_float {
-        (Rat)
-        <spec_sep>
-        (float)
-        <spec_sep>
-        (<[1-9A-Z]>)
-        <spec_sep>
-        ((0|\-?<[1-9A-Z]><[0-9A-Z]>*)
-        \*
-        (<[2-9A-Z]><[0-9A-Z]>*)
-        \^
-        (0|\-?<[1-9A-Z]><[0-9A-Z]>*))
     }
 
     token blob {
@@ -357,12 +317,6 @@ execution.  Any remaining errors should be corrected as soon as possible.
         <quoted_text_str>
     }
 
-    token cat_e_rm {
-        (Cat.E_RM)
-        <spec_sep>
-        (half_down|half_up|half_even|to_floor|to_ceiling|to_zero|to_inf)
-    }
-
     token cat_e_tk {
         (Cat.E_TK)
         <spec_sep>
@@ -389,6 +343,52 @@ execution.  Any remaining errors should be corrected as soon as possible.
         (Cat.E_PSAK)
         <spec_sep>
         (default|upd_param|ro_param|inner_var|outer_var)
+    }
+
+    token rat {
+          rat_with_radix
+        | rat_as_ratio
+        | rat_as_float
+    }
+
+    token rat_with_radix {
+        (Rat)
+        <spec_sep>
+        (radix)
+        <spec_sep>
+        (<[1-9A-Z]>)
+        <spec_sep>
+        (0|\-?<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>*)
+    }
+
+    token rat_as_ratio {
+        (Rat)
+        <spec_sep>
+        (ratio)
+        <spec_sep>
+        (<[1-9A-Z]>)
+        <spec_sep>
+        ((0|\-?<[1-9A-Z]><[0-9A-Z]>*)\/(<[1-9A-Z]><[0-9A-Z]>*))
+    }
+
+    token rat_as_float {
+        (Rat)
+        <spec_sep>
+        (float)
+        <spec_sep>
+        (<[1-9A-Z]>)
+        <spec_sep>
+        ((0|\-?<[1-9A-Z]><[0-9A-Z]>*)
+        \*
+        (<[2-9A-Z]><[0-9A-Z]>*)
+        \^
+        (0|\-?<[1-9A-Z]><[0-9A-Z]>*))
+    }
+
+    token cat_e_rm {
+        (Cat.E_RM)
+        <spec_sep>
+        (half_down|half_up|half_even|to_floor|to_ceiling|to_zero|to_inf)
     }
 
 =head1 EXAMPLES
@@ -418,26 +418,6 @@ The following are fragments of actual Plain Text Muldis D code.
     Int:3:301
 
     Int:B:A09B
-
-    Rat:radix:1:-1.1
-
-    Rat:radix:9:-1.5
-
-    Rat:radix:9:3.14159
-
-    Rat:radix:A:0.0
-
-    Rat:radix:F:DEADBEEF.FACE
-
-    Rat:radix:Z:0.000AZE
-
-    Rat:ratio:6:500001/1000
-
-    Rat:ratio:B:A09B/A
-
-    Rat:float:1:1011101101*10^-11011
-
-    Rat:float:9:45207196*10^37
 
     Blob:1:00101110100010
 
@@ -544,8 +524,6 @@ The following are fragments of actual Plain Text Muldis D code.
 
     Cat.Comment:'This does something.'
 
-    Cat.E_RM:half_up
-
     Cat.E_TK:scalar
 
     Cat.E_TDM:alias
@@ -553,6 +531,28 @@ The following are fragments of actual Plain Text Muldis D code.
     Cat.E_ENK:default
 
     Cat.E_PSAK:ro_param
+
+    Rat:radix:1:-1.1
+
+    Rat:radix:9:-1.5
+
+    Rat:radix:9:3.14159
+
+    Rat:radix:A:0.0
+
+    Rat:radix:F:DEADBEEF.FACE
+
+    Rat:radix:Z:0.000AZE
+
+    Rat:ratio:6:500001/1000
+
+    Rat:ratio:B:A09B/A
+
+    Rat:float:1:1011101101*10^-11011
+
+    Rat:float:9:45207196*10^37
+
+    Cat.E_RM:half_up
 
 =head1 SEE ALSO
 

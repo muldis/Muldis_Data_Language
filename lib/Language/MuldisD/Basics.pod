@@ -575,14 +575,13 @@ root type.  All root types are mutually disjoint, so every value is a
 member of exactly one root type.  Generally speaking, root types are the
 implementational foundation over which all operators and all other types
 are built, and the declared parameter and result types of most
-system-defined operators are root types.  The 7 most important
-system-defined root types are: C<Bool>, C<Int>, C<Rat>, C<Blob>, C<Text>,
-C<Tuple>, C<Relation>.  All user-defined root types are scalar types that
-are defined not in terms of other types except for that any components of
-their I<possreps> (possible representations) have declared types.
-I<Perhaps it should be said that all root types are defined by this last
-sentence?>  A I<leaf type> is a data type that has no proper subtypes save
-for C<Empty>.
+system-defined operators are root types.  The 6 most important
+system-defined root types are: C<Bool>, C<Int>, C<Blob>, C<Text>, C<Tuple>,
+C<Relation>.  All user-defined root types are scalar types that are defined
+not in terms of other types except for that any components of their
+I<possreps> (possible representations) have declared types.  I<Perhaps it
+should be said that all root types are defined by this last sentence?>  A
+I<leaf type> is a data type that has no proper subtypes save for C<Empty>.
 
 A I<complete type> is a data type that is fully defined, and for which it
 would be possible to have values that are of just that data type, if it
@@ -903,10 +902,10 @@ attribute which is itself infinite (for example, a type that has an I<Int>
 attribute).
 
 The system-defined root type C<Bool> is finite (2 values), as is the
-C<Empty> type (zero values), while all of the other 6 most important
-system-defined root types (C<Int>, C<Rat>, C<Blob>, C<Text>, C<Tuple>,
-C<Relation>) are infinite, as are the C<Universal>, C<Scalar>,
-C<QuasiScalar>, C<QuasiTuple>, C<QuasiRelation>, C<Remnant> types.
+C<Empty> type (zero values), while all of the other 5 most important
+system-defined root types (C<Int>, C<Blob>, C<Text>, C<Tuple>, C<Relation>)
+are infinite, as are the C<Universal>, C<Scalar>, C<QuasiScalar>,
+C<QuasiTuple>, C<QuasiRelation>, C<Remnant> types.
 
 All proper subtypes of finite types are themselves finite types.  Proper
 subtypes of infinite types can be either finite or infinite depending on
@@ -954,7 +953,7 @@ of a new type, they get those operators for the type at no extra cost.
 
 =head2 Numeric Types
 
-Conceptually speaking, the Muldis D language core has just a single numeric
+Conceptually speaking, Muldis D has just a single most-important numeric
 data type, which consists of every possible real rational number.  This
 data type is a "bignum", and will exactly represent a rational number with
 any arbitrary magnitude and precision, limited only by the amount of
@@ -979,29 +978,31 @@ instead, such as to represent the value four-thirds exactly.
 
 If you want to represent any numeric or numeric-related value in Muldis D
 other than the aforementioned core-supported ones, you will need to do it
-with some non-core language type, either some system-defined extension or
-some user-defined type.  For example, if you want division by zero to
-produce a special infinity value rather than fail / throw an exception,
-you'll need a non-core type.  Or likewise if you want your math to process
-approximate/measured numbers with proper significant figure handling.
+with some less-important non-core language type, either some system-defined
+extension or some user-defined type.  For example, if you want division by
+zero to produce a special infinity value rather than fail / throw an
+exception, you'll need a non-core type.  Or likewise if you want your math
+to process approximate/measured numbers with proper significant figure
+handling.
 
 On the other hand, if you want to have something that's just like either a
 traditional 32-bit integer or 64-bit IEEE-754 float sans special values,
-you can have that as a simple proper subtype of the core numeric type.
+you can have that as a simple proper subtype of the most-important numeric
+type.
 
-Now, the Muldis D language core actually has 2 numeric data types which are
-disjoint: C<Int> and C<Rat>.  The latter one is equal to the conceptual
-single numeric type as to what numeric values it can represent; the first
-one by contrast is conceptually a proper subtype which just contains all
-the integers, that is the values where the conceptual I<exponent> is zero
-(or I<denominator> is 1) and so the I<mantissa> (or I<numerator>) by itself
-is the value.  The reason that Muldis D has these 2 types disjoint is to
-assist ease of use and implementation; moreover, C<Int> is conceptually a
-lot simpler, and C<Rat> is conceptually defined in terms of C<Int>.
-
-Note that only the C<Int> type is required for bootstrapping the Muldis D
-language core and must always be provided; but the C<Rat> type may be left
-out of a minimal Muldis D implementation if it isn't needed for user data.
+Now, the Muldis D language actually has 2 most-important numeric data types
+which are disjoint: C<Int> (which is in the language core) and C<Rat>
+(which is in the system-defined C<Rational> language extension).  The
+latter one is equal to the conceptual single numeric type as to what
+numeric values it can represent; the first one by contrast is conceptually
+a proper subtype which just contains all the integers, that is the values
+where the conceptual I<exponent> is zero (or I<denominator> is 1) and so
+the I<mantissa> (or I<numerator>) by itself is the value.  The reason that
+Muldis D has these 2 types disjoint is to assist ease of use and
+implementation; moreover, C<Int> is conceptually a lot simpler, and C<Rat>
+is conceptually defined in terms of C<Int>.  And C<Rat> isn't needed for
+bootstrapping a minimal Muldis D implementation or the system catalog,
+whereas C<Int> is.
 
 I<This documentation is pending.>
 
