@@ -40,7 +40,12 @@ L<Language::MuldisD::Basics>, L<Language::MuldisD::Core> (which has its own
 tree of parts to follow), L<Language::MuldisD::Dialect::PTMD_Tiny>,
 L<Language::MuldisD::Dialect::HDMD_Perl_Tiny>,
 L<Language::MuldisD::Hierarchical>, L<Language::MuldisD::Conventions>,
-L<Language::MuldisD::Ext::Temporal>, L<Language::MuldisD::Ext::Spatial>.
+L<Language::MuldisD::Ext::Ordered>, L<Language::MuldisD::Ext::Integer>,
+L<Language::MuldisD::Ext::Blob>, L<Language::MuldisD::Ext::Text>,
+L<Language::MuldisD::Ext::Nonscalar>, L<Language::MuldisD::Ext::Set>,
+L<Language::MuldisD::Ext::Sequence>, L<Language::MuldisD::Ext::Bag>,
+L<Language::MuldisD::Ext::Rational>, L<Language::MuldisD::Ext::Temporal>,
+L<Language::MuldisD::Ext::Spatial>.
 
 =head1 DESCRIPTION
 

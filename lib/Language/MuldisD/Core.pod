@@ -22,9 +22,7 @@ comfortably fit in one file, it has been split into pieces and therefore
 has its own tree of parts to follow, which it is the root of:
 L<Language::MuldisD::Core::Types>,
 L<Language::MuldisD::Core::Types_Catalog>,
-L<Language::MuldisD::Core::Routines>,
-L<Language::MuldisD::Core::Functions_Scalar>,
-L<Language::MuldisD::Core::Functions_Nonscalar>.
+L<Language::MuldisD::Core::Routines>.
 
 =head1 DESCRIPTION
 
@@ -36,24 +34,45 @@ any entities outside the core, called I<Muldis D extensions>, are
 non-mandatory and are defined in terms of the core or each other, but the
 reverse isn't true.
 
-This current C<Core> document features the boolean, integer, rational, bit
-string, and character string types and operators, plus the tuple and
-relation type constructors (and quasi- variants) and operators, plus the
-type system minimal and maximal types, plus the special types used to
-define the system catalog, and the polymorphic operators that all types, or
-some types including core types, have defined over them.
+This current C<Core> document features the boolean type and operators, plus
+the integer, bit string, and character string types, plus the tuple and
+relation type constructors (and quasi- variants) and the more important
+relational operators, plus the type system minimal and maximal types, plus
+the special types used to define the system catalog, and the polymorphic
+operators that all types, or some types including core types, have defined
+over them, such as identity tests or assignment.  (All of these are used
+for bootstrapping the Muldis D language, except for the bit string type,
+but that's still good to have in the core.)
 
-(Technically speaking, not all of the core types or operators are necessary
-for bootstrapping the language.  In fact, any or all of the rationals, bit
-strings, and general character strings can be excised from minimalist
-implementations, and the language fundamentals would still work with just
-the booleans, integers, tuples, relations, and special catalog types, which
-include the entity-name-specific character string types.  But said
-excisables are strongly recommended for universal support because they are
-very frequently useful in practice, and they are not any more complicated.)
+Most of the C<Core> document is actually in these pieces:
+L<Language::MuldisD::Core::Types>,
+L<Language::MuldisD::Core::Types_Catalog>,
+L<Language::MuldisD::Core::Routines>.
 
-Extensions are in these other documents:
-L<Language::MuldisD::Ext::Temporal>, L<Language::MuldisD::Ext::Spatial>.
+Extensions are in other documents.
+
+Generic order-concerning types and operators, such as for sorting or
+quota queries or plain order-determination, which could be applied to any
+data type potentially, are separated into mainly just this extension:
+L<Language::MuldisD::Ext::Ordered>.
+
+All of the generic operators (except those that do or could apply to all
+types) concerning the integer, bit string, and character string types don't
+exist in C<Core> but have been separated into language extensions; while
+they are good for all implementations to have, they are less necessary than
+some other operators that actually were kept in C<Core>.  These are the
+relevant extensions: L<Language::MuldisD::Ext::Integer>,
+L<Language::MuldisD::Ext::Blob>, L<Language::MuldisD::Ext::Text>.
+
+The most important relational nonscalar-concerning operators exist in
+C<Core>, but a lot more are available in these extensions:
+L<Language::MuldisD::Ext::Nonscalar>, L<Language::MuldisD::Ext::Set>,
+L<Language::MuldisD::Ext::Sequence>, L<Language::MuldisD::Ext::Bag>.
+
+These extensions do not generally just add operators for core types; rather
+they mainly define new types plus just operators for those:
+L<Language::MuldisD::Ext::Rational>, L<Language::MuldisD::Ext::Temporal>,
+L<Language::MuldisD::Ext::Spatial>.
 
 =head1 SEE ALSO
 
