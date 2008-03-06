@@ -137,6 +137,500 @@ C<Bool:false>, which is the identity value for logical exclusive-or.
 
 =back
 
+=head1 SYSTEM-DEFINED GENERIC TUPLE-CONCERNING FUNCTIONS
+
+These functions are applicable to mainly tuple types, but are generic
+in that they typically work with any tuple types.
+
+=over
+
+=item C<function sys.Core.Tuple.attr result ScaTupRel params {
+topic(Tuple), name(Cat.Name) }>
+
+This function results in the scalar or nonscalar value of the attribute of
+C<topic> whose name is given by C<name>.  This function will fail if
+C<name> specifies an attribute name that C<topic> doesn't have.
+
+=item C<function sys.Core.Tuple.update_attr result Tuple params {
+topic(Tuple), name(Cat.Name), value(ScaTupRel) }>
+
+This function results in its C<topic> argument but that its attribute whose
+name is C<name> has been updated with a new scalar or nonscalar value given
+by C<value>.  This function will fail if C<name> specifies an attribute
+name that C<topic> doesn't have, or if the declared type of C<value> isn't
+a subtype of the declared type of the attribute.
+
+=item C<function sys.Core.Tuple.multi_update result Tuple params {
+topic(Tuple), attrs(Tuple) }>
+
+This function is like C<sys.Core.Tuple.update_attr> except that it handles
+N tuple attributes at once rather than just 1.  The heading of the C<attrs>
+argument must be a subset of the heading of the C<topic> argument; this
+function's result is C<topic> with all the attribute values of C<attrs>
+substituted into it.  This function could alternately be named
+I<sys.Core.Tuple.static_substitution>.
+
+=item C<function sys.Core.Tuple.rename result Tuple params { topic(Tuple),
+map(Cat.AttrRenameMap) }>
+
+This function results in a C<Tuple> value that is the same as its C<topic>
+argument but that some of its attributes have different names.  Each tuple
+of the argument C<map> specifies how to rename one C<topic> attribute, with
+the C<before> and C<after> attributes of a C<map> tuple representing the
+old and new names of a C<topic> attribute, respectively.  As a trivial
+case, this function's result is C<topic> if C<map> has no tuples.  This
+function supports renaming attributes to each others' names.  This function
+will fail if C<map> specifies any old names that C<topic> doesn't have, or
+any new names that are the same as C<topic> attributes that aren't being
+renamed.
+
+=item C<function sys.Core.Tuple.projection result Tuple params {
+topic(Tuple), attrs(Cat.SetOfName) }>
+
+This function results in the projection of its C<topic> argument that has
+just the subset of attributes of C<topic> which are named in its C<attrs>
+argument.  As a trivial case, this function's result is C<topic> if
+C<attrs> lists all attributes of C<topic>; or, it is the nullary tuple if
+C<attrs> is empty.  This function will fail if C<attrs> specifies any
+attribute names that C<topic> doesn't have.
+
+=item C<function sys.Core.Tuple.cmpl_projection result Tuple params {
+topic(Tuple), attrs(Cat.SetOfName) }>
+
+This function is the same as C<projection> but that it results in the
+complementary subset of attributes of C<topic> when given the same
+arguments.
+
+=item C<function sys.Core.Tuple.wrap result Tuple params { topic(Tuple),
+inner(Cat.SetOfName), outer(Cat.Name) }>
+
+This function results in a C<Tuple> value that is the same as its C<topic>
+argument but that some of its attributes have been wrapped up into a new
+C<Tuple>-typed attribute, which exists in place of the original attributes.
+The C<inner> argument specifies which C<topic> attributes are to be removed
+and wrapped up, and the C<outer> argument specifies the name of their
+replacement attribute.  As a trivial case, if C<inner> is empty, then the
+result has all the same attributes as before plus a new tuple-typed
+attribute of degree zero; or, if C<inner> lists all attributes of C<topic>,
+then the result has a single attribute whose value is the same as C<topic>.
+ This function supports the new attribute having the same name as an old
+one being wrapped into it.  This function will fail if C<inner> specifies
+any attribute names that C<topic> doesn't have, or if C<outer> is the same
+as C<topic> attributes that aren't being wrapped.
+
+=item C<function sys.Core.Tuple.cmpl_wrap result Tuple params {
+topic(Tuple), cmpl_inner(Cat.SetOfName), outer(Cat.Name) }>
+
+This function is the same as C<wrap> but that it wraps the complementary
+subset of attributes of C<topic> to those specified by C<cmpl_inner>.
+
+=item C<function sys.Core.Tuple.unwrap result Tuple params { topic(Tuple),
+outer(Cat.Name) }>
+
+This function is the inverse of C<sys.Core.Tuple.wrap>, such that it will
+unwrap a C<Tuple>-type attribute into its member attributes.  This function
+will fail if C<outer> specifies any attribute name that C<topic> doesn't
+have, or if an attribute of C<topic{outer}> is the same as another C<topic>
+attribute.
+
+=item C<function sys.Core.Tuple.product result Tuple params {
+topic(QuasiSetOfTuple) }>
+
+This function is similar to C<sys.Core.Relation.product> but that it works
+with tuples rather than relations.  This function is mainly intended for
+use in connecting tuples that have all disjoint headings, such as for
+extending one tuple with additional attributes.
+
+=back
+
+=head1 SYSTEM-DEFINED GENERIC SINGLE INPUT RELATION FUNCTIONS
+
+These functions are applicable to mainly relation types, but are generic
+in that they typically work with any relation types.
+
+=over
+
+=item C<function sys.Core.Relation.cardinality result UInt params {
+topic(Relation) }>
+
+This function results in the cardinality of its argument (that is, the
+count of tuples its body has).
+
+=item C<function sys.Core.Relation.is_member result Bool params {
+r(Relation), t(Tuple) }>
+
+This function results in C<Bool:true> iff its C<t> argument matches a tuple
+of its C<r> argument (that is, iff conceptually C<t> is a member of C<r>),
+and C<Bool:false> otherwise.  This function is like
+C<sys.Core.Relation.is_subset> except that the tuple being looked for
+doesn't have to be wrapped in a relation.  This function will fail if the 2
+arguments don't have the same heading.
+
+=item C<function sys.Core.Relation.is_not_member result Bool params {
+r(Relation), t(Tuple) }>
+
+This function is exactly the same as C<sys.Core.Relation.is_member> except
+that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<function sys.Core.Relation.Tuple_from_Relation result Tuple params
+{ topic(Relation) }>
+
+This function results in the C<Tuple> that is the sole member tuple of its
+argument.  This function will fail if its argument does not have exactly
+one tuple.
+
+=item C<function sys.Core.Relation.Relation_from_Tuple result Relation
+params { topic(Tuple) }>
+
+This function results in the C<Relation> value those body has just the one
+C<Tuple> that is its argument.
+
+=item C<function sys.Core.Relation.insertion result Relation params {
+r(Relation), t(Tuple) }>
+
+This function results in a C<Relation> that is the relational union of C<r>
+and a relation whose sole tuple is C<t>; that is, conceptually the result
+is C<t> inserted into C<r>.  As a trivial case, if C<t> already exists in
+C<r>, then the result is just C<r>.
+
+=item C<function sys.Core.Relation.disjoint_insertion result Relation
+params { r(Relation), t(Tuple) }>
+
+This function is exactly the same as C<sys.Core.Relation.insertion> except
+that it will fail if C<t> already exists in C<r>.
+
+=item C<function sys.Core.Relation.deletion result Relation params {
+r(Relation), t(Tuple) }>
+
+This function results in a C<Relation> that is the relational difference
+from C<r> of a relation whose sole tuple is C<t>; that is, conceptually the
+result is C<t> deleted from C<r>.  As a trivial case, if C<t> already
+doesn't exist in C<r>, then the result is just C<r>.
+
+=item C<function sys.Core.Relation.rename result Relation params {
+topic(Relation), map(Cat.AttrRenameMap) }>
+
+This function is the same as C<sys.Core.Tuple.rename> but that it operates
+on and results in a C<Relation> rather than a C<Tuple>.
+
+=item C<function sys.Core.Relation.projection result Relation params {
+topic(Relation), attrs(Cat.SetOfName) }>
+
+This function is the same as C<sys.Core.Tuple.projection> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>.  But note
+that the result relation will have fewer tuples than C<topic> if any
+C<topic> tuples were non-distinct for just the projected attributes.
+
+=item C<function sys.Core.Relation.cmpl_projection result Relation params {
+topic(Relation), attrs(Cat.SetOfName) }>
+
+This function is the same as C<sys.Core.Tuple.cmpl_projection> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>.
+
+=item C<function sys.Core.Relation.wrap result Relation params {
+topic(Relation), inner(Cat.SetOfName), outer(Cat.Name) }>
+
+This function is the same as C<sys.Core.Tuple.wrap> but that it operates on
+and results in a C<Relation> rather than a C<Tuple>, where each of its
+member tuples was transformed as per C<sys.Core.Tuple.wrap>.
+
+=item C<function sys.Core.Relation.cmpl_wrap result Relation params {
+topic(Relation), cmpl_inner(Cat.SetOfName), outer(Cat.Name) }>
+
+This function is the same as C<sys.Core.Tuple.cmpl_wrap> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>, where each
+of its member tuples was transformed as per C<sys.Core.Tuple.cmpl_wrap>.
+
+=item C<function sys.Core.Relation.unwrap result Relation params {
+topic(Relation), outer(Cat.Name), inner(Cat.SetOfName) }>
+
+This function is the inverse of C<sys.Core.Relation.wrap> as
+C<sys.Core.Tuple.unwrap> is to C<sys.Core.Tuple.wrap>.  But unlike the
+C<Tuple> variant of C<unwrap>, this current function requires the extra
+C<inner> argument to prevent ambiguity in the general case where C<topic>
+might have zero tuples, because in that situation the most-specific-type of
+C<topic{outer}> would be C<Empty>, and the names of the attributes to add
+to C<topic> in place of C<topic{outer}> are not known.  This function will
+fail if C<topic> has at least 1 tuple and C<inner> does not match the names
+of the attributes of C<topic{outer}>.
+
+=item C<function sys.Core.Relation.group result Relation params {
+topic(Relation), inner(Cat.SetOfName), outer(Cat.Name) }>
+
+This function is similar to C<sys.Core.Relation.wrap> but that the C<topic>
+attribute-wrapping transformations result in new C<Relation>-typed
+attributes rather than new C<Tuple>-typed attributes, and moreover multiple
+C<topic> tuples may be combined into fewer tuples whose new
+C<Relation>-typed attributes have multiple tuples.  This function takes a
+relation of N tuples and divides the tuples into M groups where all the
+tuples in a group have the same values in the attributes which aren't being
+grouped (and distinct values in the attributes that are being grouped); it
+then results in a new relation of M tuples where the new relation-valued
+attribute of the result has the tuples of the M groups.  A grouped relation
+contains all of the information in the original relation, but it has less
+redundancy due to redundant non-grouped attributes now just being
+represented in one tuple per the multiple tuples whose grouped attributes
+had them in common.  A relation having relation-valued attributes like this
+is a common way to group so-called child tuples under their parents.  As a
+trivial case, if C<inner> is empty, then the result has all the same tuples
+and attributes as before plus a new relation-typed attribute of degree zero
+whose value per tuple is of cardinality one; or, if C<inner> lists all
+attributes of C<topic>, then the result has a single tuple of a single
+attribute whose value is the same as C<topic>.  This function supports the
+new attribute having the same name as an old one being grouped into it.
+This function will fail if C<inner> specifies any attribute names that
+C<topic> doesn't have, or if C<outer> is the same as C<topic> attributes
+that aren't being grouped.
+
+=item C<function sys.Core.Relation.cmpl_group result Relation params {
+topic(Relation), group_per(Cat.SetOfName), outer(Cat.Name) }>
+
+This function is the same as C<group> but that it groups the complementary
+subset of attributes of C<topic> to those specified by C<group_per>.
+
+=item C<function sys.Core.Relation.ungroup result Relation params {
+topic(Relation), outer(Cat.Name), inner(Cat.SetOfName) }>
+
+This function is the inverse of C<sys.Core.Relation.group> as
+C<sys.Core.Relation.unwrap> is to C<sys.Core.Relation.wrap>; it will
+ungroup a C<Relation>-type attribute into its member attributes and tuples.
+A relation can be first grouped and then that result ungrouped to produce
+the original relation, with no data loss.  However, the ungroup of a
+relation on a relation-valued attribute will lose the information in any
+outer relation tuples whose inner relation value has zero tuples; a group
+on this result won't bring them back.  This function will fail if C<outer>
+specifies any attribute name that C<topic> doesn't have, or if an attribute
+of C<topic{outer}> is the same as another C<topic> attribute.
+
+=item C<function sys.Core.Relation.restriction result Relation params {
+topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+
+This function results in the relational restriction of its C<topic>
+argument as determined by applying the C<Bool>-resulting function named in
+its C<func> argument when the latter function is curried by its C<assuming>
+argument.  The result relation has the same heading as C<topic>, and its
+body contains the subset of C<topic> tuples where, for each tuple, the
+function named by C<func> results in C<Bool:true> when passed the tuple as
+its C<topic> argument and C<assuming> as its C<assuming> argument.  As a
+trivial case, if C<func> is defined to unconditionally result in
+C<Bool:true>, then this function results simply in C<topic>; or, for an
+unconditional C<Bool:false>, this function results in the empty relation
+with the same heading.  Note that this operation is also legitimately known
+as I<where>.  See also the C<sys.Core.Relation.semijoin> function, which is
+a simpler-syntax alternative for C<sys.Core.Relation.restriction> in its
+typical usage where restrictions are composed simply of anded or ored tests
+for attribute value equality.
+
+=item C<function sys.Core.Relation.cmpl_restriction result Relation params
+{ topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+
+This function is the same as C<restriction> but that it results in the
+complementary subset of tuples of C<topic> when given the same arguments.
+See also the C<sys.Core.Relation.semidifference> function.
+
+=item C<function sys.Core.Relation.extension result Relation params {
+topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+
+This function results in the relational extension of its C<topic> argument
+as determined by applying the C<Tuple>-resulting function named in its
+C<func> argument when the latter function is curried by its C<assuming>
+argument.  The result relation has a heading that is a superset of that of
+C<topic>, and its body contains the same number of tuples, with all
+attribute values of C<topic> retained, and possibly extra present,
+determined as follows; for each C<topic> tuple, the function named by
+C<func> results in a second tuple when passed the first tuple as its
+C<topic> argument and C<assuming> as its C<assuming> argument; the first
+and second tuples must have no attribute names in common, and the result
+tuple is derived by joining (cross-product) the tuples together.  As a
+trivial case, if C<func> is defined to unconditionally result in the
+degree-zero tuple, then this function results simply in C<topic>.
+
+=item C<function sys.Core.Relation.static_extension result Relation params
+{ topic(Relation), attrs(Tuple) }>
+
+This function is a simpler-syntax alternative to both
+C<sys.Core.Relation.extension> and C<sys.Core.Relation.product> in the
+typical scenario of extending a relation, given in the C<topic> argument,
+such that every tuple has mutually identical values for each of the new
+attributes; the new attribute names and common values are given in the
+C<attrs> argument.
+
+=item C<function sys.Core.Relation.summary result Relation params {
+topic(Relation), group_per(Cat.SetOfName), summ_func(Cat.NameChain),
+summ_assuming(Tuple) }>
+
+This function provides a convenient context for using aggregate functions
+to derive a per-group summary relation, which is its result, from another
+relation, which is its C<topic> argument.  This function first performs a
+C<cmpl_group> on C<topic> using C<group_per> to specify which attributes
+get grouped into a new relation-valued attribute and which don't; those
+that don't instead get wrapped into a tuple-valued attribute.  Then, per
+tuple in the main relation, this function applies the C<Tuple>-resulting
+function named in its C<summ_func> argument when the latter function is
+curried by its C<summ_assuming> argument (passed to it as just
+C<assuming>); the curried function has, rather than the typical 1 C<topic>
+varying parameter, 2 varying parameters named C<summarize> and C<per>,
+which are valued with the relation-valued attribute and tuple-valued
+attribute, respectively.  As per a function that C<map> applies, the
+function named by C<summ_func> effectively takes a whole post-grouping
+input tuple and results in a whole tuple; the applied function would
+directly invoke any N-ary / aggregate operators, and extract their inputs
+from (or calculate) C<summarize> as it sees fit.  Note that C<summary> is
+not intended to be used to summarize an entire C<topic> relation at once
+(except by chance of it resolving to 1 group); you should instead invoke
+your summarize-all C<func> directly, or inline it, rather than by way of
+C<summary>, especially if you want a single-tuple result on an empty
+C<topic> (which C<summary>) won't do.
+
+=back
+
+=head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT RELATION FUNCTIONS
+
+These functions are applicable to mainly relation types, but are generic
+in that they typically work with any relation types.
+
+=over
+
+=item C<function sys.Core.Relation.is_subset result Bool params {
+look_in(Relation), look_for(Relation) }>
+
+This function results in C<Bool:true> iff the set of tuples comprising
+C<look_for> is a subset of the set of tuples comprising C<look_in>, and
+C<Bool:false> otherwise.  This function will fail if the 2 arguments don't
+have the same heading.
+
+=item C<function sys.Core.Relation.is_not_subset result Bool params {
+look_in(Relation), look_for(Relation) }>
+
+This function is exactly the same as C<sys.Core.Relation.is_subset> except
+that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<function sys.Core.Relation.union result Relation params {
+topic(SetOfRelation) }>
+
+This function results in the relational union/inclusive-or of the N element
+values of its argument; it is a reduction operator that recursively takes
+each pair of input values and relationally unions (which is both
+commutative and associative) them together until just one is left, which is
+the result.  The result relation has the same heading as all of its inputs,
+and its body contains every tuple that is in any of the input relations.
+If C<topic> has zero values, then C<union> results in the empty relation
+with the same heading, which is the per-distinct-heading identity value for
+relational union.
+
+=item C<function sys.Core.Relation.disjoint_union result Relation params {
+topic(SetOfRelation) }>
+
+This function is exactly the same as C<sys.Core.Relation.union> except that
+it will fail if any 2 input values have a tuple in common.
+
+=item C<function sys.Core.Relation.intersection result Relation params {
+topic(SetOfRelation) }>
+
+This function results in the relational intersection/and of the N element
+values of its argument; it is a reduction operator that recursively takes
+each pair of input values and relationally intersects (which is both
+commutative and associative) them together until just one is left, which is
+the result.  The result relation has the same heading as all of its inputs,
+and its body contains only the tuples that are in every one of the input
+relations.  If C<topic> has zero values, then C<intersection> results in
+the universal relation with the same heading (that is, the relation having
+all the tuples that could ever exist in a relation with that heading),
+which is the per-distinct-heading identity value for relational
+intersection.  Note that this I<intersection> operator is conceptually a
+special case of C<join>, applicable when the headings of the inputs are the
+same, and the other will produce the same result as this when given the
+same inputs, but with the exception that I<intersection> has a different
+identity value when given zero inputs.  This function will fail on a
+C<topic> of zero values if the result type's universal relation is
+impossible or impractically large to represent, such as when any attributes
+are of infinite types.
+
+=item C<function sys.Core.Relation.difference result Relation params {
+source(Relation), filter(Relation) }>
+
+This function results in the relational difference when its C<filter>
+argument is subtracted from its C<source> argument.  The result relation
+has the same heading as both of its arguments, and its body contains only
+the tuples that are in C<source> and are not in C<filter>.  This function
+will fail if its 2 arguments do not have the same heading.  Note that this
+I<difference> operator is conceptually a special case of I<semidifference>,
+applicable when the headings of the inputs are the same.
+
+=item C<function sys.Core.Relation.semidifference result Relation params {
+source(Relation), filter(Relation) }>
+
+This function is the same as C<semijoin> but that it results in the
+complementary subset of tuples of C<source> when given the same arguments.
+Note that this operation is also legitimately known as I<antijoin> or
+I<anti-semijoin>.
+
+=item C<function sys.Core.Relation.semijoin result Relation params {
+source(Relation), filter(Relation) }>
+
+This function results in the relational semijoin of its C<source> and
+C<filter> arguments.  The result relation has the same heading as
+C<source>, and its body contains the subset of C<source> tuples that match
+those of C<filter> as per C<join>.  Note that relational semijoin is
+conceptually a short-hand for first doing an ordinary relational join
+between its 2 arguments, and then performing a relational projection on all
+of the attributes that just C<source> has.  This function will fail any
+time that C<join> would fail on the same 2 input relations.
+
+=item C<function sys.Core.Relation.join result Relation params {
+topic(QuasiSetOfRelation) }>
+
+This function results in the relational join of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and relationally joins (which is both commutative and
+associative) them together until just one is left, which is the result.
+The result relation has a heading that is a union of all of the headings of
+its inputs, and its body is the result of first pairwise-matching every
+tuple of each input relation with every tuple of each other input relation,
+then where each member of a tuple pair has attribute names in common,
+eliminating pairs where the values of those attributes differ and unioning
+the remaining said tuple pairs, then eliminating any result tuples that
+duplicate others.  If C<topic> has zero values, then C<join> results in the
+nullary relation with one tuple, which is the identity value for relational
+join.  As a trivial case, if any input relation has zero tuples, then the
+function's result will too; or, if any input is the nullary relation with
+one tuple, that input can be ignored (see identity value); or, if any 2
+inputs have no attribute names in common, then the join of just those 2 is
+a cartesian product; or, if any 2 inputs have all attribute names in
+common, then the join of just those 2 is an intersection; or, if for 2
+inputs, one's set of attribute names is a proper subset of another's, then
+the join of just those to is a semijoin with the former filtering the
+latter.  This function will fail if any input relations have attributes
+with common names but different/incompatible declared types.  Note that
+this operation is also legitimately known as I<natural inner join>.
+
+=item C<function sys.Core.Relation.product result Relation params {
+topic(QuasiSetOfRelation) }>
+
+This function results in the relational cartesian/cross product of the N
+element values of its argument; it is conceptually a special case of
+C<join> where all input relations have mutually distinct attribute names;
+unlike C<join>, C<product> will fail if any inputs have attribute names in
+common.  Note that this operation is also legitimately known as
+I<cartesian/cross join>.
+
+=item C<function sys.Core.Relation.quotient result Relation params {
+dividend(Relation), divisor(Relation) }>
+
+This function results in the quotient when its C<dividend> argument is
+divided by its C<divisor> argument using relational division.  Speaking
+informally, say the relations C<dividend> and C<divisor> are called C<A>
+and C<B>, and their attribute sets are respectively named C<{X,Y}> and
+C<{Y}>, then the result relation has a heading composed of attributes
+C<{X}> (so the result and C<divisor> headings are both complementary
+subsets of the C<dividend> heading); the result has all tuples C<{X}> such
+that a tuple C<{X,Y}> appears in C<A> for all tuples C<{Y}> appearing in
+C<B>; that is, C<A / B> is shorthand for C<A{X} - ((A{X} join B) - A){X}>.
+
+=back
+
 =head1 SYSTEM-DEFINED CORE GENERIC QUASI- FUNCTIONS
 
 I<This documentation is pending.>
