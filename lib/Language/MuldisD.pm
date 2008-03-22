@@ -299,6 +299,79 @@ appreciate being informed any time you create a modified version of Muldis
 D that you are willing to distribute, because that is a practical way of
 suggesting improvements to the standard version.
 
+=head1 TRADEMARK POLICY
+
+The word MULDIS (in any letter case or font) is a Trademark (™), with
+Canadian registration pending (®), of Muldis Data Systems Inc.
+(L<http://www.muldis.com/>), which is wholly owned by Darren Duncan.  The
+trademark applies to computer database software and related services.
+
+The word MULDIS was invented as a new word, through contraction of the
+quasi-meaningful phrase MULTIVERSE OF DISCOURSE, by Darren Duncan for the
+express purpose of using that word as a distinguishing brand name for the
+products and services (and entity name) of Muldis Data Systems.  Said
+products and services are created for the world's betterment by way of the
+improved means to organize and share trustworthy data that their use
+enables.  Muldis Data Systems is obligated to protect the reputation and
+identity of its name and works, which should be evoked by the MULDIS brand.
+
+The trademark on MULDIS gives Muldis Data Systems the exclusive right to
+use the term to promote websites, businesses, products and services (such
+as the B<Muldis D> language and B<Muldis DB> software); however, we (Muldis
+Data Systems) are happy to give you permission to use the term under many
+circumstances without the need of any specific permission from us (in
+addition to what vanilla trademark law allows).
+
+The following is a general policy that tells you when you can refer to the
+word MULDIS without need of any specific permission from us:
+
+1.  You must make clear that you are not Muldis Data Systems and that
+you do not represent Muldis Data Systems.  A simple or conspicuous
+disclaimer on your home page and product or service documentation is an
+excellent way of doing that.
+
+2.  You may not incorporate the word MULDIS into the name or logo of your
+website, business, product or service; but see points 4 thru 6 for limited
+exceptions to this.
+
+3.  You may use the word MULDIS only in descriptions of your website,
+business, product or service to provide accurate information to the public
+about yourself.
+
+4.  If you have made a language variant or extension based on the B<Muldis
+D> (L<Language::MuldisD>) language, then the fully qualified machine
+readable name of your work may, and in fact should, use the base name
+C<Muldis_D> as per the provisions of the VERSIONING documentation of the
+official Muldis D language spec.
+
+5.  The Perl package primary namespace C<Muldis::> is reserved for the
+official works of Muldis Data Systems (or works of third parties having
+explicit permission to use it).  If you have made a variant or extension of
+any Muldis Data Systems work in Perl (such as B<Muldis DB>; L<Muldis::DB>),
+you may use the C<MuldisX::> namespace for it as per CPAN conventions, or
+alternately just use your own distinct brand.  The same considerations
+apply to any secondary or tertiary (etc) namespaces where their ancestor
+namespaces serve as generic categorizing terms, such as C<Language::> or
+C<Data::> or C<Net::>.  For works you make in other programming languages
+than Perl, you should apply that language's or community's conventional
+naming practices for distinguishing official works from non-official ones.
+
+6.  If you have made a work or service that interacts with a Muldis Data
+Systems work or service for any reason, you may use the word MULDIS within
+the names of the components of your work or service that are involved in
+said interaction, as long as it is apparent by normal conventions that the
+word MULDIS is subservient to other parts of the name, such as your own
+main project name, and that the component is expressly a part of your work;
+for example, C<Foo::Storage::MuldisDB> or C<Bar::Interface::MuldisDB>.
+
+If you would like to use the word MULDIS for any other use, please contact
+Muldis Data Systems and we'll discuss a way to make that happen.  Assuming
+that you agree that our rights to the MULDIS trademark are valid and
+superior to yours, and that you take appropriate steps to ensure that
+people don't confuse you with us, then we should be able to make things
+work out.  If you've already started using the word MULDIS in a way that
+would require permission, don't panic, but please contact us.
+
 =head1 ACKNOWLEDGEMENTS
 
 None yet.
@@ -343,7 +416,7 @@ An official IRC channel for Muldis DB is also intended, but not yet
 started.
 
 Alternately, you can purchase more advanced commercial support for various
-Muldis D implementations, particularly Muldis DB, from its author; contact
-C<perl@DarrenDuncan.net> for details.
+Muldis D implementations, particularly Muldis DB, from its author by way of
+Muldis Data Systems; see (L<http://www.muldis.com/>) for details.
 
 =cut
