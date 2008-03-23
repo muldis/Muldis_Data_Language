@@ -6,11 +6,11 @@ use warnings FATAL => 'all';
 ###########################################################################
 ###########################################################################
 
-{ package Language::MuldisD; # package
+{ package Muldis::D; # package
     use version; our $VERSION = qv('0.23.0');
     # Note that Perl code only exists at all in this file in order to help
     # the CPAN indexer handle the distribution properly.
-} # package Language::MuldisD
+} # package Muldis::D
 
 ###########################################################################
 ###########################################################################
@@ -24,28 +24,27 @@ __END__
 
 =head1 NAME
 
-Language::MuldisD -
+Muldis::D -
 Formal spec of Muldis D relational DBMS lang
 
 =head1 VERSION
 
-This document is Language::MuldisD version 0.23.0.
+This document is Muldis::D version 0.23.0.
 
 =head1 PREFACE
 
 This is the root document of the Muldis D language specification; the
 documents that comprise the remaining parts of the specification, in their
 suggested reading order (but that all follow the root), are:
-L<Language::MuldisD::Basics>, L<Language::MuldisD::Core> (which has its own
-tree of parts to follow), L<Language::MuldisD::Dialect::PTMD_Tiny>,
-L<Language::MuldisD::Dialect::HDMD_Perl_Tiny>,
-L<Language::MuldisD::Hierarchical>, L<Language::MuldisD::Conventions>,
-L<Language::MuldisD::Ext::Ordered>, L<Language::MuldisD::Ext::Integer>,
-L<Language::MuldisD::Ext::Blob>, L<Language::MuldisD::Ext::Text>,
-L<Language::MuldisD::Ext::Nonscalar>, L<Language::MuldisD::Ext::Set>,
-L<Language::MuldisD::Ext::Sequence>, L<Language::MuldisD::Ext::Bag>,
-L<Language::MuldisD::Ext::Rational>, L<Language::MuldisD::Ext::Temporal>,
-L<Language::MuldisD::Ext::Spatial>.
+L<Muldis::D::Basics>, L<Muldis::D::Core> (which has its own tree of parts
+to follow), L<Muldis::D::Dialect::PTMD_Tiny>,
+L<Muldis::D::Dialect::HDMD_Perl_Tiny>, L<Muldis::D::Hierarchical>,
+L<Muldis::D::Conventions>, L<Muldis::D::Ext::Ordered>,
+L<Muldis::D::Ext::Integer>, L<Muldis::D::Ext::Blob>,
+L<Muldis::D::Ext::Text>, L<Muldis::D::Ext::Nonscalar>,
+L<Muldis::D::Ext::Set>, L<Muldis::D::Ext::Sequence>,
+L<Muldis::D::Ext::Bag>, L<Muldis::D::Ext::Rational>,
+L<Muldis::D::Ext::Temporal>, L<Muldis::D::Ext::Spatial>.
 
 =head1 DESCRIPTION
 
@@ -103,7 +102,7 @@ to them.
 Muldis D also incorporates design aspects and constructs that are taken
 from or influenced by Perl 6, other general-purpose languages (particularly
 functional ones like Haskell), B<Tutorial D>, various B<D> implementations,
-and various SQL implementations (see the L<Language::MuldisD::SeeAlso>
+and various SQL implementations (see the L<Muldis::D::SeeAlso>
 file).  It also appears in retrospect that Muldis D has some designs in
 common with FoxPro or xBase, and with the Ada and Lua languages.
 
@@ -111,7 +110,7 @@ In any event, the Muldis D documentation will be focusing mainly on how
 Muldis D itself works, and will spend little time in providing rationale;
 you can read the aforementioned external documentation for much of that.
 
-Continue reading the language spec in L<Language::MuldisD::Basics>.
+Continue reading the language spec in L<Muldis::D::Basics>.
 
 Also look at the separately distributed L<Muldis::DB>, which is the first
 main implementation of Muldis D.
@@ -253,9 +252,9 @@ the code's behavior.
 
 See the following parts of the current multi-document for descriptions of
 bundled dialects (names subject to change):
-L<Language::MuldisD::Dialect::PTMD_Tiny>,
-L<Language::MuldisD::Dialect::HDMD_Perl_Tiny>,
-L<Language::MuldisD::Hierarchical>.
+L<Muldis::D::Dialect::PTMD_Tiny>,
+L<Muldis::D::Dialect::HDMD_Perl_Tiny>,
+L<Muldis::D::Hierarchical>.
 
 =head2 Extensions
 
@@ -268,7 +267,7 @@ meaning not part of the already named language authority+version+dialect.
 
 =head1 SEE ALSO
 
-Go to the L<Language::MuldisD::SeeAlso> file for the majority of external
+Go to the L<Muldis::D::SeeAlso> file for the majority of external
 references.
 
 =head1 AUTHOR
@@ -285,7 +284,7 @@ Muldis D is free documentation for software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License (GPL) as
 published by the Free Software Foundation (L<http://www.fsf.org/>); either
 version 3 of the License, or (at your option) any later version.  You
-should have received copies of the GPL as part of the Language::MuldisD
+should have received copies of the GPL as part of the Muldis::D
 distribution, in the file named "LICENSE/GPL"; if not, see
 L<http://www.gnu.org/licenses/>.
 
@@ -339,7 +338,7 @@ business, product or service to provide accurate information to the public
 about yourself.
 
 4.  If you have made a language variant or extension based on the B<Muldis
-D> (L<Language::MuldisD>) language, then the fully qualified machine
+D> (L<Muldis::D>) language, then the fully qualified machine
 readable name of your work may, and in fact should, use the base name
 C<Muldis_D> as per the provisions of the VERSIONING documentation of the
 official Muldis D language spec.
@@ -362,7 +361,7 @@ the names of the components of your work or service that are involved in
 said interaction, as long as it is apparent by normal conventions that the
 word MULDIS is subservient to other parts of the name, such as your own
 main project name, and that the component is expressly a part of your work;
-for example, C<Foo::Storage::MuldisDB> or C<Bar::Interface::MuldisDB>.
+for example, C<Foo::Storage::Muldis_DB> or C<Bar::Interface::Muldis_DB>.
 
 If you would like to use the word MULDIS for any other use, please contact
 Muldis Data Systems and we'll discuss a way to make that happen.  Assuming
@@ -379,7 +378,7 @@ None yet.
 =head1 FORUMS
 
 Several public email-based forums exist whose main topic is all
-implementations of the L<Muldis D|Language::MuldisD> language, especially
+implementations of the L<Muldis D|Muldis::D> language, especially
 the L<Muldis DB|Muldis::DB> project, which they are named for.  All of
 these you can reach via L<http://mm.DarrenDuncan.net/mailman/listinfo>; go
 there to manage your subscriptions to, or view the archives of, the
