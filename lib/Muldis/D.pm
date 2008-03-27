@@ -57,20 +57,21 @@ at them.
 
 The fully-qualified name of this multi-part document and the language
 specification it contains (as a single composition) is
-C<Muldis_D:'cpan:DUNCAND':'0.24.0'>.  It is the official/original (not
+C<Muldis_D:'http://muldis.com':'0.24.0'>.  It is the official/original (not
 embraced and extended) Muldis D language specification by the authority
-Darren Duncan (C<cpan:DUNCAND>), version C<0.24.0> (this number matches the
-VERSION pod in this file).  This multi-part document is named and organized
-with the expectation that many dialects, extensions, and core versions of
-it will exist over time, some of those under the original author's control,
-and some under the control of other parties.  The VERSIONING pod section in
-this file presents a formal method for specifying the fully-qualified name
-of a complete language derived from Muldis D, including any common base
-plus any dialects and extensions.  All code written in any dialect or
-derivation of Muldis D should begin by specifying the fully-qualified name
-of the language that it is written in, the format of the name as defined by
-said method, to make the code unambiguous to both human and machine (eg,
-implementing) readers of the code.  The method should be very future-proof.
+Darren Duncan (C<http://muldis.com>), version C<0.24.0> (this number
+matches the VERSION pod in this file).  This multi-part document is named
+and organized with the expectation that many dialects, extensions, and core
+versions of it will exist over time, some of those under the original
+author's control, and some under the control of other parties.  The
+VERSIONING pod section in this file presents a formal method for specifying
+the fully-qualified name of a complete language derived from Muldis D,
+including any common base plus any dialects and extensions.  All code
+written in any dialect or derivation of Muldis D should begin by specifying
+the fully-qualified name of the language that it is written in, the format
+of the name as defined by said method, to make the code unambiguous to both
+human and machine (eg, implementing) readers of the code.  The method
+should be very future-proof.
 
 Muldis D is a computationally / Turing complete (and industrial strength)
 high-level programming language with fully integrated database
@@ -186,10 +187,10 @@ follow the formats that are valid as authority strings for the long names
 of Perl 6 packages, such as a CPAN identifier or an http url.
 
 For the official/original Muldis D language spec by Darren Duncan, that
-string is always C<cpan:DUNCAND> during the foreseeable future.
+string is always C<http://muldis.com> during the foreseeable future.
 
 If someone else wants to I<embrace and extend> Muldis D, then they must use
-their own (not C<cpan:DUNCAND>) base authority identifier, to prevent
+their own (not C<http://muldis.com>) base authority identifier, to prevent
 ambiguity, assist quality control, and give due credit.
 
 In this context, I<embrace and extend> means for someone to do any of the
@@ -218,37 +219,37 @@ top-level namespace (as opposed to in C<imp>).
 =head2 Base Version Number
 
 The third element of the Muldis D language name, at the very least when the
-base authority is C<cpan:DUNCAND>, is a multi-part base version number,
-which identifies the base language spec version between all those by the
-same authority, typically indicating the relative ages of the versions, the
-relative sizes of their deltas, and perhaps which development branches the
-versions are on.  The base version number is a sequence of unsigned
-integers that consists of at least 1 element, and either 3 or 4 elements is
-recommended (the official base version number has 3 elements); elements are
-ordered from most significant to least (eg, [major, minor, bug-fix]).  At
-the present time, the official spec version number to use is shown in the
-VERSION and DESCRIPTION pod of the current file, when corresponding to the
-spec containing that file.
+base authority is C<http://muldis.com>, is a multi-part base version
+number, which identifies the base language spec version between all those
+by the same authority, typically indicating the relative ages of the
+versions, the relative sizes of their deltas, and perhaps which development
+branches the versions are on.  The base version number is a sequence of
+unsigned integers that consists of at least 1 element, and either 3 or 4
+elements is recommended (the official base version number has 3 elements);
+elements are ordered from most significant to least (eg, [major, minor,
+bug-fix]).  At the present time, the official spec version number to use is
+shown in the VERSION and DESCRIPTION pod of the current file, when
+corresponding to the spec containing that file.
 
 =head2 Dialect
 
 The fourth element of the Muldis D language name, at the very least when
-the base authority is C<cpan:DUNCAND>, uniquely identifies which Muldis D
-language primary dialect the Muldis D code (that this fully-qualified
-language name is meta-data for) is formatted in; for example this may be
-one of several non-hosted plain-text variants, or one of several hosted
-data variants (each host language has its own ones).  This fourth element
-can either be some character string or be a sequence of 3+ elements.  In
-the first case, the character string is interpreted as the name of one of
-the several dialects included in the current multi-document, and the
-specific variant of said dialect is assumed to be whichever one is bundled
-with the already named base language authority+version.  In the second
-case, the sequence of elements is a dialect name plus authority plus
+the base authority is C<http://muldis.com>, uniquely identifies which
+Muldis D language primary dialect the Muldis D code (that this
+fully-qualified language name is meta-data for) is formatted in; for
+example this may be one of several non-hosted plain-text variants, or one
+of several hosted data variants (each host language has its own ones).
+This fourth element can either be some character string or be a sequence of
+3+ elements.  In the first case, the character string is interpreted as the
+name of one of the several dialects included in the current multi-document,
+and the specific variant of said dialect is assumed to be whichever one is
+bundled with the already named base language authority+version.  In the
+second case, the sequence of elements is a dialect name plus authority plus
 version plus whatever, for some spec definition not bundled with the
 current multi-document.  Note that a dialect specification can appear to
 provide features not in the underlying main spec, but code written in any
-dialect needs to be translatable to a standard dialect without changing
-the code's behavior.
+dialect needs to be translatable to a standard dialect without changing the
+code's behavior.
 
 See the following parts of the current multi-document for descriptions of
 bundled dialects (names subject to change):
@@ -300,10 +301,10 @@ suggesting improvements to the standard version.
 
 =head1 TRADEMARK POLICY
 
-The word MULDIS (in any letter case or font) is a Trademark (™), with
-Canadian registration pending (®), of Muldis Data Systems Inc.
-(L<http://www.muldis.com/>), which is wholly owned by Darren Duncan.  The
-trademark applies to computer database software and related services.
+MULDIS and MULDIS MULTIVERSE OF DISCOURSE are trademarks of Muldis Data
+Systems Inc. (L<http://www.muldis.com/>), which is wholly owned by Darren
+Duncan.  The trademarks apply to computer database software and related
+services.
 
 The word MULDIS was invented as a new word, through contraction of the
 quasi-meaningful phrase MULTIVERSE OF DISCOURSE, by Darren Duncan for the
