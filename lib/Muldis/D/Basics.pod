@@ -1232,30 +1232,31 @@ parameters.
 
 =item C<procedure>
 
-A C<procedure> is an explicitly invokable routine with 0..N parameters that
-can directly see and update global variables (both catalog and data), and
-is generally the only kind of routine that can; every call chain that is
-meant to work with a persisting (global) dbvar must generally include a
-C<procedure> invocation.  The body of a C<procedure> consists of 0..N
-statements which conceptually run in sequence (not concurrently).  A
-C<procedure> can invoke every kind of explicitly invokable routine.  A
-C<procedure> invocation is I<not> implicitly atomic; unless a wider-scope
-explicit transaction is active, an aborted C<procedure> will leave an
-incomplete update (though not one that violates any constraints or leaves
-the system in an inconsistant state), because each of its statements had
-conceptually auto-committed; so Muldis D does support batch operations
-where partial completion or interruptability is acceptable.  A procedure
-can define explicit (lexically scoped) transactions over multiple
-consecutive statements, and is generally the only kind of routine that can;
-specifically, those statements are parcelled together into a separate
-C<inner_procedure>, and then that is invoked indirectly by way of a new
-statement in the first procedure that invokes the system-defined
-C<try_catch> procedure.  The vast majority of C<procedure> that exist will
-be user-defined.  But some system-defined routines that would otherwise be
-C<function> or C<updater> are C<procedure> instead solely because they are
-non-deterministic; an example is an operator that derives a tuple sequence
-from a relation without fully sorting the tuples, because the result is
-fundamentally random and non-repeatable.
+A C<procedure> is an explicitly invokable routine with 0..N parameters and
+0..N lexical variables that can directly see and update global variables
+(both catalog and data), and is generally the only kind of routine that
+can; every call chain that is meant to work with a persisting (global)
+dbvar must generally include a C<procedure> invocation.  The body of a
+C<procedure> consists of 0..N statements which conceptually run in sequence
+(not concurrently).  A C<procedure> can invoke every kind of explicitly
+invokable routine.  A C<procedure> invocation is I<not> implicitly atomic;
+unless a wider-scope explicit transaction is active, an aborted
+C<procedure> will leave an incomplete update (though not one that violates
+any constraints or leaves the system in an inconsistant state), because
+each of its statements had conceptually auto-committed; so Muldis D does
+support batch operations where partial completion or interruptability is
+acceptable.  A procedure can define explicit (lexically scoped)
+transactions over multiple consecutive statements, and is generally the
+only kind of routine that can; specifically, those statements are parcelled
+together into a separate C<inner_procedure>, and then that is invoked
+indirectly by way of a new statement in the first procedure that invokes
+the system-defined C<try_catch> procedure.  The vast majority of
+C<procedure> that exist will be user-defined.  But some system-defined
+routines that would otherwise be C<function> or C<updater> are C<procedure>
+instead solely because they are non-deterministic; an example is an
+operator that derives a tuple sequence from a relation without fully
+sorting the tuples, because the result is fundamentally random and
+non-repeatable.
 
 =item C<inner_procedure>
 
@@ -1267,14 +1268,17 @@ C<function>.
 A C<main> is the single anonymous procedure that is the "main program" of a
 non-hosted Plain Text Muldis D application.  A C<main> is the same as a
 C<procedure>, but that it can not be invoked by any other Muldis D routine,
-it does not live in any depot, it can not directly see or update any global
-variables, and it can not have any parameters.  Fundamentally, the only
-task that a 'main' should be doing is loading or creating depots (by
-invoking system-defined routines that update the system catalog), which
-should contain all of the other user-defined routines as if they were code
-libraries, and invoking them.  In a mixed-language application, where
-Muldis D code is invoked by another host language, there is no Muldis D
-C<main> at all, since it would be redundant with host langauge routines.
+it does not live in any depot, it can not have any parameters or lexical
+variables or inner routines, it can not directly see or update any global
+variables, and it can only invoke procedures that have no subject-to-update
+parameters.  Fundamentally, the only task that a 'main' should be doing is
+loading or creating depots (by invoking system-defined procedures that
+update the system catalog), which should contain all of the other
+user-defined routines as if they were code libraries, and invoking them. In
+a mixed-language application, where Muldis D code is invoked by another
+host language, there is no Muldis D C<main> at all, since it would be
+redundant with host langauge routines (and host language routines can do
+anything that a C<function> or C<updater> or C<procedure> can do).
 
 =back
 
