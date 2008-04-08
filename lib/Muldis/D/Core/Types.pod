@@ -40,6 +40,8 @@ relationships:
             # The following are all regular ordered scalar types.
 
             sys.Core.Type.Bool
+            sys.Core.Type.Name
+            sys.Core.Type.Comment
 
         # The following are mostly nonscalar type factories.
 
@@ -62,7 +64,7 @@ relationships:
         # The following is filler, to group possible user-def types.
 
         sys.Core.Type.QuasiScalar
-            sys.Core.Type.E_D
+            sys.Core.Type.QuasiScalarDVPT
 
         # The following are mostly quasi-nonscalar type factories.
 
@@ -141,12 +143,43 @@ C<Bool:false>.  The cardinality of this type is infinity.
 
 =head2 sys.Core.Type.Bool
 
-A C<Bool> is an enumeration consisting of the 2 values C<Bool:false> and
-C<Bool:true>.  It represents a truth value, and is the result type of any
-C<is_identical> or C<is_not_identical> routine; it is the only essential
-scalar data type of a B<D> language.  Its default and minimum value is
-C<Bool:false>; its maximum value is C<Bool:true>.  The cardinality of this
-type is 2.
+A C<Bool> is a scalar enumeration consisting of the 2 values C<Bool:false>
+and C<Bool:true>.  It represents a truth value, and is the result type of
+any C<is_identical> or C<is_not_identical> routine; it is the only
+essential general-purpose scalar data type of a B<D> language.  Its default
+and minimum value is C<Bool:false>; its maximum value is C<Bool:true>.  The
+cardinality of this type is 2.
+
+=head2 sys.Core.Type.Name
+
+A C<Name> (scalar) is a canonical short name for any kind of DBMS entity
+(or named component) when declaring it; this short name is sufficient to
+identify the entity within its immediate namespace.  Similarly, a DBMS
+entity can often be invoked or referred to using just its C<Name>,
+depending on the context; other times, a C<Cat.NameChain> must be used
+instead to also qualify the reference with a namespace.  A C<Name> is
+represented as a string of characters.  Its default and minimum value is
+the empty string; its maximum value is an infinite-length string and
+practically impossible.  Note that there is only one system-defined
+character repertoire for character string types, which is the newest
+Unicode repertoire (5.0.0).  The cardinality of this type is infinity; to
+define a most-generalized finite character string subtype, you must specify
+a maximum length in characters (that is, eg, in NFC graphemes) that the
+subtype's strings are.  See also the C<sys.Text.Type.Text> type, which is
+exactly the same as C<Name> in representation and cardinality though its
+values are distinct; it is intended for general-purpose user data while
+C<Name> is just intended for naming DBMS entities.
+
+=head2 sys.Core.Type.Comment
+
+A C<Comment> (scalar) is the text of a Muldis D code comment, which
+programmers can populate as an attribute of several catalog data types,
+such as whole routines or statements or expression nodes.  C<Comment> is
+exactly the same as C<Name> in representation and cardinality though its
+values are distinct; it is intended just for commenting Muldis D code.  One
+main intended use of this type is to help preserve comments in code
+translated to or from other languages; though only a subset of those
+(FoxPro?) keep comments in the AST rather than discarding them.
 
 =head1 SYSTEM-DEFINED CORE NONSCALAR PARAMETERIZED DATA TYPES
 
@@ -313,15 +346,15 @@ may come to exist.
 
 The C<QuasiScalar> type is the maximal type of all Muldis D quasi-scalar
 types, and contains every quasi-scalar value that can possibly exist.  Its
-default value is C<QuasiScalar.E_D:default>.  The cardinality of this type
-is infinity.
+default value is C<QuasiScalar.QuasiScalarDVPT:default>.  The cardinality
+of this type is infinity.
 
-=item C<sys.Core.Type.E_D>
+=item C<sys.Core.Type.QuasiScalarDVPT>
 
-A C<QuasiScalar.E_D> is an enumeration consisting of the 1 value
-C<QuasiScalar.E_D:default>, which is also its default value.  The only
-reason it exists is to provide a default value for the QuasiScalar union
-type.  The cardinality of this type is 1.
+A C<QuasiScalar.QuasiScalarDVPT> is an enumeration consisting of the 1
+value C<QuasiScalar.QuasiScalarDVPT:default>, which is also its default
+value.  The only reason it exists is to provide a default value for the
+QuasiScalar union type.  The cardinality of this type is 1.
 
 =back
 
