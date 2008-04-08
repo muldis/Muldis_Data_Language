@@ -40,6 +40,11 @@ relationships:
             # The following are all regular ordered scalar types.
 
             sys.Core.Type.Bool
+            sys.Core.Type.Int
+                sys.Core.Type.UInt
+                    sys.Core.Type.PInt
+            sys.Core.Type.Blob
+            sys.Core.Type.Text
             sys.Core.Type.Name
             sys.Core.Type.Comment
 
@@ -126,12 +131,13 @@ referenced.  Plain Text Muldis D provides a specific syntax per type to
 select a value of one of these types, which does not look like a routine
 invocation, but rather like a scalar literal in a typical programming
 language; details of that syntax are not given here, but in
-L<Muldis::D::Dialect::PTMD_Tiny>.  Hosted Data Muldis D as hosted
-in another language will essentially use literals of corresponding host
+L<Muldis::D::Dialect::PTMD_Tiny>.  Hosted Data Muldis D as hosted in
+another language will essentially use literals of corresponding host
 language types, whatever they use for eg booleans and integers and
 character strings, but tagged with extra meta-data if the host language is
 more weakly typed or lacks one-to-one type correspondence; see
-L<Muldis::D::Dialect::HDMD_Perl_Tiny> for a Perl-based example.
+L<Muldis::D::Dialect::HDMD_Perl_Tiny> for a Perl-based example.  These
+types are all ordered.
 
 =head2 sys.Core.Type.Scalar
 
@@ -150,6 +156,44 @@ essential general-purpose scalar data type of a B<D> language.  Its default
 and minimum value is C<Bool:false>; its maximum value is C<Bool:true>.  The
 cardinality of this type is 2.
 
+=head2 sys.Core.Type.Int
+
+An C<Int> is a single exact integral number of any magnitude.  Its default
+value is zero; its minimum and maximum values are conceptually infinities
+and practically impossible.  The cardinality of this type is infinity; to
+define a most-generalized finite C<Int> subtype, you must specify the 2
+integer end-points of the inclusive range that all its values are in.
+
+=head2 sys.Core.Type.UInt
+
+A C<UInt> (unsigned / non-negative integer) is a proper subtype of C<Int>
+where all member values are greater than or equal to zero.  Its minimum
+value is zero.
+
+=head2 sys.Core.Type.PInt
+
+A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
+member values are greater than zero.  Its default and minimum value is 1.
+
+=head2 sys.Core.Type.Blob
+
+A C<Blob> is an undifferentiated string of bits.  Its default and minimum
+value is the empty string; its maximum value is an infinite-length string
+and practically impossible.  The cardinality of this type is infinity; to
+define a most-generalized finite C<Blob> subtype, you must specify a
+maximum length in bits that the subtype's strings are.
+
+=head2 sys.Core.Type.Text
+
+A C<Text> is a string of characters.  Its default and minimum value is the
+empty string; its maximum value is an infinite-length string and
+practically impossible.  Note that there is only one system-defined
+character repertoire for C<Text> types, which is the newest Unicode
+repertoire (5.0.0).  The cardinality of this type is infinity; to define a
+most-generalized finite C<Text> subtype, you must specify a maximum length
+in characters (that is, eg, in NFC graphemes) that the subtype's strings
+are.
+
 =head2 sys.Core.Type.Name
 
 A C<Name> (scalar) is a canonical short name for any kind of DBMS entity
@@ -165,7 +209,7 @@ character repertoire for character string types, which is the newest
 Unicode repertoire (5.0.0).  The cardinality of this type is infinity; to
 define a most-generalized finite character string subtype, you must specify
 a maximum length in characters (that is, eg, in NFC graphemes) that the
-subtype's strings are.  See also the C<sys.Text.Type.Text> type, which is
+subtype's strings are.  See also the C<Text> type, which is
 exactly the same as C<Name> in representation and cardinality though its
 values are distinct; it is intended for general-purpose user data while
 C<Name> is just intended for naming DBMS entities.
