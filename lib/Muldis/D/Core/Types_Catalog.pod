@@ -129,38 +129,38 @@ be used for user data:
 
                 # The following are all nonscalar type factories.
 
-                sys.Core.QuasiCat.SetOfTuple
-                sys.Core.QuasiCat.SetOfRelation
-                    sys.Core.QuasiCat.SetOfBag
+                sys.Core.Type.QuasiCat.SetOfTuple
+                sys.Core.Type.QuasiCat.SetOfRelation
+                    sys.Core.Type.QuasiCat.SetOfBag
 
                 sys.Core.Type.Maybe
 
                     # The following are all nonscalar type factories.
 
-                    sys.Core.QuasiCat.MaybeOfTuple
+                    sys.Core.Type.QuasiCat.MaybeOfTuple
 
             sys.Core.Type.Seq
 
                 # The following are all nonscalar type factories.
 
-                sys.Core.QuasiCat.SeqOfSeq
+                sys.Core.Type.QuasiCat.SeqOfSeq
 
             sys.Core.Type.Bag
 
                 # The following are all nonscalar type factories.
 
-                sys.Core.QuasiCat.BagOfTuple
-                sys.Core.QuasiCat.BagOfRelation
+                sys.Core.Type.QuasiCat.BagOfTuple
+                sys.Core.Type.QuasiCat.BagOfRelation
 
         sys.Core.Type.QuasiRelation
             sys.Core.Type.QuasiSet
 
                 # The following are all quasi-nonscalar type factories.
 
-                sys.Core.QuasiCat.QuasiSetOfTuple
-                sys.Core.QuasiCat.QuasiSetOfRelation
+                sys.Core.Type.QuasiCat.QuasiSetOfTuple
+                sys.Core.Type.QuasiCat.QuasiSetOfRelation
 
-=head1 ENTITY NAME DEFINING TYPES
+=head1 SYSTEM-DEFINED CORE CATALOG SCALAR DATA TYPES
 
 =head2 sys.Core.Type.Cat.Name
 
@@ -195,15 +195,6 @@ the character string possrep of a C<Cat.NameChain> (see that type for
 details); while being a character string like C<Cat.Name>, the two are
 disjoint.
 
-=head2 sys.Core.Type.Cat.NESeqOfName
-
-A C<Cat.NESeqOfName> is a C<Seq> whose C<value> attribute has a declared
-type of C<Cat.Name> and that must have at least 1 element; this type is
-used as the definition of the sequence possrep of a C<Cat.NameChain> (see
-that type for details).
-
-=head1 CODE COMMENT DEFINING TYPES
-
 =head2 sys.Core.Type.Cat.Comment
 
 A C<Cat.Comment> (scalar) is the text of a Muldis D code comment, which
@@ -215,7 +206,29 @@ One main intended use of this type is to help preserve comments in code
 translated to or from other languages; though only a subset of those
 (FoxPro?) keep comments in the AST rather than discarding them.
 
-=head1 ROUTINE DEFINING TYPES
+=head2 sys.Core.Type.Cat.E_TK
+
+A C<Cat.E_TK> (type kind) is a scalar enumeration consisting of the 8
+values C<Cat.E_TK:special> (mainly for system-defined implicit supertypes),
+C<Cat.E_TK:scalar>, C<Cat.E_TK:tuple>, C<Cat.E_TK:relation>,
+C<Cat.E_TK:quasi_scalar>, C<Cat.E_TK:quasi_tuple>,
+C<Cat.E_TK:quasi_relation>, C<Cat.E_TK:remnant>.  Its default value is
+C<Cat.E_TK:scalar>.
+
+=head2 sys.Core.Type.Cat.E_TDM
+
+A C<Cat.E_TDM> (type definition method) is a scalar enumeration consisting
+of the 9 values C<Cat.E_TDM:special> (for some system-defined types that
+don't best fit in other categories, and all parameterized types; users can
+not define the latter for now), C<Cat.E_TDM:root> (complete root type
+defined in terms of explicit attribute collection; all are fully defined,
+not parameterized), C<Cat.E_TDM:restriction> (defined as "explicit
+other-type where condition"), C<Cat.E_TDM:alias> (so the same one type can
+have multiple names), C<Cat.E_TDM:(union|intersection|exclusion)> (defined
+as explicit union|intersection|exclusion of other types),
+C<Cat.E_TDM:difference> (defined as explicit difference of 2 other types),
+C<Cat.E_TDM:negation> (defined as explicit negation of another type).  Its
+default value is C<Cat.E_TDM:alias>.
 
 =head2 sys.Core.Type.Cat.E_ENK
 
@@ -245,6 +258,112 @@ value of a non-lexical variable).  Note that only C<upd_param> and
 C<(inner|outer)_var> can be used for a subject-to-update argument, but all
 of these can be used with a read-only argument.  Its default value is
 C<Cat.E_PSAK:ro_param>.
+
+=head1 SYSTEM-DEFINED CORE CATALOG TUPLE DATA TYPES
+
+=head2 sys.Core.Type.Cat.Type
+
+A C<Cat.Type> is a C<Tuple>.  It defines a data type, which can either be
+(sometimes) invoked directly for values, or be invoked by or embedded into
+other type definitions.  C<Cat.Type> is used in the catalogs for defining
+both system and user types (just the interfaces in the former case).
+
+I<TODO:  The catalog types for type definitions need an overhaul.>
+
+A C<Cat.Type> has these 8 attributes:
+
+=over
+
+=item C<tk> - C<Cat.E_TK>
+
+This broadly declares what kind of type this is (eg,
+scalar|tuple|relation); it partially says how to interpret the rest of the
+attributes and/or which of them have significant values.
+
+=item C<tdm> - C<Cat.E_TDM>
+
+This is the type definition method for the type; it partially says how to
+interpret the rest of the attributes and/or which of them have significant
+values.  If C<tk> is C<Cat.E_TK:special>, then C<tdm> must be
+C<Cat.E_TDM:special>; C<tdm> can be special at other times too.
+
+=item C<types> - C<Cat.SetOfNameChain>
+
+For some values of C<tdm>, the data type is defined at least partially in
+terms of other data types not by way of attribute definitions, and then
+C<types> lists all/most of those types.  Iff C<tdm> is C<Cat.E_TDM:alias>,
+then the data type is just a symbolic reference for some other data type
+(as far as the type system is concerned, they are the same data type,
+invokable by an extra name), and C<types> has one element that is the name
+of that type.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then the data type
+is defined as an explicit subtype of another type by way of an explicit
+further type constraint applied to it, and C<types> has one element that is
+the name of that supertype.  Iff C<tdm> is
+C<Cat.E_TDM:(union|intersection|exclusion)>, then the data type is defined
+as an explicit union|intersection|exclusion of N other types, and C<types>
+lists their names, one per element; 2+ elements is the norm; just 1 element
+means that the data type is a simple alias for the named element; zero
+elements means the data type is a simple alias for, respectively, the type
+C<Empty>, C<Universal>, or C<Empty>.  Iff C<tdm> is
+C<Cat.E_TDM.difference>, then the data type is defined as the difference of
+2 other types, and C<types> has one element that is the name of the minuend
+type.  Iff C<tdm> is C<Cat.E_TDM.negation>, then the data type is defined
+as the negation of some other type, and C<types> has one element that is
+the name of that type.
+
+=item C<subtr_type> - C<Cat.NameChain>
+
+Iff C<tdm> is C<Cat.E_TDM.difference>, then the data type is defined as the
+difference of 2 other types, and C<subtr_type> is the name of the
+subtrahend type.
+
+=item C<attrs> - C<Cat.NameTypeMap>
+
+Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
+fundamentally in terms of an explicit attribute collection, and C<attrs>
+defines the names and declared types of those attributes.  Iff additionally
+C<tk> is C<Cat.E_TK:(scalar|quasi_scalar)>, then C<attrs> specifically
+defines the attributes of just the core/initial/only possrep; otherwise,
+C<attrs> defines the heading of the tuple or relation etc type.  It is
+valid to have zero attributes; in this case, the type consists of exactly
+one value.
+
+=item C<keys> - C<Cat.SetOfSetOfName>
+
+Iff C<tk> is C<Cat.E_TK:(relation|quasi_relation)> and C<tdm> is not
+C<Cat.E_TDM:special>, then the data type is or resembles a relation type
+and can have explicit keys (duality of unique key constraints and terser
+unique identifiers for the q/relation's member q/tuples) defined over its
+attributes, and C<keys> defines those keys in the canonical simplest form
+(in contrast with using C<constraint> instead).  Each element of C<keys>
+defines one key of the q/relation, and that element is a set of the
+attribute names comprising that key.  For q/relation types, if no keys are
+explicitly defined, then it implicitly has a single key comprising all of
+its attributes.  If any explicit keys are defined, then every one must be
+over a distinct proper subset of the type's attributes, and moreover no
+key's attributes may be a proper subset of any other key's attributes; if 2
+such candidates appear, just use the one that has the subset.  It is valid
+for a key to consist of zero attributes; in this case, that key is the only
+key of the q/relation type, and values of the type may each consist of no
+more than one tuple.
+
+=item C<constraint> - C<Cat.TypeConstraint> ... default one always res True
+
+Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
+fundamentally in terms of an explicit attribute collection, and
+C<constraint> defines/names a generalized type constraint that validates
+the collection as a whole.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then
+the data type is defined as an explicit subtype of another type by way of
+an explicit further type constraint applied to it, and C<constraint>
+defines/names that further constraint.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the data type.
+
+=back
+
+The default value of C<Cat.Type> is an alias of C<Empty>.
 
 =head2 sys.Core.Type.Cat.ExprNode
 
@@ -748,6 +867,12 @@ This is an optional programmer comment about the procedure as a whole.
 
 The default value of C<Cat.Proc> is as per the default of C<Cat.InnerProc>.
 
+=head2 sys.Core.Type.Cat.Exception
+
+I<TODO.>
+
+=head1 SYSTEM-DEFINED CORE CATALOG RELATION DATA TYPES
+
 =head2 sys.Core.Type.Cat.NameTypeMap
 
 A C<Cat.NameTypeMap> is a C<Relation>.  It defines a basic component list,
@@ -868,161 +993,32 @@ is to C<Cat.InnerUpdater>.
 A C<Cat.SetOfName> is a C<Set> whose C<value> attribute has a declared type
 of C<Cat.Name>.
 
-=head2 sys.Core.Type.Cat.SetOfNameExprMap
-
-A C<Cat.SetOfNameExprMap> is a C<Set> whose C<value> attribute has a
-declared type of C<Cat.NameExprMap>.
-
-=head2 sys.Core.Type.Cat.SeqOfProcStmt
-
-A C<Cat.SeqOfProcStmt> is a C<Seq> whose C<value> attribute has a declared
-type of C<Cat.ProcStmt>.
-
-=head1 DATA TYPE DEFINING TYPES
-
-=head2 sys.Core.Type.Cat.E_TK
-
-A C<Cat.E_TK> (type kind) is a scalar enumeration consisting of the 8
-values C<Cat.E_TK:special> (mainly for system-defined implicit supertypes),
-C<Cat.E_TK:scalar>, C<Cat.E_TK:tuple>, C<Cat.E_TK:relation>,
-C<Cat.E_TK:quasi_scalar>, C<Cat.E_TK:quasi_tuple>,
-C<Cat.E_TK:quasi_relation>, C<Cat.E_TK:remnant>.  Its default value is
-C<Cat.E_TK:scalar>.
-
-=head2 sys.Core.Type.Cat.E_TDM
-
-A C<Cat.E_TDM> (type definition method) is a scalar enumeration consisting
-of the 9 values C<Cat.E_TDM:special> (for some system-defined types that
-don't best fit in other categories, and all parameterized types; users can
-not define the latter for now), C<Cat.E_TDM:root> (complete root type
-defined in terms of explicit attribute collection; all are fully defined,
-not parameterized), C<Cat.E_TDM:restriction> (defined as "explicit
-other-type where condition"), C<Cat.E_TDM:alias> (so the same one type can
-have multiple names), C<Cat.E_TDM:(union|intersection|exclusion)> (defined
-as explicit union|intersection|exclusion of other types),
-C<Cat.E_TDM:difference> (defined as explicit difference of 2 other types),
-C<Cat.E_TDM:negation> (defined as explicit negation of another type).  Its
-default value is C<Cat.E_TDM:alias>.
-
-=head2 sys.Core.Type.Cat.Type
-
-A C<Cat.Type> is a C<Tuple>.  It defines a data type, which can either be
-(sometimes) invoked directly for values, or be invoked by or embedded into
-other type definitions.  C<Cat.Type> is used in the catalogs for defining
-both system and user types (just the interfaces in the former case).
-
-I<TODO:  The catalog types for type definitions need an overhaul.>
-
-A C<Cat.Type> has these 8 attributes:
-
-=over
-
-=item C<tk> - C<Cat.E_TK>
-
-This broadly declares what kind of type this is (eg,
-scalar|tuple|relation); it partially says how to interpret the rest of the
-attributes and/or which of them have significant values.
-
-=item C<tdm> - C<Cat.E_TDM>
-
-This is the type definition method for the type; it partially says how to
-interpret the rest of the attributes and/or which of them have significant
-values.  If C<tk> is C<Cat.E_TK:special>, then C<tdm> must be
-C<Cat.E_TDM:special>; C<tdm> can be special at other times too.
-
-=item C<types> - C<Cat.SetOfNameChain>
-
-For some values of C<tdm>, the data type is defined at least partially in
-terms of other data types not by way of attribute definitions, and then
-C<types> lists all/most of those types.  Iff C<tdm> is C<Cat.E_TDM:alias>,
-then the data type is just a symbolic reference for some other data type
-(as far as the type system is concerned, they are the same data type,
-invokable by an extra name), and C<types> has one element that is the name
-of that type.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then the data type
-is defined as an explicit subtype of another type by way of an explicit
-further type constraint applied to it, and C<types> has one element that is
-the name of that supertype.  Iff C<tdm> is
-C<Cat.E_TDM:(union|intersection|exclusion)>, then the data type is defined
-as an explicit union|intersection|exclusion of N other types, and C<types>
-lists their names, one per element; 2+ elements is the norm; just 1 element
-means that the data type is a simple alias for the named element; zero
-elements means the data type is a simple alias for, respectively, the type
-C<Empty>, C<Universal>, or C<Empty>.  Iff C<tdm> is
-C<Cat.E_TDM.difference>, then the data type is defined as the difference of
-2 other types, and C<types> has one element that is the name of the minuend
-type.  Iff C<tdm> is C<Cat.E_TDM.negation>, then the data type is defined
-as the negation of some other type, and C<types> has one element that is
-the name of that type.
-
-=item C<subtr_type> - C<Cat.NameChain>
-
-Iff C<tdm> is C<Cat.E_TDM.difference>, then the data type is defined as the
-difference of 2 other types, and C<subtr_type> is the name of the
-subtrahend type.
-
-=item C<attrs> - C<Cat.NameTypeMap>
-
-Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
-fundamentally in terms of an explicit attribute collection, and C<attrs>
-defines the names and declared types of those attributes.  Iff additionally
-C<tk> is C<Cat.E_TK:(scalar|quasi_scalar)>, then C<attrs> specifically
-defines the attributes of just the core/initial/only possrep; otherwise,
-C<attrs> defines the heading of the tuple or relation etc type.  It is
-valid to have zero attributes; in this case, the type consists of exactly
-one value.
-
-=item C<keys> - C<Cat.SetOfSetOfName>
-
-Iff C<tk> is C<Cat.E_TK:(relation|quasi_relation)> and C<tdm> is not
-C<Cat.E_TDM:special>, then the data type is or resembles a relation type
-and can have explicit keys (duality of unique key constraints and terser
-unique identifiers for the q/relation's member q/tuples) defined over its
-attributes, and C<keys> defines those keys in the canonical simplest form
-(in contrast with using C<constraint> instead).  Each element of C<keys>
-defines one key of the q/relation, and that element is a set of the
-attribute names comprising that key.  For q/relation types, if no keys are
-explicitly defined, then it implicitly has a single key comprising all of
-its attributes.  If any explicit keys are defined, then every one must be
-over a distinct proper subset of the type's attributes, and moreover no
-key's attributes may be a proper subset of any other key's attributes; if 2
-such candidates appear, just use the one that has the subset.  It is valid
-for a key to consist of zero attributes; in this case, that key is the only
-key of the q/relation type, and values of the type may each consist of no
-more than one tuple.
-
-=item C<constraint> - C<Cat.TypeConstraint> ... default one always res True
-
-Iff C<tdm> is C<Cat.E_TDM:root>, then the data type is defined
-fundamentally in terms of an explicit attribute collection, and
-C<constraint> defines/names a generalized type constraint that validates
-the collection as a whole.  Iff C<tdm> is C<Cat.E_TDM:restriction>, then
-the data type is defined as an explicit subtype of another type by way of
-an explicit further type constraint applied to it, and C<constraint>
-defines/names that further constraint.
-
-=item C<comment> - C<Cat.Comment>
-
-This is an optional programmer comment about the data type.
-
-=back
-
-The default value of C<Cat.Type> is an alias of C<Empty>.
-
 =head2 sys.Core.Type.Cat.SetOfSetOfName
 
 A C<Cat.SetOfSetOfName> is a C<Set> whose C<value> attribute has a declared
 type of C<Cat.SetOfName>.
+
+=head2 sys.Core.Type.Cat.SetOfNameExprMap
+
+A C<Cat.SetOfNameExprMap> is a C<Set> whose C<value> attribute has a
+declared type of C<Cat.NameExprMap>.
 
 =head2 sys.Core.Type.Cat.SetOfNameChain
 
 A C<Cat.SetOfNameChain> is a C<Set> whose C<value> attribute has a declared
 type of C<Cat.NameChain>.
 
-=head1 EXCEPTION DEFINING TYPES
+=head2 sys.Core.Type.Cat.NESeqOfName
 
-=head2 sys.Core.Type.Cat.Exception
+A C<Cat.NESeqOfName> is a C<Seq> whose C<value> attribute has a declared
+type of C<Cat.Name> and that must have at least 1 element; this type is
+used as the definition of the sequence possrep of a C<Cat.NameChain> (see
+that type for details).
 
-I<TODO.>
+=head2 sys.Core.Type.Cat.SeqOfProcStmt
+
+A C<Cat.SeqOfProcStmt> is a C<Seq> whose C<value> attribute has a declared
+type of C<Cat.ProcStmt>.
 
 =head1 SYSTEM-DEFINED CORE QUASI-CATALOG PARAMETERIZED TYPES
 
@@ -1035,33 +1031,33 @@ also are not used to compose the system catalog either.
 
 =over
 
-=item C<sys.Core.QuasiCat.(Set|Bag)Of(Tuple|Relation)>
+=item C<sys.Core.Type.QuasiCat.(Set|Bag)Of(Tuple|Relation)>
 
 A C<(Set|Bag)OfRelation> is an incompletely defined proper subtype of
 C<Set|Bag> whose C<value> attribute has a declared type of a
 C<Tuple|Relation> subtype; this is the parameter type of several N-ary
 relational operators.
 
-=item C<sys.Core.QuasiCat.SetOfBag>
+=item C<sys.Core.Type.QuasiCat.SetOfBag>
 
 A C<SetOfBag> is an incompletely defined proper subtype of C<Set> whose
 C<value> attribute has a declared type of a C<Bag> subtype; this is the
 parameter type of several N-ary relational operators that work with C<Bag>
 values.
 
-=item C<sys.Core.QuasiCat.MaybeOfTuple>
+=item C<sys.Core.Type.QuasiCat.MaybeOfTuple>
 
 A C<MaybeOfTuple> is an incompletely defined proper subtype of C<Maybe>
 whose C<value> attribute has a declared type of a C<Tuple> subtype; this is
 the parameter type of the C<sys.Core.Relation.maybe_reduction> operator.
 
-=item C<sys.Core.QuasiCat.SeqOfSeq>
+=item C<sys.Core.Type.QuasiCat.SeqOfSeq>
 
 A C<SeqOfSeq> is an incompletely defined proper subtype of C<Seq> whose
 C<value> attribute has a declared type of a C<Seq> subtype; this is the
 parameter type of the N-ary C<sys.Core.Seq.catenation> operator.
 
-=item C<sys.Core.QuasiCat.QuasiSetOf(Tuple|Relation)>
+=item C<sys.Core.Type.QuasiCat.QuasiSetOf(Tuple|Relation)>
 
 A C<QuasiSetOfRelation> is an incompletely defined proper subtype of
 C<QuasiSet> whose C<value> attribute has a declared type of
