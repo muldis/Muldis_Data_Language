@@ -42,27 +42,26 @@ I<This documentation is pending.>
 
 =over
 
-=item C<function sys.Bag.Bag.cardinality result UInt params { topic(Bag)
-}>
+=item C<function sys.Bag.cardinality result UInt params { topic(Bag) }>
 
 This function is like C<sys.Core.Relation.cardinality> but that it accounts
 for the greater-than-one multiplicity of values in its argument; it results
 in the sum of the C<count> attribute of its argument.
 
-=item C<function sys.Bag.Bag.is_member result Bool params { bag(Bag),
+=item C<function sys.Bag.is_member result Bool params { bag(Bag),
 value(ScaTupRel) }>
 
-This function is the same as C<sys.Set.Set.is_member>, including that
-matching of C<value> is done against the C<value> attribute, except that it
-works with a C<Bag> rather than a C<Set>.
+This function is the same as C<sys.Set.is_member>, including that matching
+of C<value> is done against the C<value> attribute, except that it works
+with a C<Bag> rather than a C<Set>.
 
-=item C<function sys.Bag.Bag.is_not_member result Bool params { bag(Bag),
+=item C<function sys.Bag.is_not_member result Bool params { bag(Bag),
 value(ScaTupRel) }>
 
-This function is exactly the same as C<sys.Bag.Bag.is_member> except that
-it results in the opposite boolean value when given the same arguments.
+This function is exactly the same as C<sys.Bag.is_member> except that it
+results in the opposite boolean value when given the same arguments.
 
-=item C<function sys.Bag.Bag.count result UInt params { bag(Bag),
+=item C<function sys.Bag.count result UInt params { bag(Bag),
 value(ScaTupRel) }>
 
 This function results in the multiplicity / count of occurrances of
@@ -70,52 +69,50 @@ C<value> in C<bag>; if a tuple exists in C<bag> whose C<value> attribute is
 C<value>, then the result is its C<count> attribute; otherwise the result
 is zero.
 
-=item C<function sys.Bag.Bag.insertion result Bag params { bag(Bag),
+=item C<function sys.Bag.insertion result Bag params { bag(Bag),
 value(ScaTupRel) }>
 
-This function is the same as C<sys.Set.Set.insertion> as per C<is_member>
-but that its result differs depending on whether C<value> already exists in
+This function is the same as C<sys.Set.insertion> as per C<is_member> but
+that its result differs depending on whether C<value> already exists in
 C<bag>; if it does, then no new tuple is added, but the C<count> attribute
 for the matching tuple is incremented by 1; if it does not, then a new
 tuple is added where its C<value> is C<value> and its C<count> is 1.
 
-=item C<function sys.Bag.Bag.deletion result Bag params { bag(Bag),
+=item C<function sys.Bag.deletion result Bag params { bag(Bag),
 value(ScaTupRel) }>
 
-This function is the same as C<sys.Set.Set.deletion> as per C<is_member>
-but that its result differs depending on what the C<count> for any tuple
+This function is the same as C<sys.Set.deletion> as per C<is_member> but
+that its result differs depending on what the C<count> for any tuple
 matching C<value> that already exists in C<bag> is; if the C<count> is
 greater than 1, then it is decremented by 1; if it is equal to 1, then the
 tuple whose C<value> is C<value> is deleted.
 
-=item C<function sys.Bag.Bag.reduction result ScaTupRel params {
-topic(Bag), func(Cat.NameChain), assuming(Tuple), identity(ScaTupRel) }>
+=item C<function sys.Bag.reduction result ScaTupRel params { topic(Bag),
+func(Cat.NameChain), assuming(Tuple), identity(ScaTupRel) }>
 
-This function is the same as C<sys.Set.Set.reduction>, including that
-input values for the reduction come from the C<value> attribute of
-C<topic>, except that it works with a C<Bag> rather than a C<Set>; C<func>
-is invoked extra times, where both its C<v1> and C<v2> arguments might be
-different instances of the same value having >= 2 multiplicity.
+This function is the same as C<sys.Set.reduction>, including that input
+values for the reduction come from the C<value> attribute of C<topic>,
+except that it works with a C<Bag> rather than a C<Set>; C<func> is invoked
+extra times, where both its C<v1> and C<v2> arguments might be different
+instances of the same value having >= 2 multiplicity.
 
-=item C<function sys.Bag.Bag.maybe_reduction result Maybe params {
-topic(Bag), func(Cat.NameChain), assuming(Tuple) }>
+=item C<function sys.Bag.maybe_reduction result Maybe params { topic(Bag),
+func(Cat.NameChain), assuming(Tuple) }>
 
-This function is to C<sys.Set.Set.maybe_reduction> as
-C<sys.Bag.Bag.reduction> is to C<sys.Set.Set.reduction>.
+This function is to C<sys.Set.maybe_reduction> as C<sys.Bag.reduction> is
+to C<sys.Set.reduction>.
 
-=item C<function sys.Bag.Bag.Set_from_Bag result Set params { topic(Bag)
-}>
+=item C<function sys.Bag.Set_from_Bag result Set params { topic(Bag) }>
 
 This function results in the C<Set> that is the projection of the C<value>
 attribute of its C<Bag> argument.
 
-=item C<function sys.Bag.Bag.Bag_from_Set result Bag params { topic(Set)
-}>
+=item C<function sys.Bag.Bag_from_Set result Bag params { topic(Set) }>
 
 This function results in the C<Bag> that is the extension of its C<Set>
 argument with a new C<count> attribute whose value for every tuple is 1.
 
-=item C<function sys.Bag.Bag.Bag_from_wrap result BagOfTuple params {
+=item C<function sys.Bag.Bag_from_wrap result BagOfTuple params {
 topic(Relation) }>
 
 This function results in a C<Bag> whose C<value> attribute is tuple-typed
@@ -124,8 +121,8 @@ for a relational wrap of all attributes of C<topic> such that the new
 tuple-valued attribute is named C<value>, and then that result is extended
 with a C<count> attribute whose value for every tuple is 1.
 
-=item C<function sys.Bag.Bag.Bag_from_attr result Bag params {
-topic(Relation), name(Cat.Name) }>
+=item C<function sys.Bag.Bag_from_attr result Bag params { topic(Relation),
+name(Cat.Name) }>
 
 This function results in a C<Bag> consisting of all the values of the
 attribute of C<topic> named by C<name>.  It is a short-hand for first doing
@@ -136,7 +133,7 @@ the relation-valued attribute's values, and then doing a binary projection
 of the named attribute and the new integer attribute plus their renaming to
 C<value> and C<count> respectively.
 
-=item C<function sys.Bag.Bag.is_subset result Bool params { look_in(Bag),
+=item C<function sys.Bag.is_subset result Bool params { look_in(Bag),
 look_for(Bag) }>
 
 This function is like C<sys.Core.Relation.is_subset> but that it accounts
@@ -145,25 +142,25 @@ function returns C<Bool:true> iff the multiplicity of each C<look_for>
 value is less than or equal to the multiplicity of its counterpart
 C<look_in> value.
 
-=item C<function sys.Bag.Bag.is_not_subset result Bool params {
-look_in(Bag), look_for(Bag) }>
+=item C<function sys.Bag.is_not_subset result Bool params { look_in(Bag),
+look_for(Bag) }>
 
 This function is like C<sys.Core.Relation.is_not_subset> as per
 C<is_subset>.
 
-=item C<function sys.Bag.Bag.is_proper_subset result Bool params {
+=item C<function sys.Bag.is_proper_subset result Bool params {
 look_in(Bag), look_for(Bag) }>
 
 This function is like C<sys.Core.Relation.is_proper_subset> as per
 C<is_subset>.  I<TODO: What is its definition?>
 
-=item C<function sys.Bag.Bag.is_not_proper_subset result Bool params {
+=item C<function sys.Bag.is_not_proper_subset result Bool params {
 look_in(Bag), look_for(Bag) }>
 
 This function is like C<sys.Core.Relation.is_not_proper_subset> as per
 C<is_subset>.  I<TODO: What is its definition?>
 
-=item C<function sys.Bag.Bag.union result Bag params { topic(SetOfBag) }>
+=item C<function sys.Bag.union result Bag params { topic(SetOfBag) }>
 
 This function is like C<sys.Core.Relation.union> but that it just looks at
 the C<value> attribute of its argument elements when determining what
@@ -171,14 +168,14 @@ element tuples correspond; then for each tuple in the result, its C<count>
 attribute value is the maximum of the C<count> attribute values of its
 corresponding input element tuples.
 
-=item C<function sys.Bag.Bag.intersection result Bag params {
-topic(SetOfBag) }>
+=item C<function sys.Bag.intersection result Bag params { topic(SetOfBag)
+}>
 
 This function is like C<sys.Core.Relation.intersection> as C<union> is like
 C<sys.Core.Relation.union>; the minimum of C<count> attribute values is
 used rather than the maximum.
 
-=item C<function sys.Bag.Bag.difference result Bag params { source(Bag),
+=item C<function sys.Bag.difference result Bag params { source(Bag),
 filter(Bag) }>
 
 This function is like C<sys.Core.Relation.difference> as C<union> is like
