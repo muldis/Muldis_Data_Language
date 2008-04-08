@@ -31,60 +31,55 @@ Following are all the data types and data type factories described in this
 document, arranged in a type graph according to their proper sub|supertype
 relationships:
 
-    sys.Core.Universal.Universal
+    sys.Core.Type.Universal
 
-        sys.Core.Universal.Empty
+        sys.Core.Type.Empty
 
-        sys.Core.Scalar.Scalar
+        sys.Core.Type.Scalar
 
             # The following are all regular ordered scalar types.
 
-            sys.Core.Scalar.Bool
-            sys.Core.Scalar.Int
-                sys.Core.Scalar.UInt
-                    sys.Core.Scalar.PInt
-            sys.Core.Scalar.Blob
-            sys.Core.Scalar.Text
+            sys.Core.Type.Bool
 
         # The following are mostly nonscalar type factories.
 
-        sys.Core.Tuple.Tuple
-            sys.Core.Tuple.D0
-            sys.Core.Tuple.SetElem
-            sys.Core.Tuple.SeqElem
-            sys.Core.Tuple.BagElem
-            sys.Core.Tuple.Database
+        sys.Core.Type.Tuple
+            sys.Core.Type.TupleD0
+            sys.Core.Type.SetElem
+            sys.Core.Type.SeqElem
+            sys.Core.Type.BagElem
+            sys.Core.Type.Database
 
-        sys.Core.Relation.Relation
-            sys.Core.Relation.D0
-            sys.Core.Relation.Set
-                sys.Core.Relation.Maybe
-                    sys.Core.Relation.Nothing
-                    sys.Core.Relation.Single
-            sys.Core.Relation.Seq
-            sys.Core.Relation.Bag
+        sys.Core.Type.Relation
+            sys.Core.Type.RelationD0
+            sys.Core.Type.Set
+                sys.Core.Type.Maybe
+                    sys.Core.Type.Nothing
+                    sys.Core.Type.Single
+            sys.Core.Type.Seq
+            sys.Core.Type.Bag
 
         # The following is filler, to group possible user-def types.
 
-        sys.Core.QuasiScalar.QuasiScalar
-            sys.Core.QuasiScalar.E_D
+        sys.Core.Type.QuasiScalar
+            sys.Core.Type.E_D
 
         # The following are mostly quasi-nonscalar type factories.
 
-        sys.Core.QuasiTuple.QuasiTuple
-            sys.Core.QuasiTuple.D0
-            sys.Core.QuasiTuple.QuasiSetElem
-            sys.Core.QuasiTuple.QuasiSeqElem
-            sys.Core.QuasiTuple.QuasiBagElem
+        sys.Core.Type.QuasiTuple
+            sys.Core.Type.QuasiTupleD0
+            sys.Core.Type.QuasiSetElem
+            sys.Core.Type.QuasiSeqElem
+            sys.Core.Type.QuasiBagElem
 
-        sys.Core.QuasiRelation.QuasiRelation
-            sys.Core.QuasiRelation.D0
-            sys.Core.QuasiRelation.QuasiSet
-                sys.Core.QuasiRelation.QuasiMaybe
-                    sys.Core.QuasiRelation.QuasiNothing
-                    sys.Core.QuasiRelation.QuasiSingle
-            sys.Core.QuasiRelation.QuasiSeq
-            sys.Core.QuasiRelation.QuasiBag
+        sys.Core.Type.QuasiRelation
+            sys.Core.Type.QuasiRelationD0
+            sys.Core.Type.QuasiSet
+                sys.Core.Type.QuasiMaybe
+                    sys.Core.Type.QuasiNothing
+                    sys.Core.Type.QuasiSingle
+            sys.Core.Type.QuasiSeq
+            sys.Core.Type.QuasiBag
 
         # The following are all remnant types.
 
@@ -136,7 +131,7 @@ character strings, but tagged with extra meta-data if the host language is
 more weakly typed or lacks one-to-one type correspondence; see
 L<Muldis::D::Dialect::HDMD_Perl_Tiny> for a Perl-based example.
 
-=head2 sys.Core.Scalar.Scalar
+=head2 sys.Core.Type.Scalar
 
 The C<Scalar> type is the maximal type of all Muldis D scalar types, and
 contains every scalar value that can possibly exist.  Every other scalar
@@ -144,7 +139,7 @@ type is implicitly a proper subtype of C<Scalar>, and C<Scalar> is
 implicitly a union type over all other scalar types.  Its default value is
 C<Bool:false>.  The cardinality of this type is infinity.
 
-=head2 sys.Core.Scalar.Bool
+=head2 sys.Core.Type.Bool
 
 A C<Bool> is an enumeration consisting of the 2 values C<Bool:false> and
 C<Bool:true>.  It represents a truth value, and is the result type of any
@@ -152,44 +147,6 @@ C<is_identical> or C<is_not_identical> routine; it is the only essential
 scalar data type of a B<D> language.  Its default and minimum value is
 C<Bool:false>; its maximum value is C<Bool:true>.  The cardinality of this
 type is 2.
-
-=head2 sys.Core.Scalar.Int
-
-An C<Int> is a single exact integral number of any magnitude.  Its default
-value is zero; its minimum and maximum values are conceptually infinities
-and practically impossible.  The cardinality of this type is infinity; to
-define a most-generalized finite C<Int> subtype, you must specify the 2
-integer end-points of the inclusive range that all its values are in.
-
-=head2 sys.Core.Scalar.UInt
-
-A C<UInt> (unsigned / non-negative integer) is a proper subtype of C<Int>
-where all member values are greater than or equal to zero.  Its minimum
-value is zero.
-
-=head2 sys.Core.Scalar.PInt
-
-A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
-member values are greater than zero.  Its default and minimum value is 1.
-
-=head2 sys.Core.Scalar.Blob
-
-A C<Blob> is an undifferentiated string of bits.  Its default and minimum
-value is the empty string; its maximum value is an infinite-length string
-and practically impossible.  The cardinality of this type is infinity; to
-define a most-generalized finite C<Blob> subtype, you must specify a
-maximum length in bits that the subtype's strings are.
-
-=head2 sys.Core.Scalar.Text
-
-A C<Text> is a string of characters.  Its default and minimum value is the
-empty string; its maximum value is an infinite-length string and
-practically impossible.  Note that there is only one system-defined
-character repertoire for C<Text> types, which is the newest Unicode
-repertoire (5.0.0).  The cardinality of this type is infinity; to define a
-most-generalized finite C<Text> subtype, you must specify a maximum length
-in characters (that is, eg, in NFC graphemes) that the subtype's strings
-are.
 
 =head1 SYSTEM-DEFINED CORE NONSCALAR PARAMETERIZED DATA TYPES
 
@@ -215,7 +172,7 @@ tuple or relation types.
 As exceptions to the above 2 paragraphs, the C<Nothing> type and the 2
 C<D0> types are actually complete types, despite being listed here.
 
-=head2 sys.Core.Tuple.Tuple
+=head2 sys.Core.Type.Tuple
 
 The C<Tuple> type is the maximal type of all Muldis D tuple (nonscalar)
 types, and contains every tuple value that could possibly exist.  A
@@ -232,31 +189,31 @@ attribute of the tuple and the value of the input is the cardinality of the
 declared type of the attribute; for a C<Tuple> subtype to be finite, all of
 its attribute types must be.
 
-=head2 sys.Core.Tuple.D0
+=head2 sys.Core.Type.TupleD0
 
-A C<Tuple.D0> is a proper subtype of C<Tuple> that has zero attributes; its
+A C<TupleD0> is a proper subtype of C<Tuple> that has zero attributes; its
 cardinality is 1, and its only value is also the default value of C<Tuple>.
 
-=head2 sys.Core.Tuple.SetElem
+=head2 sys.Core.Type.SetElem
 
 A C<SetElem> is a C<Tuple> with the same heading as C<Set>.
 
-=head2 sys.Core.Tuple.SeqElem
+=head2 sys.Core.Type.SeqElem
 
 A C<SeqElem> is a C<Tuple> with the same heading as C<Seq>.
 
-=head2 sys.Core.Tuple.BagElem
+=head2 sys.Core.Type.BagElem
 
 A C<BagElem> is a C<Tuple> with the same heading as C<Bag>.
 
-=head2 sys.Core.Tuple.Database
+=head2 sys.Core.Type.Database
 
 A C<Database> is a proper subtype of C<Tuple> where all of its attributes
 are each of relation types or of database types (the leaves of this
 recursion are all relation types); it is otherwise the same.  It is also
-trivially a proper supertype of C<Tuple.D0>.
+trivially a proper supertype of C<TupleD0>.
 
-=head2 sys.Core.Relation.Relation
+=head2 sys.Core.Type.Relation
 
 The C<Relation> type is the maximal type of all Muldis D relation
 (nonscalar) types, and contains every relation value that could possibly
@@ -274,13 +231,13 @@ keys each defined over a subset of its attributes, which constrain its set
 of values relative to there being no explicit keys, but having the keys
 won't turn an infinite relation type into a finite one.
 
-=head2 sys.Core.Relation.D0
+=head2 sys.Core.Type.RelationD0
 
-A C<Relation.D0> is a proper subtype of C<Relation> that has 0 attributes;
+A C<RelationD0> is a proper subtype of C<Relation> that has 0 attributes;
 its cardinality is 2, and its default value is the same as that of
 C<Relation>.
 
-=head2 sys.Core.Relation.Set
+=head2 sys.Core.Type.Set
 
 A C<Set> is a proper subtype of C<Relation> that has 1 attribute, and its
 name is C<value>; it can be of any declared type.  A C<Set> subtype is
@@ -291,7 +248,7 @@ for any given I<complete> C<Set> subtype, C<Foo>, where its C<value>
 attribute has a declared type of C<Bar>, the type C<Foo> can be considered
 the I<power set> of the type C<Bar>.
 
-=head2 sys.Core.Relation.Maybe
+=head2 sys.Core.Type.Maybe
 
 A C<Maybe> is a proper subtype of C<Set> that may have at most one element;
 that is, it is a unary C<Relation> with a nullary key.  Operators that work
@@ -301,7 +258,7 @@ close to SQL's nullable types without actually having 3-valued logic; it
 would probably be convenient for code that round-trips SQL by way of Muldis
 D to use the C<Maybe> type.  Its default value has zero tuples.
 
-=head2 sys.Core.Relation.Nothing
+=head2 sys.Core.Type.Nothing
 
 A C<Nothing> is a proper subtype of C<Maybe> that has exactly zero
 elements; its cardinality is 1 and its only value is its default.  The
@@ -312,7 +269,7 @@ missing or inapplicable information, that does not typically equal any
 normal/scalar value; however, in Muldis D, C<Nothing> I<is a value>, and it
 I<is> equal to itself.
 
-=head2 sys.Core.Relation.Single
+=head2 sys.Core.Type.Single
 
 A C<Single> is a proper subtype of C<Maybe> that has exactly 1 element.
 Its default value's only tuple's only attribute has the value
@@ -320,7 +277,7 @@ C<Bool:false>.  The C<Single> type is complementary to the C<Nothing> type
 under C<Maybe>; C<Nothing> consists of exactly 1 of C<Maybe>'s values, and
 C<Single> consists of all of C<Maybe>'s other values.
 
-=head2 sys.Core.Relation.Seq
+=head2 sys.Core.Type.Seq
 
 A C<Seq> is a proper subtype of C<Relation> that has 2 attributes, and
 their names are C<index> and C<value>, where C<index> is a unary key and
@@ -333,7 +290,7 @@ their argument elements or result is significant (and duplicate values are
 significant); specifically, C<index> defines an explicit ordering for
 C<value>.  Its default value has zero tuples.
 
-=head2 sys.Core.Relation.Bag
+=head2 sys.Core.Type.Bag
 
 A C<Bag> (or I<multiset>) is a proper subtype of C<Relation> that has 2
 attributes, and their names are C<value> and C<count>, where C<value> is a
@@ -352,14 +309,14 @@ may come to exist.
 
 =over
 
-=item C<sys.Core.QuasiScalar.QuasiScalar>
+=item C<sys.Core.Type.QuasiScalar>
 
 The C<QuasiScalar> type is the maximal type of all Muldis D quasi-scalar
 types, and contains every quasi-scalar value that can possibly exist.  Its
 default value is C<QuasiScalar.E_D:default>.  The cardinality of this type
 is infinity.
 
-=item C<sys.Core.QuasiScalar.E_D>
+=item C<sys.Core.Type.E_D>
 
 A C<QuasiScalar.E_D> is an enumeration consisting of the 1 value
 C<QuasiScalar.E_D:default>, which is also its default value.  The only
@@ -378,71 +335,71 @@ particular that there is no "QuasiDatabase" type, since all normal data or
 catalog databases should be composed of normal relations only; but all of
 the other nonscalar incomplete types have counterparts here.
 
-=head2 sys.Core.QuasiTuple.QuasiTuple
+=head2 sys.Core.Type.QuasiTuple
 
 A C<QuasiTuple> is like a C<Tuple> but that the declared types of its
 attributes can be anything at all.  Its cardinality is infinite.
 
-=head2 sys.Core.QuasiTuple.D0
+=head2 sys.Core.Type.QuasiTupleD0
 
-A C<QuasiTuple.D0> is a proper subtype of C<QuasiTuple> in the
-corresponding manner to C<Tuple.D0> being a proper subtype of C<Tuple>.
+A C<QuasiTupleD0> is a proper subtype of C<QuasiTuple> in the
+corresponding manner to C<TupleD0> being a proper subtype of C<Tuple>.
 Its cardinality is 1.
 
-=head2 sys.Core.QuasiTuple.QuasiSetElem
+=head2 sys.Core.Type.QuasiSetElem
 
 A C<QuasiSetElem> is a C<QuasiTuple> with the same heading as C<QuasiSet>.
 
-=head2 sys.Core.QuasiTuple.QuasiSeqElem
+=head2 sys.Core.Type.QuasiSeqElem
 
 A C<QuasiSeqElem> is a C<QuasiTuple> with the same heading as C<QuasiSeq>.
 
-=head2 sys.Core.QuasiTuple.QuasiBagElem
+=head2 sys.Core.Type.QuasiBagElem
 
 A C<QuasiBagElem> is a C<QuasiTuple> with the same heading as C<QuasiBag>.
 
-=head2 sys.Core.QuasiRelation.QuasiRelation
+=head2 sys.Core.Type.QuasiRelation
 
 A C<QuasiRelation> is like a C<Relation> but that the declared types of its
 attributes can be anything at all.  Its cardinality is infinite.
 
-=head2 sys.Core.QuasiRelation.D0
+=head2 sys.Core.Type.QuasiRelationD0
 
-A C<QuasiRelation.D0> is a proper subtype of C<QuasiRelation> in the
-corresponding manner to C<Relation.D0> being a proper subtype of
+A C<QuasiRelationD0> is a proper subtype of C<QuasiRelation> in the
+corresponding manner to C<RelationD0> being a proper subtype of
 C<Relation>.  Its cardinality is 2.
 
-=head2 sys.Core.QuasiRelation.QuasiSet
+=head2 sys.Core.Type.QuasiSet
 
 A C<QuasiSet> is a proper subtype of C<QuasiRelation> in the corresponding
 manner to C<Set> being a proper subtype of C<Relation>.  Its cardinality is
 infinite.
 
-=head2 sys.Core.QuasiRelation.QuasiMaybe
+=head2 sys.Core.Type.QuasiMaybe
 
 A C<QuasiMaybe> is a proper subtype of C<QuasiSet> in the corresponding
 manner to C<Maybe> being a proper subtype of C<Set>. Its cardinality is
 infinite.
 
-=head2 sys.Core.QuasiRelation.QuasiNothing
+=head2 sys.Core.Type.QuasiNothing
 
 A C<QuasiNothing> is a proper subtype of C<QuasiMaybe> in the corresponding
 manner to C<Nothing> being a proper subtype of C<Maybe>.  Its cardinality
 is 1.
 
-=head2 sys.Core.QuasiRelation.QuasiSingle
+=head2 sys.Core.Type.QuasiSingle
 
 A C<QuasiSingle> is a proper subtype of C<QuasiMaybe> in the corresponding
 manner to C<Single> being a proper subtype of C<Maybe>.  Its cardinality is
 infinite.
 
-=head2 sys.Core.QuasiRelation.QuasiSeq
+=head2 sys.Core.Type.QuasiSeq
 
 A C<QuasiSeq> is a proper subtype of C<QuasiRelation> in the corresponding
 manner to C<Seq> being a proper subtype of C<Relation>.  Its cardinality is
 infinite.
 
-=head2 sys.Core.QuasiRelation.QuasiBag
+=head2 sys.Core.Type.QuasiBag
 
 A C<QuasiBag> is a proper subtype of C<QuasiRelation> in the corresponding
 manner to C<Bag> being a proper subtype of C<Relation>.  Its cardinality is
