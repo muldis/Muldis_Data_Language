@@ -53,8 +53,10 @@ more or less:
 
             # The following are all regular ordered scalar types.
 
+            sys.Core.Cat.Name
             sys.Core.Cat.NameChain
             sys.Core.Cat.FlattenedNameChain
+            sys.Core.Cat.Comment
 
             # The following are all regular non-ordered scalar types.
 
@@ -160,12 +162,25 @@ be used for user data:
 
 =head1 ENTITY NAME DEFINING TYPES
 
+=head2 sys.Core.Cat.Name
+
+A C<Cat.Name> (scalar) is a canonical short name for any kind of DBMS
+entity (or named component) when declaring it; this short name is
+sufficient to identify the entity within its immediate namespace.
+Similarly, a DBMS entity can often be invoked or referred to using just its
+C<Cat.Name>, depending on the context; other times, a C<Cat.NameChain> must
+be used instead to also qualify the reference with a namespace.
+C<Cat.Name> is the same as C<Text> in representation (each value as a
+string of characters) and cardinality though its values are distinct; it is
+specifically intended for use in naming DBMS entities rather than being for
+general-purpose user data.
+
 =head2 sys.Core.Cat.NameChain
 
 A C<Cat.NameChain> (scalar) is a canonical long name for invoking or
 referring to a DBMS entity, when its name needs to be qualified with a
 namespace.  A C<Cat.NameChain> has 2 possreps; one possrep is a sequence of
-1..N C<Name> (represented by a C<Cat.NESeqOfName>), the 1..N elements
+1..N C<Cat.Name> (represented by a C<Cat.NESeqOfName>), the 1..N elements
 being ordered from parent-most to child-most component name; the other
 possrep is a character string (represented by a C<Cat.FlattenedNameChain>)
 like when the elements of the first possrep are catenated (in order with
@@ -177,15 +192,28 @@ periods are escaped as C<\b>, C<\q> and C<\p> respectively.
 
 The C<Cat.FlattenedNameChain> (scalar) type is used as the definition of
 the character string possrep of a C<Cat.NameChain> (see that type for
-details); while being a character string like C<Name>, the two are
+details); while being a character string like C<Cat.Name>, the two are
 disjoint.
 
 =head2 sys.Core.Cat.NESeqOfName
 
 A C<Cat.NESeqOfName> is a C<Seq> whose C<value> attribute has a declared
-type of C<Name> and that must have at least 1 element; this type is
+type of C<Cat.Name> and that must have at least 1 element; this type is
 used as the definition of the sequence possrep of a C<Cat.NameChain> (see
 that type for details).
+
+=head1 CODE COMMENT DEFINING TYPES
+
+=head2 sys.Core.Cat.Comment
+
+A C<Cat.Comment> (scalar) is the text of a Muldis D code comment, which
+programmers can populate as an attribute of several catalog data types,
+such as whole routines or statements or expression nodes.  C<Cat.Comment>
+is exactly the same as C<Cat.Name> in representation and cardinality though
+its values are distinct; it is intended just for commenting Muldis D code.
+One main intended use of this type is to help preserve comments in code
+translated to or from other languages; though only a subset of those
+(FoxPro?) keep comments in the AST rather than discarding them.
 
 =head1 ROUTINE DEFINING TYPES
 
@@ -241,7 +269,7 @@ A C<Cat.ExprNode> has these 8 attributes:
 
 =over
 
-=item C<name> - C<Name>
+=item C<name> - C<Cat.Name>
 
 This is the declared name of the expression node; other Muldis D code that
 is composing this expression node into their own definitions would
@@ -274,7 +302,7 @@ C<coll_lit> defines exactly one tuple when C<kind> specifies a tuple or
 quasi-tuple, and it defines 0..N tuples when C<kind> specifies a relation
 or quasi-relation.
 
-=item C<param> - C<Name>
+=item C<param> - C<Cat.Name>
 
 Iff C<kind> is C<Cat.E_ENK:param>, then the expression represents the value
 of the containing function's parameter which this names.  Or, if C<kind> is
@@ -295,7 +323,7 @@ invocation.  Each element defines one argument value, with the element
 C<name> matching the parameter name, and the element C<expr> naming another
 local C<ExprNode> which defines the value.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -318,7 +346,7 @@ A C<Cat.InnerFunc> has these 6 attributes:
 
 =over
 
-=item C<name> - C<Name>
+=item C<name> - C<Cat.Name>
 
 This is the declared name of the inner function within its parent complete
 function; other Muldis D code within said complete function would reference
@@ -350,7 +378,7 @@ single expression tree, whose root node's name is the empty string.  This
 expression tree must reference all of the parameters that the inner
 function has.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the inner function as a whole.
 
@@ -369,7 +397,7 @@ A C<Cat.Func> has these 3 attributes:
 
 =over
 
-=item C<name> - C<Name>
+=item C<name> - C<Cat.Name>
 
 This is the declared name of the function; other Muldis D code would
 reference it with this name.
@@ -382,7 +410,7 @@ one or more inner functions, plus its public interface / parameter list,
 which is defined by one of those.  The inner function defining the outer
 function's main body has the empty string as its name.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the function as a whole.
 
@@ -435,7 +463,7 @@ Each element defines one argument value, with the element C<name> matching
 the parameter name, and the element C<expr> naming a local C<ExprNode>
 which defines the value.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the update statement as a
 whole.
@@ -457,7 +485,7 @@ A C<Cat.InnerUpdater> has these 7 attributes:
 
 =over
 
-=item C<name> - C<Name>
+=item C<name> - C<Cat.Name>
 
 This is the declared name of the inner update operator within its parent
 complete update operator; other Muldis D code within said complete update
@@ -493,7 +521,7 @@ This defines the entire body of the inner update operator, which is
 composed of a single multi-update statement.  This multi-update statement
 must reference all of the parameters that the inner update operator has.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the inner updater as a whole.
 
@@ -515,7 +543,7 @@ A C<Cat.Updater> has these 4 attributes:
 
 =over
 
-=item C<name> - C<Name>
+=item C<name> - C<Cat.Name>
 
 This is the declared name of the update operator; other Muldis D code would
 reference it with this name.
@@ -532,7 +560,7 @@ as its name.
 
 This also contributes to the body of the update operator.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the updater as a whole.
 
@@ -551,7 +579,7 @@ A C<Cat.ProcStmtArg> has these 6 attributes:
 
 =over
 
-=item C<name> - C<Name>
+=item C<name> - C<Cat.Name>
 
 This is the declared name of the invoked procedural routine's parameter
 (either subject-to-update or read-only) that this argument is binding to.
@@ -562,13 +590,13 @@ This is the declared kind of value that this argument is; it says how to
 interpret the rest of the attributes and/or which of them have significant
 values.
 
-=item C<param> - C<Name>
+=item C<param> - C<Cat.Name>
 
 Iff C<kind> is C<Cat.E_PSAK:upd_param> or C<Cat.E_PSAK:ro_param>, then the
 argument is the current value or value of the containing procedure's
 subject-to-update or read-only parameter, respectively.
 
-=item C<inner_var> - C<Name>
+=item C<inner_var> - C<Cat.Name>
 
 Iff C<kind> is C<Cat.E_PSAK:inner_var>, then the argument is the current
 value of a lexical variable that isn't a parameter.
@@ -578,7 +606,7 @@ value of a lexical variable that isn't a parameter.
 Iff C<kind> is C<Cat.E_PSAK:outer_var>, then the argument is the current
 value of a non-lexical variable.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the statement argument.
 
@@ -615,7 +643,7 @@ These are the 0..N read-only arguments to the routine invocation.  There is
 a distributed (unique) key over the C<name> attributes of C<upd_params> and
 C<ro_params>.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the statement as a whole.
 
@@ -636,7 +664,7 @@ A C<Cat.InnerProc> has these 7 attributes:
 
 =over
 
-=item C<name> - C<Name>
+=item C<name> - C<Cat.Name>
 
 This is the declared name of the inner procedure within its parent complete
 procedure; other Muldis D code within said complete procedure would
@@ -670,7 +698,7 @@ This defines the entire main body of the inner procedure, which is composed
 of 0..N procedure statements.  These statements must reference all of the
 parameters and lexical variables that the inner procedure has.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the inner procedure as a
 whole.
@@ -678,7 +706,7 @@ whole.
 =back
 
 The default value of C<Cat.InnerProc> has an empty name and is a no-op; its
-C<name> has the default value of C<Name>, it has zero parameters, zero
+C<name> has the default value of C<Cat.Name>, it has zero parameters, zero
 variables, and zero statements.
 
 =head2 sys.Core.Cat.Proc
@@ -691,7 +719,7 @@ A C<Cat.Proc> has these 5 attributes:
 
 =over
 
-=item C<name> - C<Name>
+=item C<name> - C<Cat.Name>
 
 This is the declared name of the procedure; other Muldis D code would
 reference it with this name.
@@ -712,7 +740,7 @@ This also contributes to the body of the procedure.
 
 This also contributes to the body of the procedure.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the procedure as a whole.
 
@@ -728,7 +756,7 @@ the foundation for most componentized type definitions, including all tuple
 and relation types (for which it is named I<heading>), and it is used also
 for the components list of a scalar possrep.  It is also used to define
 parameter lists for routines.  A C<Cat.NameTypeMap> has 2 attributes,
-C<name> (a C<Name>) and C<type> (a C<Cat.NameChain>); the C<name> is
+C<name> (a C<Cat.Name>) and C<type> (a C<Cat.NameChain>); the C<name> is
 the declared name of the attribute or parameter, and comprises a unary key;
 the C<type> is the declared data type of the attribute or parameter.  Its
 default value has zero tuples.
@@ -740,7 +768,7 @@ list, meaning a set of names, with a declared local expression node name
 for each.  It is used to define collection literals; one C<Cat.NameExprMap>
 defines a whole C<Tuple> value.  It is also used to define argument lists
 for routine invocations.  A C<Cat.NameExprMap> has 2 attributes, C<name>
-and C<expr>, each of those being a C<Name>; the C<name> is the name of
+and C<expr>, each of those being a C<Cat.Name>; the C<name> is the name of
 the tuple/etc attribute or routine argument, and comprises a unary key; the
 C<expr> is the declared local name of the expression node which defines the
 value for the attribute or argument.  Its default value has zero tuples.
@@ -749,7 +777,7 @@ value for the attribute or argument.  Its default value has zero tuples.
 
 A C<Cat.AttrRenameMap> is a C<Relation>.  It is used as a specification for
 how to rename attributes of some collection.  A C<Cat.AttrRenameMap> has 2
-attributes, C<before> and C<after>, each of those being a C<Name>, and
+attributes, C<before> and C<after>, each of those being a C<Cat.Name>, and
 each of those being a unary key.  Its default value has zero tuples.
 
 =head2 sys.Core.Cat.ExprSet
@@ -838,7 +866,7 @@ is to C<Cat.InnerUpdater>.
 =head2 sys.Core.Cat.SetOfName
 
 A C<Cat.SetOfName> is a C<Set> whose C<value> attribute has a declared type
-of C<Name>.
+of C<Cat.Name>.
 
 =head2 sys.Core.Cat.SetOfNameExprMap
 
@@ -972,7 +1000,7 @@ the data type is defined as an explicit subtype of another type by way of
 an explicit further type constraint applied to it, and C<constraint>
 defines/names that further constraint.
 
-=item C<comment> - C<Comment>
+=item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the data type.
 
