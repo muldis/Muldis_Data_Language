@@ -113,8 +113,8 @@ you can read the aforementioned external documentation for much of that.
 
 Continue reading the language spec in L<Muldis::D::Basics>.
 
-Also look at the separately distributed L<Muldis::DB>, which is the first
-main implementation of Muldis D.
+Also look at the separately distributed L<Muldis::Rosetta>, which is the
+first main implementation of Muldis D.
 
 =head1 VERSIONING
 
@@ -330,9 +330,9 @@ for our official works.  You can always use either the C<MuldisX::>
 namespace for related unofficial works, or some other namespace that is
 completely different.  Also as per conventions, its fine to use C<Muldis>
 within a Perl package name where that word is nested under some other
-project-specific namespace (for example, C<Foo::Storage::Muldis_DB> or
-C<Bar::Interface::Muldis_DB>), and the package serves to interact with a
-Muldis Data Systems work or service.
+project-specific namespace (for example, C<Foo::Storage::Muldis_Rosetta> or
+C<Bar::Interface::Muldis_Rosetta>), and the package serves to interact with
+a Muldis Data Systems work or service.
 
 If you have made a language variant or extension based on the B<Muldis D>
 language, then please follow the naming conventions described in the
@@ -350,44 +350,43 @@ None yet.
 =head1 FORUMS
 
 Several public email-based forums exist whose main topic is all
-implementations of the L<Muldis D|Muldis::D> language, especially
-the L<Muldis DB|Muldis::DB> project, which they are named for.  All of
-these you can reach via L<http://mm.DarrenDuncan.net/mailman/listinfo>; go
-there to manage your subscriptions to, or view the archives of, the
-following:
+implementations of the L<Muldis D|Muldis::D> language, especially the
+L<Muldis Rosetta|Muldis::Rosetta> reference implementation.  All of these
+you can reach via L<http://mm.DarrenDuncan.net/mailman/listinfo>; go there
+to manage your subscriptions to, or view the archives of, the following:
 
 =over
 
 =item C<muldis-db-announce@mm.DarrenDuncan.net>
 
 This low-volume list is mainly for official announcements from the Muldis
-DB developers, though developers of Muldis DB extensions can also post
-their announcements here.  This is not a discussion list.
+Rosetta developers, though developers of Muldis Rosetta extensions can also
+post their announcements here.  This is not a discussion list.
 
 =item C<muldis-db-users@mm.DarrenDuncan.net>
 
-This list is for general discussion among people who are using Muldis DB,
-which is not concerned with the implementation of Muldis DB itself.  This
-is the best place to ask for basic help in getting Muldis DB installed on
-your machine or to make it do what you want.  You could also submit feature
-requests or report perceived bugs here, if you don't want to use CPAN's RT
-system.
+This list is for general discussion among people who are using Muldis
+Rosetta, which is not concerned with the implementation of Muldis Rosetta
+itself.  This is the best place to ask for basic help in getting Muldis
+Rosetta installed on your machine or to make it do what you want.  You
+could also submit feature requests or report perceived bugs here, if you
+don't want to use CPAN's RT system.
 
 =item C<muldis-db-devel@mm.DarrenDuncan.net>
 
 This list is for discussion among people who are designing or implementing
-the Muldis DB core API (including Muldis D language design), or who are
-implementing Muldis DB Engines, or who are writing core documentation,
-tests, or examples.  It is not the place for non-implementers to get help
-in using said.
+the Muldis Rosetta core API (including Muldis D language design), or who
+are implementing Muldis Rosetta Engines, or who are writing core
+documentation, tests, or examples.  It is not the place for
+non-implementers to get help in using said.
 
 =back
 
-An official IRC channel for Muldis DB is also intended, but not yet
-started.
+An official IRC channel for Muldis D and its implementations is also
+intended, but not yet started.
 
 Alternately, you can purchase more advanced commercial support for various
-Muldis D implementations, particularly Muldis DB, from its author by way of
-Muldis Data Systems; see (L<http://www.muldis.com/>) for details.
+Muldis D implementations, particularly Muldis Rosetta, from its author by
+way of Muldis Data Systems; see (L<http://www.muldis.com/>) for details.
 
 =cut
