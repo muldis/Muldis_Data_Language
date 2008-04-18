@@ -404,10 +404,12 @@ data processing operators, which is called the DBMS "catalog".  The catalog
 is a set of system-defined relvars (relation-typed variables) which reflect
 the definitions of DBMS entities; users can generally update these to
 create, alter, or drop DBMS entities.  In fact, updating the catalog
-relvars is the fundamental way to do data-definition tasks in Muldis D,
-and any other provisions for data-definition are conceptually abstractions
-of this.  Generally speaking, users can do absolutely everything in the
-DBMS with just data querying and updating operations.
+relvars is the fundamental way to do data-definition tasks in Muldis D, and
+any other provisions for data-definition are conceptually abstractions of
+this.  Generally speaking, users can do absolutely everything in the DBMS
+with just data querying and updating operations.  (Technically speaking,
+any global-scope relvars are actually pseudo-variables which reflect
+components of dbvars, the actual variables.)
 
 The design and various features of Muldis D go a long way to help both its
 users and implementers alike.  A lot of flexibility is afforded to
@@ -1629,7 +1631,9 @@ gives users a choice, Muldis D requires all depot entities to be in
 packages for simplicity; but making all package members public has the
 effect of negating package encapsulation.  All non-lexical data variables
 in a depot may only be relation typed, because relational databases are
-composed fundamentally of just relations.
+composed fundamentally of just relations.  (Technically speaking, all
+non-lexical relvars are actually pseudo-variables which reflect components
+of dbvars, the actual non-lexical variables.)
 
 When a DBMS starts up, it only contains one auto-started process, which is
 the root process; the root process is defined either by the non-hosted
@@ -1654,8 +1658,8 @@ client typically is autonomous from others, shared depot contention aside.
 All entities that exist at some given time within a DBMS environment can be
 explicitly referenced in some manner for definition and/or use; there are
 no orphans.  At the very least, every kind of DBMS entity is defined in one
-or more catalog relvars or relcons; its interface and/or implementation can
-be observed and possibly updated therein.
+or more catalog (pseudo-) relvars or relcons; its interface and/or
+implementation can be observed and possibly updated therein.
 
 All entity names are generally context specific, with each context
 generally being provided by a routine or other entity; all entity names are
@@ -1680,17 +1684,7 @@ compensate for any case-insensitive storage system they might use.>
 
 This is the hierarchy of invocation namespaces of DBMS entities:
 
-    cat  # system catalog desc everything; all but .system|impl updateable
-        cat.system
-        cat.impl
-        cat.native
-            cat.native.fed
-            cat.native.dep
-            cat.native.sdp
-            cat.native.pkg
-        cat.mount
-        cat.foreign
-        cat.interp
+    cat  # read-only sys cat db desc entities under cat|sys|imp|mnt, *.cat
     sys  # system-defined types and routines defined by standard Muldis D
         sys.Core
             sys.Core(.<namespace>){0,}
@@ -1705,46 +1699,59 @@ This is the hierarchy of invocation namespaces of DBMS entities:
             imp.<authority-or-impl-name>(.<namespace>){0,}
                 imp.<authority-or-impl-name>(.<namespace>){0,}.<type>
                 imp.<authority-or-impl-name>(.<namespace>){0,}.<routine>
+    mnt  # updateable system catalog controlling what depot mounts exist
     fed  # the transac-synced federation of curr mounted depots w mount nms
-        fed.<depot>
-            fed.<depot>(.<subdepot>){0,}
-                fed.<depot>(.<subdepot>){0,}.<package>
-                    fed.<depot>(.<subdepot>){0,}.<package>.<relvar>
-                    fed.<depot>(.<subdepot>){0,}.<package>.<type>
-                    fed.<depot>(.<subdepot>){0,}.<package>.<routine>
+        fed.cat  # updateable sys cat db desc entities under fed.(lib|data)
+        fed.lib  # invokable user-def types and routines in this federation
+            fed.lib.<depot>
+                fed.lib.<depot>(.<subdepot>){0,}
+                    fed.lib.<depot>(.<subdepot>){0,}.<package>
+                       fed.lib.<depot>(.<subdepot>){0,}.<package>.<type>
+                       fed.lib.<depot>(.<subdepot>){0,}.<package>.<routine>
+        fed.data  # updateable db of normal user data in this federation
     dep  # entities in a self-sufficient depot ref their own depot w this
-        dep(.<subdepot>){0,}
-            dep(.<subdepot>){0,}.<package>
-                dep(.<subdepot>){0,}.<package>.<relvar>
-                dep(.<subdepot>){0,}.<package>.<type>
-                dep(.<subdepot>){0,}.<package>.<routine>
+        dep.cat  # updateable sys cat db desc entities under dep.(lib|data)
+        dep.lib  # invokable user-def types and routines in this depot
+            dep.lib(.<subdepot>){0,}
+                dep.lib(.<subdepot>){0,}.<package>
+                    dep.lib(.<subdepot>){0,}.<package>.<type>
+                    dep.lib(.<subdepot>){0,}.<package>.<routine>
+        dep.data  # updateable db of normal user data in this depot
     sdp  # entities in a subdepot (public gen nsp) ref their own sdp w this
-        sdp.<package>
-            sdp.<package>.<relvar>
-            sdp.<package>.<type>
-            sdp.<package>.<routine>
+        sdp.cat  # updateable sys cat db desc entities under sdp.(lib|data)
+        sdp.lib  # invokable user-def types and routines in this subdepot
+            sdp.lib.<package>
+                sdp.lib.<package>.<type>
+                sdp.lib.<package>.<routine>
+        sdp.data  # updateable db of normal user data in this subdepot
     pkg  # entities in a package (priv nsp) ref their own package with this
-        pkg.<relvar>
-        pkg.<type>
-        pkg.<routine>
-    inn  # entities in a main|inner routine ref child|sib rtns with this
-        inn.<routine>
+        pkg.cat  # updateable sys cat db desc entities under pkg.(lib|data)
+        pkg.lib  # invokable user-def types and routines in this package
+            pkg.lib.<type>
+            pkg.lib.<routine>
+        pkg.data  # updateable db of normal user data in this package
+    inn  # entities in a main|inner tp|rtn ref child|sib tps|rtns with this
+        inn.<inner-type>
+        inn.<inner-routine>
     lex  # entities in a rtn ref own lexical params|exprs|vars with this
-        lex.param.<param>
-        lex.expr.<expr>
-        lex.var.<var>
+        lex.<param>
+        lex.<expr>
+        lex.<var>
 
 Further details of each namespace follow below.
 
 =head2 User Data Variables and System Catalog Variables
 
-All globally visible Muldis D variables can be grouped into two main kinds,
-which are system catalog variables (some of which are actually constants)
-and user data variables; the former all exist under the C<cat> primary
-namespace, and the latter live under some of the other primary namespaces,
-specifically C<fed|dep|sdp|pkg>.  All non-global variables are just of the
-user data variety, and use the C<pkg|lex> primary namespaces (yes, C<pkg>
-has both public and private variables).
+All globally visible Muldis D variables are database-typed and can be
+grouped into two main kinds, which are system catalog variables (one of
+which is actually constant) and user data variables.  The global system
+catalog variables exist partially as the C<cat|mnt> primary namespaces
+(C<cat> is constant), and partially as the C<(fed|dep|sdp|pkg).cat>
+secondary namespaces.  The global user data variables all live as the
+C<(fed|dep|sdp|pkg).data> secondary namespaces.  All non-global variables
+are just of the user data variety, can be of any types, and use the
+C<pkg|lex> primary namespaces (yes, C<pkg> has both public and private
+variables).
 
 The purpose of user data variables is hold user data, and are what gets
 read or updated by database users the vast majority of the time; working
@@ -1773,10 +1780,10 @@ the other variables are system catalog variables, then effectively so are
 the user defined virtual ones; this is the only way users can effectively
 define magical variables, which otherwise isn't possible.
 
-The C<cat> primary namespace of Muldis D can be considered analogous to the
-"information schema" of SQL, but that the latter is just read-only.
+The system catalog namespaces of Muldis D can be considered analogous to
+the "information schema" of SQL, but that the latter is just read-only.
 
-The secondary namespaces under C<cat> are described in other sections.
+The individual catalog namespaces are described in other sections.
 
 =head2 Standard System-Defined Entities
 
@@ -1793,9 +1800,7 @@ other secondary "extension" namespaces, with each secondary namespace
 conceptually representing a dynamically loadable plug-in library.  Finally,
 each of the C<Core> and any other extensions has at least a 1-level
 namespace, where types and routines are optionally grouped under common
-extra name spaces.  For system-defined entities, package names are simply a
-convenience, routines that work with particular types don't have to be
-grouped with said types' declarations.
+extra name spaces.
 
 The catalog namespace C<cat.system> is where all the relcons that describe,
 in a machine-readable way, all of the standard system-defined entities just
@@ -1849,7 +1854,7 @@ one of those at a time.  Under each depot name is an optional tree of
 generic namespaces, adding 0..N name parts, each of which we refer to
 simply as a I<subdepot>.  After that we have 1 layer that are package
 names.  After that, we have the lowest layer, which are globally
-addressable relvar, type, and routine unqualified names.  So the
+addressable pseudo-relvar, type, and routine unqualified names.  So the
 fullly-qualified names of most user-defined entities by way of C<fed> are
 4-5 parts.
 
