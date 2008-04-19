@@ -1940,6 +1940,29 @@ typically either be turned into actual expression trees or actual
 variables, or sometimes use native equivalents if the other language is
 pure functional.
 
+=head2 Terse Pseudo-Variable Syntax
+
+An important feature of DBMS entity names is that the components of
+variables' current values can be addressed directly as if they were normal
+variables, both for reading and for updating; and so this feature allows
+for attributes of tuple and possrep-having-scalar (but not relation) typed
+variables to be used as pseudo-variables, to the Nth degree of recursion,
+with very terse syntax.
+
+For example, if C<lex.foo> was the name of a tuple-typed variable, and that
+tuple type had an attribute named C<bar>, then C<lex.foo.bar> can be
+addressed as if it were a normal variable in the same vein as C<lex.foo>.
+As a (read-only) value expression, C<lex.foo.bar> would be short-hand for
+the result of invoking a tuple attribute extractor function on C<lex.foo>
+that extracts C<bar>.  When C<lex.foo.bar> is used as the target of a value
+assignment, say the value 42, that is a short-hand for selecting the tuple
+value that is equal to what C<lex.foo>'s value is except for its C<bar>
+attribute being 42, and assigning that tuple to C<lex.foo>.
+
+Note that in general, any value expression can denote a pseudo-variable,
+but only components of tuples or scalar possreps get the special short-hand
+where an extended entity name can be used as the full expression.
+
 =head1 SEE ALSO
 
 Go to L<Muldis::D> for the majority of distribution-internal
