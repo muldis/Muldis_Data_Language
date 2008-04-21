@@ -87,6 +87,22 @@ represent that a value is unknown or inapplicable, then the C<Nothing> node
 type is provided as one way you can explicitly say so.  I<This policy may
 be reconsidered.>
 
+=head1 BOOTLOADER
+
+A full or partial Muldis D C<bootloader> routine consists of a language
+name declaration plus a series of 0..N procedure calls (specifically
+procedures with no subject-to-update parameters).  A C<bootloader> is
+formatted as a PHMD node having 1..N elements, where the first element is
+a PHMD node defining a Muldis D "language name", and each remaining element
+is a PHMD node defining a "bootloader procedure call".
+
+Examples:
+
+    [
+        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl_Tiny', {} ],
+        [ 'boot_call', 'sys.Core.Cat.create_public_relvar', { ... } ],
+    ]
+
 =head1 LANGUAGE NAME
 
 As per the VERSIONING pod section of L<Muldis::D>, code written in
@@ -128,6 +144,35 @@ More specifically, a language name PHMD node like the above would generally
 be the input for a Perl Hosted Muldis D implementating virtual machine's
 configuration step, which provides a context for subsequent feeding of
 other PHMD trees to said virtual machine.
+
+=head1 BOOTLOADER PROCEDURE CALL
+
+This PHMD node specifies one statement of a Muldis D C<bootloader> routine
+which invokes a procedure, such statements being what the entire body of a
+C<bootloader> is composed of.  A bootloader procedure call is formatted as
+a PHMD node having the following 3 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<boot_call>.
+
+=item *
+
+Procedure name: a Perl C<Array|Seq|Str> as per the payload of a
+C<Cat.NameChain> PHMD node.
+
+=item *
+
+Procedure args: a Perl C<Hash|Mapping> as per the payload of a C<Tuple>
+PHMD node.
+
+=back
+
+Examples
+
+    [ 'boot_call', 'sys.Core.Cat.create_public_relvar', { ... } ]
 
 =head1 CORE GENERIC SCALAR VALUES
 
@@ -717,17 +762,18 @@ as follows:
 
 =item *
 
-If the payload is an C<Array|Seq>, then it must have at least 1 element,
+If the payload is an C<Array|Seq>, then it must have at least 2 elements,
 and every element must be a valid payload for a C<Cat.Name> PHMD node (that
-is, any Perl character string).  Each element of the payload, in
-order, defines an element of the sequence possrep of a C<Cat.NameChain>.
+is, any Perl character string).  Each element of the payload, in order,
+defines an element of the C<seq> possrep's attribute of a C<Cat.NameChain>.
 
 =item *
 
 If the payload is a C<Str>, then it must be formatted as a catenation
-(using period (C<.>) separators) of at least 1 part, where each part is
+(using period (C<.>) separators) of at least 2 parts, where each part is
 escaped such that backslashes, single-quotes, and periods are escaped as
-C<\b>, C<\q> and C<\p> respectively.
+C<\b>, C<\q> and C<\p> respectively; it defines the C<flat> possrep's
+attribute of a C<Cat.NameChain>.
 
 =back
 

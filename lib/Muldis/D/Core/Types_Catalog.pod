@@ -55,7 +55,6 @@ more or less:
 
             sys.Core.Type.Cat.Name
             sys.Core.Type.Cat.NameChain
-            sys.Core.Type.Cat.FlattenedNameChain
             sys.Core.Type.Cat.Comment
 
             # The following are all regular non-ordered scalar types.
@@ -112,7 +111,6 @@ more or less:
 
                 # The following are all regular sequence types.
 
-                sys.Core.Type.Cat.NESeqOfName
                 sys.Core.Type.Cat.SeqOfProcStmt
 
 These system-defined subtypes are used as the declared types of some
@@ -173,27 +171,37 @@ be used instead to also qualify the reference with a namespace.
 C<Cat.Name> is the same as C<Text> in representation (each value as a
 string of characters) and cardinality though its values are distinct; it is
 specifically intended for use in naming DBMS entities rather than being for
-general-purpose user data.
+general-purpose user data.  The default value et al is as for C<Text>.
 
 =head2 sys.Core.Type.Cat.NameChain
 
 A C<Cat.NameChain> (scalar) is a canonical long name for invoking or
 referring to a DBMS entity, when its name needs to be qualified with a
-namespace.  A C<Cat.NameChain> has 2 possreps; one possrep is a sequence of
-1..N C<Cat.Name> (represented by a C<Cat.NESeqOfName>), the 1..N elements
-being ordered from parent-most to child-most component name; the other
-possrep is a character string (represented by a C<Cat.FlattenedNameChain>)
-like when the elements of the first possrep are catenated (in order with
-the first element at the start of the string), with a period (C<.>) between
-the parts, and each part escaped such that backslashes, single-quotes, and
+namespace.  A C<Cat.NameChain> is conceptually a sequence of 2..N
+C<Cat.Name>, the 2..N elements being ordered from parent-most to child-most
+component name.  A C<Cat.NameChain> has 2 system-defined possreps, named
+C<seq> and C<flat>, both of which are defined over C<Cat.Name>.
+
+The C<seq> possrep directly matches the conception of the type; it consists
+of 1 attribute whose name is the empty string; the attribute is a C<Seq>
+whose C<value> attribute has a declared type of C<Cat.Name> and that must
+have at least 2 elements.
+
+The C<flat> possrep consists of 1 attribute whose name is the empty string;
+the attribute is a C<Cat.Name>, its value being identical to when the
+elements of the first possrep are catenated (in order with the first
+element at the start of the string), with a period (C<.>) between the
+parts, and each part escaped such that backslashes, single-quotes, and
 periods are escaped as C<\b>, C<\q> and C<\p> respectively.
 
-=head2 sys.Core.Type.Cat.FlattenedNameChain
-
-The C<Cat.FlattenedNameChain> (scalar) type is used as the definition of
-the character string possrep of a C<Cat.NameChain> (see that type for
-details); while being a character string like C<Cat.Name>, the two are
-disjoint.
+The default and minimum value of C<Cat.NameChain> is a 2 element sequence
+where each element is the default value of C<Cat.Name> (the empty string);
+its maximum value is an infinite sequence where each element is the maximum
+value of C<Cat.Name> (an infinite-length string) and practically
+impossible.  The cardinality of this type is infinity; to define a
+most-generalized finite C<Cat.NameChain> subtype, you must specify a
+maximum number of sequence elements of its values, and each element must be
+of a finite C<Cat.Name> subtype.
 
 =head2 sys.Core.Type.Cat.Comment
 
@@ -204,7 +212,8 @@ is exactly the same as C<Cat.Name> in representation and cardinality though
 its values are distinct; it is intended just for commenting Muldis D code.
 One main intended use of this type is to help preserve comments in code
 translated to or from other languages; though only a subset of those
-(FoxPro?) keep comments in the AST rather than discarding them.
+(FoxPro?) keep comments in the AST rather than discarding them.  The
+default value et al is as for C<Cat.Name>.
 
 =head2 sys.Core.Type.Cat.E_TK
 
@@ -1007,13 +1016,6 @@ declared type of C<Cat.NameExprMap>.
 
 A C<Cat.SetOfNameChain> is a C<Set> whose C<value> attribute has a declared
 type of C<Cat.NameChain>.
-
-=head2 sys.Core.Type.Cat.NESeqOfName
-
-A C<Cat.NESeqOfName> is a C<Seq> whose C<value> attribute has a declared
-type of C<Cat.Name> and that must have at least 1 element; this type is
-used as the definition of the sequence possrep of a C<Cat.NameChain> (see
-that type for details).
 
 =head2 sys.Core.Type.Cat.SeqOfProcStmt
 

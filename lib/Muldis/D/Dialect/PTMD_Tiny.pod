@@ -84,9 +84,9 @@ execution.  Any remaining errors should be corrected as soon as possible.
     # grammar Muldis_D_PTMD_Tiny:auth<http://muldis.com>:ver<0.17.0>;
     grammar Muldis_D_PTMD_Tiny-0.17.0-http://muldis.com;
 
-    token start {
+    token bootloader {
         (<language_name>)
-        (<procedure_call>*)
+        (<bootloader_procedure_call>*)
     }
 
     token language_name {
@@ -110,8 +110,8 @@ execution.  Any remaining errors should be corrected as soon as possible.
 
     token ln_extensions { <tuple_body> }
 
-    token procedure_call {
-        (Call)
+    token bootloader_procedure_call {
+        (boot_call)
         <spec_sep>
         <procedure_name>
         <spec_sep>
@@ -291,23 +291,23 @@ execution.  Any remaining errors should be corrected as soon as possible.
     }
 
     token cat_name_chain_body {
-          nc_sequence
-        | nc_flattened
+          nc_seq
+        | nc_flat
     }
 
-    token nc_sequence {
-        ((<cat_name>) (<nc_elem_sep> <cat_name>)*)
+    token nc_seq {
+        ((<cat_name>) (<nc_elem_sep> (<cat_name>))+)
     }
 
-    token nc_flattened {
+    token nc_flat {
         <text_delim>
-            (<nc_char>*)
+            ((<nc_char>*) (<nc_elem_sep> (<nc_char>*))+)
         <text_delim>
     }
 
     token nc_elem_sep { '.' }
 
-    token nc_char { ['\b'|'\q'|'\p'|<-[\\\']>] }
+    token nc_char { ['\b'|'\q'|'\p'|<-[\\\'\.]>] }
 
     token cat_comment {
         (Cat.Comment)
@@ -393,9 +393,9 @@ execution.  Any remaining errors should be corrected as soon as possible.
 
 The following are fragments of actual Plain Text Muldis D code.
 
-    Muldis_D:'http://muldis.com':'1.2.3':'PTMD_Tiny':{}
+    Muldis_D:'http://muldis.com':'1.2.3':'PTMD_Tiny':{};
 
-    Call:'sys.Core.Cat.create_public_relvar':{ ... }
+    boot_call:'sys.Core.Cat.create_public_relvar':{ ... };
 
     Bool:true
 
