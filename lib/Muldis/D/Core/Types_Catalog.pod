@@ -125,7 +125,7 @@ be used for user data:
                 sys.Core.Type.QuasiCat.QuasiSetOfTuple
                 sys.Core.Type.QuasiCat.QuasiSetOfRelation
 
-=head1 SYSTEM-DEFINED CORE CATALOG SCALAR DATA TYPES
+=head1 ENTITY NAME AND COMMENT DEFINING TYPES
 
 =head2 sys.Core.Type.Cat.Name
 
@@ -181,6 +181,314 @@ One main intended use of this type is to help preserve comments in code
 translated to or from other languages; though only a subset of those
 (FoxPro?) keep comments in the AST rather than discarding them.  The
 default value et al is as for C<Cat.Name>.
+
+=head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
+
+=head2 sys.Core.Type.Cat.System
+
+A C<Cat.System> is a C<Tuple>.  It specifies the public interfaces of
+system-defined entities, specifically all the system-defined types,
+routines, and catalogs.  Both standard system-defined entities and
+implementation-specific system-defined entities are specified here,
+specifically all the relcons and relvars with the names C<cat|sys|imp|mnt>
+and C<(fed|dep|sdp|pkg).cat>.  The system catalog constant named C<cat> is
+of the C<Cat.System> type.
+
+A C<Cat.System> has these N attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the collection of
+system-defined entities as a whole.
+
+=item C<namespaces> - C<Cat.SysNspSet>
+
+These are all the system-defined namespaces where DBMS entities may live.
+
+=item C<functions> - C<Cat.SysFuncSet>
+
+These are the interfaces of all the system-defined functions.
+
+=item C<updaters> - C<Cat.SysUpdSet>
+
+These are the interfaces of all the system-defined updaters.
+
+=item C<procedures> - C<Cat.SysProcSet>
+
+These are the interfaces of all the system-defined procedures.
+
+=item C<types> - C<Cat.SysTypeSet>
+
+These are the interfaces of all the system-defined types.
+
+=item C<catalogs> - C<Cat.SysCatSet>
+
+These are the interfaces of all the catalog relcons, relvars.
+
+=back
+
+The default value of C<Cat.System> defines a system with zero builtins.
+
+=head2 sys.Core.Type.Cat.SysNspSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.SysFuncSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.SysUpdSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.SysProcSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.SysTypeSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.SysCatSet
+
+I<TODO.>
+
+=head1 MOUNT CONTROL DEFINING TYPES
+
+=head2 sys.Core.Type.Cat.MountControlCat
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.MountControlSet
+
+I<TODO.>
+
+=head1 FEDERATION DEFINING TYPES
+
+=head2 sys.Core.Type.Cat.Federation
+
+A C<Cat.Federation> is a C<Tuple>.  It specifies a federation of depot
+mounts, that is, all the depot mounts that an in-DBMS process can see or
+update, and that defines the scope of an active transaction.  There is
+exactly one of these per process and it doesn't have a name.  The system
+catalog variable named C<fed.cat> is of the C<Cat.Federation> type.
+
+A C<Cat.Federation> has these 2 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the federation as a whole.
+
+=item C<mounts> - C<Cat.DepotMountSet>
+
+These are the depot mounts that comprise the federation.
+
+=back
+
+The default value of C<Cat.Federation> has zero depot mounts.
+
+=head2 sys.Core.Type.Cat.DepotMountSet
+
+A C<Cat.DepotMountSet> is a C<Relation> that specifies a set of depot
+mounts, such that each tuple is a single depot mount.  A depot mount is a
+named in-DBMS context by which a depot is referenced from either other
+depots or by the main application, and it also specifies the catalog
+content of the depot itself.
+
+A C<Cat.DepotMountSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the depot mount; other Muldis D code would
+reference it with this name.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about this specific mount of the
+depot.
+
+=item C<depot> - C<Cat.Depot>
+
+This defines the entire system catalog of the depot that this mount has
+made visible to the DBMS.
+
+=back
+
+A C<Cat.DepotMountSet> has a unary (unique) key on the C<name> attribute.
+Its default value is empty.
+
+=head1 DEPOT AND SUBDEPOT DEFINING TYPES
+
+=head2 sys.Core.Type.Cat.Depot
+
+A C<Cat.Depot> is a C<Tuple>.  It specifies the entire system catalog of a
+single depot, that is, the widest scope within which all entities must be
+fully defined in terms of just user-defined entities within the same scope
+or of system-defined entities.  It also doubles to specify the system
+catalog of a subdepot, which is an arbitrary subset of a depot's entities
+that internally looks like a depot; a depot can have 0..N subdepots, and
+any that exist are arranged in a hierarchy with the depot as the root.  The
+system catalog variables named C<dep.cat> and C<sdp.cat> are both of the
+C<Cat.Depot> type.
+
+A C<Cat.Depot> has these N attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the (|sub)depot as a whole.
+
+=item C<subdepots> - C<Cat.SubdepotSet>
+
+These are all the subdepots that this (|sub)depot contains.
+
+=item C<packages> - C<Cat.PackageSet>
+
+These are all the packages that this (|sub)depot contains.
+
+=item C<functions> - C<Cat.DepFuncSet>
+
+These are all the function definitions that this (|sub)depot contains.
+
+=item C<updaters> - C<Cat.DepUpdSet>
+
+These are all the updater definitions that this (|sub)depot contains.
+
+=item C<procedures> - C<Cat.DepProcSet>
+
+These are all the procedure definitions that this (|sub)depot contains.
+
+=item C<types> - C<Cat.DepTypeSet>
+
+These are all the type definitions that this (|sub)depot contains.
+TODO: possibly split into scalar|tuple|relation|etc
+
+=item C<vars> - TODO: all public variables or pseudo-variables or something
+
+=item C<data> - TODO: the single main/root database variable
+
+=back
+
+The default value of C<Cat.Depot> defines an empty (|sub)depot.
+
+=head2 sys.Core.Type.Cat.SubdepotSet
+
+A C<Cat.SubdepotSet> is a C<Relation> that specifies the set of subdepots
+that a depot might optionally have for organizing its public entities;
+these subdepots are organized into a tree whose root is the depot.
+
+A C<Cat.SubdepotSet> has these 3 attributes:
+
+=over
+
+=item C<parent> - C<Cat.NameChain>
+
+This is the fully-qualified name, in the C<dep> namespace, of the
+subdepot's parent subdepot, which is often just the depot itself.
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the subdepot within the namespace defined by
+C<parent>; other Muldis D code would reference it with the combination of
+C<parent> and C<name>.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about this specific subdepot.
+
+=back
+
+A C<Cat.SubdepotSet> has a binary (unique) key on the C<parent> plus
+C<name> attributes.  Its default value is empty.
+
+=head2 sys.Core.Type.Cat.PackageSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.DepFuncSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.DepUpdSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.DepProcSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.DepTypeSet
+
+I<TODO.>
+
+=head1 PACKAGE DEFINING TYPES
+
+=head2 sys.Core.Type.Cat.Package
+
+A C<Cat.Package> is a C<Tuple>.  It specifies the entire system catalog of
+a single package, which provides a privatizing namespace for a subset of a
+depot's entities; entities outside a package can only invoke that package's
+entities which have been declared part of its public interface.  A package
+internally looks like a depot but that it doesn't contain subdepots or
+other packages.  The system catalog variable named C<pkg.cat> is of the
+C<Cat.Package> type.
+
+A C<Cat.Package> has these N attributes:
+
+=over
+
+TODO
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the package as a whole.
+
+=item C<functions> - C<Cat.PkgFuncSet>
+
+These are all the function definitions that this package contains.
+
+=item C<updaters> - C<Cat.PkgUpdSet>
+
+These are all the updater definitions that this package contains.
+
+=item C<procedures> - C<Cat.PkgProcSet>
+
+These are all the procedure definitions that this package contains.
+
+=item C<types> - C<Cat.PkgTypeSet>
+
+These are all the type definitions that this package contains.
+
+=item C<vars> - TODO: all public variables or pseudo-variables or something
+
+=item C<data> - TODO: the single main/root database variable
+
+=back
+
+The default value of C<Cat.Package> defines an empty package.
+
+=head2 sys.Core.Type.Cat.PkgFuncSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.PkgUpdSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.PkgProcSet
+
+I<TODO.>
+
+=head2 sys.Core.Type.Cat.PkgTypeSet
+
+I<TODO.>
 
 =head1 SYSTEM-DEFINED CORE QUASI-CATALOG PARAMETERIZED TYPES
 
