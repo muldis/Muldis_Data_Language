@@ -126,7 +126,8 @@ execution.  Any remaining errors should be corrected as soon as possible.
     token statement_end { ';' \s* }
 
     token literal {
-          <bool>
+          <scalar_or_qv>
+        | <bool>
         | <int>
         | <blob>
         | <text>
@@ -142,6 +143,22 @@ execution.  Any remaining errors should be corrected as soon as possible.
         | <rat>
         | <cat_e_rm>
     }
+
+    token scalar_or_qv {
+        ((Quasi)? Scalar)
+        <spec_sep>
+        <scalar_type_name>
+        <spec_sep>
+        <possrep_name>
+        <spec_sep>
+        <possrep_attrs>
+    }
+
+    token scalar_type_name { <cat_name_chain_body> }
+
+    token possrep_name { <cat_name> }
+
+    token possrep_attrs { <tuple_body> }
 
     token bool { (Bool) <spec_sep> (false|true) }
 
@@ -396,6 +413,20 @@ The following are fragments of actual Plain Text Muldis D code.
     Muldis_D:'http://muldis.com':'1.2.3':'PTMD_Tiny':{};
 
     boot_call:'sys.Core.Cat.create_public_relvar':{ ... };
+
+    Scalar:'sys.Rational.Type.Rat':'float':{
+        'mantissa' => Int:9:45207196,
+        'radix'    => Int:9:10,
+        'exponent' => Int:9:37,
+    }
+
+    Scalar:'fed.the_db.WeekDay':'name':{
+        '' => Text:'monday',
+    }
+
+    Scalar:'fed.the_db.WeekDay':'number':{
+        '' => Int:9:5,
+    }
 
     Bool:true
 

@@ -176,6 +176,62 @@ Examples
 
 =head1 CORE GENERIC SCALAR VALUES
 
+=head2 sys.Core.Type.Scalar
+
+This node type represents a scalar subtype value.  It has 4 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<Scalar>.
+
+=item *
+
+Scalar type name: a Perl C<Array|Seq|Str> as per the payload of a
+C<Cat.NameChain> PHMD node.
+
+=item *
+
+Possrep name: a Perl C<Str> as per a C<Cat.Name> PHMD node.
+
+=item *
+
+The payload: a Perl C<Hash|Mapping> as per the payload of a C<Tuple>
+PHMD node.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.Core.Type.Scalar> subtype
+value whose declared type is specified by the scalar type name (second node
+element) and whose attributes are defined by the payload.  The C<Scalar>
+PHMD node type can only be used for scalar types that have at least 1
+possrep, and the payload is interpreted specifically as attributes of the
+declared type's possrep which is specified by the possrep name (third node
+element).  Each key+value pair of the payload defines a named possrep
+attribute of the new scalar; the pair's key and value are, respectively, a
+Perl C<Str> that specifies the possrep attribute name, and a PHMD node that
+specifies the possrep attribute value.  (Note that most scalar types have
+at least 1 possrep; the only ones that don't are either union types of
+types having possreps, or they are core system-defined types, and those all
+have their own dedicated syntax for literals.)
+
+Examples:
+
+    [ 'Scalar', 'sys.Rational.Type.Rat', 'float', {
+        'mantissa' => [ 'Int', 'perl_int', 45207196 ],
+        'radix'    => [ 'Int', 'perl_int', 10 ],
+        'exponent' => [ 'Int', 'perl_int', 37 ],
+    } ]
+
+    [ 'Scalar', 'fed.the_db.WeekDay', 'name', {
+        '' => [ 'Text', 'monday' ],
+    } ]
+
+    [ 'Scalar', 'fed.the_db.WeekDay', 'number', {
+        '' => [ 'Int', 'perl_int', 5 ],
+    } ]
+
 =head2 sys.Core.Type.Bool
 
 This node type represents a logical boolean value.  It has 3 elements:
@@ -697,19 +753,19 @@ Examples:
         [ 'Text', 'Baz' ],
     ] ]
 
-=head1 QUASI-NONSCALAR VALUES
+=head1 QUASI- VALUES
 
-Every PHMD node type for a nonscalar literal has a corresponding extra PHMD
-node type for a quasi-nonscalar literal.  The corresponding extra quasi-
-node types are exactly the same in format to the non-quasi types but that
-for each one of them, the value of its first element has the Perl C<Str>
-value C<Quasi> prepended.  So PHMD nodes whose first elements each are
-[C<QuasiTuple>, C<QuasiRelation>, C<QuasiSet>, C<QuasiNothing>,
-C<QuasiSingle>, C<QuasiSeq>, C<QuasiBag>] are interpreted as Muldis D
-[C<sys.Core.Type.QuasiTuple>, C<sys.Core.Type.QuasiRelation>,
-C<sys.Core.Type.QuasiSet>, C<sys.Core.Type.QuasiNothing>,
-C<sys.Core.Type.QuasiSingle>, C<sys.Core.Type.QuasiSeq>,
-C<sys.Core.Type.QuasiBag>] values, respectively.
+Every PHMD node type for a generic scalar or nonscalar literal has a
+corresponding extra PHMD node type for a quasi- literal.  The corresponding
+extra quasi- node types are exactly the same in format to the non-quasi
+types but that for each one of them, the value of its first element has the
+Perl C<Str> value C<Quasi> prepended.  So PHMD nodes whose first elements
+each are [C<QuasiScalar>, C<QuasiTuple>, C<QuasiRelation>, C<QuasiSet>,
+C<QuasiNothing>, C<QuasiSingle>, C<QuasiSeq>, C<QuasiBag>] are interpreted
+as Muldis D [C<sys.Core.Type.QuasiScalar>, C<sys.Core.Type.QuasiTuple>,
+C<sys.Core.Type.QuasiRelation>, C<sys.Core.Type.QuasiSet>,
+C<sys.Core.Type.QuasiNothing>, C<sys.Core.Type.QuasiSingle>,
+C<sys.Core.Type.QuasiSeq>, C<sys.Core.Type.QuasiBag>] values, respectively.
 
 =head1 CATALOG SCALAR VALUES
 
@@ -1077,7 +1133,7 @@ Examples:
 
     [ 'Rat', 'any_perl_float', [ ' 656573456 ', ' 8 ', ' 243323 ' ] ]
 
-=head2 sys.Rational.Cat.E_RM
+=head2 sys.Rational.Type.E_RM
 
 This node type represents a rounding method.  It has 2 elements:
 
@@ -1093,7 +1149,7 @@ The payload.
 
 =back
 
-This node is interpreted as a Muldis D C<sys.Rational.Cat.E_RM> value by
+This node is interpreted as a Muldis D C<sys.Rational.Type.E_RM> value by
 directly mapping the payload.  The payload must be a Perl C<Str> having one
 of the 7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
 C<to_ceiling>, C<to_zero>, C<to_inf>.
