@@ -55,6 +55,7 @@ more or less:
 
             sys.Core.Type.Cat.Name
             sys.Core.Type.Cat.NameChain
+            sys.Core.Type.Cat.DeclNameChain
             sys.Core.Type.Cat.Comment
 
             # The following are all regular non-ordered scalar types.
@@ -170,6 +171,18 @@ most-generalized finite C<Cat.NameChain> subtype, you must specify a
 maximum number of sequence elements of its values, and each element must be
 of a finite C<Cat.Name> subtype.
 
+=head2 sys.Core.Type.Cat.DeclNameChain
+
+A C<Cat.DeclNameChain> (scalar) is mostly the same as a C<Cat.NameChain>
+but that it is a sequence of 0..N rather than 2..N, and that its C<flat>
+possrep has N+1 periods rather than N-1; the possrep starts with a period,
+and also has a period just following each sequence element, and so an empty
+sequence means a C<flat> possrep consisting of just a period.  A
+C<Cat.DeclNameChain> is used in declaring system catalogs where DBMS
+entities live under a potentially N-depth namespace, such as depot entities
+grouped in a subdepot hierarchy.  The default and minimum value of
+C<Cat.DeclNameChain> is a zero element sequence.
+
 =head2 sys.Core.Type.Cat.Comment
 
 A C<Cat.Comment> (scalar) is the text of a Muldis D code comment, which
@@ -244,10 +257,9 @@ A C<Cat.SysNspSet> has these 3 attributes:
 
 =over
 
-=item C<parent> - C<Cat.NameChain>
+=item C<parent> - I<TODO.>
 
-This is the fully-qualified name, in the C<sys> namespace, of the system
-namespace's parent system namespace.
+I<TODO.>
 
 =item C<name> - C<Cat.Name>
 
@@ -420,10 +432,10 @@ A C<Cat.SubdepotSet> has these 3 attributes:
 
 =over
 
-=item C<parent> - C<Cat.NameChain>
+=item C<parent> - C<Cat.DeclNameChain>
 
-This is the fully-qualified name, in the C<dep> namespace, of the
-subdepot's parent subdepot, which is often just the depot itself.
+This is the fully-qualified name, in the C<dep.(cat|lib|data)> namespace,
+of the subdepot's parent subdepot, which is often just the depot itself.
 
 =item C<name> - C<Cat.Name>
 
@@ -450,10 +462,10 @@ A C<Cat.PackageSet> has these 4 attributes:
 
 =over
 
-=item C<parent> - C<Cat.NameChain>
+=item C<parent> - C<Cat.DeclNameChain>
 
-This is the fully-qualified name, in the C<dep> namespace, of the
-packages's parent (|sub)depot.
+This is the fully-qualified name, in the C<dep.(cat|lib|data)> namespace,
+of the packages's parent (|sub)depot.
 
 =item C<name> - C<Cat.Name>
 

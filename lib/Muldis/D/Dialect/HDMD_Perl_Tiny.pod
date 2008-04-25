@@ -224,11 +224,11 @@ Examples:
         'exponent' => [ 'Int', 'perl_int', 37 ],
     } ]
 
-    [ 'Scalar', 'fed.the_db.WeekDay', 'name', {
+    [ 'Scalar', 'fed.lib.the_db.WeekDay', 'name', {
         '' => [ 'Text', 'monday' ],
     } ]
 
-    [ 'Scalar', 'fed.the_db.WeekDay', 'number', {
+    [ 'Scalar', 'fed.lib.the_db.WeekDay', 'number', {
         '' => [ 'Int', 'perl_int', 5 ],
     } ]
 
@@ -795,7 +795,7 @@ Examples:
 
 =head2 sys.Core.Type.Cat.NameChain
 
-This node type represents a canonical long name for invoking some a DBMS
+This node type represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short
 names.  It has 2 elements:
 
@@ -835,9 +835,56 @@ attribute of a C<Cat.NameChain>.
 
 Examples:
 
-    [ 'Cat.NameChain', ['fed','the_db','gene','sorted_person_name'] ]
+    [ 'Cat.NameChain',
+        ['fed','data','the_db','gene','sorted_person_name'] ]
 
-    [ 'Cat.NameChain', 'fed.the_db.stats.samples_by_order' ]
+    [ 'Cat.NameChain', 'fed.data.the_db.stats.samples_by_order' ]
+
+=head2 sys.Core.Type.Cat.DeclNameChain
+
+This node type represents a canonical long name for declaring a DBMS entity
+in N-depth contexts; it is conceptually a sequence of entity short names.
+It has 2 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<Cat.DeclNameChain>.
+
+=item *
+
+The payload; a Perl C<Array|Seq> value or C<Str> (char-mode scalar) value.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.Core.Type.Cat.DeclNameChain>
+value as follows:
+
+=over
+
+=item *
+
+If the payload is an C<Array|Seq>, then every element must be a valid
+payload for a C<Cat.Name> PHMD node (that is, any Perl character string).
+Each element of the payload, in order, defines an element of the C<seq>
+possrep's attribute of a C<Cat.DeclNameChain>.
+
+=item *
+
+If the payload is a C<Str>, then it must be formatted as a catenation of
+0..N parts (starting with a period (C<.>) and each part ending with a
+period), where each part is escaped such that backslashes, single-quotes,
+and periods are escaped as C<\b>, C<\q> and C<\p> respectively; it defines
+the C<flat> possrep's attribute of a C<Cat.DeclNameChain>.
+
+=back
+
+Examples:
+
+    [ 'Cat.DeclNameChain', ['gene','sorted_person_name'] ]
+
+    [ 'Cat.DeclNameChain', '.stats.samples_by_order.' ]
 
 =head2 sys.Core.Type.Cat.Comment
 
