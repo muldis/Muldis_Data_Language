@@ -211,8 +211,8 @@ following a change of who is the official maintainer.
 
 Releasing a delta document for a version of this current multi-document
 where the referenced original is released by someone else, and where the
-delta either makes incompatible changes or adds DBMS entities in the C<sys>
-top-level namespace (as opposed to in C<imp>).
+delta either makes incompatible changes or adds DBMS entities in the
+C<sys.std> top-level namespace (as opposed to in C<sys.imp>).
 
 =back
 

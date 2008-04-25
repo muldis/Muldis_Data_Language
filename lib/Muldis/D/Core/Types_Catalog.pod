@@ -190,9 +190,9 @@ A C<Cat.System> is a C<Tuple>.  It specifies the public interfaces of
 system-defined entities, specifically all the system-defined types,
 routines, and catalogs.  Both standard system-defined entities and
 implementation-specific system-defined entities are specified here,
-specifically all the relcons and relvars with the names C<cat|sys|imp|mnt>
-and C<(fed|dep|sdp|pkg).cat>.  The system catalog constant named C<cat> is
-of the C<Cat.System> type.
+specifically all the relcons and relvars with the names
+C<(sys|mnt|fed|dep|sdp|pkg).cat>.  The system catalog constant named
+C<sys.cat> is of the C<Cat.System> type.
 
 A C<Cat.System> has these N attributes:
 
@@ -233,7 +233,37 @@ The default value of C<Cat.System> defines a system with zero builtins.
 
 =head2 sys.Core.Type.Cat.SysNspSet
 
-I<TODO.>
+A C<Cat.SysNspSet> is a C<Relation> that specifies the set of system
+namespaces that exist for organizing DBMS public entities, mostly the
+system-defined ones; these system namespaces are organized into a tree
+whose root has no name.  A C<Cat.SysNspSet> only specifies that a system
+namespace exists, not which public entities it contains; see the
+C<Cat.System> which contains it for that.
+
+A C<Cat.SysNspSet> has these 3 attributes:
+
+=over
+
+=item C<parent> - C<Cat.NameChain>
+
+This is the fully-qualified name, in the C<sys> namespace, of the system
+namespace's parent system namespace.
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the system namespace within the namespace
+defined by C<parent>; other Muldis D code would reference it with the
+combination of C<parent> and C<name>.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about this specific system
+namespace.
+
+=back
+
+A C<Cat.SysNspSet> has a binary (unique) key on the C<parent> plus
+C<name> attributes.  Its default value is empty.
 
 =head2 sys.Core.Type.Cat.SysFuncSet
 
@@ -382,7 +412,9 @@ The default value of C<Cat.Depot> defines an empty (|sub)depot.
 
 A C<Cat.SubdepotSet> is a C<Relation> that specifies the set of subdepots
 that a depot might optionally have for organizing its public entities;
-these subdepots are organized into a tree whose root is the depot.
+these subdepots are organized into a tree whose root is the depot.  A
+C<Cat.SubdepotSet> only specifies that a subdepot exists, not which depot
+entities it contains; see the C<Cat.Depot> which contains it for that.
 
 A C<Cat.SubdepotSet> has these 3 attributes:
 
@@ -410,7 +442,38 @@ C<name> attributes.  Its default value is empty.
 
 =head2 sys.Core.Type.Cat.PackageSet
 
-I<TODO.>
+A C<Cat.PackageSet> is a C<Relation> that specifies the set of packages
+that a depot might optionally have for organizing its possibly private
+entities.
+
+A C<Cat.PackageSet> has these 4 attributes:
+
+=over
+
+=item C<parent> - C<Cat.NameChain>
+
+This is the fully-qualified name, in the C<dep> namespace, of the
+packages's parent (|sub)depot.
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the package within the namespace defined by
+C<parent>; other Muldis D code would reference it with the combination of
+C<parent> and C<name>.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the package definition as
+associated with this package name.
+
+=item C<package> - C<Cat.Depot>
+
+This defines the entire system catalog of the package.
+
+=back
+
+A C<Cat.PackageSet> has a binary (unique) key on the C<parent> plus
+C<name> attributes.  Its default value is empty.
 
 =head2 sys.Core.Type.Cat.DepFuncSet
 

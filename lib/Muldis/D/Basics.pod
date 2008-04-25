@@ -1731,22 +1731,25 @@ compensate for any case-insensitive storage system they might use.>
 
 This is the hierarchy of invocation namespaces of DBMS entities:
 
-    cat  # read-only sys cat db desc entities under cat|sys|imp|mnt, *.cat
-    sys  # system-defined types and routines defined by standard Muldis D
-        sys.Core
-            sys.Core(.<sys-nsp>){0,}
-                sys.Core(.<sys-nsp>){0,}.<type>
-                sys.Core(.<sys-nsp>){0,}.<routine>
-        sys.<extension>
-            sys.<extension>(.<sys-nsp>){0,}
-                sys.<extension>(.<sys-nsp>){0,}.<type>
-                sys.<extension>(.<sys-nsp>){0,}.<routine>
-    imp  # sys-def types and routines added by, specific to implementations
-        imp.<authority-or-impl-name>
-            imp.<authority-or-impl-name>(.<sys-nsp>){0,}
-                imp.<authority-or-impl-name>(.<sys-nsp>){0,}.<type>
-                imp.<authority-or-impl-name>(.<sys-nsp>){0,}.<routine>
-    mnt  # updateable system catalog controlling what depot mounts exist
+    sys  # system-defined builtin types, routines, and catalogs
+        sys.cat  # read-only sys cat db desc entities under sys|mnt, *.cat
+        sys.std  # sys-def types and routines defined by standard Muldis D
+            sys.std.Core
+                sys.std.Core(.<sys-nsp>){0,}
+                    sys.std.Core(.<sys-nsp>){0,}.<type>
+                    sys.std.Core(.<sys-nsp>){0,}.<routine>
+            sys.std.<extension>
+                sys.std.<extension>(.<sys-nsp>){0,}
+                    sys.std.<extension>(.<sys-nsp>){0,}.<type>
+                    sys.std.<extension>(.<sys-nsp>){0,}.<routine>
+        sys.imp  # sys-def types, rtns added by, specif to implementations
+            sys.imp.<auth-or-impl-name>
+                sys.imp.<auth-or-impl-name>(.<sys-nsp>){0,}
+                    sys.imp.<auth-or-impl-name>(.<sys-nsp>){0,}.<type>
+                    sys.imp.<auth-or-impl-name>(.<sys-nsp>){0,}.<routine>
+        sys.nsp  # what <sys-nsp> themselves are actually named into
+    mnt  # controls for mapping external storage devices etc with depots
+        mnt.cat  # updateable sys cat controlling what depot mounts exist
     fed  # the transac-synced federation of curr mounted depots w mount nms
         fed.cat  # updateable sys cat db desc entities under fed.(lib|data)
         fed.lib  # invokable user-def types and routines in this federation
@@ -1764,6 +1767,7 @@ This is the hierarchy of invocation namespaces of DBMS entities:
                     dep.lib(.<subdepot>){0,}.<package>.<type>
                     dep.lib(.<subdepot>){0,}.<package>.<routine>
         dep.data  # updateable db of normal user data in this depot
+        dep.sdp  # what <subdepot> themselves are actually named into
     sdp  # entities in a subdepot (public gen nsp) ref their own sdp w this
         sdp.cat  # updateable sys cat db desc entities under sdp.(lib|data)
         sdp.lib  # invokable user-def types and routines in this subdepot
@@ -1785,6 +1789,10 @@ This is the hierarchy of invocation namespaces of DBMS entities:
         lex.<expr>
         lex.<var>
 
+Note that the 3 tokens [C<Core>, C<< <extension> >>, C<<
+<auth-or-impl-name> >>] under C<sys> are all actually C<< <sys-nsp> >> as
+far as the system catalog that describes built-ins is concerned.
+
 Further details of each namespace follow below.
 
 =head2 User Data Variables and System Catalog Variables
@@ -1792,13 +1800,12 @@ Further details of each namespace follow below.
 All globally visible Muldis D variables are database-typed and can be
 grouped into two main kinds, which are system catalog variables (one of
 which is actually constant) and user data variables.  The global system
-catalog variables exist partially as the C<cat|mnt> primary namespaces
-(C<cat> is constant), and partially as the C<(fed|dep|sdp|pkg).cat>
-secondary namespaces.  The global user data variables all live as the
-C<(fed|dep|sdp|pkg).data> secondary namespaces.  All non-global variables
-are just of the user data variety, can be of any types, and use the
-C<pkg|lex> primary namespaces (yes, C<pkg> has both public and private
-variables).
+catalog variables all exist as the C<(sys|mnt|fed|dep|sdp|pkg).cat>
+secondary namespaces (C<sys.cat> is a constant).  The global user data
+variables all live as the C<(fed|dep|sdp|pkg).data> secondary namespaces.
+All non-global variables are just of the user data variety, can be of any
+types, and use the C<pkg|lex> primary namespaces (yes, C<pkg> has both
+public and private variables).
 
 The purpose of user data variables is hold user data, and are what gets
 read or updated by database users the vast majority of the time; working
@@ -1837,9 +1844,9 @@ The individual catalog namespaces are described in other sections.
 All system-defined data types and routines are globally visible and
 invokable.
 
-Each standard system-defined type and routine exists under the C<sys>
+Each standard system-defined type and routine exists under the C<sys.std>
 primary namespace, and its fully qualified name has at least 2 parts
-besides the C<sys>.  The most fundamental standard types and routines,
+besides the C<sys.std>.  The most fundamental standard types and routines,
 those that are ideally the least that every Muldis D implementation would
 provide, are further under the C<Core> secondary namespace; less
 fundamental but still standard types and routines are grouped under various
@@ -1849,43 +1856,45 @@ each of the C<Core> and any other extensions has at least a 1-level
 namespace, where types and routines are optionally grouped under common
 extra name spaces.
 
-The catalog namespace C<cat.system> is where all the relcons that describe,
-in a machine-readable way, all of the standard system-defined entities just
-discussed, as well as themselves, reside; the definitions of the standard
-data types of these relcons are also reflected by the same relcons.
+The catalog namespace C<sys.cat.system> is where all the relcons that
+describe, in a machine-readable way, all of the standard system-defined
+entities just discussed, as well as themselves, reside; the definitions of
+the standard data types of these relcons are also reflected by the same
+relcons.
 
 =head2 Implementation Specific System-Defined Entities
 
 Minimally speaking, the structure and contents of the catalog namespaces
-C<cat.(mount|foreign|interp)> are expected to be implementation specific,
-and so the (typically named nonscalar) types in terms of which they are
-defined would also have to be implementation specific.  While adhering to
-that minimum purpose for non-standard additions would be the best in terms
-of portability, it is realistic to assume that some implementations will
-intend some of their additions to be used for user data as well.  But even
-then, ideally such additions would be to serve specialized niches only,
-rather than being intended for general use.  Or ideally these would be
-deprecated in favor of support of the niche coming into the standard
-language as an elegantly designed extension.
+C<sys.cat.(mount|foreign|interp)> are expected to be implementation
+specific, and so the (typically named nonscalar) types in terms of which
+they are defined would also have to be implementation specific.  While
+adhering to that minimum purpose for non-standard additions would be the
+best in terms of portability, it is realistic to assume that some
+implementations will intend some of their additions to be used for user
+data as well.  But even then, ideally such additions would be to serve
+specialized niches only, rather than being intended for general use.  Or
+ideally these would be deprecated in favor of support of the niche coming
+into the standard language as an elegantly designed extension.
 
-The C<imp> primary namespace is for the hardwired non-standard /
+The C<sys.imp> primary namespace is for the hardwired non-standard /
 implementation specific system-defined types and routines in the same way
-that C<sys> is for the standard system-defined types and routines.  Keeping
-this separate namespace now allows for implementations to continue
+that C<sys.std> is for the standard system-defined types and routines.
+Keeping this separate namespace now allows for implementations to continue
 supporting an evolving standard without becoming conflicted with their own
 legacy extensions.  Non-standard system-defined entities have fully
-qualified names with at least 2 parts besides the C<imp>.  The secondary
-namespace is always some authority-like identifier which could alternately
-be an implementation name.  If some implementation ended up supporting not
-only its own extensions, but also the extensions of other implementations,
-then the secondary namespace would say who declared the entity in question;
-or, that is still useful for external processors of the extended Muldis D
-code.  Finally, the depth of the namespace under the authority-like level
-is purely implementation specific, and is at least 1 level.
+qualified names with at least 2 parts besides the C<sys.imp>.  The
+secondary namespace is always some authority-like identifier which could
+alternately be an implementation name.  If some implementation ended up
+supporting not only its own extensions, but also the extensions of other
+implementations, then the secondary namespace would say who declared the
+entity in question; or, that is still useful for external processors of the
+extended Muldis D code.  Finally, the depth of the namespace under the
+authority-like level is purely implementation specific, and is at least 1
+level.
 
-The catalog namespace C<cat.impl> corresponds to C<cat.system>.  The two
-being separated also results in the value of the C<cat.system> catalog
-constant being exactly the same for all implementations.
+The catalog namespace C<sys.cat.impl> corresponds to C<sys.cat.system>.
+The two being separated also results in the value of the C<sys.cat.system>
+catalog constant being exactly the same for all implementations.
 
 =head2 User-Defined Entities
 
