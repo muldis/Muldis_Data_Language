@@ -126,7 +126,7 @@ be used for user data:
                 sys.Core.Type.QuasiCat.QuasiSetOfTuple
                 sys.Core.Type.QuasiCat.QuasiSetOfRelation
 
-=head1 ENTITY NAME AND COMMENT DEFINING TYPES
+=head1 TYPES FOR DEFINING ENTITY NAMES AND COMMENTS
 
 =head2 sys.Core.Type.Cat.Name
 
@@ -313,7 +313,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 MOUNT CONTROL DEFINING TYPES
+=head1 TYPES FOR DEFINING MOUNT CONTROLS
 
 =head2 sys.Core.Type.Cat.MountControlCat
 
@@ -323,7 +323,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 FEDERATION DEFINING TYPES
+=head1 TYPES FOR DEFINING FEDERATIONS
 
 =head2 sys.Core.Type.Cat.Federation
 
@@ -381,7 +381,7 @@ made visible to the DBMS.
 A C<Cat.DepotMountSet> has a unary (unique) key on the C<name> attribute.
 Its default value is empty.
 
-=head1 DEPOT AND SUBDEPOT DEFINING TYPES
+=head1 TYPES FOR DEFINING DEPOTS AND SUBDEPOTS
 
 =head2 sys.Core.Type.Cat.Depot
 
@@ -541,7 +541,7 @@ plus C<name> attributes.  Its default value is empty.
 
 I<TODO.>
 
-=head1 PACKAGE DEFINING TYPES
+=head1 TYPES FOR DEFINING PACKAGES
 
 =head2 sys.Core.Type.Cat.Package
 
@@ -618,11 +618,120 @@ implementation, besides what C<interface> defines.
 =back
 
 A C<Cat.Pkg(Func|Upd|Proc)Set> has a unary (unique) key on the C<name>
-attribute. Its default value is empty.
+attribute.  Its default value is empty.
 
 =head2 sys.Core.Type.Cat.PkgTypeSet
 
 I<TODO.>
+
+=head1 TYPES FOR DEFINING ROUTINE HEADINGS
+
+=head2 sys.Core.Type.Cat.FuncHead
+
+A C<Cat.FuncHead> is a C<Tuple>.  It specifies the entire heading or public
+interface of a function, except for its name and public/private status; the
+latter are provided by any type embedding this one when applicable.
+
+A C<Cat.FuncHead> has these 3 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the function heading.
+
+=item C<result_type> - C<Cat.NameChain>
+
+This is the declared result data type of the function as a whole.
+
+=item C<params> - C<Cat.NameTypeMap>
+
+This is the declared parameter list of the function, which has 0..N named
+and typed parameters.
+
+=back
+
+The default value of C<Cat.FuncHead> has zero parameters and a result type
+of C<Bool>.
+
+=head2 sys.Core.Type.Cat.UpdHead
+
+A C<Cat.UpdHead> is a C<Tuple>.  It specifies the entire heading or public
+interface of a updater, except for its name and public/private status; the
+latter are provided by any type embedding this one when applicable.
+
+A C<Cat.UpdHead> has these 3 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the updater heading.
+
+=item C<upd_params> - C<Cat.NameTypeMap>
+
+This is the declared subject-to-update parameter list of the updater, which
+has 1..N named and typed such parameters.  It must have at least 1 element.
+
+=item C<ro_params> - C<Cat.NameTypeMap>
+
+This is the declared read-only parameter list of the updater, which has
+0..N named and typed such parameters.  There is a distributed (unique) key
+over the C<name> attributes of C<upd_params> and C<ro_params>.
+
+=back
+
+The default value of C<Cat.UpdHead> has 1 subject-to-update parameter whose
+name is C<topic> and whose declared type is C<Bool>; it has zero read-only
+parameters.
+
+=head2 sys.Core.Type.Cat.ProcHead
+
+A C<Cat.ProcHead> is a C<Tuple>.  It specifies the entire heading or public
+interface of a procedure, except for its name and public/private status;
+the latter are provided by any type embedding this one when applicable.
+
+A C<Cat.ProcHead> has these 3 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the procedure heading.
+
+=item C<upd_params> - C<Cat.NameTypeMap>
+
+This is the declared subject-to-update parameter list of the procedure,
+which has 0..N named and typed such parameters.
+
+=item C<ro_params> - C<Cat.NameTypeMap>
+
+This is the declared read-only parameter list of the procedure, which has
+0..N named and typed such parameters.  There is a distributed (unique) key
+over the C<name> attributes of C<upd_params> and C<ro_params>.
+
+=back
+
+The default value of C<Cat.ProcHead> has zero parameters.
+
+=head1 TYPES FOR DEFINING ROUTINE BODIES
+
+I<TODO.>
+
+=head1 SIMPLE GENERIC CATALOG COLLECTION TYPES
+
+=head2 sys.Core.Type.Cat.NameTypeMap
+
+A C<Cat.NameTypeMap> is a C<Relation>.  It defines a basic component list,
+meaning a set of names, with a declared data type name for each.  It forms
+the foundation for most componentized type definitions, including all tuple
+and relation types (for which it is named I<heading>), and it is used also
+for the components list of a scalar possrep.  It is also used to define
+parameter lists for routines.  A C<Cat.NameTypeMap> has 2 attributes,
+C<name> (a C<Cat.Name>) and C<type> (a C<Cat.NameChain>); the C<name> is
+the declared name of the attribute or parameter, and comprises a unary key;
+the C<type> is the declared data type of the attribute or parameter.  Its
+default value has zero tuples.
 
 =head1 SYSTEM-DEFINED CORE QUASI-CATALOG PARAMETERIZED TYPES
 
