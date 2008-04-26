@@ -220,17 +220,10 @@ system-defined entities as a whole.
 
 These are all the system-defined namespaces where DBMS entities may live.
 
-=item C<functions> - C<Cat.SysFuncSet>
+=item C<functions|updaters|procedures> - C<Cat.Sys(Func|Upd|Proc)Set>
 
-These are the interfaces of all the system-defined functions.
-
-=item C<updaters> - C<Cat.SysUpdSet>
-
-These are the interfaces of all the system-defined updaters.
-
-=item C<procedures> - C<Cat.SysProcSet>
-
-These are the interfaces of all the system-defined procedures.
+These are the interfaces of all the system-defined
+functions|updaters|procedures.
 
 =item C<types> - C<Cat.SysTypeSet>
 
@@ -277,17 +270,40 @@ namespace.
 A C<Cat.SysNspSet> has a binary (unique) key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.Core.Type.Cat.SysFuncSet
+=head2 sys.Core.Type.Cat.Sys(Func|Upd|Proc)Set
+
+A C<Cat.Sys(Func|Upd|Proc)Set> is a C<Relation> that specifies a set of
+system-defined functions|updaters|procedures.
+
+A C<Cat.Sys(Func|Upd|Proc)Set> has these 4 attributes:
+
+=over
+
+=item C<parent> - I<TODO.>
 
 I<TODO.>
 
-=head2 sys.Core.Type.Cat.SysUpdSet
+=item C<name> - C<Cat.Name>
 
-I<TODO.>
+This is the declared name of the function|updater|procedure within the
+namespace defined by C<parent>; other Muldis D code would reference it with
+the combination of C<parent> and C<name>.
 
-=head2 sys.Core.Type.Cat.SysProcSet
+=item C<comment> - C<Cat.Comment>
 
-I<TODO.>
+This is an optional programmer comment about the function|updater|procedure
+as a whole.
+
+=item C<head> - C<Cat.(Func|Upd|Proc)Head>
+
+This defines the entire function|updater|procedure heading, that is its
+public interface sans the name, which is all the details of how to use it
+and no more detail than necessary about how it is implemented.
+
+=back
+
+A C<Cat.Sys(Func|Upd|Proc)Set> has a binary (unique) key on the C<parent>
+plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.Core.Type.Cat.SysTypeSet
 
@@ -395,17 +411,10 @@ These are all the subdepots that this (|sub)depot contains.
 
 These are all the packages that this (|sub)depot contains.
 
-=item C<functions> - C<Cat.DepFuncSet>
+=item C<functions|updaters|procedures> - C<Cat.Dep(Func|Upd|Proc)Set>
 
-These are all the function definitions that this (|sub)depot contains.
-
-=item C<updaters> - C<Cat.DepUpdSet>
-
-These are all the updater definitions that this (|sub)depot contains.
-
-=item C<procedures> - C<Cat.DepProcSet>
-
-These are all the procedure definitions that this (|sub)depot contains.
+These are all the function|updater|procedure definitions that this
+(|sub)depot contains.
 
 =item C<types> - C<Cat.DepTypeSet>
 
@@ -487,17 +496,46 @@ This defines the entire system catalog of the package.
 A C<Cat.PackageSet> has a binary (unique) key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.Core.Type.Cat.DepFuncSet
+=head2 sys.Core.Type.Cat.Dep(Func|Upd|Proc)Set
 
-I<TODO.>
+A C<Cat.Dep(Func|Upd|Proc)Set> is a C<Relation> that specifies a set of
+functions|updaters|procedures that a (|sub)depot might directly contain.
 
-=head2 sys.Core.Type.Cat.DepUpdSet
+A C<Cat.Dep(Func|Upd|Proc)Set> has these 5 attributes:
 
-I<TODO.>
+=over
 
-=head2 sys.Core.Type.Cat.DepProcSet
+=item C<parent> - C<Cat.DeclNameChain>
 
-I<TODO.>
+This is the fully-qualified name, in the C<dep.(cat|lib|data)> namespace,
+of the function|updater|procedure's parent (|sub)depot.
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the function|updater|procedure within the
+namespace defined by C<parent>; other Muldis D code would reference it with
+the combination of C<parent> and C<name>.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the function|updater|procedure
+as a whole.
+
+=item C<head> - C<Cat.(Func|Upd|Proc)Head>
+
+This defines the entire function|updater|procedure heading, that is its
+public interface sans the name, which is all the details of how to use it
+and no more detail than necessary about how it is implemented.
+
+=item C<body> - C<Cat.(Func|Upd|Proc)Body>
+
+This defines the entire function|updater|procedure body, that is its
+implementation, besides what C<interface> defines.
+
+=back
+
+A C<Cat.Dep(Func|Upd|Proc)Set> has a binary (unique) key on the C<parent>
+plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.Core.Type.Cat.DepTypeSet
 
@@ -525,17 +563,10 @@ TODO
 
 This is an optional programmer comment about the package as a whole.
 
-=item C<functions> - C<Cat.PkgFuncSet>
+=item C<functions|updaters|procedures> - C<Cat.Pkg(Func|Upd|Proc)Set>
 
-These are all the function definitions that this package contains.
-
-=item C<updaters> - C<Cat.PkgUpdSet>
-
-These are all the updater definitions that this package contains.
-
-=item C<procedures> - C<Cat.PkgProcSet>
-
-These are all the procedure definitions that this package contains.
+These are all the function|updater|procedure definitions that this package
+contains.
 
 =item C<types> - C<Cat.PkgTypeSet>
 
@@ -549,17 +580,47 @@ These are all the type definitions that this package contains.
 
 The default value of C<Cat.Package> defines an empty package.
 
-=head2 sys.Core.Type.Cat.PkgFuncSet
+=head2 sys.Core.Type.Cat.Pkg(Func|Upd|Proc)Set
 
-I<TODO.>
+A C<Cat.Pkg(Func|Upd|Proc)Set> is a C<Relation> that specifies a set of
+functions|updaters|procedures that a package might contain, where each
+function|updater|procedure may be either public for the DBMS as a whole or
+private to the package.
 
-=head2 sys.Core.Type.Cat.PkgUpdSet
+A C<Cat.Pkg(Func|Upd|Proc)Set> has these 5 attributes:
 
-I<TODO.>
+=over
 
-=head2 sys.Core.Type.Cat.PkgProcSet
+=item C<name> - C<Cat.Name>
 
-I<TODO.>
+This is the declared name of the function|updater|procedure.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the function|updater|procedure
+as a whole.
+
+=item C<is_public> - C<Bool>
+
+This is C<Bool:true> if the function|updater|procedure is part of the
+package's own public interface and may be invoked from outside the package;
+it is C<Bool:false> if it is just part of the package's internals.
+
+=item C<head> - C<Cat.(Func|Upd|Proc)Head>
+
+This defines the entire function|updater|procedure heading, that is its
+public interface sans the name, which is all the details of how to use it
+and no more detail than necessary about how it is implemented.
+
+=item C<body> - C<Cat.(Func|Upd|Proc)Body>
+
+This defines the entire function|updater|procedure body, that is its
+implementation, besides what C<interface> defines.
+
+=back
+
+A C<Cat.Pkg(Func|Upd|Proc)Set> has a unary (unique) key on the C<name>
+attribute. Its default value is empty.
 
 =head2 sys.Core.Type.Cat.PkgTypeSet
 
