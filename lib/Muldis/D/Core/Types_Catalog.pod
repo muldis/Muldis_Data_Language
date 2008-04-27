@@ -678,10 +678,12 @@ has 1..N named and typed such parameters.  It must have at least 1 element.
 =item C<ro_params> - C<Cat.NameTypeMap>
 
 This is the declared read-only parameter list of the updater, which has
-0..N named and typed such parameters.  There is a distributed (unique) key
-over the C<name> attributes of C<upd_params> and C<ro_params>.
+0..N named and typed such parameters.
 
 =back
+
+There is a distributed (unique) key over the C<name> attributes of
+C<upd_params> and C<ro_params>.
 
 The default value of C<Cat.UpdHead> has 1 subject-to-update parameter whose
 name is C<topic> and whose declared type is C<Bool>; it has zero read-only
@@ -710,10 +712,12 @@ which has 0..N named and typed such parameters.
 =item C<ro_params> - C<Cat.NameTypeMap>
 
 This is the declared read-only parameter list of the procedure, which has
-0..N named and typed such parameters.  There is a distributed (unique) key
-over the C<name> attributes of C<upd_params> and C<ro_params>.
+0..N named and typed such parameters.
 
 =back
+
+There is a distributed (unique) key over the C<name> attributes of
+C<upd_params> and C<ro_params>.
 
 The default value of C<Cat.ProcHead> has zero parameters.
 
@@ -750,6 +754,9 @@ These are all the inner function definitions that this function contains.
 These are all the inner type definitions that this function contains.
 
 =back
+
+There is a distributed (unique) key over the C<name> attributes of
+C<inner_(funcs|types)>.
 
 The default value of C<Cat.FuncBody> directly corresponds to the default
 value of C<Cat.FuncHead> and unconditionally results in the value
@@ -789,6 +796,9 @@ These are all the inner function definitions that this updater contains.
 These are all the inner type definitions that this updater contains.
 
 =back
+
+There is a distributed (unique) key over the C<name> attributes of
+C<inner_(upds|funcs|types)>.
 
 The default value of C<Cat.UpdBody> directly corresponds to the default
 value of C<Cat.UpdHead> and unconditionally updates its C<topic> argument
@@ -832,6 +842,9 @@ These are all the inner type definitions that this procedure contains.
 
 =back
 
+There is a distributed (unique) key over the C<name> attributes of
+C<inner_(procs|upds|funcs|types)>.
+
 The default value of C<Cat.ProcBody> directly corresponds to the default
 value of C<Cat.ProcHead> and is a no-op, having zero statements.
 
@@ -872,7 +885,252 @@ attribute.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING INNER ROUTINE BODIES
 
-I<TODO.>
+=head2 sys.Core.Type.Cat.InnerFuncBody
+
+A C<Cat.InnerFuncBody> is a C<Tuple>.  It specifies the entire body or
+implementation of an inner function (or the main body of a function),
+besides the details that a C<Cat.FuncHead> has, one of which each
+C<Cat.InnerFuncBody> typically must be paired with.
+
+A C<Cat.InnerFuncBody> has these 6 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the function body.
+
+=item C<sca_lit_exprs> - C<Cat.ScaLitExprNodeSet>
+
+These are expression nodes that define (|quasi-)scalar literals of types
+such that the Muldis D dialect provides special literal syntax specific to
+the type, and the type may not have any possreps.
+
+=item C<sca_pr_lit_exprs> - C<Cat.ScaPRLitExprNodeSet>
+
+These are expression nodes that define (|quasi-)scalar literals of types
+such that each type has at least 1 possrep, and each literal is specified
+simply in terms of possrep attributes.
+
+=item C<tup_lit_exprs> - C<Cat.TupLitExprNodeSet>
+
+These are expression nodes that define (|quasi-)tuple literals.
+
+=item C<rel_lit_exprs> - C<Cat.RelLitExprNodeSet>
+
+These are expression nodes that define (|quasi-)relation literals.
+
+=item C<func_invo_exprs> - C<Cat.FuncInvoExprNodeSet>
+
+These are expression nodes that invoke (|inner )functions.
+
+=back
+
+There is a distributed (unique) key over the C<name> attributes of
+C<((sca|sca_pr|tup|rel)_lit|func)_exprs>; and if this C<Cat.InnerFuncBody>
+is paired with a C<Cat.FuncHead>, then the distributed key also extends
+over the head's parameter names.
+
+A C<Cat.InnerFuncBody> specifies a simple value expression tree of named
+expression nodes, each of which is a tuple of one of its C<\w+._exprs>
+attributes.  It must have at least 1 member node, except that it may have
+zero member nodes iff the (|inner )function it is composed into has exactly
+1 parameter, in which case the value expression tree implicitly results in
+the argument to said parameter.  Otherwise:  All member nodes must define a
+simple expression node tree, such that every member except one (which is
+the root node) has one of its peers as a parent node, and no direct cycles
+between members are permitted (only indirect cycles based on (|inner
+)function invocations are allowed); the name of the root node must be the
+empty string.  Note that the composed-into (|inner )function's parameters
+are also implicitly tree nodes, and are referenced by name into the
+expression the same way as any other named expression node is.  Regardless
+of whether the node count is zero or 1+, the tree must denote a value
+expression whose result type is of the result type of the (|inner )function
+it is composed into, and which invokes all of the (|inner )function's
+parameters.
+
+The default value of C<Cat.InnerFuncBody> directly corresponds to the
+default value of C<Cat.FuncHead> and unconditionally results in the value
+C<Bool:false>.
+
+=head2 sys.Core.Type.Cat.ScaLitExprNodeSet
+
+A C<Cat.ScaLitExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node is a hard-coded (|quasi-)scalar literal of
+one of a certain collection of system-defined core (|quasi-)scalar types
+(or subtype thereof).
+
+A C<Cat.ScaLitExprNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<value> - C<Scalar>
+
+This is the actual literal value that the expression node represents.
+I<That is, any Scalar value could be used here, but in practice that is
+either dialect-defined (what literals are supported), and possibly
+implementation defined/limited.>
+
+=back
+
+A C<Cat.ScaLitExprNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.Core.Type.Cat.ScaPRLitExprNodeSet
+
+A C<Cat.ScaPRLitExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents a (|quasi-)scalar literal of a
+type that has at least 1 possrep, and the literal is specified simply in
+terms of possrep attributes.
+
+A C<Cat.ScaPRLitExprNodeSet> has these 6 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<is_quasi> - C<Bool>
+
+This is C<Bool:true> if the node denotes a quasi-scalar literal; it is
+C<Bool:false> if the node just denotes a scalar literal.
+
+=item C<type_name> - C<Cat.NameChain>
+
+This is the name of the type that the (|quasi-)scalar value belongs to.
+
+=item C<possrep_name> - C<Cat.Name>
+
+This is the name of the possrep, of the type named by C<scalar_type_name>,
+in terms of whose attributes the (|quasi-)scalar value is being selected.
+
+=item C<possrep_attrs> - C<Cat.NameExprMap>
+
+These are the attributes (names and values) of the C<possrep_name> possrep
+of the (|quasi-)scalar literal.
+
+=back
+
+A C<Cat.ScaPRLitExprNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.Core.Type.Cat.TupLitExprNodeSet
+
+A C<Cat.TupLitExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents a (|quasi-)tuple literal.
+
+A C<Cat.TupLitExprNodeSet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<is_quasi> - C<Bool>
+
+This is C<Bool:true> if the node denotes a quasi-tuple literal; it is
+C<Bool:false> if the node just denotes a tuple literal.
+
+=item C<attrs> - C<Cat.NameExprMap>
+
+These are the attributes (names and values) of the (|quasi-)tuple literal.
+
+=back
+
+A C<Cat.TupLitExprNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.Core.Type.Cat.RelLitExprNodeSet
+
+A C<Cat.RelLitExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents a (|quasi-)relation literal.
+
+A C<Cat.RelLitExprNodeSet> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<is_quasi> - C<Bool>
+
+This is C<Bool:true> if the node denotes a quasi-relation literal; it is
+C<Bool:false> if the node just denotes a relation literal.
+
+=item C<head> - C<Cat.SetOfName>
+
+These are the names of all of this (|quasi-)relation literal's attributes.
+
+=item C<body> - C<Cat.SetOfNameExprMap>
+
+These are the (|quasi-)tuples of the (|quasi-)relation literal.
+
+=back
+
+A C<Cat.RelLitExprNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.Core.Type.Cat.FuncInvoExprNodeSet
+
+A C<Cat.FuncInvoExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents the result of invoking a named
+(|inner )function with specific arguments.
+
+A C<Cat.FuncInvoExprNodeSet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<func> - C<Cat.NameChain>
+
+This is the name of the (|inner )function being invoked.
+
+=item C<func_args> - C<Cat.NameExprMap>
+
+These are the arguments for the (|inner )function invocation.  Each element
+defines one argument value, with the element C<name> matching the parameter
+name, and the element C<expr> naming another local expression node which
+defines the value.
+
+=back
+
+A C<Cat.FuncInvoExprNodeSet> has a unary (unique) key on the C<name>
+attribute. Its default value is empty.
 
 =head1 SIMPLE GENERIC CATALOG COLLECTION TYPES
 
@@ -888,6 +1146,28 @@ C<name> (a C<Cat.Name>) and C<type> (a C<Cat.NameChain>); the C<name> is
 the declared name of the attribute or parameter, and comprises a unary key;
 the C<type> is the declared data type of the attribute or parameter.  Its
 default value has zero tuples.
+
+=head2 sys.Core.Type.Cat.NameExprMap
+
+A C<Cat.NameExprMap> is a C<Relation>.  It defines a basic component-values
+list, meaning a set of names, with a declared local expression node name
+for each.  It is used to define collection literals; one C<Cat.NameExprMap>
+defines a whole C<Tuple> value.  It is also used to define argument lists
+for routine invocations.  A C<Cat.NameExprMap> has 2 attributes, C<name>
+and C<expr>, each of those being a C<Cat.Name>; the C<name> is the name of
+the tuple/etc attribute or routine argument, and comprises a unary key; the
+C<expr> is the declared local name of the expression node which defines the
+value for the attribute or argument.  Its default value has zero tuples.
+
+=head2 sys.Core.Type.Cat.SetOfName
+
+A C<Cat.SetOfName> is a C<Set> whose C<value> attribute has a declared type
+of C<Cat.Name>.
+
+=head2 sys.Core.Type.Cat.SetOfNameExprMap
+
+A C<Cat.SetOfNameExprMap> is a C<Set> whose C<value> attribute has a
+declared type of C<Cat.NameExprMap>.
 
 =head1 SYSTEM-DEFINED CORE QUASI-CATALOG PARAMETERIZED TYPES
 
