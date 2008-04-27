@@ -629,8 +629,9 @@ I<TODO.>
 =head2 sys.Core.Type.Cat.FuncHead
 
 A C<Cat.FuncHead> is a C<Tuple>.  It specifies the entire heading or public
-interface of a function, except for its name and public/private status; the
-latter are provided by any type embedding this one when applicable.
+interface of a function or inner function, except for its name and
+public/private status; the latter are provided by any type embedding this
+one when applicable.
 
 A C<Cat.FuncHead> has these 3 attributes:
 
@@ -657,8 +658,9 @@ of C<Bool>.
 =head2 sys.Core.Type.Cat.UpdHead
 
 A C<Cat.UpdHead> is a C<Tuple>.  It specifies the entire heading or public
-interface of a updater, except for its name and public/private status; the
-latter are provided by any type embedding this one when applicable.
+interface of an updater or inner updater, except for its name and
+public/private status; the latter are provided by any type embedding this
+one when applicable.
 
 A C<Cat.UpdHead> has these 3 attributes:
 
@@ -688,8 +690,9 @@ parameters.
 =head2 sys.Core.Type.Cat.ProcHead
 
 A C<Cat.ProcHead> is a C<Tuple>.  It specifies the entire heading or public
-interface of a procedure, except for its name and public/private status;
-the latter are provided by any type embedding this one when applicable.
+interface of a procedure or inner procedure, except for its name and
+public/private status; the latter are provided by any type embedding this
+one when applicable.
 
 A C<Cat.ProcHead> has these 3 attributes:
 
@@ -715,6 +718,159 @@ over the C<name> attributes of C<upd_params> and C<ro_params>.
 The default value of C<Cat.ProcHead> has zero parameters.
 
 =head1 TYPES FOR DEFINING ROUTINE BODIES
+
+=head2 sys.Core.Type.Cat.FuncBody
+
+A C<Cat.FuncBody> is a C<Tuple>.  It specifies the entire body or
+implementation of a function, besides the details that a C<Cat.FuncHead>
+has, one of which each C<Cat.FuncBody> typically must be paired with.
+
+A C<Cat.FuncBody> has these N attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the function body.
+
+=item C<main_body> - C<Cat.InnerFuncBody>
+
+This defines the entire main body of the function, namely what's left of
+the function body after parts of it are optionally factored out into inner
+routines or inner types.  It must consist of a value expression whose
+result type is of the result type of the function, and which invokes all of
+the function's parameters.
+
+=item C<inner_funcs> - C<Cat.InnerFuncSet>
+
+These are all the inner function definitions that this function contains.
+
+=item C<inner_types> - C<Cat.InnerTypeSet>
+
+These are all the inner type definitions that this function contains.
+
+=back
+
+The default value of C<Cat.FuncBody> directly corresponds to the default
+value of C<Cat.FuncHead> and unconditionally results in the value
+C<Bool:false>.
+
+=head2 sys.Core.Type.Cat.UpdBody
+
+A C<Cat.UpdBody> is a C<Tuple>.  It specifies the entire body or
+implementation of an updater, besides the details that a C<Cat.UpdHead>
+has, one of which each C<Cat.UpdBody> typically must be paired with.
+
+A C<Cat.UpdBody> has these N attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the updater body.
+
+=item C<main_body> - C<Cat.InnerUpdBody>
+
+This defines the entire main body of the updater, namely what's left of the
+updater body after parts of it are optionally factored out into inner
+routines or inner types.  It must consist of a multi-update statement which
+invokes all of the updater's parameters.
+
+=item C<inner_upds> - C<Cat.InnerUpdSet>
+
+These are all the inner updater definitions that this updater contains.
+
+=item C<inner_funcs> - C<Cat.InnerFuncSet>
+
+These are all the inner function definitions that this updater contains.
+
+=item C<inner_types> - C<Cat.InnerTypeSet>
+
+These are all the inner type definitions that this updater contains.
+
+=back
+
+The default value of C<Cat.UpdBody> directly corresponds to the default
+value of C<Cat.UpdHead> and unconditionally updates its C<topic> argument
+to the value C<Bool:false>.
+
+=head2 sys.Core.Type.Cat.ProcBody
+
+A C<Cat.ProcBody> is a C<Tuple>.  It specifies the entire body or
+implementation of a procedure, besides the details that a C<Cat.ProcHead>
+has, one of which each C<Cat.ProcBody> typically must be paired with.
+
+A C<Cat.ProcBody> has these N attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the procedure body.
+
+=item C<main_body> - C<Cat.InnerProcBody>
+
+This defines the entire main body of the procedure, namely what's left of
+the procedure body after parts of it are optionally factored out into inner
+routines or inner types.
+
+=item C<inner_procs> - C<Cat.InnerProcSet>
+
+These are all the inner procedure definitions that this procedure contains.
+
+=item C<inner_upds> - C<Cat.InnerUpdSet>
+
+These are all the inner updater definitions that this procedure contains.
+
+=item C<inner_funcs> - C<Cat.InnerFuncSet>
+
+These are all the inner function definitions that this procedure contains.
+
+=item C<inner_types> - C<Cat.InnerTypeSet>
+
+These are all the inner type definitions that this procedure contains.
+
+=back
+
+The default value of C<Cat.ProcBody> directly corresponds to the default
+value of C<Cat.ProcHead> and is a no-op, having zero statements.
+
+=head2 sys.Core.Type.Cat.Inner(Func|Upd|Proc)Set
+
+A C<Cat.Inner(Func|Upd|Proc)Set> is a C<Relation> that specifies a set of
+inner functions|updaters|procedures that a function|updater|procedure might
+contain.
+
+A C<Cat.Inner(Func|Upd|Proc)Set> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the inner function|updater|procedure.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the inner
+function|updater|procedure as a whole.
+
+=item C<head> - C<Cat.(Func|Upd|Proc)Head>
+
+This defines the entire inner function|updater|procedure heading, that is
+its public interface sans the name, which is all the details of how to use
+it and no more detail than necessary about how it is implemented.
+
+=item C<body> - C<Cat.Inner(Func|Upd|Proc)Body>
+
+This defines the entire inner function|updater|procedure body, that is its
+implementation, besides what C<interface> defines.
+
+=back
+
+A C<Cat.Inner(Func|Upd|Proc)Set> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head1 TYPES FOR DEFINING INNER ROUTINE BODIES
 
 I<TODO.>
 
