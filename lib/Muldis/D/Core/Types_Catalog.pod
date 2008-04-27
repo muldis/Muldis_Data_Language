@@ -892,13 +892,72 @@ implementation of an inner function (or the main body of a function),
 besides the details that a C<Cat.FuncHead> has, one of which each
 C<Cat.InnerFuncBody> typically must be paired with.
 
-A C<Cat.InnerFuncBody> has these 6 attributes:
+A C<Cat.InnerFuncBody> has these 2 attributes:
 
 =over
 
 =item C<comment> - C<Cat.Comment>
 
-This is an optional programmer comment about the function body.
+This is an optional programmer comment about the (|inner )function body.
+
+=item C<expr> - C<Cat.ExprNodeSet>
+
+This defines the value expression tree that comprises the entire (|inner
+)function body.
+
+=back
+
+There is a distributed (unique) key over the C<name> attributes of all the
+attributes of C<expr>; and if this C<Cat.InnerFuncBody> is paired with a
+C<Cat.FuncHead>, then the distributed key also extends over the head's
+parameter names.
+
+A C<Cat.InnerFuncBody> specifies a simple value expression tree of named
+expression nodes, each of which is a tuple of one of its C<expr.\w+_exprs>
+attributes.  It must have at least 1 member node, except that it may have
+zero member nodes iff the (|inner )function it is composed into has exactly
+1 parameter, in which case the value expression tree implicitly results in
+the argument to said parameter.  Otherwise:  All member nodes must define a
+simple expression node tree, such that every member except one (which is
+the root node) has one of its peers as a parent node, and no direct cycles
+between members are permitted (only indirect cycles based on (|inner
+)function invocations are allowed); the name of the root node must be the
+empty string.  Note that the composed-into (|inner )function's parameters
+are also implicitly tree nodes, and are referenced by name into the
+expression the same way as any other named expression node is.  Regardless
+of whether the node count is zero or 1+, the tree must denote a value
+expression whose result type is of the result type of the (|inner )function
+it is composed into, and which invokes all of the (|inner )function's
+parameters.
+
+The default value of C<Cat.InnerFuncBody> directly corresponds to the
+default value of C<Cat.FuncHead> and unconditionally results in the value
+C<Bool:false>.
+
+=head2 sys.Core.Type.Cat.ExprNodeSet
+
+A C<Cat.ExprNodeSet> is a C<Tuple> that specifies a set of named value
+expression nodes.  It is typically composed into a (|inner
+)(function|updater). Each tuple of a C<Cat.ExprNodeSet> attribute is a
+named expression node, which is the majority component of functional Muldis
+D code.  All arbitrarily complex Muldis D expression trees, including
+relational queries, are composed of just expression nodes, either directly,
+or indirectly by way of (|inner )function invocations, as each (|inner
+)function body is itself composed entirely of a single expression tree (of
+at least 1 node).  Only functions and updaters may contain expression
+nodes, so for any procedures that would conceptually include them, those
+portions of the procedures need to be separated out and encapsulated by
+named (|inner )functions or (|inner )updaters.  Note that, while the
+general case has expression trees simply denoting a value, in some cases
+they may instead define a pseudo-variable / virtual variable; that only
+happens in (|inner )updaters where the expression is used as an argument
+for a subject-to-update parameter of an (|inner )update operator call; in
+that case the leaf nodes / only node of the expression must map to a
+subject-to-update parameter of the containing (|inner )update operator.
+
+A C<Cat.ExprNodeSet> has these 5 attributes:
+
+=over
 
 =item C<sca_lit_exprs> - C<Cat.ScaLitExprNodeSet>
 
@@ -926,32 +985,8 @@ These are expression nodes that invoke (|inner )functions.
 
 =back
 
-There is a distributed (unique) key over the C<name> attributes of
-C<((sca|sca_pr|tup|rel)_lit|func)_exprs>; and if this C<Cat.InnerFuncBody>
-is paired with a C<Cat.FuncHead>, then the distributed key also extends
-over the head's parameter names.
-
-A C<Cat.InnerFuncBody> specifies a simple value expression tree of named
-expression nodes, each of which is a tuple of one of its C<\w+._exprs>
-attributes.  It must have at least 1 member node, except that it may have
-zero member nodes iff the (|inner )function it is composed into has exactly
-1 parameter, in which case the value expression tree implicitly results in
-the argument to said parameter.  Otherwise:  All member nodes must define a
-simple expression node tree, such that every member except one (which is
-the root node) has one of its peers as a parent node, and no direct cycles
-between members are permitted (only indirect cycles based on (|inner
-)function invocations are allowed); the name of the root node must be the
-empty string.  Note that the composed-into (|inner )function's parameters
-are also implicitly tree nodes, and are referenced by name into the
-expression the same way as any other named expression node is.  Regardless
-of whether the node count is zero or 1+, the tree must denote a value
-expression whose result type is of the result type of the (|inner )function
-it is composed into, and which invokes all of the (|inner )function's
-parameters.
-
-The default value of C<Cat.InnerFuncBody> directly corresponds to the
-default value of C<Cat.FuncHead> and unconditionally results in the value
-C<Bool:false>.
+There is a distributed (unique) key over the C<name> attributes of all of a
+C<Cat.ExprNodeSet>'s attributes.  Its default value is empty.
 
 =head2 sys.Core.Type.Cat.ScaLitExprNodeSet
 
@@ -1116,11 +1151,11 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<func> - C<Cat.NameChain>
+=item C<function> - C<Cat.NameChain>
 
 This is the name of the (|inner )function being invoked.
 
-=item C<func_args> - C<Cat.NameExprMap>
+=item C<args> - C<Cat.NameExprMap>
 
 These are the arguments for the (|inner )function invocation.  Each element
 defines one argument value, with the element C<name> matching the parameter
@@ -1131,6 +1166,100 @@ defines the value.
 
 A C<Cat.FuncInvoExprNodeSet> has a unary (unique) key on the C<name>
 attribute. Its default value is empty.
+
+=head2 sys.Core.Type.Cat.InnerUpdBody
+
+A C<Cat.InnerUpdBody> is a C<Tuple>.  It specifies the entire body or
+implementation of an inner updater (or the main body of a updater), besides
+the details that a C<Cat.UpdHead> has, one of which each
+C<Cat.InnerUpdBody> typically must be paired with.
+
+A C<Cat.InnerUpdBody> has these 3 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the (|inner )updater body.
+
+=item C<exprs> - C<Cat.ExprNodeSet>
+
+This defines the expression trees that are arguments to the update
+operators that C<stmt> invokes.  These expression trees must reference all
+of the parameters that the inner update operator has.
+
+=item C<stmt> - C<Cat.MultiUpdStmt>
+
+This defines the entire body of the (|inner )updater, which is composed of
+a single multi-update statement.  This multi-update statement must
+reference all of the parameters that the (|inner )updater has.
+
+=back
+
+There is a distributed (unique) key over the C<name> attributes of all the
+attributes of C<exprs>; and if this C<Cat.InnerUpdBody> is paired with a
+C<Cat.UpdHead>, then the distributed key also extends over the head's
+parameter names.
+
+The default value of C<Cat.InnerUpdBody> directly corresponds to the
+default value of C<Cat.UpdHead> and unconditionally updates its C<topic>
+argument to the value C<Bool:false>.
+
+=head2 sys.Core.Type.Cat.MultiUpdStmt
+
+A C<Cat.MultiUpdStmt> is a C<Relation> that specifies a multi-update
+statement (of 1..N variables), which is the narrowest scope implicitly
+atomic component of procedural Muldis D code.  It is the most fundamental
+component of procedural Muldis D code.  The variables being updated are
+accessed via the host (|inner )updater's subject-to-update parameters.  All
+arbitrarily complex Muldis D value assignments, including relational
+assignments, are composed of just C<Cat.MultiUpdStmt>, either directly, or
+indirectly by way of (|inner )updater invocations, as each (|inner )updater
+body is itself composed entirely of 1 multi-update statement (plus
+supporting value expressions).  Only (|inner )updaters may contain
+C<Cat.MultiUpdStmt>, so for any procedures that would conceptually include
+them, those portions of the procedures need to be separated out and
+encapsulated by named (|inner )updaters.  Each tuple of a multi-update
+statement is a single update statement, which represents a single
+invocation of an (|inner )updater, and at least 1 tuple is required.
+
+A C<Cat.MultiUpdStmt> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the single update statement as
+a whole.
+
+=item C<updater> - C<Cat.NameChain>
+
+This is the name of the (|inner )updater being invoked.
+
+=item C<upd_args> - C<Cat.NameExprMap>
+
+These are the 1..N subject-to-update arguments to the (|inner )updater
+invocation, as-per C<ro_args>.  But since each expression tree in
+C<upd_args> is binding to a subject-to-update parameter, the expression
+tree actually is defining a pseudo-variable / virtual-variable over 1..N
+containing routine subject-to-update parameters; in the most trivial (and
+common) case, the parameter is referenced directly.
+
+=item C<ro_args> - C<Cat.NameExprMap>
+
+These are the 0..N read-only arguments to the (|inner )updater invocation.
+Each element defines one argument value, with the element C<name> matching
+the parameter name, and the element C<expr> naming a local expression node
+(or parameter) which defines the value.
+
+=back
+
+There is a distributed (unique) key over the C<name> attributes of
+C<upd_args> and C<ro_args>.
+
+The default value of C<Cat.MultiUpdStmt> directly corresponds to the
+default value of C<Cat.InnerUpdBody> and unconditionally updates its
+containing (|inner )updater's C<topic> argument to the value C<Bool:false>.
 
 =head1 SIMPLE GENERIC CATALOG COLLECTION TYPES
 
