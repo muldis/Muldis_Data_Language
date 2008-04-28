@@ -6,10 +6,10 @@
     * Muldis::D version 0.27.0 is released on CPAN as
     Muldis-D-0.27.0.tar.gz.
 
-    * Removed the file Hierarchical.pod, as it has become more superfluous
-    given the other Tiny dialects becoming more terse and better for
-    regular use.  Not that other dialects can't be introduced later, but
-    they aren't as necessary now.
+    * Removed the very incomplete file Hierarchical.pod, as it has become
+    more superfluous given the other Tiny dialects becoming more terse and
+    better for regular use.  Not that other dialects can't be introduced
+    later, but they aren't as necessary now.
 
     * New file versions are: D.pm 0.27.0 and Types_Catalog.pod 0.24.0 and
     Basics.pod 0.20.0 and PTMD_Tiny.pod 0.19.0 and HDMD_Perl_Tiny.pod
@@ -57,7 +57,9 @@
     types Cat.ProcStmtArg(|Set) were eliminated since, following the above
     changes, Cat.NameExprMap could be used instead for defining procedure
     statement arguments; then the Cat.E_PSAK enumerated type had no more
-    uses, and was eliminated.  The 3 types Cat.Expr(Node|Set|Tree) were
+    uses, and was eliminated.  The 2 types Cat.(|Multi)UpdStmt were merged
+    into the 1 type Cat.MultiUpdStmt, which otherwise is essentially the
+    same as the old version.  The 3 types Cat.Expr(Node|Set|Tree) were
     refactored into the 6 types
     Cat.(|(Sca|ScaPR|Tup|Rel)Lit|FuncInvo)ExprNodeSet; the first of those
     is a tuple with 5 attributes, one each of the other 5 of those, which
@@ -77,12 +79,72 @@
     has periods before and after the parts rather than just between them.
     This type was added for use when declaring subdepots, depot entities.
 
-    * (Types_Catalog.pod)  Removed all the sys.Core.Type.Cat.\w+ types
-    except for the 3 [Name, NameChain, Comment], which are now in a pod
-    section named TYPES FOR DEFINING ENTITY NAMES AND COMMENTS.  (The
-    QuasiCat were all retained as well, keeping their pod section name.)
-    The removed will be either replaced or restored piecemeal in a
-    different order, as detailed in following change items.
+    * (Types_Catalog.pod)  Added a set of 4 top-level catalog types which
+    are the types of the Muldis D catalog dbvars: Cat.System (for
+    'sys.cat'), Cat.Federation (for 'fed.cat'), Cat.Depot (for 'dep.cat'
+    and 'sdp.cat'), Cat.Package (for 'pkg.cat').  Added a set of 2 catalog
+    types which define nodes in N-depth namespace hierarchies for
+    organizing entities within a catalog: Cat.SysNspSet (hierarchies for
+    system-defined entities), Cat.SubdepotSet (hierarchies for user-defined
+    entities, for example SQL 'schema'); these 2 only declare that
+    namespaces exist, not what entities are in them.  Added a set of 11
+    catalog types which specify/embed the definitions of entities in
+    catalog dbvars: Cat.DepotMountSet (what depot mounts are in a mount
+    federation), Cat.PackageSet (what packages are in a depot),
+    Cat.Sys(Func|Upd|Proc)Set (what system-defined routines there are),
+    Cat.(Dep|Pkg)(Func|Upd|Proc)Set (what user-defined routines there are,
+    directly in a depot or in a package of a depot, respectively); for the
+    system-defined routines, only the routine headings/interfaces are
+    specified, and for user-defined ones, both those and the
+    bodies/implementations are specified.
+
+    * (Types_Catalog.pod)  Refactored the catalog types for defining
+    main|outer and inner routines, so that routine headings and bodies are
+    now separate from each other, and routine declared names are now
+    external to both parts; that is, a routine's name, if it has one, is
+    supplied by whatever other type embeds the otherwise anonymous routine
+    definition.  The 11 types Cat.(|Inner)(Func|Updater|Proc) and
+    Cat.Inner(Func|Updater)(Set|Tree) and Cat.InnerProcTree were refactored
+    into the 12 types Cat.(Func|Upd|Proc)(Head|Body) and
+    Cat.Inner(Func|Upd|Proc)(Body|Set).  Following this refactoring plus
+    the previous change item, the 'name' attribute for named functions is
+    directly in each of the 12 Cat.(Sys|Dep|Pkg|Inner)(Func|Upd|Proc)Set
+    types; all 12 have a 'head' attribute and all but the Sys have a 'body'
+    attribute, those embedding appropriate Head and Body types, the 3
+    together completely defining the routine.  Both outer and inner
+    routines of the same kind use the same Head types, but have their own
+    Body types.  Another change this refactoring brought is that an outer
+    routine no longer requires an inner routine to define its own
+    interface; now an outer routine body embeds its implementation detail
+    (still an inner routine Body) directly, rather than it being a list
+    item in an inner routines list whose name is the empty string;
+    therefore, outer routines no longer need to have inner routines at all
+    unless they do certain things.
+
+    * (Types_Catalog.pod)  Despite the widescale refactoring, these 10
+    catalog types transitioned from the previous to the current design
+    while retaining their names and purpose, and also all or most of their
+    own design details: Cat.Name, Cat.NameChain, Cat.Comment,
+    Cat.SeqOfProcStmt, Cat.ProcStmt, Cat.NameTypeMap, NameExprMap,
+    AttrRenameMap, SetOfName, Cat.SetOfNameExprMap.  Also some minor typo
+    fixes with a few of the 9 QuasiCat type docs, but the whole block was
+    left alone and still fits in fine.
+
+    * (Types_Catalog.pod)  The following 6 catalog types were not addressed
+    yet and still need to be rewritten/refactored: Cat.E_TK, Cat.E_TDM,
+    Cat.Type, Cat.Exception, Cat.SetOfSetOfName, Cat.SetOfNameChain.  More
+    generally speaking, the catalog types for defining data types (and
+    databases) still need to be rewritten, or actually they mostly need to
+    be written in the first place.  Hopefully by the next Muldis D release.
+
+    * (Types_Catalog.pod)  In the process of the other changes, the 3
+    largest main documentation sections, "SYSTEM-DEFINED CORE CATALOG (
+    SCALAR | TUPLE | RELATION ) DATA TYPES", were reorganized into the 10
+    main documentation sections "TYPES FOR DEFINING ( ENTITY NAMES AND
+    COMMENTS | SYSTEM-DEFINED ENTITIES | FEDERATIONS | DEPOTS AND SUBDEPOTS
+    | PACKAGES | ROUTINE HEADINGS | ROUTINE BODIES | INNER ROUTINE BODIES
+    )" and "SIMPLE GENERIC CATALOG COLLECTION TYPES" and "OLD TYPE
+    DEFINITIONS TO REWRITE OR REPLACE".
 
 2008-04-21  Darren Duncan <perl@DarrenDuncan.net>
 
