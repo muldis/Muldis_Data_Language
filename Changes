@@ -45,12 +45,30 @@
     * (PTMD_Tiny.pod)  Updated the literal syntax for a Cat.NameChain so
     its 'seq' representation now has square brackets around the name parts.
 
-    * (Types_Catalog.pod)  Removed all the sys.Core.Type.Cat.\w+ types
-    except for the 3 [Name, NameChain, Comment], which are now in a pod
-    section named TYPES FOR DEFINING ENTITY NAMES AND COMMENTS.  (The
-    QuasiCat were all retained as well, keeping their pod section name.)
-    The removed will be either replaced or restored piecemeal in a
-    different order, as detailed in following change items.
+    * (Types_Catalog.pod, PTMD_Tiny.pod, HDMD_Perl_Tiny.pod)  Refactored
+    the catalog types for defining value expressions and routine
+    statements.  Routine parameters and variables are now invokable
+    directly in expressions and statements, and are no longer invokable by
+    way of 'param' or 'var' etc expression nodes.  Expression nodes and
+    parameters and variables are now invoked using Cat.NameChain rather
+    than Cat.Name (the implementing change was in Cat.NameExprMap), which
+    allows you both to access their attributes with minimal syntax, but
+    also normalizes the syntax for local and global variable access.  The 2
+    types Cat.ProcStmtArg(|Set) were eliminated since, following the above
+    changes, Cat.NameExprMap could be used instead for defining procedure
+    statement arguments; then the Cat.E_PSAK enumerated type had no more
+    uses, and was eliminated.  The 3 types Cat.Expr(Node|Set|Tree) were
+    refactored into the 6 types
+    Cat.(|(Sca|ScaPR|Tup|Rel)Lit|FuncInvo)ExprNodeSet; the first of those
+    is a tuple with 5 attributes, one each of the other 5 of those, which
+    are relations; so then an inner routine that used to have a
+    Cat.Expr(Set|Tree) attribute now has a Cat.ExprNodeSet attribute
+    instead; then the Cat.E_ENK enumerated type had no more uses, and was
+    eliminated.  With the previous changes, code for expressions or
+    statements no longer has any inapplicable attributes, save relations
+    allowed to be empty.  Along with their types, the special literal
+    syntax for Cat.E_ENK and Cat.E_PSAK was eliminated from the 2 Tiny
+    dialects.
 
     * (Types_Catalog.pod, PTMD_Tiny.pod, HDMD_Perl_Tiny.pod)  Added new
     scalar type Cat.DeclNameChain, as well as its own literal syntax in
@@ -58,6 +76,13 @@
     it allows 0..N name parts rather than 2..N, and its flat possrep also
     has periods before and after the parts rather than just between them.
     This type was added for use when declaring subdepots, depot entities.
+
+    * (Types_Catalog.pod)  Removed all the sys.Core.Type.Cat.\w+ types
+    except for the 3 [Name, NameChain, Comment], which are now in a pod
+    section named TYPES FOR DEFINING ENTITY NAMES AND COMMENTS.  (The
+    QuasiCat were all retained as well, keeping their pod section name.)
+    The removed will be either replaced or restored piecemeal in a
+    different order, as detailed in following change items.
 
 2008-04-21  Darren Duncan <perl@DarrenDuncan.net>
 
