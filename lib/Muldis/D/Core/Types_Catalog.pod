@@ -1158,9 +1158,9 @@ This is the name of the (|inner )function being invoked.
 =item C<args> - C<Cat.NameExprMap>
 
 These are the arguments for the (|inner )function invocation.  Each element
-defines one argument value, with the element C<name> matching the parameter
-name, and the element C<expr> naming another local expression node which
-defines the value.
+defines one argument value, with the element C<name> matching the invoked
+(|inner )function's parameter name, and the element C<expr> naming another
+local expression node which defines the value.
 
 =back
 
@@ -1249,8 +1249,8 @@ common) case, the parameter is referenced directly.
 
 These are the 0..N read-only arguments to the (|inner )updater invocation.
 Each element defines one argument value, with the element C<name> matching
-the parameter name, and the element C<expr> naming a local expression node
-(or parameter) which defines the value.
+the invoked routine's parameter name, and the element C<expr> naming a
+local expression node (or parameter) which defines the value.
 
 =back
 
@@ -1260,6 +1260,89 @@ C<upd_args> and C<ro_args>.
 The default value of C<Cat.MultiUpdStmt> directly corresponds to the
 default value of C<Cat.InnerUpdBody> and unconditionally updates its
 containing (|inner )updater's C<topic> argument to the value C<Bool:false>.
+
+=head2 sys.Core.Type.Cat.InnerProcBody
+
+A C<Cat.InnerProcBody> is a C<Tuple>.  It specifies the entire body or
+implementation of an inner procedure (or the main body of a procedure),
+besides the details that a C<Cat.ProcHead> has, one of which each
+C<Cat.InnerProcBody> typically must be paired with.
+
+A C<Cat.InnerProcBody> has these 3 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the (|inner )procedure body.
+
+=item C<vars> - C<Cat.NameTypeMap>
+
+This defines the 0..N (non-parameter) lexical variables of the (|inner
+)procedure; they initialize to the default values of their declared types.
+
+=item C<stmts> - C<Cat.SeqOfProcStmt>
+
+This defines the entire main body of the (|inner )procedure, which is
+composed of 0..N procedure statements.  These statements must reference all
+of the parameters and lexical variables that the (|inner )procedure has.
+
+=back
+
+There is a distributed (unique) key over the C<name> attributes of all the
+attributes of C<vars>; and if this C<Cat.InnerProcBody> is paired with a
+C<Cat.ProcHead>, then the distributed key also extends over the head's
+parameter names.
+
+The default value of C<Cat.InnerProcBody> directly corresponds to the
+default value of C<Cat.ProcHead> and is a no-op, having zero statements.
+
+=head2 sys.Core.Type.Cat.SeqOfProcStmt
+
+A C<Cat.SeqOfProcStmt> is a C<Seq> whose C<value> attribute has a declared
+type of C<Cat.ProcStmt>.
+
+=head2 sys.Core.Type.Cat.ProcStmt
+
+A C<Cat.ProcStmt> is a C<Tuple>.  It specifies a generic statement from
+which non-implicitly-atomic procedural Muldis D code is composed.  Only
+(|inner )procedure may contain C<Cat.ProcStmt>.
+
+A C<Cat.ProcStmt> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the statement as a whole.
+
+=item C<procedure> - C<Cat.NameChain>
+
+Every procedure statement is an invocation of some other procedural routine
+(eg, procedure, update operator, system service), either user-defined or
+system-defined; this is the name of that routine.
+
+=item C<upd_args> - C<Cat.NameExprMap>
+
+These are the 0..N subject-to-update arguments to the routine invocation,
+as-per C<ro_args>.
+
+=item C<ro_args> - C<Cat.NameExprMap>
+
+These are the 0..N read-only arguments to the routine invocation.  Each
+element defines one argument value, with the element C<name> matching the
+invoked routine's parameter name, and the element C<expr> naming a local or
+global variable or statement-containing routine parameter which defines the
+value.
+
+=back
+
+There is a distributed (unique) key over the C<name> attributes of
+C<upd_args> and C<ro_args>.
+
+The default value of C<Cat.ProcStmt> will invoke
+C<sys.Core.Universal.assign>, giving it arguments from same-named and typed
+parameters.
 
 =head1 SIMPLE GENERIC CATALOG COLLECTION TYPES
 
@@ -1279,18 +1362,26 @@ default value has zero tuples.
 =head2 sys.Core.Type.Cat.NameExprMap
 
 A C<Cat.NameExprMap> is a C<Relation>.  It defines a basic component-values
-list, meaning a set of names, with a declared local expression node name
-for each.  It is used to define collection literals; one C<Cat.NameExprMap>
-defines a whole C<Tuple> value.  It is also used to define argument lists
-for routine invocations.  A C<Cat.NameExprMap> has 2 attributes, C<name> (a
-C<Cat.Name>) and C<expr> (a C<Cat.NameChain>); the C<name> is the name of
-the tuple/etc attribute or routine argument, and comprises a unary key; the
-C<expr> is the declared local name of the expression node (or parameter)
-which defines the value for the attribute or argument.  Note that while the
-C<expr> attribute could conceivably just be a C<Cat.Name> because all of
-its allowed values would be in the C<lex> namespace, the C<Cat.NameChain>
-is used instead so that value expressions can take advantage of terse
-syntax for addressing value attributes.  Its default value has zero tuples.
+list, meaning a set of names, with a declared local expression node (or
+parameter or variable) name for each.  It is used to define collection
+literals; one C<Cat.NameExprMap> defines a whole C<Tuple> value.  It is
+also used to define argument lists for routine invocations.  A
+C<Cat.NameExprMap> has 2 attributes, C<name> (a C<Cat.Name>) and C<expr> (a
+C<Cat.NameChain>); the C<name> is the name of the tuple/etc attribute or
+routine argument, and comprises a unary key; the C<expr> is the declared
+local name of the expression node (or parameter or variable) which defines
+the value for the attribute or argument.  Note that while the C<expr>
+attribute could conceivably just be a C<Cat.Name> because most of its
+allowed values would be in the C<lex> namespace, the C<Cat.NameChain> is
+used instead so that value expressions can take advantage of terse syntax
+for addressing value attributes.  Its default value has zero tuples.
+
+=head2 sys.Core.Type.Cat.AttrRenameMap
+
+A C<Cat.AttrRenameMap> is a C<Relation>.  It is used as a specification for
+how to rename attributes of some collection.  A C<Cat.AttrRenameMap> has 2
+attributes, C<before> and C<after>, each of those being a C<Cat.Name>, and
+each of those being a unary key.  Its default value has zero tuples.
 
 =head2 sys.Core.Type.Cat.SetOfName
 
