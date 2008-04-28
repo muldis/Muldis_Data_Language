@@ -28,9 +28,7 @@ the new slightly longer names, but we should defer that change until we are
 also changing all type/routine/etc signatures in some other way, such as
 for the previous todo item.  Meanwhile some items may move over piecemeal.
 
-* Overhaul and expand the catalog types for defining data types.
-
-* Add catalog types for defining whole packages, subdepots, depots, whole
+* Overhaul and expand the catalog types for defining data types, whole
 database constraints, virtual relvars, triggered routines, etc.
 
 * Add some automatic code completion to the two Tiny dialects or as a
@@ -51,6 +49,30 @@ update a single possrep attr, as per the Tuple.\w+ functions 'attr',
 'update_attr'.  Another 2 will extract|update an arbitrary subset of
 possrep attrs as per the Tuple.\w+ functions 'project', 'multi_update'.
 For that matter, add an analogue to Tuple.substitution_in_default as well.
+
+* Add a new extension, perhaps ext/Patterns.pod, which does
+pattern-sensitive search and/or replace in Text values, including both the
+full feature set of SQL's LIKE operator (not just the special case of
+matching a static substring once), as well as full regular expression
+support such as grep or Perl et al support, or simple transliterations.
+This new extension is meant to be algorithm-agnositic and can both be
+plugged with new algorithms or have multiple system-defined ones, as per
+Perl 5.10 now supports plugins that substitute for its builtin regexp
+engines.
+
+* Generalize the operator set for controlled character string degrading, of
+which upper/lower case folding is one example, and of which removing
+accents or combining characters with base characters is another.  Yet
+another is converting data from a larger character repetoire to a smaller
+one eg, anything to ASCII, where we want for example range-external
+characters to be either deleted or changed to certain other characters.
+Any features-to-be like case-insensitive or accent-insensitive comparisons
+(over which keys or indexes could be built) needs to be done this way; you
+don't simply treat non-identical things as being equal; you actually change
+them so they are.  These features are possibly useable not just with user
+data, but also database entity names on underlying systems that are eg not
+case sensitive but case preserving and we want to retain those semantics
+for some reason of backwards compatibility.
 
 * Add relational operators for sorting and quota queries; that is,
 analogues to SQL's ORDER BY and LIMIT tasks, as well as order-significant
