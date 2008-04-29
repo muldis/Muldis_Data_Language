@@ -1665,21 +1665,20 @@ Now, most of the time, the code for a Muldis D application would just be
 collected in a single depot, matters of reusability between multiple
 database-sharing applications aside.  Each depot is designed to accommodate
 its own collections of resources according to various good practices.  A
-depot fundamentally consists a collection of packages (under a potentially
-multi-level namespace), into which everything else is grouped.  Each
-package declares its own public interface, consisting of the types,
-routines, and relvars that are allowed to be directly invoked or referenced
-from outside of the package, and it can also have more types, routines, and
-relvars which are private to the package.  This is analogous to a class
-definition with public and private elements, or to C .h vs .c files, or to
-an Oracle DBMS' "package".  Unlike with a typical supporting SQL DBMS that
-gives users a choice, Muldis D requires all depot entities to be in
-packages for simplicity; but making all package members public has the
-effect of negating package encapsulation.  All non-lexical data variables
-in a depot may only be relation typed, because relational databases are
-composed fundamentally of just relations.  (Technically speaking, all
-non-lexical relvars are actually pseudo-variables which reflect components
-of dbvars, the actual non-lexical variables.)
+depot fundamentally consists a collection of types, routines, and packages
+(under a potentially multi-level namespace), where some types and routines
+are grouped under packages and others aren't.  Each package declares its
+own public interface, consisting of the types, routines, and relvars that
+are allowed to be directly invoked or referenced from outside of the
+package, and it can also have more types, routines, and relvars which are
+private to the package.  This is analogous to a class definition with
+public and private elements, or to C .h vs .c files, or to an Oracle DBMS'
+"package".  All non-lexical data variables in a depot may only be database
+typed, and the databases are in turn composed of relations, because
+relational databases are composed fundamentally of just relations.  To be
+more specific, each depot contains exactly 1 dbvar, and each subdepot and
+package in it also contains exactly 1 dbvar, where the latter dbvars are
+pseudo-variables which are attributes of their parent depot's dbvar.
 
 When a DBMS starts up, it only contains one auto-started process, which is
 the root process; the root process is defined either by the non-hosted
