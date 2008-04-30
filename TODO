@@ -31,6 +31,16 @@ for the previous todo item.  Meanwhile some items may move over piecemeal.
 * Overhaul and expand the catalog types for defining data types, whole
 database constraints, virtual relvars, triggered routines, etc.
 
+* Add a system-defined function that will take a function name as a normal
+data argument and then turns around and invokes that function.  This is the
+fundamental function over which the generic relational restriction operator
+or map operator or reduce operator et al works.  Note that while the needs
+of those functions could be addressed as special catalog node syntax rather
+than an actual function, we go the function route so that users can define
+their own operators that invoke based on data.  Similarly add a
+system-defined procedure, which is what try_catch et al works over for
+calling named procedures.
+
 * Add some automatic code completion to the two Tiny dialects or as a
 general function, mainly so that tuples comprising catalogs don't have to
 be written out in full; attributes may be omitted by the coders but will be
@@ -62,11 +72,12 @@ engines.
 
 * Generalize the operator set for controlled character string degrading, of
 which upper/lower case folding is one example, and of which removing
-accents or combining characters with base characters is another.  Yet
-another is converting data from a larger character repetoire to a smaller
-one eg, anything to ASCII, where we want for example range-external
-characters to be either deleted or changed to certain other characters.
-Any features-to-be like case-insensitive or accent-insensitive comparisons
+accents or combining characters with base characters is another, and of
+which trimming or normalizing runs of whitespace is another.  Yet another
+is converting data from a larger character repetoire to a smaller one eg,
+anything to ASCII, where we want for example range-external characters to
+be either deleted or changed to certain other characters.  Any
+features-to-be like case-insensitive or accent-insensitive comparisons
 (over which keys or indexes could be built) needs to be done this way; you
 don't simply treat non-identical things as being equal; you actually change
 them so they are.  These features are possibly useable not just with user
@@ -80,10 +91,15 @@ aggregate operations on relation attributes (eg, catenate).  Consider
 overhauling the nature of the Ordered role and/or generic comparison or
 sorting operators.
 
-* Define more flow control operators like IF/ELSE, GIVEN/WHEN, etc.
+* Define more flow control operators like IF/ELSE, GIVEN/WHEN, etc.  Both
+functional and imperative versions.
 
-* Define short-hand data definition operators analagous to SQL's CREATE,
-ALTER, DROP etc.
+* Define short-hand data definition procedures analagous to SQL's CREATE,
+ALTER, DROP etc.  Note that these are not short-hand for inserting records
+into catalogs, at least when the code doing either is an updater or
+procedure.  Rather, these procedures are mainly for making bootloaders
+work, since those can not directly invoke variables such as the catalogs in
+order to insert into them.
 
 * Flesh out and add system service operators like random numbers or current
 dates or simple generic I/O.
