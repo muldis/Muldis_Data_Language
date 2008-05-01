@@ -511,7 +511,7 @@ Examples:
 
 =head2 sys.Core.Type.Relation
 
-This node type represents a relation value.  It has 2 elements:
+This node type represents a relation value.  It has 2-3 elements:
 
 =over
 
@@ -521,12 +521,26 @@ Node type: the Perl C<Str> value C<Relation>.
 
 =item *
 
-The payload; a Perl C<Array|Seq|Set|KeySet> of C<Str|Hash|Mapping> value.
+Only when the node has 3 elements; ordered attr names; a Perl C<Array|Seq>
+value.
+
+=item *
+
+The payload; only when the node has 2 elements, a Perl
+C<Array|Seq|Set|KeySet> of C<Str|Hash|Mapping> value; only when the node
+has 3 elements, a Perl C<Array|Seq> of C<Array|Seq> value.
 
 =back
 
 This node is interpreted as a Muldis D C<sys.Core.Type.Relation> value
-whose tuples and attribute names are defined by the payload.  Iff the
+as follows:
+
+=over
+
+=item *
+
+If the node has 2 elements, then:  The new relation value's
+tuples and attribute names are defined by the payload.  Iff the
 payload has zero elements, then it defines the only relation value having
 zero attributes and zero tuples.  If the payload has elements, then either
 the elements must all be C<Str>, or they must all be C<Hash|Mapping>, but
@@ -540,6 +554,20 @@ node; every tuple-defining element of the payload must be of the same
 degree and have the same attribute names as its sibling elements; these are
 the degree and attribute names of the relation as a whole, which is its
 heading for the current purposes.
+
+=item *
+
+If the node has 3 elements, then:  The new relation value's attribute names
+are defined by the ordered attr names (second element) and the relation
+body's tuples' attribute values are defined by the payload (third element).
+This format is meant to be the most compact of the generic relation node
+formats, as the attribute names only appear once for the relation rather
+than repeating for each tuple.  As a trade-off, the attribute values per
+tuple from the third element must appear in the same order as their
+corresponding attribute names appear in the second element, as the names
+and values in the relation literal are matched up by ordinal position here.
+
+=back
 
 Examples:
 
@@ -557,11 +585,8 @@ Examples:
         },
     ] ]
 
-    [ 'Relation', [
-        {
-            'name' => [ 'Text', 'Michelle' ],
-            'age'  => [ 'Int', 'perl_int', 17 ],
-        },
+    [ 'Relation', [ 'name', 'age', ], [
+        [ [ 'Text', 'Michelle' ], [ 'Int', 'perl_int', 17 ], ],
     ] ]
 
 =head2 sys.Core.Type.Set
