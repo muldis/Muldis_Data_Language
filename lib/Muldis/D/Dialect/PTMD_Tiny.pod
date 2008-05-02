@@ -174,7 +174,7 @@ execution.  Any remaining errors should be corrected as soon as possible.
         <spec_sep>
         (<[137F]>)
         <spec_sep>
-        (<[0-9A-F]>*)
+        ((<[0-9A-F]>*) (<segment_sep> (<[0-9A-F]>*))*)
     }
 
     token text {
@@ -299,17 +299,23 @@ execution.  Any remaining errors should be corrected as soon as possible.
 
     token list_close { \s* '}' }
 
-    token ord_list_open { '[' }
+    token ord_list_open { \s* '[' \s* }
 
-    token ord_list_close { ']' }
+    token ord_list_close { \s* ']' \s* }
 
     token list_sep { \s* ',' \s* }
 
     token pair_sep { \s* '=>' \s* }
 
-    token spec_sep { ':' }
+    token spec_sep { \s* ':' \s* }
 
     token quoted_text_str {
+        (<quoted_text_str_seg> (<segment_sep> <quoted_text_str_seg>)*)
+    }
+
+    token segment_sep { \s* '~' \s* }
+
+    token quoted_text_str_seg {
         <text_delim>
             (<text_char>*)
         <text_delim>
@@ -334,7 +340,7 @@ execution.  Any remaining errors should be corrected as soon as possible.
 
     token nc_seq {
         <ord_list_open>
-            ((<cat_name>) (<nc_elem_sep> (<cat_name>))+)
+            ((<cat_name>) (\s* <nc_elem_sep> \s* (<cat_name>))+)
         <ord_list_close>
     }
 
@@ -361,7 +367,7 @@ execution.  Any remaining errors should be corrected as soon as possible.
 
     token dnc_seq {
         <ord_list_open>
-            (((<cat_name>) (<nc_elem_sep> (<cat_name>))?)?)
+            (((<cat_name>) (\s* <nc_elem_sep> \s* (<cat_name>))?)?)
         <ord_list_close>
     }
 
