@@ -67,10 +67,6 @@ more or less:
 
             # The following are all regular tuple types.
 
-            sys.Core.Type.Cat.System
-            sys.Core.Type.Cat.Federation
-            sys.Core.Type.Cat.Depot
-            sys.Core.Type.Cat.Package
             sys.Core.Type.Cat.FuncHead
             sys.Core.Type.Cat.UpdHead
             sys.Core.Type.Cat.ProcHead
@@ -78,12 +74,21 @@ more or less:
             sys.Core.Type.Cat.UpdBody
             sys.Core.Type.Cat.ProcBody
             sys.Core.Type.Cat.InnerFuncBody
-            sys.Core.Type.Cat.ExprNodeSet
             sys.Core.Type.Cat.InnerUpdBody
             sys.Core.Type.Cat.InnerProcBody
             sys.Core.Type.Cat.ProcStmt
             sys.Core.Type.Cat.Type
             sys.Core.Type.Cat.Exception
+
+            sys.Core.Type.Database
+
+                # The following are all regular database types.
+
+                sys.Core.Type.Cat.System
+                sys.Core.Type.Cat.Federation
+                sys.Core.Type.Cat.Depot
+                sys.Core.Type.Cat.Package
+                sys.Core.Type.Cat.ExprNodeSet
 
         sys.Core.Type.Relation
 
@@ -115,6 +120,13 @@ more or less:
                 sys.Core.Type.Cat.SetOfNameExprMap
                 sys.Core.Type.Cat.SetOfSetOfName
                 sys.Core.Type.Cat.SetOfNameChain
+
+                sys.Core.Type.Maybe
+                    sys.Core.Type.Single
+
+                    # The following are all regular single types.
+
+                    sys.Core.Type.Cat.SingleOfComment
 
             sys.Core.Type.Seq
 
@@ -240,7 +252,7 @@ default value et al is as for C<Cat.Name>.
 
 =head2 sys.Core.Type.Cat.System
 
-A C<Cat.System> is a C<Tuple>.  It specifies the public interfaces of
+A C<Cat.System> is a C<Database>.  It specifies the public interfaces of
 system-defined entities, specifically all the system-defined types,
 routines, and catalogs.  Both standard system-defined entities and
 implementation-specific system-defined entities are specified here,
@@ -252,7 +264,7 @@ A C<Cat.System> has these N attributes:
 
 =over
 
-=item C<comment> - C<Cat.Comment>
+=item C<comment> - C<Cat.SingleOfComment>
 
 This is an optional programmer comment about the collection of
 system-defined entities as a whole.
@@ -350,7 +362,7 @@ plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.Core.Type.Cat.Federation
 
-A C<Cat.Federation> is a C<Tuple>.  It specifies a federation of depot
+A C<Cat.Federation> is a C<Database>.  It specifies a federation of depot
 mounts, that is, all the depot mounts that an in-DBMS process can see or
 update, and that defines the scope of an active transaction.  There is
 exactly one of these per process and it doesn't have a name.  The system
@@ -360,7 +372,7 @@ A C<Cat.Federation> has these 2 attributes:
 
 =over
 
-=item C<comment> - C<Cat.Comment>
+=item C<comment> - C<Cat.SingleOfComment>
 
 This is an optional programmer comment about the federation as a whole.
 
@@ -408,8 +420,8 @@ Its default value is empty.
 
 =head2 sys.Core.Type.Cat.Depot
 
-A C<Cat.Depot> is a C<Tuple>.  It specifies the entire system catalog of a
-single depot, that is, the widest scope within which all entities must be
+A C<Cat.Depot> is a C<Database>.  It specifies the entire system catalog of
+a single depot, that is, the widest scope within which all entities must be
 fully defined in terms of just user-defined entities within the same scope
 or of system-defined entities.  It also doubles to specify the system
 catalog of a subdepot, which is an arbitrary subset of a depot's entities
@@ -422,7 +434,7 @@ A C<Cat.Depot> has these N attributes:
 
 =over
 
-=item C<comment> - C<Cat.Comment>
+=item C<comment> - C<Cat.SingleOfComment>
 
 This is an optional programmer comment about the (|sub)depot as a whole.
 
@@ -564,19 +576,19 @@ plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.Core.Type.Cat.Package
 
-A C<Cat.Package> is a C<Tuple>.  It specifies the entire system catalog of
-a single package, which provides a privatizing namespace for a subset of a
-depot's entities; entities outside a package can only invoke that package's
-entities which have been declared part of its public interface.  A package
-internally looks like a depot but that it doesn't contain subdepots or
-other packages.  The system catalog variable named C<pkg.cat> is of the
-C<Cat.Package> type.
+A C<Cat.Package> is a C<Database>.  It specifies the entire system catalog
+of a single package, which provides a privatizing namespace for a subset of
+a depot's entities; entities outside a package can only invoke that
+package's entities which have been declared part of its public interface.
+A package internally looks like a depot but that it doesn't contain
+subdepots or other packages.  The system catalog variable named C<pkg.cat>
+is of the C<Cat.Package> type.
 
 A C<Cat.Package> has these N attributes:
 
 =over
 
-=item C<comment> - C<Cat.Comment>
+=item C<comment> - C<Cat.SingleOfComment>
 
 This is an optional programmer comment about the package as a whole.
 
@@ -951,7 +963,7 @@ C<Bool:false>.
 
 =head2 sys.Core.Type.Cat.ExprNodeSet
 
-A C<Cat.ExprNodeSet> is a C<Tuple> that specifies a set of named value
+A C<Cat.ExprNodeSet> is a C<Database> that specifies a set of named value
 expression nodes.  It is typically composed into a (|inner
 )(function|updater). Each tuple of a C<Cat.ExprNodeSet> attribute is a
 named expression node, which is the majority component of functional Muldis
@@ -1020,8 +1032,7 @@ This is the declared name of the expression node.
 
 =item C<comment> - C<Cat.Comment>
 
-This is an optional programmer comment about either the expression node or
-the expression node (sub-)tree it is the root of.
+This is an optional programmer comment about the expression (leaf) node.
 
 =item C<value> - C<Scalar>
 
@@ -1407,6 +1418,11 @@ of C<Cat.Name>.
 
 A C<Cat.SetOfNameExprMap> is a C<Set> whose C<value> attribute has a
 declared type of C<Cat.NameExprMap>.
+
+=head2 sys.Core.Type.Cat.SingleOfComment
+
+A C<Cat.SingleOfComment> is a C<Single> whose C<value> attribute has a
+declared type of C<Cat.Comment>.
 
 =head1 OLD TYPE DEFINITIONS TO REWRITE OR REPLACE
 
