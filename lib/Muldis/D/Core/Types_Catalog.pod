@@ -278,6 +278,24 @@ These are all the system-defined namespaces where DBMS entities may live.
 These are the interfaces of all the system-defined
 functions|updaters|procedures.
 
+=item C<special_types> - C<Cat.SysSpecTypeSet>
+
+These are the few central system-defined data types that have special
+hard-coded meanings and are not defined like any other types. Specifically,
+it declares these 9 standard types (all in the C<sys.std.Core.Type>
+namespace): C<Universal>, C<Empty>, C<Scalar>, C<Tuple>, C<Relation>,
+C<QuasiScalar>, C<QuasiTuple>, C<QuasiRelation>, C<Remnant>.
+
+=item C<sca_npr_types> - C<Cat.SysScaNPRTypeSet>
+
+These are all the system-defined (|quasi-)scalar root (not union etc) types
+that have no possreps, the likes of which users can not define, and values
+of which can only be selected using either system-defined literal syntax or
+mapping functions.  Specifically, it declares these 7 standard types: in
+the C<sys.std.Core.Type> namespace, C<Bool>, C<Int>, C<Blob>, C<Text>,
+C<QuasiScalarDVPT>; in the C<sys.std.Core.Type.Cat> namespace, C<Name>,
+C<Comment>.
+
 =item C<types> - C<Cat.SysTypeSet>
 
 These are the interfaces of all the system-defined types.
@@ -357,6 +375,68 @@ and no more detail than necessary about how it is implemented.
 
 A C<Cat.Sys(Func|Upd|Proc)Set> has a binary (unique) key on the C<parent>
 plus C<name> attributes.  Its default value is empty.
+
+=head2 sys.Core.Type.Cat.SysSpecTypeSet
+
+A C<Cat.SysSpecTypeSet> is a C<Relation> that specifies a set of
+system-defined types which are particularly special and unlike other types.
+
+A C<Cat.SysSpecTypeSet> has these 3 attributes:
+
+=over
+
+=item C<parent> - I<TODO.>
+
+I<TODO.>
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the type within the namespace defined by
+C<parent>; other Muldis D code would reference it with the combination of
+C<parent> and C<name>.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the type as a whole.
+
+=back
+
+A C<Cat.SysSpecTypeSet> has a binary (unique) key on the C<parent> plus
+C<name> attributes.  Its default value is empty.
+
+=head2 sys.Core.Type.Cat.SysScaNPRTypeSet
+
+A C<Cat.SysSpecTypeSet> is a C<Relation> that specifies a set of
+system-defined (|quasi-)scalar root (not union etc) types that have no
+possreps.
+
+A C<Cat.SysScaNPRTypeSet> has these 4 attributes:
+
+=over
+
+=item C<parent> - I<TODO.>
+
+I<TODO.>
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the type within the namespace defined by
+C<parent>; other Muldis D code would reference it with the combination of
+C<parent> and C<name>.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the type as a whole.
+
+=item C<is_quasi> - C<Bool>
+
+This is C<Bool:true> if the type is a quasi-scalar type; it is
+C<Bool:false> if the type is a scalar type.
+
+=back
+
+A C<Cat.SysScaNPRTypeSet> has a binary (unique) key on the C<parent> plus
+C<name> attributes.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING FEDERATIONS
 
@@ -1369,6 +1449,88 @@ C<upd_args> and C<ro_args>.
 The default value of C<Cat.ProcStmt> will invoke
 C<sys.Core.Universal.assign>, giving it arguments from same-named and typed
 parameters.
+
+=head1 TYPES FOR DEFINING DATA TYPES
+
+=head2 sys.Core.Type.Cat.DomainType
+
+A C<Cat.DomainType> is a C<Tuple>.  It defines a new data (sub-)type simply
+in terms of its values being an explicit subset of the values of a
+specified single other type (and it has its own default value).  It does
+not define any changes or supplements to the interfaces available for
+working with its values, instead simply using those of its declared parent
+type.  A data type defined in this way is typically not considered to exist
+when the system wants to determine the MST (most specific type) of one of
+its values.
+
+A C<Cat.DomainType> has these N attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the domain type as a whole.
+
+=item C<main_type> - C<Cat.InnerDomainType>
+
+This defines the actual main domain type, which a C<Cat.DomainType> is just
+a wrapper for, namely what's left of the updater body after parts of it are
+optionally factored out into inner routines or inner types.
+
+=item C<inner_types> - C<Cat.InnerTypeSet>
+
+These are all the inner type definitions that this type contains.
+
+=item C<inner_funcs> - C<Cat.InnerFuncSet>
+
+These are all the inner function definitions that this type contains.
+
+=back
+
+There is a distributed (unique) key over the C<name> attributes of
+C<inner_(types|funcs)>.
+
+The default value of C<Cat.DomainType> is as per C<Cat.InnerDomainType>.
+
+=head1 TYPES FOR DEFINING INNER DATA TYPES
+
+=head2 sys.Core.Type.Cat.InnerDomainType
+
+A C<Cat.InnerDomainType> is a C<Tuple>.  Its purpose is as per
+C<Cat.DomainType> but that it does the actual work for that type.
+
+A C<Cat.InnerDomainType> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the inner domain type as a whole.
+
+=item C<base_type> - C<Cat.NameChain>
+
+This is the name of the other type that the current type is defined as
+an explicit restriction / subtype of; it can be any type at all.
+
+=item C<type_constraint> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of a C<type_constraint> function that
+determines what supertype values are part of the domain type.  The implicit
+function heading that this goes with has a single C<topic> parameter whose
+declared type is of the supertype and whose argument is the value to test;
+the function's implicit result type is C<Bool>.
+
+=item C<default_value> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of a function that results in the
+default value of the subtype; it has zero parameters and its result type is
+the same as the domain type whose declaration it is part of.
+
+=back
+
+The default value of C<Cat.InnerDomainType> defines an alias for
+C<Universal>, with the same default value; the C<base_type> is that type,
+C<type_constraint> is unconditionally C<Bool:true>.
 
 =head1 SIMPLE GENERIC CATALOG COLLECTION TYPES
 
