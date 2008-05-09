@@ -271,7 +271,16 @@ system-defined entities as a whole.
 
 =item C<namespaces> - C<Cat.SysNspSet>
 
-These are all the system-defined namespaces where DBMS entities may live.
+These are all the system-defined namespaces where DBMS entities may live,
+or that otherwise always exist due to being system-defined.  Specifically,
+it declares these 27 standard language namespaces:
+C<.(sys|mnt|fed|dep|sdp|pkg|inn|lex).> (which have the nameless global root
+namespace as their parent, spelled C<.>, that isn't also declared here),
+C<.sys.(cat|std|imp).>, C<.mnt.cat.>,
+C<.(fed|dep|sdp|pkg).(cat|lib|data).>, C<.sys.std.Core.>,
+C<.sys.std.Core.Type.>, C<.sys.std.Core.Type.Cat.>; it also declares other
+C<Core> namespaces, and where applicable, standard extensions or
+implementation-specific extensions.
 
 =item C<functions|updaters|procedures> - C<Cat.Sys(Func|Upd|Proc)Set>
 
@@ -281,10 +290,11 @@ functions|updaters|procedures.
 =item C<special_types> - C<Cat.SysSpecTypeSet>
 
 These are the few central system-defined data types that have special
-hard-coded meanings and are not defined like any other types. Specifically,
-it declares these 9 standard types (all in the C<sys.std.Core.Type>
-namespace): C<Universal>, C<Empty>, C<Scalar>, C<Tuple>, C<Relation>,
-C<QuasiScalar>, C<QuasiTuple>, C<QuasiRelation>, C<Remnant>.
+hard-coded meanings and are not defined like any other types.
+Specifically, it declares these 9 standard types (all in the
+C<sys.std.Core.Type> namespace): C<Universal>, C<Empty>, C<Scalar>,
+C<Tuple>, C<Relation>, C<QuasiScalar>, C<QuasiTuple>, C<QuasiRelation>,
+C<Remnant>.
 
 =item C<sca_npr_types> - C<Cat.SysScaNPRTypeSet>
 
@@ -321,9 +331,10 @@ A C<Cat.SysNspSet> has these 3 attributes:
 
 =over
 
-=item C<parent> - I<TODO.>
+=item C<parent> - C<Cat.DeclNameChain>
 
-I<TODO.>
+This is the fully-qualified name, in the nameless global root namespace, of
+the system namespace's parent system namespace.
 
 =item C<name> - C<Cat.Name>
 
@@ -350,9 +361,10 @@ A C<Cat.Sys(Func|Upd|Proc)Set> has these 4 attributes:
 
 =over
 
-=item C<parent> - I<TODO.>
+=item C<parent> - C<Cat.DeclNameChain>
 
-I<TODO.>
+This is the fully-qualified name, in the nameless global root namespace, of
+the function|updater|procedure's parent system namespace.
 
 =item C<name> - C<Cat.Name>
 
@@ -385,9 +397,10 @@ A C<Cat.SysSpecTypeSet> has these 3 attributes:
 
 =over
 
-=item C<parent> - I<TODO.>
+=item C<parent> - C<Cat.DeclNameChain>
 
-I<TODO.>
+This is the fully-qualified name, in the nameless global root namespace, of
+the type's parent system namespace.
 
 =item C<name> - C<Cat.Name>
 
@@ -414,9 +427,10 @@ A C<Cat.SysScaNPRTypeSet> has these 4 attributes:
 
 =over
 
-=item C<parent> - I<TODO.>
+=item C<parent> - C<Cat.DeclNameChain>
 
-I<TODO.>
+This is the fully-qualified name, in the nameless global root namespace, of
+the type's parent system namespace.
 
 =item C<name> - C<Cat.Name>
 
