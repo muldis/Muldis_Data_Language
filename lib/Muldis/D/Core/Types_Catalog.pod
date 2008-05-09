@@ -1466,30 +1466,25 @@ parameters.
 
 =head1 TYPES FOR DEFINING DATA TYPES
 
-=head2 sys.Core.Type.Cat.DomainType
+=head2 sys.Core.Type.Cat.(Scalar|Domain)Type
 
-A C<Cat.DomainType> is a C<Tuple>.  It defines a new data (sub-)type simply
-in terms of its values being an explicit subset of the values of a
-specified single other type (and it has its own default value).  It does
-not define any changes or supplements to the interfaces available for
-working with its values, instead simply using those of its declared parent
-type.  A data type defined in this way is typically not considered to exist
-when the system wants to determine the MST (most specific type) of one of
-its values.
+A C<Cat.(Scalar|Domain)Type> is a C<Tuple>.  Its purpose is as per
+C<Cat.Inner(Scalar|Domain)Type>, one of which it is a wrapper for along
+with other inner types that are composed into it.
 
-A C<Cat.DomainType> has these N attributes:
+A C<Cat.(Scalar|Domain)Type> has these N attributes:
 
 =over
 
 =item C<comment> - C<Cat.Comment>
 
-This is an optional programmer comment about the domain type as a whole.
+This is an optional programmer comment about the type as a whole.
 
-=item C<main_type> - C<Cat.InnerDomainType>
+=item C<main_type> - C<Cat.Inner(Scalar|Domain)Type>
 
-This defines the actual main domain type, which a C<Cat.DomainType> is just
-a wrapper for, namely what's left of the updater body after parts of it are
-optionally factored out into inner routines or inner types.
+This defines the actual main type, which a C<Cat.(Scalar|Domain)Type> is
+just a wrapper for, namely what's left of the updater body after parts of
+it are optionally factored out into inner routines or inner types.
 
 =item C<inner_types> - C<Cat.InnerTypeSet>
 
@@ -1504,14 +1499,178 @@ These are all the inner function definitions that this type contains.
 There is a distributed (unique) key over the C<name> attributes of
 C<inner_(types|funcs)>.
 
-The default value of C<Cat.DomainType> is as per C<Cat.InnerDomainType>.
+The default value of C<Cat.(Scalar|Domain)Type> is as per
+C<Cat.Inner(Scalar|Domain)Type>.
 
 =head1 TYPES FOR DEFINING INNER DATA TYPES
 
+=head2 sys.Core.Type.Cat.InnerScalarType
+
+A C<Cat.InnerScalarType> is a C<Tuple>.  It defines either a new
+(|quasi-)scalar root type with at least 1 possrep, or it defines a subtype
+of some other (|quasi-)scalar type which also adds at least one possrep to
+the other type.  Either way, every possrep defines a candidate
+representation that can handle every value of the (|sub)type it is defined
+with, and the Muldis D implementation may choose for itself which of these,
+or some other alternative, is the actual/physical representation.
+
+A C<Cat.InnerScalarType> has these 6 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the (|quasi-)scalar
+(|sub-)type as a whole.
+
+=item C<base_type> - C<Cat.MaybeOfNameChain>
+
+Iff the type being defined is a (|quasi-)scalar root type, then
+C<base_type> is not applicable and is a C<Nothing>.  Iff the type being
+defined is a subtype of some other (|quasi-)scalar type, then C<base_type>
+is a C<Single> whose sole element is the name of that other type.  Note
+that any type named by C<base_type> must itself have at least 1 possrep.
+
+=item C<is_quasi> - C<MaybeOfBool>
+
+Iff the type being defined is a (|quasi-)scalar root type, then C<is_quasi>
+is a C<Single> whose sole element is C<Bool:true> if the type is a
+quasi-scalar type; the element is C<Bool:false> if the type is a scalar
+type.  Iff the type being defined is a subtype of some other type, then
+C<is_quasi> is not applicable (would be redundant) and is a C<Nothing>.
+
+=item C<possreps> - C<Cat.PossrepSet>
+
+These are the possrep definitions that comprise this type such that each
+one fully defines a set of attributes plus restrictions on their collective
+values whereby it defines a representation of all values of this type.
+Note that if multiple (|quasi-)scalar types are related to each other such
+that more than one declares possreps for at least one common value, then
+the C<name> attribute of the C<possreps> attributes of all of those types'
+definitions have a distributed (unique) key over them.  I<Details of this
+policy are subject to be revised, but it must still ensure that diamond
+subtype/supertype relationships are taken properly into account.>
+
+=item C<possrep_maps> - C<Cat.PossrepMapSet>
+
+When this type has more than one possrep applicable to all of its values,
+these are the definitions of mapping functions for deriving the
+representation of a value in one possrep directly from the representation
+in another possrep, and also directly in the reverse.  Every one of this
+type's possreps must be mapped bidirectionally to every other one of its
+possreps, either directly or indirectly.  So for C<P> total possreps, the
+total number of bidirectional maps C<M> is in C<< (P-1) <= M <= ((P-1)*P/2)
+>>.  When a subtype is adding possreps to an other base type, all of the
+mapping functions are defined with the subtype.
+
+=item C<default> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of a function that results in the
+default value of the (|sub-)type; it has zero parameters and its result
+type is the same as the domain type whose declaration it is part of.
+
+=back
+
+The default value of C<Cat.InnerScalarType> defines a scalar root type with
+a single possrep whose name is the empty string and that has no attributes;
+it is a singleton type, whose default value is its only value.
+
+=head2 sys.Core.Type.Cat.PossrepSet
+
+A C<Cat.PossrepSet> is a C<Relation> that specifies a set of possreps that
+a (|quasi-)scalar (|sub-)type might consist primarily of.
+
+A C<Cat.PossrepSet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the possrep.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the possrep as a whole.
+
+=item C<attrs> - C<Cat.NameTypeMap>
+
+This defines the 0..N attributes of the possrep.
+
+=item C<constraint> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of a C<type_constraint> function that
+determines what combinations of possrep attribute values denote values of
+the (|sub-)type, besides the restrictions imposed by the declared types of
+the attributes individually.  The implicit function heading that this goes
+with has a single C<topic> parameter whose declared type is a tuple whose
+attributes match those declared by C<attrs> and whose argument denotes the
+value to test; the function's implicit result type is C<Bool>.  If the
+function unconditionally results in C<Bool:true>, then all possible
+combinations of attribute-allowable values are collectively allowed.
+
+=back
+
+A C<Cat.PossrepSet> has a unary (unique) key on the C<name> attribute.  Its
+default value is empty.
+
+=head2 sys.Core.Type.Cat.PossrepMapSet
+
+A C<Cat.PossrepMapSet> is a C<Relation> such that each tuple in it
+specifies a pair of mapping functions to bidirectionally derive a value of
+a type between 2 of its possreps.
+
+A C<Cat.PossrepMapSet> has these 5 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about this bidirectional mapping.
+
+=item C<p1> - C<Cat.Name>
+
+This is the declared name of one possrep.
+
+=item C<p2> - C<Cat.Name>
+
+This is the declared name of a second possrep.  The value of C<p2> must be
+distinct from that of C<p1>, and moreover, the 2 values must be mutually
+ordered so that the value of C<p1> is before the value of C<p2>; the latter
+constraint defines a C<Cat.PossrepMapSet>'s canonical form.
+
+=item C<p2_from_p1> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of a mapping function that derives the
+representation of the possrep named by C<p2> from that of the possrep named
+by C<p1>.  The implicit function heading that this goes with has a single
+C<topic> parameter whose declared type is a tuple whose attributes match
+those of C<p1>; the function's implicit result type is a tuple whose
+attributes match those of C<p2>.  Note that every distinct argument
+(domain) value of this function must have a distinct result (range) value.
+
+=item C<p1_from_p2> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of the inverse mapping function to that
+of C<p2_from_p1>.  I<Note that it would often be feasible for a Muldis D
+implementation to automatically infer a reverse function, but for now we
+still require it to be explicitly stated; the explicitly stated inverse
+function could be generated though.  This design is subject to change.>
+
+=back
+
+A C<Cat.PossrepMapSet> has a binary (unique) key on the C<p1> plus C<p2>
+attributes.  Its default value is empty.
+
 =head2 sys.Core.Type.Cat.InnerDomainType
 
-A C<Cat.InnerDomainType> is a C<Tuple>.  Its purpose is as per
-C<Cat.DomainType> but that it does the actual work for that type.
+A C<Cat.InnerDomainType> is a C<Tuple>.  It defines a new data (sub-)type
+simply in terms of its values being an explicit subset of the values of a
+specified single other type (and it has its own default value).  It does
+not define any changes or supplements to the interfaces available for
+working with its values, instead simply using those of its declared parent
+type.  A data type defined in this way is typically not considered to exist
+when the system wants to determine the MST (most specific type) of one of
+its values.
 
 A C<Cat.InnerDomainType> has these 4 attributes:
 
@@ -1526,7 +1685,7 @@ This is an optional programmer comment about the inner domain type as a whole.
 This is the name of the other type that the current type is defined as
 an explicit restriction / subtype of; it can be any type at all.
 
-=item C<type_constraint> - C<Cat.InnerFuncBody>
+=item C<constraint> - C<Cat.InnerFuncBody>
 
 This defines the entire (main) body of a C<type_constraint> function that
 determines what supertype values are part of the domain type.  The implicit
@@ -1534,7 +1693,7 @@ function heading that this goes with has a single C<topic> parameter whose
 declared type is of the supertype and whose argument is the value to test;
 the function's implicit result type is C<Bool>.
 
-=item C<default_value> - C<Cat.InnerFuncBody>
+=item C<default> - C<Cat.InnerFuncBody>
 
 This defines the entire (main) body of a function that results in the
 default value of the subtype; it has zero parameters and its result type is
@@ -1544,7 +1703,7 @@ the same as the domain type whose declaration it is part of.
 
 The default value of C<Cat.InnerDomainType> defines an alias for
 C<Universal>, with the same default value; the C<base_type> is that type,
-C<type_constraint> is unconditionally C<Bool:true>.
+C<constraint> is unconditionally C<Bool:true>.
 
 =head1 SIMPLE GENERIC CATALOG COLLECTION TYPES
 
