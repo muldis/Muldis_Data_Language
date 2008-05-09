@@ -1663,35 +1663,72 @@ attributes.  Its default value is empty.
 
 =head2 sys.Core.Type.Cat.InnerDomainType
 
-A C<Cat.InnerDomainType> is a C<Tuple>.  It defines a new data (sub-)type
-simply in terms of its values being an explicit subset of the values of a
-specified single other type (and it has its own default value).  It does
-not define any changes or supplements to the interfaces available for
-working with its values, instead simply using those of its declared parent
-type.  A data type defined in this way is typically not considered to exist
-when the system wants to determine the MST (most specific type) of one of
-its values.
+A C<Cat.InnerDomainType> is a C<Tuple>.  It defines a new data type whose
+values are all drawn from one or more specified other types (which can be
+any types at all), and that generally speaking it is an arbitrary subset of
+C<Universal> (and it has its own default value).  The value set of the new
+data type is determined by taking a set of source types' values and
+subtracting from it a set of filter types' values, then applying a type
+constraint function to the values remaining.  The two likely most common
+such type definition scenarios are defining a simple restriction/domain
+type over a single scalar source type (no possreps added) using a filter
+function, and defining a simple explicit union type of 2+ scalar source
+types.  A domain type does not define any changes or supplements to the
+interfaces available for working with its values, instead simply using
+those of its declared parent types.  A data type defined in this way is
+typically not considered to exist when the system wants to determine the
+MST (most specific type) of one of its values.
 
-A C<Cat.InnerDomainType> has these 4 attributes:
+A C<Cat.InnerDomainType> has these 7 attributes:
 
 =over
 
 =item C<comment> - C<Cat.Comment>
 
-This is an optional programmer comment about the inner domain type as a whole.
+This is an optional programmer comment about the inner domain type as a
+whole.
 
-=item C<base_type> - C<Cat.NameChain>
+=item C<sources> - C<Cat.SetOfNameChain>
 
-This is the name of the other type that the current type is defined as
-an explicit restriction / subtype of; it can be any type at all.
+These are the names of the 0..N other types that all the values of the new
+data type are drawn from; the complete set of source values is determined
+by either unioning (the default) or intersecting the values of these types.
+
+=item C<is_source_intersection> - C<Bool>
+
+Iff this is C<Bool:true> then the set of source data types will be
+intersected to determine the complete set of source values, and if
+C<sources> has no elements then the source set is just C<Empty>; iff this
+is C<Bool:false> then the set of source data types will be unioned to
+determine the complete set of source values, and if C<sources> has no
+elements then the source set is just C<Universal>.
+
+=item C<filters> - C<Cat.SetOfNameChain>
+
+These are the names of the 0..N other types (which are generally subtypes
+of those of C<sources>) that determine values which the new data type will
+I<not> contain; the complete set of filter values is determined by either
+intersecting (the default) or unioning the values of these types.
+
+=item C<is_filter_union> - C<Bool>
+
+Iff this is C<Bool:true> then the set of filter data types will be unioned
+to determine the complete set of filter values, and if C<filters> has no
+elements then the filter set is just C<Universal>; iff this is
+C<Bool:false> then the set of filter data types will be intersected to
+determine the complete set of filter values, and if C<filters> has no
+elements then the filter set is just C<Empty>.
 
 =item C<constraint> - C<Cat.InnerFuncBody>
 
 This defines the entire (main) body of a C<type_constraint> function that
-determines what supertype values are part of the domain type.  The implicit
-function heading that this goes with has a single C<topic> parameter whose
-declared type is of the supertype and whose argument is the value to test;
-the function's implicit result type is C<Bool>.
+determines what filter-type-passing source-type values are part of the
+domain type.  The implicit function heading that this goes with has a
+single C<topic> parameter whose declared type is C<Universal>, unless there
+is exactly 1 C<sources> element whereupon the declared type is the same as
+the source type, and whose argument is the value to test; the function's
+implicit result type is C<Bool>.  If the function unconditionally results
+in C<Bool:true>, then all filter-type-passing values are allowed.
 
 =item C<default> - C<Cat.InnerFuncBody>
 
@@ -1753,6 +1790,16 @@ of C<Cat.Name>.
 
 A C<Cat.SetOfNameExprMap> is a C<Set> whose C<value> attribute has a
 declared type of C<Cat.NameExprMap>.
+
+=head2 sys.Core.Type.Cat.SetOfNameChain
+
+A C<Cat.SetOfNameChain> is a C<Set> whose C<value> attribute has a declared
+type of C<Cat.NameChain>.
+
+=head2 sys.Core.Type.Cat.MaybeOfNameChain
+
+A C<Cat.MaybeOfNameChain> is a C<Maybe> whose C<value> attribute has a
+declared type of C<Cat.NameChain>.
 
 =head2 sys.Core.Type.Cat.SingleOfComment
 
