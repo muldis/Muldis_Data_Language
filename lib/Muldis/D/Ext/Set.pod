@@ -9,7 +9,7 @@ Muldis D extension for Set and Maybe specific operators
 
 =head1 VERSION
 
-This document is Muldis::D::Ext::Set version 0.22.0.
+This document is Muldis::D::Ext::Set version 0.22.1.
 
 =head1 PREFACE
 
@@ -42,7 +42,7 @@ I<This documentation is pending.>
 
 =over
 
-=item C<function sys.Set.is_member result Bool params { set(Set),
+=item C<function sys.std.Set.is_member result Bool params { set(Set),
 value(ScaTupRel) }>
 
 This function results in C<Bool:true> iff its C<value> argument matches the
@@ -51,13 +51,13 @@ C<value> is a member of C<set>), and C<Bool:false> otherwise.  This
 function will fail if the declared type of C<value> isn't a subtype of the
 declared type of the attribute.
 
-=item C<function sys.Set.is_not_member result Bool params { set(Set),
+=item C<function sys.std.Set.is_not_member result Bool params { set(Set),
 value(ScaTupRel) }>
 
-This function is exactly the same as C<sys.Set.is_member> except that it
-results in the opposite boolean value when given the same arguments.
+This function is exactly the same as C<sys.std.Set.is_member> except that
+it results in the opposite boolean value when given the same arguments.
 
-=item C<function sys.Set.insertion result Set params { set(Set),
+=item C<function sys.std.Set.insertion result Set params { set(Set),
 value(ScaTupRel) }>
 
 This function results in a C<Set> that is the relational union of C<set>
@@ -65,13 +65,13 @@ and a Set whose sole tuple has the sole attribute value of C<value>; that
 is, conceptually the result is C<value> inserted into C<set>.  As a trivial
 case, if C<value> already exists in C<set>, then the result is just C<set>.
 
-=item C<function sys.Set.disjoint_insertion result Set params { set(Set),
-value(ScaTupRel) }>
+=item C<function sys.std.Set.disjoint_insertion result Set params {
+set(Set), value(ScaTupRel) }>
 
-This function is exactly the same as C<sys.Set.insertion> except that it
-will fail if C<value> already exists in C<set>.
+This function is exactly the same as C<sys.std.Set.insertion> except that
+it will fail if C<value> already exists in C<set>.
 
-=item C<function sys.Set.deletion result Set params { set(Set),
+=item C<function sys.std.Set.deletion result Set params { set(Set),
 value(ScaTupRel) }>
 
 This function results in a C<Set> that is the relational difference from
@@ -80,8 +80,8 @@ that is, conceptually the result is C<value> deleted from C<set>.  As a
 trivial case, if C<value> already doesn't exist in C<set>, then the result
 is just C<set>.
 
-=item C<function sys.Set.reduction result ScaTupRel params { topic(Set),
-func(Cat.NameChain), assuming(Tuple), identity(ScaTupRel) }>
+=item C<function sys.std.Set.reduction result ScaTupRel params {
+topic(Set), func(Cat.NameChain), assuming(Tuple), identity(ScaTupRel) }>
 
 This function is a generic reduction operator that recursively takes each
 pair of input values in C<topic> and applies an argument-specified scalar
@@ -97,15 +97,15 @@ a function name rather than a value, for consistency with C<func>.> This
 function will fail if the declared type of C<identity> isn't a subtype of
 the declared type of the sole attribute of C<topic>.
 
-=item C<function sys.Set.maybe_reduction result Maybe params { topic(Set),
-func(Cat.NameChain), assuming(Tuple) }>
+=item C<function sys.std.Set.maybe_reduction result Maybe params {
+topic(Set), func(Cat.NameChain), assuming(Tuple) }>
 
-This function is exactly the same as C<sys.Set.reduction> except that it
-does not take an C<assuming> argument, and it results in a C<Maybe> of what
-is otherwise the result type, and that result has zero elements if the
+This function is exactly the same as C<sys.std.Set.reduction> except that
+it does not take an C<assuming> argument, and it results in a C<Maybe> of
+what is otherwise the result type, and that result has zero elements if the
 argument has zero elements.
 
-=item C<function sys.Set.Set_from_wrap result SetOfTuple params {
+=item C<function sys.std.Set.Set_from_wrap result SetOfTuple params {
 topic(Relation) }>
 
 This function results in a C<Set> whose sole attribute is tuple-typed and
@@ -113,8 +113,8 @@ the attribute values are all the tuples of C<topic>; is a short-hand for a
 relational wrap of all attributes of C<topic> such that the new
 tuple-valued attribute is named C<value>.
 
-=item C<function sys.Set.Set_from_attr result Set params { topic(Relation),
-name(Cat.Name) }>
+=item C<function sys.std.Set.Set_from_attr result Set params {
+topic(Relation), name(Cat.Name) }>
 
 This function results in a C<Set> consisting of all the values of the
 attribute of C<topic> named by C<name>.  It is a short-hand for a unary
@@ -126,32 +126,32 @@ projection of just the named attribute plus its renaming to C<value>.
 
 =over
 
-=item C<function sys.Set.Maybe.nothing result Nothing params {}>
+=item C<function sys.std.Set.Maybe.nothing result Nothing params {}>
 
 This selector function results in the only zero-tuple Maybe value.
 
-=item C<function sys.Set.Maybe.single result Single params {
+=item C<function sys.std.Set.Maybe.single result Single params {
 value(ScaTupRel) }>
 
 This selector function results in the Maybe value with a single tuple whose
 C<value> attribute's value is the C<value> argument.
 
-=item C<function sys.Set.Maybe.attr result ScaTupRel params {
+=item C<function sys.std.Set.Maybe.attr result ScaTupRel params {
 topic(Single) }>
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of its argument, which always exists when the
 argument is a C<Single>.
 
-=item C<function sys.Set.Maybe.attr_or_default result ScaTupRel params {
-topic(Maybe) }>
+=item C<function sys.std.Set.Maybe.attr_or_default result ScaTupRel params
+{ topic(Maybe) }>
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of its argument, if said tuple exists;
 otherwise, it results in the default value of the declared type of the said
 attribute.
 
-=item C<function sys.Set.Maybe.attr_or_value result ScaTupRel params {
+=item C<function sys.std.Set.Maybe.attr_or_value result ScaTupRel params {
 topic(Maybe), value(ScaTupRel) }>
 
 This function results in the scalar or nonscalar value of the sole
