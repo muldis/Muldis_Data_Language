@@ -234,9 +234,10 @@ the C<sys.std.Core.Type> namespace, C<Bool>, C<Int>, C<Blob>, C<Text>,
 C<QuasiScalarDVPT>; in the C<sys.std.Core.Type.Cat> namespace, C<Name>,
 C<Comment>.
 
-=item C<types> - C<Cat.SysTypeSet>
+=item C<(sca|non_sca|dom)_types> - C<Cat.Sys(Sca|NonSca|Dom)TypeSet>
 
-These are the interfaces of all the system-defined types.
+These are all the system-defined (|quasi-)scalar types with possreps, and
+complete (|quasi-)nonscalar types, and domain types.
 
 =item C<catalogs> - C<Cat.SysCatSet>
 
@@ -380,6 +381,40 @@ C<Bool:false> if the type is a scalar type.
 A C<Cat.SysScaNPRTypeSet> has a binary (unique) key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
+=head2 sys.std.Core.Type.Cat.Sys(Sca|NonSca|Dom)TypeSet
+
+A C<Cat.Sys(Sca|NonSca|Dom)TypeSet> is a C<Relation> that specifies a set
+of system-defined scalar|nonscalar|domain types.
+
+A C<Cat.Sys(Sca|NonSca|Dom)TypeSet> has these 4 attributes:
+
+=over
+
+=item C<parent> - C<Cat.DeclNameChain>
+
+This is the fully-qualified name, in the nameless global root namespace, of
+the scalar|nonscalar|domain type's parent system namespace.
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the scalar|nonscalar|domain type within the
+namespace defined by C<parent>; other Muldis D code would reference it with
+the combination of C<parent> and C<name>.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the scalar|nonscalar|domain
+type as a whole.
+
+=item C<type> - C<Cat.(Scalar|Nonscalar|Domain)Type>
+
+This defines the entire scalar|nonscalar|domain type sans the name.
+
+=back
+
+A C<Cat.Sys(Sca|NonSca|Dom)TypeSet> has a binary (unique) key on the
+C<parent> plus C<name> attributes.  Its default value is empty.
+
 =head1 TYPES FOR DEFINING FEDERATIONS
 
 =head2 sys.std.Core.Type.Cat.Federation
@@ -473,10 +508,11 @@ These are all the packages that this (|sub)depot contains.
 These are all the function|updater|procedure definitions that this
 (|sub)depot contains.
 
-=item C<types> - C<Cat.DepTypeSet>
+=item C<(sca|non_sca|dom)_types> - C<Cat.Dep(Sca|NonSca|Dom)TypeSet>
 
-These are all the type definitions that this (|sub)depot contains.
-TODO: possibly split into scalar|tuple|relation|etc
+These are all the definitions that this (|sub)depot contains of
+(|quasi-)scalar types with possreps, and complete (|quasi-)nonscalar types,
+and domain types.
 
 =item C<vars> - TODO: all public variables or pseudo-variables or something
 
@@ -594,6 +630,40 @@ implementation, besides what C<interface> defines.
 A C<Cat.Dep(Func|Upd|Proc)Set> has a binary (unique) key on the C<parent>
 plus C<name> attributes.  Its default value is empty.
 
+=head2 sys.std.Core.Type.Cat.Dep(Sca|NonSca|Dom)TypeSet
+
+A C<Cat.Dep(Sca|NonSca|Dom)TypeSet> is a C<Relation> that specifies a set
+of scalar|nonscalar|domain types that a (|sub)depot might directly contain.
+
+A C<Cat.Dep(Sca|NonSca|Dom)TypeSet> has these 4 attributes:
+
+=over
+
+=item C<parent> - C<Cat.DeclNameChain>
+
+This is the fully-qualified name, in the C<dep.(cat|lib|data)> namespace,
+of the scalar|nonscalar|domain type's parent (|sub)depot.
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the scalar|nonscalar|domain type within the
+namespace defined by C<parent>; other Muldis D code would reference it with
+the combination of C<parent> and C<name>.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the scalar|nonscalar|domain
+type as a whole.
+
+=item C<type> - C<Cat.(Scalar|Nonscalar|Domain)Type>
+
+This defines the entire scalar|nonscalar|domain type sans the name.
+
+=back
+
+A C<Cat.Dep(Sca|NonSca|Dom)TypeSet> has a binary (unique) key on the
+C<parent> plus C<name> attributes.  Its default value is empty.
+
 =head1 TYPES FOR DEFINING PACKAGES
 
 =head2 sys.std.Core.Type.Cat.Package
@@ -619,9 +689,11 @@ This is an optional programmer comment about the package as a whole.
 These are all the function|updater|procedure definitions that this package
 contains.
 
-=item C<types> - C<Cat.PkgTypeSet>
+=item C<(sca|non_sca|dom)_types> - C<Cat.Pkg(Sca|NonSca|Dom)TypeSet>
 
-These are all the type definitions that this package contains.
+These are all the definitions that this package contains of (|quasi-)scalar
+types with possreps, and complete (|quasi-)nonscalar types, and domain
+types.
 
 =item C<vars> - TODO: all public variables or pseudo-variables or something
 
@@ -672,6 +744,43 @@ implementation, besides what C<interface> defines.
 
 A C<Cat.Pkg(Func|Upd|Proc)Set> has a unary (unique) key on the C<name>
 attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.Pkg(Sca|NonSca|Dom)TypeSet
+
+A C<Cat.Pkg(Sca|NonSca|Dom)TypeSet> is a C<Relation> that specifies a set
+of scalar|nonscalar|domain types that a package might contain, where each
+scalar|nonscalar|domain type may be either public for the DBMS as a whole
+or private to the package.
+
+A C<Cat.Pkg(Sca|NonSca|Dom)TypeSet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the scalar|nonscalar|domain type within the
+namespace defined by C<parent>; other Muldis D code would reference it with
+the combination of C<parent> and C<name>.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the scalar|nonscalar|domain
+type as a whole.
+
+=item C<is_public> - C<Bool>
+
+This is C<Bool:true> if the scalar|nonscalar|domain type is part of the
+package's own public interface and may be directly invoked from outside the
+package; it is C<Bool:false> if it is just part of the package's internals.
+
+=item C<type> - C<Cat.(Scalar|Nonscalar|Domain)Type>
+
+This defines the entire scalar|nonscalar|domain type sans the name.
+
+=back
+
+A C<Cat.Pkg(Sca|NonSca|Dom)TypeSet> has a binary (unique) key on the
+C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING ROUTINE HEADINGS
 
