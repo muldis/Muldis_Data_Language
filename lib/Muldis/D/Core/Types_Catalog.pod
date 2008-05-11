@@ -112,73 +112,6 @@ more or less:
             sys.std.Core.Type.Cat.NameExprMap
             sys.std.Core.Type.Cat.AttrRenameMap
 
-            sys.std.Core.Type.Set
-
-                # The following are all regular set types.
-
-                sys.std.Core.Type.Cat.SetOfName
-                sys.std.Core.Type.Cat.SetOfNameExprMap
-                sys.std.Core.Type.Cat.SetOfSetOfName
-                sys.std.Core.Type.Cat.SetOfNameChain
-
-                sys.std.Core.Type.Maybe
-                    sys.std.Core.Type.Single
-
-                    # The following are all regular single types.
-
-                    sys.std.Core.Type.Cat.SingleOfComment
-
-            sys.std.Core.Type.Seq
-
-                # The following are all regular sequence types.
-
-                sys.std.Core.Type.Cat.SeqOfProcStmt
-
-These system-defined subtypes are used as the declared types of some
-parameters of some system-defined N-ary routines, but they are not used in
-defining the system catalog itself; it is not anticipated that they would
-be used for user data:
-
-    sys.std.Core.Type.Universal
-
-        sys.std.Core.Type.Empty
-
-        sys.std.Core.Type.Relation
-            sys.std.Core.Type.Set
-
-                # The following are all nonscalar type factories.
-
-                sys.std.Core.Type.QuasiCat.SetOfTuple
-                sys.std.Core.Type.QuasiCat.SetOfRelation
-                    sys.std.Core.Type.QuasiCat.SetOfBag
-
-                sys.std.Core.Type.Maybe
-
-                    # The following are all nonscalar type factories.
-
-                    sys.std.Core.Type.QuasiCat.MaybeOfTuple
-
-            sys.std.Core.Type.Seq
-
-                # The following are all nonscalar type factories.
-
-                sys.std.Core.Type.QuasiCat.SeqOfSeq
-
-            sys.std.Core.Type.Bag
-
-                # The following are all nonscalar type factories.
-
-                sys.std.Core.Type.QuasiCat.BagOfTuple
-                sys.std.Core.Type.QuasiCat.BagOfRelation
-
-        sys.std.Core.Type.QuasiRelation
-            sys.std.Core.Type.QuasiSet
-
-                # The following are all quasi-nonscalar type factories.
-
-                sys.std.Core.Type.QuasiCat.QuasiSetOfTuple
-                sys.std.Core.Type.QuasiCat.QuasiSetOfRelation
-
 =head1 TYPES FOR DEFINING ENTITY NAMES AND COMMENTS
 
 =head2 sys.std.Core.Type.Cat.Name
@@ -264,7 +197,7 @@ A C<Cat.System> has these N attributes:
 
 =over
 
-=item C<comment> - C<Cat.SingleOfComment>
+=item C<comment> - C<single_of.Cat.Comment>
 
 This is an optional programmer comment about the collection of
 system-defined entities as a whole.
@@ -466,7 +399,7 @@ A C<Cat.Federation> has these 2 attributes:
 
 =over
 
-=item C<comment> - C<Cat.SingleOfComment>
+=item C<comment> - C<single_of.Cat.Comment>
 
 This is an optional programmer comment about the federation as a whole.
 
@@ -528,7 +461,7 @@ A C<Cat.Depot> has these N attributes:
 
 =over
 
-=item C<comment> - C<Cat.SingleOfComment>
+=item C<comment> - C<single_of.Cat.Comment>
 
 This is an optional programmer comment about the (|sub)depot as a whole.
 
@@ -682,7 +615,7 @@ A C<Cat.Package> has these N attributes:
 
 =over
 
-=item C<comment> - C<Cat.SingleOfComment>
+=item C<comment> - C<single_of.Cat.Comment>
 
 This is an optional programmer comment about the package as a whole.
 
@@ -1239,11 +1172,11 @@ the expression node (sub-)tree it is the root of.
 This is C<Bool:true> if the node denotes a quasi-relation literal; it is
 C<Bool:false> if the node just denotes a relation literal.
 
-=item C<head> - C<Cat.SetOfName>
+=item C<head> - C<set_of.Cat.Name>
 
 These are the names of all of this (|quasi-)relation literal's attributes.
 
-=item C<body> - C<Cat.SetOfNameExprMap>
+=item C<body> - C<set_of.Cat.NameExprMap>
 
 These are the (|quasi-)tuples of the (|quasi-)relation literal.
 
@@ -1401,7 +1334,7 @@ This is an optional programmer comment about the (|inner )procedure body.
 This defines the 0..N (non-parameter) lexical variables of the (|inner
 )procedure; they initialize to the default values of their declared types.
 
-=item C<stmts> - C<Cat.SeqOfProcStmt>
+=item C<stmts> - C<seq_of.Cat.ProcStmt>
 
 This defines the entire main body of the (|inner )procedure, which is
 composed of 0..N procedure statements.  These statements must reference all
@@ -1416,11 +1349,6 @@ parameter names.
 
 The default value of C<Cat.InnerProcBody> directly corresponds to the
 default value of C<Cat.ProcHead> and is a no-op, having zero statements.
-
-=head2 sys.std.Core.Type.Cat.SeqOfProcStmt
-
-A C<Cat.SeqOfProcStmt> is a C<Seq> whose C<value> attribute has a declared
-type of C<Cat.ProcStmt>.
 
 =head2 sys.std.Core.Type.Cat.ProcStmt
 
@@ -1523,7 +1451,7 @@ A C<Cat.InnerScalarType> has these 6 attributes:
 This is an optional programmer comment about the (|quasi-)scalar
 (|sub-)type as a whole.
 
-=item C<base_type> - C<Cat.MaybeOfNameChain>
+=item C<base_type> - C<maybe_of.Cat.NameChain>
 
 Iff the type being defined is a (|quasi-)scalar root type, then
 C<base_type> is not applicable and is a C<Nothing>.  Iff the type being
@@ -1531,7 +1459,7 @@ defined is a subtype of some other (|quasi-)scalar type, then C<base_type>
 is a C<Single> whose sole element is the name of that other type.  Note
 that any type named by C<base_type> must itself have at least 1 possrep.
 
-=item C<is_quasi> - C<MaybeOfBool>
+=item C<is_quasi> - C<maybe_of.Bool>
 
 Iff the type being defined is a (|quasi-)scalar root type, then C<is_quasi>
 is a C<Single> whose sole element is C<Bool:true> if the type is a
@@ -1688,7 +1616,7 @@ A C<Cat.InnerDomainType> has these 7 attributes:
 This is an optional programmer comment about the inner domain type as a
 whole.
 
-=item C<sources> - C<Cat.SetOfNameChain>
+=item C<sources> - C<set_of.Cat.NameChain>
 
 These are the names of the 0..N other types that all the values of the new
 data type are drawn from; the complete set of source values is determined
@@ -1703,7 +1631,7 @@ is C<Bool:false> then the set of source data types will be unioned to
 determine the complete set of source values, and if C<sources> has no
 elements then the source set is just C<Universal>.
 
-=item C<filters> - C<Cat.SetOfNameChain>
+=item C<filters> - C<set_of.Cat.NameChain>
 
 These are the names of the 0..N other types (which are generally subtypes
 of those of C<sources>) that determine values which the new data type will
@@ -1780,79 +1708,6 @@ A C<Cat.AttrRenameMap> is a C<Relation>.  It is used as a specification for
 how to rename attributes of some collection.  A C<Cat.AttrRenameMap> has 2
 attributes, C<before> and C<after>, each of those being a C<Cat.Name>, and
 each of those being a unary key.  Its default value has zero tuples.
-
-=head2 sys.std.Core.Type.Cat.SetOfName
-
-A C<Cat.SetOfName> is a C<Set> whose C<value> attribute has a declared type
-of C<Cat.Name>.
-
-=head2 sys.std.Core.Type.Cat.SetOfNameExprMap
-
-A C<Cat.SetOfNameExprMap> is a C<Set> whose C<value> attribute has a
-declared type of C<Cat.NameExprMap>.
-
-=head2 sys.std.Core.Type.Cat.SetOfNameChain
-
-A C<Cat.SetOfNameChain> is a C<Set> whose C<value> attribute has a declared
-type of C<Cat.NameChain>.
-
-=head2 sys.std.Core.Type.Cat.MaybeOfNameChain
-
-A C<Cat.MaybeOfNameChain> is a C<Maybe> whose C<value> attribute has a
-declared type of C<Cat.NameChain>.
-
-=head2 sys.std.Core.Type.Cat.SingleOfComment
-
-A C<Cat.SingleOfComment> is a C<Single> whose C<value> attribute has a
-declared type of C<Cat.Comment>.
-
-=head1 SYSTEM-DEFINED CORE QUASI-CATALOG PARAMETERIZED TYPES
-
-These types are incomplete proper subtypes of other core incomplete types,
-and generally speaking their sole purpose is to be the declared data types
-of several system-defined N-ary tuple|relation operator parameters which
-are collections of generic nonscalar values.  They are called quasi-catalog
-because they are not generally expected to be used for user data, but they
-also are not used to compose the system catalog either.
-
-=over
-
-=item C<sys.std.Core.Type.QuasiCat.(Set|Bag)Of(Tuple|Relation)>
-
-A C<(Set|Bag)OfRelation> is an incompletely defined proper subtype of
-C<Set|Bag> whose C<value> attribute has a declared type of a
-C<Tuple|Relation> subtype; this is the parameter type of several N-ary
-relational operators.
-
-=item C<sys.std.Core.Type.QuasiCat.SetOfBag>
-
-A C<SetOfBag> is an incompletely defined proper subtype of C<Set> whose
-C<value> attribute has a declared type of a C<Bag> subtype; this is the
-parameter type of several N-ary relational operators that work with C<Bag>
-values.
-
-=item C<sys.std.Core.Type.QuasiCat.MaybeOfTuple>
-
-A C<MaybeOfTuple> is an incompletely defined proper subtype of C<Maybe>
-whose C<value> attribute has a declared type of a C<Tuple> subtype; this is
-the parameter type of the C<sys.std.Nonscalar.Relation.maybe_reduction>
-operator.
-
-=item C<sys.std.Core.Type.QuasiCat.SeqOfSeq>
-
-A C<SeqOfSeq> is an incompletely defined proper subtype of C<Seq> whose
-C<value> attribute has a declared type of a C<Seq> subtype; this is the
-parameter type of the N-ary C<sys.std.Sequence.catenation> operator.
-
-=item C<sys.std.Core.Type.QuasiCat.QuasiSetOf(Tuple|Relation)>
-
-A C<QuasiSetOfRelation> is an incompletely defined proper subtype of
-C<QuasiSet> whose C<value> attribute has a declared type of
-C<Tuple|Relation>; these are the parameter types of the N-ary
-C<sys.std.Core.Tuple.product> and C<sys.std.Core.Relation.(join|product)>
-operators.
-
-=back
 
 =head1 SEE ALSO
 
