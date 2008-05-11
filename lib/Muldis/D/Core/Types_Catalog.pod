@@ -1469,15 +1469,16 @@ C<is_quasi> is not applicable (would be redundant) and is a C<Nothing>.
 
 =item C<possreps> - C<Cat.PossrepSet>
 
-These are the possrep definitions that comprise this type such that each
-one fully defines a set of attributes plus restrictions on their collective
-values whereby it defines a representation of all values of this type.
-Note that if multiple (|quasi-)scalar types are related to each other such
-that more than one declares possreps for at least one common value, then
-the C<name> attribute of the C<possreps> attributes of all of those types'
-definitions have a distributed (unique) key over them.  I<Details of this
-policy are subject to be revised, but it must still ensure that diamond
-subtype/supertype relationships are taken properly into account.>
+These are the 1..N possrep definitions that comprise this type such that
+each one fully defines a set of attributes plus restrictions on their
+collective values whereby it defines a representation of all values of this
+type.  Note that if multiple (|quasi-)scalar types are related to each
+other such that more than one declares possreps for at least one common
+value, then the C<name> attribute of the C<possreps> attributes of all of
+those types' definitions have a distributed (unique) key over them.
+I<Details of this policy are subject to be revised, but it must still
+ensure that diamond subtype/supertype relationships are taken properly into
+account.>
 
 =item C<possrep_maps> - C<Cat.PossrepMapSet>
 
@@ -1494,8 +1495,9 @@ mapping functions are defined with the subtype.
 =item C<default> - C<Cat.InnerFuncBody>
 
 This defines the entire (main) body of a function that results in the
-default value of the (|sub-)type; it has zero parameters and its result
-type is the same as the domain type whose declaration it is part of.
+default (|quasi-)scalar value of the (|sub-)type; it has zero parameters
+and its result type is the same as the (|quasi-)scalar type whose
+declaration it is part of.
 
 =back
 
@@ -1588,6 +1590,164 @@ function could be generated though.  This design is subject to change.>
 
 A C<Cat.PossrepMapSet> has a binary (unique) key on the C<p1> plus C<p2>
 attributes.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.InnerNonscalarType
+
+A C<Cat.InnerNonscalarType> is a C<Tuple>.  It defines either a new
+(|quasi-)nonscalar heading (set of attributes) with associated constraints
+for a tuple and relation type having that heading, or it defines a subtype
+of some other (|quasi-)nonscalar type.  That is, it defines 2 new data
+types, a tuple type and a relation type with matching headings.  Note that
+you also declare a database type using C<Cat.InnerNonscalarType>, by
+declaring a tuple type whose attributes are all relation or database typed.
+Note that you can not use a C<Cat.InnerNonscalarType> to declare or
+subtype an incomplete type, as it (or its supertype) must specify a
+complete set of attributes.
+
+A C<Cat.InnerNonscalarType> has these 10 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the (|quasi-)nonscalar
+(|sub-)type as a whole.
+
+=item C<base_type> - C<maybe_of.Cat.NameChain>
+
+Iff the type being defined is a (|quasi-)nonscalar root type, then
+C<base_type> is not applicable and is a C<Nothing>.  Iff the type being
+defined is a subtype of some other (|quasi-)nonscalar type, then
+C<base_type> is a C<Single> whose sole element is the name of that other
+type.
+
+=item C<is_quasi> - C<maybe_of.Bool>
+
+Iff the type being defined is a (|quasi-)nonscalar root type, then
+C<is_quasi> is a C<Single> whose sole element is C<Bool:true> if the type
+is a quasi-nonscalar type; the element is C<Bool:false> if the type is a
+nonscalar type.  Iff the type being defined is a subtype of some other
+type, then C<is_quasi> is not applicable (would be redundant) and is a
+C<Nothing>.
+
+=item C<is_tuple_first> - C<Bool>
+
+Iff this is C<Bool:true> then the type being defined is primarily
+considered a tuple type; that is, when either the type name is referenced
+normally (not using the C<type> namespace), or the type definition is
+embedded (and nameless), then it is simply considered to be a tuple type;
+iff this is C<Bool:false> then the type being defined is primarily
+considered to be a relation type.  When a type is primarily considered a
+tuple or relation type, the only way to reference it as the other kind of
+type is by using the C<type.(tuple|relation)_from.\w+> referencing syntax.
+
+=item C<attrs> - C<Cat.NameTypeMap>
+
+Iff the type being defined is a (|quasi-)nonscalar root type, then C<attrs>
+defines the 0..N attributes of the type.  Iff the type being defined is a
+subtype of some other type, then the parent type's attribute list is used
+by default, but C<attrs> of the current type may be used to apply
+additional constraints by overriding the declared types of a subset of the
+parent's attributes with types that are subtypes of the originals; an
+override is done using matching C<name> attribute values of C<attrs>.
+
+=item C<keys> - C<Cat.KeySet>
+
+These are the 0..N explicit (unique) keys that are applicable to relation
+values of the type being defined; they apply either as candidate keys or as
+unique key constraints, depending on context.  If there are no explicit
+keys, then there is an implicit (unique) key over all attributes of the
+relation type being defined, meaning that every possible tuple that may
+individually be an element of a relation value of the type being defined,
+may be in it at once.
+
+=item C<tuple_constraint> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of a C<type_constraint> function that
+determines what combinations of tuple attribute values denote values of the
+(|sub-)type, besides the restrictions imposed by the declared types of the
+attributes individually.  The implicit function heading that this goes with
+has a single C<topic> parameter whose declared type is a tuple whose
+attributes match those declared by C<attrs> and whose argument denotes the
+value to test; the function's implicit result type is C<Bool>.  If the
+function unconditionally results in C<Bool:true>, then all possible
+combinations of attribute-allowable values are collectively allowed.  This
+function is invoked either once to test a tuple value, or multiple times to
+individually test every tuple in a relation value.
+
+=item C<relation_constraint> - C<Cat.InnerFuncBody>
+
+This is like C<tuple_constraint> but that the function's parameter is
+relation-typed rather than tuple-typed, and it tests an entire relation
+value at once.  Note that C<keys> of the type being defined is logically a
+short-hand syntax for a particular kind of C<relation_constraint> value,
+one that compares the cardinality of a projection of a relation on its key
+attributes with the cardinality of the original relation; the attributes
+are a key if the cardinalities are equal.
+
+=item C<default_tuple> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of a function that results in the
+default (|quasi-)tuple value of the (|sub-)type; it has zero parameters and
+its result type is the same as the (|quasi-)tuple type whose declaration it
+is part of.
+
+=item C<default_relation> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of a function that results in the
+default (|quasi-)relation value of the (|sub-)type; it has zero parameters
+and its result type is the same as the (|quasi-)relation type whose
+declaration it is part of.
+
+=back
+
+The default value of C<Cat.InnerNonscalarType> defines a relation type that
+is the same as C<RelationD0>, having zero attributes, whose default value
+is the one with zero tuples.
+
+=head2 sys.std.Core.Type.Cat.KeySet
+
+A C<Cat.KeySet> is a C<Relation> that specifies a set of candidate keys or
+unique key constraints for a relation type; each tuple specifies one
+candidate key.
+
+A C<Cat.KeySet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the key.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the key as a whole.
+
+=item C<attrs> - C<set_of.Cat.Name>
+
+This defines the 0..N host relation attributes comprising the key.  If this
+set is empty, then we have a nullary key which restricts the host relation
+to have a maximum of 1 tuple.
+
+=item C<is_primary> - C<Bool>
+
+This is C<Bool:true> if all of the attributes comprising this key are
+likely to be treated as immutable in practice for the relation's tuples,
+and hence are the best candidates for identifying tuples within a relation
+over an extended term, and are the best mapping values for automatic new
+foreign keys and join conditions if the host relation type has to be
+auto-split into several associated ones, for example because the physical
+representation of this relation doesn't support RVAs.  This concept is a
+generalization of the concept of "the primary key" of a relation.  A
+relation type can have either none of its keys or more than one of its keys
+with a true C<is_primary> attribute.  This is C<Bool:false> if any of the
+attributes comprising this key are likely to mutate and so shouldn't be
+used as the target of generated foreign keys.
+
+=back
+
+A C<Cat.KeySet> has a unary (unique) key on the C<name> attribute.  Its
+default value is empty.
 
 =head2 sys.std.Core.Type.Cat.InnerDomainType
 
