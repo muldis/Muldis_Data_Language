@@ -58,11 +58,6 @@ more or less:
             sys.std.Core.Type.Cat.DeclNameChain
             sys.std.Core.Type.Cat.Comment
 
-            # The following are all regular non-ordered scalar types.
-
-            sys.std.Core.Type.Cat.E_TK
-            sys.std.Core.Type.Cat.E_TDM
-
         sys.std.Core.Type.Tuple
 
             # The following are all regular tuple types.
@@ -1394,13 +1389,13 @@ typed parameters.
 
 =head1 TYPES FOR DEFINING DATA TYPES
 
-=head2 sys.std.Core.Type.Cat.(Scalar|Domain)Type
+=head2 sys.std.Core.Type.Cat.(Scalar|Nonscalar|Domain)Type
 
-A C<Cat.(Scalar|Domain)Type> is a C<Tuple>.  Its purpose is as per
-C<Cat.Inner(Scalar|Domain)Type>, one of which it is a wrapper for along
-with other inner types that are composed into it.
+A C<Cat.(Scalar|Nonscalar|Domain)Type> is a C<Tuple>.  Its purpose is as
+per C<Cat.Inner(Scalar|Nonscalar|Domain)Type>, one of which it is a wrapper
+for along with other inner types that are composed into it.
 
-A C<Cat.(Scalar|Domain)Type> has these N attributes:
+A C<Cat.(Scalar|Nonscalar|Domain)Type> has these N attributes:
 
 =over
 
@@ -1408,11 +1403,12 @@ A C<Cat.(Scalar|Domain)Type> has these N attributes:
 
 This is an optional programmer comment about the type as a whole.
 
-=item C<main_type> - C<Cat.Inner(Scalar|Domain)Type>
+=item C<main_type> - C<Cat.Inner(Scalar|Nonscalar|Domain)Type>
 
-This defines the actual main type, which a C<Cat.(Scalar|Domain)Type> is
-just a wrapper for, namely what's left of the updater body after parts of
-it are optionally factored out into inner routines or inner types.
+This defines the actual main type, which a
+C<Cat.(Scalar|Nonscalar|Domain)Type> is just a wrapper for, namely what's
+left of the updater body after parts of it are optionally factored out into
+inner routines or inner types.
 
 =item C<inner_types> - C<Cat.InnerTypeSet>
 
@@ -1427,8 +1423,8 @@ These are all the inner function definitions that this type contains.
 There is a distributed (unique) key over the C<name> attributes of
 C<inner_(types|funcs)>.
 
-The default value of C<Cat.(Scalar|Domain)Type> is as per
-C<Cat.Inner(Scalar|Domain)Type>.
+The default value of C<Cat.(Scalar|Nonscalar|Domain)Type> is as per
+C<Cat.Inner(Scalar|Nonscalar|Domain)Type>.
 
 =head1 TYPES FOR DEFINING INNER DATA TYPES
 
@@ -1649,7 +1645,10 @@ subtype of some other type, then the parent type's attribute list is used
 by default, but C<attrs> of the current type may be used to apply
 additional constraints by overriding the declared types of a subset of the
 parent's attributes with types that are subtypes of the originals; an
-override is done using matching C<name> attribute values of C<attrs>.
+override is done using matching C<name> attribute values of C<attrs>.  It
+is indeed valid for a (|quasi-)nonscalar type to have zero attributes; in
+this case, a tuple type consists of exactly one value, and a relation type
+consists of exactly two values.
 
 =item C<keys> - C<Cat.KeySet>
 
@@ -1659,31 +1658,39 @@ unique key constraints, depending on context.  If there are no explicit
 keys, then there is an implicit (unique) key over all attributes of the
 relation type being defined, meaning that every possible tuple that may
 individually be an element of a relation value of the type being defined,
-may be in it at once.
+may be in it at once.  If any explicit keys are defined, then every one
+must be over a distinct proper subset of the type's attributes, and
+moreover no key's attributes may be a proper subset of any other key's
+attributes; if 2 such candidates appear, just use the one that has the
+subset.  It is valid for a key to consist of zero attributes; in this case,
+that key is the only key of the type, and values of the type may each
+consist of no more than one tuple.  Note that C<keys> is logically a
+short-hand syntax (the canonical simplest form) for a particular kind of
+C<relation_constraint> of the type being defined, one that compares the
+cardinality of a projection of a relation on its key attributes with the
+cardinality of the original relation; the attributes are a key if the
+cardinalities are equal.
 
 =item C<tuple_constraint> - C<Cat.InnerFuncBody>
 
 This defines the entire (main) body of a C<type_constraint> function that
 determines what combinations of tuple attribute values denote values of the
 (|sub-)type, besides the restrictions imposed by the declared types of the
-attributes individually.  The implicit function heading that this goes with
-has a single C<topic> parameter whose declared type is a tuple whose
-attributes match those declared by C<attrs> and whose argument denotes the
-value to test; the function's implicit result type is C<Bool>.  If the
-function unconditionally results in C<Bool:true>, then all possible
-combinations of attribute-allowable values are collectively allowed.  This
-function is invoked either once to test a tuple value, or multiple times to
+attributes individually; it is a generalized type constraint that validates
+a tuple as a whole.  The implicit function heading that this goes with has
+a single C<topic> parameter whose declared type is a tuple whose attributes
+match those declared by C<attrs> and whose argument denotes the value to
+test; the function's implicit result type is C<Bool>.  If the function
+unconditionally results in C<Bool:true>, then all possible combinations of
+attribute-allowable values are collectively allowed.  This function is
+invoked either once to test a tuple value, or multiple times to
 individually test every tuple in a relation value.
 
 =item C<relation_constraint> - C<Cat.InnerFuncBody>
 
 This is like C<tuple_constraint> but that the function's parameter is
-relation-typed rather than tuple-typed, and it tests an entire relation
-value at once.  Note that C<keys> of the type being defined is logically a
-short-hand syntax for a particular kind of C<relation_constraint> value,
-one that compares the cardinality of a projection of a relation on its key
-attributes with the cardinality of the original relation; the attributes
-are a key if the cardinalities are equal.
+relation-typed rather than tuple-typed; it is a generalized type constraint
+that validates a relation as a whole.
 
 =item C<default_tuple> - C<Cat.InnerFuncBody>
 
