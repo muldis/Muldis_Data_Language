@@ -188,7 +188,7 @@ specifically all the relcons and relvars with the names
 C<(sys|mnt|fed|dep|sdp|pkg).cat>.  The system catalog constant named
 C<sys.cat> is of the C<Cat.System> type.
 
-A C<Cat.System> has these N attributes:
+A C<Cat.System> has these 11 attributes:
 
 =over
 
@@ -241,7 +241,9 @@ complete (|quasi-)nonscalar types, and domain types.
 
 =item C<catalogs> - C<Cat.SysCatSet>
 
-These are the interfaces of all the catalog relcons, relvars.
+These are the interfaces of all the catalog relcons and relvars.
+Specifically, it declares these 6 standard catalogs:
+C<(sys|mnt|fed|dep|sdp|pkg).cat>; the first is a relcon, the others not.
 
 =back
 
@@ -415,6 +417,37 @@ This defines the entire scalar|nonscalar|domain type sans the name.
 A C<Cat.Sys(Sca|NonSca|Dom)TypeSet> has a binary (unique) key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
 
+=head2 sys.std.Core.Type.Cat.SysCatSet
+
+A C<Cat.SysCatSet> is a C<Relation> that specifies a set of system-defined
+catalog dbvars; each tuple specifies one catalog dbvar.
+
+A C<Cat.SysCatSet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Cat.NameChain>
+
+This is the fully-qualified name of the catalog dbvar.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the catalog dbvar as a whole.
+
+=item C<is_readonly> - C<Bool>
+
+This is C<Bool:true> if a catalog relcon is being described; it is
+C<Bool:false> if a catalog relvar is being described.
+
+=item C<catalog> - C<Cat.DbVar>
+
+This is the definition of the catalog dbvar.
+
+=back
+
+A C<Cat.SysCatSet> has a unary (unique) key on the C<name> attribute.  Its
+default value is empty.
+
 =head1 TYPES FOR DEFINING FEDERATIONS
 
 =head2 sys.std.Core.Type.Cat.Federation
@@ -487,7 +520,7 @@ any that exist are arranged in a hierarchy with the depot as the root.  The
 system catalog variables named C<dep.cat> and C<sdp.cat> are both of the
 C<Cat.Depot> type.
 
-A C<Cat.Depot> has these N attributes:
+A C<Cat.Depot> has these 10 attributes:
 
 =over
 
@@ -514,9 +547,9 @@ These are all the definitions that this (|sub)depot contains of
 (|quasi-)scalar types with possreps, and complete (|quasi-)nonscalar types,
 and domain types.
 
-=item C<vars> - TODO: all public variables or pseudo-variables or something
+=item C<data> - C<single_of.Cat.DbVar>
 
-=item C<data> - TODO: the single main/root database variable
+This is the definition of the dbvar that this (|sub)depot contains.
 
 =back
 
@@ -676,7 +709,7 @@ A package internally looks like a depot but that it doesn't contain
 subdepots or other packages.  The system catalog variable named C<pkg.cat>
 is of the C<Cat.Package> type.
 
-A C<Cat.Package> has these N attributes:
+A C<Cat.Package> has these 8 attributes:
 
 =over
 
@@ -695,9 +728,9 @@ These are all the definitions that this package contains of (|quasi-)scalar
 types with possreps, and complete (|quasi-)nonscalar types, and domain
 types.
 
-=item C<vars> - TODO: all public variables or pseudo-variables or something
+=item C<data> - C<single_of.Cat.DbVar>
 
-=item C<data> - TODO: the single main/root database variable
+This is the definition of the dbvar that this package contains.
 
 =back
 
@@ -885,7 +918,7 @@ A C<Cat.FuncBody> is a C<Tuple>.  It specifies the entire body or
 implementation of a function, besides the details that a C<Cat.FuncHead>
 has, one of which each C<Cat.FuncBody> typically must be paired with.
 
-A C<Cat.FuncBody> has these N attributes:
+A C<Cat.FuncBody> has these 6 attributes:
 
 =over
 
@@ -926,7 +959,7 @@ A C<Cat.UpdBody> is a C<Tuple>.  It specifies the entire body or
 implementation of an updater, besides the details that a C<Cat.UpdHead>
 has, one of which each C<Cat.UpdBody> typically must be paired with.
 
-A C<Cat.UpdBody> has these N attributes:
+A C<Cat.UpdBody> has these 7 attributes:
 
 =over
 
@@ -970,7 +1003,7 @@ A C<Cat.ProcBody> is a C<Tuple>.  It specifies the entire body or
 implementation of a procedure, besides the details that a C<Cat.ProcHead>
 has, one of which each C<Cat.ProcBody> typically must be paired with.
 
-A C<Cat.ProcBody> has these N attributes:
+A C<Cat.ProcBody> has these 8 attributes:
 
 =over
 
@@ -1508,7 +1541,7 @@ A C<Cat.(Scalar|Nonscalar|Domain)Type> is a C<Tuple>.  Its purpose is as
 per C<Cat.Inner(Scalar|Nonscalar|Domain)Type>, one of which it is a wrapper
 for along with other inner types that are composed into it.
 
-A C<Cat.(Scalar|Nonscalar|Domain)Type> has these N attributes:
+A C<Cat.(Scalar|Nonscalar|Domain)Type> has these 6 attributes:
 
 =over
 
@@ -1979,6 +2012,33 @@ the same as the domain type whose declaration it is part of.
 The default value of C<Cat.InnerDomainType> defines an alias for
 C<Universal>, with the same default value; the C<base_type> is that type,
 C<constraint> is unconditionally C<Bool:true>.
+
+=head1 TYPES FOR DEFINING DBVARS
+
+=head2 sys.std.Core.Type.Cat.DbVar
+
+A C<Cat.DbVar> is a C<Tuple>.  It specifies the data type and transition
+constraints and so forth of a database-typed variable, such as the
+C<(dep|sdp|pkg).data> variables.
+
+A C<Cat.Package> has these 2 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the dbvar as a whole.
+
+=item C<type> - C<Cat.NonscalarType>
+
+This defines the entire database type.
+
+=back
+
+I<Transition constraints et al are still TODO.>
+
+The default value of C<Cat.DbVar> defines a variable that is "just a
+database" and has no extra constraints.
 
 =head1 SIMPLE GENERIC CATALOG COLLECTION TYPES
 
