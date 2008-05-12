@@ -72,7 +72,7 @@ more or less:
             sys.std.Core.Type.Cat.InnerUpdBody
             sys.std.Core.Type.Cat.InnerProcBody
             sys.std.Core.Type.Cat.ProcStmt
-            sys.std.Core.Type.Cat.(Scalar|Nonscalar|Domain)Type
+            sys.std.Core.Type.Cat.Type
             sys.std.Core.Type.Cat.InnerScalarType
             sys.std.Core.Type.Cat.InnerNonscalarType
             sys.std.Core.Type.Cat.InnerDomainType
@@ -97,15 +97,15 @@ more or less:
             sys.std.Core.Type.Cat.Sys(Func|Upd|Proc)Set
             sys.std.Core.Type.Cat.SysSpecTypeSet
             sys.std.Core.Type.Cat.SysScaNPRTypeSet
-            sys.std.Core.Type.Cat.Sys(Sca|NonSca|Dom)TypeSet
+            sys.std.Core.Type.Cat.SysTypeSet
             sys.std.Core.Type.Cat.SysCatSet
             sys.std.Core.Type.Cat.DepotMountSet
             sys.std.Core.Type.Cat.SubdepotSet
             sys.std.Core.Type.Cat.PackageSet
             sys.std.Core.Type.Cat.Dep(Func|Upd|Proc)Set
-            sys.std.Core.Type.Cat.Dep(Sca|NonSca|Dom)TypeSet
+            sys.std.Core.Type.Cat.DepTypeSet
             sys.std.Core.Type.Cat.Pkg(Func|Upd|Proc)Set
-            sys.std.Core.Type.Cat.Pkg(Sca|NonSca|Dom)TypeSet
+            sys.std.Core.Type.Cat.PkgTypeSet
             sys.std.Core.Type.Cat.Inner(Func|Upd|Proc)Set
             sys.std.Core.Type.Cat.ScaLitExprNodeSet
             sys.std.Core.Type.Cat.ScaPRLitExprNodeSet
@@ -202,7 +202,7 @@ specifically all the relcons and relvars with the names
 C<(sys|mnt|fed|dep|sdp|pkg).cat>.  The system catalog constant named
 C<sys.cat> is of the C<Cat.System> type.
 
-A C<Cat.System> has these 11 attributes:
+A C<Cat.System> has these 9 attributes:
 
 =over
 
@@ -248,7 +248,7 @@ the C<sys.std.Core.Type> namespace, C<Bool>, C<Int>, C<Blob>, C<Text>,
 C<QuasiScalarDVPT>; in the C<sys.std.Core.Type.Cat> namespace, C<Name>,
 C<Comment>.
 
-=item C<(sca|non_sca|dom)_types> - C<Cat.Sys(Sca|NonSca|Dom)TypeSet>
+=item C<types> - C<Cat.SysTypeSet>
 
 These are all the system-defined (|quasi-)scalar types with possreps, and
 complete (|quasi-)nonscalar types, and domain types.
@@ -397,39 +397,38 @@ C<Bool:false> if the type is a scalar type.
 A C<Cat.SysScaNPRTypeSet> has a binary (unique) key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Sys(Sca|NonSca|Dom)TypeSet
+=head2 sys.std.Core.Type.Cat.SysTypeSet
 
-A C<Cat.Sys(Sca|NonSca|Dom)TypeSet> is a C<Relation> that specifies a set
-of system-defined scalar|nonscalar|domain types.
+A C<Cat.SysTypeSet> is a C<Relation> that specifies a set of system-defined
+types.
 
-A C<Cat.Sys(Sca|NonSca|Dom)TypeSet> has these 4 attributes:
+A C<Cat.SysTypeSet> has these 4 attributes:
 
 =over
 
 =item C<parent> - C<Cat.DeclNameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
-the scalar|nonscalar|domain type's parent system namespace.
+the type's parent system namespace.
 
 =item C<name> - C<Cat.Name>
 
-This is the declared name of the scalar|nonscalar|domain type within the
-namespace defined by C<parent>; other Muldis D code would reference it with
-the combination of C<parent> and C<name>.
+This is the declared name of the type within the namespace defined by
+C<parent>; other Muldis D code would reference it with the combination of
+C<parent> and C<name>.
 
 =item C<comment> - C<Cat.Comment>
 
-This is an optional programmer comment about the scalar|nonscalar|domain
-type as a whole.
+This is an optional programmer comment about the type as a whole.
 
-=item C<type> - C<Cat.(Scalar|Nonscalar|Domain)Type>
+=item C<type> - C<Cat.Type>
 
-This defines the entire scalar|nonscalar|domain type sans the name.
+This defines the entire type sans the name.
 
 =back
 
-A C<Cat.Sys(Sca|NonSca|Dom)TypeSet> has a binary (unique) key on the
-C<parent> plus C<name> attributes.  Its default value is empty.
+A C<Cat.SysTypeSet> has a binary (unique) key on the C<parent> plus C<name>
+attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysCatSet
 
@@ -534,7 +533,7 @@ any that exist are arranged in a hierarchy with the depot as the root.  The
 system catalog variables named C<dep.cat> and C<sdp.cat> are both of the
 C<Cat.Depot> type.
 
-A C<Cat.Depot> has these 10 attributes:
+A C<Cat.Depot> has these 8 attributes:
 
 =over
 
@@ -555,7 +554,7 @@ These are all the packages that this (|sub)depot contains.
 These are all the function|updater|procedure definitions that this
 (|sub)depot contains.
 
-=item C<(sca|non_sca|dom)_types> - C<Cat.Dep(Sca|NonSca|Dom)TypeSet>
+=item C<types> - C<Cat.DepTypeSet>
 
 These are all the definitions that this (|sub)depot contains of
 (|quasi-)scalar types with possreps, and complete (|quasi-)nonscalar types,
@@ -677,39 +676,38 @@ implementation, besides what C<interface> defines.
 A C<Cat.Dep(Func|Upd|Proc)Set> has a binary (unique) key on the C<parent>
 plus C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Dep(Sca|NonSca|Dom)TypeSet
+=head2 sys.std.Core.Type.Cat.DepTypeSet
 
-A C<Cat.Dep(Sca|NonSca|Dom)TypeSet> is a C<Relation> that specifies a set
-of scalar|nonscalar|domain types that a (|sub)depot might directly contain.
+A C<Cat.DepTypeSet> is a C<Relation> that specifies a set of types that a
+(|sub)depot might directly contain.
 
-A C<Cat.Dep(Sca|NonSca|Dom)TypeSet> has these 4 attributes:
+A C<Cat.DepTypeSet> has these 4 attributes:
 
 =over
 
 =item C<parent> - C<Cat.DeclNameChain>
 
 This is the fully-qualified name, in the C<dep.(cat|lib|data)> namespace,
-of the scalar|nonscalar|domain type's parent (|sub)depot.
+of the type's parent (|sub)depot.
 
 =item C<name> - C<Cat.Name>
 
-This is the declared name of the scalar|nonscalar|domain type within the
-namespace defined by C<parent>; other Muldis D code would reference it with
-the combination of C<parent> and C<name>.
+This is the declared name of the type within the namespace defined by
+C<parent>; other Muldis D code would reference it with the combination of
+C<parent> and C<name>.
 
 =item C<comment> - C<Cat.Comment>
 
-This is an optional programmer comment about the scalar|nonscalar|domain
-type as a whole.
+This is an optional programmer comment about the type as a whole.
 
-=item C<type> - C<Cat.(Scalar|Nonscalar|Domain)Type>
+=item C<type> - C<Cat.Type>
 
-This defines the entire scalar|nonscalar|domain type sans the name.
+This defines the entire type sans the name.
 
 =back
 
-A C<Cat.Dep(Sca|NonSca|Dom)TypeSet> has a binary (unique) key on the
-C<parent> plus C<name> attributes.  Its default value is empty.
+A C<Cat.DepTypeSet> has a binary (unique) key on the C<parent> plus C<name>
+attributes.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING PACKAGES
 
@@ -723,7 +721,7 @@ A package internally looks like a depot but that it doesn't contain
 subdepots or other packages.  The system catalog variable named C<pkg.cat>
 is of the C<Cat.Package> type.
 
-A C<Cat.Package> has these 8 attributes:
+A C<Cat.Package> has these 6 attributes:
 
 =over
 
@@ -736,7 +734,7 @@ This is an optional programmer comment about the package as a whole.
 These are all the function|updater|procedure definitions that this package
 contains.
 
-=item C<(sca|non_sca|dom)_types> - C<Cat.Pkg(Sca|NonSca|Dom)TypeSet>
+=item C<types> - C<Cat.PkgTypeSet>
 
 These are all the definitions that this package contains of (|quasi-)scalar
 types with possreps, and complete (|quasi-)nonscalar types, and domain
@@ -792,40 +790,38 @@ implementation, besides what C<interface> defines.
 A C<Cat.Pkg(Func|Upd|Proc)Set> has a unary (unique) key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Pkg(Sca|NonSca|Dom)TypeSet
+=head2 sys.std.Core.Type.Cat.PkgTypeSet
 
-A C<Cat.Pkg(Sca|NonSca|Dom)TypeSet> is a C<Relation> that specifies a set
-of scalar|nonscalar|domain types that a package might contain, where each
-scalar|nonscalar|domain type may be either public for the DBMS as a whole
-or private to the package.
+A C<Cat.PkgTypeSet> is a C<Relation> that specifies a set of types that a
+package might contain, where each type may be either public for the DBMS as
+a whole or private to the package.
 
-A C<Cat.Pkg(Sca|NonSca|Dom)TypeSet> has these 4 attributes:
+A C<Cat.PkgTypeSet> has these 4 attributes:
 
 =over
 
 =item C<name> - C<Cat.Name>
 
-This is the declared name of the scalar|nonscalar|domain type.
+This is the declared name of the type.
 
 =item C<comment> - C<Cat.Comment>
 
-This is an optional programmer comment about the scalar|nonscalar|domain
-type as a whole.
+This is an optional programmer comment about the type as a whole.
 
 =item C<is_public> - C<Bool>
 
-This is C<Bool:true> if the scalar|nonscalar|domain type is part of the
-package's own public interface and may be directly invoked from outside the
-package; it is C<Bool:false> if it is just part of the package's internals.
+This is C<Bool:true> if the type is part of the package's own public
+interface and may be directly invoked from outside the package; it is
+C<Bool:false> if it is just part of the package's internals.
 
-=item C<type> - C<Cat.(Scalar|Nonscalar|Domain)Type>
+=item C<type> - C<Cat.Type>
 
-This defines the entire scalar|nonscalar|domain type sans the name.
+This defines the entire type sans the name.
 
 =back
 
-A C<Cat.Pkg(Sca|NonSca|Dom)TypeSet> has a unary (unique) key on the C<name>
-attribute.  Its default value is empty.
+A C<Cat.PkgTypeSet> has a unary (unique) key on the C<name> attribute.  Its
+default value is empty.
 
 =head1 TYPES FOR DEFINING ROUTINE HEADINGS
 
@@ -1546,13 +1542,13 @@ typed parameters.
 
 =head1 TYPES FOR DEFINING DATA TYPES
 
-=head2 sys.std.Core.Type.Cat.(Scalar|Nonscalar|Domain)Type
+=head2 sys.std.Core.Type.Cat.Type
 
-A C<Cat.(Scalar|Nonscalar|Domain)Type> is a C<Tuple>.  Its purpose is as
-per C<Cat.Inner(Scalar|Nonscalar|Domain)Type>, one of which it is a wrapper
-for along with other inner types that are composed into it.
+A C<Cat.Type> is a C<Tuple>.  Its purpose is as per
+C<Cat.Inner(Scalar|Nonscalar|Domain)Type>, one of which it is a wrapper for
+along with other inner types that are composed into it.
 
-A C<Cat.(Scalar|Nonscalar|Domain)Type> has these 4 attributes:
+A C<Cat.Type> has these 3 attributes:
 
 =over
 
@@ -1560,20 +1556,18 @@ A C<Cat.(Scalar|Nonscalar|Domain)Type> has these 4 attributes:
 
 This is an optional programmer comment about the type as a whole.
 
-=item C<main_type> - C<Cat.Inner(Scalar|Nonscalar|Domain)Type>
-
-This defines the actual main type, which a
-C<Cat.(Scalar|Nonscalar|Domain)Type> is just a wrapper for, namely what's
-left of the updater body after parts of it are optionally factored out into
-inner routines or inner types.
-
 =item C<inner_types> - C<Cat.InnerTypeSet>
 
-These are all the inner type definitions that this type contains.
+These are all the inner type definitions that this type contains.  There
+must be at least 1 inner type here, and exactly 1 of the inner types must
+have the empty string as its name; that inner type defines the actual main
+type that the C<Cat.Type> is a wrapper for, and the other inner types, if
+any, support it.
 
 =item C<inner_funcs> - C<Cat.InnerFuncSet>
 
-These are all the inner function definitions that this type contains.
+These are all the inner function definitions that this type contains, which
+support the main type or inner types.
 
 =back
 
@@ -1581,8 +1575,7 @@ There is a distributed (unique) key over both the C<name> attributes of all
 the attributes of C<inner_types> and the C<name> attributes of
 C<inner_funcs>.
 
-The default value of C<Cat.(Scalar|Nonscalar|Domain)Type> is as per
-C<Cat.Inner(Scalar|Nonscalar|Domain)Type>.
+The default value of C<Cat.Type> is as per C<Cat.InnerDomainType>.
 
 =head2 sys.std.Core.Type.Cat.InnerTypeSet
 
@@ -2060,7 +2053,7 @@ A C<Cat.Package> has these 2 attributes:
 
 This is an optional programmer comment about the dbvar as a whole.
 
-=item C<type> - C<Cat.NonscalarType>
+=item C<type> - C<Cat.Type>
 
 This defines the entire database type.
 
