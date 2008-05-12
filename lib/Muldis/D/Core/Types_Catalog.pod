@@ -87,6 +87,7 @@ more or less:
                 sys.std.Core.Type.Cat.Depot
                 sys.std.Core.Type.Cat.Package
                 sys.std.Core.Type.Cat.ExprNodeSet
+                sys.std.Core.Type.Cat.InnerTypeSet
 
         sys.std.Core.Type.Relation
 
@@ -931,7 +932,7 @@ A C<Cat.FuncBody> is a C<Tuple>.  It specifies the entire body or
 implementation of a function, besides the details that a C<Cat.FuncHead>
 has, one of which each C<Cat.FuncBody> typically must be paired with.
 
-A C<Cat.FuncBody> has these 6 attributes:
+A C<Cat.FuncBody> has these 4 attributes:
 
 =over
 
@@ -951,16 +952,15 @@ the function's parameters.
 
 These are all the inner function definitions that this function contains.
 
-=item C<inner_(sca|non_sca|dom)_types> -
-C<Cat.Inner(Sca|NonSca|Dom)TypeSet>
+=item C<inner_types> - C<Cat.InnerTypeSet>
 
-These are all the inner scalar|nonscalar|domain type definitions that this
-function contains.
+These are all the inner type definitions that this function contains.
 
 =back
 
-There is a distributed (unique) key over the C<name> attributes of
-C<inner_(funcs|(sca|non_sca|dom)_types)>.
+There is a distributed (unique) key over both the C<name> attributes of
+C<inner_funcs> and the C<name> attributes of all the attributes of
+C<inner_types>.
 
 The default value of C<Cat.FuncBody> directly corresponds to the default
 value of C<Cat.FuncHead> and unconditionally results in the value
@@ -972,7 +972,7 @@ A C<Cat.UpdBody> is a C<Tuple>.  It specifies the entire body or
 implementation of an updater, besides the details that a C<Cat.UpdHead>
 has, one of which each C<Cat.UpdBody> typically must be paired with.
 
-A C<Cat.UpdBody> has these 7 attributes:
+A C<Cat.UpdBody> has these 5 attributes:
 
 =over
 
@@ -995,16 +995,15 @@ These are all the inner updater definitions that this updater contains.
 
 These are all the inner function definitions that this updater contains.
 
-=item C<inner_(sca|non_sca|dom)_types> -
-C<Cat.Inner(Sca|NonSca|Dom)TypeSet>
+=item C<inner_types> - C<Cat.InnerTypeSet>
 
-These are all the inner scalar|nonscalar|domain type definitions that this
-updater contains.
+These are all the inner type definitions that this updater contains.
 
 =back
 
-There is a distributed (unique) key over the C<name> attributes of
-C<inner_(upds|funcs|(sca|non_sca|dom)_types)>.
+There is a distributed (unique) key over both the C<name> attributes of
+C<inner_(upds|funcs)> and the C<name> attributes of all the attributes of
+C<inner_types>.
 
 The default value of C<Cat.UpdBody> directly corresponds to the default
 value of C<Cat.UpdHead> and unconditionally updates its C<topic> argument
@@ -1016,7 +1015,7 @@ A C<Cat.ProcBody> is a C<Tuple>.  It specifies the entire body or
 implementation of a procedure, besides the details that a C<Cat.ProcHead>
 has, one of which each C<Cat.ProcBody> typically must be paired with.
 
-A C<Cat.ProcBody> has these 8 attributes:
+A C<Cat.ProcBody> has these 6 attributes:
 
 =over
 
@@ -1042,16 +1041,15 @@ These are all the inner updater definitions that this procedure contains.
 
 These are all the inner function definitions that this procedure contains.
 
-=item C<inner_(sca|non_sca|dom)_types> -
-C<Cat.Inner(Sca|NonSca|Dom)TypeSet>
+=item C<inner_types> - C<Cat.InnerTypeSet>
 
-These are all the inner scalar|nonscalar|domain type definitions that this
-procedure contains.
+These are all the inner type definitions that this procedure contains.
 
 =back
 
-There is a distributed (unique) key over the C<name> attributes of
-C<inner_(procs|upds|funcs|(sca|non_sca|dom)_types)>.
+There is a distributed (unique) key over both the C<name> attributes of
+C<inner_(procs|upds|funcs)> and the C<name> attributes of all the
+attributes of C<inner_types>.
 
 The default value of C<Cat.ProcBody> directly corresponds to the default
 value of C<Cat.ProcHead> and is a no-op, having zero statements.
@@ -1554,7 +1552,7 @@ A C<Cat.(Scalar|Nonscalar|Domain)Type> is a C<Tuple>.  Its purpose is as
 per C<Cat.Inner(Scalar|Nonscalar|Domain)Type>, one of which it is a wrapper
 for along with other inner types that are composed into it.
 
-A C<Cat.(Scalar|Nonscalar|Domain)Type> has these 6 attributes:
+A C<Cat.(Scalar|Nonscalar|Domain)Type> has these 4 attributes:
 
 =over
 
@@ -1569,11 +1567,9 @@ C<Cat.(Scalar|Nonscalar|Domain)Type> is just a wrapper for, namely what's
 left of the updater body after parts of it are optionally factored out into
 inner routines or inner types.
 
-=item C<inner_(sca|non_sca|dom)_types> -
-C<Cat.Inner(Sca|NonSca|Dom)TypeSet>
+=item C<inner_types> - C<Cat.InnerTypeSet>
 
-These are all the inner scalar|nonscalar|domain type definitions that this
-type contains.
+These are all the inner type definitions that this type contains.
 
 =item C<inner_funcs> - C<Cat.InnerFuncSet>
 
@@ -1581,11 +1577,33 @@ These are all the inner function definitions that this type contains.
 
 =back
 
-There is a distributed (unique) key over the C<name> attributes of
-C<inner_((sca|non_sca|dom)_types|funcs)>.
+There is a distributed (unique) key over both the C<name> attributes of all
+the attributes of C<inner_types> and the C<name> attributes of
+C<inner_funcs>.
 
 The default value of C<Cat.(Scalar|Nonscalar|Domain)Type> is as per
 C<Cat.Inner(Scalar|Nonscalar|Domain)Type>.
+
+=head2 sys.std.Core.Type.Cat.InnerTypeSet
+
+A C<Cat.InnerTypeSet> is a C<Database> that specifies a set of named inner
+types.  It is typically composed into a
+function|updater|procedure|outer-type.
+
+A C<Cat.InnerTypeSet> has these 3 attributes:
+
+=over
+
+=item C<inner_(sca|non_sca|dom)_types> -
+C<Cat.Inner(Sca|NonSca|Dom)TypeSet>
+
+These are all the inner scalar|nonscalar|domain type definitions that this
+type contains.
+
+=back
+
+There is a distributed (unique) key over the C<name> attributes of all of a
+C<Cat.InnerTypeSet>'s attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.Inner(Sca|NonSca|Dom)TypeSet
 
