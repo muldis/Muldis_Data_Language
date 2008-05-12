@@ -758,9 +758,7 @@ A C<Cat.Pkg(Sca|NonSca|Dom)TypeSet> has these 4 attributes:
 
 =item C<name> - C<Cat.Name>
 
-This is the declared name of the scalar|nonscalar|domain type within the
-namespace defined by C<parent>; other Muldis D code would reference it with
-the combination of C<parent> and C<name>.
+This is the declared name of the scalar|nonscalar|domain type.
 
 =item C<comment> - C<Cat.Comment>
 
@@ -779,8 +777,8 @@ This defines the entire scalar|nonscalar|domain type sans the name.
 
 =back
 
-A C<Cat.Pkg(Sca|NonSca|Dom)TypeSet> has a binary (unique) key on the
-C<parent> plus C<name> attributes.  Its default value is empty.
+A C<Cat.Pkg(Sca|NonSca|Dom)TypeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING ROUTINE HEADINGS
 
@@ -907,14 +905,16 @@ the function's parameters.
 
 These are all the inner function definitions that this function contains.
 
-=item C<inner_types> - C<Cat.InnerTypeSet>
+=item C<inner_(sca|non_sca|dom)_types> -
+C<Cat.Inner(Sca|NonSca|Dom)TypeSet>
 
-These are all the inner type definitions that this function contains.
+These are all the inner scalar|nonscalar|domain type definitions that this
+function contains.
 
 =back
 
 There is a distributed (unique) key over the C<name> attributes of
-C<inner_(funcs|types)>.
+C<inner_(funcs|(sca|non_sca|dom)_types)>.
 
 The default value of C<Cat.FuncBody> directly corresponds to the default
 value of C<Cat.FuncHead> and unconditionally results in the value
@@ -949,14 +949,16 @@ These are all the inner updater definitions that this updater contains.
 
 These are all the inner function definitions that this updater contains.
 
-=item C<inner_types> - C<Cat.InnerTypeSet>
+=item C<inner_(sca|non_sca|dom)_types> -
+C<Cat.Inner(Sca|NonSca|Dom)TypeSet>
 
-These are all the inner type definitions that this updater contains.
+These are all the inner scalar|nonscalar|domain type definitions that this
+updater contains.
 
 =back
 
 There is a distributed (unique) key over the C<name> attributes of
-C<inner_(upds|funcs|types)>.
+C<inner_(upds|funcs|(sca|non_sca|dom)_types)>.
 
 The default value of C<Cat.UpdBody> directly corresponds to the default
 value of C<Cat.UpdHead> and unconditionally updates its C<topic> argument
@@ -994,14 +996,16 @@ These are all the inner updater definitions that this procedure contains.
 
 These are all the inner function definitions that this procedure contains.
 
-=item C<inner_types> - C<Cat.InnerTypeSet>
+=item C<inner_(sca|non_sca|dom)_types> -
+C<Cat.Inner(Sca|NonSca|Dom)TypeSet>
 
-These are all the inner type definitions that this procedure contains.
+These are all the inner scalar|nonscalar|domain type definitions that this
+procedure contains.
 
 =back
 
 There is a distributed (unique) key over the C<name> attributes of
-C<inner_(procs|upds|funcs|types)>.
+C<inner_(procs|upds|funcs|(sca|non_sca|dom)_types)>.
 
 The default value of C<Cat.ProcBody> directly corresponds to the default
 value of C<Cat.ProcHead> and is a no-op, having zero statements.
@@ -1519,9 +1523,11 @@ C<Cat.(Scalar|Nonscalar|Domain)Type> is just a wrapper for, namely what's
 left of the updater body after parts of it are optionally factored out into
 inner routines or inner types.
 
-=item C<inner_types> - C<Cat.InnerTypeSet>
+=item C<inner_(sca|non_sca|dom)_types> -
+C<Cat.Inner(Sca|NonSca|Dom)TypeSet>
 
-These are all the inner type definitions that this type contains.
+These are all the inner scalar|nonscalar|domain type definitions that this
+type contains.
 
 =item C<inner_funcs> - C<Cat.InnerFuncSet>
 
@@ -1530,10 +1536,38 @@ These are all the inner function definitions that this type contains.
 =back
 
 There is a distributed (unique) key over the C<name> attributes of
-C<inner_(types|funcs)>.
+C<inner_((sca|non_sca|dom)_types|funcs)>.
 
 The default value of C<Cat.(Scalar|Nonscalar|Domain)Type> is as per
 C<Cat.Inner(Scalar|Nonscalar|Domain)Type>.
+
+=head2 sys.std.Core.Type.Cat.Inner(Sca|NonSca|Dom)TypeSet
+
+A C<Cat.Inner(Sca|NonSca|Dom)TypeSet> is a C<Relation> that specifies a set
+of inner scalar|nonscalar|domain types that a function|updater|procedure or
+scalar|nonscalar|domain type might contain.
+
+A C<Cat.Inner(Sca|NonSca|Dom)TypeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the inner scalar|nonscalar|domain type.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the inner
+scalar|nonscalar|domain type as a whole.
+
+=item C<type> - C<Cat.Inner(Scalar|Nonscalar|Domain)Type>
+
+This defines the entire inner scalar|nonscalar|domain type sans the name.
+
+=back
+
+A C<Cat.Inner(Sca|NonSca|Dom)TypeSet> has a unary (unique) key on the
+C<name> attribute.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING INNER DATA TYPES
 
