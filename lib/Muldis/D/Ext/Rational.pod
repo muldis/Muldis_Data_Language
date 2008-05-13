@@ -72,7 +72,7 @@ and aren't re-described here):
 
             # The following are all regular non-ordered scalar types.
 
-            sys.std.Rational.Type.E_RM
+            sys.std.Rational.Type.RatRoundMeth
 
         sys.std.Core.Type.Tuple
 
@@ -164,30 +164,31 @@ normalization constraint); it is the best option to exactly represent
 rational numbers that are conceptually the decimal numbers that humans
 typically work with.
 
-=head2 sys.std.Rational.Type.E_RM
+=head2 sys.std.Rational.Type.RatRoundMeth
 
-A C<Cat.E_RM> (rounding method) is a scalar enumeration consisting of the 7
-values C<Cat.E_RM:half_down>, C<Cat.E_RM:half_up>, C<Cat.E_RM:half_even>,
-C<Cat.E_RM:to_floor>, C<Cat.E_RM:to_ceiling>, C<Cat.E_RM:to_zero>,
-C<Cat.E_RM:to_inf>.  When a value of some ordered type needs to be mapped
-into a proper subtype that doesn't contain that value, such as when mapping
-an arbitrary number to one with less precision, some rounding method is
-applied to determine which value of the subtype is to be mapped to while
-most accurately reflecting the original value.  The C<Cat.E_RM> type
-enumerates the rounding methods that Muldis D operators can typically
-apply.  With C<half_down>, C<half_up>, and C<half_even> (aka I<unbiased
-rounding>, I<convergent rounding>, I<statistician's rounding>, or
-I<bankers' rounding>), the original value will be mapped to the single
-target value that it is closest to, if there is one; otherwise, if it is
-exactly half-way between 2 adjacent target values, then C<half_down> will
-round towards negative infinity, C<half_up> will round towards positive
-infinity, and C<half_even> will round towards the nearest "even" target.
-With C<to_floor>, C<to_ceiling>, C<to_zero> (aka I<truncate>), C<to_inf>,
-the original value will always be mapped to the single adjacent value that
-is lower than it, or higher than it, or towards "zero" from it, or towards
-the nearer infinity from it, respectively.  The default value of
-C<Cat.E_RM> is C<Cat.E_RM:half_up>, since that is the most commonly used
-method of rounding.
+A C<RatRoundMeth> (rounding method) is a scalar enumeration consisting of
+the 7 values C<RatRoundMeth:half_down>, C<RatRoundMeth:half_up>,
+C<RatRoundMeth:half_even>, C<RatRoundMeth:to_floor>,
+C<RatRoundMeth:to_ceiling>, C<RatRoundMeth:to_zero>,
+C<RatRoundMeth:to_inf>.  When a value of some ordered type needs to be
+mapped into a proper subtype that doesn't contain that value, such as when
+mapping an arbitrary number to one with less precision, some rounding
+method is applied to determine which value of the subtype is to be mapped
+to while most accurately reflecting the original value.  The
+C<RatRoundMeth> type enumerates the rounding methods that Muldis D
+operators can typically apply.  With C<half_down>, C<half_up>, and
+C<half_even> (aka I<unbiased rounding>, I<convergent rounding>,
+I<statistician's rounding>, or I<bankers' rounding>), the original value
+will be mapped to the single target value that it is closest to, if there
+is one; otherwise, if it is exactly half-way between 2 adjacent target
+values, then C<half_down> will round towards negative infinity, C<half_up>
+will round towards positive infinity, and C<half_even> will round towards
+the nearest "even" target. With C<to_floor>, C<to_ceiling>, C<to_zero> (aka
+I<truncate>), C<to_inf>, the original value will always be mapped to the
+single adjacent value that is lower than it, or higher than it, or towards
+"zero" from it, or towards the nearer infinity from it, respectively.  The
+default value of C<RatRoundMeth> is C<RatRoundMeth:half_up>, since that is
+the most commonly used method of rounding.
 
 =head2 sys.std.Rational.Type.RatRoundRule
 
@@ -200,13 +201,13 @@ approximating rational number.  It is also used to define a generic
 rounding operation on a rational number that derives a typically less
 precise rational.  A C<Cat.RatRoundRule> has these 3 attributes: C<radix>
 (a C<Cat.PInt2_N>), C<max_denom> (a C<PInt>), and C<round_meth> (a
-C<Cat.E_RM>).  The rational resulting from the operation is as close as
+C<RatRoundMeth>).  The rational resulting from the operation is as close as
 possible to the conceptual result but that its denominator is a
 non-negative power of C<radix> and said denominator is not larger than
 C<max_denom>; if rounding is needed, then C<round> dictates the rounding
 method.  The default value of C<Cat.RatRoundRule> specifies a coersion to a
-whole number using the C<Cat.E_RM:half_up> rounding method (its radix is 2
-and its max denom is 1).
+whole number using the C<RatRoundMeth:half_up> rounding method (its radix
+is 2 and its max denom is 1).
 
 =head1 SYSTEM-DEFINED RATIONAL-CONCERNING FUNCTIONS
 
@@ -421,7 +422,7 @@ This selector function results in the C<Rat> value that is conceptually
 equal to its C<Int> argument.
 
 =item C<function sys.std.Rational.Int_from_Rat result Int params {
-rat(Rat), round_meth(Cat.E_RM) }>
+rat(Rat), round_meth(RatRoundMeth) }>
 
 This selector function results in the C<Int> value that is conceptually
 equal to or otherwise nearest to its C<rat> argument, where the nearest is
