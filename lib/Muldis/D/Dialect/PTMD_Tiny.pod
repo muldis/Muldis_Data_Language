@@ -141,7 +141,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         <procedure_args>
     }
 
-    token procedure_name { <cat_name_chain_body> }
+    token procedure_name { <name_chain_body> }
 
     token procedure_args { <tuple_body> }
 
@@ -153,10 +153,10 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         | <text>
         | <tuple_or_qv>
         | <relation_or_qv>
-        | <cat_name>
-        | <cat_name_chain>
-        | <cat_decl_name_chain>
-        | <cat_comment>
+        | <name>
+        | <name_chain>
+        | <decl_name_chain>
+        | <comment>
         | <rat>
         | <rat_round_meth>
     }
@@ -171,9 +171,9 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         <possrep_attrs>
     }
 
-    token scalar_type_name { <cat_name_chain_body> }
+    token scalar_type_name { <name_chain_body> }
 
-    token possrep_name { <cat_name> }
+    token possrep_name { <name> }
 
     token possrep_attrs { <tuple_body> }
 
@@ -222,7 +222,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         ((Quasi)? Relation)
         <spec_sep>
         <list_open>
-            (((<cat_name>) <list_sep>)*)
+            (((<name>) <list_sep>)*)
         <list_close>
     }
 
@@ -238,7 +238,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         ((Quasi)? Relation)
         <spec_sep>
         <ord_list_open>
-            (((<cat_name>) <list_sep>)*)
+            (((<name>) <list_sep>)*)
         <ord_list_close>
         <spec_sep>
         <list_open>
@@ -252,7 +252,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token tuple_body {
         <list_open>
-            (((<cat_name> <pair_sep> <literal>) <list_sep>)*)
+            (((<name> <pair_sep> <literal>) <list_sep>)*)
         <list_close>
     }
 
@@ -343,22 +343,22 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token text_char { ['\b'|'\q'|<-[\\\']>] }
 
-    token cat_name { <quoted_text_str> }
+    token name { <quoted_text_str> }
 
-    token cat_name_chain {
-        (Cat.NameChain)
+    token name_chain {
+        (NameChain)
         <spec_sep>
-        <cat_name_chain_body>
+        <name_chain_body>
     }
 
-    token cat_name_chain_body {
+    token name_chain_body {
           nc_seq
         | nc_flat
     }
 
     token nc_seq {
         <ord_list_open>
-            ((<cat_name>) (\s* <nc_elem_sep> \s* (<cat_name>))+)
+            ((<name>) (\s* <nc_elem_sep> \s* (<name>))+)
         <ord_list_close>
     }
 
@@ -372,20 +372,20 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token nc_char { ['\b'|'\q'|'\p'|<-[\\\'\.]>] }
 
-    token cat_decl_name_chain {
-        (Cat.DeclNameChain)
+    token decl_name_chain {
+        (DeclNameChain)
         <spec_sep>
-        <cat_decl_name_chain_body>
+        <decl_name_chain_body>
     }
 
-    token cat_decl_name_chain_body {
+    token decl_name_chain_body {
           dnc_seq
         | dnc_flat
     }
 
     token dnc_seq {
         <ord_list_open>
-            (((<cat_name>) (\s* <nc_elem_sep> \s* (<cat_name>))?)?)
+            (((<name>) (\s* <nc_elem_sep> \s* (<name>))?)?)
         <ord_list_close>
     }
 
@@ -395,8 +395,8 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         <text_delim>
     }
 
-    token cat_comment {
-        (Cat.Comment)
+    token comment {
+        (Comment)
         <spec_sep>
         <quoted_text_str>
     }
@@ -589,15 +589,15 @@ The following are fragments of actual Plain Text Muldis D code.
 
     'First Name'
 
-    Cat.NameChain:['fed'.'data'.'the_db'.'gene'.'sorted_person_name']
+    NameChain:['fed'.'data'.'the_db'.'gene'.'sorted_person_name']
 
-    Cat.NameChain:'fed.data.the_db.stats.samples_by_order'
+    NameChain:'fed.data.the_db.stats.samples_by_order'
 
-    Cat.DeclNameChain:['gene'.'sorted_person_name']
+    DeclNameChain:['gene'.'sorted_person_name']
 
-    Cat.DeclNameChain:'.stats.samples_by_order.'
+    DeclNameChain:'.stats.samples_by_order.'
 
-    Cat.Comment:'This does something.'
+    Comment:'This does something.'
 
     Rat:radix:1:-1.1
 
