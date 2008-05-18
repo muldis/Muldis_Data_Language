@@ -1010,16 +1010,71 @@ whereas C<Int> is.
 
 =head2 Ordered Types
 
-TODO: THIS
+Data types in Muldis D are fundamentally unordered sets of values, and so
+in the general case, it does not make sense to use them in a context that
+requires some conception of values being mutually ordered.  However,
+potentially any type can externally have ordering algorithms (as defined by
+functions) applied to it in particular contexts, and so fake the type being
+ordered, in either one or multiple ways.  Moreover, many of the common use
+cases here have system-defined functionality to support them.
 
-total order vs partial order
+To maximize code reuse and polymorphism in Muldis D, you should only need
+to define a single order-determination function per data type whose values
+you want to sort, in the general case.  If such a function is declared in
+the appropriate format and in the appropriate place, then the multiplicity
+of system-defined type-generic order-sensitive operators should be able to
+wrap this function and work with the data type.
 
-default order function for type, built into type def,
-only definable for scalar root types
-invoke using sys.std.Core.Scalar.\w+ named func
+Examples of generic order-sensitive operators include tests of the relative
+order of 2 values, tests of whether a value is inside or outside of the
+range between 2 other values, querying the minimum or maximum value from a
+set of values, ranking a set of values based on their relative order, or
+sorting a set of values into a sequence that reflects such a ranking.
 
-also, every system-defined scalar type without possreps is ordered; for
-those with possreps, only some are
+A system-compatible fundamental order-determination function has 2
+parameters named C<topic> and C<other>, where the declared types of the
+parameters are the same as the type whose values the function is to
+determine the order of, and it would be invoked with 2 of those values as
+its arguments; the result type of the function is a C<Cat.Order>.  This
+function results in C<Cat.Order:same> iff its 2 arguments are exactly the
+same value, and otherwise it results in C<Cat.Order:increase> if the value
+of the C<other> argument is considered to be an increase (as defined by the
+function's algorithm) over the value of the C<topic> argument, and
+otherwise it results in C<Cat.Order:decrease> as the reverse of the last
+condition would be true.  The function also has a C<Tuple>-typed third
+parameter, named C<assuming>, which carries optional customization details
+for the algorithm; this permits the function to implement a choice between
+multiple (typically similar) ordering algorithms rather than just one,
+which reduces the number of functions needed for supporting that choice.
+
+In the general case, any context which wants to use a system-defined
+type-generic order-sensitive operator will specify the fully-qualified name
+of a system-compatible fundamental order-determination function to
+implement it over, by supplying the name of the latter function as an
+additional argument to the former.  However, as an option allowed for
+scalar root types, a default fundamental order-determination function can
+be included as part of the definition of that type, which is automatically
+applied when using values of that type with versions of order-sensitive
+operators that don't have the additional function-name-specifying
+parameter.  All ordered system-defined scalar root types have this
+type-default ordering function defined for them, especially all
+system-defined scalar types that don't have any possreps, so you don't need
+to define any yourself for these most-common cases.  Note that a nonscalar
+type can't have a default ordering function, and a subtype of a scalar type
+can't supply or replace one either, with the reasoning for this that any
+resulting behaviour from supporting such would be difficult to predict; by
+contrast, it is easy to predict behaviour when a type-default sorting
+function is attached to a scalar root type.
+
+Note that, for the present at least, a system-compatible fundamental
+order-determination function may only be totally ordered; that is, no 2
+distinct values of a type it is applied to may compare as C<same>.  In the
+future, Muldis D may have privileged support for partial ordering
+functions, which when applied to sort a set of values would result in a
+sequence of sets of compares-as-same values, rather than a straight
+sequence of values.  But in the meantime you can make a non-privileged
+partial sort function by combining a set folding function with a totally
+ordered order-determination function, and a relational group if applicable.
 
 =head1 ENVIRONMENT
 
