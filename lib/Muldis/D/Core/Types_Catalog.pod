@@ -57,6 +57,7 @@ more or less:
             sys.std.Core.Type.Cat.NameChain
             sys.std.Core.Type.Cat.DeclNameChain
             sys.std.Core.Type.Cat.Comment
+            sys.std.Core.Type.Cat.Order
 
         sys.std.Core.Type.Tuple
 
@@ -121,7 +122,7 @@ more or less:
             sys.std.Core.Type.Cat.NameExprMap
             sys.std.Core.Type.Cat.AttrRenameMap
 
-=head1 TYPES FOR DEFINING ENTITY NAMES AND COMMENTS
+=head1 SIMPLE GENERIC SCALAR TYPES
 
 =head2 sys.std.Core.Type.Cat.Name
 
@@ -189,6 +190,25 @@ One main intended use of this type is to help preserve comments in code
 translated to or from other languages; though only a subset of those
 (FoxPro?) keep comments in the AST rather than discarding them.  The
 default value et al is as for C<Cat.Name>.
+
+=head2 sys.std.Core.Type.Cat.Order
+
+A C<Cat.Order> (order determination) is a scalar enumeration consisting of
+the 3 values C<increase>, C<same>, C<decrease>.  When some context (such as
+within a list sort or range check operation) needs to know the relative
+order of 2 values according to some criteria, it can invoke a function that
+applies that criteria to those 2 values, which are its main/only arguments,
+and that function results in a C<Cat.Order> value for the context to make
+use of.  A C<Cat.Order> has 2 system-defined possreps, named C<name> and
+C<int>.  The C<name> possrep directly matches the conception of the type as
+an enumeration of 3 character string values; it consists of 1
+C<Cat.Name>-typed attribute whose name is the empty string.  The C<int>
+possrep consists of 1 C<Int>-typed attribute whose name is the empty string
+and whose value must be one of [C<-1>, C<0>, C<1>]; the 3 values of each
+possrep correspond in the same order as they are documented here.  The
+default value of C<Cat.Order> is C<same>; its minimum and maximum values
+are, respectively, C<increase> and C<decrease>.  The cardinality of this
+type is 3.
 
 =head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
 
@@ -2064,7 +2084,7 @@ I<Transition constraints et al are still TODO.>
 The default value of C<Cat.DbVar> defines a variable that is "just a
 database" and has no extra constraints.
 
-=head1 SIMPLE GENERIC CATALOG COLLECTION TYPES
+=head1 SIMPLE GENERIC NONSCALAR TYPES
 
 =head2 sys.std.Core.Type.Cat.NameTypeMap
 
