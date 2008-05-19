@@ -135,7 +135,9 @@ be used instead to also qualify the reference with a namespace.
 C<Cat.Name> is the same as C<Text> in representation (each value as a
 string of characters) and cardinality though its values are distinct; it is
 specifically intended for use in naming DBMS entities rather than being for
-general-purpose user data.  The default value et al is as for C<Text>.
+general-purpose user data.  The default value et al is as for C<Text>.  The
+C<Cat.Name> type has a default ordering algorithm; it is the same as for
+C<Text>.
 
 =head2 sys.std.Core.Type.Cat.NameChain
 
@@ -167,6 +169,17 @@ most-generalized finite C<Cat.NameChain> subtype, you must specify a
 maximum number of sequence elements of its values, and each element must be
 of a finite C<Cat.Name> subtype.
 
+The C<Cat.NameChain> type has a default ordering algorithm; for 2 distinct
+C<Cat.NameChain> values, their order is determined as follows:  1.
+Eliminate any identical parent-most sequence elements as those alone would
+make the chains compare as same (if the remainder of both strings was the
+empty chain, then the chains are identical).  2.  Iff the remainder of just
+one chain is the empty chain, then that chain is ordered before the
+non-empty one.  3.  Compare the first element of each of the chain
+remainders; the chain with the first remaining element that is ordered
+first as per its own algorithm (that of C<Cat.Name>) is ordered before the
+other chain.
+
 =head2 sys.std.Core.Type.Cat.DeclNameChain
 
 A C<Cat.DeclNameChain> (scalar) is mostly the same as a C<Cat.NameChain>
@@ -177,7 +190,9 @@ sequence means a C<flat> possrep consisting of just a period.  A
 C<Cat.DeclNameChain> is used in declaring system catalogs where DBMS
 entities live under a potentially N-depth namespace, such as depot entities
 grouped in a subdepot hierarchy.  The default and minimum value of
-C<Cat.DeclNameChain> is a zero element sequence.
+C<Cat.DeclNameChain> is a zero element sequence.  The C<Cat.DeclNameChain>
+type has a default ordering algorithm; it is the same as for
+C<Cat.NameChain>.
 
 =head2 sys.std.Core.Type.Cat.Comment
 
@@ -189,7 +204,8 @@ its values are distinct; it is intended just for commenting Muldis D code.
 One main intended use of this type is to help preserve comments in code
 translated to or from other languages; though only a subset of those
 (FoxPro?) keep comments in the AST rather than discarding them.  The
-default value et al is as for C<Cat.Name>.
+default value et al is as for C<Cat.Name>.  The C<Cat.Comment> type has a
+default ordering algorithm; it is the same as for C<Cat.Name>.
 
 =head2 sys.std.Core.Type.Cat.Order
 
@@ -208,7 +224,8 @@ and whose value must be one of [C<-1>, C<0>, C<1>]; the 3 values of each
 possrep correspond in the same order as they are documented here.  The
 default value of C<Cat.Order> is C<same>; its minimum and maximum values
 are, respectively, C<increase> and C<decrease>.  The cardinality of this
-type is 3.
+type is 3.  The C<Cat.Order> type has a default ordering algorithm;
+C<increase> is ordered before C<same>, and C<same> before C<decrease>.
 
 =head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
 

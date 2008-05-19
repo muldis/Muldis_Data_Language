@@ -143,7 +143,8 @@ and C<Bool:true>.  It represents a truth value, and is the result type of
 any C<is_identical> or C<is_not_identical> routine; it is the only
 essential general-purpose scalar data type of a B<D> language.  Its default
 and minimum value is C<Bool:false>; its maximum value is C<Bool:true>.  The
-cardinality of this type is 2.
+cardinality of this type is 2.  The C<Bool> type has a default ordering
+algorithm; C<Bool:false> is ordered before C<Bool:true>.
 
 =head2 sys.std.Core.Type.Int
 
@@ -151,7 +152,10 @@ An C<Int> is a single exact integral number of any magnitude.  Its default
 value is zero; its minimum and maximum values are conceptually infinities
 and practically impossible.  The cardinality of this type is infinity; to
 define a most-generalized finite C<Int> subtype, you must specify the 2
-integer end-points of the inclusive range that all its values are in.
+integer end-points of the inclusive range that all its values are in.  The
+C<Int> type has a default ordering algorithm; for 2 distinct C<Int> values,
+the value closer to negative infinity is ordered before the value closer to
+positive infinity.
 
 =head2 sys.std.Core.Type.UInt
 
@@ -170,7 +174,16 @@ A C<Blob> is an undifferentiated string of bits.  Its default and minimum
 value is the empty string; its maximum value is an infinite-length string
 and practically impossible.  The cardinality of this type is infinity; to
 define a most-generalized finite C<Blob> subtype, you must specify a
-maximum length in bits that the subtype's strings are.
+maximum length in bits that the subtype's strings are.  The C<Blob> type
+has a default ordering algorithm; for 2 distinct C<Blob> values, their
+order is determined as follows:  1.  Eliminate any identical leading
+sub-strings from both bit strings as those alone would make the strings
+compare as same (if the remainder of both strings was the empty string,
+then the strings are identical).  2.  Iff the remainder of just one string
+is the empty string, then that string is ordered before the non-empty one.
+3.  Compare the first bit of each of the string remainders; the one with
+the 0-valued first bit is ordered before the one with the 1-valued first
+bit.
 
 =head2 sys.std.Core.Type.Text
 
@@ -181,7 +194,12 @@ character repertoire for C<Text> types, which is the newest Unicode
 repertoire (5.0.0).  The cardinality of this type is infinity; to define a
 most-generalized finite C<Text> subtype, you must specify a maximum length
 in characters (that is, eg, in NFC graphemes) that the subtype's strings
-are.
+are.  The C<Text> type has a default ordering algorithm; for 2 distinct
+C<Text> values, their order is determined as per C<Blob> but that
+characters are being compared rather than bits; more specifically, the
+standard Unicode Collation Algorithm (UCA) is used by default, assuming it
+is totally ordered.  I<TODO: Support customization parameters for default
+text sorting, or fix to make totally ordered if it isn't yet.>
 
 =head1 SYSTEM-DEFINED CORE NONSCALAR PARAMETERIZED DATA TYPES
 
