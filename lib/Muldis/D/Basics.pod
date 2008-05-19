@@ -1031,21 +1031,22 @@ range between 2 other values, querying the minimum or maximum value from a
 set of values, ranking a set of values based on their relative order, or
 sorting a set of values into a sequence that reflects such a ranking.
 
-A system-compatible fundamental order-determination function has 2
-parameters named C<topic> and C<other>, where the declared types of the
-parameters are the same as the type whose values the function is to
-determine the order of, and it would be invoked with 2 of those values as
-its arguments; the result type of the function is a C<Cat.Order>.  This
-function results in C<Cat.Order:same> iff its 2 arguments are exactly the
-same value, and otherwise it results in C<Cat.Order:increase> if the value
-of the C<other> argument is considered to be an increase (as defined by the
-function's algorithm) over the value of the C<topic> argument, and
-otherwise it results in C<Cat.Order:decrease> as the reverse of the last
-condition would be true.  The function also has a C<Tuple>-typed third
-parameter, named C<assuming>, which carries optional customization details
-for the algorithm; this permits the function to implement a choice between
-multiple (typically similar) ordering algorithms rather than just one,
-which reduces the number of functions needed for supporting that choice.
+A system-compatible fundamental order-determination function (fulfilled by
+the routine kind C<order_determination>) has 2 parameters named C<topic>
+and C<other>, where the declared types of the parameters are the same as
+the type whose values the function is to determine the order of, and it
+would be invoked with 2 of those values as its arguments; the result type
+of the function is a C<Cat.Order>.  This function results in
+C<Cat.Order:same> iff its 2 arguments are exactly the same value, and
+otherwise it results in C<Cat.Order:increase> if the value of the C<other>
+argument is considered to be an increase (as defined by the function's
+algorithm) over the value of the C<topic> argument, and otherwise it
+results in C<Cat.Order:decrease> as the reverse of the last condition would
+be true.  The function also has a C<Tuple>-typed third parameter, named
+C<assuming>, which carries optional customization details for the
+algorithm; this permits the function to implement a choice between multiple
+(typically similar) ordering algorithms rather than just one, which reduces
+the number of functions needed for supporting that choice.
 
 In the general case, any context which wants to use a system-defined
 type-generic order-sensitive operator will specify the fully-qualified name
@@ -1152,6 +1153,7 @@ substitutability:
             inner_function
             type_constraint
             transition_constraint
+            order_determination
         imperative
             deterministic
                 updater
@@ -1254,6 +1256,14 @@ update any variable's state, with the result of a value expression or
 otherwise; in the case of a multi-update statement, all the updates would
 happen simultaneously, so a transition failure for any update would prevent
 all that statement's updates from occurring.
+
+=item C<order_determination>
+
+A C<order_determination> is the same as a C<inner_function>, but that it is
+structured to fill the role of a I<system-compatible fundamental
+order-determination function>; see the L</Ordered Types> pod section in
+this file for more details.  A C<order_determination> has 3 arguments named
+[C<topic>, C<order>, C<assuming>] and results in a C<Cat.Order>.
 
 =item C<updater>
 
