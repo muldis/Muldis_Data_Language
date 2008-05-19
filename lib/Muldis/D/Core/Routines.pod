@@ -91,6 +91,90 @@ variables, so they always hold valid values of their declared type.
 
 =back
 
+=head1 SYSTEM-DEFINED GENERIC SCALAR-CONCERNING FUNCTIONS
+
+These functions are applicable to mainly scalar types, but are generic in
+that they typically work with any scalar types.  Now some of these
+functions (those with a parameter named C<possrep>) work only with scalar
+values that have possreps, and not with values of the 6 system-defined
+scalar types lacking any possreps: C<Bool>, C<Int>, C<Blob>, C<Text>,
+C<Cat.Name>, C<Cat.Comment>; other functions are not limited in that way,
+but may be limited in other ways.  Note that the terminology used to
+describe these functions is taking advantage of the fact that a scalar
+possrep looks just like a tuple.
+
+=over
+
+=item C<function sys.std.Core.Scalar.attr result ScaTupRel params {
+topic(Scalar), possrep(Cat.Name), name(Cat.Name) }>
+
+This function results in the scalar or nonscalar value of the possrep
+attribute of C<topic> where the possrep name is given by C<possrep> and the
+attribute name is given by C<name>.  This function will fail if C<possrep>
+specifies a possrep name that C<topic> doesn't have or C<name> specifies an
+attribute name that the named possrep of C<topic> doesn't have.
+
+=item C<function sys.std.Core.Scalar.update_attr result Scalar params {
+topic(Scalar), possrep(Cat.Name), name(Cat.Name), value(ScaTupRel) }>
+
+This function results in its C<topic> argument but that its possrep
+attribute whose possrep name is C<possrep> and whose attribute name is
+C<name> has been updated with a new scalar or nonscalar value given by
+C<value>.  This function will fail if C<possrep> specifies a possrep name
+that C<topic> doesn't have or C<name> specifies an attribute name that the
+named possrep of C<topic> doesn't have, or if the declared type of C<value>
+isn't a subtype of the declared type of the attribute.
+
+=item C<function sys.std.Core.Scalar.multi_update result Scalar params {
+topic(Scalar), possrep(Cat.Name), attrs(Tuple) }>
+
+This function is like C<sys.std.Core.Scalar.update_attr> except that it
+handles N scalar possrep attributes at once rather than just 1.  The
+heading of the C<attrs> argument must be a subset of the heading of the
+C<topic> argument's possrep named by C<possrep>; this function's result is
+C<topic> with all the possrep attribute values of C<attrs> substituted into
+it.  This function could alternately be named
+I<sys.std.Core.Scalar.static_substitution>.
+
+=item C<function sys.std.Core.Scalar.projection result Tuple params {
+topic(Scalar), possrep(Cat.Name), attrs(set_of.Cat.Name) }>
+
+This function results in the C<Tuple> that is the projection of the possrep
+(whose name is given in the C<possrep> argument) of its C<topic> argument
+that has just the subset of attributes of C<topic> which are named in its
+C<attrs> argument. As a trivial case, this function's result is the entire
+named possrep of C<topic> if C<attrs> lists all attributes of that possrep;
+or, it is the nullary tuple if C<attrs> is empty.  This function will fail
+if C<possrep> specifies a possrep name that C<topic> doesn't have or
+C<attrs> specifies any attribute names that C<topic> doesn't have.
+
+=item C<function sys.std.Core.Scalar.cmpl_projection result Tuple params {
+topic(Scalar), possrep(Cat.Name), attrs(set_of.Cat.Name) }>
+
+This function is the same as C<projection> but that it results in the
+complementary subset of possrep attributes of C<topic> when given the same
+arguments.
+
+=item C<function sys.std.Core.Scalar.Tuple_from_Scalar result Tuple params
+{ topic(Scalar), possrep(Cat.Name) }>
+
+This function results in the C<Tuple> that has all the same attributes of
+the possrep of C<topic> whose name is given in C<possrep>; in other words,
+the function results in the externalization of one of a scalar value's
+possreps.  This function will fail if C<possrep> specifies a possrep name
+that C<topic> doesn't have.
+
+=item C<function sys.std.Core.Scalar.Scalar_from_Tuple result Scalar
+params { topic(Tuple), type(Cat.NameChain), possrep(Cat.Name) }>
+
+This function results in the C<Scalar> value whose scalar root (|sub)type
+is named by C<type>, which has a possrep whose name matches C<possrep>, and
+whose complete set of attributes of that named possrep match the attributes
+of C<topic>.  This function can be used to select any scalar value at all
+that has a possrep.
+
+=back
+
 =head1 SYSTEM-DEFINED BOOLEAN-CONCERNING FUNCTIONS
 
 These functions select values of the C<Bool> enumeration.
