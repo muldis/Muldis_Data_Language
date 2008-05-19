@@ -173,6 +173,29 @@ whose complete set of attributes of that named possrep match the attributes
 of C<topic>.  This function can be used to select any scalar value at all
 that has a possrep.
 
+=item C<function sys.std.Core.Scalar.order result Cat.Order params {
+topic(Scalar), other(Scalar), assuming(Tuple) }>
+
+This function is the externalization of a scalar root type's type-default
+(total) C<order_determination> function.  This function results in
+C<Cat.Order:same> iff its C<topic> and C<other> arguments are exactly the
+same value, and otherwise it results in C<Cat.Order:increase> if the value
+of the C<other> argument is considered to be an increase (as defined by the
+type) over the value of the C<topic> argument, and otherwise it results in
+C<Cat.Order:decrease> as the reverse of the last condition would be true.
+This function's C<topic> and C<other> arguments must be of compatible
+declared types; in this case, 2 declared types are compatible iff they are
+both subtypes of a common scalar root type that declares a type-default
+C<order_determination> function.  Note that C<order_determination>
+functions are considered the only fundamental order-sensitive operators,
+and all others are defined over them.  This function also has a
+C<Tuple>-typed third parameter, named C<assuming>, which carries optional
+customization details for the order-determination algorithm; this permits
+the function to implement a choice between multiple (typically similar)
+ordering algorithms rather than just one, which reduces the number of
+functions needed for supporting that choice; if the algorithm is not
+customizable, then a tuple argument would be of degree zero.
+
 =back
 
 =head1 SYSTEM-DEFINED BOOLEAN-CONCERNING FUNCTIONS
