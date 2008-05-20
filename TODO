@@ -31,6 +31,11 @@ constraint or something, as per scalar possrep mapping functions.
 
 * Add other kinds of triggered routines.
 
+* Fix or replace the sys.std.Nonscalar.Relation.(universal|negation)
+functions as they make more sense taking the name of a nonscalar heading
+def as an argument rather than a value, so that the correct declared types
+are used and/or the result is more predictable.
+
 * Add a system-defined function that will take a function name as a normal
 data argument and then turns around and invokes that function.  This is the
 fundamental function over which the generic relational restriction operator
@@ -40,6 +45,13 @@ than an actual function, we go the function route so that users can define
 their own operators that invoke based on data.  Similarly add a
 system-defined procedure, which is what try_catch et al works over for
 calling named procedures.
+
+* Consider adding catalog support for making some routine parameters
+optional; if no explicit arguments are given them, then implicit default
+argument values are used instead.  Examples of use are with order-sensitive
+functions, to make the 'func' and/or 'assuming' parameters optional, where
+they default to 'sys.std.Core.Scalar.order' and the D0 tuple respectively;
+but err on the side of making parameters non-optional for robustness.
 
 * Add some automatic code completion to the two Tiny dialects or as a
 general function, mainly so that tuples comprising catalogs don't have to
@@ -90,7 +102,8 @@ into catalogs, at least when the code doing either is an updater or
 procedure.  Rather, these procedures are mainly for making bootloaders
 work, since those can not directly invoke variables such as the catalogs in
 order to insert into them.  Probably add new file Core/Routines_Catalog.pod
-at the same time, to house them.
+at the same time, to house them.  Also add sys.std.Core.Cat.Order_reverse
+function in that new file; or that function best goes elsewhere?
 
 * Flesh out and add system service operators like random numbers or current
 dates or simple generic I/O.

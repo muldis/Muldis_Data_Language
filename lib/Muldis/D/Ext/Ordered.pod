@@ -32,8 +32,8 @@ Ordered Extension>, which consists of generic operators that are sensitive
 to an ordering of a type's values, and are used for such things as list
 sorting or quota queries or determining before/after/min/max/between/etc.
 They can potentially be used with values of any data type as long as said
-data type is either inherently ordered or or has an order-determination
-operator defined for them.
+data type has a (total) C<order_determination> function defined for it,
+and all system-defined conceptually-ordered Muldis D scalar root types do.
 
 This current document does not describe the polymorphic operators that all
 types, or some types including core types, have defined over them; said
@@ -43,32 +43,32 @@ I<This documentation is pending.>
 
 =head1 SYSTEM-DEFINED ORDER-CONCERNING FUNCTIONS
 
-These functions are applicable to values of potentially any data type,
-those which have a C<comparison> or such function defined for them.  They
-provide a common syntax for sort-related functionality, though technically
-every type having these functions is re-implementing its own version.  If
-values of an ordered data type can conceivably be sorted using multiple
-criteria (such as different text collations), then these functions just
-represent the default criteria; any additional criteria are represented by
-additional functions declared for just the types they apply to.
+Each of these functions which has the 2 parameters named C<func> and
+C<assuming> is a wrapper over the C<order_determination> function named in
+its C<func> argument when the latter function is curried by its C<assuming>
+argument.  For any scalar root type's type-default order function, the
+argument for C<func> is C<sys.std.Core.Scalar.order>.
 
 =over
 
-=item C<function sys.std.Ordered.is_before result Bool params {
-topic(Universal), other(Universal) }>
+=item C<function sys.std.Ordered.reverse_order result Cat.Order params {
+topic(Universal), other(Universal), func(Cat.NameChain), assuming(Tuple) }>
 
-This function results in C<Bool:true> iff its 2 arguments are non-identical
-and the value of the C<topic> argument is considered to come before the
-value of the C<other> argument when the 2 values are arranged in order (as
-defined by the type); it results in C<Bool:false> otherwise.  This
-function's arguments must be of compatible declared types; in this case, 2
-declared types are compatible iff they are both subtypes of a common scalar
-type that declares a C<comparison> function for itself.  Note that
-C<is_before> is considered the only fundamental ordered-specific operator,
-and all others are defined over it plus C<is_identical>.
+This function is exactly the same as the C<order_determination> function it
+wraps except that it results in the reverse value when given the same
+non-C<func> arguments.  It is a short-hand for applying
+C<sys.std.Core.Cat.Order_reverse> to the result of the wrapped function
+with the same non-C<func> arguments.
+
+=item C<function sys.std.Ordered.is_before result Bool params {
+topic(Universal), other(Universal), func(Cat.NameChain), assuming(Tuple) }>
+
+This function results in C<Bool:true> iff the wrapped function would result
+in C<Cat.Order:increase> when given the same arguments, and C<Bool:false>
+otherwise.
 
 =item C<function sys.std.Ordered.is_not_before result Bool params {
-topic(Universal), other(Universal) }>
+topic(Universal), other(Universal), func(Cat.NameChain), assuming(Tuple) }>
 
 This function is exactly the same as C<sys.std.Ordered.is_before> except
 that it results in the opposite boolean value when given the same
@@ -76,53 +76,59 @@ arguments.  (It could alternately be called "is after or is identical".)
 
 =item C<function sys.std.Ordered.is_inside_range result Bool params {
 topic(Universal), min(Universal), max(Universal), min_is_inside(Bool),
-max_is_inside(Bool) }>
+max_is_inside(Bool), func(Cat.NameChain), assuming(Tuple) }>
 
 This function results in C<Bool:true> iff its C<topic> argument is within
 the range whose bounds are defined by its C<min> and C<max> arguments.  If
 C<min_is_inside> or C<max_is_inside> are C<Bool:true>, then C<topic> is
 considered to be within the range if it is equal to C<min> or C<max>,
 respectively; otherwise, C<topic> is not considered to be within the range
-if it is equal to C<min> or C<max>.  This function's arguments must be of
-compatible declared types as per C<sys.std.Ordered.is_before>.  This
-function will fail if C<max> is before C<min>.
+if it is equal to C<min> or C<max>.  This function's C<min> and C<max>
+arguments must be of compatible declared types with C<topic> and C<order>
+as per the wrapped function.  This function will fail if C<max> is before
+C<min>.
 
 =item C<function sys.std.Ordered.is_outside_range result Bool params {
 topic(Universal), min(Universal), max(Universal), min_is_inside(Bool),
-max_is_inside(Bool) }>
+max_is_inside(Bool), func(Cat.NameChain), assuming(Tuple) }>
 
 This function is exactly the same as C<sys.std.Ordered.is_inside_range>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.std.Ordered.min result Universal params { topic(Set)
-}>
+=item C<function sys.std.Ordered.min result Universal params { topic(Set),
+func(Cat.NameChain), assuming(Tuple) }>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and picks the minimum of the 2 (a process which
 is both commutative and associative) until just one is left, which is the
-function's result.  If C<topic> has zero values, then C<min> results in the
-result type's concept of positive infinity, which is the identity value for
-I<min>.  This function will fail on a C<topic> of zero values if the result
-type's concept of positive infinity is impossible or impractically large to
+function's result.  If C<topic> has zero values, then this function will
+fail.  Note that, conceptually C<min> I<does> have an identity value which
+could be this function's result when C<topic> has zero values, which is the
+result type's concept of positive infinity; however, in practice there is
+little benefit to C<min> supporting this identity value, since the wrapped
+C<order_determination> function can't supply the value, and also many
+types' concept of positive infinity is impossible or impractically large to
 represent, such as with the infinite C<Text> type.
 
-=item C<function sys.std.Ordered.max result Universal params { topic(Set)
-}>
+=item C<function sys.std.Ordered.max result Universal params { topic(Set),
+func(Cat.NameChain), assuming(Tuple) }>
 
 This function is exactly the same as C<sys.std.Ordered.min> except that it
-results in the maximum input element value rather than the minimum one, and
-its identity value is the result type's concept of negative infinity.
+results in the maximum input element value rather than the minimum one.
+(Note that, conceptually C<max> has an identity value which is the result
+type's concept of negative infinity, but it is unsupported here).
 
-=item C<function sys.std.Ordered.maybe_min result Maybe params { topic(Set)
-}>
+=item C<function sys.std.Ordered.maybe_min result Maybe params {
+topic(Set), func(Cat.NameChain), assuming(Tuple) }>
 
 This function is exactly the same as C<sys.std.Ordered.min> except that it
 results in a C<Maybe> of what is otherwise the result type, and that result
-has zero elements if the argument has zero elements.
+has zero elements if the argument has zero elements, rather than the
+function failing.
 
-=item C<function sys.std.Ordered.maybe_max result Maybe params { topic(Set)
-}>
+=item C<function sys.std.Ordered.maybe_max result Maybe params {
+topic(Set), func(Cat.NameChain), assuming(Tuple) }>
 
 This function is to C<sys.std.Ordered.max> as C<sys.std.Ordered.maybe_min>
 is to C<sys.std.Ordered.min>.
