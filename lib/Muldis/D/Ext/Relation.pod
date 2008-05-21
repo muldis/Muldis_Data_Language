@@ -230,6 +230,57 @@ record values.
 
 =back
 
+=head1 SYSTEM-DEFINED RELATIONAL RANKING AND QUOTA FUNCTIONS
+
+These additional functions are specific to supporting ranking and quotas.
+
+=over
+
+=item C<function sys.std.Relation.rank result Relation params {
+topic(Relation), name(Cat.Name), ord_func(Cat.NameChain),
+ord_assuming(Tuple) }>
+
+This function results in the relational extension of its C<topic> argument
+by a single C<UInt>-typed attribute whose name is provided by the C<name>
+argument, where the value of the new attribute for each tuple is the rank
+of that tuple as determined by the (total) C<order_determination> function
+named in the C<ord_func> argument when the latter function is curried by
+the C<ord_assuming> argument.  The C<order_determination> function compares
+tuples, with each invocation of it getting a C<topic> tuple as each its
+C<topic> and C<other> arguments.  The new attribute of C<rank>'s result has
+a value of zero for its ranked-first tuple, and each further consecutive
+ranked tuple has the next larger integer value.  Note that C<rank> provides
+the functionality of SQL's "RANK" feature but that the result of C<rank> is
+always a total ordering (as per a (total) C<order_determination> function)
+and so there is no "dense" / "not dense" distinction (however a partial
+ordering can be implemented over it).  See also the
+C<sys.std.Sequence.Seq_from_wrap> function, which is the same as
+C<sys.std.Relation.rank> but that it wraps the source tuples rather than
+just adding an attribute to them.
+
+=item C<function sys.std.Relation.limit result Relation params {
+topic(Relation), ord_func(Cat.NameChain), ord_assuming(Tuple),
+min_rank(UInt), max_rank(UInt) }>
+
+This function results in the relational restriction of its C<topic>
+argument as determined by first ranking its tuples as per C<rank> function
+(using C<ord_func> and C<ord_assuming>) and then keeping just those tuples
+whose rank is within the inclusive range specified by the C<min_rank> and
+C<max_rank> arguments (C<rank>'s extra attribute is not kept).  The
+C<limit> function implements a certain kind of quota query where all the
+result tuples are consecutive in their ranks.  This function will fail if
+C<max_rank> is before C<min_rank>.  It is valid for C<min_rank> or
+C<max_rank> to be greater than the maximum rank of the source tuples; in
+the first case, the result has zero tuples; in the second case, the result
+has all remaining tuples starting at C<min_rank>.  If C<topic> has any
+tuples and C<min_rank> matches the rank of a source tuple, then the result
+will always have at least 1 tuple.  Note that C<limit> provides the
+functionality of SQL's "LIMIT/OFFSET" feature in combination with "ORDER
+BY" but that the result tuples of C<limit> do not remain ordered (but see
+C<sys.std.Sequence.limit_of_Seq_from_wrap> for an alternative).
+
+=back
+
 =head1 SYSTEM-DEFINED RELATIONAL SUBSTITUTION FUNCTIONS
 
 These additional functions are specific to supporting substitutions.

@@ -16,10 +16,10 @@
     were updated accordingly.
 
     * New file versions are: D.pm 0.31.0 and Types_Catalog.pod 0.27.0 and
-    Rational.pod 0.25.0 and Types.pod and Routines.pod 0.24.0 and
-    PTMD_Tiny.pod and Ordered.pod and Tuple.pod and Relation.pod 0.23.0 and
-    Basics.pod 0.22.0 and Core.pod 0.21.1 and HDMD_Perl_Tiny.pod 0.20.0.
-    The other pre-existing versioned files are unchanged.
+    Rational.pod 0.25.0 and Types.pod and Sequence.pod and Routines.pod
+    0.24.0 and PTMD_Tiny.pod and Ordered.pod and Tuple.pod and Relation.pod
+    0.23.0 and Basics.pod 0.22.0 and Core.pod 0.21.1 and HDMD_Perl_Tiny.pod
+    0.20.0.  The other pre-existing versioned files are unchanged.
 
     * (Basics.pod, Types.pod)  Fixed a few fossils.
 
@@ -83,6 +83,30 @@
     types or otherwise.  Also added the function
     'sys.std.Ordered.reverse_order'.  Also, 'min' and 'max' no longer
     result in an identity value with zero topic elements.
+
+    * (Relation.pod)  Added new main pod section "SYSTEM-DEFINED RELATIONAL
+    RANKING AND QUOTA FUNCTIONS" with an initial complement of the 2
+    "sys.std.Relation.(rank|limit)" generic relational operators.  The
+    "rank" function will extend the topic relation with an integer column
+    with the tuples ranked 0..N, that order determined by an
+    "order_determination"-function argument that it wraps; its
+    functionality is essentially SQL's "RANK" but the ordering is only
+    total, so no dense / not dense distinction.  This "rank" function
+    provides the basis of both arbitrary quota queries as well as making
+    lists sorted.  The "limit" function provides a specific kind of quota
+    query, in doing a restriction on the topic relation to a consecutive
+    range of tuples ranked as per "rank"; its functionality is like SQL's
+    "ORDER BY" plus "LIMIT" but the result is not a sequence.
+
+    * (Sequence.pod)  Added the 2
+    "sys.std.Sequence.(|limit_of_)Seq_from_wrap" functions, which are
+    essentially the same as the above rank|limit but that the result is a
+    sequence rather than a generic relation.  Prefer the sequence versions
+    when immediately returning the sorted query results, versus prefer the
+    rank|limit versions when using their results as a subquery in a larger
+    relational query.  Also added "Seq_from_attr", which together with
+    "Seq_from_wrap" are analogies to similar Set and Bag functions.  Also
+    added the 2 functions "last_index" and "slice".
 
     * (Routines.pod)  Removed the empty main pod section "SYSTEM-DEFINED
     CORE CATALOG FUNCTIONS"; catalog-specific routines will instead go in a
