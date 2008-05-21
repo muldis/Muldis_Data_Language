@@ -31,10 +31,16 @@ constraint or something, as per scalar possrep mapping functions.
 
 * Add other kinds of triggered routines.
 
-* Fix or replace the sys.std.Nonscalar.Relation.(universal|negation)
+* Fix or replace the sys.std.Nonscalar.(universal|negation)
 functions as they make more sense taking the name of a nonscalar heading
 def as an argument rather than a value, so that the correct declared types
-are used and/or the result is more predictable.
+are used and/or the result is more predictable.  Similarly fix
+sys.std.Set.Maybe.attr_or_default as how would it know what the declared
+type is, when the MST of the Nothing attribute is Empty.  Also see if
+sys.std.Nonscalar.outer_join_with_defaults has a similar problem.
+Also possibly tighten up the matter of default values in the face of
+subtypes, so we know which subtype's default value applies when some
+context desires a default value.
 
 * Add a system-defined function that will take a function name as a normal
 data argument and then turns around and invokes that function.  This is the
@@ -102,9 +108,11 @@ another extension perhaps or perhaps not.
 
 * Add relational operators for sorting and quota queries; that is,
 analogues to SQL's ORDER BY and LIMIT tasks, as well as order-significant
-aggregate operations on relation attributes (eg, catenate).  Consider
-overhauling the nature of the Ordered role and/or generic comparison or
-sorting operators.
+aggregate operations on relation attributes (eg, catenate).  Add RANK and
+QUOTA etc operators, which are generic relational as per extend or restrict,
+so for example it is more natural to effectively to QUOTA/LIMIT without
+any conversion to a sequence in the process, though sorting is involved;
+QUOTA does sort+limit in one operation.
 
 * Define more flow control operators like IF/ELSE, GIVEN/WHEN, etc.  Both
 functional and imperative versions.
