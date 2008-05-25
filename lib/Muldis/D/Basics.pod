@@ -1155,6 +1155,7 @@ substitutability:
             function
             inner_function
             type_constraint
+            state_constraint
             transition_constraint
             order_determination
         imperative
@@ -1224,30 +1225,50 @@ C<Bool:true> if the described value would be a member of the data type, or
 C<Bool:false> if not; in the latter case, the DBMS would then throw a
 type-constraint-violation exception (resulting in a transaction rollback
 where applicable), or in the former case, it would consider the selection a
-success.  If the data type being selected of is defined as a scalar root
-type, then the parameter list matches its initial/core possrep's component
-attributes list (their names and declared types), and the arguments are the
-candidate values for those attributes; or, if the data type being selected
-of is defined as a restriction of one other data type, then the parameter
-list has exactly one parameter whose name is C<topic> and whose declared
-type is that other data type.  Note that, because Muldis D requires dbvars
-to be defined over named data types, all I<state constraints> for a
-database, including uniqueness keys or foreign keys or other
-state-constraining business rules, are normally defined as the
-C<type_constraint> for the type which that database is.  Conceptually
-speaking, a C<type_constraint> will execute as the beginning part of a
-statement, prior to any attempt to update any variable's state or affect
-the environment.
+success.  A C<type_constraint> has exactly 1 parameter whose name is
+C<topic>.  If the data type being selected is a scalar type or subtype with
+possreps, then each possrep has its own C<type_constraint>, and the
+declared type of the C<topic> parameter for each is a tuple where the
+attributes of the tuple match those of the possrep; such a tuple argument
+provides the candidate components of the scalar value being selected.  Or,
+if the data type being selected of is defined as a restriction of one other
+data type, then the declared type of the C<topic> parameter is that other
+data type.  Note that, because Muldis D requires dbvars to be defined over
+named data types, all I<state constraints> for a database, including
+uniqueness keys or foreign keys or other state-constraining business rules,
+are normally defined as the C<type_constraint> for the type which that
+database is.  Conceptually speaking, a C<type_constraint> will execute as
+the beginning part of a statement, prior to any attempt to update any
+variable's state or affect the environment.
+
+=item C<state_constraint>
+
+A C<state_constraint> is the same as a C<type_constraint> except that it is
+not part of the definition of a data type, but rather it is associated with
+a variable (or pseudo-variable); it is invoked automatically by the DBMS
+when that variable is being updated, and it asserts that the variable would
+be in a valid state after the update (it results in C<Bool:true> for yes
+and C<Bool:false> for no).  The C<topic> parameter of a C<state_constraint>
+has a declared type that is the same as that of the variable; its argument
+carries the value that the variable would have post-update.  The purpose of
+having the distinct C<state_constraint> routine kind when
+C<type_constraint> would otherwise do, is to make it easier for users to
+independently and externally apply multiple (named) state constraints to
+the same variable (typically a dbvar or relvar) rather than having to
+update the existing internal explicit type constraint of the declared type
+of the variable, and other users of that type aren't affected.  When
+multiple C<state_constraint> are applied to the same variable, then a
+I<total state constraint> is in effect on the variable equivalent to the
+logical C<and> of the individual constraints.  Conceptually speaking, a
+C<state_constraint> will execute after all C<type_constraint> and before
+all C<transition_constraint>.
 
 =item C<transition_constraint>
 
-A C<transition_constraint> is the same as a C<type_constraint> except that
-it is part of the definition of a variable (or pseudo-variable) rather than
-of a data type, and it is invoked automatically by the DBMS when that
-variable is being updated.  A C<transition_constraint> takes exactly 2
-parameters, whose names are C<before> and C<after>, and whose declared
-types are both the same as that of the variable; it returns C<Bool:true> if
-the variable is allowed (according to current business rules) to transition
+A C<transition_constraint> is the same as a C<state_constraint> except that
+rather than 1 C<topic> parameter, it takes exactly 2 same-typed parameters
+whose names are C<before> and C<after>; it returns C<Bool:true> if the
+variable is allowed (according to current business rules) to transition
 directly from the C<before> state to the C<after> state, or C<Bool:false>
 if not; in the latter case, the DBMS would then throw a
 transition-constraint-violation exception (resulting in a transaction
