@@ -690,19 +690,18 @@ said possreps can differ from each other in arbitrarily large ways, but
 every one is individually capable of representing all of the type's values;
 any possrep could be used exclusively by a user when they work with its
 type, without diminishing what they can do.  A single possrep is specific
-to one and only one type, so it is possible to refer to a type by simply
-referring to the name of one of its possreps.
+to one and only one type.
 
-Taking for example an integer data type, one of its possreps could
-represent an integer value as a string of binary digits, while another
-possrep could represent an integer value as a string of decimal digits.  Or
-taking for example a temporal data type, one of its possreps could
-represent a date as an ISO 8601 formatted character string in the Gregorian
-calendar, and another possrep could represent it as a number of seconds
-since the UNIX epoch.  Or taking for example a spatial data type that is a
-rectangle, one possrep could specify the 4 vertices as 4 (or 3) point
-values, and another possrep could specify fewer vertices and also specify
-the rectangle's width and height as numeric values.
+Taking for example a conceptual integer data type, one of its possreps
+could represent an integer value as a string of binary digits, while
+another possrep could represent an integer value as a string of decimal
+digits.  Or taking for example a conceptual temporal data type, one of its
+possreps could represent a date as an ISO 8601 formatted character string
+in the Gregorian calendar, and another possrep could represent it as a
+number of seconds since the UNIX epoch.  Or taking for example a spatial
+data type that is a rectangle, one possrep could specify the 4 vertices as
+4 (or 3) point values, and another possrep could specify fewer vertices and
+also specify the rectangle's width and height as numeric values.
 
 A possrep additionally has a defined boolean-valued constraint expression
 (which is simply I<true> in the trivial case), that restricts what values
@@ -710,41 +709,44 @@ the possrep components can have within the context of their fellows.
 Taking for example a "medium polygon" data type, there could be a
 constraint that the area of the polygon is between 5 and 10 units.
 
-Each possrep comprises exactly one selector operator whose named parameter
-set exactly matches that possrep's set of named attributes, and you
-select a value of the type by invoking the selector with a full set of
-values for the possible attributes.  Each possrep also comprises an
-accessor operator for each of its attributes, with which users can extract
-the possible attribute's value.
+Generic system-defined selector and possrep attribute accessor operators
+exist that automatically work with all scalar types (that have possreps,
+which all user-defined scalar root types do), so such do not need to be
+explicitly defined per such type.  They are all in the
+C<sys.std.Core.Scalar.\w+> namespace.  These generic operators take
+advantage of the fact that each scalar possrep looks like a tuple, and they
+look like basic tuple operators but for taking an extra argument to say
+which possrep we're dealing with, and possibly a second extra attribute to
+say what type, in the case of the generic scalar value selector.
 
-TODO: EDIT THE ABOVE TO REFLECT THE ACTUAL sys.std.Core.Scalar.\w+
-FUNCTIONS; FOR EXAMPLE, THERE ARE NOT SEPARATE FUNCTIONS OR PARAMETERS FOR
-EACH ATTRIBUTE OF EACH SCALAR TYPE'S POSSREP; RATHER THE ATTRIBUTE NAMES
-ARE ARGUMENTS FOR PARAMETERS OF JUST A HANDFUL OF GENERIC FUNCTIONS.
+No data type has any operators built-in to its definition except for
+certain implicitly system-defined operators that are automatically
+generated from their structure/etc definitions, such as the aforementioned
+implicitly system-defined selectors and accessors (or certain other
+explicitly defined operators whose public interfaces are still implicitly
+system-defined).  All other operators that are used with a data type are
+expressly I<not> built-in to the type (even if they are system-defined);
+the other operators do not have any access to the data type's internals,
+and must be defined (directly or indirectly) in terms of (that is, layered
+on top of) the few that are built-in, though the built-ins from any or all
+possreps of the type can be utilized.
 
-No data type has any operators built-in to its definition except for the
-aforementioned selectors and accessors.  All other operators that are used
-with a data type are expressly I<not> built-in to the type (even if they
-are system-defined); the other operators do not have any access to the data
-type's internals, and must be defined (directly or indirectly) in terms of
-(that is, layered on top of) the few that are built-in, though the
-built-ins from any or all possreps of the type can be utilized.
+With a user-defined scalar type, if the type has multiple possreps, then
+each distinct pair of possreps for the type has a mapping function plus its
+inverse function defined, permitting every value of the type which is first
+expressed using one possrep to be translated for expression in the other.
+The entire complement of possreps of a type must be linked together by
+explicit mapping functions, but not every pair has to be; if the possreps
+are arranged as nodes on a directed graph, with an explicit mapping
+function being a side, there just needs to be a path from every possrep to
+every other one; every path then has at least an implicit mapping function.
 
-With a user-defined scalar type, if the type is to have multiple possreps,
-then just one possrep is defined as the fundamental one, and the other
-possreps are defined in terms of the first, by which means the mappings
-between them is done.  The type-defining user can later come back and
-redefine the type if they wish, using a different possrep as the
-fundamental, but assuming the redefinition has all the same values,
-non-defining users of the type won't know any different.
-
-The Muldis D implementation can choose for itself as to how the scalar
-type is physically represented behind the scenes, either picking between
-any of the user-provided possreps (assuming enough information is present
-to derive all needed inverse functions as applicable) or using yet another
-one or several of its own; the implementation can work how it knows best to
-achieve an efficient system, and this is all hidden away from the users,
-who simply perceive in it what they requested.
+The Muldis D implementation can choose for itself as to how the scalar type
+is physically represented behind the scenes, either picking between any of
+the user-provided possreps or using yet another one or several of its own;
+the implementation can work how it knows best to achieve an efficient
+system, and this is all hidden away from the users, who simply perceive in
+it what they requested.
 
 In the context of scalar subtype/supertype relationships, the definition of
 a subtype can add additional possreps that are only valid for the subtype,
@@ -780,8 +782,9 @@ definition defines every tuple in the relation, and also but that relation
 types can additionally have I<keys> defined which indicate that a subset of
 its attributes' values are distinct between all tuples in the relation.
 
-Generic selector and accessor operators exist that work with all tuple and
-relation types, so they do not need to be defined per such type.
+Generic system-defined selector and accessor operators exist that
+automatically work with all tuple and relation types, so they do not need
+to be defined per such type.
 
 The system-defined types C<Tuple> and C<Relation> (and their system-defined
 subtypes) are technically generic factory types, such that they themselves
