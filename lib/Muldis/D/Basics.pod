@@ -1170,6 +1170,7 @@ substitutability:
             state_constraint
             transition_constraint
             type_default
+            possrep_map
             order_determination
         imperative
             deterministic
@@ -1215,15 +1216,16 @@ typical database "select" query out of.
 =item C<inner_function>
 
 A C<inner_function> is the same as a C<function>, but that it is
-quasi-lexically scoped within another, non-lexical routine, and it is only
-visible within or invokable by either its parent routine or its sibling
-C<inner_function>.  Conceptually speaking, a C<inner_function> is part of
-the definition of the body of the parent routine (like a value expression
-in general), but is isolated into a named C<function>-like entity for
-technical / language design reasons.  For example, it is used to implement
-what would conceptually be an anonymous function defined within its parent
-routine for use as a function-valued argument of some other routine call;
-or to implement what is conceptually a self-referencing/cyclic expression.
+quasi-lexically scoped within another, non-lexical routine or type
+definition, and it is only visible within or invokable by either its parent
+routine or its sibling routines.  Conceptually speaking, a
+C<inner_function> is part of the definition of the body of the parent
+routine or type (like a value expression in general), but is isolated into
+a named C<function>-like entity for technical / language design reasons.
+For example, it is used to implement what would conceptually be an
+anonymous function defined within its parent routine for use as a
+function-valued argument of some other routine call; or to implement what
+is conceptually a self-referencing/cyclic expression.
 
 =item C<type_constraint>
 
@@ -1303,6 +1305,17 @@ type whose declaration it is part of is needed, such as when initializing a
 variable whose declared type is that type (a variable must always hold a
 valid value of its declared type).  A C<type_default> has zero parameters
 and unconditionally results in the same value of the type.
+
+=item C<possrep_map>
+
+A C<possrep_map> is the same as a C<inner_function>, but that it is part of
+the definition of a (|quasi-)scalar data type, and it is used to convert a
+value from one of that type's possreps to another.  A C<possrep_map> has a
+single C<topic> parameter whose declared type is a tuple whose attributes
+match those of the possrep being converted from, and its result type is a
+tuple whose attributes match those of the possrep being converted to.  Note
+that every distinct argument (domain) value of this function must have a
+distinct result (range) value, as it is a 1:1 mapping function.
 
 =item C<order_determination>
 

@@ -1785,7 +1785,15 @@ with has a single C<topic> parameter whose declared type is a tuple whose
 attributes match those declared by C<attrs> and whose argument denotes the
 value to test; the function's implicit result type is C<Bool>.  If the
 function unconditionally results in C<Bool:true>, then all possible
-combinations of attribute-allowable values are collectively allowed.
+combinations of attribute-allowable values are collectively allowed.  Note
+that, strictly speaking, any constraint defined as part of a possrep (where
+there are multiple possreps) may actually be less restrictive than the
+total constraint of (|sub-)type as a whole, because the total constraint is
+defined by I<and>-ing the constraints of all the possreps of the
+(|sub-)type; therefore, mainly any given possrep's constraints need to be
+just restricting enough so that the inter-possrep mapping functions can
+handle the arguments that it accepts, so it is possible to apply the other
+possreps' constraints.
 
 =back
 
@@ -1819,21 +1827,23 @@ constraint defines a C<Cat.PossrepMapSet>'s canonical form.
 
 =item C<p2_from_p1> - C<Cat.InnerFuncBody>
 
-This defines the entire (main) body of a mapping function that derives the
-representation of the possrep named by C<p2> from that of the possrep named
-by C<p1>.  The implicit function heading that this goes with has a single
-C<topic> parameter whose declared type is a tuple whose attributes match
-those of C<p1>; the function's implicit result type is a tuple whose
-attributes match those of C<p2>.  Note that every distinct argument
-(domain) value of this function must have a distinct result (range) value.
+This defines the entire (main) body of a C<possrep_map> function that
+derives the representation of the possrep named by C<p2> from that of the
+possrep named by C<p1>.  The implicit function heading that this goes with
+has a single C<topic> parameter whose declared type is a tuple whose
+attributes match those of C<p1>; the function's implicit result type is a
+tuple whose attributes match those of C<p2>.  Note that every distinct
+argument (domain) value of this function must have a distinct result
+(range) value.
 
 =item C<p1_from_p2> - C<Cat.InnerFuncBody>
 
-This defines the entire (main) body of the inverse mapping function to that
-of C<p2_from_p1>.  I<Note that it would often be feasible for a Muldis D
-implementation to automatically infer a reverse function, but for now we
-still require it to be explicitly stated; the explicitly stated inverse
-function could be generated though.  This design is subject to change.>
+This defines the entire (main) body of the inverse C<possrep_map> function
+to that of C<p2_from_p1>.  I<Note that it would often be feasible for a
+Muldis D implementation to automatically infer a reverse function, but for
+now we still require it to be explicitly stated; the explicitly stated
+inverse function could be generated though.  This design is subject to
+change.>
 
 =back
 
