@@ -2051,32 +2051,31 @@ whole.
 
 =item C<sources> - C<set_of.Cat.NameChain>
 
-These are the names of the 0..N other types that all the values of the new
-data type are drawn from; the complete set of source values is determined
-by either unioning (the default) or intersecting the values of these types.
+These are the names of the 1..N other not-C<Empty> types that all the
+values of the new data type are drawn from; the complete set of source
+values is determined by either unioning (the default) or intersecting the
+values of these types.
 
 =item C<is_source_intersection> - C<Bool>
 
 Iff this is C<Bool:true> then the set of source data types will be
-intersected to determine the complete set of source values, and if
-C<sources> has no elements then the source set is just C<Empty>; iff this
-is C<Bool:false> then the set of source data types will be unioned to
-determine the complete set of source values, and if C<sources> has no
-elements then the source set is just C<Universal>.
+intersected to determine the complete set of source values; iff this is
+C<Bool:false> then the set of source data types will be unioned to
+determine the complete set of source values.
 
 =item C<filters> - C<set_of.Cat.NameChain>
 
 These are the names of the 0..N other types (which are generally subtypes
 of those of C<sources>) that determine values which the new data type will
 I<not> contain; the complete set of filter values is determined by either
-intersecting (the default) or unioning the values of these types.
+unioning (the default) or intersecting the values of these types.
 
-=item C<is_filter_union> - C<Bool>
+=item C<is_filter_intersection> - C<Bool>
 
-Iff this is C<Bool:true> then the set of filter data types will be unioned
-to determine the complete set of filter values, and if C<filters> has no
-elements then the filter set is just C<Universal>; iff this is
-C<Bool:false> then the set of filter data types will be intersected to
+Iff this is C<Bool:true> then the set of filter data types will be
+intersected to determine the complete set of filter values, and if
+C<filters> has no elements then the filter set is just C<Universal>; iff
+this is C<Bool:false> then the set of filter data types will be unioned to
 determine the complete set of filter values, and if C<filters> has no
 elements then the filter set is just C<Empty>.
 
@@ -2101,8 +2100,11 @@ part of.
 =back
 
 The default value of C<Cat.InnerDomainType> defines an alias for
-C<Universal>, with the same default value; the C<base_type> is that type,
-C<constraint> is unconditionally C<Bool:true>.
+C<Universal>, with the same default value; it has just the source type
+C<Universal> and zero filter types, both type lists are unioned, and
+C<constraint> is unconditionally C<Bool:true>.  Note that there is no valid
+combination of C<Cat.InnerDomainType> attribute values that would result in
+an alias for the C<Empty> type, due to C<default> being mandatory.
 
 =head1 TYPES FOR DEFINING DBVARS
 
