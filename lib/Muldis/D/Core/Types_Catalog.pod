@@ -84,6 +84,7 @@ more or less:
                 # The following are all regular database types.
 
                 sys.std.Core.Type.Cat.System
+                sys.std.Core.Type.Cat.MountControlCat
                 sys.std.Core.Type.Cat.Federation
                 sys.std.Core.Type.Cat.Depot
                 sys.std.Core.Type.Cat.Package
@@ -100,6 +101,7 @@ more or less:
             sys.std.Core.Type.Cat.SysScaNPRTypeSet
             sys.std.Core.Type.Cat.SysTypeSet
             sys.std.Core.Type.Cat.SysCatSet
+            sys.std.Core.Type.Cat.MountControlSet
             sys.std.Core.Type.Cat.DepotMountSet
             sys.std.Core.Type.Cat.SubdepotSet
             sys.std.Core.Type.Cat.PackageSet
@@ -497,6 +499,147 @@ This is the definition of the catalog dbvar.
 
 A C<Cat.SysCatSet> has a unary (unique) key on the C<name> attribute.  Its
 default value is empty.
+
+=head1 TYPES FOR DEFINING MOUNT CONTROLS
+
+=head2 sys.std.Core.Type.Cat.MountControlCat
+
+A C<Cat.MountControlCat> is a C<Database>.  It specifies the control
+interface for mounting and unmounting (and creating and deleting) depots
+within the current in-DBMS process.  The scope of these controls includes
+specifying what name the depot is mounted with, whether the mount is
+readonly vs updateable, or is temporary vs persistant, and implementation
+specific details like storage file names or network login credentials.
+Updates to this catalog have side-effects in what other user-updateable
+catalogs exist, making them appear or disappear.  This catalog may only be
+updated when the current process has no active transaction.  The system
+catalog variable named C<mnt.cat> is of the C<Cat.MountControlCat> type.
+
+A C<Cat.MountControlCat> has these 2 attributes:
+
+=over
+
+=item C<comment> - C<single_of.Cat.Comment>
+
+This is an optional programmer comment about the depot mount control
+catalog as a whole.
+
+=item C<mounts> - C<Cat.MountControlSet>
+
+These are the controls for the current depot mounts.
+
+=back
+
+The default value of C<Cat.MountControlCat> has zero depot mount controls.
+
+=head2 sys.std.Core.Type.Cat.MountControlSet
+
+A C<Cat.MountControlSet> is a C<Relation> that specifies a set of controls
+per depot mounts, such that each tuple is a single control for a depot
+mount, and each depot mount has 1 mount control.  Inserting a tuple will
+result in either an existing depot being mounted or a new depot being
+created (if possible) and mounted; updating a tuple will change some
+details of that depot mount's status, such as making it readonly or
+updateable; deleting a tuple will result in a mounted depot being either
+unmounted or unmounted plus deleted (if possible).
+
+A C<Cat.MountControlSet> has these 7 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the depot mount; other Muldis D code would
+reference it with this name.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about this specific mount of the
+depot.
+
+=item C<is_temporary> - C<Bool>
+
+This is C<Bool:true> if the depot mount is for a transient depot that would
+automatically be created when mounted I<and> automatically be deleted when
+unmounted, because it is only intended for use as the application's current
+working memory, and its maximum lifetime is the lifetime of the in-DBMS
+process.  This is C<Bool:false> (the default) if the depot mount is for a
+depot that either should already exist before being mounted, I<or> that
+should continue to exist after being unmounted, because it is intended for
+persistent data.  Note that the C<is_temporary> status is orthogonal to
+whether the depot's storage is in volatile memory (eg, RAM) or in stable
+memory (eg, on disk); a I<not-temporary> depot is simply one that is meant
+to be reusable by multiple depot mounts or processes.  The C<is_temporary>
+status may not be updated on an existing depot mount control.  I<These
+details are subject to revision.>
+
+=item C<create_on_mount> - C<Bool>
+
+This is C<Bool:true> if the depot mount must represent a depot that was
+newly created at the time the depot mount was created, where the depot
+creation is a direct side-effect of the mount operation.  This is
+C<Bool:false> (the default) if the depot being mounted must already exist
+without the mounting process having any hand in creating it.  Note that
+there is no option provided to conditionally create a depot depending on
+whether it already exists, as a perceived safety feature (this detail is
+subject to change); to get that behaviour, first try creating the depot
+mount control with this attribute C<Bool:false>, and if that fails due to
+nonexistence, then try again with it set to C<Bool:true>.  This attribute
+is ignored / not applicable when C<is_temporary> is true.
+
+=item C<delete_on_unmount> - C<Bool>
+
+This is C<Bool:true> if the depot should be deleted at the same time it is
+unmounted, that is, when this depot mount control tuple is deleted.  This
+is C<Bool:false> (the default) if the depot should not be deleted as part
+of the unmount process.  This attribute is ignored / not applicable when
+C<is_temporary> is true.
+
+=item C<we_may_update> - C<Bool>
+
+This is C<Bool:true> if the depot mount will permit the current in-DBMS
+process to make any kind of update to the depot, such as data manipulation,
+data definition, or creating/deleting it.  This is C<Bool:false> (the
+default) if the depot mount is only providing readonly access to the depot.
+When a depot mount is readonly, any attempt to update the depot through it
+will throw a runtime exception.  The C<we_may_update> attribute may be set
+to C<Bool:false> at any time (when there is no active transaction), but it
+may only be set to C<Bool:true> at the time the depot is mounted; this is
+for safety, such that if a depot mount won't let you update the depot now,
+there's no way it will let you update it later, save by unmounting and
+remounting the depot (the result of which is a different depot mount).
+Note that the C<we_may_update> status is orthogonal to the depot locking
+mechanism; it won't block any other process from reading or updating that
+depot, so unless you have locks on the depot using some other means, it may
+still be updated by others while mounted readonly for you, so consistent
+reads between distinct statements outside of transactions are not
+guaranteed.  I<These details are subject to revision, such as in regards to
+what autonomous child processes of the current process may do.>
+
+=item C<details> - C<Cat.ScaLitExprNodeSet>
+
+These are the 0..N other miscellaneous details that define this depot mount
+control.  Each tuple in C<details> specifies an implementation-specific
+attribute name and (scalar) value.  Example such implementation-specific
+details include the name of a local file that the depot is stored as, or
+the name of a DBMS server on the network plus authentication credentials to
+connect to it with.  See each Muldis D implementation for details.  Note
+that C<details> generally corresponds to the Perl DBI's concept of a data
+source name or connection string.  But C<details> can also have other
+details like customizations on how to map a foreign DBMS' concepts to
+native Muldis D equivalents, or maybe information on where to find extra
+meta-data that has such info, or info to instruct a Muldis D interface to
+fill in functionality missing in the actual depot of a less capable DBMS,
+like constraints or stored invokable routines.
+
+=back
+
+A C<Cat.MountControlSet> has a unary (unique) key on the C<name> attribute.
+Its default value is empty.  It also has a transition constraint that
+prevents changing some attributes of a depot mount control once set.  Note
+that the 3 attributes [C<is_temporary>, C<create_on_mount>,
+C<delete_on_unmount>] may be merged into a single enumerated-typed
+attribute or otherwise be reorganized.
 
 =head1 TYPES FOR DEFINING FEDERATIONS
 
