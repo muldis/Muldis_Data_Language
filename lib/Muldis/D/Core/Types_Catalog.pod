@@ -119,6 +119,7 @@ more or less:
             sys.std.Core.Type.Cat.Inner(Sca|NonSca|Dom)TypeSet
             sys.std.Core.Type.Cat.PossrepSet
             sys.std.Core.Type.Cat.PossrepMapSet
+            sys.std.Core.Type.Cat.ConstraintSet
             sys.std.Core.Type.Cat.KeySet
             sys.std.Core.Type.Cat.NameTypeMap
             sys.std.Core.Type.Cat.NameExprMap
@@ -2058,6 +2059,28 @@ is indeed valid for a (|quasi-)nonscalar type to have zero attributes; in
 this case, a tuple type consists of exactly one value, and a relation type
 consists of exactly two values.
 
+=item C<tuple_constraints> - C<Cat.ConstraintSet>
+
+This defines the entire (main) bodies of 0..N C<type_constraint> functions
+that (when I<and>-ed together) determine what combinations of tuple
+attribute values denote values of the (|sub-)type, besides the restrictions
+imposed by the declared types of the attributes individually; they are
+generalized type constraints that together validate a tuple as a whole.
+The implicit function heading that each of these goes with has a single
+C<topic> parameter whose declared type is a tuple whose attributes match
+those declared by C<attrs> and whose argument denotes the value to test;
+the function's implicit result type is C<Bool>.  If the functions
+unconditionally result in C<Bool:true>, then all possible combinations of
+attribute-allowable values are collectively allowed.  Each function is
+invoked either once to test a tuple value, or multiple times to
+individually test every tuple in a relation value.
+
+=item C<relation_constraints> - C<Cat.ConstraintSet>
+
+This is like C<tuple_constraint> but that each function's parameter is
+relation-typed rather than tuple-typed; each is a generalized type
+constraint that validates a relation as a whole.
+
 =item C<keys> - C<Cat.KeySet>
 
 These are the 0..N explicit (unique) keys that are applicable to relation
@@ -2079,27 +2102,6 @@ cardinality of a projection of a relation on its key attributes with the
 cardinality of the original relation; the attributes are a key if the
 cardinalities are equal.
 
-=item C<tuple_constraint> - C<Cat.InnerFuncBody>
-
-This defines the entire (main) body of a C<type_constraint> function that
-determines what combinations of tuple attribute values denote values of the
-(|sub-)type, besides the restrictions imposed by the declared types of the
-attributes individually; it is a generalized type constraint that validates
-a tuple as a whole.  The implicit function heading that this goes with has
-a single C<topic> parameter whose declared type is a tuple whose attributes
-match those declared by C<attrs> and whose argument denotes the value to
-test; the function's implicit result type is C<Bool>.  If the function
-unconditionally results in C<Bool:true>, then all possible combinations of
-attribute-allowable values are collectively allowed.  This function is
-invoked either once to test a tuple value, or multiple times to
-individually test every tuple in a relation value.
-
-=item C<relation_constraint> - C<Cat.InnerFuncBody>
-
-This is like C<tuple_constraint> but that the function's parameter is
-relation-typed rather than tuple-typed; it is a generalized type constraint
-that validates a relation as a whole.
-
 =item C<default_tuple> - C<Cat.InnerFuncBody>
 
 This defines the entire (main) body of a C<type_default> function that
@@ -2116,10 +2118,46 @@ type whose declaration it is part of.
 
 =back
 
+There is a distributed (unique) key over the C<name> attributes of
+C<(tuple|relation)_constraint> and C<keys>.
+
 The default value of C<Cat.InnerNonscalarType> defines a relation type that
 is the same as C<RelationD0>, having zero attributes, whose default value
-is the one with zero tuples; its C<(tuple|relation)_constraint> each
-unconditionally resuts in C<Bool:true>.
+is the one with zero tuples.
+
+=head2 sys.std.Core.Type.Cat.ConstraintSet
+
+A C<Cat.ConstraintSet> is a C<Relation> that specifies a set of named
+generic constraints for data types or variables; each tuple is one named
+constraint.  Each constraint in the set can be either a C<type_constraint>
+or C<state_constraint> or C<transition_constraint>, but when a set has
+multiple constraints, all of them must be the same kind, and they must all
+correspond to the same implicit function heading.  One or more (possibly
+empty) C<Cat.ConstraintSet> is composed into the definition each nonscalar
+type and domain type and dbvar.
+
+A C<Cat.ConstraintSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the constraint function.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the constraint as a whole.
+
+=item C<body> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of the constraint function.
+
+=back
+
+A C<Cat.ConstraintSet> has a unary (unique) key on the C<name> attribute.
+Its default value is empty.  The default value of a tuple of
+C<Cat.ConstraintSet> has a C<name> that is the empty string, and its
+C<body> unconditionally results in C<Bool:true>.
 
 =head2 sys.std.Core.Type.Cat.KeySet
 
@@ -2222,16 +2260,17 @@ this is C<Bool:false> then the set of filter data types will be unioned to
 determine the complete set of filter values, and if C<filters> has no
 elements then the filter set is just C<Empty>.
 
-=item C<constraint> - C<Cat.InnerFuncBody>
+=item C<constraints> - C<Cat.ConstraintSet>
 
-This defines the entire (main) body of a C<type_constraint> function that
-determines what filter-type-passing source-type values are part of the
-domain type.  The implicit function heading that this goes with has a
-single C<topic> parameter whose declared type is C<Universal>, unless there
-is exactly 1 C<sources> element whereupon the declared type is the same as
-the source type, and whose argument is the value to test; the function's
-implicit result type is C<Bool>.  If the function unconditionally results
-in C<Bool:true>, then all filter-type-passing values are allowed.
+This defines the entire (main) bodies of 0..N C<type_constraint> functions
+that (when I<and>-ed together) determine what filter-type-passing
+source-type values are part of the domain type.  The implicit function
+heading that each of these goes with has a single C<topic> parameter whose
+declared type is C<Universal>, unless there is exactly 1 C<sources> element
+whereupon the declared type is the same as the source type, and whose
+argument is the value to test; the function's implicit result type is
+C<Bool>.  If the functions unconditionally result in C<Bool:true>, then all
+filter-type-passing values are allowed.
 
 =item C<default> - C<Cat.InnerFuncBody>
 
