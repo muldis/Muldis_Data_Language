@@ -121,6 +121,9 @@ more or less:
             sys.std.Core.Type.Cat.PossrepMapSet
             sys.std.Core.Type.Cat.ConstraintSet
             sys.std.Core.Type.Cat.KeySet
+            sys.std.Core.Type.Cat.DistribKeySet
+            sys.std.Core.Type.Cat.DKMemRelAttrMap
+            sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
             sys.std.Core.Type.Cat.NameTypeMap
             sys.std.Core.Type.Cat.NameExprMap
             sys.std.Core.Type.Cat.AttrRenameMap
@@ -2009,7 +2012,7 @@ Note that you can not use a C<Cat.InnerNonscalarType> to declare or
 subtype an incomplete type, as it (or its supertype) must specify a
 complete set of attributes.
 
-A C<Cat.InnerNonscalarType> has these 10 attributes:
+A C<Cat.InnerNonscalarType> has these 11 attributes:
 
 =over
 
@@ -2095,12 +2098,24 @@ moreover no key's attributes may be a proper subset of any other key's
 attributes; if 2 such candidates appear, just use the one that has the
 subset.  It is valid for a key to consist of zero attributes; in this case,
 that key is the only key of the type, and values of the type may each
-consist of no more than one tuple.  Note that C<keys> is logically a
-short-hand syntax (the canonical simplest form) for a particular kind of
+consist of no more than one tuple.  Note that C<keys> is logically an
+abstraction syntax (the canonical simplest form) for a particular kind of
 C<relation_constraint> of the type being defined, one that compares the
 cardinality of a projection of a relation on its key attributes with the
-cardinality of the original relation; the attributes are a key if the
-cardinalities are equal.
+cardinality of the original relation; the attribute values comprise a key
+if the cardinalities are equal.
+
+=item C<distrib_keys> - C<Cat.DistribKeySet>
+
+These are the 0..N explicit simple distributed keys that are applicable to
+tuple/database values of the type being defined, that range over specified
+relation-typed attributes of it.  Note that C<distrib_keys> is logically an
+abstraction syntax (the canonical simplest form) for a particular kind of
+C<tuple_constraint> of the type being defined, one that compares the
+cardinality of the union of the projection of distributed key attributes of
+all key-participating relation-valued attributes, with the sum of
+cardinalities of the source relation-valued attributes; the attribute
+values comprise a distributed key if the cardinalities are equal.
 
 =item C<default_tuple> - C<Cat.InnerFuncBody>
 
@@ -2119,7 +2134,7 @@ type whose declaration it is part of.
 =back
 
 There is a distributed (unique) key over the C<name> attributes of
-C<(tuple|relation)_constraint> and C<keys>.
+C<(tuple|relation)_constraint> and C<keys> and C<distrib_keys>.
 
 The default value of C<Cat.InnerNonscalarType> defines a relation type that
 is the same as C<RelationD0>, having zero attributes, whose default value
@@ -2200,8 +2215,95 @@ used as the target of generated foreign keys.
 
 =back
 
-A C<Cat.KeySet> has a unary (unique) key on the C<name> attribute.  Its
-default value is empty.
+A C<Cat.KeySet> has a unary (unique) key on the C<name> attribute, and
+another on its C<attrs> attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.DistribKeySet
+
+A C<Cat.DistribKeySet> is a C<Relation> that specifies a set of candidate
+distributed (unique) keys over relation-valued attributes of a
+tuple/database; each tuple specifies one distributed (unique) key.
+
+A C<Cat.DistribKeySet> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the distributed (unique) key.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the distributed (unique) key
+as a whole.
+
+=item C<attrs> - C<set_of.Cat.Name>
+
+This declares the 0..N attributes comprising the distributed (unique) key.
+If this set is empty, then we have a nullary key which restricts all of the
+relations participating in the distributed key to have a maximum of 1 tuple
+between them.  Note that the distributed key attribute names don't have to
+match the names of any participating relation attributes.
+
+=item C<relations> - C<Cat.DKMemRelAttrMap>
+
+This names the 0..N relation-valued attributes of the host tuple/database
+type that are participating in the distributed key, and says which of each
+of their attributes maps to the attributes of the distributed key itself.
+If this set is empty, then the distributed key has no effect.  The unary
+projection of every tuple of the C<key_attr> attribute of C<relations> must
+be identical to C<attrs>.
+
+=item C<is_primary> - C<Bool>
+
+This has the same meaning as C<is_primary> of C<Cat.KeySet> but for being
+distributed as if the relations distributed over were one relation.
+
+=back
+
+A C<Cat.DistribKeySet> has a unary (unique) key on the C<name> attribute,
+and another on its C<relations> attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.DKMemRelAttrMap
+
+A C<Cat.DKMemRelAttrMap> is a C<Relation> that names the 0..N
+relation-valued attributes of a host tuple/database type that are
+participating in a distributed key, and says which of each of their
+attributes maps to the attributes of the distributed key itself.
+
+A C<Cat.DKMemRelAttrMap> has these 3 attributes:
+
+=over
+
+=item C<rel_name> - C<Cat.Name>
+
+This is the name of the relation-valued attribute that is participating
+in the distributed key.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the participation.
+
+=item C<attr_map> - C<Cat.DKRelAttrKeyAttrMap>
+
+This maps 0..N attributes of the relation with the same number of
+attributes of the distributed key.  Every tuple of C<attr_map> must have an
+identical value for the unary projection on its C<key_attr> attribute; in
+other words, they must all map with the same distributed key attributes.
+
+=back
+
+A C<Cat.DKMemRelAttrMap> has a unary (unique) key on the C<rel_name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
+
+A C<Cat.DKRelAttrKeyAttrMap> is a C<Relation>.  It maps 0..N attributes of
+a relation-valued attribute of a host tuple/database type participating in
+a distributed key, to the same number of attributes of the distributed key
+itself.  A C<Cat.DKRelAttrKeyAttrMap> has 2 attributes, C<rel_attr> and
+C<key_attr>, each of those being a C<Cat.Name>, and each of those being a
+unary key.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.InnerDomainType
 
