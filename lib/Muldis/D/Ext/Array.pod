@@ -4,12 +4,12 @@
 
 =head1 NAME
 
-Muldis::D::Ext::Sequence -
+Muldis::D::Ext::Array -
 Muldis D extension for Seq specific operators
 
 =head1 VERSION
 
-This document is Muldis::D::Ext::Sequence version 0.24.0.
+This document is Muldis::D::Ext::Array version 0.24.0.
 
 =head1 PREFACE
 
@@ -27,8 +27,8 @@ any entities outside the core, called I<Muldis D extensions>, are
 non-mandatory and are defined in terms of the core or each other, but the
 reverse isn't true.
 
-This current C<Sequence> document describes the system-defined I<Muldis D
-Sequence Extension>, which consists of generic operators that are specific
+This current C<Array> document describes the system-defined I<Muldis D
+Array Extension>, which consists of generic operators that are specific
 to the C<Seq> parameterized relation type, and said operators are
 short-hands for generic relational operators in the language core.
 
@@ -42,14 +42,14 @@ I<This documentation is pending.>
 
 =over
 
-=item C<function sys.std.Sequence.value result ScaTupRel params {
+=item C<function sys.std.Array.value result ScaTupRel params {
 topic(Seq), index(UInt) }>
 
 This function results in the scalar or nonscalar C<value> attribute of the
 tuple of C<topic> whose C<index> attribute is C<index>.  This function will
 fail if no tuple exists in C<topic> with the specified index.
 
-=item C<function sys.std.Sequence.update_value result Seq params {
+=item C<function sys.std.Array.update_value result Seq params {
 topic(Seq), index(UInt), value(ScaTupRel) }>
 
 This function results in its C<topic> argument but that the C<value>
@@ -59,7 +59,7 @@ function will fail if no tuple exists in C<topic> with the specified index,
 or if the declared type of C<value> isn't a subtype of the declared type of
 the C<value> attribute.
 
-=item C<function sys.std.Sequence.insertion result Seq params { topic(Seq),
+=item C<function sys.std.Array.insertion result Seq params { topic(Seq),
 index(UInt), value(ScaTupRel) }>
 
 This function results in its C<topic> argument but that a new tuple has
@@ -72,7 +72,7 @@ fail if C<index> is greater than the cardinality of C<topic>, or if the
 declared type of C<value> isn't a subtype of the declared type of the
 C<value> attribute.
 
-=item C<function sys.std.Sequence.deletion result Seq params { topic(Seq),
+=item C<function sys.std.Array.deletion result Seq params { topic(Seq),
 index(UInt) }>
 
 This function results in its C<topic> argument but that a tuple has been
@@ -80,7 +80,7 @@ deleted whose C<index> is C<index>; any existing tuples with C<index>
 values greater than or equal to C<index> had theirs decremented by 1.  This
 function will fail if no tuple exists in C<topic> with the specified index.
 
-=item C<function sys.std.Sequence.is_element result Bool params {
+=item C<function sys.std.Array.is_element result Bool params {
 topic(Seq), value(ScaTupRel) }>
 
 This function results in C<Bool:true> iff its C<value> argument matches the
@@ -89,14 +89,14 @@ iff conceptually C<value> is an element of C<topic>), and C<Bool:false>
 otherwise.  This function will fail if the declared type of C<value> isn't
 a subtype of the declared type of that attribute.
 
-=item C<function sys.std.Sequence.is_not_element result Bool params {
+=item C<function sys.std.Array.is_not_element result Bool params {
 topic(Seq), value(ScaTupRel) }>
 
-This function is exactly the same as C<sys.std.Sequence.is_element> except
+This function is exactly the same as C<sys.std.Array.is_element> except
 that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.std.Sequence.reduction result ScaTupRel params {
+=item C<function sys.std.Array.reduction result ScaTupRel params {
 topic(Seq), func(Cat.NameChain), assuming(Tuple), identity(ScaTupRel) }>
 
 This function is the same as C<sys.std.Set.reduction>, including that input
@@ -107,13 +107,13 @@ arguments to C<v1> and C<v2> of C<func> are guaranteed to be consecutive
 input elements, with the result returning to their place in sequence beween
 the other input elements.
 
-=item C<function sys.std.Sequence.maybe_reduction result Maybe params {
+=item C<function sys.std.Array.maybe_reduction result Maybe params {
 topic(Seq), func(Cat.NameChain), assuming(Tuple) }>
 
 This function is to C<sys.std.Set.maybe_reduction> as
-C<sys.std.Sequence.reduction> is to C<sys.std.Set.reduction>.
+C<sys.std.Array.reduction> is to C<sys.std.Set.reduction>.
 
-=item C<function sys.std.Sequence.slice result Seq params {
+=item C<function sys.std.Array.slice result Seq params {
 topic(Seq), first_index(UInt), last_index(UInt) }>
 
 This function results in the sub-sequence of its C<topic> argument that is
@@ -126,7 +126,7 @@ case, the result has all remaining elements starting at C<first_index>.  If
 C<topic> has any elements and C<first_index> matches the index of a source
 element, then the result will always have at least 1 element.
 
-=item C<function sys.std.Sequence.catenation result Seq params {
+=item C<function sys.std.Array.catenation result Seq params {
 topic(seq_of.Seq) }>
 
 This function results in the catenation of the N element values of its
@@ -138,18 +138,18 @@ of the second one by the cardinality of the first one.  If C<topic> has
 zero values, then C<catenate> results in the empty sequence value, which is
 the identity value for catenate.
 
-=item C<function sys.std.Sequence.repeat result Seq params { topic(Seq),
+=item C<function sys.std.Array.repeat result Seq params { topic(Seq),
 count(UInt) }>
 
 This function results in the catenation of C<count> instances of C<topic>.
 
-=item C<function sys.std.Sequence.reverse result Seq params { topic(Seq) }>
+=item C<function sys.std.Array.reverse result Seq params { topic(Seq) }>
 
 This function results in its argument but that the order of its elements
 has been reversed.  For example, the input C<< { 0=>'a', 1=>'b', 2=>'c',
 3=>'d'} >> results in C<< { 0=>'d', 1=>'c', 2=>'b', 3=>'a' } >>.
 
-=item C<function sys.std.Sequence.is_subseq result Bool params {
+=item C<function sys.std.Array.is_subseq result Bool params {
 look_in(Seq), look_for(Seq) }>
 
 This function results in C<Bool:true> iff the sequence of values comprising
@@ -157,14 +157,14 @@ C<look_for> is a sub-sequence of the sequence of values C<look_in>, and
 C<Bool:false> otherwise.  This function will fail if the 2 arguments don't
 have the same heading.
 
-=item C<function sys.std.Sequence.is_not_subseq result Bool params {
+=item C<function sys.std.Array.is_not_subseq result Bool params {
 look_in(Seq), look_for(Seq) }>
 
-This function is exactly the same as C<sys.std.Sequence.is_subseq> except
+This function is exactly the same as C<sys.std.Array.is_subseq> except
 that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.std.Sequence.Seq_from_wrap result seq_of.Tuple params
+=item C<function sys.std.Array.Seq_from_wrap result seq_of.Tuple params
 { topic(Relation), ord_func(Cat.NameChain), ord_assuming(Tuple) }>
 
 This function results in a C<Seq> whose C<value> attribute is tuple-typed
@@ -178,19 +178,19 @@ named in its C<ord_func> argument when the latter function is curried by
 its C<ord_assuming> argument; this wrapped function is used to rank the
 tuples, with each invocation getting a C<topic> tuple as each its C<topic>
 and C<other> arguments.  See also the C<sys.std.Relation.rank> function,
-which is the same as C<sys.std.Sequence.Seq_from_wrap> but that it just
+which is the same as C<sys.std.Array.Seq_from_wrap> but that it just
 adds an attribute to the source tuples and does not wrap them.
 
-=item C<function sys.std.Sequence.limit_of_Seq_from_wrap result
+=item C<function sys.std.Array.limit_of_Seq_from_wrap result
 seq_of.Tuple params { topic(Relation), func(Cat.NameChain),
 assuming(Tuple), first_index(UInt), last_index(UInt) }>
 
 This function is a short-hand for invoking first
-C<sys.std.Sequence.Seq_from_wrap> and then C<sys.std.Sequence.slice> on its
-result.  This function is to C<sys.std.Sequence.Seq_from_wrap> what the
+C<sys.std.Array.Seq_from_wrap> and then C<sys.std.Array.slice> on its
+result.  This function is to C<sys.std.Array.Seq_from_wrap> what the
 C<sys.std.Relation.limit> function is to C<sys.std.Relation.rank>.
 
-=item C<function sys.std.Sequence.Seq_from_attr result Seq params {
+=item C<function sys.std.Array.Seq_from_attr result Seq params {
 topic(Relation), name(Cat.Name), ord_func(Cat.NameChain),
 ord_assuming(Tuple) }>
 
@@ -200,7 +200,7 @@ projection of just the named attribute plus its renaming to C<value>, and
 then that result is extended with an C<index> attribute whose values result
 from a rank of the source attribute values, where the ranked-first source
 value has an C<index> of zero, and so on.  This function is otherwise the
-same as C<sys.std.Sequence.Seq_from_wrap>.
+same as C<sys.std.Array.Seq_from_wrap>.
 
 =back
 
