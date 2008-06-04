@@ -156,16 +156,19 @@ including all SQL DBMSs such as Oracle, PostgreSQL and SQLite, though they
 usually give lip-service to the relational data model and approximate a
 RDBMS to varying degrees.
 
-=item sequence
+=item sequence / array, sequence generator
 
-Within this documentation, a I<sequence> generically refers to an ordered
-collection of 0..N elements.  The term I<array> is not used in this
-documentation because that word's actual meaning is more broad, and
-includes both matrices plus unordered collections of name-value pairs.
-Note that a sequence may be used simply to maintain a simple collection in
-order, though the actual order of its elements may not always be
-significant.  Sometimes I<sequence> also refers specifically to the C<Seq>
-data type, which is a particular binary relation.
+Within this documentation, a I<sequence> or I<array> generically refers to
+an ordered collection of 0..N elements.  While I<array> legitimately has
+more broad meanings in other contexts, and includes both matrices plus
+unordered but indexed collections of name-value pairs, it does not in this
+documentation.  Note that a sequence may be used simply to maintain a
+simple collection in order, though the actual order of its elements may not
+always be significant.  Sometimes I<sequence> or I<array> also refer
+specifically to the C<Array> data type, which is a particular binary
+relation.  The term I<sequence> by itself never refers to the concept of a
+I<sequence generator>; in this documentation, the latter concept is only
+referred to by the longer term I<sequence generator>.
 
 =item selector
 
@@ -2299,17 +2302,17 @@ the effect of implicitly declaring simple (|quasi-)nonscalar collection
 types over that type; but these implicit extra types only appear when you
 attempt to use them, in the form of adding yet another syntax element to
 all of the aforementioned forms, which is
-C<(.(|quasi_)(set|maybe|single|seq|bag)_of){0,}>; this C<of> element takes
-the same position as the C<from> element in the syntax, just after the
-C<type>; or they can both be used together in which case the C<of>
+C<(.(|quasi_)(set|maybe|single|array|bag)_of){0,}>; this C<of> element
+takes the same position as the C<from> element in the syntax, just after
+the C<type>; or they can both be used together in which case the C<of>
 typically appears first.
 
 This feature extension is intended mainly to save the language from a
 proliferation of explicitly defined but very similar (|quasi-)nonscalar
 types; so rather than having to explicitly declare a type that is a
-sequential array of integers (that is, a C<Seq> whose C<value> attribute
+sequential array of integers (that is, a C<Array> whose C<value> attribute
 has the type C<Int>), you can just use it implicitly by saying
-C<type.seq_of.type.sys.std.Core.Type.Int>, the same as you would use the
+C<type.array_of.type.sys.std.Core.Type.Int>, the same as you would use the
 plain integer type by saying C<sys.std.Core.Type.Int>.  Or for the common
 scenario of an attribute being optional (like SQL's nullable), you can say
 for example C<type.maybe_of.type.sys.std.Core.Type.Text>.  This feature
