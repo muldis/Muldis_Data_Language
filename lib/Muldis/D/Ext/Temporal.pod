@@ -29,7 +29,46 @@ reverse isn't true.
 
 This current C<Temporal> document describes the system-defined I<Muldis D
 Temporal Extension>, which consists of temporal data types and operators,
-particularly durations and dates or times.
+particularly calendar dates, times and intervals.  The bundled data types
+describe common kinds of temporal artifacts according to modern calendars.
+They come in a variety of precisions and epochs so that users can pick one
+that most accurately represents what they actually know about their data.
+
+The I<Muldis D Temporal Extension> is expressly not meant to be complete by
+any means, as a solution for working with temporal data.  Rather it is
+meant to be "good enough" for many common uses.  Moreover it isn't intended
+to have a scope much greater than the temporal data handling abilities of
+the ISO/IEC 9075 (SQL) standard.  In many situations, users may be better
+off ignoring this extension, and using Muldis D's core facilities for
+user-defined types and routines, and code an alternate temporal data
+solution that works best for them, building over Muldis D's basic integer
+or such types, or alternately using third-party Muldis D temporal
+extensions.  This current extension exists primarily to ease the porting of
+SQL databases to Muldis D, and save users accustomed to SQL's facilities
+from having to frequently reinvent the wheel.  The details of this Muldis D
+extension are typically just the same as those in ISO/IEC 9075 (SQL)
+section "4.6 Datetimes and intervals", but with some alterations.  As with
+SQL, dates and times are specified as YYYY.MM.DD.HH.MM.SS.F+ in the
+Gregorian calendar, with optional time-zone offsets from the UTC zone.
+
+Now the general practice of working with calendar-centric temporal data is
+an imperfect process and can not be done with perfect mathematical
+precision.  This is partly because our temporal data in general comes from
+measurements of environmental cycles (such as rotations of the Earth,
+revolutions of the Earth's moon around it, and revolutions of the Earth
+around its sun), which not only are rounded approximations, but we also
+know for a fact that the actual amount of time these events takes slowly
+varies over time (such as that the rotation of the Earth is gradually
+slowing as the moon gradually drifts away from it each year).  Also our
+typical calendaring systems change over time, sometimes to deal with our
+improved ability to measure the environmental cycles or compensate for
+drift; witness for example a large part of the world's moving from the
+Julian to the Gregorian calendar.  So the best we have to work with in
+general will involve rounding, and sometimes a conceptually commutative or
+associative sequence of operations on temporal data may not yield an
+identical result from identical inputs when the operations are rearranged
+into a conceptually equivalent but different form; a simple example being
+adding or subtracting dates.  All the issues can be complicated.
 
 This current document does not describe the polymorphic operators that all
 types, or some types including core types, have defined over them; said
@@ -52,122 +91,217 @@ and aren't re-described here):
 
             # The following are all regular ordered scalar types.
 
-            sys.std.Temporal.Type.DateTimeWithTZ
-            sys.std.Temporal.Type.DateWithTZ
-            sys.std.Temporal.Type.TimeWithTZ
-            sys.std.Temporal.Type.DurationWithTZ
-            sys.std.Temporal.Type.DurationOfDaysWithTZ
-            sys.std.Temporal.Type.DateTimeNoTZ
-            sys.std.Temporal.Type.DateNoTZ
-            sys.std.Temporal.Type.TimeNoTZ
-            sys.std.Temporal.Type.DurationNoTZ
-            sys.std.Temporal.Type.DurationOfDaysNoTZ
+            sys.std.Temporal.Type.DurationOf(Y|M|D|I|S|FS)
+            sys.std.Temporal.Type.DateTo(Y|M|D|I|S|FS)
+            sys.std.Temporal.Type.TimeTo(I|S|FS)
+            sys.std.Temporal.Type.DateTo(I|S|FS)WithTZ
+            sys.std.Temporal.Type.TimeTo(I|S|FS)WithTZ
+
+            sys.std.Core.Type.Int
+
+                sys.std.Core.Type.UInt
+
+                    sys.std.Core.Type.PInt
+
+                        # These are all finite positive integer types.
+
+                        sys.std.Temporal.Type.PInt(12|31)
+
+                    # These are all finite unsigned integer types.
+
+                    sys.std.Temporal.Type.UInt(23|59|62)
+
+                # These are all infinite integer types.
+
+                sys.std.Temporal.Type.NZInt
+
+            sys.std.Rational.Type.Rat
+                sys.std.Rational.Type.URat
+
+                    # These are all infinite unsigned rational types.
+
+                    sys.std.Temporal.Type.URatLT1
 
 I<This documentation is pending.>
 
-=head1 SYSTEM-DEFINED TEMPORAL SCALAR DATA TYPES
+=head1 SYSTEM-DEFINED TEMPORAL-CONCERNING DATA TYPES
 
-These non-core scalar data types describe common kinds of temporal
-artifacts according to modern calendars.  They come in a variety of
-precisions and epochs so that users can pick one that most accurately
-represents what they actually know about their data.  I<Of course, dealing
-with these types in general isn't a perfect science; they stand to be
-revised or rewritten.>
+These non-core data types are all ordered scalar types.
 
 =over
 
-=item C<sys.std.Temporal.Type.DateTimeWithTZ>
+=head2 sys.std.Temporal.Type.NZInt
 
-A C<DateTimeWithTZ> is a single specific time on a specific date, with
-precision to arbitrary fractions of a second.  It I<does> incorporate an
-explicit terrestrial time-zone offset (relative to UTC), so you use it when
-you I<do know> the time-zone and it is significant (which is usually).  It
-is conceptually calendar-agnostic.  The default value of
-C<DateTimeWithTZ> is the Perl 6 epoch, namely 2000-1-1T0:0:0 in the
-Gregorian calendar, with a time-zone offset of zero.  This type's minimum
-and maximum values are some kind of infinities.  The cardinality of this
-type is infinity; to define a most-generalized finite C<DateTimeWithTZ>
-subtype, you must specify the earliest and latest datetimes it includes,
-and also its least magnitude fraction of a second.
+A C<NZInt> is a proper subtype of C<Int> where all member values are not
+equal to zero.  Its default value is 1.  The significance is that in
+Gregorian dates, the year portion is an integer not equal to zero.
 
-=item C<sys.std.Temporal.Type.DateWithTZ>
+=head2 sys.std.Temporal.Type.PInt(12|31)
 
-A C<DateWithTZ> is the same as C<DateTimeWithTZ> in all respects but
-that its precision is only to the whole terrestrial day.  Its default value
-is 2000-1-1 in the Gregorian calendar.  The cardinality of this type is
-infinity; to define a most-generalized finite C<DateWithTZ> subtype, you
-must specify the earliest and latest dates it includes.
+A C<PInt(12|31)> is a proper subtype of C<PInt> where all member values are
+not greater than (12|31).  Its default and minimum value is 1; its maximum
+value is (12|31).  The significance is that in Gregorian dates, the
+(month|month-day) portion is a positive integer not greater than (12|31).
 
-=item C<sys.std.Temporal.Type.TimeWithTZ>
+=head2 sys.std.Temporal.Type.UInt(23|59|62)
 
-A C<TimeWithTZ> is a single specific time that isn't on any day in
-particular, and isn't part of any calendar in particular, with a precision
-to arbitrary fractions of a second; its allowed range is between zero
-seconds (inclusive) and 1 terrestrial day (exclusive).  It does incorporate
-an explicit time-zone offset interval as per C<DateTimeWithTZ>.  Its
-default and minimum value is 0:0:0; its maximum value is 1 terrestrial day
-in actuality, due to rounding from something slightly less than that.  The
+A C<UInt(23|59|62)> is a proper subtype of C<UInt> where all member values
+are not greater than (23|59|62).  Its default and minimum value is 0; its
+maximum value is (23|59|62).  The significance is that in the time portion
+of Gregorian dates, the (hour|minute|second) portion is an unsigned integer
+not greater than (23|59|62).
+
+=head2 sys.std.Temporal.Type.URatLT1
+
+A C<URatLT1> is a proper subtype of C<URat> where all member values are
+less than one.  Its default and minimum value is 0; its maximum value is
+conceptually infinitessimally less than one and practically impossible.
+The significance is that in Gregorian dates, the fractional-second portion
+is an unsigned integer less than one.  The cardinality of this type is
+infinity; to define a most-generalized finite C<URatLT1> subtype, you must
+specify the greatest magnitude value denominator of its C<ratio> possrep,
+that is, its maximum precision (that denominator is 10^9 if we're working
+to nanosecond precision).
+
+=head2 sys.std.Temporal.Type.DurationOfFS
+
+A C<DurationOfFS> (duration of fractional seconds) is a single amount of
+time, with precision to arbitrary fractions of a second.  It is not fixed
+to any date or time and is agnostic to the calendar.  It is the result type
+of taking the difference between two C<DateToFS> or two C<TimeToFS> values.
+A C<DurationOfFS> has 1 system-defined possrep whose name is the empty
+string, which has 1 attribute named C<fractional_seconds> (a C<Rat>).  The
+default value of C<DurationOfFS> is zero; its minimum and maximum values
+are conceptually infinities and practically impossible.  The cardinality of
+this type is infinity; to define a most-generalized finite C<DurationOfFS>
+subtype, you must specify the minimum and maximum amount of time that its
+values may be, plus the granularity of the type in fractions of a second;
+in other words, you specify as per a C<Rat>.  The C<DurationOfFS> type has
+a default ordering algorithm which is conceptually the same as for C<Rat>;
+for 2 distinct C<DurationOfFS> values, the value closer to negative
+infinity is ordered before the value closer to positive infinity.
+
+=head2 sys.std.Temporal.Type.DurationOf(Y|M|D|I|S)
+
+A C<DurationOf(Y|M|D|I|S)> (duration of years|months|days|minutes|seconds)
+is the same as C<DurationOfFS>, but that its precision is appropriately
+less, going to the whole year|month|day|minute|second, and its only
+possrep's only attribute name is different,
+C<years>|C<months>|C<days>|C<minutes>|C<seconds>, and the type of that
+attribute is instead an C<Int>.  While the cardinality of this type is
+infinity like C<DurationOfFS>, C<DurationOf(Y|M|D|I|S)> only needs
+specified minimum and maximum amounts of time to make it finite; unlike
+C<DurationOfFS>, its granularity is already fixed.
+
+=head2 sys.std.Temporal.Type.DateToFS
+
+A C<DateToFS> (date to the fractional second) is a single specific time on
+a specific date in the Gregorian calendar, with precision to arbitrary
+fractions of a second.  It is a floating date which I<does not> incorporate
+an explicit terrestrial time-zone offset duration, nor any concept of a
+daylight-savings time offset; you use it when you I<do not know> the
+time-zone, or it is not significant, or you are simply working according to
+vanilla UTC all the time.  A C<DateToFS> has 1 system-defined possrep whose
+name is the empty string, which has 7 attributes: C<year> (a C<NZInt>),
+C<month> (within year; a C<PInt12>), C<day> (within month; a C<PInt31>),
+C<hour> (within day; a C<UInt23>), C<minute> (within hour; a C<UInt59>),
+C<second> (within minute; a C<UInt62>), C<fractional_second> (within whole
+second; a C<URatLT1>).  There is no Gregorian year zero; the C<year> values
+greater than zero are CE, those less than zero are BCE.  The C<month> value
+C<1> corresponds to the month of January, and C<12> corresponds to the
+month of December.  The value of C<day> is further restricted depending on
+the combined values of C<year> and C<month>, such that all 3 together may
+only represent a valid date of the Gregorian calendar (taking into account
+leap-days); so for example you can't select April 31st or February 30th.
+The value of C<second> is further restricted as per C<day>, as leap-seconds
+are only valid on certain days, and perhaps only when the hour-minute is
+23-59.  The default value of C<DateToFS> is exactly midnight at the start
+of January 1st of the year 1 CE; its minimum and maximum values are
+conceptually infinities and practically impossible.  The cardinality of
+this type is infinity; to define a most-generalized finite C<DateToFS>
+subtype, you must specify the earliest and latest dates it includes
+(minimally, the earliest and latest C<year>), as well as the granularity of
+the type as a fraction of a second (minimally, the largest value
+denominator for C<fractional_second>).  The C<DateToFS> type has a default
+ordering algorithm; for 2 distinct C<DateToFS> values, the earlier value is
+ordered before the later value.
+
+=head2 sys.std.Temporal.Type.DateTo(Y|M|D|I|S)
+
+A C<DateTo(Y|M|D|I|S)> (date to the whole year|month|day|minute|second) is
+the same as C<DateToFS>, but that its precision is appropriately less,
+going to the whole year|month|day|minute|second, and its possrep has
+appropriately fewer attributes, keeping the range of attributes from the
+most significant down to the one specific to its granularity.  While the
+cardinality of this type is infinity like C<DateToFS>, C<DateTo(Y|M|D|I|S)>
+only needs specified earliest and latest dates to make it finite; unlike
+C<DateToFS>, its granularity is already fixed.
+
+=head2 sys.std.Temporal.Type.TimeToFS
+
+A C<TimeToFS> (time to the fractional second) is a single specific time
+that isn't on any day in particular, with precision to arbitrary fractions
+of a second.  It is the same as C<DateToFS> but that its only possrep has
+only the least significant 4 attributes: C<hour>, C<minute>, C<second>,
+C<fractional_second>.  The default and minimum value of C<TimeToFS> is
+exactly midnight at the start of its day (all of its possrep attributes are
+zero-valued); its maximum value is conceptually infinitessimally less than
+the midnight at the end of its day and practically impossible.  The
 cardinality of this type is infinity; to define a most-generalized finite
-C<TimeWithTZ> subtype, you must specify its least magnitude fraction of
-a second.
+C<TimeToFS> subtype, you must specify the granularity of the type as a
+fraction of a second (minimally, the largest value denominator for
+C<fractional_second>).  The C<TimeToFS> type has a default ordering
+algorithm; for 2 distinct C<TimeToFS> values, the earlier value is ordered
+before the later value.
 
-=item C<sys.std.Temporal.Type.DurationWithTZ>
+=head2 sys.std.Temporal.Type.TimeTo(I|S)
 
-A C<DurationWithTZ> is a single amount of time, with precision to
-arbitrary fractions of a second.  It is not fixed to any date or time and
-is agnostic to the calendar.  It is the result type of taking the
-difference between two C<DateTimeWithTZ> values, and is likewise assumed
-to be as unambiguous as when you know the time-zone offsets are known.  Its
-default value is zero; its minimum and maximum values are some kind of
-infinities.  The cardinality of this type is infinity; to define a
-most-generalized finite C<DurationWithTZ> subtype, you must specify the
-minimum and maximum amount of time that its values may be, plus the
-granularity of the type in fractions of a second.
+A C<TimeTo(I|S)> (time to the whole minute|second) is the same as
+C<TimeToFS>, but that its precision is appropriately less, going to the
+whole minute|second, and its possrep has appropriately fewer attributes,
+keeping the range of attributes from the most significant down to the one
+specific to its granularity.  The cardinality of this type is
+1440|up-to-90720 (24*60)|(24*60*63).
 
-=item C<sys.std.Temporal.Type.DurationOfDaysWithTZ>
+=head2 sys.std.Temporal.Type.DateToFSWithTZ
 
-A C<DurationOfDaysWithTZ> is the same as C<DurationWithTZ> in all
-respects but that its precision is only to the whole terrestrial day.  The
-cardinality of this type is infinity; to define a most-generalized finite
-C<DurationOfDaysWithTZ> subtype, you must specify the minimum and
-maximum amount of time that its values may be.
+A C<DateToFSWithTZ> (date to the fractional second with time-zone offset)
+is the same as C<DateToFS>, but that it I<does> incorporate an explicit
+terrestrial time-zone offset (relative to UTC), so you use it when you I<do
+know> the time-zone and it is significant (which is usually), and also you
+want to account for the concept of a daylight-savings time offset.  Note
+that it is common to still choose the C<DateToFSWithTZ> type over
+C<DateToFS> when all of the dates being represented have an offset of zero
+for simplicity; use what type works best for you.  A C<DateToFSWithTZ> has
+1 system-defined possrep whose name is the empty string, which has 8
+attributes; the first 7 are the same attributes as the only possrep of
+C<DateToFS> has, and the 8th attribute is the same as the sole attribute of
+the sole possrep of C<DurationOfI> is in meaning and type, but that its
+name is C<time_zone_offset_minutes>.  Note that while the offset can
+currently be any integer, that will probably be made more restrictive in
+the future; conceptually all the time-zone offsets are in the range -12
+hours to 14 hours.  The default value of C<DateToFSWithTZ> is the same as
+that of C<DateToFS> but that it has also the default time-zone offset of
+zero.  Matters of cardinality and minimum/maximum are as per an appropriate
+combination of C<DateToFS> and C<DurationOfI>.  The C<DateToFSWithTZ> type
+has a default ordering algorithm; for 2 distinct C<DateToFSWithTZ> values,
+the earlier value is ordered before the later value (when both are
+normalized to the same time-zone).
 
-=item C<sys.std.Temporal.Type.DateTimeNoTZ>
+=head2 sys.std.Temporal.Type.DateTo(I|S)WithTZ
 
-A C<DateTimeNoTZ> is the same as C<DateTimeWithTZ> in its
-precision, but it I<does not> incorporate an explicit terrestrial time-zone
-offset interval, and so it is conceptually ambiguous within an interval of
-about 25 hours; you use it when you I<do not know> the time-zone or it is
-not significant (which is not usually).  Its default value is
-2000-1-1T0:0:0 in the Gregorian calendar.  Matters of its cardinality are
-the same as for C<DateTimeWithTZ>.
+A C<DateTo(I|S)WithTZ> (date to the whole minute|second with time-zone
+offset) is to C<DateToFSWithTZ> as C<DateTo(I|S)> is to C<DateToFS>.
 
-=item C<sys.std.Temporal.Type.DateNoTZ>
+=head2 sys.std.Temporal.Type.TimeToFSWithTZ
 
-A C<DateNoTZ> is the same as C<DateWithTZ> in all respects but
-that its differences correspond to the differences between
-C<DateTimeWithTZ> and C<DateTimeNoTZ>.  Matters of its
-cardinality are the same as for C<DateWithTZ>.
+A C<TimeToFSWithTZ> (time to the fractional second with time-zone
+offset) is to C<TimeToFS> as C<DateToFSWithTZ> is to C<DateToFS>.
 
-=item C<sys.std.Temporal.Type.TimeNoTZ>
+=head2 sys.std.Temporal.Type.TimeTo(I|S)WithTZ
 
-A C<TimeNoTZ> is the same as C<TimeWithTZ> in all respects but
-that its differences correspond to the differences between
-C<DateTimeWithTZ> and C<DateTimeNoTZ>.  Matters of its
-cardinality are the same as for C<TimeWithTZ>.
-
-=item C<sys.std.Temporal.Type.DurationNoTZ>
-
-A C<DurationNoTZ> is the same as C<DurationWithTZ> in all
-respects but that it is considered ambiguous within a 50 hour interval, and
-it is the result type of taking the difference between two
-C<DateTimeNoTZ> values.  Matters of its cardinality are the same
-as for C<DurationWithTZ>.
-
-=item C<sys.std.Temporal.Type.DurationOfDaysNoTZ>
-
-A C<DurationOfDaysNoTZ> is to C<DurationOfDaysWithTZ> what
-C<DurationNoTZ> is to C<DurationWithTZ>.
+A C<TimeTo(I|S)WithTZ> (time to the whole minute|second with time-zone
+offset) is to C<TimeToFSWithTZ> as C<TimeTo(I|S)> is to C<TimeToFS>.
 
 =back
 
