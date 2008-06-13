@@ -93,8 +93,8 @@ and aren't re-described here):
 
             sys.std.Temporal.Type.DurationOf(Y|M|D|I|S|FS)
             sys.std.Temporal.Type.DateTo(Y|M|D|I|S|FS)
-            sys.std.Temporal.Type.TimeTo(I|S|FS)
             sys.std.Temporal.Type.DateTo(I|S|FS)WithTZ
+            sys.std.Temporal.Type.TimeTo(I|S|FS)
             sys.std.Temporal.Type.TimeTo(I|S|FS)WithTZ
 
             sys.std.Core.Type.Int
@@ -127,8 +127,6 @@ I<This documentation is pending.>
 =head1 SYSTEM-DEFINED TEMPORAL-CONCERNING DATA TYPES
 
 These non-core data types are all ordered scalar types.
-
-=over
 
 =head2 sys.std.Temporal.Type.NZInt
 
@@ -237,32 +235,6 @@ cardinality of this type is infinity like C<DateToFS>, C<DateTo(Y|M|D|I|S)>
 only needs specified earliest and latest dates to make it finite; unlike
 C<DateToFS>, its granularity is already fixed.
 
-=head2 sys.std.Temporal.Type.TimeToFS
-
-A C<TimeToFS> (time to the fractional second) is a single specific time
-that isn't on any day in particular, with precision to arbitrary fractions
-of a second.  It is the same as C<DateToFS> but that its only possrep has
-only the least significant 4 attributes: C<hour>, C<minute>, C<second>,
-C<fractional_second>.  The default and minimum value of C<TimeToFS> is
-exactly midnight at the start of its day (all of its possrep attributes are
-zero-valued); its maximum value is conceptually infinitessimally less than
-the midnight at the end of its day and practically impossible.  The
-cardinality of this type is infinity; to define a most-generalized finite
-C<TimeToFS> subtype, you must specify the granularity of the type as a
-fraction of a second (minimally, the largest value denominator for
-C<fractional_second>).  The C<TimeToFS> type has a default ordering
-algorithm; for 2 distinct C<TimeToFS> values, the earlier value is ordered
-before the later value.
-
-=head2 sys.std.Temporal.Type.TimeTo(I|S)
-
-A C<TimeTo(I|S)> (time to the whole minute|second) is the same as
-C<TimeToFS>, but that its precision is appropriately less, going to the
-whole minute|second, and its possrep has appropriately fewer attributes,
-keeping the range of attributes from the most significant down to the one
-specific to its granularity.  The cardinality of this type is
-1440|up-to-90720 (24*60)|(24*60*63).
-
 =head2 sys.std.Temporal.Type.DateToFSWithTZ
 
 A C<DateToFSWithTZ> (date to the fractional second with time-zone offset)
@@ -293,6 +265,32 @@ normalized to the same time-zone).
 A C<DateTo(I|S)WithTZ> (date to the whole minute|second with time-zone
 offset) is to C<DateToFSWithTZ> as C<DateTo(I|S)> is to C<DateToFS>.
 
+=head2 sys.std.Temporal.Type.TimeToFS
+
+A C<TimeToFS> (time to the fractional second) is a single specific time
+that isn't on any day in particular, with precision to arbitrary fractions
+of a second.  It is the same as C<DateToFS> but that its only possrep has
+only the least significant 4 attributes: C<hour>, C<minute>, C<second>,
+C<fractional_second>.  The default and minimum value of C<TimeToFS> is
+exactly midnight at the start of its day (all of its possrep attributes are
+zero-valued); its maximum value is conceptually infinitessimally less than
+the midnight at the end of its day and practically impossible.  The
+cardinality of this type is infinity; to define a most-generalized finite
+C<TimeToFS> subtype, you must specify the granularity of the type as a
+fraction of a second (minimally, the largest value denominator for
+C<fractional_second>).  The C<TimeToFS> type has a default ordering
+algorithm; for 2 distinct C<TimeToFS> values, the earlier value is ordered
+before the later value.
+
+=head2 sys.std.Temporal.Type.TimeTo(I|S)
+
+A C<TimeTo(I|S)> (time to the whole minute|second) is the same as
+C<TimeToFS>, but that its precision is appropriately less, going to the
+whole minute|second, and its possrep has appropriately fewer attributes,
+keeping the range of attributes from the most significant down to the one
+specific to its granularity.  The cardinality of this type is
+1440|up-to-90720 (24*60)|(24*60*63).
+
 =head2 sys.std.Temporal.Type.TimeToFSWithTZ
 
 A C<TimeToFSWithTZ> (time to the fractional second with time-zone
@@ -302,6 +300,250 @@ offset) is to C<TimeToFS> as C<DateToFSWithTZ> is to C<DateToFS>.
 
 A C<TimeTo(I|S)WithTZ> (time to the whole minute|second with time-zone
 offset) is to C<TimeToFSWithTZ> as C<TimeTo(I|S)> is to C<TimeToFS>.
+
+=head1 FUNCTIONS FOR INTER-DURATION MATH
+
+These functions implement commonly used temporal math operations that just
+work with durations and not dates or times.  For functions in a namespace
+named with a precision, their parameters and result type have that same
+precision only.  They mirror basic integer or rational numeric functions
+but for taking and resulting in durations.  Or actually, most numeric
+functions are not reflected here; if you want to use more, you can extract
+the duration's attribute, use the normal math ops, and then select a new
+duration with the result.  Or a few more functions can be added here later.
+
+=over
+
+=item C<function sys.std.Temporal.DurationOf(Y|M|D|I|S|FS).abs result
+DurationOf(Y|M|D|I|S|FS) params { topic(DurationOf(Y|M|D|I|S|FS)) }>
+
+This function results in the absolute value of its argument.
+
+=item C<function sys.std.Temporal.DurationOf(Y|M|D|I|S|FS).sum result
+DurationOf(Y|M|D|I|S|FS) params { addends(bag_of.DurationOf(Y|M|D|I|S|FS))
+}>
+
+This function results in the sum of the N same-root-typed element values of
+its argument; it is a reduction operator that recursively takes each pair
+of input values and adds (which is both commutative and associative) them
+together until just one is left, which is the result.  If C<addends> has
+zero values, then C<sum> results in the duration zero, which is the
+identity value for addition.
+
+=item C<function sys.std.Temporal.DurationOf(Y|M|D|I|S|FS).difference
+result DurationOf(Y|M|D|I|S|FS) params { minuend(DurationOf(Y|M|D|I|S|FS)),
+subtrahend(DurationOf(Y|M|D|I|S|FS)) }>
+
+This function results in the difference when its C<subtrahend> argument is
+subtracted from its same-root-typed C<minuend> argument.
+
+=back
+
+=head1 FUNCTIONS FOR DATE AND TIME MATH
+
+These functions implement commonly used temporal math operations that have
+date or time valued arguments.  For functions in a namespace named with a
+precision, their parameters and result type have that same precision only.
+
+=head2 DateTo(Y|M|D|I|S|FS)
+
+=over
+
+=item C<function sys.std.Temporal.DateTo(Y|M|D|I|S|FS).difference result
+DurationOf(Y|M|D|I|S|FS) params { minuend(DateTo(Y|M|D|I|S|FS)),
+subtrahend(DateTo(Y|M|D|I|S|FS)) }>
+
+This function results in the duration-typed difference when its date-typed
+C<subtrahend> argument is subtracted from its date-typed C<minuend>
+argument.  The result is the amount of time between the 2 arguments.
+
+=item C<function sys.std.Temporal.DateTo(Y|M|D|I|S|FS).later result
+DateTo(Y|M|D|I|S|FS) params { date(DateTo(Y|M|D|I|S|FS)),
+duration(DurationOf(Y|M|D|I|S|FS)) }>
+
+This function results in the date that is later than its C<date> argument
+by the amount of time in the C<duration> argument.
+
+=item C<function sys.std.Temporal.DateTo(Y|M|D|I|S|FS).earlier result
+DateTo(Y|M|D|I|S|FS) params { date(DateTo(Y|M|D|I|S|FS)),
+duration(DurationOf(Y|M|D|I|S|FS)) }>
+
+This function results in the date that is earlier than its C<date> argument
+by the amount of time in the C<duration> argument.
+
+=back
+
+=head2 DateTo(I|S|FS)WithTZ
+
+=over
+
+=item C<function sys.std.Temporal.DateTo(I|S|FS)WithTZ.difference result
+DurationOf(I|S|FS) params { minuend(DateTo(I|S|FS)WithTZ),
+subtrahend(DateTo(I|S|FS)WithTZ) }>
+
+This function results in the duration-typed difference when its date-typed
+C<subtrahend> argument is subtracted from its date-typed C<minuend>
+argument.  The result is the amount of time between the 2 arguments.  If
+the 2 arguments have the same time-zone offset, the rules for that
+time-zone apply; otherwise, they are both normalized to an offset of zero,
+and then the rules for that time-zone are applied.
+
+=item C<function sys.std.Temporal.DateTo(I|S|FS)WithTZ.later result
+DateTo(I|S|FS) params { date(DateTo(I|S|FS)WithTZ),
+duration(DurationOf(I|S|FS)) }>
+
+This function results in the date that is later than its C<date> argument
+by the amount of time in the C<duration> argument.  The result has the same
+time-zone as its C<date> argument, and the rules for that time-zone apply.
+
+=item C<function sys.std.Temporal.DateTo(I|S|FS)WithTZ.earlier result
+DateTo(I|S|FS) params { date(DateTo(I|S|FS)WithTZ),
+duration(DurationOf(I|S|FS)) }>
+
+This function results in the date that is earlier than its C<date> argument
+by the amount of time in the C<duration> argument.  The result has the same
+time-zone as its C<date> argument, and the rules for that time-zone apply.
+
+=back
+
+=head2 TimeTo(I|S|FS)
+
+=over
+
+=item C<function sys.std.Temporal.TimeTo(I|S|FS).difference result
+DurationOf(I|S|FS) params { minuend(TimeTo(I|S|FS)),
+subtrahend(TimeTo(I|S|FS)) }>
+
+This function results in the duration-typed difference when its time-typed
+C<subtrahend> argument is subtracted from its time-typed C<minuend>
+argument.  The result is the amount of time between the 2 arguments.  The 2
+arguments are treated as being on the same day.
+
+=item C<function sys.std.Temporal.TimeTo(I|S|FS).later result
+TimeTo(I|S|FS) params { time(TimeTo(I|S|FS)), duration(DurationOf(I|S|FS))
+}>
+
+This function results in the time of day that is later than its C<time>
+argument by the amount of time in the C<duration> argument.  If the added
+duration would take the time to midnight, it will wrap around.
+
+=item C<function sys.std.Temporal.TimeTo(I|S|FS).earlier result
+TimeTo(I|S|FS) params { time(TimeTo(I|S|FS)), duration(DurationOf(I|S|FS))
+}>
+
+This function results in the time of day that is earlier than its C<time>
+argument by the amount of time in the C<duration> argument.  If the
+subtracted duration would take the time earlier than midnight, it will wrap
+around.
+
+=back
+
+=head2 TimeTo(I|S|FS)WithTZ
+
+=over
+
+=item C<function sys.std.Temporal.TimeTo(I|S|FS)WithTZ.difference result
+DurationOf(I|S|FS) params { minuend(TimeTo(I|S|FS)WithTZ),
+subtrahend(TimeTo(I|S|FS)WithTZ) }>
+
+This function is to C<sys.std.Temporal.TimeTo(I|S|FS).difference> what
+C<sys.std.Temporal.DateTo(I|S|FS)WithTZ.difference> is to
+C<sys.std.Temporal.DateTo(I|S|FS).difference>.
+
+=item C<function sys.std.Temporal.TimeTo(I|S|FS)WithTZ.later result
+TimeTo(I|S|FS) params { time(TimeTo(I|S|FS)WithTZ),
+duration(DurationOf(I|S|FS)) }>
+
+This function is to C<sys.std.Temporal.TimeTo(I|S|FS).later> what
+C<sys.std.Temporal.DateTo(I|S|FS)WithTZ.later> is to
+C<sys.std.Temporal.DateTo(I|S|FS).later>.
+
+=item C<function sys.std.Temporal.TimeTo(I|S|FS)WithTZ.earlier result
+TimeTo(I|S|FS) params { time(TimeTo(I|S|FS)WithTZ),
+duration(DurationOf(I|S|FS)) }>
+
+This function is to C<sys.std.Temporal.TimeTo(I|S|FS).earlier> what
+C<sys.std.Temporal.DateTo(I|S|FS)WithTZ.earlier> is to
+C<sys.std.Temporal.DateTo(I|S|FS).earlier>.
+
+=back
+
+=head1 SYSTEM SERVICES FOR CURRENT DATES AND TIMES
+
+These system service routines provide ways to get the current date or time
+from the system.  For routines in a namespace named with a precision, their
+parameters have that same precision only.
+
+=over
+
+=item C<system_service
+sys.std.Temporal.DateTo(Y|M|D|I|S|FS).fetch_current_date_utc update {
+target(DateTo(Y|M|D|I|S|FS)) }>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds the value of the current utc date as
+taken with precision of the (whole
+year|month|day|minute|second)|(fractional second).
+
+=item C<system_service
+sys.std.Temporal.DateTo(Y|M|D|I|S|FS).fetch_current_date_local update {
+target(DateTo(Y|M|D|I|S|FS)) }>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds the value of the current system-local
+date as taken with precision of the (whole
+year|month|day|minute|second)|(fractional second).
+
+=item C<system_service
+sys.std.Temporal.DateTo(I|S|FS)WithTZ.fetch_current_date_utc update {
+target(DateTo(I|S|FS)WithTZ) }>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds the value of the current utc date as
+taken with precision of the (whole minute|second)|(fractional second).
+
+=item C<system_service
+sys.std.Temporal.DateTo(I|S|FS)WithTZ.fetch_current_date_local update {
+target(DateTo(I|S|FS)WithTZ) }>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds the value of the current system-local
+date as taken with precision of the (whole minute|second)|(fractional
+second).
+
+=item C<system_service
+sys.std.Temporal.TimeTo(I|S|FS).fetch_current_time_utc update {
+target(TimeTo(I|S|FS)) }>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds the value of the current utc time as
+taken with precision of the (whole minute|second)|(fractional second).
+
+=item C<system_service
+sys.std.Temporal.TimeTo(I|S|FS).fetch_current_time_local update {
+target(TimeTo(I|S|FS)) }>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds the value of the current system-local
+time as taken with precision of the (whole minute|second)|(fractional
+second).
+
+=item C<system_service
+sys.std.Temporal.TimeTo(I|S|FS)WithTZ.fetch_current_time_utc update {
+target(TimeTo(I|S|FS)WithTZ) }>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds the value of the current utc time as
+taken with precision of the (whole minute|second)|(fractional second).
+
+=item C<system_service
+sys.std.Temporal.TimeTo(I|S|FS)WithTZ.fetch_current_time_local update {
+target(TimeTo(I|S|FS)WithTZ) }>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds the value of the current system-local
+time as taken with precision of the (whole minute|second)|(fractional
+second).
 
 =back
 
