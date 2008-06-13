@@ -183,9 +183,9 @@ at least.>  Any remaining errors should be corrected as soon as possible.
     token int {
         (Int)
         <spec_sep>
-        (<[1-9A-Z]>)
+        <int_max_col_val>
         <spec_sep>
-        (0|\-?<[1-9A-Z]><[0-9A-Z]>*)
+        <int_body>
     }
 
     token blob {
@@ -299,9 +299,9 @@ at least.>  Any remaining errors should be corrected as soon as possible.
     }
 
     token count {
-        (<[1-9A-Z]>)
+        <int_max_col_val>
         <spec_sep>
-        (<[1-9A-Z]><[0-9A-Z]>*)
+        <pint_body>
     }
 
     token bag_repeated_values_or_qv {
@@ -343,6 +343,12 @@ at least.>  Any remaining errors should be corrected as soon as possible.
     token text_delim { <[']> }
 
     token text_char { ['\b'|'\q'|<-[\\\']>] }
+
+    token int_max_col_val { (<[1-9A-Z]>) }
+
+    token int_body { (0|\-?<[1-9A-Z]><[0-9A-Z]>*) }
+
+    token pint_body { (<[1-9A-Z]><[0-9A-Z]>*) }
 
     token name { <quoted_text_str> }
 
@@ -415,9 +421,9 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         <spec_sep>
         (radix)
         <spec_sep>
-        (<[1-9A-Z]>)
+        <int_max_col_val>
         <spec_sep>
-        (0|\-?<[1-9A-Z]><[0-9A-Z]>*\.?<[0-9A-Z]>*)
+        (<int_body>\.?<[0-9A-Z]>*)
     }
 
     token rat_as_ratio {
@@ -425,9 +431,9 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         <spec_sep>
         (ratio)
         <spec_sep>
-        (<[1-9A-Z]>)
+        <int_max_col_val>
         <spec_sep>
-        ((0|\-?<[1-9A-Z]><[0-9A-Z]>*) \s* \/ \s* (<[1-9A-Z]><[0-9A-Z]>*))
+        (<int_body> \s* \/ \s* <pint_body>)
     }
 
     token rat_as_float {
@@ -435,17 +441,9 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         <spec_sep>
         (float)
         <spec_sep>
-        (<[1-9A-Z]>)
+        <int_max_col_val>
         <spec_sep>
-        ((0|\-?<[1-9A-Z]><[0-9A-Z]>*)
-        \s*
-        \*
-        \s*
-        (<[2-9A-Z]><[0-9A-Z]>*)
-        \s*
-        \^
-        \s*
-        (0|\-?<[1-9A-Z]><[0-9A-Z]>*))
+        (<int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>)
     }
 
     token rat_round_meth {
