@@ -70,7 +70,7 @@ values are between 2 and 36.  (The significance of the number 36 is 10
 digits plus 26 letters.)  Its maximum value is 36.  The cardinality of this
 type is 35.
 
-=head1 SYSTEM-DEFINED INTEGER-CONCERNING FUNCTIONS
+=head1 FUNCTIONS FOR INTEGER MATH
 
 These functions implement commonly used integer numeric operations.
 
@@ -187,6 +187,8 @@ multiplication of an empty set).
 
 =back
 
+=head1 FUNCTIONS FOR INTEGER CONVERSION WITH TEXT
+
 These functions convert between C<Int> values and canonically formatted
 representations of integers as character strings.
 
@@ -209,6 +211,8 @@ This selector function results in the (not-empty) C<Text> value where its
 C<int> argument is formatted as a base-C<radix> integer.
 
 =back
+
+=head1 FUNCTIONS FOR INTEGER CONVERSION WITH BLOB
 
 These functions convert between C<Int> values and canonically formatted
 representations of integers as binary strings.  I<Conjecture: These may not
@@ -248,6 +252,28 @@ blob(Blob) }>
 
 This function is the same as C<sys.std.Integer.Blob_S_VBE_from_Int> but
 that it does unsigned integers.
+
+=back
+
+=head1 SYSTEM SERVICES FOR RANDOM NUMBER GENERATORS
+
+These system service routines provide ways to get random numbers from the
+system.  Where the results are in the range between truly random and
+pseudo-random is, for the moment, an implementation detail, but the details
+of these functions is subject to become more formalized later.
+
+=over
+
+=item C<system_service sys.std.Integer.fetch_random update { target(Int) }
+read { min(Int), max(Int), exclude_min(Bool), exclude_max(Bool) }>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds a randomly generated integer value in
+the range whose bounds are defined by its C<min> and C<max> arguments.  If
+C<exclude_min> or C<exclude_max> are C<Bool:true>, then the randomly
+generated value will not be equal to C<min> or C<max>, respectively;
+otherwise, the generated value might be equal to C<min> or C<max>.  This
+function will fail if C<max> is before C<min>.
 
 =back
 

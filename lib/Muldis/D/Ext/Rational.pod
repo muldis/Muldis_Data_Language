@@ -187,7 +187,7 @@ original value will be mapped to the single target value that it is closest
 to, if there is one; otherwise, if it is exactly half-way between 2
 adjacent target values, then C<half_down> will round towards negative
 infinity, C<half_up> will round towards positive infinity, and C<half_even>
-will round towards the nearest "even" target. With C<to_floor>,
+will round towards the nearest "even" target.  With C<to_floor>,
 C<to_ceiling>, C<to_zero> (aka I<truncate>), C<to_inf>, the original value
 will always be mapped to the single adjacent value that is lower than it,
 or higher than it, or towards "zero" from it, or towards the nearer
@@ -213,7 +213,7 @@ dictates the rounding method.  The default value of C<RatRoundRule>
 specifies a coersion to a whole number using the C<half_up> rounding method
 (its radix is 2 and its max denom is 1).
 
-=head1 SYSTEM-DEFINED RATIONAL-CONCERNING FUNCTIONS
+=head1 FUNCTIONS FOR RATIONAL MATH
 
 These functions implement commonly used rational numeric operations.
 
@@ -351,6 +351,8 @@ The C<round_rule> parameter is as per C<log>.
 
 =back
 
+=head1 FUNCTIONS FOR RATIONAL CONVERSION WITH TEXT
+
 These functions convert between C<Rat> values and canonically formatted
 representations of rationals as character strings.
 
@@ -374,6 +376,8 @@ C<rat> argument is formatted as a base-C<radix> rational.
 
 =back
 
+=head1 FUNCTIONS FOR RATIONAL CONVERSION WITH INTEGER
+
 These functions convert between C<Rat> values and equal or nearly equal
 C<Int> values.
 
@@ -391,6 +395,31 @@ rat(Rat), round_meth(RatRoundMeth) }>
 This selector function results in the C<Int> value that is conceptually
 equal to or otherwise nearest to its C<rat> argument, where the nearest is
 determined by the rounding method specified by the C<round_meth> argument.
+
+=back
+
+=head1 SYSTEM SERVICES FOR RANDOM NUMBER GENERATORS
+
+These system service routines provide ways to get random numbers from the
+system.  Where the results are in the range between truly random and
+pseudo-random is, for the moment, an implementation detail, but the details
+of these functions is subject to become more formalized later.
+
+=over
+
+=item C<system_service sys.std.Rational.fetch_random update { target(Rat) }
+read { min(Rat), max(Rat), exclude_min(Bool), exclude_max(Bool),
+radix(PInt2_N), max_denom(PInt) }>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds a randomly generated rational value in
+the range whose bounds are defined by its C<min> and C<max> arguments.  The
+denominator attribute of the generated value will be a non-negative power
+of C<radix> that is not larger than C<max_denom>.  If C<exclude_min> or
+C<exclude_max> are C<Bool:true>, then the randomly generated value will not
+be equal to C<min> or C<max>, respectively; otherwise, the generated value
+might be equal to C<min> or C<max>.  This function will fail if C<max> is
+before C<min>.
 
 =back
 
