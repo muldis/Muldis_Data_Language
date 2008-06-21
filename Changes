@@ -6,11 +6,11 @@
     * Muldis::D version 0.35.0 is released on CPAN as
     Muldis-D-0.35.0.tar.gz.
 
-    * New file versions are: D.pm 0.35.0 and Array.pod and Rational.pod
-    0.26.0 and Basics.pod and Routines.pod and PTMD_Tiny.pod and
-    Integer.pod 0.25.0 and Ordered.pod and Tuple.pod and Relation.pod and
-    Set.pod 0.24.0 and HDMD_Perl_Tiny.pod 0.22.0 and Temporal.pod 0.8.1. 
-    The other pre-existing versioned files are unchanged.
+    * New file versions are: D.pm 0.35.0 and Blob.pod and Array.pod and
+    Rational.pod 0.26.0 and Basics.pod and Routines.pod and PTMD_Tiny.pod
+    and Integer.pod 0.25.0 and Ordered.pod and Tuple.pod and Relation.pod
+    and Set.pod 0.24.0 and HDMD_Perl_Tiny.pod 0.22.0 and Temporal.pod
+    0.8.1.  The other pre-existing versioned files are unchanged.
 
     * (Basics.pod)  Added new "Type Safety" pod section under TYPE SYSTEM,
     which says such things that Muldis D is type safe, it is hybrid
@@ -38,6 +38,29 @@
     lot of other changes related to tuple or relation values versus
     declared types, and various other fall-out from the is-identical
     change.
+
+    * (Relation.pod, Set.pod)  Updated the 'outer_join_with_defaults' and
+    'attr_or_default' functions so that each now has an extra
+    Cat.NameChain-typed argument that specifies the type to use the default
+    value of; the functions no longer use the declared type of some other
+    of their arguments to use the default of, since that is unreliable.
+
+    * (Routines.pod, Relation.pod, Blob.pod)  Updated the 7 functions
+    ['union', 'disjoint_union', 'intersection'; 'exclusion'; 'and', 'or',
+    'xor'] so that they now fail when given zero input elements rather than
+    result in an identity value; while such identities conceptually exist,
+    an empty input element list lacks the information to make one, so for
+    these functions the best general solution is to make the caller work
+    around the zero element limitation as it sees fit (such as adding an
+    identity value to the input list); adding an identity parameter instead
+    was rejected as that makes the most common use cases more verbose.
+
+    * (Relation.pod)  Deleted the 2 functions ['universal', 'negation']
+    since they wouldn't have worked in the current forms; they depend on
+    knowing a declared type which isn't reliably obtainable without being
+    explicitly given in an extra parameter; moreover most universal
+    relations would be too large to handle or infinite.  Also updated the
+    'empty' function description.
 
     * (PTMD_Tiny.pod, HDMD_Perl_Tiny.pod)  Fixed a bug in the grammar of
     the 'radix' format for specifying a Rat literal; the bug was such that

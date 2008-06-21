@@ -635,9 +635,15 @@ each pair of input values and relationally unions (which is both
 commutative and associative) them together until just one is left, which is
 the result.  The result relation has the same heading as all of its inputs,
 and its body contains every tuple that is in any of the input relations.
-If C<topic> has zero values, then C<union> results in the empty relation
-with the same heading, which is the per-distinct-heading identity value for
-relational union.
+If C<topic> has zero values, then this function will fail.  Note that,
+conceptually C<union> I<does> have an identity value which could be this
+function's result when C<topic> has zero values, which is the empty
+relation with the same heading, which is the per-distinct-heading identity
+value for relational union; however, since a C<topic> with zero values
+wouldn't know the heading / attribute names for the result relation in
+question, it seems the best alternative is to require invoking code to work
+around the limitation somehow, which might mean it will supply the identity
+value explicitly as an extra C<topic> element.
 
 =item C<function sys.std.Core.Relation.disjoint_union result Relation
 params { topic(set_of.Relation) }>
@@ -654,18 +660,24 @@ each pair of input values and relationally intersects (which is both
 commutative and associative) them together until just one is left, which is
 the result.  The result relation has the same heading as all of its inputs,
 and its body contains only the tuples that are in every one of the input
-relations.  If C<topic> has zero values, then C<intersection> results in
-the universal relation with the same heading (that is, the relation having
-all the tuples that could ever exist in a relation with that heading),
-which is the per-distinct-heading identity value for relational
-intersection.  Note that this I<intersection> operator is conceptually a
-special case of C<join>, applicable when the headings of the inputs are the
-same, and the other will produce the same result as this when given the
-same inputs, but with the exception that I<intersection> has a different
-identity value when given zero inputs.  This function will fail on a
-C<topic> of zero values if the result type's universal relation is
-impossible or impractically large to represent, such as when any attributes
-are of infinite types.
+relations.  If C<topic> has zero values, then this function will fail.
+Note that, conceptually C<intersection> I<does> have an identity value
+which could be this function's result when C<topic> has zero values, which
+is the universal relation with the same heading (that is, the relation
+having all the tuples that could ever exist in a relation with that
+heading), which is the per-distinct-heading identity value for relational
+intersection; however, since a C<topic> with zero values wouldn't know the
+heading / attribute names for the result relation in question (and even if
+they were, more information on attribute types would be needed to produce
+said universal relation, and even then it might be infinite or impossibly
+large), it seems the best alternative is to require invoking code to work
+around the limitation somehow, which might mean it will supply the identity
+value explicitly as an extra C<topic> element.  Note that this
+I<intersection> operator is conceptually a special case of C<join>,
+applicable when the headings of the inputs are the same, and the other will
+produce the same result as this when given the same inputs, but with the
+exception that I<intersection> has a different identity value when given
+zero inputs.
 
 =item C<function sys.std.Core.Relation.difference result Relation params {
 source(Relation), filter(Relation) }>

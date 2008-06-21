@@ -72,16 +72,8 @@ SQL's C<is not null>.
 topic(Relation) }>
 
 This function results in the empty relation of the same heading of its
-argument; it has zero tuples.
-
-=item C<function sys.std.Relation.universal result Relation params {
-topic(Relation) }>
-
-This function results in the universal relation of the same heading of its
-argument; that is, the relation having all the tuples that could ever exist
-in a relation with that heading.  This function will fail if said universal
-relation is impossible or impractically large to represent, such as when
-any attributes are of infinite types.
+argument, that is having the same degree and attribute names; it has zero
+tuples.
 
 =item C<function sys.std.Relation.power_set result set_of.Relation params {
 topic(Relation) }>
@@ -94,17 +86,6 @@ to 2 raised to the power of the cardinality of the argument (which may
 easily lead to a very large result, so use this function with care).  Note
 that the N-ary relational union of the power set of some relation is that
 relation; the N-ary intersection of any power set is the empty relation.
-
-=item C<function sys.std.Relation.negation result Relation params {
-topic(Relation) }>
-
-This function results in the relational negation/not of its argument.  The
-result relation has the same heading as its argument, and its body contains
-all of the tuples that are in the universal relation of the same heading
-and that are not in the argument; that is, the result is the relational
-difference when the argument is subtracted from said universal relation.
-This function will fail on any argument that C<sys.std.Relation.universal>
-would fail on.
 
 =item C<function sys.std.Relation.transitive_closure result Relation params
 { topic(Relation) }>
@@ -197,9 +178,10 @@ takes each pair of input values and relationally excludes (which is both
 commutative and associative) them together until just one is left, which is
 the result.  The result relation has the same heading as all of its inputs,
 and its body contains every tuple that is in just an odd number of the
-input relations.  If C<topic> has zero values, then C<exclusion> results in
-the empty relation with the same heading, which is the per-distinct-heading
-identity value for relational exclusion.  Note that this operation is also
+input relations.  Matters concerning a C<topic> with zero values are as per
+C<sys.std.Core.Relation.union>; this function will fail when given such,
+and the per-distinct-heading identity value for relational exclusion is the
+same as for relational union.  Note that this operation is also
 legitimately known as I<symmetric difference>.
 
 =item C<function sys.std.Relation.composition result Relation params {
@@ -382,26 +364,28 @@ the SQL LEFT OUTER JOIN where SQL NULL is implicitly used in result rows
 that were a non-match.
 
 =item C<function sys.std.Relation.outer_join_with_defaults result Relation
-params { primary(Relation), secondary(Relation) }>
+params { primary(Relation), secondary(Relation), filler(Cat.NameChain) }>
 
-This function is the same as C<sys.std.Relation.outer_join_with_maybes> but
-that C<secondary>-sourced result attributes are not converted to C<Maybe>;
-rather, for result tuples from non-matches, the declared types of the
-C<secondary> attributes are considered, and the default values of those
-types are used to fill in missing result values.
+This function is the same as C<sys.std.Relation.outer_join_with_product>
+but that the filler tuple is the default value of the tuple data type whose
+name is given in the C<filler> argument.  This function is a short-hand for
+invoking C<outer_join_with_product> with the result from invoking
+C<sys.std.Core.Universal.default>.
 
 =item C<function sys.std.Relation.outer_join_with_product result Relation
 params { primary(Relation), secondary(Relation), filler(Tuple) }>
 
-This function is the same as C<sys.std.Relation.outer_join_with_defaults>
-but that missing values are provided explicitly from the C<filler>
-argument, which is a tuple whose heading matches the projection of
-C<secondary>'s attributes that aren't in common with C<primary>, and whose
-body is the literal values to use for those missing attribute values.  This
-function gets its name in that conceptually the result tuples from
-non-matches are the result of performing a relational cross-product between
-the un-matched C<primary> tuples and the single C<filler> tuple.  This
-function could alternately be named I<outer_join_with_static_extension>.
+This function is the same as C<sys.std.Relation.outer_join_with_maybes> but
+that C<secondary>-sourced result attributes are not converted to C<Maybe>;
+rather, for result tuples from non-matches, the missing values are provided
+explicitly from the C<filler> argument, which is a tuple whose heading
+matches the projection of C<secondary>'s attributes that aren't in common
+with C<primary>, and whose body is the literal values to use for those
+missing attribute values.  This function gets its name in that conceptually
+the result tuples from non-matches are the result of performing a
+relational cross-product between the un-matched C<primary> tuples and the
+single C<filler> tuple.  This function could alternately be named
+I<outer_join_with_static_extension>.
 
 =item C<function sys.std.Relation.outer_join_with_extension result Relation
 params { primary(Relation), secondary(Relation), exten_func(Cat.NameChain),

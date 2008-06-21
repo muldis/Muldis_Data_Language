@@ -125,14 +125,20 @@ commutative and associative) on them until just one is left, which is the
 function's result.  This function's argument values must all be of the same
 length in bits, that length being part of the argument's declared type
 (that is, C<Blob> subtype) definition, and that is also the length in bits
-of the function's result.  If C<topic> has zero values, then C<and> will
-result in an appropriate-length string of identity/1 valued bits.
+of the function's result.  If C<topic> has zero values, then this function
+will fail.  Note that, conceptually C<and> I<does> have an identity value
+which could be this function's result when C<topic> has zero values, which
+is an appropriate-length string of identity/1 valued bits; however, since a
+C<topic> with zero values wouldn't know the length in question, it seems
+the best alternative is to require invoking code to work around the
+limitation somehow, which might mean it will supply the identity value
+explicitly as an extra C<topic> element.
 
 =item C<function sys.std.Blob.or result Blob params { topic(set_of.Blob) }>
 
 This function is the same as C<sys.std.Blob.and> but that it recursively
-does a bitwise inclusive-or rather than a bitwise I<and>, and its identity
-value is composed of zero valued bits.
+does a bitwise inclusive-or rather than a bitwise I<and>, and its
+conceptual identity value is composed of zero valued bits.
 
 =item C<function sys.std.Blob.xor result Blob params { topic(bag_of.Blob)
 }>
