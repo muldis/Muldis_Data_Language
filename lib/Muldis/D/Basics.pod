@@ -186,7 +186,18 @@ of the routine throwing an exception at runtime, or failing to compile in
 the first place (which is a thrown exception at compile time); the latter
 is more likely to happen if the compiler can detect that certain arguments
 will always be unacceptable, and the former usually happens just if a
-problem can likely not be caught at compile time.
+problem can likely not be caught at compile time.  Other terms like
+I<requires> or I<must> may be used as well to indicate that a failure would
+occur if they aren't satisfied.  A I<fail> is a fatal error.
+
+=item warn
+
+Within this documentation, if a routine is said to I<warn> under some
+circumstance, such as with certain arguments, that means that the system
+doesn't recognize any fatal problem, but it detects that the programmer may
+have done something they didn't intend, such as an equality test between
+two variables whose declared types are numeric and character data, which
+would always have a false result.
 
 =back
 
@@ -778,8 +789,8 @@ the same depot.
 =head2 Tuple Types and Relation Types
 
 Tuple types are the fundamental heterogeneous conceptually non-encapsulated
-collection types in Muldis D, and are like the Pascal language's concept
-of a record, or the C language's concept of a struct.  The definition of a
+collection types in Muldis D, and are like the Pascal language's concept of
+a record, or the C language's concept of a struct.  The definition of a
 tuple type comprises a set of zero or more named I<attributes> of any
 scalar or nonscalar type.  This set definition is called the tuple's
 I<heading>.
@@ -789,7 +800,7 @@ non-encapsulated collection types in Muldis D, and are like other
 languages' concepts of sets (or arrays where all elements are distinct),
 but restricted in that all elements are tuples.  The definition of a
 relation type looks exactly like the definition of a tuple type (such that
-a relation has a I<heading> even if it has no tuples), but that the
+a relation has attributes even if it has no tuples), but that the
 definition defines every tuple in the relation, and also but that relation
 types can additionally have I<keys> defined which indicate that a subset of
 its attributes' values are distinct between all tuples in the relation.
@@ -808,6 +819,13 @@ degree, the attribute names are identical, and the name-wise corresponding
 attributes in each heading have a valid subtype/supertype relationship;
 each attribute of a tuple or relation subtype is a subtype of the
 same-named attribute of the tuple or relation supertype.
+
+The explicit heading of a tuple or relation value only defines the names of
+its attributes, not their types; the types of tuple or relation attributes
+are simply derived from the values of those attributes, specifically their
+MSTs, recursively in the case of TVAs and RVAs.  Declared tuple or relation
+attribute types are only applicable to explicit tuple or relation type
+definitions, and the variables or routine parameters etc that compose them.
 
 The most specific type (MST) of a tuple value is determined by the MSTs of
 all of its attributes' values; what the heading of that tuple says for each
@@ -979,6 +997,14 @@ identical (as well as C<is_not_identical>, for nonidentical).  Moreover,
 these operators exist implicitly, so when one defines the initial possrep
 of a new type, they get those operators for the type at no extra cost.
 
+But really, the only kind of polymorphism that Muldis D has is related to
+subtypes inheriting the operators of their supertypes.  Besides this, all
+Muldis D operators have different fully-qualified names from each other, so
+there isn't a case of incompatible operators having the same names, which
+then must be differentiated by their argument types.  So in that respect,
+maybe Muldis D isn't so polymorphic after all, depending on whether the
+latter behaviour would be needed to call a language I<polymorphic>.
+
 =head2 Numeric Types
 
 Conceptually speaking, Muldis D has just a single most-important numeric
@@ -1103,6 +1129,122 @@ sequence of sets of compares-as-same values, rather than a straight
 sequence of values.  But in the meantime you can make a non-privileged
 partial sort function by combining a set folding function with a totally
 ordered order-determination function, and a relational group if applicable.
+
+=head2 Type Safety
+
+Muldis D should qualify as a I<type-safe> language by many, if not all,
+definitions of the term I<type-safe>.
+
+The Muldis D type system is used to prevent certain erroneous or
+undesirable program behaviour.  Type errors are usually those that result
+from attempts to perform an operation on some values, that is not
+appropriate to their data types; or any contravention of the programmer's
+intent (as communicated via typing annotations) are erroneous and to be
+prevented by the system.
+
+Every value is of a type.  Every literal, expression, function result,
+routine parameter, type component, and variable has a declared type; the
+system ensures that a variable will only ever hold a value of its declared
+type, that a routine parameter will only take an argument of its declared
+type, and a function will only ever result in a value of its declared type.
+There are no implicit type conversions, only explicit type mapping.  For
+example, it is invalid for a numeric value to appear where a character
+string value is expected, or vice-versa, but an expression or function that
+explicitly maps a numeric to a string is valid to use there.  Muldis D
+follows the I<principle of cautious design>.
+
+Muldis D is a hybrid dynamic and static language, and where on the spectrum
+it is varies by implementation.  At the very least, all imminent type
+errors would be prevented by the system at run time.  But the more
+potential type errors are caught at compile time, the better for users.
+
+Fundamentally, Muldis D is a dynamic language, associating type information
+with values at run time and consulting them as needed to detect imminent
+errors; the system prevents run time imminent type errors by throwing an
+exception.  However, it is possible in many cases for Muldis D to be
+treated as a static language, where type errors are found and prevented at
+compile time, such that the compilation process throws an exception.
+Ideally, all type errors would be found at compile time, and more
+intelligent compilers will be closer to that goal, but in the general case
+it is not possible to go all the way.  In order to increase type error
+detection at compile time, a wider scope needs to be analysed than
+otherwise; in practice, the widest practical scope is to analyse the entire
+I<depot> that would contain the code being compiled.
+
+By design, all Muldis D user-defined variables and routines must live in
+the same depot as all the user-defined types (and constraints) they are
+defined in terms of, and the same depot as all the functions that they
+invoke.  Only procedures may invoke things in depots other than their own,
+and only procedures may be what is thusly invoked.  Both depots would have
+their own copies of data types and constraints of the invoked procedures'
+parameters.  So it is in fact possible for an entire depot to be proven
+internally free of type errors at the time of compilation for any entity
+living within it.  As for inter-depot type checking, that could be done at
+depot mount time.
+
+But that is assuming no Muldis D code in a depot will update its own system
+catalog, in which case that assumption can be thrown out the window.  While
+a depot's code doesn't have to update its own system catalog, because all
+such updates could typically have been done in advance by C<bootloader>
+code, or later on by other utility depots' code, it is a fundamental Muldis
+D feature that code in a depot can update its own system catalog.  A
+depot's system catalog update constitutes recompiling the then-changed code
+in that depot, and so what types and routines and variables exist would
+have changed.  It is valid for a Muldis D procedure to define a new type or
+routine in one statement, and then invoke it in the next; that is how the
+Muldis D analogy of SQL's "prepared statements" works.  Or alternately
+perhaps said statements could be invoked by a C<bootloader> etc.  I<Note
+that this whole matter may be subject to revisiting, such that Muldis D
+code can never update the system catalog of its own depot to alter types or
+routines or variables; but other system catalog updates such as affecting
+database user privileges in the same depot may be retained.>
+
+Now, the Muldis D language spec is currently somewhat hazy in respect to
+how declared types are enforced as constraints with respect to generic
+operators, and the spec currently doesn't fully formalize behaviour for
+implementations in some regards, or different parts may seem to contradict
+each other.  These details still need to be worked out, and in the
+mean-time, following are some pointers.
+
+Generally speaking, there are two categories of type errors.  The first is
+where the system simply can't function in a reasonable or deterministic
+manner if they are violated; this is the kind that must always be detected
+and prevented by the system.  The second is where the type error is more
+just an error concerning the programmer's intent, and this is not fatal by
+any means; the system will still produce a reasonable and deterministic
+result if those were not treated as errors and be allowed to resume.  An
+example of the first is divide by zero with the system standard integer and
+rational types.  An example of the second is an identity/equality
+comparison between 2 values from variables of different declared types; it
+is valid to compare an integer to a character string for equality; the
+result would always be false, but it is still logical; however the user
+might want the system to detect such occurrences.
+
+Therefore, Muldis D officially defines for now that the latter category is
+not fatal and would just generate a warning by default.  Warnings can be
+either enabled as warnings, disabled to not display, or be promoted to
+fatal errors automatically, using a compile-time option or lexically scoped
+pragma or something.
+
+All warnings are issued at compile-time only, which includes any time when
+a system catalog is being updated.
+
+Generally speaking, a Muldis D implementation can not expect at run time to
+remember matters related to declared types of contexts that values are
+coming from.  Rather, only the most specific type of the value itself can
+be known or computable at runtime in order to enforce say the constraint
+from the declared type of a variable it is being assigned to.  However, the
+declared type of a variable used as an argument to a subject-to-update
+parameter I<would> be known at runtime, if it is more specific than the
+declared type of the parameter.
+
+The declared type of an operator argument's source generally can not be
+seen or used by a logical decision in the routine, so for example, if a
+generic operator is going to return the default value of its argument's
+declared type and not the default value of its corresponding parameter's
+declared type, then this can't be done.  What must happen is for the
+operator to take an extra argument where the name of the type whose default
+we want is spelled out, or alternately just the default value itself.
 
 =head1 ENVIRONMENT
 
@@ -1381,7 +1523,7 @@ beast, users can not define their own C<system_service> routines but by
 updating the Muldis D implementation's source code itself.  Invoking a
 C<system_service> can have side-effects outside of the DBMS, but it will
 not alter anything inside the DBMS aside from any of its subject-to-update
-parameters.
+parameters; it can not see any global variables.
 
 =item C<procedure>
 
@@ -2210,10 +2352,11 @@ types, then database relations can no longer be added or removed without
 also updating the corresponding database type.  Generally speaking, the
 declared type of C<dep.data> includes everything that SQL would define as
 table definitions, table unique key constraints, foreign key constraints,
-and generic database or table state constraints.  Only database transition
-constraints are not part of the database's type, and are applied directly
-to the C<dep.data> variable (and C<fed.data> also) by the depot's catalog
-in another way.
+and generic database or table state constraints, but state constraints can
+also be associated with just variables rather than types.  Only database
+transition constraints are not part of the database's type, and are applied
+directly to the C<dep.data> variable (and C<fed.data> also) by the depot's
+catalog in another way.
 
 If a depot has any subdepots or packages, then the type of C<dep.data> must
 have corresponding attributes that match by name, recursively.  For

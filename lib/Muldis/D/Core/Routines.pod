@@ -35,14 +35,13 @@ These functions are applicable to values of any data type at all.
 topic(Universal), other(Universal) }>
 
 This function results in C<Bool:true> iff its 2 arguments are exactly the
-same value, and C<Bool:false> otherwise.  This function's arguments must be
-of compatible declared types; in this case, 2 declared types are compatible
-iff at least one of the following is true: 1. they are both subtypes of a
-common scalar root type; 2. they are both subtypes of a common
-non-incomplete tuple or relation type, that is they essentially have the
-same headings; 3. at least one type is a generic (eg-C<Universal>) or
-incomplete (eg-C<Array>) type, and it is a supertype of the other.  This
-function's 2 parameters are mutually commutative.
+same value, and C<Bool:false> otherwise.  This function's 2 parameters are
+mutually commutative.  This function will warn if, in regards to the
+declared types of its arguments, none the following are true: 1. they are
+both subtypes of a common scalar root type; 2. they are both subtypes of a
+common non-incomplete tuple or relation type, that is they essentially have
+the same headings; 3. at least one type is a generic (eg-C<Universal>) or
+incomplete (eg-C<Array>) type, and it is a supertype of the other.
 
 =item C<function sys.std.Core.Universal.is_not_identical result Bool params
 { topic(Universal), other(Universal) }>
@@ -76,7 +75,7 @@ type-mismatch validation, and possible failure, to happen at runtime
 instead, on the actual value rather than declared value.  For example, if
 you are storing an C<Int> value in a C<Scalar>-typed variable, using
 C<treated> will cause the compiler to let you use that variable as an
-argument to C<sys.std.Integer.sum>, which it otherwise wouldn't.
+argument to C<sys.std.Integer.difference>, which it otherwise wouldn't.
 
 =item C<function sys.std.Core.Universal.default result Universal params {
 of(Cat.NameChain) }>
@@ -123,8 +122,10 @@ attribute whose possrep name is C<possrep> and whose attribute name is
 C<name> has been updated with a new scalar or nonscalar value given by
 C<value>.  This function will fail if C<possrep> specifies a possrep name
 that C<topic> doesn't have or C<name> specifies an attribute name that the
-named possrep of C<topic> doesn't have, or if the declared type of C<value>
-isn't a subtype of the declared type of the attribute.
+named possrep of C<topic> doesn't have, or if C<value> isn't of the
+declared type of the attribute; this function will otherwise warn if the
+declared type of C<value> isn't a subtype of the declared type of the
+attribute.
 
 =item C<function sys.std.Core.Scalar.multi_update result Scalar params {
 topic(Scalar), possrep(Cat.Name), attrs(Tuple) }>
@@ -184,18 +185,19 @@ same value, and otherwise it results in C<Cat.Order:increase> if the value
 of the C<other> argument is considered to be an increase (as defined by the
 type) over the value of the C<topic> argument, and otherwise it results in
 C<Cat.Order:decrease> as the reverse of the last condition would be true.
-This function's C<topic> and C<other> arguments must be of compatible
-declared types; in this case, 2 declared types are compatible iff they are
-both subtypes of a common scalar root type that declares a type-default
-C<order_determination> function.  Note that C<order_determination>
-functions are considered the only fundamental order-sensitive operators,
-and all others are defined over them.  This function also has a
-C<Tuple>-typed third parameter, named C<assuming>, which carries optional
-customization details for the order-determination algorithm; this permits
-the function to implement a choice between multiple (typically similar)
-ordering algorithms rather than just one, which reduces the number of
-functions needed for supporting that choice; if the algorithm is not
-customizable, then a tuple argument would be of degree zero.
+This function will fail if its C<topic> and C<other> arguments are not
+values of a common scalar root type that declares a type-default
+C<order_determination> function; this function will otherwise warn if the
+declared types of those arguments are not both subtypes of such a common
+scalar root type.  Note that C<order_determination> functions are
+considered the only fundamental order-sensitive operators, and all others
+are defined over them.  This function also has a C<Tuple>-typed third
+parameter, named C<assuming>, which carries optional customization details
+for the order-determination algorithm; this permits the function to
+implement a choice between multiple (typically similar) ordering algorithms
+rather than just one, which reduces the number of functions needed for
+supporting that choice; if the algorithm is not customizable, then a tuple
+argument would be of degree zero.
 
 =back
 
@@ -268,8 +270,9 @@ topic(Tuple), name(Cat.Name), value(ScaTupRel) }>
 This function results in its C<topic> argument but that its attribute whose
 name is C<name> has been updated with a new scalar or nonscalar value given
 by C<value>.  This function will fail if C<name> specifies an attribute
-name that C<topic> doesn't have, or if the declared type of C<value> isn't
-a subtype of the declared type of the attribute.
+name that C<topic> doesn't have; this function will otherwise warn if the
+declared type of C<value> isn't a subtype of the declared type of the
+attribute.
 
 =item C<function sys.std.Core.Tuple.multi_update result Tuple params {
 topic(Tuple), attrs(Tuple) }>
@@ -374,8 +377,8 @@ This function results in C<Bool:true> iff its C<t> argument matches a tuple
 of its C<r> argument (that is, iff conceptually C<t> is a member of C<r>),
 and C<Bool:false> otherwise.  This function is like
 C<sys.std.Core.Relation.is_subset> except that the tuple being looked for
-doesn't have to be wrapped in a relation.  This function will fail if the 2
-arguments don't have the same heading.
+doesn't have to be wrapped in a relation.  This function will fail|warn if
+its 2 arguments are incompatible as per C<is_subset>.
 
 =item C<function sys.std.Core.Relation.is_not_member result Bool params {
 r(Relation), t(Tuple) }>
@@ -610,8 +613,11 @@ look_in(Relation), look_for(Relation) }>
 
 This function results in C<Bool:true> iff the set of tuples comprising
 C<look_for> is a subset of the set of tuples comprising C<look_in>, and
-C<Bool:false> otherwise.  This function will fail if the 2 arguments don't
-have the same heading.
+C<Bool:false> otherwise.  This function will fail if the 2 arguments have
+attributes with common names but their most specific types would be fatally
+incompatible in a common relation value; this function will otherwise warn
+with common-named attributes where their declared types are incompatible as
+per C<is_identical>.
 
 =item C<function sys.std.Core.Relation.is_not_subset result Bool params {
 look_in(Relation), look_for(Relation) }>
@@ -668,9 +674,9 @@ This function results in the relational difference when its C<filter>
 argument is subtracted from its C<source> argument.  The result relation
 has the same heading as both of its arguments, and its body contains only
 the tuples that are in C<source> and are not in C<filter>.  This function
-will fail if its 2 arguments do not have the same heading.  Note that this
-I<difference> operator is conceptually a special case of I<semidifference>,
-applicable when the headings of the inputs are the same.
+will fail|warn if its 2 arguments are incompatible as per C<is_subset>.
+Note that this I<difference> operator is conceptually a special case of
+I<semidifference>, applicable when the headings of the inputs are the same.
 
 =item C<function sys.std.Core.Relation.semidifference result Relation
 params { source(Relation), filter(Relation) }>
@@ -689,8 +695,8 @@ C<source>, and its body contains the subset of C<source> tuples that match
 those of C<filter> as per C<join>.  Note that relational semijoin is
 conceptually a short-hand for first doing an ordinary relational join
 between its 2 arguments, and then performing a relational projection on all
-of the attributes that just C<source> has.  This function will fail any
-time that C<join> would fail on the same 2 input relations.
+of the attributes that just C<source> has.  This function will fail|warn
+any time that C<join> would fail|warn on the same 2 input relations.
 
 =item C<function sys.std.Core.Relation.join result Relation params {
 topic(quasi_set_of.Relation) }>
@@ -716,8 +722,11 @@ common, then the join of just those 2 is an intersection; or, if for 2
 inputs, one's set of attribute names is a proper subset of another's, then
 the join of just those to is a semijoin with the former filtering the
 latter.  This function will fail if any input relations have attributes
-with common names but different/incompatible declared types.  Note that
-this operation is also legitimately known as I<natural inner join>.
+with common names but their most specific types would be fatally
+incompatible in a common relation value; this function will otherwise warn
+with common-named attributes where their declared types are incompatible as
+per C<is_identical>.  Note that this operation is also legitimately known
+as I<natural inner join>.
 
 =item C<function sys.std.Core.Relation.product result Relation params {
 topic(quasi_set_of.Relation) }>
@@ -761,8 +770,9 @@ read { v(Universal) }>
 
 This update operator will update the variable supplied as its C<target>
 argument so that it holds the value supplied as its C<v> argument.  This
-update operator's arguments must be of compatible declared types; in this
-case, C<v> must be a subtype of C<target>.
+updater will fail if C<v> isn't of the declared type of the variable behind
+C<target>; this function will otherwise warn if the declared type of C<v>
+isn't a subtype of the declared type of the variable behind C<target>.
 
 =back
 

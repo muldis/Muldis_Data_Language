@@ -38,7 +38,7 @@ operators are defined once for all types in L<Muldis::D::Core>.
 
 I<This documentation is pending.>
 
-=head1 SYSTEM-DEFINED SEQUENCE-CONCERNING FUNCTIONS
+=head1 SYSTEM-DEFINED ARRAY-CONCERNING FUNCTIONS
 
 =over
 
@@ -56,8 +56,10 @@ This function results in its C<topic> argument but that the C<value>
 attribute of the tuple of C<topic> whose C<index> attribute is C<index> has
 been updated with a new scalar or nonscalar value given by C<value>.  This
 function will fail if no tuple exists in C<topic> with the specified index,
-or if the declared type of C<value> isn't a subtype of the declared type of
-the C<value> attribute.
+or if the most specific types of the C<value> argument and the C<value>
+attribute of C<topic> would be fatally incompatible in a common relation
+value's attribute; this function will otherwise warn if the declared type
+of C<value> isn't a subtype of the declared type of the C<value> attribute.
 
 =item C<function sys.std.Array.insertion result Array params {
 topic(Array), index(UInt), value(ScaTupRel) }>
@@ -68,9 +70,9 @@ any existing tuples with C<index> values greater than or equal to C<index>
 had theirs incremented by 1.  As a trivial case, if C<index> is equal to
 zero or is equal to the cardinality of C<topic>, then C<value> has become
 the new first or last (or only) element, respectively.  This function will
-fail if C<index> is greater than the cardinality of C<topic>, or if the
-declared type of C<value> isn't a subtype of the declared type of the
-C<value> attribute.
+fail if C<index> is greater than the cardinality of C<topic>, or it will
+fail|warn if C<topic.value> and C<value> are incompatible as per
+C<update_value>.
 
 =item C<function sys.std.Array.deletion result Array params { topic(Array),
 index(UInt) }>
@@ -86,8 +88,8 @@ topic(Array), value(ScaTupRel) }>
 This function results in C<Bool:true> iff its C<value> argument matches the
 C<value> attribute of at least one tuple of its C<topic> argument (that is,
 iff conceptually C<value> is an element of C<topic>), and C<Bool:false>
-otherwise.  This function will fail if the declared type of C<value> isn't
-a subtype of the declared type of that attribute.
+otherwise.  This function will fail|warn if C<topic.value> and C<value> are
+incompatible as per C<update_value>.
 
 =item C<function sys.std.Array.is_not_element result Bool params {
 topic(Array), value(ScaTupRel) }>
@@ -155,8 +157,8 @@ look_in(Array), look_for(Array) }>
 
 This function results in C<Bool:true> iff the sequence of values comprising
 C<look_for> is a sub-sequence of the sequence of values C<look_in>, and
-C<Bool:false> otherwise.  This function will fail if the 2 arguments don't
-have the same heading.
+C<Bool:false> otherwise.  This function will fail|warn if the 2 arguments
+don't have a compatible or same heading.
 
 =item C<function sys.std.Array.is_not_subarray result Bool params {
 look_in(Array), look_for(Array) }>
