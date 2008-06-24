@@ -101,25 +101,67 @@ look_in(Text), look_for(Text), fixed_start(Bool), fixed_end(Bool) }>
 This function is exactly the same as C<sys.std.Text.is_substr> except that
 it results in the opposite boolean value when given the same arguments.
 
+=back
+
+=head1 FUNCTIONS FOR TEXT NORMALIZATION
+
+These functions implement commonly used text normalization operations which
+are relatively simple or whose details are fully specified by the Unicode
+standard; examples are folding letters to lower or upper case, removing
+combining characters like accent marks and other diacritics from base
+letters, or removing or normalizing whitespace, or that convert text from a
+larger to a smaller character repertoire such as to ASCII.  By contrast,
+operations such as stemming or removing common words or expanding
+abbreviations are not done by these functions and are best implemented by a
+third party language extension or library.  You can use these functions as
+a basis for making comparison or ranking or collation operators that ignore
+some distinctions between values such as their case or accents, such as to
+do case-insensitive or accent-insensitive or whitespace-insensitive
+matching or indexing or sorting; the actual system-defined matching
+operators are still sensitive to case et al, but you can pretend they're
+not by having them work with the results of these normalization functions
+rather than on the inputs to these functions.  This is useful when you want
+to emulate the semantics of insensitive though possibly preserving systems
+over Muldis D.
+
+=over
+
 =item C<function sys.std.Text.case_folded_to_upper result Text {
 topic(Text) }>
 
-This function results in the transformation of its argument where any
+This function results in the normalization of its argument where any
 letters considered to be (small) lowercase are folded to (capital)
 uppercase.
 
 =item C<function sys.std.Text.case_folded_to_lower result Text {
 topic(Text) }>
 
-This function results in the transformation of its argument where any
+This function results in the normalization of its argument where any
 letters considered to be (capital) uppercase are folded to (small)
 lowercase.
+
+=item C<function sys.std.Text.accents_stripped result Text { topic(Text) }>
+
+This function results in the normalization of its argument where any accent
+marks or diacritics are removed from letters, leaving just the primary
+letters.
+
+=item C<function sys.std.Text.ASCII result Text { topic(Text), mark(Text)
+}>
+
+This function results in the normalization of its C<topic> argument where
+any characters not in the 7-bit ASCII repertoire are stripped out, where
+each non-ASCII character is replaced with the common ASCII character string
+specified by its C<mark> argument; if C<mark> is the empty string, then the
+non-ASCII characters are simply stripped.  This function is quite simple
+and does not do a smart replace with sequences of similar looking ASCII
+characters.
 
 =item C<function sys.std.Text.whitespace_trimmed result Text { topic(Text)
 }>
 
-This function results in the value of its argument but that any leading or
-trailing whitespace characters are trimmed.
+This function results in the normalization of its argument where any
+leading or trailing whitespace characters are trimmed.
 
 =back
 
