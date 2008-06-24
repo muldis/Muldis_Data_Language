@@ -1092,8 +1092,8 @@ otherwise it results in C<Cat.Order:increase> if the value of the C<other>
 argument is considered to be an increase (as defined by the function's
 algorithm) over the value of the C<topic> argument, and otherwise it
 results in C<Cat.Order:decrease> as the reverse of the last condition would
-be true.  The function also has a C<Tuple>-typed third parameter, named
-C<assuming>, which carries optional customization details for the
+be true.  The function also has an optional C<Tuple>-typed third parameter,
+named C<assuming>, which carries optional customization details for the
 algorithm; this permits the function to implement a choice between multiple
 (typically similar) ordering algorithms rather than just one, which reduces
 the number of functions needed for supporting that choice; if the algorithm
@@ -1618,6 +1618,22 @@ C<procedure> calls having no updateable arguments.  Host language routines
 can not directly invoke Muldis D C<bootloader_exclusive> routines but by
 way of a fed C<bootloader> piece; however, some appropriate counterparts
 to those may be provided directly by the virtual machine's API.
+
+Some subject-to-update or read-only parameters of routines may be optional,
+that is, do not need to be supplied explicit arguments when the routine is
+invoked; the other routine parameters would be non-optional and must be
+supplied explicit arguments.  The optionality of each routine parameter is
+part of the definition of that routine.  Routine declarations are
+huffman-coded with the assumption that the majority of parameters will be
+non-optional, and non-optional also errs on the side of readability and
+error avoidance; each parameter is non-optional by default unless it is
+explicitly marked as optional.  When a routine executes, any of its
+parameters marked as optional which is not given an explicit argument will
+implicitly default to the default value of its declared type; any
+subject-to-update parameter marked as optional which is not given an
+explicit argument will implicitly bind to a new anonymous variable (with
+the aforementioned default value) which is discarded after the routine
+finishes executing.
 
 Note that Muldis D currently has no direct support for the concept of a
 trigger-routine that can update a database; updating virtual relvars or

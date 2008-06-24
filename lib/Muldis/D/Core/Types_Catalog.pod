@@ -1016,7 +1016,7 @@ interface of a function or inner function, except for its name and
 public/private status; the latter are provided by any type embedding this
 one when applicable.
 
-A C<Cat.FuncHead> has these 3 attributes:
+A C<Cat.FuncHead> has these 4 attributes:
 
 =over
 
@@ -1033,10 +1033,19 @@ This is the declared result data type of the function as a whole.
 This is the declared parameter list of the function, which has 0..N named
 and typed parameters.
 
+=item C<opt_params> - C<set_of.Cat.Name>
+
+This indicates the subset of the function's parameters that are optional,
+that is, do not need to be supplied explicit arguments when the function is
+invoked; any function parameters not named here must be supplied explicit
+arguments.  Any parameter marked as optional which is not given an explicit
+argument will implicitly default to the default value of its declared type.
+Each element of C<opt_params> must match a parameter name in C<params>.
+
 =back
 
 The default value of C<Cat.FuncHead> has zero parameters and a result type
-of C<Bool>.
+of C<Bool>; by default, its parameters are all non-optional.
 
 =head2 sys.std.Core.Type.Cat.UpdHead
 
@@ -1045,7 +1054,7 @@ interface of an updater or inner updater, except for its name and
 public/private status; the latter are provided by any type embedding this
 one when applicable.
 
-A C<Cat.UpdHead> has these 3 attributes:
+A C<Cat.UpdHead> has these 4 attributes:
 
 =over
 
@@ -1063,6 +1072,20 @@ has 1..N named and typed such parameters.  It must have at least 1 element.
 This is the declared read-only parameter list of the updater, which has
 0..N named and typed such parameters.
 
+=item C<opt_params> - C<set_of.Cat.Name>
+
+This indicates the subset of the updater's subject-to-update or read-only
+parameters that are optional, that is, do not need to be supplied explicit
+arguments when the function is invoked; any updater parameters not named
+here must be supplied explicit arguments.  Any parameter marked as optional
+which is not given an explicit argument will implicitly default to the
+default value of its declared type; any subject-to-update parameter marked
+as optional which is not given an explicit argument will implicitly bind to
+a new anonymous variable (with the aforementioned default value) which is
+discarded after the updater finishes executing.  Each element of
+C<opt_params> must match a parameter name in either C<upd_params> or
+C<ro_params>.
+
 =back
 
 There is a distributed (unique) key over the C<name> attributes of
@@ -1070,7 +1093,7 @@ C<upd_params> and C<ro_params>.
 
 The default value of C<Cat.UpdHead> has 1 subject-to-update parameter whose
 name is C<topic> and whose declared type is C<Bool>; it has zero read-only
-parameters.
+parameters; by default, its parameters are all non-optional.
 
 =head2 sys.std.Core.Type.Cat.ProcHead
 
@@ -1079,7 +1102,7 @@ interface of a procedure or inner procedure, except for its name and
 public/private status; the latter are provided by any type embedding this
 one when applicable.
 
-A C<Cat.ProcHead> has these 3 attributes:
+A C<Cat.ProcHead> has these 4 attributes:
 
 =over
 
@@ -1097,12 +1120,17 @@ which has 0..N named and typed such parameters.
 This is the declared read-only parameter list of the procedure, which has
 0..N named and typed such parameters.
 
+=item C<opt_params> - C<set_of.Cat.Name>
+
+This is as per the same-named attribute of C<Cat.UpdHead>.
+
 =back
 
 There is a distributed (unique) key over the C<name> attributes of
 C<upd_params> and C<ro_params>.
 
-The default value of C<Cat.ProcHead> has zero parameters.
+The default value of C<Cat.ProcHead> has zero parameters; by default, its
+parameters are all non-optional.
 
 =head1 TYPES FOR DEFINING ROUTINE BODIES
 
