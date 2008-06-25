@@ -41,7 +41,9 @@ I<This documentation is pending.>
 =head1 SYSTEM-DEFINED GENERIC SINGLE INPUT RELATION FUNCTIONS
 
 These functions are applicable to mainly relation types, but are generic in
-that they typically work with any relation types.
+that they typically work with any relation types.  Each C<assuming>
+parameter is optional and defaults to the zero-attribute tuple if no
+explicit argument is given to it.
 
 =over
 
@@ -104,7 +106,7 @@ queries, such as in connection with the "part explosion problem" (the
 problem of finding all components, at all levels, of some specified part).
 
 =item C<function sys.std.Relation.reduction result Tuple params {
-topic(Relation), func(Cat.NameChain), assuming(Tuple), identity(Tuple) }>
+topic(Relation), func(Cat.NameChain), assuming(Tuple)?, identity(Tuple) }>
 
 This function is a generic reduction operator that recursively takes each
 pair of tuples in C<topic> and applies an argument-specified tuple
@@ -120,7 +122,7 @@ consistency with C<func>.>  This function will fail|warn if the |declared
 headings of C<identity> and C<topic> aren't compatible.
 
 =item C<function sys.std.Relation.maybe_reduction result maybe_of.Tuple
-params { topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+params { topic(Relation), func(Cat.NameChain), assuming(Tuple)? }>
 
 This function is exactly the same as C<sys.std.Relation.reduction> except
 that it does not take an C<assuming> argument, and it results in a C<Maybe>
@@ -128,7 +130,7 @@ of what is otherwise the result type, and that result has zero elements if
 the argument has zero elements.
 
 =item C<function sys.std.Relation.map result Relation params {
-topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+topic(Relation), func(Cat.NameChain), assuming(Tuple)? }>
 
 This function provides a convenient one-place generalization of per-tuple
 transformations that otherwise might require the chaining of up to a
@@ -214,12 +216,14 @@ record values.
 =head1 SYSTEM-DEFINED RELATIONAL RANKING AND QUOTA FUNCTIONS
 
 These additional functions are specific to supporting ranking and quotas.
+Each C<ord_assuming> parameter is optional and defaults to the
+zero-attribute tuple if no explicit argument is given to it.
 
 =over
 
 =item C<function sys.std.Relation.rank result Relation params {
 topic(Relation), name(Cat.Name), ord_func(Cat.NameChain),
-ord_assuming(Tuple) }>
+ord_assuming(Tuple)? }>
 
 This function results in the relational extension of its C<topic> argument
 by a single C<UInt>-typed attribute whose name is provided by the C<name>
@@ -240,7 +244,7 @@ C<sys.std.Relation.rank> but that it wraps the source tuples rather than
 just adding an attribute to them.
 
 =item C<function sys.std.Relation.limit result Relation params {
-topic(Relation), ord_func(Cat.NameChain), ord_assuming(Tuple),
+topic(Relation), ord_func(Cat.NameChain), ord_assuming(Tuple)?,
 min_rank(UInt), max_rank(UInt) }>
 
 This function results in the relational restriction of its C<topic>
@@ -264,12 +268,14 @@ C<sys.std.Array.limit_of_Array_from_wrap> for an alternative).
 
 =head1 SYSTEM-DEFINED RELATIONAL SUBSTITUTION FUNCTIONS
 
-These additional functions are specific to supporting substitutions.
+These additional functions are specific to supporting substitutions.  Each
+C<\w*assuming> parameter is optional and defaults to the zero-attribute
+tuple if no explicit argument is given to it.
 
 =over
 
 =item C<function sys.std.Relation.substitution result Relation params {
-topic(Relation), func(Cat.NameChain), assuming(Tuple) }>
+topic(Relation), func(Cat.NameChain), assuming(Tuple)? }>
 
 This function is similar to C<extension> except that it substitutes values
 of existing relation attributes rather than adding new attributes.  The
@@ -296,7 +302,8 @@ C<attrs> argument.
 
 =item C<function sys.std.Relation.substitution_in_restriction result
 Relation params { topic(Relation), restr_func(Cat.NameChain),
-restr_assuming(Tuple), subst_func(Cat.NameChain), subst_assuming(Tuple) }>
+restr_assuming(Tuple)?, subst_func(Cat.NameChain), subst_assuming(Tuple)?
+}>
 
 This function is like C<substitution> except that it only transforms a
 subset of the tuples of C<topic> rather than all of them.  It is a
@@ -311,7 +318,7 @@ tests for attribute value equality.
 
 =item C<function sys.std.Relation.static_substitution_in_restriction result
 Relation params { topic(Relation), restr_func(Cat.NameChain),
-restr_assuming(Tuple), subst(Tuple) }>
+restr_assuming(Tuple)?, subst(Tuple) }>
 
 This function is to C<sys.std.Relation.substitution_in_restriction> what
 C<sys.std.Relation.static_substitution> is to
@@ -320,7 +327,7 @@ C<static_substitution_in_semijoin> function.
 
 =item C<function sys.std.Relation.substitution_in_semijoin result Relation
 params { topic(Relation), restr(Relation), subst_func(Cat.NameChain),
-subst_assuming(Tuple) }>
+subst_assuming(Tuple)? }>
 
 This function is like C<substitution_in_restriction> except that the subset
 of the tuples of C<topic> to be transformed is determined by those matched
@@ -389,14 +396,16 @@ I<outer_join_with_static_extension>.
 
 =item C<function sys.std.Relation.outer_join_with_extension result Relation
 params { primary(Relation), secondary(Relation), exten_func(Cat.NameChain),
-exten_assuming(Tuple) }>
+exten_assuming(Tuple)? }>
 
 This function is the same as C<sys.std.Relation.outer_join_with_product>
 but that the result tuples from non-matches are the result of performing a
 relational extension on the un-matched C<primary> tuples such that each
 said result tuple is determined by applying the function named in
 C<exten_func> to each said C<primary> tuple when the named function is
-curried using the C<exten_assuming> argument.
+curried using the C<exten_assuming> argument.  The C<exten_assuming>
+parameter is optional and defaults to the zero-attribute tuple if no
+explicit argument is given to it.
 
 =back
 

@@ -40,6 +40,9 @@ I<This documentation is pending.>
 
 =head1 SYSTEM-DEFINED ARRAY-CONCERNING FUNCTIONS
 
+Each C<\w*assuming> parameter is optional and defaults to the
+zero-attribute tuple if no explicit argument is given to it.
+
 =over
 
 =item C<function sys.std.Array.value result ScaTupRel params {
@@ -99,7 +102,7 @@ that it results in the opposite boolean value when given the same
 arguments.
 
 =item C<function sys.std.Array.reduction result ScaTupRel params {
-topic(Array), func(Cat.NameChain), assuming(Tuple), identity(ScaTupRel) }>
+topic(Array), func(Cat.NameChain), assuming(Tuple)?, identity(ScaTupRel) }>
 
 This function is the same as C<sys.std.Set.reduction>, including that input
 values for the reduction come from the C<value> attribute of C<topic>,
@@ -110,7 +113,7 @@ input elements, with the result returning to their place in sequence beween
 the other input elements.
 
 =item C<function sys.std.Array.maybe_reduction result Maybe params {
-topic(Array), func(Cat.NameChain), assuming(Tuple) }>
+topic(Array), func(Cat.NameChain), assuming(Tuple)? }>
 
 This function is to C<sys.std.Set.maybe_reduction> as
 C<sys.std.Array.reduction> is to C<sys.std.Set.reduction>.
@@ -168,7 +171,7 @@ that it results in the opposite boolean value when given the same
 arguments.
 
 =item C<function sys.std.Array.Array_from_wrap result array_of.Tuple params
-{ topic(Relation), ord_func(Cat.NameChain), ord_assuming(Tuple) }>
+{ topic(Relation), ord_func(Cat.NameChain), ord_assuming(Tuple)? }>
 
 This function results in an C<Array> whose C<value> attribute is
 tuple-typed and that attribute's values are all the tuples of C<topic>; is
@@ -185,8 +188,8 @@ which is the same as C<sys.std.Array.Array_from_wrap> but that it just adds
 an attribute to the source tuples and does not wrap them.
 
 =item C<function sys.std.Array.limit_of_Array_from_wrap result
-array_of.Tuple params { topic(Relation), func(Cat.NameChain),
-assuming(Tuple), first_index(UInt), last_index(UInt) }>
+array_of.Tuple params { topic(Relation), ord_func(Cat.NameChain),
+ord_assuming(Tuple)?, first_index(UInt), last_index(UInt) }>
 
 This function is a short-hand for invoking first
 C<sys.std.Array.Array_from_wrap> and then C<sys.std.Array.slice> on its
@@ -194,8 +197,8 @@ result.  This function is to C<sys.std.Array.Array_from_wrap> what the
 C<sys.std.Relation.limit> function is to C<sys.std.Relation.rank>.
 
 =item C<function sys.std.Array.Array_from_attr result Array params {
-topic(Relation), name(Cat.Name), ord_func(Cat.NameChain),
-ord_assuming(Tuple) }>
+topic(Relation), name(Cat.Name), ord_func(Cat.OrdDetFuncNameChain)?,
+ord_assuming(Tuple)? }>
 
 This function results in an C<Array> consisting of all the values of the
 attribute of C<topic> named by C<name>.  It is a short-hand for a unary
@@ -203,7 +206,10 @@ projection of just the named attribute plus its renaming to C<value>, and
 then that result is extended with an C<index> attribute whose values result
 from a rank of the source attribute values, where the ranked-first source
 value has an C<index> of zero, and so on.  This function is otherwise the
-same as C<sys.std.Array.Array_from_wrap>.
+same as C<sys.std.Array.Array_from_wrap>.  Each of the C<ord_func> and
+C<ord_assuming> parameters is optional and defaults to
+C<sys.std.Core.Scalar.order> or the zero-attribute tuple, respectively, if
+no explicit argument is given to it.
 
 =back
 
