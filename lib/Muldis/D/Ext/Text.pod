@@ -85,7 +85,7 @@ This function results in the length of its argument in Unicode
 Normalization Form C code points.
 
 =item C<function sys.std.Text.is_substr result Bool params { look_in(Text),
-look_for(Text), fixed_start(Bool), fixed_end(Bool) }>
+look_for(Text), fixed_start(Bool)?, fixed_end(Bool)? }>
 
 This function results in C<Bool:true> iff its C<look_for> argument is a
 substring of its C<look_in> argument as per the optional C<fixed_start> and
@@ -93,13 +93,15 @@ C<fixed_end> constraints, and C<Bool:false> otherwise.  If C<fixed_start>
 or C<fixed_end> are C<Bool:true>, then C<look_for> must occur right at the
 start or end, respectively, of C<look_in> in order for C<contains> to
 result in C<Bool:true>; if either flag is C<Bool:false>, its additional
-constraint doesn't apply.  Note that C<is_substr> will handle the common
-special cases of SQL's "LIKE" operator for patterns like ['foo', '%foo',
-'foo%', '%foo%'], but see also the C<is_match_using_like> function which
-provides the full generality of SQL's "LIKE", such as 'foo%bar%baz'.
+constraint doesn't apply.  Each of the C<fixed_(start|end)> parameters is
+optional and defaults to C<Bool:false> if no explicit argument is given to
+it.  Note that C<is_substr> will handle the common special cases of SQL's
+"LIKE" operator for patterns like ['foo', '%foo', 'foo%', '%foo%'], but see
+also the C<is_match_using_like> function which provides the full generality
+of SQL's "LIKE", such as 'foo%bar%baz'.
 
 =item C<function sys.std.Text.is_not_substr result Bool params {
-look_in(Text), look_for(Text), fixed_start(Bool), fixed_end(Bool) }>
+look_in(Text), look_for(Text), fixed_start(Bool)?, fixed_end(Bool)? }>
 
 This function is exactly the same as C<sys.std.Text.is_substr> except that
 it results in the opposite boolean value when given the same arguments.
@@ -149,7 +151,7 @@ This function results in the normalization of its argument where any accent
 marks or diacritics are removed from letters, leaving just the primary
 letters.
 
-=item C<function sys.std.Text.ASCII result Text { topic(Text), mark(Text)
+=item C<function sys.std.Text.ASCII result Text { topic(Text), mark(Text)?
 }>
 
 This function results in the normalization of its C<topic> argument where
@@ -158,7 +160,8 @@ each non-ASCII character is replaced with the common ASCII character string
 specified by its C<mark> argument; if C<mark> is the empty string, then the
 non-ASCII characters are simply stripped.  This function is quite simple
 and does not do a smart replace with sequences of similar looking ASCII
-characters.
+characters.  The C<mark> parameter is optional and defaults to the empty
+string if no explicit argument is given to it.
 
 =item C<function sys.std.Text.whitespace_trimmed result Text { topic(Text)
 }>
