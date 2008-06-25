@@ -108,6 +108,46 @@ they generally should be entirely lowercase.  The main exception to this is
 if the routine name embeds a type name, in which case the type should be
 spelled with its normal casing, such as C<Int_from_Text>.
 
+=head2 Defaults and Options
+
+When defining a routine parameter or type attribute that is expected to
+have the same single value in a majority of usage scenarios, and that users
+would generally conceive that they shouldn't have to explicitly specify a
+value for that parameter or attribute when it would be that common value,
+then you should give the parameter or attribute an appropriate name and
+declared type such that the single default value of the declared type is
+the same as the common value in question; for a parameter, typically it
+should also be marked as optional.
+
+Similarly, if a certain attribute or parameter would be considered
+non-applicable or ignorable under certain circumstances, such as defined by
+neighboring parameters or circumstances, then said ignorables should be
+named and typed such that their declared type gives them a default value
+that is best for use when it should be ignored.
+
+One example is a binary choice encoded as a boolean value; the boolean
+parameter or attribute can be named after the infrequent choice such that
+giving it a true value will pick the infrequent choice and letting it
+default to the false value (C<Bool:false> is the default value of the
+C<Bool> type) will pick the frequent choice.
+
+Generally speaking, the default value of a type should correspond most
+closely to its concept of I<empty>, unless there is no such concept in the
+type.  So for string types this would mean the empty string, or for
+collection types, one with no elements, or for numeric types, the value
+zero.
+
+When declaring a scalar root type that has exactly one possrep, the name of
+that possrep should be the empty string, which makes it easier for that
+possrep to be referred to by default in contexts where a possrep name is
+optional to specify.  By contrast, when declaring a scalar root type that
+has at least 2 possreps of its own, none of the possreps should have the
+empty string as their name.  When declaring a scalar subtype that adds one
+or more extra possreps, none of the added possreps should have the empty
+string as its name.  On the other hand, don't be hesitant to just use a
+non-empty name even when there is just one possrep, if that name results in
+better self-documentation of the type and its value selections.
+
 =head2 Syntax Ordering
 
 Muldis D internally (that is, in the system catalog) organizes parts of
