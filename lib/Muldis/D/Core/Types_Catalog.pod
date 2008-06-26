@@ -77,7 +77,8 @@ more or less:
             sys.std.Core.Type.Cat.Type
             sys.std.Core.Type.Cat.InnerScalarType
             sys.std.Core.Type.Cat.InnerNonscalarType
-            sys.std.Core.Type.Cat.InnerDomainType
+            sys.std.Core.Type.Cat.InnerUnionType
+            sys.std.Core.Type.Cat.InnerRestrType
             sys.std.Core.Type.Cat.DbVar
 
             sys.std.Core.Type.Database
@@ -117,7 +118,7 @@ more or less:
             sys.std.Core.Type.Cat.RelLitExprNodeSet
             sys.std.Core.Type.Cat.FuncInvoExprNodeSet
             sys.std.Core.Type.Cat.MultiUpdStmt
-            sys.std.Core.Type.Cat.Inner(Sca|NonSca|Dom)TypeSet
+            sys.std.Core.Type.Cat.Inner(Sca|Nonsca|Uni|Restr)TypeSet
             sys.std.Core.Type.Cat.PossrepSet
             sys.std.Core.Type.Cat.PossrepMapSet
             sys.std.Core.Type.Cat.ConstraintSet
@@ -305,7 +306,7 @@ C<Comment>.
 =item C<types> - C<Cat.SysTypeSet>
 
 These are all the system-defined (|quasi-)scalar types with possreps, and
-complete (|quasi-)nonscalar types, and domain types.
+complete (|quasi-)nonscalar types, and union types, and restriction types.
 
 =item C<catalogs> - C<Cat.SysCatSet>
 
@@ -753,7 +754,7 @@ These are all the function|updater|procedure definitions that this
 
 These are all the definitions that this (|sub)depot contains of
 (|quasi-)scalar types with possreps, and complete (|quasi-)nonscalar types,
-and domain types.
+and union types, and restriction types.
 
 =item C<data> - C<single_of.Cat.DbVar>
 
@@ -932,8 +933,8 @@ contains.
 =item C<types> - C<Cat.PkgTypeSet>
 
 These are all the definitions that this package contains of (|quasi-)scalar
-types with possreps, and complete (|quasi-)nonscalar types, and domain
-types.
+types with possreps, and complete (|quasi-)nonscalar types, and union
+types, and restriction types
 
 =item C<data> - C<single_of.Cat.DbVar>
 
@@ -1768,8 +1769,8 @@ typed parameters.
 =head2 sys.std.Core.Type.Cat.Type
 
 A C<Cat.Type> is a C<Tuple>.  Its purpose is as per
-C<Cat.Inner(Scalar|Nonscalar|Domain)Type>, one of which it is a wrapper for
-along with other inner types that are composed into it.
+C<Cat.Inner(Scalar|Nonscalar|Union|Restr)Type>, one of which it is a
+wrapper for along with other inner types that are composed into it.
 
 A C<Cat.Type> has these 3 attributes:
 
@@ -1798,7 +1799,7 @@ There is a distributed (unique) key over both the C<name> attributes of all
 the attributes of C<inner_types> and the C<name> attributes of
 C<inner_funcs>.
 
-The default value of C<Cat.Type> is as per C<Cat.InnerDomainType>.
+The default value of C<Cat.Type> is as per C<Cat.InnerRestrType>.
 
 =head2 sys.std.Core.Type.Cat.InnerTypeSet
 
@@ -1806,47 +1807,50 @@ A C<Cat.InnerTypeSet> is a C<Database> that specifies a set of named inner
 types.  It is typically composed into a
 function|updater|procedure|outer-type.
 
-A C<Cat.InnerTypeSet> has these 3 attributes:
+A C<Cat.InnerTypeSet> has these 4 attributes:
 
 =over
 
-=item C<inner_(sca|non_sca|dom)_types> -
-C<Cat.Inner(Sca|NonSca|Dom)TypeSet>
+=item C<inner_(sca|nonsca|uni|restr)_types> -
+C<Cat.Inner(Sca|Nonsca|Uni|Restr)TypeSet>
 
-These are all the inner scalar|nonscalar|domain type definitions that this
-type contains.
+These are all the inner scalar|nonscalar|union|restriction type definitions
+that this type contains.
 
 =back
 
 There is a distributed (unique) key over the C<name> attributes of all of a
 C<Cat.InnerTypeSet>'s attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Inner(Sca|NonSca|Dom)TypeSet
+=head2 sys.std.Core.Type.Cat.Inner(Sca|Nonsca|Uni|Restr)TypeSet
 
-A C<Cat.Inner(Sca|NonSca|Dom)TypeSet> is a C<Relation> that specifies a set
-of inner scalar|nonscalar|domain types that a function|updater|procedure or
-scalar|nonscalar|domain type might contain.
+A C<Cat.Inner(Sca|Nonsca|Uni|Restr)TypeSet> is a C<Relation> that specifies
+a set of inner scalar|nonscalar|union|restriction types that a
+function|updater|procedure or scalar|nonscalar|union|restriction type might
+contain.
 
-A C<Cat.Inner(Sca|NonSca|Dom)TypeSet> has these 3 attributes:
+A C<Cat.Inner(Sca|Nonsca|Uni|Restr)TypeSet> has these 3 attributes:
 
 =over
 
 =item C<name> - C<Cat.Name>
 
-This is the declared name of the inner scalar|nonscalar|domain type.
+This is the declared name of the inner scalar|nonscalar|union|restriction
+type.
 
 =item C<comment> - C<Cat.Comment>
 
 This is an optional programmer comment about the inner
-scalar|nonscalar|domain type as a whole.
+scalar|nonscalar|union|restriction type as a whole.
 
-=item C<type> - C<Cat.Inner(Scalar|Nonscalar|Domain)Type>
+=item C<type> - C<Cat.Inner(Scalar|Nonscalar|Union|Restr)Type>
 
-This defines the entire inner scalar|nonscalar|domain type sans the name.
+This defines the entire inner scalar|nonscalar|union|restriction type sans
+the name.
 
 =back
 
-A C<Cat.Inner(Sca|NonSca|Dom)TypeSet> has a unary (unique) key on the
+A C<Cat.Inner(Sca|Nonsca|Uni|Restr)TypeSet> has a unary (unique) key on the
 C<name> attribute.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING INNER DATA TYPES
@@ -2193,7 +2197,7 @@ or C<state_constraint> or C<transition_constraint>, but when a set has
 multiple constraints, all of them must be the same kind, and they must all
 correspond to the same implicit function heading.  One or more (possibly
 empty) C<Cat.ConstraintSet> is composed into the definition each nonscalar
-type and domain type and dbvar.
+type and union type and restriction type and dbvar.
 
 A C<Cat.ConstraintSet> has these 3 attributes:
 
@@ -2349,31 +2353,31 @@ itself.  A C<Cat.DKRelAttrKeyAttrMap> has 2 attributes, C<rel_attr> and
 C<key_attr>, each of those being a C<Cat.Name>, and each of those being a
 unary key.  Its default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.InnerDomainType
+=head2 sys.std.Core.Type.Cat.InnerUnionType
 
-A C<Cat.InnerDomainType> is a C<Tuple>.  It defines a new data type whose
+A C<Cat.InnerUnionType> is a C<Tuple>.  It defines a new data type whose
 values are all drawn from one or more specified other types (which can be
-any types at all), and that generally speaking it is an arbitrary subset of
-C<Universal> (and it has its own default value).  The value set of the new
-data type is determined by taking a set of source types' values and
-subtracting from it a set of filter types' values, then applying a type
-constraint function to the values remaining.  The two likely most common
-such type definition scenarios are defining a simple restriction/domain
-type over a single scalar source type (no possreps added) using a filter
-function, and defining a simple explicit union type of 2+ scalar source
-types.  A domain type does not define any changes or supplements to the
-interfaces available for working with its values, instead simply using
-those of its declared parent types.  A data type defined in this way is
-typically not considered to exist when the system wants to determine the
-MST (most specific type) of one of its values.
+any not-C<Empty> types at all), and that generally speaking it is an
+arbitrary subset of C<Universal> (and it has its own default value).  The
+value set of the new data type is determined by taking a set of source
+types' values and subtracting from it a set of filter types' values (and
+then optionally applying 0..N type constraint functions to the values
+remaining).  The likely most common such type definition scenario is
+defining a simple explicit union type of 2+ scalar source types.  Less
+likely for usage, you can also define simple explicit intersection or
+difference or exclusion types.  A union type does not define any changes or
+supplements to the interfaces available for working with its values,
+instead simply using those of its declared parent types.  A data type
+defined in this way is typically not considered to exist when the system
+wants to determine the MST (most specific type) of one of its values.
 
-A C<Cat.InnerDomainType> has these 7 attributes:
+A C<Cat.InnerUnionType> has these 7 attributes:
 
 =over
 
 =item C<comment> - C<Cat.Comment>
 
-This is an optional programmer comment about the inner domain type as a
+This is an optional programmer comment about the inner union type as a
 whole.
 
 =item C<sources> - C<set_of.Cat.NameChain>
@@ -2410,7 +2414,7 @@ elements then the filter set is just C<Empty>.
 
 This defines the entire (main) bodies of 0..N C<type_constraint> functions
 that (when I<and>-ed together) determine what filter-type-passing
-source-type values are part of the domain type.  The implicit function
+source-type values are part of the union type.  The implicit function
 heading that each of these goes with has a single C<topic> parameter whose
 declared type is C<Universal>, unless there is exactly 1 C<sources> element
 whereupon the declared type is the same as the source type, and whose
@@ -2421,18 +2425,78 @@ filter-type-passing values are allowed.
 =item C<default> - C<Cat.InnerFuncBody>
 
 This defines the entire (main) body of a C<type_default> function that
-results in the default value of the (sub|union)type; it has zero parameters
-and its result type is the same as the domain type whose declaration it is
-part of.
+results in the default value of the union type; it has zero parameters and
+its result type is the same as the union type whose declaration it is part
+of.
 
 =back
 
-The default value of C<Cat.InnerDomainType> defines an alias for
+The default value of C<Cat.InnerUnionType> defines an alias for
 C<Universal>, with the same default value; it has just the source type
 C<Universal> and zero filter types, both type lists are unioned, and
-C<constraint> is unconditionally C<Bool:true>.  Note that there is no valid
-combination of C<Cat.InnerDomainType> attribute values that would result in
-an alias for the C<Empty> type, due to C<default> being mandatory.
+C<constraints> is empty (unconditionally C<Bool:true>).  Note that there is
+no valid combination of C<Cat.InnerUnionType> attribute values that would
+result in an alias for the C<Empty> type, due to C<default> being
+mandatory.
+
+=head2 sys.std.Core.Type.Cat.InnerRestrType
+
+A C<Cat.InnerRestrType> is a C<Tuple>.  It provides a relatively terse
+method to define a simple restriction-defined subtype of a single other
+type (which can be any not-C<Empty> type at all), which is a common kind of
+type to have.  The new type is either a proper or non-proper subset of the
+other type, whose values are determined from applying 0..N type constraint
+functions to the parent type; either way, the new type does declare its own
+default value.  An alternate common scenario is to define a non-proper
+subtype of its parent type that serves just to supply a different default
+value for the context in which the new type is used.  A restriction type
+does not define any changes or supplements to the interfaces available for
+working with its values, instead simply using those of its declared parent
+type.  A data type defined in this way is typically not considered to exist
+when the system wants to determine the MST (most specific type) of one of
+its values.
+
+A C<Cat.InnerRestrType> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the inner restriction type as
+a whole.
+
+=item C<base_type> - C<Cat.NameChain>
+
+This is the name of the not-C<Empty> other type that all the values of the
+new data type are drawn from; the new type is being declared as a subtype
+of that named by C<base_type>.
+
+=item C<constraints> - C<Cat.ConstraintSet>
+
+This defines the entire (main) bodies of 0..N C<type_constraint> functions
+that (when I<and>-ed together) determine what base type values are part of
+the restriction type.  The implicit function heading that each of these
+goes with has a single C<topic> parameter whose declared type is that named
+by C<base_type>, and whose argument is the value to test; the function's
+implicit result type is C<Bool>.  If the functions unconditionally result
+in C<Bool:true>, then the new type is a non-proper subtype of the base
+type.
+
+=item C<default> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of a C<type_default> function that
+results in the default value of the restriction type; it has zero
+parameters and its result type is the same as the restriction type whose
+declaration it is part of.
+
+=back
+
+The default value of C<Cat.InnerRestrType> defines an alias for
+C<Universal>, with the same default value; it has the base type
+C<Universal> and C<constraints> is empty (unconditionally C<Bool:true>).
+Note that there is no valid combination of C<Cat.InnerRestrType> attribute
+values that would result in an alias for the C<Empty> type, due to
+C<default> being mandatory.
 
 =head1 TYPES FOR DEFINING DBVARS
 
