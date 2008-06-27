@@ -89,6 +89,18 @@ or runtime depending whether the type is in the system or user namespace.
 This function is conceptually implicitly used to provide default values for
 variables, so they always hold valid values of their declared type.
 
+=item C<function sys.std.Core.Universal.assertion result Universal params {
+is_true(Bool), result(Universal) }>
+
+This function results in the value of its C<result> argument, when its
+C<is_true> argument is C<Bool:true>.  This function will fail if its
+C<is_true> argument is C<Bool:false>.  The purpose of C<assertion> is to
+perform condition assertions in a pure functional context that may be
+better done without the overhead of creating a new constrained data type,
+especially when the assertion is on some fact that is only known after
+performing calculations from multiple function arguments; this can
+potentially be done at compile time as per type constraints.
+
 =back
 
 =head1 SYSTEM-DEFINED GENERIC SCALAR-CONCERNING FUNCTIONS
@@ -770,13 +782,38 @@ C<B>; that is, C<A / B> is shorthand for C<A{X} - ((A{X} join B) - A){X}>.
 
 =back
 
-=head1 SYSTEM-DEFINED CORE GENERIC QUASI- FUNCTIONS
+=head1 SYSTEM-DEFINED GENERIC QUASI- FUNCTIONS
 
-I<This documentation is pending.>
+I<This documentation is pending.  But assume that any necessary quasi-
+routines are like those of their non-quasi counterparts, and that mapping
+functions exist between corresponding quasi- and non-quasi types as well.>
 
-=head1 SYSTEM-DEFINED CORE UPDATERS
+=head1 SYSTEM-DEFINED GENERIC CONTROL FLOW FUNCTIONS
 
-=head2 Generic Universal
+=over
+
+=item C<function sys.std.Core.Control.func_invo result Universal params {
+function(Cat.NameChain), args(QuasiTuple)? }>
+
+This function results in the result of invoking the other function named in
+its C<function> argument when the latter function is curried by its C<args>
+argument; each attribute name of C<args> is mapped to a parameter name of
+the invoked function, and the corresponding attribute value is the
+corresponding argument for the function invocation.  This function will
+fail if the invoked function has any non-optional parameters such that
+there aren't any corresponding attributes in C<args>, or if there are any
+attributes in C<args> that don't have corresponding parameters, or if any
+attribute values aren't of the declared types of the corresponding
+parameters.  The purpose of C<func_invo> is to support invocation of any
+function whose name or parameters potentially aren't known until runtime;
+it forms the foundation of all other system-defined functions that want to
+invoke a function whose name they take as an argument.  The C<args>
+parameter is optional and defaults to the zero-attribute quasi-tuple if no
+explicit argument is given to it.
+
+=back
+
+=head1 SYSTEM-DEFINED GENERIC UNIVERSAL UPDATERS
 
 These update operators are applicable to values of any data type at all.
 
@@ -793,20 +830,37 @@ isn't a subtype of the declared type of the variable behind C<target>.
 
 =back
 
-=head1 SYSTEM-DEFINED CORE SYSTEM SERVICES
+=head1 SYSTEM-DEFINED GENERIC CONTROL FLOW UPDATERS
 
-These system services are applicable to just one or more specific
-system-defined core scalar data type.
+=over
 
-I<This documentation is pending.>
+=item C<updater sys.std.Core.Control.upd_invo update {
+upd_args(QuasiTuple)? } read { updater(Cat.NameChain), ro_args(QuasiTuple)?
+}>
 
-=head1 SYSTEM-DEFINED CORE PROCEDURES
+This update operator has the same purpose and features as
+C<sys.std.Core.Control.func_invo> but that it invokes an updater rather
+than a function; there is no result to deal with, and there are both
+subject-to-update parameters and read-only parameters of the invoked
+updater to bind to; they are bound with the attributes of this updater's
+C<upd_args> and C<ro_args> arguments, respectively.  The C<upd_args> and
+C<ro_args> parameters are optional and default as per the C<args> parameter
+of C<func_invo>.
 
-=head2 Generic Control-Flow Procedures
+=back
+
+=head1 SYSTEM-DEFINED GENERIC CONTROL FLOW PROCEDURES
 
 These procedures are applicable to use in all kinds of procedures.
 
 =over
+
+=item C<procedure sys.std.Core.Control.proc_invo update {
+upd_args(QuasiTuple)? } read { procedure(Cat.NameChain),
+ro_args(QuasiTuple)? }>
+
+This procedure is the same as C<sys.std.Core.Control.upd_invo> but that it
+invokes a procedure rather than an updater.
 
 =item C<procedure sys.std.Core.Control.fail update {} read {
 topic(Cat.Exception) }>
@@ -836,7 +890,7 @@ explicit argument is given to it.
 
 =back
 
-=head1 SYSTEM-DEFINED CORE BOOTLOADER EXCLUSIVES
+=head1 SYSTEM-DEFINED GENERIC BOOTLOADER EXCLUSIVES
 
 These system services may only be invoked directly by a C<bootloader>
 routine.
