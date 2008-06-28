@@ -21,6 +21,18 @@
     Any other catalog types which had attributes of any of the above types
     were also appropriately updated.
 
+    * (Types_Catalog.pod)  Added 4 new catalog types ['IfElseExprNodeSet',
+    'IfThenExprMap', 'GivenWhenDefExprNodeSet', 'WhenThenExprMap'] which
+    collectively define N-way if-else and given-when-default control flow
+    expressions.  This control flow functionality is implemented using
+    special catalog types rather than generically as routines because they
+    carry special short-circuit semantics such that some of their operands
+    are only conditionally evaluated (which isn't true with routines in
+    general), generally because some operands are determining whether we
+    even know it is legal to evaluate some other operands.  Also added 2
+    attributes to the 'ExprNodeSet' catalog type, ['if_else_exprs',
+    'given_when_def_exprs'].
+
     * (Routines.pod)  Renamed or grouped the headings of a few pod
     sections, added a few as well.
 
@@ -33,23 +45,12 @@
     defining superfluous new types with type constraints.
 
     * (Routines.pod)  Added 3 new control-flow routines named
-    'sys.std.Core.Universal.func_invo' and
-    'sys.std.Core.Control.(upd|proc)_invo', each of which takes a routine
-    name as an argument and then invokes it with arguments given as another
-    argument.  These are the fundamental routines over which other routines
-    that want to invoke a routine whose name or parameters they might not
-    know until runtime would do it, such as generic relational restriction
-    or the map or reduction operators or try_catch.
-
-    * (Routines.pod)  Added new function 'sys.std.Core.Bool.if_then_else'
-    which implements the standard triadic 'if' expression.  Note that,
-    unlike most Muldis D functions, 'if_then_else' requires short-circuit
-    semantics to work in the general case.
-
-    * (Routines.pod)  Added new function
-    'sys.std.Core.Relation.given_when_default' which implements the
-    standard switch expression that dispatches based on matching a single
-    value with several options.
+    'sys.std.Core.Control.(func|upd|proc)_invo', each of which takes a
+    routine name as an argument and then invokes it with arguments given as
+    another argument.  These are the fundamental routines over which other
+    routines that want to invoke a routine whose name or parameters they
+    might not know until runtime would do it, such as generic relational
+    restriction or the map or reduction operators or try_catch.
 
 2008-06-24  Darren Duncan <perl@DarrenDuncan.net>
 

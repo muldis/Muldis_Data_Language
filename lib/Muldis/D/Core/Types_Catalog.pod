@@ -71,6 +71,7 @@ more or less:
             sys.std.Core.Type.Cat.UpdBody
             sys.std.Core.Type.Cat.ProcBody
             sys.std.Core.Type.Cat.InnerFuncBody
+            sys.std.Core.Type.Cat.IfThenExprMap
             sys.std.Core.Type.Cat.InnerUpdBody
             sys.std.Core.Type.Cat.InnerProcBody
             sys.std.Core.Type.Cat.ProcStmt
@@ -117,6 +118,9 @@ more or less:
             sys.std.Core.Type.Cat.TupLitExprNodeSet
             sys.std.Core.Type.Cat.RelLitExprNodeSet
             sys.std.Core.Type.Cat.FuncInvoExprNodeSet
+            sys.std.Core.Type.Cat.IfElseExprNodeSet
+            sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
+            sys.std.Core.Type.Cat.WhenThenExprMap
             sys.std.Core.Type.Cat.MultiUpdStmt
             sys.std.Core.Type.Cat.Inner(Sca|Nonsca|Uni|Restr)TypeSet
             sys.std.Core.Type.Cat.PossrepSet
@@ -934,7 +938,7 @@ contains.
 
 These are all the definitions that this package contains of (|quasi-)scalar
 types with possreps, and complete (|quasi-)nonscalar types, and union
-types, and restriction types
+types, and restriction types.
 
 =item C<data> - C<single_of.Cat.DbVar>
 
@@ -1381,7 +1385,7 @@ for a subject-to-update parameter of an (|inner )update operator call; in
 that case the leaf nodes / only node of the expression must map to a
 subject-to-update parameter of the containing (|inner )update operator.
 
-A C<Cat.ExprNodeSet> has these 5 attributes:
+A C<Cat.ExprNodeSet> has these 7 attributes:
 
 =over
 
@@ -1408,6 +1412,15 @@ These are expression nodes that define (|quasi-)relation literals.
 =item C<func_invo_exprs> - C<Cat.FuncInvoExprNodeSet>
 
 These are expression nodes that invoke (|inner )functions.
+
+=item C<if_else_exprs> - C<Cat.IfElseExprNodeSet>
+
+These are expression nodes that represent if-else control flow expressions.
+
+=item C<given_when_def_exprs> - C<Cat.GivenWhenDefExprNodeSet>
+
+These are expression nodes that represent given-when-default control flow
+expressions.
 
 =back
 
@@ -1591,6 +1604,139 @@ local expression node which defines the value.
 
 A C<Cat.FuncInvoExprNodeSet> has a unary (unique) key on the C<name>
 attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.IfElseExprNodeSet
+
+A C<Cat.IfElseExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents an N-way if-else control flow
+expression.
+
+The reason that the C<Cat.IfElseExprNodeSet> expression node type exists,
+rather than this functionality being provided by an ordinary function
+invocation, is because the semantics of an if-else expression require its
+sub-expressions to be evaluated in a specific sequence and that later
+elements in the sequence are evaluated only conditionally based on the
+results of earlier elements in the sequence, whereas with ordinary
+functions the operands are all independent of each other, can be done in
+any order, and can all be evaluated prior to the function.  The main
+scenario that requires the special semantics is when an earlier conditional
+part of the sequence is testing whether it is even logically possible to
+evaluate a later part of the sequence; for example, the first condition may
+test if a value is a member of a certain data type, and a later part of the
+sequence may want to use some operator on the value that is only defined
+for the certain data type (invoking it on something else would result in a
+failure/exception); so only known-safe/appropriate expressions then get
+evaluated.
+
+A C<Cat.IfElseExprNodeSet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<if_then> - C<array_of.Cat.IfThenExprMap>
+
+This is a sequence of 0..N conditional expressions, each of which has an
+associated result expression.  Each conditional expression will evaluate in
+order while the previous conditional resulted in C<Bool:false>; once a
+conditional results in C<Bool:true>, its associated result expression will
+evaluate and be the result of the larger if-else sequence, and no more
+conditionals will be evaluated; no result expressions will be evaluated
+except the one with the true conditional.
+
+=item C<else> - C<Cat.NameChain>
+
+Iff none of the conditionals in C<if_then> result in C<Bool:true> (or as a
+trivial case, if C<if_then> is an empty sequence), then the result
+expression represented by the local expression node (or parameter) named by
+C<else> will be evaluated, and be the result of the larger if-else.
+
+=back
+
+A C<Cat.IfElseExprNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.IfThenExprMap
+
+A C<Cat.IfThenExprMap> is a C<Tuple>.  It defines an element of an if-else
+sequential expression.  A C<Cat.IfThenExprMap> has 2 attributes, C<if> and
+C<then>, each of which is a C<Cat.NameChain>; C<if> and C<then> each have
+the name of a local expression node (or parameter); the C<if> node is the
+condition to evaluate; if that condition evaluates to C<Bool:true>, then
+the C<then> node is evaluated and its result is the result of the whole
+if-else block; otherwise, C<then> is not evaluated.  Its default value
+references a parameter named C<topic> in both attributes.
+
+=head2 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
+
+A C<Cat.GivenWhenDefExprNodeSet> is a C<Relation> that specifies a set of
+value expression nodes where each node represents an N-way
+given-when-default switch control flow expression that dispatches based
+on matching a single value with several options.
+
+A C<Cat.GivenWhenDefExprNodeSet> is essentially a more specialized version
+of a C<Cat.IfElseExprNodeSet> where every condition expression is a simple
+value equality test and one of the operands is the same for all the
+conditions in the set; also, with a given-when-default it doesn't matter
+what order the conditionals are tested to find a true resulting one.
+
+A C<Cat.GivenWhenDefExprNodeSet> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<given> - C<Cat.NameChain>
+
+This is the single operand value that is common to all the conditions; it
+is the control value for the expression.
+
+=item C<when_then> - C<Cat.WhenThenExprMap>
+
+This is a set of distinct condition operand values, each of which has an
+associated result expression.  If a condition operand matches the value of
+C<given>, its associated result expression will evaluate and be the result
+of the larger if-else sequence; no result expressions will be evaluated
+except the one with the matching conditional operand.
+
+=item C<default> - C<Cat.NameChain>
+
+Iff none of the condition operand values in C<when_then> matches the value
+of C<given> (or as a trivial case, if C<when_then> has no tuples), then the
+result expression represented by the local expression node (or parameter)
+named by C<default> will be evaluated, and be the result of the larger
+given-when-default.
+
+=back
+
+A C<Cat.GivenWhenDefExprNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.WhenThenExprMap
+
+A C<Cat.WhenThenExprMap> is a C<Relation>.  It defines a set of dispatch
+options for a given-when-default expression.  A C<Cat.WhenThenExprMap> has
+2 attributes, C<when> and C<then>, each of which is a C<Cat.NameChain>;
+C<when> and C<then> each have the name of a local expression node (or
+parameter); the C<when> node is the not-common / distinct operand for each
+condition; if a C<when> value is matched, then the C<then> node is
+evaluated and its result is the result of the whole given-when-default
+block; otherwise, C<then> is not evaluated.  Its default value has zero
+tuples.
 
 =head2 sys.std.Core.Type.Cat.InnerUpdBody
 
