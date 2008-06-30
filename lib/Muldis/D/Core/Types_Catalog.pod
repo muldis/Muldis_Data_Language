@@ -71,16 +71,15 @@ more or less:
             sys.std.Core.Type.Cat.UpdBody
             sys.std.Core.Type.Cat.ProcBody
             sys.std.Core.Type.Cat.InnerFuncBody
-            sys.std.Core.Type.Cat.IfThenExprMap
             sys.std.Core.Type.Cat.InnerUpdBody
             sys.std.Core.Type.Cat.InnerProcBody
-            sys.std.Core.Type.Cat.ProcStmt
             sys.std.Core.Type.Cat.Type
             sys.std.Core.Type.Cat.InnerScalarType
             sys.std.Core.Type.Cat.InnerNonscalarType
             sys.std.Core.Type.Cat.InnerUnionType
             sys.std.Core.Type.Cat.InnerRestrType
             sys.std.Core.Type.Cat.DbVar
+            sys.std.Core.Type.Cat.IfThenMap
 
             sys.std.Core.Type.Database
 
@@ -92,6 +91,7 @@ more or less:
                 sys.std.Core.Type.Cat.Depot
                 sys.std.Core.Type.Cat.Package
                 sys.std.Core.Type.Cat.ExprNodeSet
+                sys.std.Core.Type.Cat.StmtNodeSet
                 sys.std.Core.Type.Cat.InnerTypeSet
 
         sys.std.Core.Type.Relation
@@ -120,8 +120,11 @@ more or less:
             sys.std.Core.Type.Cat.FuncInvoExprNodeSet
             sys.std.Core.Type.Cat.IfElseExprNodeSet
             sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
-            sys.std.Core.Type.Cat.WhenThenExprMap
             sys.std.Core.Type.Cat.MultiUpdStmt
+            sys.std.Core.Type.Cat.CompoundStmtNodeSet
+            sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
+            sys.std.Core.Type.Cat.IfElseStmtNodeSet
+            sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
             sys.std.Core.Type.Cat.Inner(Sca|Nonsca|Uni|Restr)TypeSet
             sys.std.Core.Type.Cat.PossrepSet
             sys.std.Core.Type.Cat.PossrepMapSet
@@ -133,6 +136,7 @@ more or less:
             sys.std.Core.Type.Cat.NameTypeMap
             sys.std.Core.Type.Cat.NameExprMap
             sys.std.Core.Type.Cat.AttrRenameMap
+            sys.std.Core.Type.Cat.WhenThenMap
 
 =head1 SIMPLE GENERIC SCALAR TYPES
 
@@ -1641,7 +1645,7 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<if_then> - C<array_of.Cat.IfThenExprMap>
+=item C<if_then> - C<array_of.Cat.IfThenMap>
 
 This is a sequence of 0..N conditional expressions, each of which has an
 associated result expression.  Each conditional expression will evaluate in
@@ -1662,17 +1666,6 @@ C<else> will be evaluated, and be the result of the larger if-else.
 
 A C<Cat.IfElseExprNodeSet> has a unary (unique) key on the C<name>
 attribute.  Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.IfThenExprMap
-
-A C<Cat.IfThenExprMap> is a C<Tuple>.  It defines an element of an if-else
-sequential expression.  A C<Cat.IfThenExprMap> has 2 attributes, C<if> and
-C<then>, each of which is a C<Cat.NameChain>; C<if> and C<then> each have
-the name of a local expression node (or parameter); the C<if> node is the
-condition to evaluate; if that condition evaluates to C<Bool:true>, then
-the C<then> node is evaluated and its result is the result of the whole
-if-else block; otherwise, C<then> is not evaluated.  Its default value
-references a parameter named C<topic> in both attributes.
 
 =head2 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
 
@@ -1705,7 +1698,7 @@ the expression node (sub-)tree it is the root of.
 This is the single operand value that is common to all the conditions; it
 is the control value for the expression.
 
-=item C<when_then> - C<Cat.WhenThenExprMap>
+=item C<when_then> - C<Cat.WhenThenMap>
 
 This is a set of distinct condition operand values, each of which has an
 associated result expression.  If a condition operand matches the value of
@@ -1726,18 +1719,6 @@ given-when-default.
 A C<Cat.GivenWhenDefExprNodeSet> has a unary (unique) key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.WhenThenExprMap
-
-A C<Cat.WhenThenExprMap> is a C<Relation>.  It defines a set of dispatch
-options for a given-when-default expression.  A C<Cat.WhenThenExprMap> has
-2 attributes, C<when> and C<then>, each of which is a C<Cat.NameChain>;
-C<when> and C<then> each have the name of a local expression node (or
-parameter); the C<when> node is the not-common / distinct operand for each
-condition; if a C<when> value is matched, then the C<then> node is
-evaluated and its result is the result of the whole given-when-default
-block; otherwise, C<then> is not evaluated.  Its default value has zero
-tuples.
-
 =head2 sys.std.Core.Type.Cat.InnerUpdBody
 
 A C<Cat.InnerUpdBody> is a C<Tuple>.  It specifies the entire body or
@@ -1757,7 +1738,7 @@ This is an optional programmer comment about the (|inner )updater body.
 
 This defines the expression trees that are arguments to the update
 operators that C<stmt> invokes.  These expression trees must reference all
-of the parameters that the inner update operator has.
+of the read-only parameters that the inner update operator has.
 
 =item C<stmt> - C<Cat.MultiUpdStmt>
 
@@ -1852,41 +1833,124 @@ This is an optional programmer comment about the (|inner )procedure body.
 This defines the 0..N (non-parameter) lexical variables of the (|inner
 )procedure; they initialize to the default values of their declared types.
 
-=item C<stmts> - C<array_of.Cat.ProcStmt>
+=item C<stmt> - C<Cat.StmtNodeSet>
 
-This defines the entire main body of the (|inner )procedure, which is
-composed of 0..N procedure statements.  These statements must reference all
-of the parameters and lexical variables that the (|inner )procedure has.
+This defines the statement tree that comprises the entire (|inner
+)procedure body.
 
 =back
 
-There is a distributed (unique) key over the C<name> attributes of all the
-attributes of C<vars>; and if this C<Cat.InnerProcBody> is paired with a
-C<Cat.ProcHead>, then the distributed key also extends over the head's
-parameter names.
+There is a distributed (unique) key over the C<name> attribute of C<vars>
+and the C<name> attributes of all the attributes of C<stmt>; and if this
+C<Cat.InnerProcBody> is paired with a C<Cat.ProcHead>, then the distributed
+key also extends over the head's parameter names.
+
+A C<Cat.InnerProcBody> specifies a simple statement tree of named statement
+nodes, each of which is a tuple of one of its C<stmt.\w+_stmts> attributes.
+If it has zero member nodes, then the (|inner )procedure is a no-op.
+Otherwise:  All member nodes must define a simple statement node tree, such
+that every member except one (which is the root node) has one of its peers
+as a parent node, and no direct cycles between members are permitted (only
+indirect cycles based on (|inner )procedure invocations are allowed); the
+name of the root node must be the empty string.  Note that the
+composed-into (|inner )procedure's parameters are also implicitly tree
+nodes, and are referenced by name into the statement tree the same way as
+any other named statement node is.  The statement tree should reference all
+of the parameters and lexical variables that the (|inner )procedure has,
+but this isn't a strict requirement.
 
 The default value of C<Cat.InnerProcBody> directly corresponds to the
-default value of C<Cat.ProcHead> and is a no-op, having zero statements.
+default value of C<Cat.ProcHead> and is a no-op, having an empty statement
+tree.
 
-=head2 sys.std.Core.Type.Cat.ProcStmt
+=head2 sys.std.Core.Type.Cat.StmtNodeSet
 
-A C<Cat.ProcStmt> is a C<Tuple>.  It specifies a generic statement from
-which non-implicitly-atomic procedural Muldis D code is composed.  Only
-(|inner )procedure may contain C<Cat.ProcStmt>.
+A C<Cat.StmtNodeSet> is a C<Database> that specifies a set of named
+statement nodes.  It is typically composed into a (|inner )procedure.  Each
+tuple of a C<Cat.StmtNodeSet> attribute is a named statement node, from
+which non-implicitly-atomic procedural Muldis D code is composed.
 
-A C<Cat.ProcStmt> has these 4 attributes:
+A C<Cat.StmtNodeSet> has these 4 attributes:
 
 =over
 
+=item C<compound_stmts> - C<Cat.CompoundStmtNodeSet>
+
+These are statement nodes that each represent a compound statement having a
+sequence of 0..N procedure statements.
+
+=item C<proc_invo_stmts> - C<Cat.ProcInvoStmtNodeSet>
+
+These are statement nodes that invoke (|inner )procedures.
+
+=item C<if_else_stmts> - C<Cat.IfElseStmtNodeSet>
+
+These are statement nodes that represent if-else control flow statements.
+
+=item C<given_when_def_stmts> - C<Cat.GivenWhenDefStmtNodeSet>
+
+These are statement nodes that represent given-when-default control flow
+statements.
+
+=back
+
+There is a distributed (unique) key over the C<name> attributes of all of a
+C<Cat.StmtNodeSet>'s attributes.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.CompoundStmtNodeSet
+
+A C<Cat.CompoundStmtNodeSet> is a C<Relation> that specifies a set of
+statement nodes where each node is a compound statement composed of a
+sequence of 0..N other statements.
+
+A C<Cat.CompoundStmtNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the statement node.
+
 =item C<comment> - C<Cat.Comment>
 
-This is an optional programmer comment about the statement as a whole.
+This is an optional programmer comment about either the statement node or
+the statement node (sub-)tree it is the root of.
+
+=item C<stmts> - C<array_of.Cat.NameChain>
+
+This is a sequence of names of 0..N other local statement nodes; the
+current compound statement consists of having those other statements
+execute in this given sequence.
+
+=back
+
+A C<Cat.CompoundStmtNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
+
+A C<Cat.ProcInvoStmtNodeSet> is a C<Relation> that specifies a set of
+statement nodes where each node is an invocation of some other procedural
+routine (eg, procedure, update operator, system service, 'inner' variant)
+with specific arguments.  The invoked routine can be either user-defined or
+system-defined.
+
+A C<Cat.ProcInvoStmtNodeSet> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the statement node or
+the statement node (sub-)tree it is the root of.
 
 =item C<procedure> - C<Cat.NameChain>
 
-Every procedure statement is an invocation of some other procedural routine
-(eg, procedure, update operator, system service), either user-defined or
-system-defined; this is the name of that routine.
+This is the name of the procedural routine being invoked.
 
 =item C<upd_args> - C<Cat.NameExprMap>
 
@@ -1903,12 +1967,106 @@ value.
 
 =back
 
-There is a distributed (unique) key over the C<name> attributes of
-C<upd_args> and C<ro_args>.
+A C<Cat.ProcInvoStmtNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.  There is a distributed (unique)
+key over the C<name> attributes of C<upd_args> and C<ro_args>.
 
-The default value of C<Cat.ProcStmt> will invoke
-C<sys.std.Core.Universal.assign>, giving it arguments from same-named and
-typed parameters.
+=head2 sys.std.Core.Type.Cat.IfElseStmtNodeSet
+
+A C<Cat.IfElseStmtNodeSet> is a C<Relation> that specifies a set of
+statement nodes where each node represents an N-way if-else control flow
+statement.  A C<Cat.IfElseStmtNodeSet> is essentially the imperative
+version of the functional C<Cat.IfElseExprNodeSet>, except that for design
+simplicity, all of the conditionals need to be pre-evaluated and their
+boolean results stored in variables (but this could be a lazy though still
+necessarily deterministic operation, so work isn't actually done if the
+results aren't needed); if any conditionals could only be conditionally
+evaluated, then the necessary logic means this if-else statement must be
+broken up into multiple nested if-else.
+
+A C<Cat.IfElseStmtNodeSet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the statement node or
+the statement node (sub-)tree it is the root of.
+
+=item C<if_then> - C<array_of.Cat.IfThenMap>
+
+This is a sequence of 0..N conditional result variable names, each of which
+has an associated statement.  Each conditional result will be tested in
+order while the previous conditional result is C<Bool:false>; once a
+conditional result is C<Bool:true>, its associated statement will be
+invoked; no statements will be invoked except the one with the true
+conditional result.
+
+=item C<else> - C<maybe_of.Cat.NameChain>
+
+Iff none of the conditional results in C<if_then> is C<Bool:true> (or as a
+trivial case, if C<if_then> is an empty sequence), then the statement
+represented by the local statement node named by C<else> will be invoked
+iff C<else> is a C<Single>; if under the first circumstance C<else> is a
+C<Nothing>, then the whole if-else will have been a no-op.
+
+=back
+
+A C<Cat.IfElseStmtNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
+
+A C<Cat.GivenWhenDefStmtNodeSet> is a C<Relation> that specifies a set of
+statement nodes where each node represents an N-way given-when-default
+switch control flow statement that dispatches based on matching a single
+value with several options.  A C<Cat.GivenWhenDefStmtNodeSet> is
+essentially the imperative version of the functional
+C<Cat.GivenWhenDefExprNodeSet>.
+
+A C<Cat.GivenWhenDefStmtNodeSet> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the statement node or
+the statement node (sub-)tree it is the root of.
+
+=item C<given> - C<Cat.NameChain>
+
+This is name of the local parameter or variable that supplies the single
+operand value that is common to all the conditions; it is the control value
+for the statement.
+
+=item C<when_then> - C<Cat.WhenThenMap>
+
+This is a set of distinct condition operand values, each of which has an
+associated statement.  If a condition operand matches the value of
+C<given>, its associated statement will be invoked; no statements will be
+invoked except the one with the matching conditional operand.
+
+=item C<default> - C<maybe_of.Cat.NameChain>
+
+Iff none of the condition operand values in C<when_then> matches the value
+of C<given> (or as a trivial case, if C<when_then> has no tuples), then the
+statement represented by the local statement node named by C<default> will
+be invoked iff C<default> is a C<Single>; if under the first circumstance
+C<default> is a C<Nothing>, then the whole given-when-default will have
+been a no-op.
+
+=back
+
+A C<Cat.GivenWhenDefStmtNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING DATA TYPES
 
@@ -2709,6 +2867,38 @@ A C<Cat.AttrRenameMap> is a C<Relation>.  It is used as a specification for
 how to rename attributes of some collection.  A C<Cat.AttrRenameMap> has 2
 attributes, C<before> and C<after>, each of those being a C<Cat.Name>, and
 each of those being a unary key.  Its default value has zero tuples.
+
+=head2 sys.std.Core.Type.Cat.IfThenMap
+
+A C<Cat.IfThenMap> is a C<Tuple>.  It defines an element of an if-else
+sequential expression or statement.  A C<Cat.IfThenMap> has 2 attributes,
+C<if> and C<then>, each of which is a C<Cat.NameChain>; C<if> has the name
+of a local expression node (or parameter or variable), and C<then> in the
+case of an if-else expression has likewise, or in the case of an if-else
+statement has the name of a statement node.  For an if-else expression, the
+C<if> node is the condition to evaluate; if that condition evaluates to
+C<Bool:true>, then the C<then> node is evaluated and its result is the
+result of the whole if-else expression; otherwise, C<then> is not
+evaluated.  For an if-else statement, the C<if> node is the conditional
+result variable name; if that conditional result is C<Bool:true>, then the
+C<then> statement node is invoked; otherwise, C<then> is not invoked.  Its
+default value has the default value of the C<Cat.NameChain> type in both
+attributes.
+
+=head2 sys.std.Core.Type.Cat.WhenThenMap
+
+A C<Cat.WhenThenMap> is a C<Relation>.  It defines a set of dispatch
+options for a given-when-default expression or statement.  A
+C<Cat.WhenThenMap> has 2 attributes, C<when> and C<then>, each of which is
+a C<Cat.NameChain>; C<when> has the name of a local expression node (or
+parameter or variable), and C<then> in the case of a g-w-d expression has
+likewise, or in the case of a g-w-d statement has the name of a statement
+node.  The C<when> node is the not-common / distinct operand for each
+condition.  For a g-w-d expression, if a C<when> value is matched, then the
+C<then> node is evaluated and its result is the result of the whole g-w-d
+expression; otherwise, C<then> is not evaluated.  For a g-w-d statement, if
+a C<when> value is matched, then the C<then> statement node is invoked;
+otherwise, C<then> is not invoked.  Its default value has zero tuples.
 
 =head1 SEE ALSO
 
