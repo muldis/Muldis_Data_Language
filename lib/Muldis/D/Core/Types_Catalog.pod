@@ -121,6 +121,7 @@ more or less:
             sys.std.Core.Type.Cat.IfElseExprNodeSet
             sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
             sys.std.Core.Type.Cat.MultiUpdStmt
+            sys.std.Core.Type.Cat.LeaveStmtNodeSet
             sys.std.Core.Type.Cat.CompoundStmtNodeSet
             sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
             sys.std.Core.Type.Cat.IfElseStmtNodeSet
@@ -1870,9 +1871,13 @@ statement nodes.  It is typically composed into a (|inner )procedure.  Each
 tuple of a C<Cat.StmtNodeSet> attribute is a named statement node, from
 which non-implicitly-atomic procedural Muldis D code is composed.
 
-A C<Cat.StmtNodeSet> has these 4 attributes:
+A C<Cat.StmtNodeSet> has these 5 attributes:
 
 =over
+
+=item C<leave_stmts> - C<Cat.LeaveStmtNodeSet>
+
+These are statement nodes that represent abnormal block exit statements.
 
 =item C<compound_stmts> - C<Cat.CompoundStmtNodeSet>
 
@@ -1896,6 +1901,41 @@ statements.
 
 There is a distributed (unique) key over the C<name> attributes of all of a
 C<Cat.StmtNodeSet>'s attributes.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.LeaveStmtNodeSet
+
+A C<Cat.LeaveStmtNodeSet> is a C<Relation> that specifies a set of
+statement leaf nodes where each node represents an instruction to
+abnormally exit the block defined by a parent statement node (a normal exit
+is to simply execute to the end of the block).  If the parent node in
+question is the root statement node for the containing (|inner )procedure,
+then the latter will be exited; this is how a "return" statement is
+represented, but "return" is still easy to recognize because the root node
+always has the empty string as its name.
+
+A C<Cat.LeaveStmtNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the statement leaf node.
+
+=item C<leave> - C<Cat.NameChain>
+
+This is the name of the parent statement node we wish to abnormally exit;
+note that this reference does not count as making the other node a child of
+the current one, so this reference does not contribute to a cycle.
+
+=back
+
+A C<Cat.LeaveStmtNodeSet> has a unary (unique) key on the C<name>
+attribute, plus another such key on the C<leave> attribute.  Its default
+value is empty.
 
 =head2 sys.std.Core.Type.Cat.CompoundStmtNodeSet
 
