@@ -126,6 +126,8 @@ more or less:
             sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
             sys.std.Core.Type.Cat.IfElseStmtNodeSet
             sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
+            sys.std.Core.Type.Cat.IterateStmtNodeSet
+            sys.std.Core.Type.Cat.LoopStmtNodeSet
             sys.std.Core.Type.Cat.Inner(Sca|Nonsca|Uni|Restr)TypeSet
             sys.std.Core.Type.Cat.PossrepSet
             sys.std.Core.Type.Cat.PossrepMapSet
@@ -1871,7 +1873,12 @@ statement nodes.  It is typically composed into a (|inner )procedure.  Each
 tuple of a C<Cat.StmtNodeSet> attribute is a named statement node, from
 which non-implicitly-atomic procedural Muldis D code is composed.
 
-A C<Cat.StmtNodeSet> has these 5 attributes:
+Note that, regarding Muldis D's feature of a statement node having an
+explicit C<name> that can be referenced by "leave" and "iterate" control
+flow statements to leave or re-iterate the corresponding block, both SQL
+and Perl have native counterpart features in the form of block labels.
+
+A C<Cat.StmtNodeSet> has these 7 attributes:
 
 =over
 
@@ -1897,6 +1904,14 @@ These are statement nodes that represent if-else control flow statements.
 These are statement nodes that represent given-when-default control flow
 statements.
 
+=item C<iterate_stmts> - C<Cat.IterateStmtNodeSet>
+
+These are statement nodes that represent abnormal block restart statements.
+
+=item C<loop_stmts> - C<Cat.LoopStmtNodeSet>
+
+These are statement nodes that represent generic looping block statements.
+
 =back
 
 There is a distributed (unique) key over the C<name> attributes of all of a
@@ -1911,7 +1926,9 @@ is to simply execute to the end of the block).  If the parent node in
 question is the root statement node for the containing (|inner )procedure,
 then the latter will be exited; this is how a "return" statement is
 represented, but "return" is still easy to recognize because the root node
-always has the empty string as its name.
+always has the empty string as its name.  If the parent node in question is
+an iterating or looping statement, then any remaining iterations it might
+have had are skipped, especially useful if it was an infinite loop.
 
 A C<Cat.LeaveStmtNodeSet> has these 3 attributes:
 
@@ -2107,6 +2124,71 @@ been a no-op.
 
 A C<Cat.GivenWhenDefStmtNodeSet> has a unary (unique) key on the C<name>
 attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.IterateStmtNodeSet
+
+A C<Cat.IterateStmtNodeSet> is a C<Relation> that specifies a set of
+statement leaf nodes where each node represents an instruction to
+abnormally end the current iteration of a looping block defined by a parent
+statement node, and then start at the beginning of the next iteration of
+that loop if there are any left ("normal" is to simply execute to the end
+of the block before starting the next iteration).  The same semantics apply
+for the beginning of the next loop as if the current block iteration had
+executed to the end before repeating.
+
+A C<Cat.IterateStmtNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the statement leaf node.
+
+=item C<iterate> - C<Cat.NameChain>
+
+This is the name of the parent statement node we wish to abnormally exit
+and restart; note that this reference does not count as making the other
+node a child of the current one, so this reference does not contribute to a
+cycle.
+
+=back
+
+A C<Cat.IterateStmtNodeSet> has a unary (unique) key on the C<name>
+attribute, plus another such key on the C<iterate> attribute.  Its default
+value is empty.
+
+=head2 sys.std.Core.Type.Cat.LoopStmtNodeSet
+
+A C<Cat.LoopStmtNodeSet> is a C<Relation> that specifies a set of statement
+nodes where each node represents a generic looping statement block which
+iterates until a child "leave" statement executes.
+
+A C<Cat.LoopStmtNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about either the statement node or
+the statement node (sub-)tree it is the root of.
+
+=item C<do> - C<Cat.NameChain>
+
+This is the name of the local statement node that will get executed for
+each iteration of the loop; typically it has a sub-tree of statement nodes.
+
+=back
+
+A C<Cat.LoopStmtNodeSet> has a unary (unique) key on the C<name> attribute.
+Its default value is empty.
 
 =head1 TYPES FOR DEFINING DATA TYPES
 
