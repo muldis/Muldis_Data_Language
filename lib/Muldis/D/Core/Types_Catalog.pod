@@ -136,6 +136,9 @@ more or less:
             sys.std.Core.Type.Cat.DistribKeySet
             sys.std.Core.Type.Cat.DKMemRelAttrMap
             sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
+            sys.std.Core.Type.Cat.ForeignKeySet
+            sys.std.Core.Type.Cat.ForeignDistribKeySet
+            sys.std.Core.Type.Cat.FKChildAttrParentAttrMap
             sys.std.Core.Type.Cat.NameTypeMap
             sys.std.Core.Type.Cat.NameExprMap
             sys.std.Core.Type.Cat.AttrRenameMap
@@ -2581,15 +2584,48 @@ if the cardinalities are equal.
 
 =item C<distrib_keys> - C<Cat.DistribKeySet>
 
-These are the 0..N explicit simple distributed keys that are applicable to
-tuple/database values of the type being defined, that range over specified
-relation-typed attributes of it.  Note that C<distrib_keys> is logically an
+These are the 0..N explicit simple distributed (unique) keys that are
+applicable to tuple/database values of the type being defined, that range
+over specified relation-typed attributes of it.  Note that C<distrib_keys>
+is logically an abstraction syntax (the canonical simplest form) for a
+particular kind of C<tuple_constraint> of the type being defined, one that
+compares the cardinality of the union of the projection of distributed key
+attributes of all key-participating relation-valued attributes, with the
+sum of cardinalities of the source relation-valued attributes; the
+attribute values comprise a distributed key if the cardinalities are equal.
+
+=item C<foreign_keys> - C<Cat.ForeignKeySet>
+
+These are the 0..N explicit simple foreign (non-distributed) keys that are
+applicable to tuple/database values of the type being defined, that range
+over and relate tuples of specified relation-typed attributes of it; they
+are a kind of referential constraint.  Each tuple of a child attribute must
+have a corresponding tuple in a specific single parent attribute, where
+they correspond on the attributes of the parent attribute that comprise a
+(unique) key of the latter.  Note that C<foreign_keys> is logically an
 abstraction syntax (the canonical simplest form) for a particular kind of
-C<tuple_constraint> of the type being defined, one that compares the
-cardinality of the union of the projection of distributed key attributes of
-all key-participating relation-valued attributes, with the sum of
-cardinalities of the source relation-valued attributes; the attribute
-values comprise a distributed key if the cardinalities are equal.
+C<tuple_constraint> of the type being defined, one that tests if the
+relational difference, where a projection of the parent relation is
+subtracted from a corresponding projection of the child relation (with
+attribute renaming if necessary), is an empty relation; if the difference
+is an empty relation, then the foreign key is satisfied; otherwise, any
+difference tuples are from child tuples that violate the foreign key.
+
+=item C<foreign_distrib_keys> - C<Cat.ForeignDistribKeySet>
+
+These are the 0..N explicit simple foreign distributed keys that are
+applicable to tuple/database values of the type being defined, that range
+over and relate tuples of specified relation-typed attributes of it; they
+are a kind of referential constraint.  Each tuple of a child attribute must
+have a corresponding tuple in one member of a specific set of
+parent-alternative attributes (that have a distributed key ranging over
+them), where they correspond on the attributes of the parent-alternative
+attribute that comprise a distributed key on the latter.  Note that
+C<foreign_distrib_keys> is logically an abstraction syntax (the canonical
+simplest form) for a particular kind of C<tuple_constraint> of the type
+being defined; it is as per C<foreign_keys> except that the parent relation
+is the result of unioning appropriately renamed projections of the member
+relations of the distributed key.
 
 =item C<default_tuple> - C<Cat.InnerFuncBody>
 
@@ -2778,6 +2814,114 @@ a distributed key, to the same number of attributes of the distributed key
 itself.  A C<Cat.DKRelAttrKeyAttrMap> has 2 attributes, C<rel_attr> and
 C<key_attr>, each of those being a C<Cat.Name>, and each of those being a
 unary key.  Its default value has zero tuples.
+
+=head2 sys.std.Core.Type.Cat.ForeignKeySet
+
+A C<Cat.ForeignKeySet> is a C<Relation> that specifies a set of foreign
+(non-distributed) keys over relation-valued attributes of a tuple/database;
+each tuple specifies one foreign key, which is a kind of referential
+constraint, that relates tuples of such attributes.  Each tuple of a child
+attribute must have a corresponding tuple in a specific single parent
+attribute, where they correspond on the attributes of the parent attribute
+that comprise a (unique) key of the latter.  Note that it is valid to
+define a foreign key involving zero attributes, but its effect would be a
+no-op / a constraint that rejects nothing.
+
+A C<Cat.ForeignKeySet> has these 6 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the foreign key.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the foreign key as a whole.
+
+=item C<parent> - C<Cat.Name>
+
+This is the name of the relation-valued attribute that is the parent in the
+foreign (non-distributed) key relationship.
+
+=item C<parent_key> - C<Cat.Name>
+
+This is the name of the explicitly declared candidate key or unique key
+constraint of C<parent> which defines the attributes of C<parent> that are
+being matched on in the foreign key.
+
+=item C<child> - C<Cat.Name>
+
+This is the name of the relation-valued attribute that is the child in the
+foreign (non-distributed) key relationship.
+
+=item C<attr_map> - C<Cat.FKChildAttrParentAttrMap>
+
+This maps 0..N attributes of the child relation with the same number of
+attributes of the parent relation; the mapped attribute names may or may
+not be the same.
+
+=back
+
+A C<Cat.ForeignKeySet> has a unary (unique) key on the C<name> attribute.
+Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.ForeignDistribKeySet
+
+A C<Cat.ForeignDistribKeySet> is a C<Relation> that specifies a set of
+foreign distributed keys over relation-valued attributes of a
+tuple/database; each tuple specifies one foreign key, which is a kind of
+referential constraint, that relates tuples of such attributes.  Each tuple
+of a child attribute must have a corresponding tuple in one member of a
+specific set of parent-alternative attributes (that have a distributed key
+ranging over them), where they correspond on the attributes of the
+parent-alternative attribute that comprise a distributed key on the latter.
+Note that it is valid to define a foreign key involving zero attributes,
+but its effect would be a no-op / a constraint that rejects nothing.
+
+A C<Cat.ForeignDistribKeySet> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the foreign key.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the foreign key as a whole.
+
+=item C<parent_distrib_key> - C<Cat.Name>
+
+This is the name of the explicitly declared distributed (unique) key that
+is the parent in the foreign distributed key relationship; it defines by
+proxy the attributes that are being matched on in the foreign key.
+
+=item C<child> - C<Cat.Name>
+
+This is the name of the relation-valued attribute that is the child in the
+foreign distributed key relationship.
+
+=item C<attr_map> - C<Cat.FKChildAttrParentAttrMap>
+
+This maps 0..N attributes of the child relation with the same number of
+attributes of the parent distributed key; the mapped attribute names may or
+may not be the same.
+
+=back
+
+A C<Cat.ForeignDistribKeySet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.FKChildAttrParentAttrMap
+
+A C<Cat.FKChildAttrParentAttrMap> is a C<Relation>.  It maps 0..N
+attributes of a child relation-valued attribute of a host tuple/database
+type participating in a foreign non-distributed or distributed key, to the
+same number of attributes of a parent such attribute or a distributed key
+of the host.  A C<Cat.FKChildAttrParentAttrMap> has 2 attributes,
+C<child_attr> and C<parent_attr>, each of those being a C<Cat.Name>, and
+each of those being a unary key.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.InnerUnionType
 
