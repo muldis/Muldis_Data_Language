@@ -2489,7 +2489,7 @@ Note that you can not use a C<Cat.InnerNonscalarType> to declare or
 subtype an incomplete type, as it (or its supertype) must specify a
 complete set of attributes.
 
-A C<Cat.InnerNonscalarType> has these 11 attributes:
+A C<Cat.InnerNonscalarType> has these 14 attributes:
 
 =over
 
@@ -2538,6 +2538,13 @@ override is done using matching C<name> attribute values of C<attrs>.  It
 is indeed valid for a (|quasi-)nonscalar type to have zero attributes; in
 this case, a tuple type consists of exactly one value, and a relation type
 consists of exactly two values.
+
+=item C<virtual_attr_maps> - C<Cat.VirtualAttrMapSet>
+
+This defines the proper subset of this type's attributes that are virtual,
+and how they are defined in terms of the rest of this type's attributes.
+Note that the special functional dependencies between attributes defined
+herein mean that some kinds of tuple constraints would be redundant.
 
 =item C<tuple_constraints> - C<Cat.ConstraintSet>
 
@@ -2644,11 +2651,130 @@ type whose declaration it is part of.
 =back
 
 There is a distributed (unique) key over the C<name> attributes of
-C<(tuple|relation)_constraint> and C<keys> and C<distrib_keys>.
+C<(tuple|relation)_constraint> and C<(|foreign_)(|distrib_)keys>.
 
 The default value of C<Cat.InnerNonscalarType> defines a relation type that
 is the same as C<RelationD0>, having zero attributes, whose default value
 is the one with zero tuples.
+
+=head2 sys.std.Core.Type.Cat.VirtualAttrMapSet
+
+A C<Cat.VirtualAttrMapSet> is a C<Relation> that defines special functional
+dependencies between attributes of a (|quasi-)nonscalar data type, such
+that, on a per-tuple basis, some attributes can be generated purely from
+other attributes, and hence the former attributes may be virtual.  Each
+tuple of a C<Cat.VirtualAttrMapSet> specifies 2 disjoint subsets of the
+(|quasi-)nonscalar's attributes, which are I<determinant> and I<dependent>
+attributes respectively, where the values of the second set are generated
+from the first using a C<virtual_attr_map> function.  Whether I<dependent>
+attributes are computed when needed or pre-computed and stored (a trade-off
+of storage space for speed) is implementation dependent, though users may
+give hints to govern that performance decision.
+
+The main reason for virtual attributes to exist is to provide a fundamental
+feature of a relational database where multiple perceptions of the same
+data can exist at once; each user can perceive the same data being
+organized according to their own preferences, and even if the actual means
+of storing the data changes over time, the users continue to be able to
+perceive it in the same ways as before the change.
+
+The most important use case of virtual attributes is when the data type
+having them is a database type, all of whose attributes are relations (or
+databases); and so these attributes define database relvars, with
+non-virtual and virtual attributes being base and virtual relvars,
+respectively (which correspond to the SQL concepts of base tables and
+views, respectively).  The idea in general is that users can work with any
+relvar without knowing whether it is base or virtual, and so if
+implementations change later such that real relvars become virtual or
+vice-versa, users could continue as if nothing changed.
+
+A less common use case of virtual attributes is in (typically non-database)
+nonscalar types when users want to treat non-identical values as being
+distinct in some situations and non-distinct in others.  For example they
+want to do case-insensitive matching of character data, or alternately they
+want a case-insensitive (unique) key constraint on such, but either way
+they want the case of the data preserved.  In this situation, a base
+attribute can exist with the original case-preserved data, and a dependent
+virtual attribute can exist with the first's values folded to uppercase
+(eliminating any case differences); so then the key constraint can be
+placed on the virtual attribute to get the desired semantics, and the
+matching can be done against the same.
+
+All permissable operations on virtual (|pseudo-)variables are such that the
+semantics of updating them is the same as for updating base
+(|pseudo-)variables, with respect to I<The Assignment Principle>: Following
+assignment of a value C<v> to a variable C<V>, the comparison C<v = V>
+evaluates to TRUE.  Just as an update to determinant variables will have
+the cascade effect of updating their dependent variables such that the
+functional dependency between them continues to hold, the reverse also must
+happen.  Any update to dependent variables must have the side effect of
+updating their determinant variables.  Specifically, the implementing code
+of an update to dependents must be rewritten behind the scenes to become
+instead an update to their determinants, as if the latter was what the
+users had actually written, such that following the then-first update of
+the determinants, the cascading update to the dependents by the functional
+dependency must result in the same dependents' values that they would have
+had if the dependents were just base variables being updated by the
+original code.  If such a code rewrite can not be done, such as due to
+information lost in the functional dependency, then the operation
+attempting to update the dependent attributes must fail.  Sometimes the
+code rewrite can be done automatically by the DBMS, and sometimes it can
+succeed if the map definer gives explicit details on how to accomplish it.
+
+Because Muldis D requires a strong degree of determinism in the whole
+system, sometimes users have to provide explicit details on how to
+accomplish a reverse mapping, even if it is possible to automatically
+generate such, because there may be multiple ways to do a reverse map that
+satisfy I<The Assignment Principle>, so the explicitness would be to pick
+exactly one of those, so that how determinants are updated is predictable
+in an implementation-portable manner.  For example, if a virtual relvar
+C<V> is defined as the simple relational union of 2 other relvars C<R1> and
+C<R2>, then a tuple insertion into C<V> could be rewritten at least 3 ways,
+which are an insertion into just C<R1>, or into just C<R2>, or into both
+C<R1> and C<R2>; so for predictability's sake, the map should specify which
+option to do (which can vary on a case-by-case basis).
+
+I<This all being said, for the moment the C<Cat.VirtualAttrMapSet> type
+does not give a way to manually specify a reverse function, so for now all
+the virtuals are either read-only or updatable due to an automatically
+generated reverse function, which might vary by implementation.  Fixing
+this matter is TODO.  Note that the reverse functions might have to be
+defined as per-tuple operations, separately for insert/substitute/delete.>
+
+A C<Cat.VirtualAttrMapSet> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about this virtual attribute map.
+
+=item C<determinant_attrs> - C<set_of.Cat.Name>
+
+These are the declared names of the determinant attributes.
+
+=item C<dependent_attrs> - C<set_of.Cat.Name>
+
+These are the declared names of the dependent attributes; none of these may
+be the same as the names of the determinant attributes.
+
+=item C<virtual_attr_map> - C<Cat.InnerFuncBody>
+
+This defines the entire (main) body of a C<virtual_attr_map> function that
+derives a tuple of dependent attribute values from a tuple of determinant
+attribute values.  The implicit function heading that this goes with has a
+single C<topic> parameter whose declared type is a tuple whose attributes
+match those of C<determinant_attrs>; the function's implicit result type is
+a tuple whose attributes match those of C<dependent_attrs>.  Note that the
+range of this function is typically smaller than its domain, though it
+might not be.
+
+=back
+
+A C<Cat.VirtualAttrMapSet> has a binary (unique) key on the
+C<determinant_attrs> plus C<dependent_attrs> attributes; it also has a
+distributed (unique) key over the C<dependent_attrs> attribute of all
+tuples.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.ConstraintSet
 
@@ -2853,7 +2979,8 @@ being matched on in the foreign key.
 =item C<child> - C<Cat.Name>
 
 This is the name of the relation-valued attribute that is the child in the
-foreign (non-distributed) key relationship.
+foreign (non-distributed) key relationship.  Note that C<child> and
+C<parent> are allowed to be one and the same.
 
 =item C<attr_map> - C<Cat.FKChildAttrParentAttrMap>
 

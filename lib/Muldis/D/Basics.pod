@@ -1325,6 +1325,7 @@ substitutability:
             transition_constraint
             type_default
             possrep_map
+            virtual_attr_map
             order_determination
         imperative
             deterministic
@@ -1475,6 +1476,30 @@ match those of the possrep being converted from, and its result type is a
 tuple whose attributes match those of the possrep being converted to.  Note
 that every distinct argument (domain) value of this function must have a
 distinct result (range) value, as it is a 1:1 mapping function.
+
+=item C<virtual_attr_map>
+
+A C<virtual_attr_map> is the same as a C<possrep_map> except that its range
+may be (and typically is) smaller than its domain, it is usually part of
+the definition of a (|quasi-)nonscalar data type, and it is used such that,
+on a per-tuple basis, one subset of that type's attributes is defined to be
+generated, by the C<virtual_attr_map> function, purely from a disjoint
+subset of that type's attributes.  So a special kind of I<functional
+dependency> exists between the first subset, which has the I<dependent>
+attributes, and the second subset, which has the I<determinant> attributes.
+For example, a dependent attribute could always hold a character string
+value that is the same as a determinant attribute but for being folded to
+uppercase; or for another example, a dependent attribute may hold the
+result of a relational join of multiple determinant attributes, or a
+restriction on one (in the latter case, the data type being defined is
+probably a database).  A C<virtual_attr_map> has a single C<topic>
+parameter whose declared type is a tuple whose attributes match those of
+the determinant attributes of the type being declared, and its result type
+is a tuple whose attributes match those of the dependent attributes.  A
+consequence of the special functional dependency is that the dependent
+attributes can all be virtual; the DBMS can store just the determinant
+attributes, and the dependent attributes can be generated when needed (or
+they can still be pre-computed and stored for performance).
 
 =item C<order_determination>
 
