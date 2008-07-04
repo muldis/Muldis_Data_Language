@@ -51,7 +51,7 @@ except that it results in the opposite boolean value when given the same
 arguments.
 
 =item C<function sys.std.Core.Universal.is_value_of_type result Bool params
-{ topic(Universal), type(Cat.NameChain) }>
+{ topic(Universal), type(Cat.TypeRef) }>
 
 This function results in C<Bool:true> iff the value of its C<topic>
 argument is a member of the data type whose name is given in the C<type>
@@ -61,7 +61,7 @@ C<Bool:false> if it is C<Empty>.  This function will fail if the named type
 doesn't exist in the virtual machine.
 
 =item C<function sys.std.Core.Universal.treated result Universal params {
-topic(Universal), as(Cat.NameChain) }>
+topic(Universal), as(Cat.TypeRef) }>
 
 This function results in the value of its C<topic> argument, but that the
 declared type of the result is the not-C<Empty> data type whose name is
@@ -78,7 +78,7 @@ C<treated> will cause the compiler to let you use that variable as an
 argument to C<sys.std.Integer.difference>, which it otherwise wouldn't.
 
 =item C<function sys.std.Core.Universal.default result Universal params {
-of(Cat.NameChain) }>
+of(Cat.TypeRef) }>
 
 This function is the externalization of a not-C<Empty> data type's
 C<type_default> function.  This function results in the default value of
@@ -180,7 +180,7 @@ possreps.  This function will fail if C<possrep> specifies a possrep name
 that C<topic> doesn't have.
 
 =item C<function sys.std.Core.Scalar.Scalar_from_Tuple result Scalar
-params { topic(Tuple), type(Cat.NameChain), possrep(Cat.Name)? }>
+params { topic(Tuple), type(Cat.TypeRef), possrep(Cat.Name)? }>
 
 This function results in the C<Scalar> value whose scalar root (|sub)type
 is named by C<type>, which has a possrep whose name matches C<possrep>, and
@@ -189,7 +189,7 @@ of C<topic>.  This function can be used to select any scalar value at all
 that has a possrep.
 
 =item C<function sys.std.Core.Scalar.order result Cat.Order params {
-topic(Scalar), other(Scalar), assuming(Tuple)? }>
+topic(Scalar), other(Scalar), assuming(QuasiTuple)? }>
 
 This function is the externalization of a scalar root type's type-default
 (total) C<order_determination> function.  This function results in
@@ -536,7 +536,7 @@ specifies any attribute name that C<topic> doesn't have, or if an attribute
 of C<topic{outer}> is the same as another C<topic> attribute.
 
 =item C<function sys.std.Core.Relation.restriction result Relation params {
-topic(Relation), func(Cat.NameChain), assuming(Tuple)? }>
+topic(Relation), func(Cat.FuncRef), assuming(QuasiTuple)? }>
 
 This function results in the relational restriction of its C<topic>
 argument as determined by applying the C<Bool>-resulting function named in
@@ -556,14 +556,14 @@ restrictions are composed simply of anded or ored tests for attribute value
 equality.
 
 =item C<function sys.std.Core.Relation.cmpl_restriction result Relation
-params { topic(Relation), func(Cat.NameChain), assuming(Tuple)? }>
+params { topic(Relation), func(Cat.FuncRef), assuming(QuasiTuple)? }>
 
 This function is the same as C<restriction> but that it results in the
 complementary subset of tuples of C<topic> when given the same arguments.
 See also the C<sys.std.Core.Relation.semidifference> function.
 
 =item C<function sys.std.Core.Relation.extension result Relation params {
-topic(Relation), func(Cat.NameChain), assuming(Tuple)? }>
+topic(Relation), func(Cat.FuncRef), assuming(QuasiTuple)? }>
 
 This function results in the relational extension of its C<topic> argument
 as determined by applying the C<Tuple>-resulting function named in its
@@ -590,8 +590,8 @@ the new attributes; the new attribute names and common values are given in
 the C<attrs> argument.
 
 =item C<function sys.std.Core.Relation.summary result Relation params {
-topic(Relation), group_per(set_of.Cat.Name), summ_func(Cat.NameChain),
-summ_assuming(Tuple)? }>
+topic(Relation), group_per(set_of.Cat.Name), summ_func(Cat.FuncRef),
+summ_assuming(QuasiTuple)? }>
 
 This function provides a convenient context for using aggregate functions
 to derive a per-group summary relation, which is its result, from another
@@ -793,7 +793,7 @@ functions exist between corresponding quasi- and non-quasi types as well.>
 =over
 
 =item C<function sys.std.Core.Control.func_invo result Universal params {
-function(Cat.NameChain), args(QuasiTuple)? }>
+function(Cat.FuncRef), args(QuasiTuple)? }>
 
 This function results in the result of invoking the other function named in
 its C<function> argument when the latter function is curried by its C<args>
@@ -835,7 +835,7 @@ isn't a subtype of the declared type of the variable behind C<target>.
 =over
 
 =item C<updater sys.std.Core.Control.upd_invo update {
-upd_args(QuasiTuple)? } read { updater(Cat.NameChain), ro_args(QuasiTuple)?
+upd_args(QuasiTuple)? } read { updater(Cat.ProcRef), ro_args(QuasiTuple)?
 }>
 
 This update operator has the same purpose and features as
@@ -865,7 +865,7 @@ These procedures are applicable to use in all kinds of procedures.
 =over
 
 =item C<procedure sys.std.Core.Control.proc_invo update {
-upd_args(QuasiTuple)? } read { procedure(Cat.NameChain),
+upd_args(QuasiTuple)? } read { procedure(Cat.ProcRef),
 ro_args(QuasiTuple)? }>
 
 This procedure is the same as C<sys.std.Core.Control.upd_invo> but that it
@@ -878,8 +878,9 @@ This procedure will throw the exception given as its argument; this results
 in the call stack unwinding, and transaction rollbacks, until it is caught.
 
 =item C<procedure sys.std.Core.Control.try_catch update {
-try_updating(Tuple)?, catch_updating(Tuple)? } read { try(Cat.NameChain),
-catch(Cat.NameChain), try_assuming(Tuple)?, catch_assuming(Tuple)? }>
+try_updating(QuasiTuple)?, catch_updating(QuasiTuple)? } read {
+try(Cat.ProcRef), catch(Cat.ProcRef), try_assuming(QuasiTuple)?,
+catch_assuming(QuasiTuple)? }>
 
 This procedure invokes the procedure named in its C<try> argument, giving
 it the arguments C<try_updating> and C<try_assuming> as its C<updating> and

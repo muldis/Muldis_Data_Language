@@ -7,8 +7,9 @@
     Muldis-D-0.39.0.tar.gz.
 
     * New file versions are: D.pm 0.39.0 and Types_Catalog.pod 0.33.0 and
-    Basics.pod 0.27.0.  The other pre-existing versioned files are
-    unchanged.
+    Routines.pod and Array.pod 0.28.0 and Basics.pod 0.27.0 and Ordered.pod
+    and Relation.pod and Set.pod 0.26.0 and Tuple.pod and Bag.pod 0.25.0.
+    The other pre-existing versioned files are unchanged.
 
     * (Types_Catalog.pod)  Updated the catalog type 'DKMemRelAttrMap' so
     its 'rel_name' attribute is now a 'DeclNameChain' rather than a 'Name'.
@@ -37,6 +38,28 @@
     or their attributes etc of a nonscalar type; two versions exist, one
     that targets a key of a single relation as the parent, and one that
     targets a distributed key on multiple relations as the parent.
+
+    * (Types_Catalog.pod)  Added 4 new quasi-scalar catalog types
+    '(Func|Proc|Type|OrdDetFunc)Ref' as an initial solution to the problem
+    that plain 'NameChain' don't actually work too well as values to
+    represent closures or higher order functions in the general case,
+    particularly when wanting to use an inner routine as a closure to pass
+    to another routine defined in some external context; these were added
+    in the new main pod section "TYPES FOR SPECIAL ENTITY REFERENCES".
+    Also added 4 new expression node catalog types,
+    '(Func|Proc|Type|OrdDetFunc)RefLitExprNodeSet', for selecting values of
+    the first 4 types.  Also added 5 new attributes to the 'ExprNodeSet'
+    type that are of the 4 new node types.
+
+    * (Routines.pod, Ordered.pod, Tuple.pod, Relation.pod, Set.pod,
+    Array.pod, Bag.pod)  Updated all routine parameters that conceptually
+    were closure-et-al-typed (each such parameter took the name of a
+    function or imperative routine or data type), so that their actual
+    types were the new '(Func|Proc|Type|OrdDetFunc)Ref' types rather than
+    the 'NameChain' type.  Also updated all routine parameters that take a
+    set of argument values for closures so that the data type of said
+    parameters is 'QuasiTuple' rather than 'Tuple', which is more
+    appropriate in the general case.
 
 2008-06-30  Darren Duncan <perl@DarrenDuncan.net>
 

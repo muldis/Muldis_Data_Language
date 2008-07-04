@@ -29,7 +29,7 @@ These core data types are more special-purpose in nature and are intended
 for use in defining or working with the system catalog.  Those types that
 are nonscalar are completely defined types.
 
-Note that whenever an attribute of one of the tuple types isn't
+Note that whenever an attribute of one of the nonscalar types isn't
 significant, given the context (determined by other attributes of the same
 type), and should be ignored, its value is the default for its type.
 
@@ -120,6 +120,8 @@ more or less:
             sys.std.Core.Type.Cat.FuncInvoExprNodeSet
             sys.std.Core.Type.Cat.IfElseExprNodeSet
             sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
+            sys.std.Core.Type.Cat.(Func|Proc|Type)RefLitExprNodeSet
+            sys.std.Core.Type.Cat.OrdDetFuncRefLitExprNodeSet
             sys.std.Core.Type.Cat.MultiUpdStmt
             sys.std.Core.Type.Cat.LeaveStmtNodeSet
             sys.std.Core.Type.Cat.CompoundStmtNodeSet
@@ -145,6 +147,22 @@ more or less:
             sys.std.Core.Type.Cat.NameDNCMap
             sys.std.Core.Type.Cat.AttrRenameMap
             sys.std.Core.Type.Cat.WhenThenMap
+
+These system-defined subtypes can never be used as components of a system
+catalog, or any database, but they may be used temporarily at runtime:
+
+    sys.std.Core.Type.Universal
+
+        sys.std.Core.Type.Empty
+
+        sys.std.Core.Type.QuasiScalar
+
+            # The following are special-purpose quasi-scalar types.
+
+            sys.std.Core.Type.Cat.FuncRef
+            sys.std.Core.Type.Cat.ProcRef
+            sys.std.Core.Type.Cat.TypeRef
+            sys.std.Core.Type.Cat.OrdDetFuncRef
 
 =head1 SIMPLE GENERIC SCALAR TYPES
 
@@ -256,10 +274,10 @@ C<increase> is ordered before C<same>, and C<same> before C<decrease>.
 The C<Cat.OrdDetFuncNameChain> type is defined as a non-proper / identical
 subtype of the C<Cat.NameChain> type that has a different default value,
 which is C<sys.std.Core.Scalar.order> rather than C<.>.  This type is
-intended for use as the declared type of a routine parameter that would
-take the name of an C<order_determination> function, but that parameter is
-optional and should default to the system-defined scalar ordering function
-when no argument is given to it.
+conceptually intended for use as the declared type of a routine parameter
+that would take the name of an C<order_determination> function, but that
+parameter is optional and should default to the system-defined scalar
+ordering function when no argument is given to it.
 
 =head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
 
@@ -1397,7 +1415,7 @@ for a subject-to-update parameter of an (|inner )update operator call; in
 that case the leaf nodes / only node of the expression must map to a
 subject-to-update parameter of the containing (|inner )update operator.
 
-A C<Cat.ExprNodeSet> has these 7 attributes:
+A C<Cat.ExprNodeSet> has these 11 attributes:
 
 =over
 
@@ -1433,6 +1451,13 @@ These are expression nodes that represent if-else control flow expressions.
 
 These are expression nodes that represent given-when-default control flow
 expressions.
+
+=item C<(func|proc|type|ord_det_func)_ref_lit_exprs> -
+C<Cat.(Func|Proc|Type|OrdDetFunc)RefLitExprNodeSet>
+
+These are expression nodes that define
+function|imperative-routine|type|order-determination-function reference
+literals.
 
 =back
 
@@ -1725,6 +1750,38 @@ given-when-default.
 =back
 
 A C<Cat.GivenWhenDefExprNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.(Func|Proc|Type|OrdDetFunc)RefLitExprNodeSet
+
+A C<Cat.(Func|Proc|Type|OrdDetFunc)RefLitExprNodeSet> is a C<Relation> that
+specifies a set of expression nodes where each node represents a value of
+the special C<sys.std.Core.Type.Cat.(Func|Proc|Type|OrdDetFunc)Ref> type.
+
+A C<Cat.(Func|Proc|Type|OrdDetFunc)RefLitExprNodeSet> has these 3
+attributes:
+
+=over
+
+=item C<name> - C<Cat.Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about the expression leaf node.
+
+=item C<referencing> - C<Cat.NameChain>
+
+This is the name, from the point of view of the routine embedding this
+expression node, of the
+function|imperative-routine|type|order-determination-function that the new
+special reference value is supposed to facilitate portable invoking of.
+
+=back
+
+A C<Cat.(Func|Proc|Type|OrdDetFunc)RefLitExprNodeSet> has a unary (unique)
+key on the C<name> attribute, plus another such key on the C<referencing>
 attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.InnerUpdBody
@@ -3340,6 +3397,97 @@ C<then> node is evaluated and its result is the result of the whole g-w-d
 expression; otherwise, C<then> is not evaluated.  For a g-w-d statement, if
 a C<when> value is matched, then the C<then> statement node is invoked;
 otherwise, C<then> is not invoked.  Its default value has zero tuples.
+
+=head1 TYPES FOR SPECIAL ENTITY REFERENCES
+
+Muldis D needs to support the concept of a closure or higher-order
+function, mainly for functions but also to a smaller extent for imperative
+routines.  For example, the generic relational restriction operator is
+designed to conceptually take a function as an argument and then invoke
+that function on each tuple of a relation it is filtering, and the function
+has the criteria for whether the tuple passes the filter.
+
+Conceptually, all that is needed is to pass the fully-qualified name of the
+routine as such an argument, which in the system catalog is represented as
+a C<Cat.NameChain>.  But using an actual C<Cat.NameChain> frequently
+doesn't work to support closures because the typical closure is defined as
+an I<inner routine> and those are expressly private to the context of the
+outer entity that the inner is embedded in.  There is no valid
+C<Cat.NameChain> value for referencing it from outside that context
+(likewise for routines declared private to a package), and outside that
+context is typically where the routines that take closures as arguments
+would live.  For example, if public function C<dep.mymain> had an inner
+function C<inn.mytest> and C<dep.myfoo> invoked the public function
+C<dep.myfilter> with an argument value of C<inn.mytest>, then if
+C<dep.myfilter> tried to invoke the function it was passed, it would
+actually be trying to invoke an inner function of C<dep.myfilter> named
+C<inn.mytest>, which won't work.  Conceptually, a solution to this problem
+is to actually pass a routine name in a more fully-qualified form,
+conceptually like C<dep.mymain.mytest>, which then C<dep.myfilter> could
+correctly invoke.  However, if that was made to work literally with a
+C<Cat.NameChain>, then this could cause problems where anything could
+invoke C<mytest> directly without being given permission from C<mymain>.
+
+As an at-least-initial solution to this problem, here are a few black box
+data types (specifically, quasi-scalar types with no possreps) which will
+provide fully-qualified identifiers for routines, useful as alternatives to
+C<Cat.NameChain> values, so any routine may be correctly invoked from any
+other routine, without losing privacy.  Values of these types work their
+magic by embedding knowledge about the lexical-et-al context in which they
+were selected, so that when routines are to be invoked by way of those
+values, the invocation of the capture effectively takes place within the
+same context where the special type values were selected, as users would
+conceptually expect.  Selecting one of these special values involves a
+C<Cat.NameChain> argument, and the identity of the selected special value
+is based on the combination of the argument and the context of selection,
+more or less.  At the same time, every one of these values may incorporate
+a meaningless random element to make every selection produce a distinct
+value, even if more than one would have the same semantics.  However,
+normal value assignment et al will preserve the same value of course, so
+identity comparison of a C<V> with a C<v> that was previously assigned to
+it would result in TRUE.  Currently, selecting these special values can not
+be done with an ordinary routine, but only with a special catalog type for
+an expression or statement node, due to the unusualness of this.  It is
+also not possible to map one of these special values to another type.
+There are no defined sorting orders for values of these types.  There are
+default values for these types (of course), and those defaults are to
+system-defined routines, for which incidentally the C<Cat.NameChain>
+solution would always have worked.  These types are all infinite.
+
+There are also similar special types here for referencing data types, but
+not for as many of the reasons.  Maybe another advantage of all of the
+above is that this can help compile-time type checking.
+
+=head2 sys.std.Core.Type.Cat.FuncRef
+
+A C<Cat.FuncRef> (quasi-scalar) is functionally like a smart
+C<Cat.NameChain> that holds a function name but it remembers the context of
+its creation.  It is used to implement a higher-order function or a
+functional closure.  Its default value is a reference to the
+C<sys.std.Core.Universal.is_identical> function.
+
+=head2 sys.std.Core.Type.Cat.ProcRef
+
+A C<Cat.ProcRef> (quasi-scalar) is functionally like a smart
+C<Cat.NameChain> that holds an imperative routine name but it remembers the
+context of its creation.  It is used to implement an imperative closure.
+Its default value is a reference to the C<sys.std.Core.Universal.assign>
+updater.
+
+=head2 sys.std.Core.Type.Cat.TypeRef
+
+A C<Cat.TypeRef> (quasi-scalar) is functionally like a smart
+C<Cat.NameChain> that holds a data type name but it remembers the context
+of its creation.  It is used in places where the name of a data type to
+'use' would be taken as a routine argument.  Its default value is a
+reference to the C<sys.std.Core.Type.Bool> data type.
+
+=head2 sys.std.Core.Type.Cat.OrdDetFuncRef
+
+A C<Cat.OrdDetFuncRef> (quasi-scalar) is to a C<Cat.OrdDetFuncNameChain>
+what a C<Cat.FuncRef> is to a C<Cat.NameChain>; it implements a functional
+closure but its default value is a reference to to the
+C<sys.std.Core.Scalar.order> function.
 
 =head1 SEE ALSO
 
