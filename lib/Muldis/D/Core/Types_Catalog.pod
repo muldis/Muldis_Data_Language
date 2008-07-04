@@ -131,6 +131,7 @@ more or less:
             sys.std.Core.Type.Cat.Inner(Sca|Nonsca|Uni|Restr)TypeSet
             sys.std.Core.Type.Cat.PossrepSet
             sys.std.Core.Type.Cat.PossrepMapSet
+            sys.std.Core.Type.Cat.VirtualAttrMapSet
             sys.std.Core.Type.Cat.ConstraintSet
             sys.std.Core.Type.Cat.KeySet
             sys.std.Core.Type.Cat.DistribKeySet
@@ -141,6 +142,7 @@ more or less:
             sys.std.Core.Type.Cat.FKChildAttrParentAttrMap
             sys.std.Core.Type.Cat.NameTypeMap
             sys.std.Core.Type.Cat.NameExprMap
+            sys.std.Core.Type.Cat.NameDNCMap
             sys.std.Core.Type.Cat.AttrRenameMap
             sys.std.Core.Type.Cat.WhenThenMap
 
@@ -2741,7 +2743,7 @@ generated reverse function, which might vary by implementation.  Fixing
 this matter is TODO.  Note that the reverse functions might have to be
 defined as per-tuple operations, separately for insert/substitute/delete.>
 
-A C<Cat.VirtualAttrMapSet> has these 4 attributes:
+A C<Cat.VirtualAttrMapSet> has these 5 attributes:
 
 =over
 
@@ -2749,14 +2751,24 @@ A C<Cat.VirtualAttrMapSet> has these 4 attributes:
 
 This is an optional programmer comment about this virtual attribute map.
 
-=item C<determinant_attrs> - C<set_of.Cat.Name>
+=item C<determinant_attrs> - C<Cat.NameDNCMap>
 
-These are the declared names of the determinant attributes.
+These are the names of the determinant attributes.  Each name is given in 2
+forms, called C<name> and C<dnc>; C<dnc> is the actual name of the
+attribute as existing in the host type, and it may actually be a component
+attribute of a host type attribute to any recursive depth (a single C<dnc>
+element means it is the actual host type element); C<name> is an alias by
+which the attribute will be known in the C<virtual_attr_map> function; this
+mapping exists so to make the determinant attributes look like direct
+sibling attributes whereas in reality they can be further-away relatives,
+just common components somewhere under the host type.
 
-=item C<dependent_attrs> - C<set_of.Cat.Name>
+=item C<dependent_attrs> - C<Cat.NameDNCMap>
 
-These are the declared names of the dependent attributes; none of these may
-be the same as the names of the determinant attributes.
+These are the names of the dependent attributes; the structure of
+C<dependent_attrs> is as per C<determinant_attrs>; none of these may be the
+same as the names of the determinant attributes, since a virtual attribute
+can't be defined in terms of itself.
 
 =item C<virtual_attr_map> - C<Cat.InnerFuncBody>
 
@@ -2768,6 +2780,17 @@ match those of C<determinant_attrs>; the function's implicit result type is
 a tuple whose attributes match those of C<dependent_attrs>.  Note that the
 range of this function is typically smaller than its domain, though it
 might not be.
+
+=item C<is_updateable> - C<Bool>
+
+This is C<Bool:true> if all of the dependent attributes should be treated
+as updateable, because they have enough information to map any kinds of
+updates (all of tuple insert/substitute/delete) back to their determinant
+attributes, and the system should try to support updates against them.
+This is C<Bool:false> if all of the dependent attributes should not be
+considered updateable, either because it is known they don't have enough
+information, or because we expect users will never try to update them, so
+don't go to the trouble of supporting updates.
 
 =back
 
@@ -2911,10 +2934,13 @@ A C<Cat.DKMemRelAttrMap> has these 3 attributes:
 
 =over
 
-=item C<rel_name> - C<Cat.Name>
+=item C<rel_name> - C<Cat.DeclNameChain>
 
-This is the name of the relation-valued attribute that is participating
-in the distributed key.
+This is the name of the relation-valued attribute that is participating in
+the distributed key.  But the attribute named by C<rel_name> is only a
+direct attribute of the host type if C<rel_name> has 1 chain element; if it
+has more, then the host type attribute is a tuple/database and any further
+elements serve to make C<rel_name> actually address a component of said.
 
 =item C<comment> - C<Cat.Comment>
 
@@ -2965,10 +2991,14 @@ This is the declared name of the foreign key.
 
 This is an optional programmer comment about the foreign key as a whole.
 
-=item C<parent> - C<Cat.Name>
+=item C<parent> - C<Cat.DeclNameChain>
 
 This is the name of the relation-valued attribute that is the parent in the
-foreign (non-distributed) key relationship.
+foreign (non-distributed) key relationship.  But the attribute named by
+C<parent> is only a direct attribute of the host type if C<parent> has 1
+chain element; if it has more, then the host type attribute is a
+tuple/database and any further elements serve to make C<parent> actually
+address a component of said.
 
 =item C<parent_key> - C<Cat.Name>
 
@@ -2976,11 +3006,12 @@ This is the name of the explicitly declared candidate key or unique key
 constraint of C<parent> which defines the attributes of C<parent> that are
 being matched on in the foreign key.
 
-=item C<child> - C<Cat.Name>
+=item C<child> - C<Cat.DeclNameChain>
 
 This is the name of the relation-valued attribute that is the child in the
-foreign (non-distributed) key relationship.  Note that C<child> and
-C<parent> are allowed to be one and the same.
+foreign (non-distributed) key relationship; its structure is as per
+C<parent>.  Note that C<child> and C<parent> are allowed to be one and the
+same.
 
 =item C<attr_map> - C<Cat.FKChildAttrParentAttrMap>
 
@@ -3018,16 +3049,25 @@ This is the declared name of the foreign key.
 
 This is an optional programmer comment about the foreign key as a whole.
 
-=item C<parent_distrib_key> - C<Cat.Name>
+=item C<parent_distrib_key> - C<Cat.DeclNameChain>
 
 This is the name of the explicitly declared distributed (unique) key that
 is the parent in the foreign distributed key relationship; it defines by
-proxy the attributes that are being matched on in the foreign key.
+proxy the attributes that are being matched on in the foreign key.  But the
+distributed key named by C<parent_distrib_key> may not be directly declared
+by the host type of this foreign key; it might be declared by the type of
+an attribute of the host type, if said attribute is a tuple/database; so
+the only or last C<parent_distrib_key> chain element is a key name, and any
+preceeding names are attribute names.
 
-=item C<child> - C<Cat.Name>
+=item C<child> - C<Cat.DeclNameChain>
 
 This is the name of the relation-valued attribute that is the child in the
-foreign distributed key relationship.
+foreign distributed key relationship.  But the attribute named by C<child>
+is only a direct attribute of the host type if C<child> has 1 chain
+element; if it has more, then the host type attribute is a tuple/database
+and any further elements serve to make C<child> actually address a
+component of said.
 
 =item C<attr_map> - C<Cat.FKChildAttrParentAttrMap>
 
@@ -3253,6 +3293,14 @@ attribute could conceivably just be a C<Cat.Name> because most of its
 allowed values would be in the C<lex> namespace, the C<Cat.NameChain> is
 used instead so that value expressions can take advantage of terse syntax
 for addressing value attributes.  Its default value has zero tuples.
+
+=head2 sys.std.Core.Type.Cat.NameDNCMap
+
+A C<Cat.NameDNCMap> is a C<Relation>.  It defines an association of a short
+name with a declaration name chain, to be used for aliasing the latter with
+the former in a particular context.  A C<Cat.NameDNCMap> has 2 attributes,
+C<name> (a C<Cat.Name>) and C<dnc> (a C<Cat.DeclNameChain>); each of those
+is a unary key.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.AttrRenameMap
 
