@@ -919,6 +919,110 @@ trying to do
 math without
 using a zero
 ----
+Data types and
+the relational
+model are 
+orthogonal
+----
+An attribute
+value may be
+a tuple or a
+relation; not
+just a scalar
+----
+All of the same
+relational operators
+work with relations
+in attributes,
+not just relvars
+----
+Consistency
+is good
+----
+This is a very
+powerful feature
+generally missing
+from SQL where only
+scalars allowed
+----
+An RVA means a
+single query can
+return parent, child
+tuples together,
+without redundancy
+----
+Child tuples are
+in an RVA of
+parent tuples
+----
+Similarly, you
+don't have to use
+association tables
+for a many-to-many
+relationship
+----
+You don't have
+to split up a
+relvar into
+several for
+normalization
+----
+The use of TVAs,
+RVAs does *not*
+violate any
+normalization
+forms
+----
+So about a 2VL
+alternative to
+SQL nulls?
+----
+Use RVAs
+as the
+conceptually
+nullable
+attributes
+----
+If the RVA has
+zero tuples,
+that means
+missing or N/A,
+meaning IS NULL
+----
+If the RVA has
+a tuple, that
+means IS NOT NULL;
+the tuple attr val
+is the known value
+----
+This approach
+brings consistency
+for outer-joins
+----
+Result attributes
+from the possibly
+missing tuples are
+RVAs with either
+zero or 1+ tuples
+----
+So a test for
+IS (NOT) NULL
+becomes a test
+for is the RVA
+empty or not
+----
+Of course, an
+implementation
+can recognize
+such cases and
+optimize BTS
+----
+A Muldis D
+implementation
+over SQL would
+probably map
+nullable to RVA
+----
 So what is a
 relational
 database?
@@ -1052,6 +1156,22 @@ Your code says
 rather than
 *how* to do it
 ----
+Provides a clear
+distinction
+between model and
+implementation
+----
+A database
+structure
+is logical,
+not physical
+----
+Don't define
+abstract machine
+in terms of what
+system "really
+does" BTS
+----
 2. Homoiconic
 ----
 Muldis D code
@@ -1070,6 +1190,12 @@ code takes the
 form of pure
 functional value
 expressions
+----
+Also, Muldis D
+uses closures
+or higher
+order functions
+to an extent
 ----
 4. Imperative
 ----
@@ -1165,6 +1291,481 @@ attacks have
 no frequently
 exploitable
 analogy here!
+----
+Depots
+----
+A depot is a local
+abstraction of a typically
+external storage system
+which holds 1 dbvar
+and 1 associated catalog
+----
+Plus maybe other
+details that help
+mapping of the 
+abstraction to
+the actuality
+----
+All user-defined
+non-lexical code and
+data lives in 1+
+depots; those are
+generally persisted
+----
+A depot can also have
+just code; then
+it is essentially
+a dynamically
+loaded library.
+----
+A depot is a
+completely
+independent
+unit
+----
+All types or
+constraints
+defining a dbvar
+or routine are
+always kept with it
+----
+A depot can't have
+external dependencies
+to understand its
+contents, implementing
+DBMS aside
+----
+There can't be
+any inter-depot
+constraints, but
+depots can call
+each others routines
+----
+A DBMS can mount
+multiple depots at
+once, under their
+own namespaces,
+like a filesystem
+----
+You can perform
+cross-database
+queries or updates
+on multiple depots by
+mounting them at once
+----
+They are like
+one database
+during that time,
+definition
+isolation aside
+----
+So cloning a
+database is
+essentially just
+a variable
+assignment
+----
+A transaction will
+subjugate all mounted
+depots together, so
+they commit or
+rollback as a unit
+----
+You can't unmount
+a depot while
+a transaction
+is active
+----
+A depot can
+be mounted
+read-only
+----
+A depot can
+be persistent
+or transient
+----
+Database and
+application vars
+treated the same,
+all in depots
+used the same way
+----
+Authentication
+details like
+DB user/pass
+apply per-depot
+mount, not on DBMS
+----
+A relational DBMS is a
+program that manages
+relational dbvars,
+associated catalogs,
+and depots in general
+----
+A Muldis D DBMS
+is a virtual
+machine
+----
+Transactions
+----
+All "D" languages
+are ACID compliant
+and support
+arbitrary depth
+nested transactions
+----
+You can start a
+transaction within
+another one
+----
+This lets code
+blocks make themselves
+atomic without worry
+of how calling
+code uses transactions
+----
+Only a parent-most
+trans commit will
+cause actual commit
+----
+Child transactions
+make it easy to
+rollback just part
+of the overall
+transaction
+----
+Muldis D
+transactions
+are always
+explicitly tied to
+lexical scopes
+----
+They are also
+tied to the
+exception
+control-flow
+mechanism
+----
+When you enter
+a "try" block,
+that begins a
+new child
+transaction
+----
+If the "try"
+block executes to
+its end normally,
+its transaction
+commits
+----
+If the "try" block
+abnormally ends with
+an exception (that
+it catches), its
+transaction rolls back
+----
+So transactions are
+easy to get right
+even when a block has
+multiple exit points,
+or throws exceptions
+----
+No worry about
+mis-matched
+transaction
+start/end
+statement calls
+----
+SQL savepoints can
+emulate child
+transactions,
+but can be more
+difficult to use
+----
+In Muldis D, all
+kinds of changes
+are subject to
+transactions,
+including DD
+----
+So schema changes
+due to updating
+the system
+catalog can also
+be rolled back
+----
+SQL DBMSs
+mutually
+differ
+on this
+----
+SQLite subjugates
+everything to
+transactions,
+including DD,
+which is right
+----
+MySQL will do an
+implicit commit
+of prior data
+changes if you, say,
+create a table; bad
+----
+Muldis D
+requires
+everything
+to be
+explicit
+----
+An implementation
+of Muldis D over
+such as MySQL will
+have to fail what
+it can't support
+----
+There, data
+definition should
+only be allowed
+outside of
+a transaction
+----
+All "D" languages
+support multiple
+assignment, to
+simultaneously update
+multiple variables
+----
+The whole of this
+multi-update is
+implicitly atomic,
+an implicit child
+/ only transaction
+----
+For example, you
+can insert parent
+and child tuples
+in diff relvars
+simultaneously
+----
+Or debit one
+bank account and
+credit another
+simultaneously
+----
+Database constraints
+are tested on
+multi-update
+statement boundaries
+----
+All constraints
+are immediate,
+can't defer to
+end of transaction
+----
+So database is
+never seen in an
+invalid state
+----
+There is *not*
+"domain check
+override" in a
+"D" language
+----
+It is the job of
+a DBMS to ensure
+its data always
+obeys its constraints
+or business rules
+----
+You can't count
+on the main app
+to check
+everything
+----
+There might be new
+applications sharing
+a DB that have
+different quality
+control
+----
+Much as
+you should
+never trust
+the user
+----
+Thanks to
+multi-update,
+you can be strict
+without losing
+flexability
+----
+A Muldis D DBMS
+*must* rollback
+on disconnect;
+only an explicit
+success can commit
+----
+Many SQL DBMSs
+do that too; some
+will auto-commit an
+incomplete transac;
+AFAIK, so does ODBC
+----
+Implicit commit on
+disconnect is bad,
+making a DBMS
+unreliable with any
+unexpected failure
+----
+Dialects
+----
+Muldis D
+code has
+several
+layers of
+abstraction
+----
+Inner
+Abstraction
+----
+You write code
+by writing data;
+****
+This is
+homoiconic
+----
+Conceptually,
+you make ASTs,
+but actually
+tuples and
+relations
+----
+Code becomes
+runnable as
+side-effect
+of insertion
+in sys catalog
+----
+There is no
+concrete syntax,
+only abstract
+syntax
+----
+Code is
+somewhat
+verbose, as
+typical
+for ASTs
+----
+High
+determinism
+extremely
+important
+----
+Muldis D
+is not DWIM,
+where DWIM
+means
+guessing
+----
+Code has
+exact same
+semantics
+everywhere
+----
+Traditional
+implicit semantic
+diffs made
+explicit choices
+----
+Semantics with
+numeric rounding
+made explicit
+----
+Any logical
+difference
+is a big
+difference
+----
+Strongly
+typed, is
+type safe
+----
+No implicit /
+automatic
+sideways type
+conversion /
+coercion
+----
+For example,
+converting
+char data to
+a number must
+be explicit
+----
+
+
+[less organized
+notes follow,
+to flesh out]
+----
+Entity names
+are case
+sensitive, can
+be anything,
+even empty str
+----
+Like most
+languages,
+or like
+quoted SQL
+identifiers
+----
+Invoke entities
+fully qualified
+with namespaces
+----
+No unqualified
+name searches,
+prevents
+ambiguity, bugs
+----
+System-defined
+and user defined
+entities in
+separate
+namespaces
+----
+No reserved
+words; they
+aren't needed
+----
+Character data
+is always case,
+accent, whitespace
+sensitive
+----
+If you want
+insensitive,
+explicitly
+fold case, etc
+----
+Numbers are
+big numbers
+----
+No multiplicity
+of types like
+in SQL where
+essentially
+the same
+----
+
+A selector is a routine that captures an appearance of a value for use
+in a variable or expression.  The term constructor is not used in this
+documentation because all values in Muldis D are conceptually eternal and
+immutable, so it does not make sense to say that we are "building" one; we
+are "selecting" one.
+
 ----
 [content goes here]
 ----
