@@ -655,14 +655,182 @@ components, etc; they have
 possreps defined over Int
 and Rat; they're incomplete
 ----
+Next are a few details about
+Muldis D routines, most of
+which come in 1 of 3 kinds:
+functions (read-only
+operators), updaters (update
+operators), and procedures
+----
+Functions
+----
+ create in fed.myapp
+ function cube {
+   result sys.std.Core.Type.Int
+   params { topic(sys.std.Core.Type.Int) }
+   exprs {
+     exp(sca_lit Int:9:3),
+     ''(func_invo sys.std.Integer.power
+       args { radix(lex.topic), exponent(lex.exp) }
+     ),
+   }
+ }
+ ;
+ ;
+ ;
+----
+Functions are pure and
+may only be invoked in value
+expressions; a function has
+just read-only parameters
+may only consist of a value
+expression, and may only
+invoke functional routines
+----
+Updaters
+----
+ create in fed.myapp
+ updater chop_sign {
+   upd_params { topic(sys.std.Core.Type.Int) }
+   exprs {
+     abs_val(func_invo sys.std.Integer.abs
+       args { topic(lex.topic) }
+     ),
+   }
+   stmt {
+     sys.std.Core.Universal.assign
+       upd_args { target(lex.topic) }
+       ro_args { v(lex.abs_val) },
+   }
+ }
+----
+Updaters are imperative but
+all of their statements will
+execute simultaneously, as
+if they are just a single
+more complex statement that
+may update multiple
+subject-to-update params
+----
+Functions and updaters are
+fully deterministic, have no
+lexical vars, can't see
+global vars; they execute as
+an implicit atomic unit, and
+an implementation may safely
+refactor them, what they inv
+----
+Both have value expressions
+that are arbitrarily complex
+and are composed of sets of
+named nodes; this node
+naming helps with self-doc,
+and lets common sub-exprs
+be factored to one instance
+----
+Procedures
+----
+ create in fed.myapp
+ procedure fetch_all_people {
+   upd_params { people(type.var.fed.mydb.people) }
+   stmts [
+     proc_invo sys.std.Core.Universal.assign
+       upd_args { target(lex.people) }
+       ro_args { v(fed.mydb.people) },
+   ]
+ }
+ ;
+ ;
+ ;
+ ;
+ ;
+----
+Procedures are imperative,
+can see/update global vars,
+can have lexical vars; they
+have a sequence of stmts
+that execute one at a time
+in order; some stmts may be
+non-deterministic
+----
+Only procedures may have
+side-effects in non-args;
+they can't have value exprs;
+they are pure imperative as
+functions are pure
+functional; updaters bridge
+the gap between these
+----
+All 3 routine kinds may, and
+often do, have other "inner"
+routines declared within
+themselves, allowing them to
+be arbitrarily complex
+without forcing parts to be
+externalized as public rtns
+----
+ For example, to represent a
+ SQL procedure like this:
+   CREATE PROCEDURE count_people
+       (INOUT p_count INT)
+     SELECT COUNT(*)
+     INTO p_count
+     FROM mydb.people;
+ ... a Muldis DB procedure would
+ need an inner updater to hold
+ the "COUNT(*) FROM people" portion,
+ which is a value expression
+----
+ create in fed.myapp
+ procedure count_people {
+   upd_args { p_count(sys.std.Core.Type.UInt) }
+   stmts [
+     proc_invo inn.icount
+       upd_args { p_count(lex.p_count) }
+       ro_args { people(fed.mydb.people) },
+   ]
+   updater icount {
+     upd_params { p_count(sys.std.Core.Type.UInt) }
+     ro_params { people(type.var.fed.mydb.people) }
+     exprs {
+       pc(func_invo sys.std.Core.Relation.cardinality
+         args { topic(lex.people) }
+       ),
+     }
+     stmt {
+       sys.std.Core.Universal.assign
+         upd_args { target(lex.p_count) }
+         ro_args { v(lex.pc) },
+     }
+   }
+ }
+----
+Another use of inner
+routines is to support
+internal recursion; for
+functions, this is like
+a named WITH RECURSIVE
+section in SQL; inners
+are like WITH in general
+----
+All routine parameters are
+named, not positional, which
+helps self-doc; also, every
+argument is explicitly
+marked with whether it might
+be updated or not, also
+helping self-doc
+----
+Generally speaking,
+everything in Muldis D is
+named rather than
+positional, besides
+procedure statements and
+array elements
+----
 1234567890123456789012345678901234567890
 ----
 [FOLLOWING NOT IN ORDER PER SE]
-[intro routine kinds]
-[params are named]
-[intro system-defined scalar types]
-  [contrast with multiplicity of SQL types]
-[intro user-defined routines, types]
 [intro RVAs, TVAs]
 [Muldis D is 2VL]
 [talk about no pointers when saying relation
