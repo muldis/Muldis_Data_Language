@@ -911,11 +911,171 @@ positional, besides
 procedure statements and
 array elements
 ----
+Data types and the
+relational model are
+orthogonal; a Muldis D
+attribute value may be a
+tuple or a relation, not
+just a scalar
+----
+All of the same relational
+ops work with relations in
+attributes as with relvars;
+Muldis D doesn't distinguish
+the SQL concept of a
+MULTISET from a table/rowset
+----
+Consistency is good
+----
+Support for tuple-valued
+attributes (TVAs) and
+relation-valued attributes
+(RVAs) is mandatory in a
+"D" language, and they are
+extremely useful
+----
+An RVA means a single query
+can return parent and child
+tuples together, without
+redundancy; child tuples are
+in an RVA of parent tuples
+----
+This form is natural for
+many forms of use, such as
+for display to users in a
+multi-level report
+----
+Similarly, you don't have to
+use association tables for a
+many-to-many relationship;
+you don't have to split up a
+relvar into several for
+normalization
+----
+ Relation:[ 'order_id', 'cust_id', 'order_item' ]:{
+   [ Int:9:5073, Int:9:209, Relation:{
+     { 'prod_id' => Text:'paint',  'qty' => Int:9:3 },
+   } ],
+   [ Int:9:5074, Int:9:332, Relation:{
+     { 'prod_id' => Text:'axle',  'qty' => Int:9:20 },
+     { 'prod_id' => Text:'lever', 'qty' => Int:9:50 },
+     { 'prod_id' => Text:'paint', 'qty' => Int:9:8 },
+   } ],
+   [ Int:9:5075, Int:9:17, Relation:{
+     { 'prod_id' => Text:'banana', 'qty' => Int:9:100 },
+     { 'prod_id' => Text:'orange', 'qty' => Int:9:160 },
+   } ],
+ }
+----
+The use of TVAs and RVAs
+does *not* violate any
+normalization forms
+----
+Now some people talk about
+"Object Relational Impedence
+Mismatch", but I don't see
+it here; a so-called
+object-relational DBMS is
+really just plain relational
+when the latter's done right
+----
+Values in logic
+----
+Muldis D is founded in
+2-valued predicate logic,
+like every "D" language;
+every proposition must
+evaluate to just FALSE or
+TRUE; there is *no* 3+
+valued logic as in SQL
+----
+In particular, "The
+Assignment Principle" of TTM
+always holds with Muldis D:
+immediately following
+assignment of a value "v" to
+a var "V", the comparison
+"v = V" evaluates to TRUE
+----
+By contrast, SQL is
+inconsistent with itself
+with respect to NULL; in
+some contexts, two
+instances of NULL are
+considered distinct, and in
+other contexts, they match
+----
+Muldis D doesn't have the
+SQL concept of NULL; but it
+*does* have an alternative
+canonical way to say "N/A"
+or "unknown" etc, with just
+2-valued logic
+----
+The canonical way to make
+an attribute conceptually
+nullable is to make it an
+RVA, specifically a Maybe,
+which is a special subtype
+of Set having either zero
+tuples or one
+----
+If a Maybe/RVA has zero
+tuples, that means the
+conceptual value is missing
+or N/A, meaning IS NULL
+----
+If a Maybe/RVA has a tuple,
+that means IS NOT NULL, and
+the tuple's sole attribute's
+value then is the known
+conceptual value
+----
+So a test for IS (NOT) NULL
+becomes a test for is the
+Maybe/RVA empty or not
+----
+This approach brings
+consistency for outer-joins;
+result attributes from the
+possibly missing tuples are
+RVAs with either zero or 1+
+tuples
+----
+Used together with the use
+of RVAs to collect parent
+and child records, an outer
+join can mean the RVAs of
+child records have zero or
+more tuples rather than 1+
+----
+The Maybe type has exactly
+one value with zero tuples,
+and the special subtype with
+just that is called Nothing;
+all other Maybe values have
+1 tuple and all belong to
+the subtype Single
+----
+So SQL's NULL has a specific
+Muldis D analogy called
+Nothing, which does not
+equal everything else;
+however, Nothing *does*
+always equal itself (and all
+relational ops work on it)
+----
+I don't see this low level
+difference of Muldis D from
+SQL (NULL<>NULL) being an
+actual problem, same as the
+difference in set vs bag
+orientation; one can define
+3VL in 2VL terms if desired
+----
 1234567890123456789012345678901234567890
 ----
 [FOLLOWING NOT IN ORDER PER SE]
-[intro RVAs, TVAs]
-[Muldis D is 2VL]
 [talk about no pointers when saying relation
   tuples id'd by attr values only not hidden things]
 [SQL says trailing bits of bit strs don't have to be significant]
