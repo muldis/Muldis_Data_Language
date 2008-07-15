@@ -520,6 +520,29 @@ they can do; they can
 select any value of the type
 and extract any possrep attr
 ----
+Next are example literals of
+a user-defined WeekDay type,
+which is an enumerated type;
+it has 2 possreps called
+'name' and 'number', each of
+those having a single attr
+named with the empty string
+----
+ PTMD_Tiny dialect:
+   Scalar:'fed.lib.the_db.WeekDay':'name':{
+     '' => Text:'monday',
+   }
+   Scalar:'fed.lib.the_db.WeekDay':'number':{
+     '' => Int:9:5,
+   }
+ HDMD_Perl_Tiny dialect:
+   [ 'Scalar', 'fed.lib.the_db.WeekDay', 'name', {
+     '' => [ 'Text', 'monday' ],
+   } ]
+   [ 'Scalar', 'fed.lib.the_db.WeekDay', 'number', {
+     '' => [ 'Int', 'perl_int', 5 ],
+   } ]
+----
 A few scalar types are
 special and don't have any
 possreps: Bool, Int, Blob,
@@ -551,13 +574,73 @@ has duplicate tuples; also,
 a relation's tuples are
 never ordered
 ----
+Next are example generic
+tuple and relation literals
+----
+ Tuples in PTMD_Tiny dialect:
+   Tuple:{}
+   Tuple:{
+     'login_name' => Text:'hartmark',
+     'login_pass' => Text:'letmein',
+     'is_special' => Bool:true,
+   }
+   Tuple:{
+     'name' => Text:'Michelle',
+     'age'  => Int:9:17,
+   }
+----
+ Same in PTMD_Perl_Tiny dialect:
+   [ 'Tuple', {} ]
+   [ 'Tuple', {
+     'login_name' => [ 'Text', 'hartmark' ],
+     'login_pass' => [ 'Text', 'letmein' ],
+     'is_special' => [ 'Bool', 'md_enum', 'true' ],
+   } ]
+   [ 'Tuple', {
+     'name' => [ 'Text', 'Michelle' ],
+     'age'  => [ 'Int', 'perl_int', 17 ],
+   } ]
+----
+ Relations in PTMD_Tiny dialect:
+   Relation:{}
+   Relation:{ {}, }
+   Relation:{ 'x', 'y', 'z', }
+   Relation:{
+     {
+       'login_name' => Text:'hartmark',
+       'login_pass' => Text:'letmein',
+       'is_special' => Bool:true,
+     },
+   }
+   Relation:[ 'name', 'age', ]:{
+     [ Text:'Michelle', Int:9:17, ],
+   }
+----
+ Same in PTMD_Perl_Tiny dialect:
+   [ 'Relation', [] ]
+   [ 'Relation', [ {}, ] ]
+   [ 'Relation', [ 'x', 'y', 'z', ] ]
+   [ 'Relation', [
+     {
+       'login_name' => [ 'Text', 'hartmark' ],
+       'login_pass' => [ 'Text', 'letmein' ],
+       'is_special' => [ 'Bool', 'md_enum', 'true' ],
+     },
+   ] ]
+   [ 'Relation', [ 'name', 'age', ], [
+     [ [ 'Text', 'Michelle' ], [ 'Int', 'perl_int', 17 ], ],
+   ] ]
+----
 Muldis D also has canonical
 representations of plain
 sets, arrays, and bags,
 represented by the special
-Set, Array, and Bag types;
-these are just relations
-with pre-defined attributes
+Set, Array, and Bag types
+----
+These are just relations
+with pre-defined attributes,
+and the Tiny dialects also
+have special syntax for them
 ----
 Next are a few details about
 the system-defined generic
@@ -787,14 +870,14 @@ externalized as public rtns
    stmts [
      proc_invo inn.icount
        upd_args { p_count(lex.p_count) }
-       ro_args { people(fed.mydb.people) },
+       ro_args { the_db(fed.mydb) },
    ]
    updater icount {
      upd_params { p_count(sys.std.Core.Type.UInt) }
-     ro_params { people(type.var.fed.mydb.people) }
+     ro_params { the_db(type.var.fed.mydb) }
      exprs {
        pc(func_invo sys.std.Core.Relation.cardinality
-         args { topic(lex.people) }
+         args { topic(lex.the_db.people) }
        ),
      }
      stmt {
