@@ -10,10 +10,10 @@
 
 <![CDATA[
 NOTE: THIS
-TALK'S IN
-THE MIDDLE
-OF BEING
-REWRITTEN
+TALK'S YET
+TO BE
+COMPLETED,
+TRIMMED
 ----
 Muldis D -
 Portable Databases
@@ -1100,13 +1100,13 @@ relations with no contriving
 Any logical difference is a
 big difference; the generic
 Muldis D identity test
-operator, is_identical(),
+operator, "is_identical",
 will never result in TRUE if
 there is a logical
 difference in its operands
 ----
 With character data,
-is_identical() treats any
+"is_identical" treats any
 differences in case or
 accents or whitespace as
 significant, and so any
@@ -1130,7 +1130,7 @@ distinction for identity
 With numeric data, Muldis D
 treats even floating-point
 derived values as exact
-values; is_identical() will
+values; "is_identical" will
 only result in TRUE if all
 bits of the significand and
 exponent are the same
@@ -1530,12 +1530,201 @@ Muldis D means there are no
 reserved words, so users may
 name their entities anything
 ----
+Next are a few example code
+snippits, in a fake dialect;
+note that they use SQL terms
+----
+To just select a constant
+scalar value
+----
+ Muldis D:
+   'x'
+ SQL (as a scalar query):
+   (SELECT 'x')
+ or:
+   (SELECT 'x' FROM dual)
+----
+To return a rowset of all
+rows in a table
+----
+ Muldis D:
+   tab1
+ SQL:
+   SELECT * FROM tab1
+----
+To return a scalar count
+of rows in a table
+----
+ Muldis D:
+   sys.std.Core.Relation.cardinality(
+     topic(tab1)
+   )
+ SQL (as a scalar query):
+   (SELECT COUNT(*) FROM tab1)
+----
+To return a rowset having
+just some columns from all
+rows of a table
+----
+ Muldis D:
+   sys.std.Core.Relation.projection(
+     topic(tab1),
+     attrs(Set:{ 'col1', 'col2' }),
+   )
+ SQL:
+   SELECT DISTINCT col1, col2
+   FROM tab1
+----
+To return a rowset having
+all cols of just some rows
+of a table, where certain
+columns match desired values
+----
+ Muldis D:
+   sys.std.Core.Relation.semijoin(
+     source(tab1),
+     filter(Relation:{
+       { col1(Text:'hello'), col2(Int:9:5) },
+       { col1(Text:'world'), col2(Int:9:7) },
+     }),
+   )
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+----
+ SQL:
+   SELECT *
+   FROM tab1
+   WHERE (col1, col2) IN (
+     SELECT 'hello' AS col1, 5 AS col2
+     UNION
+     SELECT 'world' AS col1, 7 AS col2
+   )
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+----
+ or:
+   SELECT *
+   FROM tab1
+   WHERE col1 = 'hello' AND col2 = 5
+      OR col1 = 'world' AND col2 = 7
+----
+Alternately you can use
+"semidifference" if you want
+rows that *don't* match,
+like a NOT IN subquery
+----
+Alternately you can use
+"restrict" for generic
+boolean expressions besides
+matches/not-matches,
+like a generic WHERE
+----
+To do a natural inner join
+on 2 tables, say
+tab1(col1,col2,col3),
+tab2(col2,col3,col4), such
+that the result is
+tab(col1,col2,col3,col4)
+----
+ Muldis D:
+   sys.std.Core.Relation.join(
+     topic(QuasiSet:{ tab1, tab2 }),
+   )
+ SQL:
+   SELECT DISTINCT tab1.*, tab2.col4
+   FROM tab1 NATURAL INNER JOIN tab2
+ or:
+   SELECT DISTINCT tab1.*, tab2.col4
+   FROM tab1 INNER JOIN tab2 USING (col2, col3)
+ or:
+   SELECT DISTINCT tab1.*, tab2.col4
+   FROM tab1 INNER JOIN tab2
+     ON tab2.col2 = tab1.col2 AND tab2.col3 = tab1.col3
+ ;
+ ;
+----
+To select rows but with some
+cols renamed
+----
+ Muldis D:
+   sys.std.Core.Relation.rename(
+     topic(tab1),
+     map(Relation:['before','after']:{
+       ['col1', 'foo'],
+       ['col3', 'bar'],
+     }),
+   )
+ SQL:
+   SELECT col1 AS foo, col2, col3 AS bar
+   FROM tab1
+----
+To select rows with extra
+columns
+----
+ Muldis D
+   with { function myext {
+       result sys.std.Core.Type.Tuple
+       params { topic(sys.std.Core.Type.Tuple) }
+       body { Tuple:{
+         a => Text:'x',
+         b => sys.std.Integer.difference(
+           minuend(lex.topic.m),
+           subtrahend(lex.topic.n)
+         ), } }
+   }, }
+   sys.std.Core.Relation.extension(
+     topic(tab1), func(inn.myext), )
+ SQL:
+   SELECT tab1.*, 'x' AS a, (tab1.m - tab1.n) AS b FROM tab1
+ ;
+ ;
+----
+Now that last Muldis D
+example shows the use of a
+closure; the "extension"
+operator takes a relation
+and a function reference,
+which it invokes on every
+tuple of the relation
+----
+Not shown is an optional
+"assuming" quasi-tuple
+parameter of "extension",
+which provides extra, static
+context to the closure from
+the main expression, if it
+had needed such
+----
+Closures like this are used
+with many other functions
+too such as "projection"
+and "summary"; closures are
+exactly how a general
+purpose language would
+implement such functions
+----
+A benefit of using closures
+explicitly, versus their
+being embedded with SQL,
+is avoiding confusion as to
+what various unqualified
+names refer to, eg an inner
+vs outer query tuple attr
+----
 1234567890123456789012345678901234567890
 ----
-[FOLLOWING NOT IN ORDER PER SE]
-[compare some SQL and MD code re relational ops]
 [intro constraints]
 [intro transactions]
+[TODO: GUIDELINE NOTES TO EXPAND INTO SLIDES]
+[THIS IS JUST TO BE THE LAST 10% OF THE TALK]
 [intro Muldis Rosetta]
 [is toolkit as per Muldis D]
 [why done in Perl]
