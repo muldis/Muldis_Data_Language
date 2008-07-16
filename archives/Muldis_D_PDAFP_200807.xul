@@ -1415,13 +1415,125 @@ several times, say while
 authenticated as different
 users
 ----
+Entity Names
+----
+Muldis D has a hierarchical
+namespace for all invokable
+DBMS entities, both system
+and user-defined, including
+depots, variables, types,
+and routines
+----
+Entities are always invoked
+fully-qualified with their
+namespace, rather than
+unqualified; for example,
+"sys.std.Rational.sum" is
+used rather than "sum"
+----
+Doing this reduces ambiguity
+and bugs that can result
+from name searches; for
+example, a call to just
+"sum" might break or change
+behaviour if a new "sum" is
+declared more locally
+----
+Another advantage is that
+picking which of multiple
+"sum" to dispatch to doesn't
+have to depend on names or
+declared types of arguments;
+only the routine name is
+needed to determine invocant
+----
+System-defined entities are
+under the top namespace
+"sys", which is subdivided
+mainly into "sys.std", for
+official Muldis D features,
+and "sys.imp", for extra
+implementation-specifics
+----
+Controls for mounting and
+unmounting depots are under
+the top namespace "mnt"
+----
+Global-scope user-defined
+entities are all under the
+top namespace "fed" (meaning
+"federation"); beneath that,
+they are grouped by depot
+mount names, and then as per
+the depot's organization
+----
+Now "fed" is just intended
+for calling out to other
+depots than your own; the
+top namespace "dep" is
+rooted at the caller's own
+depot, and should be used
+for calls within it
+----
+A subdepot generalizes a SQL
+schema; you can have zero
+or more layers of these
+namespaces under a depot;
+"sdp" is rooted at the
+caller's most immediate
+parent; it might match "dep"
+----
+A package is a generic
+privatizable namespace under
+a depot/subdepot; it is as
+per the Oracle DBMS schema
+object of that name; "pkg"
+is rooted at the caller's
+host package
+----
+Within the context of a type
+or routine definition, the
+top namespace "inn" is what
+you use to invoke any child
+or sibling "inner" types or
+routines
+----
+Within the context of a
+routine body, the top
+namespace "lex" is what you
+use to invoke that routine's
+lexical parameter arguments,
+variables, or expression or
+statement nodes
+----
+Some Muldis D features make
+use of special prefixes or
+suffixes to entity names,
+such as for drilling into
+var attrs, or for avoiding
+type def explosions, or for
+taking the type of something
+----
+Declared names of
+user-defined entities are
+unqualified or their context
+is named separately; an
+entity name may have any
+Unicode chars at all, and it
+may be the empty string
+----
+Entity names are case/etc
+sensitive and are analagous
+to delimited SQL
+identifiers; the nature of
+Muldis D means there are no
+reserved words, so users may
+name their entities anything
+----
 1234567890123456789012345678901234567890
 ----
 [FOLLOWING NOT IN ORDER PER SE]
-[intro namespaces]
-  [entity names case-sensitive, may be empty, no reserved words, etc]
 [compare some SQL and MD code re relational ops]
-[mention cross-database queries; multiple dbs act like one]
 [intro constraints]
 [intro transactions]
 [intro Muldis Rosetta]
