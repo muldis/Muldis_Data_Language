@@ -923,6 +923,30 @@ positional, besides
 procedure statements and
 array elements
 ----
+Wherever possible, the
+built-in operators of Muldis
+D are the N-ary versions of
+those, such that they will
+take any number of primary
+operands, in the form of a
+single Set|Array|Bag param
+----
+Examples are: boolean and,
+or, xor; numeric sum,
+product; string catenation;
+relational union,
+intersection, join, product;
+these are all associative,
+and almost all commutative
+----
+Muldis D also generalized
+the N-ary operator concept
+so that it also fulfills the
+role of what are distinct
+aggregate operators in SQL;
+"sum" for example, and also
+"min","max" are just N-aries
+----
 Nonscalar attributes
 ----
 Data types and the
@@ -1719,28 +1743,220 @@ what various unqualified
 names refer to, eg an inner
 vs outer query tuple attr
 ----
-1234567890123456789012345678901234567890
+Database constraints
 ----
-[intro constraints]
-[intro transactions]
-[TODO: GUIDELINE NOTES TO EXPAND INTO SLIDES]
-[THIS IS JUST TO BE THE LAST 10% OF THE TALK]
-[intro Muldis Rosetta]
-[is toolkit as per Muldis D]
-[why done in Perl]
-[just generate equivalent Perl code from MD, let Perl do most of the work]
-[or generate SQL where applicable]
-[provides relational ops for direct use on Perl app land vars]
-[apps call database like remote procedure calls]
-[or like database, its procs built into app]
-[Example lets core be tryable, testable in isolation]
-[more reliable, no errors or limits due to non-native system]
-[then bridges over SQL DBMSs et al can be tested in isolation]
-[develop/test on one DBMS, deploy on another]
-[develop/test a DBMS app without having a "real" DBMS]
-[Muldis Rosetta keeps all features, speed of underlying DBMS]
+Given that "the database" in
+Muldis D is a variable, it
+has a data type, and most of
+the common database
+constraints are canonically
+expressed as type
+constraints
 ----
-[content goes here]
+A database, like with other
+types, can have a generic
+constraint function apply to
+it, which takes a database
+value as its arg, resulting
+in TRUE if the constraint
+passes, and FALSE if not
+----
+Separately, each relvar of
+the database can have such,
+both at the per-tuple level
+and the whole relation
+level; these functions can
+be arbitrarily complex, and
+are very powerful
+----
+The DBMS would automatically
+apply constraints to the
+database at the end of each
+executed statement, and it
+would throw an exception if
+any resulted in FALSE
+----
+Constraints can not be
+deferred, so the database is
+always in a valid state; but
+thanks to Muldis D being
+able to update multiple
+variables simultaneously,
+this isn't ever a problem
+----
+For example, if a constraint
+says that each bank account
+credit needs a corresponding
+debit, you don't need to
+defer constraint checking to
+the end of the latter; you
+can do both changes at once
+----
+As canonical abstractions of
+these constraint functions,
+Muldis D provides analagous
+syntax to SQL's unique key
+and foreign key constraints;
+the former is on a relation,
+the latter between db attrs
+----
+Muldis D also provides
+distributed unique/foreign
+key constraints; the first
+tests that several relations
+have no key values in
+common, the second lets any
+of mult rels have the parent
+----
+As an example use case of
+a distributed unique key,
+say a library has books and
+DVDs, each having different
+descriptive details, but
+there is a common catalogue
+id system shared by both
+----
+Say then that you have
+separate relvars for your
+book and DVD inventory; a
+distributed unique key can
+ensure that catalogue item
+ids are mutually distinct
+between the 2 relvars
+----
+And an example of a
+distributed foreign key?
+Take a loan record; a fk
+that targets books+DVDs
+ensures the cat id of the
+materials borrowing record
+matches a library property
+----
+Muldis D fully supports keys
+consisting of multiple
+attributes, for all kinds of
+key constraints
+----
+Transition constraints are a
+main exception; those apply
+to a variable rather than
+being a type constraint;
+they check that a var may
+change directly from its old
+value to its new value
+----
+Transactions
+----
+All "D" languages are ACID
+compliant and support
+arbitrary depth nested
+transactions; you can start
+a transaction within
+another one
+----
+This lets code blocks make
+themselves atomic without
+worry of how calling code
+uses transactions
+----
+Only a parent-most
+transaction commit will
+cause actual commit; child
+transactions make it easy to
+rollback just part of the
+overall transaction
+----
+A transaction will subjugate
+all mounted depots together,
+so they commit or rollback
+as a unit
+----
+Muldis D transactions are
+always explicitly tied to
+lexical scopes
+----
+They are also tied to the
+exception control-flow
+mechanism; when you enter a
+"try" block, that begins a
+new child transaction
+----
+If the "try" block executes
+to its end normally, its
+transaction commits; if the
+"try" block abnormally ends
+with an exception (that it
+catches), its transaction
+rolls back
+----
+So transactions are easy to
+get right even when a block
+has multiple exit points,
+or throws exceptions; no
+worry about mis-matched
+transaction start/end
+statement calls
+----
+A Muldis D DBMS *must*
+rollback incomplete
+transactions on disconnect;
+only an explicit success can
+commit; many SQL DBMSs do
+that too, which is good
+----
+Some SQL DBMSs will
+auto-commit an incomplete
+transaction, which is bad;
+that kind of behaviour makes
+a DBMS unreliable with any
+unexpected failure
+----
+In Muldis D, all kinds of
+changes are subject to
+transactions, including
+data definition; so schema
+changes due to updating the
+system catalog can also be
+rolled back
+----
+SQL DBMSs mutually differ on
+this; SQLite subjugates
+everything to transactions,
+including data definition,
+so it is more powerful in
+this respect
+----
+MySQL will do an implicit
+commit of prior data changes
+if you, say, create a table;
+this is a bad thing
+----
+An implementation of Muldis
+D over such as MySQL will
+have to fail what it can't
+support; there, data
+definition should only be
+allowed outside of a
+transaction
+----
+    TODO: GUIDELINE NOTES TO EXPAND INTO SLIDES
+    THIS IS JUST TO BE THE LAST 10% OF THE TALK
+    intro Muldis Rosetta
+    is toolkit as per Muldis D
+    why done in Perl
+    just generate equivalent Perl code from MD, let Perl do most of work
+    or generate SQL where applicable
+    provides relational ops for direct use on Perl app land vars
+    apps call database like remote procedure calls
+    or like database, its procs built into app
+    Example lets core be tryable, testable in isolation
+    more reliable, no errors or limits due to non-native system
+    then bridges over SQL DBMSs et al can be tested in isolation
+    develop/test on one DBMS, deploy on another
+    develop/test a DBMS app without having a "real" DBMS
+    Muldis Rosetta keeps all features, speed of underlying DBMS
+    common test suite for all Engines / all DBMSs
+    END TODO
 ----
 Copyright © 2008,
 Darren Duncan
