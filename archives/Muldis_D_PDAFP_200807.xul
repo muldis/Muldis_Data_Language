@@ -215,7 +215,7 @@ example, all numbers are
 radix-agnostic in concept,
 regardless of implementation
 ----
-Muldis D is not DWIM
+Muldis D is *not* DWIM
 (do what I mean) where
 DWIM means guessing
 ----
@@ -1206,6 +1206,9 @@ whose attributes are all
 relations (or databases);
 the relvars are virtual
 ----
+A database-typed variable is
+called a "dbvar"
+----
 The SQL concept of multiple
 schemas in a database, as
 namespaces for organizing
@@ -1264,11 +1267,157 @@ first, and then you actually
 make a key of the virtual
 attribute
 ----
+System Catalog
+----
+The SQL concept of an
+"information schema" is
+represented in Muldis D by
+its "system catalog", which
+is a special dbvar that is
+separate from the dbvar
+holding ordinary user data
+----
+The Muldis D system catalog
+is updateable, and in fact,
+updating the catalog is
+*the* fundamental way to do
+data-definition in Muldis D;
+any DD-specific routines are
+just abstractions of this
+----
+So, for example, to create a
+new data relvar, you insert
+records into appropriate
+catalog relvars that
+describe it; the data relvar
+then comes into existence as
+a side-effect of the inserts
+----
+Similarly, to create a new
+user-defined data type or
+routine, you insert its
+code-as-data into the
+catalog; the code compiles
+and becomes runnable as a
+side-effect
+----
+You even perform the analogy
+of connecting or
+disconnecting a DBMS by
+inserting or deleting
+catalog records that
+describe the connection
+----
+Generally speaking, users
+can do absolutely everything
+in the DBMS with just data
+querying and updating
+operations
+----
+In particular, you should
+see that SQL's ALTER
+statements have a much more
+flexible analogy in Muldis
+D, where you can just update
+records in an ad-hoc way;
+changed code auto-recompiles
+----
+Since the catalog contents
+are abstract AST-like data
+structures (that are tuples
+and relations), and not code
+strings, its easy for a DB
+wrapper to introspect the
+DB, even its stored routines
+----
+The system catalog also
+reflects all system-defined
+entities, but this portion
+is read-only
+----
+Depots
+----
+A depot is a local
+abstraction of a typically
+external storage system
+which holds 1 user data
+dbvar and 1 associated
+catalog dbvar (and maybe
+details to map actuality)
+----
+Generally speaking, the SQL
+concept of "the database"
+is represented by a depot,
+which packages together user
+data and user-defined types
+and routines
+----
+A depot can also have just
+code; then it is
+essentially a dynamically
+loaded library
+----
+A DBMS can mount multiple
+depots at once, under their
+own namespaces, like a
+filesystem
+----
+You can perform
+cross-database queries or
+updates on multiple depots
+by mounting them at once;
+they are like one database
+during that time,
+definition isolation aside
+----
+So cloning a database is
+essentially just a variable
+assignment from one depot's
+data/catalog dbvars to those
+of another depot
+----
+A depot is a completely
+independent unit; all types
+or constraints defining a
+dbvar or routine are always
+kept with it
+----
+A depot can't have external
+dependencies to understand
+its contents, implementing
+DBMS aside; there can't be
+any inter-depot constraints,
+but depots can call each
+others' routines
+----
+Even code and data that is
+conceptually part of the
+application lives in depots,
+and you do data definition
+or manipulation with such
+in the same way
+----
+A depot can be persistent
+or transient, the latter
+kind being where "temporary"
+entities probably should
+live, such as one-off
+generated query routines
+----
+A depot can be mounted
+read-only
+----
+Authentication details like
+DB user/pass apply per-depot
+mount, not on a whole DBMS;
+you can mount the same DB
+several times, say while
+authenticated as different
+users
+----
 1234567890123456789012345678901234567890
 ----
 [FOLLOWING NOT IN ORDER PER SE]
-[intro system catalog]
-[intro depots]
 [intro namespaces]
   [entity names case-sensitive, may be empty, no reserved words, etc]
 [compare some SQL and MD code re relational ops]
