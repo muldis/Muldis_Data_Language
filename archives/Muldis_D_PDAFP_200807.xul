@@ -150,7 +150,7 @@ The main part of the book,
 chapter 4, is also a free
 download at their website
 ****
-http://www.thethirdmanifesto.com
+http://thethirdmanifesto.com
 ----
 Muldis D is effectively a
 generalization of all the
@@ -258,6 +258,14 @@ code in the same language as
 your main application, such
 as when dynamically
 generating database queries
+----
+Hosted data means you aren't
+stitching code strings at
+runtime, and you never have
+to escape or quote values;
+so there's no exploitable
+analogy here to the common
+SQL injection attack
 ----
 The Muldis D spec bundles 2
 "Tiny" concrete grammars,
@@ -864,8 +872,8 @@ externalized as public rtns
      INTO p_count
      FROM mydb.people;
  ... a Muldis DB procedure would
- need an inner updater to hold
- the "COUNT(*) FROM people" portion,
+ use an inner updater to hold the
+ "COUNT(*) FROM people" portion,
  which is a value expression
 ----
  create in fed.myapp
@@ -914,6 +922,8 @@ named rather than
 positional, besides
 procedure statements and
 array elements
+----
+Nonscalar attributes
 ----
 Data types and the
 relational model are
@@ -1163,16 +1173,105 @@ addresses or hidden
 equivalents of tuples in
 relvars
 ----
+Virtual reality
+----
+A fundamental feature of a
+relational database is that
+multiple perceptions of the
+same data can exist at once;
+each user can perceive the
+same data being organized
+according to their own prefs
+----
+Even if the actual means of
+storing data changes over
+time, users continue to be
+able to perceive it in the
+same ways as before the
+change
+----
+In Muldis D, an attr of a
+var can itself be treated as
+a var; if the latter is
+updated, the actual effect
+is to update the former to
+the same value it had but
+for one changed attr value
+----
+The most significant example
+of this feature is that an
+entire database is really
+just a single tuple variable
+whose attributes are all
+relations (or databases);
+the relvars are virtual
+----
+The SQL concept of multiple
+schemas in a database, as
+namespaces for organizing
+tables, is realized in
+Muldis D with DB attrs being
+themselves databases, whose
+attrs are relations
+----
+More on Muldis D namespaces
+will follow further along
+----
+The SQL concept of viewed
+tables versus base tables is
+represented in Muldis D by
+declaring special functional
+dependencies between several
+database relvars, using
+mapping functions
+----
+The "virtual" relvars are
+defined that their values
+can always be generated,
+using the mapping functions,
+from other relvars, so
+updates to the latter always
+result in upd to the former
+----
+As with SQL's views, such
+"dependent" virtual relvars
+are sometimes directly
+updateable, such that their
+"determinant" base relvars
+are also updated, and
+sometimes they're read-only
+----
+This same virtual attribute
+concept also applies to
+tuples in general, so the
+same Muldis D feature covers
+the SQL concept of a
+"generated column" as well,
+generated from other attrs
+----
+As a use case example, say
+you conceptually want a
+simple (unique) key
+constraint on a relation's
+text attribute that is
+case-insensitive, but you
+want the text case preserved
+----
+You can do this by making a
+virtual attribute defined as
+a case-folded version of the
+first, and then you actually
+make a key of the virtual
+attribute
+----
 1234567890123456789012345678901234567890
 ----
 [FOLLOWING NOT IN ORDER PER SE]
-[say what a database is]
 [intro system catalog]
 [intro depots]
 [intro namespaces]
   [entity names case-sensitive, may be empty, no reserved words, etc]
 [compare some SQL and MD code re relational ops]
-[intro views]
 [mention cross-database queries; multiple dbs act like one]
 [intro constraints]
 [intro transactions]
