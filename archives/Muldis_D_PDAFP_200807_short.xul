@@ -10,147 +10,52 @@
 
 <![CDATA[
 NOTE: THIS
-TALK'S YET
-TO BE
-COMPLETED,
-TRIMMED
+TALK'S NOW
+GETTING
+TRIMMED,
+REWRITTEN
 ----
 Muldis D -
 Portable Databases
 At Full Power
 (2008 July Edition)
+(Shorter Version)
 ----
 Darren Duncan
 Muldis Data Systems
-----
+****
 Victoria, BC, Canada
-----
+****
 Database Software
 Products and Services
 (Perl by Default)
 ----
 Miss something?
 http://muldis.com
-has a copy of this
-slideshow and a
-list of all urls
+has a copy of this talk,
+plus a longer version,
+and a list of all urls
 ----
-Questions?
-You may ask anywhen
-But at the end is best
+This talk is about
+introducing "Muldis D",
+a new programming language
+for truly relational
+databases; you can see its
+official spec on CPAN or at
+http://muldis.com
 ----
-So what's this
-talk about?
+The spec is mostly done but
+has a few gaps, which I will
+fill in soon; ask me if you
+can't find something
 ----
-1. Introduce
-Muldis D
-----
-New programming
-language for
-truly relational
-databases
-----
-Official Muldis D language
-spec is on CPAN
-(Comprehensive Perl Archive Network),
-in the namespace Muldis::D
-****
-http://search.cpan.org/dist/Muldis-D/
-****
-Or you can see the spec by
-way of http://muldis.com
-----
-2. Introduce
-Muldis Rosetta
-----
-Reference
-Implementation
-of Muldis D,
-in Perl
-----
-Also on CPAN, in the
-namespace Muldis::Rosetta
-****
-http://search.cpan.org/dist/Muldis-Rosetta/
-****
-Or by way of http://muldis.com
-----
-Note that both the Muldis D
-spec and the Muldis Rosetta
-implementation are presently
-incomplete; the first is
-about 90% done, and the
-second is about 10% done,
-as of this writing
-----
-Now before anyone asks,
-the word "Muldis" means
-"Multiverse of Discourse";
-search for its singular form
-----
-The phrase is meaningful
-to what my work's about,
-and the contraction's
-good for branding
-----
-So moving
-right along ...
-----
-Muldis D is a Turing /
-computationally
-complete language
-with fully integrated
-database functionality
-----
-It can perform any
-operation that a
-typical general purpose
-language is capable of
-----
-Muldis D is intended to be
-a "D" language as defined by
-"Databases, Types, and
-The Relational Model:
-The Third Manifesto" (TTM),
-a book by Hugh Darwen
-and Christopher J. Date
-----
-The Third Manifesto is a
-formal proposal for a solid
-foundation for data and
-database management systems
-(DBMSs)
-----
-It is an abstract blueprint
-for the design of a truly
-relational DBMS and the
-language interface
-to such a DBMS
-----
-It consists in essence of a
-rigorous set of principles,
-stated in the form of a
-series of prescriptions
-and proscriptions
-----
-A hypothetical language
-that conforms to those,
-Darwen and Date call "D"
-----
-The "D" part of
-"Muldis D"
-refers to that
-----
-It's just a
-coincidence
-my own names
-start with "D"
-----
-The main part of the book,
-chapter 4, is also a free
-download at their website
-****
-http://thethirdmanifesto.com
+I also have a reference
+implementation in the works,
+called "Muldis Rosetta", but
+that is mostly incomplete so
+you can't actually run
+Muldis D code yet; hopefully
+you can in a few weeks
 ----
 Muldis D is effectively a
 generalization of all the
@@ -160,64 +65,13 @@ of SQL that isn't hobbled by
 ill-conceived or out-dated
 aspects and features
 ----
-In this case, a dialect of
-SQL refers to the specific
-combination of what concrete
-SQL syntax a specific DBMS
-product accepts as input,
-and the exact semantics of
-executing said
-----
-Muldis D is intended to
-serve as an intermediate
-language for translating
-any kind of SQL code from
-one dialect to another,
-while exactly preserving all
-of its semantics
-----
-The "any kind" includes
-queries, data manipulation,
-schema definitions,
-user-defined types,
-user-defined routines,
-utilities, applications
-----
-At the same time, either the
-source or the destination
-language of such translation
-doesn't have to be SQL;
-it could be some non-SQL
-language, either database
-specific or general purpose
-----
-Muldis D is designed with a
-high degree of determinism;
-traditionally implicit
-semantic differences between
-various languages / dialects
-become explicit decisions
-or options in Muldis D
-----
-For example, the semantics
-for when and how a number
-loses precision or is
-rounded are made explicit;
-or when and how the case
-or accents or whitespace of
-text affects comparisons
-----
-How Muldis D specifies
-behaviour is done in as
-neutral and portable a
-manner as possible; for
-example, all numbers are
-radix-agnostic in concept,
-regardless of implementation
-----
-Muldis D is *not* DWIM
-(do what I mean) where
-DWIM means guessing
+Muldis D is designed as an
+intermediate language for
+translating database code
+between SQL dialects, or
+between non-SQL languages,
+while accurately preserving
+all semantics
 ----
 Muldis D is a homoiconic
 declarative language; you
@@ -243,22 +97,6 @@ as multi-dimensional data
 structures of some other
 host language, such as Perl
 ----
-The plain text choice makes
-more sense if you want to
-use Muldis D in a more
-isolated manner, and compile
-it into apps or libraries
-the same as you would with
-C or Haskell or Perl code
-----
-The hosted data choice makes
-more sense if you want to
-actually write your Muldis D
-code in the same language as
-your main application, such
-as when dynamically
-generating database queries
-----
 Hosted data means you aren't
 stitching code strings at
 runtime, and you never have
@@ -267,21 +105,19 @@ so there's no exploitable
 analogy here to the common
 SQL injection attack
 ----
-The Muldis D spec bundles 2
-"Tiny" concrete grammars,
-named "PTMD_Tiny" (Tiny
-Plain Text Muldis D) and
-"HDMD_Perl_Tiny" (Tiny
-Perl-Hosted Data Muldis D);
-each is a "Muldis D Dialect"
+The code examples in the
+rest of this talk will come
+in a variety of concrete
+grammars / dialects, some
+that are official, named
+"Tiny", and some that are
+fake
 ----
-It should be possible to
-make a complete parser for
-either that is composed of
-very little code; however,
-Muldis D code written in a
-Tiny dialect is somewhat
-verbose, much like an AST is
+Please treat all example
+code as pseudo-code, since
+in reality you can make and
+use any concrete grammar you
+want with Muldis D
 ----
 As examples, here are some
 scalar literals in the
@@ -304,22 +140,6 @@ HDMD_Perl_Tiny dialect:
   [ 'Rat', 'perl_int_ratio', [ 1, 43 ] ]
 Note this grammar has more
 lit formats to choose from
-----
-Future Muldis D dialects
-should permit considerably
-less verbose Muldis D code,
-but their grammars would
-either be more complicated,
-or they would handle only
-a subset of the language
-----
-The Muldis D code examples
-in the rest of this
-slideshow will be in either
-one of the Tiny dialects or
-in a fake terse Muldis D
-dialect ("fake" meaning no
-grammar exists for it yet)
 ----
 Muldis D is intended to be
 used as a toolkit for
@@ -345,6 +165,67 @@ parsed into, or as their
 public query language as an
 alternative to taking SQL
 ----
+Please note that Muldis D is
+fundamentally verbose, like
+an AST; so this talk will
+just have trivial code
+examples, and will explain
+most language features in
+words
+----
+Also, most of the talk
+should be taken as a list
+of comparisons or contrasts
+between Muldis D and SQL,
+and many things are better
+explained in words than
+with code
+----
+Muldis D is not DWIM where
+DWIM means guessing;
+traditionally implicit
+semantic differences between
+various languages / dialects
+become explicit decisions
+or options in Muldis D
+----
+For example, the semantics
+for when and how a number
+loses precision or is
+rounded are made explicit;
+or when and how the case
+or accents or whitespace of
+text affects comparisons
+----
+How Muldis D specifies
+behaviour is done in as
+neutral and portable a
+manner as possible; for
+example, all numbers are
+radix-agnostic in concept,
+regardless of implementation
+----
+Muldis D is intended to be
+a "D" language as defined by
+"Databases, Types, and
+The Relational Model:
+The Third Manifesto" (TTM),
+a book by Hugh Darwen
+and Christopher J. Date
+----
+The main part of the book,
+chapter 4, is also a free
+download at their website
+****
+http://thethirdmanifesto.com
+----
+The "D" part of "Muldis D"
+refers to "D language;
+it doesn't refer my name
+****
+Also, "Muldis" means
+"Multiverse of Discourse"
+----
 Not accustomed to some
 basic relational terms?
 Here's what refers to what:
@@ -353,11 +234,9 @@ Here's what refers to what:
   relation  : rowset
   relvar    : table
 ----
-Also, a relational database
-gets that name "relational"
-*because* it is composed of
-relation-typed variables
-(relvars)
+AFTER THIS,
+NO TRIMMING
+WAS DONE YET
 ----
 Muldis D has very distinct
 concepts for the terms
