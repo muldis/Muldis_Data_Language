@@ -234,88 +234,25 @@ Here's what refers to what:
   relation  : rowset
   relvar    : table
 ----
-AFTER THIS,
-NO TRIMMING
-WAS DONE YET
+Muldis D doesn't use the
+word "object" since that
+doesn't distinguish between
+the concepts of "value"
+and "variable"; the latter
+terms are used instead; a
+value is eternal, immutable
 ----
-Muldis D has very distinct
-concepts for the terms
-"value" and "variable"
+We also say "selector"
+rather than "constructor"
+for a routine; it doesn't
+make sense to say we are
+"building" a value; rather
+we're "selecting" one
 ----
-A value is conceptually
-unique, eternal, immutable,
-and isn't fixed in time
-or space; it has no address
-----
-So when one appears to be
-testing 2 values for
-equality, they are
-actually testing whether
-2 value appearances are
-in fact the same value
-----
-A variable is fixed in
-time and space; it does
-have an address; it holds
-an appearance of a value;
-a variable can be created
-and destroyed, and its
-value might not be distinct
-----
-The term "object" isn't
-used since it doesn't make
-a value/variable distinction
-in the general case
-----
-We use the term "selector"
-in places where an OO
-language might use the term
-"constructor" for a routine;
-it doesn't make sense to say
-we are "building" a value;
-rather we're "selecting" one
-----
-In the Muldis D type system,
-a "data type" is a set of
-values; as with individual
-values, a data type is
-conceptually eternal and
-immutable
-----
-A subtype or supertype
-is a type whose values
-are a subset or superset,
-respectively, of some
-other type
-----
-A union type or intersection
-type is a type whose values
-are the union or
-intersection, respectively,
-of multiple other types
-----
-The 2 special types "Empty"
-and "Universal" have exactly
-zero values and all possible
-values, respectively; they
-are the intersection and
-union type, respectively,
-of all other types
-----
-When you define a data type,
-you are defining a not-empty
-set of values, as well as
-picking one of those as the
-type's "default value",
-one of which every not-empty
-type must have
-----
-Muldis D is polymorphic;
-if a context requires a
-value of some given type,
-then a value of any of
-that type's subtypes may
-be used there
+A Muldis D "data type" is a
+set of values; a subtype /
+supertype relationship means
+subset / superset of values
 ----
 Subtyping in Muldis D, as in
 any "D" language, takes the
@@ -324,122 +261,21 @@ constraint", not
 "specialization
 by extension"
 ----
-So conceptually speaking, a
-"circle" is an "ellipse",
-but a "coloured circle" is
-neither a "circle" nor a
-"colour"
+So an example type "circle"
+is a subtype of "ellipse",
+and "coloured circle" is
+neither a subtype of
+"circle" nor of "colour";
+rather, a "coloured circle"
+is a multi-component type
 ----
-So then, a type "circle" is
-a subtype of "ellipse", and
-"coloured circle" is neither
-a subtype of "circle" nor of
-"colour"
-----
-Rather, for example, a
-"coloured circle" is a
-multi-component type which
-has components of type
-"circle" and "colour", but
-composition like this does
-not a subtype make
-----
-Every Muldis D value that
-can be in a database is a
-member of exactly 1 of 3
-special union types:
-Scalar, Tuple, and Relation
-----
-Subtypes of those 3 are
-scalar, tuple, and relation
-types, respectively; their
-values are scalar, tuple,
-and relation values; tuples
-and relations together
-are called nonscalars
-----
-There are also quasi-
-scalar/tuple/relation types,
-which are disjoint from the
-above, but their values
-can't be in databases;
-they're used with routine
-parameters or lexical vars
-----
-Remnant types round out the
-main categories; they are
-any sets of 2+ values that
-don't qualify for the other
-6 categories
-----
-Scalar types are
-conceptually encapsulated;
-they're like OO languages'
-concepts of object classes
-where all their attributes
-are private, and only
-accessible indirectly
-----
-The definition of a scalar
-type comprises usually one
-or more named "possreps" or
-"possible representations"
-----
-A possrep of a type is like
-an OO "role" or "interface"
-definition; it looks like a
-set of named attributes that
-the type could logically be
-implemented as, but the real
-implementation could differ
-----
-A possrep is exactly like a
-tuple, in fact
-----
-If a type has multiple
-possreps, they can differ in
-arbitrarily large ways, but
-every one is individually
-capable of representing all
-of the type's values
-----
-Any possrep could be used
-exclusively by a user when
-they work with its type,
-without diminishing what
-they can do; they can
-select any value of the type
-and extract any possrep attr
-----
-Next are example literals of
-a user-defined WeekDay type,
-which is an enumerated type;
-it has 2 possreps called
-'name' and 'number', each of
-those having a single attr
-named with the empty string
-----
- PTMD_Tiny dialect:
-   Scalar:'fed.lib.the_db.WeekDay':'name':{
-     '' => Text:'monday',
-   }
-   Scalar:'fed.lib.the_db.WeekDay':'number':{
-     '' => Int:9:5,
-   }
- HDMD_Perl_Tiny dialect:
-   [ 'Scalar', 'fed.lib.the_db.WeekDay', 'name', {
-     '' => [ 'Text', 'monday' ],
-   } ]
-   [ 'Scalar', 'fed.lib.the_db.WeekDay', 'number', {
-     '' => [ 'Int', 'perl_int', 5 ],
-   } ]
-----
-A few scalar types are
-special and don't have any
-possreps: Bool, Int, Blob,
-Text; a few others exist too
-but those aren't intended
-for general purpose use
+Most Muldis D types are
+scalar or nonscalar (tuple
+or relation) types, and a
+database can only be made of
+those; there also exist
+quasi- variants, used just
+with parameters and lexicals
 ----
 Tuple and relation types
 are conceptually
@@ -464,9 +300,6 @@ is a set of tuples and never
 has duplicate tuples; also,
 a relation's tuples are
 never ordered
-----
-Next are example generic
-tuple and relation literals
 ----
  Tuples in PTMD_Tiny dialect:
    Tuple:{}
@@ -533,6 +366,44 @@ with pre-defined attributes,
 and the Tiny dialects also
 have special syntax for them
 ----
+Scalar types are
+conceptually encapsulated;
+they're like OO languages'
+concepts of object classes
+where all their attributes
+are private, and only
+accessible indirectly
+----
+The definition of a scalar
+type comprises usually one
+or more named "possreps" or
+"possible representations",
+each of which looks like a
+tuple; a possrep is like an
+OO "role" or "interface"
+----
+ PTMD_Tiny dialect:
+   Scalar:'fed.lib.the_db.WeekDay':'name':{
+     '' => Text:'monday',
+   }
+   Scalar:'fed.lib.the_db.WeekDay':'number':{
+     '' => Int:9:5,
+   }
+ HDMD_Perl_Tiny dialect:
+   [ 'Scalar', 'fed.lib.the_db.WeekDay', 'name', {
+     '' => [ 'Text', 'monday' ],
+   } ]
+   [ 'Scalar', 'fed.lib.the_db.WeekDay', 'number', {
+     '' => [ 'Int', 'perl_int', 5 ],
+   } ]
+----
+A few scalar types are
+special and don't have any
+possreps: Bool, Int, Blob,
+Text; a few others exist too
+but those aren't intended
+for general purpose use
+----
 Next are a few details about
 the system-defined generic
 scalar types; all of them
@@ -548,13 +419,6 @@ Boolean types
  SQL:
    BOOLEAN, TINYINT(1),
    INTEGER, NUMBER(1), ...
-----
-A Bool has the values FALSE
-and TRUE; it is the only
-essential general-purpose
-scalar data type of a "D"
-language, as it is the
-result of an identity test
 ----
 Numeric types
 ----
@@ -593,12 +457,6 @@ Binary string types
    MEDIUMBLOB, LONGBLOB,
    BYTEA, RAW, LONG RAW, ...
 ----
-A Blob is an
-undifferentiated string of
-bits, that can either be
-small or a LOB
-(large object)
-----
 Character string types
 ----
  Muldis D:
@@ -610,16 +468,8 @@ Character string types
    NATIONAL variants,
    VARCHAR2, LONG, ...
 ----
-A Text is a string of
-characters, that can either
-be small or a LOB
-----
-Muldis D has only one
-system-defined character
-repertoire for character
-string types, which is the
-newest Unicode repertoire
-that exists
+All Muldis D character
+string types are Unicode
 ----
 Muldis D has temporal and
 spatial data types, for
@@ -628,6 +478,8 @@ dates, times, durations,
 components, etc; they have
 possreps defined over Int
 and Rat; they're incomplete
+----
+AFTER HERE WASN'T TRIMMED YET
 ----
 Next are a few details about
 Muldis D routines, most of
