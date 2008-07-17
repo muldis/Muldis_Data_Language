@@ -1124,14 +1124,7 @@ they are Unicode strings and
 may be the empty string;
 users have complete freedom
 ----
-AFTER HERE WASN'T TRIMMED YET
-----
-Next are a few example code
-snippits, in a fake dialect;
-note that they use SQL terms
-----
-To just select a constant
-scalar value
+Code comparisons
 ----
  Muldis D:
    'x'
@@ -1140,16 +1133,10 @@ scalar value
  or:
    (SELECT 'x' FROM dual)
 ----
-To return a rowset of all
-rows in a table
-----
  Muldis D:
    tab1
  SQL:
    SELECT * FROM tab1
-----
-To return a scalar count
-of rows in a table
 ----
  Muldis D:
    sys.std.Core.Relation.cardinality(
@@ -1157,10 +1144,6 @@ of rows in a table
    )
  SQL (as a scalar query):
    (SELECT COUNT(*) FROM tab1)
-----
-To return a rowset having
-just some columns from all
-rows of a table
 ----
  Muldis D:
    sys.std.Core.Relation.projection(
@@ -1170,11 +1153,6 @@ rows of a table
  SQL:
    SELECT DISTINCT col1, col2
    FROM tab1
-----
-To return a rowset having
-all cols of just some rows
-of a table, where certain
-columns match desired values
 ----
  Muldis D:
    sys.std.Core.Relation.semijoin(
@@ -1211,20 +1189,19 @@ columns match desired values
    FROM tab1
    WHERE col1 = 'hello' AND col2 = 5
       OR col1 = 'world' AND col2 = 7
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
 ----
-Alternately you can use
-"semidifference" if you want
-rows that *don't* match,
-like a NOT IN subquery
-----
-Alternately you can use
-"restrict" for generic
-boolean expressions besides
-matches/not-matches,
-like a generic WHERE
-----
-To do a natural inner join
-on 2 tables, say
+The next example is a
+natural join of 2 relations
+whose attrs are as follows:
 tab1(col1,col2,col3),
 tab2(col2,col3,col4), such
 that the result is
@@ -1247,9 +1224,6 @@ tab(col1,col2,col3,col4)
  ;
  ;
 ----
-To select rows but with some
-cols renamed
-----
  Muldis D:
    sys.std.Core.Relation.rename(
      topic(tab1),
@@ -1262,10 +1236,7 @@ cols renamed
    SELECT col1 AS foo, col2, col3 AS bar
    FROM tab1
 ----
-To select rows with extra
-columns
-----
- Muldis D
+ Muldis D:
    with { function myext {
        result sys.std.Core.Type.Tuple
        params { topic(sys.std.Core.Type.Tuple) }
@@ -1283,37 +1254,7 @@ columns
  ;
  ;
 ----
-Now that last Muldis D
-example shows the use of a
-closure; the "extension"
-operator takes a relation
-and a function reference,
-which it invokes on every
-tuple of the relation
-----
-Not shown is an optional
-"assuming" quasi-tuple
-parameter of "extension",
-which provides extra, static
-context to the closure from
-the main expression, if it
-had needed such
-----
-Closures like this are used
-with many other functions
-too such as "projection"
-and "summary"; closures are
-exactly how a general
-purpose language would
-implement such functions
-----
-A benefit of using closures
-explicitly, versus their
-being embedded with SQL,
-is avoiding confusion as to
-what various unqualified
-names refer to, eg an inner
-vs outer query tuple attr
+TRIMMED UP TO HERE
 ----
 Database constraints
 ----
