@@ -233,6 +233,7 @@ Here's what refers to what:
   tuple     : row
   relation  : rowset
   relvar    : table
+  dbvar     : database
 ----
 Muldis D doesn't use the
 word "object" since that
@@ -761,25 +762,15 @@ join can mean the RVAs of
 child records have zero or
 more tuples rather than 1+
 ----
-AFTER HERE WASN'T TRIMMED YET
-----
 Identity matters
 ----
-Muldis D has basic identity
-comparison and value
-assignment operators which
-work for all types, scalar
-and nonscalar; you can
-compare or assign whole
-relations with no contriving
-----
-Any logical difference is a
-big difference; the generic
-Muldis D identity test
-operator, "is_identical",
-will never result in TRUE if
-there is a logical
-difference in its operands
+Muldis D's generic
+"is_identical" and "assign"
+operators work for all
+types, including nonscalars,
+so you can compare or assign
+whole relations without
+contrivances
 ----
 With character data,
 "is_identical" treats any
@@ -826,13 +817,6 @@ casting; for example, from
 a Rat to an Int or from a
 number to character data
 ----
-There are multiple ways to
-round to an integer, and
-multiple ways to represent
-a number as characters; it
-is better to be explicit in
-the conversion semantics
-----
 Tuples in a relation are
 always identified by the
 values of their explicitly
@@ -840,14 +824,6 @@ defined attrs; there are no
 special implicit extra attrs
 like an automatically
 generated SQL "row id"
-----
-Muldis D does not have SQL's
-concept of a "pointer" or
-"reference" type, whose
-values point to memory
-addresses or hidden
-equivalents of tuples in
-relvars
 ----
 Virtual reality
 ----
@@ -882,9 +858,6 @@ whose attributes are all
 relations (or databases);
 the relvars are virtual
 ----
-A database-typed variable is
-called a "dbvar"
-----
 The SQL concept of multiple
 schemas in a database, as
 namespaces for organizing
@@ -892,9 +865,6 @@ tables, is realized in
 Muldis D with DB attrs being
 themselves databases, whose
 attrs are relations
-----
-More on Muldis D namespaces
-will follow further along
 ----
 The SQL concept of viewed
 tables versus base tables is
@@ -990,14 +960,6 @@ in the DBMS with just data
 querying and updating
 operations
 ----
-In particular, you should
-see that SQL's ALTER
-statements have a much more
-flexible analogy in Muldis
-D, where you can just update
-records in an ad-hoc way;
-changed code auto-recompiles
-----
 Since the catalog contents
 are abstract AST-like data
 structures (that are tuples
@@ -1005,11 +967,6 @@ and relations), and not code
 strings, its easy for a DB
 wrapper to introspect the
 DB, even its stored routines
-----
-The system catalog also
-reflects all system-defined
-entities, but this portion
-is read-only
 ----
 Depots
 ----
@@ -1137,50 +1094,19 @@ the top namespace "mnt"
 ----
 Global-scope user-defined
 entities are all under the
-top namespace "fed" (meaning
-"federation"); beneath that,
-they are grouped by depot
-mount names, and then as per
-the depot's organization
+top namespaces "fed", "dep",
+"sdp", "pkg"; they mean
+all depots, current depot,
+current schema, current
+Oracle-concept package
 ----
-Now "fed" is just intended
-for calling out to other
-depots than your own; the
-top namespace "dep" is
-rooted at the caller's own
-depot, and should be used
-for calls within it
-----
-A subdepot generalizes a SQL
-schema; you can have zero
-or more layers of these
-namespaces under a depot;
-"sdp" is rooted at the
-caller's most immediate
-parent; it might match "dep"
-----
-A package is a generic
-privatizable namespace under
-a depot/subdepot; it is as
-per the Oracle DBMS schema
-object of that name; "pkg"
-is rooted at the caller's
-host package
-----
-Within the context of a type
-or routine definition, the
-top namespace "inn" is what
-you use to invoke any child
-or sibling "inner" types or
-routines
-----
-Within the context of a
-routine body, the top
-namespace "lex" is what you
-use to invoke that routine's
-lexical parameter arguments,
-variables, or expression or
-statement nodes
+Lexical-scope user-defined
+entities are all under "inn"
+and "lex"; the first is for
+local inner types/routines,
+the second is for the curr
+routine's param args, vars,
+expression nodes, etc
 ----
 Some Muldis D features make
 use of special prefixes or
@@ -1190,21 +1116,15 @@ var attrs, or for avoiding
 type def explosions, or for
 taking the type of something
 ----
-Declared names of
-user-defined entities are
-unqualified or their context
-is named separately; an
-entity name may have any
-Unicode chars at all, and it
-may be the empty string
+Entity names are as per
+delimited SQL identifiers,
+being case/etc sensitive and
+having no reserved words;
+they are Unicode strings and
+may be the empty string;
+users have complete freedom
 ----
-Entity names are case/etc
-sensitive and are analagous
-to delimited SQL
-identifiers; the nature of
-Muldis D means there are no
-reserved words, so users may
-name their entities anything
+AFTER HERE WASN'T TRIMMED YET
 ----
 Next are a few example code
 snippits, in a fake dialect;
