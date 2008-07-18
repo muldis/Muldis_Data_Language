@@ -9,11 +9,16 @@
 <html:textarea id="builtinCode" style="visibility: collapse">
 
 <![CDATA[
+THIS CURRENTLY MATCHES
+THE STAND ALONE VERSION
+AND NEEDS TO BE REWRITTEN
+ANY HOUR OR DAY NOW
+----
 Muldis D -
 Portable Databases
 At Full Power
 (2008 July Edition)
-(Shorter Version)
+(Live Talk Version)
 ----
 Darren Duncan
 Muldis Data Systems
@@ -27,7 +32,7 @@ Products and Services
 Miss something?
 http://muldis.com
 has a copy of this talk,
-plus a longer version,
+plus a Stand Alone version,
 and a list of all urls
 ----
 This talk is about
@@ -90,6 +95,22 @@ like typical languages, or
 as multi-dimensional data
 structures of some other
 host language, such as Perl
+----
+The plain text choice makes
+more sense if you want to
+use Muldis D in a more
+isolated manner, and compile
+it into apps or libraries
+the same as you would with
+C or Haskell or Perl code
+----
+The hosted data choice makes
+more sense if you want to
+actually write your Muldis D
+code in the same language as
+your main application, such
+as when dynamically
+generating database queries
 ----
 Hosted data means you aren't
 stitching code strings at
@@ -234,8 +255,13 @@ word "object" since that
 doesn't distinguish between
 the concepts of "value"
 and "variable"; the latter
-terms are used instead; a
-value is eternal, immutable
+terms are used instead
+----
+A value is conceptually
+unique, eternal, immutable,
+and isn't fixed in time
+or space; it has no address;
+a variable is the opposite
 ----
 We also say "selector"
 rather than "constructor"
@@ -248,6 +274,12 @@ A Muldis D "data type" is a
 set of values; a subtype /
 supertype relationship means
 subset / superset of values
+----
+A union type or intersection
+type is a type whose values
+are the union or
+intersection, respectively,
+of multiple other types
 ----
 Subtyping in Muldis D, as in
 any "D" language, takes the
@@ -376,6 +408,14 @@ or more named "possreps" or
 each of which looks like a
 tuple; a possrep is like an
 OO "role" or "interface"
+----
+Next are example literals of
+a user-defined WeekDay type,
+which is an enumerated type;
+it has 2 possreps called
+'name' and 'number', each of
+those having a single attr
+named with the empty string
 ----
  PTMD_Tiny dialect:
    Scalar:'fed.lib.the_db.WeekDay':'name':{
@@ -954,6 +994,14 @@ in the DBMS with just data
 querying and updating
 operations
 ----
+In particular, you should
+see that SQL's ALTER
+statements have a much more
+flexible analogy in Muldis
+D, where you can just update
+records in an ad-hoc way;
+changed code auto-recompiles
+----
 Since the catalog contents
 are abstract AST-like data
 structures (that are tuples
@@ -961,6 +1009,11 @@ and relations), and not code
 strings, its easy for a DB
 wrapper to introspect the
 DB, even its stored routines
+----
+The system catalog also
+reflects all system-defined
+entities, but this portion
+is read-only
 ----
 Depots
 ----
@@ -1193,6 +1246,17 @@ Code comparisons
  ;
  ;
 ----
+Alternately you can use
+"semidifference" if you want
+tuples that *don't* match,
+like a NOT IN subquery
+----
+Alternately you can use
+"restrict" for generic
+boolean expressions besides
+matches/not-matches,
+like a generic WHERE
+----
 The next example is a
 natural join of 2 relations
 whose attrs are as follows:
@@ -1248,6 +1312,22 @@ tab(col1,col2,col3,col4)
  ;
  ;
 ----
+Now that last Muldis D
+example shows the use of a
+closure; the "extension"
+operator takes a relation
+and a function reference,
+which it invokes on every
+tuple of the relation
+----
+Closures like this are used
+with many other functions
+too such as "projection"
+and "summary"; closures are
+exactly how a general
+purpose language would
+implement such functions
+----
 Database constraints
 ----
 Given that "the database" in
@@ -1265,6 +1345,12 @@ whole relvar, or per relvar
 tuple; it takes the value to
 test as its argument and
 results in a boolean
+----
+A generic constraint
+function is a generalization
+of SQL's concept of a CHECK
+constraint, as well as some
+kinds of SQL triggers
 ----
 The DBMS would automatically
 apply constraints to the
@@ -1393,6 +1479,28 @@ or throws exceptions; no
 worry about mis-matched
 transaction start/end
 statement calls
+----
+A Muldis D DBMS *must*
+rollback incomplete
+transactions on disconnect;
+only an explicit success can
+commit; many SQL DBMSs do
+that too, which is good
+----
+Some SQL DBMSs will
+auto-commit an incomplete
+transaction, which is bad;
+that kind of behaviour makes
+a DBMS unreliable with any
+unexpected failure
+----
+In Muldis D, all kinds of
+changes are subject to
+transactions, including
+data definition; so schema
+changes due to updating the
+system catalog can also be
+rolled back
 ----
     TODO: GUIDELINE NOTES TO EXPAND INTO SLIDES
     THIS IS JUST TO BE THE LAST 10% OF THE TALK
