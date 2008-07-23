@@ -9,6 +9,14 @@
 <html:textarea id="builtinCode" style="visibility: collapse">
 
 <![CDATA[
+Note: You may need to
+"zoom out" in your browser
+or set it to display text
+smaller than normal (such as
+with Cmd/Ctrl-minus), so
+you can see the longer
+lines of code
+----
 Muldis D -
 Portable Databases
 At Full Power
@@ -25,49 +33,28 @@ Products and Services
 (Perl by Default)
 ----
 Miss something?
-http://muldis.com
-has a copy of this talk,
-plus a Stand Alone version,
-and a list of all urls
+See http://muldis.com
 ----
- Introducing "Muldis D":
-  * New language for truly relational databases
-  * See official spec on CPAN
-  * Or at http://muldis.com
-  * Mostly done
-  * Ask if you can't find something
+Language: "Muldis D"
 ----
- Reference implementation "Muldis Rosetta":
-  * Mostly incomplete
-  * You can't run Muldis D code yet
-  * But soon
+Reference implementation:
+"Muldis Rosetta"
 ----
- Muldis D is effectively:
-  * Generalization of all SQL dialects
-  * Modernization
-  * Not hobbled by ill-conceived features
+Muldis D:
+* In the context of SQL
+* Intermediate of translation
+* Semantics preserved
 ----
- Intermediate language for translating DB code:
-  * Between SQL dialects
-  * Non-SQL languages
-  * While accurately preserving all semantics
+Features:
+* Homoiconic
+* Declarative
 ----
- Features:
-  * Homoiconic
-  * Declarative
-  * Write code by writing data
-  * Code manipulatable by code
+Grammar:
+* Abstract at core
+* Concretes are many
+* Today is pseudo-code
 ----
- Grammar:
-  * Fundamentally abstract
-  * Formed as an AST
-  * Any number of concrete grammars equivalent
-  * Plain text grammars
-  * Hosted data grammars - no SQL injection
-  * Treat all examples as pseudo-code
-  * But "Tiny" grammars defined
-----
- Scalar literals in PTMD_Tiny dialect:
+Scalar literals in PTMD_Tiny dialect:
   Bool:true
   Int:9:42
   Blob:F:A705E
@@ -75,7 +62,7 @@ and a list of all urls
   Rat:radix:9:3.14159
   Rat:ratio:9:1/43
 ----
- Same scalar literals in HDMD_Perl_Tiny dialect:
+Same scalar literals in HDMD_Perl_Tiny dialect:
   [ 'Bool', 'perl_bool', Bool::True ] # Perl 6 only
   [ 'Bool', 'perl_bool', (1 == 1) ]  # alternative
   [ 'Int', 'perl_int', 42 ]
@@ -84,535 +71,237 @@ and a list of all urls
   [ 'Rat', 'perl_rat', 3.14159 ]
   [ 'Rat', 'perl_int_ratio', [ 1, 43 ] ]
 ----
- Toolkit for:
-  * Better database wrappers
-  * Persistence tools
-  * Abstraction frameworks
-  * Migration tools
-  * ORMs
-  * In any general purpose language
+Database wrapper toolkit
 ----
- Use for:
-  * Internal AST for schemas, queries, data
-  * Interchange format for same
-  * Rather than proprietary
-  * Likewise for actual DBMSs
-  * Or as public query language
+Talk format
 ----
- Talk format:
-  * Muldis D fundamentally verbose like AST
-  * We'll just have trivial code examples
-  * Explain most features in words
-  * Mostly compare/contrast with SQL
+Not DWIM but explicit
 ----
- Not DWIM where DWIM means guessing:
-  * Implicit semantic diffs made explicit
-  * Number rounding
-  * Text comparisons
-  * Behaviour specified neutral as possible
-  * Numbers radix-agnostic
+A "D" language
 ----
- A "D" language:
-  * As defined by "Databases, Types, and
-    The Relational Model:
-    The Third Manifesto" (TTM)
-  * Book by Hugh Darwen and Christopher J. Date
-  * Free chapter 4 at http://thethirdmanifesto.com
+Basic relational terms:
+attribute : field/column
+tuple : row
+relation : rowset
+relvar : table
+dbvar : database
 ----
- Name:
-  * The "D" of "Muldis D" refers to "D language"
-  * Not my name
-  * "Muldis" means "Multiverse of Discourse"
+OO vs relational terms
 ----
- Basic relational terms:
-  attribute : field/column
-  tuple     : row
-  relation  : rowset
-  relvar    : table
-  dbvar     : database
+Data type:
+* Value set
+* Specialization by constraint
+* Circle example
+* Main categories
 ----
- OO vs relational terms:
-  * "object" not used
-  * "value" and "variable" instead
-  * Say "selector" rather than "constructor"
+Tuple and relation types
 ----
- Data type:
-  * A set of values
-  * Subtype/supertype means sub/superset
-  * Union/intersection types
-  * "specialization by constraint"
-  * Not "specialization by extension"
+Tuples in PTMD_Tiny dialect:
+  Tuple:{}
+  Tuple:{
+    'login_name' => Text:'hartmark',
+    'login_pass' => Text:'letmein',
+    'is_special' => Bool:true,
+  }
+  Tuple:{
+    'name' => Text:'Michelle',
+    'age'  => Int:9:17,
+  }
 ----
- Example:
-  * "circle" is a subtype of "ellipse"
-  * "coloured circle" not of "circle", "colour"
-  * "coloured circle" is multi-component type
+Same in PTMD_Perl_Tiny dialect:
+  [ 'Tuple', {} ]
+  [ 'Tuple', {
+    'login_name' => [ 'Text', 'hartmark' ],
+    'login_pass' => [ 'Text', 'letmein' ],
+    'is_special' => [ 'Bool', 'md_enum', 'true' ],
+  } ]
+  [ 'Tuple', {
+    'name' => [ 'Text', 'Michelle' ],
+    'age'  => [ 'Int', 'perl_int', 17 ],
+  } ]
 ----
- Type categories:
-  * Scalar or nonscalar (tuple or relation) in DB
-  * Quasi-variants for params, lexicals
+Relations in PTMD_Tiny dialect:
+  Relation:{}
+  Relation:{ {}, }
+  Relation:{ 'x', 'y', 'z', }
+  Relation:{
+    {
+      'login_name' => Text:'hartmark',
+      'login_pass' => Text:'letmein',
+      'is_special' => Bool:true,
+    },
+  }
+  Relation:[ 'name', 'age', ]:{
+    [ Text:'Michelle', Int:9:17, ],
+  }
 ----
- Tuple and relation types:
-  * non-encapsulated
-  * fundamental hetero/homogeneous collections
+Same in PTMD_Perl_Tiny dialect:
+  [ 'Relation', [] ]
+  [ 'Relation', [ {}, ] ]
+  [ 'Relation', [ 'x', 'y', 'z', ] ]
+  [ 'Relation', [
+    {
+      'login_name' => [ 'Text', 'hartmark' ],
+      'login_pass' => [ 'Text', 'letmein' ],
+      'is_special' => [ 'Bool', 'md_enum', 'true' ],
+    },
+  ] ]
+  [ 'Relation', [ 'name', 'age', ], [
+    [ [ 'Text', 'Michelle' ], [ 'Int', 'perl_int', 17 ], ],
+  ] ]
 ----
- Tuple like row but:
- * Attrs all named
- * Names all distinct
- * Attrs not ordered, only ref by name
- * May have zero attrs
+Set, Array, Bag
 ----
- Relation like rowset as tuple/row but:
-  * Set of tuples
-  * No duplicates
-  * Never ordered
+Scalar types and possreps
 ----
- Tuples in PTMD_Tiny dialect:
-   Tuple:{}
-   Tuple:{
-     'login_name' => Text:'hartmark',
-     'login_pass' => Text:'letmein',
-     'is_special' => Bool:true,
-   }
-   Tuple:{
-     'name' => Text:'Michelle',
-     'age'  => Int:9:17,
-   }
+PTMD_Tiny dialect:
+  Scalar:'fed.lib.the_db.WeekDay':'name':{
+    '' => Text:'monday',
+  }
+  Scalar:'fed.lib.the_db.WeekDay':'number':{
+    '' => Int:9:5,
+  }
+HDMD_Perl_Tiny dialect:
+  [ 'Scalar', 'fed.lib.the_db.WeekDay', 'name', {
+    '' => [ 'Text', 'monday' ],
+  } ]
+  [ 'Scalar', 'fed.lib.the_db.WeekDay', 'number', {
+    '' => [ 'Int', 'perl_int', 5 ],
+  } ]
 ----
- Same in PTMD_Perl_Tiny dialect:
-   [ 'Tuple', {} ]
-   [ 'Tuple', {
-     'login_name' => [ 'Text', 'hartmark' ],
-     'login_pass' => [ 'Text', 'letmein' ],
-     'is_special' => [ 'Bool', 'md_enum', 'true' ],
-   } ]
-   [ 'Tuple', {
-     'name' => [ 'Text', 'Michelle' ],
-     'age'  => [ 'Int', 'perl_int', 17 ],
-   } ]
-----
- Relations in PTMD_Tiny dialect:
-   Relation:{}
-   Relation:{ {}, }
-   Relation:{ 'x', 'y', 'z', }
-   Relation:{
-     {
-       'login_name' => Text:'hartmark',
-       'login_pass' => Text:'letmein',
-       'is_special' => Bool:true,
-     },
-   }
-   Relation:[ 'name', 'age', ]:{
-     [ Text:'Michelle', Int:9:17, ],
-   }
-----
- Same in PTMD_Perl_Tiny dialect:
-   [ 'Relation', [] ]
-   [ 'Relation', [ {}, ] ]
-   [ 'Relation', [ 'x', 'y', 'z', ] ]
-   [ 'Relation', [
-     {
-       'login_name' => [ 'Text', 'hartmark' ],
-       'login_pass' => [ 'Text', 'letmein' ],
-       'is_special' => [ 'Bool', 'md_enum', 'true' ],
-     },
-   ] ]
-   [ 'Relation', [ 'name', 'age', ], [
-     [ [ 'Text', 'Michelle' ], [ 'Int', 'perl_int', 17 ], ],
-   ] ]
-----
- More:
-  * Canonical Set, Array, Bag
-  * Just relations with pre-def attrs
-  * Tiny dialects have special syntax
-----
- Scalar types:
-  * Encapsulated
-  * Like OO languages' object classes
-  * All their attrs private
-  * Only accessible indirectly
-----
- Scalar type comprises "possreps":
- * "possible representations"
- * Each looks like a tuple
- * Possrep like OO "role" or "interface"
-----
- PTMD_Tiny dialect:
-   Scalar:'fed.lib.the_db.WeekDay':'name':{
-     '' => Text:'monday',
-   }
-   Scalar:'fed.lib.the_db.WeekDay':'number':{
-     '' => Int:9:5,
-   }
- HDMD_Perl_Tiny dialect:
-   [ 'Scalar', 'fed.lib.the_db.WeekDay', 'name', {
-     '' => [ 'Text', 'monday' ],
-   } ]
-   [ 'Scalar', 'fed.lib.the_db.WeekDay', 'number', {
-     '' => [ 'Int', 'perl_int', 5 ],
-   } ]
-----
- Some scalar types special:
-  * Bool, Int, Blob, Text
-  * No possreps
-  * Others not for general purpose use
-  * All are "big" as applicable
+Special scalar types
 ----
 Boolean types
 ----
- Muldis D:
-   Bool
- SQL:
-   BOOLEAN, TINYINT(1),
-   INTEGER, NUMBER(1), ...
+Muldis D:
+  Bool
+SQL:
+  BOOLEAN, TINYINT(1),
+  INTEGER, NUMBER(1), ...
 ----
 Numeric types
 ----
- Muldis D:
-   Int, Rat
- SQL:
-   TINYINT, SMALLINT,
-   MEDIUMINT, INTEGER,
-   BIGINT, NUMERIC, NUMBER,
-   DECIMAL, REAL, FLOAT,
-   DOUBLE, BIT, PLS_INTEGER,
-   BINARY_INTEGER, ...
-----
- Numeric types:
-  * All bigints / bignums
-  * Radix agnostic
-  * Exact precision
-  * For all rationals
-  * Fixed and floating-point
-  * Int has no possrep
-  * Rat has 2 possreps
+Muldis D:
+  Int, Rat
+SQL:
+  TINYINT, SMALLINT,
+  MEDIUMINT, INTEGER,
+  BIGINT, NUMERIC, NUMBER,
+  DECIMAL, REAL, FLOAT,
+  DOUBLE, BIT, PLS_INTEGER,
+  BINARY_INTEGER, ...
 ----
 Binary string types
 ----
- Muldis D:
-   Blob
- SQL:
-   BIT, BINARY, VARBINARY,
-   TINYBLOB, BLOB,
-   MEDIUMBLOB, LONGBLOB,
-   BYTEA, RAW, LONG RAW, ...
+Muldis D:
+  Blob
+SQL:
+  BIT, BINARY, VARBINARY,
+  TINYBLOB, BLOB,
+  MEDIUMBLOB, LONGBLOB,
+  BYTEA, RAW, LONG RAW, ...
 ----
 Character string types
 ----
- Muldis D:
-   Text
- SQL:
-   CHAR, VARCHAR, TINYTEXT,
-   TEXT, MEDIUMTEXT,
-   LONGTEXT, CLOB,
-   NATIONAL variants,
-   VARCHAR2, LONG, ...
+Muldis D:
+  Text
+SQL:
+  CHAR, VARCHAR, TINYTEXT,
+  TEXT, MEDIUMTEXT,
+  LONGTEXT, CLOB,
+  NATIONAL variants,
+  VARCHAR2, LONG, ...
 ----
- All Muldis D character string types are Unicode
+Unicode
 ----
- Also:
-  * Temporals - dates, times, durations
-  * Spatials - 2D geometrics, GIS
-  * They're incomplete
+Temporals and spatials
 ----
- Routines:
-  * 3 main kinds
-  * functions
-  * updaters
-  * procedures
+Routine kinds
 ----
 Functions
 ----
  create in fed.myapp
  function cube {
-   result sys.std.Core.Type.Int
-   params { topic(sys.std.Core.Type.Int) }
-   exprs {
-     exp(sca_lit Int:9:3),
-     ''(func_invo sys.std.Integer.power
-       args { radix(lex.topic), exponent(lex.exp) }
-     ),
-   }
+  result sys.std.Core.Type.Int
+  params { topic(sys.std.Core.Type.Int) }
+  exprs {
+    exp(sca_lit Int:9:3),
+    ''(func_invo sys.std.Integer.power
+      args { radix(lex.topic), exponent(lex.exp) }
+    ),
+  }
  }
- ;
- ;
- ;
-----
- Functions:
-  * Pure
-  * Only invoke in value expressions
-  * Just read-only params
-  * Just has value expression
-  * Only invokes functions
 ----
 Updaters
 ----
  create in fed.myapp
  updater chop_sign {
-   upd_params { topic(sys.std.Core.Type.Int) }
-   exprs {
-     abs_val(func_invo sys.std.Integer.abs
-       args { topic(lex.topic) }
-     ),
-   }
-   stmt {
-     sys.std.Core.Universal.assign
-       upd_args { target(lex.topic) }
-       ro_args { v(lex.abs_val) },
-   }
+  upd_params { topic(sys.std.Core.Type.Int) }
+  exprs {
+    abs_val(func_invo sys.std.Integer.abs
+      args { topic(lex.topic) }
+    ),
+  }
+  stmt {
+    sys.std.Core.Universal.assign
+      upd_args { target(lex.topic) }
+      ro_args { v(lex.abs_val) },
+  }
  }
 ----
- Updaters:
-  * Imperative
-  * All statements simultaneous
-  * May update multiple subject-to-update params
-----
- Functions and updaters:
-  * Fully deterministic
-  * No lexical vars
-  * Can't see globals
-  * Implicitly atomic
-  * Safe to implicitly refactor
-  * Have value exprs of named nodes
-  * Helps docs, common sub-expr refactor
+Common to functions
+and updaters
 ----
 Procedures
 ----
  create in fed.myapp
  procedure fetch_all_people {
-   upd_params { people(type.var.fed.mydb.people) }
-   stmts [
-     proc_invo sys.std.Core.Universal.assign
-       upd_args { target(lex.people) }
-       ro_args { v(fed.mydb.people) },
-   ]
- }
- ;
- ;
- ;
- ;
- ;
-----
- Procedures:
-  * Imperative
-  * Can see/update globals
-  * Have lexicals
-  * Seq of ordered statements
-  * May be non-deterministic
-  * May have side-effects in non-args
-  * Pure imperative
-  * Updaters bridge gap
-----
- Inner routines:
-  * For all routine kinds
-  * Don't have to externalize parts
-  * Like SQL WITH in general
-  * Support internal recursion
-----
- For example, to represent a
- SQL procedure like this:
-   CREATE PROCEDURE count_people
-       (INOUT p_count INT)
-     SELECT COUNT(*)
-     INTO p_count
-     FROM mydb.people;
- ... a Muldis DB procedure would
- use an inner updater to hold the
- "COUNT(*) FROM people" portion,
- which is a value expression
-----
- create in fed.myapp
- procedure count_people {
-   upd_args { p_count(sys.std.Core.Type.UInt) }
-   stmts [
-     proc_invo inn.icount
-       upd_args { p_count(lex.p_count) }
-       ro_args { the_db(fed.mydb) },
-   ]
-   updater icount {
-     upd_params { p_count(sys.std.Core.Type.UInt) }
-     ro_params { the_db(type.var.fed.mydb) }
-     exprs {
-       pc(func_invo sys.std.Core.Relation.cardinality
-         args { topic(lex.the_db.people) }
-       ),
-     }
-     stmt {
-       sys.std.Core.Universal.assign
-         upd_args { target(lex.p_count) }
-         ro_args { v(lex.pc) },
-     }
-   }
+  upd_params { people(type.var.fed.mydb.people) }
+  stmts [
+    proc_invo sys.std.Core.Universal.assign
+      upd_args { target(lex.people) }
+      ro_args { v(fed.mydb.people) },
+  ]
  }
 ----
- Routines:
-  * All params named, not positional
-  * All args marked updateable or not
-  * Helps self-documentation
+Inner routines
 ----
- Merger:
-  * Generic N-ary operator
-  * SQL aggregate operator
-  * Any built-ins possible are N-ary
-  * Can be used in summary
+Parameters and arguments
 ----
- Examples:
-  * Boolean and, or, xor
-  * Ordinal min, max
-  * Numeric sum, product
-  * String catenate
-  * Relational join, product, union, intersect
-  * All these are associative
-  * All but catenate are commutative
+N-ary operators
+and aggregates
 ----
 Nonscalar attributes
 ----
- Data types and relational model orthogonal
-  * Attr may be tuple or relation
-  * Not just scalar
-  * All relational ops work with them
-  * No distinction of SQL MULTISET vs table
-  * Consistency is good
-  * Support for TVAs, RVAs mandatory in "D"
-  * Extremely useful
-----
- RVA means:
-  * Parent+child in single query
-  * No redundancy
-  * Child tuples in RVA of parents
-  * Very natural for multi-level report
-  * No many-to-many assoc tables needed
-  * No need to split relvar to normalize
-----
  Relation:[ 'order_id', 'cust_id', 'order_item' ]:{
-   [ Int:9:5073, Int:9:209, Relation:{
-     { 'prod_id' => Text:'paint',  'qty' => Int:9:3 },
-   } ],
-   [ Int:9:5074, Int:9:332, Relation:{
-     { 'prod_id' => Text:'axle',  'qty' => Int:9:20 },
-     { 'prod_id' => Text:'lever', 'qty' => Int:9:50 },
-     { 'prod_id' => Text:'paint', 'qty' => Int:9:8 },
-   } ],
-   [ Int:9:5075, Int:9:17, Relation:{
-     { 'prod_id' => Text:'banana', 'qty' => Int:9:100 },
-     { 'prod_id' => Text:'orange', 'qty' => Int:9:160 },
-   } ],
+  [ Int:9:5073, Int:9:209, Relation:{
+    { 'prod_id' => Text:'paint',  'qty' => Int:9:3 },
+  } ],
+  [ Int:9:5074, Int:9:332, Relation:{
+    { 'prod_id' => Text:'axle',  'qty' => Int:9:20 },
+    { 'prod_id' => Text:'lever', 'qty' => Int:9:50 },
+    { 'prod_id' => Text:'paint', 'qty' => Int:9:8 },
+  } ],
+  [ Int:9:5075, Int:9:17, Relation:{
+    { 'prod_id' => Text:'banana', 'qty' => Int:9:100 },
+    { 'prod_id' => Text:'orange', 'qty' => Int:9:160 },
+  } ],
  }
 ----
 Values in logic
 ----
- Native 2-valued logic:
-  * No SQL 3+VL NULL where NULL<>itself
-  * All Muldis D values equal themselves
-  * Alternate canon for "N/A"/"unknown" with 2VL
+A way to replace NULL
 ----
- To make attr conceptually nullable:
-  * Make it an RVA
-  * Or a Maybe (Set with 0..1 tuples)
-  * IS (NOT) NULL becomes is (not) Maybe/RVA empty
-  * Empty means IS NULL
-  * Non-empty means IS NOT NULL
-  * Tuple's attribute is the known value
-  * Brings consistency for outer-joins
-----
-Identity matters
-----
- "is_identical", "assign" operators:
-  * Work for all types, including nonscalars
-  * Compare/assign whole relations, no contriving
-  * Text case/accents/ws diffs significant
-  * Derived ops (joins etc) act the same
-  * Floating point nums treated as exact
-  * Unicode graphemes significant, codepoints not
-  * Tuples in relation always ident by value
-  * No implicit extra attrs like SQL "row id"
-----
- Type safety
-  * Strong typing
-  * No implicit sideways type conversion/casting
+Identity matters,
+comparisons, type safety
 ----
 Virtual reality
 ----
- Views:
-  * A var attr is a var too
-  * A whole database is a tuple var
-  * Database relvars are virtual
-  * SQL schemas are databases in databases
-  * Hierarchy with relation leaves
-----
- Merger:
-  * SQL viewed tables
-  * SQL generated columns
-  * Special functional dependencies between attrs
-  * Virtual attrs gen from other attrs
-  * Mapping functions say how
-  * Virtuals updateable if possible
-  * Case-insensitive key example
-----
 System Catalog
-----
- System catalog:
-  * Represents SQL "information schema"
-  * Is special dbvar
-  * Separate from user data dbvar
-  * Is updateable
-----
- Updating system catalog:
-  * Fundamental means of data definition
-  * DD-specific routines just abstraction
-  * Put desc of relvar into it to create
-  * Put code-as-data in to make routines, types
-  * Compiles, becomes runnable as side-effect
-  * Even connect/disconnect a DBMS
-  * Do all DBMS ops with just queries, DML
-----
- Catalog contents:
-  * Abstract AST-like data structures
-  * Actually tuples and relations
-  * Not code strings
-  * Easy for DB wrapper to introspect a DB
-  * Even its stored routines
-  * System-defined entities too
 ----
 Depots
 ----
- A depot:
-  * Local abstract of typically external storage
-  * Holds a user data dbvar, related catalog dbvar
-  * Maybe details to map reality
-  * Represents SQL concept of "the database"
-  * Packages user data, user-def types, routines
-  * May just have code - a dynamic loaded lib
-  * Persistent or transient, read-only or not
-----
- Multiple depots:
-  * Mountable by DBMS at once
-  * Have own namespaces like filesystem
-  * Perform cross-database queries or updates
-  * They're like one database then
-  * Cloning a database just a variable assignment
-----
- A depot is a completely independent unit:
-  * All types, constraints for dbvar kept together
-  * Likewise for routines etc
-  * No ext dependencies to understand its contents
-  * No inter-depot constraints
-----
- DB authentication details:
-  * Such as DB user/pass
-  * Apply per depot mount, not on whole DBMS
-----
 Entity Names
-----
- All DBMS entities in one namespace:
-  * Hierarchical
-  * System and user defined
-  * Depots, variables, types, routines
-  * Entities always invoked fully-qualified
-  * No name search ambiguity
-  * No subtle code breaks due to new entities
-----
- Organization:
   sys - system-defined entities
     sys.std - official Muldis D features
     sys.imp - extra implementation-specifics
@@ -624,245 +313,123 @@ Entity Names
   inn - local inner types/routines
   lex - lexical param args, vars, expr nodes
 ----
- Special features:
-  * Special suffixes for drilling into attrs
-  * Special prefixes for taking type of something
-  * or avoiding type def explosions
-----
- Entity names:
-  * As per delimited SQL identifiers
-  * Case/etc sensitive
-  * No reserved words
-  * Unicode
-  * May be the empty string
-  * Users have complete freedom
-----
 Code comparisons
 ----
- Muldis D:
-   'x'
- SQL (as a scalar query):
-   (SELECT 'x')
- or:
-   (SELECT 'x' FROM dual)
+Muldis D:
+  'x'
+SQL (as a scalar query):
+  (SELECT 'x')
+or:
+  (SELECT 'x' FROM dual)
 ----
- Muldis D:
-   tab1
- SQL:
-   SELECT * FROM tab1
+Muldis D:
+  tab1
+SQL:
+  SELECT * FROM tab1
 ----
- Muldis D:
-   sys.std.Core.Relation.cardinality(
-     topic(tab1)
-   )
- SQL (as a scalar query):
-   (SELECT COUNT(*) FROM tab1)
+Muldis D:
+  sys.std.Core.Relation.cardinality(
+    topic(tab1)
+  )
+SQL (as a scalar query):
+  (SELECT COUNT(*) FROM tab1)
 ----
- Muldis D:
-   sys.std.Core.Relation.projection(
-     topic(tab1),
-     attrs(Set:{ 'col1', 'col2' }),
-   )
- SQL:
-   SELECT DISTINCT col1, col2
-   FROM tab1
+Muldis D:
+  sys.std.Core.Relation.projection(
+    topic(tab1),
+    attrs(Set:{ 'col1', 'col2' }),
+  )
+SQL:
+  SELECT DISTINCT col1, col2
+  FROM tab1
 ----
- Muldis D:
-   sys.std.Core.Relation.semijoin(
-     source(tab1),
-     filter(Relation:{
-       { col1(Text:'hello'), col2(Int:9:5) },
-       { col1(Text:'world'), col2(Int:9:7) },
-     }),
-   )
- ;
- ;
- ;
- ;
- ;
- ;
+Muldis D:
+  sys.std.Core.Relation.semijoin(
+    source(tab1),
+    filter(Relation:{
+      { col1(Text:'hello'), col2(Int:9:5) },
+      { col1(Text:'world'), col2(Int:9:7) },
+    }),
+  )
 ----
- SQL:
-   SELECT *
-   FROM tab1
-   WHERE (col1, col2) IN (
-     SELECT 'hello' AS col1, 5 AS col2
-     UNION
-     SELECT 'world' AS col1, 7 AS col2
-   )
- ;
- ;
- ;
- ;
- ;
- ;
-----
- or:
-   SELECT *
-   FROM tab1
-   WHERE col1 = 'hello' AND col2 = 5
+SQL:
+  SELECT *
+  FROM tab1
+  WHERE (col1, col2) IN (
+    SELECT 'hello' AS col1, 5 AS col2
+    UNION
+    SELECT 'world' AS col1, 7 AS col2
+  )
+or:
+  SELECT *
+  FROM tab1
+  WHERE col1 = 'hello' AND col2 = 5
       OR col1 = 'world' AND col2 = 7
- ;
- ;
- ;
- ;
- ;
- ;
- ;
- ;
- ;
 ----
- The next example is a
- natural join of 2 relations
- whose attrs are as follows:
- tab1(col1,col2,col3),
- tab2(col2,col3,col4), such
- that the result is
+The next example is a
+natural join of 2 relations
+whose attrs are as follows:
+ tab1(col1,col2,col3)
+ tab2(col2,col3,col4)
+such that the result is:
  tab(col1,col2,col3,col4)
 ----
- Muldis D:
-   sys.std.Core.Relation.join(
-     topic(QuasiSet:{ tab1, tab2 }),
-   )
- SQL:
-   SELECT DISTINCT tab1.*, tab2.col4
-   FROM tab1 NATURAL INNER JOIN tab2
- or:
-   SELECT DISTINCT tab1.*, tab2.col4
-   FROM tab1 INNER JOIN tab2 USING (col2, col3)
- or:
-   SELECT DISTINCT tab1.*, tab2.col4
-   FROM tab1 INNER JOIN tab2
-     ON tab2.col2 = tab1.col2 AND tab2.col3 = tab1.col3
- ;
- ;
+Muldis D:
+  sys.std.Core.Relation.join(
+    topic(QuasiSet:{ tab1, tab2 }),
+  )
+SQL:
+  SELECT DISTINCT tab1.*, tab2.col4
+  FROM tab1 NATURAL INNER JOIN tab2
+or:
+  SELECT DISTINCT tab1.*, tab2.col4
+  FROM tab1 INNER JOIN tab2 USING (col2, col3)
+or:
+  SELECT DISTINCT tab1.*, tab2.col4
+  FROM tab1 INNER JOIN tab2
+    ON tab2.col2 = tab1.col2 AND tab2.col3 = tab1.col3
 ----
- Muldis D:
-   sys.std.Core.Relation.rename(
-     topic(tab1),
-     map(Relation:['before','after']:{
-       ['col1', 'foo'],
-       ['col3', 'bar'],
-     }),
-   )
- SQL:
-   SELECT col1 AS foo, col2, col3 AS bar
-   FROM tab1
+Muldis D:
+  sys.std.Core.Relation.rename(
+    topic(tab1),
+    map(Relation:['before','after']:{
+      ['col1', 'foo'],
+      ['col3', 'bar'],
+    }),
+  )
+SQL:
+  SELECT col1 AS foo, col2, col3 AS bar
+  FROM tab1
 ----
- Muldis D:
-   with { function myext {
-       result sys.std.Core.Type.Tuple
-       params { topic(sys.std.Core.Type.Tuple) }
-       body { Tuple:{
-         a => Text:'x',
-         b => sys.std.Integer.difference(
-           minuend(lex.topic.m),
-           subtrahend(lex.topic.n)
-         ), } }
-   }, }
-   sys.std.Core.Relation.extension(
-     topic(tab1), func(inn.myext), )
- SQL:
-   SELECT tab1.*, 'x' AS a, (tab1.m - tab1.n) AS b FROM tab1
- ;
- ;
+Muldis D:
+  with { function myext {
+      result sys.std.Core.Type.Tuple
+      params { topic(sys.std.Core.Type.Tuple) }
+      body { Tuple:{
+        a => Text:'x',
+        b => sys.std.Integer.difference(
+          minuend(lex.topic.m),
+          subtrahend(lex.topic.n)
+        ), } }
+  }, }
+  sys.std.Core.Relation.extension(
+    topic(tab1), func(inn.myext), )
+SQL:
+  SELECT tab1.*, 'x' AS a, (tab1.m - tab1.n) AS b FROM tab1
 ----
 Database constraints
 ----
- Merger:
-  * SQL's CHECK constraint
-  * Some kinds of SQL triggers
-  * Generic constraint function
-  * Takes value as input, results in boolean
-  * Apply per whole DB, or relvar, or per-tuple
-  * Commonly expressed as type constraints
-  * Whole database has a type
-----
- Database constraints:
-  * Automatically apply at end of each statement
-  * Throws exception if any result in FALSE
-  * Can't be deferred
-  * No "domain check override"
-  * Database always in a valid state
-  * But this isn't a problem
-  * You can update multiple vars simultaneously
-  * Bank account credit/debit example
-----
- Canonical abstractions:
-  * For SQL's unique, foreign key constraints
-  * Unique key on a relation
-  * Foreign key between db attrs
-  * Muldis D adds distributed unique/foreign keys
-  * Library books and DVDs example
-  * Multi-attribute keys supported
-----
- Transition constraints:
-  * Apply to vars, not types
-  * Check how a var value may directly change
-----
-Transactions
-----
- All "D" languages are ACID compliant
-----
- Nested transactions:
-  * All "D" languages support
-  * Arbitrary depth
-  * Start a transaction within another one
-  * Let code be atomic, no worry about callers
-  * Only parent-most does actual commit
-  * Easy to rollback just part of overall trans
-----
- Transactions:
-  * All depots commit or rollback as a unit
-  * Explicitly tied to lexical scopes
-  * And to the exception mechanism
-  * "try" block entry begins a child
-  * "try" success / normal end commits
-  * "try" catches exception, rollback
-  * Easy to get right even with multiple exits
-  * No worry about mis-matched start/end
-  * DBMS must auto-rollback on disconnect
+Transactions and
+exception handling
 ----
 Muldis Rosetta
 ----
- Introducing "Muldis Rosetta":
-  * Reference implementation of Muldis D
-  * Is a DBMS
-  * Mostly incomplete
-  * Should be working soon
+Nature of DBMS,
+relation to app
 ----
- Concepts:
-  * DBMS is a virtual machine
-  * DBMS embedded in your dev environment
-  * DBMS needn't be external program from your app
-  * DBMS is like module in your app
-  * Provides relational ops for munging app vars
-  * State managing solution for relvars/dbvars
-  * Actual embed or external, you code same way
-  * Like local vs remote procedure calls
-  * Write queries as named rtns to invoke later
+Implemented in Perl
 ----
- Implemented in Perl:
-  * Lots of fundamental features built in
-  * Can invoke compiler at runtime
-  * Just gen Perl code from MD, let Perl do work
-  * Automatic garbage collection
-  * Text is Unicode, unlimited length
-  * Bigint/bignum built-in
-  * Ad-hoc multi-dimensional data structures
-  * Extensive meta-model
-  * Closures, higher-order functions, map, grep
-----
- Structure:
-  * A Perl framework like DBI; sep intf, engines
-  * Develop/test on one DBMS, deploy on another
-  * Standalone Example Engine bundled with intf
-  * Develop/test a DBMS app without "real" DBMS
-  * Example just demos semantics, doesn't scale
-  * Most Engines likely bridge to existing DBMSs
-  * Keeps all features, speed of underlying DBMS
-  * Develop/test on one DBMS, deploy on another
-  * Common test suite for all Engines
+Structure, features, uses
 ----
 Thank you!
 ----
