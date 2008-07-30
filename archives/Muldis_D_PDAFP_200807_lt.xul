@@ -220,49 +220,49 @@ Routine kinds
 ----
 Functions
 ----
- create in fed.myapp
- function cube {
-  result sys.std.Core.Type.Int
-  params { topic(sys.std.Core.Type.Int) }
-  exprs {
-    exp(sca_lit Int:9:3),
-    ''(func_invo sys.std.Integer.power
-      args { radix(lex.topic), exponent(lex.exp) }
-    ),
+  create in fed.myapp
+  function cube {
+    result sys.std.Core.Type.Int
+    params { topic(sys.std.Core.Type.Int) }
+    exprs {
+      exp(sca_lit Int:9:3),
+      ''(func_invo sys.std.Integer.power
+        args { radix(lex.topic), exponent(lex.exp) }
+      ),
+    }
   }
- }
 ----
 Updaters
 ----
- create in fed.myapp
- updater chop_sign {
-  upd_params { topic(sys.std.Core.Type.Int) }
-  exprs {
-    abs_val(func_invo sys.std.Integer.abs
-      args { topic(lex.topic) }
-    ),
+  create in fed.myapp
+  updater chop_sign {
+    upd_params { topic(sys.std.Core.Type.Int) }
+    exprs {
+      abs_val(func_invo sys.std.Integer.abs
+        args { topic(lex.topic) }
+      ),
+    }
+    stmt {
+      sys.std.Core.Universal.assign
+        upd_args { target(lex.topic) }
+        ro_args { v(lex.abs_val) },
+    }
   }
-  stmt {
-    sys.std.Core.Universal.assign
-      upd_args { target(lex.topic) }
-      ro_args { v(lex.abs_val) },
-  }
- }
 ----
 Common to functions
 and updaters
 ----
 Procedures
 ----
- create in fed.myapp
- procedure fetch_all_people {
-  upd_params { people(type.var.fed.mydb.people) }
-  stmts [
-    proc_invo sys.std.Core.Universal.assign
-      upd_args { target(lex.people) }
-      ro_args { v(fed.mydb.people) },
-  ]
- }
+  create in fed.myapp
+  procedure fetch_all_people {
+    upd_params { people(type.var.fed.mydb.people) }
+    stmts [
+      proc_invo sys.std.Core.Universal.assign
+        upd_args { target(lex.people) }
+        ro_args { v(fed.mydb.people) },
+    ]
+  }
 ----
 Inner routines
 ----
@@ -273,20 +273,20 @@ and aggregates
 ----
 Nonscalar attributes
 ----
- Relation:[ 'order_id', 'cust_id', 'order_item' ]:{
-  [ Int:9:5073, Int:9:209, Relation:{
-    { 'prod_id' => Text:'paint',  'qty' => Int:9:3 },
-  } ],
-  [ Int:9:5074, Int:9:332, Relation:{
-    { 'prod_id' => Text:'axle',  'qty' => Int:9:20 },
-    { 'prod_id' => Text:'lever', 'qty' => Int:9:50 },
-    { 'prod_id' => Text:'paint', 'qty' => Int:9:8 },
-  } ],
-  [ Int:9:5075, Int:9:17, Relation:{
-    { 'prod_id' => Text:'banana', 'qty' => Int:9:100 },
-    { 'prod_id' => Text:'orange', 'qty' => Int:9:160 },
-  } ],
- }
+  Relation:[ 'order_id', 'cust_id', 'order_item' ]:{
+    [ Int:9:5073, Int:9:209, Relation:{
+      { 'prod_id' => Text:'paint',  'qty' => Int:9:3 },
+    } ],
+    [ Int:9:5074, Int:9:332, Relation:{
+      { 'prod_id' => Text:'axle',  'qty' => Int:9:20 },
+      { 'prod_id' => Text:'lever', 'qty' => Int:9:50 },
+      { 'prod_id' => Text:'paint', 'qty' => Int:9:8 },
+    } ],
+    [ Int:9:5075, Int:9:17, Relation:{
+      { 'prod_id' => Text:'banana', 'qty' => Int:9:100 },
+      { 'prod_id' => Text:'orange', 'qty' => Int:9:160 },
+    } ],
+  }
 ----
 Values in logic
 ----
@@ -364,15 +364,15 @@ or:
   SELECT *
   FROM tab1
   WHERE col1 = 'hello' AND col2 = 5
-      OR col1 = 'world' AND col2 = 7
+     OR col1 = 'world' AND col2 = 7
 ----
 The next example is a
 natural join of 2 relations
 whose attrs are as follows:
- tab1(col1,col2,col3)
- tab2(col2,col3,col4)
+  tab1(col1,col2,col3)
+  tab2(col2,col3,col4)
 such that the result is:
- tab(col1,col2,col3,col4)
+  tab(col1,col2,col3,col4)
 ----
 Muldis D:
   sys.std.Core.Relation.join(
