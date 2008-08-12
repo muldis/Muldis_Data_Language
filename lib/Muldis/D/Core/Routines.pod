@@ -938,14 +938,81 @@ must always be invoked with at least one subject-to-update argument.
 
 =back
 
-=head1 SYSTEM-DEFINED GENERIC SYSTEM SERVICES
+=head1 SYSTEM-DEFINED GENERIC SYSTEM SERVICES FOR STANDARD I/O
 
-These system services are applicable to just one or more specific
-system-defined core scalar data type.
+These system services are provided so Muldis D can do basic user
+input/output by itself, using standard input and standard output, like any
+general purpose programming language, and help satisfy its need to be
+computationally complete.  For now they just work with plain (Unicode) text
+data, so one can implement a basic command-line program interface, or do
+basic invoker-setup file piping, as well as display diagnostics to standard
+error.  These routines are not exhaustive, and their details are subject to
+future revision.
 
-Note: Basic I/O procedures go here!
+=over
 
-I<This documentation is pending.>
+=item C<system_service sys.std.Core.STDIO.read_Text update { target(Text) }
+read { length_in_graphemes(UInt) }>
+
+This system service routine will attempt to read C<length_in_graphemes>
+characters from standard input as a single C<Text> value, blocking the
+current in-DBMS process until it finishes, and then update the variable
+supplied as its C<target> argument so that it holds the read value.  The
+routine will only fetch fewer than the requested number of characters if
+the input stream is closed first.  This routine will throw an exception if
+any system errors occur.
+
+=item C<system_service sys.std.Core.STDIO.read_Text_line update {
+target(Text) } read { ignore_empty_lines(Bool)? }>
+
+This system service routine is the same as C<sys.std.Core.STDIO.read_Text>
+except that it will read from standard input until an
+implementation-defined end-of-line character is read, rather than reading a
+fixed number of characters; this end-of-line character will not be included
+in the read C<Text> value.  If the C<ignore_empty_lines> argument is
+C<Bool:true>, then this routine will keep reading lines from standard input
+until it reads a non-empty line, and then C<target> is only updated to hold
+that last non-empty line; otherwise, this routine will end as soon as one
+line is read, even if it is empty.
+
+=item C<system_service sys.std.Core.STDIO.write_Text update {} read {
+v(Text) }>
+
+This system service routine will attempt to write the characters of its
+C<v> argument to standard output, blocking the current in-DBMS process
+until it finishes.  This routine will throw an exception if any system
+errors occur.
+
+=item C<system_service sys.std.Core.STDIO.write_Text_line update {} read {
+v(Text) }>
+
+This system service routine is the same as C<sys.std.Core.STDIO.write_Text>
+except that it will additionally write an implementation-defined
+end-of-line character after writing C<v>.
+
+=item C<system_service sys.std.Core.STDIO.prompt_Text_line update {
+target(Text) } read { prompt(Text), ignore_empty_lines(Bool)?  }>
+
+This system service routine is a wrapper over first invoking
+C<sys.std.Core.STDIO.write_Text> with its C<prompt> argument and then
+invoking C<sys.std.Core.STDIO.read_Text_line> with its C<target> argument.
+A true C<ignore_empty_lines> argument will result in I<both> of the wrapped
+routines being invoked repeatedly, not just C<read_text_line>.
+
+=item C<system_service sys.std.Core.STDIO.error_Text update {} read {
+v(Text) }>
+
+This system service routine is the same as C<sys.std.Core.STDIO.write_Text>
+except that it will write to standard error rather than standard output.
+
+=item C<system_service sys.std.Core.STDIO.error_Text_line update {} read {
+v(Text) }>
+
+This system service routine is the same as
+C<sys.std.Core.STDIO.write_Text_line> except that it will write to standard
+error rather than standard output.
+
+=back
 
 =head1 SYSTEM-DEFINED GENERIC CONTROL FLOW PROCEDURES
 
