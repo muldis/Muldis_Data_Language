@@ -222,6 +222,10 @@ remainders; the chain with the first remaining element that is ordered
 first as per its own algorithm (that of C<Cat.Name>) is ordered before the
 other chain.
 
+The C<Cat.NameChain> type has an implementation hint for less intelligent
+Muldis D implementations, that suggests using the C<flat> possrep as the
+basis for the physical representation.
+
 =head2 sys.std.Core.Type.Cat.DeclNameChain
 
 A C<Cat.DeclNameChain> (scalar) is mostly the same as a C<Cat.NameChain>
@@ -234,7 +238,7 @@ entities live under a potentially N-depth namespace, such as depot entities
 grouped in a subdepot hierarchy.  The default and minimum value of
 C<Cat.DeclNameChain> is a zero element sequence.  The C<Cat.DeclNameChain>
 type has a default ordering algorithm; it is the same as for
-C<Cat.NameChain>.
+C<Cat.NameChain>.  Likewise it has a same implementation hint.
 
 =head2 sys.std.Core.Type.Cat.Comment
 
@@ -267,7 +271,10 @@ possrep correspond in the same order as they are documented here.  The
 default value of C<Cat.Order> is C<same>; its minimum and maximum values
 are, respectively, C<increase> and C<decrease>.  The cardinality of this
 type is 3.  The C<Cat.Order> type has a default ordering algorithm;
-C<increase> is ordered before C<same>, and C<same> before C<decrease>.
+C<increase> is ordered before C<same>, and C<same> before C<decrease>.  The
+C<Cat.Order> type has an implementation hint for less intelligent Muldis D
+implementations, that suggests using the C<int> possrep as the basis for
+the physical representation.
 
 =head2 sys.std.Core.Type.Cat.OrdDetFuncNameChain
 
@@ -2442,7 +2449,7 @@ it is a singleton type, whose default value is its only value.
 A C<Cat.PossrepSet> is a C<Relation> that specifies a set of possreps that
 a (|quasi-)scalar (|sub-)type might consist primarily of.
 
-A C<Cat.PossrepSet> has these 4 attributes:
+A C<Cat.PossrepSet> has these 5 attributes:
 
 =over
 
@@ -2477,6 +2484,18 @@ defined by I<and>-ing the constraints of all the possreps of the
 just restricting enough so that the inter-possrep mapping functions can
 handle the arguments that it accepts, so it is possible to apply the other
 possreps' constraints.
+
+=item C<is_base> - C<Bool>
+
+This is an optimization hint for Muldis D implementations that are not
+intelligent enough to decide on a best physical representation for the
+(|sub-)type.  At most one of the type's possreps is singled out by having a
+C<Bool:true> value here, so an implementation doesn't have to think and can
+just use that as the basis for the physical representation.  To keep things
+simple, only a possrep of a root type may be marked C<Bool:true>, so it can
+apply consistently to all subtypes as well.  More intelligent
+implementations are free to ignore C<is_base>, or just use it as a
+tie-breaker if applicable.
 
 =back
 
