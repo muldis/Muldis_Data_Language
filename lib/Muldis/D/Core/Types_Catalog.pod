@@ -2641,7 +2641,8 @@ moreover no key's attributes may be a proper subset of any other key's
 attributes; if 2 such candidates appear, just use the one that has the
 subset.  It is valid for a key to consist of zero attributes; in this case,
 that key is the only key of the type, and values of the type may each
-consist of no more than one tuple.  Note that C<keys> is logically an
+consist of no more than one tuple.  At most one key in C<keys> may be
+privileged as the I<primary key>.  Note that C<keys> is logically an
 abstraction syntax (the canonical simplest form) for a particular kind of
 C<relation_constraint> of the type being defined, one that compares the
 cardinality of a projection of a relation on its key attributes with the
@@ -2652,13 +2653,15 @@ if the cardinalities are equal.
 
 These are the 0..N explicit simple distributed (unique) keys that are
 applicable to tuple/database values of the type being defined, that range
-over specified relation-typed attributes of it.  Note that C<distrib_keys>
-is logically an abstraction syntax (the canonical simplest form) for a
-particular kind of C<tuple_constraint> of the type being defined, one that
-compares the cardinality of the union of the projection of distributed key
-attributes of all key-participating relation-valued attributes, with the
-sum of cardinalities of the source relation-valued attributes; the
-attribute values comprise a distributed key if the cardinalities are equal.
+over specified relation-typed attributes of it.  At most one key in
+C<distrib_keys> may be privileged as the I<primary key>.  Note that
+C<distrib_keys> is logically an abstraction syntax (the canonical simplest
+form) for a particular kind of C<tuple_constraint> of the type being
+defined, one that compares the cardinality of the union of the projection
+of distributed key attributes of all key-participating relation-valued
+attributes, with the sum of cardinalities of the source relation-valued
+attributes; the attribute values comprise a distributed key if the
+cardinalities are equal.
 
 =item C<foreign_keys> - C<Cat.ForeignKeySet>
 
@@ -2916,18 +2919,30 @@ to have a maximum of 1 tuple.
 
 =item C<is_primary> - C<Bool>
 
-This is C<Bool:true> if all of the attributes comprising this key are
+This is C<Bool:true> if this key has been designated the I<primary key> of
+the relation (a relation may have at most one, or none, of those); it is
+C<Bool:false> otherwise.  A primary key is privileged over candidate keys
+in general, in that all of the attributes comprising the primary key are
 likely to be treated as immutable in practice for the relation's tuples,
 and hence are the best candidates for identifying tuples within a relation
-over an extended term, and are the best mapping values for automatic new
-foreign keys and join conditions if the host relation type has to be
-auto-split into several associated ones, for example because the physical
-representation of this relation doesn't support RVAs.  This concept is a
-generalization of the concept of "the primary key" of a relation.  A
-relation type can have either none of its keys or more than one of its keys
-with a true C<is_primary> attribute.  This is C<Bool:false> if any of the
-attributes comprising this key are likely to mutate and so shouldn't be
-used as the target of generated foreign keys.
+over an extended term (if multiple keys conceptually have all those
+qualities, then you could choose either as the primary, or perhaps such a
+situation may indicate a flaw in your database design).  The common concept
+of a tuple having an identity that is distinct from the sum total of all
+its attribute values, such that one can say that a tuple is being "updated"
+(rather than its host relation being the only thing that is updated to hold
+a different set of tuples) is dependent in Muldis D on the host relation
+having a primary key; if a tuple in a relation is replaced by a distinct
+tuple whose values in the primary key attributes are identical, it is only
+in this situation that we can consider that we still have the same tuple,
+which was just updated, and that we have not lost the old tuple and gained
+a new one.  The relation attributes comprising a primary key are the best
+mapping values for automatic new foreign keys and join conditions if the
+host relation type has to be auto-split into several associated ones, for
+example because the physical representation of this relation doesn't
+support RVAs; in fact, some implementations may require that any relation
+having an RVA must also have an explicit primary key, so it is easier for
+them to choose the key to automatically relate a split relation on.
 
 =back
 
