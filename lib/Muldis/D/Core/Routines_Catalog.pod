@@ -44,6 +44,23 @@ This function results in the reverse value of its argument; a
 C<Cat.Order:increase> or C<Cat.Order:decrease> argument results in the
 other one of the two; an C<Cat.Order:same> argument results in itself.
 
+=item C<function sys.std.Core.Cat.Order_reduction result Cat.Order params {
+topic(array_of.Cat.Order) }>
+
+This function results in the lowest-indexed of its N input element values
+that isn't equal to C<Cat.Order:same>, if there is such an input value, and
+otherwise it results in C<Cat.Order:same>.  It is a reduction operator that
+recursively takes each consecutive pair of input values, for each pair
+picking the lower-indexed one if that isn't equal to C<Cat.Order:same> and
+otherwise picking the higher-indexed one (a process which is associative),
+until just one is left, which is the result.  If C<topic> has zero values,
+then C<Order_reduction> results in C<Cat.Order:same>, which is the identity
+value for this operation.  The purpose of this function is to provide a
+canonical terse way to chain invocations of multiple C<order_determination>
+functions to derive a larger such function, such as when you want to define
+an C<order_determination> function for a tuple type, which would then be
+your control for sorting a relation as per a SQL "ORDER BY" or "RANK".
+
 =head1 PROCEDURES FOR DEFINING DEPOT MOUNTS
 
 =over
