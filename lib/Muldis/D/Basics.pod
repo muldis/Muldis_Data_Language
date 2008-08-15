@@ -2330,9 +2330,9 @@ pure functional.
 An important feature of DBMS entity names is that the components of
 variables' current values can be addressed directly as if they were normal
 variables, both for reading and for updating; and so this feature allows
-for attributes of tuple and possrep-having-scalar (but not relation) typed
-variables to be used as pseudo-variables, to the Nth degree of recursion,
-with very terse syntax.
+for attributes of tuple and possrep-having-scalar (but not relation in the
+general case; see below) typed variables to be used as pseudo-variables, to
+the Nth degree of recursion, with very terse syntax.
 
 For example, if C<lex.foo> was the name of a tuple-typed variable, and that
 tuple type had an attribute named C<bar>, then C<lex.foo.bar> can be
@@ -2344,9 +2344,23 @@ assignment, say the value 42, that is a short-hand for selecting the tuple
 value that is equal to what C<lex.foo>'s value is except for its C<bar>
 attribute being 42, and assigning that tuple to C<lex.foo>.
 
+With relations, this kind of terse syntax may also be used in some, though
+not all, situations as the syntax may be with tuples and scalar possreps,
+since in the general case, addressing a relation attribute is conceptually
+referring to a set of 0..N items rather than exactly 1.  So for the
+present, relation attributes may only be referred to using this terse
+syntax in situations where said attributes of *all* of the tuples in the
+relation at once are being referenced.  An example of this is some
+canonical terse foreign key constraint definitions, where one might want to
+apply a referential constraint to elements of a TVA or RVA of a relation,
+rather than the whole relation attribute.  (For the present, other parts of
+the Muldis D documentation ignore for simplicity that an RVA of a relation
+can be drilled into, but you in fact can do this where it makes sense.)
+
 Note that in general, any value expression can denote a pseudo-variable,
-but only components of tuples or scalar possreps get the special short-hand
-where an extended entity name can be used as the full expression.
+but only components of tuples or scalar possreps, and sometimes components
+of relations, get the special short-hand where an extended entity name can
+be used as the full expression.
 
 =head2 User Namespace Correspondence
 
