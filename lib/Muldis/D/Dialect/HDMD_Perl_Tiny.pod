@@ -1189,6 +1189,57 @@ Examples:
 
     [ 'RatRoundMeth', 'half_up' ]
 
+=head1 TREAT AS TYPE
+
+This PHMD node is a lexical-scoped pragma that may be used where any
+literal value representing PHMD node may be used.  It has 3 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<treat_as_type>.
+
+=item *
+
+Type name: a Perl C<Array|Seq|Str> as per the payload of a C<NameChain>
+PHMD node.
+
+=item *
+
+The payload; a PHMD node that defines a single value.
+
+=back
+
+This node is used just to provide meta-data for its sole child node, which
+typically is a tuple or relation literal.  By default, when defining a
+nonscalar literal using a PHMD node tree, the resulting nonscalar value is
+"just a tuple|relation".  If that literal is then a sub-literal used as
+either a scalar possrep attribute value or as an argument to a
+bootloader-invoked routine, the known declared type of that scalar possrep
+attribute or routine parameter would provide a context such that the
+expected specific type of the nonscalar value, such as what attributes it
+should have, can be gleaned, and then it would be known what type the
+nonscalar literal is supposed to belong to.  But in some contexts, such as
+when the declared type of the routine parameter is simply C<Relation>,
+there isn't enough information in the normal context to know what attribute
+names and types the new nonscalar should have.  So the C<treat_as_type>
+PHMD node type can then be used by the programmer to explicitly tell the
+Tiny dialect parser what the specific type of the nonscalar is.  The
+literal being annotated is provided by the payload 3rd node element, and
+the type name it is being annotated with is given in the type name 2nd node
+element.  Using C<treat_as_type> is useful to enable some kinds of
+compile-time type checking, and it also helps the C<auto_complete> pragma
+to work in many places where it otherwise lacks information needed to work.
+
+Examples:
+
+    [ 'treat_as_type', 'fed.the_db.gene.person',
+        [ 'Relation', [ 'name', 'age', ], [
+            [ [ 'Text', 'Michelle' ], [ 'Int', 'perl_int', 17 ], ],
+        ] ]
+    ]
+
 =head1 MULDIS D TINY DIALECT PRAGMAS
 
 =head2 auto_complete
@@ -1249,14 +1300,17 @@ being looked at is the declared type of the bootloader-invoked routine's
 parameter that the literal is being given to as an argument.
 
 Now if the declared type of said parameter is just a generic type, such as
-C<Relation> or C<Array>, then often no information can be gleaned for what
-attributes should exist, and so C<auto_complete> won't help you and you
-must fully define relation values with the same attributes per tuple.  But
-fortunately, a lot of the places where C<auto_complete> would help you the
-most is when the bootloader is invoking system-defined data-defining
-procedures, and their parameters are all of attribute-specifying types, and
-it is in such data definition that you may be most likely to face a large
-number of default-valued attributes, such as C<comment>.
+C<Relation> or C<Array>, then often no information can be gleaned from this
+context for what attributes should exist, and so you will need to wrap the
+argument literal in a C<treat_as_type> literal that explicitly provides the
+specific type information needed; otherwise, C<auto_complete> won't help
+you and you must then fully define relation values with the same attributes
+per tuple.  But fortunately for brevity, a lot of the places where
+C<auto_complete> would help you the most is when the bootloader is invoking
+system-defined data-defining procedures, and their parameters are all of
+attribute-specifying types, and it is in such data definition that you may
+be most likely to face a large number of default-valued attributes, such as
+C<comment>.
 
 Note that the reason the C<auto_complete> behaviour is turned off by
 default is twofold.  First, the parser can be a lot simpler / more tiny
