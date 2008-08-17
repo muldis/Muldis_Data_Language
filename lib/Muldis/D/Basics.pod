@@ -1175,12 +1175,12 @@ By design, all Muldis D user-defined variables and routines must live in
 the same depot as all the user-defined types (and constraints) they are
 defined in terms of, and the same depot as all the functions that they
 invoke.  Only procedures may invoke things in depots other than their own,
-and only procedures may be what is thusly invoked.  Both depots would have
-their own copies of data types and constraints of the invoked procedures'
-parameters.  So it is in fact possible for an entire depot to be proven
-internally free of type errors at the time of compilation for any entity
-living within it.  As for inter-depot type checking, that could be done at
-depot mount time.
+and only procedures and updaters may be what is thusly invoked.  Both
+depots would have their own copies of data types and constraints of the
+invoked imperative routine's parameters.  So it is in fact possible for an
+entire depot to be proven internally free of type errors at the time of
+compilation for any entity living within it.  As for inter-depot type
+checking, that could be done at depot mount time.
 
 But that is assuming no Muldis D code in a depot will update its own system
 catalog, in which case that assumption can be thrown out the window.  While
@@ -1595,10 +1595,9 @@ standalone transaction initiation and termination statements.
 A C<bootloader> is a very simple routine whose fundamental purpose is to
 load or create the depot that contains the user-defined C<procedure> that
 is the actual "main program" of a Muldis D application, and invoke it.  All
-that a C<bootloader> can do is invoke C<procedure> (or C<system_service>)
-routines (specifically ones with no subject-to-update parameters), and
-statements to invoke such are all that a C<bootloader> consists of (besides
-the declaration of what Muldis D language variant it is written in).  A
+that a C<bootloader> can do is invoke imperative routines, and statements
+to invoke such are all that a C<bootloader> consists of (besides the
+declaration of what Muldis D language variant it is written in).  A
 C<bootloader> can not exist in a depot, and typically takes the form of a
 thin wrapper script which is what users of the Muldis D application would
 directly invoke, in order to invoke the actual program in an existing
@@ -1612,37 +1611,36 @@ straight source compiler, while one that both creates and invokes is
 analagous to a runtime for a program distributed as source, especially so
 if the main depot is just a transient / volatile memory one.  A
 C<bootloader> does not have any inner routines nor lexical variables (but
-it does have inline constants) nor parameters, and it can not directly see
-or update any global variables.  A C<bootloader> can, depending on the
+it does have inline constants) nor parameters.  A C<bootloader> can
+directly see and update (by using them as subject-to-update imperative
+routine arguments) global variables.  A C<bootloader> can, depending on the
 Muldis D implementation, be split into multiple pieces such as for
 organizing into multiple code source files (in which case a system-defined
 routine can be invoked in one piece to load and execute another piece), or
 for feeding piece-meal by a host language into its hosted Muldis D
 environment.  Note that the result of a database dump as Muldis D code, or
 a batch of data insert statements, would most likely take the form of a
-C<bootloader> routine.  Note that a C<bootloader> can not directly read
-command-line arguments or environment variables, but it can act on them
-indirectly by invoking certain C<procedure>, as C<procedure> can see them
-by way of special system catalog variables.  Note that a C<bootloader> can
-not directly invoke statements conditionally, so all of its statements will
-run unless the sequence is stopped early by a thrown exception in one.
+C<bootloader> routine.  Note that a C<bootloader> can not directly invoke
+statements conditionally, so all of its statements will run unless the
+sequence is stopped early by a thrown exception in one.
 
 =back
 
 In a mixed-language application, where Muldis D code is invoked by another
 host language, it is unlikely that there would be any Muldis D "main
-program" C<procedure> to invoke, since it would be redundant with host
-langauge routines, which would likely invoke the non-"main" Muldis D
+program" imperative routine to invoke, since it would be redundant with
+host langauge routines, which would likely invoke the non-"main" Muldis D
 routines directly.  Host language routines can directly invoke Muldis D
 C<function> or C<updater> or C<system_service> or C<procedure> routines,
 with possibly updateable arguments, as well as have their own lexical
 Muldis D constants or variables for use as arguments or results for said
 invocations.  Sometimes for increased efficiency or flexability, the host
 language may instead feed C<bootloader> pieces, consisting of multiple
-C<procedure> calls having no updateable arguments.  Host language routines
-can not directly invoke Muldis D C<bootloader_exclusive> routines but by
-way of a fed C<bootloader> piece; however, some appropriate counterparts
-to those may be provided directly by the virtual machine's API.
+imperative routine calls having no updateable arguments that are lexical
+variables.  Host language routines can not directly invoke Muldis D
+C<bootloader_exclusive> routines but by way of a fed C<bootloader> piece;
+however, some appropriate counterparts to those may be provided directly by
+the virtual machine's API.
 
 Some subject-to-update or read-only parameters of routines may be optional,
 that is, do not need to be supplied explicit arguments when the routine is

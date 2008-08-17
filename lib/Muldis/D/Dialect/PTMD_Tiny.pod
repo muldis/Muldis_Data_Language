@@ -64,8 +64,7 @@ otherwise valid.
 Keeping in mind that any Plain Text Muldis D code file has to actually
 consist of a Muldis D C<bootloader> routine, the following grammar is
 actually the grammar to parse a C<bootloader> routine, which is simply a
-series of procedure calls (specifically procedures with no
-subject-to-update parameters), where earlier procedure calls are to
+series of imperative routine calls, where earlier routine calls are to
 system-defined data-definition routines (their arguments are values to put
 in the system catalog), and later ones are then to user-defined routines
 that the earlier statements either loaded or defined.
@@ -110,7 +109,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token bootloader {
         (<language_name>)
-        (<bootloader_procedure_call>*)
+        (<bootloader_imperative_routine_call>*)
     }
 
     token language_name {
@@ -133,17 +132,25 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token ln_extensions { <tuple_body> }
 
-    token bootloader_procedure_call {
+    token bootloader_imperative_routine_call {
         (boot_call)
         <spec_sep>
-        <procedure_name>
+        <imperative_routine_name>
         <spec_sep>
-        <procedure_args>
+        <imperative_routine_upd_args>
+        <spec_sep>
+        <imperative_routine_ro_args>
     }
 
-    token procedure_name { <name_chain_body> }
+    token imperative_routine_name { <name_chain_body> }
 
-    token procedure_args { <tuple_body> }
+    token imperative_routine_upd_args {
+        <list_open>
+            (((<name> <pair_sep> <name_chain_body>) <list_sep>)*)
+        <list_close>
+    }
+
+    token imperative_routine_ro_args { <tuple_body> }
 
     token literal {
           <scalar_or_qv>
@@ -475,7 +482,7 @@ The following are fragments of actual Plain Text Muldis D code.
         'auto_complete' => Bool:true,
     };
 
-    boot_call:'sys.std.Core.Cat.create_public_relvar':{ ... };
+    boot_call:'sys.std.Core.Cat.create_depot_procedure':{}:{ ... };
 
     Scalar:'sys.std.Rational.Type.Rat':'float':{
         'mantissa' => Int:9:45207196,
