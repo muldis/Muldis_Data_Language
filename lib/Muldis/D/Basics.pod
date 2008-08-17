@@ -2374,12 +2374,14 @@ namespaces of C<fed|dep|sdp|pkg> are fully independent in definition, such
 that namespaces under C<lib> are defined in terms of child subdepots and
 packages, while namespaces under C<data> are defined in terms of tuple
 (database) attributes that are themselves tuples (databases) rather than
-relations.  However, in order for any given depot|subdepot|package to have
-its own concept of a (pseudo-)dbvar that is local to itself, these
-otherwise independent namespace hierarchies are constrained to resemble
-each other to a certain degree; that also serves to support DBMSs that have
-a common namespace hierarchy for both routines and relvars.  This section
-details that mutual constraint.
+relations.  However, in order for any given depot|subdepot|package to
+optionally have its own concept of a (pseudo-)dbvar that is local to
+itself, these otherwise independent namespace hierarchies are constrained
+to resemble each other to a certain degree, when the option to have a
+self-local dbvar is exercised (a depot|subdepot|package can alternately
+choose to I<not> have its own dbvar); that also serves to support DBMSs
+that have a common namespace hierarchy for both routines and relvars.  This
+section details that mutual constraint.
 
 The 4 system-defined user-data variables named C<(fed|dep|sdp|pkg).data>
 are all of "just" the C<Database> type (which is a C<Tuple> proper
@@ -2391,15 +2393,21 @@ contents of each mounted depot.  When a new DBMS process starts, there are
 no depot mounts, and the type of C<fed.data> is the singleton type
 consisting of just the zero-attribute database/tuple value, which is also
 C<fed.data>'s default value; mounting a depot adds one corresponding
-database-typed attribute to C<fed.data>'s type and value, and unmounting
-the depot removes its corresponding attribute.  For each attribute of the
-type and value of C<fed.data>, its type and value is equal to the type and
-value of the C<dep.data> variable seen by entities within the corresponding
-depot.
+database-typed attribute to C<fed.data>'s type and value, iff the depot has
+a self-local dbvar, and unmounting the depot removes its corresponding
+attribute, iff likewise.  For each attribute of the type and value of
+C<fed.data>, its type and value is equal to the type and value of the
+C<dep.data> variable seen by entities within the corresponding depot, iff
+the depot has a self-local dbvar.
 
-The C<dep.data> variable's type is determined by the catalog of the same
-depot.  When a new depot is created, the default value of its catalog
-defines zero types or routines, and defines that the type of that depot's
+The C<dep.data> variable's existence and type is determined by the catalog
+of the same depot.  When a new depot is created, the default value of its
+catalog defines zero types or routines, and defines that the depot does
+I<not> have a self-local dbvar; this means by default the depot is just a
+repository for code, able to contain only types and routines, and that
+depot's C<dep.data> doesn't exist at all.  Later on, if a depot's catalog
+is updated to say that the depot I<does> have a self-local dbvar, then in
+the default case of that situation, the declared type of that depot's
 C<dep.data> is "just a database".  This means that by default users can
 update C<dep.data> (or more specifically, C<< fed.data.<depot-mount-name>
 >>) with any C<Database> value at all, and (where applicable) have it
@@ -2419,18 +2427,21 @@ directly to the C<dep.data> variable (and C<fed.data> also) by the depot's
 catalog in another way.
 
 If a depot has any subdepots or packages, then the value of C<dep.data>
-must have corresponding attributes that match by name, recursively.  For
-example, if a depot has a root-child subdepot named C<foo> and a child
-package of that named C<bar>, then the type of C<dep.data> must have a
-database-typed attribute named C<foo> and the type of C<foo> must have a
-database-typed attribute named C<bar>.  So then, C<dep.data.foo> is the
-pseudo-dbvar of C<sdp.data> as seen by entities in the C<foo> subdepot (and
-they have the same type and value), and C<dep.data.foo.bar> is the
-pseudo-dbvar of C<pkg.data> as seen by entities in the C<bar> package.  The
-type of C<dep.data> may have additional attributes besides those matching
-subsepots or packages, but it may not lack any corresponding ones.
+must have corresponding attributes that match by name, recursively, iff the
+subdepot or package has a self-local dbvar.  For example, if a depot has a
+root-child subdepot named C<foo> and a child package of that named C<bar>,
+and C<bar> expects to have a self-local dbvar, then the type of C<dep.data>
+must have a database-typed attribute named C<foo> and the type of C<foo>
+must have a database-typed attribute named C<bar>.  So then,
+C<dep.data.foo> is the pseudo-dbvar of C<sdp.data> as seen by entities in
+the C<foo> subdepot (and they have the same type and value), and
+C<dep.data.foo.bar> is the pseudo-dbvar of C<pkg.data> as seen by entities
+in the C<bar> package.  The type of C<dep.data> may have additional
+attributes besides those matching subsepots or packages, but it may not
+lack any corresponding ones with subdepots or packages that have self-local
+dbvars.
 
-Now while subdepots and packages in a depot must have corresponding
+Now while subdepots and packages in a depot optionally have corresponding
 database-typed C<dep.data> attributes, the opposite is true in regards to
 routines and types in a depot; for those, there must I<not> be any
 corresponding C<dep.data> attributes, either database or relation-typed;
@@ -2439,7 +2450,12 @@ routines, and must not have the same fully-qualified names.
 
 What is said above for the relationship between the catalog of a depot and
 its C<dep.data>, goes also for the catalogs of a subdepot or package, and
-their C<sdp.data> or C<pkg.data>, respectively.
+their C<sdp.data> or C<pkg.data>, respectively.  Note that while a depot or
+subdepot or package does not need to have a self-local dbvar in the general
+case, if any subdepot or package wants to have a self-local dbvar, then all
+of its direct ancestor namespaces must have one too, because a subdepot or
+package dbvar is always a pseudo-variable defined as an attribute of its
+parent depot or subdepot, recursively.
 
 =head2 Referencing Data Types
 
