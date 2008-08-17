@@ -105,6 +105,8 @@ more or less:
             sys.std.Core.Type.Cat.SysCatSet
             sys.std.Core.Type.Cat.MountControlSet
             sys.std.Core.Type.Cat.DepotMountSet
+            sys.std.Core.Type.Cat.FedTypeMapSet
+            sys.std.Core.Type.Cat.FedTypeMap
             sys.std.Core.Type.Cat.SubdepotSet
             sys.std.Core.Type.Cat.PackageSet
             sys.std.Core.Type.Cat.Dep(Func|Upd|Proc)Set
@@ -707,7 +709,7 @@ update, and that defines the scope of an active transaction.  There is
 exactly one of these per process and it doesn't have a name.  The system
 catalog variable named C<fed.cat> is of the C<Cat.Federation> type.
 
-A C<Cat.Federation> has these 2 attributes:
+A C<Cat.Federation> has these 3 attributes:
 
 =over
 
@@ -718,6 +720,20 @@ This is an optional programmer comment about the federation as a whole.
 =item C<mounts> - C<Cat.DepotMountSet>
 
 These are the depot mounts that comprise the federation.
+
+=item C<type_maps> - C<Cat.FedTypeMapSet>
+
+When this federation has more than one depot mount, and the depots have
+copies of the same data types, then C<type_maps> is used to specify which
+types in each depot correspond to types in others, so that during the time
+period of common mounting, those data types can be treated as aliases and
+so be used interchangeably.  Mainly this is used when either a procedure in
+one depot wants to access or update a dbvar of another depot, or when a
+procedure in one depot wants to invoke a routine in another depot, that
+have parameters/etc of some user-defined data type.  The expected most
+common use case would be when there are 2 depot mounts, one being a
+persistent database and the other being transient application-specific code
+that creates or otherwise works with that persistent database.
 
 =back
 
@@ -754,6 +770,42 @@ made visible to the DBMS.
 
 A C<Cat.DepotMountSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.FedTypeMapSet
+
+A C<Cat.FedTypeMapSet> is a C<Relation> such that each tuple in it
+specifies which of multiple depots have a copy of the same data type, for
+the purpose of treating all the copies as being interchangeable, so to
+support cross-depot interaction.
+
+A C<Cat.FedTypeMapSet> has these 2 attributes:
+
+=over
+
+=item C<comment> - C<Cat.Comment>
+
+This is an optional programmer comment about this type mapping.
+
+=item C<map> - C<Cat.FedTypeMap>
+
+This lists the fully-qualified names of 0..N data types that are all
+considered to be copies of the same 1 type, and should be treated
+interchangeably by the DBMS.
+
+=back
+
+A C<Cat.FedTypeMapSet> has a primary key on the C<map> attribute.  Its
+default value is empty.
+
+=head2 sys.std.Core.Type.Cat.FedTypeMap
+
+A C<Cat.FedTypeMap> is a C<Relation>.  It lists the fully-qualified names
+of 0..N data types that are all considered to be copies and of the same 1
+type, and should be treated interchangeably by the DBMS.  A
+C<Cat.FedTypeMap> has 2 attributes, C<depot> (a C<Cat.Name>) and C<type> (a
+C<Cat.NameChain>); the C<depot> is the declared name of the depot mount
+that the data type lives in; the C<type> is the C<dep.>-qualified name of
+the data type living in it.  Its default value has zero tuples.
 
 =head1 TYPES FOR DEFINING DEPOTS AND SUBDEPOTS
 
