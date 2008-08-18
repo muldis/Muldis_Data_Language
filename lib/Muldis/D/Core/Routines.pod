@@ -830,7 +830,67 @@ isn't a subtype of the declared type of the variable behind C<target>.
 
 =back
 
-=head1 SYSTEM-DEFINED GENERIC RELVAR UPDATERS
+=head1 SYSTEM-DEFINED GENERIC TUPLE VARIABLE UPDATERS
+
+=head2 Updaters That Rename Attributes
+
+=over
+
+=item C<updater sys.std.Core.Tuple.assign_rename update { topic(Tuple) }
+read { map(Cat.AttrRenameMap) }>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Tuple.rename> function with the same arguments, and then
+assigning the result of that function to C<topic>.  This procedure is
+analagous to the data-manipulation phase of a SQL RENAME TABLE|VIEW or
+ALTER TABLE|VIEW RENAME TO statement iff C<topic> is C<Database>-typed;
+each tuple of C<map> corresponds to a renamed SQL table.
+
+=back
+
+=head2 Updaters That Add Attributes
+
+=over
+
+=item C<updater sys.std.Core.Tuple.assign_product update { topic(Tuple) }
+read { other(Tuple) }>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Tuple.product> function such that it has 2 input tuples from
+C<assign_product>'s 2 arguments, and then assigning the result of that
+function to C<topic>.  This procedure is analagous to the data-manipulation
+phase of a SQL CREATE TABLE|VIEW statement iff both arguments are
+C<Database>-typed; each relation-typed attribute of C<other> corresponds to
+a created SQL table.
+
+=back
+
+=head2 Updaters That Remove Attributes
+
+=over
+
+=item C<updater sys.std.Core.Tuple.assign_projection update { topic(Tuple)
+} read { attrs(set_of.Cat.Name) }>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Tuple.projection> function with the same arguments, and then
+assigning the result of that function to C<topic>.
+
+=item C<updater sys.std.Core.Tuple.assign_cmpl_projection update {
+topic(Tuple) } read { attrs(set_of.Cat.Name) }>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Tuple.cmpl_projection> function with the same arguments, and
+then assigning the result of that function to C<topic>.  This procedure is
+analagous to the data-manipulation phase of a SQL DROP TABLE|VIEW statement
+iff C<topic> is C<Database>-typed; each relation-typed attribute named by
+C<attrs> corresponds to a dropped SQL table.
+
+=back
+
+=head1 SYSTEM-DEFINED GENERIC RELATION VARIABLE UPDATERS
+
+=head2 Updaters That Add Tuples
 
 =over
 
@@ -848,6 +908,28 @@ r(Relation) } read { t(Tuple) }>
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.disjoint_insertion> function with the same
 arguments, and then assigning the result of that function to C<r>.
+
+=item C<updater sys.std.Core.Relation.assign_union update { topic(Relation)
+} read { other(Relation) }>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.union> function such that it has 2 input relations
+from C<assign_union>'s 2 arguments, and then assigning the result of that
+function to C<topic>.  This updater is analagous to the general case of the
+multiple-row SQL "INSERT" statement.
+
+=item C<updater sys.std.Core.Relation.assign_disjoint_union update {
+topic(Relation) } read { other(Relation) }>
+
+This update operator is to C<sys.std.Core.Relation.disjoint_union> what the
+function C<sys.std.Core.Relation.assign_union> is to
+C<sys.std.Core.Relation.union>.
+
+=back
+
+=head2 Updaters That Remove Tuples
+
+=over
 
 =item C<updater sys.std.Core.Relation.assign_deletion update { r(Relation)
 } read { t(Tuple) }>
@@ -870,22 +952,6 @@ This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.cmpl_restriction> function with the same arguments,
 and then assigning the result of that function to C<topic>.  This updater
 is analagous to the general case of the SQL "DELETE" statement.
-
-=item C<updater sys.std.Core.Relation.assign_union update { topic(Relation)
-} read { other(Relation) }>
-
-This update operator is a short-hand for first invoking the
-C<sys.std.Core.Relation.union> function such that it has 2 input relations
-from C<assign_union>'s 2 arguments, and then assigning the result of that
-function to C<topic>.  This updater is analagous to the general case of the
-multiple-row SQL "INSERT" statement.
-
-=item C<updater sys.std.Core.Relation.assign_disjoint_union update {
-topic(Relation) } read { other(Relation) }>
-
-This update operator is to C<sys.std.Core.Relation.disjoint_union> what the
-function C<sys.std.Core.Relation.assign_union> is to
-C<sys.std.Core.Relation.union>.
 
 =item C<updater sys.std.Core.Relation.assign_intersection update {
 topic(Relation) } read { other(Relation) }>
@@ -916,6 +982,68 @@ source(Relation) } read { filter(Relation) }>
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.semijoin> function with the same arguments, and
 then assigning the result of that function to C<source>.
+
+=back
+
+=head2 Updaters That Rename Attributes
+
+=over
+
+=item C<updater sys.std.Core.Relation.assign_rename update {
+topic(Relation) } read { map(Cat.AttrRenameMap) }>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.rename> function with the same arguments, and then
+assigning the result of that function to C<topic>.  This procedure is
+analagous to the data-manipulation phase of a SQL ALTER TABLE|VIEW RENAME
+COLUMN statement; each tuple of C<map> corresponds to a renamed SQL table
+column.
+
+=back
+
+=head2 Updaters That Add Attributes
+
+=over
+
+=item C<updater sys.std.Core.Relation.assign_extension update {
+topic(Relation) } read { func(Cat.FuncRef), assuming(QuasiTuple)? }>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.extension> function with the same arguments, and
+then assigning the result of that function to C<topic>.
+
+=item C<updater sys.std.Core.Relation.assign_static_extension update {
+topic(Relation) } read { attrs(Tuple) }>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.static_extension> function with the same arguments,
+and then assigning the result of that function to C<topic>.  This procedure
+is analagous to the data-manipulation phase of a SQL ALTER TABLE|VIEW ADD
+COLUMN statement; each attribute of C<attrs> corresponds to an added SQL
+table column.
+
+=back
+
+=head2 Updaters That Remove Attributes
+
+=over
+
+=item C<updater sys.std.Core.Relation.assign_projection update {
+topic(Relation) } read { attrs(set_of.Cat.Name) }>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.projection> function with the same arguments, and
+then assigning the result of that function to C<topic>.
+
+=item C<updater sys.std.Core.Relation.assign_cmpl_projection update {
+topic(Relation) } read { attrs(set_of.Cat.Name) }>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.cmpl_projection> function with the same arguments,
+and then assigning the result of that function to C<topic>.  This procedure
+is analagous to the data-manipulation phase of a SQL ALTER TABLE|VIEW DROP
+COLUMN statement; each attribute named by C<attrs> corresponds to an
+dropped SQL table column.
 
 =back
 
