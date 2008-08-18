@@ -25,16 +25,7 @@ This document contains one or more sections that were moved here from
 L<Muldis::D::Core> so that that other document would not be too large.
 
 These core routines are more special-purpose in nature and are intended for
-use in working with the system catalog.  Generally speaking they comprise
-the system-defined data definition routines of Muldis D.  These procedures
-are mainly for making bootloaders work, since a bootloader's ability to
-directly make use of catalog or data variables is limited compared to an
-in-depot routine.
-
-Note that these routines are far from exhaustive as far as providing the
-means to do data definition.  The most exhaustive means to do data
-definition is to use ordinary data manipulation routines directly on the
-system catalog.
+use in working with the system catalog.
 
 =head1 FUNCTIONS FOR SIMPLE GENERIC SCALAR TYPES
 
@@ -62,7 +53,32 @@ functions to derive a larger such function, such as when you want to define
 an C<order_determination> function for a tuple type, which would then be
 your control for sorting a relation as per a SQL "ORDER BY" or "RANK".
 
-=head1 PROCEDURES FOR DEFINING DEPOT MOUNTS
+=head1 PROCEDURES FOR BOOTSTRAPPING A MULDIS D PROGRAM OR DATABASE
+
+These procedures comprise a minimal set of system-defined data definition
+routines that can be used by capability-limited bootloader routines in
+order to setup a DBMS environment in which the rest of the Muldis D program
+would live, and in order to create more other routines in that environment
+which are more capable than bootloaders at setting up the rest of the DBMS
+environment.
+
+Generally speaking, most data definition requires manipulating the Muldis D
+system catalog dbvars in sometimes complicated ways, and bootloaders alone
+aren't capable of that in the general case, so typically a bootloader will
+create procedures and updaters using its limited abilities such that the
+created are capable of doing the more complicated manipulations.
+
+After the bootloader creates those other routines and invokes them, the
+bootloader can then invoke appropriate system-defined update operators
+defined in L<Muldis::D::Core::Routines> to seed the database with data, if
+applicable, such that those calls would probably make up the bulk of the
+bootloader if the bootloader is a restore program for a database dump.
+
+The following procedures can do the following: create|mount and
+drop|unmount depots, create|drop subdepots and packages, create|drop
+user-defined routines and data types; they can not create or drop relvars.
+
+=head2 Procedures For Defining Depot Mounts
 
 =over
 
@@ -96,7 +112,7 @@ C<Bool:false>.
 
 =back
 
-=head1 PROCEDURES FOR DEFINING IN-DEPOT NAMESPACES
+=head2 Procedures For Defining In-Depot Namespaces
 
 =over
 
@@ -138,7 +154,7 @@ statement.
 
 =back
 
-=head1 PROCEDURES FOR DEFINING ROUTINES
+=head2 Procedures For Defining Routines
 
 =over
 
@@ -191,7 +207,7 @@ function|updater|procedure.
 
 =back
 
-=head1 PROCEDURES FOR DEFINING DATA TYPES
+=head2 Procedures For Defining Data Types
 
 =over
 
@@ -234,14 +250,6 @@ relvar C<fed.cat.mounts{name=$depot}.depot
 existing package type.
 
 =back
-
-=head1 PROCEDURES FOR DEFINING DATABASE RELVARS
-
-I<TODO.>
-
-=head1 PROCEDURES FOR DEFINING DATABASE CONSTRAINTS
-
-I<TODO.>
 
 =head1 SEE ALSO
 
