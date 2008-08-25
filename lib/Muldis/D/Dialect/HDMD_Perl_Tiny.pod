@@ -145,7 +145,8 @@ Examples:
     [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl_Tiny', {} ]
 
     [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl_Tiny', {
-        'auto_complete' => [ 'Bool', 'md_enum', 'true' ],
+        'auto_add_attrs'          => [ 'Bool', 'md_enum', 'true' ],
+        'auto_unabbrev_std_names' => [ 'Bool', 'md_enum', 'true' ],
     } ]
 
 More specifically, a language name PHMD node like the above would generally
@@ -1237,7 +1238,7 @@ Tiny dialect parser what the specific type of the nonscalar is.  The
 literal being annotated is provided by the payload 3rd node element, and
 the type name it is being annotated with is given in the type name 2nd node
 element.  Using C<treat_as_type> is useful to enable some kinds of
-compile-time type checking, and it also helps the C<auto_complete> pragma
+compile-time type checking, and it also helps the C<auto_add_attrs> pragma
 to work in many places where it otherwise lacks information needed to work.
 
 Examples:
@@ -1250,7 +1251,7 @@ Examples:
 
 =head1 MULDIS D TINY DIALECT PRAGMAS
 
-=head2 auto_complete
+=head2 auto_add_attrs
 
 All Muldis D values, besides scalars lacking any possreps, are defined in
 terms of a collection of attribute values, and there is no such thing as an
@@ -1270,9 +1271,9 @@ much code as they otherwise would if they could simply not write out the
 default-valued attributes.
 
 If the 5th I<Extensions> portion of the fully-qualified Muldis D language
-name contains a name+value pair of C<auto_complete> + C<Bool:true>, then
-this activates the optional C<auto_complete> pragma, which provides one
-kind of automatic code completion.  When C<auto_complete> is active,
+name contains a name+value pair of C<auto_add_attrs> + C<Bool:true>, then
+this activates the optional C<auto_add_attrs> pragma, which provides one
+kind of automatic code completion.  When C<auto_add_attrs> is active,
 programmers may omit any literal attributes that they want, and those
 attributes will be automatically defined by the parser to have the default
 values for their type.  Or more specifically, the wider literal whose
@@ -1282,7 +1283,7 @@ explicitly given will override the default's values for those attributes.
 The actual behaviour is essentially what the
 C<sys.std.Tuple.substitution_in_default> function does.
 
-But the C<auto_complete> pragma is not simply an automatically invoked
+But the C<auto_add_attrs> pragma is not simply an automatically invoked
 pre-processing Muldis D function, because it also serves the common case
 where one is defining relation literals that have different attributes
 specified per tuple; such a thing by itself isn't even valid as a generic
@@ -1290,16 +1291,16 @@ relation, so it certainly can't be given to a Muldis D function; so the
 pragma has at least that advantage unique to itself.
 
 Note that the lexer is exactly the same regardless of whether the
-C<auto_complete> pragma is turned on or off, because the matters of missing
-attributes were never tested or enforced at the lexical level in the first
-place; rather the pragma only affects the parsing stage that follows the
-lexing.  In other words, the actual syntax or grammar is identical
-regardless of the setting of this pragma.
+C<auto_add_attrs> pragma is turned on or off, because the matters of
+missing attributes were never tested or enforced at the lexical level in
+the first place; rather the pragma only affects the parsing stage that
+follows the lexing.  In other words, the actual syntax or grammar is
+identical regardless of the setting of this pragma.
 
-Now one consequence of using the C<auto_complete> pragma is that in general
-the parser must be more complicated, and read type definitions from the
-DBMS information schema so that it knows what attributes each literal is
-supposed to have, and their declared types, and also sub-literals can no
+Now one consequence of using the C<auto_add_attrs> pragma is that in
+general the parser must be more complicated, and read type definitions from
+the DBMS information schema so that it knows what attributes each literal
+is supposed to have, and their declared types, and also sub-literals can no
 longer in general be fully converted to values in isolation; now the
 parent-most literal must be evaluated first, because its declared type
 generally determines the declared types of its attributes, and then their
@@ -1311,31 +1312,74 @@ Now if the declared type of said parameter is just a generic type, such as
 C<Relation> or C<Array>, then often no information can be gleaned from this
 context for what attributes should exist, and so you will need to wrap the
 argument literal in a C<treat_as_type> literal that explicitly provides the
-specific type information needed; otherwise, C<auto_complete> won't help
+specific type information needed; otherwise, C<auto_add_attrs> won't help
 you and you must then fully define relation values with the same attributes
 per tuple.  But fortunately for brevity, a lot of the places where
-C<auto_complete> would help you the most is when the bootloader is invoking
-system-defined data-defining procedures, and their parameters are all of
-attribute-specifying types, and it is in such data definition that you may
-be most likely to face a large number of default-valued attributes, such as
-C<comment>.
+C<auto_add_attrs> would help you the most is when the bootloader is
+invoking system-defined data-defining procedures, and their parameters are
+all of attribute-specifying types, and it is in such data definition that
+you may be most likely to face a large number of default-valued attributes,
+such as C<comment>.
 
-Note that the reason the C<auto_complete> behaviour is turned off by
+Note that the reason the C<auto_add_attrs> behaviour is turned off by
 default is twofold.  First, the parser can be a lot simpler / more tiny
 with it off.  Second, requiring users to explicitly define even
 default-valued attributes can make the code more self-documenting and can
 help users avoid some kinds of bugs due to action from unseen values, or
 due to some default values "silently" changing between language versions.
-So then essentially, turning on C<auto_complete> means the programmer is
+So then essentially, turning on C<auto_add_attrs> means the programmer is
 telling the parser "I know what I'm doing" by I<explicitly> asking for
-potentially less-safe behaviour.  Of course, even with C<auto_complete>
+potentially less-safe behaviour.  Of course, even with C<auto_add_attrs>
 turned on, you can still explicitly define attribute values that are their
 type's default values, so it is possible to compromise such as you like.
 
 Also note that it should be trivial for a Muldis D implementation to let
-users input code written with C<auto_complete> turned on, and then output
+users input code written with C<auto_add_attrs> turned on, and then output
 the version of that code for their perusal with it turned off, so they can
 see what extra values were filled in without having to manually write said.
+
+=head2 auto_unabbrev_std_names
+
+Normally when one is specifying a C<Cat.NameChain> literal that is a
+reference to a standard system-defined type or routine, they must write out
+the name in full, starting with C<sys.std> and so on through the unique
+part of the entity name.  While this allows for clearly self-documenting
+code, as well as for relatively simple parsers, it can also be added tedium
+to programmers that would prefer to write out the names in a less verbose
+manner, especially since to a point, a slightly more complicated parser
+could still unambiguously resolve a much shorter substring of the name.
+
+If the 5th I<Extensions> portion of the fully-qualified Muldis D language
+name contains a name+value pair of C<auto_unabbrev_std_names> +
+C<Bool:true>, then this activates the optional C<auto_unabbrev_std_names>
+pragma, which provides one kind of automatic code completion.  When
+C<auto_unabbrev_std_names> is active, programmers may omit any number of
+consecutive leading chain elements from such a C<Cat.NameChain> literal, so
+long as the remaining unqualified chain is distinct among all standard
+system-defined (C<sys.std>-prefix) DBMS entities.  This feature has no
+effect on the namespace prefixes like C<tuple_from> or C<array_of>; one
+still writes those as normal prepended to the otherwise shortened chains.
+
+So for example, one can just write C<Int> rather than
+C<sys.std.Core.Type.Int>, C<is_identical> rather than
+C<sys.std.Core.Universal.is_identical>, C<Tuple.attr> rather than
+C<sys.std.Core.Tuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
+C<array_of.Rat> rather than C<array_of.sys.std.Rational.Type.Rat>, and so
+on.
+
+The C<auto_unabbrev_std_names> pragma intentionally does not empower auto
+un-abbreviations of any namespaces other than C<sys.std>, to keep things
+simple for users to predict and for systems to implement; it does not
+affect C<sys.(imp|cat)>, nor any other top-level namespace.  When one is
+referencing either any system-defined implementation-specific
+(non-standard) types or routines, or any user-defined types or routines, or
+any dbvars or constraints or whatever, their names can not be written
+abbreviated due to the C<auto_unabbrev_std_names> pragma.
+
+Note that the lexer is exactly the same regardless of whether the
+C<auto_unabbrev_std_names> pragma is turned on or off, as per the
+C<auto_add_attrs> pragma.  Many other comments about the other pragma also
+apply to this one.
 
 =head1 SEE ALSO
 
