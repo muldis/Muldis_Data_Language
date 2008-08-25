@@ -147,6 +147,7 @@ Examples:
     [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl_Tiny', {
         'auto_add_attrs'          => [ 'Bool', 'md_enum', 'true' ],
         'auto_unabbrev_std_names' => [ 'Bool', 'md_enum', 'true' ],
+        'auto_chains_from_names'  => [ 'Bool', 'md_enum', 'true' ],
     } ]
 
 More specifically, a language name PHMD node like the above would generally
@@ -1251,6 +1252,9 @@ Examples:
 
 =head1 MULDIS D TINY DIALECT PRAGMAS
 
+All of the following pragmas apply to both the C<PTMD_Tiny> and
+C<HDMD_Perl_Tiny> dialects, and have the same semantics with both.
+
 =head2 auto_add_attrs
 
 All Muldis D values, besides scalars lacking any possreps, are defined in
@@ -1380,6 +1384,33 @@ Note that the lexer is exactly the same regardless of whether the
 C<auto_unabbrev_std_names> pragma is turned on or off, as per the
 C<auto_add_attrs> pragma.  Many other comments about the other pragma also
 apply to this one.
+
+=head2 auto_chains_from_names
+
+Iff both the C<auto_add_attrs> and C<auto_unabbrev_std_names> pragmas are
+active, then the optional C<auto_chains_from_names> dependent pragma may be
+activated in the same manner (as an I<Extensions> name+value pair with
+C<Bool:true>.  When C<auto_chains_from_names> is active, programmers may
+write an otherwise abbreviated-to-one-chain-element C<Cat.NameChain>
+literal as a plain C<Cat.Name> literal; this can chop the literal down to a
+third or fourth of its otherwise-length such as in the case of a reference
+to the C<Int> type.  When the parent literal of such a faux-C<Cat.Name>
+literal is examined for missing attributes, or examined that existing
+attributes are of the correct type, any attributes whose declared type says
+they are supposed to be C<Cat.NameChain> but that have an explicitly
+defined C<Cat.Name> child literal will have that literal mapped to and
+replaced with a single element C<Cat.NameChain> literal, which can be
+subsequently un-abbreviated into a standard system-defined type or routine
+name.  The C<auto_chains_from_names> pragma will not work when the declared
+type being applied to a faux-C<Cat.Name> is not a C<Cat.NameChain> subtype,
+and such literals will then be taken as actual C<Cat.Name>; where such
+declared type information is missing, you will need to write out the
+abbreviated chain as an actual C<Cat.NameChain> literal.  Note that the
+C<auto_chains_from_names> pragma has no effect on C<Cat.NameChain> literal
+bodies that don't comprise the payload portion of their parent literal,
+such as with the imperative routine name composed into a C<boot_call>
+literal; literal bodies in those positions will always be interpreted
+according to C<Cat.NameChain> literal body syntax.
 
 =head1 SEE ALSO
 
