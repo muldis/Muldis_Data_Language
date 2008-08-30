@@ -3,7 +3,7 @@ use utf8;
 use strict;
 use warnings FATAL => 'all';
 
-use version;
+use version 0.74;
 
 use Test::More;
 
