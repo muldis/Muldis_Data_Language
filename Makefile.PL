@@ -3,16 +3,6 @@ use utf8;
 use strict;
 use warnings FATAL => 'all';
 
-warn q{
----------------------------------------------------------------------------
-  NOTE: Please ignore any warnings during installation about the use of
-  "=encoding utf8" in the pod documentation.
-
-  Continuing in 3 seconds...
----------------------------------------------------------------------------
-};
-sleep 3;
-
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
