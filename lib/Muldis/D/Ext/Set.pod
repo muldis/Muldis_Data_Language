@@ -165,6 +165,30 @@ attribute of the sole tuple of C<topic>, if said tuple exists; otherwise,
 it results in C<value>.  This function will warn if the declared type of
 C<value> isn't a subtype of the declared type of the attribute.
 
+=item C<function sys.std.Set.Maybe.order result Cat.Order params {
+topic(Maybe), other(Maybe), treat_nothing_as_max(Bool),
+ord_func(Cat.OrdDetFuncRef)?, ord_assuming(QuasiTuple)?,
+reverse_order_of_singles(Bool)? }>
+
+This function is a generic (total) C<order_determination> function for
+C<Maybe> values.  Iff both of its C<topic> and C<other> arguments are
+identical, this function results in C<Cat.Order:same>.  Otherwise, iff both
+of those 2 arguments are C<Single> values, then the result of this function
+is the result of applying to those 2 arguments the (total)
+C<order_determination> function given in its C<ord_func> argument, as
+curried by its C<ord_assuming> argument; if C<reverse_order_of_singles> is
+C<Bool:true> then C<sys.std.Core.Cat.Order_reverse> is also applied such
+that the result of C<ord_func> is reversed, and otherwise it isn't applied.
+Otherwise, iff C<topic> is C<Nothing>, this function results in
+C<Cat.Order:increase> or C<Cat.Order:decrease> respectively when
+C<treat_nothing_as_max> is C<Bool:false> (the default) or C<Bool:true>.
+Otherwise (iff C<other> is C<Nothing>), this function results in the
+reverse of when only C<topic> is C<Nothing>.  In situations where a
+C<Maybe> is used analagously to a SQL nullable value and this function is
+analagous to the binary comparison underlying a SQL "ORDER BY", then
+C<reverse_order_of_singles> designates SQL's "ASC|DESC" and
+C<treat_nothing_as_max> designates SQL's "NULLS FIRST|LAST".
+
 =back
 
 =head1 SEE ALSO
