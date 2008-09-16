@@ -29,27 +29,37 @@ reverse isn't true.
 
 This current C<Temporal> document describes the system-defined I<Muldis D
 Temporal Extension>, which consists of temporal data types and operators,
-particularly calendar dates, times and intervals.  The bundled data types
-describe common kinds of temporal artifacts according to modern calendars.
-They come in a variety of precisions and epochs so that users can pick one
-that most accurately represents what they actually know about their data.
+particularly calendar dates and intervals.  The bundled data types describe
+common kinds of temporal artifacts according to modern calendars.  They can
+represent a variety of precisions and epochs so that users can employ them
+in a way that most accurately represents what they actually know about
+their data.
 
 The I<Muldis D Temporal Extension> is expressly not meant to be complete by
 any means, as a solution for working with temporal data.  Rather it is
 meant to be "good enough" for many common uses.  Moreover it isn't intended
 to have a scope much greater than the temporal data handling abilities of
-the ISO/IEC 9075 (SQL) standard.  In many situations, users may be better
-off ignoring this extension, and using Muldis D's core facilities for
-user-defined types and routines, and code an alternate temporal data
-solution that works best for them, building over Muldis D's basic integer
-or such types, or alternately using third-party Muldis D temporal
-extensions.  This current extension exists primarily to ease the porting of
-SQL databases to Muldis D, and save users accustomed to SQL's facilities
-from having to frequently reinvent the wheel.  The details of this Muldis D
-extension are typically just the same as those in ISO/IEC 9075 (SQL)
-section "4.6 Datetimes and intervals", but with some alterations.  As with
-SQL, dates and times are specified as YYYY.MM.DD.HH.MM.SS.F+ in the
-Gregorian calendar, with optional time-zone offsets from the UTC zone.
+the ISO/IEC 9075 (SQL) standard and the Perl L<DateTime> module.  In many
+situations, users may be better off ignoring this extension, and using
+Muldis D's core facilities for user-defined types and routines, and code an
+alternate temporal data solution that works best for them, building over
+Muldis D's basic integer or such types, or alternately using third-party
+Muldis D temporal extensions.  This current extension exists primarily to
+ease the porting of SQL databases to Muldis D, and save users accustomed to
+SQL's facilities and the Perl DateTime module's facilities from having to
+frequently reinvent the wheel.  The details of this Muldis D extension are
+typically just the same as those in ISO/IEC 9075 (SQL) section "4.6
+Datetimes and intervals", but with some alterations.  As with SQL and
+DateTime, dates and times are specified as YYYY.MM.DD.HH.MM.SS+ in the
+proleptic Gregorian calendar, specifically the version with a year zero and
+negative year numbers, either in the UTC time-zone or floating / no-zone.
+Matters of "local time" or specifications of other time-zones or daylight
+savings time are not supported for encoding into values, due partly to
+various logical problems and complexity such as an inability to distinguish
+between duplicated times of day around a daylight savings adjustment.  If
+you want to work with "local time", you generally will have to convert to
+UTC on input and from UTC on output with the I<Muldis D Temporal
+Extension>; UTC is better for storage, local is maybe better for display.
 
 Now the general practice of working with calendar-centric temporal data is
 an imperfect process and can not be done with perfect mathematical
@@ -91,11 +101,17 @@ and aren't re-described here):
 
             # The following are all regular ordered scalar types.
 
-            sys.std.Temporal.Type.DurationOf(Y|M|D|I|S|FS)
-            sys.std.Temporal.Type.DateTo(Y|M|D|I|S|FS)
-            sys.std.Temporal.Type.DateTo(I|S|FS)WithTZ
-            sys.std.Temporal.Type.TimeTo(I|S|FS)
-            sys.std.Temporal.Type.TimeTo(I|S|FS)WithTZ
+            sys.std.Temporal.Type.UTCInstant
+                sys.std.Temporal.Type.UTCDateTime
+                sys.std.Temporal.Type.UTCDate
+                sys.std.Temporal.Type.UTCTime
+
+            sys.std.Temporal.Type.FloatInstant
+                sys.std.Temporal.Type.FloatDateTime
+                sys.std.Temporal.Type.FloatDate
+                sys.std.Temporal.Type.FloatTime
+
+            sys.std.Temporal.Type.Duration
 
             sys.std.Core.Type.Int
 
@@ -109,18 +125,14 @@ and aren't re-described here):
 
                     # These are all finite unsigned integer types.
 
-                    sys.std.Temporal.Type.UInt(23|59|62)
-
-                # These are all infinite integer types.
-
-                sys.std.Temporal.Type.NZInt
+                    sys.std.Temporal.Type.UInt(23|59)
 
             sys.std.Rational.Type.Rat
                 sys.std.Rational.Type.URat
 
                     # These are all infinite unsigned rational types.
 
-                    sys.std.Temporal.Type.URatLT1
+                    sys.std.Temporal.Type.URatLT62
 
 I<This documentation is pending.>
 
@@ -128,422 +140,347 @@ I<This documentation is pending.>
 
 These non-core data types are all ordered scalar types.
 
-=head2 sys.std.Temporal.Type.NZInt
-
-A C<NZInt> is a proper subtype of C<Int> where all member values are not
-equal to zero.  Its default value is 1.  The significance is that in
-Gregorian dates, the year portion is an integer not equal to zero.
-
 =head2 sys.std.Temporal.Type.PInt(12|31)
 
 A C<PInt(12|31)> is a proper subtype of C<PInt> where all member values are
-not greater than (12|31).  Its default and minimum value is 1; its maximum
-value is (12|31).  The significance is that in Gregorian dates, the
-(month|month-day) portion is a positive integer not greater than (12|31).
+not greater than 12|31.  Its default and minimum value is 1; its maximum
+value is 12|31.  The significance is that in proleptic Gregorian dates, the
+(month|month-day) portion is a positive integer not greater than 12|31.
 
-=head2 sys.std.Temporal.Type.UInt(23|59|62)
+=head2 sys.std.Temporal.Type.UInt(23|59)
 
-A C<UInt(23|59|62)> is a proper subtype of C<UInt> where all member values
-are not greater than (23|59|62).  Its default and minimum value is 0; its
-maximum value is (23|59|62).  The significance is that in the time portion
-of Gregorian dates, the (hour|minute|second) portion is an unsigned integer
-not greater than (23|59|62).
+A C<UInt(23|59)> is a proper subtype of C<UInt> where all member values are
+not greater than 23|59.  Its default and minimum value is 0; its maximum
+value is 23|59.  The significance is that in the time portion of proleptic
+Gregorian dates, the (hour|minute) portion is an unsigned integer not
+greater than 23|59.
 
-=head2 sys.std.Temporal.Type.URatLT1
+=head2 sys.std.Temporal.Type.URatLT62
 
-A C<URatLT1> is a proper subtype of C<URat> where all member values are
-less than one.  Its default and minimum value is 0; its maximum value is
-conceptually infinitessimally less than one and practically impossible.
-The significance is that in Gregorian dates, the fractional-second portion
-is an unsigned integer less than one.  The cardinality of this type is
-infinity; to define a most-generalized finite C<URatLT1> subtype, you must
-specify the greatest magnitude value denominator of its C<ratio> possrep,
-that is, its maximum precision (that denominator is 10^9 if we're working
-to nanosecond precision).
+A C<URatLT62> is a proper subtype of C<URat> where all member values are
+less than 62.  Its default and minimum value is 0; its maximum value is
+conceptually infinitessimally less than 62 and practically impossible.  The
+significance is that in the time portion of proleptic Gregorian dates, the
+'second' portion is an unsigned rational less than 62.  The cardinality of
+this type is infinity; to define a most-generalized finite C<URatLT62>
+subtype, you must specify the greatest magnitude value denominator of its
+C<ratio> possrep, that is, its maximum precision (that denominator is 10^9
+if we're working to nanosecond precision).
 
-=head2 sys.std.Temporal.Type.DurationOfFS
+=head2 sys.std.Temporal.Type.UTCInstant
 
-A C<DurationOfFS> (duration of fractional seconds) is a single amount of
-time, with precision to arbitrary fractions of a second.  It is not fixed
-to any date or time and is agnostic to the calendar.  It is the result type
-of taking the difference between two C<DateToFS> or two C<TimeToFS> values.
-A C<DurationOfFS> has 1 system-defined possrep whose name is the empty
-string, which has 1 attribute named C<fractional_seconds> (a C<Rat>).  The
-default value of C<DurationOfFS> is zero; its minimum and maximum values
-are conceptually infinities and practically impossible.  The cardinality of
-this type is infinity; to define a most-generalized finite C<DurationOfFS>
-subtype, you must specify the minimum and maximum amount of time that its
-values may be, plus the granularity of the type in fractions of a second;
-in other words, you specify as per a C<Rat>.  The C<DurationOfFS> type has
-a default ordering algorithm which is conceptually the same as for C<Rat>;
-for 2 distinct C<DurationOfFS> values, the value closer to negative
-infinity is ordered before the value closer to positive infinity.
+A C<UTCInstant> is a single point in time, or a periodic multiplicity of
+points in time, which is specified with arbitrary precision using a set of
+unit quantities involving multiple units, where the units do not generally
+have a fixed conversion rate with each other.  A C<UTCInstant> is defined
+against the proleptic Gregorian calendar and uses these 6 units:
+terrestrial year, month within year, day within month, hour within day,
+minute within hour, second and possibly fraction of a second within minute;
+the only fixed conversion rates are: 1 year is 12 months, 1 hour is 60
+minutes.  A C<UTCInstant> is defined against the UTC time-zone
+specifically, so you use it when you I<do know> that the instant you are
+specifying was experienced in the UTC time-zone with the specified unit
+values; if you are otherwise working according to your local time-zone, you
+would be selecting your C<UTCInstant> values in terms of a time-zone offset
+(and daylight-savings time offset if applicable) from your local time.
 
-=head2 sys.std.Temporal.Type.DurationOf(Y|M|D|I|S)
+A C<UTCInstant> has 1 system-defined possrep whose name is C<instant>,
+which has 6 attributes: C<year> (a C<maybe_of.Int>), C<month> (a
+C<maybe_of.PInt12>), C<day> (a C<maybe_of.PInt31>), C<hour> (a
+C<maybe_of.UInt23>), C<minute> (a C<maybe_of.UInt59>), C<second> (a
+C<maybe_of.URatLT62>).  For each attribute, that attribute should be a
+C<Single> if a quanity in that unit is known, and it should be C<Nothing>
+if there is no applicable or known quantity in that unit.  The C<year>
+values greater than zero are CE, those less than zero are BCE.  The
+C<month> value C<1> corresponds to the month of January, and C<12>
+corresponds to the month of December.  The value of C<day> is further
+restricted depending on the combined values of C<year> and C<month>, such
+that all 3 together may only represent a valid date of the proleptic
+Gregorian calendar (taking into account leap-days); so for example you
+can't select April 31st or February 30th.  The value of C<second> is
+further restricted as per C<day>, as leap-seconds are only valid on certain
+days, and perhaps only when the hour-minute is 23-59.  These further
+restrictions do not apply if any of the attributes needed to calculate
+whether they apply are C<Nothing>.
 
-A C<DurationOf(Y|M|D|I|S)> (duration of years|months|days|minutes|seconds)
-is the same as C<DurationOfFS>, but that its precision is appropriately
-less, going to the whole year|month|day|minute|second, and its only
-possrep's only attribute name is different,
-C<years>|C<months>|C<days>|C<minutes>|C<seconds>, and the type of that
-attribute is instead an C<Int>.  While the cardinality of this type is
-infinity like C<DurationOfFS>, C<DurationOf(Y|M|D|I|S)> only needs
-specified minimum and maximum amounts of time to make it finite; unlike
-C<DurationOfFS>, its granularity is already fixed.
-
-=head2 sys.std.Temporal.Type.DateToFS
-
-A C<DateToFS> (date to the fractional second) is a single specific time on
-a specific date in the Gregorian calendar, with precision to arbitrary
-fractions of a second.  It is a floating date which I<does not> incorporate
-an explicit terrestrial time-zone offset duration, nor any concept of a
-daylight-savings time offset; you use it when you I<do not know> the
-time-zone, or it is not significant, or you are simply working according to
-vanilla UTC all the time.  A C<DateToFS> has 1 system-defined possrep whose
-name is the empty string, which has 7 attributes: C<year> (a C<NZInt>),
-C<month> (within year; a C<PInt12>), C<day> (within month; a C<PInt31>),
-C<hour> (within day; a C<UInt23>), C<minute> (within hour; a C<UInt59>),
-C<second> (within minute; a C<UInt62>), C<fractional_second> (within whole
-second; a C<URatLT1>).  There is no Gregorian year zero; the C<year> values
-greater than zero are CE, those less than zero are BCE.  The C<month> value
-C<1> corresponds to the month of January, and C<12> corresponds to the
-month of December.  The value of C<day> is further restricted depending on
-the combined values of C<year> and C<month>, such that all 3 together may
-only represent a valid date of the Gregorian calendar (taking into account
-leap-days); so for example you can't select April 31st or February 30th.
-The value of C<second> is further restricted as per C<day>, as leap-seconds
-are only valid on certain days, and perhaps only when the hour-minute is
-23-59.  The default value of C<DateToFS> is exactly midnight at the start
-of January 1st of the year 1 CE; its minimum and maximum values are
+The default value of C<UTCInstant> is exactly midnight at the start of
+January 1st of the year 1 CE (which also happens to be the proleptic
+Gregorian calendar's epoch); its minimum and maximum values are
 conceptually infinities and practically impossible.  The cardinality of
-this type is infinity; to define a most-generalized finite C<DateToFS>
+this type is infinity; to define a most-generalized finite C<UTCInstant>
 subtype, you must specify the earliest and latest dates it includes
 (minimally, the earliest and latest C<year>), as well as the granularity of
 the type as a fraction of a second (minimally, the largest value
-denominator for C<fractional_second>).  The C<DateToFS> type has a default
-ordering algorithm; for 2 distinct C<DateToFS> values, the earlier value is
-ordered before the later value.
+denominator for C<second>).
 
-=head2 sys.std.Temporal.Type.DateTo(Y|M|D|I|S)
+The C<UTCInstant> type has a default ordering algorithm; for 2 distinct
+C<UTCInstant> values, the earlier value is ordered before the later value.
+To make full ordering of C<UTCInstant> values possible and deterministic
+(though semi-meaningless) in the face of unknown/inapplicable attributes;
+the algorithm works like this: 1. ordering is done numerically one
+attribute at a time, from the largest units to the smallest; 2. for each
+attribute, the C<Nothing> value will order before any C<Single> value.
 
-A C<DateTo(Y|M|D|I|S)> (date to the whole year|month|day|minute|second) is
-the same as C<DateToFS>, but that its precision is appropriately less,
-going to the whole year|month|day|minute|second, and its possrep has
-appropriately fewer attributes, keeping the range of attributes from the
-most significant down to the one specific to its granularity.  While the
-cardinality of this type is infinity like C<DateToFS>, C<DateTo(Y|M|D|I|S)>
-only needs specified earliest and latest dates to make it finite; unlike
-C<DateToFS>, its granularity is already fixed.
+=head2 sys.std.Temporal.Type.UTCDateTime
 
-=head2 sys.std.Temporal.Type.DateToFSWithTZ
+A C<UTCDateTime> is a single specific time on a specific date, with
+precision to arbitrary fractions of a second.  A C<UTCDateTime> is a
+proper subtype of C<UTCInstant> where all 6 attributes of its C<instant>
+possrep have C<Single> / known values.  A C<UTCDateTime> adds 1
+system-defined possrep whose name is C<datetime>, which has 6 attributes:
+C<year> (a C<Int>), C<month> (a C<PInt12>), C<day> (a C<PInt31>), C<hour>
+(a C<UInt23>), C<minute> (a C<UInt59>), C<second> (a C<URatLT62>).  The
+default and minimum and maximum values are the same as for C<UTCInstant>.
 
-A C<DateToFSWithTZ> (date to the fractional second with time-zone offset)
-is the same as C<DateToFS>, but that it I<does> incorporate an explicit
-terrestrial time-zone offset (relative to UTC), so you use it when you I<do
-know> the time-zone and it is significant (which is usually), and also you
-want to account for the concept of a daylight-savings time offset.  Note
-that it is common to still choose the C<DateToFSWithTZ> type over
-C<DateToFS> when all of the dates being represented have an offset of zero
-for simplicity; use what type works best for you.  A C<DateToFSWithTZ> has
-1 system-defined possrep whose name is the empty string, which has 8
-attributes; the first 7 are the same attributes as the only possrep of
-C<DateToFS> has, and the 8th attribute is the same as the sole attribute of
-the sole possrep of C<DurationOfI> is in meaning and type, but that its
-name is C<time_zone_offset_minutes>.  Note that while the offset can
-currently be any integer, that will probably be made more restrictive in
-the future; conceptually all the time-zone offsets are in the range -12
-hours to 14 hours.  The default value of C<DateToFSWithTZ> is the same as
-that of C<DateToFS> but that it has also the default time-zone offset of
-zero.  Matters of cardinality and minimum/maximum are as per an appropriate
-combination of C<DateToFS> and C<DurationOfI>.  The C<DateToFSWithTZ> type
-has a default ordering algorithm; for 2 distinct C<DateToFSWithTZ> values,
-the earlier value is ordered before the later value (when both are
-normalized to the same time-zone).
+=head2 sys.std.Temporal.Type.UTCDate
 
-=head2 sys.std.Temporal.Type.DateTo(I|S)WithTZ
+A C<UTCDate> is a single specific terrestrial day, at no particular time
+of day.  A C<UTCDate> is a proper subtype of C<UTCInstant> where the 3
+attributes of its C<instant> possrep named [C<year>, C<month>, C<day>] have
+C<Single> / known values, and the other 3 C<instant> possrep attributes
+each have the C<Nothing> / unknown value.  A C<UTCDate> adds 1
+system-defined possrep whose name is C<date>, which has 3 attributes:
+C<year> (a C<Int>), C<month> (a C<PInt12>), C<day> (a C<PInt31>).  The
+default value of C<UTCDate> is January 1st of the year 1 CE; its minimum
+and maximum values are conceptually infinities and practically impossible.
+The cardinality of this type is infinity; to define a most-generalized
+finite C<UTCDate> subtype, you must specify the earliest and latest dates
+it includes (minimally, the earliest and latest C<year>).
 
-A C<DateTo(I|S)WithTZ> (date to the whole minute|second with time-zone
-offset) is to C<DateToFSWithTZ> as C<DateTo(I|S)> is to C<DateToFS>.
+=head2 sys.std.Temporal.Type.UTCTime
 
-=head2 sys.std.Temporal.Type.TimeToFS
+A C<UTCTime> is a single specific time that isn't on any day in particular
+(or alternately that is repeating on multiple days), with a precision to
+arbitrary fractions of a second; its allowed range is between zero seconds
+(inclusive) and 1 terrestrial day (exclusive).  A C<UTCTime> is a proper
+subtype of C<UTCInstant> where the 3 attributes of its C<instant> possrep
+named [C<hour>, C<minute>, C<second>] have C<Single> / known values, and
+the other 3 C<instant> possrep attributes each have the C<Nothing> /
+unknown value.  A C<UTCTime> adds 1 system-defined possrep whose name is
+C<time>, which has 3 attributes: C<hour> (a C<UInt23>), C<minute> (a
+C<UInt59>), C<second> (a C<URatLT62>).  The default and minimum value of
+C<UTCTime> is exactly midnight at the start of its day (all of its C<time>
+possrep attributes are zero-valued); its maximum value is conceptually
+infinitessimally less than the midnight at the end of its day and
+practically impossible.  The cardinality of this type is infinity; to
+define a most-generalized finite C<UTCTime> subtype, you must specify the
+granularity of the type as a fraction of a second (minimally, the largest
+value denominator for C<second>).
 
-A C<TimeToFS> (time to the fractional second) is a single specific time
-that isn't on any day in particular, with precision to arbitrary fractions
-of a second.  It is the same as C<DateToFS> but that its only possrep has
-only the least significant 4 attributes: C<hour>, C<minute>, C<second>,
-C<fractional_second>.  The default and minimum value of C<TimeToFS> is
-exactly midnight at the start of its day (all of its possrep attributes are
-zero-valued); its maximum value is conceptually infinitessimally less than
-the midnight at the end of its day and practically impossible.  The
-cardinality of this type is infinity; to define a most-generalized finite
-C<TimeToFS> subtype, you must specify the granularity of the type as a
-fraction of a second (minimally, the largest value denominator for
-C<fractional_second>).  The C<TimeToFS> type has a default ordering
-algorithm; for 2 distinct C<TimeToFS> values, the earlier value is ordered
-before the later value.
+=head2 sys.std.Temporal.Type.FloatInstant
 
-=head2 sys.std.Temporal.Type.TimeTo(I|S)
+A C<FloatInstant> is exactly the same as C<UTCInstant>, but that it is not
+defined against any specific time-zone, but rather is floating; you use it
+when you I<do not know> in what time-zone the specified date+time is
+supposed to refer to (it was just I<somewhere>), or when that detail is not
+significant.  The C<FloatInstant> type is disjoint from the C<UTCInstant>
+type, but all of its details save its name and one aspect of its
+interpretation (representation, cardinality, default values, ordering
+algorithm, etc) are identical.
 
-A C<TimeTo(I|S)> (time to the whole minute|second) is the same as
-C<TimeToFS>, but that its precision is appropriately less, going to the
-whole minute|second, and its possrep has appropriately fewer attributes,
-keeping the range of attributes from the most significant down to the one
-specific to its granularity.  The cardinality of this type is
-1440|up-to-90720 (24*60)|(24*60*63).
+=head2 sys.std.Temporal.Type.FloatDateTime
 
-=head2 sys.std.Temporal.Type.TimeToFSWithTZ
+A C<FloatDateTime> is to C<UTCDateTime> as C<FloatInstant> is to
+C<UTCInstant>.
 
-A C<TimeToFSWithTZ> (time to the fractional second with time-zone
-offset) is to C<TimeToFS> as C<DateToFSWithTZ> is to C<DateToFS>.
+=head2 sys.std.Temporal.Type.FloatDate
 
-=head2 sys.std.Temporal.Type.TimeTo(I|S)WithTZ
+A C<FloatDate> is to C<UTCDate> as C<FloatInstant> is to C<UTCInstant>.
 
-A C<TimeTo(I|S)WithTZ> (time to the whole minute|second with time-zone
-offset) is to C<TimeToFSWithTZ> as C<TimeTo(I|S)> is to C<TimeToFS>.
+=head2 sys.std.Temporal.Type.FloatTime
 
-=head1 FUNCTIONS FOR INTER-DURATION MATH
+A C<FloatTime> is to C<UTCTime> as C<FloatInstant> is to C<UTCInstant>.
 
-These functions implement commonly used temporal math operations that just
-work with durations and not dates or times.  For functions in a namespace
-named with a precision, their parameters and result type have that same
-precision only.  They mirror basic integer or rational numeric functions
-but for taking and resulting in durations.  Or actually, most numeric
-functions are not reflected here; if you want to use more, you can extract
-the duration's attribute, use the normal math ops, and then select a new
-duration with the result.  Or a few more functions can be added here later.
+=head2 sys.std.Temporal.Type.Duration
+
+A C<Duration> is a single amount of time, which is specified with arbitrary
+precision using 6 quantities in the same units as a C<UTCInstant> is
+structured with.  It is not fixed to any date or time and is agnostic to
+the calendar, other than the interpretation of units' size.  A C<Duration>
+is the result type of taking the difference between two C<UTCInstant>
+values or between two C<FloatInstant> values, but it is not defined in
+terms of said two values.
+
+A C<Duration> has 1 system-defined possrep whose name is C<duration>, which
+has 6 attributes: C<years>, C<months>, C<days>, C<hours>, C<minutes>, (all
+5 each a C<maybe_of.Int>), C<seconds> (a C<maybe_of.Rat>).  Each attribute
+value is C<Nothing> when it is unknown or not applicable, and a C<Single>
+when it is known and applicable, as per a C<UTCInstant>.
+
+The default value of C<Duration> is zero; its minimum and maximum values
+are conceptually infinities and practically impossible.  The cardinality of
+this type is infinity; to define a most-generalized finite C<Duration>
+subtype, you must specify the maximum amount of time that its values may
+be, plus the granularity of the type in fractions of a second; in other
+words, you specify C<seconds> as per a C<Rat> and the other attributes as
+per C<Int>.
+
+The C<Duration> type has a default ordering algorithm which is structurally
+the same as for C<UTCInstant>: 1. ordering is done numerically one
+attribute at a time, from the largest units to the smallest; 2. for each
+attribute, the C<Nothing> value will order before any C<Single> value.
+However, because the unit values are unconstrained, this algorithm
+will sort [0 months and 40 days] before [1 month and 0 days] even though
+common sense says the second should be before the first.  So for ordering
+to make sense, either in general leave all attributes C<Nothing> except one
+(recommended), or otherwise be careful to just set compatible attribute
+values.
+
+=head1 FUNCTIONS FOR TEMPORAL MATH
+
+These functions implement commonly used temporal math operations.
+
+=head2 UTCInstant
 
 =over
 
-=item C<function sys.std.Temporal.DurationOf(Y|M|D|I|S|FS).abs result
-DurationOf(Y|M|D|I|S|FS) params { topic(DurationOf(Y|M|D|I|S|FS)) }>
+=item C<function sys.std.Temporal.UTCInstant.difference result Duration
+params { minuend(UTCInstant), subtrahend(UTCInstant) }>
+
+This function results in the duration-typed difference when its
+instant-typed C<subtrahend> argument is subtracted from its instant-typed
+C<minuend> argument.  The result is the amount of time between the 2
+arguments, which may be positive or negative depending on which argument
+was earlier.
+
+=item C<function sys.std.Temporal.UTCInstant.abs_difference result Duration
+params { topic(Duration), other(Duration) }>
+
+This function results in the absolute difference between its 2 arguments.
+The result is the amount of time between the 2 arguments, which is always
+non-negative.
+
+=item C<function sys.std.Temporal.UTCInstant.later result UTCInstant params
+{ instant(Instant), duration(Duration) }>
+
+This function results in the instant that is later than its C<instant>
+argument by the amount of time in the C<duration> argument.
+
+=item C<function sys.std.Temporal.UTCInstant.earlier result UTCInstant
+params { instant(Instant), duration(Duration) }>
+
+This function results in the instant that is earlier than its C<instant>
+argument by the amount of time in the C<duration> argument.
+
+=back
+
+=head2 FloatInstant
+
+=over
+
+=item C<function sys.std.Temporal.FloatInstant.difference result Duration
+params { minuend(FloatInstant), subtrahend(FloatInstant) }>
+
+This function results in the duration-typed difference when its
+instant-typed C<subtrahend> argument is subtracted from its instant-typed
+C<minuend> argument.  The result is the amount of time between the 2
+arguments, which may be positive or negative depending on which argument
+was earlier.
+
+=item C<function sys.std.Temporal.FloatInstant.abs_difference result
+Duration params { topic(Duration), other(Duration) }>
+
+This function results in the absolute difference between its 2 arguments.
+The result is the amount of time between the 2 arguments, which is always
+non-negative.
+
+=item C<function sys.std.Temporal.FloatInstant.later result FloatInstant
+params { instant(Instant), duration(Duration) }>
+
+This function results in the instant that is later than its C<instant>
+argument by the amount of time in the C<duration> argument.
+
+=item C<function sys.std.Temporal.FloatInstant.earlier result FloatInstant
+params { instant(Instant), duration(Duration) }>
+
+This function results in the instant that is earlier than its C<instant>
+argument by the amount of time in the C<duration> argument.
+
+=back
+
+=head2 Duration
+
+Note that all inter-duration operators in general will just do the math on
+each corresponding attribute individually and not normalize between
+attributes.  This is subject to be revised in the future.
+
+=over
+
+=item C<function sys.std.Temporal.Duration.abs result Duration params {
+topic(Duration) }>
 
 This function results in the absolute value of its argument.
 
-=item C<function sys.std.Temporal.DurationOf(Y|M|D|I|S|FS).sum result
-DurationOf(Y|M|D|I|S|FS) params { addends(bag_of.DurationOf(Y|M|D|I|S|FS))
-}>
+=item C<function sys.std.Temporal.Duration.sum result Duration params {
+addends(bag_of.Duration) }>
 
-This function results in the sum of the N same-root-typed element values of
-its argument; it is a reduction operator that recursively takes each pair
-of input values and adds (which is both commutative and associative) them
-together until just one is left, which is the result.  If C<addends> has
-zero values, then C<sum> results in the duration zero, which is the
-identity value for addition.
+This function results in the sum of the N element values of its argument;
+it is a reduction operator that recursively takes each pair of input values
+and adds (which is both commutative and associative) them together until
+just one is left, which is the result.  If C<addends> has zero values, then
+C<sum> results in the duration zero, which is the identity value for
+addition.
 
-=item C<function sys.std.Temporal.DurationOf(Y|M|D|I|S|FS).difference
-result DurationOf(Y|M|D|I|S|FS) params { minuend(DurationOf(Y|M|D|I|S|FS)),
-subtrahend(DurationOf(Y|M|D|I|S|FS)) }>
+=item C<function sys.std.Temporal.Duration.difference result Duration
+params { minuend(Duration), subtrahend(Duration) }>
 
 This function results in the difference when its C<subtrahend> argument is
-subtracted from its same-root-typed C<minuend> argument.
-
-=back
-
-=head1 FUNCTIONS FOR DATE AND TIME MATH
-
-These functions implement commonly used temporal math operations that have
-date or time valued arguments.  For functions in a namespace named with a
-precision, their parameters and result type have that same precision only.
-
-=head2 DateTo(Y|M|D|I|S|FS)
-
-=over
-
-=item C<function sys.std.Temporal.DateTo(Y|M|D|I|S|FS).difference result
-DurationOf(Y|M|D|I|S|FS) params { minuend(DateTo(Y|M|D|I|S|FS)),
-subtrahend(DateTo(Y|M|D|I|S|FS)) }>
-
-This function results in the duration-typed difference when its date-typed
-C<subtrahend> argument is subtracted from its date-typed C<minuend>
-argument.  The result is the amount of time between the 2 arguments.
-
-=item C<function sys.std.Temporal.DateTo(Y|M|D|I|S|FS).later result
-DateTo(Y|M|D|I|S|FS) params { date(DateTo(Y|M|D|I|S|FS)),
-duration(DurationOf(Y|M|D|I|S|FS)) }>
-
-This function results in the date that is later than its C<date> argument
-by the amount of time in the C<duration> argument.
-
-=item C<function sys.std.Temporal.DateTo(Y|M|D|I|S|FS).earlier result
-DateTo(Y|M|D|I|S|FS) params { date(DateTo(Y|M|D|I|S|FS)),
-duration(DurationOf(Y|M|D|I|S|FS)) }>
-
-This function results in the date that is earlier than its C<date> argument
-by the amount of time in the C<duration> argument.
-
-=back
-
-=head2 DateTo(I|S|FS)WithTZ
-
-=over
-
-=item C<function sys.std.Temporal.DateTo(I|S|FS)WithTZ.difference result
-DurationOf(I|S|FS) params { minuend(DateTo(I|S|FS)WithTZ),
-subtrahend(DateTo(I|S|FS)WithTZ) }>
-
-This function results in the duration-typed difference when its date-typed
-C<subtrahend> argument is subtracted from its date-typed C<minuend>
-argument.  The result is the amount of time between the 2 arguments.  If
-the 2 arguments have the same time-zone offset, the rules for that
-time-zone apply; otherwise, they are both normalized to an offset of zero,
-and then the rules for that time-zone are applied.
-
-=item C<function sys.std.Temporal.DateTo(I|S|FS)WithTZ.later result
-DateTo(I|S|FS) params { date(DateTo(I|S|FS)WithTZ),
-duration(DurationOf(I|S|FS)) }>
-
-This function results in the date that is later than its C<date> argument
-by the amount of time in the C<duration> argument.  The result has the same
-time-zone as its C<date> argument, and the rules for that time-zone apply.
-
-=item C<function sys.std.Temporal.DateTo(I|S|FS)WithTZ.earlier result
-DateTo(I|S|FS) params { date(DateTo(I|S|FS)WithTZ),
-duration(DurationOf(I|S|FS)) }>
-
-This function results in the date that is earlier than its C<date> argument
-by the amount of time in the C<duration> argument.  The result has the same
-time-zone as its C<date> argument, and the rules for that time-zone apply.
-
-=back
-
-=head2 TimeTo(I|S|FS)
-
-=over
-
-=item C<function sys.std.Temporal.TimeTo(I|S|FS).difference result
-DurationOf(I|S|FS) params { minuend(TimeTo(I|S|FS)),
-subtrahend(TimeTo(I|S|FS)) }>
-
-This function results in the duration-typed difference when its time-typed
-C<subtrahend> argument is subtracted from its time-typed C<minuend>
-argument.  The result is the amount of time between the 2 arguments.  The 2
-arguments are treated as being on the same day.
-
-=item C<function sys.std.Temporal.TimeTo(I|S|FS).later result
-TimeTo(I|S|FS) params { time(TimeTo(I|S|FS)), duration(DurationOf(I|S|FS))
-}>
-
-This function results in the time of day that is later than its C<time>
-argument by the amount of time in the C<duration> argument.  If the added
-duration would take the time to midnight, it will wrap around.
-
-=item C<function sys.std.Temporal.TimeTo(I|S|FS).earlier result
-TimeTo(I|S|FS) params { time(TimeTo(I|S|FS)), duration(DurationOf(I|S|FS))
-}>
-
-This function results in the time of day that is earlier than its C<time>
-argument by the amount of time in the C<duration> argument.  If the
-subtracted duration would take the time earlier than midnight, it will wrap
-around.
-
-=back
-
-=head2 TimeTo(I|S|FS)WithTZ
-
-=over
-
-=item C<function sys.std.Temporal.TimeTo(I|S|FS)WithTZ.difference result
-DurationOf(I|S|FS) params { minuend(TimeTo(I|S|FS)WithTZ),
-subtrahend(TimeTo(I|S|FS)WithTZ) }>
-
-This function is to C<sys.std.Temporal.TimeTo(I|S|FS).difference> what
-C<sys.std.Temporal.DateTo(I|S|FS)WithTZ.difference> is to
-C<sys.std.Temporal.DateTo(I|S|FS).difference>.
-
-=item C<function sys.std.Temporal.TimeTo(I|S|FS)WithTZ.later result
-TimeTo(I|S|FS) params { time(TimeTo(I|S|FS)WithTZ),
-duration(DurationOf(I|S|FS)) }>
-
-This function is to C<sys.std.Temporal.TimeTo(I|S|FS).later> what
-C<sys.std.Temporal.DateTo(I|S|FS)WithTZ.later> is to
-C<sys.std.Temporal.DateTo(I|S|FS).later>.
-
-=item C<function sys.std.Temporal.TimeTo(I|S|FS)WithTZ.earlier result
-TimeTo(I|S|FS) params { time(TimeTo(I|S|FS)WithTZ),
-duration(DurationOf(I|S|FS)) }>
-
-This function is to C<sys.std.Temporal.TimeTo(I|S|FS).earlier> what
-C<sys.std.Temporal.DateTo(I|S|FS)WithTZ.earlier> is to
-C<sys.std.Temporal.DateTo(I|S|FS).earlier>.
+subtracted from its C<minuend> argument.
 
 =back
 
 =head1 SYSTEM SERVICES FOR CURRENT DATES AND TIMES
 
 These system service routines provide ways to get the current date or time
-from the system.  For routines in a namespace named with a precision, their
-parameters have that same precision only.
+from the system.
 
 =over
 
-=item C<system_service
-sys.std.Temporal.DateTo(Y|M|D|I|S|FS).fetch_current_date_utc update {
-target(DateTo(Y|M|D|I|S|FS)) } read {}>
+=item C<system_service sys.std.Temporal.UTCInstant.fetch_current_datetime
+update { target(UTCDateTime) } read {}>
 
 This system service routine will update the variable supplied as its
-C<target> argument so that it holds the value of the current utc date as
-taken with precision of the (whole
-year|month|day|minute|second)|(fractional second).
+C<target> argument so that it holds the value of the current UTC date and
+time (YMDHIS) as taken with the full precision that the implementation's
+system clock or used time server supports.
 
-=item C<system_service
-sys.std.Temporal.DateTo(Y|M|D|I|S|FS).fetch_current_date_local update {
-target(DateTo(Y|M|D|I|S|FS)) } read {}>
+=item C<system_service sys.std.Temporal.UTCInstant.fetch_current_date
+update { target(UTCDate) } read {}>
 
-This system service routine will update the variable supplied as its
-C<target> argument so that it holds the value of the current system-local
-date as taken with precision of the (whole
-year|month|day|minute|second)|(fractional second).
+This system service routine is the same as
+C<sys.std.Temporal.UTCInstant.fetch_current_date> except that it only
+produces an instant value with the date (YMD) attributes set.
 
-=item C<system_service
-sys.std.Temporal.DateTo(I|S|FS)WithTZ.fetch_current_date_utc update {
-target(DateTo(I|S|FS)WithTZ) } read {}>
+=item C<system_service sys.std.Temporal.UTCInstant.fetch_current_time
+update { target(UTCTime) } read {}>
 
-This system service routine will update the variable supplied as its
-C<target> argument so that it holds the value of the current utc date as
-taken with precision of the (whole minute|second)|(fractional second).
+This system service routine is the same as
+C<sys.std.Temporal.UTCInstant.fetch_current_date> except that it only
+produces an instant value with the time (HIS) attributes set; it still
+retains the full precision.
 
-=item C<system_service
-sys.std.Temporal.DateTo(I|S|FS)WithTZ.fetch_current_date_local update {
-target(DateTo(I|S|FS)WithTZ) } read {}>
+=item C<system_service sys.std.Temporal.FloatInstant.fetch_current_datetime
+update { target(FloatDateTime) } read {}>
 
 This system service routine will update the variable supplied as its
-C<target> argument so that it holds the value of the current system-local
-date as taken with precision of the (whole minute|second)|(fractional
-second).
+C<target> argument so that it holds the value of the current floating date
+and time (YMDHIS) as taken with the full precision that the
+implementation's system clock or used time server supports.
 
-=item C<system_service
-sys.std.Temporal.TimeTo(I|S|FS).fetch_current_time_utc update {
-target(TimeTo(I|S|FS)) } read {}>
+=item C<system_service sys.std.Temporal.FloatInstant.fetch_current_date
+update { target(FloatDate) } read {}>
 
-This system service routine will update the variable supplied as its
-C<target> argument so that it holds the value of the current utc time as
-taken with precision of the (whole minute|second)|(fractional second).
+This system service routine is the same as
+C<sys.std.Temporal.FloatInstant.fetch_current_date> except that it only
+produces an instant value with the date (YMD) attributes set.
 
-=item C<system_service
-sys.std.Temporal.TimeTo(I|S|FS).fetch_current_time_local update {
-target(TimeTo(I|S|FS)) } read {}>
+=item C<system_service sys.std.Temporal.FloatInstant.fetch_current_time
+update { target(FloatTime) } read {}>
 
-This system service routine will update the variable supplied as its
-C<target> argument so that it holds the value of the current system-local
-time as taken with precision of the (whole minute|second)|(fractional
-second).
-
-=item C<system_service
-sys.std.Temporal.TimeTo(I|S|FS)WithTZ.fetch_current_time_utc update {
-target(TimeTo(I|S|FS)WithTZ) } read {}>
-
-This system service routine will update the variable supplied as its
-C<target> argument so that it holds the value of the current utc time as
-taken with precision of the (whole minute|second)|(fractional second).
-
-=item C<system_service
-sys.std.Temporal.TimeTo(I|S|FS)WithTZ.fetch_current_time_local update {
-target(TimeTo(I|S|FS)WithTZ) } read {}>
-
-This system service routine will update the variable supplied as its
-C<target> argument so that it holds the value of the current system-local
-time as taken with precision of the (whole minute|second)|(fractional
-second).
+This system service routine is the same as
+C<sys.std.Temporal.FloatInstant.fetch_current_date> except that it only
+produces an instant value with the time (HIS) attributes set; it still
+retains the full precision.
 
 =back
 

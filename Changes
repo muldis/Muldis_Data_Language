@@ -8,8 +8,8 @@
 
     * New file versions are: D.pm 0.48.0 and Routines.pod 0.31.0 and
     Rational.pod 0.29.0 and Integer.pod and Set.pod 0.27.0 and
-    HDMD_Perl_Tiny.pod 0.25.1. The other pre-existing versioned files are
-    unchanged.
+    HDMD_Perl_Tiny.pod 0.25.1 and Temporal.pod 0.9.0. The other
+    pre-existing versioned files are unchanged.
 
     * Updated the README file to indicate that a new public repository at
     http://github.com/muldis/ is planned for the near future.
@@ -32,6 +32,59 @@
     * (Integer.pod, Rational.pod)  Added 2 dyadic functions
     "sys.std.(Integer|Rational).abs_difference", each of which results in
     the absolute difference between its 2 arguments.
+
+    * (Temporal.pod)  As anticipated would be necessary following the
+    previous rewrite in release 0.34.0, rewrote the Muldis D Temporal
+    Extension again; the most serious issues cited after the previous
+    rewrite are now gone.  The temporal data types, and associated
+    operators, are now few and generic rather than many and specialized, so
+    the combinatorial explosion is gone; the number of distinct types
+    dropped from 28 to 14, and routines from 93 to 17.  The 2 previous
+    distinct units 'second(|s)' (int), 'fractional_second(|s)' (rat) have
+    been merged into the 1 distinct unit 'second(|s)' (rat).  A year zero
+    is now supported where it previously wasn't.  The concepts of multiple
+    time zones and daylight savings time adjustments are now gone; instead,
+    date-time types now just come in 2 kinds, those known to be specific to
+    UTC, and those that are floating and not tied to any zone; if you want
+    to work with time zones or DST, you must now explicitly convert to/from
+    UTC on input and output.  The DESCRIPTION pod received some updates but
+    is mostly the same as before.
+
+    * (Temporal.pod)  Rewrote the complement of temporal data types.  In
+    summary, the previous 21 temporal scalar root types were replaced by 3
+    new temporal scalar root types plus 6 new scalar subtypes.  Each new
+    root type declares 1 possrep and each new subtype adds 1 more possrep.
+    Each new root type possrep consists of 6 maybes of numerics, so the
+    root types can represent arbitrary precision as before, but also
+    represent that information on larger units is unknown while in smaller
+    units it is known; each subtype says that exactly certain parent
+    attributes are known and others are unknown (eg, just YMD or HIS are
+    known).  For specifics: 6 '(Date|Time)To(I|S|FS)WithTZ' became 4
+    'UTC(Instant|DateTime|Date|Time)', 9
+    '(DateTo(Y|M|D|I|S|FS)|TimeTo(I|S|FS))' became 4
+    'Float(Instant|DateTime|Date|Time)', 6 'DurationOf(Y|M|D|I|S|FS)'
+    became 1 'Duration' (this last one may gain a few subtypes in the
+    future).  Regarding the plain numeric subtypes declared by Temporal,
+    the 1 'NZInt' was removed and the 2 ['UInt62', 'URatLT1'] were replaced
+    by the 1 'URatLT62'; the 4 ['PInt(12|31)', 'UInt(23|59)'] remained
+    unchanged.
+
+    * (Temporal.pod)  Rewrote the complement of temporal math functions and
+    system services.  In summary, the previous 63 temporal math functions
+    and 30 system services were replaced by the new 11 temporal math
+    functions and 6 system services.  For specifics: 18
+    '(Date|Time)To(I|S|FS)WithTZ.(difference|later|earlier)' became 4
+    'UTCInstant.((|abs_)difference|later|earlier)', 27
+    '(DateTo(Y|M|D|I|S|FS)|TimeTo(I|S|FS)).(difference|later|earlier)'
+    became 4 'FloatInstant.((|abs_)difference|later|earlier)', 18
+    'DurationOf(Y|M|D|I|S|FS).(abs|sum|difference)' became 3
+    'Duration.(abs|sum|difference)', 6
+    'DateTo(I|S|FS)WithTZ.fetch_current_date_(utc|local)' and 6
+    'TimeTo(I|S|FS)WithTZ.fetch_current_time_(utc|local)' became 3
+    'UTCInstant.fetch_current_(datetime|date|time)', 12
+    'DateTo(Y|M|D|I|S|FS).fetch_current_date_(utc|local)' and 6
+    'TimeTo(I|S|FS).fetch_current_time_(utc|local)' became 3
+    'FloatInstant.fetch_current_(datetime|date|time)'.
 
 2008-08-30  Darren Duncan <perl@DarrenDuncan.net>
 
@@ -765,7 +818,7 @@
     and 6 system services named
     "sys.std.Temporal.DateTo(I|S|FS)WithTZ.fetch_current_date_(utc|local)",
     and 12 system services named
-    "sys.std.Temporal.TimeTo(I|S|FS)(|WithTZ).fetch_current_date_(utc|local
+    "sys.std.Temporal.TimeTo(I|S|FS)(|WithTZ).fetch_current_time_(utc|local
     )".
 
 2008-06-04  Darren Duncan <perl@DarrenDuncan.net>
