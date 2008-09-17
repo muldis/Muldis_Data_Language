@@ -292,13 +292,17 @@ at least.>  Any remaining errors should be corrected as soon as possible.
     }
 
     token bag_or_qv {
-          bag_counted_values_or_qv
-        | bag_repeated_values_or_qv
-    }
-
-    token bag_counted_values_or_qv {
         ((Quasi)? Bag)
         <spec_sep>
+        <bag_body>
+    }
+
+    token bag_body {
+          bag_body_counted_values
+        | bag_body_repeated_values
+    }
+
+    token bag_body_counted_values {
         <list_open>
             (((<literal>) <pair_sep> (<count>) <list_sep>)*)
         <list_close>
@@ -310,9 +314,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         <pint_body>
     }
 
-    token bag_repeated_values_or_qv {
-        ((Quasi)? Bag)
-        <spec_sep>
+    token bag_body_repeated_values {
         <list_open>
             (((<literal>) <list_sep>)*)
         <list_close>
@@ -415,33 +417,17 @@ at least.>  Any remaining errors should be corrected as soon as possible.
     token order { (Order) <spec_sep> (increase|same|decrease|-1|0|1) }
 
     token rat {
-          rat_with_radix
-        | rat_as_ratio
-        | rat_as_float
-    }
-
-    token rat_with_radix {
         (Rat)
         <spec_sep>
         <int_max_col_val>
         <spec_sep>
-        (<int_body>\.?<[0-9A-Z]>*)
+        <rat_body>
     }
 
-    token rat_as_ratio {
-        (Rat)
-        <spec_sep>
-        <int_max_col_val>
-        <spec_sep>
-        (<int_body> \s* \/ \s* <pint_body>)
-    }
-
-    token rat_as_float {
-        (Rat)
-        <spec_sep>
-        <int_max_col_val>
-        <spec_sep>
-        (<int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>)
+    token rat_body {
+          (<int_body>\.?<[0-9A-Z]>*)
+        | (<int_body> \s* \/ \s* <pint_body>)
+        | (<int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>)
     }
 
     token rat_round_meth {
