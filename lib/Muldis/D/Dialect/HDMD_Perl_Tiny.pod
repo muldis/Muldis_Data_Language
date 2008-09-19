@@ -241,6 +241,15 @@ Examples:
         'exponent' => [ 'Int', 'perl_int', 37 ],
     } ]
 
+    [ 'Scalar', 'sys.std.Temporal.Type.UTCDateTime', 'datetime', {
+        'year'   => [ 'Int', 'perl_int', 2003 ],
+        'month'  => [ 'Int', 'perl_int', 10 ],
+        'day'    => [ 'Int', 'perl_int', 26 ],
+        'hour'   => [ 'Int', 'perl_int', 1 ],
+        'minute' => [ 'Int', 'perl_int', 30 ],
+        'second' => [ 'Rat', 'perl_rat', 0 ],
+    } ]
+
     [ 'Scalar', 'fed.lib.the_db.WeekDay', 'name', {
         '' => [ 'Text', 'monday' ],
     } ]
@@ -674,7 +683,7 @@ defines the C<value> attribute of the single tuple of the new 'single'.
 
 Examples:
 
-    [ 'Single', [ 'Text', '2003.07.24' ] ]
+    [ 'Single', [ 'Text', 'I know this one!' ] ]
 
 =head2 sys.std.Core.Type.Array
 
@@ -1197,6 +1206,134 @@ C<to_zero>, C<to_inf>.
 Examples:
 
     [ 'RatRoundMeth', 'half_up' ]
+
+=head1 TEMPORAL EXTENSION SCALAR VALUES
+
+=head2 sys.std.Temporal.Type.UTCInstant
+
+This node type represents an "instant"/"datetime" value that is affiliated
+with the UTC time-zone.  It has 3-4 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<UTCInstant>.
+
+=item *
+
+Format; one of: C<md_num>, C<perl_num>, C<any_perl>.
+
+=item *
+
+Only when format is C<md_num>; the max-col-val.
+
+=item *
+
+The payload; a 6-element C<Array|Seq> value where each element may be
+either undefined or defined; or if fewer than 6 elements are provided, the
+C<Array|Seq> will be implicitly extended to 6, filling with undefs.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.std.Temporal.Type.UTCInstant>
+value whose C<instant> possrep attribute values are defined by the
+C<Array|Seq> payload.  The 6 payload elements correspond in order, from the
+lowest to the highest indexed, to the 6 attributes: C<year>, C<month>
+C<day>, C<hour>, C<minute>, C<second>.  For each payload element that Perl
+considers undefined or defined, the corresponding attribute has a
+C<Nothing> or a C<Single> value, respectively.  For each of the first 5
+elements, when it is defined, it must qualify as a valid payload for an
+C<Int> PHMD node; for the 6th element, when it is defined, it must qualify
+as a valid payload for a C<Rat> PHMD node.  Each of the 6 payload elements,
+when defined, is further interpreted according to the format and
+max-col-val elements of this node, in the same manner as how an C<Int> or
+C<Rat> node payload is interpreted; the format value C<md_num> corresponds
+directly to C<md_(int|rat)>, C<perl_num> corresponds to C<perl_(int|rat)>,
+and C<any_perl> corresponds to C<any_perl>.
+
+A defined C<year> may be any integer, each of [C<month>, C<day>] must be a
+positive integer, each of [C<hour>, C<minute>] must be an
+unsigned/non-negative integer, and C<second> must be an
+unsigned/non-negative rational number.  If all 6 attributes are defined,
+then the new C<UTCInstant> value is also a C<UTCDateTime>; if just the
+first 3 or last 3 are defined, then the value is not a C<UTCDateTime> but
+rather a C<UTCDate> or C<UTCTime>, respectively; if any other combination
+of attributes are defined, then the value is just a C<UTCInstant> and not
+of any of the other 3 subtypes.
+
+Examples:
+
+    [ 'UTCInstant', 'perl_num', [1964,10,16,16,12,47.5] ] # a UTCDateTime
+
+    [ 'UTCInstant', 'perl_num', [2002,12,6] ] # a UTCDate
+
+    [ 'UTCInstant', 'perl_num', [undef,undef,undef,14,2,29] ] # a UTCTime
+
+=head2 sys.std.Temporal.Type.FloatInstant
+
+This node type is exactly the same as the C<UTCInstant> node type, in both
+structure/constraints and interpretation, etc, except that it represents a
+"floating" instant/datetime value, that is not affiliated with any
+time-zone, and it is interpreted as a Muldis D
+C<sys.std.Temporal.Type.FloatInstant> value.
+
+Examples:
+
+    [ 'FloatInstant', 'perl_num', [2003,4,5,2] ] # min,sec unknown or N/A
+
+    [ 'FloatInstant', 'perl_num', [1407] ] # just know its sometime in 1407
+
+=head2 sys.std.Temporal.Type.Duration
+
+This node type represents a duration value, an amount of time, which is not
+fixed to any instant in time.  It has 3-4 elements:
+
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<Duration>.
+
+=item *
+
+Format; one of: C<md_num>, C<perl_num>, C<any_perl>.
+
+=item *
+
+Only when format is C<md_num>; the max-col-val.
+
+=item *
+
+The payload; a 6-element C<Array|Seq> value where each element may be
+either undefined or defined; or if fewer than 6 elements are provided, the
+C<Array|Seq> will be implicitly extended to 6, filling with undefs.
+
+=back
+
+This node is interpreted as a Muldis D C<sys.std.Temporal.Type.Duration>
+value whose C<duration> possrep attribute values are defined by the
+C<Array|Seq> payload.  The 6 payload elements correspond in order, from the
+lowest to the highest indexed, to the 6 attributes: C<years>, C<months>
+C<days>, C<hours>, C<minutes>, C<seconds>.  For each payload element that
+Perl considers undefined or defined, the corresponding attribute has a
+C<Nothing> or a C<Single> value, respectively.  For each of the first 5
+elements, when it is defined, it must qualify as a valid payload for an
+C<Int> PHMD node; for the 6th element, when it is defined, it must qualify
+as a valid payload for a C<Rat> PHMD node.  Each of the 6 payload elements,
+when defined, is further interpreted according to the format and
+max-col-val elements of this node, in the same manner as how an C<Int> or
+C<Rat> node payload is interpreted; the format value C<md_num> corresponds
+directly to C<md_(int|rat)>, C<perl_num> corresponds to C<perl_(int|rat)>,
+and C<any_perl> corresponds to C<any_perl>.
+
+A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
+integer, and C<seconds> may be any rational number.  I<Currently,
+C<Duration> has no system-defined subtypes, but that may change later.>
+
+Examples:
+
+    [ 'Duration', 'perl_num', [3,5,1,6,15,45.000012] ]
 
 =head1 TREAT AS TYPE
 
