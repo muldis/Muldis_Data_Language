@@ -146,7 +146,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token imperative_routine_upd_args {
         <list_open>
-            (((<name> <pair_sep> <name_chain_body>) <list_sep>)*)
+            (((<name_body> <pair_sep> <name_chain_body>) <list_sep>)*)
         <list_close>
     }
 
@@ -184,7 +184,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token scalar_type_name { <name_chain_body> }
 
-    token possrep_name { <name> }
+    token possrep_name { <name_body> }
 
     token possrep_attrs { <tuple_body> }
 
@@ -233,7 +233,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         ((Quasi)? Relation)
         <spec_sep>
         <list_open>
-            (((<name>) <list_sep>)*)
+            (((<name_body>) <list_sep>)*)
         <list_close>
     }
 
@@ -249,7 +249,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
         ((Quasi)? Relation)
         <spec_sep>
         <ord_list_open>
-            (((<name>) <list_sep>)*)
+            (((<name_body>) <list_sep>)*)
         <ord_list_close>
         <spec_sep>
         <list_open>
@@ -263,7 +263,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token tuple_body {
         <list_open>
-            (((<name> <pair_sep> <literal>) <list_sep>)*)
+            (((<name_body> <pair_sep> <literal>) <list_sep>)*)
         <list_close>
     }
 
@@ -360,7 +360,13 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token pint_body { (<[1-9A-Z]><[0-9A-Z_]>*) }
 
-    token name { <quoted_text_str> }
+    token name {
+        (Name)
+        <spec_sep>
+        <name_body>
+    }
+
+    token name_body { <quoted_text_str> }
 
     token name_chain {
         (NC)
@@ -375,7 +381,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token nc_array {
         <ord_list_open>
-            ((<name>) (\s* <nc_elem_sep> \s* (<name>))+)
+            ((<name_body>) (\s* <nc_elem_sep> \s* (<name_body>))+)
         <ord_list_close>
     }
 
@@ -402,7 +408,7 @@ at least.>  Any remaining errors should be corrected as soon as possible.
 
     token dnc_array {
         <ord_list_open>
-            (((<name>) (\s* <nc_elem_sep> \s* (<name>))*)?)
+            (((<name_body>) (\s* <nc_elem_sep> \s* (<name_body>))*)?)
         <ord_list_close>
     }
 
@@ -631,9 +637,9 @@ The following are fragments of actual Plain Text Muldis D code.
         Text:'Baz',
     }
 
-    'login_pass'
+    Name:'login_pass'
 
-    'First Name'
+    Name:'First Name'
 
     NC:['fed'.'data'.'the_db'.'gene'.'sorted_person_name']
 

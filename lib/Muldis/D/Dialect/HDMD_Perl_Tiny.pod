@@ -77,9 +77,7 @@ Array is a tree node.  The elements of each node/Array include typically a
 native Perl payload value, which may be a PHMD value itself, plus meta-data
 for that payload, that meta-data typically including the analogy of a class
 name, were PHMD nodes instead represented by a tree of PHMD-specific
-objects.  As an exception, one kind of PHMD node is not a Perl Array, but
-just a Perl C<Str>; if you see a C<Str> where you expect a PHMD node,
-assume it is a C<Name> node; this exception is for huffmanizing.
+objects.
 
 It should be emphasized that no Perl undefined values are allowed anywhere
 in a PHMD value; you must use only defined values instead.  This
@@ -210,7 +208,7 @@ C<NameChain> PHMD node.
 
 =item *
 
-Possrep name: a Perl C<Str> as per a C<Name> PHMD node.
+Possrep name: a Perl C<Str> as per the payload of a C<Name> PHMD node.
 
 =item *
 
@@ -828,25 +826,31 @@ C<sys.std.Core.Type.QuasiBag>] values, respectively.
 
 This node type represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
-from C<Text>.
+from C<Text>.  It has 2 elements:
 
-Unlike every other PHMD node type, a canonical short name is simply a Perl
-C<Str> value, which is its payload; it is not encapsulated in a Perl Array;
-this difference is done for huffmanizing reasons, since a short name is
-probably the most often used node type, and moreover this change allows for
-simplifying other parts of the grammar.
+=over
+
+=item *
+
+Node type: the Perl C<Str> value C<Name>.
+
+=item *
+
+The payload.
+
+=back
 
 This node is interpreted as a Muldis D C<sys.std.Core.Type.Cat.Name> value
-by directly mapping itself / the payload.  Note that, while Plain Text
-Muldis D may contain a few escape sequences, those would be replaced with
-what they represent prior to making a PHMD node.  The node / its payload
-must be as per the payload of a C<Text> PHMD node.
+by directly mapping the payload.  Note that, while Plain Text Muldis D may
+contain a few escape sequences, those would be replaced with what they
+represent prior to making a PHMD node.  The payload must be as per the
+payload of a C<Text> PHMD node.
 
 Examples:
 
-    'login_pass'
+    [ 'Name', 'login_pass' ]
 
-    'First Name'
+    [ 'Name', 'First Name' ]
 
 =head2 sys.std.Core.Type.Cat.NameChain
 
