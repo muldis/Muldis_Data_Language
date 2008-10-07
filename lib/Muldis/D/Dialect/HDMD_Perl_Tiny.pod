@@ -722,7 +722,7 @@ Examples:
 
 =head2 sys.std.Core.Type.Bag
 
-This node type represents a bag value.  It has 2-3 elements:
+This node type represents a bag value.  It has 2 elements:
 
 =over
 
@@ -732,13 +732,7 @@ Node type: the Perl C<Str> value C<Bag>.
 
 =item *
 
-Only when the node has 3 elements; format; one of: C<aoa_counted>,
-C<array_repeated>.
-
-=item *
-
-The payload; only when the node has 2 elements, a Perl C<Bag|KeyBag> value;
-only when the node has 3 elements, a Perl C<Array|Seq> or C<Array|Seq> of
+The payload; a Perl C<Bag|KeyBag>, or C<Array|Seq> of C<Array|Seq>, or
 C<Array|Seq>.
 
 =back
@@ -751,52 +745,53 @@ follows:
 
 =item *
 
-If the node has 2 elements, then the payload must be a Perl 6 (there is no
-Perl 5 analogy) C<Bag|KeyBag> value; the payload elements are PHMD nodes
-corresponding to the C<value> attribute of the new bag's tuples, and the
-mapping is as you should expect.
+Iff the payload is not an C<Array|Seq>, then the payload must be a Perl 6
+(there is no Perl 5 analogy) C<Bag|KeyBag> value; the payload elements are
+PHMD nodes corresponding to the C<value> attribute of the new bag's tuples,
+and the mapping is as you should expect.
 
 =item *
 
-If the node has 3 elements, and the format is C<aoa_counted>, then the
-payload must be a Perl C<Array|Seq>, and each element of the payload
-defines a binary tuple of the new bag; the element is a 2-element
-C<Array|Seq>, and those 2 elements, by index order, are a PHMD node that
-defines the C<value> attribute of the tuple, and a 2-3-element C<Array|Seq>
-(which is the same as an 'Int' PHMD node minus the first constant element)
-that defines the C<count> attribute of the tuple; the count must be a
-positive integer.
+Iff the payload is an C<Array|Seq> with zero elements, then it defines the
+only bag value having zero elements.  Iff the payload is an C<Array|Seq>
+with at least one element, then every one of the payload elements must be
+itself an C<Array|Seq>.
 
 =item *
 
-If the node has 3 elements, and the format is C<array_repeated>, then the
-payload must be a Perl C<Array|Seq>, and each element of the payload
-contributes to a binary tuple of the new bag; the element value is a PHMD
-node that defines the C<value> attribute of the tuple.  The bag has 1 tuple
-for every distinct (after format normalization) element value in the
-payload, and the C<count> attribute of that tuple says how many instances
-of said element were in the payload.
+Iff the payload is an C<Array|Seq> with at least one (C<Array|Seq>)
+element, and the first element of that element I<is> itself an
+C<Array|Seq>, then the payload is interpreted as being of the I<array
+counted values> bag format.  Each element of the payload defines a binary
+tuple of the new bag; the element is a 2-element C<Array|Seq>, and those 2
+elements, by index order, are a PHMD node that defines the C<value>
+attribute of the tuple, and a 2-3-element C<Array|Seq> (which is the same
+as an 'Int' PHMD node minus the first constant element) that defines the
+C<count> attribute of the tuple; the count must be a positive integer.
+
+=item *
+
+Iff the payload is an C<Array|Seq> with at least one (C<Array|Seq>)
+element, and the first element of that element I<is not> itself an
+C<Array|Seq>, then the payload is interpreted as being of the I<array
+repeated values> bag format.  Each element of the payload contributes to a
+binary tuple of the new bag; the element value is a PHMD node that defines
+the C<value> attribute of the tuple.  The bag has 1 tuple for every
+distinct (after format normalization) element value in the payload, and the
+C<count> attribute of that tuple says how many instances of said element
+were in the payload.
 
 =back
 
 Examples:
 
-    [ 'Bag', 'aoa_counted', [
-        [
-            [ 'Text', 'Apple' ],
-            [ 'md_int', '9', '500' ],
-        ],
-        [
-            [ 'Text', 'Orange' ],
-            [ 'perl_int', 300 ],
-        ],
-        [
-            [ 'Text', 'Banana' ],
-            [ 'perl_int', 400 ],
-        ],
+    [ 'Bag', [
+        [ [ 'Text', 'Apple'  ], [ 'md_int', '9', '500' ], ],
+        [ [ 'Text', 'Orange' ], [ 'perl_int', 300 ], ],
+        [ [ 'Text', 'Banana' ], [ 'perl_int', 400 ], ],
     ] ]
 
-    [ 'Bag', 'array_repeated', [
+    [ 'Bag', [
         [ 'Text', 'Foo' ],
         [ 'Text', 'Quux' ],
         [ 'Text', 'Foo' ],
