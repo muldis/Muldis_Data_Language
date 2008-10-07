@@ -349,13 +349,17 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token text_char { ['\b'|'\q'|<-[\\\']>] }
 
-    token int_max_col_val { <[1-9A-Z]> }
+    token int_max_col_val { <pint_head> }
 
-    token int_body { [0|\-?<[1-9A-Z]><[0-9A-Z_]>*] }
+    token int_body { [0|\-?<pint_body>] }
 
-    token uint_body { [0|<[1-9A-Z]><[0-9A-Z_]>*] }
+    token uint_body { [0|<pint_body>] }
 
-    token pint_body { <[1-9A-Z]><[0-9A-Z_]>* }
+    token pint_body { <pint_head> <pint_tail>? }
+
+    token pint_head { <[1-9A-Z]> }
+
+    token pint_tail { [<[0-9A-Z_]>+] ** <segment_sep> }
 
     token name {
         Name
@@ -432,13 +436,13 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     }
 
     token rat_body {
-          <int_body>\.?<[0-9A-Z_]>*
+          <int_body>\.?<pint_tail>?
         | <int_body> \s* \/ \s* <pint_body>
         | <int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
     }
 
     token urat_body {
-          <uint_body>\.?<[0-9A-Z_]>*
+          <uint_body>\.?<pint_tail>?
         | <uint_body> \s* \/ \s* <pint_body>
         | <uint_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
     }
