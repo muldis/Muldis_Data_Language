@@ -22,7 +22,7 @@ before you read this one, which provides subservient details.
 This document outlines the grammar of the I<Plain Text Muldis D> dialect
 named C<PTMD_Tiny>.  The fully-qualified name of this Muldis D dialect, in
 combination with the base language spec it is bundled with, is
-C<Muldis_D:'http://muldis.com':'N.N.N':'PTMD_Tiny'> (when the bundled base
+C<Muldis_D:'http://muldis.com':'N.N.N':PTMD_Tiny> (when the bundled base
 language version is substituted for the C<N.N.N>).
 
 This dialect is designed to exactly match the Muldis D system catalog (the
@@ -121,11 +121,11 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         <ln_extensions>
     }
 
-    token ln_authority { <quoted_text_str> }
+    token ln_authority { <text_str> }
 
-    token ln_version { <quoted_text_str> }
+    token ln_version { <text_str> }
 
-    token ln_dialect { <text_delim> PTMD_Tiny <text_delim> }
+    token ln_dialect { PTMD_Tiny }
 
     token ln_extensions { <tuple_body> }
 
@@ -206,7 +206,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token text {
         Text
         <spec_sep>
-        <quoted_text_str>
+        <text_str>
     }
 
     token tuple_or_qv {
@@ -333,11 +333,16 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token spec_sep { \s* ':' \s* }
 
-    token quoted_text_str {
-        [<quoted_text_str_seg> ** <segment_sep>]?
+    token text_str {
+        [<text_str_seg> ** <segment_sep>]?
     }
 
     token segment_sep { \s* '~' \s* }
+
+    token text_str_seg {
+          <quoted_text_str_seg>
+        | <nonquoted_text_str_seg>
+    }
 
     token quoted_text_str_seg {
         <text_delim>
@@ -348,6 +353,8 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token text_delim { <[']> }
 
     token text_char { ['\b'|'\q'|<-[\\\']>] }
+
+    token nonquoted_text_str_seg { <[a-zA-Z0-9_-]>+ }
 
     token int_max_col_val { <pint_head> }
 
@@ -367,7 +374,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         <name_body>
     }
 
-    token name_body { <quoted_text_str> }
+    token name_body { <text_str> }
 
     token name_chain {
         NameChain
@@ -388,7 +395,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token nc_flat {
         <text_delim>
-            <nc_char>* [<nc_elem_sep> <nc_char>*]+
+            [<nc_char>*] ** <nc_elem_sep>
         <text_delim>
     }
 
@@ -422,7 +429,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token comment {
         Comment
         <spec_sep>
-        <quoted_text_str>
+        <text_str>
     }
 
     token order { Order <spec_sep> [increase|same|decrease|-1|0|1] }
@@ -493,36 +500,36 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
 
 The following are fragments of actual Plain Text Muldis D code.
 
-    Muldis_D:'http://muldis.com':'1.2.3':'PTMD_Tiny':{}
+    Muldis_D:'http://muldis.com':'1.2.3':PTMD_Tiny:{}
 
-    Muldis_D:'http://muldis.com':'1.2.3':'PTMD_Tiny':{
-        'auto_add_attrs'          => Bool:true,
-        'auto_unabbrev_std_names' => Bool:true,
-        'auto_chains_from_names'  => Bool:true
+    Muldis_D:'http://muldis.com':'1.2.3':PTMD_Tiny:{
+        auto_add_attrs          => Bool:true,
+        auto_unabbrev_std_names => Bool:true,
+        auto_chains_from_names  => Bool:true
     }
 
-    boot_call:'sys.std.Core.Cat.create_depot_procedure':{}:{ ... }
+    boot_call:sys.std.Core.Cat.create_depot_procedure:{}:{ ... }
 
-    Scalar:'sys.std.Rational.Type.Rat':'float':{
-        'mantissa' => Int:9:45207196,
-        'radix'    => Int:9:10,
-        'exponent' => Int:9:37
+    Scalar:sys.std.Rational.Type.Rat:float:{
+        mantissa => Int:9:45207196,
+        radix    => Int:9:10,
+        exponent => Int:9:37
     }
 
-    Scalar:'sys.std.Temporal.Type.UTCDateTime':'datetime':{
-        'year'   => Int:9:2003,
-        'month'  => Int:9:10,
-        'day'    => Int:9:26,
-        'hour'   => Int:9:1,
-        'minute' => Int:9:30,
-        'second' => Rat:9:0
+    Scalar:sys.std.Temporal.Type.UTCDateTime:datetime:{
+        year   => Int:9:2003,
+        month  => Int:9:10,
+        day    => Int:9:26,
+        hour   => Int:9:1,
+        minute => Int:9:30,
+        second => Rat:9:0
     }
 
-    Scalar:'fed.lib.the_db.WeekDay':'name':{
+    Scalar:fed.lib.the_db.WeekDay:name:{
         '' => Text:'monday'
     }
 
-    Scalar:'fed.lib.the_db.WeekDay':'number':{
+    Scalar:fed.lib.the_db.WeekDay:number:{
         '' => Int:9:5
     }
 
@@ -565,31 +572,31 @@ The following are fragments of actual Plain Text Muldis D code.
     Tuple:{}
 
     Tuple:{
-        'login_name' => Text:'hartmark',
-        'login_pass' => Text:'letmein',
-        'is_special' => Bool:true
+        login_name => Text:'hartmark',
+        login_pass => Text:'letmein',
+        is_special => Bool:true
     }
 
     Tuple:{
-        'name' => Text:'Michelle',
-        'age'  => Int:9:17
+        name => Text:'Michelle',
+        age  => Int:9:17
     }
 
     Relation:{}
 
     Relation:{ {} }
 
-    Relation:{ 'x', 'y', 'z' }
+    Relation:{ x, y, z }
 
     Relation:{
         {
-            'login_name' => Text:'hartmark',
-            'login_pass' => Text:'letmein',
-            'is_special' => Bool:true
+            login_name => Text:'hartmark',
+            login_pass => Text:'letmein',
+            is_special => Bool:true
         }
     }
 
-    Relation:[ 'name', 'age' ]:{
+    Relation:[ name, age ]:{
         [ Text:'Michelle', Int:9:17 ]
     }
 
@@ -638,17 +645,17 @@ The following are fragments of actual Plain Text Muldis D code.
         Text:'Baz'
     }
 
-    Name:'login_pass'
+    Name:login_pass
 
     Name:'First Name'
 
-    NameChain:['fed'.'data'.'the_db'.'gene'.'sorted_person_name']
+    NameChain:[fed.data.the_db.gene.sorted_person_name]
 
-    NameChain:'fed.data.the_db.stats.samples_by_order'
+    NameChain:fed.data.the_db.stats.samples_by_order
 
-    DeclNameChain:['gene'.'sorted_person_name']
+    DeclNameChain:[gene.sorted_person_name]
 
-    DeclNameChain:'.stats.samples_by_order.'
+    DeclNameChain:.stats.samples_by_order.
 
     Comment:'This does something.'
 
@@ -688,8 +695,8 @@ The following are fragments of actual Plain Text Muldis D code.
 
     Duration:9:[3,5,1,6,15,45.000012]
 
-    treat_as_type:'fed.lib.the_db.gene.Person':{
-        Relation:[ 'name', 'age' ]:{
+    treat_as_type:fed.lib.the_db.gene.Person:{
+        Relation:[ name, age ]:{
             [ Text:'Michelle', Int:9:17 ]
         }
     }
