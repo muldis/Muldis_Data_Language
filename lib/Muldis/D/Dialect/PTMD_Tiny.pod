@@ -143,7 +143,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token imperative_routine_upd_args {
         <list_open>
-            [<name_body> <pair_sep> <name_chain_body> <list_sep>]*
+            [[<name_body> <pair_sep> <name_chain_body>] ** <list_sep>]?
         <list_close>
     }
 
@@ -200,7 +200,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         <spec_sep>
         <[137F]>
         <spec_sep>
-        <[0-9A-F]>* [<segment_sep> <[0-9A-F]>*]*
+        [[<[0-9A-F]>+] ** <segment_sep>]?
     }
 
     token text {
@@ -230,7 +230,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         [Quasi]? Relation
         <spec_sep>
         <list_open>
-            [<name_body> <list_sep>]*
+            [<name_body> ** <list_sep>]?
         <list_close>
     }
 
@@ -238,7 +238,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         [Quasi]? Relation
         <spec_sep>
         <list_open>
-            [<tuple_body> <list_sep>]*
+            [<tuple_body> ** <list_sep>]?
         <list_close>
     }
 
@@ -246,21 +246,21 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         [Quasi]? Relation
         <spec_sep>
         <ord_list_open>
-            [<name_body> <list_sep>]*
+            [<name_body> ** <list_sep>]?
         <ord_list_close>
         <spec_sep>
         <list_open>
-        [
+        [[
             <ord_list_open>
-                [<literal> <list_sep>]*
-            <ord_list_close> <list_sep>
-        ]*
+                [<literal> ** <list_sep>]?
+            <ord_list_close>
+        ] ** <list_sep>]?
         <list_close>
     }
 
     token tuple_body {
         <list_open>
-            [<name_body> <pair_sep> <literal> <list_sep>]*
+            [[<name_body> <pair_sep> <literal>] ** <list_sep>]?
         <list_close>
     }
 
@@ -268,7 +268,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         [Quasi]? Set
         <spec_sep>
         <list_open>
-            [<literal> <list_sep>]*
+            [<literal> ** <list_sep>]?
         <list_close>
     }
 
@@ -286,7 +286,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         [Quasi]? Array
         <spec_sep>
         <ord_list_open>
-            [<literal> <list_sep>]*
+            [<literal> ** <list_sep>]?
         <ord_list_close>
     }
 
@@ -303,7 +303,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token bag_body_counted_values {
         <list_open>
-            [<literal> <pair_sep> <count> <list_sep>]*
+            [[<literal> <pair_sep> <count>] ** <list_sep>]?
         <list_close>
     }
 
@@ -315,7 +315,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token bag_body_repeated_values {
         <list_open>
-            [<literal> <list_sep>]*
+            [<literal> ** <list_sep>]?
         <list_close>
     }
 
@@ -334,7 +334,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token spec_sep { \s* ':' \s* }
 
     token quoted_text_str {
-        <quoted_text_str_seg> [<segment_sep> <quoted_text_str_seg>]*
+        [<quoted_text_str_seg> ** <segment_sep>]?
     }
 
     token segment_sep { \s* '~' \s* }
@@ -494,7 +494,7 @@ The following are fragments of actual Plain Text Muldis D code.
     Muldis_D:'http://muldis.com':'1.2.3':'PTMD_Tiny':{
         'auto_add_attrs'          => Bool:true,
         'auto_unabbrev_std_names' => Bool:true,
-        'auto_chains_from_names'  => Bool:true,
+        'auto_chains_from_names'  => Bool:true
     }
 
     boot_call:'sys.std.Core.Cat.create_depot_procedure':{}:{ ... }
@@ -502,7 +502,7 @@ The following are fragments of actual Plain Text Muldis D code.
     Scalar:'sys.std.Rational.Type.Rat':'float':{
         'mantissa' => Int:9:45207196,
         'radix'    => Int:9:10,
-        'exponent' => Int:9:37,
+        'exponent' => Int:9:37
     }
 
     Scalar:'sys.std.Temporal.Type.UTCDateTime':'datetime':{
@@ -511,15 +511,15 @@ The following are fragments of actual Plain Text Muldis D code.
         'day'    => Int:9:26,
         'hour'   => Int:9:1,
         'minute' => Int:9:30,
-        'second' => Rat:9:0,
+        'second' => Rat:9:0
     }
 
     Scalar:'fed.lib.the_db.WeekDay':'name':{
-        '' => Text:'monday',
+        '' => Text:'monday'
     }
 
     Scalar:'fed.lib.the_db.WeekDay':'number':{
-        '' => Int:9:5,
+        '' => Int:9:5
     }
 
     Bool:true
@@ -563,43 +563,43 @@ The following are fragments of actual Plain Text Muldis D code.
     Tuple:{
         'login_name' => Text:'hartmark',
         'login_pass' => Text:'letmein',
-        'is_special' => Bool:true,
+        'is_special' => Bool:true
     }
 
     Tuple:{
         'name' => Text:'Michelle',
-        'age'  => Int:9:17,
+        'age'  => Int:9:17
     }
 
     Relation:{}
 
-    Relation:{ {}, }
+    Relation:{ {} }
 
-    Relation:{ 'x', 'y', 'z', }
+    Relation:{ 'x', 'y', 'z' }
 
     Relation:{
         {
             'login_name' => Text:'hartmark',
             'login_pass' => Text:'letmein',
-            'is_special' => Bool:true,
-        },
+            'is_special' => Bool:true
+        }
     }
 
-    Relation:[ 'name', 'age', ]:{
-        [ Text:'Michelle', Int:9:17, ],
+    Relation:[ 'name', 'age' ]:{
+        [ Text:'Michelle', Int:9:17 ]
     }
 
     Set:{
         Text:'Canada',
         Text:'Spain',
         Text:'Jordan',
-        Text:'Thailand',
+        Text:'Thailand'
     }
 
     Set:{
         Int:9:3,
         Int:9:16,
-        Int:9:85,
+        Int:9:85
     }
 
     Nothing
@@ -609,20 +609,20 @@ The following are fragments of actual Plain Text Muldis D code.
     Array:[
         Text:'Alphonse',
         Text:'Edward',
-        Text:'Winry',
+        Text:'Winry'
     ]
 
     Array:[
         Int:9:57,
         Int:9:45,
         Int:9:63,
-        Int:9:61,
+        Int:9:61
     ]
 
     Bag:{
         Text:'Apple'  => 9:500,
         Text:'Orange' => 9:300,
-        Text:'Banana' => 9:400,
+        Text:'Banana' => 9:400
     }
 
     Bag:{
@@ -631,7 +631,7 @@ The following are fragments of actual Plain Text Muldis D code.
         Text:'Foo',
         Text:'Bar',
         Text:'Baz',
-        Text:'Baz',
+        Text:'Baz'
     }
 
     Name:'login_pass'
@@ -685,8 +685,8 @@ The following are fragments of actual Plain Text Muldis D code.
     Duration:9:[3,5,1,6,15,45.000012]
 
     treat_as_type:'fed.lib.the_db.gene.Person':{
-        Relation:[ 'name', 'age', ]:{
-            [ Text:'Michelle', Int:9:17, ],
+        Relation:[ 'name', 'age' ]:{
+            [ Text:'Michelle', Int:9:17 ]
         }
     }
 
