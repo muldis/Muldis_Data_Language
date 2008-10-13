@@ -33,43 +33,20 @@ round-trippable with the system catalog with the result maintaining all the
 details that were started with.  Since it matches the system catalog, this
 dialect should be able to exactly represent all possible Muldis D base
 language code (and probably all extensions too), rather than a subset of
-it.  This dialect similarly matches the C<HDMD_Perl_Tiny> dialect, which is
-documented at L<Muldis::D::Dialect::HDMD_Perl_Tiny>.
+it.  That said, the C<PTMD_Tiny> dialect does provide a choice of multiple
+syntax options for writing Muldis D value literals and DBMS entity (eg type
+and routine) declarations, so several very distinct C<PTMD_Tiny> code
+artifacts may parse into the same system catalog entries.  There is even a
+considerable level of abstraction in some cases, so that it is easier for
+programmers to write and understand typical C<PTMD_Tiny> code, and so that
+this code isn't absurdly verbose.
 
 This dialect is designed to be as small as possible while meeting the above
 criteria, and is designed such that a parser that handles all of this
 dialect can be tiny, hence the dialect's C<Tiny> name.  Likewise, a code
 generator for this dialect from the system catalog can be tiny.
 
-This document mainly just specifies a way to represent Muldis D values as
-character strings.  Since the fundamental way to do data definition in
-Muldis D is to update catalog (information schema) variables, aka the
-Muldis D meta-model, which are themselves just data, then this document
-only needs to tell you how to define values to put in the catalog
-variables.  Defining data types or routines are done by defining catalog
-values describing them.
-
-See instead L<Muldis::D::Core> for how to actually define the
-tuples and relations that define your data types and routines and queries
-and so forth.
-
-See also L<Muldis::D::Dialect::HDMD_Perl_Tiny> and look up its
-syntax for representing Muldis D literal values, each syntax item typically
-corresponds to a syntax item in the current document; the other document
-helps explain the meaning of and further constraints on value
-specifications than this current document does.  The syntax given in the
-current document primarily tests for well-formedness, not that code is
-otherwise valid.
-
-Keeping in mind that any Plain Text Muldis D code file has to actually
-consist of a Muldis D C<bootloader> routine, the following grammar is
-actually the grammar to parse a C<bootloader> routine, which is simply a
-series of imperative routine calls, where earlier routine calls are to
-system-defined data-definition routines (their arguments are values to put
-in the system catalog), and later ones are then to user-defined routines
-that the earlier statements either loaded or defined.
-
-Now another quality of the C<PTMD_Tiny> dialect is that it is designed to
+A significant quality of the C<PTMD_Tiny> dialect is that it is designed to
 work easily for a single-pass parser, or at least a single-pass lexer; all
 the context that one needs to know for how to parse or lex any arbitrary
 substring of code is provided by prior code.  Therefore, a C<PTMD_Tiny>
@@ -88,8 +65,25 @@ no effect on the meaning.  So programmers can easily format (separate,
 indent, linewrap, order) code how they like, and making an automated code
 reformatter shouldn't be difficult.  Often, named elements can also be
 omitted entirely for brevity, in which case the parser would use context to
-supply default values for those elements.  These qualities are all shared
-by the C<HDMD_Perl_Tiny> dialect too.
+supply default values for those elements.
+
+Keeping in mind that any Plain Text Muldis D code file has to actually
+consist of a Muldis D C<bootloader> routine, the following grammar is
+actually the grammar to parse a C<bootloader> routine, which is simply a
+series of imperative routine calls, where earlier routine calls are to
+system-defined data-definition routines (their arguments are values to put
+in the system catalog), and later ones are then to user-defined routines
+that the earlier statements either loaded or defined.
+
+See also the C<HDMD_Perl_Tiny> dialect
+(L<Muldis::D::Dialect::HDMD_Perl_Tiny>), which is derived directly from
+C<PTMD_Tiny>, and represents a possible Perl concrete syntax tree for it;
+in fact, most of the details in common with that other dialect are
+described just in the current file, for both dialects.
+
+=head1 HERE AND BELOW WE RERITE HAVE TO STILL.
+
+Yes, that's right.
 
 =head1 GRAMMAR OF TINY PLAIN TEXT MULDIS D
 
