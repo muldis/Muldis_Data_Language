@@ -67,13 +67,13 @@ reformatter shouldn't be difficult.  Often, named elements can also be
 omitted entirely for brevity, in which case the parser would use context to
 supply default values for those elements.
 
-Keeping in mind that any Plain Text Muldis D code file has to actually
-consist of a Muldis D C<bootloader> routine, the following grammar is
-actually the grammar to parse a C<bootloader> routine, which is simply a
-series of imperative routine calls, where earlier routine calls are to
-system-defined data-definition routines (their arguments are values to put
-in the system catalog), and later ones are then to user-defined routines
-that the earlier statements either loaded or defined.
+Given that plain text is (more or less) universally unambiguously portable
+between all general purpose languages that could be used to implement a
+DBMS, it is expected that every single Muldis D implementation will
+natively accept input in the C<PTMD_Tiny> dialect, which isn't dependent on
+any specific host language and should be easy enough to process, so it
+should be considered the safest official Muldis D dialect to write in by
+default, when you don't have a specific reason to use some other dialect.
 
 See also the C<HDMD_Perl_Tiny> dialect
 (L<Muldis::D::Dialect::HDMD_Perl_Tiny>), which is derived directly from
@@ -81,22 +81,54 @@ C<PTMD_Tiny>, and represents a possible Perl concrete syntax tree for it;
 in fact, most of the details in common with that other dialect are
 described just in the current file, for both dialects.
 
+=head1 GENERAL STRUCTURE
+
+A C<PTMD_Tiny> Muldis D code file consists just of a full or partial Muldis
+D C<bootloader> routine definition, which begins with a language name
+declaration, and otherwise is simply an ordered sequence of imperative
+routine calls, where earlier routine calls are to system-defined
+data-definition routines (their arguments are values to put in the system
+catalog), and later ones are then to user-defined routines that the earlier
+statements either loaded or defined.  This is conceptually what a
+C<PTMD_Tiny> file is, and it can even be that literally, but C<PTMD_Tiny>
+provides a canonical further abstraction which should be used when doing
+data-definition.  And so you typically use syntax resembling routine and
+type declarations in a general purpose programming language, where simply
+declaring such an entity will cause it to be written into the system
+catalog for subsequent use.
+
+The grammar in this file is formatted as a Perl 6 grammar which could be
+used to parse it, but it is only meant to be illustrative, and would need
+further additions or changes to actually function in Perl 6.  The grammar
+consists mainly of named I<tokens> which define matching rules.  A token's
+name is declared as a bareword following the keyword C<token> and it is
+subsequently referenced with C<< '<' and '>' >> delimiters.  Any other
+bareword in a token definition consisting of alphanumerics is matched
+literally, and all non-quoted whitespace is not significant.  Any pairs of
+parenthesis (C<'(' and ')'>) in token definitions are capturing groups, and
+each parser match by a pair corresponds to a capture I<node> or node
+element in the concrete syntax tree resulting from the parse.
+
+The grammar of the C<PTMD_Tiny> dialect has 3 main subsections, the first
+being the syntax for declaring a Muldis D language name, the second being
+the syntax for Muldis D value literals, and the third being the syntax for
+DBMS entity definition and routine invocation.  The subsection for a
+language name (having the root grammar token C<language_name>) is quite
+small and is defined partly in terms of the value literals subsection.  The
+subsection for value literals (having the root grammar token C<value>) is
+completely self-defined and can be used in isolation from the wider grammar
+as a Muldis D sub-language; for example, a hosted-data Muldis D
+implementation may have an object representing a Muldis D value, which is
+initialized using code written in that sub-language.  The subsection for
+entity definition and invocation (having the root grammar token
+C<boot_stmt>) is defined partly in terms of the value literals subsection.
+The root grammar token for the entire dialect is C<bootloader>.
+
 =head1 HERE AND BELOW WE RERITE HAVE TO STILL.
 
 Yes, that's right.
 
 =head1 GRAMMAR OF TINY PLAIN TEXT MULDIS D
-
-This grammar is formatted as a Perl 6 grammar which could be used to parse
-it.  That said, it is only meant to be illustrative, as only some Muldis D
-implementations would actually be written in Perl 6 or understand Perl 6
-grammars.  The following Perl 6 code does successfully compile using the
-current Perl6::Pugs, though it has not yet been tested for correct
-execution.  I<Actually, the last several versions were not even tested for
-being able to compile, but it is assumed they are close to being compilable
-at least.>  Any remaining errors should be corrected as soon as possible.
-This grammar is missing the 'grammar' declarator, and it omits any
-capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token bootloader {
         <language_name>
