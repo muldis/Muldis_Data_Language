@@ -257,7 +257,7 @@ Node type: the Perl C<Str> value C<Bool>.
 
 =item *
 
-Format; one of: C<md_enum>, C<perl_bool>, C<any_perl>.
+Format; one of: C<md_enum>, C<perl_bool>.
 
 =item *
 
@@ -282,14 +282,8 @@ If the format is C<perl_bool>, then:  Under Perl 6, the payload must
 be a Perl C<Bool>, and so C<Bool::False> and C<Bool::True> are mapped
 directly.  Under Perl 5, the payload must be just the specific result of a
 Perl 5 logical expression, such as C<(1 == 0)> or C<(1 == 1)>, and nothing
-else; said values are probably the empty string and number 1, respectively.
-
-=item *
-
-If the format is C<any_perl>, then the payload may be any Perl value,
-and it is simply coerced into a boolean context as per Perl's own
-semantics; typically for built-in scalars, the empty string and number zero
-are considered false, and everything else true.
+else; said values are probably the empty string and number 1, respectively;
+as another option under Perl 5, the number 0 may be used to mean false.
 
 =back
 
@@ -300,8 +294,6 @@ Examples:
     [ 'Bool', 'perl_bool', Bool::False ] # Perl 6 only
 
     [ 'Bool', 'perl_bool', (1 == 0) ]
-
-    [ 'Bool', 'perl_any', 42 ]
 
 =head2 sys.std.Core.Type.Int
 
@@ -315,7 +307,7 @@ Node type: the Perl C<Str> value C<Int>.
 
 =item *
 
-Format; one of: C<md_int>, C<perl_int>, C<any_perl>.
+Format; one of: C<md_int>, C<perl_int>.
 
 =item *
 
@@ -350,14 +342,6 @@ If the format is C<perl_int>, then:  Under Perl 6, the payload must
 be a Perl C<Int>, which is mapped directly.  Under Perl 5, the payload must
 be just a canonical integer value according to Perl.
 
-=item *
-
-If the format is C<any_perl>, then the payload may be any Perl value, and
-it is simply coerced into an integer context as per Perl's own semantics
-(resulting from adding zero to it), meaning base-10 where applicable.  If
-something doesn't look numeric, it becomes zero; if something looks like a
-fractional number, it is truncated.
-
 =back
 
 Examples:
@@ -377,8 +361,6 @@ Examples:
     [ 'Int', 'md_int', 'Z', '-HELLOWORLD' ] # base-36
 
     [ 'Int', 'perl_int', 21 ]
-
-    [ 'Int', 'any_perl', ' 171 ' ]
 
     [ 'Int', 'md_int', '3', '301' ] # base-4
 
@@ -1022,7 +1004,7 @@ Node type: the Perl C<Str> value C<Rat>.
 
 =item *
 
-Format; one of: C<md_rat>, C<perl_rat>, C<any_perl>.
+Format; one of: C<md_rat>, C<perl_rat>.
 
 =item *
 
@@ -1107,30 +1089,6 @@ per defining a C<perl_int>; the rational's value is interpreted as the
 first element multiplied by the result of the second element taken to the
 power of the third.
 
-=item *
-
-If the format is C<any_perl> and the payload is not an C<Array|Seq>, then
-the payload may be any Perl value, and it is simply coerced into a numeric
-context as per Perl's own semantics (resulting from adding zero to it),
-meaning base-10 where applicable.  If something doesn't look numeric, it
-becomes zero.
-
-=item *
-
-If the format is C<any_perl> and the payload is a 2-element C<Array|Seq>,
-then each payload array element is simply coerced into an integer context,
-and the payload is then interpreted as per C<perl_rat>.  If Perl's coercion
-of the denominator produces an integer less than 1, it becomes a 1.  I<This
-may be revised to fail instead.>
-
-=item *
-
-If the format is C<any_perl> and the payload is a 3-element C<Array|Seq>,
-then each payload array element is simply coerced into an integer context,
-and the payload is then interpreted as per C<perl_rat>.  If Perl's coercion
-of the radix produces an integer less than 2, it becomes a 2.  I<This may
-be revised to fail instead.>
-
 =back
 
 Examples:
@@ -1162,12 +1120,6 @@ Examples:
     [ 'Rat', 'perl_rat', [ 1, 43 ] ]
 
     [ 'Rat', 'perl_rat', [ 314159, 10, -5 ] ]
-
-    [ 'Rat', 'any_perl', ' 54.67 ' ]
-
-    [ 'Rat', 'any_perl', [ ' 57 ', ' 71 ' ] ]
-
-    [ 'Rat', 'any_perl', [ ' 656573456 ', ' 8 ', ' 243323 ' ] ]
 
 =head2 sys.std.Rational.Type.RatRoundMeth
 
@@ -1210,7 +1162,7 @@ Node type: the Perl C<Str> value C<UTCInstant>.
 
 =item *
 
-Format; one of: C<md_num>, C<perl_num>, C<any_perl>.
+Format; one of: C<md_num>, C<perl_num>.
 
 =item *
 
@@ -1237,8 +1189,7 @@ as a valid payload for a C<Rat> PHMD node.  Each of the 6 payload elements,
 when defined, is further interpreted according to the format and
 max-col-val elements of this node, in the same manner as how an C<Int> or
 C<Rat> node payload is interpreted; the format value C<md_num> corresponds
-directly to C<md_(int|rat)>, C<perl_num> corresponds to C<perl_(int|rat)>,
-and C<any_perl> corresponds to C<any_perl>.
+directly to C<md_(int|rat)>, C<perl_num> corresponds to C<perl_(int|rat)>.
 
 A defined C<year> may be any integer, each of [C<month>, C<day>] must be a
 positive integer, each of [C<hour>, C<minute>] must be an
@@ -1285,7 +1236,7 @@ Node type: the Perl C<Str> value C<Duration>.
 
 =item *
 
-Format; one of: C<md_num>, C<perl_num>, C<any_perl>.
+Format; one of: C<md_num>, C<perl_num>.
 
 =item *
 
@@ -1312,8 +1263,7 @@ as a valid payload for a C<Rat> PHMD node.  Each of the 6 payload elements,
 when defined, is further interpreted according to the format and
 max-col-val elements of this node, in the same manner as how an C<Int> or
 C<Rat> node payload is interpreted; the format value C<md_num> corresponds
-directly to C<md_(int|rat)>, C<perl_num> corresponds to C<perl_(int|rat)>,
-and C<any_perl> corresponds to C<any_perl>.
+directly to C<md_(int|rat)>, C<perl_num> corresponds to C<perl_(int|rat)>.
 
 A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
 integer, and C<seconds> may be any rational number.  I<Currently,
