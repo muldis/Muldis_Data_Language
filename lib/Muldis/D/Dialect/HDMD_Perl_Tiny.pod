@@ -451,13 +451,18 @@ Examples:
 
 =head2 sys.std.Core.Type.Tuple
 
-This node type represents a tuple value.  It has 2 elements:
+This node type represents a tuple value.  It has 2-3 elements:
 
 =over
 
 =item *
 
 Node type: the Perl C<Str> value C<Tuple>.
+
+=item *
+
+Only when the node has 3 elements; type name: a Perl C<Array|Seq|Str> as
+per the payload of a C<NameChain> PHMD node.
 
 =item *
 
@@ -475,7 +480,7 @@ Examples:
 
     [ 'Tuple', {} ]
 
-    [ 'Tuple', {
+    [ 'Tuple', 'type.tuple_from.var.fed.data.the_db.account.users', {
         'login_name' => [ 'Text', 'hartmark' ],
         'login_pass' => [ 'Text', 'letmein' ],
         'is_special' => [ 'Bool', 'true' ],
@@ -488,7 +493,7 @@ Examples:
 
 =head2 sys.std.Core.Type.Relation
 
-This node type represents a relation value.  It has 2-3 elements:
+This node type represents a relation value.  It has 2-4 elements:
 
 =over
 
@@ -498,14 +503,23 @@ Node type: the Perl C<Str> value C<Relation>.
 
 =item *
 
-Only when the node has 3 elements; ordered attr names; a Perl C<Array|Seq>
-value.
+Only when the node has 3-4 elements; type name: a Perl C<Array|Seq|Str> as
+per the payload of a C<NameChain> PHMD node.  Or more specifically to avoid
+ambiguity, when the node has 3 elements and both of the 2nd and 3rd
+elements are C<Array|Seq> and either the 3rd element is empty or has Perl
+C<Str> elements, then the type name must instead in Perl 5 be a ref to an
+Array ref rather than just an Array ref; what to do then in Perl 6 TBD.
 
 =item *
 
-The payload; only when the node has 2 elements, a Perl
+Only when the node has 3-4 elements; ordered attr names; a Perl
+C<Array|Seq> value.
+
+=item *
+
+The payload; only when the node has 2-3 elements, a Perl
 C<Array|Seq|Set|KeySet> of C<Str|Hash|Mapping> value; only when the node
-has 3 elements, a Perl C<Array|Seq> of C<Array|Seq> value.
+has 3-4 elements, a Perl C<Array|Seq> of C<Array|Seq> value.
 
 =back
 
@@ -516,7 +530,30 @@ as follows:
 
 =item *
 
-If the node has 2 elements, then:  The new relation value's
+If the node has 2 elements, then:  If the payload element has zero elements
+then the new relation value has zero attributes and zero tuples.  Else if
+the first payload element is a C<Hash|Mapping>, then the node is in
+I<nonordered attrs> format, and at least 1 tuple exists.  Else the first
+payload element is a Perl C<Str>, and the node is in I<ordered attrs>
+format, it has at least one attribute, and it has zero tuples.
+
+=item *
+
+If the node has 3 elements, then:  If the second element is a C<Str> or a
+Perl 5 reference to a reference to an array, then the second element is a
+type name, and the third/payload element is interpreted in the exact same
+way as with a node that has 2 elements.  Else the second element is an
+ordered attr name list and the node is in I<ordered attrs> format and no
+type name is specified.
+
+=item *
+
+If the node has 4 elements, then the node is in I<ordered attrs> format and
+a type name is specified.
+
+=item *
+
+If the node has nonordered attrs, then:  The new relation value's
 tuples and attribute names are defined by the payload.  Iff the
 payload has zero elements, then it defines the only relation value having
 zero attributes and zero tuples.  If the payload has elements, then either
@@ -534,25 +571,25 @@ heading for the current purposes.
 
 =item *
 
-If the node has 3 elements, then:  The new relation value's attribute names
-are defined by the ordered attr names (second element) and the relation
-body's tuples' attribute values are defined by the payload (third element).
+If the node has ordered attrs, then:  The new relation value's attr names
+are defined by the ordered attr names (2nd/3rd element) and the relation
+body's tuples' attribute values are defined by the payload (3rd/4th elem).
 This format is meant to be the most compact of the generic relation node
 formats, as the attribute names only appear once for the relation rather
 than repeating for each tuple.  As a trade-off, the attribute values per
-tuple from the third element must appear in the same order as their
-corresponding attribute names appear in the second element, as the names
+tuple from the 3rd/4th element must appear in the same order as their
+corresponding attribute names appear in the 2nd/3rd element, as the names
 and values in the relation literal are matched up by ordinal position here.
 
 =back
 
 Examples:
 
-    [ 'Relation', [] ]
+    [ 'Relation', [] ]  # zero attrs + zero tuples
 
-    [ 'Relation', [ {} ] ]
+    [ 'Relation', [ 'x', 'y', 'z' ] ]  # 3 attrs + zero tuples
 
-    [ 'Relation', [ 'x', 'y', 'z' ] ]
+    [ 'Relation', [ {} ] ]  # zero attrs + 1 tuple
 
     [ 'Relation', [
         {
@@ -560,21 +597,26 @@ Examples:
             'login_pass' => [ 'Text', 'letmein' ],
             'is_special' => [ 'Bool', 'true' ],
         },
-    ] ]
+    ] ]  # 3 attrs + 1 tuple
 
-    [ 'Relation', [ 'name', 'age' ], [
+    [ 'Relation', 'fed.lib.the_db.gene.Person', [ 'name', 'age' ], [
         [ [ 'Text', 'Michelle' ], [ 'Int', 17 ] ],
-    ] ]
+    ] ]  # 2 attrs + 1 tuple
 
 =head2 sys.std.Core.Type.Set
 
-This node type represents a set value.  It has 2 elements:
+This node type represents a set value.  It has 2-3 elements:
 
 =over
 
 =item *
 
 Node type: the Perl C<Str> value C<Set>.
+
+=item *
+
+Only when the node has 3 elements; type name: a Perl C<Array|Seq|Str> as
+per the payload of a C<NameChain> PHMD node.
 
 =item *
 
@@ -589,7 +631,7 @@ C<value> attribute of the tuple.
 
 Examples:
 
-    [ 'Set', [
+    [ 'Set', 'fed.lib.the_db.account.Country_Names', [
         [ 'Text', 'Canada' ],
         [ 'Text', 'Spain' ],
         [ 'Text', 'Jordan' ],
@@ -614,13 +656,18 @@ Examples:
 
 =head2 sys.std.Core.Type.Single
 
-This node type represents a 'single' value.  It has 2 elements:
+This node type represents a 'single' value.  It has 2-3 elements:
 
 =over
 
 =item *
 
 Node type: the Perl C<Str> value C<Single>.
+
+=item *
+
+Only when the node has 3 elements; type name: a Perl C<Array|Seq|Str> as
+per the payload of a C<NameChain> PHMD node.
 
 =item *
 
@@ -638,13 +685,18 @@ Examples:
 
 =head2 sys.std.Core.Type.Array
 
-This node type represents a sequence value.  It has 2 elements:
+This node type represents a sequence value.  It has 2-3 elements:
 
 =over
 
 =item *
 
 Node type: the Perl C<Str> value C<Array>.
+
+=item *
+
+Only when the node has 3 elements; type name: a Perl C<Array|Seq|Str> as
+per the payload of a C<NameChain> PHMD node.
 
 =item *
 
@@ -666,7 +718,7 @@ Examples:
         [ 'Text', 'Winry' ],
     ] ]
 
-    [ 'Array', [
+    [ 'Array', 'fed.lib.the_db.stats.Samples_By_Order', [
         [ 'Int', 57 ],
         [ 'Int', 45 ],
         [ 'Int', 63 ],
@@ -675,13 +727,18 @@ Examples:
 
 =head2 sys.std.Core.Type.Bag
 
-This node type represents a bag value.  It has 2 elements:
+This node type represents a bag value.  It has 2-3 elements:
 
 =over
 
 =item *
 
 Node type: the Perl C<Str> value C<Bag>.
+
+=item *
+
+Only when the node has 3 elements; type name: a Perl C<Array|Seq|Str> as
+per the payload of a C<NameChain> PHMD node.
 
 =item *
 
@@ -738,7 +795,7 @@ were in the payload.
 
 Examples:
 
-    [ 'Bag', [
+    [ 'Bag', 'fed.lib.the_db.inventory.Fruit', [
         [ [ 'Text', 'Apple'  ], [ '9', '500' ] ],
         [ [ 'Text', 'Orange' ], [ 300 ] ],
         [ [ 'Text', 'Banana' ], [ 400 ] ],
@@ -1233,57 +1290,6 @@ Examples:
 
     [ 'Duration', [3,5,1,6,15,45.000012] ]
 
-=head1 TREAT AS TYPE
-
-This PHMD node is a lexical-scoped pragma that may be used where any
-literal value representing PHMD node may be used.  It has 3 elements:
-
-=over
-
-=item *
-
-Node type: the Perl C<Str> value C<treat_as_type>.
-
-=item *
-
-Type name: a Perl C<Array|Seq|Str> as per the payload of a C<NameChain>
-PHMD node.
-
-=item *
-
-The payload; a PHMD node that defines a single value.
-
-=back
-
-This node is used just to provide meta-data for its sole child node, which
-typically is a tuple or relation literal.  By default, when defining a
-nonscalar literal using a PHMD node tree, the resulting nonscalar value is
-"just a tuple|relation".  If that literal is then a sub-literal used as
-either a scalar possrep attribute value or as an argument to a
-bootloader-invoked routine, the known declared type of that scalar possrep
-attribute or routine parameter would provide a context such that the
-expected specific type of the nonscalar value, such as what attributes it
-should have, can be gleaned, and then it would be known what type the
-nonscalar literal is supposed to belong to.  But in some contexts, such as
-when the declared type of the routine parameter is simply C<Relation>,
-there isn't enough information in the normal context to know what attribute
-names and types the new nonscalar should have.  So the C<treat_as_type>
-PHMD node type can then be used by the programmer to explicitly tell the
-Tiny dialect parser what the specific type of the nonscalar is.  The
-literal being annotated is provided by the payload 3rd node element, and
-the type name it is being annotated with is given in the type name 2nd node
-element.  Using C<treat_as_type> is useful to enable some kinds of
-compile-time type checking, and it also helps the C<auto_add_attrs> pragma
-to work in many places where it otherwise lacks information needed to work.
-
-Examples:
-
-    [ 'treat_as_type', 'fed.lib.the_db.gene.Person',
-        [ 'Relation', [ 'name', 'age' ], [
-            [ [ 'Text', 'Michelle' ], [ 'Int', 17 ] ],
-        ] ]
-    ]
-
 =head1 MULDIS D TINY DIALECT PRAGMAS
 
 All of the following pragmas apply to both the C<PTMD_Tiny> and
@@ -1348,8 +1354,8 @@ parameter that the literal is being given to as an argument.
 
 Now if the declared type of said parameter is just a generic type, such as
 C<Relation> or C<Array>, then often no information can be gleaned from this
-context for what attributes should exist, and so you will need to wrap the
-argument literal in a C<treat_as_type> literal that explicitly provides the
+context for what attributes should exist, and so you will need to make the
+arg literal include treat-as-type metadata that explicitly provides the
 specific type information needed; otherwise, C<auto_add_attrs> won't help
 you and you must then fully define relation values with the same attributes
 per tuple.  But fortunately for brevity, a lot of the places where
