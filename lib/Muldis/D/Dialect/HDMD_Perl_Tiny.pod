@@ -25,28 +25,29 @@ dialect, in combination with the base language spec it is bundled with, is
 C<[ 'Muldis_D', 'http://muldis.com', 'N.N.N', 'HDMD_Perl_Tiny' ]> (when the
 bundled base language version is substituted for the C<N.N.N>).
 
+This dialect is designed to exactly match the Muldis D system catalog (the
+possible representation of Muldis D code that is visible to or updateable
+by Muldis D programs at runtime) as to what non-critical meta-data it
+explicitly stores; so code in the C<HDMD_Perl_Tiny> dialect should be
+round-trippable with the system catalog with the result maintaining all the
+details that were started with.  Since it matches the system catalog, this
+dialect should be able to exactly represent all possible Muldis D base
+language code (and probably all extensions too), rather than a subset of
+it.  This dialect similarly matches the C<PTMD_Tiny> dialect, which is
+documented at L<Muldis::D::Dialect::PTMD_Tiny>; in fact, most of the
+details in common with that other dialect are described just in the current
+file, for both dialects.
+
+This dialect is designed to be as small as possible while meeting the above
+criteria, and is designed such that a parser that handles all of this
+dialect can be tiny, hence the dialect's C<Tiny> name.  Likewise, a code
+generator for this dialect from the system catalog can be tiny.
+
 The C<HDMD_Perl_Tiny> dialect is defined to be hosted in either Perl 5 or
 Perl 6, and as composed of just|mainly core Perl types.  Where Perl 5 and 6
 differ, the terminology and examples in this documentation specifically
 uses Perl 6 terminology and examples by default, and adds analogous Perl 5
 terminology as necessary.
-
-This dialect is designed to exactly match the structure of a possible
-concrete syntax tree, comprised of native Perl scalar and collection typed
-values, resulting from parsing code written in the Muldis D C<PTMD_Tiny>
-dialect (L<Muldis::D::Dialect::PTMD_Tiny>) using Perl.  This dialect exists
-as a convenience to Perl programmers that want to generate or introspect
-Muldis D code by saving them the difficulty and overhead of escaping and
-stitching plain text code; it is expected that a Muldis D implementation
-written in Perl will natively accept input in both the C<PTMD_Tiny> and
-C<HDMD_Perl_Tiny> dialects.  Furthermore, the C<HDMD_Perl_Tiny> dialect
-provides additional Muldis D syntax options to Perl programmers besides
-what C<PTMD_Tiny> would canonically parse into, such as the direct use of
-some Perl-only features.  Note that most of the details that the 2 dialects
-have in common are described just in the C<PTMD_Tiny> file, for both
-dialects; this current file will mainly focus on the differences; you
-should read the L<Muldis::D::Dialect::PTMD_Tiny> file before the current
-one, so to provide a context for better understanding it.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl 5 or 6 native scalar and collection
@@ -55,26 +56,36 @@ typed, than Perl, each Muldis D literal is represented by a Perl Array,
 whose elements include both the payload Perl literal plus explicit
 meta-data for how to interpret that Perl literal for mapping to Muldis D.
 
+This document mainly just specifies a way to represent Muldis D values as
+Perl values.  Since the fundamental way to do data definition in Muldis D
+is to update catalog (information schema) variables, aka the Muldis D
+meta-model, which are themselves just data, then this document only needs
+to tell you how to define values to put in the catalog variables.  Defining
+data types or routines are done by defining catalog values describing them.
+
+See instead L<Muldis::D::Core> for how to actually define the
+tuples and relations that define your data types and routines and queries
+and so forth.
+
+For the present, this document will use the term I<PHMD> (I<Perl Hosted
+Muldis D>) for brevity when referring to aspects of the Perl-Tiny dialect.
+
 =head1 GENERAL STRUCTURE
 
-A C<HDMD_Perl_Tiny> Muldis D code file is a Perl 5 code file that defines a
-Perl value that is a tree of Perl Array, such that each Array is a tree
-I<node>; or such a Perl value definition may be embedded or constructed in
-one or more files of a larger Perl program that does more than this.  The
-elements of each node/Array include typically a native Perl payload value,
-which may be a node itself, plus meta-data for that payload, that meta-data
-typically including the analogy of a class name, were nodes instead
-represented by a tree of node-specific objects.
+A PHMD value is composed mainly of a tree of Perl Array, such that each
+Array is a tree node.  The elements of each node/Array include typically a
+native Perl payload value, which may be a PHMD value itself, plus meta-data
+for that payload, that meta-data typically including the analogy of a class
+name, were PHMD nodes instead represented by a tree of PHMD-specific
+objects.
 
-Note that Perl undefined values are not allowed anywhere in a node in the
-general case; you must use only defined values instead.  This documentation
-also assumes that only defined values are used, and that supplying a Perl
-undef will result in an error.  The few exceptions to this rule are
-explicitly stated.
-
-=head1 HERE AND BELOW WE RERITE HAVE TO STILL.
-
-Yes, that's right.
+It should be emphasized that no Perl undefined values are allowed anywhere
+in a PHMD value; you must use only defined values instead.  This
+documentation also assumes that only defined values are used, and that
+supplying a Perl undef will result in an error.  If you genuinely want to
+represent that a value is unknown or inapplicable, then the C<Nothing> node
+type is provided as one way you can explicitly say so.  I<This policy may
+be reconsidered.>
 
 =head1 BOOTLOADER
 
@@ -1006,8 +1017,6 @@ directly.  Under Perl 5, the payload may be the specific result of a Perl 5
 order-determining expression, such as C<< (1 <=> 2) >> or C<< (1 <=> 1) >>
 or C<< (2 <=> 1) >>; said values are probably the 3 twice-earlier-mentioned
 integers.
-
-=back
 
 Examples:
 
