@@ -187,19 +187,26 @@ bit.
 
 =head2 sys.std.Core.Type.Text
 
-A C<Text> is a string of characters.  Its default and minimum value is the
-empty string; its maximum value is an infinite-length string and
-practically impossible.  Note that there is only one system-defined
-character repertoire for C<Text> types, which is the newest Unicode
-repertoire (5.0.0).  The cardinality of this type is infinity; to define a
-most-generalized finite C<Text> subtype, you must specify a maximum length
-in characters (that is, eg, in NFC graphemes) that the subtype's strings
-are.  The C<Text> type has a default ordering algorithm; for 2 distinct
-C<Text> values, their order is determined as per C<Blob> but that
-characters are being compared rather than bits; more specifically, the
-standard Unicode Collation Algorithm (UCA) is used by default, assuming it
-is totally ordered.  I<TODO: Support customization parameters for default
-text sorting, or fix to make totally ordered if it isn't yet.>
+A C<Text> is a string of characters, where a I<character> specifically is a
+Unicode I<codepoint>.  Its default and minimum value is the empty string;
+its maximum value is an infinite-length string and practically impossible. 
+Note that there is only one system-defined character repertoire for C<Text>
+types, which is the newest Unicode repertoire (5.1.0).  Two C<Text> will
+only compare as identical if all of their codepoints are identical, and any
+combining character codepoints have the same sequence; if you want to
+effectively work at the abstraction level of a I<language-independent
+grapheme> or I<language-specific grapheme>, you need to ensure that your
+C<Text> values are effectively normalized or folded first.  The cardinality
+of this type is infinity; to define a most-generalized finite C<Text>
+subtype, you must specify a maximum length in characters/codepoints that
+the subtype's strings are.  The C<Text> type has a default ordering
+algorithm; for 2 distinct C<Text> values, their order is determined as per
+C<Blob> but that characters/codepoints are being compared rather than bits;
+at each character position in the text string, corresponding codepoints are
+ordered according to their codepoint number as per C<Int>; possibly, the
+standard Unicode Collation Algorithm (UCA) also works this way, assuming it
+is totally ordered, but that's unsure.  I<TODO: Support customization
+parameters for default text sorting.>
 
 =head1 SYSTEM-DEFINED CORE NONSCALAR PARAMETERIZED DATA TYPES
 

@@ -39,6 +39,11 @@ operators are defined once for all types in L<Muldis::D::Core>.
 
 I<This documentation is pending.>
 
+I<Maybe TODO:  Add proper subtypes of Text specific to those values in each
+Unicode Normal Form; such would be the output of a folded_to_UFC etc
+function; or maybe not as then maybe we'd want to add ASCII etc subtypes
+too, so all said, too much complexity for too little benefit.>
+
 =head1 SYSTEM-DEFINED TEXT-CONCERNING FUNCTIONS
 
 These functions implement commonly used character string operations.
@@ -60,14 +65,18 @@ count(UInt) }>
 
 This function results in the catenation of C<count> instances of C<topic>.
 
+=item C<function sys.std.Text.length_in_codepoints result UInt params {
+topic(Text) }>
+
+This function results in the length of its argument in codepoints, or in
+other words, in the actual length of the argument since Muldis D explicitly
+works natively at the codepoint abstraction level.
+
 =item C<function sys.std.Text.length_in_graphemes result UInt params {
 topic(Text) }>
 
-This function results in the length of its argument in graphemes.  We are
-assuming here for simplicity that at the grapheme level of abstraction, the
-particular Unicode Normal Form that might be in use behind the scenes has
-no effect on the result.  Muldis D explicitly never works at the Unicode
-codepoint or encoding byte level abstrations of text.
+This function results in the length of its argument in language-independent
+graphemes.
 
 =item C<function sys.std.Text.is_substr result Bool params { look_in(Text),
 look_for(Text), fixed_start(Bool)?, fixed_end(Bool)? }>
@@ -115,6 +124,16 @@ to emulate the semantics of insensitive though possibly preserving systems
 over Muldis D.
 
 =over
+
+=item C<function sys.std.Text.folded_to_NF(C|D) result Text { topic(Text)
+}>
+
+This function results in the normalization of its argument into Unicode
+Normal Form C|D.  I<TODO:  Generalize this to handle the other normal
+forms, such as with an extra enum argument, or add extra functions.  Also
+to do eventually, and definitely with the extra argument version, add
+normalization specific to locales, such as to handle language-specific
+graphemes right.>
 
 =item C<function sys.std.Text.case_folded_to_upper result Text {
 topic(Text) }>
