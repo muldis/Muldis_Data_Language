@@ -6,24 +6,87 @@
     * Muldis::D version 0.51.0 is released on CPAN as
     Muldis-D-0.51.0.tar.gz.
 
-    * New file versions are: D.pm 0.51.0 and Basics.pod 0.30.0 and
-    Types.pod and Text.pod 0.27.0.  The other pre-existing versioned files
-    are unchanged.
+    * This release serves mainly to add a new conceptually lower level
+    abstraction layer to the Muldis D type system such that the (unlimited
+    size) integer is now the only primitive scalar type, and all other
+    types are now explicitly defined just in terms of integers, directly or
+    indirectly.  This release's changes are fully backwards compatible,
+    only adding features; the 2 exceptions being that certain subtleties of
+    character strings have changed, and a bit about reference types.
+
+    * New file versions are: D.pm 0.51.0 and Types_Catalog.pod 0.36.0 and
+    Routines.pod 0.31.0 and PTMD_Tiny.pod 0.32.0 and Basics.pod 0.30.0 and
+    HDMD_Perl_Tiny.pod 0.29.0 and Types.pod and Text.pod 0.27.0.  The other
+    pre-existing versioned files are unchanged.
 
     * (Basics.pod, Types.pod, Text.pod)  Updated the definition of
-    character strings and the 'Text' data type (and indirectly, 'Name' etc)
-    to explicitly say that Muldis D works at the Unicode codepoint
-    abstraction level, not the grapheme abstraction level, so what
-    codepoints comprise a grapheme are significant for value identity. This
-    change was made to make Muldis D simpler to define in isolation and
-    more future-proofed and deterministic etc, and easier to extend such as
-    for locale-specific things, versus the undefined 'highest possible'
-    abstraction level it previously had.  In Text.pod, added new function
-    'length_in_codepoints' to complement the existing
+    character strings and the 'Text' data type (and indirectly, 'Name',
+    'Comment', etc) to explicitly say that Muldis D works at the Unicode
+    codepoint abstraction level, not the grapheme abstraction level, so
+    what codepoints comprise a grapheme are significant for value identity.
+    This change was made to make Muldis D simpler to define in isolation
+    and more future-proofed and deterministic etc, and easier to extend
+    such as for locale-specific things, versus the undefined 'highest
+    possible' abstraction level it previously had.  In Text.pod, added new
+    function 'length_in_codepoints' to complement the existing
     'length_in_graphemes', and changed the exact meaning of the latter;
     also added the 2 new functions 'folded_to_NF(C|D)' (to be generified
     later), which you would use if you want to effectively work at the
     grapheme abstraction level.
+
+    * (Basics.pod, Types.pod, Types_Catalog.pod)  Added new union type
+    'sys.std.Core.Type.Reference' that is disjoint from all the
+    non-'Remnant' types, and updated the 4 'Func|Proc|Type|OrdDetFunc)Ref'
+    types so they are now in this new category and are no longer in the
+    quasi-scalar category (which now has no system-defined non-DVPT types).
+
+    * (Types.pod, Types_Catalog.pod, Routines.pod, PTMD_Tiny.pod)
+    Redefined the Bool core type so that rather than having zero possreps,
+    it now has 2: 'name' (a Name) with values ['false', 'true']; 'int' (an
+    Int) with values [0, 1].  Also updated the plain-text Tiny dialect so
+    that '0' and '1' are now acceptable Bool literals along with 'false'
+    and 'true' (no change was needed in HDMD_Perl_Tiny.pod as it already
+    supported 0|1).  So Bool is now defined structurally and syntax-wise in
+    the same way as Order.
+
+    * (Types.pod, Types_Catalog.pod)  Redefined the QuasiScalarDVPT core
+    type so that rather than having zero possreps, it now has 1, with zero
+    attributes.
+
+    * (Types.pod, Types_Catalog.pod, Routines.pod, PTMD_Tiny.pod,
+    HDMD_Perl_Tiny.pod)  Added new core scalar type
+    'sys.std.Core.Type.String', which has zero possreps; a String is
+    defined as a dense sequence of 0..N (unlimited size) integers,
+    similarly to the primitive string types of many programming languages;
+    unlike Array, String is *not* defined over a Relation and its elements
+    can only be integers.  Updated the 2 Tiny dialects so they gain special
+    literal syntax for String values.
+
+    * (Types.pod, Types_Catalog.pod, Routines.pod)  Added new core subtype
+    'BString' (bit string) of String where each element must be between
+    zero and 1, and redefined the Blob core type so that rather than having
+    zero possreps, it now has 1, and Blob is now simply a wrapper over
+    BString having a different intended interpretation.
+
+    * (Types.pod, Types_Catalog.pod, Routines.pod)  Added new core subtype
+    'UCPString' (Unicode codepoint string) of String where each element
+    must be between zero and 0x10FFFF, and redefined the 3 core types
+    Text|Name|Comment so that rather than having zero possreps, each now
+    has 1, and each of Text|Name|Comment is now simply a wrapper over
+    UCPString having a different intended interpretation.
+
+    * (Basics.pod)  Made some large additions and changes to the TYPE
+    SYSTEM main documentation section of Basics.pod, primarily to declare a
+    new parallel type categorization system, wherein every Muldis D type is
+    just one of these 4 kinds, depending on how the type is defined:
+    primitive type, structure type, enumeration type, reference type.  Also
+    the definition of a root type (and nonroot type) has been restated in
+    terms of these categories, which should be a lot more understandable.
+
+    * (Types.pod, Types_Catalog.pod, ...)  Annotated all the Muldis D data
+    type definitions, either individually or by documentation section, to
+    say which of the above 4 categories each one belongs to.
+    TODO: FINISH THAT
 
 2008-11-08  Darren Duncan <perl@DarrenDuncan.net>
 

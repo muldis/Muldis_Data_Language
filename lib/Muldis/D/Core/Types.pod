@@ -43,6 +43,9 @@ relationships:
             sys.std.Core.Type.Int
                 sys.std.Core.Type.UInt
                     sys.std.Core.Type.PInt
+            sys.std.Core.Type.String
+                sys.std.Core.Type.BString
+                sys.std.Core.Type.UCPString
             sys.std.Core.Type.Blob
             sys.std.Core.Type.Text
 
@@ -80,6 +83,10 @@ relationships:
             sys.std.Core.Type.QuasiArray
             sys.std.Core.Type.QuasiBag
 
+        # The following are all reference types.
+
+        sys.std.Core.Type.Reference
+
         # The following are all remnant types.
 
         sys.std.Core.Type.Remnant
@@ -98,29 +105,32 @@ nature.
 
 =head2 sys.std.Core.Type.Universal
 
-The C<Universal> type is the maximal type of the entire Muldis D type
-system, and contains every value that can possibly exist.  Every other type
-is implicitly a proper subtype of C<Universal>, and C<Universal> is
-implicitly a union type over all other types.  Its default value is
-C<Bool:false>.  The cardinality of this type is infinity.
+This is an enumeration data type.  The C<Universal> type is the maximal
+type of the entire Muldis D type system, and contains every value that can
+possibly exist.  Every other (non-aliased) type is implicitly a proper
+subtype of C<Universal>, and C<Universal> is implicitly a union type over
+all other types.  Its default value is C<Bool:false>.  The cardinality of
+this type is infinity.
 
 =head2 sys.std.Core.Type.Empty
 
-The C<Empty> type is the minimal type of the entire Muldis D type system,
-and is the only type that contains exactly zero values.  Every other type
-is implicitly a proper supertype of C<Empty> and C<Empty> is implicitly an
-intersection type over all other types.  It has no default value.  The
-cardinality of this type is zero.
+This is an enumeration data type.  The C<Empty> type is the minimal type of
+the entire Muldis D type system, and is the only type that contains exactly
+zero values.  Every other (non-aliased) type is implicitly a proper
+supertype of C<Empty> and C<Empty> is implicitly an intersection type over
+all other types.  It has no default value.  The cardinality of this type is
+zero.
 
 =head1 SYSTEM-DEFINED CORE SCALAR DATA TYPES
 
-These core scalar data types are the most fundamental Muldis D types.  Each
-one has zero possreps, and hence has no named components that can be
-referenced.  Plain Text Muldis D provides a specific syntax per type to
-select a value of one of these types, which does not look like a routine
-invocation, but rather like a scalar literal in a typical programming
-language; details of that syntax are not given here, but in
-L<Muldis::D::Dialect::PTMD_Tiny>.  Hosted Data Muldis D as hosted in
+These core scalar data types are the most fundamental Muldis D types.  Some
+of them have zero possreps, and hence have no named components that can be
+referenced; with those that do have possreps, their components are of the
+types in this section that don't.  Plain Text Muldis D provides a specific
+syntax per type to select a value of one of these types, which does not
+look like a routine invocation, but rather like a scalar literal in a
+typical programming language; details of that syntax are not given here,
+but in L<Muldis::D::Dialect::PTMD_Tiny>.  Hosted Data Muldis D as hosted in
 another language will essentially use literals of corresponding host
 language types, whatever they use for eg booleans and integers and
 character strings, but tagged with extra meta-data if the host language is
@@ -130,83 +140,126 @@ types, except for C<Scalar>, are all ordered.
 
 =head2 sys.std.Core.Type.Scalar
 
-The C<Scalar> type is the maximal type of all Muldis D scalar types, and
-contains every scalar value that can possibly exist.  Every other scalar
-type is implicitly a proper subtype of C<Scalar>, and C<Scalar> is
-implicitly a union type over all other scalar types.  Its default value is
-C<Bool:false>.  The cardinality of this type is infinity.
+This is an enumeration data type.  The C<Scalar> type is the maximal type
+of all Muldis D scalar types, and contains every scalar value that can
+possibly exist.  Every other (non-aliased) scalar type is implicitly a
+proper subtype of C<Scalar>, and C<Scalar> is implicitly a union type over
+all other scalar types.  Its default value is C<Bool:false>.  The
+cardinality of this type is infinity.
 
 =head2 sys.std.Core.Type.Bool
 
-A C<Bool> is a scalar enumeration consisting of the 2 values C<Bool:false>
-and C<Bool:true>.  It represents a truth value, and is the result type of
-any C<is_identical> or C<is_not_identical> routine; it is the only
-essential general-purpose scalar data type of a B<D> language.  Its default
-and minimum value is C<Bool:false>; its maximum value is C<Bool:true>.  The
-cardinality of this type is 2.  The C<Bool> type has a default ordering
-algorithm; C<Bool:false> is ordered before C<Bool:true>.
+This is a structure data type.  C<Bool> consists of just the 2 values
+C<false> and C<true>.  A C<Bool> represents a truth value, and is the
+result type of any C<is_identical> or C<is_not_identical> routine; it is
+the only essential general-purpose scalar data type of a generic B<D>
+language, although not the only essential one in B<Muldis D>.  A C<Bool>
+has 2 system-defined possreps, named C<name> and C<int>.  The C<name>
+possrep directly matches the conception of the type as consisting of 2
+character string values; it consists of 1 C<Cat.Name>-typed attribute whose
+name is the empty string.  The C<int> possrep consists of 1 C<Int>-typed
+attribute whose name is the empty string and whose value must be one of
+[C<0>, C<1>]; the 2 values of each possrep correspond in the same order as
+they are documented here.  The default and minimum value of C<Bool> is
+C<false>; its maximum value is C<true>.  The cardinality of this type is 2.
+The C<Bool> type has a default ordering algorithm that corresponds directly
+to that of its C<int> possrep attribute; C<false> is ordered before
+C<true>.  The C<Bool> type has an implementation hint for less intelligent
+Muldis D implementations, that suggests using the C<int> possrep as the
+basis for the physical representation.
 
 =head2 sys.std.Core.Type.Int
 
-An C<Int> is a single exact integral number of any magnitude.  Its default
-value is zero; its minimum and maximum values are conceptually infinities
-and practically impossible.  The cardinality of this type is infinity; to
-define a most-generalized finite C<Int> subtype, you must specify the 2
-integer end-points of the inclusive range that all its values are in.  The
-C<Int> type has a default ordering algorithm; for 2 distinct C<Int> values,
-the value closer to negative infinity is ordered before the value closer to
+This is a primitive data type.  An C<Int> is a single exact integral number
+of any magnitude.  Its default value is zero; its minimum and maximum
+values are conceptually infinities and practically impossible.  C<Int> is
+one of just two scalar root types (the other is C<String>) that does I<not>
+have any possreps.  The cardinality of this type is infinity; to define a
+most-generalized finite C<Int> subtype, you must specify the 2 integer
+end-points of the inclusive range that all its values are in.  The C<Int>
+type has a default ordering algorithm; for 2 distinct C<Int> values, the
+value closer to negative infinity is ordered before the value closer to
 positive infinity.
 
 =head2 sys.std.Core.Type.UInt
 
-A C<UInt> (unsigned / non-negative integer) is a proper subtype of C<Int>
-where all member values are greater than or equal to zero.  Its minimum
-value is zero.
+This is an enumeration data type.  A C<UInt> (unsigned / non-negative
+integer) is a proper subtype of C<Int> where all member values are greater
+than or equal to zero.  Its minimum value is zero.
 
 =head2 sys.std.Core.Type.PInt
 
-A C<PInt> (positive integer) is a proper subtype of C<UInt> where all
-member values are greater than zero.  Its default and minimum value is 1.
+This is an enumeration data type.  A C<PInt> (positive integer) is a proper
+subtype of C<UInt> where all member values are greater than zero.  Its
+default and minimum value is 1.
+
+=head2 sys.std.Core.Type.String
+
+This is a primitive data type.  A C<String> is a string of integers, or
+more specifically it is a dense sequence of 0..N elements (I<not> defined
+over C<Relation>) where each element is an C<Int>.  Its default and minimum
+value is the empty sequence; its maximum value is an infinite-length
+sequence and practically impossible.  C<String> is one of just two scalar
+root types (the other is C<Int>) that does I<not> have any possreps.  The
+cardinality of this type is infinity; to define a most-generalized finite
+C<String> subtype, you must specify a maximum length in elements that the
+subtype's values can have.  The C<String> type has a default ordering
+algorithm; for 2 distinct C<String> values, their order is determined as
+follows:  First eliminate any identical leading elements from both strings
+as those alone would make the strings compare as same (if the remainder of
+both strings was the empty string, then the strings are identical).  Then,
+iff the remainder of just one string is the empty string, then that string
+is ordered before the non-empty one; otherwise, compare the first element
+of each of the string remainders according to the default ordering
+algorithm of C<Int> to get the order of their respective strings.
+
+=head2 sys.std.Core.Type.BString
+
+This is an enumeration data type.  A C<BString> (bit string) is a proper
+subtype of C<String> where all member value elements are between zero and
+1.  One can be used to represent a string of bits.
+
+=head2 sys.std.Core.Type.UCPString
+
+This is an enumeration data type.  A C<UCPString> (Unicode codepoint
+string) is a proper subtype of C<String> where all member value elements
+are between zero and 0x10FFFF.  As of the Unicode standard version 5.1.0,
+all character codepoints exist within that range, and so each element could
+be used to represent any Unicode character and the whole string can be used
+to represent a string of Unicode characters.
 
 =head2 sys.std.Core.Type.Blob
 
-A C<Blob> is an undifferentiated string of bits.  Its default and minimum
-value is the empty string; its maximum value is an infinite-length string
-and practically impossible.  The cardinality of this type is infinity; to
-define a most-generalized finite C<Blob> subtype, you must specify a
-maximum length in bits that the subtype's strings are.  The C<Blob> type
-has a default ordering algorithm; for 2 distinct C<Blob> values, their
-order is determined as follows:  1.  Eliminate any identical leading
-sub-strings from both bit strings as those alone would make the strings
-compare as same (if the remainder of both strings was the empty string,
-then the strings are identical).  2.  Iff the remainder of just one string
-is the empty string, then that string is ordered before the non-empty one.
-3.  Compare the first bit of each of the string remainders; the one with
-the 0-valued first bit is ordered before the one with the 1-valued first
-bit.
+This is a structure data type.  A C<Blob> is an undifferentiated string of
+bits.  A C<Blob> has 1 system-defined possrep named C<bits> which consists
+of 1 C<BString>-typed attribute whose name is the empty string; each
+element of C<bits> is either C<0> to represent an off bit or C<1> to
+represent an on bit.  A C<Blob> is a simple wrapper for a C<BString> and
+all of its other details such as default and minimum and maximum values and
+cardinality and default ordering algorithm all correspond directly.  But
+C<Blob> is explicitly disjoint from C<BString> due to having a different
+intended interpretation.
 
 =head2 sys.std.Core.Type.Text
 
-A C<Text> is a string of characters, where a I<character> specifically is a
-Unicode I<codepoint>.  Its default and minimum value is the empty string;
-its maximum value is an infinite-length string and practically impossible. 
-Note that there is only one system-defined character repertoire for C<Text>
-types, which is the newest Unicode repertoire (5.1.0).  Two C<Text> will
+This is a structure data type.  A C<Text> is a string of characters, where
+a I<character> specifically is a Unicode I<codepoint>.  Two C<Text> will
 only compare as identical if all of their codepoints are identical, and any
 combining character codepoints have the same sequence; if you want to
 effectively work at the abstraction level of a I<language-independent
 grapheme> or I<language-specific grapheme>, you need to ensure that your
-C<Text> values are effectively normalized or folded first.  The cardinality
-of this type is infinity; to define a most-generalized finite C<Text>
-subtype, you must specify a maximum length in characters/codepoints that
-the subtype's strings are.  The C<Text> type has a default ordering
-algorithm; for 2 distinct C<Text> values, their order is determined as per
-C<Blob> but that characters/codepoints are being compared rather than bits;
-at each character position in the text string, corresponding codepoints are
-ordered according to their codepoint number as per C<Int>; possibly, the
-standard Unicode Collation Algorithm (UCA) also works this way, assuming it
-is totally ordered, but that's unsure.  I<TODO: Support customization
-parameters for default text sorting.>
+C<Text> values are effectively normalized or folded first.  A C<Text> has 1
+system-defined possrep named C<codepoints> which consists of 1
+C<UCPString>-typed attribute whose name is the empty string; each element
+of C<codepoints> represents a Unicode standard version 5.1.0 character
+codepoint number.  A C<Text> is a simple wrapper for a C<UCPString> and all
+of its other details such as default and minimum and maximum values and
+cardinality and default ordering algorithm (sorting is numeric by codepoint
+number) all correspond directly.  But C<Text> is explicitly disjoint from
+C<UCPString> due to having a different intended interpretation.  In regards
+to ordering, possibly the standard Unicode Collation Algorithm (UCA) also
+works this way, assuming it is totally ordered, but that's unsure.  I<TODO:
+Support customization parameters for default text sorting.>
 
 =head1 SYSTEM-DEFINED CORE NONSCALAR PARAMETERIZED DATA TYPES
 
@@ -234,125 +287,131 @@ C<D0> types are actually complete types, despite being listed here.
 
 =head2 sys.std.Core.Type.Tuple
 
-The C<Tuple> type is the maximal type of all Muldis D tuple (nonscalar)
-types, and contains every tuple value that could possibly exist.  A
-C<Tuple> is an unordered heterogeneous collection of 0..N named attributes
-(the count of attributes being its I<degree>), where all attribute names
-are mutually distinct, and each attribute may be of distinct types; the
-mapping of a tuple's attribute names and their declared data types is
-called the tuple's I<heading>.  Its default value is the sole value of the
-sole tuple data type that has zero attributes.  The cardinality of a
-I<complete> C<Tuple> type (if it has no type constraints other than those
-of its constituent attribute types) is equal to the product of the N-ary
-multiplication where there is an input to that multiplication for each
-attribute of the tuple and the value of the input is the cardinality of the
-declared type of the attribute; for a C<Tuple> subtype to be finite, all of
-its attribute types must be.
+This is a primitive data type.  The C<Tuple> type is the maximal type of
+all Muldis D tuple (nonscalar) types, and contains every tuple value that
+could possibly exist.  A C<Tuple> is an unordered heterogeneous collection
+of 0..N named attributes (the count of attributes being its I<degree>),
+where all attribute names are mutually distinct, and each attribute may be
+of distinct types; the mapping of a tuple's attribute names and their
+declared data types is called the tuple's I<heading>.  Its default value is
+the sole value of the sole tuple data type that has zero attributes.  The
+cardinality of a I<complete> C<Tuple> type (if it has no type constraints
+other than those of its constituent attribute types) is equal to the
+product of the N-ary multiplication where there is an input to that
+multiplication for each attribute of the tuple and the value of the input
+is the cardinality of the declared type of the attribute; for a C<Tuple>
+subtype to be finite, all of its attribute types must be.
 
 =head2 sys.std.Core.Type.TupleD0
 
-A C<TupleD0> is a proper subtype of C<Tuple> that has zero attributes; its
-cardinality is 1, and its only value is also the default value of C<Tuple>.
+This is an enumeration data type.  A C<TupleD0> is a proper subtype of
+C<Tuple> that has zero attributes; its cardinality is 1, and its only value
+is also the default value of C<Tuple>.
 
 =head2 sys.std.Core.Type.Database
 
-A C<Database> is a proper subtype of C<Tuple> where all of its attributes
-are each of relation types or of database types (the leaves of this
-recursion are all relation types); it is otherwise the same.  The 4
-system-defined user-data variables named C<(fed|dep|sdp|pkg).data> are all
-of "just" the C<Database> type, or are of its proper subtypes.  It is also
-trivially a proper supertype of C<TupleD0>.
+This is an enumeration data type.  A C<Database> is a proper subtype of
+C<Tuple> where all of its attributes are each of relation types or of
+database types (the leaves of this recursion are all relation types); it is
+otherwise the same.  The 4 system-defined user-data variables named
+C<(fed|dep|sdp|pkg).data> are all of "just" the C<Database> type, or are of
+its proper subtypes.  It is also trivially a proper supertype of
+C<TupleD0>.
 
 =head2 sys.std.Core.Type.Relation
 
-The C<Relation> type is the maximal type of all Muldis D relation
-(nonscalar) types, and contains every relation value that could possibly
-exist.  A C<Relation> is analogous to a set of 0..N tuples where all tuples
-have the same heading (the degrees match and all attribute names and
-corresponding declared data types match), but that a C<Relation> data type
-still has its own corresponding heading (attribute names and declared data
-types) even when it consists of zero tuples.  Its default value is the
-zero-tuple value of the sole relation data type that has zero attributes.
-The cardinality of a I<complete> C<Relation> type (if it has no type
-constraints other than those of its constituent attribute types) is equal
-to 2 raised to the power of the cardinality of the I<complete> C<Tuple>
-type with the same heading.  A relation data type can also have (unique)
-keys each defined over a subset of its attributes, which constrain its set
-of values relative to there being no explicit keys, but having the keys
-won't turn an infinite relation type into a finite one.
+This is a primitive data type.  The C<Relation> type is the maximal type of
+all Muldis D relation (nonscalar) types, and contains every relation value
+that could possibly exist.  A C<Relation> is analogous to a set of 0..N
+tuples where all tuples have the same heading (the degrees match and all
+attribute names and corresponding declared data types match), but that a
+C<Relation> data type still has its own corresponding heading (attribute
+names and declared data types) even when it consists of zero tuples.  Its
+default value is the zero-tuple value of the sole relation data type that
+has zero attributes.  The cardinality of a I<complete> C<Relation> type (if
+it has no type constraints other than those of its constituent attribute
+types) is equal to 2 raised to the power of the cardinality of the
+I<complete> C<Tuple> type with the same heading.  A relation data type can
+also have (unique) keys each defined over a subset of its attributes, which
+constrain its set of values relative to there being no explicit keys, but
+having the keys won't turn an infinite relation type into a finite one.
 
 =head2 sys.std.Core.Type.RelationD0
 
-A C<RelationD0> is a proper subtype of C<Relation> that has 0 attributes;
-its cardinality is 2, and its default value is the same as that of
-C<Relation>.
+This is an enumeration data type.  A C<RelationD0> is a proper subtype of
+C<Relation> that has 0 attributes; its cardinality is 2, and its default
+value is the same as that of C<Relation>.
 
 =head2 sys.std.Core.Type.Set
 
-A C<Set> is a proper subtype of C<Relation> that has 1 attribute, and its
-name is C<value>; it can be of any declared type.  A C<Set> subtype is
-normally used by any system-defined N-ary operators where the order of
-their argument elements or result is not significant, and that duplicate
-values are not significant.  Its default value has zero tuples.  Note that,
-for any given I<complete> C<Set> subtype, C<Foo>, where its C<value>
-attribute has a declared type of C<Bar>, the type C<Foo> can be considered
-the I<power set> of the type C<Bar>.
+This is an enumeration data type.  A C<Set> is a proper subtype of
+C<Relation> that has 1 attribute, and its name is C<value>; it can be of
+any declared type.  A C<Set> subtype is normally used by any system-defined
+N-ary operators where the order of their argument elements or result is not
+significant, and that duplicate values are not significant.  Its default
+value has zero tuples.  Note that, for any given I<complete> C<Set>
+subtype, C<Foo>, where its C<value> attribute has a declared type of
+C<Bar>, the type C<Foo> can be considered the I<power set> of the type
+C<Bar>.
 
 =head2 sys.std.Core.Type.Maybe
 
-A C<Maybe> is a proper subtype of C<Set> that may have at most one element;
-that is, it is a unary C<Relation> with a nullary key.  Operators that work
-specifically with C<Maybe> subtypes can provide a syntactic shorthand for
-working with sparse data; so Muldis D has something which is conceptually
-close to SQL's nullable types without actually having 3-valued logic; it
-would probably be convenient for code that round-trips SQL by way of Muldis
-D to use the C<Maybe> type.  Its default value has zero tuples.
+This is an enumeration data type.  A C<Maybe> is a proper subtype of C<Set>
+that may have at most one element; that is, it is a unary C<Relation> with
+a nullary key.  Operators that work specifically with C<Maybe> subtypes can
+provide a syntactic shorthand for working with sparse data; so Muldis D has
+something which is conceptually close to SQL's nullable types without
+actually having 3-valued logic; it would probably be convenient for code
+that round-trips SQL by way of Muldis D to use the C<Maybe> type.  Its
+default value has zero tuples.
 
 =head2 sys.std.Core.Type.Nothing
 
-A C<Nothing> is a proper subtype of C<Maybe> that has exactly zero
-elements; its cardinality is 1 and its only value is its default.  The
-single C<Nothing> value, which is a relation with zero tuples and a single
-attribute named C<value>, is Muldis D's answer to the SQL NULL and is
-intended to be used for the same purposes; that is, a special marker for
-missing or inapplicable information, that does not typically equal any
-normal/scalar value; however, in Muldis D, C<Nothing> I<is a value>, and it
-I<is> equal to itself.
+This is an enumeration data type.  A C<Nothing> is a proper subtype of
+C<Maybe> that has exactly zero elements; its cardinality is 1 and its only
+value is its default.  The single C<Nothing> value, which is a relation
+with zero tuples and a single attribute named C<value>, is Muldis D's
+answer to the SQL NULL and is intended to be used for the same purposes;
+that is, a special marker for missing or inapplicable information, that
+does not typically equal any normal/scalar value; however, in Muldis D,
+C<Nothing> I<is a value>, and it I<is> equal to itself.
 
 =head2 sys.std.Core.Type.Single
 
-A C<Single> is a proper subtype of C<Maybe> that has exactly 1 element.
-Its default value's only tuple's only attribute has the value
-C<Bool:false>.  The C<Single> type is complementary to the C<Nothing> type
-under C<Maybe>; C<Nothing> consists of exactly 1 of C<Maybe>'s values, and
-C<Single> consists of all of C<Maybe>'s other values.  Subtypes of
-C<Single> are also used to implement data-carrying database objects that
-are conceptually scalars rather than relations; for example, the current
-state of a sequence generator might typically be one.
+This is an enumeration data type.  A C<Single> is a proper subtype of
+C<Maybe> that has exactly 1 element.  Its default value's only tuple's only
+attribute has the value C<Bool:false>.  The C<Single> type is complementary
+to the C<Nothing> type under C<Maybe>; C<Nothing> consists of exactly 1 of
+C<Maybe>'s values, and C<Single> consists of all of C<Maybe>'s other
+values.  Subtypes of C<Single> are also used to implement data-carrying
+database objects that are conceptually scalars rather than relations; for
+example, the current state of a sequence generator might typically be one.
 
 =head2 sys.std.Core.Type.Array
 
-An C<Array> is a proper subtype of C<Relation> that has 2 attributes, and
-their names are C<index> and C<value>, where C<index> is a unary primary
-key and its declared type is a C<UInt> subtype (C<value> can be non-unique
-and of any declared type).  An C<Array> is considered dense, and all
-C<index> values in one are numbered consecutively from 0 to 1 less than the
-count of tuples, like array indices in typical programming languages.  An
-C<Array> subtype is normally used by any system-defined N-ary operators
-where the order of their argument elements or result is significant (and
-duplicate values are significant); specifically, C<index> defines an
-explicit ordering for C<value>.  Its default value has zero tuples.
+This is an enumeration data type.  An C<Array> is a proper subtype of
+C<Relation> that has 2 attributes, and their names are C<index> and
+C<value>, where C<index> is a unary primary key and its declared type is a
+C<UInt> subtype (C<value> can be non-unique and of any declared type).  An
+C<Array> is considered dense, and all C<index> values in one are numbered
+consecutively from 0 to 1 less than the count of tuples, like array indices
+in typical programming languages.  An C<Array> subtype is normally used by
+any system-defined N-ary operators where the order of their argument
+elements or result is significant (and duplicate values are significant);
+specifically, C<index> defines an explicit ordering for C<value>.  Its
+default value has zero tuples.
 
 =head2 sys.std.Core.Type.Bag
 
-A C<Bag> (or I<multiset>) is a proper subtype of C<Relation> that has 2
-attributes, and their names are C<value> and C<count>, where C<value> is a
-unary primary key (that can have any declared type) and C<count> is a
-C<PInt> subtype.  A C<Bag> subtype is normally used by any system-defined
-N-ary operators where the order of their argument elements or result is not
-significant, but that duplicate values are significant; specifically,
-C<count> defines an explicit count of occurrences for C<value>, also known
-as that value's I<multiplicity>.  Its default value has zero tuples.
+This is an enumeration data type.  A C<Bag> (or I<multiset>) is a proper
+subtype of C<Relation> that has 2 attributes, and their names are C<value>
+and C<count>, where C<value> is a unary primary key (that can have any
+declared type) and C<count> is a C<PInt> subtype.  A C<Bag> subtype is
+normally used by any system-defined N-ary operators where the order of
+their argument elements or result is not significant, but that duplicate
+values are significant; specifically, C<count> defines an explicit count of
+occurrences for C<value>, also known as that value's I<multiplicity>.  Its
+default value has zero tuples.
 
 =head1 SYSTEM-DEFINED CORE QUASI-SCALAR DATA TYPES
 
@@ -364,17 +423,20 @@ may come to exist.
 
 =item C<sys.std.Core.Type.QuasiScalar>
 
-The C<QuasiScalar> type is the maximal type of all Muldis D quasi-scalar
-types, and contains every quasi-scalar value that can possibly exist.  Its
-default value is C<QuasiScalarDVPT:default>.  The cardinality of this type
-is infinity.
+This is an enumeration data type.  The C<QuasiScalar> type is the maximal
+type of all Muldis D quasi-scalar types, and contains every quasi-scalar
+value that can possibly exist.  Its default value is
+C<QuasiScalarDVPT:default>.  The cardinality of this type is infinity.
 
 =item C<sys.std.Core.Type.QuasiScalarDVPT>
 
-A C<QuasiScalarDVPT> is an enumeration consisting of the 1 value
+This is a structure data type.  C<QuasiScalarDVPT> (quasi-scalar default
+value providing type) consists of just the 1 value
 C<QuasiScalarDVPT:default>, which is also its default value.  The only
-reason it exists is to provide a default value for the QuasiScalar union
-type.  The cardinality of this type is 1.
+reason it exists is to provide a default value for the QuasiScalar
+enumeration type.  A C<QuasiScalarDVPT> has 1 system-defined possrep whose
+name is the empty string which consists of zero attributes.  The
+cardinality of this type is 1.
 
 =back
 
@@ -390,61 +452,79 @@ the other nonscalar incomplete types have counterparts here.
 
 =head2 sys.std.Core.Type.QuasiTuple
 
-A C<QuasiTuple> is like a C<Tuple> but that the declared types of its
-attributes can be anything at all.  Its cardinality is infinite.
+This is a primitive data type.  A C<QuasiTuple> is like a C<Tuple> but that
+the declared types of its attributes can be anything at all.  Its
+cardinality is infinite.
 
 =head2 sys.std.Core.Type.QuasiTupleD0
 
-A C<QuasiTupleD0> is a proper subtype of C<QuasiTuple> in the
-corresponding manner to C<TupleD0> being a proper subtype of C<Tuple>.
-Its cardinality is 1.
+This is an enumeration data type.  A C<QuasiTupleD0> is a proper subtype of
+C<QuasiTuple> in the corresponding manner to C<TupleD0> being a proper
+subtype of C<Tuple>.  Its cardinality is 1.
 
 =head2 sys.std.Core.Type.QuasiRelation
 
-A C<QuasiRelation> is like a C<Relation> but that the declared types of its
-attributes can be anything at all.  Its cardinality is infinite.
+This is a primitive data type.  A C<QuasiRelation> is like a C<Relation>
+but that the declared types of its attributes can be anything at all.  Its
+cardinality is infinite.
 
 =head2 sys.std.Core.Type.QuasiRelationD0
 
-A C<QuasiRelationD0> is a proper subtype of C<QuasiRelation> in the
-corresponding manner to C<RelationD0> being a proper subtype of
-C<Relation>.  Its cardinality is 2.
+This is an enumeration data type.  A C<QuasiRelationD0> is a proper subtype
+of C<QuasiRelation> in the corresponding manner to C<RelationD0> being a
+proper subtype of C<Relation>.  Its cardinality is 2.
 
 =head2 sys.std.Core.Type.QuasiSet
 
-A C<QuasiSet> is a proper subtype of C<QuasiRelation> in the corresponding
-manner to C<Set> being a proper subtype of C<Relation>.  Its cardinality is
-infinite.
+This is an enumeration data type.  A C<QuasiSet> is a proper subtype of
+C<QuasiRelation> in the corresponding manner to C<Set> being a proper
+subtype of C<Relation>.  Its cardinality is infinite.
 
 =head2 sys.std.Core.Type.QuasiMaybe
 
-A C<QuasiMaybe> is a proper subtype of C<QuasiSet> in the corresponding
-manner to C<Maybe> being a proper subtype of C<Set>.  Its cardinality is
-infinite.
+This is an enumeration data type.  A C<QuasiMaybe> is a proper subtype of
+C<QuasiSet> in the corresponding manner to C<Maybe> being a proper subtype
+of C<Set>.  Its cardinality is infinite.
 
 =head2 sys.std.Core.Type.QuasiNothing
 
-A C<QuasiNothing> is a proper subtype of C<QuasiMaybe> in the corresponding
-manner to C<Nothing> being a proper subtype of C<Maybe>.  Its cardinality
-is 1.
+This is an enumeration data type.  A C<QuasiNothing> is a proper subtype of
+C<QuasiMaybe> in the corresponding manner to C<Nothing> being a proper
+subtype of C<Maybe>.  Its cardinality is 1.
 
 =head2 sys.std.Core.Type.QuasiSingle
 
-A C<QuasiSingle> is a proper subtype of C<QuasiMaybe> in the corresponding
-manner to C<Single> being a proper subtype of C<Maybe>.  Its cardinality is
-infinite.
+This is an enumeration data type.  A C<QuasiSingle> is a proper subtype of
+C<QuasiMaybe> in the corresponding manner to C<Single> being a proper
+subtype of C<Maybe>.  Its cardinality is infinite.
 
 =head2 sys.std.Core.Type.QuasiArray
 
-A C<QuasiArray> is a proper subtype of C<QuasiRelation> in the
-corresponding manner to C<Array> being a proper subtype of C<Relation>.
-Its cardinality is infinite.
+This is an enumeration data type.  A C<QuasiArray> is a proper subtype of
+C<QuasiRelation> in the corresponding manner to C<Array> being a proper
+subtype of C<Relation>.  Its cardinality is infinite.
 
 =head2 sys.std.Core.Type.QuasiBag
 
-A C<QuasiBag> is a proper subtype of C<QuasiRelation> in the corresponding
-manner to C<Bag> being a proper subtype of C<Relation>.  Its cardinality is
-infinite.
+This is an enumeration data type.  A C<QuasiBag> is a proper subtype of
+C<QuasiRelation> in the corresponding manner to C<Bag> being a proper
+subtype of C<Relation>.  Its cardinality is infinite.
+
+=head1 SYSTEM-DEFINED REFERENCE TYPES
+
+This core data type is just for grouping all the system-defined root
+reference data types.
+
+=over
+
+=item sys.std.Core.Type.Reference
+
+This is an enumeration data type.  The C<Reference> type is the maximal
+type of all Muldis D reference types (which are all system-defined).  Its
+default value is a reference to the C<sys.std.Core.Type.Bool> data type by
+way of its C<Cat.TypeRef> subtype.  The cardinality of this type is 4.
+
+=back
 
 =head1 SYSTEM-DEFINED REMNANT TYPES
 
@@ -455,16 +535,17 @@ categories or namespaces.
 
 =head2 sys.std.Core.Type.Remnant
 
-The C<Remnant> type is a partially redundant maximal type of all Muldis D
-remnant types.  Its default value is C<Bool:false> by way of its
-C<ScaTupRel> subtype.  The cardinality of this type is infinity.
+This is an enumeration data type.  The C<Remnant> type is a partially
+redundant maximal type of all Muldis D remnant types.  Its default value is
+C<Bool:false> by way of its C<ScaTupRel> subtype.  The cardinality of this
+type is infinity.
 
 =head2 sys.std.Core.Type.ScaTupRel
 
-The C<ScaTupRel> type is a union type over C<Scalar>, C<Tuple> and
-C<Relation>; it is mainly useful in describing the possible range of types
-of attributes of scalar possreps or tuples or relations.  Its default value
-is C<Bool:false>.
+This is an enumeration data type.  The C<ScaTupRel> type is a union type
+over C<Scalar>, C<Tuple> and C<Relation>; it is mainly useful in describing
+the possible range of types of attributes of scalar possreps or tuples or
+relations.  Its default value is C<Bool:false>.
 
 =head1 SEE ALSO
 

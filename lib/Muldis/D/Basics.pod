@@ -511,12 +511,15 @@ object-oriented language, but that the former is conceptually "selecting"
 an eternally existing value rather than conceptually "creating" a new one.
 
 In the Muldis D type system, a I<data type> is a set of values, and as with
-individual values, a data type is eternal and immutable.  Every data type
-is distinct from all other data types, and no 2 data types may encompass
-exactly the same set of values.  Every data type other than C<Universal>
-and C<Empty> has at least 1 member value, and at most 1 less value than the
-universal set.  If 2 data types have no values in common, they are said to
-be I<disjoint>.
+individual values, a data type is eternal and immutable.  Each data type
+can also have type-specific meta-data where what meta-data is possible
+depends on how the type is defined; an example of meta-data is a default
+value ordering algorithm.  Ignoring for a moment the existence of type
+aliases, every data type is distinct from all other data types in that no 2
+data types encompass exactly the same set of values.  Still ignoring type
+aliases, every data type other than C<Universal> and C<Empty> has at least
+1 member value, and at most 1 less value than the universal set.  If 2 data
+types have no values in common, they are said to be I<disjoint>.
 
 Given 2 arbitrary data types, I<T1> and I<T2>, I<T1> is called a
 I<supertype> of I<T2> if its value set is a superset of that of I<T2>, and
@@ -591,19 +594,55 @@ odd number of its immediate subtypes.  A I<negation type> is a type that
 consists of only the values that aren't members of a single other type; it
 is like a difference type where the common supertype is C<Universal>.
 
-A I<root type> is a data type for which all of its values can be selected
-by the same single selector, and which has no proper supertype that is a
-root type.  All root types are mutually disjoint, so every value is a
-member of exactly one root type.  Generally speaking, root types are the
+Every data type is one of these 4 kinds, depending on how the type is
+defined: I<primitive type>, I<structure type>, I<enumeration type>,
+I<reference type>.  A data type that is a primitive or structure or
+reference type is also called a I<root type>; a data type that is an
+enumeration is also called a I<nonroot type>.  A root type definition will
+just introduce new values into the type system while a nonroot type will
+just reuse values that the type system already has or will have.  Every
+root type is disjoint from every other root type, and every value in the
+type system belongs to exactly one root type; each value conceptually has
+meta-data naming the root type that it is a member of.  One quality of a
+root type is that a single selector exists which can select all of the
+values of that type.  Generally speaking, root types are the
 implementational foundation over which all operators and all other types
 are built, and the declared parameter and result types of most
-system-defined operators are root types.  The 6 most important
-system-defined root types are: C<Bool>, C<Int>, C<Blob>, C<Text>, C<Tuple>,
-C<Relation>.  All user-defined root types are scalar types that are defined
-not in terms of other types except for that any components of their
-I<possreps> (possible representations) have declared types.  I<Perhaps it
-should be said that all root types are defined by this last sentence?>  A
-I<leaf type> is a data type that has no proper subtypes save for C<Empty>.
+system-defined operators are root types.  A I<leaf type> is a data type
+that has no proper subtypes save for C<Empty>.
+
+A primitive type is not, in most cases, conceptually defined in terms of
+any other data type in the system.  A primitive type can only be
+system-defined, not user-defined.  There are just 6 of these: C<Int>,
+C<String>, C<Tuple>, C<Relation>, C<QuasiTuple>, C<QuasiRelation>.  I<TODO:
+Further correct this description.>
+
+A structure type is conceptually defined in terms of a collection of N
+elements of one or more other types along with an optional constraint that
+restricts the values of the structure data type to be a subset of the
+permutations of possible element values.  The system-defined structure
+types include: C<Bool>, C<Blob>, C<Text>, C<Name>, C<Order>, C<Rat>,
+C<Duration>.  All user-defined structure types are scalar or quasi-scalar
+types.  I<TODO: Further correct this description.>
+
+An enumeration type is defined in terms of a union or subset of the values
+of one or more other data types.  The system-defined types defined in terms
+of a subset include: C<UInt>, C<BString>, C<Database>, C<Set>, C<Array>,
+C<QuasiMaybe>, C<QuasiBag>, C<UTCDateTime>.  The system-defined types
+defined in terms of a union include: C<Universal>, C<Empty>, C<Scalar>,
+C<QuasiScalar>, C<Reference>, C<Remnant>, C<ScaTupRel>.  In the case of a
+scalar subset enumeration type, typically it will define extra scalar
+possreps or selectors.  All user-defined nonscalar or quasi-nonscalar types
+are enumeration types.
+
+A reference type is a special only-system-defined opaque type that is used
+at runtime to implement certain Muldis D features, such as closures, that
+effectively require pointers to implementation entities in memory; a value
+of a reference type can not be stored in a database and it only is ever
+stored in routine lexical variables or arguments.  There are just a few of
+these, which include: C<FuncRef>, C<ProcRef>, C<TypeRef>.  I<Note: It is
+possible that a future Muldis D design change may do away with the need for
+such reference values.>
 
 A I<complete type> is a data type that is fully defined, and for which it
 would be possible to have values that are of just that data type, if it
@@ -614,36 +653,38 @@ just of a parameterized type.  The most important complete types are
 C<Bool>, C<Int>, C<Blob>, C<Text>; the most important incomplete types are
 C<Tuple>, C<Relation>.  For that matter, any implicit supertypes such as
 C<Universal> and C<Scalar> could be considered incomplete types, but that
-they are not parameterized.
+they are not parameterized.  I<TODO: Further correct this description.>
 
 =head2 Type Identification
 
-All values in the Muldis D type system are broadly categorized into 6
-complementary sets called I<scalar values>, I<tuple values>, I<relation
-values>, I<quasi-scalar values>, I<quasi-tuple values>, and
-I<quasi-relation values>; tuple and relation values are collectively known
-as I<nonscalar values>; quasi-tuple and quasi-relation values are
+All non-reference values in the Muldis D type system are broadly
+categorized into 6 complementary sets called I<scalar values>, I<tuple
+values>, I<relation values>, I<quasi-scalar values>, I<quasi-tuple values>,
+and I<quasi-relation values>; tuple and relation values are collectively
+known as I<nonscalar values>; quasi-tuple and quasi-relation values are
 collectively known as I<quasi-nonscalar values>.  The type system has the
 system-defined data types named C<Scalar>, C<Tuple>, C<Relation>,
 C<QuasiScalar>, C<QuasiTuple>, and C<QuasiRelation>, which serve as maximal
-data types for each category, respectively.  The 6 types are all mutually
-disjoint, and C<Universal> is a union type over all of them.
+data types for each category, respectively.  There is also a system-defined
+enumeration type named C<Reference> which is a union over all reference
+types.  The 7 types are all mutually disjoint, and C<Universal> is a union
+type over all of them.
 
-Most data types each consist exclusively of values from exactly one of the
-above 6 categories, and each such type does not include values from several
-of them.  Therefore, every such data type is said to be either a I<scalar
-type>, a I<tuple type>, a I<relation type>, a I<quasi-scalar> type, a
-I<quasi-tuple type>, or a I<quasi-relation type>, depending which category
-all of its values come from.  In similar fashion, a I<nonscalar type> is
-generally any type that is not a scalar type, if we ignored quasi- types,
-meaning it is either a tuple type or a relation type.
+Most non-reference data types each consist exclusively of values from
+exactly one of the above first 6 categories, and each such type does not
+include values from several of them.  Therefore, every such data type is
+said to be either a I<scalar type>, a I<tuple type>, a I<relation type>, a
+I<quasi-scalar> type, a I<quasi-tuple type>, or a I<quasi-relation type>,
+depending which category all of its values come from.  In similar fashion,
+a I<nonscalar type> is generally any type that is not a scalar type, if we
+ignored quasi- types, meaning it is either a tuple type or a relation type.
 
 A I<remnant type> is any type having at least 2 values, where at least 2 of
 the values are not allowed to be in a same single type of one of the other
-6 categories, according to their type definition rules.  The remnant
+7 categories, according to their type definition rules.  The remnant
 category is the complement category to all the others in that every
 possible proper subset of the values of C<Universal> can now be represented
-by a type that fits in one of the 7 categories, save C<Empty> itself.  The
+by a type that fits in one of the 8 categories, save C<Empty> itself.  The
 type system has the system-defined data type named C<Remnant> which serves
 as a partially redundant maximal data type for remnant types.
 
