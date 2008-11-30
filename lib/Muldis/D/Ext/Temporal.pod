@@ -115,7 +115,7 @@ and aren't re-described here):
 
             sys.std.Core.Type.Int
 
-                sys.std.Core.Type.UInt
+                sys.std.Core.Type.NNInt
 
                     sys.std.Core.Type.PInt
 
@@ -123,16 +123,16 @@ and aren't re-described here):
 
                         sys.std.Temporal.Type.PInt(12|31)
 
-                    # These are all finite unsigned integer types.
+                    # These are all finite non-negative integer types.
 
-                    sys.std.Temporal.Type.UInt(23|59)
+                    sys.std.Temporal.Type.NNInt(23|59)
 
             sys.std.Rational.Type.Rat
-                sys.std.Rational.Type.URat
+                sys.std.Rational.Type.NNRat
 
-                    # These are all infinite unsigned rational types.
+                    # These are all infinite non-negative rational types.
 
-                    sys.std.Temporal.Type.URatLT62
+                    sys.std.Temporal.Type.NNRatLT62
 
 I<This documentation is pending.>
 
@@ -148,25 +148,25 @@ and minimum value is 1; its maximum value is 12|31.  The significance is
 that in proleptic Gregorian dates, the (month|month-day) portion is a
 positive integer not greater than 12|31.
 
-=head2 sys.std.Temporal.Type.UInt(23|59)
+=head2 sys.std.Temporal.Type.NNInt(23|59)
 
-This is an enumeration data type.  A C<UInt(23|59)> is a proper subtype of
-C<UInt> where all member values are not greater than 23|59.  Its default
+This is an enumeration data type.  A C<NNInt(23|59)> is a proper subtype of
+C<NNInt> where all member values are not greater than 23|59.  Its default
 and minimum value is 0; its maximum value is 23|59.  The significance is
 that in the time portion of proleptic Gregorian dates, the (hour|minute)
-portion is an unsigned integer not greater than 23|59.
+portion is a non-negative integer not greater than 23|59.
 
-=head2 sys.std.Temporal.Type.URatLT62
+=head2 sys.std.Temporal.Type.NNRatLT62
 
-This is an enumeration data type.  A C<URatLT62> is a proper subtype of
-C<URat> where all member values are less than 62.  Its default and minimum
+This is an enumeration data type.  A C<NNRatLT62> is a proper subtype of
+C<NNRat> where all member values are less than 62.  Its default and minimum
 value is 0; its maximum value is conceptually infinitessimally less than 62
 and practically impossible.  The significance is that in the time portion
-of proleptic Gregorian dates, the 'second' portion is an unsigned rational
-less than 62.  The cardinality of this type is infinity; to define a
-most-generalized finite C<URatLT62> subtype, you must specify the greatest
-magnitude value denominator of its C<ratio> possrep, that is, its maximum
-precision (that denominator is 10^9 if we're working to nanosecond
+of proleptic Gregorian dates, the 'second' portion is a non-negative
+rational less than 62.  The cardinality of this type is infinity; to define
+a most-generalized finite C<NNRatLT62> subtype, you must specify the
+greatest magnitude value denominator of its C<ratio> possrep, that is, its
+maximum precision (that denominator is 10^9 if we're working to nanosecond
 precision).
 
 =head2 sys.std.Temporal.Type.UTCInstant
@@ -190,8 +190,8 @@ applicable) from your local time.
 A C<UTCInstant> has 1 system-defined possrep whose name is C<instant>,
 which has 6 attributes: C<year> (a C<maybe_of.Int>), C<month> (a
 C<maybe_of.PInt12>), C<day> (a C<maybe_of.PInt31>), C<hour> (a
-C<maybe_of.UInt23>), C<minute> (a C<maybe_of.UInt59>), C<second> (a
-C<maybe_of.URatLT62>).  For each attribute, that attribute should be a
+C<maybe_of.NNInt23>), C<minute> (a C<maybe_of.NNInt59>), C<second> (a
+C<maybe_of.NNRatLT62>).  For each attribute, that attribute should be a
 C<Single> if a quanity in that unit is known, and it should be C<Nothing>
 if there is no applicable or known quantity in that unit.  The C<year>
 values greater than zero are CE, those less than zero are BCE.  The
@@ -232,9 +232,9 @@ A C<UTCDateTime> is a proper subtype of C<UTCInstant> where all 6
 attributes of its C<instant> possrep have C<Single> / known values.  A
 C<UTCDateTime> adds 1 system-defined possrep whose name is C<datetime>,
 which has 6 attributes: C<year> (a C<Int>), C<month> (a C<PInt12>), C<day>
-(a C<PInt31>), C<hour> (a C<UInt23>), C<minute> (a C<UInt59>), C<second> (a
-C<URatLT62>).  The default and minimum and maximum values are the same as
-for C<UTCInstant>.
+(a C<PInt31>), C<hour> (a C<NNInt23>), C<minute> (a C<NNInt59>), C<second>
+(a C<NNRatLT62>).  The default and minimum and maximum values are the same
+as for C<UTCInstant>.
 
 =head2 sys.std.Temporal.Type.UTCDate
 
@@ -262,14 +262,15 @@ attributes of its C<instant> possrep named [C<hour>, C<minute>, C<second>]
 have C<Single> / known values, and the other 3 C<instant> possrep
 attributes each have the C<Nothing> / unknown value.  A C<UTCTime> adds 1
 system-defined possrep whose name is C<time>, which has 3 attributes:
-C<hour> (a C<UInt23>), C<minute> (a C<UInt59>), C<second> (a C<URatLT62>).
-The default and minimum value of C<UTCTime> is exactly midnight at the
-start of its day (all of its C<time> possrep attributes are zero-valued);
-its maximum value is conceptually infinitessimally less than the midnight
-at the end of its day and practically impossible.  The cardinality of this
-type is infinity; to define a most-generalized finite C<UTCTime> subtype,
-you must specify the granularity of the type as a fraction of a second
-(minimally, the largest value denominator for C<second>).
+C<hour> (a C<NNInt23>), C<minute> (a C<NNInt59>), C<second> (a
+C<NNRatLT62>).  The default and minimum value of C<UTCTime> is exactly
+midnight at the start of its day (all of its C<time> possrep attributes are
+zero-valued); its maximum value is conceptually infinitessimally less than
+the midnight at the end of its day and practically impossible.  The
+cardinality of this type is infinity; to define a most-generalized finite
+C<UTCTime> subtype, you must specify the granularity of the type as a
+fraction of a second (minimally, the largest value denominator for
+C<second>).
 
 =head2 sys.std.Temporal.Type.FloatInstant
 

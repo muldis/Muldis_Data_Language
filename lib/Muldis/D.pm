@@ -231,11 +231,11 @@ number, which identifies the base language spec version between all those
 by the same authority, typically indicating the relative ages of the
 versions, the relative sizes of their deltas, and perhaps which development
 branches the versions are on.  The base version number is a sequence of
-unsigned integers that consists of at least 1 element, and either 3 or 4
-elements is recommended (the official base version number has 3 elements);
-elements are ordered from most significant to least (eg, [major, minor,
-bug-fix]).  At the present time, the official spec version number to use is
-shown in the VERSION and DESCRIPTION pod of the current file, when
+non-negative integers that consists of at least 1 element, and either 3 or
+4 elements is recommended (the official base version number has 3
+elements); elements are ordered from most significant to least (eg, [major,
+minor, bug-fix]).  At the present time, the official spec version number to
+use is shown in the VERSION and DESCRIPTION pod of the current file, when
 corresponding to the spec containing that file.
 
 =head2 Dialect
