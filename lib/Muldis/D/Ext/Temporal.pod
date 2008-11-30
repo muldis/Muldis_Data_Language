@@ -142,47 +142,50 @@ These non-core data types are all ordered scalar types.
 
 =head2 sys.std.Temporal.Type.PInt(12|31)
 
-A C<PInt(12|31)> is a proper subtype of C<PInt> where all member values are
-not greater than 12|31.  Its default and minimum value is 1; its maximum
-value is 12|31.  The significance is that in proleptic Gregorian dates, the
-(month|month-day) portion is a positive integer not greater than 12|31.
+This is an enumeration data type.  A C<PInt(12|31)> is a proper subtype of
+C<PInt> where all member values are not greater than 12|31.  Its default
+and minimum value is 1; its maximum value is 12|31.  The significance is
+that in proleptic Gregorian dates, the (month|month-day) portion is a
+positive integer not greater than 12|31.
 
 =head2 sys.std.Temporal.Type.UInt(23|59)
 
-A C<UInt(23|59)> is a proper subtype of C<UInt> where all member values are
-not greater than 23|59.  Its default and minimum value is 0; its maximum
-value is 23|59.  The significance is that in the time portion of proleptic
-Gregorian dates, the (hour|minute) portion is an unsigned integer not
-greater than 23|59.
+This is an enumeration data type.  A C<UInt(23|59)> is a proper subtype of
+C<UInt> where all member values are not greater than 23|59.  Its default
+and minimum value is 0; its maximum value is 23|59.  The significance is
+that in the time portion of proleptic Gregorian dates, the (hour|minute)
+portion is an unsigned integer not greater than 23|59.
 
 =head2 sys.std.Temporal.Type.URatLT62
 
-A C<URatLT62> is a proper subtype of C<URat> where all member values are
-less than 62.  Its default and minimum value is 0; its maximum value is
-conceptually infinitessimally less than 62 and practically impossible.  The
-significance is that in the time portion of proleptic Gregorian dates, the
-'second' portion is an unsigned rational less than 62.  The cardinality of
-this type is infinity; to define a most-generalized finite C<URatLT62>
-subtype, you must specify the greatest magnitude value denominator of its
-C<ratio> possrep, that is, its maximum precision (that denominator is 10^9
-if we're working to nanosecond precision).
+This is an enumeration data type.  A C<URatLT62> is a proper subtype of
+C<URat> where all member values are less than 62.  Its default and minimum
+value is 0; its maximum value is conceptually infinitessimally less than 62
+and practically impossible.  The significance is that in the time portion
+of proleptic Gregorian dates, the 'second' portion is an unsigned rational
+less than 62.  The cardinality of this type is infinity; to define a
+most-generalized finite C<URatLT62> subtype, you must specify the greatest
+magnitude value denominator of its C<ratio> possrep, that is, its maximum
+precision (that denominator is 10^9 if we're working to nanosecond
+precision).
 
 =head2 sys.std.Temporal.Type.UTCInstant
 
-A C<UTCInstant> is a single point in time, or a periodic multiplicity of
-points in time, which is specified with arbitrary precision using a set of
-unit quantities involving multiple units, where the units do not generally
-have a fixed conversion rate with each other.  A C<UTCInstant> is defined
-against the proleptic Gregorian calendar and uses these 6 units:
-terrestrial year, month within year, day within month, hour within day,
-minute within hour, second and possibly fraction of a second within minute;
-the only fixed conversion rates are: 1 year is 12 months, 1 hour is 60
-minutes.  A C<UTCInstant> is defined against the UTC time-zone
-specifically, so you use it when you I<do know> that the instant you are
-specifying was experienced in the UTC time-zone with the specified unit
-values; if you are otherwise working according to your local time-zone, you
-would be selecting your C<UTCInstant> values in terms of a time-zone offset
-(and daylight-savings time offset if applicable) from your local time.
+This is a structure data type.  A C<UTCInstant> is a single point in time,
+or a periodic multiplicity of points in time, which is specified with
+arbitrary precision using a set of unit quantities involving multiple
+units, where the units do not generally have a fixed conversion rate with
+each other.  A C<UTCInstant> is defined against the proleptic Gregorian
+calendar and uses these 6 units: terrestrial year, month within year, day
+within month, hour within day, minute within hour, second and possibly
+fraction of a second within minute; the only fixed conversion rates are: 1
+year is 12 months, 1 hour is 60 minutes.  A C<UTCInstant> is defined
+against the UTC time-zone specifically, so you use it when you I<do know>
+that the instant you are specifying was experienced in the UTC time-zone
+with the specified unit values; if you are otherwise working according to
+your local time-zone, you would be selecting your C<UTCInstant> values in
+terms of a time-zone offset (and daylight-savings time offset if
+applicable) from your local time.
 
 A C<UTCInstant> has 1 system-defined possrep whose name is C<instant>,
 which has 6 attributes: C<year> (a C<maybe_of.Int>), C<month> (a
@@ -223,83 +226,86 @@ attribute, the C<Nothing> value will order before any C<Single> value.
 
 =head2 sys.std.Temporal.Type.UTCDateTime
 
-A C<UTCDateTime> is a single specific time on a specific date, with
-precision to arbitrary fractions of a second.  A C<UTCDateTime> is a
-proper subtype of C<UTCInstant> where all 6 attributes of its C<instant>
-possrep have C<Single> / known values.  A C<UTCDateTime> adds 1
-system-defined possrep whose name is C<datetime>, which has 6 attributes:
-C<year> (a C<Int>), C<month> (a C<PInt12>), C<day> (a C<PInt31>), C<hour>
-(a C<UInt23>), C<minute> (a C<UInt59>), C<second> (a C<URatLT62>).  The
-default and minimum and maximum values are the same as for C<UTCInstant>.
+This is an enumeration data type.  A C<UTCDateTime> is a single specific
+time on a specific date, with precision to arbitrary fractions of a second.
+A C<UTCDateTime> is a proper subtype of C<UTCInstant> where all 6
+attributes of its C<instant> possrep have C<Single> / known values.  A
+C<UTCDateTime> adds 1 system-defined possrep whose name is C<datetime>,
+which has 6 attributes: C<year> (a C<Int>), C<month> (a C<PInt12>), C<day>
+(a C<PInt31>), C<hour> (a C<UInt23>), C<minute> (a C<UInt59>), C<second> (a
+C<URatLT62>).  The default and minimum and maximum values are the same as
+for C<UTCInstant>.
 
 =head2 sys.std.Temporal.Type.UTCDate
 
-A C<UTCDate> is a single specific terrestrial day, at no particular time
-of day.  A C<UTCDate> is a proper subtype of C<UTCInstant> where the 3
-attributes of its C<instant> possrep named [C<year>, C<month>, C<day>] have
-C<Single> / known values, and the other 3 C<instant> possrep attributes
-each have the C<Nothing> / unknown value.  A C<UTCDate> adds 1
-system-defined possrep whose name is C<date>, which has 3 attributes:
-C<year> (a C<Int>), C<month> (a C<PInt12>), C<day> (a C<PInt31>).  The
-default value of C<UTCDate> is January 1st of the year 1 CE; its minimum
-and maximum values are conceptually infinities and practically impossible.
-The cardinality of this type is infinity; to define a most-generalized
-finite C<UTCDate> subtype, you must specify the earliest and latest dates
-it includes (minimally, the earliest and latest C<year>).
+This is an enumeration data type.  A C<UTCDate> is a single specific
+terrestrial day, at no particular time of day.  A C<UTCDate> is a proper
+subtype of C<UTCInstant> where the 3 attributes of its C<instant> possrep
+named [C<year>, C<month>, C<day>] have C<Single> / known values, and the
+other 3 C<instant> possrep attributes each have the C<Nothing> / unknown
+value.  A C<UTCDate> adds 1 system-defined possrep whose name is C<date>,
+which has 3 attributes: C<year> (a C<Int>), C<month> (a C<PInt12>), C<day>
+(a C<PInt31>).  The default value of C<UTCDate> is January 1st of the year
+1 CE; its minimum and maximum values are conceptually infinities and
+practically impossible. The cardinality of this type is infinity; to define
+a most-generalized finite C<UTCDate> subtype, you must specify the earliest
+and latest dates it includes (minimally, the earliest and latest C<year>).
 
 =head2 sys.std.Temporal.Type.UTCTime
 
-A C<UTCTime> is a single specific time that isn't on any day in particular
-(or alternately that is repeating on multiple days), with a precision to
-arbitrary fractions of a second; its allowed range is between zero seconds
-(inclusive) and 1 terrestrial day (exclusive).  A C<UTCTime> is a proper
-subtype of C<UTCInstant> where the 3 attributes of its C<instant> possrep
-named [C<hour>, C<minute>, C<second>] have C<Single> / known values, and
-the other 3 C<instant> possrep attributes each have the C<Nothing> /
-unknown value.  A C<UTCTime> adds 1 system-defined possrep whose name is
-C<time>, which has 3 attributes: C<hour> (a C<UInt23>), C<minute> (a
-C<UInt59>), C<second> (a C<URatLT62>).  The default and minimum value of
-C<UTCTime> is exactly midnight at the start of its day (all of its C<time>
-possrep attributes are zero-valued); its maximum value is conceptually
-infinitessimally less than the midnight at the end of its day and
-practically impossible.  The cardinality of this type is infinity; to
-define a most-generalized finite C<UTCTime> subtype, you must specify the
-granularity of the type as a fraction of a second (minimally, the largest
-value denominator for C<second>).
+This is an enumeration data type.  A C<UTCTime> is a single specific time
+that isn't on any day in particular (or alternately that is repeating on
+multiple days), with a precision to arbitrary fractions of a second; its
+allowed range is between zero seconds (inclusive) and 1 terrestrial day
+(exclusive).  A C<UTCTime> is a proper subtype of C<UTCInstant> where the 3
+attributes of its C<instant> possrep named [C<hour>, C<minute>, C<second>]
+have C<Single> / known values, and the other 3 C<instant> possrep
+attributes each have the C<Nothing> / unknown value.  A C<UTCTime> adds 1
+system-defined possrep whose name is C<time>, which has 3 attributes:
+C<hour> (a C<UInt23>), C<minute> (a C<UInt59>), C<second> (a C<URatLT62>).
+The default and minimum value of C<UTCTime> is exactly midnight at the
+start of its day (all of its C<time> possrep attributes are zero-valued);
+its maximum value is conceptually infinitessimally less than the midnight
+at the end of its day and practically impossible.  The cardinality of this
+type is infinity; to define a most-generalized finite C<UTCTime> subtype,
+you must specify the granularity of the type as a fraction of a second
+(minimally, the largest value denominator for C<second>).
 
 =head2 sys.std.Temporal.Type.FloatInstant
 
-A C<FloatInstant> is exactly the same as C<UTCInstant>, but that it is not
-defined against any specific time-zone, but rather is floating; you use it
-when you I<do not know> in what time-zone the specified date+time is
-supposed to refer to (it was just I<somewhere>), or when that detail is not
-significant.  The C<FloatInstant> type is disjoint from the C<UTCInstant>
-type, but all of its details save its name and one aspect of its
-interpretation (representation, cardinality, default values, ordering
-algorithm, etc) are identical.
+This is a structure data type.  A C<FloatInstant> is exactly the same as
+C<UTCInstant>, but that it is not defined against any specific time-zone,
+but rather is floating; you use it when you I<do not know> in what
+time-zone the specified date+time is supposed to refer to (it was just
+I<somewhere>), or when that detail is not significant.  The C<FloatInstant>
+type is disjoint from the C<UTCInstant> type, but all of its details save
+its name and one aspect of its interpretation (representation, cardinality,
+default values, ordering algorithm, etc) are identical.
 
 =head2 sys.std.Temporal.Type.FloatDateTime
 
-A C<FloatDateTime> is to C<UTCDateTime> as C<FloatInstant> is to
-C<UTCInstant>.
+This is an enumeration data type.  A C<FloatDateTime> is to C<UTCDateTime>
+as C<FloatInstant> is to C<UTCInstant>.
 
 =head2 sys.std.Temporal.Type.FloatDate
 
-A C<FloatDate> is to C<UTCDate> as C<FloatInstant> is to C<UTCInstant>.
+This is an enumeration data type.  A C<FloatDate> is to C<UTCDate> as
+C<FloatInstant> is to C<UTCInstant>.
 
 =head2 sys.std.Temporal.Type.FloatTime
 
-A C<FloatTime> is to C<UTCTime> as C<FloatInstant> is to C<UTCInstant>.
+This is an enumeration data type.  A C<FloatTime> is to C<UTCTime> as
+C<FloatInstant> is to C<UTCInstant>.
 
 =head2 sys.std.Temporal.Type.Duration
 
-A C<Duration> is a single amount of time, which is specified with arbitrary
-precision using 6 quantities in the same units as a C<UTCInstant> is
-structured with.  It is not fixed to any date or time and is agnostic to
-the calendar, other than the interpretation of units' size.  A C<Duration>
-is the result type of taking the difference between two C<UTCInstant>
-values or between two C<FloatInstant> values, but it is not defined in
-terms of said two values.
+This is a structure data type.  A C<Duration> is a single amount of time,
+which is specified with arbitrary precision using 6 quantities in the same
+units as a C<UTCInstant> is structured with.  It is not fixed to any date
+or time and is agnostic to the calendar, other than the interpretation of
+units' size.  A C<Duration> is the result type of taking the difference
+between two C<UTCInstant> values or between two C<FloatInstant> values, but
+it is not defined in terms of said two values.
 
 A C<Duration> has 1 system-defined possrep whose name is C<duration>, which
 has 6 attributes: C<years>, C<months>, C<days>, C<hours>, C<minutes>, (all
