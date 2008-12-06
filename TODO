@@ -37,6 +37,36 @@ In other words, support what is common with the likes of Postgres and MySQL
 where one can just set the "current database|schema" and then subsequent
 entity references by statements don't have to be qualified with said.
 
+* Reorganize the Tiny dialects docs so that plain-text-Tiny now has most of
+the detail info and is standalone, and hosted-data-Perl-Tiny is just
+defined as being the same as the former but for specified format
+differences.
+
+* Update the plain-text Tiny dialect to support more Perl 6 isms directly,
+such as "0(b|o|d|x)" prefixes rather than "max-col-val:" prefixes (and the
+same can be done for Blob but just b|o|x opts); still up for debate is
+supporting numbers with no prefix at all, which would then be interpreted
+as base-10.  Also reconsider use of colon as value def separator, possibly
+going with different separators between first and rest/other element, and
+in front of any elements beyond the second.  For example, maybe just use
+colon after first element, and then semicolon between any 2nd/3rd etc.  Or
+use a delimiter pair such as <> following the first element and surrounding
+all remaining ones, any multiple remaining being semicolon delimited.
+
+* Split up the 1 HDMD_Perl_Tiny dialect into the 2 HDMD_Perl(6|5)_Tiny
+dialects, and don't be afraid to let them grow apart.  For example, the
+Perl 6 version can use Pair objects as the basis for most nodes, eg
+":Text<Foo>" or ":Int(:3<21>)", rather than Array/Seq, and the p6v can
+avoid providing the 3-part number syntax to match the plain-text dialect,
+simply requiring use of Perl 6's own multi-radix support (plain-text
+parsers in Perl 6 would do more than just output tokens as text), and
+Bool|Order|Int|etc nodes would require payloads as only native Perl 6
+Bool|Order|Int|etc objects and not accept text forms or number forms for
+bool etc (once again, parsers in Perl 6 can do more than just tokenize).
+For example, the Perl 5 version can ignore mentioning all the named
+variants in Perl 6, and just say "string" rather than Str|etc and array-ref
+rather than Array|Seq etc.
+
 * Update the Tiny dialects with special syntax for declaring whole depots
 in a single expression, catalog+data.  This can be useful for example with
 a simple Muldis D implementation that wants to represent a persisted depot

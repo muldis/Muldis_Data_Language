@@ -121,9 +121,9 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         <ln_extensions>
     }
 
-    token ln_authority { <text_str> }
+    token ln_authority { <char_str> }
 
-    token ln_version { <text_str> }
+    token ln_version { <char_str> }
 
     token ln_dialect { PTMD_Tiny }
 
@@ -216,7 +216,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token text {
         Text
         <spec_sep>
-        <text_str>
+        <char_str>
     }
 
     token tuple_or_qv {
@@ -351,18 +351,18 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token spec_sep { \s* ':' \s* }
 
-    token text_str {
-        [<text_str_seg> ** <segment_sep>]?
+    token char_str {
+        [<char_str_seg> ** <segment_sep>]?
     }
 
     token segment_sep { \s* '~' \s* }
 
-    token text_str_seg {
-          <quoted_text_str_seg>
-        | <nonquoted_text_str_seg>
+    token char_str_seg {
+          <quoted_char_str_seg>
+        | <nonquoted_char_str_seg>
     }
 
-    token quoted_text_str_seg {
+    token quoted_char_str_seg {
         <text_delim>
             <text_char>*
         <text_delim>
@@ -372,7 +372,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token text_char { ['\b'|'\q'|<-[\\\']>] }
 
-    token nonquoted_text_str_seg { <[a-zA-Z0-9_-]>+ }
+    token nonquoted_char_str_seg { <[a-zA-Z0-9_-]>+ }
 
     token int_max_col_val { <pint_head> }
 
@@ -392,7 +392,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         <name_body>
     }
 
-    token name_body { <text_str> }
+    token name_body { <char_str> }
 
     token name_chain {
         NameChain
@@ -401,25 +401,10 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     }
 
     token name_chain_body {
-          nc_array
-        | nc_flat
-    }
-
-    token nc_array {
-        <ord_list_open>
-            <name_body> [\s* <nc_elem_sep> \s* <name_body>]+
-        <ord_list_close>
-    }
-
-    token nc_flat {
-        <text_delim>
-            [<nc_char>*] ** <nc_elem_sep>
-        <text_delim>
+        <name_body> [\s* <nc_elem_sep> \s* <name_body>]+
     }
 
     token nc_elem_sep { '.' }
-
-    token nc_char { ['\b'|'\q'|'\p'|<-[\\\'\.]>] }
 
     token decl_name_chain {
         DeclNameChain
@@ -428,26 +413,13 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     }
 
     token decl_name_chain_body {
-          dnc_array
-        | dnc_flat
-    }
-
-    token dnc_array {
-        <ord_list_open>
-            [<name_body> [\s* <nc_elem_sep> \s* <name_body>]*]?
-        <ord_list_close>
-    }
-
-    token dnc_flat {
-        <text_delim>
-            <nc_elem_sep> [<nc_char>* <nc_elem_sep>]*
-        <text_delim>
+        [<name_body> [\s* <nc_elem_sep> \s* <name_body>]*]?
     }
 
     token comment {
         Comment
         <spec_sep>
-        <text_str>
+        <char_str>
     }
 
     token order { Order <spec_sep> [increase|same|decrease|-1|0|1] }
@@ -659,13 +631,13 @@ The following are fragments of actual Plain Text Muldis D code.
 
     Name:'First Name'
 
-    NameChain:[fed.data.the_db.gene.sorted_person_name]
+    NameChain:fed.data.the_db.gene.sorted_person_name
 
-    NameChain:fed.data.the_db.stats.samples_by_order
+    NameChain:fed.data.the_db.stats.'samples by order'
 
-    DeclNameChain:[gene.sorted_person_name]
+    DeclNameChain:gene.sorted_person_name
 
-    DeclNameChain:.stats.samples_by_order.
+    DeclNameChain:stats.'samples by order'
 
     Comment:'This does something.'
 

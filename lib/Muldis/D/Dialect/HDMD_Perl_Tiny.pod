@@ -934,10 +934,11 @@ defines an element of the C<array> possrep's attribute of a C<NameChain>.
 =item *
 
 If the payload is a C<Str>, then it must be formatted as a catenation
-(using period (C<.>) separators) of at least 2 parts, where each part is
-escaped such that backslashes, single-quotes, and periods are escaped as
-C<\b>, C<\q> and C<\p> respectively; it defines the C<flat> possrep's
-attribute of a C<NameChain>.
+(using period (C<.>) separators) of at least 2 parts, where each part can
+not have any literal period (C<.>) characters (if you want literal periods
+then you can only use the C<Array|Seq> payload format to express it).  The
+C<Str> format of payload is interpreted by splitting it on the separators
+into the C<Array|Seq> format, then processed as per the latter.
 
 =back
 
@@ -945,53 +946,23 @@ Examples:
 
     [ 'NameChain', ['fed','data','the_db','gene','sorted_person_name'] ]
 
-    [ 'NameChain', 'fed.data.the_db.stats.samples_by_order' ]
+    [ 'NameChain', 'fed.data.the_db.stats.samples by order' ]
 
 =head2 sys.std.Core.Type.Cat.DeclNameChain
 
-This node type represents a canonical long name for declaring a DBMS entity
-in N-depth contexts; it is conceptually a sequence of entity short names.
-It has 2 elements:
-
-=over
-
-=item *
-
-Node type: the Perl C<Str> value C<DeclNameChain>.
-
-=item *
-
-The payload; a Perl C<Array|Seq> value or C<Str> (char-mode scalar) value.
-
-=back
-
-This node is interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.DeclNameChain> value as follows:
-
-=over
-
-=item *
-
-If the payload is an C<Array|Seq>, then every element must be a valid
-payload for a C<Name> PHMD node (that is, any Perl character string).
-Each element of the payload, in order, defines an element of the C<array>
-possrep's attribute of a C<DeclNameChain>.
-
-=item *
-
-If the payload is a C<Str>, then it must be formatted as a catenation of
-0..N parts (starting with a period (C<.>) and each part ending with a
-period), where each part is escaped such that backslashes, single-quotes,
-and periods are escaped as C<\b>, C<\q> and C<\p> respectively; it defines
-the C<flat> possrep's attribute of a C<DeclNameChain>.
-
-=back
+This node type is exactly the same as the C<NameChain> node type, in both
+structure/constraints and interpretation, etc, except that it represents a
+canonical long name for declaring a DBMS entity in N-depth contexts, and
+that the chain may have as few as zero parts rather than as few as 2;
+however, a zero part chain can only be expressed with the C<Array|Seq>
+payload format; an empty string C<Str> format will be interpreted as having
+a single element that is the empty string.
 
 Examples:
 
     [ 'DeclNameChain', ['gene','sorted_person_name'] ]
 
-    [ 'DeclNameChain', '.stats.samples_by_order.' ]
+    [ 'DeclNameChain', 'stats.samples by order' ]
 
 =head2 sys.std.Core.Type.Cat.Comment
 
