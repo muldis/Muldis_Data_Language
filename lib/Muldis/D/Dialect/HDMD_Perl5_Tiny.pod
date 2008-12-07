@@ -4,12 +4,12 @@
 
 =head1 NAME
 
-Muldis::D::Dialect::HDMD_Perl_Tiny -
-How to format Perl Hosted Data Muldis D
+Muldis::D::Dialect::HDMD_Perl5_Tiny -
+How to format Perl 5 Hosted Data Muldis D
 
 =head1 VERSION
 
-This document is Muldis::D::Dialect::HDMD_Perl_Tiny version 0.52.0.
+This document is Muldis::D::Dialect::HDMD_Perl5_Tiny version 0.52.0.
 
 =head1 PREFACE
 
@@ -20,21 +20,21 @@ before you read this one, which provides subservient details.
 =head1 DESCRIPTION
 
 This document outlines the grammar of the I<Hosted Data Muldis D> dialect
-named C<HDMD_Perl_Tiny>.  The fully-qualified name of this Muldis D
+named C<HDMD_Perl5_Tiny>.  The fully-qualified name of this Muldis D
 dialect, in combination with the base language spec it is bundled with, is
-C<[ 'Muldis_D', 'http://muldis.com', 'N.N.N', 'HDMD_Perl_Tiny' ]> (when the
-bundled base language version is substituted for the C<N.N.N>).
+C<[ 'Muldis_D', 'http://muldis.com', 'N.N.N', 'HDMD_Perl5_Tiny' ]> (when
+the bundled base language version is substituted for the C<N.N.N>).
 
 This dialect is designed to exactly match the Muldis D system catalog (the
 possible representation of Muldis D code that is visible to or updateable
 by Muldis D programs at runtime) as to what non-critical meta-data it
-explicitly stores; so code in the C<HDMD_Perl_Tiny> dialect should be
+explicitly stores; so code in the C<HDMD_Perl5_Tiny> dialect should be
 round-trippable with the system catalog with the result maintaining all the
 details that were started with.  Since it matches the system catalog, this
 dialect should be able to exactly represent all possible Muldis D base
 language code (and probably all extensions too), rather than a subset of
-it.  This dialect similarly matches the C<PTMD_Tiny> dialect, which is
-documented at L<Muldis::D::Dialect::PTMD_Tiny>; in fact, most of the
+it.  This dialect similarly matches the
+L<PTMD_Tiny|Muldis::D::Dialect::PTMD_Tiny> dialect; in fact, most of the
 details in common with that other dialect are described just in the current
 file, for both dialects.
 
@@ -43,21 +43,21 @@ criteria, and is designed such that a parser that handles all of this
 dialect can be tiny, hence the dialect's C<Tiny> name.  Likewise, a code
 generator for this dialect from the system catalog can be tiny.
 
-The C<HDMD_Perl_Tiny> dialect is defined to be hosted in either Perl 5 or
-Perl 6, and as composed of just|mainly core Perl types.  Where Perl 5 and 6
-differ, the terminology and examples in this documentation specifically
-uses Perl 6 terminology and examples by default, and adds analogous Perl 5
-terminology as necessary.
+The C<HDMD_Perl5_Tiny> dialect is defined to be hosted in Perl 5, and is
+composed of just|mainly core Perl 5 types.  This dialect is optimized for
+Perl 5 specifically, and doesn't try to match the version for Perl 6; you
+*will* have to reformat any Perl Hosted Data Muldis D when migrating
+between Perl 5 and Perl 6, same as with your ordinary Perl code.
 
 Fundamentally, the various Muldis D scalar and collection types are
-represented by their equivalent Perl 5 or 6 native scalar and collection
+represented by their equivalent Perl 5 native scalar and collection
 types.  But since Muldis D is more strongly typed, or at least differently
-typed, than Perl, each Muldis D literal is represented by a Perl Array,
-whose elements include both the payload Perl literal plus explicit
-meta-data for how to interpret that Perl literal for mapping to Muldis D.
+typed, than Perl 5, each Muldis D literal is represented by a Perl 5 Array,
+whose elements include both the payload Perl 5 literal plus explicit
+meta-data for how to interpret that Perl 5 literal for mapping to Muldis D.
 
 This document mainly just specifies a way to represent Muldis D values as
-Perl values.  Since the fundamental way to do data definition in Muldis D
+Perl 5 values.  Since the fundamental way to do data definition in Muldis D
 is to update catalog (information schema) variables, aka the Muldis D
 meta-model, which are themselves just data, then this document only needs
 to tell you how to define values to put in the catalog variables.  Defining
@@ -67,22 +67,23 @@ See instead L<Muldis::D::Core> for how to actually define the
 tuples and relations that define your data types and routines and queries
 and so forth.
 
-For the present, this document will use the term I<PHMD> (I<Perl Hosted
-Muldis D>) for brevity when referring to aspects of the Perl-Tiny dialect.
+For the present, this document will use the term I<PHMD> (I<Perl 5 Hosted
+Muldis D>) for brevity when referring to aspects of the Perl 5-Tiny
+dialect.
 
 =head1 GENERAL STRUCTURE
 
-A PHMD value is composed mainly of a tree of Perl Array, such that each
+A PHMD value is composed mainly of a tree of Perl 5 Array, such that each
 Array is a tree node.  The elements of each node/Array include typically a
-native Perl payload value, which may be a PHMD value itself, plus meta-data
-for that payload, that meta-data typically including the analogy of a class
-name, were PHMD nodes instead represented by a tree of PHMD-specific
-objects.
+native Perl 5 payload value, which may be a PHMD value itself, plus
+meta-data for that payload, that meta-data typically including the analogy
+of a class name, were PHMD nodes instead represented by a tree of
+PHMD-specific objects.
 
-It should be emphasized that no Perl undefined values are allowed anywhere
-in a PHMD value; you must use only defined values instead.  This
+It should be emphasized that no Perl 5 undefined values are allowed
+anywhere in a PHMD value; you must use only defined values instead.  This
 documentation also assumes that only defined values are used, and that
-supplying a Perl undef will result in an error.  If you genuinely want to
+supplying a Perl 5 undef will result in an error.  If you genuinely want to
 represent that a value is unknown or inapplicable, then the C<Nothing> node
 type is provided as one way you can explicitly say so.  I<This policy may
 be reconsidered.>
@@ -99,7 +100,7 @@ call".
 Examples:
 
     [
-        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl_Tiny', {} ],
+        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_Tiny', {} ],
         [ 'boot_call', 'sys.std.Core.Cat.create_depot_procedure',
             {}, { ... } ],
     ]
@@ -108,7 +109,7 @@ Examples:
 
 As per the VERSIONING pod section of L<Muldis::D>, code written in
 Muldis D must start by declaring the fully-qualified Muldis D language name
-it is written in.  The C<HDMD_Perl_Tiny> dialect formats this name as a
+it is written in.  The C<HDMD_Perl5_Tiny> dialect formats this name as a
 PHMD node having the following 5 elements:
 
 =over
@@ -129,7 +130,7 @@ typically a Perl C<Str> value like C<1.2.3>.
 
 =item *
 
-Dialect: the Perl C<Str> value C<HDMD_Perl_Tiny>.
+Dialect: the Perl C<Str> value C<HDMD_Perl5_Tiny>.
 
 =item *
 
@@ -140,9 +141,9 @@ see the L<MULDIS D TINY DIALECT PRAGMAS> pod section for more details.
 
 Examples:
 
-    [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl_Tiny', {} ]
+    [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_Tiny', {} ]
 
-    [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl_Tiny', {
+    [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_Tiny', {
         'auto_add_attrs'          => [ 'Bool', 'true' ],
         'auto_unabbrev_std_names' => [ 'Bool', 'true' ],
         'auto_chains_from_names'  => [ 'Bool', 'true' ],
@@ -1305,7 +1306,7 @@ Examples:
 =head1 MULDIS D TINY DIALECT PRAGMAS
 
 All of the following pragmas apply to both the C<PTMD_Tiny> and
-C<HDMD_Perl_Tiny> dialects, and have the same semantics with both.
+C<HDMD_Perl5_Tiny> dialects, and have the same semantics with both.
 
 =head2 auto_add_attrs
 
@@ -1315,7 +1316,7 @@ attribute being undefined; normally when one selects a value of a
 particular attribute-based type, they must supply values for I<all> of its
 attributes; this is true with values comprising the system catalog as with
 any other values.  Code written in the Muldis D C<PTMD_Tiny> or
-C<HDMD_Perl_Tiny> dialect is comprised almost entirely of value literals,
+C<HDMD_Perl5_Tiny> dialect is comprised almost entirely of value literals,
 and by default all of the attribute values of said values must be
 explicitly given in the literals as sub-literals, even in the common case
 where some attributes just have the default values for their type.
