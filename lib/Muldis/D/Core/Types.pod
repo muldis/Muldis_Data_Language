@@ -45,8 +45,10 @@ relationships:
                     sys.std.Core.Type.PInt
             sys.std.Core.Type.String
                 sys.std.Core.Type.BString
+                sys.std.Core.Type.OString
                 sys.std.Core.Type.UCPString
             sys.std.Core.Type.Blob
+                sys.std.Core.Type.OctetBlob
             sys.std.Core.Type.Text
 
         # The following are mostly nonscalar type factories.
@@ -219,6 +221,12 @@ This is an enumeration data type.  A C<BString> (bit string) is a proper
 subtype of C<String> where all member value elements are between zero and
 1.  One can be used to represent a string of bits.
 
+=head2 sys.std.Core.Type.OString
+
+This is an enumeration data type.  An C<OString> (octet string) is a proper
+subtype of C<String> where all member value elements are between zero and
+255.  One can be used to represent a string of octets.
+
 =head2 sys.std.Core.Type.UCPString
 
 This is an enumeration data type.  A C<UCPString> (Unicode codepoint
@@ -239,6 +247,24 @@ all of its other details such as default and minimum and maximum values and
 cardinality and default ordering algorithm all correspond directly.  But
 C<Blob> is explicitly disjoint from C<BString> due to having a different
 intended interpretation.
+
+=head2 sys.std.Core.Type.OctetBlob
+
+This is an enumeration data type.  An C<OctetBlob> is a proper subtype of
+C<Blob> where all member values have a length in bits that is an even
+multiple of 8 (or is zero).  An C<OctetBlob> adds 1 system-defined possrep
+named C<octets> which consists of 1 C<OString>-typed attribute whose name
+is the empty string.  The C<octets> and C<bits> possreps correspond as you
+might expect, such that each element of the sole attribute of C<octets>
+maps to 8 consecutive elements of the sole attribute of C<bits>; with each
+8 bits corresponding to an octet, the lowest-element-indexed bit
+corresponds to the highest bit of the octet when the latter is encoded as a
+standard two's complement binary unsigned integer, and the
+highest-element-indeed bit corresponds to the lowest bit of the octet.  The
+reason the C<OctetBlob> type is system-defined as distinct from C<Blob> is
+for convenience of users since it is likely the vast majority of C<Blob>
+values consist of whole octets and users would want to work with them in
+those terms.
 
 =head2 sys.std.Core.Type.Text
 
