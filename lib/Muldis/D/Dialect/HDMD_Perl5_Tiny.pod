@@ -85,7 +85,7 @@ anywhere in a PHMD value; you must use only defined values instead.  This
 documentation also assumes that only defined values are used, and that
 supplying a Perl 5 undef will result in an error.  If you genuinely want to
 represent that a value is unknown or inapplicable, then the C<Nothing> node
-type is provided as one way you can explicitly say so.  I<This policy may
+kind is provided as one way you can explicitly say so.  I<This policy may
 be reconsidered.>
 
 =head1 BOOTLOADER
@@ -116,7 +116,7 @@ PHMD node having the following 5 elements:
 
 =item *
 
-Node type / language base name: the Perl C<Str> value C<Muldis_D>.
+Node kind / language base name: the Perl C<Str> value C<Muldis_D>.
 
 =item *
 
@@ -165,7 +165,7 @@ call is formatted as a PHMD node having the following 4 elements:
 
 =item *
 
-Node type: the Perl C<Str> value C<boot_call>.
+Node kind: the Perl C<Str> value C<boot_call>.
 
 =item *
 
@@ -194,13 +194,13 @@ Examples
 
 =head2 sys.std.Core.Type.Scalar
 
-This node type represents a scalar subtype value.  It has 4 elements:
+This node kind represents a scalar subtype value.  It has 4 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Scalar>.
+Node kind: the Perl C<Str> value C<Scalar>.
 
 =item *
 
@@ -221,7 +221,7 @@ PHMD node.
 This node is interpreted as a Muldis D C<sys.std.Core.Type.Scalar> subtype
 value whose declared type is specified by the scalar type name (second node
 element) and whose attributes are defined by the payload.  The C<Scalar>
-PHMD node type can only be used for scalar types that have at least 1
+PHMD node kind can only be used for scalar types that have at least 1
 possrep, and the payload is interpreted specifically as attributes of the
 declared type's possrep which is specified by the possrep name (third node
 element).  Each key+value pair of the payload defines a named possrep
@@ -259,13 +259,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Bool
 
-This node type represents a logical boolean value.  It has 2 elements:
+This node kind represents a logical boolean value.  It has 2 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Bool>.
+Node kind: the Perl C<Str> value C<Bool>.
 
 =item *
 
@@ -296,13 +296,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Int
 
-This node type represents an integer value.  It has 2-3 elements:
+This node kind represents an integer value.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Int>.
+Node kind: the Perl C<Str> value C<Int>.
 
 =item *
 
@@ -322,14 +322,15 @@ follows:
 =item *
 
 If the node has 3 elements, then the max-col-val must be a Perl C<Str>
-composed of a single C<[1-9A-Z]> character, and the payload must be a Perl
-C<Str> of the format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z_]>* >>.  This format
-specifically is what the Plain Text Muldis D grammar uses, and is the
-result of parsing it.  The payload is interpreted as a base-I<N> integer
-where I<N> might be between 2 and 36, and the given max-col-val says which
-possible value of I<N> to use.  Assuming all column values are between zero
-and I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
-specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].
+composed of a single C<[ 1..9 A..Z ]> character, and the payload must be a
+Perl C<Str> of the format C<0> or C<< \-?<[ 1..9 A..Z ]><[ 0..9 A..Z _ ]>*
+>>.  This format specifically is what the Plain Text Muldis D grammar uses,
+and is the result of parsing it.  The payload is interpreted as a base-I<N>
+integer where I<N> might be between 2 and 36, and the given max-col-val
+says which possible value of I<N> to use.  Assuming all column values are
+between zero and I<N>-minus-one, the max-col-val contains that
+I<N>-minus-one.  So to specify, eg, bases [2,8,10,16], use max-col-val of
+[1,7,9,F].
 
 =item *
 
@@ -338,7 +339,7 @@ be a Perl C<Int>, which is mapped directly.  Under Perl 5, the payload must
 be just a canonical integer value according to Perl; since native Perl 5
 integers are limited precision, larger integers can be represented either
 by a bigint object or a character string of the format C<0> or C<<
-\-?<[1-9]><[0-9_]>* >> that is interpreted as base 10.
+\-?<[1..9]><[ 0..9 _ ]>* >> that is interpreted as base 10.
 
 =back
 
@@ -370,13 +371,13 @@ Examples:
 
 =head2 sys.std.Core.Type.String
 
-This node type represents an integer string value.  It has 2-3 elements:
+This node kind represents an integer string value.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<String>.
+Node kind: the Perl C<Str> value C<String>.
 
 =item *
 
@@ -403,13 +404,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Blob
 
-This node type represents a bit string.  It has 2-3 elements:
+This node kind represents a bit string.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Blob>.
+Node kind: the Perl C<Str> value C<Blob>.
 
 =item *
 
@@ -428,9 +429,9 @@ follows:
 
 =item *
 
-If the node has 3 elements, then the max-col-val must be a Perl
-C<Str> composed of a single C<[137F]> character, and the payload must be a
-Perl C<Str> of the format C<< <[0-9A-F]>* >>.  This format specifically is
+If the node has 3 elements, then the max-col-val must be a Perl C<Str>
+composed of a single C<[137F]> character, and the payload must be a Perl
+C<Str> of the format C<< <[ 0..9 A..F ]>* >>.  This format specifically is
 what the Plain Text Muldis D grammar uses, and is the result of parsing it.
 Each column of the payload specifies a sequence of one of [1,2,3,4] bits,
 depending on whether max-col-val is [1,3,7,F].
@@ -460,13 +461,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Text
 
-This node type represents a character string.  It has 2 elements:
+This node kind represents a character string.  It has 2 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Text>.
+Node kind: the Perl C<Str> value C<Text>.
 
 =item *
 
@@ -496,13 +497,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Tuple
 
-This node type represents a tuple value.  It has 2-3 elements:
+This node kind represents a tuple value.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Tuple>.
+Node kind: the Perl C<Str> value C<Tuple>.
 
 =item *
 
@@ -538,13 +539,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Relation
 
-This node type represents a relation value.  It has 2-4 elements:
+This node kind represents a relation value.  It has 2-4 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Relation>.
+Node kind: the Perl C<Str> value C<Relation>.
 
 =item *
 
@@ -650,13 +651,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Set
 
-This node type represents a set value.  It has 2-3 elements:
+This node kind represents a set value.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Set>.
+Node kind: the Perl C<Str> value C<Set>.
 
 =item *
 
@@ -691,7 +692,7 @@ Examples:
 
 =head2 sys.std.Core.Type.Nothing
 
-This node type represents a 'nothing' value; it is interpreted as a Muldis
+This node kind represents a 'nothing' value; it is interpreted as a Muldis
 D C<sys.std.Core.Type.Nothing>.  It has 1 element, which is the Perl C<Str>
 value C<Nothing>.
 
@@ -701,13 +702,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Single
 
-This node type represents a 'single' value.  It has 2-3 elements:
+This node kind represents a 'single' value.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Single>.
+Node kind: the Perl C<Str> value C<Single>.
 
 =item *
 
@@ -730,13 +731,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Array
 
-This node type represents a sequence value.  It has 2-3 elements:
+This node kind represents a sequence value.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Array>.
+Node kind: the Perl C<Str> value C<Array>.
 
 =item *
 
@@ -772,13 +773,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Bag
 
-This node type represents a bag value.  It has 2-3 elements:
+This node kind represents a bag value.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Bag>.
+Node kind: the Perl C<Str> value C<Bag>.
 
 =item *
 
@@ -857,9 +858,9 @@ Examples:
 
 =head1 QUASI- VALUES
 
-Every PHMD node type for a generic scalar or nonscalar literal has a
-corresponding extra PHMD node type for a quasi- literal.  The corresponding
-extra quasi- node types are exactly the same in format to the non-quasi
+Every PHMD node kind for a generic scalar or nonscalar literal has a
+corresponding extra PHMD node kind for a quasi- literal.  The corresponding
+extra quasi- node kinds are exactly the same in format to the non-quasi
 types but that for each one of them, the value of its first element has the
 Perl C<Str> value C<Quasi> prepended.  So PHMD nodes whose first elements
 each are [C<QuasiScalar>, C<QuasiTuple>, C<QuasiRelation>, C<QuasiSet>,
@@ -874,7 +875,7 @@ C<sys.std.Core.Type.QuasiBag>] values, respectively.
 
 =head2 sys.std.Core.Type.Cat.Name
 
-This node type represents a canonical short name for any kind of DBMS
+This node kind represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
 from C<Text>.  It has 2 elements:
 
@@ -882,7 +883,7 @@ from C<Text>.  It has 2 elements:
 
 =item *
 
-Node type: the Perl C<Str> value C<Name>.
+Node kind: the Perl C<Str> value C<Name>.
 
 =item *
 
@@ -904,7 +905,7 @@ Examples:
 
 =head2 sys.std.Core.Type.Cat.NameChain
 
-This node type represents a canonical long name for invoking a DBMS
+This node kind represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short
 names.  It has 2 elements:
 
@@ -912,7 +913,7 @@ names.  It has 2 elements:
 
 =item *
 
-Node type: the Perl C<Str> value C<NameChain>.
+Node kind: the Perl C<Str> value C<NameChain>.
 
 =item *
 
@@ -951,7 +952,7 @@ Examples:
 
 =head2 sys.std.Core.Type.Cat.DeclNameChain
 
-This node type is exactly the same as the C<NameChain> node type, in both
+This node kind is exactly the same as the C<NameChain> node kind, in both
 structure/constraints and interpretation, etc, except that it represents a
 canonical long name for declaring a DBMS entity in N-depth contexts, and
 that the chain may have as few as zero parts rather than as few as 2;
@@ -967,7 +968,7 @@ Examples:
 
 =head2 sys.std.Core.Type.Cat.Comment
 
-This node type represents the text of a Muldis D code comment; it is a
+This node kind represents the text of a Muldis D code comment; it is a
 character string type, that is disjoint from both C<Text> and C<Name>.  It
 has 2 elements:
 
@@ -975,7 +976,7 @@ has 2 elements:
 
 =item *
 
-Node type: the Perl C<Str> value C<Comment>.
+Node kind: the Perl C<Str> value C<Comment>.
 
 =item *
 
@@ -995,13 +996,13 @@ Examples:
 
 =head2 sys.std.Core.Type.Cat.Order
 
-This node type represents an order-determination.  It has 2 elements:
+This node kind represents an order-determination.  It has 2 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Order>.
+Node kind: the Perl C<Str> value C<Order>.
 
 =item *
 
@@ -1035,13 +1036,13 @@ Examples:
 
 =head2 sys.std.Rational.Type.Rat
 
-This node type represents a rational value.  It has 2-3 elements:
+This node kind represents a rational value.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Rat>.
+Node kind: the Perl C<Str> value C<Rat>.
 
 =item *
 
@@ -1061,14 +1062,14 @@ as follows:
 =item *
 
 If the node has 3 elements and the payload is not an C<Array|Seq>, then the
-max-col-val must be a Perl C<Str> composed of a single C<[1-9A-Z]>
-character, and the payload must be a Perl C<Str> of the format C<<
-0\.?<[0-9A-Z_]>* >> or C<< \-?<[1-9A-Z]><[0-9A-Z_]>*\.?<[0-9A-Z_]>* >>.
-This format specifically is what the Plain Text Muldis D grammar uses
-('radix' option), and is the result of parsing it.  The payload is
-interpreted as a base-I<N> rational where I<N> might be between 2 and 36,
-and the given max-col-val says which possible value of I<N> to use.
-Assuming all column values are between zero and I<N>-minus-one, the
+max-col-val must be a Perl C<Str> composed of a single C<[ 1..9 A..Z ]>
+character, and the payload must be a Perl C<Str> of the format C<< 0\.?<[
+0..9 A..Z _ ]>* >> or C<< \-?<[ 1..9 A..Z ]><[ 0..9 A..Z _ ]>*\.?<[ 0..9
+A..Z _ ]>* >>.  This format specifically is what the Plain Text Muldis D
+grammar uses ('radix' option), and is the result of parsing it.  The
+payload is interpreted as a base-I<N> rational where I<N> might be between
+2 and 36, and the given max-col-val says which possible value of I<N> to
+use.  Assuming all column values are between zero and I<N>-minus-one, the
 max-col-val contains that I<N>-minus-one.  So to specify, eg, bases
 [2,8,10,16], use max-col-val of [1,7,9,F].
 
@@ -1077,30 +1078,30 @@ max-col-val contains that I<N>-minus-one.  So to specify, eg, bases
 If the node has 3 elements and the payload is a 2-element C<Array|Seq>,
 then the max-col-val must be as per the previous bullet, and the payload
 C<Array|Seq> must be such that the first element is a Perl C<Str> of the
-format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z_]>* >> (an integer) and the second
-element is a Perl C<Str> of the format C<< <[1-9A-Z]><[0-9A-Z_]>* >> (a
-positive integer).  The payload is interpreted as per C<md_radix> but that
-its value comes from the first element (a numerator) divided by the second
-(a denominator).  Note that while the C<md_radix> format is limited to
-representing rationals whose denominator is a power of some I<N> between 2
-and 36, the C<md_ratio> format can represent those with any I<N> that is
-greater than or equal to 2, such as 1/43.
+format C<0> or C<< \-?<[ 1..9 A..Z ]><[ 0..9 A..Z _ ]>* >> (an integer) and
+the second element is a Perl C<Str> of the format C<< <[ 1..9 A..Z ]><[
+0..9 A..Z _ ]>* >> (a positive integer).  The payload is interpreted as per
+C<md_radix> but that its value comes from the first element (a numerator)
+divided by the second (a denominator).  Note that while the C<md_radix>
+format is limited to representing rationals whose denominator is a power of
+some I<N> between 2 and 36, the C<md_ratio> format can represent those with
+any I<N> that is greater than or equal to 2, such as 1/43.
 
 =item *
 
 If the node has 3 elements and the payload is a 3-element C<Array|Seq>,
 then the max-col-val must be as per the previous bullet, and the payload
 C<Array|Seq> must be such that the first element is a Perl C<Str> of the
-format C<0> or C<< \-?<[1-9A-Z]><[0-9A-Z_]>* >> (an integer) and the second
-element is a Perl C<Str> of the format C<< <[2-9A-Z]><[0-9A-Z_]>* >> (an
-integer greater than 1) and the third element is as per the first (an
-integer).  The payload is interpreted as per C<md_radix> but that its value
-comes from the first element (a mantissa) multiplied by the result of the
-second element (a radix) taken to the power of the third (an exponent).
-Note that while the C<md_ratio> format can represent all rationals, the
-very large or very small ones would be quite verbose written in that
-format, and so the C<md_float> format allows writing those values in a more
-terse fashion, such as 1.56*10^37.
+format C<0> or C<< \-?<[ 1..9 A..Z ]><[ 0..9 A..Z _ ]>* >> (an integer) and
+the second element is a Perl C<Str> of the format C<< <[ 2..9 A..Z ]><[
+0..9 A..Z _ ]>* >> (an integer greater than 1) and the third element is as
+per the first (an integer).  The payload is interpreted as per C<md_radix>
+but that its value comes from the first element (a mantissa) multiplied by
+the result of the second element (a radix) taken to the power of the third
+(an exponent).  Note that while the C<md_ratio> format can represent all
+rationals, the very large or very small ones would be quite verbose written
+in that format, and so the C<md_float> format allows writing those values
+in a more terse fashion, such as 1.56*10^37.
 
 =item *
 
@@ -1109,9 +1110,9 @@ Under Perl 6, the payload must be a Perl C<Rat|Num|Int>, which is mapped
 directly.  Under Perl 5, the payload must be just a canonical numeric value
 according to Perl; since native Perl 5 numerics are limited precision or
 are inexact (IEEE float), larger numerics can be represented either by a
-bigrat|bignum object or a character string of the format C<< 0\.?<[0-9_]>*
->> or C<< \-?<[1-9]><[0-9_]>*\.?<[0-9_]>* >> that is interpreted as base
-10.
+bigrat|bignum object or a character string of the format C<< 0\.?<[ 0..9 _
+]>* >> or C<< \-?<[1..9]><[ 0..9 _ ]>*\.?<[ 0..9 _ ]>* >> that is
+interpreted as base 10.
 
 =item *
 
@@ -1164,13 +1165,13 @@ Examples:
 
 =head2 sys.std.Rational.Type.RatRoundMeth
 
-This node type represents a rounding method.  It has 2 elements:
+This node kind represents a rounding method.  It has 2 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<RatRoundMeth>.
+Node kind: the Perl C<Str> value C<RatRoundMeth>.
 
 =item *
 
@@ -1192,14 +1193,14 @@ Examples:
 
 =head2 sys.std.Temporal.Type.UTCInstant
 
-This node type represents an "instant"/"datetime" value that is affiliated
+This node kind represents an "instant"/"datetime" value that is affiliated
 with the UTC time-zone.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<UTCInstant>.
+Node kind: the Perl C<Str> value C<UTCInstant>.
 
 =item *
 
@@ -1246,7 +1247,7 @@ Examples:
 
 =head2 sys.std.Temporal.Type.FloatInstant
 
-This node type is exactly the same as the C<UTCInstant> node type, in both
+This node kind is exactly the same as the C<UTCInstant> node kind, in both
 structure/constraints and interpretation, etc, except that it represents a
 "floating" instant/datetime value, that is not affiliated with any
 time-zone, and it is interpreted as a Muldis D
@@ -1260,14 +1261,14 @@ Examples:
 
 =head2 sys.std.Temporal.Type.Duration
 
-This node type represents a duration value, an amount of time, which is not
+This node kind represents a duration value, an amount of time, which is not
 fixed to any instant in time.  It has 2-3 elements:
 
 =over
 
 =item *
 
-Node type: the Perl C<Str> value C<Duration>.
+Node kind: the Perl C<Str> value C<Duration>.
 
 =item *
 
