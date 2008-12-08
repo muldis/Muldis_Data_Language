@@ -38,8 +38,7 @@ documents that comprise the remaining parts of the specification, in their
 suggested reading order (but that all follow the root), are:
 L<Muldis::D::Basics>, L<Muldis::D::Core> (which has its own tree of parts
 to follow), L<Muldis::D::Dialect::PTMD_Tiny>,
-L<Muldis::D::Dialect::HDMD_Perl6_Tiny>,
-L<Muldis::D::Dialect::HDMD_Perl5_Tiny>, L<Muldis::D::Conventions>,
+L<Muldis::D::Dialect::HDMD_Perl_Tiny>, L<Muldis::D::Conventions>,
 L<Muldis::D::Ext::Ordered>, L<Muldis::D::Ext::Integer>,
 L<Muldis::D::Ext::Blob>, L<Muldis::D::Ext::Text>, L<Muldis::D::Ext::Tuple>,
 L<Muldis::D::Ext::Relation>, L<Muldis::D::Ext::Set>,
@@ -261,8 +260,8 @@ code's behavior.
 
 See the following parts of the current multi-document for descriptions of
 bundled dialects (names subject to change):
-L<Muldis::D::Dialect::PTMD_Tiny>, L<Muldis::D::Dialect::HDMD_Perl6_Tiny>,
-L<Muldis::D::Dialect::HDMD_Perl5_Tiny>.
+L<Muldis::D::Dialect::PTMD_Tiny>,
+L<Muldis::D::Dialect::HDMD_Perl_Tiny>.
 
 =head2 Extensions
 
