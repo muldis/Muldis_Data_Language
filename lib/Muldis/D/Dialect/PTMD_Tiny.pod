@@ -127,7 +127,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token ln_dialect { PTMD_Tiny }
 
-    token ln_extensions { <tuple_body> }
+    token ln_extensions { <tuple_or_qv_payload> }
 
     token bootloader_imperative_routine_call {
         boot_call
@@ -139,16 +139,16 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         <imperative_routine_ro_args>
     }
 
-    token imperative_routine_name { <name_chain_body> }
+    token imperative_routine_name { <name_chain_payload> }
 
     token imperative_routine_upd_args {
         <list_open>
-            [[<name_body> <pair_elem_sep> <name_chain_body>]
+            [[<name_payload> <pair_elem_sep> <name_chain_payload>]
                 ** <list_elem_sep>]?
         <list_close>
     }
 
-    token imperative_routine_ro_args { <tuple_body> }
+    token imperative_routine_ro_args { <tuple_or_qv_payload> }
 
     token literal {
           <scalar_or_qv>
@@ -173,13 +173,17 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token scalar_or_qv {
         [Quasi]? Scalar <val_node_elem_sep>
         <type_name> <val_node_elem_sep>
+        <scalar_or_qv_payload>
+    }
+
+    token scalar_or_qv_payload {
         <possrep_name> <val_payload_elem_sep>
         <possrep_attrs>
     }
 
-    token possrep_name { <name_body> }
+    token possrep_name { <name_payload> }
 
-    token possrep_attrs { <tuple_body> }
+    token possrep_attrs { <tuple_or_qv_payload> }
 
     token bool {
         Bool <val_node_elem_sep>
@@ -189,6 +193,10 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token int {
         Int <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <int_payload>
+    }
+
+    token int_payload {
         [<int_max_col_val> <val_payload_elem_sep>]?
         <int_body>
     }
@@ -196,6 +204,10 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token string {
         String <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <string_payload>
+    }
+
+    token string_payload {
         [<int_max_col_val> <val_payload_elem_sep>]?
         <ord_list_open>
             [<int_body> ** <list_elem_sep>]?
@@ -205,6 +217,10 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token blob {
         Blob <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <blob_payload>
+    }
+
+    token blob_payload {
         <[137F]> <val_payload_elem_sep>
         [[<[ 0..9 A..F ]>+] ** <segment_sep>]?
     }
@@ -212,19 +228,21 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token text {
         Text <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <text_payload>
+    }
+
+    token text_payload {
         <char_str>
     }
 
     token tuple_or_qv {
         [Quasi]? Tuple <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
-        <tuple_body>
+        <tuple_or_qv_payload>
     }
 
     token relation_or_qv {
-          <generic_relation_empty_body_or_qv>
-        | <generic_relation_nonordered_attr_or_qv>
-        | <generic_relation_ordered_attr_or_qv>
+          <generic_relation_or_qv>
         | <set_or_qv>
         | <nothing_or_qv>
         | <single_or_qv>
@@ -232,27 +250,33 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         | <bag_or_qv>
     }
 
-    token generic_relation_empty_body_or_qv {
+    token generic_relation_or_qv {
         [Quasi]? Relation <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <generic_relation_or_qv_payload>
+    }
+
+    token generic_relation_or_qv_payload {
+          <generic_relation_empty_body_or_qv_payload>
+        | <generic_relation_nonordered_attr_or_qv_payload>
+        | <generic_relation_ordered_attr_or_qv_payload>
+    }
+
+    token generic_relation_empty_body_or_qv_payload {
         <list_open>
-            [<name_body> ** <list_elem_sep>]?
+            [<name_payload> ** <list_elem_sep>]?
         <list_close>
     }
 
-    token generic_relation_nonordered_attr_or_qv {
-        [Quasi]? Relation <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
+    token generic_relation_nonordered_attr_or_qv_payload {
         <list_open>
-            [<tuple_body> ** <list_elem_sep>]?
+            [<tuple_or_qv_payload> ** <list_elem_sep>]?
         <list_close>
     }
 
-    token generic_relation_ordered_attr_or_qv {
-        [Quasi]? Relation <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
+    token generic_relation_ordered_attr_or_qv_payload {
         <ord_list_open>
-            [<name_body> ** <list_elem_sep>]?
+            [<name_payload> ** <list_elem_sep>]?
         <ord_list_close>
         <val_payload_elem_sep>
         <list_open>
@@ -264,15 +288,20 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         <list_close>
     }
 
-    token tuple_body {
+    token tuple_or_qv_payload {
         <list_open>
-            [[<name_body> <pair_elem_sep> <literal>] ** <list_elem_sep>]?
+            [[<name_payload> <pair_elem_sep> <literal>]
+                ** <list_elem_sep>]?
         <list_close>
     }
 
     token set_or_qv {
         [Quasi]? Set <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <set_or_qv_payload>
+    }
+
+    token set_or_qv_payload {
         <list_open>
             [<literal> ** <list_elem_sep>]?
         <list_close>
@@ -285,6 +314,10 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token single_or_qv {
         [Quasi]? Single <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <single_or_qv_payload>
+    }
+
+    token single_or_qv_payload {
         <list_open>
             <literal>
         <list_close>
@@ -293,6 +326,10 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token array_or_qv {
         [Quasi]? Array <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <array_or_qv_payload>
+    }
+
+    token array_or_qv_payload {
         <ord_list_open>
             [<literal> ** <list_elem_sep>]?
         <ord_list_close>
@@ -301,15 +338,15 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token bag_or_qv {
         [Quasi]? Bag <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
-        <bag_body>
+        <bag_or_qv_payload>
     }
 
-    token bag_body {
-          bag_body_counted_values
-        | bag_body_repeated_values
+    token bag_or_qv_payload {
+          bag_or_qv_payload_counted_values
+        | bag_or_qv_payload_repeated_values
     }
 
-    token bag_body_counted_values {
+    token bag_or_qv_payload_counted_values {
         <list_open>
             [[<literal> <pair_elem_sep> <count>] ** <list_elem_sep>]?
         <list_close>
@@ -320,7 +357,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         <pint_body>
     }
 
-    token bag_body_repeated_values {
+    token bag_or_qv_payload_repeated_values {
         <list_open>
             [<literal> ** <list_elem_sep>]?
         <list_close>
@@ -376,19 +413,21 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token name {
         Name <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
-        <name_body>
+        <name_payload>
     }
 
-    token name_body { <char_str> }
+    token name_payload {
+        <char_str>
+    }
 
     token name_chain {
         NameChain <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
-        <name_chain_body>
+        <name_chain_payload>
     }
 
-    token name_chain_body {
-        <name_body> [\s* <nc_elem_sep> \s* <name_body>]+
+    token name_chain_payload {
+        <name_payload> [\s* <nc_elem_sep> \s* <name_payload>]+
     }
 
     token nc_elem_sep { '.' }
@@ -396,16 +435,20 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token decl_name_chain {
         DeclNameChain <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
-        <decl_name_chain_body>
+        <decl_name_chain_payload>
     }
 
-    token decl_name_chain_body {
-        [<name_body> [\s* <nc_elem_sep> \s* <name_body>]*]?
+    token decl_name_chain_payload {
+        [<name_payload> [\s* <nc_elem_sep> \s* <name_payload>]*]?
     }
 
     token comment {
         Comment <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <comment_payload>
+    }
+
+    token comment_payload {
         <char_str>
     }
 
@@ -417,6 +460,10 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token rat {
         Rat <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <rat_payload>
+    }
+
+    token rat_payload {
         [<int_max_col_val> <val_payload_elem_sep>]?
         <rat_body>
     }
@@ -441,6 +488,10 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token instant {
         [UTC|Float] Instant <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <instant_payload>
+    }
+
+    token instant_payload {
         [<int_max_col_val> <val_payload_elem_sep>]?
         <ord_list_open>
             <int_body>? <list_elem_sep>
@@ -453,6 +504,10 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
     token duration {
         Duration <val_node_elem_sep>
         [<type_name> <val_node_elem_sep>]?
+        <duration_payload>
+    }
+
+    token duration_payload {
         [<int_max_col_val> <val_payload_elem_sep>]?
         <ord_list_open>
             [<int_body>? <list_elem_sep>] ** 5
@@ -460,7 +515,7 @@ capturing parens for simplicity to fulfil its purpose as an illustration.
         <ord_list_close>
     }
 
-    token type_name { <name_chain_body> }
+    token type_name { <name_chain_payload> }
 
 =head1 EXAMPLES
 
