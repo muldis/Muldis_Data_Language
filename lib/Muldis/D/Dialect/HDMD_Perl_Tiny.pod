@@ -231,36 +231,25 @@ Examples
 
 =head2 sys.std.Core.Type.Scalar
 
-This node kind represents a scalar subtype value.  Its payload is a Perl
-C<Array|Seq> with 2 elements:
-
-=over
-
-=item *
-
-Possrep name: a Perl C<Str> as per the payload of a C<Name> PHMD node.
-
-=item *
-
-Possrep attrs: a Perl C<Hash|Mapping> as per the payload of a C<Tuple>
-PHMD node.
-
-=back
-
-This node is interpreted as a Muldis D C<sys.std.Core.Type.Scalar> subtype
-value whose declared type is specified by the PHMD node's (mandatory for
-Scalar) type name element and whose attributes are defined by the payload.
+This node kind represents a scalar subtype value.  This node is interpreted
+as a Muldis D C<sys.std.Core.Type.Scalar> subtype value whose declared type
+is specified by the PHMD node's (mandatory for C<Scalar>) type name element
+and whose attributes are defined by the payload.  Under Perl 6, the payload
+must be a Perl 6 C<Pair>, whose key and value, respectively, are designated
+I<possrep name> and I<possrep attrs>.  Under Perl 5, the payload must be
+just a Perl 5 array ref having exactly 2 elements, that are designated the
+same 2 labels in that order.  The possrep name and possrep attrs must be as
+per the payload of a C<Name> and C<Tuple> PHMD node payload, respectively.
 The C<Scalar> PHMD node kind can only be used for scalar types that have at
-least 1 possrep, and the possrep attrs (second payload element) is
-interpreted specifically as attributes of the declared type's possrep which
-is specified by the possrep name (first payload element).  Each key+value
-pair of the second payload element defines a named possrep attribute of the
-new scalar; the pair's key and value are, respectively, a Perl C<Str> that
-specifies the possrep attribute name, and a PHMD node that specifies the
-possrep attribute value.  (Note that most scalar types have at least 1
-possrep; the only ones that don't are either union types of types having
-possreps, or they are core system-defined types, and those all have their
-own dedicated syntax for literals.)
+least 1 possrep, and the I<possrep attrs> is interpreted specifically as
+attributes of the declared type's possrep which is specified by the
+I<possrep name>.  Each key+value pair of the second payload element defines
+a named possrep attribute of the new scalar; the pair's key and value are,
+respectively, a Perl C<Str> that specifies the possrep attribute name, and
+a PHMD node that specifies the possrep attribute value.  (Note that most
+scalar types have at least 1 possrep; the only ones that don't are either
+union types of types having possreps, or they are core system-defined
+types, and those all have their own dedicated syntax for literals.)
 
 Perl 6 Examples:
 
@@ -606,59 +595,60 @@ Perl 5 Examples:
 
 =head2 sys.std.Core.Type.Relation
 
-This node kind represents a relation value.  Its payload is a Perl
-C<Array|Seq> with 1-2 elements:
+This node kind represents a relation value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Relation> value whose attributes and tuples
+are defined by the payload.  The payload is interpreted as follows:
 
 =over
 
 =item *
 
-Only when the payload has 2 elements; ordered attr names; a Perl
-C<Array|Seq> value.
+Under Perl 6, iff the payload is a Perl 6 C<Set|KeySet> with zero elements,
+then it defines the only relation value having zero attributes and zero
+tuples.  For the Perl 5 equivalent, change the C<Set|KeySet> to a Perl 5
+array ref.
 
 =item *
 
-The main payload; only when the payload has 1 element, a Perl
-C<Array|Seq|Set|KeySet> of C<Str|Hash|Mapping> value; only when the payload
-has 2 elements, a Perl C<Array|Seq> of C<Array|Seq> value.
-
-=back
-
-This node is interpreted as a Muldis D C<sys.std.Core.Type.Relation> value
-as follows:
-
-=over
+Under Perl 6, iff the payload is a Perl 6 C<Set|KeySet> with at least one
+element, and every element is a Perl 6 C<Str> (as per a valid payload for a
+C<Name> PHMD node), then it defines the attribute names of a relation
+having zero tuples.  For the Perl 5 equivalent, change the C<Set|KeySet> to
+a Perl 5 array ref, and each C<Str> to a Perl 5 character string.
 
 =item *
 
-If the payload has 1 element, then:  The new relation value's tuples and
-attribute names are defined by the main payload.  Iff the main payload has
-zero elements, then it defines the only relation value having zero
-attributes and zero tuples.  If the main payload has elements, then either
-the elements must all be C<Str>, or they must all be C<Hash|Mapping>, but
-not both kinds in the same main payload.  Iff a main payload's elements are
-each C<Str>, then the main payload defines the attribute names of a
-relation having zero tuples; each element must be as per the main payload
-of a C<Name>-defining PHMD node.  Iff a main payload's elements are each
-C<Hash|Mapping>, then each element of the main payload defines a tuple of
-the new relation; each element is as per the main payload of a
-tuple-defining PHMD node; every tuple-defining element of the main payload
+Under Perl 6, iff the payload is a Perl 6 C<Set|KeySet> with at least one
+element, and every element is a Perl 6 C<Mapping|Hash> (as per a valid
+payload for a C<Tuple> PHMD node), then each element of the payload defines
+a tuple of the new relation; every tuple-defining element of the payload
 must be of the same degree and have the same attribute names as its sibling
 elements; these are the degree and attribute names of the relation as a
-whole, which is its heading for the current purposes.
+whole, which is its heading for the current purposes.  For the Perl 5
+equivalent, change the C<Set|KeySet> to a Perl 5 array ref, and each
+C<Mapping|Hash> to a Perl 5 hash ref.
 
 =item *
 
-If the payload has 2 elements, then:  The new relation value's attribute
-names are defined by the ordered attr names (first element) and the
-relation body's tuples' attribute values are defined by the main payload
-(second element).  This format is meant to be the most compact of the
-generic relation payload formats, as the attribute names only appear once
-for the relation rather than repeating for each tuple.  As a trade-off, the
-attribute values per tuple from the second element must appear in the same
-order as their corresponding attribute names appear in the first element,
-as the names and values in the relation literal are matched up by ordinal
-position here.
+Under Perl 6, iff the payload is a Perl 6 C<Pair>, then:  The new relation
+value's attribute names are defined by the payload's key, which is a Perl 6
+C<Seq|Array> of C<Str> (each as per a C<Name> node payload), and the
+relation body's tuples' attribute values are defined by the payload's
+value, which is a Perl 6 C<Set|KeySet> of C<Seq|Array> of tuple attribute
+value defining PHMD nodes.  This format is meant to be the most compact of
+the generic relation payload formats, as the attribute names only appear
+once for the relation rather than repeating for each tuple.  As a
+trade-off, the attribute values per tuple from the payload value must
+appear in the same order as their corresponding attribute names appear in
+the payload key, as the names and values in the relation literal are
+matched up by ordinal position here.  For the Perl 5 equivalent, change the
+C<Pair> to a Perl 5 array ref with exactly 2 elements, each of which is a
+Perl 5 array ref, and:  The new relation value's attribute names are
+defined by the payload's first element, which is a Perl 5 array ref of
+character string (each as per a C<Name> node payload), and the relation
+body's tuples' attribute values are defined by the payload's value, which
+is a Perl 5 array ref of Perl 5 array ref of tuple attribute value defining
+PHMD nodes.
 
 =back
 
@@ -684,19 +674,19 @@ Perl 6 Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
 Perl 5 Examples:
 
-    [ 'Relation', [ [] ] ]  # zero attrs + zero tuples
+    [ 'Relation', [] ]  # zero attrs + zero tuples
 
-    [ 'Relation', [ [ 'x', 'y', 'z' ] ] ]  # 3 attrs + zero tuples
+    [ 'Relation', [ 'x', 'y', 'z' ] ]  # 3 attrs + zero tuples
 
-    [ 'Relation', [ [ {} ] ] ]  # zero attrs + 1 tuple
+    [ 'Relation', [ {} ] ]  # zero attrs + 1 tuple
 
-    [ 'Relation', [ [
+    [ 'Relation', [
         {
             'login_name' => [ 'Text', 'hartmark' ],
             'login_pass' => [ 'Text', 'letmein' ],
             'is_special' => [ 'Bool', 'true' ],
         },
-    ] ] ]  # 3 attrs + 1 tuple
+    ] ]  # 3 attrs + 1 tuple
 
     [ 'Relation', 'fed.lib.the_db.gene.Person', [ [ 'name', 'age' ], [
         [ [ 'Text', 'Michelle' ], [ 'Int', 17 ] ],
