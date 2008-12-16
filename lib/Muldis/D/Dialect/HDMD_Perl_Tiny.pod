@@ -262,7 +262,32 @@ possrep; the only ones that don't are either union types of types having
 possreps, or they are core system-defined types, and those all have their
 own dedicated syntax for literals.)
 
-Examples:
+Perl 6 Examples:
+
+    [ 'Scalar', 'sys.std.Rational.Type.Rat', float => {
+        mantissa => :Int(45207196),
+        radix    => :Int(10),
+        exponent => :Int(37),
+    } ]
+
+    [ 'Scalar', 'sys.std.Temporal.Type.UTCDateTime', datetime => {
+        year   => :Int(2003),
+        month  => :Int(10),
+        day    => :Int(26),
+        hour   => :Int(1),
+        minute => :Int(30),
+        second => :Rat(0),
+    } ]
+
+    [ 'Scalar', 'fed.lib.the_db.WeekDay', name => {
+        '' => :Text<monday>,
+    } ]
+
+    [ 'Scalar', 'fed.lib.the_db.WeekDay', number => {
+        '' => :Int(5),
+    } ]
+
+Perl 5 Examples:
 
     [ 'Scalar', 'sys.std.Rational.Type.Rat', [ 'float', {
         'mantissa' => [ 'Int', [ 45207196 ] ],
@@ -301,11 +326,13 @@ payload may be the specific result of a Perl 5 logical expression, such as
 C<(1 == 0)> or C<(1 == 1)>; said values are probably the empty string and
 number 1, respectively.
 
-Examples:
+Perl 6 Examples:
+
+    :Bool(Bool::True)
+
+Perl 5 Examples:
 
     [ 'Bool', 'true' ]
-
-    [ 'Bool', Bool::False ] # Perl 6 only
 
     [ 'Bool', (1 == 0) ]
 
@@ -355,7 +382,27 @@ by a bigint object or a character string of the format C<0> or C<<
 
 =back
 
-Examples:
+Perl 6 Examples:
+
+    :Int(:2<11001001>) # binary
+
+    :Int(:8<0>) # octal
+
+    :Int(:8<644>) # octal
+
+    :Int(-34) # decimal
+
+    :Int(42) # decimal
+
+    :Int(:16<DEADBEEF>) # hexadecimal
+
+    :Int(:36<-HELLOWORLD>) # base-36
+
+    :Int(:4<301>) # base-4
+
+    :Int(:12<A09B>) # base-12
+
+Perl 5 Examples:
 
     [ 'Int', [ '1', '11001001' ] ] # binary
 
@@ -405,7 +452,13 @@ main payload elements is further interpreted according to the count of
 elements and max-col-val element of this node, in the same manner as how an
 C<Int> node main payload is interpreted.
 
-Examples:
+Perl 6 Examples:
+
+    :String[0x50,0x65,0x72,0x6C] # Unicode codepoints = 'Perl'
+
+    :String[80,101,114,109] # same thing
+
+Perl 5 Examples:
 
     [ 'String', [ 'F', ['50','65','72','6C'] ] ] # Unicode codepoints = 'Perl'
 
@@ -451,7 +504,17 @@ flag is false.
 
 =back
 
-Examples:
+Perl 6 Examples I<TODO: What is the actual syntax for the P6 Blob type?>:
+
+    :Blob( Blob.new(  2 => '00101110100010' ) ) # binary
+
+    :Blob( Blob.new(  4 => '' ) )
+
+    :Blob( Blob.new( 16 => 'A705E' ) ) # hexadecimal
+
+    :Blob( Blob.new(  8 => '523504376' ) )
+
+Perl 5 Examples:
 
     [ 'Blob', [ '1', '00101110100010' ] ] # binary
 
@@ -476,7 +539,17 @@ directly.  Under Perl 5, the payload must be just a canonical Perl
 character string, which is a scalar whose utf-8 flag is true, or that
 doesn't contain any octets with a C<1>-valued highest bit.
 
-Examples:
+Perl 6 Examples:
+
+    :Text<Ceres>
+
+    :Text<サンプル>
+
+    :Text<>
+
+    :Text<Perl>
+
+Perl 5 Examples:
 
     [ 'Text', 'Ceres' ]
 
@@ -498,7 +571,22 @@ the new tuple; the pair's key and value are, respectively, a Perl C<Str>
 that specifies the attribute name, and a PHMD node that specifies the
 attribute value.
 
-Examples:
+Perl 6 Examples:
+
+    :Tuple{}
+
+    [ 'Tuple', 'type.tuple_from.var.fed.data.the_db.account.users', {
+        login_name => :Text<hartmark>,
+        login_pass => :Text<letmein>,
+        is_special => :Bool(Bool::True),
+    } ]
+
+    :Tuple{
+        name => :Text<Michelle>,
+        age  => :Int(17),
+    }
+
+Perl 5 Examples:
 
     [ 'Tuple', {} ]
 
@@ -571,7 +659,27 @@ position here.
 
 =back
 
-Examples:
+Perl 6 Examples I<TODO: What is the actual syntax for the P6 Set type?>:
+
+    :Relation( Set.new() )  # zero attrs + zero tuples
+
+    :Relation( Set.new(<x y z>) )  # 3 attrs + zero tuples
+
+    :Relation( Set.new( {} ) )  # zero attrs + 1 tuple
+
+    :Relation( Set.new(
+        {
+            login_name => :Text<hartmark>,
+            login_pass => :Text<letmein>,
+            is_special => :Bool(Bool::True),
+        },
+    ) )  # 3 attrs + 1 tuple
+
+    [ 'Relation', 'fed.lib.the_db.gene.Person', <name age> => Set.new(
+        [ :Text<Michelle>, :Int(17) ],
+    ) ]  # 2 attrs + 1 tuple
+
+Perl 5 Examples:
 
     [ 'Relation', [ [] ] ]  # zero attrs + zero tuples
 
@@ -599,7 +707,22 @@ C<sys.std.Core.Type.Set> value whose elements are defined by the payload.
 Each element of the payload defines a unary tuple of the new set; each
 element is a PHMD node that defines the C<value> attribute of the tuple.
 
-Examples:
+Perl 6 Examples I<TODO: What is the actual syntax for the P6 Set type?>:
+
+    [ 'Set', 'fed.lib.the_db.account.Country_Names', Set.new(
+        :Text<Canada>,
+        :Text<Spain>,
+        :Text<Jordan>,
+        :Text<Thailand>,
+    ) ]
+
+    :Set( Set.new(
+        :Int(3),
+        :Int(16),
+        :Int(85),
+    ) )
+
+Perl 5 Examples:
 
     [ 'Set', 'fed.lib.the_db.account.Country_Names', [
         [ 'Text', 'Canada' ],
@@ -620,7 +743,11 @@ This node kind represents a 'nothing' value; it is interpreted as a Muldis
 D C<sys.std.Core.Type.Nothing>.  It has 1 element, which is the Perl C<Str>
 value C<Nothing>.
 
-Examples:
+Perl 6 Examples:
+
+    :Nothing()  # or how does Perl 6 make a Pair with undef/default value?
+
+Perl 5 Examples:
 
     [ 'Nothing' ]
 
@@ -632,7 +759,11 @@ as a Muldis D C<sys.std.Core.Type.Single> value whose element is defined by
 the payload.  The payload is a PHMD node that defines the C<value>
 attribute of the single tuple of the new 'single'.
 
-Examples:
+Perl 6 Examples:
+
+    :Single( :Text('I know this one!') )
+
+Perl 5 Examples:
 
     [ 'Single', [ 'Text', 'I know this one!' ] ]
 
@@ -646,7 +777,22 @@ element value is a PHMD node that defines the C<value> attribute of the
 tuple, and the element index is used as the C<index> attribute of the
 tuple.
 
-Examples:
+Perl 6 Examples:
+
+    :Array[
+        :Text<Alphonse>,
+        :Text<Edward>,
+        :Text<Winry>,
+    ]
+
+    [ 'Array', 'fed.lib.the_db.stats.Samples_By_Order', [
+        :Int(57),
+        :Int(45),
+        :Int(63),
+        :Int(61),
+    ] ]
+
+Perl 5 Examples:
 
     [ 'Array', [
         [ 'Text', 'Alphonse' ],
@@ -710,7 +856,24 @@ were in the payload.
 
 =back
 
-Examples:
+Perl 6 Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
+
+    [ 'Bag', 'fed.lib.the_db.inventory.Fruit', Bag.new(
+        :Text<Apple>  => 500,
+        :Text<Orange> => 300,
+        :Text<Banana> => 400,
+    ) ]
+
+    :Bag( Bag.new( [
+        :Text<Foo>,
+        :Text<Quux>,
+        :Text<Foo>,
+        :Text<Bar>,
+        :Text<Baz>,
+        :Text<Baz>,
+    ] ) )
+
+Perl 5 Examples:
 
     [ 'Bag', 'fed.lib.the_db.inventory.Fruit', [
         [ [ 'Text', 'Apple'  ], [ '500' ] ],
@@ -754,7 +917,13 @@ that, while Plain Text Muldis D may contain a few escape sequences, those
 would be replaced with what they represent prior to making a PHMD node.
 The payload must be as per the payload of a C<Text> PHMD node.
 
-Examples:
+Perl 6 Examples:
+
+    :Name<login_pass>
+
+    :Name('First Name')
+
+Perl 5 Examples:
 
     [ 'Name', 'login_pass' ]
 
@@ -788,7 +957,13 @@ into the C<Array|Seq> format, then processed as per the latter.
 
 =back
 
-Examples:
+Perl 6 Examples:
+
+    :NameChain['fed','data','the_db','gene','sorted_person_name']
+
+    :NameChain('fed.data.the_db.stats.samples by order')
+
+Perl 5 Examples:
 
     [ 'NameChain', ['fed','data','the_db','gene','sorted_person_name'] ]
 
@@ -804,7 +979,13 @@ however, a zero part chain can only be expressed with the C<Array|Seq>
 payload format; an empty string C<Str> format will be interpreted as having
 a single element that is the empty string.
 
-Examples:
+Perl 6 Examples:
+
+    :DeclNameChain['gene','sorted_person_name']
+
+    :DeclNameChain('stats.samples by order')
+
+Perl 5 Examples:
 
     [ 'DeclNameChain', ['gene','sorted_person_name'] ]
 
@@ -820,7 +1001,11 @@ D may contain a few escape sequences, those would be replaced with what
 they represent prior to making a PHMD node.  The payload must be as per the
 payload of a C<Text> PHMD node.
 
-Examples:
+Perl 6 Examples:
+
+    :Comment('This does something.')
+
+Perl 5 Examples:
 
     [ 'Comment', 'This does something.' ]
 
@@ -840,11 +1025,13 @@ the specific result of a Perl 5 order-determining expression, such as C<<
 (1 <=> 2) >> or C<< (1 <=> 1) >> or C<< (2 <=> 1) >>; said values are
 probably the 3 twice-earlier-mentioned integers.
 
-Examples:
+Perl 6 Examples:
+
+    :Order(Order::Same)
+
+Perl 5 Examples:
 
     [ 'Order', 'same' ]
-
-    [ 'Order', Order::Increase ] # Perl 6 only
 
     [ 'Order', (2 <=> 1) ]
 
@@ -947,7 +1134,33 @@ element taken to the power of the third.
 
 =back
 
-Examples:
+Perl 6 Examples:
+
+    :Rat(:2<-1.1>)
+
+    :Rat(-1.5) # same val as prev
+
+    :Rat(3.14159)
+
+    :Rat(:11<0.0>)
+
+    :Rat(:16<DEADBEEF.FACE>)
+
+    :Rat(:36<0.000AZE>)
+
+    :Rat(:7<500001> div :7<1000>)
+
+    :Rat(:12<A09B> div :12<A>)
+
+    :Rat(:2<1011101101> * :2<10> ** :2<-11011>)
+
+    :Rat(45207196 * 10 ** 37)
+
+    :Rat(1 div 43)
+
+    :Rat(314159 * 10 ** -5)
+
+Perl 5 Examples:
 
     [ 'Rat', [ '1', '-1.1' ] ]
 
@@ -985,7 +1198,11 @@ the payload.  The payload must be a Perl C<Str> having one of the 7 values
 C<half_down>, C<half_up>, C<half_even>, C<to_floor>, C<to_ceiling>,
 C<to_zero>, C<to_inf>.
 
-Examples:
+Perl 6 Examples:
+
+    :RatRoundMeth<half_up>
+
+Perl 5 Examples:
 
     [ 'RatRoundMeth', 'half_up' ]
 
@@ -1034,7 +1251,15 @@ is not a C<UTCDateTime> but rather a C<UTCDate> or C<UTCTime>,
 respectively; if any other combination of attributes are defined, then the
 value is just a C<UTCInstant> and not of any of the other 3 subtypes.
 
-Examples:
+Perl 6 Examples:
+
+    :UTCInstant[1964,10,16,16,12,47.5] # a UTCDateTime
+
+    :UTCInstant[2002,12,6] # a UTCDate
+
+    :UTCInstant[undef,undef,undef,14,2,29] # a UTCTime
+
+Perl 5 Examples:
 
     [ 'UTCInstant', [ [1964,10,16,16,12,47.5] ] ] # a UTCDateTime
 
@@ -1050,7 +1275,13 @@ structure/constraints and interpretation, etc, except that it represents a
 time-zone, and it is interpreted as a Muldis D
 C<sys.std.Temporal.Type.FloatInstant> value.
 
-Examples:
+Perl 6 Examples:
+
+    :FloatInstant[2003,4,5,2] # min,sec unknown or N/A
+
+    :FloatInstant[1407] # just know its sometime in 1407
+
+Perl 5 Examples:
 
     [ 'FloatInstant', [ [2003,4,5,2] ] ] # min,sec unknown or N/A
 
@@ -1095,7 +1326,11 @@ A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
 integer, and C<seconds> may be any rational number.  I<Currently,
 C<Duration> has no system-defined subtypes, but that may change later.>
 
-Examples:
+Perl 6 Examples:
+
+    :Duration[3,5,1,6,15,45.000012]
+
+Perl 5 Examples:
 
     [ 'Duration', [ [3,5,1,6,15,45.000012] ] ]
 

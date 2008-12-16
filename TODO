@@ -35,14 +35,25 @@ core and under extensions, will remain named for the non-q types, but they
 will actually close over the quasi types; however, when their arguments are
 appropriate non-q types, they effectively are as they were before.  Same
 principle as how the .Int namespace has some routines only valid for NNInt
-or PInt etc.  After the change, there will only exist the Nothing type,
-QNothing won't exist.  No QDatabase type will be added. The catalog
+or PInt etc.  Or actually no, we should rename the namespaces to be QFoo
+also, to avoid deception/confusion.  After the change, there will only
+exist the Nothing type, QNothing won't exist.  Generally speaking, if a
+scalar|tuple|relation has zero attributes, there is no difference at all
+between a quasi-foo and a foo, and likewise with a relation having zero
+tuples, there is no diff.  No QDatabase type will be added.  The catalog
 facilities will still huffmanize for non-q types; one still has to turn an
 is-quasi flag on to get that, else the more restrictive behaviour will be
 default.  Any documentation referring to plain scalar|tuple|relation will
 be updated to refer to "q/scalar"|"q/tuple"|"q/relation" etc, when the
 quasi-versions are also applicable there (I have to examine every example
 case by case), but the emphasis would still be on the non-q versions.
+As for relational operators that would consider arguments to be
+incompatible with non-q relation context etc, such as join or union of 2
+different-degree RVA with same attr name, the q-savvy operators would
+succeed but can offer a warning if the declared types of the arguments are
+plain Relation etc, same as one can have warnings for certain is_identical.
+In the general case even ungroup/unwrap is defined for quasi-foo also; it
+would only die if the specific attributes asked to be ungr/wr are quasis.
 
 * Add a feature affecting namespaces where one can refer to "the current
 depot|subdepot|etc" as defined by a global variable of sorts.  The idea is
