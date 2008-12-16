@@ -537,10 +537,10 @@ This node kind represents a character string.  This node is interpreted as
 a Muldis D C<sys.std.Core.Type.Text> value by directly mapping the payload.
 Note that, while Plain Text Muldis D may contain a few escape sequences,
 those would be replaced with what they represent prior to making a PHMD
-node.  Under Perl 6, the payload must be a Perl C<Str>, which is mapped
-directly.  Under Perl 5, the payload must be just a canonical Perl
-character string, which is a scalar whose utf-8 flag is true, or that
-doesn't contain any octets with a C<1>-valued highest bit.
+node.  Under Perl 6, the payload must be a Perl 6 C<Str>.  Under Perl 5,
+the payload must be just a canonical Perl 5 character string, which is any
+Perl 5 scalar value (a Muldis D implementation in Perl 5 can ignore the
+utf-8 flag as Perl itself knows how to treat its strings consistently).
 
 Perl 6 Examples:
 
@@ -556,7 +556,7 @@ Perl 5 Examples:
 
     [ 'Text', 'Ceres' ]
 
-    [ 'Text', 'サンプル' ] # note: Perl 5 needs "use utf8;" pragma to work
+    [ 'Text', 'サンプル' ] # note: needs "use utf8;" pragma to work
 
     [ 'Text', '' ]
 
@@ -566,13 +566,13 @@ Perl 5 Examples:
 
 =head2 sys.std.Core.Type.Tuple
 
-This node kind represents a tuple value.  Its payload is a Perl
-C<Hash|Mapping> value.  This node is interpreted as a Muldis D
-C<sys.std.Core.Type.Tuple> value whose attributes are defined by the
-payload.  Each key+value pair of the payload defines a named attribute of
-the new tuple; the pair's key and value are, respectively, a Perl C<Str>
-that specifies the attribute name, and a PHMD node that specifies the
-attribute value.
+This node kind represents a tuple value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Tuple> value whose attributes are defined by
+the payload.  Under Perl 6, the payload must be a Perl 6 C<Mapping|Hash>.
+Under Perl 5, the payload must be just a Perl 5 hash ref.  Each key+value
+pair of the payload defines a named attribute of the new tuple; the pair's
+key and value are, respectively, a Perl C<Str> that specifies the attribute
+name, and a PHMD node that specifies the attribute value.
 
 Perl 6 Examples:
 
@@ -704,11 +704,12 @@ Perl 5 Examples:
 
 =head2 sys.std.Core.Type.Set
 
-This node kind represents a set value.  Its payload is a Perl
-C<Array|Seq|Set|KeySet> value.  This node is interpreted as a Muldis D
-C<sys.std.Core.Type.Set> value whose elements are defined by the payload.
-Each element of the payload defines a unary tuple of the new set; each
-element is a PHMD node that defines the C<value> attribute of the tuple.
+This node kind represents a set value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Set> value whose elements are defined by the
+payload.  Under Perl 6, the payload must be a Perl 6 C<Set|KeySet>.  Under
+Perl 5, the payload must be just a Perl 5 array ref.  Each element of the
+payload defines a unary tuple of the new set; each element is a PHMD node
+that defines the C<value> attribute of the tuple.
 
 Perl 6 Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
@@ -772,13 +773,13 @@ Perl 5 Examples:
 
 =head2 sys.std.Core.Type.Array
 
-This node kind represents a sequence value.  Its payload is a Perl
-C<Array|Seq> value.  This node is interpreted as a Muldis D
-C<sys.std.Core.Type.Array> value whose elements are defined by the payload.
-Each element of the payload defines a binary tuple of the new sequence; the
-element value is a PHMD node that defines the C<value> attribute of the
-tuple, and the element index is used as the C<index> attribute of the
-tuple.
+This node kind represents a sequence value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Array> value whose elements are defined by the
+payload.  Under Perl 6, the payload must be a Perl 6 C<Seq|Array>.  Under
+Perl 5, the payload must be just a Perl 5 array ref.  Each element of the
+payload defines a binary tuple of the new sequence; the element value is a
+PHMD node that defines the C<value> attribute of the tuple, and the element
+index is used as the C<index> attribute of the tuple.
 
 Perl 6 Examples:
 
@@ -812,50 +813,50 @@ Perl 5 Examples:
 
 =head2 sys.std.Core.Type.Bag
 
-This node kind represents a bag value.  Its payload is a Perl
-C<Bag|KeyBag>, or C<Array|Seq> of C<Array|Seq>, or C<Array|Seq>.  This node
-is interpreted as a Muldis D C<sys.std.Core.Type.Bag> value whose elements
-are defined by the payload.  The payload is interpreted as follows:
+This node kind represents a bag value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Bag> value whose elements are defined by the
+payload.  The payload is interpreted as follows:
 
 =over
 
 =item *
 
-Iff the payload is not an C<Array|Seq>, then the payload must be a Perl 6
-(there is no Perl 5 analogy) C<Bag|KeyBag> value; the payload elements are
-PHMD nodes corresponding to the C<value> attribute of the new bag's tuples,
-and the mapping is as you should expect.
+Under Perl 6, the payload must be a Perl 6 C<Bag|KeyBag|Set|KeySet> value;
+the payload element keys are PHMD nodes corresponding to the C<value>
+attribute of the new bag's tuples, and the payload element values are
+positive integers (or C<Bool::True>, which counts as the number 1)
+corresponding to the C<count> attribute; the payload element mapping is as
+you should expect.
 
 =item *
 
-Iff the payload is an C<Array|Seq> with zero elements, then it defines the
-only bag value having zero elements.  Iff the payload is an C<Array|Seq>
-with at least one element, then every one of the payload elements must be
-itself an C<Array|Seq>.
+Under Perl 5, iff the payload is a Perl 5 array ref with zero elements,
+then it defines the only bag value having zero elements.  Iff the payload
+is an array ref with at least one element, then every one of the payload
+elements must be itself a Perl 5 array ref.
 
 =item *
 
-Iff the payload is an C<Array|Seq> with at least one (C<Array|Seq>)
-element, and the first element of that element I<is> itself an
-C<Array|Seq>, then the payload is interpreted as being of the I<array
-counted values> bag format.  Each element of the payload defines a binary
-tuple of the new bag; the element is a 2-element C<Array|Seq>, and those 2
-elements, by index order, are a PHMD node that defines the C<value>
-attribute of the tuple, and a 2-3-element C<Array|Seq> (which is the same
-as an 'Int' PHMD node minus the first constant element) that defines the
-C<count> attribute of the tuple; the count must be a positive integer.
+Under Perl 5, iff the payload is an array ref with at least one (array ref)
+element, and the first element of that element I<is> itself an array ref,
+then the payload is interpreted as being of the I<array counted values> bag
+format.  Each element of the payload defines a binary tuple of the new bag;
+the element is a 2-element array ref, and those 2 elements, by index order,
+are a PHMD node that defines the C<value> attribute of the tuple, and a
+valid C<Int> PHMD node payload that defines the C<count> attribute of the
+tuple; the count must be a positive integer.
 
 =item *
 
-Iff the payload is an C<Array|Seq> with at least one (C<Array|Seq>)
-element, and the first element of that element I<is not> itself an
-C<Array|Seq>, then the payload is interpreted as being of the I<array
-repeated values> bag format.  Each element of the payload contributes to a
-binary tuple of the new bag; the element value is a PHMD node that defines
-the C<value> attribute of the tuple.  The bag has 1 tuple for every
-distinct (after format normalization) element value in the payload, and the
-C<count> attribute of that tuple says how many instances of said element
-were in the payload.
+Under Perl 5, iff the payload is an array ref with at least one (array ref)
+element, and the first element of that element I<is not> itself an array
+ref, then the payload is interpreted as being of the I<array repeated
+values> bag format.  Each element of the payload contributes to a binary
+tuple of the new bag; the element value is a PHMD node that defines the
+C<value> attribute of the tuple.  The bag has 1 tuple for every distinct
+(after format normalization) element value in the payload, and the C<count>
+attribute of that tuple says how many instances of said element were in the
+payload.
 
 =back
 
