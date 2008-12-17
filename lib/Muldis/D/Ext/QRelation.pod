@@ -47,13 +47,13 @@ explicit argument is given to it.
 
 =over
 
-=item C<function sys.std.Relation.degree result NNInt params {
+=item C<function sys.std.QRelation.degree result NNInt params {
 topic(Relation) }>
 
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
-=item C<function sys.std.Relation.is_empty result Bool params {
+=item C<function sys.std.QRelation.is_empty result Bool params {
 topic(Relation) }>
 
 This function results in C<Bool:true> iff its argument has zero tuples, and
@@ -62,23 +62,23 @@ represent a sparse data item, analagously to a SQL nullable context, then
 testing the C<Maybe> with C<is_empty> is analagous to testing a SQL
 nullable with C<is null>.
 
-=item C<function sys.std.Relation.is_not_empty result Bool params {
+=item C<function sys.std.QRelation.is_not_empty result Bool params {
 topic(Relation) }>
 
-This function is exactly the same as C<sys.std.Relation.is_empty> except
+This function is exactly the same as C<sys.std.QRelation.is_empty> except
 that it results in the opposite boolean value when given the same argument.
 And following the analogy with C<is_empty>, C<is_not_empty> is analagous to
 SQL's C<is not null>.
 
-=item C<function sys.std.Relation.empty result Relation params {
+=item C<function sys.std.QRelation.empty result Relation params {
 topic(Relation) }>
 
 This function results in the empty relation of the same heading of its
 argument, that is having the same degree and attribute names; it has zero
 tuples.
 
-=item C<function sys.std.Relation.power_set result set_of.Relation params {
-topic(Relation) }>
+=item C<function sys.std.QRelation.power_set result set_of.Relation params
+{ topic(Relation) }>
 
 This function results in the power set of its argument.  The result is a
 C<Set> whose sole attribute is C<Relation>-typed (its type is nominally the
@@ -89,8 +89,8 @@ easily lead to a very large result, so use this function with care).  Note
 that the N-ary relational union of the power set of some relation is that
 relation; the N-ary intersection of any power set is the empty relation.
 
-=item C<function sys.std.Relation.transitive_closure result Relation params
-{ topic(Relation) }>
+=item C<function sys.std.QRelation.transitive_closure result Relation
+params { topic(Relation) }>
 
 This function results in the transitive closure of its argument.  The
 argument is a binary relation whose attributes are both of the same type,
@@ -105,7 +105,7 @@ The C<transitive_closure> function is intended to support recursive
 queries, such as in connection with the "part explosion problem" (the
 problem of finding all components, at all levels, of some specified part).
 
-=item C<function sys.std.Relation.reduction result Tuple params {
+=item C<function sys.std.QRelation.reduction result Tuple params {
 topic(Relation), func(FuncRef), assuming(QuasiTuple)?, identity(Tuple) }>
 
 This function is a generic reduction operator that recursively takes each
@@ -121,15 +121,15 @@ C<identity> may be changed to take a function name rather than a value, for
 consistency with C<func>.>  This function will fail|warn if the |declared
 headings of C<identity> and C<topic> aren't compatible.
 
-=item C<function sys.std.Relation.maybe_reduction result maybe_of.Tuple
+=item C<function sys.std.QRelation.maybe_reduction result maybe_of.Tuple
 params { topic(Relation), func(FuncRef), assuming(QuasiTuple)? }>
 
-This function is exactly the same as C<sys.std.Relation.reduction> except
+This function is exactly the same as C<sys.std.QRelation.reduction> except
 that it does not take an C<assuming> argument, and it results in a C<Maybe>
 of what is otherwise the result type, and that result has zero elements if
 the argument has zero elements.
 
-=item C<function sys.std.Relation.map result Relation params {
+=item C<function sys.std.QRelation.map result Relation params {
 topic(Relation), func(FuncRef), assuming(QuasiTuple)? }>
 
 This function provides a convenient one-place generalization of per-tuple
@@ -158,20 +158,20 @@ that they typically work with any relation types.
 
 =over
 
-=item C<function sys.std.Relation.is_proper_subset result Bool params {
+=item C<function sys.std.QRelation.is_proper_subset result Bool params {
 look_in(Relation), look_for(Relation) }>
 
-This function is exactly the same as C<sys.std.Core.Relation.is_subset>
+This function is exactly the same as C<sys.std.Core.QRelation.is_subset>
 except that it results in C<Bool:false> if its 2 arguments are equal.
 
-=item C<function sys.std.Relation.is_not_proper_subset result Bool params {
-look_in(Relation), look_for(Relation) }>
+=item C<function sys.std.QRelation.is_not_proper_subset result Bool params
+{ look_in(Relation), look_for(Relation) }>
 
-This function is exactly the same as C<sys.std.Relation.is_proper_subset>
+This function is exactly the same as C<sys.std.QRelation.is_proper_subset>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.std.Relation.exclusion result Relation params {
+=item C<function sys.std.QRelation.exclusion result Relation params {
 topic(bag_of.Relation) }>
 
 This function results in the relational exclusion/exclusive-or of the N
@@ -181,12 +181,12 @@ commutative and associative) them together until just one is left, which is
 the result.  The result relation has the same heading as all of its inputs,
 and its body contains every tuple that is in just an odd number of the
 input relations.  Matters concerning a C<topic> with zero values are as per
-C<sys.std.Core.Relation.union>; this function will fail when given such,
+C<sys.std.Core.QRelation.union>; this function will fail when given such,
 and the per-distinct-heading identity value for relational exclusion is the
 same as for relational union.  Note that this operation is also
 legitimately known as I<symmetric difference>.
 
-=item C<function sys.std.Relation.composition result Relation params {
+=item C<function sys.std.QRelation.composition result Relation params {
 r1(Relation), r2(Relation) }>
 
 This function results in the relational composition of its 2 arguments.  It
@@ -197,7 +197,7 @@ has all of and just the attributes that were not involved in matching the
 tuples of the 2 arguments.  This function will fail|warn any time that
 C<join> would fail|warn on the same 2 input relations.
 
-=item C<function sys.std.Relation.join_with_group result Relation params {
+=item C<function sys.std.QRelation.join_with_group result Relation params {
 primary(Relation), secondary(Relation), group_attr(Name) }>
 
 This function is a short-hand for first taking a (natural inner) C<join> of
@@ -221,7 +221,7 @@ zero-attribute tuple if no explicit argument is given to it.
 
 =over
 
-=item C<function sys.std.Relation.rank result Relation params {
+=item C<function sys.std.QRelation.rank result Relation params {
 topic(Relation), name(Name), ord_func(FuncRef),
 ord_assuming(QuasiTuple)? }>
 
@@ -239,11 +239,11 @@ the functionality of SQL's "RANK" feature but that the result of C<rank> is
 always a total ordering (as per a (total) C<order_determination> function)
 and so there is no "dense" / "not dense" distinction (however a partial
 ordering can be implemented over it).  See also the
-C<sys.std.Array.Array_from_wrap> function, which is the same as
-C<sys.std.Relation.rank> but that it wraps the source tuples rather than
+C<sys.std.QArray.Array_from_wrap> function, which is the same as
+C<sys.std.QRelation.rank> but that it wraps the source tuples rather than
 just adding an attribute to them.
 
-=item C<function sys.std.Relation.limit result Relation params {
+=item C<function sys.std.QRelation.limit result Relation params {
 topic(Relation), ord_func(FuncRef), ord_assuming(QuasiTuple)?,
 min_rank(NNInt), max_rank(NNInt) }>
 
@@ -262,7 +262,7 @@ tuples and C<min_rank> matches the rank of a source tuple, then the result
 will always have at least 1 tuple.  Note that C<limit> provides the
 functionality of SQL's "LIMIT/OFFSET" feature in combination with "ORDER
 BY" but that the result tuples of C<limit> do not remain ordered (but see
-C<sys.std.Array.limit_of_Array_from_wrap> for an alternative).
+C<sys.std.QArray.limit_of_Array_from_wrap> for an alternative).
 
 =back
 
@@ -274,7 +274,7 @@ tuple if no explicit argument is given to it.
 
 =over
 
-=item C<function sys.std.Relation.substitution result Relation params {
+=item C<function sys.std.QRelation.substitution result Relation params {
 topic(Relation), func(FuncRef), assuming(QuasiTuple)? }>
 
 This function is similar to C<extension> except that it substitutes values
@@ -291,16 +291,16 @@ tuple as its own C<topic> argument, then this function results simply in
 C<topic>; or, if C<func> is defined to have a static result and it replaces
 all attributes, then this function's result will have just 0..1 tuples.
 
-=item C<function sys.std.Relation.static_substitution result Relation
+=item C<function sys.std.QRelation.static_substitution result Relation
 params { topic(Relation), attrs(Tuple) }>
 
 This function is a simpler-syntax alternative to
-C<sys.std.Relation.substitution> in the typical scenario where every tuple
+C<sys.std.QRelation.substitution> in the typical scenario where every tuple
 of a relation, given in the C<topic> argument, is updated with identical
 values for the same attributes; the new attribute values are given in the
 C<attrs> argument.
 
-=item C<function sys.std.Relation.substitution_in_restriction result
+=item C<function sys.std.QRelation.substitution_in_restriction result
 Relation params { topic(Relation), restr_func(FuncRef),
 restr_assuming(QuasiTuple)?, subst_func(FuncRef),
 subst_assuming(QuasiTuple)? }>
@@ -316,16 +316,16 @@ which is a simpler-syntax alternative for C<substitution_in_restriction> in
 its typical usage where restrictions are composed simply of anded or ored
 tests for attribute value equality.
 
-=item C<function sys.std.Relation.static_substitution_in_restriction result
-Relation params { topic(Relation), restr_func(FuncRef),
+=item C<function sys.std.QRelation.static_substitution_in_restriction
+result Relation params { topic(Relation), restr_func(FuncRef),
 restr_assuming(QuasiTuple)?, subst(Tuple) }>
 
-This function is to C<sys.std.Relation.substitution_in_restriction> what
-C<sys.std.Relation.static_substitution> is to
-C<sys.std.Relation.substitution>.  See also the
+This function is to C<sys.std.QRelation.substitution_in_restriction> what
+C<sys.std.QRelation.static_substitution> is to
+C<sys.std.QRelation.substitution>.  See also the
 C<static_substitution_in_semijoin> function.
 
-=item C<function sys.std.Relation.substitution_in_semijoin result Relation
+=item C<function sys.std.QRelation.substitution_in_semijoin result Relation
 params { topic(Relation), restr(Relation), subst_func(FuncRef),
 subst_assuming(QuasiTuple)? }>
 
@@ -334,12 +334,12 @@ of the tuples of C<topic> to be transformed is determined by those matched
 by a semijoin with C<restr> rather than those that pass a generic
 relational restriction.
 
-=item C<function sys.std.Relation.static_substitution_in_semijoin result
+=item C<function sys.std.QRelation.static_substitution_in_semijoin result
 Relation params { topic(Relation), restr(Relation), subst(Tuple) }>
 
-This function is to C<sys.std.Relation.substitution_in_semijoin> what
-C<sys.std.Relation.static_substitution> is to
-C<sys.std.Relation.substitution>.
+This function is to C<sys.std.QRelation.substitution_in_semijoin> what
+C<sys.std.QRelation.static_substitution> is to
+C<sys.std.QRelation.substitution>.
 
 =back
 
@@ -349,16 +349,16 @@ These additional functions are specific to supporting outer-joins.
 
 =over
 
-=item C<function sys.std.Relation.outer_join_with_group result Relation
+=item C<function sys.std.QRelation.outer_join_with_group result Relation
 params { primary(Relation), secondary(Relation), group_attr(Name) }>
 
-This function is the same as C<sys.std.Relation.join_with_group> except
+This function is the same as C<sys.std.QRelation.join_with_group> except
 that it results in a half-outer natural join rather than an inner natural
 join; every tuple of C<primary> has exactly 1 corresponding tuple in the
 result, but where there were no matching C<secondary> tuples, the result
 attribute named by C<group_attr> contains zero tuples rather than 1+.
 
-=item C<function sys.std.Relation.outer_join_with_maybes result Relation
+=item C<function sys.std.QRelation.outer_join_with_maybes result Relation
 params { primary(Relation), secondary(Relation) }>
 
 This function results in a plain half-outer natural join of its C<primary>
@@ -370,35 +370,35 @@ C<Nothing>.  The C<outer_join_with_maybes> function is Muldis D's answer to
 the SQL LEFT OUTER JOIN where SQL NULL is implicitly used in result rows
 that were a non-match.
 
-=item C<function sys.std.Relation.outer_join_with_defaults result Relation
+=item C<function sys.std.QRelation.outer_join_with_defaults result Relation
 params { primary(Relation), secondary(Relation), filler(TypeRef) }>
 
-This function is the same as C<sys.std.Relation.outer_join_with_product>
+This function is the same as C<sys.std.QRelation.outer_join_with_product>
 but that the filler tuple is the default value of the tuple data type whose
 name is given in the C<filler> argument.  This function is a short-hand for
 invoking C<outer_join_with_product> with the result from invoking
 C<sys.std.Core.Universal.default>.
 
-=item C<function sys.std.Relation.outer_join_with_product result Relation
+=item C<function sys.std.QRelation.outer_join_with_product result Relation
 params { primary(Relation), secondary(Relation), filler(Tuple) }>
 
-This function is the same as C<sys.std.Relation.outer_join_with_maybes> but
-that C<secondary>-sourced result attributes are not converted to C<Maybe>;
-rather, for result tuples from non-matches, the missing values are provided
-explicitly from the C<filler> argument, which is a tuple whose heading
-matches the projection of C<secondary>'s attributes that aren't in common
-with C<primary>, and whose body is the literal values to use for those
-missing attribute values.  This function gets its name in that conceptually
-the result tuples from non-matches are the result of performing a
-relational cross-product between the un-matched C<primary> tuples and the
-single C<filler> tuple.  This function could alternately be named
-I<outer_join_with_static_extension>.
+This function is the same as C<sys.std.QRelation.outer_join_with_maybes>
+but that C<secondary>-sourced result attributes are not converted to
+C<Maybe>; rather, for result tuples from non-matches, the missing values
+are provided explicitly from the C<filler> argument, which is a tuple whose
+heading matches the projection of C<secondary>'s attributes that aren't in
+common with C<primary>, and whose body is the literal values to use for
+those missing attribute values.  This function gets its name in that
+conceptually the result tuples from non-matches are the result of
+performing a relational cross-product between the un-matched C<primary>
+tuples and the single C<filler> tuple.  This function could alternately be
+named I<outer_join_with_static_extension>.
 
-=item C<function sys.std.Relation.outer_join_with_extension result Relation
-params { primary(Relation), secondary(Relation), exten_func(FuncRef),
-exten_assuming(QuasiTuple)? }>
+=item C<function sys.std.QRelation.outer_join_with_extension result
+Relation params { primary(Relation), secondary(Relation),
+exten_func(FuncRef), exten_assuming(QuasiTuple)? }>
 
-This function is the same as C<sys.std.Relation.outer_join_with_product>
+This function is the same as C<sys.std.QRelation.outer_join_with_product>
 but that the result tuples from non-matches are the result of performing a
 relational extension on the un-matched C<primary> tuples such that each
 said result tuple is determined by applying the function named in
@@ -413,64 +413,65 @@ explicit argument is given to it.
 
 =over
 
-=item C<updater sys.std.Relation.assign_exclusion update { topic(Relation)
+=item C<updater sys.std.QRelation.assign_exclusion update { topic(Relation)
 } read { other(Relation) }>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Relation.exclusion> function such that it has 2 input relations
+C<sys.std.QRelation.exclusion> function such that it has 2 input relations
 from C<assign_exclusion>'s 2 arguments, and then assigning the result of
 that function to C<topic>.
 
-=item C<updater sys.std.Relation.assign_substitution update {
+=item C<updater sys.std.QRelation.assign_substitution update {
 topic(Relation) } read { func(FuncRef), assuming(QuasiTuple)? }>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.Relation.substitution> function with the same arguments, and
-then assigning the result of that function to C<topic>.  This updater is
-analagous to the general case of the unconditional SQL "UPDATE" statement.
+C<sys.std.Core.QRelation.substitution> function with the same arguments,
+and then assigning the result of that function to C<topic>.  This updater
+is analagous to the general case of the unconditional SQL "UPDATE"
+statement.
 
-=item C<updater sys.std.Relation.assign_static_substitution update {
+=item C<updater sys.std.QRelation.assign_static_substitution update {
 topic(Relation) } read { attrs(Tuple) }>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.Relation.static_substitution> function with the same
+C<sys.std.Core.QRelation.static_substitution> function with the same
 arguments, and then assigning the result of that function to C<topic>.
 
-=item C<updater sys.std.Relation.assign_substitution_in_restriction update
+=item C<updater sys.std.QRelation.assign_substitution_in_restriction update
 { topic(Relation) } read { restr_func(FuncRef),
 restr_assuming(QuasiTuple)?, subst_func(FuncRef),
 subst_assuming(QuasiTuple)? }>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.Relation.substitution_in_restriction> function with the same
-arguments, and then assigning the result of that function to C<topic>.
+C<sys.std.Core.QRelation.substitution_in_restriction> function with the
+same arguments, and then assigning the result of that function to C<topic>.
 This updater is analagous to the general case of the conditional SQL
 "UPDATE" statement.
 
-=item C<updater sys.std.Relation.assign_static_substitution_in_restriction
+=item C<updater sys.std.QRelation.assign_static_substitution_in_restriction
 update { topic(Relation) } read { restr_func(FuncRef),
 restr_assuming(QuasiTuple)?, subst(Tuple) }>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.Relation.static_substitution_in_restriction> function with
+C<sys.std.Core.QRelation.static_substitution_in_restriction> function with
 the same arguments, and then assigning the result of that function to
 C<topic>.
 
-=item C<updater sys.std.Relation.assign_substitution_in_semijoin update {
+=item C<updater sys.std.QRelation.assign_substitution_in_semijoin update {
 topic(Relation) } read { restr(Relation), subst_func(FuncRef),
 subst_assuming(QuasiTuple)? }>  This updater is analagous to the common
 case of the conditional SQL "UPDATE" statement where the criteria is simply
 a set of and-ed and or-ed value equality tests.
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.Relation.substitution_in_semijoin> function with the same
+C<sys.std.Core.QRelation.substitution_in_semijoin> function with the same
 arguments, and then assigning the result of that function to C<topic>.
 
-=item C<updater sys.std.Relation.assign_static_substitution_in_semijoin
+=item C<updater sys.std.QRelation.assign_static_substitution_in_semijoin
 update { topic(Relation) } read { restr(Relation), subst(Tuple) }>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.Relation.static_substitution_in_semijoin> function with the
+C<sys.std.Core.QRelation.static_substitution_in_semijoin> function with the
 same arguments, and then assigning the result of that function to C<topic>.
 
 =back

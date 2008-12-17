@@ -45,14 +45,14 @@ zero-attribute tuple if no explicit argument is given to it.
 
 =over
 
-=item C<function sys.std.Array.value result ScaTupRel params {
+=item C<function sys.std.QArray.value result ScaTupRel params {
 topic(Array), index(NNInt) }>
 
 This function results in the scalar or nonscalar C<value> attribute of the
 tuple of C<topic> whose C<index> attribute is C<index>.  This function will
 fail if no tuple exists in C<topic> with the specified index.
 
-=item C<function sys.std.Array.update_value result Array params {
+=item C<function sys.std.QArray.update_value result Array params {
 topic(Array), index(NNInt), value(ScaTupRel) }>
 
 This function results in its C<topic> argument but that the C<value>
@@ -64,7 +64,7 @@ attribute of C<topic> would be fatally incompatible in a common relation
 value's attribute; this function will otherwise warn if the declared type
 of C<value> isn't a subtype of the declared type of the C<value> attribute.
 
-=item C<function sys.std.Array.insertion result Array params {
+=item C<function sys.std.QArray.insertion result Array params {
 topic(Array), index(NNInt), value(ScaTupRel) }>
 
 This function results in its C<topic> argument but that a new tuple has
@@ -77,15 +77,15 @@ fail if C<index> is greater than the cardinality of C<topic>, or it will
 fail|warn if C<topic.value> and C<value> are incompatible as per
 C<update_value>.
 
-=item C<function sys.std.Array.deletion result Array params { topic(Array),
-index(NNInt) }>
+=item C<function sys.std.QArray.deletion result Array params {
+topic(Array), index(NNInt) }>
 
 This function results in its C<topic> argument but that a tuple has been
 deleted whose C<index> is C<index>; any existing tuples with C<index>
 values greater than or equal to C<index> had theirs decremented by 1.  This
 function will fail if no tuple exists in C<topic> with the specified index.
 
-=item C<function sys.std.Array.is_element result Bool params {
+=item C<function sys.std.QArray.is_element result Bool params {
 topic(Array), value(ScaTupRel) }>
 
 This function results in C<Bool:true> iff its C<value> argument matches the
@@ -94,31 +94,31 @@ iff conceptually C<value> is an element of C<topic>), and C<Bool:false>
 otherwise.  This function will fail|warn if C<topic.value> and C<value> are
 incompatible as per C<update_value>.
 
-=item C<function sys.std.Array.is_not_element result Bool params {
+=item C<function sys.std.QArray.is_not_element result Bool params {
 topic(Array), value(ScaTupRel) }>
 
-This function is exactly the same as C<sys.std.Array.is_element> except
+This function is exactly the same as C<sys.std.QArray.is_element> except
 that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.std.Array.reduction result ScaTupRel params {
+=item C<function sys.std.QArray.reduction result ScaTupRel params {
 topic(Array), func(FuncRef), assuming(QuasiTuple)?, identity(ScaTupRel) }>
 
-This function is the same as C<sys.std.Set.reduction>, including that input
-values for the reduction come from the C<value> attribute of C<topic>,
-except that it works with an C<Array> rather than a C<Set>.  Also, the
-function named in C<func> is only associative, and I<not> commutative; the
-arguments to C<v1> and C<v2> of C<func> are guaranteed to be consecutive
-input elements, with the result returning to their place in sequence beween
-the other input elements.
+This function is the same as C<sys.std.QSet.reduction>, including that
+input values for the reduction come from the C<value> attribute of
+C<topic>, except that it works with an C<Array> rather than a C<Set>.
+Also, the function named in C<func> is only associative, and I<not>
+commutative; the arguments to C<v1> and C<v2> of C<func> are guaranteed to
+be consecutive input elements, with the result returning to their place in
+sequence beween the other input elements.
 
-=item C<function sys.std.Array.maybe_reduction result Maybe params {
+=item C<function sys.std.QArray.maybe_reduction result Maybe params {
 topic(Array), func(FuncRef), assuming(QuasiTuple)? }>
 
-This function is to C<sys.std.Set.maybe_reduction> as
-C<sys.std.Array.reduction> is to C<sys.std.Set.reduction>.
+This function is to C<sys.std.QSet.maybe_reduction> as
+C<sys.std.QArray.reduction> is to C<sys.std.QSet.reduction>.
 
-=item C<function sys.std.Array.slice result Array params {
+=item C<function sys.std.QArray.slice result Array params {
 topic(Array), first_index(NNInt), last_index(NNInt) }>
 
 This function results in the sub-sequence of its C<topic> argument that is
@@ -131,7 +131,7 @@ case, the result has all remaining elements starting at C<first_index>.  If
 C<topic> has any elements and C<first_index> matches the index of a source
 element, then the result will always have at least 1 element.
 
-=item C<function sys.std.Array.catenation result Array params {
+=item C<function sys.std.QArray.catenation result Array params {
 topic(array_of.Array) }>
 
 This function results in the catenation of the N element values of its
@@ -143,19 +143,19 @@ C<index> values of the second one by the cardinality of the first one.  If
 C<topic> has zero values, then C<catenate> results in the empty sequence
 value, which is the identity value for catenate.
 
-=item C<function sys.std.Array.repeat result Array params { topic(Array),
+=item C<function sys.std.QArray.repeat result Array params { topic(Array),
 count(NNInt) }>
 
 This function results in the catenation of C<count> instances of C<topic>.
 
-=item C<function sys.std.Array.reverse result Array params { topic(Array)
+=item C<function sys.std.QArray.reverse result Array params { topic(Array)
 }>
 
 This function results in its argument but that the order of its elements
 has been reversed.  For example, the input C<< { 0=>'a', 1=>'b', 2=>'c',
 3=>'d'} >> results in C<< { 0=>'d', 1=>'c', 2=>'b', 3=>'a' } >>.
 
-=item C<function sys.std.Array.is_subarray result Bool params {
+=item C<function sys.std.QArray.is_subarray result Bool params {
 look_in(Array), look_for(Array) }>
 
 This function results in C<Bool:true> iff the sequence of values comprising
@@ -163,15 +163,15 @@ C<look_for> is a sub-sequence of the sequence of values C<look_in>, and
 C<Bool:false> otherwise.  This function will fail|warn if the 2 arguments
 don't have a compatible or same heading.
 
-=item C<function sys.std.Array.is_not_subarray result Bool params {
+=item C<function sys.std.QArray.is_not_subarray result Bool params {
 look_in(Array), look_for(Array) }>
 
-This function is exactly the same as C<sys.std.Array.is_subarray> except
+This function is exactly the same as C<sys.std.QArray.is_subarray> except
 that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.std.Array.Array_from_wrap result array_of.Tuple params
-{ topic(Relation), ord_func(FuncRef), ord_assuming(QuasiTuple)? }>
+=item C<function sys.std.QArray.Array_from_wrap result array_of.Tuple
+params { topic(Relation), ord_func(FuncRef), ord_assuming(QuasiTuple)? }>
 
 This function results in an C<Array> whose C<value> attribute is
 tuple-typed and that attribute's values are all the tuples of C<topic>; is
@@ -183,20 +183,20 @@ This function is a wrapper over the (total) C<order_determination> function
 named in its C<ord_func> argument when the latter function is curried by
 its C<ord_assuming> argument; this wrapped function is used to rank the
 tuples, with each invocation getting a C<topic> tuple as each its C<topic>
-and C<other> arguments.  See also the C<sys.std.Relation.rank> function,
-which is the same as C<sys.std.Array.Array_from_wrap> but that it just adds
-an attribute to the source tuples and does not wrap them.
+and C<other> arguments.  See also the C<sys.std.QRelation.rank> function,
+which is the same as C<sys.std.QArray.Array_from_wrap> but that it just
+adds an attribute to the source tuples and does not wrap them.
 
-=item C<function sys.std.Array.limit_of_Array_from_wrap result
+=item C<function sys.std.QArray.limit_of_Array_from_wrap result
 array_of.Tuple params { topic(Relation), ord_func(FuncRef),
 ord_assuming(QuasiTuple)?, first_index(NNInt), last_index(NNInt) }>
 
 This function is a short-hand for invoking first
-C<sys.std.Array.Array_from_wrap> and then C<sys.std.Array.slice> on its
-result.  This function is to C<sys.std.Array.Array_from_wrap> what the
-C<sys.std.Relation.limit> function is to C<sys.std.Relation.rank>.
+C<sys.std.QArray.Array_from_wrap> and then C<sys.std.QArray.slice> on its
+result.  This function is to C<sys.std.QArray.Array_from_wrap> what the
+C<sys.std.QRelation.limit> function is to C<sys.std.QRelation.rank>.
 
-=item C<function sys.std.Array.Array_from_attr result Array params {
+=item C<function sys.std.QArray.Array_from_attr result Array params {
 topic(Relation), name(Name), ord_func(OrdDetFuncRef)?,
 ord_assuming(QuasiTuple)? }>
 
@@ -206,9 +206,9 @@ projection of just the named attribute plus its renaming to C<value>, and
 then that result is extended with an C<index> attribute whose values result
 from a rank of the source attribute values, where the ranked-first source
 value has an C<index> of zero, and so on.  This function is otherwise the
-same as C<sys.std.Array.Array_from_wrap>.  Each of the C<ord_func> and
+same as C<sys.std.QArray.Array_from_wrap>.  Each of the C<ord_func> and
 C<ord_assuming> parameters is optional and defaults to
-C<sys.std.Core.Scalar.order> or the zero-attribute tuple, respectively, if
+C<sys.std.Core.QScalar.order> or the zero-attribute tuple, respectively, if
 no explicit argument is given to it.
 
 =back

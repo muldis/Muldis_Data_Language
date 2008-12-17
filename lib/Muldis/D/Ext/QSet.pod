@@ -45,22 +45,22 @@ tuple if no explicit argument is given to it.
 
 =over
 
-=item C<function sys.std.Set.is_member result Bool params { set(Set),
+=item C<function sys.std.QSet.is_member result Bool params { set(Set),
 value(ScaTupRel) }>
 
 This function results in C<Bool:true> iff its C<value> argument matches the
 sole attribute of a tuple of its C<set> argument (that is, iff conceptually
 C<value> is a member of C<set>), and C<Bool:false> otherwise.  This
 function will fail|warn if its 2 arguments are incompatible as per
-C<sys.std.Core.Relation.is_subset>.
+C<sys.std.Core.QRelation.is_subset>.
 
-=item C<function sys.std.Set.is_not_member result Bool params { set(Set),
+=item C<function sys.std.QSet.is_not_member result Bool params { set(Set),
 value(ScaTupRel) }>
 
-This function is exactly the same as C<sys.std.Set.is_member> except that
+This function is exactly the same as C<sys.std.QSet.is_member> except that
 it results in the opposite boolean value when given the same arguments.
 
-=item C<function sys.std.Set.insertion result Set params { set(Set),
+=item C<function sys.std.QSet.insertion result Set params { set(Set),
 value(ScaTupRel) }>
 
 This function results in a C<Set> that is the relational union of C<set>
@@ -68,13 +68,13 @@ and a Set whose sole tuple has the sole attribute value of C<value>; that
 is, conceptually the result is C<value> inserted into C<set>.  As a trivial
 case, if C<value> already exists in C<set>, then the result is just C<set>.
 
-=item C<function sys.std.Set.disjoint_insertion result Set params {
+=item C<function sys.std.QSet.disjoint_insertion result Set params {
 set(Set), value(ScaTupRel) }>
 
-This function is exactly the same as C<sys.std.Set.insertion> except that
+This function is exactly the same as C<sys.std.QSet.insertion> except that
 it will fail if C<value> already exists in C<set>.
 
-=item C<function sys.std.Set.deletion result Set params { set(Set),
+=item C<function sys.std.QSet.deletion result Set params { set(Set),
 value(ScaTupRel) }>
 
 This function results in a C<Set> that is the relational difference from
@@ -83,7 +83,7 @@ that is, conceptually the result is C<value> deleted from C<set>.  As a
 trivial case, if C<value> already doesn't exist in C<set>, then the result
 is just C<set>.
 
-=item C<function sys.std.Set.reduction result ScaTupRel params {
+=item C<function sys.std.QSet.reduction result ScaTupRel params {
 topic(Set), func(FuncRef), assuming(QuasiTuple)?, identity(ScaTupRel) }>
 
 This function is a generic reduction operator that recursively takes each
@@ -100,15 +100,15 @@ a function name rather than a value, for consistency with C<func>.>  This
 function will fail|warn if the |declared type of C<identity> isn't a
 subtype of the |declared type of the sole attribute of C<topic>.
 
-=item C<function sys.std.Set.maybe_reduction result Maybe params {
+=item C<function sys.std.QSet.maybe_reduction result Maybe params {
 topic(Set), func(FuncRef), assuming(QuasiTuple)? }>
 
-This function is exactly the same as C<sys.std.Set.reduction> except that
+This function is exactly the same as C<sys.std.QSet.reduction> except that
 it does not take an C<assuming> argument, and it results in a C<Maybe> of
 what is otherwise the result type, and that result has zero elements if the
 argument has zero elements.
 
-=item C<function sys.std.Set.Set_from_wrap result set_of.Tuple params {
+=item C<function sys.std.QSet.Set_from_wrap result set_of.Tuple params {
 topic(Relation) }>
 
 This function results in a C<Set> whose sole attribute is tuple-typed and
@@ -116,7 +116,7 @@ the attribute values are all the tuples of C<topic>; is a short-hand for a
 relational wrap of all attributes of C<topic> such that the new
 tuple-valued attribute is named C<value>.
 
-=item C<function sys.std.Set.Set_from_attr result Set params {
+=item C<function sys.std.QSet.Set_from_attr result Set params {
 topic(Relation), name(Name) }>
 
 This function results in a C<Set> consisting of all the values of the
@@ -129,25 +129,25 @@ projection of just the named attribute plus its renaming to C<value>.
 
 =over
 
-=item C<function sys.std.Set.Maybe.nothing result Nothing params {}>
+=item C<function sys.std.QSet.QMaybe.nothing result Nothing params {}>
 
 This selector function results in the only zero-tuple Maybe value.
 
-=item C<function sys.std.Set.Maybe.single result Single params {
+=item C<function sys.std.QSet.QMaybe.single result Single params {
 value(ScaTupRel) }>
 
 This selector function results in the Maybe value with a single tuple whose
 C<value> attribute's value is the C<value> argument.
 
-=item C<function sys.std.Set.Maybe.attr result ScaTupRel params {
+=item C<function sys.std.QSet.QMaybe.attr result ScaTupRel params {
 topic(Single) }>
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of its argument, which always exists when the
 argument is a C<Single>.
 
-=item C<function sys.std.Set.Maybe.attr_or_default result ScaTupRel params
-{ topic(Maybe), default(TypeRef) }>
+=item C<function sys.std.QSet.QMaybe.attr_or_default result ScaTupRel
+params { topic(Maybe), default(TypeRef) }>
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of its argument, if said tuple exists;
@@ -156,15 +156,15 @@ type whose name is given in the C<default> argument.  This function is a
 short-hand for invoking C<attr_or_value> with the result from invoking
 C<sys.std.Core.Universal.default>.
 
-=item C<function sys.std.Set.Maybe.attr_or_value result ScaTupRel params {
-topic(Maybe), value(ScaTupRel) }>
+=item C<function sys.std.QSet.QMaybe.attr_or_value result ScaTupRel params
+{ topic(Maybe), value(ScaTupRel) }>
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of C<topic>, if said tuple exists; otherwise,
 it results in C<value>.  This function will warn if the declared type of
 C<value> isn't a subtype of the declared type of the attribute.
 
-=item C<function sys.std.Set.Maybe.order result Order params {
+=item C<function sys.std.QSet.QMaybe.order result Order params {
 topic(Maybe), other(Maybe), treat_nothing_as_max(Bool),
 ord_func(OrdDetFuncRef)?, ord_assuming(QuasiTuple)?,
 reverse_order_of_singles(Bool)? }>

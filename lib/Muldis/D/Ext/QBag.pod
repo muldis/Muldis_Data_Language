@@ -45,27 +45,27 @@ tuple if no explicit argument is given to it.
 
 =over
 
-=item C<function sys.std.Bag.cardinality result NNInt params { topic(Bag)
+=item C<function sys.std.QBag.cardinality result NNInt params { topic(Bag)
 }>
 
-This function is like C<sys.std.Core.Relation.cardinality> but that it
+This function is like C<sys.std.Core.QRelation.cardinality> but that it
 accounts for the greater-than-one multiplicity of values in its argument;
 it results in the sum of the C<count> attribute of its argument.
 
-=item C<function sys.std.Bag.is_member result Bool params { bag(Bag),
+=item C<function sys.std.QBag.is_member result Bool params { bag(Bag),
 value(ScaTupRel) }>
 
-This function is the same as C<sys.std.Set.is_member>, including that
+This function is the same as C<sys.std.QSet.is_member>, including that
 matching of C<value> is done against the C<value> attribute, except that it
 works with a C<Bag> rather than a C<Set>.
 
-=item C<function sys.std.Bag.is_not_member result Bool params { bag(Bag),
+=item C<function sys.std.QBag.is_not_member result Bool params { bag(Bag),
 value(ScaTupRel) }>
 
-This function is exactly the same as C<sys.std.Bag.is_member> except that
+This function is exactly the same as C<sys.std.QBag.is_member> except that
 it results in the opposite boolean value when given the same arguments.
 
-=item C<function sys.std.Bag.count result NNInt params { bag(Bag),
+=item C<function sys.std.QBag.count result NNInt params { bag(Bag),
 value(ScaTupRel) }>
 
 This function results in the multiplicity / count of occurrances of
@@ -73,50 +73,52 @@ C<value> in C<bag>; if a tuple exists in C<bag> whose C<value> attribute is
 C<value>, then the result is its C<count> attribute; otherwise the result
 is zero.
 
-=item C<function sys.std.Bag.insertion result Bag params { bag(Bag),
+=item C<function sys.std.QBag.insertion result Bag params { bag(Bag),
 value(ScaTupRel) }>
 
-This function is the same as C<sys.std.Set.insertion> as per C<is_member>
+This function is the same as C<sys.std.QSet.insertion> as per C<is_member>
 but that its result differs depending on whether C<value> already exists in
 C<bag>; if it does, then no new tuple is added, but the C<count> attribute
 for the matching tuple is incremented by 1; if it does not, then a new
 tuple is added where its C<value> is C<value> and its C<count> is 1.
 
-=item C<function sys.std.Bag.deletion result Bag params { bag(Bag),
+=item C<function sys.std.QBag.deletion result Bag params { bag(Bag),
 value(ScaTupRel) }>
 
-This function is the same as C<sys.std.Set.deletion> as per C<is_member>
+This function is the same as C<sys.std.QSet.deletion> as per C<is_member>
 but that its result differs depending on what the C<count> for any tuple
 matching C<value> that already exists in C<bag> is; if the C<count> is
 greater than 1, then it is decremented by 1; if it is equal to 1, then the
 tuple whose C<value> is C<value> is deleted.
 
-=item C<function sys.std.Bag.reduction result ScaTupRel params {
+=item C<function sys.std.QBag.reduction result ScaTupRel params {
 topic(Bag), func(FuncRef), assuming(QuasiTuple)?, identity(ScaTupRel) }>
 
-This function is the same as C<sys.std.Set.reduction>, including that input
-values for the reduction come from the C<value> attribute of C<topic>,
-except that it works with a C<Bag> rather than a C<Set>; C<func> is invoked
-extra times, where both its C<v1> and C<v2> arguments might be different
-instances of the same value having >= 2 multiplicity.
+This function is the same as C<sys.std.QSet.reduction>, including that
+input values for the reduction come from the C<value> attribute of
+C<topic>, except that it works with a C<Bag> rather than a C<Set>; C<func>
+is invoked extra times, where both its C<v1> and C<v2> arguments might be
+different instances of the same value having >= 2 multiplicity.
 
-=item C<function sys.std.Bag.maybe_reduction result Maybe params {
+=item C<function sys.std.QBag.maybe_reduction result Maybe params {
 topic(Bag), func(FuncRef), assuming(QuasiTuple)? }>
 
-This function is to C<sys.std.Set.maybe_reduction> as
-C<sys.std.Bag.reduction> is to C<sys.std.Set.reduction>.
+This function is to C<sys.std.QSet.maybe_reduction> as
+C<sys.std.QBag.reduction> is to C<sys.std.QSet.reduction>.
 
-=item C<function sys.std.Bag.Set_from_Bag result Set params { topic(Bag) }>
+=item C<function sys.std.QBag.Set_from_Bag result Set params { topic(Bag)
+}>
 
 This function results in the C<Set> that is the projection of the C<value>
 attribute of its C<Bag> argument.
 
-=item C<function sys.std.Bag.Bag_from_Set result Bag params { topic(Set) }>
+=item C<function sys.std.QBag.Bag_from_Set result Bag params { topic(Set)
+}>
 
 This function results in the C<Bag> that is the extension of its C<Set>
 argument with a new C<count> attribute whose value for every tuple is 1.
 
-=item C<function sys.std.Bag.Bag_from_wrap result bag_of.Tuple params {
+=item C<function sys.std.QBag.Bag_from_wrap result bag_of.Tuple params {
 topic(Relation) }>
 
 This function results in a C<Bag> whose C<value> attribute is tuple-typed
@@ -125,7 +127,7 @@ for a relational wrap of all attributes of C<topic> such that the new
 tuple-valued attribute is named C<value>, and then that result is extended
 with a C<count> attribute whose value for every tuple is 1.
 
-=item C<function sys.std.Bag.Bag_from_attr result Bag params {
+=item C<function sys.std.QBag.Bag_from_attr result Bag params {
 topic(Relation), name(Name) }>
 
 This function results in a C<Bag> consisting of all the values of the
@@ -137,53 +139,54 @@ the relation-valued attribute's values, and then doing a binary projection
 of the named attribute and the new integer attribute plus their renaming to
 C<value> and C<count> respectively.
 
-=item C<function sys.std.Bag.is_subset result Bool params { look_in(Bag),
+=item C<function sys.std.QBag.is_subset result Bool params { look_in(Bag),
 look_for(Bag) }>
 
-This function is like C<sys.std.Core.Relation.is_subset> but that it
+This function is like C<sys.std.Core.QRelation.is_subset> but that it
 accounts for the greater-than-one multiplicity of values in its arguments;
 this function returns C<Bool:true> iff the multiplicity of each C<look_for>
 value is less than or equal to the multiplicity of its counterpart
 C<look_in> value.
 
-=item C<function sys.std.Bag.is_not_subset result Bool params {
+=item C<function sys.std.QBag.is_not_subset result Bool params {
 look_in(Bag), look_for(Bag) }>
 
-This function is like C<sys.std.Core.Relation.is_not_subset> as per
+This function is like C<sys.std.Core.QRelation.is_not_subset> as per
 C<is_subset>.
 
-=item C<function sys.std.Bag.is_proper_subset result Bool params {
+=item C<function sys.std.QBag.is_proper_subset result Bool params {
 look_in(Bag), look_for(Bag) }>
 
-This function is like C<sys.std.Core.Relation.is_proper_subset> as per
+This function is like C<sys.std.Core.QRelation.is_proper_subset> as per
 C<is_subset>.  I<TODO: What is its definition?>
 
-=item C<function sys.std.Bag.is_not_proper_subset result Bool params {
+=item C<function sys.std.QBag.is_not_proper_subset result Bool params {
 look_in(Bag), look_for(Bag) }>
 
-This function is like C<sys.std.Core.Relation.is_not_proper_subset> as per
+This function is like C<sys.std.Core.QRelation.is_not_proper_subset> as per
 C<is_subset>.  I<TODO: What is its definition?>
 
-=item C<function sys.std.Bag.union result Bag params { topic(set_of.Bag) }>
+=item C<function sys.std.QBag.union result Bag params { topic(set_of.Bag)
+}>
 
-This function is like C<sys.std.Core.Relation.union> but that it just looks
-at the C<value> attribute of its argument elements when determining what
-element tuples correspond; then for each tuple in the result, its C<count>
-attribute value is the maximum of the C<count> attribute values of its
-corresponding input element tuples.
+This function is like C<sys.std.Core.QRelation.union> but that it just
+looks at the C<value> attribute of its argument elements when determining
+what element tuples correspond; then for each tuple in the result, its
+C<count> attribute value is the maximum of the C<count> attribute values of
+its corresponding input element tuples.
 
-=item C<function sys.std.Bag.intersection result Bag params {
+=item C<function sys.std.QBag.intersection result Bag params {
 topic(set_of.Bag) }>
 
-This function is like C<sys.std.Core.Relation.intersection> as C<union> is
-like C<sys.std.Core.Relation.union>; the minimum of C<count> attribute
+This function is like C<sys.std.Core.QRelation.intersection> as C<union> is
+like C<sys.std.Core.QRelation.union>; the minimum of C<count> attribute
 values is used rather than the maximum.
 
-=item C<function sys.std.Bag.difference result Bag params { source(Bag),
+=item C<function sys.std.QBag.difference result Bag params { source(Bag),
 filter(Bag) }>
 
-This function is like C<sys.std.Core.Relation.difference> as C<union> is
-like C<sys.std.Core.Relation.union>; for corresponding input tuples, the
+This function is like C<sys.std.Core.QRelation.difference> as C<union> is
+like C<sys.std.Core.QRelation.union>; for corresponding input tuples, the
 result only has a tuple with the same C<value> if the C<count> of the
 C<source> tuple is greater than the C<count> of the C<filter> tuple, and
 the C<count> of the result tuple is the difference of those two.
