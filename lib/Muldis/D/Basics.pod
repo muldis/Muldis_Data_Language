@@ -719,23 +719,23 @@ see I<scalar>, then that generally is excluding the values or types outside
 the most important subset.
 
 The identity of every q/scalar type is defined by its name alone, and every
-q/scalar type must have a distinct name that is explicitly defined, either by
-the system or by the user as is applicable.  Every value of a q/scalar type
-is conceptually opaque and atomic, and its components are not known to
+q/scalar type must have a distinct name that is explicitly defined, either
+by the system or by the user as is applicable.  Every value of a q/scalar
+type is conceptually opaque and atomic, and its components are not known to
 users of that type; but even when the components are known (because they
-are user-defined structured types), two independently defined q/scalar types
-are completely disjoint even if their components look the same, by
-definition.  The only way for 2 q/scalar types to have values in common is if
-one is explicitly defined, directly or indirectly, as a subtype of, or as a
-union type encompassing a subtype of, the other.
+are user-defined structured types), two independently defined q/scalar
+types are completely disjoint even if their components look the same, by
+definition.  The only way for 2 q/scalar types to have values in common is
+if one is explicitly defined, directly or indirectly, as a subtype of, or
+as a union type encompassing a subtype of, the other.
 
-Every value of a q/nonscalar type (either a q/tuple type I<or> a q/relation type,
-respectively) is conceptually transparent, and its component structure is
-known to all.  The identity of every q/nonscalar type is defined by its
-component structure alone, and every q/nonscalar type must have a distinct
-component structure.  Any two q/nonscalar types that have the same component
-structure are in fact the same type, by definition, regardless of whether
-they were defined independently of each other or not.
+Every value of a q/nonscalar type (either a q/tuple type I<or> a q/relation
+type, respectively) is conceptually transparent, and its component
+structure is known to all.  The identity of every q/nonscalar type is
+defined by its component structure alone, and every q/nonscalar type must
+have a distinct component structure.  Any two q/nonscalar types that have
+the same component structure are in fact the same type, by definition,
+regardless of whether they were defined independently of each other or not.
 
 A remnant type is always defined in terms of one or more other types, and
 it can never be a root type with defined components.  The identity of every
@@ -752,18 +752,19 @@ implemented more easily).
 
 =head2 Q/Scalar Types
 
-Q/Scalar types are the only conceptually encapsulated types in Muldis D, and
-are like other languages' concepts of object classes where all their
+Q/Scalar types are the only conceptually encapsulated types in Muldis D,
+and are like other languages' concepts of object classes where all their
 attributes are private, and only accessible indirectly.  The definition of
-a q/scalar type comprises usually one or more named I<possreps> or I<possible
-representations>, and for each of those, at least one I<selector> operator
-and usually at least one I<accessor> or I<the> operator.
+a q/scalar type comprises usually one or more named I<possreps> or
+I<possible representations>, and for each of those, at least one
+I<selector> operator and usually at least one I<accessor> or I<the>
+operator.
 
 A I<possrep> of a type is an exhaustively complete means for users to
 conceptualize the structure of the type; it is like a "role" or "interface"
 definition.  A possrep has the appearance of a complete collection of (zero
-or more) named object attributes (of any q/scalar or q/nonscalar type) that the
-type could logically be implemented as, and users can use it as if it
+or more) named object attributes (of any q/scalar or q/nonscalar type) that
+the type could logically be implemented as, and users can use it as if it
 actually was implemented that way, but without the requirement that the
 type actually is implemented that way.  If a type has multiple possreps,
 said possreps can differ from each other in arbitrarily large ways, but
@@ -794,10 +795,10 @@ exist that automatically work with all q/scalar types (that have possreps,
 which all user-defined q/scalar root types do), so such do not need to be
 explicitly defined per such type.  They are all in the
 C<sys.std.Core.QScalar.\w+> namespace.  These generic operators take
-advantage of the fact that each q/scalar possrep looks like a q/tuple, and they
-look like basic q/tuple operators but for taking an extra argument to say
-which possrep we're dealing with, and possibly a second extra attribute to
-say what type, in the case of the generic q/scalar value selector.
+advantage of the fact that each q/scalar possrep looks like a q/tuple, and
+they look like basic q/tuple operators but for taking an extra argument to
+say which possrep we're dealing with, and possibly a second extra attribute
+to say what type, in the case of the generic q/scalar value selector.
 
 No data type has any operators built-in to its definition except for
 certain implicitly system-defined operators that are automatically
@@ -821,17 +822,17 @@ are arranged as nodes on a directed graph, with an explicit mapping
 function being a side, there just needs to be a path from every possrep to
 every other one; every path then has at least an implicit mapping function.
 
-The Muldis D implementation can choose for itself as to how the q/scalar type
-is physically represented behind the scenes, either picking between any of
-the user-provided possreps or using yet another one or several of its own;
-the implementation can work how it knows best to achieve an efficient
-system, and this is all hidden away from the users, who simply perceive in
-it what they requested.
+The Muldis D implementation can choose for itself as to how the q/scalar
+type is physically represented behind the scenes, either picking between
+any of the user-provided possreps or using yet another one or several of
+its own; the implementation can work how it knows best to achieve an
+efficient system, and this is all hidden away from the users, who simply
+perceive in it what they requested.
 
-In the context of q/scalar subtype/supertype relationships, the definition of
-a subtype can add additional possreps that are only valid for the subtype,
-such that users of the subtype can use both possreps defined for the
-subtype and the supertype, but users of the supertype can only use the
+In the context of q/scalar subtype/supertype relationships, the definition
+of a subtype can add additional possreps that are only valid for the
+subtype, such that users of the subtype can use both possreps defined for
+the subtype and the supertype, but users of the supertype can only use the
 possreps for the supertype, and not the subtype.  Taking for example the
 data types of rectangle and square, the latter is a subtype of the former;
 a possrep for a rectangle in general comprises its center point as well as
@@ -840,8 +841,8 @@ possrep that just works for a square rather than a rectangle in general
 comprises a center point plus its length.
 
 As a corollary to this, all union types have none of the possreps defined
-by their subtypes.  So the system-defined C<QScalar> type has no possreps at
-all, and hence has no selectors or accessors defined for it.
+by their subtypes.  So the system-defined C<QScalar> type has no possreps
+at all, and hence has no selectors or accessors defined for it.
 
 Note that, to keep things simple and deterministic under the possibility of
 diamond subtype/supertype relationships (such that the generic
@@ -854,65 +855,68 @@ the same depot.
 
 =head2 Q/Tuple Types and Q/Relation Types
 
-Q/Tuple types are the fundamental heterogeneous conceptually non-encapsulated
-collection types in Muldis D, and are like the Pascal language's concept of
-a record, or the C language's concept of a struct.  The definition of a
-q/tuple type comprises a set of zero or more named I<attributes> of any
-q/scalar or q/nonscalar type.  This set definition is called the q/tuple's
-I<heading>.
+Q/Tuple types are the fundamental heterogeneous conceptually
+non-encapsulated collection types in Muldis D, and are like the Pascal
+language's concept of a record, or the C language's concept of a struct.
+The definition of a q/tuple type comprises a set of zero or more named
+I<attributes> of any q/scalar or q/nonscalar type.  This set definition is
+called the q/tuple's I<heading>.
 
 Q/Relation types are the fundamental homogeneous conceptually
 non-encapsulated collection types in Muldis D, and are like other
 languages' concepts of sets (or arrays where all elements are distinct),
 but restricted in that all elements are q/tuples.  The definition of a
-q/relation type looks exactly like the definition of a q/tuple type (such that
-a q/relation has attributes even if it has no q/tuples), but that the
-definition defines every q/tuple in the q/relation, and also but that q/relation
-types can additionally have I<keys> defined which indicate that a subset of
-its attributes' values are distinct between all q/tuples in the q/relation.
+q/relation type looks exactly like the definition of a q/tuple type (such
+that a q/relation has attributes even if it has no q/tuples), but that the
+definition defines every q/tuple in the q/relation, and also but that
+q/relation types can additionally have I<keys> defined which indicate that
+a subset of its attributes' values are distinct between all q/tuples in the
+q/relation.
 
 Generic system-defined selector and accessor operators exist that
-automatically work with all q/tuple and q/relation types, so they do not need
-to be defined per such type.
+automatically work with all q/tuple and q/relation types, so they do not
+need to be defined per such type.
 
-The system-defined types C<QTuple> and C<QRelation> (and their system-defined
-subtypes) are technically generic factory types, such that they themselves
-do not define any attribute sets, and are supertypes of all q/tuple and
-q/relation types that do.  Beyond this special case, a pair of q/tuple or
-q/relation types can only have a subtype/supertype relationship if they have
-compatible headings, which means the attribute sets are of the same
-degree, the attribute names are identical, and the name-wise corresponding
-attributes in each heading have a valid subtype/supertype relationship;
-each attribute of a q/tuple or q/relation subtype is a subtype of the
-same-named attribute of the q/tuple or q/relation supertype.
+The system-defined types C<QTuple> and C<QRelation> (and their
+system-defined subtypes) are technically generic factory types, such that
+they themselves do not define any attribute sets, and are supertypes of all
+q/tuple and q/relation types that do.  Beyond this special case, a pair of
+q/tuple or q/relation types can only have a subtype/supertype relationship
+if they have compatible headings, which means the attribute sets are of the
+same degree, the attribute names are identical, and the name-wise
+corresponding attributes in each heading have a valid subtype/supertype
+relationship; each attribute of a q/tuple or q/relation subtype is a
+subtype of the same-named attribute of the q/tuple or q/relation supertype.
 
-The explicit heading of a q/tuple or q/relation value only defines the names of
-its attributes, not their types; the types of q/tuple or q/relation attributes
-are simply derived from the values of those attributes, specifically their
-MSTs, recursively in the case of TVAs and RVAs.  Declared q/tuple or q/relation
-attribute types are only applicable to explicit q/tuple or q/relation type
-definitions, and the variables or routine parameters etc that compose them.
+The explicit heading of a q/tuple or q/relation value only defines the
+names of its attributes, not their types; the types of q/tuple or
+q/relation attributes are simply derived from the values of those
+attributes, specifically their MSTs, recursively in the case of TVAs and
+RVAs.  Declared q/tuple or q/relation attribute types are only applicable
+to explicit q/tuple or q/relation type definitions, and the variables or
+routine parameters etc that compose them.
 
-The most specific type (MST) of a q/tuple value is determined by the MSTs of
-all of its attributes' values; what the heading of that q/tuple says for each
-of its attributes is that its data type is the MST of the value of that
-attribute in the q/tuple's body.
+The most specific type (MST) of a q/tuple value is determined by the MSTs
+of all of its attributes' values; what the heading of that q/tuple says for
+each of its attributes is that its data type is the MST of the value of
+that attribute in the q/tuple's body.
 
 The MST of a q/relation value is similarly based on the attribute values in
 its member q/tuples; for each q/relation attribute, its MST is the most
 specific common supertype of the MSTs of the q/tuple values for that
-attribute.  If a q/relation value has zero q/tuples, then the MST of every one
-of its attributes is simply C<Empty>, regardless of whether that attribute
-would otherwise be q/scalar or q/tuple or q/relation valued.  A consequence of
-this is that 2 q/relation values with zero q/tuples are always identical if
-just their degree and the names of their attributes match, and regardless
-of the declared types of the attributes.  A corollary to this is that if
-the declared type of an attribute of a q/relation type is C<Empty>, then that
-type can only consist of exactly 1 value, which is the zero-tuple relation
-having those attribute names (and their types are all C<Empty>).  This
-quality is reserved for relation and quasi-relation types alone; no
-scalar possrep or tuple (or quasi- variants) may use C<Empty> as a declared
-attribute type because their attributes can't contain zero values.
+attribute.  If a q/relation value has zero q/tuples, then the MST of every
+one of its attributes is simply C<Empty>, regardless of whether that
+attribute would otherwise be q/scalar or q/tuple or q/relation valued.  A
+consequence of this is that 2 q/relation values with zero q/tuples are
+always identical if just their degree and the names of their attributes
+match, and regardless of the declared types of the attributes.  A corollary
+to this is that if the declared type of an attribute of a q/relation type
+is C<Empty>, then that type can only consist of exactly 1 value, which is
+the zero-tuple relation having those attribute names (and their types are
+all C<Empty>).  This quality is reserved for relation and quasi-relation
+types alone; no scalar possrep or tuple (or quasi- variants) may use
+C<Empty> as a declared attribute type because their attributes can't
+contain zero values.
 
 A consequence of these identity matters is that a Muldis D implementation
 can choose to keep all the actual type information of a nonscalar (and
@@ -1000,8 +1004,8 @@ arguments as a single collection argument, and the conceptual arguments to
 relational join usually have different headings, and so this single actual
 argument can't be just a relation in the general case (if it was, then the
 join will happen to be the special case that is a relational intersection).
-But this exception is just an artifact of Muldis D having exclusively
-named parameters plus N-ary by default where possible, and the actual join
+But this exception is just an artifact of Muldis D having exclusively named
+parameters plus N-ary by default where possible, and the actual join
 operation is still relational model abiding.
 
 =head2 Remnant Types
@@ -1010,9 +1014,10 @@ Generally speaking, a remnant type is what results when one defines a union
 type over 2 other types whose values are mutually incompatible for use in
 the same relation attribute, such as 2 q/relation types with different
 degrees or attribute names.  Generally speaking, a remnant type is the
-declared type of each attribute of a general quasi-nonscalar type, when said
-attribute isn't one of the special system-defined maximal types.  A remnant
-type also results from defining a negation type over a non-remnant type.
+declared type of each attribute of a general quasi-nonscalar type, when
+said attribute isn't one of the special system-defined maximal types.  A
+remnant type also results from defining a negation type over a non-remnant
+type.
 
 =head2 Finite Types and Infinite Types
 
@@ -1214,15 +1219,15 @@ applied when using values of that type with versions of order-sensitive
 operators that don't have the additional function-name-specifying
 parameter.  All ordered system-defined q/scalar root types have this
 type-default ordering function defined for them, especially all
-system-defined q/scalar types that don't have any possreps, so you don't need
-to define any yourself for these most-common cases.  Note that a q/nonscalar
-type can't have a default ordering function, and a subtype of a q/scalar type
-can't supply or replace one either, with the reasoning for this that any
-resulting behaviour from supporting such would be difficult to predict and
-easily introduce bugs, due for example to "action at a distance" or knowing
-what function applies to what values by default in the case of subtyping;
-by contrast, it is easy to predict behaviour when a type-default sorting
-function is attached to a q/scalar root type.
+system-defined q/scalar types that don't have any possreps, so you don't
+need to define any yourself for these most-common cases.  Note that a
+q/nonscalar type can't have a default ordering function, and a subtype of a
+q/scalar type can't supply or replace one either, with the reasoning for
+this that any resulting behaviour from supporting such would be difficult
+to predict and easily introduce bugs, due for example to "action at a
+distance" or knowing what function applies to what values by default in the
+case of subtyping; by contrast, it is easy to predict behaviour when a
+type-default sorting function is attached to a q/scalar root type.
 
 Note that, for the present at least, a system-compatible fundamental
 order-determination function may only be totally ordered; that is, no 2
@@ -1500,25 +1505,25 @@ C<Bool:false> if not; in the latter case, the DBMS would then throw a
 type-constraint-violation exception (resulting in a transaction rollback
 where applicable), or in the former case, it would consider the selection a
 success.  A C<type_constraint> has exactly 1 parameter whose name is
-C<topic>.  If the data type being selected is a q/scalar type or subtype with
-possreps, then each possrep has its own C<type_constraint>, and the
+C<topic>.  If the data type being selected is a q/scalar type or subtype
+with possreps, then each possrep has its own C<type_constraint>, and the
 declared type of the C<topic> parameter for each is a q/tuple where the
-attributes of the q/tuple match those of the possrep; such a q/tuple argument
-provides the candidate components of the q/scalar value being selected.  Or,
-if the data type being selected of is defined as a restriction of one other
-data type, then the declared type of the C<topic> parameter is that other
-data type.  Or, if the data type being selected of is defined over a union
-of multiple other data types, then the declared type of the C<topic>
-parameter is C<Universal>.  Note that it is not valid to define a type
-(other than C<Empty>) with a C<type_constraint> that unconditionally
-results in C<Bool:false>, as such a type could not also have a default
-value.  Note that, because Muldis D requires dbvars to be defined over
-named data types, all I<state constraints> for a database, including
-uniqueness keys or foreign keys or other state-constraining business rules,
-are normally defined as the C<type_constraint> for the type which that
-database is.  Conceptually speaking, a C<type_constraint> will execute as
-the beginning part of a statement, prior to any attempt to update any
-variable's state or affect the environment.
+attributes of the q/tuple match those of the possrep; such a q/tuple
+argument provides the candidate components of the q/scalar value being
+selected.  Or, if the data type being selected of is defined as a
+restriction of one other data type, then the declared type of the C<topic>
+parameter is that other data type.  Or, if the data type being selected of
+is defined over a union of multiple other data types, then the declared
+type of the C<topic> parameter is C<Universal>.  Note that it is not valid
+to define a type (other than C<Empty>) with a C<type_constraint> that
+unconditionally results in C<Bool:false>, as such a type could not also
+have a default value.  Note that, because Muldis D requires dbvars to be
+defined over named data types, all I<state constraints> for a database,
+including uniqueness keys or foreign keys or other state-constraining
+business rules, are normally defined as the C<type_constraint> for the type
+which that database is.  Conceptually speaking, a C<type_constraint> will
+execute as the beginning part of a statement, prior to any attempt to
+update any variable's state or affect the environment.
 
 =item C<state_constraint>
 
@@ -1575,19 +1580,20 @@ and unconditionally results in the same value of the type.
 A C<possrep_map> is the same as an C<inner_function>, but that it is part
 of the definition of a (|quasi-)scalar data type, and it is used to convert
 a value from one of that type's possreps to another.  A C<possrep_map> has
-a single C<topic> parameter whose declared type is a q/tuple whose attributes
-match those of the possrep being converted from, and its result type is a
-q/tuple whose attributes match those of the possrep being converted to.  Note
-that every distinct argument (domain) value of this function must have a
-distinct result (range) value, as it is a 1:1 mapping function.
+a single C<topic> parameter whose declared type is a q/tuple whose
+attributes match those of the possrep being converted from, and its result
+type is a q/tuple whose attributes match those of the possrep being
+converted to.  Note that every distinct argument (domain) value of this
+function must have a distinct result (range) value, as it is a 1:1 mapping
+function.
 
 =item C<virtual_attr_map>
 
 A C<virtual_attr_map> is the same as a C<possrep_map> except that its range
 may be (and typically is) smaller than its domain, it is usually part of
 the definition of a (|quasi-)nonscalar data type, and it is used such that,
-on a per-q/tuple basis, one subset of that type's attributes is defined to be
-generated, by the C<virtual_attr_map> function, purely from a disjoint
+on a per-q/tuple basis, one subset of that type's attributes is defined to
+be generated, by the C<virtual_attr_map> function, purely from a disjoint
 subset of that type's attributes.  So a special kind of I<functional
 dependency> exists between the first subset, which has the I<dependent>
 attributes, and the second subset, which has the I<determinant> attributes.
@@ -1860,14 +1866,14 @@ invoker statement's first phase.  I<TODO: elegantly support updating
 triggers somehow.>
 
 In account to situations where external processes are concurrently using
-the same persistent (and externally visible) repository as a Muldis D
-DBMS instance, the Muldis D DBMS will maintain a lock on the whole
-repository (or appropriate subset thereof) during any active read-only
-and/or for-update transaction, to ensure that the transaction sees a
-consistent environment during its life.  The lock is a shared lock if the
-transaction only does reading, and it is an exclusive lock if the
-transaction also does writing.  Similar management happens to handle
-multiple Muldis D internal processes.
+the same persistent (and externally visible) repository as a Muldis D DBMS
+instance, the Muldis D DBMS will maintain a lock on the whole repository
+(or appropriate subset thereof) during any active read-only and/or
+for-update transaction, to ensure that the transaction sees a consistent
+environment during its life.  The lock is a shared lock if the transaction
+only does reading, and it is an exclusive lock if the transaction also does
+writing.  Similar management happens to handle multiple Muldis D internal
+processes.
 
 The rest of this documentation section is written just within the context
 of a single in-DBMS process, unless explicitly stated otherwise.
@@ -1975,10 +1981,10 @@ C<procedure> etc or the host language, the main examples being those that
 mount or unmount a persistent repository; this is because such a change in
 the environment mid-transaction would result in an inconsistent state.
 
-I<Muldis D lets you explicitly place locks on resources that you don't
-want external processes to change out from under you, and these locks do
-not automatically expire when transactions end; or maybe they do; this
-feature has to be thought out more.>
+I<Muldis D lets you explicitly place locks on resources that you don't want
+external processes to change out from under you, and these locks do not
+automatically expire when transactions end; or maybe they do; this feature
+has to be thought out more.>
 
 =head1 RESOURCE MODULARITY AND PERSISTENCE
 
@@ -2437,37 +2443,38 @@ pure functional.
 An important feature of DBMS entity names is that the components of
 variables' current values can be addressed directly as if they were normal
 variables, both for reading and for updating; and so this feature allows
-for attributes of q/tuple and possrep-having-q/scalar (but not q/relation in the
-general case; see below) typed variables to be used as pseudo-variables, to
-the Nth degree of recursion, with very terse syntax.
+for attributes of q/tuple and possrep-having-q/scalar (but not q/relation
+in the general case; see below) typed variables to be used as
+pseudo-variables, to the Nth degree of recursion, with very terse syntax.
 
-For example, if C<lex.foo> was the name of a q/tuple-typed variable, and that
-q/tuple type had an attribute named C<bar>, then C<lex.foo.bar> can be
+For example, if C<lex.foo> was the name of a q/tuple-typed variable, and
+that q/tuple type had an attribute named C<bar>, then C<lex.foo.bar> can be
 addressed as if it were a normal variable in the same vein as C<lex.foo>.
 As a (read-only) value expression, C<lex.foo.bar> would be short-hand for
 the result of invoking a q/tuple attribute extractor function on C<lex.foo>
 that extracts C<bar>.  When C<lex.foo.bar> is used as the target of a value
-assignment, say the value 42, that is a short-hand for selecting the q/tuple
-value that is equal to what C<lex.foo>'s value is except for its C<bar>
-attribute being 42, and assigning that q/tuple to C<lex.foo>.
+assignment, say the value 42, that is a short-hand for selecting the
+q/tuple value that is equal to what C<lex.foo>'s value is except for its
+C<bar> attribute being 42, and assigning that q/tuple to C<lex.foo>.
 
-With q/relations, this kind of terse syntax may also be used in some, though
-not all, situations as the syntax may be with q/tuples and q/scalar possreps,
-since in the general case, addressing a q/relation attribute is conceptually
-referring to a set of 0..N items rather than exactly 1.  So for the
-present, q/relation attributes may only be referred to using this terse
-syntax in situations where said attributes of *all* of the q/tuples in the
-q/relation at once are being referenced.  An example of this is some
+With q/relations, this kind of terse syntax may also be used in some,
+though not all, situations as the syntax may be with q/tuples and q/scalar
+possreps, since in the general case, addressing a q/relation attribute is
+conceptually referring to a set of 0..N items rather than exactly 1.  So
+for the present, q/relation attributes may only be referred to using this
+terse syntax in situations where said attributes of *all* of the q/tuples
+in the q/relation at once are being referenced.  An example of this is some
 canonical terse foreign key constraint definitions, where one might want to
 apply a referential constraint to elements of a TVA or RVA of a q/relation,
-rather than the whole q/relation attribute.  (For the present, other parts of
-the Muldis D documentation ignore for simplicity that an RVA of a q/relation
-can be drilled into, but you in fact can do this where it makes sense.)
+rather than the whole q/relation attribute.  (For the present, other parts
+of the Muldis D documentation ignore for simplicity that an RVA of a
+q/relation can be drilled into, but you in fact can do this where it makes
+sense.)
 
 Note that in general, any value expression can denote a pseudo-variable,
-but only components of q/tuples or q/scalar possreps, and sometimes components
-of q/relations, get the special short-hand where an extended entity name can
-be used as the full expression.
+but only components of q/tuples or q/scalar possreps, and sometimes
+components of q/relations, get the special short-hand where an extended
+entity name can be used as the full expression.
 
 =head2 User Namespace Correspondence
 
@@ -2582,8 +2589,8 @@ analogy to its terse pseudo-variable invocation syntax that lets you
 directly reference the type used by an entity by way of that entity's
 fully-qualified (context-sensitive) name.  To be specific, you take the
 entity's name and then attach extra syntax indicating you want to use its
-declared type, in the form of 2..3 extra prefixed name chain elements,
-plus possibly 1 extra suffixed name chain element.
+declared type, in the form of 2..3 extra prefixed name chain elements, plus
+possibly 1 extra suffixed name chain element.
 
 The extra syntax takes the form of a new primary namespace C<type>, which
 has 1..2 special following namespaces, and then the rest of the namespaces
@@ -2610,12 +2617,13 @@ Dealing with (|quasi-)nonscalar type is slightly more complicated yet, due
 to the fact that one tends to declare q/tuple+q/relation type pairs by
 declaring the heading that they have in common and the fact that when you
 use one you often need to use its counterpart.  So when you when you are
-taking the declared type where a q/tuple+q/relation type was declared together,
-you use extra syntax to say whether it is a q/tuple type or q/relation type
-that you actually want.  So to deal with this, the aforementioned forms of
-taking types actually have C<(.(|quasi_)(tuple|relation)_from){0,1}> in
-their syntax following the C<type> and before the aforementioned remainder;
-for example C<type.(tuple|relation)_from.var.dep.data.myrelvar>.
+taking the declared type where a q/tuple+q/relation type was declared
+together, you use extra syntax to say whether it is a q/tuple type or
+q/relation type that you actually want.  So to deal with this, the
+aforementioned forms of taking types actually have
+C<(.(|quasi_)(tuple|relation)_from){0,1}> in their syntax following the
+C<type> and before the aforementioned remainder; for example
+C<type.(tuple|relation)_from.var.dep.data.myrelvar>.
 
 Muldis D also has an extension to the previously described "taking the
 type" feature such that declaring any type, embedded or otherwise, also has
