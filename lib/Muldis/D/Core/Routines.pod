@@ -189,7 +189,7 @@ of C<topic>.  This function can be used to select any scalar value at all
 that has a possrep.
 
 =item C<function sys.std.Core.QScalar.order result Order params {
-topic(Scalar), other(Scalar), assuming(QuasiTuple)? }>
+topic(Scalar), other(Scalar), assuming(QTuple)? }>
 
 This function is the externalization of a scalar root type's type-default
 (total) C<order_determination> function.  This function results in
@@ -204,7 +204,7 @@ C<order_determination> function; this function will otherwise warn if the
 declared types of those arguments are not both subtypes of such a common
 scalar root type.  Note that C<order_determination> functions are
 considered the only fundamental order-sensitive operators, and all others
-are defined over them.  This function also has a C<QuasiTuple>-typed third
+are defined over them.  This function also has a C<QTuple>-typed third
 parameter, named C<assuming>, which carries optional customization details
 for the order-determination algorithm; this permits the function to
 implement a choice between multiple (typically similar) ordering algorithms
@@ -526,7 +526,7 @@ specifies any attribute name that C<topic> doesn't have, or if an attribute
 of C<topic{outer}> is the same as another C<topic> attribute.
 
 =item C<function sys.std.Core.QRelation.restriction result Relation params
-{ topic(Relation), func(FuncRef), assuming(QuasiTuple)? }>
+{ topic(Relation), func(FuncRef), assuming(QTuple)? }>
 
 This function results in the relational restriction of its C<topic>
 argument as determined by applying the C<Bool>-resulting function named in
@@ -546,14 +546,14 @@ restrictions are composed simply of anded or ored tests for attribute value
 equality.
 
 =item C<function sys.std.Core.QRelation.cmpl_restriction result Relation
-params { topic(Relation), func(FuncRef), assuming(QuasiTuple)? }>
+params { topic(Relation), func(FuncRef), assuming(QTuple)? }>
 
 This function is the same as C<restriction> but that it results in the
 complementary subset of tuples of C<topic> when given the same arguments.
 See also the C<sys.std.Core.QRelation.semidifference> function.
 
 =item C<function sys.std.Core.QRelation.extension result Relation params {
-topic(Relation), func(FuncRef), assuming(QuasiTuple)? }>
+topic(Relation), func(FuncRef), assuming(QTuple)? }>
 
 This function results in the relational extension of its C<topic> argument
 as determined by applying the C<Tuple>-resulting function named in its
@@ -581,7 +581,7 @@ the C<attrs> argument.
 
 =item C<function sys.std.Core.QRelation.summary result Relation params {
 topic(Relation), group_per(set_of.Name), summ_func(FuncRef),
-summ_assuming(QuasiTuple)? }>
+summ_assuming(QTuple)? }>
 
 This function provides a convenient context for using aggregate functions
 to derive a per-group summary relation, which is its result, from another
@@ -777,7 +777,7 @@ C<B>; that is, C<A / B> is shorthand for C<A{X} - ((A{X} join B) - A){X}>.
 =over
 
 =item C<function sys.std.Core.Control.func_invo result Universal params {
-function(FuncRef), args(QuasiTuple)? }>
+function(FuncRef), args(QTuple)? }>
 
 This function results in the result of invoking the other function named in
 its C<function> argument when the latter function is curried by its C<args>
@@ -923,14 +923,14 @@ C<sys.std.Core.QRelation.deletion> function with the same arguments, and
 then assigning the result of that function to C<r>.
 
 =item C<updater sys.std.Core.QRelation.assign_restriction update {
-topic(Relation) } read { func(FuncRef), assuming(QuasiTuple)? }>
+topic(Relation) } read { func(FuncRef), assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.restriction> function with the same arguments, and
 then assigning the result of that function to C<topic>.
 
 =item C<updater sys.std.Core.QRelation.assign_cmpl_restriction update {
-topic(Relation) } read { func(FuncRef), assuming(QuasiTuple)? }>
+topic(Relation) } read { func(FuncRef), assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.cmpl_restriction> function with the same
@@ -991,7 +991,7 @@ column.
 =over
 
 =item C<updater sys.std.Core.QRelation.assign_extension update {
-topic(Relation) } read { func(FuncRef), assuming(QuasiTuple)? }>
+topic(Relation) } read { func(FuncRef), assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.extension> function with the same arguments, and
@@ -1036,8 +1036,8 @@ dropped SQL table column.
 
 =over
 
-=item C<updater sys.std.Core.Control.upd_invo update { upd_args(QuasiTuple)
-} read { updater(ProcRef), ro_args(QuasiTuple)? }>
+=item C<updater sys.std.Core.Control.upd_invo update { upd_args(QTuple)
+} read { updater(ProcRef), ro_args(QTuple)? }>
 
 This update operator has the same purpose and features as
 C<sys.std.Core.Control.func_invo> but that it invokes an updater rather
@@ -1134,7 +1134,7 @@ These procedures are applicable to use in all kinds of procedures.
 =over
 
 =item C<procedure sys.std.Core.Control.proc_invo update {
-upd_args(QuasiTuple)? } read { procedure(ProcRef), ro_args(QuasiTuple)? }>
+upd_args(QTuple)? } read { procedure(ProcRef), ro_args(QTuple)? }>
 
 This procedure is the same as C<sys.std.Core.Control.upd_invo> but that it
 invokes a procedure rather than an updater, and that C<upd_args> is
@@ -1147,9 +1147,9 @@ This procedure will throw the exception given as its argument; this results
 in the call stack unwinding, and transaction rollbacks, until it is caught.
 
 =item C<procedure sys.std.Core.Control.try_catch update {
-try_updating(QuasiTuple)?, catch_updating(QuasiTuple)? } read {
-try(ProcRef), catch(ProcRef), try_assuming(QuasiTuple)?,
-catch_assuming(QuasiTuple)? }>
+try_updating(QTuple)?, catch_updating(QTuple)? } read {
+try(ProcRef), catch(ProcRef), try_assuming(QTuple)?,
+catch_assuming(QTuple)? }>
 
 This procedure invokes the procedure named in its C<try> argument, giving
 it the arguments C<try_updating> and C<try_assuming> as its C<updating> and

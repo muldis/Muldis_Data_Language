@@ -106,7 +106,7 @@ queries, such as in connection with the "part explosion problem" (the
 problem of finding all components, at all levels, of some specified part).
 
 =item C<function sys.std.QRelation.reduction result Tuple params {
-topic(Relation), func(FuncRef), assuming(QuasiTuple)?, identity(Tuple) }>
+topic(Relation), func(FuncRef), assuming(QTuple)?, identity(Tuple) }>
 
 This function is a generic reduction operator that recursively takes each
 pair of tuples in C<topic> and applies an argument-specified tuple
@@ -122,7 +122,7 @@ consistency with C<func>.>  This function will fail|warn if the |declared
 headings of C<identity> and C<topic> aren't compatible.
 
 =item C<function sys.std.QRelation.maybe_reduction result maybe_of.Tuple
-params { topic(Relation), func(FuncRef), assuming(QuasiTuple)? }>
+params { topic(Relation), func(FuncRef), assuming(QTuple)? }>
 
 This function is exactly the same as C<sys.std.QRelation.reduction> except
 that it does not take an C<assuming> argument, and it results in a C<Maybe>
@@ -130,7 +130,7 @@ of what is otherwise the result type, and that result has zero elements if
 the argument has zero elements.
 
 =item C<function sys.std.QRelation.map result Relation params {
-topic(Relation), func(FuncRef), assuming(QuasiTuple)? }>
+topic(Relation), func(FuncRef), assuming(QTuple)? }>
 
 This function provides a convenient one-place generalization of per-tuple
 transformations that otherwise might require the chaining of up to a
@@ -223,7 +223,7 @@ zero-attribute tuple if no explicit argument is given to it.
 
 =item C<function sys.std.QRelation.rank result Relation params {
 topic(Relation), name(Name), ord_func(FuncRef),
-ord_assuming(QuasiTuple)? }>
+ord_assuming(QTuple)? }>
 
 This function results in the relational extension of its C<topic> argument
 by a single C<NNInt>-typed attribute whose name is provided by the C<name>
@@ -244,7 +244,7 @@ C<sys.std.QRelation.rank> but that it wraps the source tuples rather than
 just adding an attribute to them.
 
 =item C<function sys.std.QRelation.limit result Relation params {
-topic(Relation), ord_func(FuncRef), ord_assuming(QuasiTuple)?,
+topic(Relation), ord_func(FuncRef), ord_assuming(QTuple)?,
 min_rank(NNInt), max_rank(NNInt) }>
 
 This function results in the relational restriction of its C<topic>
@@ -275,7 +275,7 @@ tuple if no explicit argument is given to it.
 =over
 
 =item C<function sys.std.QRelation.substitution result Relation params {
-topic(Relation), func(FuncRef), assuming(QuasiTuple)? }>
+topic(Relation), func(FuncRef), assuming(QTuple)? }>
 
 This function is similar to C<extension> except that it substitutes values
 of existing relation attributes rather than adding new attributes.  The
@@ -302,8 +302,8 @@ C<attrs> argument.
 
 =item C<function sys.std.QRelation.substitution_in_restriction result
 Relation params { topic(Relation), restr_func(FuncRef),
-restr_assuming(QuasiTuple)?, subst_func(FuncRef),
-subst_assuming(QuasiTuple)? }>
+restr_assuming(QTuple)?, subst_func(FuncRef),
+subst_assuming(QTuple)? }>
 
 This function is like C<substitution> except that it only transforms a
 subset of the tuples of C<topic> rather than all of them.  It is a
@@ -318,7 +318,7 @@ tests for attribute value equality.
 
 =item C<function sys.std.QRelation.static_substitution_in_restriction
 result Relation params { topic(Relation), restr_func(FuncRef),
-restr_assuming(QuasiTuple)?, subst(Tuple) }>
+restr_assuming(QTuple)?, subst(Tuple) }>
 
 This function is to C<sys.std.QRelation.substitution_in_restriction> what
 C<sys.std.QRelation.static_substitution> is to
@@ -327,7 +327,7 @@ C<static_substitution_in_semijoin> function.
 
 =item C<function sys.std.QRelation.substitution_in_semijoin result Relation
 params { topic(Relation), restr(Relation), subst_func(FuncRef),
-subst_assuming(QuasiTuple)? }>
+subst_assuming(QTuple)? }>
 
 This function is like C<substitution_in_restriction> except that the subset
 of the tuples of C<topic> to be transformed is determined by those matched
@@ -396,7 +396,7 @@ named I<outer_join_with_static_extension>.
 
 =item C<function sys.std.QRelation.outer_join_with_extension result
 Relation params { primary(Relation), secondary(Relation),
-exten_func(FuncRef), exten_assuming(QuasiTuple)? }>
+exten_func(FuncRef), exten_assuming(QTuple)? }>
 
 This function is the same as C<sys.std.QRelation.outer_join_with_product>
 but that the result tuples from non-matches are the result of performing a
@@ -422,7 +422,7 @@ from C<assign_exclusion>'s 2 arguments, and then assigning the result of
 that function to C<topic>.
 
 =item C<updater sys.std.QRelation.assign_substitution update {
-topic(Relation) } read { func(FuncRef), assuming(QuasiTuple)? }>
+topic(Relation) } read { func(FuncRef), assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.substitution> function with the same arguments,
@@ -439,8 +439,8 @@ arguments, and then assigning the result of that function to C<topic>.
 
 =item C<updater sys.std.QRelation.assign_substitution_in_restriction update
 { topic(Relation) } read { restr_func(FuncRef),
-restr_assuming(QuasiTuple)?, subst_func(FuncRef),
-subst_assuming(QuasiTuple)? }>
+restr_assuming(QTuple)?, subst_func(FuncRef),
+subst_assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.substitution_in_restriction> function with the
@@ -450,7 +450,7 @@ This updater is analagous to the general case of the conditional SQL
 
 =item C<updater sys.std.QRelation.assign_static_substitution_in_restriction
 update { topic(Relation) } read { restr_func(FuncRef),
-restr_assuming(QuasiTuple)?, subst(Tuple) }>
+restr_assuming(QTuple)?, subst(Tuple) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.static_substitution_in_restriction> function with
@@ -459,7 +459,7 @@ C<topic>.
 
 =item C<updater sys.std.QRelation.assign_substitution_in_semijoin update {
 topic(Relation) } read { restr(Relation), subst_func(FuncRef),
-subst_assuming(QuasiTuple)? }>  This updater is analagous to the common
+subst_assuming(QTuple)? }>  This updater is analagous to the common
 case of the conditional SQL "UPDATE" statement where the criteria is simply
 a set of and-ed and or-ed value equality tests.
 
