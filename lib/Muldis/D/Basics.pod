@@ -615,9 +615,8 @@ that has no proper subtypes save for C<Empty>.
 
 A primitive type is not, in most cases, conceptually defined in terms of
 any other data type in the system.  A primitive type can only be
-system-defined, not user-defined.  There are just 6 of these: C<Int>,
-C<String>, C<Tuple>, C<Relation>, C<QTuple>, C<QRelation>.  I<TODO:
-Further correct this description.>
+system-defined, not user-defined.  There are just 4 of these: C<Int>,
+C<String>, C<QTuple>, C<QRelation>.  I<TODO: Further correct this desc.>
 
 A structure type is conceptually defined in terms of a collection of N
 elements of one or more other types along with an optional constraint that
@@ -629,13 +628,13 @@ types.  I<TODO: Further correct this description.>
 
 An enumeration type is defined in terms of a union or subset of the values
 of one or more other data types.  The system-defined types defined in terms
-of a subset include: C<NNInt>, C<BString>, C<Database>, C<Set>, C<Array>,
-C<QMaybe>, C<QBag>, C<UTCDateTime>.  The system-defined types
-defined in terms of a union include: C<Universal>, C<Empty>, C<Scalar>,
-C<QScalar>, C<Reference>, C<Remnant>, C<ScaTupRel>.  In the case of a
-scalar subset enumeration type, typically it will define extra scalar
-possreps or selectors.  All user-defined nonscalar or quasi-nonscalar types
-are enumeration types.
+of a subset include: C<NNInt>, C<BString>, C<Tuple>, C<Database>,
+C<Relation>, C<Set>, C<Array>, C<QMaybe>, C<QBag>, C<UTCDateTime>.  The
+system-defined types defined in terms of a union include: C<Universal>,
+C<Empty>, C<QScalar>, C<Scalar>, C<Reference>, C<Remnant>, C<ScaTupRel>.
+In the case of a q/scalar subset enumeration type, typically it will define
+extra q/scalar possreps or selectors.  All user-defined nonscalar or
+quasi-nonscalar types are enumeration types.
 
 A reference type is a special only-system-defined opaque type that is used
 at runtime to implement certain Muldis D features, such as closures, that
@@ -660,64 +659,88 @@ they are not parameterized.  I<TODO: Further correct this description.>
 =head2 Type Identification
 
 All non-reference values in the Muldis D type system are broadly
-categorized into 6 complementary sets called I<scalar values>, I<tuple
-values>, I<relation values>, I<quasi-scalar values>, I<quasi-tuple values>,
-and I<quasi-relation values>; tuple and relation values are collectively
-known as I<nonscalar values>; quasi-tuple and quasi-relation values are
-collectively known as I<quasi-nonscalar values>.  The type system has the
-system-defined data types named C<Scalar>, C<Tuple>, C<Relation>,
-C<QScalar>, C<QTuple>, and C<QRelation>, which serve as maximal
-data types for each category, respectively.  There is also a system-defined
-enumeration type named C<Reference> which is a union over all reference
-types.  The 7 types are all mutually disjoint, and C<Universal> is a union
-type over all of them.
+categorized into 3 complementary sets called I<quasi-scalar values>,
+I<quasi-tuple values>, and I<quasi-relation values>; quasi-tuple and
+quasi-relation values are collectively known as I<quasi-nonscalar values>.
+The type system has the system-defined data types named C<QScalar>,
+C<QTuple>, and C<QRelation>, which serve as maximal data types for each
+category, respectively.  There is also a system-defined enumeration type
+named C<Reference> which is a union over all reference types.  The 4 types
+are all mutually disjoint, and C<Universal> is a union type over all of
+them.
 
 Most non-reference data types each consist exclusively of values from
-exactly one of the above first 6 categories, and each such type does not
+exactly one of the above first 3 categories, and each such type does not
 include values from several of them.  Therefore, every such data type is
-said to be either a I<scalar type>, a I<tuple type>, a I<relation type>, a
-I<quasi-scalar> type, a I<quasi-tuple type>, or a I<quasi-relation type>,
-depending which category all of its values come from.  In similar fashion,
-a I<nonscalar type> is generally any type that is not a scalar type, if we
-ignored quasi- types, meaning it is either a tuple type or a relation type.
+said to be either a I<quasi-scalar> type, a I<quasi-tuple type>, or a
+I<quasi-relation type>, depending which category all of its values come
+from.  In similar fashion, a I<quasi-nonscalar type> is generally any type
+that is not a quasi-scalar type, meaning it is either a quasi-tuple type or
+a quasi-relation type.
 
 A I<remnant type> is any type having at least 2 values, where at least 2 of
 the values are not allowed to be in a same single type of one of the other
-7 categories, according to their type definition rules.  The remnant
+4 categories, according to their type definition rules.  The remnant
 category is the complement category to all the others in that every
 possible proper subset of the values of C<Universal> can now be represented
-by a type that fits in one of the 8 categories, save C<Empty> itself.  The
+by a type that fits in one of the 5 categories, save C<Empty> itself.  The
 type system has the system-defined data type named C<Remnant> which serves
 as a partially redundant maximal data type for remnant types.
 
-The identity of every scalar type is defined by its name alone, and every
-scalar type must have a distinct name that is explicitly defined, either by
-the system or by the user as is applicable.  Every value of a scalar type
+The most important values of the Muldis D type system (because those are
+the only ones that can be stored in a I<database>) are broadly categorized
+into 3 complementary sets called I<scalar values>, I<tuple values>, and
+I<relation values>; tuple and relation values are collectively known as
+I<nonscalar values>.  The type system has the system-defined data types
+named C<Scalar>, C<Tuple>, and C<Relation>, which serve as maximal data
+types for each category, respectively.  Each of these 3 types is a proper
+subtype of the previously mentioned type whose name is the same but for a
+'Q' prefix.  The most important data types each consist exclusively of
+values from exactly one of the most important 3 categories, and each such
+type does not include values from several of them.  Therefore, every such
+data type is said to be either a I<scalar> type, a I<tuple type>, or a
+I<relation type>, depending which category all of its values come from.  In
+similar fashion, a I<nonscalar type> is generally any type that is not a
+scalar type, if we ignored quasi- types, meaning it is either a tuple type
+or a relation type.
+
+A quasi- type is the same as its similarly named non-quasi counterpart in
+every way (and in fact every such non-quasi type is also a quasi-type), but
+that particular kinds of components are permitted in quasi- types that
+aren't permitted in non-quasi types.
+
+Now, while every scalar|tuple|relation type or value is also a
+quasi-scalar|tuple|relation type or value, most of the Muldis D
+specification will use the quasi- names specifically to mean values or
+types that are outside of the quasi- subset that non-quasi values or types
+occupy.  As a common short-hand, anywhere you see syntax like I<q/scalar>
+etc, that means "scalar or other quasi-scalar"; by contrast, if you just
+see I<scalar>, then that generally is excluding the values or types outside
+the most important subset.
+
+The identity of every q/scalar type is defined by its name alone, and every
+q/scalar type must have a distinct name that is explicitly defined, either by
+the system or by the user as is applicable.  Every value of a q/scalar type
 is conceptually opaque and atomic, and its components are not known to
 users of that type; but even when the components are known (because they
-are user-defined structured types), two independently defined scalar types
+are user-defined structured types), two independently defined q/scalar types
 are completely disjoint even if their components look the same, by
-definition.  The only way for 2 scalar types to have values in common is if
+definition.  The only way for 2 q/scalar types to have values in common is if
 one is explicitly defined, directly or indirectly, as a subtype of, or as a
 union type encompassing a subtype of, the other.
 
-Every value of a nonscalar type (either a tuple type I<or> a relation type,
+Every value of a q/nonscalar type (either a q/tuple type I<or> a q/relation type,
 respectively) is conceptually transparent, and its component structure is
-known to all.  The identity of every nonscalar type is defined by its
-component structure alone, and every nonscalar type must have a distinct
-component structure.  Any two nonscalar types that have the same component
+known to all.  The identity of every q/nonscalar type is defined by its
+component structure alone, and every q/nonscalar type must have a distinct
+component structure.  Any two q/nonscalar types that have the same component
 structure are in fact the same type, by definition, regardless of whether
 they were defined independently of each other or not.
-
-A quasi- type is the same as its similarly named non-quasi counterpart as
-far as the means of identifying it go (by name for scalar vs by its
-structure for nonscalar), but that particular kinds of components are
-permitted in quasi- types that aren't permitted in non-quasi types.
 
 A remnant type is always defined in terms of one or more other types, and
 it can never be a root type with defined components.  The identity of every
 remnant type is defined only in terms of it being, directly or indirectly,
-a union or negation of other non-remnant types.  As per with nonscalars,
+a union or negation of other non-remnant types.  As per with q/nonscalars,
 several independently defined remnant types can be considered the same one.
 
 To keep things simpler, every data type in Muldis D has a name by which it
@@ -727,19 +750,19 @@ aliases for their true identities, which are their structures (the
 convenience allows various Muldis D catalog features to be designed and
 implemented more easily).
 
-=head2 Scalar Types
+=head2 Q/Scalar Types
 
-Scalar types are the only conceptually encapsulated types in Muldis D, and
+Q/Scalar types are the only conceptually encapsulated types in Muldis D, and
 are like other languages' concepts of object classes where all their
 attributes are private, and only accessible indirectly.  The definition of
-a scalar type comprises usually one or more named I<possreps> or I<possible
+a q/scalar type comprises usually one or more named I<possreps> or I<possible
 representations>, and for each of those, at least one I<selector> operator
 and usually at least one I<accessor> or I<the> operator.
 
 A I<possrep> of a type is an exhaustively complete means for users to
 conceptualize the structure of the type; it is like a "role" or "interface"
 definition.  A possrep has the appearance of a complete collection of (zero
-or more) named object attributes (of any scalar or nonscalar type) that the
+or more) named object attributes (of any q/scalar or q/nonscalar type) that the
 type could logically be implemented as, and users can use it as if it
 actually was implemented that way, but without the requirement that the
 type actually is implemented that way.  If a type has multiple possreps,
@@ -767,14 +790,14 @@ Taking for example a "medium polygon" data type, there could be a
 constraint that the area of the polygon is between 5 and 10 units.
 
 Generic system-defined selector and possrep attribute accessor operators
-exist that automatically work with all scalar types (that have possreps,
-which all user-defined scalar root types do), so such do not need to be
+exist that automatically work with all q/scalar types (that have possreps,
+which all user-defined q/scalar root types do), so such do not need to be
 explicitly defined per such type.  They are all in the
 C<sys.std.Core.QScalar.\w+> namespace.  These generic operators take
-advantage of the fact that each scalar possrep looks like a tuple, and they
-look like basic tuple operators but for taking an extra argument to say
+advantage of the fact that each q/scalar possrep looks like a q/tuple, and they
+look like basic q/tuple operators but for taking an extra argument to say
 which possrep we're dealing with, and possibly a second extra attribute to
-say what type, in the case of the generic scalar value selector.
+say what type, in the case of the generic q/scalar value selector.
 
 No data type has any operators built-in to its definition except for
 certain implicitly system-defined operators that are automatically
@@ -788,7 +811,7 @@ and must be defined (directly or indirectly) in terms of (that is, layered
 on top of) the few that are built-in, though the built-ins from any or all
 possreps of the type can be utilized.
 
-With a user-defined scalar type, if the type has multiple possreps, then
+With a user-defined q/scalar type, if the type has multiple possreps, then
 each distinct pair of possreps for the type has a mapping function plus its
 inverse function defined, permitting every value of the type which is first
 expressed using one possrep to be translated for expression in the other.
@@ -798,14 +821,14 @@ are arranged as nodes on a directed graph, with an explicit mapping
 function being a side, there just needs to be a path from every possrep to
 every other one; every path then has at least an implicit mapping function.
 
-The Muldis D implementation can choose for itself as to how the scalar type
+The Muldis D implementation can choose for itself as to how the q/scalar type
 is physically represented behind the scenes, either picking between any of
 the user-provided possreps or using yet another one or several of its own;
 the implementation can work how it knows best to achieve an efficient
 system, and this is all hidden away from the users, who simply perceive in
 it what they requested.
 
-In the context of scalar subtype/supertype relationships, the definition of
+In the context of q/scalar subtype/supertype relationships, the definition of
 a subtype can add additional possreps that are only valid for the subtype,
 such that users of the subtype can use both possreps defined for the
 subtype and the supertype, but users of the supertype can only use the
@@ -817,77 +840,77 @@ possrep that just works for a square rather than a rectangle in general
 comprises a center point plus its length.
 
 As a corollary to this, all union types have none of the possreps defined
-by their subtypes.  So the system-defined C<Scalar> type has no possreps at
+by their subtypes.  So the system-defined C<QScalar> type has no possreps at
 all, and hence has no selectors or accessors defined for it.
 
 Note that, to keep things simple and deterministic under the possibility of
 diamond subtype/supertype relationships (such that the generic
-system-defined scalar possrep attribute accessors can work), Muldis D
-requires all of the possreps of all scalar types having a common scalar
+system-defined q/scalar possrep attribute accessors can work), Muldis D
+requires all of the possreps of all q/scalar types having a common q/scalar
 root type to have mutually distinct names, regardless of whether any
 subtypes have values in common; this can be enforced at
 type-definition-in-catalog time since all types that can interact are in
 the same depot.
 
-=head2 Tuple Types and Relation Types
+=head2 Q/Tuple Types and Q/Relation Types
 
-Tuple types are the fundamental heterogeneous conceptually non-encapsulated
+Q/Tuple types are the fundamental heterogeneous conceptually non-encapsulated
 collection types in Muldis D, and are like the Pascal language's concept of
 a record, or the C language's concept of a struct.  The definition of a
-tuple type comprises a set of zero or more named I<attributes> of any
-scalar or nonscalar type.  This set definition is called the tuple's
+q/tuple type comprises a set of zero or more named I<attributes> of any
+q/scalar or q/nonscalar type.  This set definition is called the q/tuple's
 I<heading>.
 
-Relation types are the fundamental homogeneous conceptually
+Q/Relation types are the fundamental homogeneous conceptually
 non-encapsulated collection types in Muldis D, and are like other
 languages' concepts of sets (or arrays where all elements are distinct),
-but restricted in that all elements are tuples.  The definition of a
-relation type looks exactly like the definition of a tuple type (such that
-a relation has attributes even if it has no tuples), but that the
-definition defines every tuple in the relation, and also but that relation
+but restricted in that all elements are q/tuples.  The definition of a
+q/relation type looks exactly like the definition of a q/tuple type (such that
+a q/relation has attributes even if it has no q/tuples), but that the
+definition defines every q/tuple in the q/relation, and also but that q/relation
 types can additionally have I<keys> defined which indicate that a subset of
-its attributes' values are distinct between all tuples in the relation.
+its attributes' values are distinct between all q/tuples in the q/relation.
 
 Generic system-defined selector and accessor operators exist that
-automatically work with all tuple and relation types, so they do not need
+automatically work with all q/tuple and q/relation types, so they do not need
 to be defined per such type.
 
-The system-defined types C<Tuple> and C<Relation> (and their system-defined
+The system-defined types C<QTuple> and C<QRelation> (and their system-defined
 subtypes) are technically generic factory types, such that they themselves
-do not define any attribute sets, and are supertypes of all tuple and
-relation types that do.  Beyond this special case, a pair of tuple or
-relation types can only have a subtype/supertype relationship if they have
+do not define any attribute sets, and are supertypes of all q/tuple and
+q/relation types that do.  Beyond this special case, a pair of q/tuple or
+q/relation types can only have a subtype/supertype relationship if they have
 compatible headings, which means the attribute sets are of the same
 degree, the attribute names are identical, and the name-wise corresponding
 attributes in each heading have a valid subtype/supertype relationship;
-each attribute of a tuple or relation subtype is a subtype of the
-same-named attribute of the tuple or relation supertype.
+each attribute of a q/tuple or q/relation subtype is a subtype of the
+same-named attribute of the q/tuple or q/relation supertype.
 
-The explicit heading of a tuple or relation value only defines the names of
-its attributes, not their types; the types of tuple or relation attributes
+The explicit heading of a q/tuple or q/relation value only defines the names of
+its attributes, not their types; the types of q/tuple or q/relation attributes
 are simply derived from the values of those attributes, specifically their
-MSTs, recursively in the case of TVAs and RVAs.  Declared tuple or relation
-attribute types are only applicable to explicit tuple or relation type
+MSTs, recursively in the case of TVAs and RVAs.  Declared q/tuple or q/relation
+attribute types are only applicable to explicit q/tuple or q/relation type
 definitions, and the variables or routine parameters etc that compose them.
 
-The most specific type (MST) of a tuple value is determined by the MSTs of
-all of its attributes' values; what the heading of that tuple says for each
+The most specific type (MST) of a q/tuple value is determined by the MSTs of
+all of its attributes' values; what the heading of that q/tuple says for each
 of its attributes is that its data type is the MST of the value of that
-attribute in the tuple's body.
+attribute in the q/tuple's body.
 
-The MST of a relation value is similarly based on the attribute values in
-its member tuples; for each relation attribute, its MST is the most
-specific common supertype of the MSTs of the tuple values for that
-attribute.  If a relation value has zero tuples, then the MST of every one
+The MST of a q/relation value is similarly based on the attribute values in
+its member q/tuples; for each q/relation attribute, its MST is the most
+specific common supertype of the MSTs of the q/tuple values for that
+attribute.  If a q/relation value has zero q/tuples, then the MST of every one
 of its attributes is simply C<Empty>, regardless of whether that attribute
-would otherwise be scalar or tuple or relation valued.  A consequence of
-this is that 2 relation values with zero tuples are always identical if
+would otherwise be q/scalar or q/tuple or q/relation valued.  A consequence of
+this is that 2 q/relation values with zero q/tuples are always identical if
 just their degree and the names of their attributes match, and regardless
 of the declared types of the attributes.  A corollary to this is that if
-the declared type of an attribute of a relation type is C<Empty>, then that
+the declared type of an attribute of a q/relation type is C<Empty>, then that
 type can only consist of exactly 1 value, which is the zero-tuple relation
 having those attribute names (and their types are all C<Empty>).  This
-quality is reserved for relation (and quasi-relation) types alone; no
+quality is reserved for relation and quasi-relation types alone; no
 scalar possrep or tuple (or quasi- variants) may use C<Empty> as a declared
 attribute type because their attributes can't contain zero values.
 
@@ -897,59 +920,92 @@ quasi-nonscalar) value's attributes in the body, leaving the heading to
 keep nothing but the names of the attributes.  An empty relation (or
 quasi-relation) body does not mean that any important meta-data is lost.
 
-=head2 Quasi- Types
+=head2 Distinction of Quasi- Types from Non-Quasi Types
 
-The union types C<Universal>, C<Tuple>, C<Relation> (and the system-defined
-subtypes of the latter 2), and remnant types, can be used as the declared
-types of such as variables and routine parameters, but they can not be used
-as the declared types of scalar possrep or nonscalar (tuple or relation)
-attributes.  The declared type of each of the latter must be either a
-scalar type, or a specific tuple or relation subtype (meaning tuple or
-relation types that have specific attribute sets defined for them).
+A quasi-relation value can have any combination of values of C<Universal>
+as the values of the same attribute across its constituent q/tuples.  All
+generic relational operators will work with every quasi-relation value
+except for C<unwrap> and C<ungroup>, which will only work with a subset of
+quasi-relation values.
 
-If all data types were scalar or nonscalar, then it would not be possible
-to define operators with N-ary parameters whose declared types are any of
-the aforementioned 3 union types plus the remnant types.  That is, an N-ary
-parameter is usually relation-typed, such that the multiplicity of values
-that the parameter can take are each provided as a tuple of said relation;
-however, as relation attributes can not have said union types as their
-declared types, it would not be possible to implement an N-ary relational
-join operator, for example, since each relation being joined would probably
-have a different heading than the others.
+You can only unwrap a q/tuple-valued attribute into an extension of the
+host quasi-relation if for every q/tuple of the host, that attribute's
+q/tuple value has the same degree and attribute names, otherwise there is
+no way to consistently extend the host.  Likewise, you can only ungroup a
+q/relation-valued attribute if for every q/tuple of the host, that
+attribute's q/relation value has the same degree and attribute names.
 
-Quasi-tuple types and quasi-relation types exist as a solution to this
-problem (and quasi-scalar types round out the type system), such that the
-I<quasi-heading> of one is allowed to include attributes whose declared
-types are any type at all, including the union types C<Universal>,
-C<Tuple>, C<Relation>, C<QScalar>, C<QTuple>, C<QRelation>,
-C<Remnant>, and subtypes of tuple and relation without specific attribute
-sets, and remnant types.
+A I<relation value> is, by definition, any quasi-relation value for which
+it is possible to unwrap all of its q/tuple-valued attributes, and ungroup
+all of its q/relation-valued attributes, recursively, until you have just a
+quasi-relation whose attributes are all just scalar-valued.
 
-This said, the situations in which quasi- types may be used are limited;
-only quasi- types may have quasi- types as components; (non-quasi) scalar
-and nonscalar types may not.
+A I<tuple value> is, by definition, any quasi-tuple value such that any
+quasi-relation-valued attributes it has, directly or indirectly, are also
+just relation-valued.
 
-Also, quasi-nonscalar types only have defined for them a subset of
-corresponding nonscalar type operators, partly because the former are not
-intended to replace the latter for the majority of use cases, and partly
-because some of them are simply impossible to implement for
-quasi-nonscalars in the general case: C<unwrap>, C<ungroup>.
+A I<scalar value> is, by definition, any quasi-scalar value that either has
+no possreps (it is an C<Int> or a C<String>) or its root type has at least
+one possrep such that any quasi-relation-valued attributes it has, directly
+or indirectly, are also just relation-valued.
 
-By some conceptions, the type system could be organized such that all
-non-quasi types are proper subtypes of their quasi- counterparts (as
-integers could be considered proper subtypes of rationals); however, these
-type groups have been made disjoint intentionally for reasons which include
-making it easier to avoid using quasi- types, which are not needed for the
-vast majority of tasks, and which are not allowed in truly relational
-databases as global/persisting variables.
+A I<relation type> is, by definition, any type consisting of just relation
+values, such that if the declared type of a unary quasi-relation attribute
+was that relation type, then every value of said unary quasi-relation would
+also be just a relation.  Likewise, a quasi-tuple type is a I<tuple type>
+if said unary quasi-relation could have said tuple type as its attribute's
+declared type and be a relation type.
+
+A I<scalar type> is not defined that way, though, since a relation type can
+validly have an attribute whose declared type is a union of very
+differently constructed scalar root types.  Instead we distinguish I<scalar
+type> as whether, within each individual scalar root type, it has a root
+possrep that can map to a tuple type.  Technically the internals of scalar
+types aren't really part of the relational model, which treats scalars as
+atomic, but this is how Muldis D is defining the distinction from another
+quasi-scalar type.
+
+The distinction between non-quasi types and other quasi-types is very
+important to make, because only non-quasi types can be interpreted
+according to the relational model, as predicates and prepositions.
+
+Therefore, Muldis D only permits a I<database> typed variable, which are
+the only kinds of variables that can be global and persist, to consist of
+non-quasi relations and tuples and scalars.
+
+The other quasi- types are just intended for use with fringe kinds of
+transient data in lexical variables or to pass to routine parameters or
+return from functions, which is where they are expected to be useful; but
+even there, it is not expected that you would need to use with other quasi-
+types very often; Muldis D is designed such that you generally need just
+the non-quasi types to do anything important.
+
+The quasi- types serve partly as a convenience for programmers integrating
+Muldis D with another host language, and want Muldis D to work with their
+transients more like the host language itself does, for example to hold a
+"relation of anything to anything" or a "list of anything" in memory.  Or
+likewise, to help programmers more easily emulate another arbitrary
+language in Muldis D.
+
+As an exception to the general rule of nothing important needing quasi-
+types, the definition of Muldis D's relational join and cross-product
+operators require a quasi-relation main argument because they are N-ary
+operators and N-ary Muldis D operators take a conceptual multiplicity of
+arguments as a single collection argument, and the conceptual arguments to
+relational join usually have different headings, and so this single actual
+argument can't be just a relation in the general case (if it was, then the
+join will happen to be the special case that is a relational intersection).
+But this exception is just an artifact of Muldis D having exclusively
+named parameters plus N-ary by default where possible, and the actual join
+operation is still relational model abiding.
 
 =head2 Remnant Types
 
 Generally speaking, a remnant type is what results when one defines a union
 type over 2 other types whose values are mutually incompatible for use in
-the same relation attribute, such as 2 relation types with different
+the same relation attribute, such as 2 q/relation types with different
 degrees or attribute names.  Generally speaking, a remnant type is the
-declared type of each attribute of a quasi-nonscalar type, when said
+declared type of each attribute of a general quasi-nonscalar type, when said
 attribute isn't one of the special system-defined maximal types.  A remnant
 type also results from defining a negation type over a non-remnant type.
 
@@ -1140,28 +1196,28 @@ optional customization details for the algorithm; this permits the function
 to implement a choice between multiple (typically similar) ordering
 algorithms rather than just one, which reduces the number of functions
 needed for supporting that choice; if the algorithm is not customizable,
-then a tuple argument would be of degree zero.
+then a q/tuple argument would be of degree zero.
 
 In the general case, any context which wants to use a system-defined
 type-generic order-sensitive operator will specify the fully-qualified name
 of a system-compatible fundamental order-determination function to
 implement it over, by supplying the name of the latter function as an
 additional argument to the former.  However, as an option allowed for
-scalar root types, a default fundamental order-determination function can
+q/scalar root types, a default fundamental order-determination function can
 be included as part of the definition of that type, which is automatically
 applied when using values of that type with versions of order-sensitive
 operators that don't have the additional function-name-specifying
-parameter.  All ordered system-defined scalar root types have this
+parameter.  All ordered system-defined q/scalar root types have this
 type-default ordering function defined for them, especially all
-system-defined scalar types that don't have any possreps, so you don't need
-to define any yourself for these most-common cases.  Note that a nonscalar
-type can't have a default ordering function, and a subtype of a scalar type
+system-defined q/scalar types that don't have any possreps, so you don't need
+to define any yourself for these most-common cases.  Note that a q/nonscalar
+type can't have a default ordering function, and a subtype of a q/scalar type
 can't supply or replace one either, with the reasoning for this that any
 resulting behaviour from supporting such would be difficult to predict and
 easily introduce bugs, due for example to "action at a distance" or knowing
 what function applies to what values by default in the case of subtyping;
 by contrast, it is easy to predict behaviour when a type-default sorting
-function is attached to a scalar root type.
+function is attached to a q/scalar root type.
 
 Note that, for the present at least, a system-compatible fundamental
 order-determination function may only be totally ordered; that is, no 2
@@ -1439,11 +1495,11 @@ C<Bool:false> if not; in the latter case, the DBMS would then throw a
 type-constraint-violation exception (resulting in a transaction rollback
 where applicable), or in the former case, it would consider the selection a
 success.  A C<type_constraint> has exactly 1 parameter whose name is
-C<topic>.  If the data type being selected is a scalar type or subtype with
+C<topic>.  If the data type being selected is a q/scalar type or subtype with
 possreps, then each possrep has its own C<type_constraint>, and the
-declared type of the C<topic> parameter for each is a tuple where the
-attributes of the tuple match those of the possrep; such a tuple argument
-provides the candidate components of the scalar value being selected.  Or,
+declared type of the C<topic> parameter for each is a q/tuple where the
+attributes of the q/tuple match those of the possrep; such a q/tuple argument
+provides the candidate components of the q/scalar value being selected.  Or,
 if the data type being selected of is defined as a restriction of one other
 data type, then the declared type of the C<topic> parameter is that other
 data type.  Or, if the data type being selected of is defined over a union
@@ -1514,9 +1570,9 @@ and unconditionally results in the same value of the type.
 A C<possrep_map> is the same as an C<inner_function>, but that it is part
 of the definition of a (|quasi-)scalar data type, and it is used to convert
 a value from one of that type's possreps to another.  A C<possrep_map> has
-a single C<topic> parameter whose declared type is a tuple whose attributes
+a single C<topic> parameter whose declared type is a q/tuple whose attributes
 match those of the possrep being converted from, and its result type is a
-tuple whose attributes match those of the possrep being converted to.  Note
+q/tuple whose attributes match those of the possrep being converted to.  Note
 that every distinct argument (domain) value of this function must have a
 distinct result (range) value, as it is a 1:1 mapping function.
 
@@ -1525,7 +1581,7 @@ distinct result (range) value, as it is a 1:1 mapping function.
 A C<virtual_attr_map> is the same as a C<possrep_map> except that its range
 may be (and typically is) smaller than its domain, it is usually part of
 the definition of a (|quasi-)nonscalar data type, and it is used such that,
-on a per-tuple basis, one subset of that type's attributes is defined to be
+on a per-q/tuple basis, one subset of that type's attributes is defined to be
 generated, by the C<virtual_attr_map> function, purely from a disjoint
 subset of that type's attributes.  So a special kind of I<functional
 dependency> exists between the first subset, which has the I<dependent>
@@ -1536,9 +1592,9 @@ uppercase; or for another example, a dependent attribute may hold the
 result of a relational join of multiple determinant attributes, or a
 restriction on one (in the latter case, the data type being defined is
 probably a database).  A C<virtual_attr_map> has a single C<topic>
-parameter whose declared type is a tuple whose attributes match those of
+parameter whose declared type is a q/tuple whose attributes match those of
 the determinant attributes of the type being declared, and its result type
-is a tuple whose attributes match those of the dependent attributes.  A
+is a q/tuple whose attributes match those of the dependent attributes.  A
 consequence of the special functional dependency is that the dependent
 attributes can all be virtual; the DBMS can store just the determinant
 attributes, and the dependent attributes can be generated when needed (or
@@ -1617,8 +1673,8 @@ the system-defined C<try_catch> procedure.  The vast majority of
 C<procedure> that exist will be user-defined.  But some system-defined
 routines that would otherwise be C<function> or C<updater> are C<procedure>
 instead solely because they are non-deterministic; an example is an
-operator that derives a tuple sequence from a relation without fully
-sorting the tuples, because the result is fundamentally random and
+operator that derives a q/tuple sequence from a q/relation without fully
+sorting the q/tuples, because the result is fundamentally random and
 non-repeatable.
 
 =item C<inner_procedure>
@@ -2376,36 +2432,36 @@ pure functional.
 An important feature of DBMS entity names is that the components of
 variables' current values can be addressed directly as if they were normal
 variables, both for reading and for updating; and so this feature allows
-for attributes of tuple and possrep-having-scalar (but not relation in the
+for attributes of q/tuple and possrep-having-q/scalar (but not q/relation in the
 general case; see below) typed variables to be used as pseudo-variables, to
 the Nth degree of recursion, with very terse syntax.
 
-For example, if C<lex.foo> was the name of a tuple-typed variable, and that
-tuple type had an attribute named C<bar>, then C<lex.foo.bar> can be
+For example, if C<lex.foo> was the name of a q/tuple-typed variable, and that
+q/tuple type had an attribute named C<bar>, then C<lex.foo.bar> can be
 addressed as if it were a normal variable in the same vein as C<lex.foo>.
 As a (read-only) value expression, C<lex.foo.bar> would be short-hand for
-the result of invoking a tuple attribute extractor function on C<lex.foo>
+the result of invoking a q/tuple attribute extractor function on C<lex.foo>
 that extracts C<bar>.  When C<lex.foo.bar> is used as the target of a value
-assignment, say the value 42, that is a short-hand for selecting the tuple
+assignment, say the value 42, that is a short-hand for selecting the q/tuple
 value that is equal to what C<lex.foo>'s value is except for its C<bar>
-attribute being 42, and assigning that tuple to C<lex.foo>.
+attribute being 42, and assigning that q/tuple to C<lex.foo>.
 
-With relations, this kind of terse syntax may also be used in some, though
-not all, situations as the syntax may be with tuples and scalar possreps,
-since in the general case, addressing a relation attribute is conceptually
+With q/relations, this kind of terse syntax may also be used in some, though
+not all, situations as the syntax may be with q/tuples and q/scalar possreps,
+since in the general case, addressing a q/relation attribute is conceptually
 referring to a set of 0..N items rather than exactly 1.  So for the
-present, relation attributes may only be referred to using this terse
-syntax in situations where said attributes of *all* of the tuples in the
-relation at once are being referenced.  An example of this is some
+present, q/relation attributes may only be referred to using this terse
+syntax in situations where said attributes of *all* of the q/tuples in the
+q/relation at once are being referenced.  An example of this is some
 canonical terse foreign key constraint definitions, where one might want to
-apply a referential constraint to elements of a TVA or RVA of a relation,
-rather than the whole relation attribute.  (For the present, other parts of
-the Muldis D documentation ignore for simplicity that an RVA of a relation
+apply a referential constraint to elements of a TVA or RVA of a q/relation,
+rather than the whole q/relation attribute.  (For the present, other parts of
+the Muldis D documentation ignore for simplicity that an RVA of a q/relation
 can be drilled into, but you in fact can do this where it makes sense.)
 
 Note that in general, any value expression can denote a pseudo-variable,
-but only components of tuples or scalar possreps, and sometimes components
-of relations, get the special short-hand where an extended entity name can
+but only components of q/tuples or q/scalar possreps, and sometimes components
+of q/relations, get the special short-hand where an extended entity name can
 be used as the full expression.
 
 =head2 User Namespace Correspondence
@@ -2413,9 +2469,9 @@ be used as the full expression.
 The namespace hierarchies under the C<lib> and C<data> second-level
 namespaces of C<fed|dep|sdp|pkg> are fully independent in definition, such
 that namespaces under C<lib> are defined in terms of child subdepots and
-packages, while namespaces under C<data> are defined in terms of tuple
-(database) attributes that are themselves tuples (databases) rather than
-relations.  However, in order for any given depot|subdepot|package to
+packages, while namespaces under C<data> are defined in terms of q/tuple
+(database) attributes that are themselves q/tuples (databases) rather than
+q/relations.  However, in order for any given depot|subdepot|package to
 optionally have its own concept of a (pseudo-)dbvar that is local to
 itself, these otherwise independent namespace hierarchies are constrained
 to resemble each other to a certain degree, when the option to have a
@@ -2511,7 +2567,7 @@ definitions of other entities like routines or variables or other types,
 and are not typically intended to be used except within the context of
 using those other entities.  For example, often types that are just
 restrictions of other types will get embedded into the definitions of
-relation types or variables that use them as their attributes' declared
+q/relation types or variables that use them as their attributes' declared
 types; or they are embedded into definitions of routine parameters.
 
 To more easily interact with entities that embed the definitions of the
@@ -2546,11 +2602,11 @@ type.param(.<path-elem-to-rtn>){1,}.<param-name>(.<path-elem-to-attr>){0,}
 >>, for example C<type.param.sys.std.Integer.quotient.divisor>.
 
 Dealing with (|quasi-)nonscalar type is slightly more complicated yet, due
-to the fact that one tends to declare tuple+relation type pairs by
+to the fact that one tends to declare q/tuple+q/relation type pairs by
 declaring the heading that they have in common and the fact that when you
 use one you often need to use its counterpart.  So when you when you are
-taking the declared type where a tuple+relation type was declared together,
-you use extra syntax to say whether it is a tuple type or relation type
+taking the declared type where a q/tuple+q/relation type was declared together,
+you use extra syntax to say whether it is a q/tuple type or q/relation type
 that you actually want.  So to deal with this, the aforementioned forms of
 taking types actually have C<(.(|quasi_)(tuple|relation)_from){0,1}> in
 their syntax following the C<type> and before the aforementioned remainder;
