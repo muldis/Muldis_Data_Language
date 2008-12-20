@@ -25,37 +25,6 @@ specifically [result, params, update, read], to something better sounding.
 6's Test.pm / David Wheeler's pgTAP to Muldis D; assist users in testing
 their Muldis D code using TAP protocol.  The TAP messages have type Text.
 
-* IN PROGRESS ...
-Reorganize the type hierarchy so that quasi-scalar|tuple|relation are now
-the main supertypes and the non-quasi scalar|tuple|relation supertypes are
-now proper subtypes of those.  That also means that the system-defined
-'Tuple' and 'Relation' types are then enumerated types rather than
-primitive types; the quasi- versions would be the only primitives.  Rename
-the types QuasiFoo to just QFoo.  The name-spaces .Tuple etc, both under
-core and under extensions, will remain named for the non-q types, but they
-will actually close over the quasi types; however, when their arguments are
-appropriate non-q types, they effectively are as they were before.  Same
-principle as how the .Int namespace has some routines only valid for NNInt
-or PInt etc.  Or actually no, we should rename the namespaces to be QFoo
-also, to avoid deception/confusion.  After the change, there will only
-exist the Nothing type, QNothing won't exist.  Generally speaking, if a
-scalar|tuple|relation has zero attributes, there is no difference at all
-between a quasi-foo and a foo, and likewise with a relation having zero
-tuples, there is no diff.  No QDatabase type will be added.  The catalog
-facilities will still huffmanize for non-q types; one still has to turn an
-is-quasi flag on to get that, else the more restrictive behaviour will be
-default.  Any documentation referring to plain scalar|tuple|relation will
-be updated to refer to "q/scalar"|"q/tuple"|"q/relation" etc, when the
-quasi-versions are also applicable there (I have to examine every example
-case by case), but the emphasis would still be on the non-q versions.
-As for relational operators that would consider arguments to be
-incompatible with non-q relation context etc, such as join or union of 2
-different-degree RVA with same attr name, the q-savvy operators would
-succeed but can offer a warning if the declared types of the arguments are
-plain Relation etc, same as one can have warnings for certain is_identical.
-In the general case even ungroup/unwrap is defined for quasi-foo also; it
-would only die if the specific attributes asked to be ungr/wr are quasis.
-
 * Add a feature affecting namespaces where one can refer to "the current
 depot|subdepot|etc" as defined by a global variable of sorts.  The idea is
 that code existing outside of a depot can refer to that depot or its
@@ -103,6 +72,19 @@ subtype, key, possrep, etc; they apply to both 'outer' and 'inner'
 types/routines; also keywords for declaring whole packages or something.
 Also consider that some pragmas can go away, their actions made always-on
 or 'lexical'.
+
+* Overhaul docs again concerning interaction of quasi-types and the
+complete vs incomplete type definitions and prim vs struc vs enum etc.
+
+* Overhaul the system catalog, as well as the system-defined operators, so
+one can easily define incomplete types / type generators, and can easily
+define the Relation union type over the QRelation union type.
+
+* Add nonscalar value routines like: has_attr(:topic(QT/QR), :name(Name)),
+has_attrs, attr_list(:topic(QT/QR)) ... these complement degree(); add
+scalar value routines like above and has_possrep() etc ...; add type
+introspection routines like: is_incomplete() or is_quasi() etc; add type
+intro rtns like: is_primitive|structure|reference|enumerated etc
 
 * Add catalog types that represent thrown exceptions.
 
@@ -194,13 +176,5 @@ autonomous in-DBMS processes, in general, besides the special case about
 sequence generators.
 
 * Consider some more elegant solution about matters of closures et al.
-
-* IN PROGRESS ...
-Add Ext/Quasi.pod or multiple such language extensions that contain
-routines for system-defined quasi-scalar and quasi-nonscalar types, which
-are analagous to the system-defined routines for their non-quasi
-counterparts.  There won't necessarily be a counterpart for all non-quasi
-generic routines, and probably not even for most of them, but rather just
-enough counterparts to be useful.
 
 * Whatever else needs doing, such as, fixing bugs.
