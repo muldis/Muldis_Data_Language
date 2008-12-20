@@ -384,8 +384,9 @@ This function results in C<Bool:true> iff its C<t> argument matches a q/tuple
 of its C<r> argument (that is, iff conceptually C<t> is a member of C<r>),
 and C<Bool:false> otherwise.  This function is like
 C<sys.std.Core.QRelation.is_subset> except that the q/tuple being looked for
-doesn't have to be wrapped in a q/relation.  This function will fail|warn if
-its 2 arguments are incompatible as per C<is_subset>.
+doesn't have to be wrapped in a q/relation.  This function will warn if its
+2 arguments' common-named attributes have declared types that are
+incompatible as per C<is_identical>.
 
 =item C<function sys.std.Core.QRelation.is_not_member result Bool params {
 r(QRelation), t(QTuple) }>
@@ -632,11 +633,9 @@ look_in(QRelation), look_for(QRelation) }>
 
 This function results in C<Bool:true> iff the set of q/tuples comprising
 C<look_for> is a subset of the set of q/tuples comprising C<look_in>, and
-C<Bool:false> otherwise.  This function will fail if the 2 arguments have
-attributes with common names but their most specific types would be fatally
-incompatible in a common relation value; this function will otherwise warn
-with common-named attributes where their declared types are incompatible as
-per C<is_identical>.
+C<Bool:false> otherwise.  This function will warn if the input q/relations
+common-named attributes have declared types that are incompatible as per
+C<is_identical>.
 
 =item C<function sys.std.Core.QRelation.is_not_subset result Bool params {
 look_in(QRelation), look_for(QRelation) }>
@@ -705,9 +704,10 @@ This function results in the relational difference when its C<filter>
 argument is subtracted from its C<source> argument.  The result q/relation
 has the same heading as both of its arguments, and its body contains only
 the q/tuples that are in C<source> and are not in C<filter>.  This function
-will fail|warn if its 2 arguments are incompatible as per C<is_subset>.
-Note that this I<difference> operator is conceptually a special case of
-I<semidifference>, applicable when the headings of the inputs are the same.
+will warn if the input q/relations common-named attributes have declared
+types that are incompatible as per C<is_identical>.  Note that this
+I<difference> operator is conceptually a special case of I<semidifference>,
+applicable when the headings of the inputs are the same.
 
 =item C<function sys.std.Core.QRelation.semidifference result QRelation
 params { source(QRelation), filter(QRelation) }>
@@ -752,10 +752,8 @@ a cartesian product; or, if any 2 inputs have all attribute names in
 common, then the join of just those 2 is an intersection; or, if for 2
 inputs, one's set of attribute names is a proper subset of another's, then
 the join of just those to is a semijoin with the former filtering the
-latter.  This function will fail if any input q/relations have attributes
-with common names but their most specific types would be fatally
-incompatible in a common q/relation value; this function will otherwise warn
-with common-named attributes where their declared types are incompatible as
+latter.  This function will warn if any input q/relations have attributes
+with common names where their declared types are incompatible as
 per C<is_identical>.  Note that this operation is also legitimately known
 as I<natural inner join>.
 
