@@ -38,8 +38,8 @@ This function results in C<Bool:true> iff its 2 arguments are exactly the
 same value, and C<Bool:false> otherwise.  This function's 2 parameters are
 mutually commutative.  This function will warn if, in regards to the
 declared types of its arguments, none the following are true: 1. they are
-both subtypes of a common scalar root type; 2. they are both subtypes of a
-common non-incomplete tuple or relation type, that is they essentially have
+both subtypes of a common q/scalar root type; 2. they are both subtypes of a
+common non-incomplete q/tuple or q/relation type, that is they essentially have
 the same headings; 3. at least one type is a generic (eg-C<Universal>) or
 incomplete (eg-C<Array>) type, and it is a supertype of the other.
 
@@ -103,36 +103,36 @@ potentially be done at compile time as per type constraints.
 
 =back
 
-=head1 SYSTEM-DEFINED GENERIC SCALAR-CONCERNING FUNCTIONS
+=head1 SYSTEM-DEFINED GENERIC QUASI-/SCALAR-CONCERNING FUNCTIONS
 
-These functions are applicable to mainly scalar types, but are generic in
-that they typically work with any scalar types.  Now some of these
-functions (those with a parameter named C<possrep>) work only with scalar
+These functions are applicable to mainly q/scalar types, but are generic in
+that they typically work with any q/scalar types.  Now some of these
+functions (those with a parameter named C<possrep>) work only with q/scalar
 values that have possreps, and not with values of the 2 system-defined
 scalar types lacking any possreps: C<Int>, C<String>; other functions are
 not limited in that way, but may be limited in other ways.  Note that the
 terminology used to describe these functions is taking advantage of the
-fact that a scalar possrep looks just like a tuple.  Each C<possrep>
+fact that a q/scalar possrep looks just like a q/tuple.  Each C<possrep>
 parameter is optional and defaults to the empty string if no explicit
 argument is given to it.
 
 =over
 
-=item C<function sys.std.Core.QScalar.attr result ScaTupRel params {
-topic(Scalar), possrep(Name)?, name(Name) }>
+=item C<function sys.std.Core.QScalar.attr result Universal params {
+topic(QScalar), possrep(Name)?, name(Name) }>
 
-This function results in the scalar or nonscalar value of the possrep
+This function results in the q/scalar or q/nonscalar value of the possrep
 attribute of C<topic> where the possrep name is given by C<possrep> and the
 attribute name is given by C<name>.  This function will fail if C<possrep>
 specifies a possrep name that C<topic> doesn't have or C<name> specifies an
 attribute name that the named possrep of C<topic> doesn't have.
 
-=item C<function sys.std.Core.QScalar.update_attr result Scalar params {
-topic(Scalar), possrep(Name)?, name(Name), value(ScaTupRel) }>
+=item C<function sys.std.Core.QScalar.update_attr result QScalar params {
+topic(QScalar), possrep(Name)?, name(Name), value(Universal) }>
 
 This function results in its C<topic> argument but that its possrep
 attribute whose possrep name is C<possrep> and whose attribute name is
-C<name> has been updated with a new scalar or nonscalar value given by
+C<name> has been updated with a new q/scalar or q/nonscalar value given by
 C<value>.  This function will fail if C<possrep> specifies a possrep name
 that C<topic> doesn't have or C<name> specifies an attribute name that the
 named possrep of C<topic> doesn't have, or if C<value> isn't of the
@@ -140,21 +140,21 @@ declared type of the attribute; this function will otherwise warn if the
 declared type of C<value> isn't a subtype of the declared type of the
 attribute.
 
-=item C<function sys.std.Core.QScalar.multi_update result Scalar params {
-topic(Scalar), possrep(Name)?, attrs(Tuple) }>
+=item C<function sys.std.Core.QScalar.multi_update result QScalar params {
+topic(QScalar), possrep(Name)?, attrs(QTuple) }>
 
 This function is like C<sys.std.Core.QScalar.update_attr> except that it
-handles N scalar possrep attributes at once rather than just 1.  The
+handles N q/scalar possrep attributes at once rather than just 1.  The
 heading of the C<attrs> argument must be a subset of the heading of the
 C<topic> argument's possrep named by C<possrep>; this function's result is
 C<topic> with all the possrep attribute values of C<attrs> substituted into
 it.  This function could alternately be named
 I<sys.std.Core.QScalar.static_substitution>.
 
-=item C<function sys.std.Core.QScalar.projection result Tuple params {
-topic(Scalar), possrep(Name)?, attrs(set_of.Name) }>
+=item C<function sys.std.Core.QScalar.projection result QTuple params {
+topic(QScalar), possrep(Name)?, attrs(set_of.Name) }>
 
-This function results in the C<Tuple> that is the projection of the possrep
+This function results in the C<QTuple> that is the projection of the possrep
 (whose name is given in the C<possrep> argument) of its C<topic> argument
 that has just the subset of attributes of C<topic> which are named in its
 C<attrs> argument.  As a trivial case, this function's result is the entire
@@ -163,35 +163,35 @@ or, it is the nullary tuple if C<attrs> is empty.  This function will fail
 if C<possrep> specifies a possrep name that C<topic> doesn't have or
 C<attrs> specifies any attribute names that C<topic> doesn't have.
 
-=item C<function sys.std.Core.QScalar.cmpl_projection result Tuple params {
-topic(Scalar), possrep(Name)?, attrs(set_of.Name) }>
+=item C<function sys.std.Core.QScalar.cmpl_projection result QTuple params {
+topic(QScalar), possrep(Name)?, attrs(set_of.Name) }>
 
 This function is the same as C<projection> but that it results in the
 complementary subset of possrep attributes of C<topic> when given the same
 arguments.
 
-=item C<function sys.std.Core.QScalar.Tuple_from_Scalar result Tuple params
-{ topic(Scalar), possrep(Name)? }>
+=item C<function sys.std.Core.QScalar.QTuple_from_QScalar result QTuple params
+{ topic(QScalar), possrep(Name)? }>
 
-This function results in the C<Tuple> that has all the same attributes of
+This function results in the C<QTuple> that has all the same attributes of
 the possrep of C<topic> whose name is given in C<possrep>; in other words,
-the function results in the externalization of one of a scalar value's
+the function results in the externalization of one of a q/scalar value's
 possreps.  This function will fail if C<possrep> specifies a possrep name
 that C<topic> doesn't have.
 
-=item C<function sys.std.Core.QScalar.Scalar_from_Tuple result Scalar
-params { topic(Tuple), type(TypeRef), possrep(Name)? }>
+=item C<function sys.std.Core.QScalar.QScalar_from_QTuple result QScalar
+params { topic(QTuple), type(TypeRef), possrep(Name)? }>
 
-This function results in the C<Scalar> value whose scalar root (|sub)type
+This function results in the C<QScalar> value whose q/scalar root (|sub)type
 is named by C<type>, which has a possrep whose name matches C<possrep>, and
 whose complete set of attributes of that named possrep match the attributes
-of C<topic>.  This function can be used to select any scalar value at all
+of C<topic>.  This function can be used to select any q/scalar value at all
 that has a possrep.
 
 =item C<function sys.std.Core.QScalar.order result Order params {
-topic(Scalar), other(Scalar), assuming(QTuple)? }>
+topic(QScalar), other(QScalar), assuming(QTuple)? }>
 
-This function is the externalization of a scalar root type's type-default
+This function is the externalization of a q/scalar root type's type-default
 (total) C<order_determination> function.  This function results in
 C<Order:same> iff its C<topic> and C<other> arguments are exactly the
 same value, and otherwise it results in C<Order:increase> if the value
@@ -199,17 +199,17 @@ of the C<other> argument is considered to be an increase (as defined by the
 type) over the value of the C<topic> argument, and otherwise it results in
 C<Order:decrease> as the reverse of the last condition would be true.
 This function will fail if its C<topic> and C<other> arguments are not
-values of a common scalar root type that declares a type-default
+values of a common q/scalar root type that declares a type-default
 C<order_determination> function; this function will otherwise warn if the
 declared types of those arguments are not both subtypes of such a common
-scalar root type.  Note that C<order_determination> functions are
+q/scalar root type.  Note that C<order_determination> functions are
 considered the only fundamental order-sensitive operators, and all others
 are defined over them.  This function also has a C<QTuple>-typed third
 parameter, named C<assuming>, which carries optional customization details
 for the order-determination algorithm; this permits the function to
 implement a choice between multiple (typically similar) ordering algorithms
 rather than just one, which reduces the number of functions needed for
-supporting that choice; if the algorithm is not customizable, then a tuple
+supporting that choice; if the algorithm is not customizable, then a q/tuple
 argument would be of degree zero.  The C<assuming> parameter is optional
 and defaults to the zero-attribute tuple if no explicit argument is given
 to it.
@@ -255,44 +255,44 @@ C<Bool:false>, which is the identity value for logical exclusive-or.
 
 =back
 
-=head1 SYSTEM-DEFINED GENERIC TUPLE-CONCERNING FUNCTIONS
+=head1 SYSTEM-DEFINED GENERIC QUASI-/TUPLE-CONCERNING FUNCTIONS
 
-These functions are applicable to mainly tuple types, but are generic in
-that they typically work with any tuple types.
+These functions are applicable to mainly q/tuple types, but are generic in
+that they typically work with any q/tuple types.
 
 =over
 
-=item C<function sys.std.Core.QTuple.attr result ScaTupRel params {
-topic(Tuple), name(Name) }>
+=item C<function sys.std.Core.QTuple.attr result Universal params {
+topic(QTuple), name(Name) }>
 
-This function results in the scalar or nonscalar value of the attribute of
+This function results in the q/scalar or q/nonscalar value of the attribute of
 C<topic> whose name is given by C<name>.  This function will fail if
 C<name> specifies an attribute name that C<topic> doesn't have.
 
-=item C<function sys.std.Core.QTuple.update_attr result Tuple params {
-topic(Tuple), name(Name), value(ScaTupRel) }>
+=item C<function sys.std.Core.QTuple.update_attr result QTuple params {
+topic(QTuple), name(Name), value(Universal) }>
 
 This function results in its C<topic> argument but that its attribute whose
-name is C<name> has been updated with a new scalar or nonscalar value given
+name is C<name> has been updated with a new q/scalar or q/nonscalar value given
 by C<value>.  This function will fail if C<name> specifies an attribute
 name that C<topic> doesn't have; this function will otherwise warn if the
 declared type of C<value> isn't a subtype of the declared type of the
 attribute.
 
-=item C<function sys.std.Core.QTuple.multi_update result Tuple params {
-topic(Tuple), attrs(Tuple) }>
+=item C<function sys.std.Core.QTuple.multi_update result QTuple params {
+topic(QTuple), attrs(QTuple) }>
 
 This function is like C<sys.std.Core.QTuple.update_attr> except that it
-handles N tuple attributes at once rather than just 1.  The heading of the
+handles N q/tuple attributes at once rather than just 1.  The heading of the
 C<attrs> argument must be a subset of the heading of the C<topic> argument;
 this function's result is C<topic> with all the attribute values of
 C<attrs> substituted into it.  This function could alternately be named
 I<sys.std.Core.QTuple.static_substitution>.
 
-=item C<function sys.std.Core.QTuple.rename result Tuple params {
-topic(Tuple), map(AttrRenameMap) }>
+=item C<function sys.std.Core.QTuple.rename result QTuple params {
+topic(QTuple), map(AttrRenameMap) }>
 
-This function results in a C<Tuple> value that is the same as its C<topic>
+This function results in a C<QTuple> value that is the same as its C<topic>
 argument but that some of its attributes have different names.  Each tuple
 of the argument C<map> specifies how to rename one C<topic> attribute, with
 the C<before> and C<after> attributes of a C<map> tuple representing the
@@ -303,8 +303,8 @@ will fail if C<map> specifies any old names that C<topic> doesn't have, or
 any new names that are the same as C<topic> attributes that aren't being
 renamed.
 
-=item C<function sys.std.Core.QTuple.projection result Tuple params {
-topic(Tuple), attrs(set_of.Name) }>
+=item C<function sys.std.Core.QTuple.projection result QTuple params {
+topic(QTuple), attrs(set_of.Name) }>
 
 This function results in the projection of its C<topic> argument that has
 just the subset of attributes of C<topic> which are named in its C<attrs>
@@ -313,19 +313,19 @@ C<attrs> lists all attributes of C<topic>; or, it is the nullary tuple if
 C<attrs> is empty.  This function will fail if C<attrs> specifies any
 attribute names that C<topic> doesn't have.
 
-=item C<function sys.std.Core.QTuple.cmpl_projection result Tuple params {
-topic(Tuple), attrs(set_of.Name) }>
+=item C<function sys.std.Core.QTuple.cmpl_projection result QTuple params {
+topic(QTuple), attrs(set_of.Name) }>
 
 This function is the same as C<projection> but that it results in the
 complementary subset of attributes of C<topic> when given the same
 arguments.
 
-=item C<function sys.std.Core.QTuple.wrap result Tuple params {
-topic(Tuple), inner(set_of.Name), outer(Name) }>
+=item C<function sys.std.Core.QTuple.wrap result QTuple params {
+topic(QTuple), inner(set_of.Name), outer(Name) }>
 
-This function results in a C<Tuple> value that is the same as its C<topic>
+This function results in a C<QTuple> value that is the same as its C<topic>
 argument but that some of its attributes have been wrapped up into a new
-C<Tuple>-typed attribute, which exists in place of the original attributes.
+C<QTuple>-typed attribute, which exists in place of the original attributes.
 The C<inner> argument specifies which C<topic> attributes are to be removed
 and wrapped up, and the C<outer> argument specifies the name of their
 replacement attribute.  As a trivial case, if C<inner> is empty, then the
@@ -337,203 +337,215 @@ being wrapped into it.  This function will fail if C<inner> specifies any
 attribute names that C<topic> doesn't have, or if C<outer> is the same as
 C<topic> attributes that aren't being wrapped.
 
-=item C<function sys.std.Core.QTuple.cmpl_wrap result Tuple params {
-topic(Tuple), cmpl_inner(set_of.Name), outer(Name) }>
+=item C<function sys.std.Core.QTuple.cmpl_wrap result QTuple params {
+topic(QTuple), cmpl_inner(set_of.Name), outer(Name) }>
 
 This function is the same as C<wrap> but that it wraps the complementary
 subset of attributes of C<topic> to those specified by C<cmpl_inner>.
 
-=item C<function sys.std.Core.QTuple.unwrap result Tuple params {
-topic(Tuple), outer(Name) }>
+=item C<function sys.std.Core.QTuple.unwrap result QTuple params {
+topic(QTuple), outer(Name) }>
 
 This function is the inverse of C<sys.std.Core.QTuple.wrap>, such that it
-will unwrap a C<Tuple>-type attribute into its member attributes.  This
+will unwrap a C<QTuple>-type attribute into its member attributes.  This
 function will fail if C<outer> specifies any attribute name that C<topic>
 doesn't have, or if an attribute of C<topic{outer}> is the same as another
 C<topic> attribute.
 
-=item C<function sys.std.Core.QTuple.product result Tuple params {
-topic(quasi_set_of.Tuple) }>
+=item C<function sys.std.Core.QTuple.product result QTuple params {
+topic(quasi_set_of.QTuple) }>
 
 This function is similar to C<sys.std.Core.QRelation.product> but that it
-works with tuples rather than relations.  This function is mainly intended
-for use in connecting tuples that have all disjoint headings, such as for
-extending one tuple with additional attributes.
+works with q/tuples rather than q/relations.  This function is mainly intended
+for use in connecting q/tuples that have all disjoint headings, such as for
+extending one q/tuple with additional attributes.
 
 =back
 
-=head1 SYSTEM-DEFINED GENERIC SINGLE INPUT RELATION FUNCTIONS
+=head1 SYSTEM-DEFINED GENERIC SINGLE INPUT QUASI-/RELATION FUNCTIONS
 
-These functions are applicable to mainly relation types, but are generic in
-that they typically work with any relation types.  Each C<\w*assuming>
+These functions are applicable to mainly q/relation types, but are generic in
+that they typically work with any q/relation types.  Each C<\w*assuming>
 parameter is optional and defaults to the zero-attribute tuple if no
 explicit argument is given to it.
 
 =over
 
 =item C<function sys.std.Core.QRelation.cardinality result NNInt params {
-topic(Relation) }>
+topic(QRelation) }>
 
 This function results in the cardinality of its argument (that is, the
-count of tuples its body has).
+count of q/tuples its body has).
 
 =item C<function sys.std.Core.QRelation.is_member result Bool params {
-r(Relation), t(Tuple) }>
+r(QRelation), t(QTuple) }>
 
-This function results in C<Bool:true> iff its C<t> argument matches a tuple
+This function results in C<Bool:true> iff its C<t> argument matches a q/tuple
 of its C<r> argument (that is, iff conceptually C<t> is a member of C<r>),
 and C<Bool:false> otherwise.  This function is like
-C<sys.std.Core.QRelation.is_subset> except that the tuple being looked for
-doesn't have to be wrapped in a relation.  This function will fail|warn if
+C<sys.std.Core.QRelation.is_subset> except that the q/tuple being looked for
+doesn't have to be wrapped in a q/relation.  This function will fail|warn if
 its 2 arguments are incompatible as per C<is_subset>.
 
 =item C<function sys.std.Core.QRelation.is_not_member result Bool params {
-r(Relation), t(Tuple) }>
+r(QRelation), t(QTuple) }>
 
 This function is exactly the same as C<sys.std.Core.QRelation.is_member>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.std.Core.QRelation.Tuple_from_Relation result Tuple
-params { topic(Relation) }>
+=item C<function sys.std.Core.QRelation.QTuple_from_QRelation result QTuple
+params { topic(QRelation) }>
 
-This function results in the C<Tuple> that is the sole member tuple of its
+This function results in the C<QTuple> that is the sole member q/tuple of its
 argument.  This function will fail if its argument does not have exactly
-one tuple.
+one q/tuple.
 
-=item C<function sys.std.Core.QRelation.Relation_from_Tuple result Relation
-params { topic(Tuple) }>
+=item C<function sys.std.Core.QRelation.QRelation_from_QTuple result QRelation
+params { topic(QTuple) }>
 
-This function results in the C<Relation> value those body has just the one
-C<Tuple> that is its argument.
+This function results in the C<QRelation> value those body has just the one
+C<QTuple> that is its argument.
 
-=item C<function sys.std.Core.QRelation.insertion result Relation params {
-r(Relation), t(Tuple) }>
+=item C<function sys.std.Core.QRelation.insertion result QRelation params {
+r(QRelation), t(QTuple) }>
 
-This function results in a C<Relation> that is the relational union of C<r>
-and a relation whose sole tuple is C<t>; that is, conceptually the result
+This function results in a C<QRelation> that is the relational union of C<r>
+and a q/relation whose sole q/tuple is C<t>; that is, conceptually the result
 is C<t> inserted into C<r>.  As a trivial case, if C<t> already exists in
 C<r>, then the result is just C<r>.
 
-=item C<function sys.std.Core.QRelation.disjoint_insertion result Relation
-params { r(Relation), t(Tuple) }>
+=item C<function sys.std.Core.QRelation.disjoint_insertion result QRelation
+params { r(QRelation), t(QTuple) }>
 
 This function is exactly the same as C<sys.std.Core.QRelation.insertion>
 except that it will fail if C<t> already exists in C<r>.
 
-=item C<function sys.std.Core.QRelation.deletion result Relation params {
-r(Relation), t(Tuple) }>
+=item C<function sys.std.Core.QRelation.deletion result QRelation params {
+r(QRelation), t(QTuple) }>
 
-This function results in a C<Relation> that is the relational difference
-from C<r> of a relation whose sole tuple is C<t>; that is, conceptually the
+This function results in a C<QRelation> that is the relational difference
+from C<r> of a q/relation whose sole q/tuple is C<t>; that is, conceptually the
 result is C<t> deleted from C<r>.  As a trivial case, if C<t> already
 doesn't exist in C<r>, then the result is just C<r>.
 
-=item C<function sys.std.Core.QRelation.rename result Relation params {
-topic(Relation), map(AttrRenameMap) }>
+=item C<function sys.std.Core.QRelation.rename result QRelation params {
+topic(QRelation), map(AttrRenameMap) }>
 
 This function is the same as C<sys.std.Core.QTuple.rename> but that it
-operates on and results in a C<Relation> rather than a C<Tuple>.
+operates on and results in a C<QRelation> rather than a C<QTuple>.
 
-=item C<function sys.std.Core.QRelation.projection result Relation params {
-topic(Relation), attrs(set_of.Name) }>
+=item C<function sys.std.Core.QRelation.projection result QRelation params {
+topic(QRelation), attrs(set_of.Name) }>
 
 This function is the same as C<sys.std.Core.QTuple.projection> but that it
-operates on and results in a C<Relation> rather than a C<Tuple>.  But note
-that the result relation will have fewer tuples than C<topic> if any
-C<topic> tuples were non-distinct for just the projected attributes.
+operates on and results in a C<QRelation> rather than a C<QTuple>.  But note
+that the result q/relation will have fewer q/tuples than C<topic> if any
+C<topic> q/tuples were non-distinct for just the projected attributes.
 
-=item C<function sys.std.Core.QRelation.cmpl_projection result Relation
-params { topic(Relation), attrs(set_of.Name) }>
+=item C<function sys.std.Core.QRelation.cmpl_projection result QRelation
+params { topic(QRelation), attrs(set_of.Name) }>
 
 This function is the same as C<sys.std.Core.QTuple.cmpl_projection> but
-that it operates on and results in a C<Relation> rather than a C<Tuple>.
+that it operates on and results in a C<QRelation> rather than a C<QTuple>.
 
-=item C<function sys.std.Core.QRelation.wrap result Relation params {
-topic(Relation), inner(set_of.Name), outer(Name) }>
+=item C<function sys.std.Core.QRelation.wrap result QRelation params {
+topic(QRelation), inner(set_of.Name), outer(Name) }>
 
 This function is the same as C<sys.std.Core.QTuple.wrap> but that it
-operates on and results in a C<Relation> rather than a C<Tuple>, where each
-of its member tuples was transformed as per C<sys.std.Core.QTuple.wrap>.
+operates on and results in a C<QRelation> rather than a C<QTuple>, where each
+of its member q/tuples was transformed as per C<sys.std.Core.QTuple.wrap>.
 
-=item C<function sys.std.Core.QRelation.cmpl_wrap result Relation params {
-topic(Relation), cmpl_inner(set_of.Name), outer(Name) }>
+=item C<function sys.std.Core.QRelation.cmpl_wrap result QRelation params {
+topic(QRelation), cmpl_inner(set_of.Name), outer(Name) }>
 
 This function is the same as C<sys.std.Core.QTuple.cmpl_wrap> but that it
-operates on and results in a C<Relation> rather than a C<Tuple>, where each
-of its member tuples was transformed as per
+operates on and results in a C<QRelation> rather than a C<QTuple>, where each
+of its member q/tuples was transformed as per
 C<sys.std.Core.QTuple.cmpl_wrap>.
 
-=item C<function sys.std.Core.QRelation.unwrap result Relation params {
-topic(Relation), outer(Name), inner(set_of.Name) }>
+=item C<function sys.std.Core.QRelation.unwrap result QRelation params {
+topic(QRelation), outer(Name), inner(set_of.Name) }>
 
 This function is the inverse of C<sys.std.Core.QRelation.wrap> as
 C<sys.std.Core.QTuple.unwrap> is to C<sys.std.Core.QTuple.wrap>.  But
-unlike the C<Tuple> variant of C<unwrap>, this current function requires
+unlike the C<QTuple> variant of C<unwrap>, this current function requires
 the extra C<inner> argument to prevent ambiguity in the general case where
-C<topic> might have zero tuples, because in that situation the
+C<topic> might have zero q/tuples, because in that situation the
 most-specific-type of C<topic{outer}> would be C<Empty>, and the names of
 the attributes to add to C<topic> in place of C<topic{outer}> are not
-known.  This function will fail if C<topic> has at least 1 tuple and
+known.  This function will fail if C<topic> has at least 1 q/tuple and
 C<inner> does not match the names of the attributes of C<topic{outer}>.
+This function will fail with a non-C<Relation> valued C<topic> unless, for
+every q/tuple of C<topic>, the attribute specified by C<outer> is valued
+with a q/tuple of the same degree and heading (attribute names); this
+failure is because there would be no consistent set of attribute names to
+extend C<topic> with (a problem that would never happen by definition with
+a non-quasi relation C<topic>).
 
-=item C<function sys.std.Core.QRelation.group result Relation params {
-topic(Relation), inner(set_of.Name), outer(Name) }>
+=item C<function sys.std.Core.QRelation.group result QRelation params {
+topic(QRelation), inner(set_of.Name), outer(Name) }>
 
 This function is similar to C<sys.std.Core.QRelation.wrap> but that the
-C<topic> attribute-wrapping transformations result in new C<Relation>-typed
-attributes rather than new C<Tuple>-typed attributes, and moreover multiple
-C<topic> tuples may be combined into fewer tuples whose new
-C<Relation>-typed attributes have multiple tuples.  This function takes a
-relation of N tuples and divides the tuples into M groups where all the
-tuples in a group have the same values in the attributes which aren't being
+C<topic> attribute-wrapping transformations result in new C<QRelation>-typed
+attributes rather than new C<QTuple>-typed attributes, and moreover multiple
+C<topic> q/tuples may be combined into fewer q/tuples whose new
+C<QRelation>-typed attributes have multiple q/tuples.  This function takes a
+q/relation of N q/tuples and divides the q/tuples into M groups where all the
+q/tuples in a group have the same values in the attributes which aren't being
 grouped (and distinct values in the attributes that are being grouped); it
-then results in a new relation of M tuples where the new relation-valued
-attribute of the result has the tuples of the M groups.  A grouped relation
-contains all of the information in the original relation, but it has less
+then results in a new q/relation of M q/tuples where the new q/relation-valued
+attribute of the result has the q/tuples of the M groups.  A grouped q/relation
+contains all of the information in the original q/relation, but it has less
 redundancy due to redundant non-grouped attributes now just being
-represented in one tuple per the multiple tuples whose grouped attributes
-had them in common.  A relation having relation-valued attributes like this
-is a common way to group so-called child tuples under their parents.  As a
-trivial case, if C<inner> is empty, then the result has all the same tuples
+represented in one q/tuple per the multiple q/tuples whose grouped attributes
+had them in common.  A q/relation having q/relation-valued attributes like this
+is a common way to group so-called child q/tuples under their parents.  As a
+trivial case, if C<inner> is empty, then the result has all the same q/tuples
 and attributes as before plus a new relation-typed attribute of degree zero
 whose value per tuple is of cardinality one; or, if C<inner> lists all
-attributes of C<topic>, then the result has a single tuple of a single
+attributes of C<topic>, then the result has a single q/tuple of a single
 attribute whose value is the same as C<topic>.  This function supports the
 new attribute having the same name as an old one being grouped into it.
 This function will fail if C<inner> specifies any attribute names that
 C<topic> doesn't have, or if C<outer> is the same as C<topic> attributes
 that aren't being grouped.
 
-=item C<function sys.std.Core.QRelation.cmpl_group result Relation params {
-topic(Relation), group_per(set_of.Name), outer(Name) }>
+=item C<function sys.std.Core.QRelation.cmpl_group result QRelation params {
+topic(QRelation), group_per(set_of.Name), outer(Name) }>
 
 This function is the same as C<group> but that it groups the complementary
 subset of attributes of C<topic> to those specified by C<group_per>.
 
-=item C<function sys.std.Core.QRelation.ungroup result Relation params {
-topic(Relation), outer(Name), inner(set_of.Name) }>
+=item C<function sys.std.Core.QRelation.ungroup result QRelation params {
+topic(QRelation), outer(Name), inner(set_of.Name) }>
 
 This function is the inverse of C<sys.std.Core.QRelation.group> as
 C<sys.std.Core.QRelation.unwrap> is to C<sys.std.Core.QRelation.wrap>; it
-will ungroup a C<Relation>-type attribute into its member attributes and
-tuples.  A relation can be first grouped and then that result ungrouped to
-produce the original relation, with no data loss.  However, the ungroup of
-a relation on a relation-valued attribute will lose the information in any
-outer relation tuples whose inner relation value has zero tuples; a group
-on this result won't bring them back.  This function will fail if C<outer>
-specifies any attribute name that C<topic> doesn't have, or if an attribute
-of C<topic{outer}> is the same as another C<topic> attribute.
+will ungroup a C<QRelation>-type attribute into its member attributes and
+q/tuples.  A q/relation can be first grouped and then that result ungrouped
+to produce the original q/relation, with no data loss.  However, the
+ungroup of a q/relation on a q/relation-valued attribute will lose the
+information in any outer q/relation q/tuples whose inner q/relation value
+has zero q/tuples; a group on this result won't bring them back.  This
+function will fail if C<outer> specifies any attribute name that C<topic>
+doesn't have, or if an attribute of C<topic{outer}> is the same as another
+C<topic> attribute.  This function will fail with a non-C<Relation> valued
+C<topic> unless, for every q/tuple of C<topic>, the attribute specified by
+C<outer> is valued with a q/relation of the same degree and heading
+(attribute names); this failure is because there would be no consistent set
+of attribute names to extend C<topic> with (a problem that would never
+happen by definition with a non-quasi relation C<topic>).
 
-=item C<function sys.std.Core.QRelation.restriction result Relation params
-{ topic(Relation), func(FuncRef), assuming(QTuple)? }>
+=item C<function sys.std.Core.QRelation.restriction result QRelation params
+{ topic(QRelation), func(FuncRef), assuming(QTuple)? }>
 
 This function results in the relational restriction of its C<topic>
 argument as determined by applying the C<Bool>-resulting function named in
 its C<func> argument when the latter function is curried by its C<assuming>
-argument.  The result relation has the same heading as C<topic>, and its
-body contains the subset of C<topic> tuples where, for each tuple, the
-function named by C<func> results in C<Bool:true> when passed the tuple as
+argument.  The result q/relation has the same heading as C<topic>, and its
+body contains the subset of C<topic> q/tuples where, for each q/tuple, the
+function named by C<func> results in C<Bool:true> when passed the q/tuple as
 its C<topic> argument and C<assuming> as its C<assuming> argument.  As a
 trivial case, if C<func> is defined to unconditionally result in
 C<Bool:true>, then this function results simply in C<topic>; or, for an
@@ -545,81 +557,81 @@ C<sys.std.Core.QRelation.restriction> in its typical usage where
 restrictions are composed simply of anded or ored tests for attribute value
 equality.
 
-=item C<function sys.std.Core.QRelation.cmpl_restriction result Relation
-params { topic(Relation), func(FuncRef), assuming(QTuple)? }>
+=item C<function sys.std.Core.QRelation.cmpl_restriction result QRelation
+params { topic(QRelation), func(FuncRef), assuming(QTuple)? }>
 
 This function is the same as C<restriction> but that it results in the
-complementary subset of tuples of C<topic> when given the same arguments.
+complementary subset of q/tuples of C<topic> when given the same arguments.
 See also the C<sys.std.Core.QRelation.semidifference> function.
 
-=item C<function sys.std.Core.QRelation.extension result Relation params {
-topic(Relation), func(FuncRef), assuming(QTuple)? }>
+=item C<function sys.std.Core.QRelation.extension result QRelation params {
+topic(QRelation), func(FuncRef), assuming(QTuple)? }>
 
 This function results in the relational extension of its C<topic> argument
-as determined by applying the C<Tuple>-resulting function named in its
+as determined by applying the C<QTuple>-resulting function named in its
 C<func> argument when the latter function is curried by its C<assuming>
-argument.  The result relation has a heading that is a superset of that of
-C<topic>, and its body contains the same number of tuples, with all
+argument.  The result q/relation has a heading that is a superset of that of
+C<topic>, and its body contains the same number of q/tuples, with all
 attribute values of C<topic> retained, and possibly extra present,
-determined as follows; for each C<topic> tuple, the function named by
-C<func> results in a second tuple when passed the first tuple as its
+determined as follows; for each C<topic> q/tuple, the function named by
+C<func> results in a second q/tuple when passed the first q/tuple as its
 C<topic> argument and C<assuming> as its C<assuming> argument; the first
-and second tuples must have no attribute names in common, and the result
-tuple is derived by joining (cross-product) the tuples together.  As a
+and second q/tuples must have no attribute names in common, and the result
+q/tuple is derived by joining (cross-product) the q/tuples together.  As a
 trivial case, if C<func> is defined to unconditionally result in the
 degree-zero tuple, then this function results simply in C<topic>.
 
-=item C<function sys.std.Core.QRelation.static_extension result Relation
-params { topic(Relation), attrs(Tuple) }>
+=item C<function sys.std.Core.QRelation.static_extension result QRelation
+params { topic(QRelation), attrs(QTuple) }>
 
 This function is a simpler-syntax alternative to both
 C<sys.std.Core.QRelation.extension> and C<sys.std.Core.QRelation.product>
-in the typical scenario of extending a relation, given in the C<topic>
-argument, such that every tuple has mutually identical values for each of
+in the typical scenario of extending a q/relation, given in the C<topic>
+argument, such that every q/tuple has mutually identical values for each of
 the new attributes; the new attribute names and common values are given in
 the C<attrs> argument.
 
-=item C<function sys.std.Core.QRelation.summary result Relation params {
-topic(Relation), group_per(set_of.Name), summ_func(FuncRef),
+=item C<function sys.std.Core.QRelation.summary result QRelation params {
+topic(QRelation), group_per(set_of.Name), summ_func(FuncRef),
 summ_assuming(QTuple)? }>
 
 This function provides a convenient context for using aggregate functions
-to derive a per-group summary relation, which is its result, from another
-relation, which is its C<topic> argument.  This function first performs a
+to derive a per-group summary q/relation, which is its result, from another
+q/relation, which is its C<topic> argument.  This function first performs a
 C<cmpl_group> on C<topic> using C<group_per> to specify which attributes
-get grouped into a new relation-valued attribute and which don't; those
-that don't instead get wrapped into a tuple-valued attribute.  Then, per
-tuple in the main relation, this function applies the C<Tuple>-resulting
+get grouped into a new q/relation-valued attribute and which don't; those
+that don't instead get wrapped into a q/tuple-valued attribute.  Then, per
+q/tuple in the main q/relation, this function applies the C<QTuple>-resulting
 function named in its C<summ_func> argument when the latter function is
 curried by its C<summ_assuming> argument (passed to it as just
 C<assuming>); the curried function has, rather than the typical 1 C<topic>
 varying parameter, 2 varying parameters named C<summarize> and C<per>,
-which are valued with the relation-valued attribute and tuple-valued
+which are valued with the q/relation-valued attribute and q/tuple-valued
 attribute, respectively.  As per a function that C<map> applies, the
 function named by C<summ_func> effectively takes a whole post-grouping
-input tuple and results in a whole tuple; the applied function would
+input q/tuple and results in a whole q/tuple; the applied function would
 directly invoke any N-ary / aggregate operators, and extract their inputs
 from (or calculate) C<summarize> as it sees fit.  Note that C<summary> is
-not intended to be used to summarize an entire C<topic> relation at once
+not intended to be used to summarize an entire C<topic> q/relation at once
 (except by chance of it resolving to 1 group); you should instead invoke
 your summarize-all C<func> directly, or inline it, rather than by way of
-C<summary>, especially if you want a single-tuple result on an empty
+C<summary>, especially if you want a single-q/tuple result on an empty
 C<topic> (which C<summary>) won't do.
 
 =back
 
-=head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT RELATION FUNCTIONS
+=head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT QUASI-/RELATION FUNCTIONS
 
-These functions are applicable to mainly relation types, but are generic in
-that they typically work with any relation types.
+These functions are applicable to mainly q/relation types, but are generic in
+that they typically work with any q/relation types.
 
 =over
 
 =item C<function sys.std.Core.QRelation.is_subset result Bool params {
-look_in(Relation), look_for(Relation) }>
+look_in(QRelation), look_for(QRelation) }>
 
-This function results in C<Bool:true> iff the set of tuples comprising
-C<look_for> is a subset of the set of tuples comprising C<look_in>, and
+This function results in C<Bool:true> iff the set of q/tuples comprising
+C<look_for> is a subset of the set of q/tuples comprising C<look_in>, and
 C<Bool:false> otherwise.  This function will fail if the 2 arguments have
 attributes with common names but their most specific types would be fatally
 incompatible in a common relation value; this function will otherwise warn
@@ -627,56 +639,56 @@ with common-named attributes where their declared types are incompatible as
 per C<is_identical>.
 
 =item C<function sys.std.Core.QRelation.is_not_subset result Bool params {
-look_in(Relation), look_for(Relation) }>
+look_in(QRelation), look_for(QRelation) }>
 
 This function is exactly the same as C<sys.std.Core.QRelation.is_subset>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.std.Core.QRelation.union result Relation params {
-topic(set_of.Relation) }>
+=item C<function sys.std.Core.QRelation.union result QRelation params {
+topic(quasi_set_of.QRelation) }>
 
 This function results in the relational union/inclusive-or of the N element
 values of its argument; it is a reduction operator that recursively takes
 each pair of input values and relationally unions (which is both
 commutative and associative) them together until just one is left, which is
-the result.  The result relation has the same heading as all of its inputs,
-and its body contains every tuple that is in any of the input relations.
+the result.  The result q/relation has the same heading as all of its inputs,
+and its body contains every q/tuple that is in any of the input q/relations.
 If C<topic> has zero values, then this function will fail.  Note that,
 conceptually C<union> I<does> have an identity value which could be this
 function's result when C<topic> has zero values, which is the empty
 relation with the same heading, which is the per-distinct-heading identity
 value for relational union; however, since a C<topic> with zero values
-wouldn't know the heading / attribute names for the result relation in
+wouldn't know the heading / attribute names for the result q/relation in
 question, it seems the best alternative is to require invoking code to work
 around the limitation somehow, which might mean it will supply the identity
 value explicitly as an extra C<topic> element.
 
-=item C<function sys.std.Core.QRelation.disjoint_union result Relation
-params { topic(set_of.Relation) }>
+=item C<function sys.std.Core.QRelation.disjoint_union result QRelation
+params { topic(quasi_set_of.QRelation) }>
 
 This function is exactly the same as C<sys.std.Core.QRelation.union> except
-that it will fail if any 2 input values have a tuple in common.
+that it will fail if any 2 input values have a q/tuple in common.
 
-=item C<function sys.std.Core.QRelation.intersection result Relation params
-{ topic(set_of.Relation) }>
+=item C<function sys.std.Core.QRelation.intersection result QRelation params
+{ topic(quasi_set_of.QRelation) }>
 
 This function results in the relational intersection/and of the N element
 values of its argument; it is a reduction operator that recursively takes
 each pair of input values and relationally intersects (which is both
 commutative and associative) them together until just one is left, which is
-the result.  The result relation has the same heading as all of its inputs,
-and its body contains only the tuples that are in every one of the input
-relations.  If C<topic> has zero values, then this function will fail.
+the result.  The result q/relation has the same heading as all of its inputs,
+and its body contains only the q/tuples that are in every one of the input
+q/relations.  If C<topic> has zero values, then this function will fail.
 Note that, conceptually C<intersection> I<does> have an identity value
 which could be this function's result when C<topic> has zero values, which
-is the universal relation with the same heading (that is, the relation
-having all the tuples that could ever exist in a relation with that
+is the universal q/relation with the same heading (that is, the q/relation
+having all the q/tuples that could ever exist in a q/relation with that
 heading), which is the per-distinct-heading identity value for relational
 intersection; however, since a C<topic> with zero values wouldn't know the
-heading / attribute names for the result relation in question (and even if
+heading / attribute names for the result q/relation in question (and even if
 they were, more information on attribute types would be needed to produce
-said universal relation, and even then it might be infinite or impossibly
+said universal q/relation, and even then it might be infinite or impossibly
 large), it seems the best alternative is to require invoking code to work
 around the limitation somehow, which might mean it will supply the identity
 value explicitly as an extra C<topic> element.  Note that this
@@ -686,88 +698,88 @@ produce the same result as this when given the same inputs, but with the
 exception that I<intersection> has a different identity value when given
 zero inputs.
 
-=item C<function sys.std.Core.QRelation.difference result Relation params {
-source(Relation), filter(Relation) }>
+=item C<function sys.std.Core.QRelation.difference result QRelation params {
+source(QRelation), filter(QRelation) }>
 
 This function results in the relational difference when its C<filter>
-argument is subtracted from its C<source> argument.  The result relation
+argument is subtracted from its C<source> argument.  The result q/relation
 has the same heading as both of its arguments, and its body contains only
-the tuples that are in C<source> and are not in C<filter>.  This function
+the q/tuples that are in C<source> and are not in C<filter>.  This function
 will fail|warn if its 2 arguments are incompatible as per C<is_subset>.
 Note that this I<difference> operator is conceptually a special case of
 I<semidifference>, applicable when the headings of the inputs are the same.
 
-=item C<function sys.std.Core.QRelation.semidifference result Relation
-params { source(Relation), filter(Relation) }>
+=item C<function sys.std.Core.QRelation.semidifference result QRelation
+params { source(QRelation), filter(QRelation) }>
 
 This function is the same as C<semijoin> but that it results in the
-complementary subset of tuples of C<source> when given the same arguments.
+complementary subset of q/tuples of C<source> when given the same arguments.
 Note that this operation is also legitimately known as I<antijoin> or
 I<anti-semijoin>.
 
-=item C<function sys.std.Core.QRelation.semijoin result Relation params {
-source(Relation), filter(Relation) }>
+=item C<function sys.std.Core.QRelation.semijoin result QRelation params {
+source(QRelation), filter(QRelation) }>
 
 This function results in the relational semijoin of its C<source> and
-C<filter> arguments.  The result relation has the same heading as
-C<source>, and its body contains the subset of C<source> tuples that match
+C<filter> arguments.  The result q/relation has the same heading as
+C<source>, and its body contains the subset of C<source> q/tuples that match
 those of C<filter> as per C<join>.  Note that relational semijoin is
 conceptually a short-hand for first doing an ordinary relational join
 between its 2 arguments, and then performing a relational projection on all
 of the attributes that just C<source> has.  This function will fail|warn
-any time that C<join> would fail|warn on the same 2 input relations.
+any time that C<join> would fail|warn on the same 2 input q/relations.
 
-=item C<function sys.std.Core.QRelation.join result Relation params {
-topic(quasi_set_of.Relation) }>
+=item C<function sys.std.Core.QRelation.join result QRelation params {
+topic(quasi_set_of.QRelation) }>
 
 This function results in the relational join of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
 input values and relationally joins (which is both commutative and
 associative) them together until just one is left, which is the result.
-The result relation has a heading that is a union of all of the headings of
+The result q/relation has a heading that is a union of all of the headings of
 its inputs, and its body is the result of first pairwise-matching every
-tuple of each input relation with every tuple of each other input relation,
-then where each member of a tuple pair has attribute names in common,
+q/tuple of each input q/relation with every q/tuple of each other input q/relation,
+then where each member of a q/tuple pair has attribute names in common,
 eliminating pairs where the values of those attributes differ and unioning
-the remaining said tuple pairs, then eliminating any result tuples that
+the remaining said q/tuple pairs, then eliminating any result q/tuples that
 duplicate others.  If C<topic> has zero values, then C<join> results in the
-nullary relation with one tuple, which is the identity value for relational
-join.  As a trivial case, if any input relation has zero tuples, then the
-function's result will too; or, if any input is the nullary relation with
-one tuple, that input can be ignored (see identity value); or, if any 2
+nullary q/relation with one q/tuple, which is the identity value for relational
+join.  As a trivial case, if any input q/relation has zero q/tuples, then the
+function's result will too; or, if any input is the nullary q/relation with
+one q/tuple, that input can be ignored (see identity value); or, if any 2
 inputs have no attribute names in common, then the join of just those 2 is
 a cartesian product; or, if any 2 inputs have all attribute names in
 common, then the join of just those 2 is an intersection; or, if for 2
 inputs, one's set of attribute names is a proper subset of another's, then
 the join of just those to is a semijoin with the former filtering the
-latter.  This function will fail if any input relations have attributes
+latter.  This function will fail if any input q/relations have attributes
 with common names but their most specific types would be fatally
-incompatible in a common relation value; this function will otherwise warn
+incompatible in a common q/relation value; this function will otherwise warn
 with common-named attributes where their declared types are incompatible as
 per C<is_identical>.  Note that this operation is also legitimately known
 as I<natural inner join>.
 
-=item C<function sys.std.Core.QRelation.product result Relation params {
-topic(quasi_set_of.Relation) }>
+=item C<function sys.std.Core.QRelation.product result QRelation params {
+topic(quasi_set_of.QRelation) }>
 
 This function results in the relational cartesian/cross product of the N
 element values of its argument; it is conceptually a special case of
-C<join> where all input relations have mutually distinct attribute names;
+C<join> where all input q/relations have mutually distinct attribute names;
 unlike C<join>, C<product> will fail if any inputs have attribute names in
 common.  Note that this operation is also legitimately known as
 I<cartesian/cross join>.
 
-=item C<function sys.std.Core.QRelation.quotient result Relation params {
-dividend(Relation), divisor(Relation) }>
+=item C<function sys.std.Core.QRelation.quotient result QRelation params {
+dividend(QRelation), divisor(QRelation) }>
 
 This function results in the quotient when its C<dividend> argument is
 divided by its C<divisor> argument using relational division.  Speaking
-informally, say the relations C<dividend> and C<divisor> are called C<A>
-and C<B>, and their attribute sets are respectively named C<{X,Y}> and
-C<{Y}>, then the result relation has a heading composed of attributes
+informally, say the q/relations C<dividend> and C<divisor> are called C<A>
+and C<B>, and their attribute q/sets are respectively named C<{X,Y}> and
+C<{Y}>, then the result q/relation has a heading composed of attributes
 C<{X}> (so the result and C<divisor> headings are both complementary
-subsets of the C<dividend> heading); the result has all tuples C<{X}> such
-that a tuple C<{X,Y}> appears in C<A> for all tuples C<{Y}> appearing in
+subsets of the C<dividend> heading); the result has all q/tuples C<{X}> such
+that a q/tuple C<{X,Y}> appears in C<A> for all q/tuples C<{Y}> appearing in
 C<B>; that is, C<A / B> is shorthand for C<A{X} - ((A{X} join B) - A){X}>.
 
 =back
@@ -814,13 +826,13 @@ isn't a subtype of the declared type of the variable behind C<target>.
 
 =back
 
-=head1 SYSTEM-DEFINED GENERIC TUPLE VARIABLE UPDATERS
+=head1 SYSTEM-DEFINED GENERIC QUASI-/TUPLE VARIABLE UPDATERS
 
 =head2 Updaters That Rename Attributes
 
 =over
 
-=item C<updater sys.std.Core.QTuple.assign_rename update { topic(Tuple) }
+=item C<updater sys.std.Core.QTuple.assign_rename update { topic(QTuple) }
 read { map(AttrRenameMap) }>
 
 This update operator is a short-hand for first invoking the
@@ -836,15 +848,15 @@ each tuple of C<map> corresponds to a renamed SQL table.
 
 =over
 
-=item C<updater sys.std.Core.QTuple.assign_product update { topic(Tuple) }
-read { other(Tuple) }>
+=item C<updater sys.std.Core.QTuple.assign_product update { topic(QTuple) }
+read { other(QTuple) }>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.QTuple.product> function such that it has 2 input tuples
+C<sys.std.Core.QTuple.product> function such that it has 2 input q/tuples
 from C<assign_product>'s 2 arguments, and then assigning the result of that
 function to C<topic>.  This procedure is analagous to the data-manipulation
 phase of a SQL CREATE TABLE|VIEW statement iff both arguments are
-C<Database>-typed; each relation-typed attribute of C<other> corresponds to
+C<Database>-typed; each q/relation-typed attribute of C<other> corresponds to
 a created SQL table.
 
 =back
@@ -853,7 +865,7 @@ a created SQL table.
 
 =over
 
-=item C<updater sys.std.Core.QTuple.assign_projection update { topic(Tuple)
+=item C<updater sys.std.Core.QTuple.assign_projection update { topic(QTuple)
 } read { attrs(set_of.Name) }>
 
 This update operator is a short-hand for first invoking the
@@ -861,25 +873,25 @@ C<sys.std.Core.QTuple.projection> function with the same arguments, and
 then assigning the result of that function to C<topic>.
 
 =item C<updater sys.std.Core.QTuple.assign_cmpl_projection update {
-topic(Tuple) } read { attrs(set_of.Name) }>
+topic(QTuple) } read { attrs(set_of.Name) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QTuple.cmpl_projection> function with the same arguments,
 and then assigning the result of that function to C<topic>.  This procedure
 is analagous to the data-manipulation phase of a SQL DROP TABLE|VIEW
-statement iff C<topic> is C<Database>-typed; each relation-typed attribute
+statement iff C<topic> is C<Database>-typed; each q/relation-typed attribute
 named by C<attrs> corresponds to a dropped SQL table.
 
 =back
 
-=head1 SYSTEM-DEFINED GENERIC RELATION VARIABLE UPDATERS
+=head1 SYSTEM-DEFINED GENERIC QUASI-/RELATION VARIABLE UPDATERS
 
-=head2 Updaters That Add Tuples
+=head2 Updaters That Add Q/Tuples
 
 =over
 
 =item C<updater sys.std.Core.QRelation.assign_insertion update {
-r(Relation) } read { t(Tuple) }>
+r(QRelation) } read { t(QTuple) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.insertion> function with the same arguments, and
@@ -887,23 +899,23 @@ then assigning the result of that function to C<r>.  This updater is
 analagous to the general case of the single-row SQL "INSERT" statement.
 
 =item C<updater sys.std.Core.QRelation.assign_disjoint_insertion update {
-r(Relation) } read { t(Tuple) }>
+r(QRelation) } read { t(QTuple) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.disjoint_insertion> function with the same
 arguments, and then assigning the result of that function to C<r>.
 
 =item C<updater sys.std.Core.QRelation.assign_union update {
-topic(Relation) } read { other(Relation) }>
+topic(QRelation) } read { other(QRelation) }>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.QRelation.union> function such that it has 2 input relations
+C<sys.std.Core.QRelation.union> function such that it has 2 input q/relations
 from C<assign_union>'s 2 arguments, and then assigning the result of that
 function to C<topic>.  This updater is analagous to the general case of the
 multiple-row SQL "INSERT" statement.
 
 =item C<updater sys.std.Core.QRelation.assign_disjoint_union update {
-topic(Relation) } read { other(Relation) }>
+topic(QRelation) } read { other(QRelation) }>
 
 This update operator is to C<sys.std.Core.QRelation.disjoint_union> what
 the function C<sys.std.Core.QRelation.assign_union> is to
@@ -911,26 +923,26 @@ C<sys.std.Core.QRelation.union>.
 
 =back
 
-=head2 Updaters That Remove Tuples
+=head2 Updaters That Remove Q/Tuples
 
 =over
 
-=item C<updater sys.std.Core.QRelation.assign_deletion update { r(Relation)
-} read { t(Tuple) }>
+=item C<updater sys.std.Core.QRelation.assign_deletion update { r(QRelation)
+} read { t(QTuple) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.deletion> function with the same arguments, and
 then assigning the result of that function to C<r>.
 
 =item C<updater sys.std.Core.QRelation.assign_restriction update {
-topic(Relation) } read { func(FuncRef), assuming(QTuple)? }>
+topic(QRelation) } read { func(FuncRef), assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.restriction> function with the same arguments, and
 then assigning the result of that function to C<topic>.
 
 =item C<updater sys.std.Core.QRelation.assign_cmpl_restriction update {
-topic(Relation) } read { func(FuncRef), assuming(QTuple)? }>
+topic(QRelation) } read { func(FuncRef), assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.cmpl_restriction> function with the same
@@ -939,21 +951,21 @@ This updater is analagous to the general case of the SQL "DELETE"
 statement.
 
 =item C<updater sys.std.Core.QRelation.assign_intersection update {
-topic(Relation) } read { other(Relation) }>
+topic(QRelation) } read { other(QRelation) }>
 
 This update operator is to C<sys.std.Core.QRelation.intersection> what the
 function C<sys.std.Core.QRelation.assign_union> is to
 C<sys.std.Core.QRelation.union>.
 
 =item C<updater sys.std.Core.QRelation.assign_difference update {
-source(Relation) } read { filter(Relation) }>
+source(QRelation) } read { filter(QRelation) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.difference> function with the same arguments, and
 then assigning the result of that function to C<source>.
 
 =item C<updater sys.std.Core.QRelation.assign_semidifference update {
-source(Relation) } read { filter(Relation) }>
+source(QRelation) } read { filter(QRelation) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.semidifference> function with the same arguments,
@@ -962,7 +974,7 @@ is analagous to the common case of the SQL "DELETE" statement where the
 criteria is simply a set of and-ed and or-ed value equality tests.
 
 =item C<updater sys.std.Core.QRelation.assign_semijoin update {
-source(Relation) } read { filter(Relation) }>
+source(QRelation) } read { filter(QRelation) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.semijoin> function with the same arguments, and
@@ -975,7 +987,7 @@ then assigning the result of that function to C<source>.
 =over
 
 =item C<updater sys.std.Core.QRelation.assign_rename update {
-topic(Relation) } read { map(AttrRenameMap) }>
+topic(QRelation) } read { map(AttrRenameMap) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.rename> function with the same arguments, and then
@@ -991,14 +1003,14 @@ column.
 =over
 
 =item C<updater sys.std.Core.QRelation.assign_extension update {
-topic(Relation) } read { func(FuncRef), assuming(QTuple)? }>
+topic(QRelation) } read { func(FuncRef), assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.extension> function with the same arguments, and
 then assigning the result of that function to C<topic>.
 
 =item C<updater sys.std.Core.QRelation.assign_static_extension update {
-topic(Relation) } read { attrs(Tuple) }>
+topic(QRelation) } read { attrs(QTuple) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.static_extension> function with the same
@@ -1014,14 +1026,14 @@ an added SQL table column.
 =over
 
 =item C<updater sys.std.Core.QRelation.assign_projection update {
-topic(Relation) } read { attrs(set_of.Name) }>
+topic(QRelation) } read { attrs(set_of.Name) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.projection> function with the same arguments, and
 then assigning the result of that function to C<topic>.
 
 =item C<updater sys.std.Core.QRelation.assign_cmpl_projection update {
-topic(Relation) } read { attrs(set_of.Name) }>
+topic(QRelation) } read { attrs(set_of.Name) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.cmpl_projection> function with the same arguments,
