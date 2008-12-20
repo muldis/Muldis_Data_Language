@@ -322,7 +322,7 @@ C<sys.std.Core.Type.Cat> namespace, C<(Func|Proc|Type|OrdDetFunc)Ref>.
 
 =item C<sca_npr_types> - C<SysScaNPRTypeSet>
 
-These are all the system-defined (|quasi-)scalar root (not union etc) types
+These are all the system-defined scalar root (not union etc) types
 that have no possreps, the likes of which users can not define, and values
 of which can only be selected using either system-defined literal syntax or
 mapping functions.  Specifically, it declares these 2 standard types (all
@@ -444,11 +444,10 @@ C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysScaNPRTypeSet
 
-A C<SysSpecTypeSet> is a C<Relation> that specifies a set of
-system-defined (|quasi-)scalar root (not union etc) types that have no
-possreps.
+A C<SysScaNPRTypeSet> is a C<Relation> that specifies a set of
+system-defined scalar root (not union etc) types that have no possreps.
 
-A C<SysScaNPRTypeSet> has these 4 attributes:
+A C<SysScaNPRTypeSet> has these 3 attributes:
 
 =over
 
@@ -466,11 +465,6 @@ C<parent> and C<name>.
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the type as a whole.
-
-=item C<is_quasi> - C<Bool>
-
-This is C<Bool:true> if the type is a quasi-scalar type; it is
-C<Bool:false> if the type is a scalar type.
 
 =back
 
@@ -1562,7 +1556,7 @@ expression nodes where each node represents a (|quasi-)scalar literal of a
 type that has at least 1 possrep, and the literal is specified simply in
 terms of possrep attributes.
 
-A C<ScaPRLitExprNodeSet> has these 6 attributes:
+A C<ScaPRLitExprNodeSet> has these 5 attributes:
 
 =over
 
@@ -1574,11 +1568,6 @@ This is the declared name of the expression node.
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
-
-=item C<is_quasi> - C<Bool>
-
-This is C<Bool:true> if the node denotes a quasi-scalar literal; it is
-C<Bool:false> if the node just denotes a scalar literal.
 
 =item C<type_name> - C<NameChain>
 
@@ -1604,7 +1593,7 @@ attribute.  Its default value is empty.
 A C<TupLitExprNodeSet> is a C<Relation> that specifies a set of value
 expression nodes where each node represents a (|quasi-)tuple literal.
 
-A C<TupLitExprNodeSet> has these 4 attributes:
+A C<TupLitExprNodeSet> has these 3 attributes:
 
 =over
 
@@ -1616,11 +1605,6 @@ This is the declared name of the expression node.
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
-
-=item C<is_quasi> - C<Bool>
-
-This is C<Bool:true> if the node denotes a quasi-tuple literal; it is
-C<Bool:false> if the node just denotes a tuple literal.
 
 =item C<attrs> - C<NameExprMap>
 
@@ -1636,7 +1620,7 @@ attribute.  Its default value is empty.
 A C<RelLitExprNodeSet> is a C<Relation> that specifies a set of value
 expression nodes where each node represents a (|quasi-)relation literal.
 
-A C<RelLitExprNodeSet> has these 5 attributes:
+A C<RelLitExprNodeSet> has these 4 attributes:
 
 =over
 
@@ -1648,11 +1632,6 @@ This is the declared name of the expression node.
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
-
-=item C<is_quasi> - C<Bool>
-
-This is C<Bool:true> if the node denotes a quasi-relation literal; it is
-C<Bool:false> if the node just denotes a relation literal.
 
 =item C<head> - C<set_of.Name>
 
@@ -2415,7 +2394,7 @@ representation that can handle every value of the (|sub)type it is defined
 with, and the Muldis D implementation may choose for itself which of these,
 or some other alternative, is the actual/physical representation.
 
-An C<InnerScalarType> has these 7 attributes:
+An C<InnerScalarType> has these 6 attributes:
 
 =over
 
@@ -2431,14 +2410,6 @@ C<base_type> is not applicable and is a C<Nothing>.  Iff the type being
 defined is a subtype of some other (|quasi-)scalar type, then C<base_type>
 is a C<Single> whose sole element is the name of that other type.  Note
 that any type named by C<base_type> must itself have at least 1 possrep.
-
-=item C<is_quasi> - C<maybe_of.Bool>
-
-Iff the type being defined is a (|quasi-)scalar root type, then C<is_quasi>
-is a C<Single> whose sole element is C<Bool:true> if the type is a
-quasi-scalar type; the element is C<Bool:false> if the type is a scalar
-type.  Iff the type being defined is a subtype of some other type, then
-C<is_quasi> is not applicable (would be redundant) and is a C<Nothing>.
 
 =item C<possreps> - C<PossrepSet>
 
@@ -2622,7 +2593,7 @@ Note that you can not use an C<InnerNonscalarType> to declare or
 subtype an incomplete type, as it (or its supertype) must specify a
 complete set of attributes.
 
-An C<InnerNonscalarType> has these 14 attributes:
+An C<InnerNonscalarType> has these 13 attributes:
 
 =over
 
@@ -2638,15 +2609,6 @@ C<base_type> is not applicable and is a C<Nothing>.  Iff the type being
 defined is a subtype of some other (|quasi-)nonscalar type, then
 C<base_type> is a C<Single> whose sole element is the name of that other
 type.
-
-=item C<is_quasi> - C<maybe_of.Bool>
-
-Iff the type being defined is a (|quasi-)nonscalar root type, then
-C<is_quasi> is a C<Single> whose sole element is C<Bool:true> if the type
-is a quasi-nonscalar type; the element is C<Bool:false> if the type is a
-nonscalar type.  Iff the type being defined is a subtype of some other
-type, then C<is_quasi> is not applicable (would be redundant) and is a
-C<Nothing>.
 
 =item C<is_tuple_first> - C<Bool>
 
