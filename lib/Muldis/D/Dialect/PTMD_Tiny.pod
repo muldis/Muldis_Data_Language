@@ -33,45 +33,20 @@ round-trippable with the system catalog with the result maintaining all the
 details that were started with.  Since it matches the system catalog, this
 dialect should be able to exactly represent all possible Muldis D base
 language code (and probably all extensions too), rather than a subset of
-it.  This dialect similarly matches the dialects
-L<HDMD_Perl6_Tiny|Muldis::D::Dialect::HDMD_Perl6_Tiny> and
-L<HDMD_Perl5_Tiny|Muldis::D::Dialect::HDMD_Perl5_Tiny>.
+it.  That said, the C<PTMD_Tiny> dialect does provide a choice of multiple
+syntax options for writing Muldis D value literals and DBMS entity (eg type
+and routine) declarations, so several very distinct C<PTMD_Tiny> code
+artifacts may parse into the same system catalog entries.  There is even a
+considerable level of abstraction in some cases, so that it is easier for
+programmers to write and understand typical C<PTMD_Tiny> code, and so that
+this code isn't absurdly verbose.
 
 This dialect is designed to be as small as possible while meeting the above
 criteria, and is designed such that a parser that handles all of this
 dialect can be tiny, hence the dialect's C<Tiny> name.  Likewise, a code
 generator for this dialect from the system catalog can be tiny.
 
-This document mainly just specifies a way to represent Muldis D values as
-character strings.  Since the fundamental way to do data definition in
-Muldis D is to update catalog (information schema) variables, aka the
-Muldis D meta-model, which are themselves just data, then this document
-only needs to tell you how to define values to put in the catalog
-variables.  Defining data types or routines are done by defining catalog
-values describing them.
-
-See instead L<Muldis::D::Core> for how to actually define the
-tuples and relations that define your data types and routines and queries
-and so forth.
-
-See also L<HDMD_Perl6_Tiny|Muldis::D::Dialect::HDMD_Perl6_Tiny> or
-L<HDMD_Perl5_Tiny|Muldis::D::Dialect::HDMD_Perl5_Tiny> and look up its
-syntax for representing Muldis D literal values, each syntax item typically
-corresponds to a syntax item in the current document; the other document
-helps explain the meaning of and further constraints on value
-specifications than this current document does.  The syntax given in the
-current document primarily tests for well-formedness, not that code is
-otherwise valid.
-
-Keeping in mind that any Plain Text Muldis D code file has to actually
-consist of a Muldis D C<bootloader> routine, the following grammar is
-actually the grammar to parse a C<bootloader> routine, which is simply a
-series of imperative routine calls, where earlier routine calls are to
-system-defined data-definition routines (their arguments are values to put
-in the system catalog), and later ones are then to user-defined routines
-that the earlier statements either loaded or defined.
-
-Now another quality of the C<PTMD_Tiny> dialect is that it is designed to
+A significant quality of the C<PTMD_Tiny> dialect is that it is designed to
 work easily for a single-pass parser, or at least a single-pass lexer; all
 the context that one needs to know for how to parse or lex any arbitrary
 substring of code is provided by prior code.  Therefore, a C<PTMD_Tiny>
@@ -90,22 +65,72 @@ no effect on the meaning.  So programmers can easily format (separate,
 indent, linewrap, order) code how they like, and making an automated code
 reformatter shouldn't be difficult.  Often, named elements can also be
 omitted entirely for brevity, in which case the parser would use context to
-supply default values for those elements.  These qualities are all shared
-by the dialects L<HDMD_Perl6_Tiny|Muldis::D::Dialect::HDMD_Perl6_Tiny> and
-L<HDMD_Perl5_Tiny|Muldis::D::Dialect::HDMD_Perl5_Tiny> too.
+supply default values for those elements.
+
+Given that plain text is (more or less) universally unambiguously portable
+between all general purpose languages that could be used to implement a
+DBMS, it is expected that every single Muldis D implementation will
+natively accept input in the C<PTMD_Tiny> dialect, which isn't dependent on
+any specific host language and should be easy enough to process, so it
+should be considered the safest official Muldis D dialect to write in by
+default, when you don't have a specific reason to use some other dialect.
+
+See also the dialects
+L<HDMD_Perl6_Tiny|Muldis::D::Dialect::HDMD_Perl6_Tiny> and
+L<HDMD_Perl5_Tiny|Muldis::D::Dialect::HDMD_Perl5_Tiny>, which are derived
+directly from C<PTMD_Tiny>, and represent possible Perl 6 and 5 concrete
+syntax trees for it; in fact, most of the details in common with those
+other dialects are described just in the current file, for all 3 dialects.
+
+=head1 GENERAL STRUCTURE
+
+A C<PTMD_Tiny> Muldis D code file consists just of a full or partial Muldis
+D C<bootloader> routine definition, which begins with a language name
+declaration, and otherwise is simply an ordered sequence of imperative
+routine calls, where earlier routine calls are to system-defined
+data-definition routines (their arguments are values to put in the system
+catalog), and later ones are then to user-defined routines that the earlier
+statements either loaded or defined.  This is conceptually what a
+C<PTMD_Tiny> file is, and it can even be that literally, but C<PTMD_Tiny>
+provides a canonical further abstraction which should be used when doing
+data-definition.  And so you typically use syntax resembling routine and
+type declarations in a general purpose programming language, where simply
+declaring such an entity will cause it to be written into the system
+catalog for subsequent use.
+
+The grammar in this file is formatted as a Perl 6 grammar (see
+L<http://perlcabal.org/syn/S05.html> for details) which could be used to
+parse it, but it is only meant to be illustrative, and would need further
+additions or changes to actually function in Perl 6.  The grammar consists
+mainly of named I<tokens> which define matching rules.  A token's name is
+declared as a bareword following the keyword C<token> and it is
+subsequently referenced with C<< '<' and '>' >> delimiters.  Any other
+bareword in a token definition consisting of alphanumerics is matched
+literally, and all non-quoted whitespace is not significant.  Any pairs of
+parenthesis (C<'(' and ')'>) in token definitions are capturing groups, and
+each parser match by a pair corresponds to a capture I<node> or node
+element in the concrete syntax tree resulting from the parse.
+
+The grammar of the C<PTMD_Tiny> dialect has 3 main subsections, the first
+being the syntax for declaring a Muldis D language name, the second being
+the syntax for Muldis D value literals, and the third being the syntax for
+DBMS entity definition and routine invocation.  The subsection for a
+language name (having the root grammar token C<language_name>) is quite
+small and is defined partly in terms of the value literals subsection.  The
+subsection for value literals (having the root grammar token C<value>) is
+completely self-defined and can be used in isolation from the wider grammar
+as a Muldis D sub-language; for example, a hosted-data Muldis D
+implementation may have an object representing a Muldis D value, which is
+initialized using code written in that sub-language.  The subsection for
+entity definition and invocation (having the root grammar token
+C<boot_stmt>) is defined partly in terms of the value literals subsection.
+The root grammar token for the entire dialect is C<bootloader>.
+
+=head1 HERE AND BELOW WE RERITE HAVE TO STILL.
+
+Yes, that's right.
 
 =head1 GRAMMAR OF TINY PLAIN TEXT MULDIS D
-
-This grammar is formatted as a Perl 6 grammar which could be used to parse
-it.  That said, it is only meant to be illustrative, as only some Muldis D
-implementations would actually be written in Perl 6 or understand Perl 6
-grammars.  The following Perl 6 code does successfully compile using the
-current Perl6::Pugs, though it has not yet been tested for correct
-execution.  I<Actually, the last several versions were not even tested for
-being able to compile, but it is assumed they are close to being compilable
-at least.>  Any remaining errors should be corrected as soon as possible.
-This grammar is missing the 'grammar' declarator, and it omits any
-capturing parens for simplicity to fulfil its purpose as an illustration.
 
     token bootloader {
         <language_name>
