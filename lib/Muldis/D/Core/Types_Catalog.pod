@@ -26,8 +26,7 @@ L<Muldis::D::Core> so that that other document would not be too
 large.
 
 These core data types are more special-purpose in nature and are intended
-for use in defining or working with the system catalog.  Those types that
-are nonscalar are completely defined types.
+for use in defining or working with the system catalog.
 
 Note that whenever an attribute of one of the nonscalar types isn't
 significant, given the context (determined by other attributes of the same
@@ -2392,7 +2391,12 @@ of some other (|quasi-)scalar type which also adds at least one possrep to
 the other type.  Either way, every possrep defines a candidate
 representation that can handle every value of the (|sub)type it is defined
 with, and the Muldis D implementation may choose for itself which of these,
-or some other alternative, is the actual/physical representation.
+or some other alternative, is the actual/physical representation.  Whether
+a declared type is scalar or quasi-scalar depends only on the declared
+types of the attributes its possreps compose, whether they any are quasi-
+or none are.  You can not declare a (|quasi-)scalar root type at all except
+by using a C<InnerScalarType>, and you can not define a quasi-scalar type
+with an incompletely defined attribute list at all.
 
 An C<InnerScalarType> has these 6 attributes:
 
@@ -3305,7 +3309,9 @@ does not define any changes or supplements to the interfaces available for
 working with its values, instead simply using those of its declared parent
 type.  A data type defined in this way is typically not considered to exist
 when the system wants to determine the MST (most specific type) of one of
-its values.
+its values.  You can only declare a quasi-nonscalar type with an
+incompletely defined attribute list using a C<InnerRestrType> (or a
+C<InnerUnionType>).
 
 An C<InnerRestrType> has these 4 attributes:
 

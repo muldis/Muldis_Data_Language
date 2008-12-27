@@ -549,7 +549,11 @@ conceptually speaking, a "circle" value is an "ellipse" value, but a
 type "circle" is a subtype of "ellipse", and "coloured circle" is neither a
 subtype of "circle" nor of "colour".  Rather, for example, a "coloured
 circle" is a multi-component type which has components of type "circle" and
-"colour", but composition like this does not a subtype make.
+"colour", but composition like this does not a subtype make.  I<Possibly
+TODO, add a feature to Muldis D akin to a Perl 6 "role", which aids in code
+reuse between disjoint types having common components, such as is a main
+benefit of "specialization by extension"; any 2 types that compose the same
+role would not have values in common due to that common role composition.>
 
 Every value conceptually has exactly one I<most specific type> (or I<MST>),
 which is cited as the general answer to the question "what is this value's
@@ -636,25 +640,26 @@ In the case of a q/scalar subset enumeration type, typically it will define
 extra q/scalar possreps or selectors.  All user-defined nonscalar or
 quasi-nonscalar types are enumeration types.
 
-A reference type is a special only-system-defined opaque type that is used
-at runtime to implement certain Muldis D features, such as closures, that
-effectively require pointers to implementation entities in memory; a value
-of a reference type can not be stored in a database and it only is ever
-stored in routine lexical variables or arguments.  There are just a few of
-these, which include: C<FuncRef>, C<ProcRef>, C<TypeRef>.  I<Note: It is
-possible that a future Muldis D design change may do away with the need for
-such reference values.>
-
-A I<complete type> is a data type that is fully defined, and for which it
-would be possible to have values that are of just that data type, if it
-didn't have proper subtypes.  An I<incomplete type> or I<parameterized
-type> is a data type that is not fully defined, but serves as a template by
-which complete types can be defined; there can never be values that are
-just of a parameterized type.  The most important complete types are
-C<Bool>, C<Int>, C<Blob>, C<Text>; the most important incomplete types are
-C<Tuple>, C<Relation>.  For that matter, any implicit supertypes such as
-C<Universal> and C<Scalar> could be considered incomplete types, but that
-they are not parameterized.  I<TODO: Further correct this description.>
+A reference type is a special opaque type that is used for either of 2
+distinct purposes, each type being for exactly one of those purposes.  A
+value of a reference type can not be stored in a database and it only is
+ever stored in routine lexical variables or arguments.  The first use
+purpose is at runtime to implement certain Muldis D features, such as
+closures, that effectively require pointers to implementation entities in
+memory; there are just a few of these, which include: C<FuncRef>,
+C<ProcRef>, C<TypeRef>.  I<Note: It is possible that a future Muldis D
+design change may do away with the need for such reference values.>  The
+second use purpose is provided by Muldis D's special C<External> reference
+type, the values of which will represent any arbitrary values of any
+arbitrary, often user-defined and mutable, types of a peer or host language
+to Muldis D in the context of a common program.  Each C<External> value is
+a black box to Muldis D code, which other parts of a wider program can give
+to Muldis D routines to manage, such as store in a quasi-relation value for
+organization and processing with relational operators.  The mutual identity
+of C<External> values is implementation-defined, and by default each one is
+conceptually a memory address meaningful to the external language.  But
+regardless, C<External> values are disjoint from all native Muldis D
+values, so their proprietary identity schemes have no bearing on natives.
 
 =head2 Type Identification
 
@@ -679,8 +684,7 @@ that is not a quasi-scalar type, meaning it is either a quasi-tuple type or
 a quasi-relation type.
 
 A I<remnant type> is any type having at least 2 values, where at least 2 of
-the values are not allowed to be in a same single type of one of the other
-4 categories, according to their type definition rules.  The remnant
+the values are not in the same one of the 4 categories.  The remnant
 category is the complement category to all the others in that every
 possible proper subset of the values of C<Universal> can now be represented
 by a type that fits in one of the 5 categories, save C<Empty> itself.  The
@@ -696,21 +700,19 @@ named C<Scalar>, C<Tuple>, and C<Relation>, which serve as maximal data
 types for each category, respectively.  Each of these 3 types is a proper
 subtype of the previously mentioned type whose name is the same but for a
 'Q' prefix.  The most important data types each consist exclusively of
-values from exactly one of the most important 3 categories, and each such
-type does not include values from several of them.  Therefore, every such
-data type is said to be either a I<scalar> type, a I<tuple type>, or a
+values from exactly one of the most important 3 categories, and every such
+data type is said to be either a I<scalar type>, a I<tuple type>, or a
 I<relation type>, depending which category all of its values come from.  In
 similar fashion, a I<nonscalar type> is generally any type that is not a
 scalar type, if we ignored quasi- types, meaning it is either a tuple type
-or a relation type.
-
-A quasi- type is the same as its similarly named non-quasi counterpart in
-every way (and in fact every such non-quasi type is also a quasi-type), but
-that particular kinds of components are permitted in quasi- types that
-aren't permitted in non-quasi types.
+or a relation type.  This said, the definition of a tuple|relation type is
+restricted further than just being a set of tuple|relation values, and so
+C<Tuple> isn't actually a tuple type and C<Relation> isn't actually a
+relation type (they are both quasi- types); see L</Distinction of Quasi-
+Types from Non-Quasi Types> for more details.
 
 Now, while every scalar|tuple|relation type or value is also a
-quasi-scalar|tuple|relation type or value, most of the Muldis D
+quasi-(scalar|tuple|relation) type or value, a lot of the Muldis D
 specification will use the quasi- names specifically to mean values or
 types that are outside of the quasi- subset that non-quasi values or types
 occupy.  As a common short-hand, anywhere you see syntax like I<q/scalar>
@@ -744,20 +746,19 @@ a union or negation of other non-remnant types.  As per with q/nonscalars,
 several independently defined remnant types can be considered the same one.
 
 To keep things simpler, every data type in Muldis D has a name by which it
-is referenced, even nonscalar and quasi-nonscalar types; however, the names
-of types that are not scalar or quasi-scalar types are simply convenient
-aliases for their true identities, which are their structures (the
-convenience allows various Muldis D catalog features to be designed and
-implemented more easily).
+is referenced, even q/nonscalar types; however, the names of types that are
+not q/scalar types are simply convenient aliases for their true identities,
+which are their structures (the convenience allows various Muldis D catalog
+features to be designed and implemented more easily).
 
 =head2 Q/Scalar Types
 
-Q/Scalar types are the only conceptually encapsulated types in Muldis D,
-and are like other languages' concepts of object classes where all their
-attributes are private, and only accessible indirectly.  The definition of
-a q/scalar type comprises usually one or more named I<possreps> or
-I<possible representations>, and for each of those, at least one
-I<selector> operator and usually at least one I<accessor> or I<the>
+Q/Scalar types are the only conceptually (non-reference) encapsulated types
+in Muldis D, and are like other languages' concepts of object classes where
+all their attributes are private, and only accessible indirectly.  The
+definition of a q/scalar type comprises usually one or more named
+I<possreps> or I<possible representations>, and for each of those, at least
+one I<selector> operator and usually at least one I<accessor> or I<the>
 operator.
 
 A I<possrep> of a type is an exhaustively complete means for users to
@@ -781,7 +782,7 @@ possreps could represent a date as an ISO 8601 formatted character string
 in the Gregorian calendar, and another possrep could represent it as a
 number of seconds since the UNIX epoch.  Or taking for example a spatial
 data type that is a rectangle, one possrep could specify the 4 vertices as
-4 (or 3) point values, and another possrep could specify fewer vertices and
+4 (or 3) point values, and another possrep could specify 2 vertices and
 also specify the rectangle's width and height as numeric values.
 
 A possrep additionally has a defined boolean-valued constraint expression
@@ -841,8 +842,8 @@ possrep that just works for a square rather than a rectangle in general
 comprises a center point plus its length.
 
 As a corollary to this, all union types have none of the possreps defined
-by their subtypes.  So the system-defined C<QScalar> type has no possreps
-at all, and hence has no selectors or accessors defined for it.
+by their proper subtypes.  So the system-defined C<QScalar> type has no
+possreps at all, and hence has no selectors or accessors defined for it.
 
 Note that, to keep things simple and deterministic under the possibility of
 diamond subtype/supertype relationships (such that the generic
@@ -853,6 +854,12 @@ subtypes have values in common; this can be enforced at
 type-definition-in-catalog time since all types that can interact are in
 the same depot.
 
+Note that, if a quasi-scalar root type's possreps' attributes are all just
+scalar or nonscalar (none quasi-) typed, or there aren't any possrep
+attributes, then that root type is a scalar type, and any subtype of this
+is forbidden from declaring any possreps having attributes that are neither
+scalar nor nonscalar.
+
 =head2 Q/Tuple Types and Q/Relation Types
 
 Q/Tuple types are the fundamental heterogeneous conceptually
@@ -860,14 +867,17 @@ non-encapsulated collection types in Muldis D, and are like the Pascal
 language's concept of a record, or the C language's concept of a struct.
 The definition of a q/tuple type comprises a set of zero or more named
 I<attributes> of any q/scalar or q/nonscalar type.  This set definition is
-called the q/tuple's I<heading>.
+called the q/tuple's I<heading>, and the count of attributes is called the
+q/tuple's I<degree>.
 
 Q/Relation types are the fundamental homogeneous conceptually
 non-encapsulated collection types in Muldis D, and are like other
 languages' concepts of sets (or arrays where all elements are distinct),
-but restricted in that all elements are q/tuples.  The definition of a
-q/relation type looks exactly like the definition of a q/tuple type (such
-that a q/relation has attributes even if it has no q/tuples), but that the
+but restricted in that all elements are q/tuples (whose degrees and
+attribute names are identical); the count of q/tuples in a q/relation is
+called the q/relation's I<cardinality>.  The definition of a q/relation
+type looks exactly like the definition of a q/tuple type (such that a
+q/relation has attributes even if it has no q/tuples), but that the
 definition defines every q/tuple in the q/relation, and also but that
 q/relation types can additionally have I<keys> defined which indicate that
 a subset of its attributes' values are distinct between all q/tuples in the
@@ -880,19 +890,21 @@ need to be defined per such type.
 The system-defined types C<QTuple> and C<QRelation> (and their
 system-defined subtypes) are technically generic factory types, such that
 they themselves do not define any attribute sets, and are supertypes of all
-q/tuple and q/relation types that do.  Beyond this special case, a pair of
-q/tuple or q/relation types can only have a subtype/supertype relationship
-if they have compatible headings, which means the attribute sets are of the
-same degree, the attribute names are identical, and the name-wise
-corresponding attributes in each heading have a valid subtype/supertype
-relationship; each attribute of a q/tuple or q/relation subtype is a
-subtype of the same-named attribute of the q/tuple or q/relation supertype.
+q/tuple and q/relation types that do.
+
+A pair of tuple or relation types can only have a subtype/supertype
+relationship if they have compatible headings, which means the attribute
+sets are of the same degree, the attribute names are identical, and the
+name-wise corresponding attributes in each heading have a valid
+subtype/supertype relationship; each attribute of a tuple or relation
+subtype is a subtype of the same-named attribute of the tuple or relation
+supertype.
 
 The explicit heading of a q/tuple or q/relation value only defines the
 names of its attributes, not their types; the types of q/tuple or
 q/relation attributes are simply derived from the values of those
-attributes, specifically their MSTs, recursively in the case of TVAs and
-RVAs.  Declared q/tuple or q/relation attribute types are only applicable
+attributes, specifically their MSTs, recursively in the case of q/TVAs and
+q/RVAs.  Declared q/tuple or q/relation attribute types are only applicable
 to explicit q/tuple or q/relation type definitions, and the variables or
 routine parameters etc that compose them.
 
@@ -913,36 +925,36 @@ match, and regardless of the declared types of the attributes.  A corollary
 to this is that if the declared type of an attribute of a q/relation type
 is C<Empty>, then that type can only consist of exactly 1 value, which is
 the zero-tuple relation having those attribute names (and their types are
-all C<Empty>).  This quality is reserved for relation and quasi-relation
-types alone; no scalar possrep or tuple (or quasi- variants) may use
-C<Empty> as a declared attribute type because their attributes can't
-contain zero values.
+all C<Empty>).  This quality is reserved for q/relation types alone; no
+q/scalar possrep or q/tuple may use C<Empty> as a declared attribute type
+because their attributes can't contain zero values.
 
 A consequence of these identity matters is that a Muldis D implementation
-can choose to keep all the actual type information of a nonscalar (and
-quasi-nonscalar) value's attributes in the body, leaving the heading to
-keep nothing but the names of the attributes.  An empty relation (or
-quasi-relation) body does not mean that any important meta-data is lost.
+can choose to keep all the actual type information of a q/nonscalar value's
+attributes in the body, leaving the heading to keep nothing but the names
+of the attributes.  An empty q/relation body does not mean that any
+important meta-data is lost.
 
 =head2 Distinction of Quasi- Types from Non-Quasi Types
 
 A quasi-relation value can have any combination of values of C<Universal>
 as the values of the same attribute across its constituent q/tuples.  All
 generic relational operators will work with every quasi-relation value
-except for C<unwrap> and C<ungroup>, which will only work with a subset of
-quasi-relation values.
+except for C<unwrap> and C<ungroup> (or other operators defined over them),
+which will only work with a subset of quasi-relation values.
 
-You can only unwrap a q/tuple-valued attribute into an extension of the
-host quasi-relation if for every q/tuple of the host, that attribute's
-q/tuple value has the same degree and attribute names, otherwise there is
-no way to consistently extend the host.  Likewise, you can only ungroup a
-q/relation-valued attribute if for every q/tuple of the host, that
-attribute's q/relation value has the same degree and attribute names.
+You can only unwrap a host quasi-relation's attribute into an extension of
+that host if for every q/tuple of the host, that attribute is a q/tuple
+with the same degree and attribute names, or otherwise there is no
+consistent set of attribute names to extend the host with.  Likewise, you
+can only ungroup a host quasi-relation's attribute if for every q/tuple of
+the host, that attribute is a q/relation with the same degree and attribute
+names.
 
-A I<relation value> is, by definition, any quasi-relation value for which
-it is possible to unwrap all of its q/tuple-valued attributes, and ungroup
-all of its q/relation-valued attributes, recursively, until you have just a
-quasi-relation whose attributes are all just scalar-valued.
+A I<relation value> is, by definition, any host quasi-relation value for
+which you can take any of the host's attributes that is not scalar, and
+validly either unwrap or ungroup that attribute, recursively, until your
+host quasi-relation has just scalar-valued attributes.
 
 A I<tuple value> is, by definition, any quasi-tuple value such that any
 quasi-relation-valued attributes it has, directly or indirectly, are also
@@ -951,28 +963,26 @@ just relation-valued.
 As trivial cases, all 3 of the quasi-nonscalar values with zero attributes
 are just nonscalar values, and all quasi-relation values with zero q/tuples
 are just relation values.  (Hence the system-defined C<(Tuple|Relation)D0>
-and C<Nothing> types don't each come in 2 flavors.)
+and C<Nothing> nonscalar types don't each come in 2 flavors.)
 
 A I<scalar value> is, by definition, any quasi-scalar value that either has
-no possreps (it is an C<Int> or a C<String>) or its root type has at least
-one possrep such that any quasi-relation-valued attributes it has, directly
-or indirectly, are also just relation-valued.
+no possreps (it is an C<Int> or a C<String>) or all of its possreps are
+such that any quasi-relation-valued attributes it has, directly or
+indirectly, are also just relation-valued.
 
 A I<relation type> is, by definition, any type consisting of just relation
 values, such that if the declared type of a unary quasi-relation attribute
 was that relation type, then every value of said unary quasi-relation would
 also be just a relation.  Likewise, a quasi-tuple type is a I<tuple type>
 if said unary quasi-relation could have said tuple type as its attribute's
-declared type and be a relation type.
+declared type and be a relation type.  A I<scalar type> is a I<quasi-scalar
+type> whose values are all scalar values.
 
-A I<scalar type> is not defined that way, though, since a relation type can
-validly have an attribute whose declared type is a union of very
-differently constructed scalar root types.  Instead we distinguish I<scalar
-type> as whether, within each individual scalar root type, it has a root
-possrep that can map to a tuple type.  Technically the internals of scalar
-types aren't really part of the relational model, which treats scalars as
-atomic, but this is how Muldis D is defining the distinction from another
-quasi-scalar type.
+And so, the 8 system-defined enumeration types [C<Tuple>, C<Database>,
+C<Relation>, C<Set>, C<Maybe>, C<Single> C<Array>, C<Bag>] are actually not
+nonscalar types like their namesakes at all, but they are all
+quasi-nonscalar types; no scalar or nonscalar types could use those as
+declared types of any attributes.
 
 The distinction between non-quasi types and other quasi-types is very
 important to make, because only non-quasi types can be interpreted
@@ -1008,16 +1018,14 @@ But this exception is just an artifact of Muldis D having exclusively named
 parameters plus N-ary by default where possible, and the actual join
 operation is still relational model abiding.
 
-=head2 Remnant Types
-
-Generally speaking, a remnant type is what results when one defines a union
-type over 2 other types whose values are mutually incompatible for use in
-the same relation attribute, such as 2 q/relation types with different
-degrees or attribute names.  Generally speaking, a remnant type is the
-declared type of each attribute of a general quasi-nonscalar type, when
-said attribute isn't one of the special system-defined maximal types.  A
-remnant type also results from defining a negation type over a non-remnant
-type.
+Sometimes this documentation may use the term I<complete type> or
+I<incomplete type> to refer to a quasi-nonscalar type; every complete type
+has its full list of attributes defined, and every incomplete type (or
+I<parameterized type>) doesn't.  Most system-defined quasi-nonscalar types
+are complete; the only ones that aren't are the various maximal types
+C<(|Q)(Tuple|Relation)> and C<Database>, and none of those define any
+attributes at all.  (All quasi-nonscalar values have a full list of
+attributes defined, of course.)
 
 =head2 Finite Types and Infinite Types
 
@@ -1042,9 +1050,9 @@ range (for example, a type comprising the range of integers between 1 and
 granularity of 0.001, or any IEEE floating point number of a specific bit
 length), or their values are length-constrained strings of
 finite-cardinality elements (for example, a character string that is not
-longer than 250 characters), or they are composite scalar or nonscalar or
-quasi-nonscalar types whose attributes are all of finite types themselves
-(for example, a type whose attributes are all C<Bool>).
+longer than 250 characters), or they are composite q/scalar or q/nonscalar
+types whose attributes are all of finite types themselves (for example, a
+type whose attributes are all C<Bool>).
 
 Generally speaking, all infinite types are defined either as being some
 open-ended natural domain (for example, the type having all integers, or
@@ -1052,24 +1060,23 @@ the type having all prime numbers), or they are some continuous domain,
 whether open-ended or not (for example, the type having all real or complex
 numbers between 1 and 100), or they are non-length-constrained strings (for
 example, the set of all possible text strings), or they are composite
-scalar or nonscalar or quasi-nonscalar types which have at least one
-attribute which is itself infinite (for example, a type that has an I<Int>
-attribute).
+q/scalar or q/nonscalar types which have at least one attribute which is
+itself infinite (for example, a type that has an I<Int> attribute).
 
 The system-defined root type C<Bool> is finite (2 values), as is the
-C<Empty> type (zero values), while all of the other 5 most important
-system-defined root types (C<Int>, C<Blob>, C<Text>, C<Tuple>, C<Relation>)
-are infinite, as are the C<Universal>, C<Scalar>, C<QScalar>,
-C<QTuple>, C<QRelation>, C<Remnant> types.
+C<Empty> type (zero values), while all of the other important
+system-defined root types (C<Int>, C<String>, C<Blob>, C<Text>, C<QTuple>,
+C<QRelation>, etc) are infinite, as are the C<Universal>, C<QScalar>,
+C<Reference>, C<Remnant> types.
 
 All proper subtypes of finite types are themselves finite types.  Proper
 subtypes of infinite types can be either finite or infinite depending on
 how they are defined.  For example, a subtype of C<Int> whose numbers are
 all simply greater than 10 is infinite, but a subtype whose numbers are
 additionally all less than 1000 is finite.  I<The documentation for
-individual system-defined data types, further below, specifies whether each
-of which is finite or infinite, and in the latter case, it states a most
-generic means to specify a finite subtype.>
+individual system-defined data types specifies whether each of which is
+finite or infinite, and in the latter case, it states a most generic means
+to specify a finite subtype.>
 
 Note that, while it is not mandated by the language, some Muldis D
 implementations may legitimately choose to impose restrictions on their

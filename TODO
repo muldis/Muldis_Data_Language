@@ -37,7 +37,8 @@ In other words, support what is common with the likes of Postgres and MySQL
 where one can just set the "current database|schema" and then subsequent
 entity references by statements don't have to be qualified with said.
 
-* Reorganize the Tiny dialects docs so that plain-text-Tiny now has most of
+* IN PROGRESS ...
+Reorganize the Tiny dialects docs so that plain-text-Tiny now has most of
 the detail info and is standalone, and hosted-data-Perl-Tiny is just
 defined as being the same as the former but for specified format
 differences.
@@ -73,18 +74,117 @@ types/routines; also keywords for declaring whole packages or something.
 Also consider that some pragmas can go away, their actions made always-on
 or 'lexical'.
 
-* Overhaul docs again concerning interaction of quasi-types and the
-complete vs incomplete type definitions and prim vs struc vs enum etc.
-
-* Overhaul the system catalog, as well as the system-defined operators, so
+* IN PROGRESS ...
+Overhaul the system catalog, as well as the system-defined operators, so
 one can easily define incomplete types / type generators, and can easily
-define the Relation union type over the QRelation union type.
+define the Relation union type over the QRelation union type.  See also
+'roles' below, which may take over for incomplete types.
 
-* Add nonscalar value routines like: has_attr(:topic(QT/QR), :name(Name)),
+* UP NEXT ...
+Add nonscalar value routines like: has_attr(:topic(QT/QR), :name(Name)),
 has_attrs, attr_list(:topic(QT/QR)) ... these complement degree(); add
 scalar value routines like above and has_possrep() etc ...; add type
 introspection routines like: is_incomplete() or is_quasi() etc; add type
 intro rtns like: is_primitive|structure|reference|enumerated etc
+
+* Consider adding a direct analogy to Perl 6 "roles", whose primary purpose
+is to help with managing software reuse, mainly when multiple types have a
+number of attributes in common, a role can define these and then the
+multiple types can compose that role.  This concept should be workable with
+both InnerScalarType and InnerNonscalarType.  A role can compose other
+roles.  A role or type that composes a role can both add additional
+attributes of its own to what the role defines, and the composer can add
+extra constraints over the composed attributes like forcing a subtype.  Now
+on one hand we could make a role a distinct concept, which by itself can't
+be instantiated as a type, or we could reuse the above 2 (IST/INT) type
+definition facilities and say an existing such type can be composed into
+another.  Now that latter case would in a manner of speaking give Muldis D
+the advantages of other OO languages or SQL that work using "specialization
+by extension" except that composing an existing type in this way will
+actually, for a q/scalar base, create a disjoint type not a subtype, so we
+get the code reuse but Muldis D is still specialization by constraint.  On
+the other hand, if we just declare roles as roles that can't be
+instantiated themselves, then declaring a role could also serve to declare
+a quasi- union type name that can be referred to in type constraint
+definitions, that union type implicitly ranging over all actual types that
+compose it, and so in this case the composers actually are subtypes; the
+problem with this is, what to do about a default value for said union type
+whose role isn't composed into anything ... maybe each one needs an
+implicit DVPT subtype?  But maybe by TTM terms, what a role actually is is
+a dummy type of sorts, where you declare the union name before what it
+unions, and the regular types it unions declare themselves part of the
+union rather than the other way around.  In any event, a composed role
+would never appear in a value's MST or root type list, same as any type
+declared as a union.  I should look at TTM and see if they intended for
+dummy types to fulfil a role such as this.  Except all directly declared
+subtypes of a role union are always disjoint, for q/scalar ones anyway; the
+role is defin shorthand.
+
+* IN PROGRESS ...
+A Muldis D host|peer language can probably hold lexical-to-them variables
+whose Muldis D value object is Reference typed, and so they could
+effectively pass around an anonymous Muldis D FuncRef etc like a closure of
+their own language.  Such a value object would be a black box to the host
+and can't be dumped to Muldis D source code.
+
+* IN PROGRESS ...
+Fully support direct interaction with other languages, mainly either peer
+Parrot-hosted languages or each host language of the Muldis D
+implementation.  Expand the definition of the "reference" main type
+category (or if we need to, create a 5th similarly themed main category) so
+that it is home to all foreign-managed values, which to Muldis D are simply
+black boxes that Muldis D can pass around routines, store in transient
+variables, and use as attributes of quasi-tuples or quasi-relations.  These
+of course can not be stored in a Muldis D depot/database, but they can be
+kept in transiant values of Muldis D collection types which are held in
+lexical variables by the peer or host language; that language is then
+really just using Muldis D as a library of relational functions to organize
+and transform its own data.  We also need to add a top level namespace by
+which we can reference or invoke the opaque-to-us data types and routines
+of the peer or host language.  This can not go under sys.imp or
+sys.anything because these are supposed to represent user-defined types and
+routines, which in a dynamic peer language can appear or disappear or
+change at a moment's notice, same as in Muldis D; on the other hand, types
+or routines built-in to the peer/host language that we can assume are as
+static as sys.std, could go under sys.imp or something.  This also doesn't
+go under fed etc since fed is reserved for data under Muldis D control and
+only ever contains pure s/t/r types.  Presumably this namespace will be
+subdivided by language analagously to sys.imp or whatever syntax Perl 6
+provides for calling out into foreign languages co-hosted on Parrot.  Since
+all foreign values are treated as black boxes by Muldis D, it is assumed
+that the Muldis D implementation's bindings to the peer/host language will
+be providing something akin to a simple pointer value, and that it would
+provide the means to know what foreign values are mutually distinct or
+implement is_identical for them.  One thing for certain is that every
+foreign value is disjoint from every Muldis D value, and by default every
+foreign value is mutually distinct from every other foreign too, unless
+identity is overloaded by the foreign, like how Perl 6's .WHICH works.
+The foreign-access namespace may have a simple catalog variable
+representing what types and routines it is exposing, but to Muldis D this
+would be we_may_update=false.  It stands to reason that Muldis D's standard
+FuncRef etc can point to the name of a foreign routine as much as a native.
+TODO:  Figure out how to declare a Muldis D quasi- type whose attributes
+are declared of some foreign type ... or maybe we can't and all such
+attributes would simply be declared Universal all the time, might be enuf.
+
+* IN PROGRESS ...
+First round to above:  Add system-defined subtype of Reference called
+sys.std.Core.Type.ForeignValue (itself 'special' like FuncRef etc), the new
+one being a root type, and then we simply say that all values passed in
+from a host or peer language are of that root type, period; this new one is
+declared in Types.pod probably maybe I guess.  Then update Perl5_Tiny and
+Perl6_Tiny to add a new PHMD node kind 'ForeignValue' which takes any Perl
+value or object as its payload; this is treated completely as a black box
+in general within the Muldis D implementation.  For matters of identity
+within the Muldis D envirnment, it works as follows:  Under Perl 6, the
+Perl value's .WHICH result determines its identity.  Under Perl 5, if the
+value is a Perl ref ('ref $obj' returns true) then its memory address is
+used, and this applies to all objects also (since all refs are mutable,
+this seems to be the safest bet); otherwise ('ref $obj' is false) then the
+value's result in a string context, "$obj", is used as the identity; the
+mem addr and stringification would both be prefixed with some constant to
+distinguish the 2 that might stringify the same.  By default, a
+ForeignValue supports no operators but is/not_identical.
 
 * Add catalog types that represent thrown exceptions.
 

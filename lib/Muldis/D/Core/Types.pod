@@ -77,6 +77,7 @@ relationships:
         # The following are all reference types.
 
         sys.std.Core.Type.Reference
+            sys.std.Core.Type.External
 
         # The following are all remnant types.
 
@@ -319,29 +320,14 @@ to ordering, possibly the standard Unicode Collation Algorithm (UCA) also
 works this way, assuming it is totally ordered, but that's unsure.  I<TODO:
 Support customization parameters for default text sorting.>
 
-=head1 SYSTEM-DEFINED CORE QUASI-/NONSCALAR PARAMETERIZED DATA TYPES
+=head1 SYSTEM-DEFINED CORE QUASI-/NONSCALAR DATA TYPES
 
-These are only called q/nonscalar data types in a loose sense, because by
-themselves they are incomplete type definitions.  Actual q/nonscalar data
-type definitions are derived from these by supplying the balance of the
-type definitions, such as what their attributes are and/or what their
-attribute types are.  Associated with these incomplete type definitions are
-a set of system-defined routines that can be applied to values of any
-actual q/nonscalar types derived from them; such are called I<generic
-(|quasi-)nonscalar operators>.  In the Muldis D type system, these
-incomplete q/nonscalar types are defined as union types over all actual
-types derived from them, and are proper supertypes of said.
-
-Some actual nonscalar data types are system-defined, for use in defining
-the Muldis D system catalog / meta-model (see further below in the current
-document), and some other q/nonscalar types are system-defined for
-convenience since they are the types of many core operators (see further
-below in the current document), but all other actual q/nonscalar data types
-are user-defined.  Users can also define their own incomplete q/nonscalar
-data types that are q/tuple or q/relation types I<(or eventually so?)>.
-
-As exceptions to the above 2 paragraphs, the C<Nothing> type and the 2
-C<D0> types are actually complete types, despite being listed here.
+These core q/nonscalar data types permit transparent/user-visible
+compositions of multiple values into other conceptual values.  For all
+q/nonscalar types, their cardinality is mainly or wholly dependent on the
+data types they are composed of.  Almost all of these types are
+quasi-nonscalar types; only the C<Nothing> type and the 2 C<D0> types are
+non-quasi nonscalar types.
 
 =head2 sys.std.Core.Type.QTuple
 
@@ -439,9 +425,9 @@ any declared type.  A C<QSet> subtype is normally used by any
 system-defined N-ary operators where the order of their argument elements
 or result is not significant, and that duplicate values are not
 significant.  Its default value has zero q/tuples.  Note that, for any
-given I<complete> C<QSet> subtype, C<Foo>, where its C<value> attribute has
-a declared type of C<Bar>, the type C<Foo> can be considered the I<power
-set> of the type C<Bar>.
+given C<QSet> subtype, C<Foo>, where its C<value> attribute has a declared
+type of C<Bar>, the type C<Foo> can be considered the I<power set> of the
+type C<Bar>.
 
 =head2 sys.std.Core.Type.Set
 
@@ -530,15 +516,22 @@ C<QBag> and C<Relation>.  Its cardinality is infinite.
 
 =head1 SYSTEM-DEFINED REFERENCE TYPES
 
-This core data type is just for grouping all the system-defined root
-reference data types.
+These are the core reference data types.
 
 =head2 sys.std.Core.Type.Reference
 
 This is an enumeration data type.  The C<Reference> type is the maximal
-type of all Muldis D reference types (which are all system-defined).  Its
-default value is a reference to the C<sys.std.Core.Type.Bool> data type by
-way of its C<TypeRef> subtype.  The cardinality of this type is 4.
+type of all Muldis D reference types.  Its default value is a reference to
+the C<sys.std.Core.Type.Bool> data type by way of its C<TypeRef> subtype.
+The cardinality of this type is infinity.
+
+=head2 sys.std.Core.Type.External
+
+This is a reference data type.  An C<External> is a reference within the
+Muldis D virtual machine to a value managed not by the Muldis D
+implementation but rather by a peer or host language in the wider program
+that includes the VM.  All C<External> values are treated as black boxes by
+Muldis D itself.  The default value of this type is implementation-defined.
 
 =head1 SYSTEM-DEFINED REMNANT TYPES
 
