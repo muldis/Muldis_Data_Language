@@ -87,6 +87,7 @@ more or less:
 
                     sys.std.Core.Type.Cat.System
                     sys.std.Core.Type.Cat.MountControlCat
+                    sys.std.Core.Type.Cat.TopicNSControlCat
                     sys.std.Core.Type.Cat.Federation
                     sys.std.Core.Type.Cat.Depot
                     sys.std.Core.Type.Cat.Package
@@ -645,6 +646,47 @@ prevents changing some attributes of a depot mount control once set.  Note
 that the 3 attributes [C<is_temporary>, C<create_on_mount>,
 C<delete_on_unmount>] may be merged into a single enumerated-typed
 attribute or otherwise be reorganized.
+
+=head1 TYPES FOR DEFINING TOPIC NAMESPACE CONTROLS
+
+These are all enumeration data types.
+
+=head2 sys.std.Core.Type.Cat.TopicNSControlCat
+
+A C<TopicNSControlCat> is a C<Database>.  It specifies the control
+interface for what depot|subdepot|package is the current topic for DBMS
+entity referencing code.  The system catalog variable named C<tpc.cat> is
+of the C<TopicNSControlCat> type.
+
+A C<TopicNSControlCat> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<single_of.Comment>
+
+This is an optional programmer comment about the topic namespace control
+catalog as a whole.
+
+=item C<topic_depot> - C<maybe_of.Name>
+
+This specifies a topic depot for the DBMS if it is a C<Single>; if it is
+C<Nothing>, then the DBMS has no topic depot.
+
+=item C<topic_subdepot> - C<maybe_of.DeclNameChain>
+
+This specifies a topic subdepot for the DBMS within a specified
+C<topic_depot> if it is a C<Single>; if it is C<Nothing>, then the DBMS has
+no topic subdepot.
+
+=item C<topic_package> - C<maybe_of.Name>
+
+This specifies a topic package for the DBMS within a specified
+C<topic_subdepot> if it is a C<Single>; if it is C<Nothing>, then the DBMS
+has no topic package.
+
+=back
+
+The default value of C<TopicNSControlCat> has all-C<Nothing> attributes.
 
 =head1 TYPES FOR DEFINING FEDERATIONS
 

@@ -2193,6 +2193,11 @@ This is the hierarchy of invocation namespaces of DBMS entities:
                     sys.imp.<auth-or-impl-name>(.<sys-nsp>){0,}.<routine>
     mnt  # controls for mapping external storage devices etc with depots
         mnt.cat  # updateable sys cat controlling what depot mounts exist
+    tpc  # time-varying opt user-def aliases for fed.* invoc namespaces
+        tpc.cat  # upd sys cat db desc ent under tpc.(dep|sdp|pkg)
+        tpc.(dep|sdp|pkg)
+            tpc.(dep|sdp|pkg).(cat|lib|data)
+                # and so on like under dep|sdp|pkg top-levels
     fed  # the transac-synced federation of curr mounted depots w mount nms
         fed.cat  # updateable sys cat db desc entities under fed.(lib|data)
         fed.lib  # invokable user-def types and routines in this federation
@@ -2575,6 +2580,37 @@ case, if any subdepot or package wants to have a self-local dbvar, then all
 of its direct ancestor namespaces must have one too, because a subdepot or
 package dbvar is always a pseudo-variable defined as an attribute of its
 parent depot or subdepot, recursively.
+
+=head2 Time-Varying Topic Namespaces
+
+Frequently, some Muldis D code will want to reference the same user-defined
+DBMS entity namespace multiple times, say a specific depot for example, but
+because the code itself does not live in said depot, it can not use the
+C<dep.> reference syntax as a short-hand over the longer C<fed.> reference
+syntax.  In particular this affects any C<bootloader> code, or any code
+that needs certain kinds of portability such as when dumping the contents
+of one depot as code and wanting to run that code to load a
+different-mount-named depot.
+
+The C<tpc> primary namespace exists to bring the benefits of the
+C<dep|sdp|pkg> namespaces to referencing code living outside the same
+depot|subdepot|package as the referenced entity.  For example, while the
+DBMS-global C<tpc.cat.topic_depot> catalog variable is valued with the name
+of the depot C<mydb>, any code that references C<topic.dep.lib.myfunc> will
+have the same effective meaning as if it had said C<fed.lib.mydb.myfunc>,
+or as if any such code living in C<mydb> had said C<dep.lib.myfunc>.
+Similarly, the catalog variables C<tpc.cat.topic_subdepot> and
+C<tpc.cat.topic_package> exist.  While C<tpc.cat.topic_depot> etc is not
+valued (that is, it is C<Nothing>), referencing C<tpc.dep> etc will fail.
+
+This "topic depot|subdepot|package" feature is analagous to the "current
+database|schema" etc global/session/etc variables of SQL DBMSs, where you
+can just refer to unqualified names of user-defined variables or routines
+and the topic namespace is used to qualify them by default.  Or the feature
+is like how typical general purpose languages work, for example with Perl 5
+where you can say "package Foo;" and then subsequent unqualified subroutine
+etc declarations will install into the Foo namespace, until another
+"package ..." is encountered.
 
 =head2 Referencing Data Types
 
