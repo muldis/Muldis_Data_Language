@@ -283,7 +283,7 @@ Darren Duncan (C<perl@DarrenDuncan.net>)
 
 This file is part of the formal specification of the Muldis D language.
 
-Muldis D is Copyright © 2002-2008, Darren Duncan.  All rights reserved.
+Muldis D is Copyright © 2002-2009, Darren Duncan.  All rights reserved.
 
 Muldis D is free documentation for software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License (GPL) as
