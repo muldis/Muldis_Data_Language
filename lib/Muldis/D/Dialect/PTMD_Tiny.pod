@@ -138,11 +138,17 @@ Grammar:
 
 Examples:
 
+    Muldis_D:'http://muldis.com':'1.2.3':PTMD_Tiny:{}
+
+    Muldis_D:'http://muldis.com':'1.2.3':PTMD_Tiny:{
+        auto_add_attrs          => Bool:true,
+        auto_unabbrev_std_names => Bool:true,
+        auto_chains_from_names  => Bool:true
+    }
+
 =head1 VALUE LITERAL COMMON ELEMENTS
 
 Grammar:
-
-Examples:
 
 =head1 SIMPLE CORE SCALAR VALUE LITERALS
 
@@ -152,11 +158,31 @@ Grammar:
 
 Examples:
 
+    Bool:true
+
 =head2 sys.std.Core.Type.Int
 
 Grammar:
 
 Examples:
+
+    Int:1;11001001
+
+    Int:7;0
+
+    Int:7;644
+
+    Int:-34
+
+    Int:42
+
+    Int:F;DEADBEEF
+
+    Int:Z;-HELLOWORLD
+
+    Int:3;301
+
+    Int:B;A09B
 
 =head2 sys.std.Core.Type.String
 
@@ -164,11 +190,21 @@ Grammar:
 
 Examples:
 
+    String:F;[50,65,72,6C]
+
 =head2 sys.std.Core.Type.Blob
 
 Grammar:
 
 Examples:
+
+    Blob:1;00101110100010
+
+    Blob:3;
+
+    Blob:F;A705E
+
+    Blob:7;523504376
 
 =head2 sys.std.Core.Type.Text
 
@@ -176,11 +212,23 @@ Grammar:
 
 Examples:
 
+    Text:'Ceres'
+
+    Text:'サンプル'
+
+    Text:''
+
+    Text:'Perl'
+
 =head2 sys.std.Core.Type.Cat.Name
 
 Grammar:
 
 Examples:
+
+    Name:login_pass
+
+    Name:'First Name'
 
 =head2 sys.std.Core.Type.Cat.NameChain
 
@@ -188,11 +236,19 @@ Grammar:
 
 Examples:
 
+    NameChain:fed.data.the_db.gene.sorted_person_name
+
+    NameChain:fed.data.the_db.stats.'samples by order'
+
 =head2 sys.std.Core.Type.Cat.DeclNameChain
 
 Grammar:
 
 Examples:
+
+    DeclNameChain:gene.sorted_person_name
+
+    DeclNameChain:stats.'samples by order'
 
 =head2 sys.std.Core.Type.Cat.Comment
 
@@ -200,11 +256,15 @@ Grammar:
 
 Examples:
 
+    Comment:'This does something.'
+
 =head2 sys.std.Core.Type.Cat.Order
 
 Grammar:
 
 Examples:
+
+    Order:same
 
 =head1 GENERIC Q/SCALAR AND Q/NONSCALAR VALUE LITERALS
 
@@ -214,11 +274,47 @@ Grammar:
 
 Examples:
 
+    Scalar:sys.std.Rational.Type.Rat:float;{
+        mantissa => Int:45207196,
+        radix    => Int:10,
+        exponent => Int:37
+    }
+
+    Scalar:sys.std.Temporal.Type.UTCDateTime:datetime;{
+        year   => Int:2003,
+        month  => Int:10,
+        day    => Int:26,
+        hour   => Int:1,
+        minute => Int:30,
+        second => Rat:0
+    }
+
+    Scalar:fed.lib.the_db.WeekDay:name;{
+        '' => Text:'monday'
+    }
+
+    Scalar:fed.lib.the_db.WeekDay:number;{
+        '' => Int:5
+    }
+
 =head2 sys.std.Core.Type.(Q|)Tuple
 
 Grammar:
 
 Examples:
+
+    Tuple:{}
+
+    Tuple:type.tuple_from.var.fed.data.the_db.account.users:{
+        login_name => Text:'hartmark',
+        login_pass => Text:'letmein',
+        is_special => Bool:true
+    }
+
+    Tuple:{
+        name => Text:'Michelle',
+        age  => Int:17
+    }
 
 =head2 sys.std.Core.Type.(Q|)Relation
 
@@ -226,11 +322,42 @@ Grammar:
 
 Examples:
 
+    Relation:{}
+
+    Relation:{ x, y, z }
+
+    Relation:{ {} }
+
+    Relation:{
+        {
+            login_name => Text:'hartmark',
+            login_pass => Text:'letmein',
+            is_special => Bool:true
+        }
+    }
+
+    Relation:fed.lib.the_db.gene.Person:[ name, age ];{
+        [ Text:'Michelle', Int:17 ]
+    }
+
 =head2 sys.std.Core.Type.(Q|)Set
 
 Grammar:
 
 Examples:
+
+    Set:fed.lib.the_db.account.Country_Names:{
+        Text:'Canada',
+        Text:'Spain',
+        Text:'Jordan',
+        Text:'Thailand'
+    }
+
+    Set:{
+        Int:3,
+        Int:16,
+        Int:85
+    }
 
 =head2 sys.std.Core.Type.Nothing
 
@@ -238,11 +365,15 @@ Grammar:
 
 Examples:
 
+    Nothing
+
 =head2 sys.std.Core.Type.(Q|)Single
 
 Grammar:
 
 Examples:
+
+    Single:{ Text:'I know this one!' }
 
 =head2 sys.std.Core.Type.(Q|)Array
 
@@ -250,11 +381,39 @@ Grammar:
 
 Examples:
 
+    Array:[
+        Text:'Alphonse',
+        Text:'Edward',
+        Text:'Winry'
+    ]
+
+    Array:fed.lib.the_db.stats.Samples_By_Order:[
+        Int:57,
+        Int:45,
+        Int:63,
+        Int:61
+    ]
+
 =head2 sys.std.Core.Type.(Q|)Bag
 
 Grammar:
 
 Examples:
+
+    Bag:fed.lib.the_db.inventory.Fruit:{
+        Text:'Apple'  => 500,
+        Text:'Orange' => 300,
+        Text:'Banana' => 400
+    }
+
+    Bag:{
+        Text:'Foo',
+        Text:'Quux',
+        Text:'Foo',
+        Text:'Bar',
+        Text:'Baz',
+        Text:'Baz'
+    }
 
 =head1 RATIONAL EXTENSION SCALAR VALUE LITERALS
 
@@ -264,11 +423,37 @@ Grammar:
 
 Examples:
 
+    Rat:1;-1.1
+
+    Rat:-1.5
+
+    Rat:3.14159
+
+    Rat:A;0.0
+
+    Rat:F;DEADBEEF.FACE
+
+    Rat:Z;0.000AZE
+
+    Rat:6;500001/1000
+
+    Rat:B;A09B/A
+
+    Rat:1;1011101101*10^-11011
+
+    Rat:45207196*10^37
+
+    Rat:1/43
+
+    Rat:314159*10^-5
+
 =head2 sys.std.Rational.Type.RatRoundMeth
 
 Grammar:
 
 Examples:
+
+    RatRoundMeth:half_up
 
 =head1 TEMPORAL EXTENSION SCALAR VALUE LITERALS
 
@@ -278,23 +463,40 @@ Grammar:
 
 Examples:
 
+    UTCInstant:[1964,10,16,16,12,47.5]
+
+    UTCInstant:[2002,12,16,,,]
+
+    UTCInstant:[,,,14,2,29]
+
+    FloatInstant:[2003,4,5,2,,]
+
+    FloatInstant:[1407,,,,,]
+
 =head2 sys.std.Temporal.Type.Duration
 
 Grammar:
 
 Examples:
 
+    Duration:[3,5,1,6,15,45.000012]
+
 =head1 BOOTLOADER
 
 Grammar:
-
-Examples:
 
 =head1 BOOTLOADER STATEMENT
 
 Grammar:
 
 Examples:
+
+    boot_stmt:sys.std.Core.Cat.create_depot_procedure:{}:{ ... }
+
+
+
+
+===================
 
 =head1 GRAMMAR OF TINY PLAIN TEXT MULDIS D
 
@@ -712,211 +914,6 @@ Examples:
     }
 
     token type_name { <name_chain_payload> }
-
-=head1 EXAMPLES
-
-The following are fragments of actual Plain Text Muldis D code.
-
-    Muldis_D:'http://muldis.com':'1.2.3':PTMD_Tiny:{}
-
-    Muldis_D:'http://muldis.com':'1.2.3':PTMD_Tiny:{
-        auto_add_attrs          => Bool:true,
-        auto_unabbrev_std_names => Bool:true,
-        auto_chains_from_names  => Bool:true
-    }
-
-    boot_stmt:sys.std.Core.Cat.create_depot_procedure:{}:{ ... }
-
-    Scalar:sys.std.Rational.Type.Rat:float;{
-        mantissa => Int:45207196,
-        radix    => Int:10,
-        exponent => Int:37
-    }
-
-    Scalar:sys.std.Temporal.Type.UTCDateTime:datetime;{
-        year   => Int:2003,
-        month  => Int:10,
-        day    => Int:26,
-        hour   => Int:1,
-        minute => Int:30,
-        second => Rat:0
-    }
-
-    Scalar:fed.lib.the_db.WeekDay:name;{
-        '' => Text:'monday'
-    }
-
-    Scalar:fed.lib.the_db.WeekDay:number;{
-        '' => Int:5
-    }
-
-    Bool:true
-
-    Int:1;11001001
-
-    Int:7;0
-
-    Int:7;644
-
-    Int:-34
-
-    Int:42
-
-    Int:F;DEADBEEF
-
-    Int:Z;-HELLOWORLD
-
-    Int:3;301
-
-    Int:B;A09B
-
-    String:F;[50,65,72,6C]
-
-    Blob:1;00101110100010
-
-    Blob:3;
-
-    Blob:F;A705E
-
-    Blob:7;523504376
-
-    Text:'Ceres'
-
-    Text:'サンプル'
-
-    Text:''
-
-    Text:'Perl'
-
-    Tuple:{}
-
-    Tuple:type.tuple_from.var.fed.data.the_db.account.users:{
-        login_name => Text:'hartmark',
-        login_pass => Text:'letmein',
-        is_special => Bool:true
-    }
-
-    Tuple:{
-        name => Text:'Michelle',
-        age  => Int:17
-    }
-
-    Relation:{}
-
-    Relation:{ x, y, z }
-
-    Relation:{ {} }
-
-    Relation:{
-        {
-            login_name => Text:'hartmark',
-            login_pass => Text:'letmein',
-            is_special => Bool:true
-        }
-    }
-
-    Relation:fed.lib.the_db.gene.Person:[ name, age ];{
-        [ Text:'Michelle', Int:17 ]
-    }
-
-    Set:fed.lib.the_db.account.Country_Names:{
-        Text:'Canada',
-        Text:'Spain',
-        Text:'Jordan',
-        Text:'Thailand'
-    }
-
-    Set:{
-        Int:3,
-        Int:16,
-        Int:85
-    }
-
-    Nothing
-
-    Single:{ Text:'I know this one!' }
-
-    Array:[
-        Text:'Alphonse',
-        Text:'Edward',
-        Text:'Winry'
-    ]
-
-    Array:fed.lib.the_db.stats.Samples_By_Order:[
-        Int:57,
-        Int:45,
-        Int:63,
-        Int:61
-    ]
-
-    Bag:fed.lib.the_db.inventory.Fruit:{
-        Text:'Apple'  => 500,
-        Text:'Orange' => 300,
-        Text:'Banana' => 400
-    }
-
-    Bag:{
-        Text:'Foo',
-        Text:'Quux',
-        Text:'Foo',
-        Text:'Bar',
-        Text:'Baz',
-        Text:'Baz'
-    }
-
-    Name:login_pass
-
-    Name:'First Name'
-
-    NameChain:fed.data.the_db.gene.sorted_person_name
-
-    NameChain:fed.data.the_db.stats.'samples by order'
-
-    DeclNameChain:gene.sorted_person_name
-
-    DeclNameChain:stats.'samples by order'
-
-    Comment:'This does something.'
-
-    Order:same
-
-    Rat:1;-1.1
-
-    Rat:-1.5
-
-    Rat:3.14159
-
-    Rat:A;0.0
-
-    Rat:F;DEADBEEF.FACE
-
-    Rat:Z;0.000AZE
-
-    Rat:6;500001/1000
-
-    Rat:B;A09B/A
-
-    Rat:1;1011101101*10^-11011
-
-    Rat:45207196*10^37
-
-    Rat:1/43
-
-    Rat:314159*10^-5
-
-    RatRoundMeth:half_up
-
-    UTCInstant:[1964,10,16,16,12,47.5]
-
-    UTCInstant:[2002,12,16,,,]
-
-    UTCInstant:[,,,14,2,29]
-
-    FloatInstant:[2003,4,5,2,,]
-
-    FloatInstant:[1407,,,,,]
-
-    Duration:[3,5,1,6,15,45.000012]
 
 =head1 MULDIS D TINY DIALECT PRAGMAS
 
