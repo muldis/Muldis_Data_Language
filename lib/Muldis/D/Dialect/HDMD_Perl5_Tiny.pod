@@ -96,12 +96,12 @@ Every PHMD node representing a Muldis D value literal has 1-3 elements:
 
 Node kind: a Perl character string of the format C<< <[ a..z A..Z 0..9 _
 ]>+ >>.  All of the PHMD node kinds for Muldis D value literals are these
-30: C<(|Q)Scalar>, C<Bool>, C<Int>, C<String>, C<Blob>, C<Text>,
-C<(|Q)Tuple>, C<(|Q)Relation>, C<(|Q)Set>, C<Nothing>, C<(|Q)Single>,
-C<(|Q)Array>, C<(|Q)Bag>, C<Name>, C<NameChain>, C<DeclNameChain>,
-C<Comment>, C<Order>, C<Rat>, C<RatRoundMeth>, C<(UTC|Float)Instant>,
-C<Duration>.  All of the non-value-literal PHMD node kinds currently
-defined are these 2: C<Muldis_D>, C<boot_stmt>.
+30: C<Bool>, C<Int>, C<String>, C<Blob>, C<Text>, C<Name>, C<NameChain>,
+C<DeclNameChain>, C<Comment>, C<Order>, C<(Q|)Scalar>, C<(Q|)Tuple>,
+C<(Q|)Relation>, C<(Q|)Set>, C<Nothing>, C<(Q|)Single>, C<(Q|)Array>,
+C<(Q|)Bag>, C<Rat>, C<RatRoundMeth>, C<(UTC|Float)Instant>, C<Duration>.
+All of the non-value-literal PHMD node kinds currently defined are these 2:
+C<Muldis_D>, C<boot_stmt>.
 
 =item *
 
@@ -110,7 +110,7 @@ C<NameChain> PHMD node.  PHMD nodes of all of the aforementioned 30
 value-specific kinds can have the 2nd type name node element except for
 these 4: C<Bool>, C<Nothing>, C<Order>, C<RatRoundMeth>; this isn't because
 those types can't be subtyped, but because in practice doing so isn't
-useful.  Furthermore, with just the C<(|Q)Scalar> kinds, having the second
+useful.  Furthermore, with just the C<(Q|)Scalar> kinds, having the second
 type name element is mandatory.  Non-value-literal PHMD nodes never have
 this type name element.
 
@@ -126,24 +126,6 @@ Generally speaking, no Perl undefined values are allowed anywhere in a PHMD
 value; you must use only defined values instead.  This documentation also
 assumes that only defined values are used, and that supplying a Perl undef
 will result in an error.  Exceptions to this are explicitly noted.
-
-=head1 BOOTLOADER
-
-A full or partial Muldis D C<bootloader> routine consists of a language
-name declaration plus a series of 0..N imperative routine calls.  A
-C<bootloader> is formatted as a PHMD node having 1..N elements, where the
-first element is a PHMD node defining a Muldis D "language name", and each
-remaining element is a PHMD node defining a "bootloader imperative routine
-call".
-
-Examples:
-
-    [
-        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_Tiny',
-            {} ],
-        [ 'boot_stmt', 'sys.std.Core.Cat.create_depot_procedure',
-            {}, { ... } ],
-    ]
 
 =head1 LANGUAGE NAME
 
@@ -194,89 +176,7 @@ be the input for a Perl Hosted Muldis D implementating virtual machine's
 configuration step, which provides a context for subsequent feeding of
 other PHMD trees to said virtual machine.
 
-=head1 BOOTLOADER STATEMENT
-
-This PHMD node specifies one statement of a Muldis D C<bootloader> routine
-which invokes an imperative routine, such statements being what the entire
-body of a C<bootloader> is composed of.  A bootloader imperative routine
-call is formatted as a PHMD node having the following 4 elements:
-
-=over
-
-=item *
-
-Node kind: the Perl character string C<boot_stmt>.
-
-=item *
-
-Imperative routine name: a Perl array ref or character string as per the
-payload of a C<NameChain> PHMD node.
-
-=item *
-
-Imperative routine subject-to-update args: a Perl hash ref as per the
-payload of a C<Tuple> PHMD node except that every hash ref is just a Perl
-array ref or character string as per the payload of a C<NameChain> PHMD
-node (each value is the name of a global variable).
-
-=item *
-
-Imperative routine read-only args: a Perl hash ref as per the
-payload of a C<Tuple> PHMD node.
-
-=back
-
-Examples
-
-    [ 'boot_stmt', 'sys.std.Core.Cat.create_depot_procedure', {}, { ... } ]
-
-=head1 CORE GENERIC SCALAR VALUES
-
-=head2 sys.std.Core.Type.Scalar
-
-This node kind represents a scalar subtype value.  This node is interpreted
-as a Muldis D C<sys.std.Core.Type.Scalar> subtype value whose declared type
-is specified by the PHMD node's (mandatory for C<Scalar>) type name element
-and whose attributes are defined by the payload.  The payload must be just
-a Perl array ref having exactly 2 elements, that are designated I<possrep
-name> and I<possrep attrs>.  The possrep name and possrep attrs must be as
-per the payload of a C<Name> and C<Tuple> PHMD node payload, respectively.
-The C<Scalar> PHMD node kind can only be used for scalar types that have at
-least 1 possrep, and the I<possrep attrs> is interpreted specifically as
-attributes of the declared type's possrep which is specified by the
-I<possrep name>.  Each key+value pair of the second payload element defines
-a named possrep attribute of the new scalar; the pair's key and value are,
-respectively, a Perl character string that specifies the possrep attribute
-name, and a PHMD node that specifies the possrep attribute value.  (Note
-that most scalar types have at least 1 possrep; the only ones that don't
-are either union types of types having possreps, or they are core
-system-defined types, and those all have their own dedicated syntax for
-literals.)
-
-Examples:
-
-    [ 'Scalar', 'sys.std.Rational.Type.Rat', [ 'float', {
-        'mantissa' => [ 'Int', 45207196 ],
-        'radix'    => [ 'Int', 10 ],
-        'exponent' => [ 'Int', 37 ],
-    } ] ]
-
-    [ 'Scalar', 'sys.std.Temporal.Type.UTCDateTime', [ 'datetime', {
-        'year'   => [ 'Int', 2003 ],
-        'month'  => [ 'Int', 10 ],
-        'day'    => [ 'Int', 26 ],
-        'hour'   => [ 'Int', 1 ],
-        'minute' => [ 'Int', 30 ],
-        'second' => [ 'Rat', 0 ],
-    } ] ]
-
-    [ 'Scalar', 'fed.lib.the_db.WeekDay', [ 'name', {
-        '' => [ 'Text', 'monday' ],
-    } ] ]
-
-    [ 'Scalar', 'fed.lib.the_db.WeekDay', [ 'number', {
-        '' => [ 'Int', 5 ],
-    } ] ]
+=head1 SIMPLE CORE SCALAR VALUE LITERALS
 
 =head2 sys.std.Core.Type.Bool
 
@@ -453,241 +353,6 @@ Examples:
 
     [ 'Text', 'Perl' ]
 
-=head1 CORE GENERIC NONSCALAR VALUES
-
-=head2 sys.std.Core.Type.Tuple
-
-This node kind represents a tuple value.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.Tuple> value whose attributes are defined by
-the payload.  The payload must be just a Perl hash ref.  Each key+value
-pair of the payload defines a named attribute of the new tuple; the pair's
-key and value are, respectively, a Perl character string that specifies the
-attribute name, and a PHMD node that specifies the attribute value.
-
-Examples:
-
-    [ 'Tuple', {} ]
-
-    [ 'Tuple', 'type.tuple_from.var.fed.data.the_db.account.users', {
-        'login_name' => [ 'Text', 'hartmark' ],
-        'login_pass' => [ 'Text', 'letmein' ],
-        'is_special' => [ 'Bool', 'true' ],
-    } ]
-
-    [ 'Tuple', {
-        'name' => [ 'Text', 'Michelle' ],
-        'age'  => [ 'Int', 17 ],
-    } ]
-
-=head2 sys.std.Core.Type.Relation
-
-This node kind represents a relation value.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.Relation> value whose attributes and tuples
-are defined by the payload.  The payload is interpreted as follows:
-
-=over
-
-=item *
-
-Iff the payload is a Perl array ref with zero elements, then it defines the
-only relation value having zero attributes and zero tuples.
-
-=item *
-
-Iff the payload is a Perl array ref with at least one element, and every
-element is a Perl character string (as per a valid payload for a C<Name>
-PHMD node), then it defines the attribute names of a relation having zero
-tuples.
-
-=item *
-
-Iff the payload is a Perl array ref with at least one element, and every
-element is a Perl hash ref (as per a valid payload for a C<Tuple> PHMD
-node), then each element of the payload defines a tuple of the new
-relation; every tuple-defining element of the payload must be of the same
-degree and have the same attribute names as its sibling elements; these are
-the degree and attribute names of the relation as a whole, which is its
-heading for the current purposes.
-
-=item *
-
-Iff the payload is a Perl array ref with exactly 2 elements, each of which
-is a Perl array ref, then:  The new relation value's attribute names are
-defined by the payload's first element, which is a Perl array ref of
-character string (each as per a C<Name> node payload), and the relation
-body's tuples' attribute values are defined by the payload's second
-element, which is a Perl array ref of Perl array ref of tuple attribute
-value defining PHMD nodes.  This format is meant to be the most compact of
-the generic relation payload formats, as the attribute names only appear
-once for the relation rather than repeating for each tuple.  As a
-trade-off, the attribute values per tuple from the payload second element
-must appear in the same order as their corresponding attribute names appear
-in the payload first element, as the names and values in the relation
-literal are matched up by ordinal position here.
-
-=back
-
-Examples:
-
-    [ 'Relation', [] ]  # zero attrs + zero tuples
-
-    [ 'Relation', [ 'x', 'y', 'z' ] ]  # 3 attrs + zero tuples
-
-    [ 'Relation', [ {} ] ]  # zero attrs + 1 tuple
-
-    [ 'Relation', [
-        {
-            'login_name' => [ 'Text', 'hartmark' ],
-            'login_pass' => [ 'Text', 'letmein' ],
-            'is_special' => [ 'Bool', 'true' ],
-        },
-    ] ]  # 3 attrs + 1 tuple
-
-    [ 'Relation', 'fed.lib.the_db.gene.Person', [ [ 'name', 'age' ], [
-        [ [ 'Text', 'Michelle' ], [ 'Int', 17 ] ],
-    ] ] ]  # 2 attrs + 1 tuple
-
-=head2 sys.std.Core.Type.Set
-
-This node kind represents a set value.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.Set> value whose elements are defined by the
-payload.  The payload must be just a Perl array ref.  Each element of the
-payload defines a unary tuple of the new set; each element is a PHMD node
-that defines the C<value> attribute of the tuple.
-
-Examples:
-
-    [ 'Set', 'fed.lib.the_db.account.Country_Names', [
-        [ 'Text', 'Canada' ],
-        [ 'Text', 'Spain' ],
-        [ 'Text', 'Jordan' ],
-        [ 'Text', 'Thailand' ],
-    ] ]
-
-    [ 'Set', [
-        [ 'Int', 3 ],
-        [ 'Int', 16 ],
-        [ 'Int', 85 ],
-    ] ]
-
-=head2 sys.std.Core.Type.Nothing
-
-This node kind represents a 'nothing' value; it is interpreted as a Muldis
-D C<sys.std.Core.Type.Nothing>.  It has 1 element, which is the Perl
-character string C<Nothing>.
-
-Examples:
-
-    [ 'Nothing' ]
-
-=head2 sys.std.Core.Type.Single
-
-This node kind represents a 'single' value.  Its payload is a PHMD node
-that defines a single scalar or nonscalar value.  This node is interpreted
-as a Muldis D C<sys.std.Core.Type.Single> value whose element is defined by
-the payload.  The payload is a PHMD node that defines the C<value>
-attribute of the single tuple of the new 'single'.
-
-Examples:
-
-    [ 'Single', [ 'Text', 'I know this one!' ] ]
-
-=head2 sys.std.Core.Type.Array
-
-This node kind represents a sequence value.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.Array> value whose elements are defined by the
-payload.  The payload must be just a Perl array ref.  Each element of the
-payload defines a binary tuple of the new sequence; the element value is a
-PHMD node that defines the C<value> attribute of the tuple, and the element
-index is used as the C<index> attribute of the tuple.
-
-Examples:
-
-    [ 'Array', [
-        [ 'Text', 'Alphonse' ],
-        [ 'Text', 'Edward' ],
-        [ 'Text', 'Winry' ],
-    ] ]
-
-    [ 'Array', 'fed.lib.the_db.stats.Samples_By_Order', [
-        [ 'Int', 57 ],
-        [ 'Int', 45 ],
-        [ 'Int', 63 ],
-        [ 'Int', 61 ],
-    ] ]
-
-=head2 sys.std.Core.Type.Bag
-
-This node kind represents a bag value.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.Bag> value whose elements are defined by the
-payload.  The payload is interpreted as follows:
-
-=over
-
-=item *
-
-Iff the payload is a Perl array ref with zero elements, then it defines the
-only bag value having zero elements.  Iff the payload is an array ref with
-at least one element, then every one of the payload elements must be itself
-a Perl array ref.
-
-=item *
-
-Iff the payload is an array ref with at least one (array ref) element, and
-the first element of that element I<is> itself an array ref, then the
-payload is interpreted as being of the I<array counted values> bag format.
-Each element of the payload defines a binary tuple of the new bag; the
-element is a 2-element array ref, and those 2 elements, by index order, are
-a PHMD node that defines the C<value> attribute of the tuple, and a valid
-C<Int> PHMD node payload that defines the C<count> attribute of the tuple;
-the count must be a positive integer.
-
-=item *
-
-Iff the payload is an array ref with at least one (array ref) element, and
-the first element of that element I<is not> itself an array ref, then the
-payload is interpreted as being of the I<array repeated values> bag format.
-Each element of the payload contributes to a binary tuple of the new bag;
-the element value is a PHMD node that defines the C<value> attribute of the
-tuple.  The bag has 1 tuple for every distinct (after format normalization)
-element value in the payload, and the C<count> attribute of that tuple says
-how many instances of said element were in the payload.
-
-=back
-
-Examples:
-
-    [ 'Bag', 'fed.lib.the_db.inventory.Fruit', [
-        [ [ 'Text', 'Apple'  ], 500 ],
-        [ [ 'Text', 'Orange' ], 300 ],
-        [ [ 'Text', 'Banana' ], 400 ],
-    ] ]
-
-    [ 'Bag', [
-        [ 'Text', 'Foo' ],
-        [ 'Text', 'Quux' ],
-        [ 'Text', 'Foo' ],
-        [ 'Text', 'Bar' ],
-        [ 'Text', 'Baz' ],
-        [ 'Text', 'Baz' ],
-    ] ]
-
-=head1 QUASI- VALUES
-
-Every PHMD node kind for a generic scalar or nonscalar literal has a
-corresponding extra PHMD node kind for a quasi- literal.  The corresponding
-extra quasi- node kinds are exactly the same in format to the non-quasi
-types but that for each one of them, the value of its first element has the
-Perl character string C<Q> prepended.  So PHMD nodes whose first elements
-each are [C<QScalar>, C<QTuple>, C<QRelation>, C<QSet>, C<QSingle>,
-C<QArray>, C<QBag>] are interpreted as Muldis D
-[C<sys.std.Core.Type.QScalar>, C<sys.std.Core.Type.QTuple>,
-C<sys.std.Core.Type.QRelation>, C<sys.std.Core.Type.QSet>,
-C<sys.std.Core.Type.QSingle>, C<sys.std.Core.Type.QArray>,
-C<sys.std.Core.Type.QBag>] values, respectively.
-
-=head1 CATALOG SCALAR VALUES
-
 =head2 sys.std.Core.Type.Cat.Name
 
 This node kind represents a canonical short name for any kind of DBMS
@@ -799,7 +464,272 @@ Examples:
 
     [ 'Order', (2 <=> 1) ]
 
-=head1 RATIONAL EXTENSION SCALAR VALUES
+=head1 GENERIC Q/SCALAR AND Q/NONSCALAR VALUE LITERALS
+
+=head2 sys.std.Core.Type.(Q|)Scalar
+
+This node kind represents a scalar subtype value.  This node is interpreted
+as a Muldis D C<sys.std.Core.Type.(Q|)Scalar> subtype value whose declared
+type is specified by the PHMD node's (mandatory for C<(Q|)Scalar>) type
+name element and whose attributes are defined by the payload.  The payload
+must be just a Perl array ref having exactly 2 elements, that are
+designated I<possrep name> and I<possrep attrs>.  The possrep name and
+possrep attrs must be as per the payload of a C<Name> and C<Tuple> PHMD
+node payload, respectively.  The C<Scalar> PHMD node kind can only be used
+for scalar types that have at least 1 possrep, and the I<possrep attrs> is
+interpreted specifically as attributes of the declared type's possrep which
+is specified by the I<possrep name>.  Each key+value pair of the second
+payload element defines a named possrep attribute of the new scalar; the
+pair's key and value are, respectively, a Perl character string that
+specifies the possrep attribute name, and a PHMD node that specifies the
+possrep attribute value.  (Note that most scalar types have at least 1
+possrep; the only ones that don't are either union types of types having
+possreps, or they are core system-defined types, and those all have their
+own dedicated syntax for literals.)
+
+Examples:
+
+    [ 'Scalar', 'sys.std.Rational.Type.Rat', [ 'float', {
+        'mantissa' => [ 'Int', 45207196 ],
+        'radix'    => [ 'Int', 10 ],
+        'exponent' => [ 'Int', 37 ],
+    } ] ]
+
+    [ 'Scalar', 'sys.std.Temporal.Type.UTCDateTime', [ 'datetime', {
+        'year'   => [ 'Int', 2003 ],
+        'month'  => [ 'Int', 10 ],
+        'day'    => [ 'Int', 26 ],
+        'hour'   => [ 'Int', 1 ],
+        'minute' => [ 'Int', 30 ],
+        'second' => [ 'Rat', 0 ],
+    } ] ]
+
+    [ 'Scalar', 'fed.lib.the_db.WeekDay', [ 'name', {
+        '' => [ 'Text', 'monday' ],
+    } ] ]
+
+    [ 'Scalar', 'fed.lib.the_db.WeekDay', [ 'number', {
+        '' => [ 'Int', 5 ],
+    } ] ]
+
+=head2 sys.std.Core.Type.(Q|)Tuple
+
+This node kind represents a tuple value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.(Q|)Tuple> value whose attributes are defined
+by the payload.  The payload must be just a Perl hash ref.  Each key+value
+pair of the payload defines a named attribute of the new tuple; the pair's
+key and value are, respectively, a Perl character string that specifies the
+attribute name, and a PHMD node that specifies the attribute value.
+
+Examples:
+
+    [ 'Tuple', {} ]
+
+    [ 'Tuple', 'type.tuple_from.var.fed.data.the_db.account.users', {
+        'login_name' => [ 'Text', 'hartmark' ],
+        'login_pass' => [ 'Text', 'letmein' ],
+        'is_special' => [ 'Bool', 'true' ],
+    } ]
+
+    [ 'Tuple', {
+        'name' => [ 'Text', 'Michelle' ],
+        'age'  => [ 'Int', 17 ],
+    } ]
+
+=head2 sys.std.Core.Type.(Q|)Relation
+
+This node kind represents a relation value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.(Q|)Relation> value whose attributes and
+tuples are defined by the payload.  The payload is interpreted as follows:
+
+=over
+
+=item *
+
+Iff the payload is a Perl array ref with zero elements, then it defines the
+only relation value having zero attributes and zero tuples.
+
+=item *
+
+Iff the payload is a Perl array ref with at least one element, and every
+element is a Perl character string (as per a valid payload for a C<Name>
+PHMD node), then it defines the attribute names of a relation having zero
+tuples.
+
+=item *
+
+Iff the payload is a Perl array ref with at least one element, and every
+element is a Perl hash ref (as per a valid payload for a C<Tuple> PHMD
+node), then each element of the payload defines a tuple of the new
+relation; every tuple-defining element of the payload must be of the same
+degree and have the same attribute names as its sibling elements; these are
+the degree and attribute names of the relation as a whole, which is its
+heading for the current purposes.
+
+=item *
+
+Iff the payload is a Perl array ref with exactly 2 elements, each of which
+is a Perl array ref, then:  The new relation value's attribute names are
+defined by the payload's first element, which is a Perl array ref of
+character string (each as per a C<Name> node payload), and the relation
+body's tuples' attribute values are defined by the payload's second
+element, which is a Perl array ref of Perl array ref of tuple attribute
+value defining PHMD nodes.  This format is meant to be the most compact of
+the generic relation payload formats, as the attribute names only appear
+once for the relation rather than repeating for each tuple.  As a
+trade-off, the attribute values per tuple from the payload second element
+must appear in the same order as their corresponding attribute names appear
+in the payload first element, as the names and values in the relation
+literal are matched up by ordinal position here.
+
+=back
+
+Examples:
+
+    [ 'Relation', [] ]  # zero attrs + zero tuples
+
+    [ 'Relation', [ 'x', 'y', 'z' ] ]  # 3 attrs + zero tuples
+
+    [ 'Relation', [ {} ] ]  # zero attrs + 1 tuple
+
+    [ 'Relation', [
+        {
+            'login_name' => [ 'Text', 'hartmark' ],
+            'login_pass' => [ 'Text', 'letmein' ],
+            'is_special' => [ 'Bool', 'true' ],
+        },
+    ] ]  # 3 attrs + 1 tuple
+
+    [ 'Relation', 'fed.lib.the_db.gene.Person', [ [ 'name', 'age' ], [
+        [ [ 'Text', 'Michelle' ], [ 'Int', 17 ] ],
+    ] ] ]  # 2 attrs + 1 tuple
+
+=head2 sys.std.Core.Type.(Q|)Set
+
+This node kind represents a set value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.(Q|)Set> value whose elements are defined by
+the payload.  The payload must be just a Perl array ref.  Each element of
+the payload defines a unary tuple of the new set; each element is a PHMD
+node that defines the C<value> attribute of the tuple.
+
+Examples:
+
+    [ 'Set', 'fed.lib.the_db.account.Country_Names', [
+        [ 'Text', 'Canada' ],
+        [ 'Text', 'Spain' ],
+        [ 'Text', 'Jordan' ],
+        [ 'Text', 'Thailand' ],
+    ] ]
+
+    [ 'Set', [
+        [ 'Int', 3 ],
+        [ 'Int', 16 ],
+        [ 'Int', 85 ],
+    ] ]
+
+=head2 sys.std.Core.Type.Nothing
+
+This node kind represents a 'nothing' value; it is interpreted as a Muldis
+D C<sys.std.Core.Type.Nothing>.  It has 1 element, which is the Perl
+character string C<Nothing>.
+
+Examples:
+
+    [ 'Nothing' ]
+
+=head2 sys.std.Core.Type.(Q|)Single
+
+This node kind represents a 'single' value.  Its payload is a PHMD node
+that defines a single scalar or nonscalar value.  This node is interpreted
+as a Muldis D C<sys.std.Core.Type.(Q|)Single> value whose element is
+defined by the payload.  The payload is a PHMD node that defines the
+C<value> attribute of the single tuple of the new 'single'.
+
+Examples:
+
+    [ 'Single', [ 'Text', 'I know this one!' ] ]
+
+=head2 sys.std.Core.Type.(Q|)Array
+
+This node kind represents a sequence value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.(Q|)Array> value whose elements are defined by
+the payload.  The payload must be just a Perl array ref.  Each element of
+the payload defines a binary tuple of the new sequence; the element value
+is a PHMD node that defines the C<value> attribute of the tuple, and the
+element index is used as the C<index> attribute of the tuple.
+
+Examples:
+
+    [ 'Array', [
+        [ 'Text', 'Alphonse' ],
+        [ 'Text', 'Edward' ],
+        [ 'Text', 'Winry' ],
+    ] ]
+
+    [ 'Array', 'fed.lib.the_db.stats.Samples_By_Order', [
+        [ 'Int', 57 ],
+        [ 'Int', 45 ],
+        [ 'Int', 63 ],
+        [ 'Int', 61 ],
+    ] ]
+
+=head2 sys.std.Core.Type.(Q|)Bag
+
+This node kind represents a bag value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.(Q|)Bag> value whose elements are defined by
+the payload.  The payload is interpreted as follows:
+
+=over
+
+=item *
+
+Iff the payload is a Perl array ref with zero elements, then it defines the
+only bag value having zero elements.  Iff the payload is an array ref with
+at least one element, then every one of the payload elements must be itself
+a Perl array ref.
+
+=item *
+
+Iff the payload is an array ref with at least one (array ref) element, and
+the first element of that element I<is> itself an array ref, then the
+payload is interpreted as being of the I<array counted values> bag format.
+Each element of the payload defines a binary tuple of the new bag; the
+element is a 2-element array ref, and those 2 elements, by index order, are
+a PHMD node that defines the C<value> attribute of the tuple, and a valid
+C<Int> PHMD node payload that defines the C<count> attribute of the tuple;
+the count must be a positive integer.
+
+=item *
+
+Iff the payload is an array ref with at least one (array ref) element, and
+the first element of that element I<is not> itself an array ref, then the
+payload is interpreted as being of the I<array repeated values> bag format.
+Each element of the payload contributes to a binary tuple of the new bag;
+the element value is a PHMD node that defines the C<value> attribute of the
+tuple.  The bag has 1 tuple for every distinct (after format normalization)
+element value in the payload, and the C<count> attribute of that tuple says
+how many instances of said element were in the payload.
+
+=back
+
+Examples:
+
+    [ 'Bag', 'fed.lib.the_db.inventory.Fruit', [
+        [ [ 'Text', 'Apple'  ], 500 ],
+        [ [ 'Text', 'Orange' ], 300 ],
+        [ [ 'Text', 'Banana' ], 400 ],
+    ] ]
+
+    [ 'Bag', [
+        [ 'Text', 'Foo' ],
+        [ 'Text', 'Quux' ],
+        [ 'Text', 'Foo' ],
+        [ 'Text', 'Bar' ],
+        [ 'Text', 'Baz' ],
+        [ 'Text', 'Baz' ],
+    ] ]
+
+=head1 RATIONAL EXTENSION SCALAR VALUE LITERALS
 
 =head2 sys.std.Rational.Type.Rat
 
@@ -894,13 +824,14 @@ Examples:
 
     [ 'RatRoundMeth', 'half_up' ]
 
-=head1 TEMPORAL EXTENSION SCALAR VALUES
+=head1 TEMPORAL EXTENSION SCALAR VALUE LITERALS
 
-=head2 sys.std.Temporal.Type.UTCInstant
+=head2 sys.std.Temporal.Type.(UTC|Float)Instant
 
-This node kind represents an "instant"/"datetime" value that is affiliated
-with the UTC time-zone.  This node is interpreted as a Muldis D
-C<sys.std.Temporal.Type.UTCInstant> value whose C<instant> possrep
+This node kind represents an "instant"/"datetime" value that is (affiliated
+with the UTC time-zone | "floating" / not affiliated with any time-zone).
+This node is interpreted as a Muldis D
+C<sys.std.Temporal.Type.(UTC|Float)Instant> value whose C<instant> possrep
 attribute values are defined by the payload.  The payload is interpreted as
 follows:
 
@@ -923,11 +854,12 @@ as a valid payload for a C<Rat> PHMD node.
 A defined C<year> may be any integer, each of [C<month>, C<day>] must be a
 positive integer, each of [C<hour>, C<minute>] must be a non-negative
 integer, and C<second> must be a non-negative rational number.  If all 6
-attributes are defined, then the new C<UTCInstant> value is also a
+attributes are defined, then the new C<(UTC|Float)Instant> value is also a
 C<UTCDateTime>; if just the first 3 or last 3 are defined, then the value
 is not a C<UTCDateTime> but rather a C<UTCDate> or C<UTCTime>,
 respectively; if any other combination of attributes are defined, then the
-value is just a C<UTCInstant> and not of any of the other 3 subtypes.
+value is just a C<(UTC|Float)Instant> and not of any of the other 3
+subtypes.
 
 =item *
 
@@ -950,16 +882,6 @@ Examples:
     [ 'UTCInstant', [2002,12,6] ] # a UTCDate
 
     [ 'UTCInstant', [undef,undef,undef,14,2,29] ] # a UTCTime
-
-=head2 sys.std.Temporal.Type.FloatInstant
-
-This node kind is exactly the same as the C<UTCInstant> node kind, in both
-structure/constraints and interpretation, etc, except that it represents a
-"floating" instant/datetime value, that is not affiliated with any
-time-zone, and it is interpreted as a Muldis D
-C<sys.std.Temporal.Type.FloatInstant> value.
-
-Examples:
 
     [ 'FloatInstant', [2003,4,5,2] ] # min,sec unknown or N/A
 
@@ -1009,6 +931,60 @@ Perl array ref payload.
 Examples:
 
     [ 'Duration', [3,5,1,6,15,45.000012] ]
+
+=head1 BOOTLOADER
+
+A full or partial Muldis D C<bootloader> routine consists of a language
+name declaration plus a series of 0..N imperative routine calls.  A
+C<bootloader> is formatted as a PHMD node having 1..N elements, where the
+first element is a PHMD node defining a Muldis D "language name", and each
+remaining element is a PHMD node defining a "bootloader imperative routine
+call".
+
+Examples:
+
+    [
+        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_Tiny',
+            {} ],
+        [ 'boot_stmt', 'sys.std.Core.Cat.create_depot_procedure',
+            {}, { ... } ],
+    ]
+
+=head1 BOOTLOADER STATEMENT
+
+This PHMD node specifies one statement of a Muldis D C<bootloader> routine
+which invokes an imperative routine, such statements being what the entire
+body of a C<bootloader> is composed of.  A bootloader imperative routine
+call is formatted as a PHMD node having the following 4 elements:
+
+=over
+
+=item *
+
+Node kind: the Perl character string C<boot_stmt>.
+
+=item *
+
+Imperative routine name: a Perl array ref or character string as per the
+payload of a C<NameChain> PHMD node.
+
+=item *
+
+Imperative routine subject-to-update args: a Perl hash ref as per the
+payload of a C<Tuple> PHMD node except that every hash ref is just a Perl
+array ref or character string as per the payload of a C<NameChain> PHMD
+node (each value is the name of a global variable).
+
+=item *
+
+Imperative routine read-only args: a Perl hash ref as per the
+payload of a C<Tuple> PHMD node.
+
+=back
+
+Examples
+
+    [ 'boot_stmt', 'sys.std.Core.Cat.create_depot_procedure', {}, { ... } ]
 
 =head1 MULDIS D TINY DIALECT PRAGMAS
 
