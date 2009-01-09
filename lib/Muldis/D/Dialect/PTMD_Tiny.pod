@@ -136,6 +136,28 @@ whole file should reflect what the DESCRIPTION etc above says.>
 
 Grammar:
 
+    token language_name {
+        <ln_base_name>
+        <value_node_elem_sep>
+        <ln_base_authority>
+        <value_node_elem_sep>
+        <ln_base_version_number>
+        <value_node_elem_sep>
+        <ln_dialect>
+        <value_node_elem_sep>
+        <ln_extensions>
+    }
+
+    token ln_base_name { Muldis_D }
+
+    token ln_base_authority { <char_str> }
+
+    token ln_base_version_number { <char_str> }
+
+    token ln_dialect { PTMD_Tiny }
+
+    token ln_extensions { <qtuple_payload> }
+
 Examples:
 
     Muldis_D:'http://muldis.com':'1.2.3':PTMD_Tiny:{}
@@ -150,11 +172,40 @@ Examples:
 
 Grammar:
 
+    token value_node_elem_sep { \s* ':' \s* }
+
+    token type_name { <name_chain_payload> }
+
+    token value {
+          <bool>
+        | <int>
+        | <string>
+        | <blob>
+        | <text>
+        | <name>
+        | <name_chain>
+        | <decl_name_chain>
+        | <comment>
+        | <order>
+        | <qscalar>
+        | <qtuple>
+        | <qrelation>
+        | <rat>
+        | <rat_round_meth>
+        | <instant>
+        | <duration>
+    }
+
 =head1 SIMPLE CORE SCALAR VALUE LITERALS
 
 =head2 sys.std.Core.Type.Bool
 
 Grammar:
+
+    token bool {
+        Bool <value_node_elem_sep>
+        [false | true | 0 | 1]
+    }
 
 Examples:
 
@@ -163,6 +214,33 @@ Examples:
 =head2 sys.std.Core.Type.Int
 
 Grammar:
+
+    token int {
+        Int <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <int_payload>
+    }
+
+    token int_payload {
+        [<int_max_col_val> <value_payload_elem_sep>]?
+        <int_body>
+    }
+
+    token value_payload_elem_sep { \s* ';' \s* }
+
+    token int_max_col_val { <pint_head> }
+
+    token int_body { [0 | \-?<pint_body>] }
+
+    token nnint_body { [0 | <pint_body>] }
+
+    token pint_body { <pint_head> <pint_tail>? }
+
+    token pint_head { <[ 1..9 A..Z ]> }
+
+    token pint_tail { [<[ 0..9 A..Z _ ]>+] ** <segment_sep> }
+
+    token segment_sep { \s* '~' \s* }
 
 Examples:
 
@@ -188,6 +266,25 @@ Examples:
 
 Grammar:
 
+    token string {
+        String <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <string_payload>
+    }
+
+    token string_payload {
+        [<int_max_col_val> <value_payload_elem_sep>]?
+        <ord_list_open>
+            [<int_body> ** <list_elem_sep>]?
+        <ord_list_close>
+    }
+
+    token ord_list_open { \s* '[' \s* }
+
+    token ord_list_close { \s* ']' \s* }
+
+    token list_elem_sep { \s* ',' \s* }
+
 Examples:
 
     String:F;[50,65,72,6C]
@@ -195,6 +292,17 @@ Examples:
 =head2 sys.std.Core.Type.Blob
 
 Grammar:
+
+    token blob {
+        Blob <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <blob_payload>
+    }
+
+    token blob_payload {
+        <[137F]> <value_payload_elem_sep>
+        [[<[ 0..9 A..F ]>+] ** <segment_sep>]?
+    }
 
 Examples:
 
@@ -210,6 +318,33 @@ Examples:
 
 Grammar:
 
+    token text {
+        Text <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <text_payload>
+    }
+
+    token text_payload {
+        <char_str>
+    }
+
+    token char_str {
+        [<char_str_seg> ** <segment_sep>]?
+    }
+
+    token char_str_seg {
+          <quoted_char_str_seg>
+        | <nonquoted_char_str_seg>
+    }
+
+    token quoted_char_str_seg {
+        <[']>
+            ['\b' | '\q' | <-[\\\']>]*
+        <[']>
+    }
+
+    token nonquoted_char_str_seg { <[ a..z A..Z 0..9 _ - ]>+ }
+
 Examples:
 
     Text:'Ceres'
@@ -224,6 +359,16 @@ Examples:
 
 Grammar:
 
+    token name {
+        Name <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <name_payload>
+    }
+
+    token name_payload {
+        <char_str>
+    }
+
 Examples:
 
     Name:login_pass
@@ -233,6 +378,18 @@ Examples:
 =head2 sys.std.Core.Type.Cat.NameChain
 
 Grammar:
+
+    token name_chain {
+        NameChain <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <name_chain_payload>
+    }
+
+    token name_chain_payload {
+        <name_payload> [\s* <nc_elem_sep> \s* <name_payload>]+
+    }
+
+    token nc_elem_sep { '.' }
 
 Examples:
 
@@ -244,6 +401,16 @@ Examples:
 
 Grammar:
 
+    token decl_name_chain {
+        DeclNameChain <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <decl_name_chain_payload>
+    }
+
+    token decl_name_chain_payload {
+        [<name_payload> [\s* <nc_elem_sep> \s* <name_payload>]*]?
+    }
+
 Examples:
 
     DeclNameChain:gene.sorted_person_name
@@ -254,6 +421,16 @@ Examples:
 
 Grammar:
 
+    token comment {
+        Comment <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <comment_payload>
+    }
+
+    token comment_payload {
+        <char_str>
+    }
+
 Examples:
 
     Comment:'This does something.'
@@ -261,6 +438,11 @@ Examples:
 =head2 sys.std.Core.Type.Cat.Order
 
 Grammar:
+
+    token order {
+        Order <value_node_elem_sep>
+        [increase | same | decrease | -1 | 0 | 1]
+    }
 
 Examples:
 
@@ -271,6 +453,21 @@ Examples:
 =head2 sys.std.Core.Type.(Q|)Scalar
 
 Grammar:
+
+    token qscalar {
+        Q? Scalar <value_node_elem_sep>
+        <type_name> <value_node_elem_sep>
+        <qscalar_payload>
+    }
+
+    token qscalar_payload {
+        <possrep_name> <value_payload_elem_sep>
+        <possrep_attrs>
+    }
+
+    token possrep_name { <name_payload> }
+
+    token possrep_attrs { <qtuple_payload> }
 
 Examples:
 
@@ -301,6 +498,25 @@ Examples:
 
 Grammar:
 
+    token qtuple {
+        Q? Tuple <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <qtuple_payload>
+    }
+
+    token qtuple_payload {
+        <list_open>
+            [[<name_payload> <pair_elem_sep> <value>]
+                ** <list_elem_sep>]?
+        <list_close>
+    }
+
+    token list_open { \s* '{' \s* }
+
+    token list_close { \s* '}' \s* }
+
+    token pair_elem_sep { \s* '=>' \s* }
+
 Examples:
 
     Tuple:{}
@@ -319,6 +535,53 @@ Examples:
 =head2 sys.std.Core.Type.(Q|)Relation
 
 Grammar:
+
+    token qrelation {
+          <generic_qrelation>
+        | <qset>
+        | <nothing>
+        | <qsingle>
+        | <qarray>
+        | <qbag>
+    }
+
+    token generic_qrelation {
+        Q? Relation <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <generic_qrelation_payload>
+    }
+
+    token generic_qrelation_payload {
+          <generic_relation_empty_qbody_payload>
+        | <generic_relation_nonordered_qattr_payload>
+        | <generic_relation_ordered_qattr_payload>
+    }
+
+    token generic_relation_empty_qbody_payload {
+        <list_open>
+            [<name_payload> ** <list_elem_sep>]?
+        <list_close>
+    }
+
+    token generic_relation_nonordered_qattr_payload {
+        <list_open>
+            [<qtuple_payload> ** <list_elem_sep>]?
+        <list_close>
+    }
+
+    token generic_relation_ordered_qattr_payload {
+        <ord_list_open>
+            [<name_payload> ** <list_elem_sep>]?
+        <ord_list_close>
+        <value_payload_elem_sep>
+        <list_open>
+        [[
+            <ord_list_open>
+                [<value> ** <list_elem_sep>]?
+            <ord_list_close>
+        ] ** <list_elem_sep>]?
+        <list_close>
+    }
 
 Examples:
 
@@ -344,6 +607,18 @@ Examples:
 
 Grammar:
 
+    token qset {
+        Q? Set <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <qset_payload>
+    }
+
+    token qset_payload {
+        <list_open>
+            [<value> ** <list_elem_sep>]?
+        <list_close>
+    }
+
 Examples:
 
     Set:fed.lib.the_db.account.Country_Names:{
@@ -363,6 +638,10 @@ Examples:
 
 Grammar:
 
+    token nothing {
+        Nothing
+    }
+
 Examples:
 
     Nothing
@@ -371,6 +650,18 @@ Examples:
 
 Grammar:
 
+    token qsingle {
+        Q? Single <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <qsingle_payload>
+    }
+
+    token qsingle_payload {
+        <list_open>
+            <value>
+        <list_close>
+    }
+
 Examples:
 
     Single:{ Text:'I know this one!' }
@@ -378,6 +669,18 @@ Examples:
 =head2 sys.std.Core.Type.(Q|)Array
 
 Grammar:
+
+    token qarray {
+        Q? Array <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <qarray_payload>
+    }
+
+    token qarray_payload {
+        <ord_list_open>
+            [<value> ** <list_elem_sep>]?
+        <ord_list_close>
+    }
 
 Examples:
 
@@ -397,6 +700,34 @@ Examples:
 =head2 sys.std.Core.Type.(Q|)Bag
 
 Grammar:
+
+    token qbag {
+        Q? Bag <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <qbag_payload>
+    }
+
+    token qbag_payload {
+          <qbag_payload_counted_values>
+        | <qbag_payload_repeated_values>
+    }
+
+    token qbag_payload_counted_values {
+        <list_open>
+            [[<value> <pair_elem_sep> <count>] ** <list_elem_sep>]?
+        <list_close>
+    }
+
+    token count {
+        [<int_max_col_val> <value_payload_elem_sep>]?
+        <pint_body>
+    }
+
+    token qbag_payload_repeated_values {
+        <list_open>
+            [<value> ** <list_elem_sep>]?
+        <list_close>
+    }
 
 Examples:
 
@@ -420,6 +751,29 @@ Examples:
 =head2 sys.std.Rational.Type.Rat
 
 Grammar:
+
+    token rat {
+        Rat <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <rat_payload>
+    }
+
+    token rat_payload {
+        [<int_max_col_val> <value_payload_elem_sep>]?
+        <rat_body>
+    }
+
+    token rat_body {
+          <int_body>\.?<pint_tail>?
+        | <int_body> \s* \/ \s* <pint_body>
+        | <int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
+    }
+
+    token nnrat_body {
+          <nnint_body>\.?<pint_tail>?
+        | <nnint_body> \s* \/ \s* <pint_body>
+        | <nnint_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
+    }
 
 Examples:
 
@@ -451,6 +805,16 @@ Examples:
 
 Grammar:
 
+    token rat_round_meth {
+        RatRoundMeth <value_node_elem_sep>
+        [
+              half_down | half_up
+            | half_even
+            | to_floor | to_ceiling
+            | to_zero | to_inf
+        ]
+    }
+
 Examples:
 
     RatRoundMeth:half_up
@@ -460,6 +824,22 @@ Examples:
 =head2 sys.std.Temporal.Type.(UTC|Float)Instant
 
 Grammar:
+
+    token instant {
+        [UTC | Float] Instant <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <instant_payload>
+    }
+
+    token instant_payload {
+        [<int_max_col_val> <value_payload_elem_sep>]?
+        <ord_list_open>
+            <int_body>? <list_elem_sep>
+            [<pint_body>? <list_elem_sep>] ** 2
+            [<nnint_body>? <list_elem_sep>] ** 2
+            <nnrat_body>?
+        <ord_list_close>
+    }
 
 Examples:
 
@@ -477,6 +857,20 @@ Examples:
 
 Grammar:
 
+    token duration {
+        Duration <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <duration_payload>
+    }
+
+    token duration_payload {
+        [<int_max_col_val> <value_payload_elem_sep>]?
+        <ord_list_open>
+            [<int_body>? <list_elem_sep>] ** 5
+            <rat_body>
+        <ord_list_close>
+    }
+
 Examples:
 
     Duration:[3,5,1,6,15,45.000012]
@@ -485,55 +879,22 @@ Examples:
 
 Grammar:
 
-=head1 BOOTLOADER STATEMENT
-
-Grammar:
-
-Examples:
-
-    boot_stmt:sys.std.Core.Cat.create_depot_procedure:{}:{ ... }
-
-
-
-
-===================
-
-=head1 GRAMMAR OF TINY PLAIN TEXT MULDIS D
-
     token bootloader {
         <language_name>
         <boot_stmt>*
     }
 
-    token language_name {
-        <ln_base_name>
-        <val_node_elem_sep>
-        <ln_base_authority>
-        <val_node_elem_sep>
-        <ln_base_version_number>
-        <val_node_elem_sep>
-        <ln_dialect>
-        <val_node_elem_sep>
-        <ln_extensions>
-    }
+=head1 BOOTLOADER STATEMENT
 
-    token ln_base_name { Muldis_D }
-
-    token ln_base_authority { <char_str> }
-
-    token ln_base_version_number { <char_str> }
-
-    token ln_dialect { PTMD_Tiny }
-
-    token ln_extensions { <tuple_or_qv_payload> }
+Grammar:
 
     token boot_stmt {
         boot_stmt
-        <val_node_elem_sep>
+        <value_node_elem_sep>
         <imperative_routine_name>
-        <val_node_elem_sep>
+        <value_node_elem_sep>
         <imperative_routine_upd_args>
-        <val_node_elem_sep>
+        <value_node_elem_sep>
         <imperative_routine_ro_args>
     }
 
@@ -546,374 +907,11 @@ Examples:
         <list_close>
     }
 
-    token imperative_routine_ro_args { <tuple_or_qv_payload> }
+    token imperative_routine_ro_args { <qtuple_payload> }
 
-    token literal {
-          <scalar_or_qv>
-        | <bool>
-        | <int>
-        | <string>
-        | <blob>
-        | <text>
-        | <tuple_or_qv>
-        | <relation_or_qv>
-        | <name>
-        | <name_chain>
-        | <decl_name_chain>
-        | <comment>
-        | <order>
-        | <rat>
-        | <rat_round_meth>
-        | <instant>
-        | <duration>
-    }
+Examples:
 
-    token scalar_or_qv {
-        [Q]? Scalar <val_node_elem_sep>
-        <type_name> <val_node_elem_sep>
-        <scalar_or_qv_payload>
-    }
-
-    token scalar_or_qv_payload {
-        <possrep_name> <val_payload_elem_sep>
-        <possrep_attrs>
-    }
-
-    token possrep_name { <name_payload> }
-
-    token possrep_attrs { <tuple_or_qv_payload> }
-
-    token bool {
-        Bool <val_node_elem_sep>
-        [false|true|0|1]
-    }
-
-    token int {
-        Int <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <int_payload>
-    }
-
-    token int_payload {
-        [<int_max_col_val> <val_payload_elem_sep>]?
-        <int_body>
-    }
-
-    token string {
-        String <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <string_payload>
-    }
-
-    token string_payload {
-        [<int_max_col_val> <val_payload_elem_sep>]?
-        <ord_list_open>
-            [<int_body> ** <list_elem_sep>]?
-        <ord_list_close>
-    }
-
-    token blob {
-        Blob <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <blob_payload>
-    }
-
-    token blob_payload {
-        <[137F]> <val_payload_elem_sep>
-        [[<[ 0..9 A..F ]>+] ** <segment_sep>]?
-    }
-
-    token text {
-        Text <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <text_payload>
-    }
-
-    token text_payload {
-        <char_str>
-    }
-
-    token tuple_or_qv {
-        [Q]? Tuple <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <tuple_or_qv_payload>
-    }
-
-    token relation_or_qv {
-          <generic_relation_or_qv>
-        | <set_or_qv>
-        | <nothing>
-        | <single_or_qv>
-        | <array_or_qv>
-        | <bag_or_qv>
-    }
-
-    token generic_relation_or_qv {
-        [Q]? Relation <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <generic_relation_or_qv_payload>
-    }
-
-    token generic_relation_or_qv_payload {
-          <generic_relation_empty_body_or_qv_payload>
-        | <generic_relation_nonordered_attr_or_qv_payload>
-        | <generic_relation_ordered_attr_or_qv_payload>
-    }
-
-    token generic_relation_empty_body_or_qv_payload {
-        <list_open>
-            [<name_payload> ** <list_elem_sep>]?
-        <list_close>
-    }
-
-    token generic_relation_nonordered_attr_or_qv_payload {
-        <list_open>
-            [<tuple_or_qv_payload> ** <list_elem_sep>]?
-        <list_close>
-    }
-
-    token generic_relation_ordered_attr_or_qv_payload {
-        <ord_list_open>
-            [<name_payload> ** <list_elem_sep>]?
-        <ord_list_close>
-        <val_payload_elem_sep>
-        <list_open>
-        [[
-            <ord_list_open>
-                [<literal> ** <list_elem_sep>]?
-            <ord_list_close>
-        ] ** <list_elem_sep>]?
-        <list_close>
-    }
-
-    token tuple_or_qv_payload {
-        <list_open>
-            [[<name_payload> <pair_elem_sep> <literal>]
-                ** <list_elem_sep>]?
-        <list_close>
-    }
-
-    token set_or_qv {
-        [Q]? Set <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <set_or_qv_payload>
-    }
-
-    token set_or_qv_payload {
-        <list_open>
-            [<literal> ** <list_elem_sep>]?
-        <list_close>
-    }
-
-    token nothing {
-        Nothing
-    }
-
-    token single_or_qv {
-        [Q]? Single <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <single_or_qv_payload>
-    }
-
-    token single_or_qv_payload {
-        <list_open>
-            <literal>
-        <list_close>
-    }
-
-    token array_or_qv {
-        [Q]? Array <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <array_or_qv_payload>
-    }
-
-    token array_or_qv_payload {
-        <ord_list_open>
-            [<literal> ** <list_elem_sep>]?
-        <ord_list_close>
-    }
-
-    token bag_or_qv {
-        [Q]? Bag <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <bag_or_qv_payload>
-    }
-
-    token bag_or_qv_payload {
-          <bag_or_qv_payload_counted_values>
-        | <bag_or_qv_payload_repeated_values>
-    }
-
-    token bag_or_qv_payload_counted_values {
-        <list_open>
-            [[<literal> <pair_elem_sep> <count>] ** <list_elem_sep>]?
-        <list_close>
-    }
-
-    token count {
-        [<int_max_col_val> <val_payload_elem_sep>]?
-        <pint_body>
-    }
-
-    token bag_or_qv_payload_repeated_values {
-        <list_open>
-            [<literal> ** <list_elem_sep>]?
-        <list_close>
-    }
-
-    token list_open { \s* '{' \s* }
-
-    token list_close { \s* '}' \s* }
-
-    token ord_list_open { \s* '[' \s* }
-
-    token ord_list_close { \s* ']' \s* }
-
-    token list_elem_sep { \s* ',' \s* }
-
-    token pair_elem_sep { \s* '=>' \s* }
-
-    token val_node_elem_sep { \s* ':' \s* }
-
-    token val_payload_elem_sep { \s* ';' \s* }
-
-    token char_str {
-        [<char_str_seg> ** <segment_sep>]?
-    }
-
-    token segment_sep { \s* '~' \s* }
-
-    token char_str_seg {
-          <quoted_char_str_seg>
-        | <nonquoted_char_str_seg>
-    }
-
-    token quoted_char_str_seg {
-        <[']>
-            ['\b'|'\q'|<-[\\\']>]*
-        <[']>
-    }
-
-    token nonquoted_char_str_seg { <[ a..z A..Z 0..9 _ - ]>+ }
-
-    token int_max_col_val { <pint_head> }
-
-    token int_body { [0|\-?<pint_body>] }
-
-    token nnint_body { [0|<pint_body>] }
-
-    token pint_body { <pint_head> <pint_tail>? }
-
-    token pint_head { <[ 1..9 A..Z ]> }
-
-    token pint_tail { [<[ 0..9 A..Z _ ]>+] ** <segment_sep> }
-
-    token name {
-        Name <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <name_payload>
-    }
-
-    token name_payload {
-        <char_str>
-    }
-
-    token name_chain {
-        NameChain <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <name_chain_payload>
-    }
-
-    token name_chain_payload {
-        <name_payload> [\s* <nc_elem_sep> \s* <name_payload>]+
-    }
-
-    token nc_elem_sep { '.' }
-
-    token decl_name_chain {
-        DeclNameChain <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <decl_name_chain_payload>
-    }
-
-    token decl_name_chain_payload {
-        [<name_payload> [\s* <nc_elem_sep> \s* <name_payload>]*]?
-    }
-
-    token comment {
-        Comment <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <comment_payload>
-    }
-
-    token comment_payload {
-        <char_str>
-    }
-
-    token order {
-        Order <val_node_elem_sep>
-        [increase|same|decrease|-1|0|1]
-    }
-
-    token rat {
-        Rat <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <rat_payload>
-    }
-
-    token rat_payload {
-        [<int_max_col_val> <val_payload_elem_sep>]?
-        <rat_body>
-    }
-
-    token rat_body {
-          <int_body>\.?<pint_tail>?
-        | <int_body> \s* \/ \s* <pint_body>
-        | <int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
-    }
-
-    token nnrat_body {
-          <nnint_body>\.?<pint_tail>?
-        | <nnint_body> \s* \/ \s* <pint_body>
-        | <nnint_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
-    }
-
-    token rat_round_meth {
-        RatRoundMeth <val_node_elem_sep>
-        [half_down|half_up|half_even|to_floor|to_ceiling|to_zero|to_inf]
-    }
-
-    token instant {
-        [UTC|Float] Instant <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <instant_payload>
-    }
-
-    token instant_payload {
-        [<int_max_col_val> <val_payload_elem_sep>]?
-        <ord_list_open>
-            <int_body>? <list_elem_sep>
-            [<pint_body>? <list_elem_sep>] ** 2
-            [<nnint_body>? <list_elem_sep>] ** 2
-            <nnrat_body>?
-        <ord_list_close>
-    }
-
-    token duration {
-        Duration <val_node_elem_sep>
-        [<type_name> <val_node_elem_sep>]?
-        <duration_payload>
-    }
-
-    token duration_payload {
-        [<int_max_col_val> <val_payload_elem_sep>]?
-        <ord_list_open>
-            [<int_body>? <list_elem_sep>] ** 5
-            <rat_body>
-        <ord_list_close>
-    }
-
-    token type_name { <name_chain_payload> }
+    boot_stmt:sys.std.Core.Cat.create_depot_procedure:{}:{ ... }
 
 =head1 MULDIS D TINY DIALECT PRAGMAS
 
