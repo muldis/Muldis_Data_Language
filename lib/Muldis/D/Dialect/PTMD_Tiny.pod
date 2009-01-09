@@ -132,6 +132,170 @@ B<What follows next in this file, between this point and the SEE ALSO,
 still has to be rewritten according to certain TODO plans, after which this
 whole file should reflect what the DESCRIPTION etc above says.>
 
+=head1 LANGUAGE NAME
+
+Grammar:
+
+Examples:
+
+=head1 VALUE LITERAL COMMON ELEMENTS
+
+Grammar:
+
+Examples:
+
+=head1 SIMPLE CORE SCALAR VALUE LITERALS
+
+=head2 sys.std.Core.Type.Bool
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.Int
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.String
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.Blob
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.Text
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.Cat.Name
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.Cat.NameChain
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.Cat.DeclNameChain
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.Cat.Comment
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.Cat.Order
+
+Grammar:
+
+Examples:
+
+=head1 GENERIC Q/SCALAR AND Q/NONSCALAR VALUE LITERALS
+
+=head2 sys.std.Core.Type.(Q|)Scalar
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.(Q|)Tuple
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.(Q|)Relation
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.(Q|)Set
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.Nothing
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.(Q|)Single
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.(Q|)Array
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Core.Type.(Q|)Bag
+
+Grammar:
+
+Examples:
+
+=head1 RATIONAL EXTENSION SCALAR VALUE LITERALS
+
+=head2 sys.std.Rational.Type.Rat
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Rational.Type.RatRoundMeth
+
+Grammar:
+
+Examples:
+
+=head1 TEMPORAL EXTENSION SCALAR VALUE LITERALS
+
+=head2 sys.std.Temporal.Type.(UTC|Float)Instant
+
+Grammar:
+
+Examples:
+
+=head2 sys.std.Temporal.Type.Duration
+
+Grammar:
+
+Examples:
+
+=head1 BOOTLOADER
+
+Grammar:
+
+Examples:
+
+=head1 BOOTLOADER STATEMENT
+
+Grammar:
+
+Examples:
+
 =head1 GRAMMAR OF TINY PLAIN TEXT MULDIS D
 
     token bootloader {
@@ -753,6 +917,171 @@ The following are fragments of actual Plain Text Muldis D code.
     FloatInstant:[1407,,,,,]
 
     Duration:[3,5,1,6,15,45.000012]
+
+=head1 MULDIS D TINY DIALECT PRAGMAS
+
+All of the following pragmas apply to both the C<PTMD_Tiny> and
+C<HDMD_Perl(6|5)_Tiny> dialects, and have the same semantics with both.
+
+=head2 auto_add_attrs
+
+All Muldis D values, besides scalars lacking any possreps, are defined in
+terms of a collection of attribute values, and there is no such thing as an
+attribute being undefined; normally when one selects a value of a
+particular attribute-based type, they must supply values for I<all> of its
+attributes; this is true with values comprising the system catalog as with
+any other values.  Code written in the Muldis D C<PTMD_Tiny> or
+C<HDMD_Perl(6|5)_Tiny> dialect is comprised almost entirely of value
+literals, and by default all of the attribute values of said values must be
+explicitly given in the literals as sub-literals, even in the common case
+where some attributes just have the default values for their type.
+
+While this fact allows for parsers to be very simple and for sub-literals
+to be compilable into values without knowing the context they're compiled
+into, it means that programmers would have to write maybe about twice as
+much code as they otherwise would if they could simply not write out the
+default-valued attributes.
+
+If the 5th I<Extensions> portion of the fully-qualified Muldis D language
+name contains a name+value pair of C<auto_add_attrs> + C<Bool:true>, then
+this activates the optional C<auto_add_attrs> pragma, which provides one
+kind of automatic code completion.  When C<auto_add_attrs> is active,
+programmers may omit any literal attributes that they want, and those
+attributes will be automatically defined by the parser to have the default
+values for their type.  Or more specifically, the wider literal whose
+attributes are missing will be extended to become the default value of the
+type of the wider literal but that those attributes of its that I<were>
+explicitly given will override the default's values for those attributes.
+The actual behaviour is essentially what the
+C<sys.std.QTuple.substitution_in_default> function does.
+
+But the C<auto_add_attrs> pragma is not simply an automatically invoked
+pre-processing Muldis D function, because it also serves the common case
+where one is defining relation literals that have different attributes
+specified per tuple; such a thing by itself isn't even valid as a generic
+relation, so it certainly can't be given to a Muldis D function; so the
+pragma has at least that advantage unique to itself.
+
+Note that the lexer is exactly the same regardless of whether the
+C<auto_add_attrs> pragma is turned on or off, because the matters of
+missing attributes were never tested or enforced at the lexical level in
+the first place; rather the pragma only affects the parsing stage that
+follows the lexing.  In other words, the actual syntax or grammar is
+identical regardless of the setting of this pragma.
+
+Now one consequence of using the C<auto_add_attrs> pragma is that in
+general the parser must be more complicated, and read type definitions from
+the DBMS information schema so that it knows what attributes each literal
+is supposed to have, and their declared types, and also sub-literals can no
+longer in general be fully converted to values in isolation; now the
+parent-most literal must be evaluated first, because its declared type
+generally determines the declared types of its attributes, and then their
+attributes recursively.  For nonscalar types, the initial declared type
+being looked at is the declared type of the bootloader-invoked routine's
+parameter that the literal is being given to as an argument.
+
+Now if the declared type of said parameter is just a generic type, such as
+C<Relation> or C<Array>, then often no information can be gleaned from this
+context for what attributes should exist, and so you will need to make the
+arg literal include treat-as-type metadata that explicitly provides the
+specific type information needed; otherwise, C<auto_add_attrs> won't help
+you and you must then fully define relation values with the same attributes
+per tuple.  But fortunately for brevity, a lot of the places where
+C<auto_add_attrs> would help you the most is when the bootloader is
+invoking system-defined data-defining procedures, and their parameters are
+all of attribute-specifying types, and it is in such data definition that
+you may be most likely to face a large number of default-valued attributes,
+such as C<comment>.
+
+Note that the reason the C<auto_add_attrs> behaviour is turned off by
+default is twofold.  First, the parser can be a lot simpler / more tiny
+with it off.  Second, requiring users to explicitly define even
+default-valued attributes can make the code more self-documenting and can
+help users avoid some kinds of bugs due to action from unseen values, or
+due to some default values "silently" changing between language versions.
+So then essentially, turning on C<auto_add_attrs> means the programmer is
+telling the parser "I know what I'm doing" by I<explicitly> asking for
+potentially less-safe behaviour.  Of course, even with C<auto_add_attrs>
+turned on, you can still explicitly define attribute values that are their
+type's default values, so it is possible to compromise such as you like.
+
+Also note that it should be trivial for a Muldis D implementation to let
+users input code written with C<auto_add_attrs> turned on, and then output
+the version of that code for their perusal with it turned off, so they can
+see what extra values were filled in without having to manually write said.
+
+=head2 auto_unabbrev_std_names
+
+Normally when one is specifying a C<NameChain> literal that is a
+reference to a standard system-defined type or routine, they must write out
+the name in full, starting with C<sys.std> and so on through the unique
+part of the entity name.  While this allows for clearly self-documenting
+code, as well as for relatively simple parsers, it can also be added tedium
+to programmers that would prefer to write out the names in a less verbose
+manner, especially since to a point, a slightly more complicated parser
+could still unambiguously resolve a much shorter substring of the name.
+
+If the 5th I<Extensions> portion of the fully-qualified Muldis D language
+name contains a name+value pair of C<auto_unabbrev_std_names> +
+C<Bool:true>, then this activates the optional C<auto_unabbrev_std_names>
+pragma, which provides one kind of automatic code completion.  When
+C<auto_unabbrev_std_names> is active, programmers may omit any number of
+consecutive leading chain elements from such a C<NameChain> literal, so
+long as the remaining unqualified chain is distinct among all standard
+system-defined (C<sys.std>-prefix) DBMS entities (but that as an exception,
+a non-distinct abbreviation is allowed iff exactly 1 of the candidate
+entities is in the language core, C<sys.std.Core>-prefix, in which case
+that 1 is unambiguously the entity that is resolved to).  This feature has
+no effect on the namespace prefixes like C<tuple_from> or C<array_of>; one
+still writes those as normal prepended to the otherwise shortened chains.
+
+So for example, one can just write C<Int> rather than
+C<sys.std.Core.Type.Int>, C<is_identical> rather than
+C<sys.std.Core.Universal.is_identical>, C<QTuple.attr> rather than
+C<sys.std.Core.QTuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
+C<array_of.Rat> rather than C<array_of.sys.std.Rational.Type.Rat>, and so
+on.
+
+The C<auto_unabbrev_std_names> pragma intentionally does not empower auto
+un-abbreviations of any namespaces other than C<sys.std>, to keep things
+simple for users to predict and for systems to implement; it does not
+affect C<sys.(imp|cat)>, nor any other top-level namespace.  When one is
+referencing either any system-defined implementation-specific
+(non-standard) types or routines, or any user-defined types or routines, or
+any dbvars or constraints or whatever, their names can not be written
+abbreviated due to the C<auto_unabbrev_std_names> pragma.
+
+Note that the lexer is exactly the same regardless of whether the
+C<auto_unabbrev_std_names> pragma is turned on or off, as per the
+C<auto_add_attrs> pragma.  Many other comments about the other pragma also
+apply to this one.
+
+=head2 auto_chains_from_names
+
+Iff both the C<auto_add_attrs> and C<auto_unabbrev_std_names> pragmas are
+active, then the optional C<auto_chains_from_names> dependent pragma may be
+activated in the same manner (as an I<Extensions> name+value pair with
+C<Bool:true>.  When C<auto_chains_from_names> is active, programmers may
+write an otherwise abbreviated-to-one-chain-element C<NameChain>
+literal as a plain C<Name> literal; this can chop the literal down to a
+third or fourth of its otherwise-length such as in the case of a reference
+to the C<Int> type.  When the parent literal of such a faux-C<Name>
+literal is examined for missing attributes, or examined that existing
+attributes are of the correct type, any attributes whose declared type says
+they are supposed to be C<NameChain> but that have an explicitly
+defined C<Name> child literal will have that literal mapped to and
+replaced with a single element C<NameChain> literal, which can be
+subsequently un-abbreviated into a standard system-defined type or routine
+name.  The C<auto_chains_from_names> pragma will not work when the declared
+type being applied to a faux-C<Name> is not a C<NameChain> subtype,
+and such literals will then be taken as actual C<Name>; where such
+declared type information is missing, you will need to write out the
+abbreviated chain as an actual C<NameChain> literal.  Note that the
+C<auto_chains_from_names> pragma has no effect on C<NameChain> literal
+bodies that don't comprise the payload portion of their parent literal,
+such as with the imperative routine name composed into a C<boot_stmt>
+literal; literal bodies in those positions will always be interpreted
+according to C<NameChain> literal body syntax.
 
 =head1 SEE ALSO
 
