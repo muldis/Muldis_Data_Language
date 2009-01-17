@@ -181,12 +181,27 @@ in that they typically work with any q/relation types.
 look_in(QRelation), look_for(QRelation) }>
 
 This function is exactly the same as C<sys.std.Core.QRelation.is_subset>
-except that it results in C<Bool:false> if its 2 arguments are equal.
+except that it results in C<Bool:false> if its 2 arguments are identical.
 
 =item C<function sys.std.QRelation.is_not_proper_subset result Bool params
 { look_in(QRelation), look_for(QRelation) }>
 
 This function is exactly the same as C<sys.std.QRelation.is_proper_subset>
+except that it results in the opposite boolean value when given the same
+arguments.
+
+=item C<function sys.std.QRelation.is_disjoint result Bool params {
+topic(QRelation), other(QRelation) }>
+
+This function results in C<Bool:true> iff the set of q/tuples comprising
+each of its 2 arguments are mutually disjoint, that is, iff the
+intersection of the 2 arguments is empty; it results in C<Bool:false>
+otherwise.  This function's 2 parameters are mutually commutative.
+
+=item C<function sys.std.QRelation.is_not_disjoint result Bool params {
+topic(QRelation), other(QRelation) }>
+
+This function is exactly the same as C<sys.std.QRelation.is_disjoint>
 except that it results in the opposite boolean value when given the same
 arguments.
 
@@ -208,13 +223,14 @@ also legitimately known as I<symmetric difference>.
 =item C<function sys.std.QRelation.composition result QRelation params {
 r1(QRelation), r2(QRelation) }>
 
-This function results in the relational composition of its 2 arguments.  It
-is conceptually a short-hand for first doing an ordinary relational join
-between its 2 arguments, and then performing a relational projection on all
-of the attributes that only one of the arguments has; that is, the result
-has all of and just the attributes that were not involved in matching the
-q/tuples of the 2 arguments.  This function will fail|warn any time that
-C<join> would fail|warn on the same 2 input q/relations.
+This function results in the relational composition of its (mutually
+commutative) 2 arguments.  It is conceptually a short-hand for first doing
+an ordinary relational join between its 2 arguments, and then performing a
+relational projection on all of the attributes that only one of the
+arguments has; that is, the result has all of and just the attributes that
+were not involved in matching the q/tuples of the 2 arguments.  This
+function will fail|warn any time that C<join> would fail|warn on the same 2
+input q/relations.
 
 =item C<function sys.std.QRelation.join_with_group result QRelation params
 { primary(QRelation), secondary(QRelation), group_attr(Name) }>
