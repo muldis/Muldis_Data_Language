@@ -355,6 +355,14 @@ This function is the same as C<projection> but that it results in the
 complementary subset of attributes of C<topic> when given the same
 arguments.
 
+=item C<function sys.std.Core.QTuple.static_extension result QTuple params
+{ topic(QTuple), attrs(QTuple) }>
+
+This function results in the extension of its C<topic> argument by joining
+that with its C<attrs> argument; the attribute names of the 2 arguments
+must be disjoint.  See also C<sys.std.Core.QTuple.product> for an N-ary
+version of this.
+
 =item C<function sys.std.Core.QTuple.wrap result QTuple params {
 topic(QTuple), inner(set_of.Name), outer(Name) }>
 
@@ -900,16 +908,15 @@ each tuple of C<map> corresponds to a renamed SQL table.
 
 =over
 
-=item C<updater sys.std.Core.QTuple.assign_product update { topic(QTuple) }
-read { other(QTuple) }>
+=item C<updater sys.std.Core.QTuple.assign_static_extension update {
+topic(QTuple) } read { attrs(QTuple) }>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.QTuple.product> function such that it has 2 input q/tuples
-from C<assign_product>'s 2 arguments, and then assigning the result of that
-function to C<topic>.  This procedure is analagous to the data-manipulation
-phase of a SQL CREATE TABLE|VIEW statement iff both arguments are
-C<Database>-typed; each q/relation-typed attribute of C<other> corresponds
-to a created SQL table.
+C<sys.std.Core.QTuple.static_extension> function with the same arguments,
+and then assigning the result of that function to C<topic>.  This procedure
+is analagous to the data-manipulation phase of a SQL CREATE TABLE|VIEW
+statement iff both arguments are C<Database>-typed; each q/relation-typed
+attribute of C<attrs> corresponds to a created SQL table.
 
 =back
 
