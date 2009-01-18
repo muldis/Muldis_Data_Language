@@ -148,7 +148,8 @@ C<QMaybe> of what is otherwise the result type, and that result has zero
 elements if the argument has zero elements.
 
 =item C<function sys.std.QRelation.map result QRelation params {
-topic(QRelation), func(FuncRef), assuming(QTuple)? }>
+topic(QRelation), func(FuncRef), assuming(QTuple)?,
+result_attrs(set_of.Name) }>
 
 This function provides a convenient one-place generalization of per-q/tuple
 transformations that otherwise might require the chaining of up to a
@@ -166,7 +167,14 @@ result has appropriately fewer q/tuples.  As a trivial case, if C<func> is
 defined to unconditionally result in the same q/tuple as its own C<topic>
 argument, then this function results simply in C<topic>; or, if C<func> is
 defined to have a static result, then this function's result will have just
-0..1 q/tuples.
+0..1 q/tuples.  Now, C<map> requires the extra C<result_attrs> argument to
+prevent ambiguity in the general case where C<topic> might have zero
+q/tuples, because in that situation, C<func> would never be invoked, and
+the names of the attributes of the result are not known (we don't generally
+assume that C<map> can reverse-engineer C<func> to see what attributes it
+would have resulted in).  This function will fail if C<topic> has at least
+1 q/tuple and the result of C<func> does not have matching attribute names
+to those named by C<result_attrs>.
 
 =back
 

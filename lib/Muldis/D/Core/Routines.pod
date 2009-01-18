@@ -603,7 +603,7 @@ complementary subset of q/tuples of C<topic> when given the same arguments.
 See also the C<sys.std.Core.QRelation.semidifference> function.
 
 =item C<function sys.std.Core.QRelation.extension result QRelation params {
-topic(QRelation), func(FuncRef), assuming(QTuple)? }>
+topic(QRelation), attrs(set_of.Name), func(FuncRef), assuming(QTuple)? }>
 
 This function results in the relational extension of its C<topic> argument
 as determined by applying the C<QTuple>-resulting function named in its
@@ -617,7 +617,15 @@ C<topic> argument and C<assuming> as its C<assuming> argument; the first
 and second q/tuples must have no attribute names in common, and the result
 q/tuple is derived by joining (cross-product) the q/tuples together.  As a
 trivial case, if C<func> is defined to unconditionally result in the
-degree-zero tuple, then this function results simply in C<topic>.
+degree-zero tuple, then this function results simply in C<topic>.  Now,
+C<extension> requires the extra C<attrs> argument to prevent ambiguity in
+the general case where C<topic> might have zero q/tuples, because in that
+situation, C<func> would never be invoked, and the names of the attributes
+to add to C<topic> are not known (we don't generally assume that
+C<extension> can reverse-engineer C<func> to see what attributes it would
+have resulted in).  This function will fail if C<topic> has at least 1
+q/tuple and the result of C<func> does not have matching attribute names to
+those named by C<attrs>.
 
 =item C<function sys.std.Core.QRelation.static_extension result QRelation
 params { topic(QRelation), attrs(QTuple) }>
@@ -631,7 +639,7 @@ the C<attrs> argument.
 
 =item C<function sys.std.Core.QRelation.summary result QRelation params {
 topic(QRelation), group_per(set_of.Name), summ_func(FuncRef),
-summ_assuming(QTuple)? }>
+summ_assuming(QTuple)?, result_attrs(set_of.Name) }>
 
 This function provides a convenient context for using aggregate functions
 to derive a per-group summary q/relation, which is its result, from another
@@ -654,7 +662,15 @@ C<summary> is not intended to be used to summarize an entire C<topic>
 q/relation at once (except by chance of it resolving to 1 group); you
 should instead invoke your summarize-all C<func> directly, or inline it,
 rather than by way of C<summary>, especially if you want a single-q/tuple
-result on an empty C<topic> (which C<summary>) won't do.
+result on an empty C<topic> (which C<summary>) won't do.  Now, C<summary>
+requires the extra C<result_attrs> argument to prevent ambiguity in the
+general case where C<topic> might have zero q/tuples, because in that
+situation, C<summ_func> would never be invoked, and the names of the
+attributes of the result are not known (we don't generally assume that
+C<summary> can reverse-engineer C<summ_func> to see what attributes it
+would have resulted in).  This function will fail if C<topic> has at least
+1 q/tuple and the result of C<summ_func> does not have matching attribute
+names to those named by C<result_attrs>.
 
 =back
 
@@ -1039,7 +1055,8 @@ column.
 =over
 
 =item C<updater sys.std.Core.QRelation.assign_extension update {
-topic(QRelation) } read { func(FuncRef), assuming(QTuple)? }>
+topic(QRelation) } read { attrs(set_of.Name), func(FuncRef),
+assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.extension> function with the same arguments, and
