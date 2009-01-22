@@ -355,9 +355,10 @@ None yet.
 
 Several public email-based forums exist whose main topic is all
 implementations of the L<Muldis D|Muldis::D> language, especially the
-L<Muldis Rosetta|Muldis::Rosetta> reference implementation.  All of these
-you can reach via L<http://mm.DarrenDuncan.net/mailman/listinfo>; go there
-to manage your subscriptions to, or view the archives of, the following:
+L<Muldis Rosetta|Muldis::Rosetta> reference implementation, but also the
+L<Set::Relation> module.  All of these you can reach via
+L<http://mm.DarrenDuncan.net/mailman/listinfo>; go there to manage your
+subscriptions to, or view the archives of, the following:
 
 =over
 
