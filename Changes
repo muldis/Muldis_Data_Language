@@ -1,15 +1,27 @@
                                  Muldis::D
 ---------------------------------------------------------------------------
 
-2009-01-xx  Darren Duncan <perl@DarrenDuncan.net>
+2009-02-xx  Darren Duncan <perl@DarrenDuncan.net>
 
     * Muldis::D version 0.59.0 is released on CPAN as
     Muldis-D-0.59.0.tar.gz.
 
-    * (Routines.pod, QRelation.pod, QSet.pod)  A few minor description
-    updates or fixes.
+    * This release features a set of smaller language enhancements that
+    were inspired during development of the module Set::Relation version
+    0.Y.0 for Perl 5.  These 2 releases were made in tandem.
 
-    * (D.pm, README)  Added mentions of Set::Relation in FORUMS/SUPPORT.
+    * (QRelation.pod)  Updated each of the 3 functions
+    "sys.std.QRelation.substitution(|_in_(restriction|semijoin))" to add
+    the 1 non-optional parameter "(|subst_)attrs", which lets the user
+    spell out exactly which topic attrs are the ones that may be getting
+    their values updated by the closure argument; while not strictly
+    necessary, this extra constraint should force any use of each function
+    to be more predictable and easier to implement.
+
+    * (Basics.pod, Types.pod, Routines.pod, QRelation.pod, QSet.pod)  A few
+    minor description updates or fixes.
+
+    * (README, D.pm)  Added mentions of Set::Relation in SUPPORT/FORUMS.
 
 2009-01-19  Darren Duncan <perl@DarrenDuncan.net>
 
@@ -33,12 +45,12 @@
     wouldn't be invoked and said new attributes are not otherwise known.
 
     * (Routines.pod, QRelation.pod)  Added 1 routine
-    "sys.std.Core.QTuple.static_extension" (binary version of "product"),
+    "sys.std.Core.QTuple.static_extension" (dyadic version of "product"),
     renamed "sys.std.Core.QTuple.assign_product" to
     "assign_static_extension" (and its param "other" to "attrs"), and
     renamed "sys.std.QRelation.outer_join_with_product" to
     "outer_join_with_static_extension"; the new names are easier to
-    understand, and the name "product" is saved for just N-ary operators.
+    understand, and the name "product" is saved for just N-adic operators.
     Also renamed the "sys.std.QRelation.composition" parameters from
     "r1|r2" to "topic|other".
 
@@ -3041,7 +3053,7 @@
 
     * (Core.pod)  Added the 2 functions Ordered.is_(in|de)crease_or_same,
     which are to is_(in|de)crease what '>='|'<=' are to '>'|'<'.  With this
-    addition, all 6 of the common binary compare operators [=,!=,<,>,<=,>=]
+    addition, all 6 of the common dyadic compare operators [=,!=,<,>,<=,>=]
     are directly represented, so no need to emulate over several functions.
 
     * (Core.pod)  Added the 3 functions Relation.disjoint_(insertion|union)
@@ -3180,7 +3192,7 @@
 
     * (Core.pod)  Renamed (from 'Spec') or added the following 9
     quasi-catalog incomplete types, which are used only as the declared
-    types of some system-defined N-ary relational operators; all are in the
+    types of some system-defined N-adic relational operators; all are in th
     new package 'sys.Core.QuasiCat': (Set|Bag)Of(Tuple|Relation), SetOfBag,
     MaybeOfTuple, SeqOfSeq, QuasiSetOf(Tuple|Relation).  Moved to a new doc
     section SYSTEM-DEFINED CORE QUASI-CATALOG PARAMETERIZED TYPES.
@@ -3188,8 +3200,8 @@
     * (Core.pod)  With the above 2 groups removed from 'Spec', that package
     is now simply for conveniently system-defined collection-of-scalar
     types that are likely to be used in user data, and many of which are
-    the declared types of N-ary system-defined scalar operators.  Added any
-    of the following 32 subtypes that didn't previously exist:
+    the declared types of N-adic system-defined scalar operators.  Added
+    any of the following 32 subtypes that didn't previously exist:
     sys.Core.Spec.(Set|Maybe|Seq|Bag)Of(Scalar|Ordered),
     sys.Core.Spec.(Set|Maybe|Seq|Bag)Of(Bool|Int|UInt|Rat|Blob|Text).
 
@@ -3260,7 +3272,7 @@
 
     * (Core.pod)  Added 8 generic reduction operators
     'sys.Core.(Relation|Set|Seq|Bag).(|maybe_)reduction', so users can more
-    easily write their own N-ary reduction operators.
+    easily write their own N-adic reduction operators.
 
     * (Core.pod)  Added initial complement of 11 Seq-specific functions,
     besides the 2 aforementioned: 'value', 'update_value', 'insertion',
@@ -3328,7 +3340,7 @@
     involve a GROUP BY, and there is to be one result tuple per group,
     which also means an empty result relation from an empty input relation.
     Those who want their summary to be one tuple for the entire input, even
-    an empty one, would just invoke the N-ary / aggregate operators
+    an empty one, would just invoke the N-adic / aggregate operators
     directly without doing it by way of 'summary'.
 
     * (Core.pod)  Added 2 new Relation functions 'is_(|not_)proper_subset'.
@@ -3911,14 +3923,14 @@
     types to specify what their minimum and maximum values are, or whether
     said are infinities.
 
-    * (Core.pod)  Redefined the Maybe-returning N-ary functions
+    * (Core.pod)  Redefined the Maybe-returning N-adic functions
     Ordinal.(min|max) with versions that instead try to return that
     functions' identity value when given zero argument values, and
     fails/dies in just specific situations where said identity is
     impossibly or impractically large to handle.  Also added 2 new
     functions Ordinal.maybe_(min|max) that provide the old behaviour.
 
-    * (Core.pod)  Redefined the N-ary functions Blob.(and|or|xor) from
+    * (Core.pod)  Redefined the N-adic functions Blob.(and|or|xor) from
     resulting in Maybes to resulting in identity values on zero inputs.
     Also corrected the Relation.intersection function definition such that
     its identity value is actually the universal relation for its heading,
@@ -4108,7 +4120,7 @@
 
     * Muldis D now has a new scalar data type, "Order", which is an
     enumeration (like "Bool" is) of 3 values: [Increase, Same, Decrease];
-    it is the result type of any binary comparison operator that underlies
+    it is the result type of any dyadic comparison operator that underlies
     the likes of less|greater-than or min|max or sorting operations.
 
     * Muldis D now has the new scalar types "Cat.ShortName" and

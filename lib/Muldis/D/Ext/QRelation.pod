@@ -114,8 +114,8 @@ the same as that of the argument) and which has a q/tuple for every
 distinct subset of q/tuples in the argument.  The cardinality of the result
 is equal to 2 raised to the power of the cardinality of the argument (which
 may easily lead to a very large result, so use this function with care).
-Note that the N-ary relational union of the power set of some q/relation is
-that q/relation; the N-ary intersection of any power set is the empty
+Note that the N-adic relational union of the power set of some q/relation
+is that q/relation; the N-adic intersection of any power set is the empty
 relation.
 
 =item C<function sys.std.QRelation.transitive_closure result QRelation
@@ -332,7 +332,7 @@ tuple if no explicit argument is given to it.
 =over
 
 =item C<function sys.std.QRelation.substitution result QRelation params {
-topic(QRelation), func(FuncRef), assuming(QTuple)? }>
+topic(QRelation), attrs(set_of.Name), func(FuncRef), assuming(QTuple)? }>
 
 This function is similar to C<extension> except that it substitutes values
 of existing q/relation attributes rather than adding new attributes.  The
@@ -347,7 +347,15 @@ defined to unconditionally result in either the degree-zero tuple or in the
 same q/tuple as its own C<topic> argument, then this function results
 simply in C<topic>; or, if C<func> is defined to have a static result and
 it replaces all attributes, then this function's result will have just 0..1
-q/tuples.
+q/tuples.  Now, strictly speaking, C<substitution> could conceivably be
+implemented such that each result from C<func> is allowed to specify
+replacement values for different subsets of C<topic> attributes; however,
+to improve the function's predictability and ease of implementation over
+disparate foundations, C<substitution> requires the extra C<attrs> argument
+so that users can specify a consistent subset that C<func> will update
+(possibly to itself).  This function will fail if C<topic> has at least 1
+q/tuple and the result of C<func> does not have matching attribute names to
+those named by C<attrs>.
 
 =item C<function sys.std.QRelation.static_substitution result QRelation
 params { topic(QRelation), attrs(QTuple) }>
@@ -360,18 +368,19 @@ given in the C<attrs> argument.
 
 =item C<function sys.std.QRelation.substitution_in_restriction result
 QRelation params { topic(QRelation), restr_func(FuncRef),
-restr_assuming(QTuple)?, subst_func(FuncRef), subst_assuming(QTuple)? }>
+restr_assuming(QTuple)?, subst_attrs(set_of.Name), subst_func(FuncRef),
+subst_assuming(QTuple)? }>
 
 This function is like C<substitution> except that it only transforms a
 subset of the q/tuples of C<topic> rather than all of them.  It is a
 short-hand for first separating the q/tuples of C<topic> into 2 groups
 where those passed by a relational restriction (defined by C<restr_func>
-and C<restr_assuming>) are then transformed (defined by C<subst_func> and
-C<subst_assuming>), then the result of the substitution is unioned with the
-un-transformed group.  See also the C<substitution_in_semijoin> function,
-which is a simpler-syntax alternative for C<substitution_in_restriction> in
-its typical usage where restrictions are composed simply of anded or ored
-tests for attribute value equality.
+and C<restr_assuming>) are then transformed (defined by C<subst_attrs>,
+C<subst_func> and C<subst_assuming>), then the result of the substitution
+is unioned with the un-transformed group.  See also the
+C<substitution_in_semijoin> function, which is a simpler-syntax alternative
+for C<substitution_in_restriction> in its typical usage where restrictions
+are composed simply of anded or ored tests for attribute value equality.
 
 =item C<function sys.std.QRelation.static_substitution_in_restriction
 result QRelation params { topic(QRelation), restr_func(FuncRef),
@@ -383,8 +392,8 @@ C<sys.std.QRelation.substitution>.  See also the
 C<static_substitution_in_semijoin> function.
 
 =item C<function sys.std.QRelation.substitution_in_semijoin result
-QRelation params { topic(QRelation), restr(QRelation), subst_func(FuncRef),
-subst_assuming(QTuple)? }>
+QRelation params { topic(QRelation), restr(QRelation),
+subst_attrs(set_of.Name), subst_func(FuncRef), subst_assuming(QTuple)? }>
 
 This function is like C<substitution_in_restriction> except that the subset
 of the q/tuples of C<topic> to be transformed is determined by those

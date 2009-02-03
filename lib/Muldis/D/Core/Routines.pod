@@ -360,7 +360,7 @@ arguments.
 
 This function results in the extension of its C<topic> argument by joining
 that with its C<attrs> argument; the attribute names of the 2 arguments
-must be disjoint.  See also C<sys.std.Core.QTuple.product> for an N-ary
+must be disjoint.  See also C<sys.std.Core.QTuple.product> for an N-adic
 version of this.
 
 =item C<function sys.std.Core.QTuple.wrap result QTuple params {
@@ -378,7 +378,7 @@ of C<topic>, then the result has a single attribute whose value is the same
 as C<topic>. This function supports the new attribute having the same name
 as an old one being wrapped into it.  This function will fail if C<inner>
 specifies any attribute names that C<topic> doesn't have, or if C<outer> is
-the same as C<topic> attributes that aren't being wrapped.
+the same as a C<topic> attribute that isn't being wrapped.
 
 =item C<function sys.std.Core.QTuple.cmpl_wrap result QTuple params {
 topic(QTuple), cmpl_inner(set_of.Name), outer(Name) }>
@@ -392,8 +392,8 @@ topic(QTuple), outer(Name) }>
 This function is the inverse of C<sys.std.Core.QTuple.wrap>, such that it
 will unwrap a C<QTuple>-type attribute into its member attributes.  This
 function will fail if C<outer> specifies any attribute name that C<topic>
-doesn't have, or if an attribute of C<topic{outer}> is the same as another
-C<topic> attribute.
+doesn't have, or if an attribute of C<topic{outer}> has the same name as
+another C<topic> attribute.
 
 =item C<function sys.std.Core.QTuple.product result QTuple params {
 topic(quasi_set_of.QTuple) }>
@@ -499,7 +499,8 @@ topic(QRelation), inner(set_of.Name), outer(Name) }>
 This function is the same as C<sys.std.Core.QTuple.wrap> but that it
 operates on and results in a C<QRelation> rather than a C<QTuple>, where
 each of its member q/tuples was transformed as per
-C<sys.std.Core.QTuple.wrap>.
+C<sys.std.Core.QTuple.wrap>.  The result relation has the same cardinality
+as C<topic>.
 
 =item C<function sys.std.Core.QRelation.cmpl_wrap result QRelation params {
 topic(QRelation), cmpl_inner(set_of.Name), outer(Name) }>
@@ -575,13 +576,13 @@ ungroup of a q/relation on a q/relation-valued attribute will lose the
 information in any outer q/relation q/tuples whose inner q/relation value
 has zero q/tuples; a group on this result won't bring them back.  This
 function will fail if C<outer> specifies any attribute name that C<topic>
-doesn't have, or if an attribute of C<topic{outer}> is the same as another
-C<topic> attribute.  This function will fail with a non-C<Relation> valued
-C<topic> unless, for every q/tuple of C<topic>, the attribute specified by
-C<outer> is valued with a q/relation of the same degree and heading
-(attribute names); this failure is because there would be no consistent set
-of attribute names to extend C<topic> with (a problem that would never
-happen by definition with a non-quasi relation C<topic>).
+doesn't have, or if an attribute of C<topic{outer}> has the same name as
+another C<topic> attribute.  This function will fail with a non-C<Relation>
+valued C<topic> unless, for every q/tuple of C<topic>, the attribute
+specified by C<outer> is valued with a q/relation of the same degree and
+heading (attribute names); this failure is because there would be no
+consistent set of attribute names to extend C<topic> with (a problem that
+would never happen by definition with a non-quasi relation C<topic>).
 
 =item C<function sys.std.Core.QRelation.restriction result QRelation params
 { topic(QRelation), func(FuncRef), assuming(QTuple)? }>
@@ -655,7 +656,7 @@ q/relation, which is its C<topic> argument.  This function first performs a
 C<cmpl_group> on C<topic> using C<group_per> to specify which attributes
 get grouped into a new q/relation-valued attribute and which don't; those
 that don't instead get wrapped into a q/tuple-valued attribute.  Then, per
-q/tuple in the main q/relation, this function applies the
+binary q/tuple in the main q/relation, this function applies the
 C<QTuple>-resulting function named in its C<summ_func> argument when the
 latter function is curried by its C<summ_assuming> argument (passed to it
 as just C<assuming>); the curried function has, rather than the typical 1
@@ -664,21 +665,21 @@ C<per>, which are valued with the q/relation-valued attribute and
 q/tuple-valued attribute, respectively.  As per a function that C<map>
 applies, the function named by C<summ_func> effectively takes a whole
 post-grouping input q/tuple and results in a whole q/tuple; the applied
-function would directly invoke any N-ary / aggregate operators, and extract
+function would directly invoke any N-adic/aggregate operators, and extract
 their inputs from (or calculate) C<summarize> as it sees fit.  Note that
 C<summary> is not intended to be used to summarize an entire C<topic>
 q/relation at once (except by chance of it resolving to 1 group); you
-should instead invoke your summarize-all C<func> directly, or inline it,
-rather than by way of C<summary>, especially if you want a single-q/tuple
-result on an empty C<topic> (which C<summary>) won't do.  Now, C<summary>
-requires the extra C<result_attrs> argument to prevent ambiguity in the
-general case where C<topic> might have zero q/tuples, because in that
-situation, C<summ_func> would never be invoked, and the names of the
-attributes of the result are not known (we don't generally assume that
-C<summary> can reverse-engineer C<summ_func> to see what attributes it
-would have resulted in).  This function will fail if C<topic> has at least
-1 q/tuple and the result of C<summ_func> does not have matching attribute
-names to those named by C<result_attrs>.
+should instead invoke your summarize-all C<summ_func> directly, or inline
+it, rather than by way of C<summary>, especially if you want a
+single-q/tuple result on an empty C<topic> (which C<summary>) won't do.
+Now, C<summary> requires the extra C<result_attrs> argument to prevent
+ambiguity in the general case where C<topic> might have zero q/tuples,
+because in that situation, C<summ_func> would never be invoked, and the
+names of the attributes of the result are not known (we don't generally
+assume that C<summary> can reverse-engineer C<summ_func> to see what
+attributes it would have resulted in).  This function will fail if C<topic>
+has at least 1 q/tuple and the result of C<summ_func> does not have
+matching attribute names to those named by C<result_attrs>.
 
 =back
 
