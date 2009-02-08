@@ -29,14 +29,18 @@ use in working with the system catalog.
 
 =head1 FUNCTIONS FOR SIMPLE GENERIC SCALAR TYPES
 
-=item C<function sys.std.Core.Cat.Order_reverse result Order params {
+=head2 sys.std.Core.Cat.Order_reverse
+
+C<function sys.std.Core.Cat.Order_reverse result Order params {
 topic(Order) }>
 
 This function results in the reverse value of its argument; an
 C<Order:increase> or C<Order:decrease> argument results in the other one of
 the two; an C<Order:same> argument results in itself.
 
-=item C<function sys.std.Core.Cat.Order_reduction result Order params {
+=head2 sys.std.Core.Cat.Order_reduction
+
+C<function sys.std.Core.Cat.Order_reduction result Order params {
 topic(array_of.Order) }>
 
 This function results in the lowest-indexed of its N input element values
@@ -79,11 +83,11 @@ drop|unmount depots, set|clear topic namespaces, create|drop subdepots and
 packages, create|drop user-defined routines and data types; they can not
 create or drop relvars.
 
-=head2 Procedures For Defining Depot Mounts
+=head1 Procedures For Defining Depot Mounts
 
-=over
+=head2 sys.std.Core.Cat.create_depot_mount
 
-=item C<procedure sys.std.Core.Cat.create_depot_mount update {} read {
+C<procedure sys.std.Core.Cat.create_depot_mount update {} read {
 name(Name), comment(Comment)?, is_temporary(Bool)?, create_on_mount(Bool)?,
 delete_on_unmount(Bool)?, we_may_update(Bool)?, details(ScaLitExprNodeSet)?
 }>
@@ -95,7 +99,9 @@ details match the other arguments; the mount may be for either an existing
 depot or for a newly created one.  This procedure is analagous to a SQL
 CONNECT statement or SQLite ATTACH statement.
 
-=item C<procedure sys.std.Core.Cat.drop_depot_mount update {} read {
+=head2 sys.std.Core.Cat.drop_depot_mount
+
+C<procedure sys.std.Core.Cat.drop_depot_mount update {} read {
 name(Name) }>
 
 This procedure is an abstraction over deleting a tuple from the catalog
@@ -104,20 +110,20 @@ DBMS whose name is given by the argument; the depot behind the mount may
 then either cease to exist or persist on.  This procedure is analagous to a
 SQL DISCONNECT statement or SQLite DETACH statement.
 
-=item C<procedure sys.std.Core.Cat.alter_depot_mount_so_we_may_not_update
+=head2 sys.std.Core.Cat.alter_depot_mount_so_we_may_not_update
+
+C<procedure sys.std.Core.Cat.alter_depot_mount_so_we_may_not_update
 update {} read { name(Name) }>
 
 This procedure is an abstraction over updating a tuple of the catalog
 relvar C<mnt.cat.mounts> such that its C<we_may_update> attribute is made
 C<Bool:false>.
 
-=back
+=head1 Procedures For Defining Topic Namespaces
 
-=head2 Procedures For Defining Topic Namespaces
+=head2 sys.std.Core.Cat.select_topic_namespaces
 
-=over
-
-=item C<procedure sys.std.Core.Cat.select_topic_namespaces update {} read {
+C<procedure sys.std.Core.Cat.select_topic_namespaces update {} read {
 depot(maybe_of.Name)?, subdepot(maybe_of.DeclNameChain)?,
 package(maybe_of.Name)?, comment(Comment)? }>
 
@@ -129,9 +135,7 @@ default namespaces.  If C<subdepot> is a C<Single> then C<depot> must be;
 likewise C<package> depends on C<subdepot> and C<depot> (but C<subdepot>
 can be the empty name chain).
 
-=back
-
-=head2 Procedures For Defining In-Depot Namespaces
+=head1 Procedures For Defining In-Depot Namespaces
 
 These 4 procedures conceptually have the extra 2 parameters C<depot(Name),
 parent(DeclNameChain)?>, whose values are implicitly supplied from
@@ -139,9 +143,9 @@ C<tpc.cat.topic_(depot|subdepot)> respectively; those 1 or 2 (as
 applicable) catalog variables must be non-empty as a precondition to
 invoking the 4 procedures.
 
-=over
+=head2 sys.std.Core.Cat.create_subdepot
 
-=item C<procedure sys.std.Core.Cat.create_subdepot update {} read {
+C<procedure sys.std.Core.Cat.create_subdepot update {} read {
 name(Name), comment(Comment)? }>
 
 This procedure is an abstraction over inserting a tuple into the catalog
@@ -150,16 +154,19 @@ new subdepot, in the depot mounted under the name given by the C<depot>
 argument, whose name and other details match the other arguments.  This
 procedure is analagous to a SQL CREATE SCHEMA statement.
 
-=item C<procedure sys.std.Core.Cat.drop_subdepot update {} read {
-name(Name) }>
+=head2 sys.std.Core.Cat.drop_subdepot
+
+C<procedure sys.std.Core.Cat.drop_subdepot update {} read { name(Name) }>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.subdepots>.  It will drop an
 existing subdepot.  This procedure is analagous to a SQL DROP SCHEMA
 statement.
 
-=item C<procedure sys.std.Core.Cat.create_package update {} read {
-name(Name), comment(Comment)?, package(Package)? }>
+=head2 sys.std.Core.Cat.create_package
+
+C<procedure sys.std.Core.Cat.create_package update {} read { name(Name),
+comment(Comment)?, package(Package)? }>
 
 This procedure is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.packages>.  It will create a new
@@ -167,17 +174,16 @@ package, in the depot mounted under the name given by the C<depot>
 argument, whose name and other details match the other arguments.  This
 procedure is analagous to an Oracle CREATE PACKAGE statement.
 
-=item C<procedure sys.std.Core.Cat.drop_package update {} read { name(Name)
-}>
+=head2 sys.std.Core.Cat.drop_package
+
+C<procedure sys.std.Core.Cat.drop_package update {} read { name(Name) }>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.packages>.  It will drop an
 existing package.  This procedure is analagous to an Oracle DROP PACKAGE
 statement.
 
-=back
-
-=head2 Procedures For Defining Depot Routines and Data Types
+=head1 Procedures For Defining Depot Routines and Data Types
 
 These 8 procedures conceptually have the extra 2 parameters C<depot(Name),
 parent(DeclNameChain)?>, whose values are implicitly supplied from
@@ -185,12 +191,11 @@ C<tpc.cat.topic_(depot|subdepot)> respectively; those 1 or 2 (as
 applicable) catalog variables must be non-empty as a precondition to
 invoking the 4 procedures.
 
-=over
+=head2 sys.std.Core.Cat.create_depot_(function|updater|procedure)
 
-=item C<procedure
-sys.std.Core.Cat.create_depot_(function|updater|procedure) update {} read {
-name(Name), comment(Comment)?, head(Cat.(Func|Upd|Proc)Head),
-body(Cat.(Func|Upd|Proc)Body) }>
+C<procedure sys.std.Core.Cat.create_depot_(function|updater|procedure)
+update {} read { name(Name), comment(Comment)?,
+head(Cat.(Func|Upd|Proc)Head), body(Cat.(Func|Upd|Proc)Body) }>
 
 This procedure is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.(function|updater|procedure)s>.
@@ -199,7 +204,9 @@ the name given by the C<depot> argument, whose name and other details match
 the other arguments.  This procedure is analagous to a SQL CREATE
 FUNCTION|PROCEDURE statement.
 
-=item C<procedure sys.std.Core.Cat.drop_depot_(function|updater|procedure)
+=head2 sys.std.Core.Cat.drop_depot_(function|updater|procedure)
+
+C<procedure sys.std.Core.Cat.drop_depot_(function|updater|procedure)
 update {} read { name(Name) }>
 
 This procedure is an abstraction over deleting a tuple from the catalog
@@ -207,7 +214,9 @@ relvar C<fed.cat.mounts{name=$depot}.depot.(function|updater|procedure)s>.
 It will drop an existing depot function|updater|procedure.  This procedure
 is analagous to a SQL DROP FUNCTION|PROCEDURE statement.
 
-=item C<procedure sys.std.Core.Cat.create_depot_type update {} read {
+=head2 sys.std.Core.Cat.create_depot_type
+
+C<procedure sys.std.Core.Cat.create_depot_type update {} read {
 name(Name), comment(Comment)?, type(Type) }>
 
 This procedure is an abstraction over inserting a tuple into the catalog
@@ -216,17 +225,16 @@ type, in the depot mounted under the name given by the C<depot> argument,
 whose name and other details match the other arguments.  This procedure is
 analagous to a SQL CREATE TYPE|DOMAIN statement.
 
-=item C<procedure sys.std.Core.Cat.drop_depot_type update {} read {
-name(Name) }>
+=head2 sys.std.Core.Cat.drop_depot_type
+
+C<procedure sys.std.Core.Cat.drop_depot_type update {} read { name(Name) }>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.types>.  It will drop an
 existing depot type.  This procedure is analagous to a SQL DROP TYPE|DOMAIN
 statement.
 
-=back
-
-=head2 Procedures For Defining Package Routines and Data Types
+=head1 Procedures For Defining Package Routines and Data Types
 
 These 8 procedures conceptually have the extra 3 parameters C<depot(Name),
 subdepot(DeclNameChain)?, package(Name)>, whose values are implicitly
@@ -234,11 +242,10 @@ supplied from C<tpc.cat.topic_(depot|subdepot|package)> respectively; those
 2 or 3 (as applicable) catalog variables must be non-empty as a
 precondition to invoking the 4 procedures.
 
-=over
+=head2 sys.std.Core.Cat.create_package_(function|updater|procedure)
 
-=item C<procedure
-sys.std.Core.Cat.create_package_(function|updater|procedure) update {} read
-{ name(Name), comment(Comment)?, is_public(Bool)?,
+C<procedure sys.std.Core.Cat.create_package_(function|updater|procedure)
+update {} read { name(Name), comment(Comment)?, is_public(Bool)?,
 head(Cat.(Func|Upd|Proc)Head), body(Cat.(Func|Upd|Proc)Body) }>
 
 This procedure is an abstraction over inserting a tuple into the catalog
@@ -249,9 +256,10 @@ function|updater|procedure, in the package having the name given by the
 C<package> argument, in the depot mounted under the name given by the
 C<depot> argument, whose name and other details match the other arguments.
 
-=item C<procedure
-sys.std.Core.Cat.drop_package_(function|updater|procedure) update {} read {
-name(Name) }>
+=head2 sys.std.Core.Cat.drop_package_(function|updater|procedure)
+
+C<procedure sys.std.Core.Cat.drop_package_(function|updater|procedure)
+update {} read { name(Name) }>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot
@@ -259,7 +267,9 @@ relvar C<fed.cat.mounts{name=$depot}.depot
 .(function|updater|procedure)s>.  It will drop an existing package
 function|updater|procedure.
 
-=item C<procedure sys.std.Core.Cat.create_package_type update {} read {
+=head2 sys.std.Core.Cat.create_package_type
+
+C<procedure sys.std.Core.Cat.create_package_type update {} read {
 name(Name), comment(Comment)?, is_public(Bool)?, type(Type) }>
 
 This procedure is an abstraction over inserting a tuple into the catalog
@@ -269,15 +279,15 @@ new type, in the package having the name given by the C<package> argument,
 in the depot mounted under the name given by the C<depot> argument, whose
 name and other details match the other arguments.
 
-=item C<procedure sys.std.Core.Cat.drop_package_type update {} read {
+=head2 sys.std.Core.Cat.drop_package_type
+
+C<procedure sys.std.Core.Cat.drop_package_type update {} read {
 name(Name) }>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot
 .packages{parent=$subdepot,name=$package}.package.types>.  It will drop an
 existing package type.
-
-=back
 
 =head1 SEE ALSO
 

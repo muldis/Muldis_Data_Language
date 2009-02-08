@@ -45,15 +45,17 @@ in that they typically work with any q/relation types.  Each C<assuming>
 parameter is optional and defaults to the zero-attribute tuple if no
 explicit argument is given to it.
 
-=over
+=head2 sys.std.QRelation.degree
 
-=item C<function sys.std.QRelation.degree result NNInt params {
+C<function sys.std.QRelation.degree result NNInt params {
 topic(QRelation) }>
 
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
-=item C<function sys.std.QRelation.is_nullary result Bool params {
+=head2 sys.std.QRelation.is_nullary
+
+C<function sys.std.QRelation.is_nullary result Bool params {
 topic(QRelation) }>
 
 This function results in C<Bool:true> iff its argument has a degree of zero
@@ -61,13 +63,17 @@ This function results in C<Bool:true> iff its argument has a degree of zero
 definition, the only 2 q/relation values for which this function would
 result in C<Bool:true> are the only members of the type C<RelationD0>.
 
-=item C<function sys.std.QRelation.is_not_nullary result Bool params {
+=head2 sys.std.QRelation.is_not_nullary
+
+C<function sys.std.QRelation.is_not_nullary result Bool params {
 topic(QRelation) }>
 
 This function is exactly the same as C<sys.std.QRelation.is_nullary> except
 that it results in the opposite boolean value when given the same argument.
 
-=item C<function sys.std.QRelation.has_attrs result Bool params {
+=head2 sys.std.QRelation.has_attrs
+
+C<function sys.std.QRelation.has_attrs result Bool params {
 topic(QRelation), attrs(set_of.Name) }>
 
 This function results in C<Bool:true> iff, for every one of the attribute
@@ -75,13 +81,17 @@ names specified by its C<attrs> argument, its C<topic> argument has an
 attribute with that name; otherwise it results in C<Bool:false>.  As a
 trivial case, this function's result is C<Bool:true> if C<attrs> is empty.
 
-=item C<function sys.std.QRelation.attr_names result set_of.Name params {
+=head2 sys.std.QRelation.attr_names
+
+C<function sys.std.QRelation.attr_names result set_of.Name params {
 topic(QRelation) }>
 
 This function results in the set of the names of the attributes of its
 argument.
 
-=item C<function sys.std.QRelation.is_empty result Bool params {
+=head2 sys.std.QRelation.is_empty
+
+C<function sys.std.QRelation.is_empty result Bool params {
 topic(QRelation) }>
 
 This function results in C<Bool:true> iff its argument has a cardinality of
@@ -90,7 +100,9 @@ that if you are using a C<QMaybe> to represent a sparse data item,
 analagously to a SQL nullable context, then testing the C<QMaybe> with
 C<is_empty> is analagous to testing a SQL nullable with C<is null>.
 
-=item C<function sys.std.QRelation.is_not_empty result Bool params {
+=head2 sys.std.QRelation.is_not_empty
+
+C<function sys.std.QRelation.is_not_empty result Bool params {
 topic(QRelation) }>
 
 This function is exactly the same as C<sys.std.QRelation.is_empty> except
@@ -98,14 +110,18 @@ that it results in the opposite boolean value when given the same argument.
 And following the analogy with C<is_empty>, C<is_not_empty> is analagous to
 SQL's C<is not null>.
 
-=item C<function sys.std.QRelation.empty result Relation params {
+=head2 sys.std.QRelation.empty
+
+C<function sys.std.QRelation.empty result Relation params {
 topic(QRelation) }>
 
 This function results in the empty relation of the same heading of its
 argument, that is having the same degree and attribute names; it has zero
 tuples.
 
-=item C<function sys.std.QRelation.power_set result quasi_set_of.QRelation
+=head2 sys.std.QRelation.power_set
+
+C<function sys.std.QRelation.power_set result quasi_set_of.QRelation
 params { topic(QRelation) }>
 
 This function results in the power set of its argument.  The result is a
@@ -118,7 +134,9 @@ Note that the N-adic relational union of the power set of some q/relation
 is that q/relation; the N-adic intersection of any power set is the empty
 relation.
 
-=item C<function sys.std.QRelation.transitive_closure result QRelation
+=head2 sys.std.QRelation.transitive_closure
+
+C<function sys.std.QRelation.transitive_closure result QRelation
 params { topic(QRelation) }>
 
 This function results in the transitive closure of its argument.  The
@@ -135,7 +153,9 @@ support recursive queries, such as in connection with the "part explosion
 problem" (the problem of finding all components, at all levels, of some
 specified part).
 
-=item C<function sys.std.QRelation.reduction result QTuple params {
+=head2 sys.std.QRelation.reduction
+
+C<function sys.std.QRelation.reduction result QTuple params {
 topic(QRelation), func(FuncRef), assuming(QTuple)?, identity(QTuple) }>
 
 This function is a generic reduction operator that recursively takes each
@@ -152,16 +172,19 @@ name rather than a value, for consistency with C<func>.>  This function
 will fail|warn if the |declared headings of C<identity> and C<topic> aren't
 compatible.
 
-=item C<function sys.std.QRelation.maybe_reduction result
-quasi_maybe_of.QTuple params { topic(QRelation), func(FuncRef),
-assuming(QTuple)? }>
+=head2 sys.std.QRelation.maybe_reduction
+
+C<function sys.std.QRelation.maybe_reduction result quasi_maybe_of.QTuple
+params { topic(QRelation), func(FuncRef), assuming(QTuple)? }>
 
 This function is exactly the same as C<sys.std.QRelation.reduction> except
 that it does not take an C<identity> argument, and it results in a
 C<QMaybe> of what is otherwise the result type, and that result has zero
 elements if the argument has zero elements.
 
-=item C<function sys.std.QRelation.map result QRelation params {
+=head2 sys.std.QRelation.map
+
+C<function sys.std.QRelation.map result QRelation params {
 topic(QRelation), result_attrs(set_of.Name), func(FuncRef),
 assuming(QTuple)? }>
 
@@ -190,29 +213,31 @@ would have resulted in).  This function will fail if C<topic> has at least
 1 q/tuple and the result of C<func> does not have matching attribute names
 to those named by C<result_attrs>.
 
-=back
-
 =head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT QUASI-/RELATION FUNCTIONS
 
 These functions are applicable to mainly q/relation types, but are generic
 in that they typically work with any q/relation types.
 
-=over
+=head2 sys.std.QRelation.is_proper_subset
 
-=item C<function sys.std.QRelation.is_proper_subset result Bool params {
+C<function sys.std.QRelation.is_proper_subset result Bool params {
 look_in(QRelation), look_for(QRelation) }>
 
 This function is exactly the same as C<sys.std.Core.QRelation.is_subset>
 except that it results in C<Bool:false> if its 2 arguments are identical.
 
-=item C<function sys.std.QRelation.is_not_proper_subset result Bool params
+=head2 sys.std.QRelation.is_not_proper_subset
+
+C<function sys.std.QRelation.is_not_proper_subset result Bool params
 { look_in(QRelation), look_for(QRelation) }>
 
 This function is exactly the same as C<sys.std.QRelation.is_proper_subset>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.std.QRelation.is_disjoint result Bool params {
+=head2 sys.std.QRelation.is_disjoint
+
+C<function sys.std.QRelation.is_disjoint result Bool params {
 topic(QRelation), other(QRelation) }>
 
 This function results in C<Bool:true> iff the set of q/tuples comprising
@@ -220,14 +245,18 @@ each of its 2 arguments are mutually disjoint, that is, iff the
 intersection of the 2 arguments is empty; it results in C<Bool:false>
 otherwise.  This function's 2 parameters are mutually commutative.
 
-=item C<function sys.std.QRelation.is_not_disjoint result Bool params {
+=head2 sys.std.QRelation.is_not_disjoint
+
+C<function sys.std.QRelation.is_not_disjoint result Bool params {
 topic(QRelation), other(QRelation) }>
 
 This function is exactly the same as C<sys.std.QRelation.is_disjoint>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=item C<function sys.std.QRelation.exclusion result QRelation params {
+=head2 sys.std.QRelation.exclusion
+
+C<function sys.std.QRelation.exclusion result QRelation params {
 topic(quasi_bag_of.QRelation) }>
 
 This function results in the relational exclusion/exclusive-or of the N
@@ -242,7 +271,9 @@ given such, and the per-distinct-heading identity value for relational
 exclusion is the same as for relational union.  Note that this operation is
 also legitimately known as I<symmetric difference>.
 
-=item C<function sys.std.QRelation.composition result QRelation params {
+=head2 sys.std.QRelation.composition
+
+C<function sys.std.QRelation.composition result QRelation params {
 topic(QRelation), other(QRelation) }>
 
 This function results in the relational composition of its (mutually
@@ -254,7 +285,9 @@ were not involved in matching the q/tuples of the 2 arguments.  This
 function will fail|warn any time that C<join> would fail|warn on the same 2
 input q/relations.
 
-=item C<function sys.std.QRelation.join_with_group result QRelation params
+=head2 sys.std.QRelation.join_with_group
+
+C<function sys.std.QRelation.join_with_group result QRelation params
 { primary(QRelation), secondary(QRelation), group_attr(Name) }>
 
 This function is a short-hand for first taking a (natural inner) C<join> of
@@ -268,17 +301,15 @@ This function is a convenient tool for gathering both parent and child
 records from a database using a single query while avoiding duplication of
 the parent record values.
 
-=back
-
 =head1 SYSTEM-DEFINED RELATIONAL RANKING AND QUOTA FUNCTIONS
 
 These additional functions are specific to supporting ranking and quotas.
 Each C<ord_assuming> parameter is optional and defaults to the
 zero-attribute tuple if no explicit argument is given to it.
 
-=over
+=head2 sys.std.QRelation.rank
 
-=item C<function sys.std.QRelation.rank result QRelation params {
+C<function sys.std.QRelation.rank result QRelation params {
 topic(QRelation), name(Name), ord_func(FuncRef), ord_assuming(QTuple)? }>
 
 This function results in the relational extension of its C<topic> argument
@@ -299,7 +330,9 @@ also the C<sys.std.QArray.QArray_from_wrap> function, which is the same as
 C<sys.std.QRelation.rank> but that it wraps the source q/tuples rather than
 just adding an attribute to them.
 
-=item C<function sys.std.QRelation.limit result QRelation params {
+=head2 sys.std.QRelation.limit
+
+C<function sys.std.QRelation.limit result QRelation params {
 topic(QRelation), ord_func(FuncRef), ord_assuming(QTuple)?,
 min_rank(NNInt), max_rank(NNInt) }>
 
@@ -321,17 +354,15 @@ combination with "ORDER BY" but that the result q/tuples of C<limit> do not
 remain ordered (but see C<sys.std.QArray.limit_of_QArray_from_wrap> for an
 alternative).
 
-=back
-
 =head1 SYSTEM-DEFINED RELATIONAL SUBSTITUTION FUNCTIONS
 
 These additional functions are specific to supporting substitutions.  Each
 C<\w*assuming> parameter is optional and defaults to the zero-attribute
 tuple if no explicit argument is given to it.
 
-=over
+=head2 sys.std.QRelation.substitution
 
-=item C<function sys.std.QRelation.substitution result QRelation params {
+C<function sys.std.QRelation.substitution result QRelation params {
 topic(QRelation), attrs(set_of.Name), func(FuncRef), assuming(QTuple)? }>
 
 This function is similar to C<extension> except that it substitutes values
@@ -357,7 +388,9 @@ so that users can specify a consistent subset that C<func> will update
 q/tuple and the result of C<func> does not have matching attribute names to
 those named by C<attrs>.
 
-=item C<function sys.std.QRelation.static_substitution result QRelation
+=head2 sys.std.QRelation.static_substitution
+
+C<function sys.std.QRelation.static_substitution result QRelation
 params { topic(QRelation), attrs(QTuple) }>
 
 This function is a simpler-syntax alternative to
@@ -366,7 +399,9 @@ q/tuple of a q/relation, given in the C<topic> argument, is updated with
 identical values for the same attributes; the new attribute values are
 given in the C<attrs> argument.
 
-=item C<function sys.std.QRelation.subst_in_restr result QRelation params {
+=head2 sys.std.QRelation.subst_in_restr
+
+C<function sys.std.QRelation.subst_in_restr result QRelation params {
 topic(QRelation), restr_func(FuncRef), restr_assuming(QTuple)?,
 subst_attrs(set_of.Name), subst_func(FuncRef), subst_assuming(QTuple)? }>
 
@@ -381,7 +416,9 @@ C<subst_in_semijoin> function, which is a simpler-syntax alternative for
 C<subst_in_restr> in its typical usage where restrictions are composed
 simply of anded or ored tests for attribute value equality.
 
-=item C<function sys.std.QRelation.static_subst_in_restr result QRelation
+=head2 sys.std.QRelation.static_subst_in_restr
+
+C<function sys.std.QRelation.static_subst_in_restr result QRelation
 params { topic(QRelation), restr_func(FuncRef), restr_assuming(QTuple)?,
 subst(QTuple) }>
 
@@ -390,7 +427,9 @@ C<sys.std.QRelation.static_substitution> is to
 C<sys.std.QRelation.substitution>.  See also the
 C<static_subst_in_semijoin> function.
 
-=item C<function sys.std.QRelation.subst_in_semijoin result QRelation
+=head2 sys.std.QRelation.subst_in_semijoin
+
+C<function sys.std.QRelation.subst_in_semijoin result QRelation
 params { topic(QRelation), restr(QRelation), subst_attrs(set_of.Name),
 subst_func(FuncRef), subst_assuming(QTuple)? }>
 
@@ -399,22 +438,22 @@ q/tuples of C<topic> to be transformed is determined by those matched by a
 semijoin with C<restr> rather than those that pass a generic relational
 restriction.
 
-=item C<function sys.std.QRelation.static_subst_in_semijoin result
+=head2 sys.std.QRelation.static_subst_in_semijoin
+
+C<function sys.std.QRelation.static_subst_in_semijoin result
 QRelation params { topic(QRelation), restr(QRelation), subst(QTuple) }>
 
 This function is to C<sys.std.QRelation.subst_in_semijoin> what
 C<sys.std.QRelation.static_substitution> is to
 C<sys.std.QRelation.substitution>.
 
-=back
-
 =head1 SYSTEM-DEFINED RELATIONAL OUTER-JOIN FUNCTIONS
 
 These additional functions are specific to supporting outer-joins.
 
-=over
+=head2 sys.std.QRelation.outer_join_with_group
 
-=item C<function sys.std.QRelation.outer_join_with_group result QRelation
+C<function sys.std.QRelation.outer_join_with_group result QRelation
 params { primary(QRelation), secondary(QRelation), group_attr(Name) }>
 
 This function is the same as C<sys.std.QRelation.join_with_group> except
@@ -424,7 +463,9 @@ the result, but where there were no matching C<secondary> q/tuples, the
 result attribute named by C<group_attr> contains zero q/tuples rather than
 1+.
 
-=item C<function sys.std.QRelation.outer_join_with_maybes result QRelation
+=head2 sys.std.QRelation.outer_join_with_maybes
+
+C<function sys.std.QRelation.outer_join_with_maybes result QRelation
 params { primary(QRelation), secondary(QRelation) }>
 
 This function results in a plain half-outer natural join of its C<primary>
@@ -436,9 +477,10 @@ attribute value is a C<Nothing>.  The C<outer_join_with_maybes> function is
 Muldis D's answer to the SQL LEFT OUTER JOIN where SQL NULL is implicitly
 used in result rows that were a non-match.
 
-=item C<function sys.std.QRelation.outer_join_with_defaults result
-QRelation params { primary(QRelation), secondary(QRelation),
-filler(TypeRef) }>
+=head2 sys.std.QRelation.outer_join_with_defaults
+
+C<function sys.std.QRelation.outer_join_with_defaults result QRelation
+params { primary(QRelation), secondary(QRelation), filler(TypeRef) }>
 
 This function is the same as
 C<sys.std.QRelation.outer_join_with_static_exten> but that the filler
@@ -447,9 +489,10 @@ in the C<filler> argument.  This function is a short-hand for invoking
 C<outer_join_with_static_exten> with the result from invoking
 C<sys.std.Core.Universal.default>.
 
-=item C<function sys.std.QRelation.outer_join_with_static_exten result
-QRelation params { primary(QRelation), secondary(QRelation), filler(QTuple)
-}>
+=head2 sys.std.QRelation.outer_join_with_static_exten
+
+C<function sys.std.QRelation.outer_join_with_static_exten result QRelation
+params { primary(QRelation), secondary(QRelation), filler(QTuple) }>
 
 This function is the same as C<sys.std.QRelation.outer_join_with_maybes>
 but that C<secondary>-sourced result attributes are not converted to
@@ -459,7 +502,9 @@ whose heading matches the projection of C<secondary>'s attributes that
 aren't in common with C<primary>, and whose body is the literal values to
 use for those missing attribute values.
 
-=item C<function sys.std.QRelation.outer_join_with_exten result QRelation
+=head2 sys.std.QRelation.outer_join_with_exten
+
+C<function sys.std.QRelation.outer_join_with_exten result QRelation
 params { primary(QRelation), secondary(QRelation), exten_func(FuncRef),
 exten_assuming(QTuple)? }>
 
@@ -473,13 +518,11 @@ C<exten_assuming> argument.  The C<exten_assuming> parameter is optional
 and defaults to the zero-attribute tuple if no explicit argument is given
 to it.
 
-=back
-
 =head1 SYSTEM-DEFINED GENERIC RELVAR UPDATERS
 
-=over
+=head2 sys.std.QRelation.assign_empty
 
-=item C<updater sys.std.QRelation.assign_empty update { topic(QRelation) }
+C<updater sys.std.QRelation.assign_empty update { topic(QRelation) }
 read {}>
 
 This update operator is a short-hand for first invoking the
@@ -487,7 +530,9 @@ C<sys.std.QRelation.empty> function with the same argument, and then
 assigning the result of that function to C<topic>.  This updater is
 analagous to the SQL "TRUNCATE" statement.
 
-=item C<updater sys.std.QRelation.assign_exclusion update {
+=head2 sys.std.QRelation.assign_exclusion
+
+C<updater sys.std.QRelation.assign_exclusion update {
 topic(QRelation) } read { other(QRelation) }>
 
 This update operator is a short-hand for first invoking the
@@ -495,7 +540,9 @@ C<sys.std.QRelation.exclusion> function such that it has 2 input
 q/relations from C<assign_exclusion>'s 2 arguments, and then assigning the
 result of that function to C<topic>.
 
-=item C<updater sys.std.QRelation.assign_substitution update {
+=head2 sys.std.QRelation.assign_substitution
+
+C<updater sys.std.QRelation.assign_substitution update {
 topic(QRelation) } read { func(FuncRef), assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
@@ -504,14 +551,18 @@ and then assigning the result of that function to C<topic>.  This updater
 is analagous to the general case of the unconditional SQL "UPDATE"
 statement.
 
-=item C<updater sys.std.QRelation.assign_static_substitution update {
+=head2 sys.std.QRelation.assign_static_substitution
+
+C<updater sys.std.QRelation.assign_static_substitution update {
 topic(QRelation) } read { attrs(QTuple) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.static_substitution> function with the same
 arguments, and then assigning the result of that function to C<topic>.
 
-=item C<updater sys.std.QRelation.assign_subst_in_restr update {
+=head2 sys.std.QRelation.assign_subst_in_restr
+
+C<updater sys.std.QRelation.assign_subst_in_restr update {
 topic(QRelation) } read { restr_func(FuncRef), restr_assuming(QTuple)?,
 subst_func(FuncRef), subst_assuming(QTuple)? }>
 
@@ -520,7 +571,9 @@ C<sys.std.Core.QRelation.subst_in_restr> function with the same arguments,
 and then assigning the result of that function to C<topic>.  This updater
 is analagous to the general case of the conditional SQL "UPDATE" statement.
 
-=item C<updater sys.std.QRelation.assign_static_subst_in_restr update {
+=head2 sys.std.QRelation.assign_static_subst_in_restr
+
+C<updater sys.std.QRelation.assign_static_subst_in_restr update {
 topic(QRelation) } read { restr_func(FuncRef), restr_assuming(QTuple)?,
 subst(QTuple) }>
 
@@ -528,7 +581,9 @@ This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.static_subst_in_restr> function with the same
 arguments, and then assigning the result of that function to C<topic>.
 
-=item C<updater sys.std.QRelation.assign_subst_in_semijoin update {
+=head2 sys.std.QRelation.assign_subst_in_semijoin
+
+C<updater sys.std.QRelation.assign_subst_in_semijoin update {
 topic(QRelation) } read { restr(QRelation), subst_func(FuncRef),
 subst_assuming(QTuple)? }>
 
@@ -539,14 +594,14 @@ This updater is analagous to the common case of the conditional SQL
 "UPDATE" statement where the criteria is simply a set of and-ed and or-ed
 value equality tests.
 
-=item C<updater sys.std.QRelation.assign_static_subst_in_semijoin update {
+=head2 sys.std.QRelation.assign_static_subst_in_semijoin
+
+C<updater sys.std.QRelation.assign_static_subst_in_semijoin update {
 topic(QRelation) } read { restr(QRelation), subst(QTuple) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.static_subst_in_semijoin> function with the same
 arguments, and then assigning the result of that function to C<topic>.
-
-=back
 
 =head1 SEE ALSO
 
