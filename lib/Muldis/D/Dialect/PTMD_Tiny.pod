@@ -222,7 +222,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | Q? Array
         | Q? Bag
         | [UTC | Float] Instant
-        | Duration
+        | UTCDuration
     }
 
     token type_name { <name_chain_payload> }
@@ -243,8 +243,8 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <qscalar_payload>
         | <qtuple_payload>
         | <qrelation_payload>
-        | <instant_payload>
-        | <duration_payload>
+        | <utc_instant_payload>
+        | <utc_duration_payload>
     }
 
 So a C<value> node has 1-3 elements in general:
@@ -290,18 +290,18 @@ would typically want to use the following grammar for C<value> instead:
         | <string>
         | <blob>
         | <text>
+        | <rat>
         | <name>
         | <name_chain>
         | <decl_name_chain>
         | <comment>
         | <order>
+        | <rat_round_meth>
         | <qscalar>
         | <qtuple>
         | <qrelation>
-        | <rat>
-        | <rat_round_meth>
-        | <instant>
-        | <duration>
+        | <utc_instant>
+        | <utc_duration>
     }
 
 For GCVL examples, see the subsequent documentation sections.
@@ -945,13 +945,13 @@ Examples:
 
 Grammar:
 
-    token instant {
+    token utc_instant {
         [UTC | Float] Instant <value_node_elem_sep>
         [<type_name> <value_node_elem_sep>]?
-        <instant_payload>
+        <utc_instant_payload>
     }
 
-    token instant_payload {
+    token utc_instant_payload {
         [<int_max_col_val> <value_payload_elem_sep>]?
         <ord_list_open>
             <int_body>? <list_elem_sep>
@@ -973,17 +973,17 @@ Examples:
 
     FloatInstant:[1407,,,,,]
 
-=head2 sys.std.Temporal.Type.Duration
+=head2 sys.std.Temporal.Type.UTCDuration
 
 Grammar:
 
-    token duration {
-        Duration <value_node_elem_sep>
+    token utc_duration {
+        UTCDuration <value_node_elem_sep>
         [<type_name> <value_node_elem_sep>]?
-        <duration_payload>
+        <utc_duration_payload>
     }
 
-    token duration_payload {
+    token utc_duration_payload {
         [<int_max_col_val> <value_payload_elem_sep>]?
         <ord_list_open>
             [<int_body>? <list_elem_sep>] ** 5
@@ -993,7 +993,7 @@ Grammar:
 
 Examples:
 
-    Duration:[3,5,1,6,15,45.000012]
+    UTCDuration:[3,5,1,6,15,45.000012]
 
 =head1 BOOTLOADER
 
