@@ -60,6 +60,10 @@ more or less:
                 sys.std.Core.Type.Cat.Comment
                 sys.std.Core.Type.Cat.Order
 
+                # The following are all regular non-ordered scalar types.
+
+                sys.std.Core.Type.Cat.RatRoundMeth
+
         sys.std.Core.Type.QTuple
             sys.std.Core.Type.Tuple
 
@@ -80,6 +84,7 @@ more or less:
                 sys.std.Core.Type.Cat.InnerUnionType
                 sys.std.Core.Type.Cat.InnerRestrType
                 sys.std.Core.Type.Cat.IfThenMap
+                sys.std.Core.Type.Cat.RatRoundRule
 
                 sys.std.Core.Type.Database
 
@@ -268,6 +273,33 @@ declared type of a routine parameter that would take the name of an
 C<order_determination> function, but that parameter is optional and should
 default to the system-defined q/scalar ordering function when no argument
 is given to it.
+
+=head2 sys.std.Core.Type.Cat.RatRoundMeth
+
+This is a structure data type.  C<RatRoundMeth> (rounding method) consists
+of just the 7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
+C<to_ceiling>, C<to_zero>, C<to_inf>.  A C<RatRoundMeth> has 1
+system-defined possrep whose name is the empty string, which has 1
+C<Name>-typed attribute whose name is the empty string.  When a value
+of some ordered type needs to be mapped into a proper subtype that doesn't
+contain that value, such as when mapping an arbitrary number to one with
+less precision, some rounding method is applied to determine which value of
+the subtype is to be mapped to while most accurately reflecting the
+original value.  The C<RatRoundMeth> type enumerates the rounding methods
+that Muldis D operators can typically apply.  With C<half_down>,
+C<half_up>, and C<half_even> (aka I<unbiased rounding>, I<convergent
+rounding>, I<statistician's rounding>, or I<bankers' rounding>), the
+original value will be mapped to the single target value that it is closest
+to, if there is one; otherwise, if it is exactly half-way between 2
+adjacent target values, then C<half_down> will round towards negative
+infinity, C<half_up> will round towards positive infinity, and C<half_even>
+will round towards the nearest "even" target.  With C<to_floor>,
+C<to_ceiling>, C<to_zero> (aka I<truncate>), C<to_inf>, the original value
+will always be mapped to the single adjacent value that is lower than it,
+or higher than it, or towards "zero" from it, or towards the nearer
+infinity from it, respectively.  The default value of C<RatRoundMeth> is
+C<half_up>, since that is the most commonly used method of rounding.  The
+C<RatRoundMeth> type does I<not> have a default ordering algorithm.
 
 =head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
 
@@ -3446,6 +3478,24 @@ result is the result of the whole g-w-d expression; otherwise, C<then> is
 not evaluated.  For a g-w-d statement, if a C<when> value is matched, then
 the C<then> statement node is invoked; otherwise, C<then> is not invoked.
 Its default value has zero tuples.
+
+=head2 sys.std.Core.Type.Cat.RatRoundRule
+
+A C<RatRoundRule> is a C<Tuple>.  It specifies a controlled (and typically
+degrading) coercion of a real number into a rational number having a
+specific radix and precision.  It is mainly used to deterministically
+massage an operation, whose conceptual result is generally an irrational
+number, so that its actual result is a best approximating rational number.
+It is also used to define a generic rounding operation on a rational number
+that derives a typically less precise rational.  A C<RatRoundRule> has
+these 3 attributes: C<radix> (a C<PInt2_N>), C<max_denom> (a C<PInt>), and
+C<round_meth> (a C<RatRoundMeth>).  The rational resulting from the
+operation is as close as possible to the conceptual result but that its
+denominator is a non-negative power of C<radix> and said denominator is not
+larger than C<max_denom>; if rounding is needed, then C<round_meth>
+dictates the rounding method.  The default value of C<RatRoundRule>
+specifies a coersion to a whole number using the C<half_up> rounding method
+(its radix is 2 and its max denom is 1).
 
 =head1 TYPES FOR SPECIAL ENTITY REFERENCES
 

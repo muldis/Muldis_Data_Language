@@ -206,11 +206,13 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | String
         | Blob
         | Text
+        | Rat
         | Name
         | NameChain
         | DeclNameChain
         | Comment
         | Order
+        | RatRoundMeth
         | Q? Scalar
         | Q? Tuple
         | Q? Relation
@@ -219,8 +221,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | Q? Single
         | Q? Array
         | Q? Bag
-        | Rat
-        | RatRoundMeth
         | [UTC | Float] Instant
         | Duration
     }
@@ -233,16 +233,16 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <string_payload>
         | <blob_payload>
         | <text_payload>
+        | <rat_payload>
         | <name_payload>
         | <name_chain_payload>
         | <decl_name_chain_payload>
         | <comment_payload>
         | <order_payload>
+        | <rat_round_meth_payload>
         | <qscalar_payload>
         | <qtuple_payload>
         | <qrelation_payload>
-        | <rat_payload>
-        | <rat_round_meth_payload>
         | <instant_payload>
         | <duration_payload>
     }
@@ -469,6 +469,59 @@ Examples:
 
     Text:'Perl'
 
+=head2 sys.std.Core.Type.Rat
+
+Grammar:
+
+    token rat {
+        Rat <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <rat_payload>
+    }
+
+    token rat_payload {
+        [<int_max_col_val> <value_payload_elem_sep>]?
+        <rat_body>
+    }
+
+    token rat_body {
+          <int_body>\.?<pint_tail>?
+        | <int_body> \s* \/ \s* <pint_body>
+        | <int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
+    }
+
+    token nnrat_body {
+          <nnint_body>\.?<pint_tail>?
+        | <nnint_body> \s* \/ \s* <pint_body>
+        | <nnint_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
+    }
+
+Examples:
+
+    Rat:1;-1.1
+
+    Rat:-1.5
+
+    Rat:3.14159
+
+    Rat:A;0.0
+
+    Rat:F;DEADBEEF.FACE
+
+    Rat:Z;0.000AZE
+
+    Rat:6;500001/1000
+
+    Rat:B;A09B/A
+
+    Rat:1;1011101101*10^-11011
+
+    Rat:45207196*10^37
+
+    Rat:1/43
+
+    Rat:314159*10^-5
+
 =head2 sys.std.Core.Type.Cat.Name
 
 Grammar:
@@ -566,6 +619,28 @@ Examples:
 
     Order:same
 
+=head2 sys.std.Core.Type.Cat.RatRoundMeth
+
+Grammar:
+
+    token rat_round_meth {
+        RatRoundMeth <value_node_elem_sep>
+        <rat_round_meth_payload>
+    }
+
+    token rat_round_meth_payload {
+        [
+              half_down | half_up
+            | half_even
+            | to_floor | to_ceiling
+            | to_zero | to_inf
+        ]
+    }
+
+Examples:
+
+    RatRoundMeth:half_up
+
 =head1 GENERIC Q/SCALAR AND Q/NONSCALAR VALUE LITERALS
 
 =head2 sys.std.Core.Type.(Q|)Scalar
@@ -589,7 +664,7 @@ Grammar:
 
 Examples:
 
-    Scalar:sys.std.Rational.Type.Rat:float;{
+    Scalar:sys.std.Core.Type.Rat:float;{
         mantissa => Int:45207196,
         radix    => Int:10,
         exponent => Int:37
@@ -864,83 +939,6 @@ Examples:
         Text:'Baz'
     }
 
-=head1 RATIONAL EXTENSION SCALAR VALUE LITERALS
-
-=head2 sys.std.Rational.Type.Rat
-
-Grammar:
-
-    token rat {
-        Rat <value_node_elem_sep>
-        [<type_name> <value_node_elem_sep>]?
-        <rat_payload>
-    }
-
-    token rat_payload {
-        [<int_max_col_val> <value_payload_elem_sep>]?
-        <rat_body>
-    }
-
-    token rat_body {
-          <int_body>\.?<pint_tail>?
-        | <int_body> \s* \/ \s* <pint_body>
-        | <int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
-    }
-
-    token nnrat_body {
-          <nnint_body>\.?<pint_tail>?
-        | <nnint_body> \s* \/ \s* <pint_body>
-        | <nnint_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
-    }
-
-Examples:
-
-    Rat:1;-1.1
-
-    Rat:-1.5
-
-    Rat:3.14159
-
-    Rat:A;0.0
-
-    Rat:F;DEADBEEF.FACE
-
-    Rat:Z;0.000AZE
-
-    Rat:6;500001/1000
-
-    Rat:B;A09B/A
-
-    Rat:1;1011101101*10^-11011
-
-    Rat:45207196*10^37
-
-    Rat:1/43
-
-    Rat:314159*10^-5
-
-=head2 sys.std.Rational.Type.RatRoundMeth
-
-Grammar:
-
-    token rat_round_meth {
-        RatRoundMeth <value_node_elem_sep>
-        <rat_round_meth_payload>
-    }
-
-    token rat_round_meth_payload {
-        [
-              half_down | half_up
-            | half_even
-            | to_floor | to_ceiling
-            | to_zero | to_inf
-        ]
-    }
-
-Examples:
-
-    RatRoundMeth:half_up
-
 =head1 TEMPORAL EXTENSION SCALAR VALUE LITERALS
 
 =head2 sys.std.Temporal.Type.(UTC|Float)Instant
@@ -1161,7 +1159,7 @@ So for example, one can just write C<Int> rather than
 C<sys.std.Core.Type.Int>, C<is_identical> rather than
 C<sys.std.Core.Universal.is_identical>, C<QTuple.attr> rather than
 C<sys.std.Core.QTuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
-C<array_of.Rat> rather than C<array_of.sys.std.Rational.Type.Rat>, and so
+C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so
 on.
 
 The C<auto_unabbrev_std_names> pragma intentionally does not empower auto

@@ -98,12 +98,12 @@ Every PHMD node representing a Muldis D value literal has 1-3 elements:
 
 Node kind: a Perl C<Str> value of the format C<< <[ a..z A..Z 0..9 _ ]>+
 >>.  All of the PHMD node kinds for Muldis D value literals are these 30:
-C<Bool>, C<Int>, C<String>, C<Blob>, C<Text>, C<Name>, C<NameChain>,
-C<DeclNameChain>, C<Comment>, C<Order>, C<(Q|)Scalar>, C<(Q|)Tuple>,
-C<(Q|)Relation>, C<(Q|)Set>, C<Nothing>, C<(Q|)Single>, C<(Q|)Array>,
-C<(Q|)Bag>, C<Rat>, C<RatRoundMeth>, C<(UTC|Float)Instant>, C<Duration>.
-All of the non-value-literal PHMD node kinds currently defined are these 2:
-C<Muldis_D>, C<boot_stmt>.
+C<Bool>, C<Int>, C<String>, C<Blob>, C<Text>, C<Rat>, C<Name>,
+C<NameChain>, C<DeclNameChain>, C<Comment>, C<Order>, C<RatRoundMeth>,
+C<(Q|)Scalar>, C<(Q|)Tuple>, C<(Q|)Relation>, C<(Q|)Set>, C<Nothing>,
+C<(Q|)Single>, C<(Q|)Array>, C<(Q|)Bag>, C<(UTC|Float)Instant>,
+C<Duration>.  All of the non-value-literal PHMD node kinds currently
+defined are these 2: C<Muldis_D>, C<boot_stmt>.
 
 =item *
 
@@ -270,6 +270,38 @@ Examples:
 
     :Text<Perl>
 
+=head2 sys.std.Core.Type.Rat
+
+This node kind represents a rational value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Rat> value as follows:  The payload must
+be a Perl C<Rat|Num|Int>, which is mapped directly.
+
+Examples:
+
+    :Rat(:2<-1.1>)
+
+    :Rat(-1.5) # same val as prev
+
+    :Rat(3.14159)
+
+    :Rat(:11<0.0>)
+
+    :Rat(:16<DEADBEEF.FACE>)
+
+    :Rat(:36<0.000AZE>)
+
+    :Rat(:7<500001> div :7<1000>)
+
+    :Rat(:12<A09B> div :12<A>)
+
+    :Rat(:2<1011101101> * :2<10> ** :2<-11011>)
+
+    :Rat(45207196 * 10 ** 37)
+
+    :Rat(1 div 43)
+
+    :Rat(314159 * 10 ** -5)
+
 =head2 sys.std.Core.Type.Cat.Name
 
 This node kind represents a canonical short name for any kind of DBMS
@@ -361,6 +393,18 @@ Examples:
 
     :Order(Order::Same)
 
+=head2 sys.std.Core.Type.Cat.RatRoundMeth
+
+This node kind represents a rounding method.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Cat.RatRoundMeth> value by directly mapping
+the payload.  The payload must be a Perl C<Str> having one of the 7
+values C<half_down>, C<half_up>, C<half_even>, C<to_floor>, C<to_ceiling>,
+C<to_zero>, C<to_inf>.
+
+Examples:
+
+    :RatRoundMeth<half_up>
+
 =head1 GENERIC Q/SCALAR AND Q/NONSCALAR VALUE LITERALS
 
 =head2 sys.std.Core.Type.(Q|)Scalar
@@ -386,7 +430,7 @@ syntax for literals.)
 
 Examples:
 
-    [ 'Scalar', 'sys.std.Rational.Type.Rat', float => {
+    [ 'Scalar', 'sys.std.Core.Type.Rat', float => {
         mantissa => :Int(45207196),
         radix    => :Int(10),
         exponent => :Int(37),
@@ -597,52 +641,6 @@ Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
         :Text<Baz>,
         :Text<Baz>,
     ] ) )
-
-=head1 RATIONAL EXTENSION SCALAR VALUE LITERALS
-
-=head2 sys.std.Rational.Type.Rat
-
-This node kind represents a rational value.  This node is interpreted as a
-Muldis D C<sys.std.Rational.Type.Rat> value as follows:  The payload must
-be a Perl C<Rat|Num|Int>, which is mapped directly.
-
-Examples:
-
-    :Rat(:2<-1.1>)
-
-    :Rat(-1.5) # same val as prev
-
-    :Rat(3.14159)
-
-    :Rat(:11<0.0>)
-
-    :Rat(:16<DEADBEEF.FACE>)
-
-    :Rat(:36<0.000AZE>)
-
-    :Rat(:7<500001> div :7<1000>)
-
-    :Rat(:12<A09B> div :12<A>)
-
-    :Rat(:2<1011101101> * :2<10> ** :2<-11011>)
-
-    :Rat(45207196 * 10 ** 37)
-
-    :Rat(1 div 43)
-
-    :Rat(314159 * 10 ** -5)
-
-=head2 sys.std.Rational.Type.RatRoundMeth
-
-This node kind represents a rounding method.  This node is interpreted as a
-Muldis D C<sys.std.Rational.Type.RatRoundMeth> value by directly mapping
-the payload.  The payload must be a Perl C<Str> having one of the 7
-values C<half_down>, C<half_up>, C<half_even>, C<to_floor>, C<to_ceiling>,
-C<to_zero>, C<to_inf>.
-
-Examples:
-
-    :RatRoundMeth<half_up>
 
 =head1 TEMPORAL EXTENSION SCALAR VALUE LITERALS
 
@@ -890,7 +888,7 @@ So for example, one can just write C<Int> rather than
 C<sys.std.Core.Type.Int>, C<is_identical> rather than
 C<sys.std.Core.Universal.is_identical>, C<QTuple.attr> rather than
 C<sys.std.Core.QTuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
-C<array_of.Rat> rather than C<array_of.sys.std.Rational.Type.Rat>, and so
+C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so
 on.
 
 The C<auto_unabbrev_std_names> pragma intentionally does not empower auto

@@ -96,12 +96,12 @@ Every PHMD node representing a Muldis D value literal has 1-3 elements:
 
 Node kind: a Perl character string of the format C<< <[ a..z A..Z 0..9 _
 ]>+ >>.  All of the PHMD node kinds for Muldis D value literals are these
-30: C<Bool>, C<Int>, C<String>, C<Blob>, C<Text>, C<Name>, C<NameChain>,
-C<DeclNameChain>, C<Comment>, C<Order>, C<(Q|)Scalar>, C<(Q|)Tuple>,
-C<(Q|)Relation>, C<(Q|)Set>, C<Nothing>, C<(Q|)Single>, C<(Q|)Array>,
-C<(Q|)Bag>, C<Rat>, C<RatRoundMeth>, C<(UTC|Float)Instant>, C<Duration>.
-All of the non-value-literal PHMD node kinds currently defined are these 2:
-C<Muldis_D>, C<boot_stmt>.
+30: C<Bool>, C<Int>, C<String>, C<Blob>, C<Text>, C<Rat>, C<Name>,
+C<NameChain>, C<DeclNameChain>, C<Comment>, C<Order>, C<RatRoundMeth>,
+C<(Q|)Scalar>, C<(Q|)Tuple>, C<(Q|)Relation>, C<(Q|)Set>, C<Nothing>,
+C<(Q|)Single>, C<(Q|)Array>, C<(Q|)Bag>, C<(UTC|Float)Instant>,
+C<Duration>.  All of the non-value-literal PHMD node kinds currently
+defined are these 2: C<Muldis_D>, C<boot_stmt>.
 
 =item *
 
@@ -353,6 +353,87 @@ Examples:
 
     [ 'Text', 'Perl' ]
 
+=head2 sys.std.Core.Type.Rat
+
+This node kind represents a rational value.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Rat> value as follows:
+
+=over
+
+=item *
+
+If the payload is a Perl scalar, then it must be just a canonical numeric
+value according to Perl, and it is mapped directly; since native Perl
+numerics are limited precision or are inexact (IEEE float), larger numerics
+can be represented by a Perl character string of the format C<< 0\.?<[ 0..9
+_ ]>* >> or C<< \-?<[1..9]><[ 0..9 _ ]>*\.?<[ 0..9 _ ]>* >> that is
+interpreted as base 10.
+
+=item *
+
+An alternative payload format is a C<bigrat|bignum|bigint> object, which is
+conceptually the closest thing Perl 5 has in core to a "big rational".
+
+=item *
+
+If the payload is a Perl array ref, then the payload must have exactly 2 or
+3 elements, each of which constitutes a valid payload of an C<Int> PHMD
+node.  If the payload has 2 elements, then the rational's value is
+interpreted as the first element (a numerator) divided by the second (a
+denominator).  If the payload has 3 elements, then the rational's value is
+interpreted as the first element (a mantissa) multiplied by the result of
+the second element (a radix) taken to the power of the third (an exponent).
+
+=item *
+
+If the payload is a Perl hash ref, then it must have 1 element, whose key
+and value are designated, in order, I<max-col-val> and I<main payload>; the
+max-col-val must be a Perl string composed of a single C<[ 1..9 A..Z ]>
+character.  If the main payload is a Perl scalar, then the main payload
+must be a Perl character string of the format C<< 0\.?<[ 0..9 A..Z _ ]>* >>
+or C<< \-?<[ 1..9 A..Z ]><[ 0..9 A..Z _ ]>*\.?<[ 0..9 A..Z _ ]>* >>.  This
+format specifically is what the Plain Text Muldis D grammar uses as one
+general form for rational literals, and is the result of parsing it.  The
+main payload is interpreted as a base-I<N> rational where I<N> might be
+between 2 and 36, and the given max-col-val says which possible value of
+I<N> to use.  Assuming all column values are between zero and
+I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
+specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].  If the main
+payload is a Perl array ref, then the main payload must have exactly 2 or 3
+elements, and every pairwise combination of the max-col-val with the
+elements of the main payload must, when appropriately wrapped in a Perl
+hash ref, must constitute a valid hash ref payload for an C<Int> PHMD node;
+the meaning of the 2 or 3 main payload elements is the same as the 2 or 3
+payload elements mentioned in the previous bullet point.
+
+=back
+
+Examples:
+
+    [ 'Rat', { 1 => '-1.1' } ]
+
+    [ 'Rat', -1.5 ] # same val as prev
+
+    [ 'Rat', 3.14159 ]
+
+    [ 'Rat', { A => '0.0' } ]
+
+    [ 'Rat', { F => 'DEADBEEF.FACE' } ]
+
+    [ 'Rat', { Z => '0.000AZE' } ]
+
+    [ 'Rat', { 6 => [ '500001', '1000' ] } ]
+
+    [ 'Rat', { B => [ 'A09B', 'A' ] } ]
+
+    [ 'Rat', { 1 => [ '1011101101', '10', '-11011' ] } ]
+
+    [ 'Rat', [ '45207196', '10', '37' ] ]
+
+    [ 'Rat', [ 1, 43 ] ]
+
+    [ 'Rat', [ 314159, 10, -5 ] ]
+
 =head2 sys.std.Core.Type.Cat.Name
 
 This node kind represents a canonical short name for any kind of DBMS
@@ -464,6 +545,18 @@ Examples:
 
     [ 'Order', (2 <=> 1) ]
 
+=head2 sys.std.Core.Type.Cat.RatRoundMeth
+
+This node kind represents a rounding method.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Cat.RatRoundMeth> value by directly mapping
+the payload.  The payload must be a Perl character string having one of the
+7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
+C<to_ceiling>, C<to_zero>, C<to_inf>.
+
+Examples:
+
+    [ 'RatRoundMeth', 'half_up' ]
+
 =head1 GENERIC Q/SCALAR AND Q/NONSCALAR VALUE LITERALS
 
 =head2 sys.std.Core.Type.(Q|)Scalar
@@ -489,7 +582,7 @@ own dedicated syntax for literals.)
 
 Examples:
 
-    [ 'Scalar', 'sys.std.Rational.Type.Rat', [ 'float', {
+    [ 'Scalar', 'sys.std.Core.Type.Rat', [ 'float', {
         'mantissa' => [ 'Int', 45207196 ],
         'radix'    => [ 'Int', 10 ],
         'exponent' => [ 'Int', 37 ],
@@ -728,101 +821,6 @@ Examples:
         [ 'Text', 'Baz' ],
         [ 'Text', 'Baz' ],
     ] ]
-
-=head1 RATIONAL EXTENSION SCALAR VALUE LITERALS
-
-=head2 sys.std.Rational.Type.Rat
-
-This node kind represents a rational value.  This node is interpreted as a
-Muldis D C<sys.std.Rational.Type.Rat> value as follows:
-
-=over
-
-=item *
-
-If the payload is a Perl scalar, then it must be just a canonical numeric
-value according to Perl, and it is mapped directly; since native Perl
-numerics are limited precision or are inexact (IEEE float), larger numerics
-can be represented by a Perl character string of the format C<< 0\.?<[ 0..9
-_ ]>* >> or C<< \-?<[1..9]><[ 0..9 _ ]>*\.?<[ 0..9 _ ]>* >> that is
-interpreted as base 10.
-
-=item *
-
-An alternative payload format is a C<bigrat|bignum|bigint> object, which is
-conceptually the closest thing Perl 5 has in core to a "big rational".
-
-=item *
-
-If the payload is a Perl array ref, then the payload must have exactly 2 or
-3 elements, each of which constitutes a valid payload of an C<Int> PHMD
-node.  If the payload has 2 elements, then the rational's value is
-interpreted as the first element (a numerator) divided by the second (a
-denominator).  If the payload has 3 elements, then the rational's value is
-interpreted as the first element (a mantissa) multiplied by the result of
-the second element (a radix) taken to the power of the third (an exponent).
-
-=item *
-
-If the payload is a Perl hash ref, then it must have 1 element, whose key
-and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string composed of a single C<[ 1..9 A..Z ]>
-character.  If the main payload is a Perl scalar, then the main payload
-must be a Perl character string of the format C<< 0\.?<[ 0..9 A..Z _ ]>* >>
-or C<< \-?<[ 1..9 A..Z ]><[ 0..9 A..Z _ ]>*\.?<[ 0..9 A..Z _ ]>* >>.  This
-format specifically is what the Plain Text Muldis D grammar uses as one
-general form for rational literals, and is the result of parsing it.  The
-main payload is interpreted as a base-I<N> rational where I<N> might be
-between 2 and 36, and the given max-col-val says which possible value of
-I<N> to use.  Assuming all column values are between zero and
-I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
-specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].  If the main
-payload is a Perl array ref, then the main payload must have exactly 2 or 3
-elements, and every pairwise combination of the max-col-val with the
-elements of the main payload must, when appropriately wrapped in a Perl
-hash ref, must constitute a valid hash ref payload for an C<Int> PHMD node;
-the meaning of the 2 or 3 main payload elements is the same as the 2 or 3
-payload elements mentioned in the previous bullet point.
-
-=back
-
-Examples:
-
-    [ 'Rat', { 1 => '-1.1' } ]
-
-    [ 'Rat', -1.5 ] # same val as prev
-
-    [ 'Rat', 3.14159 ]
-
-    [ 'Rat', { A => '0.0' } ]
-
-    [ 'Rat', { F => 'DEADBEEF.FACE' } ]
-
-    [ 'Rat', { Z => '0.000AZE' } ]
-
-    [ 'Rat', { 6 => [ '500001', '1000' ] } ]
-
-    [ 'Rat', { B => [ 'A09B', 'A' ] } ]
-
-    [ 'Rat', { 1 => [ '1011101101', '10', '-11011' ] } ]
-
-    [ 'Rat', [ '45207196', '10', '37' ] ]
-
-    [ 'Rat', [ 1, 43 ] ]
-
-    [ 'Rat', [ 314159, 10, -5 ] ]
-
-=head2 sys.std.Rational.Type.RatRoundMeth
-
-This node kind represents a rounding method.  This node is interpreted as a
-Muldis D C<sys.std.Rational.Type.RatRoundMeth> value by directly mapping
-the payload.  The payload must be a Perl character string having one of the
-7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
-C<to_ceiling>, C<to_zero>, C<to_inf>.
-
-Examples:
-
-    [ 'RatRoundMeth', 'half_up' ]
 
 =head1 TEMPORAL EXTENSION SCALAR VALUE LITERALS
 
@@ -1107,7 +1105,7 @@ So for example, one can just write C<Int> rather than
 C<sys.std.Core.Type.Int>, C<is_identical> rather than
 C<sys.std.Core.Universal.is_identical>, C<QTuple.attr> rather than
 C<sys.std.Core.QTuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
-C<array_of.Rat> rather than C<array_of.sys.std.Rational.Type.Rat>, and so
+C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so
 on.
 
 The C<auto_unabbrev_std_names> pragma intentionally does not empower auto

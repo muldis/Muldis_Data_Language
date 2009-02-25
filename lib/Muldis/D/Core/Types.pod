@@ -44,6 +44,7 @@ relationships:
                 sys.std.Core.Type.Int
                     sys.std.Core.Type.NNInt
                         sys.std.Core.Type.PInt
+                            sys.std.Core.Type.PInt2_N
                 sys.std.Core.Type.String
                     sys.std.Core.Type.BString
                     sys.std.Core.Type.OString
@@ -51,6 +52,9 @@ relationships:
                 sys.std.Core.Type.Blob
                     sys.std.Core.Type.OctetBlob
                 sys.std.Core.Type.Text
+                sys.std.Core.Type.Rat
+                    sys.std.Core.Type.NNRat
+                        sys.std.Core.Type.PRat
 
         # The following are mostly q/nonscalar type factories.
 
@@ -228,6 +232,12 @@ This is an enumeration data type.  C<PInt> (positive integer) is a proper
 subtype of C<NNInt> where all member values are greater than zero.  Its
 default and minimum value is 1.
 
+=head2 sys.std.Core.Type.PInt2_N
+
+This is an enumeration data type.  C<PInt2_N> is a proper subtype of
+C<PInt> where all member values are greater than 1.  Its default and
+minimum value is 2.
+
 =head2 sys.std.Core.Type.String
 
 This is a primitive data type.  A C<String> is a string of integers, or
@@ -319,6 +329,69 @@ C<UCPString> due to having a different intended interpretation.  In regards
 to ordering, possibly the standard Unicode Collation Algorithm (UCA) also
 works this way, assuming it is totally ordered, but that's unsure.  I<TODO:
 Support customization parameters for default text sorting.>
+
+=head2 sys.std.Core.Type.Rat
+
+This is a structure data type.  A C<Rat> (scalar) is a single exact
+rational number of any magnitude and precision.  It is conceptually a
+composite type with 2 main system-defined possreps, called C<ratio> and
+C<float>, both of which are defined over several C<Int>.
+
+The C<ratio> possrep consists of 2 attributes: C<numerator> (an C<Int>),
+C<denominator> (a C<PInt>); the conceptual value of a C<Rat> is the result
+of rational-dividing its C<numerator> by its C<denominator>.  Because in
+the general case there are an infinite set of [C<numerator>,C<denominator>]
+integer pairs that denote the same rational value, the C<ratio> possrep
+carries the normalization constraint that C<numerator> and C<denominator>
+must be coprime, that is, they have no common integer factors other than 1.
+
+The C<float> possrep consists of 3 attributes: C<mantissa> (an C<Int>),
+C<radix> (a C<PInt2_N>), C<exponent> (an C<Int>); the conceptual value
+of a C<Rat> is the result of multiplying its C<mantissa> by the result of
+taking its C<radix> to the power of its C<exponent>.  The C<float> possrep
+carries the normalization constraint that among all the
+[C<mantissa>,C<radix>,C<exponent>] triples which would denote the same
+rational value, the only allowed triple is the one having both the C<radix>
+with the lowest value (that is closest to or equal to 2) and the
+C<exponent> with the highest value (that is closest to positive infinity).
+I<Note: this constraint could stand to be rephrased for simplification or
+correction, eg if somehow the sets of candidate triples sharing the lowest
+radix and sharing the highest exponent have an empty intersection.>
+
+The default value of C<Rat> is zero; its minimum and maximum values are
+conceptually infinities and practically impossible.  The cardinality of
+this type is infinity; to define a most-generalized finite C<Rat> subtype,
+you must specify the greatest magnitude value denominator, plus the the 2
+integer end-points of the inclusive range of the value numerator; or
+alternately you must specify the greatest magnitude value mantissa (the
+I<maximum precision> of the number), and specify the greatest magnitude
+value radix, plus the the 2 integer end-points of the inclusive range of
+the value exponent (the I<maximum scale> of the number).  Common subtypes
+specify that the normalized radixes of all their values are either 2 or 10;
+types such as these will easily map exactly to common human or physical
+numeric representations, so they tend to perform better.
+
+The C<Rat> type has a default ordering algorithm which is conceptually the
+same as for C<Int>; for 2 distinct C<Rat> values, the value closer to
+negative infinity is ordered before the value closer to positive infinity.
+
+The C<Rat> type has an implementation hint for less intelligent Muldis D
+implementations, that suggests using the C<float> possrep as the basis for
+the physical representation.
+
+=head2 sys.std.Core.Type.NNRat
+
+This is an enumeration data type.  C<NNRat> (non-negative rational) is a
+proper subtype of C<Rat> where all member values are greater than or equal
+to zero (that is, the C<numerator>|C<mantissa> is greater than or equal to
+zero).  Its minimum value is zero.
+
+=head2 sys.std.Core.Type.PRat
+
+This is an enumeration data type.  C<PRat> (positive rational) is a
+proper subtype of C<NNRat> where all member values are greater than zero
+(that is, the C<numerator>|C<mantissa> is greater than zero).  Its default
+and minimum value is 1.
 
 =head1 SYSTEM-DEFINED CORE QUASI-/NONSCALAR DATA TYPES
 
