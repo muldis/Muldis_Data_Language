@@ -97,20 +97,20 @@ Every PHMD node representing a Muldis D value literal has 1-3 elements:
 =item *
 
 Node kind: a Perl C<Str> value of the format C<< <[ a..z A..Z 0..9 _ ]>+
->>.  All of the PHMD node kinds for Muldis D value literals are these 30:
-C<Bool>, C<Int>, C<String>, C<Blob>, C<Text>, C<Rat>, C<Name>,
-C<NameChain>, C<DeclNameChain>, C<Comment>, C<Order>, C<RatRoundMeth>,
-C<(Q|)Scalar>, C<(Q|)Tuple>, C<(Q|)Relation>, C<(Q|)Set>, C<Nothing>,
-C<(Q|)Single>, C<(Q|)Array>, C<(Q|)Bag>, C<(UTC|Float)Instant>,
+>>.  All of the PHMD node kinds for Muldis D value literals are these 32:
+C<Bool>, C<Int>, C<String>, C<Blob>, C<Text>, C<Rat>, C<Instant>,
+C<Duration>, C<Name>, C<NameChain>, C<DeclNameChain>, C<Comment>, C<Order>,
+C<RatRoundMeth>, C<(Q|)Scalar>, C<(Q|)Tuple>, C<(Q|)Relation>, C<(Q|)Set>,
+C<Nothing>, C<(Q|)Single>, C<(Q|)Array>, C<(Q|)Bag>, C<(UTC|Float)Instant>,
 C<UTCDuration>.  All of the non-value-literal PHMD node kinds currently
 defined are these 2: C<Muldis_D>, C<boot_stmt>.
 
 =item *
 
 Only when the node has 3 elements; type name: as per the payload of a
-C<NameChain> PHMD node.  PHMD nodes of all of the aforementioned 30
+C<NameChain> PHMD node.  PHMD nodes of all of the aforementioned 32
 value-specific kinds can have the 2nd type name node element except for
-these 4: C<Bool>, C<Nothing>, C<Order>, C<RatRoundMeth>; this isn't because
+these 4: C<Bool>, C<Order>, C<RatRoundMeth>, C<Nothing>; this isn't because
 those types can't be subtyped, but because in practice doing so isn't
 useful.  Furthermore, with just the C<(Q|)Scalar> kinds, having the second
 type name element is mandatory.  Non-value-literal PHMD nodes never have
@@ -301,6 +301,39 @@ Examples:
     :Rat(1 div 43)
 
     :Rat(314159 * 10 ** -5)
+
+=head2 sys.std.Core.Type.Instant
+
+This node kind represents a single point in time which is specified in
+terms of of atomic seconds; it is a rational numeric type, that is disjoint
+from both C<Rat> and C<Duration>.  This node is interpreted as a Muldis D
+C<sys.std.Core.Type.Instant> value by directly mapping the payload, which
+must be as per the payload of a C<Rat> PHMD node.
+
+Examples:
+
+    :Instant(1235556432)
+
+=head2 sys.std.Core.Type.Duration
+
+This node kind represents a single amount of time (the difference between
+two instants) which is specified in terms of of atomic seconds; it is a
+rational numeric type, that is disjoint from both C<Rat> and C<Instant>.
+This node is interpreted as a Muldis D C<sys.std.Core.Type.Duration> value
+by directly mapping the payload, which must be as per the payload of a
+C<Rat> PHMD node.
+
+Examples:
+
+    :Duration(3600)
+
+    :Duration(-50)
+
+    :Duration(3.14159)
+
+    :Duration(:2<1011101101> * :2<10> ** :2<-11011>)
+
+    :Duration(1 div 43)
 
 =head2 sys.std.Core.Type.Cat.Name
 

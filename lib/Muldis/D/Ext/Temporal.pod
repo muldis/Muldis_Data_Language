@@ -33,7 +33,9 @@ particularly calendar dates and intervals.  The bundled data types describe
 common kinds of temporal artifacts according to modern calendars.  They can
 represent a variety of precisions and epochs so that users can employ them
 in a way that most accurately represents what they actually know about
-their data.
+their data.  The C<Temporal> document also provides a selection of
+operators for working with the C<Instant> and C<Duration> types that are
+part of the Muldis D language core.
 
 The I<Muldis D Temporal Extension> is expressly not meant to be complete by
 any means, as a solution for working with temporal data.  Rather it is
@@ -339,6 +341,73 @@ values.
 
 These functions implement commonly used temporal math operations.
 
+=head1 Instant
+
+=head2 sys.std.Temporal.Instant.difference
+
+C<function sys.std.Temporal.Instant.difference result Duration params {
+minuend(Instant), subtrahend(Instant) }>
+
+This function results in the duration-typed difference when its
+instant-typed C<subtrahend> argument is subtracted from its instant-typed
+C<minuend> argument.  The result is the amount of time between the 2
+arguments, which may be positive or negative depending on which argument
+was earlier.
+
+=head2 sys.std.Temporal.Instant.abs_difference
+
+C<function sys.std.Temporal.Instant.abs_difference result Duration params {
+topic(Instant), other(Instant) }>
+
+This function results in the absolute difference between its 2 arguments.
+The result is the amount of time between the 2 arguments, which is always
+non-negative.
+
+=head2 sys.std.Temporal.Instant.later
+
+C<function sys.std.Temporal.Instant.later result Instant params {
+instant(Instant), duration(Duration) }>
+
+This function results in the instant that is later than its C<instant>
+argument by the amount of time in the C<duration> argument.
+
+=head2 sys.std.Temporal.Instant.earlier
+
+C<function sys.std.Temporal.Instant.earlier result Instant params {
+instant(Instant), duration(Duration) }>
+
+This function results in the instant that is earlier than its C<instant>
+argument by the amount of time in the C<duration> argument.
+
+=head1 Duration
+
+=head2 sys.std.Temporal.Duration.abs
+
+C<function sys.std.Temporal.Duration.abs result Duration params {
+topic(Duration) }>
+
+This function results in the absolute value of its argument.
+
+=head2 sys.std.Temporal.Duration.sum
+
+C<function sys.std.Temporal.Duration.sum result Duration params {
+addends(bag_of.Duration) }>
+
+This function results in the sum of the N element values of its argument;
+it is a reduction operator that recursively takes each pair of input values
+and adds (which is both commutative and associative) them together until
+just one is left, which is the result.  If C<addends> has zero values, then
+C<sum> results in the duration zero, which is the identity value for
+addition.
+
+=head2 sys.std.Temporal.Duration.difference
+
+C<function sys.std.Temporal.Duration.difference result Duration params {
+minuend(Duration), subtrahend(Duration) }>
+
+This function results in the difference when its C<subtrahend> argument is
+subtracted from its C<minuend> argument.
+
 =head1 UTCInstant
 
 =head2 sys.std.Temporal.UTCInstant.difference
@@ -355,7 +424,7 @@ was earlier.
 =head2 sys.std.Temporal.UTCInstant.abs_difference
 
 C<function sys.std.Temporal.UTCInstant.abs_difference result UTCDuration
-params { topic(UTCDuration), other(UTCDuration) }>
+params { topic(UTCInstant), other(UTCInstant) }>
 
 This function results in the absolute difference between its 2 arguments.
 The result is the amount of time between the 2 arguments, which is always
@@ -364,7 +433,7 @@ non-negative.
 =head2 sys.std.Temporal.UTCInstant.later
 
 C<function sys.std.Temporal.UTCInstant.later result UTCInstant params
-{ instant(Instant), duration(UTCDuration) }>
+{ instant(UTCInstant), duration(UTCDuration) }>
 
 This function results in the instant that is later than its C<instant>
 argument by the amount of time in the C<duration> argument.
@@ -372,7 +441,7 @@ argument by the amount of time in the C<duration> argument.
 =head2 sys.std.Temporal.UTCInstant.earlier
 
 C<function sys.std.Temporal.UTCInstant.earlier result UTCInstant
-params { instant(Instant), duration(UTCDuration) }>
+params { instant(UTCInstant), duration(UTCDuration) }>
 
 This function results in the instant that is earlier than its C<instant>
 argument by the amount of time in the C<duration> argument.
@@ -393,7 +462,7 @@ was earlier.
 =head2 sys.std.Temporal.FloatInstant.abs_difference
 
 C<function sys.std.Temporal.FloatInstant.abs_difference result
-UTCDuration params { topic(UTCDuration), other(UTCDuration) }>
+UTCDuration params { topic(FloatInstant), other(FloatInstant) }>
 
 This function results in the absolute difference between its 2 arguments.
 The result is the amount of time between the 2 arguments, which is always
@@ -402,7 +471,7 @@ non-negative.
 =head2 sys.std.Temporal.FloatInstant.later
 
 C<function sys.std.Temporal.FloatInstant.later result FloatInstant
-params { instant(Instant), duration(UTCDuration) }>
+params { instant(FloatInstant), duration(UTCDuration) }>
 
 This function results in the instant that is later than its C<instant>
 argument by the amount of time in the C<duration> argument.
@@ -410,7 +479,7 @@ argument by the amount of time in the C<duration> argument.
 =head2 sys.std.Temporal.FloatInstant.earlier
 
 C<function sys.std.Temporal.FloatInstant.earlier result FloatInstant
-params { instant(Instant), duration(UTCDuration) }>
+params { instant(FloatInstant), duration(UTCDuration) }>
 
 This function results in the instant that is earlier than its C<instant>
 argument by the amount of time in the C<duration> argument.
@@ -448,10 +517,46 @@ params { minuend(UTCDuration), subtrahend(UTCDuration) }>
 This function results in the difference when its C<subtrahend> argument is
 subtracted from its C<minuend> argument.
 
+=head1 FUNCTIONS FOR CONVERSION BETWEEN UTC AND TAI
+
+These functions convert between C<UTCDateTime> values and equal or nearly
+equal C<Instant> values.  I<WARNING:  These functions may not produce
+consistent results over time when dealing with future dates because it is
+unknown in advance when leap seconds will be added to the UTC time scale,
+and TAI has no leap seconds.>
+
+=head2 sys.std.Temporal.UTCInstant.UTC_from_TAI
+
+C<function sys.std.Temporal.UTCInstant.UTC_from_TAI result UTCDateTime
+params { tai(Instant) }>
+
+This selector function results in the C<UTCDateTime> value that is
+conceptually equal to its C<Instant> argument, insofar as relevant leap
+seconds are known.
+
+=head2 sys.std.Temporal.UTCInstant.TAI_from_UTC
+
+C<function sys.std.Temporal.UTCInstant.TAI_from_UTC result Instant params {
+utc(UTCDateTime) }>
+
+This selector function results in the C<Instant> value that is conceptually
+equal to its C<UTCDateTime> argument, insofar as relevant leap seconds are
+known.
+
 =head1 SYSTEM SERVICES FOR CURRENT DATES AND TIMES
 
 These system service routines provide ways to get the current date or time
 from the system.
+
+=head2 sys.std.Temporal.Instant.fetch_current_instant
+
+C<system_service sys.std.Temporal.Instant.fetch_current_instant update
+{ target(Instant) } read {}>
+
+This system service routine will update the variable supplied as its
+C<target> argument so that it holds the value of the current TAI instant as
+taken with the full precision that the implementation's system clock or
+used time server supports.
 
 =head2 sys.std.Temporal.UTCInstant.fetch_current_datetime
 
