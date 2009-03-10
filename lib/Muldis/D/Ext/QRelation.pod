@@ -74,12 +74,13 @@ that it results in the opposite boolean value when given the same argument.
 =head2 sys.std.QRelation.has_attrs
 
 C<function sys.std.QRelation.has_attrs result Bool params {
-topic(QRelation), attrs(set_of.Name) }>
+topic(QRelation), attr_names(set_of.Name) }>
 
 This function results in C<Bool:true> iff, for every one of the attribute
-names specified by its C<attrs> argument, its C<topic> argument has an
+names specified by its C<attr_names> argument, its C<topic> argument has an
 attribute with that name; otherwise it results in C<Bool:false>.  As a
-trivial case, this function's result is C<Bool:true> if C<attrs> is empty.
+trivial case, this function's result is C<Bool:true> if C<attr_names> is
+empty.
 
 =head2 sys.std.QRelation.attr_names
 
@@ -113,14 +114,14 @@ SQL's C<is not null>.
 =head2 sys.std.QRelation.has_key
 
 C<function sys.std.QRelation.has_key result Bool params { topic(QRelation),
-attrs(set_of.Name) }>
+attr_names(set_of.Name) }>
 
 This function results in C<Bool:true> iff its C<topic> argument has a
 (unique) key over the subset of its attributes whose names are specified by
-its C<attrs> argument; otherwise it results in C<Bool:false>.  This
+its C<attr_names> argument; otherwise it results in C<Bool:false>.  This
 function will fail if C<topic> does not have all of the attributes named by
-C<attrs>.  As a trivial case, this function's result is C<Bool:true> if
-C<topic> is empty.
+C<attr_names>.  As a trivial case, this function's result is C<Bool:true>
+if C<topic> is empty.
 
 =head2 sys.std.QRelation.empty
 
@@ -197,7 +198,7 @@ elements if the argument has zero elements.
 =head2 sys.std.QRelation.map
 
 C<function sys.std.QRelation.map result QRelation params {
-topic(QRelation), result_attrs(set_of.Name), func(FuncRef),
+topic(QRelation), result_attr_names(set_of.Name), func(FuncRef),
 assuming(QTuple)? }>
 
 This function provides a convenient one-place generalization of per-q/tuple
@@ -216,14 +217,14 @@ result has appropriately fewer q/tuples.  As a trivial case, if C<func> is
 defined to unconditionally result in the same q/tuple as its own C<topic>
 argument, then this function results simply in C<topic>; or, if C<func> is
 defined to have a static result, then this function's result will have just
-0..1 q/tuples.  Now, C<map> requires the extra C<result_attrs> argument to
-prevent ambiguity in the general case where C<topic> might have zero
-q/tuples, because in that situation, C<func> would never be invoked, and
-the names of the attributes of the result are not known (we don't generally
-assume that C<map> can reverse-engineer C<func> to see what attributes it
-would have resulted in).  This function will fail if C<topic> has at least
-1 q/tuple and the result of C<func> does not have matching attribute names
-to those named by C<result_attrs>.
+0..1 q/tuples.  Now, C<map> requires the extra C<result_attr_names>
+argument to prevent ambiguity in the general case where C<topic> might have
+zero q/tuples, because in that situation, C<func> would never be invoked,
+and the names of the attributes of the result are not known (we don't
+generally assume that C<map> can reverse-engineer C<func> to see what
+attributes it would have resulted in).  This function will fail if C<topic>
+has at least 1 q/tuple and the result of C<func> does not have matching
+attribute names to those named by C<result_attr_names>.
 
 =head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT QUASI-/RELATION FUNCTIONS
 
@@ -375,7 +376,8 @@ tuple if no explicit argument is given to it.
 =head2 sys.std.QRelation.substitution
 
 C<function sys.std.QRelation.substitution result QRelation params {
-topic(QRelation), attrs(set_of.Name), func(FuncRef), assuming(QTuple)? }>
+topic(QRelation), attr_names(set_of.Name), func(FuncRef), assuming(QTuple)?
+}>
 
 This function is similar to C<extension> except that it substitutes values
 of existing q/relation attributes rather than adding new attributes.  The
@@ -394,11 +396,11 @@ q/tuples.  Now, strictly speaking, C<substitution> could conceivably be
 implemented such that each result from C<func> is allowed to specify
 replacement values for different subsets of C<topic> attributes; however,
 to improve the function's predictability and ease of implementation over
-disparate foundations, C<substitution> requires the extra C<attrs> argument
-so that users can specify a consistent subset that C<func> will update
-(possibly to itself).  This function will fail if C<topic> has at least 1
-q/tuple and the result of C<func> does not have matching attribute names to
-those named by C<attrs>.
+disparate foundations, C<substitution> requires the extra C<attr_names>
+argument so that users can specify a consistent subset that C<func> will
+update (possibly to itself).  This function will fail if C<topic> has at
+least 1 q/tuple and the result of C<func> does not have matching attribute
+names to those named by C<attr_names>.
 
 =head2 sys.std.QRelation.static_substitution
 
@@ -415,15 +417,16 @@ given in the C<attrs> argument.
 
 C<function sys.std.QRelation.subst_in_restr result QRelation params {
 topic(QRelation), restr_func(FuncRef), restr_assuming(QTuple)?,
-subst_attrs(set_of.Name), subst_func(FuncRef), subst_assuming(QTuple)? }>
+subst_attr_names(set_of.Name), subst_func(FuncRef), subst_assuming(QTuple)?
+}>
 
 This function is like C<substitution> except that it only transforms a
 subset of the q/tuples of C<topic> rather than all of them.  It is a
 short-hand for first separating the q/tuples of C<topic> into 2 groups
 where those passed by a relational restriction (defined by C<restr_func>
-and C<restr_assuming>) are then transformed (defined by C<subst_attrs>,
-C<subst_func> and C<subst_assuming>), then the result of the substitution
-is unioned with the un-transformed group.  See also the
+and C<restr_assuming>) are then transformed (defined by
+C<subst_attr_names>, C<subst_func> and C<subst_assuming>), then the result
+of the substitution is unioned with the un-transformed group.  See also the
 C<subst_in_semijoin> function, which is a simpler-syntax alternative for
 C<subst_in_restr> in its typical usage where restrictions are composed
 simply of anded or ored tests for attribute value equality.
@@ -442,7 +445,7 @@ C<static_subst_in_semijoin> function.
 =head2 sys.std.QRelation.subst_in_semijoin
 
 C<function sys.std.QRelation.subst_in_semijoin result QRelation
-params { topic(QRelation), restr(QRelation), subst_attrs(set_of.Name),
+params { topic(QRelation), restr(QRelation), subst_attr_names(set_of.Name),
 subst_func(FuncRef), subst_assuming(QTuple)? }>
 
 This function is like C<subst_in_restr> except that the subset of the

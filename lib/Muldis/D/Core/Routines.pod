@@ -166,21 +166,22 @@ I<sys.std.Core.QScalar.static_substitution>.
 =head2 sys.std.Core.QScalar.projection
 
 C<function sys.std.Core.QScalar.projection result QTuple params {
-topic(QScalar), possrep(Name)?, attrs(set_of.Name) }>
+topic(QScalar), possrep(Name)?, attr_names(set_of.Name) }>
 
 This function results in the C<QTuple> that is the projection of the
 possrep (whose name is given in the C<possrep> argument) of its C<topic>
 argument that has just the subset of attributes of C<topic> which are named
-in its C<attrs> argument.  As a trivial case, this function's result is the
-entire named possrep of C<topic> if C<attrs> lists all attributes of that
-possrep; or, it is the nullary tuple if C<attrs> is empty.  This function
-will fail if C<possrep> specifies a possrep name that C<topic> doesn't have
-or C<attrs> specifies any attribute names that C<topic> doesn't have.
+in its C<attr_names> argument.  As a trivial case, this function's result
+is the entire named possrep of C<topic> if C<attr_names> lists all
+attributes of that possrep; or, it is the nullary tuple if C<attr_names> is
+empty.  This function will fail if C<possrep> specifies a possrep name that
+C<topic> doesn't have or C<attr_names> specifies any attribute names that
+C<topic> doesn't have.
 
 =head2 sys.std.Core.QScalar.cmpl_projection
 
 C<function sys.std.Core.QScalar.cmpl_projection result QTuple params
-{ topic(QScalar), possrep(Name)?, attrs(set_of.Name) }>
+{ topic(QScalar), possrep(Name)?, attr_names(set_of.Name) }>
 
 This function is the same as C<projection> but that it results in the
 complementary subset of possrep attributes of C<topic> when given the same
@@ -265,13 +266,13 @@ possrep has).
 =head2 sys.std.Core.QScalar.has_attrs
 
 C<function sys.std.Core.QScalar.has_attrs result Bool params {
-topic(QScalar), possrep(Name)?, attrs(set_of.Name) }>
+topic(QScalar), possrep(Name)?, attr_names(set_of.Name) }>
 
 This function results in C<Bool:true> iff, for every one of the attribute
-names specified by its C<attrs> argument, its C<topic> argument's possrep
-whose name is given by C<possrep> has an attribute with that name;
+names specified by its C<attr_names> argument, its C<topic> argument's
+possrep whose name is given by C<possrep> has an attribute with that name;
 otherwise it results in C<Bool:false>.  As a trivial case, this function's
-result is C<Bool:true> if C<attrs> is empty.
+result is C<Bool:true> if C<attr_names> is empty.
 
 =head2 sys.std.Core.QScalar.attr_names
 
@@ -381,19 +382,19 @@ renamed.
 =head2 sys.std.Core.QTuple.projection
 
 C<function sys.std.Core.QTuple.projection result QTuple params {
-topic(QTuple), attrs(set_of.Name) }>
+topic(QTuple), attr_names(set_of.Name) }>
 
 This function results in the projection of its C<topic> argument that has
-just the subset of attributes of C<topic> which are named in its C<attrs>
-argument.  As a trivial case, this function's result is C<topic> if
-C<attrs> lists all attributes of C<topic>; or, it is the nullary tuple if
-C<attrs> is empty.  This function will fail if C<attrs> specifies any
-attribute names that C<topic> doesn't have.
+just the subset of attributes of C<topic> which are named in its
+C<attr_names> argument.  As a trivial case, this function's result is
+C<topic> if C<attr_names> lists all attributes of C<topic>; or, it is the
+nullary tuple if C<attr_names> is empty.  This function will fail if
+C<attr_names> specifies any attribute names that C<topic> doesn't have.
 
 =head2 sys.std.Core.QTuple.cmpl_projection
 
 C<function sys.std.Core.QTuple.cmpl_projection result QTuple params {
-topic(QTuple), attrs(set_of.Name) }>
+topic(QTuple), attr_names(set_of.Name) }>
 
 This function is the same as C<projection> but that it results in the
 complementary subset of attributes of C<topic> when given the same
@@ -550,7 +551,7 @@ operates on and results in a C<QRelation> rather than a C<QTuple>.
 =head2 sys.std.Core.QRelation.projection
 
 C<function sys.std.Core.QRelation.projection result QRelation params
-{ topic(QRelation), attrs(set_of.Name) }>
+{ topic(QRelation), attr_names(set_of.Name) }>
 
 This function is the same as C<sys.std.Core.QTuple.projection> but that it
 operates on and results in a C<QRelation> rather than a C<QTuple>.  But
@@ -560,7 +561,7 @@ any C<topic> q/tuples were non-distinct for just the projected attributes.
 =head2 sys.std.Core.QRelation.cmpl_projection
 
 C<function sys.std.Core.QRelation.cmpl_projection result QRelation
-params { topic(QRelation), attrs(set_of.Name) }>
+params { topic(QRelation), attr_names(set_of.Name) }>
 
 This function is the same as C<sys.std.Core.QTuple.cmpl_projection> but
 that it operates on and results in a C<QRelation> rather than a C<QTuple>.
@@ -702,7 +703,8 @@ See also the C<sys.std.Core.QRelation.semidifference> function.
 =head2 sys.std.Core.QRelation.extension
 
 C<function sys.std.Core.QRelation.extension result QRelation params {
-topic(QRelation), attrs(set_of.Name), func(FuncRef), assuming(QTuple)? }>
+topic(QRelation), attr_names(set_of.Name), func(FuncRef), assuming(QTuple)?
+}>
 
 This function results in the relational extension of its C<topic> argument
 as determined by applying the C<QTuple>-resulting function named in its
@@ -717,14 +719,14 @@ and second q/tuples must have no attribute names in common, and the result
 q/tuple is derived by joining (cross-product) the q/tuples together.  As a
 trivial case, if C<func> is defined to unconditionally result in the
 degree-zero tuple, then this function results simply in C<topic>.  Now,
-C<extension> requires the extra C<attrs> argument to prevent ambiguity in
-the general case where C<topic> might have zero q/tuples, because in that
-situation, C<func> would never be invoked, and the names of the attributes
-to add to C<topic> are not known (we don't generally assume that
+C<extension> requires the extra C<attr_names> argument to prevent ambiguity
+in the general case where C<topic> might have zero q/tuples, because in
+that situation, C<func> would never be invoked, and the names of the
+attributes to add to C<topic> are not known (we don't generally assume that
 C<extension> can reverse-engineer C<func> to see what attributes it would
 have resulted in).  This function will fail if C<topic> has at least 1
 q/tuple and the result of C<func> does not have matching attribute names to
-those named by C<attrs>.
+those named by C<attr_names>.
 
 =head2 sys.std.Core.QRelation.static_extension
 
@@ -741,7 +743,7 @@ the C<attrs> argument.
 =head2 sys.std.Core.QRelation.summary
 
 C<function sys.std.Core.QRelation.summary result QRelation params {
-topic(QRelation), group_per(set_of.Name), result_attrs(set_of.Name),
+topic(QRelation), group_per(set_of.Name), result_attr_names(set_of.Name),
 summ_func(FuncRef), summ_assuming(QTuple)? }>
 
 This function provides a convenient context for using aggregate functions
@@ -766,14 +768,14 @@ q/relation at once (except by chance of it resolving to 1 group); you
 should instead invoke your summarize-all C<summ_func> directly, or inline
 it, rather than by way of C<summary>, especially if you want a
 single-q/tuple result on an empty C<topic> (which C<summary>) won't do.
-Now, C<summary> requires the extra C<result_attrs> argument to prevent
+Now, C<summary> requires the extra C<result_attr_names> argument to prevent
 ambiguity in the general case where C<topic> might have zero q/tuples,
 because in that situation, C<summ_func> would never be invoked, and the
 names of the attributes of the result are not known (we don't generally
 assume that C<summary> can reverse-engineer C<summ_func> to see what
 attributes it would have resulted in).  This function will fail if C<topic>
 has at least 1 q/tuple and the result of C<summ_func> does not have
-matching attribute names to those named by C<result_attrs>.
+matching attribute names to those named by C<result_attr_names>.
 
 =head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT QUASI-/RELATION FUNCTIONS
 
@@ -1028,7 +1030,7 @@ attribute of C<attrs> corresponds to a created SQL table.
 =head2 sys.std.Core.QTuple.assign_projection
 
 C<updater sys.std.Core.QTuple.assign_projection update {
-topic(QTuple) } read { attrs(set_of.Name) }>
+topic(QTuple) } read { attr_names(set_of.Name) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QTuple.projection> function with the same arguments, and
@@ -1037,14 +1039,14 @@ then assigning the result of that function to C<topic>.
 =head2 sys.std.Core.QTuple.assign_cmpl_projection
 
 C<updater sys.std.Core.QTuple.assign_cmpl_projection update {
-topic(QTuple) } read { attrs(set_of.Name) }>
+topic(QTuple) } read { attr_names(set_of.Name) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QTuple.cmpl_projection> function with the same arguments,
 and then assigning the result of that function to C<topic>.  This procedure
 is analagous to the data-manipulation phase of a SQL DROP TABLE|VIEW
 statement iff C<topic> is C<Database>-typed; each q/relation-typed
-attribute named by C<attrs> corresponds to a dropped SQL table.
+attribute named by C<attr_names> corresponds to a dropped SQL table.
 
 =head1 SYSTEM-DEFINED GENERIC QUASI-/RELATION VARIABLE UPDATERS
 
@@ -1177,7 +1179,7 @@ column.
 =head2 sys.std.Core.QRelation.assign_extension
 
 C<updater sys.std.Core.QRelation.assign_extension update { topic(QRelation)
-} read { attrs(set_of.Name), func(FuncRef), assuming(QTuple)? }>
+} read { attr_names(set_of.Name), func(FuncRef), assuming(QTuple)? }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.extension> function with the same arguments, and
@@ -1200,7 +1202,7 @@ an added SQL table column.
 =head2 sys.std.Core.QRelation.assign_projection
 
 C<updater sys.std.Core.QRelation.assign_projection update {
-topic(QRelation) } read { attrs(set_of.Name) }>
+topic(QRelation) } read { attr_names(set_of.Name) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.projection> function with the same arguments, and
@@ -1209,13 +1211,13 @@ then assigning the result of that function to C<topic>.
 =head2 sys.std.Core.QRelation.assign_cmpl_projection
 
 C<updater sys.std.Core.QRelation.assign_cmpl_projection update {
-topic(QRelation) } read { attrs(set_of.Name) }>
+topic(QRelation) } read { attr_names(set_of.Name) }>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.QRelation.cmpl_projection> function with the same arguments,
 and then assigning the result of that function to C<topic>.  This procedure
 is analagous to the data-manipulation phase of a SQL ALTER TABLE|VIEW DROP
-COLUMN statement; each attribute named by C<attrs> corresponds to an
+COLUMN statement; each attribute named by C<attr_names> corresponds to an
 dropped SQL table column.
 
 =head1 SYSTEM-DEFINED GENERIC CONTROL FLOW UPDATERS
