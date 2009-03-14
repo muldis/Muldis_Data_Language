@@ -46,6 +46,7 @@ relationships:
                         sys.std.Core.Type.PInt
                             sys.std.Core.Type.PInt2_N
                 sys.std.Core.Type.String
+                    sys.std.Core.Type.String.*
                     sys.std.Core.Type.SEString
                     sys.std.Core.Type.BString
                     sys.std.Core.Type.OString
@@ -147,11 +148,9 @@ zero.
 
 =head1 SYSTEM-DEFINED CORE QUASI-/SCALAR DATA TYPES
 
-These core scalar data types are the most fundamental Muldis D types.  Some
-of them have zero possreps, and hence have no named components that can be
-referenced; with those that do have possreps, their components are of the
-types in this section that don't.  Plain Text Muldis D provides a specific
-syntax per type to select a value of one of these types, which does not
+These core scalar data types are the most fundamental Muldis D types.
+Plain Text Muldis D provides a specific syntax per type to select a value
+of every one of these types (or of their super/subtypes), which does not
 look like a routine invocation, but rather like a scalar literal in a
 typical programming language; details of that syntax are not given here,
 but in L<Muldis::D::Dialect::PTMD_Tiny>.  Hosted Data Muldis D as hosted in
@@ -243,12 +242,13 @@ minimum value is 2.
 
 =head2 sys.std.Core.Type.String
 
-This is a primitive data type.  A C<String> is a string of integers, or
-more specifically it is a dense sequence of 0..N elements (I<not> defined
-over C<Relation>) where each element is an integer.  Its default and minimum
-value is the empty sequence; its maximum value is an infinite-length
-sequence and practically impossible.  C<String> is the only scalar
-root type that does I<not> have any possreps.  The
+This is an enumeration data type.  The C<String> type is a union type over
+the infinite number of types having C<sys.std.Core.Type.String.*>-format
+names (see also their collective entry in the type list).  A C<String> is a
+string of integers, or more specifically it is a dense sequence of 0..N
+elements (I<not> defined over C<Relation>) where each element is an
+integer.  Its default and minimum value is the empty sequence; its maximum
+value is an infinite-length sequence and practically impossible.  The
 cardinality of this type is infinity; to define a most-generalized finite
 C<String> subtype, you must specify a maximum length in elements that the
 subtype's values can have, and you must specify the 2 integer end-points of
@@ -263,6 +263,35 @@ non-empty one; otherwise, compare the first element of each of the string
 remainders according to the following ordering algorithm to get the order
 of their respective strings: the integer value closer to negative infinity
 is ordered before the value closer to positive infinity.
+
+=head2 sys.std.Core.Type.String.*
+
+There are an infinite number of types having
+C<sys.std.Core.Type.String.*>-format names and each one is a structure data
+type; for the rest of this description, the type name C<String.Value> will
+be used as a proxy for each and every one of them.  A C<String.Value> is a
+string of integers, or more specifically it is a dense sequence of 0..N
+elements (I<not> defined over C<Relation>) where each element is an
+integer.  A C<String.Value> has 1 system-defined possrep whose name is the
+empty string and which has zero attributes.  The cardinality of this type
+is 1, and its only value is its default and minimum and maximum value.  The
+sole value of C<String.Value> is the same as its unqualified name, or more
+accurately, it is identical to the sole attribute value of the sole possrep
+of the C<Name> value C<Value>.
+
+Now, one main rationale to have the system-defined C<String> type as a
+union type over an infinite number of C<String.*> types, is to avoid any
+"chicken and egg" scenario where at least one q/scalar root type needs to
+be special and have no possreps in order to be the foundation for other
+scalar root types.  Under the current system, I<every> q/scalar root type
+has at least one possrep and the type system design does not require any
+q/scalar root type to be special.  One can always avoid the need for some
+other type to base your scalar root type off of by building your scalar
+root type over singleton types with no possrep attributes.  That said, the
+fact that an implicitly defined infinity of types underlie C<String>
+(rather than an explicitly defined finite set of types) now is another kind
+of special that user-defined types can't do, but this solution seemed to be
+the lesser of evils versus some scalar root types having no possreps.
 
 =head2 sys.std.Core.Type.SEString
 

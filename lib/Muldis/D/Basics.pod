@@ -620,29 +620,30 @@ are built, and the declared parameter and result types of most
 system-defined operators are root types.  A I<leaf type> is a data type
 that has no proper subtypes save for C<Empty>.
 
-A primitive type is not, in most cases, conceptually defined in terms of
-any other data type in the system.  A primitive type can only be
-system-defined, not user-defined.  There are just 3 of these:
-C<String>, C<QTuple>, C<QRelation>.  I<TODO: Further correct this desc.>
+A primitive type is not conceptually defined in terms of any other data
+type in the system.  A primitive type can only be system-defined, not
+user-defined.  There are just 2 of these: C<QTuple>, C<QRelation>.  I<TODO:
+Further correct this desc.>
 
 A structure type is conceptually defined in terms of a collection of N
 elements of one or more other types along with an optional constraint that
 restricts the values of the structure data type to be a subset of the
 permutations of possible element values.  The system-defined structure
 types include: C<Bool>, C<Int>, C<Blob>, C<Text>, C<Rat>, C<Instant>,
-C<Duration>, C<Name>, C<Comment>, C<Order>.  All user-defined structure
-types are scalar or quasi-scalar types.  I<TODO: Further correct this
-description.>
+C<Duration>, C<Name>, C<Comment>, C<Order>, and also the infinite number of
+C<String.*> singleton types.  All user-defined structure types are scalar
+or quasi-scalar types.  I<TODO: Further correct this description.>
 
 An enumeration type is defined in terms of a union or subset of the values
 of one or more other data types.  The system-defined types defined in terms
 of a subset include: C<NNInt>, C<BString>, C<Tuple>, C<Database>,
 C<Relation>, C<Set>, C<Array>, C<QMaybe>, C<QBag>, C<UTCDateTime>.  The
-system-defined types defined in terms of a union include: C<Universal>,
-C<Empty>, C<QScalar>, C<Scalar>, C<Reference>, C<Remnant>, C<ScaTupRel>.
-In the case of a q/scalar subset enumeration type, typically it will define
-extra q/scalar possreps or selectors.  All user-defined nonscalar or
-quasi-nonscalar types are enumeration types.
+system-defined types defined in terms of a union (typically not an
+explicitly enumerated one like with user-defined types) include:
+C<Universal>, C<Empty>, C<QScalar>, C<Scalar>, C<String>, C<Reference>,
+C<Remnant>, C<ScaTupRel>.  In the case of a q/scalar subset enumeration
+type, typically it will define extra q/scalar possreps or selectors.  All
+user-defined nonscalar or quasi-nonscalar types are enumeration types.
 
 A reference type is a special opaque type that is used for either of 2
 distinct purposes, each type being for exactly one of those purposes.  A
@@ -797,7 +798,7 @@ constraint that the area of the polygon is between 5 and 10 units.
 
 Generic system-defined selector and possrep attribute accessor operators
 exist that automatically work with all q/scalar types (that have possreps,
-which all user-defined q/scalar root types do), so such do not need to be
+which all q/scalar root types do), so such do not need to be
 explicitly defined per such type.  They are all in the
 C<sys.std.Core.QScalar.\w+> namespace.  These generic operators take
 advantage of the fact that each q/scalar possrep looks like a q/tuple, and
@@ -969,10 +970,9 @@ are just nonscalar values, and all quasi-relation values with zero q/tuples
 are just relation values.  (Hence the system-defined C<(Tuple|Relation)D0>
 and C<Nothing> nonscalar types don't each come in 2 flavors.)
 
-A I<scalar value> is, by definition, any quasi-scalar value that either has
-no possreps (it is a C<String>) or all of its possreps are
-such that any quasi-relation-valued attributes it has, directly or
-indirectly, are also just relation-valued.
+A I<scalar value> is, by definition, any quasi-scalar value where all of
+its possreps are such that any quasi-relation-valued attributes it has,
+directly or indirectly, are also just relation-valued.
 
 A I<relation type> is, by definition, any type consisting of just relation
 values, such that if the declared type of a unary quasi-relation attribute
@@ -1229,8 +1229,7 @@ be included as part of the definition of that type, which is automatically
 applied when using values of that type with versions of order-sensitive
 operators that don't have the additional function-name-specifying
 parameter.  All ordered system-defined q/scalar root types have this
-type-default ordering function defined for them, especially all
-system-defined q/scalar types that don't have any possreps, so you don't
+type-default ordering function defined for them, so you don't
 need to define any yourself for these most-common cases.  Note that a
 q/nonscalar type can't have a default ordering function, and a subtype of a
 q/scalar type can't supply or replace one either, with the reasoning for
@@ -2459,7 +2458,7 @@ pure functional.
 An important feature of DBMS entity names is that the components of
 variables' current values can be addressed directly as if they were normal
 variables, both for reading and for updating; and so this feature allows
-for attributes of q/tuple and possrep-having-q/scalar (but not q/relation
+for attributes of q/tuple and q/scalar (but not q/relation
 in the general case; see below) typed variables to be used as
 pseudo-variables, to the Nth degree of recursion, with very terse syntax.
 

@@ -182,11 +182,31 @@ this short name is sufficient to identify the entity within its immediate
 namespace.  Similarly, a DBMS entity can often be invoked or referred to
 using just its C<Name>, depending on the context; other times, a
 C<NameChain> must be used instead to also qualify the reference with a
-namespace.  Every detail of C<Name>'s representation (its 1 possrep,
-default value and ordering algorithm, etc) is the same as C<Text> but it is
-explicitly disjoint due to having a different intended interpretation; it
-is specifically intended for use in naming DBMS entities rather than being
-for general-purpose user data.
+namespace.  A C<Name> has 1 system-defined possrep whose name is the empty
+string which consists of 1 C<String>-typed attribute whose name is the
+empty string.  A C<Name> is a simple wrapper for a C<String> and all of its
+other details such as default and minimum and maximum values and
+cardinality and default ordering algorithm all correspond directly.  But
+C<Name> is explicitly disjoint from C<String> due to having a different
+intended interpretation.  C<Name> is also very similar to C<Text> but that
+while C<Text> is limited to string elements matching Unicode codepoints,
+C<Name> elements can be any integer; besides that they are explicitly
+disjoint due to having a different intended interpretation; it is
+specifically intended for use in naming DBMS entities rather than being for
+general-purpose user data.
+
+All of the above being said, any use of a C<Name> value that can not be
+exactly matched by a C<Text> value (because its component C<String> value
+is not a valid C<UCPString> value) is strongly discouraged for various
+reasons of practicality.  In fact it is so strongly discouraged that all of
+the standard Muldis D dialects do not provide support in their C<Name>/etc
+value literal syntax for selecting said discouraged values, and so the only
+way you can select said values in those dialects is in terms of a generic
+C<Scalar> value literal with a component that is a C<String> value literal.
+The primary reason that the internal C<Name> flexibility exists for now is
+so that some/most of the implicitly defined infinite number of
+system-defined singleton scalar types comprising the quasi-foundational
+system-defined C<String> type can be named after their values.
 
 =head2 sys.std.Core.Type.Cat.NameChain
 
@@ -232,7 +252,7 @@ This is a structure data type.  A C<Comment> (scalar) is the text of a
 Muldis D code comment, which programmers can populate as an attribute of
 several catalog data types, such as whole routines or statements or
 expression nodes.  Every detail of C<Comment>'s representation (its 1
-possrep, default value and ordering algorithm, etc) is the same as C<Name>
+possrep, default value and ordering algorithm, etc) is the same as C<Text>
 but it is explicitly disjoint due to having a different intended
 interpretation; it is intended just for commenting Muldis D code.  One main
 intended use of this type is to help preserve comments in code translated
@@ -349,18 +369,22 @@ hard-coded meanings and are not defined like any other types; these are
 declarations of all of the native Muldis D types that can't be defined like
 user-defined types.  Specifically, it declares these 13 standard types: in
 the C<sys.std.Core.Type> namespace, C<Universal>, C<Empty>, C<QScalar>,
-C<String>, C<QTuple>, C<QRelation>, C<Reference>, C<External>,
-C<Remnant>; in the C<sys.std.Core.Type.Cat> namespace,
-C<(Func|Proc|Type|OrdDetFunc)Ref>.  These constitute all 3 Muldis D
+C<String>, C<QTuple>, C<QRelation>, C<Reference>, C<External>, C<Remnant>;
+in the C<sys.std.Core.Type.Cat> namespace,
+C<(Func|Proc|Type|OrdDetFunc)Ref>.  These constitute all 2 Muldis D
 primitive types, all 5 Muldis D reference types, all 2 Muldis D type system
-minimal and maximal (enumeration) types, and all 3 Muldis D enumeration
-types that are each implicit maximal types of 3 of 5 type categories (the
-other 2 such maximals are primitive types).
+minimal and maximal (enumeration) types, all 3 Muldis D enumeration types
+that are each implicit maximal types of 3 of 5 type categories (the other 2
+such maximals are primitive types), and the 1 sole scalar enumeration type
+that is defined in terms of an infinite number of singleton structure types
+(and those structure types are not listed individually in the system
+catalog at all, for what should be obvious reasons).
 
 =item C<types> - C<SysTypeSet>
 
-These are all the system-defined (|quasi-)scalar types with possreps, and
-complete (|quasi-)nonscalar types, and union types, and restriction types.
+These are all the system-defined (|quasi-)scalar types, except for
+C<String> because it can't be defined like user-defined types, and complete
+(|quasi-)nonscalar types, and union types, and restriction types.
 
 =item C<catalogs> - C<SysCatSet>
 
@@ -1518,13 +1542,11 @@ An C<ExprNodeSet> has these 11 attributes:
 =item C<sca_lit_exprs> - C<ScaLitExprNodeSet>
 
 These are expression nodes that define scalar literals of types such that
-the Muldis D dialect provides special literal syntax specific to the type,
-and the type may not have any possreps.
+the Muldis D dialect provides special literal syntax specific to the type.
 
 =item C<sca_pr_lit_exprs> - C<ScaPRLitExprNodeSet>
 
-These are expression nodes that define (|quasi-)scalar literals of types
-such that each type has at least 1 possrep, and each literal is specified
+These are expression nodes that define (|quasi-)scalar literals specified
 simply in terms of possrep attributes.
 
 =item C<tup_lit_exprs> - C<TupLitExprNodeSet>
@@ -1564,8 +1586,8 @@ C<ExprNodeSet>'s attributes.  Its default value is empty.
 
 A C<ScaLitExprNodeSet> is a C<Relation> that specifies a set of value
 expression nodes where each node is a hard-coded scalar literal of one of a
-certain collection of system-defined core scalar types (or subtype
-thereof).
+certain collection of system-defined core scalar types that special value
+literal syntax exists for (or subtype thereof).
 
 A C<ScaLitExprNodeSet> has these 3 attributes:
 
@@ -1594,9 +1616,8 @@ attribute.  Its default value is empty.
 =head2 sys.std.Core.Type.Cat.ScaPRLitExprNodeSet
 
 A C<ScaPRLitExprNodeSet> is a C<Relation> that specifies a set of value
-expression nodes where each node represents a (|quasi-)scalar literal of a
-type that has at least 1 possrep, and the literal is specified simply in
-terms of possrep attributes.
+expression nodes where each node represents a (|quasi-)scalar literal that
+is specified simply in terms of possrep attributes.
 
 A C<ScaPRLitExprNodeSet> has these 5 attributes:
 
@@ -2456,7 +2477,8 @@ Iff the type being defined is a (|quasi-)scalar root type, then
 C<base_type> is not applicable and is a C<Nothing>.  Iff the type being
 defined is a subtype of some other (|quasi-)scalar type, then C<base_type>
 is a C<Single> whose sole element is the name of that other type.  Note
-that any type named by C<base_type> must itself have at least 1 possrep.
+that any type named by C<base_type> must itself be a (|quasi-)scalar root
+type or a subtype of one.
 
 =item C<possreps> - C<PossrepSet>
 
@@ -3528,7 +3550,7 @@ C<NameChain>, then this could cause problems where anything could
 invoke C<mytest> directly without being given permission from C<mymain>.
 
 As an at-least-initial solution to this problem, here are a few black box
-data types (specifically, quasi-scalar types with no possreps) which will
+data types (similar to quasi-scalar types but with no possreps) which will
 provide fully-qualified identifiers for routines, useful as alternatives to
 C<NameChain> values, so any routine may be correctly invoked from any
 other routine, without losing privacy.  Values of these types work their
