@@ -46,6 +46,7 @@ relationships:
                         sys.std.Core.Type.PInt
                             sys.std.Core.Type.PInt2_N
                 sys.std.Core.Type.String
+                    sys.std.Core.Type.SEString
                     sys.std.Core.Type.BString
                     sys.std.Core.Type.OString
                     sys.std.Core.Type.UCPString
@@ -211,16 +212,16 @@ basis for the physical representation.
 
 =head2 sys.std.Core.Type.Int
 
-This is a primitive data type.  An C<Int> is a single exact integral number
-of any magnitude.  Its default value is zero; its minimum and maximum
-values are conceptually infinities and practically impossible.  C<Int> is
-one of just two scalar root types (the other is C<String>) that does I<not>
-have any possreps.  The cardinality of this type is infinity; to define a
-most-generalized finite C<Int> subtype, you must specify the 2 integer
-end-points of the inclusive range that all its values are in.  The C<Int>
-type has a default ordering algorithm; for 2 distinct C<Int> values, the
-value closer to negative infinity is ordered before the value closer to
-positive infinity.
+This is a structure data type.  An C<Int> is a single exact integral number
+of any magnitude.  An C<Int> has 1 system-defined possrep whose name is the
+empty string, which has of 1 C<SEString>-typed attribute whose name is the
+empty string.  Its default value is zero; its minimum and maximum values
+are conceptually infinities and practically impossible.  The cardinality of
+this type is infinity; to define a most-generalized finite C<Int> subtype,
+you must specify the 2 integer end-points of the inclusive range that all
+its values are in.  The C<Int> type has a default ordering algorithm; for 2
+distinct C<Int> values, the value closer to negative infinity is ordered
+before the value closer to positive infinity.
 
 =head2 sys.std.Core.Type.NNInt
 
@@ -244,21 +245,30 @@ minimum value is 2.
 
 This is a primitive data type.  A C<String> is a string of integers, or
 more specifically it is a dense sequence of 0..N elements (I<not> defined
-over C<Relation>) where each element is an C<Int>.  Its default and minimum
+over C<Relation>) where each element is an integer.  Its default and minimum
 value is the empty sequence; its maximum value is an infinite-length
-sequence and practically impossible.  C<String> is one of just two scalar
-root types (the other is C<Int>) that does I<not> have any possreps.  The
+sequence and practically impossible.  C<String> is the only scalar
+root type that does I<not> have any possreps.  The
 cardinality of this type is infinity; to define a most-generalized finite
 C<String> subtype, you must specify a maximum length in elements that the
-subtype's values can have.  The C<String> type has a default ordering
-algorithm; for 2 distinct C<String> values, their order is determined as
-follows:  First eliminate any identical leading elements from both strings
-as those alone would make the strings compare as same (if the remainder of
-both strings was the empty string, then the strings are identical).  Then,
-iff the remainder of just one string is the empty string, then that string
-is ordered before the non-empty one; otherwise, compare the first element
-of each of the string remainders according to the default ordering
-algorithm of C<Int> to get the order of their respective strings.
+subtype's values can have, and you must specify the 2 integer end-points of
+the inclusive range that all its values' integer elements are in.  The
+C<String> type has a default ordering algorithm; for 2 distinct C<String>
+values, their order is determined as follows:  First eliminate any
+identical leading element sequences from both strings as those alone would
+make the strings compare as same (if the remainder of both strings was the
+empty string, then the strings are identical).  Then, iff the remainder of
+just one string is the empty string, then that string is ordered before the
+non-empty one; otherwise, compare the first element of each of the string
+remainders according to the following ordering algorithm to get the order
+of their respective strings: the integer value closer to negative infinity
+is ordered before the value closer to positive infinity.
+
+=head2 sys.std.Core.Type.SEString
+
+This is an enumeration data type.  C<SEString> (single-element string) is a
+proper subtype of C<String> where all member values have exactly one
+element.  One can be used to represent an integer.
 
 =head2 sys.std.Core.Type.BString
 
