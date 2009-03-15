@@ -166,6 +166,30 @@ support recursive queries, such as in connection with the "part explosion
 problem" (the problem of finding all components, at all levels, of some
 specified part).
 
+=head2 sys.std.QRelation.classification
+
+C<function sys.std.QRelation.classification result QRelation params {
+topic(QRelation), func(FuncRef), assuming(QTuple)?, class_attr_name(Name),
+group_attr_name(Name) }>
+
+This function conceptually is to C<sys.std.Core.QRelation.restriction> what
+C<sys.std.Core.QRelation.group> is to C<sys.std.Core.QRelation.semijoin>.
+It classifies the q/tuples of C<topic> into N groups using the function
+named by C<func>, such that any distinct q/tuples are in a common group if
+the function named by C<func> results in the same value when given either
+of those q/tuples as its C<topic> argument, and C<assuming> as its
+C<assuming> argument.  This function conceptually is a short-hand for first
+extending C<topic> with a new attribute whose name is given in
+C<class_attr_name>, whose value per tuple is determined from C<topic> using
+C<func> and C<assuming>, and then grouping that result q/relation on all of
+its original attributes, with the post-group RVA having the name given in
+C<group_attr_name>; the result of C<classification> is a binary q/relation
+whose 2 attributes have the names given in C<class_attr_name> and
+C<group_attr_name>.  This function is intended for use when you want to
+partition a q/relation's q/tuples into an arbitrary number of groups using
+arbitrary criteria, in contrast with C<restriction> where you are dividing
+into exactly 2 groups (and returning one) using arbitrary criteria.
+
 =head2 sys.std.QRelation.reduction
 
 C<function sys.std.QRelation.reduction result QTuple params {
