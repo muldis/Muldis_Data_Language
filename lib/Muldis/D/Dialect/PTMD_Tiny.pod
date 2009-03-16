@@ -459,7 +459,15 @@ Grammar:
 
     token quoted_char_str_seg {
         <[']>
-            ['\b' | '\q' | <-[\\\']>]*
+            [
+                  '\b' | '\q' | <-[\\\']>
+                | '\c<' [
+                      [<[ A..Z ]> | ' ']*
+                    | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
+                    | <[ 1..9 A..Z ]> ';'
+                        [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
+                  ] '>'
+            ]*
         <[']>
     }
 
@@ -474,6 +482,8 @@ Examples:
     Text:''
 
     Text:'Perl'
+
+    Text:'\c<LATIN SMALL LETTER OU>\c<F;263A>\c<65>'
 
 =head2 sys.std.Core.Type.Rat
 
