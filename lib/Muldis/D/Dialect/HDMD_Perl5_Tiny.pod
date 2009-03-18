@@ -368,8 +368,8 @@ Muldis D C<sys.std.Core.Type.Rat> value as follows:
 If the payload is a Perl scalar, then it must be just a canonical numeric
 value according to Perl, and it is mapped directly; since native Perl
 numerics are limited precision or are inexact (IEEE float), larger numerics
-can be represented by a Perl character string of the format C<< 0\.?<[ 0..9
-_ ]>* >> or C<< \-?<[1..9]><[ 0..9 _ ]>*\.?<[ 0..9 _ ]>* >> that is
+can be represented by a Perl character string of the format C<< 0\.<[ 0..9
+_ ]>+ >> or C<< \-?<[1..9]><[ 0..9 _ ]>*\.<[ 0..9 _ ]>+ >> that is
 interpreted as base 10.
 
 =item *
@@ -393,8 +393,8 @@ If the payload is a Perl hash ref, then it must have 1 element, whose key
 and value are designated, in order, I<max-col-val> and I<main payload>; the
 max-col-val must be a Perl string composed of a single C<[ 1..9 A..Z ]>
 character.  If the main payload is a Perl scalar, then the main payload
-must be a Perl character string of the format C<< 0\.?<[ 0..9 A..Z _ ]>* >>
-or C<< \-?<[ 1..9 A..Z ]><[ 0..9 A..Z _ ]>*\.?<[ 0..9 A..Z _ ]>* >>.  This
+must be a Perl character string of the format C<< 0\.<[ 0..9 A..Z _ ]>+ >>
+or C<< \-?<[ 1..9 A..Z ]><[ 0..9 A..Z _ ]>*\.<[ 0..9 A..Z _ ]>+ >>.  This
 format specifically is what the Plain Text Muldis D grammar uses as one
 general form for rational literals, and is the result of parsing it.  The
 main payload is interpreted as a base-I<N> rational where I<N> might be
@@ -447,7 +447,7 @@ must be as per the payload of a C<Rat> PHMD node.
 
 Examples:
 
-    [ 'Instant', 1235556432 ]
+    [ 'Instant', 1235556432.0 ]
 
 =head2 sys.std.Core.Type.Duration
 
@@ -460,9 +460,9 @@ C<Rat> PHMD node.
 
 Examples:
 
-    [ 'Duration', 3600 ]
+    [ 'Duration', 3600.0 ]
 
-    [ 'Duration', -50 ]
+    [ 'Duration', -50.0 ]
 
     [ 'Duration', 3.14159 ]
 
@@ -630,7 +630,7 @@ Examples:
         'day'    => [ 'Int', 26 ],
         'hour'   => [ 'Int', 1 ],
         'minute' => [ 'Int', 30 ],
-        'second' => [ 'Rat', 0 ],
+        'second' => [ 'Rat', 0.0 ],
     } ] ]
 
     [ 'Scalar', 'fed.lib.the_db.WeekDay', [ 'name', {
@@ -915,7 +915,7 @@ Examples:
 
     [ 'UTCInstant', [2002,12,6] ] # a UTCDate
 
-    [ 'UTCInstant', [undef,undef,undef,14,2,29] ] # a UTCTime
+    [ 'UTCInstant', [undef,undef,undef,14,2,29.0] ] # a UTCTime
 
     [ 'FloatInstant', [2003,4,5,2] ] # min,sec unknown or N/A
 
