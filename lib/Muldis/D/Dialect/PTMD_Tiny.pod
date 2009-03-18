@@ -150,9 +150,9 @@ Grammar:
 
     token ln_base_name { Muldis_D }
 
-    token ln_base_authority { <char_str> }
+    token ln_base_authority { <name_payload> }
 
-    token ln_base_version_number { <char_str> }
+    token ln_base_version_number { <name_payload> }
 
     token ln_dialect { PTMD_Tiny }
 
@@ -421,18 +421,18 @@ Grammar:
 
     token blob_payload {
         <[137F]> <value_payload_elem_sep>
-        [[<[ 0..9 A..F ]>+] ** <segment_sep>]?
+        [<[']> <[ 0..9 A..F ]>* <[']>] ** <segment_sep>
     }
 
 Examples:
 
-    Blob:1;00101110100010
+    Blob:1;'00101110100010'
 
-    Blob:3;
+    Blob:3;''
 
-    Blob:F;A705E
+    Blob:F;'A705E'
 
-    Blob:7;523504376
+    Blob:7;'523504376'
 
 =head2 sys.std.Core.Type.Text
 
@@ -445,16 +445,7 @@ Grammar:
     }
 
     token text_payload {
-        <char_str>
-    }
-
-    token char_str {
-        [<char_str_seg> ** <segment_sep>]?
-    }
-
-    token char_str_seg {
-          <quoted_char_str_seg>
-        | <nonquoted_char_str_seg>
+        <quoted_char_str_seg> ** <segment_sep>
     }
 
     token quoted_char_str_seg {
@@ -470,8 +461,6 @@ Grammar:
             ]*
         <[']>
     }
-
-    token nonquoted_char_str_seg { <[ a..z A..Z 0..9 _ - ]>+ }
 
 Examples:
 
@@ -595,8 +584,10 @@ Grammar:
     }
 
     token name_payload {
-        <char_str>
+        [<quoted_char_str_seg> | <nonquoted_char_str_seg>] ** <segment_sep>
     }
+
+    token nonquoted_char_str_seg { <[ a..z A..Z 0..9 _ - ]>+ }
 
 Examples:
 
@@ -657,7 +648,7 @@ Grammar:
     }
 
     token comment_payload {
-        <char_str>
+        <quoted_char_str_seg> ** <segment_sep>
     }
 
 Examples:
