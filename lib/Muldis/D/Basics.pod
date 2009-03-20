@@ -717,7 +717,7 @@ relation type (they are both quasi- types); see L</Distinction of Quasi-
 Types from Non-Quasi Types> for more details.
 
 Now, while every scalar|tuple|relation type or value is also a
-quasi-(scalar|tuple|relation) type or value, a lot of the Muldis D
+quasi-[scalar|tuple|relation] type or value, a lot of the Muldis D
 specification will use the quasi- names specifically to mean values or
 types that are outside of the quasi- subset that non-quasi values or types
 occupy.  As a common short-hand, anywhere you see syntax like I<q/scalar>
@@ -967,7 +967,7 @@ just relation-valued.
 
 As trivial cases, all 3 of the quasi-nonscalar values with zero attributes
 are just nonscalar values, and all quasi-relation values with zero q/tuples
-are just relation values.  (Hence the system-defined C<(Tuple|Relation)D0>
+are just relation values.  (Hence the system-defined C<[Tuple|Relation]D0>
 and C<Nothing> nonscalar types don't each come in 2 flavors.)
 
 A I<scalar value> is, by definition, any quasi-scalar value where all of
@@ -1027,7 +1027,7 @@ I<incomplete type> to refer to a quasi-nonscalar type; every complete type
 has its full list of attributes defined, and every incomplete type (or
 I<parameterized type>) doesn't.  Most system-defined quasi-nonscalar types
 are complete; the only ones that aren't are the various maximal types
-C<(|Q)(Tuple|Relation)> and C<Database>, and none of those define any
+C<[|Q][Tuple|Relation]> and C<Database>, and none of those define any
 attributes at all.  (All quasi-nonscalar values have a full list of
 attributes defined, of course.)
 
@@ -1588,7 +1588,7 @@ and unconditionally results in the same value of the type.
 =item C<possrep_map>
 
 A C<possrep_map> is the same as an C<inner_function>, but that it is part
-of the definition of a (|quasi-)scalar data type, and it is used to convert
+of the definition of a [|quasi-]scalar data type, and it is used to convert
 a value from one of that type's possreps to another.  A C<possrep_map> has
 a single C<topic> parameter whose declared type is a q/tuple whose
 attributes match those of the possrep being converted from, and its result
@@ -1601,7 +1601,7 @@ function.
 
 A C<virtual_attr_map> is the same as a C<possrep_map> except that its range
 may be (and typically is) smaller than its domain, it is usually part of
-the definition of a (|quasi-)nonscalar data type, and it is used such that,
+the definition of a [|quasi-]nonscalar data type, and it is used such that,
 on a per-q/tuple basis, one subset of that type's attributes is defined to
 be generated, by the C<virtual_attr_map> function, purely from a disjoint
 subset of that type's attributes.  So a special kind of I<functional
@@ -1640,7 +1640,7 @@ updating said parameters.  The body of an updater is a single statement
 (plus any support expressions) that invokes one or more C<updater>
 (recursively down to some system-defined variable assignment operator); if
 invoking several, it is a multi-update statement.  An C<updater> can only
-invoke C<function> and C<updater> (and local C<inner_(function|updater)>)
+invoke C<function> and C<updater> (and local C<inner_[function|updater]>)
 routines.  Despite being imperative, an C<updater> has no lexical variables
 save for its subject-to-update parameters, and it just assigns to those as
 its last/only action; but like functions, it does have named expression
@@ -2179,48 +2179,48 @@ This is the hierarchy of invocation namespaces of DBMS entities:
         sys.cat  # read-only sys cat db desc entities under sys|mnt, *.cat
         sys.std  # sys-def types and routines defined by standard Muldis D
             sys.std.Core
-                sys.std.Core(.<sys-nsp>){0,}
-                    sys.std.Core(.<sys-nsp>){0,}.<type>
-                    sys.std.Core(.<sys-nsp>){0,}.<routine>
+                sys.std.Core[.<sys-nsp>]**0..*
+                    sys.std.Core[.<sys-nsp>]**0..*.<type>
+                    sys.std.Core[.<sys-nsp>]**0..*.<routine>
             sys.std.<extension>
-                sys.std.<extension>(.<sys-nsp>){0,}
-                    sys.std.<extension>(.<sys-nsp>){0,}.<type>
-                    sys.std.<extension>(.<sys-nsp>){0,}.<routine>
+                sys.std.<extension>[.<sys-nsp>]**0..*
+                    sys.std.<extension>[.<sys-nsp>]**0..*.<type>
+                    sys.std.<extension>[.<sys-nsp>]**0..*.<routine>
         sys.imp  # sys-def types, rtns added by, specif to implementations
             sys.imp.<auth-or-impl-name>
-                sys.imp.<auth-or-impl-name>(.<sys-nsp>){0,}
-                    sys.imp.<auth-or-impl-name>(.<sys-nsp>){0,}.<type>
-                    sys.imp.<auth-or-impl-name>(.<sys-nsp>){0,}.<routine>
+                sys.imp.<auth-or-impl-name>[.<sys-nsp>]**0..*
+                    sys.imp.<auth-or-impl-name>[.<sys-nsp>]**0..*.<type>
+                    sys.imp.<auth-or-impl-name>[.<sys-nsp>]**0..*.<routine>
     mnt  # controls for mapping external storage devices etc with depots
         mnt.cat  # updateable sys cat controlling what depot mounts exist
     tpc  # time-varying opt user-def aliases for fed.* invoc namespaces
-        tpc.cat  # upd sys cat db desc ent under tpc.(dep|sdp|pkg)
-        tpc.(dep|sdp|pkg)
-            tpc.(dep|sdp|pkg).(cat|lib|data)
+        tpc.cat  # upd sys cat db desc ent under tpc.[dep|sdp|pkg]
+        tpc.[dep|sdp|pkg]
+            tpc.[dep|sdp|pkg].[cat|lib|data]
                 # and so on like under dep|sdp|pkg top-levels
     fed  # the transac-synced federation of curr mounted depots w mount nms
-        fed.cat  # updateable sys cat db desc entities under fed.(lib|data)
+        fed.cat  # updateable sys cat db desc entities under fed.[lib|data]
         fed.lib  # invokable user-def types and routines in this federation
             fed.lib.<depot>
-                fed.lib.<depot>(.<subdepot>){0,}
-                    fed.lib.<depot>(.<subdepot>){0,}.<type>
-                    fed.lib.<depot>(.<subdepot>){0,}.<routine>
-                    fed.lib.<depot>(.<subdepot>){0,}.<package>
-                       fed.lib.<depot>(.<subdepot>){0,}.<package>.<type>
-                       fed.lib.<depot>(.<subdepot>){0,}.<package>.<routine>
+               fed.lib.<depot>[.<subdepot>]**0..*
+                  fed.lib.<depot>[.<subdepot>]**0..*.<type>
+                  fed.lib.<depot>[.<subdepot>]**0..*.<routine>
+                  fed.lib.<depot>[.<subdepot>]**0..*.<package>
+                     fed.lib.<depot>[.<subdepot>]**0..*.<package>.<type>
+                     fed.lib.<depot>[.<subdepot>]**0..*.<package>.<routine>
         fed.data  # updateable db of normal user data in this federation
     dep  # entities in a self-sufficient depot ref their own depot w this
-        dep.cat  # updateable sys cat db desc entities under dep.(lib|data)
+        dep.cat  # updateable sys cat db desc entities under dep.[lib|data]
         dep.lib  # invokable user-def types and routines in this depot
-            dep.lib(.<subdepot>){0,}
-                dep.lib(.<subdepot>){0,}.<type>
-                dep.lib(.<subdepot>){0,}.<routine>
-                dep.lib(.<subdepot>){0,}.<package>
-                    dep.lib(.<subdepot>){0,}.<package>.<type>
-                    dep.lib(.<subdepot>){0,}.<package>.<routine>
+            dep.lib[.<subdepot>]**0..*
+                dep.lib[.<subdepot>]**0..*.<type>
+                dep.lib[.<subdepot>]**0..*.<routine>
+                dep.lib[.<subdepot>]**0..*.<package>
+                    dep.lib[.<subdepot>]**0..*.<package>.<type>
+                    dep.lib[.<subdepot>]**0..*.<package>.<routine>
         dep.data  # updateable db of normal user data in this depot
     sdp  # entities in a subdepot (public gen nsp) ref their own sdp w this
-        sdp.cat  # updateable sys cat db desc entities under sdp.(lib|data)
+        sdp.cat  # updateable sys cat db desc entities under sdp.[lib|data]
         sdp.lib  # invokable user-def types and routines in this subdepot
             sdp.lib.<type>
             sdp.lib.<routine>
@@ -2229,7 +2229,7 @@ This is the hierarchy of invocation namespaces of DBMS entities:
                 sdp.lib.<package>.<routine>
         sdp.data  # updateable db of normal user data in this subdepot
     pkg  # entities in a package (priv nsp) ref their own package with this
-        pkg.cat  # updateable sys cat db desc entities under pkg.(lib|data)
+        pkg.cat  # updateable sys cat db desc entities under pkg.[lib|data]
         pkg.lib  # invokable user-def types and routines in this package
             pkg.lib.<type>
             pkg.lib.<routine>
@@ -2253,9 +2253,9 @@ Further details of each namespace follow below.
 All globally visible Muldis D variables are database-typed and can be
 grouped into two main kinds, which are system catalog variables (one of
 which is actually constant) and user data variables.  The global system
-catalog variables all exist as the C<(sys|mnt|fed|dep|sdp|pkg).cat>
+catalog variables all exist as the C<[sys|mnt|fed|dep|sdp|pkg].cat>
 secondary namespaces (C<sys.cat> is a constant).  The global user data
-variables all live as the C<(fed|dep|sdp|pkg).data> secondary namespaces.
+variables all live as the C<[fed|dep|sdp|pkg].data> secondary namespaces.
 All non-global variables are just of the user data variety, can be of any
 types, and use the C<pkg|lex> primary namespaces (yes, C<pkg> has both
 public and private variables).
@@ -2319,7 +2319,7 @@ C<sys.cat.system> and plain C<sys.cat> currently fills that stated role.>
 =head2 Implementation Specific System-Defined Entities
 
 Minimally speaking, the structure and contents of the catalog namespaces
-C<sys.cat.(mount|foreign|interp)> are expected to be implementation
+C<sys.cat.[mount|foreign|interp]> are expected to be implementation
 specific, and so the (typically named nonscalar) types in terms of which
 they are defined would also have to be implementation specific.  While
 adhering to that minimum purpose for non-standard additions would be the
@@ -2330,7 +2330,7 @@ specialized niches only, rather than being intended for general use.  Or
 ideally these would be deprecated in favor of support of the niche coming
 into the standard language as an elegantly designed extension.  I<Actually,
 this paragraph is out of date; there is no
-C<sys.cat.(mount|foreign|interp)>.>
+C<sys.cat.[mount|foreign|interp]>.>
 
 The C<sys.imp> primary namespace is for the hardwired non-standard /
 implementation specific system-defined types and routines in the same way
@@ -2352,7 +2352,7 @@ The catalog namespace C<sys.cat.impl> corresponds to C<sys.cat.system>.
 The two being separated also results in the value of the C<sys.cat.system>
 catalog constant being exactly the same for all implementations.
 I<Actually, this paragraph is out of date; there is no
-C<sys.cat.(system|impl)>.>
+C<sys.cat.[system|impl]>.>
 
 =head2 User-Defined Entities
 
@@ -2507,7 +2507,7 @@ choose to I<not> have its own dbvar); that also serves to support DBMSs
 that have a common namespace hierarchy for both routines and relvars.  This
 section details that mutual constraint.
 
-The 4 system-defined user-data variables named C<(fed|dep|sdp|pkg).data>
+The 4 system-defined user-data variables named C<[fed|dep|sdp|pkg].data>
 are all of "just" the C<Database> type (which is a C<Tuple> proper
 subtype), or are of its proper subtypes.
 
@@ -2644,22 +2644,22 @@ afterwards match the other/normal primary namespaces and what follow them,
 but for 1 possible extra element following those.
 
 The grammatically simplest scenario is taking the declared type of a
-(|quasi-)scalar variable or pseudo-variable, which takes the form C<<
-type.var(.<path-elem-to-var>){1,}(.<path-elem-to-attr>){0,} >>, for example
-C<type.var.lex.myvar>.  A similar scenario is taking the declared type of
-an attribute of a distinct type entity, which takes the form C<<
-type.type(.<path-elem-to-type>){1,}(.<path-elem-to-attr>){0,} >>, for
+[|quasi-]scalar variable or pseudo-variable, which takes the form C<<
+type.var[.<path-elem-to-var>]**1..*[.<path-elem-to-attr>]**0..* >>, for
+example C<type.var.lex.myvar>.  A similar scenario is taking the declared
+type of an attribute of a distinct type entity, which takes the form C<<
+type.type[.<path-elem-to-type>]**1..*[.<path-elem-to-attr>]**0..* >>, for
 example C<type.type.dep.lib.mytyp.myattr>.  A similar scenario is taking
 the declared result type of a function, which takes the form C<<
-type.func_result(.<path-elem-to-func>){1,}(.<path-elem-to-attr>){0,} >>,
-for example C<type.func_result.dep.lib.myfunc>.
+type.func_result[.<path-elem-to-func>]**1..*[.<path-elem-to-attr>]**0..*
+>>, for example C<type.func_result.dep.lib.myfunc>.
 
 A slightly more complicated scenario is taking the declared type of a
 routine parameter, which takes the form C<<
-type.param(.<path-elem-to-rtn>){1,}.<param-name>(.<path-elem-to-attr>){0,}
->>, for example C<type.param.sys.std.Integer.quotient.divisor>.
+type.param[.<path-elem-to-rtn>]**1..*.<param-name>[.<path-elem-to-attr>]**0
+..* >>, for example C<type.param.sys.std.Integer.quotient.divisor>.
 
-Dealing with (|quasi-)nonscalar type is slightly more complicated yet, due
+Dealing with [|quasi-]nonscalar type is slightly more complicated yet, due
 to the fact that one tends to declare q/tuple+q/relation type pairs by
 declaring the heading that they have in common and the fact that when you
 use one you often need to use its counterpart.  So when you when you are
@@ -2667,23 +2667,23 @@ taking the declared type where a q/tuple+q/relation type was declared
 together, you use extra syntax to say whether it is a q/tuple type or
 q/relation type that you actually want.  So to deal with this, the
 aforementioned forms of taking types actually have
-C<(.(|quasi_)(tuple|relation)_from){0,1}> in their syntax following the
+C<[.[|quasi_][tuple|relation]_from]**0..1> in their syntax following the
 C<type> and before the aforementioned remainder; for example
-C<type.(tuple|relation)_from.var.dep.data.myrelvar>.
+C<type.[tuple|relation]_from.var.dep.data.myrelvar>.
 
 Muldis D also has an extension to the previously described "taking the
 type" feature such that declaring any type, embedded or otherwise, also has
-the effect of implicitly declaring simple (|quasi-)nonscalar collection
+the effect of implicitly declaring simple [|quasi-]nonscalar collection
 types over that type; but these implicit extra types only appear when you
 attempt to use them, in the form of adding yet another syntax element to
 all of the aforementioned forms, which is
-C<(.(|quasi_)(set|maybe|single|array|bag)_of){0,}>; this C<of> element
+C<[.[|quasi_][set|maybe|single|array|bag]_of]**0..*>; this C<of> element
 takes the same position as the C<from> element in the syntax, just after
 the C<type>; or they can both be used together in which case the C<of>
 typically appears first.
 
 This feature extension is intended mainly to save the language from a
-proliferation of explicitly defined but very similar (|quasi-)nonscalar
+proliferation of explicitly defined but very similar [|quasi-]nonscalar
 types; so rather than having to explicitly declare a type that is a
 sequential array of integers (that is, an C<Array> whose C<value> attribute
 has the type C<Int>), you can just use it implicitly by saying
