@@ -28,10 +28,6 @@ the detail info and is standalone, and hosted-data-Perl-Tiny is just
 defined as being the same as the former but for specified format
 differences.
 
-* Update the plain-text Tiny dialect to support more Perl 6 isms directly,
-such as "0[b|o|d|x]" prefixes rather than "max-col-val;" prefixes (and the
-same can be done for Blob but just b|o|x opts).
-
 * Update the Tiny dialects with special syntax for declaring whole depots
 in a single expression, catalog+data.  This can be useful for example with
 a simple Muldis D implementation that wants to represent a persisted depot
@@ -51,6 +47,42 @@ subtype, key, possrep, etc; they apply to both 'outer' and 'inner'
 types/routines; also keywords for declaring whole packages or something.
 Also consider that some pragmas can go away, their actions made always-on
 or 'lexical'.
+
+* Add one or more files to the distro that are straight PTMD_Tiny code like
+for defining a whole depot (as per the above) but instead these files
+define all the system entities.  Or more specifically they define just the
+interfaces/heads of all the system-defined routines, and they have the
+complete definitions of all system-defined types, and they declare all the
+system catalog dbvars/dbcons.  In other words these files contain
+everything that is in the sys.cat dbcon; anything that users can introspect
+from sys.cat can also be read from these files in the form of PTMD_Tiny
+code, more or less.  The function of these files is analagous to the Perl 6
+Setting files described in the Perl 6 Synopsis 32, except that the Muldis D
+analogy explicitly does not define the bodies of any built-in routines.  An
+idea is that Muldis D implementations could take these files as is and
+parse them to populate their sys.cat that users see; of course, the
+implementations can actually implement the routines/types as they want.
+Note that although this Muldis D code would be bundled with the spec, it is
+most likely that the PTMD_Tiny-written standard impl test suite will not.
+Note that these files will not go in lib/ but in some other new dir.
+
+* Further to the prior item, add new file Ext/String.pod and add to that
+file and other files definitions of any remaining routines that would be
+needed so that for all system-defined types all the necessary
+system-defined routines would exist that are necessary for defining said
+types, especially their constraint or mapping etc definitions.  So in
+String.pod, besides the usual suspects like [catenation, repeat, length,
+is_substr] etc, we also need: 1. "has_single_element" tests if its single
+param String $topic has exactly one element or not, and its invocation
+comprises the whole "constraint" of the sole possrep of the SEString type
+by way of which the Int type is defined; a more generic length test won't
+work since that would take an Int argument, so we can't define Int with it.
+2. "all_elements_in_range" tests if every element of its param String
+$topic is an integer in the range given by the other arguments, which can
+be Int typed; this is used in the "constraint" def of the [B|O|UCP] types.
+Also add "is_coprime" or GCD or LCM or etc which are used either in the
+constraint definition of Rat or in a normalization function for Rat; see
+also "the Euclidean algorithm" as an efficient way to do the calculations.
 
 * Consider adding type introspection routines like: is_incomplete() or
 is_quasi() or is_primitive|structure|reference|enumerated etc.  Or don't
@@ -156,7 +188,7 @@ mem addr and stringification would both be prefixed with some constant to
 distinguish the 2 that might stringify the same.  By default, a
 ForeignValue supports no operators but is/not_identical.
 
-* Add catalog types that represent thrown exceptions.
+* Add catalog types that represent thrown exceptions.  Probably q/scalar.
 
 * Also study SQL concept of conditions and handlers, looks sort of like
 something between exception handling, signals; or it is their exceptions.
