@@ -194,8 +194,9 @@ strongly recommended for Muldis D variant names that authority strings
 follow the formats that are valid as authority strings for the long names
 of Perl 6 packages, such as a CPAN identifier or an http url.
 
-For the official/original Muldis D language spec by Darren Duncan, that
-string is always C<http://muldis.com> during the foreseeable future.
+For the official/original Muldis D language spec by Muldis Data Systems,
+Inc., that string is always C<http://muldis.com> during the foreseeable
+future.
 
 If someone else wants to I<embrace and extend> Muldis D, then they must use
 their own (not C<http://muldis.com>) base authority identifier, to prevent
