@@ -13,6 +13,35 @@
     specified to a multiple of a whole number greater than one, and not
     just to a multiple of a number of lesser or equal magnitude to one.
 
+    * (PTMD_Tiny.pod)  Made "Name" (and chains etc) value literals stricter
+    in a couple ways.  First, segmented Name payloads must now have all of
+    their segments quoted, not just those segments with characters outside
+    of the nonquoted repertoire; a corollary to this is that if you have an
+    otherwise nonquoted Name payload that is long enough to segment, you
+    have to make it quoted to do that.  Second, nonquoted Name payloads
+    must begin with a letter or underscore and may no longer start with a
+    digit or hyphen; you must use the quoted form if you want to do that.
+    These changes were made to aid code readability and reduce confusion of
+    some Name literals with some Int literals.  In the process, a bit of
+    grammar refactoring was done: "quoted_char_str_seg" was enlarged to
+    include "segment_sep" and was renamed to "quoted_char_str", and now
+    "[text|name|comment]_payload" refer to that; "nonquoted_char_str_seg"
+    was renamed to "nonquoted_char_str".
+
+    * (PTMD_Tiny.pod)  Made "Bool" and "Order" value literals stricter such
+    that they may only be specified with values allowed for their "name"
+    possreps and no longer their "int" possreps.  So for example, you can
+    say "Bool:false" or "false" but no longer "Bool:0".  Updated grammar
+    tokens are "bool[|_payload]" and "order_payload".
+
+    * (PTMD_Tiny.pod)  Updated the support for unqualified value literals
+    so "Order" and "RatRoundMeth" literals may now be written that way.
+    Updated grammar tokens are "order" and "rat_round_meth".
+
+    * (PTMD_Tiny.pod)  Made the grammar token "pint_tail" stricter so that
+    two underscore separator characters may not appear in a row within any
+    of the value literals defined in terms of numeric values.
+
     * (D.pm, SeeAlso.pod)  Minor updates; changed notes about projects'
     owners from Darren Duncan to Muldis Data Systems.
 
