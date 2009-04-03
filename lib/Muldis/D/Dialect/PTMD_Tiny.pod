@@ -361,8 +361,8 @@ Grammar:
     }
 
     token int_payload {
-        [<int_max_col_val> <value_payload_elem_sep>]?
-        <int_body>
+          <int_max_col_val> <value_payload_elem_sep> <int_body>
+        | <d_int_body>
     }
 
     token value_payload_elem_sep { \s* ';' \s* }
@@ -380,6 +380,16 @@ Grammar:
     token pint_tail { [['_'?<[ 0..9 A..Z ]>+]+] ** <segment_sep> }
 
     token segment_sep { \s* '~' \s* }
+
+    token d_int_body { [0 | \-?<d_pint_body>] }
+
+    token d_nnint_body { [0 | <d_pint_body>] }
+
+    token d_pint_body { <d_pint_head> <d_pint_tail>? }
+
+    token d_pint_head { <[ 1..9 ]> }
+
+    token d_pint_tail { [['_'?<[ 0..9 ]>+]+] ** <segment_sep> }
 
 Examples:
 
@@ -412,10 +422,13 @@ Grammar:
     }
 
     token string_payload {
-        [<int_max_col_val> <value_payload_elem_sep>]?
-        <ord_list_open>
-            [<int_body> ** <list_elem_sep>]?
-        <ord_list_close>
+          <int_max_col_val> <value_payload_elem_sep>
+          <ord_list_open>
+              [<int_body> ** <list_elem_sep>]?
+          <ord_list_close>
+        | <ord_list_open>
+              [<d_int_body> ** <list_elem_sep>]?
+          <ord_list_close>
     }
 
     token ord_list_open { \s* '[' \s* }
@@ -512,8 +525,8 @@ Grammar:
     }
 
     token rat_payload {
-        [<int_max_col_val> <value_payload_elem_sep>]?
-        <rat_body>
+          <int_max_col_val> <value_payload_elem_sep> <rat_body>
+        | <d_rat_body>
     }
 
     token rat_body {
@@ -526,6 +539,18 @@ Grammar:
           <nnint_body>\.<pint_tail>
         | <nnint_body> \s* \/ \s* <pint_body>
         | <nnint_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
+    }
+
+    token d_rat_body {
+          <d_int_body>\.<d_pint_tail>
+        | <d_int_body> \s* \/ \s* <d_pint_body>
+        | <d_int_body> \s* \* \s* <d_pint_body> \s* \^ \s* <d_int_body>
+    }
+
+    token d_nnrat_body {
+          <d_nnint_body>\.<d_pint_tail>
+        | <d_nnint_body> \s* \/ \s* <d_pint_body>
+        | <d_nnint_body> \s* \* \s* <d_pint_body> \s* \^ \s* <d_int_body>
     }
 
 Examples:
@@ -565,8 +590,7 @@ Grammar:
     }
 
     token instant_payload {
-        [<int_max_col_val> <value_payload_elem_sep>]?
-        <rat_body>
+        <rat_payload>
     }
 
 Examples:
@@ -586,8 +610,7 @@ Grammar:
     }
 
     token duration_payload {
-        [<int_max_col_val> <value_payload_elem_sep>]?
-        <rat_body>
+        <rat_payload>
     }
 
 Examples:
@@ -1007,8 +1030,8 @@ Grammar:
     }
 
     token count {
-        [<int_max_col_val> <value_payload_elem_sep>]?
-        <pint_body>
+          <int_max_col_val> <value_payload_elem_sep> <pint_body>
+        | <d_pint_body>
     }
 
     token qbag_payload_repeated_values {
@@ -1047,13 +1070,19 @@ Grammar:
     }
 
     token utc_instant_payload {
-        [<int_max_col_val> <value_payload_elem_sep>]?
-        <ord_list_open>
-            <int_body>? <list_elem_sep>
-            [<pint_body>? <list_elem_sep>] ** 2
-            [<nnint_body>? <list_elem_sep>] ** 2
-            <nnrat_body>?
-        <ord_list_close>
+          <int_max_col_val> <value_payload_elem_sep>
+          <ord_list_open>
+              <int_body>? <list_elem_sep>
+              [<pint_body>? <list_elem_sep>] ** 2
+              [<nnint_body>? <list_elem_sep>] ** 2
+              <nnrat_body>?
+          <ord_list_close>
+        | <ord_list_open>
+              <d_int_body>? <list_elem_sep>
+              [<d_pint_body>? <list_elem_sep>] ** 2
+              [<d_nnint_body>? <list_elem_sep>] ** 2
+              <d_nnrat_body>?
+          <ord_list_close>
     }
 
 Examples:
@@ -1079,11 +1108,15 @@ Grammar:
     }
 
     token utc_duration_payload {
-        [<int_max_col_val> <value_payload_elem_sep>]?
-        <ord_list_open>
-            [<int_body>? <list_elem_sep>] ** 5
-            <rat_body>
-        <ord_list_close>
+          <int_max_col_val> <value_payload_elem_sep>
+          <ord_list_open>
+              [<int_body>? <list_elem_sep>] ** 5
+              <rat_body>
+          <ord_list_close>
+        | <ord_list_open>
+              [<d_int_body>? <list_elem_sep>] ** 5
+              <d_rat_body>
+          <ord_list_close>
     }
 
 Examples:
