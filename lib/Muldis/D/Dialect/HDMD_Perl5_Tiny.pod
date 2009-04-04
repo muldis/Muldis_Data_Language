@@ -212,9 +212,9 @@ probably the empty string and number 1, respectively.
 
 A few alternative payload formats are supported:  The Perl value literals
 [C<'false'>, C<'0'>, C<0>, C<''>] all map to 'false', and the Perl value
-literals [C<'true'>, C<'1'>, C<1>] all map to 'true'.  The 4 character
-strings [C<false>, C<0>, C<true>, C<1>] specifically are what the Plain
-Text Muldis D grammar uses, and are the results of parsing it in Perl 5.
+literals [C<'true'>, C<'1'>, C<1>] all map to 'true'.  The 2 character
+strings [C<false>, C<true>] specifically are what the Plain Text Muldis D
+grammar uses, and are the results of parsing it in Perl 5.
 
 =back
 
@@ -236,8 +236,8 @@ Muldis D C<sys.std.Core.Type.Int> value as follows:
 If the payload is a Perl scalar, then it must be just a canonical integer
 value according to Perl, and it is mapped directly; since native Perl
 integers are limited precision, larger integers can be represented by a
-Perl character string of the format C<0> or C<< \-?<[1..9]><[ 0..9 _ ]>* >>
-that is interpreted as base 10.
+Perl character string of the format C<0> or C<< \-?<[1..9]>['_'?<[0..9]>+]*
+>> that is interpreted as base 10.
 
 =item *
 
@@ -250,7 +250,7 @@ If the payload is a Perl hash ref, then it must have 1 element, whose key
 and value are designated, in order, I<max-col-val> and I<main payload>; the
 max-col-val must be a Perl string composed of a single C<[ 1..9 A..Z ]>
 character, and the main payload must be a Perl character string of the
-format C<0> or C<< \-?<[ 1..9 A..Z ]><[ 0..9 A..Z _ ]>* >>.  This format
+format C<0> or C<< \-?<[ 1..9 A..Z ]>['_'?<[ 0..9 A..Z ]>+]* >>.  This format
 specifically is what the Plain Text Muldis D grammar uses as its general
 form for integer literals, and is the result of parsing it.  The main
 payload is interpreted as a base-I<N> integer where I<N> might be between 2
@@ -385,9 +385,9 @@ Muldis D C<sys.std.Core.Type.Rat> value as follows:
 If the payload is a Perl scalar, then it must be just a canonical numeric
 value according to Perl, and it is mapped directly; since native Perl
 numerics are limited precision or are inexact (IEEE float), larger numerics
-can be represented by a Perl character string of the format C<< 0\.<[ 0..9
-_ ]>+ >> or C<< \-?<[1..9]><[ 0..9 _ ]>*\.<[ 0..9 _ ]>+ >> that is
-interpreted as base 10.
+can be represented by a Perl character string of the format C<<
+0\.['_'?<[0..9]>+]+ >> or C<< \-?<[1..9]>['_'?<[0..9]>+]*\.['_'?<[0..9]>+]+
+>> that is interpreted as base 10.
 
 =item *
 
@@ -410,14 +410,14 @@ If the payload is a Perl hash ref, then it must have 1 element, whose key
 and value are designated, in order, I<max-col-val> and I<main payload>; the
 max-col-val must be a Perl string composed of a single C<[ 1..9 A..Z ]>
 character.  If the main payload is a Perl scalar, then the main payload
-must be a Perl character string of the format C<< 0\.<[ 0..9 A..Z _ ]>+ >>
-or C<< \-?<[ 1..9 A..Z ]><[ 0..9 A..Z _ ]>*\.<[ 0..9 A..Z _ ]>+ >>.  This
-format specifically is what the Plain Text Muldis D grammar uses as one
-general form for rational literals, and is the result of parsing it.  The
-main payload is interpreted as a base-I<N> rational where I<N> might be
-between 2 and 36, and the given max-col-val says which possible value of
-I<N> to use.  Assuming all column values are between zero and
-I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
+must be a Perl character string of the format C<< 0\.['_'?<[ 0..9 A..Z
+]>+]+ >> or C<< \-?<[ 1..9 A..Z ]>['_'?<[ 0..9 A..Z ]>+]*\.['_'?<[ 0..9
+A..Z ]>+]+ >>.  This format specifically is what the Plain Text Muldis D
+grammar uses as one general form for rational literals, and is the result
+of parsing it.  The main payload is interpreted as a base-I<N> rational
+where I<N> might be between 2 and 36, and the given max-col-val says which
+possible value of I<N> to use.  Assuming all column values are between zero
+and I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
 specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].  If the main
 payload is a Perl array ref, then the main payload must have exactly 2 or 3
 elements, and every pairwise combination of the max-col-val with the
@@ -589,10 +589,10 @@ numbers [-1,0,1], respectively.
 A few alternative payload formats are supported:  The Perl value literals
 [C<'increase'>, C<'-1'>, C<-1>] all map to 'increase', the Perl value
 literals [C<'same'>, C<'0'>, C<0>] all map to 'same, and the Perl value
-literals [C<'decrease'>, C<'1'>, C<1>] all map to 'decrease'.  The 6
-character strings [C<increase>, C<-1>, C<same>, C<0>, C<decrease>, C<1>]
-specifically are what the Plain Text Muldis D grammar uses, and are the
-results of parsing it in Perl 5.
+literals [C<'decrease'>, C<'1'>, C<1>] all map to 'decrease'.  The 3
+character strings [C<increase>, C<same>, C<decrease>] specifically are what
+the Plain Text Muldis D grammar uses, and are the results of parsing it in
+Perl 5.
 
 =back
 
