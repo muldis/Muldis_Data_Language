@@ -126,6 +126,9 @@ more or less:
                 sys.std.Core.Type.Cat.ScaPRSelExprNodeSet
                 sys.std.Core.Type.Cat.TupSelExprNodeSet
                 sys.std.Core.Type.Cat.RelSelExprNodeSet
+                sys.std.Core.Type.Cat.SetSelExprNodeSet
+                sys.std.Core.Type.Cat.ArySelExprNodeSet
+                sys.std.Core.Type.Cat.BagSelExprNodeSet
                 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
                 sys.std.Core.Type.Cat.IfElseExprNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
@@ -1536,7 +1539,7 @@ for a subject-to-update parameter of an [|inner ]update operator call; in
 that case the leaf nodes / only node of the expression must map to a
 subject-to-update parameter of the containing [|inner ]update operator.
 
-An C<ExprNodeSet> has these 11 attributes:
+An C<ExprNodeSet> has these 14 attributes:
 
 =over
 
@@ -1558,6 +1561,18 @@ These are expression nodes that represent [|quasi-]tuple value selections.
 
 These are expression nodes that represent generic [|quasi-]relation value
 selections.
+
+=item C<set_sel_exprs> - C<SetSelExprNodeSet>
+
+These are expression nodes that represent [|quasi-]set value selections.
+
+=item C<ary_sel_exprs> - C<ArySelExprNodeSet>
+
+These are expression nodes that represent [|quasi-]array value selections.
+
+=item C<bag_sel_exprs> - C<BagSelExprNodeSet>
+
+These are expression nodes that represent [|quasi-]bag value selections.
 
 =item C<func_invo_exprs> - C<FuncInvoExprNodeSet>
 
@@ -1716,6 +1731,99 @@ do not constitute a failure condition.
 =back
 
 A C<RelSelExprNodeSet> has a unary primary key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.SetSelExprNodeSet
+
+A C<SetSelExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents a [|quasi-]set value selection.
+
+A C<SetSelExprNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<elems> - C<set_of.NameChain>
+
+These represent the elements of the [|quasi-]set value being selected.
+When this value expression is evaluated, if any child expression nodes are
+such that any duplicate tuples might be input to this C<SetSelExprNodeSet>
+selector, the duplicates are silently eliminated and do not constitute a
+failure condition.
+
+=back
+
+A C<SetSelExprNodeSet> has a unary primary key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.ArySelExprNodeSet
+
+An C<ArySelExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents a [|quasi-]array value
+selection.
+
+An C<ArySelExprNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<elems> - C<array_of.NameChain>
+
+These represent the elements of the [|quasi-]array value being selected.
+
+=back
+
+An C<ArySelExprNodeSet> has a unary primary key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.BagSelExprNodeSet
+
+A C<BagSelExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents a [|quasi-]bag value selection.
+
+A C<BagSelExprNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<elems> - C<bag_of.NameChain>
+
+These represent the elements of the [|quasi-]bag value being selected.
+When this value expression is evaluated, if any child expression nodes are
+such that any tuple pairs with duplicate C<value> attribute values might be
+input to this C<BagSelExprNodeSet> selector, the tuple pairs are silently
+merged as per the semantics of bag union; the replacement tuple for such a
+pair has a C<count> attribute that is the sum of that attribute of each of
+the originals in said pair; any duplicate C<value> do not constitute a
+failure condition.
+
+=back
+
+A C<BagSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
