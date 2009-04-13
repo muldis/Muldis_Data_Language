@@ -43,6 +43,25 @@
     bar" etc that doesn't need a user-defined closure, though you still
     need the latter for the general case of "ORDER BY <expr>".
 
+    * (Routines.pod)  Changed the "sys.std.Core.QRelation.summary" function
+    by renaming its "result_attr_names" parameter to "summ_attr_names" and
+    redefining its functionality more in terms of "extension" rather than
+    "map"; the function given to "summ_func" must now just result in a
+    tuple with attributes to add to a result which now already has all the
+    attributes named by "group_per", rather than resulting in all
+    attributes for the result.  The new version of "summary" should be much
+    easier to use as presumably users always want to keep the attributes
+    they are grouping per, and they now don't have to spell them out every
+    time.  For the rare case where you want the old behaviour, now you have
+    to do it manually with an explicit "cmpl_group" plus "map".
+
+    * (Routines.pod, QBag.pod)  Added new function
+    "sys.std.Core.QRelation.cardinality_per_group" which is like "summary"
+    but shorthands the common case where people just want a count of tuples
+    per group and not any other information.  Also added new function
+    "sys.std.QBag.QBag_from_cmpl_group" which is like the other new
+    function but the result is a QBag.
+
     * (HDMD_Perl5_Tiny.pod)  Fixed a few detail fossils that became
     obsolete with last release's PTMD_Tiny changes.  Updated details for
     PHMD payloads of these 4 types: Bool, Int, Rat, Order.
@@ -51,6 +70,13 @@
     referenced the concept of a scalar without a possrep.
 
     * (Routines.pod, Ordered.pod, QRelation.pod)  Minor updates.
+
+    * Added note in the TODO file concerning a prospective
+    ext/MultiQRelation.pod language extension that has "multi_" variants of
+    all the applicable relational operators, saving users from reinventing
+    the wheel when they want to have multiset behaviour with their
+    relations like SQL performs by default; but the data involved is still
+    q/relations, with an explicit extra count attribute.
 
 2009-04-02  Darren Duncan <perl@DarrenDuncan.net>
 

@@ -746,7 +746,7 @@ the C<attrs> argument.
 =head2 sys.std.Core.QRelation.summary
 
 C<< function sys.std.Core.QRelation.summary (QRelation <--
-QRelation $topic, set_of.Name $group_per, set_of.Name $result_attr_names,
+QRelation $topic, set_of.Name $group_per, set_of.Name $summ_attr_names,
 FuncRef $summ_func, QTuple $summ_assuming?) >>
 
 This function provides a convenient context for using aggregate functions
@@ -761,9 +761,11 @@ latter function is curried by its C<summ_assuming> argument (passed to it
 as just C<assuming>); the curried function has, rather than the typical 1
 C<topic> varying parameter, 2 varying parameters named C<summarize> and
 C<per>, which are valued with the q/relation-valued attribute and
-q/tuple-valued attribute, respectively.  As per a function that C<map>
-applies, the function named by C<summ_func> effectively takes a whole
-post-grouping input q/tuple and results in a whole q/tuple; the applied
+q/tuple-valued attribute, respectively.  As per a function that
+C<extension> applies, the function named by C<summ_func> effectively takes
+a whole post-grouping input q/tuple and results in a partial q/tuple that
+would be joined by C<summary> with the C<per> tuple to get the result
+tuple; the applied
 function would directly invoke any N-adic/aggregate operators, and extract
 their inputs from (or calculate) C<summarize> as it sees fit.  Note that
 C<summary> is not intended to be used to summarize an entire C<topic>
@@ -771,14 +773,26 @@ q/relation at once (except by chance of it resolving to 1 group); you
 should instead invoke your summarize-all C<summ_func> directly, or inline
 it, rather than by way of C<summary>, especially if you want a
 single-q/tuple result on an empty C<topic> (which C<summary>) won't do.
-Now, C<summary> requires the extra C<result_attr_names> argument to prevent
+Now, C<summary> requires the extra C<summ_attr_names> argument to prevent
 ambiguity in the general case where C<topic> might have zero q/tuples,
 because in that situation, C<summ_func> would never be invoked, and the
-names of the attributes of the result are not known (we don't generally
+names of the attributes to add to C<per> are not known (we don't generally
 assume that C<summary> can reverse-engineer C<summ_func> to see what
 attributes it would have resulted in).  This function will fail if C<topic>
 has at least 1 q/tuple and the result of C<summ_func> does not have
-matching attribute names to those named by C<result_attr_names>.
+matching attribute names to those named by C<summ_attr_names>.
+
+=head2 sys.std.Core.QRelation.cardinality_per_group
+
+C<< function sys.std.Core.QRelation.cardinality_per_group (QRelation <--
+QRelation $topic, set_of.Name $group_per, Name $count_attr_name) >>
+
+This function is a convenient shorthand for the common use of C<summary>
+that is just counting the tuples of each group.  This function is like
+C<cmpl_group> but that the single added attribute, rather than an RVA of
+the grouped C<topic> attributes, has the cardinality that said RVA would
+have had.  The result's heading consists of the attributes named in
+C<group_per> plus the attribute named in C<count_attr_name> (a C<NNInt>).
 
 =head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT QUASI-/RELATION FUNCTIONS
 
