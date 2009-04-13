@@ -84,6 +84,7 @@ more or less:
                 sys.std.Core.Type.Cat.InnerUnionType
                 sys.std.Core.Type.Cat.InnerRestrType
                 sys.std.Core.Type.Cat.IfThenMap
+                sys.std.Core.Type.Cat.OrderByName
                 sys.std.Core.Type.Cat.RatRoundRule
 
                 sys.std.Core.Type.Database
@@ -121,15 +122,15 @@ more or less:
                 sys.std.Core.Type.Cat.Pkg[Func|Upd|Proc]Set
                 sys.std.Core.Type.Cat.PkgTypeSet
                 sys.std.Core.Type.Cat.Inner[Func|Upd|Proc]Set
-                sys.std.Core.Type.Cat.ScaLitExprNodeSet
-                sys.std.Core.Type.Cat.ScaPRLitExprNodeSet
-                sys.std.Core.Type.Cat.TupLitExprNodeSet
-                sys.std.Core.Type.Cat.RelLitExprNodeSet
+                sys.std.Core.Type.Cat.ScaValExprNodeSet
+                sys.std.Core.Type.Cat.ScaPRSelExprNodeSet
+                sys.std.Core.Type.Cat.TupSelExprNodeSet
+                sys.std.Core.Type.Cat.RelSelExprNodeSet
                 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
                 sys.std.Core.Type.Cat.IfElseExprNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
-                sys.std.Core.Type.Cat.[Func|Proc|Type]RefLitExprNodeSet
-                sys.std.Core.Type.Cat.OrdDetFuncRefLitExprNodeSet
+                sys.std.Core.Type.Cat.[Func|Proc|Type]RefSelExprNodeSet
+                sys.std.Core.Type.Cat.OrdDetFuncRefSelExprNodeSet
                 sys.std.Core.Type.Cat.MultiUpdStmt
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
                 sys.std.Core.Type.Cat.CompoundStmtNodeSet
@@ -678,7 +679,7 @@ reads between distinct statements outside of transactions are not
 guaranteed.  I<These details are subject to revision, such as in regards to
 what autonomous child processes of the current process may do.>
 
-=item C<details> - C<ScaLitExprNodeSet>
+=item C<details> - C<ScaValExprNodeSet>
 
 These are the 0..N other miscellaneous details that define this depot mount
 control.  Each tuple in C<details> specifies an implementation-specific
@@ -1539,27 +1540,28 @@ An C<ExprNodeSet> has these 11 attributes:
 
 =over
 
-=item C<sca_lit_exprs> - C<ScaLitExprNodeSet>
+=item C<sca_val_exprs> - C<ScaValExprNodeSet>
 
-These are expression nodes that define scalar literals of types such that
+These are expression nodes that represent scalar values of types such that
 the Muldis D dialect provides special literal syntax specific to the type.
 
-=item C<sca_pr_lit_exprs> - C<ScaPRLitExprNodeSet>
+=item C<sca_pr_sel_exprs> - C<ScaPRSelExprNodeSet>
 
-These are expression nodes that define [|quasi-]scalar literals specified
-simply in terms of possrep attributes.
+These are expression nodes that represent generic [|quasi-]scalar value
+selections specified simply in terms of possrep attributes.
 
-=item C<tup_lit_exprs> - C<TupLitExprNodeSet>
+=item C<tup_sel_exprs> - C<TupSelExprNodeSet>
 
-These are expression nodes that define [|quasi-]tuple literals.
+These are expression nodes that represent [|quasi-]tuple value selections.
 
-=item C<rel_lit_exprs> - C<RelLitExprNodeSet>
+=item C<rel_sel_exprs> - C<RelSelExprNodeSet>
 
-These are expression nodes that define [|quasi-]relation literals.
+These are expression nodes that represent generic [|quasi-]relation value
+selections.
 
 =item C<func_invo_exprs> - C<FuncInvoExprNodeSet>
 
-These are expression nodes that invoke [|inner ]functions.
+These are expression nodes that represent [|inner ]function invocations.
 
 =item C<if_else_exprs> - C<IfElseExprNodeSet>
 
@@ -1570,8 +1572,8 @@ These are expression nodes that represent if-else control flow expressions.
 These are expression nodes that represent given-when-default control flow
 expressions.
 
-=item C<[func|proc|type|ord_det_func]_ref_lit_exprs> -
-C<Cat.[Func|Proc|Type|OrdDetFunc]RefLitExprNodeSet>
+=item C<[func|proc|type|ord_det_func]_ref_sel_exprs> -
+C<Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet>
 
 These are expression nodes that define
 function|imperative-routine|type|order-determination-function reference
@@ -1582,14 +1584,14 @@ literals.
 There is a distributed primary key over the C<name> attributes of all of an
 C<ExprNodeSet>'s attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ScaLitExprNodeSet
+=head2 sys.std.Core.Type.Cat.ScaValExprNodeSet
 
-A C<ScaLitExprNodeSet> is a C<Relation> that specifies a set of value
+A C<ScaValExprNodeSet> is a C<Relation> that specifies a set of value
 expression nodes where each node is a hard-coded scalar literal of one of a
 certain collection of system-defined core scalar types that special value
 literal syntax exists for (or subtype thereof).
 
-A C<ScaLitExprNodeSet> has these 3 attributes:
+A C<ScaValExprNodeSet> has these 3 attributes:
 
 =over
 
@@ -1603,23 +1605,23 @@ This is an optional programmer comment about the expression (leaf) node.
 
 =item C<value> - C<Scalar>
 
-This is the actual literal value that the expression node represents.
+This is the actual scalar value that the expression node represents.
 I<That is, any Scalar value could be used here, but in practice that is
 either dialect-defined (what literals are supported), and possibly
 implementation defined/limited.>
 
 =back
 
-A C<ScaLitExprNodeSet> has a unary primary key on the C<name>
+A C<ScaValExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ScaPRLitExprNodeSet
+=head2 sys.std.Core.Type.Cat.ScaPRSelExprNodeSet
 
-A C<ScaPRLitExprNodeSet> is a C<Relation> that specifies a set of value
-expression nodes where each node represents a [|quasi-]scalar literal that
-is specified simply in terms of possrep attributes.
+A C<ScaPRSelExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents a [|quasi-]scalar value
+selection that is specified simply in terms of possrep attributes.
 
-A C<ScaPRLitExprNodeSet> has these 5 attributes:
+A C<ScaPRSelExprNodeSet> has these 5 attributes:
 
 =over
 
@@ -1643,20 +1645,21 @@ terms of whose attributes the [|quasi-]scalar value is being selected.
 
 =item C<possrep_attrs> - C<NameExprMap>
 
-These are the attributes (names and values) of the C<possrep_name> possrep
-of the [|quasi-]scalar literal.
+These represent the attributes (names and values) of the C<possrep_name>
+possrep of the [|quasi-]scalar value being selected.
 
 =back
 
-A C<ScaPRLitExprNodeSet> has a unary primary key on the C<name>
+A C<ScaPRSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.TupLitExprNodeSet
+=head2 sys.std.Core.Type.Cat.TupSelExprNodeSet
 
-A C<TupLitExprNodeSet> is a C<Relation> that specifies a set of value
-expression nodes where each node represents a [|quasi-]tuple literal.
+A C<TupSelExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents a [|quasi-]tuple value
+selection.
 
-A C<TupLitExprNodeSet> has these 3 attributes:
+A C<TupSelExprNodeSet> has these 3 attributes:
 
 =over
 
@@ -1671,19 +1674,21 @@ the expression node (sub-)tree it is the root of.
 
 =item C<attrs> - C<NameExprMap>
 
-These are the attributes (names and values) of the [|quasi-]tuple literal.
+These represent the attributes (names and values) of the [|quasi-]tuple
+value being selected.
 
 =back
 
-A C<TupLitExprNodeSet> has a unary primary key on the C<name>
+A C<TupSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.RelLitExprNodeSet
+=head2 sys.std.Core.Type.Cat.RelSelExprNodeSet
 
-A C<RelLitExprNodeSet> is a C<Relation> that specifies a set of value
-expression nodes where each node represents a [|quasi-]relation literal.
+A C<RelSelExprNodeSet> is a C<Relation> that specifies a set of value
+expression nodes where each node represents a [|quasi-]relation value
+selection.
 
-A C<RelLitExprNodeSet> has these 4 attributes:
+A C<RelSelExprNodeSet> has these 4 attributes:
 
 =over
 
@@ -1698,15 +1703,19 @@ the expression node (sub-)tree it is the root of.
 
 =item C<head> - C<set_of.Name>
 
-These are the names of all of this [|quasi-]relation literal's attributes.
+These are the names of all of this [|quasi-]relation value's attributes.
 
 =item C<body> - C<set_of.NameExprMap>
 
-These are the [|quasi-]tuples of the [|quasi-]relation literal.
+These represent the [|quasi-]tuples of the [|quasi-]relation value being
+selected.  When this value expression is evaluated, if any child expression
+nodes are such that any duplicate tuples might be input to this
+C<RelSelExprNodeSet> selector, the duplicates are silently eliminated and
+do not constitute a failure condition.
 
 =back
 
-A C<RelLitExprNodeSet> has a unary primary key on the C<name>
+A C<RelSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
@@ -1854,13 +1863,13 @@ given-when-default.
 A C<GivenWhenDefExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]RefLitExprNodeSet
+=head2 sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet
 
-A C<Cat.[Func|Proc|Type|OrdDetFunc]RefLitExprNodeSet> is a C<Relation> that
+A C<Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet> is a C<Relation> that
 specifies a set of expression nodes where each node represents a value of
 the special C<sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]Ref> type.
 
-A C<Cat.[Func|Proc|Type|OrdDetFunc]RefLitExprNodeSet> has these 3
+A C<Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet> has these 3
 attributes:
 
 =over
@@ -1882,7 +1891,7 @@ special reference value is supposed to facilitate portable invoking of.
 
 =back
 
-A C<Cat.[Func|Proc|Type|OrdDetFunc]RefLitExprNodeSet> has a unary (unique)
+A C<Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet> has a unary (unique)
 key on the C<name> attribute, plus another such key on the C<referencing>
 attribute.  Its default value is empty.
 
@@ -2056,7 +2065,7 @@ sequence of 0..N procedure statements.
 
 =item C<proc_invo_stmts> - C<ProcInvoStmtNodeSet>
 
-These are statement nodes that invoke [|inner ]procedures.
+These are statement nodes that represent [|inner ]procedure invocations.
 
 =item C<if_else_stmts> - C<IfElseStmtNodeSet>
 
