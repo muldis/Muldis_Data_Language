@@ -2579,7 +2579,7 @@ or none are.  You can not declare a [|quasi-]scalar root type at all except
 by using a C<InnerScalarType>, and you can not define a quasi-scalar type
 with an incompletely defined attribute list at all.
 
-An C<InnerScalarType> has these 6 attributes:
+An C<InnerScalarType> has these 7 attributes:
 
 =over
 
@@ -2596,6 +2596,28 @@ defined is a subtype of some other [|quasi-]scalar type, then C<base_type>
 is a C<Single> whose sole element is the name of that other type.  Note
 that any type named by C<base_type> must itself be a [|quasi-]scalar root
 type or a subtype of one.
+
+=item C<subtype_constraint> - C<maybe_of.InnerFuncBody>
+
+Iff the type being defined is a [|quasi-]scalar root type, or it is a
+non-proper subtype of some other type, then C<subtype_constraint> is not
+applicable and is a C<Nothing>.  Iff the type being defined is a proper
+subtype of some other [|quasi-]scalar type, then C<subtype_constraint> is a
+C<Single> whose sole element defines the entire (main) body of a
+C<type_constraint> function that determines what base type values are part
+of the subtype.  The implicit function heading that this goes with has a
+single C<topic> parameter whose declared type is that named by
+C<base_type>, and whose argument is the value to test; the function's
+implicit result type is C<Bool>.  This constraint function may only
+reference possreps of the base type, and may not reference possreps of the
+type being defined.  Note that, strictly speaking, C<subtype_constraint>
+may actually be less restrictive than the total constraint of the sub-type
+as a whole, because the total constraint is defined by I<and>-ing the
+constraints of the base types and the C<subtype_constraint> and the
+constraints of all the possreps of the sub-type; therefore, mainly the
+C<subtype_constraint> needs to be just restricting enough so that the
+inter-possrep mapping functions can handle the base type values that it
+accepts, so it is possible to apply the new possreps' constraints.
 
 =item C<possreps> - C<PossrepSet>
 
@@ -2692,9 +2714,11 @@ that, strictly speaking, any constraint defined as part of a possrep (where
 there are multiple possreps) may actually be less restrictive than the
 total constraint of [|sub-]type as a whole, because the total constraint is
 defined by I<and>-ing the constraints of all the possreps of the
-[|sub-]type; therefore, mainly any given possrep's constraints need to be
-just restricting enough so that the inter-possrep mapping functions can
-handle the arguments that it accepts, so it is possible to apply the other
+[|sub-]type (and, in the case of defining a subtype, with the
+C<subtype_constraint> of the subtype and all base type constraints);
+therefore, mainly any given possrep's constraints need to be just
+restricting enough so that the inter-possrep mapping functions can handle
+the arguments that it accepts, so it is possible to apply the other
 possreps' constraints.
 
 =item C<is_base> - C<Bool>
@@ -3407,7 +3431,11 @@ difference or exclusion types.  A union type does not define any changes or
 supplements to the interfaces available for working with its values,
 instead simply using those of its declared parent types.  A data type
 defined in this way is typically not considered to exist when the system
-wants to determine the MST (most specific type) of one of its values.
+wants to determine the MST (most specific type) of one of its values.  Note
+that if you want to define a possrep-adding q/scalar subtype whose base is
+a union/intersection/etc of other types (eg, to define a "Square" when you
+have "Rectangle", "Rhombus"), you have to first define a C<InnerUnionType>,
+and then use that as the base type of a C<InnerScalarType>.
 
 An C<InnerUnionType> has these 7 attributes:
 
