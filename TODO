@@ -295,35 +295,6 @@ rollback would affect, and it might be easier to implement as-is.
 * Consider adding random value generators for data types other than integer
 and rational numerics, such as for character strings or binary strings.
 
-* Consider adding a ext/Counted.pod which defines special count-sensitive
-versions of all the common and applicable relational operators in
-Routines.pod and QRelation.pod, each new one taking an extra
-$count_attr_name argument that specifies which attribute of each normal
-argument contains the count and is to be treated specially, such that
-generally just the other attributes are considered in regards to the normal
-semantics of the operators, and the count attributes are summed or diffed
-as is appropriate.  For simplicity, Muldis D will require that all
-arguments to a function call with a count attribute have the same name for
-said attribute, so users might have to rename() on attributes, same as the
-normal join or union et al requires common/etc-named corresponding
-attributes.  All of the new operators will have a common prefix like
-"multi_" so they both stand out as variants and also so Muldis D code can
-reference both those and the normal versions with unqualified names without
-namespace ambiguity.  Having these operators system-defined is probably the
-best way to support people who actually want bag-o-tuple semantics, or most
-precisely simulate the general case of bag-o-tup behaviour of SQL for those
-using Muldis D as an intermediate representation, and then various users
-won't be reimplementing that wheel as multiple incompatible extensions.
-Note that in practice, any toolkits providing a Muldis D wrapper over a SQL
-DBMS, that have to generate the count column with an automatically picked
-name, will likely pick an attribute name universally that is known to be
-unique from all actual user-defined attributes, so allowing for the least
-indirection.  There is generally no point in trying to shoehorn QBag to
-build these operators over since its extra layers of wrapping are an
-unnecessary complexity, so QBag will only have its own (already-existing)
-operators in general where they are useful with one-dimensional bag
-representations that QBag is supposed to be.
-
 * Make further updates to Temporal.pod to improve correctness or
 normalization, particularly with durations, maybe add some UTCDuration
 subtypes.  Also expand the selection of routines to allow more control over

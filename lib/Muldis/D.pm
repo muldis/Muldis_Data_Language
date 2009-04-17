@@ -45,7 +45,8 @@ L<Muldis::D::Ext::Blob>, L<Muldis::D::Ext::Text>,
 L<Muldis::D::Ext::Rational>, L<Muldis::D::Ext::QTuple>,
 L<Muldis::D::Ext::QRelation>, L<Muldis::D::Ext::QSet>,
 L<Muldis::D::Ext::QArray>, L<Muldis::D::Ext::QBag>,
-L<Muldis::D::Ext::Temporal>, L<Muldis::D::Ext::Spatial>.
+L<Muldis::D::Ext::Counted>, L<Muldis::D::Ext::Temporal>,
+L<Muldis::D::Ext::Spatial>.
 
 =head1 DESCRIPTION
 
