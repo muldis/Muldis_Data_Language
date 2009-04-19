@@ -206,7 +206,7 @@ q/scalar value at all that has a possrep.
 =head2 sys.std.Core.QScalar.order
 
 C<< function sys.std.Core.QScalar.order (Order <-- QScalar $topic,
-QScalar $other, QTuple $assuming?) >>
+QScalar $other, QTuple $assuming?, Bool $is_reverse_order?) >>
 
 This C<order_determination> function is the externalization of a q/scalar
 root type's type-default (total) C<order_determination> function.  This
@@ -227,9 +227,17 @@ for the order-determination algorithm; this permits the function to
 implement a choice between multiple (typically similar) ordering algorithms
 rather than just one, which reduces the number of functions needed for
 supporting that choice; if the algorithm is not customizable, then a
-q/tuple argument would be of degree zero.  The C<assuming> parameter is
-optional and defaults to the zero-attribute tuple if no explicit argument
-is given to it.
+q/tuple argument would be of degree zero.  This function also has a
+C<Bool>-typed fourth parameter, named C<is_reverse_order>; a C<Bool:false>
+argument means the function's algorithm operates as normal when given any
+particular 3 other arguments (meaning a sorting operation based on it will
+place elements in ascending order), while a C<Bool:true> argument means the
+function's algorithm operates in reverse, so the function results in the
+reverse C<Order> value it would have otherwise when given the same 3 other
+arguments (meaning a sorting operation based on it will place elements in
+descending order).  The C<assuming> and C<is_reverse_order> parameters are
+optional and default to the zero-attribute tuple and C<Bool:false>,
+respectively, if no explicit arguments are given to them.
 
 =head2 sys.std.Core.QScalar.has_possrep
 
@@ -792,7 +800,7 @@ that is just counting the tuples of each group.  This function is like
 C<cmpl_group> but that the single added attribute, rather than an RVA of
 the grouped C<topic> attributes, has the cardinality that said RVA would
 have had.  The result's heading consists of the attributes named in
-C<group_per> plus the attribute named in C<count_attr_name> (a C<NNInt>).
+C<group_per> plus the attribute named in C<count_attr_name> (a C<PInt>).
 
 =head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT QUASI-/RELATION FUNCTIONS
 

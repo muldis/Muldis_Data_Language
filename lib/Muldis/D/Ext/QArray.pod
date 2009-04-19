@@ -200,7 +200,8 @@ arguments.
 =head2 sys.std.QArray.QArray_from_wrap
 
 C<< function sys.std.QArray.QArray_from_wrap (quasi_array_of.QTuple <--
-QRelation $topic, FuncRef $ord_func, QTuple $ord_assuming?) >>
+QRelation $topic, FuncRef $ord_func, QTuple $ord_assuming?,
+Bool $is_reverse_order?) >>
 
 This function results in an C<QArray> whose C<value> attribute is
 q/tuple-typed and that attribute's values are all the q/tuples of C<topic>;
@@ -210,7 +211,8 @@ result is extended with an C<index> attribute whose values result from a
 rank of the q/tuples, where the ranked-first q/tuple has an C<index> of
 zero, and so on.  This function is a wrapper over the (total)
 C<order_determination> function named in its C<ord_func> argument when the
-latter function is curried by its C<ord_assuming> argument; this wrapped
+latter function is curried by its C<ord_assuming> and C<is_reverse_order>
+arguments; this wrapped
 function is used to rank the q/tuples, with each invocation getting a
 C<topic> q/tuple as each its C<topic> and C<other> arguments.  See also the
 C<sys.std.QRelation.rank> function, which is the same as
@@ -221,7 +223,7 @@ the source q/tuples and does not wrap them.
 
 C<< function sys.std.QArray.QArray_from_wrap_by_attr_names
 (quasi_array_of.QTuple <-- QRelation $topic,
-array_of.OrderByName $order_by) >>
+array_of.OrderByName $order_by, Bool $is_reverse_order?) >>
 
 This function is to C<QArray_from_wrap> what
 C<sys.std.QRelation.rank_by_attr_names> is to C<sys.std.QRelation.rank>.
@@ -235,7 +237,8 @@ that may contain any arbitrary value expression.
 
 C<< function sys.std.QArray.limit_of_QArray_from_wrap
 (quasi_array_of.QTuple <-- QRelation $topic, FuncRef $ord_func,
-QTuple $ord_assuming?, NNInt $first_index, NNInt $last_index) >>
+QTuple $ord_assuming?, Bool $is_reverse_order?, NNInt $first_index,
+NNInt $last_index) >>
 
 This function is a short-hand for invoking first
 C<sys.std.QArray.QArray_from_wrap> and then C<sys.std.QArray.slice> on its
@@ -246,7 +249,8 @@ C<sys.std.QRelation.limit> function is to C<sys.std.QRelation.rank>.
 
 C<< function sys.std.QArray.limit_of_QArray_from_wrap_by_attr_names
 (quasi_array_of.QTuple <-- QRelation $topic,
-array_of.OrderByName $order_by, NNInt $first_index, NNInt $last_index) >>
+array_of.OrderByName $order_by, Bool $is_reverse_order?,
+NNInt $first_index, NNInt $last_index) >>
 
 This function is to C<limit_of_QArray_from_wrap> what
 C<QArray_from_wrap_by_attr_names> is to C<QArray_from_wrap>.
@@ -254,7 +258,8 @@ C<QArray_from_wrap_by_attr_names> is to C<QArray_from_wrap>.
 =head2 sys.std.QArray.QArray_from_attr
 
 C<< function sys.std.QArray.QArray_from_attr (QArray <-- QRelation $topic,
-Name $name, OrdDetFuncRef $ord_func?, QTuple $ord_assuming?) >>
+Name $name, OrdDetFuncRef $ord_func?, QTuple $ord_assuming?,
+Bool $is_reverse_order?) >>
 
 This function results in an C<QArray> consisting of all the values of the
 attribute of C<topic> named by C<name>.  It is a short-hand for a unary
@@ -263,9 +268,9 @@ then that result is extended with an C<index> attribute whose values result
 from a rank of the source attribute values, where the ranked-first source
 value has an C<index> of zero, and so on.  This function is otherwise the
 same as C<sys.std.QArray.QArray_from_wrap>.  Each of the C<ord_func> and
-C<ord_assuming> parameters is optional and defaults to
-C<sys.std.Core.QScalar.order> or the zero-attribute tuple, respectively, if
-no explicit argument is given to it.
+C<ord_assuming> and C<is_reverse_order> parameters is optional and defaults
+to C<sys.std.Core.QScalar.order> or the zero-attribute tuple or
+C<Bool:false>, respectively, if no explicit argument is given to it.
 
 =head1 SEE ALSO
 

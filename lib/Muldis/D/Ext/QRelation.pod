@@ -341,14 +341,16 @@ zero-attribute tuple if no explicit argument is given to it.
 =head2 sys.std.QRelation.rank
 
 C<< function sys.std.QRelation.rank (QRelation <-- QRelation $topic,
-Name $name, FuncRef $ord_func, QTuple $ord_assuming?) >>
+Name $name, FuncRef $ord_func, QTuple $ord_assuming?,
+Bool $is_reverse_order?) >>
 
 This function results in the relational extension of its C<topic> argument
 by a single C<NNInt>-typed attribute whose name is provided by the C<name>
 argument, where the value of the new attribute for each q/tuple is the rank
 of that q/tuple as determined by the (total) C<order_determination>
 function named in the C<ord_func> argument when the latter function is
-curried by the C<ord_assuming> argument.  The C<order_determination>
+curried by the C<ord_assuming> and C<is_reverse_order> arguments.  The
+C<order_determination>
 function compares q/tuples, with each invocation of it getting a C<topic>
 q/tuple as each its C<topic> and C<other> arguments.  The new attribute of
 C<rank>'s result has a value of zero for its ranked-first q/tuple, and each
@@ -364,7 +366,8 @@ just adding an attribute to them.
 =head2 sys.std.QRelation.rank_by_attr_names
 
 C<< function sys.std.QRelation.rank_by_attr_names (QRelation <--
-QRelation $topic, Name $name, array_of.OrderByName $order_by) >>
+QRelation $topic, Name $name, array_of.OrderByName $order_by,
+Bool $is_reverse_order?) >>
 
 This function is a short-hand for invoking C<rank> with the function
 C<sys.std.QTuple.order_by_attr_names> as its C<ord_func> argument, and the
@@ -373,12 +376,13 @@ latter is given C<order_by> in its C<assuming> argument.
 =head2 sys.std.QRelation.limit
 
 C<< function sys.std.QRelation.limit (QRelation <-- QRelation $topic,
-FuncRef $ord_func, QTuple $ord_assuming?, NNInt $min_rank, NNInt $max_rank)
->>
+FuncRef $ord_func, QTuple $ord_assuming?, NNInt $min_rank, NNInt $max_rank,
+Bool $is_reverse_order?) >>
 
 This function results in the relational restriction of its C<topic>
 argument as determined by first ranking its q/tuples as per C<rank>
-function (using C<ord_func> and C<ord_assuming>) and then keeping just
+function (using C<ord_func>, C<ord_assuming> and C<is_reverse_order>) and
+then keeping just
 those q/tuples whose rank is within the inclusive range specified by the
 C<min_rank> and C<max_rank> arguments (C<rank>'s extra attribute is not
 kept).  The C<limit> function implements a certain kind of quota query
@@ -398,7 +402,7 @@ alternative).
 
 C<< function sys.std.QRelation.limit_by_attr_names (QRelation <--
 QRelation $topic, array_of.OrderByName $order_by, NNInt $min_rank,
-NNInt $max_rank) >>
+NNInt $max_rank, Bool $is_reverse_order?) >>
 
 This function is to C<limit> what C<rank_by_attr_names> is to C<rank>.
 

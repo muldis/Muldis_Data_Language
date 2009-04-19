@@ -46,22 +46,12 @@ I<This documentation is pending.>
 Each of these functions which has the 2 parameters named C<func> and
 C<assuming> is a wrapper over the C<order_determination> function named in
 its C<func> argument when the latter function is curried by its C<assuming>
-argument.  For any q/scalar root type's type-default order function, the
+argument plus a calling-function-specific C<is_reverse_order> argument
+value.  For any q/scalar root type's type-default order function, the
 argument for C<func> is C<sys.std.Core.QScalar.order>.  Each C<func> and
 C<assuming> parameter is optional and defaults to
 C<sys.std.Core.QScalar.order> or the zero-attribute tuple, respectively, if
 no explicit argument is given to it.
-
-=head2 sys.std.Ordered.reverse_order
-
-C<< function sys.std.Ordered.reverse_order (Order <-- Universal $topic,
-Universal $other, OrdDetFuncRef $func?, QTuple $assuming?) >>
-
-This C<order_determination> function is exactly the same as the
-C<order_determination> function it wraps except that it results in the
-reverse value when given the same non-C<func> arguments.  It is a
-short-hand for applying C<sys.std.Core.Cat.Order_reverse> to the result of
-the wrapped function with the same non-C<func> arguments.
 
 =head2 sys.std.Ordered.is_before
 
@@ -69,8 +59,8 @@ C<< function sys.std.Ordered.is_before (Bool <-- Universal $topic,
 Universal $other, OrdDetFuncRef $func?, QTuple $assuming?) >>
 
 This function results in C<Bool:true> iff the wrapped function would result
-in C<Order:increase> when given the same arguments, and C<Bool:false>
-otherwise.
+in C<Order:increase> when given the same corresponding 3 arguments plus a
+C<is_reverse_order> argument of C<Bool:false>, and C<Bool:false> otherwise.
 
 =head2 sys.std.Ordered.is_not_before
 
@@ -79,7 +69,8 @@ Universal $other, OrdDetFuncRef $func?, QTuple $assuming?) >>
 
 This function is exactly the same as C<sys.std.Ordered.is_before> except
 that it results in the opposite boolean value when given the same
-arguments.  (It could alternately be called "is after or is identical".)
+corresponding 3 arguments.  (It could alternately be called "is after or is
+identical".)
 
 =head2 sys.std.Ordered.is_inside_range
 

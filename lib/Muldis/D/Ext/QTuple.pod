@@ -103,7 +103,7 @@ whose name is given by C<name> and whose value is given by C<value>.
 =head2 sys.std.QTuple.order_by_attr_names
 
 C<< function sys.std.QTuple.order_by_attr_names (Order <-- QTuple $topic,
-QTuple $other, QTuple $assuming) >>
+QTuple $other, QTuple $assuming, Bool $is_reverse_order?) >>
 
 This C<order_determination> function provides convenient short-hand for the
 common case of ordering q/tuples of a q/relation on a sequential list of
@@ -113,21 +113,24 @@ function, which is used to order on that attribute.  This function takes an
 C<array_of.OrderByName> as the C<order_by> sole attribute of its
 C<assuming> argument.  This function is a short-hand for invoking
 C<sys.std.Core.Cat.Order_reduction> on an C<Array> each of whose C<Order>
-elements is the result of invoking either C<sys.std.Core.QScalar.order> or
-C<sys.std.Ordered.reverse_order> as appropriate on the corresponding
-attributes of C<topic> and C<other> whose names are given in C<order_by>;
-the C<Array> given to C<Order_reduction> has the same number of elements as
-C<order_by> has.  For each element value in C<order_by>, the C<name>
-attribute specifies the attribute name of each of C<topic> and C<order> to
-be compared; if the C<is_reverse_order> attribute is C<Bool:true>, then
-C<reverse_order> is the comparison operator used (as a wrapper over
-C<order>); otherwise (the default) C<order> is used.  This function will
-fail if C<topic> and C<other> don't have an identical degree and attribute
-names, or if C<order_by> specifies any attribute names that C<topic|other>
-doesn't have, or if for any attribute named to be ordered by, that
-attribute's value for either of C<topic> and C<other> isn't a member of a
-q/scalar root type having a type-default ordering function, or if said root
-type isn't identical for both C<topic> and <other>.  It is expected that
+elements is the result of invoking C<sys.std.Core.QScalar.order> on the
+corresponding attributes of C<topic> and C<other> whose names are given in
+C<order_by>; the C<Array> given to C<Order_reduction> has the same number
+of elements as C<order_by> has.  For each element value in C<order_by>, the
+C<name> attribute specifies the attribute name of each of C<topic> and
+C<order> to be compared, and the comparison operator's C<is_reverse_order>
+argument is supplied by the C<is_reverse_order> attribute.  This function
+will fail if C<topic> and C<other> don't have an identical degree and
+attribute names, or if C<order_by> specifies any attribute names that
+C<topic|other> doesn't have, or if for any attribute named to be ordered
+by, that attribute's value for either of C<topic> and C<other> isn't a
+member of a q/scalar root type having a type-default ordering function, or
+if said root type isn't identical for both C<topic> and <other>.  The
+C<order_by_attr_names> function's C<is_reverse_order> argument is optional
+and defaults to C<Bool:false>, meaning it has no further effect on the
+function's behaviour; but if this argument is C<Bool:true>, then this
+function will result in the opposite C<Order> value that it otherwise would
+have when given all the same other argument values.  It is expected that
 for any q/relation whose q/tuples are to be ordered using
 C<order_by_attr_names>, the C<order_by> constitutes a key or superkey.
 

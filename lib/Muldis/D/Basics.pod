@@ -1204,22 +1204,34 @@ set of values, ranking a set of values based on their relative order, or
 sorting a set of values into a sequence that reflects such a ranking.
 
 A system-compatible fundamental order-determination function (fulfilled by
-the routine kind C<order_determination>) has 2 parameters named C<topic>
-and C<other>, where the declared types of the parameters are the same as
-the type whose values the function is to determine the order of, and it
-would be invoked with 2 of those values as its arguments; the result type
-of the function is an C<Order>.  This function results in C<Order:same> iff
-its 2 arguments are exactly the same value, and otherwise it results in
-C<Order:increase> if the value of the C<other> argument is considered to be
-an increase (as defined by the function's algorithm) over the value of the
-C<topic> argument, and otherwise it results in C<Order:decrease> as the
-reverse of the last condition would be true.  The function also has an
-optional C<QTuple>-typed third parameter, named C<assuming>, which carries
+the routine kind C<order_determination>) must have exactly 4 parameters
+named [C<topic>, C<other>, C<assuming>, C<is_reverse_order>], where the
+declared types of the two main parameters C<topic> and C<other> are the
+same as the type whose values the function is to determine the order of,
+and it would be invoked with 2 of those values as its arguments; the result
+type of the function is an C<Order>.  This function by default results in
+C<Order:same> iff its 2 arguments are exactly the same value, and otherwise
+it results in C<Order:increase> if the value of the C<other> argument is
+considered to be an increase (as defined by the function's algorithm) over
+the value of the C<topic> argument, and otherwise it results in
+C<Order:decrease> as the reverse of the last condition would be true.  The
+function's third parameter, C<assuming>, is C<QTuple>-typed and carries
 optional customization details for the algorithm; this permits the function
 to implement a choice between multiple (typically similar) ordering
 algorithms rather than just one, which reduces the number of functions
 needed for supporting that choice; if the algorithm is not customizable,
-then a q/tuple argument would be of degree zero.
+then the q/tuple argument would be of degree zero.  The function's fourth
+parameter, C<is_reverse_order>, is C<Bool>-typed; a C<Bool:false> argument
+means the function's algorithm operates as normal when given any particular
+3 other arguments (meaning a sorting operation based on it will place
+elements in ascending order), while a C<Bool:true> argument means the
+function's algorithm operates in reverse, so the function results in the
+reverse C<Order> value it would have otherwise when given the same 3 other
+arguments (meaning a sorting operation based on it will place elements in
+descending order).  The function's C<topic> and C<other> parameters always
+require arguments, the C<is_reverse_order> parameter always doesn't require
+an argument and defaults to C<Bool:false>, and whether the C<assuming>
+parameter requires an argument is up to the individual function.
 
 In the general case, any context which wants to use a system-defined
 type-generic order-sensitive operator will specify the fully-qualified name
