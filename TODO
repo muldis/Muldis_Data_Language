@@ -18,12 +18,43 @@ table for these items; they are simply to be done "as soon as possible".
 the progress is non-trivial, so there are regular public snapshots with
 nicely rendered documentation.
 
-* IN PROGRESS ...
-In PTMD_Tiny, update Comment literals to have # delimiters (whose
-official Unicode name is "NUMBER SIGN", so let's maybe backslash # literals
-with \n, or maybe not since that escape is so common in Perl etc with diff
-meaning).  Related item, simplify the BBEdit CLM Plist so that all colored
-string literals don't include value-kind keyword, now simply a keyword.
+* Add new function to QRelation.pod, perhaps named
+"aggregations_per_group", which is functionally in the middle between
+"summary" and "cardinality_per_group", and is to "summary" what
+"rank_by_attr_names" is to "rank".  It lets one specify using a
+relation-typed argument, a list of new attributes to extend a post-group
+relation with, and for each attribute it specifies that the attribute's
+value is the result of invoking a specific N-ary function whose only
+mandatory parameter is named "topic", whose parameter comes from a named
+grouped attribute.  Presumably the relation-typed argument would have about
+4 attributes: the attr to add, the attr to get data from, whether to
+extract the source data as a set or a bag etc, the name-chain of the
+function to invoke.  The point of this new function is to support the most
+common kinds of per-group aggregation operators that coders use, other than
+cardinality, without them needing to write a closure to specify it as a
+generic value expression.  Perhaps this function fills the last gap of
+shorthands for common operations for relational operators saving a need to
+write closures (eg, as per the "rank_by" and "semijoin" vs "restriction").
+This new function should also take an optional maybe_of.Name argument so
+invokers can also do "cardinality" in the same call as other ops, as
+cardinality is invoked differently than the other ops.  Note that in its
+simpler / as-specified form, the new function would only work with N-ary
+ops that take unordered value collections as inputs (those not extracted as
+arrays, but rather sets or bags), so the only common aggregate ops it
+wouldn't serve is (N-ary) string catenation; in order to support this, the
+function will have to be more complicated, such as to name a sort func and
+desired asc/desc direction.  Now conceivably that support could be best
+added using an extra optional relation-typed argument that maps the result
+attr name with a sort func name and direction indicator (rather than
+further extending the 4-attr rel-arg); moreover, if this extra arg is
+omitted or short, then using just the main arg we could still reasonably
+default to QScalar.order + ascending.  So then, if the new function does
+all this, then the main things you can't do with it is invoke aggregate or
+sort funcs that take extra arguments aka assuming, and if you want the
+result to be based on a multi-attribute calculation (eg, if you want the
+average of differences between 2 source attributes), you'll either have to
+pre-extend the pre-group relation with that using normal extension to
+provide the input, or else use the normal 'summary'.
 
 * Add ext/TAP.pod, which is a partial port of Perl 5's Test::More / Perl
 6's Test.pm / David Wheeler's pgTAP to Muldis D; assist users in testing
