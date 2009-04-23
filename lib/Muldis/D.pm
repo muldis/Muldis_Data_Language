@@ -59,7 +59,7 @@ at them.
 
 The fully-qualified name of this multi-part document and the language
 specification it contains (as a single composition) is
-C<Muldis_D:'http://muldis.com':'0.64.0'>.  It is the official/original (not
+C<Muldis_D:"http://muldis.com":"0.64.0">.  It is the official/original (not
 embraced and extended) Muldis D language specification by the authority
 Darren Duncan (C<http://muldis.com>), version C<0.64.0> (this number
 matches the VERSION pod in this file).  This multi-part document is named

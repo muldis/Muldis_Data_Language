@@ -6,6 +6,50 @@
     * Muldis::D version 0.65.0 is released on CPAN as
     Muldis-D-0.65.0.tar.gz.
 
+    * (PTMD_Tiny.pod)  Updated the possible simple escape sequences
+    allowable in quoted character string literals.  The escape for
+    backslash (F;5C), "\b", is unchanged.  The escape for
+    apostrophe/single-quote (F;27) is now "\a" rather than "\q".  Added 2
+    more escapes for visible characters, "\q" for double-quote (F;22) and
+    "\h" for number-sign/hash (F;23).  Also added 4 more escapes for the
+    most commonly written out invisible/control characters, that match
+    their common meanings: "\t" for tab (F;9), "\n" for line-feed/newline
+    (F;A), "\f" for form feed (F;C), "\r" for carriage return (F;D).  Note
+    that, unlike with Perl/etc where the meaning of "\n"/etc may change
+    depending on context, in Muldis D each escape always represents the
+    same single Unicode codepoint.  The multi-part escape sequences
+    "\c<...>" were unchanged.  As part of this update, the grammar token
+    "quoted_char_str" was split into itself and "escaped_char".
+
+    * (PTMD_Tiny.pod)  Differentiated further the 3 main kinds of character
+    string literals (Text/Blob, Name/chains, Comment) by giving each
+    different delimiter characters.  Text and Blob retain their existing
+    apostrophe/single-quote delimiters.  Name and chains based on it now
+    have double-quote delimiters when they are quoted at all, and they can
+    still be barewords where they could before; in practice there is little
+    change here since most Name/chains tend to be barewords.  Comment now
+    has numer-sign/hash delimiters, so it looks much like a Perl/etc
+    comment except that a trailing # is also necessary; furthermore,
+    segmented Comment literals now no longer use a tilde/~ between segments
+    (Text/Name/etc still do), rather they just have optional whitespace
+    between segments.  Regarding char escape sequences, within each kind of
+    quoted character string literals, it is only mandatory to escape the
+    same character as delimits that particular literal plus the backspace;
+    using the other escapes is optional.  As part of this update, the
+    grammar token "quoted_char_str" was removed and a customized version
+    inlined into each payload/etc token that used to include it, and the
+    tokens related to Name literal payloads were reorganized.  Also updated
+    all relevant code examples to reflect the delimiter changes for
+    Name/etc and Comment.
+
+    * (D.pm, PTMD_Tiny.pod)  The previous change item also affected the
+    format of PTMD_Tiny fully-qualified Muldis D language names; the
+    authority and version number parts are now delimited with double-quotes
+    as per Name, rather than single-quotes.
+
+    * (BBEdit_LM_Muldis_D.plist)  Updated the syntax coloring regexes to
+    reflect the previous change item about character string literals.
+
     * (Basics.pod, Types_Catalog.pod, Routines.pod, Ordered.pod,
     QTuple.pod, QSet.pod)  In Basics.pod, in the "Ordered Types"
     sub-section of "TYPE SYSTEM", updated the definition of an

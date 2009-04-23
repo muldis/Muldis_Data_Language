@@ -22,7 +22,7 @@ before you read this one, which provides subservient details.
 This document outlines the grammar of the I<Plain Text Muldis D> dialect
 named C<PTMD_Tiny>.  The fully-qualified name of this Muldis D dialect, in
 combination with the base language spec it is bundled with, is
-C<Muldis_D:'http://muldis.com':'N.N.N':PTMD_Tiny> (when the bundled base
+C<Muldis_D:"http://muldis.com":"N.N.N":PTMD_Tiny> (when the bundled base
 language version is substituted for the C<N.N.N>).
 
 This dialect is designed to exactly match the Muldis D system catalog (the
@@ -160,9 +160,9 @@ Grammar:
 
 Examples:
 
-    Muldis_D:'http://muldis.com':'1.2.3':PTMD_Tiny:{}
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_Tiny:{}
 
-    Muldis_D:'http://muldis.com':'1.2.3':PTMD_Tiny:{
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_Tiny:{
         auto_add_attrs          => true,
         auto_unabbrev_std_names => true,
         auto_chains_from_names  => true
@@ -481,24 +481,37 @@ Grammar:
     }
 
     token text_payload {
-        <quoted_char_str>
-    }
-
-    token quoted_char_str {
         [
             <[']>
-                [
-                      '\b' | '\q' | <-[\\\']>
-                    | '\c<' [
-                          [<[ A..Z ]>+] ** ' '
-                        | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
-                        | <[ 1..9 A..Z ]> ';'
-                            [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
-                      ] '>'
-                ]*
+                [ <-[\\\']> | <escaped_char>]*
             <[']>
         ] ** <segment_sep>
     }
+
+    token escaped_char {
+          '\b' | '\a' | '\q' | '\h'
+        | '\t' | '\n' | '\f' | '\r'
+        | '\c<' [
+              [<[ A..Z ]>+] ** ' '
+            | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
+            | <[ 1..9 A..Z ]> ';'
+                [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
+          ] '>'
+    }
+
+The meanings of the simple escape sequences are:
+
+    Esc | Unicode   | Unicode         | Chr | Literal character used
+    Seq | Codepoint | Character Name  | Lit | for when not escaped
+    ----+-----------+-----------------+-----+------------------------------
+    \b  | F;5C      | REVERSE SOLIDUS | \   | esc seq lead (aka backslash)
+    \a  | F;27      | APOSTROPHE      | '   | delim Text literals
+    \q  | F;22      | QUOTATION MARK  | "   | delim quoted Name literals
+    \h  | F;23      | NUMBER SIGN     | #   | delim Comment lit (aka hash)
+    \t  | F;9       | CHAR... TAB...  |     | control char horizontal tab
+    \n  | F;A       | LINE FEED (LF)  |     | ctrl char line feed / newline
+    \f  | F;C       | FORM FEED (FF)  |     | control char form feed
+    \r  | F;D       | CARR. RET. (CR) |     | control char carriage return
 
 Examples:
 
@@ -636,16 +649,24 @@ Grammar:
     }
 
     token name_payload {
-          <nonquoted_char_str>
-        | <quoted_char_str>
+          <nonquoted_name_str>
+        | <quoted_name_str>
     }
 
-    token nonquoted_char_str { <[ a..z A..Z _ ]><[ a..z A..Z 0..9 _ - ]>* }
+    token nonquoted_name_str { <[ a..z A..Z _ ]><[ a..z A..Z 0..9 _ - ]>* }
 
-A C<nonquoted_char_str> is composed of a single alphabetic or underscore
+    token quoted_name_str {
+        [
+            <["]>
+                [ <-[\\\"]> | <escaped_char>]*
+            <["]>
+        ] ** <segment_sep>
+    }
+
+A C<nonquoted_name_str> is composed of a single alphabetic or underscore
 character followed by zero or more characters that are each alphanumeric or
 underscore or hyphen.  It can not be segmented, so you will have to use the
-C<quoted_char_str> equivalent if you want a segmented string.  I<The
+C<quoted_name_str> equivalent if you want a segmented string.  I<The
 definitions of alphabetic and numeric should include appropriate Unicode
 characters, but at the moment this isn't reflected in the grammar; TODO:
 fix this.>
@@ -654,7 +675,7 @@ Examples:
 
     Name:login_pass
 
-    Name:'First Name'
+    Name:"First Name"
 
 =head2 sys.std.Core.Type.Cat.NameChain
 
@@ -676,7 +697,7 @@ Examples:
 
     NameChain:fed.data.the_db.gene.sorted_person_name
 
-    NameChain:fed.data.the_db.stats.'samples by order'
+    NameChain:fed.data.the_db.stats."samples by order"
 
 =head2 sys.std.Core.Type.Cat.DeclNameChain
 
@@ -697,7 +718,7 @@ Examples:
 
     DeclNameChain:gene.sorted_person_name
 
-    DeclNameChain:stats.'samples by order'
+    DeclNameChain:stats."samples by order"
 
     DeclNameChain:[]
 
@@ -712,12 +733,16 @@ Grammar:
     }
 
     token comment_payload {
-        <quoted_char_str>
+        [
+            <[#]>
+                [ <-[\\\#]> | <escaped_char>]*
+            <[#]>
+        ] ** \s*
     }
 
 Examples:
 
-    Comment:'This does something.'
+    Comment:#This does something.#
 
 =head2 sys.std.Core.Type.Cat.Order
 
@@ -801,11 +826,11 @@ Examples:
     }
 
     Scalar:fed.lib.the_db.WeekDay:name;{
-        '' => 'monday'
+        "" => "monday"
     }
 
     Scalar:fed.lib.the_db.WeekDay:number;{
-        '' => 5
+        "" => 5
     }
 
 =head2 sys.std.Core.Type.[Q|]Tuple
@@ -1137,7 +1162,7 @@ Grammar:
 
 Examples:
 
-    Muldis_D:'http://muldis.com':'1.2.3':PTMD_Tiny:{}
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_Tiny:{}
     boot_stmt:sys.std.Core.Cat.create_depot_procedure:{}:{ ... }
 
 =head1 BOOTLOADER STATEMENT
