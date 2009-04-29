@@ -213,7 +213,7 @@ other PHMD trees to said virtual machine.
 
 =head1 OPAQUE VALUE LITERALS
 
-=head2 sys.std.Core.Type.Nothing
+=head2 The Nothing Literal
 
 This node kind represents a 'nothing' value; it is interpreted as a Muldis
 D C<sys.std.Core.Type.Nothing>.  It has 1 element, which is the Perl
@@ -223,7 +223,7 @@ Examples:
 
     [ 'Nothing' ]
 
-=head2 sys.std.Core.Type.Bool
+=head2 Boolean Literals
 
 This node kind represents a logical boolean value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Bool> value as follows:
@@ -252,7 +252,7 @@ Examples:
 
     [ 'Bool', (1 == 0) ]
 
-=head2 sys.std.Core.Type.Cat.Order
+=head2 Order-Determination Literals
 
 This node kind represents an order-determination.  This node is interpreted
 as a Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:
@@ -284,7 +284,7 @@ Examples:
 
     [ 'Order', (2 <=> 1) ]
 
-=head2 sys.std.Core.Type.Cat.RatRoundMeth
+=head2 Rational Rounding Method Literals
 
 This node kind represents a rounding method.  This node is interpreted as a
 Muldis D C<sys.std.Core.Type.Cat.RatRoundMeth> value by directly mapping
@@ -298,7 +298,7 @@ Examples:
 
     [ 'RatRoundMeth', 'to_zero' ]
 
-=head2 sys.std.Core.Type.Int
+=head2 General Purpose Integer Numeric Literals
 
 This node kind represents an integer value.  This node is interpreted as a
 Muldis D C<sys.std.Core.Type.Int> value as follows:
@@ -355,7 +355,7 @@ Examples:
 
     [ 'Int', { B => 'A09B' } ] # base-12
 
-=head2 sys.std.Core.Type.Rat
+=head2 General Purpose Rational Numeric Literals
 
 This node kind represents a rational value.  This node is interpreted as a
 Muldis D C<sys.std.Core.Type.Rat> value as follows:
@@ -436,7 +436,7 @@ Examples:
 
     [ 'Rat', [ 314159, 10, -5 ] ]
 
-=head2 sys.std.Core.Type.Blob
+=head2 General Purpose Binary String Literals
 
 This node kind represents a bit string.  This node is interpreted as a
 Muldis D C<sys.std.Core.Type.Blob> value as follows:
@@ -476,7 +476,7 @@ Examples:
 
     [ 'Blob', (pack 'H2', 'Z') ]
 
-=head2 sys.std.Core.Type.Text
+=head2 General Purpose Character String Literals
 
 This node kind represents a character string.  This node is interpreted as
 a Muldis D C<sys.std.Core.Type.Text> value by directly mapping the payload.
@@ -499,9 +499,9 @@ Examples:
     "\N{LATIN SMALL LETTER OU}\x{263A}".chr(65)
         # note: \N{} needs "use charnames ':full';" pragma to work
 
-=head2 sys.std.Core.Type.Cat.Name
+=head2 DBMS Entity Name Literals
 
-This node kind represents a canonical short name for any kind of DBMS
+C<Name> represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
 from C<Text>.  This node is interpreted as a Muldis D
 C<sys.std.Core.Type.Cat.Name> value by directly mapping the payload.  Note
@@ -509,15 +509,7 @@ that, while Plain Text Muldis D may contain a few escape sequences, those
 would be replaced with what they represent prior to making a PHMD node.
 The payload must be as per the payload of a C<Text> PHMD node.
 
-Examples:
-
-    [ 'Name', 'login_pass' ]
-
-    [ 'Name', 'First Name' ]
-
-=head2 sys.std.Core.Type.Cat.NameChain
-
-This node kind represents a canonical long name for invoking a DBMS entity
+C<NameChain> represents a canonical long name for invoking a DBMS entity
 in some contexts; it is conceptually a sequence of entity short names.  Its
 payload is a Perl array ref or character string.  This node is interpreted
 as a Muldis D C<sys.std.Core.Type.Cat.NameChain> value as follows:
@@ -542,15 +534,7 @@ into the array ref format, then processed as per the latter.
 
 =back
 
-Examples:
-
-    [ 'NameChain', ['fed','data','the_db','gene','sorted_person_name'] ]
-
-    [ 'NameChain', 'fed.data.the_db.stats.samples by order' ]
-
-=head2 sys.std.Core.Type.Cat.DeclNameChain
-
-This node kind is exactly the same as the C<NameChain> node kind, in both
+C<DeclNameChain> is exactly the same as the C<NameChain> node kind, in both
 structure/constraints and interpretation, etc, except that it represents a
 canonical long name for declaring a DBMS entity in N-depth contexts, and
 that the chain may have as few as zero parts rather than as few as 2;
@@ -560,13 +544,21 @@ a single element that is the empty string.
 
 Examples:
 
+    [ 'Name', 'login_pass' ]
+
+    [ 'Name', 'First Name' ]
+
+    [ 'NameChain', ['fed','data','the_db','gene','sorted_person_name'] ]
+
+    [ 'NameChain', 'fed.data.the_db.stats.samples by order' ]
+
     [ 'DeclNameChain', ['gene','sorted_person_name'] ]
 
     [ 'DeclNameChain', 'stats.samples by order' ]
 
     [ 'DeclNameChain', [] ]
 
-=head2 sys.std.Core.Type.Cat.Comment
+=head2 Code Comment Literals
 
 This node kind represents the text of a Muldis D code comment; it is a
 character string type, that is disjoint from both C<Text> and C<Name>.
@@ -580,23 +572,15 @@ Examples:
 
     [ 'Comment', 'This does something.' ]
 
-=head2 sys.std.Core.Type.Instant
+=head2 TAI Temporal Literals
 
-This node kind represents a single point in time which is specified in
+C<Instant> represents a single point in time which is specified in
 terms of of atomic seconds; it is a rational numeric type, that is disjoint
 from both C<Rat> and C<Duration>.  This node is interpreted as a Muldis D
 C<sys.std.Core.Type.Instant> value by directly mapping the payload, which
 must be as per the payload of a C<Rat> PHMD node.
 
-Examples:
-
-    [ 'Instant', 1235556432.0 ]
-
-    [ 'Instant', 854309115.0 ]
-
-=head2 sys.std.Core.Type.Duration
-
-This node kind represents a single amount of time (the difference between
+C<Duration> represents a single amount of time (the difference between
 two instants) which is specified in terms of of atomic seconds; it is a
 rational numeric type, that is disjoint from both C<Rat> and C<Instant>.
 This node is interpreted as a Muldis D C<sys.std.Core.Type.Duration> value
@@ -604,6 +588,10 @@ by directly mapping the payload, which must be as per the payload of a
 C<Rat> PHMD node.
 
 Examples:
+
+    [ 'Instant', 1235556432.0 ]
+
+    [ 'Instant', 854309115.0 ]
 
     [ 'Duration', 3600.0 ]
 
@@ -615,9 +603,9 @@ Examples:
 
     [ 'Duration', [ 1, 43 ] ]
 
-=head2 sys.std.Temporal.Type.[UTC|Float]Instant
+=head2 UTC and Float Temporal Literals
 
-This node kind represents an "instant"/"datetime" value that is (affiliated
+C<UTCFInstant> represents an "instant"/"datetime" value that is (affiliated
 with the UTC time-zone | "floating" / not affiliated with any time-zone).
 This node is interpreted as a Muldis D
 C<sys.std.Temporal.Type.[UTC|Float]Instant> value whose C<instant> possrep
@@ -664,21 +652,7 @@ Perl array ref payload.
 
 =back
 
-Examples:
-
-    [ 'UTCInstant', [1964,10,16,16,12,47.5] ] # a UTCDateTime
-
-    [ 'UTCInstant', [2002,12,6] ] # a UTCDate
-
-    [ 'UTCInstant', [undef,undef,undef,14,2,29.0] ] # a UTCTime
-
-    [ 'FloatInstant', [2003,4,5,2] ] # min,sec unknown or N/A
-
-    [ 'FloatInstant', [1407] ] # just know its sometime in 1407
-
-=head2 sys.std.Temporal.Type.UTCDuration
-
-This node kind represents a duration value, an amount of time, which is not
+C<UTCDuration> represents a duration value, an amount of time, which is not
 fixed to any instant in time.  This node is interpreted as a Muldis D
 C<sys.std.Temporal.Type.UTCDuration> value whose C<duration> possrep
 attribute values are defined by the payload.  The payload is interpreted as
@@ -720,9 +694,19 @@ Perl array ref payload.
 
 Examples:
 
+    [ 'UTCInstant', [1964,10,16,16,12,47.5] ] # a UTCDateTime
+
+    [ 'UTCInstant', [2002,12,6] ] # a UTCDate
+
+    [ 'UTCInstant', [undef,undef,undef,14,2,29.0] ] # a UTCTime
+
+    [ 'FloatInstant', [2003,4,5,2] ] # min,sec unknown or N/A
+
+    [ 'FloatInstant', [1407] ] # just know its sometime in 1407
+
     [ 'UTCDuration', [3,5,1,6,15,45.000012] ]
 
-=head2 sys.std.Core.Type.String
+=head2 Low Level Integer String Literals
 
 This node kind represents an integer string value.  This node is
 interpreted as a Muldis D C<sys.std.Core.Type.String> value as follows:
@@ -753,7 +737,7 @@ Examples:
 
 =head1 COLLECTION VALUE SELECTORS
 
-=head2 sys.std.Core.Type.[Q|]Scalar
+=head2 Scalar Selectors
 
 This node kind represents a scalar subtype value.  This node is interpreted
 as a Muldis D C<sys.std.Core.Type.[Q|]Scalar> subtype value whose declared
@@ -764,7 +748,7 @@ designated I<possrep name> and I<possrep attrs>.  The possrep name and
 possrep attrs must be as per the payload of a C<Name> and C<Tuple> PHMD
 node payload, respectively.  The I<possrep attrs> is
 interpreted specifically as attributes of the declared type's possrep which
-is specified by the I<possrep name>.  Each key+value pair of the 
+is specified by the I<possrep name>.  Each key+value pair of the
 I<possrep attrs> defines a named possrep attribute of the new scalar; the
 pair's key and value are, respectively, a Perl character string that
 specifies the possrep attribute name, and a PHMD node that specifies the
@@ -795,7 +779,7 @@ Examples:
         '' => 5,
     } ] ]
 
-=head2 sys.std.Core.Type.[Q|]Tuple
+=head2 Tuple and Database Selectors
 
 This node kind represents a tuple value.  This node is interpreted as a
 Muldis D C<sys.std.Core.Type.[Q|]Tuple> value whose attributes are defined
@@ -819,7 +803,7 @@ Examples:
         'age'  => 17,
     } ]
 
-=head2 sys.std.Core.Type.[Q|]Relation
+=head2 Relation Selectors
 
 This node kind represents a relation value.  This node is interpreted as a
 Muldis D C<sys.std.Core.Type.[Q|]Relation> value whose attributes and
@@ -887,7 +871,7 @@ Examples:
         [ 'Michelle', 17 ],
     ] ] ]  # 2 attrs + 1 tuple
 
-=head2 sys.std.Core.Type.[Q|]Set
+=head2 Set Selectors
 
 This node kind represents a set value.  This node is interpreted as a
 Muldis D C<sys.std.Core.Type.[Q|]Set> value whose elements are defined by
@@ -910,7 +894,7 @@ Examples:
         85,
     ] ]
 
-=head2 sys.std.Core.Type.[Q|]Single
+=head2 Single Selectors
 
 This node kind represents a 'single' value.  Its payload is a PHMD node
 that defines a single scalar or nonscalar value.  This node is interpreted
@@ -922,7 +906,7 @@ Examples:
 
     [ 'Single', 'I know this one!' ]
 
-=head2 sys.std.Core.Type.[Q|]Array
+=head2 Array Selectors
 
 This node kind represents an array value.  This node is interpreted as a
 Muldis D C<sys.std.Core.Type.[Q|]Array> value whose elements are defined by
@@ -946,7 +930,7 @@ Examples:
         61,
     ] ]
 
-=head2 sys.std.Core.Type.[Q|]Bag
+=head2 Bag Selectors
 
 This node kind represents a bag value.  This node is interpreted as a
 Muldis D C<sys.std.Core.Type.[Q|]Bag> value whose elements are defined by
