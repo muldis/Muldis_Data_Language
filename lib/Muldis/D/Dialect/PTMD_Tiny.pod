@@ -589,19 +589,19 @@ Grammar:
     token text_payload {
         [
             <[']>
-                [ <-[\\\']> | <escaped_char>]*
+                [ <-[\\\'\t\n\f\r]> | <escaped_char>]*
             <[']>
         ] ** <segment_sep>
     }
 
     token escaped_char {
           '\b' | '\a' | '\q' | '\h'
+        | '\s'
         | '\t' | '\n' | '\f' | '\r'
         | '\c<' [
               [<[ A..Z ]>+] ** ' '
             | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
-            | <[ 1..9 A..Z ]> ';'
-                [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
+            | <[ 1..9 A..Z ]> ';' [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
           ] '>'
     }
 
@@ -614,6 +614,7 @@ The meanings of the simple escape sequences are:
     \a  | F;27      | APOSTROPHE      | '   | delim Text literals
     \q  | F;22      | QUOTATION MARK  | "   | delim quoted Name literals
     \h  | F;23      | NUMBER SIGN     | #   | delim Comment lit (aka hash)
+    \s  | F;20      | SPACE           |     | space char
     \t  | F;9       | CHAR... TAB...  |     | control char horizontal tab
     \n  | F;A       | LINE FEED (LF)  |     | ctrl char line feed / newline
     \f  | F;C       | FORM FEED (FF)  |     | control char form feed
@@ -651,7 +652,7 @@ Grammar:
     token quoted_name_str {
         [
             <["]>
-                [ <-[\\\"]> | <escaped_char>]*
+                [ <-[\\\"\t\n\f\r]> | <escaped_char>]*
             <["]>
         ] ** <segment_sep>
     }
@@ -717,15 +718,23 @@ Grammar:
 
     token comment_payload {
         [
-            <[#]>
-                [ <-[\\\#]> | <escaped_char>]*
-            <[#]>
+            '#' ' '*
+                [ <-[\\\#\t\n\f\r]> | <escaped_char>]*
+            ' '* '#'
         ] ** \s*
     }
 
+Note that any leading or trailing space (F;20) characters inside the C<#>
+delimiters of a C<comment_payload> are also part of the delimiters, and are
+not part of the selected C<Comment> value; if you want to denote a
+C<Comment> value with leading or trailing space chars, you must write those
+space chars in an escaped form such as with C<\s>.
+
 Examples:
 
-    Comment:#This does something.#
+    Comment:# This does something. #
+
+    # So does this. #
 
 =head2 TAI Temporal Literals
 
