@@ -132,6 +132,20 @@ B<What follows next in this file, between this point and the SEE ALSO,
 still has to be rewritten according to certain TODO plans, after which this
 whole file should reflect what the DESCRIPTION etc above says.>
 
+=head1 BOOTLOADER
+
+Grammar:
+
+    token bootloader {
+        <language_name>
+        <boot_stmt>*
+    }
+
+Examples:
+
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_Tiny:{}
+    boot_stmt:sys.std.Core.Cat.create_depot_procedure:{}:{ ... }
+
 =head1 LANGUAGE NAME
 
 Grammar:
@@ -206,54 +220,54 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
     token value_node_elem_sep { \s* ':' \s* }
 
     token value_kind {
-          Bool
+          Nothing
+        | Bool
+        | Order
+        | RatRoundMeth
         | Int
-        | String
+        | Rat
         | Blob
         | Text
-        | Rat
-        | Instant
-        | Duration
         | Name
         | NameChain
         | DeclNameChain
         | Comment
-        | Order
-        | RatRoundMeth
+        | Instant
+        | Duration
+        | [UTC | Float] Instant
+        | UTCDuration
+        | String
         | Q? Scalar
         | Q? Tuple
         | Q? Relation
         | Q? Set
-        | Nothing
         | Q? Single
         | Q? Array
         | Q? Bag
-        | [UTC | Float] Instant
-        | UTCDuration
     }
 
     token type_name { <name_chain_payload> }
 
     token payload {
           <bool_payload>
+        | <order_payload>
+        | <rat_round_meth_payload>
         | <int_payload>
-        | <string_payload>
+        | <rat_payload>
         | <blob_payload>
         | <text_payload>
-        | <rat_payload>
-        | <instant_payload>
-        | <duration_payload>
         | <name_payload>
         | <name_chain_payload>
         | <decl_name_chain_payload>
         | <comment_payload>
-        | <order_payload>
-        | <rat_round_meth_payload>
+        | <instant_payload>
+        | <duration_payload>
+        | <utc_instant_payload>
+        | <utc_duration_payload>
+        | <string_payload>
         | <qscalar_payload>
         | <qtuple_payload>
         | <qrelation_payload>
-        | <utc_instant_payload>
-        | <utc_duration_payload>
     }
 
 So a C<value> node has 1-3 elements in general:
@@ -305,29 +319,41 @@ would typically want to use the following grammar for C<value> instead:
 
     token value {
           <bool>
+        | <order>
+        | <rat_round_meth>
         | <int>
-        | <string>
+        | <rat>
         | <blob>
         | <text>
-        | <rat>
-        | <instant>
-        | <duration>
         | <name>
         | <name_chain>
         | <decl_name_chain>
         | <comment>
-        | <order>
-        | <rat_round_meth>
+        | <instant>
+        | <duration>
+        | <utc_instant>
+        | <utc_duration>
+        | <string>
         | <qscalar>
         | <qtuple>
         | <qrelation>
-        | <utc_instant>
-        | <utc_duration>
     }
 
 For GCVL examples, see the subsequent documentation sections.
 
-=head1 SIMPLE CORE SCALAR VALUE LITERALS
+=head1 OPAQUE VALUE LITERALS
+
+=head2 sys.std.Core.Type.Nothing
+
+Grammar:
+
+    token nothing {
+        Nothing
+    }
+
+Examples:
+
+    Nothing
 
 =head2 sys.std.Core.Type.Bool
 
@@ -347,6 +373,49 @@ Examples:
     Bool:true
 
     false
+
+=head2 sys.std.Core.Type.Cat.Order
+
+Grammar:
+
+    token order {
+        [Order <value_node_elem_sep>]?
+        <order_payload>
+    }
+
+    token order_payload {
+        [increase | same | decrease]
+    }
+
+Examples:
+
+    Order:same
+
+    decrease
+
+=head2 sys.std.Core.Type.Cat.RatRoundMeth
+
+Grammar:
+
+    token rat_round_meth {
+        [RatRoundMeth <value_node_elem_sep>]?
+        <rat_round_meth_payload>
+    }
+
+    token rat_round_meth_payload {
+        [
+              half_down | half_up
+            | half_even
+            | to_floor | to_ceiling
+            | to_zero | to_inf
+        ]
+    }
+
+Examples:
+
+    RatRoundMeth:half_up
+
+    to_zero
 
 =head2 sys.std.Core.Type.Int
 
@@ -411,35 +480,72 @@ Examples:
 
     B;A09B
 
-=head2 sys.std.Core.Type.String
+=head2 sys.std.Core.Type.Rat
 
 Grammar:
 
-    token string {
-        String <value_node_elem_sep>
-        [<type_name> <value_node_elem_sep>]?
-        <string_payload>
+    token rat {
+        [
+            Rat <value_node_elem_sep>
+            [<type_name> <value_node_elem_sep>]?
+        ]?
+        <rat_payload>
     }
 
-    token string_payload {
-          <int_max_col_val> <value_payload_elem_sep>
-          <ord_list_open>
-              [<int_body> ** <list_elem_sep>]?
-          <ord_list_close>
-        | <ord_list_open>
-              [<d_int_body> ** <list_elem_sep>]?
-          <ord_list_close>
+    token rat_payload {
+          <int_max_col_val> <value_payload_elem_sep> <rat_body>
+        | <d_rat_body>
     }
 
-    token ord_list_open { \s* '[' \s* }
+    token rat_body {
+          <int_body>\.<pint_tail>
+        | <int_body> \s* \/ \s* <pint_body>
+        | <int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
+    }
 
-    token ord_list_close { \s* ']' \s* }
+    token nnrat_body {
+          <nnint_body>\.<pint_tail>
+        | <nnint_body> \s* \/ \s* <pint_body>
+        | <nnint_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
+    }
 
-    token list_elem_sep { \s* ',' \s* }
+    token d_rat_body {
+          <d_int_body>\.<d_pint_tail>
+        | <d_int_body> \s* \/ \s* <d_pint_body>
+        | <d_int_body> \s* \* \s* <d_pint_body> \s* \^ \s* <d_int_body>
+    }
+
+    token d_nnrat_body {
+          <d_nnint_body>\.<d_pint_tail>
+        | <d_nnint_body> \s* \/ \s* <d_pint_body>
+        | <d_nnint_body> \s* \* \s* <d_pint_body> \s* \^ \s* <d_int_body>
+    }
 
 Examples:
 
-    String:F;[50,65,72,6C]
+    Rat:1;-1.1
+
+    -1.5
+
+    3.14159
+
+    A;0.0
+
+    F;DEADBEEF.FACE
+
+    Z;0.000AZE
+
+    Rat:6;500001/1000
+
+    B;A09B/A
+
+    Rat:1;1011101101*10^-11011
+
+    45207196*10^37
+
+    1/43
+
+    314159*10^-5
 
 =head2 sys.std.Core.Type.Blob
 
@@ -525,119 +631,6 @@ Examples:
     'Perl'
 
     '\c<LATIN SMALL LETTER OU>\c<F;263A>\c<65>'
-
-=head2 sys.std.Core.Type.Rat
-
-Grammar:
-
-    token rat {
-        [
-            Rat <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-        ]?
-        <rat_payload>
-    }
-
-    token rat_payload {
-          <int_max_col_val> <value_payload_elem_sep> <rat_body>
-        | <d_rat_body>
-    }
-
-    token rat_body {
-          <int_body>\.<pint_tail>
-        | <int_body> \s* \/ \s* <pint_body>
-        | <int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
-    }
-
-    token nnrat_body {
-          <nnint_body>\.<pint_tail>
-        | <nnint_body> \s* \/ \s* <pint_body>
-        | <nnint_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
-    }
-
-    token d_rat_body {
-          <d_int_body>\.<d_pint_tail>
-        | <d_int_body> \s* \/ \s* <d_pint_body>
-        | <d_int_body> \s* \* \s* <d_pint_body> \s* \^ \s* <d_int_body>
-    }
-
-    token d_nnrat_body {
-          <d_nnint_body>\.<d_pint_tail>
-        | <d_nnint_body> \s* \/ \s* <d_pint_body>
-        | <d_nnint_body> \s* \* \s* <d_pint_body> \s* \^ \s* <d_int_body>
-    }
-
-Examples:
-
-    Rat:1;-1.1
-
-    -1.5
-
-    3.14159
-
-    A;0.0
-
-    F;DEADBEEF.FACE
-
-    Z;0.000AZE
-
-    Rat:6;500001/1000
-
-    B;A09B/A
-
-    Rat:1;1011101101*10^-11011
-
-    45207196*10^37
-
-    1/43
-
-    314159*10^-5
-
-=head2 sys.std.Core.Type.Instant
-
-Grammar:
-
-    token instant {
-        Instant <value_node_elem_sep>
-        [<type_name> <value_node_elem_sep>]?
-        <instant_payload>
-    }
-
-    token instant_payload {
-        <rat_payload>
-    }
-
-Examples:
-
-    Instant:1235556432.0
-
-    Instant:854309115.0
-
-=head2 sys.std.Core.Type.Duration
-
-Grammar:
-
-    token duration {
-        Duration <value_node_elem_sep>
-        [<type_name> <value_node_elem_sep>]?
-        <duration_payload>
-    }
-
-    token duration_payload {
-        <rat_payload>
-    }
-
-Examples:
-
-    Duration:3600.0
-
-    Duration:-50.0
-
-    Duration:3.14159
-
-    Duration:1;1011101101*10^-11011
-
-    Duration:1/43
 
 =head2 sys.std.Core.Type.Cat.Name
 
@@ -755,50 +748,147 @@ Examples:
 
     # So does this. #
 
-=head2 sys.std.Core.Type.Cat.Order
+=head2 sys.std.Core.Type.Instant
 
 Grammar:
 
-    token order {
-        [Order <value_node_elem_sep>]?
-        <order_payload>
+    token instant {
+        Instant <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <instant_payload>
     }
 
-    token order_payload {
-        [increase | same | decrease]
+    token instant_payload {
+        <rat_payload>
     }
 
 Examples:
 
-    Order:same
+    Instant:1235556432.0
 
-    decrease
+    Instant:854309115.0
 
-=head2 sys.std.Core.Type.Cat.RatRoundMeth
+=head2 sys.std.Core.Type.Duration
 
 Grammar:
 
-    token rat_round_meth {
-        [RatRoundMeth <value_node_elem_sep>]?
-        <rat_round_meth_payload>
+    token duration {
+        Duration <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <duration_payload>
     }
 
-    token rat_round_meth_payload {
-        [
-              half_down | half_up
-            | half_even
-            | to_floor | to_ceiling
-            | to_zero | to_inf
-        ]
+    token duration_payload {
+        <rat_payload>
     }
 
 Examples:
 
-    RatRoundMeth:half_up
+    Duration:3600.0
 
-    to_zero
+    Duration:-50.0
 
-=head1 GENERIC Q/SCALAR AND Q/NONSCALAR VALUE LITERALS
+    Duration:3.14159
+
+    Duration:1;1011101101*10^-11011
+
+    Duration:1/43
+
+=head2 sys.std.Temporal.Type.[UTC|Float]Instant
+
+Grammar:
+
+    token utc_instant {
+        [UTC | Float] Instant <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <utc_instant_payload>
+    }
+
+    token utc_instant_payload {
+          <int_max_col_val> <value_payload_elem_sep>
+          <ord_list_open>
+              <int_body>? <list_elem_sep>
+              [<pint_body>? <list_elem_sep>] ** 2
+              [<nnint_body>? <list_elem_sep>] ** 2
+              <nnrat_body>?
+          <ord_list_close>
+        | <ord_list_open>
+              <d_int_body>? <list_elem_sep>
+              [<d_pint_body>? <list_elem_sep>] ** 2
+              [<d_nnint_body>? <list_elem_sep>] ** 2
+              <d_nnrat_body>?
+          <ord_list_close>
+    }
+
+Examples:
+
+    UTCInstant:[1964,10,16,16,12,47.5]
+
+    UTCInstant:[2002,12,16,,,]
+
+    UTCInstant:[,,,14,2,29.0]
+
+    FloatInstant:[2003,4,5,2,,]
+
+    FloatInstant:[1407,,,,,]
+
+=head2 sys.std.Temporal.Type.UTCDuration
+
+Grammar:
+
+    token utc_duration {
+        UTCDuration <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <utc_duration_payload>
+    }
+
+    token utc_duration_payload {
+          <int_max_col_val> <value_payload_elem_sep>
+          <ord_list_open>
+              [<int_body>? <list_elem_sep>] ** 5
+              <rat_body>
+          <ord_list_close>
+        | <ord_list_open>
+              [<d_int_body>? <list_elem_sep>] ** 5
+              <d_rat_body>
+          <ord_list_close>
+    }
+
+Examples:
+
+    UTCDuration:[3,5,1,6,15,45.000012]
+
+=head2 sys.std.Core.Type.String
+
+Grammar:
+
+    token string {
+        String <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <string_payload>
+    }
+
+    token string_payload {
+          <int_max_col_val> <value_payload_elem_sep>
+          <ord_list_open>
+              [<int_body> ** <list_elem_sep>]?
+          <ord_list_close>
+        | <ord_list_open>
+              [<d_int_body> ** <list_elem_sep>]?
+          <ord_list_close>
+    }
+
+    token ord_list_open { \s* '[' \s* }
+
+    token ord_list_close { \s* ']' \s* }
+
+    token list_elem_sep { \s* ',' \s* }
+
+Examples:
+
+    String:F;[50,65,72,6C]
+
+=head1 COLLECTION VALUE SELECTORS
 
 =head2 sys.std.Core.Type.[Q|]Scalar
 
@@ -984,18 +1074,6 @@ Examples:
         85
     }
 
-=head2 sys.std.Core.Type.Nothing
-
-Grammar:
-
-    token nothing {
-        Nothing
-    }
-
-Examples:
-
-    Nothing
-
 =head2 sys.std.Core.Type.[Q|]Single
 
 Grammar:
@@ -1095,86 +1173,6 @@ Examples:
         'Baz',
         'Baz'
     }
-
-=head1 TEMPORAL EXTENSION SCALAR VALUE LITERALS
-
-=head2 sys.std.Temporal.Type.[UTC|Float]Instant
-
-Grammar:
-
-    token utc_instant {
-        [UTC | Float] Instant <value_node_elem_sep>
-        [<type_name> <value_node_elem_sep>]?
-        <utc_instant_payload>
-    }
-
-    token utc_instant_payload {
-          <int_max_col_val> <value_payload_elem_sep>
-          <ord_list_open>
-              <int_body>? <list_elem_sep>
-              [<pint_body>? <list_elem_sep>] ** 2
-              [<nnint_body>? <list_elem_sep>] ** 2
-              <nnrat_body>?
-          <ord_list_close>
-        | <ord_list_open>
-              <d_int_body>? <list_elem_sep>
-              [<d_pint_body>? <list_elem_sep>] ** 2
-              [<d_nnint_body>? <list_elem_sep>] ** 2
-              <d_nnrat_body>?
-          <ord_list_close>
-    }
-
-Examples:
-
-    UTCInstant:[1964,10,16,16,12,47.5]
-
-    UTCInstant:[2002,12,16,,,]
-
-    UTCInstant:[,,,14,2,29.0]
-
-    FloatInstant:[2003,4,5,2,,]
-
-    FloatInstant:[1407,,,,,]
-
-=head2 sys.std.Temporal.Type.UTCDuration
-
-Grammar:
-
-    token utc_duration {
-        UTCDuration <value_node_elem_sep>
-        [<type_name> <value_node_elem_sep>]?
-        <utc_duration_payload>
-    }
-
-    token utc_duration_payload {
-          <int_max_col_val> <value_payload_elem_sep>
-          <ord_list_open>
-              [<int_body>? <list_elem_sep>] ** 5
-              <rat_body>
-          <ord_list_close>
-        | <ord_list_open>
-              [<d_int_body>? <list_elem_sep>] ** 5
-              <d_rat_body>
-          <ord_list_close>
-    }
-
-Examples:
-
-    UTCDuration:[3,5,1,6,15,45.000012]
-
-=head1 BOOTLOADER
-
-Grammar:
-
-    token bootloader {
-        <language_name>
-        <boot_stmt>*
-    }
-
-Examples:
-
-    Muldis_D:"http://muldis.com":"1.2.3":PTMD_Tiny:{}
-    boot_stmt:sys.std.Core.Cat.create_depot_procedure:{}:{ ... }
 
 =head1 BOOTLOADER STATEMENT
 

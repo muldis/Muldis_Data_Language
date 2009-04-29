@@ -144,6 +144,24 @@ value; you must use only defined values instead.  This documentation also
 assumes that only defined values are used, and that supplying a Perl undef
 will result in an error.  Exceptions to this are explicitly noted.
 
+=head1 BOOTLOADER
+
+A full or partial Muldis D C<bootloader> routine consists of a language
+name declaration plus a series of 0..N imperative routine calls.  A
+C<bootloader> is formatted as a PHMD node having 1..N elements, where the
+first element is a PHMD node defining a Muldis D "language name", and each
+remaining element is a PHMD node defining a "bootloader imperative routine
+call".
+
+Examples:
+
+    [
+        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_Tiny',
+            {} ],
+        [ 'boot_stmt', 'sys.std.Core.Cat.create_depot_procedure',
+            {}, { ... } ],
+    ]
+
 =head1 LANGUAGE NAME
 
 As per the VERSIONING pod section of L<Muldis::D>, code written in
@@ -174,7 +192,7 @@ Dialect: the Perl character string C<HDMD_Perl5_Tiny>.
 =item *
 
 Extensions: a Perl hash ref as per the payload of a C<Tuple> node;
-see the L<MULDIS D TINY DIALECT PRAGMAS> pod section for more details.
+see the L</MULDIS D TINY DIALECT PRAGMAS> pod section for more details.
 
 =back
 
@@ -193,7 +211,17 @@ be the input for a Perl Hosted Muldis D implementating virtual machine's
 configuration step, which provides a context for subsequent feeding of
 other PHMD trees to said virtual machine.
 
-=head1 SIMPLE CORE SCALAR VALUE LITERALS
+=head1 OPAQUE VALUE LITERALS
+
+=head2 sys.std.Core.Type.Nothing
+
+This node kind represents a 'nothing' value; it is interpreted as a Muldis
+D C<sys.std.Core.Type.Nothing>.  It has 1 element, which is the Perl
+character string C<Nothing>.
+
+Examples:
+
+    [ 'Nothing' ]
 
 =head2 sys.std.Core.Type.Bool
 
@@ -223,6 +251,52 @@ Examples:
     [ 'Bool', 'true' ]
 
     [ 'Bool', (1 == 0) ]
+
+=head2 sys.std.Core.Type.Cat.Order
+
+This node kind represents an order-determination.  This node is interpreted
+as a Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:
+
+=over
+
+=item *
+
+The canonical payload is the specific result of a Perl order-determining
+expression, such as C<< (1 <=> 2) >> for 'increase' or C<< (1 <=> 1) >> for
+'same' or C<< (2 <=> 1) >> for 'decrease'; said values are probably the
+numbers [-1,0,1], respectively.
+
+=item *
+
+A few alternative payload formats are supported:  The Perl value literals
+[C<'increase'>, C<'-1'>, C<-1>] all map to 'increase', the Perl value
+literals [C<'same'>, C<'0'>, C<0>] all map to 'same, and the Perl value
+literals [C<'decrease'>, C<'1'>, C<1>] all map to 'decrease'.  The 3
+character strings [C<increase>, C<same>, C<decrease>] specifically are what
+the Plain Text Muldis D grammar uses, and are the results of parsing it in
+Perl 5.
+
+=back
+
+Examples:
+
+    [ 'Order', 'same' ]
+
+    [ 'Order', (2 <=> 1) ]
+
+=head2 sys.std.Core.Type.Cat.RatRoundMeth
+
+This node kind represents a rounding method.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Cat.RatRoundMeth> value by directly mapping
+the payload.  The payload must be a Perl character string having one of the
+7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
+C<to_ceiling>, C<to_zero>, C<to_inf>.
+
+Examples:
+
+    [ 'RatRoundMeth', 'half_up' ]
+
+    [ 'RatRoundMeth', 'to_zero' ]
 
 =head2 sys.std.Core.Type.Int
 
@@ -280,98 +354,6 @@ Examples:
     [ 'Int', { 3 => '301' } ] # base-4
 
     [ 'Int', { B => 'A09B' } ] # base-12
-
-=head2 sys.std.Core.Type.String
-
-This node kind represents an integer string value.  This node is
-interpreted as a Muldis D C<sys.std.Core.Type.String> value as follows:
-
-=over
-
-=item *
-
-If the payload is a Perl array ref, then every one of its elements must
-constitute a valid payload for an C<Int> PHMD node.
-
-=item *
-
-If the payload is a Perl hash ref, then it must have 1 element, whose key
-and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string and the main payload must be a Perl array
-ref; every pairwise combination of the max-col-val with the elements of the
-main payload must, when appropriately wrapped in a Perl hash ref, must
-constitute a valid hash ref payload for an C<Int> PHMD node.
-
-=back
-
-Examples:
-
-    [ 'String', { F => ['50','65','72','6C'] } ] # Unicode codepts = 'Perl'
-
-    [ 'String', [80,101,114,109] ] # same thing
-
-=head2 sys.std.Core.Type.Blob
-
-This node kind represents a bit string.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.Blob> value as follows:
-
-=over
-
-=item *
-
-If the payload is a Perl scalar, then it must be a canonical Perl bit
-string, which is a scalar whose utf-8 flag is false, and it is mapped
-directly.
-
-=item *
-
-If the payload is a Perl hash ref, then it must have 1 element, whose key
-and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string composed of a single C<[137F]> character,
-and the main payload must be a Perl character string of the format C<< <[
-0..9 A..F ]>* >>.  This format specifically is what the Plain Text Muldis D
-grammar uses, and is the result of parsing it in Perl 5.  Each column of
-the main payload specifies a sequence of one of [1,2,3,4] bits, depending
-on whether max-col-val is [1,3,7,F].
-
-=back
-
-Examples:
-
-    [ 'Blob', { 1 => '00101110100010' } ] # binary
-
-    [ 'Blob', { 3 => '' } ]
-
-    [ 'Blob', { F => 'A705E' } ] # hexadecimal
-
-    [ 'Blob', { 7 => '523504376' } ]
-
-    [ 'Blob', (pack 'H2', 'P') ]
-
-    [ 'Blob', (pack 'H2', 'Z') ]
-
-=head2 sys.std.Core.Type.Text
-
-This node kind represents a character string.  This node is interpreted as
-a Muldis D C<sys.std.Core.Type.Text> value by directly mapping the payload.
-Note that, while Plain Text Muldis D may contain a few escape sequences,
-those would be replaced with what they represent prior to making a PHMD
-node.  The payload must be just a canonical Perl character string, which is
-any Perl scalar value (a Muldis D implementation in Perl can ignore the
-utf-8 flag as Perl itself knows how to treat its strings consistently).
-
-Examples:
-
-    [ 'Text', 'Ceres' ]
-
-    'サンプル' # note: needs "use utf8;" pragma to work
-
-    ''
-
-    'Perl'
-
-    "\N{LATIN SMALL LETTER OU}\x{263A}".chr(65)
-        # note: \N{} needs "use charnames ':full';" pragma to work
 
 =head2 sys.std.Core.Type.Rat
 
@@ -454,40 +436,68 @@ Examples:
 
     [ 'Rat', [ 314159, 10, -5 ] ]
 
-=head2 sys.std.Core.Type.Instant
+=head2 sys.std.Core.Type.Blob
 
-This node kind represents a single point in time which is specified in
-terms of of atomic seconds; it is a rational numeric type, that is disjoint
-from both C<Rat> and C<Duration>.  This node is interpreted as a Muldis D
-C<sys.std.Core.Type.Instant> value by directly mapping the payload, which
-must be as per the payload of a C<Rat> PHMD node.
+This node kind represents a bit string.  This node is interpreted as a
+Muldis D C<sys.std.Core.Type.Blob> value as follows:
+
+=over
+
+=item *
+
+If the payload is a Perl scalar, then it must be a canonical Perl bit
+string, which is a scalar whose utf-8 flag is false, and it is mapped
+directly.
+
+=item *
+
+If the payload is a Perl hash ref, then it must have 1 element, whose key
+and value are designated, in order, I<max-col-val> and I<main payload>; the
+max-col-val must be a Perl string composed of a single C<[137F]> character,
+and the main payload must be a Perl character string of the format C<< <[
+0..9 A..F ]>* >>.  This format specifically is what the Plain Text Muldis D
+grammar uses, and is the result of parsing it in Perl 5.  Each column of
+the main payload specifies a sequence of one of [1,2,3,4] bits, depending
+on whether max-col-val is [1,3,7,F].
+
+=back
 
 Examples:
 
-    [ 'Instant', 1235556432.0 ]
+    [ 'Blob', { 1 => '00101110100010' } ] # binary
 
-    [ 'Instant', 854309115.0 ]
+    [ 'Blob', { 3 => '' } ]
 
-=head2 sys.std.Core.Type.Duration
+    [ 'Blob', { F => 'A705E' } ] # hexadecimal
 
-This node kind represents a single amount of time (the difference between
-two instants) which is specified in terms of of atomic seconds; it is a
-rational numeric type, that is disjoint from both C<Rat> and C<Instant>.
-This node is interpreted as a Muldis D C<sys.std.Core.Type.Duration> value
-by directly mapping the payload, which must be as per the payload of a
-C<Rat> PHMD node.
+    [ 'Blob', { 7 => '523504376' } ]
+
+    [ 'Blob', (pack 'H2', 'P') ]
+
+    [ 'Blob', (pack 'H2', 'Z') ]
+
+=head2 sys.std.Core.Type.Text
+
+This node kind represents a character string.  This node is interpreted as
+a Muldis D C<sys.std.Core.Type.Text> value by directly mapping the payload.
+Note that, while Plain Text Muldis D may contain a few escape sequences,
+those would be replaced with what they represent prior to making a PHMD
+node.  The payload must be just a canonical Perl character string, which is
+any Perl scalar value (a Muldis D implementation in Perl can ignore the
+utf-8 flag as Perl itself knows how to treat its strings consistently).
 
 Examples:
 
-    [ 'Duration', 3600.0 ]
+    [ 'Text', 'Ceres' ]
 
-    [ 'Duration', -50.0 ]
+    'サンプル' # note: needs "use utf8;" pragma to work
 
-    [ 'Duration', 3.14159 ]
+    ''
 
-    [ 'Duration', { 1 => [ '1011101101', '10', '-11011' ] } ]
+    'Perl'
 
-    [ 'Duration', [ 1, 43 ] ]
+    "\N{LATIN SMALL LETTER OU}\x{263A}".chr(65)
+        # note: \N{} needs "use charnames ':full';" pragma to work
 
 =head2 sys.std.Core.Type.Cat.Name
 
@@ -570,53 +580,178 @@ Examples:
 
     [ 'Comment', 'This does something.' ]
 
-=head2 sys.std.Core.Type.Cat.Order
+=head2 sys.std.Core.Type.Instant
 
-This node kind represents an order-determination.  This node is interpreted
-as a Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:
+This node kind represents a single point in time which is specified in
+terms of of atomic seconds; it is a rational numeric type, that is disjoint
+from both C<Rat> and C<Duration>.  This node is interpreted as a Muldis D
+C<sys.std.Core.Type.Instant> value by directly mapping the payload, which
+must be as per the payload of a C<Rat> PHMD node.
+
+Examples:
+
+    [ 'Instant', 1235556432.0 ]
+
+    [ 'Instant', 854309115.0 ]
+
+=head2 sys.std.Core.Type.Duration
+
+This node kind represents a single amount of time (the difference between
+two instants) which is specified in terms of of atomic seconds; it is a
+rational numeric type, that is disjoint from both C<Rat> and C<Instant>.
+This node is interpreted as a Muldis D C<sys.std.Core.Type.Duration> value
+by directly mapping the payload, which must be as per the payload of a
+C<Rat> PHMD node.
+
+Examples:
+
+    [ 'Duration', 3600.0 ]
+
+    [ 'Duration', -50.0 ]
+
+    [ 'Duration', 3.14159 ]
+
+    [ 'Duration', { 1 => [ '1011101101', '10', '-11011' ] } ]
+
+    [ 'Duration', [ 1, 43 ] ]
+
+=head2 sys.std.Temporal.Type.[UTC|Float]Instant
+
+This node kind represents an "instant"/"datetime" value that is (affiliated
+with the UTC time-zone | "floating" / not affiliated with any time-zone).
+This node is interpreted as a Muldis D
+C<sys.std.Temporal.Type.[UTC|Float]Instant> value whose C<instant> possrep
+attribute values are defined by the payload.  The payload is interpreted as
+follows:
 
 =over
 
 =item *
 
-The canonical payload is the specific result of a Perl order-determining
-expression, such as C<< (1 <=> 2) >> for 'increase' or C<< (1 <=> 1) >> for
-'same' or C<< (2 <=> 1) >> for 'decrease'; said values are probably the
-numbers [-1,0,1], respectively.
+If the payload is a Perl array ref, then it must have 6 elements, where
+each element may be either undefined or defined; or if fewer than 6
+elements are provided, the array ref will be implicitly extended to 6,
+filling with undefs.  The 6 payload elements correspond in order, from the
+lowest to the highest indexed, to the 6 attributes: C<year>, C<month>
+C<day>, C<hour>, C<minute>, C<second>.  For each payload element that Perl
+considers undefined or defined, the corresponding attribute has a
+C<Nothing> or a C<Single> value, respectively.  For each of the first 5
+elements, when it is defined, it must qualify as a valid payload for an
+C<Int> PHMD node; for the 6th element, when it is defined, it must qualify
+as a valid payload for a C<Rat> PHMD node.
+
+A defined C<year> may be any integer, each of [C<month>, C<day>] must be a
+positive integer, each of [C<hour>, C<minute>] must be a non-negative
+integer, and C<second> must be a non-negative rational number.  If all 6
+attributes are defined, then the new C<[UTC|Float]Instant> value is also a
+C<[UTC|Float]DateTime>; if just the first 3 or last 3 are defined, then the
+value is not a C<[UTC|Float]DateTime> but rather a C<[UTC|Float]Date> or
+C<[UTC|Float]Time>, respectively; if any other combination of attributes
+are defined, then the value is just a C<[UTC|Float]Instant> and not of any
+of the other 3 subtypes.
 
 =item *
 
-A few alternative payload formats are supported:  The Perl value literals
-[C<'increase'>, C<'-1'>, C<-1>] all map to 'increase', the Perl value
-literals [C<'same'>, C<'0'>, C<0>] all map to 'same, and the Perl value
-literals [C<'decrease'>, C<'1'>, C<1>] all map to 'decrease'.  The 3
-character strings [C<increase>, C<same>, C<decrease>] specifically are what
-the Plain Text Muldis D grammar uses, and are the results of parsing it in
-Perl 5.
+If the payload is a Perl hash ref, then it must have 1 element, whose key
+and value are designated, in order, I<max-col-val> and I<main payload>; the
+max-col-val must be a Perl string and the main payload must be a Perl array
+ref as per the payload of the previous bullet point but that none of the 6
+elements is a Perl hash ref.  Each of the 6 main payload elements, when
+defined, is further interpreted according to the max-col-val, in the same
+manner as how an C<Int> or C<Rat> node's hash ref payload's element's value
+is interpreted.  The interpretation of this payload is the same as for the
+Perl array ref payload.
 
 =back
 
 Examples:
 
-    [ 'Order', 'same' ]
+    [ 'UTCInstant', [1964,10,16,16,12,47.5] ] # a UTCDateTime
 
-    [ 'Order', (2 <=> 1) ]
+    [ 'UTCInstant', [2002,12,6] ] # a UTCDate
 
-=head2 sys.std.Core.Type.Cat.RatRoundMeth
+    [ 'UTCInstant', [undef,undef,undef,14,2,29.0] ] # a UTCTime
 
-This node kind represents a rounding method.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.Cat.RatRoundMeth> value by directly mapping
-the payload.  The payload must be a Perl character string having one of the
-7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
-C<to_ceiling>, C<to_zero>, C<to_inf>.
+    [ 'FloatInstant', [2003,4,5,2] ] # min,sec unknown or N/A
+
+    [ 'FloatInstant', [1407] ] # just know its sometime in 1407
+
+=head2 sys.std.Temporal.Type.UTCDuration
+
+This node kind represents a duration value, an amount of time, which is not
+fixed to any instant in time.  This node is interpreted as a Muldis D
+C<sys.std.Temporal.Type.UTCDuration> value whose C<duration> possrep
+attribute values are defined by the payload.  The payload is interpreted as
+follows:
+
+=over
+
+=item *
+
+If the payload is a Perl array ref, then it must have 6 elements, where
+each element may be either undefined or defined; or if fewer than 6
+elements are provided, the array ref will be implicitly extended to 6,
+filling with undefs.  The 6 payload elements correspond in order, from the
+lowest to the highest indexed, to the 6 attributes: C<years>, C<months>
+C<days>, C<hours>, C<minutes>, C<seconds>.  For each payload element that
+Perl considers undefined or defined, the corresponding attribute has a
+C<Nothing> or a C<Single> value, respectively.  For each of the first 5
+elements, when it is defined, it must qualify as a valid payload for an
+C<Int> PHMD node; for the 6th element, when it is defined, it must qualify
+as a valid payload for a C<Rat> PHMD node.
+
+A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
+integer, and C<seconds> may be any rational number.  I<Currently,
+C<UTCDuration> has no system-defined subtypes, but that may change later.>
+
+=item *
+
+If the payload is a Perl hash ref, then it must have 1 element, whose key
+and value are designated, in order, I<max-col-val> and I<main payload>; the
+max-col-val must be a Perl string and the main payload must be a Perl array
+ref as per the payload of the previous bullet point but that none of the 6
+elements is a Perl hash ref.  Each of the 6 main payload elements, when
+defined, is further interpreted according to the max-col-val, in the same
+manner as how an C<Int> or C<Rat> node's hash ref payload's element's value
+is interpreted.  The interpretation of this payload is the same as for the
+Perl array ref payload.
+
+=back
 
 Examples:
 
-    [ 'RatRoundMeth', 'half_up' ]
+    [ 'UTCDuration', [3,5,1,6,15,45.000012] ]
 
-    [ 'RatRoundMeth', 'to_zero' ]
+=head2 sys.std.Core.Type.String
 
-=head1 GENERIC Q/SCALAR AND Q/NONSCALAR VALUE LITERALS
+This node kind represents an integer string value.  This node is
+interpreted as a Muldis D C<sys.std.Core.Type.String> value as follows:
+
+=over
+
+=item *
+
+If the payload is a Perl array ref, then every one of its elements must
+constitute a valid payload for an C<Int> PHMD node.
+
+=item *
+
+If the payload is a Perl hash ref, then it must have 1 element, whose key
+and value are designated, in order, I<max-col-val> and I<main payload>; the
+max-col-val must be a Perl string and the main payload must be a Perl array
+ref; every pairwise combination of the max-col-val with the elements of the
+main payload must, when appropriately wrapped in a Perl hash ref, must
+constitute a valid hash ref payload for an C<Int> PHMD node.
+
+=back
+
+Examples:
+
+    [ 'String', { F => ['50','65','72','6C'] } ] # Unicode codepts = 'Perl'
+
+    [ 'String', [80,101,114,109] ] # same thing
+
+=head1 COLLECTION VALUE SELECTORS
 
 =head2 sys.std.Core.Type.[Q|]Scalar
 
@@ -627,17 +762,13 @@ name element and whose attributes are defined by the payload.  The payload
 must be just a Perl array ref having exactly 2 elements, that are
 designated I<possrep name> and I<possrep attrs>.  The possrep name and
 possrep attrs must be as per the payload of a C<Name> and C<Tuple> PHMD
-node payload, respectively.  The C<Scalar> PHMD node kind can only be used
-for scalar types that have at least 1 possrep, and the I<possrep attrs> is
+node payload, respectively.  The I<possrep attrs> is
 interpreted specifically as attributes of the declared type's possrep which
-is specified by the I<possrep name>.  Each key+value pair of the second
-payload element defines a named possrep attribute of the new scalar; the
+is specified by the I<possrep name>.  Each key+value pair of the 
+I<possrep attrs> defines a named possrep attribute of the new scalar; the
 pair's key and value are, respectively, a Perl character string that
 specifies the possrep attribute name, and a PHMD node that specifies the
-possrep attribute value.  (Note that most scalar types have at least 1
-possrep; the only ones that don't are either union types of types having
-possreps, or they are core system-defined types, and those all have their
-own dedicated syntax for literals.)
+possrep attribute value.
 
 Examples:
 
@@ -779,16 +910,6 @@ Examples:
         85,
     ] ]
 
-=head2 sys.std.Core.Type.Nothing
-
-This node kind represents a 'nothing' value; it is interpreted as a Muldis
-D C<sys.std.Core.Type.Nothing>.  It has 1 element, which is the Perl
-character string C<Nothing>.
-
-Examples:
-
-    [ 'Nothing' ]
-
 =head2 sys.std.Core.Type.[Q|]Single
 
 This node kind represents a 'single' value.  Its payload is a PHMD node
@@ -803,7 +924,7 @@ Examples:
 
 =head2 sys.std.Core.Type.[Q|]Array
 
-This node kind represents a sequence value.  This node is interpreted as a
+This node kind represents an array value.  This node is interpreted as a
 Muldis D C<sys.std.Core.Type.[Q|]Array> value whose elements are defined by
 the payload.  The payload must be just a Perl array ref.  Each element of
 the payload defines a binary tuple of the new sequence; the element value
@@ -880,133 +1001,6 @@ Examples:
         'Baz',
         'Baz',
     ] ]
-
-=head1 TEMPORAL EXTENSION SCALAR VALUE LITERALS
-
-=head2 sys.std.Temporal.Type.[UTC|Float]Instant
-
-This node kind represents an "instant"/"datetime" value that is (affiliated
-with the UTC time-zone | "floating" / not affiliated with any time-zone).
-This node is interpreted as a Muldis D
-C<sys.std.Temporal.Type.[UTC|Float]Instant> value whose C<instant> possrep
-attribute values are defined by the payload.  The payload is interpreted as
-follows:
-
-=over
-
-=item *
-
-If the payload is a Perl array ref, then it must have 6 elements, where
-each element may be either undefined or defined; or if fewer than 6
-elements are provided, the array ref will be implicitly extended to 6,
-filling with undefs.  The 6 payload elements correspond in order, from the
-lowest to the highest indexed, to the 6 attributes: C<year>, C<month>
-C<day>, C<hour>, C<minute>, C<second>.  For each payload element that Perl
-considers undefined or defined, the corresponding attribute has a
-C<Nothing> or a C<Single> value, respectively.  For each of the first 5
-elements, when it is defined, it must qualify as a valid payload for an
-C<Int> PHMD node; for the 6th element, when it is defined, it must qualify
-as a valid payload for a C<Rat> PHMD node.
-
-A defined C<year> may be any integer, each of [C<month>, C<day>] must be a
-positive integer, each of [C<hour>, C<minute>] must be a non-negative
-integer, and C<second> must be a non-negative rational number.  If all 6
-attributes are defined, then the new C<[UTC|Float]Instant> value is also a
-C<UTCDateTime>; if just the first 3 or last 3 are defined, then the value
-is not a C<UTCDateTime> but rather a C<UTCDate> or C<UTCTime>,
-respectively; if any other combination of attributes are defined, then the
-value is just a C<[UTC|Float]Instant> and not of any of the other 3
-subtypes.
-
-=item *
-
-If the payload is a Perl hash ref, then it must have 1 element, whose key
-and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string and the main payload must be a Perl array
-ref as per the payload of the previous bullet point but that none of the 6
-elements is a Perl hash ref.  Each of the 6 main payload elements, when
-defined, is further interpreted according to the max-col-val, in the same
-manner as how an C<Int> or C<Rat> node's hash ref payload's element's value
-is interpreted.  The interpretation of this payload is the same as for the
-Perl array ref payload.
-
-=back
-
-Examples:
-
-    [ 'UTCInstant', [1964,10,16,16,12,47.5] ] # a UTCDateTime
-
-    [ 'UTCInstant', [2002,12,6] ] # a UTCDate
-
-    [ 'UTCInstant', [undef,undef,undef,14,2,29.0] ] # a UTCTime
-
-    [ 'FloatInstant', [2003,4,5,2] ] # min,sec unknown or N/A
-
-    [ 'FloatInstant', [1407] ] # just know its sometime in 1407
-
-=head2 sys.std.Temporal.Type.UTCDuration
-
-This node kind represents a duration value, an amount of time, which is not
-fixed to any instant in time.  This node is interpreted as a Muldis D
-C<sys.std.Temporal.Type.UTCDuration> value whose C<duration> possrep
-attribute values are defined by the payload.  The payload is interpreted as
-follows:
-
-=over
-
-=item *
-
-If the payload is a Perl array ref, then it must have 6 elements, where
-each element may be either undefined or defined; or if fewer than 6
-elements are provided, the array ref will be implicitly extended to 6,
-filling with undefs.  The 6 payload elements correspond in order, from the
-lowest to the highest indexed, to the 6 attributes: C<years>, C<months>
-C<days>, C<hours>, C<minutes>, C<seconds>.  For each payload element that
-Perl considers undefined or defined, the corresponding attribute has a
-C<Nothing> or a C<Single> value, respectively.  For each of the first 5
-elements, when it is defined, it must qualify as a valid payload for an
-C<Int> PHMD node; for the 6th element, when it is defined, it must qualify
-as a valid payload for a C<Rat> PHMD node.
-
-A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
-integer, and C<seconds> may be any rational number.  I<Currently,
-C<UTCDuration> has no system-defined subtypes, but that may change later.>
-
-=item *
-
-If the payload is a Perl hash ref, then it must have 1 element, whose key
-and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string and the main payload must be a Perl array
-ref as per the payload of the previous bullet point but that none of the 6
-elements is a Perl hash ref.  Each of the 6 main payload elements, when
-defined, is further interpreted according to the max-col-val, in the same
-manner as how an C<Int> or C<Rat> node's hash ref payload's element's value
-is interpreted.  The interpretation of this payload is the same as for the
-Perl array ref payload.
-
-=back
-
-Examples:
-
-    [ 'UTCDuration', [3,5,1,6,15,45.000012] ]
-
-=head1 BOOTLOADER
-
-A full or partial Muldis D C<bootloader> routine consists of a language
-name declaration plus a series of 0..N imperative routine calls.  A
-C<bootloader> is formatted as a PHMD node having 1..N elements, where the
-first element is a PHMD node defining a Muldis D "language name", and each
-remaining element is a PHMD node defining a "bootloader imperative routine
-call".
-
-Examples:
-
-    [
-        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_Tiny',
-            {} ],
-        [ 'boot_stmt', 'sys.std.Core.Cat.create_depot_procedure',
-            {}, { ... } ],
-    ]
 
 =head1 BOOTLOADER STATEMENT
 
