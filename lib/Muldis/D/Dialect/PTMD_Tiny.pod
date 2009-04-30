@@ -176,6 +176,42 @@ Grammar:
 
     token ln_extensions { <QTuple_payload> }
 
+As per the VERSIONING pod section of L<Muldis::D>, code written in Muldis D
+must start by declaring the fully-qualified Muldis D language name it is
+written in.  The C<PTMD_Tiny> dialect formats this name as a
+C<language_name> node having 5 ordered elements:
+
+=over
+
+=item C<ln_base_name>
+
+This is the Muldis D language base name; it is simply the bareword
+character string C<Muldis_D>.
+
+=item C<ln_base_authority>
+
+This is the base authority; it is a character string formatted as per a
+specific-context C<Name> value literal; it is typically the delimited
+character string C<http://muldis.com>.
+
+=item C<ln_base_version_number>
+
+This is the base version number; it is a character string formatted as per
+C<ln_base_authority>; it is typically a character string like C<1.2.3>.
+
+=item C<ln_dialect>
+
+This is the dialect name; it is simply the bareword character string
+C<PTMD_Tiny>.
+
+=item C<ln_extensions>
+
+This is a set of chosen pragma/parser-config options as per a C<Tuple>
+SCVL; see the L</MULDIS D TINY DIALECT PRAGMAS> pod section for more
+details.
+
+=back
+
 Examples:
 
     Muldis_D:"http://muldis.com":"1.2.3":PTMD_Tiny:{}
@@ -412,6 +448,12 @@ Grammar:
         (Nothing)
     }
 
+A C<Nothing> node represents a 'nothing' value; it is interpreted as a
+Muldis D C<sys.std.Core.Type.Nothing>, which is a singleton type.  It is
+simply the bareword character string C<Nothing>.  Nothing literals are
+distinct from all other value literals in that, besides being a singleton,
+its SCVL form is identical to its GCVL form.
+
 Examples:
 
     Nothing
@@ -430,6 +472,11 @@ Grammar:
     token Bool_payload {
         (false | true)
     }
+
+A C<Bool> node represents a logical boolean value.  It is interpreted as a
+Muldis D C<sys.std.Core.Type.Bool> value as follows:  The C<Bool_payload>
+is a bareword character string formatted as per a C<Name> SCVL, and it maps
+directly to the C<name> possrep of the C<Bool> type.
 
 Examples:
 
@@ -451,6 +498,11 @@ Grammar:
     token Order_payload {
         (increase | same | decrease)
     }
+
+An C<Order> node represents an order-determination.  It is interpreted as a
+Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:  The
+C<Order_payload> is a bareword character string formatted as per a C<Name>
+SCVL, and it maps directly to the C<name> possrep of the C<Order> type.
 
 Examples:
 
@@ -477,6 +529,12 @@ Grammar:
             | to_zero | to_inf
         )
     }
+
+A C<RatRoundMeth> node represents a rational rounding method.  It is
+interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundMeth> value as
+follows:  The C<RatRoundMeth_payload> is a bareword character string
+formatted as per a C<Name> SCVL, and it maps directly to the only possrep
+of the C<RatRoundMeth> type.
 
 Examples:
 
@@ -530,6 +588,37 @@ Grammar:
     token d_pint_head { <[ 1..9 ]> }
 
     token d_pint_tail { [[_?<[ 0..9 ]>+]+] ** <segment_sep> }
+
+An C<Int> node represents an integer numeric value.  It is interpreted as a
+Muldis D C<sys.std.Core.Type.Int> value as follows:
+
+If the C<Int_payload> is composed of a C<num_max_col_val> plus C<int_body>,
+then the C<int_body> is interpreted as a base-I<N> integer where I<N> might
+be between 2 and 36, and the C<num_max_col_val> says which possible value
+of I<N> to use.  Assuming all C<int_body> column values are between zero
+and I<N>-minus-one, the C<num_max_col_val> contains that I<N>-minus-one.
+So to specify, eg, bases [2,8,10,16], use C<num_max_col_val> of [1,7,9,F].
+
+If the C<Int_payload> is a C<d_int_body>, then it is interpreted as a base
+10 integer.
+
+Fundamentally the I<body> part of an C<Int> node consists of a string of
+digits and uppercased (but not lowercased) letters, where each digit
+(C<0..9>) represents its own number and each letter (C<A..Z>) represents a
+number in [10..35].  A I<body> may optionally contain underscore characters
+(C<_>), which exist just to help with visual formatting, such as for
+C<10_000_000>, and these are ignored/stripped by the parser.  A I<body> may
+optionally be split into 1..N segments where each segment is separated by a
+tilde token (C<~>); this segmenting ability is provided to support code
+that contains very long numeric literals while still being well formatted
+(no extra long lines); the tilde tokens are also ignored/stripped by the
+parser, and the I<body> is interpreted as if all its alphanumeric
+characters were contiguous.
+
+If the C<value_kind> of a C<value> node is C<NNInt> or C<PInt> rather than
+C<Int>, then the C<value> node is interpreted simply as an C<Int> node
+whose C<type_name> is C<NNInt> or C<PInt>, and the allowed I<body> is
+appropriately further restricted.
 
 Examples:
 
@@ -598,6 +687,31 @@ Grammar:
             \s* \^ \s* (<d_int_body>)
     }
 
+A C<Rat> node represents a rational numeric value.  It is interpreted as a
+Muldis D C<sys.std.Core.Type.Rat> value as follows:
+
+Fundamentally a C<Rat> node is formatted and interpreted like an C<Int>
+node, and any similarities won't be repeated here.  The differences of
+interpreting a C<Rat_payload> being composed of a C<num_max_col_val> plus
+C<rat_body> versus the C<Rat_payload> being a C<d_rat_body> are as per the
+corresponding differences of interpreting an C<Int_payload>.  Also
+interpreting a C<NNRat> or C<PRat> is as per a C<NNInt> or C<PInt>.
+
+If the I<body> part of a C<Rat> node contains a radix point (C<.>), then it
+is interpreted as is usual for a programming language with such a literal.
+
+If the I<body> part of a C<Rat> node contains a solidus (C</>), then the
+rational's value is interpreted as the leading integer (a numerator)
+divided by the trailing positive integer (a denominator); that is, the two
+integers collectively map to the C<ratio> possrep of the C<Rat> type.
+
+If the I<body> part of a C<Rat> node contains a asterisk (C<*>) plus a
+circumflex accent (C<^>), then the rational's value is interpreted as the
+leading integer (a mantissa) multiplied by the result of the middle
+positive integer (a radix) taken to the power of the trailing integer (an
+exponent); that is, the three integers collectively map to the C<float>
+possrep of the C<Rat> type.
+
 Examples:
 
     Rat:1;-1.1
@@ -652,6 +766,20 @@ Grammar:
         ] ** <segment_sep>
     }
 
+A C<Blob> node represents a general purpose bit string.  It is interpreted
+as a Muldis D C<sys.std.Core.Type.Blob> value as follows:  Fundamentally
+the I<body> part of a C<Blob> node consists of a delimited string of digits
+and uppercased (but not lowercased) letters, where each digit (C<0..9>)
+represents its own number and each letter (C<A..F>) represents a number in
+[10..15]; this string is qualified with a C<blob_max_col_val> character
+(C<[137F]>), similarly to how an C<int_body> is qualified by a
+C<num_max_col_val>.  Each character of the delimited string specifies a
+sequence of one of [1,2,3,4] bits, depending on whether C<blob_max_col_val>
+is [1,3,7,F].  If the C<value_kind> of a C<value> node is C<OctetBlob>
+rather than C<Blob>, then the C<value> node is interpreted simply as an
+C<Blob> node whose C<type_name> is C<OctetBlob>, and the delimited string
+is appropriately further restricted.
+
 Examples:
 
     Blob:1;'00101110100010'
@@ -697,6 +825,27 @@ Grammar:
           ] '>'
     }
 
+A C<Text> node represents a general purpose character string.  It is
+interpreted as a Muldis D C<sys.std.Core.Type.Text> value as follows:
+
+The C<Text_payload> is interpreted generally as is usual for a programming
+language with such a delimited character string literal.
+
+A C<Text_payload> may optionally be split into 1..N segments where each
+segment is delimited by apostrophes/single-quotes (C<'>) and separated by a
+tilde token (C<~>); this segmenting ability is provided to support code
+that contains long string literals while still being well formatted (no
+extra long lines); the tilde tokens and adjoining string delimiters are
+ignored/stripped by the parser, and the C<Text_payload> is interpreted as
+if it just consisted of a single delimited string.
+
+All Muldis D delimited character string literals (generally the 3 C<Text>,
+C<Name>, C<Comment>) may contain some characters denoted with escape
+sequences rather than literally.  The Muldis D parser would substitute the
+escape sequences with the characters they represent, so the resulting
+character string values don't contain those escape sequences.  Currently
+there are 2 classes of escape sequences, called I<simple> and I<complex>.
+
 The meanings of the simple escape sequences are:
 
     Esc | Unicode   | Unicode         | Chr | Literal character used
@@ -711,6 +860,38 @@ The meanings of the simple escape sequences are:
     \n  | F;A       | LINE FEED (LF)  |     | ctrl char line feed / newline
     \f  | F;C       | FORM FEED (FF)  |     | control char form feed
     \r  | F;D       | CARR. RET. (CR) |     | control char carriage return
+
+One design decision of PTMD_Tiny that is distinct from typical other
+languages is that an escape sequence for any character used as a delimiter
+I<never> contains that literal character.  For example, while in SQL or
+Perl character strings delimited by C<'>, they typically escape literal
+apostrophes/single-quotes as C<''> or C<\'>; while this is unambiguous, the
+task of parsing such code is considerably more difficult than it could be.
+In contrast, while in PTMD_Tiny character strings delimited by C<'>, a
+literal of the same is escaped with C<\a>; so parsing such code is an order
+of magnitude easier because the parser doesn't have to understand the
+internals of any character string literal in order to separate out the
+character string from its surrounding code.
+
+Another design decision of PTMD_Tiny that is distinct at least from Perl is
+that non-"space" whitespace characters in character string literals must
+never appear literally, but must instead be denoted with escape sequences.
+The main reason for this is to ensure that the actual values being selected
+by the string literals were not variable per the kind of linebreaks used to
+format the Muldis D source code itself.
+
+There is currently just one complex escape sequence, of the format C<<
+\c<...> >>, that supports specifying characters in terms of their Unicode
+codepoint name or number.  If the C<...> consists of just uppercased (not
+lowercased) letters and the space character, then the C<...> is interpreted
+as a Unicode character name.  If the C<...> looks like an C<Int_payload>,
+sans that underscores and tilde segmentation aren't allowed here, then the
+C<...> is interpreted as a Unicode codepoint number.  One reason for this
+feature is to empower specifying exactly which sequence of codepoints you
+want for a particular grapheme (which text editors tend to abstract away
+when you write characters literally), and also it is to empower more
+elegant passing of Unicode-savvy PTMD_Tiny source code through a
+communications channel that is more limited, such as to 7-bit ASCII.
 
 Examples:
 
@@ -779,6 +960,19 @@ Grammar:
         )
     }
 
+A C<Name> node represents a canonical short name for any kind of DBMS
+entity when declaring it; it is a character string type, that is disjoint
+from C<Text>.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Cat.Name> value as follows:
+
+Fundamentally a C<Name> node is formatted and interpreted like a C<Text>
+node, and any similarities won't be repeated here.  Unlike a
+C<Text_payload> literal which must always be delimited, a C<Name_payload>
+has 2 variants, one delimited (C<quoted_name_str>) and one not
+(C<nonquoted_name_str>).  The delimited C<Name_payload> form differs from
+C<Text_payload> only in that each string segment is delimited by
+double-quotes rather than apostrophes/single-quotes.
+
 A C<nonquoted_name_str> is composed of a single alphabetic or underscore
 character followed by zero or more characters that are each alphanumeric or
 underscore or hyphen.  It can not be segmented, so you will have to use the
@@ -786,6 +980,22 @@ C<quoted_name_str> equivalent if you want a segmented string.  I<The
 definitions of alphabetic and numeric should include appropriate Unicode
 characters, but at the moment this isn't reflected in the grammar; TODO:
 fix this.>
+
+A C<NameChain> node represents a canonical long name for invoking a DBMS
+entity in some contexts; it is conceptually a sequence of entity short
+names.  This node is interpreted as a Muldis D
+C<sys.std.Core.Type.Cat.NameChain> value as follows:  A
+C<NameChain_payload> consists of a sequence of 2 or more C<Name_payload>
+where the elements of the sequence are separated by C<name_chain_elem_sep>
+tokens (C<.>); each element of the sequence, in order, defines an element
+of the C<array> possrep's attribute of the result C<NameChain> value.
+
+A C<DeclNameChain> node represents a canonical long name for declaring a
+DBMS entity in N-depth contexts; the format and interpretation of a
+C<DeclNameChain_payload> (but as a C<sys.std.Core.Type.Cat.DeclNameChain>
+value) is the same as a C<NameChain_payload> but that the chain may have as
+few as zero parts rather than as few as 2, and a zero-element chain is
+represented by the special C<DeclNameChain_payload> syntax of C<[]>.
 
 Examples:
 
@@ -827,6 +1037,17 @@ Grammar:
         )
     }
 
+A C<Comment> node represents the text of a Muldis D code comment; it is a
+character string type, that is disjoint from both C<Text> and C<Name>. It
+is interpreted as a Muldis D C<sys.std.Core.Type.Cat.Comment> value as
+follows:
+
+Fundamentally a C<Name> node is formatted and interpreted like a C<Text>
+node, and any similarities won't be repeated here.  The C<Comment_payload>
+differs from C<Text_payload> only in that each string segment is delimited
+by number-signs/hash-marks rather than apostrophes/single-quotes, and also
+that:
+
 Note that any leading or trailing space (F;20) characters inside the C<#>
 delimiters of a C<Comment_payload> are also part of the delimiters, and are
 not part of the selected C<Comment> value; if you want to denote a
@@ -866,6 +1087,19 @@ Grammar:
     token Duration_payload {
         <Rat_payload>
     }
+
+An C<Instant> node represents a single point in time which is specified in
+terms of of atomic seconds; it is a rational numeric type, that is disjoint
+from both C<Rat> and C<Duration>.  This node is interpreted as a Muldis D
+C<sys.std.Core.Type.Instant> value as follows:  An C<Instant_payload> is
+formatted and interpreted in the same way as a C<Rat_payload>.
+
+A C<Duration> node represents a single amount of time (the difference
+between two instants) which is specified in terms of of atomic seconds; it
+is a rational numeric type, that is disjoint from both C<Rat> and
+C<Instant>. This node is interpreted as a Muldis D
+C<sys.std.Core.Type.Duration> value as follows:  A C<Duration_payload> is
+formatted and interpreted in the same way as a C<Rat_payload>.
 
 Examples:
 
@@ -964,6 +1198,67 @@ Grammar:
         <ord_list_close>
     }
 
+A C<UTCInstant> node represents an "instant"/"datetime" value that is
+affiliated with the UTC time-zone.  This node is interpreted as a Muldis D
+C<sys.std.Temporal.Type.UTCInstant> value whose C<instant> possrep
+attribute values are defined as follows:
+
+A C<UTCInstant_payload> consists mainly of a bracket-delimited sequence of
+6 comma-separated elements, where each element is either a valid numeric
+literal or is completely absent.  The 6 elements correspond in order to
+the 6 attributes: C<year>, C<month> C<day>, C<hour>, C<minute>, C<second>.
+For each element that is absent or defined, the corresponding attribute has
+a C<Nothing> or a C<Single> value, respectively.  For each of the first 5
+elements, when it is defined, it must qualify as a valid I<body> part of an
+C<Int> node; for the 6th element, when it is defined, it must qualify as a
+valid I<body> part of a C<Rat> node.
+
+Fundamentally each C<UTCInstant> node element is formatted and interpreted
+like an C<Int> or C<Rat> node, and any similarities won't be repeated here.
+
+A defined C<year> may be any integer, each of [C<month>, C<day>] must be a
+positive integer, each of [C<hour>, C<minute>] must be a non-negative
+integer, and C<second> must be a non-negative rational number.  If all 6
+attributes are defined, then the new C<UTCInstant> value is also a
+C<UTCDateTime>; if just the first 3 or last 3 are defined, then the value
+is not a C<UTCDateTime> but rather a C<UTCDate> or C<UTCTime>,
+respectively; if any other combination of attributes are defined, then the
+value is just a C<UTCInstant> and not of any of the other 3 subtypes.
+
+If the C<value_kind> of a C<value> node is C<UTCDateTime> or C<UTCDate> or
+C<UTCTime> rather than C<UTCInstant>, then the C<value> node is interpreted
+simply as a C<UTCInstant> node whose C<type_name> is C<UTCDateTime> or
+C<UTCDate> or C<UTCTime>, and the allowed I<body> is appropriately further
+restricted.
+
+A C<FloatInstant> node represents an "instant"/"datetime" value that is
+"floating" / not affiliated with any time-zone.  This node is interpreted
+as a Muldis D C<sys.std.Temporal.Type.FloatInstant> value in an identical
+fashion to how a C<UTCInstant> node is interpreted, whose format it
+completely shares.  Likewise regarding C<Float[DateTime|Date|Time]>.
+
+A C<UTCDuration> node represents a duration value, an amount of time, which
+is not fixed to any instant in time.  This node is interpreted as a Muldis
+D C<sys.std.Temporal.Type.UTCDuration> value whose C<duration> possrep
+attribute values are defined as follows:
+
+A C<UTCDuration_payload> consists mainly of a bracket-delimited sequence of
+6 comma-separated elements, where each element is either a valid numeric
+literal or is completely absent.  The 6 elements correspond in order to the
+6 attributes: C<years>, C<months> C<days>, C<hours>, C<minutes>,
+C<seconds>.  For each element that is absent or defined, the corresponding
+attribute has a C<Nothing> or a C<Single> value, respectively.  For each of
+the first 5 elements, when it is defined, it must qualify as a valid
+I<body> part of an C<Int> node; for the 6th element, when it is defined, it
+must qualify as a valid I<body> part of a C<Rat> node.
+
+Mostly a C<UTCDuration> is formatted and interpreted like a C<UTCInstant>
+node, and any similarities won't be repeated here.
+
+A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
+integer, and C<seconds> may be any rational number.  I<Currently,
+C<UTCDuration> has no system-defined subtypes, but that may change later.>
+
 Examples:
 
     UTCInstant:[1964,10,16,16,12,47.5]
@@ -1015,9 +1310,20 @@ Grammar:
 
     token list_elem_sep { \s* ',' \s* }
 
+A C<String> node represents an integer string value.  It is interpreted as
+a Muldis D C<sys.std.Core.Type.Cat.String> value as follows:  A
+C<String_payload> consists mainly of a bracket-delimited sequence of 0..N
+elements, where each element must qualify as a valid I<body> part of a
+C<Int> node, and the new C<String> is conceptually that sequence of
+integers.  Fundamentally each C<String> node element is formatted and
+interpreted like an C<Int> node, and any similarities won't be repeated
+here.
+
 Examples:
 
-    String:F;[50,65,72,6C]
+    String:F;[50,65,72,6C] # Unicode codepts = 'Perl' #
+
+    String:[80,101,114,109] # same thing #
 
 =head1 COLLECTION VALUE SELECTORS
 
@@ -1047,6 +1353,26 @@ Grammar:
     token possrep_name { <Name_payload> }
 
     token possrep_attrs { <QTuple_payload> }
+
+A C<QScalar> node represents a literal or selector invocation for a
+quasi-scalar subtype value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.QScalar> subtype value whose declared type is specified
+by the node's (mandatory for C<QScalar>) C<type_name> and whose attributes
+are defined by the C<QScalar_payload>.  The C<possrep_attrs> is interpreted
+specifically as attributes of the declared type's possrep which is
+specified by the C<possrep_name>.  Each name+expr pair of the
+C<possrep_attrs> defines a named possrep attribute of the new quasi-scalar;
+the pair's name and expr specify, respectively, the possrep attribute name,
+and the possrep attribute value.  If the C<value_kind> of a C<value> node
+is C<Scalar> rather than C<QScalar>, then the C<value> node is interpreted
+simply as an C<QScalar> node that is appropriately further restricted; the
+C<type_name> must name a C<Scalar> subtype, and the C<possrep_attrs> must
+not specify any quasi- typed attribute values.
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.ScaPRSelExprNodeSet>, which is what in general a
+C<QScalar> node distills to when it is beneath the context of a C<depot> or
+C<boot_stmt> node, as it describes some semantics.
 
 Examples:
 
@@ -1096,6 +1422,23 @@ Grammar:
     token nonord_list_close { \s* '}' \s* }
 
     token pair_elem_sep { \s* '=>' \s* }
+
+A C<QTuple> node represents a literal or selector invocation for a
+quasi-tuple value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.QTuple> value whose attributes are defined by the
+C<QTuple_payload>.  Each name+expr pair of the C<QTuple_payload> defines a
+named attribute of the new quasi-tuple; the pair's name and expr specify,
+respectively, the attribute name, and the attribute value.  If the
+C<value_kind> of a C<value> node is C<Tuple> rather than C<QTuple>, then
+the C<value> node is interpreted simply as an C<QTuple> node that is
+appropriately further restricted; the C<QTuple_payload> must not specify
+any quasi- typed attribute values.  If the C<value_kind> is instead
+C<Database>, then then only C<Relation> attribute values may be specified.
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, which is what in general a
+C<QTuple> node distills to when it is beneath the context of a C<depot> or
+C<boot_stmt> node, as it describes some semantics.
 
 Examples:
 
@@ -1160,6 +1503,48 @@ Grammar:
         <ord_list_close>
     }
 
+A C<QRelation> node represents a literal or selector invocation for a
+quasi-relation value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.QRelation> value whose attributes and tuples are
+defined by the C<QTuple_payload>, which is interpreted as follows:
+
+Iff the C<QRelation_payload> is composed of just a
+C<nonord_list_[open|close]> pair with zero elements between them, then it
+defines the only relation value having zero attributes and zero tuples.
+
+Iff the C<QRelation_payload> is a C<r_empty_qbody_payload> with at least
+one C<Name_payload> element, then it defines the attribute names of a
+relation having zero tuples.
+
+Iff the C<QRelation_payload> is a C<r_nonordered_qattr_payload> with at
+least one <QTuple_payload> element, then each element defines a quasi-tuple
+of the new quasi-relation; every <QTuple_payload> must define a quasi-tuple
+of the same degree and have the same attribute names as its sibling
+<QTuple_payload>; these are the degree and attribute names of the
+quasi-relation as a whole, which is its heading for the current purposes.
+
+Iff the C<QRelation_payload> is a C<r_ordered_qattr_payload>, then:  The
+new quasi-relation value's attribute names are defined by the
+C<Name_payload> elements, and the relation body's tuples' attribute values
+are defined by the C<ordered_qtuple_qattrs> elements.  This format is meant
+to be the most compact of the generic relation selector formats, as the
+attribute names only appear once for the relation rather than repeating for
+each tuple.  As a trade-off, the attribute values per tuple from all of the
+C<ordered_qtuple_attrs> elements must appear in the same order as their
+corresponding attribute names appear in the collection of C<Name_payload>
+elements, as the names and values in the relation literal are matched up by
+ordinal position here.
+
+If the C<value_kind> of a C<value> node is C<Relation> rather than
+C<QRelation>, then the C<value> node is interpreted simply as an
+C<QRelation> node that is appropriately further restricted; the
+C<QRelation_payload> must not specify any quasi- typed attribute values.
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.RelSelExprNodeSet>, which is what in general a
+C<QRelation> node distills to when it is beneath the context of a C<depot>
+or C<boot_stmt> node, as it describes some semantics.
+
 Examples:
 
     Relation:{}
@@ -1198,6 +1583,19 @@ Grammar:
         <nonord_list_close>
     }
 
+A C<QSet> node represents a literal or selector invocation for a quasi-set
+value.  It is interpreted as a Muldis D C<sys.std.Core.Type.QSet> value
+whose elements are defined by the C<QSet_payload>.  Each C<expr> of the
+C<QSet_payload> defines a unary quasi-tuple of the new quasi-set; each
+C<expr> defines the C<value> attribute of the quasi-tuple.  If the
+C<value_kind> of a C<value> node is C<Set> rather than C<QSet>, then the
+C<value> node is further restricted.
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.SetSelExprNodeSet>, which is what in general a
+C<QSet> node distills to when it is beneath the context of a C<depot> or
+C<boot_stmt> node, as it describes some semantics.
+
 Examples:
 
     Set:fed.lib.the_db.account.Country_Names:{
@@ -1231,6 +1629,18 @@ Grammar:
         <nonord_list_close>
     }
 
+A C<QSingle> node represents a literal or selector invocation for a
+quasi-'single' value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.QSingle> value whose element is defined by the
+C<QSingle_payload>.  The payload defines the C<value> attribute of the
+single quasi-tuple of the new quasi-'single'.  If the C<value_kind> of a
+C<value> node is C<Single> rather than C<QSingle>, then the C<value> node
+is further restricted.
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.SetSelExprNodeSet>, which is what in general a
+C<QSingle> node distills to same as when C<QSet> does.
+
 Examples:
 
     Single:{ 'I know this one!' }
@@ -1252,6 +1662,22 @@ Grammar:
             ([<expr> ** <list_elem_sep>]?)
         <ord_list_close>
     }
+
+A C<QArray> node represents a literal or selector invocation for a
+quasi-array value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.QArray> value whose elements are defined by the
+C<QArray_payload>.  Each C<expr> of the C<QArray_payload> defines a binary
+quasi-tuple of the new sequence; the C<expr> defines the C<value> attribute
+of the quasi-tuple, and the C<index> attribute of the quasi-tuple is
+generated such that the first C<expr> gets an C<index> of zero and
+subsequent ones get consecutive higher integer values.  If the
+C<value_kind> of a C<value> node is C<Array> rather than C<QArray>, then
+the C<value> node is further restricted.
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.ArySelExprNodeSet>, which is what in general a
+C<QArray> node distills to when it is beneath the context of a C<depot> or
+C<boot_stmt> node, as it describes some semantics.
 
 Examples:
 
@@ -1303,6 +1729,34 @@ Grammar:
             ([<expr> ** <list_elem_sep>]?)
         <nonord_list_close>
     }
+
+A C<QBag> node represents a literal or selector invocation for a quasi-bag
+value.  It is interpreted as a Muldis D C<sys.std.Core.Type.QBag> value
+whose elements are defined by the C<QBag_payload>, which is interpreted as
+follows:
+
+Iff the C<QBag_payload> is composed of just a C<nonord_list_[open|close]>
+pair with zero elements between them, then it defines the only bag value
+having zero elements.
+
+Iff the C<QBag_payload> is a C<qbag_payload_counted_values> with at least
+one C<expr>/C<count>-pair element, then each pair defines a binary
+quasi-tuple of the new quasi-bag; the C<expr> defines the C<value>
+attribute of the quasi-tuple, and the C<count> defines the C<count>
+attribute.
+
+Iff the C<QBag_payload> is a C<qbag_payload_repeated_values> with at least
+one <expr> element, then each C<expr> contributes to a binary quasi-tuple
+of the new quasi-bag; the C<expr> defines the C<value> attribute of the
+quasi-tuple.  The quasi-bag has 1 quasi-tuple for every distinct (after
+normalization or evaluation) C<expr> and C<expr>-derived value in the
+C<QBag_payload>, and the C<count> attribute of that quasi-tuple says how
+many instances of said C<value> there were.
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.BagSelExprNodeSet>, which is what in general a
+C<QBag> node distills to when it is beneath the context of a C<depot> or
+C<boot_stmt> node, as it describes some semantics.
 
 Examples:
 
