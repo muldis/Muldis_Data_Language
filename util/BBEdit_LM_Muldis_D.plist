@@ -26,8 +26,14 @@
   <array>
     <string>Muldis_D</string>
     <string>PTMD_Tiny</string>
+    <string>bootloader</string>
+    <string>depot</string>
 
     <string>boot_stmt</string>
+    <string>create</string>
+    <string>depot_mount</string>
+    <string>within</string>
+
     <string>function</string>
     <string>inner_function</string>
     <string>updater</string>
@@ -35,19 +41,35 @@
     <string>procedure</string>
     <string>inner_procedure</string>
     <string>main</string>
+
     <string>var</string>
+    <string>loop</string>
+
+    <string>if</string>
+    <string>then</string>
+    <string>else</string>
+    <string>given</string>
+    <string>when</string>
+    <string>default</string>
 
     <string>not</string>
     <string>and</string>
     <string>or</string>
     <string>xor</string>
+
     <string>where</string>
     <string>matching</string>
     <string>join</string>
+
+    <string>tuple</string>
+    <string>set</string>
     <string>array</string>
+    <string>bag</string>
     <string>from</string>
+
     <string>ordered</string>
     <string>by</string>
+
     <string>cardinality</string>
     <string>of</string>
   </array>
@@ -64,7 +86,8 @@
     <key>String Pattern</key>
     <string><![CDATA[(?x:
       (
-        (Bool \s* : \s*)? (?<!\w) (false | true)
+        Nothing
+      | (Bool \s* : \s*)? (?<!\w) (false | true)
       | (Order \s* : \s*)? (?<!\w) (increase | same | decrease)
       | (RatRoundMeth \s* : \s*)? (?<!\w)
         (
@@ -74,9 +97,9 @@
           | to_zero | to_inf
         )
       | (Text \s* : \s*)? (?<!\w) ' [^']* ' (\s* ~ \s* ' [^']* ')*
-      | (Blob \s* : \s*)? (?<!\w)
+      | ((Octet)? Blob \s* : \s*)? (?<!\w)
         [137F] \s* ; \s* ' [0-9A-F]* ' (\s* ~ \s* ' [0-9A-F]* ')*
-      | ((Rat | Instant | Duration) \s* : \s*)? (?<!\w)
+      | (((|NN|P)Rat | Instant | Duration) \s* : \s*)? (?<!\w)
         (
             [1-9A-Z] \s* ; \s* -?[0-9A-Z_]+
             (
@@ -91,12 +114,12 @@
               | \s* \* \s* [1-9](_?[0-9]+)* \s* \^ \s* -?[0-9](_?[0-9]+)*
             )
         )
-      | (Int \s* : \s*)? (?<!\w)
+      | ((|NN|P)Int \s* : \s*)? (?<!\w)
         (
             [1-9A-Z] \s* ; \s* -?[0-9A-Z_]+
           | (0 | -?[1-9](_?[0-9]+)*)
         )
-      | String \s* : \s*
+      | (|O|B|UCP)String \s* : \s*
         (
             [1-9A-Z] \s* ; \s*
             \[ \s*
@@ -108,7 +131,8 @@
               (\s* , \s* (0 | -?[1-9](_?[0-9]+)*))*
             \s* \]
         )
-      | ((UTC | Float) Instant | UTCDuration) \s* : \s*
+      | ((UTC | Float) (Instant | DateTime | Date | Time)
+            | UTCDuration) \s* : \s*
         (
             [1-9A-Z] \s* ; \s*
             \[ \s*
