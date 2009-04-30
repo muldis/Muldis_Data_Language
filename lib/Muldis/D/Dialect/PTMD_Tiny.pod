@@ -145,24 +145,26 @@ Examples:
 Grammar:
 
     token language_name {
-        <ln_base_name>
-        <value_node_elem_sep>
-        <ln_base_authority>
-        <value_node_elem_sep>
-        <ln_base_version_number>
-        <value_node_elem_sep>
-        <ln_dialect>
-        <value_node_elem_sep>
-        <ln_extensions>
+        (
+            <ln_base_name>
+            <value_node_elem_sep>
+            <ln_base_authority>
+            <value_node_elem_sep>
+            <ln_base_version_number>
+            <value_node_elem_sep>
+            <ln_dialect>
+            <value_node_elem_sep>
+            <ln_extensions>
+        )
     }
 
-    token ln_base_name { Muldis_D }
+    token ln_base_name { (Muldis_D) }
 
     token ln_base_authority { <Name_payload> }
 
     token ln_base_version_number { <Name_payload> }
 
-    token ln_dialect { PTMD_Tiny }
+    token ln_dialect { (PTMD_Tiny) }
 
     token ln_extensions { <QTuple_payload> }
 
@@ -260,9 +262,9 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
             | Bool
             | Order
             | RatRoundMeth
-            | Int
-            | Rat
-            | Blob
+            | Int | NNInt | PInt
+            | Rat | NNRat | PRat
+            | Blob | OctetBlob
             | Text
             | Name
             | NameChain
@@ -270,12 +272,12 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
             | Comment
             | Instant
             | Duration
-            | UTCInstant
-            | FloatInstant
+            | UTC [Instant | DateTime | Date | Time]
+            | Float [Instant | DateTime | Date | Time]
             | UTCDuration
-            | String
+            | String | BString | OString | UCPString
             | Q? Scalar
-            | Q? Tuple
+            | Q? Tuple | Database
             | Q? Relation
             | Q? Set
             | Q? Single
@@ -445,7 +447,7 @@ Grammar:
     token Int {
         (
             [
-                (Int) <value_node_elem_sep>
+                (Int | NNInt | PInt) <value_node_elem_sep>
                 [<type_name> <value_node_elem_sep>]?
             ]?
             <Int_payload>
@@ -512,7 +514,7 @@ Grammar:
     token Rat {
         (
             [
-                (Rat) <value_node_elem_sep>
+                (Rat | NNRat | PRat) <value_node_elem_sep>
                 [<type_name> <value_node_elem_sep>]?
             ]?
             <Rat_payload>
@@ -585,7 +587,7 @@ Grammar:
     token Blob {
         (
             [
-                (Blob) <value_node_elem_sep>
+                (Blob | OctetBlob) <value_node_elem_sep>
                 [<type_name> <value_node_elem_sep>]?
             ]?
             <Blob_payload>
@@ -843,7 +845,7 @@ Grammar:
 
     token UTCInstant {
         (
-            (UTCInstant) <value_node_elem_sep>
+            (UTC [Instant | DateTime | Date | Time]) <value_node_elem_sep>
             [<type_name> <value_node_elem_sep>]?
             <UTCInstant_payload>
         )
@@ -877,7 +879,8 @@ Grammar:
 
     token FloatInstant {
         (
-            (FloatInstant) <value_node_elem_sep>
+            (Float [Instant | DateTime | Date | Time])
+                <value_node_elem_sep>
             [<type_name> <value_node_elem_sep>]?
             <FloatInstant_payload>
         )
@@ -937,7 +940,7 @@ Grammar:
 
     token String {
         (
-            (String) <value_node_elem_sep>
+            (String | BString | OString | UCPString) <value_node_elem_sep>
             [<type_name> <value_node_elem_sep>]?
             <String_payload>
         )
@@ -1025,7 +1028,7 @@ Grammar:
 
     token QTuple {
         (
-            (Q? Tuple) <value_node_elem_sep>
+            (Q? Tuple | Database) <value_node_elem_sep>
             [<type_name> <value_node_elem_sep>]?
             <QTuple_payload>
         )
