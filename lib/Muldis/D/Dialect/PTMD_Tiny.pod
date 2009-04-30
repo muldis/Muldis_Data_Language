@@ -569,8 +569,6 @@ Grammar:
 
     token int_body { [0 | \-?<pint_body>] }
 
-    token nnint_body { [0 | <pint_body>] }
-
     token pint_body { <pint_head> <pint_tail>? }
 
     token pint_head { <[ 1..9 A..Z ]> }
@@ -580,8 +578,6 @@ Grammar:
     token segment_sep { \s* '~' \s* }
 
     token d_int_body { [0 | \-?<d_pint_body>] }
-
-    token d_nnint_body { [0 | <d_pint_body>] }
 
     token d_pint_body { <d_pint_head> <d_pint_tail>? }
 
@@ -667,23 +663,10 @@ Grammar:
         | (<int_body>) \s* \* \s* (<pint_body>) \s* \^ \s* (<int_body>)
     }
 
-    token nnrat_body {
-          <nnint_body>\.<pint_tail>
-        | (<nnint_body>) \s* \/ \s* (<pint_body>)
-        | (<nnint_body>) \s* \* \s* (<pint_body>) \s* \^ \s* (<int_body>)
-    }
-
     token d_rat_body {
           <d_int_body>\.<d_pint_tail>
         | (<d_int_body>) \s* \/ \s* (<d_pint_body>)
         | (<d_int_body>) \s* \* \s* (<d_pint_body>)
-            \s* \^ \s* (<d_int_body>)
-    }
-
-    token d_nnrat_body {
-          <d_nnint_body>\.<d_pint_tail>
-        | (<d_nnint_body>) \s* \/ \s* (<d_pint_body>)
-        | (<d_nnint_body>) \s* \* \s* (<d_pint_body>)
             \s* \^ \s* (<d_int_body>)
     }
 
@@ -1130,29 +1113,7 @@ Grammar:
     }
 
     token UTCInstant_payload {
-        (
-              (<num_max_col_val>) <value_payload_elem_sep>
-                    (<utc_instant_body>)
-            | <d_utc_instant_body>
-        )
-    }
-
-    token utc_instant_body {
-        <ord_list_open>
-            (<int_body>)? <list_elem_sep>
-            [(<pint_body>)? <list_elem_sep>] ** 2
-            [(<nnint_body>)? <list_elem_sep>] ** 2
-            (<nnrat_body>)?
-        <ord_list_close>
-    }
-
-    token d_utc_instant_body {
-        <ord_list_open>
-            (<d_int_body>)? <list_elem_sep>
-            [(<d_pint_body>)? <list_elem_sep>] ** 2
-            [(<d_nnint_body>)? <list_elem_sep>] ** 2
-            (<d_nnrat_body>)?
-        <ord_list_close>
+        <UTCDuration_payload>
     }
 
     token FloatInstant {
@@ -1165,7 +1126,7 @@ Grammar:
     }
 
     token FloatInstant_payload {
-        <UTCInstant_payload>
+        <UTCDuration_payload>
     }
 
     token UTCDuration {
