@@ -56,12 +56,6 @@ than Perl, each Muldis D literal is represented by a Perl Seq|Array, whose
 elements include both the payload Perl literal plus explicit meta-data for
 how to interpret that Perl literal for mapping to Muldis D.
 
-=head1 REWRITE PROGRESS MARKER
-
-B<What follows next in this file, between this point and the SEE ALSO,
-still has to be rewritten according to certain TODO plans, after which this
-whole file should reflect what the DESCRIPTION etc above says.>
-
 =head1 GENERAL STRUCTURE
 
 A C<HDMD_Perl6_Tiny> Muldis D code file is a Perl 6 code file that defines
@@ -80,6 +74,69 @@ undef will result in an error.  The few exceptions to this rule are
 explicitly stated.
 
 ...
+
+=head1 BOOTLOADER
+
+A full or partial Muldis D C<bootloader> routine consists of a language
+name declaration plus a series of 0..N imperative routine calls.  A
+C<bootloader> is formatted as a PHMD node having 1..N elements, where the
+first element is a PHMD node defining a Muldis D "language name", and each
+remaining element is a PHMD node defining a "bootloader imperative routine
+call".
+
+=head1 LANGUAGE NAME
+
+As per the VERSIONING pod section of L<Muldis::D>, code written in
+Muldis D must start by declaring the fully-qualified Muldis D language name
+it is written in.  The C<HDMD_Perl6_Tiny> dialect formats this name as a
+PHMD node having the following 4-5 elements:
+
+=over
+
+=item *
+
+Node kind / language base name: the Perl C<Str> value C<Muldis_D>.
+
+=item *
+
+Base authority: a Perl C<Str> as per the payload of a C<Text> node;
+typically the Perl C<Str> value C<http://muldis.com>.
+
+=item *
+
+Base version number: a Perl C<Str> as per the payload of a C<Text> node;
+typically a Perl C<Str> value like C<1.2.3>.
+
+=item *
+
+Dialect: the Perl C<Str> value C<HDMD_Perl6_Tiny>.
+
+=item *
+
+Extensions: optional; a Perl C<Mapping|Hash> as per the payload of a
+C<Tuple> node; see the L</MULDIS D TINY DIALECT PRAGMAS> pod section for
+more details.
+
+=back
+
+Examples:
+
+    [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_Tiny' ]
+
+    [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_Tiny', {
+        auto_add_attrs          => Bool::True,
+        auto_unabbrev_std_names => Bool::True,
+        auto_chains_from_names  => Bool::True,
+    } ]
+
+More specifically, a language name PHMD node like the above would generally
+be the input for a Perl Hosted Muldis D implementating virtual machine's
+configuration step, which provides a context for subsequent feeding of
+other PHMD trees to said virtual machine.
+
+=head1 VALUE LITERALS AND SELECTORS
+
+B<TODO/REDO: ALL OF THIS HERE MAIN POD SECTION!>
 
 A PHMD value is composed mainly of a tree of Perl Seq|Array, such that each
 Seq|Array is a tree node.  The elements of each node/Seq|Array include
@@ -151,72 +208,9 @@ value; you must use only defined values instead.  This documentation also
 assumes that only defined values are used, and that supplying a Perl undef
 will result in an error.  Exceptions to this are explicitly noted.
 
-=head1 BOOTLOADER
+=head2 Value Literal Common Elements
 
-A full or partial Muldis D C<bootloader> routine consists of a language
-name declaration plus a series of 0..N imperative routine calls.  A
-C<bootloader> is formatted as a PHMD node having 1..N elements, where the
-first element is a PHMD node defining a Muldis D "language name", and each
-remaining element is a PHMD node defining a "bootloader imperative routine
-call".
-
-Examples:
-
-    [
-        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_Tiny' ],
-        [ 'boot_stmt', 'sys.std.Core.Cat.create_depot_procedure',
-            {}, { ... } ],
-    ]
-
-=head1 LANGUAGE NAME
-
-As per the VERSIONING pod section of L<Muldis::D>, code written in
-Muldis D must start by declaring the fully-qualified Muldis D language name
-it is written in.  The C<HDMD_Perl6_Tiny> dialect formats this name as a
-PHMD node having the following 4-5 elements:
-
-=over
-
-=item *
-
-Node kind / language base name: the Perl C<Str> value C<Muldis_D>.
-
-=item *
-
-Base authority: a Perl C<Str> as per the payload of a C<Text> node;
-typically the Perl C<Str> value C<http://muldis.com>.
-
-=item *
-
-Base version number: a Perl C<Str> as per the payload of a C<Text> node;
-typically a Perl C<Str> value like C<1.2.3>.
-
-=item *
-
-Dialect: the Perl C<Str> value C<HDMD_Perl6_Tiny>.
-
-=item *
-
-Extensions: optional; a Perl C<Mapping|Hash> as per the payload of a
-C<Tuple> node; see the L</MULDIS D TINY DIALECT PRAGMAS> pod section for
-more details.
-
-=back
-
-Examples:
-
-    [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_Tiny' ]
-
-    [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_Tiny', {
-        auto_add_attrs          => Bool::True,
-        auto_unabbrev_std_names => Bool::True,
-        auto_chains_from_names  => Bool::True,
-    } ]
-
-More specifically, a language name PHMD node like the above would generally
-be the input for a Perl Hosted Muldis D implementating virtual machine's
-configuration step, which provides a context for subsequent feeding of
-other PHMD trees to said virtual machine.
+B<TODO/REDO: ALL OF THIS HERE MAIN POD SECTION!>
 
 =head1 OPAQUE VALUE LITERALS
 
@@ -762,6 +756,10 @@ Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
         'Baz',
         'Baz',
     ] ) )
+
+=head1 DEPOT DECLARATION
+
+B<TODO: ALL OF THIS HERE MAIN POD SECTION!>
 
 =head1 BOOTLOADER STATEMENT
 
