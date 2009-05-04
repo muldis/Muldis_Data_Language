@@ -96,29 +96,27 @@ Every PHMD node representing a Muldis D value literal has 1-3 elements:
 
 Node kind: a Perl character string of the format C<< <[ a..z A..Z 0..9 _
 ]>+ >>.  All of the PHMD node kinds for Muldis D value literals are these
-32: C<Bool>, C<Int>, C<String>, C<Blob>, C<Text>, C<Rat>, C<Instant>,
-C<Duration>, C<Name>, C<NameChain>, C<DeclNameChain>, C<Comment>, C<Order>,
-C<RatRoundMeth>, C<[Q|]Scalar>, C<[Q|]Tuple>, C<[Q|]Relation>, C<[Q|]Set>,
-C<Nothing>, C<[Q|]Single>, C<[Q|]Array>, C<[Q|]Bag>, C<[UTC|Float]Instant>,
-C<UTCDuration>.  All of the non-value-literal PHMD node kinds currently
-defined are these 2: C<Muldis_D>, C<boot_stmt>.
+31: C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>,
+C<Name>, C<NameChain>, C<DeclNameChain>, C<Comment>, C<Instant>,
+C<Duration>, C<UTCInstant>, C<FloatInstant>, C<UTCDuration>, C<String>,
+C<[Q|]Scalar>, C<[Q|]Tuple>, C<[Q|]Relation>, C<[Q|]Set>, C<[Q|]Maybe>,
+C<[Q|]Array>, C<[Q|]Bag>.  All of the non-value-literal PHMD node kinds
+currently defined are these 2: C<Muldis_D>, C<boot_stmt>.
 
 =item *
 
 Only when the node has 3 elements; type name: as per the payload of a
-C<NameChain> PHMD node.  PHMD nodes of all of the aforementioned 32
+C<NameChain> PHMD node.  PHMD nodes of all of the aforementioned 31
 value-specific kinds can have the 2nd type name node element except for
-these 4: C<Bool>, C<Order>, C<RatRoundMeth>, C<Nothing>; this isn't because
-those types can't be subtyped, but because in practice doing so isn't
-useful.  Furthermore, with just the C<[Q|]Scalar> kinds, having the second
-type name element is mandatory.  Non-value-literal PHMD nodes never have
-this type name element.
+these 2: C<Bool>, C<Order>; this isn't because those types can't be
+subtyped, but because in practice doing so isn't useful.  Furthermore, with
+just the C<[Q|]Scalar> kinds, having the second type name element is
+mandatory.  Non-value-literal PHMD nodes never have this type name element.
 
 =item *
 
-Only when the node kind is not C<Nothing>; the payload: its allowed formats
-depend on the node kind, and are defined separately per each node kind,
-further below.
+The payload: its allowed formats depend on the node kind, and are defined
+separately per each node kind, further below.
 
 =back
 
@@ -130,8 +128,8 @@ as a full PHMD node as follows:
     Muldis D <- Perl 5
     --------------------
     Int  <- BigInt object or Perl scalar that looks like an integer
-    Text <- Perl scalar that doesn't look like a number
     Rat  <- BigRat|BigNum obj or Perl scal that looks like num but not int
+    Text <- Perl scalar that doesn't look like a number
 
 Or specifically, Int or Rat is assumed if the Perl value agrees with a
 canonical payload format according to the Int|Rat PHMD node definitions, or
@@ -212,16 +210,6 @@ configuration step, which provides a context for subsequent feeding of
 other PHMD trees to said virtual machine.
 
 =head1 OPAQUE VALUE LITERALS
-
-=head2 The Nothing Literal
-
-This node kind represents a 'nothing' value; it is interpreted as a Muldis
-D C<sys.std.Core.Type.Nothing>.  It has 1 element, which is the Perl
-character string C<Nothing>.
-
-Examples:
-
-    [ 'Nothing' ]
 
 =head2 Boolean Literals
 
@@ -622,8 +610,8 @@ elements are provided, the array ref will be implicitly extended to 6,
 filling with undefs.  The 6 payload elements correspond in order, from the
 lowest to the highest indexed, to the 6 attributes: C<year>, C<month>
 C<day>, C<hour>, C<minute>, C<second>.  For each payload element that Perl
-considers undefined or defined, the corresponding attribute has a
-C<Nothing> or a C<Single> value, respectively.  For each of the first 5
+considers undefined or defined, the corresponding attribute has the
+C<nothing> or a C<Single> value, respectively.  For each of the first 5
 elements, when it is defined, it must qualify as a valid payload for an
 C<Int> PHMD node; for the 6th element, when it is defined, it must qualify
 as a valid payload for a C<Rat> PHMD node.
@@ -668,8 +656,8 @@ elements are provided, the array ref will be implicitly extended to 6,
 filling with undefs.  The 6 payload elements correspond in order, from the
 lowest to the highest indexed, to the 6 attributes: C<years>, C<months>
 C<days>, C<hours>, C<minutes>, C<seconds>.  For each payload element that
-Perl considers undefined or defined, the corresponding attribute has a
-C<Nothing> or a C<Single> value, respectively.  For each of the first 5
+Perl considers undefined or defined, the corresponding attribute has the
+C<nothing> or a C<Single> value, respectively.  For each of the first 5
 elements, when it is defined, it must qualify as a valid payload for an
 C<Int> PHMD node; for the 6th element, when it is defined, it must qualify
 as a valid payload for a C<Rat> PHMD node.
@@ -894,17 +882,22 @@ Examples:
         85,
     ] ]
 
-=head2 Single Selectors
+=head2 Maybe Selectors
 
-This node kind represents a 'single' value.  Its payload is a PHMD node
-that defines a single scalar or nonscalar value.  This node is interpreted
-as a Muldis D C<sys.std.Core.Type.[Q|]Single> value whose element is
-defined by the payload.  The payload is a PHMD node that defines the
-C<value> attribute of the single tuple of the new 'single'.
+This node kind represents a 'maybe' value; it is interpreted as a Muldis D
+C<sys.std.Core.Type.[Q|]Maybe> value.  If the node payload is missing or
+undefined, then the node is interpreted as the special value
+C<Maybe:nothing>, aka C<nothing>, which is the only C<QMaybe> value with
+zero elements.  If the node payload is defined then the node is interpreted
+as a C<QSingle> whose element is defined by the payload.  The payload is a
+PHMD node that defines the C<value> attribute of the single tuple of the
+new 'single'.
 
 Examples:
 
-    [ 'Single', 'I know this one!' ]
+    [ 'Maybe', 'I know this one!' ]
+
+    [ 'Maybe', undef ]
 
 =head2 Array Selectors
 
