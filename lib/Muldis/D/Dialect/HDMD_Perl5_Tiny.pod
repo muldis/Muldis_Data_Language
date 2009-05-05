@@ -146,9 +146,9 @@ Examples:
     [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_Tiny' ]
 
     [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_Tiny', {
-        'auto_add_attrs'          => [ 'Bool', 'true' ],
-        'auto_unabbrev_std_names' => [ 'Bool', 'true' ],
-        'auto_chains_from_names'  => [ 'Bool', 'true' ],
+        auto_add_attrs          => [ 'Bool', 'true' ],
+        auto_unabbrev_std_names => [ 'Bool', 'true' ],
+        auto_chains_from_names  => [ 'Bool', 'true' ],
     } ]
 
 =head1 VALUE LITERALS AND SELECTORS
@@ -240,7 +240,7 @@ For GCVL and SCVL examples, see the subsequent documentation sections.
 
 =head2 Boolean Literals
 
-This node kind represents a logical boolean value.  It is interpreted as a
+A C<Bool> node represents a logical boolean value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Bool> value as follows:
 
 =over
@@ -248,16 +248,14 @@ Muldis D C<sys.std.Core.Type.Bool> value as follows:
 =item *
 
 The canonical payload is the specific result of a Perl logical expression,
-such as C<(1 == 0)> for 'false' or C<(1 == 1)> for 'true'; said values are
-probably the empty string and number 1, respectively.
+such as C<(1 == 0)> for C<Bool:false> or C<(1 == 1)> for C<Bool:true>; said
+values are probably the empty string and number 1, respectively.
 
 =item *
 
 A few alternative payload formats are supported:  The Perl value literals
-[C<'false'>, C<'0'>, C<0>, C<''>] all map to 'false', and the Perl value
-literals [C<'true'>, C<'1'>, C<1>] all map to 'true'.  The 2 character
-strings [C<false>, C<true>] specifically are what the Plain Text Muldis D
-grammar uses, and are the results of parsing it in Perl 5.
+[C<'false'>, C<'0'>, C<0>, C<''>] all map to C<Bool:false>, and the Perl
+value literals [C<'true'>, C<'1'>, C<1>] all map to C<Bool:true>.
 
 =back
 
@@ -269,27 +267,25 @@ Examples:
 
 =head2 Order-Determination Literals
 
-This node kind represents an order-determination.  This node is interpreted
-as a Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:
+A C<Order> node represents an order-determination.  It is interpreted as a
+Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:
 
 =over
 
 =item *
 
 The canonical payload is the specific result of a Perl order-determining
-expression, such as C<< (1 <=> 2) >> for 'increase' or C<< (1 <=> 1) >> for
-'same' or C<< (2 <=> 1) >> for 'decrease'; said values are probably the
-numbers [-1,0,1], respectively.
+expression, such as C<< (1 <=> 2) >> for C<Order:increase> or C<< (1 <=> 1)
+>> for C<Order:same> or C<< (2 <=> 1) >> for C<Order:decrease>; said values
+are probably the numbers [-1,0,1], respectively.
 
 =item *
 
 A few alternative payload formats are supported:  The Perl value literals
-[C<'increase'>, C<'-1'>, C<-1>] all map to 'increase', the Perl value
-literals [C<'same'>, C<'0'>, C<0>] all map to 'same, and the Perl value
-literals [C<'decrease'>, C<'1'>, C<1>] all map to 'decrease'.  The 3
-character strings [C<increase>, C<same>, C<decrease>] specifically are what
-the Plain Text Muldis D grammar uses, and are the results of parsing it in
-Perl 5.
+[C<'increase'>, C<'-1'>, C<-1>] all map to C<Order:increase>, the Perl
+value literals [C<'same'>, C<'0'>, C<0>] all map to C<Order:same>, and the
+Perl value literals [C<'decrease'>, C<'1'>, C<1>] all map to
+C<Order:decrease>.
 
 =back
 
@@ -301,11 +297,11 @@ Examples:
 
 =head2 Rational Rounding Method Literals
 
-This node kind represents a rounding method.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.Cat.RatRoundMeth> value by directly mapping
-the payload.  The payload must be a Perl character string having one of the
-7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
-C<to_ceiling>, C<to_zero>, C<to_inf>.
+A C<RatRoundMeth> node represents a rational rounding method.  It is
+interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundMeth> value by
+directly mapping the payload.  The payload must be a Perl character string
+having one of the 7 values C<half_down>, C<half_up>, C<half_even>,
+C<to_floor>, C<to_ceiling>, C<to_zero>, C<to_inf>.
 
 Examples:
 
@@ -315,7 +311,7 @@ Examples:
 
 =head2 General Purpose Integer Numeric Literals
 
-This node kind represents an integer value.  This node is interpreted as a
+An C<Int> node represents an integer numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Int> value as follows:
 
 =over
@@ -340,7 +336,7 @@ and value are designated, in order, I<max-col-val> and I<main payload>; the
 max-col-val must be a Perl string composed of a single C<[ 1..9 A..Z ]>
 character, and the main payload must be a Perl character string of the
 format C<0> or C<< \-?<[ 1..9 A..Z ]>['_'?<[ 0..9 A..Z ]>+]* >>.  This
-format specifically is what the Plain Text Muldis D grammar uses as its
+format specifically is what the C<PTMD_Tiny> grammar uses as its
 general form for integer literals, and is the result of parsing it.  The
 main payload is interpreted as a base-I<N> integer where I<N> might be
 between 2 and 36, and the given max-col-val says which possible value of
@@ -372,7 +368,7 @@ Examples:
 
 =head2 General Purpose Rational Numeric Literals
 
-This node kind represents a rational value.  This node is interpreted as a
+A C<Rat> node represents a rational numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Rat> value as follows:
 
 =over
@@ -394,7 +390,7 @@ conceptually the closest thing Perl 5 has in core to a "big rational".
 =item *
 
 If the payload is a Perl array ref, then the payload must have exactly 2 or
-3 elements, each of which constitutes a valid payload of an C<Int> PHMD
+3 elements, each of which constitutes a valid payload of an C<Int>
 node.  If the payload has 2 elements, then the rational's value is
 interpreted as the first element (a numerator) divided by the second (a
 denominator).  If the payload has 3 elements, then the rational's value is
@@ -409,7 +405,7 @@ max-col-val must be a Perl string composed of a single C<[ 1..9 A..Z ]>
 character.  If the main payload is a Perl scalar, then the main payload
 must be a Perl character string of the format C<< 0\.['_'?<[ 0..9 A..Z
 ]>+]+ >> or C<< \-?<[ 1..9 A..Z ]>['_'?<[ 0..9 A..Z ]>+]*\.['_'?<[ 0..9
-A..Z ]>+]+ >>.  This format specifically is what the Plain Text Muldis D
+A..Z ]>+]+ >>.  This format specifically is what the C<PTMD_Tiny>
 grammar uses as one general form for rational literals, and is the result
 of parsing it.  The main payload is interpreted as a base-I<N> rational
 where I<N> might be between 2 and 36, and the given max-col-val says which
@@ -419,7 +415,7 @@ specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].  If the main
 payload is a Perl array ref, then the main payload must have exactly 2 or 3
 elements, and every pairwise combination of the max-col-val with the
 elements of the main payload must, when appropriately wrapped in a Perl
-hash ref, must constitute a valid hash ref payload for an C<Int> PHMD node;
+hash ref, must constitute a valid hash ref payload for an C<Int>  node;
 the meaning of the 2 or 3 main payload elements is the same as the 2 or 3
 payload elements mentioned in the previous bullet point.
 
@@ -453,8 +449,8 @@ Examples:
 
 =head2 General Purpose Binary String Literals
 
-This node kind represents a bit string.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.Blob> value as follows:
+A C<Blob> node represents a general purpose bit string.  It is interpreted
+as a Muldis D C<sys.std.Core.Type.Blob> value as follows:
 
 =over
 
@@ -470,7 +466,7 @@ If the payload is a Perl hash ref, then it must have 1 element, whose key
 and value are designated, in order, I<max-col-val> and I<main payload>; the
 max-col-val must be a Perl string composed of a single C<[137F]> character,
 and the main payload must be a Perl character string of the format C<< <[
-0..9 A..F ]>* >>.  This format specifically is what the Plain Text Muldis D
+0..9 A..F ]>* >>.  This format specifically is what the C<PTMD_Tiny>
 grammar uses, and is the result of parsing it in Perl 5.  Each column of
 the main payload specifies a sequence of one of [1,2,3,4] bits, depending
 on whether max-col-val is [1,3,7,F].
@@ -493,13 +489,12 @@ Examples:
 
 =head2 General Purpose Character String Literals
 
-This node kind represents a character string.  This node is interpreted as
-a Muldis D C<sys.std.Core.Type.Text> value by directly mapping the payload.
-Note that, while Plain Text Muldis D may contain a few escape sequences,
-those would be replaced with what they represent prior to making a PHMD
-node.  The payload must be just a canonical Perl character string, which is
-any Perl scalar value (a Muldis D implementation in Perl can ignore the
-utf-8 flag as Perl itself knows how to treat its strings consistently).
+A C<Text> node represents a general purpose character string.  It is
+interpreted as a Muldis D C<sys.std.Core.Type.Text> value by directly
+mapping the payload.  The payload must be just a canonical Perl character
+string, which is any Perl scalar value (a Muldis D implementation in Perl
+can ignore the utf-8 flag as Perl itself knows how to treat its strings
+consistently).
 
 Examples:
 
@@ -516,25 +511,24 @@ Examples:
 
 =head2 DBMS Entity Name Literals
 
-C<Name> represents a canonical short name for any kind of DBMS
+A C<Name> node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
-from C<Text>.  This node is interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.Name> value by directly mapping the payload.  Note
-that, while Plain Text Muldis D may contain a few escape sequences, those
-would be replaced with what they represent prior to making a PHMD node.
-The payload must be as per the payload of a C<Text> PHMD node.
+from C<Text>.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Cat.Name> value by directly mapping the payload.  The
+payload must be as per the payload of a C<Text> node.
 
-C<NameChain> represents a canonical long name for invoking a DBMS entity
-in some contexts; it is conceptually a sequence of entity short names.  Its
-payload is a Perl array ref or character string.  This node is interpreted
-as a Muldis D C<sys.std.Core.Type.Cat.NameChain> value as follows:
+A C<NameChain> node represents a canonical long name for invoking a DBMS
+entity in some contexts; it is conceptually a sequence of entity short
+names.  Its payload is a Perl array ref or character string.  This node is
+interpreted as a Muldis D C<sys.std.Core.Type.Cat.NameChain> value as
+follows:
 
 =over
 
 =item *
 
 If the payload is an array ref, then it must have at least 2 elements,
-and every element must be a valid payload for a C<Name> PHMD node (that
+and every element must be a valid payload for a C<Name>  node (that
 is, any Perl character string).  Each element of the payload, in order,
 defines an element of the C<array> possrep's attribute of a C<NameChain>.
 
@@ -549,13 +543,14 @@ into the array ref format, then processed as per the latter.
 
 =back
 
-C<DeclNameChain> is exactly the same as the C<NameChain> node kind, in both
-structure/constraints and interpretation, etc, except that it represents a
-canonical long name for declaring a DBMS entity in N-depth contexts, and
-that the chain may have as few as zero parts rather than as few as 2;
-however, a zero part chain can only be expressed with the array ref payload
-format; an empty string char str format will be interpreted as having
-a single element that is the empty string.
+A C<DeclNameChain> node represents a canonical long name for declaring a
+DBMS entity in N-depth contexts; the format and interpretation of a
+C<DeclNameChain_payload> (but as a C<sys.std.Core.Type.Cat.DeclNameChain>
+value) is the same as a C<NameChain_payload> but that the chain may have as
+few as zero parts rather than as few as 2; however, a zero part chain can
+only be expressed with the array ref payload format; an empty string
+char str format will be interpreted as having a single element that is the
+empty string.
 
 Examples:
 
@@ -575,32 +570,32 @@ Examples:
 
 =head2 Code Comment Literals
 
-This node kind represents the text of a Muldis D code comment; it is a
-character string type, that is disjoint from both C<Text> and C<Name>.
-This node is interpreted as a Muldis D C<sys.std.Core.Type.Cat.Comment>
-value by directly mapping the payload.  Note that, while Plain Text Muldis
-D may contain a few escape sequences, those would be replaced with what
-they represent prior to making a PHMD node.  The payload must be as per the
-payload of a C<Text> PHMD node.
+A C<Comment> node represents the text of a Muldis D code comment; it is a
+character string type, that is disjoint from both C<Text> and C<Name>.  It
+is interpreted as a Muldis D C<sys.std.Core.Type.Cat.Comment> value by
+directly mapping the payload.  The payload must be as per the payload of a
+C<Text> node.
 
 Examples:
 
     [ 'Comment', 'This does something.' ]
 
+    [ 'Comment', 'So does this.' ]
+
 =head2 TAI Temporal Literals
 
-C<Instant> represents a single point in time which is specified in
+An C<Instant> node represents a single point in time which is specified in
 terms of of atomic seconds; it is a rational numeric type, that is disjoint
 from both C<Rat> and C<Duration>.  This node is interpreted as a Muldis D
 C<sys.std.Core.Type.Instant> value by directly mapping the payload, which
-must be as per the payload of a C<Rat> PHMD node.
+must be as per the payload of a C<Rat> node.
 
-C<Duration> represents a single amount of time (the difference between
-two instants) which is specified in terms of of atomic seconds; it is a
-rational numeric type, that is disjoint from both C<Rat> and C<Instant>.
-This node is interpreted as a Muldis D C<sys.std.Core.Type.Duration> value
-by directly mapping the payload, which must be as per the payload of a
-C<Rat> PHMD node.
+A C<Duration> node represents a single amount of time (the difference
+between two instants) which is specified in terms of of atomic seconds; it
+is a rational numeric type, that is disjoint from both C<Rat> and
+C<Instant>.  This node is interpreted as a Muldis D
+C<sys.std.Core.Type.Duration> value by directly mapping the payload, which
+must be as per the payload of a C<Rat> node.
 
 Examples:
 
@@ -620,12 +615,10 @@ Examples:
 
 =head2 UTC and Float Temporal Literals
 
-C<UTCFInstant> represents an "instant"/"datetime" value that is (affiliated
-with the UTC time-zone | "floating" / not affiliated with any time-zone).
-This node is interpreted as a Muldis D
-C<sys.std.Temporal.Type.[UTC|Float]Instant> value whose C<instant> possrep
-attribute values are defined by the payload.  The payload is interpreted as
-follows:
+A C<UTCInstant> node represents an "instant"/"datetime" value that is
+affiliated with the UTC time-zone.  This node is interpreted as a Muldis D
+C<sys.std.Temporal.Type.UTCInstant> value whose C<instant> possrep
+attribute values are defined as follows:
 
 =over
 
@@ -640,18 +633,17 @@ C<day>, C<hour>, C<minute>, C<second>.  For each payload element that Perl
 considers undefined or defined, the corresponding attribute has the
 C<nothing> or a C<Single> value, respectively.  For each of the first 5
 elements, when it is defined, it must qualify as a valid payload for an
-C<Int> PHMD node; for the 6th element, when it is defined, it must qualify
-as a valid payload for a C<Rat> PHMD node.
+C<Int> node; for the 6th element, when it is defined, it must qualify
+as a valid payload for a C<Rat> node.
 
 A defined C<year> may be any integer, each of [C<month>, C<day>] must be a
 positive integer, each of [C<hour>, C<minute>] must be a non-negative
 integer, and C<second> must be a non-negative rational number.  If all 6
-attributes are defined, then the new C<[UTC|Float]Instant> value is also a
-C<[UTC|Float]DateTime>; if just the first 3 or last 3 are defined, then the
-value is not a C<[UTC|Float]DateTime> but rather a C<[UTC|Float]Date> or
-C<[UTC|Float]Time>, respectively; if any other combination of attributes
-are defined, then the value is just a C<[UTC|Float]Instant> and not of any
-of the other 3 subtypes.
+attributes are defined, then the new C<UTCInstant> value is also a
+C<UTCDateTime>; if just the first 3 or last 3 are defined, then the value
+is not a C<UTCDateTime> but rather a C<UTCDate> or C<UTCTime>,
+respectively; if any other combination of attributes are defined, then the
+value is just a C<UTCInstant> and not of any of the other 3 subtypes.
 
 =item *
 
@@ -667,11 +659,16 @@ Perl array ref payload.
 
 =back
 
-C<UTCDuration> represents a duration value, an amount of time, which is not
-fixed to any instant in time.  This node is interpreted as a Muldis D
-C<sys.std.Temporal.Type.UTCDuration> value whose C<duration> possrep
-attribute values are defined by the payload.  The payload is interpreted as
-follows:
+A C<FloatInstant> node represents an "instant"/"datetime" value that is
+"floating" / not affiliated with any time-zone.  This node is interpreted
+as a Muldis D C<sys.std.Temporal.Type.FloatInstant> value in an identical
+fashion to how a C<UTCInstant> node is interpreted, whose format it
+completely shares.  Likewise regarding C<Float[DateTime|Date|Time]>.
+
+A C<UTCDuration> node represents a duration value, an amount of time, which
+is not fixed to any instant in time.  This node is interpreted as a Muldis
+D C<sys.std.Temporal.Type.UTCDuration> value whose C<duration> possrep
+attribute values are defined as follows:
 
 =over
 
@@ -686,8 +683,8 @@ C<days>, C<hours>, C<minutes>, C<seconds>.  For each payload element that
 Perl considers undefined or defined, the corresponding attribute has the
 C<nothing> or a C<Single> value, respectively.  For each of the first 5
 elements, when it is defined, it must qualify as a valid payload for an
-C<Int> PHMD node; for the 6th element, when it is defined, it must qualify
-as a valid payload for a C<Rat> PHMD node.
+C<Int>  node; for the 6th element, when it is defined, it must qualify
+as a valid payload for a C<Rat>  node.
 
 A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
 integer, and C<seconds> may be any rational number.  I<Currently,
@@ -723,7 +720,7 @@ Examples:
 
 =head2 Low Level Integer String Literals
 
-This node kind represents an integer string value.  This node is
+A C<String> node represents an integer string value.  This node is
 interpreted as a Muldis D C<sys.std.Core.Type.Cat.String> value as follows:
 
 =over
@@ -731,7 +728,7 @@ interpreted as a Muldis D C<sys.std.Core.Type.Cat.String> value as follows:
 =item *
 
 If the payload is a Perl array ref, then every one of its elements must
-constitute a valid payload for an C<Int> PHMD node.
+constitute a valid payload for an C<Int> node.
 
 =item *
 
@@ -740,7 +737,7 @@ and value are designated, in order, I<max-col-val> and I<main payload>; the
 max-col-val must be a Perl string and the main payload must be a Perl array
 ref; every pairwise combination of the max-col-val with the elements of the
 main payload must, when appropriately wrapped in a Perl hash ref, must
-constitute a valid hash ref payload for an C<Int> PHMD node.
+constitute a valid hash ref payload for an C<Int> node.
 
 =back
 
@@ -752,38 +749,45 @@ Examples:
 
 =head1 COLLECTION VALUE SELECTORS
 
+Note that, with each of the main value selector nodes documented in this
+main POD section, any occurrences
+of child C<expr> nodes should be read as being C<value> nodes instead in
+contexts where instances of the main nodes are being composed beneath
+C<value> nodes.  That is, any C<expr> node options beyond what C<value>
+options exist are only valid within a C<depot> node or C<boot_stmt> node.
+
 =head2 Scalar Selectors
 
-This node kind represents a scalar subtype value.  This node is interpreted
-as a Muldis D C<sys.std.Core.Type.[Q|]Scalar> subtype value whose declared
-type is specified by the PHMD node's (mandatory for C<[Q|]Scalar>) type
-name element and whose attributes are defined by the payload.  The payload
-must be just a Perl array ref having exactly 2 elements, that are
-designated I<possrep name> and I<possrep attrs>.  The possrep name and
-possrep attrs must be as per the payload of a C<Name> and C<Tuple> PHMD
-node payload, respectively.  The I<possrep attrs> is
-interpreted specifically as attributes of the declared type's possrep which
-is specified by the I<possrep name>.  Each key+value pair of the
-I<possrep attrs> defines a named possrep attribute of the new scalar; the
-pair's key and value are, respectively, a Perl character string that
-specifies the possrep attribute name, and a PHMD node that specifies the
+A C<QScalar> node represents a literal or selector invocation for a
+quasi-scalar subtype value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.QScalar> subtype value whose declared type is specified
+by the  node's (mandatory for C<QScalar>) C<type_name> element and whose
+attributes are defined by the payload.  The payload must be just a Perl
+array ref having exactly 2 elements, that are designated I<possrep name>
+and I<possrep attrs>.  The possrep name and possrep attrs must be as per
+the payload of a C<Name> and C<QTuple> node, respectively.  The I<possrep
+attrs> is interpreted specifically as attributes of the declared type's
+possrep which is specified by the I<possrep name>.  Each key+value pair of
+the I<possrep attrs> defines a named possrep attribute of the new scalar;
+the pair's key and value are, respectively, a Perl character string that
+specifies the possrep attribute name, and a C<expr> node that specifies the
 possrep attribute value.
 
 Examples:
 
     [ 'Scalar', 'sys.std.Core.Type.Rat', [ 'float', {
-        'mantissa' => 45207196,
-        'radix'    => 10,
-        'exponent' => 37,
+        mantissa => 45207196,
+        radix    => 10,
+        exponent => 37,
     } ] ]
 
     [ 'Scalar', 'sys.std.Temporal.Type.UTCDateTime', [ 'datetime', {
-        'year'   => 2003,
-        'month'  => 10,
-        'day'    => 26,
-        'hour'   => 1,
-        'minute' => 30,
-        'second' => 0.0,
+        year   => 2003,
+        month  => 10,
+        day    => 26,
+        hour   => 1,
+        minute => 30,
+        second => 0.0,
     } ] ]
 
     [ 'Scalar', 'fed.lib.the_db.WeekDay', [ 'name', {
@@ -796,33 +800,35 @@ Examples:
 
 =head2 Tuple and Database Selectors
 
-This node kind represents a tuple value.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.[Q|]Tuple> value whose attributes are defined
-by the payload.  The payload must be just a Perl hash ref.  Each key+value
-pair of the payload defines a named attribute of the new tuple; the pair's
-key and value are, respectively, a Perl character string that specifies the
-attribute name, and a PHMD node that specifies the attribute value.
+A C<QTuple> node represents a literal or selector invocation for a
+quasi-tuple value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.QTuple> value whose attributes are defined by the
+payload.  The payload must be just a Perl hash ref.  Each key+value pair of
+the payload defines a named attribute of the new tuple; the pair's key and
+value are, respectively, a Perl character string that specifies the
+attribute name, and a C<expr> node that specifies the attribute value.
 
 Examples:
 
     [ 'Tuple', {} ]
 
     [ 'Tuple', 'type.tuple_from.var.fed.data.the_db.account.users', {
-        'login_name' => 'hartmark',
-        'login_pass' => 'letmein',
-        'is_special' => [ 'Bool', 'true' ],
+        login_name => 'hartmark',
+        login_pass => 'letmein',
+        is_special => [ 'Bool', 'true' ],
     } ]
 
     [ 'Tuple', {
-        'name' => 'Michelle',
-        'age'  => 17,
+        name => 'Michelle',
+        age  => 17,
     } ]
 
 =head2 Relation Selectors
 
-This node kind represents a relation value.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.[Q|]Relation> value whose attributes and
-tuples are defined by the payload.  The payload is interpreted as follows:
+A C<QRelation> node represents a literal or selector invocation for a
+quasi-relation value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.QRelation> value whose attributes and tuples are
+defined by the payload, which is interpreted as follows:
 
 =over
 
@@ -835,13 +841,13 @@ only relation value having zero attributes and zero tuples.
 
 Iff the payload is a Perl array ref with at least one element, and every
 element is a Perl character string (as per a valid payload for a C<Name>
-PHMD node), then it defines the attribute names of a relation having zero
+node), then it defines the attribute names of a relation having zero
 tuples.
 
 =item *
 
 Iff the payload is a Perl array ref with at least one element, and every
-element is a Perl hash ref (as per a valid payload for a C<Tuple> PHMD
+element is a Perl hash ref (as per a valid payload for a C<QTuple>
 node), then each element of the payload defines a tuple of the new
 relation; every tuple-defining element of the payload must be of the same
 degree and have the same attribute names as its sibling elements; these are
@@ -856,7 +862,7 @@ defined by the payload's first element, which is a Perl array ref of
 character string (each as per a C<Name> node payload), and the relation
 body's tuples' attribute values are defined by the payload's second
 element, which is a Perl array ref of Perl array ref of tuple attribute
-value defining PHMD nodes.  This format is meant to be the most compact of
+value defining  nodes.  This format is meant to be the most compact of
 the generic relation payload formats, as the attribute names only appear
 once for the relation rather than repeating for each tuple.  As a
 trade-off, the attribute values per tuple from the payload second element
@@ -876,9 +882,9 @@ Examples:
 
     [ 'Relation', [
         {
-            'login_name' => 'hartmark',
-            'login_pass' => 'letmein',
-            'is_special' => [ 'Bool', 'true' ],
+            login_name => 'hartmark',
+            login_pass => 'letmein',
+            is_special => [ 'Bool', 'true' ],
         },
     ] ]  # 3 attrs + 1 tuple
 
@@ -888,11 +894,12 @@ Examples:
 
 =head2 Set Selectors
 
-This node kind represents a set value.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.[Q|]Set> value whose elements are defined by
-the payload.  The payload must be just a Perl array ref.  Each element of
-the payload defines a unary tuple of the new set; each element is a PHMD
-node that defines the C<value> attribute of the tuple.
+A C<QSet> node represents a literal or selector invocation for a quasi-set
+value.  It is interpreted as a Muldis D C<sys.std.Core.Type.QSet> value
+whose elements are defined by the payload.  The payload must be just a Perl
+array ref.  Each element of the payload defines a unary quasi-tuple of the
+new quasi-set; each element is a C<expr> node that defines the C<value>
+attribute of the quasi-tuple.
 
 Examples:
 
@@ -911,14 +918,15 @@ Examples:
 
 =head2 Maybe Selectors
 
-This node kind represents a 'maybe' value; it is interpreted as a Muldis D
-C<sys.std.Core.Type.[Q|]Maybe> value.  If the node payload is missing or
+A C<QMaybe> node represents a literal or selector invocation for a
+quasi-maybe value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.QMaybe> value.  If the node payload is missing or
 undefined, then the node is interpreted as the special value
 C<Maybe:nothing>, aka C<nothing>, which is the only C<QMaybe> value with
 zero elements.  If the node payload is defined then the node is interpreted
 as a C<QSingle> whose element is defined by the payload.  The payload is a
-PHMD node that defines the C<value> attribute of the single tuple of the
-new 'single'.
+C<expr> node that defines the C<value> attribute of the single quasi-tuple
+of the new quasi-'single'.
 
 Examples:
 
@@ -928,12 +936,13 @@ Examples:
 
 =head2 Array Selectors
 
-This node kind represents an array value.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.[Q|]Array> value whose elements are defined by
-the payload.  The payload must be just a Perl array ref.  Each element of
-the payload defines a binary tuple of the new sequence; the element value
-is a PHMD node that defines the C<value> attribute of the tuple, and the
-element index is used as the C<index> attribute of the tuple.
+A C<QArray> node represents a literal or selector invocation for a
+quasi-array value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.QArray> value whose elements are defined by the
+payload.  The payload must be just a Perl array ref.  Each element of the
+payload defines a binary quasi-tuple of the new sequence; the element value
+is a C<expr> node that defines the C<value> attribute of the quasi-tuple,
+and the element index is used as the C<index> attribute of the quasi-tuple.
 
 Examples:
 
@@ -952,9 +961,10 @@ Examples:
 
 =head2 Bag Selectors
 
-This node kind represents a bag value.  This node is interpreted as a
-Muldis D C<sys.std.Core.Type.[Q|]Bag> value whose elements are defined by
-the payload.  The payload is interpreted as follows:
+A C<QBag> node represents a literal or selector invocation for a quasi-bag
+value.  It is interpreted as a Muldis D C<sys.std.Core.Type.QBag> value
+whose elements are defined by the payload.  The payload is interpreted as
+follows:
 
 =over
 
@@ -970,22 +980,23 @@ a Perl array ref.
 Iff the payload is an array ref with at least one (array ref) element, and
 the first element of that element I<is> itself an array ref, then the
 payload is interpreted as being of the I<array counted values> bag format.
-Each element of the payload defines a binary tuple of the new bag; the
-element is a 2-element array ref, and those 2 elements, by index order, are
-a PHMD node that defines the C<value> attribute of the tuple, and a valid
-C<Int> PHMD node payload that defines the C<count> attribute of the tuple;
-the count must be a positive integer.
+Each element of the payload defines a binary quasi-tuple of the new
+quasi-bag; the element is a 2-element array ref, and those 2 elements, by
+index order, are a C<expr> node that defines the C<value> attribute of the
+quasi-tuple, and a valid C<Int> node payload that defines the C<count>
+attribute of the quasi-tuple; the count must be a positive integer.
 
 =item *
 
 Iff the payload is an array ref with at least one (array ref) element, and
 the first element of that element I<is not> itself an array ref, then the
 payload is interpreted as being of the I<array repeated values> bag format.
-Each element of the payload contributes to a binary tuple of the new bag;
-the element value is a PHMD node that defines the C<value> attribute of the
-tuple.  The bag has 1 tuple for every distinct (after format normalization)
-element value in the payload, and the C<count> attribute of that tuple says
-how many instances of said element were in the payload.
+Each element of the payload contributes to a binary quasi-tuple of the new
+quasi-bag; the element value is a C<expr> node that defines the C<value>
+attribute of the tuple.  The bag has 1 quasi-tuple for every distinct
+(after format normalization) element value in the payload, and the C<count>
+attribute of that quasi-tuple says how many instances of said element were
+in the payload.
 
 =back
 
@@ -1033,14 +1044,14 @@ payload of a C<NameChain> node.
 =item *
 
 Imperative routine subject-to-update args: a Perl hash ref as per the
-payload of a C<Tuple> node except that every hash ref is just a Perl
-array ref or character string as per the payload of a C<NameChain> PHMD
+payload of a C<QTuple> node except that every hash ref is just a Perl
+array ref or character string as per the payload of a C<NameChain>
 node (each value is the name of a global variable).
 
 =item *
 
 Imperative routine read-only args: a Perl hash ref as per the
-payload of a C<Tuple> node.
+payload of a C<QTuple> node.
 
 =back
 
