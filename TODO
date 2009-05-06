@@ -24,7 +24,7 @@ their Muldis D code using TAP protocol.  The TAP messages have type Text.
 
 * Create another distribution, maybe called Muldis::D::Validator, which
 consists essentially of just a t/ directory holding a large number of files
-that are straight PTMD_Tiny code, and that emit the TAP protocol when
+that are straight PTMD_STD code, and that emit the TAP protocol when
 executed.  The structure and purpose of this collection is essentially
 identical to the official Perl 6 test suite.  A valid Muldis D
 implementation could conceivably be defined as any interpreter which runs
@@ -41,7 +41,7 @@ for awhile between releases of the language spec, and also since .Z updates
 in the language spec only indicate bug fixes and shouldn't constitute a
 change to the spec from the point of view of ::Validator.
 
-* Update the Tiny dialects with special syntax for declaring whole depots
+* Update the STD dialects with special syntax for declaring whole depots
 in a single expression, catalog+data.  This can be useful for example with
 a simple Muldis D implementation that wants to represent a persisted depot
 on disk as a single file that is Muldis D source code.  This would mostly
@@ -49,7 +49,7 @@ be like a bootloader definition except that details related to the name
 that a depot is mounted with aren't given as they would with an
 application-side bootloader.
 
-* Update the Tiny dialects with special syntax for some nonscalar catalog
+* Update the STD dialects with special syntax for some nonscalar catalog
 types, particularly definitions of routines and types, so that both doing
 this can be made even more like a normal language, and also the missing
 pieces to support more appropriate syntax coloring and routine locating in
@@ -61,14 +61,14 @@ types/routines; also keywords for declaring whole packages or something.
 Also consider that some pragmas can go away, their actions made always-on
 or 'lexical'.
 
-* Add one or more files to the distro that are straight PTMD_Tiny code like
+* Add one or more files to the distro that are straight PTMD_STD code like
 for defining a whole depot (as per the above) but instead these files
 define all the system entities.  Or more specifically they define just the
 interfaces/heads of all the system-defined routines, and they have the
 complete definitions of all system-defined types, and they declare all the
 system catalog dbvars/dbcons.  In other words these files contain
 everything that is in the sys.cat dbcon; anything that users can introspect
-from sys.cat can also be read from these files in the form of PTMD_Tiny
+from sys.cat can also be read from these files in the form of PTMD_STD
 code, more or less.  The function of these files is analagous to the Perl 6
 Setting files described in the Perl 6 Synopsis 32, except that the Muldis D
 analogy explicitly does not define the bodies of any built-in routines.  An
@@ -76,7 +76,7 @@ idea is that Muldis D implementations could take these files as is and
 parse them to populate their sys.cat that users see; of course, the
 implementations can actually implement the routines/types as they want.
 Note that although this Muldis D code would be bundled with the spec, it is
-most likely that the PTMD_Tiny-written standard impl test suite will not.
+most likely that the PTMD_STD-written standard impl test suite will not.
 Note that these files will not go in lib/ but in some other new dir.  Note
 that it is likely any implementation will bundle a clone of these files
 (suitably integrated as desired) rather than having an actual external
@@ -194,8 +194,8 @@ First round to above:  Add system-defined subtype of Reference called
 sys.std.Core.Type.Foreign (itself 'special' like FuncRef etc), the new
 one being a root type, and then we simply say that all values passed in
 from a host or peer language are of that root type, period; this new one is
-declared in Types.pod probably maybe I guess.  Then update Perl5_Tiny and
-Perl6_Tiny to add a new selector node kind 'Foreign' which takes any Perl
+declared in Types.pod probably maybe I guess.  Then update Perl5_STD and
+Perl6_STD to add a new selector node kind 'Foreign' which takes any Perl
 value or object as its payload; this is treated completely as a black box
 in general within the Muldis D implementation.  For matters of identity
 within the Muldis D envirnment, it works as follows:  Under Perl 6, the
@@ -230,7 +230,7 @@ constraint writers want to know anyway.
 * Enhance the catalog so that one when defining values like
 [Tup|Rel]SelExprNodeSet, one can tag such values with the data type the
 value is supposed to be in, so they can auto-complete missing attributes as
-per the GCVL optional middle element of the Tiny dialects; this would
+per the GCVL optional middle element of the STD dialects; this would
 also work for when a definition isn't a valid relation since the actual
 Node value is valid.  In the absense of or in addition to auto-complete,
 this feature could be used as treat-like operators to help with code
@@ -283,8 +283,8 @@ rollback would affect, and it might be easier to implement as-is.
 * Consider adding random value generators for data types other than integer
 and rational numerics, such as for character strings or binary strings.
 
-* Consider updating the Tiny dialects to to provide alternate special
-syntax for certain values, for example in PTMD_Tiny allowing value literals
+* Consider updating the STD dialects to to provide alternate special
+syntax for certain values, for example in PTMD_STD allowing value literals
 like these to be valid: Tuple:d0, Relation:d0c0, Relation:d0c1.
 
 * Make further updates to Temporal.pod to improve correctness or

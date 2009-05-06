@@ -4,12 +4,12 @@
 
 =head1 NAME
 
-Muldis::D::Dialect::PTMD_Tiny -
+Muldis::D::Dialect::PTMD_STD -
 How to format Plain Text Muldis D
 
 =head1 VERSION
 
-This document is Muldis::D::Dialect::PTMD_Tiny version 0.67.0.
+This document is Muldis::D::Dialect::PTMD_STD version 0.67.0.
 
 =head1 PREFACE
 
@@ -20,37 +20,37 @@ before you read this one, which provides subservient details.
 =head1 DESCRIPTION
 
 This document outlines the grammar of the I<Plain Text Muldis D> dialect
-named C<PTMD_Tiny>.  The fully-qualified name of this Muldis D dialect, in
+named C<PTMD_STD>.  The fully-qualified name of this Muldis D dialect, in
 combination with the base language spec it is bundled with, is
-C<Muldis_D:"http://muldis.com":"N.N.N":PTMD_Tiny> (when the bundled base
+C<Muldis_D:"http://muldis.com":"N.N.N":PTMD_STD> (when the bundled base
 language version is substituted for the C<N.N.N>).
 
 This dialect is designed to exactly match the Muldis D system catalog (the
 possible representation of Muldis D code that is visible to or updateable
 by Muldis D programs at runtime) as to what non-critical meta-data it
-explicitly stores; so code in the C<PTMD_Tiny> dialect should be
+explicitly stores; so code in the C<PTMD_STD> dialect should be
 round-trippable with the system catalog with the result maintaining all the
 details that were started with.  Since it matches the system catalog, this
 dialect should be able to exactly represent all possible Muldis D base
 language code (and probably all extensions too), rather than a subset of
-it.  That said, the C<PTMD_Tiny> dialect does provide a choice of multiple
+it.  That said, the C<PTMD_STD> dialect does provide a choice of multiple
 syntax options for writing Muldis D value literals and DBMS entity (eg type
-and routine) declarations, so several very distinct C<PTMD_Tiny> code
+and routine) declarations, so several very distinct C<PTMD_STD> code
 artifacts may parse into the same system catalog entries.  There is even a
 considerable level of abstraction in some cases, so that it is easier for
-programmers to write and understand typical C<PTMD_Tiny> code, and so that
+programmers to write and understand typical C<PTMD_STD> code, and so that
 this code isn't absurdly verbose.
 
 This dialect is designed to be as small as possible while meeting the above
 criteria, and is designed such that a parser that handles all of this
-dialect can be tiny, hence the dialect's C<Tiny> name.  Likewise, a code
-generator for this dialect from the system catalog can be tiny.
+dialect can be fairly small and simple.  Likewise, a code generator for
+this dialect from the system catalog can be fairly small and simple.
 
-A significant quality of the C<PTMD_Tiny> dialect is that it is designed to
+A significant quality of the C<PTMD_STD> dialect is that it is designed to
 work easily for a single-pass parser, or at least a single-pass lexer; all
 the context that one needs to know for how to parse or lex any arbitrary
 substring of code is provided by prior code, or any required lookahead is
-just by a few characters in general.  Therefore, a C<PTMD_Tiny> parser can
+just by a few characters in general.  Therefore, a C<PTMD_STD> parser can
 easily work on a streaming input like a file-handle where you can't go back
 earlier in the stream.  Often this means a parser can work with little RAM.
 
@@ -70,28 +70,28 @@ parser would use context to supply default values for those elements.
 Given that plain text is (more or less) universally unambiguously portable
 between all general purpose languages that could be used to implement a
 DBMS, it is expected that every single Muldis D implementation will
-natively accept input in the C<PTMD_Tiny> dialect, which isn't dependent on
+natively accept input in the C<PTMD_STD> dialect, which isn't dependent on
 any specific host language and should be easy enough to process, so it
 should be considered the safest official Muldis D dialect to write in by
 default, when you don't have a specific reason to use some other dialect.
 
 See also the dialects
-L<HDMD_Perl6_Tiny|Muldis::D::Dialect::HDMD_Perl6_Tiny> and
-L<HDMD_Perl5_Tiny|Muldis::D::Dialect::HDMD_Perl5_Tiny>, which are derived
-directly from C<PTMD_Tiny>, and represent possible Perl 6 and 5 concrete
+L<HDMD_Perl6_STD|Muldis::D::Dialect::HDMD_Perl6_STD> and
+L<HDMD_Perl5_STD|Muldis::D::Dialect::HDMD_Perl5_STD>, which are derived
+directly from C<PTMD_STD>, and represent possible Perl 6 and 5 concrete
 syntax trees for it; in fact, most of the details in common with those
 other dialects are described just in the current file, for all 3 dialects.
 
 =head1 GENERAL STRUCTURE
 
-A C<PTMD_Tiny> Muldis D code file consists just of a full or partial Muldis
+A C<PTMD_STD> Muldis D code file consists just of a full or partial Muldis
 D C<bootloader> routine definition, which begins with a language name
 declaration, and otherwise is simply an ordered sequence of imperative
 routine calls, where earlier routine calls are to system-defined
 data-definition routines (their arguments are values to put in the system
 catalog), and later ones are then to user-defined routines that the earlier
 statements either loaded or defined.  This is conceptually what a
-C<PTMD_Tiny> file is, and it can even be that literally, but C<PTMD_Tiny>
+C<PTMD_STD> file is, and it can even be that literally, but C<PTMD_STD>
 provides a canonical further abstraction which should be used when doing
 data-definition.  And so you typically use syntax resembling routine and
 type declarations in a general purpose programming language, where simply
@@ -174,13 +174,13 @@ Grammar:
 
     token ln_base_version_number { <Name_payload> }
 
-    token ln_dialect { (PTMD_Tiny) }
+    token ln_dialect { (PTMD_STD) }
 
     token ln_extensions { <QTuple_payload> }
 
 As per the VERSIONING pod section of L<Muldis::D>, code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
-written in.  The C<PTMD_Tiny> dialect formats this name as a
+written in.  The C<PTMD_STD> dialect formats this name as a
 C<language_name> node having 4-5 ordered elements:
 
 =over
@@ -204,7 +204,7 @@ C<ln_base_authority>; it is typically a character string like C<1.2.3>.
 =item C<ln_dialect>
 
 This is the dialect name; it is simply the bareword character string
-C<PTMD_Tiny>.
+C<PTMD_STD>.
 
 =item C<ln_extensions>
 
@@ -216,9 +216,9 @@ more details.
 
 Examples:
 
-    Muldis_D:"http://muldis.com":"1.2.3":PTMD_Tiny
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD
 
-    Muldis_D:"http://muldis.com":"1.2.3":PTMD_Tiny:{
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
         auto_add_attrs          => true,
         auto_unabbrev_std_names => true,
         auto_chains_from_names  => true
@@ -274,7 +274,7 @@ by definition, a C<value> can be completely evaluated at compile time.  A
 C<bootloader> consisting directly of a C<value> is hence just a serialized
 Muldis D value.
 
-The PTMD_Tiny grammar subsection for value literals (having the root
+The PTMD_STD grammar subsection for value literals (having the root
 grammar token C<value>) is completely self-defined and can be used in
 isolation from the wider grammar as a Muldis D sub-language; for example, a
 hosted-data Muldis D implementation may have an object representing a
@@ -827,19 +827,19 @@ The meanings of the simple escape sequences are:
     \f  | F;C       | FORM FEED (FF)  |     | control char form feed
     \r  | F;D       | CARR. RET. (CR) |     | control char carriage return
 
-One design decision of PTMD_Tiny that is distinct from typical other
+One design decision of PTMD_STD that is distinct from typical other
 languages is that an escape sequence for any character used as a delimiter
 I<never> contains that literal character.  For example, while in SQL or
 Perl character strings delimited by C<'>, they typically escape literal
 apostrophes/single-quotes as C<''> or C<\'>; while this is unambiguous, the
 task of parsing such code is considerably more difficult than it could be.
-In contrast, while in PTMD_Tiny character strings delimited by C<'>, a
+In contrast, while in PTMD_STD character strings delimited by C<'>, a
 literal of the same is escaped with C<\a>; so parsing such code is an order
 of magnitude easier because the parser doesn't have to understand the
 internals of any character string literal in order to separate out the
 character string from its surrounding code.
 
-Another design decision of PTMD_Tiny that is distinct at least from Perl is
+Another design decision of PTMD_STD that is distinct at least from Perl is
 that non-"space" whitespace characters in character string literals must
 never appear literally, but must instead be denoted with escape sequences.
 The main reason for this is to ensure that the actual values being selected
@@ -856,7 +856,7 @@ C<...> is interpreted as a Unicode codepoint number.  One reason for this
 feature is to empower specifying exactly which sequence of codepoints you
 want for a particular grapheme (which text editors tend to abstract away
 when you write characters literally), and also it is to empower more
-elegant passing of Unicode-savvy PTMD_Tiny source code through a
+elegant passing of Unicode-savvy PTMD_STD source code through a
 communications channel that is more limited, such as to 7-bit ASCII.
 
 Examples:
@@ -1797,8 +1797,8 @@ Examples:
 
 B<TODO/REDO: ALL OF THIS HERE MAIN POD SECTION!>
 
-All of the following pragmas apply to both the C<PTMD_Tiny> and
-C<HDMD_Perl[6|5]_Tiny> dialects, and have the same semantics with both.
+All of the following pragmas apply to both the C<PTMD_STD> and
+C<HDMD_Perl[6|5]_STD> dialects, and have the same semantics with both.
 
 =head2 auto_add_attrs
 
@@ -1807,8 +1807,8 @@ terms of a collection of attribute values, and there is no such thing as an
 attribute being undefined; normally when one selects a value of a
 particular attribute-based type, they must supply values for I<all> of its
 attributes; this is true with values comprising the system catalog as with
-any other values.  Code written in the Muldis D C<PTMD_Tiny> or
-C<HDMD_Perl[6|5]_Tiny> dialect is comprised almost entirely of value
+any other values.  Code written in the Muldis D C<PTMD_STD> or
+C<HDMD_Perl[6|5]_STD> dialect is comprised almost entirely of value
 literals, and by default all of the attribute values of said values must be
 explicitly given in the literals as sub-literals, even in the common case
 where some attributes just have the default values for their type.
