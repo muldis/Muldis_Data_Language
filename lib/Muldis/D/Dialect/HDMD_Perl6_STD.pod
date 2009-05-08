@@ -155,12 +155,12 @@ Examples:
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
 
-There are 24 main varieties of C<value> node, each of which is a named node
+There are 25 main varieties of C<value> node, each of which is a named node
 kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<DeclNameChain>, C<Comment>,
 C<Instant>, C<Duration>, C<UTCInstant>, C<FloatInstant>, C<UTCDuration>,
-C<String>, C<QScalar>, C<QTuple>, C<QRelation>, C<QSet>, C<QMaybe>,
-C<QArray>, C<QBag>.
+C<String>, C<QScalar>, C<QTuple>, C<Database>, C<QRelation>, C<QSet>,
+C<QMaybe>, C<QArray>, C<QBag>.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl native scalar and collection types.
@@ -191,9 +191,9 @@ C<value_kind>:  C<Bool>, C<Order>, C<RatRoundMeth>, C<[|NN|P]Int>,
 C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
 C<DeclNameChain>, C<Comment>, C<Instant>, C<Duration>,
 C<UTC[Instant|DateTime|Date|Time]>, C<Float[Instant|DateTime|Date|Time]>,
-C<UTCDuration>, C<[|B|O|UCP]String>, C<[Q|]Scalar>, C<[Q|]Tuple|Database>,
-C<[Q|]Relation>, C<[Q|]Set>, C<[Q|][Maybe|Single]>, C<[Q|]Array>,
-C<[Q|]Bag>.
+C<UTCDuration>, C<[|B|O|UCP]String>, C<[Q|]Scalar>, C<[Q|]Tuple>,
+C<Database>, C<[Q|]Relation>, C<[Q|]Set>, C<[Q|][Maybe|Single]>,
+C<[Q|]Array>, C<[Q|]Bag>.
 
 For just some data types, the C<value_kind> may be omitted; see below.
 
@@ -610,7 +610,7 @@ Examples:
         '' => 5,
     } ]
 
-=head2 Tuple and Database Selectors
+=head2 Tuple Selectors
 
 A C<QTuple> node represents a literal or selector invocation for a
 quasi-tuple value.  It is interpreted as a Muldis D
@@ -634,6 +634,17 @@ Examples:
         name => 'Michelle',
         age  => 17,
     }
+
+=head2 Database Selectors
+
+A C<Database> node represents a literal or selector invocation for a
+'database' value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Database> value whose attributes are defined by the
+payload.  The payload must be a Perl C<Mapping|Hash>.  Each key+value pair
+of the payload defines a named attribute of the new 'database'; the pair's
+key and value are, respectively, a Perl C<Str> that specifies the attribute
+name, and a C<expr> node that specifies the attribute value, which must be
+represent a relation value.
 
 =head2 Relation Selectors
 

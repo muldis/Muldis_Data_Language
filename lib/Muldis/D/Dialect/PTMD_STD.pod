@@ -257,6 +257,7 @@ Grammar:
     token coll_value_selector {
           <QScalar>
         | <QTuple>
+        | <Database>
         | <QRelation>
         | <QSet>
         | <QMaybe>
@@ -356,7 +357,8 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
             | UTCDuration
             | String | BString | OString | UCPString
             | Q? Scalar
-            | Q? Tuple | Database
+            | Q? Tuple
+            | Database
             | Q? Relation
             | Q? Set
             | Q? [Maybe | Single]
@@ -387,6 +389,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <String_payload>
         | <QScalar_payload>
         | <QTuple_payload>
+        | <Database_payload>
         | <QRelation_payload>
         | <QSet_payload>
         | <QMaybe_payload>
@@ -1391,13 +1394,13 @@ Examples:
         "" => 5
     }
 
-=head2 Tuple and Database Selectors
+=head2 Tuple Selectors
 
 Grammar:
 
     token QTuple {
         (
-            (Q? Tuple | Database) <value_node_elem_sep>
+            (Q? Tuple) <value_node_elem_sep>
             [<type_name> <value_node_elem_sep>]?
             <QTuple_payload>
         )
@@ -1424,8 +1427,7 @@ respectively, the attribute name, and the attribute value.  If the
 C<value_kind> of a C<value> node is C<Tuple> rather than C<QTuple>, then
 the C<value> node is interpreted simply as an C<QTuple> node that is
 appropriately further restricted; the C<QTuple_payload> must not specify
-any quasi- typed attribute values.  If the C<value_kind> is instead
-C<Database>, then then only C<Relation> attribute values may be specified.
+any quasi- typed attribute values.
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what in
@@ -1446,6 +1448,36 @@ Examples:
         name => 'Michelle',
         age  => 17
     }
+
+=head2 Database Selectors
+
+Grammar:
+
+    token Database {
+        (
+            (Database) <value_node_elem_sep>
+            [<type_name> <value_node_elem_sep>]?
+            <Database_payload>
+        )
+    }
+
+    token Database_payload {
+        <QTuple_payload>
+    }
+
+A C<Database> node represents a literal or selector invocation for a
+'database' value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Database> value whose attributes are defined by the
+C<Database_payload>.  Each name+relation pair of the C<Database_payload>
+defines a named attribute of the new 'database'; the pair's name and
+relation specify, respectively, the attribute name, and the attribute
+value.  While this grammar mentions that C<Database_payload> is a
+C<QTuple_payload>, it is in fact significantly further restricted, such
+that every attribute value of the C<Database> can only be a relation.
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what in
+general a C<Database> node distills to same as when C<QTuple> does.
 
 =head2 Relation Selectors
 
