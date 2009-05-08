@@ -221,7 +221,7 @@ Examples:
     Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD
 
     Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
-        auto_add_attrs          => true,
+        ...
     }
 
 =head1 VALUE LITERALS AND SELECTORS
@@ -1875,96 +1875,6 @@ Examples:
 =head1 MULDIS D TINY DIALECT PRAGMAS
 
 B<TODO/REDO: ALL OF THIS HERE MAIN POD SECTION!>
-
-All of the following pragmas apply to both the C<PTMD_STD> and
-C<HDMD_Perl[6|5]_STD> dialects, and have the same semantics with both.
-
-=head2 auto_add_attrs
-
-All Muldis D values are defined in
-terms of a collection of attribute values, and there is no such thing as an
-attribute being undefined; normally when one selects a value of a
-particular attribute-based type, they must supply values for I<all> of its
-attributes; this is true with values comprising the system catalog as with
-any other values.  Code written in the Muldis D C<PTMD_STD> or
-C<HDMD_Perl[6|5]_STD> dialect is comprised almost entirely of value
-literals, and by default all of the attribute values of said values must be
-explicitly given in the literals as sub-literals, even in the common case
-where some attributes just have the default values for their type.
-
-While this fact allows for parsers to be very simple and for sub-literals
-to be compilable into values without knowing the context they're compiled
-into, it means that programmers would have to write maybe about twice as
-much code as they otherwise would if they could simply not write out the
-default-valued attributes.
-
-If the 5th I<Extensions> portion of the fully-qualified Muldis D language
-name contains a name+value pair of C<auto_add_attrs> + C<Bool:true>, then
-this activates the optional C<auto_add_attrs> pragma, which provides one
-kind of automatic code completion.  When C<auto_add_attrs> is active,
-programmers may omit any literal attributes that they want, and those
-attributes will be automatically defined by the parser to have the default
-values for their type.  Or more specifically, the wider literal whose
-attributes are missing will be extended to become the default value of the
-type of the wider literal but that those attributes of its that I<were>
-explicitly given will override the default's values for those attributes.
-The actual behaviour is essentially what the
-C<sys.std.QTuple.subst_in_default> function does.
-
-But the C<auto_add_attrs> pragma is not simply an automatically invoked
-pre-processing Muldis D function, because it also serves the common case
-where one is defining relation literals that have different attributes
-specified per tuple; such a thing by itself isn't even valid as a generic
-relation, so it certainly can't be given to a Muldis D function; so the
-pragma has at least that advantage unique to itself.
-
-Note that the lexer is exactly the same regardless of whether the
-C<auto_add_attrs> pragma is turned on or off, because the matters of
-missing attributes were never tested or enforced at the lexical level in
-the first place; rather the pragma only affects the parsing stage that
-follows the lexing.  In other words, the actual syntax or grammar is
-identical regardless of the setting of this pragma.
-
-Now one consequence of using the C<auto_add_attrs> pragma is that in
-general the parser must be more complicated, and read type definitions from
-the DBMS information schema so that it knows what attributes each literal
-is supposed to have, and their declared types, and also sub-literals can no
-longer in general be fully converted to values in isolation; now the
-parent-most literal must be evaluated first, because its declared type
-generally determines the declared types of its attributes, and then their
-attributes recursively.  For nonscalar types, the initial declared type
-being looked at is the declared type of the bootloader-invoked routine's
-parameter that the literal is being given to as an argument.
-
-Now if the declared type of said parameter is just a generic type, such as
-C<Relation> or C<Array>, then often no information can be gleaned from this
-context for what attributes should exist, and so you will need to make the
-arg literal include treat-as-type metadata that explicitly provides the
-specific type information needed; otherwise, C<auto_add_attrs> won't help
-you and you must then fully define relation values with the same attributes
-per tuple.  But fortunately for brevity, a lot of the places where
-C<auto_add_attrs> would help you the most is when the bootloader is
-invoking system-defined data-defining procedures, and their parameters are
-all of attribute-specifying types, and it is in such data definition that
-you may be most likely to face a large number of default-valued attributes,
-such as C<comment>.
-
-Note that the reason the C<auto_add_attrs> behaviour is turned off by
-default is twofold.  First, the parser can be a lot simpler / more tiny
-with it off.  Second, requiring users to explicitly define even
-default-valued attributes can make the code more self-documenting and can
-help users avoid some kinds of bugs due to action from unseen values, or
-due to some default values "silently" changing between language versions.
-So then essentially, turning on C<auto_add_attrs> means the programmer is
-telling the parser "I know what I'm doing" by I<explicitly> asking for
-potentially less-safe behaviour.  Of course, even with C<auto_add_attrs>
-turned on, you can still explicitly define attribute values that are their
-type's default values, so it is possible to compromise such as you like.
-
-Also note that it should be trivial for a Muldis D implementation to let
-users input code written with C<auto_add_attrs> turned on, and then output
-the version of that code for their perusal with it turned off, so they can
-see what extra values were filled in without having to manually write said.
 
 =head1 SEE ALSO
 
