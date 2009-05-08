@@ -222,7 +222,6 @@ Examples:
 
     Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
         auto_add_attrs          => true,
-        auto_unabbrev_std_names => true,
         auto_chains_from_names  => true
     }
 
@@ -908,7 +907,7 @@ Grammar:
     }
 
     token NameChain_payload {
-        (<Name_payload> [<name_chain_elem_sep> <Name_payload>]+)
+        (<Name_payload> ** <name_chain_elem_sep>)
     }
 
     token name_chain_elem_sep { \s* '.' \s* }
@@ -922,10 +921,7 @@ Grammar:
     }
 
     token DeclNameChain_payload {
-        (
-              <Name_payload> ** <name_chain_elem_sep>
-            | <ord_list_open> <ord_list_close>
-        )
+        <NameChain_payload> | (<ord_list_open> <ord_list_close>)
     }
 
 A C<Name> node represents a canonical short name for any kind of DBMS
@@ -953,16 +949,66 @@ A C<NameChain> node represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short
 names.  This node is interpreted as a Muldis D
 C<sys.std.Core.Type.Cat.NameChain> value as follows:  A
-C<NameChain_payload> consists of a sequence of 2 or more C<Name_payload>
+C<NameChain_payload> consists of a sequence of 1 or more C<Name_payload>
 where the elements of the sequence are separated by C<name_chain_elem_sep>
 tokens (C<.>); each element of the sequence, in order, defines an element
 of the C<array> possrep's attribute of the result C<NameChain> value.
+
+Now, strictly speaking, a Muldis D C<NameChain> value is supposed to have
+at least 2 elements in its sequence, and the first element of any sequence
+must be one of these 9 C<Name> values, which is a top-level namespace:
+C<sys>, C<mnt>, C<tpc>, C<fed>, C<dep>, C<sdp>, C<pkg>, C<inn>, C<lex>.
+(Actually, C<type> is a 10th option, but that will be largely ignored in
+this discussion.)  In the general case, a C<NameChain_payload> must be
+written out in full, so it is completely unambiguous (and is clearly
+self-documenting), and it is always the case that a C<NameChain> value in
+the system catalog is written out in full.  But the PTMD_STD grammar also
+has a few commonly used special cases where a C<NameChain_payload> may be a
+much shorter substring of its complete version, such that a simple parser,
+with no knowledge of any user-defined entities besides said shorter
+C<NameChain_payload> in isolation, can still unambiguously resolve it to
+its complete version; exploiting these typically makes for code that is a
+lot less verbose, and much easier to write or read.
+
+The first special case involves any context where a type or routine is
+being referenced by name.  In such a context, when the referenced entity is
+a standard system-defined type or routine, programmers may omit any number
+of consecutive leading chain elements from such a C<NameChain_payload>, so
+long as the remaining unqualified chain is distinct among all standard
+system-defined (C<sys.std>-prefix) DBMS entities (but that as an exception,
+a non-distinct abbreviation is allowed iff exactly 1 of the candidate
+entities is in the language core, C<sys.std.Core>-prefix, in which case
+that 1 is unambiguously the entity that is resolved to).  This feature has
+no effect on the namespace prefixes like C<type> or C<tuple_from> or
+C<array_of>; one still writes those as normal prepended to the otherwise
+shortened chains.  When a C<NameChain_payload>, whose context indicates it
+is a type or routine invocation, is encountered by the parser, and its
+existing first chain element isn't one of the other 8 top-level namespaces,
+then the parser will assume it is an unqualified chain in the C<sys>
+namespace and lookup the best / only match from the known C<sys.std> DBMS
+entities, to resolve to.  So for example, one can just write C<Int> rather
+than C<sys.std.Core.Type.Int>, C<is_identical> rather than
+C<sys.std.Core.Universal.is_identical>, C<QTuple.attr> rather than
+C<sys.std.Core.QTuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
+C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so on.
+In fact, the Muldis D spec itself uses such abbreviations frequently.
+
+The second special case involves any context where a value expression
+(including a parameter) or a variable is being referenced by name, such as
+with an C<expr_name> node.  In such a context, any leading C<lex> element
+may be omitted; when a C<NameChain_payload>, whose context indicates it is
+a type or routine invocation, is encountered by the parser, and its
+existing first chain element isn't one of the other 8 top-level namespaces,
+then the parser will assume it is an unqualified chain in the C<lex>
+namespace and will prepend a C<lex> element to it.  So for example a
+C<$foo> is treated as being C<$lex.foo> while a C<$dep.data.foo> is treated
+as itself.
 
 A C<DeclNameChain> node represents a canonical long name for declaring a
 DBMS entity in N-depth contexts; the format and interpretation of a
 C<DeclNameChain_payload> (but as a C<sys.std.Core.Type.Cat.DeclNameChain>
 value) is the same as a C<NameChain_payload> but that the chain may have as
-few as zero parts rather than as few as 2, and a zero-element chain is
+few as zero parts rather than as few as 1 or 2, and a zero-element chain is
 represented by the special C<DeclNameChain_payload> syntax of C<[]>.
 
 Examples:
@@ -1889,55 +1935,9 @@ users input code written with C<auto_add_attrs> turned on, and then output
 the version of that code for their perusal with it turned off, so they can
 see what extra values were filled in without having to manually write said.
 
-=head2 auto_unabbrev_std_names
-
-Normally when one is specifying a C<NameChain> literal that is a
-reference to a standard system-defined type or routine, they must write out
-the name in full, starting with C<sys.std> and so on through the unique
-part of the entity name.  While this allows for clearly self-documenting
-code, as well as for relatively simple parsers, it can also be added tedium
-to programmers that would prefer to write out the names in a less verbose
-manner, especially since to a point, a slightly more complicated parser
-could still unambiguously resolve a much shorter substring of the name.
-
-If the 5th I<Extensions> portion of the fully-qualified Muldis D language
-name contains a name+value pair of C<auto_unabbrev_std_names> +
-C<Bool:true>, then this activates the optional C<auto_unabbrev_std_names>
-pragma, which provides one kind of automatic code completion.  When
-C<auto_unabbrev_std_names> is active, programmers may omit any number of
-consecutive leading chain elements from such a C<NameChain> literal, so
-long as the remaining unqualified chain is distinct among all standard
-system-defined (C<sys.std>-prefix) DBMS entities (but that as an exception,
-a non-distinct abbreviation is allowed iff exactly 1 of the candidate
-entities is in the language core, C<sys.std.Core>-prefix, in which case
-that 1 is unambiguously the entity that is resolved to).  This feature has
-no effect on the namespace prefixes like C<tuple_from> or C<array_of>; one
-still writes those as normal prepended to the otherwise shortened chains.
-
-So for example, one can just write C<Int> rather than
-C<sys.std.Core.Type.Int>, C<is_identical> rather than
-C<sys.std.Core.Universal.is_identical>, C<QTuple.attr> rather than
-C<sys.std.Core.QTuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
-C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so
-on.
-
-The C<auto_unabbrev_std_names> pragma intentionally does not empower auto
-un-abbreviations of any namespaces other than C<sys.std>, to keep things
-simple for users to predict and for systems to implement; it does not
-affect C<sys.[imp|cat]>, nor any other top-level namespace.  When one is
-referencing either any system-defined implementation-specific
-(non-standard) types or routines, or any user-defined types or routines, or
-any dbvars or constraints or whatever, their names can not be written
-abbreviated due to the C<auto_unabbrev_std_names> pragma.
-
-Note that the lexer is exactly the same regardless of whether the
-C<auto_unabbrev_std_names> pragma is turned on or off, as per the
-C<auto_add_attrs> pragma.  Many other comments about the other pragma also
-apply to this one.
-
 =head2 auto_chains_from_names
 
-Iff both the C<auto_add_attrs> and C<auto_unabbrev_std_names> pragmas are
+Iff the C<auto_add_attrs> pragma is
 active, then the optional C<auto_chains_from_names> dependent pragma may be
 activated in the same manner (as an I<Extensions> name+value pair with
 C<Bool:true>.  When C<auto_chains_from_names> is active, programmers may

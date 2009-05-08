@@ -147,7 +147,6 @@ Examples:
 
     [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_STD', {
         auto_add_attrs          => [ 'Bool', 'true' ],
-        auto_unabbrev_std_names => [ 'Bool', 'true' ],
         auto_chains_from_names  => [ 'Bool', 'true' ],
     } ]
 
@@ -521,7 +520,7 @@ follows:
 
 =item *
 
-If the payload is an array ref, then it must have at least 2 elements,
+If the payload is an array ref, then it must have at least 1 element,
 and every element must be a valid payload for a C<Name>  node (that
 is, any Perl character string).  Each element of the payload, in order,
 defines an element of the C<array> possrep's attribute of a C<NameChain>.
@@ -529,7 +528,7 @@ defines an element of the C<array> possrep's attribute of a C<NameChain>.
 =item *
 
 If the payload is a char str, then it must be formatted as a catenation
-(using period (C<.>) separators) of at least 2 parts, where each part can
+(using period (C<.>) separators) of at least 1 part, where each part can
 not have any literal period (C<.>) characters (if you want literal periods
 then you can only use the array ref payload format to express it).  The
 char str format of payload is interpreted by splitting it on the separators
@@ -541,8 +540,8 @@ A C<DeclNameChain> node represents a canonical long name for declaring a
 DBMS entity in N-depth contexts; the format and interpretation of a
 C<DeclNameChain_payload> (but as a C<sys.std.Core.Type.Cat.DeclNameChain>
 value) is the same as a C<NameChain_payload> but that the chain may have as
-few as zero parts rather than as few as 2; however, a zero part chain can
-only be expressed with the array ref payload format; an empty string
+few as zero parts rather than as few as 1 or 2; however, a zero part chain
+can only be expressed with the array ref payload format; an empty string
 char str format will be interpreted as having a single element that is the
 empty string.
 
@@ -1147,55 +1146,9 @@ users input code written with C<auto_add_attrs> turned on, and then output
 the version of that code for their perusal with it turned off, so they can
 see what extra values were filled in without having to manually write said.
 
-=head2 auto_unabbrev_std_names
-
-Normally when one is specifying a C<NameChain> literal that is a
-reference to a standard system-defined type or routine, they must write out
-the name in full, starting with C<sys.std> and so on through the unique
-part of the entity name.  While this allows for clearly self-documenting
-code, as well as for relatively simple parsers, it can also be added tedium
-to programmers that would prefer to write out the names in a less verbose
-manner, especially since to a point, a slightly more complicated parser
-could still unambiguously resolve a much shorter substring of the name.
-
-If the 5th I<Extensions> portion of the fully-qualified Muldis D language
-name contains a name+value pair of C<auto_unabbrev_std_names> +
-C<Bool:true>, then this activates the optional C<auto_unabbrev_std_names>
-pragma, which provides one kind of automatic code completion.  When
-C<auto_unabbrev_std_names> is active, programmers may omit any number of
-consecutive leading chain elements from such a C<NameChain> literal, so
-long as the remaining unqualified chain is distinct among all standard
-system-defined (C<sys.std>-prefix) DBMS entities (but that as an exception,
-a non-distinct abbreviation is allowed iff exactly 1 of the candidate
-entities is in the language core, C<sys.std.Core>-prefix, in which case
-that 1 is unambiguously the entity that is resolved to).  This feature has
-no effect on the namespace prefixes like C<tuple_from> or C<array_of>; one
-still writes those as normal prepended to the otherwise shortened chains.
-
-So for example, one can just write C<Int> rather than
-C<sys.std.Core.Type.Int>, C<is_identical> rather than
-C<sys.std.Core.Universal.is_identical>, C<QTuple.attr> rather than
-C<sys.std.Core.QTuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
-C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so
-on.
-
-The C<auto_unabbrev_std_names> pragma intentionally does not empower auto
-un-abbreviations of any namespaces other than C<sys.std>, to keep things
-simple for users to predict and for systems to implement; it does not
-affect C<sys.[imp|cat]>, nor any other top-level namespace.  When one is
-referencing either any system-defined implementation-specific
-(non-standard) types or routines, or any user-defined types or routines, or
-any dbvars or constraints or whatever, their names can not be written
-abbreviated due to the C<auto_unabbrev_std_names> pragma.
-
-Note that the lexer is exactly the same regardless of whether the
-C<auto_unabbrev_std_names> pragma is turned on or off, as per the
-C<auto_add_attrs> pragma.  Many other comments about the other pragma also
-apply to this one.
-
 =head2 auto_chains_from_names
 
-Iff both the C<auto_add_attrs> and C<auto_unabbrev_std_names> pragmas are
+Iff the C<auto_add_attrs> pragma is
 active, then the optional C<auto_chains_from_names> dependent pragma may be
 activated in the same manner (as an I<Extensions> name+value pair with
 C<Bool:true>.  When C<auto_chains_from_names> is active, programmers may
