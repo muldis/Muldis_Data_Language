@@ -431,6 +431,19 @@ C<value>, except that C<type_name> must be omitted when C<value_kind> is
 one of the 2 [C<Bool>, C<Order>]; this isn't because those 2 types can't be
 subtyped, but because in practice doing so isn't useful.
 
+How a Muldis D parser treats a C<value> node with a C<type_name> element
+depends on the wider context.  In the general case where the C<value> is an
+C<expr> beneath the context of a C<depot> or C<boot_stmt> node, the
+C<value> is treated as if it had an extra parent C<func_invo_expr> node
+that invokes the C<treated> function and whose 2 argument nodes are as
+follows: C<topic> gets the C<value> without the C<type_name> element, and
+C<as> gets the C<type_name> element.  This means that in general the
+C<type_name> assertion is done at runtime.  In the common special case
+where both C<value> is an C<opaque_value_literal> and C<type_name> refers
+to a system-defined type, then the C<type_name> assertion is done at
+compile time, and then the C<type_name> element is simply eliminated, so
+the C<value> ends up simply as itself with no new C<func_invo_expr> parent.
+
 =item C<payload>
 
 This is mandatory for all C<value>.
