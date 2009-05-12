@@ -1833,6 +1833,311 @@ Examples:
         'Baz'
     }
 
+=head1 GENERIC VALUE EXPRESSIONS
+
+Grammar:
+
+    token expr {
+          <expr_name>
+        | <opaque_value_literal>
+        | <coll_value_selector>
+        | <func_invo_expr>
+        | <if_else_expr>
+        | <given_when_def_expr>
+        | <lib_entity_ref_selector>
+        | <func_invo_alt_syntax_expr>
+    }
+
+    token expr_name {
+        <data_sigil> <NameChain_payload>
+    }
+
+    token data_sigil { '$' }
+
+An C<expr> node is the general case of a Muldis D value expression tree
+(which normally denotes a Muldis D value selector), which must be composed
+beneath a C<depot> or C<boot_stmt>, or specifically into a function or
+updater or type or constraint (etc) definition, because in the general case
+an C<expr> can I<not> be completely evaluated at compile time.
+
+An C<expr> node is a proper superset of a C<value> node, and any
+occurrences of C<expr> nodes in this document may optionally be substituted
+with C<value> nodes on a per-instance basis.
+
+An C<expr> node in the PTMD_STD grammar corresponds directly to a tuple of
+an attribute of a value of the catalog data type
+C<sys.std.Core.Type.Cat.ExprNodeSet>, which is how a value expression node
+is actually represented in Muldis D's nonsugared form, which is as a
+component of the system catalog.  Or more specifically, an entire tree of
+PTMD_STD C<expr> nodes corresponds to a set of said attribute values, one
+attribute value per C<expr> node.  In the nonsugared form, every C<expr>
+node has an explicitly designated name, as per a PTMD_STD C<named_expr>
+node, and all child nodes are not declared inline with their parent nodes
+but rather are declared in parallel with them, and the parents refer to
+their children by their names.  A feature of the PTMD_STD grammar is that
+expression nodes may be declared without explicit names, such that the
+parser would generate names for them when deriving system catalog entries,
+and that is why PTMD_STD supports, and encourages the use of for code
+brevity/readability, the use of inline-declared expression nodes,
+especially so when the C<expr> in question is an C<opaque_value_literal>.
+
+Iff an C<expr> is an C<expr_name>, then this typically means that the
+parent C<expr> is having at least one of its children declared with an
+explicit name rather than inline, same as the corresponding system catalog
+entry would do, and then the C<expr_name> is the invocation name of that
+child.  Alternately, the C<expr_name> may be the invocation name of one of
+the expression-containing routine's parameters, in which case the C<expr>
+in question represents the current argument to that parameter; this also is
+exactly the same as a corresponding catalog entry for using an argument.
+
+Examples (of C<expr_name>):
+
+    $my_param
+
+=head2 Generic Function Invocation Expressions
+
+Grammar:
+
+    token func_invo_expr {
+        (<routine_name> <func_arg_list>)
+    }
+
+    token routine_name { <NameChain_payload> }
+
+    token func_arg_list {
+        <param_list_open>
+            ([[<named_ro_arg> | <anon_ro_arg>] ** <list_elem_sep>]?)
+        <param_list_close>
+    }
+
+    token param_list_open { \s* '(' \s* }
+
+    token param_list_close { \s* ')' \s* }
+
+    token named_ro_arg {
+        (<param_name> <pair_elem_sep> <expr>)
+    }
+
+    token param_name { C<Name_payload> }
+
+    token anon_ro_arg { <expr> }
+
+A C<func_invo_expr> node represents the result of invoking a named
+inner/function with specific arguments.  It is interpreted as a tuple of a
+Muldis D C<sys.std.Core.Type.Cat.FuncInvoExprNodeSet> value.  The
+C<routine_name> element specifies the C<function> attribute of the new
+C<FuncInvoExprNodeSet>, which is the name of the function being invoked,
+and the C<func_arg_list> element specifies the C<args> attribute.
+
+In the general case of a function invocation, all of the arguments are
+named, as per C<named_ro_arg>, and formatting a C<func_invo_expr> node that
+way is always allowed.  In some (common) special cases, some (which might
+be all) arguments may be anonymous, as per C<anon_ro_arg>.
+
+With just functions in the top-level namespaces C<sys.std> and C<inn>,
+these 4 special cases apply:  If a function has exactly one parameter, then
+it may be invoked with a single anonymous argument and the latter will bind
+to that parameter.  Or, if a function has multiple parameters but exactly
+one of those is mandatory, then it may be invoked with just one anonymous
+argument, which is assumed to bind to the single mandatory parameter, and
+all optional arguments must be named.  Or, if a function has multiple
+mandatory parameters and one of them is named C<topic>, then it may be
+invoked with a single anonymous argument and the latter will bind to that
+parameter.  Or, if a function has multiple mandatory parameters and two of
+them are named C<topic> and C<other>, then it may be invoked with two
+anonymous arguments and the latter will bind to those parameters in
+sequential order, the first one to C<topic> and the second one to C<other>.
+
+With just functions in all top-level namespaces except C<sys.std> and
+C<inn>, these 2 special cases apply (similar to the prior-mentioned second
+2):  If a function invocation has either 1 or 2 anonymous arguments, then
+they will be treated as if they were named arguments for the C<topic> and
+C<other> parameters; the only or sequentially first argument will bind to
+C<topic>, and any sequentially second argument will bind to C<other>.
+
+One reason for this difference between treatment of top-level namespaces is
+it allows the Muldis D parser to convert all the anonymous arguments to
+named ones (all arguments in the system catalog are named) when parsing the
+expression-containing outer routine/etc in isolation from any other
+user-defined entities.  The other reason for this limitation is that it
+helps with self-documentation; programmers wanting to know an anonymous
+argument's parameter name won't have to look outside the current outer
+routine/etc or the language spec to find the answer.
+
+I<Maybe TODO:  Consider adding a language pragma to enable use of the first
+4 special cases with functions in all top-level namespaces, where the cost
+of enabling is added implementation complexity and a reduction of the
+ability to parse exploiting Muldis D code piecemeal.>
+
+Examples:
+
+    # zero params #
+    nothing()
+
+    # single mandatory param #
+    Integer.median( Bag:{ 22, 20, 21, 20, 21, 21, 23 } )
+
+    # single mandatory param #
+    factorial( topic => 5 )
+
+    # two mandatory params #
+    Rational.quotient( dividend => 43.7, divisor => 16.9 )
+
+    # same as previous #
+    Rational.quotient( divisor => 16.9, dividend => 43.7 )
+
+    # one mandatory param, two optional #
+    inn.barfunc( $mand_arg, oa1 => $opt_arg1, oa2 => $opt_arg2 )
+
+    # same as previous #
+    inn.barfunc( oa2 => $opt_arg2, $mand_arg, oa1 => $opt_arg1 )
+
+    # a user-defined non-inner function #
+    dep.lib.foodb.bazfunc( a1 => 52, a2 => 'hello world' )
+
+    # two params named 'topic' and 'other'
+    is_identical( $foo, $bar )
+
+=head2 Generic If-Else Expressions
+
+Grammar:
+
+    token if_else_expr {
+        <param_list_open>
+        (
+            ([if <term_sep> <if_expr> <term_sep>
+                then <term_sep> <then_expr> <term_sep>
+                else <term_sep>]*)
+            <else_expr>
+        )
+        <param_list_close>
+    }
+
+    token if_expr { <expr> }
+
+    token then_expr { <expr> }
+
+    token else_expr { <expr> }
+
+An C<if_else_expr> node represents an N-way if-else control flow
+expression.  It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.IfElseExprNodeSet> value.  The whole collection of
+sequential 0..N C<if_expr> + C<then_expr> elements specifies the C<if_then>
+attribute of the new C<IfElseExprNodeSet>, which is a sequence of arbitrary
+but C<Bool>-resulting I<if> expressions, and for just the first one of
+those in the sequence that at runtime evaluates to C<Bool:true>, its
+associated I<then> result value is the result of the C<if_else_expr>.  The
+C<else_expr> element specifies the C<else> attribute, which determines the
+result value of the C<if_else_expr> at runtime if either <if_then> is an
+empty sequence or all of its conditionals evaluate to C<Bool:false>.
+
+Examples:
+
+    (if ($foo > 5) then $bar else $baz)
+
+    (if ($ary is empty) then $empty_result else ($ary[0]))
+
+    (if (($x === nothing) or ($y === nothing)) then nothing
+        else single( ($x{M:}) I+ (($y{M:}) I** 3) )
+
+    (if ($val isa T->Int) then ($val I** 3)
+        else if ($val isa T->Text) then ($val Tx 5)
+        else true)
+
+=head2 Generic Given-When-Default Expressions
+
+Grammar:
+
+    token given_when_def_expr {
+        <param_list_open>
+        (
+            given <term_sep> <given_expr> <term_sep>
+            ([when <term_sep> <when_expr> <term_sep>
+                then <term_sep> <then_expr> <term_sep>]*)
+            default <term_sep> <default_expr>
+        )
+        <param_list_close>
+    }
+
+    token given_expr { <expr> }
+
+    token when_expr { <expr> }
+
+    token then_expr { <expr> }
+
+    token default_expr { <expr> }
+
+An C<given_when_def_expr> node represents an N-way given-when-default
+switch control flow expression that dispatches based on matching a single
+value with several options.  It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet> value.  The C<given_expr>
+element specifies the C<given> attribute of the new
+C<GivenWhenDefExprNodeSet>, which is the control value for the expression.
+The whole collection of nonordered 0..N C<when_expr> + C<then_expr>
+elements specifies the C<when_then> attribute, which is a set of I<when>
+comparands; if any of these I<when> values matches the value of C<given>,
+its associated I<then> result value is the result of the
+C<given_when_def_expr>.  The C<default_expr> element specifies the
+C<default> attribute, which determines the result value of the
+C<given_when_def_expr> at runtime if either <when_then> is an empty set or
+none of its comparands match C<given>.
+
+Examples:
+
+    (given $digit
+        when 'T' then 10
+        when 'E' then 11
+        default $digit
+    )
+
+=head2 Library Entity Reference Selector
+
+Grammar:
+
+    token lib_entity_ref_selector {
+          <func_ref_selector>
+        | <proc_ref_selector>
+        | <type_ref_selector>
+        | <ord_det_func_ref_selector>
+    }
+
+    token func_ref_selector {
+        (('F->') <routine_name>)
+    }
+
+    token proc_ref_selector {
+        (('P->') <routine_name>)
+    }
+
+    token type_ref_selector {
+        (('T->') <type_name>)
+    }
+
+    token ord_det_func_ref_selector {
+        (('ODF->') <routine_name>)
+    }
+
+A C<lib_entity_ref_selector> node represents a value of one of the 4
+special C<sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]Ref> types, each
+corresponding to a C<[func|proc|type|ord_det_func]_ref_selector> node,
+respectively.  It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet>
+value.  The C<[routine|type]_name> element specifies the C<referencing>
+attribute of the new
+C<sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet>,
+which is the name of the routine or type being invoked by way of the new
+reference value.
+
+Examples:
+
+    F->inn.filter
+
+    P->inn.try_block
+
+    T->inn.foo_type
+
+    ODF->inn.order_bars
+
 =head1 DEPOT DECLARATION
 
 B<TODO: ALL OF THIS HERE MAIN POD SECTION!>
