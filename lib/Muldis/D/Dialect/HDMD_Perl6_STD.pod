@@ -290,23 +290,23 @@ Perl C<Int>, which is mapped directly.
 
 Examples:
 
-    :Int(:2<11001001>) # binary
+    :Int(:2<11001001>) # binary #
 
-    :8<0> # octal
+    :8<0> # octal #
 
-    :8<644> # octal
+    :8<644> # octal #
 
-    -34 # decimal
+    -34 # decimal #
 
-    42 # decimal
+    42 # decimal #
 
-    :16<DEADBEEF> # hexadecimal
+    :16<DEADBEEF> # hexadecimal #
 
-    :36<-HELLOWORLD> # base-36
+    :36<-HELLOWORLD> # base-36 #
 
-    :4<301> # base-4
+    :4<301> # base-4 #
 
-    :12<A09B> # base-12
+    :12<A09B> # base-12 #
 
 =head2 General Purpose Rational Numeric Literals
 
@@ -318,7 +318,7 @@ Examples:
 
     :Rat(:2<-1.1>)
 
-    -1.5 # same val as prev
+    -1.5 # same val as prev #
 
     3.14159
 
@@ -348,11 +348,11 @@ be a Perl C<Blob>, which is mapped directly.
 
 Examples I<TODO: What is the actual syntax for the P6 Blob type?>:
 
-    :Blob( Blob.new(  2 => '00101110100010' ) ) # binary
+    :Blob( Blob.new(  2 => '00101110100010' ) ) # binary #
 
      Blob.new(  4 => '' )
 
-     Blob.new( 16 => 'A705E' ) # hexadecimal
+     Blob.new( 16 => 'A705E' ) # hexadecimal #
 
      Blob.new(  8 => '523504376' )
 
@@ -532,15 +532,15 @@ C<UTCDuration> has no system-defined subtypes, but that may change later.>
 
 Examples:
 
-    :UTCInstant[1964,10,16,16,12,47.5] # a UTCDateTime
+    :UTCInstant[1964,10,16,16,12,47.5] # a UTCDateTime #
 
-    :UTCInstant[2002,12,6] # a UTCDate
+    :UTCInstant[2002,12,6] # a UTCDate #
 
-    :UTCInstant[undef,undef,undef,14,2,29.0] # a UTCTime
+    :UTCInstant[undef,undef,undef,14,2,29.0] # a UTCTime #
 
-    :FloatInstant[2003,4,5,2] # min,sec unknown or N/A
+    :FloatInstant[2003,4,5,2] # min,sec unknown or N/A #
 
-    :FloatInstant[1407] # just know its sometime in 1407
+    :FloatInstant[1407] # just know its sometime in 1407 #
 
     :UTCDuration[3,5,1,6,15,45.000012]
 
@@ -554,9 +554,9 @@ of an C<Int> node.
 
 Examples:
 
-    :String[0x50,0x65,0x72,0x6C] # Unicode codepoints = 'Perl'
+    :String[0x50,0x65,0x72,0x6C] # Unicode codepoints = 'Perl' #
 
-    :String[80,101,114,109] # same thing
+    :String[80,101,114,109] # same thing #
 
 =head1 COLLECTION VALUE SELECTORS
 
@@ -694,11 +694,11 @@ matched up by ordinal position here.
 
 Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
-    :Relation( Set.new() )  # zero attrs + zero tuples
+    :Relation( Set.new() )  # zero attrs + zero tuples #
 
-    :Relation( Set.new(<x y z>) )  # 3 attrs + zero tuples
+    :Relation( Set.new(<x y z>) )  # 3 attrs + zero tuples #
 
-    :Relation( Set.new( {} ) )  # zero attrs + 1 tuple
+    :Relation( Set.new( {} ) )  # zero attrs + 1 tuple #
 
     :Relation( Set.new(
         {
@@ -706,11 +706,11 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
             login_pass => 'letmein',
             is_special => Bool::True,
         },
-    ) )  # 3 attrs + 1 tuple
+    ) )  # 3 attrs + 1 tuple #
 
     [ 'Relation', 'fed.lib.the_db.gene.Person', <name age> => Set.new(
         [ 'Michelle', 17 ],
-    ) ]  # 2 attrs + 1 tuple
+    ) ]  # 2 attrs + 1 tuple #
 
 =head2 Set Selectors
 
@@ -752,7 +752,7 @@ Examples:
 
     :Maybe( 'I know this one!' )
 
-    :Maybe()  # or how does Perl 6 make a Pair with undef/default value?
+    :Maybe()  # or how does Perl 6 make a Pair with undef/default value? #
 
 =head2 Array Selectors
 
@@ -806,6 +806,133 @@ Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
         'Baz',
         'Baz',
     ] ) )
+
+=head1 GENERIC VALUE EXPRESSIONS
+
+An C<expr_name> node has 2 ordered elements:  The first element is the Perl
+C<Str> value C<expr_name>.  The second element is a C<NameChain_payload>.
+
+An C<expr_name> node may alternately be formatted as a Perl Pair whose key
+and value are what would otherwise be the first and second node elements,
+respectively.
+
+Examples:
+
+    :expr_name<my_param>
+
+=head2 Generic Function Invocation Expressions
+
+An C<func_invo> node has 2-4 ordered elements:  The first element is the
+Perl C<Str> value C<func_invo>.  The second element is a
+C<NameChain_payload>, which names the function to invoke.  The last 1-2
+elements provide arguments to the function invocation; either or both or
+none of a C<QArray_payload> element and a C<QTuple_payload> element may be
+given.  The C<QArray_payload> 3rd/4th element is for any anonymous (and
+ordered if multiple exist) arguments, and the C<QTuple_payload> 3rd/4th
+element is for any named arguments; each C<QArray_payload> element or
+C<QTuple_payload> element value is an C<expr> node which is the argument
+value.
+
+Examples:
+
+    # zero params #
+    [ 'func_invo', 'nothing' ]
+
+    # single mandatory param #
+    [ 'func_invo', 'Integer.median',
+        [ :Bag( Bag.new( [ 22, 20, 21, 20, 21, 21, 23 ] ) ) ] ]
+
+    # single mandatory param #
+    [ 'func_invo', 'factorial', { topic => 5 } ]
+
+    # two mandatory params #
+    [ 'func_invo', 'Rational.quotient',
+        { dividend => 43.7, divisor => 16.9 } ]
+
+    # one mandatory param, two optional #
+    [ 'func_invo', 'inn.barfunc', [ :expr_name<mand_arg> ],
+        { oa1 => :expr_name<opt_arg1>, oa2 => :expr_name<opt_arg2> } ]
+
+    # a user-defined non-inner function #
+    [ 'func_invo', 'dep.lib.foodb.bazfunc',
+        { a1 => 52, a2 => 'hello world' } ]
+
+    # two params named 'topic' and 'other' #
+    [ 'func_invo', 'is_identical',
+        [ :expr_name<foo>, :expr_name<bar> ] ]
+
+=head2 Generic If-Else Expressions
+
+An C<if_else_expr> node has 2-3 ordered elements:  The first element is the
+Perl C<Str> value C<if_else_expr>.  The optional second element is
+I<if_then>, a Perl C<Seq|Array> with 0..N elements, each of those being a
+2-element Perl C<Seq|Array> or a Perl Pair, where each element is an
+C<expr> node; the first element / key is an I<if> condition expression, and
+the second element / value is the associated <then> result expression.  The
+3rd/last element of an C<if_else_expr> node is I<else> result expression,
+which is an C<expr> node.
+
+Examples:
+
+    [ 'if_else_expr',
+        [
+            [ 'func_invo_alt_syntax', '>', :expr_name<foo>, 5 ]
+                => :expr_name<bar>,
+        ],
+        :expr_name<baz>
+    ]
+
+    [ 'if_else_expr',
+        [
+            [ 'func_invo_alt_syntax', 'is_empty', :expr_name<ary> ]
+                => :expr_name<empty_result>,
+        ],
+        [ 'func_invo_alt_syntax', 'QArray.value', :expr_name<ary>, 0 ]
+    ]
+
+=head2 Generic Given-When-Default Expressions
+
+A C<given_when_def_expr> node has 3-4 ordered elements:  The first element
+is the Perl C<Str> value C<given_when_def_expr>.  The second element is an
+C<expr> node which is the I<given> common comparand.  The optional third
+element is I<when_then>, a Perl C<Seq|Array> with 0..N elements, each of
+those being a 2-element Perl C<Seq|Array> or a Perl Pair, where each
+element is an C<expr> node; the first element / key is a I<when> comparand,
+and the second element / value is the associated <then> result expression.
+The 4th/last element of an C<given_when_def_expr> node is I<default> result
+expression, which is an C<expr> node.
+
+Examples:
+
+    [ 'given_when_def_expr',
+        :expr_name<digit>,
+        [
+            'T' => 10,
+            'E' => 11,
+        ],
+        :expr_name<digit>,
+    ]
+
+=head2 Library Entity Reference Selector
+
+A C<[func|proc|type|ord_det_func]_ref> node has 2 ordered elements:  The
+first element is the Perl C<Str> value
+C<[func|proc|type|ord_det_func]_ref>.  The second element is a
+C<NameChain_payload>, which names the routine|type to invoke.
+
+A C<[func|proc|type|ord_det_func]_ref> node may alternately be formatted as
+a Perl Pair whose key and value are what would otherwise be the first and
+second node elements, respectively.
+
+Examples:
+
+    :func_ref<inn.filter>
+
+    :proc_ref<inn.try_block>
+
+    :type_ref<inn.foo_type>
+
+    :ord_det_func_ref<inn.order_bars>
 
 =head1 DEPOT DECLARATION
 

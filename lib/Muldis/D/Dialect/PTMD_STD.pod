@@ -434,7 +434,7 @@ subtyped, but because in practice doing so isn't useful.
 How a Muldis D parser treats a C<value> node with a C<type_name> element
 depends on the wider context.  In the general case where the C<value> is an
 C<expr> beneath the context of a C<depot> or C<boot_stmt> node, the
-C<value> is treated as if it had an extra parent C<func_invo_expr> node
+C<value> is treated as if it had an extra parent C<func_invo> node
 that invokes the C<treated> function and whose 2 argument nodes are as
 follows: C<topic> gets the C<value> without the C<type_name> element, and
 C<as> gets the C<type_name> element.  This means that in general the
@@ -442,7 +442,7 @@ C<type_name> assertion is done at runtime.  In the common special case
 where both C<value> is an C<opaque_value_literal> and C<type_name> refers
 to a system-defined type, then the C<type_name> assertion is done at
 compile time, and then the C<type_name> element is simply eliminated, so
-the C<value> ends up simply as itself with no new C<func_invo_expr> parent.
+the C<value> ends up simply as itself with no new C<func_invo> parent.
 
 =item C<payload>
 
@@ -1841,11 +1841,11 @@ Grammar:
           <expr_name>
         | <opaque_value_literal>
         | <coll_value_selector>
-        | <func_invo_expr>
+        | <func_invo>
         | <if_else_expr>
         | <given_when_def_expr>
         | <lib_entity_ref_selector>
-        | <func_invo_alt_syntax_expr>
+        | <func_invo_alt_syntax>
     }
 
     token expr_name {
@@ -1898,7 +1898,7 @@ Examples (of C<expr_name>):
 
 Grammar:
 
-    token func_invo_expr {
+    token func_invo {
         (<routine_name> <func_arg_list>)
     }
 
@@ -1922,7 +1922,7 @@ Grammar:
 
     token anon_ro_arg { <expr> }
 
-A C<func_invo_expr> node represents the result of invoking a named
+A C<func_invo> node represents the result of invoking a named
 inner/function with specific arguments.  It is interpreted as a tuple of a
 Muldis D C<sys.std.Core.Type.Cat.FuncInvoExprNodeSet> value.  The
 C<routine_name> element specifies the C<function> attribute of the new
@@ -1930,7 +1930,7 @@ C<FuncInvoExprNodeSet>, which is the name of the function being invoked,
 and the C<func_arg_list> element specifies the C<args> attribute.
 
 In the general case of a function invocation, all of the arguments are
-named, as per C<named_ro_arg>, and formatting a C<func_invo_expr> node that
+named, as per C<named_ro_arg>, and formatting a C<func_invo> node that
 way is always allowed.  In some (common) special cases, some (which might
 be all) arguments may be anonymous, as per C<anon_ro_arg>.
 
@@ -1995,7 +1995,7 @@ Examples:
     # a user-defined non-inner function #
     dep.lib.foodb.bazfunc( a1 => 52, a2 => 'hello world' )
 
-    # two params named 'topic' and 'other'
+    # two params named 'topic' and 'other' #
     is_identical( $foo, $bar )
 
 =head2 Generic If-Else Expressions
@@ -2067,7 +2067,7 @@ Grammar:
 
     token default_expr { <expr> }
 
-An C<given_when_def_expr> node represents an N-way given-when-default
+A C<given_when_def_expr> node represents an N-way given-when-default
 switch control flow expression that dispatches based on matching a single
 value with several options.  It is interpreted as a tuple of a Muldis D
 C<sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet> value.  The C<given_expr>
@@ -2095,35 +2095,36 @@ Examples:
 Grammar:
 
     token lib_entity_ref_selector {
-          <func_ref_selector>
-        | <proc_ref_selector>
-        | <type_ref_selector>
-        | <ord_det_func_ref_selector>
+          <func_ref>
+        | <proc_ref>
+        | <type_ref>
+        | <ord_det_func_ref>
     }
 
-    token func_ref_selector {
+    token func_ref {
         (('F->') <routine_name>)
     }
 
-    token proc_ref_selector {
+    token proc_ref {
         (('P->') <routine_name>)
     }
 
-    token type_ref_selector {
+    token type_ref {
         (('T->') <type_name>)
     }
 
-    token ord_det_func_ref_selector {
+    token ord_det_func_ref {
         (('ODF->') <routine_name>)
     }
 
-A C<lib_entity_ref_selector> node represents a value of one of the 4
-special C<sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]Ref> types, each
-corresponding to a C<[func|proc|type|ord_det_func]_ref_selector> node,
-respectively.  It is interpreted as a tuple of a Muldis D
+A C<[func|proc|type|ord_det_func]_ref> node represents a literal or
+selector invocation for a DBMS routine or type reference value.  It is
+interpreted as a tuple of a Muldis D
 C<sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet>
-value.  The C<[routine|type]_name> element specifies the C<referencing>
-attribute of the new
+value, which when evaluated at runtime would result in a
+C<sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]Ref> value.  The
+C<[routine|type]_name> element specifies the C<referencing> attribute of
+the new
 C<sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet>,
 which is the name of the routine or type being invoked by way of the new
 reference value.
