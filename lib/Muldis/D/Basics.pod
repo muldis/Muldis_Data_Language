@@ -2663,7 +2663,7 @@ q/scalar variable or pseudo-variable, which takes the form C<<
 type.var[.<path-elem-to-var>]**1..*[.<path-elem-to-attr>]**0..* >>, for
 example C<type.var.lex.myvar>.  A similar scenario is taking the declared
 type of an attribute of a distinct type entity, which takes the form C<<
-type.type[.<path-elem-to-type>]**1..*[.<path-elem-to-attr>]**0..* >>, for
+type.type[.<path-elem-to-type>]**1..*[.<path-elem-to-attr>]**1..* >>, for
 example C<type.type.dep.lib.mytyp.myattr>.  A similar scenario is taking
 the declared result type of a function, which takes the form C<<
 type.func_result[.<path-elem-to-func>]**1..*[.<path-elem-to-attr>]**0..*
@@ -2683,8 +2683,11 @@ together, you use extra syntax to say whether it is a q/tuple type or
 q/relation type that you actually want.  So to deal with this, the
 aforementioned forms of taking types actually have
 C<[.[|quasi_][tuple|relation]_from]**0..1> in their syntax following the
-C<type> and before the aforementioned remainder; for example
-C<type.[tuple|relation]_from.var.dep.data.myrelvar>.
+C<type> (or you add the C<type> if you didn't otherwise have one because
+you were otherwise referring to a named type directly) and before the
+aforementioned remainder; for example
+C<type.[tuple|relation]_from.var.dep.data.myrelvar>
+or C<type.[tuple|relation]_from.dep.lib.mytype>.
 
 Muldis D also has an extension to the previously described "taking the
 type" feature such that declaring any type, embedded or otherwise, also has
@@ -2694,21 +2697,21 @@ attempt to use them, in the form of adding yet another syntax element to
 all of the aforementioned forms, which is
 C<[.[|quasi_][set|maybe|single|array|bag]_of]**0..*>; this C<of> element
 takes the same position as the C<from> element in the syntax, just after
-the C<type>; or they can both be used together in which case the C<of>
-typically appears first.
+the C<type> (which likewise you add if you didn't already have it); or they
+can both be used together in which case all the C<of> would appear first.
 
 This feature extension is intended mainly to save the language from a
 proliferation of explicitly defined but very similar q/nonscalar
 types; so rather than having to explicitly declare a type that is a
 sequential array of integers (that is, an C<Array> whose C<value> attribute
 has the type C<Int>), you can just use it implicitly by saying
-C<type.array_of.type.sys.std.Core.Type.Int>, the same as you would use the
+C<type.array_of.sys.std.Core.Type.Int>, the same as you would use the
 plain integer type by saying C<sys.std.Core.Type.Int>.  Or for the common
 scenario of an attribute being optional (like SQL's nullable), you can say
-for example C<type.maybe_of.type.sys.std.Core.Type.Text>.  This feature
+for example C<type.maybe_of.sys.std.Core.Type.Text>.  This feature
 extension lets you declare a simple collection of any type, including those
 declared by the same feature, for example:
-C<type.set_of.set_of.type.sys.std.Core.Type.Cat.Name>.
+C<type.set_of.set_of.sys.std.Core.Type.Cat.Name>.
 
 =head1 SEE ALSO
 

@@ -973,7 +973,7 @@ Now, strictly speaking, a Muldis D C<NameChain> value is supposed to have
 at least 2 elements in its sequence, and the first element of any sequence
 must be one of these 9 C<Name> values, which is a top-level namespace:
 C<sys>, C<mnt>, C<tpc>, C<fed>, C<dep>, C<sdp>, C<pkg>, C<inn>, C<lex>.
-(Actually, C<type> is a 10th option, but that will be largely ignored in
+(Actually, C<type> is a 10th option, but that will be treated separately in
 this discussion.)  In the general case, a C<NameChain_payload> must be
 written out in full, so it is completely unambiguous (and is clearly
 self-documenting), and it is always the case that a C<NameChain> value in
@@ -1019,6 +1019,20 @@ namespace and will prepend a C<lex> element to it.  So for example a
 C<$foo> is treated as being C<$lex.foo> while a C<$dep.data.foo> is treated
 as itself.
 
+The third special case involves any context where a type is being
+referenced using the C<type> namespace prefix feature described in
+L<Muldis::D::Basics/Referencing Data Types>.  In such a context, when the
+namespace prefix contains either of the optional chain elements
+C<[|quasi_][tuple|relation]_from> or
+C<[|quasi_][set|maybe|single|array|bag]_of>, programmers may omit the
+single prefix-leading C<type> chain element.  So for example, one can just
+write C<array_of.Rat> rather than C<type.array_of.Rat>, or
+C<tuple_from.var.lex.myrelvar> rather than
+C<type.tuple_from.var.lex.myrelvar>.  This third special case is completely
+orthogonal to which of the 9 normal top-level namespaces is in use
+(implicitly or explicitly) by the chain being prefixed, and works for all 9
+of them.
+
 A C<DeclNameChain> node represents a canonical long name for declaring a
 DBMS entity in N-depth contexts; the format and interpretation of a
 C<DeclNameChain_payload> (but as a C<sys.std.Core.Type.Cat.DeclNameChain>
@@ -1032,7 +1046,7 @@ Examples:
 
     Name:"First Name"
 
-    NameChain:fed.data.the_db.gene.sorted_person_name
+    NameChain:fed.data.the_db.gene.sorted_person_names
 
     NameChain:fed.data.the_db.stats."samples by order"
 
