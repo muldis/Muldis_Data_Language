@@ -1853,6 +1853,7 @@ Grammar:
 
     token expr {
           <expr_name>
+        | <named_expr>
         | <opaque_value_literal>
         | <coll_value_selector>
         | <func_invo>
@@ -1867,6 +1868,16 @@ Grammar:
     }
 
     token data_sigil { '$' }
+
+    token named_expr {
+        (<decl_expr_name> <term_sep> <bind_op> <term_sep> <expr>)
+    }
+
+    token decl_expr_name {
+        <data_sigil> <Name_payload>
+    }
+
+    token bind_op { '=' }
 
 An C<expr> node is the general case of a Muldis D value expression tree
 (which normally denotes a Muldis D value selector), which must be composed
@@ -1904,9 +1915,19 @@ the expression-containing routine's parameters, in which case the C<expr>
 in question represents the current argument to that parameter; this also is
 exactly the same as a corresponding catalog entry for using an argument.
 
-Examples (of C<expr_name>):
+Iff an C<expr> is a C<named_expr>, then then the C<expr> element of the
+C<named_expr> is being declared with an explicit name, and the
+C<decl_expr_name> element of the C<named_expr> is that name.  Note that a
+C<named_expr> node may not have a C<named_expr> node as its direct C<expr>
+child element.  I<TODO: nor a C<param> node.>
 
-    $my_param
+Examples:
+
+    # an expr_name node #
+    $foo_expr
+
+    # a named_expr node #
+    $bar_expr = factorial( $foo_expr )
 
 =head2 Generic Function Invocation Expressions
 
