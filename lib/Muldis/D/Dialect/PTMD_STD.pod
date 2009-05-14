@@ -98,18 +98,32 @@ type declarations in a general purpose programming language, where simply
 declaring such an entity will cause it to be written into the system
 catalog for subsequent use.
 
-The grammar in this file is formatted as a Perl 6 grammar (see
-L<http://perlcabal.org/syn/S05.html> for details) which could be used to
-parse it, but it is only meant to be illustrative, and would need further
-additions or changes to actually function in Perl 6.  The grammar consists
-mainly of named I<tokens> which define matching rules.  A token's name is
-declared as a bareword following the keyword C<token> and it is
-subsequently referenced with C<< '<' and '>' >> delimiters.  Any other
-bareword in a token definition consisting of alphanumerics is matched
-literally, and all non-quoted whitespace is not significant.  Any pairs of
-parenthesis (C<'(' and ')'>) in token definitions are capturing groups, and
-each parser match by a pair corresponds to a capture I<node> or node
-element in the concrete syntax tree resulting from the parse.
+The grammar in this file is formatted as a hybrid between various EBNF
+flavors and Perl 6 rules (see L<http://perlcabal.org/syn/S05.html> for
+details on the latter) with further changes.  It is only meant to be
+illustrative and human readable, and would need significant changes to
+actually be a functional parser, which are different for each parser
+toolkit.
+
+The grammar consists mainly of named I<tokens> which define matching rules.
+Loosely speaking, each parser match of a token corresponds to a capture
+I<node> or node element in the concrete syntax tree resulting from the
+parse; in practice, the parser may make various alterations to the match
+when generating a node, such as adding guide keywords corresponding to the
+token name, or by merging series of trivial tokens or doing escaped
+character substitutions.  No explicit capture syntax such as parenthesis is
+used in the grammar.
+
+To help understand the grammar in this file, here are a few guidelines:  1.
+The grammar is exactly the same as that of a Perl 6 rule except where these
+guidelines state otherwise; this includes that square brackets mean
+grouping not optionality.  2. The grammar portion that actually declares a
+token, that is what associates a token name with its definition body, is
+formatted like EBNF, as C<< <footok> ::= ... >> rather than the Perl 6 way
+like C<token footok { ... }> or C<rule footok { ... }>.  3. All non-quoted
+whitespace is not significant and just is formatting the grammar itself;
+rather, whitespace rules in the grammar are spelled out explicitly such as
+with C<\s+> (optional whitespace) and C<\s+> (mandatory whitespace.
 
 The root grammar token for the entire dialect is C<bootloader>.
 
@@ -117,18 +131,16 @@ The root grammar token for the entire dialect is C<bootloader>.
 
 Grammar:
 
-    token bootloader {
-        (
-            <language_name>
-            [<term_sep> [
-                  <value>
-                | <depot>
-                | <boot_stmt> ** <term_sep>
-            ]]?
-        )
-    }
+    <bootloader> ::=
+        <language_name>
+        [<term_sep> [
+              <value>
+            | <depot>
+            | <boot_stmt> ** <term_sep>
+        ]]?
 
-    token term_sep { \s+ }
+    <term_sep> ::=
+        \s+
 
 A C<bootloader> node has 1..N ordered elements where the first element is a
 C<language_name> node and then either: 1. there is exactly one (second)
@@ -154,31 +166,33 @@ Muldis D code that isn't itself qualified with a C<language_name>.
 
 Grammar:
 
-    token language_name {
-        (
-            <ln_base_name>
+    <language_name> ::=
+        <ln_base_name>
+        <value_node_elem_sep>
+        <ln_base_authority>
+        <value_node_elem_sep>
+        <ln_base_version_number>
+        <value_node_elem_sep>
+        <ln_dialect>
+        [
             <value_node_elem_sep>
-            <ln_base_authority>
-            <value_node_elem_sep>
-            <ln_base_version_number>
-            <value_node_elem_sep>
-            <ln_dialect>
-            [
-                <value_node_elem_sep>
-                <ln_extensions>
-            ]?
-        )
-    }
+            <ln_extensions>
+        ]?
 
-    token ln_base_name { (Muldis_D) }
+    <ln_base_name> ::=
+        Muldis_D
 
-    token ln_base_authority { <Name_payload> }
+    <ln_base_authority> ::=
+        <Name_payload>
 
-    token ln_base_version_number { <Name_payload> }
+    <ln_base_version_number> ::=
+        <Name_payload>
 
-    token ln_dialect { (PTMD_STD) }
+    <ln_dialect> ::=
+        PTMD_STD
 
-    token ln_extensions { <QTuple_payload> }
+    <ln_extensions> ::=
+        <QTuple_payload>
 
 As per the VERSIONING pod section of L<Muldis::D>, code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
@@ -228,12 +242,11 @@ Examples:
 
 Grammar:
 
-    token value {
+    <value> ::=
           <opaque_value_literal>
         | <coll_value_selector>
-    }
 
-    token opaque_value_literal {
+    <opaque_value_literal> ::=
           <Bool>
         | <Order>
         | <RatRoundMeth>
@@ -251,9 +264,8 @@ Grammar:
         | <FloatInstant>
         | <UTCDuration>
         | <String>
-    }
 
-    token coll_value_selector {
+    <coll_value_selector> ::=
           <QScalar>
         | <QTuple>
         | <Database>
@@ -262,7 +274,6 @@ Grammar:
         | <QMaybe>
         | <QArray>
         | <QBag>
-    }
 
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
@@ -324,51 +335,47 @@ C<Name_payload>.
 
 Every GCVL has 1-3 elements, illustrated by this grammar:
 
-    token x_value {
-        (
-            [
-                <value_kind> <value_node_elem_sep>
-                [<type_name> <value_node_elem_sep>]?
-            ]?
-            <payload>
-        )
-    }
+    <x_value> ::=
+        [
+            <value_kind> <value_node_elem_sep>
+            [<type_name> <value_node_elem_sep>]?
+        ]?
+        <payload>
 
-    token value_node_elem_sep { \s* ':' \s* }
+    <value_node_elem_sep> ::=
+        \s* ':' \s*
 
-    token value_kind {
-        (
-              Bool
-            | Order
-            | RatRoundMeth
-            | Int | NNInt | PInt
-            | Rat | NNRat | PRat
-            | Blob | OctetBlob
-            | Text
-            | Name
-            | NameChain
-            | DeclNameChain
-            | Comment
-            | Instant
-            | Duration
-            | UTC [Instant | DateTime | Date | Time]
-            | Float [Instant | DateTime | Date | Time]
-            | UTCDuration
-            | String | BString | OString | UCPString
-            | Q? Scalar
-            | Q? Tuple
-            | Database
-            | Q? Relation
-            | Q? Set
-            | Q? [Maybe | Single]
-            | Q? Array
-            | Q? Bag
-        )
-    }
+    <value_kind> ::=
+          Bool
+        | Order
+        | RatRoundMeth
+        | Int | NNInt | PInt
+        | Rat | NNRat | PRat
+        | Blob | OctetBlob
+        | Text
+        | Name
+        | NameChain
+        | DeclNameChain
+        | Comment
+        | Instant
+        | Duration
+        | UTC [Instant | DateTime | Date | Time]
+        | Float [Instant | DateTime | Date | Time]
+        | UTCDuration
+        | String | BString | OString | UCPString
+        | Q? Scalar
+        | Q? Tuple
+        | Database
+        | Q? Relation
+        | Q? Set
+        | Q? [Maybe | Single]
+        | Q? Array
+        | Q? Bag
 
-    token type_name { <NameChain_payload> }
+    <type_name> ::=
+        <NameChain_payload>
 
-    token payload {
+    <payload> ::=
           <Bool_payload>
         | <Order_payload>
         | <RatRoundMeth_payload>
@@ -394,7 +401,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <QMaybe_payload>
         | <QArray_payload>
         | <QBag_payload>
-    }
 
 So a C<x_value>|C<value> node has 1-3 elements in general:
 
@@ -458,16 +464,12 @@ For GCVL and SCVL examples, see the subsequent documentation sections.
 
 Grammar:
 
-    token Bool {
-        (
-            [(Bool) <value_node_elem_sep>]?
-            <Bool_payload>
-        )
-    }
+    <Bool> ::=
+        [Bool <value_node_elem_sep>]?
+        <Bool_payload>
 
-    token Bool_payload {
-        (false | true)
-    }
+    <Bool_payload> ::=
+        false | true
 
 A C<Bool> node represents a logical boolean value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Bool> value as follows:  The C<Bool_payload>
@@ -484,16 +486,12 @@ Examples:
 
 Grammar:
 
-    token Order {
-        (
-            [(Order) <value_node_elem_sep>]?
-            <Order_payload>
-        )
-    }
+    <Order> ::=
+        [Order <value_node_elem_sep>]?
+        <Order_payload>
 
-    token Order_payload {
-        (increase | same | decrease)
-    }
+    <Order_payload> ::=
+        increase | same | decrease
 
 An C<Order> node represents an order-determination.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:  The
@@ -510,24 +508,18 @@ Examples:
 
 Grammar:
 
-    token RatRoundMeth {
-        (
-            [
-                (RatRoundMeth) <value_node_elem_sep>
-                [<type_name> <value_node_elem_sep>]?
-            ]?
-            <RatRoundMeth_payload>
-        )
-    }
+    <RatRoundMeth> ::=
+        [
+            RatRoundMeth <value_node_elem_sep>
+            [<type_name> <value_node_elem_sep>]?
+        ]?
+        <RatRoundMeth_payload>
 
-    token RatRoundMeth_payload {
-        (
-              half_down | half_up
-            | half_even
-            | to_floor | to_ceiling
-            | to_zero | to_inf
-        )
-    }
+    <RatRoundMeth_payload> ::=
+          half_down | half_up
+        | half_even
+        | to_floor | to_ceiling
+        | to_zero | to_inf
 
 A C<RatRoundMeth> node represents a rational rounding method.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundMeth> value as
@@ -545,44 +537,49 @@ Examples:
 
 Grammar:
 
-    token Int {
-        (
-            [
-                (Int | NNInt | PInt) <value_node_elem_sep>
-                [<type_name> <value_node_elem_sep>]?
-            ]?
-            <Int_payload>
-        )
-    }
+    <Int> ::=
+        [
+            [Int | NNInt | PInt] <value_node_elem_sep>
+            [<type_name> <value_node_elem_sep>]?
+        ]?
+        <Int_payload>
 
-    token Int_payload {
-        (
-              (<num_max_col_val>) <value_payload_elem_sep> (<int_body>)
-            | <d_int_body>
-        )
-    }
+    <Int_payload> ::=
+          <num_max_col_val> <value_payload_elem_sep> <int_body>
+        | <d_int_body>
 
-    token value_payload_elem_sep { \s* ';' \s* }
+    <value_payload_elem_sep> ::=
+        \s* ';' \s*
 
-    token num_max_col_val { <pint_head> }
+    <num_max_col_val> ::=
+        <pint_head>
 
-    token int_body { [0 | \-?<pint_body>] }
+    <int_body> ::=
+        [0 | \-?<pint_body>]
 
-    token pint_body { <pint_head> <pint_tail>? }
+    <pint_body> ::=
+        <pint_head> <pint_tail>?
 
-    token pint_head { <[ 1..9 A..Z ]> }
+    <pint_head> ::=
+        <[ 1..9 A..Z ]>
 
-    token pint_tail { [[_?<[ 0..9 A..Z ]>+]+] ** <segment_sep> }
+    <pint_tail> ::=
+        [[_?<[ 0..9 A..Z ]>+]+] ** <segment_sep>
 
-    token segment_sep { \s* '~' \s* }
+    <segment_sep> ::=
+        \s* '~' \s*
 
-    token d_int_body { [0 | \-?<d_pint_body>] }
+    <d_int_body> ::=
+        [0 | \-?<d_pint_body>]
 
-    token d_pint_body { <d_pint_head> <d_pint_tail>? }
+    <d_pint_body> ::=
+        <d_pint_head> <d_pint_tail>?
 
-    token d_pint_head { <[ 1..9 ]> }
+    <d_pint_head> ::=
+        <[ 1..9 ]>
 
-    token d_pint_tail { [[_?<[ 0..9 ]>+]+] ** <segment_sep> }
+    <d_pint_tail> ::=
+        [[_?<[ 0..9 ]>+]+] ** <segment_sep>
 
 An C<Int> node represents an integer numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Int> value as follows:
@@ -639,35 +636,26 @@ Examples:
 
 Grammar:
 
-    token Rat {
-        (
-            [
-                (Rat | NNRat | PRat) <value_node_elem_sep>
-                [<type_name> <value_node_elem_sep>]?
-            ]?
-            <Rat_payload>
-        )
-    }
+    <Rat> ::=
+        [
+            [Rat | NNRat | PRat] <value_node_elem_sep>
+            [<type_name> <value_node_elem_sep>]?
+        ]?
+        <Rat_payload>
 
-    token Rat_payload {
-        (
-              (<num_max_col_val>) <value_payload_elem_sep> (<rat_body>)
-            | <d_rat_body>
-        )
-    }
+    <Rat_payload> ::=
+          <num_max_col_val> <value_payload_elem_sep> <rat_body>
+        | <d_rat_body>
 
-    token rat_body {
+    <rat_body> ::=
           <int_body>\.<pint_tail>
-        | (<int_body>) \s* \/ \s* (<pint_body>)
-        | (<int_body>) \s* \* \s* (<pint_body>) \s* \^ \s* (<int_body>)
-    }
+        | <int_body> \s* \/ \s* <pint_body>
+        | <int_body> \s* \* \s* <pint_body> \s* \^ \s* <int_body>
 
-    token d_rat_body {
+    <d_rat_body> ::=
           <d_int_body>\.<d_pint_tail>
-        | (<d_int_body>) \s* \/ \s* (<d_pint_body>)
-        | (<d_int_body>) \s* \* \s* (<d_pint_body>)
-            \s* \^ \s* (<d_int_body>)
-    }
+        | <d_int_body> \s* \/ \s* <d_pint_body>
+        | <d_int_body> \s* \* \s* <d_pint_body> \s* \^ \s* <d_int_body>
 
 A C<Rat> node represents a rational numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Rat> value as follows:
@@ -724,29 +712,25 @@ Examples:
 
 Grammar:
 
-    token Blob {
-        (
-            [
-                (Blob | OctetBlob) <value_node_elem_sep>
-                [<type_name> <value_node_elem_sep>]?
-            ]?
-            <Blob_payload>
-        )
-    }
+    <Blob> ::=
+        [
+            [Blob | OctetBlob] <value_node_elem_sep>
+            [<type_name> <value_node_elem_sep>]?
+        ]?
+        <Blob_payload>
 
-    token Blob_payload {
-        ((<blob_max_col_val>) <value_payload_elem_sep> (<blob_body>))
-    }
+    <Blob_payload> ::=
+        <blob_max_col_val> <value_payload_elem_sep> <blob_body>
 
-    token blob_max_col_val { <[137F]> }
+    <blob_max_col_val> ::=
+        <[137F]>
 
-    token blob_body {
+    <blob_body> ::=
         [
             <[']>
-                (<[ 0..9 A..F ]>*)
+                <[ 0..9 A..F ]>*
             <[']>
         ] ** <segment_sep>
-    }
 
 A C<Blob> node represents a general purpose bit string.  It is interpreted
 as a Muldis D C<sys.std.Core.Type.Blob> value as follows:  Fundamentally
@@ -776,27 +760,21 @@ Examples:
 
 Grammar:
 
-    token Text {
-        (
-            [
-                (Text) <value_node_elem_sep>
-                [<type_name> <value_node_elem_sep>]?
-            ]?
-            <Text_payload>
-        )
-    }
+    <Text> ::=
+        [
+            Text <value_node_elem_sep>
+            [<type_name> <value_node_elem_sep>]?
+        ]?
+        <Text_payload>
 
-    token Text_payload {
-        (
-            [
-                <[']>
-                    ([ <-[\\\'\t\n\f\r]> | <escaped_char>]*)
-                <[']>
-            ] ** <segment_sep>
-        )
-    }
+    <Text_payload> ::=
+        [
+            <[']>
+                [<-[\\\'\t\n\f\r]> | <escaped_char>]*
+            <[']>
+        ] ** <segment_sep>
 
-    token escaped_char {
+    <escaped_char> ::=
           '\b' | '\a' | '\q' | '\h'
         | '\s'
         | '\t' | '\n' | '\f' | '\r'
@@ -805,7 +783,6 @@ Grammar:
             | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
             | <[ 1..9 A..Z ]> ';' [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
           ] '>'
-    }
 
 A C<Text> node represents a general purpose character string.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Text> value as follows:
@@ -891,53 +868,42 @@ Examples:
 
 Grammar:
 
-    token Name {
-        (
-            (Name) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <Name_payload>
-        )
-    }
+    <Name> ::=
+        Name <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <Name_payload>
 
-    token Name_payload {
-        (<nonquoted_name_str> | <quoted_name_str>)
-    }
+    <Name_payload> ::=
+        <nonquoted_name_str> | <quoted_name_str>
 
-    token nonquoted_name_str { <[ a..z A..Z _ ]><[ a..z A..Z 0..9 _ - ]>* }
+    <nonquoted_name_str> ::=
+        <[ a..z A..Z _ ]><[ a..z A..Z 0..9 _ - ]>*
 
-    token quoted_name_str {
+    <quoted_name_str> ::=
         [
             <["]>
-                ([ <-[\\\"\t\n\f\r]> | <escaped_char>]*)
+                [<-[\\\"\t\n\f\r]> | <escaped_char>]*
             <["]>
         ] ** <segment_sep>
-    }
 
-    token NameChain {
-        (
-            (NameChain) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <NameChain_payload>
-        )
-    }
+    <NameChain> ::=
+        NameChain <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <NameChain_payload>
 
-    token NameChain_payload {
-        (<Name_payload> ** <name_chain_elem_sep>)
-    }
+    <NameChain_payload> ::=
+        <Name_payload> ** <name_chain_elem_sep>
 
-    token name_chain_elem_sep { \s* '.' \s* }
+    <name_chain_elem_sep> ::=
+        \s* '.' \s*
 
-    token DeclNameChain {
-        (
-            (DeclNameChain) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <DeclNameChain_payload>
-        )
-    }
+    <DeclNameChain> ::=
+        DeclNameChain <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <DeclNameChain_payload>
 
-    token DeclNameChain_payload {
-        <NameChain_payload> | (<ord_list_open> <ord_list_close>)
-    }
+    <DeclNameChain_payload> ::=
+        <NameChain_payload> | <ord_list_open> <ord_list_close>
 
 A C<Name> node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
@@ -1060,25 +1026,19 @@ Examples:
 
 Grammar:
 
-    token Comment {
-        (
-            [
-                (Comment) <value_node_elem_sep>
-                [<type_name> <value_node_elem_sep>]?
-            ]?
-            <Comment_payload>
-        )
-    }
+    <Comment> ::=
+        [
+            Comment <value_node_elem_sep>
+            [<type_name> <value_node_elem_sep>]?
+        ]?
+        <Comment_payload>
 
-    token Comment_payload {
-        (
-            [
-                '#' ' '*
-                    ([ <-[\\\#\t\n\f\r]> | <escaped_char>]*)
-                ' '* '#'
-            ] ** \s*
-        )
-    }
+    <Comment_payload> ::=
+        [
+            '#' ' '*
+                [<-[\\\#\t\n\f\r]> | <escaped_char>]*
+            ' '* '#'
+        ] ** \s*
 
 A C<Comment> node represents the text of a Muldis D code comment; it is a
 character string type, that is disjoint from both C<Text> and C<Name>.  It
@@ -1107,29 +1067,21 @@ Examples:
 
 Grammar:
 
-    token Instant {
-        (
-            (Instant) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <Instant_payload>
-        )
-    }
+    <Instant> ::=
+        Instant <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <Instant_payload>
 
-    token Instant_payload {
+    <Instant_payload> ::=
         <Rat_payload>
-    }
 
-    token Duration {
-        (
-            (Duration) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <Duration_payload>
-        )
-    }
+    <Duration> ::=
+        Duration <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <Duration_payload>
 
-    token Duration_payload {
+    <Duration_payload> ::=
         <Rat_payload>
-    }
 
 An C<Instant> node represents a single point in time which is specified in
 terms of of atomic seconds; it is a rational numeric type, that is disjoint
@@ -1164,60 +1116,42 @@ Examples:
 
 Grammar:
 
-    token UTCInstant {
-        (
-            (UTC [Instant | DateTime | Date | Time]) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <UTCInstant_payload>
-        )
-    }
+    <UTCInstant> ::=
+        UTC [Instant | DateTime | Date | Time] <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <UTCInstant_payload>
 
-    token UTCInstant_payload {
+    <UTCInstant_payload> ::=
         <UTCDuration_payload>
-    }
 
-    token FloatInstant {
-        (
-            (Float [Instant | DateTime | Date | Time])
-                <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <FloatInstant_payload>
-        )
-    }
+    <FloatInstant> ::=
+        Float [Instant | DateTime | Date | Time] <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <FloatInstant_payload>
 
-    token FloatInstant_payload {
+    <FloatInstant_payload> ::=
         <UTCDuration_payload>
-    }
 
-    token UTCDuration {
-        (
-            (UTCDuration) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <UTCDuration_payload>
-        )
-    }
+    <UTCDuration> ::=
+        UTCDuration <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <UTCDuration_payload>
 
-    token UTCDuration_payload {
-        (
-              (<num_max_col_val>) <value_payload_elem_sep>
-                    (<utc_duration_body>)
-            | <d_utc_duration_body>
-        )
-    }
+    <UTCDuration_payload> ::=
+          <num_max_col_val> <value_payload_elem_sep> <utc_duration_body>
+        | <d_utc_duration_body>
 
-    token utc_duration_body {
+    <utc_duration_body> ::=
         <ord_list_open>
-            [(<int_body>)? <list_elem_sep>] ** 5
-            (<rat_body>)
+            [<int_body>? <list_elem_sep>] ** 5
+            <rat_body>
         <ord_list_close>
-    }
 
-    token d_utc_duration_body {
+    <d_utc_duration_body> ::=
         <ord_list_open>
-            [(<d_int_body>)? <list_elem_sep>] ** 5
-            (<d_rat_body>)
+            [<d_int_body>? <list_elem_sep>] ** 5
+            <d_rat_body>
         <ord_list_close>
-    }
 
 A C<UTCInstant> node represents an "instant"/"datetime" value that is
 affiliated with the UTC time-zone.  This node is interpreted as a Muldis D
@@ -1298,38 +1232,33 @@ Examples:
 
 Grammar:
 
-    token String {
-        (
-            (String | BString | OString | UCPString) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <String_payload>
-        )
-    }
+    <String> ::=
+        [String | BString | OString | UCPString] <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <String_payload>
 
-    token String_payload {
-        (
-              (<num_max_col_val>) <value_payload_elem_sep> (<string_body>)
-            | <d_string_body>
-        )
-    }
+    <String_payload> ::=
+          <num_max_col_val> <value_payload_elem_sep> <string_body>
+        | <d_string_body>
 
-    token string_body {
+    <string_body> ::=
         <ord_list_open>
-            ([(<int_body>) ** <list_elem_sep>]?)
+            [<int_body> ** <list_elem_sep>]?
         <ord_list_close>
-    }
 
-    token d_string_body {
+    <d_string_body> ::=
         <ord_list_open>
-            ([(<d_int_body>) ** <list_elem_sep>]?)
+            [<d_int_body> ** <list_elem_sep>]?
         <ord_list_close>
-    }
 
-    token ord_list_open { \s* '[' \s* }
+    <ord_list_open> ::=
+        \s* '[' \s*
 
-    token ord_list_close { \s* ']' \s* }
+    <ord_list_close> ::=
+        \s* ']' \s*
 
-    token list_elem_sep { \s* ',' \s* }
+    <list_elem_sep> ::=
+        \s* ',' \s*
 
 A C<String> node represents an integer string value.  It is interpreted as
 a Muldis D C<sys.std.Core.Type.Cat.String> value as follows:  A
@@ -1359,21 +1288,19 @@ options exist are only valid within a C<depot> node or C<boot_stmt> node.
 
 Grammar:
 
-    token QScalar {
-        (
-            (Q? Scalar) <value_node_elem_sep>
-            <type_name> <value_node_elem_sep>
-            <QScalar_payload>
-        )
-    }
+    <QScalar> ::=
+        Q? Scalar <value_node_elem_sep>
+        <type_name> <value_node_elem_sep>
+        <QScalar_payload>
 
-    token QScalar_payload {
-        (<possrep_name> <value_payload_elem_sep> <possrep_attrs>)
-    }
+    <QScalar_payload> ::=
+        <possrep_name> <value_payload_elem_sep> <possrep_attrs>
 
-    token possrep_name { <Name_payload> }
+    <possrep_name> ::=
+        <Name_payload>
 
-    token possrep_attrs { <QTuple_payload> }
+    <possrep_attrs> ::=
+        <QTuple_payload>
 
 A C<QScalar> node represents a literal or selector invocation for a
 quasi-scalar subtype value.  It is interpreted as a Muldis D
@@ -1424,25 +1351,24 @@ Examples:
 
 Grammar:
 
-    token QTuple {
-        (
-            (Q? Tuple) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <QTuple_payload>
-        )
-    }
+    <QTuple> ::=
+        Q? Tuple <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <QTuple_payload>
 
-    token QTuple_payload {
+    <QTuple_payload> ::=
         <nonord_list_open>
-            ([(<Name_payload> <pair_elem_sep> <expr>) ** <list_elem_sep>]?)
+            [[<Name_payload> <pair_elem_sep> <expr>] ** <list_elem_sep>]?
         <nonord_list_close>
-    }
 
-    token nonord_list_open { \s* '{' \s* }
+    <nonord_list_open> ::=
+        \s* '{' \s*
 
-    token nonord_list_close { \s* '}' \s* }
+    <nonord_list_close> ::=
+        \s* '}' \s*
 
-    token pair_elem_sep { \s* '=>' \s* }
+    <pair_elem_sep> ::=
+        \s* '=>' \s*
 
 A C<QTuple> node represents a literal or selector invocation for a
 quasi-tuple value.  It is interpreted as a Muldis D
@@ -1479,17 +1405,13 @@ Examples:
 
 Grammar:
 
-    token Database {
-        (
-            (Database) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <Database_payload>
-        )
-    }
+    <Database> ::=
+        Database <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <Database_payload>
 
-    token Database_payload {
+    <Database_payload> ::=
         <QTuple_payload>
-    }
 
 A C<Database> node represents a literal or selector invocation for a
 'database' value.  It is interpreted as a Muldis D
@@ -1509,49 +1431,39 @@ general a C<Database> node distills to same as when C<QTuple> does.
 
 Grammar:
 
-    token QRelation {
-        (
-            (Q? Relation) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <QRelation_payload>
-        )
-    }
+    <QRelation> ::=
+        Q? Relation <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <QRelation_payload>
 
-    token QRelation_payload {
+    <QRelation_payload> ::=
           <r_empty_qbody_payload>
         | <r_nonordered_qattr_payload>
         | <r_ordered_qattr_payload>
-    }
 
-    token r_empty_qbody_payload {
+    <r_empty_qbody_payload> ::=
         <nonord_list_open>
-            ([<Name_payload> ** <list_elem_sep>]?)
+            [<Name_payload> ** <list_elem_sep>]?
         <nonord_list_close>
-    }
 
-    token r_nonordered_qattr_payload {
+    <r_nonordered_qattr_payload> ::=
         <nonord_list_open>
-            ([<QTuple_payload> ** <list_elem_sep>]?)
+            [<QTuple_payload> ** <list_elem_sep>]?
         <nonord_list_close>
-    }
 
-    token r_ordered_qattr_payload {
-        (
-            <ord_list_open>
-                ([<Name_payload> ** <list_elem_sep>]?)
-            <ord_list_close>
-            <value_payload_elem_sep>
-            <nonord_list_open>
-                ([<ordered_qtuple_qattrs> ** <list_elem_sep>]?)
-            <nonord_list_close>
-        )
-    }
-
-    token ordered_qtuple_qattrs {
+    <r_ordered_qattr_payload> ::=
         <ord_list_open>
-            ([<expr> ** <list_elem_sep>]?)
+            [<Name_payload> ** <list_elem_sep>]?
         <ord_list_close>
-    }
+        <value_payload_elem_sep>
+        <nonord_list_open>
+            [<ordered_qtuple_qattrs> ** <list_elem_sep>]?
+        <nonord_list_close>
+
+    <ordered_qtuple_qattrs> ::=
+        <ord_list_open>
+            [<expr> ** <list_elem_sep>]?
+        <ord_list_close>
 
 A C<QRelation> node represents a literal or selector invocation for a
 quasi-relation value.  It is interpreted as a Muldis D
@@ -1619,19 +1531,15 @@ Examples:
 
 Grammar:
 
-    token QSet {
-        (
-            (Q? Set) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <QSet_payload>
-        )
-    }
+    <QSet> ::=
+        Q? Set <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <QSet_payload>
 
-    token QSet_payload {
+    <QSet_payload> ::=
         <nonord_list_open>
-            ([<expr> ** <list_elem_sep>]?)
+            [<expr> ** <list_elem_sep>]?
         <nonord_list_close>
-    }
 
 A C<QSet> node represents a literal or selector invocation for a quasi-set
 value.  It is interpreted as a Muldis D C<sys.std.Core.Type.QSet> value
@@ -1665,25 +1573,19 @@ Examples:
 
 Grammar:
 
-    token QMaybe {
-        (
-            (Q? (Maybe | Single)) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <QMaybe_payload>
-        )
-    }
+    <QMaybe> ::=
+        Q? [Maybe | Single] <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <QMaybe_payload>
 
-    token QMaybe_payload {
-        (<maybe_list> | <maybe_nothing>)
-    }
+    <QMaybe_payload> ::=
+        <maybe_list> | <maybe_nothing>
 
-    token maybe_list {
+    <maybe_list> ::=
         <nonord_list_open> <expr> <nonord_list_close>
-    }
 
-    token maybe_nothing {
+    <maybe_nothing> ::=
         nothing
-    }
 
 A C<QMaybe> node represents a literal or selector invocation for a
 quasi-maybe value.  It is interpreted as a Muldis D
@@ -1721,19 +1623,15 @@ Examples:
 
 Grammar:
 
-    token QArray {
-        (
-            (Q? Array) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <QArray_payload>
-        )
-    }
+    <QArray> ::=
+        Q? Array <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <QArray_payload>
 
-    token QArray_payload {
+    <QArray_payload> ::=
         <ord_list_open>
-            ([<expr> ** <list_elem_sep>]?)
+            [<expr> ** <list_elem_sep>]?
         <ord_list_close>
-    }
 
 A C<QArray> node represents a literal or selector invocation for a
 quasi-array value.  It is interpreted as a Muldis D
@@ -1770,37 +1668,28 @@ Examples:
 
 Grammar:
 
-    token QBag {
-        (
-            (Q? Bag) <value_node_elem_sep>
-            [<type_name> <value_node_elem_sep>]?
-            <QBag_payload>
-        )
-    }
+    <QBag> ::=
+        Q? Bag <value_node_elem_sep>
+        [<type_name> <value_node_elem_sep>]?
+        <QBag_payload>
 
-    token QBag_payload {
+    <QBag_payload> ::=
           <qbag_payload_counted_values>
         | <qbag_payload_repeated_values>
-    }
 
-    token qbag_payload_counted_values {
+    <qbag_payload_counted_values> ::=
         <nonord_list_open>
-            ([(<expr> <pair_elem_sep> <count>) ** <list_elem_sep>]?)
+            [[<expr> <pair_elem_sep> <count>] ** <list_elem_sep>]?
         <nonord_list_close>
-    }
 
-    token count {
-        (
-              (<num_max_col_val>) <value_payload_elem_sep> (<pint_body>)
-            | <d_pint_body>
-        )
-    }
+    <count> ::=
+          <num_max_col_val> <value_payload_elem_sep> <pint_body>
+        | <d_pint_body>
 
-    token qbag_payload_repeated_values {
+    <qbag_payload_repeated_values> ::=
         <nonord_list_open>
-            ([<expr> ** <list_elem_sep>]?)
+            [<expr> ** <list_elem_sep>]?
         <nonord_list_close>
-    }
 
 A C<QBag> node represents a literal or selector invocation for a quasi-bag
 value.  It is interpreted as a Muldis D C<sys.std.Core.Type.QBag> value
@@ -1851,7 +1740,7 @@ Examples:
 
 Grammar:
 
-    token expr {
+    <expr> ::=
           <expr_name>
         | <named_expr>
         | <opaque_value_literal>
@@ -1861,23 +1750,21 @@ Grammar:
         | <given_when_def_expr>
         | <lib_entity_ref_selector>
         | <func_invo_alt_syntax>
-    }
 
-    token expr_name {
+    <expr_name> ::=
         <data_sigil> <NameChain_payload>
-    }
 
-    token data_sigil { '$' }
+    <data_sigil> ::=
+        '$'
 
-    token named_expr {
-        (<decl_expr_name> <infix_bind_op> <expr>)
-    }
+    <named_expr> ::=
+        <decl_expr_name> <infix_bind_op> <expr>
 
-    token decl_expr_name {
+    <decl_expr_name> ::=
         <data_sigil> <Name_payload>
-    }
 
-    token infix_bind_op { \s* '=' \s* }
+    <infix_bind_op> ::=
+        \s* '=' \s*
 
 An C<expr> node is the general case of a Muldis D value expression tree
 (which normally denotes a Muldis D value selector), which must be composed
@@ -1933,29 +1820,31 @@ Examples:
 
 Grammar:
 
-    token func_invo {
-        (<routine_name> <func_arg_list>)
-    }
+    <func_invo> ::=
+        <routine_name> <func_arg_list>
 
-    token routine_name { <NameChain_payload> }
+    <routine_name> ::=
+        <NameChain_payload>
 
-    token func_arg_list {
+    <func_arg_list> ::=
         <param_list_open>
-            ([[<named_ro_arg> | <anon_ro_arg>] ** <list_elem_sep>]?)
+            [[<named_ro_arg> | <anon_ro_arg>] ** <list_elem_sep>]?
         <param_list_close>
-    }
 
-    token param_list_open { \s* '(' \s* }
+    <param_list_open> ::=
+        \s* '(' \s*
 
-    token param_list_close { \s* ')' \s* }
+    <param_list_close> ::=
+        \s* ')' \s*
 
-    token named_ro_arg {
-        (<param_name> <pair_elem_sep> <expr>)
-    }
+    <named_ro_arg> ::=
+        <param_name> <pair_elem_sep> <expr>
 
-    token param_name { C<Name_payload> }
+    <param_name> ::=
+        C<Name_payload>
 
-    token anon_ro_arg { <expr> }
+    <anon_ro_arg> ::=
+        <expr>
 
 A C<func_invo> node represents the result of invoking a named
 inner/function with specific arguments.  It is interpreted as a tuple of a
@@ -2037,22 +1926,22 @@ Examples:
 
 Grammar:
 
-    token if_else_expr {
+    <if_else_expr> ::=
         <param_list_open>
-        (
-            ([if <term_sep> <if_expr> <term_sep>
+            [if <term_sep> <if_expr> <term_sep>
                 then <term_sep> <then_expr> <term_sep>
-                else <term_sep>]*)
+                else <term_sep>]*
             <else_expr>
-        )
         <param_list_close>
-    }
 
-    token if_expr { <expr> }
+    <if_expr> ::=
+        <expr>
 
-    token then_expr { <expr> }
+    <then_expr> ::=
+        <expr>
 
-    token else_expr { <expr> }
+    <else_expr> ::=
+        <expr>
 
 An C<if_else_expr> node represents an N-way if-else control flow
 expression.  It is interpreted as a tuple of a Muldis D
@@ -2083,24 +1972,25 @@ Examples:
 
 Grammar:
 
-    token given_when_def_expr {
+    <given_when_def_expr> ::=
         <param_list_open>
-        (
             given <term_sep> <given_expr> <term_sep>
-            ([when <term_sep> <when_expr> <term_sep>
-                then <term_sep> <then_expr> <term_sep>]*)
+            [when <term_sep> <when_expr> <term_sep>
+                then <term_sep> <then_expr> <term_sep>]*
             default <term_sep> <default_expr>
-        )
         <param_list_close>
-    }
 
-    token given_expr { <expr> }
+    <given_expr> ::=
+        <expr>
 
-    token when_expr { <expr> }
+    <when_expr> ::=
+        <expr>
 
-    token then_expr { <expr> }
+    <then_expr> ::=
+        <expr>
 
-    token default_expr { <expr> }
+    <default_expr> ::=
+        <expr>
 
 A C<given_when_def_expr> node represents an N-way given-when-default
 switch control flow expression that dispatches based on matching a single
@@ -2129,28 +2019,23 @@ Examples:
 
 Grammar:
 
-    token lib_entity_ref_selector {
+    <lib_entity_ref_selector> ::=
           <func_ref>
         | <proc_ref>
         | <type_ref>
         | <ord_det_func_ref>
-    }
 
-    token func_ref {
-        (('F->') <routine_name>)
-    }
+    <func_ref> ::=
+        'F->' <routine_name>
 
-    token proc_ref {
-        (('P->') <routine_name>)
-    }
+    <proc_ref> ::=
+        'P->' <routine_name>
 
-    token type_ref {
-        (('T->') <type_name>)
-    }
+    <type_ref> ::=
+        'T->' <type_name>
 
-    token ord_det_func_ref {
-        (('ODF->') <routine_name>)
-    }
+    <ord_det_func_ref> ::=
+        'ODF->' <routine_name>
 
 A C<[func|proc|type|ord_det_func]_ref> node represents a literal or
 selector invocation for a DBMS routine or type reference value.  It is
@@ -2180,13 +2065,12 @@ B<TODO: ALL OF THIS HERE MAIN POD SECTION!>
 
 Grammar:
 
-    token depot {
-        (depot)
+    <depot> ::=
+        depot
         <nonord_list_open>
             <depot_catalog>
             <depot_data>?
         <nonord_list_close>
-    }
 
 =head1 BOOTLOADER STATEMENT
 
@@ -2194,33 +2078,30 @@ B<TODO/REDO: ALL OF THIS HERE MAIN POD SECTION!>
 
 Grammar:
 
-    token boot_stmt {
-        (
-              <generic_boot_stmt>
-            | ...
-        )
-    }
+    <boot_stmt> ::=
+          <generic_boot_stmt>
+        | ...
 
-    token generic_boot_stmt
-        (boot_stmt)
+    <generic_boot_stmt> ::=
+        boot_stmt
         <value_node_elem_sep>
         <imperative_routine_name>
         <value_node_elem_sep>
         <imperative_routine_upd_args>
         <value_node_elem_sep>
         <imperative_routine_ro_args>
-    }
 
-    token imperative_routine_name { <NameChain_payload> }
+    <imperative_routine_name> ::=
+        <NameChain_payload>
 
-    token imperative_routine_upd_args {
+    <imperative_routine_upd_args> ::=
         <nonord_list_open>
             [[<Name_payload> <pair_elem_sep> <NameChain_payload>]
                 ** <list_elem_sep>]?
         <nonord_list_close>
-    }
 
-    token imperative_routine_ro_args { <QTuple_payload> }
+    <imperative_routine_ro_args> ::=
+        <QTuple_payload>
 
 Examples:
 
