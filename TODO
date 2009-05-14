@@ -93,6 +93,46 @@ function, updater, procedure, type, param, ro_param, upd_param, expr, stmt,
 subtype, key, possrep, etc; they apply to both 'outer' and 'inner'
 types/routines; also keywords for declaring whole packages or something.
 
+* Update the STD dialects to support inline definition of basic inner
+routines (and types?) right in the expressions/etc where they are used,
+such as filter functions in restriction() invocations, so many common cases
+look much more like their SQL or Perl counterparts, or for that matter, a
+functional language's anonymous higher order functions.  This syntax would
+be sugar over an explicit inner definition plus a FooRef value selection,
+which means the inner def effectively is an expression node, and users can
+choose to name or not name the FooRef selecting node as normal with value
+expressions.  It is expected that the inners could be declared anonymously
+and names for them (the inn.foo, not the FooRef's lex.foo) would be
+generated as per inline expression nodes etc.  Presumably also add some new
+keyword for a routine to invoke itself without using a name like normal;
+this would be sugar for normal functional call syntax, using gen inn name.
+
+* Further to the previous item, add some special syntax, similar to how one
+references a parameter to get its argument's value, which can see into the
+caller's lexical scope.  This would be sugar over declaring parameters with
+the same name and having the caller explicitly pass arguments to it,
+without having to explicitly write that.  Generally this syntax would only
+be used with inline-declared routines.  But similarly, add some special
+syntax allowing one to essentially just write the body of a routine without
+having to explicitly write its heading / parameter list, which is useful
+for routines invoked directly from a host language, where said parameters
+are attached to host bind variables.  Now one still has to say what the
+expected data type is for these bind variables, but then the explicit
+syntax for such Muldis D routines is more like that of a SQL statement you
+plug into DBI or whatever, without the explicit framing.  May not work
+anywhere, but should help where it does.  Maybe use $$foo rather than $foo
+to indicate that the 'foo' wasn't explicitly declared in the current
+lexical scope and we are referring to the caller or a bind variable.  Or
+rather than $$foo, have something like "(param Bar $foo)" for an
+expression-inline parameter definition and use, where the part after the
+"param" has all the same syntax as an actual param list; this is the one
+for host language bind parameters.  Actually that might be useful by
+itself.  Similarly "(caller $foo)" would be the look to parent Muldis D
+lexical scope, or $$foo would just do that maybe, unless this should have
+an explicit type declaration still.  Note, if same inline-declared host
+param used more than once, you just need "(param Bar $foo)" form once, and
+other uses can just say $foo as per usual; in fact, it must be this way.
+
 * Add one or more files to the distro that are straight PTMD_STD code like
 for defining a whole depot (as per the above) but instead these files
 define all the system entities.  Or more specifically they define just the
