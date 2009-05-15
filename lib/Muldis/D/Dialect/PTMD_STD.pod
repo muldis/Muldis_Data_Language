@@ -1682,6 +1682,13 @@ C<sys.std.Core.Type.Cat.BagSelExprNodeSet>, a tuple of which is what in
 general a C<QBag> node distills to when it is beneath the context of a
 C<depot> or C<boot_stmt> node, as it describes some semantics.
 
+Further concerning C<qbag_payload_counted_values>, because of how
+C<BagSelExprNodeSet> is defined, a C<count> has to be a compile time
+constant, since an integer is stored in the system catalog rather than the
+name of an expression node like with C<value>; if you actually want the
+q/bag value being selected at runtime to have runtime-determined C<count>
+values, then you must use a C<Relation> node rather than a C<Bag> node.
+
 Examples:
 
     Bag:fed.lib.the_db.inventory.Fruit:{
@@ -1917,9 +1924,9 @@ Examples:
     (if ($ary is empty) then $empty_result else ($ary[0]))
 
     (if (($x === nothing) or ($y === nothing)) then nothing
-        else single( ($x{M:}) I+ (($y{M:}) I** 3) )
+        else Maybe:{ ($x{M:}) I+ (($y{M:}) I^ 3) }
 
-    (if ($val isa T->Int) then ($val I** 3)
+    (if ($val isa T->Int) then ($val I^ 3)
         else if ($val isa T->Text) then ($val Tx 5)
         else true)
 
