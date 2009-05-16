@@ -954,12 +954,11 @@ The last 1-N elements provide arguments to the function invocation; the
 number and format of these last 1-N elements, hereafter referred to as I<op
 args>, varies depending on the second C<func_invo_alt_syntax> node element.
 
-=head2 Infix N-adic Reduction Operators
+=head2 Simple Commutative N-adic Infix Reduction Operators
 
-An C<infix_reduce_op_invo> node has exactly 1 op arg, which is a Perl
-C<Seq|Array|Bag|KeyBag|Set|KeySet> (but for some ops it can only be a
-C<Seq|Array>) having at least 2 elements; each element is a C<expr> node
-that defines an input value for the operator.
+A C<comm_infix_reduce_op_invo> node has exactly 1 op arg, which is a Perl
+C<Seq|Array|Bag|KeyBag|Set|KeySet> having at least 2 elements; each element
+is a C<expr> node that defines an input value for the operator.
 
 Examples:
 
@@ -969,8 +968,6 @@ Examples:
 
     [ 'op', 'xor', [ Bool::True, Bool::False, Bool::True ] ]
 
-    [ 'op', '[<=>]', [ Order::Same, Order::Increase, Order::Decrease ] ]
-
     [ 'op', 'I+', [ 14, 3, -5 ] ]
 
     [ 'op', 'I*', [ -6, 2, 25 ] ]
@@ -979,30 +976,50 @@ Examples:
 
     [ 'op', 'N*', [ 69.3, 15 * 2 ** 6, 49 div 23 ] ]
 
-    [ 'op', 'B~', [ Blob.new( 16 => 'DEAD' ),
-        Blob.new( 2 => '10001101' ), Blob.new( 16 => 'BEEF' ) ] ]
-
-    [ 'op', 'T~', [ 'hello', ' ', 'world' ] ]
-
     [ 'op', 'R+', [ :Set( Set.new( 1, 3, 5 ) ),
         :Set( Set.new( 4, 5, 6 ) ), :Set( Set.new( 0, 9 ) ) ] ]
 
     [ 'op', 'R*', [ :Set( Set.new( 1, 3, 5, 7, 9 ) ),
         :Set( Set.new( 3, 4, 5, 6, 7, 8 ) ), :Set( Set.new( 2, 5, 9 ) ) ] ]
 
+=head2 Simple Non-commutative N-adic Infix Reduction Operators
+
+A C<noncomm_infix_reduce_op_invo> node has exactly 1 op arg, which is a
+Perl C<Seq|Array> having at least 2 elements; each element is a C<expr>
+node that defines an input value for the operator.
+
+Examples:
+
+    [ 'op', '[<=>]', [ Order::Same, Order::Increase, Order::Decrease ] ]
+
+    [ 'op', 'B~', [ Blob.new( 16 => 'DEAD' ),
+        Blob.new( 2 => '10001101' ), Blob.new( 16 => 'BEEF' ) ] ]
+
+    [ 'op', 'T~', [ 'hello', ' ', 'world' ] ]
+
     [ 'op', 'A~', [ :Array[24, 52], :Array[-9], :Array[0, 11, 24, 7] ] ]
 
-=head2 Infix Homogenous Dyadic Operators
+=head2 Simple Commutative Dyadic Infix Operators
 
-An C<infix_h_dyadic_op_invo> node has exactly 2 op args, each of which is a
-C<expr> node that defines an input value for the operator; the first and
+An C<comm_dyadic_infix_op> node has exactly 2 op args, each of which is a
+C<expr> node that defines an input value for the operator; which function
+arguments get which op args isn't significant.
+
+Examples:
+
+    [ 'op', 'I|-|', 15, 17 ]
+
+    [ 'op', 'N|-|', 7.5, 9.0 ]
+
+=head2 Simple Non-commutative Dyadic Infix Operators
+
+An C<noncomm_dyadic_infix_op> node has exactly 2 op args, each of which is
+a C<expr> node that defines an input value for the operator; the first and
 second arg are C<lhs> and C<rhs>, respectively.
 
 Examples:
 
     [ 'op', 'I-', 34, 21 ]
-
-    [ 'op', 'I|-|', 15, 17 ]
 
     [ 'op', 'I/', 5, 3 ]
 
@@ -1011,8 +1028,6 @@ Examples:
     [ 'op', 'I^', 2, 63 ]
 
     [ 'op', 'N-', 9.2, 0.1 ]
-
-    [ 'op', 'N|-|', 7.5, 9.0 ]
 
     [ 'op', 'N/', :2<101.01>, :2<11.0> ]
 

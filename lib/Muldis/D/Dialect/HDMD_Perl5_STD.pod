@@ -1163,11 +1163,11 @@ invocation; the number and format of these last 1-N elements, hereafter
 referred to as I<op args>, varies depending on the second
 C<func_invo_alt_syntax> node element.
 
-=head2 Infix N-adic Reduction Operators
+=head2 Simple Commutative N-adic Infix Reduction Operators
 
-An C<infix_reduce_op_invo> node has exactly 1 op arg, which is a Perl array
-ref having at least 2 elements; each element is a C<expr> node that defines
-an input value for the operator.
+A C<comm_infix_reduce_op_invo> node has exactly 1 op arg, which is a Perl
+array ref having at least 2 elements; each element is a C<expr> node that
+defines an input value for the operator.
 
 Examples:
 
@@ -1177,9 +1177,6 @@ Examples:
 
     [ 'op', 'xor', [ ['Bool','true'], ['Bool','false'], ['Bool','true'] ] ]
 
-    [ 'op', '[<=>]', [ ['Order','same'],
-        ['Order','increase'], ['Order','decrease'] ] ]
-
     [ 'op', 'I+', [ 14, 3, -5 ] ]
 
     [ 'op', 'I*', [ -6, 2, 25 ] ]
@@ -1188,31 +1185,52 @@ Examples:
 
     [ 'op', 'N*', [ 69.3, [ 'Rat', [15,2,6] ], [ 'Rat', [49,23] ] ] ]
 
-    [ 'op', 'B~', [ [ 'Blob', { F => 'DEAD' } ],
-        [ 'Blob', { 1 => '10001101' } ], [ 'Blob', { F => 'BEEF' } ] ] ]
-
-    [ 'op', 'T~', [ 'hello', ' ', 'world' ] ]
-
     [ 'op', 'R+', [ [ 'Set', [ 1, 3, 5 ] ],
         [ 'Set', [ 4, 5, 6 ] ], [ 'Set', [ 0, 9 ] ] ] ]
 
     [ 'op', 'R*', [ [ 'Set', [ 1, 3, 5, 7, 9 ] ],
         [ 'Set', [ 3, 4, 5, 6, 7, 8 ] ], [ 'Set', [ 2, 5, 9 ] ] ] ]
 
+=head2 Simple Non-commutative N-adic Infix Reduction Operators
+
+A C<noncomm_infix_reduce_op_invo> node has exactly 1 op arg, which is a
+Perl array ref having at least 2 elements; each element is a C<expr> node
+that defines an input value for the operator.
+
+Examples:
+
+    [ 'op', '[<=>]', [ ['Order','same'],
+        ['Order','increase'], ['Order','decrease'] ] ]
+
+    [ 'op', 'B~', [ [ 'Blob', { F => 'DEAD' } ],
+        [ 'Blob', { 1 => '10001101' } ], [ 'Blob', { F => 'BEEF' } ] ] ]
+
+    [ 'op', 'T~', [ 'hello', ' ', 'world' ] ]
+
     [ 'op', 'A~', [ [ 'Array', [ 24, 52 ] ],
         [ 'Array', [ -9 ] ], [ 'Array', [ 0, 11, 24, 7 ] ] ] ]
 
-=head2 Infix Homogenous Dyadic Operators
+=head2 Simple Commutative Dyadic Infix Operators
 
-An C<infix_h_dyadic_op_invo> node has exactly 2 op args, each of which is a
-C<expr> node that defines an input value for the operator; the first and
+An C<comm_dyadic_infix_op> node has exactly 2 op args, each of which is a
+C<expr> node that defines an input value for the operator; which function
+arguments get which op args isn't significant.
+
+Examples:
+
+    [ 'op', 'I|-|', 15, 17 ]
+
+    [ 'op', 'N|-|', 7.5, 9.0 ]
+
+=head2 Simple Non-commutative Dyadic Infix Operators
+
+An C<noncomm_dyadic_infix_op> node has exactly 2 op args, each of which is
+a C<expr> node that defines an input value for the operator; the first and
 second arg are C<lhs> and C<rhs>, respectively.
 
 Examples:
 
     [ 'op', 'I-', 34, 21 ]
-
-    [ 'op', 'I|-|', 15, 17 ]
 
     [ 'op', 'I/', 5, 3 ]
 
@@ -1221,8 +1239,6 @@ Examples:
     [ 'op', 'I^', 2, 63 ]
 
     [ 'op', 'N-', 9.2, 0.1 ]
-
-    [ 'op', 'N|-|', 7.5, 9.0 ]
 
     [ 'op', 'N/', [ 'Rat', {1 => '101.01'} ], [ 'Rat', {1 => '11.0'} ] ]
 
