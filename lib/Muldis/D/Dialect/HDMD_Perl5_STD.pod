@@ -259,9 +259,9 @@ value literals [C<'true'>, C<'1'>, C<1>] all map to C<Bool:true>.
 
 Examples:
 
-    [ 'Bool', 'true' ]
+    ['Bool','true']
 
-    [ 'Bool', (1 == 0) ]
+    ['Bool',(1 == 0)]
 
 =head2 Order-Determination Literals
 
@@ -289,9 +289,9 @@ C<Order:decrease>.
 
 Examples:
 
-    [ 'Order', 'same' ]
+    ['Order','same']
 
-    [ 'Order', (2 <=> 1) ]
+    ['Order',(2 <=> 1)]
 
 =head2 Rational Rounding Method Literals
 
@@ -303,9 +303,9 @@ C<to_floor>, C<to_ceiling>, C<to_zero>, C<to_inf>.
 
 Examples:
 
-    [ 'RatRoundMeth', 'half_up' ]
+    ['RatRoundMeth','half_up']
 
-    [ 'RatRoundMeth', 'to_zero' ]
+    ['RatRoundMeth','to_zero']
 
 =head2 General Purpose Integer Numeric Literals
 
@@ -429,17 +429,17 @@ Examples:
 
     [ 'Rat', { Z => '0.000AZE' } ]
 
-    [ 'Rat', { 6 => [ '500001', '1000' ] } ]
+    [ 'Rat', { 6 => ['500001','1000'] } ]
 
-    [ 'Rat', { B => [ 'A09B', 'A' ] } ]
+    [ 'Rat', { B => ['A09B','A'] } ]
 
-    [ 'Rat', { 1 => [ '1011101101', '10', '-11011' ] } ]
+    [ 'Rat', { 1 => ['1011101101','10','-11011'] } ]
 
-    [ 'Rat', [ '45207196', '10', '37' ] ]
+    [ 'Rat', [45207196,10,37] ]
 
-    [ 'Rat', [ 1, 43 ] ]
+    [ 'Rat', [1,43] ]
 
-    [ 'Rat', [ 314159, 10, -5 ] ]
+    [ 'Rat', [314159,10,-5] ]
 
 =head2 General Purpose Binary String Literals
 
@@ -601,9 +601,9 @@ Examples:
 
     [ 'Duration', 3.14159 ]
 
-    [ 'Duration', { 1 => [ '1011101101', '10', '-11011' ] } ]
+    [ 'Duration', { 1 => ['1011101101','10','-11011'] } ]
 
-    [ 'Duration', [ 1, 43 ] ]
+    [ 'Duration', [1,43] ]
 
 =head2 UTC and Float Temporal Literals
 
@@ -807,7 +807,7 @@ Examples:
     [ 'Tuple', 'type.tuple_from.var.fed.data.the_db.account.users', {
         login_name => 'hartmark',
         login_pass => 'letmein',
-        is_special => [ 'Bool', 'true' ],
+        is_special => ['Bool','true'],
     } ]
 
     [ 'Tuple', {
@@ -887,11 +887,11 @@ Examples:
         {
             login_name => 'hartmark',
             login_pass => 'letmein',
-            is_special => [ 'Bool', 'true' ],
+            is_special => ['Bool','true'],
         },
     ] ]  # 3 attrs + 1 tuple #
 
-    [ 'Relation', 'fed.lib.the_db.gene.Person', [ [ 'name', 'age' ], [
+    [ 'Relation', 'fed.lib.the_db.gene.Person', [ [ 'name', 'age' ] => [
         [ 'Michelle', 17 ],
     ] ] ]  # 2 attrs + 1 tuple #
 
@@ -1152,6 +1152,84 @@ Examples:
     ['type_ref','inn.foo_type']
 
     ['ord_det_func_ref','inn.order_bars']
+
+=head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
+
+A C<func_invo_alt_syntax> node has 3-N ordered elements:  The first element
+is the Perl character string C<op>.  The second element is a Perl character
+string, hereafter referred to as I<op>, which determines the function to
+invoke.  The last 1-N elements provide arguments to the function
+invocation; the number and format of these last 1-N elements, hereafter
+referred to as I<op args>, varies depending on the second
+C<func_invo_alt_syntax> node element.
+
+=head2 Infix N-adic Reduction Operators
+
+An C<infix_reduce_op_invo> node has exactly 1 op arg, which is a Perl array
+ref having at least 2 elements; each element is a C<expr> node that defines
+an input value for the operator.
+
+Examples:
+
+    [ 'op', 'and', [ ['Bool','true'], ['Bool','false'], ['Bool','true'] ] ]
+
+    [ 'op', 'or', [ ['Bool','true'], ['Bool','false'], ['Bool','true'] ] ]
+
+    [ 'op', 'xor', [ ['Bool','true'], ['Bool','false'], ['Bool','true'] ] ]
+
+    [ 'op', '[<=>]', [ ['Order','same'],
+        ['Order','increase'], ['Order','decrease'] ] ]
+
+    [ 'op', 'I+', [ 14, 3, -5 ] ]
+
+    [ 'op', 'I*', [ -6, 2, 25 ] ]
+
+    [ 'op', 'N+', [ 4.25, -0.002, 1.0 ] ]
+
+    [ 'op', 'N*', [ 69.3, [ 'Rat', [15,2,6] ], [ 'Rat', [49,23] ] ] ]
+
+    [ 'op', 'B~', [ [ 'Blob', { F => 'DEAD' } ],
+        [ 'Blob', { 1 => '10001101' } ], [ 'Blob', { F => 'BEEF' } ] ] ]
+
+    [ 'op', 'T~', [ 'hello', ' ', 'world' ] ]
+
+    [ 'op', 'R+', [ [ 'Set', [ 1, 3, 5 ] ],
+        [ 'Set', [ 4, 5, 6 ] ], [ 'Set', [ 0, 9 ] ] ] ]
+
+    [ 'op', 'R*', [ [ 'Set', [ 1, 3, 5, 7, 9 ] ],
+        [ 'Set', [ 3, 4, 5, 6, 7, 8 ] ], [ 'Set', [ 2, 5, 9 ] ] ] ]
+
+    [ 'op', 'A~', [ [ 'Array', [ 24, 52 ] ],
+        [ 'Array', [ -9 ] ], [ 'Array', [ 0, 11, 24, 7 ] ] ] ]
+
+=head2 Infix Homogenous Dyadic Operators
+
+An C<infix_h_dyadic_op_invo> node has exactly 2 op args, each of which is a
+C<expr> node that defines an input value for the operator; the first and
+second arg are C<lhs> and C<rhs>, respectively.
+
+Examples:
+
+    [ 'op', 'I-', 34, 21 ]
+
+    [ 'op', 'I|-|', 15, 17 ]
+
+    [ 'op', 'I/', 5, 3 ]
+
+    [ 'op', '%', 5, 3 ]
+
+    [ 'op', 'I^', 2, 63 ]
+
+    [ 'op', 'N-', 9.2, 0.1 ]
+
+    [ 'op', 'N|-|', 7.5, 9.0 ]
+
+    [ 'op', 'N/', [ 'Rat', {1 => '101.01'} ], [ 'Rat', {1 => '11.0'} ] ]
+
+    [ 'op', 'R-', [ 'Set', [ 8, 4, 6, 7 ] ], [ 'Set', [ 9, 0, 7 ] ] ]
+
+    [ 'op', 'R/', [ 'Relation', [ ['x', 'y'] => [ [5, 6], [3, 6] ] ] ],
+        [ 'Relation', [ { y => 6 } ] ] ]
 
 =head1 DEPOT DECLARATION
 

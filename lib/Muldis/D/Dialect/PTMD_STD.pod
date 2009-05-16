@@ -2020,6 +2020,192 @@ Examples:
 
     ODF->inn.order_bars
 
+=head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
+
+Grammar:
+
+    <func_invo_alt_syntax> ::=
+          <infix_reduce_op_invo>
+        | <infix_h_dyadic_op_invo>
+        | ...
+
+A C<func_invo_alt_syntax> node represents the result of invoking a named
+system-defined function with specific arguments.  It is interpreted as a
+tuple of a Muldis D C<sys.std.Core.Type.Cat.FuncInvoExprNodeSet> value.  A
+C<func_invo_alt_syntax> node is a lot like a C<func_invo> node in purpose
+and interpretation but it differs in several significant ways.
+
+While a C<func_invo> node can be used to invoke any inner/function at all,
+a C<func_invo_alt_syntax> node can only invoke a fraction of them, and only
+standard system-defined functions.  While a C<func_invo> node uses a simple
+common format with all functions, written in prefix notation with generally
+named arguments, a C<func_invo_alt_syntax> node uses potentially unique
+syntax for each function, often written in infix notation, although
+inter-function format consistency is still applied as much as is reasonably
+possible.
+
+One basic format commonality with all C<func_invo_alt_syntax> tokens is
+that the entire token is delimited by a pair of parenthesis, whose
+conceptual purpose is to group together all the parts of the token, so
+there are no precedence issues to make difficulty in telling the token from
+its parent, no matter how complicated it is; this is like with the common
+grouping parenthesis in mathematical expressions.  A practical purpose of
+this is that the delimiting parenthesis is a feature mostly unique to a
+C<func_invo_alt_syntax> token, which almost all other grammar tokens don't
+have, C<if_else_expr> and C<given_when_def_expr> being the main exceptions.
+
+The decision of I<which> system-defined functions get the special alternate
+syntax treatment partly comes down to respecting common good practices in
+programming languages, letting people write code more like how they're
+comfortable with.  Most programming languages only have special syntax for
+a handful of their operators, such as common comparison and boolean and
+mathematical and string and element extraction operators, and so Muldis D
+mainly does likewise.  Functions get special alternate syntax if they would
+be frequently used and the syntax would significantly aid programmers in
+quickly writing understandeable code.
+
+=head2 Infix N-adic Reduction Operators
+
+Grammar:
+
+    <infix_reduce_op_invo> ::=
+        '(' \s*
+            <expr> ** [\s+ <infix_reduce_op> \s+]
+        \s* ')'
+
+    <infix_reduce_op ::=
+          and | or | xor
+        | '[<=>]'
+        | 'I+' | 'I*'
+        | 'N+' | 'N*'
+        | 'B~'
+        | 'T~'
+        | 'R+' | 'R*'
+        | 'A~'
+
+An C<infix_reduce_op_invo> node is for using infix notation to invoke a
+(homogenous) N-adic reduction operator function.  Such a function takes
+exactly 1 actual argument, which is collection typed (q/set or q/array or
+q/bag), and the elements of that collection are the inputs of the
+operation; the inputs are all of the same type as each other and of the
+result.  A single C<infix_reduce_op_invo> node is equivalent to a single
+C<func_invo> node whose C<func_arg_list> element defines a single argument,
+whose value is a C<QSet> or C<QArray> or C<QBag> node, which has a payload
+C<expr> element for each C<expr> element of the C<infix_reduce_op_invo>,
+and the C<expr> elements have the same sequence (important for C<QArray>).
+A C<infix_reduce_op_invo> node requires at least 2 input value providing
+child nodes (C<expr> must match at least twice); if you already have your
+inputs in a single collection-valued node then use C<func_invo> to invoke
+the function instead.  If C<infix_reduce_op> matches more than once in the
+same C<infix_reduce_op_invo>, then all of the C<infix_reduce_op> matches
+must be identical / the same operator.
+
+This table indicates which function is invoked by each infix keyword:
+
+    and   -> Core.Bool.and( Set:{ ... } )
+    or    -> Core.Bool.or( Set:{ ... } )
+    xor   -> Core.Bool.xor( Bag:{ ... } )
+    [<=>] -> Core.Cat.Order.reduction( Array:{ ... } )
+    I+    -> Integer.sum( Bag:{ ... } )
+    I*    -> Integer.product( Bag:{ ... } )
+    N+    -> Rational.sum( Bag:{ ... } )
+    N*    -> Rational.product( Bag:{ ... } )
+    B~    -> Blob.catenation( Array:{ ... } )
+    T~    -> Text.catenation( Array:{ ... } )
+    R+    -> Core.QRelation.union( QSet:{ ... } )
+    R*    -> Core.QRelation.join( QSet:{ ... } )
+    A~    -> QArray.catenation( QArray:{ ... } )
+
+Examples:
+
+    (true and false and true)
+
+    (true or false or true)
+
+    (true xor false xor true)
+
+    (same [<=>] increase [<=>] decrease)
+
+    (14 I+ 3 I+ -5)
+
+    (-6 I* 2 I* 25)
+
+    (4.25 N+ -0.002 N+ 1.0)
+
+    (69.3 N* 15*2^6 N* 49/23)
+
+    (F;'DEAD' B~ 1;'10001101' B~ F;'BEEF')
+
+    ('hello' T~ ' ' T~ 'world')
+
+    (Set:{ 1, 3, 5 } R+ Set:{ 4, 5, 6 } R+ Set:{ 0, 9 })
+
+    (Set:{ 1, 3, 5, 7, 9 } R* Set:{ 3, 4, 5, 6, 7, 8 } R* Set:{ 2, 5, 9 })
+
+    (Array:[ 24, 52 ] A~ Array:[ -9 ] A~ Array:[ 0, 11, 24, 7 ])
+
+=head2 Infix Homogenous Dyadic Operators
+
+    <infix_h_dyadic_op_invo> ::=
+        '(' \s*
+            <lhs> \s+ <infix_h_dyadic_op> \s+ <rhs>
+        \s* ')'
+
+    <lhs> ::=
+        <expr>
+
+    <rhs> ::=
+        <expr>
+
+    <infix_h_dyadic_op> ::=
+        | 'I-' | 'I|-|' | 'I/' | '%' | 'I^'
+        | 'N-' | 'N|-|' | 'N/'
+        | 'R-' | 'R/'
+
+An C<infix_h_dyadic_op_invo> node is for using infix notation to invoke a
+homogenous dyadic operator function.  Such a function takes exactly 2
+arguments, which are the inputs of the operation; the inputs are all of the
+same type as each other and of the result.  A single
+C<infix_h_dyadic_op_invo> node is equivalent to a single C<func_invo> node
+whose C<func_arg_list> element defines 2 arguments, and the 2 C<expr>
+elements of the C<infix_h_dyadic_op_invo> supply the values of those
+arguments, which are associated as one would normally expect.
+
+This table indicates which function is invoked by each infix keyword:
+
+    I-   -> Integer.difference( minuend => $lhs, subtrahend => $rhs )
+    I|-| -> Integer.abs_difference( $lhs, $rhs )
+    I/   -> Integer.quotient( dividend => $lhs, divisor => $rhs )
+    %    -> Integer.remainder( dividend => $lhs, divisor => $rhs )
+    I^   -> Integer.power( radix => $lhs, exponent => $rhs )
+    N-   -> Rational.difference( minuend => $lhs, subtrahend => $rhs )
+    N|-| -> Rational.abs_difference( $lhs, $rhs )
+    N/   -> Rational.quotient( dividend => $lhs, divisor => $rhs )
+    R-   -> Core.QRelation.difference( source => $lhs, filter => $rhs )
+    R/   -> Core.QRelation.quotient( dividend => $lhs, divisor => $rhs )
+
+Examples:
+
+    (34 I- 21)
+
+    (15 I|-| 17)
+
+    (5 I/ 3)
+
+    (5 % 3)
+
+    (2 I^ 63)
+
+    (9.2 N- 0.1)
+
+    (7.5 N|-| 9.0)
+
+    (1;101.01 N/ 1;11.0)
+
+    (Set:{ 8, 4, 6, 7 } R- Set:{ 9, 0, 7 })
+
+    (Relation:[ x, y ];{ [ 5, 6 ], [ 3, 6 ] } R/ Relation:{ { y => 6 } })
+
 =head1 DEPOT DECLARATION
 
 B<TODO: ALL OF THIS HERE MAIN POD SECTION!>
