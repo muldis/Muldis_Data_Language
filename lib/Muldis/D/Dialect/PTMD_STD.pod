@@ -2029,6 +2029,8 @@ Grammar:
         | <noncomm_infix_reduce_op_invo>
         | <comm_dyadic_infix_op_invo>
         | <noncomm_dyadic_infix_op_invo>
+        | <monadic_prefix_op_invo>
+        | <monadic_postfix_op_invo>
         | ...
 
 A C<func_invo_alt_syntax> node represents the result of invoking a named
@@ -2188,7 +2190,8 @@ Grammar:
         \s* ')'
 
     <comm_dyadic_infix_op> ::=
-        'I|-|' | 'N|-|'
+          '===' | '!==='
+        | 'I|-|' | 'N|-|'
 
 A C<comm_dyadic_infix_op_invo> node is for using infix notation to invoke a
 commutative dyadic operator function.  Such a function takes exactly 2
@@ -2202,10 +2205,16 @@ isn't significant.
 
 This table indicates which function is invoked by each keyword:
 
+    ===  -> Core.Universal.is_identical( $expr[0], $expr[1] )
+    !=== -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
     I|-| -> Integer.abs_difference( $expr[0], $expr[1] )
     N|-| -> Rational.abs_difference( $expr[0], $expr[1] )
 
 Examples:
+
+    ($foo === $bar)
+
+    ($foo !=== $bar)
 
     (15 I|-| 17)
 
@@ -2231,15 +2240,15 @@ Grammar:
         | 'N-' | 'N/'
         | 'R-' | 'R/'
 
-A C<noncomm_dyadic_infix_op> node is for using infix notation to invoke a
-non-commutative dyadic operator function.  Such a function takes exactly 2
-arguments, which are the inputs of the operation; the inputs are all of the
-same type as each other but the result might be of either that type or a
-different type.  A single C<noncomm_dyadic_infix_op> node is equivalent to
-a single C<func_invo> node whose C<func_arg_list> element defines 2
-arguments, and the 2 C<expr> elements of the C<noncomm_dyadic_infix_op>
-supply the values of those arguments, which are associated in the
-appropriate sequence.
+A C<noncomm_dyadic_infix_op_invo> node is for using infix notation to
+invoke a non-commutative dyadic operator function.  Such a function takes
+exactly 2 arguments, which are the inputs of the operation; the inputs are
+all of the same type as each other but the result might be of either that
+type or a different type.  A single C<noncomm_dyadic_infix_op_invo> node is
+equivalent to a single C<func_invo> node whose C<func_arg_list> element
+defines 2 arguments, and the 2 C<expr> elements of the
+C<noncomm_dyadic_infix_op_invo> supply the values of those arguments, which
+are associated in the appropriate sequence.
 
 This table indicates which function is invoked by each keyword:
 
@@ -2269,6 +2278,72 @@ Examples:
     (Set:{ 8, 4, 6, 7 } R- Set:{ 9, 0, 7 })
 
     (Relation:[ x, y ];{ [ 5, 6 ], [ 3, 6 ] } R/ Relation:{ { y => 6 } })
+
+=head2 Simple Monadic Prefix Operators
+
+Grammar:
+
+    <monadic_prefix_op_invo> ::=
+        '(' \s*
+            <monadic_prefix_op> \s+ <expr>
+        \s* ')'
+
+    <monadic_prefix_op> ::=
+        not | 'I||' | 'N||'
+
+A C<monadic_prefix_op_invo> node is for using prefix notation to invoke a
+monadic operator function.  Such a function takes exactly 1 argument, which
+is the input of the operation.  A single C<monadic_prefix_op_invo> node is
+equivalent to a single C<func_invo> node whose C<func_arg_list> element
+defines 1 argument, and the 1 C<expr> element of the
+C<monadic_prefix_op_invo> supplies the value of that argument.
+
+This table indicates which function is invoked by each keyword:
+
+    not -> Core.Bool.not( $expr )
+    I|| -> Integer.abs( $expr )
+    N|| -> Rational.abs( $expr )
+
+Examples:
+
+    (not true)
+
+    (I|| -23)
+
+    (N|| -4.59)
+
+=head2 Simple Monadic Postfix Operators
+
+Grammar:
+
+    <monadic_postfix_op_invo> ::=
+        '(' \s*
+            <expr> \s+ <monadic_postfix_op>
+        \s* ')'
+
+    <monadic_postfix_op> ::=
+        '++' | '--' | '!'
+
+A C<monadic_postfix_op_invo> node is for using prefix notation to invoke a
+monadic operator function.  Such a function takes exactly 1 argument, which
+is the input of the operation.  A single C<monadic_postfix_op_invo> node is
+equivalent to a single C<func_invo> node whose C<func_arg_list> element
+defines 1 argument, and the 1 C<expr> element of the
+C<monadic_postfix_op_invo> supplies the value of that argument.
+
+This table indicates which function is invoked by each keyword:
+
+    ++ -> Integer.increment( $expr )
+    -- -> Integer.decrement( $expr )
+    !  -> Integer.factorial( $expr )
+
+Examples:
+
+    (13 ++)
+
+    (4 --)
+
+    (5 !)
 
 =head1 DEPOT DECLARATION
 

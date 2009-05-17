@@ -887,18 +887,17 @@ Examples:
 
     [ 'if_else_expr',
         [
-            [ 'func_invo_alt_syntax', '>', :expr_name<foo>, 5 ]
-                => :expr_name<bar>,
+            [ 'op', '>', :expr_name<foo>, 5 ] => :expr_name<bar>,
         ],
         :expr_name<baz>
     ]
 
     [ 'if_else_expr',
         [
-            [ 'func_invo_alt_syntax', 'is_empty', :expr_name<ary> ]
+            [ 'op', 'is_empty', :expr_name<ary> ]
                 => :expr_name<empty_result>,
         ],
-        [ 'func_invo_alt_syntax', 'QArray.value', :expr_name<ary>, 0 ]
+        [ 'op', 'QArray.value', :expr_name<ary>, 0 ]
     ]
 
 =head2 Generic Given-When-Default Expressions
@@ -958,7 +957,7 @@ args>, varies depending on the second C<func_invo_alt_syntax> node element.
 
 A C<comm_infix_reduce_op_invo> node has exactly 1 op arg, which is a Perl
 C<Seq|Array|Bag|KeyBag|Set|KeySet> having at least 2 elements; each element
-is a C<expr> node that defines an input value for the operator.
+is an C<expr> node that defines an input value for the operator.
 
 Examples:
 
@@ -985,7 +984,7 @@ Examples:
 =head2 Simple Non-commutative N-adic Infix Reduction Operators
 
 A C<noncomm_infix_reduce_op_invo> node has exactly 1 op arg, which is a
-Perl C<Seq|Array> having at least 2 elements; each element is a C<expr>
+Perl C<Seq|Array> having at least 2 elements; each element is an C<expr>
 node that defines an input value for the operator.
 
 Examples:
@@ -1001,11 +1000,15 @@ Examples:
 
 =head2 Simple Commutative Dyadic Infix Operators
 
-An C<comm_dyadic_infix_op> node has exactly 2 op args, each of which is a
-C<expr> node that defines an input value for the operator; which function
-arguments get which op args isn't significant.
+A C<comm_dyadic_infix_op_invo> node has exactly 2 op args, each of which is
+an C<expr> node that defines an input value for the operator; which
+function arguments get which op args isn't significant.
 
 Examples:
+
+    [ 'op', '===', :expr_name<foo>, :expr_name<bar> ]
+
+    [ 'op', '!===', :expr_name<foo>, :expr_name<bar> ]
 
     [ 'op', 'I|-|', 15, 17 ]
 
@@ -1013,9 +1016,9 @@ Examples:
 
 =head2 Simple Non-commutative Dyadic Infix Operators
 
-An C<noncomm_dyadic_infix_op> node has exactly 2 op args, each of which is
-a C<expr> node that defines an input value for the operator; the first and
-second arg are C<lhs> and C<rhs>, respectively.
+A C<noncomm_dyadic_infix_op_invo> node has exactly 2 op args, each of which
+is an C<expr> node that defines an input value for the operator; the first
+and second arg are C<lhs> and C<rhs>, respectively.
 
 Examples:
 
@@ -1035,6 +1038,32 @@ Examples:
 
     [ 'op', 'R/', :Relation( <x y> => Set.new( [ 5, 6 ], [ 3, 6 ] ) ),
         :Relation( Set.new( { y => 6 } ) ) ]
+
+=head2 Simple Monadic Prefix Operators
+
+A C<monadic_prefix_op_invo> node has exactly 1 op arg, which is an C<expr>
+node that defines the input value for the operator.
+
+Examples:
+
+    [ 'op', 'not', Bool::True ]
+
+    [ 'op', 'I||', -23 ]
+
+    [ 'op', 'N||', -4.59 ]
+
+=head2 Simple Monadic Postfix Operators
+
+A C<monadic_postfix_op_invo> node has exactly 1 op arg, which is an C<expr>
+node that defines the input value for the operator.
+
+Examples:
+
+    [ 'op', '++', 13 ]
+
+    [ 'op', '--', 4 ]
+
+    [ 'op', '!', 5 ]
 
 =head1 DEPOT DECLARATION
 
