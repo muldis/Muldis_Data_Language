@@ -267,6 +267,7 @@ Grammar:
         | <QMaybe>
         | <QArray>
         | <QBag>
+        | <RatRoundRule>
 
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
@@ -361,6 +362,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | Q? [Maybe | Single]
         | Q? Array
         | Q? Bag
+        | RatRoundRule
 
     <type_name> ::=
         <NameChain_payload>
@@ -391,6 +393,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <QMaybe_payload>
         | <QArray_payload>
         | <QBag_payload>
+        | <RatRoundRule_payload>
 
 So a C<x_value>|C<value> node has 1-3 elements in general:
 
@@ -1706,6 +1709,48 @@ Examples:
         'Baz'
     }
 
+=head2 Rational Rounding Rule Selectors
+
+Grammar:
+
+    <RatRoundRule> ::=
+        RatRoundRule \s* ':' \s*
+        [<type_name> \s* ':' \s*]?
+        <RatRoundRule_payload>
+
+    <RatRoundRule_payload> ::=
+        '[' \s*
+            <radix> \s* ',' \s* <min_exp> \s* ',' \s* <round_meth>
+        \s* ']'
+
+    <radix> ::=
+        <expr>
+
+    <min_exp> ::=
+        <expr>
+
+    <round_meth> ::=
+        <expr>
+
+A C<RatRoundRule> node represents a literal or selector invocation for a
+rational rounding rule.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Cat.RatRoundRule> value whose attributes are defined by
+the C<RatRoundRule_payload>.  A C<RatRoundRule_payload> consists mainly of
+a bracket-delimited sequence of 3 comma-separated elements, which
+correspond in order to the 3 attributes: C<radix> (a C<PInt2_N>),
+C<min_exp> (an C<Int>), and C<round_meth> (a C<RatRoundMeth>).  Each of the
+3 C<RatRoundRule_payload> elements is an C<expr> node.
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what in
+general a C<RatRoundRule> node distills to same as when C<QTuple> does.
+
+Examples:
+
+    RatRoundRule:[10,-2,half_even]
+
+    RatRoundRule:[2,-7,to_zero]
+
 =head1 GENERIC VALUE EXPRESSIONS
 
 Grammar:
@@ -2252,14 +2297,14 @@ are associated in the appropriate sequence.
 
 This table indicates which function is invoked by each keyword:
 
-    I-   -> Integer.difference( minuend => $lhs, subtrahend => $rhs )
-    I/   -> Integer.quotient( dividend => $lhs, divisor => $rhs )
-    %    -> Integer.remainder( dividend => $lhs, divisor => $rhs )
-    I^   -> Integer.power( radix => $lhs, exponent => $rhs )
-    N-   -> Rational.difference( minuend => $lhs, subtrahend => $rhs )
-    N/   -> Rational.quotient( dividend => $lhs, divisor => $rhs )
-    R-   -> Core.QRelation.difference( source => $lhs, filter => $rhs )
-    R/   -> Core.QRelation.quotient( dividend => $lhs, divisor => $rhs )
+    I- -> Integer.difference( minuend => $lhs, subtrahend => $rhs )
+    I/ -> Integer.quotient( dividend => $lhs, divisor => $rhs )
+    %  -> Integer.remainder( dividend => $lhs, divisor => $rhs )
+    I^ -> Integer.power( radix => $lhs, exponent => $rhs )
+    N- -> Rational.difference( minuend => $lhs, subtrahend => $rhs )
+    N/ -> Rational.quotient( dividend => $lhs, divisor => $rhs )
+    R- -> Core.QRelation.difference( source => $lhs, filter => $rhs )
+    R/ -> Core.QRelation.quotient( dividend => $lhs, divisor => $rhs )
 
 Examples:
 

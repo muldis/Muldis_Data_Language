@@ -154,12 +154,12 @@ Examples:
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
 
-There are 25 main varieties of C<value> node, each of which is a named node
+There are 26 main varieties of C<value> node, each of which is a named node
 kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<DeclNameChain>, C<Comment>,
 C<Instant>, C<Duration>, C<UTCInstant>, C<FloatInstant>, C<UTCDuration>,
 C<String>, C<QScalar>, C<QTuple>, C<Database>, C<QRelation>, C<QSet>,
-C<QMaybe>, C<QArray>, C<QBag>.
+C<QMaybe>, C<QArray>, C<QBag>, C<RatRoundRule>.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl native scalar and collection types.
@@ -185,14 +185,14 @@ only external meta-data of C<payload> generally necessary to interpret the
 latter; what grammars are valid for C<payload> depend just on
 C<value_kind>.
 
-Between the various kinds of C<value> node, these 48 values are allowed for
+Between the various kinds of C<value> node, these 49 values are allowed for
 C<value_kind>:  C<Bool>, C<Order>, C<RatRoundMeth>, C<[|NN|P]Int>,
 C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
 C<DeclNameChain>, C<Comment>, C<Instant>, C<Duration>,
 C<UTC[Instant|DateTime|Date|Time]>, C<Float[Instant|DateTime|Date|Time]>,
 C<UTCDuration>, C<[|B|O|UCP]String>, C<[Q|]Scalar>, C<[Q|]Tuple>,
 C<Database>, C<[Q|]Relation>, C<[Q|]Set>, C<[Q|][Maybe|Single]>,
-C<[Q|]Array>, C<[Q|]Bag>.
+C<[Q|]Array>, C<[Q|]Bag>, C<RatRoundRule>.
 
 For just some data types, the C<value_kind> may be omitted; see below.
 
@@ -1019,6 +1019,23 @@ Examples:
         'Baz',
         'Baz',
     ] ]
+
+=head2 Rational Rounding Rule Selectors
+
+A C<RatRoundRule> node represents a literal or selector invocation for a
+rational rounding rule.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Cat.RatRoundRule> value whose attributes are defined by
+the C<RatRoundRule_payload>.  A C<RatRoundRule_payload> must be a Perl
+array ref with 3 elements, which correspond in order to the 3 attributes:
+C<radix> (a C<PInt2_N>), C<min_exp> (an C<Int>), and C<round_meth> (a
+C<RatRoundMeth>).  Each of the 3 C<RatRoundRule_payload> elements is an
+C<expr> node.
+
+Examples:
+
+    [ 'RatRoundRule', [10,-2,half_even] ]
+
+    [ 'RatRoundRule', [2,-7,to_zero] ]
 
 =head1 GENERIC VALUE EXPRESSIONS
 
