@@ -248,22 +248,30 @@ element.  One can be used to represent an integer.
 
 This is an enumeration data type.  C<BString> (bit string) is a proper
 subtype of C<String> where all member value elements are between zero and
-1.  One can be used to represent a string of bits.
+1 inclusive.  One can be used to represent a string of bits.
 
 =head2 sys.std.Core.Type.Cat.OString
 
 This is an enumeration data type.  C<OString> (octet string) is a proper
 subtype of C<String> where all member value elements are between zero and
-255.  One can be used to represent a string of octets.
+255 inclusive.  One can be used to represent a string of octets.
 
 =head2 sys.std.Core.Type.Cat.UCPString
 
-This is an enumeration data type.  C<UCPString> (Unicode codepoint
+This is an enumeration data type.  C<UCPString> (Unicode abstract codepoint
 string) is a proper subtype of C<String> where all member value elements
-are between zero and 0x10FFFF.  As of the Unicode standard version 5.1.0,
-all character codepoints exist within that range, and so each element could
-be used to represent any Unicode character and the whole string can be used
-to represent a string of Unicode characters.
+are between zero and F;D7FF inclusive or F;E000 and F;10FFFF inclusive.  As
+of the Unicode standard version 5.1.0, all character abstract codepoints
+exist within that range, and so each element could be used to represent any
+Unicode character and the whole string can be used to represent a string of
+Unicode characters.
+
+There are no Unicode abstract codepoints between F;D800 and F;DFFF
+inclusive; those numbers would only represent special surrogates that do
+not define extra abstract characters and only have any meaning in
+conjunction with the UTF-16 character encoding form; and so the
+C<UCPString> type specifically excludes them from use in its member values;
+you must just use the normal character abstract codepoints instead.
 
 =head2 sys.std.Core.Type.Cat.Name
 
@@ -280,11 +288,11 @@ other details such as default and minimum and maximum values and
 cardinality and default ordering algorithm all correspond directly.  But
 C<Name> is explicitly disjoint from C<String> due to having a different
 intended interpretation.  C<Name> is also very similar to C<Text> but that
-while C<Text> is limited to string elements matching Unicode codepoints,
-C<Name> elements can be any integer; besides that they are explicitly
-disjoint due to having a different intended interpretation; it is
-specifically intended for use in naming DBMS entities rather than being for
-general-purpose user data.
+while C<Text> is limited to string elements matching Unicode abstract
+codepoints, C<Name> elements can be any integer; besides that they are
+explicitly disjoint due to having a different intended interpretation; it
+is specifically intended for use in naming DBMS entities rather than being
+for general-purpose user data.
 
 All of the above being said, any use of a C<Name> value that can not be
 exactly matched by a C<Text> value (because its component C<String> value
