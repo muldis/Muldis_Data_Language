@@ -219,10 +219,21 @@ is a string of integers, or more specifically it is a dense sequence of
 0..N elements (I<not> defined over C<Relation>) where each element is an
 integer.  A C<String.Value> has 1 system-defined possrep whose name is the
 empty string and which has zero attributes.  The cardinality of this type
-is 1, and its only value is its default and minimum and maximum value.  The
-sole value of C<String.Value> is the same as its unqualified name, or more
-accurately, it is identical to the sole attribute value of the sole possrep
-of the C<Name> value C<Value>.
+is 1, and its only value is its default and minimum and maximum value.
+
+The sole value of C<String.Value> is the same as the decoded form of its
+unqualified name, or more accurately, it is identical to the decoded form
+of the sole attribute value of the sole possrep of the C<Name> value
+C<Value>.  The unqualified name of the type C<String.Value> is formatted
+simply as a (ordered) sequence of tokens where each token defines an
+integer element of the C<String> and the token is formatted as a base-10
+integer literal delimited with less-than and greater-than characters; for
+example, the C<Name> value C<< <80><101><114><109> >> defines a 4-element
+C<String>.  Said unqualified name format is the encoded form of the
+C<String.Value> type's name.  The reason for using encoding like this is
+that a C<Name> string element is limited to specific range of integer
+values where a C<String> element can be any integer, so a one-to-one
+element mapping isn't possible.
 
 Now, one main rationale to have the system-defined C<String> type as a
 union type over an infinite number of C<String.*> types, is to avoid any
@@ -281,31 +292,11 @@ this short name is sufficient to identify the entity within its immediate
 namespace.  Similarly, a DBMS entity can often be invoked or referred to
 using just its C<Name>, depending on the context; other times, a
 C<NameChain> must be used instead to also qualify the reference with a
-namespace.  A C<Name> has 1 system-defined possrep whose name is the empty
-string which consists of 1 C<String>-typed attribute whose name is the
-empty string.  A C<Name> is a simple wrapper for a C<String> and all of its
-other details such as default and minimum and maximum values and
-cardinality and default ordering algorithm all correspond directly.  But
-C<Name> is explicitly disjoint from C<String> due to having a different
-intended interpretation.  C<Name> is also very similar to C<Text> but that
-while C<Text> is limited to string elements matching Unicode abstract
-codepoints, C<Name> elements can be any integer; besides that they are
+namespace.  Every detail of C<Name>'s representation (its 1 possrep,
+default value and ordering algorithm, etc) is the same as C<Text> but it is
 explicitly disjoint due to having a different intended interpretation; it
 is specifically intended for use in naming DBMS entities rather than being
 for general-purpose user data.
-
-All of the above being said, any use of a C<Name> value that can not be
-exactly matched by a C<Text> value (because its component C<String> value
-is not a valid C<UCPString> value) is strongly discouraged for various
-reasons of practicality.  In fact it is so strongly discouraged that all of
-the standard Muldis D dialects do not provide support in their C<Name>/etc
-value literal syntax for selecting said discouraged values, and so the only
-way you can select said values in those dialects is in terms of a generic
-C<Scalar> value literal with a component that is a C<String> value literal.
-The primary reason that the internal C<Name> flexibility exists for now is
-so that some/most of the implicitly defined infinite number of
-system-defined singleton scalar types comprising the quasi-foundational
-system-defined C<String> type can be named after their values.
 
 =head2 sys.std.Core.Type.Cat.NameChain
 
@@ -468,8 +459,8 @@ hard-coded meanings and are not defined like any other types; these are
 declarations of all of the native Muldis D types that can't be defined like
 user-defined types.  Specifically, it declares these 13 standard types: in
 the C<sys.std.Core.Type> namespace, C<Universal>, C<Empty>, C<QScalar>,
-C<String>, C<QTuple>, C<QRelation>, C<Reference>, C<External>, C<Remnant>;
-in the C<sys.std.Core.Type.Cat> namespace,
+C<QTuple>, C<QRelation>, C<Reference>, C<External>, C<Remnant>; in the
+C<sys.std.Core.Type.Cat> namespace, C<String> and
 C<[Func|Proc|Type|OrdDetFunc]Ref>.  These constitute all 2 Muldis D
 primitive types, all 5 Muldis D reference types, all 2 Muldis D type system
 minimal and maximal (enumeration) types, all 3 Muldis D enumeration types
