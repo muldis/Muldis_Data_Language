@@ -158,8 +158,8 @@ There are 26 main varieties of C<value> node, each of which is a named node
 kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<DeclNameChain>, C<Comment>,
 C<Instant>, C<Duration>, C<UTCInstant>, C<FloatInstant>, C<UTCDuration>,
-C<String>, C<QScalar>, C<QTuple>, C<Database>, C<QRelation>, C<QSet>,
-C<QMaybe>, C<QArray>, C<QBag>, C<RatRoundRule>.
+C<RatRoundRule>, C<String>, C<QScalar>, C<QTuple>, C<Database>,
+C<QRelation>, C<QSet>, C<QMaybe>, C<QArray>, C<QBag>.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl native scalar and collection types.
@@ -190,9 +190,9 @@ C<value_kind>:  C<Bool>, C<Order>, C<RatRoundMeth>, C<[|NN|P]Int>,
 C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
 C<DeclNameChain>, C<Comment>, C<Instant>, C<Duration>,
 C<UTC[Instant|DateTime|Date|Time]>, C<Float[Instant|DateTime|Date|Time]>,
-C<UTCDuration>, C<[|B|O|UCP]String>, C<[Q|]Scalar>, C<[Q|]Tuple>,
-C<Database>, C<[Q|]Relation>, C<[Q|]Set>, C<[Q|][Maybe|Single]>,
-C<[Q|]Array>, C<[Q|]Bag>, C<RatRoundRule>.
+C<UTCDuration>, C<RatRoundRule>, C<[|B|O|UCP]String>, C<[Q|]Scalar>,
+C<[Q|]Tuple>, C<Database>, C<[Q|]Relation>, C<[Q|]Set>,
+C<[Q|][Maybe|Single]>, C<[Q|]Array>, C<[Q|]Bag>.
 
 For just some data types, the C<value_kind> may be omitted; see below.
 
@@ -710,6 +710,23 @@ Examples:
 
     [ 'UTCDuration', [3,5,1,6,15,45.000012] ]
 
+=head2 Rational Rounding Rule Literals
+
+A C<RatRoundRule> node represents a rational rounding rule.  It is
+interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundRule> value whose
+attributes are defined by the C<RatRoundRule_payload>.  A
+C<RatRoundRule_payload> must be a Perl array ref with 3 elements, which
+correspond in order to the 3 attributes: C<radix> (a C<PInt2_N>),
+C<min_exp> (an C<Int>), and C<round_meth> (a C<RatRoundMeth>).  Each of
+C<radix> and C<min_exp> must qualify as a valid C<Int_payload>, and
+C<round_meth> must qualify as a valid C<RatRoundMeth_payload>.
+
+Examples:
+
+    [ 'RatRoundRule', [10,-2,'half_even'] ]
+
+    [ 'RatRoundRule', [2,-7,'to_zero'] ]
+
 =head2 Low Level Integer String Literals
 
 A C<String> node represents an integer string value.  This node is
@@ -1020,23 +1037,6 @@ Examples:
         'Baz',
     ] ]
 
-=head2 Rational Rounding Rule Selectors
-
-A C<RatRoundRule> node represents a literal or selector invocation for a
-rational rounding rule.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.RatRoundRule> value whose attributes are defined by
-the C<RatRoundRule_payload>.  A C<RatRoundRule_payload> must be a Perl
-array ref with 3 elements, which correspond in order to the 3 attributes:
-C<radix> (a C<PInt2_N>), C<min_exp> (an C<Int>), and C<round_meth> (a
-C<RatRoundMeth>).  Each of the 3 C<RatRoundRule_payload> elements is an
-C<expr> node.
-
-Examples:
-
-    [ 'RatRoundRule', [10,-2,half_even] ]
-
-    [ 'RatRoundRule', [2,-7,to_zero] ]
-
 =head1 GENERIC VALUE EXPRESSIONS
 
 An C<expr_name> node has 2 ordered elements:  The first element is the Perl
@@ -1307,15 +1307,15 @@ second and third args are C<lhs>, C<rhs> and C<round_rule>, respectively.
 Examples:
 
     [ 'op', 'round', [ ['expr_name','foo'],
-        [ 'RatRoundRule', [10,-2,half_even] ] ] ]
+        [ 'RatRoundRule', [10,-2,'half_even'] ] ] ]
 
-    [ 'op', 'N^', [ 2.0, 0.5, [ 'RatRoundRule', [2,-7,to_zero] ] ] ]
+    [ 'op', 'N^', [ 2.0, 0.5, [ 'RatRoundRule', [2,-7,'to_zero'] ] ] ]
 
-    [ 'op', 'log', [ 309.1, 5.4, [ 'RatRoundRule', [10,-4,half_up] ] ] ]
+    [ 'op', 'log', [ 309.1, 5.4, [ 'RatRoundRule', [10,-4,'half_up'] ] ] ]
 
-    [ 'op', 'e^', [ 6.3, [ 'RatRoundRule', [10,-6,to_ceiling] ] ] ]
+    [ 'op', 'e^', [ 6.3, [ 'RatRoundRule', [10,-6,'to_ceiling'] ] ] ]
 
-    [ 'op', 'loge', [ 17.0, [ 'RatRoundRule', [3,-5,to_floor] ] ] ]
+    [ 'op', 'loge', [ 17.0, [ 'RatRoundRule', [3,-5,'to_floor'] ] ] ]
 
 =head1 DEPOT DECLARATION
 

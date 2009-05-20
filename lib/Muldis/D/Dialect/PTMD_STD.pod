@@ -256,6 +256,7 @@ Grammar:
         | <UTCInstant>
         | <FloatInstant>
         | <UTCDuration>
+        | <RatRoundRule>
         | <String>
 
     <coll_value_selector> ::=
@@ -267,7 +268,6 @@ Grammar:
         | <QMaybe>
         | <QArray>
         | <QBag>
-        | <RatRoundRule>
 
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
@@ -353,6 +353,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | UTC [Instant | DateTime | Date | Time]
         | Float [Instant | DateTime | Date | Time]
         | UTCDuration
+        | RatRoundRule
         | String | BString | OString | UCPString
         | Q? Scalar
         | Q? Tuple
@@ -362,7 +363,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | Q? [Maybe | Single]
         | Q? Array
         | Q? Bag
-        | RatRoundRule
 
     <type_name> ::=
         <NameChain_payload>
@@ -384,6 +384,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <UTCInstant_payload>
         | <FloatInstant_payload>
         | <UTCDuration_payload>
+        | <RatRoundRule_payload>
         | <String_payload>
         | <QScalar_payload>
         | <QTuple_payload>
@@ -393,7 +394,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <QMaybe_payload>
         | <QArray_payload>
         | <QBag_payload>
-        | <RatRoundRule_payload>
 
 So a C<x_value>|C<value> node has 1-3 elements in general:
 
@@ -1210,6 +1210,45 @@ Examples:
 
     UTCDuration:[3,5,1,6,15,45.000012]
 
+=head2 Rational Rounding Rule Literals
+
+Grammar:
+
+    <RatRoundRule> ::=
+        RatRoundRule \s* ':' \s*
+        [<type_name> \s* ':' \s*]?
+        <RatRoundRule_payload>
+
+    <RatRoundRule_payload> ::=
+        '[' \s*
+            <radix> \s* ',' \s* <min_exp> \s* ',' \s* <round_meth>
+        \s* ']'
+
+    <radix> ::=
+        <Int_payload>
+
+    <min_exp> ::=
+        <Int_payload>
+
+    <round_meth> ::=
+        <RatRoundMeth_payload>
+
+A C<RatRoundRule> node represents a rational rounding rule.  It is
+interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundRule> value whose
+attributes are defined by the C<RatRoundRule_payload>.  A
+C<RatRoundRule_payload> consists mainly of a bracket-delimited sequence of
+3 comma-separated elements, which correspond in order to the 3 attributes:
+C<radix> (a C<PInt2_N>), C<min_exp> (an C<Int>), and C<round_meth> (a
+C<RatRoundMeth>).  Each of C<radix> and C<min_exp> must qualify as a valid
+C<Int_payload>, and C<round_meth> must qualify as a valid
+C<RatRoundMeth_payload>.
+
+Examples:
+
+    RatRoundRule:[10,-2,half_even]
+
+    RatRoundRule:[2,-7,to_zero]
+
 =head2 Low Level Integer String Literals
 
 Grammar:
@@ -1706,48 +1745,6 @@ Examples:
         'Baz',
         'Baz'
     }
-
-=head2 Rational Rounding Rule Selectors
-
-Grammar:
-
-    <RatRoundRule> ::=
-        RatRoundRule \s* ':' \s*
-        [<type_name> \s* ':' \s*]?
-        <RatRoundRule_payload>
-
-    <RatRoundRule_payload> ::=
-        '[' \s*
-            <radix> \s* ',' \s* <min_exp> \s* ',' \s* <round_meth>
-        \s* ']'
-
-    <radix> ::=
-        <expr>
-
-    <min_exp> ::=
-        <expr>
-
-    <round_meth> ::=
-        <expr>
-
-A C<RatRoundRule> node represents a literal or selector invocation for a
-rational rounding rule.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.RatRoundRule> value whose attributes are defined by
-the C<RatRoundRule_payload>.  A C<RatRoundRule_payload> consists mainly of
-a bracket-delimited sequence of 3 comma-separated elements, which
-correspond in order to the 3 attributes: C<radix> (a C<PInt2_N>),
-C<min_exp> (an C<Int>), and C<round_meth> (a C<RatRoundMeth>).  Each of the
-3 C<RatRoundRule_payload> elements is an C<expr> node.
-
-See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what in
-general a C<RatRoundRule> node distills to same as when C<QTuple> does.
-
-Examples:
-
-    RatRoundRule:[10,-2,half_even]
-
-    RatRoundRule:[2,-7,to_zero]
 
 =head1 GENERIC VALUE EXPRESSIONS
 
