@@ -963,18 +963,25 @@ Examples:
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
-A C<func_invo_alt_syntax> node has 3-N ordered elements:  The first element
+A C<func_invo_alt_syntax> node has 3-4 ordered elements:  The first element
 is the Perl C<Str> value C<op>.  The second element is a Perl C<Str> value,
-hereafter referred to as I<op>, which determines the function to invoke.
-The last 1-N elements provide arguments to the function invocation; the
-number and format of these last 1-N elements, hereafter referred to as I<op
-args>, varies depending on the second C<func_invo_alt_syntax> node element.
+hereafter referred to as I<op> or I<keyword>, which determines the function
+to invoke.  The third element is (usually) a Perl C<Seq|Array>, hereafter
+referred to as I<main op args>, which is an ordered list of 1-N mandatory
+inputs to the function invocation.  The (optional) fourth element is a Perl
+C<Mapping|Hash>, hereafter referred to as I<extra op args>, which is a
+named list of optional function inputs.  The number and format of elements
+of either I<main op args> or I<extra op args> varies depending on I<op>.
+Note that, when a I<main op args> would just contain a single element, such
+as when it is for a monadic operator, it may alternately be formatted as
+what is otherwise just its sole (node) element iff that node is not
+formatted as a Perl C<Seq|Array>.
 
 =head2 Simple Commutative N-adic Infix Reduction Operators
 
-A C<comm_infix_reduce_op_invo> node has exactly 1 op arg, which is a Perl
-C<Seq|Array|Bag|KeyBag|Set|KeySet> having at least 2 elements; each element
-is an C<expr> node that defines an input value for the operator.
+A C<comm_infix_reduce_op_invo> node has 2-N main op args, each of which is
+an C<expr> node.  Note that the I<main op args> may alternately be given as
+a Perl C<Bag|KeyBag|Set|KeySet> rather than a Perl C<Seq|Array>.
 
 Examples:
 
@@ -1000,9 +1007,8 @@ Examples:
 
 =head2 Simple Non-commutative N-adic Infix Reduction Operators
 
-A C<noncomm_infix_reduce_op_invo> node has exactly 1 op arg, which is a
-Perl C<Seq|Array> having at least 2 elements; each element is an C<expr>
-node that defines an input value for the operator.
+A C<noncomm_infix_reduce_op_invo> node has 2-N main op args, each of which
+is an C<expr> node.
 
 Examples:
 
@@ -1017,49 +1023,49 @@ Examples:
 
 =head2 Simple Commutative Dyadic Infix Operators
 
-A C<comm_dyadic_infix_op_invo> node has exactly 2 op args, each of which is
-an C<expr> node that defines an input value for the operator; which
-function arguments get which op args isn't significant.
+A C<comm_dyadic_infix_op_invo> node has exactly 2 main op args, each of
+which is an C<expr> node; which function arguments get which main op args
+isn't significant.
 
 Examples:
 
-    [ 'op', '===', :expr_name<foo>, :expr_name<bar> ]
+    [ 'op', '===', [ :expr_name<foo>, :expr_name<bar> ] ]
 
-    [ 'op', '!===', :expr_name<foo>, :expr_name<bar> ]
+    [ 'op', '!===', [ :expr_name<foo>, :expr_name<bar> ] ]
 
-    [ 'op', 'I|-|', 15, 17 ]
+    [ 'op', 'I|-|', [ 15, 17 ] ]
 
-    [ 'op', 'N|-|', 7.5, 9.0 ]
+    [ 'op', 'N|-|', [ 7.5, 9.0 ] ]
 
 =head2 Simple Non-commutative Dyadic Infix Operators
 
-A C<noncomm_dyadic_infix_op_invo> node has exactly 2 op args, each of which
-is an C<expr> node that defines an input value for the operator; the first
-and second arg are C<lhs> and C<rhs>, respectively.
+A C<noncomm_dyadic_infix_op_invo> node has exactly 2 main op args, each of
+which is an C<expr> node; the first and second main op args are C<lhs> and
+C<rhs>, respectively.
 
 Examples:
 
-    [ 'op', 'I-', 34, 21 ]
+    [ 'op', 'I-', [ 34, 21 ] ]
 
-    [ 'op', 'I/', 5, 3 ]
+    [ 'op', 'I/', [ 5, 3 ] ]
 
-    [ 'op', '%', 5, 3 ]
+    [ 'op', '%', [ 5, 3 ] ]
 
-    [ 'op', 'I^', 2, 63 ]
+    [ 'op', 'I^', [ 2, 63 ] ]
 
-    [ 'op', 'N-', 9.2, 0.1 ]
+    [ 'op', 'N-', [ 9.2, 0.1 ] ]
 
-    [ 'op', 'N/', :2<101.01>, :2<11.0> ]
+    [ 'op', 'N/', [ :2<101.01>, :2<11.0> ] ]
 
-    [ 'op', 'R-', :Set(Set.new( 8, 4, 6, 7 )), :Set(Set.new( 9, 0, 7 )) ]
+    [ 'op', 'R-', [:Set(Set.new( 8, 4, 6, 7 )), :Set(Set.new( 9, 0, 7 ))] ]
 
-    [ 'op', 'R/', :Relation( <x y> => Set.new( [ 5, 6 ], [ 3, 6 ] ) ),
-        :Relation( Set.new( { y => 6 } ) ) ]
+    [ 'op', 'R/', [ :Relation( <x y> => Set.new( [ 5, 6 ], [ 3, 6 ] ) ),
+        :Relation( Set.new( { y => 6 } ) ) ] ]
 
 =head2 Simple Monadic Prefix Operators
 
-A C<monadic_prefix_op_invo> node has exactly 1 op arg, which is an C<expr>
-node that defines the input value for the operator.
+A C<monadic_prefix_op_invo> node has exactly 1 main op arg, which is an
+C<expr> node.
 
 Examples:
 
@@ -1071,8 +1077,8 @@ Examples:
 
 =head2 Simple Monadic Postfix Operators
 
-A C<monadic_postfix_op_invo> node has exactly 1 op arg, which is an C<expr>
-node that defines the input value for the operator.
+A C<monadic_postfix_op_invo> node has exactly 1 main op arg, which is an
+C<expr> node.
 
 Examples:
 
@@ -1084,23 +1090,23 @@ Examples:
 
 =head2 Rational Operators That Do Rounding
 
-A C<rat_op_invo_with_round> node has exactly 2-3 op args, each of which is
-an C<expr> node that defines an input value for the operator.  When there
-are 2 op args, the first and second args are C<expr> and C<round_rule>,
-respectively.  When there are 3 op args, the first, second and third args
-are C<lhs>, C<rhs> and C<round_rule>, respectively.
+A C<rat_op_invo_with_round> node has exactly 2-3 main op args, each of
+which is an C<expr> node that defines an input value for the operator.
+When there are 2 main op args, the first and second args are C<expr> and
+C<round_rule>, respectively.  When there are 3 main op args, the first,
+second and third args are C<lhs>, C<rhs> and C<round_rule>, respectively.
 
 Examples:
 
-    [ 'op', 'round', :expr_name<foo>, :RatRoundRule[10,-2,half_even] ]
+    [ 'op', 'round', [ :expr_name<foo>, :RatRoundRule[10,-2,half_even] ] ]
 
-    [ 'op', 'N^', 2.0, 0.5, :RatRoundRule[2,-7,to_zero] ]
+    [ 'op', 'N^', [ 2.0, 0.5, :RatRoundRule[2,-7,to_zero] ] ]
 
-    [ 'op', 'log', 309.1, 5.4, :RatRoundRule[10,-4,half_up] ]
+    [ 'op', 'log', [ 309.1, 5.4, :RatRoundRule[10,-4,half_up] ] ]
 
-    [ 'op', 'e^', 6.3, :RatRoundRule[10,-6,to_ceiling] ]
+    [ 'op', 'e^', [ 6.3, :RatRoundRule[10,-6,to_ceiling] ] ]
 
-    [ 'op', 'loge', 17.0, :RatRoundRule[3,-5,to_floor] ]
+    [ 'op', 'loge', [ 17.0, :RatRoundRule[3,-5,to_floor] ] ]
 
 =head1 DEPOT DECLARATION
 
