@@ -407,14 +407,21 @@ only external meta-data of C<payload> generally necessary to interpret the
 latter; what grammars are valid for C<payload> depend just on
 C<value_kind>.
 
-For all values of just the 8 data types [C<Bool>, C<Order>,
-C<RatRoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>, C<Comment>], the
+For all values of just the 7 data types [C<Bool>, C<Order>,
+C<RatRoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>], the
 C<value_kind> portion of a GCVL may be omitted for brevity, but the code
 parser should still be able to infer it easily by examining the first few
-characters of the C<payload>, which for each of said 8 data types has a
+characters of the C<payload>, which for each of said 7 data types has a
 mutually uniquely identifying format, which is also distinct from all
 possible C<value_kind>.  Note that omission of C<value_kind> is only
 allowed when the GCVL doesn't include a C<type_name> element.
+
+Note that, by the above criteria, the C<Comment> type could easily have
+been an 8th member of the list; however, it is excluded on purpose because
+in practice Muldis D code can contain SCVL C<Comment> literals almost
+anywhere as meta-data for that code, and so having an explicit
+C<value_kind> of C<Comment> means that that particular C<Comment> literal
+is to be treated as ordinary data like with any GCVL.
 
 For just these certain special values of other data types, the same option
 of omitting the C<value_kind> (and C<type_name>) applies: C<Maybe:nothing>.
@@ -1009,25 +1016,24 @@ Examples:
 Grammar:
 
     <Comment> ::=
-        [
-            Comment \s* ':' \s*
-            [<type_name> \s* ':' \s*]?
-        ]?
+        Comment \s* ':' \s*
+        [<type_name> \s* ':' \s*]?
         <Comment_payload>
 
     <Comment_payload> ::=
         [
-            '#' ' '*
+            '#' ** 2..*
+          | '#' ' '*
                 [<-[\\\#\t\n\f\r]> | <escaped_char>]*
             ' '* '#'
-        ] ** \s*
+        ] ** \s+
 
 A C<Comment> node represents the text of a Muldis D code comment; it is a
 character string type, that is disjoint from both C<Text> and C<Name>.  It
 is interpreted as a Muldis D C<sys.std.Core.Type.Cat.Comment> value as
 follows:
 
-Fundamentally a C<Name> node is formatted and interpreted like a C<Text>
+Fundamentally a C<Comment> node is formatted and interpreted like a C<Text>
 node, and any similarities won't be repeated here.  The C<Comment_payload>
 differs from C<Text_payload> only in that each string segment is delimited
 by number-signs/hash-marks rather than apostrophes/single-quotes, and also
@@ -1039,7 +1045,18 @@ not part of the selected C<Comment> value; if you want to denote a
 C<Comment> value with leading or trailing space chars, you must write those
 space chars in an escaped form such as with C<\s>.
 
-Examples:
+Note that a run of 3+ C<#> is equivalent to exactly 2 adjacent ones, which
+denotes an empty comment segment.  This feature exists to empower things
+like making visual dividing lines in the code just out of hash-marks.
+
+Note that the hash-mark does have other uses in PTMD_STD code besides
+delimiting comments, so since C<Comment_payload> may conceptually be placed
+almost anywhere in code, the other parts of the grammar that specifically
+enable this need to ensure appropriate measures are taken to avoid
+ambiguity, for example mandating that the comments are bounded by
+whitespace.
+
+Examples (the first is GCVL, the second is a SCVL):
 
     Comment:# This does something. #
 
