@@ -40,7 +40,8 @@ none of the following are true: 1. they are both subtypes of a common
 q/scalar root type; 2. they are both subtypes of a common complete q/tuple
 or q/relation type, that is they essentially have the same headings; 3. at
 least one type is a generic (eg-C<Universal>) or incomplete
-(eg-C<Relation>) type, and it is a supertype of the other.
+(eg-C<Relation>) type, and it is a supertype of the other.  Note that
+this operation is also known as I<is equal> or C<=>.
 
 =head2 sys.std.Core.Universal.is_not_identical
 
@@ -49,7 +50,8 @@ Universal $topic, Universal $other) >>
 
 This function is exactly the same as C<sys.std.Core.Universal.is_identical>
 except that it results in the opposite boolean value when given the same
-arguments.
+arguments.  Note that this operation is also known as I<is not equal> or
+C<≠>.
 
 =head2 sys.std.Core.Universal.is_value_of_type
 
@@ -295,13 +297,24 @@ C<topic> argument's possrep whose name is given by C<possrep>.
 
 =head1 SYSTEM-DEFINED BOOLEAN-CONCERNING FUNCTIONS
 
-These functions implement commonly used boolean operations.
+These functions implement commonly used boolean logic operations.  See also
+L<Muldis::D::Ext::Bool> for all the other standard boolean logic operators
+which aren't shown below.
 
 =head2 sys.std.Core.Bool.not
 
 C<< function sys.std.Core.Bool.not (Bool <-- Bool $topic) >>
 
-This function results in the logical I<not> of its argument.
+This function results in the logical I<not> of its argument.  This function
+results in C<Bool:true> iff its argument is C<Bool:false>, and
+C<Bool:false> otherwise.  Note that this operation is also known as
+I<negation> or C<¬>.
+
+There also exists conceptually the logical monadic operation called
+I<proposition> which results simply in its argument; this is the complement
+operation of I<negation>.  Now in practice any value expression that is an
+invocation of I<proposition> can simply be replaced with its argument, so
+there is no reason for I<proposition> to exist as an actual function.
 
 =head2 sys.std.Core.Bool.and
 
@@ -310,8 +323,17 @@ C<< function sys.std.Core.Bool.and (Bool <-- set_of.Bool $topic?) >>
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical I<and> (which is both
 commutative and associative) on them until just one is left, which is the
-function's result.  If C<topic> has zero values, then C<and> results in
-C<Bool:true>, which is the identity value for logical I<and>.
+function's result.  For each pair of input values, the I<and> of that pair
+is C<Bool:true> iff both input values are C<Bool:true>, and C<Bool:false>
+otherwise.  If C<topic> has zero values, then C<and> results in
+C<Bool:true>, which is the identity value for logical I<and>.  Note that
+this operation is also known as I<all> or I<conjunction> or C<∧>.
+
+=head2 sys.std.Bool.all
+
+C<< function sys.std.Bool.all (Bool <-- set_of.Bool $topic?) >>
+
+This function is an alias for C<sys.std.Core.Bool.and>.
 
 =head2 sys.std.Core.Bool.or
 
@@ -320,8 +342,17 @@ C<< function sys.std.Core.Bool.or (Bool <-- set_of.Bool $topic?) >>
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical inclusive-or (which is both
 commutative and associative) on them until just one is left, which is the
-function's result.  If C<topic> has zero values, then C<or> results in
-C<Bool:false>, which is the identity value for logical inclusive-or.
+function's result.  For each pair of input values, the I<or> of that pair
+is C<Bool:false> iff both input values are C<Bool:false>, and C<Bool:true>
+otherwise.  If C<topic> has zero values, then C<or> results in
+C<Bool:false>, which is the identity value for logical inclusive-or.  Note
+that this operation is also known as I<any> or I<disjunction> or C<∨>.
+
+=head2 sys.std.Bool.any
+
+C<< function sys.std.Bool.any (Bool <-- set_of.Bool $topic?) >>
+
+This function is an alias for C<sys.std.Core.Bool.or>.
 
 =head2 sys.std.Core.Bool.xor
 
@@ -330,8 +361,15 @@ C<< function sys.std.Core.Bool.xor (Bool <-- bag_of.Bool $topic?) >>
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical exclusive-or (which is both
 commutative and associative) on them until just one is left, which is the
-function's result.  If C<topic> has zero values, then C<xor> results in
-C<Bool:false>, which is the identity value for logical exclusive-or.
+function's result.  For each pair of input values, the I<xor> of that pair
+is C<Bool:false> iff both input values are exactly the same value, and
+C<Bool:true> otherwise.  If C<topic> has zero values, then C<xor> results
+in C<Bool:false>, which is the identity value for logical exclusive-or.
+Note that this operation is also known as I<exclusive disjunction> or
+I<not equivalent> (dyadic usage) or C<⊻> or <↮>.  Note that a dyadic (2
+input value) invocation of C<xor> is exactly the same operation as a
+C<sys.std.Core.Universal.is_not_identical> invocation whose arguments are
+both C<Bool>-typed.
 
 =head1 SYSTEM-DEFINED GENERIC QUASI-/TUPLE-CONCERNING FUNCTIONS
 
