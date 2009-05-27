@@ -2098,6 +2098,7 @@ Grammar:
         | <monadic_prefix_op_invo>
         | <monadic_postfix_op_invo>
         | <rat_op_invo_with_round>
+        | <ord_compare_op_invo>
         | ...
 
 A C<func_invo_alt_syntax> node represents the result of invoking a named
@@ -2558,8 +2559,8 @@ Grammar:
 A C<rat_op_invo_with_round> node is for using infix or prefix or postfix
 notation to invoke a rational numeric operator function whose operation
 involve rounding a number to one with less precision.  Such a function
-takes exactly 1 (C<$expr>) or 2 (C<$lhs> and C<$rhs>) primary arguments,
-which are the inputs of the operation, plus a special C<$round_rule>
+takes exactly 1 (C<expr>) or 2 (C<lhs> and C<rhs>) primary arguments,
+which are the inputs of the operation, plus a special C<round_rule>
 argument which specifies explicitly the semantics of the numeric rounding
 in a declarative way (all 3 of these are I<main op args>).  A single
 C<rat_op_invo_with_round> node is equivalent to a single C<func_invo> node
@@ -2573,7 +2574,7 @@ This table indicates which function is invoked by each keyword:
          -> Rational.round( $expr, round_rule => $round_rule )
     N^   -> Rational.power( radix => $lhs, exponent => $rhs,
                 round_rule => $round_rule )
-    log  -> Rational.log( $lhs, $radix => $rhs, round_rule => $round_rule )
+    log  -> Rational.log( $lhs, radix => $rhs, round_rule => $round_rule )
     e^   -> Rational.natural_power( $expr, round_rule => $round_rule )
     loge -> Rational.natural_log( $expr, round_rule => $round_rule )
 
@@ -2588,6 +2589,141 @@ Examples:
     (e^ 6.3 round RatRoundRule:[10,-6,to_ceiling])
 
     (17.0 loge round RatRoundRule:[3,-5,to_floor])
+
+=head2 Order Comparison Operators
+
+Grammar:
+
+    <ord_compare_op_invo> ::=
+        '(' \s*
+            [<sca_ord_det_op_invo> | <gen_compare_op_invo>]
+        \s* ')'
+
+    <sca_ord_det_op_invo> ::=
+        <lhs> \s+ '<=>' \s+ <rhs>
+            [\s+ <assuming_clause>]?
+            [\s+ <reversed_clause>]?
+
+    <gen_compare_op_invo> ::=
+        [
+              <compare_reduce_op_invo>
+            | <dyadic_compare_op_invo>
+            | <triadic_compare_op_invo>
+        ]
+        [\s+ <gen_compare_op_ordered_clause>]?
+
+    <compare_reduce_op_invo> ::=
+        <expr> ** [\s+ <compare_reduce_op> \s+]
+
+    <compare_reduce_op ::=
+        min | max
+
+    <dyadic_compare_op_invo> ::=
+        <lhs> \s+ <dyadic_compare_op> \s+ <rhs>
+
+    <dyadic_compare_op> ::=
+        <is_before_op> | <is_after_op>
+
+    <is_before_op> ::=
+        '<' | '≤' | '<='
+
+    <is_after_op> ::=
+        '>' | '≥' | '>='
+
+    <triadic_compare_op_invo> ::=
+        [not \s+]?
+        <min> \s+ <is_before_op> \s+ <expr> \s+ <is_before_op> \s+ <max>
+
+    <min> ::=
+        <expr>
+
+    <max> ::=
+        <expr>
+
+    <gen_compare_op_ordered_clause> ::=
+        ordered \s+ <using_clause> | <ordered_by_clause>
+
+An C<ord_compare_op_invo> node is for using infix notation to invoke an
+order comparison operator function.  Such a function takes exactly 2
+(C<lhs> and C<rhs>) or 3 (C<min> and C<expr> and C<max>) or N/2+ (C<expr>)
+main op args, which are the inputs of the operation, plus 2 extra op args
+(C<assuming> and C<reversed> for the C<< <=> >> op, or C<func> and
+C<assuming> for any other op) which let you customize the semantics of the
+operation.  A single C<ord_compare_op_invo> node is equivalent to a single
+C<func_invo> node whose C<func_arg_list> element defines 2-N arguments, and
+the C<expr|lhs|rhs|min|max|func|assuming|reversed> elements of the
+C<ord_compare_op_invo> supply the values of those arguments, which are
+associated in the appropriate sequence, except for the N-adic operators
+which are commutative (and associative and idempotent) so the relative
+order of the main op args isn't significant.  Details on the extra op args
+are pending.
+
+Some of the keywords are aliases for each other:
+
+    keyword | aliases
+    --------+--------
+    ≤       | <=
+    ≥       | >=
+    ≤≤      | <=<=
+    ≤<      | <=<
+    <≤      | <<=
+    !≤≤     | !<=<=
+    !≤<     | !<=<
+    !<≤     | !<<=
+
+This table indicates which function is invoked by each keyword:
+
+    <=> -> Core.QScalar.order( $lhs, $rhs )
+
+    min -> Ordered.min( Set:{ $expr[0], ..., $expr[n] } )
+    max -> Ordered.max( Set:{ $expr[0], ..., $expr[n] } )
+
+    <   -> Ordered.is_before( $lhs, $rhs )
+    >   -> Ordered.is_after( $lhs, $rhs )
+    ≤   -> Ordered.is_before_or_same( $lhs, $rhs )
+    ≥   -> Ordered.is_after_or_same( $lhs, $rhs )
+
+    ≤≤  -> Ordered.is_inside_range( $expr, min => $min, max => $max )
+    ≤<  -> Ordered.is_inside_range( $expr, min => $min, max => $max
+                max_is_outside => true )
+    <≤  -> Ordered.is_inside_range( $expr, min => $min, max => $max
+                min_is_outside => true )
+    <<  -> Ordered.is_inside_range( $expr, min => $min, max => $max
+                min_is_outside => true, max_is_outside => true )
+    !≤≤ -> Ordered.is_outside_range( $expr, min => $min, max => $max )
+    !≤< -> Ordered.is_outside_range( $expr, min => $min, max => $max
+                max_is_outside => true )
+    !<≤ -> Ordered.is_outside_range( $expr, min => $min, max => $max
+                min_is_outside => true )
+    !<< -> Ordered.is_outside_range( $expr, min => $min, max => $max
+                min_is_outside => true, max_is_outside => true )
+
+Details regarding the extra op args is pending.  But most of the time you
+wouldn't be using them, so just the main args represents typical usage.
+
+Examples (for now sans any use of extra op args, which are atypical):
+
+    ($foo <=> $bar)
+
+    ($foo min $bar min $baz)
+
+    ($foo max $bar max $baz)
+
+    ($foo < $bar)
+
+    ($foo > $bar)
+
+    ($foo ≤ $bar)
+
+    ($foo ≥ $bar)
+
+    ($min ≤ $foo ≤ $max)
+
+    ($min ≤ $foo < $max)
+
+    (not $min < $foo ≤ $max)
+
+    (not $min < $foo < $max)
 
 =head1 DEPOT DECLARATION
 
