@@ -2160,10 +2160,12 @@ Grammar:
         \s* ')'
 
     <comm_infix_reduce_op ::=
-          and | '∧' | or | '∨' | xor | '⊻' | '↮'
+          and | '∧' | or | '∨' | xor | '⊻' | '↮' | xnor | '↔' | iff
         | 'I+' | 'I*'
         | 'N+' | 'N*'
         | '∪' | 'R+' | union | '∩' | 'R*' | intersect
+        | '∆' | 'R%' | exclude | symmdiff
+        | '⋈' | join | '×' | times | 'cross join'
 
 A C<comm_infix_reduce_op_invo> node is for using infix notation to invoke a
 (homogenous) commutative N-adic reduction operator function.  Such a
@@ -2190,20 +2192,28 @@ Some of the keywords are aliases for each other:
     and     | ∧
     or      | ∨
     xor     | ⊻ ↮
+    xnor    | ↔ iff
     ∪       | R+ union
     ∩       | R* intersect
+    ∆       | R% exclude symmdiff
+    ⋈       | join
+    ×       | times 'cross join'
 
 This table indicates which function is invoked by each keyword:
 
-    and -> Core.Bool.and( Set:{ $expr[0], ..., $expr[n] } )
-    or  -> Core.Bool.or( Set:{ $expr[0], ..., $expr[n] } )
-    xor -> Core.Bool.xor( Bag:{ $expr[0], ..., $expr[n] } )
-    I+  -> Integer.sum( Bag:{ $expr[0], ..., $expr[n] } )
-    I*  -> Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
-    N+  -> Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
-    N*  -> Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
-    ∪   -> Core.QRelation.union( QSet:{ $expr[0], ..., $expr[n] } )
-    ∩   -> Core.QRelation.intersection( QSet:{ $expr[0], ..., $expr[n] } )
+    and  -> Core.Bool.and( Set:{ $expr[0], ..., $expr[n] } )
+    or   -> Core.Bool.or( Set:{ $expr[0], ..., $expr[n] } )
+    xor  -> Core.Bool.xor( Bag:{ $expr[0], ..., $expr[n] } )
+    xnor -> Bool.xnor( Bag:{ $expr[0], ..., $expr[n] } )
+    I+   -> Integer.sum( Bag:{ $expr[0], ..., $expr[n] } )
+    I*   -> Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
+    N+   -> Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
+    N*   -> Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
+    ∪    -> Core.QRelation.union( QSet:{ $expr[0], ..., $expr[n] } )
+    ∩    -> Core.QRelation.intersection( QSet:{ $expr[0], ..., $expr[n] } )
+    ∆    -> QRelation.exclusion( QBag:{ $expr[0], ..., $expr[n] } )
+    ⋈    -> Core.QRelation.join( QSet:{ $expr[0], ..., $expr[n] } )
+    ×    -> Core.QRelation.product( QSet:{ $expr[0], ..., $expr[n] } )
 
 Examples:
 
@@ -2283,6 +2293,7 @@ Grammar:
 
     <sym_dyadic_infix_op> ::=
           '=' | '≠' | '!=' | '<>'
+        | nand | '⊼' | '↑' | nor | '⊽' | '↓'
         | 'I|-|' | 'N|-|'
 
 A C<sym_dyadic_infix_op_invo> node is for using infix notation to invoke a
@@ -2300,11 +2311,15 @@ Some of the keywords are aliases for each other:
     keyword | aliases
     --------+--------
     ≠       | != <>
+    nand    | ⊼ ↑
+    nor     | ⊽ ↓
 
 This table indicates which function is invoked by each keyword:
 
     =    -> Core.Universal.is_identical( $expr[0], $expr[1] )
     ≠    -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
+    nand -> Bool.nand( $expr[0], $expr[1] )
+    nor  -> Bool.nor( $expr[0], $expr[1] )
     I|-| -> Integer.abs_difference( $expr[0], $expr[1] )
     N|-| -> Rational.abs_difference( $expr[0], $expr[1] )
 
@@ -2313,6 +2328,8 @@ Examples:
     ($foo = $bar)
 
     ($foo ≠ $bar)
+
+    (false nand true)
 
     (15 I|-| 17)
 
@@ -2334,15 +2351,22 @@ Grammar:
         <expr>
 
     <nonsym_dyadic_infix_op> ::=
+        | imp | '→' | implies | nimp | '↛' | if | '←' | nif | '↚'
         | 'I-' | 'I/' | '%' | mod | 'I^'
         | 'N-' | 'N/'
-        | '∖' | 'R-' | minus | except | '÷' | 'R/' | divideby
+        | '∈' | '∉' | '∋' | '∌'
+        | '⊆' | '⊈' | '⊇' | '⊉'
+        | '⊂' | '⊄' | '⊃' | '⊅'
+        | '∖' | 'R-' | minus | except
+        | '⊿' | 'not matching' | antijoin | semiminus
+        | '⋉' | matching | semijoin
+        | '÷' | 'R/' | divideby
 
 A C<nonsym_dyadic_infix_op_invo> node is for using infix notation to
 invoke a non-symmetric dyadic operator function.  Such a function takes
-exactly 2 arguments, which are the inputs of the operation; the inputs are
-all of the same type as each other but the result might be of either that
-type or a different type.  A single C<nonsym_dyadic_infix_op_invo> node is
+exactly 2 arguments, which are the inputs of the operation; the inputs
+and the result may possibly be all of the same type, or they might all be
+of different types.  A single C<nonsym_dyadic_infix_op_invo> node is
 equivalent to a single C<func_invo> node whose C<func_arg_list> element
 defines 2 arguments, and the 2 C<expr> elements of the
 C<nonsym_dyadic_infix_op_invo> supply the values of those arguments, which
@@ -2352,22 +2376,54 @@ Some of the keywords are aliases for each other:
 
     keyword | aliases
     --------+--------
+    imp     | → implies
+    nimp    | ↛
+    if      | ←
+    nif     | ↚
     %       | mod
     ∖       | R- minus except
+    ⊿       | 'not matching' antijoin semiminus
+    ⋉       | matching semijoin
     ÷       | R/ divideby
+
+Currently the alternate syntaxes for 12 functions, those testing set
+membership or sub/superset relationships, only come in versions that use
+trans-ASCII characters; if you are stuck using plain ASCII then you'll just
+have to use the generic function invocation syntax to invoke them for now.
+Plain ASCII infix syntax that is reasonable is yet to be determined.
 
 This table indicates which function is invoked by each keyword:
 
-    I- -> Integer.difference( minuend => $lhs, subtrahend => $rhs )
-    I/ -> Integer.quotient( dividend => $lhs, divisor => $rhs )
-    %  -> Integer.remainder( dividend => $lhs, divisor => $rhs )
-    I^ -> Integer.power( radix => $lhs, exponent => $rhs )
-    N- -> Rational.difference( minuend => $lhs, subtrahend => $rhs )
-    N/ -> Rational.quotient( dividend => $lhs, divisor => $rhs )
-    ∖  -> Core.QRelation.difference( source => $lhs, filter => $rhs )
-    ÷  -> Core.QRelation.quotient( dividend => $lhs, divisor => $rhs )
+    imp  -> Bool.imp( $lhs, $rhs )
+    nimp -> Bool.nimp( $lhs, $rhs )
+    if   -> Bool.if( $lhs, $rhs )
+    nif  -> Bool.nif( $lhs, $rhs )
+    I-   -> Integer.difference( minuend => $lhs, subtrahend => $rhs )
+    I/   -> Integer.quotient( dividend => $lhs, divisor => $rhs )
+    %    -> Integer.remainder( dividend => $lhs, divisor => $rhs )
+    I^   -> Integer.power( radix => $lhs, exponent => $rhs )
+    N-   -> Rational.difference( minuend => $lhs, subtrahend => $rhs )
+    N/   -> Rational.quotient( dividend => $lhs, divisor => $rhs )
+    ∈    -> Core.QTuple.is_member( t => $lhs, r => $rhs )
+    ∉    -> Core.QTuple.is_not_member( t => $lhs, r => $rhs )
+    ∋    -> Core.QRelation.has_member( r => $lhs, t => $rhs )
+    ∌    -> Core.QRelation.has_not_member( r => $lhs, t => $rhs )
+    ⊆    -> Core.QRelation.is_subset( $lhs, $rhs )
+    ⊈    -> Core.QRelation.is_not_subset( $lhs, $rhs )
+    ⊇    -> Core.QRelation.is_superset( $lhs, $rhs )
+    ⊉    -> Core.QRelation.is_not_superset( $lhs, $rhs )
+    ⊂    -> QRelation.is_proper_subset( $lhs, $rhs )
+    ⊄    -> QRelation.is_not_proper_subset( $lhs, $rhs )
+    ⊃    -> QRelation.is_proper_superset( $lhs, $rhs )
+    ⊅    -> QRelation.is_not_proper_superset( $lhs, $rhs )
+    ∖    -> Core.QRelation.difference( source => $lhs, filter => $rhs )
+    ⊿    -> Core.QRelation.semidifference( source => $lhs, filter => $rhs )
+    ⋉    -> Core.QRelation.semijoin( source => $lhs, filter => $rhs )
+    ÷    -> Core.QRelation.quotient( dividend => $lhs, divisor => $rhs )
 
 Examples:
+
+    (true implies false)
 
     (34 I- 21)
 
@@ -2395,7 +2451,7 @@ Grammar:
         \s* ')'
 
     <monadic_prefix_op> ::=
-        not | ¬ | 'I||' | 'N||'
+        not | ¬ | 'I||' | 'N||' | 'R#'
 
 A C<monadic_prefix_op_invo> node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
@@ -2415,6 +2471,7 @@ This table indicates which function is invoked by each keyword:
     not -> Core.Bool.not( $expr )
     I|| -> Integer.abs( $expr )
     N|| -> Rational.abs( $expr )
+    R#  -> QRelation.cardinality( $expr )
 
 Examples:
 
@@ -2423,6 +2480,8 @@ Examples:
     (I|| -23)
 
     (N|| -4.59)
+
+    (R# Set:{ 5, -1, 2 })
 
 =head2 Simple Monadic Postfix Operators
 
