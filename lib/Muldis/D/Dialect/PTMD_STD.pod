@@ -1800,7 +1800,7 @@ Grammar:
         <data_sigil> <Name_payload>
 
     <infix_bind_op> ::=
-        '='
+        '::='
 
 An C<expr> node is the general case of a Muldis D value expression tree
 (which normally denotes a Muldis D value selector), which must be composed
@@ -1850,7 +1850,7 @@ Examples:
     $foo_expr
 
     # a named_expr node #
-    $bar_expr = factorial( $foo_expr )
+    $bar_expr ::= factorial( $foo_expr )
 
 =head2 Generic Function Invocation Expressions
 
@@ -1989,8 +1989,8 @@ Examples:
 
     (if ($ary is empty) then $empty_result else ($ary[0]))
 
-    (if (($x === nothing) or ($y === nothing)) then nothing
-        else Maybe:{ ($x{M:}) I+ (($y{M:}) I^ 3) }
+    (if (($x = ∅) or ($y = ∅)) then ∅
+        else Maybe:{ ($x{M:}) I+ (($y{M:}) I^ 3) })
 
     (if ($val isa T->Int) then ($val I^ 3)
         else if ($val isa T->Text) then ($val Tx 5)
@@ -2160,10 +2160,10 @@ Grammar:
         \s* ')'
 
     <comm_infix_reduce_op ::=
-          and | or | xor
+          and | '∧' | or | '∨' | xor | '⊻' | '↮'
         | 'I+' | 'I*'
         | 'N+' | 'N*'
-        | 'R+' | 'R*'
+        | '∪' | 'R+' | union | '∩' | 'R*' | intersect
 
 A C<comm_infix_reduce_op_invo> node is for using infix notation to invoke a
 (homogenous) commutative N-adic reduction operator function.  Such a
@@ -2183,6 +2183,16 @@ function instead.  If C<comm_infix_reduce_op> matches more than once in the
 same C<comm_infix_reduce_op_invo>, then all of the C<comm_infix_reduce_op>
 matches must be identical / the same operator.
 
+Some of the keywords are aliases for each other:
+
+    keyword | aliases
+    --------+--------
+    and     | ∧
+    or      | ∨
+    xor     | ⊻ ↮
+    ∪       | R+ union
+    ∩       | R* intersect
+
 This table indicates which function is invoked by each keyword:
 
     and -> Core.Bool.and( Set:{ $expr[0], ..., $expr[n] } )
@@ -2192,8 +2202,8 @@ This table indicates which function is invoked by each keyword:
     I*  -> Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
     N+  -> Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
     N*  -> Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
-    R+  -> Core.QRelation.union( QSet:{ $expr[0], ..., $expr[n] } )
-    R*  -> Core.QRelation.join( QSet:{ $expr[0], ..., $expr[n] } )
+    ∪   -> Core.QRelation.union( QSet:{ $expr[0], ..., $expr[n] } )
+    ∩   -> Core.QRelation.intersection( QSet:{ $expr[0], ..., $expr[n] } )
 
 Examples:
 
@@ -2211,9 +2221,9 @@ Examples:
 
     (69.3 N* 15*2^6 N* 49/23)
 
-    (Set:{ 1, 3, 5 } R+ Set:{ 4, 5, 6 } R+ Set:{ 0, 9 })
+    (Set:{ 1, 3, 5 } ∪ Set:{ 4, 5, 6 } ∪ Set:{ 0, 9 })
 
-    (Set:{ 1, 3, 5, 7, 9 } R* Set:{ 3, 4, 5, 6, 7, 8 } R* Set:{ 2, 5, 9 })
+    (Set:{ 1, 3, 5, 7, 9 } ∩ Set:{ 3, 4, 5, 6, 7, 8 } ∩ Set:{ 2, 5, 9 })
 
 =head2 Simple Non-commutative N-adic Infix Reduction Operators
 
@@ -2272,7 +2282,7 @@ Grammar:
         \s* ')'
 
     <sym_dyadic_infix_op> ::=
-          '===' | '!==='
+          '=' | '≠' | '!=' | '<>'
         | 'I|-|' | 'N|-|'
 
 A C<sym_dyadic_infix_op_invo> node is for using infix notation to invoke a
@@ -2285,18 +2295,24 @@ arguments, and the 2 C<expr> elements of the C<sym_dyadic_infix_op_invo>
 supply the values of those arguments, and which arguments get which C<expr>
 isn't significant.
 
+Some of the keywords are aliases for each other:
+
+    keyword | aliases
+    --------+--------
+    ≠       | != <>
+
 This table indicates which function is invoked by each keyword:
 
-    ===  -> Core.Universal.is_identical( $expr[0], $expr[1] )
-    !=== -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
+    =    -> Core.Universal.is_identical( $expr[0], $expr[1] )
+    ≠    -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
     I|-| -> Integer.abs_difference( $expr[0], $expr[1] )
     N|-| -> Rational.abs_difference( $expr[0], $expr[1] )
 
 Examples:
 
-    ($foo === $bar)
+    ($foo = $bar)
 
-    ($foo !=== $bar)
+    ($foo ≠ $bar)
 
     (15 I|-| 17)
 
@@ -2318,9 +2334,9 @@ Grammar:
         <expr>
 
     <nonsym_dyadic_infix_op> ::=
-        | 'I-' | 'I/' | '%' | 'I^'
+        | 'I-' | 'I/' | '%' | mod | 'I^'
         | 'N-' | 'N/'
-        | 'R-' | 'R/'
+        | '∖' | 'R-' | minus | except | '÷' | 'R/' | divideby
 
 A C<nonsym_dyadic_infix_op_invo> node is for using infix notation to
 invoke a non-symmetric dyadic operator function.  Such a function takes
@@ -2332,6 +2348,14 @@ defines 2 arguments, and the 2 C<expr> elements of the
 C<nonsym_dyadic_infix_op_invo> supply the values of those arguments, which
 are associated in the appropriate sequence.
 
+Some of the keywords are aliases for each other:
+
+    keyword | aliases
+    --------+--------
+    %       | mod
+    ∖       | R- minus except
+    ÷       | R/ divideby
+
 This table indicates which function is invoked by each keyword:
 
     I- -> Integer.difference( minuend => $lhs, subtrahend => $rhs )
@@ -2340,8 +2364,8 @@ This table indicates which function is invoked by each keyword:
     I^ -> Integer.power( radix => $lhs, exponent => $rhs )
     N- -> Rational.difference( minuend => $lhs, subtrahend => $rhs )
     N/ -> Rational.quotient( dividend => $lhs, divisor => $rhs )
-    R- -> Core.QRelation.difference( source => $lhs, filter => $rhs )
-    R/ -> Core.QRelation.quotient( dividend => $lhs, divisor => $rhs )
+    ∖  -> Core.QRelation.difference( source => $lhs, filter => $rhs )
+    ÷  -> Core.QRelation.quotient( dividend => $lhs, divisor => $rhs )
 
 Examples:
 
@@ -2357,9 +2381,9 @@ Examples:
 
     (1;101.01 N/ 1;11.0)
 
-    (Set:{ 8, 4, 6, 7 } R- Set:{ 9, 0, 7 })
+    (Set:{ 8, 4, 6, 7 } ∖ Set:{ 9, 0, 7 })
 
-    (Relation:[ x, y ];{ [ 5, 6 ], [ 3, 6 ] } R/ Relation:{ { y => 6 } })
+    (Relation:[ x, y ];{ [ 5, 6 ], [ 3, 6 ] } ÷ Relation:{ { y => 6 } })
 
 =head2 Simple Monadic Prefix Operators
 
@@ -2371,7 +2395,7 @@ Grammar:
         \s* ')'
 
     <monadic_prefix_op> ::=
-        not | 'I||' | 'N||'
+        not | ¬ | 'I||' | 'N||'
 
 A C<monadic_prefix_op_invo> node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
@@ -2379,6 +2403,12 @@ is the input of the operation.  A single C<monadic_prefix_op_invo> node is
 equivalent to a single C<func_invo> node whose C<func_arg_list> element
 defines 1 argument, and the 1 C<expr> element of the
 C<monadic_prefix_op_invo> supplies the value of that argument.
+
+Some of the keywords are aliases for each other:
+
+    keyword | aliases
+    --------+--------
+    not     | ¬
 
 This table indicates which function is invoked by each keyword:
 
