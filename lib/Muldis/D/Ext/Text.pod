@@ -61,19 +61,18 @@ C<< function sys.std.Text.repeat (Text <-- Text $topic, NNInt $count) >>
 
 This function results in the catenation of C<count> instances of C<topic>.
 
-=head2 sys.std.Text.length_in_nfd_codepoints
+=head2 sys.std.Text.len_in_nfd_codes
 
-C<< function sys.std.Text.length_in_nfd_codepoints (NNInt <-- Text $topic)
->>
+C<< function sys.std.Text.len_in_nfd_codes (NNInt <-- Text $topic) >>
 
 This function results in the length of its argument in Unicode canonical
 decomposed normal form (NFD) abstract codepoints, or in other words, in the
 actual length of the argument since Muldis D explicitly works natively at
 the abstract codepoint abstraction level.
 
-=head2 sys.std.Text.length_in_graphemes
+=head2 sys.std.Text.len_in_graphs
 
-C<< function sys.std.Text.length_in_graphemes (NNInt <-- Text $topic) >>
+C<< function sys.std.Text.len_in_graphs (NNInt <-- Text $topic) >>
 
 This function results in the length of its argument in language-independent
 graphemes.
@@ -93,7 +92,7 @@ constraint doesn't apply.  Each of the C<fixed_[start|end]> parameters is
 optional and defaults to C<Bool:false> if no explicit argument is given to
 it.  Note that C<has_substr> will handle the common special cases of SQL's
 "LIKE" operator for patterns like ['foo', '%foo', 'foo%', '%foo%'], but see
-also the C<is_match_using_like> function which provides the full generality
+also the C<is_like> function which provides the full generality
 of SQL's "LIKE", such as 'foo%bar%baz'.
 
 =head2 sys.std.Text.has_not_substr
@@ -125,17 +124,17 @@ rather than on the inputs to these functions.  This is useful when you want
 to emulate the semantics of insensitive though possibly preserving systems
 over Muldis D.
 
-=head2 sys.std.Text.case_folded_to_upper
+=head2 sys.std.Text.upper
 
-C<< function sys.std.Text.case_folded_to_upper (Text <-- Text $topic) >>
+C<< function sys.std.Text.upper (Text <-- Text $topic) >>
 
 This function results in the normalization of its argument where any
 letters considered to be (small) lowercase are folded to (capital)
 uppercase.
 
-=head2 sys.std.Text.case_folded_to_lower
+=head2 sys.std.Text.lower
 
-C<< function sys.std.Text.case_folded_to_lower (Text <-- Text $topic) >>
+C<< function sys.std.Text.lower (Text <-- Text $topic) >>
 
 This function results in the normalization of its argument where any
 letters considered to be (capital) uppercase are folded to (small)
@@ -162,12 +161,13 @@ and does not do a smart replace with sequences of similar looking ASCII
 characters.  The C<mark> parameter is optional and defaults to the empty
 string if no explicit argument is given to it.
 
-=head2 sys.std.Text.whitespace_trimmed
+=head2 sys.std.Text.trim
 
-C<< function sys.std.Text.whitespace_trimmed (Text <-- Text $topic) >>
+C<< function sys.std.Text.trim (Text <-- Text $topic) >>
 
 This function results in the normalization of its argument where any
-leading or trailing whitespace characters are trimmed.
+leading or trailing whitespace characters are trimmed, but no other changes
+are made, including to any whitespace bounded by non-whitespace characters.
 
 =head1 FUNCTIONS FOR PATTERN MATCHING AND TRANSLITERATION
 
@@ -185,10 +185,10 @@ lot of this section is still TODO, with several useful functions missing,
 or more complicated parts like the Perl pattern matching may be separated
 off into their own language extensions later.>
 
-=head2 sys.std.Text.is_match_using_like
+=head2 sys.std.Text.is_like
 
-C<< function sys.std.Text.is_match_using_like (Bool <-- Text $look_in,
-Text $look_for, Text $escape) >>
+C<< function sys.std.Text.is_like (Bool <-- Text $look_in,
+Text $look_for, Text $escape?) >>
 
 This function results in C<Bool:true> iff its C<look_in> argument is
 matched by the pattern given in its C<look_for> argument, and C<Bool:false>
@@ -196,21 +196,21 @@ otherwise.  This function implements the full generalization of SQL's
 simple "LIKE" pattern matching operator.  Any characters in C<look_for> are
 matched literally except for the 2 wildcard characters C<_> (match any
 single character) and C<%> (match any string of 0..N characters); the
-preceeding assumes that the C<escape> argument is the empty string.  If
-C<escape> is a character, then that character is also special and its lone
-occurrence in C<look_for> will no longer match itself as per the 2 wildcard
-characters; rather it will be used in C<look_for> to indicate when the
-pattern wishes to match a literal C<_> or C<%> or the escape character
-itself literally.  For example, if C<\> is used as the escape character,
-then you use C<\_>, C<\%>, C<\\> to match the literal wildcard characters
-or itself, respectively.
+preceeding assumes that the C<escape> argument is the empty string (or is
+missing).  If C<escape> is a character, then that character is also special
+and its lone occurrence in C<look_for> will no longer match itself as per
+the 2 wildcard characters; rather it will be used in C<look_for> to
+indicate when the pattern wishes to match a literal C<_> or C<%> or the
+escape character itself literally.  For example, if C<\> is used as the
+escape character, then you use C<\_>, C<\%>, C<\\> to match the literal
+wildcard characters or itself, respectively.
 
-=head2 sys.std.Text.is_not_match_using_like
+=head2 sys.std.Text.is_not_like
 
-C<< function sys.std.Text.is_not_match_using_like (Bool <-- Text $look_in,
-Text $look_for, Text $escape) >>
+C<< function sys.std.Text.is_not_like (Bool <-- Text $look_in,
+Text $look_for, Text $escape?) >>
 
-This function is exactly the same as C<sys.std.Text.is_match_using_like>
+This function is exactly the same as C<sys.std.Text.is_like>
 except that it results in the opposite boolean value when given the same
 arguments; it implements SQL's "NOT LIKE".
 
