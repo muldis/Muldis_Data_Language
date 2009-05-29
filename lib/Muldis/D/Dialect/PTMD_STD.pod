@@ -2362,6 +2362,7 @@ Grammar:
         | '⊿' | 'not matching' | antijoin | semiminus
         | '⋉' | matching | semijoin
         | '÷' | 'R/' | divideby
+        | like | 'not like'
 
 A C<nonsym_dyadic_infix_op_invo> node is for using infix notation to
 invoke a non-symmetric dyadic operator function.  Such a function takes
@@ -2421,6 +2422,14 @@ This table indicates which function is invoked by each keyword:
     ⊿    -> Core.QRelation.semidiff( source => $lhs, filter => $rhs )
     ⋉    -> Core.QRelation.semijoin( source => $lhs, filter => $rhs )
     ÷    -> Core.QRelation.quotient( dividend => $lhs, divisor => $rhs )
+
+    like     -> sys.std.Text.is_like( look_in => $lhs, look_for => $rhs )
+    not like -> sys.std.Text.is_not_like(look_in => $lhs, look_for => $rhs)
+
+Note that while the C<is[|_not]_like> functions also have an optional third
+parameter C<escape>, you will have to use a C<func_invo> node to exploit
+it; for simplicity, the infix C<like> and C<not like> don't support that
+customization; but most actual uses of like/etc don't use C<escape> anyway.
 
 Examples:
 
