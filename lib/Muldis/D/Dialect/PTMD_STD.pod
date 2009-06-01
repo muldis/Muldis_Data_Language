@@ -2251,7 +2251,9 @@ Grammar:
         \s* ')'
 
     <noncomm_infix_reduce_op ::=
-        '[<=>]' | 'B~' | 'T~' | 'A~'
+          '[<=>]'
+        | 'B~' | 'T~' | 'A~'
+        | '//' | '//d'
 
 A C<noncomm_infix_reduce_op_invo> node is for using infix notation to
 invoke a (homogenous) non-commutative N-adic reduction operator function.
@@ -2270,6 +2272,9 @@ a single collection-valued node then use C<func_invo> to invoke the
 function instead.  If C<noncomm_infix_reduce_op> matches more than once in
 the same C<noncomm_infix_reduce_op_invo>, then all of the
 C<noncomm_infix_reduce_op> matches must be identical / the same operator.
+Exception: with some of these, the actual C<func_arg_list> derived from
+this has 2 actual arguments, the first a collection and the second taking a
+different type of value, from the last op input list element.
 
 This table indicates which function is invoked by each keyword:
 
@@ -2277,6 +2282,11 @@ This table indicates which function is invoked by each keyword:
     B~    -> Blob.catenation( Array:{ $expr[0], ..., $expr[n] } )
     T~    -> Text.catenation( Array:{ $expr[0], ..., $expr[n] } )
     A~    -> QArray.catenation( QArray:{ $expr[0], ..., $expr[n] } )
+
+    //    -> QSet.QMaybe.attr_or_value(
+                QArray:{ $expr[0], ..., $expr[n-1] }, value => $expr[n] )
+    //d   -> QSet.QMaybe.attr_or_default(
+                QArray:{ $expr[0], ..., $expr[n-1] }, default => $expr[n] )
 
 Examples:
 
@@ -2287,6 +2297,10 @@ Examples:
     ('hello' T~ ' ' T~ 'world')
 
     (Array:[ 24, 52 ] A~ Array:[ -9 ] A~ Array:[ 0, 11, 24, 7 ])
+
+    ($a // $b // 42)
+
+    ($a //d $b //d T->inn.foo_type)
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -2725,9 +2739,9 @@ Examples (for now sans any use of extra op args, which are atypical):
 
     ($foo <=> $bar)
 
-    ($foo min $bar min $baz)
+    ($a min $b min $c)
 
-    ($foo max $bar max $baz)
+    ($a max $b max $c)
 
     ($foo < $bar)
 
