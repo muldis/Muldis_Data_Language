@@ -2371,6 +2371,7 @@ Grammar:
         <expr>
 
     <nonsym_dyadic_infix_op> ::=
+        | isa | !isa | as | asserting
         | imp | '→' | implies | nimp | '↛' | if | '←' | nif | '↚'
         | 'I-' | 'I/' | '%' | mod | 'I^'
         | 'N-' | 'N/'
@@ -2416,6 +2417,10 @@ Plain ASCII infix syntax that is reasonable is yet to be determined.
 
 This table indicates which function is invoked by each keyword:
 
+    isa  -> Core.Universal.is_value_of_type( $lhs, type => $rhs )
+    !isa -> Core.Universal.is_not_value_of_type( $lhs, type => $rhs )
+    as   -> Core.Universal.treated( $lhs, as => $rhs )
+    asserting -> Core.Universal.assertion( $lhs, is_true => $rhs )
     imp  -> Bool.imp( $lhs, $rhs )
     nimp -> Bool.nimp( $lhs, $rhs )
     if   -> Bool.if( $lhs, $rhs )
@@ -2456,6 +2461,14 @@ customization; but most actual uses of like/etc don't use C<escape> anyway.
 
 Examples:
 
+    ($bar isa T->inn.foo_type)
+
+    ($bar !isa T->inn.foo_type)
+
+    ($scalar as T->Int)
+
+    ($int asserting ($int ≠ 0))
+
     (true implies false)
 
     (34 I- 21)
@@ -2486,7 +2499,7 @@ Grammar:
         \s* ')'
 
     <monadic_prefix_op> ::=
-        not | ¬ | 'I||' | 'N||' | 'R#'
+        d | not | ¬ | 'I||' | 'N||' | 'R#'
 
 A C<monadic_prefix_op_invo> node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
@@ -2503,12 +2516,15 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
+    d   -> Core.Universal.default( of => $expr )
     not -> Core.Bool.not( $expr )
     I|| -> Integer.abs( $expr )
     N|| -> Rational.abs( $expr )
     R#  -> QRelation.cardinality( $expr )
 
 Examples:
+
+    (d T->inn.foo_type)
 
     (not true)
 
