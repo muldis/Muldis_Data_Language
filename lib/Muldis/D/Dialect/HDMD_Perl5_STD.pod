@@ -526,6 +526,10 @@ If the payload is an array ref, then it must have at least 1 element,
 and every element must be a valid payload for a C<Name>  node (that
 is, any Perl character string).  Each element of the payload, in order,
 defines an element of the C<array> possrep's attribute of a C<NameChain>.
+As a special case, the first element of a 2+ element C<NameChain> payload
+may be undefined; if it is, then that element is treated as if it was the
+C<Name> payload value C<topic>; no other element may be undefined, and an
+undefined first element is only permitted when there are 2+ elements.
 
 =item *
 
@@ -534,7 +538,12 @@ If the payload is a char str, then it must be formatted as a catenation
 not have any literal period (C<.>) characters (if you want literal periods
 then you can only use the array ref payload format to express it).  The
 char str format of payload is interpreted by splitting it on the separators
-into the array ref format, then processed as per the latter.
+into the array ref format, then processed as per the latter.  As a special
+case, if the C<NameChain> payload begins with a period separator, then the
+first element of the post-split result is treated not as the empty string
+C<Name>, but rather as the C<Name> value C<topic>; that is, C<.foo> means
+the same thing as C<topic.foo> (if you want a literal empty string first
+element, then you can only use the array ref payload format to express it).
 
 =back
 
@@ -556,6 +565,8 @@ Examples:
     [ 'NameChain', ['fed','data','the_db','gene','sorted_person_names'] ]
 
     [ 'NameChain', 'fed.data.the_db.stats.samples by order' ]
+
+    [ 'NameChain', '.attr' ]  # same as [ 'NameChain', 'lex.topic.attr' ] #
 
     [ 'DeclNameChain', ['gene','sorted_person_name'] ]
 

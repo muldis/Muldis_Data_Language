@@ -888,7 +888,7 @@ Grammar:
         <NameChain_payload>
 
     <NameChain_payload> ::=
-        <Name_payload> ** [\s* '.' \s*]
+        ['.' \s*]? <Name_payload> ** [\s* '.' \s*]
 
     <DeclNameChain> ::=
         DeclNameChain \s* ':' \s*
@@ -971,14 +971,30 @@ The second special case involves any context where a value expression
 (including a parameter) or a variable is being referenced by name, such as
 with an C<expr_name> node.  In such a context, any leading C<lex> element
 may be omitted; when a C<NameChain_payload>, whose context indicates it is
-a type or routine invocation, is encountered by the parser, and its
+a value expression / etc reference, is encountered by the parser, and its
 existing first chain element isn't one of the other 8 top-level namespaces,
 then the parser will assume it is an unqualified chain in the C<lex>
 namespace and will prepend a C<lex> element to it.  So for example a
 C<$foo> is treated as being C<$lex.foo> while a C<$dep.data.foo> is treated
 as itself.
 
-The third special case involves any context where a type is being
+The third special case is an extension to the second special case that
+involves any context where a referenced-by-name value expression / etc has
+the declaration name C<topic>.  In only such a context, a
+C<NameChain_payload> may be prefixed with a chain-element-separator /
+period token instead of having a leading (post C<lex> omission) C<topic>
+element; a parser encountering a chain with a leading period will assume
+the chain sans that period is unqualified and will prepend both a C<lex>
+and C<topic> element to it.  So for example a C<$.foo> is treated as being
+C<$lex.topic.foo>.  Note that PTMD_STD doesn't confuse this with the use of
+an empty string chain element because those must always be delimited, so
+C<$"".foo> is still treated as C<$lex."".foo>.  Note that the third special
+case may only be used to reference attributes of C<$lex.topic> (or
+attributes of those, etc), not C<$lex.topic> itself; you still have to use
+C<$topic> for that.  Note that if C<$topic> is a q/scalar value, you still
+have to write the possrep name as normal, such as C<$.possrep.attr>.
+
+The fourth special case involves any context where a type is being
 referenced using the C<type> namespace prefix feature described in
 L<Muldis::D::Basics/Referencing Data Types>.  In such a context, when the
 namespace prefix contains either of the optional chain elements
@@ -987,10 +1003,10 @@ C<[|quasi_][set|maybe|single|array|bag]_of>, programmers may omit the
 single prefix-leading C<type> chain element.  So for example, one can just
 write C<array_of.Rat> rather than C<type.array_of.Rat>, or
 C<tuple_from.var.lex.myrelvar> rather than
-C<type.tuple_from.var.lex.myrelvar>.  This third special case is completely
-orthogonal to which of the 9 normal top-level namespaces is in use
-(implicitly or explicitly) by the chain being prefixed, and works for all 9
-of them.
+C<type.tuple_from.var.lex.myrelvar>.  This fourth special case is
+completely orthogonal to which of the 9 normal top-level namespaces is in
+use (implicitly or explicitly) by the chain being prefixed, and works for
+all 9 of them.
 
 A C<DeclNameChain> node represents a canonical long name for declaring a
 DBMS entity in N-depth contexts; the format and interpretation of a
@@ -1008,6 +1024,8 @@ Examples:
     NameChain:fed.data.the_db.gene.sorted_person_names
 
     NameChain:fed.data.the_db.stats."samples by order"
+
+    NameChain:.attr  # same as NameChain:lex.topic.attr #
 
     DeclNameChain:gene.sorted_person_name
 
