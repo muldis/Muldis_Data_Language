@@ -1182,7 +1182,7 @@ attribute values are defined as follows:
 A C<UTCInstant_payload> consists mainly of a bracket-delimited sequence of
 6 comma-separated elements, where each element is either a valid numeric
 literal or is completely absent.  The 6 elements correspond in order to
-the 6 attributes: C<year>, C<month> C<day>, C<hour>, C<minute>, C<second>.
+the 6 attributes: C<year>, C<month>, C<day>, C<hour>, C<minute>, C<second>.
 For each element that is absent or defined, the corresponding attribute has
 the C<nothing> or a C<Single> value, respectively.  For each of the first 5
 elements, when it is defined, it must qualify as a valid I<body> part of an
@@ -1221,7 +1221,7 @@ attribute values are defined as follows:
 A C<UTCDuration_payload> consists mainly of a bracket-delimited sequence of
 6 comma-separated elements, where each element is either a valid numeric
 literal or is completely absent.  The 6 elements correspond in order to the
-6 attributes: C<years>, C<months> C<days>, C<hours>, C<minutes>,
+6 attributes: C<years>, C<months>, C<days>, C<hours>, C<minutes>,
 C<seconds>.  For each element that is absent or defined, the corresponding
 attribute has the C<nothing> or a C<Single> value, respectively.  For each
 of the first 5 elements, when it is defined, it must qualify as a valid
@@ -2011,7 +2011,7 @@ Examples:
     (if ($ary is empty) then $empty_result else ($ary[0]))
 
     (if (($x = ∅) or ($y = ∅)) then ∅
-        else Maybe:{ ($x{M:}) I+ (($y{M:}) I^ 3) })
+        else (s ((v $x) I+ ((v $y) I^ 3)))
 
     (if ($val isa T->Int) then ($val I^ 3)
         else if ($val isa T->Text) then ($val Tx 5)
@@ -2517,7 +2517,7 @@ Grammar:
         \s* ')'
 
     <monadic_prefix_op> ::=
-        d | not | ¬ | 'I||' | 'N||' | 'R#'
+        d | not | ¬ | 'I||' | 'N||' | 'R#' | t | r | s | v
 
 A C<monadic_prefix_op_invo> node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
@@ -2538,7 +2538,11 @@ This table indicates which function is invoked by each keyword:
     not -> Core.Bool.not( $expr )
     I|| -> Integer.abs( $expr )
     N|| -> Rational.abs( $expr )
-    R#  -> QRelation.cardinality( $expr )
+    R#  -> Core.QRelation.cardinality( $expr )
+    t   -> Core.QRelation.QTuple_from_QRelation( $expr )
+    r   -> Core.QRelation.QRelation_from_QTuple( $expr )
+    s   -> QSet.QMaybe.single( value => $expr )
+    v   -> QSet.QMaybe.attr( $expr )
 
 Examples:
 
@@ -2551,6 +2555,12 @@ Examples:
     (N|| -4.59)
 
     (R# Set:{ 5, -1, 2 })
+
+    (t $relvar)
+
+    (r $tupvar)
+
+    (s ((v $a) N+ (v $b)))
 
 =head2 Simple Monadic Postfix Operators
 
