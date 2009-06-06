@@ -963,7 +963,7 @@ namespace and lookup the best / only match from the known C<sys.std> DBMS
 entities, to resolve to.  So for example, one can just write C<Int> rather
 than C<sys.std.Core.Type.Int>, C<is_identical> rather than
 C<sys.std.Core.Universal.is_identical>, C<QTuple.attr> rather than
-C<sys.std.Core.QTuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
+C<sys.std.Core.Tuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
 C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so on.
 In fact, the Muldis D spec itself uses such abbreviations frequently.
 
@@ -2233,11 +2233,11 @@ This table indicates which function is invoked by each keyword:
     I*   -> Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
     N+   -> Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
     N*   -> Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
-    ∪    -> Core.QRelation.union( QSet:{ $expr[0], ..., $expr[n] } )
-    ∩    -> Core.QRelation.intersection( QSet:{ $expr[0], ..., $expr[n] } )
-    ∆    -> QRelation.exclusion( QBag:{ $expr[0], ..., $expr[n] } )
-    ⋈    -> Core.QRelation.join( QSet:{ $expr[0], ..., $expr[n] } )
-    ×    -> Core.QRelation.product( QSet:{ $expr[0], ..., $expr[n] } )
+    ∪    -> Core.Relation.union( QSet:{ $expr[0], ..., $expr[n] } )
+    ∩    -> Core.Relation.intersection( QSet:{ $expr[0], ..., $expr[n] } )
+    ∆    -> Relation.exclusion( QBag:{ $expr[0], ..., $expr[n] } )
+    ⋈    -> Core.Relation.join( QSet:{ $expr[0], ..., $expr[n] } )
+    ×    -> Core.Relation.product( QSet:{ $expr[0], ..., $expr[n] } )
 
 Examples:
 
@@ -2299,11 +2299,11 @@ This table indicates which function is invoked by each keyword:
     [<=>] -> Core.Cat.Order.reduction( Array:{ $expr[0], ..., $expr[n] } )
     B~    -> Blob.catenation( Array:{ $expr[0], ..., $expr[n] } )
     T~    -> Text.catenation( Array:{ $expr[0], ..., $expr[n] } )
-    A~    -> QArray.catenation( QArray:{ $expr[0], ..., $expr[n] } )
+    A~    -> Array.catenation( QArray:{ $expr[0], ..., $expr[n] } )
 
-    //    -> QSet.QMaybe.attr_or_value(
+    //    -> Set.Maybe.attr_or_value(
                 QArray:{ $expr[0], ..., $expr[n-1] }, value => $expr[n] )
-    //d   -> QSet.QMaybe.attr_or_default(
+    //d   -> Set.Maybe.attr_or_default(
                 QArray:{ $expr[0], ..., $expr[n-1] }, default => $expr[n] )
 
 Examples:
@@ -2451,23 +2451,23 @@ This table indicates which function is invoked by each keyword:
     N/   -> Rational.quotient( dividend => $lhs, divisor => $rhs )
     Bx   -> Blob.replication( $lhs, count => $rhs )
     Tx   -> Text.replication( $lhs, count => $rhs )
-    Ax   -> QArray.replication( $lhs, count => $rhs )
-    ∈    -> Core.QTuple.is_member( t => $lhs, r => $rhs )
-    ∉    -> Core.QTuple.is_not_member( t => $lhs, r => $rhs )
-    ∋    -> Core.QRelation.has_member( r => $lhs, t => $rhs )
-    ∌    -> Core.QRelation.has_not_member( r => $lhs, t => $rhs )
-    ⊆    -> Core.QRelation.is_subset( $lhs, $rhs )
-    ⊈    -> Core.QRelation.is_not_subset( $lhs, $rhs )
-    ⊇    -> Core.QRelation.is_superset( $lhs, $rhs )
-    ⊉    -> Core.QRelation.is_not_superset( $lhs, $rhs )
-    ⊂    -> QRelation.is_proper_subset( $lhs, $rhs )
-    ⊄    -> QRelation.is_not_proper_subset( $lhs, $rhs )
-    ⊃    -> QRelation.is_proper_superset( $lhs, $rhs )
-    ⊅    -> QRelation.is_not_proper_superset( $lhs, $rhs )
-    ∖    -> Core.QRelation.diff( source => $lhs, filter => $rhs )
-    ⊿    -> Core.QRelation.semidiff( source => $lhs, filter => $rhs )
-    ⋉    -> Core.QRelation.semijoin( source => $lhs, filter => $rhs )
-    ÷    -> Core.QRelation.quotient( dividend => $lhs, divisor => $rhs )
+    Ax   -> Array.replication( $lhs, count => $rhs )
+    ∈    -> Core.Tuple.is_member( t => $lhs, r => $rhs )
+    ∉    -> Core.Tuple.is_not_member( t => $lhs, r => $rhs )
+    ∋    -> Core.Relation.has_member( r => $lhs, t => $rhs )
+    ∌    -> Core.Relation.has_not_member( r => $lhs, t => $rhs )
+    ⊆    -> Core.Relation.is_subset( $lhs, $rhs )
+    ⊈    -> Core.Relation.is_not_subset( $lhs, $rhs )
+    ⊇    -> Core.Relation.is_superset( $lhs, $rhs )
+    ⊉    -> Core.Relation.is_not_superset( $lhs, $rhs )
+    ⊂    -> Relation.is_proper_subset( $lhs, $rhs )
+    ⊄    -> Relation.is_not_proper_subset( $lhs, $rhs )
+    ⊃    -> Relation.is_proper_superset( $lhs, $rhs )
+    ⊅    -> Relation.is_not_proper_superset( $lhs, $rhs )
+    ∖    -> Core.Relation.diff( source => $lhs, filter => $rhs )
+    ⊿    -> Core.Relation.semidiff( source => $lhs, filter => $rhs )
+    ⋉    -> Core.Relation.semijoin( source => $lhs, filter => $rhs )
+    ÷    -> Core.Relation.quotient( dividend => $lhs, divisor => $rhs )
 
     like     -> sys.std.Text.is_like( look_in => $lhs, look_for => $rhs )
     not like -> sys.std.Text.is_not_like(look_in => $lhs, look_for => $rhs)
@@ -2538,11 +2538,11 @@ This table indicates which function is invoked by each keyword:
     not -> Core.Bool.not( $expr )
     I|| -> Integer.abs( $expr )
     N|| -> Rational.abs( $expr )
-    R#  -> Core.QRelation.cardinality( $expr )
-    t   -> Core.QRelation.QTuple_from_QRelation( $expr )
-    r   -> Core.QRelation.QRelation_from_QTuple( $expr )
-    s   -> QSet.QMaybe.single( value => $expr )
-    v   -> QSet.QMaybe.attr( $expr )
+    R#  -> Core.Relation.cardinality( $expr )
+    t   -> Core.Relation.QTuple_from_QRelation( $expr )
+    r   -> Core.Relation.QRelation_from_QTuple( $expr )
+    s   -> Set.Maybe.single( value => $expr )
+    v   -> Set.Maybe.attr( $expr )
 
 Examples:
 
@@ -2751,7 +2751,7 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
-    <=> -> Core.QScalar.order( $lhs, $rhs )
+    <=> -> Core.Scalar.order( $lhs, $rhs )
 
     min -> Ordered.min( Set:{ $expr[0], ..., $expr[n] } )
     max -> Ordered.max( Set:{ $expr[0], ..., $expr[n] } )

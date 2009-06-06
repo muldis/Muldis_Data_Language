@@ -68,7 +68,7 @@ tuple if no explicit argument is given to it.
 C<< function sys.std.Counted.add_count_attr (QRelation <--
 QRelation $topic, Name $count_attr_name) >>
 
-This function is a shorthand for C<sys.std.Core.QRelation.static_exten>
+This function is a shorthand for C<sys.std.Core.Relation.static_exten>
 that adds to C<topic> a single C<tcount> attribute whose value for all
 tuples is 1.  This function conceptually converts a set of tuples into a
 bag of tuples, of multiplicity 1 per tuple.
@@ -78,7 +78,7 @@ bag of tuples, of multiplicity 1 per tuple.
 C<< function sys.std.Counted.remove_count_attr (QRelation <--
 QRelation $topic, Name $count_attr_name) >>
 
-This function is a shorthand for C<sys.std.Core.QRelation.cmpl_proj>
+This function is a shorthand for C<sys.std.Core.Relation.cmpl_proj>
 that removes from C<topic> the single C<tcount> attribute.  This function
 conceptually converts a bag of tuples into a set of tuples, elimimating all
 duplicates.
@@ -88,7 +88,7 @@ duplicates.
 C<< function sys.std.Counted.counted_cardinality (NNInt <--
 QRelation $topic, Name $count_attr_name) >>
 
-This function is like C<sys.std.Core.QRelation.cardinality> but that it
+This function is like C<sys.std.Core.Relation.cardinality> but that it
 accounts for the greater-than-one conceptual multiplicity of q/tuples in
 its C<topic> argument; it results in the sum of the C<tcount> attribute of
 its C<topic> argument.
@@ -98,7 +98,7 @@ its C<topic> argument.
 C<< function sys.std.Counted.counted_has_member (Bool <-- QRelation $r,
 QTuple $t, Name $count_attr_name) >>
 
-This function is the same as C<sys.std.Core.QRelation.has_member> except
+This function is the same as C<sys.std.Core.Relation.has_member> except
 that C<t> must have one fewer attribute than C<r> does, specifically
 C<tcount> (and otherwise they must have the same headings).
 
@@ -116,7 +116,7 @@ arguments.
 C<< function sys.std.Counted.counted_insertion (QRelation <-- QRelation $r,
 QTuple $t, Name $count_attr_name) >>
 
-This function is the same as C<sys.std.Core.QRelation.insertion> as per
+This function is the same as C<sys.std.Core.Relation.insertion> as per
 C<counted_has_member> but that its result differs depending on whether C<t>
 already exists in C<r>; if it does, then no new q/tuple is added, but the
 C<tcount> attribute for the matching q/tuple is incremented by 1; if it
@@ -132,7 +132,7 @@ union).
 C<< function sys.std.Counted.counted_deletion (QRelation <-- QRelation $r,
 QTuple $t, Name $count_attr_name) >>
 
-This function is the same as C<sys.std.Core.QRelation.deletion> as per
+This function is the same as C<sys.std.Core.Relation.deletion> as per
 C<counted_has_member> but that its result differs depending on what the
 C<tcount> for any q/tuple matching C<t> that already exists in C<r> is; if
 the C<tcount> is greater than 1, then it is decremented by 1; if it is
@@ -143,7 +143,7 @@ equal to 1, then the q/tuple whose C<tattrs> is C<t> is deleted.
 C<< function sys.std.Counted.counted_projection (QRelation <--
 QRelation $topic, set_of.Name $attr_names, Name $count_attr_name) >>
 
-This function is the same as C<sys.std.Core.QRelation.projection> except
+This function is the same as C<sys.std.Core.Relation.projection> except
 that the C<counted_cardinality> of the result is guaranteed to be the same
 as that of C<topic> rather than possibly less.  The C<topic> argument must
 have a C<tcount> attribute and C<attr_names> must not specify that
@@ -155,7 +155,7 @@ C<attr_names> plus the C<tcount> attribute.
 C<< function sys.std.Counted.counted_cmpl_proj (QRelation <--
 QRelation $topic, set_of.Name $attr_names, Name $count_attr_name) >>
 
-This function is the same as C<sys.std.Core.QRelation.cmpl_proj>
+This function is the same as C<sys.std.Core.Relation.cmpl_proj>
 except that the C<counted_cardinality> of the result is guaranteed to be
 the same as that of C<topic> rather than possibly less.  The C<topic>
 argument must have a C<tcount> attribute and C<attr_names> must not specify
@@ -168,7 +168,7 @@ C<< function sys.std.Counted.counted_reduction (QTuple <--
 QRelation $topic, FuncRef $func, QTuple $assuming?, QTuple $identity,
 Name $count_attr_name) >>
 
-This function is the same as C<sys.std.QRelation.reduction> except that
+This function is the same as C<sys.std.Relation.reduction> except that
 C<func> is invoked extra times, where both its C<v1> and C<v2> arguments
 might be different instances of the same C<tattrs> tuple having >= 2
 multiplicity.  This function's C<topic> argument has a C<tcount> attribute
@@ -182,8 +182,8 @@ C<< function sys.std.Counted.counted_maybe_reduction
 (quasi_maybe_of.QTuple <-- QRelation $topic, FuncRef $func,
 QTuple $assuming?, Name $count_attr_name) >>
 
-This function is to C<sys.std.Core.QRelation.maybe_reduction> as
-C<sys.std.Counted.counted_reduction> is to C<sys.std.QRelation.reduction>.
+This function is to C<sys.std.Core.Relation.maybe_reduction> as
+C<sys.std.Counted.counted_reduction> is to C<sys.std.Relation.reduction>.
 
 =head2 sys.std.Counted.counted_map
 
@@ -191,7 +191,7 @@ C<< function sys.std.Counted.counted_map (QRelation <-- QRelation $topic,
 set_of.Name $result_attr_names, FuncRef $func, QTuple $assuming?,
 Name $count_attr_name) >>
 
-This function is the same as C<sys.std.QRelation.map> except that the
+This function is the same as C<sys.std.Relation.map> except that the
 C<counted_cardinality> of the result is guaranteed to be the same as that
 of C<topic> rather than possibly less.  The C<topic> argument must have a
 C<tcount> attribute and C<result_attr_names> must not specify that
@@ -204,7 +204,7 @@ C<topic> argument don't have the C<tcount> attribute.
 C<< function sys.std.Counted.counted_is_subset (Bool <--
 QRelation $topic, QRelation $other, Name $count_attr_name) >>
 
-This function is like C<sys.std.Core.QRelation.is_subset> but that it
+This function is like C<sys.std.Core.Relation.is_subset> but that it
 accounts for the greater-than-one multiplicity of C<tattrs> in its
 C<topic> and C<other> arguments, both of which have a C<tcount>
 attribute; this function returns C<Bool:true> iff the multiplicity of each
@@ -216,7 +216,7 @@ counterpart C<other> value.
 C<< function sys.std.Counted.counted_is_not_subset (Bool <--
 QRelation $topic, QRelation $other, Name $count_attr_name) >>
 
-This function is like C<sys.std.Core.QRelation.is_not_subset> as per
+This function is like C<sys.std.Core.Relation.is_not_subset> as per
 C<counted_is_subset>.
 
 =head2 sys.std.Counted.counted_is_superset
@@ -226,7 +226,7 @@ QRelation $topic, QRelation $other, Name $count_attr_name) >>
 
 This function is an alias for C<sys.std.Counted.counted_is_subset> except
 that it transposes the C<topic> and C<other> arguments.  This function is
-like C<sys.std.Core.QRelation.is_superset> but that it accounts for the
+like C<sys.std.Core.Relation.is_superset> but that it accounts for the
 greater-than-one multiplicity of C<tattrs> in its C<topic> and C<other>
 arguments, both of which have a C<tcount> attribute; this function returns
 C<Bool:true> iff the multiplicity of each C<topic> value is greater than or
@@ -239,7 +239,7 @@ QRelation $topic, QRelation $other, Name $count_attr_name) >>
 
 This function is an alias for C<sys.std.Counted.counted_is_not_subset>
 except that it transposes the C<topic> and C<other> arguments.  This
-function is like C<sys.std.Core.QRelation.is_not_superset> as per
+function is like C<sys.std.Core.Relation.is_not_superset> as per
 C<counted_is_superset>.
 
 =head2 sys.std.Counted.counted_is_proper_subset
@@ -247,7 +247,7 @@ C<counted_is_superset>.
 C<< function sys.std.Counted.counted_is_proper_subset (Bool <--
 QRelation $topic, QRelation $other, Name $count_attr_name) >>
 
-This function is like C<sys.std.QRelation.is_proper_subset> as per
+This function is like C<sys.std.Relation.is_proper_subset> as per
 C<counted_is_subset>.  I<TODO: What is its definition?>
 
 =head2 sys.std.Counted.counted_is_not_proper_subset
@@ -255,7 +255,7 @@ C<counted_is_subset>.  I<TODO: What is its definition?>
 C<< function sys.std.Counted.counted_is_not_proper_subset (Bool <--
 QRelation $topic, QRelation $other, Name $count_attr_name) >>
 
-This function is like C<sys.std.QRelation.is_not_proper_subset> as per
+This function is like C<sys.std.Relation.is_not_proper_subset> as per
 C<counted_is_subset>.  I<TODO: What is its definition?>
 
 =head2 sys.std.Counted.counted_is_proper_superset
@@ -265,7 +265,7 @@ QRelation $topic, QRelation $other, Name $count_attr_name) >>
 
 This function is an alias for C<sys.std.Counted.counted_is_proper_subset>
 except that it transposes the C<topic> and C<other> arguments.  This
-function is like C<sys.std.QRelation.is_proper_superset> as per
+function is like C<sys.std.Relation.is_proper_superset> as per
 C<counted_is_superset>.
 
 =head2 sys.std.Counted.counted_is_not_proper_superset
@@ -276,14 +276,14 @@ QRelation $topic, QRelation $other, Name $count_attr_name) >>
 This function is an alias for
 C<sys.std.Counted.counted_is_not_proper_subset> except that it transposes
 the C<topic> and C<other> arguments.  This function is like
-C<sys.std.QRelation.is_not_proper_superset> as per C<counted_is_superset>.
+C<sys.std.Relation.is_not_proper_superset> as per C<counted_is_superset>.
 
 =head2 sys.std.Counted.counted_union
 
 C<< function sys.std.Counted.counted_union (QRelation <--
 quasi_set_of.QRelation $topic, Name $count_attr_name) >>
 
-This function is like C<sys.std.Core.QRelation.union> but that it just
+This function is like C<sys.std.Core.Relation.union> but that it just
 looks at the C<tattrs> attributes of its argument elements when determining
 what element q/tuples correspond; then for each q/tuple in the result, its
 C<tcount> attribute value is the maximum of the C<tcount> attribute values
@@ -298,7 +298,7 @@ This function is like C<sys.std.Counted.counted_union> but that for each
 pair of argument elements being unioned, the output C<tcount> value is the
 sum of the input C<tcount> values rather than being the maximum of the
 inputs.  This function is the nearest Muldis D analogy to the SQL "UNION
-ALL" operation, versus C<sys.std.Core.QRelation.union> which is the nearest
+ALL" operation, versus C<sys.std.Core.Relation.union> which is the nearest
 analogy to "UNION DISTINCT".
 
 =head2 sys.std.Counted.counted_intersection
@@ -306,8 +306,8 @@ analogy to "UNION DISTINCT".
 C<< function sys.std.Counted.counted_intersection (QRelation <--
 quasi_set_of.QRelation $topic, Name $count_attr_name) >>
 
-This function is like C<sys.std.Core.QRelation.intersection> as
-C<counted_union> is like C<sys.std.Core.QRelation.union>; the minimum of
+This function is like C<sys.std.Core.Relation.intersection> as
+C<counted_union> is like C<sys.std.Core.Relation.union>; the minimum of
 C<tcount> attribute values is used rather than the maximum.
 
 =head2 sys.std.Counted.counted_diff
@@ -315,8 +315,8 @@ C<tcount> attribute values is used rather than the maximum.
 C<< function sys.std.Counted.counted_diff (QRelation <--
 QRelation $source, QRelation $filter, Name $count_attr_name) >>
 
-This function is like C<sys.std.Core.QRelation.diff> as
-C<counted_union> is like C<sys.std.Core.QRelation.union>; for corresponding
+This function is like C<sys.std.Core.Relation.diff> as
+C<counted_union> is like C<sys.std.Core.Relation.union>; for corresponding
 input q/tuples, the result only has a q/tuple with the same C<tattrs> if
 the C<tcount> of the C<source> q/tuple is greater than the C<tcount> of the
 C<filter> q/tuple, and the C<tcount> of the result q/tuple is the
@@ -328,7 +328,7 @@ C<< function sys.std.Counted.counted_substitution (QRelation <--
 QRelation $topic, set_of.Name $attr_names, FuncRef $func,
 QTuple $assuming?, Name $count_attr_name) >>
 
-This function is the same as C<sys.std.QRelation.substitution> except that
+This function is the same as C<sys.std.Relation.substitution> except that
 the C<counted_cardinality> of the result is guaranteed to be the same as
 that of C<topic> rather than possibly less.  The C<topic> argument must
 have a C<tcount> attribute and C<attr_names> must not specify that
@@ -339,7 +339,7 @@ attribute.
 C<< function sys.std.Counted.counted_static_subst (QRelation <--
 QRelation $topic, QTuple $attrs, Name $count_attr_name) >>
 
-This function is the same as C<sys.std.QRelation.static_subst>
+This function is the same as C<sys.std.Relation.static_subst>
 except that the C<counted_cardinality> of the result is guaranteed to be
 the same as that of C<topic> rather than possibly less.  The C<topic>
 argument must have a C<tcount> attribute and C<attrs> must not have that
