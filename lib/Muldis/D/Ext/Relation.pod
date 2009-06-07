@@ -27,9 +27,9 @@ any entities outside the core, called I<Muldis D extensions>, are
 non-mandatory and are defined in terms of the core or each other, but the
 reverse isn't true.
 
-This current C<QRelation> document describes the system-defined I<Muldis D
-QRelation Extension>, which consists of many generic relational operators
-(for generic q/relations), adding to the minimum few defined in the
+This current C<Relation> document describes the system-defined I<Muldis D
+Relation Extension>, which consists of many generic relational operators
+(for generic relations), adding to the minimum few defined in the
 language core.
 
 This current document does not describe the polymorphic operators that all
@@ -38,40 +38,39 @@ operators are defined once for all types in L<Muldis::D::Core>.
 
 I<This documentation is pending.>
 
-=head1 SYSTEM-DEFINED GENERIC SINGLE INPUT QUASI-/RELATION FUNCTIONS
+=head1 SYSTEM-DEFINED GENERIC SINGLE INPUT RELATION FUNCTIONS
 
-These functions are applicable to mainly q/relation types, but are generic
-in that they typically work with any q/relation types.  Each C<assuming>
+These functions are applicable to mainly relation types, but are generic
+in that they typically work with any relation types.  Each C<assuming>
 parameter is optional and defaults to the zero-attribute tuple if no
 explicit argument is given to it.
 
 =head2 sys.std.Relation.degree
 
-C<< function sys.std.Relation.degree (NNInt <-- QRelation $topic) >>
+C<< function sys.std.Relation.degree (NNInt <-- Relation $topic) >>
 
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
 =head2 sys.std.Relation.is_nullary
 
-C<< function sys.std.Relation.is_nullary (Bool <-- QRelation $topic) >>
+C<< function sys.std.Relation.is_nullary (Bool <-- Relation $topic) >>
 
 This function results in C<Bool:true> iff its argument has a degree of zero
 (that is, it has zero attributes), and C<Bool:false> otherwise.  By
-definition, the only 2 q/relation values for which this function would
+definition, the only 2 relation values for which this function would
 result in C<Bool:true> are the values C<Relation:d0c[0|1]>.
 
 =head2 sys.std.Relation.is_not_nullary
 
-C<< function sys.std.Relation.is_not_nullary (Bool <-- QRelation $topic)
->>
+C<< function sys.std.Relation.is_not_nullary (Bool <-- Relation $topic) >>
 
 This function is exactly the same as C<sys.std.Relation.is_nullary> except
 that it results in the opposite boolean value when given the same argument.
 
 =head2 sys.std.Relation.has_attrs
 
-C<< function sys.std.Relation.has_attrs (Bool <-- QRelation $topic,
+C<< function sys.std.Relation.has_attrs (Bool <-- Relation $topic,
 set_of.Name $attr_names) >>
 
 This function results in C<Bool:true> iff, for every one of the attribute
@@ -83,24 +82,24 @@ empty.
 =head2 sys.std.Relation.attr_names
 
 C<< function sys.std.Relation.attr_names (set_of.Name <--
-QRelation $topic) >>
+Relation $topic) >>
 
 This function results in the set of the names of the attributes of its
 argument.
 
 =head2 sys.std.Relation.is_empty
 
-C<< function sys.std.Relation.is_empty (Bool <-- QRelation $topic) >>
+C<< function sys.std.Relation.is_empty (Bool <-- Relation $topic) >>
 
 This function results in C<Bool:true> iff its argument has a cardinality of
-zero (that is, it has zero q/tuples), and C<Bool:false> otherwise.  Note
-that if you are using a C<QMaybe> to represent a sparse data item,
-analagously to a SQL nullable context, then testing the C<QMaybe> with
+zero (that is, it has zero tuples), and C<Bool:false> otherwise.  Note
+that if you are using a C<Maybe> to represent a sparse data item,
+analagously to a SQL nullable context, then testing the C<Maybe> with
 C<is_empty> is analagous to testing a SQL nullable with C<is null>.
 
 =head2 sys.std.Relation.is_not_empty
 
-C<< function sys.std.Relation.is_not_empty (Bool <-- QRelation $topic) >>
+C<< function sys.std.Relation.is_not_empty (Bool <-- Relation $topic) >>
 
 This function is exactly the same as C<sys.std.Relation.is_empty> except
 that it results in the opposite boolean value when given the same argument.
@@ -109,7 +108,7 @@ SQL's C<is not null>.
 
 =head2 sys.std.Relation.has_key
 
-C<< function sys.std.Relation.has_key (Bool <-- QRelation $topic,
+C<< function sys.std.Relation.has_key (Bool <-- Relation $topic,
 set_of.Name $attr_names) >>
 
 This function results in C<Bool:true> iff its C<topic> argument has a
@@ -121,7 +120,7 @@ if C<topic> is empty.
 
 =head2 sys.std.Relation.empty
 
-C<< function sys.std.Relation.empty (Relation <-- QRelation $topic) >>
+C<< function sys.std.Relation.empty (Relation <-- Relation $topic) >>
 
 This function results in the empty relation of the same heading of its
 argument, that is having the same degree and attribute names; it has zero
@@ -129,31 +128,31 @@ tuples.
 
 =head2 sys.std.Relation.power_set
 
-C<< function sys.std.Relation.power_set (quasi_set_of.QRelation <--
-QRelation $topic) >>
+C<< function sys.std.Relation.power_set (set_of.Relation <--
+Relation $topic) >>
 
 This function results in the power set of its argument.  The result is a
-C<QSet> whose sole attribute is C<QRelation>-typed (its type is nominally
-the same as that of the argument) and which has a q/tuple for every
-distinct subset of q/tuples in the argument.  The cardinality of the result
+C<Set> whose sole attribute is C<Relation>-typed (its type is nominally
+the same as that of the argument) and which has a tuple for every
+distinct subset of tuples in the argument.  The cardinality of the result
 is equal to 2 raised to the power of the cardinality of the argument (which
 may easily lead to a very large result, so use this function with care).
-Note that the N-adic relational union of the power set of some q/relation
-is that q/relation; the N-adic intersection of any power set is the empty
+Note that the N-adic relational union of the power set of some relation
+is that relation; the N-adic intersection of any power set is the empty
 relation.
 
 =head2 sys.std.Relation.tclose
 
-C<< function sys.std.Relation.tclose (QRelation <-- QRelation $topic) >>
+C<< function sys.std.Relation.tclose (Relation <-- Relation $topic) >>
 
 This function results in the transitive closure of its argument.  The
-argument must be a binary q/relation whose attributes are both of the same
-type, and the result is a q/relation having the same heading and a body
-which is a superset of the argument's q/tuples.  Assuming that the argument
+argument must be a binary relation whose attributes are both of the same
+type, and the result is a relation having the same heading and a body
+which is a superset of the argument's tuples.  Assuming that the argument
 represents all of the node pairs in a directed graph that have an arc
-between them, and so each argument q/tuple represents an arc, C<tclose>
+between them, and so each argument tuple represents an arc, C<tclose>
 will determine all of the node pairs in that graph which have a path
-between them (a recursive operation), so each q/tuple of the result
+between them (a recursive operation), so each tuple of the result
 represents a path.  The result is a superset since all arcs are also
 complete paths.  The C<tclose> function is intended to support recursive
 queries, such as in connection with the "part explosion problem" (the
@@ -161,42 +160,42 @@ problem of finding all components, at all levels, of some specified part).
 
 =head2 sys.std.Relation.classification
 
-C<< function sys.std.Relation.classification (QRelation <--
-QRelation $topic, FuncRef $func, QTuple $assuming?, Name $class_attr_name,
+C<< function sys.std.Relation.classification (Relation <-- Relation $topic,
+FuncRef $func, Tuple $assuming?, Name $class_attr_name,
 Name $group_attr_name) >>
 
 This function conceptually is to C<sys.std.Core.Relation.restriction> what
 C<sys.std.Core.Relation.group> is to C<sys.std.Core.Relation.semijoin>.
-It classifies the q/tuples of C<topic> into N groups using the function
-named by C<func>, such that any distinct q/tuples are in a common group if
+It classifies the tuples of C<topic> into N groups using the function
+named by C<func>, such that any distinct tuples are in a common group if
 the function named by C<func> results in the same value when given either
-of those q/tuples as its C<topic> argument, and C<assuming> as its
+of those tuples as its C<topic> argument, and C<assuming> as its
 C<assuming> argument.  This function conceptually is a short-hand for first
 extending C<topic> with a new attribute whose name is given in
 C<class_attr_name>, whose value per tuple is determined from C<topic> using
-C<func> and C<assuming>, and then grouping that result q/relation on all of
+C<func> and C<assuming>, and then grouping that result relation on all of
 its original attributes, with the post-group RVA having the name given in
-C<group_attr_name>; the result of C<classification> is a binary q/relation
+C<group_attr_name>; the result of C<classification> is a binary relation
 whose 2 attributes have the names given in C<class_attr_name> and
 C<group_attr_name>.  This function is intended for use when you want to
-partition a q/relation's q/tuples into an arbitrary number of groups using
+partition a relation's tuples into an arbitrary number of groups using
 arbitrary criteria, in contrast with C<restriction> where you are dividing
 into exactly 2 groups (and returning one) using arbitrary criteria.
 
 =head2 sys.std.Relation.reduction
 
-C<< function sys.std.Relation.reduction (QTuple <-- QRelation $topic,
-FuncRef $func, QTuple $assuming?, QTuple $identity) >>
+C<< function sys.std.Relation.reduction (Tuple <-- Relation $topic,
+FuncRef $func, Tuple $assuming?, Tuple $identity) >>
 
 This function is a generic reduction operator that recursively takes each
-pair of q/tuples in C<topic> and applies an argument-specified q/tuple
+pair of tuples in C<topic> and applies an argument-specified tuple
 value-resulting function (which is both commutative and associative) to the
-pair until just one input q/tuple is left, which is the result.  The
+pair until just one input tuple is left, which is the result.  The
 function to apply is named in the C<func> argument, and that function must
 have 3 arguments named C<v1>, C<v2>, C<assuming>; the last parameter is
 curried with the same-named argument of C<reduction>, and the first 2
-parameters are the 2 input q/tuples for an invocation.  If C<topic> has
-zero q/tuples, then C<reduction> results in the q/tuple given in
+parameters are the 2 input tuples for an invocation.  If C<topic> has
+zero tuples, then C<reduction> results in the tuple given in
 C<identity>.  I<Note that C<identity> may be changed to take a function
 name rather than a value, for consistency with C<func>.>  This function
 will fail|warn if the |declared headings of C<identity> and C<topic> aren't
@@ -204,53 +203,53 @@ compatible.
 
 =head2 sys.std.Relation.maybe_reduction
 
-C<< function sys.std.Relation.maybe_reduction (quasi_maybe_of.QTuple <--
-QRelation $topic, FuncRef $func, QTuple $assuming?) >>
+C<< function sys.std.Relation.maybe_reduction (maybe_of.Tuple <--
+Relation $topic, FuncRef $func, Tuple $assuming?) >>
 
 This function is exactly the same as C<sys.std.Relation.reduction> except
 that it does not take an C<identity> argument, and it results in a
-C<QMaybe> of what is otherwise the result type, and that result has zero
+C<Maybe> of what is otherwise the result type, and that result has zero
 elements if the argument has zero elements.
 
 =head2 sys.std.Relation.map
 
-C<< function sys.std.Relation.map (QRelation <-- QRelation $topic,
-set_of.Name $result_attr_names, FuncRef $func, QTuple $assuming?) >>
+C<< function sys.std.Relation.map (Relation <-- Relation $topic,
+set_of.Name $result_attr_names, FuncRef $func, Tuple $assuming?) >>
 
-This function provides a convenient one-place generalization of per-q/tuple
+This function provides a convenient one-place generalization of per-tuple
 transformations that otherwise might require the chaining of up to a
 half-dozen other operators like restriction, extension, and rename.  This
-function results in a q/relation each of whose q/tuples is the result of
-applying, to each of the q/tuples of its C<topic> argument, the
-C<QTuple>-resulting function named in its C<func> argument when the latter
+function results in a relation each of whose tuples is the result of
+applying, to each of the tuples of its C<topic> argument, the
+C<Tuple>-resulting function named in its C<func> argument when the latter
 function is curried by its C<assuming> argument.  There is no restriction
-on what attributes the result q/tuple of C<func> may have (except that all
-q/tuples from C<func> must have compatible headings); this q/tuple from
-C<func> would completely replace the original q/tuple from C<topic>.  The
-result q/relation has a cardinality that is the same as that of C<topic>,
-unless the result of C<func> was redundant q/tuples, in which case the
-result has appropriately fewer q/tuples.  As a trivial case, if C<func> is
-defined to unconditionally result in the same q/tuple as its own C<topic>
+on what attributes the result tuple of C<func> may have (except that all
+tuples from C<func> must have compatible headings); this tuple from
+C<func> would completely replace the original tuple from C<topic>.  The
+result relation has a cardinality that is the same as that of C<topic>,
+unless the result of C<func> was redundant tuples, in which case the
+result has appropriately fewer tuples.  As a trivial case, if C<func> is
+defined to unconditionally result in the same tuple as its own C<topic>
 argument, then this function results simply in C<topic>; or, if C<func> is
 defined to have a static result, then this function's result will have just
-0..1 q/tuples.  Now, C<map> requires the extra C<result_attr_names>
+0..1 tuples.  Now, C<map> requires the extra C<result_attr_names>
 argument to prevent ambiguity in the general case where C<topic> might have
-zero q/tuples, because in that situation, C<func> would never be invoked,
+zero tuples, because in that situation, C<func> would never be invoked,
 and the names of the attributes of the result are not known (we don't
 generally assume that C<map> can reverse-engineer C<func> to see what
 attributes it would have resulted in).  This function will fail if C<topic>
-has at least 1 q/tuple and the result of C<func> does not have matching
+has at least 1 tuple and the result of C<func> does not have matching
 attribute names to those named by C<result_attr_names>.
 
-=head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT QUASI-/RELATION FUNCTIONS
+=head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT RELATION FUNCTIONS
 
-These functions are applicable to mainly q/relation types, but are generic
-in that they typically work with any q/relation types.
+These functions are applicable to mainly relation types, but are generic
+in that they typically work with any relation types.
 
 =head2 sys.std.Relation.is_proper_subset
 
 C<< function sys.std.Relation.is_proper_subset (Bool <--
-QRelation $topic, QRelation $other) >>
+Relation $topic, Relation $other) >>
 
 This function is exactly the same as C<sys.std.Core.Relation.is_subset>
 except that it results in C<Bool:false> if its 2 arguments are identical.
@@ -259,7 +258,7 @@ Note that this operation is also known as C<⊂>.
 =head2 sys.std.Relation.is_not_proper_subset
 
 C<< function sys.std.Relation.is_not_proper_subset (Bool <--
-QRelation $topic, QRelation $other) >>
+Relation $topic, Relation $other) >>
 
 This function is exactly the same as C<sys.std.Relation.is_proper_subset>
 except that it results in the opposite boolean value when given the same
@@ -268,7 +267,7 @@ arguments.  Note that this operation is also known as C<⊄>.
 =head2 sys.std.Relation.is_proper_superset
 
 C<< function sys.std.Relation.is_proper_superset (Bool <--
-QRelation $topic, QRelation $other) >>
+Relation $topic, Relation $other) >>
 
 This function is an alias for C<sys.std.Relation.is_proper_subset> except
 that it transposes the C<topic> and C<other> arguments.  This function
@@ -279,7 +278,7 @@ operation is also known as C<⊃>.
 =head2 sys.std.Relation.is_not_proper_superset
 
 C<< function sys.std.Relation.is_not_proper_superset (Bool <--
-QRelation $topic, QRelation $other) >>
+Relation $topic, Relation $other) >>
 
 This function is an alias for C<sys.std.Relation.is_not_proper_subset>
 except that it transposes the C<topic> and C<other> arguments.  This
@@ -289,18 +288,18 @@ arguments.  Note that this operation is also known as C<⊅>.
 
 =head2 sys.std.Relation.is_disjoint
 
-C<< function sys.std.Relation.is_disjoint (Bool <-- QRelation $topic,
-QRelation $other) >>
+C<< function sys.std.Relation.is_disjoint (Bool <-- Relation $topic,
+Relation $other) >>
 
-This symmetric function results in C<Bool:true> iff the set of q/tuples
+This symmetric function results in C<Bool:true> iff the set of tuples
 comprising each of its 2 arguments are mutually disjoint, that is, iff the
 intersection of the 2 arguments is empty; it results in C<Bool:false>
 otherwise.
 
 =head2 sys.std.Relation.is_not_disjoint
 
-C<< function sys.std.Relation.is_not_disjoint (Bool <-- QRelation $topic,
-QRelation $other) >>
+C<< function sys.std.Relation.is_not_disjoint (Bool <-- Relation $topic,
+Relation $other) >>
 
 This symmetric function is exactly the same as
 C<sys.std.Relation.is_disjoint> except that it results in the opposite
@@ -308,16 +307,16 @@ boolean value when given the same arguments.
 
 =head2 sys.std.Relation.exclusion
 
-C<< function sys.std.Relation.exclusion (QRelation <--
-quasi_bag_of.QRelation $topic) >>
+C<< function sys.std.Relation.exclusion (Relation <--
+bag_of.Relation $topic) >>
 
 This function results in the relational exclusion/exclusive-or of the N
 element values of its argument; it is a reduction operator that recursively
 takes each pair of input values and relationally excludes (which is both
 commutative and associative) them together until just one is left, which is
-the result.  The result q/relation has the same heading as all of its
-inputs, and its body contains every q/tuple that is in just an odd number
-of the input q/relations.  Matters concerning a C<topic> with zero values
+the result.  The result relation has the same heading as all of its
+inputs, and its body contains every tuple that is in just an odd number
+of the input relations.  Matters concerning a C<topic> with zero values
 are as per C<sys.std.Core.Relation.union>; this function will fail when
 given such, and the per-distinct-heading identity value for relational
 exclusion is the same as for relational union.  Note that this operation is
@@ -325,36 +324,36 @@ also known as I<symmetric difference> or C<∆>.
 
 =head2 sys.std.Relation.symmetric_diff
 
-C<< function sys.std.Relation.symmetric_diff (QRelation <--
-quasi_bag_of.QRelation $topic) >>
+C<< function sys.std.Relation.symmetric_diff (Relation <--
+bag_of.Relation $topic) >>
 
 This function is an alias for C<sys.std.Relation.exclusion>.
 
 =head2 sys.std.Relation.composition
 
-C<< function sys.std.Relation.composition (QRelation <-- QRelation $topic,
-QRelation $other) >>
+C<< function sys.std.Relation.composition (Relation <-- Relation $topic,
+Relation $other) >>
 
 This symmetric function results in the relational composition of its
 2 arguments.  It is conceptually a short-hand for first doing
 an ordinary relational join between its 2 arguments, and then performing a
 relational projection on all of the attributes that only one of the
 arguments has; that is, the result has all of and just the attributes that
-were not involved in matching the q/tuples of the 2 arguments.  This
+were not involved in matching the tuples of the 2 arguments.  This
 function will fail|warn any time that C<join> would fail|warn on the same 2
-input q/relations.
+input relations.
 
 =head2 sys.std.Relation.join_with_group
 
-C<< function sys.std.Relation.join_with_group (QRelation <--
-QRelation $primary, QRelation $secondary, Name $group_attr) >>
+C<< function sys.std.Relation.join_with_group (Relation <--
+Relation $primary, Relation $secondary, Name $group_attr) >>
 
 This function is a short-hand for first taking a (natural inner) C<join> of
 its C<primary> and C<secondary> arguments, and then taking a C<group> on
 all of the attributes that only the C<secondary> argument had, such that
 the attribute resulting from the group has the name C<group_attr>.  The
-result has 1 q/tuple for every q/tuple of C<primary> where at least 1
-matching q/tuple exists in C<secondary>.  This function will fail if
+result has 1 tuple for every tuple of C<primary> where at least 1
+matching tuple exists in C<secondary>.  This function will fail if
 C<group_attr> is the same name as any source attribute that wasn't grouped.
 This function is a convenient tool for gathering both parent and child
 records from a database using a single query while avoiding duplication of
@@ -368,33 +367,33 @@ zero-attribute tuple if no explicit argument is given to it.
 
 =head2 sys.std.Relation.rank
 
-C<< function sys.std.Relation.rank (QRelation <-- QRelation $topic,
-Name $name, FuncRef $ord_func, QTuple $ord_assuming?,
+C<< function sys.std.Relation.rank (Relation <-- Relation $topic,
+Name $name, FuncRef $ord_func, Tuple $ord_assuming?,
 Bool $is_reverse_order?) >>
 
 This function results in the relational extension of its C<topic> argument
 by a single C<NNInt>-typed attribute whose name is provided by the C<name>
-argument, where the value of the new attribute for each q/tuple is the rank
-of that q/tuple as determined by the (total) C<order_determination>
+argument, where the value of the new attribute for each tuple is the rank
+of that tuple as determined by the (total) C<order_determination>
 function named in the C<ord_func> argument when the latter function is
 curried by the C<ord_assuming> and C<is_reverse_order> arguments.  The
 C<order_determination>
-function compares q/tuples, with each invocation of it getting a C<topic>
-q/tuple as each its C<topic> and C<other> arguments.  The new attribute of
-C<rank>'s result has a value of zero for its ranked-first q/tuple, and each
-further consecutive ranked q/tuple has the next larger integer value.  Note
+function compares tuples, with each invocation of it getting a C<topic>
+tuple as each its C<topic> and C<other> arguments.  The new attribute of
+C<rank>'s result has a value of zero for its ranked-first tuple, and each
+further consecutive ranked tuple has the next larger integer value.  Note
 that C<rank> provides the functionality of SQL's "RANK" feature but that
 the result of C<rank> is always a total ordering (as per a (total)
 C<order_determination> function) and so there is no "dense" / "not dense"
 distinction (however a partial ordering can be implemented over it).  See
-also the C<sys.std.Array.QArray_from_wrap> function, which is the same as
-C<sys.std.Relation.rank> but that it wraps the source q/tuples rather than
+also the C<sys.std.Array.Array_from_wrap> function, which is the same as
+C<sys.std.Relation.rank> but that it wraps the source tuples rather than
 just adding an attribute to them.
 
 =head2 sys.std.Relation.rank_by_attr_names
 
-C<< function sys.std.Relation.rank_by_attr_names (QRelation <--
-QRelation $topic, Name $name, array_of.OrderByName $order_by,
+C<< function sys.std.Relation.rank_by_attr_names (Relation <--
+Relation $topic, Name $name, array_of.OrderByName $order_by,
 Bool $is_reverse_order?) >>
 
 This function is a short-hand for invoking C<rank> with the function
@@ -403,33 +402,33 @@ latter is given C<order_by> in its C<assuming> argument.
 
 =head2 sys.std.Relation.limit
 
-C<< function sys.std.Relation.limit (QRelation <-- QRelation $topic,
-FuncRef $ord_func, QTuple $ord_assuming?, NNInt $min_rank, NNInt $max_rank,
+C<< function sys.std.Relation.limit (Relation <-- Relation $topic,
+FuncRef $ord_func, Tuple $ord_assuming?, NNInt $min_rank, NNInt $max_rank,
 Bool $is_reverse_order?) >>
 
 This function results in the relational restriction of its C<topic>
-argument as determined by first ranking its q/tuples as per C<rank>
+argument as determined by first ranking its tuples as per C<rank>
 function (using C<ord_func>, C<ord_assuming> and C<is_reverse_order>) and
 then keeping just
-those q/tuples whose rank is within the inclusive range specified by the
+those tuples whose rank is within the inclusive range specified by the
 C<min_rank> and C<max_rank> arguments (C<rank>'s extra attribute is not
 kept).  The C<limit> function implements a certain kind of quota query
-where all the result q/tuples are consecutive in their ranks.  This
+where all the result tuples are consecutive in their ranks.  This
 function will fail if C<max_rank> is before C<min_rank>.  It is valid for
 C<min_rank> or C<max_rank> to be greater than the maximum rank of the
-source q/tuples; in the first case, the result has zero q/tuples; in the
-second case, the result has all remaining q/tuples starting at C<min_rank>.
-If C<topic> has any q/tuples and C<min_rank> matches the rank of a source
-q/tuple, then the result will always have at least 1 q/tuple.  Note that
+source tuples; in the first case, the result has zero tuples; in the
+second case, the result has all remaining tuples starting at C<min_rank>.
+If C<topic> has any tuples and C<min_rank> matches the rank of a source
+tuple, then the result will always have at least 1 tuple.  Note that
 C<limit> provides the functionality of SQL's "LIMIT/OFFSET" feature in
-combination with "ORDER BY" but that the result q/tuples of C<limit> do not
-remain ordered (but see C<sys.std.Array.limit_of_QArray_from_wrap> for an
+combination with "ORDER BY" but that the result tuples of C<limit> do not
+remain ordered (but see C<sys.std.Array.limit_of_Array_from_wrap> for an
 alternative).
 
 =head2 sys.std.Relation.limit_by_attr_names
 
-C<< function sys.std.Relation.limit_by_attr_names (QRelation <--
-QRelation $topic, array_of.OrderByName $order_by, NNInt $min_rank,
+C<< function sys.std.Relation.limit_by_attr_names (Relation <--
+Relation $topic, array_of.OrderByName $order_by, NNInt $min_rank,
 NNInt $max_rank, Bool $is_reverse_order?) >>
 
 This function is to C<limit> what C<rank_by_attr_names> is to C<rank>.
@@ -442,54 +441,52 @@ tuple if no explicit argument is given to it.
 
 =head2 sys.std.Relation.substitution
 
-C<< function sys.std.Relation.substitution (QRelation <--
-QRelation $topic, set_of.Name $attr_names, FuncRef $func,
-QTuple $assuming?) >>
+C<< function sys.std.Relation.substitution (Relation <-- Relation $topic,
+set_of.Name $attr_names, FuncRef $func, Tuple $assuming?) >>
 
 This function is similar to C<extension> except that it substitutes values
-of existing q/relation attributes rather than adding new attributes.  The
-result q/relation has the same heading as C<topic>.  The result q/tuple of
+of existing relation attributes rather than adding new attributes.  The
+result relation has the same heading as C<topic>.  The result tuple of
 the function named in C<func> must have a heading that is a subset of the
 heading of C<topic>; corresponding values resulting from the function named
-in C<func> will replace the values of the q/tuples of C<topic>.  The result
-q/relation has a cardinality that is the same as that of C<topic>, unless
-the result of any substitutions was redundant q/tuples, in which case the
-result has appropriately fewer q/tuples.  As a trivial case, if C<func> is
+in C<func> will replace the values of the tuples of C<topic>.  The result
+relation has a cardinality that is the same as that of C<topic>, unless
+the result of any substitutions was redundant tuples, in which case the
+result has appropriately fewer tuples.  As a trivial case, if C<func> is
 defined to unconditionally result in either the degree-zero tuple or in the
-same q/tuple as its own C<topic> argument, then this function results
+same tuple as its own C<topic> argument, then this function results
 simply in C<topic>; or, if C<func> is defined to have a static result and
 it replaces all attributes, then this function's result will have just 0..1
-q/tuples.  Now, strictly speaking, C<substitution> could conceivably be
+tuples.  Now, strictly speaking, C<substitution> could conceivably be
 implemented such that each result from C<func> is allowed to specify
 replacement values for different subsets of C<topic> attributes; however,
 to improve the function's predictability and ease of implementation over
 disparate foundations, C<substitution> requires the extra C<attr_names>
 argument so that users can specify a consistent subset that C<func> will
 update (possibly to itself).  This function will fail if C<topic> has at
-least 1 q/tuple and the result of C<func> does not have matching attribute
+least 1 tuple and the result of C<func> does not have matching attribute
 names to those named by C<attr_names>.
 
 =head2 sys.std.Relation.static_subst
 
-C<< function sys.std.Relation.static_subst (QRelation <--
-QRelation $topic, QTuple $attrs) >>
+C<< function sys.std.Relation.static_subst (Relation <--
+Relation $topic, Tuple $attrs) >>
 
 This function is a simpler-syntax alternative to
 C<sys.std.Relation.substitution> in the typical scenario where every
-q/tuple of a q/relation, given in the C<topic> argument, is updated with
+tuple of a relation, given in the C<topic> argument, is updated with
 identical values for the same attributes; the new attribute values are
 given in the C<attrs> argument.
 
 =head2 sys.std.Relation.subst_in_restr
 
-C<< function sys.std.Relation.subst_in_restr (QRelation <--
-QRelation $topic, FuncRef $restr_func, QTuple $restr_assuming?,
-set_of.Name $subst_attr_names, FuncRef $subst_func,
-QTuple $subst_assuming?) >>
+C<< function sys.std.Relation.subst_in_restr (Relation <-- Relation $topic,
+FuncRef $restr_func, Tuple $restr_assuming?, set_of.Name $subst_attr_names,
+FuncRef $subst_func, Tuple $subst_assuming?) >>
 
 This function is like C<substitution> except that it only transforms a
-subset of the q/tuples of C<topic> rather than all of them.  It is a
-short-hand for first separating the q/tuples of C<topic> into 2 groups
+subset of the tuples of C<topic> rather than all of them.  It is a
+short-hand for first separating the tuples of C<topic> into 2 groups
 where those passed by a relational restriction (defined by C<restr_func>
 and C<restr_assuming>) are then transformed (defined by
 C<subst_attr_names>, C<subst_func> and C<subst_assuming>), then the result
@@ -500,9 +497,9 @@ simply of anded or ored tests for attribute value equality.
 
 =head2 sys.std.Relation.static_subst_in_restr
 
-C<< function sys.std.Relation.static_subst_in_restr (QRelation <--
-QRelation $topic, FuncRef $restr_func, QTuple $restr_assuming?,
-QTuple $subst) >>
+C<< function sys.std.Relation.static_subst_in_restr (Relation <--
+Relation $topic, FuncRef $restr_func, Tuple $restr_assuming?,
+Tuple $subst) >>
 
 This function is to C<sys.std.Relation.subst_in_restr> what
 C<sys.std.Relation.static_subst> is to
@@ -511,19 +508,19 @@ C<static_subst_in_semijoin> function.
 
 =head2 sys.std.Relation.subst_in_semijoin
 
-C<< function sys.std.Relation.subst_in_semijoin (QRelation <--
-QRelation $topic, QRelation $restr, set_of.Name $subst_attr_names,
-FuncRef $subst_func, QTuple $subst_assuming?) >>
+C<< function sys.std.Relation.subst_in_semijoin (Relation <--
+Relation $topic, Relation $restr, set_of.Name $subst_attr_names,
+FuncRef $subst_func, Tuple $subst_assuming?) >>
 
 This function is like C<subst_in_restr> except that the subset of the
-q/tuples of C<topic> to be transformed is determined by those matched by a
+tuples of C<topic> to be transformed is determined by those matched by a
 semijoin with C<restr> rather than those that pass a generic relational
 restriction.
 
 =head2 sys.std.Relation.static_subst_in_semijoin
 
-C<< function sys.std.Relation.static_subst_in_semijoin (QRelation <--
-QRelation $topic, QRelation $restr, QTuple $subst) >>
+C<< function sys.std.Relation.static_subst_in_semijoin (Relation <--
+Relation $topic, Relation $restr, Tuple $subst) >>
 
 This function is to C<sys.std.Relation.subst_in_semijoin> what
 C<sys.std.Relation.static_subst> is to
@@ -535,67 +532,67 @@ These additional functions are specific to supporting outer-joins.
 
 =head2 sys.std.Relation.outer_join_with_group
 
-C<< function sys.std.Relation.outer_join_with_group (QRelation <--
-QRelation $primary, QRelation $secondary, Name $group_attr) >>
+C<< function sys.std.Relation.outer_join_with_group (Relation <--
+Relation $primary, Relation $secondary, Name $group_attr) >>
 
 This function is the same as C<sys.std.Relation.join_with_group> except
 that it results in a half-outer natural join rather than an inner natural
-join; every q/tuple of C<primary> has exactly 1 corresponding q/tuple in
-the result, but where there were no matching C<secondary> q/tuples, the
-result attribute named by C<group_attr> contains zero q/tuples rather than
+join; every tuple of C<primary> has exactly 1 corresponding tuple in
+the result, but where there were no matching C<secondary> tuples, the
+result attribute named by C<group_attr> contains zero tuples rather than
 1+.
 
 =head2 sys.std.Relation.outer_join_with_maybes
 
-C<< function sys.std.Relation.outer_join_with_maybes (QRelation <--
-QRelation $primary, QRelation $secondary) >>
+C<< function sys.std.Relation.outer_join_with_maybes (Relation <--
+Relation $primary, Relation $secondary) >>
 
 This function results in a plain half-outer natural join of its C<primary>
 and C<secondary> arguments where all the result attributes that come from
-just C<secondary> are C<QMaybe>-typed; for result q/tuples from matched
-source q/tuples, each C<secondary> attribute value is a C<QSingle>; for
-result q/tuples from non-matched C<primary> q/tuples, each C<secondary>
+just C<secondary> are C<Maybe>-typed; for result tuples from matched
+source tuples, each C<secondary> attribute value is a C<Single>; for
+result tuples from non-matched C<primary> tuples, each C<secondary>
 attribute value is C<nothing>.  The C<outer_join_with_maybes> function is
 Muldis D's answer to the SQL LEFT OUTER JOIN where SQL NULL is implicitly
 used in result rows that were a non-match.
 
 =head2 sys.std.Relation.outer_join_with_defaults
 
-C<< function sys.std.Relation.outer_join_with_defaults (QRelation <--
-QRelation $primary, QRelation $secondary, TypeRef $filler) >>
+C<< function sys.std.Relation.outer_join_with_defaults (Relation <--
+Relation $primary, Relation $secondary, TypeRef $filler) >>
 
 This function is the same as
 C<sys.std.Relation.outer_join_with_static_exten> but that the filler
-q/tuple is the default value of the q/tuple data type whose name is given
+tuple is the default value of the tuple data type whose name is given
 in the C<filler> argument.  This function is a short-hand for invoking
 C<outer_join_with_static_exten> with the result from invoking
 C<sys.std.Core.Universal.default>.
 
 =head2 sys.std.Relation.outer_join_with_static_exten
 
-C<< function sys.std.Relation.outer_join_with_static_exten (QRelation <--
-QRelation $primary, QRelation $secondary, QTuple $filler) >>
+C<< function sys.std.Relation.outer_join_with_static_exten (Relation <--
+Relation $primary, Relation $secondary, Tuple $filler) >>
 
 This function is the same as C<sys.std.Relation.outer_join_with_maybes>
 but that C<secondary>-sourced result attributes are not converted to
-C<QMaybe>; rather, for result q/tuples from non-matches, the missing values
-are provided explicitly from the C<filler> argument, which is a q/tuple
+C<Maybe>; rather, for result tuples from non-matches, the missing values
+are provided explicitly from the C<filler> argument, which is a tuple
 whose heading matches the projection of C<secondary>'s attributes that
 aren't in common with C<primary>, and whose body is the specific values to
 use for those missing attribute values.
 
 =head2 sys.std.Relation.outer_join_with_exten
 
-C<< function sys.std.Relation.outer_join_with_exten (QRelation <--
-QRelation $primary, QRelation $secondary, FuncRef $exten_func,
-QTuple $exten_assuming?) >>
+C<< function sys.std.Relation.outer_join_with_exten (Relation <--
+Relation $primary, Relation $secondary, FuncRef $exten_func,
+Tuple $exten_assuming?) >>
 
 This function is the same as
 C<sys.std.Relation.outer_join_with_static_exten> but that the result
-q/tuples from non-matches are the result of performing a relational
-extension on the un-matched C<primary> q/tuples such that each said result
-q/tuple is determined by applying the function named in C<exten_func> to
-each said C<primary> q/tuple when the named function is curried using the
+tuples from non-matches are the result of performing a relational
+extension on the un-matched C<primary> tuples such that each said result
+tuple is determined by applying the function named in C<exten_func> to
+each said C<primary> tuple when the named function is curried using the
 C<exten_assuming> argument.  The C<exten_assuming> parameter is optional
 and defaults to the zero-attribute tuple if no explicit argument is given
 to it.
@@ -604,7 +601,7 @@ to it.
 
 =head2 sys.std.Relation.assign_empty
 
-C<updater sys.std.Relation.assign_empty (QRelation &$topic)>
+C<updater sys.std.Relation.assign_empty (Relation &$topic)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Relation.empty> function with the same argument, and then
@@ -613,18 +610,18 @@ analagous to the SQL "TRUNCATE" statement.
 
 =head2 sys.std.Relation.assign_exclusion
 
-C<updater sys.std.Relation.assign_exclusion (QRelation &$topic,
-QRelation $other)>
+C<updater sys.std.Relation.assign_exclusion (Relation &$topic,
+Relation $other)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Relation.exclusion> function such that it has 2 input
-q/relations from C<assign_exclusion>'s 2 arguments, and then assigning the
+relations from C<assign_exclusion>'s 2 arguments, and then assigning the
 result of that function to C<topic>.
 
 =head2 sys.std.Relation.assign_substitution
 
-C<updater sys.std.Relation.assign_substitution (QRelation &$topic,
-FuncRef $func, QTuple $assuming?)>
+C<updater sys.std.Relation.assign_substitution (Relation &$topic,
+FuncRef $func, Tuple $assuming?)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.substitution> function with the same arguments,
@@ -634,8 +631,8 @@ statement.
 
 =head2 sys.std.Relation.assign_static_subst
 
-C<updater sys.std.Relation.assign_static_subst (QRelation &$topic,
-QTuple $attrs)>
+C<updater sys.std.Relation.assign_static_subst (Relation &$topic,
+Tuple $attrs)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.static_subst> function with the same
@@ -643,9 +640,9 @@ arguments, and then assigning the result of that function to C<topic>.
 
 =head2 sys.std.Relation.assign_subst_in_restr
 
-C<updater sys.std.Relation.assign_subst_in_restr (QRelation &$topic,
-FuncRef $restr_func, QTuple $restr_assuming?, FuncRef $subst_func,
-QTuple $subst_assuming?)>
+C<updater sys.std.Relation.assign_subst_in_restr (Relation &$topic,
+FuncRef $restr_func, Tuple $restr_assuming?, FuncRef $subst_func,
+Tuple $subst_assuming?)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.subst_in_restr> function with the same arguments,
@@ -654,9 +651,8 @@ is analagous to the general case of the conditional SQL "UPDATE" statement.
 
 =head2 sys.std.Relation.assign_static_subst_in_restr
 
-C<updater sys.std.Relation.assign_static_subst_in_restr
-(QRelation &$topic, FuncRef $restr_func, QTuple $restr_assuming?,
-QTuple $subst)>
+C<updater sys.std.Relation.assign_static_subst_in_restr (Relation &$topic,
+FuncRef $restr_func, Tuple $restr_assuming?, Tuple $subst)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.static_subst_in_restr> function with the same
@@ -664,8 +660,8 @@ arguments, and then assigning the result of that function to C<topic>.
 
 =head2 sys.std.Relation.assign_subst_in_semijoin
 
-C<updater sys.std.Relation.assign_subst_in_semijoin (QRelation &$topic,
-QRelation $restr, FuncRef $subst_func, QTuple $subst_assuming?)>
+C<updater sys.std.Relation.assign_subst_in_semijoin (Relation &$topic,
+Relation $restr, FuncRef $subst_func, Tuple $subst_assuming?)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.subst_in_semijoin> function with the same
@@ -677,7 +673,7 @@ value equality tests.
 =head2 sys.std.Relation.assign_static_subst_in_semijoin
 
 C<updater sys.std.Relation.assign_static_subst_in_semijoin
-(QRelation &$topic, QRelation $restr, QTuple $subst)>
+(Relation &$topic, Relation $restr, Tuple $subst)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.static_subst_in_semijoin> function with the same

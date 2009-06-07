@@ -5,7 +5,7 @@
 =head1 NAME
 
 Muldis::D::Ext::Array -
-Muldis D extension for QArray specific operators
+Muldis D extension for Array specific operators
 
 =head1 VERSION
 
@@ -27,9 +27,9 @@ any entities outside the core, called I<Muldis D extensions>, are
 non-mandatory and are defined in terms of the core or each other, but the
 reverse isn't true.
 
-This current C<QArray> document describes the system-defined I<Muldis D
-QArray Extension>, which consists of generic operators that are specific
-to the C<QArray> parameterized q/relation type, and said operators are
+This current C<Array> document describes the system-defined I<Muldis D
+Array Extension>, which consists of generic operators that are specific
+to the C<Array> parameterized relation type, and said operators are
 short-hands for generic relational operators in the language core.
 
 This current document does not describe the polymorphic operators that all
@@ -38,30 +38,29 @@ operators are defined once for all types in L<Muldis::D::Core>.
 
 I<This documentation is pending.>
 
-=head1 SYSTEM-DEFINED QUASI-/ARRAY-CONCERNING FUNCTIONS
+=head1 SYSTEM-DEFINED ARRAY-CONCERNING FUNCTIONS
 
 Each C<\w*assuming> parameter is optional and defaults to the
 zero-attribute tuple if no explicit argument is given to it.
 
 =head2 sys.std.Array.value
 
-C<< function sys.std.Array.value (Universal <-- QArray $topic,
+C<< function sys.std.Array.value (Universal <-- Array $topic,
 NNInt $index) >>
 
-This function results in the q/scalar or q/nonscalar C<value> attribute of
-the q/tuple of C<topic> whose C<index> attribute is C<index>.  This
-function will fail if no q/tuple exists in C<topic> with the specified
-index.
+This function results in the scalar or nonscalar C<value> attribute of the
+tuple of C<topic> whose C<index> attribute is C<index>.  This function will
+fail if no tuple exists in C<topic> with the specified index.
 
 =head2 sys.std.Array.update_value
 
-C<< function sys.std.Array.update_value (QArray <-- QArray $topic,
+C<< function sys.std.Array.update_value (Array <-- Array $topic,
 NNInt $index, Universal $value) >>
 
 This function results in its C<topic> argument but that the C<value>
-attribute of the q/tuple of C<topic> whose C<index> attribute is C<index>
-has been updated with a new q/scalar or q/nonscalar value given by
-C<value>.  This function will fail if no q/tuple exists in C<topic> with
+attribute of the tuple of C<topic> whose C<index> attribute is C<index>
+has been updated with a new scalar or nonscalar value given by
+C<value>.  This function will fail if no tuple exists in C<topic> with
 the specified index.  This function will warn if the most specific types of
 the C<value> argument and the C<value> attribute of C<topic> are
 incompatible as per C<is_identical>, or otherwise if the declared type of
@@ -69,12 +68,12 @@ C<value> isn't a subtype of the declared type of the C<value> attribute.
 
 =head2 sys.std.Array.insertion
 
-C<< function sys.std.Array.insertion (QArray <-- QArray $topic,
+C<< function sys.std.Array.insertion (Array <-- Array $topic,
 NNInt $index, Universal $value) >>
 
-This function results in its C<topic> argument but that a new q/tuple has
+This function results in its C<topic> argument but that a new tuple has
 been inserted whose C<index> is C<index> and whose C<value> is C<value>;
-any existing q/tuples with C<index> values greater than or equal to
+any existing tuples with C<index> values greater than or equal to
 C<index> had theirs incremented by 1.  As a trivial case, if C<index> is
 equal to zero or is equal to the cardinality of C<topic>, then C<value> has
 become the new first or last (or only) element, respectively.  This
@@ -84,29 +83,28 @@ C<update_value>.
 
 =head2 sys.std.Array.deletion
 
-C<< function sys.std.Array.deletion (QArray <-- QArray $topic,
+C<< function sys.std.Array.deletion (Array <-- Array $topic,
 NNInt $index) >>
 
-This function results in its C<topic> argument but that a q/tuple has been
-deleted whose C<index> is C<index>; any existing q/tuples with C<index>
+This function results in its C<topic> argument but that a tuple has been
+deleted whose C<index> is C<index>; any existing tuples with C<index>
 values greater than or equal to C<index> had theirs decremented by 1.  This
-function will fail if no q/tuple exists in C<topic> with the specified
-index.
+function will fail if no tuple exists in C<topic> with the specified index.
 
 =head2 sys.std.Array.has_elem
 
-C<< function sys.std.Array.has_elem (Bool <-- QArray $topic,
+C<< function sys.std.Array.has_elem (Bool <-- Array $topic,
 Universal $value) >>
 
 This function results in C<Bool:true> iff its C<value> argument matches the
-C<value> attribute of at least one q/tuple of its C<topic> argument (that
+C<value> attribute of at least one tuple of its C<topic> argument (that
 is, iff conceptually C<value> is an element of C<topic>), and C<Bool:false>
 otherwise.  This function will warn if C<topic.value> and C<value> are
 incompatible as per C<update_value>.
 
 =head2 sys.std.Array.has_not_elem
 
-C<< function sys.std.Array.has_not_elem (Bool <-- QArray $topic,
+C<< function sys.std.Array.has_not_elem (Bool <-- Array $topic,
 Universal $value) >>
 
 This function is exactly the same as C<sys.std.Array.has_elem> except that
@@ -114,12 +112,12 @@ it results in the opposite boolean value when given the same arguments.
 
 =head2 sys.std.Array.reduction
 
-C<< function sys.std.Array.reduction (Universal <-- QArray $topic,
-FuncRef $func, QTuple $assuming?, Universal $identity) >>
+C<< function sys.std.Array.reduction (Universal <-- Array $topic,
+FuncRef $func, Tuple $assuming?, Universal $identity) >>
 
 This function is the same as C<sys.std.Set.reduction>, including that
 input values for the reduction come from the C<value> attribute of
-C<topic>, except that it works with an C<QArray> rather than a C<QSet>.
+C<topic>, except that it works with an C<Array> rather than a C<Set>.
 Also, the function named in C<func> is only associative, and I<not>
 commutative; the arguments to C<v1> and C<v2> of C<func> are guaranteed to
 be consecutive input elements, with the result returning to their place in
@@ -127,15 +125,15 @@ sequence beween the other input elements.
 
 =head2 sys.std.Array.maybe_reduction
 
-C<< function sys.std.Array.maybe_reduction (QMaybe <-- QArray $topic,
-FuncRef $func, QTuple $assuming?) >>
+C<< function sys.std.Array.maybe_reduction (Maybe <-- Array $topic,
+FuncRef $func, Tuple $assuming?) >>
 
 This function is to C<sys.std.Set.maybe_reduction> as
 C<sys.std.Array.reduction> is to C<sys.std.Set.reduction>.
 
 =head2 sys.std.Array.slice
 
-C<< function sys.std.Array.slice (QArray <-- QArray $topic,
+C<< function sys.std.Array.slice (Array <-- Array $topic,
 NNInt $first_index, NNInt $last_index) >>
 
 This function results in the sub-sequence of its C<topic> argument that is
@@ -150,14 +148,13 @@ element, then the result will always have at least 1 element.
 
 =head2 sys.std.Array.catenation
 
-C<< function sys.std.Array.catenation (QArray <--
-quasi_array_of.QArray $topic?) >>
+C<< function sys.std.Array.catenation (Array <-- array_of.Array $topic?) >>
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
 consecutive pair of input values and catenates (which is associative) them
 together until just one is left, which is the result.  To catenate 2
-C<QArray> means to union their q/tuples after first increasing all the
+C<Array> means to union their tuples after first increasing all the
 C<index> values of the second one by the cardinality of the first one.  If
 C<topic> has zero values, then C<catenate> results in the empty sequence
 value, which is the identity value for catenate.  Note that this operation
@@ -165,7 +162,7 @@ is also known as C<A~>.
 
 =head2 sys.std.Array.replication
 
-C<< function sys.std.Array.replication (QArray <-- QArray $topic,
+C<< function sys.std.Array.replication (Array <-- Array $topic,
 NNInt $count) >>
 
 This function results in the catenation of C<count> instances of C<topic>.
@@ -173,7 +170,7 @@ Note that this operation is also known as C<Ax>.
 
 =head2 sys.std.Array.reverse
 
-C<< function sys.std.Array.reverse (QArray <-- QArray $topic) >>
+C<< function sys.std.Array.reverse (Array <-- Array $topic) >>
 
 This function results in its argument but that the order of its elements
 has been reversed.  For example, the input C<< { 0=>'a', 1=>'b', 2=>'c',
@@ -181,8 +178,8 @@ has been reversed.  For example, the input C<< { 0=>'a', 1=>'b', 2=>'c',
 
 =head2 sys.std.Array.has_subarray
 
-C<< function sys.std.Array.has_subarray (Bool <-- QArray $look_in,
-QArray $look_for) >>
+C<< function sys.std.Array.has_subarray (Bool <-- Array $look_in,
+Array $look_for) >>
 
 This function results in C<Bool:true> iff the sequence of values comprising
 C<look_for> is a sub-sequence of the sequence of values C<look_in>, and
@@ -191,84 +188,81 @@ don't have a compatible or same heading.
 
 =head2 sys.std.Array.has_not_subarray
 
-C<< function sys.std.Array.has_not_subarray (Bool <-- QArray $look_in,
-QArray $look_for) >>
+C<< function sys.std.Array.has_not_subarray (Bool <-- Array $look_in,
+Array $look_for) >>
 
 This function is exactly the same as C<sys.std.Array.has_subarray> except
 that it results in the opposite boolean value when given the same
 arguments.
 
-=head2 sys.std.Array.QArray_from_wrap
+=head2 sys.std.Array.Array_from_wrap
 
-C<< function sys.std.Array.QArray_from_wrap (quasi_array_of.QTuple <--
-QRelation $topic, FuncRef $ord_func, QTuple $ord_assuming?,
+C<< function sys.std.Array.Array_from_wrap (array_of.Tuple <--
+Relation $topic, FuncRef $ord_func, Tuple $ord_assuming?,
 Bool $is_reverse_order?) >>
 
-This function results in an C<QArray> whose C<value> attribute is
-q/tuple-typed and that attribute's values are all the q/tuples of C<topic>;
+This function results in an C<Array> whose C<value> attribute is
+tuple-typed and that attribute's values are all the tuples of C<topic>;
 is a short-hand for a relational wrap of all attributes of C<topic> such
-that the new q/tuple-valued attribute is named C<value>, and then that
+that the new tuple-valued attribute is named C<value>, and then that
 result is extended with an C<index> attribute whose values result from a
-rank of the q/tuples, where the ranked-first q/tuple has an C<index> of
+rank of the tuples, where the ranked-first tuple has an C<index> of
 zero, and so on.  This function is a wrapper over the (total)
 C<order_determination> function named in its C<ord_func> argument when the
 latter function is curried by its C<ord_assuming> and C<is_reverse_order>
-arguments; this wrapped
-function is used to rank the q/tuples, with each invocation getting a
-C<topic> q/tuple as each its C<topic> and C<other> arguments.  See also the
-C<sys.std.Relation.rank> function, which is the same as
-C<sys.std.Array.QArray_from_wrap> but that it just adds an attribute to
-the source q/tuples and does not wrap them.
+arguments; this wrapped function is used to rank the tuples, with each
+invocation getting a C<topic> tuple as each its C<topic> and C<other>
+arguments.  See also the C<sys.std.Relation.rank> function, which is the
+same as C<sys.std.Array.Array_from_wrap> but that it just adds an attribute
+to the source tuples and does not wrap them.
 
-=head2 sys.std.Array.QArray_from_wrap_by_attr_names
+=head2 sys.std.Array.Array_from_wrap_by_attr_names
 
-C<< function sys.std.Array.QArray_from_wrap_by_attr_names
-(quasi_array_of.QTuple <-- QRelation $topic,
+C<< function sys.std.Array.Array_from_wrap_by_attr_names
+(array_of.Tuple <-- Relation $topic,
 array_of.OrderByName $order_by, Bool $is_reverse_order?) >>
 
-This function is to C<QArray_from_wrap> what
+This function is to C<Array_from_wrap> what
 C<sys.std.Relation.rank_by_attr_names> is to C<sys.std.Relation.rank>.
 Note that this function is the most direct analogy to the common case of
 SQL's "ORDER BY" where a simple list of attribute names is given to sort on
 (and the tuples remain sorted), which is in contrast with
-C<QArray_from_wrap> that is the analogy to the general case of "ORDER BY"
+C<Array_from_wrap> that is the analogy to the general case of "ORDER BY"
 that may contain any arbitrary value expression.
 
-=head2 sys.std.Array.limit_of_QArray_from_wrap
+=head2 sys.std.Array.limit_of_Array_from_wrap
 
-C<< function sys.std.Array.limit_of_QArray_from_wrap
-(quasi_array_of.QTuple <-- QRelation $topic, FuncRef $ord_func,
-QTuple $ord_assuming?, Bool $is_reverse_order?, NNInt $first_index,
-NNInt $last_index) >>
+C<< function sys.std.Array.limit_of_Array_from_wrap (array_of.Tuple <--
+Relation $topic, FuncRef $ord_func, Tuple $ord_assuming?,
+Bool $is_reverse_order?, NNInt $first_index, NNInt $last_index) >>
 
 This function is a short-hand for invoking first
-C<sys.std.Array.QArray_from_wrap> and then C<sys.std.Array.slice> on its
-result.  This function is to C<sys.std.Array.QArray_from_wrap> what the
+C<sys.std.Array.Array_from_wrap> and then C<sys.std.Array.slice> on its
+result.  This function is to C<sys.std.Array.Array_from_wrap> what the
 C<sys.std.Relation.limit> function is to C<sys.std.Relation.rank>.
 
-=head2 sys.std.Array.limit_of_QArray_from_wrap_by_attr_names
+=head2 sys.std.Array.limit_of_Array_from_wrap_by_attr_names
 
-C<< function sys.std.Array.limit_of_QArray_from_wrap_by_attr_names
-(quasi_array_of.QTuple <-- QRelation $topic,
-array_of.OrderByName $order_by, Bool $is_reverse_order?,
-NNInt $first_index, NNInt $last_index) >>
+C<< function sys.std.Array.limit_of_Array_from_wrap_by_attr_names
+(array_of.Tuple <-- Relation $topic, array_of.OrderByName $order_by,
+Bool $is_reverse_order?, NNInt $first_index, NNInt $last_index) >>
 
-This function is to C<limit_of_QArray_from_wrap> what
-C<QArray_from_wrap_by_attr_names> is to C<QArray_from_wrap>.
+This function is to C<limit_of_Array_from_wrap> what
+C<Array_from_wrap_by_attr_names> is to C<Array_from_wrap>.
 
-=head2 sys.std.Array.QArray_from_attr
+=head2 sys.std.Array.Array_from_attr
 
-C<< function sys.std.Array.QArray_from_attr (QArray <-- QRelation $topic,
-Name $name, OrdDetFuncRef $ord_func?, QTuple $ord_assuming?,
+C<< function sys.std.Array.Array_from_attr (Array <-- Relation $topic,
+Name $name, OrdDetFuncRef $ord_func?, Tuple $ord_assuming?,
 Bool $is_reverse_order?) >>
 
-This function results in an C<QArray> consisting of all the values of the
+This function results in an C<Array> consisting of all the values of the
 attribute of C<topic> named by C<name>.  It is a short-hand for a unary
 projection of just the named attribute plus its renaming to C<value>, and
 then that result is extended with an C<index> attribute whose values result
 from a rank of the source attribute values, where the ranked-first source
 value has an C<index> of zero, and so on.  This function is otherwise the
-same as C<sys.std.Array.QArray_from_wrap>.  Each of the C<ord_func> and
+same as C<sys.std.Array.Array_from_wrap>.  Each of the C<ord_func> and
 C<ord_assuming> and C<is_reverse_order> parameters is optional and defaults
 to C<sys.std.Core.Scalar.order> or the zero-attribute tuple or
 C<Bool:false>, respectively, if no explicit argument is given to it.

@@ -5,7 +5,7 @@
 =head1 NAME
 
 Muldis::D::Ext::Tuple -
-Muldis D extension adding more generic q/tuple operators
+Muldis D extension adding more generic tuple operators
 
 =head1 VERSION
 
@@ -27,8 +27,8 @@ any entities outside the core, called I<Muldis D extensions>, are
 non-mandatory and are defined in terms of the core or each other, but the
 reverse isn't true.
 
-This current C<QTuple> document describes the system-defined I<Muldis D
-QTuple Extension>, which consists of extra operators for generic q/tuples,
+This current C<Tuple> document describes the system-defined I<Muldis D
+Tuple Extension>, which consists of extra operators for generic tuples,
 adding to the minimum few defined in the language core.
 
 This current document does not describe the polymorphic operators that all
@@ -37,37 +37,37 @@ operators are defined once for all types in L<Muldis::D::Core>.
 
 I<This documentation is pending.>
 
-=head1 SYSTEM-DEFINED GENERIC QUASI-/TUPLE-CONCERNING FUNCTIONS
+=head1 SYSTEM-DEFINED GENERIC TUPLE-CONCERNING FUNCTIONS
 
-These functions are applicable to mainly q/tuple types, but are generic
-in that they typically work with any q/tuple types.
+These functions are applicable to mainly tuple types, but are generic
+in that they typically work with any tuple types.
 
 =head2 sys.std.Tuple.degree
 
-C<< function sys.std.Tuple.degree (NNInt <-- QTuple $topic) >>
+C<< function sys.std.Tuple.degree (NNInt <-- Tuple $topic) >>
 
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
 =head2 sys.std.Tuple.is_nullary
 
-C<< function sys.std.Tuple.is_nullary (Bool <-- QTuple $topic) >>
+C<< function sys.std.Tuple.is_nullary (Bool <-- Tuple $topic) >>
 
 This function results in C<Bool:true> iff its argument has a degree of zero
 (that is, it has zero attributes), and C<Bool:false> otherwise.  By
-definition, the only 1 q/tuple value for which this function would result
+definition, the only 1 tuple value for which this function would result
 in C<Bool:true> is the value C<Tuple:d0>.
 
 =head2 sys.std.Tuple.is_not_nullary
 
-C<< function sys.std.Tuple.is_not_nullary (Bool <-- QTuple $topic) >>
+C<< function sys.std.Tuple.is_not_nullary (Bool <-- Tuple $topic) >>
 
 This function is exactly the same as C<sys.std.Tuple.is_nullary> except
 that it results in the opposite boolean value when given the same argument.
 
 =head2 sys.std.Tuple.has_attrs
 
-C<< function sys.std.Tuple.has_attrs (Bool <-- QTuple $topic,
+C<< function sys.std.Tuple.has_attrs (Bool <-- Tuple $topic,
 set_of.Name $attr_names) >>
 
 This function results in C<Bool:true> iff, for every one of the attribute
@@ -78,37 +78,36 @@ empty.
 
 =head2 sys.std.Tuple.attr_names
 
-C<< function sys.std.Tuple.attr_names (set_of.Name <-- QTuple $topic) >>
+C<< function sys.std.Tuple.attr_names (set_of.Name <-- Tuple $topic) >>
 
 This function results in the set of the names of the attributes of its
 argument.
 
-=head2 sys.std.Tuple.attr_from_QTuple
+=head2 sys.std.Tuple.attr_from_Tuple
 
-C<< function sys.std.Tuple.attr_from_QTuple (Universal <-- QTuple $topic)
->>
+C<< function sys.std.Tuple.attr_from_Tuple (Universal <-- Tuple $topic) >>
 
-This function results in the q/scalar or q/nonscalar value of the sole
+This function results in the scalar or nonscalar value of the sole
 attribute of its argument.  This function will fail if its argument is not
 of degree 1.
 
-=head2 sys.std.Tuple.QTuple_from_attr
+=head2 sys.std.Tuple.Tuple_from_attr
 
-C<< function sys.std.Tuple.QTuple_from_attr (QTuple <-- Name $name,
+C<< function sys.std.Tuple.Tuple_from_attr (Tuple <-- Name $name,
 Universal $value) >>
 
-This function results in the C<QTuple> value which has just one attribute
+This function results in the C<Tuple> value which has just one attribute
 whose name is given by C<name> and whose value is given by C<value>.
 
 =head2 sys.std.Tuple.order_by_attr_names
 
-C<< function sys.std.Tuple.order_by_attr_names (Order <-- QTuple $topic,
-QTuple $other, QTuple $assuming, Bool $is_reverse_order?) >>
+C<< function sys.std.Tuple.order_by_attr_names (Order <-- Tuple $topic,
+Tuple $other, Tuple $assuming, Bool $is_reverse_order?) >>
 
 This C<order_determination> function provides convenient short-hand for the
-common case of ordering q/tuples of a q/relation on a sequential list of
+common case of ordering tuples of a relation on a sequential list of
 its named attributes, and the type of each of those attributes is a subtype
-of a single q/scalar root type having a type-default C<order_determination>
+of a single scalar root type having a type-default C<order_determination>
 function, which is used to order on that attribute.  This function takes an
 C<array_of.OrderByName> as the C<order_by> sole attribute of its
 C<assuming> argument.  This function is a short-hand for invoking
@@ -124,33 +123,33 @@ will fail if C<topic> and C<other> don't have an identical degree and
 attribute names, or if C<order_by> specifies any attribute names that
 C<topic|other> doesn't have, or if for any attribute named to be ordered
 by, that attribute's value for either of C<topic> and C<other> isn't a
-member of a q/scalar root type having a type-default ordering function, or
+member of a scalar root type having a type-default ordering function, or
 if said root type isn't identical for both C<topic> and C<other>.  The
 C<order_by_attr_names> function's C<is_reverse_order> argument is optional
 and defaults to C<Bool:false>, meaning it has no further effect on the
 function's behaviour; but if this argument is C<Bool:true>, then this
 function will result in the opposite C<Order> value that it otherwise would
 have when given all the same other argument values.  It is expected that
-for any q/relation whose q/tuples are to be ordered using
+for any relation whose tuples are to be ordered using
 C<order_by_attr_names>, the C<order_by> constitutes a key or superkey.
 
 =head2 sys.std.Tuple.subst_in_default
 
-C<< function sys.std.Tuple.subst_in_default (QTuple <-- TypeRef $of,
-QTuple $subst) >>
+C<< function sys.std.Tuple.subst_in_default (Tuple <-- TypeRef $of,
+Tuple $subst) >>
 
-This function results in the q/tuple value that is the default value of the
-q/tuple data type whose name is given in the C<of> argument, but that zero
+This function results in the tuple value that is the default value of the
+tuple data type whose name is given in the C<of> argument, but that zero
 or more of its attribute values have been substituted by values given in
 the C<subst> argument.  This function is a short-hand for
 C<sys.std.Core.Tuple.multi_update> on the result of
 C<sys.std.Core.Universal.default>.  This function will fail if either
 C<default> would fail for the same C<of> argument, or if its result isn't a
-q/tuple type, or if the heading of C<subst> isn't a subset of the heading
+tuple type, or if the heading of C<subst> isn't a subset of the heading
 of the default.  The purpose of this function is to support greater brevity
 in Muldis D coding such that users can define just part of a desired
-q/tuple value and have the remainder filled in from defaults for them;
-particularly useful with q/tuples that conceptually have some optional
+tuple value and have the remainder filled in from defaults for them;
+particularly useful with tuples that conceptually have some optional
 attributes.
 
 =head1 SEE ALSO

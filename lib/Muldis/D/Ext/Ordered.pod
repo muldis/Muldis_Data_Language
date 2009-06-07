@@ -47,7 +47,7 @@ Each of these functions which has the 2 parameters named C<func> and
 C<assuming> is a wrapper over the C<order_determination> function named in
 its C<func> argument when the latter function is curried by its C<assuming>
 argument plus a calling-function-specific C<is_reverse_order> argument
-value.  For any q/scalar root type's type-default order function, the
+value.  For any scalar root type's type-default order function, the
 argument for C<func> is C<sys.std.Core.Scalar.order>.  Each C<func> and
 C<assuming> parameter is optional and defaults to
 C<sys.std.Core.Scalar.order> or the zero-attribute tuple, respectively, if
@@ -56,7 +56,7 @@ no explicit argument is given to it.
 =head2 sys.std.Ordered.is_before
 
 C<< function sys.std.Ordered.is_before (Bool <-- Universal $topic,
-Universal $other, OrdDetFuncRef $func?, QTuple $assuming?) >>
+Universal $other, OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function results in C<Bool:true> iff the wrapped function would result
 in C<Order:increase> when given the same corresponding 3 arguments plus a
@@ -66,7 +66,7 @@ Note that this operation is also known as I<less than> or C<< < >>.
 =head2 sys.std.Ordered.is_after
 
 C<< function sys.std.Ordered.is_after (Bool <-- Universal $topic,
-Universal $other, OrdDetFuncRef $func?, QTuple $assuming?) >>
+Universal $other, OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function is an alias for C<sys.std.Ordered.is_before> except that it
 transposes the C<topic> and C<other> arguments.  This function results in
@@ -78,7 +78,7 @@ operation is also known as I<greater than> or C<< > >>.
 =head2 sys.std.Ordered.is_before_or_same
 
 C<< function sys.std.Ordered.is_before_or_same (Bool <-- Universal $topic,
-Universal $other, OrdDetFuncRef $func?, QTuple $assuming?) >>
+Universal $other, OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function is exactly the same as C<sys.std.Ordered.is_before> except
 that it results in C<Bool:true> if its 2 primary arguments are identical.
@@ -87,7 +87,7 @@ Note that this operation is also known as I<less than or equal to> or C<≤>.
 =head2 sys.std.Ordered.is_after_or_same
 
 C<< function sys.std.Ordered.is_after_or_same (Bool <-- Universal $topic,
-Universal $other, OrdDetFuncRef $func?, QTuple $assuming?) >>
+Universal $other, OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function is an alias for C<sys.std.Ordered.is_before_or_same> except
 that it transposes the C<topic> and C<other> arguments.  This function is
@@ -99,7 +99,7 @@ operation is also known as I<greater than or equal to> or C<≥>.
 
 C<< function sys.std.Ordered.is_inside_range (Bool <-- Universal $topic,
 Universal $min, Universal $max, Bool $min_is_outside?,
-Bool $max_is_outside?, OrdDetFuncRef $func?, QTuple $assuming?) >>
+Bool $max_is_outside?, OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function results in C<Bool:true> iff its C<topic> argument is within
 the range whose bounds are defined by its C<min> and C<max> arguments.  If
@@ -118,7 +118,7 @@ this operation is also known as I<between>.
 
 C<< function sys.std.Ordered.is_outside_range (Bool <-- Universal $topic,
 Universal $min, Universal $max, Bool $min_is_outside?,
-Bool $max_is_outside?, OrdDetFuncRef $func?, QTuple $assuming?) >>
+Bool $max_is_outside?, OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function is exactly the same as C<sys.std.Ordered.is_inside_range>
 except that it results in the opposite boolean value when given the same
@@ -126,8 +126,8 @@ arguments.  Note that this operation is also known as I<not between>.
 
 =head2 sys.std.Ordered.min
 
-C<< function sys.std.Ordered.min (Universal <-- QSet $topic,
-OrdDetFuncRef $func?, QTuple $assuming?) >>
+C<< function sys.std.Ordered.min (Universal <-- Set $topic,
+OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and picks the minimum of the 2 (which is
@@ -143,8 +143,8 @@ large to represent, such as with the infinite C<Text> type.
 
 =head2 sys.std.Ordered.max
 
-C<< function sys.std.Ordered.max (Universal <-- QSet $topic,
-OrdDetFuncRef $func?, QTuple $assuming?) >>
+C<< function sys.std.Ordered.max (Universal <-- Set $topic,
+OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function is exactly the same as C<sys.std.Ordered.min> except that it
 results in the maximum input element value rather than the minimum one.
@@ -153,10 +153,10 @@ type's concept of negative infinity, but it is unsupported here).
 
 =head2 sys.std.Ordered.minmax
 
-C<< function sys.std.Ordered.minmax (QTuple <-- QSet $topic,
-OrdDetFuncRef $func?, QTuple $assuming?) >>
+C<< function sys.std.Ordered.minmax (Tuple <-- Set $topic,
+OrdDetFuncRef $func?, Tuple $assuming?) >>
 
-This function results in a binary q/tuple whose attribute names are C<min>
+This function results in a binary tuple whose attribute names are C<min>
 and C<max> and whose respective attribute values are what
 C<sys.std.Ordered.min> and C<sys.std.Ordered.max> would result in when
 given the same arguments.  If C<topic> has zero values, then this function
@@ -164,26 +164,26 @@ will fail.
 
 =head2 sys.std.Ordered.maybe_min
 
-C<< function sys.std.Ordered.maybe_min (QMaybe <-- QSet $topic,
-OrdDetFuncRef $func?, QTuple $assuming?) >>
+C<< function sys.std.Ordered.maybe_min (Maybe <-- Set $topic,
+OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function is exactly the same as C<sys.std.Ordered.min> except that it
-results in a C<QMaybe> of what is otherwise the result type, and that
+results in a C<Maybe> of what is otherwise the result type, and that
 result has zero elements if the argument has zero elements, rather than the
 function failing.
 
 =head2 sys.std.Ordered.maybe_max
 
-C<< function sys.std.Ordered.maybe_max (QMaybe <-- QSet $topic,
-OrdDetFuncRef $func?, QTuple $assuming?) >>
+C<< function sys.std.Ordered.maybe_max (Maybe <-- Set $topic,
+OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function is to C<sys.std.Ordered.max> as C<sys.std.Ordered.maybe_min>
 is to C<sys.std.Ordered.min>.
 
 =head2 sys.std.Ordered.maybe_minmax
 
-C<< function sys.std.Ordered.maybe_minmax (QRelation <-- QSet $topic,
-OrdDetFuncRef $func?, QTuple $assuming?) >>
+C<< function sys.std.Ordered.maybe_minmax (Relation <-- Set $topic,
+OrdDetFuncRef $func?, Tuple $assuming?) >>
 
 This function results in a binary relation whose attribute names are C<min>
 and C<max>.  If C<topic> has zero values then the result has a single tuple

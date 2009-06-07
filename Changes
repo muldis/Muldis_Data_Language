@@ -6,38 +6,18 @@
     * Muldis::D version 0.77.0 is released on CPAN as
     Muldis-D-0.77.0.tar.gz.
 
-    * This release features renaming some Muldis D type categories as well
-    as corresponding system-defined maximal types, so to make the
-    documentation simpler, easier to understand, and less ambiguous or less
+    * This release features a rough cut (that might have introduced a few
+    subtle mistakes) of a mass renaming of some Muldis D type categories as
+    well as corresponding system-defined maximal types, so to make the
+    documentation simpler, easier to understand, and less ambiguous or more
     correct.  It concerns the pairs of concepts or types where one had a
     "quasi-" prefix and the other didn't; the concepts and types with a
     "quasi-" prefix were renamed to lose that prefix and otherwise be the
     same; the counterparts that didn't have the prefix gained a different
-    prefix, "iso-"; also the complementary concepts to the "iso-" ones
-    beneath the now prefixless ones are now prefixed with "hetero-".  This
-    release makes no changes at all to the specified language semantics or
-    features, but just to its syntax; what you may actually do is the same
-    as before.  This release has no file renames/adds/removes; just changes
-    to file contents.
-
-* IN PROGRESS:
-Improve the terminology, and by extension the type names etc, which had
-some problems with being understood and were somewhat unwieldy; rename
-tuple/relation/etc to iso-tuple/relation/etc, and quasi-tuple/relation/etc
-to tuple/relation/etc, and add hetero-tuple/relation/etc as the name for
-what used to be quasi-tuple/etc but not tuple/etc; ITuple/etc and
-HTuple/etc will become complementary subtypes of Tuple/etc.
-Hierarchy:
-  Universal
-    Relation : relation
-      PIRelation : partially homogeneous relation / homo at top level only
-        IRelation : iso-relation / fully homogeneous relation / homo all lev
-or
-      SHRelation : shallowly homogeneous relation
-        DHRelation : deeply homogeneous relation
-and complements:
-      non shallowly homogeneous relation
-      non deeply homogeneous relation
+    prefix, "dh-", or "deeply homogeneous".  This release makes no changes
+    at all to the specified language semantics or features, but just to its
+    syntax; what you may actually do is the same as before.  This release
+    has no file renames/adds/removes; just changes to file contents.
 
     * (Routines.pod, Tuple.pod, Relation.pod, Set.pod, Array.pod, Bag.pod,
     PTMD_STD.pod, Basics.pod, Types_Catalog.pod, Ordered.pod, Counted.pod)
@@ -57,6 +37,72 @@ and complements:
     type "sys.std.Core.Type.ScaTupRel", which hasn't been in use since
     release 0.55.0 made any prior uses of it use "Universal" instead.  In
     Types.pod, removed the main pod section "SYSTEM-DEFINED REMNANT TYPES".
+    In Basics.pod, also clarified that every "remnant" type is a proper
+    subset of "Universal", not just a subset.
+
+    (Types.pod, Basics.pod, Types_Catalog.pod, Routines.pod, PTMD_STD.pod,
+    HDMD_Perl[6|5]_STD.pod, Tuple.pod, Relation.pod, Set.pod, Array.pod,
+    Bag.pod, Counted.pod, Ordered.pod, Integer.pod, Blob.pod, Rational.pod,
+    Temporal.pod, Spatial.pod)  In Types.pod, renamed 16 types, in the
+    "sys.std.Core.Type.\w+" namespace: the 8
+    "[Scalar|Tuple|Relation|Set|Maybe|Single|Array|Bag]" to
+    "DH[Scalar|Tuple|Relation|Set|Maybe|Single|Array|Bag]" and the 8
+    "Q[Scalar|Tuple|Relation|Set|Maybe|Single|Array|Bag]" to
+    "[Scalar|Tuple|Relation|Set|Maybe|Single|Array|Bag]".  In Basics.pod,
+    updated the pod sub-section "Referencing Data Types" to rename the
+    "[|quasi_][tuple|relation]_from" typeref syntax to
+    "[|dh_][tuple|relation]_from" and the
+    "[|quasi_][set|maybe|single|array|bag]_of" typeref syntax to
+    "[|dh_][set|maybe|single|array|bag]_of".  In all 19 files,
+    correspondingly updated all references to those types and uses of those
+    typeref syntaxes.  In the 3 STD.pod files, updated all the "value_kind"
+    that corresponded to the renamed types, renaming them likewise.  During
+    these changes, many references to the prefixless versions of the types,
+    mainly in system-defined routine signatures, and in example code,
+    remained prefixless to maintain simpler syntax, and so in appearance
+    became more generic, though in actuality were still as specific as
+    before; for example, "bag_of.Int" is in fact just as restrictive as
+    "dh_bag_of.Int" since the "Int" is a scalar type; the extra "dh_" only
+    makes an actual difference with nonscalar element types.
+
+    * (Basics.pod)  Multiple updates to the "TYPE SYSTEM" main pod section.
+    For each of "scalar","tuple","relation","nonscalar",etc as "foo",
+    renamed each "foo" concept to "deeply homogeneous foo", and each
+    "quasi-foo" concept to "foo", and updated the related documentation to
+    be more readable.  Most changes were in the "Type Identification" and
+    "Distinction of Non-Homogeneous Types from Homogeneous Types" pod
+    sub-sections; the latter was renamed from "Distinction of Quasi- Types
+    from Non-Quasi Types".  Also an old phrase in the "Distinction ..."
+    section, "only non-quasi types can be interpreted according to the
+    relational model, as predicates and prepositions", turned out to be
+    rather incorrect, and has been excised; this problem is in fact part of
+    the rationale for the whole renaming this release features.  However, a
+    Muldis D "database" is still as strict as before, only allowing deeply
+    homogeneous relations as content, since that's much more practical.
+
+    * (Types.pod, Routines.pod, Tuple.pod, Relation.pod, Set.pod,
+    Array.pod, Bag.pod, Basics.pod)  Renamed any main pod sections with
+    "QUASI-/" in their names to remove that text, and renamed any pod
+    sub-sections with "Q/" in their names to remove that text.
+
+    * (Routines.pod, Tuple.pod, Set.pod, Array.pod, Bag.pod, Relation.pod)
+    Related to the previous changes, to make their names more accurate, 18
+    routines were renamed from
+    ["sys.std.Core.Scalar.[QTuple_from_QScalar|QScalar_from_QTuple]",
+    "sys.std.Core.Relation.[QTuple_from_QRelation|QRelation_from_QTuple]",
+    "sys.std.Tuple.[attr_from_QTuple|QTuple_from_attr]",
+    "sys.std.Set.QSet_from_[wrap|attr]",
+    "sys.std.Array.[|limit_of_]QArray_from_wrap[|_by_attr_names]",
+    "sys.std.Array.QArray_from_attr", "sys.std.Bag.QSet_from_QBag",
+    "sys.std.Bag.QBag_from_[QSet|wrap|cmpl_group|attr]"] to the same names
+    but lacking any "Q".  This is a reversal of part of release 0.55.0.
+
+    * (Basics.pod, Core.pod, Types.pod, Types_Catalog.pod, Routines.pod,
+    Routines_Catalog.pod, PTMD_STD.pod, Conventions.pod, Ordered.pod,
+    Tuple.pod, Relation.pod, Set.pod, Array.pod, Bag.pod, Counted.pod)
+    Since the prefixless types are now the supertypes, purged all instances
+    of "q/" used before various terms like "scalar" or "tuple"; outside of
+    titles, there seem to have been about 768 of them.
 
 2009-06-04  Darren Duncan <perl@DarrenDuncan.net>
 
@@ -1892,13 +1938,13 @@ and complements:
     now-Q-type result or parameter type declaration have been changed to
     "quasi_\w+_of" versions.
 
-    * (Routines.pod, QTuple.pod, QSet.pod, QAarray.pod, QBag.pod,
+    * (Routines.pod, QTuple.pod, QSet.pod, QArray.pod, QBag.pod,
     QRelation.pod) Related to the previous changes, to make their names
     more accurate, 15 routines were renamed to
     ["sys.std.Core.QScalar.(QTuple_from_QScalar|QScalar_from_QTuple)",
     "sys.std.Core.QRelation.(QTuple_from_QRelation|QRelation_from_QTuple)",
     "sys.std.QTuple.(attr_from_QTuple|QTuple_from_attr)",
-    "sys.std.QBag.QSet_from_(wrap|attr)",
+    "sys.std.QSet.QSet_from_(wrap|attr)",
     "sys.std.QArray.(QArray_from_(wrap|attr)|limit_of_QArray_from_wrap)",
     "sys.std.QBag.(QSet_from_QBag|QBag_from_(QSet|wrap|attr))"] from the
     same names but lacking any "Q".

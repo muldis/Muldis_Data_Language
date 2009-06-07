@@ -35,8 +35,8 @@ relationships:
 
         sys.std.Core.Type.Empty
 
-        sys.std.Core.Type.QScalar
-            sys.std.Core.Type.Scalar
+        sys.std.Core.Type.Scalar
+            sys.std.Core.Type.DHScalar
 
                 # The following are all regular ordered scalar types.
 
@@ -54,24 +54,24 @@ relationships:
                 sys.std.Core.Type.Instant
                 sys.std.Core.Type.Duration
 
-        # The following are mostly q/nonscalar type factories.
+        # The following are mostly nonscalar type factories.
 
-        sys.std.Core.Type.QTuple
-            sys.std.Core.Type.Tuple
+        sys.std.Core.Type.Tuple
+            sys.std.Core.Type.DHTuple
                 sys.std.Core.Type.Database
 
-        sys.std.Core.Type.QRelation
-            sys.std.Core.Type.Relation
-            sys.std.Core.Type.QSet
-                sys.std.Core.Type.Set
-                sys.std.Core.Type.QMaybe
-                    sys.std.Core.Type.Maybe
-                    sys.std.Core.Type.QSingle
-                        sys.std.Core.Type.Single
-            sys.std.Core.Type.QArray
-                sys.std.Core.Type.Array
-            sys.std.Core.Type.QBag
-                sys.std.Core.Type.Bag
+        sys.std.Core.Type.Relation
+            sys.std.Core.Type.DHRelation
+            sys.std.Core.Type.Set
+                sys.std.Core.Type.DHSet
+                sys.std.Core.Type.Maybe
+                    sys.std.Core.Type.DHMaybe
+                    sys.std.Core.Type.Single
+                        sys.std.Core.Type.DHSingle
+            sys.std.Core.Type.Array
+                sys.std.Core.Type.DHArray
+            sys.std.Core.Type.Bag
+                sys.std.Core.Type.DHBag
 
         # The following are all reference types.
 
@@ -82,7 +82,7 @@ Note that C<sys.std.Core.Type.Empty> is a proper subtype of all of the
 other types in this graph, but every other type has only one immediate
 supertype shown, and hence the graph of them is a simple hierarchy.
 
-Similarly, most C<sys.std.Core.Type.QRelation> subtypes have at least 2
+Similarly, most C<sys.std.Core.Type.Relation> subtypes have at least 2
 parent types; the above graph shows one view of their relationships, and
 here is another view of those:
 
@@ -90,25 +90,25 @@ here is another view of those:
 
         sys.std.Core.Type.Empty
 
-        # The following are mostly q/nonscalar type factories.
+        # The following are mostly nonscalar type factories.
 
-        sys.std.Core.Type.QRelation
-            sys.std.Core.Type.Relation
-                sys.std.Core.Type.Set
-                    sys.std.Core.Type.Maybe
-                        sys.std.Core.Type.Single
-                sys.std.Core.Type.Array
-                sys.std.Core.Type.Bag
-            sys.std.Core.Type.QSet
-                sys.std.Core.Type.QMaybe
-                    sys.std.Core.Type.QSingle
-            sys.std.Core.Type.QArray
-            sys.std.Core.Type.QBag
+        sys.std.Core.Type.Relation
+            sys.std.Core.Type.DHRelation
+                sys.std.Core.Type.DHSet
+                    sys.std.Core.Type.DHMaybe
+                        sys.std.Core.Type.DHSingle
+                sys.std.Core.Type.DHArray
+                sys.std.Core.Type.DHBag
+            sys.std.Core.Type.Set
+                sys.std.Core.Type.Maybe
+                    sys.std.Core.Type.Single
+            sys.std.Core.Type.Array
+            sys.std.Core.Type.Bag
 
 =head1 SYSTEM-DEFINED CORE MAXIMAL AND MINIMAL DATA TYPES
 
 These core data types are special and are the only Muldis D types that are
-neither q/scalar nor q/nonscalar nor reference types.  They are all
+neither scalar nor nonscalar nor reference types.  They are all
 system-defined and it is impossible for users to define more types of this
 nature.
 
@@ -130,7 +130,7 @@ supertype of C<Empty> and C<Empty> is implicitly an intersection type over
 all other types.  It has no default value.  The cardinality of this type is
 zero.
 
-=head1 SYSTEM-DEFINED CORE QUASI-/SCALAR DATA TYPES
+=head1 SYSTEM-DEFINED CORE SCALAR DATA TYPES
 
 These core scalar data types are the most fundamental Muldis D types.
 Plain Text Muldis D provides a specific syntax per type to select a value
@@ -144,32 +144,29 @@ character strings, but tagged with extra meta-data if the host language is
 more weakly typed or lacks one-to-one type correspondence; see
 L<Muldis::D::Dialect::HDMD_Perl6_STD> or
 L<Muldis::D::Dialect::HDMD_Perl5_STD> for a Perl 6|5-based example.  These
-types, except for C<QScalar> and C<Scalar>, are all ordered.  Actually,
-just the C<QScalar> type is not scalar, but the rest of these types are.
-
-=head2 sys.std.Core.Type.QScalar
-
-This is an enumeration data type.  The C<QScalar> type is the maximal type
-of all Muldis D quasi-scalar types, and contains every quasi-scalar value
-that can possibly exist (all of those would be user-defined; all
-system-defined quasi-scalar types are also just scalar types).  Every other
-(non-aliased) quasi-scalar type is implicitly a proper subtype of
-C<QScalar>, and C<QScalar> is implicitly a union type over all other
-quasi-scalar types.  Its default value is C<Bool:false>.  The cardinality
-of this type is infinity.
+types, except for C<Scalar> and C<DHScalar>, are all ordered.
 
 =head2 sys.std.Core.Type.Scalar
 
-This is an enumeration data type.  C<Scalar> is a proper subtype of
-C<QScalar> where every one of its possreps' attributes is restricted to be
+This is an enumeration data type.  The C<Scalar> type is the maximal type
+of all Muldis D scalar types, and contains every scalar value that can
+possibly exist.  Every other (non-aliased) scalar type is implicitly a
+proper subtype of C<Scalar>, and C<Scalar> is implicitly a union type over
+all other scalar types.  Its default value is C<Bool:false>.  The
+cardinality of this type is infinity.
+
+=head2 sys.std.Core.Type.DHScalar
+
+This is an enumeration data type.  C<DHScalar> is a proper subtype of
+C<Scalar> where every one of its possreps' attributes is restricted to be
 of just certain categories of data types, rather than allowing any data
-types at all; related to this restriction, any scalar value is allowed to
+types at all; related to this restriction, any dh-scalar value is allowed to
 be stored in a global/persisting relational database but any other
-quasi-scalar value may only be used for transient data.  The C<Scalar> type
-is the maximal type of all Muldis D scalar types, and contains every scalar
-value that can possibly exist.  Every other (non-aliased) scalar type is
-implicitly a proper subtype of C<Scalar>, and C<Scalar> is implicitly a
-union type over all other scalar types.  Its default value is
+scalar value may only be used for transient data.  The C<DHScalar> type
+is the maximal type of all Muldis D dh-scalar types, and contains every dh-scalar
+value that can possibly exist.  Every other (non-aliased) dh-scalar type is
+implicitly a proper subtype of C<DHScalar>, and C<DHScalar> is implicitly a
+union type over all other dh-scalar types.  Its default value is
 C<Bool:false>.  The cardinality of this type is infinity.
 
 =head2 sys.std.Core.Type.Bool
@@ -387,135 +384,134 @@ The C<Duration> type is intended more for benchmarking or scientific
 applications and is not intended for human-specified calendar based
 artifacts; again see the I<Muldis D Temporal Extension> for alternatives.
 
-=head1 SYSTEM-DEFINED CORE QUASI-/NONSCALAR DATA TYPES
+=head1 SYSTEM-DEFINED CORE NONSCALAR DATA TYPES
 
-These core q/nonscalar data types permit transparent/user-visible
+These core nonscalar data types permit transparent/user-visible
 compositions of multiple values into other conceptual values.  For all
-q/nonscalar types, their cardinality is mainly or wholly dependent on the
+nonscalar types, their cardinality is mainly or wholly dependent on the
 data types they are composed of.
-
-=head2 sys.std.Core.Type.QTuple
-
-This is a primitive data type.  The C<QTuple> type is the maximal type of
-all Muldis D quasi-tuple (quasi-nonscalar) types, and contains every
-quasi-tuple value that could possibly exist.  A C<QTuple> is an unordered
-heterogeneous collection of 0..N named attributes (the count of attributes
-being its I<degree>), where all attribute names are mutually distinct, and
-each attribute may be of distinct types; the mapping of a quasi-tuple's
-attribute names and their declared data types is called the quasi-tuple's
-I<heading>.  Its default value is the sole value of the sole tuple data
-type that has zero attributes.  The cardinality of a I<complete> C<QTuple>
-type (if it has no type constraints other than those of its constituent
-attribute types) is equal to the product of the N-adic multiplication where
-there is an input to that multiplication for each attribute of the
-quasi-tuple and the value of the input is the cardinality of the declared
-type of the attribute; for a C<QTuple> subtype to be finite, all of its
-attribute types must be.
 
 =head2 sys.std.Core.Type.Tuple
 
-This is an enumeration data type.  C<Tuple> is a proper subtype of
-C<QTuple> where every one of its attributes is restricted to be of just
-certain categories of data types, rather than allowing any data types at
-all; related to this restriction, any tuple value is allowed to be stored
-in a global/persisting relational database but any other quasi-tuple value
-may only be used for transient data.  The C<Tuple> type is the maximal type
-of all Muldis D tuple (nonscalar) types, and contains every tuple value
-that could possibly exist.  Its default value is the same as that of
-C<QTuple> and matters of its cardinality are determined likewise.
+This is a primitive data type.  The C<Tuple> type is the maximal type of
+all Muldis D tuple (nonscalar) types, and contains every
+tuple value that could possibly exist.  A C<Tuple> is an unordered
+heterogeneous collection of 0..N named attributes (the count of attributes
+being its I<degree>), where all attribute names are mutually distinct, and
+each attribute may be of distinct types; the mapping of a tuple's
+attribute names and their declared data types is called the tuple's
+I<heading>.  Its default value is the sole tuple value
+that has zero attributes.  The cardinality of a I<complete> C<Tuple>
+type (if it has no type constraints other than those of its constituent
+attribute types) is equal to the product of the N-adic multiplication where
+there is an input to that multiplication for each attribute of the
+tuple and the value of the input is the cardinality of the declared
+type of the attribute; for a C<Tuple> subtype to be finite, all of its
+attribute types must be.
 
-The only member value of C<Tuple> that has exactly zero attributes is also
+=head2 sys.std.Core.Type.DHTuple
+
+This is an enumeration data type.  C<DHTuple> is a proper subtype of
+C<Tuple> where every one of its attributes is restricted to be of just
+certain categories of data types, rather than allowing any data types at
+all; related to this restriction, any dh-tuple value is allowed to be stored
+in a global/persisting relational database but any other tuple value
+may only be used for transient data.  The C<DHTuple> type is the maximal type
+of all Muldis D dh-tuple (dh-nonscalar) types, and contains every dh-tuple value
+that could possibly exist.  Its default value is the same as that of
+C<Tuple> and matters of its cardinality are determined likewise.
+
+The only member value of C<DHTuple> that has exactly zero attributes is also
 known by the special name C<Tuple:d0>, which serves as the default value of
-the 3 types C<[Q|]Tuple> and C<Database>.
+the 3 types C<[|DH]Tuple> and C<Database>.
 
 =head2 sys.std.Core.Type.Database
 
 This is an enumeration data type.  C<Database> is a proper subtype of
-C<Tuple> where all of its attributes are each of relation types or of
-database types (the leaves of this recursion are all relation types); it is
+C<DHTuple> where all of its attributes are each of dh-relation types or of
+database types (the leaves of this recursion are all dh-relation types); it is
 otherwise the same.  The 4 system-defined user-data variables named
 C<[fed|dep|sdp|pkg].data> are all of "just" the C<Database> type, or are of
 its proper subtypes.
 
-=head2 sys.std.Core.Type.QRelation
-
-This is a primitive data type.  The C<QRelation> type is the maximal type
-of all Muldis D quasi-relation (quasi-nonscalar) types, and contains every
-quasi-relation value that could possibly exist.  A C<QRelation> is
-analogous to a set of 0..N quasi-tuples where all quasi-tuples have the
-same heading (the degrees match and all attribute names, and typically
-corresponding declared data types, match), but that a C<QRelation> data
-type still has its own corresponding heading (attribute names and declared
-data types) even when it consists of zero quasi-tuples.  Its default value
-is the zero-tuple value of the sole relation data type that has zero
-attributes.  The cardinality of a I<complete> C<QRelation> type (if it has
-no type constraints other than those of its constituent attribute types) is
-equal to 2 raised to the power of the cardinality of the I<complete>
-C<QTuple> type with the same heading.  A quasi-relation data type can also
-have (unique) keys each defined over a subset of its attributes, which
-constrain its set of values relative to there being no explicit keys, but
-having the keys won't turn an infinite quasi-relation type into a finite
-one.
-
 =head2 sys.std.Core.Type.Relation
 
-This is an enumeration data type.  C<Relation> is a proper subtype of
-C<QRelation> where every one of its attributes is restricted to be of just
+This is a primitive data type.  The C<Relation> type is the maximal type
+of all Muldis D relation (nonscalar) types, and contains every
+relation value that could possibly exist.  A C<Relation> is
+analogous to a set of 0..N tuples where all tuples have the
+same heading (the degrees match and all attribute names, and typically
+corresponding declared data types, match), but that a C<Relation> data
+type still has its own corresponding heading (attribute names and declared
+data types) even when it consists of zero tuples.  Its default value
+is the sole relation value that has zero tuples and zero
+attributes.  The cardinality of a I<complete> C<Relation> type (if it has
+no type constraints other than those of its constituent attribute types) is
+equal to 2 raised to the power of the cardinality of the I<complete>
+C<Tuple> type with the same heading.  A relation data type can also
+have (unique) keys each defined over a subset of its attributes, which
+constrain its set of values relative to there being no explicit keys, but
+having the keys won't turn an infinite relation type into a finite one.
+
+=head2 sys.std.Core.Type.DHRelation
+
+This is an enumeration data type.  C<DHRelation> is a proper subtype of
+C<Relation> where every one of its attributes is restricted to be of just
 certain categories of data types, rather than allowing any data types at
-all; related to this restriction, any relation value is allowed to be
+all; related to this restriction, any dh-relation value is allowed to be
 stored in a global/persisting relational database but any other
-quasi-relation value may only be used for transient data.  The main
-difference from its supertype is that a relation's tuples' headings all
+relation value may only be used for transient data.  The main
+difference from its supertype is that a dh-relation's dh-tuples' headings all
 have matching declared data types for corresponding attributes, while with
-quasi-relations they don't have to.  The C<Relation> type is the maximal
-type of all Muldis D relation (nonscalar) types, and contains every
-relation value that could possibly exist.  Its default value is the same as
-that of C<QRelation> and matters of its cardinality are determined
+relations they don't have to.  The C<DHRelation> type is the maximal
+type of all Muldis D dh-relation (dh-nonscalar) types, and contains every
+dh-relation value that could possibly exist.  Its default value is the same as
+that of C<Relation> and matters of its cardinality are determined
 likewise.
 
-The only member value of C<Relation> that has exactly zero attributes and
+The only member value of C<DHRelation> that has exactly zero attributes and
 exactly zero tuples is also known by the special name C<Relation:d0c0>,
-which serves as the default value of the 2 types C<[Q|]Relation>.  The only
-member value of C<Relation> that has exactly zero attributes and exactly
+which serves as the default value of the 2 types C<[|DH]Relation>.  The only
+member value of C<DHRelation> that has exactly zero attributes and exactly
 one tuple is also known by the special name C<Relation:d0c1>.
-
-=head2 sys.std.Core.Type.QSet
-
-This is an enumeration data type.  C<QSet> is a proper subtype of
-C<QRelation> that has 1 attribute, and its name is C<value>; it can be of
-any declared type.  A C<QSet> subtype is normally used by any
-system-defined N-adic operators where the order of their argument elements
-or result is not significant, and that duplicate values are not
-significant.  Its default value has zero q/tuples.  Note that, for any
-given C<QSet> subtype, C<Foo>, where its C<value> attribute has a declared
-type of C<Bar>, the type C<Foo> can be considered the I<power set> of the
-type C<Bar>.
 
 =head2 sys.std.Core.Type.Set
 
-This is an enumeration data type.  C<Set> is the intersection type of
-C<QSet> and C<Relation>.  The cardinality of this type is infinite.
+This is an enumeration data type.  C<Set> is a proper subtype of
+C<Relation> that has 1 attribute, and its name is C<value>; it can be of
+any declared type.  A C<Set> subtype is normally used by any
+system-defined N-adic operators where the order of their argument elements
+or result is not significant, and that duplicate values are not
+significant.  Its default value has zero tuples.  Note that, for any
+given C<Set> subtype, C<Foo>, where its C<value> attribute has a declared
+type of C<Bar>, the type C<Foo> can be considered the I<power set> of the
+type C<Bar>.
 
-=head2 sys.std.Core.Type.QMaybe
+=head2 sys.std.Core.Type.DHSet
 
-This is an enumeration data type.  C<QMaybe> is a proper subtype of C<QSet>
-where all member values may have at most one element; that is, it is a
-unary C<QRelation> with a nullary key.  Operators that work specifically
-with C<QMaybe> subtypes can provide a syntactic shorthand for working with
-sparse data; so Muldis D has something which is conceptually close to SQL's
-nullable types without actually having 3-valued logic; it would probably be
-convenient for code that round-trips SQL by way of Muldis D to use the
-C<QMaybe> type.  Its default value has zero q/tuples.
+This is an enumeration data type.  C<DHSet> is the intersection type of
+C<Set> and C<DHRelation>.  The cardinality of this type is infinite.
 
 =head2 sys.std.Core.Type.Maybe
 
-This is an enumeration data type.  C<Maybe> is the intersection type of
-C<QMaybe> and C<Set>.  The cardinality of this type is infinite.
+This is an enumeration data type.  C<Maybe> is a proper subtype of C<Set>
+where all member values may have at most one element; that is, it is a
+unary C<Relation> with a nullary key.  Operators that work specifically
+with C<Maybe> subtypes can provide a syntactic shorthand for working with
+sparse data; so Muldis D has something which is conceptually close to SQL's
+nullable types without actually having 3-valued logic; it would probably be
+convenient for code that round-trips SQL by way of Muldis D to use the
+C<Maybe> type.  Its default value has zero tuples.
 
-The only member value of C<Maybe> that has exactly zero elements is also
+=head2 sys.std.Core.Type.DHMaybe
+
+This is an enumeration data type.  C<DHMaybe> is the intersection type of
+C<Maybe> and C<DHSet>.  The cardinality of this type is infinite.
+
+The only member value of C<DHMaybe> that has exactly zero elements is also
 known by the special name C<Maybe:nothing>, aka C<nothing>,
 aka I<empty set>, aka C<∅>, which serves as
-the default value of the 4 types C<[Q|]Maybe> and C<[Q|]Set>.  The single
+the default value of the 4 types C<[|DH]Maybe> and C<[|DH]Set>.  The single
 C<nothing> value, which is a relation with zero tuples and a single
 attribute named C<value>, is Muldis D's answer to the SQL NULL and is
 intended to be used for the same purposes; that is, a special marker for
@@ -529,56 +525,56 @@ more than one reason could possibly apply in the context, then using simply
 C<nothing> or SQL's NULL can't do it, and instead you'll have to use other
 normal values such as status flags to keep the appropriate metadata.
 
-=head2 sys.std.Core.Type.QSingle
-
-This is an enumeration data type.  C<QSingle> is a proper subtype of
-C<QMaybe> where all member values have exactly 1 element.  Its default
-value's only q/tuple's only attribute has the value C<Bool:false>.  The
-C<QSingle> type consists of all of C<QMaybe>'s values except C<nothing>.
-
 =head2 sys.std.Core.Type.Single
 
-This is an enumeration data type.  C<Single> is the intersection type of
-C<QSingle> and C<Maybe>.  Subtypes of C<Single> are also used to implement
+This is an enumeration data type.  C<Single> is a proper subtype of
+C<Maybe> where all member values have exactly 1 element.  Its default
+value's only tuple's only attribute has the value C<Bool:false>.  The
+C<Single> type consists of all of C<Maybe>'s values except C<nothing>.
+
+=head2 sys.std.Core.Type.DHSingle
+
+This is an enumeration data type.  C<DHSingle> is the intersection type of
+C<Single> and C<DHMaybe>.  Subtypes of C<DHSingle> are also used to implement
 data-carrying database objects that are conceptually scalars rather than
 relations; for example, the current state of a sequence generator might
 typically be one.  The cardinality of this type is infinite.
 
-=head2 sys.std.Core.Type.QArray
+=head2 sys.std.Core.Type.Array
 
-This is an enumeration data type.  C<QArray> is a proper subtype of
-C<QRelation> that has 2 attributes, and their names are C<index> and
+This is an enumeration data type.  C<Array> is a proper subtype of
+C<Relation> that has 2 attributes, and their names are C<index> and
 C<value>, where C<index> is a unary primary key and its declared type is a
 C<NNInt> subtype (C<value> can be non-unique and of any declared type).  A
-C<QArray> is considered dense, and all C<index> values in one are numbered
-consecutively from 0 to 1 less than the count of q/tuples, like q/array
-indices in typical programming languages.  A C<QArray> subtype is normally
+C<Array> is considered dense, and all C<index> values in one are numbered
+consecutively from 0 to 1 less than the count of tuples, like array
+indices in typical programming languages.  A C<Array> subtype is normally
 used by any system-defined N-adic operators where the order of their
 argument elements or result is significant (and duplicate values are
 significant); specifically, C<index> defines an explicit ordering for
-C<value>.  Its default value has zero q/tuples.
+C<value>.  Its default value has zero tuples.
 
-=head2 sys.std.Core.Type.Array
+=head2 sys.std.Core.Type.DHArray
 
-This is an enumeration data type.  C<Array> is the intersection type of
-C<QArray> and C<Relation>.  The cardinality of this type is infinite.
+This is an enumeration data type.  C<DHArray> is the intersection type of
+C<Array> and C<DHRelation>.  The cardinality of this type is infinite.
 
-=head2 sys.std.Core.Type.QBag
+=head2 sys.std.Core.Type.Bag
 
-This is an enumeration data type.  C<QBag> (or I<quasi-multiset>) is a
-proper subtype of C<QRelation> that has 2 attributes, and their names are
+This is an enumeration data type.  C<Bag> (or I<multiset>) is a
+proper subtype of C<Relation> that has 2 attributes, and their names are
 C<value> and C<count>, where C<value> is a unary primary key (that can have
-any declared type) and C<count> is a C<PInt> subtype.  A C<QBag> subtype is
+any declared type) and C<count> is a C<PInt> subtype.  A C<Bag> subtype is
 normally used by any system-defined N-adic operators where the order of
 their argument elements or result is not significant, but that duplicate
 values are significant; specifically, C<count> defines an explicit count of
 occurrences for C<value>, also known as that value's I<multiplicity>.  Its
-default value has zero q/tuples.
+default value has zero tuples.
 
-=head2 sys.std.Core.Type.Bag
+=head2 sys.std.Core.Type.DHBag
 
-This is an enumeration data type.  C<Bag> is the intersection type of
-C<QBag> and C<Relation>.  The cardinality of this type is infinite.
+This is an enumeration data type.  C<DHBag> is the intersection type of
+C<Bag> and C<DHRelation>.  The cardinality of this type is infinite.
 
 =head1 SYSTEM-DEFINED REFERENCE TYPES
 

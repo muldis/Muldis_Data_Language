@@ -158,8 +158,8 @@ There are 26 main varieties of C<value> node, each of which is a named node
 kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<DeclNameChain>, C<Comment>,
 C<Instant>, C<Duration>, C<UTCInstant>, C<FloatInstant>, C<UTCDuration>,
-C<RatRoundRule>, C<String>, C<QScalar>, C<QTuple>, C<Database>,
-C<QRelation>, C<QSet>, C<QMaybe>, C<QArray>, C<QBag>.
+C<RatRoundRule>, C<String>, C<Scalar>, C<Tuple>, C<Database>,
+C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl native scalar and collection types.
@@ -190,9 +190,9 @@ C<value_kind>:  C<Bool>, C<Order>, C<RatRoundMeth>, C<[|NN|P]Int>,
 C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
 C<DeclNameChain>, C<Comment>, C<Instant>, C<Duration>,
 C<UTC[Instant|DateTime|Date|Time]>, C<Float[Instant|DateTime|Date|Time]>,
-C<UTCDuration>, C<RatRoundRule>, C<[|B|O|UCP]String>, C<[Q|]Scalar>,
-C<[Q|]Tuple>, C<Database>, C<[Q|]Relation>, C<[Q|]Set>,
-C<[Q|][Maybe|Single]>, C<[Q|]Array>, C<[Q|]Bag>.
+C<UTCDuration>, C<RatRoundRule>, C<[|B|O|UCP]String>, C<[|DH]Scalar>,
+C<[|DH]Tuple>, C<Database>, C<[|DH]Relation>, C<[|DH]Set>,
+C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>.
 
 For just some data types, the C<value_kind> may be omitted; see below.
 
@@ -203,7 +203,7 @@ name, for example C<sys.std.Core.Type.Int>; it identifies a specific
 subtype of the generic type denoted by C<value_kind>, and serves as an
 assertion that the Muldis D value denoted by C<payload> is a member of the
 named subtype.  Its format is a C<NameChain_payload> node.  Iff
-C<value_kind> is C<[Q|]Scalar> then C<type_name> is mandatory; otherwise,
+C<value_kind> is C<[|DH]Scalar> then C<type_name> is mandatory; otherwise,
 C<type_name> is optional for all C<value>, except that C<type_name> must be
 omitted when C<value_kind> is one of the 2 [C<Bool>, C<Order>]; this isn't
 because those 2 types can't be subtyped, but because in practice doing so
@@ -594,14 +594,14 @@ options exist are only valid within a C<depot> node or C<boot_stmt> node.
 
 =head2 Scalar Selectors
 
-A C<QScalar> node represents a literal or selector invocation for a
-quasi-scalar subtype value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.QScalar> subtype value whose declared type is specified
-by the node's (mandatory for C<QScalar>) C<type_name> element and whose
+A C<Scalar> node represents a literal or selector invocation for a
+scalar subtype value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Scalar> subtype value whose declared type is specified
+by the node's (mandatory for C<Scalar>) C<type_name> element and whose
 attributes are defined by the payload.  The payload must be a Perl C<Pair>,
 whose key and value, respectively, are designated I<possrep name> and
 I<possrep attrs>.  The possrep name and possrep attrs must be as per the
-payload of a C<Name> and C<QTuple> node, respectively.  The I<possrep
+payload of a C<Name> and C<Tuple> node, respectively.  The I<possrep
 attrs> is interpreted specifically as attributes of the declared type's
 possrep which is specified by the I<possrep name>.  Each key+value pair of
 the I<possrep attrs> defines a named possrep attribute of the new scalar;
@@ -636,9 +636,9 @@ Examples:
 
 =head2 Tuple Selectors
 
-A C<QTuple> node represents a literal or selector invocation for a
-quasi-tuple value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.QTuple> value whose attributes are defined by the
+A C<Tuple> node represents a literal or selector invocation for a
+tuple value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Tuple> value whose attributes are defined by the
 payload.  The payload must be a Perl C<Mapping|Hash>.  Each key+value pair
 of the payload defines a named attribute of the new tuple; the pair's key
 and value are, respectively, a Perl C<Str> that specifies the attribute
@@ -672,9 +672,9 @@ represent a relation value.
 
 =head2 Relation Selectors
 
-A C<QRelation> node represents a literal or selector invocation for a
-quasi-relation value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.QRelation> value whose attributes and tuples are
+A C<Relation> node represents a literal or selector invocation for a
+relation value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Relation> value whose attributes and tuples are
 defined by the payload, which is interpreted as follows:
 
 =over
@@ -694,7 +694,7 @@ then it defines the attribute names of a relation having zero tuples.
 
 Iff the payload is a Perl C<Set|KeySet> with at least one element, and
 every element is a Perl C<Mapping|Hash> (as per a valid payload for a
-C<QTuple> node), then each element of the payload defines a tuple of
+C<Tuple> node), then each element of the payload defines a tuple of
 the new relation; every tuple-defining element of the payload must be of
 the same degree and have the same attribute names as its sibling elements;
 these are the degree and attribute names of the relation as a whole, which
@@ -739,12 +739,12 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
 =head2 Set Selectors
 
-A C<QSet> node represents a literal or selector invocation for a quasi-set
-value.  It is interpreted as a Muldis D C<sys.std.Core.Type.QSet> value
+A C<Set> node represents a literal or selector invocation for a set
+value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Set> value
 whose elements are defined by the payload.  The payload must be a Perl
-C<Set|KeySet>.  Each element of the payload defines a unary quasi-tuple of
-the new quasi-set; each element is a C<expr> node that defines the C<value>
-attribute of the quasi-tuple.
+C<Set|KeySet>.  Each element of the payload defines a unary tuple of
+the new set; each element is a C<expr> node that defines the C<value>
+attribute of the tuple.
 
 Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
@@ -763,15 +763,15 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
 =head2 Maybe Selectors
 
-A C<QMaybe> node represents a literal or selector invocation for a
-quasi-maybe value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.QMaybe> value.  If the node payload is missing or
+A C<Maybe> node represents a literal or selector invocation for a
+maybe value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Maybe> value.  If the node payload is missing or
 undefined, then the node is interpreted as the special value
-C<Maybe:nothing>, aka C<nothing>, which is the only C<QMaybe> value with
+C<Maybe:nothing>, aka C<nothing>, which is the only C<Maybe> value with
 zero elements.  If the node payload is defined then the node is interpreted
-as a C<QSingle> whose element is defined by the payload.  The payload is a
-C<expr> node that defines the C<value> attribute of the single quasi-tuple
-of the new quasi-'single'.
+as a C<Single> whose element is defined by the payload.  The payload is a
+C<expr> node that defines the C<value> attribute of the single tuple
+of the new 'single'.
 
 Examples:
 
@@ -781,13 +781,13 @@ Examples:
 
 =head2 Array Selectors
 
-A C<QArray> node represents a literal or selector invocation for a
-quasi-array value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.QArray> value whose elements are defined by the
+A C<Array> node represents a literal or selector invocation for a
+array value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Array> value whose elements are defined by the
 payload.  The payload must be a Perl C<Seq|Array>.  Each element of the
-payload defines a binary quasi-tuple of the new sequence; the element value
-is a C<expr> node that defines the C<value> attribute of the quasi-tuple,
-and the element index is used as the C<index> attribute of the quasi-tuple.
+payload defines a binary tuple of the new sequence; the element value
+is a C<expr> node that defines the C<value> attribute of the tuple,
+and the element index is used as the C<index> attribute of the tuple.
 
 Examples:
 
@@ -806,12 +806,12 @@ Examples:
 
 =head2 Bag Selectors
 
-A C<QBag> node represents a literal or selector invocation for a quasi-bag
-value.  It is interpreted as a Muldis D C<sys.std.Core.Type.QBag> value
+A C<Bag> node represents a literal or selector invocation for a bag
+value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Bag> value
 whose elements are defined by the payload.  The payload must be a Perl
 C<Bag|KeyBag|Set|KeySet> value; the payload element keys are C<expr> nodes
-corresponding to the C<value> attribute of the new quasi-bag's
-quasi-tuples, and the payload element values are positive integers (or
+corresponding to the C<value> attribute of the new bag's
+tuples, and the payload element values are positive integers (or
 C<Bool::True>, which counts as the number 1) corresponding to the C<count>
 attribute; the payload element mapping is as you should expect.
 
@@ -862,11 +862,11 @@ An C<func_invo> node has 2-4 ordered elements:  The first element is the
 Perl C<Str> value C<func_invo>.  The second element is a
 C<NameChain_payload>, which names the function to invoke.  The last 1-2
 elements provide arguments to the function invocation; either or both or
-none of a C<QArray_payload> element and a C<QTuple_payload> element may be
-given.  The C<QArray_payload> 3rd/4th element is for any anonymous (and
-ordered if multiple exist) arguments, and the C<QTuple_payload> 3rd/4th
-element is for any named arguments; each C<QArray_payload> element or
-C<QTuple_payload> element value is an C<expr> node which is the argument
+none of a C<Array_payload> element and a C<Tuple_payload> element may be
+given.  The C<Array_payload> 3rd/4th element is for any anonymous (and
+ordered if multiple exist) arguments, and the C<Tuple_payload> 3rd/4th
+element is for any named arguments; each C<Array_payload> element or
+C<Tuple_payload> element value is an C<expr> node which is the argument
 value.
 
 Examples:
@@ -922,7 +922,7 @@ Examples:
             [ 'op', 'is_empty', :expr_name<ary> ]
                 => :expr_name<empty_result>,
         ],
-        [ 'op', 'QArray.value', :expr_name<ary>, 0 ]
+        [ 'op', 'Array.value', :expr_name<ary>, 0 ]
     ]
 
     [ 'op', 'T~', [ 'My answer is: ',
@@ -1216,14 +1216,14 @@ C<NameChain> node.
 =item *
 
 Imperative routine subject-to-update args: a Perl C<Mapping|Hash> as per
-the payload of a C<QTuple> node except that every C<Mapping|Hash> value is
+the payload of a C<Tuple> node except that every C<Mapping|Hash> value is
 just a Perl C<Seq|Array|Str> as per the payload of a C<NameChain> node
 (each value is the name of a global variable).
 
 =item *
 
 Imperative routine read-only args: a Perl C<Mapping|Hash> as per the
-payload of a C<QTuple> node.
+payload of a C<Tuple> node.
 
 =back
 

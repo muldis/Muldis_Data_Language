@@ -48,8 +48,8 @@ more or less:
 
         sys.std.Core.Type.Empty
 
-        sys.std.Core.Type.QScalar
-            sys.std.Core.Type.Scalar
+        sys.std.Core.Type.Scalar
+            sys.std.Core.Type.DHScalar
 
                 # The following are all regular ordered scalar types.
 
@@ -71,8 +71,8 @@ more or less:
                 sys.std.Core.Type.Cat.RatRoundMeth
                 sys.std.Core.Type.Cat.RatRoundRule
 
-        sys.std.Core.Type.QTuple
-            sys.std.Core.Type.Tuple
+        sys.std.Core.Type.Tuple
+            sys.std.Core.Type.DHTuple
 
                 # The following are all regular tuple types.
 
@@ -107,8 +107,8 @@ more or less:
                     sys.std.Core.Type.Cat.StmtNodeSet
                     sys.std.Core.Type.Cat.InnerTypeSet
 
-        sys.std.Core.Type.QRelation
-            sys.std.Core.Type.Relation
+        sys.std.Core.Type.Relation
+            sys.std.Core.Type.DHRelation
 
                 # The following are all regular relation types.
 
@@ -237,11 +237,11 @@ element mapping isn't possible.
 
 Now, one main rationale to have the system-defined C<String> type as a
 union type over an infinite number of C<String.*> types, is to avoid any
-"chicken and egg" scenario where at least one q/scalar root type needs to
+"chicken and egg" scenario where at least one scalar root type needs to
 be special and have no possreps in order to be the foundation for other
-scalar root types.  Under the current system, I<every> q/scalar root type
+scalar root types.  Under the current system, I<every> scalar root type
 has at least one possrep and the type system design does not require any
-q/scalar root type to be special.  One can always avoid the need for some
+scalar root type to be special.  One can always avoid the need for some
 other type to base your scalar root type off of by building your scalar
 root type over singleton types with no possrep attributes.  That said, the
 fact that an implicitly defined infinity of types underlie C<String>
@@ -384,7 +384,7 @@ has a different default value, which is C<sys.std.Core.Scalar.order>
 rather than C<.>.  This type is conceptually intended for use as the
 declared type of a routine parameter that would take the name of an
 C<order_determination> function, but that parameter is optional and should
-default to the system-defined q/scalar ordering function when no argument
+default to the system-defined scalar ordering function when no argument
 is given to it.
 
 =head2 sys.std.Core.Type.Cat.RatRoundMeth
@@ -481,8 +481,8 @@ These are the few central system-defined data types that have special
 hard-coded meanings and are not defined like any other types; these are
 declarations of all of the native Muldis D types that can't be defined like
 user-defined types.  Specifically, it declares these 12 standard types: in
-the C<sys.std.Core.Type> namespace, C<Universal>, C<Empty>, C<QScalar>,
-C<QTuple>, C<QRelation>, C<Reference>, C<External>; in the
+the C<sys.std.Core.Type> namespace, C<Universal>, C<Empty>, C<Scalar>,
+C<Tuple>, C<Relation>, C<Reference>, C<External>; in the
 C<sys.std.Core.Type.Cat> namespace, C<String> and
 C<[Func|Proc|Type|OrdDetFunc]Ref>.  These constitute all 2 Muldis D
 primitive types, all 5 Muldis D reference types, all 2 Muldis D type system
@@ -496,9 +496,9 @@ catalog at all, for what should be obvious reasons).
 
 =item C<types> - C<SysTypeSet>
 
-These are all the system-defined q/scalar types, except for
+These are all the system-defined scalar types, except for
 C<String> because it can't be defined like user-defined types, and complete
-q/nonscalar types, and union types, and restriction types.
+nonscalar types, and union types, and restriction types.
 
 =item C<catalogs> - C<SysCatSet>
 
@@ -512,7 +512,7 @@ The default value of C<System> defines a system with zero builtins.
 
 =head2 sys.std.Core.Type.Cat.SysNspSet
 
-A C<SysNspSet> is a C<Relation> that specifies the set of system
+A C<SysNspSet> is a C<DHRelation> that specifies the set of system
 namespaces that exist for organizing DBMS public entities, mostly the
 system-defined ones; these system namespaces are organized into a tree
 whose root has no name.  A C<SysNspSet> only specifies that a system
@@ -546,7 +546,7 @@ C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.Sys[Func|Upd|Proc]Set
 
-A C<Sys[Func|Upd|Proc]Set> is a C<Relation> that specifies a set of
+A C<Sys[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
 system-defined functions|updaters|procedures.
 
 A C<Sys[Func|Upd|Proc]Set> has these 4 attributes:
@@ -582,7 +582,7 @@ plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysSpecTypeSet
 
-A C<SysSpecTypeSet> is a C<Relation> that specifies a set of system-defined
+A C<SysSpecTypeSet> is a C<DHRelation> that specifies a set of system-defined
 types which are particularly special and unlike other types; it is used for
 declaring all system types that can't be defined like user types.
 
@@ -612,7 +612,7 @@ C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysTypeSet
 
-A C<SysTypeSet> is a C<Relation> that specifies a set of system-defined
+A C<SysTypeSet> is a C<DHRelation> that specifies a set of system-defined
 types.
 
 A C<SysTypeSet> has these 4 attributes:
@@ -645,7 +645,7 @@ attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysCatSet
 
-A C<SysCatSet> is a C<Relation> that specifies a set of system-defined
+A C<SysCatSet> is a C<DHRelation> that specifies a set of system-defined
 catalog dbvars; each tuple specifies one catalog dbvar.
 
 A C<SysCatSet> has these 4 attributes:
@@ -710,7 +710,7 @@ The default value of C<MountControlCat> has zero depot mount controls.
 
 =head2 sys.std.Core.Type.Cat.MountControlSet
 
-A C<MountControlSet> is a C<Relation> that specifies a set of controls
+A C<MountControlSet> is a C<DHRelation> that specifies a set of controls
 per depot mounts, such that each tuple is a single control for a depot
 mount, and each depot mount has 1 mount control.  Inserting a tuple will
 result in either an existing depot being mounted or a new depot being
@@ -902,7 +902,7 @@ The default value of C<Federation> has zero depot mounts.
 
 =head2 sys.std.Core.Type.Cat.DepotMountSet
 
-A C<DepotMountSet> is a C<Relation> that specifies a set of depot
+A C<DepotMountSet> is a C<DHRelation> that specifies a set of depot
 mounts, such that each tuple is a single depot mount.  A depot mount is a
 named in-DBMS context by which a depot is referenced from either other
 depots or by the main application, and it also specifies the catalog
@@ -934,7 +934,7 @@ Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.FedTypeMapSet
 
-A C<FedTypeMapSet> is a C<Relation> such that each tuple in it
+A C<FedTypeMapSet> is a C<DHRelation> such that each tuple in it
 specifies which of multiple depots have a copy of the same data type, for
 the purpose of treating all the copies as being interchangeable, so to
 support cross-depot interaction.
@@ -960,7 +960,7 @@ default value is empty.
 
 =head2 sys.std.Core.Type.Cat.FedTypeMap
 
-A C<FedTypeMap> is a C<Relation>.  It lists the fully-qualified names of
+A C<FedTypeMap> is a C<DHRelation>.  It lists the fully-qualified names of
 0..N data types that are all considered to be copies and of the same 1
 type, and should be treated interchangeably by the DBMS.  A C<FedTypeMap>
 has 2 attributes, C<depot> (a C<Name>) and C<type> (a C<NameChain>); the
@@ -1008,7 +1008,7 @@ These are all the function|updater|procedure definitions that this
 =item C<types> - C<DepTypeSet>
 
 These are all the definitions that this [|sub]depot contains of
-q/scalar types with possreps, and complete q/nonscalar types,
+scalar types with possreps, and complete nonscalar types,
 and union types, and restriction types.
 
 =item C<data> - C<maybe_of.NameChain>
@@ -1024,7 +1024,7 @@ not have any self-local dbvar.
 
 =head2 sys.std.Core.Type.Cat.SubdepotSet
 
-A C<SubdepotSet> is a C<Relation> that specifies the set of subdepots
+A C<SubdepotSet> is a C<DHRelation> that specifies the set of subdepots
 that a depot might optionally have for organizing its public entities;
 these subdepots are organized into a tree whose root is the depot.  A
 C<SubdepotSet> only specifies that a subdepot exists, not which depot
@@ -1056,7 +1056,7 @@ C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.PackageSet
 
-A C<PackageSet> is a C<Relation> that specifies the set of packages
+A C<PackageSet> is a C<DHRelation> that specifies the set of packages
 that a depot might optionally have for organizing its possibly private
 entities.
 
@@ -1091,7 +1091,7 @@ C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.Dep[Func|Upd|Proc]Set
 
-A C<Dep[Func|Upd|Proc]Set> is a C<Relation> that specifies a set of
+A C<Dep[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
 functions|updaters|procedures that a [|sub]depot might directly contain.
 
 A C<Dep[Func|Upd|Proc]Set> has these 5 attributes:
@@ -1132,7 +1132,7 @@ plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.DepTypeSet
 
-A C<DepTypeSet> is a C<Relation> that specifies a set of types that a
+A C<DepTypeSet> is a C<DHRelation> that specifies a set of types that a
 [|sub]depot might directly contain.
 
 A C<DepTypeSet> has these 4 attributes:
@@ -1192,8 +1192,8 @@ contains.
 
 =item C<types> - C<PkgTypeSet>
 
-These are all the definitions that this package contains of q/scalar
-types with possreps, and complete q/nonscalar types, and union
+These are all the definitions that this package contains of scalar
+types with possreps, and complete nonscalar types, and union
 types, and restriction types.
 
 =item C<data> - C<maybe_of.NameChain>
@@ -1209,7 +1209,7 @@ have any self-local dbvar.
 
 =head2 sys.std.Core.Type.Cat.Pkg[Func|Upd|Proc]Set
 
-A C<Pkg[Func|Upd|Proc]Set> is a C<Relation> that specifies a set of
+A C<Pkg[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
 functions|updaters|procedures that a package might contain, where each
 function|updater|procedure may be either public for the DBMS as a whole or
 private to the package.
@@ -1251,7 +1251,7 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.PkgTypeSet
 
-A C<PkgTypeSet> is a C<Relation> that specifies a set of types that a
+A C<PkgTypeSet> is a C<DHRelation> that specifies a set of types that a
 package might contain, where each type may be either public for the DBMS as
 a whole or private to the package.
 
@@ -1288,7 +1288,7 @@ These are all enumeration data types.
 
 =head2 sys.std.Core.Type.Cat.FuncHead
 
-A C<FuncHead> is a C<Tuple>.  It specifies the entire heading or public
+A C<FuncHead> is a C<DHTuple>.  It specifies the entire heading or public
 interface of a function or inner function, except for its name and
 public/private status; the latter are provided by any type embedding this
 one when applicable.
@@ -1326,7 +1326,7 @@ of C<Bool>; by default, its parameters are all non-optional.
 
 =head2 sys.std.Core.Type.Cat.UpdHead
 
-An C<UpdHead> is a C<Tuple>.  It specifies the entire heading or public
+An C<UpdHead> is a C<DHTuple>.  It specifies the entire heading or public
 interface of an updater or inner updater, except for its name and
 public/private status; the latter are provided by any type embedding this
 one when applicable.
@@ -1374,7 +1374,7 @@ parameters; by default, its parameters are all non-optional.
 
 =head2 sys.std.Core.Type.Cat.ProcHead
 
-A C<ProcHead> is a C<Tuple>.  It specifies the entire heading or public
+A C<ProcHead> is a C<DHTuple>.  It specifies the entire heading or public
 interface of a procedure or inner procedure, except for its name and
 public/private status; the latter are provided by any type embedding this
 one when applicable.
@@ -1415,7 +1415,7 @@ These are all enumeration data types.
 
 =head2 sys.std.Core.Type.Cat.FuncBody
 
-A C<FuncBody> is a C<Tuple>.  It specifies the entire body or
+A C<FuncBody> is a C<DHTuple>.  It specifies the entire body or
 implementation of a function, besides the details that a C<FuncHead>
 has, one of which each C<FuncBody> typically must be paired with.
 
@@ -1454,7 +1454,7 @@ of C<FuncHead> and unconditionally results in the value C<Bool:false>.
 
 =head2 sys.std.Core.Type.Cat.UpdBody
 
-An C<UpdBody> is a C<Tuple>.  It specifies the entire body or
+An C<UpdBody> is a C<DHTuple>.  It specifies the entire body or
 implementation of an updater, besides the details that an C<UpdHead>
 has, one of which each C<UpdBody> typically must be paired with.
 
@@ -1497,7 +1497,7 @@ to the value C<Bool:false>.
 
 =head2 sys.std.Core.Type.Cat.ProcBody
 
-A C<ProcBody> is a C<Tuple>.  It specifies the entire body or
+A C<ProcBody> is a C<DHTuple>.  It specifies the entire body or
 implementation of a procedure, besides the details that a C<ProcHead>
 has, one of which each C<ProcBody> typically must be paired with.
 
@@ -1542,7 +1542,7 @@ value of C<ProcHead> and is a no-op, having zero statements.
 
 =head2 sys.std.Core.Type.Cat.Inner[Func|Upd|Proc]Set
 
-An C<Inner[Func|Upd|Proc]Set> is a C<Relation> that specifies a set of
+An C<Inner[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
 inner functions|updaters|procedures that a function|updater|procedure might
 contain.
 
@@ -1581,7 +1581,7 @@ These are all enumeration data types.
 
 =head2 sys.std.Core.Type.Cat.InnerFuncBody
 
-An C<InnerFuncBody> is a C<Tuple>.  It specifies the entire body or
+An C<InnerFuncBody> is a C<DHTuple>.  It specifies the entire body or
 implementation of an inner function (or the main body of a function),
 besides the details that a C<FuncHead> has, one of which each
 C<InnerFuncBody> typically must be paired with.
@@ -1660,29 +1660,29 @@ the Muldis D dialect provides special literal syntax specific to the type.
 
 =item C<sca_pr_sel_exprs> - C<ScaPRSelExprNodeSet>
 
-These are expression nodes that represent generic q/scalar value
+These are expression nodes that represent generic scalar value
 selections specified simply in terms of possrep attributes.
 
 =item C<tup_sel_exprs> - C<TupSelExprNodeSet>
 
-These are expression nodes that represent q/tuple value selections.
+These are expression nodes that represent tuple value selections.
 
 =item C<rel_sel_exprs> - C<RelSelExprNodeSet>
 
-These are expression nodes that represent generic q/relation value
+These are expression nodes that represent generic relation value
 selections.
 
 =item C<set_sel_exprs> - C<SetSelExprNodeSet>
 
-These are expression nodes that represent q/set value selections.
+These are expression nodes that represent set value selections.
 
 =item C<ary_sel_exprs> - C<ArySelExprNodeSet>
 
-These are expression nodes that represent q/array value selections.
+These are expression nodes that represent array value selections.
 
 =item C<bag_sel_exprs> - C<BagSelExprNodeSet>
 
-These are expression nodes that represent q/bag value selections.
+These are expression nodes that represent bag value selections.
 
 =item C<func_invo_exprs> - C<FuncInvoExprNodeSet>
 
@@ -1711,7 +1711,7 @@ C<ExprNodeSet>'s attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.ScaValExprNodeSet
 
-A C<ScaValExprNodeSet> is a C<Relation> that specifies a set of value
+A C<ScaValExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node is a hard-coded scalar literal of one of a
 certain collection of system-defined core scalar types that special value
 literal syntax exists for (or subtype thereof).
@@ -1728,10 +1728,10 @@ This is the declared name of the expression node.
 
 This is an optional programmer comment about the expression (leaf) node.
 
-=item C<value> - C<Scalar>
+=item C<value> - C<DHScalar>
 
 This is the actual scalar value that the expression node represents.
-I<That is, any Scalar value could be used here, but in practice that is
+I<That is, any DHScalar value could be used here, but in practice that is
 either dialect-defined (what literals are supported), and possibly
 implementation defined/limited.>
 
@@ -1742,8 +1742,8 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.ScaPRSelExprNodeSet
 
-A C<ScaPRSelExprNodeSet> is a C<Relation> that specifies a set of value
-expression nodes where each node represents a q/scalar value
+A C<ScaPRSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node represents a scalar value
 selection that is specified simply in terms of possrep attributes.
 
 A C<ScaPRSelExprNodeSet> has these 5 attributes:
@@ -1761,17 +1761,17 @@ the expression node (sub-)tree it is the root of.
 
 =item C<type_name> - C<NameChain>
 
-This is the name of the type that the q/scalar value belongs to.
+This is the name of the type that the scalar value belongs to.
 
 =item C<possrep_name> - C<Name>
 
 This is the name of the possrep, of the type named by C<type_name>, in
-terms of whose attributes the q/scalar value is being selected.
+terms of whose attributes the scalar value is being selected.
 
 =item C<possrep_attrs> - C<NameExprMap>
 
 These represent the attributes (names and values) of the C<possrep_name>
-possrep of the q/scalar value being selected.
+possrep of the scalar value being selected.
 
 =back
 
@@ -1780,8 +1780,8 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.TupSelExprNodeSet
 
-A C<TupSelExprNodeSet> is a C<Relation> that specifies a set of value
-expression nodes where each node represents a q/tuple value selection.
+A C<TupSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node represents a tuple value selection.
 
 A C<TupSelExprNodeSet> has these 3 attributes:
 
@@ -1798,7 +1798,7 @@ the expression node (sub-)tree it is the root of.
 
 =item C<attrs> - C<NameExprMap>
 
-These represent the attributes (names and values) of the q/tuple
+These represent the attributes (names and values) of the tuple
 value being selected.
 
 =back
@@ -1808,8 +1808,8 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.RelSelExprNodeSet
 
-A C<RelSelExprNodeSet> is a C<Relation> that specifies a set of value
-expression nodes where each node represents a q/relation value selection.
+A C<RelSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node represents a relation value selection.
 
 A C<RelSelExprNodeSet> has these 4 attributes:
 
@@ -1826,11 +1826,11 @@ the expression node (sub-)tree it is the root of.
 
 =item C<head> - C<set_of.Name>
 
-These are the names of all of this q/relation value's attributes.
+These are the names of all of this relation value's attributes.
 
 =item C<body> - C<set_of.NameExprMap>
 
-These represent the q/tuples of the q/relation value being
+These represent the tuples of the relation value being
 selected.  When this value expression is evaluated, if any child expression
 nodes are such that any duplicate tuples might be input to this
 C<RelSelExprNodeSet> selector, the duplicates are silently eliminated and
@@ -1843,8 +1843,8 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SetSelExprNodeSet
 
-A C<SetSelExprNodeSet> is a C<Relation> that specifies a set of value
-expression nodes where each node represents a q/set value selection.
+A C<SetSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node represents a set value selection.
 
 A C<SetSelExprNodeSet> has these 3 attributes:
 
@@ -1861,7 +1861,7 @@ the expression node (sub-)tree it is the root of.
 
 =item C<elems> - C<set_of.NameChain>
 
-These represent the elements of the q/set value being selected.
+These represent the elements of the set value being selected.
 When this value expression is evaluated, if any child expression nodes are
 such that any duplicate tuples might be input to this C<SetSelExprNodeSet>
 selector, the duplicates are silently eliminated and do not constitute a
@@ -1874,8 +1874,8 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.ArySelExprNodeSet
 
-An C<ArySelExprNodeSet> is a C<Relation> that specifies a set of value
-expression nodes where each node represents a q/array value selection.
+An C<ArySelExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node represents a array value selection.
 
 An C<ArySelExprNodeSet> has these 3 attributes:
 
@@ -1892,7 +1892,7 @@ the expression node (sub-)tree it is the root of.
 
 =item C<elems> - C<array_of.NameChain>
 
-These represent the elements of the q/array value being selected.
+These represent the elements of the array value being selected.
 
 =back
 
@@ -1901,8 +1901,8 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.BagSelExprNodeSet
 
-A C<BagSelExprNodeSet> is a C<Relation> that specifies a set of value
-expression nodes where each node represents a q/bag value selection.
+A C<BagSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node represents a bag value selection.
 
 A C<BagSelExprNodeSet> has these 3 attributes:
 
@@ -1919,7 +1919,7 @@ the expression node (sub-)tree it is the root of.
 
 =item C<elems> - C<bag_of.NameChain>
 
-These represent the elements of the q/bag value being selected.
+These represent the elements of the bag value being selected.
 When this value expression is evaluated, if any child expression nodes are
 such that any tuple pairs with duplicate C<value> attribute values might be
 input to this C<BagSelExprNodeSet> selector, the tuple pairs are silently
@@ -1931,7 +1931,7 @@ failure condition.
 Note that, because of how C<BagSelExprNodeSet> is defined, the C<count>
 attribute value of each C<elems> tuple is a compile time constant, since an
 integer is stored in the system catalog rather than the name of an
-expression node like with C<value>; if you actually want the q/bag value
+expression node like with C<value>; if you actually want the bag value
 being selected at runtime to have runtime-determined C<count> values, then
 you must use a C<RelSelExprNodeSet> rather than a C<BagSelExprNodeSet>.
 
@@ -1942,7 +1942,7 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
 
-A C<FuncInvoExprNodeSet> is a C<Relation> that specifies a set of value
+A C<FuncInvoExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents the result of invoking a named
 [|inner ]function with specific arguments.
 
@@ -1977,7 +1977,7 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.IfElseExprNodeSet
 
-An C<IfElseExprNodeSet> is a C<Relation> that specifies a set of value
+An C<IfElseExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents an N-way if-else control flow
 expression.
 
@@ -2035,7 +2035,7 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
 
-A C<GivenWhenDefExprNodeSet> is a C<Relation> that specifies a set of
+A C<GivenWhenDefExprNodeSet> is a C<DHRelation> that specifies a set of
 value expression nodes where each node represents an N-way
 given-when-default switch control flow expression that dispatches based
 on matching a single value with several options.
@@ -2087,7 +2087,7 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet
 
-A C<Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet> is a C<Relation> that
+A C<Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet> is a C<DHRelation> that
 specifies a set of expression nodes where each node represents a value of
 the special C<sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]Ref> type.
 
@@ -2119,7 +2119,7 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.InnerUpdBody
 
-An C<InnerUpdBody> is a C<Tuple>.  It specifies the entire body or
+An C<InnerUpdBody> is a C<DHTuple>.  It specifies the entire body or
 implementation of an inner updater (or the main body of a updater), besides
 the details that an C<UpdHead> has, one of which each
 C<InnerUpdBody> typically must be paired with.
@@ -2157,7 +2157,7 @@ argument to the value C<Bool:false>.
 
 =head2 sys.std.Core.Type.Cat.MultiUpdStmt
 
-A C<MultiUpdStmt> is a C<Relation> that specifies a multi-update
+A C<MultiUpdStmt> is a C<DHRelation> that specifies a multi-update
 statement (of 1..N variables), which is the narrowest scope implicitly
 atomic component of procedural Muldis D code.  It is the most fundamental
 component of procedural Muldis D code.  The variables being updated are
@@ -2213,7 +2213,7 @@ containing [|inner ]updater's C<topic> argument to the value C<Bool:false>.
 
 =head2 sys.std.Core.Type.Cat.InnerProcBody
 
-An C<InnerProcBody> is a C<Tuple>.  It specifies the entire body or
+An C<InnerProcBody> is a C<DHTuple>.  It specifies the entire body or
 implementation of an inner procedure (or the main body of a procedure),
 besides the details that a C<ProcHead> has, one of which each
 C<InnerProcBody> typically must be paired with.
@@ -2313,7 +2313,7 @@ C<StmtNodeSet>'s attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.LeaveStmtNodeSet
 
-A C<LeaveStmtNodeSet> is a C<Relation> that specifies a set of
+A C<LeaveStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement leaf nodes where each node represents an instruction to
 abnormally exit the block defined by a parent statement node (a normal exit
 is to simply execute to the end of the block).  If the parent node in
@@ -2350,7 +2350,7 @@ empty.
 
 =head2 sys.std.Core.Type.Cat.CompoundStmtNodeSet
 
-A C<CompoundStmtNodeSet> is a C<Relation> that specifies a set of
+A C<CompoundStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node is a compound statement composed of a
 sequence of 0..N other statements.
 
@@ -2380,7 +2380,7 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
 
-A C<ProcInvoStmtNodeSet> is a C<Relation> that specifies a set of
+A C<ProcInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node is an invocation of some other procedural
 routine (eg, procedure, update operator, system service, 'inner' variant)
 with specific arguments.  The invoked routine can be either user-defined or
@@ -2424,7 +2424,7 @@ key over the C<name> attributes of C<upd_args> and C<ro_args>.
 
 =head2 sys.std.Core.Type.Cat.IfElseStmtNodeSet
 
-An C<IfElseStmtNodeSet> is a C<Relation> that specifies a set of
+An C<IfElseStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node represents an N-way if-else control flow
 statement.  An C<IfElseStmtNodeSet> is essentially the imperative
 version of the functional C<IfElseExprNodeSet>, except that for design
@@ -2472,7 +2472,7 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
 
-A C<GivenWhenDefStmtNodeSet> is a C<Relation> that specifies a set of
+A C<GivenWhenDefStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node represents an N-way given-when-default
 switch control flow statement that dispatches based on matching a single
 value with several options.  A C<GivenWhenDefStmtNodeSet> is essentially
@@ -2520,7 +2520,7 @@ attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.IterateStmtNodeSet
 
-An C<IterateStmtNodeSet> is a C<Relation> that specifies a set of
+An C<IterateStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement leaf nodes where each node represents an instruction to
 abnormally end the current iteration of a looping block defined by a parent
 statement node, and then start at the beginning of the next iteration of
@@ -2556,7 +2556,7 @@ default value is empty.
 
 =head2 sys.std.Core.Type.Cat.LoopStmtNodeSet
 
-A C<LoopStmtNodeSet> is a C<Relation> that specifies a set of statement
+A C<LoopStmtNodeSet> is a C<DHRelation> that specifies a set of statement
 nodes where each node represents a generic looping statement block which
 iterates until a child "leave" statement executes.
 
@@ -2589,7 +2589,7 @@ These are all enumeration data types.
 
 =head2 sys.std.Core.Type.Cat.Type
 
-A C<Type> is a C<Tuple>.  Its purpose is as per
+A C<Type> is a C<DHTuple>.  Its purpose is as per
 C<Inner[Scalar|Nonscalar|Union|Restr]Type>, one of which it is a
 wrapper for along with other inner types that are composed into it.
 
@@ -2645,7 +2645,7 @@ C<InnerTypeSet>'s attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.Inner[Sca|Nonsca|Uni|Restr]TypeSet
 
-An C<Inner[Sca|Nonsca|Uni|Restr]TypeSet> is a C<Relation> that specifies
+An C<Inner[Sca|Nonsca|Uni|Restr]TypeSet> is a C<DHRelation> that specifies
 a set of inner scalar|nonscalar|union|restriction types that a
 function|updater|procedure or scalar|nonscalar|union|restriction type might
 contain.
@@ -2680,17 +2680,18 @@ These are all enumeration data types.
 
 =head2 sys.std.Core.Type.Cat.InnerScalarType
 
-An C<InnerScalarType> is a C<Tuple>.  It defines either a new
-q/scalar root type with at least 1 possrep, or it defines a subtype
-of some other q/scalar type which also adds at least one possrep to
+An C<InnerScalarType> is a C<DHTuple>.  It defines either a new
+scalar root type with at least 1 possrep, or it defines a subtype
+of some other scalar type which also adds at least one possrep to
 the other type.  Either way, every possrep defines a candidate
 representation that can handle every value of the [|sub]type it is defined
 with, and the Muldis D implementation may choose for itself which of these,
 or some other alternative, is the actual/physical representation.  Whether
-a declared type is scalar or quasi-scalar depends only on the declared
-types of the attributes its possreps compose, whether they any are quasi-
-or none are.  You can not declare a q/scalar root type at all except
-by using a C<InnerScalarType>, and you can not define a quasi-scalar type
+a declared type is scalar or dh-scalar depends only on the declared
+types of the attributes its possreps compose, whether they any are
+deeply homogeneous
+or none are.  You can not declare a scalar root type at all except
+by using a C<InnerScalarType>, and you can not define a scalar type
 with an incompletely defined attribute list at all.
 
 An C<InnerScalarType> has these 7 attributes:
@@ -2699,24 +2700,24 @@ An C<InnerScalarType> has these 7 attributes:
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the q/scalar
+This is an optional programmer comment about the scalar
 [|sub]type as a whole.
 
 =item C<base_type> - C<maybe_of.NameChain>
 
-Iff the type being defined is a q/scalar root type, then
+Iff the type being defined is a scalar root type, then
 C<base_type> is not applicable and is C<nothing>.  Iff the type being
-defined is a subtype of some other q/scalar type, then C<base_type>
+defined is a subtype of some other scalar type, then C<base_type>
 is a C<Single> whose sole element is the name of that other type.  Note
-that any type named by C<base_type> must itself be a q/scalar root
+that any type named by C<base_type> must itself be a scalar root
 type or a subtype of one.
 
 =item C<subtype_constraint> - C<maybe_of.InnerFuncBody>
 
-Iff the type being defined is a q/scalar root type, or it is a
+Iff the type being defined is a scalar root type, or it is a
 non-proper subtype of some other type, then C<subtype_constraint> is not
 applicable and is C<nothing>.  Iff the type being defined is a proper
-subtype of some other q/scalar type, then C<subtype_constraint> is a
+subtype of some other scalar type, then C<subtype_constraint> is a
 C<Single> whose sole element defines the entire (main) body of a
 C<type_constraint> function that determines what base type values are part
 of the subtype.  The implicit function heading that this goes with has a
@@ -2738,14 +2739,14 @@ accepts, so it is possible to apply the new possreps' constraints.
 These are the 1..N possrep definitions that comprise this type such that
 each one fully defines a set of attributes plus restrictions on their
 collective values whereby it defines a representation of all values of this
-type.  Note that if multiple q/scalar types are related to each
+type.  Note that if multiple scalar types are related to each
 other such that more than one declares possreps for at least one common
 value, then the C<name> attribute of the C<possreps> attributes of all of
 those types' definitions have a distributed primary key over them.  Note
 that, to keep things simple and deterministic under the possibility of
 diamond subtype/supertype relationships (such that the generic
-system-defined q/scalar possrep attribute accessors can work), Muldis D
-requires all of the possreps of all q/scalar types having a common q/scalar
+system-defined scalar possrep attribute accessors can work), Muldis D
+requires all of the possreps of all scalar types having a common scalar
 root type to have mutually distinct names, regardless of whether any
 subtypes have values in common; this can be enforced at
 type-definition-in-catalog time since all types that can interact are in
@@ -2766,37 +2767,37 @@ functions are defined with the subtype.
 =item C<default> - C<InnerFuncBody>
 
 This defines the entire (main) body of a C<type_default> function that
-results in the default q/scalar value of the [|sub]type; it has
-zero parameters and its result type is the same as the q/scalar type
+results in the default scalar value of the [|sub]type; it has
+zero parameters and its result type is the same as the scalar type
 whose declaration it is part of.
 
 =item C<order> - C<maybe_of.InnerFuncBody>
 
-A q/scalar root type definition may optionally have a type-default
+A scalar root type definition may optionally have a type-default
 total ordering function associated with it (a type being defined as a
 subtype may not); iff the type being defined qualifies and desires such an
 associated function, then C<order> is a C<Single> whose sole element
 defines the entire (main) body of an C<order_determination> function.  The
 implicit function heading that this goes with has 4 parameters; the first
 two parameters, named C<topic> and C<other>, each have declared types that
-are the same as the q/scalar root type whose declaration the
+are the same as the scalar root type whose declaration the
 function is part of, and this function is said root type's type-default
 ordering function; the third parameter, named C<assuming>, is
-C<QTuple>-typed; the fourth parameter, named C<is_reverse_order>, is
+C<Tuple>-typed; the fourth parameter, named C<is_reverse_order>, is
 C<Bool>-typed; the function's implicit result type is C<Order>.  Iff
 the type being defined is a subtype of some other type or does not desire
 the function, then C<order> is C<nothing>.
 
 =back
 
-The default value of C<InnerScalarType> defines a q/scalar root type with
+The default value of C<InnerScalarType> defines a scalar root type with
 a single possrep whose name is the empty string and that has no attributes;
 it is a singleton type, whose default value is its only value.
 
 =head2 sys.std.Core.Type.Cat.PossrepSet
 
-A C<PossrepSet> is a C<Relation> that specifies a set of possreps that
-a q/scalar [|sub]type might consist primarily of.
+A C<PossrepSet> is a C<DHRelation> that specifies a set of possreps that
+a scalar [|sub]type might consist primarily of.
 
 A C<PossrepSet> has these 5 attributes:
 
@@ -2820,7 +2821,7 @@ This defines the entire (main) body of a C<type_constraint> function that
 determines what combinations of possrep attribute values denote values of
 the [|sub]type, besides the restrictions imposed by the declared types of
 the attributes individually.  The implicit function heading that this goes
-with has a single C<topic> parameter whose declared type is a q/tuple whose
+with has a single C<topic> parameter whose declared type is a tuple whose
 attributes match those declared by C<attrs> and whose argument denotes the
 value to test; the function's implicit result type is C<Bool>.  If the
 function unconditionally results in C<Bool:true>, then all possible
@@ -2857,7 +2858,7 @@ C<constraint> unconditionally results in C<Bool:true>.
 
 =head2 sys.std.Core.Type.Cat.PossrepMapSet
 
-A C<PossrepMapSet> is a C<Relation> such that each tuple in it
+A C<PossrepMapSet> is a C<DHRelation> such that each tuple in it
 specifies a pair of mapping functions to bidirectionally derive a value of
 a type between 2 of its possreps.
 
@@ -2885,9 +2886,9 @@ constraint defines a C<PossrepMapSet>'s canonical form.
 This defines the entire (main) body of a C<possrep_map> function that
 derives the representation of the possrep named by C<p2> from that of the
 possrep named by C<p1>.  The implicit function heading that this goes with
-has a single C<topic> parameter whose declared type is a q/tuple whose
+has a single C<topic> parameter whose declared type is a tuple whose
 attributes match those of C<p1>; the function's implicit result type is a
-q/tuple whose attributes match those of C<p2>.  Note that every distinct
+tuple whose attributes match those of C<p2>.  Note that every distinct
 argument (domain) value of this function must have a distinct result
 (range) value.
 
@@ -2907,11 +2908,11 @@ attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.InnerNonscalarType
 
-An C<InnerNonscalarType> is a C<Tuple>.  It defines either a new
-q/nonscalar heading (set of attributes) with associated constraints
-for a q/tuple and q/relation type having that heading, or it defines a
-subtype of some other q/nonscalar type.  That is, it defines 2 new
-data types, a q/tuple type and a q/relation type with matching headings.
+An C<InnerNonscalarType> is a C<DHTuple>.  It defines either a new
+nonscalar heading (set of attributes) with associated constraints
+for a tuple and relation type having that heading, or it defines a
+subtype of some other nonscalar type.  That is, it defines 2 new
+data types, a tuple type and a relation type with matching headings.
 Note that you also declare a database type using C<InnerNonscalarType>, by
 declaring a tuple type whose attributes are all relation or database typed.
 Note that you can not use an C<InnerNonscalarType> to declare or subtype an
@@ -2924,39 +2925,39 @@ An C<InnerNonscalarType> has these 13 attributes:
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the q/nonscalar
+This is an optional programmer comment about the nonscalar
 [|sub]type as a whole.
 
 =item C<base_type> - C<maybe_of.NameChain>
 
-Iff the type being defined is a q/nonscalar root type, then C<base_type> is
+Iff the type being defined is a nonscalar root type, then C<base_type> is
 not applicable and is C<nothing>.  Iff the type being defined is a
-subtype of some other q/nonscalar type, then C<base_type> is a C<Single>
+subtype of some other nonscalar type, then C<base_type> is a C<Single>
 whose sole element is the name of that other type.
 
 =item C<is_tuple_first> - C<Bool>
 
 Iff this is C<Bool:true> then the type being defined is primarily
-considered a q/tuple type; that is, when either the type name is referenced
+considered a tuple type; that is, when either the type name is referenced
 normally (not using the C<type> namespace), or the type definition is
-embedded (and nameless), then it is simply considered to be a q/tuple type;
+embedded (and nameless), then it is simply considered to be a tuple type;
 iff this is C<Bool:false> then the type being defined is primarily
-considered to be a q/relation type.  When a type is primarily considered a
-q/tuple or q/relation type, the only way to reference it as the other kind
-of type is by using the C<type.[|quasi_][tuple|relation]_from.\w+>
+considered to be a relation type.  When a type is primarily considered a
+tuple or relation type, the only way to reference it as the other kind
+of type is by using the C<type.[|dh_][tuple|relation]_from.\w+>
 referencing syntax.
 
 =item C<attrs> - C<NameTypeMap>
 
-Iff the type being defined is a q/nonscalar root type, then C<attrs>
+Iff the type being defined is a nonscalar root type, then C<attrs>
 defines the 0..N attributes of the type.  Iff the type being defined is a
 subtype of some other type, then the parent type's attribute list is used
 by default, but C<attrs> of the current type may be used to apply
 additional constraints by overriding the declared types of a subset of the
 parent's attributes with types that are subtypes of the originals; an
 override is done using matching C<name> attribute values of C<attrs>.  It
-is indeed valid for a q/nonscalar type to have zero attributes
-(which is then just a nonscalar type by definition); in this case, a tuple
+is indeed valid for a nonscalar type to have zero attributes
+(which is then just a dh-nonscalar type by definition); in this case, a tuple
 type consists of exactly one value, and a relation type consists of exactly
 two values.
 
@@ -2965,112 +2966,112 @@ two values.
 This defines the proper subset of this type's attributes that are virtual,
 and how they are defined in terms of the rest of this type's attributes.
 Note that the special functional dependencies between attributes defined
-herein mean that some kinds of q/tuple constraints would be redundant.
+herein mean that some kinds of tuple constraints would be redundant.
 
 =item C<tuple_constraints> - C<ConstraintSet>
 
 This defines the entire (main) bodies of 0..N C<type_constraint> functions
-that (when I<and>-ed together) determine what combinations of q/tuple
+that (when I<and>-ed together) determine what combinations of tuple
 attribute values denote values of the [|sub]type, besides the restrictions
 imposed by the declared types of the attributes individually; they are
-generalized type constraints that together validate a q/tuple as a whole.
+generalized type constraints that together validate a tuple as a whole.
 The implicit function heading that each of these goes with has a single
-C<topic> parameter whose declared type is a q/tuple whose attributes match
+C<topic> parameter whose declared type is a tuple whose attributes match
 those declared by C<attrs> and whose argument denotes the value to test;
 the function's implicit result type is C<Bool>.  If the functions
 unconditionally result in C<Bool:true>, then all possible combinations of
 attribute-allowable values are collectively allowed.  Each function is
-invoked either once to test a q/tuple value, or multiple times to
-individually test every q/tuple in a q/relation value.
+invoked either once to test a tuple value, or multiple times to
+individually test every tuple in a relation value.
 
 =item C<relation_constraints> - C<ConstraintSet>
 
 This is like C<tuple_constraint> but that each function's parameter is
-q/relation-typed rather than q/tuple-typed; each is a generalized type
-constraint that validates a q/relation as a whole.
+relation-typed rather than tuple-typed; each is a generalized type
+constraint that validates a relation as a whole.
 
 =item C<keys> - C<KeySet>
 
-These are the 0..N explicit (unique) keys that are applicable to q/relation
+These are the 0..N explicit (unique) keys that are applicable to relation
 values of the type being defined; they apply either as candidate keys or as
 unique key constraints, depending on context.  If there are no explicit
 keys, then there is an implicit (unique) key over all attributes of the
-q/relation type being defined, meaning that every possible q/tuple that may
-individually be an element of a q/relation value of the type being defined,
+relation type being defined, meaning that every possible tuple that may
+individually be an element of a relation value of the type being defined,
 may be in it at once.  If any explicit keys are defined, then every one
 must be over a distinct proper subset of the type's attributes, and
 moreover no key's attributes may be a proper subset of any other key's
 attributes; if 2 such candidates appear, just use the one that has the
 subset.  It is valid for a key to consist of zero attributes; in this case,
 that key is the only key of the type, and values of the type may each
-consist of no more than one q/tuple.  At most one key in C<keys> may be
+consist of no more than one tuple.  At most one key in C<keys> may be
 privileged as the I<primary key>.  Note that C<keys> is logically an
 abstraction syntax (the canonical simplest form) for a particular kind of
 C<relation_constraint> of the type being defined, one that compares the
-cardinality of a projection of a q/relation on its key attributes with the
-cardinality of the original q/relation; the attribute values comprise a key
+cardinality of a projection of a relation on its key attributes with the
+cardinality of the original relation; the attribute values comprise a key
 if the cardinalities are equal.
 
 =item C<distrib_keys> - C<DistribKeySet>
 
 These are the 0..N explicit simple distributed (unique) keys that are
-applicable to q/tuple/database values of the type being defined, that range
-over specified q/relation-typed attributes of it.  At most one key in
+applicable to tuple/database values of the type being defined, that range
+over specified relation-typed attributes of it.  At most one key in
 C<distrib_keys> may be privileged as the I<primary key>.  Note that
 C<distrib_keys> is logically an abstraction syntax (the canonical simplest
 form) for a particular kind of C<tuple_constraint> of the type being
 defined, one that compares the cardinality of the union of the projection
-of distributed key attributes of all key-participating q/relation-valued
-attributes, with the sum of cardinalities of the source q/relation-valued
+of distributed key attributes of all key-participating relation-valued
+attributes, with the sum of cardinalities of the source relation-valued
 attributes; the attribute values comprise a distributed key if the
 cardinalities are equal.
 
 =item C<foreign_keys> - C<ForeignKeySet>
 
 These are the 0..N explicit simple foreign (non-distributed) keys that are
-applicable to q/tuple/database values of the type being defined, that range
-over and relate q/tuples of specified q/relation-typed attributes of it;
-they are a kind of referential constraint.  Each q/tuple of a child
-attribute must have a corresponding q/tuple in a specific single parent
+applicable to tuple/database values of the type being defined, that range
+over and relate tuples of specified relation-typed attributes of it;
+they are a kind of referential constraint.  Each tuple of a child
+attribute must have a corresponding tuple in a specific single parent
 attribute, where they correspond on the attributes of the parent attribute
 that comprise a (unique) key of the latter.  Note that C<foreign_keys> is
 logically an abstraction syntax (the canonical simplest form) for a
 particular kind of C<tuple_constraint> of the type being defined, one that
 tests if the relational difference, where a projection of the parent
-q/relation is subtracted from a corresponding projection of the child
-q/relation (with attribute renaming if necessary), is an empty relation; if
+relation is subtracted from a corresponding projection of the child
+relation (with attribute renaming if necessary), is an empty relation; if
 the difference is an empty relation, then the foreign key is satisfied;
-otherwise, any difference q/tuples are from child q/tuples that violate the
+otherwise, any difference tuples are from child tuples that violate the
 foreign key.
 
 =item C<foreign_distrib_keys> - C<ForeignDistribKeySet>
 
 These are the 0..N explicit simple foreign distributed keys that are
-applicable to q/tuple/database values of the type being defined, that range
-over and relate q/tuples of specified q/relation-typed attributes of it;
-they are a kind of referential constraint.  Each q/tuple of a child
-attribute must have a corresponding q/tuple in one member of a specific set
+applicable to tuple/database values of the type being defined, that range
+over and relate tuples of specified relation-typed attributes of it;
+they are a kind of referential constraint.  Each tuple of a child
+attribute must have a corresponding tuple in one member of a specific set
 of parent-alternative attributes (that have a distributed key ranging over
 them), where they correspond on the attributes of the parent-alternative
 attribute that comprise a distributed key on the latter.  Note that
 C<foreign_distrib_keys> is logically an abstraction syntax (the canonical
 simplest form) for a particular kind of C<tuple_constraint> of the type
 being defined; it is as per C<foreign_keys> except that the parent
-q/relation is the result of unioning appropriately renamed projections of
-the member q/relations of the distributed key.
+relation is the result of unioning appropriately renamed projections of
+the member relations of the distributed key.
 
 =item C<default_tuple> - C<InnerFuncBody>
 
 This defines the entire (main) body of a C<type_default> function that
-results in the default q/tuple value of the [|sub]type; it has zero
-parameters and its result type is the same as the q/tuple type whose
+results in the default tuple value of the [|sub]type; it has zero
+parameters and its result type is the same as the tuple type whose
 declaration it is part of.
 
 =item C<default_relation> - C<InnerFuncBody>
 
 This defines the entire (main) body of a C<type_default> function that
-results in the default q/relation value of the [|sub]type; it has
-zero parameters and its result type is the same as the q/relation
+results in the default relation value of the [|sub]type; it has
+zero parameters and its result type is the same as the relation
 type whose declaration it is part of.
 
 =back
@@ -3083,12 +3084,12 @@ zero attributes and whose default value is the one with zero tuples.
 
 =head2 sys.std.Core.Type.Cat.VirtualAttrMapSet
 
-A C<VirtualAttrMapSet> is a C<Relation> that defines special functional
-dependencies between attributes of a q/nonscalar data type, such
-that, on a per-q/tuple basis, some attributes can be generated purely from
+A C<VirtualAttrMapSet> is a C<DHRelation> that defines special functional
+dependencies between attributes of a nonscalar data type, such
+that, on a per-tuple basis, some attributes can be generated purely from
 other attributes, and hence the former attributes may be virtual.  Each
 tuple of a C<VirtualAttrMapSet> specifies 2 disjoint subsets of the
-q/nonscalar's attributes, which are I<determinant> and I<dependent>
+nonscalar's attributes, which are I<determinant> and I<dependent>
 attributes respectively, where the values of the second set are generated
 from the first using a C<virtual_attr_map> function.  Whether I<dependent>
 attributes are computed when needed or pre-computed and stored (a trade-off
@@ -3113,7 +3114,7 @@ implementations change later such that real relvars become virtual or
 vice-versa, users could continue as if nothing changed.
 
 A less common use case of virtual attributes is in (typically non-database)
-q/nonscalar types when users want to treat non-identical values as being
+nonscalar types when users want to treat non-identical values as being
 distinct in some situations and non-distinct in others.  For example they
 want to do case-insensitive matching of character data, or alternately they
 want a case-insensitive (unique) key constraint on such, but either way
@@ -3153,7 +3154,7 @@ satisfy I<The Assignment Principle>, so the explicitness would be to pick
 exactly one of those, so that how determinants are updated is predictable
 in an implementation-portable manner.  For example, if a virtual relvar
 C<V> is defined as the simple relational union of 2 other relvars C<R1> and
-C<R2>, then a q/tuple insertion into C<V> could be rewritten at least 3
+C<R2>, then a tuple insertion into C<V> could be rewritten at least 3
 ways, which are an insertion into just C<R1>, or into just C<R2>, or into
 both C<R1> and C<R2>; so for predictability's sake, the map should specify
 which option to do (which can vary on a case-by-case basis).
@@ -3163,7 +3164,7 @@ not give a way to manually specify a reverse function, so for now all the
 virtuals are either read-only or updatable due to an automatically
 generated reverse function, which might vary by implementation.  Fixing
 this matter is TODO.  Note that the reverse functions might have to be
-defined as per-q/tuple operations, separately for
+defined as per-tuple operations, separately for
 insert/substitute/delete.>
 
 A C<VirtualAttrMapSet> has these 5 attributes:
@@ -3196,11 +3197,11 @@ can't be defined in terms of itself.
 =item C<virtual_attr_map> - C<InnerFuncBody>
 
 This defines the entire (main) body of a C<virtual_attr_map> function that
-derives a q/tuple of dependent attribute values from a q/tuple of
+derives a tuple of dependent attribute values from a tuple of
 determinant attribute values.  The implicit function heading that this goes
-with has a single C<topic> parameter whose declared type is a q/tuple whose
+with has a single C<topic> parameter whose declared type is a tuple whose
 attributes match those of C<determinant_attrs>; the function's implicit
-result type is a q/tuple whose attributes match those of
+result type is a tuple whose attributes match those of
 C<dependent_attrs>.  Note that the range of this function is typically
 smaller than its domain, though it might not be.
 
@@ -3208,7 +3209,7 @@ smaller than its domain, though it might not be.
 
 This is C<Bool:true> if all of the dependent attributes should be treated
 as updateable, because they have enough information to map any kinds of
-updates (all of q/tuple insert/substitute/delete) back to their determinant
+updates (all of tuple insert/substitute/delete) back to their determinant
 attributes, and the system should try to support updates against them.
 This is C<Bool:false> if all of the dependent attributes should not be
 considered updateable, either because it is known they don't have enough
@@ -3224,13 +3225,13 @@ empty.
 
 =head2 sys.std.Core.Type.Cat.ConstraintSet
 
-A C<ConstraintSet> is a C<Relation> that specifies a set of named generic
+A C<ConstraintSet> is a C<DHRelation> that specifies a set of named generic
 constraints for data types or variables; each tuple is one named
 constraint.  Each constraint in the set can be either a C<type_constraint>
 or C<state_constraint> or C<transition_constraint>, but when a set has
 multiple constraints, all of them must be the same kind, and they must all
 correspond to the same implicit function heading.  One or more (possibly
-empty) C<ConstraintSet> is composed into the definition each q/nonscalar
+empty) C<ConstraintSet> is composed into the definition each nonscalar
 type and union type and restriction type and dbvar.
 
 A C<ConstraintSet> has these 3 attributes:
@@ -3258,8 +3259,8 @@ results in C<Bool:true>.
 
 =head2 sys.std.Core.Type.Cat.KeySet
 
-A C<KeySet> is a C<Relation> that specifies a set of candidate keys or
-unique key constraints for a q/relation type; each tuple specifies one
+A C<KeySet> is a C<DHRelation> that specifies a set of candidate keys or
+unique key constraints for a relation type; each tuple specifies one
 candidate key.
 
 A C<KeySet> has these 4 attributes:
@@ -3276,37 +3277,37 @@ This is an optional programmer comment about the key as a whole.
 
 =item C<attrs> - C<set_of.Name>
 
-This defines the 0..N host q/relation attributes comprising the key.  If
+This defines the 0..N host relation attributes comprising the key.  If
 this set is empty, then we have a nullary key which restricts the host
-q/relation to have a maximum of 1 q/tuple.
+relation to have a maximum of 1 tuple.
 
 =item C<is_primary> - C<Bool>
 
 This is C<Bool:true> if this key has been designated the I<primary key> of
-the q/relation (a q/relation may have at most one, or none, of those); it
+the relation (a relation may have at most one, or none, of those); it
 is C<Bool:false> otherwise.  A primary key is privileged over candidate
 keys in general, in that all of the attributes comprising the primary key
-are likely to be treated as immutable in practice for the q/relation's
-q/tuples, and hence are the best candidates for identifying q/tuples within
-a q/relation over an extended term (if multiple keys conceptually have all
+are likely to be treated as immutable in practice for the relation's
+tuples, and hence are the best candidates for identifying tuples within
+a relation over an extended term (if multiple keys conceptually have all
 those qualities, then you could choose either as the primary, or perhaps
 such a situation may indicate a flaw in your database design).  The common
-concept of a q/tuple having an identity that is distinct from the sum total
-of all its attribute values, such that one can say that a q/tuple is being
-"updated" (rather than its host q/relation being the only thing that is
-updated to hold a different set of q/tuples) is dependent in Muldis D on
-the host q/relation having a primary key; if a q/tuple in a q/relation is
-replaced by a distinct q/tuple whose values in the primary key attributes
+concept of a tuple having an identity that is distinct from the sum total
+of all its attribute values, such that one can say that a tuple is being
+"updated" (rather than its host relation being the only thing that is
+updated to hold a different set of tuples) is dependent in Muldis D on
+the host relation having a primary key; if a tuple in a relation is
+replaced by a distinct tuple whose values in the primary key attributes
 are identical, it is only in this situation that we can consider that we
-still have the same q/tuple, which was just updated, and that we have not
-lost the old q/tuple and gained a new one.  The q/relation attributes
+still have the same tuple, which was just updated, and that we have not
+lost the old tuple and gained a new one.  The relation attributes
 comprising a primary key are the best mapping values for automatic new
-foreign keys and join conditions if the host q/relation type has to be
+foreign keys and join conditions if the host relation type has to be
 auto-split into several associated ones, for example because the physical
-representation of this q/relation doesn't support RVAs; in fact, some
-implementations may require that any q/relation having an RVA must also
+representation of this relation doesn't support RVAs; in fact, some
+implementations may require that any relation having an RVA must also
 have an explicit primary key, so it is easier for them to choose the key to
-automatically relate a split q/relation on.
+automatically relate a split relation on.
 
 =back
 
@@ -3315,9 +3316,9 @@ A C<KeySet> has a unary primary key on the C<name> attribute, and a unary
 
 =head2 sys.std.Core.Type.Cat.DistribKeySet
 
-A C<DistribKeySet> is a C<Relation> that specifies a set of candidate
-distributed (unique) keys over q/relation-valued attributes of a
-q/tuple/database; each tuple specifies one distributed (unique) key.
+A C<DistribKeySet> is a C<DHRelation> that specifies a set of candidate
+distributed (unique) keys over relation-valued attributes of a
+tuple/database; each tuple specifies one distributed (unique) key.
 
 A C<DistribKeySet> has these 5 attributes:
 
@@ -3336,14 +3337,14 @@ as a whole.
 
 This declares the 0..N attributes comprising the distributed (unique) key.
 If this set is empty, then we have a nullary key which restricts all of the
-q/relations participating in the distributed key to have a maximum of 1
-q/tuple between them.  Note that the distributed key attribute names don't
-have to match the names of any participating q/relation attributes.
+relations participating in the distributed key to have a maximum of 1
+tuple between them.  Note that the distributed key attribute names don't
+have to match the names of any participating relation attributes.
 
 =item C<relations> - C<DKMemRelAttrMap>
 
-This names the 0..N q/relation-valued attributes of the host
-q/tuple/database type that are participating in the distributed key, and
+This names the 0..N relation-valued attributes of the host
+tuple/database type that are participating in the distributed key, and
 says which of each of their attributes maps to the attributes of the
 distributed key itself.  If this set is empty, then the distributed key has
 no effect.  The unary projection of every tuple of the C<key_attr>
@@ -3352,7 +3353,7 @@ attribute of C<relations> must be identical to C<attrs>.
 =item C<is_primary> - C<Bool>
 
 This has the same meaning as C<is_primary> of C<KeySet> but for being
-distributed as if the q/relations distributed over were one q/relation.
+distributed as if the relations distributed over were one relation.
 
 =back
 
@@ -3362,8 +3363,8 @@ empty.
 
 =head2 sys.std.Core.Type.Cat.DKMemRelAttrMap
 
-A C<DKMemRelAttrMap> is a C<Relation> that names the 0..N q/relation-valued
-attributes of a host q/tuple/database type that are participating in a
+A C<DKMemRelAttrMap> is a C<DHRelation> that names the 0..N relation-valued
+attributes of a host tuple/database type that are participating in a
 distributed key, and says which of each of their attributes maps to the
 attributes of the distributed key itself.
 
@@ -3373,10 +3374,10 @@ A C<DKMemRelAttrMap> has these 3 attributes:
 
 =item C<rel_name> - C<DeclNameChain>
 
-This is the name of the q/relation-valued attribute that is participating
+This is the name of the relation-valued attribute that is participating
 in the distributed key.  But the attribute named by C<rel_name> is only a
 direct attribute of the host type if C<rel_name> has 1 chain element; if it
-has more, then the host type attribute is a q/tuple/database and any
+has more, then the host type attribute is a tuple/database and any
 further elements serve to make C<rel_name> actually address a component of
 said.
 
@@ -3386,7 +3387,7 @@ This is an optional programmer comment about the participation.
 
 =item C<attr_map> - C<DKRelAttrKeyAttrMap>
 
-This maps 0..N attributes of the q/relation with the same number of
+This maps 0..N attributes of the relation with the same number of
 attributes of the distributed key.  Every tuple of C<attr_map> must have an
 identical value for the unary projection on its C<key_attr> attribute; in
 other words, they must all map with the same distributed key attributes.
@@ -3398,8 +3399,8 @@ Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
 
-A C<DKRelAttrKeyAttrMap> is a C<Relation>.  It maps 0..N attributes of a
-q/relation-valued attribute of a host q/tuple/database type participating
+A C<DKRelAttrKeyAttrMap> is a C<DHRelation>.  It maps 0..N attributes of a
+relation-valued attribute of a host tuple/database type participating
 in a distributed key, to the same number of attributes of the distributed
 key itself.  A C<DKRelAttrKeyAttrMap> has 2 attributes, C<rel_attr> and
 C<key_attr>, each of those being a C<Name>, and each of those being a unary
@@ -3407,11 +3408,11 @@ key.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.ForeignKeySet
 
-A C<ForeignKeySet> is a C<Relation> that specifies a set of foreign
-(non-distributed) keys over q/relation-valued attributes of a
-q/tuple/database; each tuple specifies one foreign key, which is a kind of
-referential constraint, that relates q/tuples of such attributes.  Each
-q/tuple of a child attribute must have a corresponding q/tuple in a
+A C<ForeignKeySet> is a C<DHRelation> that specifies a set of foreign
+(non-distributed) keys over relation-valued attributes of a
+tuple/database; each tuple specifies one foreign key, which is a kind of
+referential constraint, that relates tuples of such attributes.  Each
+tuple of a child attribute must have a corresponding tuple in a
 specific single parent attribute, where they correspond on the attributes
 of the parent attribute that comprise a (unique) key of the latter.  Note
 that it is valid to define a foreign key involving zero attributes, but its
@@ -3431,11 +3432,11 @@ This is an optional programmer comment about the foreign key as a whole.
 
 =item C<parent> - C<DeclNameChain>
 
-This is the name of the q/relation-valued attribute that is the parent in
+This is the name of the relation-valued attribute that is the parent in
 the foreign (non-distributed) key relationship.  But the attribute named by
 C<parent> is only a direct attribute of the host type if C<parent> has 1
 chain element; if it has more, then the host type attribute is a
-q/tuple/database and any further elements serve to make C<parent> actually
+tuple/database and any further elements serve to make C<parent> actually
 address a component of said.
 
 =item C<parent_key> - C<Name>
@@ -3446,15 +3447,15 @@ being matched on in the foreign key.
 
 =item C<child> - C<DeclNameChain>
 
-This is the name of the q/relation-valued attribute that is the child in
+This is the name of the relation-valued attribute that is the child in
 the foreign (non-distributed) key relationship; its structure is as per
 C<parent>.  Note that C<child> and C<parent> are allowed to be one and the
 same.
 
 =item C<attr_map> - C<FKChildAttrParentAttrMap>
 
-This maps 0..N attributes of the child q/relation with the same number of
-attributes of the parent q/relation; the mapped attribute names may or may
+This maps 0..N attributes of the child relation with the same number of
+attributes of the parent relation; the mapped attribute names may or may
 not be the same.
 
 =back
@@ -3464,11 +3465,11 @@ default value is empty.
 
 =head2 sys.std.Core.Type.Cat.ForeignDistribKeySet
 
-A C<ForeignDistribKeySet> is a C<Relation> that specifies a set of foreign
-distributed keys over q/relation-valued attributes of a q/tuple/database;
+A C<ForeignDistribKeySet> is a C<DHRelation> that specifies a set of foreign
+distributed keys over relation-valued attributes of a tuple/database;
 each tuple specifies one foreign key, which is a kind of referential
-constraint, that relates q/tuples of such attributes.  Each q/tuple of a
-child attribute must have a corresponding q/tuple in one member of a
+constraint, that relates tuples of such attributes.  Each tuple of a
+child attribute must have a corresponding tuple in one member of a
 specific set of parent-alternative attributes (that have a distributed key
 ranging over them), where they correspond on the attributes of the
 parent-alternative attribute that comprise a distributed key on the latter.
@@ -3494,22 +3495,22 @@ is the parent in the foreign distributed key relationship; it defines by
 proxy the attributes that are being matched on in the foreign key.  But the
 distributed key named by C<parent_distrib_key> may not be directly declared
 by the host type of this foreign key; it might be declared by the type of
-an attribute of the host type, if said attribute is a q/tuple/database; so
+an attribute of the host type, if said attribute is a tuple/database; so
 the only or last C<parent_distrib_key> chain element is a key name, and any
 preceeding names are attribute names.
 
 =item C<child> - C<DeclNameChain>
 
-This is the name of the q/relation-valued attribute that is the child in
+This is the name of the relation-valued attribute that is the child in
 the foreign distributed key relationship.  But the attribute named by
 C<child> is only a direct attribute of the host type if C<child> has 1
 chain element; if it has more, then the host type attribute is a
-q/tuple/database and any further elements serve to make C<child> actually
+tuple/database and any further elements serve to make C<child> actually
 address a component of said.
 
 =item C<attr_map> - C<FKChildAttrParentAttrMap>
 
-This maps 0..N attributes of the child q/relation with the same number of
+This maps 0..N attributes of the child relation with the same number of
 attributes of the parent distributed key; the mapped attribute names may or
 may not be the same.
 
@@ -3520,8 +3521,8 @@ Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.FKChildAttrParentAttrMap
 
-A C<FKChildAttrParentAttrMap> is a C<Relation>.  It maps 0..N attributes of
-a child q/relation-valued attribute of a host q/tuple/database type
+A C<FKChildAttrParentAttrMap> is a C<DHRelation>.  It maps 0..N attributes of
+a child relation-valued attribute of a host tuple/database type
 participating in a foreign non-distributed or distributed key, to the same
 number of attributes of a parent such attribute or a distributed key of the
 host.  A C<FKChildAttrParentAttrMap> has 2 attributes, C<child_attr> and
@@ -3530,7 +3531,7 @@ unary key.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.InnerUnionType
 
-An C<InnerUnionType> is a C<Tuple>.  It defines a new data type whose
+An C<InnerUnionType> is a C<DHTuple>.  It defines a new data type whose
 values are all drawn from one or more specified other types (which can be
 any not-C<Empty> types at all), and that generally speaking it is an
 arbitrary subset of C<Universal> (and it has its own default value).  The
@@ -3545,7 +3546,7 @@ supplements to the interfaces available for working with its values,
 instead simply using those of its declared parent types.  A data type
 defined in this way is typically not considered to exist when the system
 wants to determine the MST (most specific type) of one of its values.  Note
-that if you want to define a possrep-adding q/scalar subtype whose base is
+that if you want to define a possrep-adding scalar subtype whose base is
 a union/intersection/etc of other types (eg, to define a "Square" when you
 have "Rectangle", "Rhombus"), you have to first define a C<InnerUnionType>,
 and then use that as the base type of a C<InnerScalarType>.
@@ -3619,7 +3620,7 @@ C<Empty> type, due to C<default> being mandatory.
 
 =head2 sys.std.Core.Type.Cat.InnerRestrType
 
-An C<InnerRestrType> is a C<Tuple>.  It provides a relatively terse method
+An C<InnerRestrType> is a C<DHTuple>.  It provides a relatively terse method
 to define a simple restriction-defined subtype of a single other type
 (which can be any not-C<Empty> type at all), which is a common kind of type
 to have.  The new type is either a proper or non-proper subset of the other
@@ -3632,7 +3633,7 @@ does not define any changes or supplements to the interfaces available for
 working with its values, instead simply using those of its declared parent
 type.  A data type defined in this way is typically not considered to exist
 when the system wants to determine the MST (most specific type) of one of
-its values.  You can only declare a quasi-nonscalar type with an
+its values.  You can only declare a nonscalar type with an
 incompletely defined attribute list using a C<InnerRestrType> (or a
 C<InnerUnionType>).
 
@@ -3684,11 +3685,11 @@ These are all enumeration data types.
 
 =head2 sys.std.Core.Type.Cat.NameTypeMap
 
-A C<NameTypeMap> is a C<Relation>.  It defines a basic component list,
+A C<NameTypeMap> is a C<DHRelation>.  It defines a basic component list,
 meaning a set of names, with a declared data type name for each.  It forms
 the foundation for most componentized type definitions, including all
-q/tuple and q/relation types (for which it is named I<heading>), and it is
-used also for the components list of a q/scalar possrep.  It is also used
+tuple and relation types (for which it is named I<heading>), and it is
+used also for the components list of a scalar possrep.  It is also used
 to define parameter lists for routines.  A C<NameTypeMap> has 2 attributes,
 C<name> (a C<Name>) and C<type> (a C<NameChain>); the C<name> is the
 declared name of the attribute or parameter, and comprises a unary key; the
@@ -3697,7 +3698,7 @@ default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.NameExprMap
 
-A C<NameExprMap> is a C<Relation>.  It defines a basic component-values
+A C<NameExprMap> is a C<DHRelation>.  It defines a basic component-values
 list, meaning a set of names, with a declared local expression node (or
 parameter or variable) name for each.  It is used to define collection
 literals; one C<NameExprMap> defines a whole C<Tuple> value.  It is also
@@ -3714,7 +3715,7 @@ attributes.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.NameDNCMap
 
-A C<NameDNCMap> is a C<Relation>.  It defines an association of a short
+A C<NameDNCMap> is a C<DHRelation>.  It defines an association of a short
 name with a declaration name chain, to be used for aliasing the latter with
 the former in a particular context.  A C<NameDNCMap> has 2 attributes,
 C<name> (a C<Name>) and C<dnc> (a C<DeclNameChain>); each of those is a
@@ -3722,14 +3723,14 @@ unary key.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.AttrRenameMap
 
-An C<AttrRenameMap> is a C<Relation>.  It is used as a specification for
+An C<AttrRenameMap> is a C<DHRelation>.  It is used as a specification for
 how to rename attributes of some collection.  An C<AttrRenameMap> has 2
 attributes, C<before> and C<after>, each of those being a C<Name>, and each
 of those being a unary key.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.IfThenMap
 
-An C<IfThenMap> is a C<Tuple>.  It defines an element of an if-else
+An C<IfThenMap> is a C<DHTuple>.  It defines an element of an if-else
 sequential expression or statement.  An C<IfThenMap> has 2 attributes,
 C<if> and C<then>, each of which is a C<NameChain>; C<if> has the name of a
 local expression node (or parameter or variable), and C<then> in the case
@@ -3746,7 +3747,7 @@ attributes.
 
 =head2 sys.std.Core.Type.Cat.WhenThenMap
 
-A C<WhenThenMap> is a C<Relation>.  It defines a set of dispatch options
+A C<WhenThenMap> is a C<DHRelation>.  It defines a set of dispatch options
 for a given-when-default expression or statement.  A C<WhenThenMap> has 2
 attributes, C<when> and C<then>, each of which is a C<NameChain>; C<when>
 has the name of a local expression node (or parameter or variable), and
@@ -3761,7 +3762,7 @@ Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.OrderByName
 
-An C<OrderByName> is a C<Tuple>.  It defines an element of an order-by
+An C<OrderByName> is a C<DHTuple>.  It defines an element of an order-by
 sequential expression, which is a specification for how to order tuples of
 a relation in terms of a list of their attributes to order on.  An
 C<OrderByName> has 2 attributes, C<name> (a C<Name>) and
@@ -3775,8 +3776,8 @@ Muldis D needs to support the concept of a closure or higher-order
 function, mainly for functions but also to a smaller extent for imperative
 routines.  For example, the generic relational restriction operator is
 designed to conceptually take a function as an argument and then invoke
-that function on each q/tuple of a q/relation it is filtering, and the
-function has the criteria for whether the q/tuple passes the filter.
+that function on each tuple of a relation it is filtering, and the
+function has the criteria for whether the tuple passes the filter.
 
 Conceptually, all that is needed is to pass the fully-qualified name of the
 routine as such an argument, which in the system catalog is represented as
@@ -3800,7 +3801,7 @@ C<NameChain>, then this could cause problems where anything could
 invoke C<mytest> directly without being given permission from C<mymain>.
 
 As an at-least-initial solution to this problem, here are a few black box
-data types (similar to quasi-scalar types but with no possreps) which will
+data types (similar to scalar types but with no possreps) which will
 provide fully-qualified identifiers for routines, useful as alternatives to
 C<NameChain> values, so any routine may be correctly invoked from any
 other routine, without losing privacy.  Values of these types work their

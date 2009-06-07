@@ -5,7 +5,7 @@
 =head1 NAME
 
 Muldis::D::Ext::Set -
-Muldis D extension for QSet and QMaybe specific operators
+Muldis D extension for Set and Maybe specific operators
 
 =head1 VERSION
 
@@ -27,9 +27,9 @@ any entities outside the core, called I<Muldis D extensions>, are
 non-mandatory and are defined in terms of the core or each other, but the
 reverse isn't true.
 
-This current C<QSet> document describes the system-defined I<Muldis D QSet
+This current C<Set> document describes the system-defined I<Muldis D Set
 Extension>, which consists of generic operators that are specific to the
-C<QSet> and C<QMaybe> parameterized q/relation types, and said operators
+C<Set> and C<Maybe> parameterized relation types, and said operators
 are short-hands for generic relational operators in the language core.
 
 This current document does not describe the polymorphic operators that all
@@ -38,25 +38,25 @@ operators are defined once for all types in L<Muldis::D::Core>.
 
 I<This documentation is pending.>
 
-=head1 SYSTEM-DEFINED QUASI-/SET-CONCERNING FUNCTIONS
+=head1 SYSTEM-DEFINED SET-CONCERNING FUNCTIONS
 
 Each C<assuming> parameter is optional and defaults to the zero-attribute
 tuple if no explicit argument is given to it.
 
 =head2 sys.std.Set.has_member
 
-C<< function sys.std.Set.has_member (Bool <-- QSet $set, Universal $value)
+C<< function sys.std.Set.has_member (Bool <-- Set $set, Universal $value)
 >>
 
 This function results in C<Bool:true> iff its C<value> argument matches the
-sole attribute of a q/tuple of its C<set> argument (that is, iff
+sole attribute of a tuple of its C<set> argument (that is, iff
 conceptually C<value> is a member of C<set>), and C<Bool:false> otherwise.
 This function will warn if its 2 arguments are incompatible as per
 C<sys.std.Core.Relation.is_subset>.
 
 =head2 sys.std.Set.has_not_member
 
-C<< function sys.std.Set.has_not_member (Bool <-- QSet $set,
+C<< function sys.std.Set.has_not_member (Bool <-- Set $set,
 Universal $value) >>
 
 This function is exactly the same as C<sys.std.Set.has_member> except that
@@ -64,18 +64,17 @@ it results in the opposite boolean value when given the same arguments.
 
 =head2 sys.std.Set.insertion
 
-C<< function sys.std.Set.insertion (QSet <-- QSet $set, Universal $value)
->>
+C<< function sys.std.Set.insertion (Set <-- Set $set, Universal $value) >>
 
-This function results in a C<QSet> that is the relational union of C<set>
-and a QSet whose sole q/tuple has the sole attribute value of C<value>;
+This function results in a C<Set> that is the relational union of C<set>
+and a Set whose sole tuple has the sole attribute value of C<value>;
 that is, conceptually the result is C<value> inserted into C<set>.  As a
 trivial case, if C<value> already exists in C<set>, then the result is just
 C<set>.
 
 =head2 sys.std.Set.disjoint_ins
 
-C<< function sys.std.Set.disjoint_ins (QSet <-- QSet $set,
+C<< function sys.std.Set.disjoint_ins (Set <-- Set $set,
 Universal $value) >>
 
 This function is exactly the same as C<sys.std.Set.insertion> except that
@@ -83,28 +82,27 @@ it will fail if C<value> already exists in C<set>.
 
 =head2 sys.std.Set.deletion
 
-C<< function sys.std.Set.deletion (QSet <-- QSet $set, Universal $value)
->>
+C<< function sys.std.Set.deletion (Set <-- Set $set, Universal $value) >>
 
-This function results in a C<QSet> that is the relational difference from
-C<set> of a QSet whose sole q/tuple has the sole attribute value of
+This function results in a C<Set> that is the relational difference from
+C<set> of a Set whose sole tuple has the sole attribute value of
 C<value>; that is, conceptually the result is C<value> deleted from C<set>.
 As a trivial case, if C<value> already doesn't exist in C<set>, then the
 result is just C<set>.
 
 =head2 sys.std.Set.reduction
 
-C<< function sys.std.Set.reduction (Universal <-- QSet $topic,
-FuncRef $func, QTuple $assuming?, Universal $identity) >>
+C<< function sys.std.Set.reduction (Universal <-- Set $topic,
+FuncRef $func, Tuple $assuming?, Universal $identity) >>
 
 This function is a generic reduction operator that recursively takes each
-pair of input values in C<topic> and applies an argument-specified q/scalar
-or q/nonscalar value-resulting function (which is both commutative and
+pair of input values in C<topic> and applies an argument-specified scalar
+or nonscalar value-resulting function (which is both commutative and
 associative) to the pair until just one input value is left, which is the
 result.  The function to apply is named in the C<func> argument, and that
 function must have 3 arguments named C<v1>, C<v2>, C<assuming>; the last
 parameter is curried with the same-named argument of C<reduction>, and the
-first 2 parameters are the 2 input q/scalar or q/nonscalar values for an
+first 2 parameters are the 2 input scalar or nonscalar values for an
 invocation.  If C<topic> has zero values, then C<reduction> results in the
 value given in C<identity>.  I<Note that C<identity> may be changed to take
 a function name rather than a value, for consistency with C<func>.>  This
@@ -113,69 +111,69 @@ subtype of the |declared type of the sole attribute of C<topic>.
 
 =head2 sys.std.Set.maybe_reduction
 
-C<< function sys.std.Set.maybe_reduction (QMaybe <-- QSet $topic,
-FuncRef $func, QTuple $assuming?) >>
+C<< function sys.std.Set.maybe_reduction (Maybe <-- Set $topic,
+FuncRef $func, Tuple $assuming?) >>
 
 This function is exactly the same as C<sys.std.Set.reduction> except that
-it does not take an C<identity> argument, and it results in a C<QMaybe> of
+it does not take an C<identity> argument, and it results in a C<Maybe> of
 what is otherwise the result type, and that result has zero elements if the
 argument has zero elements.
 
-=head2 sys.std.Set.QSet_from_wrap
+=head2 sys.std.Set.Set_from_wrap
 
-C<< function sys.std.Set.QSet_from_wrap (set_of.QTuple <--
-QRelation $topic) >>
+C<< function sys.std.Set.Set_from_wrap (set_of.Tuple <--
+Relation $topic) >>
 
-This function results in a C<QSet> whose sole attribute is q/tuple-typed
-and the attribute values are all the q/tuples of C<topic>; is a short-hand
+This function results in a C<Set> whose sole attribute is tuple-typed
+and the attribute values are all the tuples of C<topic>; is a short-hand
 for a relational wrap of all attributes of C<topic> such that the new
-q/tuple-valued attribute is named C<value>.
+tuple-valued attribute is named C<value>.
 
-=head2 sys.std.Set.QSet_from_attr
+=head2 sys.std.Set.Set_from_attr
 
-C<< function sys.std.Set.QSet_from_attr (QSet <-- QRelation $topic,
+C<< function sys.std.Set.Set_from_attr (Set <-- Relation $topic,
 Name $name) >>
 
-This function results in a C<QSet> consisting of all the values of the
+This function results in a C<Set> consisting of all the values of the
 attribute of C<topic> named by C<name>.  It is a short-hand for a unary
 projection of just the named attribute plus its renaming to C<value>.
 
-=head1 SYSTEM-DEFINED QUASI-/MAYBE-CONCERNING FUNCTIONS
+=head1 SYSTEM-DEFINED MAYBE-CONCERNING FUNCTIONS
 
 =head2 sys.std.Set.Maybe.nothing
 
 C<< function sys.std.Set.Maybe.nothing (Maybe <--) >>
 
-This selector function results in the only zero-tuple QMaybe value, which
+This selector function results in the only zero-tuple Maybe value, which
 is known by the special name C<Maybe:nothing>, aka C<nothing>, aka I<empty
 set> aka C<∅>.
 
 =head2 sys.std.Set.Maybe.single
 
-C<< function sys.std.Set.Maybe.single (QSingle <-- Universal $value) >>
+C<< function sys.std.Set.Maybe.single (Single <-- Universal $value) >>
 
-This selector function results in the QMaybe value with a single q/tuple
+This selector function results in the Maybe value with a single tuple
 whose C<value> attribute's value is the C<value> argument.  Note that this
 operation is also known as C<s>.
 
 =head2 sys.std.Set.Maybe.attr
 
-C<< function sys.std.Set.Maybe.attr (Universal <-- QSingle $topic) >>
+C<< function sys.std.Set.Maybe.attr (Universal <-- Single $topic) >>
 
-This function results in the q/scalar or q/nonscalar value of the sole
-attribute of the sole q/tuple of its argument, which always exists when the
-argument is a C<QSingle>.  Note that this operation is also known as C<v>.
+This function results in the scalar or nonscalar value of the sole
+attribute of the sole tuple of its argument, which always exists when the
+argument is a C<Single>.  Note that this operation is also known as C<v>.
 
 =head2 sys.std.Set.Maybe.attr_or_default
 
 C<< function sys.std.Set.Maybe.attr_or_default (Universal <--
-quasi_array_of.QMaybe $topic?, TypeRef $default) >>
+array_of.Maybe $topic?, TypeRef $default) >>
 
-This function results in the q/scalar or q/nonscalar value of the sole
-attribute of the sole q/tuple of the lowest-indexed of its N C<topic> input
+This function results in the scalar or nonscalar value of the sole
+attribute of the sole tuple of the lowest-indexed of its N C<topic> input
 element values where said element isn't equal to C<nothing>, if there is
-such an element; otherwise, it results in the default value of the q/scalar
-or q/nonscalar data type whose name is given in the C<default> argument.
+such an element; otherwise, it results in the default value of the scalar
+or nonscalar data type whose name is given in the C<default> argument.
 This function is a short-hand for invoking C<attr_or_value> with the result
 from invoking C<sys.std.Core.Universal.default>.  Note that this operation
 is also known as C<//d>.
@@ -183,27 +181,27 @@ is also known as C<//d>.
 =head2 sys.std.Set.Maybe.attr_or_value
 
 C<< function sys.std.Set.Maybe.attr_or_value (Universal <--
-quasi_array_of.QMaybe $topic?, Universal $value) >>
+array_of.Maybe $topic?, Universal $value) >>
 
-This function results in the q/scalar or q/nonscalar value of the sole
-attribute of the sole q/tuple of the lowest-indexed of its N C<topic> input
+This function results in the scalar or nonscalar value of the sole
+attribute of the sole tuple of the lowest-indexed of its N C<topic> input
 element values where said element isn't equal to C<nothing>, if there is
 such an element, and otherwise it results in C<value>.  This function will
 warn if the declared type of C<value> isn't a subtype of the declared type
 of the attribute.  Note that this operation is also known as C<//>.  In
-situations where a C<QMaybe> is used analagously to a SQL nullable value,
+situations where a C<Maybe> is used analagously to a SQL nullable value,
 this function is analagous to the N-adic SQL COALESCE function.
 
 =head2 sys.std.Set.Maybe.order
 
-C<< function sys.std.Set.Maybe.order (Order <-- QMaybe $topic,
-QMaybe $other, Bool $treat_nothing_as_max, OrdDetFuncRef $ord_func?,
-QTuple $ord_assuming?, Bool $reverse_order_of_singles?) >>
+C<< function sys.std.Set.Maybe.order (Order <-- Maybe $topic,
+Maybe $other, Bool $treat_nothing_as_max, OrdDetFuncRef $ord_func?,
+Tuple $ord_assuming?, Bool $reverse_order_of_singles?) >>
 
 This function is a generic (total) C<order_determination> function for
-C<QMaybe> values.  Iff both of its C<topic> and C<other> arguments are
+C<Maybe> values.  Iff both of its C<topic> and C<other> arguments are
 identical, this function results in C<Order:same>.  Otherwise, iff both of
-those 2 arguments are C<QSingle> values, then the result of this function
+those 2 arguments are C<Single> values, then the result of this function
 is the result of applying to those 2 arguments the (total)
 C<order_determination> function given in its C<ord_func> argument, as
 curried by its C<ord_assuming> and C<reverse_order_of_singles> arguments.
@@ -212,7 +210,7 @@ C<Order:increase> or C<Order:decrease> respectively when
 C<treat_nothing_as_max> is C<Bool:false> (the default) or C<Bool:true>.
 Otherwise (iff C<other> is C<nothing>), this function results in the
 reverse of when only C<topic> is C<nothing>.  In situations where a
-C<QMaybe> is used analagously to a SQL nullable value and this function is
+C<Maybe> is used analagously to a SQL nullable value and this function is
 analagous to the dyadic comparison underlying a SQL "ORDER BY", then
 C<reverse_order_of_singles> designates SQL's "ASC|DESC" and
 C<treat_nothing_as_max> designates SQL's "NULLS FIRST|LAST".

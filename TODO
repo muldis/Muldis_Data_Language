@@ -18,6 +18,14 @@ table for these items; they are simply to be done "as soon as possible".
 the progress is non-trivial, so there are regular public snapshots with
 nicely rendered documentation.
 
+* Add concept of shallowly homogeneous / sh- relation types to complement
+the deeply version, and named maximal types like SHRelation, SHSet,
+SHArray, etc to complement the DH/etc, and sh_set_of/etc to complement
+dh_set_of/etc; but not sh-scalar or sh-tuple as the concept doesn't make
+sense there.  Then update functions like Relation.union/etc to take
+sh_set_of.Relation rather than set_of.Relation, which more formally defines
+some of their input constraints.
+
 * Add ext/TAP.pod, which is a partial port of Perl 5's Test::More / Perl
 6's Test.pm / David Wheeler's pgTAP to Muldis D; assist users in testing
 their Muldis D code using TAP protocol.  The TAP messages have type Text.
@@ -187,7 +195,7 @@ constraint definition of Rat or in a normalization function for Rat; see
 also "the Euclidean algorithm" as an efficient way to do the calculations.
 
 * Consider adding type introspection routines like: is_incomplete() or
-is_quasi() or is_primitive|structure|reference|enumerated etc.  Or don't
+is_dh() or is_primitive|structure|reference|enumerated etc.  Or don't
 since one could look that up in the system catalog.  But more tests on
 individual values might be useful, or maybe we have enough already.
 
@@ -205,11 +213,11 @@ definition facilities and say an existing such type can be composed into
 another.  Now that latter case would in a manner of speaking give Muldis D
 the advantages of other OO languages or SQL that work using "specialization
 by extension" except that composing an existing type in this way will
-actually, for a q/scalar base, create a disjoint type not a subtype, so we
+actually, for a scalar base, create a disjoint type not a subtype, so we
 get the code reuse but Muldis D is still specialization by constraint.  On
 the other hand, if we just declare roles as roles that can't be
 instantiated themselves, then declaring a role could also serve to declare
-a quasi- union type name that can be referred to in type constraint
+a non-dh union type name that can be referred to in type constraint
 definitions, that union type implicitly ranging over all actual types that
 compose it, and so in this case the composers actually are subtypes; the
 problem with this is, what to do about a default value for said union type
@@ -221,7 +229,7 @@ union rather than the other way around.  In any event, a composed role
 would never appear in a value's MST or root type list, same as any type
 declared as a union.  I should look at TTM and see if they intended for
 dummy types to fulfil a role such as this.  Except all directly declared
-subtypes of a role union are always disjoint, for q/scalar ones anyway; the
+subtypes of a role union are always disjoint, for scalar ones anyway; the
 role is defin shorthand.
 
 * IN PROGRESS ...
@@ -238,7 +246,7 @@ implementation.  Expand the definition of the "reference" main type
 category (or if we need to, create a 5th similarly themed main category) so
 that it is home to all foreign-managed values, which to Muldis D are simply
 black boxes that Muldis D can pass around routines, store in transient
-variables, and use as attributes of quasi-tuples or quasi-relations.  These
+variables, and use as attributes of tuples or relations.  These
 of course can not be stored in a Muldis D depot/database, but they can be
 kept in transiant values of Muldis D collection types which are held in
 lexical variables by the peer or host language; that language is then
@@ -267,7 +275,7 @@ The foreign-access namespace may have a simple catalog variable
 representing what types and routines it is exposing, but to Muldis D this
 would be we_may_update=false.  It stands to reason that Muldis D's standard
 FuncRef etc can point to the name of a foreign routine as much as a native.
-TODO:  Figure out how to declare a Muldis D quasi- type whose attributes
+TODO:  Figure out how to declare a Muldis D non-dh type whose attributes
 are declared of some foreign type ... or maybe we can't and all such
 attributes would simply be declared Universal all the time, might be enuf.
 
@@ -290,7 +298,7 @@ mem addr and stringification would both be prefixed with some constant to
 distinguish the 2 that might stringify the same.  By default, a
 ForeignValue supports no operators but is/not_identical.
 
-* Add catalog types that represent thrown exceptions.  Probably q/scalar.
+* Add catalog types that represent thrown exceptions.  Probably scalar.
 
 * Also study SQL concept of conditions and handlers, looks sort of like
 something between exception handling, signals; or it is their exceptions.

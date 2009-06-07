@@ -185,7 +185,7 @@ Grammar:
         PTMD_STD
 
     <ln_extensions> ::=
-        <QTuple_payload>
+        <Tuple_payload>
 
 As per the VERSIONING pod section of L<Muldis::D>, code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
@@ -260,14 +260,14 @@ Grammar:
         | <String>
 
     <coll_value_selector> ::=
-          <QScalar>
-        | <QTuple>
+          <Scalar>
+        | <Tuple>
         | <Database>
-        | <QRelation>
-        | <QSet>
-        | <QMaybe>
-        | <QArray>
-        | <QBag>
+        | <Relation>
+        | <Set>
+        | <Maybe>
+        | <Array>
+        | <Bag>
 
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
@@ -355,14 +355,14 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | UTCDuration
         | RatRoundRule
         | String | BString | OString | UCPString
-        | Q? Scalar
-        | Q? Tuple
+        | DH? Scalar
+        | DH? Tuple
         | Database
-        | Q? Relation
-        | Q? Set
-        | Q? [Maybe | Single]
-        | Q? Array
-        | Q? Bag
+        | DH? Relation
+        | DH? Set
+        | DH? [Maybe | Single]
+        | DH? Array
+        | DH? Bag
 
     <type_name> ::=
         <NameChain_payload>
@@ -386,14 +386,14 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <UTCDuration_payload>
         | <RatRoundRule_payload>
         | <String_payload>
-        | <QScalar_payload>
-        | <QTuple_payload>
+        | <Scalar_payload>
+        | <Tuple_payload>
         | <Database_payload>
-        | <QRelation_payload>
-        | <QSet_payload>
-        | <QMaybe_payload>
-        | <QArray_payload>
-        | <QBag_payload>
+        | <Relation_payload>
+        | <Set_payload>
+        | <Maybe_payload>
+        | <Array_payload>
+        | <Bag_payload>
 
 So a C<x_value>|C<value> node has 1-3 elements in general:
 
@@ -431,7 +431,7 @@ of omitting the C<value_kind> (and C<type_name>) applies: C<Maybe:nothing>.
 This is a Muldis D data type name, for example C<sys.std.Core.Type.Int>; it
 identifies a specific subtype of the generic type denoted by C<value_kind>,
 and serves as an assertion that the Muldis D value denoted by C<payload> is
-a member of the named subtype.  Iff C<value_kind> is C<[Q|]Scalar> then
+a member of the named subtype.  Iff C<value_kind> is C<[|DH]Scalar> then
 C<type_name> is mandatory; otherwise, C<type_name> is optional for all
 C<value>, except that C<type_name> must be omitted when C<value_kind> is
 one of the 2 [C<Bool>, C<Order>]; this isn't because those 2 types can't be
@@ -962,7 +962,7 @@ then the parser will assume it is an unqualified chain in the C<sys>
 namespace and lookup the best / only match from the known C<sys.std> DBMS
 entities, to resolve to.  So for example, one can just write C<Int> rather
 than C<sys.std.Core.Type.Int>, C<is_identical> rather than
-C<sys.std.Core.Universal.is_identical>, C<QTuple.attr> rather than
+C<sys.std.Core.Universal.is_identical>, C<Tuple.attr> rather than
 C<sys.std.Core.Tuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
 C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so on.
 In fact, the Muldis D spec itself uses such abbreviations frequently.
@@ -991,15 +991,15 @@ an empty string chain element because those must always be delimited, so
 C<$"".foo> is still treated as C<$lex."".foo>.  Note that the third special
 case may only be used to reference attributes of C<$lex.topic> (or
 attributes of those, etc), not C<$lex.topic> itself; you still have to use
-C<$topic> for that.  Note that if C<$topic> is a q/scalar value, you still
+C<$topic> for that.  Note that if C<$topic> is a scalar value, you still
 have to write the possrep name as normal, such as C<$.possrep.attr>.
 
 The fourth special case involves any context where a type is being
 referenced using the C<type> namespace prefix feature described in
 L<Muldis::D::Basics/Referencing Data Types>.  In such a context, when the
 namespace prefix contains either of the optional chain elements
-C<[|quasi_][tuple|relation]_from> or
-C<[|quasi_][set|maybe|single|array|bag]_of>, programmers may omit the
+C<[|dh_][tuple|relation]_from> or
+C<[|dh_][set|maybe|single|array|bag]_of>, programmers may omit the
 single prefix-leading C<type> chain element.  So for example, one can just
 write C<array_of.Rat> rather than C<type.array_of.Rat>, or
 C<tuple_from.var.lex.myrelvar> rather than
@@ -1339,38 +1339,38 @@ options exist are only valid within a C<depot> node or C<boot_stmt> node.
 
 Grammar:
 
-    <QScalar> ::=
-        Q? Scalar \s* ':' \s*
+    <Scalar> ::=
+        DH? Scalar \s* ':' \s*
         <type_name> \s* ':' \s*
-        <QScalar_payload>
+        <Scalar_payload>
 
-    <QScalar_payload> ::=
+    <Scalar_payload> ::=
         <possrep_name> \s* ';' \s* <possrep_attrs>
 
     <possrep_name> ::=
         <Name_payload>
 
     <possrep_attrs> ::=
-        <QTuple_payload>
+        <Tuple_payload>
 
-A C<QScalar> node represents a literal or selector invocation for a
-quasi-scalar subtype value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.QScalar> subtype value whose declared type is specified
-by the node's (mandatory for C<QScalar>) C<type_name> and whose attributes
-are defined by the C<QScalar_payload>.  The C<possrep_attrs> is interpreted
+A C<Scalar> node represents a literal or selector invocation for a
+scalar subtype value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Scalar> subtype value whose declared type is specified
+by the node's (mandatory for C<Scalar>) C<type_name> and whose attributes
+are defined by the C<Scalar_payload>.  The C<possrep_attrs> is interpreted
 specifically as attributes of the declared type's possrep which is
 specified by the C<possrep_name>.  Each name+expr pair of the
-C<possrep_attrs> defines a named possrep attribute of the new quasi-scalar;
+C<possrep_attrs> defines a named possrep attribute of the new scalar;
 the pair's name and expr specify, respectively, the possrep attribute name,
 and the possrep attribute value.  If the C<value_kind> of a C<value> node
-is C<Scalar> rather than C<QScalar>, then the C<value> node is interpreted
-simply as an C<QScalar> node that is appropriately further restricted; the
-C<type_name> must name a C<Scalar> subtype, and the C<possrep_attrs> must
-not specify any quasi- typed attribute values.
+is C<DHScalar> rather than C<Scalar>, then the C<value> node is interpreted
+simply as an C<Scalar> node that is appropriately further restricted; the
+C<type_name> must name a C<DHScalar> subtype, and the C<possrep_attrs> must
+specify only deeply homogeneous typed attribute values.
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.ScaPRSelExprNodeSet>, a tuple of which is what in
-general a C<QScalar> node distills to when it is beneath the context of a
+general a C<Scalar> node distills to when it is beneath the context of a
 C<depot> or C<boot_stmt> node, as it describes some semantics.
 
 Examples:
@@ -1402,30 +1402,30 @@ Examples:
 
 Grammar:
 
-    <QTuple> ::=
-        Q? Tuple \s* ':' \s*
+    <Tuple> ::=
+        DH? Tuple \s* ':' \s*
         [<type_name> \s* ':' \s*]?
-        <QTuple_payload>
+        <Tuple_payload>
 
-    <QTuple_payload> ::=
+    <Tuple_payload> ::=
         '{' \s*
             [[<Name_payload> \s* '=>' \s* <expr>] ** [\s* ',' \s*]]?
         \s* '}'
 
-A C<QTuple> node represents a literal or selector invocation for a
-quasi-tuple value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.QTuple> value whose attributes are defined by the
-C<QTuple_payload>.  Each name+expr pair of the C<QTuple_payload> defines a
-named attribute of the new quasi-tuple; the pair's name and expr specify,
+A C<Tuple> node represents a literal or selector invocation for a
+tuple value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Tuple> value whose attributes are defined by the
+C<Tuple_payload>.  Each name+expr pair of the C<Tuple_payload> defines a
+named attribute of the new tuple; the pair's name and expr specify,
 respectively, the attribute name, and the attribute value.  If the
-C<value_kind> of a C<value> node is C<Tuple> rather than C<QTuple>, then
-the C<value> node is interpreted simply as an C<QTuple> node that is
-appropriately further restricted; the C<QTuple_payload> must not specify
-any quasi- typed attribute values.
+C<value_kind> of a C<value> node is C<DHTuple> rather than C<Tuple>, then
+the C<value> node is interpreted simply as an C<Tuple> node that is
+appropriately further restricted; the C<Tuple_payload> must specify only
+deeply homogeneous typed attribute values.
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what in
-general a C<QTuple> node distills to when it is beneath the context of a
+general a C<Tuple> node distills to when it is beneath the context of a
 C<depot> or C<boot_stmt> node, as it describes some semantics.
 
 Examples:
@@ -1453,7 +1453,7 @@ Grammar:
         <Database_payload>
 
     <Database_payload> ::=
-        <QTuple_payload>
+        <Tuple_payload>
 
 A C<Database> node represents a literal or selector invocation for a
 'database' value.  It is interpreted as a Muldis D
@@ -1462,91 +1462,91 @@ C<Database_payload>.  Each name+relation pair of the C<Database_payload>
 defines a named attribute of the new 'database'; the pair's name and
 relation specify, respectively, the attribute name, and the attribute
 value.  While this grammar mentions that C<Database_payload> is a
-C<QTuple_payload>, it is in fact significantly further restricted, such
-that every attribute value of the C<Database> can only be a relation.
+C<Tuple_payload>, it is in fact significantly further restricted, such
+that every attribute value of the C<Database> can only be a C<DHRelation>.
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what in
-general a C<Database> node distills to same as when C<QTuple> does.
+general a C<Database> node distills to same as when C<Tuple> does.
 
 =head2 Relation Selectors
 
 Grammar:
 
-    <QRelation> ::=
-        Q? Relation \s* ':' \s*
+    <Relation> ::=
+        DH? Relation \s* ':' \s*
         [<type_name> \s* ':' \s*]?
-        <QRelation_payload>
+        <Relation_payload>
 
-    <QRelation_payload> ::=
+    <Relation_payload> ::=
           <r_empty_qbody_payload>
-        | <r_nonordered_qattr_payload>
-        | <r_ordered_qattr_payload>
+        | <r_nonordered_attr_payload>
+        | <r_ordered_attr_payload>
 
     <r_empty_qbody_payload> ::=
         '{' \s*
             [<Name_payload> ** [\s* ',' \s*]]?
         \s* '}'
 
-    <r_nonordered_qattr_payload> ::=
+    <r_nonordered_attr_payload> ::=
         '{' \s*
-            [<QTuple_payload> ** [\s* ',' \s*]]?
+            [<Tuple_payload> ** [\s* ',' \s*]]?
         \s* '}'
 
-    <r_ordered_qattr_payload> ::=
+    <r_ordered_attr_payload> ::=
         '[' \s*
             [<Name_payload> ** [\s* ',' \s*]]?
         \s* ']'
         \s* ';' \s*
         '{' \s*
-            [<ordered_qtuple_qattrs> ** [\s* ',' \s*]]?
+            [<ordered_tuple_attrs> ** [\s* ',' \s*]]?
         \s* '}'
 
-    <ordered_qtuple_qattrs> ::=
+    <ordered_tuple_attrs> ::=
         '[' \s*
             [<expr> ** [\s* ',' \s*]]?
         \s* ']'
 
-A C<QRelation> node represents a literal or selector invocation for a
-quasi-relation value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.QRelation> value whose attributes and tuples are
-defined by the C<QRelation_payload>, which is interpreted as follows:
+A C<Relation> node represents a literal or selector invocation for a
+relation value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Relation> value whose attributes and tuples are
+defined by the C<Relation_payload>, which is interpreted as follows:
 
-Iff the C<QRelation_payload> is composed of just a
+Iff the C<Relation_payload> is composed of just a
 C<nonord_list_[open|close]> pair with zero elements between them, then it
 defines the only relation value having zero attributes and zero tuples.
 
-Iff the C<QRelation_payload> is a C<r_empty_qbody_payload> with at least
+Iff the C<Relation_payload> is a C<r_empty_qbody_payload> with at least
 one C<Name_payload> element, then it defines the attribute names of a
 relation having zero tuples.
 
-Iff the C<QRelation_payload> is a C<r_nonordered_qattr_payload> with at
-least one <QTuple_payload> element, then each element defines a quasi-tuple
-of the new quasi-relation; every <QTuple_payload> must define a quasi-tuple
+Iff the C<Relation_payload> is a C<r_nonordered_attr_payload> with at
+least one <Tuple_payload> element, then each element defines a tuple
+of the new relation; every <Tuple_payload> must define a tuple
 of the same degree and have the same attribute names as its sibling
-<QTuple_payload>; these are the degree and attribute names of the
-quasi-relation as a whole, which is its heading for the current purposes.
+<Tuple_payload>; these are the degree and attribute names of the
+relation as a whole, which is its heading for the current purposes.
 
-Iff the C<QRelation_payload> is a C<r_ordered_qattr_payload>, then:  The
-new quasi-relation value's attribute names are defined by the
+Iff the C<Relation_payload> is a C<r_ordered_attr_payload>, then:  The
+new relation value's attribute names are defined by the
 C<Name_payload> elements, and the relation body's tuples' attribute values
-are defined by the C<ordered_qtuple_qattrs> elements.  This format is meant
+are defined by the C<ordered_tuple_attrs> elements.  This format is meant
 to be the most compact of the generic relation selector formats, as the
 attribute names only appear once for the relation rather than repeating for
 each tuple.  As a trade-off, the attribute values per tuple from all of the
-C<ordered_qtuple_attrs> elements must appear in the same order as their
+C<ordered_tuple_attrs> elements must appear in the same order as their
 corresponding attribute names appear in the collection of C<Name_payload>
 elements, as the names and values in the relation literal are matched up by
 ordinal position here.
 
-If the C<value_kind> of a C<value> node is C<Relation> rather than
-C<QRelation>, then the C<value> node is interpreted simply as an
-C<QRelation> node that is appropriately further restricted; the
-C<QRelation_payload> must not specify any quasi- typed attribute values.
+If the C<value_kind> of a C<value> node is C<DHRelation> rather than
+C<Relation>, then the C<value> node is interpreted simply as an
+C<Relation> node that is appropriately further restricted; the
+C<Relation_payload> specify only deeply homogeneous typed attribute values.
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.RelSelExprNodeSet>, a tuple of which is what in
-general a C<QRelation> node distills to when it is beneath the context of a
+general a C<Relation> node distills to when it is beneath the context of a
 C<depot> or C<boot_stmt> node, as it describes some semantics.
 
 Examples:
@@ -1573,27 +1573,27 @@ Examples:
 
 Grammar:
 
-    <QSet> ::=
-        Q? Set \s* ':' \s*
+    <Set> ::=
+        DH? Set \s* ':' \s*
         [<type_name> \s* ':' \s*]?
-        <QSet_payload>
+        <Set_payload>
 
-    <QSet_payload> ::=
+    <Set_payload> ::=
         '{' \s*
             [<expr> ** [\s* ',' \s*]]?
         \s* '}'
 
-A C<QSet> node represents a literal or selector invocation for a quasi-set
-value.  It is interpreted as a Muldis D C<sys.std.Core.Type.QSet> value
-whose elements are defined by the C<QSet_payload>.  Each C<expr> of the
-C<QSet_payload> defines a unary quasi-tuple of the new quasi-set; each
-C<expr> defines the C<value> attribute of the quasi-tuple.  If the
-C<value_kind> of a C<value> node is C<Set> rather than C<QSet>, then the
+A C<Set> node represents a literal or selector invocation for a set
+value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Set> value
+whose elements are defined by the C<Set_payload>.  Each C<expr> of the
+C<Set_payload> defines a unary tuple of the new set; each
+C<expr> defines the C<value> attribute of the tuple.  If the
+C<value_kind> of a C<value> node is C<DHSet> rather than C<Set>, then the
 C<value> node is further restricted.
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.SetSelExprNodeSet>, a tuple of which is what in
-general a C<QSet> node distills to when it is beneath the context of a
+general a C<Set> node distills to when it is beneath the context of a
 C<depot> or C<boot_stmt> node, as it describes some semantics.
 
 Examples:
@@ -1615,12 +1615,12 @@ Examples:
 
 Grammar:
 
-    <QMaybe> ::=
-        Q? [Maybe | Single] \s* ':' \s*
+    <Maybe> ::=
+        DH? [Maybe | Single] \s* ':' \s*
         [<type_name> \s* ':' \s*]?
-        <QMaybe_payload>
+        <Maybe_payload>
 
-    <QMaybe_payload> ::=
+    <Maybe_payload> ::=
         <maybe_list> | <maybe_nothing>
 
     <maybe_list> ::=
@@ -1629,30 +1629,30 @@ Grammar:
     <maybe_nothing> ::=
         nothing | '∅'
 
-A C<QMaybe> node represents a literal or selector invocation for a
-quasi-maybe value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.QMaybe> value whose elements are defined by the
-C<QMaybe_payload>.
+A C<Maybe> node represents a literal or selector invocation for a
+maybe value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Maybe> value whose elements are defined by the
+C<Maybe_payload>.
 
-Iff the C<QMaybe_payload> is a C<maybe_list> then it defines either zero or
-one C<expr>; in the case of one, the C<expr> defines the unary quasi-tuple
-of the new quasi-maybe, which is a quasi-'single'; the C<expr> defines the
-C<value> attribute of the quasi-tuple.  If the C<value_kind> of a C<value>
-node is C<Maybe> or C<[Q|]Single> rather than C<QMaybe>, then the C<value>
-node is further restricted, either to not having any quasi- resulting
+Iff the C<Maybe_payload> is a C<maybe_list> then it defines either zero or
+one C<expr>; in the case of one, the C<expr> defines the unary tuple
+of the new maybe, which is a 'single'; the C<expr> defines the
+C<value> attribute of the tuple.  If the C<value_kind> of a C<value>
+node is C<DHMaybe> or C<[|DH]Single> rather than C<Maybe>, then the C<value>
+node is further restricted, either to having only deeply homogeneous resulting
 C<expr> or to having exactly one C<expr>, as appropriate.
 
-Iff the C<QMaybe_payload> is a C<maybe_nothing> then the C<QMaybe> node is
+Iff the C<Maybe_payload> is a C<maybe_nothing> then the C<Maybe> node is
 interpreted as the special value C<Maybe:nothing>, aka C<nothing>, aka
-I<empty set>, aka C<∅>, which is the only C<QMaybe> value with zero
+I<empty set>, aka C<∅>, which is the only C<Maybe> value with zero
 elements.  Note that this is just an alternative syntax, as
 C<set_expr_list> can select that value too.  As a further restriction, the
-C<value_kind> must be just one of C<[Q|]Maybe> when the C<QMaybe_payload>
+C<value_kind> must be just one of C<[|DH]Maybe> when the C<Maybe_payload>
 is a C<maybe_nothing>.
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.SetSelExprNodeSet>, a tuple of which is what in
-general a C<QMaybe> node distills to same as when C<QSet> does.
+general a C<Maybe> node distills to same as when C<Set> does.
 
 Examples:
 
@@ -1670,30 +1670,30 @@ Examples:
 
 Grammar:
 
-    <QArray> ::=
-        Q? Array \s* ':' \s*
+    <Array> ::=
+        DH? Array \s* ':' \s*
         [<type_name> \s* ':' \s*]?
-        <QArray_payload>
+        <Array_payload>
 
-    <QArray_payload> ::=
+    <Array_payload> ::=
         '[' \s*
             [<expr> ** [\s* ',' \s*]]?
         \s* ']'
 
-A C<QArray> node represents a literal or selector invocation for a
-quasi-array value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.QArray> value whose elements are defined by the
-C<QArray_payload>.  Each C<expr> of the C<QArray_payload> defines a binary
-quasi-tuple of the new sequence; the C<expr> defines the C<value> attribute
-of the quasi-tuple, and the C<index> attribute of the quasi-tuple is
+A C<Array> node represents a literal or selector invocation for a
+array value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Array> value whose elements are defined by the
+C<Array_payload>.  Each C<expr> of the C<Array_payload> defines a binary
+tuple of the new sequence; the C<expr> defines the C<value> attribute
+of the tuple, and the C<index> attribute of the tuple is
 generated such that the first C<expr> gets an C<index> of zero and
 subsequent ones get consecutive higher integer values.  If the
-C<value_kind> of a C<value> node is C<Array> rather than C<QArray>, then
+C<value_kind> of a C<value> node is C<DHArray> rather than C<Array>, then
 the C<value> node is further restricted.
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.ArySelExprNodeSet>, a tuple of which is what in
-general a C<QArray> node distills to when it is beneath the context of a
+general a C<Array> node distills to when it is beneath the context of a
 C<depot> or C<boot_stmt> node, as it describes some semantics.
 
 Examples:
@@ -1715,16 +1715,16 @@ Examples:
 
 Grammar:
 
-    <QBag> ::=
-        Q? Bag \s* ':' \s*
+    <Bag> ::=
+        DH? Bag \s* ':' \s*
         [<type_name> \s* ':' \s*]?
-        <QBag_payload>
+        <Bag_payload>
 
-    <QBag_payload> ::=
-          <qbag_payload_counted_values>
-        | <qbag_payload_repeated_values>
+    <Bag_payload> ::=
+          <bag_payload_counted_values>
+        | <bag_payload_repeated_values>
 
-    <qbag_payload_counted_values> ::=
+    <bag_payload_counted_values> ::=
         '{' \s*
             [[<expr> \s* '=>' \s* <count>] ** [\s* ',' \s*]]?
         \s* '}'
@@ -1733,44 +1733,44 @@ Grammar:
           <num_max_col_val> \s* ';' \s* <pint_body>
         | <d_pint_body>
 
-    <qbag_payload_repeated_values> ::=
+    <bag_payload_repeated_values> ::=
         '{' \s*
             [<expr> ** [\s* ',' \s*]]?
         \s* '}'
 
-A C<QBag> node represents a literal or selector invocation for a quasi-bag
-value.  It is interpreted as a Muldis D C<sys.std.Core.Type.QBag> value
-whose elements are defined by the C<QBag_payload>, which is interpreted as
+A C<Bag> node represents a literal or selector invocation for a bag
+value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Bag> value
+whose elements are defined by the C<Bag_payload>, which is interpreted as
 follows:
 
-Iff the C<QBag_payload> is composed of just a C<nonord_list_[open|close]>
+Iff the C<Bag_payload> is composed of just a C<nonord_list_[open|close]>
 pair with zero elements between them, then it defines the only bag value
 having zero elements.
 
-Iff the C<QBag_payload> is a C<qbag_payload_counted_values> with at least
+Iff the C<Bag_payload> is a C<bag_payload_counted_values> with at least
 one C<expr>/C<count>-pair element, then each pair defines a binary
-quasi-tuple of the new quasi-bag; the C<expr> defines the C<value>
-attribute of the quasi-tuple, and the C<count> defines the C<count>
+tuple of the new bag; the C<expr> defines the C<value>
+attribute of the tuple, and the C<count> defines the C<count>
 attribute.
 
-Iff the C<QBag_payload> is a C<qbag_payload_repeated_values> with at least
-one <expr> element, then each C<expr> contributes to a binary quasi-tuple
-of the new quasi-bag; the C<expr> defines the C<value> attribute of the
-quasi-tuple.  The quasi-bag has 1 quasi-tuple for every distinct (after
+Iff the C<Bag_payload> is a C<bag_payload_repeated_values> with at least
+one <expr> element, then each C<expr> contributes to a binary tuple
+of the new bag; the C<expr> defines the C<value> attribute of the
+tuple.  The bag has 1 tuple for every distinct (after
 normalization or evaluation) C<expr> and C<expr>-derived value in the
-C<QBag_payload>, and the C<count> attribute of that quasi-tuple says how
+C<Bag_payload>, and the C<count> attribute of that tuple says how
 many instances of said C<value> there were.
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.BagSelExprNodeSet>, a tuple of which is what in
-general a C<QBag> node distills to when it is beneath the context of a
+general a C<Bag> node distills to when it is beneath the context of a
 C<depot> or C<boot_stmt> node, as it describes some semantics.
 
-Further concerning C<qbag_payload_counted_values>, because of how
+Further concerning C<bag_payload_counted_values>, because of how
 C<BagSelExprNodeSet> is defined, a C<count> has to be a compile time
 constant, since an integer is stored in the system catalog rather than the
 name of an expression node like with C<value>; if you actually want the
-q/bag value being selected at runtime to have runtime-determined C<count>
+bag value being selected at runtime to have runtime-determined C<count>
 values, then you must use a C<Relation> node rather than a C<Bag> node.
 
 Examples:
@@ -2194,11 +2194,11 @@ Grammar:
 A C<comm_infix_reduce_op_invo> node is for using infix notation to invoke a
 (homogenous) commutative N-adic reduction operator function.  Such a
 function takes exactly 1 actual argument, which is unordered-collection
-typed (q/set or q/bag), and the elements of that collection are the inputs
+typed (set or bag), and the elements of that collection are the inputs
 of the operation; the inputs are all of the same type as each other and of
 the result.  A single C<comm_infix_reduce_op_invo> node is equivalent to a
 single C<func_invo> node whose C<func_arg_list> element defines a single
-argument, whose value is a C<QSet> or C<QBag> node, which has a payload
+argument, whose value is a C<Set> or C<Bag> node, which has a payload
 C<expr> element for each C<expr> element of the
 C<comm_infix_reduce_op_invo>, and the relative sequence of the C<expr>
 elements isn't significant.  A C<comm_infix_reduce_op_invo> node requires
@@ -2233,11 +2233,11 @@ This table indicates which function is invoked by each keyword:
     I*   -> Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
     N+   -> Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
     N*   -> Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
-    ∪    -> Core.Relation.union( QSet:{ $expr[0], ..., $expr[n] } )
-    ∩    -> Core.Relation.intersection( QSet:{ $expr[0], ..., $expr[n] } )
-    ∆    -> Relation.exclusion( QBag:{ $expr[0], ..., $expr[n] } )
-    ⋈    -> Core.Relation.join( QSet:{ $expr[0], ..., $expr[n] } )
-    ×    -> Core.Relation.product( QSet:{ $expr[0], ..., $expr[n] } )
+    ∪    -> Core.Relation.union( Set:{ $expr[0], ..., $expr[n] } )
+    ∩    -> Core.Relation.intersection( Set:{ $expr[0], ..., $expr[n] } )
+    ∆    -> Relation.exclusion( Bag:{ $expr[0], ..., $expr[n] } )
+    ⋈    -> Core.Relation.join( Set:{ $expr[0], ..., $expr[n] } )
+    ×    -> Core.Relation.product( Set:{ $expr[0], ..., $expr[n] } )
 
 Examples:
 
@@ -2276,11 +2276,11 @@ Grammar:
 A C<noncomm_infix_reduce_op_invo> node is for using infix notation to
 invoke a (homogenous) non-commutative N-adic reduction operator function.
 Such a function takes exactly 1 actual argument, which is
-ordered-collection typed (q/array), and the elements of that collection are
+ordered-collection typed (array), and the elements of that collection are
 the inputs of the operation; the inputs are all of the same type as each
 other and of the result.  A single C<noncomm_infix_reduce_op_invo> node is
 equivalent to a single C<func_invo> node whose C<func_arg_list> element
-defines a single argument, whose value is a C<QArray> node, which has a
+defines a single argument, whose value is a C<Array> node, which has a
 payload C<expr> element for each C<expr> element of the
 C<noncomm_infix_reduce_op_invo>, and the C<expr> elements have the same
 relative sequence.  A C<noncomm_infix_reduce_op_invo> node requires at
@@ -2299,12 +2299,12 @@ This table indicates which function is invoked by each keyword:
     [<=>] -> Core.Cat.Order.reduction( Array:{ $expr[0], ..., $expr[n] } )
     B~    -> Blob.catenation( Array:{ $expr[0], ..., $expr[n] } )
     T~    -> Text.catenation( Array:{ $expr[0], ..., $expr[n] } )
-    A~    -> Array.catenation( QArray:{ $expr[0], ..., $expr[n] } )
+    A~    -> Array.catenation( Array:{ $expr[0], ..., $expr[n] } )
 
     //    -> Set.Maybe.attr_or_value(
-                QArray:{ $expr[0], ..., $expr[n-1] }, value => $expr[n] )
+                Array:{ $expr[0], ..., $expr[n-1] }, value => $expr[n] )
     //d   -> Set.Maybe.attr_or_default(
-                QArray:{ $expr[0], ..., $expr[n-1] }, default => $expr[n] )
+                Array:{ $expr[0], ..., $expr[n-1] }, default => $expr[n] )
 
 Examples:
 
@@ -2539,8 +2539,8 @@ This table indicates which function is invoked by each keyword:
     I|| -> Integer.abs( $expr )
     N|| -> Rational.abs( $expr )
     R#  -> Core.Relation.cardinality( $expr )
-    t   -> Core.Relation.QTuple_from_QRelation( $expr )
-    r   -> Core.Relation.QRelation_from_QTuple( $expr )
+    t   -> Core.Relation.Tuple_from_Relation( $expr )
+    r   -> Core.Relation.Relation_from_Tuple( $expr )
     s   -> Set.Maybe.single( value => $expr )
     v   -> Set.Maybe.attr( $expr )
 
@@ -2842,7 +2842,7 @@ Grammar:
         \s* '}'
 
     <imperative_routine_ro_args> ::=
-        <QTuple_payload>
+        <Tuple_payload>
 
 Examples:
 
