@@ -2690,8 +2690,8 @@ representation that can handle every value of the [|sub]type it is defined
 with, and the Muldis D implementation may choose for itself which of these,
 or some other alternative, is the actual/physical representation.  Whether
 a declared type is scalar or dh-scalar depends only on the declared
-types of the attributes its possreps compose, whether they any are
-deeply homogeneous
+types of the attributes its possreps compose, whether any are
+non-deeply-homogeneous
 or none are.  You can not declare a scalar root type at all except
 by using a C<InnerScalarType>, and you can not define a scalar type
 with an incompletely defined attribute list at all.
@@ -2734,7 +2734,9 @@ constraints of the base types and the C<subtype_constraint> and the
 constraints of all the possreps of the subtype; therefore, mainly the
 C<subtype_constraint> needs to be just restricting enough so that the
 inter-possrep mapping functions can handle the base type values that it
-accepts, so it is possible to apply the new possreps' constraints.
+accepts, so it is possible to apply the new possreps' constraints.  Now if
+C<subtype_constraint> were otherwise so simple as to unconditinally result
+in C<Bool:true>, then simply making it C<nothing> has the same effect.
 
 =item C<possreps> - C<PossrepSet>
 
@@ -2766,12 +2768,23 @@ total number of bidirectional maps C<M> is in C<(P-1) ≤ M ≤ ((P-1)*P/2)>.
 When a subtype is adding possreps to an other base type, all of the mapping
 functions are defined with the subtype.
 
-=item C<default> - C<InnerFuncBody>
+=item C<default> - C<maybe_of.InnerFuncBody>
 
-This defines the entire (main) body of a C<type_default> function that
+Iff it is a C<Single>, then C<default>
+defines the entire (main) body of a C<type_default> function that
 results in the default scalar value of the [|sub]type; it has
 zero parameters and its result type is the same as the scalar type
-whose declaration it is part of.
+whose declaration it is part of.  Iff C<default> is C<nothing> and
+C<base_type> is C<nothing>, then semantics are as if it were a defined body
+that resulted in a value of the type being defined where all of the possrep
+attr values were the default values of their declared types; but if the
+type being defined has multiple possreps and going the by-attr-defaults
+route with all of the possreps doesn't produce the same value of the type
+being defined, then a C<default> of C<nothing> is invalid and it must be a
+C<Single>.  Iff C<default> is C<nothing> and C<base_type> is a C<Single>,
+then the subtype will use the same default value as its base type; but if
+the subtype's value set excludes said value, then a C<default> of
+C<nothing> is invalid and C<default> must be a C<Single>.
 
 =item C<order> - C<maybe_of.InnerFuncBody>
 
@@ -2817,9 +2830,10 @@ This is an optional programmer comment about the possrep as a whole.
 
 This defines the 0..N attributes of the possrep.
 
-=item C<constraint> - C<InnerFuncBody>
+=item C<constraint> - C<maybe_of.InnerFuncBody>
 
-This defines the entire (main) body of a C<type_constraint> function that
+Iff it is a C<Single>, then C<constraint>
+defines the entire (main) body of a C<type_constraint> function that
 determines what combinations of possrep attribute values denote values of
 the [|sub]type, besides the restrictions imposed by the declared types of
 the attributes individually.  The implicit function heading that this goes
@@ -2837,7 +2851,8 @@ C<subtype_constraint> of the subtype and all base type constraints);
 therefore, mainly any given possrep's constraints need to be just
 restricting enough so that the inter-possrep mapping functions can handle
 the arguments that it accepts, so it is possible to apply the other
-possreps' constraints.
+possreps' constraints.  Iff C<constraint> is C<nothing>, then semantics are
+as if it were a defined body that unconditionally resulted in C<Bool:true>.
 
 =item C<is_base> - C<Bool>
 
@@ -2856,7 +2871,7 @@ tie-breaker if applicable.
 A C<PossrepSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.  The default value of a tuple of C<PossrepSet>
 has a C<name> that is the empty string, its C<attrs> is empty, and its
-C<constraint> unconditionally results in C<Bool:true>.
+C<constraint> is C<nothing>.
 
 =head2 sys.std.Core.Type.Cat.PossrepMapSet
 
@@ -3061,19 +3076,35 @@ being defined; it is as per C<foreign_keys> except that the parent
 relation is the result of unioning appropriately renamed projections of
 the member relations of the distributed key.
 
-=item C<default_tuple> - C<InnerFuncBody>
+=item C<default_tuple> - C<maybe_of.InnerFuncBody>
 
-This defines the entire (main) body of a C<type_default> function that
+Iff it is a C<Single>, then C<default_tuple>
+defines the entire (main) body of a C<type_default> function that
 results in the default tuple value of the [|sub]type; it has zero
 parameters and its result type is the same as the tuple type whose
-declaration it is part of.
+declaration it is part of.  Iff C<default_tuple> is C<nothing> and
+C<base_type> is C<nothing>, then semantics are as if C<default_tuple> were
+a defined body that resulted in a value of the type being defined where all
+of the attr values were the default values of their declared types.  Iff
+C<default_tuple> is C<nothing> and C<base_type> is a C<Single>, then the
+subtype will use the same default tuple value as its base type; but if the
+subtype's value set excludes said value, then a C<default_tuple> of
+C<nothing> is invalid and C<default_tuple> must be a C<Single>.
 
-=item C<default_relation> - C<InnerFuncBody>
+=item C<default_relation> - C<maybe_of.InnerFuncBody>
 
-This defines the entire (main) body of a C<type_default> function that
+Iff it is a C<Single>, then C<default_relation>
+defines the entire (main) body of a C<type_default> function that
 results in the default relation value of the [|sub]type; it has
 zero parameters and its result type is the same as the relation
-type whose declaration it is part of.
+type whose declaration it is part of.  Iff C<default_relation> is
+C<nothing> and C<base_type> is C<nothing>, then semantics are as if
+C<default_relation> were a defined body that resulted in a value of the
+type being defined that had zero tuples.  Iff C<default_relation> is
+C<nothing> and C<base_type> is a C<Single>, then the subtype will use the
+same default relation value as its base type; but if the subtype's value
+set excludes said value, then a C<default_relation> of C<nothing> is
+invalid and C<default_relation> must be a C<Single>.
 
 =back
 
@@ -3617,7 +3648,7 @@ with the same default value; it has just the source type C<Universal> and
 zero filter types, both type lists are unioned, and C<constraints> is empty
 (unconditionally C<Bool:true>).  Note that there is no valid combination of
 C<InnerUnionType> attribute values that would result in an alias for the
-C<Empty> type, due to C<default> being mandatory.
+C<Empty> type, due to a default value for the type being mandatory.
 
 =head2 sys.std.Core.Type.Cat.InnerRestrType
 
@@ -3663,12 +3694,16 @@ implicit result type is C<Bool>.  If the functions unconditionally result
 in C<Bool:true>, then the new type is a non-proper subtype of the base
 type.
 
-=item C<default> - C<InnerFuncBody>
+=item C<default> - C<maybe_of.InnerFuncBody>
 
-This defines the entire (main) body of a C<type_default> function that
+Iff it is a C<Single>, then C<default>
+defines the entire (main) body of a C<type_default> function that
 results in the default value of the restriction type; it has zero
 parameters and its result type is the same as the restriction type whose
-declaration it is part of.
+declaration it is part of.  Iff C<default> is C<nothing>, then the
+restriction type will use the same default value as its base type; but if
+the restriction type's value set excludes said value, then a C<default> of
+C<nothing> is invalid and C<default> must be a C<Single>.
 
 =back
 
@@ -3676,8 +3711,8 @@ The default value of C<InnerRestrType> defines an alias for C<Universal>,
 with the same default value; it has the base type C<Universal> and
 C<constraints> is empty (unconditionally C<Bool:true>).  Note that there is
 no valid combination of C<InnerRestrType> attribute values that would
-result in an alias for the C<Empty> type, due to C<default> being
-mandatory.
+result in an alias for the C<Empty> type, due to a default value for the
+type being mandatory.
 
 =head1 SIMPLE GENERIC NONSCALAR TYPES
 
