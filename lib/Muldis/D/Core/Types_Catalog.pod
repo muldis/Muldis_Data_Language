@@ -1283,134 +1283,7 @@ This defines the entire type sans the name.
 A C<PkgTypeSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.
 
-=head1 TYPES FOR DEFINING ROUTINE HEADINGS
-
-These are all enumeration data types.
-
-=head2 sys.std.Core.Type.Cat.FuncHead
-
-A C<FuncHead> is a C<DHTuple>.  It specifies the entire heading or public
-interface of a function or inner function, except for its name and
-public/private status; the latter are provided by any type embedding this
-one when applicable.
-
-A C<FuncHead> has these 4 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the function heading.
-
-=item C<result_type> - C<NameChain>
-
-This is the declared result data type of the function as a whole.
-
-=item C<params> - C<NameTypeMap>
-
-This is the declared parameter list of the function, which has 0..N named
-and typed parameters.
-
-=item C<opt_params> - C<set_of.Name>
-
-This indicates the subset of the function's parameters that are optional,
-that is, do not need to be supplied explicit arguments when the function is
-invoked; any function parameters not named here must be supplied explicit
-arguments.  Any parameter marked as optional which is not given an explicit
-argument will implicitly default to the default value of its declared type.
-Each element of C<opt_params> must match a parameter name in C<params>.
-
-=back
-
-The default value of C<FuncHead> has zero parameters and a result type
-of C<Bool>; by default, its parameters are all non-optional.
-
-=head2 sys.std.Core.Type.Cat.UpdHead
-
-An C<UpdHead> is a C<DHTuple>.  It specifies the entire heading or public
-interface of an updater or inner updater, except for its name and
-public/private status; the latter are provided by any type embedding this
-one when applicable.
-
-An C<UpdHead> has these 4 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the updater heading.
-
-=item C<upd_params> - C<NameTypeMap>
-
-This is the declared subject-to-update parameter list of the updater, which
-has 1..N named and typed such parameters.  It must have at least 1 element.
-
-=item C<ro_params> - C<NameTypeMap>
-
-This is the declared read-only parameter list of the updater, which has
-0..N named and typed such parameters.
-
-=item C<opt_params> - C<set_of.Name>
-
-This indicates the subset of the updater's subject-to-update or read-only
-parameters that are optional, that is, do not need to be supplied explicit
-arguments when the function is invoked; any updater parameters not named
-here must be supplied explicit arguments.  Any parameter marked as optional
-which is not given an explicit argument will implicitly default to the
-default value of its declared type; any subject-to-update parameter marked
-as optional which is not given an explicit argument will implicitly bind to
-a new anonymous variable (with the aforementioned default value) which is
-discarded after the updater finishes executing.  Each element of
-C<opt_params> must match a parameter name in either C<upd_params> or
-C<ro_params>.
-
-=back
-
-There is a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params>.
-
-The default value of C<UpdHead> has 1 subject-to-update parameter whose
-name is C<topic> and whose declared type is C<Bool>; it has zero read-only
-parameters; by default, its parameters are all non-optional.
-
-=head2 sys.std.Core.Type.Cat.ProcHead
-
-A C<ProcHead> is a C<DHTuple>.  It specifies the entire heading or public
-interface of a procedure or inner procedure, except for its name and
-public/private status; the latter are provided by any type embedding this
-one when applicable.
-
-A C<ProcHead> has these 4 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the procedure heading.
-
-=item C<upd_params> - C<NameTypeMap>
-
-This is the declared subject-to-update parameter list of the procedure,
-which has 0..N named and typed such parameters.
-
-=item C<ro_params> - C<NameTypeMap>
-
-This is the declared read-only parameter list of the procedure, which has
-0..N named and typed such parameters.
-
-=item C<opt_params> - C<set_of.Name>
-
-This is as per the same-named attribute of C<UpdHead>.
-
-=back
-
-There is a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params>.
-
-The default value of C<ProcHead> has zero parameters; by default, its
-parameters are all non-optional.
-
-=head1 TYPES FOR DEFINING ROUTINE BODIES
+=head1 TYPES FOR DEFINING ROUTINES AND DATA TYPES
 
 These are all enumeration data types.
 
@@ -1541,6 +1414,62 @@ attributes of C<inner_types>.
 The default value of C<ProcBody> directly corresponds to the default
 value of C<ProcHead> and is a no-op, having zero statements.
 
+=head2 sys.std.Core.Type.Cat.Type
+
+A C<Type> is a C<DHTuple>.  Its purpose is as per
+C<Inner[Scalar|Nonscalar|Union|Restr]Type>, one of which it is a
+wrapper for along with other inner types that are composed into it.
+
+A C<Type> has these 3 attributes:
+
+=over
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the type as a whole.
+
+=item C<inner_types> - C<InnerTypeSet>
+
+These are all the inner type definitions that this type contains.  There
+must be at least 1 inner type here, and exactly 1 of the inner types must
+have the empty string as its name; that inner type defines the actual main
+type that the C<Type> is a wrapper for, and the other inner types, if
+any, support it.
+
+=item C<inner_funcs> - C<InnerFuncSet>
+
+These are all the inner function definitions that this type contains, which
+support the main type or inner types.
+
+=back
+
+There is a distributed primary key over both the C<name> attributes of all
+the attributes of C<inner_types> and the C<name> attributes of
+C<inner_funcs>.
+
+The default value of C<Type> is as per C<InnerRestrType>.
+
+=head2 sys.std.Core.Type.Cat.InnerTypeSet
+
+An C<InnerTypeSet> is a C<Database> that specifies a set of named inner
+types.  It is typically composed into a
+function|updater|procedure|outer-type.
+
+An C<InnerTypeSet> has these 4 attributes:
+
+=over
+
+=item C<inner_[sca|nonsca|uni|restr]_types> -
+C<Inner[Sca|Nonsca|Uni|Restr]TypeSet>
+
+These are all the inner scalar|nonscalar|union|restriction type definitions
+that this type contains.
+
+=back
+
+There is a distributed primary key over the C<name> attributes of all of an
+C<InnerTypeSet>'s attributes.  Its default value is empty.
+
 =head2 sys.std.Core.Type.Cat.Inner[Func|Upd|Proc]Set
 
 An C<Inner[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
@@ -1575,6 +1504,164 @@ implementation, besides what C<interface> defines.
 
 An C<Inner[Func|Upd|Proc]Set> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.Inner[Sca|Nonsca|Uni|Restr]TypeSet
+
+An C<Inner[Sca|Nonsca|Uni|Restr]TypeSet> is a C<DHRelation> that specifies
+a set of inner scalar|nonscalar|union|restriction types that a
+function|updater|procedure or scalar|nonscalar|union|restriction type might
+contain.
+
+An C<Inner[Sca|Nonsca|Uni|Restr]TypeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the inner scalar|nonscalar|union|restriction
+type.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the inner
+scalar|nonscalar|union|restriction type as a whole.
+
+=item C<type> - C<Inner[Scalar|Nonscalar|Union|Restr]Type>
+
+This defines the entire inner scalar|nonscalar|union|restriction type sans
+the name.
+
+=back
+
+An C<Inner[Sca|Nonsca|Uni|Restr]TypeSet> has a unary primary key on the
+C<name> attribute.  Its default value is empty.
+
+=head1 TYPES FOR DEFINING ROUTINE HEADINGS
+
+These are all enumeration data types.
+
+=head2 sys.std.Core.Type.Cat.FuncHead
+
+A C<FuncHead> is a C<DHTuple>.  It specifies the entire heading or public
+interface of a function or inner function, except for its name and
+public/private status; the latter are provided by any type embedding this
+one when applicable.
+
+A C<FuncHead> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the function heading.
+
+=item C<result_type> - C<NameChain>
+
+This is the declared result data type of the function as a whole.
+
+=item C<params> - C<NameTypeMap>
+
+This is the declared parameter list of the function, which has 0..N named
+and typed parameters.
+
+=item C<opt_params> - C<set_of.Name>
+
+This indicates the subset of the function's parameters that are optional,
+that is, do not need to be supplied explicit arguments when the function is
+invoked; any function parameters not named here must be supplied explicit
+arguments.  Any parameter marked as optional which is not given an explicit
+argument will implicitly default to the default value of its declared type.
+Each element of C<opt_params> must match a parameter name in C<params>.
+
+=back
+
+The default value of C<FuncHead> has zero parameters and a result type
+of C<Bool>; by default, its parameters are all non-optional.
+
+=head2 sys.std.Core.Type.Cat.UpdHead
+
+An C<UpdHead> is a C<DHTuple>.  It specifies the entire heading or public
+interface of an updater or inner updater, except for its name and
+public/private status; the latter are provided by any type embedding this
+one when applicable.
+
+An C<UpdHead> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the updater heading.
+
+=item C<upd_params> - C<NameTypeMap>
+
+This is the declared subject-to-update parameter list of the updater, which
+has 1..N named and typed such parameters.  It must have at least 1 element.
+
+=item C<ro_params> - C<NameTypeMap>
+
+This is the declared read-only parameter list of the updater, which has
+0..N named and typed such parameters.
+
+=item C<opt_params> - C<set_of.Name>
+
+This indicates the subset of the updater's subject-to-update or read-only
+parameters that are optional, that is, do not need to be supplied explicit
+arguments when the function is invoked; any updater parameters not named
+here must be supplied explicit arguments.  Any parameter marked as optional
+which is not given an explicit argument will implicitly default to the
+default value of its declared type; any subject-to-update parameter marked
+as optional which is not given an explicit argument will implicitly bind to
+a new anonymous variable (with the aforementioned default value) which is
+discarded after the updater finishes executing.  Each element of
+C<opt_params> must match a parameter name in either C<upd_params> or
+C<ro_params>.
+
+=back
+
+There is a distributed primary key over the C<name> attributes of
+C<upd_params> and C<ro_params>.
+
+The default value of C<UpdHead> has 1 subject-to-update parameter whose
+name is C<topic> and whose declared type is C<Bool>; it has zero read-only
+parameters; by default, its parameters are all non-optional.
+
+=head2 sys.std.Core.Type.Cat.ProcHead
+
+A C<ProcHead> is a C<DHTuple>.  It specifies the entire heading or public
+interface of a procedure or inner procedure, except for its name and
+public/private status; the latter are provided by any type embedding this
+one when applicable.
+
+A C<ProcHead> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the procedure heading.
+
+=item C<upd_params> - C<NameTypeMap>
+
+This is the declared subject-to-update parameter list of the procedure,
+which has 0..N named and typed such parameters.
+
+=item C<ro_params> - C<NameTypeMap>
+
+This is the declared read-only parameter list of the procedure, which has
+0..N named and typed such parameters.
+
+=item C<opt_params> - C<set_of.Name>
+
+This is as per the same-named attribute of C<UpdHead>.
+
+=back
+
+There is a distributed primary key over the C<name> attributes of
+C<upd_params> and C<ro_params>.
+
+The default value of C<ProcHead> has zero parameters; by default, its
+parameters are all non-optional.
 
 =head1 TYPES FOR DEFINING INNER ROUTINE BODIES
 
@@ -2584,97 +2671,6 @@ each iteration of the loop; typically it has a sub-tree of statement nodes.
 
 A C<LoopStmtNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
-
-=head1 TYPES FOR DEFINING DATA TYPES
-
-These are all enumeration data types.
-
-=head2 sys.std.Core.Type.Cat.Type
-
-A C<Type> is a C<DHTuple>.  Its purpose is as per
-C<Inner[Scalar|Nonscalar|Union|Restr]Type>, one of which it is a
-wrapper for along with other inner types that are composed into it.
-
-A C<Type> has these 3 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the type as a whole.
-
-=item C<inner_types> - C<InnerTypeSet>
-
-These are all the inner type definitions that this type contains.  There
-must be at least 1 inner type here, and exactly 1 of the inner types must
-have the empty string as its name; that inner type defines the actual main
-type that the C<Type> is a wrapper for, and the other inner types, if
-any, support it.
-
-=item C<inner_funcs> - C<InnerFuncSet>
-
-These are all the inner function definitions that this type contains, which
-support the main type or inner types.
-
-=back
-
-There is a distributed primary key over both the C<name> attributes of all
-the attributes of C<inner_types> and the C<name> attributes of
-C<inner_funcs>.
-
-The default value of C<Type> is as per C<InnerRestrType>.
-
-=head2 sys.std.Core.Type.Cat.InnerTypeSet
-
-An C<InnerTypeSet> is a C<Database> that specifies a set of named inner
-types.  It is typically composed into a
-function|updater|procedure|outer-type.
-
-An C<InnerTypeSet> has these 4 attributes:
-
-=over
-
-=item C<inner_[sca|nonsca|uni|restr]_types> -
-C<Inner[Sca|Nonsca|Uni|Restr]TypeSet>
-
-These are all the inner scalar|nonscalar|union|restriction type definitions
-that this type contains.
-
-=back
-
-There is a distributed primary key over the C<name> attributes of all of an
-C<InnerTypeSet>'s attributes.  Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.Inner[Sca|Nonsca|Uni|Restr]TypeSet
-
-An C<Inner[Sca|Nonsca|Uni|Restr]TypeSet> is a C<DHRelation> that specifies
-a set of inner scalar|nonscalar|union|restriction types that a
-function|updater|procedure or scalar|nonscalar|union|restriction type might
-contain.
-
-An C<Inner[Sca|Nonsca|Uni|Restr]TypeSet> has these 3 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the inner scalar|nonscalar|union|restriction
-type.
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the inner
-scalar|nonscalar|union|restriction type as a whole.
-
-=item C<type> - C<Inner[Scalar|Nonscalar|Union|Restr]Type>
-
-This defines the entire inner scalar|nonscalar|union|restriction type sans
-the name.
-
-=back
-
-An C<Inner[Sca|Nonsca|Uni|Restr]TypeSet> has a unary primary key on the
-C<name> attribute.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING INNER DATA TYPES
 
