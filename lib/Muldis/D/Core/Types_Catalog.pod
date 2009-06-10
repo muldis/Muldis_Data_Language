@@ -76,10 +76,7 @@ more or less:
 
                 # The following are all regular tuple types.
 
-                sys.std.Core.Type.Cat.FuncBody
-                sys.std.Core.Type.Cat.UpdBody
-                sys.std.Core.Type.Cat.ProcBody
-                sys.std.Core.Type.Cat.Type
+                sys.std.Core.Type.Cat.Material
                 sys.std.Core.Type.Cat.FuncHead
                 sys.std.Core.Type.Cat.UpdHead
                 sys.std.Core.Type.Cat.ProcHead
@@ -103,7 +100,6 @@ more or less:
                     sys.std.Core.Type.Cat.Federation
                     sys.std.Core.Type.Cat.Depot
                     sys.std.Core.Type.Cat.Package
-                    sys.std.Core.Type.Cat.InnerTypeSet
                     sys.std.Core.Type.Cat.ExprNodeSet
                     sys.std.Core.Type.Cat.StmtNodeSet
 
@@ -1124,7 +1120,7 @@ and no more detail than necessary about how it is implemented.
 =item C<body> - C<[Func|Upd|Proc]Body>
 
 This defines the entire function|updater|procedure body, that is its
-implementation, besides what C<interface> defines.
+implementation, besides what C<head> defines.
 
 =back
 
@@ -1243,7 +1239,7 @@ and no more detail than necessary about how it is implemented.
 =item C<body> - C<[Func|Upd|Proc]Body>
 
 This defines the entire function|updater|procedure body, that is its
-implementation, besides what C<interface> defines.
+implementation, besides what C<head> defines.
 
 =back
 
@@ -1287,188 +1283,58 @@ default value is empty.
 
 These are all enumeration data types.
 
-=head2 sys.std.Core.Type.Cat.FuncBody
+=head2 sys.std.Core.Type.Cat.Material
 
-A C<FuncBody> is a C<DHTuple>.  It specifies the entire body or
-implementation of a function, besides the details that a C<FuncHead>
-has, one of which each C<FuncBody> typically must be paired with.
+A C<Material> is a C<DHTuple> that specifies a named routine or type, both
+its public interface and its implementation details, except for its name
+and public/private status; the latter are provided by any depot or package
+embedding the material when applicable.  Its purpose is as per
+C<Inner[[[Func|Upd|Proc][Head|Body]]|[Scalar|Nonscalar|Union|Restr]Type]>,
+one of which it is a proxy-wrapper for along with other inner routines and
+types that are composed into it.  A C<Material> is used to define any DBMS
+entity that would be invoked via the second-level namespace C<lib> (hence
+its name is derived from the concept of a library's materials), such as
+C<[fed|dep|sdp|pkg].lib>.  A C<Material> is composed of 1 or more named
+inner routines or types, exactly 1 of which must have the empty string as
+its name; that inner routine or type defines the actual main routine or
+type that the C<Material> is a proxy-wrapper for, and the other inner
+routines and types, if any, support it.  A C<Material> is typically
+composed into a C<Depot> or C<Package>.
 
-A C<FuncBody> has these 4 attributes:
+A C<Material> has these 8 attributes:
 
 =over
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the function body.
-
-=item C<main_body> - C<InnerFuncBody>
-
-This defines the entire main body of the function, namely what's left of
-the function body after parts of it are optionally factored out into inner
-routines or inner types.  It must consist of a value expression whose
-result type is of the result type of the function, and which invokes all of
-the function's parameters.
+This is an optional programmer comment about the material as a whole.
 
 =item C<inner_funcs> - C<InnerFuncSet>
 
-These are all the inner function definitions that this function contains.
-
-=item C<inner_types> - C<InnerTypeSet>
-
-These are all the inner type definitions that this function contains.
-
-=back
-
-There is a distributed primary key over both the C<name> attributes of
-C<inner_funcs> and the C<name> attributes of all the attributes of
-C<inner_types>.
-
-The default value of C<FuncBody> directly corresponds to the default value
-of C<FuncHead> and unconditionally results in the value C<Bool:false>.
-
-=head2 sys.std.Core.Type.Cat.UpdBody
-
-An C<UpdBody> is a C<DHTuple>.  It specifies the entire body or
-implementation of an updater, besides the details that an C<UpdHead>
-has, one of which each C<UpdBody> typically must be paired with.
-
-An C<UpdBody> has these 5 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the updater body.
-
-=item C<main_body> - C<InnerUpdBody>
-
-This defines the entire main body of the updater, namely what's left of the
-updater body after parts of it are optionally factored out into inner
-routines or inner types.  It must consist of a multi-update statement which
-invokes all of the updater's parameters.
+These are all the inner function definitions that this material contains.
 
 =item C<inner_upds> - C<InnerUpdSet>
 
-These are all the inner updater definitions that this updater contains.
-
-=item C<inner_funcs> - C<InnerFuncSet>
-
-These are all the inner function definitions that this updater contains.
-
-=item C<inner_types> - C<InnerTypeSet>
-
-These are all the inner type definitions that this updater contains.
-
-=back
-
-There is a distributed primary key over both the C<name> attributes of
-C<inner_[upds|funcs]> and the C<name> attributes of all the attributes of
-C<inner_types>.
-
-The default value of C<UpdBody> directly corresponds to the default
-value of C<UpdHead> and unconditionally updates its C<topic> argument
-to the value C<Bool:false>.
-
-=head2 sys.std.Core.Type.Cat.ProcBody
-
-A C<ProcBody> is a C<DHTuple>.  It specifies the entire body or
-implementation of a procedure, besides the details that a C<ProcHead>
-has, one of which each C<ProcBody> typically must be paired with.
-
-A C<ProcBody> has these 6 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the procedure body.
-
-=item C<main_body> - C<InnerProcBody>
-
-This defines the entire main body of the procedure, namely what's left of
-the procedure body after parts of it are optionally factored out into inner
-routines or inner types.
+These are all the inner updater definitions that this material contains.
+This attribute must be empty unless the material is a procedure or updater.
 
 =item C<inner_procs> - C<InnerProcSet>
 
-These are all the inner procedure definitions that this procedure contains.
-
-=item C<inner_upds> - C<InnerUpdSet>
-
-These are all the inner updater definitions that this procedure contains.
-
-=item C<inner_funcs> - C<InnerFuncSet>
-
-These are all the inner function definitions that this procedure contains.
-
-=item C<inner_types> - C<InnerTypeSet>
-
-These are all the inner type definitions that this procedure contains.
-
-=back
-
-There is a distributed primary key over both the C<name> attributes of
-C<inner_[procs|upds|funcs]> and the C<name> attributes of all the
-attributes of C<inner_types>.
-
-The default value of C<ProcBody> directly corresponds to the default
-value of C<ProcHead> and is a no-op, having zero statements.
-
-=head2 sys.std.Core.Type.Cat.Type
-
-A C<Type> is a C<DHTuple>.  Its purpose is as per
-C<Inner[Scalar|Nonscalar|Union|Restr]Type>, one of which it is a
-wrapper for along with other inner types that are composed into it.
-
-A C<Type> has these 3 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the type as a whole.
-
-=item C<inner_types> - C<InnerTypeSet>
-
-These are all the inner type definitions that this type contains.  There
-must be at least 1 inner type here, and exactly 1 of the inner types must
-have the empty string as its name; that inner type defines the actual main
-type that the C<Type> is a wrapper for, and the other inner types, if
-any, support it.
-
-=item C<inner_funcs> - C<InnerFuncSet>
-
-These are all the inner function definitions that this type contains, which
-support the main type or inner types.
-
-=back
-
-There is a distributed primary key over both the C<name> attributes of all
-the attributes of C<inner_types> and the C<name> attributes of
-C<inner_funcs>.
-
-The default value of C<Type> is as per C<InnerRestrType>.
-
-=head2 sys.std.Core.Type.Cat.InnerTypeSet
-
-An C<InnerTypeSet> is a C<Database> that specifies a set of named inner
-types.  It is typically composed into a
-function|updater|procedure|outer-type.
-
-An C<InnerTypeSet> has these 4 attributes:
-
-=over
+These are all the inner procedure definitions that this material contains.
+This attribute must be empty unless the material is a procedure.
 
 =item C<inner_[sca|nonsca|uni|restr]_types> -
 C<Inner[Sca|Nonsca|Uni|Restr]TypeSet>
 
 These are all the inner scalar|nonscalar|union|restriction type definitions
-that this type contains.
+that this material contains.
 
 =back
 
-There is a distributed primary key over the C<name> attributes of all of an
-C<InnerTypeSet>'s attributes.  Its default value is empty.
+There is a distributed primary key over the C<name> attributes of all 7 of
+a C<Material>'s C<DHRelation>-typed attributes.
+
+The default value of C<Material> is as per C<InnerRestrType>.
 
 =head2 sys.std.Core.Type.Cat.Inner[Func|Upd|Proc]Set
 
@@ -1498,7 +1364,7 @@ it and no more detail than necessary about how it is implemented.
 =item C<body> - C<Inner[Func|Upd|Proc]Body>
 
 This defines the entire inner function|updater|procedure body, that is its
-implementation, besides what C<interface> defines.
+implementation, besides what C<head> defines.
 
 =back
 
@@ -1536,7 +1402,7 @@ the name.
 An C<Inner[Sca|Nonsca|Uni|Restr]TypeSet> has a unary primary key on the
 C<name> attribute.  Its default value is empty.
 
-=head1 TYPES FOR DEFINING ROUTINE HEADINGS
+=head1 TYPES FOR DEFINING INNER ROUTINE HEADINGS
 
 These are all enumeration data types.
 
