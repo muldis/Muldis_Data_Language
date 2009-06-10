@@ -119,10 +119,8 @@ more or less:
                 sys.std.Core.Type.Cat.FedTypeMap
                 sys.std.Core.Type.Cat.SubdepotSet
                 sys.std.Core.Type.Cat.PackageSet
-                sys.std.Core.Type.Cat.Dep[Func|Upd|Proc]Set
-                sys.std.Core.Type.Cat.DepTypeSet
-                sys.std.Core.Type.Cat.Pkg[Func|Upd|Proc]Set
-                sys.std.Core.Type.Cat.PkgTypeSet
+                sys.std.Core.Type.Cat.DepMaterialSet
+                sys.std.Core.Type.Cat.PkgMaterialSet
                 sys.std.Core.Type.Cat.Inner[Func|Upd|Proc]Set
                 sys.std.Core.Type.Cat.Inner[Sca|Nonsca|Uni|Restr]TypeSet
                 sys.std.Core.Type.Cat.ScaValExprNodeSet
@@ -631,7 +629,7 @@ C<parent> and C<name>.
 
 This is an optional programmer comment about the type as a whole.
 
-=item C<type> - C<Type>
+=item C<type> - C<Material>
 
 This defines the entire type sans the name.
 
@@ -981,7 +979,7 @@ any that exist are arranged in a hierarchy with the depot as the root.  The
 system catalog variables named C<dep.cat> and C<sdp.cat> are both of the
 C<Depot> type.
 
-A C<Depot> has these 8 attributes:
+A C<Depot> has these 5 attributes:
 
 =over
 
@@ -997,16 +995,11 @@ These are all the subdepots that this [|sub]depot contains.
 
 These are all the packages that this [|sub]depot contains.
 
-=item C<functions|updaters|procedures> - C<Dep[Func|Upd|Proc]Set>
+=item C<materials> - C<PkgMaterialSet>
 
-These are all the function|updater|procedure definitions that this
-[|sub]depot contains.
-
-=item C<types> - C<DepTypeSet>
-
-These are all the definitions that this [|sub]depot contains of
-scalar types with possreps, and complete nonscalar types,
-and union types, and restriction types.
+These are all the definitions that this [|sub]depot contains of functions,
+updaters, procedures, scalar types with possreps, complete nonscalar types,
+union types, and restriction types.
 
 =item C<data> - C<maybe_of.NameChain>
 
@@ -1086,78 +1079,38 @@ This defines the entire system catalog of the package.
 A C<PackageSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Dep[Func|Upd|Proc]Set
+=head2 sys.std.Core.Type.Cat.DepMaterialSet
 
-A C<Dep[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
-functions|updaters|procedures that a [|sub]depot might directly contain.
+A C<DepMaterialSet> is a C<DHRelation> that specifies a set of routines and
+types that a [|sub]depot might directly contain.
 
-A C<Dep[Func|Upd|Proc]Set> has these 5 attributes:
-
-=over
-
-=item C<parent> - C<DeclNameChain>
-
-This is the fully-qualified name, in the C<dep.[cat|lib|data]> namespace,
-of the function|updater|procedure's parent [|sub]depot.
-
-=item C<name> - C<Name>
-
-This is the declared name of the function|updater|procedure within the
-namespace defined by C<parent>; other Muldis D code would reference it with
-the combination of C<parent> and C<name>.
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the function|updater|procedure
-as a whole.
-
-=item C<head> - C<[Func|Upd|Proc]Head>
-
-This defines the entire function|updater|procedure heading, that is its
-public interface sans the name, which is all the details of how to use it
-and no more detail than necessary about how it is implemented.
-
-=item C<body> - C<[Func|Upd|Proc]Body>
-
-This defines the entire function|updater|procedure body, that is its
-implementation, besides what C<head> defines.
-
-=back
-
-A C<Dep[Func|Upd|Proc]Set> has a binary primary key on the C<parent>
-plus C<name> attributes.  Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.DepTypeSet
-
-A C<DepTypeSet> is a C<DHRelation> that specifies a set of types that a
-[|sub]depot might directly contain.
-
-A C<DepTypeSet> has these 4 attributes:
+A C<DepMaterialSet> has these 4 attributes:
 
 =over
 
 =item C<parent> - C<DeclNameChain>
 
 This is the fully-qualified name, in the C<dep.[cat|lib|data]> namespace,
-of the type's parent [|sub]depot.
+of the routine's or type's parent [|sub]depot.
 
 =item C<name> - C<Name>
 
-This is the declared name of the type within the namespace defined by
-C<parent>; other Muldis D code would reference it with the combination of
-C<parent> and C<name>.
+This is the declared name of the routine or type within the namespace
+defined by C<parent>; other Muldis D code would reference it with the
+combination of C<parent> and C<name>.
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the type as a whole.
+This is an optional programmer comment about the routine or type as a
+whole.
 
-=item C<type> - C<Type>
+=item C<material> - C<Material>
 
-This defines the entire type sans the name.
+This defines the entire routine or type sans its name.
 
 =back
 
-A C<DepTypeSet> has a binary primary key on the C<parent> plus C<name>
+A C<DepMaterialSet> has a binary primary key on the C<parent> plus C<name>
 attributes.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING PACKAGES
@@ -1174,7 +1127,7 @@ A package internally looks like a depot but that it doesn't contain
 subdepots or other packages.  The system catalog variable named C<pkg.cat>
 is of the C<Package> type.
 
-A C<Package> has these 6 attributes:
+A C<Package> has these 3 attributes:
 
 =over
 
@@ -1182,16 +1135,11 @@ A C<Package> has these 6 attributes:
 
 This is an optional programmer comment about the package as a whole.
 
-=item C<functions|updaters|procedures> - C<Pkg[Func|Upd|Proc]Set>
+=item C<materials> - C<PkgMaterialSet>
 
-These are all the function|updater|procedure definitions that this package
-contains.
-
-=item C<types> - C<PkgTypeSet>
-
-These are all the definitions that this package contains of scalar
-types with possreps, and complete nonscalar types, and union
-types, and restriction types.
+These are all the definitions that this package contains of functions,
+updaters, procedures, scalar types with possreps, complete nonscalar types,
+union types, and restriction types.
 
 =item C<data> - C<maybe_of.NameChain>
 
@@ -1204,79 +1152,38 @@ package does not have a self-local dbvar.
 The default value of C<Package> defines an empty package that does not
 have any self-local dbvar.
 
-=head2 sys.std.Core.Type.Cat.Pkg[Func|Upd|Proc]Set
+=head2 sys.std.Core.Type.Cat.PkgMaterialSet
 
-A C<Pkg[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
-functions|updaters|procedures that a package might contain, where each
-function|updater|procedure may be either public for the DBMS as a whole or
-private to the package.
+A C<PkgMaterialSet> is a C<DHRelation> that specifies a set of routines and
+types that a package might contain, where each routine or type may be
+either public for the DBMS as a whole or private to the package.
 
-A C<Pkg[Func|Upd|Proc]Set> has these 5 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the function|updater|procedure.
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the function|updater|procedure
-as a whole.
-
-=item C<is_public> - C<Bool>
-
-This is C<Bool:true> if the function|updater|procedure is part of the
-package's own public interface and may be invoked from outside the package;
-it is C<Bool:false> if it is just part of the package's internals.
-
-=item C<head> - C<[Func|Upd|Proc]Head>
-
-This defines the entire function|updater|procedure heading, that is its
-public interface sans the name, which is all the details of how to use it
-and no more detail than necessary about how it is implemented.
-
-=item C<body> - C<[Func|Upd|Proc]Body>
-
-This defines the entire function|updater|procedure body, that is its
-implementation, besides what C<head> defines.
-
-=back
-
-A C<Pkg[Func|Upd|Proc]Set> has a unary primary key on the C<name>
-attribute.  Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.PkgTypeSet
-
-A C<PkgTypeSet> is a C<DHRelation> that specifies a set of types that a
-package might contain, where each type may be either public for the DBMS as
-a whole or private to the package.
-
-A C<PkgTypeSet> has these 4 attributes:
+A C<PkgMaterialSet> has these 4 attributes:
 
 =over
 
 =item C<name> - C<Name>
 
-This is the declared name of the type.
+This is the declared name of the routine or type.
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the type as a whole.
+This is an optional programmer comment about the routine or type as a
+whole.
 
 =item C<is_public> - C<Bool>
 
-This is C<Bool:true> if the type is part of the package's own public
-interface and may be directly invoked from outside the package; it is
+This is C<Bool:true> if the routine or type is part of the package's own
+public interface and may be invoked from outside the package; it is
 C<Bool:false> if it is just part of the package's internals.
 
-=item C<type> - C<Type>
+=item C<material> - C<Material>
 
-This defines the entire type sans the name.
+This defines the entire routine or type sans its name.
 
 =back
 
-A C<PkgTypeSet> has a unary primary key on the C<name> attribute.  Its
+A C<PkgMaterialSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.
 
 =head1 TYPES FOR DEFINING ROUTINES AND DATA TYPES
