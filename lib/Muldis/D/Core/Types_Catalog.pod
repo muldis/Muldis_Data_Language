@@ -61,7 +61,6 @@ more or less:
                     sys.std.Core.Type.Cat.UCPString
                 sys.std.Core.Type.Cat.Name
                 sys.std.Core.Type.Cat.NameChain
-                    sys.std.Core.Type.Cat.OrdDetFuncNameChain
                 sys.std.Core.Type.Cat.DeclNameChain
                 sys.std.Core.Type.Cat.Comment
                 sys.std.Core.Type.Cat.Order
@@ -133,8 +132,7 @@ more or less:
                 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
                 sys.std.Core.Type.Cat.IfElseExprNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
-                sys.std.Core.Type.Cat.[Func|Proc|Type]RefSelExprNodeSet
-                sys.std.Core.Type.Cat.OrdDetFuncRefSelExprNodeSet
+                sys.std.Core.Type.Cat.MaterialRefSelExprNodeSet
                 sys.std.Core.Type.Cat.MultiUpdStmt
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
                 sys.std.Core.Type.Cat.CompoundStmtNodeSet
@@ -171,10 +169,11 @@ catalog, or any database, but they may be used temporarily at runtime:
 
             # The following are special-purpose reference types.
 
-            sys.std.Core.Type.Cat.FuncRef
-            sys.std.Core.Type.Cat.ProcRef
-            sys.std.Core.Type.Cat.TypeRef
-            sys.std.Core.Type.Cat.OrdDetFuncRef
+            sys.std.Core.Type.Cat.MaterialRef
+                sys.std.Core.Type.Cat.FuncRef
+                    sys.std.Core.Type.Cat.OrdDetFuncRef
+                sys.std.Core.Type.Cat.ProcRef
+                sys.std.Core.Type.Cat.TypeRef
 
 =head1 SIMPLE GENERIC SCALAR TYPES
 
@@ -370,17 +369,6 @@ implementation hint for less intelligent Muldis D implementations, that
 suggests using the C<int> possrep as the basis for the physical
 representation.
 
-=head2 sys.std.Core.Type.Cat.OrdDetFuncNameChain
-
-This is an enumeration data type.  The C<OrdDetFuncNameChain> type is
-defined as a non-proper / identical subtype of the C<NameChain> type that
-has a different default value, which is C<sys.std.Core.Scalar.order>
-rather than C<.>.  This type is conceptually intended for use as the
-declared type of a routine parameter that would take the name of an
-C<order_determination> function, but that parameter is optional and should
-default to the system-defined scalar ordering function when no argument
-is given to it.
-
 =head2 sys.std.Core.Type.Cat.RatRoundMeth
 
 This is a structure data type.  C<RatRoundMeth> (rounding method) consists
@@ -474,19 +462,18 @@ functions|updaters|procedures.
 These are the few central system-defined data types that have special
 hard-coded meanings and are not defined like any other types; these are
 declarations of all of the native Muldis D types that can't be defined like
-user-defined types.  Specifically, it declares these 12 standard types: in
+user-defined types.  Specifically, it declares these 9 standard types: in
 the C<sys.std.Core.Type> namespace, C<Universal>, C<Empty>, C<Scalar>,
 C<Tuple>, C<Relation>, C<Reference>, C<External>; in the
-C<sys.std.Core.Type.Cat> namespace, C<String> and
-C<[Func|Proc|Type|OrdDetFunc]Ref>.  These constitute all 2 Muldis D
-primitive types, all 5 Muldis D reference types, all 2 Muldis D type system
-minimal and maximal (enumeration) types, all 3 Muldis D enumeration types
-that are each implicit maximal types of 2 of 4 non-remnant type categories
-(the other 2
-such maximals are primitive types), and the 1 sole scalar enumeration type
-that is defined in terms of an infinite number of singleton structure types
-(and those structure types are not listed individually in the system
-catalog at all, for what should be obvious reasons).
+C<sys.std.Core.Type.Cat> namespace, C<String> and C<MaterialRef>.  These
+constitute all 2 Muldis D primitive types, all 2 Muldis D reference types,
+all 2 Muldis D type system minimal and maximal (enumeration) types, all 3
+Muldis D enumeration types that are each implicit maximal types of 2 of 4
+non-remnant type categories (the other 2 such maximals are primitive
+types), and the 1 sole scalar enumeration type that is defined in terms of
+an infinite number of singleton structure types (and those structure types
+are not listed individually in the system catalog at all, for what should
+be obvious reasons).
 
 =item C<types> - C<SysTypeSet>
 
@@ -995,7 +982,7 @@ These are all the subdepots that this [|sub]depot contains.
 
 These are all the packages that this [|sub]depot contains.
 
-=item C<materials> - C<PkgMaterialSet>
+=item C<materials> - C<DepMaterialSet>
 
 These are all the definitions that this [|sub]depot contains of functions,
 updaters, procedures, scalar types with possreps, complete nonscalar types,
@@ -1510,7 +1497,7 @@ for a subject-to-update parameter of an [|inner ]update operator call; in
 that case the leaf nodes / only node of the expression must map to a
 subject-to-update parameter of the containing [|inner ]update operator.
 
-An C<ExprNodeSet> has these 14 attributes:
+An C<ExprNodeSet> has these 11 attributes:
 
 =over
 
@@ -1558,12 +1545,9 @@ These are expression nodes that represent if-else control flow expressions.
 These are expression nodes that represent given-when-default control flow
 expressions.
 
-=item C<[func|proc|type|ord_det_func]_ref_sel_exprs> -
-C<[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet>
+=item C<material_ref_sel_exprs> - C<MaterialRefSelExprNodeSet>
 
-These are expression nodes that define
-function|imperative-routine|type|order-determination-function reference
-literals.
+These are expression nodes that define routine or type reference literals.
 
 =back
 
@@ -1946,15 +1930,13 @@ given-when-default.
 A C<GivenWhenDefExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet
+=head2 sys.std.Core.Type.Cat.MaterialRefSelExprNodeSet
 
-A C<[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet> is a C<DHRelation>
-that specifies a set of expression nodes where each node represents a value
-of the special C<sys.std.Core.Type.Cat.[Func|Proc|Type|OrdDetFunc]Ref>
-type.
+A C<MaterialRefSelExprNodeSet> is a C<DHRelation> that specifies a set of
+expression nodes where each node represents a value of the special
+C<sys.std.Core.Type.Cat.MaterialRef> type.
 
-A C<[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet> has these 3
-attributes:
+A C<MaterialRefSelExprNodeSet> has these 3 attributes:
 
 =over
 
@@ -1969,15 +1951,14 @@ This is an optional programmer comment about the expression leaf node.
 =item C<referencing> - C<NameChain>
 
 This is the name, from the point of view of the routine embedding this
-expression node, of the
-function|imperative-routine|type|order-determination-function that the new
-special reference value is supposed to facilitate portable invoking of.
+expression node, of the routine or type that the new special reference
+value is supposed to facilitate portable invoking of.
 
 =back
 
-A C<[Func|Proc|Type|OrdDetFunc]RefSelExprNodeSet> has a unary (unique)
-key on the C<name> attribute, plus another such key on the C<referencing>
-attribute.  Its default value is empty.
+A C<MaterialRefSelExprNodeSet> has a unary (unique) key on the C<name>
+attribute, plus another such key on the C<referencing> attribute.  Its
+default value is empty.
 
 =head2 sys.std.Core.Type.Cat.InnerUpdBody
 
@@ -3634,36 +3615,47 @@ There are also similar special types here for referencing data types, but
 not for as many of the reasons.  Maybe another advantage of all of the
 above is that this can help compile-time type checking.
 
+=head2 sys.std.Core.Type.Cat.MaterialRef
+
+This is a reference data type.  A C<MaterialRef> is functionally like a
+smart C<NameChain> that holds a routine or type name but it remembers the
+context of its creation.  Its default value is as per C<Material>, which is
+a reference to the C<sys.std.Core.Type.Universal> data type.
+
 =head2 sys.std.Core.Type.Cat.FuncRef
 
-This is a reference data type.  A C<FuncRef> is functionally like a
-smart C<NameChain> that holds a function name but it remembers the
-context of its creation.  It is used to implement a higher-order function
-or a functional closure.  Its default value is a reference to the
+This is an enumeration data type.  C<FuncRef> is a proper subtype of
+C<MaterialRef> where every member value's conceptual C<NameChain> is a
+function name.  It is used to implement a higher-order function or a
+functional closure.  Its default value is a reference to the
 C<sys.std.Core.Universal.is_identical> function.
-
-=head2 sys.std.Core.Type.Cat.ProcRef
-
-This is a reference data type.  A C<ProcRef> is functionally like a
-smart C<NameChain> that holds an imperative routine name but it
-remembers the context of its creation.  It is used to implement an
-imperative closure.  Its default value is a reference to the
-C<sys.std.Core.Universal.assign> updater.
-
-=head2 sys.std.Core.Type.Cat.TypeRef
-
-This is a reference data type.  A C<TypeRef> is functionally like a
-smart C<NameChain> that holds a data type name but it remembers the
-context of its creation.  It is used in places where the name of a data
-type to 'use' would be taken as a routine argument.  Its default value is a
-reference to the C<sys.std.Core.Type.Bool> data type.
 
 =head2 sys.std.Core.Type.Cat.OrdDetFuncRef
 
-This is a reference data type.  An C<OrdDetFuncRef> is to an
-C<OrdDetFuncNameChain> what a C<FuncRef> is to a C<NameChain>;
-it implements a functional closure but its default value is a reference to
-to the C<sys.std.Core.Scalar.order> function.
+This is an enumeration data type.  C<OrdDetFuncRef> is a proper subtype of
+C<FuncRef> where every member value's conceptual C<NameChain> is a
+C<order_determination> function name.  Its default value is a reference to
+the C<sys.std.Core.Scalar.order> function.  This type is conceptually
+intended for use as the declared type of a routine parameter that would
+take the name of an C<order_determination> function, but that parameter is
+optional and should default to the system-defined scalar ordering function
+when no argument is given to it.
+
+=head2 sys.std.Core.Type.Cat.ProcRef
+
+This is an enumeration data type.  C<ProcRef> is a proper subtype of
+C<MaterialRef> where every member value's conceptual C<NameChain> is an
+imperative routine name.  It is used to implement an imperative closure.
+Its default value is a reference to the C<sys.std.Core.Universal.assign>
+updater.
+
+=head2 sys.std.Core.Type.Cat.TypeRef
+
+This is an enumeration data type.  C<TypeRef> is a proper subtype of
+C<MaterialRef> where every member value's conceptual C<NameChain> is a data
+type name.  It is used in places where the name of a data type to 'use'
+would be taken as a routine argument.  Its default value is a reference to
+the C<sys.std.Core.Type.Universal> data type, the same as C<MaterialRef>.
 
 =head1 SEE ALSO
 
