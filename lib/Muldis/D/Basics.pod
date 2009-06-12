@@ -1619,9 +1619,7 @@ Note that, in an environment where Muldis D is being hosted under another
 language, the other language may only directly invoke these 4 kinds of
 routines: C<function>, C<updater>, C<system_service>, C<procedure>.
 
-=over
-
-=item C<function>
+=head2 function, inner_function
 
 A C<function> is an explicitly invokable read-only operator whose
 invocation both results in and represents a value of a specific data type
@@ -1641,8 +1639,6 @@ routines are C<function>; they include all value selectors, and the typical
 numeric, string, and relational operators, such that you would compose a
 typical database "select" query out of.
 
-=item C<inner_function>
-
 An C<inner_function> is the same as a C<function>, but that it is
 quasi-lexically scoped within another, non-lexical routine or type
 definition, and it is only visible within or invokable by either its parent
@@ -1655,7 +1651,7 @@ anonymous function defined within its parent routine for use as a
 function-valued argument of some other routine call; or to implement what
 is conceptually a self-referencing/cyclic expression.
 
-=item C<type_constraint>
+=head2 type_constraint
 
 A C<type_constraint> is the same as an C<inner_function>, but that it is
 part of the definition of a data type (every data type composes 0..N
@@ -1689,7 +1685,7 @@ which that database is.  Conceptually speaking, a C<type_constraint> will
 execute as the beginning part of a statement, prior to any attempt to
 update any variable's state or affect the environment.
 
-=item C<state_constraint>
+=head2 state_constraint
 
 A C<state_constraint> is the same as a C<type_constraint> except that it is
 not part of the definition of a data type, but rather it is associated with
@@ -1711,7 +1707,7 @@ logical C<and> of the individual constraints.  Conceptually speaking, a
 C<state_constraint> will execute after all C<type_constraint> and before
 all C<transition_constraint>.
 
-=item C<transition_constraint>
+=head2 transition_constraint
 
 A C<transition_constraint> is the same as a C<state_constraint> except that
 rather than 1 C<topic> parameter, it takes exactly 2 same-typed parameters
@@ -1729,7 +1725,7 @@ otherwise; in the case of a multi-update statement, all the updates would
 happen simultaneously, so a transition failure for any update would prevent
 all that statement's updates from occurring.
 
-=item C<type_default>
+=head2 type_default
 
 A C<type_default> is the same as an C<inner_function>, but that it is part
 of the definition of a (not-C<Empty>) data type rather than a routine, and
@@ -1739,7 +1735,7 @@ variable whose declared type is that type (a variable must always hold a
 valid value of its declared type).  A C<type_default> has zero parameters
 and unconditionally results in the same value of the type.
 
-=item C<possrep_map>
+=head2 possrep_map
 
 A C<possrep_map> is the same as an C<inner_function>, but that it is part
 of the definition of a scalar data type, and it is used to convert
@@ -1751,7 +1747,7 @@ converted to.  Note that every distinct argument (domain) value of this
 function must have a distinct result (range) value, as it is a 1:1 mapping
 function.
 
-=item C<virtual_attr_map>
+=head2 virtual_attr_map
 
 A C<virtual_attr_map> is the same as a C<possrep_map> except that its range
 may be (and typically is) smaller than its domain, it is usually part of
@@ -1775,15 +1771,16 @@ attributes can all be virtual; the DBMS can store just the determinant
 attributes, and the dependent attributes can be generated when needed (or
 they can still be pre-computed and stored for performance).
 
-=item C<order_determination>
+=head2 order_determination
 
 An C<order_determination> is the same as an C<inner_function>, but that it
 is structured to fill the role of a I<system-compatible fundamental
 order-determination function>; see the L</Ordered Types> pod section in
-this file for more details.  An C<order_determination> has 3 arguments
-named [C<topic>, C<other>, C<assuming>] and results in an C<Order>.
+this file for more details.  An C<order_determination> has exactly 4
+parameters named [C<topic>, C<other>, C<assuming>, C<is_reverse_order>] and
+results in an C<Order>.
 
-=item C<updater>
+=head2 updater, inner_updater
 
 An C<updater> (update operator) is the same as a C<function>, but that it
 is imperative rather than functional (its invocation does not result in or
@@ -1806,12 +1803,10 @@ C<updater>; they include all C<assign> operators, plus some
 relational-assignment short-hands such as "assign_insertion",
 "assign_substitution", "assign_deletion".
 
-=item C<inner_updater>
-
 An C<inner_updater> (inner update operator) is to an C<updater> what an
 C<inner_function> is to a C<function>.
 
-=item C<system_service>
+=head2 system_service
 
 A C<system_service> is an explicitly invokable system-defined procedure
 with 0..N parameters that can reach outside of the more deterministic DBMS
@@ -1824,7 +1819,7 @@ C<system_service> can have side-effects outside of the DBMS, but it will
 not alter anything inside the DBMS aside from any of its subject-to-update
 parameters; it can not see any global variables.
 
-=item C<procedure>
+=head2 procedure, inner_procedure
 
 A C<procedure> is an explicitly invokable routine with 0..N parameters and
 0..N lexical variables that can directly see and update global variables
@@ -1852,19 +1847,17 @@ operator that derives a tuple sequence from a relation without fully
 sorting the tuples, because the result is fundamentally random and
 non-repeatable.
 
-=item C<inner_procedure>
-
 An C<inner_procedure> is to an C<procedure> what an C<inner_function> is to
 a C<function>.
 
-=item C<bootloader_exclusive>
+=head2 bootloader_exclusive
 
 A C<bootloader_exclusive> is the same as C<system_service> but that it can
 not be directly invoked except as a statement of a C<bootloader>; it also
 has no subject-to-update parameters.  Examples of this routine kind are
 standalone transaction initiation and termination statements.
 
-=item C<bootloader>
+=head2 bootloader
 
 A C<bootloader> is a very simple routine whose fundamental purpose is to
 load or create the depot that contains the user-defined C<procedure> that
@@ -1898,7 +1891,7 @@ C<bootloader> routine.  Note that a C<bootloader> can not directly invoke
 statements conditionally, so all of its statements will run unless the
 sequence is stopped early by a thrown exception in one.
 
-=back
+=head2 Other Matters
 
 In a mixed-language application, where Muldis D code is invoked by another
 host language, it is unlikely that there would be any Muldis D "main
