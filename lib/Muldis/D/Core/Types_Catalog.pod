@@ -136,7 +136,7 @@ more or less:
                 sys.std.Core.Type.Cat.MultiUpdStmt
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
                 sys.std.Core.Type.Cat.CompoundStmtNodeSet
-                sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
+                sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
                 sys.std.Core.Type.Cat.IfElseStmtNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
                 sys.std.Core.Type.Cat.IterateStmtNodeSet
@@ -172,7 +172,8 @@ catalog, or any database, but they may be used temporarily at runtime:
             sys.std.Core.Type.Cat.MaterialRef
                 sys.std.Core.Type.Cat.FuncRef
                     sys.std.Core.Type.Cat.OrdDetFuncRef
-                sys.std.Core.Type.Cat.ProcRef
+                sys.std.Core.Type.Cat.ImpRef
+                    sys.std.Core.Type.Cat.UpdRef
                 sys.std.Core.Type.Cat.TypeRef
 
 =head1 SIMPLE GENERIC SCALAR TYPES
@@ -455,7 +456,8 @@ implementation-specific extensions.
 =item C<functions|updaters|procedures> - C<Sys[Func|Upd|Proc]Set>
 
 These are the interfaces of all the system-defined
-functions|updaters|procedures.
+functions|updaters|procedures.  (Note that C<procedures> also specifies the
+system-defined system services and bootloader exclusives.)
 
 =item C<special_types> - C<SysSpecTypeSet>
 
@@ -528,7 +530,8 @@ C<name> attributes.  Its default value is empty.
 =head2 sys.std.Core.Type.Cat.Sys[Func|Upd|Proc]Set
 
 A C<Sys[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
-system-defined functions|updaters|procedures.
+system-defined functions|updaters|procedures.  (Note that C<SysProcSet>
+also specifies the system-defined system services, bootloader exclusives.)
 
 A C<Sys[Func|Upd|Proc]Set> has these 4 attributes:
 
@@ -2128,9 +2131,9 @@ These are statement nodes that represent abnormal block exit statements.
 These are statement nodes that each represent a compound statement having a
 sequence of 0..N procedure statements.
 
-=item C<proc_invo_stmts> - C<ProcInvoStmtNodeSet>
+=item C<imp_invo_stmts> - C<ImpInvoStmtNodeSet>
 
-These are statement nodes that represent [|inner ]procedure invocations.
+These are statement nodes that represent imperative routine invocations.
 
 =item C<if_else_stmts> - C<IfElseStmtNodeSet>
 
@@ -2221,15 +2224,15 @@ execute in this given sequence.
 A C<CompoundStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
+=head2 sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
 
-A C<ProcInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
-statement nodes where each node is an invocation of some other procedural
+An C<ImpInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
+statement nodes where each node is an invocation of some other imperative
 routine (eg, procedure, update operator, system service, 'inner' variant)
 with specific arguments.  The invoked routine can be either user-defined or
 system-defined.
 
-A C<ProcInvoStmtNodeSet> has these 5 attributes:
+An C<ImpInvoStmtNodeSet> has these 5 attributes:
 
 =over
 
@@ -2242,9 +2245,9 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<procedure> - C<NameChain>
+=item C<imperative> - C<NameChain>
 
-This is the name of the procedural routine being invoked.
+This is the name of the imperative routine being invoked.
 
 =item C<upd_args> - C<NameExprMap>
 
@@ -2261,7 +2264,7 @@ value.
 
 =back
 
-A C<ProcInvoStmtNodeSet> has a unary primary key on the C<name>
+An C<ImpInvoStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.  There is a distributed primary
 key over the C<name> attributes of C<upd_args> and C<ro_args>.
 
@@ -3633,21 +3636,26 @@ C<sys.std.Core.Universal.is_identical> function.
 =head2 sys.std.Core.Type.Cat.OrdDetFuncRef
 
 This is an enumeration data type.  C<OrdDetFuncRef> is a proper subtype of
-C<FuncRef> where every member value's conceptual C<NameChain> is a
-C<order_determination> function name.  Its default value is a reference to
-the C<sys.std.Core.Scalar.order> function.  This type is conceptually
-intended for use as the declared type of a routine parameter that would
-take the name of an C<order_determination> function, but that parameter is
-optional and should default to the system-defined scalar ordering function
-when no argument is given to it.
+C<FuncRef> that is a reference to an C<order_determination> function.  Its
+default value is a reference to the C<sys.std.Core.Scalar.order> function.
+This type is conceptually intended for use as the declared type of a
+routine parameter that would take the name of an C<order_determination>
+function, but that parameter is optional and should default to the
+system-defined scalar ordering function when no argument is given to it.
 
-=head2 sys.std.Core.Type.Cat.ProcRef
+=head2 sys.std.Core.Type.Cat.ImpRef
 
-This is an enumeration data type.  C<ProcRef> is a proper subtype of
+This is an enumeration data type.  C<ImpRef> is a proper subtype of
 C<MaterialRef> where every member value's conceptual C<NameChain> is an
 imperative routine name.  It is used to implement an imperative closure.
 Its default value is a reference to the C<sys.std.Core.Universal.assign>
 updater.
+
+=head2 sys.std.Core.Type.Cat.UpdRef
+
+This is an enumeration data type.  C<UpdRef> is a proper subtype of
+C<ImpRef> that is a reference to an updater.  Its default value is the same
+as that of C<ImpRef>.
 
 =head2 sys.std.Core.Type.Cat.TypeRef
 

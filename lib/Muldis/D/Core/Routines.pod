@@ -1374,7 +1374,7 @@ dropped SQL table column.
 
 =head2 sys.std.Core.Control.upd_invo
 
-C<updater sys.std.Core.Control.upd_invo (ProcRef $updater,
+C<updater sys.std.Core.Control.upd_invo (UpdRef $updater,
 Tuple &$upd_args, Tuple $ro_args?)>
 
 This update operator has the same purpose and features as
@@ -1473,14 +1473,14 @@ error rather than standard output.
 
 These procedures are applicable to use in all kinds of procedures.
 
-=head2 sys.std.Core.Control.proc_invo
+=head2 sys.std.Core.Control.imp_invo
 
-C<procedure sys.std.Core.Control.proc_invo (ProcRef $procedure,
+C<procedure sys.std.Core.Control.imp_invo (ImpRef $imperative,
 Tuple &$upd_args?, Tuple $ro_args?)>
 
 This procedure is the same as C<sys.std.Core.Control.upd_invo> but that it
-invokes a procedure rather than an updater, and that C<upd_args> is
-optional.
+invokes any kind of imperative routine rather than just an updater, and
+that C<upd_args> is optional.
 
 =head2 sys.std.Core.Control.fail
 
@@ -1491,23 +1491,23 @@ in the call stack unwinding, and transaction rollbacks, until it is caught.
 
 =head2 sys.std.Core.Control.try_catch
 
-C<procedure sys.std.Core.Control.try_catch (ProcRef $try,
-Tuple &$try_updating?, Tuple $try_assuming?, ProcRef $catch,
+C<procedure sys.std.Core.Control.try_catch (ImpRef $try,
+Tuple &$try_updating?, Tuple $try_assuming?, ImpRef $catch,
 Tuple &$catch_updating?, Tuple $catch_assuming?)>
 
-This procedure invokes the procedure named in its C<try> argument, giving
-it the arguments C<try_updating> and C<try_assuming> as its C<updating> and
-C<assuming> arguments, respectively.  If the C<try> procedure throws an
-exception, then any state changes it made roll back (but changes made
-before that don't), and the call stack unwinds to the C<try_catch> itself;
-then the procedure named by C<catch> is invoked similarly to C<try> was,
-with corresponding arguments, but with the extra read-only argument
-C<topic> whose value is an C<Exception>; if the C<catch> procedure also
-throws an exception (such as to say its not handling the thrown one), then
-that one is not caught and the call stack unwinding plus applicable
+This procedure invokes the imperative routine named in its C<try> argument,
+giving it the arguments C<try_updating> and C<try_assuming> as its
+C<updating> and C<assuming> arguments, respectively.  If the C<try> routine
+throws an exception, then any state changes it made roll back (but changes
+made before that don't), and the call stack unwinds to the C<try_catch>
+itself; then the imperative routine named by C<catch> is invoked similarly
+to C<try> was, with corresponding arguments, but with the extra read-only
+argument C<topic> whose value is an C<Exception>; if the C<catch> routine
+also throws an exception (such as to say its not handling the thrown one),
+then that one is not caught and the call stack unwinding plus applicable
 transaction rollback carries on to the caller of the C<try_catch>.  If the
-C<try> procedure succeeds (doesn't throw an exception), then the C<catch>
-procedure is not called.  Each of the C<[try|catch]_[updating|assuming]>
+C<try> routine succeeds (doesn't throw an exception), then the C<catch>
+routine is not called.  Each of the C<[try|catch]_[updating|assuming]>
 parameters is optional and defaults to the zero-attribute tuple if no
 explicit argument is given to it.
 
