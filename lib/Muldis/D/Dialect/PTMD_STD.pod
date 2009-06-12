@@ -424,7 +424,8 @@ C<value_kind> of C<Comment> means that that particular C<Comment> literal
 is to be treated as ordinary data like with any GCVL.
 
 For just these certain special values of other data types, the same option
-of omitting the C<value_kind> (and C<type_name>) applies: C<Maybe:nothing>.
+of omitting the C<value_kind> (and C<type_name>) applies: C<Tuple:d0>,
+C<Relation:d0c0>, C<Relation:d0c1>, C<Maybe:nothing>.
 
 =item C<type_name>
 
@@ -1408,20 +1409,32 @@ Grammar:
         <Tuple_payload>
 
     <Tuple_payload> ::=
+        <tuple_list> | <tuple_d0>
+
+    <tuple_list> ::=
         '{' \s*
             [[<Name_payload> \s* '=>' \s* <expr>] ** [\s* ',' \s*]]?
         \s* '}'
 
-A C<Tuple> node represents a literal or selector invocation for a
-tuple value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Tuple> value whose attributes are defined by the
-C<Tuple_payload>.  Each name+expr pair of the C<Tuple_payload> defines a
-named attribute of the new tuple; the pair's name and expr specify,
-respectively, the attribute name, and the attribute value.  If the
-C<value_kind> of a C<value> node is C<DHTuple> rather than C<Tuple>, then
-the C<value> node is interpreted simply as an C<Tuple> node that is
-appropriately further restricted; the C<Tuple_payload> must specify only
-deeply homogeneous typed attribute values.
+    <tuple_d0> ::=
+        d0
+
+A C<Tuple> node represents a literal or selector invocation for a tuple
+value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Tuple> value
+whose attributes are defined by the C<Tuple_payload>.
+
+Iff the C<Tuple_payload> is a C<tuple_list> then each name+expr pair of the
+C<Tuple_payload> defines a named attribute of the new tuple; the pair's
+name and expr specify, respectively, the attribute name, and the attribute
+value.  If the C<value_kind> of a C<value> node is C<DHTuple> rather than
+C<Tuple>, then the C<value> node is interpreted simply as an C<Tuple> node
+that is appropriately further restricted; the C<Tuple_payload> must specify
+only deeply homogeneous typed attribute values.
+
+Iff the C<Tuple_payload> is a C<tuple_d0> then the C<Tuple> node is
+interpreted as the special value C<Tuple:d0> aka C<d0>, which is the only
+C<Tuple> value with exactly zero attributes.  Note that this is just an
+alternative syntax, as C<tuple_list> can select that value too.
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what in
@@ -1431,6 +1444,10 @@ C<depot> or C<boot_stmt> node, as it describes some semantics.
 Examples:
 
     Tuple:{}
+
+    Tuple:d0  # same as previous #
+
+    d0  # same as previous #
 
     Tuple:type.tuple_from.var.fed.data.the_db.account.users:{
         login_name => 'hartmark',
@@ -1482,6 +1499,7 @@ Grammar:
           <r_empty_qbody_payload>
         | <r_nonordered_attr_payload>
         | <r_ordered_attr_payload>
+        | <relation_d0>
 
     <r_empty_qbody_payload> ::=
         '{' \s*
@@ -1506,6 +1524,9 @@ Grammar:
         '[' \s*
             [<expr> ** [\s* ',' \s*]]?
         \s* ']'
+
+    <relation_d0> ::=
+        d0c0 | d0c1
 
 A C<Relation> node represents a literal or selector invocation for a
 relation value.  It is interpreted as a Muldis D
@@ -1539,6 +1560,12 @@ corresponding attribute names appear in the collection of C<Name_payload>
 elements, as the names and values in the relation literal are matched up by
 ordinal position here.
 
+Iff the C<Relation_payload> is a C<relation_d0> then the C<Relation> node
+is interpreted as one of the 2 special values C<Relation:d[0|1]> aka
+C<d[0|1]>, which are the only C<Relation> values with exactly zero
+attributes.  Note that this is just an alternative syntax, as other
+C<Relation_payload> formats can select those values too.
+
 If the C<value_kind> of a C<value> node is C<DHRelation> rather than
 C<Relation>, then the C<value> node is interpreted simply as an
 C<Relation> node that is appropriately further restricted; the
@@ -1553,9 +1580,13 @@ Examples:
 
     Relation:{}  # zero attrs + zero tuples #
 
+    Relation:d0c0  # same as previous #
+
     Relation:{ x, y, z }  # 3 attrs + zero tuples #
 
     Relation:{ {} }  # zero attrs + 1 tuple #
+
+    d0c1  # same as previous #
 
     Relation:{
         {
