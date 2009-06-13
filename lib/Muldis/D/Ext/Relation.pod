@@ -179,15 +179,15 @@ problem of finding all components, at all levels, of some specified part).
 =head2 sys.std.Relation.classification
 
 C<< function sys.std.Relation.classification (Relation <-- Relation $topic,
-FuncRef $func, Tuple $assuming?, Name $class_attr_name,
+ValMapFuncRef $func, Tuple $assuming?, Name $class_attr_name,
 Name $group_attr_name) >>
 
 This function conceptually is to C<sys.std.Core.Relation.restriction> what
 C<sys.std.Core.Relation.group> is to C<sys.std.Core.Relation.semijoin>.
-It classifies the tuples of C<topic> into N groups using the function
-named by C<func>, such that any distinct tuples are in a common group if
-the function named by C<func> results in the same value when given either
-of those tuples as its C<topic> argument, and C<assuming> as its
+It classifies the tuples of C<topic> into N groups using the C<value_map>
+function named by C<func>, such that any distinct tuples are in a common
+group if the function named by C<func> results in the same value when given
+either of those tuples as its C<topic> argument, and C<assuming> as its
 C<assuming> argument.  This function conceptually is a short-hand for first
 extending C<topic> with a new attribute whose name is given in
 C<class_attr_name>, whose value per tuple is determined from C<topic> using
@@ -203,13 +203,14 @@ into exactly 2 groups (and returning one) using arbitrary criteria.
 =head2 sys.std.Relation.reduction
 
 C<< function sys.std.Relation.reduction (Tuple <-- Relation $topic,
-FuncRef $func, Tuple $assuming?, Tuple $identity) >>
+ValRedFuncRef $func, Tuple $assuming?, Tuple $identity) >>
 
 This function is a generic reduction operator that recursively takes each
 pair of tuples in C<topic> and applies an argument-specified tuple
-value-resulting function (which is both commutative and associative) to the
-pair until just one input tuple is left, which is the result.  The
-function to apply is named in the C<func> argument, and that function must
+value-resulting C<value_reduction> function (which is both commutative and
+associative) to the pair until just one input tuple is left, which is the
+result.  The C<value_reduction> function to apply is named in the C<func>
+argument, and that function must
 have 3 arguments named C<v1>, C<v2>, C<assuming>; the last parameter is
 curried with the same-named argument of C<reduction>, and the first 2
 parameters are the 2 input tuples for an invocation.  If C<topic> has
@@ -222,7 +223,7 @@ compatible.
 =head2 sys.std.Relation.maybe_reduction
 
 C<< function sys.std.Relation.maybe_reduction (maybe_of.Tuple <--
-Relation $topic, FuncRef $func, Tuple $assuming?) >>
+Relation $topic, ValRedFuncRef $func, Tuple $assuming?) >>
 
 This function is exactly the same as C<sys.std.Relation.reduction> except
 that it does not take an C<identity> argument, and it results in a
@@ -232,14 +233,15 @@ elements if the argument has zero elements.
 =head2 sys.std.Relation.map
 
 C<< function sys.std.Relation.map (Relation <-- Relation $topic,
-set_of.Name $result_attr_names, FuncRef $func, Tuple $assuming?) >>
+set_of.Name $result_attr_names, ValMapFuncRef $func, Tuple $assuming?) >>
 
 This function provides a convenient one-place generalization of per-tuple
 transformations that otherwise might require the chaining of up to a
-half-dozen other operators like restriction, extension, and rename.  This
+half-dozen other operators like projection, extension, and rename.  This
 function results in a relation each of whose tuples is the result of
 applying, to each of the tuples of its C<topic> argument, the
-C<Tuple>-resulting function named in its C<func> argument when the latter
+C<Tuple>-resulting C<value_map> function named in its C<func> argument when
+the latter
 function is curried by its C<assuming> argument.  There is no restriction
 on what attributes the result tuple of C<func> may have (except that all
 tuples from C<func> must have compatible headings); this tuple from
@@ -460,12 +462,13 @@ tuple if no explicit argument is given to it.
 =head2 sys.std.Relation.substitution
 
 C<< function sys.std.Relation.substitution (Relation <-- Relation $topic,
-set_of.Name $attr_names, FuncRef $func, Tuple $assuming?) >>
+set_of.Name $attr_names, ValMapFuncRef $func, Tuple $assuming?) >>
 
 This function is similar to C<extension> except that it substitutes values
 of existing relation attributes rather than adding new attributes.  The
 result relation has the same heading as C<topic>.  The result tuple of
-the function named in C<func> must have a heading that is a subset of the
+the C<value_map> function named in C<func> must have a heading that is a
+subset of the
 heading of C<topic>; corresponding values resulting from the function named
 in C<func> will replace the values of the tuples of C<topic>.  The result
 relation has a cardinality that is the same as that of C<topic>, unless
@@ -499,8 +502,9 @@ given in the C<attrs> argument.
 =head2 sys.std.Relation.subst_in_restr
 
 C<< function sys.std.Relation.subst_in_restr (Relation <-- Relation $topic,
-FuncRef $restr_func, Tuple $restr_assuming?, set_of.Name $subst_attr_names,
-FuncRef $subst_func, Tuple $subst_assuming?) >>
+ValFiltFuncRef $restr_func, Tuple $restr_assuming?,
+set_of.Name $subst_attr_names,
+ValMapFuncRef $subst_func, Tuple $subst_assuming?) >>
 
 This function is like C<substitution> except that it only transforms a
 subset of the tuples of C<topic> rather than all of them.  It is a
@@ -516,7 +520,7 @@ simply of anded or ored tests for attribute value equality.
 =head2 sys.std.Relation.static_subst_in_restr
 
 C<< function sys.std.Relation.static_subst_in_restr (Relation <--
-Relation $topic, FuncRef $restr_func, Tuple $restr_assuming?,
+Relation $topic, ValFiltFuncRef $restr_func, Tuple $restr_assuming?,
 Tuple $subst) >>
 
 This function is to C<sys.std.Relation.subst_in_restr> what
@@ -528,7 +532,7 @@ C<static_subst_in_semijoin> function.
 
 C<< function sys.std.Relation.subst_in_semijoin (Relation <--
 Relation $topic, Relation $restr, set_of.Name $subst_attr_names,
-FuncRef $subst_func, Tuple $subst_assuming?) >>
+ValMapFuncRef $subst_func, Tuple $subst_assuming?) >>
 
 This function is like C<subst_in_restr> except that the subset of the
 tuples of C<topic> to be transformed is determined by those matched by a
@@ -602,7 +606,7 @@ use for those missing attribute values.
 =head2 sys.std.Relation.outer_join_with_exten
 
 C<< function sys.std.Relation.outer_join_with_exten (Relation <--
-Relation $primary, Relation $secondary, FuncRef $exten_func,
+Relation $primary, Relation $secondary, ValMapFuncRef $exten_func,
 Tuple $exten_assuming?) >>
 
 This function is the same as
@@ -639,7 +643,7 @@ result of that function to C<topic>.
 =head2 sys.std.Relation.assign_substitution
 
 C<updater sys.std.Relation.assign_substitution (Relation &$topic,
-FuncRef $func, Tuple $assuming?)>
+set_of.Name $attr_names, ValMapFuncRef $func, Tuple $assuming?)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.substitution> function with the same arguments,
@@ -659,8 +663,9 @@ arguments, and then assigning the result of that function to C<topic>.
 =head2 sys.std.Relation.assign_subst_in_restr
 
 C<updater sys.std.Relation.assign_subst_in_restr (Relation &$topic,
-FuncRef $restr_func, Tuple $restr_assuming?, FuncRef $subst_func,
-Tuple $subst_assuming?)>
+ValFiltFuncRef $restr_func, Tuple $restr_assuming?,
+set_of.Name $subst_attr_names,
+ValMapFuncRef $subst_func, Tuple $subst_assuming?)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.subst_in_restr> function with the same arguments,
@@ -670,7 +675,7 @@ is analagous to the general case of the conditional SQL "UPDATE" statement.
 =head2 sys.std.Relation.assign_static_subst_in_restr
 
 C<updater sys.std.Relation.assign_static_subst_in_restr (Relation &$topic,
-FuncRef $restr_func, Tuple $restr_assuming?, Tuple $subst)>
+ValFiltFuncRef $restr_func, Tuple $restr_assuming?, Tuple $subst)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.static_subst_in_restr> function with the same
@@ -679,7 +684,8 @@ arguments, and then assigning the result of that function to C<topic>.
 =head2 sys.std.Relation.assign_subst_in_semijoin
 
 C<updater sys.std.Relation.assign_subst_in_semijoin (Relation &$topic,
-Relation $restr, FuncRef $subst_func, Tuple $subst_assuming?)>
+Relation $restr, set_of.Name $subst_attr_names,
+ValMapFuncRef $subst_func, Tuple $subst_assuming?)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.subst_in_semijoin> function with the same

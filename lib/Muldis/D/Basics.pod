@@ -1601,6 +1601,9 @@ substitutability:
             possrep_map
             virtual_attr_map
             order_determination
+            value_filter
+            value_map
+            value_reduction
         imperative
             deterministic
                 updater, inner_updater
@@ -1779,7 +1782,40 @@ is structured to fill the role of a I<system-compatible fundamental
 order-determination function>; see the L</Ordered Types> pod section in
 this file for more details.  An C<order_determination> has exactly 4
 parameters named [C<topic>, C<other>, C<assuming>, C<is_reverse_order>] and
-results in an C<Order>.
+always results in an C<Order>.
+
+=head2 value_filter
+
+A C<value_filter> is the same as an C<inner_function>, but that it has
+exactly 2 parameters named [C<topic>, C<assuming>] and always results in a
+C<Bool>; C<assuming> is always a C<Tuple>, and C<topic> is usually a
+C<Tuple> but doesn't have to be.  A C<value_filter> is similar to a
+C<type_constraint> in that it evaluates C<topic> for membership in a
+particular value domain, resulting in C<Bool:true> if C<topic> is a member
+and C<Bool:false> otherwise; but a C<value_filter> differs from a
+C<type_constraint> in that it would be explicitly invoked possibly in any
+context, and its criteria for evaluating C<topic> can be customized at
+runtime by C<assuming>.  A C<value_filter> is what would be used in
+operations like the general case of relational restriction.
+
+=head2 value_map
+
+A C<value_map> is the same as an C<inner_function>, but that it has exactly
+2 parameters named [C<topic>, C<assuming>]; C<assuming> is always a
+C<Tuple>, and C<topic> is usually a C<Tuple> but doesn't have to be.  A
+C<value_map> is what would be used in operations like the general case of
+relational extension or substitution.
+
+=head2 value_reduction
+
+A C<value_reduction> is the same as an C<inner_function>, but that it has
+exactly 3 parameters named [C<v1>, C<v2>, C<assuming>]; C<assuming> is
+always a C<Tuple>; C<v1> and C<v2> must have the same declared type as each
+other, and the C<value_reduction> function's declared result type must be
+the same as that of C<v1> and C<v2>.  A C<value_reduction> is what would
+typically be used in N-ary operations that can be defined in terms of a
+repetition of binary operations, such that a C<value_reduction> would
+define such a binary operation.
 
 =head2 updater, inner_updater
 

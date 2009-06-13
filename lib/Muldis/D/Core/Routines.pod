@@ -736,10 +736,10 @@ deeply homogeneous relation C<topic>).
 =head2 sys.std.Core.Relation.restriction
 
 C<< function sys.std.Core.Relation.restriction (Relation <--
-Relation $topic, FuncRef $func, Tuple $assuming?) >>
+Relation $topic, ValFiltFuncRef $func, Tuple $assuming?) >>
 
 This function results in the relational restriction of its C<topic>
-argument as determined by applying the C<Bool>-resulting function named in
+argument as determined by applying the C<value_filter> function named in
 its C<func> argument when the latter function is curried by its C<assuming>
 argument.  The result relation has the same heading as C<topic>, and its
 body contains the subset of C<topic> tuples where, for each tuple, the
@@ -758,7 +758,7 @@ equality.
 =head2 sys.std.Core.Relation.restr_and_cmpl
 
 C<< function sys.std.Core.Relation.restr_and_cmpl (Tuple <--
-Relation $topic, FuncRef $func, Tuple $assuming?) >>
+Relation $topic, ValFiltFuncRef $func, Tuple $assuming?) >>
 
 This function performs a 2-way partitioning of all the tuples of C<topic>
 and results in a binary tuple whose attribute values are each relations
@@ -771,7 +771,7 @@ when given the same arguments.
 =head2 sys.std.Core.Relation.cmpl_restr
 
 C<< function sys.std.Core.Relation.cmpl_restr (Relation <--
-Relation $topic, FuncRef $func, Tuple $assuming?) >>
+Relation $topic, ValFiltFuncRef $func, Tuple $assuming?) >>
 
 This function is the same as C<restriction> but that it results in the
 complementary subset of tuples of C<topic> when given the same arguments.
@@ -779,12 +779,12 @@ See also the C<sys.std.Core.Relation.semidiff> function.
 
 =head2 sys.std.Core.Relation.extension
 
-C<< function sys.std.Core.Relation.extension (Relation <--
-Relation $topic, set_of.Name $attr_names, FuncRef $func,
-Tuple $assuming?) >>
+C<< function sys.std.Core.Relation.extension (Relation <-- Relation $topic,
+set_of.Name $attr_names, ValMapFuncRef $func, Tuple $assuming?) >>
 
 This function results in the relational extension of its C<topic> argument
-as determined by applying the C<Tuple>-resulting function named in its
+as determined by applying the C<Tuple>-resulting C<value_map> function
+named in its
 C<func> argument when the latter function is curried by its C<assuming>
 argument.  The result relation has a heading that is a superset of that
 of C<topic>, and its body contains the same number of tuples, with all
@@ -821,7 +821,7 @@ the C<attrs> argument.
 
 C<< function sys.std.Core.Relation.summary (Relation <--
 Relation $topic, set_of.Name $group_per, set_of.Name $summ_attr_names,
-FuncRef $summ_func, Tuple $summ_assuming?) >>
+ValMapFuncRef $summ_func, Tuple $summ_assuming?) >>
 
 This function provides a convenient context for using aggregate functions
 to derive a per-group summary relation, which is its result, from another
@@ -830,11 +830,13 @@ C<cmpl_group> on C<topic> using C<group_per> to specify which attributes
 get grouped into a new relation-valued attribute and which don't; those
 that don't instead get wrapped into a tuple-valued attribute.  Then, per
 binary tuple in the main relation, this function applies the
-C<Tuple>-resulting function named in its C<summ_func> argument when the
-latter function is curried by its C<summ_assuming> argument (passed to it
-as just C<assuming>); the curried function has, rather than the typical 1
-C<topic> varying parameter, 2 varying parameters named C<summarize> and
-C<per>, which are valued with the relation-valued attribute and
+C<Tuple>-resulting C<value_map> function named in its C<summ_func> argument
+when the latter function is curried by its C<summ_assuming> argument
+(passed to it as just C<assuming>); for each post-group main relation
+tuple, the function named in C<summ_func> results in a second tuple when
+the first tuple is its C<topic> argument; the C<topic> argument has the 2
+attribute names C<summarize> and C<per>, which are valued with the
+relation-valued attribute and
 tuple-valued attribute, respectively.  As per a function that
 C<extension> applies, the function named by C<summ_func> effectively takes
 a whole post-grouping input tuple and results in a partial tuple that
@@ -1248,7 +1250,7 @@ then assigning the result of that function to C<r>.
 =head2 sys.std.Core.Relation.assign_restriction
 
 C<updater sys.std.Core.Relation.assign_restriction (Relation &$topic,
-FuncRef $func, Tuple $assuming?)>
+ValFiltFuncRef $func, Tuple $assuming?)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.restriction> function with the same arguments, and
@@ -1257,7 +1259,7 @@ then assigning the result of that function to C<topic>.
 =head2 sys.std.Core.Relation.assign_cmpl_restr
 
 C<updater sys.std.Core.Relation.assign_cmpl_restr
-(Relation &$topic, FuncRef $func, Tuple $assuming?)>
+(Relation &$topic, ValFiltFuncRef $func, Tuple $assuming?)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.cmpl_restr> function with the same arguments, and
@@ -1329,7 +1331,7 @@ column.
 =head2 sys.std.Core.Relation.assign_extension
 
 C<updater sys.std.Core.Relation.assign_extension (Relation &$topic,
-set_of.Name $attr_names, FuncRef $func, Tuple $assuming?)>
+set_of.Name $attr_names, ValMapFuncRef $func, Tuple $assuming?)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.extension> function with the same arguments, and
