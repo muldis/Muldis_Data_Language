@@ -18,6 +18,30 @@ table for these items; they are simply to be done "as soon as possible".
 the progress is non-trivial, so there are regular public snapshots with
 nicely rendered documentation.
 
+* Fix concept of currying to be more proper / more Perl 6 like / etc.  Make
+it so conceptually a function always has exactly 1 anonymous actual
+parameter which is Tuple-typed, and the attributes of that are the actual
+named parameters that programmers interact with; only the latter will
+actually be called parameters (and take arguments) in all the docs, and the
+anonymous thing will get some other name for the few times it is referred
+to.  Make it so that things like value_filter or order_determination etc
+functions no longer have an actual "assuming" parameter but rather have any
+number of parameters but just need to include certain parameters as a
+subset such as "topic" and "other" and "is_reverse_order" etc.  So when eg
+"restriction" is invoked with an "assuming" tuple, then those tuple
+attr-names are matched against actual whole parameter names in the function
+that "restriction" invokes, so just like real currying.  Generally only the
+s-d "func_invo" etc can do the actual map between a named tuple arg and the
+anonymous tuple arg and so actual users only ever interact with the named
+args.  Similarly, an imperative routine has exactly 2 anonymous Tuple-typed
+params behind the scenes, and appropriate caveats apply.  This design
+change would have no effects on users except that their closure defs no
+longer have a literal "assuming" parameter.  Still to determine but also
+possible as a feature is to have actual currying where a routine is defined
+as another routine with certain arguments pre-bound, either in a normal
+named sense or in an anonymous sense such as built-in to a MaterialRef
+generating expression/statement node.
+
 * Add concept of shallowly homogeneous / sh- relation types to complement
 the deeply version, and named maximal types like SHRelation, SHSet,
 SHArray, etc to complement the DH/etc, and sh_set_of/etc to complement
