@@ -20,8 +20,8 @@ lines of code
 Muldis D -
 Portable Databases
 At Full Power
-(2008 July Edition)
-(Stand Alone Version)
+(Created 2008 July)
+(Updated 2009 June)
 ----
 Darren Duncan
 Muldis Data Systems
@@ -35,7 +35,6 @@ Products and Services
 Miss something?
 http://muldis.com
 has a copy of this talk,
-plus a Live Talk version,
 and a list of all urls
 ----
 This talk is about
@@ -57,7 +56,15 @@ called "Muldis Rosetta", but
 that is mostly incomplete so
 you can't actually run
 Muldis D code yet; hopefully
-you can in a few weeks
+you can in the near future
+----
+Meanwhile, a distinct
+partial implementation
+exists called
+"Set::Relation"; it only
+implements one large feature
+of Muldis D, but you can
+actually use it right now
 ----
 Muldis D is effectively a
 generalization of all the
@@ -126,38 +133,38 @@ SQL injection attack
 The code examples in the
 rest of this talk will come
 in a variety of concrete
-grammars / dialects, some
-that are official, named
-"Tiny", and some that are
-fake
-----
-Please treat all example
-code as pseudo-code, since
-in reality you can make and
-use any concrete grammar you
-want with Muldis D
+grammars / dialects, though
+primarily in the official
+plain text one, "PTMD_STD",
+that is partly specced now
 ----
 As examples, here are some
 scalar literals in the
-PTMD_Tiny dialect:
-  Bool:true
-  Int:9:42
-  Blob:F:A705E
-  Text:'サンプル'
-  Rat:radix:9:3.14159
-  Rat:ratio:9:1/43
+PTMD_STD dialect:
+  true      # Bool #
+  42        # Int #
+  F;'A705E' # Blob #
+  'サンプル' # Text #
+  3.14159   # Rat #
+  1/43      # Rat #
 ----
 And here are the same scalar literals in the
-HDMD_Perl_Tiny dialect:
-  [ 'Bool', 'perl_bool', Bool::True ] # Perl 6 only
-  [ 'Bool', 'perl_bool', (1 == 1) ]  # alternative
-  [ 'Int', 'perl_int', 42 ]
-  [ 'Blob', 'md_blob', 'F', 'A705E' ]
-  [ 'Text', 'サンプル' ]
-  [ 'Rat', 'perl_rat', 3.14159 ]
-  [ 'Rat', 'perl_int_ratio', [ 1, 43 ] ]
-Note this grammar has more
-lit formats to choose from
+HDMD_Perl6_STD dialect:
+  Bool::True # Bool #
+  42         # Int #
+  Blob.new( F => 'A705E' ) # Blob #
+  'サンプル'  # Text #
+  3.14159    # Rat #
+  1 div 43   # Rat #
+----
+And here are the same scalar literals in the
+HDMD_Perl5_STD dialect:
+  ['Bool',(1 == 1)] # Bool #
+  42                # Int #
+  [ 'Blob', { F => 'A705E' } ] # Blob #
+  'サンプル'         # Text #
+  3.14159           # Rat #
+  [ 'Rat', [1,43] ] # Rat #
 ----
 Muldis D is intended to be
 used as a toolkit for
@@ -183,13 +190,13 @@ parsed into, or as their
 public query language as an
 alternative to taking SQL
 ----
-Please note that Muldis D is
-fundamentally verbose, like
-an AST; so this talk will
-just have trivial code
-examples, and will explain
-most language features in
-words
+Please note that since the
+Muldis D concrete syntax was
+mostly unspecced when this
+talk was originally written,
+it just has trivial code
+examples, and explains most
+language features in words
 ----
 Also, most of the talk
 should be taken as a list
@@ -238,8 +245,8 @@ download at their website
 http://thethirdmanifesto.com
 ----
 The "D" part of "Muldis D"
-refers to "D language;
-it doesn't refer my name
+refers to "D language; it
+doesn't refer to my name
 ****
 Also, "Muldis" means
 "Multiverse of Discourse"
@@ -299,12 +306,12 @@ neither a subtype of
 rather, a "coloured circle"
 is a multi-component type
 ----
-Most Muldis D types are
-scalar or nonscalar (tuple
-or relation) types, and a
-database can only be made of
+Most Muldis D types are deeply
+homogeneous scalar or nonscalar
+(tuple or relation) types, and
+a database can only be made of
 those; there also exist
-quasi- variants, used just
+hetero- variants, used just
 with parameters and lexicals
 ----
 Tuple and relation types
@@ -331,59 +338,59 @@ has duplicate tuples; also,
 a relation's tuples are
 never ordered
 ----
-Tuples in PTMD_Tiny dialect:
+Tuples in PTMD_STD dialect:
   Tuple:{}
   Tuple:{
-    'login_name' => Text:'hartmark',
-    'login_pass' => Text:'letmein',
-    'is_special' => Bool:true,
+    login_name => 'hartmark',
+    login_pass => 'letmein',
+    is_special => true
   }
   Tuple:{
-    'name' => Text:'Michelle',
-    'age'  => Int:9:17,
+    name => 'Michelle',
+    age  => 17
   }
 ----
-Same in PTMD_Perl_Tiny dialect:
-  [ 'Tuple', {} ]
-  [ 'Tuple', {
-    'login_name' => [ 'Text', 'hartmark' ],
-    'login_pass' => [ 'Text', 'letmein' ],
-    'is_special' => [ 'Bool', 'md_enum', 'true' ],
-  } ]
-  [ 'Tuple', {
-    'name' => [ 'Text', 'Michelle' ],
-    'age'  => [ 'Int', 'perl_int', 17 ],
-  } ]
+Same in PTMD_Perl6_STD dialect:
+  :Tuple{}
+  :Tuple{
+    login_name => 'hartmark',
+    login_pass => 'letmein',
+    is_special => Bool::True,
+  }
+  :Tuple{
+    name => 'Michelle',
+    age  => 17,
+  }
 ----
-Relations in PTMD_Tiny dialect:
+Relations in PTMD_STD dialect:
   Relation:{}
-  Relation:{ {}, }
-  Relation:{ 'x', 'y', 'z', }
+  Relation:{ x, y, z }
+  Relation:{ {} }
   Relation:{
     {
-      'login_name' => Text:'hartmark',
-      'login_pass' => Text:'letmein',
-      'is_special' => Bool:true,
-    },
+      login_name => 'hartmark',
+      login_pass => 'letmein',
+      is_special => true,
+    }
   }
-  Relation:[ 'name', 'age', ]:{
-    [ Text:'Michelle', Int:9:17, ],
+  Relation:[ name, age ];{
+    [ 'Michelle', 17 ]
   }
 ----
-Same in PTMD_Perl_Tiny dialect:
-  [ 'Relation', [] ]
-  [ 'Relation', [ {}, ] ]
-  [ 'Relation', [ 'x', 'y', 'z', ] ]
-  [ 'Relation', [
+Same in PTMD_Perl6_STD dialect:
+  :Relation( Set.new() )
+  :Relation( Set.new(<x y z>) )
+  :Relation( Set.new( {} ) )
+  :Relation( Set.new(
     {
-      'login_name' => [ 'Text', 'hartmark' ],
-      'login_pass' => [ 'Text', 'letmein' ],
-      'is_special' => [ 'Bool', 'md_enum', 'true' ],
+      login_name => 'hartmark',
+      login_pass => 'letmein',
+      is_special => Bool::True,
     },
-  ] ]
-  [ 'Relation', [ 'name', 'age', ], [
-    [ [ 'Text', 'Michelle' ], [ 'Int', 'perl_int', 17 ], ],
-  ] ]
+  ) )
+  :Relation( <name age> => Set.new(
+    [ 'Michelle', 17 ],
+  ) )
 ----
 Muldis D also has canonical
 representations of plain
@@ -393,7 +400,7 @@ Set, Array, and Bag types
 ----
 These are just relations
 with pre-defined attributes,
-and the Tiny dialects also
+and the STD dialects also
 have special syntax for them
 ----
 Scalar types are
@@ -405,7 +412,7 @@ are private, and only
 accessible indirectly
 ----
 The definition of a scalar
-type comprises usually one
+type comprises one
 or more named "possreps" or
 "possible representations",
 each of which looks like a
@@ -420,27 +427,20 @@ it has 2 possreps called
 those having a single attr
 named with the empty string
 ----
-PTMD_Tiny dialect:
-  Scalar:'fed.lib.the_db.WeekDay':'name':{
-    '' => Text:'monday',
+PTMD_STD dialect:
+  Scalar:fed.lib.the_db.WeekDay:name;{
+    "" => "monday"
   }
-  Scalar:'fed.lib.the_db.WeekDay':'number':{
-    '' => Int:9:5,
+  Scalar:fed.lib.the_db.WeekDay:number;{
+    "" => 5
   }
-HDMD_Perl_Tiny dialect:
-  [ 'Scalar', 'fed.lib.the_db.WeekDay', 'name', {
-    '' => [ 'Text', 'monday' ],
+HDMD_Perl6_STD dialect:
+  [ 'Scalar', 'fed.lib.the_db.WeekDay', name => {
+    '' => 'monday',
   } ]
-  [ 'Scalar', 'fed.lib.the_db.WeekDay', 'number', {
-    '' => [ 'Int', 'perl_int', 5 ],
+  [ 'Scalar', 'fed.lib.the_db.WeekDay', number => {
+    '' => 5,
   } ]
-----
-A few scalar types are
-special and don't have any
-possreps: Bool, Int, Blob,
-Text; a few others exist too
-but those aren't intended
-for general purpose use
 ----
 Next are a few details about
 the system-defined generic
@@ -477,8 +477,7 @@ precision, able to represent
 all rational numbers, both
 fixed and floating point
 ----
-The Int type has no possrep;
-the Rat type has 2 possreps
+The Rat type has 2 possreps
 and is defined in terms of
 Ints, either as the
 [numerator, denominator]
@@ -514,8 +513,8 @@ spatial data types, for
 dates, times, durations,
 2D geometrics, GIS
 components, etc; they have
-possreps defined over Int
-and Rat; they're incomplete
+possreps defined over Int,
+Rat; some are incomplete
 ----
 Muldis D routines mainly
 come in 3 kinds: functions,
@@ -523,16 +522,8 @@ updaters and procedures
 ----
 Functions
 ----
-  create in fed.myapp
-  function cube {
-    result sys.std.Core.Type.Int
-    params { topic(sys.std.Core.Type.Int) }
-    exprs {
-      exp(sca_lit Int:9:3),
-      ''(func_invo sys.std.Integer.power
-        args { radix(lex.topic), exponent(lex.exp) }
-      ),
-    }
+  function cube (Int <-- Int $topic) {
+    ($topic I^ 3)
   }
 ----
 Functions are pure and
@@ -545,19 +536,8 @@ invoke functional routines
 ----
 Updaters
 ----
-  create in fed.myapp
-  updater chop_sign {
-    upd_params { topic(sys.std.Core.Type.Int) }
-    exprs {
-      abs_val(func_invo sys.std.Integer.abs
-        args { topic(lex.topic) }
-      ),
-    }
-    stmt {
-      sys.std.Core.Universal.assign
-        upd_args { target(lex.topic) }
-        ro_args { v(lex.abs_val) },
-    }
+  updater chop_sign (Int &$topic) {
+    $topic := (I|| $topic)
   }
 ----
 Updaters are imperative but
@@ -586,14 +566,9 @@ be factored to one instance
 ----
 Procedures
 ----
-  create in fed.myapp
-  procedure fetch_all_people {
-    upd_params { people(type.var.fed.mydb.people) }
-    stmts [
-      proc_invo sys.std.Core.Universal.assign
-        upd_args { target(lex.people) }
-        ro_args { v(fed.mydb.people) },
-    ]
+  procedure fetch_all_people
+      (type.var.fed.mydb.people &$people) {
+    $people := $fed.mydb.people
   }
 ----
 Procedures are imperative,
@@ -632,29 +607,25 @@ use an inner updater to hold the
 "COUNT(*) FROM people" portion,
 which is a value expression
 ----
-  create in fed.myapp
-  procedure count_people {
-    upd_args { p_count(sys.std.Core.Type.UInt) }
-    stmts [
-      proc_invo inn.icount
-        upd_args { p_count(lex.p_count) }
-        ro_args { the_db(fed.mydb) },
-    ]
-    updater icount {
-      upd_params { p_count(sys.std.Core.Type.UInt) }
-      ro_params { the_db(type.var.fed.mydb) }
-      exprs {
-        pc(func_invo sys.std.Core.Relation.cardinality
-          args { topic(lex.the_db.people) }
-        ),
-      }
-      stmt {
-        sys.std.Core.Universal.assign
-          upd_args { target(lex.p_count) }
-          ro_args { v(lex.pc) },
-      }
+Either (less abstracted from AST):
+  procedure count_people (NNInt &$p_count) {
+    main {
+      $p_count := inn.icount(
+        &p_count => $p_count,
+        the_db => $fed.mydb )
+    }
+    updater icount (NNInt &$p_count,
+        type.var.fed.mydb $the_db) {
+      $p_count := (R# $the_db.people)
     }
   }
+----
+Or (more abstracted from AST):
+  procedure count_people (NNInt &$p_count) {
+    $p_count := (R# $fed.mydb.people)
+  }
+Or (yet more abstracted):
+  query (R# $fed.mydb.people)
 ----
 Another use of inner
 routines is to support
@@ -680,7 +651,7 @@ N-ary are so defined, and
 can be used in a summary
 ----
 Examples are: boolean and,
-or, xor; ordinal min, max;
+or, xor; ordered min, max;
 numeric sum, product; string
 catenation; relational join,
 product, union, intersect;
@@ -730,18 +701,18 @@ you don't have to split up a
 relvar into several for
 normalization
 ----
-  Relation:[ 'order_id', 'cust_id', 'order_item' ]:{
-    [ Int:9:5073, Int:9:209, Relation:{
-      { 'prod_id' => Text:'paint',  'qty' => Int:9:3 },
+  Relation:[ order_id, cust_id, order_item ];{
+    [ 5073, 209, Relation:{
+      { prod_id => 'paint', qty => 3 }
     } ],
-    [ Int:9:5074, Int:9:332, Relation:{
-      { 'prod_id' => Text:'axle',  'qty' => Int:9:20 },
-      { 'prod_id' => Text:'lever', 'qty' => Int:9:50 },
-      { 'prod_id' => Text:'paint', 'qty' => Int:9:8 },
+    [ 5074, 332, Relation:{
+      { prod_id => 'axle',  qty => 20 },
+      { prod_id => 'lever', qty => 50 },
+      { prod_id => 'paint', qty => 8 }
     } ],
-    [ Int:9:5075, Int:9:17, Relation:{
-      { 'prod_id' => Text:'banana', 'qty' => Int:9:100 },
-      { 'prod_id' => Text:'orange', 'qty' => Int:9:160 },
+    [ 5075, 17, Relation:{
+      { prod_id => 'banana', qty => 100 },
+      { prod_id => 'orange', qty => 160 }
     } ],
   }
 ----
@@ -758,7 +729,8 @@ D values equal themselves
 However, Muldis D *does*
 have an alternate canonical
 way to say "N/A" or
-"unknown" etc, with just
+"unknown" etc without a
+specified reason, with just
 2-valued logic
 ----
 The canonical way to make
@@ -1100,6 +1072,7 @@ depots, variables, types,
 and routines
 ----
 Entities are always invoked
+at the AST level
 fully-qualified with their
 namespace, rather than
 unqualified; for example,
@@ -1121,6 +1094,12 @@ have to depend on names or
 declared types of arguments;
 only the routine name is
 needed to determine invocant
+----
+But concrete Muldis D code
+supports shorthands in
+many common cases, so most
+concrete Muldis D code is
+actually terse
 ----
 System-defined entities are
 under the top namespace
@@ -1176,35 +1155,26 @@ or:
   (SELECT 'x' FROM dual)
 ----
 Muldis D:
-  tab1
+  $tab1
 SQL:
   SELECT * FROM tab1
 ----
 Muldis D:
-  sys.std.Core.Relation.cardinality(
-    topic(tab1)
-  )
+  (R# $tab1)
 SQL (as a scalar query):
   (SELECT COUNT(*) FROM tab1)
 ----
 Muldis D:
-  sys.std.Core.Relation.projection(
-    topic(tab1),
-    attrs(Set:{ 'col1', 'col2' }),
-  )
+  ($tab1&#123{col1,col2}})
 SQL:
   SELECT DISTINCT col1, col2
   FROM tab1
 ----
 Muldis D:
-  sys.std.Core.Relation.semijoin(
-    source(tab1),
-    filter(Relation:{
-      { col1(Text:'hello'), col2(Int:9:5) },
-      { col1(Text:'world'), col2(Int:9:7) },
-    }),
-  )
-----
+  ($tab1 matching Relation:{
+    col1 => 'hello', col2 => 5,
+    col1 => 'world', col2 => 7
+  })
 SQL:
   SELECT *
   FROM tab1
@@ -1220,12 +1190,12 @@ or:
      OR col1 = 'world' AND col2 = 7
 ----
 Alternately you can use
-"semidifference" if you want
+"not matching" if you want
 tuples that *don't* match,
 like a NOT IN subquery
 ----
 Alternately you can use
-"restrict" for generic
+"where" for generic
 boolean expressions besides
 matches/not-matches,
 like a generic WHERE
@@ -1239,9 +1209,9 @@ such that the result is:
   tab(col1,col2,col3,col4)
 ----
 Muldis D:
-  sys.std.Core.Relation.join(
-    topic(QuasiSet:{ tab1, tab2 }),
-  )
+  ($tab1 join $tab2)
+or:
+  ($tab1 ⋈ $tab2)
 SQL:
   SELECT DISTINCT tab1.*, tab2.col4
   FROM tab1 NATURAL INNER JOIN tab2
@@ -1254,32 +1224,20 @@ or:
     ON tab2.col2 = tab1.col2 AND tab2.col3 = tab1.col3
 ----
 Muldis D:
-  sys.std.Core.Relation.rename(
-    topic(tab1),
-    map(Relation:['before','after']:{
-      ['col1', 'foo'],
-      ['col3', 'bar'],
-    }),
-  )
+  ($tab1&#123{col1=>foo,col2=>bar}})
 SQL:
   SELECT col1 AS foo, col2, col3 AS bar
   FROM tab1
 ----
 Muldis D:
-  with { function myext {
-      result sys.std.Core.Type.Tuple
-      params { topic(sys.std.Core.Type.Tuple) }
-      body { Tuple:{
-        a => Text:'x',
-        b => sys.std.Integer.difference(
-          minuend(lex.topic.m),
-          subtrahend(lex.topic.n)
-        ), } }
-  }, }
-  sys.std.Core.Relation.extension(
-    topic(tab1), func(inn.myext), )
+  ($tab1 extend VMF->{
+    Tuple:{ a => 'x',
+      b => ($.m I- $.n) }
+  })
 SQL:
-  SELECT tab1.*, 'x' AS a, (tab1.m - tab1.n) AS b FROM tab1
+  SELECT tab1.*, 'x' AS a,
+    (tab1.m - tab1.n) AS b
+  FROM tab1
 ----
 Now that last Muldis D
 example shows the use of a
@@ -1551,7 +1509,7 @@ while operating full speed
 ----
 Thank you!
 ----
-Copyright © 2008,
+Copyright © 2008-2009
 Darren Duncan
 ****
 http://muldis.com
