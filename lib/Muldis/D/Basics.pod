@@ -1346,34 +1346,35 @@ set of values, ranking a set of values based on their relative order, or
 sorting a set of values into a sequence that reflects such a ranking.
 
 A system-compatible fundamental order-determination function (fulfilled by
-the routine kind C<order_determination>) must have exactly 4 parameters
-named [C<topic>, C<other>, C<assuming>, C<is_reverse_order>], where the
-declared types of the two main parameters C<topic> and C<other> are the
+the routine kind C<order_determination>) must have at least 3 parameters,
+where those 3 are named [C<topic>, C<other>, C<is_reverse_order>], where
+the declared types of the two main parameters C<topic> and C<other> are the
 same as the type whose values the function is to determine the order of,
 and it would be invoked with 2 of those values as its arguments; the result
-type of the function is an C<Order>.  This function by default results in
+type of the function is an C<Order>.  Any additional parameters besides the
+above-named 3 are hereby collectively
+referred to as I<misc params>.  This function by default results in
 C<Order:same> iff its 2 arguments are exactly the same value, and otherwise
 it results in C<Order:increase> if the value of the C<other> argument is
 considered to be an increase (as defined by the function's algorithm) over
 the value of the C<topic> argument, and otherwise it results in
 C<Order:decrease> as the reverse of the last condition would be true.  The
-function's third parameter, C<assuming>, is C<Tuple>-typed and carries
+function's I<misc params> carry
 optional customization details for the algorithm; this permits the function
 to implement a choice between multiple (typically similar) ordering
 algorithms rather than just one, which reduces the number of functions
 needed for supporting that choice; if the algorithm is not customizable,
-then the tuple argument would be of degree zero.  The function's fourth
+then there are no I<misc params>.  The function's third
 parameter, C<is_reverse_order>, is C<Bool>-typed; a C<Bool:false> argument
 means the function's algorithm operates as normal when given any particular
-3 other arguments (meaning a sorting operation based on it will place
+other arguments (meaning a sorting operation based on it will place
 elements in ascending order), while a C<Bool:true> argument means the
 function's algorithm operates in reverse, so the function results in the
-reverse C<Order> value it would have otherwise when given the same 3 other
+reverse C<Order> value it would have otherwise when given the same other
 arguments (meaning a sorting operation based on it will place elements in
 descending order).  The function's C<topic> and C<other> parameters always
 require arguments, the C<is_reverse_order> parameter always doesn't require
-an argument and defaults to C<Bool:false>, and whether the C<assuming>
-parameter requires an argument is up to the individual function.
+an argument and defaults to C<Bool:false>.
 
 In the general case, any context which wants to use a system-defined
 type-generic order-sensitive operator will specify the fully-qualified name
@@ -1582,10 +1583,24 @@ by "statements" or "routines".
 
 There are several kinds of Muldis D routines, each of which is intended
 for, and in many cases only permitted to be used for, particular tasks.
+
 Note that for all Muldis D routines which have parameters, they are all
 named rather than positional parameters; in the case of N-adic routines,
 the N similar argument values come by way of a single nonscalar typed
 parameter.
+
+Or conceptually speaking, all Muldis D routines actually have exactly 1 or
+2 positional parameters behind the scenes, each of which is C<Tuple>-typed,
+and it is the named attributes of these positional parameters that
+correspond to the official named parameters.  With all functional routines,
+there is exactly 1 positional parameter named C<args>; with all imperative
+routines, there are exactly 2 positional parameters named C<upd_args> and
+C<ro_args>.  This behind-the-scenes nature is exposed when you use
+system-defined routines such as C<sys.std.Core.Control.func_invo>, where
+you actually are supplying a set of argument values for the routine to
+invoke as a C<Tuple> value.  Now this all being said, for the purposes of
+the rest of the Muldis D documentation, the term I<parameter> always refers
+to a named parameter, and the term I<argument> is a value passed to said.
 
 They following hierarchy should briefly illustrate how the kinds of
 routines are similar or dissimilar, but it expressly does not indicate
@@ -1712,7 +1727,7 @@ all C<transition_constraint>.
 =head2 transition_constraint
 
 A C<transition_constraint> is the same as a C<state_constraint> except that
-rather than 1 C<topic> parameter, it takes exactly 2 same-typed parameters
+rather than 1 C<topic> parameter, it has exactly 2 same-typed parameters
 whose names are C<before> and C<after>; it returns C<Bool:true> if the
 variable is allowed (according to current business rules) to transition
 directly from the C<before> state to the C<after> state, or C<Bool:false>
@@ -1729,8 +1744,8 @@ all that statement's updates from occurring.
 
 =head2 named_value
 
-A C<named_value> is the same as an C<inner_function>, but that it has zero
-parameters and unconditionally results in the same single value.  A
+A C<named_value> is the same as an C<inner_function>, but that it has only
+zero parameters and unconditionally results in the same single value.  A
 C<named_value> is often used when you want to declare a program constant
 value that is easy to reference on a non-lexical scale.  A C<named_value>
 is frequently part of the definition of a (not-C<Empty>) data type rather
@@ -1742,14 +1757,13 @@ variable must always hold a valid value of its declared type).
 =head2 possrep_map
 
 A C<possrep_map> is the same as an C<inner_function>, but that it is part
-of the definition of a scalar data type, and it is used to convert
-a value from one of that type's possreps to another.  A C<possrep_map> has
-a single C<topic> parameter whose declared type is a tuple whose
+of the definition of a scalar data type, and it is used to convert a value
+from one of that type's possreps to another.  A C<possrep_map> has exactly
+1 parameter whose name is C<topic> and whose declared type is a tuple whose
 attributes match those of the possrep being converted from, and its result
-type is a tuple whose attributes match those of the possrep being
-converted to.  Note that every distinct argument (domain) value of this
-function must have a distinct result (range) value, as it is a 1:1 mapping
-function.
+type is a tuple whose attributes match those of the possrep being converted
+to.  Note that every distinct argument (domain) value of this function must
+have a distinct result (range) value, as it is a 1:1 mapping function.
 
 =head2 virtual_attr_map
 
@@ -1780,37 +1794,37 @@ they can still be pre-computed and stored for performance).
 An C<order_determination> is the same as an C<inner_function>, but that it
 is structured to fill the role of a I<system-compatible fundamental
 order-determination function>; see the L</Ordered Types> pod section in
-this file for more details.  An C<order_determination> has exactly 4
-parameters named [C<topic>, C<other>, C<assuming>, C<is_reverse_order>] and
+this file for more details.  An C<order_determination> has at least 3
+parameters named [C<topic>, C<other>, C<is_reverse_order>] and
 always results in an C<Order>.
 
 =head2 value_filter
 
 A C<value_filter> is the same as an C<inner_function>, but that it has
-exactly 2 parameters named [C<topic>, C<assuming>] and always results in a
-C<Bool>; C<assuming> is always a C<Tuple>, and C<topic> is usually a
-C<Tuple> but doesn't have to be.  A C<value_filter> is similar to a
-C<type_constraint> in that it evaluates C<topic> for membership in a
+at least 1 parameter, where that 1 is named C<topic>, and the function
+always results in a C<Bool>; C<topic> is usually a C<Tuple> but doesn't
+have to be.  Any additional parameters besides the above-named 1 are hereby
+collectively referred to as I<misc params>.  A C<value_filter> is similar
+to a C<type_constraint> in that it evaluates C<topic> for membership in a
 particular value domain, resulting in C<Bool:true> if C<topic> is a member
 and C<Bool:false> otherwise; but a C<value_filter> differs from a
 C<type_constraint> in that it would be explicitly invoked possibly in any
 context, and its criteria for evaluating C<topic> can be customized at
-runtime by C<assuming>.  A C<value_filter> is what would be used in
+runtime by I<misc params>.  A C<value_filter> is what would be used in
 operations like the general case of relational restriction.
 
 =head2 value_map
 
-A C<value_map> is the same as an C<inner_function>, but that it has exactly
-2 parameters named [C<topic>, C<assuming>]; C<assuming> is always a
-C<Tuple>, and C<topic> is usually a C<Tuple> but doesn't have to be.  A
-C<value_map> is what would be used in operations like the general case of
-relational extension or substitution.
+A C<value_map> is the same as an C<inner_function>, but that it has at
+least 1 parameter, where that 1 is named C<topic>; C<topic> is usually a
+C<Tuple> but doesn't have to be.  A C<value_map> is what would be used in
+operations like the general case of relational extension or substitution.
 
 =head2 value_reduction
 
 A C<value_reduction> is the same as an C<inner_function>, but that it has
-exactly 3 parameters named [C<v1>, C<v2>, C<assuming>]; C<assuming> is
-always a C<Tuple>; C<v1> and C<v2> must have the same declared type as each
+at least 2 parameters, where those 2 are named [C<v1>, C<v2>]; C<v1> and
+C<v2> must have the same declared type as each
 other, and the C<value_reduction> function's declared result type must be
 the same as that of C<v1> and C<v2>.  A C<value_reduction> is what would
 typically be used in N-ary operations that can be defined in terms of a
