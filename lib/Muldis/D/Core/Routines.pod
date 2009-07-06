@@ -1131,6 +1131,31 @@ invoke a function whose name they take as an argument.  The C<args>
 parameter is optional and defaults to the zero-attribute tuple if no
 explicit argument is given to it.
 
+=head2 sys.std.Core.Control.curried_func
+
+C<< function sys.std.Core.Control.curried_func (FuncRef <--
+FuncRef $function, Tuple $args) >>
+
+This function results in a reference to a new anonymous function which is
+the result of currying the other function named in its C<function> argument
+with 0..N arguments supplied by this function's C<args> argument; each
+attribute name of C<args> is mapped to a parameter name of the curried
+function, and the corresponding attribute value is the corresponding
+pre-bound parameter of the curried function.  This function will fail if
+there are any attributes in C<args> that don't have corresponding
+parameters, or if any attribute values aren't of the declared types of the
+corresponding parameters.  A curried function effectively does not have the
+parameters of the original function that were pre-bound, and attempts to
+supply arguments to those on the curried function will fail.  Note that the
+result of a C<curried_func> invocation can be used as input to another one,
+as there is effectively no difference in their kind.  The purpose of
+C<curried_func> is to support the passing of functions as arguments to
+invocations of other routines where the passed function wants to use
+runtime-defined information in the context that invoked routine, without
+having to pass that information separately as additional routine arguments.
+Or the purpose of C<curried_func> is just to easily support defining
+functions as simplified versions of others.
+
 =head1 SYSTEM-DEFINED GENERIC UNIVERSAL UPDATERS
 
 These update operators are applicable to values of any data type at all.
