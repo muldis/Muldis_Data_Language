@@ -40,9 +40,6 @@ I<This documentation is pending.>
 
 =head1 SYSTEM-DEFINED SET-CONCERNING FUNCTIONS
 
-Each C<assuming> parameter is optional and defaults to the zero-attribute
-tuple if no explicit argument is given to it.
-
 =head2 sys.std.Set.has_member
 
 C<< function sys.std.Set.has_member (Bool <-- Set $set, Universal $value)
@@ -116,7 +113,7 @@ result is just C<set>.
 =head2 sys.std.Set.reduction
 
 C<< function sys.std.Set.reduction (Universal <-- Set $topic,
-ValRedFuncRef $func, Tuple $assuming?, Universal $identity) >>
+ValRedFuncRef $func, Universal $identity) >>
 
 This function is a generic reduction operator that recursively takes each
 pair of input values in C<topic> and applies an argument-specified scalar
@@ -124,9 +121,8 @@ or nonscalar value-resulting C<value_reduction> function (which is both
 commutative and associative) to the pair until just one input value is
 left, which is the result.  The C<value_reduction> function to apply is
 named in the C<func> argument, and that
-function must have 3 arguments named C<v1>, C<v2>, C<assuming>; the last
-parameter is curried with the same-named argument of C<reduction>, and the
-first 2 parameters are the 2 input scalar or nonscalar values for an
+function must have 2 parameters named C<v1> and C<v2>, which take
+the 2 input scalar or nonscalar values for an
 invocation.  If C<topic> has zero values, then C<reduction> results in the
 value given in C<identity>.  I<Note that C<identity> may be changed to take
 a function name rather than a value, for consistency with C<func>.>  This
@@ -136,7 +132,7 @@ subtype of the |declared type of the sole attribute of C<topic>.
 =head2 sys.std.Set.maybe_reduction
 
 C<< function sys.std.Set.maybe_reduction (Maybe <-- Set $topic,
-ValRedFuncRef $func, Tuple $assuming?) >>
+ValRedFuncRef $func) >>
 
 This function is exactly the same as C<sys.std.Set.reduction> except that
 it does not take an C<identity> argument, and it results in a C<Maybe> of
@@ -220,7 +216,7 @@ this function is analagous to the N-adic SQL COALESCE function.
 
 C<< function sys.std.Set.Maybe.order (Order <-- Maybe $topic,
 Maybe $other, Bool $treat_nothing_as_max, OrdDetFuncRef $ord_func?,
-Tuple $ord_assuming?, Bool $reverse_order_of_singles?) >>
+Bool $reverse_order_of_singles?) >>
 
 This function is a generic (total) C<order_determination> function for
 C<Maybe> values.  Iff both of its C<topic> and C<other> arguments are
@@ -228,7 +224,7 @@ identical, this function results in C<Order:same>.  Otherwise, iff both of
 those 2 arguments are C<Single> values, then the result of this function
 is the result of applying to those 2 arguments the (total)
 C<order_determination> function given in its C<ord_func> argument, as
-curried by its C<ord_assuming> and C<reverse_order_of_singles> arguments.
+curried by its C<reverse_order_of_singles> argument.
 Otherwise, iff C<topic> is C<nothing>, this function results in
 C<Order:increase> or C<Order:decrease> respectively when
 C<treat_nothing_as_max> is C<Bool:false> (the default) or C<Bool:true>.

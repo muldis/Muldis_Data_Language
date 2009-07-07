@@ -221,7 +221,7 @@ scalar value at all that has a possrep.
 =head2 sys.std.Core.Scalar.order
 
 C<< function sys.std.Core.Scalar.order (Order <-- Scalar $topic,
-Scalar $other, Tuple $assuming?, Bool $is_reverse_order?) >>
+Scalar $other, Tuple $misc_args?, Bool $is_reverse_order?) >>
 
 This C<order_determination> function is the externalization of a scalar
 root type's type-default (total) C<order_determination> function.  This
@@ -237,7 +237,7 @@ declared types of those arguments are not both subtypes of such a common
 scalar root type.  Note that C<order_determination> functions are
 considered the only fundamental order-sensitive operators, and all others
 are defined over them.  This function also has a C<Tuple>-typed third
-parameter, named C<assuming>, which carries optional customization details
+parameter, named C<misc_args>, which carries optional customization details
 for the order-determination algorithm; this permits the function to
 implement a choice between multiple (typically similar) ordering algorithms
 rather than just one, which reduces the number of functions needed for
@@ -250,7 +250,7 @@ place elements in ascending order), while a C<Bool:true> argument means the
 function's algorithm operates in reverse, so the function results in the
 reverse C<Order> value it would have otherwise when given the same 3 other
 arguments (meaning a sorting operation based on it will place elements in
-descending order).  The C<assuming> and C<is_reverse_order> parameters are
+descending order).  The C<misc_args> and C<is_reverse_order> parameters are
 optional and default to the zero-attribute tuple and C<Bool:false>,
 respectively, if no explicit arguments are given to them.
 
@@ -521,9 +521,7 @@ arguments.  Note that this operation is also known as C<∉>.
 =head1 SYSTEM-DEFINED GENERIC SINGLE INPUT RELATION FUNCTIONS
 
 These functions are applicable to mainly relation types, but are generic
-in that they typically work with any relation types.  Each C<\w*assuming>
-parameter is optional and defaults to the zero-attribute tuple if no
-explicit argument is given to it.
+in that they typically work with any relation types.
 
 =head2 sys.std.Core.Relation.cardinality
 
@@ -739,15 +737,15 @@ deeply homogeneous relation C<topic>).
 =head2 sys.std.Core.Relation.restriction
 
 C<< function sys.std.Core.Relation.restriction (Relation <--
-Relation $topic, ValFiltFuncRef $func, Tuple $assuming?) >>
+Relation $topic, ValFiltFuncRef $func) >>
 
 This function results in the relational restriction of its C<topic>
 argument as determined by applying the C<value_filter> function named in
-its C<func> argument when the latter function is curried by its C<assuming>
+its C<func>
 argument.  The result relation has the same heading as C<topic>, and its
 body contains the subset of C<topic> tuples where, for each tuple, the
 function named by C<func> results in C<Bool:true> when passed the tuple
-as its C<topic> argument and C<assuming> as its C<assuming> argument.  As a
+as its C<topic> argument.  As a
 trivial case, if C<func> is defined to unconditionally result in
 C<Bool:true>, then this function results simply in C<topic>; or, for an
 unconditional C<Bool:false>, this function results in the empty relation
@@ -761,7 +759,7 @@ equality.
 =head2 sys.std.Core.Relation.restr_and_cmpl
 
 C<< function sys.std.Core.Relation.restr_and_cmpl (Tuple <--
-Relation $topic, ValFiltFuncRef $func, Tuple $assuming?) >>
+Relation $topic, ValFiltFuncRef $func) >>
 
 This function performs a 2-way partitioning of all the tuples of C<topic>
 and results in a binary tuple whose attribute values are each relations
@@ -774,7 +772,7 @@ when given the same arguments.
 =head2 sys.std.Core.Relation.cmpl_restr
 
 C<< function sys.std.Core.Relation.cmpl_restr (Relation <--
-Relation $topic, ValFiltFuncRef $func, Tuple $assuming?) >>
+Relation $topic, ValFiltFuncRef $func) >>
 
 This function is the same as C<restriction> but that it results in the
 complementary subset of tuples of C<topic> when given the same arguments.
@@ -783,18 +781,17 @@ See also the C<sys.std.Core.Relation.semidiff> function.
 =head2 sys.std.Core.Relation.extension
 
 C<< function sys.std.Core.Relation.extension (Relation <-- Relation $topic,
-set_of.Name $attr_names, ValMapFuncRef $func, Tuple $assuming?) >>
+set_of.Name $attr_names, ValMapFuncRef $func) >>
 
 This function results in the relational extension of its C<topic> argument
 as determined by applying the C<Tuple>-resulting C<value_map> function
-named in its
-C<func> argument when the latter function is curried by its C<assuming>
+named in its C<func>
 argument.  The result relation has a heading that is a superset of that
 of C<topic>, and its body contains the same number of tuples, with all
 attribute values of C<topic> retained, and possibly extra present,
 determined as follows; for each C<topic> tuple, the function named by
 C<func> results in a second tuple when passed the first tuple as its
-C<topic> argument and C<assuming> as its C<assuming> argument; the first
+C<topic> argument; the first
 and second tuples must have no attribute names in common, and the result
 tuple is derived by joining (cross-product) the tuples together.  As a
 trivial case, if C<func> is defined to unconditionally result in the
@@ -824,7 +821,7 @@ the C<attrs> argument.
 
 C<< function sys.std.Core.Relation.summary (Relation <--
 Relation $topic, set_of.Name $group_per, set_of.Name $summ_attr_names,
-ValMapFuncRef $summ_func, Tuple $summ_assuming?) >>
+ValMapFuncRef $summ_func) >>
 
 This function provides a convenient context for using aggregate functions
 to derive a per-group summary relation, which is its result, from another
@@ -833,9 +830,8 @@ C<cmpl_group> on C<topic> using C<group_per> to specify which attributes
 get grouped into a new relation-valued attribute and which don't; those
 that don't instead get wrapped into a tuple-valued attribute.  Then, per
 binary tuple in the main relation, this function applies the
-C<Tuple>-resulting C<value_map> function named in its C<summ_func> argument
-when the latter function is curried by its C<summ_assuming> argument
-(passed to it as just C<assuming>); for each post-group main relation
+C<Tuple>-resulting C<value_map> function named in its C<summ_func>
+argument; for each post-group main relation
 tuple, the function named in C<summ_func> results in a second tuple when
 the first tuple is its C<topic> argument; the C<topic> argument has the 2
 attribute names C<summarize> and C<per>, which are valued with the
@@ -1278,7 +1274,7 @@ then assigning the result of that function to C<r>.
 =head2 sys.std.Core.Relation.assign_restriction
 
 C<updater sys.std.Core.Relation.assign_restriction (Relation &$topic,
-ValFiltFuncRef $func, Tuple $assuming?)>
+ValFiltFuncRef $func)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.restriction> function with the same arguments, and
@@ -1287,7 +1283,7 @@ then assigning the result of that function to C<topic>.
 =head2 sys.std.Core.Relation.assign_cmpl_restr
 
 C<updater sys.std.Core.Relation.assign_cmpl_restr
-(Relation &$topic, ValFiltFuncRef $func, Tuple $assuming?)>
+(Relation &$topic, ValFiltFuncRef $func)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.cmpl_restr> function with the same arguments, and
@@ -1359,7 +1355,7 @@ column.
 =head2 sys.std.Core.Relation.assign_extension
 
 C<updater sys.std.Core.Relation.assign_extension (Relation &$topic,
-set_of.Name $attr_names, ValMapFuncRef $func, Tuple $assuming?)>
+set_of.Name $attr_names, ValMapFuncRef $func)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.extension> function with the same arguments, and
@@ -1521,13 +1517,16 @@ in the call stack unwinding, and transaction rollbacks, until it is caught.
 
 =head2 sys.std.Core.Control.try_catch
 
-C<procedure sys.std.Core.Control.try_catch (ImpRef $try,
-Tuple &$try_updating?, Tuple $try_assuming?, ImpRef $catch,
-Tuple &$catch_updating?, Tuple $catch_assuming?)>
+C<procedure sys.std.Core.Control.try_catch
+(ImpRef $try, Tuple &$try_upd_args?, Tuple $try_ro_args?,
+ImpRef $catch?, Tuple &$catch_upd_args?, Tuple $catch_ro_args?)>
 
-This procedure invokes the imperative routine named in its C<try> argument,
-giving it the arguments C<try_updating> and C<try_assuming> as its
-C<updating> and C<assuming> arguments, respectively.  If the C<try> routine
+This procedure invokes the imperative routine named in its C<try> argument
+with arguments supplied by this procedure's C<try_upd_args> and
+C<try_ro_args> arguments; each attribute name of C<try_[upd|ro]_args> is
+mapped to a parameter name of the invoked imperative, and the corresponding
+attribute value is the corresponding argument for the imperative
+invocation.  If the C<try> routine
 throws an exception, then any state changes it made roll back (but changes
 made before that don't), and the call stack unwinds to the C<try_catch>
 itself; then the imperative routine named by C<catch> is invoked similarly
@@ -1537,7 +1536,7 @@ also throws an exception (such as to say its not handling the thrown one),
 then that one is not caught and the call stack unwinding plus applicable
 transaction rollback carries on to the caller of the C<try_catch>.  If the
 C<try> routine succeeds (doesn't throw an exception), then the C<catch>
-routine is not called.  Each of the C<[try|catch]_[updating|assuming]>
+routine is not called.  Each of the C<[try|catch]_[upd|ro]_args>
 parameters is optional and defaults to the zero-attribute tuple if no
 explicit argument is given to it.
 

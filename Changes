@@ -6,6 +6,29 @@
     * Muldis::D version 0.80.0 is released on CPAN as
     Muldis-D-0.80.0.tar.gz.
 
+    * This release features the extension of function reference types so
+    they also represent pre-bound parameters, which gives Muldis D both
+    proper closure support like that of other languages, as well as proper
+    currying support like that of other languages.  A consequence of this
+    is that all 50+ explicit "assuming" parameters are now removed from the
+    system-defined routines that took functional closure arguments, and so
+    those routines are now more like corresponding ones in other languages.
+
+    * (Types_Catalog.pod, Routines_Catalog.pod)  Renamed the first word of
+    the title of the main pod section "FUNCTIONS FOR SPECIAL ENTITY
+    REFERENCE DEFAULT VALUES" to "ROUTINES" and added new procedure
+    "sys.std.Core.Cat.noop" which has no params and doesn't do anything.
+    Updated the "ImpRef" type definition so that a ref to "noop" is its new
+    default value (but the default of "UpdRef" is still "assign").
+
+    * (Routines.pod)  Updated the procedure "try_catch" to make the "catch"
+    parameter optional, so by default an exception thrown in "try" is
+    simply a no-op over all.  Also renamed the 4 parameters
+    "[try|catch]_[updating|assuming]" to "[try|catch]_[upd|ro]_args".  Also
+    "try_catch" now works like "inp_invo" in how it invokes imperatives;
+    each "*args" attribute now maps to a distinct parameter rather than the
+    invoked simply having 2 Tuple params named "updating" and "assuming".
+
     * (Basics.pod)  Updated the "ROUTINES" main pod section to say that
     conceptually Muldis D routines actually have 1 or 2 Tuple-typed
     positional params and the named attributes of those Tuple params are
@@ -16,11 +39,11 @@
     "curried" since that isn't what "func_invo" conceivably does, or at
     least not with the same meaning as any other function doing "curried".
 
-    * (Basics.pod, Types_Catalog.pod)  Mainly in the "ROUTINES" main pod
-    section of Basics.pod, updated all 4 named routine kinds which used to
-    have exactly N parameters and one was named "assuming", so to have
-    instead at least N-1 parameters and the explicit "assuming" was removed
-    in favor of optional normal parameters; said 4 routine kinds are:
+    * (Basics.pod)  Mainly in the "ROUTINES" main pod section of
+    Basics.pod, updated all 4 named routine kinds which used to have
+    exactly N parameters and one was named "assuming", so to have instead
+    at least N-1 parameters and the explicit "assuming" was removed in
+    favor of optional normal parameters; said 4 routine kinds are:
     "order_determination", "value_[filter|map|reduction]".  More broadly
     speaking, the concept of "currying", that is using any "assuming"
     parameters that system-defined Muldis D routines may have, is now the
@@ -28,8 +51,8 @@
     an "assuming" Tuple will bind to an actual same-named parameter of the
     routine rather than the whole "assuming" binding to a single
     "assuming"-named param.  This change item doesn't include updating the
-    descriptions of sys-def routines that use currying, because a
-    subsequent change item removes the need.
+    descriptions of sys-def routines that use currying, because subsequent
+    change items remove the need.
 
     * (Types_Catalog.pod, Routines.pod)  In Types_Catalog.pod, updated the
     "TYPES FOR SPECIAL ENTITY REFERENCES" main pod section to say that
@@ -41,6 +64,30 @@
     parameters.  Now to keep things simple, currently imperative routines
     can not be curried; that might be supported in the future if a good way
     can be found for users to curry updateable parameters.
+
+    * (Types_Catalog.pod, Routines.pod)  While order_determination
+    functions in general can now have 3+ parameters, the ones that are
+    baked into scalar root types as their type-default order algorithms
+    must instead have exactly 4 parameters, the 4th being a "misc_args"
+    tuple; related to this, updated the "sys.std.Core.Scalar.order"
+    function to rename its "assuming" parameter to "misc_args".
+
+    * (Tuple.pod)  Updated the order_determination function
+    "sys.std.Tuple.order_by_attr_names" to replace its "assuming" parameter
+    with an "order_by" parameter, the latter previously having been
+    supplied as the sole attribute of the former.
+
+    * (Ordered.pod)  Updated every one of the 12 functions to remove its
+    "assuming" parameter.  Any situation where said parameter might have
+    been used can now curry the ord-det-func instead; this also means that
+    for any customizable scalar type-default ODF, the "func" parameter now
+    would have to be explicitly given.
+
+    * (Routines.pod)  Updated every one of the 37 remaining routines with a
+    "[|[summ|ord|restr|subst|exten]_]assuming" parameter to remove that
+    parameter.  The number of updated routines by file were: 8 in
+    Routines.pod, 15 in Relation.pod (2 of those with 2 params each
+    removed), 3 in Set.pod, 5 in Array.pod, 2 in Bag.pod, 4 in Counted.pod.
 
     * (Routines.pod, Bool.pod, PTMD_STD.pod)  Demoted the function
     "sys.std.Core.Bool.xor" from the language core into the "Bool"
@@ -67,8 +114,8 @@ MAP/RESTRICTION/ETC AND ...
 The new functions are modelled after some in Perl 5's List::MoreUtils module.
 ... AND SEE THE TODO FILE
 
-    * (BBEdit_LM_Muldis_D.plist, Input_Method_Muldis_D.cin)  Various minor
-    updates.
+    * (Conventions.pod, BBEdit_LM_Muldis_D.plist,
+    Input_Method_Muldis_D.cin)  Various minor updates and fixes.
 
 2009-06-16  Darren Duncan <perl@DarrenDuncan.net>
 
