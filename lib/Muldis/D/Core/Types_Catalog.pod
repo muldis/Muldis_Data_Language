@@ -144,7 +144,6 @@ more or less:
                 sys.std.Core.Type.Cat.PossrepSet
                 sys.std.Core.Type.Cat.PossrepMapSet
                 sys.std.Core.Type.Cat.VirtualAttrMapSet
-                sys.std.Core.Type.Cat.ConstraintSet
                 sys.std.Core.Type.Cat.KeySet
                 sys.std.Core.Type.Cat.DistribKeySet
                 sys.std.Core.Type.Cat.DKMemRelAttrMap
@@ -2472,18 +2471,18 @@ is a C<Single> whose sole element is the name of that other type.  Note
 that any type named by C<base_type> must itself be a scalar root
 type or a subtype of one.
 
-=item C<subtype_constraint> - C<maybe_of.InnerFuncBody>
+=item C<subtype_constraint> - C<maybe_of.Name>
 
 Iff the type being defined is a scalar root type, or it is a
 non-proper subtype of some other type, then C<subtype_constraint> is not
 applicable and is C<nothing>.  Iff the type being defined is a proper
 subtype of some other scalar type, then C<subtype_constraint> is a
-C<Single> whose sole element defines the entire (main) body of a
+C<Single> whose sole element matches the declared name of an inner
 C<type_constraint> function that determines what base type values are part
-of the subtype.  The implicit function heading that this goes with has a
+of the subtype.  The inner function that this names must have a
 single C<topic> parameter whose declared type is that named by
-C<base_type>, and whose argument is the value to test; the function's
-implicit result type is C<Bool>.  This constraint function may only
+C<base_type>, and whose argument is the value to test; the inner function's
+result type must be C<Bool>.  This constraint function may only
 reference possreps of the base type, and may not reference possreps of the
 type being defined.  Note that, strictly speaking, C<subtype_constraint>
 may actually be less restrictive than the total constraint of the subtype
@@ -2526,14 +2525,14 @@ total number of bidirectional maps C<M> is in C<(P-1) ≤ M ≤ ((P-1)*P/2)>.
 When a subtype is adding possreps to an other base type, all of the mapping
 functions are defined with the subtype.
 
-=item C<default> - C<maybe_of.InnerFuncBody>
+=item C<default> - C<maybe_of.Name>
 
 Iff it is a C<Single>, then C<default>
-defines the entire (main) body of a C<named_value> function that
+matches the declared name of an inner C<named_value> function that
 results in the default scalar value of the [|sub]type; it has
 zero parameters and its result type is the same as the scalar type
 whose declaration it is part of.  Iff C<default> is C<nothing> and
-C<base_type> is C<nothing>, then semantics are as if it were a defined body
+C<base_type> is C<nothing>, then semantics are as if it were a defined name
 that resulted in a value of the type being defined where all of the possrep
 attr values were the default values of their declared types; but if the
 type being defined has multiple possreps and going the by-attr-defaults
@@ -2544,20 +2543,20 @@ then the subtype will use the same default value as its base type; but if
 the subtype's value set excludes said value, then a C<default> of
 C<nothing> is invalid and C<default> must be a C<Single>.
 
-=item C<order> - C<maybe_of.InnerFuncBody>
+=item C<order> - C<maybe_of.Name>
 
 A scalar root type definition may optionally have a type-default
 total ordering function associated with it (a type being defined as a
 subtype may not); iff the type being defined qualifies and desires such an
 associated function, then C<order> is a C<Single> whose sole element
-defines the entire (main) body of an C<order_determination> function.  The
-implicit function heading that this goes with has exactly 4 parameters; the
+matches the declared name of an inner C<order_determination> function.  The
+inner function that this names must have exactly 4 parameters; the
 first two parameters, named C<topic> and C<other>, each have declared types
 that are the same as the scalar root type whose declaration the
 function is part of, and this function is said root type's type-default
 ordering function; the third parameter, named C<misc_args>, is
 C<Tuple>-typed; the fourth parameter, named C<is_reverse_order>, is
-C<Bool>-typed; the function's implicit result type is C<Order>.  Iff
+C<Bool>-typed; the function's result type must be C<Order>.  Iff
 the type being defined is a subtype of some other type or does not desire
 the function, then C<order> is C<nothing>.
 
@@ -2588,16 +2587,16 @@ This is an optional programmer comment about the possrep as a whole.
 
 This defines the 0..N attributes of the possrep.
 
-=item C<constraint> - C<maybe_of.InnerFuncBody>
+=item C<constraint> - C<maybe_of.Name>
 
 Iff it is a C<Single>, then C<constraint>
-defines the entire (main) body of a C<type_constraint> function that
+matches the declared name of an inner C<type_constraint> function that
 determines what combinations of possrep attribute values denote values of
 the [|sub]type, besides the restrictions imposed by the declared types of
-the attributes individually.  The implicit function heading that this goes
-with has a single C<topic> parameter whose declared type is a tuple whose
+the attributes individually.  The inner function that this names
+must have a single C<topic> parameter whose declared type is a tuple whose
 attributes match those declared by C<attrs> and whose argument denotes the
-value to test; the function's implicit result type is C<Bool>.  If the
+value to test; the inner function's result type must be C<Bool>.  If the
 function unconditionally results in C<Bool:true>, then all possible
 combinations of attribute-allowable values are collectively allowed.  Note
 that, strictly speaking, any constraint defined as part of a possrep (where
@@ -2610,7 +2609,7 @@ therefore, mainly any given possrep's constraints need to be just
 restricting enough so that the inter-possrep mapping functions can handle
 the arguments that it accepts, so it is possible to apply the other
 possreps' constraints.  Iff C<constraint> is C<nothing>, then semantics are
-as if it were a defined body that unconditionally resulted in C<Bool:true>.
+as if it were a defined name that unconditionally resulted in C<Bool:true>.
 
 =item C<is_base> - C<Bool>
 
@@ -2656,20 +2655,20 @@ distinct from that of C<p1>, and moreover, the 2 values must be mutually
 ordered so that the value of C<p1> is before the value of C<p2>; the latter
 constraint defines a C<PossrepMapSet>'s canonical form.
 
-=item C<p2_from_p1> - C<InnerFuncBody>
+=item C<p2_from_p1> - C<Name>
 
-This defines the entire (main) body of a C<possrep_map> function that
+This matches the declared name of an inner C<possrep_map> function that
 derives the representation of the possrep named by C<p2> from that of the
-possrep named by C<p1>.  The implicit function heading that this goes with
-has a single C<topic> parameter whose declared type is a tuple whose
-attributes match those of C<p1>; the function's implicit result type is a
+possrep named by C<p1>.  The inner function that this names must
+have a single C<topic> parameter whose declared type is a tuple whose
+attributes match those of C<p1>; the inner function's result type must be a
 tuple whose attributes match those of C<p2>.  Note that every distinct
 argument (domain) value of this function must have a distinct result
 (range) value.
 
-=item C<p1_from_p2> - C<InnerFuncBody>
+=item C<p1_from_p2> - C<Name>
 
-This defines the entire (main) body of the inverse C<possrep_map> function
+This matches the declared name of an inner inverse C<possrep_map> function
 to that of C<p2_from_p1>.  I<Note that it would often be feasible for a
 Muldis D implementation to automatically infer a reverse function, but for
 now we still require it to be explicitly stated; the explicitly stated
@@ -2742,23 +2741,23 @@ and how they are defined in terms of the rest of this type's attributes.
 Note that the special functional dependencies between attributes defined
 herein mean that some kinds of tuple constraints would be redundant.
 
-=item C<tuple_constraints> - C<ConstraintSet>
+=item C<tuple_constraints> - C<set_of.Name>
 
-This defines the entire (main) bodies of 0..N C<type_constraint> functions
+This matches the declared names of 0..N inner C<type_constraint> functions
 that (when I<and>-ed together) determine what combinations of tuple
 attribute values denote values of the [|sub]type, besides the restrictions
 imposed by the declared types of the attributes individually; they are
 generalized type constraints that together validate a tuple as a whole.
-The implicit function heading that each of these goes with has a single
+The inner function that each of these names must have a single
 C<topic> parameter whose declared type is a tuple whose attributes match
 those declared by C<attrs> and whose argument denotes the value to test;
-the function's implicit result type is C<Bool>.  If the functions
+the function's result type must be C<Bool>.  If the functions
 unconditionally result in C<Bool:true>, then all possible combinations of
 attribute-allowable values are collectively allowed.  Each function is
 invoked either once to test a tuple value, or multiple times to
 individually test every tuple in a relation value.
 
-=item C<relation_constraints> - C<ConstraintSet>
+=item C<relation_constraints> - C<set_of.Name>
 
 This is like C<tuple_constraint> but that each function's parameter is
 relation-typed rather than tuple-typed; each is a generalized type
@@ -2834,30 +2833,30 @@ being defined; it is as per C<foreign_keys> except that the parent
 relation is the result of unioning appropriately renamed projections of
 the member relations of the distributed key.
 
-=item C<default_tuple> - C<maybe_of.InnerFuncBody>
+=item C<default_tuple> - C<maybe_of.Name>
 
 Iff it is a C<Single>, then C<default_tuple>
-defines the entire (main) body of a C<named_value> function that
+matches the declared name of an inner C<named_value> function that
 results in the default tuple value of the [|sub]type; it has zero
 parameters and its result type is the same as the tuple type whose
 declaration it is part of.  Iff C<default_tuple> is C<nothing> and
 C<base_type> is C<nothing>, then semantics are as if C<default_tuple> were
-a defined body that resulted in a value of the type being defined where all
+a defined name that resulted in a value of the type being defined where all
 of the attr values were the default values of their declared types.  Iff
 C<default_tuple> is C<nothing> and C<base_type> is a C<Single>, then the
 subtype will use the same default tuple value as its base type; but if the
 subtype's value set excludes said value, then a C<default_tuple> of
 C<nothing> is invalid and C<default_tuple> must be a C<Single>.
 
-=item C<default_relation> - C<maybe_of.InnerFuncBody>
+=item C<default_relation> - C<maybe_of.Name>
 
 Iff it is a C<Single>, then C<default_relation>
-defines the entire (main) body of a C<named_value> function that
+matches the declared name of an inner C<named_value> function that
 results in the default relation value of the [|sub]type; it has
 zero parameters and its result type is the same as the relation
 type whose declaration it is part of.  Iff C<default_relation> is
 C<nothing> and C<base_type> is C<nothing>, then semantics are as if
-C<default_relation> were a defined body that resulted in a value of the
+C<default_relation> were a defined name that resulted in a value of the
 type being defined that had zero tuples.  Iff C<default_relation> is
 C<nothing> and C<base_type> is a C<Single>, then the subtype will use the
 same default relation value as its base type; but if the subtype's value
@@ -2984,14 +2983,14 @@ C<dependent_attrs> is as per C<determinant_attrs>; none of these may be the
 same as the names of the determinant attributes, since a virtual attribute
 can't be defined in terms of itself.
 
-=item C<virtual_attr_map> - C<InnerFuncBody>
+=item C<virtual_attr_map> - C<Name>
 
-This defines the entire (main) body of a C<virtual_attr_map> function that
-derives a tuple of dependent attribute values from a tuple of
-determinant attribute values.  The implicit function heading that this goes
-with has a single C<topic> parameter whose declared type is a tuple whose
-attributes match those of C<determinant_attrs>; the function's implicit
-result type is a tuple whose attributes match those of
+This matches the declared name of an inner C<virtual_attr_map> function
+that derives a tuple of dependent attribute values from a tuple of
+determinant attribute values.  The inner function that this names must
+have a single C<topic> parameter whose declared type is a tuple whose
+attributes match those of C<determinant_attrs>; the inner function's
+result type must be a tuple whose attributes match those of
 C<dependent_attrs>.  Note that the range of this function is typically
 smaller than its domain, though it might not be.
 
@@ -3012,40 +3011,6 @@ A C<VirtualAttrMapSet> has a binary primary key on the C<determinant_attrs>
 plus C<dependent_attrs> attributes; it also has a distributed primary key
 over the C<dependent_attrs> attribute of all tuples.  Its default value is
 empty.
-
-=head2 sys.std.Core.Type.Cat.ConstraintSet
-
-A C<ConstraintSet> is a C<DHRelation> that specifies a set of named generic
-constraints for data types or variables; each tuple is one named
-constraint.  Each constraint in the set can be either a C<type_constraint>
-or C<state_constraint> or C<transition_constraint>, but when a set has
-multiple constraints, all of them must be the same kind, and they must all
-correspond to the same implicit function heading.  One or more (possibly
-empty) C<ConstraintSet> is composed into the definition each nonscalar
-type and union type and restriction type and dbvar.
-
-A C<ConstraintSet> has these 3 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the constraint function.
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the constraint as a whole.
-
-=item C<body> - C<InnerFuncBody>
-
-This defines the entire (main) body of the constraint function.
-
-=back
-
-A C<ConstraintSet> has a unary primary key on the C<name> attribute.  Its
-default value is empty.  The default value of a tuple of C<ConstraintSet>
-has a C<name> that is the empty string, and its C<body> unconditionally
-results in C<Bool:true>.
 
 =head2 sys.std.Core.Type.Cat.KeySet
 
@@ -3380,21 +3345,21 @@ this is C<Bool:false> then the set of filter data types will be unioned to
 determine the complete set of filter values, and if C<filters> has no
 elements then the filter set is just C<Empty>.
 
-=item C<constraints> - C<ConstraintSet>
+=item C<constraints> - C<set_of.Name>
 
-This defines the entire (main) bodies of 0..N C<type_constraint> functions
+This matches the declared names of 0..N inner C<type_constraint> functions
 that (when I<and>-ed together) determine what filter-type-passing
-source-type values are part of the union type.  The implicit function
-heading that each of these goes with has a single C<topic> parameter whose
+source-type values are part of the union type.  The inner function
+that each of these names must have a single C<topic> parameter whose
 declared type is C<Universal>, unless there is exactly 1 C<sources> element
 whereupon the declared type is the same as the source type, and whose
-argument is the value to test; the function's implicit result type is
+argument is the value to test; the function's result type must be
 C<Bool>.  If the functions unconditionally result in C<Bool:true>, then all
 filter-type-passing values are allowed.
 
-=item C<default> - C<InnerFuncBody>
+=item C<default> - C<Name>
 
-This defines the entire (main) body of a C<named_value> function that
+This matches the declared name of an inner C<named_value> function that
 results in the default value of the union type; it has zero parameters and
 its result type is the same as the union type whose declaration it is part
 of.
@@ -3441,21 +3406,21 @@ This is the name of the not-C<Empty> other type that all the values of the
 new data type are drawn from; the new type is being declared as a subtype
 of that named by C<base_type>.
 
-=item C<constraints> - C<ConstraintSet>
+=item C<constraints> - C<set_of.Name>
 
-This defines the entire (main) bodies of 0..N C<type_constraint> functions
+This matches the declared names of 0..N inner C<type_constraint> functions
 that (when I<and>-ed together) determine what base type values are part of
-the restriction type.  The implicit function heading that each of these
-goes with has a single C<topic> parameter whose declared type is that named
+the restriction type.  The inner function that each of these names
+must have a single C<topic> parameter whose declared type is that named
 by C<base_type>, and whose argument is the value to test; the function's
-implicit result type is C<Bool>.  If the functions unconditionally result
+result type must be C<Bool>.  If the functions unconditionally result
 in C<Bool:true>, then the new type is a non-proper subtype of the base
 type.
 
-=item C<default> - C<maybe_of.InnerFuncBody>
+=item C<default> - C<maybe_of.Name>
 
 Iff it is a C<Single>, then C<default>
-defines the entire (main) body of a C<named_value> function that
+matches the declared name of an inner C<named_value> function that
 results in the default value of the restriction type; it has zero
 parameters and its result type is the same as the restriction type whose
 declaration it is part of.  Iff C<default> is C<nothing>, then the
