@@ -3547,7 +3547,7 @@ C<NameChain> value for referencing it from outside that context
 (likewise for routines declared private to a package), and outside that
 context is typically where the routines that take closures as arguments
 would live.  For example, if public function C<dep.lib.mymain> had an inner
-function C<inn.mytest> and C<dep.lib.myfoo> invoked the public function
+function C<inn.mytest> and C<dep.lib.mymain> invoked the public function
 C<dep.lib.myfilter> with an argument value of C<inn.mytest>, then if
 C<dep.lib.myfilter> tried to invoke the function it was passed, it would
 actually be trying to invoke an inner function of C<dep.lib.myfilter> named
@@ -3567,15 +3567,19 @@ magic by embedding knowledge about the lexical-et-al context in which they
 were selected, so that when routines are to be invoked by way of those
 values, the invocation of the capture effectively takes place within the
 same context where the special type values were selected, as users would
-conceptually expect.  Selecting one of these special values involves a
-C<NameChain> argument, and the identity of the selected special value
-is based on the combination of the argument and the context of selection,
-more or less.  At the same time, every one of these values may incorporate
-a meaningless random element to make every selection produce a distinct
-value, even if more than one would have the same semantics.  However,
-normal value assignment et al will preserve the same value of course, so
-identity comparison of a C<V> with a C<v> that was previously assigned to
-it would result in TRUE.  Currently, selecting these special values can not
+conceptually expect.  One of these special values is selected in terms of a
+C<NameChain>, and the identity of the selected special value is based on
+the combination of the C<NameChain> and the context of selection; two
+selections in the same context with the same C<NameChain> are guaranteed to
+be identical, and two selections with either the context or the
+C<NameChain> differing are guaranteed to be non-identical.  Now, whether or
+not 2 distinct selections are considered to have the same context (so their
+identity varies only on their C<NameChain>) depends on what namespace the
+referenced entity is relative to the referencing entity; for a reference to
+C<inn>, the context is the outer entity containing that inner; for a
+reference to C<sys> or C<fed>, the context is global; for C<dep> or C<sdp>
+or C<pkg> the context is that same depot/subdepot/package.  I<These spec
+details may be adjusted.>  Currently, selecting these special values can't
 be done with an ordinary routine, but only with a special catalog type for
 an expression or statement node, due to the unusualness of this.  It is
 also not possible to map one of these special values to another type.
@@ -3595,7 +3599,15 @@ supply argument values from the context of definition, effectively turning
 the corresponding parameters into constants, and so the actual closure has
 appropriately fewer effective parameters.  Similarly, one can take an
 already existing value of a special type and curry that to derive another
-one with arguments from the context of the derivation.
+one with arguments from the context of the derivation.  Two function
+closures are considered identical if they both reference the same routine
+as per the prior-mentioned criteria and they both have the same parameters
+curried with identical values, regardless of whether the individual
+currying operations resulting in the two closures were identical; for
+example, if one closure was produced by a single curry of two parameters
+and the other was produced by a chain of two curries where each did one of
+those parameters, then the closures are identical assuming same original
+routine and parameter values.
 
 I<For now, only functions may be curried, and imperative routines can't be;
 the latter might be supported in the future but then it has to be worked
