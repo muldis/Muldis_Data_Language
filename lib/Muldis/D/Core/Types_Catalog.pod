@@ -80,13 +80,14 @@ more or less:
                 sys.std.Core.Type.Cat.UpdHead
                 sys.std.Core.Type.Cat.ProcHead
                 sys.std.Core.Type.Cat.InnerFuncBody
+                sys.std.Core.Type.Cat.IfThenExprMap
                 sys.std.Core.Type.Cat.InnerUpdBody
                 sys.std.Core.Type.Cat.InnerProcBody
+                sys.std.Core.Type.Cat.IfThenVarStmtMap
                 sys.std.Core.Type.Cat.InnerScalarType
                 sys.std.Core.Type.Cat.InnerNonscalarType
                 sys.std.Core.Type.Cat.InnerUnionType
                 sys.std.Core.Type.Cat.InnerRestrType
-                sys.std.Core.Type.Cat.IfThenMap
                 sys.std.Core.Type.Cat.OrderByName
 
                 sys.std.Core.Type.Database
@@ -130,13 +131,16 @@ more or less:
                 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
                 sys.std.Core.Type.Cat.IfElseExprNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
+                sys.std.Core.Type.Cat.WhenThenExprMap
                 sys.std.Core.Type.Cat.MaterialRefSelExprNodeSet
                 sys.std.Core.Type.Cat.MultiUpdStmt
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
                 sys.std.Core.Type.Cat.CompoundStmtNodeSet
                 sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
+                sys.std.Core.Type.Cat.IISArgVarMap
                 sys.std.Core.Type.Cat.IfElseStmtNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
+                sys.std.Core.Type.Cat.WhenThenVarStmtMap
                 sys.std.Core.Type.Cat.IterateStmtNodeSet
                 sys.std.Core.Type.Cat.LoopStmtNodeSet
                 sys.std.Core.Type.Cat.PossrepSet
@@ -153,7 +157,6 @@ more or less:
                 sys.std.Core.Type.Cat.NameExprMap
                 sys.std.Core.Type.Cat.NameDNCMap
                 sys.std.Core.Type.Cat.AttrRenameMap
-                sys.std.Core.Type.Cat.WhenThenMap
 
 These system-defined subtypes can never be used as components of a system
 catalog, or any database, but they may be used temporarily at runtime:
@@ -1814,7 +1817,7 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<if_then> - C<array_of.IfThenMap>
+=item C<if_then> - C<array_of.IfThenExprMap>
 
 This is a sequence of 0..N conditional expressions, each of which has an
 associated result expression.  Each conditional expression will evaluate in
@@ -1835,6 +1838,23 @@ C<else> will be evaluated, and be the result of the larger if-else.
 
 An C<IfElseExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.IfThenExprMap
+
+An C<IfThenExprMap> is a C<DHTuple>.  It defines an element of an if-else
+sequential expression or statement.  An C<IfThenExprMap> has 2 attributes,
+C<if> and C<then>, each of which is a C<NameChain>; C<if> has the name of a
+local expression node (or parameter or variable), and C<then> in the case
+of an if-else expression has likewise, or in the case of an if-else
+statement has the name of a statement node.  For an if-else expression, the
+C<if> node is the condition to evaluate; if that condition evaluates to
+C<Bool:true>, then the C<then> node is evaluated and its result is the
+result of the whole if-else expression; otherwise, C<then> is not
+evaluated.  For an if-else statement, the C<if> node is the conditional
+result variable name; if that conditional result is C<Bool:true>, then the
+C<then> statement node is invoked; otherwise, C<then> is not invoked.  Its
+default value has the default value of the C<NameChain> type in both
+attributes.
 
 =head2 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
 
@@ -1867,7 +1887,7 @@ the expression node (sub-)tree it is the root of.
 This is the single operand value that is common to all the conditions; it
 is the control value for the expression.
 
-=item C<when_then> - C<WhenThenMap>
+=item C<when_then> - C<WhenThenExprMap>
 
 This is a set of distinct condition operand values, each of which has an
 associated result expression.  If a condition operand matches the value of
@@ -1887,6 +1907,23 @@ given-when-default.
 
 A C<GivenWhenDefExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.WhenThenExprMap
+
+A C<WhenThenExprMap> is a C<DHRelation>.  It defines a set of dispatch
+options
+for a given-when-default expression or statement.  A C<WhenThenExprMap> has
+2
+attributes, C<when> and C<then>, each of which is a C<NameChain>; C<when>
+has the name of a local expression node (or parameter or variable), and
+C<then> in the case of a g-w-d expression has likewise, or in the case of a
+g-w-d statement has the name of a statement node.  The C<when> node is the
+not-common / distinct operand for each condition.  For a g-w-d expression,
+if a C<when> value is matched, then the C<then> node is evaluated and its
+result is the result of the whole g-w-d expression; otherwise, C<then> is
+not evaluated.  For a g-w-d statement, if a C<when> value is matched, then
+the C<then> statement node is invoked; otherwise, C<then> is not invoked.
+Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.MaterialRefSelExprNodeSet
 
@@ -2206,12 +2243,12 @@ the statement node (sub-)tree it is the root of.
 
 This is the name of the imperative routine being invoked.
 
-=item C<upd_args> - C<NameExprMap>
+=item C<upd_args> - C<IISArgVarMap>
 
 These are the 0..N subject-to-update arguments to the routine invocation,
 as-per C<ro_args>.
 
-=item C<ro_args> - C<NameExprMap>
+=item C<ro_args> - C<IISArgVarMap>
 
 These are the 0..N read-only arguments to the routine invocation.  Each
 element defines one argument value, with the element C<name> matching the
@@ -2224,6 +2261,23 @@ value.
 An C<ImpInvoStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.  There is a distributed primary
 key over the C<name> attributes of C<upd_args> and C<ro_args>.
+
+=head2 sys.std.Core.Type.Cat.IISArgVarMap
+
+An C<IISArgVarMap> is a C<DHRelation>.  It defines a basic component-values
+list, meaning a set of names, with a declared local expression node (or
+parameter or variable) name for each.  It is used to define collection
+literals; one C<IISArgVarMap> defines a whole C<Tuple> value.  It is also
+used to define argument lists for routine invocations.  An C<IISArgVarMap>
+has 2 attributes, C<name> (a C<Name>) and C<expr> (a C<NameChain>); the
+C<name> is the name of the tuple/etc attribute or routine argument, and
+comprises a unary key; the C<expr> is the declared local name of the
+expression node (or parameter or variable) which defines the value for the
+attribute or argument.  Note that while the C<expr> attribute could
+conceivably just be a C<Name> because most of its allowed values would be
+in the C<lex> namespace, the C<NameChain> is used instead so that value
+expressions can take advantage of terse syntax for addressing value
+attributes.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.IfElseStmtNodeSet
 
@@ -2251,7 +2305,7 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<if_then> - C<array_of.IfThenMap>
+=item C<if_then> - C<array_of.IfThenVarStmtMap>
 
 This is a sequence of 0..N conditional result variable names, each of which
 has an associated statement.  Each conditional result will be tested in
@@ -2272,6 +2326,25 @@ C<nothing>, then the whole if-else will have been a no-op.
 
 An C<IfElseStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.IfThenVarStmtMap
+
+An C<IfThenVarStmtMap> is a C<DHTuple>.  It defines an element of an
+if-else
+sequential expression or statement.  An C<IfThenVarStmtMap> has 2
+attributes,
+C<if> and C<then>, each of which is a C<NameChain>; C<if> has the name of a
+local expression node (or parameter or variable), and C<then> in the case
+of an if-else expression has likewise, or in the case of an if-else
+statement has the name of a statement node.  For an if-else expression, the
+C<if> node is the condition to evaluate; if that condition evaluates to
+C<Bool:true>, then the C<then> node is evaluated and its result is the
+result of the whole if-else expression; otherwise, C<then> is not
+evaluated.  For an if-else statement, the C<if> node is the conditional
+result variable name; if that conditional result is C<Bool:true>, then the
+C<then> statement node is invoked; otherwise, C<then> is not invoked.  Its
+default value has the default value of the C<NameChain> type in both
+attributes.
 
 =head2 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
 
@@ -2300,7 +2373,7 @@ This is name of the local parameter or variable that supplies the single
 operand value that is common to all the conditions; it is the control value
 for the statement.
 
-=item C<when_then> - C<WhenThenMap>
+=item C<when_then> - C<WhenThenVarStmtMap>
 
 This is a set of distinct condition operand values, each of which has an
 associated statement.  If a condition operand matches the value of
@@ -2320,6 +2393,23 @@ been a no-op.
 
 A C<GivenWhenDefStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.WhenThenVarStmtMap
+
+A C<WhenThenVarStmtMap> is a C<DHRelation>.  It defines a set of dispatch
+options
+for a given-when-default expression or statement.  A C<WhenThenVarStmtMap>
+has 2
+attributes, C<when> and C<then>, each of which is a C<NameChain>; C<when>
+has the name of a local expression node (or parameter or variable), and
+C<then> in the case of a g-w-d expression has likewise, or in the case of a
+g-w-d statement has the name of a statement node.  The C<when> node is the
+not-common / distinct operand for each condition.  For a g-w-d expression,
+if a C<when> value is matched, then the C<then> node is evaluated and its
+result is the result of the whole g-w-d expression; otherwise, C<then> is
+not evaluated.  For a g-w-d statement, if a C<when> value is matched, then
+the C<then> statement node is invoked; otherwise, C<then> is not invoked.
+Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.IterateStmtNodeSet
 
@@ -3438,38 +3528,6 @@ An C<AttrRenameMap> is a C<DHRelation>.  It is used as a specification for
 how to rename attributes of some collection.  An C<AttrRenameMap> has 2
 attributes, C<before> and C<after>, each of those being a C<Name>, and each
 of those being a unary key.  Its default value has zero tuples.
-
-=head2 sys.std.Core.Type.Cat.IfThenMap
-
-An C<IfThenMap> is a C<DHTuple>.  It defines an element of an if-else
-sequential expression or statement.  An C<IfThenMap> has 2 attributes,
-C<if> and C<then>, each of which is a C<NameChain>; C<if> has the name of a
-local expression node (or parameter or variable), and C<then> in the case
-of an if-else expression has likewise, or in the case of an if-else
-statement has the name of a statement node.  For an if-else expression, the
-C<if> node is the condition to evaluate; if that condition evaluates to
-C<Bool:true>, then the C<then> node is evaluated and its result is the
-result of the whole if-else expression; otherwise, C<then> is not
-evaluated.  For an if-else statement, the C<if> node is the conditional
-result variable name; if that conditional result is C<Bool:true>, then the
-C<then> statement node is invoked; otherwise, C<then> is not invoked.  Its
-default value has the default value of the C<NameChain> type in both
-attributes.
-
-=head2 sys.std.Core.Type.Cat.WhenThenMap
-
-A C<WhenThenMap> is a C<DHRelation>.  It defines a set of dispatch options
-for a given-when-default expression or statement.  A C<WhenThenMap> has 2
-attributes, C<when> and C<then>, each of which is a C<NameChain>; C<when>
-has the name of a local expression node (or parameter or variable), and
-C<then> in the case of a g-w-d expression has likewise, or in the case of a
-g-w-d statement has the name of a statement node.  The C<when> node is the
-not-common / distinct operand for each condition.  For a g-w-d expression,
-if a C<when> value is matched, then the C<then> node is evaluated and its
-result is the result of the whole g-w-d expression; otherwise, C<then> is
-not evaluated.  For a g-w-d statement, if a C<when> value is matched, then
-the C<then> statement node is invoked; otherwise, C<then> is not invoked.
-Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.OrderByName
 
