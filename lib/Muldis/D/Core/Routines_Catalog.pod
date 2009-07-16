@@ -215,14 +215,15 @@ statement.
 
 =head2 sys.std.Core.Cat.create_package
 
-C<procedure sys.std.Core.Cat.create_package (Name $name, Comment $comment?,
-Package $package?)>
+C<procedure sys.std.Core.Cat.create_package (Name $name,
+Comment $comment?)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.packages>.  It will create a new
 package, in the depot mounted under the name given by the C<depot>
 argument, whose name and other details match the other arguments.  This
-procedure is analagous to an Oracle CREATE PACKAGE statement.
+procedure is analagous to an Oracle CREATE PACKAGE statement, but that it
+will just create an empty package.
 
 =head2 sys.std.Core.Cat.drop_package
 
@@ -231,12 +232,12 @@ C<procedure sys.std.Core.Cat.drop_package (Name $name)>
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.packages>.  It will drop an
 existing package.  This procedure is analagous to an Oracle DROP PACKAGE
-statement.
+statement, but that it will just drop an empty package.
 
 =head1 Procedures For Defining Depot Routines and Data Types
 
 These 2 procedures conceptually have the extra 2 parameters C<Name $depot,
-DeclNameChain $parent?>, whose values are implicitly supplied from
+DeclNameChain $subdepot?>, whose values are implicitly supplied from
 C<tpc.cat.topic_[depot|subdepot]> respectively; those 1 or 2 (as
 applicable) catalog variables must be non-empty as a precondition to
 invoking the 2 procedures.
@@ -276,8 +277,7 @@ C<procedure sys.std.Core.Cat.create_package_material (Name $name,
 Comment $comment?, Bool $is_public?, Material $material)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
-relvar C<fed.cat.mounts{name=$depot}.depot
-.packages{parent=$subdepot,name=$package}.package.materials>.  It will
+relvar C<fed.cat.mounts{name=$depot}.depot.materials>.  It will
 create a new routine or type, in the package having the name given by the
 C<package> argument, in the depot mounted under the name given by the
 C<depot> argument, whose name and other details match the other arguments.
@@ -287,8 +287,7 @@ C<depot> argument, whose name and other details match the other arguments.
 C<procedure sys.std.Core.Cat.drop_package_material (Name $name)>
 
 This procedure is an abstraction over deleting a tuple from the catalog
-relvar C<fed.cat.mounts{name=$depot}.depot
-.packages{parent=$subdepot,name=$package}.package.materials>.  It will drop
+relvar C<fed.cat.mounts{name=$depot}.depot.materials>.  It will drop
 an existing package routine or type.
 
 =head1 SEE ALSO

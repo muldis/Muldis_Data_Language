@@ -97,8 +97,7 @@ more or less:
                     sys.std.Core.Type.Cat.MountControlCat
                     sys.std.Core.Type.Cat.TopicNSControlCat
                     sys.std.Core.Type.Cat.Federation
-                    sys.std.Core.Type.Cat.Depot
-                    sys.std.Core.Type.Cat.Package
+                    sys.std.Core.Type.Cat.DepotOrPackage
                     sys.std.Core.Type.Cat.ExprNodeSet
                     sys.std.Core.Type.Cat.StmtNodeSet
 
@@ -118,8 +117,7 @@ more or less:
                 sys.std.Core.Type.Cat.FedTypeMap
                 sys.std.Core.Type.Cat.SubdepotSet
                 sys.std.Core.Type.Cat.PackageSet
-                sys.std.Core.Type.Cat.DepMaterialSet
-                sys.std.Core.Type.Cat.PkgMaterialSet
+                sys.std.Core.Type.Cat.MaterialSet
                 sys.std.Core.Type.Cat.Inner[Func|Upd|Proc]Set
                 sys.std.Core.Type.Cat.Inner[Sca|Nonsca|Uni|Restr]TypeSet
                 sys.std.Core.Type.Cat.ScaValExprNodeSet
@@ -909,7 +907,7 @@ reference it with this name.
 This is an optional programmer comment about this specific mount of the
 depot.
 
-=item C<depot> - C<Depot>
+=item C<depot> - C<DepotOrPackage>
 
 This defines the entire system catalog of the depot that this mount has
 made visible to the DBMS.
@@ -955,54 +953,65 @@ C<depot> is the declared name of the depot mount that the data type lives
 in; the C<type> is the C<dep.>-qualified name of the data type living in
 it.  Its default value has zero tuples.
 
-=head1 TYPES FOR DEFINING DEPOTS AND SUBDEPOTS
+=head1 TYPES FOR DEFINING DEPOTS AND SUBDEPOTS AND PACKAGES
 
 These are all enumeration data types.
 
-=head2 sys.std.Core.Type.Cat.Depot
+=head2 sys.std.Core.Type.Cat.DepotOrPackage
 
-A C<Depot> is a C<Database>.  It specifies the entire system catalog of
-a single depot, that is, the widest scope within which all entities must be
-fully defined in terms of just user-defined entities within the same scope
-or of system-defined entities.  It also doubles to specify the system
-catalog of a subdepot, which is an arbitrary subset of a depot's entities
-that internally looks like a depot; a depot can have 0..N subdepots, and
-any that exist are arranged in a hierarchy with the depot as the root.  The
-system catalog variables named C<dep.cat> and C<sdp.cat> are both of the
-C<Depot> type.
+A C<DepotOrPackage> is a C<Database>.  It specifies the entire system
+catalog of a single depot, that is, the widest scope within which all
+entities must be fully defined in terms of just user-defined entities
+within the same scope or of system-defined entities.  It also doubles to
+specify the system catalog of a subdepot, which is an arbitrary subset of a
+depot's entities that internally looks like a depot; a depot can have 0..N
+subdepots, and any that exist are arranged in a hierarchy with the depot as
+the root.  It also triples to specify the entire system catalog of a single
+package, which provides a privatizing namespace for a subset of a depot's
+entities; entities outside a package can only directly invoke that
+package's entities which have been declared part of its public interface.
+A package internally looks like a depot but that it doesn't contain
+subdepots or other packages.  The system catalog variables named C<dep.cat>
+and C<sdp.cat> and  C<pkg.cat> are all of the C<DepotOrPackage> type.
 
-A C<Depot> has these 5 attributes:
+A C<DepotOrPackage> has these 5 attributes:
 
 =over
 
 =item C<comment> - C<single_of.Comment>
 
-This is an optional programmer comment about the [|sub]depot as a whole.
+This is an optional programmer comment about the [|sub]depot or package as
+a whole.
 
 =item C<subdepots> - C<SubdepotSet>
 
-These are all the subdepots that this [|sub]depot contains.
+These are all the subdepots that this system catalog contains (which might
+be none), iff this system catalog is a [|sub]depot; iff this system catalog
+is a package, then C<subdepots> is not applicable and is empty.
 
 =item C<packages> - C<PackageSet>
 
-These are all the packages that this [|sub]depot contains.
+These are all the packages that this system catalog contains (which might
+be none), iff this system catalog is a [|sub]depot; iff this system catalog
+is a package, then C<packages> is not applicable and is empty.
 
-=item C<materials> - C<DepMaterialSet>
+=item C<materials> - C<MaterialSet>
 
-These are all the definitions that this [|sub]depot contains of functions,
-updaters, procedures, scalar types with possreps, complete nonscalar types,
-union types, and restriction types.
+These are all the definitions that this [|sub]depot or package contains of
+functions, updaters, procedures, scalar types with possreps, complete
+nonscalar types, union types, and restriction types.
 
 =item C<data> - C<maybe_of.NameChain>
 
 This is the declared data type of the self-local dbvar that this
-[|sub]depot contains, iff C<data> is a C<Single>; if C<data> is C<nothing>
-(the default), then this [|sub]depot does not have a self-local dbvar.
+[|sub]depot or package contains, iff C<data> is a C<Single>; if C<data> is
+C<nothing> (the default), then this [|sub]depot or package does not have a
+self-local dbvar.
 
 =back
 
-The default value of C<Depot> defines an empty [|sub]depot that does
-not have any self-local dbvar.
+The default value of C<DepotOrPackage> defines an empty [|sub]depot or
+package that does not have any self-local dbvar.
 
 =head2 sys.std.Core.Type.Cat.SubdepotSet
 
@@ -1010,7 +1019,7 @@ A C<SubdepotSet> is a C<DHRelation> that specifies the set of subdepots
 that a depot might optionally have for organizing its public entities;
 these subdepots are organized into a tree whose root is the depot.  A
 C<SubdepotSet> only specifies that a subdepot exists, not which depot
-entities it contains; see the C<Depot> which contains it for that.
+entities it contains; see the C<DepotOrPackage> which contains it for that.
 
 A C<SubdepotSet> has these 3 attributes:
 
@@ -1038,11 +1047,12 @@ C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.PackageSet
 
-A C<PackageSet> is a C<DHRelation> that specifies the set of packages
-that a depot might optionally have for organizing its possibly private
-entities.
+A C<PackageSet> is a C<DHRelation> that specifies the set of packages that
+a depot might optionally have for organizing its possibly private entities.
+A C<PackageSet> only specifies that a package exists, not which package
+entities it contains; see the C<DepotOrPackage> which contains it for that.
 
-A C<PackageSet> has these 4 attributes:
+A C<PackageSet> has these 3 attributes:
 
 =over
 
@@ -1062,39 +1072,55 @@ C<parent> and C<name>.
 This is an optional programmer comment about the package definition as
 associated with this package name.
 
-=item C<package> - C<Package>
-
-This defines the entire system catalog of the package.
-
 =back
 
 A C<PackageSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.DepMaterialSet
+=head2 sys.std.Core.Type.Cat.MaterialSet
 
-A C<DepMaterialSet> is a C<DHRelation> that specifies a set of routines and
-types that a [|sub]depot might directly contain.
+A C<MaterialSet> is a C<DHRelation> that specifies a set of routines and
+types that a [|sub]depot or package might directly contain; in the case of
+a package, each routine or type may be either public for the DBMS as a
+whole or private to the package.
 
-A C<DepMaterialSet> has these 4 attributes:
+A C<MaterialSet> has these 6 attributes:
 
 =over
 
-=item C<parent> - C<DeclNameChain>
+=item C<subdepot> - C<DeclNameChain>
 
 This is the fully-qualified name, in the C<dep.[cat|lib|data]> namespace,
-of the routine's or type's parent [|sub]depot.
+of the routine's or type's parent [|sub]depot, or of the routine's or
+type's parent package's parent [|sub]depot.
+
+=item C<package> - C<maybe_of.Name>
+
+This is the declared name of the routine's or type's parent package within
+the namespace defined by C<subdepot>, iff the routine or type belongs to a
+package; iff the routine or type directly belongs to a [|sub]depot, then
+C<package> is not applicable and is C<nothing>.
 
 =item C<name> - C<Name>
 
 This is the declared name of the routine or type within the namespace
-defined by C<parent>; other Muldis D code would reference it with the
-combination of C<parent> and C<name>.
+defined by C<subdepot>, plus C<package> if it is a C<Single>; other Muldis
+D code would reference it with the combination of C<subdepot> and
+C<package> if applicable and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the routine or type as a
 whole.
+
+=item C<is_public> - C<maybe_of.Bool>
+
+Iff the routine or type being defined lives directly in a [|sub]depot, then
+C<is_public> is not applicable and is C<nothing>.  Iff the routine or type
+being defined is part of a package, then C<is_public> is a C<Single>:  This
+is C<Bool:true> if the routine or type is part of the package's own public
+interface and may be invoked from outside the package; it is C<Bool:false>
+if it is just part of the package's internals.
 
 =item C<material> - C<Material>
 
@@ -1102,81 +1128,8 @@ This defines the entire routine or type sans its name.
 
 =back
 
-A C<DepMaterialSet> has a binary primary key on the C<parent> plus C<name>
-attributes.  Its default value is empty.
-
-=head1 TYPES FOR DEFINING PACKAGES
-
-These are all enumeration data types.
-
-=head2 sys.std.Core.Type.Cat.Package
-
-A C<Package> is a C<Database>.  It specifies the entire system catalog
-of a single package, which provides a privatizing namespace for a subset of
-a depot's entities; entities outside a package can only invoke that
-package's entities which have been declared part of its public interface.
-A package internally looks like a depot but that it doesn't contain
-subdepots or other packages.  The system catalog variable named C<pkg.cat>
-is of the C<Package> type.
-
-A C<Package> has these 3 attributes:
-
-=over
-
-=item C<comment> - C<single_of.Comment>
-
-This is an optional programmer comment about the package as a whole.
-
-=item C<materials> - C<PkgMaterialSet>
-
-These are all the definitions that this package contains of functions,
-updaters, procedures, scalar types with possreps, complete nonscalar types,
-union types, and restriction types.
-
-=item C<data> - C<maybe_of.NameChain>
-
-This is the declared data type of the dbvar that this package contains, iff
-C<data> is a C<Single>; if C<data> is C<nothing> (the default), then this
-package does not have a self-local dbvar.
-
-=back
-
-The default value of C<Package> defines an empty package that does not
-have any self-local dbvar.
-
-=head2 sys.std.Core.Type.Cat.PkgMaterialSet
-
-A C<PkgMaterialSet> is a C<DHRelation> that specifies a set of routines and
-types that a package might contain, where each routine or type may be
-either public for the DBMS as a whole or private to the package.
-
-A C<PkgMaterialSet> has these 4 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the routine or type.
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the routine or type as a
-whole.
-
-=item C<is_public> - C<Bool>
-
-This is C<Bool:true> if the routine or type is part of the package's own
-public interface and may be invoked from outside the package; it is
-C<Bool:false> if it is just part of the package's internals.
-
-=item C<material> - C<Material>
-
-This defines the entire routine or type sans its name.
-
-=back
-
-A C<PkgMaterialSet> has a unary primary key on the C<name> attribute.  Its
-default value is empty.
+A C<MaterialSet> has a ternary primary key on the C<subdepot> plus
+C<package> plus C<name> attributes.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING ROUTINES AND DATA TYPES
 
@@ -1198,7 +1151,7 @@ inner routines or types, exactly 1 of which must have the empty string as
 its name; that inner routine or type defines the actual main routine or
 type that the C<Material> is a proxy-wrapper for, and the other inner
 routines and types, if any, support it.  A C<Material> is typically
-composed into a C<Depot> or C<Package>.
+composed into a C<DepotOrPackage>.
 
 A C<Material> has these 8 attributes:
 
