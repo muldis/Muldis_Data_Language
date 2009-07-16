@@ -6,6 +6,18 @@
     * Muldis::D version 0.81.0 is released on CPAN as
     Muldis-D-0.81.0.tar.gz.
 
+    * This release features some refactoring of the system catalog, mainly
+    to make it less wide and more deep, which incidentally is what release
+    0.78.0 was mainly doing as well.  Benefits of these changes include
+    that for any formats of the system catalog that are fully
+    unwrapped/ungrouped as a set of relvars with just scalar attributes,
+    such as it would likely be when represented by a typical SQL DBMS, the
+    catalog might require a few orders of magnitude fewer relvars/tables.
+    Less wide and more deep means that what otherwise might be multiple
+    relvars/tables with a very similar structure and differing mainly/just
+    on their extra foreign-key attributes/columns, are now merged into
+    fewer relvars/tables with simple generalizations of said structures.
+
     * (Types_Catalog.pod, Routines_Catalog.pod)  Merged the catalog types
     for defining depots with those for defining packages to produce common
     catalog types for defining both.  In Types_Catalog.pod, merged the 2
@@ -65,6 +77,20 @@
     "[Leave|Compound|IfElse|GivenWhenDef|Iterate|Loop]StmtNodeSet",
     "[If|When]ThenVarStmtMap".  Also updated the "IISArgVarMap" type to
     rename its 2 attributes from "[name|expr]" to "[arg|var]".
+
+    * (Types_Catalog.pod)  Refactored the catalog types for defining
+    expression nodes so that the ability to drill into an expression node
+    or parameter etc value with the "NameChain" shorthand is now restricted
+    to being used with just one kind of expression node, and all other
+    expression node kinds can now only use "Name" values to reference child
+    nodes.  Added new catalog node type "AliasExprNodeSet" for defining
+    expression nodes that just alias or drill into attributes of other
+    nodes or parameters, and updated the "ExprNodeSet" type to add a new
+    "alias_exprs" attribute of the new type.  Then updated these 8 catalog
+    types whose attributes held names of expression nodes so that the types
+    of said attributes are now "Name" rather than "NameChain":
+    "[Set|Ary|Bag]SelExprNodeSet", "[IfElse|GivenWhenDef]ExprNodeSet",
+    "[If|When]ThenExprMap", "NameExprMap".
 
     * (Types_Catalog.pod)  Updated the "TYPES FOR SPECIAL ENTITY
     REFERENCES" main pod section in regards to when two distinct selections

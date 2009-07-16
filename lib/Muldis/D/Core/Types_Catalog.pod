@@ -128,6 +128,7 @@ more or less:
                 sys.std.Core.Type.Cat.SetSelExprNodeSet
                 sys.std.Core.Type.Cat.ArySelExprNodeSet
                 sys.std.Core.Type.Cat.BagSelExprNodeSet
+                sys.std.Core.Type.Cat.AliasExprNodeSet
                 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
                 sys.std.Core.Type.Cat.IfElseExprNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
@@ -1458,7 +1459,7 @@ for a subject-to-update parameter of an [|inner ]update operator call; in
 that case the leaf nodes / only node of the expression must map to a
 subject-to-update parameter of the containing [|inner ]update operator.
 
-An C<ExprNodeSet> has these 11 attributes:
+An C<ExprNodeSet> has these 12 attributes:
 
 =over
 
@@ -1492,6 +1493,11 @@ These are expression nodes that represent array value selections.
 =item C<bag_sel_exprs> - C<BagSelExprNodeSet>
 
 These are expression nodes that represent bag value selections.
+
+=item C<alias_exprs> - C<AliasExprNodeSet>
+
+These are expression nodes that represent aliases of other expression nodes
+or attributes of said.
 
 =item C<func_invo_exprs> - C<FuncInvoExprNodeSet>
 
@@ -1665,7 +1671,7 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<elems> - C<set_of.NameChain>
+=item C<elems> - C<set_of.Name>
 
 These represent the elements of the set value being selected.
 When this value expression is evaluated, if any child expression nodes are
@@ -1696,7 +1702,7 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<elems> - C<array_of.NameChain>
+=item C<elems> - C<array_of.Name>
 
 These represent the elements of the array value being selected.
 
@@ -1723,7 +1729,7 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<elems> - C<bag_of.NameChain>
+=item C<elems> - C<bag_of.Name>
 
 These represent the elements of the bag value being selected.
 When this value expression is evaluated, if any child expression nodes are
@@ -1744,6 +1750,34 @@ you must use a C<RelSelExprNodeSet> rather than a C<BagSelExprNodeSet>.
 =back
 
 A C<BagSelExprNodeSet> has a unary primary key on the C<name>
+attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.AliasExprNodeSet
+
+An C<AliasExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node is an alias for either another expression
+node or for an attribute of one; what each node is an alias for is defined
+in terms of a C<NameChain> in the C<lex> top-level namespace.
+
+A C<AliasExprNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the expression (leaf) node.
+
+=item C<original> - C<NameChain>
+
+This is the name of the other expression node (or attribute) being aliased.
+
+=back
+
+A C<AliasExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
@@ -1827,7 +1861,7 @@ evaluate and be the result of the larger if-else sequence, and no more
 conditionals will be evaluated; no result expressions will be evaluated
 except the one with the true conditional.
 
-=item C<else> - C<NameChain>
+=item C<else> - C<Name>
 
 Iff none of the conditionals in C<if_then> result in C<Bool:true> (or as a
 trivial case, if C<if_then> is an empty sequence), then the result
@@ -1842,19 +1876,13 @@ attribute.  Its default value is empty.
 =head2 sys.std.Core.Type.Cat.IfThenExprMap
 
 An C<IfThenExprMap> is a C<DHTuple>.  It defines an element of an if-else
-sequential expression or statement.  An C<IfThenExprMap> has 2 attributes,
-C<if> and C<then>, each of which is a C<NameChain>; C<if> has the name of a
-local expression node (or parameter or variable), and C<then> in the case
-of an if-else expression has likewise, or in the case of an if-else
-statement has the name of a statement node.  For an if-else expression, the
-C<if> node is the condition to evaluate; if that condition evaluates to
-C<Bool:true>, then the C<then> node is evaluated and its result is the
-result of the whole if-else expression; otherwise, C<then> is not
-evaluated.  For an if-else statement, the C<if> node is the conditional
-result variable name; if that conditional result is C<Bool:true>, then the
-C<then> statement node is invoked; otherwise, C<then> is not invoked.  Its
-default value has the default value of the C<NameChain> type in both
-attributes.
+sequential expression.  An C<IfThenExprMap> has 2 attributes, C<if> and
+C<then>, each of which is a C<Name>; C<if> has the name of a local
+expression node (or parameter), and C<then> has likewise.  The C<if> node
+is the condition to evaluate; if that condition evaluates to C<Bool:true>,
+then the C<then> node is evaluated and its result is the result of the
+whole if-else expression; otherwise, C<then> is not evaluated.  Its default
+value has the default value of the C<Name> type in both attributes.
 
 =head2 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
 
@@ -1882,7 +1910,7 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<given> - C<NameChain>
+=item C<given> - C<Name>
 
 This is the single operand value that is common to all the conditions; it
 is the control value for the expression.
@@ -1895,7 +1923,7 @@ C<given>, its associated result expression will evaluate and be the result
 of the larger if-else sequence; no result expressions will be evaluated
 except the one with the matching conditional operand.
 
-=item C<default> - C<NameChain>
+=item C<default> - C<Name>
 
 Iff none of the condition operand values in C<when_then> matches the value
 of C<given> (or as a trivial case, if C<when_then> has no tuples), then the
@@ -1911,19 +1939,13 @@ attribute.  Its default value is empty.
 =head2 sys.std.Core.Type.Cat.WhenThenExprMap
 
 A C<WhenThenExprMap> is a C<DHRelation>.  It defines a set of dispatch
-options
-for a given-when-default expression or statement.  A C<WhenThenExprMap> has
-2
-attributes, C<when> and C<then>, each of which is a C<NameChain>; C<when>
-has the name of a local expression node (or parameter or variable), and
-C<then> in the case of a g-w-d expression has likewise, or in the case of a
-g-w-d statement has the name of a statement node.  The C<when> node is the
-not-common / distinct operand for each condition.  For a g-w-d expression,
-if a C<when> value is matched, then the C<then> node is evaluated and its
-result is the result of the whole g-w-d expression; otherwise, C<then> is
-not evaluated.  For a g-w-d statement, if a C<when> value is matched, then
-the C<then> statement node is invoked; otherwise, C<then> is not invoked.
-Its default value has zero tuples.
+options for a given-when-default expression.  A C<WhenThenExprMap> has 2
+attributes, C<when> and C<then>, each of which is a C<Name>; C<when> has
+the name of a local expression node (or parameter), and C<then> has
+likewise.  The C<when> node is the not-common / distinct operand for each
+condition.  If a C<when> value is matched, then the C<then> node is
+evaluated and its result is the result of the whole g-w-d expression;
+otherwise, C<then> is not evaluated.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.MaterialRefSelExprNodeSet
 
@@ -3481,18 +3503,15 @@ default value has zero tuples.
 
 A C<NameExprMap> is a C<DHRelation>.  It defines a basic component-values
 list, meaning a set of names, with a declared local expression node (or
-parameter or variable) name for each.  It is used to define collection
-literals; one C<NameExprMap> defines a whole C<Tuple> value.  It is also
-used to define argument lists for routine invocations.  A C<NameExprMap>
-has 2 attributes, C<name> (a C<Name>) and C<expr> (a C<NameChain>); the
-C<name> is the name of the tuple/etc attribute or routine argument, and
-comprises a unary key; the C<expr> is the declared local name of the
-expression node (or parameter or variable) which defines the value for the
-attribute or argument.  Note that while the C<expr> attribute could
-conceivably just be a C<Name> because most of its allowed values would be
-in the C<lex> namespace, the C<NameChain> is used instead so that value
-expressions can take advantage of terse syntax for addressing value
-attributes.  Its default value has zero tuples.
+parameter) name for each.  It is used to define collection literals; one
+C<NameExprMap> defines a whole C<Tuple> value.  It is also used to define
+argument lists for routine invocations by functions or updaters.  A
+C<NameExprMap> has 2 attributes, C<name> and C<expr>, each of those being a
+C<Name>; the C<name> is the name of the tuple/etc attribute or routine
+argument, and comprises a unary key; the C<expr> is the declared local name
+(in the C<lex> namespace) of the expression node (or parameter or variable)
+which defines the value for the attribute or argument.  Its default value
+has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.NameDNCMap
 
