@@ -2176,7 +2176,7 @@ This is the declared name of the statement node.
 
 This is an optional programmer comment about the statement leaf node.
 
-=item C<leave> - C<NameChain>
+=item C<leave> - C<Name>
 
 This is the name of the parent statement node we wish to abnormally exit;
 note that this reference does not count as making the other node a child of
@@ -2207,7 +2207,7 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<stmts> - C<array_of.NameChain>
+=item C<stmts> - C<array_of.Name>
 
 This is a sequence of names of 0..N other local statement nodes; the
 current compound statement consists of having those other statements
@@ -2264,20 +2264,14 @@ key over the C<name> attributes of C<upd_args> and C<ro_args>.
 
 =head2 sys.std.Core.Type.Cat.IISArgVarMap
 
-An C<IISArgVarMap> is a C<DHRelation>.  It defines a basic component-values
-list, meaning a set of names, with a declared local expression node (or
-parameter or variable) name for each.  It is used to define collection
-literals; one C<IISArgVarMap> defines a whole C<Tuple> value.  It is also
-used to define argument lists for routine invocations.  An C<IISArgVarMap>
-has 2 attributes, C<name> (a C<Name>) and C<expr> (a C<NameChain>); the
-C<name> is the name of the tuple/etc attribute or routine argument, and
-comprises a unary key; the C<expr> is the declared local name of the
-expression node (or parameter or variable) which defines the value for the
-attribute or argument.  Note that while the C<expr> attribute could
-conceivably just be a C<Name> because most of its allowed values would be
-in the C<lex> namespace, the C<NameChain> is used instead so that value
-expressions can take advantage of terse syntax for addressing value
-attributes.  Its default value has zero tuples.
+An C<IISArgVarMap> is a C<DHRelation>.  It defines a set of argument names,
+with a declared local or global variable (or parameter or pseudo-variable)
+name for each.  It is used to define argument lists for routine invocations
+by procedures.  An C<IISArgVarMap> has 2 attributes, C<arg> (a C<Name>) and
+C<var> (a C<NameChain>); the C<arg> is the name of the routine argument,
+and comprises a unary key; the C<var> is the invocation name of the
+variable (or parameter or pseudo-variable) which defines the value for the
+argument.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.IfElseStmtNodeSet
 
@@ -2314,7 +2308,7 @@ conditional result is C<Bool:true>, its associated statement will be
 invoked; no statements will be invoked except the one with the true
 conditional result.
 
-=item C<else> - C<maybe_of.NameChain>
+=item C<else> - C<maybe_of.Name>
 
 Iff none of the conditional results in C<if_then> is C<Bool:true> (or as a
 trivial case, if C<if_then> is an empty sequence), then the statement
@@ -2330,21 +2324,13 @@ attribute.  Its default value is empty.
 =head2 sys.std.Core.Type.Cat.IfThenVarStmtMap
 
 An C<IfThenVarStmtMap> is a C<DHTuple>.  It defines an element of an
-if-else
-sequential expression or statement.  An C<IfThenVarStmtMap> has 2
-attributes,
-C<if> and C<then>, each of which is a C<NameChain>; C<if> has the name of a
-local expression node (or parameter or variable), and C<then> in the case
-of an if-else expression has likewise, or in the case of an if-else
-statement has the name of a statement node.  For an if-else expression, the
-C<if> node is the condition to evaluate; if that condition evaluates to
-C<Bool:true>, then the C<then> node is evaluated and its result is the
-result of the whole if-else expression; otherwise, C<then> is not
-evaluated.  For an if-else statement, the C<if> node is the conditional
-result variable name; if that conditional result is C<Bool:true>, then the
-C<then> statement node is invoked; otherwise, C<then> is not invoked.  Its
-default value has the default value of the C<NameChain> type in both
-attributes.
+if-else sequential statement.  An C<IfThenVarStmtMap> has 2 attributes,
+C<if> (a C<NameChain>) and C<then> (a C<Name>); C<if> has the name of a
+local or global variable (or parameter), and C<then> has the name of a
+statement node.  The C<if> node is the conditional result variable name; if
+that conditional result is C<Bool:true>, then the C<then> statement node is
+invoked; otherwise, C<then> is not invoked.  Its default value has the
+default value where each attribute is the default of its declared type.
 
 =head2 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
 
@@ -2380,7 +2366,7 @@ associated statement.  If a condition operand matches the value of
 C<given>, its associated statement will be invoked; no statements will be
 invoked except the one with the matching conditional operand.
 
-=item C<default> - C<maybe_of.NameChain>
+=item C<default> - C<maybe_of.Name>
 
 Iff none of the condition operand values in C<when_then> matches the value
 of C<given> (or as a trivial case, if C<when_then> has no tuples), then the
@@ -2397,19 +2383,13 @@ attribute.  Its default value is empty.
 =head2 sys.std.Core.Type.Cat.WhenThenVarStmtMap
 
 A C<WhenThenVarStmtMap> is a C<DHRelation>.  It defines a set of dispatch
-options
-for a given-when-default expression or statement.  A C<WhenThenVarStmtMap>
-has 2
-attributes, C<when> and C<then>, each of which is a C<NameChain>; C<when>
-has the name of a local expression node (or parameter or variable), and
-C<then> in the case of a g-w-d expression has likewise, or in the case of a
-g-w-d statement has the name of a statement node.  The C<when> node is the
-not-common / distinct operand for each condition.  For a g-w-d expression,
-if a C<when> value is matched, then the C<then> node is evaluated and its
-result is the result of the whole g-w-d expression; otherwise, C<then> is
-not evaluated.  For a g-w-d statement, if a C<when> value is matched, then
-the C<then> statement node is invoked; otherwise, C<then> is not invoked.
-Its default value has zero tuples.
+options for a given-when-default statement.  A C<WhenThenVarStmtMap> has 2
+attributes, C<when> (a C<NameChain>) and C<then> (a C<Name>); C<when> has
+the name of a local or global variable (or parameter), and C<then> has the
+name of a statement node.  The C<when> node is the not-common / distinct
+operand for each condition.  If a C<when> value is matched, then the
+C<then> statement node is invoked; otherwise, C<then> is not invoked.  Its
+default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.IterateStmtNodeSet
 
@@ -2434,7 +2414,7 @@ This is the declared name of the statement node.
 
 This is an optional programmer comment about the statement leaf node.
 
-=item C<iterate> - C<NameChain>
+=item C<iterate> - C<Name>
 
 This is the name of the parent statement node we wish to abnormally exit
 and restart; note that this reference does not count as making the other
@@ -2466,7 +2446,7 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<do> - C<NameChain>
+=item C<do> - C<Name>
 
 This is the name of the local statement node that will get executed for
 each iteration of the loop; typically it has a sub-tree of statement nodes.
