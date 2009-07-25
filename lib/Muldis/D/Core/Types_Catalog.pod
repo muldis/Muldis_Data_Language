@@ -128,7 +128,7 @@ more or less:
                 sys.std.Core.Type.Cat.SetSelExprNodeSet
                 sys.std.Core.Type.Cat.ArySelExprNodeSet
                 sys.std.Core.Type.Cat.BagSelExprNodeSet
-                sys.std.Core.Type.Cat.AliasExprNodeSet
+                sys.std.Core.Type.Cat.AccExprNodeSet
                 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
                 sys.std.Core.Type.Cat.IfElseExprNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
@@ -976,7 +976,7 @@ entities; entities outside a package can only directly invoke that
 package's entities which have been declared part of its public interface.
 A package internally looks like a depot but that it doesn't contain
 subdepots or other packages.  The system catalog variables named C<dep.cat>
-and C<sdp.cat> and  C<pkg.cat> are all of the C<DepotOrPackage> type.
+and C<sdp.cat> and C<pkg.cat> are all of the C<DepotOrPackage> type.
 
 A C<DepotOrPackage> has these 5 attributes:
 
@@ -1494,10 +1494,10 @@ These are expression nodes that represent array value selections.
 
 These are expression nodes that represent bag value selections.
 
-=item C<alias_exprs> - C<AliasExprNodeSet>
+=item C<acc_exprs> - C<AccExprNodeSet>
 
-These are expression nodes that represent aliases of other expression nodes
-or attributes of said.
+These are expression nodes that represent accessors of attributes of other
+expression nodes, or aliases of other expression nodes.
 
 =item C<func_invo_exprs> - C<FuncInvoExprNodeSet>
 
@@ -1752,14 +1752,14 @@ you must use a C<RelSelExprNodeSet> rather than a C<BagSelExprNodeSet>.
 A C<BagSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.AliasExprNodeSet
+=head2 sys.std.Core.Type.Cat.AccExprNodeSet
 
-An C<AliasExprNodeSet> is a C<DHRelation> that specifies a set of value
-expression nodes where each node is an alias for either another expression
-node or for an attribute of one; what each node is an alias for is defined
-in terms of a C<NameChain> in the C<lex> top-level namespace.
+An C<AccExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node is an accessor or alias for an attribute
+of another expression node, or is simply an alias for another expression
+node, defined in terms of a C<NameChain> in the C<lex> top-level namespace.
 
-A C<AliasExprNodeSet> has these 3 attributes:
+A C<AccExprNodeSet> has these 3 attributes:
 
 =over
 
@@ -1771,13 +1771,14 @@ This is the declared name of the expression node.
 
 This is an optional programmer comment about the expression (leaf) node.
 
-=item C<original> - C<NameChain>
+=item C<target> - C<NameChain>
 
-This is the name of the other expression node (or attribute) being aliased.
+This is the fully-qualified invocation name of the expression node or
+attribute thereof being accessed or aliased.
 
 =back
 
-A C<AliasExprNodeSet> has a unary primary key on the C<name>
+A C<AccExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
