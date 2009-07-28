@@ -1413,8 +1413,11 @@ Grammar:
 
     <tuple_list> ::=
         '{' \s*
-            [[<Name_payload> \s* '=>' \s* <expr>] ** [\s* ',' \s*]]?
+            [[<attr_name> \s* '=>' \s* <expr>] ** [\s* ',' \s*]]?
         \s* '}'
+
+    <attr_name> ::=
+        <Name_payload>
 
     <tuple_d0> ::=
         d0
@@ -1496,14 +1499,14 @@ Grammar:
         <Relation_payload>
 
     <Relation_payload> ::=
-          <r_empty_qbody_payload>
+          <r_empty_body_payload>
         | <r_nonordered_attr_payload>
         | <r_ordered_attr_payload>
         | <relation_d0>
 
-    <r_empty_qbody_payload> ::=
+    <r_empty_body_payload> ::=
         '{' \s*
-            [<Name_payload> ** [\s* ',' \s*]]?
+            [<attr_name> ** [\s* ',' \s*]]?
         \s* '}'
 
     <r_nonordered_attr_payload> ::=
@@ -1513,7 +1516,7 @@ Grammar:
 
     <r_ordered_attr_payload> ::=
         '[' \s*
-            [<Name_payload> ** [\s* ',' \s*]]?
+            [<attr_name> ** [\s* ',' \s*]]?
         \s* ']'
         \s* ';' \s*
         '{' \s*
@@ -1537,8 +1540,8 @@ Iff the C<Relation_payload> is composed of just a
 C<nonord_list_[open|close]> pair with zero elements between them, then it
 defines the only relation value having zero attributes and zero tuples.
 
-Iff the C<Relation_payload> is a C<r_empty_qbody_payload> with at least
-one C<Name_payload> element, then it defines the attribute names of a
+Iff the C<Relation_payload> is a C<r_empty_body_payload> with at least
+one C<attr_name> element, then it defines the attribute names of a
 relation having zero tuples.
 
 Iff the C<Relation_payload> is a C<r_nonordered_attr_payload> with at
@@ -1550,13 +1553,13 @@ relation as a whole, which is its heading for the current purposes.
 
 Iff the C<Relation_payload> is a C<r_ordered_attr_payload>, then:  The
 new relation value's attribute names are defined by the
-C<Name_payload> elements, and the relation body's tuples' attribute values
+C<attr_name> elements, and the relation body's tuples' attribute values
 are defined by the C<ordered_tuple_attrs> elements.  This format is meant
 to be the most compact of the generic relation selector formats, as the
 attribute names only appear once for the relation rather than repeating for
 each tuple.  As a trade-off, the attribute values per tuple from all of the
 C<ordered_tuple_attrs> elements must appear in the same order as their
-corresponding attribute names appear in the collection of C<Name_payload>
+corresponding attribute names appear in the collection of C<attr_name>
 elements, as the names and values in the relation literal are matched up by
 ordinal position here.
 
@@ -2674,7 +2677,7 @@ Grammar:
 
 A C<rat_op_invo_with_round> node is for using infix or prefix or postfix
 notation to invoke a rational numeric operator function whose operation
-involve rounding a number to one with less precision.  Such a function
+involves rounding a number to one with less precision.  Such a function
 takes exactly 1 (C<expr>) or 2 (C<lhs> and C<rhs>) primary arguments,
 which are the inputs of the operation, plus a special C<round_rule>
 argument which specifies explicitly the semantics of the numeric rounding
