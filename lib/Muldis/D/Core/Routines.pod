@@ -412,8 +412,8 @@ AttrRenameMap $map) >>
 This function results in a C<Tuple> value that is the same as its C<topic>
 argument but that some of its attributes have different names.  Each tuple
 of the argument C<map> specifies how to rename one C<topic> attribute, with
-the C<before> and C<after> attributes of a C<map> tuple representing the
-old and new names of a C<topic> attribute, respectively.  As a trivial
+the C<after> and C<before> attributes of a C<map> tuple representing the
+new and old names of a C<topic> attribute, respectively.  As a trivial
 case, this function's result is C<topic> if C<map> has no tuples.  This
 function supports renaming attributes to each others' names.  This function
 will fail if C<map> specifies any old names that C<topic> doesn't have, or
@@ -453,8 +453,8 @@ version of this.
 
 =head2 sys.std.Core.Tuple.wrap
 
-C<< function sys.std.Core.Tuple.wrap (Tuple <-- Tuple $topic,
-set_of.Name $inner, Name $outer) >>
+C<< function sys.std.Core.Tuple.wrap (Tuple <-- Tuple $topic, Name $outer,
+set_of.Name $inner) >>
 
 This function results in a C<Tuple> value that is the same as its C<topic>
 argument but that some of its attributes have been wrapped up into a new
@@ -473,7 +473,7 @@ the same as a C<topic> attribute that isn't being wrapped.
 =head2 sys.std.Core.Tuple.cmpl_wrap
 
 C<< function sys.std.Core.Tuple.cmpl_wrap (Tuple <-- Tuple $topic,
-set_of.Name $cmpl_inner, Name $outer) >>
+Name $outer, set_of.Name $cmpl_inner) >>
 
 This function is the same as C<wrap> but that it wraps the complementary
 subset of attributes of C<topic> to those specified by C<cmpl_inner>.
@@ -481,13 +481,20 @@ subset of attributes of C<topic> to those specified by C<cmpl_inner>.
 =head2 sys.std.Core.Tuple.unwrap
 
 C<< function sys.std.Core.Tuple.unwrap (Tuple <-- Tuple $topic,
-Name $outer) >>
+set_of.Name $inner, Name $outer) >>
 
 This function is the inverse of C<sys.std.Core.Tuple.wrap>, such that it
 will unwrap a C<Tuple>-type attribute into its member attributes.  This
 function will fail if C<outer> specifies any attribute name that C<topic>
 doesn't have, or if an attribute of C<topic{outer}> has the same name as
-another C<topic> attribute.
+another C<topic> attribute.  Now conceptually speaking, the C<inner>
+parameter is completely superfluous for this C<Tuple> variant of C<unwrap>;
+however, it is provided anyway so that this function has complete API
+parity with the C<Relation> variant of C<unwrap>, where C<inner> I<is>
+necessary in the general case, and so Muldis D code using this function is
+also forced to be more self-documenting or strongly typed.  This function
+will fail if C<inner> does not match the names of the attributes of
+C<topic{outer}>.
 
 =head2 sys.std.Core.Tuple.product
 
@@ -634,7 +641,7 @@ that it operates on and results in a C<Relation> rather than a C<Tuple>.
 =head2 sys.std.Core.Relation.wrap
 
 C<< function sys.std.Core.Relation.wrap (Relation <-- Relation $topic,
-set_of.Name $inner, Name $outer) >>
+Name $outer, set_of.Name $inner) >>
 
 This function is the same as C<sys.std.Core.Tuple.wrap> but that it
 operates on and results in a C<Relation> rather than a C<Tuple>, where
@@ -645,7 +652,7 @@ as C<topic>.
 =head2 sys.std.Core.Relation.cmpl_wrap
 
 C<< function sys.std.Core.Relation.cmpl_wrap (Relation <--
-Relation $topic, set_of.Name $cmpl_inner, Name $outer) >>
+Relation $topic, Name $outer, set_of.Name $cmpl_inner) >>
 
 This function is the same as C<sys.std.Core.Tuple.cmpl_wrap> but that it
 operates on and results in a C<Relation> rather than a C<Tuple>, where
@@ -655,11 +662,12 @@ C<sys.std.Core.Tuple.cmpl_wrap>.
 =head2 sys.std.Core.Relation.unwrap
 
 C<< function sys.std.Core.Relation.unwrap (Relation <-- Relation $topic,
-Name $outer, set_of.Name $inner) >>
+set_of.Name $inner, Name $outer) >>
 
 This function is the inverse of C<sys.std.Core.Relation.wrap> as
 C<sys.std.Core.Tuple.unwrap> is to C<sys.std.Core.Tuple.wrap>.  But
-unlike the C<Tuple> variant of C<unwrap>, this current function requires
+unlike the simplest concept of a
+C<Tuple> variant of C<unwrap>, this current function requires
 the extra C<inner> argument to prevent ambiguity in the general case where
 C<topic> might have zero tuples, because in that situation the
 most-specific-type of C<topic{outer}> would be C<Empty>, and the names of
@@ -676,7 +684,7 @@ a deeply homogeneous relation C<topic>).
 =head2 sys.std.Core.Relation.group
 
 C<< function sys.std.Core.Relation.group (Relation <-- Relation $topic,
-set_of.Name $inner, Name $outer) >>
+Name $outer, set_of.Name $inner) >>
 
 This function is similar to C<sys.std.Core.Relation.wrap> but that the
 C<topic> attribute-wrapping transformations result in new
@@ -707,7 +715,7 @@ C<outer> is the same as C<topic> attributes that aren't being grouped.
 =head2 sys.std.Core.Relation.cmpl_group
 
 C<< function sys.std.Core.Relation.cmpl_group (Relation <--
-Relation $topic, set_of.Name $group_per, Name $outer) >>
+Relation $topic, Name $outer, set_of.Name $group_per) >>
 
 This function is the same as C<group> but that it groups the complementary
 subset of attributes of C<topic> to those specified by C<group_per>.
@@ -715,7 +723,7 @@ subset of attributes of C<topic> to those specified by C<group_per>.
 =head2 sys.std.Core.Relation.ungroup
 
 C<< function sys.std.Core.Relation.ungroup (Relation <--
-Relation $topic, Name $outer, set_of.Name $inner) >>
+Relation $topic, set_of.Name $inner, Name $outer) >>
 
 This function is the inverse of C<sys.std.Core.Relation.group> as
 C<sys.std.Core.Relation.unwrap> is to C<sys.std.Core.Relation.wrap>; it
@@ -860,7 +868,7 @@ matching attribute names to those named by C<summ_attr_names>.
 =head2 sys.std.Core.Relation.cardinality_per_group
 
 C<< function sys.std.Core.Relation.cardinality_per_group (Relation <--
-Relation $topic, set_of.Name $group_per, Name $count_attr_name) >>
+Relation $topic, Name $count_attr_name, set_of.Name $group_per) >>
 
 This function is a convenient shorthand for the common use of C<summary>
 that is just counting the tuples of each group.  This function is like
@@ -872,7 +880,7 @@ C<group_per> plus the attribute named in C<count_attr_name> (a C<PInt>).
 =head2 sys.std.Core.Relation.count_per_group
 
 C<< function sys.std.Core.Relation.count_per_group (Relation <--
-Relation $topic, set_of.Name $group_per, Name $count_attr_name) >>
+Relation $topic, Name $count_attr_name, set_of.Name $group_per) >>
 
 This function is an alias for
 C<sys.std.Core.Relation.cardinality_per_group>.
