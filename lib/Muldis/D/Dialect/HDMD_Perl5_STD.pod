@@ -1343,6 +1343,57 @@ Examples:
 
     [ 'op', '!', 5 ]
 
+=head2 Simple Postcircumfix Operators
+
+A C<postcircumfix_op_invo> node has exactly 2-3 main op args, where the
+first is an C<expr> node that defines the primary input value for the
+operator and the other 1-2 provide attribute names that customize the
+operation.
+
+Examples:
+
+    [ 'op', '{<-}', [['expr_name','pt'], {pnum=>'pno', locale=>'city'}] ]
+
+    [ 'op', '{{<-}}', [['expr_name','pr'], {pnum=>'pno', locale=>'city'}] ]
+
+    [ 'op', '{}', [['expr_name','pt'], ['color','city']] ]
+
+    [ 'op', '{{}}', [['expr_name','pr'], ['color','city']] ]
+
+    [ 'op', '{}', [['expr_name','pt'], []] ]  # null projection #
+
+    [ 'op', '{{}}', [['expr_name','pr'], []] ]  # null projection #
+
+    [ 'op', '{!}', [['expr_name','pt'], ['pno','pname','weight']] ]
+
+    [ 'op', '{{!}}', [['expr_name','pr'], ['pno','pname','weight']] ]
+
+    [ 'op', '{@<-}', [['expr_name','person'], 'name', ['fname','lname']] ]
+
+    [ 'op', '{{@<-}}',
+        [['expr_name','people'], 'name', ['fname','lname']] ]
+
+    [ 'op', '{@<-!}',
+        [['expr_name','person'], 'all_but_name', ['fname','lname']] ]
+
+    [ 'op', '{{@<-!}}',
+        [['expr_name','people'], 'all_but_name', ['fname','lname']] ]
+
+    [ 'op', '{<-@}', [['expr_name','person'], ['fname','lname'], 'name'] ]
+
+    [ 'op', '{{<-@}}',
+        [['expr_name','people'], ['fname','lname'], 'name'] ]
+
+    [ 'op', '{{@@<-}}', [['expr_name','orders'], 'vendors', ['vendor']] ]
+
+    [ 'op', '{{@@<-!}}',
+        [['expr_name','orders'], 'all_but_vendors', ['vendor']] ]
+
+    [ 'op', '{{<-@@}}', [['expr_name','orders'], ['vendor'], 'vendors'] ]
+
+    [ 'op', '{{#@@<-!}}',
+        [['expr_name','people'], 'count_per_age_ctry', ['age','ctry']] ]
+
 =head2 Rational Operators That Do Rounding
 
 A C<rat_op_invo_with_round> node has exactly 2-3 main op args, each of

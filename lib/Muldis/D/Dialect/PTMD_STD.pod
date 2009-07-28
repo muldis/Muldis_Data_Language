@@ -2151,6 +2151,7 @@ Grammar:
         | <nonsym_dyadic_infix_op_invo>
         | <monadic_prefix_op_invo>
         | <monadic_postfix_op_invo>
+        | <postcircumfix_op_invo>
         | <rat_op_invo_with_round>
         | <ord_compare_op_invo>
         | ...
@@ -2182,7 +2183,8 @@ have, C<if_else_expr> and C<given_when_def_expr> being the main exceptions,
 and so a parser encountering an opening parenthesis at the start of a
 context where a generic C<expr> is expected can be reasonably sure it is
 dealing with a C<func_invo_alt_syntax> (or if-else or given-when) and not
-something else.
+something else.  A major exception to this format commonality is with
+C<postcircumfix_op_invo>, which does I<not> have delimiting parenthesis.
 
 Broadly speaking, a C<func_invo_alt_syntax> node has 2-3 kinds of payload
 elements:  The first is the determinant of what function to invoke,
@@ -2636,6 +2638,193 @@ Examples:
 
     (5 !)
 
+=head2 Simple Postcircumfix Operators
+
+Grammar:
+
+    <postcircumfix_op_invo> ::=
+        <t_pcf_op_invo> | <r_pcf_op_invo>
+
+    <t_pcf_op_invo> ::=
+        <expr> \s* '{' \s*
+            [
+                  <pcf_rename>
+                | <pcf_projection> | <pcf_cmpl_proj>
+                | <pcf_wrap> | <pcf_cmpl_wrap>
+                | <pcf_unwrap>
+            ]
+        \s* '}'
+
+    <r_pcf_op_invo> ::=
+        <expr> \s* '{{' \s*
+            [
+                  <pcf_rename>
+                | <pcf_projection> | <pcf_cmpl_proj>
+                | <pcf_wrap> | <pcf_cmpl_wrap>
+                | <pcf_unwrap>
+                | <pcf_group> | <pcf_cmpl_group>
+                | <pcf_ungroup>
+                | <pcf_count_per_group>
+            ]
+        \s* '}}'
+
+    <pcf_rename> ::=
+        <pcf_rename_map>
+
+    <pcf_rename_map> ::=
+        [<atnm_after> \s* '<-' \s* <atnm_before>] ** [\s* ',' \s*]
+
+    <atnm_after> ::=
+        <attr_name>
+
+    <atnm_before> ::=
+        <attr_name>
+
+    <pcf_projection> ::=
+        <pcf_atnms>?
+
+    <pcf_cmpl_proj> ::=
+        '!' \s* <pcf_atnms>
+
+    <pcf_atnms> ::=
+        <attr_name> ** [\s* ',' \s*]
+
+    <pcf_wrap> ::=
+        '@' <outer_atnm> \s* '<-' \s* <inner_atnms>
+
+    <pcf_cmpl_wrap> ::=
+        '@' <outer_atnm> \s* '<-' \s* '!' \s* <cmpl_inner_atnms>
+
+    <pcf_unwrap> ::=
+         <inner_atnms> \s* '<-' \s* '@' <outer_atnm>
+
+    <pcf_group> ::=
+        '@@' <outer_atnm> \s* '<-' \s* <inner_atnms>
+
+    <pcf_cmpl_group> ::=
+        '@@' <outer_atnm> \s* '<-' \s* '!' \s* <cmpl_inner_atnms>
+
+    <pcf_ungroup> ::=
+         <inner_atnms> \s* '<-' \s* '@@' <outer_atnm>
+
+    <pcf_count_per_group> ::=
+        '#@@' <count_atnm> \s* '<-' \s* '!' \s* <cmpl_inner_atnms>
+
+    <outer_atnm> ::=
+        <attr_name>
+
+    <count_atnm> ::=
+        <attr_name>
+
+    <inner_atnms> ::=
+        <pcf_atnms>
+
+    <cmpl_inner_atnms> ::=
+        <pcf_atnms>
+
+A C<postcircumfix_op_invo> node is for using postcircumfix notation to
+invoke a relational operator function whose operation involves deriving a
+single tuple|relation from another single tuple|relation customized only by
+further inputs that are attribute names.  Such a function takes exactly 2
+(C<expr> and C<pcf_rename_map>|C<pcf_atnms>) or 3 (C<expr> and
+C<outer_atnm> and C<inner_atnms>|C<cmpl_inner_atnms>) or 3 (C<expr> and
+C<count_atnm> and C<cmpl_inner_atnms>) primary arguments, which are the
+inputs of the operation.  A single C<postcircumfix_op_invo> node is
+equivalent to a single C<func_invo> node whose C<func_arg_list> element
+defines 2-3 arguments, and the 2-3
+C<expr|pcf[_rename_map|atnms]|[outer|count]_atnm|[|cmpl_]inner_atnms>
+elements of the C<postcircumfix_op_invo> supply the values of those
+arguments, which are associated in the appropriate sequence.
+
+This table indicates which function is invoked by each format-keyword:
+
+    {<-}   -> Core.Tuple.rename( $expr,
+                map => Relation:{
+                    { after => $atnm_after[0], before => $atnm_before[0] },
+                    ...,
+                    { after => $atnm_after[n], before => $atnm_before[n] },
+                } )
+    {{<-}} -> Core.Relation.rename( $expr,
+                map => Relation:{
+                    { after => $atnm_after[0], before => $atnm_before[0] },
+                    ...,
+                    { after => $atnm_after[n], before => $atnm_before[n] },
+                } )
+
+    {}    -> Core.Tuple.projection( $expr,
+                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
+    {{}}  -> Core.Relation.projection( $expr,
+                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
+    {!}   -> Core.Tuple.cmpl_proj( $expr,
+                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
+    {{!}} -> Core.Relation.cmpl_proj( $expr,
+                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
+
+    {@<-}    -> Core.Tuple.wrap( $expr, outer => $outer_atnm,
+                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] } )
+    {{@<-}}  -> Core.Relation.wrap( $expr, outer => $outer_atnm,
+                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] } )
+    {@<-!}   -> Core.Tuple.cmpl_wrap( $expr, outer => $outer_atnm,
+                   cmpl_inner => Set:{ $cmpl_inner_atnms[0], ... } )
+    {{@<-!}} -> Core.Relation.cmpl_wrap( $expr, outer => $outer_atnm,
+                   cmpl_inner => Set:{ $cmpl_inner_atnms[0], ... } )
+    {<-@}    -> Core.Tuple.unwrap( $expr,
+                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] },
+                   outer => $outer_atnm )
+    {{<-@}}  -> Core.Relation.unwrap( $expr,
+                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] },
+                   outer => $outer_atnm )
+
+    {{@@<-}}  -> Core.Relation.group( $expr, outer => $outer_atnm,
+                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] } )
+    {{@@<-!}} -> Core.Relation.cmpl_group( $expr, outer => $outer_atnm,
+                   group_per => Set:{ $cmpl_inner_atnms[0], ... } )
+    {{<-@@}}  -> Core.Relation.ungroup( $expr,
+                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] },
+                   outer => $outer_atnm )
+
+    {{#@@<-!}} -> Core.Relation.cardinality_per_group( $expr,
+                   count_attr_name => $count_atnm,
+                   group_per => Set:{ $cmpl_inner_atnms[0], ... } )
+
+Examples:
+
+    $pt{pnum<-pno, locale<-city}
+
+    $pr{{pnum<-pno, locale<-city}}
+
+    $pt{color,city}
+
+    $pr{{color,city}}
+
+    $pt{}  # null projection #
+
+    $pr{{}}  # null projection #
+
+    $pt{!pno,pname,weight}
+
+    $pr{{!pno,pname,weight}}
+
+    $person{@name <- fname,lname}
+
+    $people{{@name <- fname,lname}}
+
+    $person{@all_but_name <- !fname,lname}
+
+    $people{{@all_but_name <- !fname,lname}}
+
+    $person{fname,lname <- @name}
+
+    $people{{fname,lname <- @name}}
+
+    $orders{{@@vendors <- vendor}}
+
+    $orders{{@@all_but_vendors <- !vendor}}
+
+    $orders{{vendor <- @@vendors}}
+
+    $people{{#@@count_per_age_ctry <- !age,ctry}}
+
 =head2 Rational Operators That Do Rounding
 
 Grammar:
@@ -2681,7 +2870,7 @@ involves rounding a number to one with less precision.  Such a function
 takes exactly 1 (C<expr>) or 2 (C<lhs> and C<rhs>) primary arguments,
 which are the inputs of the operation, plus a special C<round_rule>
 argument which specifies explicitly the semantics of the numeric rounding
-in a declarative way (all 3 of these are I<main op args>).  A single
+in a declarative way (all 2 or 3 of these are I<main op args>).  A single
 C<rat_op_invo_with_round> node is equivalent to a single C<func_invo> node
 whose C<func_arg_list> element defines 2-3 arguments, and the
 C<expr|lhs|rhs|round_rule> elements of the C<rat_op_invo_with_round> supply
