@@ -151,9 +151,9 @@ more or less:
                 sys.std.Core.Type.Cat.DistribKeySet
                 sys.std.Core.Type.Cat.DKMemRelAttrMap
                 sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
-                sys.std.Core.Type.Cat.ForeignKeySet
-                sys.std.Core.Type.Cat.ForeignDistribKeySet
-                sys.std.Core.Type.Cat.FKChildAttrParentAttrMap
+                sys.std.Core.Type.Cat.SubsetConstrSet
+                sys.std.Core.Type.Cat.DistribSubsetConstrSet
+                sys.std.Core.Type.Cat.SCChildAttrParentAttrMap
                 sys.std.Core.Type.Cat.NameTypeMap
                 sys.std.Core.Type.Cat.NameExprMap
                 sys.std.Core.Type.Cat.NameDNCMap
@@ -2845,39 +2845,39 @@ attributes, with the sum of cardinalities of the source relation-valued
 attributes; the attribute values comprise a distributed key if the
 cardinalities are equal.
 
-=item C<foreign_keys> - C<ForeignKeySet>
+=item C<subset_constraints> - C<SubsetConstrSet>
 
-These are the 0..N explicit simple foreign (non-distributed) keys that are
-applicable to tuple/database values of the type being defined, that range
-over and relate tuples of specified relation-typed attributes of it;
-they are a kind of referential constraint.  Each tuple of a child
-attribute must have a corresponding tuple in a specific single parent
-attribute, where they correspond on the attributes of the parent attribute
-that comprise a (unique) key of the latter.  Note that C<foreign_keys> is
-logically an abstraction syntax (the canonical simplest form) for a
-particular kind of C<tuple_constraint> of the type being defined, one that
-tests if the relational difference, where a projection of the parent
-relation is subtracted from a corresponding projection of the child
-relation (with attribute renaming if necessary), is an empty relation; if
-the difference is an empty relation, then the foreign key is satisfied;
-otherwise, any difference tuples are from child tuples that violate the
-foreign key.
+These are the 0..N explicit simple (non-distributed) subset constraints
+(foreign keys) that are applicable to tuple/database values of the type
+being defined, that range over and relate tuples of specified
+relation-typed attributes of it; they are a kind of referential constraint.
+Each tuple of a child attribute must have a corresponding tuple in a
+specific single parent attribute, where they correspond on the attributes
+of the parent attribute that comprise a (unique) key of the latter.  Note
+that C<subset_constraints> is logically an abstraction syntax (the
+canonical simplest form) for a particular kind of C<tuple_constraint> of
+the type being defined, one that tests if the relational difference, where
+a projection of the parent relation is subtracted from a corresponding
+projection of the child relation (with attribute renaming if necessary), is
+an empty relation; if the difference is an empty relation, then the subset
+constraint is satisfied; otherwise, any difference tuples are from child
+tuples that violate the subset constraint.
 
-=item C<foreign_distrib_keys> - C<ForeignDistribKeySet>
+=item C<distrib_subset_constraints> - C<DistribSubsetConstrSet>
 
-These are the 0..N explicit simple foreign distributed keys that are
-applicable to tuple/database values of the type being defined, that range
-over and relate tuples of specified relation-typed attributes of it;
-they are a kind of referential constraint.  Each tuple of a child
-attribute must have a corresponding tuple in one member of a specific set
-of parent-alternative attributes (that have a distributed key ranging over
-them), where they correspond on the attributes of the parent-alternative
-attribute that comprise a distributed key on the latter.  Note that
-C<foreign_distrib_keys> is logically an abstraction syntax (the canonical
-simplest form) for a particular kind of C<tuple_constraint> of the type
-being defined; it is as per C<foreign_keys> except that the parent
-relation is the result of unioning appropriately renamed projections of
-the member relations of the distributed key.
+These are the 0..N explicit simple distributed subset constraints (foreign
+keys) that are applicable to tuple/database values of the type being
+defined, that range over and relate tuples of specified relation-typed
+attributes of it; they are a kind of referential constraint.  Each tuple of
+a child attribute must have a corresponding tuple in one member of a
+specific set of parent-alternative attributes (that have a distributed key
+ranging over them), where they correspond on the attributes of the
+parent-alternative attribute that comprise a distributed key on the latter.
+Note that C<distrib_subset_constraints> is logically an abstraction syntax
+(the canonical simplest form) for a particular kind of C<tuple_constraint>
+of the type being defined; it is as per C<subset_constraints> except that
+the parent relation is the result of unioning appropriately renamed
+projections of the member relations of the distributed key.
 
 =item C<default_tuple> - C<maybe_of.Name>
 
@@ -2911,8 +2911,9 @@ invalid and C<default_relation> must be a C<Single>.
 
 =back
 
-There is a distributed primary key over the C<name> attributes of
-C<[tuple|relation]_constraint> and C<[|foreign_][|distrib_]keys>.
+There is a distributed primary key over the elements of
+C<[tuple|relation]_constraints> and the C<name> attributes of
+C<[|distrib_][key|subset_constraint]s>.
 
 The default value of C<InnerNonscalarType> defines a relation type that has
 zero attributes and whose default value is the one with zero tuples.
@@ -3103,7 +3104,7 @@ are identical, it is only in this situation that we can consider that we
 still have the same tuple, which was just updated, and that we have not
 lost the old tuple and gained a new one.  The relation attributes
 comprising a primary key are the best mapping values for automatic new
-foreign keys and join conditions if the host relation type has to be
+subset constraints and join conditions if the host relation type has to be
 auto-split into several associated ones, for example because the physical
 representation of this relation doesn't support RVAs; in fact, some
 implementations may require that any relation having an RVA must also
@@ -3207,35 +3208,37 @@ key itself.  A C<DKRelAttrKeyAttrMap> has 2 attributes, C<rel_attr> and
 C<key_attr>, each of those being a C<Name>, and each of those being a unary
 key.  Its default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.ForeignKeySet
+=head2 sys.std.Core.Type.Cat.SubsetConstrSet
 
-A C<ForeignKeySet> is a C<DHRelation> that specifies a set of foreign
-(non-distributed) keys over relation-valued attributes of a
-tuple/database; each tuple specifies one foreign key, which is a kind of
-referential constraint, that relates tuples of such attributes.  Each
-tuple of a child attribute must have a corresponding tuple in a
-specific single parent attribute, where they correspond on the attributes
-of the parent attribute that comprise a (unique) key of the latter.  Note
-that it is valid to define a foreign key involving zero attributes, but its
-effect would be a no-op / a constraint that rejects nothing.
+A C<SubsetConstrSet> is a C<DHRelation> that specifies a set of
+(non-distributed) subset constraints (foreign keys) over relation-valued
+attributes of a tuple/database; each tuple specifies one subset constraint,
+which is a kind of referential constraint, that relates tuples of such
+attributes.  Each tuple of a child attribute must have a corresponding
+tuple in a specific single parent attribute, where they correspond on the
+attributes of the parent attribute that comprise a (unique) key of the
+latter.  Note that it is valid to define a subset constraint involving zero
+attributes, in which case the constraint is that the parent relation must
+have at least one tuple when the child relation has at least one tuple.
 
-A C<ForeignKeySet> has these 6 attributes:
+A C<SubsetConstrSet> has these 6 attributes:
 
 =over
 
 =item C<name> - C<Name>
 
-This is the declared name of the foreign key.
+This is the declared name of the subset constraint.
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the foreign key as a whole.
+This is an optional programmer comment about the subset constraint as a
+whole.
 
 =item C<parent> - C<DeclNameChain>
 
-This is the name of the relation-valued attribute that is the parent in
-the foreign (non-distributed) key relationship.  But the attribute named by
-C<parent> is only a direct attribute of the host type if C<parent> has 1
+This is the name of the relation-valued attribute that is the parent in the
+(non-distributed) subset constraint relationship.  But the attribute named
+by C<parent> is only a direct attribute of the host type if C<parent> has 1
 chain element; if it has more, then the host type attribute is a
 tuple/database and any further elements serve to make C<parent> actually
 address a component of said.
@@ -3244,16 +3247,16 @@ address a component of said.
 
 This is the name of the explicitly declared candidate key or unique key
 constraint of C<parent> which defines the attributes of C<parent> that are
-being matched on in the foreign key.
+being matched on in the subset constraint.
 
 =item C<child> - C<DeclNameChain>
 
-This is the name of the relation-valued attribute that is the child in
-the foreign (non-distributed) key relationship; its structure is as per
+This is the name of the relation-valued attribute that is the child in the
+(non-distributed) subset constraint relationship; its structure is as per
 C<parent>.  Note that C<child> and C<parent> are allowed to be one and the
 same.
 
-=item C<attr_map> - C<FKChildAttrParentAttrMap>
+=item C<attr_map> - C<SCChildAttrParentAttrMap>
 
 This maps 0..N attributes of the child relation with the same number of
 attributes of the parent relation; the mapped attribute names may or may
@@ -3261,55 +3264,58 @@ not be the same.
 
 =back
 
-A C<ForeignKeySet> has a unary primary key on the C<name> attribute.  Its
+A C<SubsetConstrSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ForeignDistribKeySet
+=head2 sys.std.Core.Type.Cat.DistribSubsetConstrSet
 
-A C<ForeignDistribKeySet> is a C<DHRelation> that specifies a set of
-foreign distributed keys over relation-valued attributes of a
-tuple/database; each tuple specifies one foreign key, which is a kind of
-referential constraint, that relates tuples of such attributes.  Each tuple
-of a child attribute must have a corresponding tuple in one member of a
-specific set of parent-alternative attributes (that have a distributed key
-ranging over them), where they correspond on the attributes of the
-parent-alternative attribute that comprise a distributed key on the latter.
-Note that it is valid to define a foreign key involving zero attributes,
-but its effect would be a no-op / a constraint that rejects nothing.
+A C<DistribSubsetConstrSet> is a C<DHRelation> that specifies a set of
+distributed subset constraints (foreign keys) over relation-valued
+attributes of a tuple/database; each tuple specifies one subset constraint,
+which is a kind of referential constraint, that relates tuples of such
+attributes.  Each tuple of a child attribute must have a corresponding
+tuple in one member of a specific set of parent-alternative attributes
+(that have a distributed key ranging over them), where they correspond on
+the attributes of the parent-alternative attribute that comprise a
+distributed key on the latter.  Note that it is valid to define a subset
+constraint involving zero attributes, in which case the constraint is that
+at least one of the parent relations must have at least one tuple when the
+child relation has at least one tuple.
 
-A C<ForeignDistribKeySet> has these 5 attributes:
+A C<DistribSubsetConstrSet> has these 5 attributes:
 
 =over
 
 =item C<name> - C<Name>
 
-This is the declared name of the foreign key.
+This is the declared name of the subset constraint.
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the foreign key as a whole.
+This is an optional programmer comment about the subset constraint as a
+whole.
 
 =item C<parent_distrib_key> - C<DeclNameChain>
 
 This is the name of the explicitly declared distributed (unique) key that
-is the parent in the foreign distributed key relationship; it defines by
-proxy the attributes that are being matched on in the foreign key.  But the
-distributed key named by C<parent_distrib_key> may not be directly declared
-by the host type of this foreign key; it might be declared by the type of
-an attribute of the host type, if said attribute is a tuple/database; so
-the only or last C<parent_distrib_key> chain element is a key name, and any
-preceeding names are attribute names.
+is the parent in the distributed subset constraint relationship; it defines
+by proxy the attributes that are being matched on in the subset constraint.
+But the distributed key named by C<parent_distrib_key> may not be directly
+declared by the host type of this subset constraint; it might be declared
+by the type of an attribute of the host type, if said attribute is a
+tuple/database; so the only or last C<parent_distrib_key> chain element is
+a key name, and any preceeding names are attribute names.
 
 =item C<child> - C<DeclNameChain>
 
-This is the name of the relation-valued attribute that is the child in
-the foreign distributed key relationship.  But the attribute named by
+This is the name of the relation-valued attribute that is the child in the
+distributed subset constraint relationship.  But the attribute named by
 C<child> is only a direct attribute of the host type if C<child> has 1
 chain element; if it has more, then the host type attribute is a
 tuple/database and any further elements serve to make C<child> actually
 address a component of said.
 
-=item C<attr_map> - C<FKChildAttrParentAttrMap>
+=item C<attr_map> - C<SCChildAttrParentAttrMap>
 
 This maps 0..N attributes of the child relation with the same number of
 attributes of the parent distributed key; the mapped attribute names may or
@@ -3317,18 +3323,19 @@ may not be the same.
 
 =back
 
-A C<ForeignDistribKeySet> has a unary primary key on the C<name> attribute.
-Its default value is empty.
+A C<DistribSubsetConstrSet> has a unary primary key on the C<name>
+attribute. Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.FKChildAttrParentAttrMap
+=head2 sys.std.Core.Type.Cat.SCChildAttrParentAttrMap
 
-A C<FKChildAttrParentAttrMap> is a C<DHRelation>.  It maps 0..N attributes
+A C<SCChildAttrParentAttrMap> is a C<DHRelation>.  It maps 0..N attributes
 of a child relation-valued attribute of a host tuple/database type
-participating in a foreign non-distributed or distributed key, to the same
-number of attributes of a parent such attribute or a distributed key of the
-host.  A C<FKChildAttrParentAttrMap> has 2 attributes, C<child_attr> and
-C<parent_attr>, each of those being a C<Name>, and each of those being a
-unary key.  Its default value has zero tuples.
+participating in a non-distributed or distributed subset constraint
+(foreign key), to the same number of attributes of a parent such attribute
+or a distributed key of the host.  A C<SCChildAttrParentAttrMap> has 2
+attributes, C<child_attr> and C<parent_attr>, each of those being a
+C<Name>, and each of those being a unary key.  Its default value has zero
+tuples.
 
 =head2 sys.std.Core.Type.Cat.InnerUnionType
 

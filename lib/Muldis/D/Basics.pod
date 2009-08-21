@@ -98,7 +98,7 @@ that the term I<relvar> is short hand for I<relation-typed variable>, and
 I<relcon> is short hand for I<relation-typed constant>.  Note also that a
 I<relational database> is called that I<because> it is composed of
 relations, and I<not> just because its relations can be joined or be
-associated through foreign key constraints.
+associated through subset (foreign key) constraints.
 
 =item function
 
@@ -1696,7 +1696,7 @@ to define a type (other than C<Empty>) with a C<type_constraint> that
 unconditionally results in C<Bool:false>, as such a type could not also
 have a default value.  Note that, because Muldis D requires dbvars to be
 defined over named data types, all I<state constraints> for a database,
-including uniqueness keys or foreign keys or other state-constraining
+including uniqueness keys or subset constraints or other state-constraining
 business rules, are normally defined as the C<type_constraint> for the type
 which that database is.  Conceptually speaking, a C<type_constraint> will
 execute as the beginning part of a statement, prior to any attempt to
@@ -2677,19 +2677,19 @@ might expect, you can also just reference a scalar possrep as a whole, as
 if it were a tuple-typed pseudo-variable, by using just 1 name element;
 for example, C<lex.scalar1.possrep1>.
 
-With relations, this kind of terse syntax may also be used in some,
-though not all, situations as the syntax may be with tuples and scalar
-possreps, since in the general case, addressing a relation attribute is
-conceptually referring to a set of 0..N items rather than exactly 1.  So
-for the present, relation attributes may only be referred to using this
-terse syntax in situations where said attributes of *all* of the tuples
-in the relation at once are being referenced.  An example of this is some
-canonical terse foreign key constraint definitions, where one might want to
-apply a referential constraint to elements of a TVA or RVA of a relation,
-rather than the whole relation attribute.  (For the present, other parts
-of the Muldis D documentation ignore for simplicity that an RVA of a
-relation can be drilled into, but you in fact can do this where it makes
-sense.)
+With relations, this kind of terse syntax may also be used in some, though
+not all, situations as the syntax may be with tuples and scalar possreps,
+since in the general case, addressing a relation attribute is conceptually
+referring to a set of 0..N items rather than exactly 1.  So for the
+present, relation attributes may only be referred to using this terse
+syntax in situations where said attributes of *all* of the tuples in the
+relation at once are being referenced.  An example of this is some
+canonical terse subset (foreign key) constraint definitions, where one
+might want to apply a referential constraint to elements of a TVA or RVA of
+a relation, rather than the whole relation attribute.  (For the present,
+other parts of the Muldis D documentation ignore for simplicity that an RVA
+of a relation can be drilled into, but you in fact can do this where it
+makes sense.)
 
 Note that in general, any value expression can denote a pseudo-variable,
 but only components of tuples or scalar possreps, and sometimes
@@ -2748,12 +2748,12 @@ values having specific relation-valued attributes of specific relation
 types, then database relations can no longer be added or removed without
 also updating the corresponding database type.  Generally speaking, the
 declared type of C<dep.data> includes everything that SQL would define as
-table definitions, table unique key constraints, foreign key constraints,
-and generic database or table state constraints, but state constraints can
-also be associated with just variables rather than types.  Only database
-transition constraints are not part of the database's type, and are applied
-directly to the C<dep.data> variable (and C<fed.data> also) by the depot's
-catalog in another way.
+table definitions, table unique key constraints, subset (foreign key)
+constraints, and generic database or table state constraints, but state
+constraints can also be associated with just variables rather than types.
+Only database transition constraints are not part of the database's type,
+and are applied directly to the C<dep.data> variable (and C<fed.data> also)
+by the depot's catalog in another way.
 
 If a depot has any subdepots or packages, then the value of C<dep.data>
 must have corresponding attributes that match by name, recursively, iff the
