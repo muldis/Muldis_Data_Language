@@ -835,26 +835,24 @@ Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
 =head1 GENERIC VALUE EXPRESSIONS
 
 An C<expr_name> node has 2 ordered elements:  The first element is the Perl
-C<Str> value C<expr_name>.  The second element is a C<NameChain_payload>.
+C<Str> value C<$>.  The second element is a C<NameChain_payload>.
 
 An C<expr_name> node may alternately be formatted as a Perl Pair whose key
 and value are what would otherwise be the first and second node elements,
 respectively.
 
 A C<named_expr> node has 3 ordered elements:  The first element is the Perl
-C<Str> value C<named_expr>.  The second element is a C<Name_payload> and
-the third element is an C<expr> node (that isn't a C<named_expr> node); the
-second element declares an explicit expression node name for the third
-element.
+C<Str> value C<::=>.  The second element is a C<Name_payload> and the third
+element is an C<expr> node (that isn't a C<named_expr> node); the second
+element declares an explicit expression node name for the third element.
 
 Examples:
 
     # an expr_name node #
-    :expr_name<foo_expr>
+    ['$','foo_expr']
 
     # a named_expr node #
-    [ 'named_expr', 'bar_expr',
-        [ 'func_invo', 'factorial', [ :expr_name<foo_expr> ] ] ]
+    [ '::=', 'bar_expr', [ 'func_invo', 'factorial', [['$','foo_expr']] ] ]
 
 =head2 Generic Function Invocation Expressions
 
@@ -886,16 +884,15 @@ Examples:
         { dividend => 43.7, divisor => 16.9 } ]
 
     # one mandatory param, two optional #
-    [ 'func_invo', 'inn.barfunc', [ :expr_name<mand_arg> ],
-        { oa1 => :expr_name<opt_arg1>, oa2 => :expr_name<opt_arg2> } ]
+    [ 'func_invo', 'inn.barfunc', [ ['$','mand_arg'] ],
+        { oa1 => ['$','opt_arg1'], oa2 => ['$','opt_arg2'] } ]
 
     # a user-defined non-inner function #
     [ 'func_invo', 'dep.lib.foodb.bazfunc',
         { a1 => 52, a2 => 'hello world' } ]
 
     # two params named 'topic' and 'other' #
-    [ 'func_invo', 'is_identical',
-        [ :expr_name<foo>, :expr_name<bar> ] ]
+    [ 'func_invo', 'is_identical', [ ['$','foo'], ['$','bar'] ] ]
 
 =head2 Generic If-Else Expressions
 
@@ -912,22 +909,20 @@ Examples:
 
     [ 'if_else_expr',
         [
-            [ 'op', '>', :expr_name<foo>, 5 ] => :expr_name<bar>,
+            [ 'op', '>', ['$','foo'], 5 ] => ['$','bar'],
         ],
-        :expr_name<baz>
+        ['$','baz']
     ]
 
     [ 'if_else_expr',
         [
-            [ 'op', 'is_empty', :expr_name<ary> ]
-                => :expr_name<empty_result>,
+            [ 'op', 'is_empty', ['$','ary'] ] => ['$','empty_result'],
         ],
-        [ 'op', 'Array.value', :expr_name<ary>, 0 ]
+        [ 'op', 'Array.value', ['$','ary'], 0 ]
     ]
 
-    [ 'op', 'T~', [ 'My answer is: ',
-        [ '??!!', [ :expr_name<maybe> => 'yes' ], 'no' ]
-    ] ]
+    [ 'op', 'T~', ['My answer is: ',
+        [ '??!!', [ ['$','maybe'] => 'yes' ], 'no' ]] ]
 
 =head2 Generic Given-When-Default Expressions
 
@@ -944,12 +939,12 @@ expression, which is an C<expr> node.
 Examples:
 
     [ 'given_when_def_expr',
-        :expr_name<digit>,
+        ['$','digit'],
         [
             'T' => 10,
             'E' => 11,
         ],
-        :expr_name<digit>,
+        ['$','digit'],
     ]
 
 =head2 Library Entity Reference Selector
@@ -1033,10 +1028,9 @@ Examples:
 
     [ 'op', 'A~', [ :Array[24, 52], :Array[-9], :Array[0, 11, 24, 7] ] ]
 
-    [ 'op', '//', [ :expr_name<a>, :expr_name<b>, 42 ] ]
+    [ 'op', '//', [ ['$','a'], ['$','b'], 42 ] ]
 
-    [ 'op', '//d', [ :expr_name<a>, :expr_name<b>,
-        :type_ref<inn.foo_type> ] ]
+    [ 'op', '//d', [ ['$','a'], ['$','b'], :type_ref<inn.foo_type> ] ]
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -1046,9 +1040,9 @@ isn't significant.
 
 Examples:
 
-    [ 'op', '=', [ :expr_name<foo>, :expr_name<bar> ] ]
+    [ 'op', '=', [ ['$','foo'], ['$','bar'] ] ]
 
-    [ 'op', '≠', [ :expr_name<foo>, :expr_name<bar> ] ]
+    [ 'op', '≠', [ ['$','foo'], ['$','bar'] ] ]
 
     [ 'op', 'nand', [ Bool::False, Bool::True ] ]
 
@@ -1064,14 +1058,13 @@ C<rhs>, respectively.
 
 Examples:
 
-    [ 'op', 'isa', [ :expr_name<bar>, :type_ref<inn.foo_type> ] ]
+    [ 'op', 'isa', [ ['$','bar'], :type_ref<inn.foo_type> ] ]
 
-    [ 'op', '!isa', [ :expr_name<bar>, :type_ref<inn.foo_type> ] ]
+    [ 'op', '!isa', [ ['$','bar'], :type_ref<inn.foo_type> ] ]
 
-    [ 'op', 'as', [ :expr_name<scalar>, :type_ref<Int> ] ]
+    [ 'op', 'as', [ ['$','scalar'], :type_ref<Int> ] ]
 
-    [ 'op', 'asserting', [ :expr_name<int>,
-        [ 'op', '≠', [ :expr_name<int>, 0 ] ] ] ]
+    [ 'op', 'asserting', [['$','int'], [ 'op', '≠', [['$','int'], 0] ]] ]
 
     [ 'op', 'implies', [ Bool::True, Bool::False ] ]
 
@@ -1111,14 +1104,12 @@ Examples:
 
     [ 'op', 'R#', :Set(Set.new( 5, -1, 2 )) ]
 
-    [ 'op', 't', :expr_name<relvar> ]
+    [ 'op', 't', [['$','relvar']] ]
 
-    [ 'op', 'r', :expr_name<tupvar> ]
+    [ 'op', 'r', [['$','tupvar']] ]
 
-    [ 'op', 's', [ [ 'op', 'N+', [
-        [ 'op', 'v', :expr_name<a> ],
-        [ 'op', 'v', :expr_name<b> ]
-    ] ] ] ]
+    [ 'op', 's', [[ 'op', 'N+',
+        [[ 'op', 'v', ['$','a'] ], [ 'op', 'v', ['$','b'] ]] ]] ]
 
 =head2 Simple Monadic Postfix Operators
 
@@ -1142,45 +1133,44 @@ operation.
 
 Examples:
 
-    [ 'op', '{<-}', [:expr_name<pt>, {pnum=>'pno', locale=>'city'}] ]
+    [ 'op', '{<-}', [['$','pt'], {pnum=>'pno', locale=>'city'}] ]
 
-    [ 'op', '{{<-}}', [:expr_name<pr>, {pnum=>'pno', locale=>'city'}] ]
+    [ 'op', '{{<-}}', [['$','pr'], {pnum=>'pno', locale=>'city'}] ]
 
-    [ 'op', '{}', [:expr_name<pt>, ['color','city']] ]
+    [ 'op', '{}', [['$','pt'], ['color','city']] ]
 
-    [ 'op', '{{}}', [:expr_name<pr>, ['color','city']] ]
+    [ 'op', '{{}}', [['$','pr'], ['color','city']] ]
 
-    [ 'op', '{}', [:expr_name<pt>, []] ]  # null projection #
+    [ 'op', '{}', [['$','pt'], []] ]  # null projection #
 
-    [ 'op', '{{}}', [:expr_name<pr>, []] ]  # null projection #
+    [ 'op', '{{}}', [['$','pr'], []] ]  # null projection #
 
-    [ 'op', '{!}', [:expr_name<pt>, ['pno','pname','weight']] ]
+    [ 'op', '{!}', [['$','pt'], ['pno','pname','weight']] ]
 
-    [ 'op', '{{!}}', [:expr_name<pr>, ['pno','pname','weight']] ]
+    [ 'op', '{{!}}', [['$','pr'], ['pno','pname','weight']] ]
 
-    [ 'op', '{@<-}', [:expr_name<person>, 'name', ['fname','lname']] ]
+    [ 'op', '{@<-}', [['$','person'], 'name', ['fname','lname']] ]
 
-    [ 'op', '{{@<-}}', [:expr_name<people>, 'name', ['fname','lname']] ]
+    [ 'op', '{{@<-}}', [['$','people'], 'name', ['fname','lname']] ]
 
-    [ 'op', '{@<-!}',
-        [:expr_name<person>, 'all_but_name', ['fname','lname']] ]
+    [ 'op', '{@<-!}', [['$','person'], 'all_but_name', ['fname','lname']] ]
 
     [ 'op', '{{@<-!}}',
-        [:expr_name<people>, 'all_but_name', ['fname','lname']] ]
+        [['$','people'], 'all_but_name', ['fname','lname']] ]
 
-    [ 'op', '{<-@}', [:expr_name<person>, ['fname','lname'], 'name'] ]
+    [ 'op', '{<-@}', [['$','person'], ['fname','lname'], 'name'] ]
 
-    [ 'op', '{{<-@}}', [:expr_name<people>, ['fname','lname'], 'name'] ]
+    [ 'op', '{{<-@}}', [['$','people'], ['fname','lname'], 'name'] ]
 
-    [ 'op', '{{@@<-}}', [:expr_name<orders>, 'vendors', ['vendor']] ]
+    [ 'op', '{{@@<-}}', [['$','orders'], 'vendors', ['vendor']] ]
 
     [ 'op', '{{@@<-!}}',
-        [:expr_name<orders>, 'all_but_vendors', ['vendor']] ]
+        [['$','orders'], 'all_but_vendors', ['vendor']] ]
 
-    [ 'op', '{{<-@@}}', [:expr_name<orders>, ['vendor'], 'vendors'] ]
+    [ 'op', '{{<-@@}}', [['$','orders'], ['vendor'], 'vendors'] ]
 
     [ 'op', '{{#@@<-!}}',
-        [:expr_name<people>, 'count_per_age_ctry', ['age','ctry']] ]
+        [['$','people'], 'count_per_age_ctry', ['age','ctry']] ]
 
 =head2 Rational Operators That Do Rounding
 
@@ -1192,7 +1182,7 @@ second and third args are C<lhs>, C<rhs> and C<round_rule>, respectively.
 
 Examples:
 
-    [ 'op', 'round', [:expr_name<foo>, :RatRoundRule[10,-2,'half_even']] ]
+    [ 'op', 'round', [['$','foo'], :RatRoundRule[10,-2,'half_even']] ]
 
     [ 'op', 'N^', [ 2.0, 0.5, :RatRoundRule[2,-7,'to_zero'] ] ]
 
@@ -1216,27 +1206,27 @@ C<Seq|Array>.  Details on the extra op args are pending.
 
 Examples (for now sans any use of extra op args, which are atypical):
 
-    [ 'op', '<=>', [ :expr_name<foo>, :expr_name<bar> ] ]
+    [ 'op', '<=>', [ ['$','foo'], ['$','bar'] ] ]
 
-    [ 'op', 'min', [ :expr_name<a>, :expr_name<b>, :expr_name<c> ] ]
+    [ 'op', 'min', [ ['$','a'], ['$','b'], ['$','c'] ] ]
 
-    [ 'op', 'max', [ :expr_name<a>, :expr_name<b>, :expr_name<c> ] ]
+    [ 'op', 'max', [ ['$','a'], ['$','b'], ['$','c'] ] ]
 
-    [ 'op', '<', [ :expr_name<foo>, :expr_name<bar> ] ]
+    [ 'op', '<', [ ['$','foo'], ['$','bar'] ] ]
 
-    [ 'op', '>', [ :expr_name<foo>, :expr_name<bar> ] ]
+    [ 'op', '>', [ ['$','foo'], ['$','bar'] ] ]
 
-    [ 'op', '≤', [ :expr_name<foo>, :expr_name<bar> ] ]
+    [ 'op', '≤', [ ['$','foo'], ['$','bar'] ] ]
 
-    [ 'op', '≥', [ :expr_name<foo>, :expr_name<bar> ] ]
+    [ 'op', '≥', [ ['$','foo'], ['$','bar'] ] ]
 
-    [ 'op', '≤≤', [ :expr_name<min>, :expr_name<foo>, :expr_name<max> ] ]
+    [ 'op', '≤≤', [ ['$','min'], ['$','foo'], ['$','max'] ] ]
 
-    [ 'op', '≤<', [ :expr_name<min>, :expr_name<foo>, :expr_name<max> ] ]
+    [ 'op', '≤<', [ ['$','min'], ['$','foo'], ['$','max'] ] ]
 
-    [ 'op', '!<≤', [ :expr_name<min>, :expr_name<foo>, :expr_name<max> ] ]
+    [ 'op', '!<≤', [ ['$','min'], ['$','foo'], ['$','max'] ] ]
 
-    [ 'op', '!<<', [ :expr_name<min>, :expr_name<foo>, :expr_name<max> ] ]
+    [ 'op', '!<<', [ ['$','min'], ['$','foo'], ['$','max'] ] ]
 
 =head1 DEPOT DECLARATION
 
