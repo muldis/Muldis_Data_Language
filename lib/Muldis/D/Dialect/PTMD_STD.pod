@@ -2422,7 +2422,7 @@ Grammar:
         <expr>
 
     <nonsym_dyadic_infix_op> ::=
-        | isa | !isa | as | asserting
+        | isa | '!isa' | 'not isa' | as | asserting
         | imp | '→' | implies | nimp | '↛' | if | '←' | nif | '↚'
         | 'I-' | 'I/' | '%' | mod | 'I^'
         | 'N-' | 'N/'
@@ -2433,10 +2433,10 @@ Grammar:
         | '⊆' | '⊈' | '⊇' | '⊉'
         | '⊂' | '⊄' | '⊃' | '⊅'
         | '∖' | 'R-' | minus | except
-        | '⊿' | 'not matching' | antijoin | semiminus
+        | '⊿' | '!matching' | 'not matching' | antijoin | semiminus
         | '⋉' | matching | semijoin
         | '÷' | 'R/' | divideby
-        | like | 'not like'
+        | like | '!like' | 'not like'
 
 A C<nonsym_dyadic_infix_op_invo> node is for using infix notation to
 invoke a non-symmetric dyadic operator function.  Such a function takes
@@ -2452,15 +2452,17 @@ Some of the keywords are aliases for each other:
 
     keyword | aliases
     --------+--------
+    !isa    | 'not isa'
     imp     | → implies
     nimp    | ↛
     if      | ←
     nif     | ↚
     %       | mod
     ∖       | R- minus except
-    ⊿       | 'not matching' antijoin semiminus
+    ⊿       | !matching 'not matching' antijoin semiminus
     ⋉       | matching semijoin
     ÷       | R/ divideby
+    !like   | 'not like'
 
 Currently the alternate syntaxes for 20 functions, those testing set
 membership or sub/superset relationships, only come in versions that use
@@ -2512,12 +2514,12 @@ This table indicates which function is invoked by each keyword:
     ⋉    -> Core.Relation.semijoin( source => $lhs, filter => $rhs )
     ÷    -> Core.Relation.quotient( dividend => $lhs, divisor => $rhs )
 
-    like     -> sys.std.Text.is_like( look_in => $lhs, look_for => $rhs )
-    not like -> sys.std.Text.is_not_like(look_in => $lhs, look_for => $rhs)
+    like  -> sys.std.Text.is_like( look_in => $lhs, look_for => $rhs )
+    !like -> sys.std.Text.is_not_like( look_in => $lhs, look_for => $rhs )
 
 Note that while the C<is[|_not]_like> functions also have an optional third
 parameter C<escape>, you will have to use a C<func_invo> node to exploit
-it; for simplicity, the infix C<like> and C<not like> don't support that
+it; for simplicity, the infix C<like> and C<!like> don't support that
 customization; but most actual uses of like/etc don't use C<escape> anyway.
 
 Examples:
@@ -2560,7 +2562,7 @@ Grammar:
         \s* ')'
 
     <monadic_prefix_op> ::=
-        d | not | ¬ | 'I||' | 'N||' | 'R#' | t | r | s | v
+        d | not | '¬' | '!' | 'I||' | 'N||' | 'R#' | t | r | s | v
 
 A C<monadic_prefix_op_invo> node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
@@ -2573,7 +2575,7 @@ Some of the keywords are aliases for each other:
 
     keyword | aliases
     --------+--------
-    not     | ¬
+    not     | ¬ !
 
 This table indicates which function is invoked by each keyword:
 
@@ -2615,7 +2617,7 @@ Grammar:
         \s* ')'
 
     <monadic_postfix_op> ::=
-        '++' | '--' | '!'
+        '++' | '--' | 'I!'
 
 A C<monadic_postfix_op_invo> node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
@@ -2628,7 +2630,7 @@ This table indicates which function is invoked by each keyword:
 
     ++ -> Integer.inc( $expr )
     -- -> Integer.dec( $expr )
-    !  -> Integer.factorial( $expr )
+    I! -> Integer.factorial( $expr )
 
 Examples:
 
@@ -2636,7 +2638,7 @@ Examples:
 
     (4 --)
 
-    (5 !)
+    (5 I!)
 
 =head2 Simple Postcircumfix Operators
 
@@ -2939,7 +2941,7 @@ Grammar:
         '>' | '≥' | '>='
 
     <triadic_compare_op_invo> ::=
-        [not \s+]?
+        [[not | !] \s+]?
         <min> \s+ <is_before_op> \s+ <expr> \s+ <is_before_op> \s+ <max>
 
     <min> ::=
