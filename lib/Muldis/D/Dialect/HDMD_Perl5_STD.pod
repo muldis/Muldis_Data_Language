@@ -588,13 +588,13 @@ Examples:
 =head2 TAI Temporal Literals
 
 An C<Instant> node represents a single point in time which is specified in
-terms of of atomic seconds; it is a rational numeric type, that is disjoint
+terms of atomic seconds; it is a rational numeric type, that is disjoint
 from both C<Rat> and C<Duration>.  This node is interpreted as a Muldis D
 C<sys.std.Core.Type.Instant> value by directly mapping the payload, which
 must be as per the payload of a C<Rat> node.
 
 A C<Duration> node represents a single amount of time (the difference
-between two instants) which is specified in terms of of atomic seconds; it
+between two instants) which is specified in terms of atomic seconds; it
 is a rational numeric type, that is disjoint from both C<Rat> and
 C<Instant>.  This node is interpreted as a Muldis D
 C<sys.std.Core.Type.Duration> value by directly mapping the payload, which
@@ -1051,13 +1051,12 @@ Examples:
 =head1 GENERIC VALUE EXPRESSIONS
 
 An C<expr_name> node has 2 ordered elements:  The first element is the Perl
-character string C<$>.  The second element is a C<NameChain_payload>.
+character string C<$>.  The second element is a C<Name_payload>.
 
 A C<named_expr> node has 3 ordered elements:  The first element is the Perl
-character string C<::=>.  The second element is a C<Name_payload>
-and the third element is an C<expr> node (that isn't a C<named_expr> node);
-the second element declares an explicit expression node name for the third
-element.
+character string C<::=>.  The second element is a C<Name_payload> and the
+third element is an C<expr> node; the second element declares an explicit
+expression node name for the third element.
 
 Examples:
 
@@ -1066,6 +1065,25 @@ Examples:
 
     # a named_expr node #
     [ '::=', 'bar_expr', [ 'func_invo', 'factorial', [['$','foo_expr']] ] ]
+
+=head2 Generic Expression Attribute Accessors
+
+An C<accessor> node has 2-3 ordered elements, such that 2 elements makes it
+an C<acc_via_named> and 3 elements makes it an C<acc_via_anon>:  The first
+element is the Perl character string C<$.>.  The last element of an
+C<acc_via_named> is a C<NameChain_payload>, which is by itself the
+C<target> of the accessor (naming both the other node plus its attribute to
+alias).  The second element of an C<acc_via_anon> is an C<expr> node which
+is the other node whose attribute is being aliased.  The last element of an
+C<acc_via_anon> is a C<DeclNameChain_payload> and names the attribute.
+
+Examples:
+
+    # an accessor node of a named node #
+    ['$.','foo_t.bar_attr']
+
+    # an accessor node of an anonymous node #
+    ['$.',[ 'func_invo', 'inn.tuple_res_func', [['$','arg']] ],'quux_attr']
 
 =head2 Generic Function Invocation Expressions
 

@@ -14,6 +14,42 @@
     "/" to select a Perl 6 "Rat" in terms of 2 "Int", where you used to use
     "div" to do that.
 
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  In the "GENERIC VALUE
+    EXPRESSIONS" main pod section, made the rules for the "named_expr"
+    grammar node more lax such that now it is valid for *any* other "expr"
+    node to be named by it, including another "named_expr"; in such a case
+    as this, or when naming an "expr_name" node, an "AccExprNodeSet" tuple
+    is now defined as what it parses to, and we have a simple node alias.
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  In the "GENERIC VALUE
+    EXPRESSIONS" main pod section, added new pod sub-section "Generic
+    Expression Attribute Accessors", featuring the new grammar node
+    "accessor", whose initial flavor is "acc_via_named".  This addition is
+    part of a grammar refactor that also features the "expr_name" node
+    being simplified to just take a "Name" payload, and "acc_via_named" now
+    handles the "NameChain" payload that "expr_name" used to handle.  Now
+    "expr_name" just references named expression nodes or parameters etc,
+    and no longer drills into their attributes; drilling is now just the
+    purvue of "accessor".  The refactor also eliminated the distinct
+    "decl_expr_name" as "named_expr" now uses "expr_name" instead.  In
+    PTMD_STD, the "acc_via_named" grammar is identical to the old
+    "expr_name" and so this change is backwards compatible.  However, in
+    HDMD_Perl[6|5]_STD, a small backwards-incompatible change was
+    introduced, such that the first element of every "accessor" node is
+    "$." rather than "$" which "expr_name" uses; but there was no older
+    example code which did drilling, so no update was necessary.
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  In "Generic Expression
+    Attribute Accessors", added new "accessor" grammar node flavor
+    "acc_via_anon", which provides the new feature that attributes can now
+    be accessed/aliased of anonymous expression nodes (not just explicitly
+    named nodes), such as one would expect to be able to do in a
+    programming language; for example you can now say "inn.tuple_res_func(
+    $arg ).quux_attr" (PTMD_STD).
+
+    * (Types.pod, PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod, Blob.pod)
+    Corrected several instances of repeated word typos.
+
 2009-08-29  Darren Duncan <perl@DarrenDuncan.net>
 
     * Muldis::D version 0.85.0 is released on CPAN as

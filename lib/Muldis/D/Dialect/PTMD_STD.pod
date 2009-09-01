@@ -1106,13 +1106,13 @@ Grammar:
         <Rat_payload>
 
 An C<Instant> node represents a single point in time which is specified in
-terms of of atomic seconds; it is a rational numeric type, that is disjoint
+terms of atomic seconds; it is a rational numeric type, that is disjoint
 from both C<Rat> and C<Duration>.  This node is interpreted as a Muldis D
 C<sys.std.Core.Type.Instant> value as follows:  An C<Instant_payload> is
 formatted and interpreted in the same way as a C<Rat_payload>.
 
 A C<Duration> node represents a single amount of time (the difference
-between two instants) which is specified in terms of of atomic seconds; it
+between two instants) which is specified in terms of atomic seconds; it
 is a rational numeric type, that is disjoint from both C<Rat> and
 C<Instant>.  This node is interpreted as a Muldis D
 C<sys.std.Core.Type.Duration> value as follows:  A C<Duration_payload> is
@@ -1832,6 +1832,7 @@ Grammar:
         | <named_expr>
         | <opaque_value_literal>
         | <coll_value_selector>
+        | <accessor>
         | <func_invo>
         | <if_else_expr>
         | <given_when_def_expr>
@@ -1839,16 +1840,13 @@ Grammar:
         | <func_invo_alt_syntax>
 
     <expr_name> ::=
-        <data_sigil> <NameChain_payload>
+        <data_sigil> <Name_payload>
 
     <data_sigil> ::=
         '$'
 
     <named_expr> ::=
-        <decl_expr_name> \s* <infix_bind_op> \s* <expr>
-
-    <decl_expr_name> ::=
-        <data_sigil> <Name_payload>
+        <expr_name> \s* <infix_bind_op> \s* <expr>
 
     <infix_bind_op> ::=
         '::='
@@ -1889,11 +1887,14 @@ the expression-containing routine's parameters, in which case the C<expr>
 in question represents the current argument to that parameter; this also is
 exactly the same as a corresponding catalog entry for using an argument.
 
-Iff an C<expr> is a C<named_expr>, then then the C<expr> element of the
-C<named_expr> is being declared with an explicit name, and the
-C<decl_expr_name> element of the C<named_expr> is that name.  Note that a
-C<named_expr> node may not have a C<named_expr> node as its direct C<expr>
-child element.  I<TODO: nor a C<param> node.>
+Iff an C<expr> is a C<named_expr>, then the C<expr> element of the
+C<named_expr> is being declared with an explicit name, and the C<expr_name>
+element of the C<named_expr> is that name.  But if the C<expr> element of
+the C<named_expr> is an C<expr_name> (or a C<named_expr> I<TODO: or a
+C<param> >), then the C<named_expr> is in fact declaring a new node itself
+(rather than simply naming its child node), which is a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.AccExprNodeSet> value; the new node is simply
+declaring an alias for another node, namely the C<expr> element.
 
 Examples:
 
@@ -1902,6 +1903,38 @@ Examples:
 
     # a named_expr node #
     $bar_expr ::= factorial( $foo_expr )
+
+=head2 Generic Expression Attribute Accessors
+
+Grammar:
+
+    <accessor> ::=
+        <acc_via_named> | <acc_via_anon>
+
+    <acc_via_named> ::=
+        <data_sigil> <NameChain_payload>
+
+    <acc_via_anon> ::=
+        <expr> \s* '.' \s* <DeclNameChain_payload>
+
+An C<accessor> node represents an accessor or alias for an attribute of
+another expression node.  It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.AccExprNodeSet> value.  If an C<accessor> is an
+C<acc_via_named>, then the C<NameChain_payload> element specifies the
+C<target> attribute of the new C<AccExprNodeSet>.  If an C<accessor> is an
+C<acc_via_anon>, then the C<target> is derived from a catenation of the
+node name that C<expr> has (explicitly or that will be generated for it by
+the parser) with the C<DeclNameChain_payload> in that order.  Note that an
+C<acc_via_anon> whose C<expr> is an C<expr_name> is also an
+C<acc_via_named>, and vice-versa.
+
+Examples:
+
+    # an accessor node of a named node #
+    $foo_t.bar_attr
+
+    # an accessor node of an anonymous node #
+    inn.tuple_res_func( $arg ).quux_attr
 
 =head2 Generic Function Invocation Expressions
 
