@@ -2686,7 +2686,7 @@ Grammar:
         <t_pcf_op_invo> | <r_pcf_op_invo>
 
     <t_pcf_op_invo> ::=
-        <expr> \s* '{' \s*
+        <expr> \s* '%{' \s*
             [
                   <pcf_rename>
                 | <pcf_projection> | <pcf_cmpl_proj>
@@ -2696,7 +2696,7 @@ Grammar:
         \s* '}'
 
     <r_pcf_op_invo> ::=
-        <expr> \s* '{{' \s*
+        <expr> \s* '@{' \s*
             [
                   <pcf_rename>
                 | <pcf_projection> | <pcf_cmpl_proj>
@@ -2706,7 +2706,7 @@ Grammar:
                 | <pcf_ungroup>
                 | <pcf_count_per_group>
             ]
-        \s* '}}'
+        \s* '}'
 
     <pcf_rename> ::=
         <pcf_rename_map>
@@ -2730,25 +2730,25 @@ Grammar:
         <attr_name> ** [\s* ',' \s*]
 
     <pcf_wrap> ::=
-        '@' <outer_atnm> \s* '<-' \s* <inner_atnms>
+        '%' <outer_atnm> \s* '<-' \s* <inner_atnms>
 
     <pcf_cmpl_wrap> ::=
-        '@' <outer_atnm> \s* '<-' \s* '!' \s* <cmpl_inner_atnms>
+        '%' <outer_atnm> \s* '<-' \s* '!' \s* <cmpl_inner_atnms>
 
     <pcf_unwrap> ::=
-         <inner_atnms> \s* '<-' \s* '@' <outer_atnm>
+         <inner_atnms> \s* '<-' \s* '%' <outer_atnm>
 
     <pcf_group> ::=
-        '@@' <outer_atnm> \s* '<-' \s* <inner_atnms>
+        '@' <outer_atnm> \s* '<-' \s* <inner_atnms>
 
     <pcf_cmpl_group> ::=
-        '@@' <outer_atnm> \s* '<-' \s* '!' \s* <cmpl_inner_atnms>
+        '@' <outer_atnm> \s* '<-' \s* '!' \s* <cmpl_inner_atnms>
 
     <pcf_ungroup> ::=
-         <inner_atnms> \s* '<-' \s* '@@' <outer_atnm>
+         <inner_atnms> \s* '<-' \s* '@' <outer_atnm>
 
     <pcf_count_per_group> ::=
-        '#@@' <count_atnm> \s* '<-' \s* '!' \s* <cmpl_inner_atnms>
+        '#@' <count_atnm> \s* '<-' \s* '!' \s* <cmpl_inner_atnms>
 
     <outer_atnm> ::=
         <attr_name>
@@ -2778,92 +2778,92 @@ arguments, which are associated in the appropriate sequence.
 
 This table indicates which function is invoked by each format-keyword:
 
-    {<-}   -> Core.Tuple.rename( $expr,
+    %{<-} -> Core.Tuple.rename( $expr,
                 map => Relation:{
                     { after => $atnm_after[0], before => $atnm_before[0] },
                     ...,
                     { after => $atnm_after[n], before => $atnm_before[n] },
                 } )
-    {{<-}} -> Core.Relation.rename( $expr,
+    @{<-} -> Core.Relation.rename( $expr,
                 map => Relation:{
                     { after => $atnm_after[0], before => $atnm_before[0] },
                     ...,
                     { after => $atnm_after[n], before => $atnm_before[n] },
                 } )
 
-    {}    -> Core.Tuple.projection( $expr,
+    %{}  -> Core.Tuple.projection( $expr,
                 attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
-    {{}}  -> Core.Relation.projection( $expr,
+    @{}  -> Core.Relation.projection( $expr,
                 attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
-    {!}   -> Core.Tuple.cmpl_proj( $expr,
+    %{!} -> Core.Tuple.cmpl_proj( $expr,
                 attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
-    {{!}} -> Core.Relation.cmpl_proj( $expr,
+    @{!} -> Core.Relation.cmpl_proj( $expr,
                 attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
 
-    {@<-}    -> Core.Tuple.wrap( $expr, outer => $outer_atnm,
+    %{%<-}  -> Core.Tuple.wrap( $expr, outer => $outer_atnm,
                    inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] } )
-    {{@<-}}  -> Core.Relation.wrap( $expr, outer => $outer_atnm,
+    @{%<-}  -> Core.Relation.wrap( $expr, outer => $outer_atnm,
                    inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] } )
-    {@<-!}   -> Core.Tuple.cmpl_wrap( $expr, outer => $outer_atnm,
+    %{%<-!} -> Core.Tuple.cmpl_wrap( $expr, outer => $outer_atnm,
                    cmpl_inner => Set:{ $cmpl_inner_atnms[0], ... } )
-    {{@<-!}} -> Core.Relation.cmpl_wrap( $expr, outer => $outer_atnm,
+    @{%<-!} -> Core.Relation.cmpl_wrap( $expr, outer => $outer_atnm,
                    cmpl_inner => Set:{ $cmpl_inner_atnms[0], ... } )
-    {<-@}    -> Core.Tuple.unwrap( $expr,
+    %{<-%}  -> Core.Tuple.unwrap( $expr,
                    inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] },
                    outer => $outer_atnm )
-    {{<-@}}  -> Core.Relation.unwrap( $expr,
+    @{<-%}  -> Core.Relation.unwrap( $expr,
                    inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] },
                    outer => $outer_atnm )
 
-    {{@@<-}}  -> Core.Relation.group( $expr, outer => $outer_atnm,
+    @{@<-}  -> Core.Relation.group( $expr, outer => $outer_atnm,
                    inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] } )
-    {{@@<-!}} -> Core.Relation.cmpl_group( $expr, outer => $outer_atnm,
+    @{@<-!} -> Core.Relation.cmpl_group( $expr, outer => $outer_atnm,
                    group_per => Set:{ $cmpl_inner_atnms[0], ... } )
-    {{<-@@}}  -> Core.Relation.ungroup( $expr,
+    @{<-@}  -> Core.Relation.ungroup( $expr,
                    inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] },
                    outer => $outer_atnm )
 
-    {{#@@<-!}} -> Core.Relation.cardinality_per_group( $expr,
+    @{#@<-!} -> Core.Relation.cardinality_per_group( $expr,
                    count_attr_name => $count_atnm,
                    group_per => Set:{ $cmpl_inner_atnms[0], ... } )
 
 Examples:
 
-    $pt{pnum<-pno, locale<-city}
+    $pt%{pnum<-pno, locale<-city}
 
-    $pr{{pnum<-pno, locale<-city}}
+    $pr@{pnum<-pno, locale<-city}
 
-    $pt{color,city}
+    $pt%{color,city}
 
-    $pr{{color,city}}
+    $pr@{color,city}
 
-    $pt{}  # null projection #
+    $pt%{}  # null projection #
 
-    $pr{{}}  # null projection #
+    $pr@{}  # null projection #
 
-    $pt{!pno,pname,weight}
+    $pt%{!pno,pname,weight}
 
-    $pr{{!pno,pname,weight}}
+    $pr@{!pno,pname,weight}
 
-    $person{@name <- fname,lname}
+    $person%{%name <- fname,lname}
 
-    $people{{@name <- fname,lname}}
+    $people@{%name <- fname,lname}
 
-    $person{@all_but_name <- !fname,lname}
+    $person%{%all_but_name <- !fname,lname}
 
-    $people{{@all_but_name <- !fname,lname}}
+    $people@{%all_but_name <- !fname,lname}
 
-    $person{fname,lname <- @name}
+    $person%{fname,lname <- %name}
 
-    $people{{fname,lname <- @name}}
+    $people@{fname,lname <- %name}
 
-    $orders{{@@vendors <- vendor}}
+    $orders@{@vendors <- vendor}
 
-    $orders{{@@all_but_vendors <- !vendor}}
+    $orders@{@all_but_vendors <- !vendor}
 
-    $orders{{vendor <- @@vendors}}
+    $orders@{vendor <- @vendors}
 
-    $people{{#@@count_per_age_ctry <- !age,ctry}}
+    $people@{#@count_per_age_ctry <- !age,ctry}
 
 =head2 Rational Operators That Do Rounding
 
