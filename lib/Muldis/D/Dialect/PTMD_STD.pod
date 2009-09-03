@@ -2683,7 +2683,12 @@ Examples:
 Grammar:
 
     <postcircumfix_op_invo> ::=
-        <t_pcf_op_invo> | <r_pcf_op_invo>
+        <s_pcf_op_invo> | <t_pcf_op_invo> | <r_pcf_op_invo>
+
+    <s_pcf_op_invo> ::=
+        <expr> \s* '${' [\s* <possrep_name> \s* ';']? \s*
+            [<pcf_projection> | <pcf_cmpl_proj>]
+        \s* '}'
 
     <t_pcf_op_invo> ::=
         <expr> \s* '%{' \s*
@@ -2791,9 +2796,13 @@ This table indicates which function is invoked by each format-keyword:
                     { after => $atnm_after[n], before => $atnm_before[n] },
                 } )
 
+    ${}  -> Core.Scalar.projection( $expr, possrep => $possrep_name,
+                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
     %{}  -> Core.Tuple.projection( $expr,
                 attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
     @{}  -> Core.Relation.projection( $expr,
+                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
+    ${!} -> Core.Scalar.cmpl_proj( $expr, possrep => $possrep_name,
                 attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
     %{!} -> Core.Tuple.cmpl_proj( $expr,
                 attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
@@ -2833,6 +2842,8 @@ Examples:
 
     $pr@{pnum<-pno, locale<-city}
 
+    $birthday${date;year,month}
+
     $pt%{color,city}
 
     $pr@{color,city}
@@ -2840,6 +2851,8 @@ Examples:
     $pt%{}  # null projection #
 
     $pr@{}  # null projection #
+
+    $rnd_rule${!round_meth}  # radix,min_exp #
 
     $pt%{!pno,pname,weight}
 
