@@ -1346,7 +1346,8 @@ Grammar:
         <Scalar_payload>
 
     <Scalar_payload> ::=
-        <possrep_name> \s* ';' \s* <possrep_attrs>
+          <possrep_name> \s* ';' \s* <possrep_attrs>
+        | <possrep_attrs>
 
     <possrep_name> ::=
         <Name_payload>
@@ -1358,9 +1359,11 @@ A C<Scalar> node represents a literal or selector invocation for a
 scalar subtype value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Scalar> subtype value whose declared type is specified
 by the node's (mandatory for C<Scalar>) C<type_name> and whose attributes
-are defined by the C<Scalar_payload>.  The C<possrep_attrs> is interpreted
-specifically as attributes of the declared type's possrep which is
-specified by the C<possrep_name>.  Each name+expr pair of the
+are defined by the C<Scalar_payload>.  If the C<Scalar_payload> is just a
+C<possrep_attrs>, then it is interpreted as if it also had an explicit
+C<possrep_name> that is the empty string.  The C<possrep_attrs> is
+interpreted specifically as attributes of the declared type's possrep which
+is specified by the C<possrep_name>.  Each name+expr pair of the
 C<possrep_attrs> defines a named possrep attribute of the new scalar;
 the pair's name and expr specify, respectively, the possrep attribute name,
 and the possrep attribute value.  If the C<value_kind> of a C<value> node
@@ -1375,6 +1378,8 @@ general a C<Scalar> node distills to when it is beneath the context of a
 C<depot> or C<boot_stmt> node, as it describes some semantics.
 
 Examples:
+
+    Scalar:sys.std.Core.Type.Cat.Name:{ "" => 'the_thing' }
 
     Scalar:sys.std.Core.Type.Rat:float;{
         mantissa => 45207196,

@@ -782,9 +782,11 @@ A C<Scalar> node represents a literal or selector invocation for a
 scalar subtype value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Scalar> subtype value whose declared type is specified
 by the  node's (mandatory for C<Scalar>) C<type_name> element and whose
-attributes are defined by the payload.  The payload must be just a Perl
-array ref having exactly 2 elements, that are designated I<possrep name>
-and I<possrep attrs>.  The possrep name and possrep attrs must be as per
+attributes are defined by the payload.  If the payload is a Perl array ref,
+then it must have exactly 2 elements, that are designated I<possrep name>
+and I<possrep attrs>; if the payload is not a Perl array ref, then it is
+interpreted as if it was just the I<possrep attrs>, and the I<possrep name>
+was the empty string.  The possrep name and possrep attrs must be as per
 the payload of a C<Name> and C<Tuple> node, respectively.  The I<possrep
 attrs> is interpreted specifically as attributes of the declared type's
 possrep which is specified by the I<possrep name>.  Each key+value pair of
@@ -794,6 +796,8 @@ specifies the possrep attribute name, and a C<expr> node that specifies the
 possrep attribute value.
 
 Examples:
+
+    [ 'Scalar', 'sys.std.Core.Type.Cat.Name', { '' => 'the_thing' } ]
 
     [ 'Scalar', 'sys.std.Core.Type.Rat', [ float => {
         mantissa => 45207196,
