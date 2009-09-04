@@ -386,6 +386,27 @@ union, that takes a list of attributes and unions the projections of those
 attributes from every input relation; so this means, as with join(), that
 the input relations don't need to have the same headings.
 
+* Consider using postcircumfix syntax for extracting single relation
+attrs into Set or Bag etc, meaning wrap_attr; eg "$r.@S{a}", "$r.@B{a}".
+Now that might not work for Array extraction, unless done like
+"($r.@A{a} ordered ...)" or some such, which isn't pure postcircumfix,
+but that may be for the best anyway.
+
+* Consider adding concrete syntax that is shorthand for multiple
+single-attribute extractions where each goes to a separate named expression
+node (or variable) but the source is a single collection-typed expr/var.
+Or the source could be a multiplicity as well, or mix and match.
+The idea here is to replicate some common idioms in Perl such as
+"($x, $y) = @xy[0,1]" or "($x, $y) = %xy{'x','y'}", this being more useful
+when the source is an anonymous arbitrary expression.
+Proposed syntax is that, on each side of the "::=" or ":=", the source and
+target lists are bounded in square brackets, indicating named items assign
+in order, and syntax for collections supplying/taking multiple items are
+ident to single-attr accessors (having a ".") but that a list is in the
+braces/brackets; for example: "[$x, $y] ::= [3, 4]",
+"[$a, $b] ::= $t.%{a,b}", "[$c, $d] ::= $ary.[3,5]".  This syntax would
+resolve into multiple single-attr accessors when app in system catalog.
+
 * Make further updates to Temporal.pod to improve correctness or
 normalization, particularly with durations, maybe add some UTCDuration
 subtypes.  Also expand the selection of routines to allow more control over
