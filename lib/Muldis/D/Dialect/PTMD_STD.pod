@@ -559,6 +559,9 @@ Grammar:
     <int_body> ::=
         [0 | \-?<pint_body>]
 
+    <nnint_body> ::=
+        [0 | <pint_body>]
+
     <pint_body> ::=
         <pint_head> <pint_tail>?
 
@@ -570,6 +573,9 @@ Grammar:
 
     <d_int_body> ::=
         [0 | \-?<d_pint_body>]
+
+    <d_nnint_body> ::=
+        [0 | <d_pint_body>]
 
     <d_pint_body> ::=
         <d_pint_head> <d_pint_tail>?
@@ -2079,7 +2085,7 @@ Examples:
 
     (if ($foo > 5) then $bar else $baz)
 
-    (if ($ary is empty) then $empty_result else ($ary[0]))
+    (if ($ary is empty) then $empty_result else $ary.[0])
 
     (if (($x = ∅) or ($y = ∅)) then ∅
         else (s ((v $x) I+ ((v $y) I^ 3)))
@@ -2683,7 +2689,20 @@ Examples:
 Grammar:
 
     <postcircumfix_op_invo> ::=
-        <s_pcf_op_invo> | <t_pcf_op_invo> | <r_pcf_op_invo>
+          <pcf_acc_op_invo>
+        | <s_pcf_op_invo> | <t_pcf_op_invo> | <r_pcf_op_invo>
+        | <pcf_ary_op_invo>
+
+    <pcf_acc_op_invo> ::=
+        <pcf_s_acc_op_invo> | <pcf_t_acc_op_invo>
+
+    <pcf_s_acc_op_invo> ::=
+        <expr> \s* '.${' [\s* <possrep_name> \s* ';']? \s*
+            <attr_name>
+        \s* '}'
+
+    <pcf_t_acc_op_invo> ::=
+        <expr> \s* '.%{' \s* <attr_name> \s* '}'
 
     <s_pcf_op_invo> ::=
         <expr> \s* '${' [\s* <possrep_name> \s* ';']? \s*
@@ -2767,6 +2786,25 @@ Grammar:
     <cmpl_inner_atnms> ::=
         <pcf_atnms>
 
+    <pcf_ary_op_invo> ::=
+        <pcf_ary_acc_op_invo> | <pcf_ary_slice_op_invo>
+
+    <pcf_ary_value_op_invo> ::=
+        <expr> \s* '.[' \s* <index> \s* ']'
+
+    <index> ::=
+          <num_max_col_val> \s* ';' \s* <nnint_body>
+        | <d_nnint_body>
+
+    <pcf_ary_slice_op_invo> ::=
+        <expr> \s* '[' \s* <first_index> \s* '..' \s* <last_index> \s* ']'
+
+    <first_index> ::=
+        <index>
+
+    <last_index> ::=
+        <index>
+
 A C<postcircumfix_op_invo> node is for using postcircumfix notation to
 invoke a relational operator function whose operation involves deriving a
 single tuple|relation from another single tuple|relation customized only by
@@ -2782,6 +2820,10 @@ elements of the C<postcircumfix_op_invo> supply the values of those
 arguments, which are associated in the appropriate sequence.
 
 This table indicates which function is invoked by each format-keyword:
+
+    .${} -> Core.Scalar.attr( $expr, possrep => $possrep_name,
+                name => $attr_name )
+    .%{} -> Core.Tuple.attr( $expr, name => $attr_name )
 
     %{<-} -> Core.Tuple.rename( $expr,
                 map => Relation:{
@@ -2836,7 +2878,15 @@ This table indicates which function is invoked by each format-keyword:
                    count_attr_name => $count_atnm,
                    group_per => Set:{ $cmpl_inner_atnms[0], ... } )
 
+    .[]  -> Array.value( $expr, index => $index )
+    [..] -> Array.slice( $expr, first_index => $first_index,
+                last_index => $last_index )
+
 Examples:
+
+    $birthday.${date;day}
+
+    $pt.%{city}
 
     $pt%{pnum<-pno, locale<-city}
 
@@ -2877,6 +2927,10 @@ Examples:
     $orders@{vendor <- @vendors}
 
     $people@{#@count_per_age_ctry <- !age,ctry}
+
+    $ary.[3]
+
+    $ary[10..14]
 
 =head2 Rational Operators That Do Rounding
 
