@@ -80,25 +80,23 @@ node is a Perl array ref unless otherwise stated, and every grammar element
 is an array element; the first node element is the array element at index
 zero, and so on.
 
-The root grammar node for the entire dialect is C<bootloader>.
+The root grammar node for the entire dialect is C<Muldis_D>.
 
-=head1 BOOTLOADER
+=head1 START
 
-A C<bootloader> node has 1..N ordered elements where the first element is a
-C<language_name> node and then either: 1. there is exactly one (second)
-element that is a C<value> node or a C<depot> node; 2. there are 1..N
-ordered elements where each is a C<boot_stmt> node; 3. there are no other
-elements, making the bootloader a no-op.
+A C<Muldis_D> node has 2 ordered elements where the first element is a
+C<language_name> node and the second element is either a C<value> node or a
+C<depot> node.
 
 See the pod sections in this file named L</LANGUAGE NAME>, L</VALUE
-LITERALS AND SELECTORS>, L</DEPOT DECLARATION>, and L</BOOTLOADER
-STATEMENT> for more details about the aforementioned tokens/nodes.
+LITERALS AND SELECTORS>, and L</DEPOT DECLARATION>, for more details about
+the aforementioned tokens/nodes.
 
 When Muldis D is being compiled and invoked piecemeal, such as because the
 Muldis D implementing virtual machine (VM) is attached to an interactive
 user terminal, or the VM is embedded in a host language where code in the
-host language invokes Muldis D code at various times, the conceptual
-C<bootloader> is usually split up, and so not every Muldis D code fragment
+host language invokes Muldis D code at various times, many C<value> may be
+fed to the VM directly for inter-language exchange, and not every one
 would then have its own C<language_name>.  Usually a C<language_name> would
 be supplied to the Muldis D VM just once as a VM configuration step, which
 provides a context for further interaction with the VM that just involves
@@ -774,7 +772,7 @@ main POD section, any occurrences
 of child C<expr> nodes should be read as being C<value> nodes instead in
 contexts where instances of the main nodes are being composed beneath
 C<value> nodes.  That is, any C<expr> node options beyond what C<value>
-options exist are only valid within a C<depot> node or C<boot_stmt> node.
+options exist are only valid within a C<depot> node.
 
 =head2 Scalar Selectors
 
@@ -1472,44 +1470,6 @@ Examples (for now sans any use of extra op args, which are atypical):
 =head1 DEPOT DECLARATION
 
 B<TODO: ALL OF THIS HERE MAIN POD SECTION!>
-
-=head1 BOOTLOADER STATEMENT
-
-B<TODO/REDO: ALL OF THIS HERE MAIN POD SECTION!>
-
-This node specifies one statement of a Muldis D C<bootloader> routine
-which invokes an imperative routine, such statements being what the entire
-body of a C<bootloader> is composed of.  A bootloader imperative routine
-call is formatted as a node having the following 4 elements:
-
-=over
-
-=item *
-
-Node kind: the Perl character string C<boot_stmt>.
-
-=item *
-
-Imperative routine name: a Perl array ref or character string as per the
-payload of a C<NameChain> node.
-
-=item *
-
-Imperative routine subject-to-update args: a Perl hash ref as per the
-payload of a C<Tuple> node except that every hash ref is just a Perl
-array ref or character string as per the payload of a C<NameChain>
-node (each value is the name of a global variable).
-
-=item *
-
-Imperative routine read-only args: a Perl hash ref as per the
-payload of a C<Tuple> node.
-
-=back
-
-Examples
-
-    [ 'boot_stmt', 'sys.std.Core.Cat.create_depot_material', {}, { ... } ]
 
 =head1 MULDIS D TINY DIALECT PRAGMAS
 

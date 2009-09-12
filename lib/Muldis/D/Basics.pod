@@ -1461,15 +1461,14 @@ checking, that could be done at depot mount time.
 But that is assuming no Muldis D code in a depot will update its own system
 catalog, in which case that assumption can be thrown out the window.  While
 a depot's code doesn't have to update its own system catalog, because all
-such updates could typically have been done in advance by C<bootloader>
-code, or later on by other utility depots' code, it is a fundamental Muldis
+such updates could typically be done either in advance
+or later on by other utility depots' code, it is a fundamental Muldis
 D feature that code in a depot can update its own system catalog.  A
 depot's system catalog update constitutes recompiling the then-changed code
 in that depot, and so what types and routines and variables exist would
 have changed.  It is valid for a Muldis D procedure to define a new type or
 routine in one statement, and then invoke it in the next; that is how the
-Muldis D analogy of SQL's "prepared statements" works.  Or alternately
-perhaps said statements could be invoked by a C<bootloader> etc.  I<Note
+Muldis D analogy of SQL's "prepared statements" works.  I<Note
 that this whole matter may be subject to revisiting, such that Muldis D
 code can never update the system catalog of its own depot to alter types or
 routines or variables; but other system catalog updates such as affecting
@@ -1609,6 +1608,26 @@ substitutability:
     routine
         functional
             function, inner_function
+        imperative
+            deterministic
+                updater, inner_updater
+            nondeterministic
+                system_service
+                procedure, inner_procedure
+
+Specifically, the routine kinds are all of the leaf nodes in the above
+hierarchy, and every Muldis D routine is designated as exactly one of
+those; the non-leaf nodes are not routine kinds.
+
+Note that, in an environment where Muldis D is being hosted under another
+language, the other language may only directly invoke these 4 kinds of
+routines: C<function>, C<updater>, C<system_service>, C<procedure>.
+
+Now there are actually a lot more distinct routine kinds, but they are
+semi-orthogonal to the above-mentioned ones:
+
+    routine
+        functional
             type_constraint
             state_constraint
             transition_constraint
@@ -1619,22 +1638,15 @@ substitutability:
             value_filter
             value_map
             value_reduction
-        imperative
-            deterministic
-                updater, inner_updater
-            nondeterministic
-                system_service
-                procedure, inner_procedure
-                bootloader_exclusive
-                bootloader
 
-Specifically, the routine kinds are all of the leaf nodes in the above
-hierarchy, and every Muldis D routine is designated as exactly one of
-those; the non-leaf nodes are not routine kinds.
-
-Note that, in an environment where Muldis D is being hosted under another
-language, the other language may only directly invoke these 4 kinds of
-routines: C<function>, C<updater>, C<system_service>, C<procedure>.
+Specifically, C<function> vs C<inner_function> is a distinction of where a
+routine of that kind is declared, whereas all of the leaf nodes in the
+second hierarchy above are distinguished by their API (parameters and
+result) and intended use.  Each routine of the routine kinds in the second
+hierarchy, such as C<possrep_map>, can be either a C<function> or
+C<inner_function> depending on where it is declared; in practice, most of
+the routine kinds in the second group tend to be C<inner_function> but they
+don't need to be.
 
 =head2 function, inner_function
 
@@ -1874,7 +1886,7 @@ parameters; it can not see any global variables.
 
 A C<procedure> is an explicitly invokable routine with 0..N parameters and
 0..N lexical variables that can directly see and update global variables
-(both catalog and data), and is generally the only kind of routine that
+(both catalog and data), and is the only kind of routine that
 can; every call chain that is meant to work with a persisting (global)
 dbvar must generally include a C<procedure> invocation.  The body of a
 C<procedure> consists of 0..N statements which conceptually run in sequence
@@ -1886,7 +1898,7 @@ any constraints or leaves the system in an inconsistant state), because
 each of its statements had conceptually auto-committed; so Muldis D does
 support batch operations where partial completion or interruptability is
 acceptable.  A procedure can define explicit (lexically scoped)
-transactions over multiple consecutive statements, and is generally the
+transactions over multiple consecutive statements, and is the
 only kind of routine that can; specifically, those statements are parcelled
 together into a separate C<inner_procedure>, and then that is invoked
 indirectly by way of a new statement in the first procedure that invokes
@@ -1901,64 +1913,7 @@ non-repeatable.
 An C<inner_procedure> is to an C<procedure> what an C<inner_function> is to
 a C<function>.
 
-=head2 bootloader_exclusive
-
-A C<bootloader_exclusive> is the same as C<system_service> but that it can
-not be directly invoked except as a statement of a C<bootloader>; it also
-has no subject-to-update parameters.  Examples of this routine kind are
-standalone transaction initiation and termination statements.
-
-=head2 bootloader
-
-A C<bootloader> is a very simple routine whose fundamental purpose is to
-load or create the depot that contains the user-defined C<procedure> that
-is the actual "main program" of a Muldis D application, and invoke it.  All
-that a C<bootloader> can do is invoke imperative routines, and statements
-to invoke such are all that a C<bootloader> consists of (besides the
-declaration of what Muldis D language variant it is written in).  A
-C<bootloader> can not exist in a depot, and typically takes the form of a
-thin wrapper script which is what users of the Muldis D application would
-directly invoke, in order to invoke the actual program in an existing
-persistent depot, which is effectively a dynamically loadable library.  On
-the other hand, if it is the job of a C<bootloader> to first or just create
-a depot, then said script can actually be quite large and contain all of
-the user-defined Muldis D code of the application.  So then if the thin
-script is analagous to a typical compiled program, then the large script
-that creates a persistent depot but doesn't invoke it is analagous to a
-straight source compiler, while one that both creates and invokes is
-analagous to a runtime for a program distributed as source, especially so
-if the main depot is just a transient / volatile memory one.  A
-C<bootloader> does not have any inner routines nor lexical variables (but
-it does have inline constants) nor parameters.  A C<bootloader> can
-directly see and update (by using them as subject-to-update imperative
-routine arguments) global variables.  A C<bootloader> can, depending on the
-Muldis D implementation, be split into multiple pieces such as for
-organizing into multiple code source files (in which case a system-defined
-routine can be invoked in one piece to load and execute another piece), or
-for feeding piece-meal by a host language into its hosted Muldis D
-environment.  Note that the result of a database dump as Muldis D code, or
-a batch of data insert statements, would most likely take the form of a
-C<bootloader> routine.  Note that a C<bootloader> can not directly invoke
-statements conditionally, so all of its statements will run unless the
-sequence is stopped early by a thrown exception in one.
-
 =head2 Other Matters
-
-In a mixed-language application, where Muldis D code is invoked by another
-host language, it is unlikely that there would be any Muldis D "main
-program" imperative routine to invoke, since it would be redundant with
-host langauge routines, which would likely invoke the non-"main" Muldis D
-routines directly.  Host language routines can directly invoke Muldis D
-C<function> or C<updater> or C<system_service> or C<procedure> routines,
-with possibly updateable arguments, as well as have their own lexical
-Muldis D constants or variables for use as arguments or results for said
-invocations.  Sometimes for increased efficiency or flexability, the host
-language may instead feed C<bootloader> pieces, consisting of multiple
-imperative routine calls having no updateable arguments that are lexical
-variables.  Host language routines can not directly invoke Muldis D
-C<bootloader_exclusive> routines but by way of a fed C<bootloader> piece;
-however, some appropriate counterparts to those may be provided directly by
-the virtual machine's API.
 
 Some subject-to-update or read-only parameters of routines may be optional,
 that is, do not need to be supplied explicit arguments when the routine is
@@ -1990,7 +1945,7 @@ constraint system, though both have the same effect of conditionally
 allowing or barring a command from executing.  The constraint system is
 strictly charged with maintaining the logical integrity of the database,
 and so only comes into affect when an update of a repository or its
-contents are attempted; it usually ignores what users were attempting the
+contents are attempted; it usually ignores which users were attempting the
 changes.  By contrast, the privilege system is strictly user-centric, and
 gates a lot of activities which don't involve any updates or threaten
 integrity.
@@ -2097,7 +2052,7 @@ Transactions in Muldis D come in both implicit and explicit varieties, but
 the implicit transactions only exist (that is, only have an effect) when
 there are no explicit transaction active.
 
-The most generalized way to specify an explicit transaction within Muldis D
+The way to specify an explicit transaction within Muldis D
 is to take the statements comprising it and isolate them into their own
 C<procedure> (or C<inner_procedure>), then invoke that by way of the
 system-defined C<try_catch> procedure; the invoked procedure is
@@ -2110,15 +2065,8 @@ exception, its transaction rolls back.  In the latter case, C<try_catch>
 will catch that exception, so the rollback doesn't proceed further than
 itself, but that if the I<catch block> it then invokes also throws (or
 re-throws) an exception, that is not caught here.  This lexically-scoped
-exception handling mechanism is the I<only> kind of generalized explicit
-transaction that Muldis D code living in a depot can perform.  By contrast,
-a C<bootloader> routine (not in a depot) may only directly perform an
-explicit transaction using distinct transaction initiation and termination
-statements (see C<start_trans>, C<commit_trans>, C<rollback_trans>).  Note
-that, since all C<bootloader> statement calls are unconditional (ignoring
-any host language), it would only make sense to include a C<rollback_trans>
-if all you are interested in is the non-subjugated side-effects of the
-transaction.
+exception handling mechanism is the I<only> kind of explicit
+transaction that Muldis D code can perform.
 
 I<TODO:  How do we specify when to start a new thread or message with
 service threads (eg, that log errors, do sequences).>
@@ -2127,25 +2075,28 @@ In a mixed-language application, when Muldis D routines are invoked by a
 host language, the host language is allowed to specify further parent-most
 explicit transactions within the DBMS that are not bound to the lexical
 scope of a block, using distinct transaction initiation and termination
-statements.  Such open-ended transactions are intended for transactions
-which last over multiple DBMS invocations of an application (whereas Muldis
-D scope-bound transactions always occur entirely within one invocation of
-the DBMS by a host language).  But it is a recommended best practice that
-host language code will associate the invocation of said statements with
-its own lexical scopes, such as its own I<try-catch> constructs.
+statements (suggested names being C<start_trans>, C<commit_trans>,
+C<rollback_trans>).  Such open-ended transactions are intended for
+transactions which last over multiple DBMS invocations of an application
+(whereas Muldis D scope-bound transactions always occur entirely within one
+invocation of the DBMS by a host language).  But it is a recommended best
+practice that host language code will associate the invocation of said
+statements with its own lexical scopes, such as its own I<try-catch>
+constructs; host language code could easily implement the scope-tied
+paradigm if it wanted to.
 
 An implicit transaction is associated with the lexical scope of every
-Muldis D C<updater> and C<system_service>, and by extension, every Muldis D
-statement that is an invocation of said.  Or more accurately, an update
-operation (including a multi-update operation) is implicitly atomic, and
-will either succeed and commit as a whole, or fail and rollback as a whole.
-This is as if every update operator invocation was surrounded by its own
-I<try> block, except that any thrown exceptions are not caught.  Similarly,
-every C<function> and C<\w+_constraint> is trivially a transaction, though
-since these never update anything, all that really means is that they see a
-consistent view of their environment.
+Muldis D C<updater> (and C<inner_updater>) and C<system_service>, and by
+extension, every Muldis D statement that is an invocation of said.  Or more
+accurately, an update operation (including a multi-update operation) is
+implicitly atomic, and will either succeed and commit as a whole, or fail
+and rollback as a whole.  This is as if every update operator invocation
+was surrounded by its own I<try> block, except that any thrown exceptions
+are not caught.  Similarly, every functional routine is trivially a
+transaction, though since these never update anything, all that really
+means is that they see a consistent view of their environment.
 
-By contrast, every C<procedure> (and C<inner_procedure>) and C<bootloader>
+By contrast, every C<procedure> (and C<inner_procedure>)
 is neither implicitly a transaction nor atomic (except when externally
 wrapped in one), so you can use a procedure to define an operation where
 you want to keep partial results of a failure.
@@ -2157,7 +2108,7 @@ unwinding, or the application exits, rolling back all remaining active
 transactions.
 
 If no explicit transactions are active at all when a failure occurs, then
-each non-procedure-invoking statement in a procedure or bootloader or host
+each non-procedure-invoking statement in a procedure or host
 language routine is the parent-most transaction, and so a failure part-way
 through said procedure will result in the prior-completed statements to be
 fully committed, and only the failed statement to have left no state
@@ -2230,7 +2181,7 @@ about name collisions with unofficial extensions.
 =head2 User-Defined Resources
 
 All user-defined resources in Muldis D are actually data, even those that
-look like code, and these are all exist in one or more I<depots>, which are
+look like code, and these all exist in one or more I<depots>, which are
 the normal means provided by Muldis D for persistence.  A depot is a
 completely self-sufficient storage system for normal user data and includes
 all the meta-data (type definitions) required to understand the structure
@@ -2243,7 +2194,8 @@ as far as its interpretability and integrity goes.  Depots are normally
 updateable within a DBMS at runtime, but they can alternately be used
 read-only.  If a depot doesn't contain normal data, but rather just data
 type and/or routine definitions, it is essentially a code library; in fact,
-all user-defined Muldis D code libraries are implemented as depots.
+all user-defined Muldis D code libraries are implemented as depots; for
+that matter, a pure Muldis D "main program" is a Muldis D code library.
 
 A depot is the native perception by the application / virtual machine
 environment of some conceptually external storage system, such as a disk
@@ -2267,11 +2219,16 @@ Technically, a depot can represent a narrower scope than this, but it
 should never represent a wider scope than what is considered a single
 independent unit.
 
-At DBMS startup, there are no depots mounted.  The only user-defined Muldis
-D code that doesn't live in a depot takes the form of C<bootloader>
-routines, and the only job of that code is to mount one or more depots that
-contain the rest of the program code (as libraries) and invoke their
-high-level routines; or it creates and populates said depots if necessary.
+At DBMS startup, there is exactly one depot mount, whose mount name is the
+empty string, and that depot mount exists continuously until DBMS shutdown.
+In a non-hosted Muldis D application (that isn't a no-op), the depot that
+this mount corresponds to has at least one procedure that is the "main
+program", which has zero parameters, and which is defined to execute
+automatically after its host depot is mounted (it is an "after mount"
+stimulus-response rule/routine).  In a mixed-language application, when
+Muldis D routines are invoked by a host language, the "main program" would
+be written in the host language, and this initial depot mount would most
+likely correspond to a new transient depot that is empty.
 
 An external storage system may be mounted as multiple distinct depots
 within the same DBMS.  This is useful, for example, when the user wants to
@@ -2320,7 +2277,8 @@ pseudo-variables which are attributes of their parent depot's dbvar.
 
 When a DBMS starts up, it only contains one auto-started process, which is
 the root process; the root process is defined either by the non-hosted
-Muldis D C<bootloader> routine (it runs at DBMS startup, and the DBMS shuts
+Muldis D "main program" procedure (it runs at DBMS startup, and the DBMS
+shuts
 down when it ends), or host language routines (the DBMS exists for the life
 of some host language object that represents it), as applicable.  This root
 process can start other processes, which are its direct child processes,
@@ -2570,7 +2528,7 @@ for them substitutes for C<fed> plus their mounting name; this allows depot
 entities to be coded in a portable way, not having to know too much about
 how they would be used (eg, not knowing what name they are mounted with).
 In fact, nothing is allowed to directly refer to entities using C<fed>
-except a procedure or bootloader, or the host language if it exists.
+except a procedure, or the host language if it exists.
 
 Similarly, the primary namespace C<sdp> is for self-references between
 entities in a common subdepot; if there are 2 or more layers of
@@ -2802,10 +2760,9 @@ Frequently, some Muldis D code will want to reference the same user-defined
 DBMS entity namespace multiple times, say a specific depot for example, but
 because the code itself does not live in said depot, it can not use the
 C<dep.> reference syntax as a short-hand over the longer C<fed.> reference
-syntax.  In particular this affects any C<bootloader> code, or any code
-that needs certain kinds of portability such as when dumping the contents
-of one depot as code and wanting to run that code to load a
-different-mount-named depot.
+syntax.  In particular this affects any code that needs certain kinds of
+portability such as when dumping the contents of one depot as code and
+wanting to run that code to load a different-mount-named depot.
 
 The C<tpc> primary namespace exists to bring the benefits of the
 C<dep|sdp|pkg> namespaces to referencing code living outside the same

@@ -6,19 +6,74 @@
     * Muldis::D version 0.88.0 is released on CPAN as
     Muldis-D-0.88.0.tar.gz.
 
-    * (Basics.pod)  Formatting typo fix.
+    * This release features the elimination of the "bootloader" concept,
+    namely Muldis D code that doesn't live in a depot (and that isn't a
+    simple value literal).  You must now use in-depot code to do whatever
+    you would have used a "bootloader" for.  For your "main program" in a
+    non-hosted Muldis D environment, you now put that code in a procedure
+    of a depot and mark that procedure as being a stimulus-response rule
+    (trigger) where the stimulus is the mounting of its host depot.  Now to
+    make a database restore script, you simply have another depot holding
+    all the database's schema and data, and that has a procedure which will
+    clone itself to another database; similarly, doing a whole database
+    dump / backup works in exactly the same manner.  Since a possible
+    physical representation of a depot is simply a Muldis D source code
+    file, you can still write code as normal even if you're actually
+    writing a depot, same as you'd write a library in a gen purp language.
+
+    * (Basics.pod)  Formatting typo fix, other minor fixes.
 
     * (Basics.pod)  Renamed the "triggered routine" concept (analogous to
     general case of a SQL trigger) to "stimulus-response rule", and updated
     any referring documentation to no longer say that the concept is
     unsupported for the forseeable future; in fact it now is officially
-    supported (and required for a subsequent change item), though its
+    supported (and required for the featured change item), though its
     details are not yet specified.  The updated docs were all in the
     "ROUTINES" pod sub-section "Other Matters", and the "TRANSACTIONS AND
     CONCURRENCY" main pod section.
 
-    * (Muldis_D_PDAFP_200807_updated.xul)  Updates corresponding to recent
-    spec changes.
+    * (Basics.pod)  In the "ROUTINES" main pod section, split up the
+    routine kind hierarchy diagram into 2, with all the specific-API
+    functional kinds being separated out, the reason being that their
+    distinction is orthogonal to the function/inner-function distinction.
+
+    * (Basics.pod)  In the "ROUTINES" main section, removed the
+    "bootloader_exclusive" and "bootloader" routine kinds and part of the
+    "Other Matters" pod sub-section.  Updated the "Type Safety" pod
+    sub-section of "TYPE SYSTEM".  Multiple updates to the "TRANSACTIONS
+    AND CONCURRENCY" main pod section; for one thing, there are no longer
+    any transactions that aren't scope bound, except possibly for direct
+    use by other host languages as an implementation permits.  Updated the
+    "User-Defined Resources" pod sub-section of "RESOURCE MODULARITY AND
+    PERSISTENCE".  Updated the "User-Defined Entities" and "Time-Varying
+    Topic Namespaces" pod sub-sections of "ENTITY NAMES".
+
+    * (Routines.pod)  Removed the whole pod main section "SYSTEM-DEFINED
+    GENERIC BOOTLOADER EXCLUSIVES", and all 3 bootloader_exclusive routines
+    "[start|commit|rollback]_trans".
+
+    * (Types_Catalog.pod)  The catalog type "SysProcSet" (and hence the
+    "procedures" attribute of the "System" catalog type) is no longer used
+    to specify bootloader exclusive routines.
+
+    * (Routines_Catalog.pod)  Gutted the main description text of the main
+    pod section "PROCEDURES FOR BOOTSTRAPPING A MULDIS D PROGRAM OR
+    DATABASE" as the procedures are no longer mainly just to allow
+    bootloaders to work at all, but now they are simply convenient ways to
+    do data definition in normal procedures.
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  The root grammar token for
+    the entire dialect is renamed to "Muldis_D" from "bootloader", and it
+    is now just a "language_name" plus a "value" or "depot", rather than
+    also having a third option of a sequence of "boot_stmt".  The main pod
+    section "BOOTLOADER" was renamed to "START" and had a number of
+    updates.  The main pod section "BOOTLOADER STATEMENT" was removed
+    entirely.  There were a number of related smaller updates in various
+    sections.  In PTMD_STD.pod, large updates to the "GENERAL STRUCTURE"
+    main pod section.
+
+    * (Muldis_D_PDAFP_200807_updated.xul, BBEdit_LM_Muldis_D.plist)
+    Updates corresponding to recent spec changes.
 
 2009-09-03  Darren Duncan <perl@DarrenDuncan.net>
 

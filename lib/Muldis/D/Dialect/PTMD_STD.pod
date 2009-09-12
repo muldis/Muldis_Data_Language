@@ -84,21 +84,27 @@ other dialects are described just in the current file, for all 3 dialects.
 
 =head1 GENERAL STRUCTURE
 
-A C<PTMD_STD> Muldis D code file consists just of a full or partial Muldis
-D C<bootloader> routine definition, which begins with a language name
-declaration, and otherwise is simply an ordered sequence of imperative
-routine calls, where earlier routine calls are to system-defined
-data-definition routines (their arguments are values to put in the system
-catalog), and later ones are then to user-defined routines that the earlier
-statements either loaded or defined.  This is conceptually what a
+A C<PTMD_STD> Muldis D code file consists just of a Muldis
+D depot definition, which begins with a language name
+declaration, and then has a C<Database> value literal defining the depot's
+catalog, and finally has, optionally, a C<Database> value literal defining
+the depot's data.  This is conceptually what a
 C<PTMD_STD> file is, and it can even be that literally, but C<PTMD_STD>
-provides a canonical further abstraction which should be used when doing
+provides a canonical further abstraction for defining the depot's catalog,
+which should be used when doing
 data-definition.  And so you typically use syntax resembling routine and
 type declarations in a general purpose programming language, where simply
-declaring such an entity will cause it to be written into the system
-catalog for subsequent use.
+declaring such an entity will cause it to be part of the system catalog.
+Fundamentally every Muldis D depot is akin to a code library, and a Muldis
+D "main program" is nothing more than a depot having a procedure that is
+designated to execute automatically after a mount event of its host depot.
 
-The grammar in this file is formatted as a hybrid between various EBNF
+As a special extension feature, a C<PTMD_STD> Muldis D code file may
+alternately consist just of a (language-qualified) Muldis D value literal,
+which mainly is intended for use in mixed-language environments as an
+interchange format for data values between Muldis D and other languages.
+
+The grammar in this file is formatted as a hybrid between various BNF
 flavors and Perl 6 rules (see L<http://perlcabal.org/syn/S05.html> for
 details on the latter) with further changes.  It is only meant to be
 illustrative and human readable, and would need significant changes to
@@ -127,35 +133,28 @@ grammar itself; rather, whitespace rules in the grammar are spelled out
 explicitly such as with C<\s*> (optional whitespace) and C<\s+> (mandatory
 whitespace).
 
-The root grammar token for the entire dialect is C<bootloader>.
+The root grammar token for the entire dialect is C<Muldis_D>.
 
-=head1 BOOTLOADER
+=head1 START
 
 Grammar:
 
-    <bootloader> ::=
-        <language_name>
-        [\s+ [
-              <value>
-            | <depot>
-            | <boot_stmt> ** \s+
-        ]]?
+    <Muldis_D> ::=
+        <language_name> \s+ [<value> | <depot>]
 
-A C<bootloader> node has 1..N ordered elements where the first element is a
-C<language_name> node and then either: 1. there is exactly one (second)
-element that is a C<value> node or a C<depot> node; 2. there are 1..N
-ordered elements where each is a C<boot_stmt> node; 3. there are no other
-elements, making the bootloader a no-op.
+A C<Muldis_D> node has 2 ordered elements where the first element is a
+C<language_name> node and the second element is either a C<value> node or a
+C<depot> node.
 
 See the pod sections in this file named L</LANGUAGE NAME>, L</VALUE
-LITERALS AND SELECTORS>, L</DEPOT DECLARATION>, and L</BOOTLOADER
-STATEMENT> for more details about the aforementioned tokens/nodes.
+LITERALS AND SELECTORS>, and L</DEPOT DECLARATION>, for more details about
+the aforementioned tokens/nodes.
 
 When Muldis D is being compiled and invoked piecemeal, such as because the
 Muldis D implementing virtual machine (VM) is attached to an interactive
 user terminal, or the VM is embedded in a host language where code in the
-host language invokes Muldis D code at various times, the conceptual
-C<bootloader> is usually split up, and so not every Muldis D code fragment
+host language invokes Muldis D code at various times, many C<value> may be
+fed to the VM directly for inter-language exchange, and not every one
 would then have its own C<language_name>.  Usually a C<language_name> would
 be supplied to the Muldis D VM just once as a VM configuration step, which
 provides a context for further interaction with the VM that just involves
@@ -273,11 +272,11 @@ A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
 
 Unlike value selectors in general, which must be composed beneath a
-C<depot> or C<boot_stmt> because they actually represent a Muldis D value
+C<depot> because they actually represent a Muldis D value
 expression tree of a function or updater or type definition, a C<value>
 node does I<not> represent an expression tree, but rather a value constant;
 by definition, a C<value> can be completely evaluated at compile time.  A
-C<bootloader> consisting directly of a C<value> is hence just a serialized
+C<Muldis_D> node with a C<value> second element is hence just a serialized
 Muldis D value.
 
 The PTMD_STD grammar subsection for value literals (having the root
@@ -440,7 +439,7 @@ subtyped, but because in practice doing so isn't useful.
 
 How a Muldis D parser treats a C<value> node with a C<type_name> element
 depends on the wider context.  In the general case where the C<value> is an
-C<expr> beneath the context of a C<depot> or C<boot_stmt> node, the
+C<expr> beneath the context of a C<depot> node, the
 C<value> is treated as if it had an extra parent C<func_invo> node
 that invokes the C<treated> function and whose 2 argument nodes are as
 follows: C<topic> gets the C<value> without the C<type_name> element, and
@@ -1342,7 +1341,7 @@ main POD section (members of C<coll_value_selector> etc), any occurrences
 of child C<expr> nodes should be read as being C<value> nodes instead in
 contexts where instances of the main nodes are being composed beneath
 C<value> nodes.  That is, any C<expr> node options beyond what C<value>
-options exist are only valid within a C<depot> node or C<boot_stmt> node.
+options exist are only valid within a C<depot> node.
 
 =head2 Scalar Selectors
 
@@ -1383,7 +1382,7 @@ specify only deeply homogeneous typed attribute values.
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.ScaPRSelExprNodeSet>, a tuple of which is what in
 general a C<Scalar> node distills to when it is beneath the context of a
-C<depot> or C<boot_stmt> node, as it describes some semantics.
+C<depot> node, as it describes some semantics.
 
 Examples:
 
@@ -1455,7 +1454,7 @@ alternative syntax, as C<tuple_list> can select that value too.
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what in
 general a C<Tuple> node distills to when it is beneath the context of a
-C<depot> or C<boot_stmt> node, as it describes some semantics.
+C<depot> node, as it describes some semantics.
 
 Examples:
 
@@ -1590,7 +1589,7 @@ C<Relation_payload> specify only deeply homogeneous typed attribute values.
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.RelSelExprNodeSet>, a tuple of which is what in
 general a C<Relation> node distills to when it is beneath the context of a
-C<depot> or C<boot_stmt> node, as it describes some semantics.
+C<depot> node, as it describes some semantics.
 
 Examples:
 
@@ -1641,7 +1640,7 @@ C<value> node is further restricted.
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.SetSelExprNodeSet>, a tuple of which is what in
 general a C<Set> node distills to when it is beneath the context of a
-C<depot> or C<boot_stmt> node, as it describes some semantics.
+C<depot> node, as it describes some semantics.
 
 Examples:
 
@@ -1740,7 +1739,7 @@ the C<value> node is further restricted.
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.ArySelExprNodeSet>, a tuple of which is what in
 general a C<Array> node distills to when it is beneath the context of a
-C<depot> or C<boot_stmt> node, as it describes some semantics.
+C<depot> node, as it describes some semantics.
 
 Examples:
 
@@ -1810,7 +1809,7 @@ many instances of said C<value> there were.
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.BagSelExprNodeSet>, a tuple of which is what in
 general a C<Bag> node distills to when it is beneath the context of a
-C<depot> or C<boot_stmt> node, as it describes some semantics.
+C<depot> node, as it describes some semantics.
 
 Further concerning C<bag_payload_counted_values>, because of how
 C<BagSelExprNodeSet> is defined, a C<count> has to be a compile time
@@ -1866,7 +1865,7 @@ Grammar:
 
 An C<expr> node is the general case of a Muldis D value expression tree
 (which normally denotes a Muldis D value selector), which must be composed
-beneath a C<depot> or C<boot_stmt>, or specifically into a function or
+beneath a C<depot>, or specifically into a function or
 updater or type or constraint (etc) definition, because in the general case
 an C<expr> can I<not> be completely evaluated at compile time.
 
@@ -3154,38 +3153,6 @@ Grammar:
             <depot_catalog>
             <depot_data>?
         \s* '}'
-
-=head1 BOOTLOADER STATEMENT
-
-B<TODO/REDO: ALL OF THIS HERE MAIN POD SECTION!>
-
-Grammar:
-
-    <boot_stmt> ::=
-          <generic_boot_stmt>
-        | ...
-
-    <generic_boot_stmt> ::=
-        boot_stmt
-        \s* ':' \s* <imperative_routine_name>
-        \s* ':' \s* <imperative_routine_upd_args>
-        \s* ':' \s* <imperative_routine_ro_args>
-
-    <imperative_routine_name> ::=
-        <NameChain_payload>
-
-    <imperative_routine_upd_args> ::=
-        '{' \s*
-            [[<Name_payload> \s* '=>' \s* <NameChain_payload>]
-                ** [\s* ',' \s*]]?
-        \s* '}'
-
-    <imperative_routine_ro_args> ::=
-        <Tuple_payload>
-
-Examples:
-
-    boot_stmt:sys.std.Core.Cat.create_depot_material:{}:{ ... }
 
 =head1 MULDIS D TINY DIALECT PRAGMAS
 
