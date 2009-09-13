@@ -217,8 +217,8 @@ C<PTMD_STD>.
 =item C<ln_extensions>
 
 Optional; this is a set of chosen pragma/parser-config options as per a
-C<Tuple> SCVL; see the L</MULDIS D TINY DIALECT PRAGMAS> pod section for
-more details.
+C<Tuple> SCVL; see the L</MULDIS D STANDARD DIALECT PRAGMAS> pod section
+for more details.
 
 =back
 
@@ -227,7 +227,7 @@ Examples:
     Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD
 
     Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
-        ...
+        with_rtn_inv_alt_syn => true
     }
 
 =head1 VALUE LITERALS AND SELECTORS
@@ -1853,6 +1853,9 @@ Grammar:
 Grammar:
 
     <expr> ::=
+        <expr_core_options>
+
+    <expr_core_options> ::=
           <expr_name>
         | <named_expr>
         | <opaque_value_literal>
@@ -1862,7 +1865,6 @@ Grammar:
         | <if_else_expr>
         | <given_when_def_expr>
         | <lib_entity_ref_selector>
-        | <func_invo_alt_syntax>
 
     <expr_name> ::=
         <data_sigil> <Name_payload>
@@ -2197,6 +2199,54 @@ Examples:
     T->inn.foo_type
 
     ODF->inn.order_bars
+
+=head1 MULDIS D STANDARD DIALECT PRAGMAS
+
+All 3 of the Muldis D standard dialects, C<PTMD_STD> and
+C<HDMD_Perl[6|5]_STD>, support these same pragmas, and have the same
+semantics: C<with_rtn_inv_alt_syn>.
+
+=head2 with_rtn_inv_alt_syn
+
+One of Muldis D's primary features is that, as much as possible, the
+system-defined language features are defined in terms of ordinary types and
+routines.  This means for one thing that users are empowered to create
+their own types and routines with all of the capabilities, flexibility, and
+syntax as the language's built-in features have.  This also means that it
+should be relatively simple to parse Muldis D code because the vast
+majority of language features don't have their own special syntax to
+account for, and the L</Generic Function Invocation Expressions> syntax
+covers most of them, in terms of the common prefix/polish notation that in
+practice most invocations of user-defined routines are formatted as anyway.
+
+However, in practice a huge payoff of improved user code brevity and
+readability (and writability) can be gained by adding special syntax for a
+lot of commonly used built-in routines, such as infix syntax for common
+math operators or postcircumfix syntax for attribute accessors.  The
+tradeoff for this user code brevity is a significant amount of extra
+complexity in parsers, due to all the extra special cases, though this
+complexity can be mitigated somewhat by standardizing these additions in
+format where possible.  But because this extra flexibility isn't actually
+I<needed> to write Muldis D code effectively, it has been relegated to an
+optional language extension rather than a mandatory one, and each Muldis D
+implementation can choose whether or not to support it.  The expectation is
+that, in general, minimal Muldis D implementations won't support it but
+non-minimal ones would.
+
+If the declared C<language_name> of Muldis D code has the C<ln_extensions>
+element and the latter contains a name+value pair of
+C<with_rtn_inv_alt_syn> + C<Bool:true>, then this activates the optional
+C<with_rtn_inv_alt_syn> (With Routine Invocation Alternate Syntax) pragma.
+When C<with_rtn_inv_alt_syn> is active, the following grammar redefinitions
+are in effect:
+
+    <expr> ::=
+          <expr_core_options>
+        | <func_invo_alt_syntax>
+
+So then the syntax described in these pod sections in this file can be
+used, where otherwise they couldn't be: L/<FUNCTION INVOCATION ALTERNATE
+SYNTAX EXPRESSIONS>.
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
@@ -3153,10 +3203,6 @@ Examples (for now sans any use of extra op args, which are atypical):
     (not $min < $foo ≤ $max)
 
     (not $min < $foo < $max)
-
-=head1 MULDIS D TINY DIALECT PRAGMAS
-
-B<TODO/REDO: ALL OF THIS HERE MAIN POD SECTION!>
 
 =head1 SEE ALSO
 
