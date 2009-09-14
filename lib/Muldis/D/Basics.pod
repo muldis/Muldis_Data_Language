@@ -2686,10 +2686,13 @@ subtype), or are of its proper subtypes.
 
 The C<fed.data> variable's type is determined primarily by the current
 value of C<mnt.cat> (which depot mounts exist), and secondarily by the
-contents of each mounted depot.  When a new DBMS process starts, there are
-no depot mounts, and the type of C<fed.data> is the singleton type
-consisting of just the zero-attribute database/tuple value, which is also
-C<fed.data>'s default value; mounting a depot adds one corresponding
+contents of each mounted depot.  When a new DBMS process starts, there is
+exactly one depot mount, whose mount name is the empty string,
+and the type of C<fed.data> has either a single database-typed attribute
+or zero attributes depending on whether or not the corresponding depot has
+a self-local dbvar and C<fed.data>'s default value is determined by the
+corresponding depot's default C<dep.data> value or it is the zero-attribute
+tuple/database; mounting a depot adds one corresponding
 database-typed attribute to C<fed.data>'s type and value, iff the depot has
 a self-local dbvar, and unmounting the depot removes its corresponding
 attribute, iff likewise.  For each attribute of the type and value of
@@ -2703,17 +2706,16 @@ catalog defines zero types or routines, and defines that the depot does
 I<not> have a self-local dbvar; this means by default the depot is just a
 repository for code, able to contain only types and routines, and that
 depot's C<dep.data> doesn't exist at all.  Later on, if a depot's catalog
-is updated to say that the depot I<does> have a self-local dbvar, then in
-the default case of that situation, the declared type of that depot's
-C<dep.data> is "just a database".  This means that by default users can
-update C<dep.data> (or more specifically, C<< fed.data.<depot-mount-name>
->>) with any C<Database> value at all, and (where applicable) have it
-persist.  In this situation, adding a database relation is done by
-extending the database with a new relation-valued attribute, and removing
-one is removing its attribute.  Later on, if a depot's catalog is updated
+is updated to say that the depot I<does> have a self-local dbvar, which is
+accomplished by adding a material with the empty string entity declaration
+name that is a database type definition directly within the depot's root
+namespace, then the declared type of that depot's C<dep.data> is that same
+database type.
+
+In most typical situations, a depot's catalog is updated
 to say that the declared type of C<dep.data> consists only of database
 values having specific relation-valued attributes of specific relation
-types, then database relations can no longer be added or removed without
+types, and database relations can not be added or removed without
 also updating the corresponding database type.  Generally speaking, the
 declared type of C<dep.data> includes everything that SQL would define as
 table definitions, table unique key constraints, subset (foreign key)
@@ -2722,6 +2724,15 @@ constraints can also be associated with just variables rather than types.
 Only database transition constraints are not part of the database's type,
 and are applied directly to the C<dep.data> variable (and C<fed.data> also)
 by the depot's catalog in another way.
+
+Conceptually speaking, for the ultimate freedom from constraints, the
+declared type of C<dep.data> can be a simple alias for the C<Database>
+type, meaning that users can update C<dep.data> (or more specifically, C<<
+fed.data.<depot-mount-name> >>) with any C<Database> value at all, and
+(where applicable) have it persist.  In this situation, adding a database
+relation is done by extending the database with a new relation-valued
+attribute, and removing one is removing its attribute.  But see further
+below as, strictly speaking, some database values can't be in C<dep.data>.
 
 If a depot has any subdepots or packages, then the value of C<dep.data>
 must have corresponding attributes that match by name, recursively, iff the
@@ -2753,6 +2764,20 @@ case, if any subdepot or package wants to have a self-local dbvar, then all
 of its direct ancestor namespaces must have one too, because a subdepot or
 package dbvar is always a pseudo-variable defined as an attribute of its
 parent depot or subdepot, recursively.
+
+Strictly speaking, the type of a depot/subdepot/package's self-local dbvar
+can I<never> be "just a database" (an alias of C<Database>).  To start
+with, a depot/etc has at least an empty string named child type iff it has
+a self-local dbvar, and so said dbvar's type has to at least exclude every
+database value with an attribute whose name is the empty string.  For a
+depot/etc with no child subdepots or packages or materials besides that
+single type, that would be the only limitation.  Regarding any other child
+materials, the type must exclude attributes with the same names.  When
+there is a child subdepot or package C<foo>, the situation depends on
+whether C<foo> has a self-local dbvar; if it does, then the parent's type
+must have an attribute named C<foo> and that attribute must declare its
+type to be C<sdp.foo."">; if it doesn't, then the parent's type must
+exclude every database value with an attribute C<foo>.
 
 =head2 Time-Varying Topic Namespaces
 

@@ -1842,11 +1842,34 @@ B<TODO: ALL OF THIS HERE MAIN POD SECTION!>
 Grammar:
 
     <depot> ::=
-        depot \s+
+        depot \s+ catalog \s+ [<Database> | <depot_or_subdepot>]
+        [\s+ depot \s+ data \s+ <Database>]?
+
+    <depot_or_subdepot> ::=
         '{' \s*
-            <depot_catalog>
-            <depot_data>?
+            [[
+                  <named_subdepot>
+                | <named_package>
+                | <depot_material>
+            ] ** \s+]?
         \s* '}'
+
+    <named_subdepot> ::=
+        subdepot \s+ <Name_payload> \s+ <depot_or_subdepot>
+
+    <named_package> ::=
+        package \s+ <Name_payload> \s+ <package>
+
+    <package> ::=
+        '{' \s*
+            [<package_material> ** \s+]?
+        \s* '}'
+
+    <depot_material> ::=
+        ... \s+ <Name_payload> \s+ ...
+
+    <package_material> ::=
+        [private | public]? ... \s+ <Name_payload> \s+ ...
 
 =head1 GENERIC VALUE EXPRESSIONS
 
