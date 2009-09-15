@@ -1556,7 +1556,7 @@ a typical disk file system, this is mounting or unmounting a logical
 volume.
 
 Any mounted depot is home to all user-defined data variables, data types,
-operators, constraints, packages, and routines; they collectively are the
+operators, constraints, and routines; they collectively are the
 database that the Muldis D DBMS is managing.  Most commands against the
 DBMS would typically involve reading and updating the data variables, which
 in typical database terms is performing queries and data manipulation.
@@ -2260,19 +2260,19 @@ Now, most of the time, the code for a Muldis D application would just be
 collected in a single depot, matters of reusability between multiple
 database-sharing applications aside.  Each depot is designed to accommodate
 its own collections of resources according to various good practices.  A
-depot fundamentally consists a collection of types, routines, and packages
+depot fundamentally consists a collection of types and routines
 (under a potentially multi-level namespace), where some types and routines
-are grouped under packages and others aren't.  Each package declares its
+are private and others are public.  Each namespace level declares its
 own public interface, consisting of the types, routines, and relvars that
 are allowed to be directly invoked or referenced from outside of the
-package, and it can also have more types, routines, and relvars which are
-private to the package.  This is analogous to a class definition with
+namespace, and it can also have more types, routines, and relvars which are
+private to the namespace.  This is analogous to a class definition with
 public and private elements, or to C .h vs .c files, or to an Oracle DBMS'
 "package".  All non-lexical data variables in a depot may only be database
 typed, and the databases are in turn composed of relations, because
 relational databases are composed fundamentally of just relations.  To be
-more specific, each depot contains exactly 1 dbvar, and each subdepot and
-package in it also contains exactly 1 dbvar, where the latter dbvars are
+more specific, each depot contains exactly 1 dbvar, and each subdepot
+in it also contains exactly 1 dbvar, where the latter dbvars are
 pseudo-variables which are attributes of their parent depot's dbvar.
 
 When a DBMS starts up, it only contains one auto-started process, which is
@@ -2344,20 +2344,17 @@ This is the hierarchy of invocation namespaces of DBMS entities:
     mnt  # controls for mapping external storage devices etc with depots
         mnt.cat  # updateable sys cat controlling what depot mounts exist
     tpc  # time-varying opt user-def aliases for fed.* invoc namespaces
-        tpc.cat  # upd sys cat db desc ent under tpc.[dep|sdp|pkg]
-        tpc.[dep|sdp|pkg]
-            tpc.[dep|sdp|pkg].[cat|lib|data]
-                # and so on like under dep|sdp|pkg top-levels
+        tpc.cat  # upd sys cat db desc ent under tpc.[dep|sdp]
+        tpc.[dep|sdp]
+            tpc.[dep|sdp].[cat|lib|data]
+                # and so on like under dep|sdp top-levels
     fed  # the transac-synced federation of curr mounted depots w mount nms
         fed.cat  # updateable sys cat db desc entities under fed.[lib|data]
         fed.lib  # invokable user-def types and routines in this federation
             fed.lib.<depot>
-               fed.lib.<depot>[.<subdepot>]**0..*
-                  fed.lib.<depot>[.<subdepot>]**0..*.<type>
-                  fed.lib.<depot>[.<subdepot>]**0..*.<routine>
-                  fed.lib.<depot>[.<subdepot>]**0..*.<package>
-                     fed.lib.<depot>[.<subdepot>]**0..*.<package>.<type>
-                     fed.lib.<depot>[.<subdepot>]**0..*.<package>.<routine>
+                fed.lib.<depot>[.<subdepot>]**0..*
+                    fed.lib.<depot>[.<subdepot>]**0..*.<type>
+                    fed.lib.<depot>[.<subdepot>]**0..*.<routine>
         fed.data  # updateable db of normal user data in this federation
     dep  # entities in a self-sufficient depot ref their own depot w this
         dep.cat  # updateable sys cat db desc entities under dep.[lib|data]
@@ -2365,25 +2362,13 @@ This is the hierarchy of invocation namespaces of DBMS entities:
             dep.lib[.<subdepot>]**0..*
                 dep.lib[.<subdepot>]**0..*.<type>
                 dep.lib[.<subdepot>]**0..*.<routine>
-                dep.lib[.<subdepot>]**0..*.<package>
-                    dep.lib[.<subdepot>]**0..*.<package>.<type>
-                    dep.lib[.<subdepot>]**0..*.<package>.<routine>
         dep.data  # updateable db of normal user data in this depot
-    sdp  # entities in a subdepot (public gen nsp) ref their own sdp w this
+    sdp  # entities in a subdepot ref their own subdepot with this
         sdp.cat  # updateable sys cat db desc entities under sdp.[lib|data]
         sdp.lib  # invokable user-def types and routines in this subdepot
             sdp.lib.<type>
             sdp.lib.<routine>
-            sdp.lib.<package>
-                sdp.lib.<package>.<type>
-                sdp.lib.<package>.<routine>
         sdp.data  # updateable db of normal user data in this subdepot
-    pkg  # entities in a package (priv nsp) ref their own package with this
-        pkg.cat  # updateable sys cat db desc entities under pkg.[lib|data]
-        pkg.lib  # invokable user-def types and routines in this package
-            pkg.lib.<type>
-            pkg.lib.<routine>
-        pkg.data  # updateable db of normal user data in this package
     inn  # entities in a main|inner tp|rtn ref child|sib tps|rtns with this
         inn.<inner-type>
         inn.<inner-routine>
@@ -2403,12 +2388,11 @@ Further details of each namespace follow below.
 All globally visible Muldis D variables are database-typed and can be
 grouped into two main kinds, which are system catalog variables (one of
 which is actually constant) and user data variables.  The global system
-catalog variables all exist as the C<[sys|mnt|fed|dep|sdp|pkg].cat>
+catalog variables all exist as the C<[sys|mnt|fed|dep|sdp].cat>
 secondary namespaces (C<sys.cat> is a constant).  The global user data
-variables all live as the C<[fed|dep|sdp|pkg].data> secondary namespaces.
+variables all live as the C<[fed|dep|sdp].data> secondary namespaces.
 All non-global variables are just of the user data variety, can be of any
-types, and use the C<pkg|lex> primary namespaces (yes, C<pkg> has both
-public and private variables).
+types, and use the C<lex> primary namespace.
 
 The purpose of user data variables is hold user data, and are what gets
 read or updated by database users the vast majority of the time; working
@@ -2516,11 +2500,11 @@ mounted with by the current process/thread in the virtual machine, and
 there is one distinct second-level name per depot, and often there is just
 one of those at a time.  Under each depot name is an optional tree of
 generic namespaces, adding 0..N name parts, each of which we refer to
-simply as a I<subdepot>.  After that we have 1 layer that are package
-names.  After that, we have the lowest layer, which are globally
+simply as a I<subdepot>.  After that, we have the lowest layer, which are
+globally
 addressable pseudo-relvar, type, and routine unqualified names.  So the
 fully-qualified names of most user-defined entities by way of C<fed> are
-4-5 parts.
+3-4 parts.
 
 Entities declared in a depot are recommended to refer to other entities
 within the same depot using the localizing primary namespace C<dep>, which
@@ -2536,9 +2520,11 @@ subdepot, then this is specifically to the most immediate one of
 the referencer; if there are zero layers of subdepot, then this is
 an alias for C<dep>.
 
-Similarly, the primary namespaces C<pkg|inn|lex> refer to entities within
+Similarly, the primary namespaces C<dep|sdp|inn|lex> (yes, C<dep|sdp> are
+repeated) refer to entities within
 the same private scope as the referencer; except for a subset of what is
-seen under C<pkg>, these items are not referenceable globally; a package
+seen under C<dep|sdp>, these items are not referenceable globally; a depot
+or subdepot, on a case by case basis,
 could be referred to as a I<generic privatizable namespace>.  Variables
 under C<lex> only are allowed to be of any data type, not just be relvars.
 
@@ -2573,7 +2559,8 @@ namespace should all be considered public or globally referenceable
 or privileges are applicable, they would typically be applied either at the
 generic namespace level or to other individual entities under depots.
 
-Each individual package should be interpreted as an integrated collection
+Each individual depot or subdepot
+should be interpreted as an integrated collection
 of type and routine definitions where some parts of the collection are
 private and just a subset are public.
 
@@ -2667,21 +2654,21 @@ code is a bit more verbose due to requiring more explicit function calls.
 =head2 User Namespace Correspondence
 
 The namespace hierarchies under the C<lib> and C<data> second-level
-namespaces of C<fed|dep|sdp|pkg> are fully independent in definition, such
-that namespaces under C<lib> are defined in terms of child subdepots and
-packages, while namespaces under C<data> are defined in terms of tuple
+namespaces of C<fed|dep|sdp> are fully independent in definition, such
+that namespaces under C<lib> are defined in terms of child subdepots,
+while namespaces under C<data> are defined in terms of tuple
 (database) attributes that are themselves tuples (databases) rather than
-relations.  However, in order for any given depot|subdepot|package to
+relations.  However, in order for any given depot|subdepot to
 optionally have its own concept of a (pseudo-)dbvar that is local to
 itself, these otherwise independent namespace hierarchies are constrained
 to resemble each other to a certain degree, when the option to have a
-self-local dbvar is exercised (a depot|subdepot|package can alternately
+self-local dbvar is exercised (a depot|subdepot can alternately
 choose to I<not> have its own dbvar); that also serves to support DBMSs
 that have a common namespace hierarchy for both routines and relvars.  This
 section details that mutual constraint.
 
-The 4 system-defined user-data variables named C<[fed|dep|sdp|pkg].data>
-are all of "just" the C<Database> type (which is a C<Tuple> proper
+The 3 system-defined user-data variables named C<[fed|dep|sdp].data>
+are all of (almost) "just" the C<Database> type (which is a C<Tuple> proper
 subtype), or are of its proper subtypes.
 
 The C<fed.data> variable's type is determined primarily by the current
@@ -2734,22 +2721,21 @@ relation is done by extending the database with a new relation-valued
 attribute, and removing one is removing its attribute.  But see further
 below as, strictly speaking, some database values can't be in C<dep.data>.
 
-If a depot has any subdepots or packages, then the value of C<dep.data>
+If a depot has any subdepots, then the value of C<dep.data>
 must have corresponding attributes that match by name, recursively, iff the
-subdepot or package has a self-local dbvar.  For example, if a depot has a
-root-child subdepot named C<foo> and a child package of that named C<bar>,
+subdepot has a self-local dbvar.  For example, if a depot has a
+root-child subdepot named C<foo> and a child subdepot of that named C<bar>,
 and C<bar> expects to have a self-local dbvar, then the type of C<dep.data>
 must have a database-typed attribute named C<foo> and the type of C<foo>
 must have a database-typed attribute named C<bar>.  So then,
 C<dep.data.foo> is the pseudo-dbvar of C<sdp.data> as seen by entities in
 the C<foo> subdepot (and they have the same type and value), and
-C<dep.data.foo.bar> is the pseudo-dbvar of C<pkg.data> as seen by entities
-in the C<bar> package.  The type of C<dep.data> may have additional
-attributes besides those matching subsepots or packages, but it may not
-lack any corresponding ones with subdepots or packages that have self-local
-dbvars.
+C<dep.data.foo.bar> is the pseudo-dbvar of C<sdp.data> as seen by entities
+in the C<bar> subdepot.  The type of C<dep.data> may have additional
+attributes besides those matching subsepots, but it may not
+lack any corresponding ones with subdepots that have self-local dbvars.
 
-Now while subdepots and packages in a depot optionally have corresponding
+Now while subdepots in a depot optionally have corresponding
 database-typed C<dep.data> attributes, the opposite is true in regards to
 routines and types in a depot; for those, there must I<not> be any
 corresponding C<dep.data> attributes, either database or relation-typed;
@@ -2757,23 +2743,23 @@ depot relvars effectively live in the same namespace hierarchy as types and
 routines, and must not have the same fully-qualified names.
 
 What is said above for the relationship between the catalog of a depot and
-its C<dep.data>, goes also for the catalogs of a subdepot or package, and
-their C<sdp.data> or C<pkg.data>, respectively.  Note that while a depot or
-subdepot or package does not need to have a self-local dbvar in the general
-case, if any subdepot or package wants to have a self-local dbvar, then all
-of its direct ancestor namespaces must have one too, because a subdepot or
-package dbvar is always a pseudo-variable defined as an attribute of its
+its C<dep.data>, goes also for the catalog of a subdepot and
+its C<sdp.data>, respectively.  Note that while a depot or
+subdepot does not need to have a self-local dbvar in the general
+case, if any subdepot wants to have a self-local dbvar, then all
+of its direct ancestor namespaces must have one too, because a subdepot
+dbvar is always a pseudo-variable defined as an attribute of its
 parent depot or subdepot, recursively.
 
-Strictly speaking, the type of a depot/subdepot/package's self-local dbvar
+Strictly speaking, the type of a depot/subdepot's self-local dbvar
 can I<never> be "just a database" (an alias of C<Database>).  To start
 with, a depot/etc has at least an empty string named child type iff it has
 a self-local dbvar, and so said dbvar's type has to at least exclude every
 database value with an attribute whose name is the empty string.  For a
-depot/etc with no child subdepots or packages or materials besides that
+depot/etc with no child subdepots or materials besides that
 single type, that would be the only limitation.  Regarding any other child
 materials, the type must exclude attributes with the same names.  When
-there is a child subdepot or package C<foo>, the situation depends on
+there is a child subdepot C<foo>, the situation depends on
 whether C<foo> has a self-local dbvar; if it does, then the parent's type
 must have an attribute named C<foo> and that attribute must declare its
 type to be C<sdp.foo."">; if it doesn't, then the parent's type must
@@ -2790,17 +2776,17 @@ portability such as when dumping the contents of one depot as code and
 wanting to run that code to load a different-mount-named depot.
 
 The C<tpc> primary namespace exists to bring the benefits of the
-C<dep|sdp|pkg> namespaces to referencing code living outside the same
-depot|subdepot|package as the referenced entity.  For example, while the
+C<dep|sdp> namespaces to referencing code living outside the same
+depot|subdepot as the referenced entity.  For example, while the
 DBMS-global C<tpc.cat.topic_depot> catalog variable is valued with the name
 of the depot C<mydb>, any code that references C<tpc.dep.lib.myfunc> will
 have the same effective meaning as if it had said C<fed.lib.mydb.myfunc>,
 or as if any such code living in C<mydb> had said C<dep.lib.myfunc>.
-Similarly, the catalog variables C<tpc.cat.topic_subdepot> and
-C<tpc.cat.topic_package> exist.  While C<tpc.cat.topic_depot> etc is not
+Similarly, the catalog variable C<tpc.cat.topic_subdepot>
+exists.  While C<tpc.cat.topic_depot> etc is not
 valued (that is, it is C<nothing>), referencing C<tpc.dep> etc will fail.
 
-This "topic depot|subdepot|package" feature is analagous to the "current
+This "topic depot|subdepot" feature is analagous to the "current
 database|schema" etc global/session/etc variables of SQL DBMSs, where you
 can just refer to unqualified names of user-defined variables or routines
 and the topic namespace is used to qualify them by default.  Or the feature
@@ -2813,8 +2799,8 @@ etc declarations will install into the Foo namespace, until another
 
 Some data types are explicitly defined as their own distinct named
 entities, for the purpose of reuse in multiple places, the same as
-explicitly defined routines; these live directly in depots or subdepots or
-packages (or the system namespace) and typically can be directly invoked by
+explicitly defined routines; these live directly in depots or subdepots
+(or the system namespace) and typically can be directly invoked by
 any other entity external to themselves.
 
 Arguably most distinct data types, by contrast, are embedded into the

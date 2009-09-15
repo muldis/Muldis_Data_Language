@@ -114,7 +114,7 @@ These procedures comprise a set of commonly useful system-defined data
 definition routines, which simplify some tasks of manipulating the Muldis D
 system catalog dbvars.  The following procedures can do the following:
 create|mount and drop|unmount depots, set|clear topic namespaces,
-create|drop subdepots and packages, create|drop user-defined routines and
+create|drop subdepots, create|drop user-defined routines and
 data types; they can not create or drop relvars.
 
 =head1 Procedures For Defining Depot Mounts
@@ -158,23 +158,21 @@ C<Bool:false>.
 
 C<procedure sys.std.Core.Cat.select_topic_namespaces
 (maybe_of.Name $depot?, maybe_of.DeclNameChain $subdepot?,
-maybe_of.Name $package?, Comment $comment?)>
+Comment $comment?)>
 
 This procedure is an abstraction over assigning a new value to the catalog
-variable C<tpc.cat>; the 4 parameters correspond directly to the attributes
+variable C<tpc.cat>; the 3 parameters correspond directly to the attributes
 of C<tpc.cat>.  If all the arguments are omitted, then C<tpc.cat> will have
 its default value of all-C<nothing> attributes, meaning there are no
-default namespaces.  If C<subdepot> is a C<Single> then C<depot> must be;
-likewise C<package> depends on C<subdepot> and C<depot> (but C<subdepot>
-can be the empty name chain).
+default namespaces.  If C<subdepot> is a C<Single> then C<depot> must be.
 
 =head1 Procedures For Defining In-Depot Namespaces
 
-These 4 procedures conceptually have the extra 2 parameters C<Name $depot,
+These 2 procedures conceptually have the extra 2 parameters C<Name $depot,
 DeclNameChain $parent?>, whose values are implicitly supplied from
 C<tpc.cat.topic_[depot|subdepot]> respectively; those 1 or 2 (as
 applicable) catalog variables must be non-empty as a precondition to
-invoking the 4 procedures.
+invoking the 2 procedures.
 
 =head2 sys.std.Core.Cat.create_subdepot
 
@@ -185,7 +183,8 @@ This procedure is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.subdepots>.  It will create a
 new subdepot, in the depot mounted under the name given by the C<depot>
 argument, whose name and other details match the other arguments.  This
-procedure is analagous to a SQL CREATE SCHEMA statement.
+procedure is analagous to a SQL CREATE SCHEMA statement or an Oracle CREATE
+PACKAGE statement.
 
 =head2 sys.std.Core.Cat.drop_subdepot
 
@@ -194,28 +193,7 @@ C<procedure sys.std.Core.Cat.drop_subdepot (Name $name)>
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.subdepots>.  It will drop an
 existing subdepot.  This procedure is analagous to a SQL DROP SCHEMA
-statement.
-
-=head2 sys.std.Core.Cat.create_package
-
-C<procedure sys.std.Core.Cat.create_package (Name $name,
-Comment $comment?)>
-
-This procedure is an abstraction over inserting a tuple into the catalog
-relvar C<fed.cat.mounts{name=$depot}.depot.packages>.  It will create a new
-package, in the depot mounted under the name given by the C<depot>
-argument, whose name and other details match the other arguments.  This
-procedure is analagous to an Oracle CREATE PACKAGE statement, but that it
-will just create an empty package.
-
-=head2 sys.std.Core.Cat.drop_package
-
-C<procedure sys.std.Core.Cat.drop_package (Name $name)>
-
-This procedure is an abstraction over deleting a tuple from the catalog
-relvar C<fed.cat.mounts{name=$depot}.depot.packages>.  It will drop an
-existing package.  This procedure is analagous to an Oracle DROP PACKAGE
-statement, but that it will just drop an empty package.
+statement or an Oracle DROP PACKAGE statement.
 
 =head1 Procedures For Defining Depot Routines and Data Types
 
@@ -228,7 +206,7 @@ invoking the 2 procedures.
 =head2 sys.std.Core.Cat.create_depot_material
 
 C<procedure sys.std.Core.Cat.create_depot_material (Name $name,
-Comment $comment?, Material $material)>
+Comment $comment?, Bool $is_public?, Material $material)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.materials>.  It will create a
@@ -245,33 +223,6 @@ This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.materials>.  It will drop an
 existing depot routine or type.  This procedure is analagous to a SQL DROP
 FUNCTION|PROCEDURE|TYPE|DOMAIN statement.
-
-=head1 Procedures For Defining Package Routines and Data Types
-
-These 2 procedures conceptually have the extra 3 parameters C<Name $depot,
-DeclNameChain $subdepot?, Name $package>, whose values are implicitly
-supplied from C<tpc.cat.topic_[depot|subdepot|package]> respectively; those
-2 or 3 (as applicable) catalog variables must be non-empty as a
-precondition to invoking the 2 procedures.
-
-=head2 sys.std.Core.Cat.create_package_material
-
-C<procedure sys.std.Core.Cat.create_package_material (Name $name,
-Comment $comment?, Bool $is_public?, Material $material)>
-
-This procedure is an abstraction over inserting a tuple into the catalog
-relvar C<fed.cat.mounts{name=$depot}.depot.materials>.  It will
-create a new routine or type, in the package having the name given by the
-C<package> argument, in the depot mounted under the name given by the
-C<depot> argument, whose name and other details match the other arguments.
-
-=head2 sys.std.Core.Cat.drop_package_material
-
-C<procedure sys.std.Core.Cat.drop_package_material (Name $name)>
-
-This procedure is an abstraction over deleting a tuple from the catalog
-relvar C<fed.cat.mounts{name=$depot}.depot.materials>.  It will drop
-an existing package routine or type.
 
 =head1 SEE ALSO
 
