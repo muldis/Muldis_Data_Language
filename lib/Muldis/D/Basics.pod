@@ -1607,24 +1607,20 @@ substitutability:
 
     routine
         functional
-            function, inner_function
+            function
         imperative
             deterministic
-                updater, inner_updater
+                updater
             nondeterministic
                 system_service
-                procedure, inner_procedure
+                procedure
 
 Specifically, the routine kinds are all of the leaf nodes in the above
 hierarchy, and every Muldis D routine is designated as exactly one of
 those; the non-leaf nodes are not routine kinds.
 
-Note that, in an environment where Muldis D is being hosted under another
-language, the other language may only directly invoke these 4 kinds of
-routines: C<function>, C<updater>, C<system_service>, C<procedure>.
-
 Now there are actually a lot more distinct routine kinds, but they are
-semi-orthogonal to the above-mentioned ones:
+special cases of the above-mentioned ones:
 
     routine
         functional
@@ -1639,16 +1635,12 @@ semi-orthogonal to the above-mentioned ones:
             value_map
             value_reduction
 
-Specifically, C<function> vs C<inner_function> is a distinction of where a
-routine of that kind is declared, whereas all of the leaf nodes in the
-second hierarchy above are distinguished by their API (parameters and
-result) and intended use.  Each routine of the routine kinds in the second
-hierarchy, such as C<possrep_map>, can be either a C<function> or
-C<inner_function> depending on where it is declared; in practice, most of
-the routine kinds in the second group tend to be C<inner_function> but they
-don't need to be.
+All of the leaf nodes in the second hierarchy above are distinguished by
+their API (parameters and result) and intended use.  All of the ones under
+I<functional> are also C<function> routines, so any context where a generic
+C<function> can be used, so can they.
 
-=head2 function, inner_function
+=head2 function
 
 A C<function> is an explicitly invokable read-only operator whose
 invocation both results in and represents a value of a specific data type
@@ -1659,8 +1651,8 @@ can be named for internal reuse).  A C<function> is pure and deterministic
 in the functional-language sense, such that all of its 0..N parameters are
 read-only / not subject to update, it has no lexical variables at all, and
 that it can only see its own parameters, if it has any; it can not see any
-global variables of any kind, and that it can only invoke C<function> (and
-local C<inner_function>) routines.  A C<function> invocation is trivially
+global variables of any kind, and that it can only invoke C<function>
+routines.  A C<function> invocation is trivially
 atomic, since it doesn't conceptually update anything.  A C<function> does
 not have any side-effects at all, either inside of or outside of the
 current in-DBMS process.  The vast majority of invokable system-defined
@@ -1668,11 +1660,9 @@ routines are C<function>; they include all value selectors, and the typical
 numeric, string, and relational operators, such that you would compose a
 typical database "select" query out of.
 
-An C<inner_function> is the same as a C<function>, but that it is
-quasi-lexically scoped within another, non-lexical routine or type
-definition, and it is only visible within or invokable by either its parent
-routine or its sibling routines.  Conceptually speaking, an
-C<inner_function> is part of the definition of the body of the parent
+Sometimes a C<function> is composed as part of the definition of another
+C<function> (or C<updater>).  Conceptually speaking, former
+C<function> is part of the definition of the body of the parent
 routine or type (like a value expression in general), but is isolated into
 a named C<function>-like entity for technical / language design reasons.
 For example, it is used to implement what would conceptually be an
@@ -1682,7 +1672,7 @@ is conceptually a self-referencing/cyclic expression.
 
 =head2 type_constraint
 
-A C<type_constraint> is the same as an C<inner_function>, but that it is
+A C<type_constraint> is the same as an C<function>, but that it is
 part of the definition of a data type (every data type composes 0..N
 explicit ones of these, plus an implicit one that always results in
 C<Bool:true>) rather than a routine, it is invoked automatically by the
@@ -1756,7 +1746,7 @@ all that statement's updates from occurring.
 
 =head2 named_value
 
-A C<named_value> is the same as an C<inner_function>, but that it has only
+A C<named_value> is the same as an C<function>, but that it has only
 zero parameters and unconditionally results in the same single value.  A
 C<named_value> is often used when you want to declare a program constant
 value that is easy to reference on a non-lexical scale.  A C<named_value>
@@ -1768,7 +1758,7 @@ variable must always hold a valid value of its declared type).
 
 =head2 possrep_map
 
-A C<possrep_map> is the same as an C<inner_function>, but that it is part
+A C<possrep_map> is the same as an C<function>, but that it is part
 of the definition of a scalar data type, and it is used to convert a value
 from one of that type's possreps to another.  A C<possrep_map> has exactly
 1 parameter whose name is C<topic> and whose declared type is a tuple whose
@@ -1803,7 +1793,7 @@ they can still be pre-computed and stored for performance).
 
 =head2 order_determination
 
-An C<order_determination> is the same as an C<inner_function>, but that it
+An C<order_determination> is the same as an C<function>, but that it
 is structured to fill the role of a I<system-compatible fundamental
 order-determination function>; see the L</Ordered Types> pod section in
 this file for more details.  An C<order_determination> has at least 3
@@ -1812,7 +1802,7 @@ always results in an C<Order>.
 
 =head2 value_filter
 
-A C<value_filter> is the same as an C<inner_function>, but that it has
+A C<value_filter> is the same as an C<function>, but that it has
 at least 1 parameter, where that 1 is named C<topic>, and the function
 always results in a C<Bool>; C<topic> is usually a C<Tuple> but doesn't
 have to be.  Any additional parameters besides the above-named 1 are hereby
@@ -1827,14 +1817,14 @@ operations like the general case of relational restriction.
 
 =head2 value_map
 
-A C<value_map> is the same as an C<inner_function>, but that it has at
+A C<value_map> is the same as an C<function>, but that it has at
 least 1 parameter, where that 1 is named C<topic>; C<topic> is usually a
 C<Tuple> but doesn't have to be.  A C<value_map> is what would be used in
 operations like the general case of relational extension or substitution.
 
 =head2 value_reduction
 
-A C<value_reduction> is the same as an C<inner_function>, but that it has
+A C<value_reduction> is the same as an C<function>, but that it has
 at least 2 parameters, where those 2 are named [C<v1>, C<v2>]; C<v1> and
 C<v2> must have the same declared type as each
 other, and the C<value_reduction> function's declared result type must be
@@ -1843,7 +1833,7 @@ typically be used in N-ary operations that can be defined in terms of a
 repetition of binary operations, such that a C<value_reduction> would
 define such a binary operation.
 
-=head2 updater, inner_updater
+=head2 updater
 
 An C<updater> (update operator) is the same as a C<function>, but that it
 is imperative rather than functional (its invocation does not result in or
@@ -1854,7 +1844,7 @@ updating said parameters.  The body of an updater is a single statement
 (plus any support expressions) that invokes one or more C<updater>
 (recursively down to some system-defined variable assignment operator); if
 invoking several, it is a multi-update statement.  An C<updater> can only
-invoke C<function> and C<updater> (and local C<inner_[function|updater]>)
+invoke C<function> and C<updater>
 routines.  Despite being imperative, an C<updater> has no lexical variables
 save for its subject-to-update parameters, and it just assigns to those as
 its last/only action; but like functions, it does have named expression
@@ -1865,9 +1855,6 @@ have done.  Most invokable system-defined imperative routines are
 C<updater>; they include all C<assign> operators, plus some
 relational-assignment short-hands such as "assign_insertion",
 "assign_substitution", "assign_deletion".
-
-An C<inner_updater> (inner update operator) is to an C<updater> what an
-C<inner_function> is to a C<function>.
 
 =head2 system_service
 
@@ -1882,7 +1869,7 @@ C<system_service> can have side-effects outside of the DBMS, but it will
 not alter anything inside the DBMS aside from any of its subject-to-update
 parameters; it can not see any global variables.
 
-=head2 procedure, inner_procedure
+=head2 procedure
 
 A C<procedure> is an explicitly invokable routine with 0..N parameters and
 0..N lexical variables that can directly see and update global variables
@@ -1900,7 +1887,7 @@ support batch operations where partial completion or interruptability is
 acceptable.  A procedure can define explicit (lexically scoped)
 transactions over multiple consecutive statements, and is the
 only kind of routine that can; specifically, those statements are parcelled
-together into a separate C<inner_procedure>, and then that is invoked
+together into a separate C<procedure>, and then that is invoked
 indirectly by way of a new statement in the first procedure that invokes
 the system-defined C<try_catch> procedure.  The vast majority of
 C<procedure> that exist will be user-defined.  But some system-defined
@@ -1909,9 +1896,6 @@ instead solely because they are non-deterministic; an example is an
 operator that derives a tuple sequence from a relation without fully
 sorting the tuples, because the result is fundamentally random and
 non-repeatable.
-
-An C<inner_procedure> is to an C<procedure> what an C<inner_function> is to
-a C<function>.
 
 =head2 Other Matters
 
@@ -2054,7 +2038,7 @@ there are no explicit transaction active.
 
 The way to specify an explicit transaction within Muldis D
 is to take the statements comprising it and isolate them into their own
-C<procedure> (or C<inner_procedure>), then invoke that by way of the
+C<procedure>, then invoke that by way of the
 system-defined C<try_catch> procedure; the invoked procedure is
 conceptually an exception-trapping I<try block>.  A procedure invoked
 through C<try_catch> is wrapped in a new child transaction that is tied to
@@ -2086,7 +2070,7 @@ constructs; host language code could easily implement the scope-tied
 paradigm if it wanted to.
 
 An implicit transaction is associated with the lexical scope of every
-Muldis D C<updater> (and C<inner_updater>) and C<system_service>, and by
+Muldis D C<updater> and C<system_service>, and by
 extension, every Muldis D statement that is an invocation of said.  Or more
 accurately, an update operation (including a multi-update operation) is
 implicitly atomic, and will either succeed and commit as a whole, or fail
@@ -2096,7 +2080,7 @@ are not caught.  Similarly, every functional routine is trivially a
 transaction, though since these never update anything, all that really
 means is that they see a consistent view of their environment.
 
-By contrast, every C<procedure> (and C<inner_procedure>)
+By contrast, every C<procedure>
 is neither implicitly a transaction nor atomic (except when externally
 wrapped in one), so you can use a procedure to define an operation where
 you want to keep partial results of a failure.
@@ -2369,13 +2353,11 @@ This is the hierarchy of invocation namespaces of DBMS entities:
             sdp.lib.<type>
             sdp.lib.<routine>
         sdp.data  # updateable db of normal user data in this subdepot
-    inn  # entities in a main|inner tp|rtn ref child|sib tps|rtns with this
-        inn.<inner-type>
-        inn.<inner-routine>
     lex  # entities in a rtn ref own lexical params|exprs|vars with this
         lex.<param>
         lex.<expr>
         lex.<var>
+        lex.<stmt>
 
 Note that the 3 tokens [C<Core>, C<< <extension> >>, C<<
 <auth-or-impl-name> >>] under C<sys> are all actually C<< <sys-nsp> >> as
@@ -2497,8 +2479,8 @@ Muldis D for persistence.
 The C<fed> primary namespace is for all non-lexical user-defined entities.
 Beneath C<fed>, each secondary namespace is the name that a depot is
 mounted with by the current process/thread in the virtual machine, and
-there is one distinct second-level name per depot, and often there is just
-one of those at a time.  Under each depot name is an optional tree of
+there is one distinct second-level name per depot mount, and often there is
+just one of those at a time.  Under each mount name is an optional tree of
 generic namespaces, adding 0..N name parts, each of which we refer to
 simply as a I<subdepot>.  After that, we have the lowest layer, which are
 globally
@@ -2520,12 +2502,8 @@ subdepot, then this is specifically to the most immediate one of
 the referencer; if there are zero layers of subdepot, then this is
 an alias for C<dep>.
 
-Similarly, the primary namespaces C<dep|sdp|inn|lex> (yes, C<dep|sdp> are
-repeated) refer to entities within
-the same private scope as the referencer; except for a subset of what is
-seen under C<dep|sdp>, these items are not referenceable globally; a depot
-or subdepot, on a case by case basis,
-could be referred to as a I<generic privatizable namespace>.  Variables
+Similarly, the primary namespace C<lex> refers to entities within
+the same private scope as the referencer.  Variables
 under C<lex> only are allowed to be of any data type, not just be relvars.
 
 =head2 Conceptions and Requirements
@@ -2550,21 +2528,16 @@ construct is provided to allow a perception of the storage system that is
 as reasonably unabstracted as possible; the native namespace hierarchy of
 the storage system can be exploited with little difficulty.  Assuming the
 previously described meaning of a depot is adhered to, there will typically
+fundamentally (but see the next paragraph)
 be either zero (SQLite) or one (PostgreSQL, Oracle) layers of generic
 namespaces; where there is one, it typically corresponds to the storage
-system's concept of a I<schema>; but N layers are provided by Muldis D
-"just in case".  This said, all entities that are directly under a generic
-namespace should all be considered public or globally referenceable
-(database user privileges notwithstanding).  If fine-grained user ownership
-or privileges are applicable, they would typically be applied either at the
-generic namespace level or to other individual entities under depots.
+system's concept of a I<schema>; where there are two, the second typically
+corresponds to Oracle's concept of a I<package>;
+but N layers are provided by Muldis D "just in case".
 
-Each individual depot or subdepot
-should be interpreted as an integrated collection
-of type and routine definitions where some parts of the collection are
-private and just a subset are public.
-
-The concept of "inner routines" in Muldis D exists mainly to deal with the
+Muldis D supports the concept of I<materials> (routines and types) being
+nested within others, like some typical programming languages, but also
+necessitated by the
 design decision where type and routine definitions are expressly fixed
 depth trees (because they are represented by components in a relational
 catalog database), rather than N-depth trees like in a typical programming
@@ -2572,13 +2545,23 @@ language.  So when a conceptually N-depth syntax tree of another language
 is converted to Muldis D, the nodes in that tree are all given distinct
 names and then turned into a flat list, where each list item is, loosely
 speaking, a 2-level tree declaring its own name as a root and declaring its
-direct children in a set.  The primary namespace C<inn> is used for
-individual nodes to refer to other nodes within the common conceptual
-single routine, and all of these are private.  The only time some other
-host language might map directly to this concept is if it allows named
-types or routines to be declared within the lexical scope of other
-routines.  There are no variables under C<inn>, but each inner routine
-can have its own variables, or parameters, where applicable.
+direct children in a set.  Any time a routine or type is conceptually
+composed inside another one, such as if the former is a closure, the former
+actually has to be composed outside the other one, and be invoked by name.
+And so, it is often considered a good practice that when a conceptual type
+or routine is split into several actual ones, then these will be grouped
+into a subdepot, named after the conceptual main, and the actual main has
+the empty string for its name within this subdepot; this grouping means
+that the ordinary namespace for conceptual entities is not polluted by
+these post-split artifacts.  This presumably common practice would mean
+that a depot will typically have 1 more subdepot layer than otherwise,
+meaning typically 2-3 layers total (corresponding to SQL schema, Oracle
+package, each non-trivial SQL stored routine or type, or SQL table with
+built-in type definition and constraints).  So the primary namespace C<sdp>
+is I<also> used for individual post-split materials to refer to other
+post-split materials within the same conceptual larger material.  I<TODO:
+Maybe split the C<sdp> primary somehow so there are distinct top-levels for
+post-split siblings and the parent subdepot of the whole post-split group.>
 
 The primary namespace C<lex> is for entities that would commonly be
 considered lexical parameters or variables in a routine; these would
@@ -2589,6 +2572,29 @@ have pseudo-variables which are named expression nodes; these would
 typically either be turned into actual expression trees or actual
 variables, or sometimes use native equivalents if the other language is
 pure functional.
+
+Each individual depot or subdepot should be interpreted as an integrated
+collection of material (type and routine) definitions where some parts of
+the collection are private and others are public.  All entities that are
+under a non-C<lex> namespace should all be considered possibly public or
+globally referenceable (database user privileges notwithstanding).  By
+default, every material is I<private>, meaning that it can only be directly
+referenceable by DBMS entities whose direct parent subdepot (which might be
+the depot) is the direct parent of said material, or entities that live in
+a subdepot of said parent.  But if a material is explicitly declared
+I<public>, then it may I<also> be directly referenceable by DBMS entities
+living externally to the direct parent of the target material.  And so,
+public materials are the public API of a library, and private ones are
+its internals.  By definition, a private material may never be directly
+invoked via the C<fed> primary namespace, and presumably not by a host
+language either.  Note that a depot's data/dbvar is always implicitly
+public to its full depth, as far as basic API (not user) concerns go; the
+only private data is lexicals.
+
+If fine-grained user ownership or privileges are applicable to a depot,
+they would typically be applied either at the subdepot level or to other
+individual entities under depot, and user-centered privileges can also be
+applied to parts of the dbvar such as individual (pseudo-)relvars.
 
 =head2 Terse Pseudo-Variable Syntax
 
@@ -2660,7 +2666,9 @@ while namespaces under C<data> are defined in terms of tuple
 (database) attributes that are themselves tuples (databases) rather than
 relations.  However, in order for any given depot|subdepot to
 optionally have its own concept of a (pseudo-)dbvar that is local to
-itself, these otherwise independent namespace hierarchies are constrained
+itself, or for any (pseudo-)relvar to have the concept of its data type
+definition being builtin to it,
+these otherwise independent namespace hierarchies are constrained
 to resemble each other to a certain degree, when the option to have a
 self-local dbvar is exercised (a depot|subdepot can alternately
 choose to I<not> have its own dbvar); that also serves to support DBMSs
@@ -2762,8 +2770,26 @@ materials, the type must exclude attributes with the same names.  When
 there is a child subdepot C<foo>, the situation depends on
 whether C<foo> has a self-local dbvar; if it does, then the parent's type
 must have an attribute named C<foo> and that attribute must declare its
-type to be C<sdp.foo."">; if it doesn't, then the parent's type must
+type to be C<sdp.lib.foo."">; if it doesn't, then the parent's type must
 exclude every database value with an attribute C<foo>.
+
+Similar to the subdepot/dbvar duality, Muldis D also supports a
+subdepot/relvar duality.  It is allowed for both a depot/subdepot C<foo> to
+have a direct child subdepot named C<bar> and also for C<foo>'s self-local
+dbvar to have a relation-typed direct child attribute named C<bar>.  In
+that situation, C<bar> does I<not> have a self-local dbvar but the
+namespace conveniently exists for a type definition to live for use as the
+explicitly declared type of the C<bar> attribute, which by convention would
+have the empty string as its name (but it isn't required to), and any
+further components of that type definition can also be grouped under the
+subdepot C<bar>.  So this arrangement is the closest analogy to SQL's
+normal behaviour of embedding a table's type into the table's declaration.
+
+I<A further feature under consideration is that, for any routine or type
+whose declared name is the empty string, its parent subdepot is a proxy for
+it for referencing purposes; so for example, C<sdp.lib.foo> is a proxy for
+C<sdp.lib.foo."">, which if that was a relvar attribute's type, might be
+the type for C<sdp.data.foo>.  But for now, that feature does not exist.>
 
 =head2 Time-Varying Topic Namespaces
 

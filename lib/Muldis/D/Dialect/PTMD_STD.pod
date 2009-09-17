@@ -936,9 +936,9 @@ possrep's attribute of the result C<NameChain> value.
 
 Now, strictly speaking, a Muldis D C<NameChain> value is supposed to have
 at least 2 elements in its sequence, and the first element of any sequence
-must be one of these 8 C<Name> values, which is a top-level namespace:
-C<sys>, C<mnt>, C<tpc>, C<fed>, C<dep>, C<sdp>, C<inn>, C<lex>.
-(Actually, C<type> is a 9th option, but that will be treated separately in
+must be one of these 7 C<Name> values, which is a top-level namespace:
+C<sys>, C<mnt>, C<tpc>, C<fed>, C<dep>, C<sdp>, C<lex>.
+(Actually, C<type> is a 8th option, but that will be treated separately in
 this discussion.)  In the general case, a C<NameChain_payload> must be
 written out in full, so it is completely unambiguous (and is clearly
 self-documenting), and it is always the case that a C<NameChain> value in
@@ -1012,9 +1012,9 @@ single prefix-leading C<type> chain element.  So for example, one can just
 write C<array_of.Rat> rather than C<type.array_of.Rat>, or
 C<tuple_from.var.lex.myrelvar> rather than
 C<type.tuple_from.var.lex.myrelvar>.  This fourth special case is
-completely orthogonal to which of the 9 normal top-level namespaces is in
+completely orthogonal to which of the 7 normal top-level namespaces is in
 use (implicitly or explicitly) by the chain being prefixed, and works for
-all 9 of them.
+all 7 of them.
 
 A C<DeclNameChain> node represents a canonical long name for declaring a
 DBMS entity in N-depth contexts; the format and interpretation of a
@@ -1972,7 +1972,7 @@ Examples:
     $foo_t.bar_attr
 
     # an accessor node of an anonymous tuple-valued node #
-    inn.tuple_res_func( $arg ).quux_attr
+    sdp.lib.tuple_res_func( $arg ).quux_attr
 
 =head2 Generic Function Invocation Expressions
 
@@ -1999,7 +1999,7 @@ Grammar:
         <expr>
 
 A C<func_invo> node represents the result of invoking a named
-inner/function with specific arguments.  It is interpreted as a tuple of a
+function with specific arguments.  It is interpreted as a tuple of a
 Muldis D C<sys.std.Core.Type.Cat.FuncInvoExprNodeSet> value.  The
 C<routine_name> element specifies the C<function> attribute of the new
 C<FuncInvoExprNodeSet>, which is the name of the function being invoked,
@@ -2010,7 +2010,7 @@ named, as per C<named_ro_arg>, and formatting a C<func_invo> node that
 way is always allowed.  In some (common) special cases, some (which might
 be all) arguments may be anonymous, as per C<anon_ro_arg>.
 
-With just functions in the top-level namespaces C<sys.std> and C<inn>,
+With just functions in the top-level namespaces C<sys.std>,
 these 4 special cases apply:  If a function has exactly one parameter, then
 it may be invoked with a single anonymous argument and the latter will bind
 to that parameter.  Or, if a function has multiple parameters but exactly
@@ -2024,8 +2024,8 @@ them are named C<topic> and C<other>, then it may be invoked with two
 anonymous arguments and the latter will bind to those parameters in
 sequential order, the first one to C<topic> and the second one to C<other>.
 
-With just functions in all top-level namespaces I<except> C<sys.std> and
-C<inn>, these 2 special cases apply (similar to the prior-mentioned second
+With just functions in all top-level namespaces I<except> C<sys.std>,
+these 2 special cases apply (similar to the prior-mentioned latter
 2):  If a function invocation has either 1 or 2 anonymous arguments, then
 they will be treated as if they were named arguments for the C<topic> and
 C<other> parameters; the only or sequentially first argument will bind to
@@ -2062,13 +2062,13 @@ Examples:
     # same as previous #
     Rational.quotient( divisor => 16.9, dividend => 43.7 )
 
-    # one mandatory param, two optional #
-    inn.barfunc( $mand_arg, oa1 => $opt_arg1, oa2 => $opt_arg2 )
+    # one mandatory 'topic' param, two optional #
+    sdp.lib.barfunc( $mand_arg, oa1 => $opt_arg1, oa2 => $opt_arg2 )
 
     # same as previous #
-    inn.barfunc( oa2 => $opt_arg2, $mand_arg, oa1 => $opt_arg1 )
+    sdp.lib.barfunc( oa2 => $opt_arg2, $mand_arg, oa1 => $opt_arg1 )
 
-    # a user-defined non-inner function #
+    # a user-defined function #
     dep.lib.foodb.bazfunc( a1 => 52, a2 => 'hello world' )
 
     # two params named 'topic' and 'other' #
@@ -2203,13 +2203,13 @@ reference value.
 
 Examples:
 
-    F->inn.filter
+    F->sdp.lib.filter
 
-    P->inn.try_block
+    P->sdp.lib.try_block
 
-    T->inn.foo_type
+    T->sdp.lib.foo_type
 
-    ODF->inn.order_bars
+    ODF->sdp.lib.order_bars
 
 =head1 MULDIS D STANDARD DIALECT PRAGMAS
 
@@ -2281,7 +2281,7 @@ tuple of a Muldis D C<sys.std.Core.Type.Cat.FuncInvoExprNodeSet> value.  A
 C<func_invo_alt_syntax> node is a lot like a C<func_invo> node in purpose
 and interpretation but it differs in several significant ways.
 
-While a C<func_invo> node can be used to invoke any inner/function at all,
+While a C<func_invo> node can be used to invoke any function at all,
 a C<func_invo_alt_syntax> node can only invoke a fraction of them, and only
 standard system-defined functions.  While a C<func_invo> node uses a simple
 common format with all functions, written in prefix notation with generally
@@ -2470,7 +2470,7 @@ Examples:
 
     ($a // $b // 42)
 
-    ($a //d $b //d T->inn.foo_type)
+    ($a //d $b //d T->sdp.lib.foo_type)
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -2643,9 +2643,9 @@ customization; but most actual uses of like/etc don't use C<escape> anyway.
 
 Examples:
 
-    ($bar isa T->inn.foo_type)
+    ($bar isa T->sdp.lib.foo_type)
 
-    ($bar !isa T->inn.foo_type)
+    ($bar !isa T->sdp.lib.foo_type)
 
     ($scalar as T->Int)
 
@@ -2710,7 +2710,7 @@ This table indicates which function is invoked by each keyword:
 
 Examples:
 
-    (d T->inn.foo_type)
+    (d T->sdp.lib.foo_type)
 
     (not true)
 
