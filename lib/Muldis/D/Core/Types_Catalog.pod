@@ -2460,7 +2460,7 @@ is a C<Single> whose sole element is the name of that other type.  Note
 that any type named by C<base_type> must itself be a scalar root
 type or a subtype of one.
 
-=item C<subtype_constraint> - C<maybe_of.Name>
+=item C<subtype_constraint> - C<maybe_of.NameChain>
 
 Iff the type being defined is a scalar root type, or it is a
 non-proper subtype of some other type, then C<subtype_constraint> is not
@@ -2514,7 +2514,7 @@ total number of bidirectional maps C<M> is in C<(P-1) ≤ M ≤ ((P-1)*P/2)>.
 When a subtype is adding possreps to an other base type, all of the mapping
 functions are defined with the subtype.
 
-=item C<default> - C<maybe_of.Name>
+=item C<default> - C<maybe_of.NameChain>
 
 Iff it is a C<Single>, then C<default>
 matches the declared name of an inner C<named_value> function that
@@ -2532,7 +2532,7 @@ then the subtype will use the same default value as its base type; but if
 the subtype's value set excludes said value, then a C<default> of
 C<nothing> is invalid and C<default> must be a C<Single>.
 
-=item C<order> - C<maybe_of.Name>
+=item C<order> - C<maybe_of.NameChain>
 
 A scalar root type definition may optionally have a type-default
 total ordering function associated with it (a type being defined as a
@@ -2576,7 +2576,7 @@ This is an optional programmer comment about the possrep as a whole.
 
 This defines the 0..N attributes of the possrep.
 
-=item C<constraint> - C<maybe_of.Name>
+=item C<constraint> - C<maybe_of.NameChain>
 
 Iff it is a C<Single>, then C<constraint>
 matches the declared name of an inner C<type_constraint> function that
@@ -2644,7 +2644,7 @@ distinct from that of C<p1>, and moreover, the 2 values must be mutually
 ordered so that the value of C<p1> is before the value of C<p2>; the latter
 constraint defines a C<PossrepMapSet>'s canonical form.
 
-=item C<p2_from_p1> - C<Name>
+=item C<p2_from_p1> - C<NameChain>
 
 This matches the declared name of an inner C<possrep_map> function that
 derives the representation of the possrep named by C<p2> from that of the
@@ -2655,7 +2655,7 @@ tuple whose attributes match those of C<p2>.  Note that every distinct
 argument (domain) value of this function must have a distinct result
 (range) value.
 
-=item C<p1_from_p2> - C<Name>
+=item C<p1_from_p2> - C<NameChain>
 
 This matches the declared name of an inner inverse C<possrep_map> function
 to that of C<p2_from_p1>.  I<Note that it would often be feasible for a
@@ -2730,7 +2730,7 @@ and how they are defined in terms of the rest of this type's attributes.
 Note that the special functional dependencies between attributes defined
 herein mean that some kinds of tuple constraints would be redundant.
 
-=item C<tuple_constraints> - C<set_of.Name>
+=item C<tuple_constraints> - C<set_of.NameChain>
 
 This matches the declared names of 0..N inner C<type_constraint> functions
 that (when I<and>-ed together) determine what combinations of tuple
@@ -2746,7 +2746,7 @@ attribute-allowable values are collectively allowed.  Each function is
 invoked either once to test a tuple value, or multiple times to
 individually test every tuple in a relation value.
 
-=item C<relation_constraints> - C<set_of.Name>
+=item C<relation_constraints> - C<set_of.NameChain>
 
 This is like C<tuple_constraint> but that each function's parameter is
 relation-typed rather than tuple-typed; each is a generalized type
@@ -2822,7 +2822,7 @@ of the type being defined; it is as per C<subset_constraints> except that
 the parent relation is the result of unioning appropriately renamed
 projections of the member relations of the distributed key.
 
-=item C<default_tuple> - C<maybe_of.Name>
+=item C<default_tuple> - C<maybe_of.NameChain>
 
 Iff it is a C<Single>, then C<default_tuple>
 matches the declared name of an inner C<named_value> function that
@@ -2837,7 +2837,7 @@ subtype will use the same default tuple value as its base type; but if the
 subtype's value set excludes said value, then a C<default_tuple> of
 C<nothing> is invalid and C<default_tuple> must be a C<Single>.
 
-=item C<default_relation> - C<maybe_of.Name>
+=item C<default_relation> - C<maybe_of.NameChain>
 
 Iff it is a C<Single>, then C<default_relation>
 matches the declared name of an inner C<named_value> function that
@@ -2973,7 +2973,7 @@ C<dependent_attrs> is as per C<determinant_attrs>; none of these may be the
 same as the names of the determinant attributes, since a virtual attribute
 can't be defined in terms of itself.
 
-=item C<virtual_attr_map> - C<Name>
+=item C<virtual_attr_map> - C<NameChain>
 
 This matches the declared name of an inner C<virtual_attr_map> function
 that derives a tuple of dependent attribute values from a tuple of
@@ -3341,7 +3341,7 @@ this is C<Bool:false> then the set of filter data types will be unioned to
 determine the complete set of filter values, and if C<filters> has no
 elements then the filter set is just C<Empty>.
 
-=item C<constraints> - C<set_of.Name>
+=item C<constraints> - C<set_of.NameChain>
 
 This matches the declared names of 0..N inner C<type_constraint> functions
 that (when I<and>-ed together) determine what filter-type-passing
@@ -3353,7 +3353,7 @@ argument is the value to test; the function's result type must be
 C<Bool>.  If the functions unconditionally result in C<Bool:true>, then all
 filter-type-passing values are allowed.
 
-=item C<default> - C<Name>
+=item C<default> - C<NameChain>
 
 This matches the declared name of an inner C<named_value> function that
 results in the default value of the union type; it has zero parameters and
@@ -3402,7 +3402,7 @@ This is the name of the not-C<Empty> other type that all the values of the
 new data type are drawn from; the new type is being declared as a subtype
 of that named by C<base_type>.
 
-=item C<constraints> - C<set_of.Name>
+=item C<constraints> - C<set_of.NameChain>
 
 This matches the declared names of 0..N inner C<type_constraint> functions
 that (when I<and>-ed together) determine what base type values are part of
@@ -3413,7 +3413,7 @@ result type must be C<Bool>.  If the functions unconditionally result
 in C<Bool:true>, then the new type is a non-proper subtype of the base
 type.
 
-=item C<default> - C<maybe_of.Name>
+=item C<default> - C<maybe_of.NameChain>
 
 Iff it is a C<Single>, then C<default>
 matches the declared name of an inner C<named_value> function that
