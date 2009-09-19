@@ -1003,6 +1003,58 @@ I<except> the one with the empty string as its name.
 The default value of C<Depot> defines an empty [|sub]depot
 that does not have any self-local dbvar.
 
+=head2 sys.std.Core.Type.Cat.Material
+
+A C<Material> is a C<DHTuple> that specifies a named routine or type, both
+its public interface and its implementation details, except for its name
+and public/private status; the latter are provided by any depot
+embedding the material when applicable.  Its purpose is as per
+C<[[[Func|Upd|Proc][Head|Body]]|[Scalar|Nonscalar|Union|Restr]Type]>,
+one of which it is a proxy-wrapper for along with other routines and
+types that are composed into it.  A C<Material> is used to define any DBMS
+entity that would be invoked via the second-level namespace C<lib> (hence
+its name is derived from the concept of a library's materials), such as
+C<[fed|dep|sdp].lib>.  A C<Material> is composed of 1 or more named
+routines or types, exactly 1 of which must have the empty string as
+its name; that routine or type defines the actual main routine or
+type that the C<Material> is a proxy-wrapper for, and the other routines
+and types, if any, support it.  A C<Material> is typically
+composed into a C<Depot>.
+
+A C<Material> has these 8 attributes:
+
+=over
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the material as a whole.
+
+=item C<functions> - C<FuncSet>
+
+These are all the function definitions that this material contains.
+
+=item C<updaters> - C<UpdSet>
+
+These are all the updater definitions that this material contains.
+This attribute must be empty unless the material is a procedure or updater.
+
+=item C<procedures> - C<ProcSet>
+
+These are all the procedure definitions that this material contains.
+This attribute must be empty unless the material is a procedure.
+
+=item C<[sca|nonsca|uni|restr]_types> - C<[Sca|Nonsca|Uni|Restr]TypeSet>
+
+These are all the scalar|nonscalar|union|restriction type definitions
+that this material contains.
+
+=back
+
+There is a distributed primary key over the C<name> attributes of all 7 of
+a C<Material>'s C<DHRelation>-typed attributes.
+
+The default value of C<Material> is as per C<RestrType>.
+
 =head2 sys.std.Core.Type.Cat.SubdepotSet
 
 A C<SubdepotSet> is a C<DHRelation> that specifies the set of subdepots
@@ -1077,62 +1129,6 @@ This defines the entire routine or type sans its name.
 A C<MaterialSet> has a binary primary key on the C<subdepot> plus
 C<name> attributes.  Its default value is empty.
 
-=head1 TYPES FOR DEFINING ROUTINES AND DATA TYPES
-
-These are all enumeration data types.
-
-=head2 sys.std.Core.Type.Cat.Material
-
-A C<Material> is a C<DHTuple> that specifies a named routine or type, both
-its public interface and its implementation details, except for its name
-and public/private status; the latter are provided by any depot
-embedding the material when applicable.  Its purpose is as per
-C<[[[Func|Upd|Proc][Head|Body]]|[Scalar|Nonscalar|Union|Restr]Type]>,
-one of which it is a proxy-wrapper for along with other routines and
-types that are composed into it.  A C<Material> is used to define any DBMS
-entity that would be invoked via the second-level namespace C<lib> (hence
-its name is derived from the concept of a library's materials), such as
-C<[fed|dep|sdp].lib>.  A C<Material> is composed of 1 or more named
-routines or types, exactly 1 of which must have the empty string as
-its name; that routine or type defines the actual main routine or
-type that the C<Material> is a proxy-wrapper for, and the other routines
-and types, if any, support it.  A C<Material> is typically
-composed into a C<Depot>.
-
-A C<Material> has these 8 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the material as a whole.
-
-=item C<funcs> - C<FuncSet>
-
-These are all the function definitions that this material contains.
-
-=item C<upds> - C<UpdSet>
-
-These are all the updater definitions that this material contains.
-This attribute must be empty unless the material is a procedure or updater.
-
-=item C<procs> - C<ProcSet>
-
-These are all the procedure definitions that this material contains.
-This attribute must be empty unless the material is a procedure.
-
-=item C<[sca|nonsca|uni|restr]_types> - C<[Sca|Nonsca|Uni|Restr]TypeSet>
-
-These are all the scalar|nonscalar|union|restriction type definitions
-that this material contains.
-
-=back
-
-There is a distributed primary key over the C<name> attributes of all 7 of
-a C<Material>'s C<DHRelation>-typed attributes.
-
-The default value of C<Material> is as per C<RestrType>.
-
 =head2 sys.std.Core.Type.Cat.[Func|Upd|Proc]Set
 
 An C<[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
@@ -1198,7 +1194,7 @@ the name.
 An C<[Sca|Nonsca|Uni|Restr]TypeSet> has a unary primary key on the
 C<name> attribute.  Its default value is empty.
 
-=head1 TYPES FOR DEFINING ROUTINE HEADINGS
+=head1 TYPES FOR DEFINING ROUTINES
 
 These are all enumeration data types.
 
@@ -1239,95 +1235,6 @@ Each element of C<opt_params> must match a parameter name in C<params>.
 
 The default value of C<FuncHead> has zero parameters and a result type
 of C<Bool>; by default, its parameters are all non-optional.
-
-=head2 sys.std.Core.Type.Cat.UpdHead
-
-An C<UpdHead> is a C<DHTuple>.  It specifies the entire heading or public
-interface of an updater or updater, except for its name and
-public/private status; the latter are provided by any type embedding this
-one when applicable.
-
-An C<UpdHead> has these 4 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the updater heading.
-
-=item C<upd_params> - C<NameTypeMap>
-
-This is the declared subject-to-update parameter list of the updater, which
-has 1..N named and typed such parameters.  It must have at least 1 element.
-
-=item C<ro_params> - C<NameTypeMap>
-
-This is the declared read-only parameter list of the updater, which has
-0..N named and typed such parameters.
-
-=item C<opt_params> - C<set_of.Name>
-
-This indicates the subset of the updater's subject-to-update or read-only
-parameters that are optional, that is, do not need to be supplied explicit
-arguments when the function is invoked; any updater parameters not named
-here must be supplied explicit arguments.  Any parameter marked as optional
-which is not given an explicit argument will implicitly default to the
-default value of its declared type; any subject-to-update parameter marked
-as optional which is not given an explicit argument will implicitly bind to
-a new anonymous variable (with the aforementioned default value) which is
-discarded after the updater finishes executing.  Each element of
-C<opt_params> must match a parameter name in either C<upd_params> or
-C<ro_params>.
-
-=back
-
-There is a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params>.
-
-The default value of C<UpdHead> has 1 subject-to-update parameter whose
-name is C<topic> and whose declared type is C<Bool>; it has zero read-only
-parameters; by default, its parameters are all non-optional.
-
-=head2 sys.std.Core.Type.Cat.ProcHead
-
-A C<ProcHead> is a C<DHTuple>.  It specifies the entire heading or public
-interface of a procedure or procedure, except for its name and
-public/private status; the latter are provided by any type embedding this
-one when applicable.
-
-A C<ProcHead> has these 4 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the procedure heading.
-
-=item C<upd_params> - C<NameTypeMap>
-
-This is the declared subject-to-update parameter list of the procedure,
-which has 0..N named and typed such parameters.
-
-=item C<ro_params> - C<NameTypeMap>
-
-This is the declared read-only parameter list of the procedure, which has
-0..N named and typed such parameters.
-
-=item C<opt_params> - C<set_of.Name>
-
-This is as per the same-named attribute of C<UpdHead>.
-
-=back
-
-There is a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params>.
-
-The default value of C<ProcHead> has zero parameters; by default, its
-parameters are all non-optional.
-
-=head1 TYPES FOR DEFINING ROUTINE BODIES
-
-These are all enumeration data types.
 
 =head2 sys.std.Core.Type.Cat.FuncBody
 
@@ -1920,6 +1827,54 @@ A C<MaterialRefSelExprNodeSet> has a unary (unique) key on the C<name>
 attribute, plus another such key on the C<referencing> attribute.  Its
 default value is empty.
 
+=head2 sys.std.Core.Type.Cat.UpdHead
+
+An C<UpdHead> is a C<DHTuple>.  It specifies the entire heading or public
+interface of an updater or updater, except for its name and
+public/private status; the latter are provided by any type embedding this
+one when applicable.
+
+An C<UpdHead> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the updater heading.
+
+=item C<upd_params> - C<NameTypeMap>
+
+This is the declared subject-to-update parameter list of the updater, which
+has 1..N named and typed such parameters.  It must have at least 1 element.
+
+=item C<ro_params> - C<NameTypeMap>
+
+This is the declared read-only parameter list of the updater, which has
+0..N named and typed such parameters.
+
+=item C<opt_params> - C<set_of.Name>
+
+This indicates the subset of the updater's subject-to-update or read-only
+parameters that are optional, that is, do not need to be supplied explicit
+arguments when the function is invoked; any updater parameters not named
+here must be supplied explicit arguments.  Any parameter marked as optional
+which is not given an explicit argument will implicitly default to the
+default value of its declared type; any subject-to-update parameter marked
+as optional which is not given an explicit argument will implicitly bind to
+a new anonymous variable (with the aforementioned default value) which is
+discarded after the updater finishes executing.  Each element of
+C<opt_params> must match a parameter name in either C<upd_params> or
+C<ro_params>.
+
+=back
+
+There is a distributed primary key over the C<name> attributes of
+C<upd_params> and C<ro_params>.
+
+The default value of C<UpdHead> has 1 subject-to-update parameter whose
+name is C<topic> and whose declared type is C<Bool>; it has zero read-only
+parameters; by default, its parameters are all non-optional.
+
 =head2 sys.std.Core.Type.Cat.UpdBody
 
 An C<UpdBody> is a C<DHTuple>.  It specifies the entire body or
@@ -2013,6 +1968,43 @@ C<upd_args> and C<ro_args>.
 The default value of C<MultiUpdStmt> directly corresponds to the
 default value of C<UpdBody> and unconditionally updates its
 containing updater's C<topic> argument to the value C<Bool:false>.
+
+=head2 sys.std.Core.Type.Cat.ProcHead
+
+A C<ProcHead> is a C<DHTuple>.  It specifies the entire heading or public
+interface of a procedure or procedure, except for its name and
+public/private status; the latter are provided by any type embedding this
+one when applicable.
+
+A C<ProcHead> has these 4 attributes:
+
+=over
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the procedure heading.
+
+=item C<upd_params> - C<NameTypeMap>
+
+This is the declared subject-to-update parameter list of the procedure,
+which has 0..N named and typed such parameters.
+
+=item C<ro_params> - C<NameTypeMap>
+
+This is the declared read-only parameter list of the procedure, which has
+0..N named and typed such parameters.
+
+=item C<opt_params> - C<set_of.Name>
+
+This is as per the same-named attribute of C<UpdHead>.
+
+=back
+
+There is a distributed primary key over the C<name> attributes of
+C<upd_params> and C<ro_params>.
+
+The default value of C<ProcHead> has zero parameters; by default, its
+parameters are all non-optional.
 
 =head2 sys.std.Core.Type.Cat.ProcBody
 
