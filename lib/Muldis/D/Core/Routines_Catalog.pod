@@ -197,32 +197,58 @@ statement or an Oracle DROP PACKAGE statement.
 
 =head1 Procedures For Defining Depot Routines and Data Types
 
-These 2 procedures conceptually have the extra 2 parameters C<Name $depot,
+These 14 procedures conceptually have the extra 2 parameters C<Name $depot,
 DeclNameChain $subdepot?>, whose values are implicitly supplied from
 C<tpc.cat.topic_[depot|subdepot]> respectively; those 1 or 2 (as
 applicable) catalog variables must be non-empty as a precondition to
-invoking the 2 procedures.
+invoking the 14 procedures.
 
-=head2 sys.std.Core.Cat.create_depot_material
+=head2 sys.std.Core.Cat.create_[function|updater|procedure]
 
-C<procedure sys.std.Core.Cat.create_depot_material (Name $name,
-Comment $comment?, Bool $is_public?, Material $material)>
+C<procedure sys.std.Core.Cat.create_[function|updater|procedure]
+(Name $name, Comment $comment?, Bool $is_public?,
+[Func|Upd|Proc]Head $head, [Func|Upd|Proc]Body $body)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
-relvar C<fed.cat.mounts{name=$depot}.depot.materials>.  It will create a
-new routine or type, in the depot mounted under the name given by the
-C<depot> argument, whose name and other details match the other arguments.
-This procedure is analagous to a SQL CREATE FUNCTION|PROCEDURE|TYPE|DOMAIN
-statement.
+relvar C<fed.cat.mounts{name=$depot}.depot.[function|updater|procedure]s>.
+It will create a new function|updater|procedure, in the depot mounted under
+the name given by the C<depot> argument, whose name and other details match
+the other arguments.  This procedure is analagous to a SQL CREATE
+FUNCTION|PROCEDURE statement.
 
-=head2 sys.std.Core.Cat.drop_depot_material
+=head2 sys.std.Core.Cat.drop_[function|updater|procedure]
 
-C<procedure sys.std.Core.Cat.drop_depot_material (Name $name)>
+C<procedure sys.std.Core.Cat.drop_[function|updater|procedure]
+(Name $name)>
 
 This procedure is an abstraction over deleting a tuple from the catalog
-relvar C<fed.cat.mounts{name=$depot}.depot.materials>.  It will drop an
-existing depot routine or type.  This procedure is analagous to a SQL DROP
-FUNCTION|PROCEDURE|TYPE|DOMAIN statement.
+relvar C<fed.cat.mounts{name=$depot}.depot.[function|updater|procedure]s>.
+It will drop an existing depot function|updater|procedure.  This procedure
+is analagous to a SQL DROP FUNCTION|PROCEDURE statement.
+
+=head2 sys.std.Core.Cat.create_[scalar|nonscalar|union|restr]_type
+
+C<procedure sys.std.Core.Cat.create_[scalar|nonscalar|union|restr]_type
+(Name $name, Comment $comment?, Bool $is_public?,
+[Scalar|Nonscalar|Union|Restr]Type $type)>
+
+This procedure is an abstraction over inserting a tuple into the catalog
+relvar
+C<fed.cat.mounts{name=$depot}.depot.[scalar|nonscalar|union|restr]_types>.
+It will create a new type, in the depot mounted under the name given by the
+C<depot> argument, whose name and other details match the other arguments.
+This procedure is analagous to a SQL CREATE TYPE|DOMAIN statement.
+
+=head2 sys.std.Core.Cat.drop_[scalar|nonscalar|union|restr]_type
+
+C<procedure sys.std.Core.Cat.drop_[scalar|nonscalar|union|restr]_type
+(Name $name)>
+
+This procedure is an abstraction over deleting a tuple from the catalog
+relvar
+C<fed.cat.mounts{name=$depot}.depot.[scalar|nonscalar|union|restr]_types>.
+It will drop an existing depot type.  This procedure is analagous to a SQL
+DROP TYPE|DOMAIN statement.
 
 =head1 SEE ALSO
 

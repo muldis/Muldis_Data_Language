@@ -65,8 +65,8 @@
     relvar, as SQL does.
 
     * (Types_Catalog.pod)  Updated all 7 catalog types ("Possrep[|Map]Set",
-    "Inner[[S|Nons]calar|Union|Restr]Type", "VirtualAttrMapSet") having at
-    least 1 attribute that held a reference to a routine (a function in
+    "Inner[Scalar|Nonscalar|Union|Restr]Type", "VirtualAttrMapSet") having
+    at least 1 attribute that held a reference to a routine (a function in
     every case), and changed the declared type of every one of the 15 such
     attributes to "NameChain" from "Name".  Prior to the change, all such
     referenceable routines had to be "inner" routines, but now the routines
@@ -75,16 +75,18 @@
     "default[|_[tuple|relation]]", "p1_from_p2", "p2_from_p1",
     "virtual_attr_map", "order".
 
-    * (Types_Catalog.pod)  Renamed the 14 catalog types
+    * (Types_Catalog.pod)  Renamed the 10 catalog types
     "Inner[Func|Upd|Proc][Body|Set]",
-    "Inner[[S|Nons]calar|Union|Restr]Type[|Set]" to remove the "Inner", and
-    updated the "Material" catalog type to rename its 3 attributes
-    "inner_[func|upd|proc]s" to "functions|updaters|procedures" and its 4
-    attributes "inner_[sca|nonsca|uni|restr]_types" to remove the "inner_".
-     Also renamed the 3 main pod sections "TYPES FOR DEFINING INNER
-    [ROUTINE [HEADINGS|BODIES]|DATA TYPES]" to remove the "INNER ".  Also
-    updated any other documentation references to "inner|outer types/etc"
-    to remove the "inner|outer".
+    "Inner[Scalar|Nonscalar|Union|Restr]Type" to remove the "Inner", the 4
+    "Inner[Sca|Nonsca|Uni|Restr]TypeSet" to
+    "[Scalar|Nonscalar|Union|Restr]TypeSet", and updated the "Material"
+    catalog type to rename its 7 attributes "inner_[func|upd|proc]s",
+    "inner_[sca|nonsca|uni|restr]_types" to
+    "functions|updaters|procedures",
+    "[scalar|nonscalar|union|restr]_types".  Also renamed the 3 main pod
+    sections "TYPES FOR DEFINING INNER [ROUTINE [HEADINGS|BODIES]|DATA
+    TYPES]" to remove the "INNER ".  Also updated any other documentation
+    references to "inner|outer types/etc" to remove the "inner|outer".
 
     * (Types_Catalog.pod)  Some pod section rearranging, which has no
     material effect on the spec.  Merged the 2 main pod sections "TYPES FOR
@@ -101,22 +103,29 @@
 
     * (Types_Catalog.pod)  Merged the catalog type "Material" into "Depot";
     the combined type has the 7 attributes "functions|updaters|procedures",
-    "[sca|nonsca|uni|restr]_types" from "Material" plus the 2 attributes
-    "comment", "subdepots" from "Depot" but not "materials" from "Depot".
-    Merged the catalog type "MaterialSet" separately into all 7 of
-    "[Func|Upd|Proc]Set", "[Sca|Nonsca|Uni|Restr]TypeSet"; each of the 7
-    types kept all of its existing 3-4 attributes ("name", "comment" and
-    "head", "body" or "type") and also gained the 2 "subdepot", "is_public"
-    from "MaterialSet" and also now has a binary primary key.  Refactored
-    the catalog types for declaring/defining system-defined materials.  The
-    "SysTypeSet" catalog type was split into the 4
-    "Sys[Sca|Nonsca|Uni|Restr]TypeSet", which are identical save for what
-    kind of "*Type" catalog type they embed; the catalog type "System" was
-    also updated so its "types" attribute was split into the 4
-    "[sca|nonsca|uni|restr]_types".  Updated the "SysFuncSet" catalog type
-    to add a "body" attribute which is "Maybe" typed; the idea is that
-    functions which are just part of the definition of a system-defined
-    type will have their bodies defined, while normal s-d functions won't.
+    "[scalar|nonscalar|union|restr]_types" from "Material" plus the 2
+    attributes "comment", "subdepots" from "Depot" but not "materials" from
+    "Depot".  Merged the catalog type "MaterialSet" separately into all 7
+    of "[Func|Upd|Proc]Set", "[Scalar|Nonscalar|Union|Restr]TypeSet"; each
+    of the 7 types kept all of its existing 3-4 attributes ("name",
+    "comment" and "head", "body" or "type") and also gained the 2
+    "subdepot", "is_public" from "MaterialSet" and also now has a binary
+    primary key.  Refactored the catalog types for declaring/defining
+    system-defined materials.  The "SysTypeSet" catalog type was split into
+    the 4 "Sys[Scalar|Nonscalar|Union|Restr]TypeSet", which are identical
+    save for what kind of "*Type" catalog type they embed; the catalog type
+    "System" was also updated so its "types" attribute was split into the 4
+    "[scalar|nonscalar|union|restr]_types".  Updated the "SysFuncSet"
+    catalog type to add a "body" attribute which is "Maybe" typed; the idea
+    is that functions which are just part of the definition of a
+    system-defined type will have their bodies defined, while normal s-d
+    functions won't.
+
+    * (Routines_Catalog.pod)  As a partial reversion to version 0.77.0 of
+    the language spec, split the 2 data-definition procedures
+    "[create|drop]_depot_material" into the 14
+    "[create|drop]_[function|updater|procedure]",
+    "[create|drop]_[scalar|nonscalar|union|restr]_type".
 
     * (PTMD_STD.pod)  Refactored the grammar nodes in the "DEPOT
     DECLARATION" main pod section to merge package stuff into subdepot
@@ -594,7 +603,7 @@
     "sys.std.Core.Type.Cat.ConstraintSet", which is no longer useful since
     all constraint functions now have names by virtue of being actual inner
     functions.  The updated 7 catalog types are: "Possrep[|Map]Set",
-    "Inner[[S|Nons]calar|Union|Restr]Type", "VirtualAttrMapSet".
+    "Inner[Scalar|Nonscalar|Union|Restr]Type", "VirtualAttrMapSet".
 
     * (Types_Catalog.pod)  Split 3 catalog types 2 ways each, with some
     renaming, where the members of each post-split pair are initially
