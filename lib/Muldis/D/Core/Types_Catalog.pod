@@ -75,13 +75,12 @@ more or less:
 
                 # The following are all regular tuple types.
 
-                sys.std.Core.Type.Cat.Material
                 sys.std.Core.Type.Cat.FuncHead
-                sys.std.Core.Type.Cat.UpdHead
-                sys.std.Core.Type.Cat.ProcHead
                 sys.std.Core.Type.Cat.FuncBody
                 sys.std.Core.Type.Cat.IfThenExprMap
+                sys.std.Core.Type.Cat.UpdHead
                 sys.std.Core.Type.Cat.UpdBody
+                sys.std.Core.Type.Cat.ProcHead
                 sys.std.Core.Type.Cat.ProcBody
                 sys.std.Core.Type.Cat.IfThenVarStmtMap
                 sys.std.Core.Type.Cat.ScalarType
@@ -110,14 +109,13 @@ more or less:
                 sys.std.Core.Type.Cat.SysNspSet
                 sys.std.Core.Type.Cat.Sys[Func|Upd|Proc]Set
                 sys.std.Core.Type.Cat.SysSpecTypeSet
-                sys.std.Core.Type.Cat.SysTypeSet
+                sys.std.Core.Type.Cat.Sys[Sca|Nonsca|Uni|Restr]TypeSet
                 sys.std.Core.Type.Cat.SysCatSet
                 sys.std.Core.Type.Cat.MountControlSet
                 sys.std.Core.Type.Cat.DepotMountSet
                 sys.std.Core.Type.Cat.FedTypeMapSet
                 sys.std.Core.Type.Cat.FedTypeMap
                 sys.std.Core.Type.Cat.SubdepotSet
-                sys.std.Core.Type.Cat.MaterialSet
                 sys.std.Core.Type.Cat.[Func|Upd|Proc]Set
                 sys.std.Core.Type.Cat.[Sca|Nonsca|Uni|Restr]TypeSet
                 sys.std.Core.Type.Cat.ScaValExprNodeSet
@@ -434,7 +432,7 @@ specifically all the relcons and relvars with the names
 C<[sys|mnt|fed|dep|sdp].cat>.  The system catalog constant named
 C<sys.cat> is of the C<System> type.
 
-A C<System> has these 8 attributes:
+A C<System> has these 11 attributes:
 
 =over
 
@@ -458,9 +456,9 @@ implementation-specific extensions.
 
 =item C<functions|updaters|procedures> - C<Sys[Func|Upd|Proc]Set>
 
-These are the interfaces of all the system-defined
-functions|updaters|procedures.  (Note that C<procedures> also specifies the
-system-defined system services.)
+These are the interfaces, or definitions in some cases, of all the
+system-defined functions|updaters|procedures.  (Note that C<procedures>
+also specifies the system-defined system services.)
 
 =item C<special_types> - C<SysSpecTypeSet>
 
@@ -480,7 +478,7 @@ an infinite number of singleton structure types (and those structure types
 are not listed individually in the system catalog at all, for what should
 be obvious reasons).
 
-=item C<types> - C<SysTypeSet>
+=item C<[sca|nonsca|uni|restr]_types> - C<Sys[Sca|Nonsca|Uni|Restr]TypeSet>
 
 These are all the system-defined scalar types, except for
 C<String> because it can't be defined like user-defined types, and complete
@@ -536,7 +534,7 @@ A C<Sys[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
 system-defined functions|updaters|procedures.  (Note that C<SysProcSet>
 also specifies the system-defined system services.)
 
-A C<Sys[Func|Upd|Proc]Set> has these 4 attributes:
+A C<Sys[Func|Upd|Proc]Set> has these 5|4|4 attributes:
 
 =over
 
@@ -559,8 +557,18 @@ as a whole.
 =item C<head> - C<[Func|Upd|Proc]Head>
 
 This defines the entire function|updater|procedure heading, that is its
-public interface sans the name, which is all the details of how to use it
+public interface sans its name, which is all the details of how to use it
 and no more detail than necessary about how it is implemented.
+
+=item C<body> - C<maybe_of.FuncBody>
+
+Iff the function exists for the sole purpose of being part of a
+system-defined type's definition, then it is fully defined in the system
+catalog as well, and C<body> is a C<Single> whose sole element defines the
+entire function body, that is its implementation, besides what C<head>
+defines.  Iff the function exists for another purpose, because it is a
+normal system-defined function, then only the function's interface is
+defined in the system catalog, and C<body> is C<nothing>.
 
 =back
 
@@ -598,38 +606,40 @@ This is an optional programmer comment about the type as a whole.
 A C<SysSpecTypeSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.SysTypeSet
+=head2 sys.std.Core.Type.Cat.Sys[Sca|Nonsca|Uni|Restr]TypeSet
 
-A C<SysTypeSet> is a C<DHRelation> that specifies a set of system-defined
-types.
+A C<Sys[Sca|Nonsca|Uni|Restr]TypeSet> is a C<DHRelation> that specifies a
+set of scalar|nonscalar|union|restriction system-defined types.
 
-A C<SysTypeSet> has these 4 attributes:
+A C<Sys[Sca|Nonsca|Uni|Restr]TypeSet> has these 4 attributes:
 
 =over
 
 =item C<parent> - C<DeclNameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
-the type's parent system namespace.
+the scalar|nonscalar|union|restriction type's parent system namespace.
 
 =item C<name> - C<Name>
 
-This is the declared name of the type within the namespace defined by
-C<parent>; other Muldis D code would reference it with the combination of
-C<parent> and C<name>.
+This is the declared name of the scalar|nonscalar|union|restriction type
+within the namespace defined by C<parent>; other Muldis D code would
+reference it with the combination of C<parent> and C<name>.
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the type as a whole.
+This is an optional programmer comment about the
+scalar|nonscalar|union|restriction type as a whole.
 
-=item C<type> - C<Material>
+=item C<type> - C<[Scalar|Nonscalar|Union|Restr]Type>
 
-This defines the entire type sans the name.
+This defines the entire scalar|nonscalar|union|restriction type sans its
+name.
 
 =back
 
-A C<SysTypeSet> has a binary primary key on the C<parent> plus C<name>
-attributes.  Its default value is empty.
+A C<Sys[Scalar|Nonscalar|Union|Restr]TypeSet> has a binary primary key on
+the C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysCatSet
 
@@ -973,7 +983,7 @@ declared data type of the self-local dbvar that this [|sub]depot
 contains; if said type doesn't exist, then this [|sub]depot does
 not have a self-local dbvar.
 
-A C<Depot> has these 3 attributes:
+A C<Depot> has these 9 attributes:
 
 =over
 
@@ -986,15 +996,20 @@ This is an optional programmer comment about the [|sub]depot as a whole.
 These are all the subdepots that this system catalog contains (which might
 be none).
 
-=item C<materials> - C<MaterialSet>
+=item C<functions|updaters|procedures> - C<[Func|Upd|Proc]Set>
 
-These are all the definitions that this [|sub]depot contains of
-functions, updaters, procedures, scalar types with possreps, complete
-nonscalar types, union types, and restriction types.
+These are all the definitions that this [|sub]depot contains of functions,
+updaters, procedures.
+
+=item C<[sca|nonsca|uni|restr]_types> - C<[Sca|Nonsca|Uni|Restr]TypeSet>
+
+These are all the definitions that this [|sub]depot contains of scalar
+types with possreps, complete nonscalar types, union types, and restriction
+types.
 
 =back
 
-There is a distributed primary key over the C<name> attributes of all 3 of
+There is a distributed primary key over the C<name> attributes of all 8 of
 a C<Depot>'s main C<DHRelation>-typed attributes.  Moreover, iff
 any of those C<name> is the empty string, then the distributed primary key
 also extends over all of the types and routines of that material,
@@ -1002,58 +1017,6 @@ I<except> the one with the empty string as its name.
 
 The default value of C<Depot> defines an empty [|sub]depot
 that does not have any self-local dbvar.
-
-=head2 sys.std.Core.Type.Cat.Material
-
-A C<Material> is a C<DHTuple> that specifies a named routine or type, both
-its public interface and its implementation details, except for its name
-and public/private status; the latter are provided by any depot
-embedding the material when applicable.  Its purpose is as per
-C<[[[Func|Upd|Proc][Head|Body]]|[Scalar|Nonscalar|Union|Restr]Type]>,
-one of which it is a proxy-wrapper for along with other routines and
-types that are composed into it.  A C<Material> is used to define any DBMS
-entity that would be invoked via the second-level namespace C<lib> (hence
-its name is derived from the concept of a library's materials), such as
-C<[fed|dep|sdp].lib>.  A C<Material> is composed of 1 or more named
-routines or types, exactly 1 of which must have the empty string as
-its name; that routine or type defines the actual main routine or
-type that the C<Material> is a proxy-wrapper for, and the other routines
-and types, if any, support it.  A C<Material> is typically
-composed into a C<Depot>.
-
-A C<Material> has these 8 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the material as a whole.
-
-=item C<functions> - C<FuncSet>
-
-These are all the function definitions that this material contains.
-
-=item C<updaters> - C<UpdSet>
-
-These are all the updater definitions that this material contains.
-This attribute must be empty unless the material is a procedure or updater.
-
-=item C<procedures> - C<ProcSet>
-
-These are all the procedure definitions that this material contains.
-This attribute must be empty unless the material is a procedure.
-
-=item C<[sca|nonsca|uni|restr]_types> - C<[Sca|Nonsca|Uni|Restr]TypeSet>
-
-These are all the scalar|nonscalar|union|restriction type definitions
-that this material contains.
-
-=back
-
-There is a distributed primary key over the C<name> attributes of all 7 of
-a C<Material>'s C<DHRelation>-typed attributes.
-
-The default value of C<Material> is as per C<RestrType>.
 
 =head2 sys.std.Core.Type.Cat.SubdepotSet
 
@@ -1088,71 +1051,45 @@ associated with this subdepot name.
 A C<SubdepotSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.MaterialSet
+=head2 sys.std.Core.Type.Cat.[Func|Upd|Proc]Set
 
-A C<MaterialSet> is a C<DHRelation> that specifies a set of routines and
-types that a [|sub]depot might directly contain; each routine or type may
-be either public for the DBMS as a whole or private to the subdepot.
+An C<[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
+functions|updaters|procedures that a [|sub]depot might directly contain;
+each routine may be either public for the DBMS as a whole or private to the
+subdepot.
 
-A C<MaterialSet> has these 5 attributes:
+An C<[Func|Upd|Proc]Set> has these 6 attributes:
 
 =over
 
 =item C<subdepot> - C<DeclNameChain>
 
 This is the fully-qualified name, in the C<dep.[cat|lib|data]> namespace,
-of the routine's or type's parent [|sub]depot.
+of the function|updater|procedure's parent [|sub]depot.
 
 =item C<name> - C<Name>
 
-This is the declared name of the routine or type within the namespace
-defined by C<subdepot>; other Muldis D code would reference it with the
-combination of C<subdepot> and C<name>.
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the routine or type as a
-whole.
-
-=item C<is_public> - C<Bool>
-
-This is C<Bool:true> if the routine or type is part of the subdepot's own
-public interface and may be invoked from outside the subdepot; it is
-C<Bool:false> if it is just part of the subdepot's internals.
-
-=item C<material> - C<Material>
-
-This defines the entire routine or type sans its name.
-
-=back
-
-A C<MaterialSet> has a binary primary key on the C<subdepot> plus
-C<name> attributes.  Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.[Func|Upd|Proc]Set
-
-An C<[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
-functions|updaters|procedures that a function|updater|procedure might
-contain.
-
-An C<[Func|Upd|Proc]Set> has these 4 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the function|updater|procedure.
+This is the declared name of the function|updater|procedure within the
+namespace defined by C<subdepot>; other Muldis D code would reference it
+with the combination of C<subdepot> and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the function|updater|procedure
 as a whole.
 
+=item C<is_public> - C<Bool>
+
+This is C<Bool:true> if the function|updater|procedure is part of the
+subdepot's own public interface and may be invoked from outside the
+subdepot; it is C<Bool:false> if it is just part of the subdepot's
+internals.
+
 =item C<head> - C<[Func|Upd|Proc]Head>
 
-This defines the entire function|updater|procedure heading, that is
-its public interface sans the name, which is all the details of how to use
-it and no more detail than necessary about how it is implemented.
+This defines the entire function|updater|procedure heading, that is its
+public interface sans its name, which is all the details of how to use it
+and no more detail than necessary about how it is implemented.
 
 =item C<body> - C<[Func|Upd|Proc]Body>
 
@@ -1161,38 +1098,52 @@ implementation, besides what C<head> defines.
 
 =back
 
-An C<[Func|Upd|Proc]Set> has a unary primary key on the C<name>
-attribute.  Its default value is empty.
+An C<[Func|Upd|Proc]Set> has a binary primary key on the C<subdepot> plus
+C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.[Sca|Nonsca|Uni|Restr]TypeSet
 
-An C<[Sca|Nonsca|Uni|Restr]TypeSet> is a C<DHRelation> that specifies
-a set of scalar|nonscalar|union|restriction types that a
-function|updater|procedure or scalar|nonscalar|union|restriction type might
-contain.
+An C<[Sca|Nonsca|Uni|Restr]TypeSet> is a C<DHRelation> that specifies a set
+of scalar|nonscalar|union|restriction types that a [|sub]depot might
+directly contain; each type may be either public for the DBMS as a whole or
+private to the subdepot.
 
-An C<[Sca|Nonsca|Uni|Restr]TypeSet> has these 3 attributes:
+An C<[Sca|Nonsca|Uni|Restr]TypeSet> has these 5 attributes:
 
 =over
 
+=item C<subdepot> - C<DeclNameChain>
+
+This is the fully-qualified name, in the C<dep.[cat|lib|data]> namespace,
+of the scalar|nonscalar|union|restriction type's parent [|sub]depot.
+
 =item C<name> - C<Name>
 
-This is the declared name of the scalar|nonscalar|union|restriction type.
+This is the declared name of the scalar|nonscalar|union|restriction type
+within the namespace defined by C<subdepot>; other Muldis D code would
+reference it with the combination of C<subdepot> and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the
 scalar|nonscalar|union|restriction type as a whole.
 
+=item C<is_public> - C<Bool>
+
+This is C<Bool:true> if the scalar|nonscalar|union|restriction type is part
+of the subdepot's own public interface and may be invoked from outside the
+subdepot; it is C<Bool:false> if it is just part of the subdepot's
+internals.
+
 =item C<type> - C<[Scalar|Nonscalar|Union|Restr]Type>
 
 This defines the entire scalar|nonscalar|union|restriction type sans
-the name.
+its name.
 
 =back
 
-An C<[Sca|Nonsca|Uni|Restr]TypeSet> has a unary primary key on the
-C<name> attribute.  Its default value is empty.
+An C<[Sca|Nonsca|Uni|Restr]TypeSet> has a binary primary key on the
+C<subdepot> plus C<name> attributes.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING ROUTINES
 
@@ -3571,9 +3522,8 @@ to define imperative versions of C<sys.std.Core.Control.curried_func>.>
 This is a reference data type.  A C<MaterialRef> is functionally like a
 smart C<NameChain> that holds a routine or type name but it remembers the
 context of its creation, and it may also hold other context-specific
-information such as pre-bound function parameters.  Its default value is as
-per C<Material>, which is a reference to the C<sys.std.Core.Type.Universal>
-data type.
+information such as pre-bound function parameters.  Its default value
+is a reference to the C<sys.std.Core.Type.Universal> data type.
 
 =head2 sys.std.Core.Type.Cat.FuncRef
 
