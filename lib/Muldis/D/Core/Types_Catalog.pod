@@ -86,7 +86,7 @@ more or less:
                 sys.std.Core.Type.Cat.ScalarType
                 sys.std.Core.Type.Cat.NonscalarType
                 sys.std.Core.Type.Cat.UnionType
-                sys.std.Core.Type.Cat.RestrType
+                sys.std.Core.Type.Cat.SubsetType
                 sys.std.Core.Type.Cat.OrderByName
 
                 sys.std.Core.Type.Database
@@ -110,7 +110,7 @@ more or less:
                 sys.std.Core.Type.Cat.Sys[Func|Upd|Proc]Set
                 sys.std.Core.Type.Cat.SysSpecTypeSet
                 sys.std.Core.Type.Cat.Sys[Scalar|Nonscalar]TypeSet
-                sys.std.Core.Type.Cat.Sys[Union|Restr]TypeSet
+                sys.std.Core.Type.Cat.Sys[Union|Subset]TypeSet
                 sys.std.Core.Type.Cat.SysCatSet
                 sys.std.Core.Type.Cat.MountControlSet
                 sys.std.Core.Type.Cat.DepotMountSet
@@ -118,7 +118,8 @@ more or less:
                 sys.std.Core.Type.Cat.FedTypeMap
                 sys.std.Core.Type.Cat.SubdepotSet
                 sys.std.Core.Type.Cat.[Func|Upd|Proc]Set
-                sys.std.Core.Type.Cat.[Scalar|Nonscalar|Union|Restr]TypeSet
+                sys.std.Core.Type.Cat.[Scalar|Nonscalar]TypeSet
+                sys.std.Core.Type.Cat.[Union|Subset]TypeSet
                 sys.std.Core.Type.Cat.ScaValExprNodeSet
                 sys.std.Core.Type.Cat.ScaPRSelExprNodeSet
                 sys.std.Core.Type.Cat.TupSelExprNodeSet
@@ -479,12 +480,12 @@ an infinite number of singleton structure types (and those structure types
 are not listed individually in the system catalog at all, for what should
 be obvious reasons).
 
-=item C<[scalar|nonscalar|union|restr]_types> -
-C<Sys[Scalar|Nonscalar|Union|Restr]TypeSet>
+=item C<[scalar|nonscalar|union|subset]_types> -
+C<Sys[Scalar|Nonscalar|Union|Subset]TypeSet>
 
 These are all the system-defined scalar types, except for
 C<String> because it can't be defined like user-defined types, and complete
-nonscalar types, and union types, and restriction types.
+nonscalar types, and union types, and subset types.
 
 =item C<catalogs> - C<SysCatSet>
 
@@ -608,39 +609,38 @@ This is an optional programmer comment about the type as a whole.
 A C<SysSpecTypeSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Sys[Scalar|Nonscalar|Union|Restr]TypeSet
+=head2 sys.std.Core.Type.Cat.Sys[Scalar|Nonscalar|Union|Subset]TypeSet
 
-A C<Sys[Scalar|Nonscalar|Union|Restr]TypeSet> is a C<DHRelation> that
-specifies a set of scalar|nonscalar|union|restriction system-defined types.
+A C<Sys[Scalar|Nonscalar|Union|Subset]TypeSet> is a C<DHRelation> that
+specifies a set of scalar|nonscalar|union|subset system-defined types.
 
-A C<Sys[Scalar|Nonscalar|Union|Restr]TypeSet> has these 4 attributes:
+A C<Sys[Scalar|Nonscalar|Union|Subset]TypeSet> has these 4 attributes:
 
 =over
 
 =item C<parent> - C<DeclNameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
-the scalar|nonscalar|union|restriction type's parent system namespace.
+the scalar|nonscalar|union|subset type's parent system namespace.
 
 =item C<name> - C<Name>
 
-This is the declared name of the scalar|nonscalar|union|restriction type
+This is the declared name of the scalar|nonscalar|union|subset type
 within the namespace defined by C<parent>; other Muldis D code would
 reference it with the combination of C<parent> and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the
-scalar|nonscalar|union|restriction type as a whole.
+scalar|nonscalar|union|subset type as a whole.
 
-=item C<type> - C<[Scalar|Nonscalar|Union|Restr]Type>
+=item C<type> - C<[Scalar|Nonscalar|Union|Subset]Type>
 
-This defines the entire scalar|nonscalar|union|restriction type sans its
-name.
+This defines the entire scalar|nonscalar|union|subset type sans its name.
 
 =back
 
-A C<Sys[Scalar|Nonscalar|Union|Restr]TypeSet> has a binary primary key on
+A C<Sys[Scalar|Nonscalar|Union|Subset]TypeSet> has a binary primary key on
 the C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysCatSet
@@ -1003,16 +1003,17 @@ be none).
 These are all the definitions that this [|sub]depot contains of functions,
 updaters, procedures.
 
-=item C<[scalar|nonscalar|union|restr]_types> -
-C<[Scalar|Nonscalar|Union|Restr]TypeSet>
+=item C<[scalar|nonscalar|union|subset]_types> -
+C<[Scalar|Nonscalar|Union|Subset]TypeSet>
 
 These are all the definitions that this [|sub]depot contains of scalar
-types with possreps, complete nonscalar types, union types, and restriction
+types with possreps, complete nonscalar types, union types, and subset
 types.
 
 =back
 
-There is a distributed primary key over the C<name> attributes of all 8 of
+There is a distributed binary primary key over the C<parent> or C<subdepot>
+plus C<name> attributes of all 8 of
 a C<Depot>'s main C<DHRelation>-typed attributes.  Moreover, iff
 any of those C<name> is the empty string, then the distributed primary key
 also extends over all of the types and routines of that material,
@@ -1104,49 +1105,48 @@ implementation, besides what C<head> defines.
 An C<[Func|Upd|Proc]Set> has a binary primary key on the C<subdepot> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Scalar|Nonscalar|Union|Restr]TypeSet
+=head2 sys.std.Core.Type.Cat.[Scalar|Nonscalar|Union|Subset]TypeSet
 
-An C<[Scalar|Nonscalar|Union|Restr]TypeSet> is a C<DHRelation> that
-specifies a set of scalar|nonscalar|union|restriction types that a
+An C<[Scalar|Nonscalar|Union|Subset]TypeSet> is a C<DHRelation> that
+specifies a set of scalar|nonscalar|union|subset types that a
 [|sub]depot might directly contain; each type may be either public for the
 DBMS as a whole or private to the subdepot.
 
-An C<[Scalar|Nonscalar|Union|Restr]TypeSet> has these 5 attributes:
+An C<[Scalar|Nonscalar|Union|Subset]TypeSet> has these 5 attributes:
 
 =over
 
 =item C<subdepot> - C<DeclNameChain>
 
 This is the fully-qualified name, in the C<dep.[cat|lib|data]> namespace,
-of the scalar|nonscalar|union|restriction type's parent [|sub]depot.
+of the scalar|nonscalar|union|subset type's parent [|sub]depot.
 
 =item C<name> - C<Name>
 
-This is the declared name of the scalar|nonscalar|union|restriction type
+This is the declared name of the scalar|nonscalar|union|subset type
 within the namespace defined by C<subdepot>; other Muldis D code would
 reference it with the combination of C<subdepot> and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the
-scalar|nonscalar|union|restriction type as a whole.
+scalar|nonscalar|union|subset type as a whole.
 
 =item C<is_public> - C<Bool>
 
-This is C<Bool:true> if the scalar|nonscalar|union|restriction type is part
+This is C<Bool:true> if the scalar|nonscalar|union|subset type is part
 of the subdepot's own public interface and may be invoked from outside the
 subdepot; it is C<Bool:false> if it is just part of the subdepot's
 internals.
 
-=item C<type> - C<[Scalar|Nonscalar|Union|Restr]Type>
+=item C<type> - C<[Scalar|Nonscalar|Union|Subset]Type>
 
-This defines the entire scalar|nonscalar|union|restriction type sans
-its name.
+This defines the entire scalar|nonscalar|union|subset type sans its name.
 
 =back
 
-An C<[Scalar|Nonscalar|Union|Restr]TypeSet> has a binary primary key on the
-C<subdepot> plus C<name> attributes.  Its default value is empty.
+An C<[Scalar|Nonscalar|Union|Subset]TypeSet> has a binary primary key on
+the C<subdepot> plus C<name> attributes.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING ROUTINES
 
@@ -3310,32 +3310,31 @@ zero filter types, both type lists are unioned, and C<constraints> is empty
 C<UnionType> attribute values that would result in an alias for the
 C<Empty> type, due to a default value for the type being mandatory.
 
-=head2 sys.std.Core.Type.Cat.RestrType
+=head2 sys.std.Core.Type.Cat.SubsetType
 
-An C<RestrType> is a C<DHTuple>.  It provides a relatively terse
-method to define a simple restriction-defined subtype of a single other
+An C<SubsetType> is a C<DHTuple>.  It provides a relatively terse
+method to define a simple subset-defined subtype of a single other
 type (which can be any not-C<Empty> type at all), which is a common kind of
 type to have.  The new type is either a proper or non-proper subset of the
 other type, whose values are determined from applying 0..N type constraint
 functions to the parent type; either way, the new type does declare its own
 default value.  An alternate common scenario is to define a non-proper
 subtype of its parent type that serves just to supply a different default
-value for the context in which the new type is used.  A restriction type
+value for the context in which the new type is used.  A subset type
 does not define any changes or supplements to the interfaces available for
 working with its values, instead simply using those of its declared parent
 type.  A data type defined in this way is typically not considered to exist
 when the system wants to determine the MST (most specific type) of one of
 its values.  You can only declare a nonscalar type with an incompletely
-defined attribute list using a C<RestrType> (or a C<UnionType>).
+defined attribute list using a C<SubsetType> (or a C<UnionType>).
 
-An C<RestrType> has these 4 attributes:
+An C<SubsetType> has these 4 attributes:
 
 =over
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the restriction type as
-a whole.
+This is an optional programmer comment about the subset type as a whole.
 
 =item C<base_type> - C<NameChain>
 
@@ -3347,30 +3346,29 @@ of that named by C<base_type>.
 
 This matches the declared names of 0..N C<type_constraint> functions
 that (when I<and>-ed together) determine what base type values are part of
-the restriction type.  The function that each of these names
+the subset type.  The function that each of these names
 must have a single C<topic> parameter whose declared type is that named
 by C<base_type>, and whose argument is the value to test; the function's
-result type must be C<Bool>.  If the functions unconditionally result
-in C<Bool:true>, then the new type is a non-proper subtype of the base
-type.
+result type must be C<Bool>.  If the functions unconditionally result in
+C<Bool:true>, then the new type is a non-proper subtype of the base type.
 
 =item C<default> - C<maybe_of.NameChain>
 
 Iff it is a C<Single>, then C<default>
 matches the declared name of an C<named_value> function that
-results in the default value of the restriction type; it has zero
-parameters and its result type is the same as the restriction type whose
+results in the default value of the subset type; it has zero
+parameters and its result type is the same as the subset type whose
 declaration it is part of.  Iff C<default> is C<nothing>, then the
-restriction type will use the same default value as its base type; but if
-the restriction type's value set excludes said value, then a C<default> of
+subset type will use the same default value as its base type; but if
+the subset type's value set excludes said value, then a C<default> of
 C<nothing> is invalid and C<default> must be a C<Single>.
 
 =back
 
-The default value of C<RestrType> defines an alias for C<Universal>,
+The default value of C<SubsetType> defines an alias for C<Universal>,
 with the same default value; it has the base type C<Universal> and
 C<constraints> is empty (unconditionally C<Bool:true>).  Note that there is
-no valid combination of C<RestrType> attribute values that would
+no valid combination of C<SubsetType> attribute values that would
 result in an alias for the C<Empty> type, due to a default value for the
 type being mandatory.
 
