@@ -2657,6 +2657,80 @@ easier to implement Muldis D and easier to understand at a glance what
 Muldis D code is doing, even if the system catalog representation of the
 code is a bit more verbose due to requiring more explicit function calls.
 
+=head2 Empty-String Names
+
+Muldis D empowers users to give the entities they define any character
+string at all for their declared names, including strings with
+non-alphanumeric characters that some programming languages would consider
+illegal in names/identifiers/symbols, and including the empty string, which
+some languages don't support.  Besides the pragmatic advantage that such
+very simple rules makes for simpler implementations, the empty string is
+the most natural value for a string-like data type to use as its default
+value, and is the most natural choice for what to name the implicit
+"default" entity to be used in some context with respect to alternatives.
+Given that Muldis D is intended to be used as an intermediate language when
+translating between other languages, the empty string also seems a natural
+choice for what to name some artifacts of Muldis D's representation of some
+concepts which in other languages don't need to be named at all, so that an
+arbitrary import from another language can bring in entities of any names
+that the other language supports, and they won't clash with some extra
+names that Muldis D might want to use in the same namespaces.
+
+It turns out that Muldis D ascribes special meanings or semantics to
+entities in many contexts when they have the empty string as their name,
+and in fact requires some entities to have empty string names.  Each of
+those meanings or semantics are described in this documentation section.
+
+Within a depot mount federation, the empty string name is reserved for the
+single depot mount that exists for the entire lifetime of an in-DBMS
+process, which begins to exist as part of the process' startup and that
+can't cease to exist except as part of the process' shutdown.  In a pure
+Muldis D application, the depot corresponding to this mount would be what
+contains the "main program" procedure; the in-DBMS process starts and ends
+with the starting and ending of that procedure.  This is the case not only
+for the main process but also any other processes in such an application;
+if the other is a worker process, then the empty-name depot mount has the
+procedure defining the work that said other process exists to perform.  In
+a mixed-language application where another language has the main program,
+and the lifetime of an in-DBMS process isn't controlled by the lifetime of
+a Muldis D procedure's execution, then the empty-name depot mount may
+simply be empty at process startup.
+
+Iff a subdepot (or a depot) directly contains a material (routine or type)
+whose declared name is the empty string, then that entire subdepot is
+considered to be a proxy for that material, as if the material had been
+declared one level up in place of the subdepot, and so any syntax which is
+valid for directly referencing the material may instead (and is recommended
+to) directly reference its parent subdepot instead as if it were the
+material itself.  So for example, if a material C<sdp.lib.foo.""> exists,
+then C<sdp.lib.foo> will implicitly refer to the same material in any
+context that expects the name of a material.  This feature should be
+immensely helpful in supporting encapsulation of materials, such that if
+one wanted to change the implementation of a material to add support
+materials, they can conceptually embed the latter into the former, by
+actually replacing the original material with a subdepot holding the
+components of the new version, keeping those from messing up the namespace
+that the original lived in, and no external code has to know about this
+implementation change of the material, and can keep referencing it in the
+same way.  Note that this proxying feature I<will> cascade, such as when a
+subdepot whose name is the empty string contains a material whose name is
+the empty string; so for example, a material C<sdp.lib.foo."".""> can also
+be referenced by both C<sdp.lib.foo> and C<sdp.lib.foo."">.  Note that this
+proxying feature can I<not> be used to reference a subdepot or depot itself
+whose name is the empty string, for hopefully obvious reasons.
+
+Iff a depot or subdepot has a self-local dbvar (specifically, iff the
+former's C<dep.cat.data> or C<sdp.cat.data> is a C<Single>), then the
+recommended convention is that the declared type of said dbvar is defined
+by a type immediately contained in said depot/subdepot whose declared name
+is the empty string.  (This also means that C<dep.lib> alone will reference
+the type of the depot's C<dep.data>, when the convention is followed.)
+
+In a function definition, it is mandatory for the root node in the
+expression node tree to have the empty string as its declared name.
+Similarly, in a procedure definition, it is mandatory for the root node in
+the statement node tree to have the empty string as its declared name.
+
 =head2 User Namespace Correspondence
 
 The namespace hierarchies under the C<lib> and C<data> second-level
@@ -2676,7 +2750,7 @@ that have a common namespace hierarchy for both routines and relvars.  This
 section details that mutual constraint.
 
 The 3 system-defined user-data variables named C<[fed|dep|sdp].data>
-are all of (almost) "just" the C<Database> type (which is a C<Tuple> proper
+are all of "just" the C<Database> type (which is a C<Tuple> proper
 subtype), or are of its proper subtypes.
 
 The C<fed.data> variable's type is determined primarily by the current
@@ -2702,10 +2776,10 @@ I<not> have a self-local dbvar; this means by default the depot is just a
 repository for code, able to contain only types and routines, and that
 depot's C<dep.data> doesn't exist at all.  Later on, if a depot's catalog
 is updated to say that the depot I<does> have a self-local dbvar, which is
-accomplished by adding a material with the empty string entity declaration
-name that is a database type definition directly within the depot's root
-namespace, then the declared type of that depot's C<dep.data> is that same
-database type.
+accomplished by setting that depot's C<dep.cat.data> to a C<Single> value
+that names the declared database type of that depot's C<dep.data>;
+typically said named type is a material also added to the depot's root
+namespace, which typically has the empty string entity declaration name.
 
 In most typical situations, a depot's catalog is updated
 to say that the declared type of C<dep.data> consists only of database
@@ -2729,9 +2803,11 @@ relation is done by extending the database with a new relation-valued
 attribute, and removing one is removing its attribute.  But see further
 below as, strictly speaking, some database values can't be in C<dep.data>.
 
-If a depot has any subdepots, then the value of C<dep.data>
-must have corresponding attributes that match by name, recursively, iff the
-subdepot has a self-local dbvar.  For example, if a depot has a
+If a depot has any subdepots, then for each subdepot, iff the subdepot has
+a self-local dbvar, that is iff the subdepot's C<sdp.cat.data> is a
+C<Single>, then the value of C<dep.data> must have a corresponding
+database-typed attribute that matches by name,
+recursively.  For example, if a depot has a
 root-child subdepot named C<foo> and a child subdepot of that named C<bar>,
 and C<bar> expects to have a self-local dbvar, then the type of C<dep.data>
 must have a database-typed attribute named C<foo> and the type of C<foo>
@@ -2759,18 +2835,15 @@ of its direct ancestor namespaces must have one too, because a subdepot
 dbvar is always a pseudo-variable defined as an attribute of its
 parent depot or subdepot, recursively.
 
-Strictly speaking, the type of a depot/subdepot's self-local dbvar
-can I<never> be "just a database" (an alias of C<Database>).  To start
-with, a depot/etc has at least an empty string named child type iff it has
-a self-local dbvar, and so said dbvar's type has to at least exclude every
-database value with an attribute whose name is the empty string.  For a
-depot/etc with no child subdepots or materials besides that
-single type, that would be the only limitation.  Regarding any other child
+Strictly speaking, the type of a depot's or subdepot's self-local dbvar
+can only be "just a database" (the C<Database> type) iff that depot has
+no subdepots or materials at all.  Regarding any other child
 materials, the type must exclude attributes with the same names.  When
 there is a child subdepot C<foo>, the situation depends on
 whether C<foo> has a self-local dbvar; if it does, then the parent's type
 must have an attribute named C<foo> and that attribute must declare its
-type to be C<sdp.lib.foo."">; if it doesn't, then the parent's type must
+type to be the same type as the child subdepot's C<sdp.cat.data> names;
+if it doesn't, then the parent's type must
 exclude every database value with an attribute C<foo>.
 
 Similar to the subdepot/dbvar duality, Muldis D also supports a

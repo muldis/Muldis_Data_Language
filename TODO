@@ -18,42 +18,6 @@ table for these items; they are simply to be done "as soon as possible".
 the progress is non-trivial, so there are regular public snapshots with
 nicely rendered documentation.
 
-* Reverse the change made in v0.89.0 about the removal of the "data"
-attribute of "DepotOrPackage" and empty-string-named-type in a subdepot
-being used implicitly in place of the "data" for self-local dbvar type.
-Remove the reservation of the empty string name for a data type and allow
-any subdepot or material to have the empty string as its name; and so, make
-it such that anytime a subdepot contains an subdepot/material whose name is
-the empty string, then the parent subdepot is a proxy for the emp-str-nm
-child for referencing purposes; so for example, C<sdp.lib.foo> is a proxy
-for C<sdp.lib.foo."">, which if that was a relvar attribute's type, might
-be the type for C<sdp.data.foo>.  In the end, .lib and .data would then not
-have as strict a correspondence, the inter-lib relationships more import.
-
-* IN PROGRESS ...
-Update ENTITY NAMES and the system catalog for further namespace
-abstraction, loosely merging [depot, subdepot, package, material] together,
-so that effectively the concept of "inner" types/routines goes away, and
-instead a more generic namespace can now be a proxy for its contents, sort
-of like Mac OS "package"-directories, and like "material" are now and the
-empty-str-name types inside depots/etc are now, but more generalized.  What
-still needs to be hidden away is now simply marked "private" (or rather,
-not marked "public") instead of being "inner".  This is one effective way
-to put many of the depot/etc dbvar attr type definitions and relvar/etc
-constraints in the same namespace as public entities, while still treating
-them different.  And for the "inners" that should still be squirreled away
-into a separate namespace, say because to avoid name conflicts especially
-with things whose names are just generated ... one thing to do is to now
-allow subdepots to share a name with a relvar attr or a routine/type, and
-not just with a database attr, so that they then create the namespace under
-which things subordinate to the relvar/etc can go.  It will also be
-generalized that anytime a namespace contains an item whose name is the
-empty str, that namespace as used directly is a proxy for said contained
-item. For example, 'dep.foo' can now be a proxy for the relvar 'dep.foo.""'
-and the type of said relvar is declared at 'dep.foo.Foo' maybe, and so now
-we have a direct analogy for relvars that embed their type definitions,
-so no sibling 'foo' and 'Foo' in the same namespace necessary for relvars.
-
 * Add concept of shallowly homogeneous / sh- relation types to complement
 the deeply version, and named maximal types like SHRelation, SHSet,
 SHArray, etc to complement the DH/etc, and sh_set_of/etc to complement
