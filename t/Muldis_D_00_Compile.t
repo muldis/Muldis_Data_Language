@@ -8,6 +8,6 @@ use Test::More;
 plan( 'tests' => 2 );
 
 use_ok( 'Muldis::D' );
-is( $Muldis::D::VERSION, 0.091000, 'Muldis::D is the correct version' );
+is( $Muldis::D::VERSION, 0.092000, 'Muldis::D is the correct version' );
 
 1; # Magic true value required at end of a reusable file's code.
