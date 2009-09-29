@@ -1924,8 +1924,9 @@ Iff an C<expr> is a C<delim_expr>, then it is interpreted simply as if it
 were its child C<expr> element; the I<only> reason that the C<delim_expr>
 grammar element exists is to assist the parser in determining the
 boundaries of an C<expr> where code otherwise might be ambiguous or be
-interpreted differently than desired due to grammar precedence rules.
-There's never a distinct parser output node for a C<delim_expr> itself.
+interpreted differently than desired due to nesting precedence rules (see
+L</NESTING PRECEDENCE RULES> for more about those).  There is never a
+distinct node in a parser's output for a C<delim_expr> itself.
 
 Iff an C<expr> is an C<expr_name>, then this typically means that the
 parent C<expr> is having at least one of its children declared with an
@@ -2119,15 +2120,15 @@ empty sequence or all of its conditionals evaluate to C<Bool:false>.
 
 Examples:
 
-    if ($foo > 5) then $bar else $baz
+    if $foo > 5 then $bar else $baz
 
-    if ($ary is empty) then $empty_result else $ary.[0]
+    if $ary is empty then $empty_result else $ary.[0]
 
-    if (($x = ∅) or ($y = ∅)) then ∅
-        else (s ((v $x) I+ ((v $y) I^ 3))
+    if $x = ∅ or $y = ∅ then ∅
+        else s ((v $x) I+ ((v $y) I^ 3)
 
-    if ($val isa T->Int) then ($val I^ 3)
-        else if ($val isa T->Text) then ($val Tx 5)
+    if $val isa T->Int then $val I^ 3
+        else if $val isa T->Text then $val Tx 5
         else true
 
     'My answer is: ' T~ ($maybe ?? 'yes' !! 'no')
@@ -3189,6 +3190,81 @@ Examples (for now sans any use of extra op args, which are atypical):
     not $min < $foo ≤ $max
 
     not $min < $foo < $max
+
+=head1 NESTING PRECEDENCE RULES
+
+This documentation section outlines Muldis D's PTMD_STD dialect's nesting
+precedence rules, meaning how it accepts Muldis D code lacking explicit
+expression delimiters and implicitly delimits the expressions therein, in a
+fully deterministic manner.
+
+Unlike many languages which can have over a dozen precedence levels, such
+as Perl (about 24) or C, PTMD_STD only has about 7 precedence levels in the
+interest of simplicity, and so you will likely have to use more explicit
+expression delimiters to force the nesting precedence you want.  That 7
+figure assumes the C<with_rtn_inv_alt_syn> pragma is active; if it isn't,
+then 3 of the levels can be eliminated, so then PTMD_STD has just 4.
+
+Here we list the 7 levels from "tightest" to "loosest":
+
+=over
+
+=item *
+
+The I<terms> and I<delimited expressions> and I<tagged delimiteds>, which
+includes every kind of C<< <expr> >> that is also a C<< <value> >> (meaning
+any C<< <opaque_value_literal> >> and C<< <coll_value_selector> >>), as
+well as any C<< <delim_expr> >> and C<< <expr_name> >> and C<< <func_invo>
+>> and C<< <lib_entity_ref_selector> >>.  In general these are very simple
+or are entirely or mostly surrounded by some kind of delimiters.  These are
+non-associative or associativity is not applicable.
+
+=item *
+
+The I<accessors> and I<postcircumfix operators> and I<postfix operators>,
+which includes every kind of C<< <accessor> >> and C<<
+<postcircumfix_op_invo> >> and C<< <monadic_postfix_op_invo> >> and C<<
+<postfix_rat_op_invo> >> and C<< <rat_op_invo> \s+
+<rounded_with_rule_clause> >>.  These are left-associative.
+
+=item *
+
+The I<prefix operators>, which includes every kind of
+C<< <monadic_prefix_op_invo> >> and C<< <prefix_rat_op_invo> >>.  These are
+right-associative.
+
+=item *
+
+The I<dyadic infix operators>, which includes every kind of C<<
+<sym_dyadic_infix_op_invo> >> and C<< <nonsym_dyadic_infix_op_invo> >> and
+C<< <infix_rat_op_invo> >> and every C<< <ord_compare_op_invo> >> that is
+not also a C<< <compare_reduce_op_invo> >>.  These are left-associative.
+
+=item *
+
+The I<infix reduction operators>, which includes every kind of C<<
+<comm_infix_reduce_op_invo> >> and C<< <noncomm_infix_reduce_op_invo> >>.
+These are left-associative.
+
+=item *
+
+Every C<< <if_else_expr> >> and C<< <given_when_def_expr> >>.  The C<<??!!>
+form is right-associative, meaning that C<$a ?? $b !! $c ?? $d !! $e> will
+parse as C<$a ?? $b !! ($c ?? $d !! $e)> (like most languages) and not as
+C<($a ?? $b !! $c) ?? $d !! $e> (like PHP).  The C<if-then-else> and
+C<given-when-default> forms are unambiguous for associativity.
+
+=item *
+
+Every C<< <named_expr> >>, that is, associating an explicit name with an
+expression node/tree.  These are right-associative, meaning that given a
+C<$a ::= $b ::= 5>, the expression node of value C<5> has the name C<b> and
+another, alias node for C<b> has the name C<a>.
+
+=back
+
+Any imperative code that embeds a value expression has looser precedence
+than all value expressions.
 
 =head1 SEE ALSO
 
