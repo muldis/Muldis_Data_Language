@@ -1867,7 +1867,8 @@ Grammar:
         <expr_core_options>
 
     <expr_core_options> ::=
-          <expr_name>
+          <delim_expr>
+        | <expr_name>
         | <named_expr>
         | <opaque_value_literal>
         | <coll_value_selector>
@@ -1876,6 +1877,9 @@ Grammar:
         | <if_else_expr>
         | <given_when_def_expr>
         | <lib_entity_ref_selector>
+
+    <delim_expr> ::=
+        '(' \s* <expr> \s* ')'
 
     <expr_name> ::=
         <data_sigil> <Name_payload>
@@ -1915,6 +1919,13 @@ parser would generate names for them when deriving system catalog entries,
 and that is why PTMD_STD supports, and encourages the use of for code
 brevity/readability, the use of inline-declared expression nodes,
 especially so when the C<expr> in question is an C<opaque_value_literal>.
+
+Iff an C<expr> is a C<delim_expr>, then it is interpreted simply as if it
+were its child C<expr> element; the I<only> reason that the C<delim_expr>
+grammar element exists is to assist the parser in determining the
+boundaries of an C<expr> where code otherwise might be ambiguous or be
+interpreted differently than desired due to grammar precedence rules.
+There's never a distinct parser output node for a C<delim_expr> itself.
 
 Iff an C<expr> is an C<expr_name>, then this typically means that the
 parent C<expr> is having at least one of its children declared with an
@@ -2079,13 +2090,11 @@ Examples:
 Grammar:
 
     <if_else_expr> ::=
-        '(' \s*
-            [
-                  [if \s+ <if_expr> \s+ then \s+ <then_expr> \s+ else \s+]*
-                | [<if_expr> \s+ '??' \s+ <then_expr> \s+ '!!' \s+]*
-            ]
-            <else_expr>
-        \s* ')'
+        [
+              [if \s+ <if_expr> \s+ then \s+ <then_expr> \s+ else \s+]*
+            | [<if_expr> \s+ '??' \s+ <then_expr> \s+ '!!' \s+]*
+        ]
+        <else_expr>
 
     <if_expr> ::=
         <expr>
@@ -2110,29 +2119,27 @@ empty sequence or all of its conditionals evaluate to C<Bool:false>.
 
 Examples:
 
-    (if ($foo > 5) then $bar else $baz)
+    if ($foo > 5) then $bar else $baz
 
-    (if ($ary is empty) then $empty_result else $ary.[0])
+    if ($ary is empty) then $empty_result else $ary.[0]
 
-    (if (($x = ∅) or ($y = ∅)) then ∅
-        else (s ((v $x) I+ ((v $y) I^ 3)))
+    if (($x = ∅) or ($y = ∅)) then ∅
+        else (s ((v $x) I+ ((v $y) I^ 3))
 
-    (if ($val isa T->Int) then ($val I^ 3)
+    if ($val isa T->Int) then ($val I^ 3)
         else if ($val isa T->Text) then ($val Tx 5)
-        else true)
+        else true
 
-    ('My answer is: ' T~ ($maybe ?? 'yes' !! 'no'))
+    'My answer is: ' T~ ($maybe ?? 'yes' !! 'no')
 
 =head2 Generic Given-When-Default Expressions
 
 Grammar:
 
     <given_when_def_expr> ::=
-        '(' \s*
-            given \s+ <given_expr> \s+
-            [when \s+ <when_expr> \s+ then \s+ <then_expr> \s+]*
-            default \s+ <default_expr>
-        \s* ')'
+        given \s+ <given_expr> \s+
+        [when \s+ <when_expr> \s+ then \s+ <then_expr> \s+]*
+        default \s+ <default_expr>
 
     <given_expr> ::=
         <expr>
@@ -2163,11 +2170,10 @@ none of its comparands match C<given>.
 
 Examples:
 
-    (given $digit
+    given $digit
         when 'T' then 10
         when 'E' then 11
         default $digit
-    )
 
 =head2 Library Entity Reference Selector
 
@@ -2290,21 +2296,6 @@ syntax for each function, often written in infix notation, although
 inter-function format consistency is still applied as much as is reasonably
 possible.
 
-One basic format commonality with all C<func_invo_alt_syntax> tokens is
-that the entire token is delimited by a pair of parenthesis, whose
-conceptual purpose is to group together all the parts of the token, so
-there are no precedence issues to make difficulty in telling the token from
-its parent, no matter how complicated it is; this is like with the common
-grouping parenthesis in mathematical expressions.  A practical purpose of
-this is that the delimiting parenthesis is a feature mostly unique to a
-C<func_invo_alt_syntax> token, which almost all other grammar tokens don't
-have, C<if_else_expr> and C<given_when_def_expr> being the main exceptions,
-and so a parser encountering an opening parenthesis at the start of a
-context where a generic C<expr> is expected can be reasonably sure it is
-dealing with a C<func_invo_alt_syntax> (or if-else or given-when) and not
-something else.  A major exception to this format commonality is with
-C<postcircumfix_op_invo>, which does I<not> have delimiting parenthesis.
-
 Broadly speaking, a C<func_invo_alt_syntax> node has 2-3 kinds of payload
 elements:  The first is the determinant of what function to invoke,
 hereafter referred to as a I<op> or I<keyword>.  The second is an ordered
@@ -2331,9 +2322,7 @@ quickly writing understandeable code.
 Grammar:
 
     <comm_infix_reduce_op_invo> ::=
-        '(' \s*
-            <expr> ** [\s+ <comm_infix_reduce_op> \s+]
-        \s* ')'
+        <expr> ** [\s+ <comm_infix_reduce_op> \s+]
 
     <comm_infix_reduce_op ::=
           and | '∧' | or | '∨' | xnor | '↔' | iff | xor | '⊻' | '↮'
@@ -2393,32 +2382,30 @@ This table indicates which function is invoked by each keyword:
 
 Examples:
 
-    (true and false and true)
+    true and false and true
 
-    (true or false or true)
+    true or false or true
 
-    (true xor false xor true)
+    true xor false xor true
 
-    (14 I+ 3 I+ -5)
+    14 I+ 3 I+ -5
 
-    (-6 I* 2 I* 25)
+    -6 I* 2 I* 25
 
-    (4.25 N+ -0.002 N+ 1.0)
+    4.25 N+ -0.002 N+ 1.0
 
-    (69.3 N* 15*2^6 N* 49/23)
+    69.3 N* 15*2^6 N* 49/23
 
-    (Set:{ 1, 3, 5 } ∪ Set:{ 4, 5, 6 } ∪ Set:{ 0, 9 })
+    Set:{ 1, 3, 5 } ∪ Set:{ 4, 5, 6 } ∪ Set:{ 0, 9 }
 
-    (Set:{ 1, 3, 5, 7, 9 } ∩ Set:{ 3, 4, 5, 6, 7, 8 } ∩ Set:{ 2, 5, 9 })
+    Set:{ 1, 3, 5, 7, 9 } ∩ Set:{ 3, 4, 5, 6, 7, 8 } ∩ Set:{ 2, 5, 9 }
 
 =head2 Simple Non-commutative N-adic Infix Reduction Operators
 
 Grammar:
 
     <noncomm_infix_reduce_op_invo> ::=
-        '(' \s*
-            <expr> ** [\s+ <noncomm_infix_reduce_op> \s+]
-        \s* ')'
+        <expr> ** [\s+ <noncomm_infix_reduce_op> \s+]
 
     <noncomm_infix_reduce_op ::=
           '[<=>]'
@@ -2460,26 +2447,24 @@ This table indicates which function is invoked by each keyword:
 
 Examples:
 
-    (same [<=>] increase [<=>] decrease)
+    same [<=>] increase [<=>] decrease
 
-    (F;'DEAD' B~ 1;'10001101' B~ F;'BEEF')
+    F;'DEAD' B~ 1;'10001101' B~ F;'BEEF'
 
-    ('hello' T~ ' ' T~ 'world')
+    'hello' T~ ' ' T~ 'world'
 
-    (Array:[ 24, 52 ] A~ Array:[ -9 ] A~ Array:[ 0, 11, 24, 7 ])
+    Array:[ 24, 52 ] A~ Array:[ -9 ] A~ Array:[ 0, 11, 24, 7 ]
 
-    ($a // $b // 42)
+    $a // $b // 42
 
-    ($a //d $b //d T->sdp.lib.foo_type)
+    $a //d $b //d T->sdp.lib.foo_type
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
 Grammar:
 
     <sym_dyadic_infix_op_invo> ::=
-        '(' \s*
-            <expr> \s+ <sym_dyadic_infix_op> \s+ <expr>
-        \s* ')'
+        <expr> \s+ <sym_dyadic_infix_op> \s+ <expr>
 
     <sym_dyadic_infix_op> ::=
           '=' | '≠' | '!='
@@ -2515,24 +2500,22 @@ This table indicates which function is invoked by each keyword:
 
 Examples:
 
-    ($foo = $bar)
+    $foo = $bar
 
-    ($foo ≠ $bar)
+    $foo ≠ $bar
 
-    (false nand true)
+    false nand true
 
-    (15 I|-| 17)
+    15 I|-| 17
 
-    (7.5 N|-| 9.0)
+    7.5 N|-| 9.0
 
 =head2 Simple Non-symmetric Dyadic Infix Operators
 
 Grammar:
 
     <nonsym_dyadic_infix_op_invo> ::=
-        '(' \s*
-            <lhs> \s+ <nonsym_dyadic_infix_op> \s+ <rhs>
-        \s* ')'
+        <lhs> \s+ <nonsym_dyadic_infix_op> \s+ <rhs>
 
     <lhs> ::=
         <expr>
@@ -2643,42 +2626,40 @@ customization; but most actual uses of like/etc don't use C<escape> anyway.
 
 Examples:
 
-    ($bar isa T->sdp.lib.foo_type)
+    $bar isa T->sdp.lib.foo_type
 
-    ($bar !isa T->sdp.lib.foo_type)
+    $bar !isa T->sdp.lib.foo_type
 
-    ($scalar as T->Int)
+    $scalar as T->Int
 
-    ($int asserting ($int ≠ 0))
+    $int asserting ($int ≠ 0)
 
-    (true implies false)
+    true implies false
 
-    (34 I- 21)
+    34 I- 21
 
-    (5 I/ 3)
+    5 I/ 3
 
-    (5 % 3)
+    5 % 3
 
-    (2 I^ 63)
+    2 I^ 63
 
-    (9.2 N- 0.1)
+    9.2 N- 0.1
 
-    (1;101.01 N/ 1;11.0)
+    1;101.01 N/ 1;11.0
 
-    ('-' Tx 80)
+    '-' Tx 80
 
-    (Set:{ 8, 4, 6, 7 } ∖ Set:{ 9, 0, 7 })
+    Set:{ 8, 4, 6, 7 } ∖ Set:{ 9, 0, 7 }
 
-    (Relation:[ x, y ];{ [ 5, 6 ], [ 3, 6 ] } ÷ Relation:{ { y => 6 } })
+    Relation:[ x, y ];{ [ 5, 6 ], [ 3, 6 ] } ÷ Relation:{ { y => 6 } }
 
 =head2 Simple Monadic Prefix Operators
 
 Grammar:
 
     <monadic_prefix_op_invo> ::=
-        '(' \s*
-            <monadic_prefix_op> \s+ <expr>
-        \s* ')'
+        <monadic_prefix_op> \s+ <expr>
 
     <monadic_prefix_op> ::=
         d | not | '¬' | '!' | 'I||' | 'N||' | 'R#' | t | r | s | v
@@ -2710,30 +2691,28 @@ This table indicates which function is invoked by each keyword:
 
 Examples:
 
-    (d T->sdp.lib.foo_type)
+    d T->sdp.lib.foo_type
 
-    (not true)
+    not true
 
-    (I|| -23)
+    I|| -23
 
-    (N|| -4.59)
+    N|| -4.59
 
-    (R# Set:{ 5, -1, 2 })
+    R# Set:{ 5, -1, 2 }
 
-    (t $relvar)
+    t $relvar
 
-    (r $tupvar)
+    r $tupvar
 
-    (s ((v $a) N+ (v $b)))
+    s ((v $a) N+ (v $b))
 
 =head2 Simple Monadic Postfix Operators
 
 Grammar:
 
     <monadic_postfix_op_invo> ::=
-        '(' \s*
-            <expr> \s+ <monadic_postfix_op>
-        \s* ')'
+        <expr> \s+ <monadic_postfix_op>
 
     <monadic_postfix_op> ::=
         '++' | '--' | 'I!'
@@ -2753,11 +2732,11 @@ This table indicates which function is invoked by each keyword:
 
 Examples:
 
-    (13 ++)
+    13 ++
 
-    (4 --)
+    4 --
 
-    (5 I!)
+    5 I!
 
 =head2 Simple Postcircumfix Operators
 
@@ -3012,9 +2991,7 @@ Examples:
 Grammar:
 
     <rat_op_invo_with_round> ::=
-        '(' \s*
-            <rat_op_invo> \s+ <rounded_with_rule_clause>
-        \s* ')'
+        <rat_op_invo> \s+ <rounded_with_rule_clause>
 
     <rat_op_invo> ::=
           <expr>
@@ -3070,24 +3047,22 @@ This table indicates which function is invoked by each keyword:
 
 Examples:
 
-    ($foo round RatRoundRule:[10,-2,half_even])
+    $foo round RatRoundRule:[10,-2,half_even]
 
-    (2.0 N^ 0.5 round RatRoundRule:[2,-7,to_zero])
+    2.0 N^ 0.5 round RatRoundRule:[2,-7,to_zero]
 
-    (309.1 log 5.4 round RatRoundRule:[10,-4,half_up])
+    309.1 log 5.4 round RatRoundRule:[10,-4,half_up]
 
-    (e^ 6.3 round RatRoundRule:[10,-6,to_ceiling])
+    e^ 6.3 round RatRoundRule:[10,-6,to_ceiling]
 
-    (17.0 loge round RatRoundRule:[3,-5,to_floor])
+    17.0 loge round RatRoundRule:[3,-5,to_floor]
 
 =head2 Order Comparison Operators
 
 Grammar:
 
     <ord_compare_op_invo> ::=
-        '(' \s*
-            [<sca_ord_det_op_invo> | <gen_compare_op_invo>]
-        \s* ')'
+        <sca_ord_det_op_invo> | <gen_compare_op_invo>
 
     <sca_ord_det_op_invo> ::=
         <lhs> \s+ '<=>' \s+ <rhs>
@@ -3193,27 +3168,27 @@ wouldn't be using them, so just the main args represents typical usage.
 
 Examples (for now sans any use of extra op args, which are atypical):
 
-    ($foo <=> $bar)
+    $foo <=> $bar
 
-    ($a min $b min $c)
+    $a min $b min $c
 
-    ($a max $b max $c)
+    $a max $b max $c
 
-    ($foo < $bar)
+    $foo < $bar
 
-    ($foo > $bar)
+    $foo > $bar
 
-    ($foo ≤ $bar)
+    $foo ≤ $bar
 
-    ($foo ≥ $bar)
+    $foo ≥ $bar
 
-    ($min ≤ $foo ≤ $max)
+    $min ≤ $foo ≤ $max
 
-    ($min ≤ $foo < $max)
+    $min ≤ $foo < $max
 
-    (not $min < $foo ≤ $max)
+    not $min < $foo ≤ $max
 
-    (not $min < $foo < $max)
+    not $min < $foo < $max
 
 =head1 SEE ALSO
 
