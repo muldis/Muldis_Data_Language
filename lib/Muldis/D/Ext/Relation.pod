@@ -412,32 +412,29 @@ latter is curried with this function's C<order_by> argument.
 =head2 sys.std.Relation.limit
 
 C<< function sys.std.Relation.limit (Relation <-- Relation $topic,
-OrdDetFuncRef $ord_func, NNInt $min_rank,
-NNInt $max_rank, Bool $is_reverse_order?) >>
+OrdDetFuncRef $ord_func, Bool $is_reverse_order?,
+interval_of.NNInt $rank_interval) >>
 
 This function results in the relational restriction of its C<topic>
-argument as determined by first ranking its tuples as per C<rank>
+argument as determined by first ranking its tuples as per the C<rank>
 function (using C<ord_func> and C<is_reverse_order>) and then keeping just
-those tuples whose rank is within the inclusive range specified by the
-C<min_rank> and C<max_rank> arguments (C<rank>'s extra attribute is not
-kept).  The C<limit> function implements a certain kind of quota query
-where all the result tuples are consecutive in their ranks.  This
-function will fail if C<max_rank> is before C<min_rank>.  It is valid for
-C<min_rank> or C<max_rank> to be greater than the maximum rank of the
-source tuples; in the first case, the result has zero tuples; in the
-second case, the result has all remaining tuples starting at C<min_rank>.
-If C<topic> has any tuples and C<min_rank> matches the rank of a source
-tuple, then the result will always have at least 1 tuple.  Note that
-C<limit> provides the functionality of SQL's "LIMIT/OFFSET" feature in
-combination with "ORDER BY" but that the result tuples of C<limit> do not
-remain ordered (but see C<sys.std.Array.limit_of_Array_from_wrap> for an
-alternative).
+those tuples whose rank is included within the interval specified by the
+C<rank_interval> argument (C<rank>'s extra attribute is not kept).  The
+C<limit> function implements a certain kind of quota query where all the
+result tuples are consecutive in their ranks.  It is valid for the lowest
+and highest rank specified by C<rank_interval> to be greater than the
+maximum rank of the source tuples; in the first case, the result has zero
+tuples; in the second case, the result has all remaining tuples starting at
+the lowest rank, if any.  Note that C<limit> provides the functionality of
+SQL's "LIMIT/OFFSET" feature in combination with "ORDER BY" but that the
+result tuples of C<limit> do not remain ordered (but see
+C<sys.std.Array.limit_of_Array_from_wrap> for an alternative).
 
 =head2 sys.std.Relation.limit_by_attr_names
 
 C<< function sys.std.Relation.limit_by_attr_names (Relation <--
-Relation $topic, array_of.OrderByName $order_by, NNInt $min_rank,
-NNInt $max_rank, Bool $is_reverse_order?) >>
+Relation $topic, array_of.OrderByName $order_by, Bool $is_reverse_order?,
+interval_of.NNInt $rank_interval) >>
 
 This function is to C<limit> what C<rank_by_attr_names> is to C<rank>.
 

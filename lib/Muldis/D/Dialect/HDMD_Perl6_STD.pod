@@ -153,12 +153,12 @@ Examples:
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
 
-There are 26 main varieties of C<value> node, each of which is a named node
+There are 27 main varieties of C<value> node, each of which is a named node
 kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<DeclNameChain>, C<Comment>,
 C<Instant>, C<Duration>, C<UTCInstant>, C<FloatInstant>, C<UTCDuration>,
 C<RatRoundRule>, C<String>, C<Scalar>, C<Tuple>, C<Database>,
-C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>.
+C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<Interval>.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl native scalar and collection types.
@@ -184,14 +184,14 @@ only external meta-data of C<payload> generally necessary to interpret the
 latter; what grammars are valid for C<payload> depend just on
 C<value_kind>.
 
-Between the various kinds of C<value> node, these 49 values are allowed for
+Between the various kinds of C<value> node, these 51 values are allowed for
 C<value_kind>:  C<Bool>, C<Order>, C<RatRoundMeth>, C<[|NN|P]Int>,
 C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
 C<DeclNameChain>, C<Comment>, C<Instant>, C<Duration>,
 C<UTC[Instant|DateTime|Date|Time]>, C<Float[Instant|DateTime|Date|Time]>,
 C<UTCDuration>, C<RatRoundRule>, C<[|B|O|UCP]String>, C<[|DH]Scalar>,
 C<[|DH]Tuple>, C<Database>, C<[|DH]Relation>, C<[|DH]Set>,
-C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>.
+C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH]Interval>.
 
 For just some data types, the C<value_kind> may be omitted; see below.
 
@@ -234,6 +234,7 @@ C<value> node as follows:
     Text     <- Str
     Instant  <- Instant
     Duration <- Duration
+    Interval <- Range
 
 The above details are subject to revision regarding when a Perl object
 might claim to do multiple type interfaces.
@@ -835,6 +836,27 @@ Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
         'Baz',
     ] ) )
 
+=head2 Interval Selectors
+
+An C<Interval> node represents a literal or selector invocation for an
+interval value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Interval> value whose attributes are defined by the
+payload.  The node payload must be a Perl C<Range>, which is mapped
+directly.  Each of the C<min> and C<max> attributes/method-return-values of
+the Range is an C<expr> node that defines the C<min> and C<max> attribute
+value, respectively, of the new interval.  Each of the C<excludes_min> and
+C<excludes_max> of the Range maps directly with the interval.
+
+Examples:
+
+    :Interval(1..10)
+
+    2.7..^9.3
+
+    'a'^..'z'
+
+    :UTCInstant[2002,12,6] ^..^ :UTCInstant[2002,12,20]
+
 =head1 DEPOT DECLARATION
 
 B<TODO: ALL OF THIS HERE MAIN POD SECTION!>
@@ -1163,6 +1185,10 @@ first is an C<expr> node that defines the primary input value for the
 operator and the other 1-2 provide attribute names that customize the
 operation.
 
+Note that for the C<[]> op, the C<min_index>, C<interval_boundary_kind>,
+C<max_index> are collectively the 2nd main op arg which is an C<Interval>
+node payload that defines an C<interval_of.NNInt>.
+
 Examples:
 
     [ 'op', '.${}', [['$','birthday'], 'date', 'day'] ]
@@ -1212,7 +1238,7 @@ Examples:
 
     [ 'op', '.[]', [['$','ary'], 3] ]
 
-    [ 'op', '[..]', [['$','ary'], [10,14]] ]
+    [ 'op', '[]', [['$','ary'], 10..14] ]
 
 =head2 Rational Operators That Do Rounding
 
@@ -1261,6 +1287,8 @@ Examples (for now sans any use of extra op args, which are atypical):
     [ 'op', '≤', [ ['$','foo'], ['$','bar'] ] ]
 
     [ 'op', '≥', [ ['$','foo'], ['$','bar'] ] ]
+
+    [ 'op', 'I∈', [ ['$','a'], 1..5 ] ]
 
     [ 'op', '≤≤', [ ['$','min'], ['$','foo'], ['$','max'] ] ]
 

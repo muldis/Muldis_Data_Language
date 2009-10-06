@@ -59,6 +59,8 @@ relationships:
         sys.std.Core.Type.Tuple
             sys.std.Core.Type.DHTuple
                 sys.std.Core.Type.Database
+                sys.std.Core.Type.Interval
+                    sys.std.Core.Type.DHInterval
 
         sys.std.Core.Type.Relation
             sys.std.Core.Type.DHRelation
@@ -433,6 +435,80 @@ database types (the leaves of this recursion are all dh-relation types); it
 is otherwise the same.  The 3 system-defined user-data variables named
 C<[fed|dep|sdp].data> are all of "just" the C<Database> type, or are of
 its proper subtypes.
+
+=head2 sys.std.Core.Type.Interval
+
+This is an enumeration data type.  An C<Interval> is a C<Tuple>.  It
+defines a single I<bounded interval> or I<finite interval> in terms of 2
+I<endpoint> values plus an indicator of whether either, both, or none of
+the endpoint values are included in the interval.
+
+An C<Interval> has these 4 attributes:
+
+=over
+
+=item C<min|max> - C<Universal>
+
+These are the interval endpoint values; C<min> defines the
+I<left|start|from> endpoint and C<max> defines the I<right|end|to>
+endpoint.  The endpoint values conceptually must be of the same,
+totally-ordered type (typically one of C<Int>, C<Rat>, C<Text>, C<Instant>,
+etc), although strictly speaking they may be of any types at all; in the
+latter case, to actually make practical use of such intervals, an
+C<order_determination> function must explicitly be employed.
+
+=item C<excludes_[min|max]> - C<Bool>
+
+If C<excludes_min> or C<excludes_max> are C<Bool:true>, then C<min> or
+C<max> I<is not> considered to be included within the interval,
+respectively; otherwise, it I<is> considered to be included within the
+interval.  If both endpoints are within the interval (the use case which
+Muldis D optimizes its syntax for), the interval is I<closed>; otherwise if
+both endpoints are not in the interval, the interval is I<open>.
+
+=back
+
+The C<Interval> type supports empty intervals (which include no values at
+all) at least as a matter of simplicity in that it doesn't place any
+restrictions on the combination of attribute values an C<Interval> value
+may have, such as that C<max> can't be before C<min>.  This liberal design
+is also necessary to support the general case where the relative order of
+the C<min> and C<max> values is situation-dependent on what
+C<order_determination> function is used with the interval; that function
+also determines what type's concept of order is being applied, and so it
+also determines whether or not a given interval is considered empty or not.
+With respect to each compatible C<order_determination> function, an
+I<Interval> is considered empty iff at least one of the following is true:
+1. Its C<min> is greater than its C<max>.  2. Its C<min> is equal to its
+C<max> I<and> at least one of C<excludes_min> or C<excludes_max> is true.
+3. Both C<excludes_min> and C<excludes_max> are true I<and> C<min> and
+C<max> are consecutive values.  And so, there are many distinct C<Interval>
+values that are conceptually empty intervals, and the C<is_identical>
+function should not be used to test an C<Interval> for being empty or not.
+
+The default value of C<Interval> represents an empty interval where its
+C<min> attribute is C<Bool:true> and its other 3 attributes are
+C<Bool:false>.
+
+The C<Interval> type has no support for I<unbounded>/I<infinite> or
+I<half-bounded> intervals that is orthogonal to data type.  However, if
+there are any types with their own special values to represent infinities,
+then those special values can be uded for endpoints of intervals over those
+types.  I<As of this writing, no system-defined types have values for
+infinities, so only user-defined types would leverage this.>
+
+The C<Interval> type only represents a continuous interval, but a
+discontinuous interval may be effectively represented by a set of
+C<Interval> values, either a C<relation_from.Interval> or a
+C<set_of.Interval>.  See also the L<Muldis::D::Ext::Interval> extension.
+
+=head2 sys.std.Core.Type.DHInterval
+
+This is an enumeration data type.  C<DHInterval> is a proper subtype of
+C<Interval> where every one of its values is also a C<DHTuple>.  In general
+practice, all C<Interval> values are C<DHInterval> values, because their
+endpoints would all be C<DHScalar> values.  The default value of
+C<DHInterval> is the same as that of C<Interval>.
 
 =head2 sys.std.Core.Type.Relation
 

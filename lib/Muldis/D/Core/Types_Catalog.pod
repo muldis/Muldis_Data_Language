@@ -127,6 +127,7 @@ more or less:
                 sys.std.Core.Type.Cat.SetSelExprNodeSet
                 sys.std.Core.Type.Cat.ArySelExprNodeSet
                 sys.std.Core.Type.Cat.BagSelExprNodeSet
+                sys.std.Core.Type.Cat.IvlSelExprNodeSet
                 sys.std.Core.Type.Cat.AccExprNodeSet
                 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
                 sys.std.Core.Type.Cat.IfElseExprNodeSet
@@ -1254,7 +1255,7 @@ for a subject-to-update parameter of an update operator call; in
 that case the leaf nodes / only node of the expression must map to a
 subject-to-update parameter of the containing update operator.
 
-An C<ExprNodeSet> has these 12 attributes:
+An C<ExprNodeSet> has these 13 attributes:
 
 =over
 
@@ -1288,6 +1289,10 @@ These are expression nodes that represent array value selections.
 =item C<bag_sel_exprs> - C<BagSelExprNodeSet>
 
 These are expression nodes that represent bag value selections.
+
+=item C<ivl_sel_exprs> - C<IvlSelExprNodeSet>
+
+These are expression nodes that represent interval value selections.
 
 =item C<acc_exprs> - C<AccExprNodeSet>
 
@@ -1546,6 +1551,42 @@ you must use a C<RelSelExprNodeSet> rather than a C<BagSelExprNodeSet>.
 
 A C<BagSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.IvlSelExprNodeSet
+
+A C<IvlSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node represents an interval value selection.
+
+A C<IvlSelExprNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<interval> - C<interval_of.Name>
+
+These represent the attributes of the interval value being selected.
+
+Note that, because of how C<IvlSelExprNodeSet> is defined, the
+C<excludes_[min|max]> attribute values of the interval are compile time
+constants, since a boolean is stored in the system catalog for each rather
+than the name of an expression node like with the C<min> and C<max>
+attributes; if you actually want the interval value being selected at
+runtime to have runtime-determined C<excludes_[min|max]> attribute values,
+then you must use a C<TupSelExprNodeSet> rather than a
+C<IvlSelExprNodeSet>.
+
+=back
+
+A C<IvlSelExprNodeSet> has a unary primary key on the C<name> attribute.
+Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.AccExprNodeSet
 

@@ -46,8 +46,8 @@ L<Muldis::D::Ext::Integer>, L<Muldis::D::Ext::Blob>,
 L<Muldis::D::Ext::Text>, L<Muldis::D::Ext::Rational>,
 L<Muldis::D::Ext::Tuple>, L<Muldis::D::Ext::Relation>,
 L<Muldis::D::Ext::Set>, L<Muldis::D::Ext::Array>, L<Muldis::D::Ext::Bag>,
-L<Muldis::D::Ext::Counted>, L<Muldis::D::Ext::Temporal>,
-L<Muldis::D::Ext::Spatial>.
+L<Muldis::D::Ext::Interval>, L<Muldis::D::Ext::Counted>,
+L<Muldis::D::Ext::Temporal>, L<Muldis::D::Ext::Spatial>.
 
 =head1 DESCRIPTION
 

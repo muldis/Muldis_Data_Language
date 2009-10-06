@@ -1,12 +1,26 @@
                                  Muldis::D
 ---------------------------------------------------------------------------
 
-2009-09-xx  Darren Duncan <perl@DarrenDuncan.net>
+2009-10-xx  Darren Duncan <perl@DarrenDuncan.net>
 
     * Muldis::D version 0.94.0 is released on CPAN as
     Muldis-D-0.94.0.tar.gz.
 
-    * (BTMD_STD.pod)  Several instances of making the grammar stricter with
+    * This release features the addition of generic parameterizable
+    interval types to Muldis D as a core feature, where they are just as
+    much first-class citizens as the likes of "set", "maybe", "array", and
+    "bag".  An "interval" is conceptually like a "set" but that rather than
+    its member values being defined via enumeration as with a normal
+    relation value, they are defined in terms of being every value of a
+    particular orderable type that is orderable between a particular pair
+    of endpoint values.  An "interval" is represented in Muldis D as a
+    tuple with 4 attributes which define a pair of endpoint values plus an
+    indicator of whether each endpoint is included in the interval.  The
+    language was also refactored in small suitable ways to use single
+    interval values where it used to use multiple values to represent
+    ranges or limits for an operation.
+
+    * (PTMD_STD.pod)  Several instances of making the grammar stricter with
     regards to whitespace.  Updated every kind of "value" regarding the
     value literal element separator (":") or value literal payload element
     separator (";") that each value literal may have, so that instead of
@@ -27,7 +41,107 @@
     especially with the previous release's changes concerning the explicit
     expression delimiters being made optional.
 
-    * (Basics.pod, PTMD_STD.pod)  Other minor updates and fixes.
+    * (PTMD_STD.pod)  Updated the main pod section "NESTING PRECEDENCE
+    RULES" to add a new tighter precedence level for the triadic comparison
+    operators, so that the likes of "not $min < $foo ≤ $max" would now
+    parse as a single entity without say "$min < $foo" always being eaten
+    as a complete operation instead.
+
+    * (Types.pod, Basics.pod)  In Types.pod, added 2 new generic tuple
+    types "sys.std.Core.Type.[|DH]Interval" to the language core, each of
+    which has 2 "Universal"-typed attributes named "min|max" and 2
+    "Bool"-typed attributes named "excludes_[min|max]"; the "min|max"
+    attributes are parameterizable as per the "value" attribute of the
+    Set|Array|Bag types.  In Basics.pod, updated the "Referencing Data
+    Types" pod sub-section of "ENTITY NAMES" to add support for the terse
+    inline parameterized interval type decl prefixes "[|dh_]interval_of.".
+
+    * (Types_Catalog.pod)  Added new catalog type "IvlSelExprNodeSet" which
+    supports a more compact representation of an Interval value selection
+    expression node than a "TupSelExprNodeSet" does; this is at the
+    Array|Bag-specific-selector-like limitation that the
+    "excludes_[min|max]" attributes of the Interval selector are
+    compile-time constants (which is typically okay); defining those
+    attributes at runtime requires the likes of a "TupSelExprNodeSet".
+    Also updated the catalog type "ExprNodeSet" to add a 13th attribute
+    "ivl_sel_exprs" of the new catalog type.
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  Added new pod sub-section
+    named "Interval Selectors" to the end of the main pod section
+    "COLLECTION VALUE SELECTORS", which declares new literal/selector
+    syntax specific to Interval values.  An Interval selector is designed
+    to mimic the literal syntax and features of Perl 6's "Range" type, and
+    generally you define an Interval in terms of a pair of value literals
+    or expressions separated by one of these 4 character strings: '..',
+    '..^', '^..', '^..^'.  For parsing simplicity an Interval GCVL in
+    PTMD_STD, the separated pair is delimited, for example as
+    "Interval:{10^..20}", but in some specific contexts the delimiter
+    wouldn't be necessary.  In HDMD_Perl6_STD, a straight-up Perl Range may
+    be used to represent an Interval literal, such as "10^..20".  In
+    HDMD_Perl5_STD, an Interval node payload is a 3 element Perl arrayref
+    with the string '^..'/etc being the middle element.
+
+    * (Ordered.pod)  Renamed the 2 functions "is_[in|out]side_range" to
+    "is_[|not_]member" (with additional aka of "I∈", "I∉"), respectively,
+    and refactored their parameter lists so each of them now takes a single
+    "interval" argument rather than the 4 "min|max","m[in|ax]_is_outside",
+    and the "topic" param is renamed to "value"; the "func" param is
+    unchanged.  The updated functions also now have more liberal semantics
+    that they no longer fail if "max" is before "min"; now they just treat
+    that scenario as "interval" being an empty interval, meaning all
+    candidate "value" would not be considered included in it.  The existing
+    also-known-as notes for these functions were retained unchanged, save
+    for the additional ones.
+
+    * Added new file "lib/Muldis/D/Ext/Interval.pod" which houses the new
+    "Muldis D Interval Extension".  This extension defines an initial
+    complement of 2 interval-specific new functions
+    "sys.std.Interval.has_[|not_]member" (aka "I∋", "I∌").  This function
+    pair and the prior-mentioned 2 in Ordered.pod are aliases for each
+    other.  Still TODO is fleshing out Interval.pod with more functions.
+
+    * (D.pm, Core.pod, README)  Added basic references to the new
+    Interval.pod file.
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  Updated the "Order Comparison
+    Operators" pod sub-section corresponding to prior-mentioned changes.
+    Accounted for the changes to what functions the ternary operators like
+    "≤≤" map to, and so now each of those doesn't just map to a 5+ argument
+    function, but instead to a 4 argument Interval selector plus a 2+
+    argument function ("Ordered.is_[|not_]member").  Also added 4 new
+    dyadic compare ops 'I∈','I∉','I∋','I∌'; 1 per distinct new/chg interval
+    func.  Also added an example code piece for "I∈" to all 3 files.
+
+    * (Relation.pod)  Updated each of the 2 functions
+    "limit[|_by_attr_names]" to merge its 2 "m[in|ax]_rank" parameters into
+    a single "rank_interval" parameter.  Each updated function is also more
+    flexible now such that tuples whose ranks match one or both of the
+    min|max may optionally be excluded from the result as per "^", and it
+    is now more liberal concerning max-before-min.
+
+    * (Array.pod)  Updated each of the 3 functions "slice",
+    "limit_of_Array_from_wrap[|_by_attr_names]" to merge its 2
+    "[first|last]_index" parameters into a single "index_interval"
+    parameter.  Each updated function is also more flexible now such that
+    elems whose indexes match one or both of the first|last may optionally
+    be excluded from the result as per "^", and it is now more liberal
+    concerning last-bef-first.  Also this op is now aka "[]", not "[..]".
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  Updated the "Simple
+    Postcircumfix Operators" pod sub-section corresponding to the
+    "Array.slice" changes.  The "op" for "slice" is now "[]", not "[..]".
+    For both HDMD_Perl[6|5]_STD, the second main op arg of the "[]" op now
+    is simply an Interval node payload rather than a 2-element arrayref,
+    which for Perl 6 can just be a Perl Range.  For PTMD_STD, accounted for
+    changes to the "slice" function that "[]" maps to.
+
+    * (Integer.pod, Rational.pod)  Updated each of the 2 functions
+    "[Integer|Rational].fetch_random" to merge its 4 "[|exclude_]m[in|ax]"
+    parameters into a single "interval" parameter.  Also expanded the
+    restriction against max-before-min to instead be against any empty
+    "interval".
+
+    * (Basics.pod, PTMD_STD.pod, Tuple.pod)  Other minor updates and fixes.
 
 2009-09-28  Darren Duncan <perl@DarrenDuncan.net>
 
