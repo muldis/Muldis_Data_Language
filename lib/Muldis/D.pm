@@ -7,7 +7,7 @@ use warnings FATAL => 'all';
 ###########################################################################
 
 { package Muldis::D; # package
-    our $VERSION = '0.092000';
+    our $VERSION = '0.094000';
     $VERSION = eval $VERSION;
     # Note that Perl code only exists at all in this file in order to help
     # the CPAN indexer handle the distribution properly.
