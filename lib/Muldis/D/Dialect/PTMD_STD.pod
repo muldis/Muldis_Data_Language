@@ -324,7 +324,7 @@ meta-data.  For example, in a tuple value literal it is assumed that a
 value literal in an attribute name position must denote a C<Name>.  The
 grammar token C<value>|C<x_value> denotes a GCVL, as do most short-named
 grammar tokens, like C<Int> or C<Name>; in contrast, a grammar token
-containing C<payload> denotes a SCVL, like C<Int_payload> or
+containing C<value_payload> denotes a SCVL, like C<Int_payload> or
 C<Name_payload>.
 
 Every GCVL has 1-3 elements, illustrated by this grammar:
@@ -334,7 +334,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
             <value_kind> ':' \s*
             [<type_name> ':' \s*]?
         ]?
-        <payload>
+        <value_payload>
 
     <value_kind> ::=
           Bool
@@ -368,7 +368,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
     <type_name> ::=
         <NameChain_payload>
 
-    <payload> ::=
+    <value_payload> ::=
           <Bool_payload>
         | <Order_payload>
         | <RatRoundMeth_payload>
@@ -405,16 +405,16 @@ So a C<x_value>|C<value> node has 1-3 elements in general:
 
 This is a character string of the format C<< <[A..Z]> <[ a..z A..Z ]>+ >>;
 it identifies the data type of the value literal in broad terms and is the
-only external meta-data of C<payload> generally necessary to interpret the
-latter; what grammars are valid for C<payload> depend just on
-C<value_kind>.
+only external meta-data of C<value_payload> generally necessary to
+interpret the latter; what grammars are valid for C<value_payload> depend
+just on C<value_kind>.
 
 For all values of just the 8 data types [C<Bool>, C<Order>,
 C<RatRoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>, C<Comment>], the
 C<value_kind> portion of a GCVL may be omitted for brevity, but the code
 parser should still be able to infer it easily by examining the first few
-characters of the C<payload>, which for each of said 8 data types has a
-mutually uniquely identifying format, which is also distinct from all
+characters of the C<value_payload>, which for each of said 8 data types has
+a mutually uniquely identifying format, which is also distinct from all
 possible C<value_kind>.  Note that omission of C<value_kind> is only
 allowed when the GCVL doesn't include a C<type_name> element.
 
@@ -426,12 +426,12 @@ C<Relation:d0c0>, C<Relation:d0c1>, C<Maybe:nothing>.
 
 This is a Muldis D data type name, for example C<sys.std.Core.Type.Int>; it
 identifies a specific subtype of the generic type denoted by C<value_kind>,
-and serves as an assertion that the Muldis D value denoted by C<payload> is
-a member of the named subtype.  Iff C<value_kind> is C<[|DH]Scalar> then
-C<type_name> is mandatory; otherwise, C<type_name> is optional for all
-C<value>, except that C<type_name> must be omitted when C<value_kind> is
-one of the 2 [C<Bool>, C<Order>]; this isn't because those 2 types can't be
-subtyped, but because in practice doing so isn't useful.
+and serves as an assertion that the Muldis D value denoted by
+C<value_payload> is a member of the named subtype.  Iff C<value_kind> is
+C<[|DH]Scalar> then C<type_name> is mandatory; otherwise, C<type_name> is
+optional for all C<value>, except that C<type_name> must be omitted when
+C<value_kind> is one of the 2 [C<Bool>, C<Order>]; this isn't because those
+2 types can't be subtyped, but because in practice doing so isn't useful.
 
 How a Muldis D parser treats a C<value> node with a C<type_name> element
 depends on the wider context.  In the general case where the C<value> is an
@@ -446,7 +446,7 @@ to a system-defined type, then the C<type_name> assertion is done at
 compile time, and then the C<type_name> element is simply eliminated, so
 the C<value> ends up simply as itself with no new C<func_invo> parent.
 
-=item C<payload>
+=item C<value_payload>
 
 This is mandatory for all C<value>.
 
@@ -1110,10 +1110,10 @@ denotes an empty comment segment.  This feature exists to empower things
 like making visual dividing lines in the code just out of hash-marks.
 
 Note that the hash-mark does have other uses in PTMD_STD code besides
-delimiting comments, so since C<non_value_comment> may conceptually be placed
-almost anywhere in code, the other parts of the grammar that specifically
-enable this need to ensure appropriate measures are taken to avoid
-ambiguity, for example mandating that the comments are bounded by
+delimiting comments, so since C<non_value_comment> may conceptually be
+placed almost anywhere in code, the other parts of the grammar that
+specifically enable this need to ensure appropriate measures are taken to
+avoid ambiguity, for example mandating that the comments are bounded by
 whitespace.
 
 Examples (the first 2 are as values, the third is not as a value):
