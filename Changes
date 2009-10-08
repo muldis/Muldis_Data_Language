@@ -9,6 +9,24 @@
     * Oops, the previous releases 0.9[3|4].0 shipped with code all decl as
     version 0.092000 rather than 0.09[3|4]000; metadata was correct though.
 
+    * (PTMD_STD.pod, Basics.pod)  In the PTMD_STD dialect, split up the
+    "Comment" node into itself and the new "non_value_comment" node, where
+    each is now specialized for particular disjoint purposes.  "Comment"
+    now has a payload delimited by backticks ("`") rather than hash-marks
+    ("#"), with simple rules the same as "Text", and it is just used in
+    code like normal data is, and is the only version that a "value" or
+    "expr" node may "be".  The new "non_value_comment" retains the more
+    complicated hash-mark-delimited syntax of the old version, and is now
+    just used in the "put it anywhere as meta-data" use, and it never has a
+    prefix such as "Comment:".  The new "Comment" is also now an 8th type
+    whose literals may always be a SCVL format in a GCVL context, because
+    it is distinguished as the only thing to use backticks.  This split was
+    done partly to avoid the problems arising from when the same syntax was
+    useable both in a normal expression as well as sprinklable anywhere.
+    Both versions are members of the tightest nesting precedence level.
+    Also added new "escaped_char" "\g" to repr a backtick/grave-accent.
+    In Basics.pod, updated "NOTES ON TEXT CHARACTER LITERALS" re backticks.
+
     * (Types.pod, Array.pod)  Typo fixes.
 
 2009-10-05  Darren Duncan <perl@DarrenDuncan.net>
