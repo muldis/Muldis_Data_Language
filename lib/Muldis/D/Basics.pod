@@ -1347,7 +1347,7 @@ set of values, ranking a set of values based on their relative order, or
 sorting a set of values into a sequence that reflects such a ranking.
 
 A system-compatible fundamental order-determination function (fulfilled by
-the routine kind C<order_determination>) must have at least 3 parameters,
+the routine kind C<order-determination>) must have at least 3 parameters,
 where those 3 are named [C<topic>, C<other>, C<is_reverse_order>], where
 the declared types of the two main parameters C<topic> and C<other> are the
 same as the type whose values the function is to determine the order of,
@@ -1613,7 +1613,7 @@ substitutability:
             deterministic
                 updater
             nondeterministic
-                system_service
+                system-service
                 procedure
 
 Specifically, the routine kinds are all of the leaf nodes in the above
@@ -1625,16 +1625,16 @@ special cases of the above-mentioned ones:
 
     routine
         functional
-            type_constraint
-            state_constraint
-            transition_constraint
-            named_value
-            possrep_map
-            virtual_attr_map
-            order_determination
-            value_filter
-            value_map
-            value_reduction
+            type-constraint
+            state-constraint
+            transition-constraint
+            named-value
+            possrep-map
+            virtual-attr-map
+            order-determination
+            value-filter
+            value-map
+            value-reduction
 
 All of the leaf nodes in the second hierarchy above are distinguished by
 their API (parameters and result) and intended use.  All of the ones under
@@ -1671,22 +1671,22 @@ anonymous function defined within its parent routine for use as a
 function-valued argument of some other routine call; or to implement what
 is conceptually a self-referencing/cyclic expression.
 
-=head2 type_constraint
+=head2 type-constraint
 
-A C<type_constraint> is the same as an C<function>, but that it is
+A C<type-constraint> is the same as an C<function>, but that it is
 part of the definition of a data type (every data type composes 0..N
 explicit ones of these, plus an implicit one that always results in
 C<Bool:true>) rather than a routine, it is invoked automatically by the
 DBMS when a value of that type is being selected, and it always results in
-a C<Bool>.  The parameters of a C<type_constraint> carry information about
-the value selection attempt, and the C<type_constraint> results in either
+a C<Bool>.  The parameters of a C<type-constraint> carry information about
+the value selection attempt, and the C<type-constraint> results in either
 C<Bool:true> if the described value would be a member of the data type, or
 C<Bool:false> if not; in the latter case, the DBMS would then throw a
 type-constraint-violation exception (resulting in a transaction rollback
 where applicable), or in the former case, it would consider the selection a
-success.  A C<type_constraint> has exactly 1 parameter whose name is
+success.  A C<type-constraint> has exactly 1 parameter whose name is
 C<topic>.  If the data type being selected is a scalar type or subtype
-with possreps, then each possrep has its own C<type_constraint>, and the
+with possreps, then each possrep has its own C<type-constraint>, and the
 declared type of the C<topic> parameter for each is a tuple where the
 attributes of the tuple match those of the possrep; such a tuple
 argument provides the candidate components of the scalar value being
@@ -1695,41 +1695,41 @@ subset of one other data type, then the declared type of the C<topic>
 parameter is that other data type.  Or, if the data type being selected of
 is defined over a union of multiple other data types, then the declared
 type of the C<topic> parameter is C<Universal>.  Note that it is not valid
-to define a type (other than C<Empty>) with a C<type_constraint> that
+to define a type (other than C<Empty>) with a C<type-constraint> that
 unconditionally results in C<Bool:false>, as such a type could not also
 have a default value.  Note that, because Muldis D requires dbvars to be
 defined over named data types, all I<state constraints> for a database,
 including uniqueness keys or subset constraints or other state-constraining
-business rules, are normally defined as the C<type_constraint> for the type
-which that database is.  Conceptually speaking, a C<type_constraint> will
+business rules, are normally defined as the C<type-constraint> for the type
+which that database is.  Conceptually speaking, a C<type-constraint> will
 execute as the beginning part of a statement, prior to any attempt to
 update any variable's state or affect the environment.
 
-=head2 state_constraint
+=head2 state-constraint
 
-A C<state_constraint> is the same as a C<type_constraint> except that it is
+A C<state-constraint> is the same as a C<type-constraint> except that it is
 not part of the definition of a data type, but rather it is associated with
 a variable (or pseudo-variable); it is invoked automatically by the DBMS
 when that variable is being updated, and it asserts that the variable would
 be in a valid state after the update (it results in C<Bool:true> for yes
-and C<Bool:false> for no).  The C<topic> parameter of a C<state_constraint>
+and C<Bool:false> for no).  The C<topic> parameter of a C<state-constraint>
 has a declared type that is the same as that of the variable; its argument
 carries the value that the variable would have post-update.  The purpose of
-having the distinct C<state_constraint> routine kind when
-C<type_constraint> would otherwise do, is to make it easier for users to
+having the distinct C<state-constraint> routine kind when
+C<type-constraint> would otherwise do, is to make it easier for users to
 independently and externally apply multiple (named) state constraints to
 the same variable (typically a dbvar or relvar) rather than having to
 update the existing internal explicit type constraint of the declared type
 of the variable, and other users of that type aren't affected.  When
-multiple C<state_constraint> are applied to the same variable, then a
+multiple C<state-constraint> are applied to the same variable, then a
 I<total state constraint> is in effect on the variable equivalent to the
 logical C<and> of the individual constraints.  Conceptually speaking, a
-C<state_constraint> will execute after all C<type_constraint> and before
-all C<transition_constraint>.
+C<state-constraint> will execute after all C<type-constraint> and before
+all C<transition-constraint>.
 
-=head2 transition_constraint
+=head2 transition-constraint
 
-A C<transition_constraint> is the same as a C<state_constraint> except that
+A C<transition-constraint> is the same as a C<state-constraint> except that
 rather than 1 C<topic> parameter, it has exactly 2 same-typed parameters
 whose names are C<before> and C<after>; it returns C<Bool:true> if the
 variable is allowed (according to current business rules) to transition
@@ -1738,43 +1738,43 @@ if not; in the latter case, the DBMS would then throw a
 transition-constraint-violation exception (resulting in a transaction
 rollback of at least the statement that attempted the update), or in the
 former case, it would consider the update a success (barring other causes
-for failure).  Conceptually speaking, a C<transition_constraint> will
+for failure).  Conceptually speaking, a C<transition-constraint> will
 execute as the ending part of a statement, right at the moment of trying to
 update any variable's state, with the result of a value expression or
 otherwise; in the case of a multi-update statement, all the updates would
 happen simultaneously, so a transition failure for any update would prevent
 all that statement's updates from occurring.
 
-=head2 named_value
+=head2 named-value
 
-A C<named_value> is the same as an C<function>, but that it has only
+A C<named-value> is the same as an C<function>, but that it has only
 zero parameters and unconditionally results in the same single value.  A
-C<named_value> is often used when you want to declare a program constant
-value that is easy to reference on a non-lexical scale.  A C<named_value>
+C<named-value> is often used when you want to declare a program constant
+value that is easy to reference on a non-lexical scale.  A C<named-value>
 is frequently part of the definition of a (not-C<Empty>) data type rather
 than a routine, and it is invoked automatically in situations where the
 default value of the type whose declaration it is part of is needed, such
 as when initializing a variable whose declared type is that type (a
 variable must always hold a valid value of its declared type).
 
-=head2 possrep_map
+=head2 possrep-map
 
-A C<possrep_map> is the same as an C<function>, but that it is part
+A C<possrep-map> is the same as an C<function>, but that it is part
 of the definition of a scalar data type, and it is used to convert a value
-from one of that type's possreps to another.  A C<possrep_map> has exactly
+from one of that type's possreps to another.  A C<possrep-map> has exactly
 1 parameter whose name is C<topic> and whose declared type is a tuple whose
 attributes match those of the possrep being converted from, and its result
 type is a tuple whose attributes match those of the possrep being converted
 to.  Note that every distinct argument (domain) value of this function must
 have a distinct result (range) value, as it is a 1:1 mapping function.
 
-=head2 virtual_attr_map
+=head2 virtual-attr-map
 
-A C<virtual_attr_map> is the same as a C<possrep_map> except that its range
+A C<virtual-attr-map> is the same as a C<possrep-map> except that its range
 may be (and typically is) smaller than its domain, it is usually part of
 the definition of a nonscalar data type, and it is used such that,
 on a per-tuple basis, one subset of that type's attributes is defined to
-be generated, by the C<virtual_attr_map> function, purely from a disjoint
+be generated, by the C<virtual-attr-map> function, purely from a disjoint
 subset of that type's attributes.  So a special kind of I<functional
 dependency> exists between the first subset, which has the I<dependent>
 attributes, and the second subset, which has the I<determinant> attributes.
@@ -1783,7 +1783,7 @@ value that is the same as a determinant attribute but for being folded to
 uppercase; or for another example, a dependent attribute may hold the
 result of a relational join of multiple determinant attributes, or a
 restriction on one (in the latter case, the data type being defined is
-probably a database).  A C<virtual_attr_map> has a single C<topic>
+probably a database).  A C<virtual-attr-map> has a single C<topic>
 parameter whose declared type is a tuple whose attributes match those of
 the determinant attributes of the type being declared, and its result type
 is a tuple whose attributes match those of the dependent attributes.  A
@@ -1792,46 +1792,46 @@ attributes can all be virtual; the DBMS can store just the determinant
 attributes, and the dependent attributes can be generated when needed (or
 they can still be pre-computed and stored for performance).
 
-=head2 order_determination
+=head2 order-determination
 
-An C<order_determination> is the same as an C<function>, but that it
+An C<order-determination> is the same as an C<function>, but that it
 is structured to fill the role of a I<system-compatible fundamental
 order-determination function>; see the L</Ordered Types> pod section in
-this file for more details.  An C<order_determination> has at least 3
+this file for more details.  An C<order-determination> has at least 3
 parameters named [C<topic>, C<other>, C<is_reverse_order>] and
 always results in an C<Order>.
 
-=head2 value_filter
+=head2 value-filter
 
-A C<value_filter> is the same as an C<function>, but that it has
+A C<value-filter> is the same as an C<function>, but that it has
 at least 1 parameter, where that 1 is named C<topic>, and the function
 always results in a C<Bool>; C<topic> is usually a C<Tuple> but doesn't
 have to be.  Any additional parameters besides the above-named 1 are hereby
-collectively referred to as I<misc params>.  A C<value_filter> is similar
-to a C<type_constraint> in that it evaluates C<topic> for membership in a
+collectively referred to as I<misc params>.  A C<value-filter> is similar
+to a C<type-constraint> in that it evaluates C<topic> for membership in a
 particular value domain, resulting in C<Bool:true> if C<topic> is a member
-and C<Bool:false> otherwise; but a C<value_filter> differs from a
-C<type_constraint> in that it would be explicitly invoked possibly in any
+and C<Bool:false> otherwise; but a C<value-filter> differs from a
+C<type-constraint> in that it would be explicitly invoked possibly in any
 context, and its criteria for evaluating C<topic> can be customized at
-runtime by I<misc params>.  A C<value_filter> is what would be used in
+runtime by I<misc params>.  A C<value-filter> is what would be used in
 operations like the general case of relational restriction.
 
-=head2 value_map
+=head2 value-map
 
-A C<value_map> is the same as an C<function>, but that it has at
+A C<value-map> is the same as an C<function>, but that it has at
 least 1 parameter, where that 1 is named C<topic>; C<topic> is usually a
-C<Tuple> but doesn't have to be.  A C<value_map> is what would be used in
+C<Tuple> but doesn't have to be.  A C<value-map> is what would be used in
 operations like the general case of relational extension or substitution.
 
-=head2 value_reduction
+=head2 value-reduction
 
-A C<value_reduction> is the same as an C<function>, but that it has
+A C<value-reduction> is the same as an C<function>, but that it has
 at least 2 parameters, where those 2 are named [C<v1>, C<v2>]; C<v1> and
 C<v2> must have the same declared type as each
-other, and the C<value_reduction> function's declared result type must be
-the same as that of C<v1> and C<v2>.  A C<value_reduction> is what would
+other, and the C<value-reduction> function's declared result type must be
+the same as that of C<v1> and C<v2>.  A C<value-reduction> is what would
 typically be used in N-ary operations that can be defined in terms of a
-repetition of binary operations, such that a C<value_reduction> would
+repetition of binary operations, such that a C<value-reduction> would
 define such a binary operation.
 
 =head2 updater
@@ -1857,16 +1857,16 @@ C<updater>; they include all C<assign> operators, plus some
 relational-assignment short-hands such as "assign_insertion",
 "assign_substitution", "assign_deletion".
 
-=head2 system_service
+=head2 system-service
 
-A C<system_service> is an explicitly invokable system-defined procedure
+A C<system-service> is an explicitly invokable system-defined procedure
 with 0..N parameters that can reach outside of the more deterministic DBMS
 environment in order to do non-deterministic things (besides working with
 depots), such as to initiate I/O of various kinds, or fetch the current
 date and time, or generate a random number.  Given the nature of this
-beast, users can not define their own C<system_service> routines but by
+beast, users can not define their own C<system-service> routines but by
 updating the Muldis D implementation's source code itself.  Invoking a
-C<system_service> can have side-effects outside of the DBMS, but it will
+C<system-service> can have side-effects outside of the DBMS, but it will
 not alter anything inside the DBMS aside from any of its subject-to-update
 parameters; it can not see any global variables.
 
@@ -1949,7 +1949,7 @@ within a repository are subject to transactions and can be rolled back,
 including both data manipulation and schema manipulation; moreover, an
 interrupted session with a repository must result in an automatic rollback,
 not an automatic commit.  (But changes that occur outside the DBMS
-environment, such as by a C<system_service>, or by a host language routine,
+environment, such as by a C<system-service>, or by a host language routine,
 are generally not affected by transactions at all.)
 
 It is important to point out that any attempt to implement Muldis D (what a
@@ -2071,7 +2071,7 @@ constructs; host language code could easily implement the scope-tied
 paradigm if it wanted to.
 
 An implicit transaction is associated with the lexical scope of every
-Muldis D C<updater> and C<system_service>, and by
+Muldis D C<updater> and C<system-service>, and by
 extension, every Muldis D statement that is an invocation of said.  Or more
 accurately, an update operation (including a multi-update operation) is
 implicitly atomic, and will either succeed and commit as a whole, or fail
