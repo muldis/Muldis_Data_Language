@@ -881,7 +881,7 @@ Examples:
     ['$','foo_expr']
 
     # a named_expr node #
-    [ '::=', 'bar_expr', [ 'func_invo', 'factorial', [['$','foo_expr']] ] ]
+    [ '::=', 'bar_expr', [ 'func-invo', 'factorial', [['$','foo_expr']] ] ]
 
 =head2 Generic Expression Attribute Accessors
 
@@ -900,12 +900,12 @@ Examples:
     ['$.','foo_t.bar_attr']
 
     # an accessor node of an anonymous tuple-valued node #
-    ['$.',['func_invo','sdp.lib.tuple_res_func',[['$','arg']]],'quux_attr']
+    ['$.',['func-invo','sdp.lib.tuple_res_func',[['$','arg']]],'quux_attr']
 
 =head2 Generic Function Invocation Expressions
 
 An C<func_invo> node has 2-4 ordered elements:  The first element is the
-Perl C<Str> value C<func_invo>.  The second element is a
+Perl C<Str> value C<func-invo>.  The second element is a
 C<NameChain_payload>, which names the function to invoke.  The last 1-2
 elements provide arguments to the function invocation; either or both or
 none of a C<Array_payload> element and a C<Tuple_payload> element may be
@@ -918,34 +918,34 @@ value.
 Examples:
 
     # zero params #
-    [ 'func_invo', 'nothing' ]
+    [ 'func-invo', 'nothing' ]
 
     # single mandatory param #
-    [ 'func_invo', 'Integer.median',
+    [ 'func-invo', 'Integer.median',
         [ :Bag( Bag.new( [ 22, 20, 21, 20, 21, 21, 23 ] ) ) ] ]
 
     # single mandatory param #
-    [ 'func_invo', 'factorial', { topic => 5 } ]
+    [ 'func-invo', 'factorial', { topic => 5 } ]
 
     # two mandatory params #
-    [ 'func_invo', 'Rational.quotient',
+    [ 'func-invo', 'Rational.quotient',
         { dividend => 43.7, divisor => 16.9 } ]
 
     # one mandatory 'topic' param, two optional #
-    [ 'func_invo', 'sdp.lib.barfunc', [ ['$','mand_arg'] ],
+    [ 'func-invo', 'sdp.lib.barfunc', [ ['$','mand_arg'] ],
         { oa1 => ['$','opt_arg1'], oa2 => ['$','opt_arg2'] } ]
 
     # a user-defined function #
-    [ 'func_invo', 'dep.lib.foodb.bazfunc',
+    [ 'func-invo', 'dep.lib.foodb.bazfunc',
         { a1 => 52, a2 => 'hello world' } ]
 
     # two params named 'topic' and 'other' #
-    [ 'func_invo', 'is_identical', [ ['$','foo'], ['$','bar'] ] ]
+    [ 'func-invo', 'is_identical', [ ['$','foo'], ['$','bar'] ] ]
 
 =head2 Generic If-Else Expressions
 
 An C<if_else_expr> node has 2-3 ordered elements:  The first element is
-either of the 2 Perl C<Str> values C<if_else_expr> and C<??!!>.  The
+either of the 2 Perl C<Str> values C<if-else-expr> and C<??!!>.  The
 optional second element is I<if_then>, a Perl C<Seq|Array> with 0..N
 elements, each of those being a 2-element Perl C<Seq|Array> or a Perl Pair,
 where each element is an C<expr> node; the first element / key is an I<if>
@@ -955,16 +955,16 @@ is I<else> result expression, which is an C<expr> node.
 
 Examples:
 
-    [ 'if_else_expr',
+    [ 'if-else-expr',
         [
             [ 'op', '>', [['$','foo'], 5] ] => ['$','bar'],
         ],
         ['$','baz']
     ]
 
-    [ 'if_else_expr',
+    [ 'if-else-expr',
         [
-            [ 'op', 'is_empty', [['$','ary']] ] => ['$','empty_result'],
+            [ 'op', 'is-empty', [['$','ary']] ] => ['$','empty_result'],
         ],
         [ 'op', '.[]', [['$','ary'], 0] ]
     ]
@@ -975,7 +975,7 @@ Examples:
 =head2 Generic Given-When-Default Expressions
 
 A C<given_when_def_expr> node has 3-4 ordered elements:  The first element
-is the Perl C<Str> value C<given_when_def_expr>.  The second element is an
+is the Perl C<Str> value C<given-when-def-expr>.  The second element is an
 C<expr> node which is the I<given> common comparand.  The optional third
 element is I<when_then>, a Perl C<Seq|Array> with 0..N elements, each of
 those being a 2-element Perl C<Seq|Array> or a Perl Pair, where each
@@ -986,7 +986,7 @@ expression, which is an C<expr> node.
 
 Examples:
 
-    [ 'given_when_def_expr',
+    [ 'given-when-def-expr',
         ['$','digit'],
         [
             'T' => 10,
@@ -999,22 +999,22 @@ Examples:
 
 A C<[func|proc|type|ord_det_func]_ref> node has 2 ordered elements:  The
 first element is the Perl C<Str> value
-C<[func|proc|type|ord_det_func]_ref>.  The second element is a
+C<[func|proc|type|ord-det-func]-ref>.  The second element is a
 C<NameChain_payload>, which names the routine|type to invoke.
 
-A C<[func|proc|type|ord_det_func]_ref> node may alternately be formatted as
+A C<[func|proc|type|ord-det-func]-ref> node may alternately be formatted as
 a Perl Pair whose key and value are what would otherwise be the first and
 second node elements, respectively.
 
 Examples:
 
-    :func_ref<sdp.lib.filter>
+    :func-ref<sdp.lib.filter>
 
-    :imp_ref<sdp.lib.try_block>
+    :imp-ref<sdp.lib.try_block>
 
-    :type_ref<sdp.lib.foo_type>
+    :type-ref<sdp.lib.foo_type>
 
-    :ord_det_func_ref<sdp.lib.order_bars>
+    :ord-det-func-ref<sdp.lib.order_bars>
 
 =head1 MULDIS D STANDARD DIALECT PRAGMAS
 
@@ -1084,7 +1084,7 @@ Examples:
 
     [ 'op', '//', [ ['$','a'], ['$','b'], 42 ] ]
 
-    [ 'op', '//d', [ ['$','a'], ['$','b'], :type_ref<sdp.lib.foo_type> ] ]
+    [ 'op', '//d', [ ['$','a'], ['$','b'], :type-ref<sdp.lib.foo_type> ] ]
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -1112,11 +1112,11 @@ C<rhs>, respectively.
 
 Examples:
 
-    [ 'op', 'isa', [ ['$','bar'], :type_ref<sdp.lib.foo_type> ] ]
+    [ 'op', 'isa', [ ['$','bar'], :type-ref<sdp.lib.foo_type> ] ]
 
-    [ 'op', '!isa', [ ['$','bar'], :type_ref<sdp.lib.foo_type> ] ]
+    [ 'op', '!isa', [ ['$','bar'], :type-ref<sdp.lib.foo_type> ] ]
 
-    [ 'op', 'as', [ ['$','scalar'], :type_ref<Int> ] ]
+    [ 'op', 'as', [ ['$','scalar'], :type-ref<Int> ] ]
 
     [ 'op', 'asserting', [['$','int'], [ 'op', '≠', [['$','int'], 0] ]] ]
 
@@ -1148,7 +1148,7 @@ C<expr> node.
 
 Examples:
 
-    [ 'op', 'd', :type_ref<sdp.lib.foo_type> ]
+    [ 'op', 'd', :type-ref<sdp.lib.foo_type> ]
 
     [ 'op', 'not', Bool::True ]
 
