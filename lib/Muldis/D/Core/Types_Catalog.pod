@@ -75,13 +75,10 @@ more or less:
 
                 # The following are all regular tuple types.
 
-                sys.std.Core.Type.Cat.FuncHead
-                sys.std.Core.Type.Cat.FuncBody
+                sys.std.Core.Type.Cat.Function
                 sys.std.Core.Type.Cat.IfThenExprMap
-                sys.std.Core.Type.Cat.UpdHead
-                sys.std.Core.Type.Cat.UpdBody
-                sys.std.Core.Type.Cat.ProcHead
-                sys.std.Core.Type.Cat.ProcBody
+                sys.std.Core.Type.Cat.Updater
+                sys.std.Core.Type.Cat.Procedure
                 sys.std.Core.Type.Cat.IfThenVarStmtMap
                 sys.std.Core.Type.Cat.ScalarType
                 sys.std.Core.Type.Cat.NonscalarType
@@ -107,7 +104,7 @@ more or less:
                 # The following are all regular relation types.
 
                 sys.std.Core.Type.Cat.SysNspSet
-                sys.std.Core.Type.Cat.Sys[Func|Upd|Proc]Set
+                sys.std.Core.Type.Cat.Sys[Function|Updater|Procedure]Set
                 sys.std.Core.Type.Cat.SysSpecTypeSet
                 sys.std.Core.Type.Cat.Sys[Scalar|Nonscalar]TypeSet
                 sys.std.Core.Type.Cat.Sys[Union|Subset]TypeSet
@@ -117,7 +114,7 @@ more or less:
                 sys.std.Core.Type.Cat.FedTypeMapSet
                 sys.std.Core.Type.Cat.FedTypeMap
                 sys.std.Core.Type.Cat.SubdepotSet
-                sys.std.Core.Type.Cat.[Func|Upd|Proc]Set
+                sys.std.Core.Type.Cat.[Function|Updater|Procedure]Set
                 sys.std.Core.Type.Cat.[Scalar|Nonscalar]TypeSet
                 sys.std.Core.Type.Cat.[Union|Subset]TypeSet
                 sys.std.Core.Type.Cat.ScaValExprNodeSet
@@ -457,7 +454,8 @@ C<sys.std.Core.Type>, C<sys.std.Core.Type.Cat>; it also declares other
 C<Core> namespaces, and where applicable, standard extensions or
 implementation-specific extensions.
 
-=item C<functions|updaters|procedures> - C<Sys[Func|Upd|Proc]Set>
+=item C<functions|updaters|procedures> -
+C<Sys[Function|Updater|Procedure]Set>
 
 These are the interfaces, or definitions in some cases, of all the
 system-defined functions|updaters|procedures.  (Note that C<procedures>
@@ -532,13 +530,13 @@ namespace.
 A C<SysNspSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Sys[Func|Upd|Proc]Set
+=head2 sys.std.Core.Type.Cat.Sys[Function|Updater|Procedure]Set
 
-A C<Sys[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
-system-defined functions|updaters|procedures.  (Note that C<SysProcSet>
-also specifies the system-defined system services.)
+A C<Sys[Function|Updater|Procedure]Set> is a C<DHRelation> that specifies a
+set of system-defined functions|updaters|procedures.  (Note that
+C<SysProcedureSet> also specifies the system-defined system services.)
 
-A C<Sys[Func|Upd|Proc]Set> has these 4 attributes:
+A C<Sys[Function|Updater|Procedure]Set> has these 4 attributes:
 
 =over
 
@@ -558,27 +556,18 @@ the combination of C<parent> and C<name>.
 This is an optional programmer comment about the function|updater|procedure
 as a whole.
 
-=item C<head> - C<[Func|Upd|Proc]Head>
+=item C<material> - C<Function|Updater|Procedure>
 
-This defines the entire function|updater|procedure heading, that is its
-public interface sans its name, which is all the details of how to use it
-and no more detail than necessary about how it is implemented.
-
-=item C<body> - C<maybe_of.[Func|Upd|Proc]Body>
-
-This defines the entire function|updater|procedure body, that is its
-implementation, besides what C<head> defines.  Note that it is not
-mandatory for a system-defined routine to have a specified body (just a
-specified heading is mandatory), and often it won't; but often it will,
-especially if it is a function used in the definition of a system-defined
-data type.  Iff a body is specified, then C<body> is a C<Single> whose sole
-element defines the entire body; otherwise a body is not specified, and
-C<body> is C<nothing>.
+This defines the entire function|updater|procedure sans its name.  Note
+that it is not mandatory for a system-defined routine to have a specified
+I<body> (just a specified I<heading> is mandatory), and often it won't; but
+often it will, especially if it is a function used in the definition of a
+system-defined data type.
 
 =back
 
-A C<Sys[Func|Upd|Proc]Set> has a binary primary key on the C<parent>
-plus C<name> attributes.  Its default value is empty.
+A C<Sys[Function|Updater|Procedure]Set> has a binary primary key on the
+C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysSpecTypeSet
 
@@ -636,7 +625,7 @@ reference it with the combination of C<parent> and C<name>.
 This is an optional programmer comment about the
 scalar|nonscalar|union|subset type as a whole.
 
-=item C<type> - C<[Scalar|Nonscalar|Union|Subset]Type>
+=item C<material> - C<[Scalar|Nonscalar|Union|Subset]Type>
 
 This defines the entire scalar|nonscalar|union|subset type sans its name.
 
@@ -993,7 +982,7 @@ This is an optional programmer comment about the [|sub]depot as a whole.
 These are all the subdepots that this system catalog contains (which might
 be none).
 
-=item C<functions|updaters|procedures> - C<[Func|Upd|Proc]Set>
+=item C<functions|updaters|procedures> - C<[Function|Updater|Procedure]Set>
 
 These are all the definitions that this [|sub]depot contains of functions,
 updaters, procedures.
@@ -1052,14 +1041,14 @@ associated with this subdepot name.
 A C<SubdepotSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Func|Upd|Proc]Set
+=head2 sys.std.Core.Type.Cat.[Function|Updater|Procedure]Set
 
-An C<[Func|Upd|Proc]Set> is a C<DHRelation> that specifies a set of
-functions|updaters|procedures that a [|sub]depot might directly contain;
-each routine may be either public for the DBMS as a whole or private to the
-subdepot.
+An C<[Function|Updater|Procedure]Set> is a C<DHRelation> that specifies a
+set of functions|updaters|procedures that a [|sub]depot might directly
+contain; each routine may be either public for the DBMS as a whole or
+private to the subdepot.
 
-An C<[Func|Upd|Proc]Set> has these 6 attributes:
+An C<[Function|Updater|Procedure]Set> has these 5 attributes:
 
 =over
 
@@ -1086,21 +1075,14 @@ subdepot's own public interface and may be invoked from outside the
 subdepot; it is C<Bool:false> if it is just part of the subdepot's
 internals.
 
-=item C<head> - C<[Func|Upd|Proc]Head>
+=item C<material> - C<Function|Updater|Procedure>
 
-This defines the entire function|updater|procedure heading, that is its
-public interface sans its name, which is all the details of how to use it
-and no more detail than necessary about how it is implemented.
-
-=item C<body> - C<[Func|Upd|Proc]Body>
-
-This defines the entire function|updater|procedure body, that is its
-implementation, besides what C<head> defines.
+This defines the entire function|updater|procedure sans its name.
 
 =back
 
-An C<[Func|Upd|Proc]Set> has a binary primary key on the C<parent> plus
-C<name> attributes.  Its default value is empty.
+An C<[Function|Updater|Procedure]Set> has a binary primary key on the
+C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.[Scalar|Nonscalar|Union|Subset]TypeSet
 
@@ -1136,7 +1118,7 @@ of the subdepot's own public interface and may be invoked from outside the
 subdepot; it is C<Bool:false> if it is just part of the subdepot's
 internals.
 
-=item C<type> - C<[Scalar|Nonscalar|Union|Subset]Type>
+=item C<material> - C<[Scalar|Nonscalar|Union|Subset]Type>
 
 This defines the entire scalar|nonscalar|union|subset type sans its name.
 
@@ -1149,20 +1131,31 @@ the C<parent> plus C<name> attributes.  Its default value is empty.
 
 These are all enumeration data types.
 
-=head2 sys.std.Core.Type.Cat.FuncHead
+=head2 sys.std.Core.Type.Cat.Function
 
-A C<FuncHead> is a C<DHTuple>.  It specifies the entire heading or public
-interface of a function or function, except for its name and
-public/private status; the latter are provided by any type embedding this
-one when applicable.
+A C<Function> is a C<DHTuple>.  It defines a new function, which has 2
+main parts, called I<heading> and I<body>:  The I<heading> defines the
+function's entire public interface, which is all the details of how to use
+it, except for its name and public/private status, and no more detail than
+necessary about how it is implemented.  The I<body> defines the function's
+entire implementation (or the main body of a function), besides its
+name/etc and what the I<heading> defines.  The function's name and
+public/private status are provided by the larger context that embeds the
+C<Function>, which is either a C<Depot> or C<System>.  Every C<Function>
+must have a specified I<heading>, but having a specified I<body> is
+optional iff the C<Function> is embedded in a C<System>, because often the
+implementations of system-defined routines are not defined in terms of
+other Muldis D routines.
 
-A C<FuncHead> has these 4 attributes:
+A C<Function> has these 5 attributes, of which the 3 C<result_type>,
+C<params>, C<opt_params> define the I<heading> and the 1 C<expr> defines
+the I<body>:
 
 =over
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the function heading.
+This is an optional programmer comment about the function as a whole.
 
 =item C<result_type> - C<NameChain>
 
@@ -1182,26 +1175,6 @@ arguments.  Any parameter marked as optional which is not given an explicit
 argument will implicitly default to the default value of its declared type.
 Each element of C<opt_params> must match a parameter name in C<params>.
 
-=back
-
-The default value of C<FuncHead> has zero parameters and a result type
-of C<Bool>; by default, its parameters are all non-optional.
-
-=head2 sys.std.Core.Type.Cat.FuncBody
-
-An C<FuncBody> is a C<DHTuple>.  It specifies the entire body or
-implementation of an function (or the main body of a function),
-besides the details that a C<FuncHead> has, one of which each
-C<FuncBody> typically must be paired with.
-
-An C<FuncBody> has these 2 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the function body.
-
 =item C<expr> - C<ExprNodeSet>
 
 This defines the value expression tree that comprises the entire
@@ -1209,37 +1182,35 @@ function body.
 
 =back
 
-There is a distributed primary key over the C<name> attributes of all the
-attributes of C<expr>; and if this C<FuncBody> is paired with a
-C<FuncHead>, then the distributed key also extends over the head's
-parameter names.
+Iff a C<Function> has no specified I<body>, then C<expr> must have zero
+member nodes; otherwise, C<expr> must have at least 1 member node.
 
-An C<FuncBody> specifies a simple value expression tree of named
+A C<Function> with a specified I<body>
+specifies a simple value expression tree of named
 expression nodes, each of which is a tuple of one of its C<expr.\w+_exprs>
-attributes.  It must have at least 1 member node, except that it may have
-zero member nodes iff the function it is composed into has exactly
-1 parameter, in which case the value expression tree implicitly results in
-the argument to said parameter.  Otherwise:  All member nodes must define a
+attributes.  It must have at least 1 member node, and
+all member nodes must define a
 simple expression node tree, such that every member except one (which is
 the root node) has one of its peers as a parent node, and no direct cycles
 between members are permitted (only indirect cycles based on
 function invocations are allowed); the name of the root node must be the
 empty string.  Note that the composed-into function's parameters
 are also implicitly tree nodes, and are referenced by name into the
-expression the same way as any other named expression node is.  Regardless
-of whether the node count is zero or 1+, the tree must denote a value
+expression the same way as any other named expression node is.  The
+tree must denote a value
 expression whose result type is of the result type of the function
 it is composed into, and which invokes all of the function's parameters.
 
-The default value of C<FuncBody> directly corresponds to the
-default value of C<FuncHead> and unconditionally results in the value
-C<Bool:false>.
+C<Function> has a distributed primary key over the C<name> attributes of
+C<params> and the C<name> attributes of all the attributes of C<expr>.  Its
+default value has zero parameters, a result type of C<Bool>, and has no
+specified I<body>.
 
 =head2 sys.std.Core.Type.Cat.ExprNodeSet
 
 An C<ExprNodeSet> is a C<Database> that specifies a set of named value
 expression nodes.  It is typically composed into a
-[function|updater].  Each tuple of an C<ExprNodeSet> attribute is a
+function|updater.  Each tuple of an C<ExprNodeSet> attribute is a
 named expression node, which is the majority component of functional Muldis
 D code.  All arbitrarily complex Muldis D expression trees, including
 relational queries, are composed of just expression nodes, either directly,
@@ -1818,20 +1789,31 @@ A C<MaterialRefSelExprNodeSet> has a unary (unique) key on the C<name>
 attribute, plus another such key on the C<referencing> attribute.  Its
 default value is empty.
 
-=head2 sys.std.Core.Type.Cat.UpdHead
+=head2 sys.std.Core.Type.Cat.Updater
 
-An C<UpdHead> is a C<DHTuple>.  It specifies the entire heading or public
-interface of an updater or updater, except for its name and
-public/private status; the latter are provided by any type embedding this
-one when applicable.
+An C<Updater> is a C<DHTuple>.  It defines a new updater, which has 2
+main parts, called I<heading> and I<body>:  The I<heading> defines the
+updater's entire public interface, which is all the details of how to use
+it, except for its name and public/private status, and no more detail than
+necessary about how it is implemented.  The I<body> defines the updater's
+entire implementation (or the main body of an updater), besides its
+name/etc and what the I<heading> defines.  The updater's name and
+public/private status are provided by the larger context that embeds the
+C<Updater>, which is either a C<Depot> or C<System>.  Every C<Updater>
+must have a specified I<heading>, but having a specified I<body> is
+optional iff the C<Updater> is embedded in a C<System>, because often the
+implementations of system-defined routines are not defined in terms of
+other Muldis D routines.
 
-An C<UpdHead> has these 4 attributes:
+An C<Updater> has these 6 attributes, of which the 3 C<upd_params>,
+C<ro_params>, C<opt_params> define the I<heading> and the 2 C<exprs>,
+C<stmt> define the I<body>:
 
 =over
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the updater heading.
+This is an optional programmer comment about the updater as a whole.
 
 =item C<upd_params> - C<NameTypeMap>
 
@@ -1857,30 +1839,6 @@ discarded after the updater finishes executing.  Each element of
 C<opt_params> must match a parameter name in either C<upd_params> or
 C<ro_params>.
 
-=back
-
-There is a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params>.
-
-The default value of C<UpdHead> has 1 subject-to-update parameter whose
-name is C<topic> and whose declared type is C<Bool>; it has zero read-only
-parameters; by default, its parameters are all non-optional.
-
-=head2 sys.std.Core.Type.Cat.UpdBody
-
-An C<UpdBody> is a C<DHTuple>.  It specifies the entire body or
-implementation of an updater (or the main body of a updater), besides
-the details that an C<UpdHead> has, one of which each
-C<UpdBody> typically must be paired with.
-
-An C<UpdBody> has these 3 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the updater body.
-
 =item C<exprs> - C<ExprNodeSet>
 
 This defines the expression trees that are arguments to the update
@@ -1895,14 +1853,15 @@ reference all of the parameters that the updater has.
 
 =back
 
-There is a distributed primary key over the C<name> attributes of all the
-attributes of C<exprs>; and if this C<UpdBody> is paired with an
-C<UpdHead>, then the distributed key also extends over the head's
-parameter names.
+Iff an C<Updater> has no specified I<body>, then C<exprs> must have zero
+member nodes and C<stmt> must have zero member tuples; otherwise, C<stmt>
+must have at least 1 member tuple.
 
-The default value of C<UpdBody> directly corresponds to the
-default value of C<UpdHead> and unconditionally updates its C<topic>
-argument to the value C<Bool:false>.
+C<Updater> has a distributed primary key over the C<name> attributes of
+C<upd_params> and C<ro_params> and the C<name> attributes of all the
+attributes of C<exprs>.  Its default value has 1 subject-to-update,
+non-optional parameter whose name is C<topic> and whose declared type is
+C<Bool>; it has zero read-only parameters; it has no specified I<body>.
 
 =head2 sys.std.Core.Type.Cat.MultiUpdStmt
 
@@ -1920,7 +1879,10 @@ C<MultiUpdStmt>, so for any procedures that would conceptually include
 them, those portions of the procedures need to be separated out and
 encapsulated by named updaters.  Each tuple of a multi-update
 statement is a single update statement, which represents a single
-invocation of an updater, and at least 1 tuple is required.
+invocation of an updater.  C<MultiUpdStmt> itself has no restriction on the
+number of tuples it consists of, but:  At least 1 tuple is required iff the
+multi-update statement is composed into a specified updater body; otherwise
+there must be only be zero tuples for an unspecified updater body.
 
 A C<MultiUpdStmt> has these 4 attributes:
 
@@ -1953,27 +1915,34 @@ local expression node (or parameter) which defines the value.
 
 =back
 
-There is a distributed primary key over the C<name> attributes of
-C<upd_args> and C<ro_args>.
+C<MultiUpdStmt> has a distributed primary key over the C<name> attributes
+of C<upd_args> and C<ro_args>.  Its default value is empty.
 
-The default value of C<MultiUpdStmt> directly corresponds to the
-default value of C<UpdBody> and unconditionally updates its
-containing updater's C<topic> argument to the value C<Bool:false>.
+=head2 sys.std.Core.Type.Cat.Procedure
 
-=head2 sys.std.Core.Type.Cat.ProcHead
+A C<Procedure> is a C<DHTuple>.  It defines a new procedure, which has 2
+main parts, called I<heading> and I<body>:  The I<heading> defines the
+procedure's entire public interface, which is all the details of how to use
+it, except for its name and public/private status, and no more detail than
+necessary about how it is implemented.  The I<body> defines the procedure's
+entire implementation (or the main body of a procedure), besides its
+name/etc and what the I<heading> defines.  The procedure's name and
+public/private status are provided by the larger context that embeds the
+C<Procedure>, which is either a C<Depot> or C<System>.  Every C<Procedure>
+must have a specified I<heading>, but having a specified I<body> is
+optional iff the C<Procedure> is embedded in a C<System>, because often the
+implementations of system-defined routines are not defined in terms of
+other Muldis D routines.
 
-A C<ProcHead> is a C<DHTuple>.  It specifies the entire heading or public
-interface of a procedure or procedure, except for its name and
-public/private status; the latter are provided by any type embedding this
-one when applicable.
-
-A C<ProcHead> has these 4 attributes:
+A C<Procedure> has these 6 attributes, of which the 3 C<upd_params>,
+C<ro_params>, C<opt_params> define the I<heading> and the 2 C<vars>,
+C<stmt> define the I<body>:
 
 =over
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the procedure heading.
+This is an optional programmer comment about the procedure as a whole.
 
 =item C<upd_params> - C<NameTypeMap>
 
@@ -1987,30 +1956,7 @@ This is the declared read-only parameter list of the procedure, which has
 
 =item C<opt_params> - C<set_of.Name>
 
-This is as per the same-named attribute of C<UpdHead>.
-
-=back
-
-There is a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params>.
-
-The default value of C<ProcHead> has zero parameters; by default, its
-parameters are all non-optional.
-
-=head2 sys.std.Core.Type.Cat.ProcBody
-
-An C<ProcBody> is a C<DHTuple>.  It specifies the entire body or
-implementation of an procedure (or the main body of a procedure),
-besides the details that a C<ProcHead> has, one of which each
-C<ProcBody> typically must be paired with.
-
-An C<ProcBody> has these 3 attributes:
-
-=over
-
-=item C<comment> - C<Comment>
-
-This is an optional programmer comment about the procedure body.
+This is as per the same-named attribute of C<Updater>.
 
 =item C<vars> - C<NameTypeMap>
 
@@ -2023,15 +1969,19 @@ This defines the statement tree that comprises the entire procedure body.
 
 =back
 
-There is a distributed primary key over the C<name> attribute of C<vars>
-and the C<name> attributes of all the attributes of C<stmt>; and if this
-C<ProcBody> is paired with a C<ProcHead>, then the distributed
-key also extends over the head's parameter names.
+Iff a C<Procedure> has no specified I<body>, then C<stmt> must have zero
+member nodes and C<vars> must have zero member tuples; otherwise, C<stmt>
+must have at least 1 member node.  (If you actually want to have a
+procedure with a specified body that is a no-op, there are a variety of
+single statement bodies that could do it, such as using a "leave" statement
+node as the root node, or such as by invoking the C<sys.std.Core.Cat.noop>
+procedure; the former is simpler.)
 
-An C<ProcBody> specifies a simple statement tree of named statement
+A C<Procedure> with a specified I<body>
+specifies a simple statement tree of named statement
 nodes, each of which is a tuple of one of its C<stmt.\w+_stmts> attributes.
-If it has zero member nodes, then the procedure is a no-op.
-Otherwise:  All member nodes must define a simple statement node tree, such
+It must have at least 1 member node, and
+all member nodes must define a simple statement node tree, such
 that every member except one (which is the root node) has one of its peers
 as a parent node, and no direct cycles between members are permitted (only
 indirect cycles based on procedure invocations are allowed); the
@@ -2042,8 +1992,10 @@ any other named statement node is.  The statement tree should reference all
 of the parameters and lexical variables that the procedure has,
 but this isn't a strict requirement.
 
-The default value of C<ProcBody> directly corresponds to the default
-value of C<ProcHead> and is a no-op, having an empty statement tree.
+C<Procedure> has a distributed primary key over the C<name> attributes of
+C<upd_params> and C<ro_params> and C<vars> and the C<name> attributes of
+all the attributes of C<stmt>.  Its default value has zero parameters and
+has no specified I<body>.
 
 =head2 sys.std.Core.Type.Cat.StmtNodeSet
 
@@ -2103,11 +2055,14 @@ statement leaf nodes where each node represents an instruction to
 abnormally exit the block defined by a parent statement node (a normal exit
 is to simply execute to the end of the block).  If the parent node in
 question is the root statement node for the containing procedure,
+that is, if the parent node has the empty string as its name,
 then the latter will be exited; this is how a "return" statement is
 represented, but "return" is still easy to recognize because the root node
 always has the empty string as its name.  If the parent node in question is
 an iterating or looping statement, then any remaining iterations it might
 have had are skipped, especially useful if it was an infinite loop.
+Alternately, a L<LeaveStmtNodeSet> node may name itself as the node to exit
+as a form of a no-op.
 
 A C<LeaveStmtNodeSet> has these 3 attributes:
 
