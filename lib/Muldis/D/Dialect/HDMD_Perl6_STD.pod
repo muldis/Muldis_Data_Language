@@ -107,7 +107,7 @@ Muldis D code that isn't itself qualified with a C<language_name>.
 As per the VERSIONING pod section of L<Muldis::D>, code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
 written in.  The C<HDMD_Perl6_STD> dialect formats this name as a
-C<language_name> node having 4-5 ordered elements:
+C<language_name> node having 5 ordered elements:
 
 =over
 
@@ -134,19 +134,178 @@ C<HDMD_Perl6_STD>.
 
 =item C<ln_extensions>
 
-Optional; this is a set of chosen pragma/parser-config options as per a
-C<Tuple> SCVL; see the L</MULDIS D STANDARD DIALECT PRAGMAS> pod section
-for more details.
+This is a set of chosen pragma/parser-config options, which is formatted
+similarly to a C<Tuple> SCVL.  The only currently defined pragma,
+C<catalog_abstraction_level> (see the L</CATALOG ABSTRACTION LEVELS> pod
+section), is mandatory; others may be added later which would likely be
+optional.
+
+The value associated with the C<ln_extensions> attribute named
+C<catalog_abstraction_level> must be one of these 4 Perl C<Str> values:
+C<the_floor>, C<code_as_data>, C<plain_rtn_inv>, C<rtn_inv_alt_syn>.
 
 =back
 
 Examples:
 
-    [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_STD' ]
-
     [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_STD', {
-        with_rtn_inv_alt_syn => Bool::True
+        catalog_abstraction_level => 'plain_rtn_inv'
     } ]
+
+=head1 CATALOG ABSTRACTION LEVELS
+
+The C<catalog_abstraction_level> pragma determines with a broad granularity
+how large the effective Muldis D grammar is that a programmer may employ
+with their Muldis D code.
+
+The catalog abstraction level of some Muldis D code is a measure of how
+much or how little that code would resemble the system catalog data that
+the code would parse into.  The lower the abstraction level, the smaller
+and simpler the used Muldis D grammar is and the more like data structure
+literals it is; the higher the abstraction level, the larger and more
+complicated the Muldis D grammar is and the more like
+general-purpose-language typical code it is.
+
+There are currently 4 specified catalog abstraction levels, which when
+arranged from lowest to highest amount of abstraction, are: C<the_floor>,
+C<code_as_data>, C<plain_rtn_inv>, C<rtn_inv_alt_syn>.  Every abstraction
+level has a proper superset of the grammar of every other abstraction level
+that is lower than itself, so for example any code that is valid
+C<code_as_data> is also valid C<plain_rtn_inv>, and so on.
+
+=head2 the_floor
+
+This abstraction level exists more as an academic exercise and is not
+intended to actually be used.
+
+Examples:
+
+    [
+        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_STD', {
+            catalog_abstraction_level => 'the_floor'
+        } ],
+        :Relation( Set.new(
+            {
+                food => [ 'Scalar', 'Text', nfd_codes => {
+                    '' => ['Scalar',
+                        'String.<67><97><114><114><111><116><115>',{}]
+                } ],
+                qty => [ 'Scalar', 'Int', {
+                    '' => ['Scalar','String.<100>',{}]
+                } ]
+            },
+            {
+                food => [ 'Scalar', 'Text', nfd_codes => {
+                    '' => ['Scalar','String.<75><105><119><105><115>',{}]
+                } ],
+                qty => [ 'Scalar', 'Int', {
+                    '' => ['Scalar','String.<30>',{}]
+                } ]
+            }
+        ) )
+    ]
+
+=head2 code_as_data
+
+This abstraction level is the best one for when you want to write code in
+exactly the same form as it would take in the system catalog.
+
+Code written to the C<code_as_data> level can employ all of the language
+grammar constructs described in these main pod sections: L</VALUE LITERALS
+AND SELECTORS>, L</OPAQUE VALUE LITERALS>, L</COLLECTION VALUE SELECTORS>.
+
+Examples:
+
+    [
+        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_STD', {
+            catalog_abstraction_level => 'code_as_data'
+        } ],
+        :Relation( Set.new(
+            { food => 'Carrots', qty => 100 },
+            { food => 'Kiwis', qty => 30 }
+        ) )
+    ]
+
+    [
+       [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_STD', {
+          catalog_abstraction_level => 'code_as_data'
+       } ],
+       [ 'depot', [ 'Database', 'Depot', {
+          functions => :Relation( Set.new(
+             {
+                name => :Name<cube>,
+                is_public => Bool::True,
+                material => [ 'Tuple', 'Function', {
+                   result_type => :NameChain<Int>,
+                   params => [ 'Relation', 'NameTypeMap', Set.new(
+                      { name => :Name<topic>, type => :NameChain<Int> }
+                   ) ],
+                   expr => [ 'Database', 'ExprNodeSet', {
+                      sca_val_exprs => :Relation( Set.new(
+                         { name => :Name<INT_3>, value => 3 }
+                      ) ),
+                      func_invo_exprs => :Relation( Set.new(
+                         {
+                            name => :Name(''),
+                            function => :NameChain('Integer.power'),
+                            args => [ 'Relation', 'NameExprMap', [
+                               {name=>:Name<radix>, expr=>:Name<topic>},
+                               {name=>:Name<exponent>, expr=>:Name<INT_3>}
+                            ] ]
+                         }
+                      ) )
+                   } ]
+                } ]
+             }
+          ) )
+       } ] ]
+    ]
+
+=head2 plain_rtn_inv
+
+This abstraction level is the lowest one that can be recommended for
+general use.
+
+Code written to the C<plain_rtn_inv> level can employ all of the language
+grammar constructs that C<code_as_data> can, plus all of those
+described in these main pod sections: L</GENERIC VALUE EXPRESSIONS>.
+
+Examples:
+
+    [
+        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_STD', {
+            catalog_abstraction_level => 'plain_rtn_inv'
+        } ],
+        [ 'depot', [
+            [ 'function', 'public', 'cube', 'Int', { topic => 'Int' }, [
+                [ 'func-invo', 'Integer.power',
+                    { radix => ['$','topic'], exponent => 3 } ]
+            ] ]
+        ] ]
+    ]
+
+=head2 rtn_inv_alt_syn
+
+This abstraction level is the highest one and is the most recommended one
+for general use.
+
+Code written to the C<rtn_inv_alt_syn> level can employ all of the language
+grammar constructs that C<plain_rtn_inv> can, plus all of those described
+in these main pod sections: L</FUNCTION INVOCATION ALTERNATE SYNTAX
+EXPRESSIONS>.
+
+Examples:
+
+    [
+        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl6_STD', {
+            catalog_abstraction_level => 'rtn_inv_alt_syn'
+        } ],
+        [ 'depot', [
+            [ 'function', 'public', 'cube', 'Int', { topic => 'Int' }, [
+                [ 'op', 'I^', [ ['$','topic'], 3 ] ]
+            ] ]
+        ] ]
+    ]
 
 =head1 VALUE LITERALS AND SELECTORS
 
@@ -638,6 +797,12 @@ Examples:
         '' => 5,
     } ]
 
+    [ 'Scalar', 'Int', { '' => ['Scalar','String.<42>',{}] } ]
+
+    [ 'Scalar', 'Text', nfd_codes => {
+        '' => ['Scalar','String.<80><101><114><109>',{}]
+    } ]
+
 =head2 Tuple Selectors
 
 A C<Tuple> node represents a literal or selector invocation for a
@@ -1015,12 +1180,6 @@ Examples:
     :type-ref<sdp.lib.foo_type>
 
     :ord-det-func-ref<sdp.lib.order_bars>
-
-=head1 MULDIS D STANDARD DIALECT PRAGMAS
-
-All 3 of the Muldis D standard dialects, C<PTMD_STD> and
-C<HDMD_Perl[6|5]_STD>, support these same pragmas, and have the same
-semantics: C<with_rtn_inv_alt_syn>.
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 

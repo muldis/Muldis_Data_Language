@@ -169,7 +169,7 @@ Grammar:
         \s* ':' <ln_base_authority>
         \s* ':' <ln_base_version_number>
         \s* ':' <ln_dialect>
-        [\s* ':' <ln_extensions>]?
+        \s* ':' <ln_extensions>
 
     <ln_base_name> ::=
         Muldis_D
@@ -184,12 +184,20 @@ Grammar:
         PTMD_STD
 
     <ln_extensions> ::=
-        <Tuple_payload>
+        '{' \s*
+            catalog_abstraction_level \s* '=>' \s* <cat_abstr_level>
+        \s* '}'
+
+    <cat_abstr_level> ::=
+          the_floor
+        | code_as_data
+        | plain_rtn_inv
+        | rtn_inv_alt_syn
 
 As per the VERSIONING pod section of L<Muldis::D>, code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
 written in.  The C<PTMD_STD> dialect formats this name as a
-C<language_name> node having 4-5 ordered elements:
+C<language_name> node having 5 ordered elements:
 
 =over
 
@@ -216,25 +224,315 @@ C<PTMD_STD>.
 
 =item C<ln_extensions>
 
-Optional; this is a set of chosen pragma/parser-config options as per a
-C<Tuple> SCVL; see the L</MULDIS D STANDARD DIALECT PRAGMAS> pod section
-for more details.
+This is a set of chosen pragma/parser-config options, which is formatted
+similarly to a C<Tuple> SCVL.  The only currently defined pragma,
+C<catalog_abstraction_level> (see the L</CATALOG ABSTRACTION LEVELS> pod
+section), is mandatory; others may be added later which would likely be
+optional.
 
 =back
 
 Examples:
 
-    Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
+        catalog_abstraction_level => plain_rtn_inv
+    }
+
+=head1 CATALOG ABSTRACTION LEVELS
+
+The C<catalog_abstraction_level> pragma determines with a broad granularity
+how large the effective Muldis D grammar is that a programmer may employ
+with their Muldis D code.
+
+The catalog abstraction level of some Muldis D code is a measure of how
+much or how little that code would resemble the system catalog data that
+the code would parse into.  The lower the abstraction level, the smaller
+and simpler the used Muldis D grammar is and the more like data structure
+literals it is; the higher the abstraction level, the larger and more
+complicated the Muldis D grammar is and the more like
+general-purpose-language typical code it is.
+
+There are currently 4 specified catalog abstraction levels, which when
+arranged from lowest to highest amount of abstraction, are: C<the_floor>,
+C<code_as_data>, C<plain_rtn_inv>, C<rtn_inv_alt_syn>.  Every abstraction
+level has a proper superset of the grammar of every other abstraction level
+that is lower than itself, so for example any code that is valid
+C<code_as_data> is also valid C<plain_rtn_inv>, and so on.
+
+Choosing an abstraction level to write Muldis D code against is all a
+matter of trade-offs, perhaps mainly between advantages for Muldis D
+implementors and advantages for Muldis D users.  Lower levels have benefits
+such as that it takes less programmer effort to create a Muldis D code
+parser or generator that just has to support that level, and such a
+parser/generator could be made more quickly and occupy a smallar resource
+footprint.  On the other side, higher levels have benefits such that any
+Muldis D code itself can be immensely more terse and readable (and
+writable), as well as have a much stronger resemblence to typical
+general-purpose programming languages, which also caries the benefit that a
+lot more of a programmer's preconceptions about what they should be able to
+write in a language is more likely to just work in Muldis D, and users can
+adopt it with less re-training.  Essentially, lower abstraction levels are
+more like machine code while higher levels are more like human language.
+It may not need to be said that while a lower level may be for a Muldis D
+implementer an easier thing to make run, it would conversely tend to be
+more difficult for them to write a test suite for, being more verbose.
+
+B<It should be emphasized that all catalog abstration levels are completely
+expressive, and everything a user can do with one, they can do with the
+others, and code is round-trippable between all of them without loss of
+behaviour.  The choice is simply about the syntax to accomplish something.>
+
+Specifying this pragma in a C<language_name> node is mandatory, since there
+is no obvious abstraction level to use implicitly when one isn't specified.
+
+=head2 the_floor
+
+When the C<catalog_abstraction_level> pragma is C<the_floor>, then the
+following grammar definitions are in effect:
+
+    <value> ::=
+        <value__the_floor>
+
+    <catalog> ::=
+        <catalog__code_as_data>
+
+    <expr> ::=
+        <value__the_floor>
+
+This abstraction level exists more as an academic exercise and is not
+intended to actually be used.  It is meant to be analogous to those
+academic programming languages whose main design goal, in addition to still
+being programmatically complete, is to have the absolute smallest grammar
+at all costs, also analogous to an extreme-RISC machine.  This level is
+like C<code_as_data> except that it has the absolute minimum of value
+literal syntaxes rather than all of them, essentially just having a single
+node kind apiece to cover all scalars, tuples, relations.  This level is
+also so minimal that many representation alternatives of the system catalog
+itself are being ignored, such as the more concise alternatives the system
+catalog itself provides to represent selectors of set/array/bag values or
+any system-defined scalar types not in terms of possreps.
+
+Examples:
 
     Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
-        with_rtn_inv_alt_syn => true
+        catalog_abstraction_level => the_floor
+    }
+    Relation:{
+        {
+            food => Scalar:Text:nfd_codes;{
+                "" => Scalar:String."<67><97><114><114><111><116><115>":{}
+            },
+            qty => Scalar:Int:{ "" => Scalar:String."<100>":{} }
+        },
+        {
+            food => Scalar:Text:nfd_codes;{
+                "" => Scalar:String."<75><105><119><105><115>":{}
+            },
+            qty => Scalar:Int:{ "" => Scalar:String."<30>":{} }
+        }
+    }
+
+=head2 code_as_data
+
+When the C<catalog_abstraction_level> pragma is C<code_as_data>, then the
+following grammar definitions are in effect:
+
+    <value> ::=
+        <value__code_as_data>
+
+    <catalog> ::=
+        <catalog__code_as_data>
+
+    <expr> ::=
+        <value__code_as_data>
+
+This abstraction level is the best one for when you want to write code in
+exactly the same form as it would take in the system catalog, and at the
+same time use all the relatively consise alternatives the system catalog
+itself provides for value literals and selectors.  With this abstraction
+level, a depot consists simply of a language name plus one or two database
+value literals.  The format for specifying a system catalog is exactly the
+same as the format for specifying the user data of a database.  All a
+Muldis D parser/generator has to know is how to parse static Muldis D value
+literals and its done.  That said, C<code_as_data> includes all of the
+special grammar dealing with value literals, including those for many
+specific scalar or nonscalar types.  This level is analagous to a
+high-level assembly language in a way; what you say in code is exactly what
+you get in the system catalog, but your code would be too verbose for the
+tastes of someone preferring normal high-level language code.
+
+Code written to the C<code_as_data> level can employ all of the language
+grammar constructs described in these main pod sections: L</VALUE LITERALS
+AND SELECTORS>, L</OPAQUE VALUE LITERALS>, L</COLLECTION VALUE SELECTORS>.
+
+Examples:
+
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
+        catalog_abstraction_level => code_as_data
+    }
+    Relation:{
+        { food => 'Carrots', qty => 100 },
+        { food => 'Kiwis', qty => 30 }
+    }
+
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
+       catalog_abstraction_level => code_as_data
+    }
+    depot-catalog Database:Depot:{
+       functions => Relation:{
+          {
+             name => Name:cube,
+             is_public => Bool:true,
+             material => Tuple:Function:{
+                result_type => NameChain:Int,
+                params => Relation:NameTypeMap:{
+                   { name => Name:topic, type => NameChain:Int }
+                },
+                expr => Database:ExprNodeSet:{
+                   sca_val_exprs => Relation:{
+                      { name => Name:INT_3, value => 3 }
+                   },
+                   func_invo_exprs => Relation:{
+                      {
+                         name => Name:"",
+                         function => NameChain:Integer.power,
+                         args => Relation:NameExprMap:{
+                            { name => Name:radix, expr => Name:topic },
+                            { name => Name:exponent, expr => Name:INT_3 }
+                         }
+                      }
+                   }
+                }
+             }
+          }
+       }
+    }
+
+=head2 plain_rtn_inv
+
+When the C<catalog_abstraction_level> pragma is C<plain_rtn_inv>, then the
+following grammar definitions are in effect:
+
+    <value> ::=
+        <value__code_as_data>
+
+    <catalog> ::=
+        <catalog__plain_rtn_inv>
+
+    <expr> ::=
+        <expr__plain_rtn_inv>
+
+This abstraction level is the lowest one that can be recommended for
+general use, and every Muldis D implementation that is expected to be
+directly used by programmers (in contrast to its main use just being by way
+of wrapper APIs or code generators) should support at least this level,
+even if that implementation is being touted as "minimal".  This abstraction
+level has the simplest grammar that could reasonably be considered as like
+that of a general purpose programming language.  Unlike the C<code_as_data>
+level, the C<plain_rtn_inv> level makes everything that isn't conceptually
+a value literal or selector look like typical routine or type declarations
+or value expressions or statements, just as programmers typically expect.
+
+One of Muldis D's primary features is that, as much as possible, the
+system-defined language features are defined in terms of ordinary types and
+routines.  This means for one thing that users are empowered to create
+their own types and routines with all of the capabilities, flexibility, and
+syntax as the language's built-in features have.  This also means that it
+should be relatively simple to parse Muldis D code because the vast
+majority of language features don't have their own special syntax to
+account for, and the L</Generic Function Invocation Expressions> syntax
+covers most of them, in terms of the common prefix/polish notation that in
+practice most invocations of user-defined routines are formatted as anyway.
+
+The C<plain_rtn_inv> abstraction level is all about having code that looks
+like general purpose programming language code but that everything looks
+like user-defined routines and types.  The code is mostly just nested
+invocations of functions or procedures in basic polish notation, and both
+that code and material declarations have a C-language-like syntax.
+
+Code written to the C<plain_rtn_inv> level can employ all of the language
+grammar constructs that C<code_as_data> can, plus all of those
+described in these main pod sections: L</GENERIC VALUE EXPRESSIONS>.
+
+Examples:
+
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
+        catalog_abstraction_level => plain_rtn_inv
+    }
+    depot-catalog {
+        public function cube (Int <-- Int $topic) {
+            Integer.power( radix => $topic, exponent => 3 )
+        }
+    }
+
+=head2 rtn_inv_alt_syn
+
+When the C<catalog_abstraction_level> pragma is C<rtn_inv_alt_syn>, then
+the following grammar definitions are in effect:
+
+    <value> ::=
+        <value__code_as_data>
+
+    <catalog> ::=
+        <catalog__plain_rtn_inv>
+
+    <expr> ::=
+        <expr__rtn_inv_alt_syn>
+
+This abstraction level is the highest one and is the most recommended one
+for general use, assuming that all the Muldis D implementations you want to
+use support it.  The expectation is that, in general, minimal Muldis D
+implementations won't support it but non-minimal ones would, so code
+written to it may not be the most universally portable as-is but should be
+portable in most common environments.
+
+In practice a huge payoff of improved user code brevity and readability
+(and writability) is gained by the C<rtn_inv_alt_syn> abstraction level
+over the C<plain_rtn_inv> level by adding special syntax for a lot of
+commonly used built-in routines, such as infix syntax for common math
+operators or postcircumfix syntax for attribute accessors.  The tradeoff
+for this user code brevity is a significant amount of extra complexity in
+parsers, due to all the extra special cases, though this complexity can be
+mitigated somewhat by standardizing these additions in format where
+possible.  These 2 highest levels both look like a general purpose
+programming language, but C<rtn_inv_alt_syn> is a lot more concise.
+
+In particular, C<rtn_inv_alt_syn> is probably the I<only> Muldis D dialect
+that conceivably can match or beat the conciseness of a majority of general
+purpose programming languages, and would probably be the most preferred
+abstraction level for developers.  This fact would also help to drive a
+majority of implementations to support this greatest complexity level.  And
+even then, this most complex of standard Muldis D grammars still generally
+has simpler grammar rules than a lot of general languages, even if this
+difference is more subtle.  It certainly is simpler and more easier to
+parse grammar than SQL in its general case.
+
+Code written to the C<rtn_inv_alt_syn> level can employ all of the language
+grammar constructs that C<plain_rtn_inv> can, plus all of those described
+in these main pod sections: L</FUNCTION INVOCATION ALTERNATE SYNTAX
+EXPRESSIONS>.
+
+Examples:
+
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
+        catalog_abstraction_level => rtn_inv_alt_syn
+    }
+    depot-catalog {
+        public function cube (Int <-- Int $topic) {
+            $topic I^ 3
+        }
     }
 
 =head1 VALUE LITERALS AND SELECTORS
 
 Grammar:
 
-    <value> ::=
+    <value__the_floor> ::=
+          <Scalar>
+        | <Tuple>
+        | <Relation>
+
+    <value__code_as_data> ::=
           <opaque_value_literal>
         | <coll_value_selector>
 
@@ -1443,6 +1741,10 @@ Examples:
         "" => 5
     }
 
+    Scalar:Int:{ "" => Scalar:String."<42>":{} }
+
+    Scalar:Text:nfd_codes;{ "" => Scalar:String."<80><101><114><109>":{} }
+
 =head2 Tuple Selectors
 
 Grammar:
@@ -1923,8 +2225,15 @@ B<TODO: ALL OF THIS HERE MAIN POD SECTION!>
 Grammar:
 
     <depot> ::=
-        'depot-catalog' \s+ [<Database> | <depot_or_subdepot>]
+        'depot-catalog' \s+ <catalog>
         [\s+ 'depot-data' \s+ <Database>]?
+
+    <catalog__code_as_data> ::=
+        <Database>
+
+    <catalog__plain_rtn_inv> ::=
+          <Database>
+        | <depot_or_subdepot>
 
     <depot_or_subdepot> ::=
         '{' \s*
@@ -1944,15 +2253,18 @@ Grammar:
 
 Grammar:
 
-    <expr> ::=
+    <expr__plain_rtn_inv> ::=
         <expr_core_options>
+
+    <expr__rtn_inv_alt_syn> ::=
+          <expr_core_options>
+        | <func_invo_alt_syntax>
 
     <expr_core_options> ::=
           <delim_expr>
         | <expr_name>
         | <named_expr>
-        | <opaque_value_literal>
-        | <coll_value_selector>
+        | <value>
         | <accessor>
         | <func_invo>
         | <if_else_expr>
@@ -2298,54 +2610,6 @@ Examples:
     T->sdp.lib.foo_type
 
     ODF->sdp.lib.order_bars
-
-=head1 MULDIS D STANDARD DIALECT PRAGMAS
-
-All 3 of the Muldis D standard dialects, C<PTMD_STD> and
-C<HDMD_Perl[6|5]_STD>, support these same pragmas, and have the same
-semantics: C<with_rtn_inv_alt_syn>.
-
-=head2 with_rtn_inv_alt_syn
-
-One of Muldis D's primary features is that, as much as possible, the
-system-defined language features are defined in terms of ordinary types and
-routines.  This means for one thing that users are empowered to create
-their own types and routines with all of the capabilities, flexibility, and
-syntax as the language's built-in features have.  This also means that it
-should be relatively simple to parse Muldis D code because the vast
-majority of language features don't have their own special syntax to
-account for, and the L</Generic Function Invocation Expressions> syntax
-covers most of them, in terms of the common prefix/polish notation that in
-practice most invocations of user-defined routines are formatted as anyway.
-
-However, in practice a huge payoff of improved user code brevity and
-readability (and writability) can be gained by adding special syntax for a
-lot of commonly used built-in routines, such as infix syntax for common
-math operators or postcircumfix syntax for attribute accessors.  The
-tradeoff for this user code brevity is a significant amount of extra
-complexity in parsers, due to all the extra special cases, though this
-complexity can be mitigated somewhat by standardizing these additions in
-format where possible.  But because this extra flexibility isn't actually
-I<needed> to write Muldis D code effectively, it has been relegated to an
-optional language extension rather than a mandatory one, and each Muldis D
-implementation can choose whether or not to support it.  The expectation is
-that, in general, minimal Muldis D implementations won't support it but
-non-minimal ones would.
-
-If the declared C<language_name> of Muldis D code has the C<ln_extensions>
-element and the latter contains a name+value pair of
-C<with_rtn_inv_alt_syn> + C<Bool:true>, then this activates the optional
-C<with_rtn_inv_alt_syn> (With Routine Invocation Alternate Syntax) pragma.
-When C<with_rtn_inv_alt_syn> is active, the following grammar redefinitions
-are in effect:
-
-    <expr> ::=
-          <expr_core_options>
-        | <func_invo_alt_syntax>
-
-So then the syntax described in these pod sections in this file can be
-used, where otherwise they couldn't be: L/<FUNCTION INVOCATION ALTERNATE
-SYNTAX EXPRESSIONS>.
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
@@ -3290,8 +3554,10 @@ Unlike many languages which can have over a dozen precedence levels, such
 as Perl (about 24) or C, PTMD_STD only has about 8 precedence levels in the
 interest of simplicity, and so you will likely have to use more explicit
 expression delimiters to force the nesting precedence you want.  That 8
-figure assumes the C<with_rtn_inv_alt_syn> pragma is active; if it isn't,
-then 3 of the levels can be eliminated, so then PTMD_STD has just 4.
+figure assumes the C<catalog_abstraction_level> pragma is
+C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 3 of the levels
+can be eliminated, so then PTMD_STD has just 4; if it is C<code_as_data>
+instead, then 3 more can be eliminated, leaving just 1.
 
 Here we list the 8 levels from "tightest" to "loosest":
 
