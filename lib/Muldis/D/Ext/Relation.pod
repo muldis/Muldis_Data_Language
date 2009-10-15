@@ -63,14 +63,14 @@ refers to this value by the special shorthand name I<TABLE_DEE>.
 
 =head2 sys.std.Relation.degree
 
-C<< function sys.std.Relation.degree (NNInt <-- Relation $topic) >>
+C<< function sys.std.Relation.degree (NNInt <-- $topic : Relation) >>
 
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
 =head2 sys.std.Relation.is_nullary
 
-C<< function sys.std.Relation.is_nullary (Bool <-- Relation $topic) >>
+C<< function sys.std.Relation.is_nullary (Bool <-- $topic : Relation) >>
 
 This function results in C<Bool:true> iff its argument has a degree of zero
 (that is, it has zero attributes), and C<Bool:false> otherwise.  By
@@ -79,15 +79,15 @@ result in C<Bool:true> are the values C<Relation:d0c[0|1]>.
 
 =head2 sys.std.Relation.is_not_nullary
 
-C<< function sys.std.Relation.is_not_nullary (Bool <-- Relation $topic) >>
+C<< function sys.std.Relation.is_not_nullary (Bool <-- $topic : Relation) >>
 
 This function is exactly the same as C<sys.std.Relation.is_nullary> except
 that it results in the opposite boolean value when given the same argument.
 
 =head2 sys.std.Relation.has_attrs
 
-C<< function sys.std.Relation.has_attrs (Bool <-- Relation $topic,
-set_of.Name $attr_names) >>
+C<< function sys.std.Relation.has_attrs (Bool <-- $topic : Relation,
+$attr_names : set_of.Name) >>
 
 This function results in C<Bool:true> iff, for every one of the attribute
 names specified by its C<attr_names> argument, its C<topic> argument has an
@@ -98,14 +98,14 @@ empty.
 =head2 sys.std.Relation.attr_names
 
 C<< function sys.std.Relation.attr_names (set_of.Name <--
-Relation $topic) >>
+$topic : Relation) >>
 
 This function results in the set of the names of the attributes of its
 argument.
 
 =head2 sys.std.Relation.is_empty
 
-C<< function sys.std.Relation.is_empty (Bool <-- Relation $topic) >>
+C<< function sys.std.Relation.is_empty (Bool <-- $topic : Relation) >>
 
 This function results in C<Bool:true> iff its argument has a cardinality of
 zero (that is, it has zero tuples), and C<Bool:false> otherwise.  Note
@@ -115,7 +115,7 @@ C<is_empty> is analagous to testing a SQL nullable with C<is null>.
 
 =head2 sys.std.Relation.is_not_empty
 
-C<< function sys.std.Relation.is_not_empty (Bool <-- Relation $topic) >>
+C<< function sys.std.Relation.is_not_empty (Bool <-- $topic : Relation) >>
 
 This function is exactly the same as C<sys.std.Relation.is_empty> except
 that it results in the opposite boolean value when given the same argument.
@@ -124,8 +124,8 @@ SQL's C<is not null>.
 
 =head2 sys.std.Relation.has_key
 
-C<< function sys.std.Relation.has_key (Bool <-- Relation $topic,
-set_of.Name $attr_names) >>
+C<< function sys.std.Relation.has_key (Bool <-- $topic : Relation,
+$attr_names : set_of.Name) >>
 
 This function results in C<Bool:true> iff its C<topic> argument has a
 (unique) key over the subset of its attributes whose names are specified by
@@ -136,7 +136,7 @@ if C<topic> is empty.
 
 =head2 sys.std.Relation.empty
 
-C<< function sys.std.Relation.empty (Relation <-- Relation $topic) >>
+C<< function sys.std.Relation.empty (Relation <-- $topic : Relation) >>
 
 This function results in the empty relation of the same heading of its
 argument, that is having the same degree and attribute names; it has zero
@@ -145,7 +145,7 @@ tuples.
 =head2 sys.std.Relation.power_set
 
 C<< function sys.std.Relation.power_set (set_of.Relation <--
-Relation $topic) >>
+$topic : Relation) >>
 
 This function results in the power set of its argument.  The result is a
 C<Set> whose sole attribute is C<Relation>-typed (its type is nominally
@@ -159,7 +159,7 @@ relation.
 
 =head2 sys.std.Relation.tclose
 
-C<< function sys.std.Relation.tclose (Relation <-- Relation $topic) >>
+C<< function sys.std.Relation.tclose (Relation <-- $topic : Relation) >>
 
 This function results in the transitive closure of its argument.  The
 argument must be a binary relation whose attributes are both of the same
@@ -176,8 +176,8 @@ problem of finding all components, at all levels, of some specified part).
 
 =head2 sys.std.Relation.classification
 
-C<< function sys.std.Relation.classification (Relation <-- Relation $topic,
-ValMapFuncRef $func, Name $class_attr_name, Name $group_attr_name) >>
+C<< function sys.std.Relation.classification (Relation <-- $topic : Relation,
+$func : ValMapFuncRef, $class_attr_name : Name, $group_attr_name : Name) >>
 
 This function conceptually is to C<sys.std.Core.Relation.restriction> what
 C<sys.std.Core.Relation.group> is to C<sys.std.Core.Relation.semijoin>.
@@ -199,8 +199,8 @@ into exactly 2 groups (and returning one) using arbitrary criteria.
 
 =head2 sys.std.Relation.reduction
 
-C<< function sys.std.Relation.reduction (Tuple <-- Relation $topic,
-ValRedFuncRef $func, Tuple $identity) >>
+C<< function sys.std.Relation.reduction (Tuple <-- $topic : Relation,
+$func : ValRedFuncRef, $identity : Tuple) >>
 
 This function is a generic reduction operator that recursively takes each
 pair of tuples in C<topic> and applies an argument-specified tuple
@@ -217,7 +217,7 @@ the |declared headings of C<identity> and C<topic> aren't compatible.
 =head2 sys.std.Relation.maybe_reduction
 
 C<< function sys.std.Relation.maybe_reduction (maybe_of.Tuple <--
-Relation $topic, ValRedFuncRef $func) >>
+$topic : Relation, $func : ValRedFuncRef) >>
 
 This function is exactly the same as C<sys.std.Relation.reduction> except
 that it does not take an C<identity> argument, and it results in a
@@ -226,8 +226,8 @@ elements if the argument has zero elements.
 
 =head2 sys.std.Relation.map
 
-C<< function sys.std.Relation.map (Relation <-- Relation $topic,
-set_of.Name $result_attr_names, ValMapFuncRef $func) >>
+C<< function sys.std.Relation.map (Relation <-- $topic : Relation,
+$result_attr_names : set_of.Name, $func : ValMapFuncRef) >>
 
 This function provides a convenient one-place generalization of per-tuple
 transformations that otherwise might require the chaining of up to a
@@ -262,7 +262,7 @@ in that they typically work with any relation types.
 =head2 sys.std.Relation.is_proper_subset
 
 C<< function sys.std.Relation.is_proper_subset (Bool <--
-Relation $topic, Relation $other) >>
+$topic : Relation, $other : Relation) >>
 
 This function is exactly the same as C<sys.std.Core.Relation.is_subset>
 except that it results in C<Bool:false> if its 2 arguments are identical.
@@ -271,7 +271,7 @@ Note that this operation is also known as C<⊂>.
 =head2 sys.std.Relation.is_not_proper_subset
 
 C<< function sys.std.Relation.is_not_proper_subset (Bool <--
-Relation $topic, Relation $other) >>
+$topic : Relation, $other : Relation) >>
 
 This function is exactly the same as C<sys.std.Relation.is_proper_subset>
 except that it results in the opposite boolean value when given the same
@@ -280,7 +280,7 @@ arguments.  Note that this operation is also known as C<⊄>.
 =head2 sys.std.Relation.is_proper_superset
 
 C<< function sys.std.Relation.is_proper_superset (Bool <--
-Relation $topic, Relation $other) >>
+$topic : Relation, $other : Relation) >>
 
 This function is an alias for C<sys.std.Relation.is_proper_subset> except
 that it transposes the C<topic> and C<other> arguments.  This function
@@ -291,7 +291,7 @@ operation is also known as C<⊃>.
 =head2 sys.std.Relation.is_not_proper_superset
 
 C<< function sys.std.Relation.is_not_proper_superset (Bool <--
-Relation $topic, Relation $other) >>
+$topic : Relation, $other : Relation) >>
 
 This function is an alias for C<sys.std.Relation.is_not_proper_subset>
 except that it transposes the C<topic> and C<other> arguments.  This
@@ -301,8 +301,8 @@ arguments.  Note that this operation is also known as C<⊅>.
 
 =head2 sys.std.Relation.is_disjoint
 
-C<< function sys.std.Relation.is_disjoint (Bool <-- Relation $topic,
-Relation $other) >>
+C<< function sys.std.Relation.is_disjoint (Bool <-- $topic : Relation,
+$other : Relation) >>
 
 This symmetric function results in C<Bool:true> iff the set of tuples
 comprising each of its 2 arguments are mutually disjoint, that is, iff the
@@ -311,8 +311,8 @@ otherwise.
 
 =head2 sys.std.Relation.is_not_disjoint
 
-C<< function sys.std.Relation.is_not_disjoint (Bool <-- Relation $topic,
-Relation $other) >>
+C<< function sys.std.Relation.is_not_disjoint (Bool <-- $topic : Relation,
+$other : Relation) >>
 
 This symmetric function is exactly the same as
 C<sys.std.Relation.is_disjoint> except that it results in the opposite
@@ -321,7 +321,7 @@ boolean value when given the same arguments.
 =head2 sys.std.Relation.exclusion
 
 C<< function sys.std.Relation.exclusion (Relation <--
-bag_of.Relation $topic) >>
+$topic : bag_of.Relation) >>
 
 This function results in the relational exclusion/exclusive-or of the N
 element values of its argument; it is a reduction operator that recursively
@@ -338,14 +338,14 @@ also known as I<symmetric difference> or C<∆>.
 =head2 sys.std.Relation.symmetric_diff
 
 C<< function sys.std.Relation.symmetric_diff (Relation <--
-bag_of.Relation $topic) >>
+$topic : bag_of.Relation) >>
 
 This function is an alias for C<sys.std.Relation.exclusion>.
 
 =head2 sys.std.Relation.composition
 
-C<< function sys.std.Relation.composition (Relation <-- Relation $topic,
-Relation $other) >>
+C<< function sys.std.Relation.composition (Relation <-- $topic : Relation,
+$other : Relation) >>
 
 This symmetric function results in the relational composition of its
 2 arguments.  It is conceptually a short-hand for first doing
@@ -359,7 +359,7 @@ input relations.
 =head2 sys.std.Relation.join_with_group
 
 C<< function sys.std.Relation.join_with_group (Relation <--
-Relation $primary, Relation $secondary, Name $group_attr) >>
+$primary : Relation, $secondary : Relation, $group_attr : Name) >>
 
 This function is a short-hand for first taking a (natural inner) C<join> of
 its C<primary> and C<secondary> arguments, and then taking a C<group> on
@@ -378,8 +378,8 @@ These additional functions are specific to supporting ranking and quotas.
 
 =head2 sys.std.Relation.rank
 
-C<< function sys.std.Relation.rank (Relation <-- Relation $topic,
-Name $name, OrdDetFuncRef $ord_func, Bool $is_reverse_order?) >>
+C<< function sys.std.Relation.rank (Relation <-- $topic : Relation,
+$name : Name, $ord_func : OrdDetFuncRef, $is_reverse_order? : Bool) >>
 
 This function results in the relational extension of its C<topic> argument
 by a single C<NNInt>-typed attribute whose name is provided by the C<name>
@@ -402,8 +402,8 @@ just adding an attribute to them.
 =head2 sys.std.Relation.rank_by_attr_names
 
 C<< function sys.std.Relation.rank_by_attr_names (Relation <--
-Relation $topic, Name $name, array_of.OrderByName $order_by,
-Bool $is_reverse_order?) >>
+$topic : Relation, $name : Name, $order_by : array_of.OrderByName,
+$is_reverse_order? : Bool) >>
 
 This function is a short-hand for invoking C<rank> with the function
 C<sys.std.Tuple.order_by_attr_names> as its C<ord_func> argument after the
@@ -411,9 +411,9 @@ latter is curried with this function's C<order_by> argument.
 
 =head2 sys.std.Relation.limit
 
-C<< function sys.std.Relation.limit (Relation <-- Relation $topic,
-OrdDetFuncRef $ord_func, Bool $is_reverse_order?,
-interval_of.NNInt $rank_interval) >>
+C<< function sys.std.Relation.limit (Relation <-- $topic : Relation,
+$ord_func : OrdDetFuncRef, $is_reverse_order? : Bool,
+$rank_interval : interval_of.NNInt) >>
 
 This function results in the relational restriction of its C<topic>
 argument as determined by first ranking its tuples as per the C<rank>
@@ -433,8 +433,8 @@ C<sys.std.Array.limit_of_Array_from_wrap> for an alternative).
 =head2 sys.std.Relation.limit_by_attr_names
 
 C<< function sys.std.Relation.limit_by_attr_names (Relation <--
-Relation $topic, array_of.OrderByName $order_by, Bool $is_reverse_order?,
-interval_of.NNInt $rank_interval) >>
+$topic : Relation, $order_by : array_of.OrderByName, $is_reverse_order? : Bool,
+$rank_interval : interval_of.NNInt) >>
 
 This function is to C<limit> what C<rank_by_attr_names> is to C<rank>.
 
@@ -444,8 +444,8 @@ These additional functions are specific to supporting substitutions.
 
 =head2 sys.std.Relation.substitution
 
-C<< function sys.std.Relation.substitution (Relation <-- Relation $topic,
-set_of.Name $attr_names, ValMapFuncRef $func) >>
+C<< function sys.std.Relation.substitution (Relation <-- $topic : Relation,
+$attr_names : set_of.Name, $func : ValMapFuncRef) >>
 
 This function is similar to C<extension> except that it substitutes values
 of existing relation attributes rather than adding new attributes.  The
@@ -474,7 +474,7 @@ names to those named by C<attr_names>.
 =head2 sys.std.Relation.static_subst
 
 C<< function sys.std.Relation.static_subst (Relation <--
-Relation $topic, Tuple $attrs) >>
+$topic : Relation, $attrs : Tuple) >>
 
 This function is a simpler-syntax alternative to
 C<sys.std.Relation.substitution> in the typical scenario where every
@@ -484,9 +484,9 @@ given in the C<attrs> argument.
 
 =head2 sys.std.Relation.subst_in_restr
 
-C<< function sys.std.Relation.subst_in_restr (Relation <-- Relation $topic,
-ValFiltFuncRef $restr_func, set_of.Name $subst_attr_names,
-ValMapFuncRef $subst_func) >>
+C<< function sys.std.Relation.subst_in_restr (Relation <-- $topic : Relation,
+$restr_func : ValFiltFuncRef, $subst_attr_names : set_of.Name,
+$subst_func : ValMapFuncRef) >>
 
 This function is like C<substitution> except that it only transforms a
 subset of the tuples of C<topic> rather than all of them.  It is a
@@ -502,7 +502,7 @@ simply of anded or ored tests for attribute value equality.
 =head2 sys.std.Relation.static_subst_in_restr
 
 C<< function sys.std.Relation.static_subst_in_restr (Relation <--
-Relation $topic, ValFiltFuncRef $restr_func, Tuple $subst) >>
+$topic : Relation, $restr_func : ValFiltFuncRef, $subst : Tuple) >>
 
 This function is to C<sys.std.Relation.subst_in_restr> what
 C<sys.std.Relation.static_subst> is to
@@ -512,8 +512,8 @@ C<static_subst_in_semijoin> function.
 =head2 sys.std.Relation.subst_in_semijoin
 
 C<< function sys.std.Relation.subst_in_semijoin (Relation <--
-Relation $topic, Relation $restr, set_of.Name $subst_attr_names,
-ValMapFuncRef $subst_func) >>
+$topic : Relation, $restr : Relation, $subst_attr_names : set_of.Name,
+$subst_func : ValMapFuncRef) >>
 
 This function is like C<subst_in_restr> except that the subset of the
 tuples of C<topic> to be transformed is determined by those matched by a
@@ -523,7 +523,7 @@ restriction.
 =head2 sys.std.Relation.static_subst_in_semijoin
 
 C<< function sys.std.Relation.static_subst_in_semijoin (Relation <--
-Relation $topic, Relation $restr, Tuple $subst) >>
+$topic : Relation, $restr : Relation, $subst : Tuple) >>
 
 This function is to C<sys.std.Relation.subst_in_semijoin> what
 C<sys.std.Relation.static_subst> is to
@@ -536,7 +536,7 @@ These additional functions are specific to supporting outer-joins.
 =head2 sys.std.Relation.outer_join_with_group
 
 C<< function sys.std.Relation.outer_join_with_group (Relation <--
-Relation $primary, Relation $secondary, Name $group_attr) >>
+$primary : Relation, $secondary : Relation, $group_attr : Name) >>
 
 This function is the same as C<sys.std.Relation.join_with_group> except
 that it results in a half-outer natural join rather than an inner natural
@@ -548,7 +548,7 @@ result attribute named by C<group_attr> contains zero tuples rather than
 =head2 sys.std.Relation.outer_join_with_maybes
 
 C<< function sys.std.Relation.outer_join_with_maybes (Relation <--
-Relation $primary, Relation $secondary) >>
+$primary : Relation, $secondary : Relation) >>
 
 This function results in a plain half-outer natural join of its C<primary>
 and C<secondary> arguments where all the result attributes that come from
@@ -562,7 +562,7 @@ used in result rows that were a non-match.
 =head2 sys.std.Relation.outer_join_with_defaults
 
 C<< function sys.std.Relation.outer_join_with_defaults (Relation <--
-Relation $primary, Relation $secondary, TypeRef $filler) >>
+$primary : Relation, $secondary : Relation, $filler : TypeRef) >>
 
 This function is the same as
 C<sys.std.Relation.outer_join_with_static_exten> but that the filler
@@ -574,7 +574,7 @@ C<sys.std.Core.Universal.default>.
 =head2 sys.std.Relation.outer_join_with_static_exten
 
 C<< function sys.std.Relation.outer_join_with_static_exten (Relation <--
-Relation $primary, Relation $secondary, Tuple $filler) >>
+$primary : Relation, $secondary : Relation, $filler : Tuple) >>
 
 This function is the same as C<sys.std.Relation.outer_join_with_maybes>
 but that C<secondary>-sourced result attributes are not converted to
@@ -587,7 +587,7 @@ use for those missing attribute values.
 =head2 sys.std.Relation.outer_join_with_exten
 
 C<< function sys.std.Relation.outer_join_with_exten (Relation <--
-Relation $primary, Relation $secondary, ValMapFuncRef $exten_func) >>
+$primary : Relation, $secondary : Relation, $exten_func : ValMapFuncRef) >>
 
 This function is the same as
 C<sys.std.Relation.outer_join_with_static_exten> but that the result
@@ -600,7 +600,7 @@ each said C<primary> tuple.
 
 =head2 sys.std.Relation.assign_empty
 
-C<updater sys.std.Relation.assign_empty (Relation &$topic)>
+C<updater sys.std.Relation.assign_empty (&$topic : Relation)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Relation.empty> function with the same argument, and then
@@ -609,8 +609,8 @@ analagous to the SQL "TRUNCATE" statement.
 
 =head2 sys.std.Relation.assign_exclusion
 
-C<updater sys.std.Relation.assign_exclusion (Relation &$topic,
-Relation $other)>
+C<updater sys.std.Relation.assign_exclusion (&$topic : Relation,
+$other : Relation)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Relation.exclusion> function such that it has 2 input
@@ -619,8 +619,8 @@ result of that function to C<topic>.
 
 =head2 sys.std.Relation.assign_substitution
 
-C<updater sys.std.Relation.assign_substitution (Relation &$topic,
-set_of.Name $attr_names, ValMapFuncRef $func)>
+C<updater sys.std.Relation.assign_substitution (&$topic : Relation,
+$attr_names : set_of.Name, $func : ValMapFuncRef)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.substitution> function with the same arguments,
@@ -630,8 +630,8 @@ statement.
 
 =head2 sys.std.Relation.assign_static_subst
 
-C<updater sys.std.Relation.assign_static_subst (Relation &$topic,
-Tuple $attrs)>
+C<updater sys.std.Relation.assign_static_subst (&$topic : Relation,
+$attrs : Tuple)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.static_subst> function with the same
@@ -639,9 +639,9 @@ arguments, and then assigning the result of that function to C<topic>.
 
 =head2 sys.std.Relation.assign_subst_in_restr
 
-C<updater sys.std.Relation.assign_subst_in_restr (Relation &$topic,
-ValFiltFuncRef $restr_func, set_of.Name $subst_attr_names,
-ValMapFuncRef $subst_func)>
+C<updater sys.std.Relation.assign_subst_in_restr (&$topic : Relation,
+$restr_func : ValFiltFuncRef, $subst_attr_names : set_of.Name,
+$subst_func : ValMapFuncRef)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.subst_in_restr> function with the same arguments,
@@ -650,8 +650,8 @@ is analagous to the general case of the conditional SQL "UPDATE" statement.
 
 =head2 sys.std.Relation.assign_static_subst_in_restr
 
-C<updater sys.std.Relation.assign_static_subst_in_restr (Relation &$topic,
-ValFiltFuncRef $restr_func, Tuple $subst)>
+C<updater sys.std.Relation.assign_static_subst_in_restr (&$topic : Relation,
+$restr_func : ValFiltFuncRef, $subst : Tuple)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.static_subst_in_restr> function with the same
@@ -659,8 +659,8 @@ arguments, and then assigning the result of that function to C<topic>.
 
 =head2 sys.std.Relation.assign_subst_in_semijoin
 
-C<updater sys.std.Relation.assign_subst_in_semijoin (Relation &$topic,
-Relation $restr, set_of.Name $subst_attr_names, ValMapFuncRef $subst_func)>
+C<updater sys.std.Relation.assign_subst_in_semijoin (&$topic : Relation,
+$restr : Relation, $subst_attr_names : set_of.Name, $subst_func : ValMapFuncRef)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.subst_in_semijoin> function with the same
@@ -672,7 +672,7 @@ value equality tests.
 =head2 sys.std.Relation.assign_static_subst_in_semijoin
 
 C<updater sys.std.Relation.assign_static_subst_in_semijoin
-(Relation &$topic, Relation $restr, Tuple $subst)>
+(&$topic : Relation, $restr : Relation, $subst : Tuple)>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.static_subst_in_semijoin> function with the same

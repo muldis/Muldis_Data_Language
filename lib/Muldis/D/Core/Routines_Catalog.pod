@@ -31,7 +31,7 @@ use in working with the system catalog.
 
 =head2 sys.std.Core.Cat.Order.reverse
 
-C<< function sys.std.Core.Cat.Order.reverse (Order <-- Order $topic) >>
+C<< function sys.std.Core.Cat.Order.reverse (Order <-- $topic : Order) >>
 
 This function results in the reverse value of its argument; an
 C<Order:increase> or C<Order:decrease> argument results in the other one of
@@ -40,7 +40,7 @@ the two; an C<Order:same> argument results in itself.
 =head2 sys.std.Core.Cat.Order.conditional_reverse
 
 C<< function sys.std.Core.Cat.Order.conditional_reverse (Order <--
-Order $topic, Bool $is_reverse_order) >>
+$topic : Order, $is_reverse_order : Bool) >>
 
 This function results in the reverse value of its C<topic> argument as per
 C<Order.reverse> iff its C<is_reverse_order> argument is C<Bool:true>;
@@ -54,7 +54,7 @@ pass the result of that algorithm through C<Order.conditional_reverse>.
 =head2 sys.std.Core.Cat.Order.reduction
 
 C<< function sys.std.Core.Cat.Order.reduction (Order <--
-array_of.Order $topic?) >>
+$topic? : array_of.Order) >>
 
 This function results in the lowest-indexed of its N input element values
 that isn't equal to C<Order:same>, if there is such an input value, and
@@ -81,14 +81,14 @@ references to these routines as their default values.
 
 =head2 sys.std.Core.Cat.pass_topic
 
-C<< function sys.std.Core.Cat.pass_topic (Bool <-- Universal $topic) >>
+C<< function sys.std.Core.Cat.pass_topic (Bool <-- $topic : Universal) >>
 
 This C<value-filter> function unconditionally results in C<Bool:true>
 regardless of the values of its arguments.
 
 =head2 sys.std.Core.Cat.map_to_topic
 
-C<< function sys.std.Core.Cat.map_to_topic (Universal <-- Universal $topic)
+C<< function sys.std.Core.Cat.map_to_topic (Universal <-- $topic : Universal)
 >>
 
 This C<value-map> function unconditionally results in its C<topic> argument
@@ -96,8 +96,8 @@ regardless of the values of its arguments.
 
 =head2 sys.std.Core.Cat.reduce_to_v1
 
-C<< function sys.std.Core.Cat.reduce_to_v1 (Universal <-- Universal $v1,
-Universal $v2) >>
+C<< function sys.std.Core.Cat.reduce_to_v1 (Universal <-- $v1 : Universal,
+$v2 : Universal) >>
 
 This C<value-reduction> function unconditionally results in its C<v1>
 argument regardless of the values of its arguments.
@@ -121,10 +121,10 @@ data types; they can not create or drop relvars.
 
 =head2 sys.std.Core.Cat.create_depot_mount
 
-C<procedure sys.std.Core.Cat.create_depot_mount (Name $name,
-Comment $comment?, Bool $is_temporary?, Bool $create_on_mount?,
-Bool $delete_on_unmount?, Bool $we_may_update?,
-ScaValExprNodeSet $details?)>
+C<procedure sys.std.Core.Cat.create_depot_mount ($name : Name,
+$comment? : Comment, $is_temporary? : Bool, $create_on_mount? : Bool,
+$delete_on_unmount? : Bool, $we_may_update? : Bool,
+$details? : ScaValExprNodeSet)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
 relvar C<mnt.cat.mounts>.  It will create a new depot mount in the DBMS
@@ -135,7 +135,7 @@ CONNECT statement or SQLite ATTACH statement.
 
 =head2 sys.std.Core.Cat.drop_depot_mount
 
-C<procedure sys.std.Core.Cat.drop_depot_mount (Name $name)>
+C<procedure sys.std.Core.Cat.drop_depot_mount ($name : Name)>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<mnt.cat.mounts>.  It will drop an existing depot mount from the
@@ -146,7 +146,7 @@ SQL DISCONNECT statement or SQLite DETACH statement.
 =head2 sys.std.Core.Cat.alter_depot_mount_so_we_may_not_update
 
 C<procedure sys.std.Core.Cat.alter_depot_mount_so_we_may_not_update
-(Name $name)>
+($name : Name)>
 
 This procedure is an abstraction over updating a tuple of the catalog
 relvar C<mnt.cat.mounts> such that its C<we_may_update> attribute is made
@@ -157,8 +157,8 @@ C<Bool:false>.
 =head2 sys.std.Core.Cat.select_topic_namespaces
 
 C<procedure sys.std.Core.Cat.select_topic_namespaces
-(maybe_of.Name $depot?, maybe_of.DeclNameChain $subdepot?,
-Comment $comment?)>
+($depot? : maybe_of.Name, $subdepot? : maybe_of.DeclNameChain,
+$comment? : Comment)>
 
 This procedure is an abstraction over assigning a new value to the catalog
 variable C<tpc.cat>; the 3 parameters correspond directly to the attributes
@@ -168,16 +168,16 @@ default namespaces.  If C<subdepot> is a C<Single> then C<depot> must be.
 
 =head1 Procedures For Defining In-Depot Namespaces
 
-These 2 procedures conceptually have the extra 2 parameters C<Name $depot,
-DeclNameChain $parent?>, whose values are implicitly supplied from
+These 2 procedures conceptually have the extra 2 parameters C<$depot : Name,
+$parent? : DeclNameChain>, whose values are implicitly supplied from
 C<tpc.cat.topic_[depot|subdepot]> respectively; those 1 or 2 (as
 applicable) catalog variables must be non-empty as a precondition to
 invoking the 2 procedures.
 
 =head2 sys.std.Core.Cat.create_subdepot
 
-C<procedure sys.std.Core.Cat.create_subdepot (Name $name,
-Comment $comment?)>
+C<procedure sys.std.Core.Cat.create_subdepot ($name : Name,
+$comment? : Comment)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.subdepots>.  It will create a
@@ -188,7 +188,7 @@ PACKAGE statement.
 
 =head2 sys.std.Core.Cat.drop_subdepot
 
-C<procedure sys.std.Core.Cat.drop_subdepot (Name $name)>
+C<procedure sys.std.Core.Cat.drop_subdepot ($name : Name)>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.subdepots>.  It will drop an
@@ -197,8 +197,8 @@ statement or an Oracle DROP PACKAGE statement.
 
 =head1 Procedures For Defining Depot Routines and Data Types
 
-These 14 procedures conceptually have the extra 2 parameters C<Name $depot,
-DeclNameChain $subdepot?>, whose values are implicitly supplied from
+These 14 procedures conceptually have the extra 2 parameters C<$depot : Name,
+$subdepot? : DeclNameChain>, whose values are implicitly supplied from
 C<tpc.cat.topic_[depot|subdepot]> respectively; those 1 or 2 (as
 applicable) catalog variables must be non-empty as a precondition to
 invoking the 14 procedures.
@@ -206,7 +206,7 @@ invoking the 14 procedures.
 =head2 sys.std.Core.Cat.create_[function|updater|procedure]
 
 C<procedure sys.std.Core.Cat.create_[function|updater|procedure]
-(Name $name, Comment $comment?, Bool $is_public?,
+($name : Name, $comment? : Comment, $is_public? : Bool,
 [Function|Updater|Procedure] $material)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
@@ -219,7 +219,7 @@ FUNCTION|PROCEDURE statement.
 =head2 sys.std.Core.Cat.drop_[function|updater|procedure]
 
 C<procedure sys.std.Core.Cat.drop_[function|updater|procedure]
-(Name $name)>
+($name : Name)>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.[function|updater|procedure]s>.
@@ -229,8 +229,8 @@ is analagous to a SQL DROP FUNCTION|PROCEDURE statement.
 =head2 sys.std.Core.Cat.create_[scalar|nonscalar|union|subset]_type
 
 C<procedure sys.std.Core.Cat.create_[scalar|nonscalar|union|subset]_type
-(Name $name, Comment $comment?, Bool $is_public?,
-[Scalar|Nonscalar|Union|Subset]Type $material)>
+($name : Name, $comment? : Comment, $is_public? : Bool,
+[Scalar|Nonscalar|Union|Subset]$material : Type)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
 relvar
@@ -242,7 +242,7 @@ This procedure is analagous to a SQL CREATE TYPE|DOMAIN statement.
 =head2 sys.std.Core.Cat.drop_[scalar|nonscalar|union|subset]_type
 
 C<procedure sys.std.Core.Cat.drop_[scalar|nonscalar|union|subset]_type
-(Name $name)>
+($name : Name)>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar
