@@ -134,7 +134,8 @@ more or less:
                 sys.std.Core.Type.Cat.MultiUpdStmt
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
                 sys.std.Core.Type.Cat.CompoundStmtNodeSet
-                sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
+                sys.std.Core.Type.Cat.UpdInvoStmtNodeSet
+                sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
                 sys.std.Core.Type.Cat.IISArgVarMap
                 sys.std.Core.Type.Cat.IfElseStmtNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
@@ -173,8 +174,8 @@ catalog, or any database, but they may be used temporarily at runtime:
                     sys.std.Core.Type.Cat.ValFiltFuncRef
                     sys.std.Core.Type.Cat.ValMapFuncRef
                     sys.std.Core.Type.Cat.ValRedFuncRef
-                sys.std.Core.Type.Cat.ImpRef
-                    sys.std.Core.Type.Cat.UpdRef
+                sys.std.Core.Type.Cat.UpdRef
+                sys.std.Core.Type.Cat.ProcRef
                 sys.std.Core.Type.Cat.TypeRef
 
 =head1 SIMPLE GENERIC SCALAR TYPES
@@ -1225,7 +1226,7 @@ they may instead define a pseudo-variable / virtual variable; that only
 happens in updaters where the expression is used as an argument
 for a subject-to-update parameter of an update operator call; in
 that case the leaf nodes / only node of the expression must map to a
-subject-to-update parameter of the containing update operator.
+subject-to-update parameter of the expression-containing update operator.
 
 An C<ExprNodeSet> has these 13 attributes:
 
@@ -1618,7 +1619,7 @@ This is the name of the function being invoked.
 These are the arguments for the function invocation.  Each element
 defines one argument value, with the element C<name> matching the invoked
 function's parameter name, and the element C<expr> naming another
-local expression node which defines the value.
+local expression node (or parameter) which defines the value.
 
 =back
 
@@ -1903,8 +1904,8 @@ These are the 1..N subject-to-update arguments to the updater
 invocation, as-per C<ro_args>.  But since each expression tree in
 C<upd_args> is binding to a subject-to-update parameter, the expression
 tree actually is defining a pseudo-variable / virtual-variable over 1..N
-containing routine subject-to-update parameters; in the most trivial (and
-common) case, the parameter is referenced directly.
+statement-containing-updater subject-to-update parameters; in the most
+trivial (and common) case, the parameter is referenced directly.
 
 =item C<ro_args> - C<NameExprMap>
 
@@ -2009,7 +2010,7 @@ explicit C<name> that can be referenced by "leave" and "iterate" control
 flow statements to leave or re-iterate the corresponding block, both SQL
 and Perl have native counterpart features in the form of block labels.
 
-A C<StmtNodeSet> has these 7 attributes:
+A C<StmtNodeSet> has these 8 attributes:
 
 =over
 
@@ -2022,9 +2023,13 @@ These are statement nodes that represent abnormal block exit statements.
 These are statement nodes that each represent a compound statement having a
 sequence of 0..N procedure statements.
 
-=item C<imp_invo_stmts> - C<ImpInvoStmtNodeSet>
+=item C<upd_invo_stmts> - C<UpdInvoStmtNodeSet>
 
-These are statement nodes that represent imperative routine invocations.
+These are statement nodes that represent updater invocations.
+
+=item C<proc_invo_stmts> - C<ProcInvoStmtNodeSet>
+
+These are statement nodes that represent procedure invocations.
 
 =item C<if_else_stmts> - C<IfElseStmtNodeSet>
 
@@ -2054,7 +2059,7 @@ A C<LeaveStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement leaf nodes where each node represents an instruction to
 abnormally exit the block defined by a parent statement node (a normal exit
 is to simply execute to the end of the block).  If the parent node in
-question is the root statement node for the containing procedure,
+question is the root statement node for the statement-containing procedure,
 that is, if the parent node has the empty string as its name,
 then the latter will be exited; this is how a "return" statement is
 represented, but "return" is still easy to recognize because the root node
@@ -2118,15 +2123,14 @@ execute in this given sequence.
 A C<CompoundStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
+=head2 sys.std.Core.Type.Cat.UpdInvoStmtNodeSet
 
-An C<ImpInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
-statement nodes where each node is an invocation of some other imperative
-routine (eg, procedure, update operator, system service)
-with specific arguments.  The invoked routine can be either user-defined or
+An C<UpdInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
+statement nodes where each node is an invocation of an updater with
+specific arguments.  The invoked updater can be either user-defined or
 system-defined.
 
-An C<ImpInvoStmtNodeSet> has these 5 attributes:
+An C<UpdInvoStmtNodeSet> has these 5 attributes:
 
 =over
 
@@ -2139,26 +2143,70 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<imperative> - C<NameChain>
+=item C<updater> - C<NameChain>
 
-This is the name of the imperative routine being invoked.
+This is the name of the updater being invoked.
 
 =item C<upd_args> - C<IISArgVarMap>
 
-These are the 0..N subject-to-update arguments to the routine invocation,
+These are the 1..N subject-to-update arguments to the updater invocation,
+as-per C<ro_args> but that an updater must take at least 1
+subject-to-update argument.
+
+=item C<ro_args> - C<IISArgVarMap>
+
+These are the 0..N read-only arguments to the updater invocation.  Each
+element defines one argument value, with the element C<name> matching the
+invoked updater's parameter name, and the element C<expr> naming a local or
+global variable or statement-containing-procedure parameter which defines
+the value.
+
+=back
+
+An C<UpdInvoStmtNodeSet> has a unary primary key on the C<name>
+attribute.  Its default value is empty.  There is a distributed primary
+key over the C<name> attributes of C<upd_args> and C<ro_args>.
+
+=head2 sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
+
+An C<ProcInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
+statement nodes where each node is an invocation of some other procedure
+(or system service) with specific arguments.  The invoked procedure can be
+either user-defined or system-defined.
+
+An C<ProcInvoStmtNodeSet> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about either the statement node or
+the statement node (sub-)tree it is the root of.
+
+=item C<procedure> - C<NameChain>
+
+This is the name of the procedure being invoked.
+
+=item C<upd_args> - C<IISArgVarMap>
+
+These are the 0..N subject-to-update arguments to the procedure invocation,
 as-per C<ro_args>.
 
 =item C<ro_args> - C<IISArgVarMap>
 
-These are the 0..N read-only arguments to the routine invocation.  Each
+These are the 0..N read-only arguments to the procedure invocation.  Each
 element defines one argument value, with the element C<name> matching the
-invoked routine's parameter name, and the element C<expr> naming a local or
-global variable or statement-containing routine parameter which defines the
-value.
+invoked procedure's parameter name, and the element C<expr> naming a local
+or global variable or statement-containing-procedure parameter which
+defines the value.
 
 =back
 
-An C<ImpInvoStmtNodeSet> has a unary primary key on the C<name>
+An C<ProcInvoStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.  There is a distributed primary
 key over the C<name> attributes of C<upd_args> and C<ro_args>.
 
@@ -3556,18 +3604,21 @@ C<FuncRef> that is a reference to a C<value-reduction> function.  Its
 default value is a reference to the C<sys.std.Core.Cat.reduce_to_v1>
 function.
 
-=head2 sys.std.Core.Type.Cat.ImpRef
-
-This is an enumeration data type.  C<ImpRef> is a proper subtype of
-C<MaterialRef> where every member value's conceptual C<NameChain> is an
-imperative routine name.  It is used to implement an imperative closure.
-Its default value is a reference to the C<sys.std.Core.Cat.noop> procedure.
-
 =head2 sys.std.Core.Type.Cat.UpdRef
 
 This is an enumeration data type.  C<UpdRef> is a proper subtype of
-C<ImpRef> that is a reference to an updater.  Its default value is a
-reference to the C<sys.std.Core.Universal.assign> updater.
+C<MaterialRef> where every member value's conceptual C<NameChain> is an
+updater name.  It is used to implement a deterministic imperative closure.
+Its default value is a reference to the C<sys.std.Core.Universal.assign>
+updater.
+
+=head2 sys.std.Core.Type.Cat.ProcRef
+
+This is an enumeration data type.  C<ProcRef> is a proper subtype of
+C<MaterialRef> where every member value's conceptual C<NameChain> is a
+procedure name.  It is used to implement a possibly-nondeterministic
+imperative closure.  Its default value is a reference to the
+C<sys.std.Core.Cat.noop> procedure.
 
 =head2 sys.std.Core.Type.Cat.TypeRef
 

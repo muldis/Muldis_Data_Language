@@ -1528,13 +1528,13 @@ error rather than standard output.
 
 These procedures are applicable to use in all kinds of procedures.
 
-=head2 sys.std.Core.Control.imp_invo
+=head2 sys.std.Core.Control.proc_invo
 
-C<procedure sys.std.Core.Control.imp_invo ($imperative : ImpRef,
+C<procedure sys.std.Core.Control.proc_invo ($procedure : ProcRef,
 &$upd_args? : Tuple, $ro_args? : Tuple)>
 
 This procedure is the same as C<sys.std.Core.Control.upd_invo> but that it
-invokes any kind of imperative routine rather than just an updater, and
+invokes a procedure (or system-service) rather than an updater, and
 that C<upd_args> is optional.
 
 =head2 sys.std.Core.Control.fail
@@ -1547,18 +1547,19 @@ in the call stack unwinding, and transaction rollbacks, until it is caught.
 =head2 sys.std.Core.Control.try_catch
 
 C<procedure sys.std.Core.Control.try_catch
-($try : ImpRef, &$try_upd_args? : Tuple, $try_ro_args? : Tuple,
-$catch? : ImpRef, &$catch_upd_args? : Tuple, $catch_ro_args? : Tuple)>
+($try : ProcRef, &$try_upd_args? : Tuple, $try_ro_args? : Tuple,
+$catch? : ProcRef, &$catch_upd_args? : Tuple, $catch_ro_args? : Tuple)>
 
-This procedure invokes the imperative routine named in its C<try> argument
+This procedure invokes the procedure (or system-service)
+named in its C<try> argument
 with arguments supplied by this procedure's C<try_upd_args> and
 C<try_ro_args> arguments; each attribute name of C<try_[upd|ro]_args> is
-mapped to a parameter name of the invoked imperative, and the corresponding
-attribute value is the corresponding argument for the imperative
+mapped to a parameter name of the invoked procedure, and the corresponding
+attribute value is the corresponding argument for the procedure
 invocation.  If the C<try> routine
 throws an exception, then any state changes it made roll back (but changes
 made before that don't), and the call stack unwinds to the C<try_catch>
-itself; then the imperative routine named by C<catch> is invoked similarly
+itself; then the procedure named by C<catch> is invoked similarly
 to C<try> was, with corresponding arguments, but with the extra read-only
 argument C<topic> whose value is an C<Exception>; if the C<catch> routine
 also throws an exception (such as to say its not handling the thrown one),
