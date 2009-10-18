@@ -89,8 +89,8 @@ C<language_name> node and the second element is either a C<value> node or a
 C<depot> node.
 
 See the pod sections in this file named L</LANGUAGE NAME>, L</VALUE
-LITERALS AND SELECTORS>, and L</DEPOT DECLARATION>, for more details about
-the aforementioned tokens/nodes.
+LITERALS AND SELECTORS>, and L</DEPOT SPECIFICATION>, for more details
+about the aforementioned tokens/nodes.
 
 When Muldis D is being compiled and invoked piecemeal, such as because the
 Muldis D implementing virtual machine (VM) is attached to an interactive
@@ -230,7 +230,7 @@ Examples:
        [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_STD', {
           catalog_abstraction_level => 'code_as_data'
        } ],
-       [ 'depot', [ 'Database', 'Depot', {
+       [ 'depot', { 'depot-catalog' => [ 'Database', 'Depot', {
           functions => [ 'Relation', [
              {
                 name => ['Name','cube'],
@@ -260,7 +260,7 @@ Examples:
                 } ]
              }
           ] ]
-       } ] ]
+       } ] } ]
     ]
 
 =head2 plain_rtn_inv
@@ -278,12 +278,12 @@ Examples:
         [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_STD', {
             catalog_abstraction_level => 'plain_rtn_inv'
         } ],
-        [ 'depot', [
+        [ 'depot', { 'depot-catalog' => [
             [ 'function', 'public', 'cube', 'Int', { topic => 'Int' }, [
                 [ 'func-invo', 'Integer.power',
                     { radix => ['$','topic'], exponent => 3 } ]
             ] ]
-        ] ]
+        ] } ]
     ]
 
 =head2 rtn_inv_alt_syn
@@ -302,11 +302,11 @@ Examples:
         [ 'Muldis_D', 'http://muldis.com', '1.2.3', 'HDMD_Perl5_STD', {
             catalog_abstraction_level => 'rtn_inv_alt_syn'
         } ],
-        [ 'depot', [
+        [ 'depot', { 'depot-catalog' => [
             [ 'function', 'public', 'cube', 'Int', { topic => 'Int' }, [
                 [ 'op', 'I^', [ ['$','topic'], 3 ] ]
             ] ]
-        ] ]
+        ] } ]
     ]
 
 =head1 VALUE LITERALS AND SELECTORS
@@ -1243,9 +1243,55 @@ Examples:
     [ 'Interval', [[ 'UTCInstant', [2002,12,6] ], '^..^',
         [ 'UTCInstant', [2002,12,20] ]] ]
 
-=head1 DEPOT DECLARATION
+=head1 DEPOT SPECIFICATION
 
-B<TODO: ALL OF THIS HERE MAIN POD SECTION!>
+A C<depot> node has 2-3 ordered elements such that 3 elements means the
+depot has a normal-user-data database and 2 elements means it has just a
+(possibly empty) system catalog database:  The first element is the Perl
+character string C<depot>.  Iff the C<depot> has 3 elements then the third
+element specifies the normal-user-data database; it is a single-element
+Perl hash ref whose element's key is the Perl character string
+C<depot-data> and whose element's value is a C<Database> node.  The second
+element specifies the system catalog database; it is a single-element Perl
+hash ref whose element's key is the Perl character string C<depot-catalog>
+and whose element's value is either a C<Database> node or a Perl array ref
+which is hereafter referred to as C<depot_catalog_payload>.  A
+C<depot_catalog_payload> either has zero elements, designating an empty
+catalog, or all of its elements are Perl array refs (in particular, none of
+its elements is the Perl character string 'Database'), each of which is one
+of the following kinds of nodes: C<subdepot>, C<material>,
+C<self_local_dbvar_type>.
+
+A C<subdepot> node has 3 ordered elements:  The first element is the Perl
+character string C<subdepot>.  The second element is a C<Name_payload>,
+which is the declared name of the subdepot within the namespace defined by
+its parent subdepot (or depot).  The third element is a
+C<depot_catalog_payload>.
+
+A C<self_local_dbvar_type> node has 2 ordered elements:  The first element
+is the Perl character string C<self-local-dbvar-type>.  The second element
+is a C<NameChain_payload>, which specifies what the normal-user-data
+database has as its declared data type.
+
+Examples:
+
+    # A completely empty depot that doesn't have a self-local dbvar. #
+    [ 'depot', { 'depot-catalog' => [] } ]
+
+    # Empty depot with self-local dbvar with unrestricted allowed values. #
+    [ 'depot',
+        { 'depot-catalog' => [
+            [ 'self-local-dbvar-type', 'Database' ]
+        ] },
+        { 'depot-data' => [ 'Database', {} ] }
+    ]
+
+    # A depot having just one function and no dbvar. #
+    [ 'depot', { 'depot-catalog' => [
+        [ 'function', 'public', 'cube', 'Int', { topic => 'Int' }, [
+            [ 'op', 'I^', [ ['$','topic'], 3 ] ]
+        ] ]
+    ] } ]
 
 =head1 GENERIC VALUE EXPRESSIONS
 

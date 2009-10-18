@@ -147,8 +147,8 @@ C<language_name> node and the second element is either a C<value> node or a
 C<depot> node.
 
 See the pod sections in this file named L</LANGUAGE NAME>, L</VALUE
-LITERALS AND SELECTORS>, and L</DEPOT DECLARATION>, for more details about
-the aforementioned tokens/nodes.
+LITERALS AND SELECTORS>, and L</DEPOT SPECIFICATION>, for more details
+about the aforementioned tokens/nodes.
 
 When Muldis D is being compiled and invoked piecemeal, such as because the
 Muldis D implementing virtual machine (VM) is attached to an interactive
@@ -2218,36 +2218,93 @@ Examples:
 
     Interval:{ UTCInstant:[2002,12,6,,,] ^..^ UTCInstant:[2002,12,20,,,] }
 
-=head1 DEPOT DECLARATION
-
-B<TODO: ALL OF THIS HERE MAIN POD SECTION!>
+=head1 DEPOT SPECIFICATION
 
 Grammar:
 
     <depot> ::=
+        <depot_catalog>
+        [\s+ <depot_data>]?
+
+    <depot_catalog> ::=
         'depot-catalog' \s+ <catalog>
-        [\s+ 'depot-data' \s+ <Database>]?
+
+    <depot_data> ::=
+        'depot-data' \s+ <Database>
 
     <catalog__code_as_data> ::=
         <Database>
 
     <catalog__plain_rtn_inv> ::=
           <Database>
-        | <depot_or_subdepot>
+        | <depot_catalog_payload>
 
-    <depot_or_subdepot> ::=
+    <depot_catalog_payload> ::=
         '{' \s*
             [[
-                  <named_subdepot>
-                | <named_material>
+                  <subdepot>
+                | <material>
+                | <self_local_dbvar_type>
             ] ** \s+]?
         \s* '}'
 
-    <named_subdepot> ::=
-        subdepot \s+ <Name_payload> \s+ <depot_or_subdepot>
+    <subdepot> ::=
+        subdepot \s+ <subdepot_declared_name> \s+ <depot_catalog_payload>
 
-    <named_material> ::=
-        [private | public]? ... \s+ <Name_payload> \s+ ...
+    <subdepot_declared_name> ::=
+        <Name_payload>
+
+    <self_local_dbvar_type> ::=
+        'self-local-dbvar-type' \s+ <NameChain_payload>
+
+A C<depot> node specifies a single complete depot, which is the widest
+scope user-defined DBMS entity that is a completely self-defined, and
+doesn't rely on any user-defined entities external to itself to be
+unambiguously understood.  A C<depot> node defines a (possibly empty)
+system catalog database, holding user material (routine and type)
+definitions, plus optionally a normal-user-data database.
+
+A C<depot_catalog_payload> node in the PTMD_STD grammar is interpreted as a
+Muldis D C<sys.std.Core.Type.Cat.Depot> value (which is also a C<Database>
+value) whose attributes are defined by its child elements.
+
+A C<subdepot> node specifies a single public entity namespace under a depot
+and all of the C<subdepot> nodes under a C<depot> comprise a hierarchy of
+such namespaces.
+
+But a C<subdepot> node doesn't have a corresponding data type for its
+entire content like with a C<depot_catalog_payload>; rather, a C<subdepot>
+node hierarchy is stored flattened in the system catalog, such that each
+tuple of the C<subdepot> attribute from the parent C<Depot> names one
+subdepot that exists, and all the subdepot's materials are flattened into
+tuples of the materials-defining attributes of the C<Depot>.
+
+A C<self_local_dbvar_type> node specifies what the normal-user-data
+database has as its declared data type.  The value of the C<data> attribute
+of the parent C<Depot> is determined from this node.  Iff
+C<self_local_dbvar_type> is not specified then C<depot_data> must be
+omitted; iff C<self_local_dbvar_type> is specified then C<depot_data> must
+be present.  The most liberal value of C<self_local_dbvar_type> is simply
+C<Database>, meaning C<depot_data> may define any database value at all.  A
+C<depot_catalog_payload> may have at most 1 C<self_local_dbvar_type>.
+
+Examples:
+
+    # A completely empty depot that doesn't have a self-local dbvar. #
+    depot-catalog {}
+
+    # Empty depot with self-local dbvar with unrestricted allowed values. #
+    depot-catalog {
+        self-local-dbvar-type Database
+    }
+    depot-data Database:{}
+
+    # A depot having just one function and no dbvar. #
+    depot-catalog {
+        public function cube (Int <-- $topic : Int) {
+            $topic I^ 3
+        }
+    }
 
 =head1 GENERIC VALUE EXPRESSIONS
 
