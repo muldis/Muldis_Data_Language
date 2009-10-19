@@ -142,6 +142,7 @@ more or less:
                 sys.std.Core.Type.Cat.WhenThenVarStmtMap
                 sys.std.Core.Type.Cat.IterateStmtNodeSet
                 sys.std.Core.Type.Cat.LoopStmtNodeSet
+                sys.std.Core.Type.Cat.MaterialRefSelStmtNodeSet
                 sys.std.Core.Type.Cat.PossrepSet
                 sys.std.Core.Type.Cat.PossrepMapSet
                 sys.std.Core.Type.Cat.VirtualAttrMapSet
@@ -2010,7 +2011,7 @@ explicit C<name> that can be referenced by "leave" and "iterate" control
 flow statements to leave or re-iterate the corresponding block, both SQL
 and Perl have native counterpart features in the form of block labels.
 
-A C<StmtNodeSet> has these 8 attributes:
+A C<StmtNodeSet> has these 9 attributes:
 
 =over
 
@@ -2047,6 +2048,11 @@ These are statement nodes that represent abnormal block restart statements.
 =item C<loop_stmts> - C<LoopStmtNodeSet>
 
 These are statement nodes that represent generic looping block statements.
+
+=item C<material_ref_sel_stmts> - C<MaterialRefSelStmtNodeSet>
+
+These are statement nodes that represent the assignment to local variables
+of newly selected routine or type reference values.
 
 =back
 
@@ -2403,6 +2409,46 @@ each iteration of the loop; typically it has a sub-tree of statement nodes.
 
 A C<LoopStmtNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.MaterialRefSelStmtNodeSet
+
+A C<MaterialRefSelStmtNodeSet> is a C<DHRelation> that specifies a set of
+statement nodes where each node represents the assignment to a variable (or
+parameter) of a newly selected value of the special
+C<sys.std.Core.Type.Cat.MaterialRef> type.  Said selected value would not
+have any pre-bound routine parameters where applicable, and those can be
+added afterwards with the system-defined currying routines.  Using one of
+these statement nodes should be an effective alternative to declaring (or
+extending) an updater that simply combines a C<MaterialRef> selecting
+expression node with an C<assign> updater call.
+
+A C<MaterialRefSelStmtNodeSet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the statement leaf node.
+
+=item C<target> - C<NameChain>
+
+This is name of the local parameter or variable that will have the newly
+selected C<MaterialRef> value assigned to it.
+
+=item C<referencing> - C<NameChain>
+
+This is the name, from the point of view of the procedure embedding this
+statement node, of the routine or type that the new special reference
+value is supposed to facilitate portable invoking of.
+
+=back
+
+A C<MaterialRefSelStmtNodeSet> has a unary (unique) key on the C<name>
+attribute.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING DATA TYPES
 
