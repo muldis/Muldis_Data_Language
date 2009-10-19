@@ -277,10 +277,10 @@ Examples:
             catalog_abstraction_level => 'plain_rtn_inv'
         } ],
         [ 'depot', :depot-catalog[
-            [ 'function', 'public', 'cube', 'Int', { topic => 'Int' }, [
+            [ 'function', 'public', 'cube', [ 'Int', { topic => 'Int' }, [
                 [ 'func-invo', 'Integer.power',
                     { radix => ['$','topic'], exponent => 3 } ]
-            ] ]
+            ] ] ]
         ] ]
     ]
 
@@ -301,9 +301,9 @@ Examples:
             catalog_abstraction_level => 'rtn_inv_alt_syn'
         } ],
         [ 'depot', :depot-catalog[
-            [ 'function', 'public', 'cube', 'Int', { topic => 'Int' }, [
+            [ 'function', 'public', 'cube', [ 'Int', { topic => 'Int' }, [
                 [ 'op', 'I^', [ ['$','topic'], 3 ] ]
-            ] ]
+            ] ] ]
         ] ]
     ]
 
@@ -1066,10 +1066,91 @@ Examples:
 
     # A depot having just one function and no dbvar. #
     [ 'depot', :depot-catalog[
-        [ 'function', 'public', 'cube', 'Int', { topic => 'Int' }, [
+        [ 'function', 'public', 'cube', [ 'Int', { topic => 'Int' }, [
             [ 'op', 'I^', [ ['$','topic'], 3 ] ]
-        ] ]
+        ] ] ]
     ] ]
+
+=head1 MATERIAL SPECIFICATION
+
+A C<material> node specifies a new material (routine or type) that lives in
+a depot or subdepot.
+
+There are 7 main varieties of C<material> node, each of which is a named
+node kind of its own:  <function>, C<updater>, C<procedure>,
+C<scalar_type>, C<nonscalar_type>, C<union_type>, C<subset_type>.
+
+=head2 Material Specification Common Elements
+
+A C<material> node has 2-4 ordered elements, such that a material that has
+2 elements is an C<anon_material> and a material with 3-4 elements is a
+C<named_material>:  The first element is C<material_kind>.  The last
+element is C<material_payload>.  Iff there are 3-4 elements then the
+second-to-last element is C<material_declared_name>.  Iff there are 4
+elements then the second element is C<priv_or_pub>.
+
+=over
+
+=item C<material_kind>
+
+This is a Perl C<Str> value of the format C<< [<[ a..z ]>+] ** '-' >>; it
+identifies the kind of the material and is the only external meta-data of
+C<material_payload> generally necessary to interpret the latter; what
+grammars are valid for C<material_payload> depend just on C<material_kind>.
+
+=item C<priv_or_pub>
+
+This is one of the 2 Perl C<Str> values [C<private>, C<public>]; it is
+C<public> if the material is part of its containing subdepot's own public
+interface and may be invoked from outside the subdepot; it is C<private> if
+it is just part of the subdepot's internals.  This is optional iff
+C<material> is a C<named_material>; this must be omitted iff C<material> is
+an C<anon_material>.  If C<priv_or_pub> is not explicitly specified then
+the C<material> is interpreted as if it were explicitly C<private> (so all
+C<anon_material> are private).
+
+=item C<material_declared_name>
+
+This is the declared name of the material within the namespace defined by
+its subdepot (or depot).  It is explicitly specified iff the C<material> is
+a C<named_material>
+
+=item C<material_payload>
+
+This is mandatory for all C<material>.  It specifies the entire material
+sans its name.  Format varies with C<material_kind>.
+
+=back
+
+For material examples, see the subsequent documentation sections.
+
+=head2 Function Specification
+
+I<TODO.>
+
+=head2 Updater Specification
+
+I<TODO.>
+
+=head2 Procedure Specification
+
+I<TODO.>
+
+=head2 Scalar Type Specification
+
+I<TODO.>
+
+=head2 Nonscalar Type Specification
+
+I<TODO.>
+
+=head2 Union Type Specification
+
+I<TODO.>
+
+=head2 Subset Type Specification
+
+I<TODO.>
 
 =head1 GENERIC VALUE EXPRESSIONS
 
