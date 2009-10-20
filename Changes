@@ -6,6 +6,43 @@
     * Muldis::D version 0.98.0 is released on CPAN as
     Muldis-D-0.98.0.tar.gz.
 
+    * (Types_Catalog.pod)  Added new scalar catalog type
+    "sys.std.Core.Type.Cat.OVLScalar", which is an explicitly defined union
+    type over all of and just the system-defined DH-scalar types for whose
+    values all of the Muldis D standard dialects provide "opaque value
+    literal" syntax for, which is currently 18 scalar root types.  Also
+    updated the "ScaValExprNodeSet" catalog type so that its "value"
+    attribute is now simply an "OVLScalar" rather than
+    "DHScalar"-plus-vague-constraint-description.  This change should help
+    improve portability between Muldis D implementations and dialects, as
+    previously what "value" was allowed to contain was specified
+    implementation or dialect dependent.
+
+    * (Types.pod, Types_Catalog.pod, Integer.pod, Blob.pod, Rational.pod,
+    Temporal.pod)  Updated the "TYPE SUMMARY" main pod section to insert
+    new "OVLScalar" between "DHScalar" and latter's hierarchy descendants.
+
+    * (Types_Catalog.pod, Routines_Catalog.pod, PTMD_STD.pod)  Renamed the
+    2 catalog types "Sca[Val|PRSel]ExprNodeSet" to
+    "[OVLScaVal|ScaSel]ExprNodeSet", respectively.  Also updated the
+    "ExprNodeSet" catalog type to rename is 2 attributes
+    "sca_[val|pr_sel]_exprs" to "[ovl_sca_val|sca_sel]_exprs".
+
+    * (PTMD_STD.pod)  The Muldis D dialects are now a bit stricter in
+    semantics such that they now specify that when code is written using a
+    specific kind of "value" node kind, the parser must use the same
+    catalog data types for every case of the same node kind, rather than
+    taking liberties in the name of optimization.  In particular, a
+    "Scalar" node must now *always* parse into a ScaSelExprNodeSet tuple,
+    even if its child exprs are all constants and it denotes a
+    system-defined type value; conversely, a "Rat" or "UTCInstant" etc node
+    must always parse into an OVLScaValExprNodeSet tuple.  Likewise for
+    nonscalar selectors.  The parser must retain as much as possible of the
+    specific syntax the user wrote.  Any optimization must now be separate
+    from the parser, such as a separate distinct parser step that the user
+    must explicitly ask for, or a runtime/JIT feature for how the
+    system-catalog is compiled to machine code.
+
     * (Types_Catalog.pod)  Added new catalog type
     "MaterialRefSelStmtNodeSet", which assigns to a procedure variable a
     newly selected material ref value (a short-hand that removes the need

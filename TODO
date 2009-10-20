@@ -272,6 +272,20 @@ constraint writers want to know anyway.
 
 * Add other kinds of stimulus-response rules / triggered routines.
 
+* Add explicit support for +/- infinities, NaNs, distinct +- zero, +/-
+underflow, +/- overflow, etc.  How this would work is that we define a set
+of scalar singleton types, one for each of the special values.  Then we
+define extended versions of the Int, Rat, etc types where the extended
+types are defined in terms of being union types that union the regular
+numeric types with the special singleton type values.  This approach also
+means that just one each of +Inf, -Overflow, etc is needed and is a member
+of extended Int or Rat etc.  Consider using the existing names "Int"/"Rat"
+with the versions that include these special values, and make new names for
+the current simpler versions that don't, such as "IntNS" (int no specials),
+"RatNS", etc.  Either way, it is useful to support the full range of values
+that a Perl 6 numeric can support, or that an IEEE float can support,
+without users necessarily having to define it themselves.
+
 * Update Text.pod (or add other extensions) to add general search and
 replace or transliteration or regular expression et al functionality,
 besides the bare minimum SQL-LIKE-alike currently provided.  Also add

@@ -50,25 +50,26 @@ more or less:
 
         sys.std.Core.Type.Scalar
             sys.std.Core.Type.DHScalar
+                sys.std.Core.Type.Cat.OVLScalar
 
-                # The following are all regular ordered scalar types.
+                    # The following are all regular ordered scalar types.
 
-                sys.std.Core.Type.Cat.String
-                    sys.std.Core.Type.Cat.String.*
-                    sys.std.Core.Type.Cat.SEString
-                    sys.std.Core.Type.Cat.BString
-                    sys.std.Core.Type.Cat.OString
-                    sys.std.Core.Type.Cat.UCPString
-                sys.std.Core.Type.Cat.Name
-                sys.std.Core.Type.Cat.NameChain
-                sys.std.Core.Type.Cat.DeclNameChain
-                sys.std.Core.Type.Cat.Comment
-                sys.std.Core.Type.Cat.Order
+                    sys.std.Core.Type.Cat.String
+                        sys.std.Core.Type.Cat.String.*
+                        sys.std.Core.Type.Cat.SEString
+                        sys.std.Core.Type.Cat.BString
+                        sys.std.Core.Type.Cat.OString
+                        sys.std.Core.Type.Cat.UCPString
+                    sys.std.Core.Type.Cat.Name
+                    sys.std.Core.Type.Cat.NameChain
+                    sys.std.Core.Type.Cat.DeclNameChain
+                    sys.std.Core.Type.Cat.Comment
+                    sys.std.Core.Type.Cat.Order
 
-                # The following are all regular non-ordered scalar types.
+                    # The following are all regular non-ord scalar types.
 
-                sys.std.Core.Type.Cat.RatRoundMeth
-                sys.std.Core.Type.Cat.RatRoundRule
+                    sys.std.Core.Type.Cat.RatRoundMeth
+                    sys.std.Core.Type.Cat.RatRoundRule
 
         sys.std.Core.Type.Tuple
             sys.std.Core.Type.DHTuple
@@ -117,8 +118,8 @@ more or less:
                 sys.std.Core.Type.Cat.[Function|Updater|Procedure]Set
                 sys.std.Core.Type.Cat.[Scalar|Nonscalar]TypeSet
                 sys.std.Core.Type.Cat.[Union|Subset]TypeSet
-                sys.std.Core.Type.Cat.ScaValExprNodeSet
-                sys.std.Core.Type.Cat.ScaPRSelExprNodeSet
+                sys.std.Core.Type.Cat.OVLScaValExprNodeSet
+                sys.std.Core.Type.Cat.ScaSelExprNodeSet
                 sys.std.Core.Type.Cat.TupSelExprNodeSet
                 sys.std.Core.Type.Cat.RelSelExprNodeSet
                 sys.std.Core.Type.Cat.SetSelExprNodeSet
@@ -180,6 +181,23 @@ catalog, or any database, but they may be used temporarily at runtime:
                 sys.std.Core.Type.Cat.TypeRef
 
 =head1 SIMPLE GENERIC SCALAR TYPES
+
+=head2 sys.std.Core.Type.Cat.OVLScalar
+
+This is an enumeration data type.  The C<OVLScalar> type is explicitly
+defined as a union type over all system-defined C<DHScalar> types, and just
+those types, for whose values all of the Muldis D standard dialects provide
+"opaque value literal" syntax for:  C<Bool>, C<Int>, C<Blob>, C<Text>,
+C<Rat>, C<Instant>, C<Duration>, C<String>, C<Name>, C<NameChain>,
+C<DeclNameChain>, C<Comment>, C<Order>, C<RatRoundMeth>, C<RatRoundRule>,
+C<UTCInstant>, C<FloatInstant>, C<UTCDuration>.  The C<OVLScalar> type is
+mainly intended to be used as the declared type of some attributes of some
+other system-defined catalog types, as a compact or hard-coded way to
+represent scalar values that are I<not> being specified explicitly in terms
+of possrep attributes.  The C<OVLScalar> type is I<not> intended to be used
+as the declared type of any user type attributes, generally speaking; if
+they would even consider it, they should be using C<DHScalar> instead.  Its
+default value is C<Bool:false>.  The cardinality of this type is infinity.
 
 =head2 sys.std.Core.Type.Cat.String
 
@@ -785,7 +803,7 @@ reads between distinct statements outside of transactions are not
 guaranteed.  I<These details are subject to revision, such as in regards to
 what autonomous child processes of the current process may do.>
 
-=item C<details> - C<ScaValExprNodeSet>
+=item C<details> - C<OVLScaValExprNodeSet>
 
 These are the 0..N other miscellaneous details that define this depot mount
 control.  Each tuple in C<details> specifies an implementation-specific
@@ -1233,15 +1251,18 @@ An C<ExprNodeSet> has these 13 attributes:
 
 =over
 
-=item C<sca_val_exprs> - C<ScaValExprNodeSet>
+=item C<ovl_sca_val_exprs> - C<OVLScaValExprNodeSet>
 
 These are expression nodes that represent scalar values of types such that
-the Muldis D dialect provides special literal syntax specific to the type.
+all of the standard Muldis D dialects provide special "opaque value
+literal" syntax specific to the type. These are expression nodes that
+represent scalar value literals that are I<not> specified simply in terms
+of possrep attributes.
 
-=item C<sca_pr_sel_exprs> - C<ScaPRSelExprNodeSet>
+=item C<sca_sel_exprs> - C<ScaSelExprNodeSet>
 
 These are expression nodes that represent generic scalar value
-selections specified simply in terms of possrep attributes.
+selections specified just in terms of possrep attributes.
 
 =item C<tup_sel_exprs> - C<TupSelExprNodeSet>
 
@@ -1295,14 +1316,15 @@ These are expression nodes that define routine or type reference literals.
 There is a distributed primary key over the C<name> attributes of all of an
 C<ExprNodeSet>'s attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ScaValExprNodeSet
+=head2 sys.std.Core.Type.Cat.OVLScaValExprNodeSet
 
-A C<ScaValExprNodeSet> is a C<DHRelation> that specifies a set of value
-expression nodes where each node is a hard-coded scalar literal of one of a
-certain collection of system-defined core scalar types that special value
-literal syntax exists for (or subtype thereof).
+A C<OVLScaValExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node is a hard-coded scalar literal that is
+I<not> being specified explicitly in terms of possrep attributes, but
+rather is specified using special "opaque value literal" syntax that all
+of the Muldis D standard dialects provide.
 
-A C<ScaValExprNodeSet> has these 3 attributes:
+A C<OVLScaValExprNodeSet> has these 3 attributes:
 
 =over
 
@@ -1314,25 +1336,25 @@ This is the declared name of the expression node.
 
 This is an optional programmer comment about the expression (leaf) node.
 
-=item C<value> - C<DHScalar>
+=item C<value> - C<OVLScalar>
 
 This is the actual scalar value that the expression node represents.
-I<That is, any DHScalar value could be used here, but in practice that is
-either dialect-defined (what literals are supported), and possibly
-implementation defined/limited.>
 
 =back
 
-A C<ScaValExprNodeSet> has a unary primary key on the C<name>
+A C<OVLScaValExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ScaPRSelExprNodeSet
+=head2 sys.std.Core.Type.Cat.ScaSelExprNodeSet
 
-A C<ScaPRSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+A C<ScaSelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a scalar value
-selection that is specified simply in terms of possrep attributes.
+selection that is specified explicitly in terms of possrep attributes.
+This node kind may be used for values of absolutely any scalar type at all,
+including all system-defined types, although optimized Muldis D code will
+likely .
 
-A C<ScaPRSelExprNodeSet> has these 5 attributes:
+A C<ScaSelExprNodeSet> has these 5 attributes:
 
 =over
 
@@ -1361,7 +1383,7 @@ possrep of the scalar value being selected.
 
 =back
 
-A C<ScaPRSelExprNodeSet> has a unary primary key on the C<name>
+A C<ScaSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.TupSelExprNodeSet
