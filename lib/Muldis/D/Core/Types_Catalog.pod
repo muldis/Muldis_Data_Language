@@ -1255,7 +1255,7 @@ An C<ExprNodeSet> has these 13 attributes:
 
 These are expression nodes that represent scalar values of types such that
 all of the standard Muldis D dialects provide special "opaque value
-literal" syntax specific to the type. These are expression nodes that
+literal" syntax specific to the type.  These are expression nodes that
 represent scalar value literals that are I<not> specified simply in terms
 of possrep attributes.
 
@@ -1318,13 +1318,13 @@ C<ExprNodeSet>'s attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.OVLScaValExprNodeSet
 
-A C<OVLScaValExprNodeSet> is a C<DHRelation> that specifies a set of value
+An C<OVLScaValExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node is a hard-coded scalar literal that is
 I<not> being specified explicitly in terms of possrep attributes, but
 rather is specified using special "opaque value literal" syntax that all
 of the Muldis D standard dialects provide.
 
-A C<OVLScaValExprNodeSet> has these 3 attributes:
+An C<OVLScaValExprNodeSet> has these 3 attributes:
 
 =over
 
@@ -1342,7 +1342,7 @@ This is the actual scalar value that the expression node represents.
 
 =back
 
-A C<OVLScaValExprNodeSet> has a unary primary key on the C<name>
+An C<OVLScaValExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.ScaSelExprNodeSet
@@ -2033,9 +2033,16 @@ explicit C<name> that can be referenced by "leave" and "iterate" control
 flow statements to leave or re-iterate the corresponding block, both SQL
 and Perl have native counterpart features in the form of block labels.
 
-A C<StmtNodeSet> has these 9 attributes:
+A C<StmtNodeSet> has these 10 attributes:
 
 =over
+
+=item C<ovl_sca_val_stmts> - C<OVLScaValStmtNodeSet>
+
+These are statement nodes that represent the assignment to local variables
+of newly selected scalar values of types such that all of the standard
+Muldis D dialects provide special "opaque value literal" syntax specific to
+the type.
 
 =item C<leave_stmts> - C<LeaveStmtNodeSet>
 
@@ -2080,6 +2087,44 @@ of newly selected routine or type reference values.
 
 There is a distributed primary key over the C<name> attributes of all of a
 C<StmtNodeSet>'s attributes.  Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.OVLScaValStmtNodeSet
+
+An C<OVLScaValStmtNodeSet> is a C<DHRelation> that specifies a set of
+statement nodes where each node represents the assignment to a variable (or
+parameter) of a hard-coded scalar literal that is I<not> being specified
+explicitly in terms of possrep attributes, but rather is specified using
+special "opaque value literal" syntax that all of the Muldis D standard
+dialects provide.  Using one of these statement nodes should be an
+effective alternative to declaring (or extending) an updater that simply
+combines a simple scalar selecting expression node with an C<assign>
+updater call.
+
+An C<OVLScaValStmtNodeSet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the statement (leaf) node.
+
+=item C<target> - C<NameChain>
+
+This is name of the local parameter or variable that will have the newly
+selected scalar value assigned to it.
+
+=item C<value> - C<OVLScalar>
+
+This is the actual scalar value that the statement node is selecting.
+
+=back
+
+An C<OVLScaValStmtNodeSet> has a unary primary key on the C<name>
+attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.LeaveStmtNodeSet
 
