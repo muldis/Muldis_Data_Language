@@ -200,6 +200,32 @@ have done something they didn't intend, such as an equality test between
 two variables whose declared types are numeric and character data, which
 would always have a false result.
 
+=item atomic
+
+Within this documentation, an I<atomic> DBMS operation is an operation that
+is completely indivisible from the perspective of I<every> DBMS user,
+I<including> the user performing that operation.  From every user's
+perspective, the database/dbvar-federation transitions directly from the
+consistent state before the operation had an effect to the consistent state
+where the operation's effect is complete, and there does not exist any
+intermediate state.  If an atomic operation fails, such as because it would
+have resulted in an inconsistent state, then the after-state is identical
+to the before-state, the operation then being a no-op.
+
+=item transaction, nested/child transaction
+
+Within this documentation, a I<transaction> generally I<is> divisible from
+the perspective of I<just> the user performing that transaction, where they
+see it as a sequence of distinct I<atomic> operations with distinct
+intermediate consistent database states between them, where one or more of
+the latest operations in the sequence may optionally be undone / rolled
+back, and the remainder committed to end the transaction.  A I<transaction>
+is indivisible from the perspective of every DBMS user besides the one
+performing the transaction.  A I<nested/child transaction> is a
+sub-sequence of the atomic operations comprising its parent transaction
+that has been identified for greater ease of managing the parent or
+outermost transaction.
+
 =back
 
 =head1 NOTES ON TEXT CHARACTER LITERALS
