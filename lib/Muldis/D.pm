@@ -1,22 +1,12 @@
-use 5.008001;
-use utf8;
+use 5.006;
 use strict;
-use warnings FATAL => 'all';
-
-###########################################################################
-###########################################################################
-
-{ package Muldis::D; # package
-    our $VERSION = '0.098000';
-    $VERSION = eval $VERSION;
-    # Note that Perl code only exists at all in this file in order to help
-    # the CPAN indexer handle the distribution properly.
-} # package Muldis::D
-
-###########################################################################
-###########################################################################
-
-1; # Magic true value required at end of a reusable file's code.
+use warnings;
+package Muldis::D;
+our $VERSION = '0.098000';
+$VERSION = eval $VERSION;
+# Note that Perl code only exists at all in this file in order to help
+# the CPAN indexer handle the distribution properly.
+1;
 __END__
 
 =pod

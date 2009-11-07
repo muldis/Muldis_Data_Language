@@ -1,13 +1,14 @@
-use 5.008001;
-use utf8;
+use 5.006;
 use strict;
-use warnings FATAL => 'all';
+use warnings;
 
-use Test::More;
+use Test;
 
-plan( 'tests' => 2 );
+BEGIN { plan tests => 2 }
 
-use_ok( 'Muldis::D' );
-is( $Muldis::D::VERSION, 0.098000, 'Muldis::D is the correct version' );
+use Muldis::D;
+ok(1);
 
-1; # Magic true value required at end of a reusable file's code.
+ok( $Muldis::D::VERSION, 0.098000 );
+
+1;
