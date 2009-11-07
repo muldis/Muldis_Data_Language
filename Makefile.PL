@@ -9,7 +9,7 @@ WriteMakefile(
     'NAME' => 'Muldis::D',
     'VERSION' => '0.98.0',
     'ABSTRACT' => 'Formal spec of Muldis D relational DBMS lang',
-    'AUTHOR' => 'Darren Duncan <perl@DarrenDuncan.net>',
+    'AUTHOR' => 'Darren Duncan <darren@DarrenDuncan.net>',
     'LICENSE' => 'gpl',
     'PREREQ_PM' => {},
 );
