@@ -26,6 +26,58 @@ into Core/.  For example, move in much of: Ordered, Tuple, Relation, Bool,
 Integer, Rational, Blob, Text.  Leave out of core most of Temporal, Spatial
 etc.  Move in parts of Set/Array/Bag but not all; move in all Maybe stuff.
 
+* Replace dep.* and sdp.* namespaces with single nlx.* namespaces:
+    nlx  # non-lex entities ref own immed parent non-lex namespace w this
+        nlx[.par]**0..*
+            nlx[.par]**0..*.cat  # upd s-c db desc ent under fed.[lib|data]
+            nlx[.par]**0..*.lib  # invokable tps|rtns in this namespace
+                nlx[.par]**0..*.lib[.chi-nlx-nsp]**0..*
+                    nlx[.par]**0..*.lib[.chi-nlx-nsp]**0..*.<material>
+            nlx[.par]**0..*.data  # upd db of normal user data in this nsp
+... so that details of material defs can remain invariant and match their
+actual stored defs despite where in their parent namespace tree is actually
+mounted as a "depot" in some DBMS.
+
+* Add subtypes of NameChain such as the likes of:
+- LibNameChain restr to [fed,nlx].lib.*, sys.std.*
+- DataNameChain restr to [fed,nlx].[cat,data].*, lex.*
+- AbsPathLibNameChain restr to fed.lib.*, sys.std.*
+- AbsPathDataNameChain restr to fed.[cat,data].*, lex.*
+- RelPathLibNameChain restr to nlx.lib.*, sys.std.*
+- RelPathDataNameChain restr to nlx.[cat,data].*, lex.*
+... and use these in many/most of the places where plain NameChain is used
+as a declared type, so for example to help ensure that it is actually
+materials vs data, or same-depot vs anywhere references are used as approp.
+For example, any type def or function/updater def can never refer to u-d
+entities outside its own depot (uses nlx/sys/etc) for a direct invoc or as
+stored in code while entity names passed as "closures"/"higher-order-funcs"
+must always use the global (fed/sys/etc) names, and typically the latter
+should always be transient / not-persisted values as they may be invalidat.
+Also replace the material-ref-sel catalog types with ones that produce
+AbsPath values from RelPath values.
+Also eliminate the whole MaterialRef tree of types and add a tuple type to
+represent a curried function, which has the AbsPath and the arguments.
+
+* Add "recipe" routine type, which is like "procedure" in that it can see
+and update globals, but like "updater" in that it can't call system-service
+routines and it is generally deterministic.  Then change most of the s-d
+"procedure" routines to be "recipe" instead, like all the data-def ones.
+
+* Large updates to docs concerning transactions and resource locking.
+
+* Add new "material" kinds that define descriptions of resource locks that
+one wants to get, starting with basic whole dbvar, relvar locks (address as
+simple fed.data.foo.*, as well as simple relvar tuple locks (addr as prior
+plus lists of values to match like with a semijoin); leave out generic
+predicate locks at first but note they will be added later.
+
+* Add new "material" kinds that define state constraints (address as simple
+nlx.*.data.*), like type constraints but ref in reverse.
+
+* Add new "material" kinds that def transit constrs, as per state constr.
+
+* Add new "material" kinds that def stimulus-response rules.
+
 * Add concept of shallowly homogeneous / sh- relation types to complement
 the deeply version, and named maximal types like SHRelation, SHSet,
 SHArray, etc to complement the DH/etc, and sh_set_of/etc to complement
