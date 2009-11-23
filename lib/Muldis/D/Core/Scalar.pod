@@ -1,0 +1,226 @@
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Muldis::D::Ext::Scalar -
+Muldis D extension for Scalar specific operators
+
+=head1 VERSION
+
+This document is Muldis::D::Ext::Scalar version 0.100.0.
+
+=head1 PREFACE
+
+This document is part of the Muldis D language specification, whose root
+document is L<Muldis::D>; you should read that root document
+before you read this one, which provides subservient details.
+
+=head1 DESCRIPTION
+
+I<This documentation is pending.>
+
+=head1 SYSTEM-DEFINED GENERIC SCALAR-CONCERNING FUNCTIONS
+
+These functions are applicable to mainly scalar types, but are generic in
+that they typically work with any scalar types.  Note that the
+terminology used to describe these functions is taking advantage of the
+fact that a scalar possrep looks just like a tuple.  Each C<possrep>
+and C<name> parameter is optional and each defaults to the empty string if
+no explicit argument is given to it.
+
+=head2 sys.std.Core.Scalar.attr
+
+C<< function sys.std.Core.Scalar.attr (Universal <-- $topic : Scalar,
+$possrep? : Name, $name? : Name) >>
+
+This function results in the scalar or nonscalar value of the possrep
+attribute of C<topic> where the possrep name is given by C<possrep> and the
+attribute name is given by C<name>.  This function will fail if C<possrep>
+specifies a possrep name that C<topic> doesn't have or C<name> specifies an
+attribute name that the named possrep of C<topic> doesn't have.  Note that
+this operation is also known as C<.${}>.
+
+=head2 sys.std.Core.Scalar.update_attr
+
+C<< function sys.std.Core.Scalar.update_attr (Scalar <-- $topic : Scalar,
+$possrep? : Name, $name? : Name, $value : Universal) >>
+
+This function results in its C<topic> argument but that its possrep
+attribute whose possrep name is C<possrep> and whose attribute name is
+C<name> has been updated with a new scalar or nonscalar value given by
+C<value>.  This function will fail if C<possrep> specifies a possrep name
+that C<topic> doesn't have or C<name> specifies an attribute name that the
+named possrep of C<topic> doesn't have, or if C<value> isn't of the
+declared type of the attribute; this function will otherwise warn if the
+declared type of C<value> isn't a subtype of the declared type of the
+attribute.
+
+=head2 sys.std.Core.Scalar.multi_update
+
+C<< function sys.std.Core.Scalar.multi_update (Scalar <-- $topic : Scalar,
+$possrep? : Name, $attrs : Tuple) >>
+
+This function is like C<sys.std.Core.Scalar.update_attr> except that it
+handles N scalar possrep attributes at once rather than just 1.  The
+heading of the C<attrs> argument must be a subset of the heading of the
+C<topic> argument's possrep named by C<possrep>; this function's result is
+C<topic> with all the possrep attribute values of C<attrs> substituted into
+it.  This function could alternately be named
+I<sys.std.Core.Scalar.static_subst>.
+
+=head2 sys.std.Core.Scalar.projection
+
+C<< function sys.std.Core.Scalar.projection (Tuple <-- $topic : Scalar,
+$possrep? : Name, $attr_names : set_of.Name) >>
+
+This function results in the C<Tuple> that is the projection of the
+possrep (whose name is given in the C<possrep> argument) of its C<topic>
+argument that has just the subset of attributes of C<topic> which are named
+in its C<attr_names> argument.  As a trivial case, this function's result
+is the entire named possrep of C<topic> if C<attr_names> lists all
+attributes of that possrep; or, it is the nullary tuple if C<attr_names> is
+empty.  This function will fail if C<possrep> specifies a possrep name that
+C<topic> doesn't have or C<attr_names> specifies any attribute names that
+C<topic> doesn't have.  Note that this operation is also known as C<${}>.
+
+=head2 sys.std.Core.Scalar.cmpl_proj
+
+C<< function sys.std.Core.Scalar.cmpl_proj (Tuple <--
+$topic : Scalar, $possrep? : Name, $attr_names : set_of.Name) >>
+
+This function is the same as C<projection> but that it results in the
+complementary subset of possrep attributes of C<topic> when given the same
+arguments.  Note that this operation is also known as C<${!}>.
+
+=head2 sys.std.Core.Scalar.Tuple_from_Scalar
+
+C<< function sys.std.Core.Scalar.Tuple_from_Scalar (Tuple <--
+$topic : Scalar, $possrep? : Name) >>
+
+This function results in the C<Tuple> that has all the same attributes of
+the possrep of C<topic> whose name is given in C<possrep>; in other words,
+the function results in the externalization of one of a scalar value's
+possreps.  This function will fail if C<possrep> specifies a possrep name
+that C<topic> doesn't have.
+
+=head2 sys.std.Core.Scalar.Scalar_from_Tuple
+
+C<< function sys.std.Core.Scalar.Scalar_from_Tuple (Scalar <--
+$topic : Tuple, $type : TypeRef, $possrep? : Name) >>
+
+This function results in the C<Scalar> value whose scalar root
+[|sub]type is named by C<type>, which has a possrep whose name matches
+C<possrep>, and whose complete set of attributes of that named possrep
+match the attributes of C<topic>.  This function can be used to select any
+scalar value at all that has a possrep.
+
+=head2 sys.std.Core.Scalar.order
+
+C<< function sys.std.Core.Scalar.order (Order <-- $topic : Scalar,
+$other : Scalar, $misc_args? : Tuple, $is_reverse_order? : Bool) >>
+
+This C<order-determination> function is the externalization of a scalar
+root type's type-default (total) C<order-determination> function.  This
+function results in C<Order:same> iff its C<topic> and C<other> arguments
+are exactly the same value, and otherwise it results in C<Order:increase>
+if the value of the C<other> argument is considered to be an increase (as
+defined by the type) over the value of the C<topic> argument, and otherwise
+it results in C<Order:decrease> as the reverse of the last condition would
+be true.  This function will fail if its C<topic> and C<other> arguments
+are not values of a common scalar root type that declares a type-default
+C<order-determination> function; this function will otherwise warn if the
+declared types of those arguments are not both subtypes of such a common
+scalar root type.  Note that C<order-determination> functions are
+considered the only fundamental order-sensitive operators, and all others
+are defined over them.  This function also has a C<Tuple>-typed third
+parameter, named C<misc_args>, which carries optional customization details
+for the order-determination algorithm; this permits the function to
+implement a choice between multiple (typically similar) ordering algorithms
+rather than just one, which reduces the number of functions needed for
+supporting that choice; if the algorithm is not customizable, then a
+tuple argument would be of degree zero.  This function also has a
+C<Bool>-typed fourth parameter, named C<is_reverse_order>; a C<Bool:false>
+argument means the function's algorithm operates as normal when given any
+particular 3 other arguments (meaning a sorting operation based on it will
+place elements in ascending order), while a C<Bool:true> argument means the
+function's algorithm operates in reverse, so the function results in the
+reverse C<Order> value it would have otherwise when given the same 3 other
+arguments (meaning a sorting operation based on it will place elements in
+descending order).  The C<misc_args> and C<is_reverse_order> parameters are
+optional and default to the zero-attribute tuple and C<Bool:false>,
+respectively, if no explicit arguments are given to them.
+
+=head2 sys.std.Core.Scalar.has_possrep
+
+C<< function sys.std.Core.Scalar.has_possrep (Bool <-- $topic : Scalar,
+$possrep? : Name) >>
+
+This function results in C<Bool:true> iff its C<topic> argument has a
+possrep whose name is given by C<possrep>; otherwise it results in
+C<Bool:false>.
+
+=head2 sys.std.Core.Scalar.possrep_names
+
+C<< function sys.std.Core.Scalar.possrep_names (set_of.Name <--
+$topic : Scalar) >>
+
+This function results in the set of the names of the possreps of its
+argument.
+
+=head2 sys.std.Core.Scalar.degree
+
+C<< function sys.std.Core.Scalar.degree (NNInt <-- $topic : Scalar,
+$possrep? : Name) >>
+
+This function results in the degree of its C<topic> argument's possrep
+whose name is given by C<possrep> (that is, the count of attributes the
+possrep has).
+
+=head2 sys.std.Core.Scalar.has_attrs
+
+C<< function sys.std.Core.Scalar.has_attrs (Bool <-- $topic : Scalar,
+$possrep? : Name, $attr_names : set_of.Name) >>
+
+This function results in C<Bool:true> iff, for every one of the attribute
+names specified by its C<attr_names> argument, its C<topic> argument's
+possrep whose name is given by C<possrep> has an attribute with that name;
+otherwise it results in C<Bool:false>.  As a trivial case, this function's
+result is C<Bool:true> if C<attr_names> is empty.
+
+=head2 sys.std.Core.Scalar.attr_names
+
+C<< function sys.std.Core.Scalar.attr_names (set_of.Name <--
+$topic : Scalar, $possrep? : Name) >>
+
+This function results in the set of the names of the attributes of its
+C<topic> argument's possrep whose name is given by C<possrep>.
+
+=head1 SEE ALSO
+
+Go to L<Muldis::D> for the majority of distribution-internal
+references, and L<Muldis::D::SeeAlso> for the majority of
+distribution-external references.
+
+=head1 AUTHOR
+
+Darren Duncan (C<darren@DarrenDuncan.net>)
+
+=head1 LICENSE AND COPYRIGHT
+
+This file is part of the formal specification of the Muldis D language.
+
+Muldis D is Copyright © 2002-2009, Muldis Data Systems, Inc.
+
+See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+
+=head1 TRADEMARK POLICY
+
+The TRADEMARK POLICY in L<Muldis::D> applies to this file too.
+
+=head1 ACKNOWLEDGEMENTS
+
+The ACKNOWLEDGEMENTS in L<Muldis::D> apply to this file too.
+
+=cut
