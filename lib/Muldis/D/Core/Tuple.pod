@@ -90,6 +90,165 @@ C<< function sys.std.Tuple.attr_names (set_of.Name <-- $topic : Tuple) >>
 This function results in the set of the names of the attributes of its
 argument.
 
+=head2 sys.std.Core.Tuple.attr
+
+C<< function sys.std.Core.Tuple.attr (Universal <-- $topic : Tuple,
+$name : Name) >>
+
+This function results in the scalar or nonscalar value of the attribute
+of C<topic> whose name is given by C<name>.  This function will fail if
+C<name> specifies an attribute name that C<topic> doesn't have.  Note that
+this operation is also known as C<.%{}>.
+
+=head2 sys.std.Core.Tuple.update_attr
+
+C<< function sys.std.Core.Tuple.update_attr (Tuple <-- $topic : Tuple,
+$name : Name, $value : Universal) >>
+
+This function results in its C<topic> argument but that its attribute whose
+name is C<name> has been updated with a new scalar or nonscalar value
+given by C<value>.  This function will fail if C<name> specifies an
+attribute name that C<topic> doesn't have; this function will otherwise
+warn if the declared type of C<value> isn't a subtype of the declared type
+of the attribute.
+
+=head2 sys.std.Core.Tuple.multi_update
+
+C<< function sys.std.Core.Tuple.multi_update (Tuple <-- $topic : Tuple,
+$attrs : Tuple) >>
+
+This function is like C<sys.std.Core.Tuple.update_attr> except that it
+handles N tuple attributes at once rather than just 1.  The heading of
+the C<attrs> argument must be a subset of the heading of the C<topic>
+argument; this function's result is C<topic> with all the attribute values
+of C<attrs> substituted into it.  This function could alternately be named
+I<sys.std.Core.Tuple.static_subst>.
+
+=head2 sys.std.Core.Tuple.rename
+
+C<< function sys.std.Core.Tuple.rename (Tuple <-- $topic : Tuple,
+$map : AttrRenameMap) >>
+
+This function results in a C<Tuple> value that is the same as its C<topic>
+argument but that some of its attributes have different names.  Each tuple
+of the argument C<map> specifies how to rename one C<topic> attribute, with
+the C<after> and C<before> attributes of a C<map> tuple representing the
+new and old names of a C<topic> attribute, respectively.  As a trivial
+case, this function's result is C<topic> if C<map> has no tuples.  This
+function supports renaming attributes to each others' names.  This function
+will fail if C<map> specifies any old names that C<topic> doesn't have, or
+any new names that are the same as C<topic> attributes that aren't being
+renamed.  Note that this operation is also known as C<< %{<-} >>.
+
+=head2 sys.std.Core.Tuple.projection
+
+C<< function sys.std.Core.Tuple.projection (Tuple <-- $topic : Tuple,
+$attr_names : set_of.Name) >>
+
+This function results in the projection of its C<topic> argument that has
+just the subset of attributes of C<topic> which are named in its
+C<attr_names> argument.  As a trivial case, this function's result is
+C<topic> if C<attr_names> lists all attributes of C<topic>; or, it is the
+nullary tuple if C<attr_names> is empty.  This function will fail if
+C<attr_names> specifies any attribute names that C<topic> doesn't have.
+Note that this operation is also known as C<%{}>.
+
+=head2 sys.std.Core.Tuple.cmpl_proj
+
+C<< function sys.std.Core.Tuple.cmpl_proj (Tuple <-- $topic : Tuple,
+$attr_names : set_of.Name) >>
+
+This function is the same as C<projection> but that it results in the
+complementary subset of attributes of C<topic> when given the same
+arguments.  Note that this operation is also known as C<%{!}>.
+
+=head2 sys.std.Core.Tuple.static_exten
+
+C<< function sys.std.Core.Tuple.static_exten (Tuple <--
+$topic : Tuple, $attrs : Tuple) >>
+
+This function results in the extension of its C<topic> argument by joining
+that with its C<attrs> argument; the attribute names of the 2 arguments
+must be disjoint.  See also C<sys.std.Core.Tuple.product> for an N-adic
+version of this.
+
+=head2 sys.std.Core.Tuple.wrap
+
+C<< function sys.std.Core.Tuple.wrap (Tuple <-- $topic : Tuple,
+$outer : Name, $inner : set_of.Name) >>
+
+This function results in a C<Tuple> value that is the same as its C<topic>
+argument but that some of its attributes have been wrapped up into a new
+C<Tuple>-typed attribute, which exists in place of the original
+attributes.  The C<inner> argument specifies which C<topic> attributes are
+to be removed and wrapped up, and the C<outer> argument specifies the name
+of their replacement attribute.  As a trivial case, if C<inner> is empty,
+then the result has all the same attributes as before plus a new
+tuple-typed attribute of degree zero; or, if C<inner> lists all attributes
+of C<topic>, then the result has a single attribute whose value is the same
+as C<topic>. This function supports the new attribute having the same name
+as an old one being wrapped into it.  This function will fail if C<inner>
+specifies any attribute names that C<topic> doesn't have, or if C<outer> is
+the same as a C<topic> attribute that isn't being wrapped.  Note that this
+operation is also known as C<< %{%<-} >>.
+
+=head2 sys.std.Core.Tuple.cmpl_wrap
+
+C<< function sys.std.Core.Tuple.cmpl_wrap (Tuple <-- $topic : Tuple,
+$outer : Name, $cmpl_inner : set_of.Name) >>
+
+This function is the same as C<wrap> but that it wraps the complementary
+subset of attributes of C<topic> to those specified by C<cmpl_inner>.  Note
+that this operation is also known as C<< %{%<-!} >>.
+
+=head2 sys.std.Core.Tuple.unwrap
+
+C<< function sys.std.Core.Tuple.unwrap (Tuple <-- $topic : Tuple,
+$inner : set_of.Name, $outer : Name) >>
+
+This function is the inverse of C<sys.std.Core.Tuple.wrap>, such that it
+will unwrap a C<Tuple>-type attribute into its member attributes.  This
+function will fail if C<outer> specifies any attribute name that C<topic>
+doesn't have, or if an attribute of C<topic{outer}> has the same name as
+another C<topic> attribute.  Now conceptually speaking, the C<inner>
+parameter is completely superfluous for this C<Tuple> variant of C<unwrap>;
+however, it is provided anyway so that this function has complete API
+parity with the C<Relation> variant of C<unwrap>, where C<inner> I<is>
+necessary in the general case, and so Muldis D code using this function is
+also forced to be more self-documenting or strongly typed.  This function
+will fail if C<inner> does not match the names of the attributes of
+C<topic{outer}>.  Note that this operation is also known as C<< %{<-%} >>.
+
+=head2 sys.std.Core.Tuple.product
+
+C<< function sys.std.Core.Tuple.product (Tuple <-- $topic : set_of.Tuple)
+>>
+
+This function is similar to C<sys.std.Core.Relation.product> but that it
+works with tuples rather than relations.  This function is mainly
+intended for use in connecting tuples that have all disjoint headings,
+such as for extending one tuple with additional attributes.
+
+=head2 sys.std.Core.Tuple.is_member
+
+C<< function sys.std.Core.Tuple.is_member (Bool <--
+$t : Tuple, $r : Relation) >>
+
+This function is an alias for C<sys.std.Core.Relation.has_member>.  This
+function results in C<Bool:true> iff its C<t> argument matches a tuple of
+its C<r> argument (that is, iff conceptually C<t> is a member of C<r>), and
+C<Bool:false> otherwise.  Note that this operation is also known as C<∈>.
+
+=head2 sys.std.Core.Tuple.is_not_member
+
+C<< function sys.std.Core.Tuple.is_not_member (Bool <--
+$t : Tuple, $r : Relation) >>
+
+This function is an alias for C<sys.std.Core.Relation.has_not_member>.
+This function is exactly the same as C<sys.std.Core.Tuple.is_member>
+except that it results in the opposite boolean value when given the same
+arguments.  Note that this operation is also known as C<∉>.
+
 =head2 sys.std.Tuple.attr_from_Tuple
 
 C<< function sys.std.Tuple.attr_from_Tuple (Universal <-- $topic : Tuple)
@@ -159,6 +318,59 @@ in Muldis D coding such that users can define just part of a desired
 tuple value and have the remainder filled in from defaults for them;
 particularly useful with tuples that conceptually have some optional
 attributes.
+
+=head1 SYSTEM-DEFINED GENERIC TUPLE VARIABLE UPDATERS
+
+=head1 Updaters That Rename Attributes
+
+=head2 sys.std.Core.Tuple.assign_rename
+
+C<updater sys.std.Core.Tuple.assign_rename (&$topic : Tuple,
+$map : AttrRenameMap)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Tuple.rename> function with the same arguments, and then
+assigning the result of that function to C<topic>.  This procedure is
+analagous to the data-manipulation phase of a SQL RENAME TABLE|VIEW or
+ALTER TABLE|VIEW RENAME TO statement iff C<topic> is C<Database>-typed;
+each tuple of C<map> corresponds to a renamed SQL table.
+
+=head1 Updaters That Add Attributes
+
+=head2 sys.std.Core.Tuple.assign_static_exten
+
+C<updater sys.std.Core.Tuple.assign_static_exten (&$topic : Tuple,
+$attrs : Tuple)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Tuple.static_exten> function with the same arguments,
+and then assigning the result of that function to C<topic>.  This procedure
+is analagous to the data-manipulation phase of a SQL CREATE TABLE|VIEW
+statement iff both arguments are C<Database>-typed; each relation-typed
+attribute of C<attrs> corresponds to a created SQL table.
+
+=head1 Updaters That Remove Attributes
+
+=head2 sys.std.Core.Tuple.assign_projection
+
+C<updater sys.std.Core.Tuple.assign_projection (&$topic : Tuple,
+$attr_names : set_of.Name)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Tuple.projection> function with the same arguments, and
+then assigning the result of that function to C<topic>.
+
+=head2 sys.std.Core.Tuple.assign_cmpl_proj
+
+C<updater sys.std.Core.Tuple.assign_cmpl_proj (&$topic : Tuple,
+$attr_names : set_of.Name)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Tuple.cmpl_proj> function with the same arguments,
+and then assigning the result of that function to C<topic>.  This procedure
+is analagous to the data-manipulation phase of a SQL DROP TABLE|VIEW
+statement iff C<topic> is C<Database>-typed; each relation-typed
+attribute named by C<attr_names> corresponds to a dropped SQL table.
 
 =head1 SEE ALSO
 

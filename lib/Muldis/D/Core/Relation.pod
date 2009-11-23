@@ -104,6 +104,21 @@ $topic : Relation) >>
 This function results in the set of the names of the attributes of its
 argument.
 
+=head2 sys.std.Core.Relation.cardinality
+
+C<< function sys.std.Core.Relation.cardinality (NNInt <--
+$topic : Relation) >>
+
+This function results in the cardinality of its argument (that is, the
+count of tuples its body has).  Note that this operation is also known as
+I<count> or C<R#>.
+
+=head2 sys.std.Core.Relation.count
+
+C<< function sys.std.Core.Relation.count (NNInt <-- $topic : Relation) >>
+
+This function is an alias for C<sys.std.Core.Relation.cardinality>.
+
 =head2 sys.std.Relation.is_empty
 
 C<< function sys.std.Relation.is_empty (Bool <-- $topic : Relation) >>
@@ -123,6 +138,27 @@ that it results in the opposite boolean value when given the same argument.
 And following the analogy with C<is_empty>, C<is_not_empty> is analagous to
 SQL's C<is not null>.
 
+=head2 sys.std.Core.Relation.has_member
+
+C<< function sys.std.Core.Relation.has_member (Bool <-- $r : Relation,
+$t : Tuple) >>
+
+This function results in C<Bool:true> iff its C<t> argument matches a
+tuple of its C<r> argument (that is, iff conceptually C<t> is a member of
+C<r>), and C<Bool:false> otherwise.  This function will warn if its 2
+arguments' common-named attributes have declared types that are
+incompatible as per C<is_identical>.  Note that this operation is also
+known as C<∋>.
+
+=head2 sys.std.Core.Relation.has_not_member
+
+C<< function sys.std.Core.Relation.has_not_member (Bool <-- $r : Relation,
+$t : Tuple) >>
+
+This function is exactly the same as C<sys.std.Core.Relation.has_member>
+except that it results in the opposite boolean value when given the same
+arguments.  Note that this operation is also known as C<∌>.
+
 =head2 sys.std.Relation.has_key
 
 C<< function sys.std.Relation.has_key (Bool <-- $topic : Relation,
@@ -135,6 +171,24 @@ function will fail if C<topic> does not have all of the attributes named by
 C<attr_names>.  As a trivial case, this function's result is C<Bool:true>
 if C<topic> is empty.
 
+=head2 sys.std.Core.Relation.Tuple_from_Relation
+
+C<< function sys.std.Core.Relation.Tuple_from_Relation (Tuple <--
+$topic : Relation) >>
+
+This function results in the C<Tuple> that is the sole member tuple of
+its argument.  This function will fail if its argument does not have
+exactly one tuple.  Note that this operation is also known as C<t>.
+
+=head2 sys.std.Core.Relation.Relation_from_Tuple
+
+C<< function sys.std.Core.Relation.Relation_from_Tuple (Relation <--
+$topic : Tuple) >>
+
+This function results in the C<Relation> value those body has just the one
+C<Tuple> that is its argument.  Note that this operation is also known as
+C<r>.
+
 =head2 sys.std.Relation.empty
 
 C<< function sys.std.Relation.empty (Relation <-- $topic : Relation) >>
@@ -142,6 +196,172 @@ C<< function sys.std.Relation.empty (Relation <-- $topic : Relation) >>
 This function results in the empty relation of the same heading of its
 argument, that is having the same degree and attribute names; it has zero
 tuples.
+
+=head2 sys.std.Core.Relation.insertion
+
+C<< function sys.std.Core.Relation.insertion (Relation <-- $r : Relation,
+$t : Tuple) >>
+
+This function results in a C<Relation> that is the relational union of
+C<r> and a relation whose sole tuple is C<t>; that is, conceptually the
+result is C<t> inserted into C<r>.  As a trivial case, if C<t> already
+exists in C<r>, then the result is just C<r>.
+
+=head2 sys.std.Core.Relation.disjoint_ins
+
+C<< function sys.std.Core.Relation.disjoint_ins (Relation <--
+$r : Relation, $t : Tuple) >>
+
+This function is exactly the same as C<sys.std.Core.Relation.insertion>
+except that it will fail if C<t> already exists in C<r>.
+
+=head2 sys.std.Core.Relation.deletion
+
+C<< function sys.std.Core.Relation.deletion (Relation <-- $r : Relation,
+$t : Tuple) >>
+
+This function results in a C<Relation> that is the relational difference
+from C<r> of a relation whose sole tuple is C<t>; that is, conceptually
+the result is C<t> deleted from C<r>.  As a trivial case, if C<t> already
+doesn't exist in C<r>, then the result is just C<r>.
+
+=head2 sys.std.Core.Relation.rename
+
+C<< function sys.std.Core.Relation.rename (Relation <-- $topic : Relation,
+$map : AttrRenameMap) >>
+
+This function is the same as C<sys.std.Core.Tuple.rename> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>.  Note
+that this operation is also known as C<< @{<-} >>.
+
+=head2 sys.std.Core.Relation.projection
+
+C<< function sys.std.Core.Relation.projection (Relation <--
+$topic : Relation, $attr_names : set_of.Name) >>
+
+This function is the same as C<sys.std.Core.Tuple.projection> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>.  But
+note that the result relation will have fewer tuples than C<topic> if
+any C<topic> tuples were non-distinct for just the projected attributes.
+Note that this operation is also known as C<@{}>.
+
+=head2 sys.std.Core.Relation.cmpl_proj
+
+C<< function sys.std.Core.Relation.cmpl_proj (Relation <--
+$topic : Relation, $attr_names : set_of.Name) >>
+
+This function is the same as C<sys.std.Core.Tuple.cmpl_proj> but
+that it operates on and results in a C<Relation> rather than a C<Tuple>.
+Note that this operation is also known as C<@{!}>.
+
+=head2 sys.std.Core.Relation.wrap
+
+C<< function sys.std.Core.Relation.wrap (Relation <-- $topic : Relation,
+$outer : Name, $inner : set_of.Name) >>
+
+This function is the same as C<sys.std.Core.Tuple.wrap> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>, where
+each of its member tuples was transformed as per
+C<sys.std.Core.Tuple.wrap>.  The result relation has the same cardinality
+as C<topic>.  Note that this operation is also known as C<< @{%<-} >>.
+
+=head2 sys.std.Core.Relation.cmpl_wrap
+
+C<< function sys.std.Core.Relation.cmpl_wrap (Relation <--
+$topic : Relation, $outer : Name, $cmpl_inner : set_of.Name) >>
+
+This function is the same as C<sys.std.Core.Tuple.cmpl_wrap> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>, where
+each of its member tuples was transformed as per
+C<sys.std.Core.Tuple.cmpl_wrap>.  Note that this operation is also known as
+C<< @{%<-!} >>.
+
+=head2 sys.std.Core.Relation.unwrap
+
+C<< function sys.std.Core.Relation.unwrap (Relation <-- $topic : Relation,
+$inner : set_of.Name, $outer : Name) >>
+
+This function is the inverse of C<sys.std.Core.Relation.wrap> as
+C<sys.std.Core.Tuple.unwrap> is to C<sys.std.Core.Tuple.wrap>.  But
+unlike the simplest concept of a
+C<Tuple> variant of C<unwrap>, this current function requires
+the extra C<inner> argument to prevent ambiguity in the general case where
+C<topic> might have zero tuples, because in that situation the
+most-specific-type of C<topic{outer}> would be C<Empty>, and the names of
+the attributes to add to C<topic> in place of C<topic{outer}> are not
+known.  This function will fail if C<topic> has at least 1 tuple and
+C<inner> does not match the names of the attributes of C<topic{outer}>.
+This function will fail with a non-C<DHRelation> valued C<topic> unless,
+for every tuple of C<topic>, the attribute specified by C<outer> is valued
+with a tuple of the same degree and heading (attribute names); this
+failure is because there would be no consistent set of attribute names to
+extend C<topic> with (a problem that would never happen by definition with
+a deeply homogeneous relation C<topic>).  Note that this operation is also
+known as C<< @{<-%} >>.
+
+=head2 sys.std.Core.Relation.group
+
+C<< function sys.std.Core.Relation.group (Relation <-- $topic : Relation,
+$outer : Name, $inner : set_of.Name) >>
+
+This function is similar to C<sys.std.Core.Relation.wrap> but that the
+C<topic> attribute-wrapping transformations result in new
+C<Relation>-typed attributes rather than new C<Tuple>-typed attributes,
+and moreover multiple C<topic> tuples may be combined into fewer tuples
+whose new C<Relation>-typed attributes have multiple tuples.  This
+function takes a relation of N tuples and divides the tuples into M
+groups where all the tuples in a group have the same values in the
+attributes which aren't being grouped (and distinct values in the
+attributes that are being grouped); it then results in a new relation of
+M tuples where the new relation-valued attribute of the result has the
+tuples of the M groups.  A grouped relation contains all of the
+information in the original relation, but it has less redundancy due to
+redundant non-grouped attributes now just being represented in one tuple
+per the multiple tuples whose grouped attributes had them in common.  A
+relation having relation-valued attributes like this is a common way to
+group so-called child tuples under their parents.  As a trivial case, if
+C<inner> is empty, then the result has all the same tuples and attributes
+as before plus a new relation-typed attribute of degree zero whose value
+per tuple is of cardinality one; or, if C<inner> lists all attributes of
+C<topic>, then the result has a single tuple of a single attribute whose
+value is the same as C<topic> (except that the result has zero tuples when
+C<topic> does).  This function supports the new attribute having the same
+name as an old one being grouped into it.  This function will fail if
+C<inner> specifies any attribute names that C<topic> doesn't have, or if
+C<outer> is the same as C<topic> attributes that aren't being grouped.
+Note that this operation is also known as I<nest> or C<< @{@<-} >>.
+
+=head2 sys.std.Core.Relation.cmpl_group
+
+C<< function sys.std.Core.Relation.cmpl_group (Relation <--
+$topic : Relation, $outer : Name, $group_per : set_of.Name) >>
+
+This function is the same as C<group> but that it groups the complementary
+subset of attributes of C<topic> to those specified by C<group_per>.  Note
+that this operation is also known as C<< @{@<-!} >>.
+
+=head2 sys.std.Core.Relation.ungroup
+
+C<< function sys.std.Core.Relation.ungroup (Relation <--
+$topic : Relation, $inner : set_of.Name, $outer : Name) >>
+
+This function is the inverse of C<sys.std.Core.Relation.group> as
+C<sys.std.Core.Relation.unwrap> is to C<sys.std.Core.Relation.wrap>; it
+will ungroup a C<Relation>-type attribute into its member attributes and
+tuples.  A relation can be first grouped and then that result ungrouped to
+produce the original relation, with no data loss.  However, the ungroup of
+a relation on a relation-valued attribute will lose the information in any
+outer relation tuples whose inner relation value has zero tuples; a group
+on this result won't bring them back.  This function will fail if C<outer>
+specifies any attribute name that C<topic> doesn't have, or if an attribute
+of C<topic{outer}> has the same name as another C<topic> attribute.  This
+function will fail with a non-C<DHRelation> valued C<topic> unless, for
+every tuple of C<topic>, the attribute specified by C<outer> is valued with
+a relation of the same degree and heading (attribute names); this failure
+is because there would be no consistent set of attribute names to extend
+C<topic> with (a problem that would never happen by definition with a
+deeply homogeneous relation C<topic>).  Note that this operation is also
+known as I<unnest> or C<< @{<-@} >>.
 
 =head2 sys.std.Relation.power_set
 
@@ -175,6 +395,50 @@ complete paths.  The C<tclose> function is intended to support recursive
 queries, such as in connection with the "part explosion problem" (the
 problem of finding all components, at all levels, of some specified part).
 
+=head2 sys.std.Core.Relation.restriction
+
+C<< function sys.std.Core.Relation.restriction (Relation <--
+$topic : Relation, $func : ValFiltFuncRef) >>
+
+This function results in the relational restriction of its C<topic>
+argument as determined by applying the C<value-filter> function named in
+its C<func>
+argument.  The result relation has the same heading as C<topic>, and its
+body contains the subset of C<topic> tuples where, for each tuple, the
+function named by C<func> results in C<Bool:true> when passed the tuple
+as its C<topic> argument.  As a
+trivial case, if C<func> is defined to unconditionally result in
+C<Bool:true>, then this function results simply in C<topic>; or, for an
+unconditional C<Bool:false>, this function results in the empty relation
+with the same heading.  Note that this operation is also known
+as I<where>.  See also the C<sys.std.Core.Relation.semijoin> function,
+which is a simpler-syntax alternative for
+C<sys.std.Core.Relation.restriction> in its typical usage where
+restrictions are composed simply of anded or ored tests for attribute value
+equality.
+
+=head2 sys.std.Core.Relation.restr_and_cmpl
+
+C<< function sys.std.Core.Relation.restr_and_cmpl (Tuple <--
+$topic : Relation, $func : ValFiltFuncRef) >>
+
+This function performs a 2-way partitioning of all the tuples of C<topic>
+and results in a binary tuple whose attribute values are each relations
+that have the same heading as C<topic> and complementary subsets of its
+tuples; the 2 result attributes have the names C<pass> and C<fail>, and
+their values are what C<sys.std.Core.Relation.restriction> and
+C<sys.std.Core.Relation.cmpl_restr>, respectively, would result in
+when given the same arguments.
+
+=head2 sys.std.Core.Relation.cmpl_restr
+
+C<< function sys.std.Core.Relation.cmpl_restr (Relation <--
+$topic : Relation, $func : ValFiltFuncRef) >>
+
+This function is the same as C<restriction> but that it results in the
+complementary subset of tuples of C<topic> when given the same arguments.
+See also the C<sys.std.Core.Relation.semidiff> function.
+
 =head2 sys.std.Relation.classification
 
 C<< function sys.std.Relation.classification (Relation <--
@@ -199,32 +463,44 @@ partition a relation's tuples into an arbitrary number of groups using
 arbitrary criteria, in contrast with C<restriction> where you are dividing
 into exactly 2 groups (and returning one) using arbitrary criteria.
 
-=head2 sys.std.Relation.reduction
+=head2 sys.std.Core.Relation.extension
 
-C<< function sys.std.Relation.reduction (Tuple <-- $topic : Relation,
-$func : ValRedFuncRef, $identity : Tuple) >>
+C<< function sys.std.Core.Relation.extension (Relation <--
+$topic : Relation, $attr_names : set_of.Name, $func : ValMapFuncRef) >>
 
-This function is a generic reduction operator that recursively takes each
-pair of tuples in C<topic> and applies an argument-specified tuple
-value-resulting C<value-reduction> function (which is both commutative and
-associative) to the pair until just one input tuple is left, which is the
-result.  The C<value-reduction> function to apply is named in the C<func>
-argument, and that function must have 2 parameters named C<v1> and C<v2>,
-which take the 2 input tuples for an invocation.  If C<topic> has zero
-tuples, then C<reduction> results in the tuple given in C<identity>.
-I<Note that C<identity> may be changed to take a function name rather than
-a value, for consistency with C<func>.>  This function will fail|warn if
-the |declared headings of C<identity> and C<topic> aren't compatible.
+This function results in the relational extension of its C<topic> argument
+as determined by applying the C<Tuple>-resulting C<value-map> function
+named in its C<func>
+argument.  The result relation has a heading that is a superset of that
+of C<topic>, and its body contains the same number of tuples, with all
+attribute values of C<topic> retained, and possibly extra present,
+determined as follows; for each C<topic> tuple, the function named by
+C<func> results in a second tuple when passed the first tuple as its
+C<topic> argument; the first
+and second tuples must have no attribute names in common, and the result
+tuple is derived by joining (cross-product) the tuples together.  As a
+trivial case, if C<func> is defined to unconditionally result in the
+degree-zero tuple, then this function results simply in C<topic>.  Now,
+C<extension> requires the extra C<attr_names> argument to prevent ambiguity
+in the general case where C<topic> might have zero tuples, because in
+that situation, C<func> would never be invoked, and the names of the
+attributes to add to C<topic> are not known (we don't generally assume that
+C<extension> can reverse-engineer C<func> to see what attributes it would
+have resulted in).  This function will fail if C<topic> has at least 1
+tuple and the result of C<func> does not have matching attribute names to
+those named by C<attr_names>.
 
-=head2 sys.std.Relation.maybe_reduction
+=head2 sys.std.Core.Relation.static_exten
 
-C<< function sys.std.Relation.maybe_reduction (maybe_of.Tuple <--
-$topic : Relation, $func : ValRedFuncRef) >>
+C<< function sys.std.Core.Relation.static_exten (Relation <--
+$topic : Relation, $attrs : Tuple) >>
 
-This function is exactly the same as C<sys.std.Relation.reduction> except
-that it does not take an C<identity> argument, and it results in a
-C<Maybe> of what is otherwise the result type, and that result has zero
-elements if the argument has zero elements.
+This function is a simpler-syntax alternative to both
+C<sys.std.Core.Relation.extension> and C<sys.std.Core.Relation.product>
+in the typical scenario of extending a relation, given in the C<topic>
+argument, such that every tuple has mutually identical values for each of
+the new attributes; the new attribute names and common values are given in
+the C<attrs> argument.
 
 =head2 sys.std.Relation.map
 
@@ -256,10 +532,140 @@ attributes it would have resulted in).  This function will fail if C<topic>
 has at least 1 tuple and the result of C<func> does not have matching
 attribute names to those named by C<result_attr_names>.
 
+=head2 sys.std.Core.Relation.summary
+
+C<< function sys.std.Core.Relation.summary (Relation <--
+$topic : Relation, $group_per : set_of.Name,
+$summ_attr_names : set_of.Name, $summ_func : ValMapFuncRef) >>
+
+This function provides a convenient context for using aggregate functions
+to derive a per-group summary relation, which is its result, from another
+relation, which is its C<topic> argument.  This function first performs a
+C<cmpl_group> on C<topic> using C<group_per> to specify which attributes
+get grouped into a new relation-valued attribute and which don't; those
+that don't instead get wrapped into a tuple-valued attribute.  Then, per
+binary tuple in the main relation, this function applies the
+C<Tuple>-resulting C<value-map> function named in its C<summ_func>
+argument; for each post-group main relation
+tuple, the function named in C<summ_func> results in a second tuple when
+the first tuple is its C<topic> argument; the C<topic> argument has the 2
+attribute names C<summarize> and C<per>, which are valued with the
+relation-valued attribute and
+tuple-valued attribute, respectively.  As per a function that
+C<extension> applies, the function named by C<summ_func> effectively takes
+a whole post-grouping input tuple and results in a partial tuple that
+would be joined by C<summary> with the C<per> tuple to get the result
+tuple; the applied
+function would directly invoke any N-adic/aggregate operators, and extract
+their inputs from (or calculate) C<summarize> as it sees fit.  Note that
+C<summary> is not intended to be used to summarize an entire C<topic>
+relation at once (except by chance of it resolving to 1 group); you
+should instead invoke your summarize-all C<summ_func> directly, or inline
+it, rather than by way of C<summary>, especially if you want a
+single-tuple result on an empty C<topic> (which C<summary>) won't do.
+Now, C<summary> requires the extra C<summ_attr_names> argument to prevent
+ambiguity in the general case where C<topic> might have zero tuples,
+because in that situation, C<summ_func> would never be invoked, and the
+names of the attributes to add to C<per> are not known (we don't generally
+assume that C<summary> can reverse-engineer C<summ_func> to see what
+attributes it would have resulted in).  This function will fail if C<topic>
+has at least 1 tuple and the result of C<summ_func> does not have
+matching attribute names to those named by C<summ_attr_names>.
+
+=head2 sys.std.Core.Relation.cardinality_per_group
+
+C<< function sys.std.Core.Relation.cardinality_per_group (Relation <--
+$topic : Relation, $count_attr_name : Name, $group_per : set_of.Name) >>
+
+This function is a convenient shorthand for the common use of C<summary>
+that is just counting the tuples of each group.  This function is like
+C<cmpl_group> but that the single added attribute, rather than an RVA of
+the grouped C<topic> attributes, has the cardinality that said RVA would
+have had.  The result's heading consists of the attributes named in
+C<group_per> plus the attribute named in C<count_attr_name> (a C<PInt>).
+Note that this operation is also known as C<< @{#@<-!} >>.
+
+=head2 sys.std.Core.Relation.count_per_group
+
+C<< function sys.std.Core.Relation.count_per_group (Relation <--
+$topic : Relation, $count_attr_name : Name, $group_per : set_of.Name) >>
+
+This function is an alias for
+C<sys.std.Core.Relation.cardinality_per_group>.
+
+=head2 sys.std.Relation.reduction
+
+C<< function sys.std.Relation.reduction (Tuple <-- $topic : Relation,
+$func : ValRedFuncRef, $identity : Tuple) >>
+
+This function is a generic reduction operator that recursively takes each
+pair of tuples in C<topic> and applies an argument-specified tuple
+value-resulting C<value-reduction> function (which is both commutative and
+associative) to the pair until just one input tuple is left, which is the
+result.  The C<value-reduction> function to apply is named in the C<func>
+argument, and that function must have 2 parameters named C<v1> and C<v2>,
+which take the 2 input tuples for an invocation.  If C<topic> has zero
+tuples, then C<reduction> results in the tuple given in C<identity>.
+I<Note that C<identity> may be changed to take a function name rather than
+a value, for consistency with C<func>.>  This function will fail|warn if
+the |declared headings of C<identity> and C<topic> aren't compatible.
+
+=head2 sys.std.Relation.maybe_reduction
+
+C<< function sys.std.Relation.maybe_reduction (maybe_of.Tuple <--
+$topic : Relation, $func : ValRedFuncRef) >>
+
+This function is exactly the same as C<sys.std.Relation.reduction> except
+that it does not take an C<identity> argument, and it results in a
+C<Maybe> of what is otherwise the result type, and that result has zero
+elements if the argument has zero elements.
+
 =head1 SYSTEM-DEFINED GENERIC MULTIPLE INPUT RELATION FUNCTIONS
 
 These functions are applicable to mainly relation types, but are generic
 in that they typically work with any relation types.
+
+=head2 sys.std.Core.Relation.is_subset
+
+C<< function sys.std.Core.Relation.is_subset (Bool <--
+$topic : Relation, $other : Relation) >>
+
+This function results in C<Bool:true> iff the set of tuples comprising
+C<topic> is a subset of the set of tuples comprising C<other>, and
+C<Bool:false> otherwise.  This function will warn if the input relations
+common-named attributes have declared types that are incompatible as per
+C<is_identical>.  Note that this operation is also known as C<⊆>.
+
+=head2 sys.std.Core.Relation.is_not_subset
+
+C<< function sys.std.Core.Relation.is_not_subset (Bool <--
+$topic : Relation, $other : Relation) >>
+
+This function is exactly the same as C<sys.std.Core.Relation.is_subset>
+except that it results in the opposite boolean value when given the same
+arguments.  Note that this operation is also known as C<⊈>.
+
+=head2 sys.std.Core.Relation.is_superset
+
+C<< function sys.std.Core.Relation.is_superset (Bool <--
+$topic : Relation, $other : Relation) >>
+
+This function is an alias for C<sys.std.Core.Relation.is_subset> except
+that it transposes the C<topic> and C<other> arguments.  This function
+results in C<Bool:true> iff the set of tuples comprising C<topic> is a
+superset of the set of tuples comprising C<other>, and C<Bool:false>
+otherwise.  Note that this operation is also known as C<⊇>.
+
+=head2 sys.std.Core.Relation.is_not_superset
+
+C<< function sys.std.Core.Relation.is_not_superset (Bool <--
+$topic : Relation, $other : Relation) >>
+
+This function is an alias for C<sys.std.Core.Relation.is_not_subset>
+except that it transposes the C<topic> and C<other> arguments.  This
+function is exactly the same as C<sys.std.Core.Relation.is_superset>
+except that it results in the opposite boolean value when given the same
+arguments.  Note that this operation is also known as C<⊉>.
 
 =head2 sys.std.Relation.is_proper_subset
 
@@ -320,6 +726,36 @@ This symmetric function is exactly the same as
 C<sys.std.Relation.is_disjoint> except that it results in the opposite
 boolean value when given the same arguments.
 
+=head2 sys.std.Core.Relation.union
+
+C<< function sys.std.Core.Relation.union (Relation <--
+$topic : set_of.Relation) >>
+
+This function results in the relational union/inclusive-or of the N element
+values of its argument; it is a reduction operator that recursively takes
+each pair of input values and relationally unions (which is commutative,
+associative, and idempotent) them together until just one is left, which is
+the result.  The result relation has the same heading as all of its
+inputs, and its body contains every tuple that is in any of the input
+relations.  If C<topic> has zero values, then this function will fail.
+Note that, conceptually C<union> I<does> have an identity value which could
+be this function's result when C<topic> has zero values, which is the empty
+relation with the same heading, which is the per-distinct-heading identity
+value for relational union; however, since a C<topic> with zero values
+wouldn't know the heading / attribute names for the result relation in
+question, it seems the best alternative is to require invoking code to work
+around the limitation somehow, which might mean it will supply the identity
+value explicitly as an extra C<topic> element.  Note that this operation is
+also known as C<∪>.
+
+=head2 sys.std.Core.Relation.disjoint_union
+
+C<< function sys.std.Core.Relation.disjoint_union (Relation <--
+$topic : set_of.Relation) >>
+
+This function is exactly the same as C<sys.std.Core.Relation.union> except
+that it will fail if any 2 input values have a tuple in common.
+
 =head2 sys.std.Relation.exclusion
 
 C<< function sys.std.Relation.exclusion (Relation <--
@@ -343,6 +779,157 @@ C<< function sys.std.Relation.symmetric_diff (Relation <--
 $topic : bag_of.Relation) >>
 
 This function is an alias for C<sys.std.Relation.exclusion>.
+
+=head2 sys.std.Core.Relation.intersection
+
+C<< function sys.std.Core.Relation.intersection (Relation <--
+$topic : set_of.Relation) >>
+
+This function results in the relational intersection/and of the N element
+values of its argument; it is a reduction operator that recursively takes
+each pair of input values and relationally intersects (which is
+commutative, associative, and idempotent) them together until just one is
+left, which is
+the result.  The result relation has the same heading as all of its
+inputs, and its body contains only the tuples that are in every one of
+the input relations.  If C<topic> has zero values, then this function
+will fail.  Note that, conceptually C<intersection> I<does> have an
+identity value which could be this function's result when C<topic> has zero
+values, which is the universal relation with the same heading (that is,
+the relation having all the tuples that could ever exist in a
+relation with that heading), which is the per-distinct-heading identity
+value for relational intersection; however, since a C<topic> with zero
+values wouldn't know the heading / attribute names for the result
+relation in question (and even if they were, more information on
+attribute types would be needed to produce said universal relation, and
+even then it might be infinite or impossibly large), it seems the best
+alternative is to require invoking code to work around the limitation
+somehow, which might mean it will supply the identity value explicitly as
+an extra C<topic> element.  Note that this I<intersection> operator is
+conceptually a special case of C<join>, applicable when the headings of the
+inputs are the same, and the other will produce the same result as this
+when given the same inputs, but with the exception that I<intersection> has
+a different identity value when given zero inputs.  Note that this
+operation is also known as C<∩>.
+
+=head2 sys.std.Core.Relation.diff
+
+C<< function sys.std.Core.Relation.diff (Relation <--
+$source : Relation, $filter : Relation) >>
+
+This function results in the relational difference when its C<filter>
+argument is subtracted from its C<source> argument.  The result relation
+has the same heading as both of its arguments, and its body contains only
+the tuples that are in C<source> and are not in C<filter>.  This function
+will warn if the input relations common-named attributes have declared
+types that are incompatible as per C<is_identical>.  Note that this
+I<difference> operator is conceptually a special case of I<semidiff>,
+applicable when the headings of the inputs are the same.  Note that this
+operation is also known as I<minus> or I<except> or C<∖>.
+
+=head2 sys.std.Core.Relation.semidiff
+
+C<< function sys.std.Core.Relation.semidiff (Relation <--
+$source : Relation, $filter : Relation) >>
+
+This function is the same as C<semijoin> but that it results in the
+complementary subset of tuples of C<source> when given the same arguments.
+Note that this operation is also known as I<antijoin> or I<anti-semijoin>
+or I<semiminus> or C<!matching> or C<not-matching> or C<⊿>.
+
+=head2 sys.std.Core.Relation.antijoin
+
+C<< function sys.std.Core.Relation.antijoin (Relation <--
+$source : Relation, $filter : Relation) >>
+
+This function is an alias for C<sys.std.Core.Relation.semidiff>.
+
+=head2 sys.std.Core.Relation.semijoin_and_diff
+
+C<< function sys.std.Core.Relation.semijoin_and_diff (Tuple <--
+$source : Relation, $filter : Relation) >>
+
+This function performs a 2-way partitioning of all the tuples of
+C<source> and results in a binary tuple whose attribute values are each
+relations that have the same heading as C<source> and complementary
+subsets of its tuples; the 2 result attributes have the names C<pass> and
+C<fail>, and their values are what C<sys.std.Core.Relation.semijoin> and
+C<sys.std.Core.Relation.semidiff>, respectively, would result in
+when given the same arguments.
+
+=head2 sys.std.Core.Relation.semijoin
+
+C<< function sys.std.Core.Relation.semijoin (Relation <--
+$source : Relation, $filter : Relation) >>
+
+This function results in the relational semijoin of its C<source> and
+C<filter> arguments.  The result relation has the same heading as
+C<source>, and its body contains the subset of C<source> tuples that
+match those of C<filter> as per C<join>.  Note that relational semijoin is
+conceptually a short-hand for first doing an ordinary relational join
+between its 2 arguments, and then performing a relational projection on all
+of the attributes that just C<source> has.  This function will fail|warn
+any time that C<join> would fail|warn on the same 2 input relations.
+Note that this operation is also known as C<matching> or C<⋉>.
+
+=head2 sys.std.Core.Relation.join
+
+C<< function sys.std.Core.Relation.join (Relation <--
+$topic? : set_of.Relation) >>
+
+This function results in the relational join of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and relationally joins (which is commutative, associative, and
+idempotent) them together until just one is left, which is the result.
+The result relation has a heading that is a union of all of the headings
+of its inputs, and its body is the result of first pairwise-matching every
+tuple of each input relation with every tuple of each other input
+relation, then where each member of a tuple pair has attribute names in
+common, eliminating pairs where the values of those attributes differ and
+unioning the remaining said tuple pairs, then eliminating any result
+tuples that duplicate others.  If C<topic> has zero values, then C<join>
+results in the nullary relation with one tuple, which is the identity
+value for relational join.  As a trivial case, if any input relation has
+zero tuples, then the function's result will too; or, if any input is the
+nullary relation with one tuple, that input can be ignored (see
+identity value); or, if any 2 inputs have no attribute names in common,
+then the join of just those 2 is a cartesian product; or, if any 2 inputs
+have all attribute names in common, then the join of just those 2 is an
+intersection; or, if for 2 inputs, one's set of attribute names is a proper
+subset of another's, then the join of just those two is a semijoin with the
+former filtering the latter.  This function will warn if any input
+relations have attributes with common names where their declared types
+are incompatible as per C<is_identical>.  Note that this operation is also
+known as I<natural inner join> or C<⋈>.
+
+=head2 sys.std.Core.Relation.product
+
+C<< function sys.std.Core.Relation.product (Relation <--
+$topic? : set_of.Relation) >>
+
+This function results in the relational cartesian/cross product of the N
+element values of its argument; it is conceptually a special case of
+C<join> where all input relations have mutually distinct attribute names;
+unlike C<join>, C<product> will fail if any inputs have attribute names in
+common.  Note that this operation is also known as I<cartesian join> or
+C<cross-join> or C<×>.
+
+=head2 sys.std.Core.Relation.quotient
+
+C<< function sys.std.Core.Relation.quotient (Relation <--
+$dividend : Relation, $divisor : Relation) >>
+
+This function results in the quotient when its C<dividend> argument is
+divided by its C<divisor> argument using relational division.  Speaking
+informally, say the relations C<dividend> and C<divisor> are called C<$A>
+and C<$B>, and their attribute sets are respectively named C<{X,Y}> and
+C<{Y}>, then the result relation has a heading composed of attributes
+C<{X}> (so the result and C<divisor> headings are both complementary
+subsets of the C<dividend> heading); the result has all tuples C<{X}>
+such that a tuple C<{X,Y}> appears in C<$A> for all tuples C<{Y}>
+appearing in C<$B>; that is, C<($A ÷ $B)> is shorthand for C<($A@{X} ∖
+(($A@{X} × $B) ∖ $A)@{X})>.  Note that this operation is also known as
+I<divideby> or C<÷>.
 
 =head2 sys.std.Relation.composition
 
@@ -598,7 +1185,110 @@ extension on the un-matched C<primary> tuples such that each said result
 tuple is determined by applying the function named in C<exten_func> to
 each said C<primary> tuple.
 
-=head1 SYSTEM-DEFINED GENERIC RELVAR UPDATERS
+=head1 SYSTEM-DEFINED GENERIC RELATION VARIABLE UPDATERS
+
+=head1 Updaters That Rename Attributes
+
+=head2 sys.std.Core.Relation.assign_rename
+
+C<updater sys.std.Core.Relation.assign_rename (&$topic : Relation,
+$map : AttrRenameMap)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.rename> function with the same arguments, and then
+assigning the result of that function to C<topic>.  This procedure is
+analagous to the data-manipulation phase of a SQL ALTER TABLE|VIEW RENAME
+COLUMN statement; each tuple of C<map> corresponds to a renamed SQL table
+column.
+
+=head1 Updaters That Add Attributes
+
+=head2 sys.std.Core.Relation.assign_extension
+
+C<updater sys.std.Core.Relation.assign_extension (&$topic : Relation,
+$attr_names : set_of.Name, $func : ValMapFuncRef)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.extension> function with the same arguments, and
+then assigning the result of that function to C<topic>.
+
+=head2 sys.std.Core.Relation.assign_static_exten
+
+C<updater sys.std.Core.Relation.assign_static_exten
+(&$topic : Relation, $attrs : Tuple)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.static_exten> function with the same
+arguments, and then assigning the result of that function to C<topic>.
+This procedure is analagous to the data-manipulation phase of a SQL ALTER
+TABLE|VIEW ADD COLUMN statement; each attribute of C<attrs> corresponds to
+an added SQL table column.
+
+=head1 Updaters That Remove Attributes
+
+=head2 sys.std.Core.Relation.assign_projection
+
+C<updater sys.std.Core.Relation.assign_projection (&$topic : Relation,
+$attr_names : set_of.Name)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.projection> function with the same arguments, and
+then assigning the result of that function to C<topic>.
+
+=head2 sys.std.Core.Relation.assign_cmpl_proj
+
+C<updater sys.std.Core.Relation.assign_cmpl_proj (&$topic : Relation,
+$attr_names : set_of.Name)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.cmpl_proj> function with the same arguments,
+and then assigning the result of that function to C<topic>.  This procedure
+is analagous to the data-manipulation phase of a SQL ALTER TABLE|VIEW DROP
+COLUMN statement; each attribute named by C<attr_names> corresponds to an
+dropped SQL table column.
+
+=head1 Updaters That Add Tuples
+
+=head2 sys.std.Core.Relation.assign_insertion
+
+C<updater sys.std.Core.Relation.assign_insertion (&$r : Relation,
+$t : Tuple)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.insertion> function with the same arguments, and
+then assigning the result of that function to C<r>.  This updater is
+analagous to the general case of the single-row SQL "INSERT" statement.
+
+=head2 sys.std.Core.Relation.assign_disjoint_ins
+
+C<updater sys.std.Core.Relation.assign_disjoint_ins (&$r : Relation,
+$t : Tuple)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.disjoint_ins> function with the same
+arguments, and then assigning the result of that function to C<r>.
+
+=head2 sys.std.Core.Relation.assign_union
+
+C<updater sys.std.Core.Relation.assign_union (&$topic : Relation,
+$other : Relation)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.union> function such that it has 2 input
+relations from C<assign_union>'s 2 arguments, and then assigning the
+result of that function to C<topic>.  This updater is analagous to the
+general case of the multiple-row SQL "INSERT" statement.
+
+=head2 sys.std.Core.Relation.assign_disjoint_union
+
+C<updater sys.std.Core.Relation.assign_disjoint_union (&$topic : Relation,
+$other : Relation)>
+
+This update operator is to C<sys.std.Core.Relation.disjoint_union> what
+the function C<sys.std.Core.Relation.assign_union> is to
+C<sys.std.Core.Relation.union>.
+
+=head1 Updaters That Remove Tuples
 
 =head2 sys.std.Relation.assign_empty
 
@@ -609,6 +1299,82 @@ C<sys.std.Relation.empty> function with the same argument, and then
 assigning the result of that function to C<topic>.  This updater is
 analagous to the SQL "TRUNCATE" statement.
 
+=head2 sys.std.Core.Relation.assign_deletion
+
+C<updater sys.std.Core.Relation.assign_deletion (&$r : Relation,
+$t : Tuple)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.deletion> function with the same arguments, and
+then assigning the result of that function to C<r>.
+
+=head2 sys.std.Core.Relation.assign_restriction
+
+C<updater sys.std.Core.Relation.assign_restriction (&$topic : Relation,
+$func : ValFiltFuncRef)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.restriction> function with the same arguments, and
+then assigning the result of that function to C<topic>.
+
+=head2 sys.std.Core.Relation.assign_cmpl_restr
+
+C<updater sys.std.Core.Relation.assign_cmpl_restr
+(&$topic : Relation, $func : ValFiltFuncRef)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.cmpl_restr> function with the same arguments, and
+then assigning the result of that function to C<topic>. This updater is
+analagous to the general case of the SQL "DELETE" statement.
+
+=head2 sys.std.Core.Relation.assign_intersection
+
+C<updater sys.std.Core.Relation.assign_intersection (&$topic : Relation,
+$other : Relation)>
+
+This update operator is to C<sys.std.Core.Relation.intersection> what the
+function C<sys.std.Core.Relation.assign_union> is to
+C<sys.std.Core.Relation.union>.
+
+=head2 sys.std.Core.Relation.assign_diff
+
+C<updater sys.std.Core.Relation.assign_diff (&$source : Relation,
+$filter : Relation)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.diff> function with the same arguments, and
+then assigning the result of that function to C<source>.
+
+=head2 sys.std.Core.Relation.assign_semidiff
+
+C<updater sys.std.Core.Relation.assign_semidiff (&$source : Relation,
+$filter : Relation)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.semidiff> function with the same arguments,
+and then assigning the result of that function to C<source>.  This updater
+is analagous to the common case of the SQL "DELETE" statement where the
+criteria is simply a set of and-ed and or-ed value equality tests.
+
+=head2 sys.std.Core.Relation.assign_antijoin
+
+C<updater sys.std.Core.Relation.assign_antijoin (&$source : Relation,
+$filter : Relation)>
+
+This update operator is an alias for
+C<sys.std.Core.Relation.assign_semidiff>.
+
+=head2 sys.std.Core.Relation.assign_semijoin
+
+C<updater sys.std.Core.Relation.assign_semijoin (&$source : Relation,
+$filter : Relation)>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.semijoin> function with the same arguments, and
+then assigning the result of that function to C<source>.
+
+=head1 Updaters That Add and Remove Tuples
+
 =head2 sys.std.Relation.assign_exclusion
 
 C<updater sys.std.Relation.assign_exclusion (&$topic : Relation,
@@ -618,6 +1384,8 @@ This update operator is a short-hand for first invoking the
 C<sys.std.Relation.exclusion> function such that it has 2 input
 relations from C<assign_exclusion>'s 2 arguments, and then assigning the
 result of that function to C<topic>.
+
+=head1 Updaters That Substitute Tuple Attribute Values
 
 =head2 sys.std.Relation.assign_substitution
 
