@@ -4,12 +4,12 @@
 
 =head1 NAME
 
-Muldis::D::Ext::Temporal -
+Muldis::D::Ext::DateTime -
 Muldis D extension for temporal data types and operators
 
 =head1 VERSION
 
-This document is Muldis::D::Ext::Temporal version 0.100.0.
+This document is Muldis::D::Ext::DateTime version 0.100.0.
 
 =head1 PREFACE
 
@@ -27,17 +27,17 @@ any entities outside the core, called I<Muldis D extensions>, are
 non-mandatory and are defined in terms of the core or each other, but the
 reverse isn't true.
 
-This current C<Temporal> document describes the system-defined I<Muldis D
-Temporal Extension>, which consists of temporal data types and operators,
+This current C<DateTime> document describes the system-defined I<Muldis D
+DateTime Extension>, which consists of temporal data types and operators,
 particularly calendar dates and intervals.  The bundled data types describe
 common kinds of temporal artifacts according to modern calendars.  They can
 represent a variety of precisions and epochs so that users can employ them
 in a way that most accurately represents what they actually know about
-their data.  The C<Temporal> document also provides a selection of
+their data.  The C<DateTime> document also provides a selection of
 operators for working with the C<Instant> and C<Duration> types that are
 part of the Muldis D language core.
 
-The I<Muldis D Temporal Extension> is expressly not meant to be complete by
+The I<Muldis D DateTime Extension> is expressly not meant to be complete by
 any means, as a solution for working with temporal data.  Rather it is
 meant to be "good enough" for many common uses.  Moreover it isn't intended
 to have a scope much greater than the temporal data handling abilities of
@@ -60,7 +60,7 @@ savings time are not supported for encoding into values, due partly to
 various logical problems and complexity such as an inability to distinguish
 between duplicated times of day around a daylight savings adjustment.  If
 you want to work with "local time", you generally will have to convert to
-UTC on input and from UTC on output with the I<Muldis D Temporal
+UTC on input and from UTC on output with the I<Muldis D DateTime
 Extension>; UTC is better for storage, local is maybe better for display.
 
 Now the general practice of working with calendar-centric temporal data is
@@ -105,17 +105,17 @@ and aren't re-described here):
 
                     # The following are all regular ordered scalar types.
 
-                    sys.std.Temporal.Type.UTCInstant
-                        sys.std.Temporal.Type.UTCDateTime
-                        sys.std.Temporal.Type.UTCDate
-                        sys.std.Temporal.Type.UTCTime
+                    sys.std.DateTime.Type.UTCInstant
+                        sys.std.DateTime.Type.UTCDateTime
+                        sys.std.DateTime.Type.UTCDate
+                        sys.std.DateTime.Type.UTCTime
 
-                    sys.std.Temporal.Type.FloatInstant
-                        sys.std.Temporal.Type.FloatDateTime
-                        sys.std.Temporal.Type.FloatDate
-                        sys.std.Temporal.Type.FloatTime
+                    sys.std.DateTime.Type.FloatInstant
+                        sys.std.DateTime.Type.FloatDateTime
+                        sys.std.DateTime.Type.FloatDate
+                        sys.std.DateTime.Type.FloatTime
 
-                    sys.std.Temporal.Type.UTCDuration
+                    sys.std.DateTime.Type.UTCDuration
 
                     sys.std.Core.Type.Int
 
@@ -125,18 +125,18 @@ and aren't re-described here):
 
                                 # These are all finite positive int types.
 
-                                sys.std.Temporal.Type.PInt[12|31]
+                                sys.std.DateTime.Type.PInt[12|31]
 
                             # These are all finite non-negative int types.
 
-                            sys.std.Temporal.Type.NNInt[23|59]
+                            sys.std.DateTime.Type.NNInt[23|59]
 
                     sys.std.Core.Type.Rat
                         sys.std.Core.Type.NNRat
 
                             # These're all infinite non-neg rational types.
 
-                            sys.std.Temporal.Type.NNRatLT62
+                            sys.std.DateTime.Type.NNRatLT62
 
 I<This documentation is pending.>
 
@@ -144,7 +144,7 @@ I<This documentation is pending.>
 
 These non-core data types are all ordered scalar types.
 
-=head2 sys.std.Temporal.Type.PInt[12|31]
+=head2 sys.std.DateTime.Type.PInt[12|31]
 
 This is an enumeration data type.  C<PInt[12|31]> is a proper subtype of
 C<PInt> where all member values are not greater than 12|31.  Its default
@@ -152,7 +152,7 @@ and minimum value is 1; its maximum value is 12|31.  The significance is
 that in proleptic Gregorian dates, the [month|month-day] portion is a
 positive integer not greater than 12|31.
 
-=head2 sys.std.Temporal.Type.NNInt[23|59]
+=head2 sys.std.DateTime.Type.NNInt[23|59]
 
 This is an enumeration data type.  C<NNInt[23|59]> is a proper subtype of
 C<NNInt> where all member values are not greater than 23|59.  Its default
@@ -160,7 +160,7 @@ and minimum value is 0; its maximum value is 23|59.  The significance is
 that in the time portion of proleptic Gregorian dates, the [hour|minute]
 portion is a non-negative integer not greater than 23|59.
 
-=head2 sys.std.Temporal.Type.NNRatLT62
+=head2 sys.std.DateTime.Type.NNRatLT62
 
 This is an enumeration data type.  C<NNRatLT62> is a proper subtype of
 C<NNRat> where all member values are less than 62.  Its default and minimum
@@ -173,7 +173,7 @@ greatest magnitude value denominator of its C<ratio> possrep, that is, its
 maximum precision (that denominator is 10^9 if we're working to nanosecond
 precision).
 
-=head2 sys.std.Temporal.Type.UTCInstant
+=head2 sys.std.DateTime.Type.UTCInstant
 
 This is a structure data type.  A C<UTCInstant> is a single point in time,
 or a periodic multiplicity of points in time, which is specified with
@@ -228,7 +228,7 @@ the algorithm works like this: 1. ordering is done numerically one
 attribute at a time, from the largest units to the smallest; 2. for each
 attribute, the C<nothing> value will order before any C<Single> value.
 
-=head2 sys.std.Temporal.Type.UTCDateTime
+=head2 sys.std.DateTime.Type.UTCDateTime
 
 This is an enumeration data type.  A C<UTCDateTime> is a single specific
 time on a specific date, with precision to arbitrary fractions of a second.
@@ -240,7 +240,7 @@ which has 6 attributes: C<year> (an C<Int>), C<month> (a C<PInt12>), C<day>
 (a C<NNRatLT62>).  The default and minimum and maximum values are the same
 as for C<UTCInstant>.
 
-=head2 sys.std.Temporal.Type.UTCDate
+=head2 sys.std.DateTime.Type.UTCDate
 
 This is an enumeration data type.  A C<UTCDate> is a single specific
 terrestrial day, at no particular time of day.  A C<UTCDate> is a proper
@@ -256,7 +256,7 @@ define a most-generalized finite C<UTCDate> subtype, you must specify the
 earliest and latest dates it includes (minimally, the earliest and latest
 C<year>).
 
-=head2 sys.std.Temporal.Type.UTCTime
+=head2 sys.std.DateTime.Type.UTCTime
 
 This is an enumeration data type.  A C<UTCTime> is a single specific time
 that isn't on any day in particular (or alternately that is repeating on
@@ -277,7 +277,7 @@ C<UTCTime> subtype, you must specify the granularity of the type as a
 fraction of a second (minimally, the largest value denominator for
 C<second>).
 
-=head2 sys.std.Temporal.Type.FloatInstant
+=head2 sys.std.DateTime.Type.FloatInstant
 
 This is a structure data type.  A C<FloatInstant> is exactly the same as
 C<UTCInstant>, but that it is not defined against any specific time-zone,
@@ -288,22 +288,22 @@ type is disjoint from the C<UTCInstant> type, but all of its details save
 its name and one aspect of its interpretation (representation, cardinality,
 default values, ordering algorithm, etc) are identical.
 
-=head2 sys.std.Temporal.Type.FloatDateTime
+=head2 sys.std.DateTime.Type.FloatDateTime
 
 This is an enumeration data type.  C<FloatDateTime> is to C<UTCDateTime>
 as C<FloatInstant> is to C<UTCInstant>.
 
-=head2 sys.std.Temporal.Type.FloatDate
+=head2 sys.std.DateTime.Type.FloatDate
 
 This is an enumeration data type.  C<FloatDate> is to C<UTCDate> as
 C<FloatInstant> is to C<UTCInstant>.
 
-=head2 sys.std.Temporal.Type.FloatTime
+=head2 sys.std.DateTime.Type.FloatTime
 
 This is an enumeration data type.  C<FloatTime> is to C<UTCTime> as
 C<FloatInstant> is to C<UTCInstant>.
 
-=head2 sys.std.Temporal.Type.UTCDuration
+=head2 sys.std.DateTime.Type.UTCDuration
 
 This is a structure data type.  A C<UTCDuration> is a single amount of
 time, which is specified with arbitrary precision using 6 quantities in the
@@ -344,9 +344,9 @@ These functions implement commonly used temporal math operations.
 
 =head1 UTCInstant
 
-=head2 sys.std.Temporal.UTCInstant.diff
+=head2 sys.std.DateTime.UTCInstant.diff
 
-C<< function sys.std.Temporal.UTCInstant.diff (UTCDuration <--
+C<< function sys.std.DateTime.UTCInstant.diff (UTCDuration <--
 $minuend : UTCInstant, $subtrahend : UTCInstant) >>
 
 This function results in the duration-typed difference when its
@@ -355,26 +355,26 @@ C<minuend> argument.  The result is the amount of time between the 2
 arguments, which may be positive or negative depending on which argument
 was earlier.
 
-=head2 sys.std.Temporal.UTCInstant.abs_diff
+=head2 sys.std.DateTime.UTCInstant.abs_diff
 
-C<< function sys.std.Temporal.UTCInstant.abs_diff (UTCDuration <--
+C<< function sys.std.DateTime.UTCInstant.abs_diff (UTCDuration <--
 $topic : UTCInstant, $other : UTCInstant) >>
 
 This symmetric function results in the absolute difference between its 2
 arguments.  The result is the amount of time between the 2 arguments, which
 is always non-negative.
 
-=head2 sys.std.Temporal.UTCInstant.later
+=head2 sys.std.DateTime.UTCInstant.later
 
-C<< function sys.std.Temporal.UTCInstant.later (UTCInstant <--
+C<< function sys.std.DateTime.UTCInstant.later (UTCInstant <--
 $instant : UTCInstant, $duration : UTCDuration) >>
 
 This function results in the instant that is later than its C<instant>
 argument by the amount of time in the C<duration> argument.
 
-=head2 sys.std.Temporal.UTCInstant.earlier
+=head2 sys.std.DateTime.UTCInstant.earlier
 
-C<< function sys.std.Temporal.UTCInstant.earlier (UTCInstant <--
+C<< function sys.std.DateTime.UTCInstant.earlier (UTCInstant <--
 $instant : UTCInstant, $duration : UTCDuration) >>
 
 This function results in the instant that is earlier than its C<instant>
@@ -382,9 +382,9 @@ argument by the amount of time in the C<duration> argument.
 
 =head1 FloatInstant
 
-=head2 sys.std.Temporal.FloatInstant.diff
+=head2 sys.std.DateTime.FloatInstant.diff
 
-C<< function sys.std.Temporal.FloatInstant.diff (UTCDuration <--
+C<< function sys.std.DateTime.FloatInstant.diff (UTCDuration <--
 $minuend : FloatInstant, $subtrahend : FloatInstant) >>
 
 This function results in the duration-typed difference when its
@@ -393,26 +393,26 @@ C<minuend> argument.  The result is the amount of time between the 2
 arguments, which may be positive or negative depending on which argument
 was earlier.
 
-=head2 sys.std.Temporal.FloatInstant.abs_diff
+=head2 sys.std.DateTime.FloatInstant.abs_diff
 
-C<< function sys.std.Temporal.FloatInstant.abs_diff (UTCDuration <--
+C<< function sys.std.DateTime.FloatInstant.abs_diff (UTCDuration <--
 $topic : FloatInstant, $other : FloatInstant) >>
 
 This symmetric function results in the absolute difference between its 2
 arguments.  The result is the amount of time between the 2 arguments, which
 is always non-negative.
 
-=head2 sys.std.Temporal.FloatInstant.later
+=head2 sys.std.DateTime.FloatInstant.later
 
-C<< function sys.std.Temporal.FloatInstant.later (FloatInstant <--
+C<< function sys.std.DateTime.FloatInstant.later (FloatInstant <--
 $instant : FloatInstant, $duration : UTCDuration) >>
 
 This function results in the instant that is later than its C<instant>
 argument by the amount of time in the C<duration> argument.
 
-=head2 sys.std.Temporal.FloatInstant.earlier
+=head2 sys.std.DateTime.FloatInstant.earlier
 
-C<< function sys.std.Temporal.FloatInstant.earlier (FloatInstant <--
+C<< function sys.std.DateTime.FloatInstant.earlier (FloatInstant <--
 $instant : FloatInstant, $duration : UTCDuration) >>
 
 This function results in the instant that is earlier than its C<instant>
@@ -424,16 +424,16 @@ Note that all inter-duration operators in general will just do the math on
 each corresponding attribute individually and not normalize between
 attributes.  This is subject to be revised in the future.
 
-=head2 sys.std.Temporal.UTCDuration.abs
+=head2 sys.std.DateTime.UTCDuration.abs
 
-C<< function sys.std.Temporal.UTCDuration.abs (UTCDuration <--
+C<< function sys.std.DateTime.UTCDuration.abs (UTCDuration <--
 $topic : UTCDuration) >>
 
 This function results in the absolute value of its argument.
 
-=head2 sys.std.Temporal.UTCDuration.sum
+=head2 sys.std.DateTime.UTCDuration.sum
 
-C<< function sys.std.Temporal.UTCDuration.sum (UTCDuration <--
+C<< function sys.std.DateTime.UTCDuration.sum (UTCDuration <--
 $topic? : bag_of.UTCDuration) >>
 
 This function results in the sum of the N element values of its argument;
@@ -443,9 +443,9 @@ just one is left, which is the result.  If C<topic> has zero values, then
 C<sum> results in the duration zero, which is the identity value for
 addition.
 
-=head2 sys.std.Temporal.UTCDuration.diff
+=head2 sys.std.DateTime.UTCDuration.diff
 
-C<< function sys.std.Temporal.UTCDuration.diff (UTCDuration <--
+C<< function sys.std.DateTime.UTCDuration.diff (UTCDuration <--
 $minuend : UTCDuration, $subtrahend : UTCDuration) >>
 
 This function results in the difference when its C<subtrahend> argument is
@@ -459,18 +459,18 @@ consistent results over time when dealing with future dates because it is
 unknown in advance when leap seconds will be added to the UTC time scale,
 and TAI has no leap seconds.>
 
-=head2 sys.std.Temporal.UTCInstant.UTC_from_TAI
+=head2 sys.std.DateTime.UTCInstant.UTC_from_TAI
 
-C<< function sys.std.Temporal.UTCInstant.UTC_from_TAI (UTCDateTime <--
+C<< function sys.std.DateTime.UTCInstant.UTC_from_TAI (UTCDateTime <--
 $tai : Instant) >>
 
 This selector function results in the C<UTCDateTime> value that is
 conceptually equal to its C<Instant> argument, insofar as relevant leap
 seconds are known.
 
-=head2 sys.std.Temporal.UTCInstant.TAI_from_UTC
+=head2 sys.std.DateTime.UTCInstant.TAI_from_UTC
 
-C<< function sys.std.Temporal.UTCInstant.TAI_from_UTC (Instant <--
+C<< function sys.std.DateTime.UTCInstant.TAI_from_UTC (Instant <--
 $utc : UTCDateTime) >>
 
 This selector function results in the C<Instant> value that is conceptually
@@ -482,9 +482,9 @@ known.
 These system service routines provide ways to get the current date or time
 from the system.
 
-=head2 sys.std.Temporal.UTCInstant.fetch_curr_datetime
+=head2 sys.std.DateTime.UTCInstant.fetch_curr_datetime
 
-C<system-service sys.std.Temporal.UTCInstant.fetch_curr_datetime
+C<system-service sys.std.DateTime.UTCInstant.fetch_curr_datetime
 (&$target : UTCDateTime)>
 
 This system service routine will update the variable supplied as its
@@ -492,28 +492,28 @@ C<target> argument so that it holds the value of the current UTC date and
 time (YMDHIS) as taken with the full precision that the implementation's
 system clock or used time server supports.
 
-=head2 sys.std.Temporal.UTCInstant.fetch_curr_date
+=head2 sys.std.DateTime.UTCInstant.fetch_curr_date
 
-C<system-service sys.std.Temporal.UTCInstant.fetch_curr_date
+C<system-service sys.std.DateTime.UTCInstant.fetch_curr_date
 (&$target : UTCDate)>
 
 This system service routine is the same as
-C<sys.std.Temporal.UTCInstant.fetch_curr_date> except that it only
+C<sys.std.DateTime.UTCInstant.fetch_curr_date> except that it only
 produces an instant value with the date (YMD) attributes set.
 
-=head2 sys.std.Temporal.UTCInstant.fetch_curr_time
+=head2 sys.std.DateTime.UTCInstant.fetch_curr_time
 
-C<system-service sys.std.Temporal.UTCInstant.fetch_curr_time
+C<system-service sys.std.DateTime.UTCInstant.fetch_curr_time
 (&$target : UTCTime)>
 
 This system service routine is the same as
-C<sys.std.Temporal.UTCInstant.fetch_curr_date> except that it only
+C<sys.std.DateTime.UTCInstant.fetch_curr_date> except that it only
 produces an instant value with the time (HIS) attributes set; it still
 retains the full precision.
 
-=head2 sys.std.Temporal.FloatInstant.fetch_curr_datetime
+=head2 sys.std.DateTime.FloatInstant.fetch_curr_datetime
 
-C<system-service sys.std.Temporal.FloatInstant.fetch_curr_datetime
+C<system-service sys.std.DateTime.FloatInstant.fetch_curr_datetime
 (&$target : FloatDateTime)>
 
 This system service routine will update the variable supplied as its
@@ -521,22 +521,22 @@ C<target> argument so that it holds the value of the current floating date
 and time (YMDHIS) as taken with the full precision that the
 implementation's system clock or used time server supports.
 
-=head2 sys.std.Temporal.FloatInstant.fetch_curr_date
+=head2 sys.std.DateTime.FloatInstant.fetch_curr_date
 
-C<system-service sys.std.Temporal.FloatInstant.fetch_curr_date
+C<system-service sys.std.DateTime.FloatInstant.fetch_curr_date
 (&$target : FloatDate)>
 
 This system service routine is the same as
-C<sys.std.Temporal.FloatInstant.fetch_curr_date> except that it only
+C<sys.std.DateTime.FloatInstant.fetch_curr_date> except that it only
 produces an instant value with the date (YMD) attributes set.
 
-=head2 sys.std.Temporal.FloatInstant.fetch_curr_time
+=head2 sys.std.DateTime.FloatInstant.fetch_curr_time
 
-C<system-service sys.std.Temporal.FloatInstant.fetch_curr_time
+C<system-service sys.std.DateTime.FloatInstant.fetch_curr_time
 (&$target : FloatTime)>
 
 This system service routine is the same as
-C<sys.std.Temporal.FloatInstant.fetch_curr_date> except that it only
+C<sys.std.DateTime.FloatInstant.fetch_curr_date> except that it only
 produces an instant value with the time (HIS) attributes set; it still
 retains the full precision.
 
