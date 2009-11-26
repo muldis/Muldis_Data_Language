@@ -1268,7 +1268,7 @@ namespace and lookup the best / only match from the known C<sys.std> DBMS
 entities, to resolve to.  So for example, one can just write C<Int> rather
 than C<sys.std.Core.Type.Int>, C<is_identical> rather than
 C<sys.std.Core.Universal.is_identical>, C<Tuple.attr> rather than
-C<sys.std.Core.Tuple.attr>, C<min> rather than C<sys.std.Ordered.min>,
+C<sys.std.Core.Tuple.attr>, C<min> rather than C<sys.std.Core.Universal.min>,
 C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so on.
 In fact, the Muldis D spec itself uses such abbreviations frequently.
 
@@ -1518,7 +1518,7 @@ Grammar:
 
 A C<UTCInstant> node represents an "instant"/"datetime" value that is
 affiliated with the UTC time-zone.  This node is interpreted as a Muldis D
-C<sys.std.Temporal.Type.UTCInstant> value whose C<instant> possrep
+C<sys.std.DateTime.Type.UTCInstant> value whose C<instant> possrep
 attribute values are defined as follows:
 
 A C<UTCInstant_payload> consists mainly of a bracket-delimited sequence of
@@ -1551,13 +1551,13 @@ restricted.
 
 A C<FloatInstant> node represents an "instant"/"datetime" value that is
 "floating" / not affiliated with any time-zone.  This node is interpreted
-as a Muldis D C<sys.std.Temporal.Type.FloatInstant> value in an identical
+as a Muldis D C<sys.std.DateTime.Type.FloatInstant> value in an identical
 fashion to how a C<UTCInstant> node is interpreted, whose format it
 completely shares.  Likewise regarding C<Float[DateTime|Date|Time]>.
 
 A C<UTCDuration> node represents a duration value, an amount of time, which
 is not fixed to any instant in time.  This node is interpreted as a Muldis
-D C<sys.std.Temporal.Type.UTCDuration> value whose C<duration> possrep
+D C<sys.std.DateTime.Type.UTCDuration> value whose C<duration> possrep
 attribute values are defined as follows:
 
 A C<UTCDuration_payload> consists mainly of a bracket-delimited sequence of
@@ -1728,7 +1728,7 @@ Examples:
         exponent => 37
     }
 
-    Scalar:sys.std.Temporal.Type.UTCDateTime:datetime;{
+    Scalar:sys.std.DateTime.Type.UTCDateTime:datetime;{
         year   => 2003,
         month  => 10,
         day    => 26,
@@ -2954,15 +2954,15 @@ This table indicates which function is invoked by each keyword:
 
     and  -> Core.Bool.and( Set:{ $expr[0], ..., $expr[n] } )
     or   -> Core.Bool.or( Set:{ $expr[0], ..., $expr[n] } )
-    xnor -> Bool.xnor( Bag:{ $expr[0], ..., $expr[n] } )
-    xor  -> Bool.xor( Bag:{ $expr[0], ..., $expr[n] } )
-    I+   -> Integer.sum( Bag:{ $expr[0], ..., $expr[n] } )
-    I*   -> Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
-    N+   -> Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
-    N*   -> Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
+    xnor -> Core.Bool.xnor( Bag:{ $expr[0], ..., $expr[n] } )
+    xor  -> Core.Bool.xor( Bag:{ $expr[0], ..., $expr[n] } )
+    I+   -> Core.Integer.sum( Bag:{ $expr[0], ..., $expr[n] } )
+    I*   -> Core.Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
+    N+   -> Core.Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
+    N*   -> Core.Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
     ∪    -> Core.Relation.union( Set:{ $expr[0], ..., $expr[n] } )
     ∩    -> Core.Relation.intersection( Set:{ $expr[0], ..., $expr[n] } )
-    ∆    -> Relation.exclusion( Bag:{ $expr[0], ..., $expr[n] } )
+    ∆    -> Core.Relation.exclusion( Bag:{ $expr[0], ..., $expr[n] } )
     ⋈    -> Core.Relation.join( Set:{ $expr[0], ..., $expr[n] } )
     ×    -> Core.Relation.product( Set:{ $expr[0], ..., $expr[n] } )
 
@@ -3022,13 +3022,13 @@ different type of value, from the last op input list element.
 This table indicates which function is invoked by each keyword:
 
     [<=>] -> Core.Cat.Order.reduction( Array:{ $expr[0], ..., $expr[n] } )
-    B~    -> Blob.catenation( Array:{ $expr[0], ..., $expr[n] } )
-    T~    -> Text.catenation( Array:{ $expr[0], ..., $expr[n] } )
-    A~    -> Array.catenation( Array:{ $expr[0], ..., $expr[n] } )
+    B~    -> Core.Blob.catenation( Array:{ $expr[0], ..., $expr[n] } )
+    T~    -> Core.Text.catenation( Array:{ $expr[0], ..., $expr[n] } )
+    A~    -> Core.Array.catenation( Array:{ $expr[0], ..., $expr[n] } )
 
-    //    -> Set.Maybe.attr_or_value(
+    //    -> Core.Set.Maybe.attr_or_value(
                 Array:{ $expr[0], ..., $expr[n-1] }, value => $expr[n] )
-    //d   -> Set.Maybe.attr_or_default(
+    //d   -> Core.Set.Maybe.attr_or_default(
                 Array:{ $expr[0], ..., $expr[n-1] }, default => $expr[n] )
 
 Examples:
@@ -3079,10 +3079,10 @@ This table indicates which function is invoked by each keyword:
 
     =    -> Core.Universal.is_identical( $expr[0], $expr[1] )
     ≠    -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
-    nand -> Bool.nand( $expr[0], $expr[1] )
-    nor  -> Bool.nor( $expr[0], $expr[1] )
-    I|-| -> Integer.abs_diff( $expr[0], $expr[1] )
-    N|-| -> Rational.abs_diff( $expr[0], $expr[1] )
+    nand -> Core.Bool.nand( $expr[0], $expr[1] )
+    nor  -> Core.Bool.nor( $expr[0], $expr[1] )
+    I|-| -> Core.Integer.abs_diff( $expr[0], $expr[1] )
+    N|-| -> Core.Rational.abs_diff( $expr[0], $expr[1] )
 
 Examples:
 
@@ -3164,46 +3164,46 @@ This table indicates which function is invoked by each keyword:
     !isa -> Core.Universal.is_not_value_of_type( $lhs, type => $rhs )
     as   -> Core.Universal.treated( $lhs, as => $rhs )
     asserting -> Core.Universal.assertion( $lhs, is_true => $rhs )
-    imp  -> Bool.imp( $lhs, $rhs )
-    nimp -> Bool.nimp( $lhs, $rhs )
-    if   -> Bool.if( $lhs, $rhs )
-    nif  -> Bool.nif( $lhs, $rhs )
-    I-   -> Integer.diff( minuend => $lhs, subtrahend => $rhs )
-    I/   -> Integer.quotient( dividend => $lhs, divisor => $rhs )
-    %    -> Integer.remainder( dividend => $lhs, divisor => $rhs )
-    I^   -> Integer.power( radix => $lhs, exponent => $rhs )
-    N-   -> Rational.diff( minuend => $lhs, subtrahend => $rhs )
-    N/   -> Rational.quotient( dividend => $lhs, divisor => $rhs )
-    Bx   -> Blob.replication( $lhs, count => $rhs )
-    Tx   -> Text.replication( $lhs, count => $rhs )
-    Ax   -> Array.replication( $lhs, count => $rhs )
+    imp  -> Core.Bool.imp( $lhs, $rhs )
+    nimp -> Core.Bool.nimp( $lhs, $rhs )
+    if   -> Core.Bool.if( $lhs, $rhs )
+    nif  -> Core.Bool.nif( $lhs, $rhs )
+    I-   -> Core.Integer.diff( minuend => $lhs, subtrahend => $rhs )
+    I/   -> Core.Integer.quotient( dividend => $lhs, divisor => $rhs )
+    %    -> Core.Integer.remainder( dividend => $lhs, divisor => $rhs )
+    I^   -> Core.Integer.power( radix => $lhs, exponent => $rhs )
+    N-   -> Core.Rational.diff( minuend => $lhs, subtrahend => $rhs )
+    N/   -> Core.Rational.quotient( dividend => $lhs, divisor => $rhs )
+    Bx   -> Core.Blob.replication( $lhs, count => $rhs )
+    Tx   -> Core.Text.replication( $lhs, count => $rhs )
+    Ax   -> Core.Array.replication( $lhs, count => $rhs )
     ∈    -> Core.Tuple.is_member( t => $lhs, r => $rhs )
     ∉    -> Core.Tuple.is_not_member( t => $lhs, r => $rhs )
     ∋    -> Core.Relation.has_member( r => $lhs, t => $rhs )
     ∌    -> Core.Relation.has_not_member( r => $lhs, t => $rhs )
-    S∈   -> Set.value_is_member( value => $lhs, set => $rhs )
-    S∉   -> Set.value_is_not_member( value => $lhs, set => $rhs )
-    S∋   -> Set.has_member( set => $lhs, value => $rhs )
-    S∌   -> Set.has_not_member( set => $lhs, value => $rhs )
-    B∈   -> Bag.value_is_member( value => $lhs, bag => $rhs )
-    B∉   -> Bag.value_is_not_member( value => $lhs, bag => $rhs )
-    B∋   -> Bag.has_member( bag => $lhs, value => $rhs )
-    B∌   -> Bag.has_not_member( bag => $lhs, value => $rhs )
+    S∈   -> Core.Set.value_is_member( value => $lhs, set => $rhs )
+    S∉   -> Core.Set.value_is_not_member( value => $lhs, set => $rhs )
+    S∋   -> Core.Set.has_member( set => $lhs, value => $rhs )
+    S∌   -> Core.Set.has_not_member( set => $lhs, value => $rhs )
+    B∈   -> Core.Bag.value_is_member( value => $lhs, bag => $rhs )
+    B∉   -> Core.Bag.value_is_not_member( value => $lhs, bag => $rhs )
+    B∋   -> Core.Bag.has_member( bag => $lhs, value => $rhs )
+    B∌   -> Core.Bag.has_not_member( bag => $lhs, value => $rhs )
     ⊆    -> Core.Relation.is_subset( $lhs, $rhs )
     ⊈    -> Core.Relation.is_not_subset( $lhs, $rhs )
     ⊇    -> Core.Relation.is_superset( $lhs, $rhs )
     ⊉    -> Core.Relation.is_not_superset( $lhs, $rhs )
-    ⊂    -> Relation.is_proper_subset( $lhs, $rhs )
-    ⊄    -> Relation.is_not_proper_subset( $lhs, $rhs )
-    ⊃    -> Relation.is_proper_superset( $lhs, $rhs )
-    ⊅    -> Relation.is_not_proper_superset( $lhs, $rhs )
+    ⊂    -> Core.Relation.is_proper_subset( $lhs, $rhs )
+    ⊄    -> Core.Relation.is_not_proper_subset( $lhs, $rhs )
+    ⊃    -> Core.Relation.is_proper_superset( $lhs, $rhs )
+    ⊅    -> Core.Relation.is_not_proper_superset( $lhs, $rhs )
     ∖    -> Core.Relation.diff( source => $lhs, filter => $rhs )
     ⊿    -> Core.Relation.semidiff( source => $lhs, filter => $rhs )
     ⋉    -> Core.Relation.semijoin( source => $lhs, filter => $rhs )
     ÷    -> Core.Relation.quotient( dividend => $lhs, divisor => $rhs )
 
-    like  -> sys.std.Text.is_like( look_in => $lhs, look_for => $rhs )
-    !like -> sys.std.Text.is_not_like( look_in => $lhs, look_for => $rhs )
+    like  -> Core.Text.is_like( look_in => $lhs, look_for => $rhs )
+    !like -> Core.Text.is_not_like( look_in => $lhs, look_for => $rhs )
 
 Note that while the C<is[|_not]_like> functions also have an optional third
 parameter C<escape>, you will have to use a C<func_invo> node to exploit
@@ -3267,13 +3267,13 @@ This table indicates which function is invoked by each keyword:
 
     d   -> Core.Universal.default( of => $expr )
     not -> Core.Bool.not( $expr )
-    I|| -> Integer.abs( $expr )
-    N|| -> Rational.abs( $expr )
+    I|| -> Core.Integer.abs( $expr )
+    N|| -> Core.Rational.abs( $expr )
     R#  -> Core.Relation.cardinality( $expr )
     t   -> Core.Relation.Tuple_from_Relation( $expr )
     r   -> Core.Relation.Relation_from_Tuple( $expr )
-    s   -> Set.Maybe.single( value => $expr )
-    v   -> Set.Maybe.attr( $expr )
+    s   -> Core.Set.Maybe.single( value => $expr )
+    v   -> Core.Set.Maybe.attr( $expr )
 
 Examples:
 
@@ -3312,9 +3312,9 @@ C<monadic_postfix_op_invo> supplies the value of that argument.
 
 This table indicates which function is invoked by each keyword:
 
-    ++ -> Integer.inc( $expr )
-    -- -> Integer.dec( $expr )
-    I! -> Integer.factorial( $expr )
+    ++ -> Core.Integer.inc( $expr )
+    -- -> Core.Integer.dec( $expr )
+    I! -> Core.Integer.factorial( $expr )
 
 Examples:
 
@@ -3520,8 +3520,8 @@ This table indicates which function is invoked by each format-keyword:
                    count_attr_name => $count_atnm,
                    group_per => Set:{ $cmpl_inner_atnms[0], ... } )
 
-    .[] -> Array.value( $expr, index => $index )
-    []  -> Array.slice( $expr, index_interval => Interval:{
+    .[] -> Core.Array.value( $expr, index => $index )
+    []  -> Core.Array.slice( $expr, index_interval => Interval:{
                 $min_index $interval_boundary_kind $max_index } )
 
 Examples:
@@ -3626,12 +3626,12 @@ sequence.
 
 This table indicates which function is invoked by each keyword:
 
-          -> Rational.round( $expr, round_rule => $round_rule )
-    N^    -> Rational.power( radix => $lhs, exponent => $rhs,
+          -> Core.Rational.round( $expr, round_rule => $round_rule )
+    N^    -> Core.Rational.power( radix => $lhs, exponent => $rhs,
                 round_rule => $round_rule )
-    log   -> Rational.log( $lhs, radix => $rhs, round_rule => $round_rule )
-    e^    -> Rational.natural_power( $expr, round_rule => $round_rule )
-    log-e -> Rational.natural_log( $expr, round_rule => $round_rule )
+    log   -> Core.Rational.log( $lhs, radix => $rhs, round_rule => $round_rule )
+    e^    -> Core.Rational.natural_power( $expr, round_rule => $round_rule )
+    log-e -> Core.Rational.natural_log( $expr, round_rule => $round_rule )
 
 Examples:
 
@@ -3725,33 +3725,33 @@ This table indicates which function is invoked by each keyword:
 
     <=> -> Core.Scalar.order( $lhs, $rhs )
 
-    min -> Ordered.min( Set:{ $expr[0], ..., $expr[n] } )
-    max -> Ordered.max( Set:{ $expr[0], ..., $expr[n] } )
+    min -> Core.Universal.min( Set:{ $expr[0], ..., $expr[n] } )
+    max -> Core.Universal.max( Set:{ $expr[0], ..., $expr[n] } )
 
-    <   -> Ordered.is_before( $lhs, $rhs )
-    >   -> Ordered.is_after( $lhs, $rhs )
-    ≤   -> Ordered.is_before_or_same( $lhs, $rhs )
-    ≥   -> Ordered.is_after_or_same( $lhs, $rhs )
-    I∈  -> Ordered.is_member( value => $lhs, interval => $rhs )
-    I∉  -> Ordered.is_not_member( value => $lhs, interval => $rhs )
-    I∋  -> Interval.has_member( interval => $lhs, value => $rhs )
-    I∌  -> Interval.has_not_member( interval => $lhs, value => $rhs )
+    <   -> Core.Universal.is_before( $lhs, $rhs )
+    >   -> Core.Universal.is_after( $lhs, $rhs )
+    ≤   -> Core.Universal.is_before_or_same( $lhs, $rhs )
+    ≥   -> Core.Universal.is_after_or_same( $lhs, $rhs )
+    I∈  -> Core.Interval.value_is_member( value => $lhs, interval => $rhs )
+    I∉  -> Core.Interval.value_is_not_member( value => $lhs, interval => $rhs )
+    I∋  -> Core.Interval.has_member( interval => $lhs, value => $rhs )
+    I∌  -> Core.Interval.has_not_member( interval => $lhs, value => $rhs )
 
-    ≤≤  -> Ordered.is_member( value => $expr,
+    ≤≤  -> Core.Interval.value_is_member( value => $expr,
                 interval => Interval:{ $min .. $max } )
-    ≤<  -> Ordered.is_member( value => $expr,
+    ≤<  -> Core.Interval.value_is_member( value => $expr,
                 interval => Interval:{ $min ..^ $max } )
-    <≤  -> Ordered.is_member( value => $expr,
+    <≤  -> Core.Interval.value_is_member( value => $expr,
                 interval => Interval:{ $min ^.. $max } )
-    <<  -> Ordered.is_member( value => $expr,
+    <<  -> Core.Interval.value_is_member( value => $expr,
                 interval => Interval:{ $min ^..^ $max } )
-    !≤≤ -> Ordered.is_not_member( value => $expr,
+    !≤≤ -> Core.Interval.value_is_not_member( value => $expr,
                 interval => Interval:{ $min .. $max } )
-    !≤< -> Ordered.is_not_member( value => $expr,
+    !≤< -> Core.Interval.value_is_not_member( value => $expr,
                 interval => Interval:{ $min ..^ $max } )
-    !<≤ -> Ordered.is_not_member( value => $expr,
+    !<≤ -> Core.Interval.value_is_not_member( value => $expr,
                 interval => Interval:{ $min ^.. $max } )
-    !<< -> Ordered.is_not_member( value => $expr,
+    !<< -> Core.Interval.value_is_not_member( value => $expr,
                 interval => Interval:{ $min ^..^ $max } )
 
 Details regarding the extra op args is pending.  But most of the time you
