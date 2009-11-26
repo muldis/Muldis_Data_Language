@@ -61,7 +61,7 @@ C<PInt> where all member values are between 2 and 36.  (The significance of
 the number 36 is 10 digits plus 26 letters.)  Its default and minimum value
 is 2.  Its maximum value is 36.  The cardinality of this type is 35.
 
-=head1 SYSTEM-DEFINED TYPE-CASTING FUNCTIONS
+=head1 FUNCTIONS FOR CASTING BETWEEN TUPLES AND SINGLE-TUPLE RELATIONS
 
 =head2 sys.std.Core.Relation.Tuple_from_Relation
 
@@ -81,6 +81,8 @@ This function results in the C<Relation> value those body has just the one
 C<Tuple> that is its argument.  Note that this operation is also known as
 C<r>.
 
+=head1 FUNCTIONS FOR CASTING BETWEEN CANONICAL SETS AND BAGS
+
 =head2 sys.std.Bag.Set_from_Bag
 
 C<< function sys.std.Bag.Set_from_Bag (Set <-- $topic : Bag) >>
@@ -95,7 +97,28 @@ C<< function sys.std.Bag.Bag_from_Set (Bag <-- $topic : Set) >>
 This function results in the C<Bag> that is the extension of its C<Set>
 argument with a new C<count> attribute whose value for every tuple is 1.
 
-=head1 FUNCTIONS FOR INTEGER CONVERSION WITH TEXT
+=head1 FUNCTIONS FOR CASTING BETWEEN INTEGERS AND RATIONALS
+
+These functions convert between C<Rat> values and equal or nearly equal
+C<Int> values.
+
+=head2 sys.std.Rational.Int_from_Rat
+
+C<< function sys.std.Rational.Int_from_Rat (Int <-- $rat : Rat,
+$round_meth : RatRoundMeth) >>
+
+This selector function results in the C<Int> value that is conceptually
+equal to or otherwise nearest to its C<rat> argument, where the nearest is
+determined by the rounding method specified by the C<round_meth> argument.
+
+=head2 sys.std.Rational.Rat_from_Int
+
+C<< function sys.std.Rational.Rat_from_Int (Rat <-- $int : Int) >>
+
+This selector function results in the C<Rat> value that is conceptually
+equal to its C<Int> argument.
+
+=head1 FUNCTIONS FOR ENCODING INTEGERS AS TEXTS
 
 These functions convert between C<Int> values and canonically formatted
 representations of integers as character strings.
@@ -120,7 +143,61 @@ $radix : PInt2_36) >>
 This selector function results in the (not-empty) C<Text> value where its
 C<int> argument is formatted as a base-C<radix> integer.
 
-=head1 FUNCTIONS FOR INTEGER CONVERSION WITH BLOB
+=head1 FUNCTIONS FOR ENCODING RATIONALS AS TEXTS
+
+These functions convert between C<Rat> values and canonically formatted
+representations of rationals as character strings.
+
+=head2 sys.std.Rational.Rat_from_Text
+
+C<< function sys.std.Rational.Rat_from_Text (Rat <-- $text : Text,
+$radix : PInt2_36) >>
+
+This selector function results in the C<Rat> value that its (not-empty)
+C<text> argument maps to when the whole character string is evaluated as a
+base-C<radix> rational.  Extending the typical formats of [base-2, base-8,
+base-10, base-16], this function supports base-2 through base-36; to get
+the latter, the characters 0-9 and A-Z represent values in 0-35.  This
+function will fail if C<text> can't be mapped as specified.
+
+=head2 sys.std.Rational.Text_from_Rat
+
+C<< function sys.std.Rational.Text_from_Rat (Text <-- $rat : Rat,
+$radix : PInt2_36) >>
+
+This selector function results in the (not-empty) C<Text> value where its
+C<rat> argument is formatted as a base-C<radix> rational.
+
+=head1 FUNCTIONS FOR ENCODING BLOBS AS TEXTS
+
+These functions convert between C<Blob> values and canonically formatted
+representations of binary strings as character strings.
+
+=head2 sys.std.Blob.Blob_from_Text
+
+C<< function sys.std.Blob.Blob_from_Text (Blob <-- $text : Text,
+$size : PInt1_4) >>
+
+This selector function results in the C<Blob> value that its C<text>
+argument maps to when each input character represents a sequence of 1-4
+bits, the number of bits per character being determined by the C<size>
+argument; for example, if C<size> is 1, then each input character is a
+[0-1] and represents a bit; or, if C<size> is 4, then each input character
+is a [0-9A-F] and represents 4 bits.  This function will fail if C<text>
+can't be mapped as specified.
+
+=head2 sys.std.Blob.Text_from_Blob
+
+C<< function sys.std.Blob.Text_from_Blob (Text <-- $blob : Blob,
+$size : PInt1_4) >>
+
+This selector function results in the C<Text> value where its argument is
+encoded using a character for each sequence of 1-4 bits, the number of bits
+per character being determined by the C<size> argument.  This function will
+fail if C<blob> doesn't have a length in bits which is a multiple of
+C<size>.
+
+=head1 FUNCTIONS FOR ENCODING INTEGERS AS BLOBS
 
 These functions convert between C<Int> values and canonically formatted
 representations of integers as binary strings.  I<Conjecture: These may not
@@ -164,81 +241,6 @@ C<< function sys.std.Integer.Blob_U_VBE_from_Int (NNInt <-- $blob : Blob)
 
 This function is the same as C<sys.std.Integer.Blob_S_VBE_from_Int> but
 that it does unsigned integers.
-
-=head1 FUNCTIONS FOR RATIONAL CONVERSION WITH TEXT
-
-These functions convert between C<Rat> values and canonically formatted
-representations of rationals as character strings.
-
-=head2 sys.std.Rational.Rat_from_Text
-
-C<< function sys.std.Rational.Rat_from_Text (Rat <-- $text : Text,
-$radix : PInt2_36) >>
-
-This selector function results in the C<Rat> value that its (not-empty)
-C<text> argument maps to when the whole character string is evaluated as a
-base-C<radix> rational.  Extending the typical formats of [base-2, base-8,
-base-10, base-16], this function supports base-2 through base-36; to get
-the latter, the characters 0-9 and A-Z represent values in 0-35.  This
-function will fail if C<text> can't be mapped as specified.
-
-=head2 sys.std.Rational.Text_from_Rat
-
-C<< function sys.std.Rational.Text_from_Rat (Text <-- $rat : Rat,
-$radix : PInt2_36) >>
-
-This selector function results in the (not-empty) C<Text> value where its
-C<rat> argument is formatted as a base-C<radix> rational.
-
-=head1 FUNCTIONS FOR RATIONAL CONVERSION WITH INTEGER
-
-These functions convert between C<Rat> values and equal or nearly equal
-C<Int> values.
-
-=head2 sys.std.Rational.Rat_from_Int
-
-C<< function sys.std.Rational.Rat_from_Int (Rat <-- $int : Int) >>
-
-This selector function results in the C<Rat> value that is conceptually
-equal to its C<Int> argument.
-
-=head2 sys.std.Rational.Int_from_Rat
-
-C<< function sys.std.Rational.Int_from_Rat (Int <-- $rat : Rat,
-$round_meth : RatRoundMeth) >>
-
-This selector function results in the C<Int> value that is conceptually
-equal to or otherwise nearest to its C<rat> argument, where the nearest is
-determined by the rounding method specified by the C<round_meth> argument.
-
-=head1 FUNCTIONS FOR BLOB CONVERSION WITH TEXT
-
-These functions convert between C<Blob> values and canonically formatted
-representations of binary strings as character strings.
-
-=head2 sys.std.Blob.Blob_from_Text
-
-C<< function sys.std.Blob.Blob_from_Text (Blob <-- $text : Text,
-$size : PInt1_4) >>
-
-This selector function results in the C<Blob> value that its C<text>
-argument maps to when each input character represents a sequence of 1-4
-bits, the number of bits per character being determined by the C<size>
-argument; for example, if C<size> is 1, then each input character is a
-[0-1] and represents a bit; or, if C<size> is 4, then each input character
-is a [0-9A-F] and represents 4 bits.  This function will fail if C<text>
-can't be mapped as specified.
-
-=head2 sys.std.Blob.Text_from_Blob
-
-C<< function sys.std.Blob.Text_from_Blob (Text <-- $blob : Blob,
-$size : PInt1_4) >>
-
-This selector function results in the C<Text> value where its argument is
-encoded using a character for each sequence of 1-4 bits, the number of bits
-per character being determined by the C<size> argument.  This function will
-fail if C<blob> doesn't have a length in bits which is a multiple of
-C<size>.
 
 =head1 SEE ALSO
 

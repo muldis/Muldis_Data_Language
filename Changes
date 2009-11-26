@@ -6,50 +6,119 @@
     * Muldis::D version 0.101.0 is released on CPAN as
     Muldis-D-0.101.0.tar.gz.
 
-    IN PROGRESS: MOVE LOTS OF EXTENSION STUFF INTO CORE ...
+TODO: SOME OF THE FOLLOWING ITEMS ARE STILL IN PROGRESS ...
 
-    RELEASE IS ROUGH FIRST CUT OF THIS.
-    NO TYPES, ROUTINES, SYNTAX, ETC ADDED OR REMOVED, JUST RENAMED/MOVED.
+    * This release features a rough cut (that might have introduced a few
+    subtle mistakes) of a mass reorganization of Muldis D system-defined
+    routines, plus a few minor data types, both between what pod files they
+    are described in and between what "sys.*" name-spaces they live in.  A
+    majority fraction of the materials that were considered to be part of
+    language "extensions" have been promoted to be part of the language
+    "core" instead.  Also, the generic "Routines.pod" has been completely
+    split up into type or subject specific files.  The main reason for
+    these changes is to make the language design better reflect what is
+    most likely to happen with actual implementations.  The old "core"
+    tried to exclude too much and be too minimal, and there were a number
+    of conceptual problems such as a high degree of conceptual
+    inter-dependencies between what otherwise should be independent
+    extensions.  The new "core" should better reflect a practical minimum
+    of functionality for a programming language, and the new "extensions"
+    are now more limited to the relative fringe of functionality that is
+    neither required to define any part of the core and is relatively
+    complicated and is relatively likely to not be easy to implement
+    everywhere; moreover, it should be much less likely now that any
+    extension would depend on another extension.  The expanded "core" now
+    has all of the order-concerning operators, all of the defined
+    relational operators except the "Counted" ones, and it has all of the
+    operators for booleans, numerics, strings, intervals, and for TAI
+    temporals.  The reduced "extensions" now has just the "Counted"
+    relational operators, all of the types and operators for temporal data
+    expressed as UTC dates and times, and all of the spatial types and
+    operators.  In the future, when support for non-trivial pattern
+    matching or regular expressions are added, those will also be as
+    extensions, one extension per distinct pattern match engine/grammar,
+    because those would be both complicated and sometimes non-portable.
+    This release does not add or remove or alter the semantics of any types
+    or routines, but simply moves around or renames them.  Just one
+    exception, where a minor type used to have 2 names and now has one.
 
-    1.  Split Ext/Temporal.pod into itself and Ext/DateTime.pod, where the
-    former has just the TAI-temporal routines and the latter has everything
-    else.  Conceptually speaking, Temporal.pod was renamed to DateTime.pod
-    and the TAI-temporals moved off to a new Temporal.pod.
+    * Split Ext/Temporal.pod into itself plus the new Ext/DateTime.pod; the
+    former has the 7 TAI-specific functions
+    "sys.std.Temporal.Instant.[[|abs_]diff|later|earlier]",
+    "sys.std.Temporal.Duration.[abs|sum|diff]" and the 1 TAI-specific
+    system-service "sys.std.Temporal.Instant.fetch_curr_instant" but no
+    data types (all 2 TAI types are in Core/Types.pod); the latter has all
+    of the 14 types, 11 functions, 6 system-services that are not
+    TAI-specific, and are all formatted in terms of YMDHIS in the UTC or
+    floating time-zone, and the latter has the 2 functions for TAI-UTC
+    conversion.  So the simple TAI temporals (for time-stamps) and
+    complicated UTC temporals (for user datetimes) are now fully separated.
+    The TAI materials kept their "sys.std.Temporal.\w+" name-spaces while
+    the UTC materials were renamed to "sys.std.DateTime.\w+".
 
-    2.  Moved 13 files from from Ext/ to Core/:  Array.pod, Bag.pod,
-    Blob.pod, Bool.pod, Integer.pod, Interval.pod, Ordered.pod,
-    Rational.pod, Relation.pod, Set.pod, Text.pod, Temporal.pod, Tuple.pod.
+    * Promoted 13 files and all of the materials (routines and types)
+    defined therein from Ext/ to Core/:  Array.pod, Bag.pod, Blob.pod,
+    Bool.pod, Integer.pod, Interval.pod, Ordered.pod, Rational.pod,
+    Relation.pod, Set.pod, Text.pod, Temporal.pod, Tuple.pod.  In every one
+    of these files, added "Core." to the name-spaces of every material, so
+    for example every "sys.std.Integer.\w+" became
+    "sys.std.Core.Integer.\w+".  Only 3 files remain in Ext/:  Counted.pod,
+    DateTime.pod, Spatial.pod; their materials' name-spaces are unchanged.
 
-    3.  Created 4 new initially-empty Core/ files:
-    Universal.pod, Scalar.pod, STDIO.pod, Cast.pod.
+    * (Routines.pod, Routines_Catalog.pod)  Moved to Routines_Catalog.pod
+    from Routines.pod all 6 "sys.std.Core.Control.\w+" routines (2
+    functions, 1 updater, 3 procedures), which are now grouped into 2 new
+    main pod sections.  The section "ROUTINES FOR INVOKING ROUTINES" got
+    the 4 "[func|upd|proc]_invo", "curried_func" and the section "ROUTINES
+    FOR WORKING WITH EXCEPTIONS" got the 2 "fail", "try_catch".  Each of
+    the 6 had "Cat." added to its name-space and "Control." removed, ending
+    up with "sys.std.Core.Cat.func_invo" for example.
 
-    4.  Moved all sys.std.Core.Universal.* f Routines.pod to Universal.pod.
-      -> 7 functions, 1 updater
-    Moved all sys.std.Core.Scalar.* from Routines.pod to Scalar.pod.
-      -> 13 functions
-    Moved all sys.std.Core.Bool.* from Routines.pod to Bool.pod.
-      -> 5 functions
-    Moved all sys.std.Core.Tuple.* from Routines.pod to Tuple.pod.
-      -> 13 functions, 4 updaters
-    Moved all sys.std.Core.Relation.* from Routines.pod to Relation.pod.
-      -> 41 functions, 17 updaters
-    Moved all sys.std.Core.Control.* f Routines.pod t Routines_Catalog.pod.
-      -> 2 functions, 1 updater, 3 procedures
-    Moved all sys.std.Core.STDIO.* from Routines.pod to STDIO.pod.
-      -> 7 system-services
+    * Added new initially-empty file Core/Cast.pod whose purpose is to
+    consolidate all the type-casting routines that are conceptually monadic
+    functions between 2 core types.
 
-    5.  Moved 2 Ordered.pod functions into Interval.pod and moved the
-    remaining 10 Ordered.pod functions into Universal.pod.
+    * (Cast.pod, Routines.pod, Integer.pod, Rational.pod, Blob.pod,
+    Bag.pod)  Moved to Cast.pod from Routines.pod the 2 functions
+    "Tuple_from_Relation", "Relation_from_Tuple"; from Integer.pod the 6
+    functions "Int_from_Text", "Text_from_Int", "Int_from_Blob_[S|U]_VBE",
+    "Blob_[S|U]_VBE_from_Int"; from Rational.pod the 4 functions
+    "Int_from_Rat", "Rat_from_Int", "Rat_from_Text", "Text_from_Rat"; from
+    Blob.pod the 2 functions "Set_from_Bag", "Bag_from_Set"; from Bag.pod
+    the 2 functions "Blob_from_Text", "Text_from_Blob".  Moved to Cast.pod
+    the 2 types PInt2_36, PInt1_4; the first was in each of Integer.pod and
+    Rational.pod (2 copies with distinct long names), and the second was in
+    Blob.pod; the sole purpose of those types was to support the routines
+    moved from the same files.  Following these moves, Integer.pod and
+    Blob.pod no longer declare any types, but Rational.pod has 2 others.
+    All materials in Cast.pod were renamed into "sys.std.Core.Cast.\w+".
 
-    6.  The new file Cast.pod consolidates all the type-casting routines
-    that are conceptually monadic functions between 2 core types.  Moved to
-    it the 2 Int types PInt1_4 from Blob.pod, PInt2_36 from Int|Rat.pod.
-    Has 16 f: 2 Relation.*, 2 Bag.*, 6 Integer.*, 4 Rational.*, 2 Blob.*.
+    * Added 3 new initially-empty files Core/Universal.pod,
+    Core/Scalar.pod, Core/STDIO.pod.
 
-    7.  Removed 2 now-empty Core/ files:  Routines.pod, Ordered.pod.
+    * (Routines.pod, Universal.pod, Scalar.pod, Bool.pod, Tuple.pod,
+    Relation.pod, STDIO.pod)  Moved every one of the routines in
+    Routines.pod to one of 6 other files, such that each routine in the
+    name-space "sys.std.Core.<ns>.\w+" was moved to the same-named file
+    "<ns>.pod": Universal.pod got 7 functions, 1 updater; Scalar.pod got 13
+    functions; Bool.pod got 5 functions; Tuple.pod got 13 functions, 4
+    updaters; Relation.pod got 41 functions, 17 updaters; STDIO.pod got 7
+    system-services.
 
-    8.  Note in Text.pod that each kind of regex / non-trivial pattern
+    * (Ordered.pod, Interval.pod, Universal.pod)  Moved the 2 functions
+    "sys.std.Core.Ordered.is[|_not]_member" from Ordered.pod to
+    Interval.pod, in the process renaming them to
+    "sys.std.Core.Interval.value_is[|_not]_member".  Then moved the
+    remaining 10 Ordered.pod functions into Universal.pod, renaming each
+    one from the "Ordered." name-space to the "Universal." name-space.
+
+    * Removed the 2 now-empty files Core/Routines.pod, Core/Ordered.pod.
+
+    * (Text.pod)  Made a note that each kind of regex / non-trivial pattern
     match supported will be in its own extension, only 'like' in the core.
+
+    * (Basics.pod, Types_Catalog.pod)  Updated any references in other
+    files to the moved/renamed/etc materials/etc.
 
 2009-11-21  Darren Duncan <darren@DarrenDuncan.net>
 
