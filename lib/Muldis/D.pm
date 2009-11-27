@@ -31,13 +31,8 @@ L<Muldis::D::Basics>, L<Muldis::D::Core> (which has its own tree of parts
 to follow), L<Muldis::D::Dialect::PTMD_STD>,
 L<Muldis::D::Dialect::HDMD_Perl6_STD>,
 L<Muldis::D::Dialect::HDMD_Perl5_STD>, L<Muldis::D::Conventions>,
-L<Muldis::D::Ext::Ordered>, L<Muldis::D::Ext::Bool>,
-L<Muldis::D::Ext::Integer>, L<Muldis::D::Ext::Blob>,
-L<Muldis::D::Ext::Text>, L<Muldis::D::Ext::Rational>,
-L<Muldis::D::Ext::Tuple>, L<Muldis::D::Ext::Relation>,
-L<Muldis::D::Ext::Set>, L<Muldis::D::Ext::Array>, L<Muldis::D::Ext::Bag>,
-L<Muldis::D::Ext::Interval>, L<Muldis::D::Ext::Counted>,
-L<Muldis::D::Ext::Temporal>, L<Muldis::D::Ext::Spatial>.
+L<Muldis::D::Ext::Counted>, L<Muldis::D::Ext::DateTime>,
+L<Muldis::D::Ext::Spatial>.
 
 =head1 DESCRIPTION
 
