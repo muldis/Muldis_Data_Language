@@ -219,7 +219,7 @@ This procedure has no parameters and doesn't do anything at all.
 These procedures comprise a set of commonly useful system-defined data
 definition routines, which simplify some tasks of manipulating the Muldis D
 system catalog dbvars.  The following procedures can do the following:
-create|mount and drop|unmount depots, set|clear topic namespaces,
+create|mount and drop|unmount depots,
 create|drop subdepots, create|drop user-defined routines and
 data types; they can not create or drop relvars.
 
@@ -258,32 +258,12 @@ This procedure is an abstraction over updating a tuple of the catalog
 relvar C<mnt.cat.mounts> such that its C<we_may_update> attribute is made
 C<Bool:false>.
 
-=head1 Procedures For Defining Topic Namespaces
-
-=head2 sys.std.Core.Cat.select_topic_namespaces
-
-C<procedure sys.std.Core.Cat.select_topic_namespaces
-($depot? : maybe_of.Name, $subdepot? : maybe_of.DeclNameChain,
-$comment? : Comment)>
-
-This procedure is an abstraction over assigning a new value to the catalog
-variable C<tpc.cat>; the 3 parameters correspond directly to the attributes
-of C<tpc.cat>.  If all the arguments are omitted, then C<tpc.cat> will have
-its default value of all-C<nothing> attributes, meaning there are no
-default namespaces.  If C<subdepot> is a C<Single> then C<depot> must be.
-
 =head1 Procedures For Defining In-Depot Namespaces
-
-These 2 procedures conceptually have the extra 2 parameters C<$depot :
-Name, $parent? : DeclNameChain>, whose values are implicitly supplied from
-C<tpc.cat.topic_[depot|subdepot]> respectively; those 1 or 2 (as
-applicable) catalog variables must be non-empty as a precondition to
-invoking the 2 procedures.
 
 =head2 sys.std.Core.Cat.create_subdepot
 
-C<procedure sys.std.Core.Cat.create_subdepot ($name : Name,
-$comment? : Comment)>
+C<procedure sys.std.Core.Cat.create_subdepot ($depot : Name,
+$parent? : DeclNameChain, $name : Name, $comment? : Comment)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.subdepots>.  It will create a
@@ -294,7 +274,8 @@ PACKAGE statement.
 
 =head2 sys.std.Core.Cat.drop_subdepot
 
-C<procedure sys.std.Core.Cat.drop_subdepot ($name : Name)>
+C<procedure sys.std.Core.Cat.drop_subdepot ($depot : Name,
+$parent? : DeclNameChain, $name : Name)>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.subdepots>.  It will drop an
@@ -303,17 +284,11 @@ statement or an Oracle DROP PACKAGE statement.
 
 =head1 Procedures For Defining Depot Routines and Data Types
 
-These 14 procedures conceptually have the extra 2 parameters C<$depot :
-Name, $subdepot? : DeclNameChain>, whose values are implicitly supplied
-from C<tpc.cat.topic_[depot|subdepot]> respectively; those 1 or 2 (as
-applicable) catalog variables must be non-empty as a precondition to
-invoking the 14 procedures.
-
 =head2 sys.std.Core.Cat.create_[function|updater|procedure]
 
 C<procedure sys.std.Core.Cat.create_[function|updater|procedure]
-($name : Name, $comment? : Comment,
-[Function|Updater|Procedure] $material)>
+($depot : Name, $subdepot? : DeclNameChain, $name : Name,
+$comment? : Comment, [Function|Updater|Procedure] $material)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.[function|updater|procedure]s>.
@@ -325,7 +300,7 @@ FUNCTION|PROCEDURE statement.
 =head2 sys.std.Core.Cat.drop_[function|updater|procedure]
 
 C<procedure sys.std.Core.Cat.drop_[function|updater|procedure]
-($name : Name)>
+($depot : Name, $subdepot? : DeclNameChain, $name : Name)>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.[function|updater|procedure]s>.
@@ -335,8 +310,8 @@ is analagous to a SQL DROP FUNCTION|PROCEDURE statement.
 =head2 sys.std.Core.Cat.create_[scalar|nonscalar|union|subset]_type
 
 C<procedure sys.std.Core.Cat.create_[scalar|nonscalar|union|subset]_type
-($name : Name, $comment? : Comment,
-[Scalar|Nonscalar|Union|Subset]$material : Type)>
+($depot : Name, $subdepot? : DeclNameChain, $name : Name,
+$comment? : Comment, [Scalar|Nonscalar|Union|Subset]$material : Type)>
 
 This procedure is an abstraction over inserting a tuple into the catalog
 relvar
@@ -348,7 +323,7 @@ This procedure is analagous to a SQL CREATE TYPE|DOMAIN statement.
 =head2 sys.std.Core.Cat.drop_[scalar|nonscalar|union|subset]_type
 
 C<procedure sys.std.Core.Cat.drop_[scalar|nonscalar|union|subset]_type
-($name : Name)>
+($depot : Name, $subdepot? : DeclNameChain, $name : Name)>
 
 This procedure is an abstraction over deleting a tuple from the catalog
 relvar
