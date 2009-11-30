@@ -2356,21 +2356,17 @@ This is the hierarchy of invocation namespaces of DBMS entities:
     fed  # the transac-synced federation of curr mounted depots w mount nms
         fed.cat  # updateable sys cat db desc entities under fed.[lib|data]
         fed.lib  # invokable user-def types and routines in this federation
-            fed.lib.<depot>
-                fed.lib.<depot>[.<subdepot>]**0..*
-                    fed.lib.<depot>[.<subdepot>]**0..*.<material>
+            fed.lib.<depot-mnt-nm>
+                fed.lib.<depot-mnt-nm>[.<chi-nlx-nsp>]**0..*
+                    fed.lib.<depot-mnt-nm>[.<chi-nlx-nsp>]**0..*.<material>
         fed.data  # updateable db of normal user data in this federation
-    dep  # entities in a self-sufficient depot ref their own depot w this
-        dep.cat  # updateable sys cat db desc entities under dep.[lib|data]
-        dep.lib  # invokable user-def types and routines in this depot
-            dep.lib[.<subdepot>]**0..*
-                dep.lib[.<subdepot>]**0..*.<material>
-        dep.data  # updateable db of normal user data in this depot
-    sdp  # entities in a subdepot ref their own subdepot with this
-        sdp.cat  # updateable sys cat db desc entities under sdp.[lib|data]
-        sdp.lib  # invokable user-def types and routines in this subdepot
-            sdp.lib.<material>
-        sdp.data  # updateable db of normal user data in this subdepot
+    nlx  # non-lex entities ref own immed parent non-lex namespace w this
+        nlx[.par]**0..*
+            nlx[.par]**0..*.cat  # upd s-c db desc ent under fed.[lib|data]
+            nlx[.par]**0..*.lib  # invokable tps|rtns in this namespace
+                nlx[.par]**0..*.lib[.chi-nlx-nsp]**0..*
+                    nlx[.par]**0..*.lib[.chi-nlx-nsp]**0..*.<material>
+            nlx[.par]**0..*.data  # upd db of normal user data in this nsp
     lex  # entities in a rtn ref own lexical params|exprs|vars with this
         lex.<param>
         lex.<expr>
@@ -2388,9 +2384,9 @@ Further details of each namespace follow below.
 All globally visible Muldis D variables are database-typed and can be
 grouped into two main kinds, which are system catalog variables (one of
 which is actually constant) and user data variables.  The global system
-catalog variables all exist as the C<[sys|mnt|fed|dep|sdp].cat>
+catalog variables all exist as the C<[sys|mnt|fed|nlx].cat>
 secondary namespaces (C<sys.cat> is a constant).  The global user data
-variables all live as the C<[fed|dep|sdp].data> secondary namespaces.
+variables all live as the C<[fed|nlx].data> secondary namespaces.
 All non-global variables are just of the user data variety, can be of any
 types, and use the C<lex> primary namespace.
 
@@ -2506,22 +2502,38 @@ addressable pseudo-relvar, type, and routine unqualified names.  So the
 fully-qualified names of most user-defined entities by way of C<fed> are
 3-4 parts.
 
-Entities declared in a depot are recommended to refer to other entities
-within the same depot using the localizing primary namespace C<dep>, which
-for them substitutes for C<fed> plus their mounting name; this allows depot
-entities to be coded in a portable way, not having to know too much about
-how they would be used (eg, not knowing what name they are mounted with).
-In fact, nothing is allowed to directly refer to entities using C<fed>
-except a procedure, or the host language if it exists.
+The C<nlx> primary namespace empowers non-lexical entities declared in the
+same depot or subdepot to refer to each other using relative paths rather
+than using absolute paths which is what C<fed> provides for.  For example,
+if 2 functions whose unqualified names are C<f1> and C<f2> live directly in
+the same depot or subdepot, each one can reference the other, or itself,
+using C<nlx.lib.f1> or C<nlx.lib.f2> respectively.  Referring to an entity
+in a child namespace of the invoker's own direct parent works as you might
+expect, by adding an element per level after the C<lib|data>, for example
+C<nlx.lib.mychild.f3>.  Referring to an entity in a parent namespace of the
+invoker's own direct parent involves adding a C<par> ("parent") element per
+level immediately after the C<nlx>, for example C<nlx.par.lib.f4>.
 
-Similarly, the primary namespace C<sdp> is for self-references between
-entities in a common subdepot; if there are 2 or more layers of
-subdepot, then this is specifically to the most immediate one of
-the referencer; if there are zero layers of subdepot, then this is
-an alias for C<dep>.
+Using C<nlx> rather than C<fed> allows depot entities to be coded in a
+portable way, not having to know too much about how they would be used,
+such as not knowing what name they are mounted under C<fed> with.  Details
+of material definitions as seen in a live in-DBMS mount can remain
+invariant and match their actual stored definitions despite where in their
+parent namespace tree is actually mounted as a "depot" in some DBMS.  For
+example, if some stored database exists with a 2-level namespace, such as
+the "schema" namespaces common to a SQL database, then it doesn't matter
+whether it is the whole stored database or just a single "schema" which is
+mounted in a Muldis D DBMS as a "depot"; when any functions defined in the
+same "schema" refer to each other with the relative syntax of
+C<nlx.lib.fX>, it will work exactly correctly either way.
 
-Similarly, the primary namespace C<lex> refers to entities within
-the same private scope as the referencer.  Variables
+In fact, nothing is allowed to directly refer to user-defined entities
+using C<fed> except a procedure (or updater?), or the host language if it
+exists.  All user-defined functions and types may only be referenced using
+C<nlx> (but that a host language is exempted if it exists).
+
+The C<lex> primary namespace refers to entities within
+the same private lexical scope as the referencer.  Variables
 under C<lex> only are allowed to be of any data type, not just be relvars.
 
 =head2 Conceptions and Requirements
@@ -2575,11 +2587,9 @@ these post-split artifacts.  This presumably common practice would mean
 that a depot will typically have 1 more subdepot layer than otherwise,
 meaning typically 2-3 layers total (corresponding to SQL schema, Oracle
 package, each non-trivial SQL stored routine or type, or SQL table with
-built-in type definition and constraints).  So the primary namespace C<sdp>
+built-in type definition and constraints).  So the primary namespace C<nlx>
 is I<also> used for individual post-split materials to refer to other
-post-split materials within the same conceptual larger material.  I<TODO:
-Maybe split the C<sdp> primary somehow so there are distinct top-levels for
-post-split siblings and the parent subdepot of the whole post-split group.>
+post-split materials within the same conceptual larger material.
 
 The primary namespace C<lex> is for entities that would commonly be
 considered lexical parameters or variables in a routine; these would
@@ -2722,8 +2732,9 @@ considered to be a proxy for that material, as if the material had been
 declared one level up in place of the subdepot, and so any syntax which is
 valid for directly referencing the material may instead (and is recommended
 to) directly reference its parent subdepot instead as if it were the
-material itself.  So for example, if a material C<sdp.lib.foo.""> exists,
-then C<sdp.lib.foo> will implicitly refer to the same material in any
+material itself.  So for example, if a material C<fed.lib.mydb.foo."">
+exists,
+then C<fed.lib.mydb.foo> will implicitly refer to the same material in any
 context that expects the name of a material.  This feature should be
 immensely helpful in supporting encapsulation of materials, such that if
 one wanted to change the implementation of a material to add support
@@ -2734,17 +2745,19 @@ that the original lived in, and no external code has to know about this
 implementation change of the material, and can keep referencing it in the
 same way.  Note that this proxying feature I<will> cascade, such as when a
 subdepot whose name is the empty string contains a material whose name is
-the empty string; so for example, a material C<sdp.lib.foo."".""> can also
-be referenced by both C<sdp.lib.foo> and C<sdp.lib.foo."">.  Note that this
+the empty string; so for example, a material C<fed.lib.mydb.foo."".""> can
+also be referenced by both C<fed.lib.mydb.foo>
+and C<fed.lib.mydb.foo."">.  Note that this
 proxying feature can I<not> be used to reference a subdepot or depot itself
 whose name is the empty string, for hopefully obvious reasons.
 
 Iff a depot or subdepot has a self-local dbvar (specifically, iff the
-former's C<dep.cat.data> or C<sdp.cat.data> is a C<Single>), then the
+former's C<fed.cat.mydb.data> is a C<Single>), then the
 recommended convention is that the declared type of said dbvar is defined
 by a type immediately contained in said depot/subdepot whose declared name
-is the empty string.  (This also means that C<dep.lib> alone will reference
-the type of the depot's C<dep.data>, when the convention is followed.)
+is the empty string.  (This also means that C<fed.lib.mydb> alone will
+reference
+the type of the depot's C<fed.data.mydb>, when the convention is followed.)
 
 In a function definition, it is mandatory for the root node in the
 expression node tree to have the empty string as its declared name.
@@ -2754,7 +2767,7 @@ the statement node tree to have the empty string as its declared name.
 =head2 User Namespace Correspondence
 
 The namespace hierarchies under the C<lib> and C<data> second-level
-namespaces of C<fed|dep|sdp> are fully independent in definition, such
+namespaces of C<fed|nlx> are fully independent in definition, such
 that namespaces under C<lib> are defined in terms of child subdepots,
 while namespaces under C<data> are defined in terms of tuple
 (database) attributes that are themselves tuples (databases) rather than
@@ -2769,7 +2782,7 @@ choose to I<not> have its own dbvar); that also serves to support DBMSs
 that have a common namespace hierarchy for both routines and relvars.  This
 section details that mutual constraint.
 
-The 3 system-defined user-data variables named C<[fed|dep|sdp].data>
+The 2 system-defined user-data variables named C<[fed|nlx].data>
 are all of "just" the C<Database> type (which is a C<Tuple> proper
 subtype), or are of its proper subtypes.
 
@@ -2780,75 +2793,75 @@ exactly one depot mount, whose mount name is the empty string,
 and the type of C<fed.data> has either a single database-typed attribute
 or zero attributes depending on whether or not the corresponding depot has
 a self-local dbvar and C<fed.data>'s default value is determined by the
-corresponding depot's default C<dep.data> value or it is the zero-attribute
+corresponding depot's default C<nlx.data> value or it is the zero-attribute
 tuple/database; mounting a depot adds one corresponding
 database-typed attribute to C<fed.data>'s type and value, iff the depot has
 a self-local dbvar, and unmounting the depot removes its corresponding
 attribute, iff likewise.  For each attribute of the type and value of
 C<fed.data>, its type and value is equal to the type and value of the
-C<dep.data> variable seen by entities within the corresponding depot, iff
+C<nlx.data> variable seen by entities within the corresponding depot, iff
 the depot has a self-local dbvar.
 
-The C<dep.data> variable's existence and type is determined by the catalog
+The C<nlx.data> variable's existence and type is determined by the catalog
 of the same depot.  When a new depot is created, the default value of its
 catalog defines zero types or routines, and defines that the depot does
 I<not> have a self-local dbvar; this means by default the depot is just a
 repository for code, able to contain only types and routines, and that
-depot's C<dep.data> doesn't exist at all.  Later on, if a depot's catalog
+depot's C<nlx.data> doesn't exist at all.  Later on, if a depot's catalog
 is updated to say that the depot I<does> have a self-local dbvar, which is
-accomplished by setting that depot's C<dep.cat.data> to a C<Single> value
-that names the declared database type of that depot's C<dep.data>;
+accomplished by setting that depot's C<nlx.cat.data> to a C<Single> value
+that names the declared database type of that depot's C<nlx.data>;
 typically said named type is a material also added to the depot's root
 namespace, which typically has the empty string entity declaration name.
 
 In most typical situations, a depot's catalog is updated
-to say that the declared type of C<dep.data> consists only of database
+to say that the declared type of C<nlx.data> consists only of database
 values having specific relation-valued attributes of specific relation
 types, and database relations can not be added or removed without
 also updating the corresponding database type.  Generally speaking, the
-declared type of C<dep.data> includes everything that SQL would define as
+declared type of C<nlx.data> includes everything that SQL would define as
 table definitions, table unique key constraints, subset (foreign key)
 constraints, and generic database or table state constraints, but state
 constraints can also be associated with just variables rather than types.
 Only database transition constraints are not part of the database's type,
-and are applied directly to the C<dep.data> variable (and C<fed.data> also)
+and are applied directly to the C<nlx.data> variable (and C<fed.data> also)
 by the depot's catalog in another way.
 
 Conceptually speaking, for the ultimate freedom from constraints, the
-declared type of C<dep.data> can be a simple alias for the C<Database>
-type, meaning that users can update C<dep.data> (or more specifically, C<<
-fed.data.<depot-mount-name> >>) with any C<Database> value at all, and
+declared type of C<nlx.data> can be a simple alias for the C<Database>
+type, meaning that users can update C<nlx.data> (or more specifically, C<<
+fed.data.<depot-mnt-nm> >>) with any C<Database> value at all, and
 (where applicable) have it persist.  In this situation, adding a database
 relation is done by extending the database with a new relation-valued
 attribute, and removing one is removing its attribute.  But see further
-below as, strictly speaking, some database values can't be in C<dep.data>.
+below as, strictly speaking, some database values can't be in C<nlx.data>.
 
 If a depot has any subdepots, then for each subdepot, iff the subdepot has
-a self-local dbvar, that is iff the subdepot's C<sdp.cat.data> is a
-C<Single>, then the value of C<dep.data> must have a corresponding
-database-typed attribute that matches by name,
-recursively.  For example, if a depot has a
-root-child subdepot named C<foo> and a child subdepot of that named C<bar>,
-and C<bar> expects to have a self-local dbvar, then the type of C<dep.data>
-must have a database-typed attribute named C<foo> and the type of C<foo>
-must have a database-typed attribute named C<bar>.  So then,
-C<dep.data.foo> is the pseudo-dbvar of C<sdp.data> as seen by entities in
-the C<foo> subdepot (and they have the same type and value), and
-C<dep.data.foo.bar> is the pseudo-dbvar of C<sdp.data> as seen by entities
-in the C<bar> subdepot.  The type of C<dep.data> may have additional
-attributes besides those matching subsepots, but it may not
-lack any corresponding ones with subdepots that have self-local dbvars.
+a self-local dbvar, that is iff the subdepot's C<nlx.cat.data> is a
+C<Single>, then the value of C<fed.data.mydb> must have a corresponding
+database-typed attribute that matches by name, recursively.  For example,
+if a depot mounted as C<mydb> has a root-child subdepot named C<foo> and a
+child subdepot of that named C<bar>, and C<bar> expects to have a
+self-local dbvar, then the type of C<fed.data.mydb> must have a
+database-typed attribute named C<foo> and the type of C<foo> must have a
+database-typed attribute named C<bar>.  So then, C<fed.data.mydb.foo> is
+the pseudo-dbvar of C<nlx.data> as seen by entities in the C<foo> subdepot
+(and they have the same type and value), and C<fed.data.mydb.foo.bar> is
+the pseudo-dbvar of C<nlx.data> as seen by entities in the C<bar> subdepot.
+ The type of C<fed.data.mydb> may have additional attributes besides those
+matching subsepots, but it may not lack any corresponding ones with
+subdepots that have self-local dbvars.
 
 Now while subdepots in a depot optionally have corresponding
-database-typed C<dep.data> attributes, the opposite is true in regards to
+database-typed C<nlx.data> attributes, the opposite is true in regards to
 routines and types in a depot; for those, there must I<not> be any
-corresponding C<dep.data> attributes, either database or relation-typed;
+corresponding C<nlx.data> attributes, either database or relation-typed;
 depot relvars effectively live in the same namespace hierarchy as types and
 routines, and must not have the same fully-qualified names.
 
 What is said above for the relationship between the catalog of a depot and
-its C<dep.data>, goes also for the catalog of a subdepot and
-its C<sdp.data>, respectively.  Note that while a depot or
+its C<nlx.data>, goes also for the catalog of a subdepot and
+its C<nlx.data>, respectively.  Note that while a depot or
 subdepot does not need to have a self-local dbvar in the general
 case, if any subdepot wants to have a self-local dbvar, then all
 of its direct ancestor namespaces must have one too, because a subdepot
@@ -2862,7 +2875,7 @@ materials, the type must exclude attributes with the same names.  When
 there is a child subdepot C<foo>, the situation depends on
 whether C<foo> has a self-local dbvar; if it does, then the parent's type
 must have an attribute named C<foo> and that attribute must declare its
-type to be the same type as the child subdepot's C<sdp.cat.data> names;
+type to be the same type as the child subdepot's C<nlx.cat.data> names;
 if it doesn't, then the parent's type must
 exclude every database value with an attribute C<foo>.
 
@@ -2915,10 +2928,10 @@ type.var[.<path-elem-to-var>]**1..*[.<path-elem-to-attr>]**0..* >>, for
 example C<type.var.lex.myvar>.  A similar scenario is taking the declared
 type of an attribute of a distinct type entity, which takes the form C<<
 type.type[.<path-elem-to-type>]**1..*[.<path-elem-to-attr>]**1..* >>, for
-example C<type.type.dep.lib.mytyp.myattr>.  A similar scenario is taking
+example C<type.type.nlx.lib.mytyp.myattr>.  A similar scenario is taking
 the declared result type of a function, which takes the form C<<
 type.func_result[.<path-elem-to-func>]**1..*[.<path-elem-to-attr>]**0..*
->>, for example C<type.func_result.dep.lib.myfunc>.
+>>, for example C<type.func_result.nlx.lib.myfunc>.
 
 A slightly more complicated scenario is taking the declared type of a
 routine parameter, which takes the form C<<
@@ -2937,8 +2950,8 @@ C<[.[|dh_][tuple|relation]_from]**0..1> in their syntax following the
 C<type> (or you add the C<type> if you didn't otherwise have one because
 you were otherwise referring to a named type directly) and before the
 aforementioned remainder; for example
-C<type.[tuple|relation]_from.var.dep.data.myrelvar>
-or C<type.[tuple|relation]_from.dep.lib.mytype>.
+C<type.[tuple|relation]_from.var.nlx.data.myrelvar>
+or C<type.[tuple|relation]_from.nlx.lib.mytype>.
 
 Muldis D also has an extension to the previously described "taking the
 type" feature such that declaring any type, embedded or otherwise, also has

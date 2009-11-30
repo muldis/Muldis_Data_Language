@@ -27,6 +27,32 @@
     PTMD_STD.pod, updated the "DBMS Entity Name Literals" pod sub-section
     to remove all references to the "tpc" top-level namespace.
 
+    * (Types_Catalog.pod)  Simplified the "FedTypeMapSet" catalog type by
+    renaming its "map" attribute to "types" and retyping the attribute from
+    a "FedTypeMap" binary relation (that named type was then removed) to an
+    equivalent "set_of.NameChain".
+
+    * (Basics.pod, Types.pod, Types_Catalog.pod, PTMD_STD.pod,
+    HDMD_Perl[6|5]_STD.pod)  Replaced the 2 top-level entity namespaces
+    "dep" (depot) and "sdp" (subdepot) with the 1 top-level namespace "nlx"
+    (nonlexical).  Now, all non-lexical user-defined entities in a depot
+    are referenced in just 2 ways; the "fed" top-level provides an absolute
+    path and the "nlx" top-level provides a relative path.  The new "nlx"
+    is more like the old "sdp" than the old "dep" in that its path starts
+    in the most immediate subdepot (or depot) parent of the referencing
+    entity, but unlike "sdp", "nlx" can also navigate to parent namespaces,
+    and so is fully capable of referencing anything in the referencer's
+    depot.  The new "nlx" avoids the limitations of the old
+    quasi-absolute-path "dep|sdp" in that it still works regardless of
+    which of the referencing entity's parent namespaces is mounted in a
+    DBMS as a "depot"; it makes writing portable code much easier, such
+    that the code itself can be invariant between storage and live
+    representation.  In Basics.pod, updated the "ENTITY NAMES" main pod
+    section, and its pod sub-section "User-Defined Entities", with the
+    aforementioned primary namespace replacements.  In all 6 files,
+    replaced any references to "dep" or "sdp" in documentation and code
+    examples with "nlx" as appropriate.
+
 2009-11-26  Darren Duncan <darren@DarrenDuncan.net>
 
     * Muldis::D version 0.101.0 is released on CPAN as

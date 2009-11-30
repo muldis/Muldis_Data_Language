@@ -1235,9 +1235,9 @@ possrep's attribute of the result C<NameChain> value.
 
 Now, strictly speaking, a Muldis D C<NameChain> value is supposed to have
 at least 2 elements in its sequence, and the first element of any sequence
-must be one of these 6 C<Name> values, which is a top-level namespace:
-C<sys>, C<mnt>, C<fed>, C<dep>, C<sdp>, C<lex>.
-(Actually, C<type> is a 7th option, but that will be treated separately in
+must be one of these 5 C<Name> values, which is a top-level namespace:
+C<sys>, C<mnt>, C<fed>, C<nlx>, C<lex>.
+(Actually, C<type> is a 6th option, but that will be treated separately in
 this discussion.)  In the general case, a C<NameChain_payload> must be
 written out in full, so it is completely unambiguous (and is clearly
 self-documenting), and it is always the case that a C<NameChain> value in
@@ -1262,7 +1262,7 @@ no effect on the namespace prefixes like C<type> or C<tuple_from> or
 C<array_of>; one still writes those as normal prepended to the otherwise
 shortened chains.  When a C<NameChain_payload>, whose context indicates it
 is a type or routine invocation, is encountered by the parser, and its
-existing first chain element isn't one of the other 7 top-level namespaces,
+existing first chain element isn't one of the other 5 top-level namespaces,
 then the parser will assume it is an unqualified chain in the C<sys>
 namespace and lookup the best / only match from the known C<sys.std> DBMS
 entities, to resolve to.  So for example, one can just write C<Int> rather
@@ -1278,10 +1278,10 @@ The second special case involves any context where a value expression
 with an C<expr_name> node.  In such a context, any leading C<lex> element
 may be omitted; when a C<NameChain_payload>, whose context indicates it is
 a value expression / etc reference, is encountered by the parser, and its
-existing first chain element isn't one of the other 7 top-level namespaces,
+existing first chain element isn't one of the other 6 top-level namespaces,
 then the parser will assume it is an unqualified chain in the C<lex>
 namespace and will prepend a C<lex> element to it.  So for example a
-C<$foo> is treated as being C<$lex.foo> while a C<$dep.data.foo> is treated
+C<$foo> is treated as being C<$lex.foo> while a C<$nlx.data.foo> is treated
 as itself.  Furthermore, if such an unqualified chain has more than exactly
 1 element in it, it is further assumed that the chain is referring to an
 attribute of a tuple (or database) typed value expression / etc.
@@ -1312,9 +1312,9 @@ single prefix-leading C<type> chain element.  So for example, one can just
 write C<array_of.Rat> rather than C<type.array_of.Rat>, or
 C<tuple_from.var.lex.myrelvar> rather than
 C<type.tuple_from.var.lex.myrelvar>.  This fourth special case is
-completely orthogonal to which of the 6 normal top-level namespaces is in
+completely orthogonal to which of the 5 normal top-level namespaces is in
 use (implicitly or explicitly) by the chain being prefixed, and works for
-all 6 of them.
+all 5 of them.
 
 A C<DeclNameChain> node represents a canonical long name for declaring a
 DBMS entity in N-depth contexts; the format and interpretation of a
@@ -2358,7 +2358,7 @@ When a C<material> node defines an outer material C<foo> directly within a
 subdepot (or depot) C<bar>, and C<foo> has no child inner materials, then
 the material definition will be stored in the system catalog exactly as
 conceived, as a new material named C<foo> directly in the subdepot C<bar>.
-For example, the outer material will have the name C<dep.lib.bar.foo>.
+For example, the outer material will have the name C<fed.lib.mydb.bar.foo>.
 
 In contrast, when said C<material> node has at least one child inner
 material C<baz>, then what happens in the system catalog instead is that a
@@ -2367,7 +2367,8 @@ every one of the whole hierarchy of said C<material> nodes is stored
 directly in the subdepot C<foo>; the outer material is stored under the
 name that is the empty string, and its inner materials are stored under
 their own names.  For example, the outer material will have the name
-C<dep.lib.bar.foo.""> and the inner will be named C<dep.lib.bar.foo.baz>.
+C<fed.lib.mydb.bar.foo.""> and the inner will be named
+C<fed.lib.mydb.bar.foo.baz>.
 Such a material hierarchy is stored in a flat namespace so it is required
 for all inner materials having a common outer material to have distinct
 declaration names, none of which are the empty string, regardless of
@@ -2612,7 +2613,7 @@ Examples:
     $foo_t.bar_attr
 
     # an accessor node of an anonymous tuple-valued node #
-    sdp.lib.tuple_res_func( $arg ).quux_attr
+    nlx.lib.tuple_res_func( $arg ).quux_attr
 
 =head2 Generic Function Invocation Expressions
 
@@ -2703,13 +2704,13 @@ Examples:
     Rational.quotient( divisor => 16.9, dividend => 43.7 )
 
     # one mandatory 'topic' param, two optional #
-    sdp.lib.barfunc( $mand_arg, oa1 => $opt_arg1, oa2 => $opt_arg2 )
+    nlx.lib.barfunc( $mand_arg, oa1 => $opt_arg1, oa2 => $opt_arg2 )
 
     # same as previous #
-    sdp.lib.barfunc( oa2 => $opt_arg2, $mand_arg, oa1 => $opt_arg1 )
+    nlx.lib.barfunc( oa2 => $opt_arg2, $mand_arg, oa1 => $opt_arg1 )
 
     # a user-defined function #
-    dep.lib.foodb.bazfunc( a1 => 52, a2 => 'hello world' )
+    nlx.lib.foodb.bazfunc( a1 => 52, a2 => 'hello world' )
 
     # two params named 'topic' and 'other' #
     is_identical( $foo, $bar )
@@ -2842,15 +2843,15 @@ reference value.
 
 Examples:
 
-    F->sdp.lib.filter
+    F->nlx.lib.filter
 
-    U->sdp.lib.swap
+    U->nlx.lib.swap
 
-    P->sdp.lib.try_block
+    P->nlx.lib.try_block
 
-    T->sdp.lib.foo_type
+    T->nlx.lib.foo_type
 
-    ODF->sdp.lib.order_bars
+    ODF->nlx.lib.order_bars
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
@@ -3044,7 +3045,7 @@ Examples:
 
     $a // $b // 42
 
-    $a //d $b //d T->sdp.lib.foo_type
+    $a //d $b //d T->nlx.lib.foo_type
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -3213,9 +3214,9 @@ customization; but most actual uses of like/etc don't use C<escape> anyway.
 
 Examples:
 
-    $bar isa T->sdp.lib.foo_type
+    $bar isa T->nlx.lib.foo_type
 
-    $bar !isa T->sdp.lib.foo_type
+    $bar !isa T->nlx.lib.foo_type
 
     $scalar as T->Int
 
@@ -3278,7 +3279,7 @@ This table indicates which function is invoked by each keyword:
 
 Examples:
 
-    d T->sdp.lib.foo_type
+    d T->nlx.lib.foo_type
 
     not true
 

@@ -108,7 +108,6 @@ more or less:
                 sys.std.Core.Type.Cat.MountControlSet
                 sys.std.Core.Type.Cat.DepotMountSet
                 sys.std.Core.Type.Cat.FedTypeMapSet
-                sys.std.Core.Type.Cat.FedTypeMap
                 sys.std.Core.Type.Cat.SubdepotSet
                 sys.std.Core.Type.Cat.[Function|Updater|Procedure]Set
                 sys.std.Core.Type.Cat.[Scalar|Nonscalar]TypeSet
@@ -445,7 +444,7 @@ system-defined entities, specifically all the system-defined types,
 routines, and catalogs.  Both standard system-defined entities and
 implementation-specific system-defined entities are specified here,
 specifically all the relcons and relvars with the names
-C<[sys|mnt|fed|dep|sdp].cat>.  The system catalog constant named
+C<[sys|mnt|fed|nlx].cat>.  The system catalog constant named
 C<sys.cat> is of the C<System> type.
 
 A C<System> has these 11 attributes:
@@ -461,11 +460,11 @@ system-defined entities as a whole.
 
 These are all the system-defined namespaces where DBMS entities may live,
 or that otherwise always exist due to being system-defined.  Specifically,
-it declares these 22 standard language namespaces:
-C<[sys|mnt|fed|dep|sdp|lex]> (which have the nameless global
+it declares these 18 standard language namespaces:
+C<[sys|mnt|fed|nlx|lex]> (which have the nameless global
 root namespace as their parent, spelled as the empty C<DeclNameChain>
 value, that isn't also declared here), C<sys.[cat|std|imp]>,
-C<mnt.cat>, C<[fed|dep|sdp].[cat|lib|data]>, C<sys.std.Core>,
+C<mnt.cat>, C<[fed|nlx].[cat|lib|data]>, C<sys.std.Core>,
 C<sys.std.Core.Type>, C<sys.std.Core.Type.Cat>; it also declares other
 C<Core> namespaces, and where applicable, standard extensions or
 implementation-specific extensions.
@@ -505,8 +504,8 @@ nonscalar types, and union types, and subset types.
 =item C<catalogs> - C<SysCatSet>
 
 These are the interfaces of all the catalog relcons and relvars.
-Specifically, it declares these 5 standard catalogs:
-C<[sys|mnt|fed|dep|sdp].cat>; the first is a relcon, the others not.
+Specifically, it declares these 4 standard catalogs:
+C<[sys|mnt|fed|nlx].cat>; the first is a relcon, the others not.
 
 =back
 
@@ -913,9 +912,9 @@ A C<FedTypeMapSet> has these 2 attributes:
 
 This is an optional programmer comment about this type mapping.
 
-=item C<map> - C<FedTypeMap>
+=item C<types> - C<set_of.NameChain>
 
-This lists the fully-qualified names of 0..N data types that are all
+This lists the C<fed.>-qualified names of 0..N data types that are all
 considered to be copies of the same 1 type, and should be treated
 interchangeably by the DBMS.
 
@@ -923,16 +922,6 @@ interchangeably by the DBMS.
 
 A C<FedTypeMapSet> has a primary key on the C<map> attribute.  Its
 default value is empty.
-
-=head2 sys.std.Core.Type.Cat.FedTypeMap
-
-A C<FedTypeMap> is a C<DHRelation>.  It lists the fully-qualified names of
-0..N data types that are all considered to be copies and of the same 1
-type, and should be treated interchangeably by the DBMS.  A C<FedTypeMap>
-has 2 attributes, C<depot> (a C<Name>) and C<type> (a C<NameChain>); the
-C<depot> is the declared name of the depot mount that the data type lives
-in; the C<type> is the C<dep.>-qualified name of the data type living in
-it.  Its default value has zero tuples.
 
 =head1 TYPES FOR DEFINING DEPOTS AND SUBDEPOTS
 
@@ -947,8 +936,8 @@ within the same scope or of system-defined entities.  It also doubles to
 specify the system catalog of a subdepot, which is an arbitrary subset of a
 depot's entities that internally looks like a depot; a depot can have 0..N
 subdepots, and any that exist are arranged in a hierarchy with the depot as
-the root.  The system catalog variables named C<dep.cat>
-and C<sdp.cat> are all of the C<Depot> type.
+the root.  The system catalog variable named C<nlx.cat> is of the C<Depot>
+type.
 
 A C<Depot> has these 10 attributes:
 
@@ -1003,7 +992,8 @@ A C<SubdepotSet> has these 3 attributes:
 
 =item C<parent> - C<DeclNameChain>
 
-This is the fully-qualified name, in the C<dep.[cat|lib|data]> namespace,
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
+of any hypothetical immediate child namespace of the depot,
 of the subdepot's parent subdepot, which is often just the depot itself.
 
 =item C<name> - C<Name>
@@ -1035,7 +1025,8 @@ An C<[Function|Updater|Procedure]Set> has these 4 attributes:
 
 =item C<parent> - C<DeclNameChain>
 
-This is the fully-qualified name, in the C<dep.[cat|lib|data]> namespace,
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
+of any hypothetical immediate child namespace of the depot,
 of the function|updater|procedure's parent [|sub]depot.
 
 =item C<name> - C<Name>
@@ -1071,7 +1062,8 @@ An C<[Scalar|Nonscalar|Union|Subset]TypeSet> has these 4 attributes:
 
 =item C<parent> - C<DeclNameChain>
 
-This is the fully-qualified name, in the C<dep.[cat|lib|data]> namespace,
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
+of any hypothetical immediate child namespace of the depot,
 of the scalar|nonscalar|union|subset type's parent [|sub]depot.
 
 =item C<name> - C<Name>
@@ -3548,16 +3540,19 @@ Y entity that the X is embedded in.  There is no valid
 C<NameChain> value for referencing it from outside that context
 (likewise for routines declared private to a subdepot), and outside that
 context is typically where the routines that take closures as arguments
-would live.  For example, if public function C<dep.lib.mymain> had an
-function C<sdp.lib.mytest> and C<dep.lib.mymain> invoked the public
+would live.  For example, if public function C<fed.lib.mydb.mymain> had an
+function C<nlx.lib.mytest> and C<fed.lib.mydb.mymain> invoked the public
 function
-C<dep.lib.myfilter> with an argument value of C<sdp.lib.mytest>, then if
-C<dep.lib.myfilter> tried to invoke the function it was passed, it would
-actually be trying to invoke an function of C<dep.lib.myfilter> named
-C<sdp.lib.mytest>, which won't work.  Conceptually, a solution to this
+C<fed.lib.mydb.myfilter> with an argument value of C<nlx.lib.mytest>,
+then if
+C<fed.lib.mydb.myfilter> tried to invoke the function it was passed,
+it would
+actually be trying to invoke an function of C<fed.lib.mydb.myfilter> named
+C<nlx.lib.mytest>, which won't work.  Conceptually, a solution to this
 problem
 is to actually pass a routine name in a more fully-qualified form,
-conceptually like C<dep.lib.mymain.mytest>, which then C<dep.lib.myfilter>
+conceptually like C<fed.lib.mydb.mymain.mytest>, which then
+C<fed.lib.mydb.myfilter>
 could correctly invoke.  However, if that was made to work literally with a
 C<NameChain>, then this could cause problems where anything could
 invoke C<mytest> directly without being given permission from C<mymain>.
@@ -3581,7 +3576,7 @@ not 2 distinct selections are considered to have the same context (so their
 identity varies only on their C<NameChain>) depends on what namespace the
 referenced entity is relative to the referencing entity; for a reference to
 C<x>, the context is the Y entity containing that X; for a
-reference to C<sys> or C<fed>, the context is global; for C<dep> or C<sdp>
+reference to C<sys> or C<fed>, the context is global; for C<nlx>
 the context is that same depot/subdepot.  I<These spec
 details may be adjusted.>  Currently, selecting these special values can't
 be done with an ordinary routine, but only with a special catalog type for
