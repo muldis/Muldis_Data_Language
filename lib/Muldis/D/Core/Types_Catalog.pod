@@ -58,6 +58,15 @@ more or less:
                         sys.std.Core.Type.Cat.UCPString
                     sys.std.Core.Type.Cat.Name
                     sys.std.Core.Type.Cat.NameChain
+                        sys.std.Core.Type.Cat.MaterialNC
+                            sys.std.Core.Type.Cat.AbsPathMaterialNC
+                                sys.std.Core.Type.Cat.APNonTypeNC
+                                    sys.std.Core.Type.Cat.APFunctionNC
+                                    sys.std.Core.Type.Cat.APUpdaterNC
+                                    sys.std.Core.Type.Cat.APProcedureNC
+                                sys.std.Core.Type.Cat.APTypeNC
+                            sys.std.Core.Type.Cat.RelPathMaterialNC
+                        sys.std.Core.Type.Cat.DataNC
                     sys.std.Core.Type.Cat.DeclNameChain
                     sys.std.Core.Type.Cat.Comment
                     sys.std.Core.Type.Cat.Order
@@ -125,7 +134,7 @@ more or less:
                 sys.std.Core.Type.Cat.IfElseExprNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
                 sys.std.Core.Type.Cat.WhenThenExprMap
-                sys.std.Core.Type.Cat.MaterialRefSelExprNodeSet
+                sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet
                 sys.std.Core.Type.Cat.MultiUpdStmt
                 sys.std.Core.Type.Cat.OVLScaValStmtNodeSet
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
@@ -138,7 +147,7 @@ more or less:
                 sys.std.Core.Type.Cat.WhenThenVarStmtMap
                 sys.std.Core.Type.Cat.IterateStmtNodeSet
                 sys.std.Core.Type.Cat.LoopStmtNodeSet
-                sys.std.Core.Type.Cat.MaterialRefSelStmtNodeSet
+                sys.std.Core.Type.Cat.APMaterialNCSelStmtNodeSet
                 sys.std.Core.Type.Cat.PossrepSet
                 sys.std.Core.Type.Cat.PossrepMapSet
                 sys.std.Core.Type.Cat.VirtualAttrMapSet
@@ -154,26 +163,23 @@ more or less:
                 sys.std.Core.Type.Cat.NameDNCMap
                 sys.std.Core.Type.Cat.AttrRenameMap
 
-These system-defined subtypes can never be used as components of a system
-catalog, or any database, but they may be used temporarily at runtime:
+These system-defined subtypes can not in general be used as components of a
+system catalog, or any database, but they may be used temporarily at
+runtime:
 
     sys.std.Core.Type.Universal
 
         sys.std.Core.Type.Empty
 
-        sys.std.Core.Type.Reference
+        sys.std.Core.Type.Tuple
 
-            # The following are special-purpose reference types.
+            # The following are all regular tuple types.
 
-            sys.std.Core.Type.Cat.MaterialRef
-                sys.std.Core.Type.Cat.FuncRef
-                    sys.std.Core.Type.Cat.OrdDetFuncRef
-                    sys.std.Core.Type.Cat.ValFiltFuncRef
-                    sys.std.Core.Type.Cat.ValMapFuncRef
-                    sys.std.Core.Type.Cat.ValRedFuncRef
-                sys.std.Core.Type.Cat.UpdRef
-                sys.std.Core.Type.Cat.ProcRef
-                sys.std.Core.Type.Cat.TypeRef
+            sys.std.Core.Type.Cat.CurriedFuncNC
+                sys.std.Core.Type.Cat.OrdDetCFuncNC
+                sys.std.Core.Type.Cat.ValFiltCFuncNC
+                sys.std.Core.Type.Cat.ValMapCFuncNC
+                sys.std.Core.Type.Cat.ValRedCFuncNC
 
 =head1 SIMPLE GENERIC SCALAR TYPES
 
@@ -339,6 +345,84 @@ non-empty one; otherwise, compare the first element of each of the chain
 remainders according to the default ordering algorithm of C<Name> to get
 the order of their respective chains.
 
+=head2 sys.std.Core.Type.Cat.MaterialNC
+
+This is an enumeration data type.  C<MaterialNC> is a proper subtype of
+C<NameChain> where every member value's chain starts with one of the
+following element sequences: C<sys.[std|imp]>, C<fed.lib>,
+C<nlx[.par]**0..*.lib>, C<type>.  One can be used to reference a material
+(routine or type or etc) for invocation, either system-defined or
+user-defined.  Its default value is a reference to the
+C<sys.std.Core.Type.Universal> type.
+
+=head2 sys.std.Core.Type.Cat.AbsPathMaterialNC
+
+This is an enumeration data type.  C<AbsPathMaterialNC> is a proper subtype
+of C<MaterialNC> where every member value's chain starts with either C<sys>
+or C<fed> (or a C<type>-prefix followed by those) but not C<nlx>.  One is
+used when conceptually a routine or type is being passed as an argument to
+a routine, such as because it is a higher-order function or closure, and it
+is in fact the name of the invocant being passed; only an absolute path can
+be used in this situation for the general case because the target is being
+invoked from a different context than where the reference to the target is
+being selected; a relative path doesn't work because C<nlx> means something
+different on each side of the NC-argument-taking-routine.  Conceptually
+speaking, an C<AbsPathMaterialNC> that points to a routine I<is> a closure,
+or a higher-order function if it points to a function.
+
+=head2 sys.std.Core.Type.Cat.APNonTypeNC
+
+This is an enumeration data type.  C<APNonTypeNC> is a proper subtype of
+C<AbsPathMaterialNC> that excludes the C<type>-prefix values.  Its default
+value is a reference to the C<sys.std.Core.Universal.is_identical>
+function.
+
+=head2 sys.std.Core.Type.Cat.APFunctionNC
+
+This is an enumeration data type.  C<APFunctionNC> is a non-proper subtype
+of C<APNonTypeNC>.  Its default value is a reference to the
+C<sys.std.Core.Universal.is_identical> function.
+
+=head2 sys.std.Core.Type.Cat.APUpdaterNC
+
+This is an enumeration data type.  C<APUpdaterNC> is a non-proper subtype
+of C<APNonTypeNC>.  Its default value is a reference to the
+C<sys.std.Core.Universal.assign> updater.
+
+=head2 sys.std.Core.Type.Cat.APProcedureNC
+
+This is an enumeration data type.  C<APProcedureNC> is a non-proper subtype
+of C<APNonTypeNC>.  Its default value is a reference to the
+C<sys.std.Core.Cat.noop> procedure.
+
+=head2 sys.std.Core.Type.Cat.APTypeNC
+
+This is an enumeration data type.  C<APTypeNC> is a non-proper subtype of
+C<AbsPathMaterialNC>.  Its default value is a reference to the
+C<sys.std.Core.Type.Universal> data type, the same as its parent type and
+therefore exists soley for use in better-self-documenting code that expects
+a reference to a type specifically.
+
+=head2 sys.std.Core.Type.Cat.RelPathMaterialNC
+
+This is an enumeration data type.  C<RelPathMaterialNC> is a proper subtype
+of C<MaterialNC> where every member value's chain starts with either C<sys>
+or C<nlx> (or a C<type>-prefix followed by those) but not C<fed>.  One is
+used in a context where a user-defined routine or type may only be invoked
+directly when both the invoker and invoked are in the same depot.
+
+=head2 sys.std.Core.Type.Cat.DataNC
+
+This is an enumeration data type.  C<DataNC> is a proper subtype of
+C<NameChain> where every member value's chain starts with one of the
+following element sequences: C<sys.cat>, C<mnt.cat>, C<fed.[cat|data]>,
+C<nlx[.par]**0..*.[cat|data]>, C<lex>.  One can be used to reference a
+variable (or pseudo-variable or parameter or named expression or
+statement), either a system-catalog or normal data variable.  Its default
+value is a reference to the C<sys.cat> catalog relcon.
+I<Conjecture:  Subtypes like C<[Abs|Rel]PathCataNC> might also be defined
+later if we have some situation where such a restriction might be useful.>
+
 =head2 sys.std.Core.Type.Cat.DeclNameChain
 
 This is a structure data type.  A C<DeclNameChain> (scalar) is exactly the
@@ -481,12 +565,12 @@ also specifies the system-defined system-services.)
 These are the few central system-defined data types that have special
 hard-coded meanings and are not defined like any other types; these are
 declarations of all of the native Muldis D types that can't be defined like
-user-defined types.  Specifically, it declares these 9 standard types: in
+user-defined types.  Specifically, it declares these 8 standard types: in
 the C<sys.std.Core.Type> namespace, C<Universal>, C<Empty>, C<Scalar>,
 C<Tuple>, C<Relation>, C<Reference>, C<External>; in the
-C<sys.std.Core.Type.Cat> namespace, C<String> and C<MaterialRef>.  These
-constitute all 2 Muldis D primitive types, all 2 Muldis D reference types,
-all 2 Muldis D type system minimal and maximal (enumeration) types, all 3
+C<sys.std.Core.Type.Cat> namespace, just C<String>.  These
+constitute all 2 Muldis D primitive types, all 1 Muldis D reference types,
+all 2 Muldis D type system minimal and maximal (enumeration) types, all 2
 Muldis D enumeration types that are each implicit maximal types of 2 of 4
 non-remnant type categories (the other 2 such maximals are primitive
 types), and the 1 sole scalar enumeration type that is defined in terms of
@@ -1246,7 +1330,7 @@ These are expression nodes that represent if-else control flow expressions.
 These are expression nodes that represent given-when-default control flow
 expressions.
 
-=item C<material_ref_sel_exprs> - C<MaterialRefSelExprNodeSet>
+=item C<ap_material_nc_sel_exprs> - C<APMaterialNCSelExprNodeSet>
 
 These are expression nodes that define routine or type reference literals.
 
@@ -1720,15 +1804,24 @@ condition.  If a C<when> value is matched, then the C<then> node is
 evaluated and its result is the result of the whole g-w-d expression;
 otherwise, C<then> is not evaluated.  Its default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.MaterialRefSelExprNodeSet
+=head2 sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet
 
-A C<MaterialRefSelExprNodeSet> is a C<DHRelation> that specifies a set of
-expression nodes where each node represents a value of the special
-C<sys.std.Core.Type.Cat.MaterialRef> type.  None of the represented values
-have any pre-bound routine parameters where applicable, and those can be
-added afterwards with the system-defined currying routines.
+An C<APMaterialNCSelExprNodeSet> is a C<DHRelation> that specifies a set of
+expression nodes where each node represents a value of the
+C<sys.std.Core.Type.Cat.AbsPathMaterialNC> type, which is selected in terms
+of a value of the C<sys.std.Core.Type.Cat.RelPathMaterialNC> type.
 
-A C<MaterialRefSelExprNodeSet> has these 3 attributes:
+The reason that the C<APMaterialNCSelExprNodeSet> expression node kind
+exists, rather than the functionality of mapping relative paths to absolute
+paths being provided by an ordinary unary function invocation, is because
+the semantics of the operation depend on the location of the referencing
+code, not just on the explicit parameters of the operation.  Moreover,
+conceptually this mapping operation can be performed at compile time (of
+the system catalog of a depot mount into native machine code) so at normal
+runtime it is as if the absolute-path value was what was originally a value
+literal in the source code.
+
+An C<APMaterialNCSelExprNodeSet> has these 3 attributes:
 
 =over
 
@@ -1740,15 +1833,15 @@ This is the declared name of the expression node.
 
 This is an optional programmer comment about the expression leaf node.
 
-=item C<referencing> - C<NameChain>
+=item C<referencing> - C<RelPathMaterialNC>
 
 This is the name, from the point of view of the routine embedding this
-expression node, of the routine or type that the new special reference
+expression node, of the routine or type that the new C<AbsPathMaterialNC>
 value is supposed to facilitate portable invoking of.
 
 =back
 
-A C<MaterialRefSelExprNodeSet> has a unary (unique) key on the C<name>
+An C<APMaterialNCSelExprNodeSet> has a unary (unique) key on the C<name>
 attribute, plus another such key on the C<referencing> attribute.  Its
 default value is empty.
 
@@ -2017,7 +2110,7 @@ These are statement nodes that represent abnormal block restart statements.
 
 These are statement nodes that represent generic looping block statements.
 
-=item C<material_ref_sel_stmts> - C<MaterialRefSelStmtNodeSet>
+=item C<ap_material_nc_sel_stmts> - C<APMaterialNCSelStmtNodeSet>
 
 These are statement nodes that represent the assignment to local variables
 of newly selected routine or type reference values.
@@ -2416,19 +2509,19 @@ each iteration of the loop; typically it has a sub-tree of statement nodes.
 A C<LoopStmtNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.MaterialRefSelStmtNodeSet
+=head2 sys.std.Core.Type.Cat.APMaterialNCSelStmtNodeSet
 
-A C<MaterialRefSelStmtNodeSet> is a C<DHRelation> that specifies a set of
+An C<APMaterialNCSelStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node represents the assignment to a variable (or
-parameter) of a newly selected value of the special
-C<sys.std.Core.Type.Cat.MaterialRef> type.  Said selected value would not
-have any pre-bound routine parameters where applicable, and those can be
-added afterwards with the system-defined currying routines.  Using one of
-these statement nodes should be an effective alternative to declaring (or
-extending) an updater that simply combines a C<MaterialRef> selecting
+parameter) of a newly selected value of the
+C<sys.std.Core.Type.Cat.AbsPathMaterialNC> type, which is selected in terms
+of a value of the C<sys.std.Core.Type.Cat.RelPathMaterialNC> type.  Using
+one of these statement nodes should be an effective alternative to
+declaring (or extending) an updater that simply
+combines an C<AbsPathMaterialNC> selecting
 expression node with an C<assign> updater call.
 
-A C<MaterialRefSelStmtNodeSet> has these 4 attributes:
+An C<APMaterialNCSelStmtNodeSet> has these 4 attributes:
 
 =over
 
@@ -2443,17 +2536,17 @@ This is an optional programmer comment about the statement leaf node.
 =item C<target> - C<NameChain>
 
 This is name of the local parameter or variable that will have the newly
-selected C<MaterialRef> value assigned to it.
+selected C<AbsPathMaterialNC> value assigned to it.
 
-=item C<referencing> - C<NameChain>
+=item C<referencing> - C<RelPathMaterialNC>
 
 This is the name, from the point of view of the procedure embedding this
-statement node, of the routine or type that the new special reference
+statement node, of the routine or type that the new C<AbsPathMaterialNC>
 value is supposed to facilitate portable invoking of.
 
 =back
 
-A C<MaterialRefSelStmtNodeSet> has a unary (unique) key on the C<name>
+An C<APMaterialNCSelStmtNodeSet> has a unary (unique) key on the C<name>
 attribute.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING DATA TYPES
@@ -3520,168 +3613,54 @@ C<is_reverse_order> (a C<Bool>).  Its default value has the default value
 of the C<Name> and C<Bool> types for their respective attributes.  I<Maybe
 TODO:  Make C<name> a C<NameChain> instead to drill into TVAs or SVAs.>
 
-=head1 TYPES FOR SPECIAL ENTITY REFERENCES
+=head1 TYPES FOR POSSIBLY CURRIED HIGHER-ORDER FUNCTIONS
 
-TODO: HEAVILY UPDATE THIS SECTION.  OR REMOVE IT / ITS TYPES OUTRIGHT.
+These are all enumeration data types.
 
-Muldis D needs to support the concept of a closure or higher-order
-function, mainly for functions but also to a smaller extent for imperative
-routines.  For example, the generic relational restriction operator is
-designed to conceptually take a function as an argument and then invoke
-that function on each tuple of a relation it is filtering, and the
-function has the criteria for whether the tuple passes the filter.
+=head2 sys.std.Core.Type.Cat.CurriedFuncNC
 
-Conceptually, all that is needed is to pass the fully-qualified name of the
-routine as such an argument, which in the system catalog is represented as
-a C<NameChain>.  But using an actual C<NameChain> frequently
-doesn't work to support closures because the typical closure is defined as
-a I<X routine> and those are expressly private to the context of the
-Y entity that the X is embedded in.  There is no valid
-C<NameChain> value for referencing it from outside that context
-(likewise for routines declared private to a subdepot), and outside that
-context is typically where the routines that take closures as arguments
-would live.  For example, if public function C<fed.lib.mydb.mymain> had an
-function C<nlx.lib.mytest> and C<fed.lib.mydb.mymain> invoked the public
-function
-C<fed.lib.mydb.myfilter> with an argument value of C<nlx.lib.mytest>,
-then if
-C<fed.lib.mydb.myfilter> tried to invoke the function it was passed,
-it would
-actually be trying to invoke an function of C<fed.lib.mydb.myfilter> named
-C<nlx.lib.mytest>, which won't work.  Conceptually, a solution to this
-problem
-is to actually pass a routine name in a more fully-qualified form,
-conceptually like C<fed.lib.mydb.mymain.mytest>, which then
-C<fed.lib.mydb.myfilter>
-could correctly invoke.  However, if that was made to work literally with a
-C<NameChain>, then this could cause problems where anything could
-invoke C<mytest> directly without being given permission from C<mymain>.
+A C<CurriedFuncNC> is a (not necessarily deeply homogeneous) C<Tuple>.  It
+is conceptually a I<curried higher-order function>, that is, an
+C<APFunctionNC> referencing a function plus a set of zero or more arguments
+to pre-bind to a same-degree subset of that function's read-only
+parameters, such that the effective higher-order-function which this
+references has appropriately fewer parameters remaining to bind to when it
+is actually invoked.  A C<CurriedFuncNC> has 2 attributes, C<function> (an
+C<APFunctionNC>) and C<args> (a C<Tuple>); C<function> names the actual
+function to invoke, and C<args> names any arguments to pre-bind to its
+parameters.  Whether or not its C<args> has any attributes that are not
+deeply homogeneous is the sole determinant of whether a C<CurriedFuncNC> is
+a C<DHTuple> rather than just a C<Tuple>.  Its default value is a reference
+to the C<sys.std.Core.Universal.is_identical> function with no pre-bound
+parameters.
 
-As an at-least-initial solution to this problem, here are a few black box
-data types (similar to scalar types but with no possreps) which will
-provide fully-qualified identifiers for routines, useful as alternatives to
-C<NameChain> values, so any routine may be correctly invoked from any
-other routine, without losing privacy.  Values of these types work their
-magic by embedding knowledge about the lexical-et-al context in which they
-were selected, so that when routines are to be invoked by way of those
-values, the invocation of the capture effectively takes place within the
-same context where the special type values were selected, as users would
-conceptually expect.  One of these special values is selected in terms of a
-C<NameChain>, and the identity of the selected special value is based on
-the combination of the C<NameChain> and the context of selection; two
-selections in the same context with the same C<NameChain> are guaranteed to
-be identical, and two selections with either the context or the
-C<NameChain> differing are guaranteed to be non-identical.  Now, whether or
-not 2 distinct selections are considered to have the same context (so their
-identity varies only on their C<NameChain>) depends on what namespace the
-referenced entity is relative to the referencing entity; for a reference to
-C<x>, the context is the Y entity containing that X; for a
-reference to C<sys> or C<fed>, the context is global; for C<nlx>
-the context is that same depot/subdepot.  I<These spec
-details may be adjusted.>  Currently, selecting these special values can't
-be done with an ordinary routine, but only with a special catalog type for
-an expression or statement node, due to the unusualness of this.  It is
-also not possible to map one of these special values to another type.
-There are no defined sorting orders for values of these types.  There are
-default values for these types (of course), and those defaults are to
-system-defined routines, for which incidentally the C<NameChain>
-solution would always have worked.  These types are all infinite.
+=head2 sys.std.Core.Type.Cat.OrdDetCFuncNC
 
-There are also similar special types here for referencing data types, but
-not for as many of the reasons.  Maybe another advantage of all of the
-above is that this can help compile-time type checking.
-
-Extending the previously discussed notions, the special types here for
-referencing functions also support currying which is another feature of
-generic closures.  When defining a value of a special type, you can also
-supply argument values from the context of definition, effectively turning
-the corresponding parameters into constants, and so the actual closure has
-appropriately fewer effective parameters.  Similarly, one can take an
-already existing value of a special type and curry that to derive another
-one with arguments from the context of the derivation.  Two function
-closures are considered identical if they both reference the same routine
-as per the prior-mentioned criteria and they both have the same parameters
-curried with identical values, regardless of whether the individual
-currying operations resulting in the two closures were identical; for
-example, if one closure was produced by a single curry of two parameters
-and the other was produced by a chain of two curries where each did one of
-those parameters, then the closures are identical assuming same original
-routine and parameter values.
-
-I<For now, only functions may be curried, and imperative routines can't be;
-the latter might be supported in the future but then it has to be worked
-out how to best support currying of updateable parameters, especially how
-to define imperative versions of C<sys.std.Core.Cat.curried_func>.>
-
-=head2 sys.std.Core.Type.Cat.MaterialRef
-
-This is a reference data type.  A C<MaterialRef> is functionally like a
-smart C<NameChain> that holds a routine or type name but it remembers the
-context of its creation, and it may also hold other context-specific
-information such as pre-bound function parameters.  Its default value
-is a reference to the C<sys.std.Core.Type.Universal> data type.
-
-=head2 sys.std.Core.Type.Cat.FuncRef
-
-This is an enumeration data type.  C<FuncRef> is a proper subtype of
-C<MaterialRef> where every member value's conceptual C<NameChain> is a
-function name plus optional pre-bound read-only parameters.  It is used to
-implement a higher-order function or a functional closure.  Its default
-value is a reference to the C<sys.std.Core.Universal.is_identical>
-function.
-
-=head2 sys.std.Core.Type.Cat.OrdDetFuncRef
-
-This is an enumeration data type.  C<OrdDetFuncRef> is a proper subtype of
-C<FuncRef> that is a reference to an C<order-determination> function.  Its
+C<OrdDetCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
+conceptually a reference to an C<order-determination> function.  Its
 default value is a reference to the C<sys.std.Core.Scalar.order> function.
 This type is conceptually intended for use as the declared type of a
 routine parameter that would take the name of an C<order-determination>
 function, but that parameter is optional and should default to the
 system-defined scalar ordering function when no argument is given to it.
 
-=head2 sys.std.Core.Type.Cat.ValFiltFuncRef
+=head2 sys.std.Core.Type.Cat.ValFiltCFuncNC
 
-This is an enumeration data type.  C<ValFiltFuncRef> is a proper subtype of
-C<FuncRef> that is a reference to a C<value-filter> function.  Its default
-value is a reference to the C<sys.std.Core.Cat.pass_topic> function.
+C<ValFiltCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
+conceptually a reference to a C<value-filter> function.  Its default value
+is a reference to the C<sys.std.Core.Cat.pass_topic> function.
 
-=head2 sys.std.Core.Type.Cat.ValMapFuncRef
+=head2 sys.std.Core.Type.Cat.ValMapCFuncNC
 
-This is an enumeration data type.  C<ValMapFuncRef> is a proper subtype of
-C<FuncRef> that is a reference to a C<value-map> function.  Its default
-value is a reference to the C<sys.std.Core.Cat.map_to_topic> function.
+C<ValMapCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
+conceptually a reference to a C<value-map> function.  Its default value is
+a reference to the C<sys.std.Core.Cat.map_to_topic> function.
 
-=head2 sys.std.Core.Type.Cat.ValRedFuncRef
+=head2 sys.std.Core.Type.Cat.ValRedCFuncNC
 
-This is an enumeration data type.  C<ValRedFuncRef> is a proper subtype of
-C<FuncRef> that is a reference to a C<value-reduction> function.  Its
-default value is a reference to the C<sys.std.Core.Cat.reduce_to_v1>
-function.
-
-=head2 sys.std.Core.Type.Cat.UpdRef
-
-This is an enumeration data type.  C<UpdRef> is a proper subtype of
-C<MaterialRef> where every member value's conceptual C<NameChain> is an
-updater name.  It is used to implement a deterministic imperative closure.
-Its default value is a reference to the C<sys.std.Core.Universal.assign>
-updater.
-
-=head2 sys.std.Core.Type.Cat.ProcRef
-
-This is an enumeration data type.  C<ProcRef> is a proper subtype of
-C<MaterialRef> where every member value's conceptual C<NameChain> is a
-procedure name.  It is used to implement a possibly-nondeterministic
-imperative closure.  Its default value is a reference to the
-C<sys.std.Core.Cat.noop> procedure.
-
-=head2 sys.std.Core.Type.Cat.TypeRef
-
-This is an enumeration data type.  C<TypeRef> is a proper subtype of
-C<MaterialRef> where every member value's conceptual C<NameChain> is a data
-type name.  It is used in places where the name of a data type to 'use'
-would be taken as a routine argument.  Its default value is a reference to
-the C<sys.std.Core.Type.Universal> data type, the same as C<MaterialRef>.
+C<ValRedCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
+conceptually a reference to a C<value-reduction> function.  Its default
+value is a reference to the C<sys.std.Core.Cat.reduce_to_v1> function.
 
 =head1 SEE ALSO
 

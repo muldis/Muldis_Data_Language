@@ -53,6 +53,64 @@
     replaced any references to "dep" or "sdp" in documentation and code
     examples with "nlx" as appropriate.
 
+    * (Types_Catalog.pod)  Eliminated the catalog type "MaterialRef" and
+    all of its 8 subtypes (and the whole "TYPES FOR SPECIAL ENTITY
+    REFERENCES" main pod section), and so now the only "Reference" type
+    left in Muldis D is "External".  Replacing the "MaterialRef" types, for
+    purposes of passing references to materials as routine arguments or for
+    implementing higher-order functions or closures, is a new set of scalar
+    "NameChain" subtypes and a new set of possibly-not-dh tuple types.  For
+    each of the "MaterialRef" types, all uses of it have been replaced with
+    uses of generally a single new type; the replacements are as follows
+    (all types have "sys.std.Core.Type.Cat.\w+" names):
+    "MaterialRef" -> "AbsPathMaterialNC",
+    "FuncRef" -> "APFunctionNC" + "CurriedFuncNC",
+    "[OrdDet|Val[Filt|Map|Red]]FuncRef" ->
+        "[OrdDet|Val[Filt|Map|Red]]CFuncNC",
+    "[Upd|Proc|Type]Ref" -> "AP[Updater|Procedure|Type]NC";
+    also added the 4 closely related new types "MaterialNC", "APNonTypeNC",
+    "RelPathMaterialNC", "DataNC" which are not direct replacements for
+    "MaterialRef" types.  The 5 new types named "CurriedFuncNC" and
+    "\w+CFuncNC" are the tuple types, and all represent a function
+    reference plus 0..N prebound parameters; the other 9 new types are all
+    "NameChain" subtypes and represent just a plain entity reference.  The
+    5 new tuple types comprise a new main pod section named "TYPES FOR
+    POSSIBLY CURRIED HIGHER-ORDER FUNCTIONS".
+
+    * (Types_Catalog.pod)  Renamed the 2 catalog types
+    "MaterialRefSel[Expr|Stmt]NodeSet" to
+    "APMaterialNCSel[Expr|Stmt]NodeSet" and tightened the declared types of
+    each of their "referencing" parameters from "NameChain" to
+    "RelPathMaterialNC"; the purpose of these catalog types has been
+    modified to derive absolute path name chains from relative path
+    name-chains, rather than derive opaque reference values from name
+    chains.  Also updated each of the 2 catalog types "[Expr|Stmt]NodeSet"
+    to rename its "material_ref_sel_[expr|stmt]s" attribute to
+    "ap_material_nc_sel_[expr|stmt]s".
+
+    * (Routines_Catalog.pod)  Removed the "curried_func" catalog function,
+    which is no longer necessary since ordinary tuple operators can be used
+    instead for the same purpose.  (But a replacement function could be
+    added later as a useful alternate syntax perhaps.)
+
+    * (Basics.pod, Types.pod, Types_Catalog.pod, PTMD_STD.pod)  Excised any
+    references to the removed "MaterialRef" types.  In Basics.pod,
+    simplified the description of the "reference" type category so that
+    only the "External" type is mentioned as an example, rather than also
+    the "MaterialRef" types.  In Types.pod, updated the "Reference" type to
+    make its default value the same as "External" rather than the same as
+    "MaterialRef".  In Types_Catalog.pod, updated the description of the
+    "special_types" attribute of the "System" catalog type to remove
+    "MaterialRef" from its list.  In PTMD_STD.pod, substituted appropriate
+    type name references in the "MATERIAL SPECIFICATION" main pod section
+    and the "Library Entity Reference Selector" pod sub-section.
+
+    * (Universal.pod, Scalar.pod, Tuple.pod, Relation.pod, Set.pod,
+    Array.pod, Bag.pod, Interval.pod, Routines_Catalog.pod, Counted.pod)
+    Updated all system defined function signatures that take material
+    references or curried functions as arguments so that they take the new
+    scalar/tuple types rather than the old reference types.
+
 2009-11-26  Darren Duncan <darren@DarrenDuncan.net>
 
     * Muldis::D version 0.101.0 is released on CPAN as

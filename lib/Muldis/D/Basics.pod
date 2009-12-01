@@ -820,17 +820,10 @@ C<String>.  In the case of a scalar subset enumeration
 type, typically it will define extra scalar possreps or selectors.  All
 user-defined nonscalar types are enumeration types.
 
-A reference type is a special opaque type that is used for either of 2
-distinct purposes, each type being for exactly one of those purposes.  A
-value of a reference type can not be stored in a database and it only is
-ever stored in routine lexical variables or arguments.  The first use
-purpose is at runtime to implement certain Muldis D features, such as
-closures, that effectively require pointers to implementation entities in
-memory; there are just a few of these, which include: C<FuncRef>,
-C<UpdRef>,
-C<ProcRef>, C<TypeRef>.  I<Note: It is possible that a future Muldis D
-design change may do away with the need for such reference values.>  The
-second use purpose is provided by Muldis D's special C<External> reference
+A reference type is a special opaque type that is used for just 1 purpose
+currently.  A value of a reference type can not be stored in a database and
+it only is ever stored in routine lexical variables or arguments.  The
+use purpose is provided by Muldis D's special C<External> reference
 type, the values of which will represent any arbitrary values of any
 arbitrary, often user-defined and mutable, types of a peer or host language
 to Muldis D in the context of a common program.  Each C<External> value is
@@ -2531,6 +2524,23 @@ In fact, nothing is allowed to directly refer to user-defined entities
 using C<fed> except a procedure (or updater?), or the host language if it
 exists.  All user-defined functions and types may only be referenced using
 C<nlx> (but that a host language is exempted if it exists).
+
+Note that a C<nlx> may I<not> navigate outside of the referencer's own
+depot; from its point of view, the root namespace inside its own depot is
+the root beyond which a relative path can not traverse; attempting this is
+an error.
+
+This also means that a namespace of a physical depot may not be mounted in
+a DBMS as a "depot" if any of its contents reference outside that namespace
+within the physical depot using C<nlx>; in this case a sufficiently larger
+portion of the physical depot must be mounted as a "depot" instead so that
+all reference targets are visible in the DBMS.  Note that this restriction
+applies mainly for references to data types or database constraints, so
+that any visible entities defined in terms of such can be fully understood;
+it might not have to apply for references to procedures or such things that
+C<fed> may be used to reference; in that case the execution of such code
+would just fail at runtime if the referenced part of the physical depot
+isn't mounted, same as with a non-existing C<fed>-qualified reference.
 
 The C<lex> primary namespace refers to entities within
 the same private lexical scope as the referencer.  Variables

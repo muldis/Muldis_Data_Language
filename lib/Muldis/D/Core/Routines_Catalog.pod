@@ -74,7 +74,7 @@ C<< [<=>] >>.
 =head2 sys.std.Core.Cat.func_invo
 
 C<< function sys.std.Core.Cat.func_invo (Universal <--
-$function : FuncRef, $args? : Tuple) >>
+$function : APFunctionNC, $args? : Tuple) >>
 
 This function results in the result of invoking the other function named in
 its C<function> argument with arguments supplied by this function's C<args>
@@ -92,34 +92,9 @@ invoke a function whose name they take as an argument.  The C<args>
 parameter is optional and defaults to the zero-attribute tuple if no
 explicit argument is given to it.
 
-=head2 sys.std.Core.Cat.curried_func
-
-C<< function sys.std.Core.Cat.curried_func (FuncRef <--
-$function : FuncRef, $args : Tuple) >>
-
-This function results in a reference to a new anonymous function which is
-the result of currying the other function named in its C<function> argument
-with 0..N arguments supplied by this function's C<args> argument; each
-attribute name of C<args> is mapped to a parameter name of the curried
-function, and the corresponding attribute value is the corresponding
-pre-bound parameter of the curried function.  This function will fail if
-there are any attributes in C<args> that don't have corresponding
-parameters, or if any attribute values aren't of the declared types of the
-corresponding parameters.  A curried function effectively does not have the
-parameters of the original function that were pre-bound, and attempts to
-supply arguments to those on the curried function will fail.  Note that the
-result of a C<curried_func> invocation can be used as input to another one,
-as there is effectively no difference in their kind.  The purpose of
-C<curried_func> is to support the passing of functions as arguments to
-invocations of other routines where the passed function wants to use
-runtime-defined information in the context that invoked routine, without
-having to pass that information separately as additional routine arguments.
-Or the purpose of C<curried_func> is just to easily support defining
-functions as simplified versions of others.
-
 =head2 sys.std.Core.Cat.upd_invo
 
-C<updater sys.std.Core.Cat.upd_invo ($updater : UpdRef,
+C<updater sys.std.Core.Cat.upd_invo ($updater : APUpdaterNC,
 &$upd_args : Tuple, $ro_args? : Tuple)>
 
 This update operator has the same purpose and features as
@@ -136,7 +111,7 @@ These procedures are applicable to use in all kinds of procedures.
 
 =head2 sys.std.Core.Cat.proc_invo
 
-C<procedure sys.std.Core.Cat.proc_invo ($procedure : ProcRef,
+C<procedure sys.std.Core.Cat.proc_invo ($procedure : APProcedureNC,
 &$upd_args? : Tuple, $ro_args? : Tuple)>
 
 This procedure is the same as C<sys.std.Core.Cat.upd_invo> but that it
@@ -155,8 +130,9 @@ in the call stack unwinding, and transaction rollbacks, until it is caught.
 =head2 sys.std.Core.Cat.try_catch
 
 C<procedure sys.std.Core.Cat.try_catch
-($try : ProcRef, &$try_upd_args? : Tuple, $try_ro_args? : Tuple,
-$catch? : ProcRef, &$catch_upd_args? : Tuple, $catch_ro_args? : Tuple)>
+($try : APProcedureNC, &$try_upd_args? : Tuple, $try_ro_args? : Tuple,
+$catch? : APProcedureNC, &$catch_upd_args? : Tuple,
+$catch_ro_args? : Tuple)>
 
 This procedure invokes the procedure (or system-service)
 named in its C<try> argument
