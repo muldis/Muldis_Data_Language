@@ -66,7 +66,10 @@ more or less:
                                     sys.std.Core.Type.Cat.APProcedureNC
                                 sys.std.Core.Type.Cat.APTypeNC
                             sys.std.Core.Type.Cat.RelPathMaterialNC
+                                sys.std.Core.Type.Cat.RPFunctionNC
+                                sys.std.Core.Type.Cat.RPTypeNC
                         sys.std.Core.Type.Cat.DataNC
+                            sys.std.Core.Type.Cat.LexDataNC
                     sys.std.Core.Type.Cat.DeclNameChain
                     sys.std.Core.Type.Cat.Comment
                     sys.std.Core.Type.Cat.Order
@@ -411,6 +414,16 @@ or C<nlx> (or a C<type>-prefix followed by those) but not C<fed>.  One is
 used in a context where a user-defined routine or type may only be invoked
 directly when both the invoker and invoked are in the same depot.
 
+=head2 sys.std.Core.Type.Cat.RPFunctionNC
+
+This is an enumeration data type.  C<RPFunctionNC> is a non-proper subtype
+of C<RelPathMaterialNC> and is analogous to the C<APFunctionNC> type.
+
+=head2 sys.std.Core.Type.Cat.RPTypeNC
+
+This is an enumeration data type.  C<RPTypeNC> is a non-proper subtype of
+C<RelPathMaterialNC> and is analogous to the C<APTypeNC> type.
+
 =head2 sys.std.Core.Type.Cat.DataNC
 
 This is an enumeration data type.  C<DataNC> is a proper subtype of
@@ -422,6 +435,12 @@ statement), either a system-catalog or normal data variable.  Its default
 value is a reference to the C<sys.cat> catalog relcon.
 I<Conjecture:  Subtypes like C<[Abs|Rel]PathCataNC> might also be defined
 later if we have some situation where such a restriction might be useful.>
+
+=head2 sys.std.Core.Type.Cat.LexDataNC
+
+This is an enumeration data type.  C<LexDataNC> is a proper subtype of
+C<DataNC> where every member value's chain starts with C<lex>.  One is used
+for every data reference by a function or updater.
 
 =head2 sys.std.Core.Type.Cat.DeclNameChain
 
@@ -742,7 +761,7 @@ A C<SysCatSet> has these 4 attributes:
 
 =over
 
-=item C<name> - C<NameChain>
+=item C<name> - C<DataNC>
 
 This is the fully-qualified name of the catalog dbvar.
 
@@ -755,7 +774,7 @@ This is an optional programmer comment about the catalog dbvar as a whole.
 This is C<Bool:true> if a catalog relcon is being described; it is
 C<Bool:false> if a catalog relvar is being described.
 
-=item C<catalog> - C<NameChain>
+=item C<catalog> - C<MaterialNC>
 
 This is the declared data type of the catalog dbvar.
 
@@ -996,7 +1015,7 @@ A C<FedTypeMapSet> has these 2 attributes:
 
 This is an optional programmer comment about this type mapping.
 
-=item C<types> - C<set_of.NameChain>
+=item C<types> - C<set_of.APTypeNC>
 
 This lists the C<fed.>-qualified names of 0..N data types that are all
 considered to be copies of the same 1 type, and should be treated
@@ -1048,7 +1067,7 @@ These are all the definitions that this [|sub]depot contains of scalar
 types with possreps, complete nonscalar types, union types, and subset
 types.
 
-=item C<data> - C<maybe_of.NameChain>
+=item C<data> - C<maybe_of.RPTypeNC>
 
 This is the declared data type of the self-local dbvar that this
 [|sub]depot contains, iff C<data> is a C<Single>; if C<data> is C<nothing>
@@ -1200,7 +1219,7 @@ the I<body>:
 
 This is an optional programmer comment about the function as a whole.
 
-=item C<result_type> - C<NameChain>
+=item C<result_type> - C<RPTypeNC>
 
 This is the declared result data type of the function as a whole.
 
@@ -1390,7 +1409,7 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<type_name> - C<NameChain>
+=item C<type_name> - C<RPTypeNC>
 
 This is the name of the type that the scalar value belongs to.
 
@@ -1612,8 +1631,7 @@ Its default value is empty.
 An C<AccExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node is an accessor or alias for an attribute
 of another, tuple-valued expression node, or is simply an alias for another
-expression node, defined in terms of a C<NameChain> in the C<lex> top-level
-namespace.
+expression node, defined in terms of a C<LexDataNC>.
 
 A C<AccExprNodeSet> has these 3 attributes:
 
@@ -1627,7 +1645,7 @@ This is the declared name of the expression node.
 
 This is an optional programmer comment about the expression (leaf) node.
 
-=item C<target> - C<NameChain>
+=item C<target> - C<LexDataNC>
 
 This is the fully-qualified invocation name of the expression node, or
 attribute thereof if it is tuple-valued, being accessed or aliased.
@@ -1656,7 +1674,7 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<function> - C<NameChain>
+=item C<function> - C<MaterialNC>
 
 This is the name of the function being invoked.
 
@@ -1949,7 +1967,7 @@ A C<MultiUpdStmt> has these 4 attributes:
 This is an optional programmer comment about the single update statement as
 a whole.
 
-=item C<updater> - C<NameChain>
+=item C<updater> - C<MaterialNC>
 
 This is the name of the updater being invoked.
 
@@ -2144,7 +2162,7 @@ This is the declared name of the statement node.
 
 This is an optional programmer comment about the statement (leaf) node.
 
-=item C<target> - C<NameChain>
+=item C<target> - C<DataNC>
 
 This is name of the local parameter or variable that will have the newly
 selected scalar value assigned to it.
@@ -2248,7 +2266,7 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<updater> - C<NameChain>
+=item C<updater> - C<MaterialNC>
 
 This is the name of the updater being invoked.
 
@@ -2292,7 +2310,7 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<procedure> - C<NameChain>
+=item C<procedure> - C<MaterialNC>
 
 This is the name of the procedure being invoked.
 
@@ -2321,7 +2339,7 @@ An C<IISArgVarMap> is a C<DHRelation>.  It defines a set of argument names,
 with a declared local or global variable (or parameter or pseudo-variable)
 name for each.  It is used to define argument lists for routine invocations
 by procedures.  An C<IISArgVarMap> has 2 attributes, C<arg> (a C<Name>) and
-C<var> (a C<NameChain>); the C<arg> is the name of the routine argument,
+C<var> (a C<DataNC>); the C<arg> is the name of the routine argument,
 and comprises a unary key; the C<var> is the invocation name of the
 variable (or parameter or pseudo-variable) which defines the value for the
 argument.  Its default value has zero tuples.
@@ -2378,7 +2396,7 @@ attribute.  Its default value is empty.
 
 An C<IfThenVarStmtMap> is a C<DHTuple>.  It defines an element of an
 if-else sequential statement.  An C<IfThenVarStmtMap> has 2 attributes,
-C<if> (a C<NameChain>) and C<then> (a C<Name>); C<if> has the name of a
+C<if> (a C<DataNC>) and C<then> (a C<Name>); C<if> has the name of a
 local or global variable (or parameter), and C<then> has the name of a
 statement node.  The C<if> node is the conditional result variable name; if
 that conditional result is C<Bool:true>, then the C<then> statement node is
@@ -2406,7 +2424,7 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<given> - C<NameChain>
+=item C<given> - C<DataNC>
 
 This is name of the local parameter or variable that supplies the single
 operand value that is common to all the conditions; it is the control value
@@ -2437,7 +2455,7 @@ attribute.  Its default value is empty.
 
 A C<WhenThenVarStmtMap> is a C<DHRelation>.  It defines a set of dispatch
 options for a given-when-default statement.  A C<WhenThenVarStmtMap> has 2
-attributes, C<when> (a C<NameChain>) and C<then> (a C<Name>); C<when> has
+attributes, C<when> (a C<DataNC>) and C<then> (a C<Name>); C<when> has
 the name of a local or global variable (or parameter), and C<then> has the
 name of a statement node.  The C<when> node is the not-common / distinct
 operand for each condition.  If a C<when> value is matched, then the
@@ -2533,7 +2551,7 @@ This is the declared name of the statement node.
 
 This is an optional programmer comment about the statement leaf node.
 
-=item C<target> - C<NameChain>
+=item C<target> - C<DataNC>
 
 This is name of the local parameter or variable that will have the newly
 selected C<AbsPathMaterialNC> value assigned to it.
@@ -2578,7 +2596,7 @@ An C<ScalarType> has these 7 attributes:
 This is an optional programmer comment about the scalar
 [|sub]type as a whole.
 
-=item C<base_type> - C<maybe_of.NameChain>
+=item C<base_type> - C<maybe_of.RPTypeNC>
 
 Iff the type being defined is a scalar root type, then
 C<base_type> is not applicable and is C<nothing>.  Iff the type being
@@ -2587,7 +2605,7 @@ is a C<Single> whose sole element is the name of that other type.  Note
 that any type named by C<base_type> must itself be a scalar root
 type or a subtype of one.
 
-=item C<subtype_constraint> - C<maybe_of.NameChain>
+=item C<subtype_constraint> - C<maybe_of.RPFunctionNC>
 
 Iff the type being defined is a scalar root type, or it is a
 non-proper subtype of some other type, then C<subtype_constraint> is not
@@ -2641,7 +2659,7 @@ total number of bidirectional maps C<M> is in C<(P-1) ≤ M ≤ ((P-1)*P/2)>.
 When a subtype is adding possreps to an other base type, all of the mapping
 functions are defined with the subtype.
 
-=item C<default> - C<maybe_of.NameChain>
+=item C<default> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Single>, then C<default>
 matches the declared name of a C<named-value> function that
@@ -2659,7 +2677,7 @@ then the subtype will use the same default value as its base type; but if
 the subtype's value set excludes said value, then a C<default> of
 C<nothing> is invalid and C<default> must be a C<Single>.
 
-=item C<order> - C<maybe_of.NameChain>
+=item C<order> - C<maybe_of.RPFunctionNC>
 
 A scalar root type definition may optionally have a type-default
 total ordering function associated with it (a type being defined as a
@@ -2703,7 +2721,7 @@ This is an optional programmer comment about the possrep as a whole.
 
 This defines the 0..N attributes of the possrep.
 
-=item C<constraint> - C<maybe_of.NameChain>
+=item C<constraint> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Single>, then C<constraint>
 matches the declared name of a C<type-constraint> function that
@@ -2771,7 +2789,7 @@ distinct from that of C<p1>, and moreover, the 2 values must be mutually
 ordered so that the value of C<p1> is before the value of C<p2>; the latter
 constraint defines a C<PossrepMapSet>'s canonical form.
 
-=item C<p2_from_p1> - C<NameChain>
+=item C<p2_from_p1> - C<RPFunctionNC>
 
 This matches the declared name of a C<possrep-map> function that
 derives the representation of the possrep named by C<p2> from that of the
@@ -2782,7 +2800,7 @@ tuple whose attributes match those of C<p2>.  Note that every distinct
 argument (domain) value of this function must have a distinct result
 (range) value.
 
-=item C<p1_from_p2> - C<NameChain>
+=item C<p1_from_p2> - C<RPFunctionNC>
 
 This matches the declared name of an inverse C<possrep-map> function
 to that of C<p2_from_p1>.  I<Note that it would often be feasible for a
@@ -2818,7 +2836,7 @@ An C<NonscalarType> has these 13 attributes:
 This is an optional programmer comment about the nonscalar
 [|sub]type as a whole.
 
-=item C<base_type> - C<maybe_of.NameChain>
+=item C<base_type> - C<maybe_of.RPTypeNC>
 
 Iff the type being defined is a nonscalar root type, then C<base_type> is
 not applicable and is C<nothing>.  Iff the type being defined is a
@@ -2857,7 +2875,7 @@ and how they are defined in terms of the rest of this type's attributes.
 Note that the special functional dependencies between attributes defined
 herein mean that some kinds of tuple constraints would be redundant.
 
-=item C<tuple_constraints> - C<set_of.NameChain>
+=item C<tuple_constraints> - C<set_of.RPFunctionNC>
 
 This matches the declared names of 0..N C<type-constraint> functions
 that (when I<and>-ed together) determine what combinations of tuple
@@ -2873,7 +2891,7 @@ attribute-allowable values are collectively allowed.  Each function is
 invoked either once to test a tuple value, or multiple times to
 individually test every tuple in a relation value.
 
-=item C<relation_constraints> - C<set_of.NameChain>
+=item C<relation_constraints> - C<set_of.RPFunctionNC>
 
 This is like C<tuple_constraint> but that each function's parameter is
 relation-typed rather than tuple-typed; each is a generalized type
@@ -2949,7 +2967,7 @@ of the type being defined; it is as per C<subset_constraints> except that
 the parent relation is the result of unioning appropriately renamed
 projections of the member relations of the distributed key.
 
-=item C<default_tuple> - C<maybe_of.NameChain>
+=item C<default_tuple> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Single>, then C<default_tuple>
 matches the declared name of a C<named-value> function that
@@ -2964,7 +2982,7 @@ subtype will use the same default tuple value as its base type; but if the
 subtype's value set excludes said value, then a C<default_tuple> of
 C<nothing> is invalid and C<default_tuple> must be a C<Single>.
 
-=item C<default_relation> - C<maybe_of.NameChain>
+=item C<default_relation> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Single>, then C<default_relation>
 matches the declared name of a C<named-value> function that
@@ -3100,7 +3118,7 @@ C<dependent_attrs> is as per C<determinant_attrs>; none of these may be the
 same as the names of the determinant attributes, since a virtual attribute
 can't be defined in terms of itself.
 
-=item C<virtual_attr_map> - C<NameChain>
+=item C<virtual_attr_map> - C<RPFunctionNC>
 
 This matches the declared name of a C<virtual-attr-map> function
 that derives a tuple of dependent attribute values from a tuple of
@@ -3437,7 +3455,7 @@ An C<UnionType> has these 7 attributes:
 
 This is an optional programmer comment about the union type as a whole.
 
-=item C<sources> - C<set_of.NameChain>
+=item C<sources> - C<set_of.RPTypeNC>
 
 These are the names of the 1..N other not-C<Empty> types that all the
 values of the new data type are drawn from; the complete set of source
@@ -3451,7 +3469,7 @@ intersected to determine the complete set of source values; iff this is
 C<Bool:false> then the set of source data types will be unioned to
 determine the complete set of source values.
 
-=item C<filters> - C<set_of.NameChain>
+=item C<filters> - C<set_of.RPTypeNC>
 
 These are the names of the 0..N other types (which are generally subtypes
 of those of C<sources>) that determine values which the new data type will
@@ -3467,7 +3485,7 @@ this is C<Bool:false> then the set of filter data types will be unioned to
 determine the complete set of filter values, and if C<filters> has no
 elements then the filter set is just C<Empty>.
 
-=item C<constraints> - C<set_of.NameChain>
+=item C<constraints> - C<set_of.RPFunctionNC>
 
 This matches the declared names of 0..N C<type-constraint> functions
 that (when I<and>-ed together) determine what filter-type-passing
@@ -3479,7 +3497,7 @@ argument is the value to test; the function's result type must be
 C<Bool>.  If the functions unconditionally result in C<Bool:true>, then all
 filter-type-passing values are allowed.
 
-=item C<default> - C<NameChain>
+=item C<default> - C<RPFunctionNC>
 
 This matches the declared name of a C<named-value> function that
 results in the default value of the union type; it has zero parameters and
@@ -3521,13 +3539,13 @@ An C<SubsetType> has these 4 attributes:
 
 This is an optional programmer comment about the subset type as a whole.
 
-=item C<base_type> - C<NameChain>
+=item C<base_type> - C<RPTypeNC>
 
 This is the name of the not-C<Empty> other type that all the values of the
 new data type are drawn from; the new type is being declared as a subtype
 of that named by C<base_type>.
 
-=item C<constraints> - C<set_of.NameChain>
+=item C<constraints> - C<set_of.RPFunctionNC>
 
 This matches the declared names of 0..N C<type-constraint> functions
 that (when I<and>-ed together) determine what base type values are part of
@@ -3537,7 +3555,7 @@ by C<base_type>, and whose argument is the value to test; the function's
 result type must be C<Bool>.  If the functions unconditionally result in
 C<Bool:true>, then the new type is a non-proper subtype of the base type.
 
-=item C<default> - C<maybe_of.NameChain>
+=item C<default> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Single>, then C<default>
 matches the declared name of a C<named-value> function that
@@ -3569,7 +3587,7 @@ the foundation for most componentized type definitions, including all
 tuple and relation types (for which it is named I<heading>), and it is
 used also for the components list of a scalar possrep.  It is also used
 to define parameter lists for routines.  A C<NameTypeMap> has 2 attributes,
-C<name> (a C<Name>) and C<type> (a C<NameChain>); the C<name> is the
+C<name> (a C<Name>) and C<type> (a C<RPTypeNC>); the C<name> is the
 declared name of the attribute or parameter, and comprises a unary key; the
 C<type> is the declared data type of the attribute or parameter.  Its
 default value has zero tuples.
