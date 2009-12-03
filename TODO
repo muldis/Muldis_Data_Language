@@ -10,7 +10,8 @@ implementations.)
 Alternately, this list deals with possible ideas to explore, which may or
 may not be good ideas to pursue.
 
-The following list is loosely ordered by priority, but list items may
+The following list is loosely ordered by priority, and is organized into
+groups by approximate subject area, but list items may
 actually be addressed in a different order.  There is no specific time
 table for these items; they are simply to be done "as soon as possible".
 
@@ -18,27 +19,83 @@ table for these items; they are simply to be done "as soon as possible".
 the progress is non-trivial, so there are regular public snapshots with
 nicely rendered documentation.
 
-* Add "recipe" routine type, which is like "procedure" in that it can see
+----------
+
+* Add "recipe" routine kind, which is like "procedure" in that it can see
 and update globals, but like "updater" in that it can't call system-service
 routines and it is generally deterministic.  Then change most of the s-d
 "procedure" routines to be "recipe" instead, like all the data-def ones.
 
-* Large updates to docs concerning transactions and resource locking.
-Note:  Supposedly PostgreSQL and MySQL use read-committed isolation by
-default while SQLite provides serializable.
+* Update the virtual attributes maps so there is a way to manually specify
+a reverse function, as meanwhile all the virtuals don't have to be either
+read-only or updatable due to an automatically generated reverse function,
+which might vary by implementation, which may be considered broken.  Note
+that the reverse functions might have to be defined as per-tuple
+operations, separately for insert/substitute/delete.
+
+* Add new "material" kinds that define state constraints (address as simple
+nlx.*.data.*), like type constraints but ref in reverse.
+
+* Add new "material" kinds that define
+transition constraints.  The initial version would simply take a
+'before' and an 'after' state argument.  But it may be good to provide an
+alternative where arguments show the delta since often that is what
+constraint writers want to know anyway.
+
+* Add new "material" kinds that def stimulus-response rules
+/ triggered routines.
+
+* Add sequence generator updaters|procedures in Integer.pod.
 
 * Add new "material" kinds that define descriptions of resource locks that
 one wants to get, starting with basic whole dbvar, relvar locks (address as
 simple fed.data.foo.*, as well as simple relvar tuple locks (addr as prior
 plus lists of values to match like with a semijoin); leave out generic
 predicate locks at first but note they will be added later.
+Update the system catalog concerning managing shared|exclusive locks or
+looking for consistent reads between statements, etc.
 
-* Add new "material" kinds that define state constraints (address as simple
-nlx.*.data.*), like type constraints but ref in reverse.
+* Large updates to docs concerning transactions and resource locking.
+Note:  Supposedly PostgreSQL and MySQL use read-committed isolation by
+default while SQLite provides serializable.
+Add catalog types that represent thrown exceptions.  Prob non-dh tuple.
+Also study SQL concept of conditions and handlers, looks sort of like
+something between exception handling, signals; or it is their exceptions.
 
-* Add new "material" kinds that def transit constrs, as per state constr.
+* Flesh out matters related to starting or communicating between multiple
+autonomous in-DBMS processes, in general, besides the special case about
+sequence generators.
 
-* Add new "material" kinds that def stimulus-response rules.
+----------
+
+* Add to Routines_Catalog.pod and other files
+definitions of any remaining routines, eg String routines, that would be
+needed so that for all system-defined types all the necessary
+system-defined routines would exist that are necessary for defining said
+types, especially their constraint or mapping etc definitions.  So in
+String.pod, besides the usual suspects like [catenation, repeat, length,
+has_substr] etc, we also need: 1. "has_single_elem" tests if its single
+param $topic : String has exactly one element or not, and its invocation
+comprises the whole "constraint" of the sole possrep of the SEString type
+by way of which the Int type is defined; a more generic length test won't
+work since that would take an Int argument, so we can't define Int with it.
+2. "all_elems_in_range" tests if every element of its param String
+$topic is an integer in the range given by the other arguments, which can
+be Int typed; this is used in the "constraint" def of the [B|O|UCP] types.
+Also add "is_coprime" or GCD or LCM or etc which are used either in the
+constraint definition of Rat or in a normalization function for Rat; see
+also "the Euclidean algorithm" as an efficient way to do the calculations.
+
+* Consider adding type introspection routines like: is_incomplete() or
+is_dh() or is_primitive|structure|reference|enumerated etc.  Or don't
+since one could look that up in the system catalog.  But more tests on
+individual values might be useful, or maybe we have enough already.
+
+* Add ext/TAP.pod, which is a partial port of Perl 5's Test::More / Perl
+6's Test.pm / David Wheeler's pgTAP to Muldis D; assist users in testing
+their Muldis D code using TAP protocol.  The TAP messages have type Text.
+
+----------
 
 * Add concept of shallowly homogeneous / sh- relation types to complement
 the deeply version, and named maximal types like SHRelation, SHSet,
@@ -48,28 +105,122 @@ sense there.  Then update functions like Relation.union/etc to take
 sh_set_of.Relation rather than set_of.Relation, which more formally defines
 some of their input constraints.
 
-* Add ext/TAP.pod, which is a partial port of Perl 5's Test::More / Perl
-6's Test.pm / David Wheeler's pgTAP to Muldis D; assist users in testing
-their Muldis D code using TAP protocol.  The TAP messages have type Text.
+* Consider adding a direct analogy to Perl 6 "roles", whose primary purpose
+is to help with managing software reuse, mainly when multiple types have a
+number of attributes in common, a role can define these and then the
+multiple types can compose that role.  This concept should be workable with
+both InnerScalarType and InnerNonscalarType.  A role can compose other
+roles.  A role or type that composes a role can both add additional
+attributes of its own to what the role defines, and the composer can add
+extra constraints over the composed attributes like forcing a subtype.  Now
+on one hand we could make a role a distinct concept, which by itself can't
+be instantiated as a type, or we could reuse the above 2 (IST/INT) type
+definition facilities and say an existing such type can be composed into
+another.  Now that latter case would in a manner of speaking give Muldis D
+the advantages of other OO languages or SQL that work using "specialization
+by extension" except that composing an existing type in this way will
+actually, for a scalar base, create a disjoint type not a subtype, so we
+get the code reuse but Muldis D is still specialization by constraint.  On
+the other hand, if we just declare roles as roles that can't be
+instantiated themselves, then declaring a role could also serve to declare
+a non-dh union type name that can be referred to in type constraint
+definitions, that union type implicitly ranging over all actual types that
+compose it, and so in this case the composers actually are subtypes; the
+problem with this is, what to do about a default value for said union type
+whose role isn't composed into anything ... maybe each one needs an
+implicit DVPT subtype?  But maybe by TTM terms, what a role actually is is
+a dummy type of sorts, where you declare the union name before what it
+unions, and the regular types it unions declare themselves part of the
+union rather than the other way around.  In any event, a composed role
+would never appear in a value's MST or root type list, same as any type
+declared as a union.  I should look at TTM and see if they intended for
+dummy types to fulfil a role such as this.  Except all directly declared
+subtypes of a role union are always disjoint, for scalar ones anyway; the
+role is defin shorthand.
 
-* Create another distribution, maybe called Muldis::D::Validator, which
-consists essentially of just a t/ directory holding a large number of files
-that are straight PTMD_STD code, and that emit the TAP protocol when
-executed.  The structure and purpose of this collection is essentially
-identical to the official Perl 6 test suite.  A valid Muldis D
-implementation could conceivably be defined as any interpreter which runs
-this test suite correctly.  This new distro would be a "testing requires"
-external dependency of both Muldis::Rosetta and any Parrot-hosted language
-or other implementation, though conceivably either could bundle a clone of
-Muldis::D::Validator rather than having an actual external dependency.
-This test suite would be LGPL licensed.  This new distribution would have a
-version number that is of X.Y.Z format like Muldis::D itself, where the X.Y
-part always matches that of the Muldis D spec that it is testing compliance
-with, while the .Z always starts at zero and increments independently of
-the Muldis D spec, as often there may be multiple updates to ::Validator
-for awhile between releases of the language spec, and also since .Z updates
-in the language spec only indicate bug fixes and shouldn't constitute a
-change to the spec from the point of view of ::Validator.
+* Consider supplementing the current generic infinite-loop-until-leave
+statement with alternatives that use boolean control variables, such as
+'while' or 'repeat-while'.
+
+* Consider adding an imperative for-each looping statement; the main
+question here is whether it should work on any (unordered) relation or just
+on an Array (in which case it iterates through the tuples in sequence by
+index); the question is what tasks the for-each would be used for; perhaps
+both versions are useful; presumably the main reason to have for-each at
+all is when I/O is involved and some derivative needs to be output either
+where order matters or where order does not matter; but perhaps only a
+routine is needed here such as a catenate function plus normal I/O output.
+
+* Consider converting the try-catch routine into a statement node, an
+optional part of which is to make the insides of the try/catch blocks part
+of the same lexical scope as the invoking routine.  But there is still a
+lot to like about having each of the try/catch blocks being a separate
+(inner) routine with its own lexical scope, such as in predicting what a
+rollback would affect, and it might be easier to implement as-is.
+
+----------
+
+* Add explicit support for +/- infinities, NaNs, distinct +- zero, +/-
+underflow, +/- overflow, etc.  How this would work is that we define a set
+of scalar singleton types, one for each of the special values.  Then we
+define extended versions of the Int, Rat, etc types where the extended
+types are defined in terms of being union types that union the regular
+numeric types with the special singleton type values.  This approach also
+means that just one each of +Inf, -Overflow, etc is needed and is a member
+of extended Int or Rat etc.  Consider using the existing names "Int"/"Rat"
+with the versions that include these special values, and make new names for
+the current simpler versions that don't, such as "IntNS" (int no specials),
+"RatNS", etc.  Either way, it is useful to support the full range of values
+that a Perl 6 numeric can support, or that an IEEE float can support,
+without users necessarily having to define it themselves.
+
+* Use terminology like "ordered" versus "ordinal" to distinguish types like
+Rat,Text from Int; "ordinal" naturally supports prec,succ (prev,next)
+operators while "ordered" does not.  All "ordinal" are "ordered" but not
+the reverse.  Making a finite subtype of an infinite ordered type might
+also have the effect of making it ordinal, in some cases.  Add concept of
+"step size" or "quantum" or such to talk about ordinal, which is the basis
+for figuring out all the other ordinal stuff.
+
+* Flesh out Interval.pod to add a complement of functions for comparing
+multiple intervals in different ways, such as is-subset, is-overlap,
+is-consecutive, etc, as well as for deriving intervals from a
+union/intersect/etc of others, as well as for treating intervals as normal
+relations in some contexts, such as for joining or filtering etc, as well
+as a function or 3 to do normalization of Interval values especially with
+respect to representing an empty interval.
+Consider adding a type or ops specifically for discontinuous intervals.
+Maybe the type name 'Range' can be used for something.
+Maybe the type name 'Span' or 'SpanSet' can be used for something;
+there are Perl modules with those names concerning date ranges.
+Input is welcome as to what interval-savvy functions Muldis D should have.
+
+* IN PROGRESS ...
+Add Bool-resulting relational operators EXISTS and FORALL, that provide
+"existential quantification" and "universal quantification" respectively,
+these being useful in constraint definitions.  See TTM book p168, pp394-5
+for some info on those.  Also add analogies to Perl 5's List::MoreUtils
+operators any(), all(), notall(), none(), true(), false(); some of those
+may be the same as EXISTS/FORALL.  Also add an EXACTLY operator like the
+Tutorial D language has, and a one() op that is between any() and none().
+Maybe some pure boolean ops can be added analagous to the above also; eg
+any() an alias for or() and all() an alias for and().
+is_(any|all|one|none|notall|etc)_of_(restr|semijoin|semidiff|etc)
+$source is any|etc matching|where|etc $filter|etc
+ADD RELATIONAL OPERATORS THAT COMBINE BOOL OPS ADDED IN 0.80.0 WITH
+RELATIONAL MAP/RESTRICTION/ETC AND ... The new functions are modelled after
+some in Perl 5's List::MoreUtils module.
+
+* Consider adding random value generators for data types other than integer
+and rational numerics, such as for character strings or binary strings.
+
+* Consider analogy to SQL's "[UNION|EXCEPT|INTERSECT] CORRESPONDING BY
+(attr1,attr2,...)", which is a shorthand for combining projection and
+union, that takes a list of attributes and unions the projections of those
+attributes from every input relation; so this means, as with join(), that
+the input relations don't need to have the same headings.
+
+----------
 
 * IN PROGRESS ...
 Update the STD dialects with special syntax for declaring whole depots
@@ -128,86 +279,51 @@ an explicit type declaration still.  Note, if same inline-declared host
 param used more than once, you just need "(param $foo : Bar)" form once and
 other uses can just say $foo as per usual; in fact, it must be this way.
 
-* Add one or more files to the distro that are straight PTMD_STD code like
-for defining a whole depot (as per the above) but instead these files
-define all the system entities.  Or more specifically they define just the
-interfaces/heads of all the system-defined routines, and they have the
-complete definitions of all system-defined types, and they declare all the
-system catalog dbvars/dbcons.  In other words these files contain
-everything that is in the sys.cat dbcon; anything that users can introspect
-from sys.cat can also be read from these files in the form of PTMD_STD
-code, more or less.  The function of these files is analagous to the Perl 6
-Setting files described in the Perl 6 Synopsis 32, except that the Muldis D
-analogy explicitly does not define the bodies of any built-in routines.  An
-idea is that Muldis D implementations could take these files as is and
-parse them to populate their sys.cat that users see; of course, the
-implementations can actually implement the routines/types as they want.
-Note that although this Muldis D code would be bundled with the spec, it is
-most likely that the PTMD_STD-written standard impl test suite will not.
-Note that these files will not go in lib/ but in some other new dir.  Note
-that it is likely any implementation will bundle a clone of these files
-(suitably integrated as desired) rather than having an actual external
-dependency on the Muldis::D distro.  Note that some explicit comment might
-be necessary to say there are no licensing restrictions on copying this
-builtins-interfaces-defining code into Muldis D implementations, or maybe
-no comment is necessary.  Probably a good precedent is to look at what
-legalities concern existing tutorial/etc books that have sample code.
+* Consider in PTMD_STD using a "<ws>" or other-named token similar to the
+Perl 6 concept of something that is treated as insignificant whitespace as
+far as interpreting the code is concerned, but that may contain #-delimited
+comments.  The idea of this is to make it easier to sprinkle comments
+almost anywhere without making the grammar a lot more verbose for it.  It
+is expected that any use of such comments beside "<value>" nodes would only
+be allowed under a "<depot>", and under plain "<value>" would be rejected.
+Mind that such a "<ws>" would not be used everywhere in place of \s+/\s*,
+but only in the specific places representing a node that would turn into
+a system catalog tuple with a "comment".
+Essentially it comes in 2 flavors whose definitions are
+"<_ms_oc> ::= \s+ [<non_value_comment> \s+]?" and
+"<_os_oc> ::= \s* | \s+ <non_value_comment> \s+" or such.
 
-* Further to the prior item, add to Routines_Catalog.pod and other files
-definitions of any remaining routines, eg String routines, that would be
-needed so that for all system-defined types all the necessary
-system-defined routines would exist that are necessary for defining said
-types, especially their constraint or mapping etc definitions.  So in
-String.pod, besides the usual suspects like [catenation, repeat, length,
-has_substr] etc, we also need: 1. "has_single_elem" tests if its single
-param $topic : String has exactly one element or not, and its invocation
-comprises the whole "constraint" of the sole possrep of the SEString type
-by way of which the Int type is defined; a more generic length test won't
-work since that would take an Int argument, so we can't define Int with it.
-2. "all_elems_in_range" tests if every element of its param String
-$topic is an integer in the range given by the other arguments, which can
-be Int typed; this is used in the "constraint" def of the [B|O|UCP] types.
-Also add "is_coprime" or GCD or LCM or etc which are used either in the
-constraint definition of Rat or in a normalization function for Rat; see
-also "the Euclidean algorithm" as an efficient way to do the calculations.
+* Consider using postcircumfix syntax for extracting single relation
+attrs into Set or Bag etc, meaning wrap_attr; eg "$r.@S{a}", "$r.@B{a}".
+Now that might not work for Array extraction, unless done like
+"($r.@A{a} ordered ...)" or some such, which isn't pure postcircumfix,
+but that may be for the best anyway.
 
-* Consider adding type introspection routines like: is_incomplete() or
-is_dh() or is_primitive|structure|reference|enumerated etc.  Or don't
-since one could look that up in the system catalog.  But more tests on
-individual values might be useful, or maybe we have enough already.
+* Consider adding concrete syntax that is shorthand for multiple
+single-attribute extractions where each goes to a separate named expression
+node (or variable) but the source is a single collection-typed expr/var.
+Or the source could be a multiplicity as well, or mix and match.
+The idea here is to replicate some common idioms in Perl such as
+"($x, $y) = @xy[0,1]" or "($x, $y) = %xy{'x','y'}", this being more useful
+when the source is an anonymous arbitrary expression.
+Proposed syntax is that, on each side of the "::=" or ":=", the source and
+target lists are bounded in square brackets, indicating named items assign
+in order, and syntax for collections supplying/taking multiple items are
+ident to single-attr accessors (having a ".") but that a list is in the
+braces/brackets; for example: "[$x, $y] ::= [3, 4]",
+"[$a, $b] ::= $t.%{a,b}", "[$c, $d] ::= $ary.[3,5]".  This syntax would
+resolve into multiple single-attr accessors when app in system catalog.
 
-* Consider adding a direct analogy to Perl 6 "roles", whose primary purpose
-is to help with managing software reuse, mainly when multiple types have a
-number of attributes in common, a role can define these and then the
-multiple types can compose that role.  This concept should be workable with
-both InnerScalarType and InnerNonscalarType.  A role can compose other
-roles.  A role or type that composes a role can both add additional
-attributes of its own to what the role defines, and the composer can add
-extra constraints over the composed attributes like forcing a subtype.  Now
-on one hand we could make a role a distinct concept, which by itself can't
-be instantiated as a type, or we could reuse the above 2 (IST/INT) type
-definition facilities and say an existing such type can be composed into
-another.  Now that latter case would in a manner of speaking give Muldis D
-the advantages of other OO languages or SQL that work using "specialization
-by extension" except that composing an existing type in this way will
-actually, for a scalar base, create a disjoint type not a subtype, so we
-get the code reuse but Muldis D is still specialization by constraint.  On
-the other hand, if we just declare roles as roles that can't be
-instantiated themselves, then declaring a role could also serve to declare
-a non-dh union type name that can be referred to in type constraint
-definitions, that union type implicitly ranging over all actual types that
-compose it, and so in this case the composers actually are subtypes; the
-problem with this is, what to do about a default value for said union type
-whose role isn't composed into anything ... maybe each one needs an
-implicit DVPT subtype?  But maybe by TTM terms, what a role actually is is
-a dummy type of sorts, where you declare the union name before what it
-unions, and the regular types it unions declare themselves part of the
-union rather than the other way around.  In any event, a composed role
-would never appear in a value's MST or root type list, same as any type
-declared as a union.  I should look at TTM and see if they intended for
-dummy types to fulfil a role such as this.  Except all directly declared
-subtypes of a role union are always disjoint, for scalar ones anyway; the
-role is defin shorthand.
+----------
+
+* Restore the concept of public-vs-private entities directly in sub|depots.
+
+* Restore the concept of "topic namespaces" (analagous to SQL DBMS concept
+of "current database|schema" etc) in some form if not redundant.
+
+* Update the system catalog to deal with database users and privileges etc.
+
+----------
 
 * IN PROGRESS ...
 A Muldis D host|peer language can probably hold lexical-to-them variables
@@ -274,151 +390,31 @@ mem addr and stringification would both be prefixed with some constant to
 distinguish the 2 that might stringify the same.  By default, a
 ForeignValue supports no operators but is/not_identical.
 
-* Add catalog types that represent thrown exceptions.  Probably scalar.
+----------
 
-* Also study SQL concept of conditions and handlers, looks sort of like
-something between exception handling, signals; or it is their exceptions.
+* Add new "FTS" or "FullTextSearch" extension which provides weighted
+indexed searching of large Text values in terms of their component tokens,
+such as what would be considered "words" in human terms.  This is what
+would map to the full text search capabilities that underlying SQL DBMSs
+may provide, if they are sufficiently similar to each other, or there might
+be distinct FTS extensions for significantly different ones?
 
-* Update the virtual attributes maps so there is a way to manually specify
-a reverse function, as meanwhile all the virtuals don't have to be either
-read-only or updatable due to an automatically generated reverse function,
-which might vary by implementation, which may be considered broken.  Note
-that the reverse functions might have to be defined as per-tuple
-operations, separately for insert/substitute/delete.
+* Add new "Perl5Regex" extension which provides full use of the Perl 5
+regular expression engine for pattern matching and transliteration of Text
+values.  Maybe the PCRE library can implement this on other foundations
+than Perl 5 itself if they are sufficiently alike; otherwise we can also
+have a separate "PCRE" extension.  Or the same extension can provide both?
 
-* Add transition constraints.  The initial version would simply take a
-'before' and an 'after' state argument.  But it may be good to provide an
-alternative where arguments show the delta since often that is what
-constraint writers want to know anyway.
+* Add new "Perl6Rules" extension which provides full use of the Perl 6
+rules engine for pattern matching and transliteration of Text values.
 
-* Add other kinds of stimulus-response rules / triggered routines.
+* Add new "PGE" or "ParrotGrammarEngine" extension, or whatever an
+appropriate replacement is, for pattern matching and transliteration of
+Text values.  This and "Perl6Rules" may or may not be sufficiently similar
+to combine into one extension.
 
-* Add explicit support for +/- infinities, NaNs, distinct +- zero, +/-
-underflow, +/- overflow, etc.  How this would work is that we define a set
-of scalar singleton types, one for each of the special values.  Then we
-define extended versions of the Int, Rat, etc types where the extended
-types are defined in terms of being union types that union the regular
-numeric types with the special singleton type values.  This approach also
-means that just one each of +Inf, -Overflow, etc is needed and is a member
-of extended Int or Rat etc.  Consider using the existing names "Int"/"Rat"
-with the versions that include these special values, and make new names for
-the current simpler versions that don't, such as "IntNS" (int no specials),
-"RatNS", etc.  Either way, it is useful to support the full range of values
-that a Perl 6 numeric can support, or that an IEEE float can support,
-without users necessarily having to define it themselves.
-
-* Update Text.pod (or add other extensions) to add general search and
-replace or transliteration or regular expression et al functionality,
-besides the bare minimum SQL-LIKE-alike currently provided.  Also add
-functions for splitting strings on delimiters or catenating them with such.
-
-* Use terminology like "ordered" versus "ordinal" to distinguish types like
-Rat,Text from Int; "ordinal" naturally supports prec,succ (prev,next)
-operators while "ordered" does not.  All "ordinal" are "ordered" but not
-the reverse.  Making a finite subtype of an infinite ordered type might
-also have the effect of making it ordinal, in some cases.  Add concept of
-"step size" or "quantum" or such to talk about ordinal, which is the basis
-for figuring out all the other ordinal stuff.
-
-* Flesh out Interval.pod to add a complement of functions for comparing
-multiple intervals in different ways, such as is-subset, is-overlap,
-is-consecutive, etc, as well as for deriving intervals from a
-union/intersect/etc of others, as well as for treating intervals as normal
-relations in some contexts, such as for joining or filtering etc, as well
-as a function or 3 to do normalization of Interval values especially with
-respect to representing an empty interval.
-Consider adding a type or ops specifically for discontinuous intervals.
-Maybe the type name 'Range' can be used for something.
-Maybe the type name 'Span' or 'SpanSet' can be used for something;
-there are Perl modules with those names concerning date ranges.
-Input is welcome as to what interval-savvy functions Muldis D should have.
-
-* Consider adding a Temporal.pod
-and/or DateTime.pod type specific to representing a period in
-time, maybe simply as an alias for 'interval_of.Instant' or some such.  See
-also the PGTemporal project and its 'Period' type.
-
-* Consider in PTMD_STD using a "<ws>" or other-named token similar to the
-Perl 6 concept of something that is treated as insignificant whitespace as
-far as interpreting the code is concerned, but that may contain #-delimited
-comments.  The idea of this is to make it easier to sprinkle comments
-almost anywhere without making the grammar a lot more verbose for it.  It
-is expected that any use of such comments beside "<value>" nodes would only
-be allowed under a "<depot>", and under plain "<value>" would be rejected.
-Mind that such a "<ws>" would not be used everywhere in place of \s+/\s*,
-but only in the specific places representing a node that would turn into
-a system catalog tuple with a "comment".
-Essentially it comes in 2 flavors whose definitions are
-"<_ms_oc> ::= \s+ [<non_value_comment> \s+]?" and
-"<_os_oc> ::= \s* | \s+ <non_value_comment> \s+" or such.
-
-* Consider supplementing the current generic infinite-loop-until-leave
-statement with alternatives that use boolean control variables, such as
-'while' or 'repeat-while'.
-
-* Consider adding an imperative for-each looping statement; the main
-question here is whether it should work on any (unordered) relation or just
-on an Array (in which case it iterates through the tuples in sequence by
-index); the question is what tasks the for-each would be used for; perhaps
-both versions are useful; presumably the main reason to have for-each at
-all is when I/O is involved and some derivative needs to be output either
-where order matters or where order does not matter; but perhaps only a
-routine is needed here such as a catenate function plus normal I/O output.
-
-* Consider converting the try-catch routine into a statement node, an
-optional part of which is to make the insides of the try/catch blocks part
-of the same lexical scope as the invoking routine.  But there is still a
-lot to like about having each of the try/catch blocks being a separate
-(inner) routine with its own lexical scope, such as in predicting what a
-rollback would affect, and it might be easier to implement as-is.
-
-* Add sequence generator updaters|procedures in Integer.pod.
-
-* IN PROGRESS ...
-Add Bool-resulting relational operators EXISTS and FORALL, that provide
-"existential quantification" and "universal quantification" respectively,
-these being useful in constraint definitions.  See TTM book p168, pp394-5
-for some info on those.  Also add analogies to Perl 5's List::MoreUtils
-operators any(), all(), notall(), none(), true(), false(); some of those
-may be the same as EXISTS/FORALL.  Also add an EXACTLY operator like the
-Tutorial D language has, and a one() op that is between any() and none().
-Maybe some pure boolean ops can be added analagous to the above also; eg
-any() an alias for or() and all() an alias for and().
-is_(any|all|one|none|notall|etc)_of_(restr|semijoin|semidiff|etc)
-$source is any|etc matching|where|etc $filter|etc
-ADD RELATIONAL OPERATORS THAT COMBINE BOOL OPS ADDED IN 0.80.0 WITH
-RELATIONAL MAP/RESTRICTION/ETC AND ... The new functions are modelled after
-some in Perl 5's List::MoreUtils module.
-
-* Consider adding random value generators for data types other than integer
-and rational numerics, such as for character strings or binary strings.
-
-* Consider analogy to SQL's "[UNION|EXCEPT|INTERSECT] CORRESPONDING BY
-(attr1,attr2,...)", which is a shorthand for combining projection and
-union, that takes a list of attributes and unions the projections of those
-attributes from every input relation; so this means, as with join(), that
-the input relations don't need to have the same headings.
-
-* Consider using postcircumfix syntax for extracting single relation
-attrs into Set or Bag etc, meaning wrap_attr; eg "$r.@S{a}", "$r.@B{a}".
-Now that might not work for Array extraction, unless done like
-"($r.@A{a} ordered ...)" or some such, which isn't pure postcircumfix,
-but that may be for the best anyway.
-
-* Consider adding concrete syntax that is shorthand for multiple
-single-attribute extractions where each goes to a separate named expression
-node (or variable) but the source is a single collection-typed expr/var.
-Or the source could be a multiplicity as well, or mix and match.
-The idea here is to replicate some common idioms in Perl such as
-"($x, $y) = @xy[0,1]" or "($x, $y) = %xy{'x','y'}", this being more useful
-when the source is an anonymous arbitrary expression.
-Proposed syntax is that, on each side of the "::=" or ":=", the source and
-target lists are bounded in square brackets, indicating named items assign
-in order, and syntax for collections supplying/taking multiple items are
-ident to single-attr accessors (having a ".") but that a list is in the
-braces/brackets; for example: "[$x, $y] ::= [3, 4]",
-"[$a, $b] ::= $t.%{a,b}", "[$c, $d] ::= $ary.[3,5]".  This syntax would
-resolve into multiple single-attr accessors when app in system catalog.
+* Add functions for splitting strings on delimiters or catenating them with
+such to above extensions or to Text.pod as appropriate.
 
 * Make further updates to DateTime.pod to improve correctness or
 normalization, particularly with durations, maybe add some UTCDuration
@@ -428,20 +424,60 @@ semantics.  Seek advice from the Perl DateTime people about this stuff.
 * Consider updates to DateTime.pod that let one record time zones etc
 attached to instant values; this would be a non-central feature.
 
-* Provide operators for the spatial data types, maybe overhaul the types.
+* Consider adding a Temporal.pod
+and/or DateTime.pod type specific to representing a period in
+time, maybe simply as an alias for 'interval_of.Instant' or some such.  See
+also the PGTemporal project and its 'Period' type.
 
-* Update the system catalog concerning managing shared|exclusive locks or
-looking for consistent reads between statements, etc.
+* Flesh out "Spatial" extension; provide operators for the spatial data
+types, maybe overhaul the types.
 
-* Restore the concept of public-vs-private entities directly in sub|depots.
+----------
 
-* Restore the concept of "topic namespaces" (analagous to SQL DBMS concept
-of "current database|schema" etc) in some form if not redundant.
+* Add one or more files to the distro that are straight PTMD_STD code like
+for defining a whole depot (as per the above) but instead these files
+define all the system entities.  Or more specifically they define just the
+interfaces/heads of all the system-defined routines, and they have the
+complete definitions of all system-defined types, and they declare all the
+system catalog dbvars/dbcons.  In other words these files contain
+everything that is in the sys.cat dbcon; anything that users can introspect
+from sys.cat can also be read from these files in the form of PTMD_STD
+code, more or less.  The function of these files is analagous to the Perl 6
+Setting files described in the Perl 6 Synopsis 32, except that the Muldis D
+analogy explicitly does not define the bodies of any built-in routines.  An
+idea is that Muldis D implementations could take these files as is and
+parse them to populate their sys.cat that users see; of course, the
+implementations can actually implement the routines/types as they want.
+Note that although this Muldis D code would be bundled with the spec, it is
+most likely that the PTMD_STD-written standard impl test suite will not.
+Note that these files will not go in lib/ but in some other new dir.  Note
+that it is likely any implementation will bundle a clone of these files
+(suitably integrated as desired) rather than having an actual external
+dependency on the Muldis::D distro.  Note that some explicit comment might
+be necessary to say there are no licensing restrictions on copying this
+builtins-interfaces-defining code into Muldis D implementations, or maybe
+no comment is necessary.  Probably a good precedent is to look at what
+legalities concern existing tutorial/etc books that have sample code.
 
-* Update the system catalog to deal with database users and privileges etc.
+* Create another distribution, maybe called Muldis::D::Validator, which
+consists essentially of just a t/ directory holding a large number of files
+that are straight PTMD_STD code, and that emit the TAP protocol when
+executed.  The structure and purpose of this collection is essentially
+identical to the official Perl 6 test suite.  A valid Muldis D
+implementation could conceivably be defined as any interpreter which runs
+this test suite correctly.  This new distro would be a "testing requires"
+external dependency of both Muldis::Rosetta and any Parrot-hosted language
+or other implementation, though conceivably either could bundle a clone of
+Muldis::D::Validator rather than having an actual external dependency.
+This test suite would be LGPL licensed.  This new distribution would have a
+version number that is of X.Y.Z format like Muldis::D itself, where the X.Y
+part always matches that of the Muldis D spec that it is testing compliance
+with, while the .Z always starts at zero and increments independently of
+the Muldis D spec, as often there may be multiple updates to ::Validator
+for awhile between releases of the language spec, and also since .Z updates
+in the language spec only indicate bug fixes and shouldn't constitute a
+change to the spec from the point of view of ::Validator.
 
-* Flesh out matters related to starting or communicating between multiple
-autonomous in-DBMS processes, in general, besides the special case about
-sequence generators.
+----------
 
 * Whatever else needs doing, such as, fixing bugs.
