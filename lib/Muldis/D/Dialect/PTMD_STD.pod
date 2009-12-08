@@ -186,6 +186,8 @@ Grammar:
     <ln_extensions> ::=
         '{' \s*
             catalog_abstraction_level \s* '=>' \s* <cat_abstr_level>
+            [\s* ',' \s* standard_syntax_extensions
+                \s* => \s* <std_syn_ext_list>]?
         \s* '}'
 
     <cat_abstr_level> ::=
@@ -193,6 +195,14 @@ Grammar:
         | code_as_data
         | plain_rtn_inv
         | rtn_inv_alt_syn
+
+    <std_syn_ext_list> ::=
+        '{' \s*
+            [<std_syn_ext_list_item> ** [\s* ',' \s*]]?
+        \s* '}'
+
+    <std_syn_ext_list_item> ::=
+        date_time
 
 As per the VERSIONING pod section of L<Muldis::D>, code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
@@ -225,10 +235,11 @@ C<PTMD_STD>.
 =item C<ln_extensions>
 
 This is a set of chosen pragma/parser-config options, which is formatted
-similarly to a C<Tuple> SCVL.  The only currently defined pragma,
+similarly to a C<Tuple> SCVL.  The only mandatory pragma is
 C<catalog_abstraction_level> (see the L</CATALOG ABSTRACTION LEVELS> pod
-section), is mandatory; others may be added later which would likely be
-optional.
+section).  The only optional pragma is C<standard_syntax_extensions> (see
+the L</STANDARD SYNTAX EXTENSIONS> pod section).  Other pragmas may be
+added later, which would likely be optional.
 
 =back
 
@@ -236,6 +247,11 @@ Examples:
 
     Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
         catalog_abstraction_level => rtn_inv_alt_syn
+    }
+
+    Muldis_D:"http://muldis.com":"1.2.3":PTMD_STD:{
+        catalog_abstraction_level  => rtn_inv_alt_syn,
+        standard_syntax_extensions => {date_time}
     }
 
 =head1 CATALOG ABSTRACTION LEVELS
@@ -522,6 +538,54 @@ Examples:
         }
     }
 
+=head1 STANDARD SYNTAX EXTENSIONS
+
+The C<standard_syntax_extensions> pragma declares which optional portions
+of the Muldis D grammar a programmer may employ
+with their Muldis D code.
+
+There is currently 1 specified standard syntax extension: C<date_time>.
+These are all mutually independent and any or all may be used at once.
+
+While each I<standard syntax extension> is closely related to a I<Muldis D
+language extension>, you can use the latter's types and routines without
+declaring the former; you only declare you are using a I<standard syntax
+extension> if you want the Muldis D parser to recognize special syntax
+specific to those types and routines, and otherwise you just use them using
+the generic syntax provided for all types and routines.
+
+The C<standard_syntax_extensions> pragma is generally orthogonal to the
+C<catalog_abstraction_level> pragma, so you can combine any value of the
+latter with any value-list of the former.  However, in practice all
+standard syntax extensions will have no effect when the catalog abstraction
+level is C<the_floor>, and some of their features may only take effect when
+the catalog abstraction level is C<rtn_inv_alt_syn>, as is appropriate.
+
+Specifying the C<standard_syntax_extensions> pragma is optional, and when
+omitted it defaults to the empty set, meaning no extensions may be used.
+
+=head2 date_time
+
+The C<date_time> standard syntax extension is closely related to the
+L<Muldis::D::Ext::DateTime> language extension, and it constitutes special
+syntax for its data types; in the future it may improve the type syntax or
+add syntax for operators.
+
+When the C<standard_syntax_extensions> pragma includes C<date_time> in its
+list, then the following grammar extensions are in effect:
+
+    <value__code_as_data> ::=
+          ...
+        | <value__sse_date_time>
+
+    <value_kind> ::=
+          ...
+        | <value_kind__sse_date_time>
+
+    <value_payload> ::=
+          ...
+        | <value_payload__sse_date_time>
+
 =head1 VALUE LITERALS AND SELECTORS
 
 Grammar:
@@ -549,9 +613,6 @@ Grammar:
         | <Comment>
         | <Instant>
         | <Duration>
-        | <UTCInstant>
-        | <FloatInstant>
-        | <UTCDuration>
         | <RatRoundRule>
         | <String>
 
@@ -647,9 +708,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | Comment
         | Instant
         | Duration
-        | UTC [Instant | DateTime | Date | Time]
-        | Float [Instant | DateTime | Date | Time]
-        | UTCDuration
         | RatRoundRule
         | String | BString | OString | UCPString
         | DH? Scalar
@@ -679,9 +737,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <Comment_payload>
         | <Instant_payload>
         | <Duration_payload>
-        | <UTCInstant_payload>
-        | <FloatInstant_payload>
-        | <UTCDuration_payload>
         | <RatRoundRule_payload>
         | <String_payload>
         | <Scalar_payload>
@@ -1475,122 +1530,6 @@ Examples:
     Duration:1;1011101101*10^-11011
 
     Duration:1/43
-
-=head2 UTC and Float Temporal Literals
-
-Grammar:
-
-    <UTCInstant> ::=
-        UTC [Instant | DateTime | Date | Time] ':' \s*
-        [<type_name> ':' \s*]?
-        <UTCInstant_payload>
-
-    <UTCInstant_payload> ::=
-        <UTCDuration_payload>
-
-    <FloatInstant> ::=
-        Float [Instant | DateTime | Date | Time] ':' \s*
-        [<type_name> ':' \s*]?
-        <FloatInstant_payload>
-
-    <FloatInstant_payload> ::=
-        <UTCDuration_payload>
-
-    <UTCDuration> ::=
-        UTCDuration ':' \s*
-        [<type_name> ':' \s*]?
-        <UTCDuration_payload>
-
-    <UTCDuration_payload> ::=
-          <num_max_col_val> ';' \s* <utc_duration_body>
-        | <d_utc_duration_body>
-
-    <utc_duration_body> ::=
-        '[' \s*
-            [<int_body>? [\s* ',' \s*]] ** 5
-            \s* ',' \s* <rat_body>?
-        \s* ']'
-
-    <d_utc_duration_body> ::=
-        '[' \s*
-            [<d_int_body>? [\s* ',' \s*]] ** 5
-            \s* ',' \s* <d_rat_body>?
-        \s* ']'
-
-A C<UTCInstant> node represents an "instant"/"datetime" value that is
-affiliated with the UTC time-zone.  This node is interpreted as a Muldis D
-C<sys.std.DateTime.Type.UTCInstant> value whose C<instant> possrep
-attribute values are defined as follows:
-
-A C<UTCInstant_payload> consists mainly of a bracket-delimited sequence of
-6 comma-separated elements, where each element is either a valid numeric
-literal or is completely absent.  The 6 elements correspond in order to
-the 6 attributes: C<year>, C<month>, C<day>, C<hour>, C<minute>, C<second>.
-For each element that is absent or defined, the corresponding attribute has
-the C<nothing> or a C<Single> value, respectively.  For each of the first 5
-elements, when it is defined, it must qualify as a valid I<body> part of an
-C<Int> node; for the 6th element, when it is defined, it must qualify as a
-valid I<body> part of a C<Rat> node.
-
-Fundamentally each C<UTCInstant> node element is formatted and interpreted
-like an C<Int> or C<Rat> node, and any similarities won't be repeated here.
-
-A defined C<year> may be any integer, each of [C<month>, C<day>] must be a
-positive integer, each of [C<hour>, C<minute>] must be a non-negative
-integer, and C<second> must be a non-negative rational number.  If all 6
-attributes are defined, then the new C<UTCInstant> value is also a
-C<UTCDateTime>; if just the first 3 or last 3 are defined, then the value
-is not a C<UTCDateTime> but rather a C<UTCDate> or C<UTCTime>,
-respectively; if any other combination of attributes are defined, then the
-value is just a C<UTCInstant> and not of any of the other 3 subtypes.
-
-If the C<value_kind> of a C<value> node is C<UTCDateTime> or C<UTCDate> or
-C<UTCTime> rather than C<UTCInstant>, then the C<value> node is interpreted
-simply as a C<UTCInstant> node whose C<type_name> is C<UTCDateTime> or
-C<UTCDate> or C<UTCTime>, and the allowed I<body> is appropriately further
-restricted.
-
-A C<FloatInstant> node represents an "instant"/"datetime" value that is
-"floating" / not affiliated with any time-zone.  This node is interpreted
-as a Muldis D C<sys.std.DateTime.Type.FloatInstant> value in an identical
-fashion to how a C<UTCInstant> node is interpreted, whose format it
-completely shares.  Likewise regarding C<Float[DateTime|Date|Time]>.
-
-A C<UTCDuration> node represents a duration value, an amount of time, which
-is not fixed to any instant in time.  This node is interpreted as a Muldis
-D C<sys.std.DateTime.Type.UTCDuration> value whose C<duration> possrep
-attribute values are defined as follows:
-
-A C<UTCDuration_payload> consists mainly of a bracket-delimited sequence of
-6 comma-separated elements, where each element is either a valid numeric
-literal or is completely absent.  The 6 elements correspond in order to the
-6 attributes: C<years>, C<months>, C<days>, C<hours>, C<minutes>,
-C<seconds>.  For each element that is absent or defined, the corresponding
-attribute has the C<nothing> or a C<Single> value, respectively.  For each
-of the first 5 elements, when it is defined, it must qualify as a valid
-I<body> part of an C<Int> node; for the 6th element, when it is defined, it
-must qualify as a valid I<body> part of a C<Rat> node.
-
-Mostly a C<UTCDuration> is formatted and interpreted like a C<UTCInstant>
-node, and any similarities won't be repeated here.
-
-A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
-integer, and C<seconds> may be any rational number.  I<Currently,
-C<UTCDuration> has no system-defined subtypes, but that may change later.>
-
-Examples:
-
-    UTCInstant:[1964,10,16,16,12,47.5] # a UTCDateTime #
-
-    UTCInstant:[2002,12,6,,,] # a UTCDate #
-
-    UTCInstant:[,,,14,2,29.0] # a UTCTime #
-
-    FloatInstant:[2003,4,5,2,,] # min,sec unknown or N/A #
-
-    FloatInstant:[1407,,,,,] # just know its sometime in 1407 #
-
-    UTCDuration:[3,5,1,6,15,45.000012]
 
 =head2 Rational Rounding Rule Literals
 
@@ -3789,6 +3728,154 @@ Examples (for now sans any use of extra op args, which are atypical):
     not $min < $foo ≤ $max
 
     not $min < $foo < $max
+
+=head1 DATE-TIME EXTENSION OPAQUE VALUE LITERALS
+
+The C<date_time> standard syntax extension is closely related to the
+L<Muldis::D::Ext::DateTime> language extension, and it constitutes special
+syntax for its data types; in the future it may improve the type syntax or
+add syntax for operators.
+
+Grammar:
+
+    <value__sse_date_time> ::=
+          ...
+        | <UTCInstant>
+        | <FloatInstant>
+        | <UTCDuration>
+
+    <value_kind__sse_date_time> ::=
+          ...
+        | UTC [Instant | DateTime | Date | Time]
+        | Float [Instant | DateTime | Date | Time]
+        | UTCDuration
+
+    <value_payload__sse_date_time> ::=
+          ...
+        | <UTCInstant_payload>
+        | <FloatInstant_payload>
+        | <UTCDuration_payload>
+
+=head2 Date and Time Literals
+
+Grammar:
+
+    <UTCInstant> ::=
+        UTC [Instant | DateTime | Date | Time] ':' \s*
+        [<type_name> ':' \s*]?
+        <UTCInstant_payload>
+
+    <UTCInstant_payload> ::=
+        <UTCDuration_payload>
+
+    <FloatInstant> ::=
+        Float [Instant | DateTime | Date | Time] ':' \s*
+        [<type_name> ':' \s*]?
+        <FloatInstant_payload>
+
+    <FloatInstant_payload> ::=
+        <UTCDuration_payload>
+
+    <UTCDuration> ::=
+        UTCDuration ':' \s*
+        [<type_name> ':' \s*]?
+        <UTCDuration_payload>
+
+    <UTCDuration_payload> ::=
+          <num_max_col_val> ';' \s* <utc_duration_body>
+        | <d_utc_duration_body>
+
+    <utc_duration_body> ::=
+        '[' \s*
+            [<int_body>? [\s* ',' \s*]] ** 5
+            \s* ',' \s* <rat_body>?
+        \s* ']'
+
+    <d_utc_duration_body> ::=
+        '[' \s*
+            [<d_int_body>? [\s* ',' \s*]] ** 5
+            \s* ',' \s* <d_rat_body>?
+        \s* ']'
+
+A C<UTCInstant> node represents an "instant"/"datetime" value that is
+affiliated with the UTC time-zone.  This node is interpreted as a Muldis D
+C<sys.std.DateTime.Type.UTCInstant> value whose C<instant> possrep
+attribute values are defined as follows:
+
+A C<UTCInstant_payload> consists mainly of a bracket-delimited sequence of
+6 comma-separated elements, where each element is either a valid numeric
+literal or is completely absent.  The 6 elements correspond in order to
+the 6 attributes: C<year>, C<month>, C<day>, C<hour>, C<minute>, C<second>.
+For each element that is absent or defined, the corresponding attribute has
+the C<nothing> or a C<Single> value, respectively.  For each of the first 5
+elements, when it is defined, it must qualify as a valid I<body> part of an
+C<Int> node; for the 6th element, when it is defined, it must qualify as a
+valid I<body> part of a C<Rat> node.
+
+Fundamentally each C<UTCInstant> node element is formatted and interpreted
+like an C<Int> or C<Rat> node, and any similarities won't be repeated here.
+
+A defined C<year> may be any integer, each of [C<month>, C<day>] must be a
+positive integer, each of [C<hour>, C<minute>] must be a non-negative
+integer, and C<second> must be a non-negative rational number.  If all 6
+attributes are defined, then the new C<UTCInstant> value is also a
+C<UTCDateTime>; if just the first 3 or last 3 are defined, then the value
+is not a C<UTCDateTime> but rather a C<UTCDate> or C<UTCTime>,
+respectively; if any other combination of attributes are defined, then the
+value is just a C<UTCInstant> and not of any of the other 3 subtypes.
+
+If the C<value_kind> of a C<value> node is C<UTCDateTime> or C<UTCDate> or
+C<UTCTime> rather than C<UTCInstant>, then the C<value> node is interpreted
+simply as a C<UTCInstant> node whose C<type_name> is C<UTCDateTime> or
+C<UTCDate> or C<UTCTime>, and the allowed I<body> is appropriately further
+restricted.
+
+A C<FloatInstant> node represents an "instant"/"datetime" value that is
+"floating" / not affiliated with any time-zone.  This node is interpreted
+as a Muldis D C<sys.std.DateTime.Type.FloatInstant> value in an identical
+fashion to how a C<UTCInstant> node is interpreted, whose format it
+completely shares.  Likewise regarding C<Float[DateTime|Date|Time]>.
+
+A C<UTCDuration> node represents a duration value, an amount of time, which
+is not fixed to any instant in time.  This node is interpreted as a Muldis
+D C<sys.std.DateTime.Type.UTCDuration> value whose C<duration> possrep
+attribute values are defined as follows:
+
+A C<UTCDuration_payload> consists mainly of a bracket-delimited sequence of
+6 comma-separated elements, where each element is either a valid numeric
+literal or is completely absent.  The 6 elements correspond in order to the
+6 attributes: C<years>, C<months>, C<days>, C<hours>, C<minutes>,
+C<seconds>.  For each element that is absent or defined, the corresponding
+attribute has the C<nothing> or a C<Single> value, respectively.  For each
+of the first 5 elements, when it is defined, it must qualify as a valid
+I<body> part of an C<Int> node; for the 6th element, when it is defined, it
+must qualify as a valid I<body> part of a C<Rat> node.
+
+Mostly a C<UTCDuration> is formatted and interpreted like a C<UTCInstant>
+node, and any similarities won't be repeated here.
+
+A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
+integer, and C<seconds> may be any rational number.  I<Currently,
+C<UTCDuration> has no system-defined subtypes, but that may change later.>
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.OVLScaValExprNodeSet>, a tuple of which is what
+every kind of C<value__sse_date_time> node distills to when it is beneath
+the context of a C<depot> node, as it describes some semantics.
+
+Examples:
+
+    UTCInstant:[1964,10,16,16,12,47.5] # a UTCDateTime #
+
+    UTCInstant:[2002,12,6,,,] # a UTCDate #
+
+    UTCInstant:[,,,14,2,29.0] # a UTCTime #
+
+    FloatInstant:[2003,4,5,2,,] # min,sec unknown or N/A #
+
+    FloatInstant:[1407,,,,,] # just know its sometime in 1407 #
+
+    UTCDuration:[3,5,1,6,15,45.000012]
 
 =head1 NESTING PRECEDENCE RULES
 
