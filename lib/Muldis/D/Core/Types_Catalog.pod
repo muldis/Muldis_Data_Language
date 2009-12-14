@@ -142,6 +142,7 @@ more or less:
                 sys.std.Core.Type.Cat.OVLScaValStmtNodeSet
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
                 sys.std.Core.Type.Cat.CompoundStmtNodeSet
+                sys.std.Core.Type.Cat.FuncInvoStmtNodeSet
                 sys.std.Core.Type.Cat.UpdInvoStmtNodeSet
                 sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
                 sys.std.Core.Type.Cat.IISArgVarMap
@@ -2083,7 +2084,7 @@ explicit C<name> that can be referenced by "leave" and "iterate" control
 flow statements to leave or re-iterate the corresponding block, both SQL
 and Perl have native counterpart features in the form of block labels.
 
-A C<StmtNodeSet> has these 10 attributes:
+A C<StmtNodeSet> has these 11 attributes:
 
 =over
 
@@ -2102,6 +2103,11 @@ These are statement nodes that represent abnormal block exit statements.
 
 These are statement nodes that each represent a compound statement having a
 sequence of 0..N procedure statements.
+
+=item C<func_invo_stmts> - C<FuncInvoStmtNodeSet>
+
+These are statement nodes that represent function invocations and the
+assignment to local variables of the results of those invocations.
 
 =item C<upd_invo_stmts> - C<UpdInvoStmtNodeSet>
 
@@ -2141,14 +2147,14 @@ C<StmtNodeSet>'s attributes.  Its default value is empty.
 =head2 sys.std.Core.Type.Cat.OVLScaValStmtNodeSet
 
 An C<OVLScaValStmtNodeSet> is a C<DHRelation> that specifies a set of
-statement nodes where each node represents the assignment to a variable (or
-parameter) of a hard-coded scalar literal that is I<not> being specified
-explicitly in terms of possrep attributes, but rather is specified using
-special "opaque value literal" syntax that all of the Muldis D standard
-dialects provide.  Using one of these statement nodes should be an
-effective alternative to declaring (or extending) an updater that simply
-combines a simple scalar selecting expression node with an C<assign>
-updater call.
+atomic statement nodes where each node represents the assignment to a
+variable (or parameter) of a hard-coded scalar literal that is I<not> being
+specified explicitly in terms of possrep attributes, but rather is
+specified using special "opaque value literal" syntax that all of the
+Muldis D standard dialects provide.  Using one of these statement nodes
+should be an effective alternative to either declaring a niladic function
+or declaring (or extending) an updater that simply combines a simple scalar
+selecting expression node with an C<assign> updater call.
 
 An C<OVLScaValStmtNodeSet> has these 4 attributes:
 
@@ -2246,9 +2252,54 @@ execute in this given sequence.
 A C<CompoundStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
+=head2 sys.std.Core.Type.Cat.FuncInvoStmtNodeSet
+
+A C<FuncInvoStmtNodeSet> is a C<DHRelation> that specifies a set of atomic
+statement nodes where each node represents the assignment to a variable (or
+parameter) of the result of an invocation of a function with specific
+arguments.  The invoked function can be either user-defined or
+system-defined.  Using one of these statement nodes should be an effective
+alternative to declaring (or extending) an updater that simply combines a
+single function-invoking expression node (whose arguments are all just the
+updater's own arguments) with an C<assign> updater call.
+
+A C<FuncInvoStmtNodeSet> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the statement (leaf) node.
+
+=item C<target> - C<DataNC>
+
+This is name of the local parameter or variable that will have the result
+value of the function invocation assigned to it.
+
+=item C<function> - C<MaterialNC>
+
+This is the name of the function being invoked by the statement node.
+
+=item C<args> - C<IISArgVarMap>
+
+These are the 0..N read-only arguments to the function invocation.  Each
+element defines one argument value, with the element C<arg> matching the
+invoked function's parameter name, and the element C<var> naming a local or
+global variable or statement-containing-procedure parameter which defines
+the value.
+
+=back
+
+A C<FuncInvoStmtNodeSet> has a unary primary key on the C<name>
+attribute.  Its default value is empty.
+
 =head2 sys.std.Core.Type.Cat.UpdInvoStmtNodeSet
 
-An C<UpdInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
+An C<UpdInvoStmtNodeSet> is a C<DHRelation> that specifies a set of atomic
 statement nodes where each node is an invocation of an updater with
 specific arguments.  The invoked updater can be either user-defined or
 system-defined.
@@ -2279,8 +2330,8 @@ subject-to-update argument.
 =item C<ro_args> - C<IISArgVarMap>
 
 These are the 0..N read-only arguments to the updater invocation.  Each
-element defines one argument value, with the element C<name> matching the
-invoked updater's parameter name, and the element C<expr> naming a local or
+element defines one argument value, with the element C<arg> matching the
+invoked updater's parameter name, and the element C<var> naming a local or
 global variable or statement-containing-procedure parameter which defines
 the value.
 
@@ -2322,8 +2373,8 @@ as-per C<ro_args>.
 =item C<ro_args> - C<IISArgVarMap>
 
 These are the 0..N read-only arguments to the procedure invocation.  Each
-element defines one argument value, with the element C<name> matching the
-invoked procedure's parameter name, and the element C<expr> naming a local
+element defines one argument value, with the element C<arg> matching the
+invoked procedure's parameter name, and the element C<var> naming a local
 or global variable or statement-containing-procedure parameter which
 defines the value.
 
@@ -2530,14 +2581,14 @@ Its default value is empty.
 =head2 sys.std.Core.Type.Cat.APMaterialNCSelStmtNodeSet
 
 An C<APMaterialNCSelStmtNodeSet> is a C<DHRelation> that specifies a set of
-statement nodes where each node represents the assignment to a variable (or
-parameter) of a newly selected value of the
+atomic statement nodes where each node represents the assignment to a
+variable (or parameter) of a newly selected value of the
 C<sys.std.Core.Type.Cat.AbsPathMaterialNC> type, which is selected in terms
 of a value of the C<sys.std.Core.Type.Cat.RelPathMaterialNC> type.  Using
-one of these statement nodes should be an effective alternative to
-declaring (or extending) an updater that simply
-combines an C<AbsPathMaterialNC> selecting
-expression node with an C<assign> updater call.
+one of these statement nodes should be an effective alternative to either
+declaring a niladic function or declaring (or extending) an updater that
+simply combines an C<AbsPathMaterialNC> selecting expression node with an
+C<assign> updater call.
 
 An C<APMaterialNCSelStmtNodeSet> has these 4 attributes:
 
