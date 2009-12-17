@@ -539,8 +539,7 @@ Examples:
 =head1 STANDARD SYNTAX EXTENSIONS
 
 The C<standard_syntax_extensions> pragma declares which optional portions
-of the Muldis D grammar a programmer may employ
-with their Muldis D code.
+of the Muldis D grammar a programmer may employ with their Muldis D code.
 
 There is currently 1 specified standard syntax extension: C<date_time>.
 These are all mutually independent and any or all may be used at once.
@@ -1632,7 +1631,7 @@ Grammar:
         <Name_payload>
 
     <possrep_attrs> ::=
-        <Tuple_payload>
+        <tuple_list>
 
 A C<Scalar> node represents a literal or selector invocation for a
 scalar subtype value.  It is interpreted as a Muldis D
@@ -1701,11 +1700,20 @@ Grammar:
 
     <tuple_list> ::=
         '{' \s*
-            [[<attr_name> \s* '=>' \s* <expr>] ** [\s* ',' \s*]]?
+            [[<nonord_atvl> | <same_named_nonord_atvl>] ** [\s* ',' \s*]]?
         \s* '}'
+
+    <nonord_atvl> ::=
+        <attr_name> \s* '=>' \s* <expr>
 
     <attr_name> ::=
         <Name_payload>
+
+    <same_named_nonord_atvl> ::=
+        <data_sigil> <pair_cosigil> <attr_name>
+
+    <pair_cosigil> ::=
+        '>'
 
     <tuple_d0> ::=
         d0
@@ -1714,7 +1722,8 @@ A C<Tuple> node represents a literal or selector invocation for a tuple
 value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Tuple> value
 whose attributes are defined by the C<Tuple_payload>.
 
-Iff the C<Tuple_payload> is a C<tuple_list> then each name+expr pair of the
+Iff the C<Tuple_payload> is a C<tuple_list> then each name+expr pair
+(C<nonord_atvl>) of the
 C<Tuple_payload> defines a named attribute of the new tuple; the pair's
 name and expr specify, respectively, the attribute name, and the attribute
 value.  If the C<value_kind> of a C<value> node is C<DHTuple> rather than
@@ -1726,6 +1735,17 @@ Iff the C<Tuple_payload> is a C<tuple_d0> then the C<Tuple> node is
 interpreted as the special value C<Tuple:d0> aka C<d0>, which is the only
 C<Tuple> value with exactly zero attributes.  Note that this is just an
 alternative syntax, as C<tuple_list> can select that value too.
+
+A special shorthand for C<nonord_atvl> also exists,
+C<same_named_nonord_atvl>, which may be used only if the C<expr> of the
+otherwise-C<nonord_atvl> is a C<expr_name> and that C<expr_name> is
+identical to the C<attr_name>.  In this situation, the identical name can
+be specified just once, which is the shorthand; for example, the attribute
+C<< foo => $foo >> may alternately be written out as C<< $>foo >> (the C<<
+> >> being meant to evoke the C<< => >>).  This shorthand is to help with
+the possibly common situation where attributes of a tuple (or relation or
+scalar) selection are being valued from same-named expression nodes / etc.
+(This shorthand is like Perl 6's C<:$a> being short for C<< a => $a >>.)
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what
@@ -1750,6 +1770,8 @@ Examples:
         name => 'Michelle',
         age  => 17
     }
+
+    Tuple:{ w => 'foo', $>x, y => 4, $>z }
 
 =head2 Database Selectors
 
@@ -1799,7 +1821,7 @@ Grammar:
 
     <r_nonordered_attr_payload> ::=
         '{' \s*
-            [<Tuple_payload> ** [\s* ',' \s*]]?
+            [<tuple_list> ** [\s* ',' \s*]]?
         \s* '}'
 
     <r_ordered_attr_payload> ::=
@@ -1833,10 +1855,10 @@ one C<attr_name> element, then it defines the attribute names of a
 relation having zero tuples.
 
 Iff the C<Relation_payload> is a C<r_nonordered_attr_payload> with at
-least one <Tuple_payload> element, then each element defines a tuple
-of the new relation; every <Tuple_payload> must define a tuple
+least one <tuple_list> element, then each element defines a tuple
+of the new relation; every <tuple_list> must define a tuple
 of the same degree and have the same attribute names as its sibling
-<Tuple_payload>; these are the degree and attribute names of the
+<tuple_list>; these are the degree and attribute names of the
 relation as a whole, which is its heading for the current purposes.
 
 Iff the C<Relation_payload> is a C<r_ordered_attr_payload>, then:  The
@@ -2565,7 +2587,8 @@ Grammar:
 
     <func_arg_list> ::=
         '(' \s*
-            [[<named_ro_arg> | <anon_ro_arg>] ** [\s* ',' \s*]]?
+            [[<named_ro_arg> | <anon_ro_arg> | <same_named_ro_arg>]
+                ** [\s* ',' \s*]]?
         \s* ')'
 
     <named_ro_arg> ::=
@@ -2576,6 +2599,9 @@ Grammar:
 
     <anon_ro_arg> ::=
         <expr>
+
+    <same_named_ro_arg> ::=
+        <data_sigil> <pair_cosigil> <param_name>
 
 A C<func_invo> node represents the result of invoking a named
 function with specific arguments.  It is interpreted as a tuple of a
@@ -2624,6 +2650,17 @@ I<Maybe TODO:  Consider adding a language pragma to enable use of the first
 of enabling is added implementation complexity and a reduction of the
 ability to parse exploiting Muldis D code piecemeal.>
 
+A special shorthand for C<named_ro_arg> also exists, C<same_named_ro_arg>,
+which may be used only if the C<expr> of the otherwise-C<named_ro_arg> is a
+C<expr_name> and that C<expr_name> is identical to the C<param_name>.  In
+this situation, the identical name can be specified just once, which is the
+shorthand; for example, the named argument C<< foo => $foo >> may
+alternately be written out as C<< $>foo >> (the C<< > >> being meant to
+evoke the C<< => >>).  This shorthand is to help with the possibly common
+situation where two successive routines in a call-chain have any same-named
+parameters and arguments are simply being passed through.
+(This shorthand is like Perl 6's C<:$a> being short for C<< a => $a >>.)
+
 Examples:
 
     # zero params #
@@ -2652,6 +2689,9 @@ Examples:
 
     # two params named 'topic' and 'other' #
     is_identical( $foo, $bar )
+
+    # three named params taking 2 same-named args, 1 diff-named arg #
+    nlx.lib.passed_thru( $>a, b => 5, $>c )
 
 =head2 Generic If-Else Expressions
 
@@ -3461,7 +3501,7 @@ This table indicates which function is invoked by each format-keyword:
                    count_attr_name => $count_atnm,
                    group_per => Set:{ $cmpl_inner_atnms[0], ... } )
 
-    .[] -> Core.Array.value( $expr, index => $index )
+    .[] -> Core.Array.value( $expr, $>index )
     []  -> Core.Array.slice( $expr, index_interval => Interval:{
                 $min_index $interval_boundary_kind $max_index } )
 
@@ -3567,14 +3607,12 @@ sequence.
 
 This table indicates which function is invoked by each keyword:
 
-          -> Core.Rational.round( $expr, round_rule => $round_rule )
+          -> Core.Rational.round( $expr, $>round_rule )
     N^    -> Core.Rational.power( radix => $lhs, exponent => $rhs,
-                round_rule => $round_rule )
-    log   -> Core.Rational.log( $lhs, radix => $rhs,
-                round_rule => $round_rule )
-    e^    -> Core.Rational.natural_power( $expr,
-                round_rule => $round_rule )
-    log-e -> Core.Rational.natural_log( $expr, round_rule => $round_rule )
+                $>round_rule )
+    log   -> Core.Rational.log( $lhs, radix => $rhs, $>round_rule )
+    e^    -> Core.Rational.natural_power( $expr, $>round_rule )
+    log-e -> Core.Rational.natural_log( $expr, $>round_rule )
 
 Examples:
 
