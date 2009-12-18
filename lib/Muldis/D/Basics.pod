@@ -1909,8 +1909,8 @@ acceptable.  A procedure can define explicit (lexically scoped)
 transactions over multiple consecutive statements, and is the
 only kind of routine that can; specifically, those statements are parcelled
 together into a separate C<procedure>, and then that is invoked
-indirectly by way of a new statement in the first procedure that invokes
-the system-defined C<try_catch> procedure.  The vast majority of
+indirectly by way of a new try-catch control flow statement in the first
+procedure.  The vast majority of
 C<procedure> that exist will be user-defined.  But some system-defined
 routines that would otherwise be C<function> or C<updater> are C<procedure>
 instead solely because they are non-deterministic; an example is an
@@ -2059,14 +2059,14 @@ there are no explicit transaction active.
 
 The way to specify an explicit transaction within Muldis D
 is to take the statements comprising it and isolate them into their own
-C<procedure>, then invoke that by way of the
-system-defined C<try_catch> procedure; the invoked procedure is
+C<procedure>, then invoke that by way of a
+try-catch control flow statement; the invoked procedure is
 conceptually an exception-trapping I<try block>.  A procedure invoked
-through C<try_catch> is wrapped in a new child transaction that is tied to
+through try-catch is wrapped in a new child transaction that is tied to
 its lexical scope.  The transaction will begin when that scope is entered
 and end when that scope is exited; if the scope is exited normally, its
 transaction commits; if the scope terminates early due to a thrown
-exception, its transaction rolls back.  In the latter case, C<try_catch>
+exception, its transaction rolls back.  In the latter case, try-catch
 will catch that exception, so the rollback doesn't proceed further than
 itself, but that if the I<catch block> it then invokes also throws (or
 re-throws) an exception, that is not caught here.  This lexically-scoped

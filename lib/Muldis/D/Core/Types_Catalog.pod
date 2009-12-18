@@ -146,6 +146,7 @@ more or less:
                 sys.std.Core.Type.Cat.UpdInvoStmtNodeSet
                 sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
                 sys.std.Core.Type.Cat.IISArgVarMap
+                sys.std.Core.Type.Cat.TryCatchStmtNodeSet
                 sys.std.Core.Type.Cat.IfElseStmtNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
                 sys.std.Core.Type.Cat.WhenThenVarStmtMap
@@ -2084,7 +2085,7 @@ explicit C<name> that can be referenced by "leave" and "iterate" control
 flow statements to leave or re-iterate the corresponding block, both SQL
 and Perl have native counterpart features in the form of block labels.
 
-A C<StmtNodeSet> has these 11 attributes:
+A C<StmtNodeSet> has these 12 attributes:
 
 =over
 
@@ -2116,6 +2117,10 @@ These are statement nodes that represent updater invocations.
 =item C<proc_invo_stmts> - C<ProcInvoStmtNodeSet>
 
 These are statement nodes that represent procedure invocations.
+
+=item C<try_catch_stmts> - C<TryCatchStmtNodeSet>
+
+These are statement nodes that represent try-catch control flow statements.
 
 =item C<if_else_stmts> - C<IfElseStmtNodeSet>
 
@@ -2394,6 +2399,53 @@ C<var> (a C<DataNC>); the C<arg> is the name of the routine argument,
 and comprises a unary key; the C<var> is the invocation name of the
 variable (or parameter or pseudo-variable) which defines the value for the
 argument.  Its default value has zero tuples.
+
+=head2 sys.std.Core.Type.Cat.TryCatchStmtNodeSet
+
+A C<TryCatchStmtNodeSet> is a C<DHRelation> that specifies a set of
+statement nodes where each node represents a try-catch control flow
+statement.  A C<TryCatchStmtNodeSet> is conceptually a wrapper over a pair
+of C<ProcInvoStmtNodeSet> named I<try> and I<catch>, where I<try> is
+unconditionally invoked first and then iff I<try> throws an exception then
+it will be caught and I<catch> will be invoked immediately after to handle
+it; if I<catch> also throws an exception then it will not be caught.  Each
+of the invoked procedures can be either user-defined or system-defined.
+
+An C<TryCatchStmtNodeSet> has these 4 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the statement node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about either the statement node or
+the statement node (sub-)tree it is the root of.
+
+=item C<try> - C<Name>
+
+This is the name of a local procedure invocation statement node that will
+be invoked first unconditionally and which constitutes its own child
+transaction; the child transaction will commit if the procedure completes
+its execution normally and it will roll back if the procedure completes
+abnormally by throwing an exception; any thrown exception will be caught.
+
+=item C<catch> - C<maybe_of.Name>
+
+Iff C<catch> is a C<Single>, it is the name of a local procedure invocation
+statement node that will be invoked second iff the C<try> procedure throws
+an exception, and it will receive that exception for handling via its
+single mandatory parameter C<topic> (which is C<Exception>-typed); iff
+C<catch> is C<nothing>, then there is no second procedure invocation,
+meaning any exception thrown by C<try> is ignored; any exception thrown by
+C<catch> will not be caught.
+
+=back
+
+A C<TryCatchStmtNodeSet> has a unary primary key on the C<name>
+attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.IfElseStmtNodeSet
 
