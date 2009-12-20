@@ -85,6 +85,14 @@ more or less:
                 # The following are all regular tuple types.
 
                 sys.std.Core.Type.Cat.Function
+                    sys.std.Core.Type.Cat.NamedValFunc
+                    sys.std.Core.Type.Cat.ValMapFunc
+                        sys.std.Core.Type.Cat.ValMapUFunc
+                        sys.std.Core.Type.Cat.ValFiltFunc
+                            sys.std.Core.Type.Cat.ValConstrFunc
+                    sys.std.Core.Type.Cat.TransConstrFunc
+                    sys.std.Core.Type.Cat.ValRedFunc
+                    sys.std.Core.Type.Cat.OrdDetFunc
                 sys.std.Core.Type.Cat.IfThenExprMap
                 sys.std.Core.Type.Cat.Updater
                 sys.std.Core.Type.Cat.Procedure
@@ -181,10 +189,10 @@ runtime:
             # The following are all regular tuple types.
 
             sys.std.Core.Type.Cat.CurriedFuncNC
-                sys.std.Core.Type.Cat.OrdDetCFuncNC
-                sys.std.Core.Type.Cat.ValFiltCFuncNC
                 sys.std.Core.Type.Cat.ValMapCFuncNC
+                    sys.std.Core.Type.Cat.ValFiltCFuncNC
                 sys.std.Core.Type.Cat.ValRedCFuncNC
+                sys.std.Core.Type.Cat.OrdDetCFuncNC
 
 =head1 SIMPLE GENERIC SCALAR TYPES
 
@@ -1269,6 +1277,80 @@ C<Function> has a distributed primary key over the C<name> attributes of
 C<params> and the C<name> attributes of all the attributes of C<expr>.  Its
 default value has zero parameters, a result type of C<Bool>, and has no
 specified I<body>.
+
+=head2 sys.std.Core.Type.Cat.NamedValFunc
+
+A C<NamedValFunc> defines a C<named-value>, which is a kind of function.
+C<NamedValFunc> is a proper subtype of C<Function> where all member values
+declare a function that is nullary / has exactly zero parameters.  Its
+default value is a function whose invocation unconditionally results in
+C<Bool:false>.
+
+=head2 sys.std.Core.Type.Cat.ValMapFunc
+
+A C<ValMapFunc> defines a C<value-map>, which is a kind of function.
+C<ValMapFunc> is a proper subtype of C<Function> where all member values
+declare a function that has at least 1 parameter, and that 1 is named
+C<topic>.  Its default value is the same as that of its C<ValMapUFunc>
+subtype.
+
+=head2 sys.std.Core.Type.Cat.ValMapUFunc
+
+A C<ValMapUFunc> defines a C<value-map-unary>, which is a kind of
+C<value-map>.  C<ValMapUFunc> is a proper subtype of C<ValMapFunc> where
+all member values declare a function that is unary / has exactly one
+parameter (just the C<topic> parameter).  Its default value is a function
+whose invocation unconditionally results in its C<topic> argument and whose
+only parameter has a declared type of C<Universal>.
+
+=head2 sys.std.Core.Type.Cat.ValFiltFunc
+
+A C<ValFiltFunc> defines a C<value-filter>, which is a kind of
+C<value-map>.  C<ValFiltFunc> is a proper subtype of C<ValMapFunc> where
+all member values declare a function whose result's declared type is
+C<Bool>.  Its default value is the same as that of its C<ValConstrFunc>
+subtype.
+
+=head2 sys.std.Core.Type.Cat.ValConstrFunc
+
+A C<ValConstrFunc> defines a C<value-constraint>, which is a kind of
+C<value-filter> I<and> a kind of C<value-map-unary>.  C<ValConstrFunc> is
+the intersection type of C<ValFiltFunc> and C<ValMapUFunc>.  Its default
+value is a function whose invocation unconditionally results in
+C<Bool:true> and whose only parameter has a declared type of C<Universal>.
+
+=head2 sys.std.Core.Type.Cat.TransConstrFunc
+
+A C<TransConstrFunc> defines a C<transition-constraint>, which is a kind of
+function.  C<TransConstrFunc> is a proper subtype of C<Function> where all
+member values declare a function that is binary / has exactly 2 parameters,
+and those 2 are named C<before> and C<after>, and the declared types of
+those 2 parameters are identical, and the declared type of the function's
+result is C<Bool>.  Its default value is a function whose invocation
+unconditionally results in C<Bool:true>.
+
+=head2 sys.std.Core.Type.Cat.ValRedFunc
+
+A C<ValRedFunc> defines a C<value-reduction>, which is a kind of function.
+C<ValRedFunc> is a proper subtype of C<Function> where all member values
+declare a function that has at least 2 parameters, and those 2 are named
+C<v1> and C<v2>, and the declared types of those 2 parameters are
+identical, and the declared type of the function's result is identical to
+that of either of those 2 parameters.  Its default value is a function,
+whose invocation unconditionally results in its C<v1> argument, and that
+has exactly 2 parameters, and all 3 of its declared types are C<Universal>.
+
+=head2 sys.std.Core.Type.Cat.OrdDetFunc
+
+An C<OrdDetFunc> defines an C<order-determination>, which is a kind of
+function.  C<OrdDetFunc> is a proper subtype of C<Function> where all
+member values declare a function that has at least 3 parameters, and those
+3 are named C<topic>, C<other> and C<is_reverse_order>, and the declared
+types of C<topic> and C<other> are identical, and the declared type of
+C<is_reverse_order> is C<Bool>, and the declared type of the function's
+result is C<Order>.  Its default value is a function, whose C<topic> and
+C<other> parameters both have the declared type of C<Bool>, which orders
+C<Bool:false> before C<Bool:true>.
 
 =head2 sys.std.Core.Type.Cat.ExprNodeSet
 
@@ -3755,6 +3837,24 @@ a C<DHTuple> rather than just a C<Tuple>.  Its default value is a reference
 to the C<sys.std.Core.Universal.is_identical> function with no pre-bound
 parameters.
 
+=head2 sys.std.Core.Type.Cat.ValMapCFuncNC
+
+C<ValMapCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
+conceptually a reference to a C<value-map> function.  Its default value is
+a reference to the C<sys.std.Core.Cat.map_to_topic> function.
+
+=head2 sys.std.Core.Type.Cat.ValFiltCFuncNC
+
+C<ValFiltCFuncNC> is a non-proper subtype of C<ValMapCFuncNC> that is
+conceptually a reference to a C<value-filter> function.  Its default value
+is a reference to the C<sys.std.Core.Cat.pass_topic> function.
+
+=head2 sys.std.Core.Type.Cat.ValRedCFuncNC
+
+C<ValRedCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
+conceptually a reference to a C<value-reduction> function.  Its default
+value is a reference to the C<sys.std.Core.Cat.reduce_to_v1> function.
+
 =head2 sys.std.Core.Type.Cat.OrdDetCFuncNC
 
 C<OrdDetCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
@@ -3764,24 +3864,6 @@ This type is conceptually intended for use as the declared type of a
 routine parameter that would take the name of an C<order-determination>
 function, but that parameter is optional and should default to the
 system-defined scalar ordering function when no argument is given to it.
-
-=head2 sys.std.Core.Type.Cat.ValFiltCFuncNC
-
-C<ValFiltCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
-conceptually a reference to a C<value-filter> function.  Its default value
-is a reference to the C<sys.std.Core.Cat.pass_topic> function.
-
-=head2 sys.std.Core.Type.Cat.ValMapCFuncNC
-
-C<ValMapCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
-conceptually a reference to a C<value-map> function.  Its default value is
-a reference to the C<sys.std.Core.Cat.map_to_topic> function.
-
-=head2 sys.std.Core.Type.Cat.ValRedCFuncNC
-
-C<ValRedCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
-conceptually a reference to a C<value-reduction> function.  Its default
-value is a reference to the C<sys.std.Core.Cat.reduce_to_v1> function.
 
 =head1 SEE ALSO
 
