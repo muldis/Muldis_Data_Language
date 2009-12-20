@@ -648,9 +648,8 @@ writing code in the host language.
 Some official Muldis D dialects have their specifications bundled with the
 current multi-document: L<Muldis::D::Dialect::PTMD_STD>,
 L<Muldis::D::Dialect::HDMD_Perl6_STD>,
-L<Muldis::D::Dialect::HDMD_Perl5_STD>.  Other, unofficial Muldis D
-dialects may be made by third parties in the future, but none are currently
-known.
+L<Muldis::D::Dialect::HDMD_Perl5_STD>.  Other, unofficial Muldis D dialects
+may be made by third parties in the future, but none are currently known.
 
 The other parts of the current multi-document generally focus on the
 behaviours and semantic features of Muldis D, rather than its syntax, and
@@ -1601,18 +1600,258 @@ by "statements" or "routines".
 
 =head1 ROUTINES
 
-There are several kinds of Muldis D routines, each of which is intended
-for, and in many cases only permitted to be used for, particular tasks.
+Muldis D is designed such that, to the maximum degree possible, the
+built-in language syntax is expressed just in terms of generic-syntax
+routine invocations, meaning that wherever possible the language features
+are defined in terms of being just routines.  This allows the fundamental
+Muldis D grammar to be as simple as possible and it empowers users to
+define additional features that can mimic nearly any built-in ones in both
+functionality and syntax.
 
-Note that for all Muldis D routines which have parameters, they are all
-named rather than positional parameters; in the case of N-adic routines,
-the N similar argument values come by way of a single nonscalar typed
-parameter.
+=head2 Functions, Updaters, and Procedures
 
-Or conceptually speaking, all Muldis D routines actually have exactly 1 or
+Every Muldis D routine is exactly one of these 3 main routine kinds, where
+the 3 kinds are mutually exclusive: C<function>, C<updater>, C<procedure>.
+Each of these 3 kinds is very distinct with regards to what it conceptually
+represents or where it may be used, and Muldis D has disjoint catalog data
+types for defining routines of each of the 3 kinds:  C<Function>,
+C<Updater>, C<Procedure>.  Just functions and updaters are collectively
+also known as I<atomic routines> (or I<pure routines>); just updaters and
+procedures are collectively also known as I<imperative routines>.
+
+The 3 main routine kinds have some aspects in common.  Every routine,
+regardless of kind, is a distinct material of a library, either built-in or
+user-defined, which has its own explicitly defined (name-space qualified)
+name and it is explicitly invokable using that name.  Any routine may be
+arbitrarily complicated and may either invoke other routines or be invoked
+by other routines, and such invocations may be recursive; any routine may
+be subdivided into other routines of its own main kind to aid management or
+documentation of code (and sometimes subdividing of a conceptually single
+routine may be mandatory for technical reasons).  Any routine may have
+explicit parameters which take corresponding arguments when the routine is
+invoked; every parameter has a declared type and the declared type may be
+any type at all.  All routine parameters are named, not positional; in the
+case of N-adic routines, the N similar argument values come by way of a
+single nonscalar typed parameter.  Any routine may directly invoke
+functions, and any routine definition may directly embed simple/"opaque"
+value literals.
+
+The 3 main routine kinds have a strict ordered proper subset/superset
+relationship with regard to what they can be used to I<do> from a user's
+perspective.  A procedure is all-powerful, and anything that can be done in
+Muldis D at all can be done by invoking a procedure.  An updater's
+capabilities are a proper subset of a procedure's; the most that can be
+accomplished just by invoking an updater is any set of operations that can
+be expressed as a single atomic unit of work, and that is completely
+deterministic, and that can be accomplished just with variables or values
+supplied as its arguments.  A function's capabilities are essentially the
+same as an updater's but that it is more limited in how it can be invoked.
+A procedure may directly invoke any of the 3 kinds of routines, which is
+the means by which it can I<do> anything they can I<do>; an updater may
+directly invoke only updaters or functions, and a function may only
+directly invoke functions.
+
+Functions differ from imperative routines (both updaters and procedures)
+primarily in regards to how they are invoked and to how they return their
+outputs.  A function, also known as a I<read-only operator>, is the only
+routine kind whose invocation both results in and represents a value of a
+specific data type (that is the function's I<result type> or I<declared
+type>).  A function's invocation can only exist as part of a
+value-expression of another routine, not as its own statement.  The body of
+a function is also itself a single value-expression (though its parts can
+be named for internal reuse).  All of a function's 0..N parameters are
+read-only / not subject to update.  And so, a function takes all of its
+inputs from its arguments and it returns all of its outputs as as a single
+function result value.  In contrast, an imperative routine exchanges data
+directly with its invoking routine by exclusive means of its parameters,
+and an imperative routine's invocation does I<not> result in or represent a
+value.  An imperative routine is invoked as the root part of a statement of
+an imperative routine, and never within a value-expression.  Each of an
+imperative routine's 0..N parameters may be either read-only or subject to
+update; the routine may take input from both kinds of parameters but it may
+return output directly to its invoker just by means of updating its subject
+to update parameters.
+
+Sometimes a function is composed as part of the definition of another
+material.  Conceptually speaking, the function is part of the definition of
+the body of the parent material (like a value expression in general), but
+is isolated into a named function-like entity for technical / language
+design reasons.  For example, it is used to implement what would
+conceptually be an anonymous function defined within its parent routine for
+use as a function-valued argument of some other routine call; or to
+implement what is conceptually a self-referencing/cyclic expression.
+
+Procedures differ from atomic/pure routines (both functions and updaters)
+primarily in regards to their difference of capabilities.  A procedure may
+directly see and update global variables (both catalog and data), and is
+the only kind of routine that can; every call chain that is meant to work
+with a persisting (global) dbvar must include a procedure.  In every
+application consisting only of Muldis D code, the "main program" that
+starts a call chain is always a procedure.  An atomic routine can I<not>
+directly see any global variables, and an updater can only update a global
+variable if the updater receives it as a subject to update argument.  A
+procedure's body may have 0..N lexical variables while an atomic routine's
+body may not have any lexical variables.  On the other hand, an atomic
+routine's body may have arbitrarily complex value-expression trees, which
+consist of named nodes whose use by name can ease program writing like
+lexical variables would have, while a procedure's body generally may not
+have any value-expressions (but a procedure may have a few kinds of very
+simple value-expressions in order to save the necessity of subdividing out
+new atomic routines to cover common simple expressions).  Also, every
+routine's parameters are effectively either value-expression nodes or
+lexical variables, even if the routine otherwise has none of those.
+
+A procedure is allowed to be nondeterministic, meaning that its behaviour
+can be different between multiple executions where all have the same
+arguments and global (database) variable preconditions.  Assuming that the
+current in-DBMS process has exclusive access to all of its mounted depots,
+a procedure is nondeterministic iff it invokes, directly or indirectly, a
+system-defined procedure that does something nondeterministic, such as
+initiating I/O of various kinds or fetching the current date and time or
+generating a random number, or deriving an array from a set simply without
+sorting the elements into a total order (because the result is
+fundamentally random and non-repeatable); such an exclusive-access
+procedure is instead deterministic if it does none of these things.  If a
+procedure does not have exclusive access to all of its mounted depots, then
+even a procedure that does none of these things may be nondeterministic
+because other processes could modify global variables it is using during
+the course of its execution, and the actual postconditions could vary
+simply due to matters of timing.  An atomic routine is always deterministic
+because it is forbidden from invoking any nondeterministic routine, which
+all happen to be procedures, and because an atomic routine's execution is
+entirely contained within a single transaction of the highest possible
+isolation level, "serializable".
+
+An updater invocation is implicitly atomic, and a failure in the middle of
+one will at least rollback any partial update that it may conceptually have
+done.  A function invocation is trivially atomic, since it doesn't
+conceptually update anything.  A procedure invocation is I<not> implicitly
+atomic; unless a wider-scope explicit transaction is active, an aborted
+procedure will leave an incomplete update (though not one that violates any
+constraints or leaves the system in an inconsistant state), because each of
+its statements had conceptually auto-committed; so Muldis D does support
+batch operations where partial completion or interruptability is
+acceptable.  A procedure can define explicit (lexically scoped)
+transactions over multiple consecutive statements, and is the only kind of
+routine that can; specifically, those statements are parcelled together
+into a separate procedure, and then that is invoked indirectly by way of a
+new try-catch control flow statement in the first procedure.
+
+An updater, also known as an I<update operator>, is exactly the same as a
+function, except that where a function returns its result as the conceptual
+value of the function invocation itself (and all of its parameters are
+read-only), an updater returns its result by way of at least one subject to
+update parameter (and the updater invocation has no conceptual value).  In
+some respects this is little more than a difference of syntax; either way,
+both an updater and a function are I<pure> in the functional language
+sense, and can't see any data except from their own definition or their
+arguments, and they have no side-effects except via their result values.
+
+The body of an updater is a single statement (plus any support expressions)
+that invokes one or more updaters (recursively down to some system-defined
+variable assignment operator); if invoking several, it is a multi-update
+statement.  Unlike either functions or procedures, which may have zero
+parameters, an updater must have at least one parameter which is subject to
+update (because the only way it can return any output at all is by updating
+said parameters).  The execution of an updater has 3 distinct phases in
+concept; the first phase analyses any chains of calls to other updaters and
+yields a new conceptualization of the first updater where it consists
+simply of a multi-update statement entirely of calls to the system-defined
+C<assign> updater (typically if the updater is just updating one or more
+parts of the global database, the new-concept consists of a single
+C<assign> to the dbvar as a whole); the second phase reads the values of
+all the updater's parameters (including the pre-invocation dbvar's value)
+and evaluates all the new-concept value-expression trees in the updater to
+determine the new values to assign to the subject to update parameters (or
+the dbvar); the updater's final/only action is just assigning the
+expression values to the parameters simultaneously.  There is never any
+situation in an updater execution where a subject to update parameter is
+updated by one of its statements before another one of its statements reads
+from said parameter, so the order of evaluation for statements of a
+multi-update statement of an updater doesn't matter.
+
+The body of a procedure consists of 0..N statements which conceptually run
+in sequence (not concurrently).  The database and any procedure lexical
+variables do have a distinct (and consistent) state between each of the
+procedure's statements.  Generally speaking, another process may also
+update the database between 2 successive statements of a procedure, and so
+a procedure won't necessarily see the same database over its run unless it
+explicitly either uses a transaction with sufficient isolation, or it
+explicitly employs resource locks, around the relevant block of its
+statements.  But while it may change from external influences, the database
+will always be in a consistent state, as Muldis D always employs at least a
+"read committed" isolation level.  See L</TRANSACTIONS AND CONCURRENCY> for
+more discussion on this matter.
+
+=head2 Emphasis on Purity
+
+Atomic routines constitute the vast majority of system-defined routines,
+and the vast majority of those are functions; procedures constitute a slim
+minority of system-defined routines.  System-defined functions include all
+value selectors, and the typical numeric, string, and relational operators,
+such that you would compose a typical database "select" query out of.
+System-defined updaters include mainly just the generic C<assign> operator
+plus some relational-assignment short-hands such as C<assign_insertion>.
+System-defined procedures include mainly just service routines that reach
+outside of the more deterministic DBMS environment in order to do
+non-deterministic things (besides working with depots), such as to initiate
+I/O of various kinds, or fetch the current date and time, or generate a
+random number.  Similarly to the built-ins, it is highly likely that there
+would be many more user-defined routines that are atomic than those that
+are not.  The vast majority of procedures that exist will be user-defined.
+
+Muldis D is generally optimized to prefer stateless immutable-value pure
+functional language paradigms over variable-mutating imperative language
+paradigms.  A Muldis D program will generally have any state-sensitive or
+side-effect-having code confined to as small a portion of it as possible,
+generally as close to the "main program" in the call chain as possible.
+Similarly, all type definitions are pure, and any database constraints that
+could be are built-in to data types rather than variables (which is part of
+the reason that "the database" is typically considered a single variable).
+
+There are many benefits to emphasizing functional purity.  For one thing,
+Muldis D should be relatively easy to optimize, since a compiler or runtime
+environment can be confident that it can make a wide variety of changes to
+code behind the scenes to improve its performance or memory usage, such as
+changing its execution order, and know that doing so isn't going to change
+the semantics of the code.  Because data in general is immutable, neither
+users nor the compiler need to worry about making sure data is copied
+repeatedly in case some code might want to modify it while other code
+doesn't want it modified.  Similarly, Muldis D code can more readily take
+advantage of the large degrees of parallelization that computers are
+trending towards, with their emphasis on more CPU cores or CPUs or machine
+clusters versus having a single CPU and increasing its speed.  A Muldis D
+compiler or runtime can automatically use multiple threads and split up
+many of its operations over multiple CPUs, running them concurrently
+without changing the behaviour versus a single-threaded program, and users
+writing Muldis D code don't generally have to worry about the details.  A
+Muldis D program should also be easier to analyze statically at compile
+time, so it is easier to prove early on whether it is correct or not, and
+reduce the burden on runtime tests or chance to discover any bugs.  Muldis
+D code should be easier for to write, since programmers can focus more on
+the real problem they want to solve and less on avoiding various gotchas.
+A lot of Muldis D code can also be evaluated lazily, so a compiler or
+runtime can recognize that often work doesn't need to be done at all.
+
+Note that when converting some code from another language (such as SQL) to
+Muldis D, some reordering may be required.  For example, when you
+conceptually want to fetch the current date or a generate a random number
+inline of a database query expression, you will actually have to perform
+the date or number fetch as a completely separate procedure statement from
+the one that performs the database query, and use variables as
+intermediaries to include the date or number in the database query.  Or, if
+converting a "function" from another language that is allowed to have
+side-effects or update its parameters, this will have to at least partially
+be rendered as a procedure or updater in Muldis D.  In practice however,
+especially if you followed good design practices in the other languages,
+such alterations shouldn't be too common.
+
+=head2 More on Parameters
+
+Conceptually speaking, all Muldis D routines actually have exactly 1 or
 2 positional parameters behind the scenes, each of which is C<Tuple>-typed,
 and it is the named attributes of these positional parameters that
-correspond to the official named parameters.  With all functional routines,
+correspond to the official named parameters.  With all functions,
 there is exactly 1 positional parameter named C<args>; with all imperative
 routines, there are exactly 2 positional parameters named C<upd_args> and
 C<ro_args>.  This behind-the-scenes nature is exposed when you use
@@ -1622,90 +1861,80 @@ invoke as a C<Tuple> value.  Now this all being said, for the purposes of
 the rest of the Muldis D documentation, the term I<parameter> always refers
 to a named parameter, and the term I<argument> is a value passed to said.
 
-They following hierarchy should briefly illustrate how the kinds of
-routines are similar or dissimilar, but it expressly does not indicate
-substitutability:
+Some subject-to-update or read-only parameters of routines may be optional,
+that is, do not need to be supplied explicit arguments when the routine is
+invoked; the other routine parameters would be non-optional and must be
+supplied explicit arguments.  The optionality of each routine parameter is
+part of the definition of that routine.  Routine declarations are
+huffman-coded with the assumption that the majority of parameters will be
+non-optional, and non-optional also errs on the side of readability and
+error avoidance; each parameter is non-optional by default unless it is
+explicitly marked as optional.  When a routine executes, any of its
+parameters marked as optional which is not given an explicit argument will
+implicitly default to the default value of its declared type; any
+subject-to-update parameter marked as optional which is not given an
+explicit argument will implicitly bind to a new anonymous variable (with
+the aforementioned default value) which is discarded after the routine
+finishes executing.
 
-    routine
-        functional
-            function
-        imperative
-            deterministic
-                updater
-            nondeterministic
-                system-service
-                procedure
+=head2 Kinds of Functions by Structure
 
-Specifically, the routine kinds are all of the leaf nodes in the above
-hierarchy, and every Muldis D routine is designated as exactly one of
-those; the non-leaf nodes are not routine kinds.
+Various subsets from all the possible functions have special significance
+in Muldis D, each of which is intended for particular tasks, and all
+functions allowed to be used for each particular task must have a certain
+structure.  This documentation sub-section describes a set of 8 function
+kinds where each kind is named after either its required structure or its
+intended use:  C<named-value>, C<value-map>, C<value-map-unary>,
+C<value-filter>, C<value-constraint>, C<transition-constraint>,
+C<value-reduction>, C<order-determination>.  Taking analogy to the type
+system, if functions in general were a maximal type, then each of these
+function kinds is a proper subtype of that maximal type.
 
-Now there are actually a lot more distinct routine kinds, but they are
-special cases of the above-mentioned ones:
+A C<named-value> is a function that is nullary / has exactly zero
+parameters and unconditionally results in the same single value.
 
-    routine
-        functional
-            type-constraint
-            state-constraint
-            transition-constraint
-            named-value
-            possrep-map
-            virtual-attr-map
-            order-determination
-            value-filter
-            value-map
-            value-reduction
+A C<value-map> is a function that has at least 1 parameter, and that 1 is
+named C<topic>.  A C<value-map-unary> is a C<value-map> that is unary / has
+exactly one parameter (just the C<topic> parameter).  A C<value-filter> is
+a C<value-map> whose result's declared type is C<Bool>.  A
+C<value-constraint> is any function that is both a C<value-filter> and a
+C<value-map-unary>.
 
-All of the leaf nodes in the second hierarchy above are distinguished by
-their API (parameters and result) and intended use.  All of the ones under
-I<functional> are also C<function> routines, so any context where a generic
-C<function> can be used, so can they.
+A C<transition-constraint> is a function that is binary / has exactly 2
+parameters, and those 2 are named C<before> and C<after>, and the declared
+types of those 2 parameters are identical, and the declared type of the
+function's result is C<Bool>.
 
-=head2 function
+A C<value-reduction> is a function that has at least 2 parameters, and
+those 2 are named C<v1> and C<v2>, and the declared types of those 2
+parameters are identical, and the declared type of the function's result is
+identical to that of either of those 2 parameters.
 
-A C<function> is an explicitly invokable read-only operator whose
-invocation both results in and represents a value of a specific data type
-(that is the function's I<result type> or I<declared type>; this invocation
-can only exist as part of a value-expression of another routine; the body
-of a function is also itself a single value-expression (though its parts
-can be named for internal reuse).  A C<function> is pure and deterministic
-in the functional-language sense, such that all of its 0..N parameters are
-read-only / not subject to update, it has no lexical variables at all, and
-that it can only see its own parameters, if it has any; it can not see any
-global variables of any kind, and that it can only invoke C<function>
-routines.  A C<function> invocation is trivially
-atomic, since it doesn't conceptually update anything.  A C<function> does
-not have any side-effects at all, either inside of or outside of the
-current in-DBMS process.  The vast majority of invokable system-defined
-routines are C<function>; they include all value selectors, and the typical
-numeric, string, and relational operators, such that you would compose a
-typical database "select" query out of.
+An C<order-determination> is a function that has at least 3 parameters, and
+those 3 are named C<topic>, C<other> and C<is_reverse_order>, and the
+declared types of C<topic> and C<other> are identical, and the declared
+type of C<is_reverse_order> is C<Bool>, and the declared type of the
+function's result is C<Order>.
 
-Sometimes a C<function> is composed as part of the definition of another
-C<function> (or C<updater>).  Conceptually speaking, former
-C<function> is part of the definition of the body of the parent
-routine or type (like a value expression in general), but is isolated into
-a named C<function>-like entity for technical / language design reasons.
-For example, it is used to implement what would conceptually be an
-anonymous function defined within its parent routine for use as a
-function-valued argument of some other routine call; or to implement what
-is conceptually a self-referencing/cyclic expression.
+=head2 Constraint Function Kinds by Purpose
 
-=head2 type-constraint
+There are 3 main kinds of constraint functions when considered in terms of
+their purpose of place of usage:  C<type-constraint>, C<state-constraint>,
+C<transition-constraint>; the first 2 have the same structure.
 
-A C<type-constraint> is the same as an C<function>, but that it is
+A C<type-constraint> is a C<value-constraint> that is
 part of the definition of a data type (every data type composes 0..N
 explicit ones of these, plus an implicit one that always results in
-C<Bool:true>) rather than a routine, it is invoked automatically by the
-DBMS when a value of that type is being selected, and it always results in
-a C<Bool>.  The parameters of a C<type-constraint> carry information about
+C<Bool:true>) rather than being intended for explicit invocation by
+a routine, and it is invoked automatically by the
+DBMS when a value of that type is being selected.  The parameters
+of a C<type-constraint> carry information about
 the value selection attempt, and the C<type-constraint> results in either
 C<Bool:true> if the described value would be a member of the data type, or
 C<Bool:false> if not; in the latter case, the DBMS would then throw a
 type-constraint-violation exception (resulting in a transaction rollback
 where applicable), or in the former case, it would consider the selection a
-success.  A C<type-constraint> has exactly 1 parameter whose name is
-C<topic>.  If the data type being selected is a scalar type or subtype
+success.  If the data type being selected is a scalar type or subtype
 with possreps, then each possrep has its own C<type-constraint>, and the
 declared type of the C<topic> parameter for each is a tuple where the
 attributes of the tuple match those of the possrep; such a tuple
@@ -1725,9 +1954,8 @@ which that database is.  Conceptually speaking, a C<type-constraint> will
 execute as the beginning part of a statement, prior to any attempt to
 update any variable's state or affect the environment.
 
-=head2 state-constraint
-
-A C<state-constraint> is the same as a C<type-constraint> except that it is
+A C<state-constraint> is a C<value-constraint> and it is
+the same as a C<type-constraint> except that it is
 not part of the definition of a data type, but rather it is associated with
 a variable (or pseudo-variable); it is invoked automatically by the DBMS
 when that variable is being updated, and it asserts that the variable would
@@ -1747,8 +1975,6 @@ logical C<and> of the individual constraints.  Conceptually speaking, a
 C<state-constraint> will execute after all C<type-constraint> and before
 all C<transition-constraint>.
 
-=head2 transition-constraint
-
 A C<transition-constraint> is the same as a C<state-constraint> except that
 rather than 1 C<topic> parameter, it has exactly 2 same-typed parameters
 whose names are C<before> and C<after>; it returns C<Bool:true> if the
@@ -1765,11 +1991,14 @@ otherwise; in the case of a multi-update statement, all the updates would
 happen simultaneously, so a transition failure for any update would prevent
 all that statement's updates from occurring.
 
-=head2 named-value
+=head2 Other Function Kinds by Purpose
 
-A C<named-value> is the same as an C<function>, but that it has only
-zero parameters and unconditionally results in the same single value.  A
-C<named-value> is often used when you want to declare a program constant
+There are 7 other main kinds of functions when considered in terms of their
+purpose of place of usage:  C<named-value>, C<value-map>, C<possrep-map>,
+C<virtual-attr-map>, C<value-filter>, C<value-reduction>,
+C<order-determination>; the 3rd and 4th have the same structure.
+
+A C<named-value> is often used when you want to declare a program constant
 value that is easy to reference on a non-lexical scale.  A C<named-value>
 is frequently part of the definition of a (not-C<Empty>) data type rather
 than a routine, and it is invoked automatically in situations where the
@@ -1777,20 +2006,21 @@ default value of the type whose declaration it is part of is needed, such
 as when initializing a variable whose declared type is that type (a
 variable must always hold a valid value of its declared type).
 
-=head2 possrep-map
+A C<value-map> is what would be used in operations like the general case of
+relational extension or substitution.  Its C<topic> parameter is usually a
+tuple type but doesn't have to be.
 
-A C<possrep-map> is the same as an C<function>, but that it is part
+A C<possrep-map> is a C<value-map-unary> that is part
 of the definition of a scalar data type, and it is used to convert a value
-from one of that type's possreps to another.  A C<possrep-map> has exactly
-1 parameter whose name is C<topic> and whose declared type is a tuple whose
+from one of that type's possreps to another.  A C<possrep-map>'s C<topic>
+parameter's declared type is a tuple whose
 attributes match those of the possrep being converted from, and its result
 type is a tuple whose attributes match those of the possrep being converted
 to.  Note that every distinct argument (domain) value of this function must
 have a distinct result (range) value, as it is a 1:1 mapping function.
 
-=head2 virtual-attr-map
-
-A C<virtual-attr-map> is the same as a C<possrep-map> except that its range
+A C<virtual-attr-map> is a C<value-map-unary> and it is
+the same as a C<possrep-map> except that its range
 may be (and typically is) smaller than its domain, it is usually part of
 the definition of a nonscalar data type, and it is used such that,
 on a per-tuple basis, one subset of that type's attributes is defined to
@@ -1803,8 +2033,8 @@ value that is the same as a determinant attribute but for being folded to
 uppercase; or for another example, a dependent attribute may hold the
 result of a relational join of multiple determinant attributes, or a
 restriction on one (in the latter case, the data type being defined is
-probably a database).  A C<virtual-attr-map> has a single C<topic>
-parameter whose declared type is a tuple whose attributes match those of
+probably a database).  A C<virtual-attr-map>'s C<topic>
+parameter's declared type is a tuple whose attributes match those of
 the determinant attributes of the type being declared, and its result type
 is a tuple whose attributes match those of the dependent attributes.  A
 consequence of the special functional dependency is that the dependent
@@ -1812,75 +2042,30 @@ attributes can all be virtual; the DBMS can store just the determinant
 attributes, and the dependent attributes can be generated when needed (or
 they can still be pre-computed and stored for performance).
 
-=head2 order-determination
-
-An C<order-determination> is the same as an C<function>, but that it
-is structured to fill the role of a I<system-compatible fundamental
-order-determination function>; see the L</Ordered Types> pod section in
-this file for more details.  An C<order-determination> has at least 3
-parameters named [C<topic>, C<other>, C<is_reverse_order>] and
-always results in an C<Order>.
-
-=head2 value-filter
-
-A C<value-filter> is the same as an C<function>, but that it has
-at least 1 parameter, where that 1 is named C<topic>, and the function
-always results in a C<Bool>; C<topic> is usually a C<Tuple> but doesn't
-have to be.  Any additional parameters besides the above-named 1 are hereby
-collectively referred to as I<misc params>.  A C<value-filter> is similar
+A C<value-filter> is similar
 to a C<type-constraint> in that it evaluates C<topic> for membership in a
 particular value domain, resulting in C<Bool:true> if C<topic> is a member
 and C<Bool:false> otherwise; but a C<value-filter> differs from a
 C<type-constraint> in that it would be explicitly invoked possibly in any
 context, and its criteria for evaluating C<topic> can be customized at
-runtime by I<misc params>.  A C<value-filter> is what would be used in
-operations like the general case of relational restriction.
+runtime by any not-C<topic> arguments it
+gets.  A C<value-filter> is what would be used in
+operations like the general case of relational restriction.  Its C<topic>
+parameter is usually a tuple type but doesn't have to be.
 
-=head2 value-map
-
-A C<value-map> is the same as an C<function>, but that it has at
-least 1 parameter, where that 1 is named C<topic>; C<topic> is usually a
-C<Tuple> but doesn't have to be.  A C<value-map> is what would be used in
-operations like the general case of relational extension or substitution.
-
-=head2 value-reduction
-
-A C<value-reduction> is the same as an C<function>, but that it has
-at least 2 parameters, where those 2 are named [C<v1>, C<v2>]; C<v1> and
-C<v2> must have the same declared type as each
-other, and the C<value-reduction> function's declared result type must be
-the same as that of C<v1> and C<v2>.  A C<value-reduction> is what would
+A C<value-reduction> is what would
 typically be used in N-ary operations that can be defined in terms of a
 repetition of binary operations, such that a C<value-reduction> would
 define such a binary operation.
 
-=head2 updater
+An C<order-determination> is structured to fill the role of a
+I<system-compatible fundamental order-determination function>; see the
+L</Ordered Types> pod section in this file for more details.
 
-An C<updater> (update operator) is the same as a C<function>, but that it
-is imperative rather than functional (its invocation does not result in or
-represent a value, and it is invoked as the root part of another routine's
-statement rather than in an expression), and it has at least one parameter
-which is subject to update; any result that it produces is returned by
-updating said parameters.  The body of an updater is a single statement
-(plus any support expressions) that invokes one or more C<updater>
-(recursively down to some system-defined variable assignment operator); if
-invoking several, it is a multi-update statement.  An C<updater> can only
-invoke C<function> and C<updater>
-routines.  Despite being imperative, an C<updater> has no lexical variables
-save for its subject-to-update parameters, and it just assigns to those as
-its last/only action; but like functions, it does have named expression
-nodes whose use can ease program writing like lexical variables would have.
-An C<updater> invocation is implicitly atomic, and a failure in the middle
-of one will at least rollback any partial update that it may conceptually
-have done.  Most invokable system-defined imperative routines are
-C<updater>; they include all C<assign> operators, plus some
-relational-assignment short-hands such as "assign_insertion",
-"assign_substitution", "assign_deletion".
+=head2 Kinds of Procedures
 
-=head2 system-service
-
-A C<system-service> is an explicitly invokable system-defined procedure
-with 0..N parameters that can reach outside of the more deterministic DBMS
+A C<system-service> is a procedure
+that can directly reach outside of the more deterministic DBMS
 environment in order to do non-deterministic things (besides working with
 depots), such as to initiate I/O of various kinds, or fetch the current
 date and time, or generate a random number.  Given the nature of this
@@ -1889,52 +2074,6 @@ updating the Muldis D implementation's source code itself.  Invoking a
 C<system-service> can have side-effects outside of the DBMS, but it will
 not alter anything inside the DBMS aside from any of its subject-to-update
 parameters; it can not see any global variables.
-
-=head2 procedure
-
-A C<procedure> is an explicitly invokable routine with 0..N parameters and
-0..N lexical variables that can directly see and update global variables
-(both catalog and data), and is the only kind of routine that
-can; every call chain that is meant to work with a persisting (global)
-dbvar must generally include a C<procedure> invocation.  The body of a
-C<procedure> consists of 0..N statements which conceptually run in sequence
-(not concurrently).  A C<procedure> can invoke every kind of explicitly
-invokable routine.  A C<procedure> invocation is I<not> implicitly atomic;
-unless a wider-scope explicit transaction is active, an aborted
-C<procedure> will leave an incomplete update (though not one that violates
-any constraints or leaves the system in an inconsistant state), because
-each of its statements had conceptually auto-committed; so Muldis D does
-support batch operations where partial completion or interruptability is
-acceptable.  A procedure can define explicit (lexically scoped)
-transactions over multiple consecutive statements, and is the
-only kind of routine that can; specifically, those statements are parcelled
-together into a separate C<procedure>, and then that is invoked
-indirectly by way of a new try-catch control flow statement in the first
-procedure.  The vast majority of
-C<procedure> that exist will be user-defined.  But some system-defined
-routines that would otherwise be C<function> or C<updater> are C<procedure>
-instead solely because they are non-deterministic; an example is an
-operator that derives a tuple sequence from a relation without fully
-sorting the tuples, because the result is fundamentally random and
-non-repeatable.
-
-=head2 Other Matters
-
-Some subject-to-update or read-only parameters of routines may be optional,
-that is, do not need to be supplied explicit arguments when the routine is
-invoked; the other routine parameters would be non-optional and must be
-supplied explicit arguments.  The optionality of each routine parameter is
-part of the definition of that routine.  Routine declarations are
-huffman-coded with the assumption that the majority of parameters will be
-non-optional, and non-optional also errs on the side of readability and
-error avoidance; each parameter is non-optional by default unless it is
-explicitly marked as optional.  When a routine executes, any of its
-parameters marked as optional which is not given an explicit argument will
-implicitly default to the default value of its declared type; any
-subject-to-update parameter marked as optional which is not given an
-explicit argument will implicitly bind to a new anonymous variable (with
-the aforementioned default value) which is discarded after the routine
-finishes executing.
 
 =head1 USERS AND PRIVILEGES
 
@@ -1962,6 +2101,8 @@ other aspects of their possible activity.  The concerns here are analogous
 to privileges on a computer's file system, or a typical SQL database.
 
 =head1 TRANSACTIONS AND CONCURRENCY
+
+B<TODO: REWRITE THIS DOCUMENTATION SECTION!>
 
 This official specification of the Muldis D DBMS includes full ACID
 compliance as part of the core feature set; moreover, all types of changes
