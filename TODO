@@ -151,28 +151,32 @@ all is when I/O is involved and some derivative needs to be output either
 where order matters or where order does not matter; but perhaps only a
 routine is needed here such as a catenate function plus normal I/O output.
 
-* Consider converting the try-catch routine into a statement node, an
-optional part of which is to make the insides of the try/catch blocks part
-of the same lexical scope as the invoking routine.  But there is still a
-lot to like about having each of the try/catch blocks being a separate
-(inner) routine with its own lexical scope, such as in predicting what a
-rollback would affect, and it might be easier to implement as-is.
-
 ----------
 
-* Add explicit support for +/- infinities, NaNs, distinct +- zero, +/-
-underflow, +/- overflow, etc.  How this would work is that we define a set
+* Add explicit support for +/- underflow, +/- overflow, NaNs, etc.
+I'm inclined to think +/- zero is unnecessary when we have underflow and
+can be confusing anyway (just a single normal number zero is better).
+I'm not sure if +/- infinities are useful or if overflows cover them for
+our purposes.  How this would work is that we define a set
 of scalar singleton types, one for each of the special values.  Then we
 define extended versions of the Int, Rat, etc types where the extended
 types are defined in terms of being union types that union the regular
 numeric types with the special singleton type values.  This approach also
-means that just one each of +Inf, -Overflow, etc is needed and is a member
+means just one each of +Underflow, -Overflow, etc is needed and is a member
 of extended Int or Rat etc.  Consider using the existing names "Int"/"Rat"
 with the versions that include these special values, and make new names for
 the current simpler versions that don't, such as "IntNS" (int no specials),
 "RatNS", etc.  Either way, it is useful to support the full range of values
 that a Perl 6 numeric can support, or that an IEEE float can support,
 without users necessarily having to define it themselves.
+IDEA:  Make all the normal math/etc ops work with the extended versions
+(those with NaNs, infinities, etc) and in situations where users don't want
+those special values they just use a declared type excluding them, and then
+the normal type constraints will take care of throwing exceptions when one
+divides by zero for example.
+And so we then can also rid ourselves of having to use Maybe (as it stands
+now based on Set) in as many situations as we do now, where functions come
+in pairs where one chooses between a Maybe or a possible exception.
 
 * Use terminology like "ordered" versus "ordinal" to distinguish types like
 Rat,Text from Int; "ordinal" naturally supports prec,succ (prev,next)
