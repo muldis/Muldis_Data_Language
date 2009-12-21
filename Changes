@@ -60,11 +60,22 @@
     "system-service" was renamed and 10% rewritten into the 1 sub-section
     "Kinds of Procedures"; in the process, redefined one nature of
     "system-service" so that now it *is* a procedure rather than being a
-    4th main kind of routine (not one of func|upd|proc).  For all intents
-    and purposes, this change item made no material change to the Muldis D
+    4th main kind of routine (not one of func|upd|proc); this also now
+    means that users can define "system-service" routines too, rather than
+    those being restricted for being built-ins.  For all intents and
+    purposes, this change item made no material change to the Muldis D
     language, but simply reorganized how the existing design is explained.
 
-    * (Types_Catalog.pod, Basics.pod)  In Types_Catalog.pod, a dded 8 new
+    * (Basics.pod, Routines_Catalog.pod)  In Basics.pod, added a new
+    procedure kind named "recipe" which is restricted to be deterministic
+    and is automatically a serialized-isolation transaction; it is intended
+    mainly for defining routines that conceptually do both data-definition
+    and data-manipulation as an atomic unit, since those two actions can't
+    actually happen simultaneously.  In Routines_Catalog.pod, updated all
+    of the routine signatures that used to be "procedure", except for the 1
+    "proc_invo", so they are now "recipe" instead.
+
+    * (Types_Catalog.pod, Basics.pod)  In Types_Catalog.pod, added 8 new
     catalog types that are all proper subtypes of "Function":
     "[NamedVal|ValMap[|U]|ValFilt|[Val|Trans]Constr|ValRed|OrdDet]Func";
     each of these corresponds to one of the 8 similary-named function kinds
@@ -74,6 +85,21 @@
     they match the order of the new catalog types they correspond to.  In
     Basics.pod, updated the "Kinds of Functions by Structure" pod
     sub-section to add references to the 8 new catalog types.
+
+    * (Types_Catalog.pod, Basics.pod)  In Types_Catalog.pod, updated the
+    catalog type "Procedure" to add the 2 new boolean attributes
+    "is_recipe", "is_system_service"; when one is true (they default to
+    false) then the procedure is explicitly declared to be that kind of
+    procedure.  Also added 2 new catalog types that are all proper subtypes
+    of "Procedure": "Recipe", "SystemService"; each of these corresponds to
+    one of the 2 similary-named procedure kinds named in Basics.pod.  In
+    Basics.pod, updated the "Kinds of Procedures" pod sub-section to add
+    references to the 2 new catalog types.
+
+    * (PTMD_STD.pod)  In the "Material Specification Common Elements" pod
+    sub-section, updated the "material_kind" node kind to replace the 10
+    old named function kinds with the 8 new ones distinguishable by
+    structure, and added the 2 named procedure kinds.
 
     * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  Updated the DESCRIPTION main
     pod section to use the current Muldis D version number in the

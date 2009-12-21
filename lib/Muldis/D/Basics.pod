@@ -2068,16 +2068,30 @@ L</Ordered Types> pod section in this file for more details.
 
 =head2 Kinds of Procedures
 
-A C<system-service> is a procedure
-that can directly reach outside of the more deterministic DBMS
+A C<recipe> is a procedure that is conceptually a mid-way point between a
+procedure in general and an updater.  The concept's main purpose is to
+empower writing routines that might otherwise have been written as
+updaters, because they want to be seen as pure and atomic externally, but
+that need to support multiple distinct states in time, such as to perform
+both data definition and data manipulation, which are forbidden to occur
+simultaneously.  A recipe's execution is entirely contained within a single
+transaction of the highest possible isolation level, "serializable", same
+as an atomic routine's is.  A recipe is forbidden from doing anything
+nondeterministic.  A recipe is forbidden from invoking a procedure that
+isn't also a recipe.  The catalog data type C<Recipe>, a proper subtype of
+C<Procedure>, will define any recipe.
+
+A C<system-service> is a procedure whose sole purpose is to
+directly reach outside of the more deterministic DBMS
 environment in order to do non-deterministic things (besides working with
 depots), such as to initiate I/O of various kinds, or fetch the current
-date and time, or generate a random number.  Given the nature of this
-beast, users can not define their own C<system-service> routines but by
-updating the Muldis D implementation's source code itself.  Invoking a
+date and time, or generate a random number.  Invoking a
 C<system-service> can have side-effects outside of the DBMS, but it will
 not alter anything inside the DBMS aside from any of its subject-to-update
-parameters; it can not see any global variables.
+parameters; it can not see any global variables.  A C<system-service> is
+forbidden from invoking a procedure that isn't also a C<system-service>.
+The catalog data type C<SystemService>, a proper subtype of C<Procedure>,
+will define any C<system-service>.
 
 =head1 USERS AND PRIVILEGES
 

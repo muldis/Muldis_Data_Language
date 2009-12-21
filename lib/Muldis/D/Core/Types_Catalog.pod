@@ -96,6 +96,8 @@ more or less:
                 sys.std.Core.Type.Cat.IfThenExprMap
                 sys.std.Core.Type.Cat.Updater
                 sys.std.Core.Type.Cat.Procedure
+                    sys.std.Core.Type.Cat.Recipe
+                    sys.std.Core.Type.Cat.SystemService
                 sys.std.Core.Type.Cat.IfThenVarStmtMap
                 sys.std.Core.Type.Cat.ScalarType
                 sys.std.Core.Type.Cat.NonscalarType
@@ -2090,9 +2092,9 @@ optional iff the C<Procedure> is embedded in a C<System>, because often the
 implementations of system-defined routines are not defined in terms of
 other Muldis D routines.
 
-A C<Procedure> has these 6 attributes, of which the 3 C<upd_params>,
-C<ro_params>, C<opt_params> define the I<heading> and the 2 C<vars>,
-C<stmt> define the I<body>:
+A C<Procedure> has these 8 attributes, of which the 5 C<upd_params>,
+C<ro_params>, C<opt_params>, C<is_recipe>, C<is_system_service> define the
+I<heading> and the 2 C<vars>, C<stmt> define the I<body>:
 
 =over
 
@@ -2113,6 +2115,30 @@ This is the declared read-only parameter list of the procedure, which has
 =item C<opt_params> - C<set_of.Name>
 
 This is as per the same-named attribute of C<Updater>.
+
+=item C<is_recipe> - C<Bool>
+
+Iff this is C<Bool:true> then the procedure is explicitly declared to be a
+C<recipe>, meaning it will be subject to tighter constraints on its allowed
+actions (such as that it may not do anything nondeterministic) and its
+execution will automatically be entirely contained within a single
+transaction of the highest possible isolation level, "serializable", same
+as an updater is; iff this is C<Bool:false> then the procedure is I<not>
+explicitly declared to be a C<recipe>, and the other restrictions or
+automatic wrapper transaction won't be present for supporting a C<recipe>.
+
+=item C<is_system_service> - C<Bool>
+
+Iff this is C<Bool:true> then the procedure is explicitly declared to be a
+C<system-service>, meaning it will be subject to tighter constraints on its
+allowed actions (it may not see any global variables) and its execution
+will automatically be entirely contained within a single transaction of the
+highest possible isolation level, "serializable", same as an updater is;
+iff this is C<Bool:false> then the procedure is I<not> explicitly declared
+to be a C<system-service>, and the other restrictions or automatic wrapper
+transaction won't be present for supporting a C<system-service>.  Note that
+a procedure is forbidden from having both its C<is_recipe> and
+C<is_system_service> valued with C<Bool:true> at once.
 
 =item C<vars> - C<NameTypeMap>
 
@@ -2152,6 +2178,18 @@ C<Procedure> has a distributed primary key over the C<name> attributes of
 C<upd_params> and C<ro_params> and C<vars> and the C<name> attributes of
 all the attributes of C<stmt>.  Its default value has zero parameters and
 has no specified I<body>.
+
+=head2 sys.std.Core.Type.Cat.Recipe
+
+A C<Recipe> defines a C<recipe>, which is a kind of procedure.  C<Recipe>
+is a proper subtype of C<Procedure> where for every member value its
+C<is_recipe> attribute is C<Bool:true>.
+
+=head2 sys.std.Core.Type.Cat.SystemService
+
+A C<SystemService> defines a C<system-service>, which is a kind of
+procedure.  C<SystemService> is a proper subtype of C<Procedure> where for
+every member value its C<is_system_service> attribute is C<Bool:true>.
 
 =head2 sys.std.Core.Type.Cat.StmtNodeSet
 
