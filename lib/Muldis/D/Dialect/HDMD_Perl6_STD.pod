@@ -245,9 +245,9 @@ Examples:
              {
                 name => :Name<cube>,
                 material => [ 'Tuple', 'Function', {
-                   result_type => :NameChain<Int>,
+                   result_type => :PNSQNameChain<Int>,
                    params => [ 'Relation', 'NameTypeMap', Set.new(
-                      { name => :Name<topic>, type => :NameChain<Int> }
+                      { name => :Name<topic>, type => :PNSQNameChain<Int> }
                    ) ],
                    expr => [ 'Database', 'ExprNodeSet', {
                       sca_val_exprs => :Relation( Set.new(
@@ -256,7 +256,7 @@ Examples:
                       func_invo_exprs => :Relation( Set.new(
                          {
                             name => :Name(''),
-                            function => :NameChain('Integer.power'),
+                            function => :PNSQNameChain('Integer.power'),
                             args => [ 'Relation', 'NameExprMap', [
                                {name=>:Name<radix>, expr=>:Name<topic>},
                                {name=>:Name<exponent>, expr=>:Name<INT_3>}
@@ -355,7 +355,7 @@ of a Muldis D value selector.
 
 There are 24 main varieties of C<value> node, each of which is a named node
 kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
-C<Blob>, C<Text>, C<Name>, C<NameChain>, C<DeclNameChain>, C<Comment>,
+C<Blob>, C<Text>, C<Name>, C<NameChain>, C<PNSQNameChain>, C<Comment>,
 C<Instant>, C<Duration>,
 C<RatRoundRule>, C<String>, C<Scalar>, C<Tuple>, C<Database>,
 C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<Interval>.
@@ -387,7 +387,7 @@ just on C<value_kind>.
 Between the various kinds of C<value> node, these 42 values are allowed for
 C<value_kind>:  C<Bool>, C<Order>, C<RatRoundMeth>, C<[|NN|P]Int>,
 C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
-C<DeclNameChain>, C<Comment>, C<Instant>, C<Duration>,
+C<PNSQNameChain>, C<Comment>, C<Instant>, C<Duration>,
 C<RatRoundRule>, C<[|B|O|UCP]String>, C<[|DH]Scalar>,
 C<[|DH]Tuple>, C<Database>, C<[|DH]Relation>, C<[|DH]Set>,
 C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH]Interval>.
@@ -400,7 +400,7 @@ Only when the C<value> node has 3 elements:  This is a Muldis D data type
 name, for example C<sys.std.Core.Type.Int>; it identifies a specific
 subtype of the generic type denoted by C<value_kind>, and serves as an
 assertion that the Muldis D value denoted by C<value_payload> is a member
-of the named subtype.  Its format is a C<NameChain_payload> node.  Iff
+of the named subtype.  Its format is a C<PNSQNameChain_payload> node.  Iff
 C<value_kind> is C<[|DH]Scalar> then C<type_name> is mandatory; otherwise,
 C<type_name> is optional for all C<value>, except that C<type_name> must be
 omitted when C<value_kind> is one of the 2 [C<Bool>, C<Order>]; this isn't
@@ -591,8 +591,8 @@ as follows:
 
 =item *
 
-If the payload is an C<Seq|Array>, then it must have at least 1 element,
-and every element must be a valid payload for a C<Name> node (that
+If the payload is an C<Seq|Array>, then
+every element must be a valid payload for a C<Name> node (that
 is, any Perl character string).  Each element of the payload, in order,
 defines an element of the C<array> possrep's attribute of a C<NameChain>.
 
@@ -603,24 +603,26 @@ If the payload is a C<Str>, then it must be formatted as a catenation
 not have any literal period (C<.>) characters (if you want literal periods
 then you can only use the C<Seq|Array> payload format to express it).  The
 C<Str> format of payload is interpreted by splitting it on the separators
-into the C<Seq|Array> format, then processed as per the latter.  As a
-special case, if the C<NameChain> payload begins with a period separator,
-then the first element of the post-split result is treated not as the empty
-string C<Name>, but rather as the C<Name> value C<topic>; that is, C<.foo>
-means the same thing as C<topic.foo> (if you want a literal empty string
-first element, then you can only use the C<Seq|Array> payload format to
-express it).
+into the C<Seq|Array> format, then processed as per the latter.  A zero
+part chain can only be expressed with the C<Seq|Array> payload format; an
+empty string C<Str> format will be interpreted as having a single element
+that is the empty string.
 
 =back
 
-A C<DeclNameChain> node represents a canonical long name for declaring a
-DBMS entity in N-depth contexts; the format and interpretation of a
-C<DeclNameChain_payload> (but as a C<sys.std.Core.Type.Cat.DeclNameChain>
-value) is the same as a C<NameChain_payload> but that the chain may have as
-few as zero parts rather than as few as 1 or 2; however, a zero part chain
-can only be expressed with the C<Seq|Array> payload format; an empty string
-C<Str> format will be interpreted as having a single element that is the
-empty string.
+Fundamentally a C<PNSQNameChain> node is exactly the same as a C<NameChain>
+node in format and interpretation, with the primary difference being that
+it may only define C<NameChain> values that are also values of the proper
+subtype C<sys.std.Core.Type.Cat.PNSQNameChain>, all of which are nonempty
+chains.  Now that distinction alone wouldn't be enough rationale to have
+these 2 distinct node kinds, and so the secondary difference between the 2
+provides that rationale; the C<PNSQNameChain> node supports a number of
+chain value shorthands while the C<NameChain> node supports none.
+
+A C<PNSQNameChain> node is interpreted the same as a C<NameChain> node
+except for the extra restrictions and shorthands.  If the first element of
+a C<PNSQNameChain> payload is the empty string then the payload is treated
+as if the first element were instead C<topic>.
 
 Examples:
 
@@ -628,17 +630,17 @@ Examples:
 
     :Name('First Name')
 
-    :NameChain['fed','data','the_db','gene','sorted_person_names']
+    :NameChain['gene','sorted_person_name']
 
-    :NameChain('fed.data.the_db.stats.samples by order')
+    :NameChain('stats.samples by order')
 
-    :NameChain('.attr')  # same as :NameChain('lex.topic.attr') #
+    :NameChain[]
 
-    :DeclNameChain['gene','sorted_person_name']
+    :PNSQNameChain['fed','data','the_db','gene','sorted_person_names']
 
-    :DeclNameChain('stats.samples by order')
+    :PNSQNameChain('fed.data.the_db.stats.samples by order')
 
-    :DeclNameChain[]
+    :PNSQNameChain('.attr')  # same as :PNSQNameChain('lex.topic.attr') #
 
 =head2 Code Comment Literals
 
@@ -1019,7 +1021,7 @@ C<depot_catalog_payload>.
 
 A C<self_local_dbvar_type> node has 2 ordered elements:  The first element
 is the Perl C<Str> value C<self-local-dbvar-type>.  The second element
-is a C<NameChain_payload>, which specifies what the normal-user-data
+is a C<PNSQNameChain_payload>, which specifies what the normal-user-data
 database has as its declared data type.
 
 Examples:
@@ -1138,11 +1140,11 @@ Examples:
 An C<accessor> node has 2-3 ordered elements, such that 2 elements makes it
 an C<acc_via_named> and 3 elements makes it an C<acc_via_anon>:  The first
 element is the Perl C<Str> value C<$.>.  The last element of an
-C<acc_via_named> is a C<NameChain_payload>, which is by itself the
+C<acc_via_named> is a C<PNSQNameChain_payload>, which is by itself the
 C<target> of the accessor (naming both the other node plus its attribute to
 alias).  The second element of an C<acc_via_anon> is an C<expr> node which
 is the other node whose attribute is being aliased.  The last element of an
-C<acc_via_anon> is a C<DeclNameChain_payload> and names the attribute.
+C<acc_via_anon> is a nonempty C<NameChain_payload> and names the attribute.
 
 Examples:
 
@@ -1156,7 +1158,7 @@ Examples:
 
 An C<func_invo> node has 2-4 ordered elements:  The first element is the
 Perl C<Str> value C<func-invo>.  The second element is a
-C<NameChain_payload>, which names the function to invoke.  The last 1-2
+C<PNSQNameChain_payload>, which names the function to invoke.  The last 1-2
 elements provide arguments to the function invocation; either or both or
 none of a C<Array_payload> element and a C<Tuple_payload> element may be
 given.  The C<Array_payload> 3rd/4th element is for any anonymous (and
@@ -1250,7 +1252,7 @@ Examples:
 A C<[func|upd|proc|type|ord_det_func]_ref> node has 2 ordered elements:
 The first element is the Perl C<Str> value
 C<[func|upd|proc|type|ord-det-func]-ref>.  The second element is a
-C<NameChain_payload>, which names the routine|type to invoke.
+C<PNSQNameChain_payload>, which names the routine|type to invoke.
 
 A C<[func|proc|type|ord-det-func]-ref> node may alternately be formatted as
 a Perl Pair whose key and value are what would otherwise be the first and

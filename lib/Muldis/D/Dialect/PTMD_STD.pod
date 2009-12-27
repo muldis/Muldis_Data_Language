@@ -397,9 +397,9 @@ Examples:
           {
              name => Name:cube,
              material => Tuple:Function:{
-                result_type => NameChain:Int,
+                result_type => PNSQNameChain:Int,
                 params => Relation:NameTypeMap:{
-                   { name => Name:topic, type => NameChain:Int }
+                   { name => Name:topic, type => PNSQNameChain:Int }
                 },
                 expr => Database:ExprNodeSet:{
                    sca_val_exprs => Relation:{
@@ -408,7 +408,7 @@ Examples:
                    func_invo_exprs => Relation:{
                       {
                          name => Name:"",
-                         function => NameChain:Integer.power,
+                         function => PNSQNameChain:Integer.power,
                          args => Relation:NameExprMap:{
                             { name => Name:radix, expr => Name:topic },
                             { name => Name:exponent, expr => Name:INT_3 }
@@ -606,7 +606,7 @@ Grammar:
         | <Text>
         | <Name>
         | <NameChain>
-        | <DeclNameChain>
+        | <PNSQNameChain>
         | <Comment>
         | <Instant>
         | <Duration>
@@ -701,7 +701,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | Text
         | Name
         | NameChain
-        | DeclNameChain
+        | PNSQNameChain
         | Comment
         | Instant
         | Duration
@@ -718,7 +718,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | DH? Interval
 
     <type_name> ::=
-        <NameChain_payload>
+        <PNSQNameChain_payload>
 
     <value_payload> ::=
           <Bool_payload>
@@ -730,7 +730,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <Text_payload>
         | <Name_payload>
         | <NameChain_payload>
-        | <DeclNameChain_payload>
+        | <PNSQNameChain_payload>
         | <Comment_payload>
         | <Instant_payload>
         | <Duration_payload>
@@ -1245,15 +1245,21 @@ Grammar:
         <NameChain_payload>
 
     <NameChain_payload> ::=
-        ['.' \s*]? <Name_payload> ** [\s* '.' \s*]
+        <nc_nonempty> | <nc_empty>
 
-    <DeclNameChain> ::=
-        DeclNameChain ':' \s*
+    <nc_nonempty> ::=
+        <Name_payload> ** [\s* '.' \s*]
+
+    <nc_empty> ::=
+        '[]'
+
+    <PNSQNameChain> ::=
+        PNSQNameChain ':' \s*
         [<type_name> ':' \s*]?
-        <DeclNameChain_payload>
+        <PNSQNameChain_payload>
 
-    <DeclNameChain_payload> ::=
-        <NameChain_payload> | '[]'
+    <PNSQNameChain_payload> ::=
+        ['.' \s*]? <nc_nonempty>
 
 A C<Name> node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
@@ -1280,40 +1286,55 @@ A C<NameChain> node represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short
 names.  This node is interpreted as a Muldis D
 C<sys.std.Core.Type.Cat.NameChain> value as follows:  A
-C<NameChain_payload> consists of a sequence of 1 or more C<Name_payload>
+C<NameChain_payload> has 2 variants, one that defines a nonempty chain
+(C<nc_nonempty>) and one that defines an empty chain (C<nc_empty>).  A
+C<nc_nonempty> consists of a sequence of 1 or more C<Name_payload>
 where the elements of the sequence are separated by period (C<.>) tokens;
 each element of the sequence, in order, defines an element of the C<array>
-possrep's attribute of the result C<NameChain> value.
+possrep's attribute of the result C<NameChain> value.  A C<nc_empty>
+consists simply of the special syntax of C<[]>.
 
-Now, strictly speaking, a Muldis D C<NameChain> value is supposed to have
+Fundamentally a C<PNSQNameChain> node is exactly the same as a C<NameChain>
+node in format and interpretation, with the primary difference being that
+it may only define C<NameChain> values that are also values of the proper
+subtype C<sys.std.Core.Type.Cat.PNSQNameChain>, all of which are nonempty
+chains.  Now that distinction alone wouldn't be enough rationale to have
+these 2 distinct node kinds, and so the secondary difference between the 2
+provides that rationale; the C<PNSQNameChain> node supports a number of
+chain value shorthands while the C<NameChain> node supports none.
+
+Strictly speaking, a Muldis D C<PNSQNameChain> value is supposed to have
 at least 2 elements in its sequence, and the first element of any sequence
 must be one of these 5 C<Name> values, which is a top-level namespace:
 C<sys>, C<mnt>, C<fed>, C<nlx>, C<lex>.
 (Actually, C<type> is a 6th option, but that will be treated separately in
-this discussion.)  In the general case, a C<NameChain_payload> must be
+this discussion.)  In the general case, a C<PNSQNameChain_payload> must be
 written out in full, so it is completely unambiguous (and is clearly
-self-documenting), and it is always the case that a C<NameChain> value in
+self-documenting), and it is always the case that a C<PNSQNameChain> value
+in
 the system catalog is written out in full.  But the PTMD_STD grammar also
-has a few commonly used special cases where a C<NameChain_payload> may be a
+has a few commonly used special cases where a C<PNSQNameChain_payload> may
+be a
 much shorter substring of its complete version, such that a simple parser,
 with no knowledge of any user-defined entities besides said shorter
-C<NameChain_payload> in isolation, can still unambiguously resolve it to
+C<PNSQNameChain_payload> in isolation, can still unambiguously resolve it
+to
 its complete version; exploiting these typically makes for code that is a
 lot less verbose, and much easier to write or read.
 
 The first special case involves any context where a type or routine is
 being referenced by name.  In such a context, when the referenced entity is
 a standard system-defined type or routine, programmers may omit any number
-of consecutive leading chain elements from such a C<NameChain_payload>, so
-long as the remaining unqualified chain is distinct among all standard
+of consecutive leading chain elements from such a C<PNSQNameChain_payload>,
+so long as the remaining unqualified chain is distinct among all standard
 system-defined (C<sys.std>-prefix) DBMS entities (but that as an exception,
 a non-distinct abbreviation is allowed iff exactly 1 of the candidate
 entities is in the language core, C<sys.std.Core>-prefix, in which case
 that 1 is unambiguously the entity that is resolved to).  This feature has
 no effect on the namespace prefixes like C<type> or C<tuple_from> or
 C<array_of>; one still writes those as normal prepended to the otherwise
-shortened chains.  When a C<NameChain_payload>, whose context indicates it
-is a type or routine invocation, is encountered by the parser, and its
+shortened chains.  When a C<PNSQNameChain_payload>, whose context indicates
+it is a type or routine invocation, is encountered by the parser, and its
 existing first chain element isn't one of the other 5 top-level namespaces,
 then the parser will assume it is an unqualified chain in the C<sys>
 namespace and lookup the best / only match from the known C<sys.std> DBMS
@@ -1328,7 +1349,8 @@ In fact, the Muldis D spec itself uses such abbreviations frequently.
 The second special case involves any context where a value expression
 (including a parameter) or a variable is being referenced by name, such as
 with an C<expr_name> node.  In such a context, any leading C<lex> element
-may be omitted; when a C<NameChain_payload>, whose context indicates it is
+may be omitted; when a C<PNSQNameChain_payload>, whose context indicates it
+is
 a value expression / etc reference, is encountered by the parser, and its
 existing first chain element isn't one of the other 6 top-level namespaces,
 then the parser will assume it is an unqualified chain in the C<lex>
@@ -1342,7 +1364,7 @@ The third special case is an extension to the second special case that
 involves any context where a referenced-by-name value expression / etc has
 the declaration name C<topic>, I<and> C<topic> is tuple (or database)
 typed.  In only such a context, a
-C<NameChain_payload> may be prefixed with a chain-element-separator /
+C<PNSQNameChain_payload> may be prefixed with a chain-element-separator /
 period token instead of having a leading (post C<lex> omission) C<topic>
 element; a parser encountering a chain with a leading period will assume
 the chain sans that period is unqualified and will prepend both a C<lex>
@@ -1368,30 +1390,23 @@ completely orthogonal to which of the 5 normal top-level namespaces is in
 use (implicitly or explicitly) by the chain being prefixed, and works for
 all 5 of them.
 
-A C<DeclNameChain> node represents a canonical long name for declaring a
-DBMS entity in N-depth contexts; the format and interpretation of a
-C<DeclNameChain_payload> (but as a C<sys.std.Core.Type.Cat.DeclNameChain>
-value) is the same as a C<NameChain_payload> but that the chain may have as
-few as zero parts rather than as few as 1 or 2, and a zero-element chain is
-represented by the special C<DeclNameChain_payload> syntax of C<[]>.
-
 Examples:
 
     Name:login_pass
 
     Name:"First Name"
 
-    NameChain:fed.data.the_db.gene.sorted_person_names
+    NameChain:gene.sorted_person_name
 
-    NameChain:fed.data.the_db.stats."samples by order"
+    NameChain:stats."samples by order"
 
-    NameChain:.attr  # same as NameChain:lex.topic.attr #
+    NameChain:[]
 
-    DeclNameChain:gene.sorted_person_name
+    PNSQNameChain:fed.data.the_db.gene.sorted_person_names
 
-    DeclNameChain:stats."samples by order"
+    PNSQNameChain:fed.data.the_db.stats."samples by order"
 
-    DeclNameChain:[]
+    PNSQNameChain:.attr  # same as PNSQNameChain:lex.topic.attr #
 
 =head2 Code Comment Literals
 
@@ -2219,7 +2234,7 @@ Grammar:
         <Name_payload>
 
     <self_local_dbvar_type> ::=
-        'self-local-dbvar-type' \s+ <NameChain_payload>
+        'self-local-dbvar-type' \s+ <PNSQNameChain_payload>
 
 A C<depot> node specifies a single complete depot, which is the widest
 scope user-defined DBMS entity that is a completely self-defined, and
@@ -2555,19 +2570,19 @@ Grammar:
         <acc_via_named> | <acc_via_anon>
 
     <acc_via_named> ::=
-        <data_sigil> <NameChain_payload>
+        <data_sigil> <PNSQNameChain_payload>
 
     <acc_via_anon> ::=
-        <expr> \s* '.' \s* <DeclNameChain_payload>
+        <expr> \s* '.' \s* <nc_nonempty>
 
 An C<accessor> node represents an accessor or alias for an attribute of
 another, tuple-valued expression node.  It is interpreted as a tuple of a
 Muldis D C<sys.std.Core.Type.Cat.AccExprNodeSet> value.  If an C<accessor>
-is an C<acc_via_named>, then the C<NameChain_payload> element specifies the
-C<target> attribute of the new C<AccExprNodeSet>.  If an C<accessor> is an
-C<acc_via_anon>, then the C<target> is derived from a catenation of the
+is an C<acc_via_named>, then the C<PNSQNameChain_payload> element specifies
+the C<target> attribute of the new C<AccExprNodeSet>.  If an C<accessor> is
+an C<acc_via_anon>, then the C<target> is derived from a catenation of the
 node name that C<expr> has (explicitly or that will be generated for it by
-the parser) with the C<DeclNameChain_payload> in that order.  Note that an
+the parser) with the C<nc_nonempty> in that order.  Note that an
 C<acc_via_anon> whose C<expr> is an C<expr_name> is also an
 C<acc_via_named>, and vice-versa.
 
@@ -2587,7 +2602,7 @@ Grammar:
         <routine_name> <func_arg_list>
 
     <routine_name> ::=
-        <NameChain_payload>
+        <PNSQNameChain_payload>
 
     <func_arg_list> ::=
         '(' \s*

@@ -58,19 +58,19 @@ more or less:
                         sys.std.Core.Type.Cat.UCPString
                     sys.std.Core.Type.Cat.Name
                     sys.std.Core.Type.Cat.NameChain
-                        sys.std.Core.Type.Cat.MaterialNC
-                            sys.std.Core.Type.Cat.AbsPathMaterialNC
-                                sys.std.Core.Type.Cat.APNonTypeNC
-                                    sys.std.Core.Type.Cat.APFunctionNC
-                                    sys.std.Core.Type.Cat.APUpdaterNC
-                                    sys.std.Core.Type.Cat.APProcedureNC
-                                sys.std.Core.Type.Cat.APTypeNC
-                            sys.std.Core.Type.Cat.RelPathMaterialNC
-                                sys.std.Core.Type.Cat.RPFunctionNC
-                                sys.std.Core.Type.Cat.RPTypeNC
-                        sys.std.Core.Type.Cat.DataNC
-                            sys.std.Core.Type.Cat.LexDataNC
-                    sys.std.Core.Type.Cat.DeclNameChain
+                        sys.std.Core.Type.Cat.PNSQNameChain
+                            sys.std.Core.Type.Cat.MaterialNC
+                                sys.std.Core.Type.Cat.AbsPathMaterialNC
+                                    sys.std.Core.Type.Cat.APNonTypeNC
+                                        sys.std.Core.Type.Cat.APFunctionNC
+                                        sys.std.Core.Type.Cat.APUpdaterNC
+                                        sys.std.Core.Type.Cat.APProcedureNC
+                                    sys.std.Core.Type.Cat.APTypeNC
+                                sys.std.Core.Type.Cat.RelPathMaterialNC
+                                    sys.std.Core.Type.Cat.RPFunctionNC
+                                    sys.std.Core.Type.Cat.RPTypeNC
+                            sys.std.Core.Type.Cat.DataNC
+                                sys.std.Core.Type.Cat.LexDataNC
                     sys.std.Core.Type.Cat.Comment
                     sys.std.Core.Type.Cat.Order
 
@@ -175,7 +175,7 @@ more or less:
                 sys.std.Core.Type.Cat.SCChildAttrParentAttrMap
                 sys.std.Core.Type.Cat.NameTypeMap
                 sys.std.Core.Type.Cat.NameExprMap
-                sys.std.Core.Type.Cat.NameDNCMap
+                sys.std.Core.Type.Cat.NameNCMap
                 sys.std.Core.Type.Cat.AttrRenameMap
 
 These system-defined subtypes can not in general be used as components of a
@@ -205,7 +205,7 @@ defined as a union type over all system-defined C<DHScalar> types, and just
 those types, for whose values all of the Muldis D standard dialects provide
 "opaque value literal" syntax for:  C<Bool>, C<Int>, C<Blob>, C<Text>,
 C<Rat>, C<Instant>, C<Duration>, C<String>, C<Name>, C<NameChain>,
-C<DeclNameChain>, C<Comment>, C<Order>, C<RatRoundMeth>, C<RatRoundRule>,
+C<Comment>, C<Order>, C<RatRoundMeth>, C<RatRoundRule>,
 C<UTCInstant>, C<FloatInstant>, C<UTCDuration>.  The C<OVLScalar> type is
 mainly intended to be used as the declared type of some attributes of some
 other system-defined catalog types, as a compact or hard-coded way to
@@ -336,15 +336,17 @@ rather than being for general-purpose user data.
 
 This is a structure data type.  A C<NameChain> (scalar) is a canonical long
 name for invoking or referring to a DBMS entity, when its name needs to be
-qualified with a namespace.  A C<NameChain> is conceptually a sequence of
-2..N C<Name>, the 2..N elements being ordered from parent-most to
+qualified with a namespace.  A C<NameChain> is used in declaring system
+catalogs where DBMS entities live under a potentially N-depth namespace,
+such as depot entities grouped in a
+subdepot hierarchy.  A C<NameChain> is conceptually a sequence of
+0..N C<Name>, the 0..N elements being ordered from parent-most to
 child-most component name.  A C<NameChain> has 1 system-defined possrep
 named C<array> which directly matches the conception of the type; it
 consists of 1 attribute whose name is the empty string; the attribute is an
-C<Array> whose C<value> attribute has a declared type of C<Name> and that
-must have at least 2 elements.  The default and minimum value of
-C<NameChain> is a 2 element sequence where each element is the default
-value of C<Name> (the empty string); its maximum value is an infinite
+C<Array> whose C<value> attribute has a declared type of C<Name>.  The
+default and minimum value of
+C<NameChain> is a zero element sequence; its maximum value is an infinite
 sequence where each element is the maximum value of C<Name> (an
 infinite-length string) and practically impossible.  The cardinality of
 this type is infinity; to define a most-generalized finite C<NameChain>
@@ -360,10 +362,23 @@ non-empty one; otherwise, compare the first element of each of the chain
 remainders according to the default ordering algorithm of C<Name> to get
 the order of their respective chains.
 
+=head2 sys.std.Core.Type.Cat.PNSQNameChain
+
+This is an enumeration data type.  C<PNSQNameChain> (primary namespace
+qualified name chain) is a proper subtype of C<NameChain> where every
+member value's chain starts with one of the following element sequences:
+C<sys.[cat|std|imp]>, C<mnt.cat>, C<fed.[cat|lib|data]>,
+C<nlx[.par]**0..*.[cat|lib|data]>, C<lex>, C<type>.  One can be used to
+reference a material (routine or type or etc) for invocation, either
+system-defined or user-defined, or one can be used to reference a variable
+(or pseudo-variable or parameter or named expression or statement), either
+a system-catalog or normal data variable.  Its default value is a reference
+to the C<sys.std.Core.Type.Universal> type.
+
 =head2 sys.std.Core.Type.Cat.MaterialNC
 
 This is an enumeration data type.  C<MaterialNC> is a proper subtype of
-C<NameChain> where every member value's chain starts with one of the
+C<PNSQNameChain> where every member value's chain starts with one of the
 following element sequences: C<sys.[std|imp]>, C<fed.lib>,
 C<nlx[.par]**0..*.lib>, C<type>.  One can be used to reference a material
 (routine or type or etc) for invocation, either system-defined or
@@ -439,7 +454,7 @@ C<RelPathMaterialNC> and is analogous to the C<APTypeNC> type.
 =head2 sys.std.Core.Type.Cat.DataNC
 
 This is an enumeration data type.  C<DataNC> is a proper subtype of
-C<NameChain> where every member value's chain starts with one of the
+C<PNSQNameChain> where every member value's chain starts with one of the
 following element sequences: C<sys.cat>, C<mnt.cat>, C<fed.[cat|data]>,
 C<nlx[.par]**0..*.[cat|data]>, C<lex>.  One can be used to reference a
 variable (or pseudo-variable or parameter or named expression or
@@ -453,16 +468,6 @@ later if we have some situation where such a restriction might be useful.>
 This is an enumeration data type.  C<LexDataNC> is a proper subtype of
 C<DataNC> where every member value's chain starts with C<lex>.  One is used
 for every data reference by a function or updater.
-
-=head2 sys.std.Core.Type.Cat.DeclNameChain
-
-This is a structure data type.  A C<DeclNameChain> (scalar) is exactly the
-same in structure as a C<NameChain> but that it is a sequence of 0..N
-rather than 2..N.  A C<DeclNameChain> is used in declaring system catalogs
-where DBMS entities live under a potentially N-depth namespace, such as
-depot entities grouped in a subdepot hierarchy.  The default and minimum
-value of C<DeclNameChain> is a zero element sequence.  The C<DeclNameChain>
-type has a default ordering algorithm; it is the same as for C<NameChain>.
 
 =head2 sys.std.Core.Type.Cat.Comment
 
@@ -577,7 +582,7 @@ These are all the system-defined namespaces where DBMS entities may live,
 or that otherwise always exist due to being system-defined.  Specifically,
 it declares these 18 standard language namespaces:
 C<[sys|mnt|fed|nlx|lex]> (which have the nameless global
-root namespace as their parent, spelled as the empty C<DeclNameChain>
+root namespace as their parent, spelled as the empty C<NameChain>
 value, that isn't also declared here), C<sys.[cat|std|imp]>,
 C<mnt.cat>, C<[fed|nlx].[cat|lib|data]>, C<sys.std.Core>,
 C<sys.std.Core.Type>, C<sys.std.Core.Type.Cat>; it also declares other
@@ -638,7 +643,7 @@ A C<SysNspSet> has these 3 attributes:
 
 =over
 
-=item C<parent> - C<DeclNameChain>
+=item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
 the system namespace's parent system namespace.
@@ -668,7 +673,7 @@ A C<Sys[Function|Updater|Procedure]Set> has these 4 attributes:
 
 =over
 
-=item C<parent> - C<DeclNameChain>
+=item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
 the function|updater|procedure's parent system namespace.
@@ -708,7 +713,7 @@ A C<SysSpecTypeSet> has these 3 attributes:
 
 =over
 
-=item C<parent> - C<DeclNameChain>
+=item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
 the type's parent system namespace.
@@ -737,7 +742,7 @@ A C<Sys[Scalar|Nonscalar|Union|Subset]TypeSet> has these 4 attributes:
 
 =over
 
-=item C<parent> - C<DeclNameChain>
+=item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
 the scalar|nonscalar|union|subset type's parent system namespace.
@@ -1103,7 +1108,7 @@ A C<SubdepotSet> has these 3 attributes:
 
 =over
 
-=item C<parent> - C<DeclNameChain>
+=item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
 of any hypothetical immediate child namespace of the depot,
@@ -1136,7 +1141,7 @@ An C<[Function|Updater|Procedure]Set> has these 4 attributes:
 
 =over
 
-=item C<parent> - C<DeclNameChain>
+=item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
 of any hypothetical immediate child namespace of the depot,
@@ -1173,7 +1178,7 @@ An C<[Scalar|Nonscalar|Union|Subset]TypeSet> has these 4 attributes:
 
 =over
 
-=item C<parent> - C<DeclNameChain>
+=item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
 of any hypothetical immediate child namespace of the depot,
@@ -3320,19 +3325,19 @@ A C<VirtualAttrMapSet> has these 5 attributes:
 
 This is an optional programmer comment about this virtual attribute map.
 
-=item C<determinant_attrs> - C<NameDNCMap>
+=item C<determinant_attrs> - C<NameNCMap>
 
 These are the names of the determinant attributes.  Each name is given in 2
-forms, called C<name> and C<dnc>; C<dnc> is the actual name of the
+forms, called C<name> and C<nc>; C<nc> is the actual name of the
 attribute as existing in the host type, and it may actually be a component
-attribute of a host type attribute to any recursive depth (a single C<dnc>
+attribute of a host type attribute to any recursive depth (a single C<nc>
 element means it is the actual host type element); C<name> is an alias by
 which the attribute will be known in the C<virtual-attr-map> function; this
 mapping exists so to make the determinant attributes look like direct
 sibling attributes whereas in reality they can be further-away relatives,
 just common components somewhere under the host type.
 
-=item C<dependent_attrs> - C<NameDNCMap>
+=item C<dependent_attrs> - C<NameNCMap>
 
 These are the names of the dependent attributes; the structure of
 C<dependent_attrs> is as per C<determinant_attrs>; none of these may be the
@@ -3483,7 +3488,7 @@ A C<DKMemRelAttrMap> has these 3 attributes:
 
 =over
 
-=item C<rel_name> - C<DeclNameChain>
+=item C<rel_name> - C<NameChain>
 
 This is the name of the relation-valued attribute that is participating
 in the distributed key.  But the attribute named by C<rel_name> is only a
@@ -3543,7 +3548,7 @@ This is the declared name of the subset constraint.
 This is an optional programmer comment about the subset constraint as a
 whole.
 
-=item C<parent> - C<DeclNameChain>
+=item C<parent> - C<NameChain>
 
 This is the name of the relation-valued attribute that is the parent in the
 (non-distributed) subset constraint relationship.  But the attribute named
@@ -3558,7 +3563,7 @@ This is the name of the explicitly declared candidate key or unique key
 constraint of C<parent> which defines the attributes of C<parent> that are
 being matched on in the subset constraint.
 
-=item C<child> - C<DeclNameChain>
+=item C<child> - C<NameChain>
 
 This is the name of the relation-valued attribute that is the child in the
 (non-distributed) subset constraint relationship; its structure is as per
@@ -3604,7 +3609,7 @@ This is the declared name of the subset constraint.
 This is an optional programmer comment about the subset constraint as a
 whole.
 
-=item C<parent_distrib_key> - C<DeclNameChain>
+=item C<parent_distrib_key> - C<NameChain>
 
 This is the name of the explicitly declared distributed (unique) key that
 is the parent in the distributed subset constraint relationship; it defines
@@ -3615,7 +3620,7 @@ by the type of an attribute of the host type, if said attribute is a
 tuple/database; so the only or last C<parent_distrib_key> chain element is
 a key name, and any preceeding names are attribute names.
 
-=item C<child> - C<DeclNameChain>
+=item C<child> - C<NameChain>
 
 This is the name of the relation-valued attribute that is the child in the
 distributed subset constraint relationship.  But the attribute named by
@@ -3827,12 +3832,12 @@ argument, and comprises a unary key; the C<expr> is the declared local name
 which defines the value for the attribute or argument.  Its default value
 has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.NameDNCMap
+=head2 sys.std.Core.Type.Cat.NameNCMap
 
-A C<NameDNCMap> is a C<DHRelation>.  It defines an association of a short
-name with a declaration name chain, to be used for aliasing the latter with
-the former in a particular context.  A C<NameDNCMap> has 2 attributes,
-C<name> (a C<Name>) and C<dnc> (a C<DeclNameChain>); each of those is a
+A C<NameNCMap> is a C<DHRelation>.  It defines an association of a short
+name with a name chain, to be used for aliasing the latter with
+the former in a particular context.  A C<NameNCMap> has 2 attributes,
+C<name> (a C<Name>) and C<nc> (a C<NameChain>); each of those is a
 unary key.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.AttrRenameMap
@@ -3850,7 +3855,7 @@ a relation in terms of a list of their attributes to order on.  An
 C<OrderByName> has 2 attributes, C<name> (a C<Name>) and
 C<is_reverse_order> (a C<Bool>).  Its default value has the default value
 of the C<Name> and C<Bool> types for their respective attributes.  I<Maybe
-TODO:  Make C<name> a C<NameChain> instead to drill into TVAs or SVAs.>
+TODO:  Make C<name> a C<PNSQNameChain> instead to drill into TVAs or SVAs.>
 
 =head1 TYPES FOR POSSIBLY CURRIED HIGHER-ORDER FUNCTIONS
 
