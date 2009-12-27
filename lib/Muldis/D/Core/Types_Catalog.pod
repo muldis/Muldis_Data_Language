@@ -368,11 +368,14 @@ This is an enumeration data type.  C<PNSQNameChain> (primary namespace
 qualified name chain) is a proper subtype of C<NameChain> where every
 member value's chain starts with one of the following element sequences:
 C<sys.[cat|std|imp]>, C<mnt.cat>, C<fed.[cat|lib|data]>,
-C<nlx[.par]**0..*.[cat|lib|data]>, C<lex>, C<type>.  One can be used to
-reference a material (routine or type or etc) for invocation, either
-system-defined or user-defined, or one can be used to reference a variable
-(or pseudo-variable or parameter or named expression or statement), either
-a system-catalog or normal data variable.  Its default value is a reference
+C<nlx[.par]**0..*.[cat|lib|data]>, C<rtn>, C<lex>, C<type>.  I<The
+definition of the type is actually more restrictive than this, as per the
+balance of the invariant rules of the primary namespaces in question, but
+those aren't detailed here for brevity.>  One can be used to reference a
+material (routine or type or etc) for invocation, either system-defined or
+user-defined, or one can be used to reference a variable (or
+pseudo-variable or parameter or named expression or statement), either a
+system-catalog or normal data variable.  Its default value is a reference
 to the C<sys.std.Core.Type.Universal> type.
 
 =head2 sys.std.Core.Type.Cat.MaterialNC
@@ -380,8 +383,8 @@ to the C<sys.std.Core.Type.Universal> type.
 This is an enumeration data type.  C<MaterialNC> is a proper subtype of
 C<PNSQNameChain> where every member value's chain starts with one of the
 following element sequences: C<sys.[std|imp]>, C<fed.lib>,
-C<nlx[.par]**0..*.lib>, C<type>.  One can be used to reference a material
-(routine or type or etc) for invocation, either system-defined or
+C<nlx[.par]**0..*.lib>, C<rtn>, C<type>.  One can be used to reference a
+material (routine or type or etc) for invocation, either system-defined or
 user-defined.  Its default value is a reference to the
 C<sys.std.Core.Type.Universal> type.
 
@@ -389,23 +392,24 @@ C<sys.std.Core.Type.Universal> type.
 
 This is an enumeration data type.  C<AbsPathMaterialNC> is a proper subtype
 of C<MaterialNC> where every member value's chain starts with either C<sys>
-or C<fed> (or a C<type>-prefix followed by those) but not C<nlx>.  One is
-used when conceptually a routine or type is being passed as an argument to
-a routine, such as because it is a higher-order function or closure, and it
-is in fact the name of the invocant being passed; only an absolute path can
-be used in this situation for the general case because the target is being
-invoked from a different context than where the reference to the target is
-being selected; a relative path doesn't work because C<nlx> means something
-different on each side of the NC-argument-taking-routine.  Conceptually
-speaking, an C<AbsPathMaterialNC> that points to a routine I<is> a closure,
-or a higher-order function if it points to a function.
+or C<fed> (or a C<type>-prefix followed by those) but not C<nlx> or C<rtn>.
+One is used when conceptually a routine or type is being passed as an
+argument to a routine, such as because it is a higher-order function or
+closure, and it is in fact the name of the invocant being passed; only an
+absolute path can be used in this situation for the general case because
+the target is being invoked from a different context than where the
+reference to the target is being selected; a relative path doesn't work
+because C<nlx> or C<rtn> means something different on each side of the
+NC-argument-taking-routine.  Conceptually speaking, an C<AbsPathMaterialNC>
+that points to a routine I<is> a closure, or a higher-order function if it
+points to a function.
 
 =head2 sys.std.Core.Type.Cat.APNonTypeNC
 
 This is an enumeration data type.  C<APNonTypeNC> is a proper subtype of
-C<AbsPathMaterialNC> that excludes the C<type>-prefix values.  Its default
-value is a reference to the C<sys.std.Core.Universal.is_identical>
-function.
+C<AbsPathMaterialNC> that excludes the C<type>-prefix values and a subset
+of the C<sys>-prefix values.  Its default value is a reference to the
+C<sys.std.Core.Universal.is_identical> function.
 
 =head2 sys.std.Core.Type.Cat.APFunctionNC
 
@@ -427,8 +431,9 @@ C<sys.std.Core.Cat.noop> procedure.
 
 =head2 sys.std.Core.Type.Cat.APTypeNC
 
-This is an enumeration data type.  C<APTypeNC> is a non-proper subtype of
-C<AbsPathMaterialNC>.  Its default value is a reference to the
+This is an enumeration data type.  C<APTypeNC> is a proper subtype of
+C<AbsPathMaterialNC> that excludes the C<rtn> value and a subset of the
+C<sys>-prefix values.  Its default value is a reference to the
 C<sys.std.Core.Type.Universal> data type, the same as its parent type and
 therefore exists soley for use in better-self-documenting code that expects
 a reference to a type specifically.
@@ -437,9 +442,9 @@ a reference to a type specifically.
 
 This is an enumeration data type.  C<RelPathMaterialNC> is a proper subtype
 of C<MaterialNC> where every member value's chain starts with either C<sys>
-or C<nlx> (or a C<type>-prefix followed by those) but not C<fed>.  One is
-used in a context where a user-defined routine or type may only be invoked
-directly when both the invoker and invoked are in the same depot.
+or C<nlx> or C<rtn> (or a C<type>-prefix followed by those) but not C<fed>.
+One is used in a context where a user-defined routine or type may only be
+invoked directly when both the invoker and invoked are in the same depot.
 
 =head2 sys.std.Core.Type.Cat.RPFunctionNC
 
@@ -580,8 +585,8 @@ system-defined entities as a whole.
 
 These are all the system-defined namespaces where DBMS entities may live,
 or that otherwise always exist due to being system-defined.  Specifically,
-it declares these 18 standard language namespaces:
-C<[sys|mnt|fed|nlx|lex]> (which have the nameless global
+it declares these 19 standard language namespaces:
+C<[sys|mnt|fed|nlx|rtn|lex]> (which have the nameless global
 root namespace as their parent, spelled as the empty C<NameChain>
 value, that isn't also declared here), C<sys.[cat|std|imp]>,
 C<mnt.cat>, C<[fed|nlx].[cat|lib|data]>, C<sys.std.Core>,

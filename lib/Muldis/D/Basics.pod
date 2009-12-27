@@ -2519,6 +2519,7 @@ This is the hierarchy of invocation namespaces of DBMS entities:
                 nlx[.par]**0..*.lib[.chi-nlx-nsp]**0..*
                     nlx[.par]**0..*.lib[.chi-nlx-nsp]**0..*.<material>
             nlx[.par]**0..*.data  # upd db of normal user data in this nsp
+    rtn  # entities in a possib-anon-declared rtn can ref that rtn w this
     lex  # entities in a rtn ref own lexical params|exprs|vars with this
         lex.<param>
         lex.<expr>
@@ -2700,6 +2701,16 @@ it might not have to apply for references to procedures or such things that
 C<fed> may be used to reference; in that case the execution of such code
 would just fail at runtime if the referenced part of the physical depot
 isn't mounted, same as with a non-existing C<fed>-qualified reference.
+
+The C<rtn> primary namespace normally is used entirely by itself as its own
+fully-qualified entity name; it refers to the lexically innermost routine,
+assuming that the referencer is code within some routine.  The primary
+reason for this namespace to exist is to make it easier to write
+directly-recursive routines, especially routines that are written as
+anonymous routines, where the name of that routine is chosen automatically
+by the compiler rather than explicitly by the programmer.  For a routine
+whose name, C<foo>, is explicitly chosen by the programmer, saying C<rtn>
+in that routine is an alias for saying C<nlx.lib.foo>.
 
 The C<lex> primary namespace refers to entities within
 the same private lexical scope as the referencer.  Variables
