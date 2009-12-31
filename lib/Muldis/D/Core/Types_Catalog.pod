@@ -101,7 +101,7 @@ more or less:
                 sys.std.Core.Type.Cat.IfThenVarStmtMap
                 sys.std.Core.Type.Cat.ScalarType
                 sys.std.Core.Type.Cat.NonscalarType
-                sys.std.Core.Type.Cat.UnionType
+                sys.std.Core.Type.Cat.DomainType
                 sys.std.Core.Type.Cat.SubsetType
                 sys.std.Core.Type.Cat.OrderByName
 
@@ -125,7 +125,7 @@ more or less:
                 sys.std.Core.Type.Cat.Sys[Function|Updater|Procedure]Set
                 sys.std.Core.Type.Cat.SysSpecTypeSet
                 sys.std.Core.Type.Cat.Sys[Scalar|Nonscalar]TypeSet
-                sys.std.Core.Type.Cat.Sys[Union|Subset]TypeSet
+                sys.std.Core.Type.Cat.Sys[Domain|Subset]TypeSet
                 sys.std.Core.Type.Cat.SysCatSet
                 sys.std.Core.Type.Cat.MountControlSet
                 sys.std.Core.Type.Cat.DepotMountSet
@@ -133,7 +133,7 @@ more or less:
                 sys.std.Core.Type.Cat.SubdepotSet
                 sys.std.Core.Type.Cat.[Function|Updater|Procedure]Set
                 sys.std.Core.Type.Cat.[Scalar|Nonscalar]TypeSet
-                sys.std.Core.Type.Cat.[Union|Subset]TypeSet
+                sys.std.Core.Type.Cat.[Domain|Subset]TypeSet
                 sys.std.Core.Type.Cat.OVLScaValExprNodeSet
                 sys.std.Core.Type.Cat.ScaSelExprNodeSet
                 sys.std.Core.Type.Cat.TupSelExprNodeSet
@@ -618,12 +618,12 @@ an infinite number of singleton structure types (and those structure types
 are not listed individually in the system catalog at all, for what should
 be obvious reasons).
 
-=item C<[scalar|nonscalar|union|subset]_types> -
-C<Sys[Scalar|Nonscalar|Union|Subset]TypeSet>
+=item C<[scalar|nonscalar|domain|subset]_types> -
+C<Sys[Scalar|Nonscalar|Domain|Subset]TypeSet>
 
 These are all the system-defined scalar types, except for
 C<String> because it can't be defined like user-defined types, and complete
-nonscalar types, and union types, and subset types.
+nonscalar types, and domain types, and subset types.
 
 =item C<catalogs> - C<SysCatSet>
 
@@ -738,38 +738,38 @@ This is an optional programmer comment about the type as a whole.
 A C<SysSpecTypeSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Sys[Scalar|Nonscalar|Union|Subset]TypeSet
+=head2 sys.std.Core.Type.Cat.Sys[Scalar|Nonscalar|Domain|Subset]TypeSet
 
-A C<Sys[Scalar|Nonscalar|Union|Subset]TypeSet> is a C<DHRelation> that
-specifies a set of scalar|nonscalar|union|subset system-defined types.
+A C<Sys[Scalar|Nonscalar|Domain|Subset]TypeSet> is a C<DHRelation> that
+specifies a set of scalar|nonscalar|domain|subset system-defined types.
 
-A C<Sys[Scalar|Nonscalar|Union|Subset]TypeSet> has these 4 attributes:
+A C<Sys[Scalar|Nonscalar|Domain|Subset]TypeSet> has these 4 attributes:
 
 =over
 
 =item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
-the scalar|nonscalar|union|subset type's parent system namespace.
+the scalar|nonscalar|domain|subset type's parent system namespace.
 
 =item C<name> - C<Name>
 
-This is the declared name of the scalar|nonscalar|union|subset type
+This is the declared name of the scalar|nonscalar|domain|subset type
 within the namespace defined by C<parent>; other Muldis D code would
 reference it with the combination of C<parent> and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the
-scalar|nonscalar|union|subset type as a whole.
+scalar|nonscalar|domain|subset type as a whole.
 
-=item C<material> - C<[Scalar|Nonscalar|Union|Subset]Type>
+=item C<material> - C<[Scalar|Nonscalar|Domain|Subset]Type>
 
-This defines the entire scalar|nonscalar|union|subset type sans its name.
+This defines the entire scalar|nonscalar|domain|subset type sans its name.
 
 =back
 
-A C<Sys[Scalar|Nonscalar|Union|Subset]TypeSet> has a binary primary key on
+A C<Sys[Scalar|Nonscalar|Domain|Subset]TypeSet> has a binary primary key on
 the C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysCatSet
@@ -1080,11 +1080,11 @@ be none).
 These are all the definitions that this [|sub]depot contains of functions,
 updaters, procedures.
 
-=item C<[scalar|nonscalar|union|subset]_types> -
-C<[Scalar|Nonscalar|Union|Subset]TypeSet>
+=item C<[scalar|nonscalar|domain|subset]_types> -
+C<[Scalar|Nonscalar|Domain|Subset]TypeSet>
 
 These are all the definitions that this [|sub]depot contains of scalar
-types with possreps, complete nonscalar types, union types, and subset
+types with possreps, complete nonscalar types, domain types, and subset
 types.
 
 =item C<data> - C<maybe_of.RPTypeNC>
@@ -1172,14 +1172,14 @@ This defines the entire function|updater|procedure sans its name.
 An C<[Function|Updater|Procedure]Set> has a binary primary key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Scalar|Nonscalar|Union|Subset]TypeSet
+=head2 sys.std.Core.Type.Cat.[Scalar|Nonscalar|Domain|Subset]TypeSet
 
-An C<[Scalar|Nonscalar|Union|Subset]TypeSet> is a C<DHRelation> that
-specifies a set of scalar|nonscalar|union|subset types that a
+An C<[Scalar|Nonscalar|Domain|Subset]TypeSet> is a C<DHRelation> that
+specifies a set of scalar|nonscalar|domain|subset types that a
 [|sub]depot might directly contain.  I<TODO: each type may be either public
 for the DBMS as a whole or private to the subdepot.>
 
-An C<[Scalar|Nonscalar|Union|Subset]TypeSet> has these 4 attributes:
+An C<[Scalar|Nonscalar|Domain|Subset]TypeSet> has these 4 attributes:
 
 =over
 
@@ -1187,26 +1187,26 @@ An C<[Scalar|Nonscalar|Union|Subset]TypeSet> has these 4 attributes:
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
 of any hypothetical immediate child namespace of the depot,
-of the scalar|nonscalar|union|subset type's parent [|sub]depot.
+of the scalar|nonscalar|domain|subset type's parent [|sub]depot.
 
 =item C<name> - C<Name>
 
-This is the declared name of the scalar|nonscalar|union|subset type
+This is the declared name of the scalar|nonscalar|domain|subset type
 within the namespace defined by C<parent>; other Muldis D code would
 reference it with the combination of C<parent> and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the
-scalar|nonscalar|union|subset type as a whole.
+scalar|nonscalar|domain|subset type as a whole.
 
-=item C<material> - C<[Scalar|Nonscalar|Union|Subset]Type>
+=item C<material> - C<[Scalar|Nonscalar|Domain|Subset]Type>
 
-This defines the entire scalar|nonscalar|union|subset type sans its name.
+This defines the entire scalar|nonscalar|domain|subset type sans its name.
 
 =back
 
-An C<[Scalar|Nonscalar|Union|Subset]TypeSet> has a binary primary key on
+An C<[Scalar|Nonscalar|Domain|Subset]TypeSet> has a binary primary key on
 the C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING ROUTINES
@@ -3656,9 +3656,9 @@ attributes, C<child_attr> and C<parent_attr>, each of those being a
 C<Name>, and each of those being a unary key.  Its default value has zero
 tuples.
 
-=head2 sys.std.Core.Type.Cat.UnionType
+=head2 sys.std.Core.Type.Cat.DomainType
 
-An C<UnionType> is a C<DHTuple>.  It defines a new data type whose
+A C<DomainType> is a C<DHTuple>.  It defines a new data type whose
 values are all drawn from one or more specified other types (which can be
 any not-C<Empty> types at all), and that generally speaking it is an
 arbitrary subset of C<Universal> (and it has its own default value).  The
@@ -3668,23 +3668,23 @@ then optionally applying 0..N type constraint functions to the values
 remaining).  The likely most common such type definition scenario is
 defining a simple explicit union type of 2+ scalar source types.  Less
 likely for usage, you can also define simple explicit intersection or
-difference or exclusion types.  A union type does not define any changes or
-supplements to the interfaces available for working with its values,
+difference or exclusion types.  A domain type does not define any changes
+or supplements to the interfaces available for working with its values,
 instead simply using those of its declared parent types.  A data type
 defined in this way is typically not considered to exist when the system
 wants to determine the MST (most specific type) of one of its values.  Note
 that if you want to define a possrep-adding scalar subtype whose base is
 a union/intersection/etc of other types (eg, to define a "Square" when you
-have "Rectangle", "Rhombus"), you have to first define a C<UnionType>,
+have "Rectangle", "Rhombus"), you have to first define a C<DomainType>,
 and then use that as the base type of a C<ScalarType>.
 
-An C<UnionType> has these 7 attributes:
+An C<DomainType> has these 7 attributes:
 
 =over
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the union type as a whole.
+This is an optional programmer comment about the domain type as a whole.
 
 =item C<sources> - C<set_of.RPTypeNC>
 
@@ -3720,7 +3720,7 @@ elements then the filter set is just C<Empty>.
 
 This matches the declared names of 0..N C<type-constraint> functions
 that (when I<and>-ed together) determine what filter-type-passing
-source-type values are part of the union type.  The function
+source-type values are part of the domain type.  The function
 that each of these names must have a single C<topic> parameter whose
 declared type is C<Universal>, unless there is exactly 1 C<sources> element
 whereupon the declared type is the same as the source type, and whose
@@ -3730,18 +3730,17 @@ filter-type-passing values are allowed.
 
 =item C<default> - C<RPFunctionNC>
 
-This matches the declared name of a C<named-value> function that
-results in the default value of the union type; it has zero parameters and
-its result type is the same as the union type whose declaration it is part
-of.
+This matches the declared name of a C<named-value> function that results in
+the default value of the domain type; it has zero parameters and its result
+type is the same as the domain type whose declaration it is part of.
 
 =back
 
-The default value of C<UnionType> defines an alias for C<Universal>,
+The default value of C<DomainType> defines an alias for C<Universal>,
 with the same default value; it has just the source type C<Universal> and
 zero filter types, both type lists are unioned, and C<constraints> is empty
 (unconditionally C<Bool:true>).  Note that there is no valid combination of
-C<UnionType> attribute values that would result in an alias for the
+C<DomainType> attribute values that would result in an alias for the
 C<Empty> type, due to a default value for the type being mandatory.
 
 =head2 sys.std.Core.Type.Cat.SubsetType
@@ -3760,7 +3759,7 @@ working with its values, instead simply using those of its declared parent
 type.  A data type defined in this way is typically not considered to exist
 when the system wants to determine the MST (most specific type) of one of
 its values.  You can only declare a nonscalar type with an incompletely
-defined attribute list using a C<SubsetType> (or a C<UnionType>).
+defined attribute list using a C<SubsetType> (or a C<DomainType>).
 
 An C<SubsetType> has these 4 attributes:
 
