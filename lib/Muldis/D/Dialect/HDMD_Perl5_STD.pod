@@ -891,8 +891,8 @@ attrs> is interpreted specifically as attributes of the declared type's
 possrep which is specified by the I<possrep name>.  Each key+value pair of
 the I<possrep attrs> defines a named possrep attribute of the new scalar;
 the pair's key and value are, respectively, a Perl character string that
-specifies the possrep attribute name, and a C<expr> node that specifies the
-possrep attribute value.
+specifies the possrep attribute name, and an C<expr> node that specifies
+the possrep attribute value.
 
 Examples:
 
@@ -935,7 +935,7 @@ C<sys.std.Core.Type.Tuple> value whose attributes are defined by the
 payload.  The payload must be just a Perl hash ref.  Each key+value pair of
 the payload defines a named attribute of the new tuple; the pair's key and
 value are, respectively, a Perl character string that specifies the
-attribute name, and a C<expr> node that specifies the attribute value.
+attribute name, and an C<expr> node that specifies the attribute value.
 
 Examples:
 
@@ -960,7 +960,7 @@ C<sys.std.Core.Type.Database> value whose attributes are defined by the
 payload.  The payload must be a just a Perl hash ref.  Each key+value pair
 of the payload defines a named attribute of the new 'database'; the pair's
 key and value are, respectively, a Perl character string that specifies the
-attribute name, and a C<expr> node that specifies the attribute value,
+attribute name, and an C<expr> node that specifies the attribute value,
 which must be represent a relation value.
 
 =head2 Relation Selectors
@@ -1038,7 +1038,7 @@ A C<Set> node represents a literal or selector invocation for a set
 value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Set> value
 whose elements are defined by the payload.  The payload must be just a Perl
 array ref.  Each element of the payload defines a unary tuple of the
-new set; each element is a C<expr> node that defines the C<value>
+new set; each element is an C<expr> node that defines the C<value>
 attribute of the tuple.
 
 Examples:
@@ -1064,7 +1064,7 @@ C<sys.std.Core.Type.Maybe> value.  If the node payload is missing or
 undefined, then the node is interpreted as the special value
 C<Maybe:nothing>, aka C<nothing>, which is the only C<Maybe> value with
 zero elements.  If the node payload is defined then the node is interpreted
-as a C<Single> whose element is defined by the payload.  The payload is a
+as a C<Single> whose element is defined by the payload.  The payload is an
 C<expr> node that defines the C<value> attribute of the single tuple
 of the new 'single'.
 
@@ -1081,7 +1081,7 @@ array value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Array> value whose elements are defined by the
 payload.  The payload must be just a Perl array ref.  Each element of the
 payload defines a binary tuple of the new sequence; the element value
-is a C<expr> node that defines the C<value> attribute of the tuple,
+is an C<expr> node that defines the C<value> attribute of the tuple,
 and the element index is used as the C<index> attribute of the tuple.
 
 Examples:
@@ -1122,7 +1122,7 @@ the first element of that element I<is> itself an array ref, then the
 payload is interpreted as being of the I<array counted values> bag format.
 Each element of the payload defines a binary tuple of the new
 bag; the element is a 2-element array ref, and those 2 elements, by
-index order, are a C<expr> node that defines the C<value> attribute of the
+index order, are an C<expr> node that defines the C<value> attribute of the
 tuple, and a valid C<Int> node payload that defines the C<count>
 attribute of the tuple; the count must be a positive integer.
 
@@ -1132,7 +1132,7 @@ Iff the payload is an array ref with at least one (array ref) element, and
 the first element of that element I<is not> itself an array ref, then the
 payload is interpreted as being of the I<array repeated values> bag format.
 Each element of the payload contributes to a binary tuple of the new
-bag; the element value is a C<expr> node that defines the C<value>
+bag; the element value is an C<expr> node that defines the C<value>
 attribute of the tuple.  The bag has 1 tuple for every distinct
 (after format normalization) element value in the payload, and the C<count>
 attribute of that tuple says how many instances of said element were
@@ -1159,29 +1159,63 @@ Examples:
 
 =head2 Interval Selectors
 
-An C<Interval> node represents a literal or selector invocation for an
-interval value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Interval> value whose attributes are defined by the
-payload.  The node payload must be a Perl array ref with 3 elements, which
+An C<Interval> node represents a literal or selector invocation for a
+possibly-discontinuous-or-empty interval value.  It is interpreted as a
+Muldis D C<sys.std.Core.Type.Interval> value whose elements are defined by
+the payload.  The payload must be just a Perl array ref; it is interpreted
+as follows:
+
+=over
+
+=item *
+
+Iff the payload has zero elements, then it defines the only interval value
+having zero elements.
+
+=item *
+
+Iff the payload has at least one element, and the payload's first element
+I<is> a Perl array ref, then every one of the payload elements must be
+itself a Perl array ref, and each payload element is designated a
+I<sub-interval>.  Each I<sub-interval> of the payload defines a 4-ary tuple
+of the new interval, which defines a continuous sub-interval of the
+interval; each I<sub-interval> defines the 4 attributes of the tuple.  Each
+I<sub-interval> must have exactly 3 elements, which
 are designated in order: I<min>, I<interval boundary kind>, I<max>.  Each
 of I<min> and I<max> is an C<expr> node that defines the C<min> and C<max>
-attribute value, respectively, of the new interval.  The I<interval
+attribute value, respectively, of the new sub-interval.  The I<interval
 boundary kind> is one of these 4 Perl character strings: C<..>, C<..^>,
 C<^..>, C<^..^>; each of those strings corresponds to one of the 4 possible
 combinations of C<excludes_min> and C<excludes_max> values that the new
-interval can have, which in order are: C<[false,false]>, C<[false,true]>,
-C<[true,false]>, C<[true,true]>.
+sub-interval can have, which in order are: C<[false,false]>,
+C<[false,true]>, C<[true,false]>, C<[true,true]>.
+
+=item *
+
+Iff the payload has at least one element, and the payload's first element
+I<is not> a Perl array ref, then every one of the payload elements must
+I<not> be itself a Perl array ref, and the payload as a whole is designated
+a I<sub-interval>.  The single I<sub-interval> is interpreted as per one of
+those in the previous bullet point.
+
+=back
 
 Examples:
 
-    [ 'Interval', [1,'..',10] ]
+    [ 'Interval', [] ]  # zero elements #
+
+    [ 'Interval', ['abc','..','abc'] ]  # 1 element #
+
+    [ 'Interval', [1,'..',10] ]  # 10 elements #
 
     [ 'Interval', [2.7,'..^',9.3] ]
 
     [ 'Interval', ['a','^..','z'] ]
 
-    [ 'Interval', [[ 'UTCInstant', [2002,12,6] ], '^..^',
-        [ 'UTCInstant', [2002,12,20] ]] ]
+    [ 'Interval', [[[ 'UTCInstant', [2002,12,6] ], '^..^',
+        [ 'UTCInstant', [2002,12,20] ]]] ]
+
+    [ 'Interval', [[1,'..',3],[6,'..',6],[8,'..',9]] ]  # 6 elements #
 
 =head1 DEPOT SPECIFICATION
 

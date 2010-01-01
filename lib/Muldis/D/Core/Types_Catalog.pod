@@ -1702,9 +1702,14 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<interval> - C<interval_of.Name>
+=item C<elems> - C<interval_of.Name>
 
-These represent the attributes of the interval value being selected.
+These represent the elements, each of which is a continuous sub-interval,
+of the possibly-discontinuous-or-empty interval value being selected.
+When this value expression is evaluated, if any child expression nodes are
+such that any duplicate tuples might be input to this C<IvlSelExprNodeSet>
+selector, the duplicates are silently eliminated and do not constitute a
+failure condition.
 
 Note that, because of how C<IvlSelExprNodeSet> is defined, the
 C<excludes_[min|max]> attribute values of the interval are compile time
@@ -1712,7 +1717,7 @@ constants, since a boolean is stored in the system catalog for each rather
 than the name of an expression node like with the C<min> and C<max>
 attributes; if you actually want the interval value being selected at
 runtime to have runtime-determined C<excludes_[min|max]> attribute values,
-then you must use a C<TupSelExprNodeSet> rather than a
+then you must use a C<RelSelExprNodeSet> rather than a
 C<IvlSelExprNodeSet>.
 
 =back
