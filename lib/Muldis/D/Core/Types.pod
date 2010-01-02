@@ -59,6 +59,8 @@ relationships:
         sys.std.Core.Type.Tuple
             sys.std.Core.Type.DHTuple
                 sys.std.Core.Type.Database
+            sys.std.Core.Type.Interval
+                sys.std.Core.Type.DHInterval
 
         sys.std.Core.Type.Relation
             sys.std.Core.Type.DHRelation
@@ -72,8 +74,6 @@ relationships:
                 sys.std.Core.Type.DHArray
             sys.std.Core.Type.Bag
                 sys.std.Core.Type.DHBag
-            sys.std.Core.Type.Interval
-                sys.std.Core.Type.DHInterval
 
         # The following are all reference types.
 
@@ -101,13 +101,11 @@ here is another view of those:
                         sys.std.Core.Type.DHSingle
                 sys.std.Core.Type.DHArray
                 sys.std.Core.Type.DHBag
-                sys.std.Core.Type.DHInterval
             sys.std.Core.Type.Set
                 sys.std.Core.Type.Maybe
                     sys.std.Core.Type.Single
             sys.std.Core.Type.Array
             sys.std.Core.Type.Bag
-            sys.std.Core.Type.Interval
 
 =head1 MAXIMAL AND MINIMAL DATA TYPES
 
@@ -438,6 +436,80 @@ is otherwise the same.  The 2 system-defined user-data variables named
 C<[fed|nlx].data> are all of "just" the C<Database> type, or are of
 its proper subtypes.
 
+=head2 sys.std.Core.Type.Interval
+
+This is an enumeration data type.  An C<Interval> is a C<Tuple>.  It
+defines a single I<bounded interval> or I<finite interval> in terms of 2
+I<endpoint> values plus an indicator of whether either, both, or none of
+the endpoint values are included in the interval.
+
+An C<Interval> has these 4 attributes:
+
+=over
+
+=item C<min|max> - C<Universal>
+
+These are the interval endpoint values; C<min> defines the
+I<left|start|from> endpoint and C<max> defines the I<right|end|to>
+endpoint.  The endpoint values conceptually must be of the same,
+totally-ordered type (typically one of C<Int>, C<Rat>, C<Text>, C<Instant>,
+etc), although strictly speaking they may be of any types at all; in the
+latter case, to actually make practical use of such intervals, an
+C<order-determination> function must explicitly be employed.
+
+=item C<excludes_[min|max]> - C<Bool>
+
+If C<excludes_min> or C<excludes_max> are C<Bool:true>, then C<min> or
+C<max> I<is not> considered to be included within the interval,
+respectively; otherwise, it I<is> considered to be included within the
+interval.  If both endpoints are within the interval (the use case which
+Muldis D optimizes its syntax for), the interval is I<closed>; otherwise if
+both endpoints are not in the interval, the interval is I<open>.
+
+=back
+
+The C<Interval> type supports empty intervals (which include no values at
+all) at least as a matter of simplicity in that it doesn't place any
+restrictions on the combination of attribute values an C<Interval> value
+may have, such as that C<max> can't be before C<min>.  This liberal design
+is also necessary to support the general case where the relative order of
+the C<min> and C<max> values is situation-dependent on what
+C<order-determination> function is used with the interval; that function
+also determines what type's concept of order is being applied, and so it
+also determines whether or not a given interval is considered empty or not.
+With respect to each compatible C<order-determination> function, an
+C<Interval> is considered empty iff at least one of the following is true:
+1. Its C<min> is greater than its C<max>.  2. Its C<min> is equal to its
+C<max> I<and> at least one of C<excludes_min> or C<excludes_max> is true.
+3. Both C<excludes_min> and C<excludes_max> are true I<and> C<min> and
+C<max> are consecutive values.  And so, there are many distinct C<Interval>
+values that are conceptually empty intervals, and the C<is_identical>
+function should not be used to test an C<Interval> for being empty or not.
+
+The default value of C<Interval> represents an empty interval where its
+C<min> attribute is C<Bool:true> and its other 3 attributes are
+C<Bool:false>.
+
+The C<Interval> type has no support for I<unbounded>/I<infinite> or
+I<half-bounded> intervals that is orthogonal to data type.  However, if
+there are any types with their own special values to represent infinities,
+then those special values can be uded for endpoints of intervals over those
+types.  I<As of this writing, no system-defined types have values for
+infinities, so only user-defined types would leverage this.>
+
+The C<Interval> type only represents a continuous interval, but a
+discontinuous interval may be effectively represented by a set of
+C<Interval> values, either a C<relation_from.Interval> or a
+C<set_of.Interval>.
+
+=head2 sys.std.Core.Type.DHInterval
+
+This is an enumeration data type.  C<DHInterval> is a proper subtype of
+C<Interval> where every one of its values is also a C<DHTuple>.  In general
+practice, all C<Interval> values are C<DHInterval> values, because their
+endpoints would all be C<DHScalar> values.  The default value of
+C<DHInterval> is the same as that of C<Interval>.
+
 =head2 sys.std.Core.Type.Relation
 
 This is a primitive data type.  The C<Relation> type is the maximal type
@@ -581,80 +653,6 @@ default value has zero tuples.
 
 This is an enumeration data type.  C<DHBag> is the intersection type of
 C<Bag> and C<DHRelation>.  The cardinality of this type is infinite.
-
-=head2 sys.std.Core.Type.Interval
-
-This is an enumeration data type.  C<Interval> is a proper subtype of
-C<Relation> that has 4 attributes, and their names are C<min|max>
-(C<Universal>) and C<excludes_[min|max]> (C<Bool>).  An C<Interval> defines
-a single possibly-discontinuous-or-empty interval in terms of a set of 0..N
-continuous sub-intervals, such that each of its tuples defines a single
-sub-interval and an C<Interval> with zero tuples defines an empty interval;
-each sub-interval is a I<bounded interval> or I<finite interval>, defined
-in terms of 2 I<endpoint> values plus an indicator of whether either, both,
-or none of the endpoint values are included in the interval.
-I<COMING SOON: Adding support for unbounded/infinite intervals.>
-
-Details on an C<Interval>'s 4 attributes:
-
-=over
-
-=item C<min|max> - C<Universal>
-
-These are the sub-interval endpoint values; C<min> defines the
-I<left|start|from> endpoint and C<max> defines the I<right|end|to>
-endpoint.  The endpoint values conceptually must be of the same,
-totally-ordered type (typically one of C<Int>, C<Rat>, C<Text>, C<Instant>,
-etc), although strictly speaking they may be of any types at all; in the
-latter case, to actually make practical use of such intervals, an
-C<order-determination> function must explicitly be employed.
-
-=item C<excludes_[min|max]> - C<Bool>
-
-If C<excludes_min> or C<excludes_max> are C<Bool:true>, then C<min> or
-C<max> I<is not> considered to be included within the sub-interval,
-respectively; otherwise, it I<is> considered to be included within the
-sub-interval.  If both endpoints are within the sub-interval (the use case
-which Muldis D optimizes its syntax for), the sub-interval is I<closed>;
-otherwise if both endpoints are not in the sub-interval, the sub-interval
-is I<open>.
-
-=back
-
-The C<Interval> type, at least as a matter of simplicity, doesn't place any
-restrictions on the combination of attribute values a sub-interval
-may have, such as that C<max> can't be before C<min>.  This liberal design
-is also necessary to support the general case where the relative order of
-the C<min> and C<max> values is situation-dependent on what
-C<order-determination> function is used with the interval; that function
-also determines what type's concept of order is being applied, and so it
-also determines whether or not a given sub-interval is considered
-empty (which is degenerate) or not.
-With respect to each compatible C<order-determination> function, a
-sub-interval is considered empty iff at least one of the following is true:
-1. Its C<min> is greater than its C<max>.  2. Its C<min> is equal to its
-C<max> I<and> at least one of C<excludes_min> or C<excludes_max> is true.
-3. Both C<excludes_min> and C<excludes_max> are true I<and> C<min> and
-C<max> are consecutive values.  And so, there are many distinct C<Interval>
-values that are conceptually empty intervals, and the C<is_identical>
-function should not be used to test an C<Interval> for being empty or not.
-
-The default value of C<Interval> represents the sole I<canonical> empty
-interval, which is the only C<Interval> with zero tuples.
-
-The C<Interval> type has (yet) no support for I<unbounded>/I<infinite> or
-I<half-bounded> intervals that is orthogonal to data type.  However, if
-there are any types with their own special values to represent infinities,
-then those special values can be uded for endpoints of intervals over those
-types.  I<As of this writing, no system-defined types have values for
-infinities, so only user-defined types would leverage this.  This will
-change very soon, with system-defined generic infinity values coming.>
-
-=head2 sys.std.Core.Type.DHInterval
-
-This is an enumeration data type.  C<DHInterval> is the intersection type
-of C<Interval> and C<DHRelation>.  The cardinality of this type is
-infinite.
 
 =head1 GENERIC REFERENCE TYPES
 

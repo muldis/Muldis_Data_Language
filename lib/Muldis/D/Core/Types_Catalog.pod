@@ -1702,14 +1702,9 @@ This is the declared name of the expression node.
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<elems> - C<interval_of.Name>
+=item C<interval> - C<interval_of.Name>
 
-These represent the elements, each of which is a continuous sub-interval,
-of the possibly-discontinuous-or-empty interval value being selected.
-When this value expression is evaluated, if any child expression nodes are
-such that any duplicate tuples might be input to this C<IvlSelExprNodeSet>
-selector, the duplicates are silently eliminated and do not constitute a
-failure condition.
+These represent the attributes of the interval value being selected.
 
 Note that, because of how C<IvlSelExprNodeSet> is defined, the
 C<excludes_[min|max]> attribute values of the interval are compile time
@@ -1717,7 +1712,7 @@ constants, since a boolean is stored in the system catalog for each rather
 than the name of an expression node like with the C<min> and C<max>
 attributes; if you actually want the interval value being selected at
 runtime to have runtime-determined C<excludes_[min|max]> attribute values,
-then you must use a C<RelSelExprNodeSet> rather than a
+then you must use a C<TupSelExprNodeSet> rather than a
 C<IvlSelExprNodeSet>.
 
 =back
@@ -2809,7 +2804,7 @@ These are all enumeration data types.
 
 =head2 sys.std.Core.Type.Cat.ScalarType
 
-An C<ScalarType> is a C<DHTuple>.  It defines either a new
+A C<ScalarType> is a C<DHTuple>.  It defines either a new
 scalar root type with at least 1 possrep, or it defines a subtype
 of some other scalar type which also adds at least one possrep to
 the other type.  Either way, every possrep defines a candidate
@@ -3052,18 +3047,18 @@ attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.NonscalarType
 
-An C<NonscalarType> is a C<DHTuple>.  It defines either a new
+A C<NonscalarType> is a C<DHTuple>.  It defines either a new
 nonscalar heading (set of attributes) with associated constraints
 for a tuple and relation type having that heading, or it defines a
 subtype of some other nonscalar type.  That is, it defines 2 new
 data types, a tuple type and a relation type with matching headings.
 Note that you also declare a database type using C<NonscalarType>, by
 declaring a tuple type whose attributes are all relation or database typed.
-Note that you can not use an C<NonscalarType> to declare or subtype an
+Note that you can not use a C<NonscalarType> to declare or subtype an
 incomplete type, as it (or its supertype) must specify a complete set of
 attributes.
 
-An C<NonscalarType> has these 13 attributes:
+A C<NonscalarType> has these 13 attributes:
 
 =over
 
@@ -3683,7 +3678,7 @@ a union/intersection/etc of other types (eg, to define a "Square" when you
 have "Rectangle", "Rhombus"), you have to first define a C<DomainType>,
 and then use that as the base type of a C<ScalarType>.
 
-An C<DomainType> has these 7 attributes:
+A C<DomainType> has these 7 attributes:
 
 =over
 
@@ -3750,7 +3745,7 @@ C<Empty> type, due to a default value for the type being mandatory.
 
 =head2 sys.std.Core.Type.Cat.SubsetType
 
-An C<SubsetType> is a C<DHTuple>.  It provides a relatively terse
+A C<SubsetType> is a C<DHTuple>.  It provides a relatively terse
 method to define a simple subset-defined subtype of a single other
 type (which can be any not-C<Empty> type at all), which is a common kind of
 type to have.  The new type is either a proper or non-proper subset of the
@@ -3766,7 +3761,7 @@ when the system wants to determine the MST (most specific type) of one of
 its values.  You can only declare a nonscalar type with an incompletely
 defined attribute list using a C<SubsetType> (or a C<DomainType>).
 
-An C<SubsetType> has these 4 attributes:
+A C<SubsetType> has these 4 attributes:
 
 =over
 
