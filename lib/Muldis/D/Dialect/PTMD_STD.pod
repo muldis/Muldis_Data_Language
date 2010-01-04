@@ -1327,8 +1327,12 @@ so long as the remaining unqualified chain is distinct among all standard
 system-defined (C<sys.std>-prefix) DBMS entities (but that as an exception,
 a non-distinct abbreviation is allowed iff exactly 1 of the candidate
 entities is in the language core, C<sys.std.Core>-prefix, in which case
-that 1 is unambiguously the entity that is resolved to).  This feature has
-no effect on the namespace prefixes like C<type> or C<tuple_from> or
+that 1 is unambiguously the entity that is resolved to).  For any
+system-defined entities whose names have trailing empty-string chain
+elements, those elements are ignored when determining a match for a
+C<PNSQNameChain_payload>, similarly to how specifying those elements is not
+required in a fully-qualified C<PNSQNameChain> to resolve it.  This feature
+has no effect on the namespace prefixes like C<type> or C<tuple_from> or
 C<array_of>; one still writes those as normal prepended to the otherwise
 shortened chains.  When a C<PNSQNameChain_payload>, whose context indicates
 it is a type or routine invocation, is encountered by the parser, and its
@@ -1336,7 +1340,8 @@ existing first chain element isn't one of the other 6 top-level namespaces,
 then the parser will assume it is an unqualified chain in the C<sys>
 namespace and lookup the best / only match from the known C<sys.std> DBMS
 entities, to resolve to.  So for example, one can just write C<Int> rather
-than C<sys.std.Core.Type.Int>, C<is_identical> rather than
+than C<sys.std.Core.Type.Int>, C<Array> rather than
+C<sys.std.Core.Type.Array."">, C<is_identical> rather than
 C<sys.std.Core.Universal.is_identical>, C<Tuple.attr> rather than
 C<sys.std.Core.Tuple.attr>, C<UTCInstant.fetch_curr_datetime> rather than
 C<sys.std.DateTime.UTCInstant.fetch_curr_datetime>,
@@ -1376,7 +1381,7 @@ The fourth special case involves any context where a type is being
 referenced using the C<type> namespace prefix feature described in
 L<Muldis::D::Basics/Referencing Data Types>.  In such a context, when the
 namespace prefix contains either of the optional chain elements
-C<[|dh_][tuple|relation]_from> or
+C<[|dh_]tuple_from> or
 C<[|dh_][set|maybe|single|array|bag|interval]_of>, programmers may omit the
 single prefix-leading C<type> chain element.  So for example, one can just
 write C<array_of.Rat> rather than C<type.array_of.Rat>, or
@@ -2290,7 +2295,8 @@ Grammar:
         | <updater>
         | <procedure>
         | <scalar_type>
-        | <nonscalar_type>
+        | <tuple_type>
+        | <relation_type>
         | <domain_type>
         | <subset_type>
 
@@ -2390,7 +2396,8 @@ Every material has 2-3 elements, illustrated by this grammar:
             | recipe
             | 'system-service'
         | 'scalar-type'
-        | 'nonscalar-type'
+        | 'tuple-type'
+        | 'relation-type'
         | 'domain-type'
         | 'subset-type'
 
@@ -2402,7 +2409,8 @@ Every material has 2-3 elements, illustrated by this grammar:
         | <updater_payload>
         | <procedure_payload>
         | <scalar_type_payload>
-        | <nonscalar_type_payload>
+        | <tuple_type_payload>
+        | <relation_type_payload>
         | <domain_type_payload>
         | <subset_type_payload>
 
@@ -2448,7 +2456,11 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Nonscalar Type Specification
+=head2 Tuple Type Specification
+
+I<TODO.>
+
+=head2 Relation Type Specification
 
 I<TODO.>
 

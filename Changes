@@ -6,6 +6,74 @@
     * Muldis::D version 0.105.0 is released on CPAN as
     Muldis-D-0.105.0.tar.gz.
 
+    * This release features some significant changes to the way that
+    nonscalar types are declared and referenced.  Previously, the only
+    facility to declare a nonscalar type mainly in terms of an attribute
+    list, as a "NonscalarType" material, was limited in that it could only
+    declare 2 new data types at once, a tuple type and relation type with
+    matching headings, rather than just 1 of those.  In order to reference
+    either of the 2 data types individually, it was generally required to
+    use a "type.tuple_from." or "type.relation_from." prefix in the
+    reference; if the material was referenced without either prefix as a
+    type, then it was either the tuple type or relation type referenced,
+    depending on how the material was defined.  This whole state of affairs
+    tended to make some things more complicated than they ought to have
+    been, even if it was meant to prevent some other complications; but
+    thanks to groundwork laid by some previous releases, this situation has
+    now been reversed as the alternate state of affairs is no longer so
+    troublesome.  And so now, the "NonscalarType" material kind has been
+    split up into the 2 new material kinds "TupleType" and "RelationType",
+    where each one declares exactly 1 data type as is otherwise normal, and
+    the "from" prefixes no longer exist in their prior forms.  Following
+    the refactor, to declare a tuple type it is done simply as one might
+    expect.  But to declare a relation type, it is now mandatory to also
+    explicitly declare a tuple type over which the relation type is partly
+    directly defined.  A tuple type declaration specifies the nonscalar
+    heading and the per-each-tuple constraints (plus other details), while
+    a relation type declaration adds per-whole-relation constraints and
+    (unique) key constraints.
+
+    * (Types_Catalog.pod)  Split the 1 "NonscalarType" catalog type, which
+    had 13 attributes, into the 2 "[Tuple|Relation]Type", which have 9 and
+    6 attributes respectively.  Both of the new types got a copy of these 2
+    old attrs: "comment", "base_type".  The 1 old attr "is_tuple_first" is
+    simply gone, and just "RelationType" has the 1 new attr "tuple_type".
+    Only "TupleType" has a copy of these 7 attrs: "attrs",
+    "virtual_attr_maps", "tuple_constraints" (renamed to "constraints"),
+    "distrib_keys", "[|distrib_]subset_constraints", "default_tuple"
+    (renamed to "default").  Only "RelationType" has a copy of these 3
+    attrs: "relation_constraints" (renamed to "constraints"), "keys",
+    "default_relation" (renamed to "default").  Also split the 2 catalog
+    types "[|Sys]NonscalarTypeSet" into the 4
+    "[|Sys][Tuple|Relation]TypeSet" where each new one is a clone of its
+    original save for its name.  Also updated each of the 2 catalog types
+    "System", "Depot" to split its "nonscalar_types" attribute into the 2
+    "[tuple|relation]_types".
+
+    * (Routines_Catalog.pod)  Split the 2 catalog recipes
+    "[create|drop]_nonscalar_type" into the 4 recipes
+    "[create|drop]_[tuple|relation]_type".
+
+    * (Types.pod, Types_Catalog.pod)  In Types.pod, added the 6 new tuple
+    types "sys.std.Core.Type.[|DH][Set|Array|Bag].T", each of which exists
+    in order for the corresponding-named relation type to be defined partly
+    in terms of it.  In Types_Catalog.pod, updated the "DESCRIPTION" main
+    pod section to add a note that for every relation type defined in that
+    file there is also a corresponding tuple type, but those tuple types
+    are not yet explicitly defined (its TODO later).
+
+    * (Basics.pod, PTMD_STD.pod)  In Basics.pod, updated the "Referencing
+    Data Types" pod sub-section of "ENTITY NAMES" to remove any references
+    to the "[|dh_]relation_from." prefixes, leaving only the
+    "[|dh_]tuple_from." prefixes, and rewrote the associated rationale
+    text.  In PTMD_STD.pod, updated one sentence of the "DBMS Entity Name
+    Literals" pod sub-section concerning the same thing.
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  Split the "Nonscalar Type
+    Specification" placeholder pod sub-section into the 2 "[Tuple|Relation]
+    Type Specification" and split the "nonscalar_type" material node kind
+    into the 2 "[tuple|relation]_type".
+
     * (Types_Catalog.pod, Routines_Catalog.pod, PTMD_STD.pod,
     HDMD_Perl[6|5]_STD.pod)  Renamed the type generator called "union type"
     to "domain type" so to better describe what the generator actually
@@ -13,7 +81,7 @@
     intersections|differences|etc.  In Types_Catalog.pod, renamed the
     catalog type "UnionType" to "DomainType", and renamed the 2 catalog
     types "[|Sys]UnionTypeSet" to "[|Sys]DomainTypeSet", and updated each
-    of the 2 catalog types "System","Depot" to rename its "union_types"
+    of the 2 catalog types "System", "Depot" to rename its "union_types"
     attribute to "domain_types".  In Routines_Catalog.pod, renamed the 2
     recipes "[create|drop]_union_type" to "[create|drop]_domain_type".  In
     all 3 STD.pod, renamed the "Union Type Specification" pod sub-section
@@ -23,11 +91,28 @@
     * (Types.pod)  Fix indenting under "TYPE SUMMARY"; the "Interval" type
     is a "Tuple" not a "DHTuple".
 
+    * (Types_Catalog.pod)  Corrected several instances of a fossil, left
+    over from the changes in version 0.90.0, where uses of the term
+    "declared name" should have been changed to "invocation name".  Also
+    corrected several instances of a fossil, left over from the changes in
+    version 0.81.0, where uses of the phrase "type whose declaration it is
+    part of" should have been changed to "type being defined".
+
     * (Types_Catalog.pod, HDMD_Perl[6|5]_STD.pod)  Fixed several instances
     of fossil-typos where "a" should be "an" or vice-versa.
 
     * (HDMD_Perl6_STD.pod)  Modified a few code examples to use more of the
     ":foo<bar>" Perl 6 syntax rather than ":foo('bar')" where it works.
+
+    * (PTMD_STD.pod)  Updated the "DBMS Entity Name Literals" pod
+    sub-section regarding abbreviated references to system-defined entities
+    so to clarify that any trailing empty-string chain elements of the
+    entity names are ignored when determining a match for an abbreviated
+    reference; the behaviour is similar to how fully-qualified references
+    don't need trailing empty-string chain elements either.
+
+    * (Conventions.pod)  Added a couple paragraphs to the "Entity Naming"
+    pod sub-section concerning relative naming of tuple and relation types.
 
 2009-12-26  Darren Duncan <darren@DarrenDuncan.net>
 

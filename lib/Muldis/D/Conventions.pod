@@ -108,6 +108,34 @@ they generally should be entirely lowercase.  The main exception to this is
 if the routine name embeds a type name, in which case the type should be
 spelled with its normal casing, such as C<Int_from_Text>.
 
+When a relation is best described as being a plurality of a kind of thing,
+where each of its tuples is exactly one of those things, then any contexts
+working with such relations should name the whole relation in the plural
+form, not the singular form.  For example, if each tuple of a relation
+represents either a person or a business, then a relvar of that relation's
+type should have a name like "people" or "businesses" rather than "person"
+or "business"; similarly, the relation type of that relvar might be
+"People" or "Businesses" while the tuple type which that relation type is
+defined partly in terms of might be "Person" and "Business".
+
+When defining a pair of closely related types where one of the types is a
+relation type and the other type is the tuple type over which that relation
+type is directly partially defined, then:  1.  If one of the types is
+clearly dominant over the other in terms of importance or likelihood to be
+used as the declared type of anything (most likely the relation type), and
+especially if it would be a challenge to name the subservient type, then
+the pair should be grouped together under their own subdepot, such that the
+subdepot has the conceptual name of the dominant type (and is referenced
+directly by users as a proxy for said), and the dominant type's actual name
+under that subdepot's namespace is the empty string, and the subservient
+type's name under that namespace is either C<T> or C<R> depending on
+whether it is a tuple or relation type.  For example, given the
+system-defined relation type C<Array>, that type's actual name is
+C<Array.""> and the tuple type it is partly defined over is named
+C<Array.T>.  2.  If the two types have a mutually even status, and it would
+be relatively easy to name both of them, then the pair should live out in a
+more public namespace, each directly under their conceptual names.
+
 =head2 Defaults and Options
 
 When defining a routine parameter or type attribute that is expected to

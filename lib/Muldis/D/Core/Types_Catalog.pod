@@ -32,6 +32,11 @@ Note that many of the tuple types might conceptually have C<name>
 attributes, but those would actually be provided by any larger types in
 which they are embedded, rather than by these types themselves.
 
+I<Note that for every relation type defined in this file, there also exists
+a corresponding tuple type in terms of which the relation type is partly
+defined; that tuple type is not yet explicitly defined in this file but a
+future spec update should change this.>
+
 I<To keep things simpler for now, most constraint definitions for these
 types are missing, or just defined informally.>
 
@@ -100,7 +105,8 @@ more or less:
                     sys.std.Core.Type.Cat.SystemService
                 sys.std.Core.Type.Cat.IfThenVarStmtMap
                 sys.std.Core.Type.Cat.ScalarType
-                sys.std.Core.Type.Cat.NonscalarType
+                sys.std.Core.Type.Cat.TupleType
+                sys.std.Core.Type.Cat.RelationType
                 sys.std.Core.Type.Cat.DomainType
                 sys.std.Core.Type.Cat.SubsetType
                 sys.std.Core.Type.Cat.OrderByName
@@ -124,7 +130,7 @@ more or less:
                 sys.std.Core.Type.Cat.SysNspSet
                 sys.std.Core.Type.Cat.Sys[Function|Updater|Procedure]Set
                 sys.std.Core.Type.Cat.SysSpecTypeSet
-                sys.std.Core.Type.Cat.Sys[Scalar|Nonscalar]TypeSet
+                sys.std.Core.Type.Cat.Sys[Scalar|Tuple|Relation]TypeSet
                 sys.std.Core.Type.Cat.Sys[Domain|Subset]TypeSet
                 sys.std.Core.Type.Cat.SysCatSet
                 sys.std.Core.Type.Cat.MountControlSet
@@ -132,7 +138,7 @@ more or less:
                 sys.std.Core.Type.Cat.FedTypeMapSet
                 sys.std.Core.Type.Cat.SubdepotSet
                 sys.std.Core.Type.Cat.[Function|Updater|Procedure]Set
-                sys.std.Core.Type.Cat.[Scalar|Nonscalar]TypeSet
+                sys.std.Core.Type.Cat.[Scalar|Tuple|Relation]TypeSet
                 sys.std.Core.Type.Cat.[Domain|Subset]TypeSet
                 sys.std.Core.Type.Cat.OVLScaValExprNodeSet
                 sys.std.Core.Type.Cat.ScaSelExprNodeSet
@@ -572,7 +578,7 @@ specifically all the relcons and relvars with the names
 C<[sys|mnt|fed|nlx].cat>.  The system catalog constant named
 C<sys.cat> is of the C<System> type.
 
-A C<System> has these 11 attributes:
+A C<System> has these 12 attributes:
 
 =over
 
@@ -618,12 +624,12 @@ an infinite number of singleton structure types (and those structure types
 are not listed individually in the system catalog at all, for what should
 be obvious reasons).
 
-=item C<[scalar|nonscalar|domain|subset]_types> -
-C<Sys[Scalar|Nonscalar|Domain|Subset]TypeSet>
+=item C<[scalar|tuple|relation|domain|subset]_types> -
+C<Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet>
 
 These are all the system-defined scalar types, except for
 C<String> because it can't be defined like user-defined types, and complete
-nonscalar types, and domain types, and subset types.
+tuple and relation types, and domain types, and subset types.
 
 =item C<catalogs> - C<SysCatSet>
 
@@ -738,39 +744,42 @@ This is an optional programmer comment about the type as a whole.
 A C<SysSpecTypeSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Sys[Scalar|Nonscalar|Domain|Subset]TypeSet
+=head2 sys.std.Core.Type.Cat.Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet
 
-A C<Sys[Scalar|Nonscalar|Domain|Subset]TypeSet> is a C<DHRelation> that
-specifies a set of scalar|nonscalar|domain|subset system-defined types.
+A C<Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet> is a C<DHRelation>
+that specifies a set of scalar|tuple|relation|domain|subset system-defined
+types.
 
-A C<Sys[Scalar|Nonscalar|Domain|Subset]TypeSet> has these 4 attributes:
+A C<Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet> has these 4
+attributes:
 
 =over
 
 =item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
-the scalar|nonscalar|domain|subset type's parent system namespace.
+the scalar|tuple|relation|domain|subset type's parent system namespace.
 
 =item C<name> - C<Name>
 
-This is the declared name of the scalar|nonscalar|domain|subset type
+This is the declared name of the scalar|tuple|relation|domain|subset type
 within the namespace defined by C<parent>; other Muldis D code would
 reference it with the combination of C<parent> and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the
-scalar|nonscalar|domain|subset type as a whole.
+scalar|tuple|relation|domain|subset type as a whole.
 
-=item C<material> - C<[Scalar|Nonscalar|Domain|Subset]Type>
+=item C<material> - C<[Scalar|Tuple|Relation|Domain|Subset]Type>
 
-This defines the entire scalar|nonscalar|domain|subset type sans its name.
+This defines the entire scalar|tuple|relation|domain|subset type sans its
+name.
 
 =back
 
-A C<Sys[Scalar|Nonscalar|Domain|Subset]TypeSet> has a binary primary key on
-the C<parent> plus C<name> attributes.  Its default value is empty.
+A C<Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet> has a binary primary
+key on the C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysCatSet
 
@@ -1062,7 +1071,7 @@ subdepots, and any that exist are arranged in a hierarchy with the depot as
 the root.  The system catalog variable named C<nlx.cat> is of the C<Depot>
 type.
 
-A C<Depot> has these 10 attributes:
+A C<Depot> has these 11 attributes:
 
 =over
 
@@ -1080,12 +1089,12 @@ be none).
 These are all the definitions that this [|sub]depot contains of functions,
 updaters, procedures.
 
-=item C<[scalar|nonscalar|domain|subset]_types> -
-C<[Scalar|Nonscalar|Domain|Subset]TypeSet>
+=item C<[scalar|tuple|relation|domain|subset]_types> -
+C<[Scalar|Tuple|Relation|Domain|Subset]TypeSet>
 
 These are all the definitions that this [|sub]depot contains of scalar
-types with possreps, complete nonscalar types, domain types, and subset
-types.
+types with possreps, complete tuple and relation types, domain types, and
+subset types.
 
 =item C<data> - C<maybe_of.RPTypeNC>
 
@@ -1172,14 +1181,14 @@ This defines the entire function|updater|procedure sans its name.
 An C<[Function|Updater|Procedure]Set> has a binary primary key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Scalar|Nonscalar|Domain|Subset]TypeSet
+=head2 sys.std.Core.Type.Cat.[Scalar|Tuple|Relation|Domain|Subset]TypeSet
 
-An C<[Scalar|Nonscalar|Domain|Subset]TypeSet> is a C<DHRelation> that
-specifies a set of scalar|nonscalar|domain|subset types that a
+An C<[Scalar|Tuple|Relation|Domain|Subset]TypeSet> is a C<DHRelation> that
+specifies a set of scalar|tuple|relation|domain|subset types that a
 [|sub]depot might directly contain.  I<TODO: each type may be either public
 for the DBMS as a whole or private to the subdepot.>
 
-An C<[Scalar|Nonscalar|Domain|Subset]TypeSet> has these 4 attributes:
+An C<[Scalar|Tuple|Relation|Domain|Subset]TypeSet> has these 4 attributes:
 
 =over
 
@@ -1187,27 +1196,28 @@ An C<[Scalar|Nonscalar|Domain|Subset]TypeSet> has these 4 attributes:
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
 of any hypothetical immediate child namespace of the depot,
-of the scalar|nonscalar|domain|subset type's parent [|sub]depot.
+of the scalar|tuple|relation|domain|subset type's parent [|sub]depot.
 
 =item C<name> - C<Name>
 
-This is the declared name of the scalar|nonscalar|domain|subset type
+This is the declared name of the scalar|tuple|relation|domain|subset type
 within the namespace defined by C<parent>; other Muldis D code would
 reference it with the combination of C<parent> and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the
-scalar|nonscalar|domain|subset type as a whole.
+scalar|tuple|relation|domain|subset type as a whole.
 
-=item C<material> - C<[Scalar|Nonscalar|Domain|Subset]Type>
+=item C<material> - C<[Scalar|Tuple|Relation|Domain|Subset]Type>
 
-This defines the entire scalar|nonscalar|domain|subset type sans its name.
+This defines the entire scalar|tuple|relation|domain|subset type sans its
+name.
 
 =back
 
-An C<[Scalar|Nonscalar|Domain|Subset]TypeSet> has a binary primary key on
-the C<parent> plus C<name> attributes.  Its default value is empty.
+An C<[Scalar|Tuple|Relation|Domain|Subset]TypeSet> has a binary primary key
+on the C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING ROUTINES
 
@@ -2842,7 +2852,7 @@ Iff the type being defined is a scalar root type, or it is a
 non-proper subtype of some other type, then C<subtype_constraint> is not
 applicable and is C<nothing>.  Iff the type being defined is a proper
 subtype of some other scalar type, then C<subtype_constraint> is a
-C<Single> whose sole element matches the declared name of a
+C<Single> whose sole element matches the invocation name of a
 C<type-constraint> function that determines what base type values are part
 of the subtype.  The function that this names must have a
 single C<topic> parameter whose declared type is that named by
@@ -2893,10 +2903,10 @@ functions are defined with the subtype.
 =item C<default> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Single>, then C<default>
-matches the declared name of a C<named-value> function that
+matches the invocation name of a C<named-value> function that
 results in the default scalar value of the [|sub]type; it has
 zero parameters and its result type is the same as the scalar type
-whose declaration it is part of.  Iff C<default> is C<nothing> and
+being defined.  Iff C<default> is C<nothing> and
 C<base_type> is C<nothing>, then semantics are as if it were a defined name
 that resulted in a value of the type being defined where all of the possrep
 attr values were the default values of their declared types; but if the
@@ -2914,7 +2924,7 @@ A scalar root type definition may optionally have a type-default
 total ordering function associated with it (a type being defined as a
 subtype may not); iff the type being defined qualifies and desires such an
 associated function, then C<order> is a C<Single> whose sole element
-matches the declared name of an C<order-determination> function.  The
+matches the invocation name of an C<order-determination> function.  The
 function that this names must have exactly 4 parameters; the
 first two parameters, named C<topic> and C<other>, each have declared types
 that are the same as the scalar root type whose declaration the
@@ -2955,7 +2965,7 @@ This defines the 0..N attributes of the possrep.
 =item C<constraint> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Single>, then C<constraint>
-matches the declared name of a C<type-constraint> function that
+matches the invocation name of a C<type-constraint> function that
 determines what combinations of possrep attribute values denote values of
 the [|sub]type, besides the restrictions imposed by the declared types of
 the attributes individually.  The function that this names
@@ -3022,7 +3032,7 @@ constraint defines a C<PossrepMapSet>'s canonical form.
 
 =item C<p2_from_p1> - C<RPFunctionNC>
 
-This matches the declared name of a C<possrep-map> function that
+This matches the invocation name of a C<possrep-map> function that
 derives the representation of the possrep named by C<p2> from that of the
 possrep named by C<p1>.  The function that this names must
 have a single C<topic> parameter whose declared type is a tuple whose
@@ -3033,7 +3043,7 @@ argument (domain) value of this function must have a distinct result
 
 =item C<p1_from_p2> - C<RPFunctionNC>
 
-This matches the declared name of an inverse C<possrep-map> function
+This matches the invocation name of an inverse C<possrep-map> function
 to that of C<p2_from_p1>.  I<Note that it would often be feasible for a
 Muldis D implementation to automatically infer a reverse function, but for
 now we still require it to be explicitly stated; the explicitly stated
@@ -3045,59 +3055,49 @@ change.>
 A C<PossrepMapSet> has a binary primary key on the C<p1> plus C<p2>
 attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.NonscalarType
+=head2 sys.std.Core.Type.Cat.TupleType
 
-A C<NonscalarType> is a C<DHTuple>.  It defines either a new
-nonscalar heading (set of attributes) with associated constraints
-for a tuple and relation type having that heading, or it defines a
-subtype of some other nonscalar type.  That is, it defines 2 new
-data types, a tuple type and a relation type with matching headings.
-Note that you also declare a database type using C<NonscalarType>, by
-declaring a tuple type whose attributes are all relation or database typed.
-Note that you can not use a C<NonscalarType> to declare or subtype an
-incomplete type, as it (or its supertype) must specify a complete set of
-attributes.
+A C<TupleType> is a C<DHTuple>.  It defines either a new tuple heading
+(set of attributes) with associated constraints for a tuple type having
+that heading, or it defines a subtype of some other tuple type.  Note that
+you also declare a database type using C<TupleType>, by declaring a tuple
+type whose attributes are all relation or database typed.  Note that you
+can not use a C<TupleType> to declare or subtype an incomplete type, as it
+(or its supertype) must specify a complete set of attributes.  Note that a
+C<TupleType> also typically doubles for defining a relation type (but it
+doesn't have to), because a C<RelationType> requires one in terms of which
+it is partly defined; each tuple of a value of the latter type is a value
+of the former type.
 
-A C<NonscalarType> has these 13 attributes:
+A C<TupleType> has these 9 attributes:
 
 =over
 
 =item C<comment> - C<Comment>
 
-This is an optional programmer comment about the nonscalar
+This is an optional programmer comment about the tuple
 [|sub]type as a whole.
 
 =item C<base_type> - C<maybe_of.RPTypeNC>
 
-Iff the type being defined is a nonscalar root type, then C<base_type> is
+Iff the type being defined is a tuple root type, then C<base_type> is
 not applicable and is C<nothing>.  Iff the type being defined is a
-subtype of some other nonscalar type, then C<base_type> is a C<Single>
+subtype of some other tuple type, then C<base_type> is a C<Single>
 whose sole element is the name of that other type.
-
-=item C<is_tuple_first> - C<Bool>
-
-Iff this is C<Bool:true> then the type being defined is primarily
-considered a tuple type; that is, when either the type name is referenced
-normally (not using the C<type> namespace), or the type definition is
-embedded (and nameless), then it is simply considered to be a tuple type;
-iff this is C<Bool:false> then the type being defined is primarily
-considered to be a relation type.  When a type is primarily considered a
-tuple or relation type, the only way to reference it as the other kind
-of type is by using the C<type.[|dh_][tuple|relation]_from.\w+>
-referencing syntax.
 
 =item C<attrs> - C<NameTypeMap>
 
-Iff the type being defined is a nonscalar root type, then C<attrs> defines
+Iff the type being defined is a tuple root type, then C<attrs> defines
 the 0..N attributes of the type.  Iff the type being defined is a subtype
 of some other type, then the parent type's attribute list is used by
 default, but C<attrs> of the current type may be used to apply additional
 constraints by overriding the declared types of a subset of the parent's
 attributes with types that are subtypes of the originals; an override is
 done using matching C<name> attribute values of C<attrs>.  It is indeed
-valid for a nonscalar type to have zero attributes (which is then just a
-dh-nonscalar type by definition); in this case, a tuple type consists of
-exactly one value, and a relation type consists of exactly two values.
+valid for a tuple type to have zero attributes (which is then just a
+dh-tuple type by definition); in this case, a tuple type consists of
+exactly one value, and any relation type defined over it consists of
+exactly two values.
 
 =item C<virtual_attr_maps> - C<VirtualAttrMapSet>
 
@@ -3106,9 +3106,10 @@ and how they are defined in terms of the rest of this type's attributes.
 Note that the special functional dependencies between attributes defined
 herein mean that some kinds of tuple constraints would be redundant.
 
-=item C<tuple_constraints> - C<set_of.RPFunctionNC>
+=item C<constraints> - C<set_of.RPFunctionNC>
 
-This matches the declared names of 0..N C<type-constraint> functions
+This, I<tuple constraints>,
+matches the invocation names of 0..N C<type-constraint> functions
 that (when I<and>-ed together) determine what combinations of tuple
 attribute values denote values of the [|sub]type, besides the restrictions
 imposed by the declared types of the attributes individually; they are
@@ -3119,36 +3120,9 @@ those declared by C<attrs> and whose argument denotes the value to test;
 the function's result type must be C<Bool>.  If the functions
 unconditionally result in C<Bool:true>, then all possible combinations of
 attribute-allowable values are collectively allowed.  Each function is
-invoked either once to test a tuple value, or multiple times to
-individually test every tuple in a relation value.
-
-=item C<relation_constraints> - C<set_of.RPFunctionNC>
-
-This is like C<tuple_constraint> but that each function's parameter is
-relation-typed rather than tuple-typed; each is a generalized type
-constraint that validates a relation as a whole.
-
-=item C<keys> - C<KeySet>
-
-These are the 0..N explicit (unique) keys that are applicable to relation
-values of the type being defined; they apply either as candidate keys or as
-unique key constraints, depending on context.  If there are no explicit
-keys, then there is an implicit (unique) key over all attributes of the
-relation type being defined, meaning that every possible tuple that may
-individually be an element of a relation value of the type being defined,
-may be in it at once.  If any explicit keys are defined, then every one
-must be over a distinct proper subset of the type's attributes, and
-moreover no key's attributes may be a proper subset of any other key's
-attributes; if 2 such candidates appear, just use the one that has the
-subset.  It is valid for a key to consist of zero attributes; in this case,
-that key is the only key of the type, and values of the type may each
-consist of no more than one tuple.  At most one key in C<keys> may be
-privileged as the I<primary key>.  Note that C<keys> is logically an
-abstraction syntax (the canonical simplest form) for a particular kind of
-C<relation_constraint> of the type being defined, one that compares the
-cardinality of a projection of a relation on its key attributes with the
-cardinality of the original relation; the attribute values comprise a key
-if the cardinalities are equal.
+invoked either once to test a tuple value of the type being defined, or
+multiple times to individually test every tuple in a relation value of a
+type defined over the first type.
 
 =item C<distrib_keys> - C<DistribKeySet>
 
@@ -3157,7 +3131,7 @@ applicable to tuple/database values of the type being defined, that range
 over specified relation-typed attributes of it.  At most one key in
 C<distrib_keys> may be privileged as the I<primary key>.  Note that
 C<distrib_keys> is logically an abstraction syntax (the canonical simplest
-form) for a particular kind of C<tuple_constraint> of the type being
+form) for a particular kind of I<tuple constraint> of the type being
 defined, one that compares the cardinality of the union of the projection
 of distributed key attributes of all key-participating relation-valued
 attributes, with the sum of cardinalities of the source relation-valued
@@ -3174,7 +3148,7 @@ Each tuple of a child attribute must have a corresponding tuple in a
 specific single parent attribute, where they correspond on the attributes
 of the parent attribute that comprise a (unique) key of the latter.  Note
 that C<subset_constraints> is logically an abstraction syntax (the
-canonical simplest form) for a particular kind of C<tuple_constraint> of
+canonical simplest form) for a particular kind of I<tuple constraint> of
 the type being defined, one that tests if the relational difference, where
 a projection of the parent relation is subtracted from a corresponding
 projection of the child relation (with attribute renaming if necessary), is
@@ -3193,48 +3167,125 @@ specific set of parent-alternative attributes (that have a distributed key
 ranging over them), where they correspond on the attributes of the
 parent-alternative attribute that comprise a distributed key on the latter.
 Note that C<distrib_subset_constraints> is logically an abstraction syntax
-(the canonical simplest form) for a particular kind of C<tuple_constraint>
+(the canonical simplest form) for a particular kind of I<tuple constraint>
 of the type being defined; it is as per C<subset_constraints> except that
 the parent relation is the result of unioning appropriately renamed
 projections of the member relations of the distributed key.
 
-=item C<default_tuple> - C<maybe_of.RPFunctionNC>
+=item C<default> - C<maybe_of.RPFunctionNC>
 
-Iff it is a C<Single>, then C<default_tuple>
-matches the declared name of a C<named-value> function that
+Iff it is a C<Single>, then C<default>
+matches the invocation name of a C<named-value> function that
 results in the default tuple value of the [|sub]type; it has zero
-parameters and its result type is the same as the tuple type whose
-declaration it is part of.  Iff C<default_tuple> is C<nothing> and
-C<base_type> is C<nothing>, then semantics are as if C<default_tuple> were
+parameters and its result type is the same as the tuple type
+being defined.  Iff C<default> is C<nothing> and
+C<base_type> is C<nothing>, then semantics are as if C<default> were
 a defined name that resulted in a value of the type being defined where all
 of the attr values were the default values of their declared types.  Iff
-C<default_tuple> is C<nothing> and C<base_type> is a C<Single>, then the
+C<default> is C<nothing> and C<base_type> is a C<Single>, then the
 subtype will use the same default tuple value as its base type; but if the
-subtype's value set excludes said value, then a C<default_tuple> of
-C<nothing> is invalid and C<default_tuple> must be a C<Single>.
-
-=item C<default_relation> - C<maybe_of.RPFunctionNC>
-
-Iff it is a C<Single>, then C<default_relation>
-matches the declared name of a C<named-value> function that
-results in the default relation value of the [|sub]type; it has
-zero parameters and its result type is the same as the relation
-type whose declaration it is part of.  Iff C<default_relation> is
-C<nothing> and C<base_type> is C<nothing>, then semantics are as if
-C<default_relation> were a defined name that resulted in a value of the
-type being defined that had zero tuples.  Iff C<default_relation> is
-C<nothing> and C<base_type> is a C<Single>, then the subtype will use the
-same default relation value as its base type; but if the subtype's value
-set excludes said value, then a C<default_relation> of C<nothing> is
-invalid and C<default_relation> must be a C<Single>.
+subtype's value set excludes said value, then a C<default> of
+C<nothing> is invalid and C<default> must be a C<Single>.
 
 =back
 
 There is a distributed primary key over the elements of
-C<[tuple|relation]_constraints> and the C<name> attributes of
-C<[|distrib_][key|subset_constraint]s>.
+C<constraints> and the C<name> attributes of
+C<distrib_keys> and C<[|distrib_]subset_constraints>.
 
-The default value of C<NonscalarType> defines a relation type that has
+The default value of C<TupleType> defines a singleton tuple type that has
+zero attributes and whose default value is its only value.
+
+=head2 sys.std.Core.Type.Cat.RelationType
+
+A C<RelationType> is a C<DHTuple>.  It defines either a new relation
+heading (set of attributes) with associated constraints for a relation type
+having that heading, or it defines a subtype of some other relation type.
+Note that you can not use a C<RelationType> to declare or subtype an
+incomplete type, as it (or its supertype) must specify a complete set of
+attributes.  Note that in order to define a C<RelationType> there must
+first exist a separate C<TupleType> in terms of which it is partly defined
+(the reverse isn't true); each tuple of a value of the former type is a
+value of the latter type.  Note that a single tuple type definition may be
+shared by multiple relation type definitions, or it may be system-defined.
+
+A C<RelationType> has these 6 attributes:
+
+=over
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the relation
+[|sub]type as a whole.
+
+=item C<base_type> - C<maybe_of.RPTypeNC>
+
+Iff the type being defined is a relation root type, then C<base_type> is
+not applicable and is C<nothing>.  Iff the type being defined is a
+subtype of some other relation type, then C<base_type> is a C<Single>
+whose sole element is the name of that other type.
+
+=item C<tuple_type> - C<RPTypeNC>
+
+This is the name of the tuple type from which the relation type being
+defined composes its list of attributes and most of its other details.
+Note that any other relation type referenced by C<base_type> must compose a
+C<tuple_type> that has a common tuple supertype with the tuple type
+referenced by the C<tuple_type> of the type being defined; that is, there
+must be a diamond relationship (but both C<tuple_type> may reference
+exactly the same tuple type).
+
+=item C<constraints> - C<set_of.RPFunctionNC>
+
+This, I<relation constraints>, is like the I<tuple constraints> of a
+C<TupleType> but that each function's parameter is
+relation-typed rather than tuple-typed; each is a generalized type
+constraint that validates a relation as a whole.
+
+=item C<keys> - C<KeySet>
+
+These are the 0..N explicit (unique) keys that are applicable to relation
+values of the type being defined; they apply either as candidate keys or as
+unique key constraints, depending on context.  If there are no explicit
+keys, then there is an implicit (unique) key over all attributes of the
+relation type being defined, meaning that every possible tuple that may
+individually be an element of a relation value of the type being defined,
+may be in it at once.  If any explicit keys are defined, then every one
+must be over a distinct proper subset of the type's attributes, and
+moreover no key's attributes may be a subset of any other key's
+attributes; if 2 such candidates appear, just use the one that has the
+subset.  It is valid for a key to consist of zero attributes; in this case,
+that key is the only key of the type, and values of the type may each
+consist of no more than one tuple.  At most one key in C<keys> may be
+privileged as the I<primary key>.  Note that C<keys> is logically an
+abstraction syntax (the canonical simplest form) for a particular kind of
+I<relation constraint> of the type being defined, one that compares the
+cardinality of a projection of a relation on its key attributes with the
+cardinality of the original relation; the attribute values comprise a key
+if the cardinalities are equal.
+
+=item C<default> - C<maybe_of.RPFunctionNC>
+
+Iff it is a C<Single>, then C<default>
+matches the invocation name of a C<named-value> function that
+results in the default relation value of the [|sub]type; it has
+zero parameters and its result type is the same as the relation
+type being defined.  Iff C<default> is
+C<nothing> and C<base_type> is C<nothing>, then semantics are as if
+C<default> were a defined name that resulted in a value of the
+type being defined that had zero tuples.  Iff C<default> is
+C<nothing> and C<base_type> is a C<Single>, then the subtype will use the
+same default relation value as its base type; but if the subtype's value
+set excludes said value, then a C<default> of C<nothing> is
+invalid and C<default> must be a C<Single>.
+
+=back
+
+There is a distributed primary key over the elements of C<constraints> and
+the C<name> attributes of C<keys>, and the similar elements or C<name>
+attributes of the C<TupleType> composed into this type.
+
+The default value of C<RelationType> defines a relation type that has
 zero attributes and whose default value is the one with zero tuples.
 
 =head2 sys.std.Core.Type.Cat.VirtualAttrMapSet
@@ -3351,7 +3402,7 @@ can't be defined in terms of itself.
 
 =item C<virtual_attr_map> - C<RPFunctionNC>
 
-This matches the declared name of a C<virtual-attr-map> function
+This matches the invocation name of a C<virtual-attr-map> function
 that derives a tuple of dependent attribute values from a tuple of
 determinant attribute values.  The function that this names must
 have a single C<topic> parameter whose declared type is a tuple whose
@@ -3718,7 +3769,7 @@ elements then the filter set is just C<Empty>.
 
 =item C<constraints> - C<set_of.RPFunctionNC>
 
-This matches the declared names of 0..N C<type-constraint> functions
+This matches the invocation names of 0..N C<type-constraint> functions
 that (when I<and>-ed together) determine what filter-type-passing
 source-type values are part of the domain type.  The function
 that each of these names must have a single C<topic> parameter whose
@@ -3730,9 +3781,9 @@ filter-type-passing values are allowed.
 
 =item C<default> - C<RPFunctionNC>
 
-This matches the declared name of a C<named-value> function that results in
-the default value of the domain type; it has zero parameters and its result
-type is the same as the domain type whose declaration it is part of.
+This matches the invocation name of a C<named-value> function that results
+in the default value of the domain type; it has zero parameters and its
+result type is the same as the domain type being defined.
 
 =back
 
@@ -3777,7 +3828,7 @@ of that named by C<base_type>.
 
 =item C<constraints> - C<set_of.RPFunctionNC>
 
-This matches the declared names of 0..N C<type-constraint> functions
+This matches the invocation names of 0..N C<type-constraint> functions
 that (when I<and>-ed together) determine what base type values are part of
 the subset type.  The function that each of these names
 must have a single C<topic> parameter whose declared type is that named
@@ -3788,10 +3839,10 @@ C<Bool:true>, then the new type is a non-proper subtype of the base type.
 =item C<default> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Single>, then C<default>
-matches the declared name of a C<named-value> function that
+matches the invocation name of a C<named-value> function that
 results in the default value of the subset type; it has zero
-parameters and its result type is the same as the subset type whose
-declaration it is part of.  Iff C<default> is C<nothing>, then the
+parameters and its result type is the same as the subset type
+being defined.  Iff C<default> is C<nothing>, then the
 subset type will use the same default value as its base type; but if
 the subset type's value set excludes said value, then a C<default> of
 C<nothing> is invalid and C<default> must be a C<Single>.
