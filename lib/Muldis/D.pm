@@ -272,7 +272,7 @@ Darren Duncan (C<darren@DarrenDuncan.net>)
 
 This file is part of the formal specification of the Muldis D language.
 
-Muldis D is Copyright © 2002-2009, Muldis Data Systems, Inc.
+Muldis D is Copyright © 2002-2010, Muldis Data Systems, Inc.
 
 L<http://www.muldis.com/>
 
