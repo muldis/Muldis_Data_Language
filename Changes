@@ -114,6 +114,44 @@
     * (Conventions.pod)  Added a couple paragraphs to the "Entity Naming"
     pod sub-section concerning relative naming of tuple and relation types.
 
+    * (Types.pod, Basics.pod, Types_Catalog.pod, PTMD_STD.pod,
+    HDMD_Perl[6|5]_STD.pod)  Expanded the generic parameterizable interval
+    types core feature so that interval-unions (such as {1..3,6..6,8..9})
+    are supported, not just (non-union) intervals (such as {1..10}).  In
+    Types.pod, added the 2 new core types "[|DH]IntervalUnion" which are
+    relation types defined partly in terms of the 2 tuple types
+    "[|DH]Interval", where they have the same nonscalar headings, and add
+    no constraints; also, the canonical empty interval-union value is now
+    the relation with zero tuples rather than a single tuple with min
+    before max.  In Basics.pod, updated the "Referencing Data Types" pod
+    sub-section to declare that the "[|dh_]interval_of" prefix now actually
+    declares interval-union types, not (non-union) intervals as before.
+    Also updated the "NOTES ON TERMINOLOGY" main pod section to add the
+    glossary item "interval, interval-union, non-union interval" which
+    explains how now the unqualified term "interval" may actually mean
+    "interval-union".  In Types_Catalog.pod, updated the
+    "IvlSelExprNodeSet" catalog type to rename its "interval" attribute to
+    "elems", such as the set|ary|bag-sel types have, and update its
+    description to specify it selects interval-unions.  In all 3 STD.pod,
+    updated the "Interval Selectors" pod sub-section to specify that
+    "Interval" nodes now select "IntervalUnion" values rather than
+    "Interval" values, and to expand what literal formats an "Interval"
+    node payload may be; generally the new payload format is a list each of
+    whose elements is what the old payload was; but for the most part a
+    whole payload may alternately be just what an element would otherwise
+    be, which maintains backwards compatibility with old Muldis D code.  To
+    be specific, both PTMD_STD and HDMD_Perl6_STD have complete backwards
+    compatibility while HDMD_Perl5_STD has backwards compatibility only
+    where the old "min" or "max" expression node values weren't expressed
+    as Perl array refs, such as would be the case with temporal intervals
+    but not generally with numbers or text.  Also added 3 more code
+    examples to each STD file under "Interval Selectors".
+
+    * (PTMD_STD.pod)  Added special shorthand syntax for sub-intervals,
+    that consisted of a single value, of interval literals, so that the
+    single sub-interval's value could be specified once (eg, "{6}") rather
+    than twice (eg, {6..6}).
+
 2009-12-26  Darren Duncan <darren@DarrenDuncan.net>
 
     * Muldis::D version 0.104.0 is released on CPAN as

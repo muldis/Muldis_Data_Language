@@ -1160,28 +1160,62 @@ Examples:
 =head2 Interval Selectors
 
 An C<Interval> node represents a literal or selector invocation for an
-interval value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Interval> value whose attributes are defined by the
-payload.  The node payload must be a Perl array ref with 3 elements, which
+interval-union value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.IntervalUnion> value whose elements are defined by the
+payload.  The payload must be just a Perl array ref; it is
+interpreted as follows:
+
+=over
+
+=item *
+
+Iff the payload has zero elements, then it defines the only interval-union
+value canonically having zero elements.
+
+=item *
+
+Iff the payload has at least one element, and the payload's first element
+I<is> a Perl array ref, then every one of the payload elements must be
+itself a Perl array ref, and each payload element is designated a
+I<nu-interval>.  Each I<nu-interval> of the payload defines a 4-ary tuple
+of the new interval-union, which defines a (non-union) interval
+of the interval-union; each I<nu-interval> defines the 4 attributes of the
+tuple.  Each I<nu-interval> must have exactly 3 elements, which
 are designated in order: I<min>, I<interval boundary kind>, I<max>.  Each
 of I<min> and I<max> is an C<expr> node that defines the C<min> and C<max>
-attribute value, respectively, of the new interval.  The I<interval
-boundary kind> is one of these 4 Perl character strings: C<..>, C<..^>,
-C<^..>, C<^..^>; each of those strings corresponds to one of the 4 possible
-combinations of C<excludes_min> and C<excludes_max> values that the new
-interval can have, which in order are: C<[false,false]>, C<[false,true]>,
-C<[true,false]>, C<[true,true]>.
+attribute value, respectively, of the new (non-union) interval.  The
+I<interval boundary kind> is one of these 4 Perl character strings: C<..>,
+C<..^>, C<^..>, C<^..^>; each of those strings corresponds to one of the 4
+possible combinations of C<excludes_min> and C<excludes_max> values that
+the new (non-union) interval can have, which in order are:
+C<[false,false]>, C<[false,true]>, C<[true,false]>, C<[true,true]>.
+
+=item *
+
+Iff the payload has at least one element, and the payload's first element
+I<is not> a Perl array ref, then every one of the payload elements must
+I<not> be itself a Perl array ref, and the payload as a whole is designated
+a I<nu-interval>.  The single I<nu-interval> is interpreted as per one of
+those in the previous bullet point.
+
+=back
 
 Examples:
 
-    [ 'Interval', [1,'..',10] ]
+    [ 'Interval', [] ]  # zero elements #
+
+    [ 'Interval', ['abc','..','abc'] ]  # 1 element #
+
+    [ 'Interval', [1,'..',10] ]  # 10 elements #
 
     [ 'Interval', [2.7,'..^',9.3] ]
 
     [ 'Interval', ['a','^..','z'] ]
 
-    [ 'Interval', [[ 'UTCInstant', [2002,12,6] ], '^..^',
-        [ 'UTCInstant', [2002,12,20] ]] ]
+    [ 'Interval', [[[ 'UTCInstant', [2002,12,6] ], '^..^',
+        [ 'UTCInstant', [2002,12,20] ]]] ]
+
+    [ 'Interval', [[1,'..',3],[6,'..',6],[8,'..',9]] ]  # 6 elements #
 
 =head1 DEPOT SPECIFICATION
 
