@@ -361,7 +361,7 @@ kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<PNSQNameChain>, C<Comment>,
 C<Instant>, C<Duration>,
 C<RatRoundRule>, C<String>, C<Scalar>, C<Tuple>, C<Database>,
-C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<Interval>.
+C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<SPInterval>.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl native scalar and collection types.
@@ -393,7 +393,7 @@ C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
 C<PNSQNameChain>, C<Comment>, C<Instant>, C<Duration>,
 C<RatRoundRule>, C<[|B|O|UCP]String>, C<[|DH]Scalar>,
 C<[|DH]Tuple>, C<Database>, C<[|DH]Relation>, C<[|DH]Set>,
-C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH]Interval>.
+C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH]SPInterval>.
 
 For just some data types, the C<value_kind> may be omitted; see below.
 
@@ -1159,28 +1159,28 @@ Examples:
 
 =head2 Interval Selectors
 
-An C<Interval> node represents a literal or selector invocation for an
-interval value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Interval> value whose attributes are defined by the
+An C<SPInterval> node represents a literal or selector invocation for an
+single-piece interval value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.SPInterval> value whose attributes are defined by the
 payload.  The node payload must be a Perl array ref with 3 elements, which
 are designated in order: I<min>, I<interval boundary kind>, I<max>.  Each
 of I<min> and I<max> is an C<expr> node that defines the C<min> and C<max>
-attribute value, respectively, of the new interval.  The I<interval
-boundary kind> is one of these 4 Perl character strings: C<..>, C<..^>,
-C<^..>, C<^..^>; each of those strings corresponds to one of the 4 possible
-combinations of C<excludes_min> and C<excludes_max> values that the new
-interval can have, which in order are: C<[false,false]>, C<[false,true]>,
-C<[true,false]>, C<[true,true]>.
+attribute value, respectively, of the new single-piece interval.  The
+I<interval boundary kind> is one of these 4 Perl character strings: C<..>,
+C<..^>, C<^..>, C<^..^>; each of those strings corresponds to one of the 4
+possible combinations of C<excludes_min> and C<excludes_max> values that
+the new single-piece interval can have, which in order are:
+C<[false,false]>, C<[false,true]>, C<[true,false]>, C<[true,true]>.
 
 Examples:
 
-    [ 'Interval', [1,'..',10] ]
+    [ 'SPInterval', [1,'..',10] ]
 
-    [ 'Interval', [2.7,'..^',9.3] ]
+    [ 'SPInterval', [2.7,'..^',9.3] ]
 
-    [ 'Interval', ['a','^..','z'] ]
+    [ 'SPInterval', ['a','^..','z'] ]
 
-    [ 'Interval', [[ 'UTCInstant', [2002,12,6] ], '^..^',
+    [ 'SPInterval', [[ 'UTCInstant', [2002,12,6] ], '^..^',
         [ 'UTCInstant', [2002,12,20] ]] ]
 
 =head1 DEPOT SPECIFICATION
@@ -1624,8 +1624,8 @@ operator and the other 1-2 provide attribute names that customize the
 operation.
 
 Note that for the C<[]> op, the C<min_index>, C<interval_boundary_kind>,
-C<max_index> are collectively the 2nd main op arg which is an C<Interval>
-node payload that defines an C<interval_of.NNInt>.
+C<max_index> are collectively the 2nd main op arg which is an C<SPInterval>
+node payload that defines an C<sp_interval_of.NNInt>.
 
 Examples:
 
@@ -1725,7 +1725,7 @@ Examples (for now sans any use of extra op args, which are atypical):
 
     [ 'op', '≥', [ ['$','foo'], ['$','bar'] ] ]
 
-    [ 'op', 'I∈', [ ['$','a'], [ 'Interval', [1,'..',5] ] ] ]
+    [ 'op', 'I∈', [ ['$','a'], [ 'SPInterval', [1,'..',5] ] ] ]
 
     [ 'op', '≤≤', [ ['$','min'], ['$','foo'], ['$','max'] ] ]
 

@@ -358,7 +358,7 @@ kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<PNSQNameChain>, C<Comment>,
 C<Instant>, C<Duration>,
 C<RatRoundRule>, C<String>, C<Scalar>, C<Tuple>, C<Database>,
-C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<Interval>.
+C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<SPInterval>.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl native scalar and collection types.
@@ -390,7 +390,7 @@ C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
 C<PNSQNameChain>, C<Comment>, C<Instant>, C<Duration>,
 C<RatRoundRule>, C<[|B|O|UCP]String>, C<[|DH]Scalar>,
 C<[|DH]Tuple>, C<Database>, C<[|DH]Relation>, C<[|DH]Set>,
-C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH]Interval>.
+C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH]SPInterval>.
 
 For just some data types, the C<value_kind> may be omitted; see below.
 
@@ -423,17 +423,17 @@ sake of brevity.  If any Perl value of one of the following types is
 encountered where a GCVL node is expected, then it is interpreted as a full
 C<value> node as follows:
 
-    Muldis D <- Perl 6
-    --------------------
-    Bool     <- Bool
-    Order    <- Order
-    Int      <- Int
-    Rat      <- FatRat|Rat|Num
-    Blob     <- Blob
-    Text     <- Str
-    Instant  <- Instant
-    Duration <- Duration
-    Interval <- Range
+    Muldis D   <- Perl 6
+    ----------------------------
+    Bool       <- Bool
+    Order      <- Order
+    Int        <- Int
+    Rat        <- FatRat|Rat|Num
+    Blob       <- Blob
+    Text       <- Str
+    Instant    <- Instant
+    Duration   <- Duration
+    SPInterval <- Range
 
 The above details are subject to revision regarding when a Perl object
 might claim to do multiple type interfaces.
@@ -976,18 +976,19 @@ Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
 
 =head2 Interval Selectors
 
-An C<Interval> node represents a literal or selector invocation for an
-interval value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Interval> value whose attributes are defined by the
+An C<SPInterval> node represents a literal or selector invocation for a
+single-piece interval value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.SPInterval> value whose attributes are defined by the
 payload.  The node payload must be a Perl C<Range>, which is mapped
 directly.  Each of the C<min> and C<max> attributes/method-return-values of
 the Range is an C<expr> node that defines the C<min> and C<max> attribute
-value, respectively, of the new interval.  Each of the C<excludes_min> and
-C<excludes_max> of the Range maps directly with the interval.
+value, respectively, of the new single-piece interval.  Each of the
+C<excludes_min> and C<excludes_max> of the Range maps directly with the
+single-piece interval.
 
 Examples:
 
-    :Interval(1..10)
+    :SPInterval(1..10)
 
     2.7..^9.3
 
@@ -1442,8 +1443,8 @@ operator and the other 1-2 provide attribute names that customize the
 operation.
 
 Note that for the C<[]> op, the C<min_index>, C<interval_boundary_kind>,
-C<max_index> are collectively the 2nd main op arg which is an C<Interval>
-node payload that defines an C<interval_of.NNInt>.
+C<max_index> are collectively the 2nd main op arg which is an C<SPInterval>
+node payload that defines an C<sp_interval_of.NNInt>.
 
 Examples:
 
