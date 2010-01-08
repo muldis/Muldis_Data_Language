@@ -44,7 +44,8 @@
     updated the "Interval Selectors" pod sub-section to revert all of its
     details to release-0.104.0-state, including that "Interval" nodes now
     select "Interval" values again, and removed its newest 3 code examples.
-    In PTMD_STD.pod, removed the shorthand for single-elem interval values.
+    In PTMD_STD.pod, removed the shorthand for single-elem interval values;
+    this specific feature is *not* being brought back as part of the re-do.
     Following these reversions, all Muldis D routines, types, syntax that
     uses intervals now again uses exclusively "Interval" or its subtypes.
 
@@ -62,6 +63,31 @@
     rename the prefix "[|dh_]interval_of" to "[|dh_]sp_interval_of".  In
     all relevant files, updated any references to the old names to instead
     use the new names.
+
+    * (Types.pod, Types_Catalog.pod, PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod,
+    Basics.pod)  Expanded the generic parameterizable interval types core
+    feature so that multi-piece intervals (such as {1..3,6..6,8..9}) are
+    supported, not just single-piece intervals (such as {1..10}).  In
+    Types.pod, added the 2 new core types "[|DH]MPInterval" which are
+    relation types defined partly in terms of the 2 tuple types
+    "[|DH]SPInterval", where they have the same nonscalar headings, and add
+    no constraints; also, the canonical empty interval value is now the
+    relation with zero tuples rather than a single tuple with min before
+    max.  In Types_Catalog.pod, added new catalog type
+    "MPIvlSelExprNodeSet" that corresponds directly to
+    "SPIvlSelExprNodeSet" (it selects multi-piece rather than single-piece
+    intervals) but its payload attribute is named "elems" (such as the
+    set|ary|bag-sel types have) rather than "interval".  Also updated the
+    catalog type "ExprNodeSet" to add a 14th attribute "mp_ivl_sel_exprs"
+    of the new catalog type.  In all 3 STD.pod, updated primarily the
+    "Interval Selectors" pod sub-section to added new value node kind
+    "MPInterval", which is similar to "SPInterval" but that takes a list of
+    interval specifiers rather than exactly one.  Also added 3 "MPInterval"
+    code examples to each STD file under "Interval Selectors".  In
+    Basics.pod, updated the "Referencing Data Types" pod sub-section to add
+    the prefix "[|dh_]mp_interval_of".  For now all of this new multi-piece
+    intervals support is just declared and can be used by users, but no
+    other parts of the language itself use the features yet.
 
 2010-01-03  Darren Duncan <darren@DarrenDuncan.net>
 

@@ -148,6 +148,7 @@ more or less:
                 sys.std.Core.Type.Cat.ArySelExprNodeSet
                 sys.std.Core.Type.Cat.BagSelExprNodeSet
                 sys.std.Core.Type.Cat.SPIvlSelExprNodeSet
+                sys.std.Core.Type.Cat.MPIvlSelExprNodeSet
                 sys.std.Core.Type.Cat.AccExprNodeSet
                 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
                 sys.std.Core.Type.Cat.IfElseExprNodeSet
@@ -1393,7 +1394,7 @@ for a subject-to-update parameter of an update operator call; in
 that case the leaf nodes / only node of the expression must map to a
 subject-to-update parameter of the expression-containing update operator.
 
-An C<ExprNodeSet> has these 13 attributes:
+An C<ExprNodeSet> has these 14 attributes:
 
 =over
 
@@ -1434,6 +1435,11 @@ These are expression nodes that represent bag value selections.
 =item C<sp_ivl_sel_exprs> - C<SPIvlSelExprNodeSet>
 
 These are expression nodes that represent single-piece interval value
+selections.
+
+=item C<mp_ivl_sel_exprs> - C<MPIvlSelExprNodeSet>
+
+These are expression nodes that represent multi-piece interval value
 selections.
 
 =item C<acc_exprs> - C<AccExprNodeSet>
@@ -1721,17 +1727,58 @@ selected.
 
 Note that, because of how C<SPIvlSelExprNodeSet> is defined, the
 C<excludes_[min|max]> attribute values of the single-piece interval are
-compile time
-constants, since a boolean is stored in the system catalog for each rather
-than the name of an expression node like with the C<min> and C<max>
-attributes; if you actually want the interval value being selected at
-runtime to have runtime-determined C<excludes_[min|max]> attribute values,
-then you must use a C<TupSelExprNodeSet> rather than an
+compile time constants, since a boolean is stored in the system catalog for
+each rather than the name of an expression node like with the C<min> and
+C<max> attributes; if you actually want the single-piece interval value
+being selected at runtime to have runtime-determined C<excludes_[min|max]>
+attribute values, then you must use a C<TupSelExprNodeSet> rather than an
 C<SPIvlSelExprNodeSet>.
 
 =back
 
 An C<SPIvlSelExprNodeSet> has a unary primary key on the C<name> attribute.
+Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.MPIvlSelExprNodeSet
+
+An C<MPIvlSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node represents a multi-piece interval value
+selection.
+
+An C<MPIvlSelExprNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<elems> - C<mp_interval_of.Name>
+
+These represent the elements, each of which is a single-piece interval, of
+the multi-piece interval value being selected.  When this value expression
+is evaluated, if any child expression nodes are such that any duplicate
+tuples might be input to this C<MPIvlSelExprNodeSet> selector, the
+duplicates are silently eliminated and do not constitute a failure
+condition.
+
+Note that, because of how C<MPIvlSelExprNodeSet> is defined, the
+C<excludes_[min|max]> attribute values of the multi-piece interval are
+compile time constants, since a boolean is stored in the system catalog for
+each rather than the name of an expression node like with the C<min> and
+C<max> attributes; if you actually want the multi-piece interval value
+being selected at runtime to have runtime-determined C<excludes_[min|max]>
+attribute values, then you must use a C<RelSelExprNodeSet> rather than an
+C<MPIvlSelExprNodeSet>.
+
+=back
+
+An C<MPIvlSelExprNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.AccExprNodeSet

@@ -80,6 +80,8 @@ relationships:
                 sys.std.Core.Type.DHArray
             sys.std.Core.Type.Bag
                 sys.std.Core.Type.DHBag
+            sys.std.Core.Type.MPInterval
+                sys.std.Core.Type.DHMPInterval
 
         # The following are all reference types.
 
@@ -107,11 +109,13 @@ here is another view of those:
                         sys.std.Core.Type.DHSingle
                 sys.std.Core.Type.DHArray
                 sys.std.Core.Type.DHBag
+                sys.std.Core.Type.DHMPInterval
             sys.std.Core.Type.Set
                 sys.std.Core.Type.Maybe
                     sys.std.Core.Type.Single
             sys.std.Core.Type.Array
             sys.std.Core.Type.Bag
+            sys.std.Core.Type.MPInterval
 
 =head1 MAXIMAL AND MINIMAL DATA TYPES
 
@@ -549,10 +553,10 @@ types.  I<As of this writing, no system-defined types have values for
 infinities, so only user-defined types would leverage this.  This will
 change very soon, with system-defined generic infinity values coming.>
 
-The C<SPInterval> type only represents a single-piece interval, but a
-multi-piece interval may be effectively represented by a set of
-C<SPInterval> values, either a relation-from-C<SPInterval> or a
-C<set_of.SPInterval>.
+See also the C<sys.std.Core.Type.MPInterval> type, which is the
+canonical means that Muldis D provides of representing the result of
+set-unioning 2 C<SPInterval> where the latter do not touch or overlap,
+and provides the single I<canonical> empty interval value.
 
 =head2 sys.std.Core.Type.DHSPInterval
 
@@ -705,6 +709,28 @@ default value has zero tuples.
 
 This is an enumeration data type.  C<DHBag> is the intersection type of
 C<Bag> and C<DHRelation>.  The cardinality of this type is infinite.
+
+=head2 sys.std.Core.Type.MPInterval
+
+This is an enumeration data type.  C<MPInterval> (multi-piece interval) is
+a proper subtype of
+C<Relation> that is defined directly partly in terms of the tuple type
+C<SPInterval>, thereby sharing its I<heading>, but defines no further
+constraints of its own.  It defines a single I<multi-piece interval>, which
+is conceptually either a set of 0..N intervals or a single larger interval
+that had 0..N sub-intervals sliced out.  An C<MPInterval> is the
+canonical means that Muldis D provides of representing the result of
+set-unioning 2 C<SPInterval> where the latter do not touch or overlap. 
+Moreover, an C<MPInterval> also empowers Muldis D to have a single
+I<canonical> empty interval value, which is the only C<MPInterval> with
+zero tuples; this value is also the default value of C<MPInterval>.  The
+cardinality of this type is infinite.
+
+=head2 sys.std.Core.Type.DHMPInterval
+
+This is an enumeration data type.  C<DHMPInterval> is the intersection
+type of C<MPInterval> and C<DHRelation>.  The cardinality of this type
+is infinite.
 
 =head1 GENERIC REFERENCE TYPES
 

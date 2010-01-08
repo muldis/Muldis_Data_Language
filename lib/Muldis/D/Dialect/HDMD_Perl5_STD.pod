@@ -356,12 +356,12 @@ add syntax for operators.
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
 
-There are 24 main varieties of C<value> node, each of which is a named node
+There are 25 main varieties of C<value> node, each of which is a named node
 kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<PNSQNameChain>, C<Comment>,
 C<Instant>, C<Duration>,
 C<RatRoundRule>, C<String>, C<Scalar>, C<Tuple>, C<Database>,
-C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<SPInterval>.
+C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<[S|M]PInterval>.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl native scalar and collection types.
@@ -387,13 +387,13 @@ only external meta-data of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
 just on C<value_kind>.
 
-Between the various kinds of C<value> node, these 42 values are allowed for
+Between the various kinds of C<value> node, these 44 values are allowed for
 C<value_kind>:  C<Bool>, C<Order>, C<RatRoundMeth>, C<[|NN|P]Int>,
 C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
 C<PNSQNameChain>, C<Comment>, C<Instant>, C<Duration>,
 C<RatRoundRule>, C<[|B|O|UCP]String>, C<[|DH]Scalar>,
 C<[|DH]Tuple>, C<Database>, C<[|DH]Relation>, C<[|DH]Set>,
-C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH]SPInterval>.
+C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH][S|M]PInterval>.
 
 For just some data types, the C<value_kind> may be omitted; see below.
 
@@ -1159,7 +1159,7 @@ Examples:
 
 =head2 Interval Selectors
 
-An C<SPInterval> node represents a literal or selector invocation for an
+An C<SPInterval> node represents a literal or selector invocation for a
 single-piece interval value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.SPInterval> value whose attributes are defined by the
 payload.  The node payload must be a Perl array ref with 3 elements, which
@@ -1172,6 +1172,15 @@ possible combinations of C<excludes_min> and C<excludes_max> values that
 the new single-piece interval can have, which in order are:
 C<[false,false]>, C<[false,true]>, C<[true,false]>, C<[true,true]>.
 
+An C<MPInterval> node represents a literal or selector invocation for a
+multi-piece interval value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.MPInterval> value whose elements are defined by the
+payload.  The payload must be just a Perl array ref.  Each element of the
+payload must be a valid payload for an C<SPInterval> node (that is, a Perl
+array ref with 3 elements et al).  Each element of the payload defines a
+4-ary tuple, representing a single-piece interval, of the new multi-piece
+interval.
+
 Examples:
 
     [ 'SPInterval', [1,'..',10] ]
@@ -1182,6 +1191,12 @@ Examples:
 
     [ 'SPInterval', [[ 'UTCInstant', [2002,12,6] ], '^..^',
         [ 'UTCInstant', [2002,12,20] ]] ]
+
+    [ 'MPInterval', [] ]  # zero elements #
+
+    [ 'MPInterval', [[1,'..',10]] ]  # 10 elements #
+
+    [ 'MPInterval', [[1,'..',3],[6,'..',6],[8,'..',9]] ]  # 6 elements #
 
 =head1 DEPOT SPECIFICATION
 
@@ -1441,6 +1456,8 @@ Examples:
     ]
 
 =head2 Library Entity Reference Selector
+
+B<TODO: REWRITE THIS DOCUMENTATION SECTION!>
 
 A C<[func|upd|proc|type|ord_det_func]_ref> node has 2 ordered elements:
 The first element is the Perl character string value
