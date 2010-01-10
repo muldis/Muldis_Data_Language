@@ -40,6 +40,41 @@ implementations over multiple SQL DBMSs.
 
 ----------
 
+* Consider adding a direct analogy to Perl 6 "roles", whose primary purpose
+is to help with managing software reuse, mainly when multiple types have a
+number of attributes in common, a role can define these and then the
+multiple types can compose that role.  This concept should be workable with
+both InnerScalarType and InnerNonscalarType.  A role can compose other
+roles.  A role or type that composes a role can both add additional
+attributes of its own to what the role defines, and the composer can add
+extra constraints over the composed attributes like forcing a subtype.  Now
+on one hand we could make a role a distinct concept, which by itself can't
+be instantiated as a type, or we could reuse the above 2 (IST/INT) type
+definition facilities and say an existing such type can be composed into
+another.  Now that latter case would in a manner of speaking give Muldis D
+the advantages of other OO languages or SQL that work using "specialization
+by extension" except that composing an existing type in this way will
+actually, for a scalar base, create a disjoint type not a subtype, so we
+get the code reuse but Muldis D is still specialization by constraint.  On
+the other hand, if we just declare roles as roles that can't be
+instantiated themselves, then declaring a role could also serve to declare
+a non-dh union type name that can be referred to in type constraint
+definitions, that union type implicitly ranging over all actual types that
+compose it, and so in this case the composers actually are subtypes; the
+problem with this is, what to do about a default value for said union type
+whose role isn't composed into anything ... maybe each one needs an
+implicit DVPT subtype?  But maybe by TTM terms, what a role actually is is
+a dummy type of sorts, where you declare the union name before what it
+unions, and the regular types it unions declare themselves part of the
+union rather than the other way around.  In any event, a composed role
+would never appear in a value's MST or root type list, same as any type
+declared as a union.  I should look at TTM and see if they intended for
+dummy types to fulfil a role such as this.  Except all directly declared
+subtypes of a role union are always disjoint, for scalar ones anyway; the
+role is defin shorthand.
+
+----------
+
 * Update the virtual attributes maps so there is a way to manually specify
 a reverse function, as meanwhile all the virtuals don't have to be either
 read-only or updatable due to an automatically generated reverse function,
@@ -118,39 +153,6 @@ dh_set_of/etc; but not sh-scalar or sh-tuple as the concept doesn't make
 sense there.  Then update functions like Relation.union/etc to take
 sh_set_of.Relation rather than set_of.Relation, which more formally defines
 some of their input constraints.
-
-* Consider adding a direct analogy to Perl 6 "roles", whose primary purpose
-is to help with managing software reuse, mainly when multiple types have a
-number of attributes in common, a role can define these and then the
-multiple types can compose that role.  This concept should be workable with
-both InnerScalarType and InnerNonscalarType.  A role can compose other
-roles.  A role or type that composes a role can both add additional
-attributes of its own to what the role defines, and the composer can add
-extra constraints over the composed attributes like forcing a subtype.  Now
-on one hand we could make a role a distinct concept, which by itself can't
-be instantiated as a type, or we could reuse the above 2 (IST/INT) type
-definition facilities and say an existing such type can be composed into
-another.  Now that latter case would in a manner of speaking give Muldis D
-the advantages of other OO languages or SQL that work using "specialization
-by extension" except that composing an existing type in this way will
-actually, for a scalar base, create a disjoint type not a subtype, so we
-get the code reuse but Muldis D is still specialization by constraint.  On
-the other hand, if we just declare roles as roles that can't be
-instantiated themselves, then declaring a role could also serve to declare
-a non-dh union type name that can be referred to in type constraint
-definitions, that union type implicitly ranging over all actual types that
-compose it, and so in this case the composers actually are subtypes; the
-problem with this is, what to do about a default value for said union type
-whose role isn't composed into anything ... maybe each one needs an
-implicit DVPT subtype?  But maybe by TTM terms, what a role actually is is
-a dummy type of sorts, where you declare the union name before what it
-unions, and the regular types it unions declare themselves part of the
-union rather than the other way around.  In any event, a composed role
-would never appear in a value's MST or root type list, same as any type
-declared as a union.  I should look at TTM and see if they intended for
-dummy types to fulfil a role such as this.  Except all directly declared
-subtypes of a role union are always disjoint, for scalar ones anyway; the
-role is defin shorthand.
 
 * Consider supplementing the current generic infinite-loop-until-leave
 statement with alternatives that use boolean control variables, such as

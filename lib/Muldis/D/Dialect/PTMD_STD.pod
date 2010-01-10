@@ -2167,6 +2167,9 @@ Grammar:
         \s* '}'
 
     <interval> ::=
+        <interval_range> | <interval_single>
+
+    <interval_range> ::=
         <min> \s* <interval_boundary_kind> \s* <max>
 
     <min> ::=
@@ -2177,6 +2180,9 @@ Grammar:
 
     <interval_boundary_kind> ::=
         '..' | '..^' | '^..' | '^..^'
+
+    <interval_single> ::=
+        <expr>
 
     <MPInterval> ::=
         DH? MPInterval ':' \s*
@@ -2198,6 +2204,14 @@ C<..>, C<..^>, C<^..>, C<^..^> corresponds to one of the 4 possible
 combinations of C<excludes_min> and C<excludes_max> values that the new
 single-piece interval can have, which in order are: C<[false,false]>,
 C<[false,true]>, C<[true,false]>, C<[true,true]>.
+
+A special shorthand for C<interval_range> also exists, C<interval_single>,
+which may be used only if the C<min> and C<max> are identical and the
+C<interval_boundary_kind> is C<..>.  In this situation, the identical
+endpoint value can be specified just once, which is the shorthand; for
+example, the interval C<6..6> may alternately be written out as C<6>.  This
+shorthand is to help with the possibly common situation where an interval
+is a singleton.
 
 An C<MPInterval> node represents a literal or selector invocation for a
 multi-piece interval value.  It is interpreted as a Muldis D
@@ -2225,7 +2239,7 @@ Examples:
 
     MPInterval:{1..10}  # 10 elements #
 
-    MPInterval:{1..3,6..6,8..9}  # 6 elements #
+    MPInterval:{1..3,6,8..9}  # 6 elements #
 
 =head1 DEPOT SPECIFICATION
 
