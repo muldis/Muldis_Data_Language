@@ -1172,6 +1172,15 @@ possible combinations of C<excludes_min> and C<excludes_max> values that
 the new single-piece interval can have, which in order are:
 C<[false,false]>, C<[false,true]>, C<[true,false]>, C<[true,true]>.
 
+A special shorthand for an C<SPInterval> payload also exists, which is to
+help with the possibly common situation where an interval is a singleton,
+meaning the interval has exactly 1 value; the shorthand empowers that value
+to be specified just once rather than twice.  Iff the payload is I<not> a
+Perl array ref, then the payload is treated as if it was instead the usual
+Perl array ref with 3 elements, whose I<min> and I<max> are both identical
+to the actual payload and whose I<interval boundary kind> is C<..>.  For
+example, the payload C<6> is shorthand for C<[6,'..',6]>.
+
 An C<MPInterval> node represents a literal or selector invocation for a
 multi-piece interval value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.MPInterval> value whose elements are defined by the
@@ -1192,11 +1201,13 @@ Examples:
     [ 'SPInterval', [[ 'UTCInstant', [2002,12,6] ], '^..^',
         [ 'UTCInstant', [2002,12,20] ]] ]
 
+    [ 'SPInterval', 'abc' ]  # 1 element #
+
     [ 'MPInterval', [] ]  # zero elements #
 
     [ 'MPInterval', [[1,'..',10]] ]  # 10 elements #
 
-    [ 'MPInterval', [[1,'..',3],[6,'..',6],[8,'..',9]] ]  # 6 elements #
+    [ 'MPInterval', [[1,'..',3],6,[8,'..',9]] ]  # 6 elements #
 
 =head1 DEPOT SPECIFICATION
 

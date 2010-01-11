@@ -2206,12 +2206,13 @@ single-piece interval can have, which in order are: C<[false,false]>,
 C<[false,true]>, C<[true,false]>, C<[true,true]>.
 
 A special shorthand for C<interval_range> also exists, C<interval_single>,
-which may be used only if the C<min> and C<max> are identical and the
-C<interval_boundary_kind> is C<..>.  In this situation, the identical
-endpoint value can be specified just once, which is the shorthand; for
-example, the interval C<6..6> may alternately be written out as C<6>.  This
-shorthand is to help with the possibly common situation where an interval
-is a singleton.
+which is to help with the possibly common situation where an interval is a
+singleton, meaning the interval has exactly 1 value; the shorthand empowers
+that value to be specified just once rather than twice.  Iff the
+C<interval> is an C<interval_single>, then the C<interval> is treated as if
+it was instead an C<interval_range> whose C<min> and C<max> are both
+identical to the C<interval_single> and whose C<interval_boundary_kind> is
+C<..>.  For example, the interval C<6> is shorthand for C<6..6>.
 
 An C<MPInterval> node represents a literal or selector invocation for a
 multi-piece interval value.  It is interpreted as a Muldis D
@@ -2234,6 +2235,8 @@ Examples:
     SPInterval:{'a'^..'z'}
 
     SPInterval:{UTCInstant:[2002,12,6,,,] ^..^ UTCInstant:[2002,12,20,,,]}
+
+    SPInterval:{'abc'}  # 1 element #
 
     MPInterval:{}  # zero elements #
 
