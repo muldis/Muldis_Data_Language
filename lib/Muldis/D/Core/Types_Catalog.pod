@@ -220,7 +220,7 @@ represent scalar values that are I<not> being specified explicitly in terms
 of possrep attributes.  The C<OVLScalar> type is I<not> intended to be used
 as the declared type of any user type attributes, generally speaking; if
 they would even consider it, they should be using C<DHScalar> instead.  Its
-default value is C<Bool:false>.  The cardinality of this type is infinity.
+default value is C<Bool:False>.  The cardinality of this type is infinity.
 
 =head2 sys.std.Core.Type.Cat.String
 
@@ -497,7 +497,7 @@ comments in the AST rather than discarding them.
 =head2 sys.std.Core.Type.Cat.Order
 
 This is a structure data type.  C<Order> (order determination) consists of
-just the 3 values C<increase>, C<same>, C<decrease>.  When some context
+just the 3 values C<Increase>, C<Same>, C<Decrease>.  When some context
 (such as within a list sort or range check operation) needs to know the
 relative order of 2 values according to some criteria, it can invoke a
 function that applies that criteria to those 2 values, which are its
@@ -509,11 +509,11 @@ C<Name>-typed attribute whose name is the empty string.  The C<int> possrep
 consists of 1 C<Int>-typed attribute whose name is the empty string and
 whose value must be one of [C<-1>, C<0>, C<1>]; the 3 values of each
 possrep correspond in the same order as they are documented here.  The
-default value of C<Order> is C<same>; its minimum and maximum values are,
-respectively, C<increase> and C<decrease>.  The cardinality of this type is
+default value of C<Order> is C<Same>; its minimum and maximum values are,
+respectively, C<Increase> and C<Decrease>.  The cardinality of this type is
 3.  The C<Order> type has a default ordering algorithm that corresponds
-directly to that of its C<int> possrep attribute; C<increase> is ordered
-before C<same>, and C<same> before C<decrease>.  The C<Order> type has an
+directly to that of its C<int> possrep attribute; C<Increase> is ordered
+before C<Same>, and C<Same> before C<Decrease>.  The C<Order> type has an
 implementation hint for less intelligent Muldis D implementations, that
 suggests using the C<int> possrep as the basis for the physical
 representation.
@@ -521,8 +521,8 @@ representation.
 =head2 sys.std.Core.Type.Cat.RatRoundMeth
 
 This is a structure data type.  C<RatRoundMeth> (rounding method) consists
-of just the 7 values C<half_down>, C<half_up>, C<half_even>, C<to_floor>,
-C<to_ceiling>, C<to_zero>, C<to_inf>.  A C<RatRoundMeth> has 1
+of just the 7 values C<HalfDown>, C<HalfUp>, C<HalfEven>, C<ToFloor>,
+C<ToCeiling>, C<ToZero>, C<ToInf>.  A C<RatRoundMeth> has 1
 system-defined possrep whose name is the empty string, which has 1
 C<Name>-typed attribute whose name is the empty string.  When a value
 of some ordered type needs to be mapped into a proper subtype that doesn't
@@ -530,19 +530,19 @@ contain that value, such as when mapping an arbitrary number to one with
 less precision, some rounding method is applied to determine which value of
 the subtype is to be mapped to while most accurately reflecting the
 original value.  The C<RatRoundMeth> type enumerates the rounding methods
-that Muldis D operators can typically apply.  With C<half_down>,
-C<half_up>, and C<half_even> (aka I<unbiased rounding>, I<convergent
+that Muldis D operators can typically apply.  With C<HalfDown>,
+C<HalfUp>, and C<HalfEven> (aka I<unbiased rounding>, I<convergent
 rounding>, I<statistician's rounding>, or I<bankers' rounding>), the
 original value will be mapped to the single target value that it is closest
 to, if there is one; otherwise, if it is exactly half-way between 2
-adjacent target values, then C<half_down> will round towards negative
-infinity, C<half_up> will round towards positive infinity, and C<half_even>
-will round towards the nearest "even" target.  With C<to_floor>,
-C<to_ceiling>, C<to_zero> (aka I<truncate>), C<to_inf>, the original value
+adjacent target values, then C<HalfDown> will round towards negative
+infinity, C<HalfUp> will round towards positive infinity, and C<HalfEven>
+will round towards the nearest "even" target.  With C<ToFloor>,
+C<ToCeiling>, C<ToZero> (aka I<truncate>), C<ToInf>, the original value
 will always be mapped to the single adjacent value that is lower than it,
 or higher than it, or towards "zero" from it, or towards the nearer
 infinity from it, respectively.  The default value of C<RatRoundMeth> is
-C<half_up>, since that is the most commonly used method of rounding.  The
+C<HalfUp>, since that is the most commonly used method of rounding.  The
 C<RatRoundMeth> type does I<not> have a default ordering algorithm.
 
 =head2 sys.std.Core.Type.Cat.RatRoundRule
@@ -562,7 +562,7 @@ conceptual result but that it is an exact multiple of the rational value
 resulting from C<radix> taken to the power of C<min_exp>; if rounding is
 needed, then C<round_meth> dictates the rounding method.  The default value
 of C<RatRoundRule> specifies a coersion to a whole number using the
-C<half_up> rounding method (its radix is 2 and its min exp is 0).  The
+C<HalfUp> rounding method (its radix is 2 and its min exp is 0).  The
 C<RatRoundRule> type does I<not> have a default ordering algorithm.
 
 =head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
@@ -801,8 +801,8 @@ This is an optional programmer comment about the catalog dbvar as a whole.
 
 =item C<is_readonly> - C<Bool>
 
-This is C<Bool:true> if a catalog relcon is being described; it is
-C<Bool:false> if a catalog relvar is being described.
+This is C<Bool:True> if a catalog relcon is being described; it is
+C<Bool:False> if a catalog relvar is being described.
 
 =item C<catalog> - C<MaterialNC>
 
@@ -874,11 +874,11 @@ depot.
 
 =item C<is_temporary> - C<Bool>
 
-This is C<Bool:true> if the depot mount is for a transient depot that would
+This is C<Bool:True> if the depot mount is for a transient depot that would
 automatically be created when mounted I<and> automatically be deleted when
 unmounted, because it is only intended for use as the application's current
 working memory, and its maximum lifetime is the lifetime of the in-DBMS
-process.  This is C<Bool:false> (the default) if the depot mount is for a
+process.  This is C<Bool:False> (the default) if the depot mount is for a
 depot that either should already exist before being mounted, I<or> that
 should continue to exist after being unmounted, because it is intended for
 persistent data.  Note that the C<is_temporary> status is orthogonal to
@@ -890,36 +890,36 @@ details are subject to revision.>
 
 =item C<create_on_mount> - C<Bool>
 
-This is C<Bool:true> if the depot mount must represent a depot that was
+This is C<Bool:True> if the depot mount must represent a depot that was
 newly created at the time the depot mount was created, where the depot
 creation is a direct side-effect of the mount operation.  This is
-C<Bool:false> (the default) if the depot being mounted must already exist
+C<Bool:False> (the default) if the depot being mounted must already exist
 without the mounting process having any hand in creating it.  Note that
 there is no option provided to conditionally create a depot depending on
 whether it already exists, as a perceived safety feature (this detail is
 subject to change); to get that behaviour, first try creating the depot
-mount control with this attribute C<Bool:false>, and if that fails due to
-nonexistence, then try again with it set to C<Bool:true>.  This attribute
+mount control with this attribute C<Bool:False>, and if that fails due to
+nonexistence, then try again with it set to C<Bool:True>.  This attribute
 is ignored / not applicable when C<is_temporary> is true.
 
 =item C<delete_on_unmount> - C<Bool>
 
-This is C<Bool:true> if the depot should be deleted at the same time it is
+This is C<Bool:True> if the depot should be deleted at the same time it is
 unmounted, that is, when this depot mount control tuple is deleted.  This
-is C<Bool:false> (the default) if the depot should not be deleted as part
+is C<Bool:False> (the default) if the depot should not be deleted as part
 of the unmount process.  This attribute is ignored / not applicable when
 C<is_temporary> is true.
 
 =item C<we_may_update> - C<Bool>
 
-This is C<Bool:true> if the depot mount will permit the current in-DBMS
+This is C<Bool:True> if the depot mount will permit the current in-DBMS
 process to make any kind of update to the depot, such as data manipulation,
-data definition, or creating/deleting it.  This is C<Bool:false> (the
+data definition, or creating/deleting it.  This is C<Bool:False> (the
 default) if the depot mount is only providing readonly access to the depot.
 When a depot mount is readonly, any attempt to update the depot through it
 will throw a runtime exception.  The C<we_may_update> attribute may be set
-to C<Bool:false> at any time (when there is no active transaction), but it
-may only be set to C<Bool:true> at the time the depot is mounted; this is
+to C<Bool:False> at any time (when there is no active transaction), but it
+may only be set to C<Bool:True> at the time the depot is mounted; this is
 for safety, such that if a depot mount won't let you update the depot now,
 there's no way it will let you update it later, save by unmounting and
 remounting the depot (the result of which is a different depot mount).
@@ -1100,7 +1100,7 @@ subset types.
 =item C<data> - C<maybe_of.RPTypeNC>
 
 This is the declared data type of the self-local dbvar that this
-[|sub]depot contains, iff C<data> is a C<Single>; if C<data> is C<nothing>
+[|sub]depot contains, iff C<data> is a C<Single>; if C<data> is C<Nothing>
 (the default), then this [|sub]depot does not have a self-local dbvar.
 
 =back
@@ -1305,7 +1305,7 @@ A C<NamedValFunc> defines a C<named-value>, which is a kind of function.
 C<NamedValFunc> is a proper subtype of C<Function> where all member values
 declare a function that is nullary / has exactly zero parameters.  Its
 default value is a function whose invocation unconditionally results in
-C<Bool:false>.
+C<Bool:False>.
 
 =head2 sys.std.Core.Type.Cat.ValMapFunc
 
@@ -1338,7 +1338,7 @@ A C<ValConstrFunc> defines a C<value-constraint>, which is a kind of
 C<value-filter> I<and> a kind of C<value-map-unary>.  C<ValConstrFunc> is
 the intersection type of C<ValFiltFunc> and C<ValMapUFunc>.  Its default
 value is a function whose invocation unconditionally results in
-C<Bool:true> and whose only parameter has a declared type of C<Universal>.
+C<Bool:True> and whose only parameter has a declared type of C<Universal>.
 
 =head2 sys.std.Core.Type.Cat.TransConstrFunc
 
@@ -1348,7 +1348,7 @@ member values declare a function that is binary / has exactly 2 parameters,
 and those 2 are named C<before> and C<after>, and the declared types of
 those 2 parameters are identical, and the declared type of the function's
 result is C<Bool>.  Its default value is a function whose invocation
-unconditionally results in C<Bool:true>.
+unconditionally results in C<Bool:True>.
 
 =head2 sys.std.Core.Type.Cat.ValRedFunc
 
@@ -1371,7 +1371,7 @@ types of C<topic> and C<other> are identical, and the declared type of
 C<is_reverse_order> is C<Bool>, and the declared type of the function's
 result is C<Order>.  Its default value is a function, whose C<topic> and
 C<other> parameters both have the declared type of C<Bool>, which orders
-C<Bool:false> before C<Bool:true>.
+C<Bool:False> before C<Bool:True>.
 
 =head2 sys.std.Core.Type.Cat.ExprNodeSet
 
@@ -1885,15 +1885,15 @@ the expression node (sub-)tree it is the root of.
 
 This is a sequence of 0..N conditional expressions, each of which has an
 associated result expression.  Each conditional expression will evaluate in
-order while the previous conditional resulted in C<Bool:false>; once a
-conditional results in C<Bool:true>, its associated result expression will
+order while the previous conditional resulted in C<Bool:False>; once a
+conditional results in C<Bool:True>, its associated result expression will
 evaluate and be the result of the larger if-else sequence, and no more
 conditionals will be evaluated; no result expressions will be evaluated
 except the one with the true conditional.
 
 =item C<else> - C<Name>
 
-Iff none of the conditionals in C<if_then> result in C<Bool:true> (or as a
+Iff none of the conditionals in C<if_then> result in C<Bool:True> (or as a
 trivial case, if C<if_then> is an empty sequence), then the result
 expression represented by the local expression node (or parameter) named by
 C<else> will be evaluated, and be the result of the larger if-else.
@@ -1909,7 +1909,7 @@ An C<IfThenExprMap> is a C<DHTuple>.  It defines an element of an if-else
 sequential expression.  An C<IfThenExprMap> has 2 attributes, C<if> and
 C<then>, each of which is a C<Name>; C<if> has the name of a local
 expression node (or parameter), and C<then> has likewise.  The C<if> node
-is the condition to evaluate; if that condition evaluates to C<Bool:true>,
+is the condition to evaluate; if that condition evaluates to C<Bool:True>,
 then the C<then> node is evaluated and its result is the result of the
 whole if-else expression; otherwise, C<then> is not evaluated.  Its default
 value has the default value of the C<Name> type in both attributes.
@@ -2189,27 +2189,27 @@ This is as per the same-named attribute of C<Updater>.
 
 =item C<is_recipe> - C<Bool>
 
-Iff this is C<Bool:true> then the procedure is explicitly declared to be a
+Iff this is C<Bool:True> then the procedure is explicitly declared to be a
 C<recipe>, meaning it will be subject to tighter constraints on its allowed
 actions (such as that it may not do anything nondeterministic) and its
 execution will automatically be entirely contained within a single
 transaction of the highest possible isolation level, "serializable", same
-as an updater is; iff this is C<Bool:false> then the procedure is I<not>
+as an updater is; iff this is C<Bool:False> then the procedure is I<not>
 explicitly declared to be a C<recipe>, and the other restrictions or
 automatic wrapper transaction won't be present for supporting a C<recipe>.
 
 =item C<is_system_service> - C<Bool>
 
-Iff this is C<Bool:true> then the procedure is explicitly declared to be a
+Iff this is C<Bool:True> then the procedure is explicitly declared to be a
 C<system-service>, meaning it will be subject to tighter constraints on its
 allowed actions (it may not see any global variables) and its execution
 will automatically be entirely contained within a single transaction of the
 highest possible isolation level, "serializable", same as an updater is;
-iff this is C<Bool:false> then the procedure is I<not> explicitly declared
+iff this is C<Bool:False> then the procedure is I<not> explicitly declared
 to be a C<system-service>, and the other restrictions or automatic wrapper
 transaction won't be present for supporting a C<system-service>.  Note that
 a procedure is forbidden from having both its C<is_recipe> and
-C<is_system_service> valued with C<Bool:true> at once.
+C<is_system_service> valued with C<Bool:True> at once.
 
 =item C<vars> - C<NameTypeMap>
 
@@ -2254,13 +2254,13 @@ has no specified I<body>.
 
 A C<Recipe> defines a C<recipe>, which is a kind of procedure.  C<Recipe>
 is a proper subtype of C<Procedure> where for every member value its
-C<is_recipe> attribute is C<Bool:true>.
+C<is_recipe> attribute is C<Bool:True>.
 
 =head2 sys.std.Core.Type.Cat.SystemService
 
 A C<SystemService> defines a C<system-service>, which is a kind of
 procedure.  C<SystemService> is a proper subtype of C<Procedure> where for
-every member value its C<is_system_service> attribute is C<Bool:true>.
+every member value its C<is_system_service> attribute is C<Bool:True>.
 
 =head2 sys.std.Core.Type.Cat.StmtNodeSet
 
@@ -2627,7 +2627,7 @@ Iff C<catch> is a C<Single>, it is the name of a local procedure invocation
 statement node that will be invoked second iff the C<try> procedure throws
 an exception, and it will receive that exception for handling via its
 single mandatory parameter C<topic> (which is C<Exception>-typed); iff
-C<catch> is C<nothing>, then there is no second procedure invocation,
+C<catch> is C<Nothing>, then there is no second procedure invocation,
 meaning any exception thrown by C<try> is ignored; any exception thrown by
 C<catch> will not be caught.
 
@@ -2666,18 +2666,18 @@ the statement node (sub-)tree it is the root of.
 
 This is a sequence of 0..N conditional result variable names, each of which
 has an associated statement.  Each conditional result will be tested in
-order while the previous conditional result is C<Bool:false>; once a
-conditional result is C<Bool:true>, its associated statement will be
+order while the previous conditional result is C<Bool:False>; once a
+conditional result is C<Bool:True>, its associated statement will be
 invoked; no statements will be invoked except the one with the true
 conditional result.
 
 =item C<else> - C<maybe_of.Name>
 
-Iff none of the conditional results in C<if_then> is C<Bool:true> (or as a
+Iff none of the conditional results in C<if_then> is C<Bool:True> (or as a
 trivial case, if C<if_then> is an empty sequence), then the statement
 represented by the local statement node named by C<else> will be invoked
 iff C<else> is a C<Single>; if under the first circumstance C<else> is
-C<nothing>, then the whole if-else will have been a no-op.
+C<Nothing>, then the whole if-else will have been a no-op.
 
 =back
 
@@ -2691,7 +2691,7 @@ if-else sequential statement.  An C<IfThenVarStmtMap> has 2 attributes,
 C<if> (a C<DataNC>) and C<then> (a C<Name>); C<if> has the name of a
 local or global variable (or parameter), and C<then> has the name of a
 statement node.  The C<if> node is the conditional result variable name; if
-that conditional result is C<Bool:true>, then the C<then> statement node is
+that conditional result is C<Bool:True>, then the C<then> statement node is
 invoked; otherwise, C<then> is not invoked.  Its default value has the
 default value where each attribute is the default of its declared type.
 
@@ -2735,7 +2735,7 @@ Iff none of the condition operand values in C<when_then> matches the value
 of C<given> (or as a trivial case, if C<when_then> has no tuples), then the
 statement represented by the local statement node named by C<default> will
 be invoked iff C<default> is a C<Single>; if under the first circumstance
-C<default> is C<nothing>, then the whole given-when-default will have
+C<default> is C<Nothing>, then the whole given-when-default will have
 been a no-op.
 
 =back
@@ -2891,7 +2891,7 @@ This is an optional programmer comment about the scalar
 =item C<base_type> - C<maybe_of.RPTypeNC>
 
 Iff the type being defined is a scalar root type, then
-C<base_type> is not applicable and is C<nothing>.  Iff the type being
+C<base_type> is not applicable and is C<Nothing>.  Iff the type being
 defined is a subtype of some other scalar type, then C<base_type>
 is a C<Single> whose sole element is the name of that other type.  Note
 that any type named by C<base_type> must itself be a scalar root
@@ -2901,7 +2901,7 @@ type or a subtype of one.
 
 Iff the type being defined is a scalar root type, or it is a
 non-proper subtype of some other type, then C<subtype_constraint> is not
-applicable and is C<nothing>.  Iff the type being defined is a proper
+applicable and is C<Nothing>.  Iff the type being defined is a proper
 subtype of some other scalar type, then C<subtype_constraint> is a
 C<Single> whose sole element matches the invocation name of a
 C<type-constraint> function that determines what base type values are part
@@ -2919,7 +2919,7 @@ C<subtype_constraint> needs to be just restricting enough so that the
 inter-possrep mapping functions can handle the base type values that it
 accepts, so it is possible to apply the new possreps' constraints.  Now if
 C<subtype_constraint> were otherwise so simple as to unconditinally result
-in C<Bool:true>, then simply making it C<nothing> has the same effect.
+in C<Bool:True>, then simply making it C<Nothing> has the same effect.
 
 =item C<possreps> - C<PossrepSet>
 
@@ -2957,17 +2957,17 @@ Iff it is a C<Single>, then C<default>
 matches the invocation name of a C<named-value> function that
 results in the default scalar value of the [|sub]type; it has
 zero parameters and its result type is the same as the scalar type
-being defined.  Iff C<default> is C<nothing> and
-C<base_type> is C<nothing>, then semantics are as if it were a defined name
+being defined.  Iff C<default> is C<Nothing> and
+C<base_type> is C<Nothing>, then semantics are as if it were a defined name
 that resulted in a value of the type being defined where all of the possrep
 attr values were the default values of their declared types; but if the
 type being defined has multiple possreps and going the by-attr-defaults
 route with all of the possreps doesn't produce the same value of the type
-being defined, then a C<default> of C<nothing> is invalid and it must be a
-C<Single>.  Iff C<default> is C<nothing> and C<base_type> is a C<Single>,
+being defined, then a C<default> of C<Nothing> is invalid and it must be a
+C<Single>.  Iff C<default> is C<Nothing> and C<base_type> is a C<Single>,
 then the subtype will use the same default value as its base type; but if
 the subtype's value set excludes said value, then a C<default> of
-C<nothing> is invalid and C<default> must be a C<Single>.
+C<Nothing> is invalid and C<default> must be a C<Single>.
 
 =item C<order> - C<maybe_of.RPFunctionNC>
 
@@ -2984,7 +2984,7 @@ ordering function; the third parameter, named C<misc_args>, is
 C<Tuple>-typed; the fourth parameter, named C<is_reverse_order>, is
 C<Bool>-typed; the function's result type must be C<Order>.  Iff
 the type being defined is a subtype of some other type or does not desire
-the function, then C<order> is C<nothing>.
+the function, then C<order> is C<Nothing>.
 
 =back
 
@@ -3023,7 +3023,7 @@ the attributes individually.  The function that this names
 must have a single C<topic> parameter whose declared type is a tuple whose
 attributes match those declared by C<attrs> and whose argument denotes the
 value to test; the function's result type must be C<Bool>.  If the
-function unconditionally results in C<Bool:true>, then all possible
+function unconditionally results in C<Bool:True>, then all possible
 combinations of attribute-allowable values are collectively allowed.  Note
 that, strictly speaking, any constraint defined as part of a possrep (where
 there are multiple possreps) may actually be less restrictive than the
@@ -3034,17 +3034,17 @@ C<subtype_constraint> of the subtype and all base type constraints);
 therefore, mainly any given possrep's constraints need to be just
 restricting enough so that the inter-possrep mapping functions can handle
 the arguments that it accepts, so it is possible to apply the other
-possreps' constraints.  Iff C<constraint> is C<nothing>, then semantics are
-as if it were a defined name that unconditionally resulted in C<Bool:true>.
+possreps' constraints.  Iff C<constraint> is C<Nothing>, then semantics are
+as if it were a defined name that unconditionally resulted in C<Bool:True>.
 
 =item C<is_base> - C<Bool>
 
 This is an optimization hint for Muldis D implementations that are not
 intelligent enough to decide on a best physical representation for the
 [|sub]type.  At most one of the type's possreps is singled out by having a
-C<Bool:true> value here, so an implementation doesn't have to think and can
+C<Bool:True> value here, so an implementation doesn't have to think and can
 just use that as the basis for the physical representation.  To keep things
-simple, only a possrep of a root type may be marked C<Bool:true>, so it can
+simple, only a possrep of a root type may be marked C<Bool:True>, so it can
 apply consistently to all subtypes as well.  More intelligent
 implementations are free to ignore C<is_base>, or just use it as a
 tie-breaker if applicable.
@@ -3054,7 +3054,7 @@ tie-breaker if applicable.
 A C<PossrepSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.  The default value of a tuple of C<PossrepSet>
 has a C<name> that is the empty string, its C<attrs> is empty, and its
-C<constraint> is C<nothing>.
+C<constraint> is C<Nothing>.
 
 =head2 sys.std.Core.Type.Cat.PossrepMapSet
 
@@ -3132,7 +3132,7 @@ This is an optional programmer comment about the tuple
 =item C<base_type> - C<maybe_of.RPTypeNC>
 
 Iff the type being defined is a tuple root type, then C<base_type> is
-not applicable and is C<nothing>.  Iff the type being defined is a
+not applicable and is C<Nothing>.  Iff the type being defined is a
 subtype of some other tuple type, then C<base_type> is a C<Single>
 whose sole element is the name of that other type.
 
@@ -3169,7 +3169,7 @@ The function that each of these names must have a single
 C<topic> parameter whose declared type is a tuple whose attributes match
 those declared by C<attrs> and whose argument denotes the value to test;
 the function's result type must be C<Bool>.  If the functions
-unconditionally result in C<Bool:true>, then all possible combinations of
+unconditionally result in C<Bool:True>, then all possible combinations of
 attribute-allowable values are collectively allowed.  Each function is
 invoked either once to test a tuple value of the type being defined, or
 multiple times to individually test every tuple in a relation value of a
@@ -3229,14 +3229,14 @@ Iff it is a C<Single>, then C<default>
 matches the invocation name of a C<named-value> function that
 results in the default tuple value of the [|sub]type; it has zero
 parameters and its result type is the same as the tuple type
-being defined.  Iff C<default> is C<nothing> and
-C<base_type> is C<nothing>, then semantics are as if C<default> were
+being defined.  Iff C<default> is C<Nothing> and
+C<base_type> is C<Nothing>, then semantics are as if C<default> were
 a defined name that resulted in a value of the type being defined where all
 of the attr values were the default values of their declared types.  Iff
-C<default> is C<nothing> and C<base_type> is a C<Single>, then the
+C<default> is C<Nothing> and C<base_type> is a C<Single>, then the
 subtype will use the same default tuple value as its base type; but if the
 subtype's value set excludes said value, then a C<default> of
-C<nothing> is invalid and C<default> must be a C<Single>.
+C<Nothing> is invalid and C<default> must be a C<Single>.
 
 =back
 
@@ -3272,7 +3272,7 @@ This is an optional programmer comment about the relation
 =item C<base_type> - C<maybe_of.RPTypeNC>
 
 Iff the type being defined is a relation root type, then C<base_type> is
-not applicable and is C<nothing>.  Iff the type being defined is a
+not applicable and is C<Nothing>.  Iff the type being defined is a
 subtype of some other relation type, then C<base_type> is a C<Single>
 whose sole element is the name of that other type.
 
@@ -3322,12 +3322,12 @@ matches the invocation name of a C<named-value> function that
 results in the default relation value of the [|sub]type; it has
 zero parameters and its result type is the same as the relation
 type being defined.  Iff C<default> is
-C<nothing> and C<base_type> is C<nothing>, then semantics are as if
+C<Nothing> and C<base_type> is C<Nothing>, then semantics are as if
 C<default> were a defined name that resulted in a value of the
 type being defined that had zero tuples.  Iff C<default> is
-C<nothing> and C<base_type> is a C<Single>, then the subtype will use the
+C<Nothing> and C<base_type> is a C<Single>, then the subtype will use the
 same default relation value as its base type; but if the subtype's value
-set excludes said value, then a C<default> of C<nothing> is
+set excludes said value, then a C<default> of C<Nothing> is
 invalid and C<default> must be a C<Single>.
 
 =back
@@ -3464,11 +3464,11 @@ smaller than its domain, though it might not be.
 
 =item C<is_updateable> - C<Bool>
 
-This is C<Bool:true> if all of the dependent attributes should be treated
+This is C<Bool:True> if all of the dependent attributes should be treated
 as updateable, because they have enough information to map any kinds of
 updates (all of tuple insert/substitute/delete) back to their determinant
 attributes, and the system should try to support updates against them.
-This is C<Bool:false> if all of the dependent attributes should not be
+This is C<Bool:False> if all of the dependent attributes should not be
 considered updateable, either because it is known they don't have enough
 information, or because we expect users will never try to update them, so
 don't go to the trouble of supporting updates.
@@ -3506,9 +3506,9 @@ relation to have a maximum of 1 tuple.
 
 =item C<is_primary> - C<Bool>
 
-This is C<Bool:true> if this key has been designated the I<primary key> of
+This is C<Bool:True> if this key has been designated the I<primary key> of
 the relation (a relation may have at most one, or none, of those); it
-is C<Bool:false> otherwise.  A primary key is privileged over candidate
+is C<Bool:False> otherwise.  A primary key is privileged over candidate
 keys in general, in that all of the attributes comprising the primary key
 are likely to be treated as immutable in practice for the relation's
 tuples, and hence are the best candidates for identifying tuples within
@@ -3797,9 +3797,9 @@ values of these types.
 
 =item C<is_source_intersection> - C<Bool>
 
-Iff this is C<Bool:true> then the set of source data types will be
+Iff this is C<Bool:True> then the set of source data types will be
 intersected to determine the complete set of source values; iff this is
-C<Bool:false> then the set of source data types will be unioned to
+C<Bool:False> then the set of source data types will be unioned to
 determine the complete set of source values.
 
 =item C<filters> - C<set_of.RPTypeNC>
@@ -3811,10 +3811,10 @@ unioning (the default) or intersecting the values of these types.
 
 =item C<is_filter_intersection> - C<Bool>
 
-Iff this is C<Bool:true> then the set of filter data types will be
+Iff this is C<Bool:True> then the set of filter data types will be
 intersected to determine the complete set of filter values, and if
 C<filters> has no elements then the filter set is just C<Universal>; iff
-this is C<Bool:false> then the set of filter data types will be unioned to
+this is C<Bool:False> then the set of filter data types will be unioned to
 determine the complete set of filter values, and if C<filters> has no
 elements then the filter set is just C<Empty>.
 
@@ -3827,7 +3827,7 @@ that each of these names must have a single C<topic> parameter whose
 declared type is C<Universal>, unless there is exactly 1 C<sources> element
 whereupon the declared type is the same as the source type, and whose
 argument is the value to test; the function's result type must be
-C<Bool>.  If the functions unconditionally result in C<Bool:true>, then all
+C<Bool>.  If the functions unconditionally result in C<Bool:True>, then all
 filter-type-passing values are allowed.
 
 =item C<default> - C<RPFunctionNC>
@@ -3841,7 +3841,7 @@ result type is the same as the domain type being defined.
 The default value of C<DomainType> defines an alias for C<Universal>,
 with the same default value; it has just the source type C<Universal> and
 zero filter types, both type lists are unioned, and C<constraints> is empty
-(unconditionally C<Bool:true>).  Note that there is no valid combination of
+(unconditionally C<Bool:True>).  Note that there is no valid combination of
 C<DomainType> attribute values that would result in an alias for the
 C<Empty> type, due to a default value for the type being mandatory.
 
@@ -3885,7 +3885,7 @@ the subset type.  The function that each of these names
 must have a single C<topic> parameter whose declared type is that named
 by C<base_type>, and whose argument is the value to test; the function's
 result type must be C<Bool>.  If the functions unconditionally result in
-C<Bool:true>, then the new type is a non-proper subtype of the base type.
+C<Bool:True>, then the new type is a non-proper subtype of the base type.
 
 =item C<default> - C<maybe_of.RPFunctionNC>
 
@@ -3893,16 +3893,16 @@ Iff it is a C<Single>, then C<default>
 matches the invocation name of a C<named-value> function that
 results in the default value of the subset type; it has zero
 parameters and its result type is the same as the subset type
-being defined.  Iff C<default> is C<nothing>, then the
+being defined.  Iff C<default> is C<Nothing>, then the
 subset type will use the same default value as its base type; but if
 the subset type's value set excludes said value, then a C<default> of
-C<nothing> is invalid and C<default> must be a C<Single>.
+C<Nothing> is invalid and C<default> must be a C<Single>.
 
 =back
 
 The default value of C<SubsetType> defines an alias for C<Universal>,
 with the same default value; it has the base type C<Universal> and
-C<constraints> is empty (unconditionally C<Bool:true>).  Note that there is
+C<constraints> is empty (unconditionally C<Bool:True>).  Note that there is
 no valid combination of C<SubsetType> attribute values that would
 result in an alias for the C<Empty> type, due to a default value for the
 type being mandatory.

@@ -316,7 +316,7 @@ just the 7-bit ASCII repertoire:
         |        |   STROKE                   |
     ↮   | F;21AE | LEFT RIGHT ARROW WITH      | logical xor/exclusive-or op
         |        |   STROKE                   |
-    ∅   | F;2205 | EMPTY SET                  | alias nothing/empty-set lit
+    ∅   | F;2205 | EMPTY SET                  | alias Nothing/empty-set lit
     ∆   | F;2206 | INCREMENT                  | symmetric-diff/exclusion op
     ∈   | F;2208 | ELEMENT OF                 | is-member op
     ∉   | F;2209 | NOT AN ELEMENT OF          | is-not-member op
@@ -340,8 +340,8 @@ just the 7-bit ASCII repertoire:
         |        |   EQUAL TO                 |
     ⊉   | F;2289 | NEITHER A SUPERSET OF NOR  | is-not-superset op
         |        |   EQUAL TO                 |
-    ⊤   | F;22A4 | DOWN TACK                  | alias true/tautology lit
-    ⊥   | F;22A5 | UP TACK                    | alias fls/contradiction lit
+    ⊤   | F;22A4 | DOWN TACK                  | alias True/tautology lit
+    ⊥   | F;22A5 | UP TACK                    | alias Fls/contradiction lit
     ⊻   | F;22BB | XOR                        | logical xor/exclusive-or op
     ⊼   | F;22BC | NAND                       | logical nand/not-and op
     ⊽   | F;22BD | NOR                        | logical nor/not-or op
@@ -1129,7 +1129,7 @@ As trivial cases, all 3 of the nonscalar values with zero attributes are
 just deeply homogeneous nonscalar values, and all relation values with zero
 tuples are just deeply homogeneous relation values.  (Hence the
 system-defined nonscalar values with additional special names, which are
-C<d0>, C<d0c[0|1]>, and C<nothing>, don't each come in 2 flavors.)
+C<D0>, C<D0C[0|1]>, and C<Nothing>, don't each come in 2 flavors.)
 
 A I<deeply homogeneous scalar value> is, by definition, any scalar value
 where all of its possreps are such that any relation-valued attributes it
@@ -1374,27 +1374,27 @@ and it would be invoked with 2 of those values as its arguments; the result
 type of the function is an C<Order>.  Any additional parameters besides the
 above-named 3 are hereby collectively
 referred to as I<misc params>.  This function by default results in
-C<Order:same> iff its 2 arguments are exactly the same value, and otherwise
-it results in C<Order:increase> if the value of the C<other> argument is
+C<Order:Same> iff its 2 arguments are exactly the same value, and otherwise
+it results in C<Order:Increase> if the value of the C<other> argument is
 considered to be an increase (as defined by the function's algorithm) over
 the value of the C<topic> argument, and otherwise it results in
-C<Order:decrease> as the reverse of the last condition would be true.  The
+C<Order:Decrease> as the reverse of the last condition would be true.  The
 function's I<misc params> carry
 optional customization details for the algorithm; this permits the function
 to implement a choice between multiple (typically similar) ordering
 algorithms rather than just one, which reduces the number of functions
 needed for supporting that choice; if the algorithm is not customizable,
 then there are no I<misc params>.  The function's third
-parameter, C<is_reverse_order>, is C<Bool>-typed; a C<Bool:false> argument
+parameter, C<is_reverse_order>, is C<Bool>-typed; a C<Bool:False> argument
 means the function's algorithm operates as normal when given any particular
 other arguments (meaning a sorting operation based on it will place
-elements in ascending order), while a C<Bool:true> argument means the
+elements in ascending order), while a C<Bool:True> argument means the
 function's algorithm operates in reverse, so the function results in the
 reverse C<Order> value it would have otherwise when given the same other
 arguments (meaning a sorting operation based on it will place elements in
 descending order).  The function's C<topic> and C<other> parameters always
 require arguments, the C<is_reverse_order> parameter always doesn't require
-an argument and defaults to C<Bool:false>.
+an argument and defaults to C<Bool:False>.
 
 In the general case, any context which wants to use a system-defined
 type-generic order-sensitive operator will specify the fully-qualified name
@@ -1418,7 +1418,7 @@ type-default sorting function is attached to a scalar root type.
 
 Note that, for the present at least, a system-compatible fundamental
 order-determination function may only be totally ordered; that is, no 2
-distinct values of a type it is applied to may compare as C<same>.  In the
+distinct values of a type it is applied to may compare as C<Same>.  In the
 future, Muldis D may have privileged support for partial ordering
 functions, which when applied to sort a set of values would result in a
 sequence of sets of compares-as-same values, rather than a straight
@@ -1929,13 +1929,13 @@ C<transition-constraint>; the first 2 have the same structure.
 A C<type-constraint> is a C<value-constraint> that is
 part of the definition of a data type (every data type composes 0..N
 explicit ones of these, plus an implicit one that always results in
-C<Bool:true>) rather than being intended for explicit invocation by
+C<Bool:True>) rather than being intended for explicit invocation by
 a routine, and it is invoked automatically by the
 DBMS when a value of that type is being selected.  The parameters
 of a C<type-constraint> carry information about
 the value selection attempt, and the C<type-constraint> results in either
-C<Bool:true> if the described value would be a member of the data type, or
-C<Bool:false> if not; in the latter case, the DBMS would then throw a
+C<Bool:True> if the described value would be a member of the data type, or
+C<Bool:False> if not; in the latter case, the DBMS would then throw a
 type-constraint-violation exception (resulting in a transaction rollback
 where applicable), or in the former case, it would consider the selection a
 success.  If the data type being selected is a scalar type or subtype
@@ -1949,7 +1949,7 @@ parameter is that other data type.  Or, if the data type being selected of
 is defined over a union of multiple other data types, then the declared
 type of the C<topic> parameter is C<Universal>.  Note that it is not valid
 to define a type (other than C<Empty>) with a C<type-constraint> that
-unconditionally results in C<Bool:false>, as such a type could not also
+unconditionally results in C<Bool:False>, as such a type could not also
 have a default value.  Note that, because Muldis D requires dbvars to be
 defined over named data types, all I<state constraints> for a database,
 including uniqueness keys or subset constraints or other state-constraining
@@ -1963,8 +1963,8 @@ the same as a C<type-constraint> except that it is
 not part of the definition of a data type, but rather it is associated with
 a variable (or pseudo-variable); it is invoked automatically by the DBMS
 when that variable is being updated, and it asserts that the variable would
-be in a valid state after the update (it results in C<Bool:true> for yes
-and C<Bool:false> for no).  The C<topic> parameter of a C<state-constraint>
+be in a valid state after the update (it results in C<Bool:True> for yes
+and C<Bool:False> for no).  The C<topic> parameter of a C<state-constraint>
 has a declared type that is the same as that of the variable; its argument
 carries the value that the variable would have post-update.  The purpose of
 having the distinct C<state-constraint> routine kind when
@@ -1981,9 +1981,9 @@ all C<transition-constraint>.
 
 A C<transition-constraint> is the same as a C<state-constraint> except that
 rather than 1 C<topic> parameter, it has exactly 2 same-typed parameters
-whose names are C<before> and C<after>; it returns C<Bool:true> if the
+whose names are C<before> and C<after>; it returns C<Bool:True> if the
 variable is allowed (according to current business rules) to transition
-directly from the C<before> state to the C<after> state, or C<Bool:false>
+directly from the C<before> state to the C<after> state, or C<Bool:False>
 if not; in the latter case, the DBMS would then throw a
 transition-constraint-violation exception (resulting in a transaction
 rollback of at least the statement that attempted the update), or in the
@@ -2048,8 +2048,8 @@ they can still be pre-computed and stored for performance).
 
 A C<value-filter> is similar
 to a C<type-constraint> in that it evaluates C<topic> for membership in a
-particular value domain, resulting in C<Bool:true> if C<topic> is a member
-and C<Bool:false> otherwise; but a C<value-filter> differs from a
+particular value domain, resulting in C<Bool:True> if C<topic> is a member
+and C<Bool:False> otherwise; but a C<value-filter> differs from a
 C<type-constraint> in that it would be explicitly invoked possibly in any
 context, and its criteria for evaluating C<topic> can be customized at
 runtime by any not-C<topic> arguments it
