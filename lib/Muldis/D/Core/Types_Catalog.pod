@@ -78,10 +78,12 @@ more or less:
                                 sys.std.Core.Type.Cat.LexDataNC
                     sys.std.Core.Type.Cat.Comment
                     sys.std.Core.Type.Cat.Order
+                        sys.std.Core.Type.Cat.Order.*
 
                     # The following are all regular non-ord scalar types.
 
                     sys.std.Core.Type.Cat.RatRoundMeth
+                        sys.std.Core.Type.Cat.RatRoundMeth.*
                     sys.std.Core.Type.Cat.RatRoundRule
 
         sys.std.Core.Type.Tuple
@@ -496,35 +498,38 @@ comments in the AST rather than discarding them.
 
 =head2 sys.std.Core.Type.Cat.Order
 
-This is a structure data type.  C<Order> (order determination) consists of
-just the 3 values C<Increase>, C<Same>, C<Decrease>.  When some context
+This is an enumeration data type.  The C<Order> (order determination) type
+is explicitly defined as a union type over just these 3 singleton types
+having C<sys.std.Core.Type.Cat.Order.*>-format names:
+C<Increase>, C<Same>, C<Decrease>.  When some context
 (such as within a list sort or range check operation) needs to know the
 relative order of 2 values according to some criteria, it can invoke a
 function that applies that criteria to those 2 values, which are its
 main/only arguments, and that function results in an C<Order> value for the
-context to make use of.  An C<Order> has 2 system-defined possreps, named
-C<name> and C<int>.  The C<name> possrep directly matches the conception of
-the type as consisting of 3 character string values; it consists of 1
-C<Name>-typed attribute whose name is the empty string.  The C<int> possrep
-consists of 1 C<Int>-typed attribute whose name is the empty string and
-whose value must be one of [C<-1>, C<0>, C<1>]; the 3 values of each
-possrep correspond in the same order as they are documented here.  The
+context to make use of.  The
 default value of C<Order> is C<Same>; its minimum and maximum values are,
 respectively, C<Increase> and C<Decrease>.  The cardinality of this type is
 3.  The C<Order> type has a default ordering algorithm that corresponds
-directly to that of its C<int> possrep attribute; C<Increase> is ordered
-before C<Same>, and C<Same> before C<Decrease>.  The C<Order> type has an
-implementation hint for less intelligent Muldis D implementations, that
-suggests using the C<int> possrep as the basis for the physical
-representation.
+directly to the sequence in which its values are documented here;
+C<Increase> is ordered before C<Same>, and C<Same> before C<Decrease>.
+
+=head2 sys.std.Core.Type.Cat.Order.*
+
+There are exactly 3 types having C<sys.std.Core.Type.Cat.Order.*>-format
+names and each one is a structure data type; for the rest of this
+description, the type name C<Order.Value> will be used as a proxy for each
+and every one of them.  A C<Order.Value> has 1 system-defined possrep whose
+name is the empty string and which has zero attributes.  The cardinality of
+this type is 1, and its only value is its default and minimum and maximum
+value.
 
 =head2 sys.std.Core.Type.Cat.RatRoundMeth
 
-This is a structure data type.  C<RatRoundMeth> (rounding method) consists
-of just the 7 values C<HalfDown>, C<HalfUp>, C<HalfEven>, C<ToFloor>,
-C<ToCeiling>, C<ToZero>, C<ToInf>.  A C<RatRoundMeth> has 1
-system-defined possrep whose name is the empty string, which has 1
-C<Name>-typed attribute whose name is the empty string.  When a value
+This is an enumeration data type.  The C<RatRoundMeth> (rounding method)
+type is explicitly defined as a union type over just these 7 singleton
+types having C<sys.std.Core.Type.Cat.RatRoundMeth.*>-format names:
+C<HalfDown>, C<HalfUp>, C<HalfEven>, C<ToFloor>,
+C<ToCeiling>, C<ToZero>, C<ToInf>.  When a value
 of some ordered type needs to be mapped into a proper subtype that doesn't
 contain that value, such as when mapping an arbitrary number to one with
 less precision, some rounding method is applied to determine which value of
@@ -544,6 +549,16 @@ or higher than it, or towards "zero" from it, or towards the nearer
 infinity from it, respectively.  The default value of C<RatRoundMeth> is
 C<HalfUp>, since that is the most commonly used method of rounding.  The
 C<RatRoundMeth> type does I<not> have a default ordering algorithm.
+
+=head2 sys.std.Core.Type.Cat.RatRoundMeth.*
+
+There are exactly 7 types having
+C<sys.std.Core.Type.Cat.RatRoundMeth.*>-format names and each one is a
+structure data type; for the rest of this description, the type name
+C<RatRoundMeth.Value> will be used as a proxy for each and every one of
+them.  A C<RatRoundMeth.Value> has 1 system-defined possrep whose name is
+the empty string and which has zero attributes.  The cardinality of this
+type is 1, and its only value is its default and minimum and maximum value.
 
 =head2 sys.std.Core.Type.Cat.RatRoundRule
 
@@ -2978,8 +2993,8 @@ associated function, then C<order> is a C<Single> whose sole element
 matches the invocation name of an C<order-determination> function.  The
 function that this names must have exactly 4 parameters; the
 first two parameters, named C<topic> and C<other>, each have declared types
-that are the same as the scalar root type whose declaration the
-function is part of, and this function is said root type's type-default
+that are the same as the scalar root type
+being defined, and this function is said root type's type-default
 ordering function; the third parameter, named C<misc_args>, is
 C<Tuple>-typed; the fourth parameter, named C<is_reverse_order>, is
 C<Bool>-typed; the function's result type must be C<Order>.  Iff
@@ -3780,7 +3795,7 @@ a union/intersection/etc of other types (eg, to define a "Square" when you
 have "Rectangle", "Rhombus"), you have to first define a C<DomainType>,
 and then use that as the base type of a C<ScalarType>.
 
-A C<DomainType> has these 7 attributes:
+A C<DomainType> has these 8 attributes:
 
 =over
 
@@ -3835,6 +3850,28 @@ filter-type-passing values are allowed.
 This matches the invocation name of a C<named-value> function that results
 in the default value of the domain type; it has zero parameters and its
 result type is the same as the domain type being defined.
+
+=item C<order> - C<maybe_of.RPFunctionNC>
+
+A domain type definition, where the domain type is a simple union over just
+singleton scalar root types, may optionally have a type-default
+total ordering function associated with it, iff the singleton types don't
+have their own C<order> defined and no other domain type which declares an
+C<order> ranges over any of those singleton types, in which case the domain
+type is treated as if it were the scalar root type declaring the values of
+the singletons in respect to order-determination semantics;
+iff the domain type being defined qualifies and desires such an
+associated function, then C<order> is a C<Single> whose sole element
+matches the invocation name of an C<order-determination> function.  The
+function that this names must have exactly 4 parameters; the
+first two parameters, named C<topic> and C<other>, each have declared types
+that are the same as the domain type
+being defined, and this function is said domain type's type-default
+ordering function; the third parameter, named C<misc_args>, is
+C<Tuple>-typed; the fourth parameter, named C<is_reverse_order>, is
+C<Bool>-typed; the function's result type must be C<Order>.  Iff
+the type being defined is a subtype of some other type or does not desire
+the function, then C<order> is C<Nothing>.
 
 =back
 
