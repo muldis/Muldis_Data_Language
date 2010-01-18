@@ -74,19 +74,46 @@ dummy types to fulfil a role such as this.  Except all directly declared
 subtypes of a role union are always disjoint, for scalar ones anyway; the
 role is defin shorthand.
 
-* Create the following roles and group types and ops under them:
+* Create the following mixins/roles and group types and ops under them:
     - Ordered :
-        - tps: Ordinal, Rat, Instant, Duration, Stringy, NameChain, etc
+        - tps: Ordinal, Rational, Stringy, NameChain, etc
         - ops: order/<=>
     - Ordinal :
-        - tps: Bool, Int, Order
+        - tps: Boolean, Integral, Order
         - ops: succ/++, pred/--, last, first
+    - Boolean :
+        - tps: Bool
+        - ops: not/!, and, or, etc
     - Numeric :
-        - tps: Int, Rat, Instant, Duration, ... in the future, Complex etc
-        - ops: abs/||, sum/+, diff/-, product/*, quotient/'/', abs_diff/|-|
+        - tps: Integral, Rational, ... in the future, Complex etc
+        - ops: abs/||, sum/+, diff/-, product/*, quotient/'/',
+            abs_diff/|-|, range, median, mode
+    - Integral :
+        - tps: Int
+        - ops: remainder/mod/%, power/I^, factorial/I!, fetch_random
+    - Rational :
+        - tps: Rat, Instant, Duration
+        - ops: mean, power/N^, log, natural_[power|log], fetch_random
     - Stringy :
-        - tps: String, Blob, Text, Name, Comment
+        - tps: Blobby, Textual, String
         - ops: catenation/~, replication/x
+    - Blobby :
+        - tps: Blob
+        - ops: other Blob ops
+    - Textual :
+        - tps: Text, Name, Comment
+        - ops: other Text ops
+
+* Support delegation / 'handles'; for example:
+    - Instant, Duration explicitly delegate to Rat attr,
+        and so all operators declared for 'Rat' simply work with
+        Instant, Duration also as if all their sigs were s/Rat/Instant/ etc
+    - Name explic delegate to Text attr
+    - maybe Blob, Text explic delegate to String attr
+    - a ColoredCircle would delegate to both Color and Circle attrs?
+This will all take some work to get right; not /all/ Rat/etc can be subst.
+Probably *only* those operators that Rational/etc explicitly declares can
+be delegated to Rat/etc by Instant/etc.
 
 ----------
 
