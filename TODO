@@ -103,6 +103,16 @@ role is defin shorthand.
     - Textual :
         - tps: Text, Name, Comment
         - ops: other Text ops
+Maybe the best term for the above is "dummy type", which TTM defines as a
+scalar root type with zero possreps.  Or "dummy type" is not exactly the
+same but that can be used in describing the above thing;
+perhaps "Scalar" is (implicitly) a "dummy type" for example.
+A dummy type example is "plane figure" and say "rectangle" is declared with
+"isa plane figure" same as "square" might be declared with "isa rectangle".
+But unlike the "dummy type" example of TTM which suggests it is a base of
+a single inheritence tree, the thing we want one should be able to inherit
+from multiple dummy types at once, which probably still works for the term.
+TTM also says that a dummy type is by necessity a union type.
 
 * Support delegation / 'handles'; for example:
     - Instant, Duration explicitly delegate to Rat attr,
@@ -152,6 +162,83 @@ default while SQLite provides serializable.
 Add catalog types that represent thrown exceptions.  Prob non-dh tuple.
 Also study SQL concept of conditions and handlers, looks sort of like
 something between exception handling, signals; or it is their exceptions.
+
+* Use a conceptual framework for database transactions that is strongly
+inspired by how distributed source-code version control systems (VCSs)
+work, in particular drawing on GIT specifically.  The fundamental feature
+of the framework is that the DBMS is managing a depot consisting of 1..N
+versions of the same database, where every one of these versions is both
+consistent and durable.  Each version is completely defined in isolation,
+conceptually, and so any versions in a depot may be deleted without
+compromising each of the other versions' ability to define a version of the
+entire database.  It is implementation-dependent as to how the versions are
+actually stored, such as each having all of the data versus most of them
+just having deltas from some other version; what matters is that each
+version *appears* to be self-contained.  Every version is created as a
+single atomic action, and it is never modified afterwards, though it may be
+later deleted (also an atomic action).  Every in-DBMS user process,
+henceforth called "user", has its own concept of the current state of the
+database, which is one of the depot's versions that is designated a "head".
+A user's current head is never replaced during the course of the in-DBMS
+process unless the user explicitly replaces it, such as by either
+performing an update or requesting to see the latest version (the latter
+done such as with an explicit "synchronize" control statement).  Therefore,
+each user is highly isolated from all the others, and is guaranteed
+consistent repeatable reads and no phantoms; they will get repeatable reads
+until they request otherwise.  The framework has no native concept of
+"nesting transactions" or "savepoints" or explicit "commit" or "rollback"
+commands.  Rather, every single DBMS-performed parent-most multi-update
+statement (which is the smallest scope where TTM requires the database to
+be consistent both immediately before and immediately after its execution),
+is a durable atomic transaction all by itself.  The effect of a successful
+multi-update statement is to both produce a new (durable) version in the
+depot and to update the executing user's "head" to be that new version (the
+prior version may then be deleted automatically depending on
+circumstances); a failed multi-update statement is a no-op for the depot,
+and the user gets a thrown exception.  A depot's versions are arranged in a
+directed acyclic graph where each version save the oldest cites 1..N other
+versions as its parents, and conversely each version may have 0..N
+children.  A child version has exactly 1 parent when it was created as the
+result of executing a multi-update statement in the context of the parent
+version; the parent version is the pre-update state of the database and the
+child is the post-update state of the database.  A child version has
+multiple parents when it is the result of merging or serializing the
+changes of multiple users' statements that ran in parallel.  One main
+purpose of tracking parents like this is for reliable merging of parallel
+changes, so that the intended semantics of each change can be interpreted
+correctly, and potential conflicts can be easily detected, and effectively
+resolved.  More on how this works follows below.  Note that versions simply
+have unique identifiers to be referenced with and there is no implied
+ordering between them if they are generated as serial numbers or using date
+stamps, though versions with earlier date stamps are given priority in the
+case of a merge conflict.  So a multi-update statement is the only native
+"transaction" concept, and it is ACID all by itself.  Now, the
+multi-statement "transactions" or concepts of nested transactions or
+savepoints would all be syntactic sugar over the native concept, and
+basically involve keeping track of versions prior to the head and
+optionally making an older one the head.  This framework uses the VCS
+concept of "branching" (which is something that GIT strongly encourages the
+use of, as GIT makes later "merging" relatively painless) as the native way
+to manage concurrent autonomous database updates by multiple users.  By
+default, when no users have made any changes to the database, a depot just
+has a "trunk", and its childmost or only version is called "master"; every
+database user process' "head" starts off as the "master" version when that
+process starts.  Each (autonomous) user process that wants to update the
+database will start by creating a new branch off of the trunk, and
+subsequent versions of theirs will go into that, rather than into the trunk
+or some other branch.  The trunk is shared by all users while each user's
+branch is just for that user, as their private working space.  Note that,
+unlike a VCS in general where branches can become long-lived and interact
+with each other independently of the trunk, the framework instead follows
+the typical needs of an RDBMS, which espouses a single world view as being
+dominant over any others, and expects that any branches will be very
+short-lived, not existing for longer than a conceptual "database
+transaction" would; only the trunk is expected to be long-lived.  (This
+isn't to say that a DBMS can't maintain them long term, but one that acts
+like a typical RDBMS of today wouldn't.)  Note that the final action on a
+branch that involves merging into the trunk, this would be perceived by all
+other DBMS users as all of the changes wrought by the branch being a single
+atomic update, though the user performing it may see several steps.
 
 * Flesh out matters related to starting or communicating between multiple
 autonomous in-DBMS processes, in general, besides the special case about

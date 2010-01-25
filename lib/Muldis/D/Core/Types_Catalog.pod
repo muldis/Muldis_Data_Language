@@ -2178,8 +2178,9 @@ optional iff the C<Procedure> is embedded in a C<System>, because often the
 implementations of system-defined routines are not defined in terms of
 other Muldis D routines.
 
-A C<Procedure> has these 8 attributes, of which the 5 C<upd_params>,
-C<ro_params>, C<opt_params>, C<is_recipe>, C<is_system_service> define the
+A C<Procedure> has these 9 attributes, of which the 6 C<upd_params>,
+C<ro_params>, C<opt_params>, C<is_recipe>, C<is_system_service>,
+C<is_transaction> define the
 I<heading> and the 2 C<vars>, C<stmt> define the I<body>:
 
 =over
@@ -2225,6 +2226,17 @@ to be a C<system-service>, and the other restrictions or automatic wrapper
 transaction won't be present for supporting a C<system-service>.  Note that
 a procedure is forbidden from having both its C<is_recipe> and
 C<is_system_service> valued with C<Bool:True> at once.
+
+=item C<is_transaction> - C<Bool>
+
+If this is C<Bool:True> then the procedure constitutes an explicit (main or
+child) transaction of its own; the transaction will commit if the procedure
+completes its execution normally and it will roll back if the procedure
+completes abnormally by throwing an exception; if this is C<Bool:False>
+then the procedure does I<not> constitute its own transaction.  Note that a
+procedure's C<is_transaction> must be C<Bool:True> if either of its
+C<is_recipe> or C<is_system_service> is C<Bool:True>; otherwise,
+C<is_transaction> may be either C<Bool:True> or C<Bool:False>.
 
 =item C<vars> - C<NameTypeMap>
 
@@ -2631,10 +2643,7 @@ the statement node (sub-)tree it is the root of.
 =item C<try> - C<Name>
 
 This is the name of a local procedure invocation statement node that will
-be invoked first unconditionally and which constitutes its own child
-transaction; the child transaction will commit if the procedure completes
-its execution normally and it will roll back if the procedure completes
-abnormally by throwing an exception; any thrown exception will be caught.
+be invoked first unconditionally; any thrown exception will be caught.
 
 =item C<catch> - C<maybe_of.Name>
 
