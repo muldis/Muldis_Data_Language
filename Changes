@@ -1,6 +1,63 @@
                                  Muldis::D
 ---------------------------------------------------------------------------
 
+2010-01-xx  Darren Duncan <darren@DarrenDuncan.net>
+
+    * Muldis::D version 0.109.0 is released on CPAN as
+    Muldis-D-0.109.0.tar.gz.
+
+    * This release features a refactor of the root of the scalar type
+    composition hierarchy so that now how it is actually structured is a
+    better reflection of how it was conceptually structured before.  To be
+    specific, "Int" replaces "String" as that 1 special type which is
+    defined as an enumeration union type over an infinite number of
+    singleton types.  "String" was conceptually a dense sequence of "Int"
+    and now it actually is one; "String" is now nonscalar, an
+    "array_of.Int", and "Int" no longer has a possrep defined over a
+    single-element-"String"-typed attribute.  One of the many benefits of
+    this change is that we will no longer need to add a bunch of
+    "String"-specific functions to bootstrap the system scalar type
+    definitions; we can now just use the Int or Array functions instead.
+
+    * (Types.pod)  Refactored the "Int" type by splitting that into itself
+    plus an infinite number of "Int.*" singleton types, where the former is
+    defined as a union over the latter.
+
+    * (Types_Catalog.pod)  Refactored the infinite scalar "String[|.*]"
+    types by merging them into the single nonscalar "String" type which is
+    defined simply as a proper subtype of "DHArray" with "Int" elements.
+    Also deleted the "SEString" subtype which has no more uses now that
+    "Int" isn't defined over "String".  The other 3 subtypes
+    "[B|O|UCP]String" still exist and are unchanged from before aside from
+    becoming "Array" subtypes as with "String"; all scalar types besides
+    "Int" that composed a "String" subtype still do, meaning "Blob" and
+    "Text".  Split the main pod section "SIMPLE GENERIC SCALAR TYPES" into
+    itself plus the new main pod section "SIMPLE GENERIC STRING TYPES"; the
+    latter got all 4 of the "String" types (that are no longer scalar) and
+    the former kept all the other types.  Also updated the def of the
+    "OVLScalar" union type to exclude "String", which is no longer scalar.
+
+    * (Basics.pod, Types_Catalog.pod)  Updated the few references that said
+    "String" was special and changed them to say "Int" instead, and
+    otherwise updated any references to those 2 types as appropriate.
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  Completely removed the value
+    literal syntax specific to the "String" type (that being the "String"
+    value node kind), and the whole "Low Level Integer String Literals" pod
+    sub-section along with it.  If one still has a reason to write plain
+    "String" literals that aren't by way of the "Blob" or "Text" syntax,
+    then an ordinary "Array" literal with "Int" elements is typically just
+    as concise as the old "String" literals were.  Also updated all code
+    examples, that had used nestings of the generic "Scalar" value literal
+    syntax to select "Int" or "Text" values in terms of the singleton
+    "String" types, to instead either use the new "Int" singletons straight
+    out or use those with "Array" or "Relation" literals to select the
+    "Text".  These examples were all in 2 places, the "Scalar Selectors"
+    pod sub-section and especially the "the_floor" pod sub-section.
+
+    * (PTMD_STD.pod)  In the "General Purpose Integer Numeric Literals" pod
+    sub-section, cleaned the grammar to remove unnecessary square brackets.
+
 2010-01-24  Darren Duncan <darren@DarrenDuncan.net>
 
     * Muldis::D version 0.108.0 is released on CPAN as
@@ -56,8 +113,8 @@
     singleton scalar types (each with a single possrep with zero
     attributes), with one singleton type per pre-defined value.
 
-    * (Types.pod, Types_Catalog.pod, PTMD_STD.pod, HDMD_Perl5_STD.pod,
-    HDMD_Perl6_STD.pod, Basics.pod, Conventions.pod, Array.pod, Bag.pod,
+    * (Types.pod, Types_Catalog.pod, PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod,
+    Basics.pod, Conventions.pod, Array.pod, Bag.pod,
     Blob.pod, Bool.pod, Interval.pod, Relation.pod, Routines_Catalog.pod,
     STDIO.pod, Scalar.pod, Set.pod, Text.pod, Tuple.pod, Universal.pod,
     Counted.pod, DateTime.pod)  Renamed all of the "simple enumeration"

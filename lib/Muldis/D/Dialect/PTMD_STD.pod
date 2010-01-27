@@ -334,15 +334,29 @@ Examples:
     Relation:{
         {
             food => Scalar:Text:nfd_codes;{
-                "" => Scalar:String."<67><97><114><114><111><116><115>":{}
+                "" => Relation:[ index, value ];{
+                    [ Scalar:Int."0":{}, Scalar:Int."67":{}  ],
+                    [ Scalar:Int."1":{}, Scalar:Int."97":{}  ],
+                    [ Scalar:Int."2":{}, Scalar:Int."114":{} ],
+                    [ Scalar:Int."3":{}, Scalar:Int."114":{} ],
+                    [ Scalar:Int."4":{}, Scalar:Int."111":{} ],
+                    [ Scalar:Int."5":{}, Scalar:Int."116":{} ],
+                    [ Scalar:Int."6":{}, Scalar:Int."115":{} ]
+                }
             },
-            qty => Scalar:Int:{ "" => Scalar:String."<100>":{} }
+            qty => Scalar:Int."100":{}
         },
         {
             food => Scalar:Text:nfd_codes;{
-                "" => Scalar:String."<75><105><119><105><115>":{}
+                "" => Relation:[ index, value ];{
+                    [ Scalar:Int."0":{}, Scalar:Int."75":{}  ],
+                    [ Scalar:Int."1":{}, Scalar:Int."105":{} ],
+                    [ Scalar:Int."2":{}, Scalar:Int."119":{} ],
+                    [ Scalar:Int."3":{}, Scalar:Int."105":{} ],
+                    [ Scalar:Int."4":{}, Scalar:Int."115":{} ],
+                }
             },
-            qty => Scalar:Int:{ "" => Scalar:String."<30>":{} }
+            qty => Scalar:Int."30":{}
         }
     }
 
@@ -611,7 +625,6 @@ Grammar:
         | <Instant>
         | <Duration>
         | <RatRoundRule>
-        | <String>
 
     <coll_value_selector> ::=
           <Scalar>
@@ -707,7 +720,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | Instant
         | Duration
         | RatRoundRule
-        | String | BString | OString | UCPString
         | DH? Scalar
         | DH? Tuple
         | Database
@@ -737,7 +749,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <Instant_payload>
         | <Duration_payload>
         | <RatRoundRule_payload>
-        | <String_payload>
         | <Scalar_payload>
         | <Tuple_payload>
         | <Database_payload>
@@ -913,10 +924,10 @@ Grammar:
         <pint_head>
 
     <int_body> ::=
-        [0 | \-?<pint_body>]
+        0 | \-?<pint_body>
 
     <nnint_body> ::=
-        [0 | <pint_body>]
+        0 | <pint_body>
 
     <pint_body> ::=
         <pint_head> <pint_tail>?
@@ -928,10 +939,10 @@ Grammar:
         [[_?<[ 0..9 A..Z ]>+]+] ** [\s* '~' \s*]
 
     <d_int_body> ::=
-        [0 | \-?<d_pint_body>]
+        0 | \-?<d_pint_body>
 
     <d_nnint_body> ::=
-        [0 | <d_pint_body>]
+        0 | <d_pint_body>
 
     <d_pint_body> ::=
         <d_pint_head> <d_pint_tail>?
@@ -1590,44 +1601,6 @@ Examples:
 
     RatRoundRule:[2,-7,ToZero]
 
-=head2 Low Level Integer String Literals
-
-Grammar:
-
-    <String> ::=
-        [String | BString | OString | UCPString] ':' \s*
-        [<type_name> ':' \s*]?
-        <String_payload>
-
-    <String_payload> ::=
-          <num_max_col_val> ';' \s* <string_body>
-        | <d_string_body>
-
-    <string_body> ::=
-        '[' \s*
-            [<int_body> ** [\s* ',' \s*]]?
-        \s* ']'
-
-    <d_string_body> ::=
-        '[' \s*
-            [<d_int_body> ** [\s* ',' \s*]]?
-        \s* ']'
-
-A C<String> node represents an integer string value.  It is interpreted as
-a Muldis D C<sys.std.Core.Type.Cat.String> value as follows:  A
-C<String_payload> consists mainly of a bracket-delimited sequence of 0..N
-elements, where each element must qualify as a valid I<body> part of an
-C<Int> node, and the new C<String> is conceptually that sequence of
-integers.  Fundamentally each C<String> node element is formatted and
-interpreted like an C<Int> node, and any similarities won't be repeated
-here.
-
-Examples:
-
-    String:[80,101,114,109] # Unicode abstract codepoints = 'Perl' #
-
-    String:F;[50,65,72,6C] # same thing #
-
 =head1 COLLECTION VALUE SELECTORS
 
 Note that, with each of the main value selector nodes documented in this
@@ -1705,9 +1678,9 @@ Examples:
         "" => 5
     }
 
-    Scalar:Int:{ "" => Scalar:String."<42>":{} }
+    Scalar:Int."42":{}
 
-    Scalar:Text:nfd_codes;{ "" => Scalar:String."<80><101><114><109>":{} }
+    Scalar:Text:nfd_codes;{ "" => Array:[80,101,114,109] }  # 'Perl' #
 
 =head2 Tuple Selectors
 

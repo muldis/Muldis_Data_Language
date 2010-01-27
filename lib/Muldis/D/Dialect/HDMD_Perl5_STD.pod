@@ -197,20 +197,29 @@ Examples:
         [ 'Relation', [
             {
                 food => [ 'Scalar', 'Text', [ nfd_codes => {
-                    '' => ['Scalar',
-                        'String.<67><97><114><114><111><116><115>',{}]
+                    '' => [ 'Relation', [ [ 'index', 'value' ] => [
+                        [ ['Scalar','Int.0',{}], ['Scalar','Int.67',{}]  ],
+                        [ ['Scalar','Int.1',{}], ['Scalar','Int.97',{}]  ],
+                        [ ['Scalar','Int.2',{}], ['Scalar','Int.114',{}] ],
+                        [ ['Scalar','Int.3',{}], ['Scalar','Int.114',{}] ],
+                        [ ['Scalar','Int.4',{}], ['Scalar','Int.111',{}] ],
+                        [ ['Scalar','Int.5',{}], ['Scalar','Int.116',{}] ],
+                        [ ['Scalar','Int.6',{}], ['Scalar','Int.115',{}] ]
+                    ] ] ]
                 } ] ],
-                qty => [ 'Scalar', 'Int', {
-                    '' => ['Scalar','String.<100>',{}]
-                } ]
+                qty => ['Scalar','Int.100',{}]
             },
             {
                 food => [ 'Scalar', 'Text', [ nfd_codes => {
-                    '' => ['Scalar','String.<75><105><119><105><115>',{}]
+                    '' => [ 'Relation', [ [ 'index', 'value' ] => [
+                        [ ['Scalar','Int.0',{}], ['Scalar','Int.75',{}]  ],
+                        [ ['Scalar','Int.1',{}], ['Scalar','Int.105',{}] ],
+                        [ ['Scalar','Int.2',{}], ['Scalar','Int.119',{}] ],
+                        [ ['Scalar','Int.3',{}], ['Scalar','Int.105',{}] ],
+                        [ ['Scalar','Int.4',{}], ['Scalar','Int.115',{}] ],
+                    ] ] ]
                 } ] ],
-                qty => [ 'Scalar', 'Int', {
-                    '' => ['Scalar','String.<30>',{}]
-                } ]
+                qty => ['Scalar','Int.30',{}]
             }
         ] ]
     ]
@@ -356,11 +365,11 @@ add syntax for operators.
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
 
-There are 25 main varieties of C<value> node, each of which is a named node
+There are 24 main varieties of C<value> node, each of which is a named node
 kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<PNSQNameChain>, C<Comment>,
 C<Instant>, C<Duration>,
-C<RatRoundRule>, C<String>, C<Scalar>, C<Tuple>, C<Database>,
+C<RatRoundRule>, C<Scalar>, C<Tuple>, C<Database>,
 C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<[S|M]PInterval>.
 
 Fundamentally, the various Muldis D scalar and collection types are
@@ -387,11 +396,11 @@ only external meta-data of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
 just on C<value_kind>.
 
-Between the various kinds of C<value> node, these 44 values are allowed for
+Between the various kinds of C<value> node, these 40 values are allowed for
 C<value_kind>:  C<Bool>, C<Order>, C<RatRoundMeth>, C<[|NN|P]Int>,
 C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
 C<PNSQNameChain>, C<Comment>, C<Instant>, C<Duration>,
-C<RatRoundRule>, C<[|B|O|UCP]String>, C<[|DH]Scalar>,
+C<RatRoundRule>, C<[|DH]Scalar>,
 C<[|DH]Tuple>, C<Database>, C<[|DH]Relation>, C<[|DH]Set>,
 C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH][S|M]PInterval>.
 
@@ -837,35 +846,6 @@ Examples:
 
     [ 'RatRoundRule', [2,-7,'ToZero'] ]
 
-=head2 Low Level Integer String Literals
-
-A C<String> node represents an integer string value.  This node is
-interpreted as a Muldis D C<sys.std.Core.Type.Cat.String> value as follows:
-
-=over
-
-=item *
-
-If the payload is a Perl array ref, then every one of its elements must
-constitute a valid payload for an C<Int> node.
-
-=item *
-
-If the payload is a Perl hash ref, then it must have 1 element, whose key
-and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string and the main payload must be a Perl array
-ref; every pairwise combination of the max-col-val with the elements of the
-main payload must, when appropriately wrapped in a Perl hash ref, must
-constitute a valid hash ref payload for an C<Int> node.
-
-=back
-
-Examples:
-
-    [ 'String', [80,101,114,109] ] # Unicode abstract codepoints = 'Perl' #
-
-    [ 'String', { F => ['50','65','72','6C'] } ] # same thing #
-
 =head1 COLLECTION VALUE SELECTORS
 
 Note that, with each of the main value selector nodes documented in this
@@ -921,11 +901,11 @@ Examples:
         '' => 5,
     } ] ]
 
-    [ 'Scalar', 'Int', { '' => ['Scalar','String.<42>',{}] } ]
+    [ 'Scalar', 'Int.42', {} ]
 
     [ 'Scalar', 'Text', [ nfd_codes => {
-        '' => ['Scalar','String.<80><101><114><109>',{}]
-    } ] ]
+        '' => [ 'Array', [80,101,114,109] ]
+    } ] ]  # 'Perl' #
 
 =head2 Tuple Selectors
 

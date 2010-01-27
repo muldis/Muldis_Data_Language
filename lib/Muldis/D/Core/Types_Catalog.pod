@@ -55,12 +55,6 @@ more or less:
 
                     # The following are all regular ordered scalar types.
 
-                    sys.std.Core.Type.Cat.String
-                        sys.std.Core.Type.Cat.String.*
-                        sys.std.Core.Type.Cat.SEString
-                        sys.std.Core.Type.Cat.BString
-                        sys.std.Core.Type.Cat.OString
-                        sys.std.Core.Type.Cat.UCPString
                     sys.std.Core.Type.Cat.Name
                     sys.std.Core.Type.Cat.NameChain
                         sys.std.Core.Type.Cat.PNSQNameChain
@@ -187,6 +181,15 @@ more or less:
                 sys.std.Core.Type.Cat.NameNCMap
                 sys.std.Core.Type.Cat.AttrRenameMap
 
+                sys.std.Core.Type.DHArray
+
+                    # The following are all array types.
+
+                    sys.std.Core.Type.Cat.String
+                        sys.std.Core.Type.Cat.BString
+                        sys.std.Core.Type.Cat.OString
+                        sys.std.Core.Type.Cat.UCPString
+
 These system-defined subtypes can not in general be used as components of a
 system catalog, or any database, but they may be used temporarily at
 runtime:
@@ -213,7 +216,7 @@ This is an enumeration data type.  The C<OVLScalar> type is explicitly
 defined as a union type over all system-defined C<DHScalar> types, and just
 those types, for whose values all of the Muldis D standard dialects provide
 "opaque value literal" syntax for:  C<Bool>, C<Int>, C<Blob>, C<Text>,
-C<Rat>, C<Instant>, C<Duration>, C<String>, C<Name>, C<NameChain>,
+C<Rat>, C<Instant>, C<Duration>, C<Name>, C<NameChain>,
 C<Comment>, C<Order>, C<RatRoundMeth>, C<RatRoundRule>,
 C<UTCInstant>, C<FloatInstant>, C<UTCDuration>.  The C<OVLScalar> type is
 mainly intended to be used as the declared type of some attributes of some
@@ -223,106 +226,6 @@ of possrep attributes.  The C<OVLScalar> type is I<not> intended to be used
 as the declared type of any user type attributes, generally speaking; if
 they would even consider it, they should be using C<DHScalar> instead.  Its
 default value is C<Bool:False>.  The cardinality of this type is infinity.
-
-=head2 sys.std.Core.Type.Cat.String
-
-This is an enumeration data type.  The C<String> type is a union type over
-the infinite number of types having
-C<sys.std.Core.Type.Cat.String.*>-format names (see also their collective
-entry in the type list).  A C<String> is a string of integers, or more
-specifically it is a dense sequence of 0..N elements (I<not> defined over
-C<Relation>) where each element is an integer.  Its default and minimum
-value is the empty sequence; its maximum value is an infinite-length
-sequence and practically impossible.  The cardinality of this type is
-infinity; to define a most-generalized finite C<String> subtype, you must
-specify a maximum length in elements that the subtype's values can have,
-and you must specify the 2 integer end-points of the inclusive range that
-all its values' integer elements are in.  The C<String> type has a default
-ordering algorithm; for 2 distinct C<String> values, their order is
-determined as follows:  First eliminate any identical leading element
-sequences from both strings as those alone would make the strings compare
-as same (if the remainder of both strings was the empty string, then the
-strings are identical).  Then, iff the remainder of just one string is the
-empty string, then that string is ordered before the non-empty one;
-otherwise, compare the first element of each of the string remainders
-according to the following ordering algorithm to get the order of their
-respective strings: the integer value closer to negative infinity is
-ordered before the value closer to positive infinity.
-
-=head2 sys.std.Core.Type.Cat.String.*
-
-There are an infinite number of types having
-C<sys.std.Core.Type.Cat.String.*>-format names and each one is a structure
-data type; for the rest of this description, the type name C<String.Value>
-will be used as a proxy for each and every one of them.  A C<String.Value>
-is a string of integers, or more specifically it is a dense sequence of
-0..N elements (I<not> defined over C<Relation>) where each element is an
-integer.  A C<String.Value> has 1 system-defined possrep whose name is the
-empty string and which has zero attributes.  The cardinality of this type
-is 1, and its only value is its default and minimum and maximum value.
-
-The sole value of C<String.Value> is the same as the decoded form of its
-unqualified name, or more accurately, it is identical to the decoded form
-of the sole attribute value of the sole possrep of the C<Name> value
-C<Value>.  The unqualified name of the type C<String.Value> is formatted
-simply as a (ordered) sequence of tokens where each token defines an
-integer element of the C<String> and the token is formatted as a base-10
-integer literal delimited with less-than and greater-than characters; for
-example, the C<Name> value C<< <80><101><114><109> >> defines a 4-element
-C<String>.  Said unqualified name format is the encoded form of the
-C<String.Value> type's name.  The reason for using encoding like this is
-that a C<Name> string element is limited to specific range of integer
-values where a C<String> element can be any integer, so a one-to-one
-element mapping isn't possible.
-
-Now, one main rationale to have the system-defined C<String> type as a
-union type over an infinite number of C<String.*> types, is to avoid any
-"chicken and egg" scenario where at least one scalar root type needs to
-be special and have no possreps in order to be the foundation for other
-scalar root types.  Under the current system, I<every> scalar root type
-has at least one possrep and the type system design does not require any
-scalar root type to be special.  One can always avoid the need for some
-other type to base your scalar root type off of by building your scalar
-root type over singleton types with no possrep attributes.  That said, the
-fact that an implicitly defined infinity of types underlie C<String>
-(rather than an explicitly defined finite set of types) now is another kind
-of special that user-defined types can't do, but this solution seemed to be
-the lesser of evils versus some scalar root types having no possreps.
-
-=head2 sys.std.Core.Type.Cat.SEString
-
-This is an enumeration data type.  C<SEString> (single-element string) is a
-proper subtype of C<String> where all member values have exactly one
-element.  One can be used to represent an integer.
-
-=head2 sys.std.Core.Type.Cat.BString
-
-This is an enumeration data type.  C<BString> (bit string) is a proper
-subtype of C<String> where all member value elements are between zero and
-1 inclusive.  One can be used to represent a string of bits.
-
-=head2 sys.std.Core.Type.Cat.OString
-
-This is an enumeration data type.  C<OString> (octet string) is a proper
-subtype of C<String> where all member value elements are between zero and
-255 inclusive.  One can be used to represent a string of octets.
-
-=head2 sys.std.Core.Type.Cat.UCPString
-
-This is an enumeration data type.  C<UCPString> (Unicode abstract codepoint
-string) is a proper subtype of C<String> where all member value elements
-are between zero and F;D7FF inclusive or F;E000 and F;10FFFF inclusive.  As
-of the Unicode standard version 5.1.0, all character abstract codepoints
-exist within that range, and so each element could be used to represent any
-Unicode character and the whole string can be used to represent a string of
-Unicode characters.
-
-There are no Unicode abstract codepoints between F;D800 and F;DFFF
-inclusive; those numbers would only represent special surrogates that do
-not define extra abstract characters and only have any meaning in
-conjunction with the UTF-16 character encoding form; and so the
-C<UCPString> type specifically excludes them from use in its member values;
-you must just use the normal character abstract codepoints instead.
 
 =head2 sys.std.Core.Type.Cat.Name
 
@@ -580,6 +483,64 @@ of C<RatRoundRule> specifies a coersion to a whole number using the
 C<HalfUp> rounding method (its radix is 2 and its min exp is 0).  The
 C<RatRoundRule> type does I<not> have a default ordering algorithm.
 
+=head1 SIMPLE GENERIC STRING TYPES
+
+=head2 sys.std.Core.Type.Cat.String
+
+This is an enumeration data type.  C<String> is a proper subtype of
+C<DHArray> where the declared type of its C<value> attribute is C<Int>; it
+is otherwise the same.  A C<String> is a string of integers, or more
+specifically it is a sequence of 0..N elements where each element is an
+integer.  A C<String> subtype is normally composed into any system-defined
+type that is conceptually a string of integers or bits or characters, such
+as C<Blob> or C<Text>.  The C<String> type's default and canonical minimum
+value is the empty sequence; its canonical maximum value is an
+infinite-length sequence and practically impossible.  The cardinality of
+this type is infinity; to define a most-generalized finite C<String>
+subtype, you must specify a maximum length in elements that the subtype's
+values can have, and you must specify the 2 integer end-points of the
+inclusive range that all its values' tuples' C<value> attribute values are
+in.  The C<String> type has a canonical ordering algorithm; for 2 distinct
+C<String> values, their order is determined as follows:  First eliminate
+any identical leading element sequences from both strings as those alone
+would make the strings compare as same (if the remainder of both strings
+was the empty string, then the strings are identical).  Then, iff the
+remainder of just one string is the empty string, then that string is
+ordered before the non-empty one; otherwise, compare the first element of
+each of the string remainders according to the following ordering algorithm
+to get the order of their respective strings: the C<value> attribute
+integer value closer to negative infinity is ordered before the value
+closer to positive infinity.
+
+=head2 sys.std.Core.Type.Cat.BString
+
+This is an enumeration data type.  C<BString> (bit string) is a proper
+subtype of C<String> where all member value elements are between zero and
+1 inclusive.  One can be used to represent a string of bits.
+
+=head2 sys.std.Core.Type.Cat.OString
+
+This is an enumeration data type.  C<OString> (octet string) is a proper
+subtype of C<String> where all member value elements are between zero and
+255 inclusive.  One can be used to represent a string of octets.
+
+=head2 sys.std.Core.Type.Cat.UCPString
+
+This is an enumeration data type.  C<UCPString> (Unicode abstract codepoint
+string) is a proper subtype of C<String> where all member value elements
+are between zero and F;D7FF inclusive or F;E000 and F;10FFFF inclusive.  As
+of the Unicode standard version 5.1.0, all character abstract codepoints
+exist within that range, and so each element could be used to represent any
+Unicode character and the whole string can be used to represent a string of
+Unicode characters.
+
+There are no Unicode abstract codepoints between F;D800 and F;DFFF
+inclusive; those numbers would only represent special surrogates that do
+not define extra abstract characters and only have any meaning in
+conjunction with the UTF-16 character encoding form; and so the
+C<UCPString> type specifically excludes them from use in its member values;
+you must just use the normal character abstract codepoints instead.
+
 =head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
 
 These are all enumeration data types.
@@ -629,8 +590,7 @@ hard-coded meanings and are not defined like any other types; these are
 declarations of all of the native Muldis D types that can't be defined like
 user-defined types.  Specifically, it declares these 8 standard types: in
 the C<sys.std.Core.Type> namespace, C<Universal>, C<Empty>, C<Scalar>,
-C<Tuple>, C<Relation>, C<Reference>, C<External>; in the
-C<sys.std.Core.Type.Cat> namespace, just C<String>.  These
+C<Int>, C<Tuple>, C<Relation>, C<Reference>, C<External>.  These
 constitute all 2 Muldis D primitive types, all 1 Muldis D reference types,
 all 2 Muldis D type system minimal and maximal (enumeration) types, all 2
 Muldis D enumeration types that are each implicit maximal types of 2 of 4
@@ -644,7 +604,7 @@ be obvious reasons).
 C<Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet>
 
 These are all the system-defined scalar types, except for
-C<String> because it can't be defined like user-defined types, and complete
+C<Int> because it can't be defined like user-defined types, and complete
 tuple and relation types, and domain types, and subset types.
 
 =item C<catalogs> - C<SysCatSet>

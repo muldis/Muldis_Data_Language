@@ -43,6 +43,7 @@ relationships:
                     sys.std.Core.Type.Bool
                         sys.std.Core.Type.Bool.*
                     sys.std.Core.Type.Int
+                        sys.std.Core.Type.Int.*
                         sys.std.Core.Type.NNInt
                             sys.std.Core.Type.PInt
                                 sys.std.Core.Type.PInt2_N
@@ -212,16 +213,49 @@ is 1, and its only value is its default and minimum and maximum value.
 
 =head2 sys.std.Core.Type.Int
 
-This is a structure data type.  An C<Int> is a single exact integral number
-of any magnitude.  An C<Int> has 1 system-defined possrep whose name is the
-empty string, which has of 1 C<SEString>-typed attribute whose name is the
-empty string.  Its default value is zero; its minimum and maximum values
+This is an enumeration data type.  The C<Int> type is a union type over
+the infinite number of types having
+C<sys.std.Core.Type.Int.*>-format names (see also their collective
+entry in the type list).  An C<Int> is a single exact integral number of
+any magnitude.  Its default value is zero; its minimum and maximum values
 are conceptually infinities and practically impossible.  The cardinality of
 this type is infinity; to define a most-generalized finite C<Int> subtype,
 you must specify the 2 integer end-points of the inclusive range that all
 its values are in.  The C<Int> type has a default ordering algorithm; for 2
 distinct C<Int> values, the value closer to negative infinity is ordered
 before the value closer to positive infinity.
+
+=head2 sys.std.Core.Type.Int.*
+
+There are an infinite number of types having
+C<sys.std.Core.Type.Int.*>-format names and each one is a structure data
+type; for the rest of this description, the type name C<Int.Value> will be
+used as a proxy for each and every one of them.  An C<Int.Value> is a
+single exact integral number of any magnitude.  An C<Int.Value> has 1
+system-defined possrep whose name is the empty string and which has zero
+attributes.  The cardinality of this type is 1, and its only value is its
+default and minimum and maximum value.
+
+The sole value of C<Int.Value> is the same as the decoded form of its
+unqualified name; its unqualified name is a C<Name> value formatted simply
+as a base-10 integer literal, and its value is the integer that this
+literal denotes; for example, the C<Name> value C<42> defines the C<Int>
+value C<42>.  A valid base-10 integer literal in this context matches the
+(Muldis D PTMD_STD or Perl 6 grammar) pattern C<0|\-?[1..9][0..9]*>.
+
+Now, one main rationale to have the system-defined C<Int> type as a
+union type over an infinite number of C<Int.*> types, is to avoid any
+"chicken and egg" scenario where at least one scalar root type needs to
+be special and have no possreps in order to be the foundation for other
+scalar root types.  Under the current system, I<every> scalar root type
+has at least one possrep and the type system design does not require any
+scalar root type to be special.  One can always avoid the need for some
+other type to base your scalar root type off of by building your scalar
+root type over singleton types with no possrep attributes.  That said, the
+fact that an implicitly defined infinity of types underlie C<Int>
+(rather than an explicitly defined finite set of types) now is another kind
+of special that user-defined types can't do, but this solution seemed to be
+the lesser of evils versus some scalar root types having no possreps.
 
 =head2 sys.std.Core.Type.NNInt
 
