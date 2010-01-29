@@ -207,25 +207,29 @@ this function is analogous to the N-adic SQL COALESCE function.
 =head2 sys.std.Core.Set.Maybe.order
 
 C<< function sys.std.Core.Set.Maybe.order (Order <-- $topic : Maybe,
-$other : Maybe, $treat_Nothing_as_max : Bool, $ord_func? : OrdDetCFuncNC,
-$reverse_order_of_singles? : Bool) >>
+$other : Maybe, $S_ord_func? : OrdDetCFuncNC, $S_is_reverse_order? : Bool, 
+$N_is_after_all_S : Bool, $is_reverse_order? : Bool) >>
 
 This function is a generic (total) C<order-determination> function for
 C<Maybe> values.  Iff both of its C<topic> and C<other> arguments are
 identical, this function results in C<Order:Same>.  Otherwise, iff both of
 those 2 arguments are C<Single> values, then the result of this function
 is the result of applying to those 2 arguments the (total)
-C<order-determination> function given in its C<ord_func> argument, as
-curried by its C<reverse_order_of_singles> argument.
-Otherwise, iff C<topic> is C<Nothing>, this function results in
-C<Order:Increase> or C<Order:Decrease> respectively when
-C<treat_Nothing_as_max> is C<Bool:False> (the default) or C<Bool:True>.
-Otherwise (iff C<other> is C<Nothing>), this function results in the
-reverse of when only C<topic> is C<Nothing>.  In situations where a
-C<Maybe> is used analogously to a SQL nullable value and this function is
-analogous to the dyadic comparison underlying a SQL "ORDER BY", then
-C<reverse_order_of_singles> designates SQL's "ASC|DESC" and
-C<treat_Nothing_as_max> designates SQL's "NULLS FIRST|LAST".
+C<order-determination> function given in its C<S_ord_func> argument, as
+curried by its C<S_is_reverse_order> argument; to be specific, the
+C<order-determination> function takes the attribute values of C<topic> and
+C<other>, not the whole C<Single> values.  Otherwise, iff C<topic> is
+C<Nothing>, this function results in C<Order:Increase> or C<Order:Decrease>
+respectively when C<N_is_after_all_S> is C<Bool:False> (the default) or
+C<Bool:True>.  Otherwise (iff C<other> is C<Nothing>), this function
+results in the reverse of when only C<topic> is C<Nothing>.  The
+C<is_reverse_order> argument is applied to the result of this function
+I<after> all of the other arguments are applied; if it is C<Bool:False>, it
+does not change the result; if it is C<Bool:True>, then it reverses the
+result.  In situations where a C<Maybe> is used analogously to a SQL
+nullable value and this function is analogous to the dyadic comparison
+underlying a SQL "ORDER BY", then C<S_is_reverse_order> designates SQL's
+"ASC|DESC" and C<N_is_after_all_S> designates SQL's "NULLS FIRST|LAST".
 
 =head1 SEE ALSO
 

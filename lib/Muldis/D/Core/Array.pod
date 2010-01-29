@@ -183,6 +183,33 @@ This function is exactly the same as C<sys.std.Core.Array.has_subarray>
 except that it results in the opposite boolean value when given the same
 arguments.
 
+=head2 sys.std.Core.Array.order
+
+C<< function sys.std.Core.Array.order (Order <-- $topic : Array,
+$other : Array, $elem_ord_func? : OrdDetCFuncNC,
+$elem_is_reverse_order? : Bool, $is_reverse_order? : Bool) >>
+
+This function is a generic (total) C<order-determination> function for
+C<Array> values, especially for homogeneous ones such as C<String>.  Iff
+both of its C<topic> and C<other> arguments are identical, this function
+results in C<Order:Same>.  Otherwise, iff one of those 2 arguments is a
+subarray of the other where the latter is matched by its leading elements,
+meaning that the former's tuples are a proper subset of the latter's, then
+the shorter argument is ordered before the longer one.  Otherwise, the
+order of the C<topic> and C<other> arguments is determined by the
+comparison of the lowest-index distinct element values of those arguments,
+as follows:  The result of this function is the result of applying to those
+2 elements the (total) C<order-determination> function given in its
+C<elem_ord_func> argument, as curried by its C<elem_is_reverse_order>
+argument.  Iff C<topic> is ordered before C<other>, this function results
+in C<Order:Increase>; otherwise, iff C<other> is ordered before C<topic>,
+this function results in C<Order:Decrease>.  The C<is_reverse_order>
+argument is applied to the result of this function I<after> all of the
+other arguments are applied; if it is C<Bool:False>, it does not change the
+result; if it is C<Bool:True>, then it reverses the result.  This function
+provides default semantics for ordering these scalar types:  C<Blob>,
+C<Text>, C<NameChain>, and any others defined over those or C<String>.
+
 =head2 sys.std.Core.Array.Array_from_wrap
 
 C<< function sys.std.Core.Array.Array_from_wrap (array_of.Tuple <--
