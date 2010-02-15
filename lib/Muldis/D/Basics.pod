@@ -794,20 +794,18 @@ are built, and the declared parameter and result types of most
 system-defined operators are root types.  A I<leaf type> is a data type
 that has no proper subtypes save for C<Empty>.
 
-A primitive type is not conceptually defined in terms of any other data
-type in the system.  A primitive type can only be system-defined, not
-user-defined.  There are just 2 of these: C<Tuple>, C<Relation>.  I<TODO:
-Further correct this desc.>
+A primitive type is not, in most cases, conceptually defined in terms of
+any other data type in the system.  A primitive type can only be
+system-defined, not user-defined.  There are just 3 of these: C<Int>,
+C<Tuple>, C<Relation>.  I<TODO: Further correct this desc.>
 
 A structure type is conceptually defined in terms of a collection of N
 elements of one or more other types along with an optional constraint that
 restricts the values of the structure data type to be a subset of the
 permutations of possible element values.  The system-defined structure
 types include: C<Bool.True>, C<Blob>, C<Text>, C<Rat>, C<Instant>,
-C<Duration>, C<Name>, C<Comment>, C<Order.Increase>,
-and also the infinite number of
-C<Int.*> singleton types.  All user-defined structure types are scalar
-types.  I<TODO: Further correct this description.>
+C<Duration>, C<Name>, C<Comment>, C<Order.Increase>.  All user-defined
+structure types are scalar types.  I<TODO: Further correct this desc.>
 
 An enumeration type is defined in terms of a union or subset of the values
 of one or more other data types.  The system-defined types defined in terms
@@ -816,7 +814,7 @@ C<DHSet>, C<DHArray>, C<Maybe>, C<Bag>, C<String>, C<UTCDateTime>.  The
 system-defined types defined in terms of a union (sometimes not an
 explicitly enumerated one like with user-defined types) include:
 C<Universal>, C<Empty>, C<Scalar>, C<DHScalar>, C<Bool>, C<Reference>,
-C<Int>, C<Order>.  In the case of a scalar subset enumeration
+C<Order>.  In the case of a scalar subset enumeration
 type, typically it will define extra scalar possreps or selectors.  All
 user-defined nonscalar types are enumeration types.
 
@@ -960,7 +958,7 @@ constraint that the area of the polygon is between 5 and 10 units.
 
 Generic system-defined selector and possrep attribute accessor operators
 exist that automatically work with all scalar types (that have possreps,
-which all scalar root types do), so such do not need to be
+which all scalar root types except C<Int> do), so such do not need to be
 explicitly defined per such type.  They are all in the
 C<sys.std.Core.Scalar.\w+> namespace.  These generic operators take
 advantage of the fact that each scalar possrep looks like a tuple, and
@@ -1133,9 +1131,9 @@ system-defined nonscalar values with additional special names, which are
 C<D0>, C<D0C[0|1]>, and C<Nothing>, don't each come in 2 flavors.)
 
 A I<deeply homogeneous scalar value> is, by definition, any scalar value
-where all of its possreps are such that any relation-valued attributes it
-has, directly or indirectly, are also just deeply homogeneous
-relation-valued.
+that either has no possreps (it is an C<Int>) or all of its possreps are
+such that any relation-valued attributes it has, directly or indirectly,
+are also just deeply homogeneous relation-valued.
 
 A I<deeply homogeneous relation type> is, by definition, any type
 consisting of just deeply homogeneous relation values, such that if the
@@ -1230,7 +1228,7 @@ whether open-ended or not (for example, the type having all real or complex
 numbers between 1 and 100), or they are non-length-constrained strings (for
 example, the set of all possible text strings), or they are composite
 scalar or nonscalar types which have at least one attribute which is
-itself infinite (for example, a type that has an I<Int> attribute).
+itself infinite (for example, a type that has an C<Int> attribute).
 
 The system-defined root type C<Bool> is finite (2 values), as is the
 C<Empty> type (zero values), while all of the other important
@@ -1407,7 +1405,8 @@ be included as part of the definition of that type, which is automatically
 applied when using values of that type with versions of order-sensitive
 operators that don't have the additional function-name-specifying
 parameter.  All ordered system-defined scalar root types have this
-type-default ordering function defined for them, so you don't
+type-default ordering function defined for them, especially the
+system-defined C<Int> type which doesn't have any possreps, so you don't
 need to define any yourself for these most-common cases.  Note that a
 nonscalar type can't have a default ordering function, and a subtype of a
 scalar type can't supply or replace one either, with the reasoning for
@@ -2812,9 +2811,9 @@ An important feature of a B<D> language is that the components of
 variables' current values can be addressed directly as if they were normal
 variables, both for reading and for updating.  In support of this feature,
 Muldis D's DBMS entity names have a feature extension that allows for
-attributes of tuple (but not scalar or relation in the general case; see
-below) typed variables to be used as pseudo-variables, to the Nth degree of
-recursion, with very terse syntax.
+attributes of tuple (but not possrep-having-scalar or relation
+in the general case; see below) typed variables to be used as
+pseudo-variables, to the Nth degree of recursion, with very terse syntax.
 
 For example, if C<lex.foo> was the name of a tuple-typed variable, and
 that tuple type had an attribute named C<bar>, then C<lex.foo.bar> can be
