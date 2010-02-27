@@ -359,6 +359,21 @@ union, that takes a list of attributes and unions the projections of those
 attributes from every input relation; so this means, as with join(), that
 the input relations don't need to have the same headings.
 
+* Update the definition of the "Instant" type to account for updates to the
+Perl 6 spec on 2010.02.23 (r29809), where "Instant" was made opaque and is
+no longer specifically a count of seconds from the TAI epoch but rather
+there can be multiple epochs where an epoch is simply an Instant value, and
+an Instant's internals are implementation defined.  Since Muldis D has no
+opaque types save Int, its analogy could perhaps have multiple possreps,
+one per each epoch of common interest, which counts seconds from that?  See
+also the Temporal-concerning perl6-language thread immed preceding r29809.
+It seems that, like with Text and the thing about NFD vs NFKD or Unicode vs
+non-Han-unifying alternatives, there isn't really any one representation
+option for Instants that is overwhelming more correct or normal than others
+to be used as a default or internal representation everywhere.
+Perhaps also consider demoting Instant/Duration from core, though what to
+do about timestamps used in a system catalog is an ongoing question.
+
 ----------
 
 * IN PROGRESS ...
@@ -418,19 +433,19 @@ an explicit type declaration still.  Note, if same inline-declared host
 param used more than once, you just need "(param $foo : Bar)" form once and
 other uses can just say $foo as per usual; in fact, it must be this way.
 
-* Consider in PTMD_STD using a "<ws>" or other-named token similar to the
-Perl 6 concept of something that is treated as insignificant whitespace as
+* Consider in PTMD_STD using a token similar to the Perl 6 "<ws>" concept
+of something that is treated as insignificant whitespace as
 far as interpreting the code is concerned, but that may contain #-delimited
 comments.  The idea of this is to make it easier to sprinkle comments
 almost anywhere without making the grammar a lot more verbose for it.  It
 is expected that any use of such comments beside "<value>" nodes would only
 be allowed under a "<depot>", and under plain "<value>" would be rejected.
-Mind that such a "<ws>" would not be used everywhere in place of \s+/\s*,
-but only in the specific places representing a node that would turn into
-a system catalog tuple with a "comment".
+Mind that such a token would not be used everywhere in place of a current
+PTMD_STD "<ws>" or "<ws>?" (means \s+ or \s*), but only in specific places
+repr a node that would turn into a system catalog tuple with a "comment".
 Essentially it comes in 2 flavors whose definitions are
-"<_ms_oc> ::= \s+ [<non_value_comment> \s+]?" and
-"<_os_oc> ::= \s* | \s+ <non_value_comment> \s+" or such.
+"<_ms_oc> ::= <ws> [<non_value_comment> <ws>]?" and
+"<_os_oc> ::= <ws>? | <ws> <non_value_comment> <ws>" or such.
 
 * Update HDMD_Perl6_STD.pod considering names of Perl collection types,
 such that "Enum" is the immutable "Pair" and "EnumMap" was renamed from
