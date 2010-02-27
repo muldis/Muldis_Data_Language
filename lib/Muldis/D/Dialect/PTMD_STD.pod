@@ -3168,11 +3168,16 @@ Grammar:
         | 'I-' | 'I/' | '%' | mod | 'I^'
         | 'N-' | 'N/'
         | Bx | Tx | Ax
-        | '∈' | '∉' | '∋' | '∌'
-        | 'S∈' | 'S∉' | 'S∋' | 'S∌'
-        | 'B∈' | 'B∉' | 'B∋' | 'B∌'
-        | '⊆' | '⊈' | '⊇' | '⊉'
-        | '⊂' | '⊄' | '⊃' | '⊅'
+        | '∈' | imem | '∉' | '!imem' | 'not-imem'
+        | '∋' | hmem | '∌' | '!hmem' | 'not-hmem'
+        | 'S∈' | Simem | 'S∉' | 'S!imem' | 'Snot-imem'
+        | 'S∋' | Shmem | 'S∌' | 'S!hmem' | 'Snot-hmem'
+        | 'B∈' | Bimem | 'B∉' | 'B!imem' | 'Bnot-imem'
+        | 'B∋' | Bhmem | 'B∌' | 'B!hmem' | 'Bnot-hmem'
+        | '⊆' | sub | '⊈' | '!sub' | 'not-sub'
+        | '⊇' | super | '⊉' | '!super' | 'not-super'
+        | '⊂' | psub | '⊄' | '!psub' | 'not-psub'
+        | '⊃' | psuper | '⊅' | '!psuper' | 'not-psuper'
         | '∖' | 'R-' | minus | except
         | '⊿' | '!matching' | 'not-matching' | antijoin | semiminus
         | '⋉' | matching | semijoin
@@ -3199,17 +3204,31 @@ Some of the keywords are aliases for each other:
     if      | ←
     nif     | ↚
     %       | mod
+    ∈       | imem
+    ∉       | !imem not-imem
+    ∋       | hmem
+    ∌       | !hmem not-hmem
+    S∈      | Simem
+    S∉      | S!imem Snot-imem
+    S∋      | Shmem
+    S∌      | S!hmem Snot-hmem
+    B∈      | Bimem
+    B∉      | B!imem Bnot-imem
+    B∋      | Bhmem
+    B∌      | B!hmem Bnot-hmem
+    ⊆       | sub
+    ⊈       | !sub not-sub
+    ⊇       | super
+    ⊉       | !super not-super
+    ⊂       | psub
+    ⊄       | !psub not-psub
+    ⊃       | psuper
+    ⊅       | !psuper not-psuper
     ∖       | R- minus except
     ⊿       | !matching not-matching antijoin semiminus
     ⋉       | matching semijoin
     ÷       | R/ divideby
     !like   | not-like
-
-Currently the alternate syntaxes for 20 functions, those testing set
-membership or sub/superset relationships, only come in versions that use
-trans-ASCII characters; if you are stuck using plain ASCII then you'll just
-have to use the generic function invocation syntax to invoke them for now.
-Plain ASCII infix syntax that is reasonable is yet to be determined.
 
 This table indicates which function is invoked by each keyword:
 
@@ -3737,7 +3756,10 @@ Grammar:
         '>' | '≥' | '>='
 
     <interval_membership_op> ::=
-        'I∈' | 'I∉' | 'I∋' | 'I∌'
+          'I∈' | Iimem | between
+        | 'I∉' | 'I!imem' | 'Inot-imem' | '!between' | 'not-between'
+        | 'I∋' | Ihmem
+        | 'I∌' | 'I!hmem' | 'Inot-hmem'
 
     <triadic_compare_op_invo> ::=
        [[not | '!'] <ws>]?
@@ -3767,6 +3789,10 @@ Some of the keywords are aliases for each other:
     --------+--------
     ≤       | <=
     ≥       | >=
+    I∈      | Iimem | between
+    I∉      | I!imem | Inot-imem | !between | not-between
+    I∋      | Ihmem
+    I∌      | I!hmem | Inot-hmem
     ≤≤      | <=<=
     ≤<      | <=<
     <≤      | <<=
