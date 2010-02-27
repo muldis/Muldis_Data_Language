@@ -21,7 +21,7 @@ before you read this one, which provides subservient details.
 
 This document outlines the grammar of the I<Plain Text Muldis D> standard
 dialect named C<PTMD_STD>.  The fully-qualified name of this Muldis D
-standard dialect is C<Muldis_D:"http://muldis.com":"0.109.0":PTMD_STD>.
+standard dialect is C<Muldis_D:"http://muldis.com":0.109.0:PTMD_STD>.
 
 This dialect is designed to exactly match the Muldis D system catalog (the
 possible representation of Muldis D code that is visible to or updateable
@@ -175,13 +175,26 @@ Grammar:
         Muldis_D
 
     <ln_base_authority> ::=
-        <Name_payload>
+        <ln_elem_str>
 
     <ln_base_version_number> ::=
-        <Name_payload>
+        <ln_elem_str>
 
     <ln_dialect> ::=
         PTMD_STD
+
+    <ln_elem_str> ::=
+        <nonquoted_ln_elem_str> | <quoted_ln_elem_str>
+
+    <nonquoted_ln_elem_str> ::=
+        <[ a..z A..Z 0..9 _ - \. ]>+
+
+    <quoted_ln_elem_str> ::=
+        [
+            <["]>
+                [<[\ ..~]-[\\"]> | '\b'|'\a'|'\q'|'\g'|'\h'|'\s']+
+            <["]>
+        ] ** [<ws>? '~']
 
     <ln_extensions> ::=
         '{' <ws>?
@@ -219,8 +232,10 @@ character string C<Muldis_D>.
 =item C<ln_base_authority>
 
 This is the base authority; it is a character string formatted as per a
-specific-context C<Name> value literal; it is typically the delimited
-character string C<http://muldis.com>.
+specific-context C<Name> value literal, except that it must be nonempty and
+it is expressly limited to using non-control characters in the ASCII
+repertoire, and its nonquoted variant has fewer limitations than C<Name>'s;
+it is typically the delimited character string C<http://muldis.com>.
 
 =item C<ln_base_version_number>
 
@@ -245,11 +260,11 @@ added later, which would likely be optional.
 
 Examples:
 
-    Muldis_D:"http://muldis.com":"0.109.0":PTMD_STD:{
+    Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
         catalog_abstraction_level => rtn_inv_alt_syn
     }
 
-    Muldis_D:"http://muldis.com":"0.109.0":PTMD_STD:{
+    Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
         catalog_abstraction_level  => rtn_inv_alt_syn,
         standard_syntax_extensions => {date_time}
     }
@@ -330,7 +345,7 @@ any system-defined scalar types not in terms of possreps.
 
 Examples:
 
-    Muldis_D:"http://muldis.com":"0.109.0":PTMD_STD:{
+    Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
         catalog_abstraction_level => the_floor
     }
     Relation:{
@@ -387,7 +402,7 @@ AND SELECTORS>, L</OPAQUE VALUE LITERALS>, L</COLLECTION VALUE SELECTORS>.
 
 Examples:
 
-    Muldis_D:"http://muldis.com":"0.109.0":PTMD_STD:{
+    Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
         catalog_abstraction_level => code_as_data
     }
     Relation:{
@@ -395,7 +410,7 @@ Examples:
         { food => 'Kiwis', qty => 30 }
     }
 
-    Muldis_D:"http://muldis.com":"0.109.0":PTMD_STD:{
+    Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
        catalog_abstraction_level => code_as_data
     }
     depot-catalog Database:Depot:{
@@ -475,7 +490,7 @@ described in these main pod sections: L</GENERIC VALUE EXPRESSIONS>.
 
 Examples:
 
-    Muldis_D:"http://muldis.com":"0.109.0":PTMD_STD:{
+    Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
         catalog_abstraction_level => plain_rtn_inv
     }
     depot-catalog {
@@ -533,7 +548,7 @@ EXPRESSIONS>.
 
 Examples:
 
-    Muldis_D:"http://muldis.com":"0.109.0":PTMD_STD:{
+    Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
         catalog_abstraction_level => rtn_inv_alt_syn
     }
     depot-catalog {
@@ -1292,10 +1307,11 @@ double-quotes rather than apostrophes/single-quotes.
 A C<nonquoted_name_str> is composed of a single alphabetic or underscore
 character followed by zero or more characters that are each alphanumeric or
 underscore or hyphen.  It can not be segmented, so you will have to use the
-C<quoted_name_str> equivalent if you want a segmented string.  I<The
-definitions of alphabetic and numeric should include appropriate Unicode
-characters, but at the moment this isn't reflected in the grammar; TODO:
-fix this.>
+C<quoted_name_str> equivalent if you want a segmented string.  The
+definitions of alphabetic and numeric in this context are expressly limited
+to the ASCII repertoire, for various reasons including simplicity and a
+better degree of security; if you want to include any other Unicode
+alphanumeric characters, you will have to use a C<quoted_name_str>.
 
 A C<NameChain> node represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short

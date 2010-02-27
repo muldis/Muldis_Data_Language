@@ -45,8 +45,7 @@ at them.
 
 The fully-qualified name of this multi-part document and the language
 specification it contains (as a single composition) is
-C<Muldis_D:"http://muldis.com":"0.109.0">.  It is the official/original
-(not
+C<Muldis_D:"http://muldis.com":0.109.0>.  It is the official/original (not
 embraced and extended) Muldis D language specification by the authority
 Darren Duncan (C<http://muldis.com>), version C<0.109.0> (this number
 matches the VERSION pod in this file).  This multi-part document is named
@@ -131,6 +130,17 @@ allowed elements; in that case, this language name implicitly refers to the
 entire language sub-tree having the specified elements in common; an
 example of this is the 3-element name mentioned in this file's DESCRIPTION
 section.  Even in code, sometimes certain child-most elements are optional.
+
+While not mandatory for Muldis D variants in general, it is strongly
+recommended that all elements of a Muldis D language name would, when
+expressed in terms of character strings, be expressly limited to comprising
+just non-control characters in the ASCII repertoire, and not include any
+other characters such as Unicode has.  The primary reason for this is to
+make it as simple as possible to interpret a language name on all
+architectures, especially so that any explicit hints in the name on how to
+interpret the rest of the Muldis D code, including hints as to what
+character repertoire it is written in, can be understood without ambiguity.
+For all official Muldis D variants, ASCII-only names is actually mandatory.
 
 =head2 Foundation
 
