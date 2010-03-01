@@ -135,15 +135,20 @@ C<HDMD_Perl5_STD>.
 =item C<ln_extensions>
 
 This is a set of chosen pragma/parser-config options, which is formatted
-similarly to a C<Tuple> SCVL.  The only mandatory pragma is
+similarly to a C<Tuple> SCVL.  The only 2 mandatory pragmas are
 C<catalog_abstraction_level> (see the L</CATALOG ABSTRACTION LEVELS> pod
-section).  The only optional pragma is C<standard_syntax_extensions> (see
-the L</STANDARD SYNTAX EXTENSIONS> pod section).  Other pragmas may be
-added later, which would likely be optional.
+section) and C<op_char_repertoire> (see L</OPERATOR CHARACTER REPERTOIRE>).
+The only optional pragma is C<standard_syntax_extensions> (see the
+L</STANDARD SYNTAX EXTENSIONS> pod section).  Other pragmas may be added
+later, which would likely be optional.
 
 The value associated with the C<ln_extensions> attribute named
 C<catalog_abstraction_level> must be one of these 4 Perl character strings:
 C<the_floor>, C<code_as_data>, C<plain_rtn_inv>, C<rtn_inv_alt_syn>.
+
+The value associated with the C<ln_extensions> attribute named
+C<op_char_repertoire> must be one of these 2 Perl character strings:
+C<basic>, C<extended>.
 
 The value associated with the C<ln_extensions> attribute named
 C<standard_syntax_extensions> must be formatted similarly to a C<Set> SCVL;
@@ -155,11 +160,13 @@ C<date_time>.
 Examples:
 
     [ 'Muldis_D', 'http://muldis.com', '0.109.0', 'HDMD_Perl5_STD', {
-        catalog_abstraction_level => 'rtn_inv_alt_syn'
+        catalog_abstraction_level => 'rtn_inv_alt_syn',
+        op_char_repertoire => 'extended'
     } ]
 
     [ 'Muldis_D', 'http://muldis.com', '0.109.0', 'HDMD_Perl5_STD', {
-        catalog_abstraction_level  => 'rtn_inv_alt_syn',
+        catalog_abstraction_level => 'rtn_inv_alt_syn',
+        op_char_repertoire => 'extended',
         standard_syntax_extensions => ['date_time']
     } ]
 
@@ -193,7 +200,8 @@ Examples:
 
     [
         [ 'Muldis_D', 'http://muldis.com', '0.109.0', 'HDMD_Perl5_STD', {
-            catalog_abstraction_level => 'the_floor'
+            catalog_abstraction_level => 'the_floor',
+            op_char_repertoire => 'basic'
         } ],
         [ 'Relation', [
             {
@@ -228,7 +236,8 @@ Examples:
 
     [
         [ 'Muldis_D', 'http://muldis.com', '0.109.0', 'HDMD_Perl5_STD', {
-            catalog_abstraction_level => 'code_as_data'
+            catalog_abstraction_level => 'code_as_data',
+            op_char_repertoire => 'basic'
         } ],
         [ 'Relation', [
             { food => 'Carrots', qty => 100 },
@@ -238,7 +247,8 @@ Examples:
 
     [
        [ 'Muldis_D', 'http://muldis.com', '0.109.0', 'HDMD_Perl5_STD', {
-          catalog_abstraction_level => 'code_as_data'
+          catalog_abstraction_level => 'code_as_data',
+          op_char_repertoire => 'basic'
        } ],
        [ 'depot', { 'depot-catalog' => [ 'Database', 'Depot', {
           functions => [ 'Relation', [
@@ -286,7 +296,8 @@ Examples:
 
     [
         [ 'Muldis_D', 'http://muldis.com', '0.109.0', 'HDMD_Perl5_STD', {
-            catalog_abstraction_level => 'plain_rtn_inv'
+            catalog_abstraction_level => 'plain_rtn_inv',
+            op_char_repertoire => 'basic'
         } ],
         [ 'depot', { 'depot-catalog' => [
             [ 'function', 'cube', [ 'Int', { topic => 'Int' }, [
@@ -310,7 +321,8 @@ Examples:
 
     [
         [ 'Muldis_D', 'http://muldis.com', '0.109.0', 'HDMD_Perl5_STD', {
-            catalog_abstraction_level => 'rtn_inv_alt_syn'
+            catalog_abstraction_level => 'rtn_inv_alt_syn',
+            op_char_repertoire => 'basic'
         } ],
         [ 'depot', { 'depot-catalog' => [
             [ 'function', 'cube', [ 'Int', { topic => 'Int' }, [
@@ -318,6 +330,41 @@ Examples:
             ] ] ]
         ] } ]
     ]
+
+=head1 OPERATOR CHARACTER REPERTOIRE
+
+The C<op_char_repertoire> pragma determines primarily whether or not the
+various routine invocation alternate syntaxes, herein called I<operators>,
+may be composed of only ASCII characters or also other Unicode characters,
+and this pragma determines secondarily whether or not a few special value
+literals (effectively nullary operators) composed of non-ASCII Unicode
+characters may exist.
+
+There are currently 2 specified operator character repertoires: C<basic>,
+C<extended>.  The latter is a proper superset of the former.
+
+Specifying the C<op_char_repertoire> pragma in a C<language_name> node is
+mandatory, since there is no obviously best setting to use implicitly when
+one isn't specified.
+
+=head2 basic
+
+The C<basic> operator character repertoire is the smallest one, and it only
+supports writing the proper subset of defined operator invocations and
+special value literals that are composed of just 7-bit ASCII characters.
+This repertoire can be recommended for general use, especially since code
+written to it should be the most universally portable as-is (with respect
+to operator character repertoires), including full support even by minimal
+Muldis D implementations and older text editors.
+
+=head2 extended
+
+The C<extended> operator character repertoire is the largest one, and it
+supports the entire set of defined operator invocations and special value
+literals, many of which are composed of Unicode characters outside the
+7-bit ASCII repertoire.  This is the most recommended repertoire for
+general use, assuming that all the Muldis D implementations and source code
+text editors you want to use support it.
 
 =head1 STANDARD SYNTAX EXTENSIONS
 
@@ -341,8 +388,9 @@ standard syntax extensions will have no effect when the catalog abstraction
 level is C<the_floor>, and some of their features may only take effect when
 the catalog abstraction level is C<rtn_inv_alt_syn>, as is appropriate.
 
-Specifying the C<standard_syntax_extensions> pragma is optional, and when
-omitted it defaults to the empty set, meaning no extensions may be used.
+Specifying the C<standard_syntax_extensions> pragma in a C<language_name>
+node is optional, and when omitted it defaults to the empty set, meaning no
+extensions may be used.
 
 =head2 date_time
 

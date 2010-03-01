@@ -199,6 +199,7 @@ Grammar:
     <ln_extensions> ::=
         '{' <ws>?
             catalog_abstraction_level <ws>? '=>' <ws>? <cat_abstr_level>
+            <ws>? ',' <ws>? op_char_repertoire <ws>? '=>' <ws>? <op_cr>
             [<ws>? ',' <ws>? standard_syntax_extensions
                 <ws>? => <ws>? <std_syn_ext_list>]?
         <ws>? '}'
@@ -208,6 +209,9 @@ Grammar:
         | code_as_data
         | plain_rtn_inv
         | rtn_inv_alt_syn
+
+    <op_cr> ::=
+        basic | extended
 
     <std_syn_ext_list> ::=
         '{' <ws>?
@@ -250,22 +254,25 @@ C<PTMD_STD>.
 =item C<ln_extensions>
 
 This is a set of chosen pragma/parser-config options, which is formatted
-similarly to a C<Tuple> SCVL.  The only mandatory pragma is
+similarly to a C<Tuple> SCVL.  The only 2 mandatory pragmas are
 C<catalog_abstraction_level> (see the L</CATALOG ABSTRACTION LEVELS> pod
-section).  The only optional pragma is C<standard_syntax_extensions> (see
-the L</STANDARD SYNTAX EXTENSIONS> pod section).  Other pragmas may be
-added later, which would likely be optional.
+section) and C<op_char_repertoire> (see L</OPERATOR CHARACTER REPERTOIRE>).
+The only optional pragma is C<standard_syntax_extensions> (see the
+L</STANDARD SYNTAX EXTENSIONS> pod section).  Other pragmas may be added
+later, which would likely be optional.
 
 =back
 
 Examples:
 
     Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
-        catalog_abstraction_level => rtn_inv_alt_syn
+        catalog_abstraction_level => rtn_inv_alt_syn,
+        op_char_repertoire => extended
     }
 
     Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
-        catalog_abstraction_level  => rtn_inv_alt_syn,
+        catalog_abstraction_level => rtn_inv_alt_syn,
+        op_char_repertoire => extended,
         standard_syntax_extensions => {date_time}
     }
 
@@ -313,8 +320,9 @@ expressive, and everything a user can do with one, they can do with the
 others, and code is round-trippable between all of them without loss of
 behaviour.  The choice is simply about the syntax to accomplish something.>
 
-Specifying this pragma in a C<language_name> node is mandatory, since there
-is no obvious abstraction level to use implicitly when one isn't specified.
+Specifying the C<catalog_abstraction_level> pragma in a C<language_name>
+node is mandatory, since there is no obvious abstraction level to use
+implicitly when one isn't specified.
 
 =head2 the_floor
 
@@ -346,7 +354,8 @@ any system-defined scalar types not in terms of possreps.
 Examples:
 
     Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
-        catalog_abstraction_level => the_floor
+        catalog_abstraction_level => the_floor,
+        op_char_repertoire => basic
     }
     Relation:{
         {
@@ -403,7 +412,8 @@ AND SELECTORS>, L</OPAQUE VALUE LITERALS>, L</COLLECTION VALUE SELECTORS>.
 Examples:
 
     Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
-        catalog_abstraction_level => code_as_data
+        catalog_abstraction_level => code_as_data,
+        op_char_repertoire => basic
     }
     Relation:{
         { food => 'Carrots', qty => 100 },
@@ -411,7 +421,8 @@ Examples:
     }
 
     Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
-       catalog_abstraction_level => code_as_data
+       catalog_abstraction_level => code_as_data,
+        op_char_repertoire => basic
     }
     depot-catalog Database:Depot:{
        functions => Relation:{
@@ -491,7 +502,8 @@ described in these main pod sections: L</GENERIC VALUE EXPRESSIONS>.
 Examples:
 
     Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
-        catalog_abstraction_level => plain_rtn_inv
+        catalog_abstraction_level => plain_rtn_inv,
+        op_char_repertoire => basic
     }
     depot-catalog {
         function cube (Int <-- $topic : Int) {
@@ -549,13 +561,135 @@ EXPRESSIONS>.
 Examples:
 
     Muldis_D:"http://muldis.com":0.109.0:PTMD_STD:{
-        catalog_abstraction_level => rtn_inv_alt_syn
+        catalog_abstraction_level => rtn_inv_alt_syn,
+        op_char_repertoire => basic
     }
     depot-catalog {
         function cube (Int <-- $topic : Int) {
             $topic I^ 3
         }
     }
+
+=head1 OPERATOR CHARACTER REPERTOIRE
+
+The C<op_char_repertoire> pragma determines primarily whether or not the
+various routine invocation alternate syntaxes, herein called I<operators>,
+may be composed of only ASCII characters or also other Unicode characters,
+and this pragma determines secondarily whether or not a few special value
+literals (effectively nullary operators) composed of non-ASCII Unicode
+characters may exist.
+
+There are currently 2 specified operator character repertoires: C<basic>,
+C<extended>.  The latter is a proper superset of the former.
+
+The C<op_char_repertoire> pragma is generally orthogonal to the
+C<catalog_abstraction_level> pragma, so you can combine any value of the
+latter with any value of the former.  However, in practice the operator
+character repertoire setting will have no effect at all when the catalog
+abstraction level is C<the_floor>, and it will otherwise have very little
+effect except when the catalog abstraction level is C<rtn_inv_alt_syn>.  To
+be specific, what the C<op_char_repertoire> pragma primarily affects is
+special operator call syntaxes provided only by C<rtn_inv_alt_syn>, and
+what the former secondarily affects is special value literals provided by
+C<code_as_data> plus greater catalog abstraction levels.
+
+Specifying the C<op_char_repertoire> pragma in a C<language_name> node is
+mandatory, since there is no obviously best setting to use implicitly when
+one isn't specified.
+
+=head2 basic
+
+The C<basic> operator character repertoire is the smallest one, and it only
+supports writing the proper subset of defined operator invocations and
+special value literals that are composed of just 7-bit ASCII characters.
+This repertoire can be recommended for general use, especially since code
+written to it should be the most universally portable as-is (with respect
+to operator character repertoires), including full support even by minimal
+Muldis D implementations and older text editors.
+
+When the C<op_char_repertoire> pragma is C<basic>, then the
+following grammar definitions are in effect:
+
+    <Bool_payload> ::=
+        <Bool_payload__op_cr_basic>
+
+    <maybe_Nothing> ::=
+        <maybe_Nothing__op_cr_basic>
+
+    <comm_infix_reduce_op> ::=
+        <comm_infix_reduce_op__op_cr_basic>
+
+    <sym_dyadic_infix_op> ::=
+        <sym_dyadic_infix_op__op_cr_basic>
+
+    <nonsym_dyadic_infix_op> ::=
+        <nonsym_dyadic_infix_op__op_cr_basic>
+
+    <monadic_prefix_op> ::=
+        <monadic_prefix_op__op_cr_basic>
+
+    <is_before_op> ::=
+        <is_before_op__op_cr_basic>
+
+    <is_after_op> ::=
+        <is_after_op__op_cr_basic>
+
+    <interval_membership_op> ::=
+        <interval_membership_op__op_cr_basic>
+
+=head2 extended
+
+The C<extended> operator character repertoire is the largest one, and it
+supports the entire set of defined operator invocations and special value
+literals, many of which are composed of Unicode characters outside the
+7-bit ASCII repertoire.  This is the most recommended repertoire for
+general use, assuming that all the Muldis D implementations and source code
+text editors you want to use support it.  The expectation is that, in
+general, minimal Muldis D implementations and older text editors won't
+support it but non-minimal ones would, so code written to it may not be the
+most universally portable as-is but should be portable in most common and
+modern environments.
+
+In practice the main payoff of C<extended> is that user code can exploit
+the wide range of symbols that Unicode provides which are the canonical
+means of writing various math or logic or relational et al operators in the
+wider world, and which programmers would likely have written with all along
+if it weren't for the large limitations of legacy computer systems which
+practically forced them to use various approximations instead.  While you
+can always write with ASCII approximations, using C<extended> means you
+often don't have to, and your code can be a lot more readable as a result,
+at least to the practitioners of the domains that the symbols come from,
+and the code is otherwise more terse and arguably appears more attractive.
+
+When the C<op_char_repertoire> pragma is C<extended>, then the
+following grammar definitions are in effect:
+
+    <Bool_payload> ::=
+        <Bool_payload__op_cr_extended>
+
+    <maybe_Nothing> ::=
+        <maybe_Nothing__op_cr_extended>
+
+    <comm_infix_reduce_op> ::=
+        <comm_infix_reduce_op__op_cr_extended>
+
+    <sym_dyadic_infix_op> ::=
+        <sym_dyadic_infix_op__op_cr_extended>
+
+    <nonsym_dyadic_infix_op> ::=
+        <nonsym_dyadic_infix_op__op_cr_extended>
+
+    <monadic_prefix_op> ::=
+        <monadic_prefix_op__op_cr_extended>
+
+    <is_before_op> ::=
+        <is_before_op__op_cr_extended>
+
+    <is_after_op> ::=
+        <is_after_op__op_cr_extended>
+
+    <interval_membership_op> ::=
+        <interval_membership_op__op_cr_extended>
 
 =head1 STANDARD SYNTAX EXTENSIONS
 
@@ -579,8 +713,9 @@ standard syntax extensions will have no effect when the catalog abstraction
 level is C<the_floor>, and some of their features may only take effect when
 the catalog abstraction level is C<rtn_inv_alt_syn>, as is appropriate.
 
-Specifying the C<standard_syntax_extensions> pragma is optional, and when
-omitted it defaults to the empty set, meaning no extensions may be used.
+Specifying the C<standard_syntax_extensions> pragma in a C<language_name>
+node is optional, and when omitted it defaults to the empty set, meaning no
+extensions may be used.
 
 =head2 date_time
 
@@ -840,8 +975,12 @@ Grammar:
         [Bool ':' <ws>?]?
         <Bool_payload>
 
-    <Bool_payload> ::=
-        False | ⊥ | True | ⊤
+    <Bool_payload__op_cr_basic> ::=
+        False | True
+
+    <Bool_payload__op_cr_extended> ::=
+          <Bool_payload__op_cr_basic>
+        | ⊥ | ⊤
 
 A C<Bool> node represents a logical boolean value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Bool> value as follows:  The C<Bool_payload>
@@ -1978,8 +2117,12 @@ Grammar:
     <maybe_list> ::=
         '{' <ws>? <expr> <ws>? '}'
 
-    <maybe_Nothing> ::=
-        Nothing | '∅'
+    <maybe_Nothing__op_cr_basic> ::=
+        Nothing
+
+    <maybe_Nothing__op_cr_extended> ::=
+          <maybe_Nothing__op_cr_basic>
+        | '∅'
 
 A C<Maybe> node represents a literal or selector invocation for a maybe
 value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Maybe> value
@@ -2963,13 +3106,18 @@ Grammar:
     <comm_infix_reduce_op_invo> ::=
         <expr> ** [<ws> <comm_infix_reduce_op> <ws>]
 
-    <comm_infix_reduce_op ::=
-          and | '∧' | or | '∨' | xnor | '↔' | iff | xor | '⊻' | '↮'
+    <comm_infix_reduce_op__op_cr_basic> ::=
+          and | or | xnor | iff | xor
         | 'I+' | 'I*'
         | 'N+' | 'N*'
-        | '∪' | 'R+' | union | '∩' | 'R*' | intersect
-        | '∆' | 'R%' | exclude | symdiff
-        | '⋈' | join | '×' | times | 'cross-join'
+        | union | 'R+' | intersect | 'R*' | exclude | symdiff | 'R%'
+        | join | times | 'cross-join'
+
+    <comm_infix_reduce_op__op_cr_extended> ::=
+          <comm_infix_reduce_op__op_cr_basic>
+        | '∧' | '∨' | '↔' | '⊻' | '↮'
+        | '∪' | '∩' | '∆'
+        | '⋈' | '×'
 
 A C<comm_infix_reduce_op_invo> node is for using infix notation to invoke a
 (homogenous) commutative N-adic reduction operator function.  Such a
@@ -2991,17 +3139,17 @@ matches must be identical / the same operator.
 
 Some of the keywords are aliases for each other:
 
-    keyword | aliases
-    --------+--------
-    and     | ∧
-    or      | ∨
-    xnor    | ↔ iff
-    xor     | ⊻ ↮
-    ∪       | R+ union
-    ∩       | R* intersect
-    ∆       | R% exclude symdiff
-    ⋈       | join
-    ×       | times cross-join
+    keyword   | aliases
+    ----------+--------
+    and       | ∧
+    or        | ∨
+    xnor      | ↔ iff
+    xor       | ⊻ ↮
+    union     | ∪ R+
+    intersect | ∩ R*
+    exclude   | ∆ symdiff R%
+    join      | ⋈
+    times     | × cross-join
 
 This table indicates which function is invoked by each keyword:
 
@@ -3013,11 +3161,13 @@ This table indicates which function is invoked by each keyword:
     I*   -> Core.Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
     N+   -> Core.Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
     N*   -> Core.Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
-    ∪    -> Core.Relation.union( Set:{ $expr[0], ..., $expr[n] } )
-    ∩    -> Core.Relation.intersection( Set:{ $expr[0], ..., $expr[n] } )
-    ∆    -> Core.Relation.exclusion( Bag:{ $expr[0], ..., $expr[n] } )
-    ⋈    -> Core.Relation.join( Set:{ $expr[0], ..., $expr[n] } )
-    ×    -> Core.Relation.product( Set:{ $expr[0], ..., $expr[n] } )
+
+    union     -> Core.Relation.union( Set:{ $expr[0], ..., $expr[n] } )
+    intersect -> Core.Relation.intersection(
+                    Set:{ $expr[0], ..., $expr[n] } )
+    exclude   -> Core.Relation.exclusion( Bag:{ $expr[0], ..., $expr[n] } )
+    join      -> Core.Relation.join( Set:{ $expr[0], ..., $expr[n] } )
+    times     -> Core.Relation.product( Set:{ $expr[0], ..., $expr[n] } )
 
 Examples:
 
@@ -3046,7 +3196,7 @@ Grammar:
     <noncomm_infix_reduce_op_invo> ::=
         <expr> ** [<ws> <noncomm_infix_reduce_op> <ws>]
 
-    <noncomm_infix_reduce_op ::=
+    <noncomm_infix_reduce_op> ::=
           '[<=>]'
         | 'B~' | 'T~' | 'A~'
         | '//' | '//d'
@@ -3105,10 +3255,15 @@ Grammar:
     <sym_dyadic_infix_op_invo> ::=
         <expr> <ws> <sym_dyadic_infix_op> <ws> <expr>
 
-    <sym_dyadic_infix_op> ::=
-          '=' | '≠' | '!='
-        | nand | '⊼' | '↑' | nor | '⊽' | '↓'
+    <sym_dyadic_infix_op__op_cr_basic> ::=
+          '=' | '!='
+        | nand | nor
         | 'I|-|' | 'N|-|'
+
+    <sym_dyadic_infix_op__op_cr_extended> ::=
+          <sym_dyadic_infix_op__op_cr_basic>
+        | '≠'
+        | '⊼' | '↑' | '⊽' | '↓'
 
 A C<sym_dyadic_infix_op_invo> node is for using infix notation to invoke a
 symmetric dyadic operator function.  Such a function takes exactly 2
@@ -3124,14 +3279,14 @@ Some of the keywords are aliases for each other:
 
     keyword | aliases
     --------+--------
-    ≠       | !=
+    !=      | ≠
     nand    | ⊼ ↑
     nor     | ⊽ ↓
 
 This table indicates which function is invoked by each keyword:
 
     =    -> Core.Universal.is_identical( $expr[0], $expr[1] )
-    ≠    -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
+    !=   -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
     nand -> Core.Bool.nand( $expr[0], $expr[1] )
     nor  -> Core.Bool.nor( $expr[0], $expr[1] )
     I|-| -> Core.Integer.abs_diff( $expr[0], $expr[1] )
@@ -3162,27 +3317,32 @@ Grammar:
     <rhs> ::=
         <expr>
 
-    <nonsym_dyadic_infix_op> ::=
-        | isa | '!isa' | 'not-isa' | as | asserting
-        | imp | '→' | implies | nimp | '↛' | if | '←' | nif | '↚'
+    <nonsym_dyadic_infix_op__op_cr_basic> ::=
+          isa | '!isa' | 'not-isa' | as | asserting
+        | imp | implies | nimp | if | nif
         | 'I-' | 'I/' | '%' | mod | 'I^'
         | 'N-' | 'N/'
         | Bx | Tx | Ax
-        | '∈' | imem | '∉' | '!imem' | 'not-imem'
-        | '∋' | hmem | '∌' | '!hmem' | 'not-hmem'
-        | 'S∈' | Simem | 'S∉' | 'S!imem' | 'Snot-imem'
-        | 'S∋' | Shmem | 'S∌' | 'S!hmem' | 'Snot-hmem'
-        | 'B∈' | Bimem | 'B∉' | 'B!imem' | 'Bnot-imem'
-        | 'B∋' | Bhmem | 'B∌' | 'B!hmem' | 'Bnot-hmem'
-        | '⊆' | sub | '⊈' | '!sub' | 'not-sub'
-        | '⊇' | super | '⊉' | '!super' | 'not-super'
-        | '⊂' | psub | '⊄' | '!psub' | 'not-psub'
-        | '⊃' | psuper | '⊅' | '!psuper' | 'not-psuper'
-        | '∖' | 'R-' | minus | except
-        | '⊿' | '!matching' | 'not-matching' | antijoin | semiminus
-        | '⋉' | matching | semijoin
-        | '÷' | 'R/' | divideby
+        | imem | '!imem' | 'not-imem' | hmem | '!hmem' | 'not-hmem'
+        | Simem | 'S!imem' | 'Snot-imem' | Shmem | 'S!hmem' | 'Snot-hmem'
+        | Bimem | 'B!imem' | 'Bnot-imem' | Bhmem | 'B!hmem' | 'Bnot-hmem'
+        | sub | '!sub' | 'not-sub' | super | '!super' | 'not-super'
+        | psub | '!psub' | 'not-psub' | psuper | '!psuper' | 'not-psuper'
+        | minus | except | 'R-'
+        | '!matching' | 'not-matching' | antijoin | semiminus
+        | matching | semijoin
+        | divideby | 'R/'
         | like | '!like' | 'not-like'
+
+    <nonsym_dyadic_infix_op__op_cr_extended> ::=
+          <nonsym_dyadic_infix_op__op_cr_basic>
+        | '→' | '↛' | '←' | '↚'
+        | '∈' | '∉' | '∋' | '∌'
+        | 'S∈' | 'S∉' | 'S∋' | 'S∌'
+        | 'B∈' | 'B∉' | 'B∋' | 'B∌'
+        | '⊆' | '⊈' | '⊇' | '⊉'
+        | '⊂' | '⊄' | '⊃' | '⊅'
+        | '∖' | '⊿' | '⋉' | '÷'
 
 A C<nonsym_dyadic_infix_op_invo> node is for using infix notation to
 invoke a non-symmetric dyadic operator function.  Such a function takes
@@ -3196,39 +3356,39 @@ are associated in the appropriate sequence.
 
 Some of the keywords are aliases for each other:
 
-    keyword | aliases
-    --------+--------
-    !isa    | not-isa
-    imp     | → implies
-    nimp    | ↛
-    if      | ←
-    nif     | ↚
-    %       | mod
-    ∈       | imem
-    ∉       | !imem not-imem
-    ∋       | hmem
-    ∌       | !hmem not-hmem
-    S∈      | Simem
-    S∉      | S!imem Snot-imem
-    S∋      | Shmem
-    S∌      | S!hmem Snot-hmem
-    B∈      | Bimem
-    B∉      | B!imem Bnot-imem
-    B∋      | Bhmem
-    B∌      | B!hmem Bnot-hmem
-    ⊆       | sub
-    ⊈       | !sub not-sub
-    ⊇       | super
-    ⊉       | !super not-super
-    ⊂       | psub
-    ⊄       | !psub not-psub
-    ⊃       | psuper
-    ⊅       | !psuper not-psuper
-    ∖       | R- minus except
-    ⊿       | !matching not-matching antijoin semiminus
-    ⋉       | matching semijoin
-    ÷       | R/ divideby
-    !like   | not-like
+    keyword   | aliases
+    ----------+--------
+    !isa      | not-isa
+    imp       | → implies
+    nimp      | ↛
+    if        | ←
+    nif       | ↚
+    %         | mod
+    imem      | ∈
+    !imem     | ∉ not-imem
+    hmem      | ∋
+    !hmem     | ∌ not-hmem
+    Simem     | S∈
+    S!imem    | S∉ Snot-imem
+    Shmem     | S∋
+    S!hmem    | S∌ Snot-hmem
+    Bimem     | B∈
+    B!imem    | B∉ Bnot-imem
+    Bhmem     | B∋
+    B!hmem    | B∌ Bnot-hmem
+    sub       | ⊆
+    !sub      | ⊈ not-sub
+    super     | ⊇
+    !super    | ⊉ not-super
+    psub      | ⊂
+    !psub     | ⊄ not-psub
+    psuper    | ⊃
+    !psuper   | ⊅ not-psuper
+    minus     | ∖ except R-
+    !matching | ⊿ not-matching antijoin semiminus
+    matching  | ⋉ semijoin
+    divideby  | ÷ R/
+    !like     | not-like
 
 This table indicates which function is invoked by each keyword:
 
@@ -3249,30 +3409,33 @@ This table indicates which function is invoked by each keyword:
     Bx   -> Core.Blob.replication( $lhs, count => $rhs )
     Tx   -> Core.Text.replication( $lhs, count => $rhs )
     Ax   -> Core.Array.replication( $lhs, count => $rhs )
-    ∈    -> Core.Tuple.is_member( t => $lhs, r => $rhs )
-    ∉    -> Core.Tuple.is_not_member( t => $lhs, r => $rhs )
-    ∋    -> Core.Relation.has_member( r => $lhs, t => $rhs )
-    ∌    -> Core.Relation.has_not_member( r => $lhs, t => $rhs )
-    S∈   -> Core.Set.value_is_member( value => $lhs, set => $rhs )
-    S∉   -> Core.Set.value_is_not_member( value => $lhs, set => $rhs )
-    S∋   -> Core.Set.has_member( set => $lhs, value => $rhs )
-    S∌   -> Core.Set.has_not_member( set => $lhs, value => $rhs )
-    B∈   -> Core.Bag.value_is_member( value => $lhs, bag => $rhs )
-    B∉   -> Core.Bag.value_is_not_member( value => $lhs, bag => $rhs )
-    B∋   -> Core.Bag.has_member( bag => $lhs, value => $rhs )
-    B∌   -> Core.Bag.has_not_member( bag => $lhs, value => $rhs )
-    ⊆    -> Core.Relation.is_subset( $lhs, $rhs )
-    ⊈    -> Core.Relation.is_not_subset( $lhs, $rhs )
-    ⊇    -> Core.Relation.is_superset( $lhs, $rhs )
-    ⊉    -> Core.Relation.is_not_superset( $lhs, $rhs )
-    ⊂    -> Core.Relation.is_proper_subset( $lhs, $rhs )
-    ⊄    -> Core.Relation.is_not_proper_subset( $lhs, $rhs )
-    ⊃    -> Core.Relation.is_proper_superset( $lhs, $rhs )
-    ⊅    -> Core.Relation.is_not_proper_superset( $lhs, $rhs )
-    ∖    -> Core.Relation.diff( source => $lhs, filter => $rhs )
-    ⊿    -> Core.Relation.semidiff( source => $lhs, filter => $rhs )
-    ⋉    -> Core.Relation.semijoin( source => $lhs, filter => $rhs )
-    ÷    -> Core.Relation.quotient( dividend => $lhs, divisor => $rhs )
+
+    imem   -> Core.Tuple.is_member( t => $lhs, r => $rhs )
+    !imem  -> Core.Tuple.is_not_member( t => $lhs, r => $rhs )
+    hmem   -> Core.Relation.has_member( r => $lhs, t => $rhs )
+    !hmem  -> Core.Relation.has_not_member( r => $lhs, t => $rhs )
+    Simem  -> Core.Set.value_is_member( value => $lhs, set => $rhs )
+    S!imem -> Core.Set.value_is_not_member( value => $lhs, set => $rhs )
+    Shmem  -> Core.Set.has_member( set => $lhs, value => $rhs )
+    S!hmem -> Core.Set.has_not_member( set => $lhs, value => $rhs )
+    Bimem  -> Core.Bag.value_is_member( value => $lhs, bag => $rhs )
+    B!imem -> Core.Bag.value_is_not_member( value => $lhs, bag => $rhs )
+    Bhmem  -> Core.Bag.has_member( bag => $lhs, value => $rhs )
+    B!hmem -> Core.Bag.has_not_member( bag => $lhs, value => $rhs )
+
+    sub     -> Core.Relation.is_subset( $lhs, $rhs )
+    !sub    -> Core.Relation.is_not_subset( $lhs, $rhs )
+    super   -> Core.Relation.is_superset( $lhs, $rhs )
+    !super  -> Core.Relation.is_not_superset( $lhs, $rhs )
+    psub    -> Core.Relation.is_proper_subset( $lhs, $rhs )
+    !psub   -> Core.Relation.is_not_proper_subset( $lhs, $rhs )
+    psuper  -> Core.Relation.is_proper_superset( $lhs, $rhs )
+    !psuper -> Core.Relation.is_not_proper_superset( $lhs, $rhs )
+
+    minus    -> Core.Relation.diff( source => $lhs, filter => $rhs )
+    !matching -> Core.Relation.semidiff( source => $lhs, filter => $rhs )
+    matching -> Core.Relation.semijoin( source => $lhs, filter => $rhs )
+    divideby -> Core.Relation.quotient( dividend => $lhs, divisor => $rhs )
 
     like  -> Core.Text.is_like( look_in => $lhs, look_for => $rhs )
     !like -> Core.Text.is_not_like( look_in => $lhs, look_for => $rhs )
@@ -3319,8 +3482,12 @@ Grammar:
     <monadic_prefix_op_invo> ::=
         <monadic_prefix_op> <ws> <expr>
 
-    <monadic_prefix_op> ::=
-        d | not | '¬' | '!' | 'I||' | 'N||' | 'R#' | t | r | s | v
+    <monadic_prefix_op__op_cr_basic> ::=
+        d | not | '!' | 'I||' | 'N||' | 'R#' | t | r | s | v
+
+    <monadic_prefix_op__op_cr_extended> ::=
+          <monadic_prefix_op__op_cr_basic>
+        | '¬'
 
 A C<monadic_prefix_op_invo> node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
@@ -3740,7 +3907,7 @@ Grammar:
     <compare_reduce_op_invo> ::=
         <expr> ** [<ws> <compare_reduce_op> <ws>]
 
-    <compare_reduce_op ::=
+    <compare_reduce_op> ::=
         min | max
 
     <dyadic_compare_op_invo> ::=
@@ -3749,17 +3916,27 @@ Grammar:
     <dyadic_compare_op> ::=
         <is_before_op> | <is_after_op> | <interval_membership_op>
 
-    <is_before_op> ::=
-        '<' | '≤' | '<='
+    <is_before_op__op_cr_basic> ::=
+        '<' | '<='
 
-    <is_after_op> ::=
-        '>' | '≥' | '>='
+    <is_before_op__op_cr_extended> ::=
+          <is_before_op__op_cr_basic>
+        | '≤'
 
-    <interval_membership_op> ::=
-          'I∈' | Iimem | between
-        | 'I∉' | 'I!imem' | 'Inot-imem' | '!between' | 'not-between'
-        | 'I∋' | Ihmem
-        | 'I∌' | 'I!hmem' | 'Inot-hmem'
+    <is_after_op__op_cr_basic> ::=
+        '>' | '>='
+
+    <is_after_op__op_cr_extended> ::=
+          <is_after_op__op_cr_basic>
+        | '≥'
+
+    <interval_membership_op__op_cr_basic> ::=
+          Iimem | 'I!imem' | 'Inot-imem' | Ihmem | 'I!hmem' | 'Inot-hmem'
+        | between | '!between' | 'not-between'
+
+    <interval_membership_op__op_cr_extended> ::=
+          <interval_membership_op__op_cr_basic>
+        | 'I∈' | 'I∉' | 'I∋' | 'I∌'
 
     <triadic_compare_op_invo> ::=
        [[not | '!'] <ws>]?
@@ -3787,18 +3964,18 @@ Some of the keywords are aliases for each other:
 
     keyword | aliases
     --------+--------
-    ≤       | <=
-    ≥       | >=
-    I∈      | Iimem | between
-    I∉      | I!imem | Inot-imem | !between | not-between
-    I∋      | Ihmem
-    I∌      | I!hmem | Inot-hmem
-    ≤≤      | <=<=
-    ≤<      | <=<
-    <≤      | <<=
-    !≤≤     | !<=<=
-    !≤<     | !<=<
-    !<≤     | !<<=
+    <=      | ≤
+    >=      | ≥
+    Iimem   | I∈ | between
+    I!imem  | I∉ | Inot-imem | !between | not-between
+    Ihmem   | I∋
+    I!hmem  | I∌ | Inot-hmem
+    <=<=    | ≤≤
+    <=<     | ≤<
+    <<=     | <≤
+    !<=<=   | !≤≤
+    !<=<    | !≤<
+    !<<=    | !<≤
 
 This table indicates which function is invoked by each keyword:
 
@@ -3807,31 +3984,33 @@ This table indicates which function is invoked by each keyword:
     min -> Core.Universal.min( Set:{ $expr[0], ..., $expr[n] } )
     max -> Core.Universal.max( Set:{ $expr[0], ..., $expr[n] } )
 
-    <   -> Core.Universal.is_before( $lhs, $rhs )
-    >   -> Core.Universal.is_after( $lhs, $rhs )
-    ≤   -> Core.Universal.is_before_or_same( $lhs, $rhs )
-    ≥   -> Core.Universal.is_after_or_same( $lhs, $rhs )
-    I∈  -> Core.Interval.value_is_member( value => $lhs, interval => $rhs )
-    I∉  -> Core.Interval.value_is_not_member( value => $lhs,
+    <      -> Core.Universal.is_before( $lhs, $rhs )
+    >      -> Core.Universal.is_after( $lhs, $rhs )
+    <=     -> Core.Universal.is_before_or_same( $lhs, $rhs )
+    >=     -> Core.Universal.is_after_or_same( $lhs, $rhs )
+    Iimem  -> Core.Interval.value_is_member( value => $lhs,
                 interval => $rhs )
-    I∋  -> Core.Interval.has_member( interval => $lhs, value => $rhs )
-    I∌  -> Core.Interval.has_not_member( interval => $lhs, value => $rhs )
+    I!imem -> Core.Interval.value_is_not_member( value => $lhs,
+                interval => $rhs )
+    Ihmem  -> Core.Interval.has_member( interval => $lhs, value => $rhs )
+    I!hmem -> Core.Interval.has_not_member( interval => $lhs,
+                value => $rhs )
 
-    ≤≤  -> Core.Interval.value_is_member( value => $expr,
+    <=<=  -> Core.Interval.value_is_member( value => $expr,
                 interval => SPInterval:{ $min .. $max } )
-    ≤<  -> Core.Interval.value_is_member( value => $expr,
+    <=<   -> Core.Interval.value_is_member( value => $expr,
                 interval => SPInterval:{ $min ..^ $max } )
-    <≤  -> Core.Interval.value_is_member( value => $expr,
+    <<=   -> Core.Interval.value_is_member( value => $expr,
                 interval => SPInterval:{ $min ^.. $max } )
-    <<  -> Core.Interval.value_is_member( value => $expr,
+    <<    -> Core.Interval.value_is_member( value => $expr,
                 interval => SPInterval:{ $min ^..^ $max } )
-    !≤≤ -> Core.Interval.value_is_not_member( value => $expr,
+    !<=<= -> Core.Interval.value_is_not_member( value => $expr,
                 interval => SPInterval:{ $min .. $max } )
-    !≤< -> Core.Interval.value_is_not_member( value => $expr,
+    !<=<  -> Core.Interval.value_is_not_member( value => $expr,
                 interval => SPInterval:{ $min ..^ $max } )
-    !<≤ -> Core.Interval.value_is_not_member( value => $expr,
+    !<<=  -> Core.Interval.value_is_not_member( value => $expr,
                 interval => SPInterval:{ $min ^.. $max } )
-    !<< -> Core.Interval.value_is_not_member( value => $expr,
+    !<<   -> Core.Interval.value_is_not_member( value => $expr,
                 interval => SPInterval:{ $min ^..^ $max } )
 
 Details regarding the extra op args is pending.  But most of the time you
