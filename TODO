@@ -447,6 +447,50 @@ Essentially it comes in 2 flavors whose definitions are
 "<_ms_oc> ::= <ws> [<non_value_comment> <ws>]?" and
 "<_os_oc> ::= <ws>? | <ws> <non_value_comment> <ws>" or such.
 
+* Consider in all STD adding a new pragma that concerns whether data in
+delimited character string literals is ASCII or Unicode etc.
+Example PTMD_STD grammar additions:
+            <ws>? ',' <ws>? str_char_repertoire <ws>? '=>' <ws>? <str_cr>
+    <str_cr> ::=
+        '{' <ws>?
+            [<str_cr_describes> <ws>? '=>' <ws>? <str_char_reper>]
+                ** [<ws>? ',' <ws>?]
+        <ws>? '}'
+    <str_cr_describes> ::=
+        all | text | name | cmnt
+    <str_char_reper> ::=
+          ASCII
+        | Unicode_5.2.0_canon
+        | Unicode_5.2.0_compat
+Example PTMD_STD code additions:
+    str_char_repertoire => { text => Unicode_5.2.0_canon,
+        name => Unicode_5.2.0_compat, cmnt => Unicode_5.2.0_compat },
+    str_char_repertoire => { all => ASCII },
+Of particular interest is the Unicode canonical vs compatibility, that is
+NFC|D vs NFKC|D; it is generally recommended such as by the Unicode
+consortium to use canonical for general data but to use compatibility for
+things like identifiers or to avoid some kinds of security problems; see
+http://www.unicode.org/faq/normalization.html.  Note that compatibility is
+a smaller repertoire than canonical, so converting from the latter to the
+former will lose information.  The text|name|cmnt affect how delimited char
+strs that are Text|Name|Comment are interpreted, and the effects are
+orthogonal to whether characters are specified literally or in escaped
+(eg "\c<...>" form); canonical will preserve exactly what is stated (but
+for normalization to NFD) and compatibility will take what is stated and
+fold it so semantically same characters become the same codepoints (like as
+normalizing to NFKD).  The suggested usage is compatibility for Name to
+help avoid security or other problems, and canonical for Text; as for
+Comment, I currently don't know which is better.  If ASCII is chosen, the
+semantics are different; with both Unicode any input is accepted but folded
+if needed; for ASCII, it is more likely an exception would be raised if
+there are any codepoints outside the 0..127 range in character strings.
+The 'all' is a shorthand for giving the same value to all 3 text|name|cmnt
+and is more likely to occur with ASCII but it might happen otherwise.
+An additional reason to raise this feature is to setup support for other
+char sets in future, such as Mojikyo, TRON, GB18030, etc which go beyond
+Unicode eg no Han-unification (see http://www.jbrowse.com/text/unij.html +
+http://www.ruby-forum.com/topic/165927) but type system also needs update.
+
 * Update HDMD_Perl6_STD.pod considering names of Perl collection types,
 such that "Enum" is the immutable "Pair" and "EnumMap" was renamed from
 "Mapping", and "FatRat" is now the "Rat" of unlimited size, etc.
