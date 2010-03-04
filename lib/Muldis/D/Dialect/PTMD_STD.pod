@@ -190,11 +190,9 @@ Grammar:
         <[ a..z A..Z 0..9 _ - \. ]>+
 
     <quoted_ln_elem_str> ::=
-        [
-            <["]>
-                [<[\ ..~]-[\\"]> | '\b'|'\a'|'\q'|'\g'|'\h'|'\s']+
-            <["]>
-        ] ** [<ws>? '~']
+        '"'
+            [<[\ ..~]-[\\"]> | '\b'|'\a'|'\q'|'\g'|'\h'|'\s' | <unspace>]+
+        '"'
 
     <ln_extensions> ::=
         '{' <ws>?
@@ -1090,7 +1088,7 @@ Grammar:
         <[ 1..9 A..Z ]>
 
     <pint_tail> ::=
-        [[_?<[ 0..9 A..Z ]>+]+] ** [<ws>? '~' <ws>?]
+        [[_?<[ 0..9 A..Z ]>+]+] ** <unspace>
 
     <d_int_body> ::=
         0 | '-'?<d_pint_body>
@@ -1105,7 +1103,7 @@ Grammar:
         <[ 1..9 ]>
 
     <d_pint_tail> ::=
-        [[_?<[ 0..9 ]>+]+] ** [<ws>? '~' <ws>?]
+        [[_?<[ 0..9 ]>+]+] ** <unspace>
 
 An C<Int> node represents an integer numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Int> value as follows:
@@ -1126,12 +1124,13 @@ digits and uppercased (but not lowercased) letters, where each digit
 number in [10..35].  A I<body> may optionally contain underscore characters
 (C<_>), which exist just to help with visual formatting, such as for
 C<10_000_000>, and these are ignored/stripped by the parser.  A I<body> may
-optionally be split into 1..N segments where each segment is separated by a
-tilde token (C<~>); this segmenting ability is provided to support code
-that contains very long numeric literals while still being well formatted
-(no extra long lines); the tilde tokens are also ignored/stripped by the
-parser, and the I<body> is interpreted as if all its alphanumeric
-characters were contiguous.
+optionally be split into 1..N segments where each pair of consecutive
+segments is separated by an I<unspace> token, which is a run of whitespace
+delimited by backslashes (C<\>); this segmenting ability is provided to
+support code that contains very long numeric literals while still being
+well formatted (no extra long lines); the I<unspace> tokens are also
+ignored/stripped by the parser, and the I<body> is interpreted as if all
+its alphanumeric characters were contiguous.
 
 If the C<value_kind> of a C<value> node is C<NNInt> or C<PInt> rather than
 C<Int>, then the C<value> node is interpreted simply as an C<Int> node
@@ -1253,11 +1252,9 @@ Grammar:
         <[137F]>
 
     <blob_body> ::=
-        [
-            <[']>
-                <[ 0..9 A..F ]>*
-            <[']>
-        ] ** [<ws>? '~' <ws>?]
+        '\''
+            [<[ 0..9 A..F ]> | <unspace>]*
+        '\''
 
 A C<Blob> node represents a general purpose bit string.  It is interpreted
 as a Muldis D C<sys.std.Core.Type.Blob> value as follows:  Fundamentally
@@ -1295,11 +1292,9 @@ Grammar:
         <Text_payload>
 
     <Text_payload> ::=
-        [
-            <[']>
-                [<-[\\\'\t\n\f\r]> | <escaped_char>]*
-            <[']>
-        ] ** [<ws>? '~' <ws>?]
+        '\''
+            [<-[\\\'\t\n\f\r]> | <escaped_char> | <unspace>]*
+        '\''
 
     <escaped_char> ::=
           '\b' | '\a' | '\q' | '\g' | '\h'
@@ -1311,6 +1306,9 @@ Grammar:
             | <[ 1..9 A..Z ]> ';' [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
           ] '>'
 
+    <unspace> ::=
+        '\\' <ws> '\\'
+
     <ws> ::=
         <[\ \t\n\f\r]>+
 
@@ -1321,12 +1319,12 @@ The C<Text_payload> is interpreted generally as is usual for a programming
 language with such a delimited character string literal.
 
 A C<Text_payload> may optionally be split into 1..N segments where each
-segment is delimited by apostrophes/single-quotes (C<'>) and separated by a
-tilde token (C<~>); this segmenting ability is provided to support code
-that contains long string literals while still being well formatted (no
-extra long lines); the tilde tokens and adjoining string delimiters are
+pair of consecutive segments is separated by an I<unspace> token, which is
+a run of whitespace delimited by backslashes (C<\>); this segmenting
+ability is provided to support code that contains long value literals while
+still being well formatted (no extra long lines); the I<unspace> tokens are
 ignored/stripped by the parser, and the C<Text_payload> is interpreted as
-if it just consisted of a single delimited string.
+if it just consisted of the rest of the delimited string contiguously.
 
 All Muldis D delimited character string literals (generally the 3 C<Text>,
 C<Name>, C<Comment>) may contain some characters denoted with escape
@@ -1375,7 +1373,7 @@ There is currently just one complex escape sequence, of the format C<<
 abstract codepoint name or number.  If the C<...> consists of just
 uppercased (not lowercased) letters and the space character, then the
 C<...> is interpreted as a Unicode character name.  If the C<...> looks
-like an C<Int_payload>, sans that underscores and tilde segmentation aren't
+like an C<Int_payload>, sans that underscores and unspace aren't
 allowed here, then the C<...> is interpreted as a Unicode abstract
 codepoint number.  One reason for this feature is to empower more elegant
 passing of Unicode-savvy PTMD_STD source code through a communications
@@ -1409,11 +1407,9 @@ Grammar:
         <[ a..z A..Z _ ]><[ a..z A..Z 0..9 _ - ]>*
 
     <quoted_name_str> ::=
-        [
-            <["]>
-                [<-[\\\"\t\n\f\r]> | <escaped_char>]*
-            <["]>
-        ] ** [<ws>? '~' <ws>?]
+        '"'
+            [<-[\\\"\t\n\f\r]> | <escaped_char> | <unspace>]*
+        '"'
 
     <NameChain> ::=
         NameChain ':' <ws>?
@@ -1447,7 +1443,7 @@ node, and any similarities won't be repeated here.  Unlike a
 C<Text_payload> literal which must always be delimited, a C<Name_payload>
 has 2 variants, one delimited (C<quoted_name_str>) and one not
 (C<nonquoted_name_str>).  The delimited C<Name_payload> form differs from
-C<Text_payload> only in that each string segment is delimited by
+C<Text_payload> only in that the string is delimited by
 double-quotes rather than apostrophes/single-quotes.
 
 A C<nonquoted_name_str> is composed of a single alphabetic or underscore
@@ -1598,17 +1594,15 @@ Grammar:
         <Comment_payload>
 
     <Comment_payload> ::=
-        [
-            <[`]>
-                [<-[\\\`\t\n\f\r]> | <escaped_char>]*
-            <[`]>
-        ] ** [<ws>? '~' <ws>?]
+        '`'
+            [<-[\\\`\t\n\f\r]> | <escaped_char> | <unspace>]*
+        '`'
 
     <non_value_comment> ::=
         [
             '#' ** 2..*
           | '#' ' '*
-                [<-[\\\#\t\n\f\r]> | <escaped_char>]*
+                [<-[\\\#\t\n\f\r]> | <escaped_char> | <unspace>]*
             ' '* '#'
         ] ** <ws>
 
@@ -1619,7 +1613,7 @@ follows:
 
 Fundamentally a C<Comment> node is formatted and interpreted like a C<Text>
 node, and any similarities won't be repeated here.  The C<Comment_payload>
-differs from C<Text_payload> only in that each string segment is delimited
+differs from C<Text_payload> only in that the string is delimited
 by backticks/grave-accents (C<`>) rather than apostrophes/single-quotes.
 
 A C<non_value_comment> node is I<also> interpreted as a Muldis D

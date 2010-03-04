@@ -9,6 +9,30 @@
     * (PTMD_STD.pod)  Updated the "Boolean Literals" pod sub-section to add
     a keywords-aliases table as if boolean literals were nullary operators.
 
+    * (PTMD_STD.pod)  Made large changes to the feature that allowed
+    segmenting long value literals such as to split them over source code
+    lines.  Now, a new Perl-6-inspired feature called "unspace" is used; an
+    "unspace" token is a pair of backslashes separated by one or more
+    whitespace chars (typically a linebreak); you can place an unspace
+    token anywhere in a stringy or numeric value literal and the Muldis D
+    parser will strip it out, treating the source characters immediately
+    before and after the unspace as if they were adjacent.  This feature
+    replaces the use of a token for separating literal segments consisting
+    of a tilde ("~") char bounded by optional whitespace (typically a
+    linebreak on one side).  For numeric literals, that's the total change;
+    but for stringy literals, another change is that now there is just one
+    pair of string delimiters around the entire literal, rather than one
+    around each literal segment, and so the unspace is contained within the
+    delimiters rather than being outside it.  A further change is that a
+    "non-value-comment" may now contain unspace inside segments, while
+    those remain each-segment-is-#-quoted-and-whitespace-separated (a tilde
+    was never used for non-value-comment, so for those programmers have a
+    choice of both ways to split lines.  Unchanged is identifiers/names can
+    only be segmented when quoted, not when barewords.  So a major benefit
+    to this change is that now the tilde character is freed up to just have
+    the mneumonic of being concerned with strings, same as in Perl 6,
+    rather than also being concerned with stitching long numerics et al.
+
     * (PTMD_STD.pod)  Other minor updates or fixes.
 
 2010-03-01  Darren Duncan <darren@DarrenDuncan.net>
