@@ -763,8 +763,6 @@ Grammar:
         | <NameChain>
         | <PNSQNameChain>
         | <Comment>
-        | <Instant>
-        | <Duration>
         | <RatRoundRule>
 
     <coll_value_selector> ::=
@@ -858,8 +856,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | NameChain
         | PNSQNameChain
         | Comment
-        | Instant
-        | Duration
         | RatRoundRule
         | DH? Scalar
         | DH? Tuple
@@ -887,8 +883,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <NameChain_payload>
         | <PNSQNameChain_payload>
         | <Comment_payload>
-        | <Instant_payload>
-        | <Duration_payload>
         | <RatRoundRule_payload>
         | <Scalar_payload>
         | <Tuple_payload>
@@ -1665,55 +1659,6 @@ Examples (the first 2 are as values, the third is not as a value):
     `So does this.`
 
     # And also this. #
-
-=head2 TAI Temporal Literals
-
-Grammar:
-
-    <Instant> ::=
-        Instant ':' <ws>?
-        [<type_name> ':' <ws>?]?
-        <Instant_payload>
-
-    <Instant_payload> ::=
-        <Rat_payload>
-
-    <Duration> ::=
-        Duration ':' <ws>?
-        [<type_name> ':' <ws>?]?
-        <Duration_payload>
-
-    <Duration_payload> ::=
-        <Rat_payload>
-
-An C<Instant> node represents a single point in time which is specified in
-terms of atomic seconds; it is a rational numeric type, that is disjoint
-from both C<Rat> and C<Duration>.  This node is interpreted as a Muldis D
-C<sys.std.Core.Type.Instant> value as follows:  An C<Instant_payload> is
-formatted and interpreted in the same way as a C<Rat_payload>.
-
-A C<Duration> node represents a single amount of time (the difference
-between two instants) which is specified in terms of atomic seconds; it
-is a rational numeric type, that is disjoint from both C<Rat> and
-C<Instant>.  This node is interpreted as a Muldis D
-C<sys.std.Core.Type.Duration> value as follows:  A C<Duration_payload> is
-formatted and interpreted in the same way as a C<Rat_payload>.
-
-Examples:
-
-    Instant:1235556432.0
-
-    Instant:854309115.0
-
-    Duration:3600.0
-
-    Duration:-50.0
-
-    Duration:3.14159
-
-    Duration:1;1011101101*10^-11011
-
-    Duration:1/43
 
 =head2 Rational Rounding Rule Literals
 
@@ -2943,7 +2888,7 @@ Examples:
 
     if $foo > 5 then $bar else $baz
 
-    if $ary is empty then $empty_result else $ary.[0]
+    if $ary is-empty then $empty_result else $ary.[0]
 
     if $x = ∅ or $y = ∅ then ∅
         else s ((v $x) I+ ((v $y) I^ 3)
@@ -4054,18 +3999,24 @@ Grammar:
 
     <value__sse_date_time> ::=
           ...
+        | <TAIInstant>
+        | <TAIDuration>
         | <UTCInstant>
         | <FloatInstant>
         | <UTCDuration>
 
     <value_kind__sse_date_time> ::=
           ...
+        | TAIInstant
+        | TAIDuration
         | UTC [Instant | DateTime | Date | Time]
         | Float [Instant | DateTime | Date | Time]
         | UTCDuration
 
     <value_payload__sse_date_time> ::=
           ...
+        | <TAIInstant_payload>
+        | <TAIDuration_payload>
         | <UTCInstant_payload>
         | <FloatInstant_payload>
         | <UTCDuration_payload>
@@ -4073,6 +4024,22 @@ Grammar:
 =head2 Date and Time Literals
 
 Grammar:
+
+    <TAIInstant> ::=
+        TAIInstant ':' <ws>?
+        [<type_name> ':' <ws>?]?
+        <TAIInstant_payload>
+
+    <TAIInstant_payload> ::=
+        <Rat_payload>
+
+    <TAIDuration> ::=
+        TAIDuration ':' <ws>?
+        [<type_name> ':' <ws>?]?
+        <TAIDuration_payload>
+
+    <TAIDuration_payload> ::=
+        <Rat_payload>
 
     <UTCInstant> ::=
         UTC [Instant | DateTime | Date | Time] ':' <ws>?
@@ -4110,6 +4077,21 @@ Grammar:
             [<d_int_body>? [<ws>? ',' <ws>?]] ** 5
             <ws>? ',' <ws>? <d_rat_body>?
         <ws>? ']'
+
+A C<TAIInstant> node represents a single point in time which is specified
+in terms of atomic seconds; it is a rational numeric type, that is disjoint
+from both C<Rat> and C<TAIDuration>.  This node is interpreted as a Muldis
+D C<sys.std.DateTime.Type.TAIInstant> value as follows:  A
+C<TAIInstant_payload> is formatted and interpreted in the same way as a
+C<Rat_payload>.
+
+A C<TAIDuration> node represents a single amount of time (the difference
+between two instants) which is specified in terms of atomic seconds; it is
+a rational numeric type, that is disjoint from both C<Rat> and
+C<TAIInstant>.  This node is interpreted as a Muldis D
+C<sys.std.DateTime.Type.TAIDuration> value as follows:  A
+C<TAIDuration_payload> is formatted and interpreted in the same way as a
+C<Rat_payload>.
 
 A C<UTCInstant> node represents an "instant"/"datetime" value that is
 affiliated with the UTC time-zone.  This node is interpreted as a Muldis D
@@ -4178,6 +4160,20 @@ every kind of C<value__sse_date_time> node distills to when it is beneath
 the context of a C<depot> node, as it describes some semantics.
 
 Examples:
+
+    TAIInstant:1235556432.0
+
+    TAIInstant:854309115.0
+
+    TAIDuration:3600.0
+
+    TAIDuration:-50.0
+
+    TAIDuration:3.14159
+
+    TAIDuration:1;1011101101*10^-11011
+
+    TAIDuration:1/43
 
     UTCInstant:[1964,10,16,16,12,47.5] # a UTCDateTime #
 

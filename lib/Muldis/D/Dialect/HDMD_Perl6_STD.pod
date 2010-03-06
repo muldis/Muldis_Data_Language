@@ -401,10 +401,9 @@ add syntax for operators.
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
 
-There are 24 main varieties of C<value> node, each of which is a named node
+There are 22 main varieties of C<value> node, each of which is a named node
 kind of its own:  C<Bool>, C<Order>, C<RatRoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<PNSQNameChain>, C<Comment>,
-C<Instant>, C<Duration>,
 C<RatRoundRule>, C<Scalar>, C<Tuple>, C<Database>,
 C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<[S|M]PInterval>.
 
@@ -432,11 +431,10 @@ only external meta-data of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
 just on C<value_kind>.
 
-Between the various kinds of C<value> node, these 40 values are allowed for
+Between the various kinds of C<value> node, these 38 values are allowed for
 C<value_kind>:  C<Bool>, C<Order>, C<RatRoundMeth>, C<[|NN|P]Int>,
 C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
-C<PNSQNameChain>, C<Comment>, C<Instant>, C<Duration>,
-C<RatRoundRule>, C<[|DH]Scalar>,
+C<PNSQNameChain>, C<Comment>, C<RatRoundRule>, C<[|DH]Scalar>,
 C<[|DH]Tuple>, C<Database>, C<[|DH]Relation>, C<[|DH]Set>,
 C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH][S|M]PInterval>.
 
@@ -479,9 +477,9 @@ C<value> node as follows:
     Rat        <- FatRat|Rat|Num
     Blob       <- Blob
     Text       <- Str
-    Instant    <- Instant
-    Duration   <- Duration
     SPInterval <- Range
+    TAIInstant <- Instant
+    TAIDuration <- Duration
 
 The above details are subject to revision regarding when a Perl object
 might claim to do multiple type interfaces.
@@ -702,35 +700,6 @@ Examples:
     :Comment('This does something.')
 
     :Comment('So does this.')
-
-=head2 TAI Temporal Literals
-
-An C<Instant> node represents a single point in time which is specified in
-terms of atomic seconds.  This node is interpreted as a Muldis D
-C<sys.std.Core.Type.Instant> value as follows:  The payload must be a Perl
-C<Instant>, which is mapped directly.
-
-A C<Duration> node represents a single amount of time (the difference
-between two instants) which is specified in terms of atomic seconds.
-This node is interpreted as a Muldis D C<sys.std.Core.Type.Duration> value
-as follows:  The payload must be a Perl C<Duration>, which is mapped
-directly.
-
-Examples I<TODO: What is t actual syntax for P6 [Instant|Duration] types?>:
-
-    :Instant( Instant.new(1235556432.0) )
-
-    Instant.new(854309115.0)
-
-    :Duration( Duration.new(3600.0) )
-
-    Duration.new(-50.0)
-
-    Duration.new(3.14159)
-
-    Duration.new(:2<1011101101> * :2<10> ** :2<-11011>)
-
-    Duration.new(1/43)
 
 =head2 Rational Rounding Rule Literals
 
@@ -1621,14 +1590,27 @@ L<Muldis::D::Ext::DateTime> language extension, and it constitutes special
 syntax for its data types; in the future it may improve the type syntax or
 add syntax for operators.
 
-When this extension is active, there exist 3 additional varieties of
-C<value> node:  C<UTCInstant>, C<FloatInstant>, C<UTCDuration>.  Also,
-between these 3 varieties, these 9 additional values are allowed for
-C<value>'s C<value_kind> attribute:  C<UTC[Instant|DateTime|Date|Time]>,
+When this extension is active, there exist 5 additional varieties of
+C<value> node:  C<TAIInstant>, C<TAIDuration>,
+C<UTCInstant>, C<FloatInstant>, C<UTCDuration>.  Also,
+between these 5 varieties, these 11 additional values are allowed for
+C<value>'s C<value_kind> attribute:  C<TAIInstant>, C<TAIDuration>,
+C<UTC[Instant|DateTime|Date|Time]>,
 C<Float[Instant|DateTime|Date|Time]>, C<UTCDuration>.  For all of these
 varieties, the C<value_kind> may not be omitted.
 
 =head2 Date and Time Literals
+
+A C<TAIInstant> node represents a single point in time which is specified
+in terms of atomic seconds.  This node is interpreted as a Muldis D
+C<sys.std.DateTime.Type.TAIInstant> value as follows:  The payload must be
+a Perl C<Instant>, which is mapped directly.
+
+A C<TAIDuration> node represents a single amount of time (the difference
+between two instants) which is specified in terms of atomic seconds.  This
+node is interpreted as a Muldis D C<sys.std.DateTime.Type.TAIDuration>
+value as follows:  The payload must be a Perl C<Duration>, which is mapped
+directly.
 
 A C<UTCInstant> node represents an "instant"/"datetime" value that is
 affiliated with the UTC time-zone.  This node is interpreted as a Muldis D
@@ -1683,7 +1665,21 @@ A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
 integer, and C<seconds> may be any rational number.  I<Currently,
 C<UTCDuration> has no system-defined subtypes, but that may change later.>
 
-Examples:
+Examples I<TODO: What is t actual syntax for P6 [Instant|Duration] types?>:
+
+    :TAIInstant( Instant.new(1235556432.0) )
+
+    Instant.new(854309115.0)
+
+    :TAIDuration( Duration.new(3600.0) )
+
+    Duration.new(-50.0)
+
+    Duration.new(3.14159)
+
+    Duration.new(:2<1011101101> * :2<10> ** :2<-11011>)
+
+    Duration.new(1/43)
 
     :UTCInstant[1964,10,16,16,12,47.5] # a UTCDateTime #
 

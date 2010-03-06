@@ -5,7 +5,7 @@
 =head1 NAME
 
 Muldis::D::Ext::DateTime -
-Muldis D extension for UTC date and time data types and operators
+Muldis D extension for temporal data types and operators
 
 =head1 VERSION
 
@@ -18,6 +18,8 @@ document is L<Muldis::D>; you should read that root document
 before you read this one, which provides subservient details.
 
 =head1 DESCRIPTION
+
+B<TODO: PARTIALLY REWRITE THIS DOCUMENT; REFACTOR THE TEMPORAL TYPES!>
 
 Muldis D has a mandatory core set of system-defined (eternally available)
 entities, which is referred to as the I<Muldis D core> or the I<core>; they
@@ -35,11 +37,11 @@ particularly calendar dates and intervals.  The bundled data types describe
 common kinds of temporal artifacts according to modern calendars.  They can
 represent a variety of precisions and epochs so that users can employ them
 in a way that most accurately represents what they actually know about
-their data.  Right now all of the included data types are based on
+their data.  Any types whose names start with C<TAI> are TAI temporal
+artifacts expressed simply as a count of seconds from a TAI epoch,
+and any whose names start with C<UTC> or C<Float> are based on
 year-month-day-hour-minute-second components in the Gregorian calendar,
-either the UTC time zone or a "floating" time zone.  This C<DateTime>
-document does I<not> deal with TAI temporal artifacts as the core does,
-except for purposes of translation with UTC artifacts.
+either the UTC time zone or a "floating" time zone.
 
 The I<Muldis D DateTime Extension> is expressly not meant to be complete by
 any means, as a solution for working with temporal data.  Rather it is
@@ -107,6 +109,9 @@ type graph according to their proper sub|supertype relationships:
 
                     # The following are all regular ordered scalar types.
 
+                    sys.std.DateTime.Type.TAIInstant
+                    sys.std.DateTime.Type.TAIDuration
+
                     sys.std.DateTime.Type.UTCInstant
                         sys.std.DateTime.Type.UTCDateTime
                         sys.std.DateTime.Type.UTCDate
@@ -142,7 +147,7 @@ type graph according to their proper sub|supertype relationships:
 
 I<This documentation is pending.>
 
-=head1 DATA TYPES FOR UTC-BASED DATES AND TIMES
+=head1 DATA TYPES FOR TEMPORAL ARTIFACTS
 
 These non-core data types are all ordered scalar types.
 
@@ -174,6 +179,52 @@ a most-generalized finite C<NNRatLT62> subtype, you must specify the
 greatest magnitude value denominator of its C<ratio> possrep, that is, its
 maximum precision (that denominator is 10^9 if we're working to nanosecond
 precision).
+
+=head2 sys.std.DateTime.Type.TAIInstant
+
+This is a structure data type.  A C<TAIInstant> is a single point in time
+which is specified with arbitrary precision in terms of atomic seconds
+with fractions.  That is, a C<TAIInstant> is defined as a point on the
+canonical continuous timeline of International Atomic Time (TAI; this is a
+perfectly linear scale with no discontinuities), specified by a scalar
+number of TAI seconds since the TAI epoch, which is exactly midnight at the
+start of January 1st of the year 1958 CE.  Put another way, the
+C<TAIInstant> type is intended to have exactly the same meaning as the
+same-named type of Perl 6 (see L<http://perlcabal.org/syn/S02.html> for
+details).  I<Or at least that used to be true; TODO: update this.>
+
+A C<TAIInstant> has 1 system-defined possrep named C<tai_instant> which
+consists of 1 C<Rat>-typed attribute named C<seconds>.  A C<TAIInstant> is
+a simple wrapper for a C<Rat> and all of its other details such as default
+and minimum and maximum values and cardinality and default ordering
+algorithm all correspond directly.  But C<TAIInstant> is explicitly
+disjoint from C<Rat> due to having a different intended interpretation.
+
+The C<TAIInstant> type is intended more for use with system event
+time-stamps or sensitive scientific applications and is not necessarily the
+best choice for common human-specified temporal artifacts according to
+various calendars, since there is no fixed conversion rate between them in
+the general case that includes future dates, and also calendar-based
+artifacts may be very non-specific; see also the C<UTCInstant> data type,
+which is defined in terms of calendars.
+
+=head2 sys.std.DateTime.Type.TAIDuration
+
+This is a structure data type.  A C<TAIDuration> is a single amount of
+time, which is specified with arbitrary precision in terms of the same
+units as a C<TAIInstant> is structured with.  A C<TAIDuration> is not fixed
+to any point in time.  A C<TAIDuration> is the result type of taking the
+difference between two C<TAIInstant> values, but it is not defined in terms
+of said two values.  The C<TAIDuration> type is intended to have exactly
+the same meaning as the same-named type of Perl 6, as per C<TAIInstant>.  A
+C<TAIDuration> has 1 system-defined possrep named C<tai_duration> which
+consists of 1 C<Rat>-typed attribute named C<seconds>.  A C<TAIDuration> is
+a simple wrapper for a C<Rat> in all ways as per C<TAIInstant>.  But
+C<TAIDuration> is explicitly disjoint from C<TAIInstant> due to having a
+different intended interpretation.  The C<TAIDuration> type is intended
+more for benchmarking or scientific applications and is not intended for
+human-specified calendar based artifacts; again see the I<Muldis D DateTime
+Extension> for alternatives.
 
 =head2 sys.std.DateTime.Type.UTCInstant
 
@@ -340,9 +391,76 @@ sense, either in general leave all attributes C<Nothing> except one
 (recommended), or otherwise be careful to just set compatible attribute
 values.
 
-=head1 FUNCTIONS FOR DATE AND TIME MATH
+=head1 FUNCTIONS FOR TEMPORAL MATH
 
 These functions implement commonly used temporal math operations.
+
+=head1 TAIInstant
+
+=head2 sys.std.DateTime.TAIInstant.diff
+
+C<< function sys.std.DateTime.TAIInstant.diff (TAIDuration <--
+$minuend : TAIInstant, $subtrahend : TAIInstant) >>
+
+This function results in the duration-typed difference when its
+instant-typed C<subtrahend> argument is subtracted from its instant-typed
+C<minuend> argument.  The result is the amount of time between the 2
+arguments, which may be positive or negative depending on which argument
+was earlier.
+
+=head2 sys.std.DateTime.TAIInstant.abs_diff
+
+C<< function sys.std.DateTime.TAIInstant.abs_diff (TAIDuration <--
+$topic : TAIInstant, $other : TAIInstant) >>
+
+This symmetric function results in the absolute difference between its 2
+arguments.  The result is the amount of time between the 2 arguments, which
+is always non-negative.
+
+=head2 sys.std.DateTime.TAIInstant.later
+
+C<< function sys.std.DateTime.TAIInstant.later (TAIInstant <--
+$instant : TAIInstant, $duration : TAIDuration) >>
+
+This function results in the instant that is later than its C<instant>
+argument by the amount of time in the C<duration> argument.
+
+=head2 sys.std.DateTime.TAIInstant.earlier
+
+C<< function sys.std.DateTime.TAIInstant.earlier (TAIInstant <--
+$instant : TAIInstant, $duration : TAIDuration) >>
+
+This function results in the instant that is earlier than its C<instant>
+argument by the amount of time in the C<duration> argument.
+
+=head1 TAIDuration
+
+=head2 sys.std.DateTime.TAIDuration.abs
+
+C<< function sys.std.DateTime.TAIDuration.abs (TAIDuration <--
+$topic : TAIDuration) >>
+
+This function results in the absolute value of its argument.
+
+=head2 sys.std.DateTime.TAIDuration.sum
+
+C<< function sys.std.DateTime.TAIDuration.sum (TAIDuration <--
+$topic? : bag_of.TAIDuration) >>
+
+This function results in the sum of the N element values of its argument;
+it is a reduction operator that recursively takes each pair of input values
+and adds (which is both commutative and associative) them together until
+just one is left, which is the result.  If C<topic> has zero values, then
+C<sum> results in the duration zero, which is the identity value for
+addition.
+
+=head2 sys.std.DateTime.TAIDuration.diff
+
+C<< function sys.std.DateTime.TAIDuration.diff (TAIDuration <--
+$minuend : TAIDuration, $subtrahend : TAIDuration) >>
+
+This function results in the difference when its C<subtrahend> argument is
+subtracted from its C<minuend> argument.
 
 =head1 UTCInstant
 
@@ -456,7 +574,7 @@ subtracted from its C<minuend> argument.
 =head1 FUNCTIONS FOR CONVERSION BETWEEN UTC AND TAI
 
 These functions convert between C<UTCDateTime> values and equal or nearly
-equal C<Instant> values.  I<WARNING:  These functions may not produce
+equal C<TAIInstant> values.  I<WARNING:  These functions may not produce
 consistent results over time when dealing with future dates because it is
 unknown in advance when leap seconds will be added to the UTC time scale,
 and TAI has no leap seconds.>
@@ -464,25 +582,35 @@ and TAI has no leap seconds.>
 =head2 sys.std.DateTime.UTCInstant.UTC_from_TAI
 
 C<< function sys.std.DateTime.UTCInstant.UTC_from_TAI (UTCDateTime <--
-$tai : Instant) >>
+$tai : TAIInstant) >>
 
 This selector function results in the C<UTCDateTime> value that is
-conceptually equal to its C<Instant> argument, insofar as relevant leap
+conceptually equal to its C<TAIInstant> argument, insofar as relevant leap
 seconds are known.
 
 =head2 sys.std.DateTime.UTCInstant.TAI_from_UTC
 
-C<< function sys.std.DateTime.UTCInstant.TAI_from_UTC (Instant <--
+C<< function sys.std.DateTime.UTCInstant.TAI_from_UTC (TAIInstant <--
 $utc : UTCDateTime) >>
 
-This selector function results in the C<Instant> value that is conceptually
-equal to its C<UTCDateTime> argument, insofar as relevant leap seconds are
-known.
+This selector function results in the C<TAIInstant> value that is
+conceptually equal to its C<UTCDateTime> argument, insofar as relevant leap
+seconds are known.
 
 =head1 SYSTEM-SERVICES FOR CURRENT DATES AND TIMES
 
 These system-service routines provide ways to get the current date or time
 from the system.
+
+=head2 sys.std.DateTime.TAIInstant.fetch_curr_instant
+
+C<system-service sys.std.DateTime.TAIInstant.fetch_curr_instant
+(&$target : TAIInstant)>
+
+This system-service routine will update the variable supplied as its
+C<target> argument so that it holds the value of the current TAI instant as
+taken with the full precision that the implementation's system clock or
+used time server supports.
 
 =head2 sys.std.DateTime.UTCInstant.fetch_curr_datetime
 

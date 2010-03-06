@@ -92,7 +92,7 @@ role is defin shorthand.
         - tps: Int
         - ops: remainder/mod/%, power/I^, factorial/I!, fetch_random
     - Rational :
-        - tps: Rat, Instant, Duration
+        - tps: Rat
         - ops: mean, power/N^, log, natural_[power|log], fetch_random
     - Stringy :
         - tps: Blobby, Textual, String
@@ -115,15 +115,22 @@ from multiple dummy types at once, which probably still works for the term.
 TTM also says that a dummy type is by necessity a union type.
 
 * Support delegation / 'handles'; for example:
-    - Instant, Duration explicitly delegate to Rat attr,
+    - TAIDuration explicitly delegate to Rat attr,
         and so all operators declared for 'Rat' simply work with
-        Instant, Duration also as if all their sigs were s/Rat/Instant/ etc
+        TAIDuration also as if all their sigs were
+        s/Rat/TAIDuration/ etc
     - Name explic delegate to Text attr
     - maybe Blob, Text explic delegate to String attr
     - a ColoredCircle would delegate to both Color and Circle attrs?
 This will all take some work to get right; not /all/ Rat/etc can be subst.
 Probably *only* those operators that Rational/etc explicitly declares can
-be delegated to Rat/etc by Instant/etc.
+be delegated to Rat/etc by TAIInstant/etc.
+
+* Actually, all the temporal stuff just needs to be refactored now, as TAI
+no longer holds a privileged position.  Moreover, TAI can't actually
+reasonably delegate all of the Rat methods, since for example it doesn't
+make sense to multiply or divide a duration by another one, though you
+can multiply or divide a duration by a rat.
 
 ----------
 
@@ -371,8 +378,6 @@ It seems that, like with Text and the thing about NFD vs NFKD or Unicode vs
 non-Han-unifying alternatives, there isn't really any one representation
 option for Instants that is overwhelming more correct or normal than others
 to be used as a default or internal representation everywhere.
-Perhaps also consider demoting Instant/Duration from core, though what to
-do about timestamps used in a system catalog is an ongoing question.
 
 ----------
 
@@ -644,17 +649,16 @@ codepoint plus N combining codepoints, or something) as single string
 elements, rather than say comparing a base char against a combining char.
 
 * Make further updates to DateTime.pod to improve correctness or
-normalization, particularly with durations, maybe add some UTCDuration
+normalization, particularly with durations, maybe add some *Duration
 subtypes.  Also expand the selection of routines to allow more control over
 semantics.  Seek advice from the Perl DateTime people about this stuff.
 
 * Consider updates to DateTime.pod that let one record time zones etc
 attached to instant values; this would be a non-central feature.
 
-* Consider adding a Temporal.pod
-and/or DateTime.pod type specific to representing a period in
-time, maybe simply as an alias for 'interval_of.Instant' or some such.  See
-also the PGTemporal project and its 'Period' type.
+* Consider adding a DateTime.pod type specific to representing a period in
+time, maybe simply as an alias for 'interval_of.*Instant' or some such.
+See also the PGTemporal project and its 'Period' type.
 
 * Flesh out "Spatial" extension; provide operators for the spatial data
 types, maybe overhaul the types.

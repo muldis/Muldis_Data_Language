@@ -52,8 +52,6 @@ relationships:
                     sys.std.Core.Type.Rat
                         sys.std.Core.Type.NNRat
                             sys.std.Core.Type.PRat
-                    sys.std.Core.Type.Instant
-                    sys.std.Core.Type.Duration
 
         # The following are mostly nonscalar type factories.
 
@@ -355,51 +353,6 @@ proper subtype of C<NNRat> where all member values are greater than zero
 (that is, the C<numerator>|C<mantissa> is greater than zero).  Its default
 and minimum value is 1.
 
-=head2 sys.std.Core.Type.Instant
-
-This is a structure data type.  An C<Instant> is a single point in time
-which is specified with arbitrary precision in terms of atomic seconds
-with fractions.  That is, an C<Instant> is defined as a point on the
-canonical continuous timeline of International Atomic Time (TAI; this is a
-perfectly linear scale with no discontinuities), specified by a scalar
-number of TAI seconds since the TAI epoch, which is exactly midnight at the
-start of January 1st of the year 1958 CE.  Put another way, the C<Instant>
-type is intended to have exactly the same meaning as the same-named type of
-Perl 6 (see L<http://perlcabal.org/syn/S02.html> for details).
-
-An C<Instant> has 1 system-defined possrep named C<tai_instant> which
-consists of 1 C<Rat>-typed attribute named C<seconds>.  An C<Instant> is a
-simple wrapper for a C<Rat> and all of its other details such as default
-and minimum and maximum values and cardinality and default ordering
-algorithm all correspond directly.  But C<Instant> is explicitly disjoint
-from C<Rat> due to having a different intended interpretation.
-
-The C<Instant> type is intended more for use with system event time-stamps
-or sensitive scientific applications and is not necessarily the best choice
-for common human-specified temporal artifacts according to various
-calendars, since there is no fixed conversion rate between them in the
-general case that includes future dates, and also calendar-based artifacts
-may be very non-specific; see also the L<Muldis D DateTime
-Extension|Muldis::D::Ext::DateTime> for a selection of other temporal data
-types defined in terms of calendars.
-
-=head2 sys.std.Core.Type.Duration
-
-This is a structure data type.  A C<Duration> is a single amount of time,
-which is specified with arbitrary precision in terms of the same units as
-an C<Instant> is structured with.  A C<Duration> is not fixed to any point
-in time.  A C<Duration> is the result type of taking the difference between
-two C<Instant> values, but it is not defined in terms of said two values.
-The C<Duration> type is intended to have exactly the same meaning as the
-same-named type of Perl 6, as per C<Instant>.  A C<Duration> has 1
-system-defined possrep named C<tai_duration> which consists of 1
-C<Rat>-typed attribute named C<seconds>.  A C<Duration> is a simple wrapper
-for a C<Rat> in all ways as per C<Instant>.  But C<Duration> is explicitly
-disjoint from C<Instant> due to having a different intended interpretation.
-The C<Duration> type is intended more for benchmarking or scientific
-applications and is not intended for human-specified calendar based
-artifacts; again see the I<Muldis D DateTime Extension> for alternatives.
-
 =head1 GENERIC NONSCALAR DATA TYPES
 
 These core nonscalar data types permit transparent/user-visible
@@ -510,10 +463,10 @@ An C<SPInterval> has these 4 attributes:
 These are the interval endpoint values; C<min> defines the
 I<left|start|from> endpoint and C<max> defines the I<right|end|to>
 endpoint.  The endpoint values conceptually must be of the same,
-totally-ordered type (typically one of C<Int>, C<Rat>, C<Text>, C<Instant>,
-etc), although strictly speaking they may be of any types at all; in the
-latter case, to actually make practical use of such intervals, an
-C<order-determination> function must explicitly be employed.
+totally-ordered type (typically one of C<Int>, C<Rat>, C<Text>,
+C<TAIInstant>, etc), although strictly speaking they may be of any types at
+all; in the latter case, to actually make practical use of such intervals,
+an C<order-determination> function must explicitly be employed.
 
 =item C<excludes_[min|max]> - C<Bool>
 
