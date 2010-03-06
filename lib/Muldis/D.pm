@@ -2,7 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 package Muldis::D;
-our $VERSION = '0.110000';
+our $VERSION = '0.111000';
 $VERSION = eval $VERSION;
 # Note that Perl code only exists at all in this file in order to help
 # the CPAN indexer handle the distribution properly.
@@ -20,7 +20,7 @@ Formal spec of Muldis D relational DBMS lang
 
 =head1 VERSION
 
-This document is Muldis::D version 0.110.0.
+This document is Muldis::D version 0.111.0.
 
 =head1 PREFACE
 
@@ -45,9 +45,9 @@ at them.
 
 The fully-qualified name of this multi-part document and the language
 specification it contains (as a single composition) is
-C<Muldis_D:"http://muldis.com":0.110.0>.  It is the official/original (not
+C<Muldis_D:"http://muldis.com":0.111.0>.  It is the official/original (not
 embraced and extended) Muldis D language specification by the authority
-Darren Duncan (C<http://muldis.com>), version C<0.110.0> (this number
+Darren Duncan (C<http://muldis.com>), version C<0.111.0> (this number
 matches the VERSION pod in this file).  This multi-part document is named
 and organized with the expectation that many dialects, extensions, and core
 versions of it will exist over time, some of those under the original
