@@ -1,6 +1,62 @@
                                  Muldis::D
 ---------------------------------------------------------------------------
 
+2010-03-xx  Darren Duncan <darren@DarrenDuncan.net>
+
+    * Muldis::D version 0.112.0 is released on CPAN as
+    Muldis-D-0.112.0.tar.gz.
+
+    * This release features a rough cut of a new major feature of the
+    Muldis D type system, called "mixin types", which is analogous to the
+    "roles" of Perl 6, or to the "mixins" or "interfaces" of some other
+    general purpose languages.  The new feature now does, or will in a
+    near-subsequent release, support multiple kinds of important
+    functionality that were either previously missing from Muldis D or were
+    implemented in a less elegant manner.  The first new functionality is
+    that a union type can now be declared in the reverse manner to how it
+    was previously doable, using a "domain type"; a domain type definition
+    explicitly lists all the other types it ranges over, so it is "closed";
+    in contrast, a "mixin type" is a union type that ranges over other
+    types that specify themselves to be part of that union, which the other
+    types do by "composing" the mixin type, so a mixin type is "open".  Any
+    user-defined type can add itself to the domain of even a system-defined
+    mixin-type (such as "Numeric"), whereas no type can add itself to the
+    domain of a system-defined domain-type (such as "Bool").  The second
+    new functionality is that functions can now be declared virtual and be
+    associated with a mixin, and other functions which are associated with
+    other types composing that mixin can be declared to implement that
+    virtual function; this means that Muldis D now supports "operator
+    overloading" to a limited extent, that limit being that you can only
+    overload operators that are explicitly defined to be overloadable; in
+    any event, a direct invocation of a virtual function will automatically
+    dispatch to one of its implementing functions based on the data types
+    of the primary function arguments.  In a subsequent release, mixins
+    will support code reuse by way of letting you define type attributes in
+    a mixin and then all composing types will have those attributes without
+    having to separately define them; this then means Muldis D will support
+    an approximation of "specialization by extension".  Having "mixin
+    types" also means that some other little-related design changes can be
+    made to Muldis D more easily, in subsequent releases.
+
+    * (Basics.pod)  Updated a "TYPE SYSTEM" main pod section paragraph that
+    talked about "specialization by constraint" post mixin types existing.
+
+    * (Types_Catalog.pod, Routines_Catalog.pod, PTMD_STD.pod,
+    HDMD_Perl[6|5]_STD.pod)  Added the new type generator called "mixin
+    type" which defines new data types whose values are a union of those
+    from the one or more other types that specify themselves to be part of
+    that union.  In Types_Catalog.pod, added the catalog type "MixinType"
+    (with the initial 2 attributes "comment", "default"), and added the 2
+    catalog types "[|Sys]MixinTypeSet", and updated each of the 2 catalog
+    types "System", "Depot" to add a "mixin_types" attribute.  In
+    Routines_Catalog.pod, added the 2 recipes "[create|drop]_mixin_type".
+    In all 3 STD.pod, added "Mixin Type Specification" pod sub-sect under
+    "MATERIAL SPECIFICATION" and added the "mixin_type" material node kind.
+
+    * (Types_Catalog.pod)  Updated all 6 catalog types
+    "[Scalar|Tuple|Relation|Domain|Subset|Mixin]Type" to add a
+    "composed_mixins" attribute, which is simply a set of type names.
+
 2010-03-05  Darren Duncan <darren@DarrenDuncan.net>
 
     * Muldis::D version 0.111.0 is released on CPAN as

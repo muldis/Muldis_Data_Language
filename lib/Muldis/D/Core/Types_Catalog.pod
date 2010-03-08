@@ -105,6 +105,7 @@ more or less:
                 sys.std.Core.Type.Cat.RelationType
                 sys.std.Core.Type.Cat.DomainType
                 sys.std.Core.Type.Cat.SubsetType
+                sys.std.Core.Type.Cat.MixinType
                 sys.std.Core.Type.Cat.OrderByName
 
                 sys.std.Core.Type.Database
@@ -127,7 +128,7 @@ more or less:
                 sys.std.Core.Type.Cat.Sys[Function|Updater|Procedure]Set
                 sys.std.Core.Type.Cat.SysSpecTypeSet
                 sys.std.Core.Type.Cat.Sys[Scalar|Tuple|Relation]TypeSet
-                sys.std.Core.Type.Cat.Sys[Domain|Subset]TypeSet
+                sys.std.Core.Type.Cat.Sys[Domain|Subset|Mixin]TypeSet
                 sys.std.Core.Type.Cat.SysCatSet
                 sys.std.Core.Type.Cat.MountControlSet
                 sys.std.Core.Type.Cat.DepotMountSet
@@ -135,7 +136,7 @@ more or less:
                 sys.std.Core.Type.Cat.SubdepotSet
                 sys.std.Core.Type.Cat.[Function|Updater|Procedure]Set
                 sys.std.Core.Type.Cat.[Scalar|Tuple|Relation]TypeSet
-                sys.std.Core.Type.Cat.[Domain|Subset]TypeSet
+                sys.std.Core.Type.Cat.[Domain|Subset|Mixin]TypeSet
                 sys.std.Core.Type.Cat.OVLScaValExprNodeSet
                 sys.std.Core.Type.Cat.ScaSelExprNodeSet
                 sys.std.Core.Type.Cat.TupSelExprNodeSet
@@ -555,7 +556,7 @@ specifically all the relcons and relvars with the names
 C<[sys|mnt|fed|nlx].cat>.  The system catalog constant named
 C<sys.cat> is of the C<System> type.
 
-A C<System> has these 12 attributes:
+A C<System> has these 13 attributes:
 
 =over
 
@@ -597,12 +598,12 @@ Muldis D enumeration types that are each implicit maximal types of 2 of 4
 non-remnant type categories (the other 2 such maximals are primitive
 types).
 
-=item C<[scalar|tuple|relation|domain|subset]_types> -
-C<Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet>
+=item C<[scalar|tuple|relation|domain|subset|mixin]_types> -
+C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>
 
-These are all the system-defined scalar types, except for
-C<Int> because it can't be defined like user-defined types, and complete
-tuple and relation types, and domain types, and subset types.
+These are all the system-defined scalar types, except for C<Int> because it
+can't be defined like user-defined types, and complete tuple and relation
+types, and domain types, and subset types, and mixin types.
 
 =item C<catalogs> - C<SysCatSet>
 
@@ -717,13 +718,13 @@ This is an optional programmer comment about the type as a whole.
 A C<SysSpecTypeSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet
+=head2 sys.std.Core.Type.Cat.Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet
 
-A C<Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet> is a C<DHRelation>
-that specifies a set of scalar|tuple|relation|domain|subset system-defined
-types.
+A C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> is a
+C<DHRelation> that specifies a set of
+scalar|tuple|relation|domain|subset|mixin system-defined types.
 
-A C<Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet> has these 4
+A C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has these 4
 attributes:
 
 =over
@@ -731,28 +732,30 @@ attributes:
 =item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
-the scalar|tuple|relation|domain|subset type's parent system namespace.
+the scalar|tuple|relation|domain|subset|mixin type's parent system
+namespace.
 
 =item C<name> - C<Name>
 
-This is the declared name of the scalar|tuple|relation|domain|subset type
-within the namespace defined by C<parent>; other Muldis D code would
+This is the declared name of the scalar|tuple|relation|domain|subset|mixin
+type within the namespace defined by C<parent>; other Muldis D code would
 reference it with the combination of C<parent> and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the
-scalar|tuple|relation|domain|subset type as a whole.
+scalar|tuple|relation|domain|subset|mixin type as a whole.
 
-=item C<material> - C<[Scalar|Tuple|Relation|Domain|Subset]Type>
+=item C<material> - C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]Type>
 
-This defines the entire scalar|tuple|relation|domain|subset type sans its
-name.
+This defines the entire scalar|tuple|relation|domain|subset|mixin type sans
+its name.
 
 =back
 
-A C<Sys[Scalar|Tuple|Relation|Domain|Subset]TypeSet> has a binary primary
-key on the C<parent> plus C<name> attributes.  Its default value is empty.
+A C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has a binary
+primary key on the C<parent> plus C<name> attributes.  Its default value is
+empty.
 
 =head2 sys.std.Core.Type.Cat.SysCatSet
 
@@ -1044,7 +1047,7 @@ subdepots, and any that exist are arranged in a hierarchy with the depot as
 the root.  The system catalog variable named C<nlx.cat> is of the C<Depot>
 type.
 
-A C<Depot> has these 11 attributes:
+A C<Depot> has these 12 attributes:
 
 =over
 
@@ -1062,12 +1065,12 @@ be none).
 These are all the definitions that this [|sub]depot contains of functions,
 updaters, procedures.
 
-=item C<[scalar|tuple|relation|domain|subset]_types> -
-C<[Scalar|Tuple|Relation|Domain|Subset]TypeSet>
+=item C<[scalar|tuple|relation|domain|subset|mixin]_types> -
+C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>
 
 These are all the definitions that this [|sub]depot contains of scalar
 types with possreps, complete tuple and relation types, domain types, and
-subset types.
+subset types, and mixin types.
 
 =item C<data> - C<maybe_of.RPTypeNC>
 
@@ -1154,14 +1157,15 @@ This defines the entire function|updater|procedure sans its name.
 A C<[Function|Updater|Procedure]Set> has a binary primary key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Scalar|Tuple|Relation|Domain|Subset]TypeSet
+=head2 sys.std.Core.Type.Cat.[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet
 
-A C<[Scalar|Tuple|Relation|Domain|Subset]TypeSet> is a C<DHRelation> that
-specifies a set of scalar|tuple|relation|domain|subset types that a
-[|sub]depot might directly contain.  I<TODO: each type may be either public
-for the DBMS as a whole or private to the subdepot.>
+A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> is a C<DHRelation>
+that specifies a set of scalar|tuple|relation|domain|subset|mixin types
+that a [|sub]depot might directly contain.  I<TODO: each type may be either
+public for the DBMS as a whole or private to the subdepot.>
 
-A C<[Scalar|Tuple|Relation|Domain|Subset]TypeSet> has these 4 attributes:
+A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has these 4
+attributes:
 
 =over
 
@@ -1169,28 +1173,29 @@ A C<[Scalar|Tuple|Relation|Domain|Subset]TypeSet> has these 4 attributes:
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
 of any hypothetical immediate child namespace of the depot,
-of the scalar|tuple|relation|domain|subset type's parent [|sub]depot.
+of the scalar|tuple|relation|domain|subset|mixin type's parent [|sub]depot.
 
 =item C<name> - C<Name>
 
-This is the declared name of the scalar|tuple|relation|domain|subset type
-within the namespace defined by C<parent>; other Muldis D code would
+This is the declared name of the scalar|tuple|relation|domain|subset|mixin
+type within the namespace defined by C<parent>; other Muldis D code would
 reference it with the combination of C<parent> and C<name>.
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the
-scalar|tuple|relation|domain|subset type as a whole.
+scalar|tuple|relation|domain|subset|mixin type as a whole.
 
-=item C<material> - C<[Scalar|Tuple|Relation|Domain|Subset]Type>
+=item C<material> - C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]Type>
 
-This defines the entire scalar|tuple|relation|domain|subset type sans its
-name.
+This defines the entire scalar|tuple|relation|domain|subset|mixin type sans
+its name.
 
 =back
 
-A C<[Scalar|Tuple|Relation|Domain|Subset]TypeSet> has a binary primary key
-on the C<parent> plus C<name> attributes.  Its default value is empty.
+A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has a binary
+primary key on the C<parent> plus C<name> attributes.  Its default value is
+empty.
 
 =head1 TYPES FOR DEFINING ROUTINES
 
@@ -2861,7 +2866,7 @@ or none are.  You can not declare a scalar root type at all except
 by using a C<ScalarType>, and you can not define a scalar type
 with an incompletely defined attribute list at all.
 
-A C<ScalarType> has these 7 attributes:
+A C<ScalarType> has these 8 attributes:
 
 =over
 
@@ -2869,6 +2874,11 @@ A C<ScalarType> has these 7 attributes:
 
 This is an optional programmer comment about the scalar
 [|sub]type as a whole.
+
+=item C<composed_mixins> - C<set_of.RPTypeNC>
+
+These are the names of the 0..N mixin types, if any, that the new scalar
+type composes, and therefore the new type is a subtype of all of them.
 
 =item C<base_type> - C<maybe_of.RPTypeNC>
 
@@ -3102,7 +3112,7 @@ doesn't have to), because a C<RelationType> requires one in terms of which
 it is partly defined; each tuple of a value of the latter type is a value
 of the former type.
 
-A C<TupleType> has these 9 attributes:
+A C<TupleType> has these 10 attributes:
 
 =over
 
@@ -3110,6 +3120,11 @@ A C<TupleType> has these 9 attributes:
 
 This is an optional programmer comment about the tuple
 [|sub]type as a whole.
+
+=item C<composed_mixins> - C<set_of.RPTypeNC>
+
+These are the names of the 0..N mixin types, if any, that the new tuple
+type composes, and therefore the new type is a subtype of all of them.
 
 =item C<base_type> - C<maybe_of.RPTypeNC>
 
@@ -3242,7 +3257,7 @@ first exist a separate C<TupleType> in terms of which it is partly defined
 value of the latter type.  Note that a single tuple type definition may be
 shared by multiple relation type definitions, or it may be system-defined.
 
-A C<RelationType> has these 6 attributes:
+A C<RelationType> has these 7 attributes:
 
 =over
 
@@ -3250,6 +3265,11 @@ A C<RelationType> has these 6 attributes:
 
 This is an optional programmer comment about the relation
 [|sub]type as a whole.
+
+=item C<composed_mixins> - C<set_of.RPTypeNC>
+
+These are the names of the 0..N mixin types, if any, that the new relation
+type composes, and therefore the new type is a subtype of all of them.
 
 =item C<base_type> - C<maybe_of.RPTypeNC>
 
@@ -3762,13 +3782,18 @@ a union/intersection/etc of other types (eg, to define a "Square" when you
 have "Rectangle", "Rhombus"), you have to first define a C<DomainType>,
 and then use that as the base type of a C<ScalarType>.
 
-A C<DomainType> has these 8 attributes:
+A C<DomainType> has these 9 attributes:
 
 =over
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the domain type as a whole.
+
+=item C<composed_mixins> - C<set_of.RPTypeNC>
+
+These are the names of the 0..N mixin types, if any, that the new domain
+type composes, and therefore the new type is a subtype of all of them.
 
 =item C<sources> - C<set_of.RPTypeNC>
 
@@ -3867,13 +3892,18 @@ when the system wants to determine the MST (most specific type) of one of
 its values.  You can only declare a nonscalar type with an incompletely
 defined attribute list using a C<SubsetType> (or a C<DomainType>).
 
-A C<SubsetType> has these 4 attributes:
+A C<SubsetType> has these 5 attributes:
 
 =over
 
 =item C<comment> - C<Comment>
 
 This is an optional programmer comment about the subset type as a whole.
+
+=item C<composed_mixins> - C<set_of.RPTypeNC>
+
+These are the names of the 0..N mixin types, if any, that the new subset
+type composes, and therefore the new type is a subtype of all of them.
 
 =item C<base_type> - C<RPTypeNC>
 
@@ -3910,6 +3940,56 @@ C<constraints> is empty (unconditionally C<Bool:True>).  Note that there is
 no valid combination of C<SubsetType> attribute values that would
 result in an alias for the C<Empty> type, due to a default value for the
 type being mandatory.
+
+=head2 sys.std.Core.Type.Cat.MixinType
+
+A C<MixinType> is a C<DHTuple>.  It defines a new data type whose values
+are a union of those from the one or more other not-C<Empty> types that
+specify themselves to be part of that union.  For all practical purposes, a
+C<MixinType> declares a I<mixin> or I<interface> or I<role> (the last as
+Perl 6 uses the term) which is meant to be composed into other types, such
+that said other types are then at least labelled as being useable in
+particular common ways, and optionally the mixin type may define attributes
+or code that can be reused by the types that compose it.  For example,
+C<Numeric> is a mixin type, and any types composing it such as C<Int> or
+C<Rat> are thereby declaring themselves to support common numeric operators
+such as addition and multiplication.  A union type declared by a
+C<MixinType> is unlike one declared by a C<DomainType> in that the former
+is I<open> and the latter is I<closed>; any user-defined type can add
+itself to the domain of even a system-defined mixin-type (such as
+C<Numeric>), whereas no type can add itself to the domain of a
+system-defined domain-type (such as C<Bool>).  A data type defined by a
+C<MixinType> is typically not considered to exist when the system wants to
+determine the MST (most specific type) of one of its values.
+
+A C<MixinType> has these 3 attributes:
+
+=over
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about the mixin type as a whole.
+
+=item C<composed_mixins> - C<set_of.RPTypeNC>
+
+These are the names of the 0..N other mixin types, if any, that the new
+mixin type composes.  Any other type that explicitly composes the new mixin
+type will also implicitly compose all of the other mixin types that the new
+mixin type composes, recursively; note that a mixin type is forbidden from
+composing itself, directly or indirectly.
+
+=item C<default> - C<RPFunctionNC>
+
+This matches the invocation name of a C<named-value> function that results
+in the default value of the mixin type; it has zero parameters and its
+result type is the same as one of the other types that, directly or
+indirectly, composes the mixin type.
+
+=back
+
+The default value of C<MixinType> defines a mixin type that is identical to
+C<Boolean>; its C<composed_mixins> is empty and its default value is
+the default value of C<Bool>.  I<This paragraph is subject to change.>
 
 =head1 SIMPLE GENERIC NONSCALAR TYPES
 
