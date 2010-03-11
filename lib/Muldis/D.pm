@@ -31,7 +31,7 @@ L<Muldis::D::Basics>, L<Muldis::D::Core> (which has its own tree of parts
 to follow), L<Muldis::D::Dialect::PTMD_STD>,
 L<Muldis::D::Dialect::HDMD_Perl6_STD>,
 L<Muldis::D::Dialect::HDMD_Perl5_STD>, L<Muldis::D::Conventions>,
-L<Muldis::D::Ext::Counted>, L<Muldis::D::Ext::DateTime>,
+L<Muldis::D::Ext::Counted>, L<Muldis::D::Ext::Temporal>,
 L<Muldis::D::Ext::Spatial>.
 
 =head1 DESCRIPTION
