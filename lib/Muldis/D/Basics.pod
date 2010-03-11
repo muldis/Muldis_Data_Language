@@ -749,20 +749,8 @@ that B<D> requirement is to support polymorphism where multiple distinct
 operators that have the same name but different semantics can dispatch
 correctly based on the MST of their operands.  However, in practice, such a
 requirement would place a gratuitous large and error-prone burden on users,
-where when they want to define a new type (typically a proper subtype of
-another), they may have to define many explicit subtypes of their new type
-to account for every overlap of their useful type with pre-existing system
-or user defined types.  Moreover, Muldis D uses distinct fully-qualified
-names for all operators, so no 2 operators would exist with the same name
-but different semantics, so that user trouble would be for naught in
-practice.  Therefore, Muldis D does not enforce single MSTs for values in
-general.  As an exception to this, MSTs I<are> mutually enforced with
-respect to all proper subtypes of a common root scalar type that each
-declare one or more possreps (and the mandatory extra intersection type
-must also declare an extra possrep), simply because it is a good idea, and
-so every scalar value I<does> have a I<most specific possrep>.  I<To keep
-documentation simpler, any reference to most-specific-types/MSTs elsewhere
-will assume each value has just one of them.>
+if mandated universally.  Instead, Muldis D only enforces single MSTs in
+the limited contexts where that is actually necessary, if any.
 
 A I<union type> is a data type that has at least 2 immediate subtypes, and
 every one of its values is also a value of an immediate subtype; that is,
@@ -821,6 +809,36 @@ C<Universal>, C<Empty>, C<Scalar>, C<DHScalar>, C<Bool>, C<Reference>,
 C<Order>.  In the case of a scalar subset enumeration
 type, typically it will define extra scalar possreps or selectors.  All
 user-defined nonscalar types are enumeration types.
+
+Muldis D provides 2 generic polar-opposite methods to define an enumeration
+type in terms of a union, and types defined in the 2 methods can be
+referred to as I<domain types> or I<mixin types>, respectively.  With a
+I<domain type>, it is the union type itself whose definition includes a
+list of all the other types from which it draws its values, and those other
+types generally don't know anything about the domain type.  With a I<mixin
+type>, the union type doesn't in general know anything about what types it
+draws its values from, and it is instead those other types whose
+definitions explicitly name that their values are all included in the union
+type, which they declare by explicitly I<composing> the mixin type.  Note
+that, just as multiple domain types can take values from the same other
+types, the same other type can compose multiple mixin types.  The primary
+determinant for whether you would declare a union type using a domain type
+or a mixin type is whether you want the union type's definition to be
+closed, or open, respectively.  If you use a domain type, then assuming you
+have control over all the types it unions (or they are system-defined), you
+are fairly guaranteed that your union type will remain static and continue
+to contain exactly the same values indefinitely, or in other words that the
+type will continue to mean exactly what you intended no matter what anyone
+else does with types outside your control.  If you use a mixin type, in
+contrast, you are expressly empowering others to alter the meaning of that
+type by adding new values to it from their own new types, and so your union
+type is flexible to accommodate new uses automatically, at the cost that
+you can't always assume when you ask for a value of that type that you'll
+know in advance all the possible values you might get.  So, for example,
+the system-defined C<Bool> type is a domain type, while the system-defined
+C<Numeric> type is a mixin type.  A particularly important use of mixin
+types particularly is doing operator overloading between disjoint types,
+which would be considerably more difficult without them.
 
 A reference type is a special opaque type that is used for just 1 purpose
 currently.  A value of a reference type can not be stored in a database and
@@ -2095,6 +2113,86 @@ parameters; it can not see any global variables.  A C<system-service> is
 forbidden from invoking a procedure that isn't also a C<system-service>.
 The catalog data type C<SystemService>, a proper subtype of C<Procedure>,
 will define any C<system-service>.
+
+=head1 Overloading With Virtual Routines
+
+Muldis D natively supports routine/operator overloading, in the sense that
+a collection can exist of routines that differ only in the declared types
+of their parameters, where one can invoke the collection as a whole by a
+single collective name, and one of the routines in the collection is
+dispatched to automatically based on the types of the invocation arguments.
+
+This overloading feature is utilized by way of I<virtual routines>.  A
+Muldis D routine of any kind (function, updater, or procedure), that has at
+least one parameter, is made I<virtual> by declaring that at least 1 of its
+parameters is a I<dispatch parameter>; moreover, said routine definition
+would only define its interface or I<heading> and not its implementation or
+I<body>.  A I<virtual> routine is intended to be overloaded, and the
+virtual routine's name is what one invokes explicitly in order to
+implicitly invoke one of any other routines that implement it.  The set of
+routines that implements a virtual routine is determined to be all routines
+whose definitions explicitly declare that they implement that specific
+virtual routine, by specifying the latter by name.  An implementing routine
+is allowed to be virtual itself, so a routine collection can look like a
+hierarchy.  A virtual routine and all of its implementers must have the
+same main routine kind (for example, they must all be functions), and their
+parameter lists (parameter count, names, which are updatable or readonly,
+which are optional) must be identical save for the declared types of the
+parameters; where any declared types of parameters or function result types
+differ, the declared type of an implementing routine must be a subtype of
+the declared type of its virtual routine.
+
+When a virtual routine is invoked with valid arguments, the types of just
+the arguments for its I<dispatch parameters> are examined, and the
+implementing routine with the most specific declared types that the
+arguments are members of is the routine that is dispatched to.  With
+functions, the declared result types of implementers can I<not> be used to
+determine which one is dispatched to.  So conceptually a virtual routine is
+just a single given-when expression or statement that dispatches on the
+types of its arguments; a user could write this explicitly instead of using
+a virtual routine, but it is often more elegant to use a virtual, where
+that dispatch table is built automatically by the system.
+
+Muldis D requires that the declared types of the corresponding dispatch
+parameters for all implementing routines of the same virtual routine to be
+mutually disjoint, so that any given dispatch argument would only ever
+qualify for exactly one of them.  Theoretically, pairs of types could be
+allowed to overlap as long as for every overlap there is an implementing
+routine in the set whose declared type is the intersection type of that
+pair, so that there is still a single most specific type to pick; however,
+Muldis D currently doesn't mandate that feature because it would be onerous
+to determine which overlapping option is the most specific one in the
+general case.
+
+Muldis D supports both system-defined and user-defined virtual routines,
+meaning users can define new overloadable operators, and users can add
+implementing routines to both system-defined and user-defined virtual
+routines, meaning users can overload all virtual routines, both to support
+system-defined types and user-defined types.
+
+Now, just because a routine implements a virtual routine doesn't mean that
+a piece of code can't invoke the former directly; in fact, it is
+recommended to do so when the invoking code knows that all of its possible
+arguments will dispatch to the same implementing routine.
+
+There are 2 main use cases for code to invoke a virtual routine.  The first
+is to allow invoking code to be open-ended polymorphic, so it can
+automatically handle new data types that are added after the invoking code
+is written, as long as the operation has the same interface and appropriate
+semantics, so repeated invoker code updates aren't needed to expand
+explicit dispatch logic with all the choices.  The second is when the
+concrete Muldis D grammar you are using has operator syntax that is
+overloaded for multiple data types, such as the common mathematical symbols
+being overloaded for both C<Int> and C<Rat>, effectively giving multiple
+implementing routines the same name, because it would be unpleasant to do
+otherwise by invoking each variant with distinct symbols.
+
+Currently, Muldis D restricts the set of interconnected virtual plus
+implementing routines to all live in the same depot, or a set may be partly
+system-defined as long as all of the user-defined members are in the same
+depot.  Or at least that is the case for all implementing functions of a
+virtual function that is used in the definition of a data type, all of
+which must be in the same depot aside from system-defined members.
 
 =head1 USERS AND PRIVILEGES
 

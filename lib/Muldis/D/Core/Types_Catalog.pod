@@ -364,6 +364,16 @@ invoked directly when both the invoker and invoked are in the same depot.
 This is an enumeration data type.  C<RPFunctionNC> is a non-proper subtype
 of C<RelPathMaterialNC> and is analogous to the C<APFunctionNC> type.
 
+=head2 sys.std.Core.Type.Cat.RPUpdaterNC
+
+This is an enumeration data type.  C<RPUpdaterNC> is a non-proper subtype
+of C<RelPathMaterialNC> and is analogous to the C<APUpdaterNC> type.
+
+=head2 sys.std.Core.Type.Cat.RPProcedureNC
+
+This is an enumeration data type.  C<RPProcedureNC> is a non-proper subtype
+of C<RelPathMaterialNC> and is analogous to the C<APProcedureNC> type.
+
 =head2 sys.std.Core.Type.Cat.RPTypeNC
 
 This is an enumeration data type.  C<RPTypeNC> is a non-proper subtype of
@@ -1217,9 +1227,9 @@ optional iff the C<Function> is embedded in a C<System>, because often the
 implementations of system-defined routines are not defined in terms of
 other Muldis D routines.
 
-A C<Function> has these 5 attributes, of which the 3 C<result_type>,
-C<params>, C<opt_params> define the I<heading> and the 1 C<expr> defines
-the I<body>:
+A C<Function> has these 7 attributes, of which the 5 C<result_type>,
+C<params>, C<opt_params>, C<dispatch_params>, C<implements> define the
+I<heading> and the 1 C<expr> defines the I<body>:
 
 =over
 
@@ -1244,6 +1254,25 @@ invoked; any function parameters not named here must be supplied explicit
 arguments.  Any parameter marked as optional which is not given an explicit
 argument will implicitly default to the default value of its declared type.
 Each element of C<opt_params> must match a parameter name in C<params>.
+
+=item C<dispatch_params> - C<set_of.Name>
+
+Iff C<dispatch_params> is nonempty then this function is a virtual
+function; otherwise, empty means not virtual.  A virtual function must
+have no I<body> specified.  This attribute indicates the subset of the
+function's parameters whose invocation arguments' types are consulted to
+determine which other function, that explicitly implements this virtual
+one, is automatically dispatched to.  Each element of C<dispatch_params>
+must match a parameter name in C<params>.
+
+=item C<implements> - C<maybe_of.RPFunctionNC>
+
+Iff C<implements> is nonempty then this function is explicitly declaring
+that it implements the other, virtual function whose name is given in its
+sole element; otherwise, empty means not implementing a virtual.  An
+implementing function must the same parameter list as its virtual, save
+that the implementer's parameters' or result's declared types must be
+subtypes of the corresponding ones of the virtual.
 
 =item C<expr> - C<ExprNodeSet>
 
@@ -2012,9 +2041,9 @@ optional iff the C<Updater> is embedded in a C<System>, because often the
 implementations of system-defined routines are not defined in terms of
 other Muldis D routines.
 
-An C<Updater> has these 6 attributes, of which the 3 C<upd_params>,
-C<ro_params>, C<opt_params> define the I<heading> and the 2 C<exprs>,
-C<stmt> define the I<body>:
+An C<Updater> has these 8 attributes, of which the 5 C<upd_params>,
+C<ro_params>, C<opt_params>, C<dispatch_params>, C<implements> define the
+I<heading> and the 2 C<exprs>, C<stmt> define the I<body>:
 
 =over
 
@@ -2045,6 +2074,25 @@ a new anonymous variable (with the aforementioned default value) which is
 discarded after the updater finishes executing.  Each element of
 C<opt_params> must match a parameter name in either C<upd_params> or
 C<ro_params>.
+
+=item C<dispatch_params> - C<set_of.Name>
+
+Iff C<dispatch_params> is nonempty then this updater is a virtual
+updater; otherwise, empty means not virtual.  A virtual updater must
+have no I<body> specified.  This attribute indicates the subset of the
+updater's parameters whose invocation arguments' types are consulted to
+determine which other updater, that explicitly implements this virtual
+one, is automatically dispatched to.  Each element of C<dispatch_params>
+must match a parameter name in C<upd_params> or C<ro_params>.
+
+=item C<implements> - C<maybe_of.RPUpdaterNC>
+
+Iff C<implements> is nonempty then this updater is explicitly declaring
+that it implements the other, virtual updater whose name is given in its
+sole element; otherwise, empty means not implementing a virtual.  An
+implementing updater must the same parameter list as its virtual, save
+that the implementer's parameters' or result's declared types must be
+subtypes of the corresponding ones of the virtual.
 
 =item C<exprs> - C<ExprNodeSet>
 
@@ -2141,9 +2189,9 @@ optional iff the C<Procedure> is embedded in a C<System>, because often the
 implementations of system-defined routines are not defined in terms of
 other Muldis D routines.
 
-A C<Procedure> has these 9 attributes, of which the 6 C<upd_params>,
-C<ro_params>, C<opt_params>, C<is_recipe>, C<is_system_service>,
-C<is_transaction> define the
+A C<Procedure> has these 11 attributes, of which the 8 C<upd_params>,
+C<ro_params>, C<opt_params>, C<dispatch_params>, C<implements>,
+C<is_recipe>, C<is_system_service>, C<is_transaction> define the
 I<heading> and the 2 C<vars>, C<stmt> define the I<body>:
 
 =over
@@ -2165,6 +2213,25 @@ This is the declared read-only parameter list of the procedure, which has
 =item C<opt_params> - C<set_of.Name>
 
 This is as per the same-named attribute of C<Updater>.
+
+=item C<dispatch_params> - C<set_of.Name>
+
+Iff C<dispatch_params> is nonempty then this procedure is a virtual
+procedure; otherwise, empty means not virtual.  A virtual procedure must
+have no I<body> specified.  This attribute indicates the subset of the
+procedure's parameters whose invocation arguments' types are consulted to
+determine which other procedure, that explicitly implements this virtual
+one, is automatically dispatched to.  Each element of C<dispatch_params>
+must match a parameter name in C<upd_params> or C<ro_params>.
+
+=item C<implements> - C<maybe_of.RPProcedureNC>
+
+Iff C<implements> is nonempty then this procedure is explicitly declaring
+that it implements the other, virtual procedure whose name is given in its
+sole element; otherwise, empty means not implementing a virtual.  An
+implementing procedure must the same parameter list as its virtual, save
+that the implementer's parameters' or result's declared types must be
+subtypes of the corresponding ones of the virtual.
 
 =item C<is_recipe> - C<Bool>
 
