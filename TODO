@@ -40,82 +40,87 @@ implementations over multiple SQL DBMSs.
 
 ----------
 
-* IN PROGRESS, FIRST PRIORITY ...
-Consider adding a direct analogy to Perl 6 "roles", whose primary purpose
-is to help with managing software reuse, mainly when multiple types have a
-number of attributes in common, a role can define these and then the
-multiple types can compose that role.  This concept should be workable with
-both InnerScalarType and InnerNonscalarType.  A role can compose other
-roles.  A role or type that composes a role can both add additional
-attributes of its own to what the role defines, and the composer can add
-extra constraints over the composed attributes like forcing a subtype.  Now
-on one hand we could make a role a distinct concept, which by itself can't
-be instantiated as a type, or we could reuse the above 2 (IST/INT) type
-definition facilities and say an existing such type can be composed into
-another.  Now that latter case would in a manner of speaking give Muldis D
-the advantages of other OO languages or SQL that work using "specialization
-by extension" except that composing an existing type in this way will
-actually, for a scalar base, create a disjoint type not a subtype, so we
-get the code reuse but Muldis D is still specialization by constraint.  On
-the other hand, if we just declare roles as roles that can't be
-instantiated themselves, then declaring a role could also serve to declare
-a non-dh union type name that can be referred to in type constraint
-definitions, that union type implicitly ranging over all actual types that
-compose it, and so in this case the composers actually are subtypes; the
-problem with this is, what to do about a default value for said union type
-whose role isn't composed into anything ... maybe each one needs an
-implicit DVPT subtype?  But maybe by TTM terms, what a role actually is is
-a dummy type of sorts, where you declare the union name before what it
-unions, and the regular types it unions declare themselves part of the
-union rather than the other way around.  In any event, a composed role
-would never appear in a value's MST or root type list, same as any type
-declared as a union.  I should look at TTM and see if they intended for
-dummy types to fulfil a role such as this.  Except all directly declared
-subtypes of a role union are always disjoint, for scalar ones anyway; the
-role is defin shorthand.
-
-* IN PROGRESS ...
-Create the following mixins/roles and group types and ops under them:
+* FIRST PRIORITY ...
+Refactor the system type hierarchy to exploit mixins and operator
+overloading / virtual routines ...
+Create the following mixins and group types and ops under them:
     - Ordered :
         - tps: Ordinal, Rational, Stringy, NameChain, etc
         - ops: order/<=>
     - Ordinal :
-        - tps: Boolean, Integral, Order
+        - tps: Bool, Int, Order
         - ops: succ/++, pred/--, last, first
-    - Boolean :
-        - tps: Bool
-        - ops: not/!, and, or, etc
     - Numeric :
-        - tps: Integral, Rational, ... in the future, Complex etc
+        - tps: Int, Rat, ... in the future, Complex etc
         - ops: abs/||, sum/+, diff/-, product/*, quotient/'/',
             abs_diff/|-|, range, median, mode
-    - Integral :
-        - tps: Int
-        - ops: remainder/mod/%, power/I^, factorial/I!, fetch_random
-    - Rational :
-        - tps: Rat
-        - ops: mean, power/N^, log, natural_[power|log], fetch_random
     - Stringy :
-        - tps: Blobby, Textual, String
+        - tps: Blob, Text, String
         - ops: catenation/~, replication/x
-    - Blobby :
-        - tps: Blob
+    - Collective :
+        - tps: Set, Array, Bag, SPInterval, MPInterval
+        - ops: in/∈, has/∋
+Then the types that compose those mixins retain ops like these:
+    - Bool :
+        - ops: not/!, and, or, etc
+    - Int :
+        - ops: remainder/mod/%, power/I^, factorial/I!, fetch_random
+    - Rat :
+        - ops: mean, power/N^, log, natural_[power|log], fetch_random
+    - Blob :
         - ops: other Blob ops
-    - Textual :
-        - tps: Text, Name, Comment
+    - Text :
         - ops: other Text ops
-Maybe the best term for the above is "dummy type", which TTM defines as a
-scalar root type with zero possreps.  Or "dummy type" is not exactly the
-same but that can be used in describing the above thing;
-perhaps "Scalar" is (implicitly) a "dummy type" for example.
-A dummy type example is "plane figure" and say "rectangle" is declared with
-"isa plane figure" same as "square" might be declared with "isa rectangle".
-But unlike the "dummy type" example of TTM which suggests it is a base of
-a single inheritence tree, the thing we want one should be able to inherit
-from multiple dummy types at once, which probably still works for the term.
-TTM also says that a dummy type is by necessity a union type.
+And these types have these similar ops:
+    - Tuple :
+        - ops: in-r/∈r
+    - Relation :
+        - ops: has-t/∋t
 
-* Support delegation / 'handles'; for example:
+* SECOND PRIORITY ...
+Refactor the scalar type hierarchy at a fundamental level, so that the
+Muldis D type system ends up with exactly 4 native root types, which are
+Int, NPScalar (non-primitive scalar), Tuple, Relation.  So the concept of
+"structure" type will be eliminated, so all scalar root types besides Int
+will become enumeration types whose common root type is NPScalar.  The
+fundamental reason to make this change is so that Muldis D can then support
+doing data definition plus data manipulation as a single atomic operation,
+because there will now be an effective way to represent and interpret all
+Muldis D values, scalar and nonscalar alike, in the complete absence of any
+user-defined types, so the chicken-and-egg problem behind not being allowed
+to do DD and DM together would then be gone.  As you might guess, there is
+a single selector for all NPScalar values.  An NPScalar is a collection
+type that looks like a Tuple except for having 2 extra components, which
+are a declaration of type name and possrep name for the value where those
+names are partially context-independent; the initial Tuple-like component
+would have the possrep attribute values.  In the absence of any actual
+user-defined type definitions, two NPScalar are considered identical if
+they have the same type name and possrep name and attribute names and
+values, and they have no native concept of possrep mapping so one can't
+compare 2 different possreps for the same type.  But when user-defined
+types are in scope that "claim" the values in question, they can provide
+possrep mapping, as well as canonicalization (such as making Rat n+d
+coprime), so effectively acting as restrictions, and overriding what
+equality tests on those values result in.  Some details still to figureout.
+
+* THIRD PRIORITY ...
+Heavily update the transaction specs so that Muldis D DBMSs are
+fundamentally multi-versioned.  See subsequent long TODO item for details.
+
+* FOURTH PRIORITY ...
+Update the mixins feature to add support for mixins that define attributes
+that types can compose, whereby we support some approximation of
+"specialization by extension" while still actually being just
+"specialization by constraint".
+Maybe also it could be said ...
+A primary purpose of mixins is to help with managing software reuse, mainly
+when multiple types have a number of attributes in common, a mixin can
+define these and then the multiple types can compose that mixin.  A mixin
+or type that composes a mixin can both add additional attributes of its own
+to what the mixin defines, and the composer can add extra constraints over
+the composed attributes like forcing a subtype.
+Maybe also do ...
+Support delegation / 'handles'; for example:
     - TAIDuration explicitly delegate to Rat attr,
         and so all operators declared for 'Rat' simply work with
         TAIDuration also as if all their sigs were
@@ -127,7 +132,14 @@ This will all take some work to get right; not /all/ Rat/etc can be subst.
 Probably *only* those operators that Rational/etc explicitly declares can
 be delegated to Rat/etc by TAIInstant/etc.
 
-* Actually, all the temporal stuff just needs to be refactored now, as TAI
+* FIFTH PRIORITY ...
+Flesh out the concrete Muldis D syntax for defining whole routines and
+types et al.  But some other spec changes may possibly butt in line before
+this, such as enhancing the system catalog for defining transition
+constraints, or something or other.
+
+* AT SOME POINT ...
+Actually, all the temporal stuff just needs to be refactored now, as TAI
 no longer holds a privileged position.  Moreover, TAI can't actually
 reasonably delegate all of the Rat methods, since for example it doesn't
 make sense to multiply or divide a duration by another one, though you
@@ -390,11 +402,6 @@ is spelled with a leading "!" (meaning "not foo"); the idea is that often
 times if you see an operator with a leading "?" or "!" then you know the
 result is a boolean.  As examples, see the ASCII versions of the
 set-membership or super/subset ops.
-
-* Further to the above, consider renaming the "imem","hmem" to "in","has"
-and then the 4 variants would be "?in","!in","?has","!has".  Now, I grant
-you that Perl 6 and Moose set the example of "has" talking about "has this
-attribute" but my using "has" for set membership shouldn't confuse?
 
 * IN PROGRESS ...
 Update the STD dialects with special syntax for declaring whole depots
