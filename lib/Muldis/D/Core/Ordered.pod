@@ -1,0 +1,185 @@
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Muldis::D::Core::Ordered -
+Muldis D generic ordered-sensitive operators
+
+=head1 VERSION
+
+This document is Muldis::D::Core::Ordered version 0.112.0.
+
+=head1 PREFACE
+
+This document is part of the Muldis D language specification, whose root
+document is L<Muldis::D>; you should read that root document before
+you read this one, which provides subservient details.  Moreover, you
+should read the L<Muldis::D::Core> document before this current
+document, as that forms its own tree beneath a root document branch.
+
+=head1 DESCRIPTION
+
+This document describes essentially all of the core Muldis D
+ordered-sensitive operators, essentially all the generic ones that a
+typical programming language should have.
+
+I<This documentation is pending.>
+
+=head1 GENERIC ORDERED-SENSITIVE FUNCTIONS FOR ALL DATA TYPES
+
+These are generic operators that are sensitive
+to an ordering of a type's values, and are used for such things as list
+sorting or quota queries or determining before/after/min/max/between/etc.
+They can potentially be used with values of any data type as long as said
+data type has a (total) C<order-determination> function defined for it,
+and all system-defined conceptually-ordered Muldis D scalar root types do.
+
+Each of these functions which has the parameter named C<func> is a wrapper
+over the C<order-determination> function named in its C<func> argument when
+the latter function is curried by a calling-function-specific
+C<is_reverse_order> argument value.  For any scalar root type's
+type-default order function, the argument for C<func> is
+C<sys.std.Core.Scalar.order>.  Each C<func> parameter is optional and
+defaults to C<sys.std.Core.Scalar.order> if no explicit argument is given
+to it.
+
+=head2 sys.std.Core.Ordered.is_before
+
+C<< function sys.std.Core.Ordered.is_before (Bool <-- $topic : Universal,
+$other : Universal, $func? : OrdDetCFuncNC) >>
+
+This function results in C<Bool:True> iff the wrapped function would result
+in C<Order:Increase> when given the same corresponding 2 arguments plus an
+C<is_reverse_order> argument of C<Bool:False>, and C<Bool:False> otherwise.
+Note that this operation is also known as I<less than> or C<< < >>.
+
+=head2 sys.std.Core.Ordered.is_after
+
+C<< function sys.std.Core.Ordered.is_after (Bool <-- $topic : Universal,
+$other : Universal, $func? : OrdDetCFuncNC) >>
+
+This function is an alias for C<sys.std.Core.Ordered.is_before> except
+that it transposes the C<topic> and C<other> arguments.  This function
+results in C<Bool:True> iff the wrapped function would result in
+C<Order:Decrease> when given the same corresponding 2 arguments plus an
+C<is_reverse_order> argument of C<Bool:False>, and C<Bool:False> otherwise.
+Note that this operation is also known as I<greater than> or C<< > >>.
+
+=head2 sys.std.Core.Ordered.is_before_or_same
+
+C<< function sys.std.Core.Ordered.is_before_or_same (Bool <--
+$topic : Universal, $other : Universal, $func? : OrdDetCFuncNC) >>
+
+This function is exactly the same as C<sys.std.Core.Ordered.is_before>
+except that it results in C<Bool:True> if its 2 primary arguments are
+identical.  Note that this operation is also known as I<less than or equal
+to> or C<≤>.
+
+=head2 sys.std.Core.Ordered.is_after_or_same
+
+C<< function sys.std.Core.Ordered.is_after_or_same (Bool <--
+$topic : Universal, $other : Universal, $func? : OrdDetCFuncNC) >>
+
+This function is an alias for C<sys.std.Core.Ordered.is_before_or_same>
+except that it transposes the C<topic> and C<other> arguments.  This
+function is exactly the same as C<sys.std.Core.Ordered.is_after> except
+that it results in C<Bool:True> if its 2 primary arguments are identical.
+Note that this operation is also known as I<greater than or equal to> or
+C<≥>.
+
+=head2 sys.std.Core.Ordered.min
+
+C<< function sys.std.Core.Ordered.min (Universal <-- $topic : Set,
+$func? : OrdDetCFuncNC) >>
+
+This function is a reduction operator that recursively takes each pair of
+its N input element values and picks the minimum of the 2 (which is
+commutative, associative, and idempotent) until just one is left, which is
+the function's result.  If C<topic> has zero values, then this function
+will fail.  Note that, conceptually C<min> I<does> have an identity value
+which could be this function's result when C<topic> has zero values, which
+is the result type's concept of positive infinity; however, in practice
+there is little benefit to C<min> supporting this identity value, since the
+wrapped C<order-determination> function can't supply the value, and also
+many types' concept of positive infinity is impossible or impractically
+large to represent, such as with the infinite C<Text> type.
+
+=head2 sys.std.Core.Ordered.max
+
+C<< function sys.std.Core.Ordered.max (Universal <-- $topic : Set,
+$func? : OrdDetCFuncNC) >>
+
+This function is exactly the same as C<sys.std.Core.Ordered.min> except
+that it results in the maximum input element value rather than the minimum
+one.  (Note that, conceptually C<max> has an identity value which is the
+result type's concept of negative infinity, but it is unsupported here).
+
+=head2 sys.std.Core.Ordered.minmax
+
+C<< function sys.std.Core.Ordered.minmax (Tuple <-- $topic : Set,
+$func? : OrdDetCFuncNC) >>
+
+This function results in a binary tuple whose attribute names are C<min>
+and C<max> and whose respective attribute values are what
+C<sys.std.Core.Ordered.min> and C<sys.std.Core.Ordered.max> would
+result in when given the same arguments.  If C<topic> has zero values, then
+this function will fail.
+
+=head2 sys.std.Core.Ordered.maybe_min
+
+C<< function sys.std.Core.Ordered.maybe_min (Maybe <-- $topic : Set,
+$func? : OrdDetCFuncNC) >>
+
+This function is exactly the same as C<sys.std.Core.Ordered.min> except
+that it results in a C<Maybe> of what is otherwise the result type, and
+that result has zero elements if the argument has zero elements, rather
+than the function failing.
+
+=head2 sys.std.Core.Ordered.maybe_max
+
+C<< function sys.std.Core.Ordered.maybe_max (Maybe <-- $topic : Set,
+$func? : OrdDetCFuncNC) >>
+
+This function is to C<sys.std.Core.Ordered.max> as
+C<sys.std.Core.Ordered.maybe_min> is to C<sys.std.Core.Ordered.min>.
+
+=head2 sys.std.Core.Ordered.maybe_minmax
+
+C<< function sys.std.Core.Ordered.maybe_minmax (Relation <--
+$topic : Set, $func? : OrdDetCFuncNC) >>
+
+This function results in a binary relation whose attribute names are C<min>
+and C<max>.  If C<topic> has zero values then the result has a single tuple
+whose respective attribute values are what C<sys.std.Core.Ordered.min>
+and C<sys.std.Core.Ordered.max> would result in when given the same
+arguments; if C<topic> has zero values, then the result has zero tuples.
+
+=head1 SEE ALSO
+
+Go to L<Muldis::D> for the majority of distribution-internal
+references, and L<Muldis::D::SeeAlso> for the majority of
+distribution-external references.
+
+=head1 AUTHOR
+
+Darren Duncan (C<darren@DarrenDuncan.net>)
+
+=head1 LICENSE AND COPYRIGHT
+
+This file is part of the formal specification of the Muldis D language.
+
+Muldis D is Copyright © 2002-2010, Muldis Data Systems, Inc.
+
+See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+
+=head1 TRADEMARK POLICY
+
+The TRADEMARK POLICY in L<Muldis::D> applies to this file too.
+
+=head1 ACKNOWLEDGEMENTS
+
+The ACKNOWLEDGEMENTS in L<Muldis::D> apply to this file too.
+
+=cut
