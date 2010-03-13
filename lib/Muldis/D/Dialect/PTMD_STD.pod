@@ -754,7 +754,7 @@ Grammar:
     <opaque_value_literal> ::=
           <Bool>
         | <Order>
-        | <RatRoundMeth>
+        | <RoundMeth>
         | <Int>
         | <Rat>
         | <Blob>
@@ -847,7 +847,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
     <value_kind> ::=
           Bool
         | Order
-        | RatRoundMeth
+        | RoundMeth
         | Int | NNInt | PInt
         | Rat | NNRat | PRat
         | Blob | OctetBlob
@@ -874,7 +874,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
     <value_payload> ::=
           <Bool_payload>
         | <Order_payload>
-        | <RatRoundMeth_payload>
+        | <RoundMeth_payload>
         | <Int_payload>
         | <Rat_payload>
         | <Blob_payload>
@@ -908,7 +908,7 @@ interpret the latter; what grammars are valid for C<value_payload> depend
 just on C<value_kind>.
 
 For all values of just the 8 data types [C<Bool>, C<Order>,
-C<RatRoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>, C<Comment>], the
+C<RoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>, C<Comment>], the
 C<value_kind> portion of a GCVL may be omitted for brevity, but the code
 parser should still be able to infer it easily by examining the first few
 characters of the C<value_payload>, which for each of said 8 data types has
@@ -1021,33 +1021,33 @@ Examples:
 
     Decrease
 
-=head2 Rational Rounding Method Literals
+=head2 Rounding Method Literals
 
 Grammar:
 
-    <RatRoundMeth> ::=
+    <RoundMeth> ::=
         [
-            RatRoundMeth ':' <ws>?
+            RoundMeth ':' <ws>?
             [<type_name> ':' <ws>?]?
         ]?
-        <RatRoundMeth_payload>
+        <RoundMeth_payload>
 
-    <RatRoundMeth_payload> ::=
+    <RoundMeth_payload> ::=
           HalfDown | HalfUp
         | HalfEven
         | ToFloor | ToCeiling
         | ToZero | ToInf
 
-A C<RatRoundMeth> node represents a rational rounding method.  It is
-interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundMeth> value as
-follows:  The C<RatRoundMeth_payload> is a bareword character string
+A C<RoundMeth> node represents a rounding method.  It is
+interpreted as a Muldis D C<sys.std.Core.Type.Cat.RoundMeth> value as
+follows:  The C<RoundMeth_payload> is a bareword character string
 formatted as per a C<Name> SCVL, and it maps directly to the matching
-unqualified declared name of one of the C<RatRoundMeth.*>
-singleton types that the C<RatRoundMeth> type is defined as a union over.
+unqualified declared name of one of the C<RoundMeth.*>
+singleton types that the C<RoundMeth> type is defined as a union over.
 
 Examples:
 
-    RatRoundMeth:HalfUp
+    RoundMeth:HalfUp
 
     ToZero
 
@@ -1681,7 +1681,7 @@ Grammar:
         <Int_payload>
 
     <round_meth> ::=
-        <RatRoundMeth_payload>
+        <RoundMeth_payload>
 
 A C<RatRoundRule> node represents a rational rounding rule.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundRule> value whose
@@ -1689,9 +1689,9 @@ attributes are defined by the C<RatRoundRule_payload>.  A
 C<RatRoundRule_payload> consists mainly of a bracket-delimited sequence of
 3 comma-separated elements, which correspond in order to the 3 attributes:
 C<radix> (a C<PInt2_N>), C<min_exp> (an C<Int>), and C<round_meth> (a
-C<RatRoundMeth>).  Each of C<radix> and C<min_exp> must qualify as a valid
+C<RoundMeth>).  Each of C<radix> and C<min_exp> must qualify as a valid
 C<Int_payload>, and C<round_meth> must qualify as a valid
-C<RatRoundMeth_payload>.
+C<RoundMeth_payload>.
 
 Examples:
 
