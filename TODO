@@ -40,37 +40,64 @@ implementations over multiple SQL DBMSs.
 
 ----------
 
+* Update the MixinType cat type so it can also do part of what DomainType
+can do, specifically list a set of initial source other types.  This is
+most elegant solution in common scenario when one wants to make a new mixin
+type that includes some system-defined or otherwise they-can't define types
+or at least that seems more elegant than otherwise requiring them to also
+declare a DomainType to collect those that then composes the mixin, or a
+SubsetType when we're just pulling in 1 initially.
+
+* Rename Bool.pod to Boolean.pod, maybe Integer.pod to Integral.pod,
+Text.pod to Textual.pod, Blob.pod to Blobby.pod, etc.
+Or standardize in some other way between mixins and types named after.
+
 * FIRST PRIORITY ...
 Refactor the system type hierarchy to exploit mixins and operator
 overloading / virtual routines ...
 Create the following mixins and group types and ops under them:
     - Ordered :
-        - tps: Ordinal, Stringy, Rat, NameChain, etc
+        - tps: Ordinal, Rational, Stringy, Temporal, NameChain,
+            Instant, Duration, etc
         - ops: order/<=>
     - Ordinal :
-        - tps: Bool, Int, Order
+        - tps: Boolean, Integer, Order
         - ops: succ/++, pred/--, last, first
+    - Boolean :
+        - tps: Bool ... and maybe Blobby/Blob (treat logi ops as bitwise)?
+        - ops: not/!, and, or, etc
+    - Diffable :
+        - tps: Numeric, Instant
+        - ops: diff/-, abs_diff/|-| (for Instant, both result in Duration)
     - Numeric :
-        - tps: Int, Rat, ... in the future, Complex etc
-        - ops: abs/||, sum/+, diff/-, product/*, quotient/'/',
-            abs_diff/|-|, range, median, mode
+        - tps: Integer, Rational, Duration, ... in the future, Complex etc
+        - ops: abs/||, sum/+, range, mean, median, mode,
+            product/*, quotient/'/' (for Duration, last 2 hv Rat 2nd param)
+    - Integer :
+        - tps: Int
+        - ops: remainder/mod/%, power/I^, factorial/I!, fetch_random
+    - Rational :
+        - tps: Rat
+        - ops: power/N^, log, natural_[power|log], fetch_random
     - Stringy :
-        - tps: Blob, Text, String
+        - tps: Blob, Text, String, NameChain ... maybe Array in general?
         - ops: catenation/~, replication/x
+    - Blobby :
+        - tps: Blob
+        - ops: other Blob ops
+    - Textual :
+        - tps: Text, Name, Comment
+        - ops: other Text ops
     - Collective :
         - tps: Set, Array, Bag, SPInterval, MPInterval
         - ops: in/∈, has/∋
+    - Instant :
+        - tps: TAIInstant, UTCInstant, FloatInstant
+        - ops: later, earlier (both have second param of Duration)
+    - Duration :
+        - tps: TAIDuration, UTCDuration
+        - ops: (none added)
 Then the types that compose those mixins retain ops like these:
-    - Bool :
-        - ops: not/!, and, or, etc
-    - Int :
-        - ops: remainder/mod/%, power/I^, factorial/I!, fetch_random
-    - Rat :
-        - ops: mean, power/N^, log, natural_[power|log], fetch_random
-    - Blob :
-        - ops: other Blob ops
-    - Text :
-        - ops: other Text ops
 And these types have these similar ops:
     - Tuple :
         - ops: in-r/∈r
@@ -309,6 +336,28 @@ where order matters or where order does not matter; but perhaps only a
 routine is needed here such as a catenate function plus normal I/O output.
 
 ----------
+
+* Regarding Integer.quotient(), the current semantics (taking the floor of
+the result of a real number division) match Perl 6 according to S03, and
+also Wolfram/Mathematica suggest that as a semantics option for integ div;
+consider either having truncation or other rounding semantics as other
+options since those are popular elsewhere; see also RatRoundMeth.
+Regarding Integer.remainder(), current semantics (the, with '/' flooring,
+"$x % $y = $x - $y * ($x / $y)" identity) match Perl 6 according to S03, as
+well as Knuth (so says WP); the current semantics have the sign of the
+remainder matching the sign of the divisor, which is also what most
+languages I respect (such as both Perl 5 and 6, Python, Ruby, Scheme, TCL,
+Lua) do as either the only or one of multiple options (most of the more
+functional languages offer both choices); it is argued that matching the
+sign of the dividend instead is a worse, but both Java and SQL:1999 and
+C:1999 do that; so it would seem to be best that I provide both options; or
+better yet, also the third option of the remainder always being nonnegativ;
+it seems generally the round-meth choice and sign choice are orthogonal, so
+I could probably provide a parameter to specify each in int-div-using ops.
+Oh, and while you're adding round-meth params to int division, go and add a
+round-rule param to rat division, I suppose, since in general we'll need it
+if we want to maintain a rational radix through every op (+,-,* will
+already do so when all their args are in the desired radix).
 
 * Add explicit support for +/- underflow, +/- overflow, NaNs, etc.
 I'm inclined to think +/- zero is unnecessary when we have underflow and
@@ -655,6 +704,23 @@ such to above extensions or to Text.pod as appropriate.
 compares whole graphemes (1 grapheme = sequence starting with a base
 codepoint plus N combining codepoints, or something) as single string
 elements, rather than say comparing a base char against a combining char.
+
+* Add new "Complex" extension which provides the numeric "complex" data
+types (each expressed as a pair of real numbers with at least 2 possreps
+like cartesian vs polar) and operators.  Note that the SQL standard does
+not have such data types but both many general languages as well some
+hardware CPUs natively support them.  Probably make "Complex" a mixin type
+and have the likes of "RatComplex" and "IntComplex" composing it.  Note
+that a complex number over just integers is also called a Gaussian integer.
+A question to ask is whether a distinct "imaginary" type is useful; some
+may say it is and Digital Mars' "D" has it, but I don't know if others do.
+In any event, complex numerics should most likely not be part of the core,
+even though their candidacy could be considered borderline; for one thing,
+I would expect that most actual uses of them would work with inexact math.
+
+* Add other mathematical extensions, such as ones that add trigonometric
+functions et al, or ones that deal with hyperreal/hypercomplex/etc types,
+or ones with variants of the core numeric types that propagate NaNs etc.
 
 * Make further updates to Temporal.pod to improve correctness or
 normalization, particularly with durations, maybe add some *Duration
