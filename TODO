@@ -337,27 +337,9 @@ routine is needed here such as a catenate function plus normal I/O output.
 
 ----------
 
-* Regarding Integer.quotient(), the current semantics (taking the floor of
-the result of a real number division) match Perl 6 according to S03, and
-also Wolfram/Mathematica suggest that as a semantics option for integ div;
-consider either having truncation or other rounding semantics as other
-options since those are popular elsewhere; see also RoundMeth.
-Regarding Integer.remainder(), current semantics (the, with '/' flooring,
-"$x % $y = $x - $y * ($x / $y)" identity) match Perl 6 according to S03, as
-well as Knuth (so says WP); the current semantics have the sign of the
-remainder matching the sign of the divisor, which is also what most
-languages I respect (such as both Perl 5 and 6, Python, Ruby, Scheme, TCL,
-Lua) do as either the only or one of multiple options (most of the more
-functional languages offer both choices); it is argued that matching the
-sign of the dividend instead is a worse, but both Java and SQL:1999 and
-C:1999 do that; so it would seem to be best that I provide both options; or
-better yet, also the third option of the remainder always being nonnegativ;
-it seems generally the round-meth choice and sign choice are orthogonal, so
-I could probably provide a parameter to specify each in int-div-using ops.
-Oh, and while you're adding round-meth params to int division, go and add a
-round-rule param to rat division, I suppose, since in general we'll need it
-if we want to maintain a rational radix through every op (+,-,* will
-already do so when all their args are in the desired radix).
+* Add a round-rule param to rat division, I suppose, since in general we'll
+need it if we want to maintain a rational radix through every op (+,-,*
+will already do so when all their args are in the desired radix).
 
 * Add explicit support for +/- underflow, +/- overflow, NaNs, etc.
 I'm inclined to think +/- zero is unnecessary when we have underflow and
@@ -443,14 +425,8 @@ to be used as a default or internal representation everywhere.
 
 ----------
 
-* Consider updating the mnemonic in the STD dialects in regard to
-boolean-valued expressions (or attributes) that are asking a yes/no
-question, especially those that come in pairs, such that the is-foo version
-is spelled with a leading "?" (meaning "so foo") and the is-not-foo version
-is spelled with a leading "!" (meaning "not foo"); the idea is that often
-times if you see an operator with a leading "?" or "!" then you know the
-result is a boolean.  As examples, see the ASCII versions of the
-set-membership or super/subset ops.
+* Update the STD dialects concerning that integer division and modulus now
+have a mandatory third parameter, not yet shown, the rounding-method.
 
 * IN PROGRESS ...
 Update the STD dialects with special syntax for declaring whole depots
