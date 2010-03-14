@@ -1170,15 +1170,15 @@ Grammar:
         | <d_rat_body>
 
     <rat_body> ::=
-          <int_body>'.'<pint_tail>
-        | <int_body> <ws>? '/' <ws>? <pint_body>
-        | <int_body> <ws>? '*' <ws>? <pint_body> <ws>? '^' <ws>? <int_body>
+          <int_body> <unspace> '.' <pint_tail>
+        | <int_body> <unspace> '/' <pint_body>
+        | <int_body> <unspace> '*' <pint_body> <unspace> '^' <int_body>
 
     <d_rat_body> ::=
-          <d_int_body>'.'<d_pint_tail>
-        | <d_int_body> <ws>? '/' <ws>? <d_pint_body>
-        | <d_int_body> <ws>? '*' <ws>? <d_pint_body>
-            <ws>? '^' <ws>? <d_int_body>
+          <d_int_body> <unspace> '.' <d_pint_tail>
+        | <d_int_body> <unspace> '/' <d_pint_body>
+        | <d_int_body> <unspace> '*' <d_pint_body>
+            <unspace> '^' <d_int_body>
 
 A C<Rat> node represents a rational numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Rat> value as follows:
@@ -1418,7 +1418,7 @@ Grammar:
         <nc_nonempty> | <nc_empty>
 
     <nc_nonempty> ::=
-        <Name_payload> ** [<ws>? '.' <ws>?]
+        <Name_payload> ** [<unspace> '.']
 
     <nc_empty> ::=
         '[]'
@@ -1429,7 +1429,7 @@ Grammar:
         <PNSQNameChain_payload>
 
     <PNSQNameChain_payload> ::=
-        ['.' <ws>?]? <nc_nonempty>
+        '.'? <nc_nonempty>
 
 A C<Name> node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
@@ -2717,7 +2717,7 @@ Grammar:
         <data_sigil> <PNSQNameChain_payload>
 
     <acc_via_anon> ::=
-        <expr> <ws>? '.' <ws>? <nc_nonempty>
+        <expr> <unspace> '.' <nc_nonempty>
 
 An C<accessor> node represents an accessor or alias for an attribute of
 another, tuple-valued expression node.  It is interpreted as a tuple of a
@@ -2743,7 +2743,7 @@ Examples:
 Grammar:
 
     <func_invo> ::=
-        <routine_name> <func_arg_list>
+        <routine_name> <unspace> <func_arg_list>
 
     <routine_name> ::=
         <PNSQNameChain_payload>
@@ -3533,20 +3533,20 @@ Grammar:
         <pcf_s_acc_op_invo> | <pcf_t_acc_op_invo>
 
     <pcf_s_acc_op_invo> ::=
-        <expr> <ws>? '.${' [<ws>? <possrep_name> ';']? <ws>?
+        <expr> <unspace> '.${' [<ws>? <possrep_name> ';']? <ws>?
             <attr_name>
         <ws>? '}'
 
     <pcf_t_acc_op_invo> ::=
-        <expr> <ws>? '.%{' <ws>? <attr_name> <ws>? '}'
+        <expr> <unspace> '.%{' <ws>? <attr_name> <ws>? '}'
 
     <s_pcf_op_invo> ::=
-        <expr> <ws>? '${' [<ws>? <possrep_name> ';']? <ws>?
+        <expr> <unspace> '${' [<ws>? <possrep_name> ';']? <ws>?
             [<pcf_projection> | <pcf_cmpl_proj>]
         <ws>? '}'
 
     <t_pcf_op_invo> ::=
-        <expr> <ws>? '%{' <ws>?
+        <expr> <unspace> '%{' <ws>?
             [
                   <pcf_rename>
                 | <pcf_projection> | <pcf_cmpl_proj>
@@ -3556,7 +3556,7 @@ Grammar:
         <ws>? '}'
 
     <r_pcf_op_invo> ::=
-        <expr> <ws>? '@{' <ws>?
+        <expr> <unspace> '@{' <ws>?
             [
                   <pcf_rename>
                 | <pcf_projection> | <pcf_cmpl_proj>
@@ -3626,14 +3626,14 @@ Grammar:
         <pcf_ary_acc_op_invo> | <pcf_ary_slice_op_invo>
 
     <pcf_ary_value_op_invo> ::=
-        <expr> <ws>? '.[' <ws>? <index> <ws>? ']'
+        <expr> <unspace> '.[' <ws>? <index> <ws>? ']'
 
     <index> ::=
           <num_max_col_val> ';' <unspace> <nnint_body>
         | <d_nnint_body>
 
     <pcf_ary_slice_op_invo> ::=
-        <expr> <ws>? '[' <ws>?
+        <expr> <unspace> '[' <ws>?
             <min_index> <ws>? <interval_boundary_kind> <ws>? <max_index>
         <ws>? ']'
 
