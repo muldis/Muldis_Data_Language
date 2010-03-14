@@ -40,17 +40,22 @@ implementations over multiple SQL DBMSs.
 
 ----------
 
-* Update the MixinType cat type so it can also do part of what DomainType
-can do, specifically list a set of initial source other types.  This is
-most elegant solution in common scenario when one wants to make a new mixin
-type that includes some system-defined or otherwise they-can't define types
-or at least that seems more elegant than otherwise requiring them to also
-declare a DomainType to collect those that then composes the mixin, or a
-SubsetType when we're just pulling in 1 initially.
+* In PTMD_STD, replace optional whitespace with unspace in some places,
+such as anywhere optional whitespace is allowed inside an "opaque value
+literal", such as around the [/,*,^] in Rat literals, or such as around the
+"." in name chains, or especially next to the ":" or ";" in any nodes.
 
 * Maybe rename Integer.pod to Integral.pod,
 Text.pod to Textual.pod, Blob.pod to Blobby.pod, etc.
 Or standardize in some other way between mixins and types named after.
+
+* Use terminology like "ordered" versus "ordinal" to distinguish types like
+Rat,Text from Int; "ordinal" naturally supports prec,succ (prev,next)
+operators while "ordered" does not.  All "ordinal" are "ordered" but not
+the reverse.  Making a finite subtype of an infinite ordered type might
+also have the effect of making it ordinal, in some cases.  Add concept of
+"step size" or "quantum" or such to talk about ordinal, which is the basis
+for figuring out all the other ordinal stuff.
 
 * FIRST PRIORITY ...
 Refactor the system type hierarchy to exploit mixins and operator
@@ -192,8 +197,6 @@ constraint writers want to know anyway.
 
 * Add new "material" kinds that def stimulus-response rules
 / triggered routines.
-
-* Add sequence generator updaters|procedures in Integer.pod.
 
 * Add new "material" kinds that define descriptions of resource locks that
 one wants to get, starting with basic whole dbvar, relvar locks (address as
@@ -357,7 +360,7 @@ the current simpler versions that don't, such as "IntNS" (int no specials),
 "RatNS", etc.  Either way, it is useful to support the full range of values
 that a Perl 6 numeric can support, or that an IEEE float can support,
 without users necessarily having to define it themselves.
-IDEA:  Make all the normal math/etc ops work with the extended versions
+IDEA:  Maybe make all normal math/etc ops work with the extended versions
 (those with NaNs, infinities, etc) and in situations where users don't want
 those special values they just use a declared type excluding them, and then
 the normal type constraints will take care of throwing exceptions when one
@@ -365,14 +368,6 @@ divides by zero for example.
 And so we then can also rid ourselves of having to use Maybe (as it stands
 now based on Set) in as many situations as we do now, where functions come
 in pairs where one chooses between a Maybe or a possible exception.
-
-* Use terminology like "ordered" versus "ordinal" to distinguish types like
-Rat,Text from Int; "ordinal" naturally supports prec,succ (prev,next)
-operators while "ordered" does not.  All "ordinal" are "ordered" but not
-the reverse.  Making a finite subtype of an infinite ordered type might
-also have the effect of making it ordinal, in some cases.  Add concept of
-"step size" or "quantum" or such to talk about ordinal, which is the basis
-for figuring out all the other ordinal stuff.
 
 * Flesh out Interval.pod to add a complement of functions for comparing
 multiple intervals in different ways, such as is-subset, is-overlap,
@@ -400,6 +395,8 @@ $source is any|etc matching|where|etc $filter|etc
 ADD RELATIONAL OPERATORS THAT COMBINE BOOL OPS ADDED IN 0.80.0 WITH
 RELATIONAL MAP/RESTRICTION/ETC AND ... The new functions are modelled after
 some in Perl 5's List::MoreUtils module.
+
+* Consider adding sequence generator updaters|procedures in Integer.pod.
 
 * Consider adding random value generators for data types other than integer
 and rational numerics, such as for character strings or binary strings.
@@ -445,19 +442,20 @@ function, updater, procedure, type, param, ro_param, upd_param, expr, stmt,
 subtype, key, possrep, etc; they apply to both 'outer' and 'inner'
 types/routines; also keywords for declaring whole packages or something.
 
-* Update the STD dialects to support inline definition of basic inner
+* IN PROGRESS ...
+Update the STD dialects to support inline definition of basic
 routines (and types?) right in the expressions/etc where they are used,
 such as filter functions in restriction() invocations, so many common cases
 look much more like their SQL or Perl counterparts, or for that matter, a
 functional language's anonymous higher order functions.  This syntax would
-be sugar over an explicit inner definition plus a FooRef value selection,
+be sugar over an explicit material definition plus a FooRef val selection,
 which means the inner def effectively is an expression node, and users can
 choose to name or not name the FooRef selecting node as normal with value
-expressions.  It is expected that the inners could be declared anonymously
+expressions.  It is expected that the materials could be decl anonymously
 and names for them (the inn.foo, not the FooRef's lex.foo) would be
 generated as per inline expression nodes etc.  Presumably also add some new
 keyword for a routine to invoke itself without using a name like normal;
-this would be sugar for normal functional call syntax, using gen inn name.
+this would be sugar for normal functional call syntax, using gen name.
 
 * Further to the previous item, add some special syntax, similar to how one
 references a parameter to get its argument's value, which can see into the
