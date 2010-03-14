@@ -442,36 +442,38 @@ value.
 =head2 sys.std.Core.Type.Cat.RoundMeth
 
 This is an enumeration data type.  The C<RoundMeth> (rounding method)
-type is explicitly defined as a union type over just these 7 singleton
+type is explicitly defined as a union type over just these 9 singleton
 types having C<sys.std.Core.Type.Cat.RoundMeth.*>-format names:
-C<HalfDown>, C<HalfUp>, C<HalfEven>, C<ToFloor>,
-C<ToCeiling>, C<ToZero>, C<ToInf>.  (Note: There are actually more rounding
-methods in the world, so this list may be expanded later.)  When a value
+C<Down>, C<Up>, C<ToZero>, C<ToInf>, C<HalfDown>, C<HalfUp>, C<HalfToZero>,
+C<HalfToInf>, C<HalfEven>.  When a value
 of some ordered type needs to be mapped into a proper subtype that doesn't
 contain that value, such as when mapping an arbitrary number to one with
 less precision, some rounding method is applied to determine which value of
 the subtype is to be mapped to while most accurately reflecting the
 original value.  The C<RoundMeth> type enumerates the rounding methods
-that Muldis D operators can typically apply.  With C<HalfDown>,
-C<HalfUp>, and C<HalfEven> (aka I<unbiased rounding>, I<convergent
+that Muldis D operators can typically apply.  With C<Down> (aka I<floor>),
+C<Up> (aka I<ceiling>), C<ToZero> (aka I<truncate>), and C<ToInf>, the
+original value will always be mapped to the single adjacent value that is
+lower than it, or higher than it, or towards "zero" from it, or towards the
+nearer infinity from it, respectively.  With C<HalfDown>,
+C<HalfUp>, C<HalfToZero>, C<HalfToInf>,
+and C<HalfEven> (aka I<unbiased rounding>, I<convergent
 rounding>, I<statistician's rounding>, or I<bankers' rounding>), the
 original value will be mapped to the single target value that it is closest
 to, if there is one; otherwise, if it is exactly half-way between 2
 adjacent target values, then C<HalfDown> will round towards negative
-infinity, C<HalfUp> will round towards positive infinity, and C<HalfEven>
-will round towards the nearest "even" target.  With C<ToFloor>,
-C<ToCeiling>, C<ToZero> (aka I<truncate>), C<ToInf>, the original value
-will always be mapped to the single adjacent value that is lower than it,
-or higher than it, or towards "zero" from it, or towards the nearer
-infinity from it, respectively.  The default value of C<RoundMeth> is
-C<HalfEven>, since in general that should be the most likely to minimize
-the rounding error from a sequence of operations that each round, which is
-especially useful in contexts where a rounding method is implicit.  The
+infinity, C<HalfUp> will round towards positive infinity,
+C<HalfToZero> will round towards "zero", C<HalfToInf> will round towards
+the nearer infinity, and C<HalfEven> will round towards the nearest "even"
+target.  The default value of C<RoundMeth> is C<HalfEven>, since in general
+that should be the most likely to minimize the rounding error from a
+sequence of operations that each round, which is especially useful in
+contexts where a rounding method is implicit.  The
 C<RoundMeth> type does I<not> have a default ordering algorithm.
 
 =head2 sys.std.Core.Type.Cat.RoundMeth.*
 
-There are exactly 7 types having
+There are exactly 9 types having
 C<sys.std.Core.Type.Cat.RoundMeth.*>-format names and each one is a
 structure data type; for the rest of this description, the type name
 C<RoundMeth.Value> will be used as a proxy for each and every one of
