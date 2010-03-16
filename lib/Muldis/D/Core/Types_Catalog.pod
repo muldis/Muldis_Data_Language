@@ -850,7 +850,7 @@ details of that depot mount's status, such as making it readonly or
 updateable; deleting a tuple will result in a mounted depot being either
 unmounted or unmounted plus deleted (if possible).
 
-A C<MountControlSet> has these 7 attributes:
+A C<MountControlSet> has these 8 attributes:
 
 =over
 
@@ -922,6 +922,47 @@ still be updated by others while mounted readonly for you, so consistent
 reads between distinct statements outside of transactions are not
 guaranteed.  I<These details are subject to revision, such as in regards to
 what autonomous child processes of the current process may do.>
+
+=item C<allow_auto_run> - C<Bool>
+
+This is C<Bool:True> if the depot mount will permit any stimulus-response
+rules defined in the depot to automatically execute when triggering events
+occur; those events could be nearly anything, including the very act of
+mounting (or unmounting) that depot.  This is C<Bool:False> (the default)
+if the depot mount will prohibit all stimulus-response rules defined in the
+depot from automatically executing.  The primary purpose of the
+C<allow_auto_run> attribute is to provide a measure of security against
+viruses and other malware that are using Muldis D databases as a vector,
+especially where the malicious code is setup to run automatically as soon
+as its host depot is mounted, which is insidious because in general users
+have to mount a depot in order to even examine it to see if its contents
+are safe, at which point it is too late.  When you have a depot with a
+dubious history, mounting it initially with a false C<allow_auto_run> will
+allow you to examine the depot for malware without giving the latter any
+opportunity to run; moreover, you will be able to clean out a virus
+infection from a depot that you otherwise wish to preserve (it is just
+data, after all); and then you can remount the depot with a true
+C<allow_auto_run> once you know it is clean, in order for benign
+auto-running code to work.  If a depot is "the main program" in a pure
+Muldis D application, then C<allow_auto_run> must be C<Bool:True> in order
+for it to work properly since auto-running is how the initial Muldis D
+routine of a call chain is invoked, and otherwise the program will
+immediately exit on launch without doing anything.  When C<allow_auto_run>
+is C<Bool:False> (and C<we_may_update> is C<Bool:True>), then the depot's
+catalog dbvar is updateable, so that you can purge any viruses, but the
+depot's data dbvar is read-only, because in the general case there may be
+some database constraints or benign side-effects of data manipulation that
+would be prevented from doing their jobs because they are defined as
+stimulus-response rules, and allowing data manipulation then could lead to
+violations of otherwise-enforced business rules.  Note that a false
+C<allow_auto_run> will not prohibit you from manually invoking code in the
+depot, so be careful not to invoke something unsafe.  Note that having a
+false C<we_may_update> status alone isn't adequate protection against
+malware because even in that situation any stimulus-response rules whose
+triggers aren't data manipulation events will still automatically run, and
+the malware can still do all sorts of harm, since stimulus-response rules
+in general can do anything a C<procedure> can, including various I/O or
+manipulating other depots.
 
 =item C<details> - C<OVLScaValExprNodeSet>
 
