@@ -629,14 +629,8 @@ following grammar definitions are in effect:
     <monadic_prefix_op> ::=
         <monadic_prefix_op__op_cr_basic>
 
-    <is_before_op> ::=
-        <is_before_op__op_cr_basic>
-
-    <is_after_op> ::=
-        <is_after_op__op_cr_basic>
-
-    <interval_membership_op> ::=
-        <interval_membership_op__op_cr_basic>
+    <dyadic_compare_op> ::=
+        <dyadic_compare_op__op_cr_basic>
 
 =head2 extended
 
@@ -683,14 +677,8 @@ following grammar definitions are in effect:
     <monadic_prefix_op> ::=
         <monadic_prefix_op__op_cr_extended>
 
-    <is_before_op> ::=
-        <is_before_op__op_cr_extended>
-
-    <is_after_op> ::=
-        <is_after_op__op_cr_extended>
-
-    <interval_membership_op> ::=
-        <interval_membership_op__op_cr_extended>
+    <dyadic_compare_op> ::=
+        <dyadic_compare_op__op_cr_extended>
 
 =head1 STANDARD SYNTAX EXTENSIONS
 
@@ -3858,7 +3846,6 @@ Grammar:
         [
               <compare_reduce_op_invo>
             | <dyadic_compare_op_invo>
-            | <triadic_compare_op_invo>
         ]
         [<ws> <gen_compare_op_ordered_clause>]?
 
@@ -3871,52 +3858,37 @@ Grammar:
     <dyadic_compare_op_invo> ::=
         <lhs> <ws> <dyadic_compare_op> <ws> <rhs>
 
-    <dyadic_compare_op> ::=
-        <is_before_op> | <is_after_op> | <interval_membership_op>
-
-    <is_before_op__op_cr_basic> ::=
-        '<' | '<='
-
-    <is_before_op__op_cr_extended> ::=
-          <is_before_op__op_cr_basic>
-        | '≤'
-
-    <is_after_op__op_cr_basic> ::=
-        '>' | '>='
-
-    <is_after_op__op_cr_extended> ::=
-          <is_after_op__op_cr_basic>
-        | '≥'
-
-    <interval_membership_op__op_cr_basic> ::=
-          Iin | 'I!in' | 'Inot-in' | Ihas | 'I!has' | 'Inot-has'
+    <dyadic_compare_op__op_cr_basic> ::=
+          '<' | '<=' | '>' | '>='
+        | Iin | 'I!in' | 'Inot-in' | Ihas | 'I!has' | 'Inot-has'
         | between | '!between' | 'not-between'
 
-    <interval_membership_op__op_cr_extended> ::=
-          <interval_membership_op__op_cr_basic>
+    <dyadic_compare_op__op_cr_extended> ::=
+          <dyadic_compare_op__op_cr_basic>
+        | '≤' | '≥'
         | 'I∈' | 'I∉' | 'I∋' | 'I∌'
-
-    <triadic_compare_op_invo> ::=
-       [[not | '!'] <ws>]?
-       <min> <ws> <is_before_op> <ws> <expr> <ws> <is_before_op> <ws> <max>
 
     <gen_compare_op_ordered_clause> ::=
         ordered <ws> <using_clause> | <ordered_by_clause>
 
 An C<ord_compare_op_invo> node is for using infix notation to invoke an
 order comparison operator function.  Such a function takes exactly 2
-(C<lhs> and C<rhs>) or 3 (C<min> and C<expr> and C<max>) or N/2+ (C<expr>)
+(C<lhs> and C<rhs>) or N/2+ (C<expr>)
 main op args, which are the inputs of the operation, plus 2 extra op args
 (C<assuming> and C<reversed> for the C<< <=> >> op, or C<func> and
 C<assuming> for any other op) which let you customize the semantics of the
 operation.  A single C<ord_compare_op_invo> node is equivalent to a single
 C<func_invo> node whose C<func_arg_list> element defines 2-N arguments, and
-the C<expr|lhs|rhs|min|max|func|assuming|reversed> elements of the
+the C<expr|lhs|rhs|func|assuming|reversed> elements of the
 C<ord_compare_op_invo> supply the values of those arguments, which are
 associated in the appropriate sequence, except for the N-adic operators
 which are commutative (and associative and idempotent) so the relative
-order of the main op args isn't significant.  Details on the extra op args
-are pending.
+order of the main op args isn't significant.  I<Details on the extra op
+args are pending.>
+
+B<TODO: Update the above paragraph because the referenced func-assuming
+pair isn't actually in grammar yet, as it would be within "using_clause",
+and "ordered_by_clause" isn't defined yet,  may have parts.>
 
 Some of the keywords are aliases for each other:
 
@@ -3928,12 +3900,6 @@ Some of the keywords are aliases for each other:
     I!in    | I∉ | Inot-in | !between | not-between
     Ihas    | I∋
     I!has   | I∌ | Inot-has
-    <=<=    | ≤≤
-    <=<     | ≤<
-    <<=     | <≤
-    !<=<=   | !≤≤
-    !<=<    | !≤<
-    !<<=    | !<≤
 
 This table indicates which function is invoked by each keyword:
 
@@ -3953,23 +3919,6 @@ This table indicates which function is invoked by each keyword:
     Ihas   -> Core.Interval.has_member( interval => $lhs, value => $rhs )
     I!has  -> Core.Interval.has_not_member( interval => $lhs,
                 value => $rhs )
-
-    <=<=  -> Core.Interval.value_is_member( value => $expr,
-                interval => SPInterval:{ $min .. $max } )
-    <=<   -> Core.Interval.value_is_member( value => $expr,
-                interval => SPInterval:{ $min ..^ $max } )
-    <<=   -> Core.Interval.value_is_member( value => $expr,
-                interval => SPInterval:{ $min ^.. $max } )
-    <<    -> Core.Interval.value_is_member( value => $expr,
-                interval => SPInterval:{ $min ^..^ $max } )
-    !<=<= -> Core.Interval.value_is_not_member( value => $expr,
-                interval => SPInterval:{ $min .. $max } )
-    !<=<  -> Core.Interval.value_is_not_member( value => $expr,
-                interval => SPInterval:{ $min ..^ $max } )
-    !<<=  -> Core.Interval.value_is_not_member( value => $expr,
-                interval => SPInterval:{ $min ^.. $max } )
-    !<<   -> Core.Interval.value_is_not_member( value => $expr,
-                interval => SPInterval:{ $min ^..^ $max } )
 
 Details regarding the extra op args is pending.  But most of the time you
 wouldn't be using them, so just the main args represents typical usage.
@@ -3992,13 +3941,7 @@ Examples (for now sans any use of extra op args, which are atypical):
 
     $a I∈ SPInterval:{1..5}
 
-    $min ≤ $foo ≤ $max
-
-    $min ≤ $foo < $max
-
-    not $min < $foo ≤ $max
-
-    not $min < $foo < $max
+    $foo I∉ SPInterval:{$min..^$max}
 
 =head1 TEMPORAL EXTENSION OPAQUE VALUE LITERALS
 
@@ -4207,15 +4150,15 @@ expression delimiters and implicitly delimits the expressions therein, in a
 fully deterministic manner.
 
 Unlike many languages which can have over a dozen precedence levels, such
-as Perl (about 24) or C, PTMD_STD only has about 8 precedence levels in the
+as Perl (about 24) or C, PTMD_STD only has about 7 precedence levels in the
 interest of simplicity, and so you will likely have to use more explicit
-expression delimiters to force the nesting precedence you want.  That 8
+expression delimiters to force the nesting precedence you want.  That 7
 figure assumes the C<catalog_abstraction_level> pragma is
 C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 3 of the levels
 can be eliminated, so then PTMD_STD has just 4; if it is C<code_as_data>
 instead, then 3 more can be eliminated, leaving just 1.
 
-Here we list the 8 levels from "tightest" to "loosest":
+Here we list the 7 levels from "tightest" to "loosest":
 
 =over
 
@@ -4240,16 +4183,6 @@ which includes every kind of C<< <accessor> >> and C<<
 
 =item *
 
-Every C<< <ord_compare_op_invo> >> that is a C<< <triadic_compare_op_invo>
->>.  The C<< <triadic_compare_op_invo> >> have been special-cased with
-their own higher precedence level so that, for example, C<< not $min < $foo
-≤ $max >> could be recognizable as its own entity rather than the C<not
-$min> or C<< $min < $foo >> substrings always being eaten on their own
-before the larger entity has a chance to be considered.  These are
-left-associative.
-
-=item *
-
 The I<prefix operators>, which includes every kind of
 C<< <monadic_prefix_op_invo> >> and C<< <prefix_rat_op_invo> >>.  These are
 right-associative.
@@ -4259,14 +4192,13 @@ right-associative.
 The I<dyadic infix operators>, which includes every kind of C<<
 <sym_dyadic_infix_op_invo> >> and C<< <nonsym_dyadic_infix_op_invo> >> and
 C<< <infix_rat_op_invo> >> and every C<< <ord_compare_op_invo> >> that is
-not also a C<< <triadic_compare_op_invo> >> or C<< <compare_reduce_op_invo>
->>.  These are left-associative.
+not also a C<< <compare_reduce_op_invo> >>.  These are left-associative.
 
 =item *
 
 The I<infix reduction operators>, which includes every kind of C<<
-<comm_infix_reduce_op_invo> >> and C<< <noncomm_infix_reduce_op_invo> >>.
-These are left-associative.
+<comm_infix_reduce_op_invo> >> and C<< <noncomm_infix_reduce_op_invo> >>
+and C<< <compare_reduce_op_invo> >>.  These are left-associative.
 
 =item *
 
