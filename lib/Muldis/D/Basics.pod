@@ -771,8 +771,8 @@ is like a difference type where the common supertype is C<Universal>.
 
 Every data type is one of these 4 kinds, depending on how the type is
 defined: I<primitive type>, I<structure type>, I<enumeration type>,
-I<reference type>.  A data type that is a primitive or structure or
-reference type is also called a I<root type>; a data type that is an
+I<external type>.  A data type that is a primitive or structure or
+external type is also called a I<root type>; a data type that is an
 enumeration is also called a I<nonroot type>.  A root type definition will
 just introduce new values into the type system while a nonroot type will
 just reuse values that the type system already has or will have.  Every
@@ -805,7 +805,7 @@ of a subset include: C<NNInt>, C<DHTuple>, C<Database>, C<DHRelation>,
 C<DHSet>, C<DHArray>, C<Maybe>, C<Bag>, C<String>, C<UTCDateTime>.  The
 system-defined types defined in terms of a union (sometimes not an
 explicitly enumerated one like with user-defined types) include:
-C<Universal>, C<Empty>, C<Scalar>, C<DHScalar>, C<Bool>, C<Reference>,
+C<Universal>, C<Empty>, C<Scalar>, C<DHScalar>, C<Bool>,
 C<Order>.  In the case of a scalar subset enumeration
 type, typically it will define extra scalar possreps or selectors.  All
 user-defined nonscalar types are enumeration types.
@@ -840,37 +840,22 @@ C<Numeric> type is a mixin type.  A particularly important use of mixin
 types is doing operator overloading between disjoint types,
 which would be considerably more difficult without them.
 
-A reference type is a special opaque type that is used for just 1 purpose
-currently.  A value of a reference type can not be stored in a database and
-it only is ever stored in routine lexical variables or arguments.  The
-use purpose is provided by Muldis D's special C<External> reference
-type, the values of which will represent any arbitrary values of any
-arbitrary, often user-defined and mutable, types of a peer or host language
-to Muldis D in the context of a common program.  Each C<External> value is
-a black box to Muldis D code, which other parts of a wider program can give
-to Muldis D routines to manage, such as store in a relation value for
-organization and processing with relational operators.  The mutual identity
-of C<External> values is implementation-defined, and by default each one is
-conceptually a memory address meaningful to the external language.  But
-regardless, C<External> values are disjoint from all native Muldis D
-values, so their proprietary identity schemes have no bearing on natives.
-
 =head2 Type Identification
 
-All non-reference values in the Muldis D type system are broadly
+All non-external values in the Muldis D type system are broadly
 categorized into 3 complementary sets called I<scalar values>, I<tuple
 values>, and I<relation values>; tuple and relation values are collectively
 known as I<nonscalar values>.  The type system has the system-defined data
 types named C<Scalar>, C<Tuple>, and C<Relation>, which serve as maximal
 data types for each category, respectively.  There is also a system-defined
-enumeration type named C<Reference> which is a union over all reference
+enumeration type named C<External> which is a union over all external
 types.  The 4 types are all mutually disjoint, and C<Universal> is a union
 type over all of them.
 
-Most non-reference data types each consist exclusively of values from
+Most non-external data types each consist exclusively of values from
 exactly one of the above first 3 categories, and each such type does not
 include values from several of them.  Therefore, every such data type is
-said to be either a I<scalar> type, a I<tuple type>, or a I<relation type>,
+said to be either a I<scalar type>, a I<tuple type>, or a I<relation type>,
 depending which category all of its values come from.  In similar fashion,
 a I<nonscalar type> is generally any type that is not a scalar type,
 meaning it is either a tuple type or a relation type.
@@ -938,9 +923,24 @@ not scalar types are simply convenient aliases for their true identities,
 which are their structures (the convenience allows various Muldis D catalog
 features to be designed and implemented more easily).
 
+An external type is a special opaque type.
+A value of an external type can not be stored in a database and
+it only is ever stored in routine lexical variables or arguments.  The
+use purpose is provided by Muldis D's special C<External>
+type, the values of which will represent any arbitrary values of any
+arbitrary, often user-defined and mutable, types of a peer or host language
+to Muldis D in the context of a common program.  Each C<External> value is
+a black box to Muldis D code, which other parts of a wider program can give
+to Muldis D routines to manage, such as store in a relation value for
+organization and processing with relational operators.  The mutual identity
+of C<External> values is implementation-defined, and by default each one is
+conceptually a memory address meaningful to the external language.  But
+regardless, C<External> values are disjoint from all native Muldis D
+values, so their proprietary identity schemes have no bearing on natives.
+
 =head2 Scalar Types
 
-Scalar types are the only conceptually (non-reference) encapsulated types
+Scalar types are the only conceptually (non-external) encapsulated types
 in Muldis D, and are like other languages' concepts of object classes where
 all their attributes are private, and only accessible indirectly.  The
 definition of a scalar type comprises usually one or more named
@@ -1256,7 +1256,7 @@ The system-defined root type C<Bool> is finite (2 values), as is the
 C<Empty> type (zero values), while all of the other important
 system-defined root types (C<Int>, C<Rat>, C<Blob>, C<Text>,
 C<Tuple>, C<Relation>, etc) are infinite, as are
-the C<Universal>, C<Scalar>, C<Reference> types.
+the C<Universal>, C<Scalar>, C<External> types.
 
 All proper subtypes of finite types are themselves finite types.  Proper
 subtypes of infinite types can be either finite or infinite depending on
