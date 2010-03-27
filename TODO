@@ -107,34 +107,25 @@ And these types have these similar ops:
         - ops: has-t/∋t
 
 * SECOND PRIORITY ...
-Refactor the scalar type hierarchy at a fundamental level, so that the
-Muldis D type system ends up with exactly 4 native root types, which are
-Int, NPScalar (non-primitive scalar), Tuple, Relation.  So the concept of
-"structure" type will be eliminated, so all scalar root types besides Int
-will become enumeration types whose common root type is NPScalar.  The
-fundamental reason to make this change is so that Muldis D can then support
-doing data definition plus data manipulation as a single atomic operation,
-because there will now be an effective way to represent and interpret all
-Muldis D values, scalar and nonscalar alike, in the complete absence of any
-user-defined types, so the chicken-and-egg problem behind not being allowed
-to do DD and DM together would then be gone.  As you might guess, there is
-a single selector for all NPScalar values.  An NPScalar is a collection
-type that looks like a Tuple except for having 2 extra components, which
-are a declaration of type name and possrep name for the value where those
-names are partially context-independent; the initial Tuple-like component
-would have the possrep attribute values.  In the absence of any actual
-user-defined type definitions, two NPScalar are considered identical if
-they have the same type name and possrep name and attribute names and
-values, and they have no native concept of possrep mapping so one can't
-compare 2 different possreps for the same type.  But when user-defined
-types are in scope that "claim" the values in question, they can provide
-possrep mapping, as well as canonicalization (such as making Rat n+d
-coprime), so effectively acting as restrictions, and overriding what
-equality tests on those values result in.  Some details still to figureout.
+Make various updates with respect to adding data types that package
+constraint-defining metadata and payload values that are constrained by
+said metadata.  Make it so that a depot is simply a value of that type,
+which is a database-tuple with 'cat' and 'data' attributes.  Replace or
+supplement the "recipe" / data-definition routines with functions and/or
+updaters (especially functions) that take such data types so that for
+example an ALTER-TABLE-alike is now a function that takes care of the
+schema alterations and corresponding data alterations as one atomic step.
+Further to this, /maybe/ consider merging 'cat' and 'data' in some limited
+way so that at any given level of drilling each namespace's or relvar's
+'cat' is together with its 'data', though more likely this would be
+accomplished with just virtual variables.
 
 * THIRD PRIORITY ...
 Heavily update the transaction specs so that Muldis D DBMSs are
 fundamentally multi-versioned.  See subsequent long TODO item for details.
+Each "version" of a depot conceptually is just a value of that
+database-tuple with 'cat' and 'data' attributes, described in prior item.
+Similarly, a mount-federation conceivably is a single such db-tup val also.
 
 * FOURTH PRIORITY ...
 Update the mixins feature to add support for mixins that define attributes

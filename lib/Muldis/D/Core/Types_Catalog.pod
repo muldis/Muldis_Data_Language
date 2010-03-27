@@ -53,9 +53,14 @@ This graph slice shows all of the top-level catalog types, plus some
 non-core catalog types for context:
 
     sys.std.Core.Type.Universal
-        sys.std.Core.Type.Tuple
-        sys.std.Core.Type.Relation
-        sys.std.Core.Type.External
+        sys.std.Core.Type.Cat.List
+            sys.std.Core.Type.Cat.Structure
+                sys.std.Core.Type.Cat.String
+                sys.std.Core.Type.Tuple
+                sys.std.Core.Type.Relation
+                sys.std.Core.Type.Cat.ScalarWP
+                sys.std.Core.Type.External
+            sys.std.Core.Type.Cat.Nonstructure
         sys.std.Core.Type.Scalar
             sys.std.Core.Type.Cat.ScalarWP
                 sys.std.Core.Type.Cat.DHScalarWP
@@ -230,6 +235,56 @@ used temporarily at runtime:
                 sys.std.Core.Type.Cat.ValRedCFuncNC
                 sys.std.Core.Type.Cat.OrdDetCFuncNC
 
+=head1 LOW-LEVEL STRUCTURE TYPES
+
+These types only exist in the low-level type system, and should not be used
+directly by users to define their ordinary data types or variables or
+parameters; rather they should use the conceptually higher-level types
+declared in L<Muldis::D::Core::Types> instead as their tools.  See also
+L<Muldis::D::Basics/Low Level Type System> for details of these types'
+structures, how their common 5 main subtypes are defined in terms of them.
+
+=head2 sys.std.Core.Type.Cat.List
+
+The C<List> type is the sub-maximal type of the entire Muldis D type
+system, and contains every non-C<Int> value that can possibly exist.  Every
+value in the Muldis D type system is declared by just one of two types,
+where C<Int> is one and C<List> is the other; therefore, C<Int> and C<List>
+are each other's I<negation type>, and the union of just those 2 types is
+C<Universal>.  A C<List> is a transparent dense sequence of 0..N elements
+where each element is identified by ordinal position and the first element
+has position zero, and where each element is either an C<Int> or a C<List>;
+in the general case, this can be an arbitrarily complex hierarchical
+structure of unlimited size, where the leaves of this hierarchy are each
+C<Int>.  The C<List> type is neither scalar nor nonscalar et al, same as
+with C<Universal>, and it contains values from all main value categories.
+The default value of C<List> is C<Bool:False>.  The cardinality of this
+type is infinity.
+
+=head2 sys.std.Core.Type.Cat.Structure
+
+C<Structure> is a proper subtype of C<List> consisting of every C<List>
+value that matches one of 5 specific formats; each of those formats is
+represented by exactly one of 5 mutually disjoint proper subtypes of
+C<Structure>, which are: C<String>, C<Tuple>, C<Relation>, C<ScalarWP>,
+C<External>; C<Structure> is a union type over all 5 of those types, and
+C<Structure> has no values which are not each of one of those 5 types.  A
+C<Structure> is a C<List> having at least 2 elements, where the first
+element is an C<Int> in the range C<1..5> (one per each of the 5 subtypes)
+that indicates how to interpret the remainder of the C<Structure> elements.
+The default value of C<Structure> is C<Bool:False>.  The cardinality of
+this type is infinity.
+
+=head2 sys.std.Core.Type.Cat.Nonstructure
+
+C<Nonstructure> is the difference type when C<Structure> is subtracted from
+C<List>.  The only main reason why C<Nonstructure> exists as a named type
+is to round out the 5 main broad value categories of the Muldis D type
+system, where each category has its own maximal type; a nonstructure value
+is any value which is neither a scalar nor a tuple nor a relation nor an
+external.  The default value of C<Nonstructure> is the sole C<List> value
+with zero elements.  The cardinality of this type is infinity.
+
 =head1 SIMPLE GENERIC SCALAR TYPES
 
 =head2 sys.std.Core.Type.Cat.ScalarWP
@@ -238,7 +293,9 @@ C<ScalarWP> (scalar with possreps) is a proper subtype of C<Scalar> where
 every one of its values has at least one possrep.  C<ScalarWP> is just the
 difference type where both C<Int> and C<String> are subtracted from
 C<Scalar>.  Its default value is C<Bool:False>.  The cardinality of this
-type is infinity.
+type is infinity.  Considering the low-level type system, C<ScalarWP> is
+just a proper subtype of C<Structure> consisting of every
+C<Structure> value whose first element is the C<Int> value C<4>.
 
 =head2 sys.std.Core.Type.Cat.DHScalarWP
 
@@ -269,7 +326,7 @@ default value is C<Bool:False>.  The cardinality of this type is infinity.
 
 A C<String> is a string of integers, or more specifically it is a dense
 sequence of 0..N elements (I<not> defined over C<Relation>) where each
-element is an integer.  A C<String> subtype is normally composed into any
+element is an C<Int>.  A C<String> subtype is normally composed into any
 system-defined type that is conceptually a string of integers or bits or
 characters, such as C<Blob> or C<Text>.  The C<String> type's default and
 canonical minimum value is the empty sequence; its canonical maximum value
@@ -278,8 +335,8 @@ one of just two scalar root types (the other is C<Int>) that do I<not> have
 any possreps.  The cardinality of this type is infinity; to define a
 most-generalized finite C<String> subtype, you must specify a maximum
 length in elements that the subtype's values can have, and you must specify
-the 2 integer end-points of the inclusive range that all its values'
-integer element values are in.  The C<String> type has a default ordering
+the 2 integer end-points of the inclusive range that all its values' C<Int>
+element values are in.  The C<String> type has a default ordering
 algorithm; for 2 distinct C<String> values, their order is determined as
 follows:  First eliminate any identical leading element sequences from both
 strings as those alone would make the strings compare as same (if the
@@ -288,29 +345,38 @@ identical).  Then, iff the remainder of just one string is the empty
 string, then that string is ordered before the non-empty one; otherwise,
 compare the first element of each of the string remainders according to the
 default ordering algorithm of C<Int> to get the order of their respective
-strings.
+strings.  Considering the low-level type system, C<String> is just a proper
+subtype of C<Structure> consisting of every C<Structure> value whose first
+element is the C<Int> value C<1>.
 
 =head2 sys.std.Core.Type.Cat.BString
 
-C<BString> (bit string) is a proper
-subtype of C<String> where all member value elements are between zero and
-1 inclusive.  One can be used to represent a string of bits.
+C<BString> (bit string) is a proper subtype of C<String> where all member
+value elements are between zero and 1 inclusive.  One can be used to
+represent a string of bits.  Considering the low-level type system, for
+every C<BString> value, its second C<Structure> element is the C<Int> value
+C<-1> (bit string).
 
 =head2 sys.std.Core.Type.Cat.OString
 
-C<OString> (octet string) is a proper
-subtype of C<String> where all member value elements are between zero and
-255 inclusive.  One can be used to represent a string of octets.
+C<OString> (octet string) is a proper subtype of C<String> where all member
+value elements are between zero and 255 inclusive.  One can be used to
+represent a string of octets.  Considering the low-level type system, for
+every C<OString> value, its second C<Structure> element is the C<Int> value
+C<-2> (octet string).
 
 =head2 sys.std.Core.Type.Cat.UCPString
 
-C<UCPString> (Unicode abstract codepoint
-string) is a proper subtype of C<String> where all member value elements
-are between zero and F;D7FF inclusive or F;E000 and F;10FFFF inclusive.  As
-of the Unicode standard version 5.2.0, all character abstract codepoints
-exist within that range, and so each element could be used to represent any
-Unicode character and the whole string can be used to represent a string of
-Unicode characters.
+C<UCPString> (Unicode abstract codepoint string) is a proper subtype of
+C<String> where all member value elements are between zero and F;D7FF
+inclusive or F;E000 and F;10FFFF inclusive.  As of the Unicode standard
+version 5.2.0, all character abstract codepoints exist within that range,
+and so each element could be used to represent any Unicode character and
+the whole string can be used to represent a string of Unicode characters.
+Considering the low-level type system, for every C<UCPString> value, its
+second C<Structure> element is the C<Int> value C<-4> (text with Unicode
+5.2.0 canonical character repertoire).  I<Support in Muldis D for the
+Unicode compatibility repertoire, other character repertoires is pending.>
 
 There are no Unicode abstract codepoints between F;D800 and F;DFFF
 inclusive; those numbers would only represent special surrogates that do
@@ -635,14 +701,17 @@ system-defined functions|updaters|procedures.
 These are the few central system-defined data types that have special
 hard-coded meanings and are not defined like any other types; these are
 declarations of all of the native Muldis D types that can't be defined like
-user-defined types.  Specifically, it declares these 8 standard types: in
-the C<sys.std.Core.Type> namespace, C<Universal>, C<Empty>, C<Scalar>,
-C<Int>, C<String>, C<Tuple>, C<Relation>, C<External>.  These
-constitute all 4 Muldis D primitive types, all 1 Muldis D external types,
-all 2 Muldis D type system minimal and maximal (enumeration) types, all 1
-Muldis D enumeration types that are each implicit maximal types of 1 of 4
-non-remnant type categories (the other 3 such maximals are primitive
-types or external types).
+user-defined types.  Specifically, it declares these 4 standard types: in
+the C<sys.std.Core.Type> namespace: C<Universal>, C<Empty>, C<Int>; in the
+C<sys.std.Core.Type.Cat> namespace: C<List>.  These constitute all 2 Muldis
+D declaration types, all 2 Muldis D type system maximal and minimal
+(enumeration) types.  Note that, while conceptually both C<Universal> and
+C<Empty> I<can> be defined like user-defined types, as the union or
+intersection of C<Int> and C<List>, respectively, in practice that wouldn't
+work for C<Empty> at least because all user-defined types are required to
+have a default value and it can't, and C<Universal> is also kept here at
+least to balance C<Empty>; actually, the maximal and minimal types are used
+in many places as default semantics in non-special type definitions.
 
 =item C<[scalar|tuple|relation|domain|subset|mixin]_types> -
 C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>

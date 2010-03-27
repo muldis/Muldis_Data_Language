@@ -769,46 +769,56 @@ odd number of its immediate subtypes.  A I<negation type> is a type that
 consists of only the values that aren't members of a single other type; it
 is like a difference type where the common supertype is C<Universal>.
 
-Every data type is one of these 4 kinds, depending on how the type is
-defined: I<primitive type>, I<structure type>, I<enumeration type>,
-I<external type>.  A data type that is a primitive or structure or
-external type is also called a I<root type>; a data type that is an
-enumeration is also called a I<nonroot type>.  A root type definition will
-just introduce new values into the type system while a nonroot type will
-just reuse values that the type system already has or will have.  Every
-root type is disjoint from every other root type, and every value in the
-type system belongs to exactly one root type; each value conceptually has
-meta-data naming the root type that it is a member of.  One quality of a
-root type is that a single selector exists which can select all of the
-values of that type.  Generally speaking, root types are the
-implementational foundation over which all operators and all other types
-are built, and the declared parameter and result types of most
-system-defined operators are root types.  A I<leaf type> is a data type
-that has no proper subtypes save for C<Empty>.
+Every data type is one of these 2 main kinds, depending on how the type is
+defined: I<declaration type>, I<enumeration type>.  A declaration type
+definition will just introduce new values into the type system while an
+enumeration type will just reuse values that the type system already has.
+Every declaration type is disjoint from every other declaration type, and
+every value in the type system belongs to exactly one declaration type;
+each value conceptually has meta-data naming the declaration type that it
+is a member of.  One quality of a declaration type is that a single
+selector exists which can select all of the values of that type.  Generally
+speaking, declaration types are the implementational foundation over which
+all operators and all other types are built.
 
-A primitive type is not, in most cases, conceptually defined in terms of
-any other data type in the system.  A primitive type can only be
-system-defined, not user-defined.  There are just 4 of these: C<Int>,
-C<String>, C<Tuple>, C<Relation>.  I<TODO: Further correct this desc.>
+A declaration type can only be system-defined, not user-defined; users can
+only define enumeration types.  A declaration type is either an atomic
+type, which is conceptually opaque and not composed of other types, or a
+nonatomic type, which is conceptually a composition of other types, either
+atomic or nonatomic, along with an optional constraint that restricts
+the values of the nonatomic data type to be a subset of the permutations of
+possible element values.  An enumeration type is defined in terms of a
+union or subset of the values of one or more other data types.  In the case
+of a scalar subset enumeration type, typically it will define extra scalar
+possreps or selectors.  There are just 2 declaration types: C<Int> and
+C<List>; only C<Int> is an atomic type and only C<List> is a nonatomic
+type.  All other system-defined types, and all user-defined types, are
+enumeration types.  Some of the more significant system-defined enumeration
+types are: C<Universal>, C<Empty>, C<Structure>, C<String>, C<Scalar>,
+C<Tuple>, C<Relation>, C<External>, C<Bool>, C<Rat>, C<Text>, C<Blob>,
+C<Set>, C<Maybe>, C<Array>, C<Bag>.
 
-A structure type is conceptually defined in terms of a collection of N
-elements of one or more other types along with an optional constraint that
-restricts the values of the structure data type to be a subset of the
-permutations of possible element values.  The system-defined structure
-types include: C<Bool.True>, C<Rat>, C<Blob>, C<Text>, C<Name>, C<Comment>,
-C<Order.Increase>, C<TAIInstant>, C<TAIDuration>.  All user-defined
-structure types are scalar types.  I<TODO: Further correct this desc.>
+The fundamental reason for this design, where all values are introduced
+into the type system by just system-defined types, is so that Muldis D can
+support doing data definition plus data manipulation as a single atomic
+operation.  This is because there is an effective way to represent and
+interpret all Muldis D values in the complete absence of any user-defined
+types, so there is no chicken-and-egg problem that prevents DD+DM from
+being done together in the general case, where one needs to have
+non-mutating definitions of user-defined types in order to do manipulation
+of data having those types.  As a consequence of this, it is also feasible
+to have structure values that have both a metadata component and a payload
+component where the former defines a type constraint that applies to the
+latter; selecting such a structure value will only succeed if the payload
+component satisfies the constraint defined by the metadata component.
+I<TODO:  Add a type factory to Muldis D for creating said structures, and
+make a depot such a structure, and let data-manipulation routines be
+updater-routines that work with such structure values.>
 
-An enumeration type is defined in terms of a union or subset of the values
-of one or more other data types.  The system-defined types defined in terms
-of a subset include: C<NNInt>, C<DHTuple>, C<Database>, C<DHRelation>,
-C<DHSet>, C<DHArray>, C<Maybe>, C<Bag>, C<UTCDateTime>.  The
-system-defined types defined in terms of a union (sometimes not an
-explicitly enumerated one like with user-defined types) include:
-C<Universal>, C<Empty>, C<Scalar>, C<DHScalar>, C<Bool>,
-C<Order>.  In the case of a scalar subset enumeration
-type, typically it will define extra scalar possreps or selectors.  All
-user-defined nonscalar types are enumeration types.
+B<TODO: REWRITE THIS SINGLE PARAGRAPH:>  A data type that is an atomic or
+structure or external type is also called a I<root type>; a data type that
+is an enumeration is also called a I<nonroot type>.  A I<leaf type> is a
+data type that has no proper subtypes save for C<Empty>.
 
 Muldis D provides 2 generic polar-opposite methods to define an enumeration
 type in terms of a union, and types defined in the 2 methods can be
@@ -842,30 +852,30 @@ which would be considerably more difficult without them.
 
 =head2 Type Identification
 
-All non-external values in the Muldis D type system are broadly
-categorized into 3 complementary sets called I<scalar values>, I<tuple
-values>, and I<relation values>; tuple and relation values are collectively
-known as I<nonscalar values>.  The type system has the system-defined data
-types named C<Scalar>, C<Tuple>, and C<Relation>, which serve as maximal
-data types for each category, respectively.  There is also a system-defined
-enumeration type named C<External> which is a union over all external
-types.  The 4 types are all mutually disjoint, and C<Universal> is a union
-type over all of them.
+All values in the Muldis D type system are broadly categorized into 5
+complementary sets called I<scalar values>, I<tuple values>, I<relation
+values>, I<external values>, and I<nonstructure values>; tuple and relation
+values are collectively known as I<nonscalar values>.  The type system has
+the system-defined data types named C<Scalar>, C<Tuple>, C<Relation>,
+C<External>, and C<Nonstructure>, which serve as maximal data types for
+each category, respectively.  The 5 types are all mutually disjoint, and
+C<Universal> is a union type over all of them.
 
-Most non-external data types each consist exclusively of values from
-exactly one of the above first 3 categories, and each such type does not
+Most data types each consist exclusively of values from
+exactly one of the above 5 categories, and each such type does not
 include values from several of them.  Therefore, every such data type is
-said to be either a I<scalar type>, a I<tuple type>, or a I<relation type>,
+said to be either a I<scalar type>, a I<tuple type>, a I<relation type>,
+an I<external type>, or a I<nonstructure type>,
 depending which category all of its values come from.  In similar fashion,
-a I<nonscalar type> is generally any type that is not a scalar type,
+a I<nonscalar type> is frequently any type that is not a scalar type,
 meaning it is either a tuple type or a relation type.
 
 A I<remnant type> is any type having at least 2 values, but that lacks at
 least one value of C<Universal>, where at least 2 of
-the values it has are not in the same one of the 4 categories.  The remnant
+the values it has are not in the same one of the 5 categories.  The remnant
 category is the complement category to all the others in that every
 possible proper subset of the values of C<Universal> can now be represented
-by a type that fits in one of the 5 categories, save C<Empty> itself.
+by a type that fits in one of the 6 categories, save C<Empty> itself.
 
 The most important values of the Muldis D type system (because those are
 the only ones that can be stored in a I<database>) are broadly categorized
@@ -1157,6 +1167,11 @@ that either has no possreps (it is an C<Int> or a C<String>) or all of its
 possreps are
 such that any relation-valued attributes it has, directly or indirectly,
 are also just deeply homogeneous relation-valued.
+
+The above deeply homogeneous value definitions further assume that every
+deeply homogeneous relation or tuple or scalar possrep attribute is a
+scalar or tuple or relation value; in particular, no such attribute is
+allowed to be either an external or a nonstructure value.
 
 A I<deeply homogeneous relation type> is, by definition, any type
 consisting of just deeply homogeneous relation values, such that if the
@@ -1563,6 +1578,186 @@ declared type and not the default value of its corresponding parameter's
 declared type, then this can't be done.  What must happen is for the
 operator to take an extra argument where the name of the type whose default
 we want is spelled out, or alternately just the default value itself.
+
+=head2 Low Level Type System
+
+At the lowest, most primitive levels of Muldis D, everything is integers or
+sequences of integers; data types in general are just abstractions of this.
+
+The fundamental Muldis D type system has 3 compositional abstraction
+levels, which are, from lowest to highest: I<atomic value>,
+I<nonnamed-element collection>, I<named-element collection>.
+
+An I<atomic value> is named in accordance with the original meaning of
+I<atom>, which is I<indivisible>; an I<atomic value> is not conceptually a
+collection of any kind, but rather is conceptually opaque.  Muldis D has
+exactly 1 atomic value type, which is C<Int>.  An C<Int> is a single exact
+integral number of any magnitude; while it can be unbounded in size, by far
+most of the C<Int> values actually used are quite small, and would fit in a
+single hardware CPU register in their entirety.  Two C<Int> are considered
+identical iff they both represent the same integer.
+
+A I<nonnamed-element collection> is conceptually a transparent sequence of
+0..N elements where each element is either an I<atomic value> or a
+I<nonnamed-element collection>.  Muldis D has exactly 1 nonnamed-element
+collection type, which is C<List>.  A C<List> is a transparent dense
+sequence of 0..N elements where each element is identified by ordinal
+position and the first element has position zero, and where each element is
+either an C<Int> or a C<List>; in the general case, this can be an
+arbitrarily complex hierarchical structure of unlimited size, where the
+leaves of this hierarchy are each C<Int>.  C<Int> and C<List> are mutually
+disjoint and complementary proper subtypes of C<Universal>; the latter has
+no values that are not each of one of the first 2 types.
+
+A I<named-element collection> is conceptually a collection of 0..N elements
+where each element is identified by a name rather than by an ordinal
+position.  Muldis D has 6 primary named-element collection types, which are
+C<Structure>, C<String>, C<Tuple>, C<Relation>, C<ScalarWP>, C<External>.
+C<Structure> is a proper subtype of C<List> consisting of every C<List>
+value that matches one of 5 specific formats; each of those formats is
+represented by exactly one of 5 mutually disjoint proper subtypes of
+C<Structure>, which are the other 5 of the 6; C<Structure> is a union type
+over all 5 of those types, and C<Structure> has no values which are not
+each of one of those 5 types.  A C<Structure> is a C<List> having at least
+2 elements, where the first element is designated the I<structure kind> and
+indicates how to interpret the remainder of the C<Structure> elements; the
+I<structure kind> is an C<Int>; all of the remaining elements are
+collectively called the I<payload elements>.
+
+This table says which I<structure kind> values indicate which of the 5
+types:
+
+    1 | String
+    2 | Tuple
+    3 | Relation
+    4 | ScalarWP
+    5 | External
+
+Rules for determining whether two C<List> are identical are defined
+separately per each of the 5 C<Structure> subtypes; but two C<List> are
+certainly not identical when they are of 2 different types of the 5, or one
+is a C<Structure> and the other is not.  As an exception to the
+defined-separately situation, if a simple comparison of two values simply
+as a C<List>-hierarchy of C<Int> determines them to be identical, then this
+is the result; a defined-separately is only allowed to differ when the
+simple comparison determines them to be non-identical.
+
+A C<String> is a C<Structure> having exactly 2 ordered payload elements,
+that are designated in order: I<element repertoire>, I<elements>.  The
+I<element repertoire> is an C<Int> value that is either any positive C<Int>
+value or one of the 6 non-positive C<Int> values in the range C<-5..0>.
+The I<elements> is a C<List> of 0..N C<Int> (or possibly C<List>) where the
+intended interpretation of I<elements> is indicated by I<element
+repertoire>.
+
+This table says how to interpret a C<String> based on its repertoire:
+
+    +1..* | interpretation is user-defined in the same depot
+     0    | unrestricted / elements are any integers at all
+    -1    | blob as bit string; each element in 0..1
+    -2    | blob as octet string; each element in 0..255
+    -3    | text with 7-bit ASCII char repertoire; each elem in 0..127
+    -4    | text w Unicode 5.2.0 canonical reper; each elem a codepoint
+    -5    | text w Unicode 5.2.0 compatibility repertoire
+
+Two C<String> are only considered identical if they have the same I<element
+repertoire> value, and for two C<String> with the same repertoire, the
+rules for determining equality vary per repertoire; it is often useful to
+fold two C<String> to the same repertoire, but that will never happen
+automatically for generic comparisons.  For the 4 system-defined
+repertoires C<-3..0>, the order of elements in I<elements> is entirely
+significant, and two C<String> match iff their I<elements> have the same
+element count and all corresponding element values are identical.  For the
+2 system-defined repertoires C<-4,-5>, the order is entirely significant
+but that the Unicode normal form is only partially significant; identity
+semantics are as if the I<elements> of both C<String> were normalized in
+Unicode normal form C<NFD> or C<NFKD>, respectively, prior to the
+comparison, so their identities are more grapheme-based.  For two C<String>
+with the same positive C<Int> element repertoire, iff there is no
+user-defined repertoire known to the DBMS matching that C<Int>, then
+interpretation is as per a C<0> repertoire; iff there is a matching
+user-defined repertoire, then identity semantics are determined by that
+repertoire's definition.
+
+A C<Tuple> is a C<Structure> having either of 2 formats, designated
+I<row-oriented tuple> and I<column-oriented tuple>; the first has exactly 2
+payload elements and the second has exactly 1.  The 2 payload elements of a
+I<row-oriented tuple> are designated, in order: I<heading>, I<tuple body>.
+The I<heading> is a C<List> of 0..N mutually distinct elements where each
+element is designated an I<attribute name>; each I<attribute name> is a
+C<String>.  The I<tuple body> is a C<List> of 0..N elements where each
+element is designated an I<attribute value>; each I<attribute value> is a
+C<Universal>.  The I<heading> and I<tuple body> must each have the same
+number of elements, and the pair of corresponding element values
+collectively define a named tuple attribute.  The payload element of a
+I<column-oriented tuple> is designated I<tuple attributes>.  The I<tuple
+attributes> is a C<List> of 0..N elements where each element is designated
+a I<tuple attribute>; a I<tuple attribute> is a C<List> of exactly 2
+elements, that are designated in order: I<attribute name>, I<attribute
+value>.  The 2 formats of C<Tuple> are interchangeable, such that every
+possible tuple value is representable by either format.  When determining a
+C<Tuple>'s identity, its row vs column format is not significant, and the
+mutual order of its attributes are not significant, but the pairings of
+attribute names and values are significant; two C<Tuple> are considered
+identical iff they have the same count of attributes and the same attribute
+names and identical attribute values for corresponding names.
+
+A C<Relation> is a C<Structure> having either of 2 formats, designated
+I<row-oriented relation> and I<column-oriented relation>; the first has
+exactly 2 payload elements and the second has exactly 1.  The 2 payload
+elements of a I<row-oriented relation> are designated, in order:
+I<heading>, I<relation body>.  The I<heading> is the same as that of a
+I<row-oriented tuple>.  The I<relation body> is a C<List> of 0..N mutually
+distinct elements where each element is designated a I<tuple body>.  Each
+I<tuple body> is the same as that of a I<row-oriented tuple>.  For each
+I<tuple body> of a I<relation body>, its relationship and associated
+constraints with I<heading> are as per a I<row-oriented tuple>.  The
+payload element of a I<column-oriented relation> is designated I<relation
+attributes>.  The I<relation attributes> is a C<List> of 0..N elements
+where each element is designated a I<relation attribute>; a I<relation
+attribute> is a C<List> of exactly 2 elements, that are designated in
+order: I<attribute name>, I<tuple attribute values>; a I<tuple attribute
+values> is a C<List> of 0..N elements where each element is designated
+I<attribute value>.  The 2 formats of C<Relation> are interchangeable, such
+that every possible relation value is representable by either format.  When
+determining a C<Relation>'s identity, its row vs column format is not
+significant, and the mutual order of its attributes are not significant,
+and the mutual order of its tuples are not significant, but the pairings of
+attribute names and values per tuple are significant, and the mutual
+association of attribute values in each same tuple is significant; two
+C<Relation> are considered identical iff they have the same count of
+attributes and the same attribute names and identical attribute values for
+corresponding names for every corresponding tuple.
+
+A C<ScalarWP> (scalar with possreps) is a C<Structure> having exactly 3
+ordered payload elements, that are designated in order: I<type name>,
+I<possrep name>, I<possrep attributes>.  The I<type name> is a C<List> of
+0..N C<String> that is restricted as per an C<APTypeNC>.  The I<possrep
+name> is a C<String>.  The I<possrep attributes> is a C<Tuple> where the
+intended interpretation of I<possrep attributes> is indicated by the
+combination of I<type name> and I<possrep name>.  Generally speaking, the
+I<type name> and I<possrep name> of a C<ScalarWP> are partially
+context-independent.  For two C<ScalarWP> with the same I<type name>, iff
+there is no user-defined type known to the DBMS matching that I<type name>,
+then interpretation is as per naive C<List> comparison semantics; iff there
+is a matching user-defined type, then identity semantics are determined by
+that type's definition, including the ability to compare two C<ScalarWP>
+with different I<possrep name> as being the same value.  When user-defined
+types are in scope that "claim" particular values, they can provide possrep
+mapping, as well as canonicalization (such as making a C<Rat>'s
+C<numerator> and C<denominator> coprime), so effectively acting as
+restrictions, and overriding what equality tests on those values result in.
+
+An C<External> is a C<Structure> having exactly 1 payload element, that is
+designated I<payload>.  The I<payload> is an C<Int> or a C<List> that the
+DBMS externally maps to a value of a type of a peer or host language to
+Muldis D, as if the payload were conceptually a memory address meaningful
+to the external language.  For two C<External>, they are considered
+identical if their I<payload> are the same C<Int> or C<List>; otherwise the
+determination of identity is left to the other language.  Note that the
+C<List> payload provision is provided so that it is possible to have some
+degree of external value structure visible in Muldis D, such as for the
+purposes of easily defining C<External> proper subtypes in Muldis D.
 
 =head1 ENVIRONMENT
 
@@ -2102,6 +2297,12 @@ as an atomic routine's is.  A recipe is forbidden from doing anything
 nondeterministic.  A recipe is forbidden from invoking a procedure that
 isn't also a recipe.  The catalog data type C<Recipe>, a proper subtype of
 C<Procedure>, will define any recipe.
+
+B<ACTUALLY, THE CONCEPT OF RECIPE IS NO LONGER NEEDED EXACTLY,
+NOW THAT ALL MULDIS-D VALUES ARE DECLARED BY SYSTEM TYPES,
+SO ORDINARY UPDATER-ROUTINES SHOULD BE ABLE TO DO WHAT RECIPES WERE FOR;
+SO THIS AND RELATED SECTIONS ARE OUTDATED AND NEED TO BE UPDATED/REPLACED;
+ALSO, TRANSACTIONING IS SUPPOSED TO BE MVCC, AND FULLY ISOLATED.>
 
 A C<system-service> is a procedure whose sole purpose is to
 directly reach outside of the more deterministic DBMS

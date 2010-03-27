@@ -6,6 +6,30 @@
     * Muldis::D version 0.114.0 is released on CPAN as
     Muldis-D-0.114.0.tar.gz.
 
+    * This release features a rough cut of a refactor of the entire Muldis
+    D type hierarchy at a fundamental level; this introduces the new
+    concept of the "low-level type system" over which the previously
+    existing, and still maintained mostly intact, type system is now an
+    abstraction.  In the new low-level type system, there are exactly 2
+    "declaration" types, the system-defined "Int" and "List", which are now
+    the only types that introduce values into the type system; now, *all*
+    other types, including all user-defined types, are just "enumeration"
+    types, which reuse values from said 2 types, and are defined just in
+    terms of either a subset or a union of other types.  The "Int" type is
+    exactly the same as in the previous release, consisting of just atomic
+    integer values, and is the sole Muldis D atomic type.  The "List"
+    type is the sole Muldis D nonatomic type, each value being a dense
+    sequence of 0..N elements where each element is an "Int" or a "List".
+    The fundamental reason for this design, where all values are introduced
+    into the type system by just system-defined types, is so that Muldis D
+    can support doing data definition plus data manipulation as a single
+    atomic operation.  This is because there is an effective way to
+    represent and interpret all Muldis D values in the complete absence of
+    any user-defined types, so there is no chicken-and-egg problem that
+    prevents DD+DM from being done together in the general case, where one
+    needs to have non-mutating definitions of user-defined types in order
+    to do manipulation of data having those types.
+
     * (PTMD_STD.pod)  Fix fossil in docs about whitespace in char str lits.
 
     * (Types_Catalog.pod)  Updated the "MountControlSet" catalog type to
@@ -98,9 +122,7 @@
     release 0.61.0, and also of one aspect of release 0.109.0,
     converted "String" into a primitive scalar type with no
     possreps, which is a dense sequence of integers, rather than it being a
-    nonscalar subtype of "Array".  And so, with concern of primitive types,
-    we have now come full circle, where both and just the 2 types "Int" and
-    "String" are scalar types with no possreps; this all is just a
+    nonscalar subtype of "Array"; this all is just a
     refactor, and the semantics of "String" are unchanged.  In
     Types_Catalog.pod, changed the definition of the "String" type to say
     it is now the aforementioned primitive scalar type, and updated the
@@ -120,8 +142,64 @@
     literal node that release 0.109.0 removed has not also been restored,
     which isn't a problem since a subseq change item adds an alternative.
 
+    * (Basics.pod, Types_Catalog.pod, Types.pod)  Added the 3 new catalog
+    types "sys.std.Core.Type.Cat.[List|[S|Nons]ructure", where "List"
+    contains every type system value that "Int" doesn't, "Structure"
+    contains every "List" value that is a scalar or nonscalar or external
+    value, and "Nonstructure" contains every "List" value that "Structure"
+    doesn't; these were declared in the new main pod section of
+    Types_Catalog.pod named "LOW-LEVEL STRUCTURE TYPES", added just prior
+    to "SIMPLE GENERIC SCALAR TYPES".  A "List" is a dense sequence of
+    elements where each element is either an "Int" or a "List".  Redefined
+    the "String" type to be a "List" proper subtype, so each of its integer
+    elements is now an actual "Int"; it still has no scalar possreps,
+    though.  Redefined the "Tuple" and "Relation" types to be "List" proper
+    subtypes, such that their attribute lists are now "List" values with
+    one element per attribute, and their headings or bodies are now
+    expressed as "List", and a relation body is now a list of lists, and
+    for nonscalars you can now choose "row-oriented" and "column-oriented"
+    formats which are logically equivalent.  Redefined "ScalarWP" to be a
+    "List" proper subtype whose explicit elements spell out the "type
+    name", "possrep name", and "possrep attributes" of a scalar value; the
+    first 2 are "String" and the last is a "Tuple".  Redefined the
+    "External" type to be a "List" proper subtype, and it is now just
+    conceptually opaque rather than actually, but its payload format is
+    still implementation-defined.  In both Types.pod and Types_Catalog.pod,
+    updated the "TYPE SUMMARY" sections to add the 3 new types and to
+    otherwise reflect the new state of affairs; also updated the
+    descriptions of these existing 12 types to reflect their additional
+    natures in light of the low-level type system: "Universal", "Empty",
+    "[|DH]Scalar", "Tuple", "Relation", "External", "ScalarWP",
+    "[|B|O|UCP]String".  In Types_Catalog.pod, updated the description of
+    the "special_types" attribute of the "System" catalog type to remove
+    the 5 types "Scalar", "String", "Tuple", "Relation", "External" from
+    its list, and add the 1 type "List" to its list, and leaving the 3
+    types "Universal", "Empty", "Int" unchanged.  In Basics.pod, several
+    major updates in the "TYPE SYSTEM" main pod section plus sub-sections. 
+    Rewrote the main section paragraphs that introduced the 4 main type
+    categories "primitive", "structure", "reference", "enumeration" so to
+    replace them with the 2 main categories "declaration" and
+    "enumeration"; also added a paragraph giving rationale for the new
+    design.  Updated the "Type Identification" sub-section to add the
+    "nonstructure" 5th category to the alternate 4 main value categories
+    "scalar", "tuple", "relation", "external".  Updated the "Distinction of
+    Non-Homogeneous Types from Homogeneous Types" sub-section to add a
+    paragraph specifying that DH types exclude external and and
+    nonstructure valued attributes.  Added new pod sub-section "Low Level
+    Type System" in "TYPE SYSTEM" that introduces and details the new
+    "low-level type system" concept, where "Int" are the atoms, "List"
+    compose those, and all other main types are "List" with particular
+    formats.  A consequence of these changes is that now Muldis D has
+    values which are neither scalar nor nonscalar nor external, though
+    users should never really encounter these in practice as all the normal
+    system-defined routines are closed over scalars and nonscalars.
+
     * Updated the TODO file concerning stimulus-response rules and DBMS
-    command-line parameters.
+    command-line parameters.  Also updated the TODO file concerning the
+    combination of related 'catalog' and 'data' into single values that are
+    binary tuples, where a value effectively defines its own constraints,
+    and that each "version" of a multi-versioned depot is one, and so using
+    those, just functions or updaters can do what 'recipe' were needed for.
 
 2010-03-13  Darren Duncan <darren@DarrenDuncan.net>
 
