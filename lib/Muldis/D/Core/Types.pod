@@ -46,12 +46,12 @@ relationships:
                         sys.std.Core.Type.NNInt
                             sys.std.Core.Type.PInt
                                 sys.std.Core.Type.PInt2_N
-                    sys.std.Core.Type.Blob
-                        sys.std.Core.Type.OctetBlob
-                    sys.std.Core.Type.Text
                     sys.std.Core.Type.Rat
                         sys.std.Core.Type.NNRat
                             sys.std.Core.Type.PRat
+                    sys.std.Core.Type.Blob
+                        sys.std.Core.Type.OctetBlob
+                    sys.std.Core.Type.Text
 
         # The following are mostly nonscalar type factories.
 
@@ -239,57 +239,6 @@ This is an enumeration data type.  C<PInt2_N> is a proper subtype of
 C<PInt> where all member values are greater than 1.  Its default and
 minimum value is 2.
 
-=head2 sys.std.Core.Type.Blob
-
-This is a structure data type.  A C<Blob> is an undifferentiated string of
-bits.  A C<Blob> has 1 system-defined possrep named C<bits> which consists
-of 1 C<BString>-typed attribute whose name is the empty string; each
-element of C<bits> is either C<0> to represent a low bit or C<1> to
-represent a high bit.  A C<Blob> is a simple wrapper for a C<BString> and
-all of its other details such as default and minimum and maximum values and
-cardinality and default ordering algorithm all correspond directly.  But
-C<Blob> is explicitly disjoint from C<BString> due to having a different
-intended interpretation.
-
-=head2 sys.std.Core.Type.OctetBlob
-
-This is an enumeration data type.  C<OctetBlob> is a proper subtype of
-C<Blob> where all member values have a length in bits that is an even
-multiple of 8 (or is zero).  An C<OctetBlob> adds 1 system-defined possrep
-named C<octets> which consists of 1 C<OString>-typed attribute whose name
-is the empty string.  The C<octets> and C<bits> possreps correspond as you
-might expect, such that each element of the sole attribute of C<octets>
-maps to 8 consecutive elements of the sole attribute of C<bits>; with each
-8 bits corresponding to an octet, the lowest-element-indexed bit
-corresponds to the highest bit of the octet when the latter is encoded as a
-standard two's complement binary unsigned integer, and the
-highest-element-indeed bit corresponds to the lowest bit of the octet.  The
-reason the C<OctetBlob> type is system-defined as distinct from C<Blob> is
-for convenience of users since it is likely the vast majority of C<Blob>
-values consist of whole octets and users would want to work with them in
-those terms.
-
-=head2 sys.std.Core.Type.Text
-
-This is a structure data type.  A C<Text> is a string of Unicode abstract
-characters which is formatted as a sequence of Unicode abstract codepoints
-in canonical decomposed normal form (NFD).  Two C<Text> will generally
-match at the grapheme abstraction level.  Of course, a Muldis D
-implementation doesn't actually have to store character data in NFD; but
-default matching semantics need to be as if it did.  A C<Text> has 1
-system-defined possrep named C<nfd_codes> which consists of 1
-C<UCPString>-typed attribute whose name is the empty string; each element
-of C<nfd_codes> represents a Unicode standard version 5.2.0 character
-abstract codepoint number.  A C<Text> is a simple wrapper for a
-C<UCPString> and all of its other details such as default and minimum and
-maximum values and cardinality and default ordering algorithm (sorting is
-numeric by abstract codepoint number) all correspond directly.  But C<Text>
-is explicitly disjoint from C<UCPString> due to having a different intended
-interpretation.  In regards to ordering, possibly the standard Unicode
-Collation Algorithm (UCA) also works this way, assuming it is totally
-ordered, but that's unsure.  I<TODO: Support customization parameters for
-default text sorting.>
-
 =head2 sys.std.Core.Type.Rat
 
 This is a structure data type.  A C<Rat> (scalar) is a single exact
@@ -352,6 +301,57 @@ This is an enumeration data type.  C<PRat> (positive rational) is a
 proper subtype of C<NNRat> where all member values are greater than zero
 (that is, the C<numerator>|C<mantissa> is greater than zero).  Its default
 and minimum value is 1.
+
+=head2 sys.std.Core.Type.Blob
+
+This is a structure data type.  A C<Blob> is an undifferentiated string of
+bits.  A C<Blob> has 1 system-defined possrep named C<bits> which consists
+of 1 C<BString>-typed attribute whose name is the empty string; each
+element of C<bits> is either C<0> to represent a low bit or C<1> to
+represent a high bit.  A C<Blob> is a simple wrapper for a C<BString> and
+all of its other details such as default and minimum and maximum values and
+cardinality and default ordering algorithm all correspond directly.  But
+C<Blob> is explicitly disjoint from C<BString> due to having a different
+intended interpretation.
+
+=head2 sys.std.Core.Type.OctetBlob
+
+This is an enumeration data type.  C<OctetBlob> is a proper subtype of
+C<Blob> where all member values have a length in bits that is an even
+multiple of 8 (or is zero).  An C<OctetBlob> adds 1 system-defined possrep
+named C<octets> which consists of 1 C<OString>-typed attribute whose name
+is the empty string.  The C<octets> and C<bits> possreps correspond as you
+might expect, such that each element of the sole attribute of C<octets>
+maps to 8 consecutive elements of the sole attribute of C<bits>; with each
+8 bits corresponding to an octet, the lowest-element-indexed bit
+corresponds to the highest bit of the octet when the latter is encoded as a
+standard two's complement binary unsigned integer, and the
+highest-element-indeed bit corresponds to the lowest bit of the octet.  The
+reason the C<OctetBlob> type is system-defined as distinct from C<Blob> is
+for convenience of users since it is likely the vast majority of C<Blob>
+values consist of whole octets and users would want to work with them in
+those terms.
+
+=head2 sys.std.Core.Type.Text
+
+This is a structure data type.  A C<Text> is a string of Unicode abstract
+characters which is formatted as a sequence of Unicode abstract codepoints
+in canonical decomposed normal form (NFD).  Two C<Text> will generally
+match at the grapheme abstraction level.  Of course, a Muldis D
+implementation doesn't actually have to store character data in NFD; but
+default matching semantics need to be as if it did.  A C<Text> has 1
+system-defined possrep named C<nfd_codes> which consists of 1
+C<UCPString>-typed attribute whose name is the empty string; each element
+of C<nfd_codes> represents a Unicode standard version 5.2.0 character
+abstract codepoint number.  A C<Text> is a simple wrapper for a
+C<UCPString> and all of its other details such as default and minimum and
+maximum values and cardinality and default ordering algorithm (sorting is
+numeric by abstract codepoint number) all correspond directly.  But C<Text>
+is explicitly disjoint from C<UCPString> due to having a different intended
+interpretation.  In regards to ordering, possibly the standard Unicode
+Collation Algorithm (UCA) also works this way, assuming it is totally
+ordered, but that's unsure.  I<TODO: Support customization parameters for
+default text sorting.>
 
 =head1 GENERIC NONSCALAR DATA TYPES
 
