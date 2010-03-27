@@ -194,6 +194,33 @@
     users should never really encounter these in practice as all the normal
     system-defined routines are closed over scalars and nonscalars.
 
+    * (Types_Catalog.pod)  Added new catalog type "ListSelExprNodeSet"
+    which provides a means to select any "List" value at all in terms of a
+    sequence of elements whose values may all be determined at runtime. It
+    is completely redundant for selecting tuple and relation values and
+    scalar values with possreps, but it currently provides the only means
+    to directly select "List" values that are "String" or external or
+    nonstructure values, not that any normal users should be doing that.
+    Also updated the catalog type "ExprNodeSet" to add a 15th attribute
+    "list_sel_exprs" of the new catalog type.
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  Added new pod sub-section
+    named "Low Level List Selectors" to the end of the main pod section
+    "COLLECTION VALUE SELECTORS", which declares new literal/selector
+    syntax specific to generic "List" values; this syntax takes the form of
+    the new "List" value node kind, which looks exactly like the "Array"
+    value node kind save for the keyword.  The new sub-sections include
+    several code examples showing how to select scalar and nonscalar values
+    just in terms of "List".  Also updated the definition of the grammar
+    node "value__the_floor" so that it can only consist of "Int" and "List"
+    nodes, rather than "Int|Scalar|Tuple|Relation" nodes, since that is the
+    new minimal syntax for the catalog abstraction level "the_floor".  Also
+    obligatorily updated the code examples for "the_floor" to show how the
+    same 2x2 relation value is represented just in terms of "List" and
+    "Int"; the primary difference from all the prior iterations of this
+    code is that now all type and possrep and attribute names are *also*
+    expressed as strings of integers like the values, not as characters.
+
     * Updated the TODO file concerning stimulus-response rules and DBMS
     command-line parameters.  Also updated the TODO file concerning the
     combination of related 'catalog' and 'data' into single values that are

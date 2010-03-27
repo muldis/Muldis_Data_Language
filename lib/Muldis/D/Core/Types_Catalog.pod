@@ -184,6 +184,7 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.BagSelExprNodeSet
                 sys.std.Core.Type.Cat.SPIvlSelExprNodeSet
                 sys.std.Core.Type.Cat.MPIvlSelExprNodeSet
+                sys.std.Core.Type.Cat.ListSelExprNodeSet
                 sys.std.Core.Type.Cat.AccExprNodeSet
                 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
                 sys.std.Core.Type.Cat.IfElseExprNodeSet
@@ -1538,7 +1539,7 @@ for a subject-to-update parameter of an update operator call; in
 that case the leaf nodes / only node of the expression must map to a
 subject-to-update parameter of the expression-containing update operator.
 
-An C<ExprNodeSet> has these 14 attributes:
+An C<ExprNodeSet> has these 15 attributes:
 
 =over
 
@@ -1585,6 +1586,10 @@ selections.
 
 These are expression nodes that represent multi-piece interval value
 selections.
+
+=item C<list_sel_exprs> - C<ListSelExprNodeSet>
+
+These are expression nodes that represent low-level list value selections.
 
 =item C<acc_exprs> - C<AccExprNodeSet>
 
@@ -1648,7 +1653,8 @@ A C<ScaSelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a scalar value
 selection that is specified explicitly in terms of possrep attributes.
 This node kind may be used for values of absolutely any scalar type at all,
-including all system-defined types, except for values of C<Int>, although
+including all system-defined types, except for values of C<Int>
+and C<String>, although
 optimized Muldis D code will likely use C<OVLScaValExprNodeSet> where it
 can do so instead of C<ScaSelExprNodeSet>.
 
@@ -1925,6 +1931,34 @@ C<MPIvlSelExprNodeSet>.
 
 An C<MPIvlSelExprNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.ListSelExprNodeSet
+
+An C<ListSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+expression nodes where each node represents a low-level list value
+selection.
+
+An C<ListSelExprNodeSet> has these 3 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the expression node.
+
+=item C<comment> - C<Comment>
+
+This is an optional programmer comment about either the expression node or
+the expression node (sub-)tree it is the root of.
+
+=item C<elems> - C<array_of.Name>
+
+These represent the elements of the low-level list value being selected.
+
+=back
+
+An C<ListSelExprNodeSet> has a unary primary key on the C<name>
+attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.AccExprNodeSet
 

@@ -203,20 +203,52 @@ Examples:
             catalog_abstraction_level => 'the_floor',
             op_char_repertoire => 'basic'
         } ],
-        [ 'Relation', [
-            {
-                food => [ 'Scalar', 'Text', [ nfd_codes => {
-                    '' => [ 'String', [67,97,114,114,111,116,115] ]
-                } ] ],
-                qty => 100
-            },
-            {
-                food => [ 'Scalar', 'Text', [ nfd_codes => {
-                    '' => [ 'String', [75,105,119,105,115] ]
-                } ] ],
-                qty => 30
-            }
-        ] ]
+        ['List',[3,
+           ['List',[
+              ['List',[1,-4,['List',[102,111,111,100]]]],
+              ['List',[1,-4,['List',[113,116,121]]]],
+           ]],
+           ['List',[
+              ['List',[
+                 ['List',[4,
+                    ['List',[
+                       ['List',[1,-4,['List',[115,121,115]]]],
+                       ['List',[1,-4,['List',[115,116,100]]]],
+                       ['List',[1,-4,['List',[67,111,114,101]]]],
+                       ['List',[1,-4,['List',[84,121,112,101]]]],
+                       ['List',[1,-4,['List',[84,101,120,116]]]],
+                    ]],
+                    ['List',[1,-4,
+                       ['List',[110,102,100,95,99,111,100,101,115]]]],
+                    ['List',[2,
+                       ['List',[['List',[1,-4,['List',[]]]]]],
+                       ['List',[['List',[1,-4,
+                          ['List',[67,97,114,114,111,116,115]]]]]]
+                    ]]
+                 ]],
+                 100
+              ]],
+              ['List',[
+                 ['List',[4,
+                    ['List',[
+                       ['List',[1,-4,['List',[115,121,115]]]],
+                       ['List',[1,-4,['List',[115,116,100]]]],
+                       ['List',[1,-4,['List',[67,111,114,101]]]],
+                       ['List',[1,-4,['List',[84,121,112,101]]]],
+                       ['List',[1,-4,['List',[84,101,120,116]]]],
+                    ]],
+                    ['List',[1,-4,
+                       ['List',[110,102,100,95,99,111,100,101,115]]]],
+                    ['List',[2,
+                       ['List',[['List',[1,-4,['List',[]]]]]],
+                       ['List',[['List',[1,-4,
+                          ['List',[75,105,119,105,115]]]]]]
+                    ]]
+                 ]],
+                 30
+              ]]
+           ]]
+        ]]
     ]
 
 =head2 code_as_data
@@ -400,11 +432,11 @@ add syntax for operators.
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
 
-There are 22 main varieties of C<value> node, each of which is a named node
+There are 23 main varieties of C<value> node, each of which is a named node
 kind of its own:  C<Bool>, C<Order>, C<RoundMeth>, C<Int>, C<Rat>,
 C<Blob>, C<Text>, C<Name>, C<NameChain>, C<PNSQNameChain>, C<Comment>,
-C<RatRoundRule>, C<Scalar>, C<Tuple>, C<Database>,
-C<Relation>, C<Set>, C<Maybe>, C<Array>, C<Bag>, C<[S|M]PInterval>.
+C<RatRoundRule>, C<Scalar>, C<Tuple>, C<Database>, C<Relation>,
+C<Set>, C<Maybe>, C<Array>, C<Bag>, C<[S|M]PInterval>, C<List>.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Perl native scalar and collection types.
@@ -430,12 +462,13 @@ only external meta-data of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
 just on C<value_kind>.
 
-Between the various kinds of C<value> node, these 38 values are allowed for
+Between the various kinds of C<value> node, these 39 values are allowed for
 C<value_kind>:  C<Bool>, C<Order>, C<RoundMeth>, C<[|NN|P]Int>,
 C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>, C<NameChain>,
 C<PNSQNameChain>, C<Comment>, C<RatRoundRule>, C<[|DH]Scalar>,
 C<[|DH]Tuple>, C<Database>, C<[|DH]Relation>, C<[|DH]Set>,
-C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH][S|M]PInterval>.
+C<[|DH][Maybe|Single]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH][S|M]PInterval>,
+C<List>.
 
 For just some data types, the C<value_kind> may be omitted; see below.
 
@@ -1053,7 +1086,7 @@ Examples:
 
 =head2 Array Selectors
 
-An C<Array> node represents a literal or selector invocation for a
+An C<Array> node represents a literal or selector invocation for an
 array value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Array> value whose elements are defined by the
 payload.  The payload must be just a Perl array ref.  Each element of the
@@ -1185,6 +1218,63 @@ Examples:
     [ 'MPInterval', [[1,'..',10]] ]  # 10 elements #
 
     [ 'MPInterval', [[1,'..',3],6,[8,'..',9]] ]  # 6 elements #
+
+=head2 Low Level List Selectors
+
+A C<List> node represents a literal or selector invocation for a low-level
+list value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Cat.List>
+value whose elements are defined by the payload.  The payload must be just
+a Perl array ref.  Each element of the payload defines an element of the
+new list, where the elements keep the same order.
+
+Examples:
+
+    # Nonstructure : Unicode abstract codepoints = 'Perl' #
+    ['List',[80,101,114,109]]
+
+    # UCPString : Unicode abstract codepoints = 'Perl' #
+    ['List',[1,-4,['List',[80,101,114,109]]]]
+
+    # Tuple:{} #
+    ['List',[2,['List',[]],['List',[]]]]
+
+    # Relation:{} #
+    ['List',[3,['List',[]],['List',[]]]]
+
+    # Set:{17,42,5} #
+    ['List',[3,
+        ['List',[['List',[1,-4,['List',[118,97,108,117,101]]]]]],
+        ['List',[
+            ['List',[17]],
+            ['List',[42]],
+            ['List',[5]]
+        ]]
+    ]]
+
+    # Nothing #
+    ['List',[3,
+        ['List',[['List',[1,-4,['List',[118,97,108,117,101]]]]]],
+        ['List',[]]
+    ]]
+
+    # Text : 'Perl' #
+    ['List',[4,
+        # type name : 'sys.std.Core.Type.Text' #
+        ['List',[
+            ['List',[1,-4,['List',[115,121,115]]]],
+            ['List',[1,-4,['List',[115,116,100]]]],
+            ['List',[1,-4,['List',[67,111,114,101]]]],
+            ['List',[1,-4,['List',[84,121,112,101]]]],
+            ['List',[1,-4,['List',[84,101,120,116]]]],
+        ]],
+        # possrep name : 'nfd_codes' #
+        ['List',[1,-4,['List',[110,102,100,95,99,111,100,101,115]]]],
+        # possrep attributes : Tuple:{""=>"Perl"} #
+        ['List',[2,
+            ['List',[['List',[1,-4,['List',[]]]]]],
+            ['List',[['List',[1,-4,['List',[80,101,114,109]]]]]]
+        ]]
+    ]]
 
 =head1 DEPOT SPECIFICATION
 

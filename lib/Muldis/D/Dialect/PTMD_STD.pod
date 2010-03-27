@@ -358,20 +358,48 @@ Examples:
         catalog_abstraction_level => the_floor,
         op_char_repertoire => basic
     }
-    Relation:{
-        {
-            food => Scalar:Text:nfd_codes;{
-                "" => String:[67,97,114,114,111,116,115]
-            },
-            qty => 100
-        },
-        {
-            food => Scalar:Text:nfd_codes;{
-                "" => String:[75,105,119,105,115]
-            },
-            qty => 30
-        }
-    }
+    List:[3,
+        List:[
+            List:[1,-4,List:[102,111,111,100]],
+            List:[1,-4,List:[113,116,121]],
+        ],
+        List:[
+            List:[
+                List:[4,
+                    List:[
+                        List:[1,-4,List:[115,121,115]],
+                        List:[1,-4,List:[115,116,100]],
+                        List:[1,-4,List:[67,111,114,101]],
+                        List:[1,-4,List:[84,121,112,101]],
+                        List:[1,-4,List:[84,101,120,116]],
+                    ],
+                    List:[1,-4,List:[110,102,100,95,99,111,100,101,115]],
+                    List:[2,
+                        List:[List:[1,-4,List:[]]],
+                        List:[List:[1,-4,List:[67,97,114,114,111,116,115]]]
+                    ]
+                ],
+                100
+            ],
+            List:[
+                List:[4,
+                    List:[
+                        List:[1,-4,List:[115,121,115]],
+                        List:[1,-4,List:[115,116,100]],
+                        List:[1,-4,List:[67,111,114,101]],
+                        List:[1,-4,List:[84,121,112,101]],
+                        List:[1,-4,List:[84,101,120,116]],
+                    ],
+                    List:[1,-4,List:[110,102,100,95,99,111,100,101,115]],
+                    List:[2,
+                        List:[List:[1,-4,List:[]]],
+                        List:[List:[1,-4,List:[75,105,119,105,115]]]
+                    ]
+                ],
+                30
+            ]
+        ]
+    ]
 
 =head2 code_as_data
 
@@ -419,7 +447,7 @@ Examples:
 
     Muldis_D:"http://muldis.com":0.113.0:PTMD_STD:{
        catalog_abstraction_level => code_as_data,
-        op_char_repertoire => basic
+       op_char_repertoire => basic
     }
     depot-catalog Database:Depot:{
        functions => Relation:{
@@ -730,9 +758,7 @@ Grammar:
 
     <value__the_floor> ::=
           <Int>
-        | <Scalar>
-        | <Tuple>
-        | <Relation>
+        | <List>
 
     <value__code_as_data> ::=
           <opaque_value_literal>
@@ -763,6 +789,7 @@ Grammar:
         | <Bag>
         | <SPInterval>
         | <MPInterval>
+        | <List>
 
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
@@ -854,6 +881,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | DH? Bag
         | DH? SPInterval
         | DH? MPInterval
+        | List
 
     <type_name> ::=
         <PNSQNameChain_payload>
@@ -881,6 +909,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <Bag_payload>
         | <SPInterval_payload>
         | <MPInterval_payload>
+        | <List_payload>
 
 So a C<x_value>|C<value> node has 1-3 elements in general:
 
@@ -2107,7 +2136,7 @@ Grammar:
             [<expr> ** [<ws>? ',' <ws>?]]?
         <ws>? ']'
 
-An C<Array> node represents a literal or selector invocation for a
+An C<Array> node represents a literal or selector invocation for an
 array value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Array> value whose elements are defined by the
 C<Array_payload>.  Each C<expr> of the C<Array_payload> defines a binary
@@ -2308,6 +2337,80 @@ Examples:
     MPInterval:{1..10}  # 10 elements #
 
     MPInterval:{1..3,6,8..9}  # 6 elements #
+
+=head2 Low Level List Selectors
+
+Grammar:
+
+    <List> ::=
+        List ':' <unspace>
+        [<type_name> ':' <unspace>]?
+        <List_payload>
+
+    <List_payload> ::=
+        '[' <ws>?
+            [<expr> ** [<ws>? ',' <ws>?]]?
+        <ws>? ']'
+
+A C<List> node represents a literal or selector invocation for a
+low-level list value.  It is interpreted as a Muldis D
+C<sys.std.Core.Type.Cat.List> value whose elements are defined by the
+C<List_payload>.  Each C<expr> of the C<List_payload> defines an element
+of the new list, where the elements keep the same order.
+
+See also the definition of the catalog data type
+C<sys.std.Core.Type.Cat.ListSelExprNodeSet>, a tuple of which is what
+a C<List> node distills to when it is beneath the context of a
+C<depot> node, as it describes some semantics.
+
+Examples:
+
+    # Nonstructure : Unicode abstract codepoints = 'Perl' #
+    List:[80,101,114,109]
+
+    # UCPString : Unicode abstract codepoints = 'Perl' #
+    List:[1,-4,List:[80,101,114,109]]
+
+    # Tuple:{} #
+    List:[2,List:[],List:[]]
+
+    # Relation:{} #
+    List:[3,List:[],List:[]]
+
+    # Set:{17,42,5} #
+    List:[3,
+        List:[List:[1,-4,List:[118,97,108,117,101]]],
+        List:[
+            List:[17],
+            List:[42],
+            List:[5]
+        ]
+    ]
+
+    # Nothing #
+    List:[3,
+        List:[List:[1,-4,List:[118,97,108,117,101]]],
+        List:[]
+    ]
+
+    # Text : 'Perl' #
+    List:[4,
+        # type name : 'sys.std.Core.Type.Text' #
+        List:[
+            List:[1,-4,List:[115,121,115]],
+            List:[1,-4,List:[115,116,100]],
+            List:[1,-4,List:[67,111,114,101]],
+            List:[1,-4,List:[84,121,112,101]],
+            List:[1,-4,List:[84,101,120,116]],
+        ],
+        # possrep name : 'nfd_codes' #
+        List:[1,-4,List:[110,102,100,95,99,111,100,101,115]],
+        # possrep attributes : Tuple:{""=>"Perl"} #
+        List:[2,
+            List:[List:[1,-4,List:[]]],
+            List:[List:[1,-4,List:[80,101,114,109]]]
+        ]
+    ]
 
 =head1 DEPOT SPECIFICATION
 
