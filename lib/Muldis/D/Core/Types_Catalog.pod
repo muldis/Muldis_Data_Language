@@ -42,16 +42,35 @@ types are missing, or just defined informally.>
 
 =head1 TYPE SUMMARY
 
-These system-defined subtypes are specific to defining the system catalog,
-more or less:
+This section shows all the data types and data type factories described in
+this document, which are specific to defining the system catalog, more or
+less.  Since there are a number of types with multiple parents, those types
+may appear multiple times in the graph; moreover, the graph is displayed in
+multiple slices, some of which are different views of the same type
+relationships.  See L<Muldis::D::Core::Types/TYPE SUMMARY> for context.
+
+This graph slice shows all of the top-level catalog types, plus some
+non-core catalog types for context:
 
     sys.std.Core.Type.Universal
+        sys.std.Core.Type.Tuple
+        sys.std.Core.Type.Relation
+            sys.std.Core.Type.Cat.String
+        sys.std.Core.Type.External
+        sys.std.Core.Type.Scalar
+            sys.std.Core.Type.Cat.ScalarWP
+                sys.std.Core.Type.Cat.DHScalarWP
+            sys.std.Core.Type.DHScalar
+                sys.std.Core.Type.Int
+                sys.std.Core.Type.Cat.DHScalarWP
+                sys.std.Core.Type.Cat.OVLScalar
 
-        sys.std.Core.Type.Empty
+This graph slice shows all of the catalog scalar types:
 
+    sys.std.Core.Type.Universal
         sys.std.Core.Type.Scalar
             sys.std.Core.Type.DHScalar
-                sys.std.Core.Type.Cat.OVLScalar
+                sys.std.Core.Type.Cat.DHScalarWP
 
                     # The following are all regular ordered scalar types.
 
@@ -81,6 +100,10 @@ more or less:
                     sys.std.Core.Type.Cat.RoundMeth
                         sys.std.Core.Type.Cat.RoundMeth.*
                     sys.std.Core.Type.Cat.RatRoundRule
+
+This graph slice shows all of the catalog nonscalar types:
+
+    sys.std.Core.Type.Universal
 
         sys.std.Core.Type.Tuple
             sys.std.Core.Type.DHTuple
@@ -193,14 +216,11 @@ more or less:
                         sys.std.Core.Type.Cat.OString
                         sys.std.Core.Type.Cat.UCPString
 
-These system-defined subtypes can not in general be used as components of a
-system catalog, or any database, but they may be used temporarily at
-runtime:
+This graph slice shows additional nonscalar types that can not in general
+be used as components of a system catalog, or any database, but they may be
+used temporarily at runtime:
 
     sys.std.Core.Type.Universal
-
-        sys.std.Core.Type.Empty
-
         sys.std.Core.Type.Tuple
 
             # The following are all regular tuple types.
@@ -212,6 +232,22 @@ runtime:
                 sys.std.Core.Type.Cat.OrdDetCFuncNC
 
 =head1 SIMPLE GENERIC SCALAR TYPES
+
+=head2 sys.std.Core.Type.Cat.ScalarWP
+
+C<ScalarWP> (scalar with possreps) is a proper subtype of C<Scalar> where
+every one of its values has at least one possrep.  C<ScalarWP> is just the
+difference type where both C<Int> is subtracted from
+C<Scalar>.  Its default value is C<Bool:False>.  The cardinality of this
+type is infinity.
+
+=head2 sys.std.Core.Type.Cat.DHScalarWP
+
+C<DHScalarWP> is the intersection type of C<ScalarWP> and C<DHScalar>.  Its
+default value is C<Bool:False>, same as both of its parent types.  The
+cardinality of this type is infinity.  All Muldis D scalar values that are
+allowed to be stored in a global/persisting relational database, besides
+C<Int> values, are C<DHScalarWP> values.
 
 =head2 sys.std.Core.Type.Cat.OVLScalar
 

@@ -26,26 +26,79 @@ for use in defining or working with normal user data.
 
 =head1 TYPE SUMMARY
 
-Following are all the data types and data type factories described in this
-document, arranged in a type graph according to their proper sub|supertype
-relationships:
+This section shows all the data types and data type factories described in
+this document, arranged in a type graph according to their proper
+sub|supertype relationships.  Since there are a number of types with
+multiple parents, those types may appear multiple times in the graph;
+moreover, the graph is displayed in multiple slices, some of which are
+different views of the same type relationships.  As a notable exception,
+C<sys.std.Core.Type.Empty> is a proper subtype of I<all> of the other types
+in this graph, but it is only shown once.
+
+This graph slice shows all of the top-level types as is relevant from the
+user's point of view:
 
     sys.std.Core.Type.Universal
-
         sys.std.Core.Type.Empty
-
         sys.std.Core.Type.Scalar
             sys.std.Core.Type.DHScalar
-                sys.std.Core.Type.Cat.OVLScalar
+                sys.std.Core.Type.Bool
+                sys.std.Core.Type.Int
+                sys.std.Core.Type.Rat
+                sys.std.Core.Type.Blob
+                sys.std.Core.Type.Text
+        sys.std.Core.Type.Tuple
+            sys.std.Core.Type.DHTuple
+                sys.std.Core.Type.Database
+        sys.std.Core.Type.Relation
+            sys.std.Core.Type.DHRelation
+        sys.std.Core.Type.External
 
-                    # The following are all regular ordered scalar types.
+This arrangement is user-significant for 2 main reasons.  The first reason
+is that general semantics and intended interpretations of values and types
+fall into 4 main lines, represented by C<Scalar|Tuple|Relation|External>.
+The second reason is that only values of the 3 deeply-homogeneous types
+shown above (C<DH[Scalar|Tuple|Relation]>) may be used in a database; all
+values not of those types may only be used transiently.  The fact that
+C<Int> is atomic while the other scalar types aren't is not relevant to
+users in the general case.
 
+This graph slice shows all of those same top-level types, plus a few more,
+as is relevant from the implementer's point of view:
+
+    sys.std.Core.Type.Universal
+        sys.std.Core.Type.Int
+        sys.std.Core.Type.Tuple
+            sys.std.Core.Type.DHTuple
+                sys.std.Core.Type.Database
+        sys.std.Core.Type.Relation
+            sys.std.Core.Type.DHRelation
+        sys.std.Core.Type.Cat.ScalarWP
+            sys.std.Core.Type.Cat.DHScalarWP
+                sys.std.Core.Type.Bool
+                sys.std.Core.Type.Rat
+                sys.std.Core.Type.Blob
+                sys.std.Core.Type.Text
+        sys.std.Core.Type.External
+
+This arrangement is implementer-significant because it best illustrates the
+conceptual implementation of the types.
+
+This graph slice shows all of the general-purpose system-defined scalar
+types:
+
+    sys.std.Core.Type.Universal
+        sys.std.Core.Type.Scalar
+            sys.std.Core.Type.Cat.ScalarWP
+                sys.std.Core.Type.Cat.DHScalarWP
+            sys.std.Core.Type.DHScalar
+                sys.std.Core.Type.Int
+                    sys.std.Core.Type.NNInt
+                        sys.std.Core.Type.PInt
+                            sys.std.Core.Type.PInt2_N
+                sys.std.Core.Type.Cat.DHScalarWP
                     sys.std.Core.Type.Bool
                         sys.std.Core.Type.Bool.*
-                    sys.std.Core.Type.Int
-                        sys.std.Core.Type.NNInt
-                            sys.std.Core.Type.PInt
-                                sys.std.Core.Type.PInt2_N
                     sys.std.Core.Type.Rat
                         sys.std.Core.Type.NNRat
                             sys.std.Core.Type.PRat
@@ -53,7 +106,15 @@ relationships:
                         sys.std.Core.Type.OctetBlob
                     sys.std.Core.Type.Text
 
-        # The following are mostly nonscalar type factories.
+To be clear, C<DHScalarWP> is the intersection type of C<ScalarWP> and
+C<DHScalar>; or, C<Scalar> is the union type of just C<Int> and
+C<ScalarWP>, and C<DHScalar> is the union type of just C<Int> and
+C<DHScalarWP>.
+
+This graph slice shows all of the general-purpose system-defined nonscalar
+type factories:
+
+    sys.std.Core.Type.Universal
 
         sys.std.Core.Type.Tuple
             sys.std.Core.Type.DHTuple
@@ -82,23 +143,22 @@ relationships:
             sys.std.Core.Type.MPInterval
                 sys.std.Core.Type.DHMPInterval
 
-        # The following are all external types.
-
-        sys.std.Core.Type.External
-
-Note that C<sys.std.Core.Type.Empty> is a proper subtype of all of the
-other types in this graph, but every other type has only one immediate
-supertype shown, and hence the graph of them is a simple hierarchy.
-
-Similarly, most C<sys.std.Core.Type.Relation> subtypes have at least 2
-parent types; the above graph shows one view of their relationships, and
-here is another view of those:
+This graph slice shows all of those same nonscalar types, with a different
+view of their relationships:
 
     sys.std.Core.Type.Universal
 
-        sys.std.Core.Type.Empty
-
-        # The following are mostly nonscalar type factories.
+        sys.std.Core.Type.Tuple
+            sys.std.Core.Type.DHTuple
+                sys.std.Core.Type.Database
+                sys.std.Core.Type.DHSet.T
+                sys.std.Core.Type.DHArray.T
+                sys.std.Core.Type.DHBag.T
+                sys.std.Core.Type.DHSPInterval
+            sys.std.Core.Type.Set.T
+            sys.std.Core.Type.Array.T
+            sys.std.Core.Type.Bag.T
+            sys.std.Core.Type.SPInterval
 
         sys.std.Core.Type.Relation
             sys.std.Core.Type.DHRelation
@@ -114,6 +174,10 @@ here is another view of those:
             sys.std.Core.Type.Array
             sys.std.Core.Type.Bag
             sys.std.Core.Type.MPInterval
+
+To be clear, all of the nonscalar C<DH>-prefixed types except for
+C<DH[Tuple|Relation]> are intersection types of one of the latter two plus
+the same-named types sans the prefix.
 
 =head1 MAXIMAL AND MINIMAL DATA TYPES
 
@@ -213,7 +277,8 @@ An C<Int> is a single exact integral number
 of any magnitude.  Its default value is zero; its minimum and maximum
 values are conceptually infinities and practically impossible.  C<Int> is
 the only scalar root type that does I<not>
-have any possreps.  The cardinality of
+have any possreps.  C<Int> is also
+the only atomic type in the Muldis D type system.  The cardinality of
 this type is infinity; to define a most-generalized finite C<Int> subtype,
 you must specify the 2 integer end-points of the inclusive range that all
 its values are in.  The C<Int> type has a default ordering algorithm; for 2
