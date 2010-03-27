@@ -55,13 +55,13 @@ non-core catalog types for context:
     sys.std.Core.Type.Universal
         sys.std.Core.Type.Tuple
         sys.std.Core.Type.Relation
-            sys.std.Core.Type.Cat.String
         sys.std.Core.Type.External
         sys.std.Core.Type.Scalar
             sys.std.Core.Type.Cat.ScalarWP
                 sys.std.Core.Type.Cat.DHScalarWP
             sys.std.Core.Type.DHScalar
                 sys.std.Core.Type.Int
+                sys.std.Core.Type.Cat.String
                 sys.std.Core.Type.Cat.DHScalarWP
                 sys.std.Core.Type.Cat.OVLScalar
 
@@ -70,6 +70,14 @@ This graph slice shows all of the catalog scalar types:
     sys.std.Core.Type.Universal
         sys.std.Core.Type.Scalar
             sys.std.Core.Type.DHScalar
+
+                # The following are all regular ordered scalar types.
+
+                sys.std.Core.Type.Cat.String
+                    sys.std.Core.Type.Cat.BString
+                    sys.std.Core.Type.Cat.OString
+                    sys.std.Core.Type.Cat.UCPString
+
                 sys.std.Core.Type.Cat.DHScalarWP
 
                     # The following are all regular ordered scalar types.
@@ -207,15 +215,6 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.NameNCMap
                 sys.std.Core.Type.Cat.AttrRenameMap
 
-                sys.std.Core.Type.DHArray
-
-                    # The following are all array types.
-
-                    sys.std.Core.Type.Cat.String
-                        sys.std.Core.Type.Cat.BString
-                        sys.std.Core.Type.Cat.OString
-                        sys.std.Core.Type.Cat.UCPString
-
 This graph slice shows additional nonscalar types that can not in general
 be used as components of a system catalog, or any database, but they may be
 used temporarily at runtime:
@@ -237,7 +236,7 @@ used temporarily at runtime:
 
 C<ScalarWP> (scalar with possreps) is a proper subtype of C<Scalar> where
 every one of its values has at least one possrep.  C<ScalarWP> is just the
-difference type where both C<Int> is subtracted from
+difference type where both C<Int> and C<String> are subtracted from
 C<Scalar>.  Its default value is C<Bool:False>.  The cardinality of this
 type is infinity.
 
@@ -247,7 +246,7 @@ C<DHScalarWP> is the intersection type of C<ScalarWP> and C<DHScalar>.  Its
 default value is C<Bool:False>, same as both of its parent types.  The
 cardinality of this type is infinity.  All Muldis D scalar values that are
 allowed to be stored in a global/persisting relational database, besides
-C<Int> values, are C<DHScalarWP> values.
+C<Int> and C<String> values, are C<DHScalarWP> values.
 
 =head2 sys.std.Core.Type.Cat.OVLScalar
 
@@ -265,6 +264,60 @@ of possrep attributes.  The C<OVLScalar> type is I<not> intended to be used
 as the declared type of any user type attributes, generally speaking; if
 they would even consider it, they should be using C<DHScalar> instead.  Its
 default value is C<Bool:False>.  The cardinality of this type is infinity.
+
+=head2 sys.std.Core.Type.Cat.String
+
+A C<String> is a string of integers, or more specifically it is a dense
+sequence of 0..N elements (I<not> defined over C<Relation>) where each
+element is an integer.  A C<String> subtype is normally composed into any
+system-defined type that is conceptually a string of integers or bits or
+characters, such as C<Blob> or C<Text>.  The C<String> type's default and
+canonical minimum value is the empty sequence; its canonical maximum value
+is an infinite-length sequence and practically impossible.  C<String> is
+one of just two scalar root types (the other is C<Int>) that do I<not> have
+any possreps.  The cardinality of this type is infinity; to define a
+most-generalized finite C<String> subtype, you must specify a maximum
+length in elements that the subtype's values can have, and you must specify
+the 2 integer end-points of the inclusive range that all its values'
+integer element values are in.  The C<String> type has a default ordering
+algorithm; for 2 distinct C<String> values, their order is determined as
+follows:  First eliminate any identical leading element sequences from both
+strings as those alone would make the strings compare as same (if the
+remainder of both strings was the empty string, then the strings are
+identical).  Then, iff the remainder of just one string is the empty
+string, then that string is ordered before the non-empty one; otherwise,
+compare the first element of each of the string remainders according to the
+default ordering algorithm of C<Int> to get the order of their respective
+strings.
+
+=head2 sys.std.Core.Type.Cat.BString
+
+C<BString> (bit string) is a proper
+subtype of C<String> where all member value elements are between zero and
+1 inclusive.  One can be used to represent a string of bits.
+
+=head2 sys.std.Core.Type.Cat.OString
+
+C<OString> (octet string) is a proper
+subtype of C<String> where all member value elements are between zero and
+255 inclusive.  One can be used to represent a string of octets.
+
+=head2 sys.std.Core.Type.Cat.UCPString
+
+C<UCPString> (Unicode abstract codepoint
+string) is a proper subtype of C<String> where all member value elements
+are between zero and F;D7FF inclusive or F;E000 and F;10FFFF inclusive.  As
+of the Unicode standard version 5.2.0, all character abstract codepoints
+exist within that range, and so each element could be used to represent any
+Unicode character and the whole string can be used to represent a string of
+Unicode characters.
+
+There are no Unicode abstract codepoints between F;D800 and F;DFFF
+inclusive; those numbers would only represent special surrogates that do
+not define extra abstract characters and only have any meaning in
+conjunction with the UTF-16 character encoding form; and so the
+C<UCPString> type specifically excludes them from use in its member values;
+you must just use the normal character abstract codepoints instead.
 
 =head2 sys.std.Core.Type.Cat.Name
 
@@ -537,64 +590,6 @@ of C<RatRoundRule> specifies a coersion to a whole number using the
 C<HalfEven> rounding method (its radix is 2 and its min exp is 0).  The
 C<RatRoundRule> type does I<not> have a default ordering algorithm.
 
-=head1 SIMPLE GENERIC STRING TYPES
-
-=head2 sys.std.Core.Type.Cat.String
-
-C<String> is a proper subtype of
-C<DHArray> where the declared type of its C<value> attribute is C<Int>; it
-is otherwise the same.  A C<String> is a string of integers, or more
-specifically it is a sequence of 0..N elements where each element is an
-integer.  A C<String> subtype is normally composed into any system-defined
-type that is conceptually a string of integers or bits or characters, such
-as C<Blob> or C<Text>.  The C<String> type's default and canonical minimum
-value is the empty sequence; its canonical maximum value is an
-infinite-length sequence and practically impossible.  The cardinality of
-this type is infinity; to define a most-generalized finite C<String>
-subtype, you must specify a maximum length in elements that the subtype's
-values can have, and you must specify the 2 integer end-points of the
-inclusive range that all its values' tuples' C<value> attribute values are
-in.  The C<String> type has a canonical ordering algorithm; for 2 distinct
-C<String> values, their order is determined as follows:  First eliminate
-any identical leading element sequences from both strings as those alone
-would make the strings compare as same (if the remainder of both strings
-was the empty string, then the strings are identical).  Then, iff the
-remainder of just one string is the empty string, then that string is
-ordered before the non-empty one; otherwise, compare the first element of
-each of the string remainders according to the following ordering algorithm
-to get the order of their respective strings: the C<value> attribute
-integer value closer to negative infinity is ordered before the value
-closer to positive infinity.
-
-=head2 sys.std.Core.Type.Cat.BString
-
-C<BString> (bit string) is a proper
-subtype of C<String> where all member value elements are between zero and
-1 inclusive.  One can be used to represent a string of bits.
-
-=head2 sys.std.Core.Type.Cat.OString
-
-C<OString> (octet string) is a proper
-subtype of C<String> where all member value elements are between zero and
-255 inclusive.  One can be used to represent a string of octets.
-
-=head2 sys.std.Core.Type.Cat.UCPString
-
-C<UCPString> (Unicode abstract codepoint
-string) is a proper subtype of C<String> where all member value elements
-are between zero and F;D7FF inclusive or F;E000 and F;10FFFF inclusive.  As
-of the Unicode standard version 5.2.0, all character abstract codepoints
-exist within that range, and so each element could be used to represent any
-Unicode character and the whole string can be used to represent a string of
-Unicode characters.
-
-There are no Unicode abstract codepoints between F;D800 and F;DFFF
-inclusive; those numbers would only represent special surrogates that do
-not define extra abstract characters and only have any meaning in
-conjunction with the UTF-16 character encoding form; and so the
-C<UCPString> type specifically excludes them from use in its member values;
-you must just use the normal character abstract codepoints instead.
-
 =head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
 
 =head2 sys.std.Core.Type.Cat.System
@@ -640,10 +635,10 @@ system-defined functions|updaters|procedures.
 These are the few central system-defined data types that have special
 hard-coded meanings and are not defined like any other types; these are
 declarations of all of the native Muldis D types that can't be defined like
-user-defined types.  Specifically, it declares these 7 standard types: in
+user-defined types.  Specifically, it declares these 8 standard types: in
 the C<sys.std.Core.Type> namespace, C<Universal>, C<Empty>, C<Scalar>,
-C<Int>, C<Tuple>, C<Relation>, C<External>.  These
-constitute all 3 Muldis D primitive types, all 1 Muldis D external types,
+C<Int>, C<String>, C<Tuple>, C<Relation>, C<External>.  These
+constitute all 4 Muldis D primitive types, all 1 Muldis D external types,
 all 2 Muldis D type system minimal and maximal (enumeration) types, all 1
 Muldis D enumeration types that are each implicit maximal types of 1 of 4
 non-remnant type categories (the other 3 such maximals are primitive

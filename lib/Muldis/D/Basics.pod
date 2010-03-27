@@ -788,8 +788,8 @@ that has no proper subtypes save for C<Empty>.
 
 A primitive type is not, in most cases, conceptually defined in terms of
 any other data type in the system.  A primitive type can only be
-system-defined, not user-defined.  There are just 3 of these: C<Int>,
-C<Tuple>, C<Relation>.  I<TODO: Further correct this desc.>
+system-defined, not user-defined.  There are just 4 of these: C<Int>,
+C<String>, C<Tuple>, C<Relation>.  I<TODO: Further correct this desc.>
 
 A structure type is conceptually defined in terms of a collection of N
 elements of one or more other types along with an optional constraint that
@@ -802,7 +802,7 @@ structure types are scalar types.  I<TODO: Further correct this desc.>
 An enumeration type is defined in terms of a union or subset of the values
 of one or more other data types.  The system-defined types defined in terms
 of a subset include: C<NNInt>, C<DHTuple>, C<Database>, C<DHRelation>,
-C<DHSet>, C<DHArray>, C<Maybe>, C<Bag>, C<String>, C<UTCDateTime>.  The
+C<DHSet>, C<DHArray>, C<Maybe>, C<Bag>, C<UTCDateTime>.  The
 system-defined types defined in terms of a union (sometimes not an
 explicitly enumerated one like with user-defined types) include:
 C<Universal>, C<Empty>, C<Scalar>, C<DHScalar>, C<Bool>,
@@ -980,8 +980,8 @@ constraint that the area of the polygon is between 5 and 10 units.
 
 Generic system-defined selector and possrep attribute accessor operators
 exist that automatically work with all scalar types (that have possreps,
-which all scalar root types except C<Int> do), so such do not need to be
-explicitly defined per such type.  They are all in the
+which all scalar root types except C<Int> and C<String> do), so such do not
+need to be explicitly defined per such type.  They are all in the
 C<sys.std.Core.Scalar.\w+> namespace.  These generic operators take
 advantage of the fact that each scalar possrep looks like a tuple, and
 they look like basic tuple operators but for taking an extra argument to
@@ -1153,7 +1153,8 @@ system-defined nonscalar values with additional special names, which are
 C<D0>, C<D0C[0|1]>, and C<Nothing>, don't each come in 2 flavors.)
 
 A I<deeply homogeneous scalar value> is, by definition, any scalar value
-that either has no possreps (it is an C<Int>) or all of its possreps are
+that either has no possreps (it is an C<Int> or a C<String>) or all of its
+possreps are
 such that any relation-valued attributes it has, directly or indirectly,
 are also just deeply homogeneous relation-valued.
 
@@ -1428,7 +1429,7 @@ applied when using values of that type with versions of order-sensitive
 operators that don't have the additional function-name-specifying
 parameter.  All ordered system-defined scalar root types have this
 type-default ordering function defined for them, especially the
-system-defined C<Int> type which doesn't have any possreps, so you don't
+system-defined C<Int> type which is opaque, so you don't
 need to define any yourself for these most-common cases.  Note that a
 nonscalar type can't have a default ordering function, and a subtype of a
 scalar type can't supply or replace one either, with the reasoning for
