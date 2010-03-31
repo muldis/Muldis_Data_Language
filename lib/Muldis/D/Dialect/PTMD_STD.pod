@@ -3366,9 +3366,9 @@ Grammar:
         | 'I-' | 'I/' | '%' | mod | 'I^'
         | 'N-' | 'N/'
         | Bx | Tx | Ax
-        | in-r | '!in-r' | 'not-in-r' | has-t | '!has-t' | 'not-has-t'
-        | Sin | 'S!in' | 'Snot-in' | Shas | 'S!has' | 'Snot-has'
-        | Bin | 'B!in' | 'Bnot-in' | Bhas | 'B!has' | 'Bnot-has'
+        | in-r | '!in-r' | 'not-in-r' | r-has | 'r-!has' | 'r-not-has'
+        | in-s | '!in-s' | 'not-in-s' | s-has | 's-!has' | 's-not-has'
+        | in-b | '!in-b' | 'not-in-b' | b-has | 'b-!has' | 'b-not-has'
         | sub | '!sub' | 'not-sub' | super | '!super' | 'not-super'
         | psub | '!psub' | 'not-psub' | psuper | '!psuper' | 'not-psuper'
         | minus | except
@@ -3380,9 +3380,9 @@ Grammar:
     <nonsym_dyadic_infix_op__op_cr_extended> ::=
           <nonsym_dyadic_infix_op__op_cr_basic>
         | '→' | '↛' | '←' | '↚'
-        | '∈r' | '∉r' | '∋t' | '∌t'
-        | 'S∈' | 'S∉' | 'S∋' | 'S∌'
-        | 'B∈' | 'B∉' | 'B∋' | 'B∌'
+        | '∈r' | '∉r' | 'r∋' | 'r∌'
+        | '∈s' | '∉s' | 's∋' | 's∌'
+        | '∈b' | '∉b' | 'b∋' | 'b∌'
         | '⊆' | '⊈' | '⊇' | '⊉'
         | '⊂' | '⊄' | '⊃' | '⊅'
         | '∖' | '⊿' | '⋉' | '÷'
@@ -3409,16 +3409,16 @@ Some of the keywords are aliases for each other:
     %         | mod
     in-r      | ∈r
     !in-r     | ∉r not-in-r
-    has-t     | ∋t
-    !has-t    | ∌t not-has-t
-    Sin       | S∈
-    S!in      | S∉ Snot-in
-    Shas      | S∋
-    S!has     | S∌ Snot-has
-    Bin       | B∈
-    B!in      | B∉ Bnot-in
-    Bhas      | B∋
-    B!has     | B∌ Bnot-has
+    r-has     | r∋
+    r-!has    | r∌ r-not-has
+    in-s      | ∈s
+    !in-s     | ∉s not-in-s
+    s-has     | s∋
+    s-!has    | s∌ s-not-has
+    in-b      | ∈b
+    !in-b     | ∉b not-in-b
+    b-has     | b∋
+    b-!has    | b∌ b-not-has
     sub       | ⊆
     !sub      | ⊈ not-sub
     super     | ⊇
@@ -3455,16 +3455,16 @@ This table indicates which function is invoked by each keyword:
 
     in-r   -> Core.Tuple.is_member( t => $lhs, r => $rhs )
     !in-r  -> Core.Tuple.is_not_member( t => $lhs, r => $rhs )
-    has-t  -> Core.Relation.has_member( r => $lhs, t => $rhs )
-    !has-t -> Core.Relation.has_not_member( r => $lhs, t => $rhs )
-    Sin    -> Core.Set.value_is_member( value => $lhs, set => $rhs )
-    S!in   -> Core.Set.value_is_not_member( value => $lhs, set => $rhs )
-    Shas   -> Core.Set.has_member( set => $lhs, value => $rhs )
-    S!has  -> Core.Set.has_not_member( set => $lhs, value => $rhs )
-    Bin    -> Core.Bag.value_is_member( value => $lhs, bag => $rhs )
-    B!in   -> Core.Bag.value_is_not_member( value => $lhs, bag => $rhs )
-    Bhas   -> Core.Bag.has_member( bag => $lhs, value => $rhs )
-    B!has  -> Core.Bag.has_not_member( bag => $lhs, value => $rhs )
+    r-has  -> Core.Relation.has_member( r => $lhs, t => $rhs )
+    r-!has -> Core.Relation.has_not_member( r => $lhs, t => $rhs )
+    in-s   -> Core.Set.value_is_member( value => $lhs, set => $rhs )
+    !in-s  -> Core.Set.value_is_not_member( value => $lhs, set => $rhs )
+    s-has  -> Core.Set.has_member( set => $lhs, value => $rhs )
+    s-!has -> Core.Set.has_not_member( set => $lhs, value => $rhs )
+    in-b   -> Core.Bag.value_is_member( value => $lhs, bag => $rhs )
+    !in-b  -> Core.Bag.value_is_not_member( value => $lhs, bag => $rhs )
+    b-has  -> Core.Bag.has_member( bag => $lhs, value => $rhs )
+    b-!has -> Core.Bag.has_not_member( bag => $lhs, value => $rhs )
 
     sub     -> Core.Relation.is_subset( $lhs, $rhs )
     !sub    -> Core.Relation.is_not_subset( $lhs, $rhs )
@@ -3957,13 +3957,13 @@ Grammar:
 
     <dyadic_compare_op__op_cr_basic> ::=
           '<' | '<=' | '>' | '>='
-        | Iin | 'I!in' | 'Inot-in' | Ihas | 'I!has' | 'Inot-has'
+        | in-i | '!in-i' | 'not-in-i' | i-has | 'i-!has' | 'i-not-has'
         | between | '!between' | 'not-between'
 
     <dyadic_compare_op__op_cr_extended> ::=
           <dyadic_compare_op__op_cr_basic>
         | '≤' | '≥'
-        | 'I∈' | 'I∉' | 'I∋' | 'I∌'
+        | '∈i' | '∉i' | 'i∋' | 'i∌'
 
     <gen_compare_op_ordered_clause> ::=
         ordered <ws> <using_clause> | <ordered_by_clause>
@@ -3993,10 +3993,10 @@ Some of the keywords are aliases for each other:
     --------+--------
     <=      | ≤
     >=      | ≥
-    Iin     | I∈ | between
-    I!in    | I∉ | Inot-in | !between | not-between
-    Ihas    | I∋
-    I!has   | I∌ | Inot-has
+    in-i    | ∈i | between
+    !in-i   | ∉i | not-in-i | !between | not-between
+    i-has   | i∋
+    i-!has  | i∌ | i-not-has
 
 This table indicates which function is invoked by each keyword:
 
@@ -4009,12 +4009,12 @@ This table indicates which function is invoked by each keyword:
     >      -> Core.Ordered.is_after( $lhs, $rhs )
     <=     -> Core.Ordered.is_before_or_same( $lhs, $rhs )
     >=     -> Core.Ordered.is_after_or_same( $lhs, $rhs )
-    Iin    -> Core.Interval.value_is_member( value => $lhs,
+    in-i   -> Core.Interval.value_is_member( value => $lhs,
                 interval => $rhs )
-    I!in   -> Core.Interval.value_is_not_member( value => $lhs,
+    !in-i  -> Core.Interval.value_is_not_member( value => $lhs,
                 interval => $rhs )
-    Ihas   -> Core.Interval.has_member( interval => $lhs, value => $rhs )
-    I!has  -> Core.Interval.has_not_member( interval => $lhs,
+    i-has  -> Core.Interval.has_member( interval => $lhs, value => $rhs )
+    i-!has -> Core.Interval.has_not_member( interval => $lhs,
                 value => $rhs )
 
 Details regarding the extra op args is pending.  But most of the time you
@@ -4036,9 +4036,9 @@ Examples (for now sans any use of extra op args, which are atypical):
 
     $foo ≥ $bar
 
-    $a I∈ SPInterval:{1..5}
+    $a ∈i SPInterval:{1..5}
 
-    $foo I∉ SPInterval:{$min..^$max}
+    $foo ∉i SPInterval:{$min..^$max}
 
 =head1 TEMPORAL EXTENSION OPAQUE VALUE LITERALS
 
