@@ -591,7 +591,7 @@ Examples:
     }
     depot-catalog {
         function cube (Int <-- $topic : Int) {
-            $topic I^ 3
+            $topic i^ 3
         }
     }
 
@@ -2496,7 +2496,7 @@ Examples:
     # A depot having just one function and no dbvar. #
     depot-catalog {
         function cube (Int <-- $topic : Int) {
-            $topic I^ 3
+            $topic i^ 3
         }
     }
 
@@ -2988,13 +2988,13 @@ Examples:
     if $ary is-empty then $empty_result else $ary.[0]
 
     if $x = ∅ or $y = ∅ then ∅
-        else s ((v $x) I+ ((v $y) I^ 3)
+        else s ((v $x) i+ ((v $y) i^ 3)
 
-    if $val isa T->Int then $val I^ 3
-        else if $val isa T->Text then $val Tx 5
+    if $val isa T->Int then $val i^ 3
+        else if $val isa T->Text then $val t-x 5
         else True
 
-    'My answer is: ' T~ ($maybe ?? 'yes' !! 'no')
+    'My answer is: ' t~ ($maybe ?? 'yes' !! 'no')
 
 =head2 Generic Given-When-Default Expressions
 
@@ -3151,8 +3151,8 @@ Grammar:
 
     <comm_infix_reduce_op__op_cr_basic> ::=
           and | or | xnor | iff | xor
-        | 'I+' | 'I*'
-        | 'N+' | 'N*'
+        | 'i+' | 'i*'
+        | 'r+' | 'r*'
         | union | intersect | exclude | symdiff
         | join | times | 'cross-join'
 
@@ -3200,10 +3200,10 @@ This table indicates which function is invoked by each keyword:
     or   -> Core.Boolean.or( Set:{ $expr[0], ..., $expr[n] } )
     xnor -> Core.Boolean.xnor( Bag:{ $expr[0], ..., $expr[n] } )
     xor  -> Core.Boolean.xor( Bag:{ $expr[0], ..., $expr[n] } )
-    I+   -> Core.Integer.sum( Bag:{ $expr[0], ..., $expr[n] } )
-    I*   -> Core.Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
-    N+   -> Core.Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
-    N*   -> Core.Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
+    i+   -> Core.Integer.sum( Bag:{ $expr[0], ..., $expr[n] } )
+    i*   -> Core.Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
+    r+   -> Core.Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
+    r*   -> Core.Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
 
     union     -> Core.Relation.union( Set:{ $expr[0], ..., $expr[n] } )
     intersect -> Core.Relation.intersection(
@@ -3220,13 +3220,13 @@ Examples:
 
     True xor False xor True
 
-    14 I+ 3 I+ -5
+    14 i+ 3 i+ -5
 
-    -6 I* 2 I* 25
+    -6 i* 2 i* 25
 
-    4.25 N+ -0.002 N+ 1.0
+    4.25 r+ -0.002 r+ 1.0
 
-    69.3 N* 15*2^6 N* 49/23
+    69.3 r* 15*2^6 r* 49/23
 
     Set:{ 1, 3, 5 } ∪ Set:{ 4, 5, 6 } ∪ Set:{ 0, 9 }
 
@@ -3241,7 +3241,7 @@ Grammar:
 
     <noncomm_infix_reduce_op> ::=
           '[<=>]'
-        | 'B~' | 'T~' | 'A~'
+        | 'b~' | 't~' | 'a~'
         | '//' | '//d'
 
 A C<noncomm_infix_reduce_op_invo> node is for using infix notation to
@@ -3268,9 +3268,9 @@ different type of value, from the last op input list element.
 This table indicates which function is invoked by each keyword:
 
     [<=>] -> Core.Cat.Order.reduction( Array:{ $expr[0], ..., $expr[n] } )
-    B~    -> Core.Blob.catenation( Array:{ $expr[0], ..., $expr[n] } )
-    T~    -> Core.Text.catenation( Array:{ $expr[0], ..., $expr[n] } )
-    A~    -> Core.Array.catenation( Array:{ $expr[0], ..., $expr[n] } )
+    b~    -> Core.Blob.catenation( Array:{ $expr[0], ..., $expr[n] } )
+    t~    -> Core.Text.catenation( Array:{ $expr[0], ..., $expr[n] } )
+    a~    -> Core.Array.catenation( Array:{ $expr[0], ..., $expr[n] } )
 
     //    -> Core.Set.Maybe.attr_or_value(
                 Array:{ $expr[0], ..., $expr[n-1] }, value => $expr[n] )
@@ -3281,11 +3281,11 @@ Examples:
 
     Same [<=>] Increase [<=>] Decrease
 
-    F;'DEAD' B~ 1;'10001101' B~ F;'BEEF'
+    F;'DEAD' b~ 1;'10001101' b~ F;'BEEF'
 
-    'hello' T~ ' ' T~ 'world'
+    'hello' t~ ' ' t~ 'world'
 
-    Array:[ 24, 52 ] A~ Array:[ -9 ] A~ Array:[ 0, 11, 24, 7 ]
+    Array:[ 24, 52 ] a~ Array:[ -9 ] a~ Array:[ 0, 11, 24, 7 ]
 
     $a // $b // 42
 
@@ -3301,7 +3301,7 @@ Grammar:
     <sym_dyadic_infix_op__op_cr_basic> ::=
           '=' | '!='
         | nand | nor
-        | 'I|-|' | 'N|-|'
+        | 'i|-|' | 'r|-|'
 
     <sym_dyadic_infix_op__op_cr_extended> ::=
           <sym_dyadic_infix_op__op_cr_basic>
@@ -3332,8 +3332,8 @@ This table indicates which function is invoked by each keyword:
     !=   -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
     nand -> Core.Boolean.nand( $expr[0], $expr[1] )
     nor  -> Core.Boolean.nor( $expr[0], $expr[1] )
-    I|-| -> Core.Integer.abs_diff( $expr[0], $expr[1] )
-    N|-| -> Core.Rational.abs_diff( $expr[0], $expr[1] )
+    i|-| -> Core.Integer.abs_diff( $expr[0], $expr[1] )
+    r|-| -> Core.Rational.abs_diff( $expr[0], $expr[1] )
 
 Examples:
 
@@ -3343,9 +3343,9 @@ Examples:
 
     False nand True
 
-    15 I|-| 17
+    15 i|-| 17
 
-    7.5 N|-| 9.0
+    7.5 r|-| 9.0
 
 =head2 Simple Non-symmetric Dyadic Infix Operators
 
@@ -3363,9 +3363,9 @@ Grammar:
     <nonsym_dyadic_infix_op__op_cr_basic> ::=
           isa | '!isa' | 'not-isa' | as | asserting
         | imp | implies | nimp | if | nif
-        | 'I-' | 'I/' | '%' | mod | 'I^'
-        | 'N-' | 'N/'
-        | Bx | Tx | Ax
+        | 'i-' | 'i/' | '%' | mod | 'i^'
+        | 'r-' | 'r/'
+        | b-x | t-x | a-x
         | in-r | '!in-r' | 'not-in-r' | r-has | 'r-!has' | 'r-not-has'
         | in-s | '!in-s' | 'not-in-s' | s-has | 's-!has' | 's-not-has'
         | in-b | '!in-b' | 'not-in-b' | b-has | 'b-!has' | 'b-not-has'
@@ -3443,15 +3443,15 @@ This table indicates which function is invoked by each keyword:
     nimp -> Core.Boolean.nimp( $lhs, $rhs )
     if   -> Core.Boolean.if( $lhs, $rhs )
     nif  -> Core.Boolean.nif( $lhs, $rhs )
-    I-   -> Core.Integer.diff( minuend => $lhs, subtrahend => $rhs )
-    I/   -> Core.Integer.quotient( dividend => $lhs, divisor => $rhs )
+    i-   -> Core.Integer.diff( minuend => $lhs, subtrahend => $rhs )
+    i/   -> Core.Integer.quotient( dividend => $lhs, divisor => $rhs )
     %    -> Core.Integer.remainder( dividend => $lhs, divisor => $rhs )
-    I^   -> Core.Integer.power( radix => $lhs, exponent => $rhs )
-    N-   -> Core.Rational.diff( minuend => $lhs, subtrahend => $rhs )
-    N/   -> Core.Rational.quotient( dividend => $lhs, divisor => $rhs )
-    Bx   -> Core.Blob.replication( $lhs, count => $rhs )
-    Tx   -> Core.Text.replication( $lhs, count => $rhs )
-    Ax   -> Core.Array.replication( $lhs, count => $rhs )
+    i^   -> Core.Integer.power( radix => $lhs, exponent => $rhs )
+    r-   -> Core.Rational.diff( minuend => $lhs, subtrahend => $rhs )
+    r/   -> Core.Rational.quotient( dividend => $lhs, divisor => $rhs )
+    b-x  -> Core.Blob.replication( $lhs, count => $rhs )
+    t-x  -> Core.Text.replication( $lhs, count => $rhs )
+    a-x  -> Core.Array.replication( $lhs, count => $rhs )
 
     in-r   -> Core.Relation.tuple_is_member( t => $lhs, r => $rhs )
     !in-r  -> Core.Relation.tuple_is_not_member( t => $lhs, r => $rhs )
@@ -3500,19 +3500,19 @@ Examples:
 
     True implies False
 
-    34 I- 21
+    34 i- 21
 
-    5 I/ 3
+    5 i/ 3
 
     5 % 3
 
-    2 I^ 63
+    2 i^ 63
 
-    9.2 N- 0.1
+    9.2 r- 0.1
 
-    1;101.01 N/ 1;11.0
+    1;101.01 r/ 1;11.0
 
-    '-' Tx 80
+    '-' t-x 80
 
     Set:{ 8, 4, 6, 7 } ∖ Set:{ 9, 0, 7 }
 
@@ -3526,7 +3526,7 @@ Grammar:
         <monadic_prefix_op> <ws> <expr>
 
     <monadic_prefix_op__op_cr_basic> ::=
-        d | not | '!' | 'I||' | 'N||' | 'R#' | t | r | s | v
+        d | not | '!' | 'i||' | 'r||' | 'r#' | t | r | s | v
 
     <monadic_prefix_op__op_cr_extended> ::=
           <monadic_prefix_op__op_cr_basic>
@@ -3549,9 +3549,9 @@ This table indicates which function is invoked by each keyword:
 
     d   -> Core.Universal.default( of => $expr )
     not -> Core.Boolean.not( $expr )
-    I|| -> Core.Integer.abs( $expr )
-    N|| -> Core.Rational.abs( $expr )
-    R#  -> Core.Relation.cardinality( $expr )
+    i|| -> Core.Integer.abs( $expr )
+    r|| -> Core.Rational.abs( $expr )
+    r#  -> Core.Relation.cardinality( $expr )
     t   -> Core.Cast.Tuple_from_Relation( $expr )
     r   -> Core.Cast.Relation_from_Tuple( $expr )
     s   -> Core.Set.Maybe.single( value => $expr )
@@ -3563,17 +3563,17 @@ Examples:
 
     not True
 
-    I|| -23
+    i|| -23
 
-    N|| -4.59
+    r|| -4.59
 
-    R# Set:{ 5, -1, 2 }
+    r# Set:{ 5, -1, 2 }
 
     t $relvar
 
     r $tupvar
 
-    s ((v $a) N+ (v $b))
+    s ((v $a) r+ (v $b))
 
 =head2 Simple Monadic Postfix Operators
 
@@ -3583,7 +3583,7 @@ Grammar:
         <expr> <ws> <monadic_postfix_op>
 
     <monadic_postfix_op> ::=
-        '++' | '--' | 'I!'
+        '++' | '--' | 'i!'
 
 A C<monadic_postfix_op_invo> node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
@@ -3596,7 +3596,7 @@ This table indicates which function is invoked by each keyword:
 
     ++ -> Core.Integer.succ( $expr )
     -- -> Core.Integer.pred( $expr )
-    I! -> Core.Integer.factorial( $expr )
+    i! -> Core.Integer.factorial( $expr )
 
 Examples:
 
@@ -3604,7 +3604,7 @@ Examples:
 
     4 --
 
-    5 I!
+    5 i!
 
 =head2 Simple Postcircumfix Operators
 
@@ -3873,7 +3873,7 @@ Grammar:
         <lhs> <ws> <infix_rat_op> <ws> <rhs>
 
     <infix_rat_op> ::=
-        'N^' | log
+        'r^' | log
 
     <prefix_rat_op_invo> ::=
         <expr> <ws> <prefix_rat_op>
@@ -3909,7 +3909,7 @@ sequence.
 This table indicates which function is invoked by each keyword:
 
           -> Core.Rational.round( $expr, $>round_rule )
-    N^    -> Core.Rational.power( radix => $lhs, exponent => $rhs,
+    r^    -> Core.Rational.power( radix => $lhs, exponent => $rhs,
                 $>round_rule )
     log   -> Core.Rational.log( $lhs, radix => $rhs, $>round_rule )
     e^    -> Core.Rational.natural_power( $expr, $>round_rule )
@@ -3919,7 +3919,7 @@ Examples:
 
     $foo round RatRoundRule:[10,-2,HalfEven]
 
-    2.0 N^ 0.5 round RatRoundRule:[2,-7,ToZero]
+    2.0 r^ 0.5 round RatRoundRule:[2,-7,ToZero]
 
     309.1 log 5.4 round RatRoundRule:[10,-4,HalfUp]
 
