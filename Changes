@@ -6,6 +6,75 @@
     * Muldis::D version 0.115.0 is released on CPAN as
     Muldis-D-0.115.0.tar.gz.
 
+    * This release features a redefinition of "recipe" to become the 4th
+    main routine kind (besides function, updater, procedure), rather than
+    being a special case of a procedure.  A "recipe" is now firmly between
+    an updater and a procedure; it is exactly the same as an updater except
+    that it can see and update global variables; moreover, a procedure has
+    been stripped of the ability to do that directly; a procedure must now
+    invoke a recipe to use the database.  From now on, it is expected that
+    most typical user code, that analogous to typical database query or
+    data manipulation or data definition code, would now be written
+    primarily as recipes, since a single recipe can do everything that is
+    possible in Muldis D to do as a single atomic and deterministic action.
+    Now, the only reason to write a "procedure" is if you want to write
+    something nonatomic or nondeterministic natively in Muldis D; in
+    general practice for a mixed-language application, you would tend to do
+    nondeterministic stuff in your main application language instead; a
+    borderline case is fetching the current date or time, which is commonly
+    done close to a database for timestamps, and it is nondeterministic.
+
+    * (Basics.pod)  Made several large updates to the "ROUTINES" main pod
+    section, mostly in its sub-section "Functions, Updaters, and
+    Procedures", which was also renamed to add "Recipes, "; these updates
+    focused on adding the "recipe" 4th main routine kind, and reducing the
+    capabilities of "procedure"; in the "Kinds of Procedures" sub-section,
+    removed the paragraph for the old definition of "recipe".
+
+    * (Basics.pod)  Made multiple small updates with respect to
+    transactions, partly to specify that Muldis D now uses a
+    multi-versioned concurrency model, and also to say that all
+    transactions are now serializable.  These updates were in the 2 main
+    pod sections "TRANSACTIONS AND CONCURRENCY" and "ROUTINES".  The Muldis
+    D spec still doesn't go into detail on how the concurrency model works,
+    but that will come eventually, though no longer a high priority item.
+
+    * (Types_Catalog.pod)  Updated the catalog type "DataNC" to change its
+    default value from "sys.cat" to "lex.topic", and that is now the
+    default value of "LexDataNC" also.
+
+    * (Types_Catalog.pod)  Renamed the catalog type "MultiUpdStmt"
+    to "MultiUpdInvoStmt".
+
+    * (Types_Catalog.pod, Routines_Catalog.pod)  In Types_Catalog.pod,
+    removed the old "Recipe" catalog type, which was a proper subtype of
+    "Procedure", and updated the "Procedure" type to remove its "is_recipe"
+    attribute.  Also updated all data types used just in defining procedure
+    statements to change the declared types of any of their "DataNC"
+    attributes to "LexDataNC".  In Routines_Catalog.pod, changed the "noop"
+    routine from a recipe to a procedure.
+
+    * (Types_Catalog.pod, Routines_Catalog.pod, PTMD_STD.pod,
+    HDMD_Perl[6|5]_STD.pod)  Added the new routine generator called
+    "recipe" which now defines the only routines that can see or update
+    global variables, and they are also atomic.  In Types_Catalog.pod,
+    added the catalog type "Recipe", which is mostly a clone of "Updater"
+    but for having the 2 extra attributes "[upd|ro]_globals" and for
+    replacing the 1 "stmt" attribute with the 2 "stmt_part_[upd|rcp]";
+    supporting that, also added the 2 catalog types "RcpGlobalVarAliasMap"
+    and "MultiRcpInvoStmt", where the latter is mostly a clone of
+    "MultiUpdInvoStmt" save for the "updater" attribute being renamed to
+    "recipe".  Also added the 2 catalog types "[|Sys]RecipeSet", and
+    updated each of the 2 catalog types "System", "Depot" to add a
+    "recipes" attribute.  Also added the 2 catalog types "[A|R]PRecipeNC". 
+    In Routines_Catalog.pod, added the 3 recipes "rcp_invo",
+    "[create|drop]_recipe".  Also added new catalog type
+    "RcpInvoStmtNodeSet", which is a clone of "UpdInvoStmtNodeSet" but for
+    one renamed attribute, and updated the "StmtNodeSet" catalog type to
+    add a "rcp_invo_stmts" attribute.
+    In all 3 STD.pod, added "Recipe Specification" pod sub-section under
+    "MATERIAL SPECIFICATION" and added the "recipe" material node kind.
+
     * (Tuple.pod, Relation.pod, PTMD_STD.pod)  Moved the 2 functions
     "sys.std.Core.Tuple.is[|_not]_member" from Tuple.pod to Relation.pod,
     in the process renaming them to
@@ -51,6 +120,10 @@
     * (Integer.pod, Rational.pod, Blob.pod, Text.pod, Array.pod,
     Relation.pod)  Updated the also-known-as notes for the 22 functions in
     correspondence to above-mentioned changes.
+
+    * Updated the TODO file so that now there are only 2 highest-priority
+    items, which are adding the Ordered/Ordinal mixins, and specifying the
+    concrete syntax for defining types and routines.
 
 2010-03-27  Darren Duncan <darren@DarrenDuncan.net>
 

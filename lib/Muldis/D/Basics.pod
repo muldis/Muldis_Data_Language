@@ -806,14 +806,7 @@ interpret all Muldis D values in the complete absence of any user-defined
 types, so there is no chicken-and-egg problem that prevents DD+DM from
 being done together in the general case, where one needs to have
 non-mutating definitions of user-defined types in order to do manipulation
-of data having those types.  As a consequence of this, it is also feasible
-to have structure values that have both a metadata component and a payload
-component where the former defines a type constraint that applies to the
-latter; selecting such a structure value will only succeed if the payload
-component satisfies the constraint defined by the metadata component.
-I<TODO:  Add a type factory to Muldis D for creating said structures, and
-make a depot such a structure, and let data-manipulation routines be
-updater-routines that work with such structure values.>
+of data having those types.
 
 B<TODO: REWRITE THIS SINGLE PARAGRAPH:>  A data type that is an atomic or
 structure or external type is also called a I<root type>; a data type that
@@ -1826,18 +1819,19 @@ Muldis D grammar to be as simple as possible and it empowers users to
 define additional features that can mimic nearly any built-in ones in both
 functionality and syntax.
 
-=head2 Functions, Updaters, and Procedures
+=head2 Functions, Updaters, Recipes, and Procedures
 
-Every Muldis D routine is exactly one of these 3 main routine kinds, where
-the 3 kinds are mutually exclusive: C<function>, C<updater>, C<procedure>.
-Each of these 3 kinds is very distinct with regards to what it conceptually
-represents or where it may be used, and Muldis D has disjoint catalog data
-types for defining routines of each of the 3 kinds:  C<Function>,
-C<Updater>, C<Procedure>.  Just functions and updaters are collectively
-also known as I<atomic routines> (or I<pure routines>); just updaters and
-procedures are collectively also known as I<imperative routines>.
+Every Muldis D routine is exactly one of these 4 main routine kinds, where
+the 4 kinds are mutually exclusive: C<function>, C<updater>, C<recipe>,
+C<procedure>.  Each of these 4 kinds is very distinct with regards to what
+it conceptually represents or where it may be used, and Muldis D has
+disjoint catalog data types for defining routines of each of the 4 kinds:
+C<Function>, C<Updater>, C<Recipe>, C<Procedure>.  Just functions and
+updaters and recipes are collectively also known as I<atomic routines>;
+just updaters and recipes and procedures are collectively also known as
+I<imperative routines>.
 
-The 3 main routine kinds have some aspects in common.  Every routine,
+The 4 main routine kinds have some aspects in common.  Every routine,
 regardless of kind, is a distinct material of a library, either built-in or
 user-defined, which has its own explicitly defined (name-space qualified)
 name and it is explicitly invokable using that name.  Any routine may be
@@ -1854,22 +1848,26 @@ single nonscalar typed parameter.  Any routine may directly invoke
 functions, and any routine definition may directly embed simple/"opaque"
 value literals.
 
-The 3 main routine kinds have a strict ordered proper subset/superset
+The 4 main routine kinds have a strict ordered proper subset/superset
 relationship with regard to what they can be used to I<do> from a user's
 perspective.  A procedure is all-powerful, and anything that can be done in
-Muldis D at all can be done by invoking a procedure.  An updater's
+Muldis D at all can be done by invoking a procedure.  A recipe's
 capabilities are a proper subset of a procedure's; the most that can be
-accomplished just by invoking an updater is any set of operations that can
+accomplished just by invoking a recipe is any set of operations that can
 be expressed as a single atomic unit of work, and that is completely
-deterministic, and that can be accomplished just with variables or values
-supplied as its arguments.  A function's capabilities are essentially the
+deterministic.  An updater's capabilities are a proper subset of a
+recipe's; the most that can be accomplished just by invoking an updater is
+any set of operations
+that can be accomplished just with variables or values supplied
+as its explicit arguments.  A function's capabilities are essentially the
 same as an updater's but that it is more limited in how it can be invoked.
-A procedure may directly invoke any of the 3 kinds of routines, which is
-the means by which it can I<do> anything they can I<do>; an updater may
+A procedure may directly invoke any of the 4 kinds of routines, which is
+the means by which it can I<do> anything they can I<do>; a recipe may
+directly invoke only recipes or updaters or functions, an updater may
 directly invoke only updaters or functions, and a function may only
 directly invoke functions.
 
-Functions differ from imperative routines (both updaters and procedures)
+Functions differ from imperative routines (updaters, recipes, procedures)
 primarily in regards to how they are invoked and to how they return their
 outputs.  A function, also known as a I<read-only operator>, is the only
 routine kind whose invocation both results in and represents a value of a
@@ -1899,29 +1897,28 @@ conceptually be an anonymous function defined within its parent routine for
 use as a function-valued argument of some other routine call; or to
 implement what is conceptually a self-referencing/cyclic expression.
 
-Procedures differ from atomic/pure routines (both functions and updaters)
-primarily in regards to their difference of capabilities.  A procedure may
-directly see and update global variables (both catalog and data), and is
-the only kind of routine that can; every call chain that is meant to work
-with a persisting (global) dbvar must include a procedure.  In every
-application consisting only of Muldis D code, the "main program" that
-starts a call chain is always a procedure.  An atomic routine can I<not>
-directly see any global variables, and an updater can only update a global
-variable if the updater receives it as a subject to update argument.  A
-procedure's body may have 0..N lexical variables while an atomic routine's
-body may not have any lexical variables.  On the other hand, an atomic
-routine's body may have arbitrarily complex value-expression trees, which
-consist of named nodes whose use by name can ease program writing like
-lexical variables would have, while a procedure's body generally may not
-have any value-expressions (but a procedure may have a few kinds of very
-simple value-expressions in order to save the necessity of subdividing out
-new atomic routines to cover common simple expressions).  Also, every
-routine's parameters are effectively either value-expression nodes or
-lexical variables, even if the routine otherwise has none of those.
+Recipes differ from other kinds of routines (functions, updaters, and
+procedures) primarily in regards to their difference of capabilities.  A
+recipe may directly see and update global variables (both catalog and
+data), and is the only kind of routine that can; every call chain that is
+meant to work with a persisting (global) dbvar must include a recipe.  A
+function, updater, or procedure can I<not> directly see any global
+variables, and an updater can only update a global variable if the updater
+receives it as a subject to update argument.  Actually, the ability to
+directly access global variables is the I<only> distinction between a
+recipe and an updater, besides the latter also being able to invoke
+recipes.  A procedure can only see or update any global variables by
+invoking a recipe to be its proxy for that purpose.
 
+Procedures differ from atomic routines (functions, updaters, and recipes)
+primarily in regards to their difference of capabilities.
 A procedure is allowed to be nondeterministic, meaning that its behaviour
 can be different between multiple executions where all have the same
-arguments and global (database) variable preconditions.  Assuming that the
+arguments and global (database) variable preconditions, and it is the only
+kind of routine that can; every call chain that is meant to do something
+nondeterministic must include a procedure.  In every interactive
+application consisting only of Muldis D code, the "main program" that
+starts a call chain is always a procedure.  Assuming that the
 current in-DBMS process has exclusive access to all of its mounted depots,
 a procedure is nondeterministic iff it invokes, directly or indirectly, a
 system-defined procedure that does something nondeterministic, such as
@@ -1938,9 +1935,30 @@ simply due to matters of timing.  An atomic routine is always deterministic
 because it is forbidden from invoking any nondeterministic routine, which
 all happen to be procedures, and because an atomic routine's execution is
 entirely contained within a single transaction of the highest possible
-isolation level, "serializable".
+isolation level, "serializable".  A procedure that does not have exclusive
+access to its depots can optionally gain back a measure of the determinism
+it would lose just due to that purpose by either being declared as its own
+transaction, or by being invoked within a larger transaction.  Since all
+transactions in Muldis D have serializable isolation, or perhaps it is
+more accurately said that Muldis D has multi-version concurrency control,
+being in a transaction will guarantee a procedure to seeing a consistent
+view of global variables during its run.  A procedure that is neither
+itself a transaction nor is invoked in one will only be guaranteed
+consistency separately within each recipe that it invokes.
 
-An updater invocation is implicitly atomic, and a failure in the middle of
+A procedure's body may have 0..N lexical variables while an atomic
+routine's body may not have any lexical variables.  On the other hand, an
+atomic routine's body may have arbitrarily complex value-expression trees,
+which consist of named nodes whose use by name can ease program writing
+like lexical variables would have, while a procedure's body generally may
+not have any value-expressions (but a procedure may have a few kinds of
+very simple value-expressions in order to save the necessity of subdividing
+out new atomic routines to cover common simple expressions).  Also, every
+routine's parameters are effectively either value-expression nodes or
+lexical variables, even if the routine otherwise has none of those.
+
+An updater or recipe invocation is implicitly atomic, and a failure in the
+middle of
 one will at least rollback any partial update that it may conceptually have
 done.  A function invocation is trivially atomic, since it doesn't
 conceptually update anything.  A procedure invocation is I<not> implicitly
@@ -1967,7 +1985,8 @@ arguments, and they have no side-effects except via their result values.
 The body of an updater is a single statement (plus any support expressions)
 that invokes one or more updaters (recursively down to some system-defined
 variable assignment operator); if invoking several, it is a multi-update
-statement.  Unlike either functions or procedures, which may have zero
+statement.  Unlike either functions, updaters, or procedures, which may
+have zero
 parameters, an updater must have at least one parameter which is subject to
 update (because the only way it can return any output at all is by updating
 said parameters).  The execution of an updater has 3 distinct phases in
@@ -1985,7 +2004,29 @@ expression values to the parameters simultaneously.  There is never any
 situation in an updater execution where a subject to update parameter is
 updated by one of its statements before another one of its statements reads
 from said parameter, so the order of evaluation for statements of a
-multi-update statement of an updater doesn't matter.
+multi-update statement of an updater doesn't matter.  Further to the
+updater's final/only conceptual phase, when both a depot's catalog and data
+dbvars have been simultaneously updated, the only database constraints that
+apply to the new value of the data dbvar are those defined by the new value
+of the corresponding catalog dbvar; neither do the old constraints apply to
+the new data nor do the new constraints apply to the old data.
+
+A recipe is exactly the same as an updater (its body being composed of a
+single possibly multi-update statement), except that it can directly see
+and update global variables, as if the latter were implicit parameters, and
+it also isn't required to have a subject-to-update explicit parameter, but
+instead must have either a subject-to-update explicit parameter I<or> a
+lexical alias for a global variable, through which it yields its output.
+Both updaters and recipes can do data definition plus data manipulation,
+but it is likely that users will prefer to use recipes in the general case
+for their primary database-using codebase because they can potentially
+encode each entire database query or manipulation as a single routine,
+which is what they are likely already used to.  This would leave updaters
+and functions for more generic toolkit or type-connected routines, and
+procedures for just nonatomic or nondeterministic activities.  A recipe or
+updater is not allowed to update both a depot mount control catalog and
+either a depot catalog or data dbvar at once; only a single procedure can
+do this, utilizing multiple sequential/non-concurrent statements.
 
 The body of a procedure consists of 0..N statements which conceptually run
 in sequence (not concurrently).  The database and any procedure lexical
@@ -1993,11 +2034,9 @@ variables do have a distinct (and consistent) state between each of the
 procedure's statements.  Generally speaking, another process may also
 update the database between 2 successive statements of a procedure, and so
 a procedure won't necessarily see the same database over its run unless it
-explicitly either uses a transaction with sufficient isolation, or it
+explicitly either uses a transaction (all of which are serializable), or it
 explicitly employs resource locks, around the relevant block of its
-statements.  But while it may change from external influences, the database
-will always be in a consistent state, as Muldis D always employs at least a
-"read committed" isolation level.  See L</TRANSACTIONS AND CONCURRENCY> for
+statements.  See L</TRANSACTIONS AND CONCURRENCY> for
 more discussion on this matter.
 
 =head2 Emphasis on Purity
@@ -2009,13 +2048,16 @@ value selectors, and the typical numeric, string, and relational operators,
 such that you would compose a typical database "select" query out of.
 System-defined updaters include mainly just the generic C<assign> operator
 plus some relational-assignment short-hands such as C<assign_insertion>.
+System-defined recipes include mainly short-hands for updating the system
+catalog, such as for creating, dropping, or altering types and routines.
 System-defined procedures include mainly just service routines that reach
 outside of the more deterministic DBMS environment in order to do
-non-deterministic things (besides working with depots), such as to initiate
+non-deterministic things, such as to initiate
 I/O of various kinds, or fetch the current date and time, or generate a
 random number.  Similarly to the built-ins, it is highly likely that there
 would be many more user-defined routines that are atomic than those that
-are not.  The vast majority of procedures that exist will be user-defined.
+are not.  The vast majority of recipes or procedures that exist will be
+user-defined.
 
 Muldis D is generally optimized to prefer stateless immutable-value pure
 functional language paradigms over variable-mutating imperative language
@@ -2045,7 +2087,7 @@ writing Muldis D code don't generally have to worry about the details.  A
 Muldis D program should also be easier to analyze statically at compile
 time, so it is easier to prove early on whether it is correct or not, and
 reduce the burden on runtime tests or chance to discover any bugs.  Muldis
-D code should be easier for to write, since programmers can focus more on
+D code should be easier to write, since programmers can focus more on
 the real problem they want to solve and less on avoiding various gotchas.
 A lot of Muldis D code can also be evaluated lazily, so a compiler or
 runtime can recognize that often work doesn't need to be done at all.
@@ -2059,7 +2101,7 @@ the one that performs the database query, and use variables as
 intermediaries to include the date or number in the database query.  Or, if
 converting a "function" from another language that is allowed to have
 side-effects or update its parameters, this will have to at least partially
-be rendered as a procedure or updater in Muldis D.  In practice however,
+be rendered as a procedure or recipe in Muldis D.  In practice however,
 especially if you followed good design practices in the other languages,
 such alterations shouldn't be too common.
 
@@ -2112,7 +2154,8 @@ kinds:  C<NamedValFunc>, C<ValMapFunc>, C<ValMapUFunc>, C<ValFiltFunc>,
 C<ValConstrFunc>, C<TransConstrFunc>, C<ValRedFunc>, C<OrdDetFunc>.
 
 A C<named-value> is a function that is nullary / has exactly zero
-parameters and unconditionally results in the same single value.
+parameters and unconditionally results in the same single value.  This kind
+of function is also called a I<thunk>.
 
 A C<value-map> is a function that has at least 1 parameter, and that 1 is
 named C<topic>.  A C<value-map-unary> is a C<value-map> that is unary / has
@@ -2285,25 +2328,6 @@ L</Ordered Types> pod section in this file for more details.
 
 =head2 Kinds of Procedures
 
-A C<recipe> is a procedure that is conceptually a mid-way point between a
-procedure in general and an updater.  The concept's main purpose is to
-empower writing routines that might otherwise have been written as
-updaters, because they want to be seen as pure and atomic externally, but
-that need to support multiple distinct states in time, such as to perform
-both data definition and data manipulation, which are forbidden to occur
-simultaneously.  A recipe's execution is entirely contained within a single
-transaction of the highest possible isolation level, "serializable", same
-as an atomic routine's is.  A recipe is forbidden from doing anything
-nondeterministic.  A recipe is forbidden from invoking a procedure that
-isn't also a recipe.  The catalog data type C<Recipe>, a proper subtype of
-C<Procedure>, will define any recipe.
-
-B<ACTUALLY, THE CONCEPT OF RECIPE IS NO LONGER NEEDED EXACTLY,
-NOW THAT ALL MULDIS-D VALUES ARE DECLARED BY SYSTEM TYPES,
-SO ORDINARY UPDATER-ROUTINES SHOULD BE ABLE TO DO WHAT RECIPES WERE FOR;
-SO THIS AND RELATED SECTIONS ARE OUTDATED AND NEED TO BE UPDATED/REPLACED;
-ALSO, TRANSACTIONING IS SUPPOSED TO BE MVCC, AND FULLY ISOLATED.>
-
 A C<system-service> is a procedure whose sole purpose is to
 directly reach outside of the more deterministic DBMS
 environment in order to do non-deterministic things (besides working with
@@ -2311,7 +2335,7 @@ depots), such as to initiate I/O of various kinds, or fetch the current
 date and time, or generate a random number.  Invoking a
 C<system-service> can have side-effects outside of the DBMS, but it will
 not alter anything inside the DBMS aside from any of its subject-to-update
-parameters; it can not see any global variables.  A C<system-service> is
+parameters; it can not invoke any recipes.  A C<system-service> is
 forbidden from invoking a procedure that isn't also a C<system-service>.
 The catalog data type C<SystemService>, a proper subtype of C<Procedure>,
 will define any C<system-service>.
@@ -2325,7 +2349,8 @@ single collective name, and one of the routines in the collection is
 dispatched to automatically based on the types of the invocation arguments.
 
 This overloading feature is utilized by way of I<virtual routines>.  A
-Muldis D routine of any kind (function, updater, or procedure), that has at
+Muldis D routine of any kind (function, updater, recipe,
+or procedure), that has at
 least one parameter, is made I<virtual> by declaring that at least 1 of its
 parameters is a I<dispatch parameter>; moreover, said routine definition
 would only define its interface or I<heading> and not its implementation or
@@ -2476,6 +2501,12 @@ serialized by the system; for example, only one process at a time may hold
 a for-update transaction on the same depot.  Speaking in terms of SQL, the
 Muldis D DBMS supports only the serializable transaction isolation level.
 
+To be more accurate, Muldis D uses a multi-versioned concurrency model,
+such that writers don't block waiting for readers to complete, and readers
+always see a consistent view of the database.  Therefore, no resource
+locking is necessary except when there is contention by multiple updaters,
+and possibly not even then if they wouldn't conflict.
+
 Within each thread of execution, conceptually only one thing is happening
 in it at a time; each individual Muldis D statement executes in sequence,
 following the completion or failure of its predecessor.  During the life of
@@ -2501,17 +2532,14 @@ for-update transaction, to ensure that the transaction sees a consistent
 environment during its life.  The lock is a shared lock if the transaction
 only does reading, and it is an exclusive lock if the transaction also does
 writing.  Similar management happens to handle multiple Muldis D internal
-processes.
+processes.  To be more accurate, Muldis D uses multi-versioned concurrency.
 
 The rest of this documentation section is written just within the context
 of a single in-DBMS process, unless explicitly stated otherwise.
 
-No multi-update statement may target both catalog and non-catalog
-variables.  If you want to perform the equivalent of SQL's "alter"
-statement on a relation variable that already contains data, you must have
-separate statements to change the definition of the relation variable and
-change what data is in it, possibly more than one of each; the combination
-can still be wrapped in an explicit transaction for atomicity.
+A single multi-update statement may target both catalog and non-catalog
+variables, as long as there aren't both writes to depot mount control
+variables and either catalog or data variables in a depot.
 
 Transactions can be nested, by starting a new one before concluding a
 previous one, and the parent-most transaction has the final say on whether
@@ -2532,7 +2560,7 @@ and end when that scope is exited; if the scope is exited normally, its
 transaction commits; if the scope terminates early due to a thrown
 exception, its transaction rolls back.  This lexically-scoped mechanism is
 the I<only> kind of explicit transaction that Muldis D code can perform
-(besides using an C<updater> rather than a C<procedure>).
+(besides using an C<updater> or C<recipe> rather than a C<procedure>).
 
 Sometimes, a transaction-comprising procedure will be invoked by way of an
 exception-trapping I<try> control flow statement so that only that
@@ -2559,7 +2587,7 @@ constructs; host language code could easily implement the scope-tied
 paradigm if it wanted to.
 
 An implicit transaction is associated with the lexical scope of every
-Muldis D C<updater> and C<system-service>, and by
+Muldis D C<updater> and C<recipe> and C<system-service>, and by
 extension, every Muldis D statement that is an invocation of said.  Or more
 accurately, an update operation (including a multi-update operation) is
 implicitly atomic, and will either succeed and commit as a whole, or fail

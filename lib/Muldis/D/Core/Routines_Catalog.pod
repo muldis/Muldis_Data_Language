@@ -107,14 +107,21 @@ parameter is optional and defaults as per the C<args> parameter of
 C<func_invo>; the C<upd_args> parameter is non-optional because an updater
 must always be invoked with at least one subject-to-update argument.
 
+=head2 sys.std.Core.Cat.rcp_invo
+
+C<recipe sys.std.Core.Cat.rcp_invo ($recipe : APRecipeNC,
+&$upd_args? : Tuple, $ro_args? : Tuple)>
+
+This recipe is the same as C<sys.std.Core.Cat.upd_invo> but that it
+invokes a recipe rather than an updater, and that C<upd_args> is optional.
+
 =head2 sys.std.Core.Cat.proc_invo
 
 C<procedure sys.std.Core.Cat.proc_invo ($procedure : APProcedureNC,
 &$upd_args? : Tuple, $ro_args? : Tuple)>
 
-This procedure is the same as C<sys.std.Core.Cat.upd_invo> but that it
-invokes a procedure rather than an updater, and
-that C<upd_args> is optional.
+This procedure is the same as C<sys.std.Core.Cat.rcp_invo> but that it
+invokes a procedure rather than an recipe.
 
 =head1 RECIPES FOR WORKING WITH EXCEPTIONS
 
@@ -157,9 +164,9 @@ argument regardless of the values of its arguments.
 
 =head2 sys.std.Core.Cat.noop
 
-C<recipe sys.std.Core.Cat.noop ()>
+C<procedure sys.std.Core.Cat.noop ()>
 
-This recipe has no parameters and doesn't do anything at all.
+This procedure has no parameters and doesn't do anything at all.
 
 =head1 RECIPES FOR BOOTSTRAPPING A MULDIS D PROGRAM OR DATABASE
 
@@ -231,28 +238,29 @@ statement or an Oracle DROP PACKAGE statement.
 
 =head1 Recipes For Defining Depot Routines and Data Types
 
-=head2 sys.std.Core.Cat.create_[function|updater|procedure]
+=head2 sys.std.Core.Cat.create_[function|updater|recipe|procedure]
 
-C<recipe sys.std.Core.Cat.create_[function|updater|procedure]
+C<recipe sys.std.Core.Cat.create_[function|updater|recipe|procedure]
 ($depot : Name, $subdepot? : NameChain, $name : Name,
-$comment? : Comment, $material : [Function|Updater|Procedure])>
+$comment? : Comment, $material : [Function|Updater|Recipe|Procedure])>
 
 This recipe is an abstraction over inserting a tuple into the catalog
-relvar C<fed.cat.mounts{name=$depot}.depot.[function|updater|procedure]s>.
-It will create a new function|updater|procedure, in the depot mounted under
-the name given by the C<depot> argument, whose name and other details match
-the other arguments.  This recipe is analogous to a SQL CREATE
-FUNCTION|PROCEDURE statement.
+relvar
+C<fed.cat.mounts{name=$depot}.depot.[function|updater|recipe|procedure]s>.
+It will create a new function|updater|recipe|procedure, in the depot
+mounted under the name given by the C<depot> argument, whose name and other
+details match the other arguments.  This recipe is analogous to a
+SQL CREATE FUNCTION|PROCEDURE statement.
 
-=head2 sys.std.Core.Cat.drop_[function|updater|procedure]
+=head2 sys.std.Core.Cat.drop_[function|updater|recipe|procedure]
 
-C<recipe sys.std.Core.Cat.drop_[function|updater|procedure]
+C<recipe sys.std.Core.Cat.drop_[function|updater|recipe|procedure]
 ($depot : Name, $subdepot? : NameChain, $name : Name)>
 
-This recipe is an abstraction over deleting a tuple from the catalog
-relvar C<fed.cat.mounts{name=$depot}.depot.[function|updater|procedure]s>.
-It will drop an existing depot function|updater|procedure.  This recipe
-is analogous to a SQL DROP FUNCTION|PROCEDURE statement.
+This recipe is an abstraction over deleting a tuple from the catalog relvar
+C<fed.cat.mounts{name=$depot}.depot.[function|updater|recipe|procedure]s>.
+It will drop an existing depot function|updater|recipe|procedure.  This
+recipe is analogous to a SQL DROP FUNCTION|PROCEDURE statement.
 
 =head2 sys.std.Core.Cat.create_[scalar|tuple|relation|domain|subset|mixin]_type
 

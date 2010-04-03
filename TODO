@@ -40,18 +40,6 @@ implementations over multiple SQL DBMSs.
 
 ----------
 
-* Maybe rename Integer.pod to Integral.pod,
-Text.pod to Textual.pod, Blob.pod to Blobby.pod, etc.
-Or standardize in some other way between mixins and types named after.
-
-* Use terminology like "ordered" versus "ordinal" to distinguish types like
-Rat,Text from Int; "ordinal" naturally supports pred,succ (prev,next)
-operators while "ordered" does not.  All "ordinal" are "ordered" but not
-the reverse.  Making a finite subtype of an infinite ordered type might
-also have the effect of making it ordinal, in some cases.  Add concept of
-"step size" or "quantum" or such to talk about ordinal, which is the basis
-for figuring out all the other ordinal stuff.
-
 * FIRST PRIORITY ...
 Refactor the system type hierarchy to exploit mixins and operator
 overloading / virtual routines ...
@@ -64,8 +52,27 @@ Create the following mixins and group types and ops under them:
         - tps: Boolean, Integer, Order
         - ops: succ/++, pred/--, last, first
 
-* AT SOME POINT ...
-Create the following mixins and group types and ops under them:
+* SECOND PRIORITY ...
+Flesh out the concrete Muldis D syntax for defining whole routines and
+types et al.  But some other spec changes may possibly butt in line before
+this, such as enhancing the system catalog for defining transition
+constraints, or something or other.
+
+----------
+
+* Maybe rename Integer.pod to Integral.pod,
+Text.pod to Textual.pod, Blob.pod to Blobby.pod, etc.
+Or standardize in some other way between mixins and types named after.
+
+* Use terminology like "ordered" versus "ordinal" to distinguish types like
+Rat,Text from Int; "ordinal" naturally supports pred,succ (prev,next)
+operators while "ordered" does not.  All "ordinal" are "ordered" but not
+the reverse.  Making a finite subtype of an infinite ordered type might
+also have the effect of making it ordinal, in some cases.  Add concept of
+"step size" or "quantum" or such to talk about ordinal, which is the basis
+for figuring out all the other ordinal stuff.
+
+* Create the following mixins and group types and ops under them:
     - Boolean :
         - tps: Bool ... and maybe Blobby/Blob (treat logi ops as bitwise)?
         - ops: not/!, and, or, etc
@@ -106,30 +113,8 @@ And these types have these similar ops:
     - Relation :
         - ops: r-has/r∋
 
-* SECOND PRIORITY ...
-Make various updates with respect to adding data types that package
-constraint-defining metadata and payload values that are constrained by
-said metadata.  Make it so that a depot is simply a value of that type,
-which is a database-tuple with 'cat' and 'data' attributes.  Replace or
-supplement the "recipe" / data-definition routines with functions and/or
-updaters (especially functions) that take such data types so that for
-example an ALTER-TABLE-alike is now a function that takes care of the
-schema alterations and corresponding data alterations as one atomic step.
-Further to this, /maybe/ consider merging 'cat' and 'data' in some limited
-way so that at any given level of drilling each namespace's or relvar's
-'cat' is together with its 'data', though more likely this would be
-accomplished with just virtual variables.
-
-* THIRD PRIORITY ...
-Heavily update the transaction specs so that Muldis D DBMSs are
-fundamentally multi-versioned.  See subsequent long TODO item for details.
-Each "version" of a depot conceptually is just a value of that
-database-tuple with 'cat' and 'data' attributes, described in prior item.
-Similarly, a mount-federation conceivably is a single such db-tup val also.
-
-* FOURTH PRIORITY ...
-Update the mixins feature to add support for mixins that define attributes
-that types can compose, whereby we support some approximation of
+* Update the mixins feature to add support for mixins that define
+attributes that types can compose, whereby we support some approximation of
 "specialization by extension" while still actually being just
 "specialization by constraint".
 Maybe also it could be said ...
@@ -152,14 +137,7 @@ This will all take some work to get right; not /all/ Rat/etc can be subst.
 Probably *only* those operators that Rational/etc explicitly declares can
 be delegated to Rat/etc by TAIInstant/etc.
 
-* FIFTH PRIORITY ...
-Flesh out the concrete Muldis D syntax for defining whole routines and
-types et al.  But some other spec changes may possibly butt in line before
-this, such as enhancing the system catalog for defining transition
-constraints, or something or other.
-
-* AT SOME POINT ...
-Actually, all the temporal stuff just needs to be refactored now, as TAI
+* Actually, all the temporal stuff just needs to be refactored now, as TAI
 no longer holds a privileged position.  Moreover, TAI can't actually
 reasonably delegate all of the Rat methods, since for example it doesn't
 make sense to multiply or divide a duration by another one, though you
