@@ -657,6 +657,9 @@ what they describe is generally common to all Muldis D dialects.  The most
 important of those parts are the current B<Basics> file and the
 L<Muldis::D::Core> file.
 
+See also L</SOURCE CODE METADATA> for more details on Muldis D's standard
+support for non-critical Muldis D code metadata.
+
 =head1 TYPE SYSTEM
 
 The Muldis D type system is a formal type system, at least in intent, and
@@ -3494,6 +3497,76 @@ B<Update:>  Unlike with the terse pseudo-variable syntax in general use
 use of referencing data types, the terse syntax may I<also> be used with
 scalar possrep and relation attributes, as described in L</Terse
 Pseudo-Variable Syntax>.
+
+=head1 SOURCE CODE METADATA
+
+The Muldis D system catalog supports the storage of some explicit metadata
+for Muldis D code, which is non-critical in that it has no impact on the
+behaviour of the code, but that rather it would be important to a
+programmer who wishes to have more control over the visual presentation of
+their code, such that said code should be easier for programmers to read
+and update when those presentation details are respected.
+
+In this way, a programmer's code has an improved chance of surviving
+unscathed in all the aspects that matter to them, when it is translated
+between different programming languages by way of Muldis D, or between
+multiple Muldis D formats.  At the very least, when code in any given
+Muldis D dialect is first parsed into the system catalog, subsequent
+generation of code in the same Muldis D dialect from that system catalog
+should much more closely resemble the original in every possible manner.
+
+Arguably, the two most important non-behavioural metadata to preserve are
+code comments and code element ordinal positions.
+
+=head2 Code Comments
+
+Many tuple and relation catalog data types have a special extra attribute
+named C<scm_comment>, a C<Comment> (a character string), which may
+optionally be used to associate an arbitrary piece of human-readable
+descriptive text with a code element represented by a given tuple.  For
+example, the C<Function> catalog type has it, meaning that a general
+overview description of a function can be remembered and guide programmers
+to understanding the function.
+
+A C<scm_comment> value of the empty string is special and means "no
+comment".  It is expected that any complete parser for a standard Muldis D
+dialect I<will> preserve any code comments that it encounters as much as is
+reasonably possible.
+
+=head2 Visible Element Order
+
+Many fundamental parts of Muldis D will identify code elements by name,
+rather than by ordinal position, or all they care about for behaviour's
+sake is representing a set of elements, and the ordinal position of any of
+these elements in the original source code is not considered significant,
+and so any information about that in the natively ordered source code,
+would normally be discarded by the parser.
+
+Many tuple and relation catalog data types have a special extra attribute
+named C<scm_vis_ord>, a C<NNInt> (non-negative integer), which may
+optionally be used to encode the visible ordinal position of the code
+element represented by a given tuple relative to its peers in the original
+source code.  For example, the C<NameTypeMap> catalog type has it, meaning
+that the declared order in a programmer's source code of a list of named
+routine parameters, or of a list of named tuple-type attributes, can be
+preserved in the system catalog, and be used to guide the presented order
+of that list in source code generated from the system catalog.
+
+A C<scm_vis_ord> value of zero is special and means "not applicable"; for
+any code elements whose C<scm_vis_ord> are zero, this means that the
+programmer doesn't consider it important to preserve their relative order;
+only C<scm_vis_ord> values that are C<1> or greater are considered to be
+"applicable" for being ordered.  Note that C<scm_vis_ord> is I<not> a key,
+so multiple sibling code elements can have the same value, in which case
+their relative ordering is implementation-defined or random, and also any
+set of associated C<scm_vis_ord> is not dense, so sibling elements don't
+need to have immediately consecutive values.
+
+To clarify, it is expected that any complete parser for a standard Muldis D
+dialect I<will> set context-distinct non-zero C<scm_vis_ord> values as much
+as is reasonably possible, and that zero values will generally come from
+either situations where a parser finds ordering non-applicable or from
+programmers updating the system catalog at runtime.
 
 =head1 SEE ALSO
 
