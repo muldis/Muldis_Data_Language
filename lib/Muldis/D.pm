@@ -106,11 +106,11 @@ first main implementation of Muldis D.
 
 =head1 VERSIONING
 
-All code written in any variant of Muldis D should begin with meta-data
+All code written in any variant of Muldis D should begin with metadata
 that explicitly states that it is written in Muldis D, and that fully
 identifies what variant of Muldis D it is, so that the code is completely
 unambiguous to both human and machine (eg, implementing) readers of the
-code.  This pod section explains how this meta-data should be formatted,
+code.  This pod section explains how this metadata should be formatted,
 and it is intended to be as future-proofed as possible in the face of a
 wide variety of both anticipated and unforeseen language variants, both by
 the original author and by other parties.
@@ -160,7 +160,7 @@ element; the sub-strings are often bounded by delimiting characters, and
 separated by separating characters.  The string of characters comprising
 this name string would be the first characters in the file, and only
 following them would be the characters for the actual Muldis D code that
-the name is meta-data for.
+the name is metadata for.
 
 With all hosted data variants, the Muldis D code is represented by
 collection-typed values that are of some native type of some other
@@ -243,7 +243,7 @@ corresponding to the spec containing that file.
 The fourth element of the Muldis D language name, at the very least when
 the base authority is C<http://muldis.com>, uniquely identifies which
 Muldis D language primary dialect the Muldis D code (that this
-fully-qualified language name is meta-data for) is formatted in; for
+fully-qualified language name is metadata for) is formatted in; for
 example this may be one of several non-hosted plain-text variants, or one
 of several hosted data variants (each host language has its own ones).
 This fourth element can either be some character string or be a sequence of
