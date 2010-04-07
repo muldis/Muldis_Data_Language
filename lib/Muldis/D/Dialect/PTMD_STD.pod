@@ -643,6 +643,9 @@ Muldis D implementations and older text editors.
 When the C<op_char_repertoire> pragma is C<basic>, then the
 following grammar definitions are in effect:
 
+    <Singleton> ::=
+        <Singleton_payload__op_cr_basic>
+
     <Bool_payload> ::=
         <Bool_payload__op_cr_basic>
 
@@ -690,6 +693,9 @@ and the code is otherwise more terse and arguably appears more attractive.
 
 When the C<op_char_repertoire> pragma is C<extended>, then the
 following grammar definitions are in effect:
+
+    <Singleton> ::=
+        <Singleton_payload__op_cr_extended>
 
     <Bool_payload> ::=
         <Bool_payload__op_cr_extended>
@@ -773,7 +779,8 @@ Grammar:
         | <coll_value_selector>
 
     <opaque_value_literal> ::=
-          <Bool>
+          <Singleton>
+        | <Bool>
         | <Order>
         | <RoundMeth>
         | <Int>
@@ -867,7 +874,8 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         <value_payload>
 
     <value_kind> ::=
-          Bool
+          Singleton
+        | Bool
         | Order
         | RoundMeth
         | Int | NNInt | PInt
@@ -895,7 +903,8 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         <PNSQNameChain_payload>
 
     <value_payload> ::=
-          <Bool_payload>
+          <Singleton_payload>
+        | <Bool_payload>
         | <Order_payload>
         | <RoundMeth_payload>
         | <Int_payload>
@@ -931,11 +940,11 @@ only external metadata of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
 just on C<value_kind>.
 
-For all values of just the 8 data types [C<Bool>, C<Order>,
+For all values of just the 9 data types [C<Singleton>, C<Bool>, C<Order>,
 C<RoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>, C<Comment>], the
 C<value_kind> portion of a GCVL may be omitted for brevity, but the code
 parser should still be able to infer it easily by examining the first few
-characters of the C<value_payload>, which for each of said 8 data types has
+characters of the C<value_payload>, which for each of said 9 data types has
 a mutually uniquely identifying format, which is also distinct from all
 possible C<value_kind>.  Note that omission of C<value_kind> is only
 allowed when the GCVL doesn't include a C<type_name> element.
@@ -952,8 +961,9 @@ and serves as an assertion that the Muldis D value denoted by
 C<value_payload> is a member of the named subtype.  Iff C<value_kind> is
 C<[|DH]Scalar> then C<type_name> is mandatory; otherwise, C<type_name> is
 optional for all C<value>, except that C<type_name> must be omitted when
-C<value_kind> is one of the 2 [C<Bool>, C<Order>]; this isn't because those
-2 types can't be subtyped, but because in practice doing so isn't useful.
+C<value_kind> is one of the 3 [C<Singleton>, C<Bool>, C<Order>]; this isn't
+because those 3 types can't be subtyped, but because in practice doing so
+isn't useful.
 
 How a Muldis D parser treats a C<value> node with a C<type_name> element
 depends on the wider context.  In the general case where the C<value> is an
@@ -983,6 +993,42 @@ C<sys.std.Core.Type.Cat.OVLScaValExprNodeSet>, a tuple of which is what
 every kind of C<opaque_value_literal> node distills to when it is beneath
 the context of a C<depot> node, as it describes some semantics.
 
+=head2 Singleton Literals
+
+Grammar:
+
+    <Singleton> ::=
+        [Singleton ':' <unspace>]?
+        <Singleton_payload>
+
+    <Singleton_payload__op_cr_basic> ::=
+        '-Inf' | Inf
+
+    <Singleton_payload__op_cr_extended> ::=
+          <Singleton_payload__op_cr_basic>
+        | '-∞' | '∞'
+
+A C<Singleton> node represents a value of any of the singleton scalar types
+that C<sys.std.Core.Type.Cat.Singleton> is a union over.
+
+Some of the keywords are aliases for each other:
+
+    keyword | aliases
+    --------+--------
+    -Inf    | -∞
+    Inf     | ∞
+
+These are the singleton types corresponding to the keywords:
+
+    -Inf -> sys.std.Core.Type.Cat."-Inf"
+    Inf  -> sys.std.Core.Type.Cat.Inf
+
+Examples:
+
+    Singleton:-Inf
+
+    ∞
+
 =head2 Boolean Literals
 
 Grammar:
@@ -1006,10 +1052,10 @@ singleton types that the C<Bool> type is defined as a union over.
 
 Some of the keywords are aliases for each other:
 
-    keyword   | aliases
-    ----------+--------
-    False     | ⊥
-    True      | ⊤
+    keyword | aliases
+    --------+--------
+    False   | ⊥
+    True    | ⊤
 
 Examples:
 
@@ -2345,6 +2391,8 @@ Examples:
     MPInterval:{1..10}  # 10 elements #
 
     MPInterval:{1..3,6,8..9}  # 6 elements #
+
+    MPInterval:{-Inf..3,14..21,29..Inf}  # all Int besides {4..13,22..28} #
 
 =head2 Low Level List Selectors
 

@@ -116,6 +116,12 @@ This graph slice shows all of the catalog scalar types:
                         sys.std.Core.Type.Cat.RoundMeth.*
                     sys.std.Core.Type.Cat.RatRoundRule
 
+                    # The following are other singleton types plus a union.
+
+                    sys.std.Core.Type.Cat.Singleton
+                        sys.std.Core.Type.Cat."-Inf"
+                        sys.std.Core.Type.Cat.Inf
+
 This graph slice shows all of the catalog nonscalar types:
 
     sys.std.Core.Type.Universal
@@ -318,7 +324,7 @@ defined as a union type over all system-defined C<DHScalar> types, and just
 those types, for whose values all of the Muldis D standard dialects provide
 "opaque value literal" syntax for:  C<Bool>, C<Int>, C<Rat>, C<Blob>,
 C<Text>, C<Name>, C<NameChain>, C<Comment>, C<Order>,
-C<RoundMeth>, C<RatRoundRule>, C<TAIInstant>, C<TAIDuration>,
+C<RoundMeth>, C<RatRoundRule>, C<Singleton>, C<TAIInstant>, C<TAIDuration>,
 C<UTCInstant>, C<FloatInstant>, C<UTCDuration>.  The C<OVLScalar> type is
 mainly intended to be used as the declared type of some attributes of some
 other system-defined catalog types, as a compact or hard-coded way to
@@ -671,6 +677,34 @@ needed, then C<round_meth> dictates the rounding method.  The default value
 of C<RatRoundRule> specifies a coersion to a whole number using the
 C<HalfEven> rounding method (its radix is 2 and its min exp is 0).  The
 C<RatRoundRule> type does I<not> have a default ordering algorithm.
+
+=head2 sys.std.Core.Type.Cat.Singleton
+
+The C<Singleton> type is explicitly defined as a union type over just the
+system-defined core singleton types which aren't otherwise included in
+another union type specific to a group of singleton types.  C<Singleton>
+only exists as a convenience for concrete Muldis D grammars that want to
+have a group type name for every system-defined opaque value.  C<Singleton>
+currently unions just these 2 types: C<-Inf>, C<Inf>.
+
+=head2 sys.std.Core.Type.Cat."-Inf"
+
+C<-Inf> is a singleton scalar type whose only value represents negative
+infinity.  It is intended for use as a special value in contexts that are
+sensitive to the ordering of a type's values, wherein it can be the
+canonical minimum-most value, and so would be ordered before every other
+possible value of C<Universal> that it might be compared with.  A C<-Inf>
+has 1 system-defined possrep whose name is the empty string and which has
+zero attributes.  The cardinality of this type is 1, and its only value is
+its default and minimum and maximum value.  The only value of C<-Inf> is
+also known as C<-∞>.
+
+=head2 sys.std.Core.Type.Cat.Inf
+
+C<Inf> is a singleton scalar type whose only value represents positive
+infinity.  It is the same as C<-Inf> in every way except it is the
+canonical maximum-most value rather than minimum-most.  The only value of
+C<Inf> is also known as C<∞>.
 
 =head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
 

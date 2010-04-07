@@ -534,12 +534,12 @@ C<DHBag> to be defined partly in terms of it.
 
 =head2 sys.std.Core.Type.SPInterval
 
-An C<SPInterval> (single-piece interval)
-is a C<Tuple>.  It
-defines a single I<bounded interval> or I<finite interval> in terms of 2
+An C<SPInterval> (single-piece interval) is a C<Tuple>.  It typically
+defines a single I<bounded interval>/I<finite interval> in terms of 2
 I<endpoint> values plus an indicator of whether either, both, or none of
-the endpoint values are included in the interval.
-I<COMING SOON: Adding support for unbounded/infinite intervals.>
+the endpoint values are included in the interval.  It can also define an
+I<unbounded interval>/I<infinite interval>, which is accomplished by
+using an infinity for either or both endpoint values.
 
 An C<SPInterval> has these 4 attributes:
 
@@ -585,17 +585,17 @@ C<SPInterval> values that are conceptually empty intervals, and the
 C<is_identical> function should not be used to test an C<SPInterval> for
 being empty or not.
 
-The default value of C<SPInterval> represents an empty interval where its
-C<min> attribute is C<Bool:True> and its other 3 attributes are
-C<Bool:False>.
+The C<SPInterval> type supports I<unbounded>/I<infinite> or I<half-bounded>
+intervals that are orthogonal to data type.  This feature is implemented
+using the 2 special singleton types C<-Inf> and C<Inf>.  Iff C<min> is
+C<-Inf> then the interval is left-unbounded; iff C<max> is C<Inf> then the
+interval is right-unbounded.  An interval that is unbounded on both ends is
+the maximal interval, in that all Muldis D values are members of it, at
+least in the general context lacking any C<order-determination> function.
 
-The C<SPInterval> type has no support for I<unbounded>/I<infinite> or
-I<half-bounded> intervals that is orthogonal to data type.  However, if
-there are any types with their own special values to represent infinities,
-then those special values can be used for endpoints of intervals over those
-types.  I<As of this writing, no system-defined types have values for
-infinities, so only user-defined types would leverage this.  This will
-change very soon, with system-defined generic infinity values coming.>
+The default value of C<SPInterval> represents an empty interval where its
+C<min> and C<max> attributes are C<Inf> and C<-Inf>, respectively, and its
+other 2 attributes are C<Bool:False>.
 
 See also the C<sys.std.Core.Type.MPInterval> type, which is the
 canonical means that Muldis D provides of representing the result of
@@ -759,8 +759,7 @@ C<Bag> and C<DHRelation>.  The cardinality of this type is infinite.
 
 =head2 sys.std.Core.Type.MPInterval
 
-C<MPInterval> (multi-piece interval) is
-a proper subtype of
+C<MPInterval> (multi-piece interval) is a proper subtype of
 C<Relation> that is defined directly partly in terms of the tuple type
 C<SPInterval>, thereby sharing its I<heading>, but defines no further
 constraints of its own.  It defines a single I<multi-piece interval>, which
@@ -775,11 +774,10 @@ cardinality of this type is infinite.
 
 =head2 sys.std.Core.Type.DHMPInterval
 
-C<DHMPInterval> is the intersection
-type of C<MPInterval> and C<DHRelation>.  The cardinality of this type
-is infinite.
+C<DHMPInterval> is the intersection type of C<MPInterval> and
+C<DHRelation>.  The cardinality of this type is infinite.
 
-=head1 GENERIC EXTERNAL TYPES
+=head1 GENERIC EXTERNAL DATA TYPES
 
 =head2 sys.std.Core.Type.External
 
