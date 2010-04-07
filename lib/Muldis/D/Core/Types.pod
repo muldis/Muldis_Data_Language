@@ -194,6 +194,23 @@ To be clear, all of the nonscalar C<DH>-prefixed types except for
 C<DH[Tuple|Relation]> are intersection types of one of the latter two plus
 the same-named types sans the prefix.
 
+This graph slice shows all of the general-purpose system-defined types that
+compose any mixin types, shown grouped under the mixin types that they
+compose:
+
+    sys.std.Core.Type.Universal
+
+        sys.std.Core.Type.Ordered
+
+            sys.std.Core.Type.Rat
+            sys.std.Core.Type.Blob
+            sys.std.Core.Type.Text
+
+            sys.std.Core.Type.Ordinal
+
+                sys.std.Core.Type.Bool
+                sys.std.Core.Type.Int
+
 =head1 MAXIMAL AND MINIMAL DATA TYPES
 
 These core data types are special and are the only Muldis D types (except
@@ -221,6 +238,45 @@ supertype of C<Empty> and C<Empty> is implicitly an intersection type over
 all other types.  It has no default value.  The cardinality of this type is
 zero.  Considering the low-level type system, C<Empty> is
 conceptually the intersection type of just the 2 types C<Int> and C<List>.
+
+=head1 GENERIC MIXIN DATA TYPES
+
+=head2 sys.std.Core.Type.Ordered
+
+The C<Ordered> type is a mixin (union) type that is intended to be
+explicitly composed by all other types that are considered I<ordered>.  An
+ordered type is a type for which one can take all of its values and place
+them on a line such that each value is definatively considered I<before>
+all of the values one one side and I<after> all of the values on the other
+side.  A typical ordered type is a scalar type, but not-scalar types can
+also be ordered.  Almost all system-defined scalar types are also ordered
+types, including: C<Bool>, C<Int>, C<Rat>, C<Blob>, C<Text>.  The
+cardinality of C<Ordered> is infinity.  The default value of C<Ordered> is
+C<Bool:False>.  The minimum and maximum values of C<Ordered> are C<-Inf>
+and C<Inf>, respectively; these 2 values are special singleton scalar types
+that are canonically considered to be before and after, respectively,
+I<every> other value of the Muldis D type system, regardless of whether
+those values are composed into an ordered type.
+
+=head2 sys.std.Core.Type.Ordinal
+
+The C<Ordinal> type is a mixin (union) type that is intended to be
+explicitly composed by all other types that are considered I<ordinal>.  An
+ordinal type is an ordered type for which one can take any one of its
+values and derive a definitive predecessor or successor value, iff the
+initial value isn't the first or last value on the line.  Similarly, one
+can take any two values of an ordinal type and produce an ordered list of
+all of that value's types which are on the line between those two values. 
+The C<Ordinal> type explicitly composes the C<Ordered> mixin type, and so
+every type which explicitly composes C<Ordinal> also implicitly composes
+C<Ordered>.  Just a few system-defined ordered types are also ordinal
+types, including: C<Bool>, C<Int>.  A primary quality of a type that is
+ordered but not ordinal is that you can take any two values of that type
+and then find a third value of that type which lies between the first two
+on the line; by definition for an ordinal type, there is no third value
+between one of its values and that value's predecessor or successor value.
+The cardinality of C<Ordinal> is infinity; its default and minimum and
+maximum values are the same as those of C<Ordered>.
 
 =head1 GENERIC SCALAR DATA TYPES
 
@@ -275,6 +331,8 @@ the only essential general-purpose scalar data type of a generic B<D>
 language, although not the only essential one in Muldis D.
 The default and minimum value of C<Bool> is
 C<False>; its maximum value is C<True>.  The cardinality of this type is 2.
+The C<Bool> type explicitly composes the C<Ordinal> mixin type, and by
+extension also implicitly composes the C<Ordered> mixin type.
 The C<Bool> type has a default ordering algorithm that corresponds directly
 to the sequence in which its values are documented here; C<False> is
 ordered before C<True>.
@@ -302,7 +360,9 @@ have any possreps.  C<Int> is also
 the only atomic type in the Muldis D type system.  The cardinality of
 this type is infinity; to define a most-generalized finite C<Int> subtype,
 you must specify the 2 integer end-points of the inclusive range that all
-its values are in.  The C<Int> type has a default ordering algorithm; for 2
+its values are in.  The C<Int> type explicitly composes the C<Ordinal>
+mixin type, and by extension also implicitly composes the C<Ordered> mixin
+type.  The C<Int> type has a default ordering algorithm; for 2
 distinct C<Int> values, the value closer to negative infinity is ordered
 before the value closer to positive infinity.
 
@@ -365,6 +425,7 @@ specify that the normalized radixes of all their values are either 2 or 10;
 types such as these will easily map exactly to common human or physical
 numeric representations, so they tend to perform better.
 
+The C<Rat> type explicitly composes the C<Ordered> mixin type.
 The C<Rat> type has a default ordering algorithm which is conceptually the
 same as for C<Int>; for 2 distinct C<Rat> values, the value closer to
 negative infinity is ordered before the value closer to positive infinity.
@@ -393,7 +454,8 @@ A C<Blob> is an undifferentiated string of
 bits.  A C<Blob> has 1 system-defined possrep named C<bits> which consists
 of 1 C<BString>-typed attribute whose name is the empty string; each
 element of C<bits> is either C<0> to represent a low bit or C<1> to
-represent a high bit.  A C<Blob> is a simple wrapper for a C<BString> and
+represent a high bit.  The C<Blob> type explicitly composes the C<Ordered>
+mixin type.  A C<Blob> is a simple wrapper for a C<BString> and
 all of its other details such as default and minimum and maximum values and
 cardinality and default ordering algorithm all correspond directly.  But
 C<Blob> is explicitly disjoint from C<BString> due to having a different
@@ -428,7 +490,8 @@ default matching semantics need to be as if it did.  A C<Text> has 1
 system-defined possrep named C<nfd_codes> which consists of 1
 C<UCPString>-typed attribute whose name is the empty string; each element
 of C<nfd_codes> represents a Unicode standard version 5.2.0 character
-abstract codepoint number.  A C<Text> is a simple wrapper for a
+abstract codepoint number.  The C<Text> type explicitly composes the
+C<Ordered> mixin type.  A C<Text> is a simple wrapper for a
 C<UCPString> and all of its other details such as default and minimum and
 maximum values and cardinality and default ordering algorithm (sorting is
 numeric by abstract codepoint number) all correspond directly.  But C<Text>

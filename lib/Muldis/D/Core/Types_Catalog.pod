@@ -247,6 +247,24 @@ used temporarily at runtime:
                 sys.std.Core.Type.Cat.ValRedCFuncNC
                 sys.std.Core.Type.Cat.OrdDetCFuncNC
 
+This graph slice shows all of the catalog types that compose any mixin
+types, shown grouped under the mixin types that they compose:
+
+    sys.std.Core.Type.Universal
+
+        sys.std.Core.Type.Ordered
+
+            sys.std.Core.Type.Cat.String
+            sys.std.Core.Type.Cat.Name
+            sys.std.Core.Type.Cat.NameChain
+            sys.std.Core.Type.Cat.Comment
+
+            sys.std.Core.Type.Ordinal
+
+                sys.std.Core.Type.Cat.Order
+                sys.std.Core.Type.Cat."-Inf"
+                sys.std.Core.Type.Cat.Inf
+
 =head1 LOW-LEVEL STRUCTURE TYPES
 
 These types only exist in the low-level type system, and should not be used
@@ -348,7 +366,8 @@ any possreps.  The cardinality of this type is infinity; to define a
 most-generalized finite C<String> subtype, you must specify a maximum
 length in elements that the subtype's values can have, and you must specify
 the 2 integer end-points of the inclusive range that all its values' C<Int>
-element values are in.  The C<String> type has a default ordering
+element values are in.  The C<String> type explicitly composes the
+C<Ordered> mixin type.  The C<String> type has a default ordering
 algorithm; for 2 distinct C<String> values, their order is determined as
 follows:  First eliminate any identical leading element sequences from both
 strings as those alone would make the strings compare as same (if the
@@ -407,7 +426,8 @@ using just its C<Name>, depending on the context; other times, a
 C<NameChain> must be used instead to also qualify the reference with a
 namespace.  A C<Name> has 1 system-defined possrep whose name is the empty
 string, which has 1 C<Text>-typed attribute whose name is the empty
-string.  A C<Name> is a simple wrapper for a C<Text> and all of its other
+string.  The C<Name> type explicitly composes the C<Ordered> mixin type.
+A C<Name> is a simple wrapper for a C<Text> and all of its other
 details such as default and minimum and maximum values and cardinality and
 default ordering algorithm all correspond directly.  But C<Name> is
 explicitly disjoint from C<Text> due to having a different intended
@@ -434,6 +454,7 @@ infinite-length string) and practically impossible.  The cardinality of
 this type is infinity; to define a most-generalized finite C<NameChain>
 subtype, you must specify a maximum number of sequence elements of its
 values, and each element must be of a finite C<Name> subtype.  The
+C<NameChain> type explicitly composes the C<Ordered> mixin type.  The
 C<NameChain> type has a default ordering algorithm; for 2 distinct
 C<NameChain> values, their order is determined as follows:  First eliminate
 any identical parent-most elements from both chains as those alone would
@@ -581,7 +602,8 @@ routine, except when defining a global-variable-alias in a recipe.
 A C<Comment> (scalar) is the text of a
 Muldis D code comment, which programmers can populate as an attribute of
 several catalog data types, such as whole routines or statements or
-expression nodes.  Every detail of C<Comment>'s representation (its 1
+expression nodes.  The C<Comment> type explicitly composes the
+C<Ordered> mixin type.  Every detail of C<Comment>'s representation (its 1
 possrep, default value and ordering algorithm, etc) is the same as C<Name>
 but it is explicitly disjoint due to having a different intended
 interpretation; it is intended just for commenting Muldis D code.  One main
@@ -602,7 +624,9 @@ main/only arguments, and that function results in an C<Order> value for the
 context to make use of.  The
 default value of C<Order> is C<Same>; its minimum and maximum values are,
 respectively, C<Increase> and C<Decrease>.  The cardinality of this type is
-3.  The C<Order> type has a default ordering algorithm that corresponds
+3.  The C<Order> type explicitly composes the C<Ordinal> mixin type, and by
+extension also implicitly composes the C<Ordered> mixin type.
+The C<Order> type has a default ordering algorithm that corresponds
 directly to the sequence in which its values are documented here;
 C<Increase> is ordered before C<Same>, and C<Same> before C<Decrease>.
 
@@ -697,14 +721,14 @@ possible value of C<Universal> that it might be compared with.  A C<-Inf>
 has 1 system-defined possrep whose name is the empty string and which has
 zero attributes.  The cardinality of this type is 1, and its only value is
 its default and minimum and maximum value.  The only value of C<-Inf> is
-also known as C<-∞>.
+also known as C<-∞>.  C<-Inf> explicitly composes C<Ordinal>.
 
 =head2 sys.std.Core.Type.Cat.Inf
 
 C<Inf> is a singleton scalar type whose only value represents positive
 infinity.  It is the same as C<-Inf> in every way except it is the
 canonical maximum-most value rather than minimum-most.  The only value of
-C<Inf> is also known as C<∞>.
+C<Inf> is also known as C<∞>.  C<Inf> explicitly composes C<Ordinal>.
 
 =head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
 

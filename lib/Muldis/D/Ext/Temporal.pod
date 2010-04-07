@@ -132,7 +132,18 @@ type graph according to their proper sub|supertype relationships:
 
                     sys.std.Temporal.Type.UTCDuration
 
-I<This documentation is pending.>
+This graph slice shows all of the temporal types that compose any mixin
+types, shown grouped under the mixin types that they compose:
+
+    sys.std.Core.Type.Universal
+
+        sys.std.Core.Type.Ordered
+
+            sys.std.Temporal.Type.TAIInstant
+            sys.std.Temporal.Type.TAIDuration
+            sys.std.Temporal.Type.UTCInstant
+            sys.std.Temporal.Type.FloatInstant
+            sys.std.Temporal.Type.UTCDuration
 
 =head1 DATA TYPES FOR TEMPORAL ARTIFACTS
 
@@ -181,7 +192,8 @@ same-named type of Perl 6 (see L<http://perlcabal.org/syn/S02.html> for
 details).  I<Or at least that used to be true; TODO: update this.>
 
 A C<TAIInstant> has 1 system-defined possrep named C<tai_instant> which
-consists of 1 C<Rat>-typed attribute named C<seconds>.  A C<TAIInstant> is
+consists of 1 C<Rat>-typed attribute named C<seconds>.  The C<TAIInstant>
+type explicitly composes the C<Ordered> mixin type.  A C<TAIInstant> is
 a simple wrapper for a C<Rat> and all of its other details such as default
 and minimum and maximum values and cardinality and default ordering
 algorithm all correspond directly.  But C<TAIInstant> is explicitly
@@ -205,7 +217,8 @@ difference between two C<TAIInstant> values, but it is not defined in terms
 of said two values.  The C<TAIDuration> type is intended to have exactly
 the same meaning as the same-named type of Perl 6, as per C<TAIInstant>.  A
 C<TAIDuration> has 1 system-defined possrep named C<tai_duration> which
-consists of 1 C<Rat>-typed attribute named C<seconds>.  A C<TAIDuration> is
+consists of 1 C<Rat>-typed attribute named C<seconds>.  The C<TAIDuration>
+type explicitly composes the C<Ordered> mixin type.  A C<TAIDuration> is
 a simple wrapper for a C<Rat> in all ways as per C<TAIInstant>.  But
 C<TAIDuration> is explicitly disjoint from C<TAIInstant> due to having a
 different intended interpretation.  The C<TAIDuration> type is intended
@@ -260,6 +273,7 @@ subtype, you must specify the earliest and latest dates it includes
 the type as a fraction of a second (minimally, the largest value
 denominator for C<second>).
 
+The C<UTCInstant> type explicitly composes the C<Ordered> mixin type.
 The C<UTCInstant> type has a default ordering algorithm; for 2 distinct
 C<UTCInstant> values, the earlier value is ordered before the later value.
 To make full ordering of C<UTCInstant> values possible and deterministic
@@ -324,6 +338,7 @@ C<UTCInstant>, but that it is not defined against any specific time-zone,
 but rather is floating; you use it when you I<do not know> in what
 time-zone the specified date+time is supposed to refer to (it was just
 I<somewhere>), or when that detail is not significant.  The C<FloatInstant>
+type explicitly composes the C<Ordered> mixin type.  The C<FloatInstant>
 type is disjoint from the C<UTCInstant> type, but all of its details save
 its name and one aspect of its interpretation (representation, cardinality,
 default values, ordering algorithm, etc) are identical.
@@ -365,6 +380,7 @@ be, plus the granularity of the type in fractions of a second; in other
 words, you specify C<seconds> as per a C<Rat> and the other attributes as
 per C<Int>.
 
+The C<UTCDuration> type explicitly composes the C<Ordered> mixin type.
 The C<UTCDuration> type has a default ordering algorithm which is
 structurally the same as for C<UTCInstant>: 1. ordering is done numerically
 one attribute at a time, from the largest units to the smallest; 2. for

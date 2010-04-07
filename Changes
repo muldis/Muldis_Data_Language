@@ -6,6 +6,26 @@
     * Muldis::D version 0.116.0 is released on CPAN as
     Muldis-D-0.116.0.tar.gz.
 
+    * This release partly features the addition of an initial complement of
+    system-defined mixin types, specifically "Ordered" and "Ordinal", where
+    the latter is a more specific example of, and composes, the former.  A
+    type would compose "Ordered" if it is an ordered type, such that you
+    can take all of its values and arrange them on a line in some
+    definitive order where every value can be said is "before" all values
+    on one side and "after" all values on the other side.  A type would
+    compose "Ordinal" if it is an ordinal type, such that between every
+    pair of values there is a known finite count of values between them,
+    and those can be enumerated in order.  Ordered/ordinal types tend to be
+    scalar types, but they don't have to be.  Ordered types like "Bool" and
+    "Int" are also ordinal, while ordered types like "Rat", "Blob", "Text"
+    are not also ordinal.
+STILL TODO:
+    Further to this new feature, various
+    ordered-sensitive functions were refactored, such that we see the first
+    system-defined virtual functions and implementing counterparts; the
+    "ordered" virtual is for all ordered types, and the two "succ|pred"
+    for "ordinal".
+
     * This release partly features large enhancements to the system catalog
     and concrete grammars that improve support for the preservation of
     non-behaviour-impacting metadata in Muldis D source code, such as code
@@ -52,6 +72,21 @@
     new infinity values, as appropriate, as identity values when the
     functions' topic arguments have zero elements, rather than the
     functions failing.
+
+    * (Types.pod, Types_Catalog.pod, Temporal.pod)  In Types.pod, added new
+    main pod section "GENERIC MIXIN DATA TYPES", just prior to "GENERIC
+    SCALAR DATA TYPES", which declares the 2 new mixin types
+    "sys.std.Core.Type.Ord[ered|inal]".  Also updated the descriptions of
+    the 5 scalar types "Bool","Int","Rat","Blob","Text" so that the last 3
+    directly compose the "Ordered" type and the first 2 directly compose
+    the "Ordinal" type (and indirectly the "Ordered" type).  In
+    Types_Catalog.pod, updated the descriptions of the 7 scalar types
+    "String","Name","NameChain","Comment","Order","-Inf", "Inf" so that the
+    first 4 directly compose "Ordered" and the last 3 directly compose
+    "Ordinal".  In Temporal.pod, updated the descriptions of the 5 scalar
+    types "[TAI|UTC|Float]Instant", "[TAI|UTC]Duration" so that they
+    directly compose "Ordered".  In all 3 files, updated "TYPE SUMMARY" to
+    add a graph slice showing types composing mixins grouped by the latter.
 
     * (Scalar.pod)  Updated all of the function signatures having a
     "possrep" parameter so that any other parameters whose declared type
