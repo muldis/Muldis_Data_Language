@@ -18,13 +18,16 @@
     and those can be enumerated in order.  Ordered/ordinal types tend to be
     scalar types, but they don't have to be.  Ordered types like "Bool" and
     "Int" are also ordinal, while ordered types like "Rat", "Blob", "Text"
-    are not also ordinal.
-STILL TODO:
-    Further to this new feature, various
+    are not also ordinal.  Further to this new feature, various
     ordered-sensitive functions were refactored, such that we see the first
     system-defined virtual functions and implementing counterparts; the
-    "ordered" virtual is for all ordered types, and the two "succ|pred"
-    for "ordinal".
+    "order" virtual is for all ordered types,
+TODO ...
+    and the two "pred","succ" for
+    "ordinal".  And so, now "order"/"<=>" in particular is now a properly
+    elegant generic overloaded operator such as any user can make, rather
+    than a special case with specific support in the system catalog.  And
+    "--","++" ("pred","succ") are no longer integer-specific.
 
     * This release partly features large enhancements to the system catalog
     and concrete grammars that improve support for the preservation of
@@ -87,6 +90,33 @@ STILL TODO:
     types "[TAI|UTC|Float]Instant", "[TAI|UTC]Duration" so that they
     directly compose "Ordered".  In all 3 files, updated "TYPE SUMMARY" to
     add a graph slice showing types composing mixins grouped by the latter.
+
+    * (Ordered.pod, Scalar.pod, PTMD_STD.pod, Array.pod, Interval.pod,
+    Tuple.pod, Types_Catalog.pod)  Moved the function
+    "sys.std.Core.Scalar.order" from Scalar.pod to Ordered.pod, in the
+    process renaming it to "sys.std.Core.Ordered.order".  Updated the
+    references to that function in 6 files to use the new name.
+
+    * (Ordered.pod, Types_Catalog.pod, Boolean.pod, Integer.pod,
+    Rational.pod, Blob.pod, Text.pod, Temporal.pod)  In Ordered.pod,
+    redefined the "order" function to specifically say that it is a virtual
+    function; updated its signature to specify this by adding the "@"
+    character to the end of the "topic" and "other" parameters, which
+    designates them as "dispatch params", and having at least one of those
+    is part of how a routine is marked as virtual (besides having no
+    defined routine body); also wrapped "order" in a new main pod section
+    "VIRTUAL FUNCTIONS FOR THE ORDERED MIXIN TYPE", and updated its
+    description.  In Types_Catalog.pod, updated each of the 2 catalog types
+    "[Scalar|Domain]Type" to remove its "order" attribute, since an ordered
+    type no longer specifies its default order-determination function in
+    the type definition itself.  In each of the other 6 files, added a new
+    main pod section "FUNCTIONS IMPLEMENTING VIRTUAL ORDERED FUNCTIONS"
+    which contains one or more functions with "order" unqualified names,
+    each of which has a signature like the virtual "order" but for more
+    specific types, no "@", and "implements sys.std.Core.Ordered.order"
+    appended, which is how the virtual-implementer association is defined;
+    Temporal.pod had 5 "order" functions, for its 5 main types, and the
+    other 5-of-6 files have one "order" function each.
 
     * (Scalar.pod)  Updated all of the function signatures having a
     "possrep" parameter so that any other parameters whose declared type

@@ -3502,7 +3502,7 @@ or none are.  You can not declare a scalar root type at all except
 by using a C<ScalarType>, and you can not define a scalar type
 with an incompletely defined attribute list at all.
 
-A C<ScalarType> has these 8 attributes:
+A C<ScalarType> has these 7 attributes:
 
 =over
 
@@ -3596,23 +3596,6 @@ C<Single>.  Iff C<default> is C<Nothing> and C<base_type> is a C<Single>,
 then the subtype will use the same default value as its base type; but if
 the subtype's value set excludes said value, then a C<default> of
 C<Nothing> is invalid and C<default> must be a C<Single>.
-
-=item C<order> - C<maybe_of.RPFunctionNC>
-
-A scalar root type definition may optionally have a type-default
-total ordering function associated with it (a type being defined as a
-subtype may not); iff the type being defined qualifies and desires such an
-associated function, then C<order> is a C<Single> whose sole element
-matches the invocation name of an C<order-determination> function.  The
-function that this names must have exactly 4 parameters; the
-first two parameters, named C<topic> and C<other>, each have declared types
-that are the same as the scalar root type
-being defined, and this function is said root type's type-default
-ordering function; the third parameter, named C<misc_args>, is
-C<Tuple>-typed; the fourth parameter, named C<is_reverse_order>, is
-C<Bool>-typed; the function's result type must be C<Order>.  Iff
-the type being defined is a subtype of some other type or does not desire
-the function, then C<order> is C<Nothing>.
 
 =back
 
@@ -4448,7 +4431,7 @@ a union/intersection/etc of other types (eg, to define a "Square" when you
 have "Rectangle", "Rhombus"), you have to first define a C<DomainType>,
 and then use that as the base type of a C<ScalarType>.
 
-A C<DomainType> has these 9 attributes:
+A C<DomainType> has these 8 attributes:
 
 =over
 
@@ -4508,28 +4491,6 @@ filter-type-passing values are allowed.
 This matches the invocation name of a C<named-value> function that results
 in the default value of the domain type; it has zero parameters and its
 result type is the same as the domain type being defined.
-
-=item C<order> - C<maybe_of.RPFunctionNC>
-
-A domain type definition, where the domain type is a simple union over just
-singleton scalar root types, may optionally have a type-default
-total ordering function associated with it, iff the singleton types don't
-have their own C<order> defined and no other domain type which declares an
-C<order> ranges over any of those singleton types, in which case the domain
-type is treated as if it were the scalar root type declaring the values of
-the singletons in respect to order-determination semantics;
-iff the domain type being defined qualifies and desires such an
-associated function, then C<order> is a C<Single> whose sole element
-matches the invocation name of an C<order-determination> function.  The
-function that this names must have exactly 4 parameters; the
-first two parameters, named C<topic> and C<other>, each have declared types
-that are the same as the domain type
-being defined, and this function is said domain type's type-default
-ordering function; the third parameter, named C<misc_args>, is
-C<Tuple>-typed; the fourth parameter, named C<is_reverse_order>, is
-C<Bool>-typed; the function's result type must be C<Order>.  Iff
-the type being defined is a subtype of some other type or does not desire
-the function, then C<order> is C<Nothing>.
 
 =back
 
@@ -4755,7 +4716,7 @@ value is a reference to the C<sys.std.Core.Cat.reduce_to_v1> function.
 
 C<OrdDetCFuncNC> is a non-proper subtype of C<CurriedFuncNC> that is
 conceptually a reference to an C<order-determination> function.  Its
-default value is a reference to the C<sys.std.Core.Scalar.order> function.
+default value is a reference to the C<sys.std.Core.Ordered.order> function.
 This type is conceptually intended for use as the declared type of a
 routine parameter that would take the name of an C<order-determination>
 function, but that parameter is optional and should default to the

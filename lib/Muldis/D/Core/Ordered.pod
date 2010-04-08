@@ -27,6 +27,48 @@ typical programming language should have.
 
 I<This documentation is pending.>
 
+=head1 VIRTUAL FUNCTIONS FOR THE ORDERED MIXIN TYPE
+
+Rather than having a whole set of virtual functions for the C<Ordered>
+mixin, such as before/after/min/max/between/etc, we have just the one
+C<order> for each ordered type to implement, and then all the other
+ordered-sensitive routines (before/etc) just take C<order> (or some other
+C<order-determination> function), with a higher-order-function parameter.
+
+=head2 sys.std.Core.Ordered.order
+
+C<< function sys.std.Core.Ordered.order (Order <-- $topic@ : Ordered,
+$other@ : Ordered, $misc_args? : Tuple, $is_reverse_order? : Bool) >>
+
+This virtual (total) C<order-determination> function results in
+C<Order:Same> iff its C<topic> and C<other> arguments are exactly the same
+value, and otherwise it results in C<Order:Increase> if the value of the
+C<other> argument is considered to be an increase (as defined by the
+implementing function) over the value of the C<topic> argument, and
+otherwise it results in C<Order:Decrease> as the reverse of the last
+condition would be true.  This function will fail if its C<topic> and
+C<other> arguments are not values of a common ordered type for which an
+C<order-determination> function is defined that explicitly implements this
+function.  Note that C<order-determination> functions are considered the
+only fundamental order-sensitive operators, and all others are defined over
+them.  This function also has a C<Tuple>-typed third parameter, named
+C<misc_args>, which carries optional customization details for the
+order-determination algorithm; this permits the function to implement a
+choice between multiple (typically similar) ordering algorithms rather than
+just one, which reduces the number of functions needed for supporting that
+choice; if the algorithm is not customizable, then a tuple argument would
+be of degree zero.  This function also has a C<Bool>-typed fourth
+parameter, named C<is_reverse_order>; a C<Bool:False> argument means the
+function's algorithm operates as normal when given any particular 3 other
+arguments (meaning a sorting operation based on it will place elements in
+ascending order), while a C<Bool:True> argument means the function's
+algorithm operates in reverse, so the function results in the reverse
+C<Order> value it would have otherwise when given the same 3 other
+arguments (meaning a sorting operation based on it will place elements in
+descending order).  The C<misc_args> and C<is_reverse_order> parameters are
+optional and default to the zero-attribute tuple and C<Bool:False>,
+respectively, if no explicit arguments are given to them.
+
 =head1 GENERIC ORDERED-SENSITIVE FUNCTIONS FOR ALL DATA TYPES
 
 These are generic operators that are sensitive
@@ -41,8 +83,8 @@ over the C<order-determination> function named in its C<func> argument when
 the latter function is curried by a calling-function-specific
 C<is_reverse_order> argument value.  For any scalar root type's
 type-default order function, the argument for C<func> is
-C<sys.std.Core.Scalar.order>.  Each C<func> parameter is optional and
-defaults to C<sys.std.Core.Scalar.order> if no explicit argument is given
+C<sys.std.Core.Ordered.order>.  Each C<func> parameter is optional and
+defaults to C<sys.std.Core.Ordered.order> if no explicit argument is given
 to it.
 
 =head2 sys.std.Core.Ordered.is_before
