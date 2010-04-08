@@ -69,6 +69,50 @@ descending order).  The C<misc_args> and C<is_reverse_order> parameters are
 optional and default to the zero-attribute tuple and C<Bool:False>,
 respectively, if no explicit arguments are given to them.
 
+=head1 VIRTUAL FUNCTIONS FOR THE ORDINAL MIXIN TYPE
+
+Conceivably, the C<Ordinal> mixin could come with functions like I<first>
+or I<last>, since such are common practice for ordinal types in other
+languages or contexts, to complement the C<pred> and C<succ> functions,
+providing the basis to take an C<Ordinal> type and enumerate all of its
+values.  However, that common practice is generally based in contexts where
+all ordinal types are finite, such as a "32 bit integer" type.  In Muldis
+D, there is no requirement for an C<Ordinal>-composing type to be finite,
+and at least 1 system-defined ordinal type, C<Int>, is instead unlimited,
+and there is no concept of a first or last C<Int> that can be counted from.
+Therefore, C<Ordinal> has no I<first> or I<last>, and if you want to
+enumerate an ordinal type's values, the canonical means to do so is to
+start with that type's I<default> value instead, which the system-defined
+C<default> function provides; starting with the default value, you can
+reach all values of any ordinal Muldis D type eventually, enumerating your
+way to them in sequence using either C<pred> to go earlier and C<succ> to
+go later, for any arbitrary distance along the ordinal type's value line.
+I<In the future, if a finite-ordinal mixin type is deemed useful and is
+created, then actual "first" and "last" functions could be made for it.>
+
+=head2 sys.std.Core.Ordered.Ordinal.pred
+
+C<< function sys.std.Core.Ordered.Ordinal.pred (Ordinal <--
+$topic@ : Ordinal) >>
+
+This virtual function results in the value that precedes its argument, iff
+the argument has a preceding value according to the C<Ordinal>-composing
+type of the argument; otherwise, this virtual function results in the
+singleton value C<-Inf> (negative infinity), which can be tested for to
+know you've run out of values.  Note that this operation is also known as
+C<-->.
+
+=head2 sys.std.Core.Ordered.Ordinal.succ
+
+C<< function sys.std.Core.Ordered.Ordinal.succ (Ordinal <--
+$topic@ : Ordinal) >>
+
+This virtual function results in the value that succeeds its argument, iff
+the argument has a succeeding value according to the C<Ordinal>-composing
+type of the argument; otherwise, this virtual function results in the
+singleton value C<Inf> (positive infinity), which can be tested for to know
+you've run out of values.  Note that this operation is also known as C<++>.
+
 =head1 GENERIC ORDERED-SENSITIVE FUNCTIONS FOR ALL DATA TYPES
 
 These are generic operators that are sensitive
