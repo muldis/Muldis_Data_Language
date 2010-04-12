@@ -1497,7 +1497,7 @@ Grammar:
         <PNSQNameChain_payload>
 
     <PNSQNameChain_payload> ::=
-        '.'? <nc_nonempty>
+        <nc_nonempty>
 
 A C<Name> node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
@@ -1544,8 +1544,8 @@ chain value shorthands while the C<NameChain> node supports none.
 
 Strictly speaking, a Muldis D C<PNSQNameChain> value is supposed to have
 at least 1 element in its sequence, and the first element of any sequence
-must be one of these 6 C<Name> values, which is a top-level namespace:
-C<sys>, C<mnt>, C<fed>, C<nlx>, C<rtn>, C<lex>.  (Actually, C<type> is a
+must be one of these 5 C<Name> values, which is a top-level namespace:
+C<sys>, C<mnt>, C<fed>, C<nlx>, C<rtn>.  (Actually, C<type> is a
 6th option, but that will be treated separately in this discussion.)  In
 the general case, a C<PNSQNameChain_payload> must be written out in full,
 so it is completely unambiguous (and is clearly self-documenting), and it
@@ -1587,36 +1587,7 @@ C<sys.std.Temporal.UTCInstant.fetch_curr_datetime>,
 C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so on.
 In fact, the Muldis D spec itself uses such abbreviations frequently.
 
-The second special case involves any context where a value expression
-(including a parameter) or a variable is being referenced by name, such as
-with an C<expr_name> node.  In such a context, any leading C<lex> element
-may be omitted; when a C<PNSQNameChain_payload>, whose context indicates it
-is a value expression / etc reference, is encountered by the parser, and
-its existing first chain element isn't one of the other 6 top-level
-namespaces, then the parser will assume it is an unqualified chain in the
-C<lex> namespace and will prepend a C<lex> element to it.  So for example a
-C<$foo> is treated as being C<$lex.foo> while a C<$nlx.data.foo> is treated
-as itself.  Furthermore, if such an unqualified chain has more than exactly
-1 element in it, it is further assumed that the chain is referring to an
-attribute of a tuple (or database) typed value expression / etc.
-
-The third special case is an extension to the second special case that
-involves any context where a referenced-by-name value expression / etc has
-the declaration name C<topic>, I<and> C<topic> is tuple (or database)
-typed.  In only such a context, a
-C<PNSQNameChain_payload> may be prefixed with a chain-element-separator /
-period token instead of having a leading (post C<lex> omission) C<topic>
-element; a parser encountering a chain with a leading period will assume
-the chain sans that period is unqualified and will prepend both a C<lex>
-and C<topic> element to it.  So for example a C<$.foo> is treated as being
-C<$lex.topic.foo>.  Note that PTMD_STD doesn't confuse this with the use of
-an empty string chain element because those must always be delimited, so
-C<$"".foo> is still treated as C<$lex."".foo>.  Note that the third special
-case may only be used to reference attributes of C<$lex.topic> (or
-attributes of those, etc), not C<$lex.topic> itself; you still have to use
-C<$topic> for that.
-
-The fourth special case involves any context where a type is being
+The second special case involves any context where a type is being
 referenced using the C<type> namespace prefix feature described in
 L<Muldis::D::Basics/Referencing Data Types>.  In such a context, when the
 namespace prefix contains either of the optional chain elements
@@ -1624,9 +1595,9 @@ C<[|dh_]tuple_from> or
 C<[|dh_][set|maybe|single|array|bag|[s|m]p_interval]_of>, programmers may
 omit the single prefix-leading C<type> chain element.  So for example, one
 can just write C<array_of.Rat> rather than C<type.array_of.Rat>, or
-C<tuple_from.var.lex.myrelvar> rather than
-C<type.tuple_from.var.lex.myrelvar>.  This fourth special case is
-completely orthogonal to which of the 6 normal top-level namespaces is in
+C<tuple_from.var.nlx.myrelvar> rather than
+C<type.tuple_from.var.nlx.myrelvar>.  This second special case is
+completely orthogonal to which of the 5 normal top-level namespaces is in
 use (implicitly or explicitly) by the chain being prefixed, and works for
 all 5 of them.
 
@@ -1645,8 +1616,6 @@ Examples:
     PNSQNameChain:fed.data.the_db.gene.sorted_person_names
 
     PNSQNameChain:fed.data.the_db.stats."samples by order"
-
-    PNSQNameChain:.attr  # same as PNSQNameChain:lex.topic.attr #
 
 =head2 Code Comment Literals
 
@@ -2859,10 +2828,13 @@ Examples:
 Grammar:
 
     <accessor> ::=
-        <acc_via_named> | <acc_via_anon>
+        <acc_via_named> | <acc_via_topic> | <acc_via_anon>
 
     <acc_via_named> ::=
-        <data_sigil> <PNSQNameChain_payload>
+        <data_sigil> <NameChain_payload>
+
+    <acc_via_topic> ::=
+        <data_sigil> '.' <NameChain_payload>
 
     <acc_via_anon> ::=
         <expr> <unspace> '.' <nc_nonempty>
@@ -2870,8 +2842,12 @@ Grammar:
 An C<accessor> node represents an accessor or alias for an attribute of
 another, tuple-valued expression node.  It is interpreted as a tuple of a
 Muldis D C<sys.std.Core.Type.Cat.AccExprNodeSet> value.  If an C<accessor>
-is an C<acc_via_named>, then the C<PNSQNameChain_payload> element specifies
+is an C<acc_via_named>, then the C<NameChain_payload> element specifies
 the C<target> attribute of the new C<AccExprNodeSet>.  If an C<accessor> is
+an C<acc_via_topic>, then it is interpreted in exactly the same manner as
+for an C<acc_via_named> except that the C<NameChain_payload> element is
+interpreted with a C<topic> element prepended to it; so for example a
+C<$.foo> is treated as being C<$topic.foo>.  If an C<accessor> is
 an C<acc_via_anon>, then the C<target> is derived from a catenation of the
 node name that C<expr> has (explicitly or that will be generated for it by
 the parser) with the C<nc_nonempty> in that order.  Note that an
@@ -2882,6 +2858,9 @@ Examples:
 
     # an accessor node of a named tuple-valued node #
     $foo_t.bar_attr
+
+    # an accessor node of a tuple-valued node named "topic" #
+    $.attr  # same as $topic.attr #
 
     # an accessor node of an anonymous tuple-valued node #
     nlx.lib.tuple_res_func( $arg ).quux_attr

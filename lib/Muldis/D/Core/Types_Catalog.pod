@@ -101,7 +101,6 @@ This graph slice shows all of the catalog scalar types:
                                     sys.std.Core.Type.Cat.RPImperativeNC
                                     sys.std.Core.Type.Cat.RPTypeNC
                             sys.std.Core.Type.Cat.DataNC
-                                sys.std.Core.Type.Cat.LexDataNC
                     sys.std.Core.Type.Cat.Comment
                     sys.std.Core.Type.Cat.Order
                         sys.std.Core.Type.Cat.Order.*
@@ -464,7 +463,7 @@ C<PNSQNameChain> (primary namespace
 qualified name chain) is a proper subtype of C<NameChain> where every
 member value's chain starts with one of the following element sequences:
 C<sys.[cat|std|imp]>, C<mnt.cat>, C<fed.[cat|lib|data]>,
-C<nlx[.par]**0..*.[cat|lib|data]>, C<rtn>, C<lex>, C<type>.  I<The
+C<nlx[.par]**0..*.[cat|lib|data]>, C<rtn>, C<type>.  I<The
 definition of the type is actually more restrictive than this, as per the
 balance of the invariant rules of the primary namespaces in question, but
 those aren't detailed here for brevity.>  One can be used to reference a
@@ -555,18 +554,12 @@ C<RelPathMaterialNC> and is analogous to the C<APTypeNC> type.
 C<DataNC> is a proper subtype of
 C<PNSQNameChain> where every member value's chain starts with one of the
 following element sequences: C<sys.cat>, C<mnt.cat>, C<fed.[cat|data]>,
-C<nlx[.par]**0..*.[cat|data]>, C<lex>.  One can be used to reference a
+C<nlx[.par]**0..*.[cat|data]>.  One can be used to reference a
 variable (or pseudo-variable or parameter or named expression or
 statement), either a system-catalog or normal data variable.  Its default
-value is a reference to a lexical parameter or variable named C<lex.topic>.
+value is a reference to the C<sys.cat> catalog relcon.
 I<Conjecture:  Subtypes like C<[Abs|Rel]PathDataNC> might also be defined
 later if we have some situation where such a restriction might be useful.>
-
-=head2 sys.std.Core.Type.Cat.LexDataNC
-
-C<LexDataNC> is a proper subtype of C<DataNC> where every member value's
-chain starts with C<lex>.  One is used for every data reference by a
-routine, except when defining a global-variable-alias in a recipe.
 
 =head2 sys.std.Core.Type.Cat.Comment
 
@@ -724,10 +717,10 @@ system-defined entities as a whole.
 
 =item C<namespaces> - C<SysNspSet>
 
-These are all the system-defined namespaces where DBMS entities may live,
-or that otherwise always exist due to being system-defined.  Specifically,
-it declares these 19 standard language namespaces:
-C<[sys|mnt|fed|nlx|rtn|lex]> (which have the nameless global
+These are all the system-defined namespaces where not-lexical DBMS entities
+may live, or that otherwise always exist due to being system-defined.
+Specifically, it declares these 18 standard language namespaces:
+C<[sys|mnt|fed|nlx|rtn]> (which have the nameless global
 root namespace as their parent, spelled as the empty C<NameChain>
 value, that isn't also declared here), C<sys.[cat|std|imp]>,
 C<mnt.cat>, C<[fed|nlx].[cat|lib|data]>, C<sys.std.Core>,
@@ -2113,7 +2106,7 @@ attribute.  Its default value is empty.
 An C<AccExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node is an accessor or alias for an attribute
 of another, tuple-valued expression node, or is simply an alias for another
-expression node, defined in terms of a C<LexDataNC>.
+expression node, defined in terms of a C<NameChain>.
 
 An C<AccExprNodeSet> has these 4 attributes:
 
@@ -2132,7 +2125,7 @@ This is an optional programmer comment about the expression (leaf) node.
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<target> - C<LexDataNC>
+=item C<target> - C<NameChain>
 
 This is the fully-qualified invocation name of the expression node, or
 attribute thereof if it is tuple-valued, being accessed or aliased.
@@ -2857,7 +2850,7 @@ This is the declared name of the statement node.
 
 This is an optional programmer comment about the statement (leaf) node.
 
-=item C<target> - C<LexDataNC>
+=item C<target> - C<Name>
 
 This is name of the local parameter or variable that will have the newly
 selected scalar value assigned to it.
@@ -2964,7 +2957,7 @@ This is the declared name of the statement node.
 
 This is an optional programmer comment about the statement (leaf) node.
 
-=item C<target> - C<LexDataNC>
+=item C<target> - C<Name>
 
 This is name of the local parameter or variable that will have the result
 value of the function invocation assigned to it.
@@ -3039,7 +3032,7 @@ An C<IISArgVarMap> is a C<DHRelation>.  It defines a set of argument names,
 with a declared local or global variable (or parameter or pseudo-variable)
 name for each.  It is used to define argument lists for routine invocations
 by procedures.  An C<IISArgVarMap> has 2 attributes, C<arg> (a C<Name>) and
-C<var> (a C<LexDataNC>); the C<arg> is the name of the routine argument,
+C<var> (a C<Name>); the C<arg> is the name of the routine argument,
 and comprises a unary key; the C<var> is the invocation name of the
 variable (or parameter or pseudo-variable) which defines the value for the
 argument.  Its default value has zero tuples.
@@ -3140,7 +3133,7 @@ attribute.  Its default value is empty.
 
 An C<IfThenVarStmtMap> is a C<DHTuple>.  It defines an element of an
 if-else sequential statement.  An C<IfThenVarStmtMap> has 2 attributes,
-C<if> (a C<LexDataNC>) and C<then> (a C<Name>); C<if> has the name of a
+C<if> (a C<Name>) and C<then> (a C<Name>); C<if> has the name of a
 local or global variable (or parameter), and C<then> has the name of a
 statement node.  The C<if> node is the conditional result variable name; if
 that conditional result is C<Bool:True>, then the C<then> statement node is
@@ -3168,7 +3161,7 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<given> - C<LexDataNC>
+=item C<given> - C<Name>
 
 This is name of the local parameter or variable that supplies the single
 operand value that is common to all the conditions; it is the control value
@@ -3199,7 +3192,7 @@ attribute.  Its default value is empty.
 
 A C<WhenThenVarStmtMap> is a C<DHRelation>.  It defines a set of dispatch
 options for a given-when-default statement.  A C<WhenThenVarStmtMap> has 2
-attributes, C<when> (a C<LexDataNC>) and C<then> (a C<Name>); C<when> has
+attributes, C<when> (a C<Name>) and C<then> (a C<Name>); C<when> has
 the name of a local or global variable (or parameter), and C<then> has the
 name of a statement node.  The C<when> node is the not-common / distinct
 operand for each condition.  If a C<when> value is matched, then the
@@ -3295,7 +3288,7 @@ This is the declared name of the statement node.
 
 This is an optional programmer comment about the statement leaf node.
 
-=item C<target> - C<LexDataNC>
+=item C<target> - C<Name>
 
 This is name of the local parameter or variable that will have the newly
 selected C<AbsPathMaterialNC> value assigned to it.
@@ -4469,12 +4462,11 @@ parameter) name for each.  It is used to define collection literals; one
 C<NameExprMap> defines a whole C<Tuple> value.  It is also used to define
 argument lists for routine invocations by functions or updaters or recipes.
 A C<NameExprMap> has 3 attributes, C<name> and C<expr>, each of those being
-a C<Name>, and C<scm_vis_ord> (a
-C<NNInt>); the C<name> is the name of the tuple/etc attribute or routine
-argument, and comprises a unary key; the C<expr> is the declared local name
-(in the C<lex> namespace) of the expression node (or parameter or variable)
-which defines the value for the attribute or argument.  Its default value
-has zero tuples.
+a C<Name>, and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of the
+tuple/etc attribute or routine argument, and comprises a unary key; the
+C<expr> is the declared lexical name of the expression node (or parameter
+or variable) which defines the value for the attribute or argument.  Its
+default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.NameNCMap
 

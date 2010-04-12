@@ -2859,6 +2859,10 @@ This is the hierarchy of invocation namespaces of DBMS entities:
                     nlx[.par]**0..*.lib[.chi-nlx-nsp]**0..*.<material>
             nlx[.par]**0..*.data  # upd db of normal user data in this nsp
     rtn  # entities in a possib-anon-declared rtn can ref that rtn w this
+
+Conceptually speaking, there is also this, but not actually; see
+L</Lexical Entities> for an explanation:
+
     lex  # entities in a rtn ref own lexical params|exprs|vars with this
         lex.<param>
         lex.<expr>
@@ -3051,9 +3055,37 @@ by the compiler rather than explicitly by the programmer.  For a routine
 whose name, C<foo>, is explicitly chosen by the programmer, saying C<rtn>
 in that routine is an alias for saying C<nlx.lib.foo>.
 
+=head2 Lexical Entities
+
 The C<lex> primary namespace refers to entities within
 the same private lexical scope as the referencer.  Variables
 under C<lex> only are allowed to be of any data type, not just be relvars.
+
+The C<lex> primary namespace is very different in practice from all of the
+other primary namespaces, because all contexts where a lexical entity may
+be referenced are disjoint from all contexts where a not-lexical entity may
+be referenced, and so all references to lexical entities are actually never
+qualified with C<lex> because that would be completely redundant, while in
+general any references to not-lexical entities must be qualified with their
+appropriate primary namespace because they may be ambiguous otherwise as to
+which other primary namespace is relevant per context.
+
+To be specific, the prior paragraph reflects the design of the Muldis D
+system catalog plus all of the standard dialects.  For code in the system
+catalog or in a standard dialect, the syntax for referencing a variable
+(read that as parameter or variable or named expression or statement) is
+different from that for referencing a routine or type, and all lexical
+entities are variables, and the only way a routine can reference a
+not-lexical variable is with a third special syntax, which defines an alias
+for that not-lexical which is a lexical variable.
+
+But it is possible, in the general case, that a Muldis D dialect might use
+common syntax for referencing lexical and not-lexical variables, such as
+one that doesn't employ user-visible aliasing of globals to lexicals, in
+which case they would probably find explicit C<lex> qualification useful.
+
+Therefore, any documentation that happens to use a C<lex> qualifier just is
+being more clear as to what is referred to for the general case.
 
 =head2 Conceptions and Requirements
 
@@ -3444,7 +3476,7 @@ but for 1 possible extra element following those.
 The grammatically simplest scenario is taking the declared type of a
 scalar variable or pseudo-variable, which takes the form C<<
 type.var[.<path-elem-to-var>]**1..*[.<path-elem-to-attr>]**0..* >>, for
-example C<type.var.lex.myvar>.  A similar scenario is taking the declared
+example C<type.var.nlx.myvar>.  A similar scenario is taking the declared
 type of an attribute of a distinct type entity, which takes the form C<<
 type.type[.<path-elem-to-type>]**1..*[.<path-elem-to-attr>]**1..* >>, for
 example C<type.type.nlx.lib.mytyp.myattr>.  A similar scenario is taking

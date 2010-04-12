@@ -22,7 +22,8 @@
     have to be done anyway, and the latter will now just be the only tests,
     and sufficient themselves.  In Types_Catalog.pod, merged the 2 nearly
     identical catalog types "Multi[Upd|Rcp]InvoStmt" into the 1
-    "MultiUpdStmt", and the 3 "[Upd|Rcp|Proc]InvoStmtNodeSet" into the 1
+    "MultiUpdStmt" (which is also a reversal of one aspect of release
+    0.115.0), and the 3 "[Upd|Rcp|Proc]InvoStmtNodeSet" into the 1
     "ImpInvoStmtNodeSet", and the 6 "[A|R]P[Updater|Recipe|Procedure]NC"
     into the 2 "[A|R]PImperativeNC".  Also updated the catalog type
     "Recipe" to merge its 2 attributes "stmt_part_[upd|rcp]" into the 1
@@ -30,6 +31,48 @@
     attributes "[upd|rcp|proc]_invo_stmts" into the 1 "imp_invo_stmts".  In
     Routines_Catalog.pod, merged the 3 routines "[upd|rcp|proc]_invo" into
     the 1 "imp_invo".
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  In all 3 STD.pod, updated the
+    "DBMS Entity Name Literals" pod sub-section to remove the special case
+    of a "PNSQNameChain" value node kind where it might be interpreted with
+    a "topic" chain element prepended.  In the 2 Perl-STD, this shorthand
+    is now just gone and you'll have to write "topic.attr" rather than
+    ".attr".  In PTMD_STD, also updated the "Generic Expression Attribute
+    Accessors" pod sub-section to add a variant of the acc-via-named format
+    that restores the "topic"-prepending shorthand which was removed from
+    PNSQNameChain, but for PTMD_STD only.  Considering other recent spec
+    changes, an attribute-accessor is the *only* place where ".attr" could
+    have been used anyway.
+
+    * (Types_Catalog.pod)  Updated the catalog type "DataNC" to change its
+    default value from "lex.topic" to "sys.cat" (which is also a reversal
+    of one aspect of release 0.115.0).
+
+    * (Basics.pod, Types_Catalog.pod, PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)
+    Further simplified the system catalog and all standard grammars by
+    eliminating completely the "lex" primary entity namespace as something
+    that is actually used in entity references in code.  Release 0.115.0
+    had mostly put the nails in its coffin and the current release is
+    basically cleaning up and removing the last vestiges, because "lex" is
+    now completely redundant for actual use, as any context that lets you
+    reference a lexical entity can't reference anything but a lexical
+    entity, and likewise for not-lexical entities.  In Basics.pod, split
+    the pod sub-section "User-Defined Entities" in 2, with the last
+    paragraph, about "lex", forming a new pod sub-section "Lexical
+    Entities", which was then expanded to explain that "lex" is now just a
+    concept and is no longer actually useable in code; similarly updated
+    the namespace graph under "ENTITY NAMES".  In Types_Catalog.pod,
+    removed the catalog type "LexDataNC", and updated each catalog type
+    having an attribute of "LexDataNC" so that said attribute's declared
+    type is now "Name" instead, except for just "AccExprNodeSet" where its
+    "target" attribute is now a "NameChain" instead.  Also updated each of
+    the 3 catalog types "PNSQNameChain", "DataNC", "SysNspSet" to remove
+    "lex[|.*]" from its value list.  In all 3 STD.pod, updated the
+    "PNSQNameChain" value node kind to remove "lex.*" from its value list,
+    and remove the special shorthand syntax where it might be interpreted
+    with a "lex" chain element prepended.  Also updated the
+    "AccExprNodeSet" node kind to change its last element's kind from
+    "PNSQNameChain" to "NameChain".
 
 2010-04-07  Darren Duncan <darren@DarrenDuncan.net>
 
