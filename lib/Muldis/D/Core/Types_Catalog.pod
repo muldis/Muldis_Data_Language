@@ -94,15 +94,11 @@ This graph slice shows all of the catalog scalar types:
                                 sys.std.Core.Type.Cat.AbsPathMaterialNC
                                     sys.std.Core.Type.Cat.APNonTypeNC
                                         sys.std.Core.Type.Cat.APFunctionNC
-                                        sys.std.Core.Type.Cat.APUpdaterNC
-                                        sys.std.Core.Type.Cat.APRecipeNC
-                                        sys.std.Core.Type.Cat.APProcedureNC
+                                        sys.std.Core.Type.Cat.APImperativeNC
                                     sys.std.Core.Type.Cat.APTypeNC
                                 sys.std.Core.Type.Cat.RelPathMaterialNC
                                     sys.std.Core.Type.Cat.RPFunctionNC
-                                    sys.std.Core.Type.Cat.RPUpdaterNC
-                                    sys.std.Core.Type.Cat.RPRecipeNC
-                                    sys.std.Core.Type.Cat.RPProcedureNC
+                                    sys.std.Core.Type.Cat.RPImperativeNC
                                     sys.std.Core.Type.Cat.RPTypeNC
                             sys.std.Core.Type.Cat.DataNC
                                 sys.std.Core.Type.Cat.LexDataNC
@@ -199,16 +195,13 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
                 sys.std.Core.Type.Cat.WhenThenExprMap
                 sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet
-                sys.std.Core.Type.Cat.MultiUpdInvoStmt
+                sys.std.Core.Type.Cat.MultiUpdStmt
                 sys.std.Core.Type.Cat.RcpGlobalVarAliasMap
-                sys.std.Core.Type.Cat.MultiRcpInvoStmt
                 sys.std.Core.Type.Cat.OVLScaValStmtNodeSet
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
                 sys.std.Core.Type.Cat.CompoundStmtNodeSet
                 sys.std.Core.Type.Cat.FuncInvoStmtNodeSet
-                sys.std.Core.Type.Cat.UpdInvoStmtNodeSet
-                sys.std.Core.Type.Cat.RcpInvoStmtNodeSet
-                sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
+                sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
                 sys.std.Core.Type.Cat.IISArgVarMap
                 sys.std.Core.Type.Cat.TryCatchStmtNodeSet
                 sys.std.Core.Type.Cat.IfElseStmtNodeSet
@@ -520,22 +513,10 @@ C<APFunctionNC> is a non-proper subtype
 of C<APNonTypeNC>.  Its default value is a reference to the
 C<sys.std.Core.Universal.is_identical> function.
 
-=head2 sys.std.Core.Type.Cat.APUpdaterNC
+=head2 sys.std.Core.Type.Cat.APImperativeNC
 
-C<APUpdaterNC> is a non-proper subtype
-of C<APNonTypeNC>.  Its default value is a reference to the
-C<sys.std.Core.Universal.assign> updater.
-
-=head2 sys.std.Core.Type.Cat.APRecipeNC
-
-C<APRecipeNC> is a non-proper subtype of C<APNonTypeNC>.  Its default value
-is a reference to the C<sys.std.Core.Cat.fail> recipe.
-
-=head2 sys.std.Core.Type.Cat.APProcedureNC
-
-C<APProcedureNC> is a non-proper subtype
-of C<APNonTypeNC>.  Its default value is a reference to the
-C<sys.std.Core.Cat.noop> procedure.
+C<APImperativeNC> is a non-proper subtype of C<APNonTypeNC>.  Its default
+value is a reference to the C<sys.std.Core.Universal.assign> updater.
 
 =head2 sys.std.Core.Type.Cat.APTypeNC
 
@@ -559,20 +540,10 @@ invoked directly when both the invoker and invoked are in the same depot.
 C<RPFunctionNC> is a non-proper subtype
 of C<RelPathMaterialNC> and is analogous to the C<APFunctionNC> type.
 
-=head2 sys.std.Core.Type.Cat.RPUpdaterNC
+=head2 sys.std.Core.Type.Cat.RPImperativeNC
 
-C<RPUpdaterNC> is a non-proper subtype
-of C<RelPathMaterialNC> and is analogous to the C<APUpdaterNC> type.
-
-=head2 sys.std.Core.Type.Cat.RPRecipeNC
-
-C<RPRecipeNC> is a non-proper subtype
-of C<RelPathMaterialNC> and is analogous to the C<APRecipeNC> type.
-
-=head2 sys.std.Core.Type.Cat.RPProcedureNC
-
-C<RPProcedureNC> is a non-proper subtype
-of C<RelPathMaterialNC> and is analogous to the C<APProcedureNC> type.
+C<RPImperativeNC> is a non-proper subtype of C<RelPathMaterialNC> and is
+analogous to the C<APImperativeNC> type.
 
 =head2 sys.std.Core.Type.Cat.RPTypeNC
 
@@ -2459,7 +2430,7 @@ determine which other updater, that explicitly implements this virtual
 one, is automatically dispatched to.  Each element of C<dispatch_params>
 must match a parameter name in C<upd_params> or C<ro_params>.
 
-=item C<implements> - C<set_of.RPUpdaterNC>
+=item C<implements> - C<set_of.RPImperativeNC>
 
 Iff C<implements> is nonempty then this updater is explicitly declaring
 that it implements the other (typically just one), virtual updaters named
@@ -2474,7 +2445,7 @@ This defines the expression trees that are arguments to the update
 operators that C<stmt> invokes.  These expression trees must reference all
 of the read-only parameters that the update operator has.
 
-=item C<stmt> - C<MultiUpdInvoStmt>
+=item C<stmt> - C<MultiUpdStmt>
 
 This defines the entire body of the updater, which is composed of
 a single multi-update statement.  This multi-update statement must
@@ -2492,30 +2463,30 @@ attributes of C<exprs>.  Its default value has 1 subject-to-update,
 non-optional parameter whose name is C<topic> and whose declared type is
 C<Bool>; it has zero read-only parameters; it has no specified I<body>.
 
-=head2 sys.std.Core.Type.Cat.MultiUpdInvoStmt
+=head2 sys.std.Core.Type.Cat.MultiUpdStmt
 
-A C<MultiUpdInvoStmt> is a C<DHRelation> that specifies a multi-update
+A C<MultiUpdStmt> is a C<DHRelation> that specifies a multi-update
 statement (of 1..N variables), which is the narrowest scope implicitly
 atomic component of procedural Muldis D code.  It is the most fundamental
 component of procedural Muldis D code.  The variables being updated are
 accessed via the host updater's or recipe's subject-to-update parameters
 (or via the host updater's lexical-alias variables).  All
 arbitrarily complex Muldis D value assignments, including relational
-assignments, are composed of just C<MultiUpdInvoStmt>, either directly, or
+assignments, are composed of just C<MultiUpdStmt>, either directly, or
 indirectly by way of updater or recipe invocations, as each updater and
 recipe body is itself composed entirely of 1 multi-update statement (plus
 supporting value expressions).  Only updaters and recipes may contain
-C<MultiUpdInvoStmt>, so for any procedures that would conceptually include
+C<MultiUpdStmt>, so for any procedures that would conceptually include
 them, those portions of the procedures need to be separated out and
 encapsulated by named updaters or recipes.  Each tuple of a multi-update
 statement is a single update statement, which represents a single
-invocation of an updater.  C<MultiUpdInvoStmt> itself has no restriction on
-the
-number of tuples it consists of, but:  At least 1 tuple is required iff the
-multi-update statement is composed into a specified updater body; otherwise
-there must be only be zero tuples for an unspecified updater body.
+invocation of an updater or recipe.  C<MultiUpdStmt> itself has no
+restriction on the number of tuples it consists of, but:  At least 1 tuple
+is required iff the multi-update statement is composed into a specified
+updater or recipe body; otherwise there must be only be zero tuples for an
+unspecified updater or recipe body.
 
-A C<MultiUpdInvoStmt> has these 5 attributes:
+A C<MultiUpdStmt> has these 5 attributes:
 
 =over
 
@@ -2530,13 +2501,14 @@ This is the visible order of this single update statement relative to all
 of its sibling statements, or non-nested expression nodes, of its host
 updater's or recipe's multi-update statement.
 
-=item C<updater> - C<MaterialNC>
+=item C<imperative> - C<MaterialNC>
 
-This is the name of the updater being invoked.
+This is the name of the updater or recipe being invoked.
 
 =item C<upd_args> - C<NameExprMap>
 
 These are the 1..N subject-to-update arguments to the updater
+invocation, or the 0..N subject-to-update arguments to the recipe
 invocation, as-per C<ro_args>.  But since each expression tree in
 C<upd_args> is binding to a subject-to-update parameter, the expression
 tree actually is defining a pseudo-variable / virtual-variable over 1..N
@@ -2545,14 +2517,14 @@ trivial (and common) case, the parameter is referenced directly.
 
 =item C<ro_args> - C<NameExprMap>
 
-These are the 0..N read-only arguments to the updater invocation.
+These are the 0..N read-only arguments to the updater or recipe invocation.
 Each element defines one argument value, with the element C<name> matching
 the invoked routine's parameter name, and the element C<expr> naming a
 local expression node (or parameter) which defines the value.
 
 =back
 
-C<MultiUpdInvoStmt> has a distributed primary key over the C<name>
+C<MultiUpdStmt> has a distributed primary key over the C<name>
 attributes of C<upd_args> and C<ro_args>.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.Recipe
@@ -2570,10 +2542,10 @@ optional iff the C<Recipe> is embedded in a C<System>, because often the
 implementations of system-defined routines are not defined in terms of
 other Muldis D routines.
 
-A C<Recipe> has these 11 attributes, of which the 7 C<upd_params>,
+A C<Recipe> has these 10 attributes, of which the 7 C<upd_params>,
 C<ro_params>, C<opt_params>, C<dispatch_params>, C<implements>,
-C<upd_globals>, C<ro_globals> define the I<heading> and the 3 C<exprs>,
-C<stmt_part_upd>, C<stmd_part_rcp> define the I<body>:
+C<upd_globals>, C<ro_globals> define the I<heading> and the 2 C<exprs>,
+C<stmt> define the I<body>:
 
 =over
 
@@ -2605,7 +2577,7 @@ determine which other recipe, that explicitly implements this virtual
 one, is automatically dispatched to.  Each element of C<dispatch_params>
 must match a parameter name in C<upd_params> or C<ro_params>.
 
-=item C<implements> - C<set_of.RPRecipeNC>
+=item C<implements> - C<set_of.RPImperativeNC>
 
 Iff C<implements> is nonempty then this recipe is explicitly declaring
 that it implements the other (typically just one), virtual recipes named
@@ -2630,17 +2602,11 @@ This defines the expression trees that are arguments to the update
 operators that C<stmt> invokes.  These expression trees must reference all
 of the read-only parameters that the update operator has.
 
-=item C<stmt_part_upd> - C<MultiUpdInvoStmt>
+=item C<stmt> - C<MultiUpdStmt>
 
-This defines one of two parts of the entire body of the recipe, which is
-composed of a single multi-update statement; C<stmt_part_upd> specifies any
-invocations of updaters.  This multi-update statement must reference all of
-the parameters that the recipe has.
-
-=item C<stmt_part_rcp> - C<MultiRcpInvoStmt>
-
-This defines the other of two parts of the entire body of the recipe,
-specifically any invocations of recipes.
+This defines the entire body of the recipe, which is composed of
+a single multi-update statement.  This multi-update statement must
+reference all of the parameters and global-aliases that the recipe has.
 
 =back
 
@@ -2666,55 +2632,6 @@ C<name> (a C<Name>), C<global> (a C<DataNC>), C<scm_comment> (a
 C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of
 the lexical alias, and comprises a unary key; the C<global> is the
 invocation name of the global variable.  Its default value has zero tuples.
-
-=head2 sys.std.Core.Type.Cat.MultiRcpInvoStmt
-
-A C<MultiRcpInvoStmt> is a C<DHRelation> that specifies a multi-update
-statement that is composed into a specified recipe body.  It is the same as
-a C<MultiUpdInvoStmt> except that tuple of a multi-update statement
-represents a single invocation of a recipe rather than an updater.
-
-A C<MultiRcpInvoStmt> has these 5 attributes:
-
-=over
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the single update statement as
-a whole.
-
-=item C<scm_vis_ord> - C<NNInt>
-
-This is the visible order of this single update statement relative to all
-of its sibling statements, or non-nested expression nodes, of its host
-updater's or recipe's multi-update statement.
-
-=item C<recipe> - C<MaterialNC>
-
-This is the name of the recipe being invoked.
-
-=item C<upd_args> - C<NameExprMap>
-
-These are the 0..N subject-to-update arguments to the recipe invocation,
-as-per C<ro_args>.  But since each expression tree in C<upd_args> is
-binding to a subject-to-update parameter, the expression tree actually is
-defining a pseudo-variable / virtual-variable over 1..N
-statement-containing-recipe subject-to-update parameters or lexical
-variable-aliases; in the most trivial (and common) case, the parameter or
-lexical variable-alias is referenced directly.
-
-=item C<ro_args> - C<NameExprMap>
-
-These are the 0..N read-only arguments to the recipe invocation.  Each
-element defines one argument value, with the element C<name> matching the
-invoked routine's parameter name, and the element C<expr> naming a local
-expression node (or parameter or lexical variable-alias) which defines the
-value.
-
-=back
-
-C<MultiRcpInvoStmt> has a distributed primary key over the C<name>
-attributes of C<upd_args> and C<ro_args>.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.Procedure
 
@@ -2767,7 +2684,7 @@ determine which other procedure, that explicitly implements this virtual
 one, is automatically dispatched to.  Each element of C<dispatch_params>
 must match a parameter name in C<upd_params> or C<ro_params>.
 
-=item C<implements> - C<set_of.RPProcedureNC>
+=item C<implements> - C<set_of.RPImperativeNC>
 
 Iff C<implements> is nonempty then this procedure is explicitly declaring
 that it implements the other (typically just one), virtual procedures named
@@ -2855,7 +2772,7 @@ explicit C<name> that can be referenced by "leave" and "iterate" control
 flow statements to leave or re-iterate the corresponding block, both SQL
 and Perl have native counterpart features in the form of block labels.
 
-A C<StmtNodeSet> has these 13 attributes:
+A C<StmtNodeSet> has these 11 attributes:
 
 =over
 
@@ -2880,17 +2797,10 @@ sequence of 0..N procedure statements.
 These are statement nodes that represent function invocations and the
 assignment to local variables of the results of those invocations.
 
-=item C<upd_invo_stmts> - C<UpdInvoStmtNodeSet>
+=item C<imp_invo_stmts> - C<ImpInvoStmtNodeSet>
 
-These are statement nodes that represent updater invocations.
-
-=item C<rcp_invo_stmts> - C<RcpInvoStmtNodeSet>
-
-These are statement nodes that represent recipe invocations.
-
-=item C<proc_invo_stmts> - C<ProcInvoStmtNodeSet>
-
-These are statement nodes that represent procedure invocations.
+These are statement nodes that represent imperative routine (updater,
+recipe, or procedure) invocations.
 
 =item C<try_catch_stmts> - C<TryCatchStmtNodeSet>
 
@@ -3076,58 +2986,16 @@ the value.
 A C<FuncInvoStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.UpdInvoStmtNodeSet
+=head2 sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
 
-An C<UpdInvoStmtNodeSet> is a C<DHRelation> that specifies a set of atomic
-statement nodes where each node is an invocation of an updater with
-specific arguments.  The invoked updater can be either user-defined or
-system-defined.
+An C<ImpInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
+statement nodes where each node is an invocation of an imperative routine
+(updater, recipe, or procedure) with specific arguments.  The invoked
+routine can be either user-defined or system-defined.  Iff the invoked
+routine is an updater or a recipe, then that statement node is an atomic
+statement node.
 
-An C<UpdInvoStmtNodeSet> has these 5 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the statement node.
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about either the statement node or
-the statement node (sub-)tree it is the root of.
-
-=item C<updater> - C<MaterialNC>
-
-This is the name of the updater being invoked.
-
-=item C<upd_args> - C<IISArgVarMap>
-
-These are the 1..N subject-to-update arguments to the updater invocation,
-as-per C<ro_args> but that an updater must take at least 1
-subject-to-update argument.
-
-=item C<ro_args> - C<IISArgVarMap>
-
-These are the 0..N read-only arguments to the updater invocation.  Each
-element defines one argument value, with the element C<arg> matching the
-invoked updater's parameter name, and the element C<var> naming a local or
-global variable or statement-containing-procedure parameter which defines
-the value.
-
-=back
-
-An C<UpdInvoStmtNodeSet> has a unary primary key on the C<name>
-attribute.  Its default value is empty.  There is a distributed primary
-key over the C<name> attributes of C<upd_args> and C<ro_args>.
-
-=head2 sys.std.Core.Type.Cat.RcpInvoStmtNodeSet
-
-A C<RcpInvoStmtNodeSet> is a C<DHRelation> that specifies a set of atomic
-statement nodes where each node is an invocation of a recipe with specific
-arguments.  The invoked recipe can be either user-defined or
-system-defined.
-
-A C<RcpInvoStmtNodeSet> has these 5 attributes:
+An C<ImpInvoStmtNodeSet> has these 5 attributes:
 
 =over
 
@@ -3140,69 +3008,28 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<recipe> - C<MaterialNC>
+=item C<imperative> - C<MaterialNC>
 
-This is the name of the recipe being invoked.
-
-=item C<upd_args> - C<IISArgVarMap>
-
-These are the 0..N subject-to-update arguments to the recipe invocation,
-as-per C<ro_args>.
-
-=item C<ro_args> - C<IISArgVarMap>
-
-These are the 0..N read-only arguments to the recipe invocation.  Each
-element defines one argument value, with the element C<arg> matching the
-invoked recipe's parameter name, and the element C<var> naming a local
-or global variable or statement-containing-recipe parameter which
-defines the value.
-
-=back
-
-A C<RcpInvoStmtNodeSet> has a unary primary key on the C<name>
-attribute.  Its default value is empty.  There is a distributed primary
-key over the C<name> attributes of C<upd_args> and C<ro_args>.
-
-=head2 sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
-
-A C<ProcInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
-statement nodes where each node is an invocation of some other procedure
-with specific arguments.  The invoked procedure can be
-either user-defined or system-defined.
-
-A C<ProcInvoStmtNodeSet> has these 5 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the statement node.
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about either the statement node or
-the statement node (sub-)tree it is the root of.
-
-=item C<procedure> - C<MaterialNC>
-
-This is the name of the procedure being invoked.
+This is the name of the imperative routine being invoked.
 
 =item C<upd_args> - C<IISArgVarMap>
 
-These are the 0..N subject-to-update arguments to the procedure invocation,
-as-per C<ro_args>.
+These are the 0..N subject-to-update arguments to the imperative routine
+invocation, as-per C<ro_args>; but iff the routine being invoked is an
+updater, then there must instead be 1..N subject-to-update arguments,
+because an updater must take at least 1 subject-to-update argument.
 
 =item C<ro_args> - C<IISArgVarMap>
 
-These are the 0..N read-only arguments to the procedure invocation.  Each
-element defines one argument value, with the element C<arg> matching the
-invoked procedure's parameter name, and the element C<var> naming a local
-or global variable or statement-containing-procedure parameter which
-defines the value.
+These are the 0..N read-only arguments to the imperative routine
+invocation.  Each element defines one argument value, with the element
+C<arg> matching the invoked routine's parameter name, and the element
+C<var> naming a local or global variable or statement-containing-procedure
+parameter which defines the value.
 
 =back
 
-A C<ProcInvoStmtNodeSet> has a unary primary key on the C<name>
+An C<ImpInvoStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.  There is a distributed primary
 key over the C<name> attributes of C<upd_args> and C<ro_args>.
 
@@ -3222,7 +3049,7 @@ argument.  Its default value has zero tuples.
 A C<TryCatchStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node represents a try-catch control flow
 statement.  A C<TryCatchStmtNodeSet> is conceptually a wrapper over a pair
-of C<ProcInvoStmtNodeSet> named I<try> and I<catch>, where I<try> is
+of C<ImpInvoStmtNodeSet> named I<try> and I<catch>, where I<try> is
 unconditionally invoked first and then iff I<try> throws an exception then
 it will be caught and I<catch> will be invoked immediately after to handle
 it; if I<catch> also throws an exception then it will not be caught.  Each
