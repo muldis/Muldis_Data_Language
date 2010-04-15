@@ -10,6 +10,26 @@
     section to give bullet-headings to the 7 precedence levels: "Terms",
     "P[ost|re]fix", "[Dyadic|Reducing] Infix", "Conditional", "Naming".
 
+    * (Integer.pod, Rational.pod, Ordered.pod, Relation.pod, Set.pod,
+    Array.pod, Bag.pod, Counted.pod)  Removed all 14 "maybe_" variants of
+    built-in functions in order to simplify the language.  Between
+    Integer.pod and Rational.pod, 6 functions that would fail due to a
+    division by zero had counterparts that wrapped the normal result in a
+    Maybe and resulted in nothing when said failure would otherwise occur:
+    "[Integer|Rational].maybe_[quotient|mean]",
+    "Integer.maybe_[remainder|quot_and_rem]"; instead of using those, users
+    can just invoke the normal versions conditionally based on an easily
+    testable input.  In Ordered.pod, 3 N-ary functions that would result in
+    special infinity values as identities if they have zero inputs have
+    counterparts that wrapped the normal result: "maybe_[min|max|minmax]";
+    users should use the normal versions and either conditionally invoke
+    them or conditionally test the results.  In each of the other 5 pod
+    files, there was a single generic reduction operator that took an
+    explicit identity value argument, and a variant saved the need for that
+    argument by resulting in a Maybe:
+    "[Relation|Set|Array|Bag].maybe_reduction",
+    "Counted.counted_maybe_reduction"; use the normal versions instead.
+
 2010-04-11  Darren Duncan <darren@DarrenDuncan.net>
 
     * Muldis::D version 0.117.0 is released on CPAN as
