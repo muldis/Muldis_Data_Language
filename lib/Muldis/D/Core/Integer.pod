@@ -108,34 +108,46 @@ has zero values, then C<product> results in the integer 1, which is the
 identity value for multiplication.  Note that this operation is also known
 as I<multiply> or I<times> or C<i*>.
 
+=head2 sys.std.Core.Integer.frac_quotient
+
+C<< function sys.std.Core.Integer.frac_quotient (Rat <-- $dividend : Int,
+$divisor : Int) >>
+
+This function results in the rational quotient when its C<dividend>
+argument is divided by its C<divisor> argument using the semantics of real
+number division.  This function will fail if C<divisor> is zero.  It is an
+alternate way to construct a C<Rat> literal at runtime in terms of 2 C<Int>
+that are its C<numerator> and C<denominator> possrep attributes.
+
 =head2 sys.std.Core.Integer.whole_quotient
 
-C<< function sys.std.Core.Integer.whole_quotient (Int <-- $dividend : Int,
-$divisor : Int, $round_meth : RoundMeth) >>
+C<< function sys.std.Core.Integer.whole_quotient (Int <--
+$dividend : Int, $divisor : Int, $round_meth : RoundMeth) >>
 
-This function results in the quotient when its C<dividend> argument is
-divided by its C<divisor> argument using integer division.  The semantics
-of this function are equivalent to rounding the result of a real number
-division to the same or nearest integer, where the nearest is determined by
-the rounding method specified by the C<round_meth> argument.  This function
-will fail if C<divisor> is zero.  Note that this operation is also known as
+This function results in the integer quotient when its C<dividend> argument
+is divided by its C<divisor> argument using the semantics of real number
+division, and then the latter's result is rounded to the same or nearest
+integer, where the nearest is determined by the rounding method specified
+by the C<round_meth> argument.  This function will fail if C<divisor> is
+zero.  Note that this operation is also known as
 I<divide> or C<div>.
 
 =head2 sys.std.Core.Integer.remainder
 
-C<< function sys.std.Core.Integer.remainder (Int <-- $dividend : Int,
-$divisor : Int, $round_meth : RoundMeth) >>
+C<< function sys.std.Core.Integer.remainder (Int <--
+$dividend : Int, $divisor : Int, $round_meth : RoundMeth) >>
 
-This function results in the remainder when its C<dividend> argument is
-divided by its C<divisor> argument using integer division.  The semantics
-of this function preserve the identity C<$x mod $y = $x - $y * ($x div $y)>
-(read C<$x> as C<dividend> and C<$y> as C<divisor>) where the division
-has the same semantics as C<sys.std.Core.Integer.whole_quotient> (rounding the
-result of a real number division as per C<round_meth>); the sign of this
-function's result always matches the sign of the dividend or the divisor if
-C<round_meth> is C<ToZero> (aka I<truncate>) or C<Down> (aka I<floor>),
-respectively.  This function
-will fail if C<divisor> is zero.  Note that this operation is also known as
+This function results in the integer remainder when its C<dividend>
+argument is divided by its C<divisor> argument using the semantics of real
+number division, and then the latter's result is rounded to the same or
+nearest integer.  The semantics of this function preserve the identity
+C<$x mod $y = $x - $y * ($x div $y)> (read C<$x> as C<dividend> and C<$y>
+as C<divisor>) where the division has the same semantics as
+C<sys.std.Core.Integer.whole_quotient> (rounding guided by C<round_meth>);
+the sign of this function's result always matches the sign of the dividend
+or the divisor if C<round_meth> is C<ToZero> (aka I<truncate>) or C<Down>
+(aka I<floor>), respectively.  This function will fail if C<divisor> is
+zero.  Note that this operation is also known as
 I<modulo> or C<mod>.
 
 =head2 sys.std.Core.Integer.quot_and_rem
@@ -144,8 +156,8 @@ C<< function sys.std.Core.Integer.quot_and_rem (Tuple <--
 $dividend : Int, $divisor : Int, $round_meth : RoundMeth) >>
 
 This function results in a binary tuple whose attribute names are
-C<quotient> and C<remainder> and whose respective
-attribute values are what C<sys.std.Core.Integer.whole_quotient> and
+C<quotient> and C<remainder> and whose respective attribute values are what
+C<sys.std.Core.Integer.whole_quotient> and
 C<sys.std.Core.Integer.remainder> would result in when given the same
 arguments.  This function will fail if C<divisor> is zero.
 
@@ -157,18 +169,29 @@ This function results in the difference between the lowest and highest
 element values of its argument.  If C<topic> has zero values, then
 this function will fail.
 
+=head2 sys.std.Core.Integer.frac_mean
+
+C<< function sys.std.Core.Integer.frac_mean (Rat <-- $topic : bag_of.Int)
+>>
+
+This function results in the rational mean or arithmetic average of the N
+element values of its argument.  It is equivalent to first taking the sum
+of the input values, and dividing that sum by the count of the input values
+using the semantics of real number division.  If C<topic> has zero values,
+then this function will fail.
+
 =head2 sys.std.Core.Integer.whole_mean
 
 C<< function sys.std.Core.Integer.whole_mean (Int <-- $topic : bag_of.Int,
 $round_meth : RoundMeth) >>
 
-This function results in the mean or arithmetic average of the N element
-values of its argument.  It is equivalent to first taking the sum of the
-input values, and dividing that sum by the count of the input values, where
-the semantics of the division are the same as those of
+This function results in the integer mean or arithmetic average of the N
+element values of its argument.  It is equivalent to first taking the sum
+of the input values, and dividing that sum by the count of the input
+values, where the semantics of the division are the same as those of
 C<sys.std.Core.Integer.whole_quotient> (rounding the result of a real
-number division as per C<round_meth>).  If
-C<topic> has zero values, then this function will fail.
+number division as per C<round_meth>).  If C<topic> has zero values, then
+this function will fail.
 
 =head2 sys.std.Core.Integer.median
 
@@ -183,14 +206,23 @@ middle values, if the count of input values is even (but if the 2 middle
 values are the same value, the output has one element).  If C<topic> has
 zero values, then the result set is empty.
 
+=head2 sys.std.Core.Integer.frac_mean_of_median
+
+C<< function sys.std.Core.Integer.frac_mean_of_median (Rat <--
+$topic : bag_of.Int) >>
+
+This function is a wrapper over C<sys.std.Core.Integer.median> that will
+result in the rational mean of its result elements; it will fail if there
+are zero elements.
+
 =head2 sys.std.Core.Integer.whole_mean_of_median
 
 C<< function sys.std.Core.Integer.whole_mean_of_median (Int <--
 $topic : bag_of.Int, $round_meth : RoundMeth) >>
 
 This function is a wrapper over C<sys.std.Core.Integer.median> that will
-result in the mean of its result elements; it will fail if there are zero
-elements.
+result in the integer mean of its result elements; it will fail if there
+are zero elements.
 
 =head2 sys.std.Core.Integer.mode
 
@@ -202,6 +234,16 @@ it is the set of values that appear the most often as input elements, and
 all have the same count of occurrances.  As a trivial case, if all input
 elements have the same count of occurrances, then they will all be in the
 output.  If C<topic> has zero values, then the result set is empty.
+
+=head2 sys.std.Core.Integer.power_with_whole_exp
+
+C<< function sys.std.Core.Integer.power_with_whole_exp (Rat <--
+$radix : Int, $exponent : Int) >>
+
+This function results in a rational number that is the result of its
+C<radix> argument taken to the power of its integer C<exponent> argument.
+This function will result in 1 if C<radix> and C<exponent> are both zero
+(rather than failing).
 
 =head2 sys.std.Core.Integer.power
 
