@@ -3409,7 +3409,7 @@ Grammar:
     <nonsym_dyadic_infix_op__op_cr_basic> ::=
           isa | '!isa' | 'not-isa' | as | asserting
         | imp | implies | nimp | if | nif
-        | 'i-' | div | mod | exp
+        | 'i-' | exp
         | 'r-' | '/'
         | b-x | t-x | a-x
         | in-r | '!in-r' | 'not-in-r' | r-has | 'r-!has' | 'r-not-has'
@@ -3489,8 +3489,6 @@ This table indicates which function is invoked by each keyword:
     if   -> Core.Boolean.if( $lhs, $rhs )
     nif  -> Core.Boolean.nif( $lhs, $rhs )
     i-   -> Core.Integer.diff( minuend => $lhs, subtrahend => $rhs )
-    div  -> Core.Integer.quotient( dividend => $lhs, divisor => $rhs )
-    mod  -> Core.Integer.remainder( dividend => $lhs, divisor => $rhs )
     exp  -> Core.Integer.power( radix => $lhs, exponent => $rhs )
     r-   -> Core.Rational.diff( minuend => $lhs, subtrahend => $rhs )
     /    -> Core.Rational.quotient( dividend => $lhs, divisor => $rhs )
@@ -3546,10 +3544,6 @@ Examples:
     True implies False
 
     34 i- 21
-
-    5 div 3
-
-    5 mod 3
 
     2 exp 63
 
@@ -3906,7 +3900,7 @@ Examples:
 Grammar:
 
     <num_op_invo_with_round> ::=
-        <num_op_invo> <ws> <rounded_with_rule_clause>
+        <num_op_invo> <ws> <rounded_with_meth_or_rule_clause>
 
     <num_op_invo> ::=
           <expr>
@@ -3918,7 +3912,7 @@ Grammar:
         <lhs> <ws> <infix_num_op> <ws> <rhs>
 
     <infix_num_op> ::=
-        '**' | log
+        div | mod | '**' | log
 
     <prefix_num_op_invo> ::=
         <expr> <ws> <prefix_num_op>
@@ -3932,8 +3926,11 @@ Grammar:
     <postfix_num_op>
         'log-e'
 
-    <rounded_with_rule_clause> ::=
-        round <ws> <round_rule>
+    <rounded_with_meth_or_rule_clause> ::=
+        round <ws> [<round_meth> | <round_rule>]
+
+    <round_meth> ::=
+        <expr>
 
     <round_rule> ::=
         <expr>
@@ -3947,11 +3944,16 @@ argument which specifies explicitly the semantics of the numeric rounding
 in a declarative way (all 2 or 3 of these are I<main op args>).  A single
 C<num_op_invo_with_round> node is equivalent to a single C<func_invo> node
 whose C<func_arg_list> element defines 2-3 arguments, and the
-C<expr|lhs|rhs|round_rule> elements of the C<num_op_invo_with_round> supply
-the values of those arguments, which are associated in the appropriate
-sequence.
+C<expr|lhs|rhs|round_[meth|rule]> elements of the C<num_op_invo_with_round>
+supply the values of those arguments, which are associated in the
+appropriate sequence.
 
 This table indicates which function is invoked by each keyword:
+
+    div -> Core.Integer.quotient( dividend => $lhs, divisor => $rhs,
+                $>round_meth )
+    mod -> Core.Integer.remainder( dividend => $lhs, divisor => $rhs,
+                $>round_meth )
 
           -> Core.Rational.round( $expr, $>round_rule )
     **    -> Core.Rational.power( radix => $lhs, exponent => $rhs,
@@ -3961,6 +3963,10 @@ This table indicates which function is invoked by each keyword:
     log-e -> Core.Rational.natural_log( $expr, $>round_rule )
 
 Examples:
+
+    5 div 3 round ToZero
+
+    5 mod 3 round ToZero
 
     $foo round RatRoundRule:[10,-2,HalfEven]
 
