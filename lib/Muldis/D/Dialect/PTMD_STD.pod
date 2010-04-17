@@ -599,7 +599,7 @@ Examples:
     }
     depot-catalog {
         function cube (Int <-- $topic : Int) {
-            $topic i^ 3
+            $topic exp 3
         }
     }
 
@@ -1566,7 +1566,12 @@ so long as the remaining unqualified chain is distinct among all standard
 system-defined (C<sys.std>-prefix) DBMS entities (but that as an exception,
 a non-distinct abbreviation is allowed iff exactly 1 of the candidate
 entities is in the language core, C<sys.std.Core>-prefix, in which case
-that 1 is unambiguously the entity that is resolved to).  For any
+that 1 is unambiguously the entity that is resolved to; or, when more than
+1 of the candidate entities is in the language core, and iff exactly 1 of
+those in-core candidates is a virtual routine and all of the other in-core
+candidates are routines that implement said virtual routine either directly
+or indirectly, then a non-distinct abbreviation is allowed and that 1
+virtual is unambiguously the entity that is resolved to).  For any
 system-defined entities whose names have trailing empty-string chain
 elements, those elements are ignored when determining a match for a
 C<PNSQNameChain_payload>, similarly to how specifying those elements is not
@@ -2521,7 +2526,7 @@ Examples:
     # A depot having just one function and no dbvar. #
     depot-catalog {
         function cube (Int <-- $topic : Int) {
-            $topic i^ 3
+            $topic exp 3
         }
     }
 
@@ -3029,9 +3034,9 @@ Examples:
     if is_empty($ary) then $empty_result else $ary.[0]
 
     if $x = ∅ or $y = ∅ then ∅
-        else s ((v $x) i+ ((v $y) i^ 3)
+        else s ((v $x) i+ ((v $y) exp 3)
 
-    if $val isa T->Int then $val i^ 3
+    if $val isa T->Int then $val exp 3
         else if $val isa T->Text then $val t-x 5
         else True
 
@@ -3404,8 +3409,8 @@ Grammar:
     <nonsym_dyadic_infix_op__op_cr_basic> ::=
           isa | '!isa' | 'not-isa' | as | asserting
         | imp | implies | nimp | if | nif
-        | 'i-' | 'i/' | mod | 'i^'
-        | 'r-' | 'r/'
+        | 'i-' | div | mod | exp
+        | 'r-' | '/'
         | b-x | t-x | a-x
         | in-r | '!in-r' | 'not-in-r' | r-has | 'r-!has' | 'r-not-has'
         | in-s | '!in-s' | 'not-in-s' | s-has | 's-!has' | 's-not-has'
@@ -3484,11 +3489,11 @@ This table indicates which function is invoked by each keyword:
     if   -> Core.Boolean.if( $lhs, $rhs )
     nif  -> Core.Boolean.nif( $lhs, $rhs )
     i-   -> Core.Integer.diff( minuend => $lhs, subtrahend => $rhs )
-    i/   -> Core.Integer.quotient( dividend => $lhs, divisor => $rhs )
+    div  -> Core.Integer.quotient( dividend => $lhs, divisor => $rhs )
     mod  -> Core.Integer.remainder( dividend => $lhs, divisor => $rhs )
-    i^   -> Core.Integer.power( radix => $lhs, exponent => $rhs )
+    exp  -> Core.Integer.power( radix => $lhs, exponent => $rhs )
     r-   -> Core.Rational.diff( minuend => $lhs, subtrahend => $rhs )
-    r/   -> Core.Rational.quotient( dividend => $lhs, divisor => $rhs )
+    /    -> Core.Rational.quotient( dividend => $lhs, divisor => $rhs )
     b-x  -> Core.Blob.replication( $lhs, count => $rhs )
     t-x  -> Core.Text.replication( $lhs, count => $rhs )
     a-x  -> Core.Array.replication( $lhs, count => $rhs )
@@ -3542,15 +3547,15 @@ Examples:
 
     34 i- 21
 
-    5 i/ 3
+    5 div 3
 
     5 mod 3
 
-    2 i^ 63
+    2 exp 63
 
     9.2 r- 0.1
 
-    1;101.01 r/ 1;11.0
+    1;101.01 / 1;11.0
 
     '-' t-x 80
 
@@ -3913,13 +3918,13 @@ Grammar:
         <lhs> <ws> <infix_num_op> <ws> <rhs>
 
     <infix_num_op> ::=
-        'r^' | log
+        '**' | log
 
     <prefix_num_op_invo> ::=
         <expr> <ws> <prefix_num_op>
 
     <prefix_num_op>
-        'e^'
+        'e**'
 
     <postfix_num_op_invo> ::=
         <expr> <ws> <postfix_num_op>
@@ -3949,21 +3954,21 @@ sequence.
 This table indicates which function is invoked by each keyword:
 
           -> Core.Rational.round( $expr, $>round_rule )
-    r^    -> Core.Rational.power( radix => $lhs, exponent => $rhs,
+    **    -> Core.Rational.power( radix => $lhs, exponent => $rhs,
                 $>round_rule )
     log   -> Core.Rational.log( $lhs, radix => $rhs, $>round_rule )
-    e^    -> Core.Rational.natural_power( $expr, $>round_rule )
+    e**   -> Core.Rational.natural_power( $expr, $>round_rule )
     log-e -> Core.Rational.natural_log( $expr, $>round_rule )
 
 Examples:
 
     $foo round RatRoundRule:[10,-2,HalfEven]
 
-    2.0 r^ 0.5 round RatRoundRule:[2,-7,ToZero]
+    2.0 ** 0.5 round RatRoundRule:[2,-7,ToZero]
 
     309.1 log 5.4 round RatRoundRule:[10,-4,HalfUp]
 
-    e^ 6.3 round RatRoundRule:[10,-6,Up]
+    e** 6.3 round RatRoundRule:[10,-6,Up]
 
     17.0 log-e round RatRoundRule:[3,-5,Down]
 
