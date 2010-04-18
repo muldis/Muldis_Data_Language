@@ -2962,16 +2962,16 @@ Examples:
     Nothing()
 
     # single mandatory param #
-    Integer.median( Bag:{ 22, 20, 21, 20, 21, 21, 23 } )
+    median( Bag:{ 22, 20, 21, 20, 21, 21, 23 } )
 
     # single mandatory param #
     factorial( topic => 5 )
 
     # two mandatory params #
-    Rational.frac_quotient( dividend => 43.7, divisor => 16.9 )
+    frac_quotient( dividend => 43.7, divisor => 16.9 )
 
     # same as previous #
-    Rational.frac_quotient( divisor => 16.9, dividend => 43.7 )
+    frac_quotient( divisor => 16.9, dividend => 43.7 )
 
     # one mandatory 'topic' param, two optional #
     nlx.lib.barfunc( $mand_arg, oa1 => $opt_arg1, oa2 => $opt_arg2 )
@@ -3034,7 +3034,7 @@ Examples:
     if is_empty($ary) then $empty_result else $ary.[0]
 
     if $x = ∅ or $y = ∅ then ∅
-        else s ((v $x) i+ ((v $y) exp 3)
+        else s ((v $x) + ((v $y) exp 3)
 
     if $val isa T->Int then $val exp 3
         else if $val isa T->Text then $val t-x 5
@@ -3197,8 +3197,7 @@ Grammar:
 
     <comm_infix_reduce_op__op_cr_basic> ::=
           and | or | xnor | iff | xor
-        | 'i+' | 'i*'
-        | 'r+' | 'r*'
+        | '+' | '*'
         | union | intersect | exclude | symdiff
         | join | times | 'cross-join'
 
@@ -3246,10 +3245,8 @@ This table indicates which function is invoked by each keyword:
     or   -> Core.Boolean.or( Set:{ $expr[0], ..., $expr[n] } )
     xnor -> Core.Boolean.xnor( Bag:{ $expr[0], ..., $expr[n] } )
     xor  -> Core.Boolean.xor( Bag:{ $expr[0], ..., $expr[n] } )
-    i+   -> Core.Integer.sum( Bag:{ $expr[0], ..., $expr[n] } )
-    i*   -> Core.Integer.product( Bag:{ $expr[0], ..., $expr[n] } )
-    r+   -> Core.Rational.sum( Bag:{ $expr[0], ..., $expr[n] } )
-    r*   -> Core.Rational.product( Bag:{ $expr[0], ..., $expr[n] } )
+    +    -> Core.Numeric.sum( Bag:{ $expr[0], ..., $expr[n] } )
+    *    -> Core.Numeric.product( Bag:{ $expr[0], ..., $expr[n] } )
 
     union     -> Core.Relation.union( Set:{ $expr[0], ..., $expr[n] } )
     intersect -> Core.Relation.intersection(
@@ -3266,13 +3263,13 @@ Examples:
 
     True xor False xor True
 
-    14 i+ 3 i+ -5
+    14 + 3 + -5
 
-    -6 i* 2 i* 25
+    -6 * 2 * 25
 
-    4.25 r+ -0.002 r+ 1.0
+    4.25 + -0.002 + 1.0
 
-    69.3 r* 15*2^6 r* 49/23
+    69.3 * 15*2^6 * 49/23
 
     Set:{ 1, 3, 5 } ∪ Set:{ 4, 5, 6 } ∪ Set:{ 0, 9 }
 
@@ -3347,7 +3344,7 @@ Grammar:
     <sym_dyadic_infix_op__op_cr_basic> ::=
           '=' | '!='
         | nand | nor
-        | 'i|-|' | 'r|-|'
+        | '|-|'
 
     <sym_dyadic_infix_op__op_cr_extended> ::=
           <sym_dyadic_infix_op__op_cr_basic>
@@ -3378,8 +3375,7 @@ This table indicates which function is invoked by each keyword:
     !=   -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
     nand -> Core.Boolean.nand( $expr[0], $expr[1] )
     nor  -> Core.Boolean.nor( $expr[0], $expr[1] )
-    i|-| -> Core.Integer.abs_diff( $expr[0], $expr[1] )
-    r|-| -> Core.Rational.abs_diff( $expr[0], $expr[1] )
+    |-|  -> Core.Numeric.abs_diff( $expr[0], $expr[1] )
 
 Examples:
 
@@ -3389,9 +3385,9 @@ Examples:
 
     False nand True
 
-    15 i|-| 17
+    15 |-| 17
 
-    7.5 r|-| 9.0
+    7.5 |-| 9.0
 
 =head2 Simple Non-symmetric Dyadic Infix Operators
 
@@ -3409,8 +3405,7 @@ Grammar:
     <nonsym_dyadic_infix_op__op_cr_basic> ::=
           isa | '!isa' | 'not-isa' | as | asserting
         | imp | implies | nimp | if | nif
-        | 'i-' | exp
-        | 'r-' | '/'
+        | '-' | '/' | '^' | exp
         | b-x | t-x | a-x
         | in-r | '!in-r' | 'not-in-r' | r-has | 'r-!has' | 'r-not-has'
         | in-s | '!in-s' | 'not-in-s' | s-has | 's-!has' | 's-not-has'
@@ -3488,10 +3483,11 @@ This table indicates which function is invoked by each keyword:
     nimp -> Core.Boolean.nimp( $lhs, $rhs )
     if   -> Core.Boolean.if( $lhs, $rhs )
     nif  -> Core.Boolean.nif( $lhs, $rhs )
-    i-   -> Core.Integer.diff( minuend => $lhs, subtrahend => $rhs )
+    -    -> Core.Numeric.diff( minuend => $lhs, subtrahend => $rhs )
+    /    -> Core.Numeric.frac_quotient( dividend => $lhs, divisor => $rhs )
+    ^    -> Core.Numeric.power_with_whole_exp( radix => $lhs,
+                exponent => $rhs )
     exp  -> Core.Integer.power( radix => $lhs, exponent => $rhs )
-    r-   -> Core.Rational.diff( minuend => $lhs, subtrahend => $rhs )
-    /    -> Core.Rational.frac_quotient( dividend => $lhs, divisor => $rhs )
     b-x  -> Core.Blob.replication( $lhs, count => $rhs )
     t-x  -> Core.Text.replication( $lhs, count => $rhs )
     a-x  -> Core.Array.replication( $lhs, count => $rhs )
@@ -3543,11 +3539,11 @@ Examples:
 
     True implies False
 
-    34 i- 21
+    34 - 21
 
     2 exp 63
 
-    9.2 r- 0.1
+    9.2 - 0.1
 
     1;101.01 / 1;11.0
 
@@ -3565,7 +3561,7 @@ Grammar:
         <monadic_prefix_op> <ws> <expr>
 
     <monadic_prefix_op__op_cr_basic> ::=
-        d | not | '!' | 'i||' | 'r||' | 'r#' | t | r | s | v
+        d | not | '!' | '||' | 'r#' | t | r | s | v
 
     <monadic_prefix_op__op_cr_extended> ::=
           <monadic_prefix_op__op_cr_basic>
@@ -3588,8 +3584,7 @@ This table indicates which function is invoked by each keyword:
 
     d   -> Core.Universal.default( of => $expr )
     not -> Core.Boolean.not( $expr )
-    i|| -> Core.Integer.abs( $expr )
-    r|| -> Core.Rational.abs( $expr )
+    ||  -> Core.Numeric.abs( $expr )
     r#  -> Core.Relation.cardinality( $expr )
     t   -> Core.Cast.Tuple_from_Relation( $expr )
     r   -> Core.Cast.Relation_from_Tuple( $expr )
@@ -3602,9 +3597,9 @@ Examples:
 
     not True
 
-    i|| -23
+    || -23
 
-    r|| -4.59
+    || -4.59
 
     r# Set:{ 5, -1, 2 }
 
@@ -3612,7 +3607,7 @@ Examples:
 
     r $tupvar
 
-    s ((v $a) r+ (v $b))
+    s ((v $a) + (v $b))
 
 =head2 Simple Monadic Postfix Operators
 
@@ -3950,9 +3945,9 @@ appropriate sequence.
 
 This table indicates which function is invoked by each keyword:
 
-    div -> Core.Integer.whole_quotient( dividend => $lhs, divisor => $rhs,
+    div -> Core.Numeric.whole_quotient( dividend => $lhs, divisor => $rhs,
                 $>round_meth )
-    mod -> Core.Integer.remainder( dividend => $lhs, divisor => $rhs,
+    mod -> Core.Numeric.remainder( dividend => $lhs, divisor => $rhs,
                 $>round_meth )
 
           -> Core.Rational.round( $expr, $>round_rule )
