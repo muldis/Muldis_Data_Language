@@ -211,6 +211,11 @@ compose:
                 sys.std.Core.Type.Bool
                 sys.std.Core.Type.Int
 
+        sys.std.Core.Type.Numeric
+
+            sys.std.Core.Type.Int
+            sys.std.Core.Type.Rat
+
 =head1 MAXIMAL AND MINIMAL DATA TYPES
 
 These core data types are special and are the only Muldis D types (except
@@ -285,6 +290,20 @@ quantum, and all steps along the value line are at exact multiples of that
 quantum.  However, ordinal types in general don't need to be like this, and
 there can be different amounts of conceivable distance between consecutive
 values; an ordinal type is just required to know where all the values are.
+
+=head2 sys.std.Core.Type.Numeric
+
+The C<Numeric> type is a mixin (union) type that is intended to be
+explicitly composed by all other types that are considered I<numeric>.  A
+numeric type is a type with whose values it would be reasonable to apply
+all of the common mathematical operators like C<+>, C<->, C<*>, C</>.  Just
+a few primary system-defined types are numeric types, including C<Int> and
+C<Rat>.  The cardinality of C<Numeric> is infinity.  The default value of
+C<Numeric> is the C<Int> value zero.  The C<Numeric> type is not itself
+ordered, but often a type which is numeric is also ordered.  Muldis D does
+not currently have any system-defined complex number types, but if it did,
+they conceivably would also compose C<Numeric>; but in that case, it may
+prove useful to split the C<Numeric> mixin into itself and a C<Real> mixin.
 
 =head1 GENERIC SCALAR DATA TYPES
 
@@ -361,7 +380,8 @@ is 1, and its only value is its default and minimum and maximum value.
 =head2 sys.std.Core.Type.Int
 
 An C<Int> is a single exact integral number
-of any magnitude.  Its default value is zero; its minimum and maximum
+of any magnitude.  The C<Int> type explicitly composes the C<Numeric> mixin
+type.  Its default value is zero; its minimum and maximum
 values are conceptually infinities and practically impossible.  C<Int> is
 one of just two scalar root types (the other is C<String>) that do I<not>
 have any possreps.  C<Int> is also
@@ -395,7 +415,8 @@ minimum value is 2.
 =head2 sys.std.Core.Type.Rat
 
 A C<Rat> (scalar) is a single exact
-rational number of any magnitude and precision.  It is conceptually a
+rational number of any magnitude and precision.  The C<Rat> type explicitly
+composes the C<Numeric> mixin type.  It is conceptually a
 composite type with 2 main system-defined possreps, called C<ratio> and
 C<float>, both of which are defined over several C<Int>.
 

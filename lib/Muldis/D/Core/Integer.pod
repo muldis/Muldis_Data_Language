@@ -56,20 +56,20 @@ implements sys.std.Core.Ordered.Ordinal.succ >>
 This function results in the value that succeeds its argument.  It is a
 shorthand for subtracting 1 from its argument.
 
-=head1 FUNCTIONS FOR INTEGER MATH
-
-These functions implement commonly used integer numeric operations.
+=head1 FUNCTIONS IMPLEMENTING VIRTUAL NUMERIC FUNCTIONS
 
 =head2 sys.std.Core.Integer.abs
 
-C<< function sys.std.Core.Integer.abs (NNInt <-- $topic : Int) >>
+C<< function sys.std.Core.Integer.abs (NNInt <-- $topic : Int)
+implements sys.std.Core.Numeric.abs >>
 
 This function results in the absolute value of its argument.  Note that
 this operation is also known as I<modulus> or C<i||>.
 
 =head2 sys.std.Core.Integer.sum
 
-C<< function sys.std.Core.Integer.sum (Int <-- $topic? : bag_of.Int) >>
+C<< function sys.std.Core.Integer.sum (Int <-- $topic? : bag_of.Int)
+implements sys.std.Core.Numeric.sum >>
 
 This function results in the sum of the N element values of its argument;
 it is a reduction operator that recursively takes each pair of input values
@@ -82,7 +82,7 @@ or C<i+>.
 =head2 sys.std.Core.Integer.diff
 
 C<< function sys.std.Core.Integer.diff (Int <-- $minuend : Int,
-$subtrahend : Int) >>
+$subtrahend : Int) implements sys.std.Core.Numeric.diff >>
 
 This function results in the difference when its C<subtrahend> argument is
 subtracted from its C<minuend> argument.  Note that this operation is also
@@ -91,14 +91,15 @@ known as I<subtraction> or I<minus> or C<i->.
 =head2 sys.std.Core.Integer.abs_diff
 
 C<< function sys.std.Core.Integer.abs_diff (Int <-- $topic : Int,
-$other : Int) >>
+$other : Int) implements sys.std.Core.Numeric.abs_diff >>
 
 This symmetric function results in the absolute difference between its 2
 arguments.  Note that this operation is also known as C<i|-|>.
 
 =head2 sys.std.Core.Integer.product
 
-C<< function sys.std.Core.Integer.product (Int <-- $topic? : bag_of.Int) >>
+C<< function sys.std.Core.Integer.product (Int <-- $topic? : bag_of.Int)
+implements sys.std.Core.Numeric.product >>
 
 This function results in the product of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -111,7 +112,7 @@ as I<multiply> or I<times> or C<i*>.
 =head2 sys.std.Core.Integer.frac_quotient
 
 C<< function sys.std.Core.Integer.frac_quotient (Rat <-- $dividend : Int,
-$divisor : Int) >>
+$divisor : Int) implements sys.std.Core.Numeric.frac_quotient >>
 
 This function results in the rational quotient when its C<dividend>
 argument is divided by its C<divisor> argument using the semantics of real
@@ -122,7 +123,8 @@ that are its C<numerator> and C<denominator> possrep attributes.
 =head2 sys.std.Core.Integer.whole_quotient
 
 C<< function sys.std.Core.Integer.whole_quotient (Int <--
-$dividend : Int, $divisor : Int, $round_meth : RoundMeth) >>
+$dividend : Int, $divisor : Int, $round_meth : RoundMeth)
+implements sys.std.Core.Numeric.whole_quotient >>
 
 This function results in the integer quotient when its C<dividend> argument
 is divided by its C<divisor> argument using the semantics of real number
@@ -135,7 +137,8 @@ I<divide> or C<div>.
 =head2 sys.std.Core.Integer.remainder
 
 C<< function sys.std.Core.Integer.remainder (Int <--
-$dividend : Int, $divisor : Int, $round_meth : RoundMeth) >>
+$dividend : Int, $divisor : Int, $round_meth : RoundMeth)
+implements sys.std.Core.Numeric.remainder >>
 
 This function results in the integer remainder when its C<dividend>
 argument is divided by its C<divisor> argument using the semantics of real
@@ -153,7 +156,8 @@ I<modulo> or C<mod>.
 =head2 sys.std.Core.Integer.quot_and_rem
 
 C<< function sys.std.Core.Integer.quot_and_rem (Tuple <--
-$dividend : Int, $divisor : Int, $round_meth : RoundMeth) >>
+$dividend : Int, $divisor : Int, $round_meth : RoundMeth)
+implements sys.std.Core.Numeric.quot_and_rem >>
 
 This function results in a binary tuple whose attribute names are
 C<quotient> and C<remainder> and whose respective attribute values are what
@@ -163,7 +167,8 @@ arguments.  This function will fail if C<divisor> is zero.
 
 =head2 sys.std.Core.Integer.range
 
-C<< function sys.std.Core.Integer.range (Int <-- $topic : set_of.Int) >>
+C<< function sys.std.Core.Integer.range (Int <-- $topic : set_of.Int)
+implements sys.std.Core.Numeric.range >>
 
 This function results in the difference between the lowest and highest
 element values of its argument.  If C<topic> has zero values, then
@@ -172,13 +177,61 @@ this function will fail.
 =head2 sys.std.Core.Integer.frac_mean
 
 C<< function sys.std.Core.Integer.frac_mean (Rat <-- $topic : bag_of.Int)
->>
+implements sys.std.Core.Numeric.frac_mean >>
 
 This function results in the rational mean or arithmetic average of the N
 element values of its argument.  It is equivalent to first taking the sum
 of the input values, and dividing that sum by the count of the input values
 using the semantics of real number division.  If C<topic> has zero values,
 then this function will fail.
+
+=head2 sys.std.Core.Integer.median
+
+C<< function sys.std.Core.Integer.median (set_of.Int <--
+$topic : bag_of.Int) implements sys.std.Core.Numeric.median >>
+
+This function results in the 1 or 2 median values of the N element values
+of its argument; they are returned as a set.  It is equivalent to first
+arranging the input values from least to greatest, and then taking the
+single middle value, if the count of input values is odd, or taking the 2
+middle values, if the count of input values is even (but if the 2 middle
+values are the same value, the output has one element).  If C<topic> has
+zero values, then the result set is empty.
+
+=head2 sys.std.Core.Integer.frac_mean_of_median
+
+C<< function sys.std.Core.Integer.frac_mean_of_median (Rat <--
+$topic : bag_of.Int) implements sys.std.Core.Numeric.frac_mean_of_median >>
+
+This function is a wrapper over C<sys.std.Core.Integer.median> that will
+result in the rational mean of its result elements; it will fail if there
+are zero elements.
+
+=head2 sys.std.Core.Integer.mode
+
+C<< function sys.std.Core.Integer.mode (set_of.Int <-- $topic : bag_of.Int)
+implements sys.std.Core.Numeric.mode >>
+
+This function results in the mode of the N element values of its argument;
+it is the set of values that appear the most often as input elements, and
+all have the same count of occurrances.  As a trivial case, if all input
+elements have the same count of occurrances, then they will all be in the
+output.  If C<topic> has zero values, then the result set is empty.
+
+=head2 sys.std.Core.Integer.power_with_whole_exp
+
+C<< function sys.std.Core.Integer.power_with_whole_exp (Rat <--
+$radix : Int, $exponent : Int)
+implements sys.std.Core.Numeric.power_with_whole_exp >>
+
+This function results in a rational number that is the result of its
+C<radix> argument taken to the power of its integer C<exponent> argument.
+This function will result in 1 if C<radix> and C<exponent> are both zero
+(rather than failing).
+
+=head1 FUNCTIONS FOR INTEGER MATH
+
+These functions implement commonly used integer numeric operations.
 
 =head2 sys.std.Core.Integer.whole_mean
 
@@ -193,28 +246,6 @@ C<sys.std.Core.Integer.whole_quotient> (rounding the result of a real
 number division as per C<round_meth>).  If C<topic> has zero values, then
 this function will fail.
 
-=head2 sys.std.Core.Integer.median
-
-C<< function sys.std.Core.Integer.median (set_of.Int <--
-$topic : bag_of.Int) >>
-
-This function results in the 1 or 2 median values of the N element values
-of its argument; they are returned as a set.  It is equivalent to first
-arranging the input values from least to greatest, and then taking the
-single middle value, if the count of input values is odd, or taking the 2
-middle values, if the count of input values is even (but if the 2 middle
-values are the same value, the output has one element).  If C<topic> has
-zero values, then the result set is empty.
-
-=head2 sys.std.Core.Integer.frac_mean_of_median
-
-C<< function sys.std.Core.Integer.frac_mean_of_median (Rat <--
-$topic : bag_of.Int) >>
-
-This function is a wrapper over C<sys.std.Core.Integer.median> that will
-result in the rational mean of its result elements; it will fail if there
-are zero elements.
-
 =head2 sys.std.Core.Integer.whole_mean_of_median
 
 C<< function sys.std.Core.Integer.whole_mean_of_median (Int <--
@@ -223,27 +254,6 @@ $topic : bag_of.Int, $round_meth : RoundMeth) >>
 This function is a wrapper over C<sys.std.Core.Integer.median> that will
 result in the integer mean of its result elements; it will fail if there
 are zero elements.
-
-=head2 sys.std.Core.Integer.mode
-
-C<< function sys.std.Core.Integer.mode (set_of.Int <-- $topic : bag_of.Int)
->>
-
-This function results in the mode of the N element values of its argument;
-it is the set of values that appear the most often as input elements, and
-all have the same count of occurrances.  As a trivial case, if all input
-elements have the same count of occurrances, then they will all be in the
-output.  If C<topic> has zero values, then the result set is empty.
-
-=head2 sys.std.Core.Integer.power_with_whole_exp
-
-C<< function sys.std.Core.Integer.power_with_whole_exp (Rat <--
-$radix : Int, $exponent : Int) >>
-
-This function results in a rational number that is the result of its
-C<radix> argument taken to the power of its integer C<exponent> argument.
-This function will result in 1 if C<radix> and C<exponent> are both zero
-(rather than failing).
 
 =head2 sys.std.Core.Integer.power
 

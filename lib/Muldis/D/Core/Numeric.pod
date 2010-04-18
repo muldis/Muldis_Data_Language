@@ -1,0 +1,232 @@
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+Muldis::D::Core::Numeric -
+Muldis D generic numeric operators
+
+=head1 VERSION
+
+This document is Muldis::D::Core::Numeric version 0.117.0.
+
+=head1 PREFACE
+
+This document is part of the Muldis D language specification, whose root
+document is L<Muldis::D>; you should read that root document before
+you read this one, which provides subservient details.  Moreover, you
+should read the L<Muldis::D::Core> document before this current
+document, as that forms its own tree beneath a root document branch.
+
+=head1 DESCRIPTION
+
+This document describes essentially all of the core Muldis D
+numeric operators, essentially all the generic ones that a
+typical programming language should have.
+
+I<This documentation is pending.>
+
+=head1 VIRTUAL FUNCTIONS FOR THE NUMERIC MIXIN TYPE
+
+=head2 sys.std.Core.Numeric.abs
+
+C<< function sys.std.Core.Numeric.abs (Numeric <-- $topic@ : Numeric) >>
+
+This virtual function results in the absolute value of its argument.
+
+=head2 sys.std.Core.Numeric.sum
+
+C<< function sys.std.Core.Numeric.sum (Numeric <--
+$topic@ : bag_of.Numeric) >>
+
+This virtual function results in the sum of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and adds (which is both commutative and associative) them
+together until just one is left, which is the result.  Conceptually, if
+C<topic> has zero values, then C<sum> results in the number zero, which is
+the identity value for addition; however, while each implementing function
+of C<sum> could actually result in a type-specific value of zero, this
+virtual function itself will instead fail when C<topic> has zero values,
+because then it would lack the necessary type information to know which
+type-specific implementing function to dispatch to.
+
+=head2 sys.std.Core.Numeric.diff
+
+C<< function sys.std.Core.Numeric.diff (Numeric <-- $minuend@ : Numeric,
+$subtrahend@ : Numeric) >>
+
+This virtual function results in the difference when its C<subtrahend>
+argument is subtracted from its C<minuend> argument.
+
+=head2 sys.std.Core.Numeric.abs_diff
+
+C<< function sys.std.Core.Numeric.abs_diff (Numeric <-- $topic@ : Numeric,
+$other@ : Numeric) >>
+
+This virtual symmetric function results in the absolute difference between
+its 2 arguments.
+
+=head2 sys.std.Core.Numeric.product
+
+C<< function sys.std.Core.Numeric.product (Numeric <--
+$topic@ : bag_of.Numeric) >>
+
+This virtual function results in the product of the N element values of its
+argument; it is a reduction operator that recursively takes each pair of
+input values and multiplies (which is both commutative and associative)
+them together until just one is left, which is the result.  Conceptually,
+if C<topic> has zero values, then C<product> results in the number 1, which
+is the identity value for multiplication; however, while each implementing
+function of C<product> could actually result in a type-specific value of 1,
+this virtual function itself will instead fail when C<topic> has zero
+values, because then it would lack the necessary type information to know
+which type-specific implementing function to dispatch to.
+
+=head2 sys.std.Core.Numeric.frac_quotient
+
+C<< function sys.std.Core.Numeric.frac_quotient (Numeric <--
+$dividend@ : Numeric, $divisor@ : Numeric) >>
+
+This virtual function results in the possibly-fractional quotient when its
+C<dividend> argument is divided by its C<divisor> argument using the
+semantics of real number division.  This function will fail if C<divisor>
+is zero.
+
+=head2 sys.std.Core.Numeric.whole_quotient
+
+C<< function sys.std.Core.Numeric.whole_quotient (Numeric <--
+$dividend@ : Numeric, $divisor@ : Numeric, $round_meth : RoundMeth) >>
+
+This virtual function results in the whole-number quotient when its
+C<dividend> argument is divided by its C<divisor> argument using the
+semantics of real number division, and then the latter's result is rounded
+to the same or nearest whole number, where the nearest is determined by the
+rounding method specified by the C<round_meth> argument.  This function
+will fail if C<divisor> is zero.
+
+=head2 sys.std.Core.Numeric.remainder
+
+C<< function sys.std.Core.Numeric.remainder (Numeric <--
+$dividend@ : Numeric, $divisor@ : Numeric, $round_meth : RoundMeth) >>
+
+This virtual function results in the possibly-fractional remainder when its
+C<dividend> argument is divided by its C<divisor> argument using the
+semantics of real number division, and then the latter's result is rounded
+to the same or nearest whole number.  The semantics of this function
+preserve the identity C<$x mod $y = $x - $y * ($x div $y)> (read C<$x> as
+C<dividend> and C<$y> as C<divisor>) where the division has the same
+semantics as C<sys.std.Core.Numeric.whole_quotient> (rounding guided by
+C<round_meth>); the sign of this function's result always matches the sign
+of the dividend or the divisor if C<round_meth> is C<ToZero> (aka
+I<truncate>) or C<Down> (aka I<floor>), respectively.  This function will
+fail if C<divisor> is zero.
+
+=head2 sys.std.Core.Numeric.quot_and_rem
+
+C<< function sys.std.Core.Numeric.quot_and_rem (Tuple <--
+$dividend@ : Numeric, $divisor@ : Numeric, $round_meth : RoundMeth) >>
+
+This virtual function results in a binary tuple whose attribute names are
+C<quotient> and C<remainder> and whose respective attribute values are what
+C<sys.std.Core.Numeric.whole_quotient> and
+C<sys.std.Core.Numeric.remainder> would result in when given the same
+arguments.  This function will fail if C<divisor> is zero.
+
+=head2 sys.std.Core.Numeric.range
+
+C<< function sys.std.Core.Numeric.range (Numeric <--
+$topic@ : set_of.Numeric) >>
+
+This virtual function results in the difference between the lowest and
+highest element values of its argument.  If C<topic> has zero values, then
+this function will fail.
+
+=head2 sys.std.Core.Numeric.frac_mean
+
+C<< function sys.std.Core.Numeric.frac_mean (Numeric <--
+$topic@ : bag_of.Numeric) >>
+
+This virtual function results in the possibly-fractional mean or arithmetic
+average of the N element values of its argument.  It is equivalent to first
+taking the sum of the input values, and dividing that sum by the count of
+the input values using the semantics of real number division.  If C<topic>
+has zero values, then this function will fail.
+
+=head2 sys.std.Core.Numeric.median
+
+C<< function sys.std.Core.Numeric.median (set_of.Numeric <--
+$topic@ : bag_of.Numeric) >>
+
+This virtual function results in the 1 or 2 median values of the N element
+values of its argument; they are returned as a set.  It is equivalent to
+first arranging the input values from least to greatest, and then taking
+the single middle value, if the count of input values is odd, or taking the
+2 middle values, if the count of input values is even (but if the 2 middle
+values are the same value, the output has one element).  If C<topic> has
+zero values, then the result set is empty.
+
+=head2 sys.std.Core.Numeric.frac_mean_of_median
+
+C<< function sys.std.Core.Numeric.frac_mean_of_median (Numeric <--
+$topic@ : bag_of.Numeric) >>
+
+This virtual function is a wrapper over C<sys.std.Core.Numeric.median> that
+will result in the possibly-fractional mean of its result elements; it will
+fail if there are zero elements.
+
+=head2 sys.std.Core.Numeric.mode
+
+C<< function sys.std.Core.Numeric.mode (set_of.Numeric <--
+$topic@ : bag_of.Numeric) >>
+
+This virtual function results in the mode of the N element values of its
+argument; it is the set of values that appear the most often as input
+elements, and all have the same count of occurrances.  As a trivial case,
+if all input elements have the same count of occurrances, then they will
+all be in the output.  If C<topic> has zero values, then the result set is
+empty.
+
+=head2 sys.std.Core.Numeric.power_with_whole_exp
+
+C<< function sys.std.Core.Numeric.power_with_whole_exp (Numeric <--
+$radix@ : Numeric, $exponent@ : Numeric) >>
+
+This virtual function results in a possibly-fractional number that is the
+result of its possibly-fractional C<radix> argument taken to the power of
+its whole-number C<exponent> argument.  Because this function constrains
+its C<exponent> argument to being a whole number, then when its C<radix>
+argument is any real or rational number at all, this function is guaranteed
+to have a naturally real and rational result, even when C<radix> is a
+negative number.  The only way that this operation could conceivably result
+in a naturally complex or irrational number when its C<radix> is rational
+is if its C<exponent> is a fractional number.  This function will result in
+1 if C<radix> and C<exponent> are both zero (rather than failing).
+
+=head1 SEE ALSO
+
+Go to L<Muldis::D> for the majority of distribution-internal
+references, and L<Muldis::D::SeeAlso> for the majority of
+distribution-external references.
+
+=head1 AUTHOR
+
+Darren Duncan (C<darren@DarrenDuncan.net>)
+
+=head1 LICENSE AND COPYRIGHT
+
+This file is part of the formal specification of the Muldis D language.
+
+Muldis D is Copyright © 2002-2010, Muldis Data Systems, Inc.
+
+See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+
+=head1 TRADEMARK POLICY
+
+The TRADEMARK POLICY in L<Muldis::D> applies to this file too.
+
+=head1 ACKNOWLEDGEMENTS
+
+The ACKNOWLEDGEMENTS in L<Muldis::D> apply to this file too.
+
+=cut
