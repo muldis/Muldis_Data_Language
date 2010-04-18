@@ -257,6 +257,13 @@ types, shown grouped under the mixin types that they compose:
                 sys.std.Core.Type.Cat."-Inf"
                 sys.std.Core.Type.Cat.Inf
 
+        sys.std.Core.Type.Stringy
+
+            sys.std.Core.Type.Cat.String
+            sys.std.Core.Type.Cat.Name
+            sys.std.Core.Type.Cat.NameChain
+            sys.std.Core.Type.Cat.Comment
+
 =head1 LOW-LEVEL STRUCTURE TYPES
 
 These types only exist in the low-level type system, and should not be used
@@ -348,7 +355,8 @@ default value is C<Bool:False>.  The cardinality of this type is infinity.
 
 A C<String> is a string of integers, or more specifically it is a dense
 sequence of 0..N elements (I<not> defined over C<Relation>) where each
-element is an C<Int>.  A C<String> subtype is normally composed into any
+element is an C<Int>.  The C<String> type explicitly composes the
+C<Stringy> mixin type.  A C<String> subtype is normally composed into any
 system-defined type that is conceptually a string of integers or bits or
 characters, such as C<Blob> or C<Text>.  The C<String> type's default and
 canonical minimum value is the empty sequence; its canonical maximum value
@@ -416,7 +424,8 @@ this short name is sufficient to identify the entity within its immediate
 namespace.  Similarly, a DBMS entity can often be invoked or referred to
 using just its C<Name>, depending on the context; other times, a
 C<NameChain> must be used instead to also qualify the reference with a
-namespace.  A C<Name> has 1 system-defined possrep whose name is the empty
+namespace.  The C<Name> type explicitly composes the C<Stringy> mixin
+type.  A C<Name> has 1 system-defined possrep whose name is the empty
 string, which has 1 C<Text>-typed attribute whose name is the empty
 string.  The C<Name> type explicitly composes the C<Ordered> mixin type.
 A C<Name> is a simple wrapper for a C<Text> and all of its other
@@ -433,7 +442,8 @@ name for invoking or referring to a DBMS entity, when its name needs to be
 qualified with a namespace.  A C<NameChain> is used in declaring system
 catalogs where DBMS entities live under a potentially N-depth namespace,
 such as depot entities grouped in a
-subdepot hierarchy.  A C<NameChain> is conceptually a sequence of
+subdepot hierarchy.  The C<NameChain> type explicitly composes the
+C<Stringy> mixin type.  A C<NameChain> is conceptually a sequence of
 0..N C<Name>, the 0..N elements being ordered from parent-most to
 child-most component name.  A C<NameChain> has 1 system-defined possrep
 named C<array> which directly matches the conception of the type; it
@@ -566,7 +576,8 @@ later if we have some situation where such a restriction might be useful.>
 A C<Comment> (scalar) is the text of a
 Muldis D code comment, which programmers can populate as an attribute of
 several catalog data types, such as whole routines or statements or
-expression nodes.  The C<Comment> type explicitly composes the
+expression nodes.  The C<Comment> type explicitly composes the C<Stringy>
+mixin type.  The C<Comment> type explicitly composes the
 C<Ordered> mixin type.  Every detail of C<Comment>'s representation (its 1
 possrep, default value and ordering algorithm, etc) is the same as C<Name>
 but it is explicitly disjoint due to having a different intended

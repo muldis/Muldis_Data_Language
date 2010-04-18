@@ -216,6 +216,12 @@ compose:
             sys.std.Core.Type.Int
             sys.std.Core.Type.Rat
 
+        sys.std.Core.Type.Stringy
+
+            sys.std.Core.Type.Blob
+            sys.std.Core.Type.Text
+            sys.std.Core.Type.Array
+
 =head1 MAXIMAL AND MINIMAL DATA TYPES
 
 These core data types are special and are the only Muldis D types (except
@@ -304,6 +310,19 @@ ordered, but often a type which is numeric is also ordered.  Muldis D does
 not currently have any system-defined complex number types, but if it did,
 they conceivably would also compose C<Numeric>; but in that case, it may
 prove useful to split the C<Numeric> mixin into itself and a C<Real> mixin.
+
+=head2 sys.std.Core.Type.Stringy
+
+The C<Stringy> type is a mixin (union) type that is intended to be
+explicitly composed by all other types that are considered I<stringy>,
+which for the moment also includes any types whose values are an ordered
+collection of elements, such as arrays.  A stringy type is a type with
+whose values it would be reasonable to apply all of the common string or
+array operators like C<~> or C<x>.  Just a few primary system-defined types
+are stringy types, including C<Blob>, C<Text>, and C<Array>.  The
+cardinality of C<Stringy> is infinity.  The default value of C<Stringy> is
+the C<Text> value empty string.  The C<Stringy> type is not itself ordered,
+but often a type which is stringy is also ordered.
 
 =head1 GENERIC SCALAR DATA TYPES
 
@@ -480,7 +499,8 @@ and minimum value is 1.
 =head2 sys.std.Core.Type.Blob
 
 A C<Blob> is an undifferentiated string of
-bits.  A C<Blob> has 1 system-defined possrep named C<bits> which consists
+bits.  The C<Blob> type explicitly composes the C<Stringy> mixin
+type.  A C<Blob> has 1 system-defined possrep named C<bits> which consists
 of 1 C<BString>-typed attribute whose name is the empty string; each
 element of C<bits> is either C<0> to represent a low bit or C<1> to
 represent a high bit.  The C<Blob> type explicitly composes the C<Ordered>
@@ -512,7 +532,8 @@ those terms.
 
 A C<Text> is a string of Unicode abstract
 characters which is formatted as a sequence of Unicode abstract codepoints
-in canonical decomposed normal form (NFD).  Two C<Text> will generally
+in canonical decomposed normal form (NFD).  The C<Text> type explicitly
+composes the C<Stringy> mixin type.  Two C<Text> will generally
 match at the grapheme abstraction level.  Of course, a Muldis D
 implementation doesn't actually have to store character data in NFD; but
 default matching semantics need to be as if it did.  A C<Text> has 1
@@ -825,7 +846,8 @@ indices in typical programming languages.  An C<Array> subtype is normally
 used by any system-defined N-adic operators where the order of their
 argument elements or result is significant (and duplicate values are
 significant); specifically, C<index> defines an explicit ordering for
-C<value>.  Its default value has zero tuples.
+C<value>.  Its default value has zero tuples.  The C<Array> type explicitly
+composes the C<Stringy> mixin type.
 
 =head2 sys.std.Core.Type.DHArray
 

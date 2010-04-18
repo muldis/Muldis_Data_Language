@@ -3037,10 +3037,10 @@ Examples:
         else s ((v $x) + ((v $y) exp 3)
 
     if $val isa T->Int then $val exp 3
-        else if $val isa T->Text then $val t-x 5
+        else if $val isa T->Text then $val x 5
         else True
 
-    'My answer is: ' t~ ($maybe ?? 'yes' !! 'no')
+    'My answer is: ' ~ ($maybe ?? 'yes' !! 'no')
 
 =head2 Generic Given-When-Default Expressions
 
@@ -3283,9 +3283,7 @@ Grammar:
         <expr> ** [<ws> <noncomm_infix_reduce_op> <ws>]
 
     <noncomm_infix_reduce_op> ::=
-          '[<=>]'
-        | 'b~' | 't~' | 'a~'
-        | '//' | '//d'
+        '[<=>]' | '~' | '//' | '//d'
 
 A C<noncomm_infix_reduce_op_invo> node is for using infix notation to
 invoke a (homogeneous) non-commutative N-adic reduction operator function.
@@ -3311,10 +3309,7 @@ different type of value, from the last op input list element.
 This table indicates which function is invoked by each keyword:
 
     [<=>] -> Core.Cat.Order.reduction( Array:{ $expr[0], ..., $expr[n] } )
-    b~    -> Core.Blob.catenation( Array:{ $expr[0], ..., $expr[n] } )
-    t~    -> Core.Text.catenation( Array:{ $expr[0], ..., $expr[n] } )
-    a~    -> Core.Array.catenation( Array:{ $expr[0], ..., $expr[n] } )
-
+    ~     -> Core.Stringy.catenation( Array:{ $expr[0], ..., $expr[n] } )
     //    -> Core.Set.Maybe.attr_or_value(
                 Array:{ $expr[0], ..., $expr[n-1] }, value => $expr[n] )
     //d   -> Core.Set.Maybe.attr_or_default(
@@ -3324,11 +3319,11 @@ Examples:
 
     Same [<=>] Increase [<=>] Decrease
 
-    F;'DEAD' b~ 1;'10001101' b~ F;'BEEF'
+    F;'DEAD' ~ 1;'10001101' ~ F;'BEEF'
 
-    'hello' t~ ' ' t~ 'world'
+    'hello' ~ ' ' ~ 'world'
 
-    Array:[ 24, 52 ] a~ Array:[ -9 ] a~ Array:[ 0, 11, 24, 7 ]
+    Array:[ 24, 52 ] ~ Array:[ -9 ] ~ Array:[ 0, 11, 24, 7 ]
 
     $a // $b // 42
 
@@ -3406,7 +3401,7 @@ Grammar:
           isa | '!isa' | 'not-isa' | as | asserting
         | imp | implies | nimp | if | nif
         | '-' | '/' | '^' | exp
-        | b-x | t-x | a-x
+        | x
         | in-r | '!in-r' | 'not-in-r' | r-has | 'r-!has' | 'r-not-has'
         | in-s | '!in-s' | 'not-in-s' | s-has | 's-!has' | 's-not-has'
         | in-b | '!in-b' | 'not-in-b' | b-has | 'b-!has' | 'b-not-has'
@@ -3488,9 +3483,7 @@ This table indicates which function is invoked by each keyword:
     ^    -> Core.Numeric.power_with_whole_exp( radix => $lhs,
                 exponent => $rhs )
     exp  -> Core.Integer.power( radix => $lhs, exponent => $rhs )
-    b-x  -> Core.Blob.replication( $lhs, count => $rhs )
-    t-x  -> Core.Text.replication( $lhs, count => $rhs )
-    a-x  -> Core.Array.replication( $lhs, count => $rhs )
+    x    -> Core.Stringy.replication( $lhs, count => $rhs )
 
     in-r   -> Core.Relation.tuple_is_member( t => $lhs, r => $rhs )
     !in-r  -> Core.Relation.tuple_is_not_member( t => $lhs, r => $rhs )
@@ -3547,7 +3540,7 @@ Examples:
 
     1;101.01 / 1;11.0
 
-    '-' t-x 80
+    '-' x 80
 
     Set:{ 8, 4, 6, 7 } ∖ Set:{ 9, 0, 7 }
 
