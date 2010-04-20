@@ -2547,9 +2547,9 @@ implementations of system-defined routines are not defined in terms of
 other Muldis D routines.
 
 A C<Recipe> has these 10 attributes, of which the 7 C<upd_params>,
-C<ro_params>, C<opt_params>, C<dispatch_params>, C<implements>,
-C<upd_globals>, C<ro_globals> define the I<heading> and the 2 C<exprs>,
-C<stmt> define the I<body>:
+C<ro_params>, C<opt_params>, C<upd_global_params>, C<ro_global_params>
+C<dispatch_params>, C<implements>, define the I<heading> and the 2
+C<exprs>, C<stmt> define the I<body>:
 
 =over
 
@@ -2571,6 +2571,16 @@ This is the declared read-only parameter list of the recipe, which has
 
 This is as per the same-named attribute of C<Updater>.
 
+=item C<upd_global_params> - C<RcpGlobalVarAliasMap>
+
+This declares 0..N lexical aliases for global variables which will
+serve as implicit subject-to-update parameters of the recipe.
+
+=item C<ro_global_params> - C<RcpGlobalVarAliasMap>
+
+This declares 0..N lexical aliases for global variables which will
+serve as implicit read-only parameters of the recipe.
+
 =item C<dispatch_params> - C<set_of.Name>
 
 Iff C<dispatch_params> is nonempty then this recipe is a virtual
@@ -2589,16 +2599,6 @@ by its elements; otherwise, empty means not implementing any virtuals.  An
 implementing recipe must have the same parameter list as its virtuals,
 save that the implementer's parameters' declared types must be
 subtypes of the corresponding ones of the virtuals.
-
-=item C<upd_globals> - C<RcpGlobalVarAliasMap>
-
-This declares 0..N lexical aliases for global variables which will
-serve as implicit subject-to-update parameters of the recipe.
-
-=item C<ro_globals> - C<RcpGlobalVarAliasMap>
-
-This declares 0..N lexical aliases for global variables which will
-serve as implicit read-only parameters of the recipe.
 
 =item C<exprs> - C<ExprNodeSet>
 
@@ -2622,7 +2622,8 @@ C<Recipe> must have at least one subject-to-update parameter or
 subject-to-update lexical-alias variable.
 
 C<Recipe> has a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params> and C<upd_globals> and C<ro_globals> and the
+C<upd_params> and C<ro_params> and C<upd_global_params> and
+C<ro_global_params> and the
 C<name> attributes of all the attributes of C<exprs>.  Its default value
 has zero parameters and has no specified I<body>.
 
