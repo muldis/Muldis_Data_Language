@@ -184,7 +184,8 @@ data types; they can not create or drop relvars.
 C<recipe sys.std.Core.Cat.create_depot_mount ($name : Name,
 $comment? : Comment, $is_temporary? : Bool, $create_on_mount? : Bool,
 $delete_on_unmount? : Bool, $we_may_update? : Bool,
-$allow_auto_run? : Bool, $details? : OVLScaValExprNodeSet)>
+$allow_auto_run? : Bool, $details? : OVLScaValExprNodeSet,
+&$mounts ::= $mnt.cat.mounts)>
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar C<mnt.cat.mounts>.  It will create a new depot mount in the DBMS
@@ -195,7 +196,8 @@ CONNECT statement or SQLite ATTACH statement.
 
 =head2 sys.std.Core.Cat.drop_depot_mount
 
-C<recipe sys.std.Core.Cat.drop_depot_mount ($name : Name)>
+C<recipe sys.std.Core.Cat.drop_depot_mount ($name : Name,
+&$mounts ::= $mnt.cat.mounts)>
 
 This recipe is an abstraction over deleting a tuple from the catalog
 relvar C<mnt.cat.mounts>.  It will drop an existing depot mount from the
@@ -206,7 +208,7 @@ SQL DISCONNECT statement or SQLite DETACH statement.
 =head2 sys.std.Core.Cat.alter_depot_mount_so_we_may_not_update
 
 C<recipe sys.std.Core.Cat.alter_depot_mount_so_we_may_not_update
-($name : Name)>
+($name : Name, &$mounts ::= $mnt.cat.mounts)>
 
 This recipe is an abstraction over updating a tuple of the catalog
 relvar C<mnt.cat.mounts> such that its C<we_may_update> attribute is made
@@ -217,7 +219,8 @@ C<Bool:False>.
 =head2 sys.std.Core.Cat.create_subdepot
 
 C<recipe sys.std.Core.Cat.create_subdepot ($depot : Name,
-$parent? : NameChain, $name : Name, $comment? : Comment)>
+$parent? : NameChain, $name : Name, $comment? : Comment,
+&$cat ::= $fed.cat, &$data ::= $fed.data)>
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.subdepots>.  It will create a
@@ -229,7 +232,8 @@ PACKAGE statement.
 =head2 sys.std.Core.Cat.drop_subdepot
 
 C<recipe sys.std.Core.Cat.drop_subdepot ($depot : Name,
-$parent? : NameChain, $name : Name)>
+$parent? : NameChain, $name : Name,
+&$cat ::= $fed.cat, &$data ::= $fed.data)>
 
 This recipe is an abstraction over deleting a tuple from the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.subdepots>.  It will drop an
@@ -238,35 +242,57 @@ statement or an Oracle DROP PACKAGE statement.
 
 =head1 Recipes For Defining Depot Routines and Data Types
 
-=head2 sys.std.Core.Cat.create_[function|updater|recipe|procedure]
+=head2 sys.std.Core.Cat.create_function
 
-C<recipe sys.std.Core.Cat.create_[function|updater|recipe|procedure]
-($depot : Name, $subdepot? : NameChain, $name : Name,
-$comment? : Comment, $material : [Function|Updater|Recipe|Procedure])>
+C<recipe sys.std.Core.Cat.create_function ($depot : Name,
+$subdepot? : NameChain, $name : Name, $comment? : Comment,
+$material : Function, &$cat ::= $fed.cat, &$data ::= $fed.data)>
 
 This recipe is an abstraction over inserting a tuple into the catalog
-relvar
-C<fed.cat.mounts{name=$depot}.depot.[function|updater|recipe|procedure]s>.
-It will create a new function|updater|recipe|procedure, in the depot
-mounted under the name given by the C<depot> argument, whose name and other
-details match the other arguments.  This recipe is analogous to a
-SQL CREATE FUNCTION|PROCEDURE statement.
+relvar C<fed.cat.mounts{name=$depot}.depot.functions>.  It will create a
+new function, in the depot mounted under the name given by the C<depot>
+argument, whose name and other details match the other arguments.  This
+recipe is analogous to a SQL CREATE FUNCTION statement.
 
-=head2 sys.std.Core.Cat.drop_[function|updater|recipe|procedure]
+=head2 sys.std.Core.Cat.drop_function
 
-C<recipe sys.std.Core.Cat.drop_[function|updater|recipe|procedure]
-($depot : Name, $subdepot? : NameChain, $name : Name)>
+C<recipe sys.std.Core.Cat.drop_function ($depot : Name,
+$subdepot? : NameChain, $name : Name,
+&$cat ::= $fed.cat, &$data ::= $fed.data)>
 
 This recipe is an abstraction over deleting a tuple from the catalog relvar
-C<fed.cat.mounts{name=$depot}.depot.[function|updater|recipe|procedure]s>.
-It will drop an existing depot function|updater|recipe|procedure.  This
-recipe is analogous to a SQL DROP FUNCTION|PROCEDURE statement.
+C<fed.cat.mounts{name=$depot}.depot.functions>.  It will drop an existing
+depot function.  This recipe is analogous to a SQL DROP FUNCTION statement.
+
+=head2 sys.std.Core.Cat.create_[updater|recipe|procedure]
+
+C<recipe sys.std.Core.Cat.create_[updater|recipe|procedure] ($depot : Name,
+$subdepot? : NameChain, $name : Name, $comment? : Comment,
+$material : [Updater|Recipe|Procedure], &$cat ::= $fed.cat)>
+
+This recipe is an abstraction over inserting a tuple into the catalog
+relvar C<fed.cat.mounts{name=$depot}.depot.[updater|recipe|procedure]s>.
+It will create a new updater|recipe|procedure, in the depot mounted under
+the name given by the C<depot> argument, whose name and other details match
+the other arguments.  This recipe is analogous to a SQL CREATE PROCEDURE
+statement.
+
+=head2 sys.std.Core.Cat.drop_[updater|recipe|procedure]
+
+C<recipe sys.std.Core.Cat.drop_[updater|recipe|procedure] ($depot : Name,
+$subdepot? : NameChain, $name : Name, &$cat ::= $fed.cat)>
+
+This recipe is an abstraction over deleting a tuple from the catalog relvar
+C<fed.cat.mounts{name=$depot}.depot.[updater|recipe|procedure]s>.  It will
+drop an existing depot updater|recipe|procedure.  This recipe is analogous
+to a SQL DROP PROCEDURE statement.
 
 =head2 sys.std.Core.Cat.create_[scalar|tuple|relation|domain|subset|mixin]_type
 
 C<recipe sys.std.Core.Cat.create_[scalar|tuple|relation|domain|subset|mixin]_type
 ($depot : Name, $subdepot? : NameChain, $name : Name, $comment? : Comment,
-$material : [Scalar|Tuple|Relation|Domain|Subset|Mixin]Type)>
+$material : [Scalar|Tuple|Relation|Domain|Subset|Mixin]Type,
+&$cat ::= $fed.cat, &$data ::= $fed.data)>
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot
@@ -278,7 +304,8 @@ This recipe is analogous to a SQL CREATE TYPE|DOMAIN statement.
 =head2 sys.std.Core.Cat.drop_[scalar|tuple|relation|domain|subset|mixin]_type
 
 C<recipe sys.std.Core.Cat.drop_[scalar|tuple|relation|domain|subset|mixin]_type
-($depot : Name, $subdepot? : NameChain, $name : Name)>
+($depot : Name, $subdepot? : NameChain, $name : Name,
+&$cat ::= $fed.cat, &$data ::= $fed.data)>
 
 This recipe is an abstraction over deleting a tuple from the catalog relvar
 C<fed.cat.mounts{name=$depot}.depot
