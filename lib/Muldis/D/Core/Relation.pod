@@ -968,8 +968,8 @@ These additional functions are specific to supporting ranking and quotas.
 =head2 sys.std.Core.Relation.rank
 
 C<< function sys.std.Core.Relation.rank (Relation <-- $topic : Relation,
-$name : Name, $ord_func : OrdDetCFuncNC, $is_reverse_order? : Bool) {...}
->>
+$name : Name, $ord_func : OrdDetCFuncNC, $is_reverse_order? : Bool,
+$first_rank? : NNInt) {...} >>
 
 This function results in the relational extension of its C<topic> argument
 by a single C<NNInt>-typed attribute whose name is provided by the C<name>
@@ -979,7 +979,8 @@ function named in the C<ord_func> argument when the latter function is
 curried by the C<is_reverse_order> argument.  The C<order-determination>
 function compares tuples, with each invocation of it getting a C<topic>
 tuple as each its C<topic> and C<other> arguments.  The new attribute of
-C<rank>'s result has a value of zero for its ranked-first tuple, and each
+C<rank>'s result has the value of the C<first_rank> argument (that defaults
+to zero if not explicitly given) for its ranked-first tuple, and each
 further consecutive ranked tuple has the next larger integer value.  Note
 that C<rank> provides the functionality of SQL's "RANK" feature but that
 the result of C<rank> is always a total ordering (as per a (total)
@@ -987,13 +988,19 @@ C<order-determination> function) and so there is no "dense" / "not dense"
 distinction (however a partial ordering can be implemented over it).  See
 also the C<sys.std.Core.Array.Array_from_wrap> function, which is the same
 as C<sys.std.Core.Relation.rank> but that it wraps the source tuples rather
-than just adding an attribute to them.
+than just adding an attribute to them.  The main purpose of the
+C<first_rank> parameter is to support C<rank> being used as a sequence
+generator to attach non-descriptive id attributes to a set of tuples that
+are about to be added to a database, where we want to start the sequence
+larger than the largest id value already in use there; granted, for that
+purpose the new ids don't have to be ordered, just distinct, but ordering
+is necessary for this setwise operation to remain deterministic.
 
 =head2 sys.std.Core.Relation.rank_by_attr_names
 
 C<< function sys.std.Core.Relation.rank_by_attr_names (Relation <--
 $topic : Relation, $name : Name, $order_by : array_of.OrderByName,
-$is_reverse_order? : Bool) {...} >>
+$is_reverse_order? : Bool, $first_rank? : NNInt) {...} >>
 
 This function is a short-hand for invoking C<rank> with the function
 C<sys.std.Core.Tuple.order_by_attr_names> as its C<ord_func> argument after
