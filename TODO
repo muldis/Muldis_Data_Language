@@ -75,22 +75,12 @@ to what the mixin defines, and the composer can add extra constraints over
 the composed attributes like forcing a subtype.
 Maybe also do ...
 Support delegation / 'handles'; for example:
-    - TAIDuration explicitly delegate to Rat attr,
-        and so all operators declared for 'Rat' simply work with
-        TAIDuration also as if all their sigs were
-        s/Rat/TAIDuration/ etc
     - Name explic delegate to Text attr
     - maybe Blob, Text explic delegate to String attr
     - a ColoredCircle would delegate to both Color and Circle attrs?
 This will all take some work to get right; not /all/ Rat/etc can be subst.
 Probably *only* those operators that Rational/etc explicitly declares can
 be delegated to Rat/etc by TAIInstant/etc.
-
-* Actually, all the temporal stuff just needs to be refactored now, as TAI
-no longer holds a privileged position.  Moreover, TAI can't actually
-reasonably delegate all of the Rat methods, since for example it doesn't
-make sense to multiply or divide a duration by another one, though you
-can multiply or divide a duration by a rat.
 
 ----------
 
@@ -330,19 +320,6 @@ and rational numerics, such as for character strings or binary strings.
 union, that takes a list of attributes and unions the projections of those
 attributes from every input relation; so this means, as with join(), that
 the input relations don't need to have the same headings.
-
-* Update the definition of the "Instant" type to account for updates to the
-Perl 6 spec on 2010.02.23 (r29809), where "Instant" was made opaque and is
-no longer specifically a count of seconds from the TAI epoch but rather
-there can be multiple epochs where an epoch is simply an Instant value, and
-an Instant's internals are implementation defined.  Since Muldis D has no
-opaque types save Int, its analogy could perhaps have multiple possreps,
-one per each epoch of common interest, which counts seconds from that?  See
-also the Temporal-concerning perl6-language thread immed preceding r29809.
-It seems that, like with Text and the thing about NFD vs NFKD or Unicode vs
-non-Han-unifying alternatives, there isn't really any one representation
-option for Instants that is overwhelming more correct or normal than others
-to be used as a default or internal representation everywhere.
 
 ----------
 
@@ -632,28 +609,10 @@ I would expect that most actual uses of them would work with inexact math.
 functions et al, or ones that deal with hyperreal/hypercomplex/etc types,
 or ones with variants of the core numeric types that propagate NaNs etc.
 
-* Make further updates to Temporal.pod to improve correctness or
-normalization, particularly with durations, maybe add some *Duration
-subtypes.  Also expand the selection of routines to allow more control over
-semantics.  Seek advice from the Perl DateTime people about this stuff.
-
-* Consider splitting Temporal.pod so that the Instant,Duration mixins and
-their virtuals are in one extension (or are in the core iff the system
-catalog ends up using them), and any composing types are in one or more
-others.  The general idea is to move to a model where the central temporals
-don't know anything about details of a particular calendar, whether TAI or
-UTC or anything else, and those details become more the domain of
-separately distributed modules or extensions, with either or both of
-temporal extensions being written in Muldis D as user modules or there
-being more sys.imp.* temporals, exposing the particular implementations.
-
 * Consider adding a sleep() system-service routine, if it would be useful.
 
 * Add multiplication and division operators to the Duration types; these
 would both be dyadic ops where the second op is a Numeric.
-
-* Consider updates to Temporal.pod that let one record time zones etc
-attached to instant values; this would be a non-central feature.
 
 * Consider adding a Temporal.pod type specific to representing a period in
 time, maybe simply as an alias for 'interval_of.*Instant' or some such.

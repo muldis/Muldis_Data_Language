@@ -152,8 +152,7 @@ C<basic>, C<extended>.
 
 The value associated with the C<ln_extensions> attribute named
 C<standard_syntax_extensions> must be formatted similarly to a C<Set> SCVL;
-each of the value's elements must be one of these 1 Perl C<Str> values:
-C<temporal>.
+each of the value's elements must be one of these 0 Perl C<Str> values.
 
 =back
 
@@ -167,7 +166,7 @@ Examples:
     [ 'Muldis_D', 'http://muldis.com', '0.120.0', 'HDMD_Perl6_STD', {
         catalog_abstraction_level => 'rtn_inv_alt_syn',
         op_char_repertoire => 'extended',
-        standard_syntax_extensions => Set.new('temporal')
+        standard_syntax_extensions => Set.new()
     } ]
 
 =head1 CATALOG ABSTRACTION LEVELS
@@ -392,7 +391,7 @@ text editors you want to use support it.
 The C<standard_syntax_extensions> pragma declares which optional portions
 of the Muldis D grammar a programmer may employ with their Muldis D code.
 
-There is currently 1 specified standard syntax extension: C<temporal>.
+There are currently no specified standard syntax extensions.
 These are all mutually independent and any or all may be used at once.
 
 While each I<standard syntax extension> is closely related to a I<Muldis D
@@ -412,13 +411,6 @@ the catalog abstraction level is C<rtn_inv_alt_syn>, as is appropriate.
 Specifying the C<standard_syntax_extensions> pragma in a C<language_name>
 node is optional, and when omitted it defaults to the empty set, meaning no
 extensions may be used.
-
-=head2 temporal
-
-The C<temporal> standard syntax extension is closely related to the
-L<Muldis::D::Ext::Temporal> language extension, and it constitutes special
-syntax for its data types; in the future it may improve the type syntax or
-add syntax for operators.
 
 =head1 VALUE LITERALS AND SELECTORS
 
@@ -791,7 +783,7 @@ Examples:
         exponent => 37,
     } ]
 
-    [ 'Scalar', 'sys.std.Temporal.Type.UTCDateTime', datetime => {
+    [ 'Scalar', 'fed.lib.the_db.UTCDateTime', datetime => {
         year   => 2003,
         month  => 10,
         day    => 26,
@@ -1672,116 +1664,6 @@ Examples (for now sans any use of extra op args, which are atypical):
     [ 'op', '∈i', [ ['$','a'], 1..5 ] ]
 
     [ 'op', '∉i', [ ['$','foo'], ['$','min']..^['$','max'] ] ]
-
-=head1 TEMPORAL EXTENSION OPAQUE VALUE LITERALS
-
-The C<temporal> standard syntax extension is closely related to the
-L<Muldis::D::Ext::Temporal> language extension, and it constitutes special
-syntax for its data types; in the future it may improve the type syntax or
-add syntax for operators.
-
-When this extension is active, there exist 5 additional varieties of
-C<value> node:  C<TAIInstant>, C<TAIDuration>,
-C<UTCInstant>, C<FloatInstant>, C<UTCDuration>.  Also,
-between these 5 varieties, these 11 additional values are allowed for
-C<value>'s C<value_kind> attribute:  C<TAIInstant>, C<TAIDuration>,
-C<UTC[Instant|DateTime|Date|Time]>,
-C<Float[Instant|DateTime|Date|Time]>, C<UTCDuration>.  For all of these
-varieties, the C<value_kind> may not be omitted.
-
-=head2 Date and Time Literals
-
-A C<TAIInstant> node represents a single point in time which is specified
-in terms of atomic seconds.  This node is interpreted as a Muldis D
-C<sys.std.Temporal.Type.TAIInstant> value as follows:  The payload must be
-a Perl C<Instant>, which is mapped directly.
-
-A C<TAIDuration> node represents a single amount of time (the difference
-between two instants) which is specified in terms of atomic seconds.  This
-node is interpreted as a Muldis D C<sys.std.Temporal.Type.TAIDuration>
-value as follows:  The payload must be a Perl C<Duration>, which is mapped
-directly.
-
-A C<UTCInstant> node represents an "instant"/"datetime" value that is
-affiliated with the UTC time-zone.  This node is interpreted as a Muldis D
-C<sys.std.Temporal.Type.UTCInstant> value whose C<instant> possrep
-attribute values are defined as follows:
-
-The payload must be a Perl C<Seq|Array> with 6 elements, where each element
-may be either undefined or defined; or if fewer than 6 elements are
-provided, the C<Seq|Array> will be implicitly extended to 6, filling with
-undefs.  The 6 payload elements correspond in order, from the lowest to the
-highest indexed, to the 6 attributes: C<year>, C<month>, C<day>, C<hour>,
-C<minute>, C<second>.  For each payload element that Perl considers
-undefined or defined, the corresponding attribute has the C<Nothing> or a
-C<Single> value, respectively.  For each of the first 5 elements, when it
-is defined, it must qualify as a valid payload for an C<Int> node; for
-the 6th element, when it is defined, it must qualify as a valid payload for
-a C<Rat> node.
-
-A defined C<year> may be any integer, each of [C<month>, C<day>] must be a
-positive integer, each of [C<hour>, C<minute>] must be a non-negative
-integer, and C<second> must be a non-negative rational number.  If all 6
-attributes are defined, then the new C<UTCInstant> value is also a
-C<UTCDateTime>; if just the first 3 or last 3 are defined, then the value
-is not a C<UTCDateTime> but rather a C<UTCDate> or C<UTCTime>,
-respectively; if any other combination of attributes are defined, then the
-value is just a C<UTCInstant> and not of any of the other 3 subtypes.
-
-A C<FloatInstant> node represents an "instant"/"datetime" value that is
-"floating" / not affiliated with any time-zone.  This node is interpreted
-as a Muldis D C<sys.std.Temporal.Type.FloatInstant> value in an identical
-fashion to how a C<UTCInstant> node is interpreted, whose format it
-completely shares.  Likewise regarding C<Float[DateTime|Date|Time]>.
-
-A C<UTCDuration> node represents a duration value, an amount of time, which
-is not fixed to any instant in time.  This node is interpreted as a Muldis
-D C<sys.std.Temporal.Type.UTCDuration> value whose C<duration> possrep
-attribute values are defined as follows:
-
-The payload must be a Perl C<Seq|Array> with 6 elements, where each element
-may be either undefined or defined; or if fewer than 6 elements are
-provided, the C<Seq|Array> will be implicitly extended to 6, filling with
-undefs.  The 6 payload elements correspond in order, from the lowest to the
-highest indexed, to the 6 attributes: C<years>, C<months>, C<days>,
-C<hours>, C<minutes>, C<seconds>.  For each payload element that Perl
-considers undefined or defined, the corresponding attribute has the
-C<Nothing> or a C<Single> value, respectively.  For each of the first 5
-elements, when it is defined, it must qualify as a valid payload for an
-C<Int>  node; for the 6th element, when it is defined, it must qualify
-as a valid payload for a C<Rat>  node.
-
-A defined [C<years>, C<months>, C<days>, C<hours>, C<minutes>] may be any
-integer, and C<seconds> may be any rational number.  I<Currently,
-C<UTCDuration> has no system-defined subtypes, but that may change later.>
-
-Examples I<TODO: What is t actual syntax for P6 [Instant|Duration] types?>:
-
-    :TAIInstant( Instant.new(1235556432.0) )
-
-    Instant.new(854309115.0)
-
-    :TAIDuration( Duration.new(3600.0) )
-
-    Duration.new(-50.0)
-
-    Duration.new(3.14159)
-
-    Duration.new(:2<1011101101> * :2<10> ** :2<-11011>)
-
-    Duration.new(1/43)
-
-    :UTCInstant[1964,10,16,16,12,47.5] # a UTCDateTime #
-
-    :UTCInstant[2002,12,6] # a UTCDate #
-
-    :UTCInstant[undef,undef,undef,14,2,29.0] # a UTCTime #
-
-    :FloatInstant[2003,4,5,2] # min,sec unknown or N/A #
-
-    :FloatInstant[1407] # just know its sometime in 1407 #
-
-    :UTCDuration[3,5,1,6,15,45.000012]
 
 =head1 SEE ALSO
 

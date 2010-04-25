@@ -6,11 +6,61 @@
     * Muldis::D version 0.121.0 is released on CPAN as
     Muldis-D-0.121.0.tar.gz.
 
+    * This release features the purge of all temporal concerning features
+    except for the temporal mixin types and virtual routines; all non-mixin
+    temporal types, all non-virtual temporal routines, and the temporal
+    standard syntax extension in all 3 concrete grammars were removed.  But
+    not lost; these removed bits will soon be put in a file in the
+    Muldis::D::Manual distribution, ostensibly in case someone wants to
+    derive from them a user-defined extension or something.  The primary
+    reason for this move is that details of the Gregorian calendar et al
+    are too complicated and too subject to change to define in a core
+    programming language spec, and are best left to separate modules; and
+    even if not, the existing TAI/UTC types needed a huge refactor anyway.
+    As a result of this purge, the spec was made smaller by 53K of text in
+    its lib/ dir, which is 5% of its release-0.121.0 lib/ size.
+
     * (Temporal.pod)  Updated the 2 mixin types "Instant","Duration" so
     that their default values are now implementation-defined.  This also
     affects the type of "Instant.fetch_curr_instant" when its "target"
     argument has the declared type of "Instant"; the fetched datetime would
     have the same type as the implementation-defined default value.
+
+    * (Types_Catalog.pod)  Updated the "OVLScalar" catalog type to remove
+    the 5 values "[TAI|UTC|Float]Instant", "[TAI|UTC]Duration".
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  In all 3 STD.pod, completely
+    removed the "temporal" standard syntax extension, which provided
+    special value literal syntax to all the system-defined non-mixin
+    temporal types.  Removed the whole main pod section "TEMPORAL EXTENSION
+    OPAQUE VALUE LITERALS", which had a sub-section "Date and Time
+    Literals", and declared the 5 value node kinds
+    "[TAI|UTC|Float]Instant", "[TAI|UTC]Duration".  Also updated the main
+    pod section "STANDARD SYNTAX EXTENSIONS" to first remove the pod
+    sub-section "temporal" and then to say that there are currently zero
+    standard syntax extensions; also updated the "LANGUAGE NAME" main pod
+    section to say likewise on the latter.  Also updated a "Scalar" code
+    example to make "UTCDateTime" into a user-defined type.
+
+    * (Temporal.pod)  Removed most of the DESCRIPTION and TYPE SUMMARY main
+    pod sections, leaving shorter versions.  Removed these 6 entire main
+    pod sections: "DATA TYPES FOR TEMPORAL ARTIFACTS", "FUNCTIONS
+    IMPLEMENTING VIRTUAL [ORDERED|INSTANT|DURATION] FUNCTIONS", "FUNCTIONS
+    FOR CONVERSION BETWEEN UTC AND TAI", "SYSTEM-SERVICES IMPLEMENTING
+    VIRTUALS FOR CURRENT DATES AND TIMES".  With those sections, these 16
+    non-mixin types were removed: "PInt[12|31]", "NNInt[23|59]",
+    "NNRatLT62", "TAI[Instant|Duration]",
+    "[UTC|Float][Instant|DateTime|Date|Time]", "UTCDuration"; also, these
+    27 non-virtual functions were removed: 15
+    "[TAI|UTC|Float]Instant.[order|[|abs_]diff|[lat|earli]er]", 10
+    "[TAI|UTC]Duration.[order|abs|sum|[|abs_]diff]", 2
+    "UTCInstant.[UTC_from_TAI|TAI_from_UTC]"; also, these 7 non-virtual
+    system-service routines were removed: TAIInstant.fetch_curr_instant",
+    "[UTC|Float]Instant.fetch_curr_[datetime|date|time]".
+
+    * (PTMD_STD.pod)  Updated the "Material Specification Common Elements"
+    pod sub-section to add "database-type" as an option (subservient to
+    "tuple-type") to the "material_kind" grammar node.
 
 2010-04-23  Darren Duncan <darren@DarrenDuncan.net>
 
