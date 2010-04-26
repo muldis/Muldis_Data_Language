@@ -1546,26 +1546,29 @@ Examples:
         ['$','digit'],
     ]
 
-=head2 Library Entity Reference Selector
+=head2 Material Reference Selector Expressions
 
-B<TODO: REWRITE THIS DOCUMENTATION SECTION!>
+A C<material_ref> node has 2 ordered elements:  The first element
+is the Perl character string C<material-ref>.  The second element is a
+C<PNSQNameChain_payload>, which names the routine or type to reference.
 
-A C<[func|upd|proc|type|ord_det_func]_ref> node has 2 ordered elements:
-The first element is the Perl character string value
-C<[func|upd|proc|type|ord-det-func]-ref>.  The second element is a
-C<PNSQNameChain_payload>, which names the routine|type to invoke.
+A C<curried_func> node has 2-4 ordered elements:  The first element is the
+Perl character string C<curried-func>.  The second element is a
+C<PNSQNameChain_payload>, which names the function to reference.  The last
+1-2 elements provide arguments for the function as per the last 1-2
+elements of a C<func_invo> node.
 
 Examples:
 
-    ['func-ref','nlx.lib.filter']
+    # a higher-order function curried with 1 argument #
+    [ 'curried-func', 'nlx.lib.filter',
+        { search_term => ['$','search_term'] } ]
 
-    ['upd-ref','nlx.lib.swap']
+    # a reference to an updater #
+    ['material-ref','nlx.lib.swap']
 
-    ['proc-ref','nlx.lib.try_block']
-
-    ['type-ref','nlx.lib.foo_type']
-
-    ['ord-det-func-ref','nlx.lib.order_bars']
+    # a reference to a data type #
+    ['material-ref','nlx.lib.foo_type']
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
@@ -1630,7 +1633,8 @@ Examples:
 
     [ 'op', '//', [ ['$','a'], ['$','b'], 42 ] ]
 
-    [ 'op', '//d', [['$','a'],['$','b'],['type-ref','nlx.lib.foo_type']] ]
+    [ 'op', '//d', [ ['$','a'], ['$','b'],
+        ['material-ref','nlx.lib.foo_type'] ] ]
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -1658,11 +1662,11 @@ C<rhs>, respectively.
 
 Examples:
 
-    [ 'op', 'isa', [ ['$','bar'], ['type-ref','nlx.lib.foo_type'] ] ]
+    [ 'op', 'isa', [ ['$','bar'], ['material-ref','nlx.lib.foo_type'] ] ]
 
-    [ 'op', '!isa', [ ['$','bar'], ['type-ref','nlx.lib.foo_type'] ] ]
+    [ 'op', '!isa', [ ['$','bar'], ['material-ref','nlx.lib.foo_type'] ] ]
 
-    [ 'op', 'as', [ ['$','scalar'], ['type-ref','Int'] ] ]
+    [ 'op', 'as', [ ['$','scalar'], ['material-ref','Int'] ] ]
 
     [ 'op', 'asserting', [['$','int'], [ 'op', '≠', [['$','int'], 0] ]] ]
 
@@ -1690,7 +1694,7 @@ C<expr> node.
 
 Examples:
 
-    [ 'op', 'd', ['type-ref','nlx.lib.foo_type'] ]
+    [ 'op', 'd', ['material-ref','nlx.lib.foo_type'] ]
 
     [ 'op', 'not', [['Bool','True']] ]
 

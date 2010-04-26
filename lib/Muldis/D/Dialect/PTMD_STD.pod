@@ -2732,7 +2732,7 @@ Grammar:
         | <func_invo>
         | <if_else_expr>
         | <given_when_def_expr>
-        | <lib_entity_ref_selector>
+        | <material_ref_sel_expr>
 
     <delim_expr> ::=
         '(' <ws>? <expr> <ws>? ')'
@@ -3018,8 +3018,8 @@ Examples:
     if $x = ∅ or $y = ∅ then ∅
         else s ((v $x) + ((v $y) exp 3)
 
-    if $val isa T->Int then $val exp 3
-        else if $val isa T->Text then $val x 5
+    if $val isa <Int> then $val exp 3
+        else if $val isa <Text> then $val x 5
         else True
 
     'My answer is: ' ~ ($maybe ?? 'yes' !! 'no')
@@ -3067,56 +3067,51 @@ Examples:
         when 'E' then 11
         default $digit
 
-=head2 Library Entity Reference Selector
-
-B<TODO: REWRITE THIS DOCUMENTATION SECTION!>
+=head2 Material Reference Selector Expressions
 
 Grammar:
 
-    <lib_entity_ref_selector> ::=
-          <func_ref>
-        | <upd_ref>
-        | <proc_ref>
-        | <type_ref>
-        | <ord_det_func_ref>
+    <material_ref_sel_expr> ::=
+          <material_ref>
+        | <curried_func>
 
-    <func_ref> ::=
-        'F->' <routine_name>
+    <material_ref> ::=
+        '<' <material_name> '>'
 
-    <upd_ref> ::=
-        'U->' <routine_name>
+    <material_name> ::=
+        <PNSQNameChain_payload>
 
-    <proc_ref> ::=
-        'P->' <routine_name>
+    <curried_func> ::=
+        <material_ref> <unspace> <func_arg_list>
 
-    <type_ref> ::=
-        'T->' <type_name>
-
-    <ord_det_func_ref> ::=
-        'ODF->' <routine_name>
-
-A C<[func|upd|proc|type|ord_det_func]_ref> node represents a literal or
-selector invocation for a DBMS routine or type reference value.  It is
+A C<material_ref> node represents a selector invocation for a value of the
+C<sys.std.Core.Type.Cat.AbsPathMaterialNC> type, which is selected in terms
+of a value of the C<sys.std.Core.Type.Cat.RelPathMaterialNC> type.  It is
 interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet> value, which when
-evaluated at runtime would result in a
-C<sys.std.Core.Type.Cat.AbsPathMaterialNC>
-value.  The C<[routine|type]_name> element specifies the C<referencing>
-attribute of the new C<sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet>,
-which is the name of the routine or type being invoked by way of the new
-reference value.
+C<sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet> value.  The
+C<material_name> element specifies the C<referencing> attribute of the new
+C<APMaterialNCSelExprNodeSet>, which is the name, from the point of view of
+the routine embedding this expression node, of the routine or type that the
+new C<AbsPathMaterialNC> value is supposed to facilitate portable invoking
+of, from any other routine besides the embedding routine.
+
+A C<curried_func> node represents a value of the
+C<sys.std.Core.Type.Cat.CurriedFuncNC> type.  It is a special shorthand
+syntax for a C<Tuple> node that defines a tuple with 2 attributes,
+C<function> and C<args>, where the first's value is a C<material_ref> node
+and the second's value is a C<Tuple> node as per a C<func_invo> node's
+argument list.
 
 Examples:
 
-    F->nlx.lib.filter
+    # a higher-order function curried with 1 argument #
+    <nlx.lib.filter>( $>search_term )
 
-    U->nlx.lib.swap
+    # a reference to an updater #
+    <nlx.lib.swap>
 
-    P->nlx.lib.try_block
-
-    T->nlx.lib.foo_type
-
-    ODF->nlx.lib.order_bars
+    # a reference to a data type #
+    <nlx.lib.foo_type>
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
@@ -3309,7 +3304,7 @@ Examples:
 
     $a // $b // 42
 
-    $a //d $b //d T->nlx.lib.foo_type
+    $a //d $b //d <nlx.lib.foo_type>
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -3380,10 +3375,11 @@ Grammar:
         <expr>
 
     <nonsym_dyadic_infix_op__op_cr_basic> ::=
-          isa | '!isa' | 'not-isa' | as | asserting
+          isa | '!isa' | 'not-isa' | as | asserting | assuming
         | imp | implies | nimp | if | nif
         | '-' | '/' | '^' | exp
         | x
+        | where | '!where' | 'not-where'
         | in-r | '!in-r' | 'not-in-r' | r-has | 'r-!has' | 'r-not-has'
         | in-s | '!in-s' | 'not-in-s' | s-has | 's-!has' | 's-not-has'
         | in-b | '!in-b' | 'not-in-b' | b-has | 'b-!has' | 'b-not-has'
@@ -3424,6 +3420,7 @@ Some of the keywords are aliases for each other:
     nimp      | ↛
     if        | ←
     nif       | ↚
+    !where    | not-where
     in-r      | ∈r
     !in-r     | ∉r not-in-r
     r-has     | r∋
@@ -3456,6 +3453,8 @@ This table indicates which function is invoked by each keyword:
     !isa -> Core.Universal.is_not_value_of_type( $lhs, type => $rhs )
     as   -> Core.Universal.treated( $lhs, as => $rhs )
     asserting -> Core.Universal.assertion( $lhs, is_true => $rhs )
+    assuming -> sys.std.Core.Cat.curried_func_static_exten(
+                function => $lhs, args => $rhs )
     imp  -> Core.Boolean.imp( $lhs, $rhs )
     nimp -> Core.Boolean.nimp( $lhs, $rhs )
     if   -> Core.Boolean.if( $lhs, $rhs )
@@ -3466,6 +3465,9 @@ This table indicates which function is invoked by each keyword:
                 exponent => $rhs )
     exp  -> Core.Integer.power( radix => $lhs, exponent => $rhs )
     x    -> Core.Stringy.replication( $lhs, count => $rhs )
+
+    where  -> Core.Relation.restriction( $lhs, func => $rhs )
+    !where -> Core.Relation.cmpl_restr( $lhs, func => $rhs )
 
     in-r   -> Core.Relation.tuple_is_member( t => $lhs, r => $rhs )
     !in-r  -> Core.Relation.tuple_is_not_member( t => $lhs, r => $rhs )
@@ -3504,11 +3506,11 @@ customization; but most actual uses of like/etc don't use C<escape> anyway.
 
 Examples:
 
-    $bar isa T->nlx.lib.foo_type
+    $bar isa <nlx.lib.foo_type>
 
-    $bar !isa T->nlx.lib.foo_type
+    $bar !isa <nlx.lib.foo_type>
 
-    $scalar as T->Int
+    $scalar as <Int>
 
     $int asserting ($int ≠ 0)
 
@@ -3568,7 +3570,7 @@ This table indicates which function is invoked by each keyword:
 
 Examples:
 
-    d T->nlx.lib.foo_type
+    d <nlx.lib.foo_type>
 
     not True
 
@@ -4088,7 +4090,7 @@ includes every kind of C<< <expr> >> that is also a C<< <value> >> (meaning
 any C<< <opaque_value_literal> >> and C<< <coll_value_selector> >>), as
 well as any C<< <non_value_comment> >> and
 C<< <delim_expr> >> and C<< <expr_name> >> and C<< <func_invo>
->> and C<< <lib_entity_ref_selector> >>.  In general these are very simple
+>> and C<< <material_ref_sel_expr> >>.  In general these are very simple
 or are entirely or mostly surrounded by some kind of delimiters.  These are
 non-associative or associativity is not applicable.
 
