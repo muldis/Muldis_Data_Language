@@ -495,6 +495,12 @@ following grammar definitions are in effect:
     <expr> ::=
         <expr__plain_rtn_inv>
 
+    <update_stmt> ::=
+        <update_stmt__plain_rtn_inv>
+
+    <proc_stmt> ::=
+        <proc_stmt__plain_rtn_inv>
+
 This abstraction level is the lowest one that can be recommended for
 general use, and every Muldis D implementation that is expected to be
 directly used by programmers (in contrast to its main use just being by way
@@ -563,6 +569,12 @@ the following grammar definitions are in effect:
     <expr> ::=
         <expr__rtn_inv_alt_syn>
 
+    <update_stmt> ::=
+        <update_stmt__rtn_inv_alt_syn>
+
+    <proc_stmt> ::=
+        <proc_stmt__rtn_inv_alt_syn>
+
 This abstraction level is the highest one and is the most recommended one
 for general use, assuming that all the Muldis D implementations you want to
 use support it.  The expectation is that, in general, minimal Muldis D
@@ -594,7 +606,7 @@ parse grammar than SQL in its general case.
 Code written to the C<rtn_inv_alt_syn> level can employ all of the language
 grammar constructs that C<plain_rtn_inv> can, plus all of those described
 in these main pod sections: L</FUNCTION INVOCATION ALTERNATE SYNTAX
-EXPRESSIONS>.
+EXPRESSIONS>, L</IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS>.
 
 Examples:
 
@@ -3123,8 +3135,12 @@ Examples:
 
 Grammar:
 
-    <update_stmt> ::=
+    <update_stmt__plain_rtn_inv> ::=
         <imus_imp_invo>
+
+    <update_stmt__rtn_inv_alt_syn> ::=
+          <update_stmt__plain_rtn_inv>
+        | <imp_invo_alt_syntax>
 
 An C<update_stmt> node is a single member statement of a multi-update
 statement, which must be composed beneath a C<depot>, or specifically into
@@ -3219,7 +3235,7 @@ Examples:
 
 Grammar:
 
-    <proc_stmt> ::=
+    <proc_stmt__plain_rtn_inv> ::=
           <stmt_name>
         | <named_stmt>
         | <ovl_sca_val_stmt>
@@ -3233,6 +3249,10 @@ Grammar:
         | <iterate_stmt>
         | <loop_stmt>
         | <material_ref_sel_stmt>
+
+    <proc_stmt__rtn_inv_alt_syn> ::=
+          <proc_stmt__plain_rtn_inv>
+        | <imp_invo_alt_syntax>
 
     <stmt_name> ::=
         <stmt_sigil> <Name_payload>
@@ -4297,6 +4317,61 @@ Examples (for now sans any use of extra op args, which are atypical):
     $a ∈i SPInterval:{1..5}
 
     $foo ∉i SPInterval:{$min..^$max}
+
+=head1 IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS
+
+Grammar:
+
+    <imp_invo_alt_syntax> ::=
+        ...
+
+An C<imp_invo_alt_syntax> node represents the invocation of a named
+system-defined imperative routine with specific arguments.  It is
+interpreted as a tuple of a Muldis D C<sys.std.Core.Type.Cat.MultiUpdStmt>
+or C<sys.std.Core.Type.Cat.ImpInvoExprNodeSet> value.  An
+C<imp_invo_alt_syntax> node is a lot like an C<imus_imp_invo> or
+C<iproc_imp_invo> node in purpose and interpretation but it differs in
+several significant ways.
+
+While an C<imus_imp_invo> or C<iproc_imp_invo> node can be used to invoke
+any imperative routine at all (except that an C<imus_imp_invo> can't invoke
+a procedure), an C<imp_invo_alt_syntax> node can only invoke a fraction of
+them, and only standard system-defined imperative routines.  While an
+C<imus_imp_invo> or C<iproc_imp_invo> node uses a simple common format with
+all imperative routines, written in prefix notation with generally named
+arguments, an C<imp_invo_alt_syntax> node uses potentially unique syntax
+for each imperative routine, often written in infix notation, although
+inter-imperative routine format consistency is still applied as much as is
+reasonably possible.
+
+Broadly speaking, an C<imp_invo_alt_syntax> node has 2-3 kinds of payload
+elements:  The first is the determinant of what imperative routine to
+invoke, hereafter referred to as an I<op> or I<keyword>.  The second is an
+ordered list of 1-N mandatory imperative routine inputs, hereafter referred
+to as I<main op args>, whose elements typically have generic names like
+C<var_name> or C<lhs_var> or C<rhs_var>.  The (optional) third is a named
+list of optional imperative routine inputs, hereafter referred to as
+I<extra op args>, whose elements tend to have more purpose-specific names
+such as C<using_clause>, though note that things like C<using_clause> can
+be either mandatory or optional depending on the op they are being used
+with.
+
+Note that, with each of the main imperative invocation alternate syntax
+statement nodes documented in this main POD section (members of
+C<imp_invo_alt_syntax> etc), any occurrences of child C<var_name> nodes
+should be read as being C<expr> nodes instead in contexts where instances
+of the main nodes are being composed beneath C<updater> or C<recipe> nodes,
+and just as C<var_name> nodes when composed beneath C<procedure> nodes.
+This is because any argument to an imperative invocation may be any value
+or pseudo-variable expression (including a parameter) when that invocation
+is in an updater or recipe, but said argument can only be a lexical
+variable or parameter name when in a procedure.
+
+Note that the imperative routines with alternate syntax include updaters,
+recipes, and procedures, and they are all shown in one list for simplicity.
+But only alternate syntax for updaters is valid in an updater, and only
+alternate syntax for updaters and recipes is valid in a recipe; all of
+these alternate syntaxes are valid in a procedure.
 
 =head1 NESTING PRECEDENCE RULES
 
