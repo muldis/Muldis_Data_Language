@@ -1574,7 +1574,39 @@ Examples:
 
 =head1 GENERIC UPDATER OR RECIPE STATEMENTS
 
-I<This main section is momentarily empty.>
+=head2 Generic In-Multi-Update-Statement Imperative Invocation Statements
+
+An C<imus_imp_invo> node has 2-4 ordered elements:  The first element is
+the Perl character string C<imus-imp-invo>.  The second element is a
+C<PNSQNameChain_payload>, which names the updater or recipe to invoke.  The
+last 1-2 elements provide arguments to the updater or recipe invocation;
+either or both or none of an C<Array_payload> element and a
+C<Tuple_payload> element may be given.  The C<Array_payload> 3rd/4th
+element is for any anonymous (and ordered if multiple exist) arguments, and
+the C<Tuple_payload> 3rd/4th element is for any named arguments; each
+C<Array_payload> element or C<Tuple_payload> element value is the
+I<possibly tagged argument value> (PTAV).  For each PTAV, if the argument
+is for a read-only parameter, then the PTAV is just an C<expr> node which
+is the argument value; if the argument is for a subject-to-update
+parameter, then the PTAV is a Perl array ref with exactly 2 elements,
+where the first element is the Perl character string C<&>, and the second
+element is the same C<expr> node that the PTAV would have been were this
+for a read-only parameter.
+
+Examples:
+
+    # two mandatory params, one s-t-u, one r-o #
+    [ 'imus-imp-invo', 'assign', [ ['&',['$','foo']], 3 ] ]
+
+    # same as previous #
+    [ 'imus-imp-invo', 'assign', [ 3, ['&',['$','foo']] ] ]
+
+    # still same as previous but with all-named syntax #
+    [ 'imus-imp-invo', 'assign', { target => ['&',['$','foo']], v => 3 } ]
+
+    # three mandatory params #
+    [ 'imus-imp-invo', 'nlx.lib.lookup', { addr => ['&',['$','addr']],
+        people => ['$','people'], name => ['$','name'] } ]
 
 =head1 GENERIC PROCEDURE STATEMENTS
 
@@ -1588,13 +1620,41 @@ explicit statement node name for the third element.
 
 Examples:
 
-    # an stmt_name node #
+    # a stmt_name node #
     ['|','foo_stmt']
 
     # a named_stmt node #
     [ '|::=', 'bar_stmt', [ 'iproc-imp-invo', 'nlx.lib.swap',
-        { first => ['$','first'], second => ['$','second'] } ] ]
-    # TODO: UPDATE EXAMPLE CODE TO ADD "&" MARKER FOR BOTH ARGS. #
+        {first => ['&',['$','first']], second => ['&',['$','second']]} ] ]
+
+=head2 Generic In-Procedure Imperative Invocation Statements
+
+An C<iproc_imp_invo> node has 2-4 ordered elements:  The first element is
+the Perl character string C<iproc-imp-invo>.  The second element is a
+C<PNSQNameChain_payload>, which names the imperative routine to invoke. 
+The last 1-2 elements provide arguments to the imperative routine
+invocation; either or both or none of an C<Array_payload> element and a
+C<Tuple_payload> element may be given.  The C<Array_payload> 3rd/4th
+element is for any anonymous (and ordered if multiple exist) arguments, and
+the C<Tuple_payload> 3rd/4th element is for any named arguments; each
+C<Array_payload> element or C<Tuple_payload> element value is the
+I<possibly tagged argument value> (PTAV).  For each PTAV, if the argument
+is for a read-only parameter, then the PTAV is just a C<var_name> node
+which is the argument value; if the argument is for a subject-to-update
+parameter, then the PTAV is a Perl array ref with exactly 2 elements,
+where the first element is the Perl character string C<&>, and the second
+element is the same C<var_name> node that the PTAV would have been were
+this for a read-only parameter.
+
+Examples:
+
+    [ 'iproc-imp-invo', 'fetch_curr_instant', [ ['&',['$','now']] ] ]
+
+    [ 'iproc-imp-invo', 'prompt_Text_line',
+        [ ['&',['$','user_input']], ['$','message'] ] ]
+
+    [ 'iproc-imp-invo', 'Integer.fetch_random',
+        [ ['&',['$','rand']], ['$','interval'] ] ]
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 

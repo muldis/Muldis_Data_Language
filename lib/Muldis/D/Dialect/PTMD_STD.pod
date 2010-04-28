@@ -3133,6 +3133,88 @@ C<update_stmt> can I<not> be completely evaluated at compile time.  It is
 interpreted as a tuple of a Muldis D C<sys.std.Core.Type.Cat.MultiUpdStmt>
 value.
 
+=head2 Generic In-Multi-Update-Statement Imperative Invocation Statements
+
+Grammar:
+
+    <imus_imp_invo> ::=
+        <routine_name> <unspace> <imus_imp_arg_list>
+
+    <imus_imp_arg_list> ::=
+        '(' <ws>?
+            [<imus_imp_arg> ** [<ws>? ',' <ws>?]]?
+        <ws>? ')'
+
+    <imus_imp_arg> ::=
+          <named_upd_arg>
+        | <named_ro_arg>
+        | <anon_upd_arg>
+        | <anon_ro_arg>
+        | <same_named_upd_arg>
+        | <same_named_ro_arg>
+
+    <named_upd_arg> ::=
+        <upd_cosigil> <named_ro_arg>
+
+    <upd_cosigil> ::=
+        '&'
+
+    <anon_upd_arg> ::=
+        <upd_cosigil> <anon_ro_arg>
+
+    <same_named_upd_arg> ::=
+        <upd_cosigil> <same_named_ro_arg>
+
+An C<imus_imp_invo> node represents the invocation of a named updater
+or recipe, with specific subject-to-update or read-only arguments, as a
+single member statement of a multi-update statement of an updater or
+recipe.  It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.MultiUpdStmt> value.  The C<routine_name> element
+specifies the C<imperative> attribute of the new C<MultiUpdStmt>, which is
+the name of the updater or recipe being invoked, and the
+C<imus_imp_arg_list> element specifies the C<upd_args> plus C<ro_args>
+attributes, one tuple thereof per C<imus_imp_arg>; each C<imus_imp_arg>
+having an C<upd_cosigil> yields an C<upd_args> tuple, and each
+C<imus_imp_arg> without one yields a C<ro_args> tuple.
+
+In the general case of an updater or recipe invocation, all of the
+arguments are named, as per C<named_[upd|ro]_arg>, and formatting an
+C<imus_imp_invo> node that way is always allowed.  In some (common) special
+cases, some (which might be all) arguments may be anonymous, as per
+C<anon_[upd|ro]_arg>.  For further details on this, see the C<func_invo>
+node kind, under L</Generic Function Invocation Expressions>, because the
+rules regarding when arguments may be anonymous or must be named are
+the same for all 4 main routine kinds.
+
+The sole exception to said rules is that the rules are evaluated
+independently for subject-to-update arguments and read-only arguments,
+because those 2 argument groups and their corresponding parameters
+effectively have independent namespaces with respect to that the presence
+or absence of an C<upd_cosigil> can always be counted on to distinguish the
+groups.  This means, for example, that you can have an anonymous
+subject-to-update argument plus an anonymous read-only argument to a
+system-defined updater or recipe where none of the corresponding parameters
+are named C<topic>.
+
+The C<imus_imp_invo> node kind also has the same special shorthand for
+named arguments, in the form of C<same_named_[upd|ro]_arg>, as the
+C<func_invo> node kind does with its C<same_named_ro_arg>, but that
+C<imus_imp_invo>'s version also works with subject-to-update arguments.
+
+Examples:
+
+    # two mandatory params, one s-t-u, one r-o #
+    assign( &$foo, 3 )
+
+    # same as previous #
+    assign( 3, &$foo )
+
+    # still same as previous but with all-named syntax #
+    assign( &target => $foo, v => 3 )
+
+    # three mandatory params #
+    nlx.lib.lookup( &$>addr, $>people, $>name )
+
 =head1 GENERIC PROCEDURE STATEMENTS
 
 Grammar:
@@ -3195,6 +3277,76 @@ Examples:
 
     # a named_stmt node #
     |bar_stmt ::= nlx.lib.swap( &$>first, &$>second )
+
+=head2 Generic In-Procedure Imperative Invocation Statements
+
+Grammar:
+
+    <iproc_imp_invo> ::=
+        <routine_name> <unspace> <iproc_imp_arg_list>
+
+    <iproc_imp_arg_list> ::=
+        '(' <ws>?
+            [<iproc_imp_arg> ** [<ws>? ',' <ws>?]]?
+        <ws>? ')'
+
+    <iproc_imp_arg> ::=
+          <iproc_named_upd_arg>
+        | <iproc_named_ro_arg>
+        | <iproc_anon_upd_arg>
+        | <iproc_anon_ro_arg>
+        | <iproc_same_named_upd_arg>
+        | <iproc_same_named_ro_arg>
+
+    <iproc_named_upd_arg> ::=
+        <upd_cosigil> <iproc_named_ro_arg>
+
+    <iproc_named_ro_arg> ::=
+        <invo_param_name> <ws>? '=>' <ws>? <var_name>
+
+    <iproc_anon_upd_arg> ::=
+        <upd_cosigil> <iproc_anon_ro_arg>
+
+    <iproc_anon_ro_arg> ::=
+        <var_name>
+
+    <var_name> ::=
+        <lex_entity_name>
+
+    <iproc_same_named_upd_arg> ::=
+        <upd_cosigil> <iproc_same_named_ro_arg>
+
+    <iproc_same_named_ro_arg> ::=
+        <data_sigil> <pair_cosigil> <invo_param_name>
+
+An C<iproc_imp_invo> node represents the invocation of a named imperative
+routine, with specific subject-to-update or read-only arguments, as a
+statement of a procedure.  It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.ImpInvoStmtNodeSet> value.  The C<routine_name>
+element specifies the C<imperative> attribute of the new
+C<ImpInvoStmtNodeSet>, which is the name of the imperative routine being
+invoked, and the C<iproc_imp_arg_list> element specifies the C<upd_args>
+plus C<ro_args> attributes, one tuple thereof per C<iproc_imp_arg>; each
+C<iproc_imp_arg> having an C<upd_cosigil> yields an C<upd_args> tuple, and
+each C<iproc_imp_arg> without one yields a C<ro_args> tuple.
+
+For details regarding the variation of formats that an C<iproc_imp_arg> can
+have, including when arguments may be anonymous or be written out in
+shorthand, see the C<imus_imp_invo> node kind, under L</Generic
+In-Multi-Update-Statement Imperative Invocation Statements>, because the
+rules regarding these things are the same for imperatives invoked by a
+procedure as for imperatives invoked by an updater or recipe.  The only
+main difference between an C<iproc_imp_invo> and a C<imus_imp_invo> is that
+the former may only name its host procedure's variables (or parameters) as
+arguments while the latter can use arbitrary value expressions for that.
+
+Examples:
+
+    fetch_curr_instant( &$now )
+
+    prompt_Text_line( &$user_input, $message )
+
+    Integer.fetch_random( &$rand, $interval )
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
