@@ -534,7 +534,8 @@ position of code elements.
 Code written to the C<plain_rtn_inv> level can employ all of the language
 grammar constructs that C<code_as_data> can, plus all of those
 described in these main pod sections: L</MATERIAL SPECIFICATION>,
-L</GENERIC VALUE EXPRESSIONS>.
+L</GENERIC VALUE EXPRESSIONS>, L</GENERIC UPDATER OR RECIPE STATEMENTS>,
+L</GENERIC PROCEDURE STATEMENTS>.
 
 Examples:
 
@@ -3117,6 +3118,83 @@ Examples:
 
     # a reference to a data type #
     <nlx.lib.foo_type>
+
+=head1 GENERIC UPDATER OR RECIPE STATEMENTS
+
+Grammar:
+
+    <update_stmt> ::=
+        <imus_imp_invo>
+
+An C<update_stmt> node is a single member statement of a multi-update
+statement, which must be composed beneath a C<depot>, or specifically into
+an updater or recipe definition, because in the general case a
+C<update_stmt> can I<not> be completely evaluated at compile time.  It is
+interpreted as a tuple of a Muldis D C<sys.std.Core.Type.Cat.MultiUpdStmt>
+value.
+
+=head1 GENERIC PROCEDURE STATEMENTS
+
+Grammar:
+
+    <proc_stmt> ::=
+          <stmt_name>
+        | <named_stmt>
+        | <ovl_sca_val_stmt>
+        | <leave_stmt>
+        | <compound_stmt>
+        | <iproc_func_invo>
+        | <iproc_imp_invo>
+        | <try_catch_stmt>
+        | <if_else_stmt>
+        | <given_when_def_stmt>
+        | <iterate_stmt>
+        | <loop_stmt>
+        | <material_ref_sel_stmt>
+
+    <stmt_name> ::=
+        <stmt_sigil> <Name_payload>
+
+    <stmt_sigil> ::=
+        '|'
+
+    <named_stmt> ::=
+        <stmt_name> <ws> <infix_bind_op> <ws> <proc_stmt>
+
+A C<proc_stmt> node is the general case of a Muldis D statement tree, which
+must be composed beneath a C<depot>, or specifically into a procedure
+definition, because in the general case a C<proc_stmt> can I<not> be
+completely evaluated at compile time.
+
+A C<proc_stmt> node in the PTMD_STD grammar corresponds directly to a tuple
+of an attribute of a value of the catalog data type
+C<sys.std.Core.Type.Cat.StmtNodeSet>, which is how a statement node is
+actually represented in Muldis D's nonsugared form, which is as a component
+of the system catalog.  Or more specifically, an entire tree of PTMD_STD
+C<proc_stmt> nodes corresponds to a set of said attribute tuples, one
+attribute tuple per C<proc_stmt> node.  In the nonsugared form, every
+C<proc_stmt> node has an explicitly designated name, as per a PTMD_STD
+C<named_stmt> node, and all child nodes are not declared inline with their
+parent nodes but rather are declared in parallel with them, and the parents
+refer to their children by their names.  A feature of the PTMD_STD grammar
+is that statement nodes may be declared without explicit names, such that
+the parser would generate names for them when deriving system catalog
+entries, and that is why PTMD_STD supports, and encourages the use of for
+code brevity/readability, the use of inline-declared statement nodes.
+
+Iff a C<proc_stmt> is an C<stmt_name>, then this typically means that the
+parent C<proc_stmt> is having at least one of its children declared with an
+explicit name rather than inline, same as the corresponding system catalog
+entry would do, and then the C<stmt_name> is the invocation name of that
+child.
+
+Examples:
+
+    # a stmt_name node #
+    |foo_stmt
+
+    # a named_stmt node #
+    |bar_stmt ::= nlx.lib.swap( &$>first, &$>second )
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
