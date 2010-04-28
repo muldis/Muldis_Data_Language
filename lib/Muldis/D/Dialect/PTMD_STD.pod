@@ -533,7 +533,8 @@ position of code elements.
 
 Code written to the C<plain_rtn_inv> level can employ all of the language
 grammar constructs that C<code_as_data> can, plus all of those
-described in these main pod sections: L</GENERIC VALUE EXPRESSIONS>.
+described in these main pod sections: L</MATERIAL SPECIFICATION>,
+L</GENERIC VALUE EXPRESSIONS>.
 
 Examples:
 
@@ -2441,14 +2442,14 @@ Grammar:
         <Database>
 
     <catalog__plain_rtn_inv> ::=
-          <Database>
+          <catalog__code_as_data>
         | <depot_catalog_payload>
 
     <depot_catalog_payload> ::=
         '{' <ws>?
             [[
                   <subdepot>
-                | <material>
+                | <named_material>
                 | <self_local_dbvar_type>
             ] ** <ws>]?
         <ws>? '}'
@@ -2623,6 +2624,7 @@ Every material has 2-3 elements, illustrated by this grammar:
         | recipe
         | procedure
             | 'system-service'
+            | transaction
         | 'scalar-type'
         | 'tuple-type'
             | 'database-type'
@@ -2717,13 +2719,6 @@ I<TODO.>
 Grammar:
 
     <expr__plain_rtn_inv> ::=
-        <expr_core_options>
-
-    <expr__rtn_inv_alt_syn> ::=
-          <expr_core_options>
-        | <func_invo_alt_syntax>
-
-    <expr_core_options> ::=
           <delim_expr>
         | <expr_name>
         | <named_expr>
@@ -2734,10 +2729,17 @@ Grammar:
         | <given_when_def_expr>
         | <material_ref_sel_expr>
 
+    <expr__rtn_inv_alt_syn> ::=
+          <expr__plain_rtn_inv>
+        | <func_invo_alt_syntax>
+
     <delim_expr> ::=
         '(' <ws>? <expr> <ws>? ')'
 
     <expr_name> ::=
+        <lex_entity_name>
+
+    <lex_entity_name> ::=
         <data_sigil> <Name_payload>
 
     <data_sigil> ::=
@@ -2864,21 +2866,23 @@ Grammar:
 
     <func_arg_list> ::=
         '(' <ws>?
-            [[<named_ro_arg> | <anon_ro_arg> | <same_named_ro_arg>]
-                ** [<ws>? ',' <ws>?]]?
+            [<func_arg> ** [<ws>? ',' <ws>?]]?
         <ws>? ')'
 
-    <named_ro_arg> ::=
-        <param_name> <ws>? '=>' <ws>? <expr>
+    <func_arg> ::=
+        <named_ro_arg> | <anon_ro_arg> | <same_named_ro_arg>
 
-    <param_name> ::=
+    <named_ro_arg> ::=
+        <invo_param_name> <ws>? '=>' <ws>? <expr>
+
+    <invo_param_name> ::=
         <Name_payload>
 
     <anon_ro_arg> ::=
         <expr>
 
     <same_named_ro_arg> ::=
-        <data_sigil> <pair_cosigil> <param_name>
+        <data_sigil> <pair_cosigil> <invo_param_name>
 
 A C<func_invo> node represents the result of invoking a named
 function with specific arguments.  It is interpreted as a tuple of a
@@ -2929,7 +2933,8 @@ ability to parse exploiting Muldis D code piecemeal.>
 
 A special shorthand for C<named_ro_arg> also exists, C<same_named_ro_arg>,
 which may be used only if the C<expr> of the otherwise-C<named_ro_arg> is
-an C<expr_name> and that C<expr_name> is identical to the C<param_name>.
+an C<expr_name> and that C<expr_name> is identical to the
+C<invo_param_name>.
 In this situation, the identical name can be specified just once, which is
 the shorthand; for example, the named argument C<< foo => $foo >> may
 alternately be written out as C<< $>foo >> (the C<< > >> being meant to
