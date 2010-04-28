@@ -199,7 +199,7 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.OVLScaValStmtNodeSet
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
                 sys.std.Core.Type.Cat.CompoundStmtNodeSet
-                sys.std.Core.Type.Cat.FuncInvoStmtNodeSet
+                sys.std.Core.Type.Cat.NilFuncInvoStmtNodeSet
                 sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
                 sys.std.Core.Type.Cat.IISArgVarMap
                 sys.std.Core.Type.Cat.TryCatchStmtNodeSet
@@ -2804,10 +2804,10 @@ These are statement nodes that represent abnormal block exit statements.
 These are statement nodes that each represent a compound statement having a
 sequence of 0..N procedure statements.
 
-=item C<func_invo_stmts> - C<FuncInvoStmtNodeSet>
+=item C<nil_func_invo_stmts> - C<NilFuncInvoStmtNodeSet>
 
-These are statement nodes that represent function invocations and the
-assignment to local variables of the results of those invocations.
+These are statement nodes that represent niladic function invocations and
+the assignment to local variables of the results of those invocations.
 
 =item C<imp_invo_stmts> - C<ImpInvoStmtNodeSet>
 
@@ -2953,18 +2953,19 @@ execute in this given sequence.
 A C<CompoundStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.FuncInvoStmtNodeSet
+=head2 sys.std.Core.Type.Cat.NilFuncInvoStmtNodeSet
 
-A C<FuncInvoStmtNodeSet> is a C<DHRelation> that specifies a set of atomic
-statement nodes where each node represents the assignment to a variable (or
-parameter) of the result of an invocation of a function with specific
-arguments.  The invoked function can be either user-defined or
-system-defined.  Using one of these statement nodes should be an effective
-alternative to declaring (or extending) an updater that simply combines a
-single function-invoking expression node (whose arguments are all just the
-updater's own arguments) with an C<assign> updater call.
+A C<NilFuncInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
+atomic statement nodes where each node represents the assignment to a
+variable (or parameter) of the result of an invocation of a niladic
+function (with no arguments).  The invoked function can be either
+user-defined or system-defined.  Using one of these statement nodes should
+be an effective alternative to declaring (or extending) an updater that
+simply combines a single niladic-function-invoking expression node with an
+C<assign> updater call, such as when you want to set a variable to an
+arbitrarily complex but statically defined value.
 
-A C<FuncInvoStmtNodeSet> has these 5 attributes:
+A C<NilFuncInvoStmtNodeSet> has these 4 attributes:
 
 =over
 
@@ -2985,17 +2986,9 @@ value of the function invocation assigned to it.
 
 This is the name of the function being invoked by the statement node.
 
-=item C<args> - C<IISArgVarMap>
-
-These are the 0..N read-only arguments to the function invocation.  Each
-element defines one argument value, with the element C<arg> matching the
-invoked function's parameter name, and the element C<var> naming a local or
-global variable or statement-containing-procedure parameter which defines
-the value.
-
 =back
 
-A C<FuncInvoStmtNodeSet> has a unary primary key on the C<name>
+A C<NilFuncInvoStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
