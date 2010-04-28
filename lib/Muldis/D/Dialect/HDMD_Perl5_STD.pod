@@ -1943,6 +1943,32 @@ args> would just contain a single element, such as when it is for a monadic
 operator, it may alternately be formatted as what is otherwise just its
 sole (node) element iff that node is not formatted as a Perl array ref.
 
+=head2 Imperative Simple Monadic Postfix Operators
+
+An C<imp_monadic_postfix_op_invo> node has exactly 1 main op arg, which is
+a C<var_name> node.
+
+Examples:
+
+    [ 'op', ':=++', [['$','counter']] ]
+
+    [ 'op', ':=--', [['$','countdown']] ]
+
+=head2 Imperative Simple Non-symmetric Dyadic Infix Operators
+
+An C<imp_nonsym_dyadic_infix_op_invo> node has exactly 2 main op args, each
+of which is a C<var_name> node; the first and second main op args are
+C<lhs_var> and C<rhs_var>, respectively.
+
+Examples:
+
+    # assign 3 to $foo #
+    [ 'op', ':=', [ ['$','foo'], 3 ] ]
+
+    # delete every person in $people whose age is either 10 or 20 #
+    [ 'op', ':=!matching', [ ['$','people'],
+        [ 'Relation', [ { age => 10 }, { age => 20 } ] ] ] ]
+
 =head1 SEE ALSO
 
 Go to L<Muldis::D> for the majority of distribution-internal

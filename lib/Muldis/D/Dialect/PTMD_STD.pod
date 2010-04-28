@@ -684,6 +684,9 @@ following grammar definitions are in effect:
     <dyadic_compare_op> ::=
         <dyadic_compare_op__op_cr_basic>
 
+    <imp_nonsym_dyadic_infix_op> ::=
+        <imp_nonsym_dyadic_infix_op__op_cr_basic>
+
 =head2 extended
 
 The C<extended> operator character repertoire is the largest one, and it
@@ -734,6 +737,9 @@ following grammar definitions are in effect:
 
     <dyadic_compare_op> ::=
         <dyadic_compare_op__op_cr_extended>
+
+    <imp_nonsym_dyadic_infix_op> ::=
+        <imp_nonsym_dyadic_infix_op__op_cr_extended>
 
 =head1 STANDARD SYNTAX EXTENSIONS
 
@@ -4323,7 +4329,9 @@ Examples (for now sans any use of extra op args, which are atypical):
 Grammar:
 
     <imp_invo_alt_syntax> ::=
-        ...
+          <imp_monadic_postfix_op_invo>
+        | <imp_nonsym_dyadic_infix_op_invo>
+        | ...
 
 An C<imp_invo_alt_syntax> node represents the invocation of a named
 system-defined imperative routine with specific arguments.  It is
@@ -4372,6 +4380,107 @@ recipes, and procedures, and they are all shown in one list for simplicity.
 But only alternate syntax for updaters is valid in an updater, and only
 alternate syntax for updaters and recipes is valid in a recipe; all of
 these alternate syntaxes are valid in a procedure.
+
+=head2 Imperative Simple Monadic Postfix Operators
+
+Grammar:
+
+    <imp_monadic_postfix_op_invo> ::=
+        <var_name> <ws> <imp_monadic_postfix_op>
+
+    <imp_monadic_postfix_op> ::=
+        ':=++' | ':=--'
+
+An C<imp_monadic_postfix_op_invo> node is for using prefix notation to
+invoke a monadic operator imperative routine.  Such a imperative routine
+takes exactly 1 argument, which is the input of the operation.  A single
+C<imp_monadic_postfix_op_invo> node is equivalent to a single
+C<imus_imp_invo> or C<iproc_imp_invo> node whose C<imus_imp_arg_list> or
+C<iproc_imp_arg_list> element defines 1 argument, and the 1 C<var_name>
+element of the C<imp_monadic_postfix_op_invo> supplies the value of that
+argument.
+
+This table indicates which imperative routine is invoked by each keyword:
+
+    :=++ -> Core.Ordered.Ordinal.assign_succ( $var_name )
+    :=-- -> Core.Ordered.Ordinal.assign_pred( $var_name )
+
+Examples:
+
+    $counter :=++
+
+    $countdown :=--
+
+=head2 Imperative Simple Non-symmetric Dyadic Infix Operators
+
+Grammar:
+
+    <imp_nonsym_dyadic_infix_op_invo> ::=
+        <lhs_var> <ws> <imp_nonsym_dyadic_infix_op_invo> <ws> <rhs_var>
+
+    <lhs_var> ::=
+        <var_name>
+
+    <rhs_var> ::=
+        <var_name>
+
+    <imp_nonsym_dyadic_infix_op__op_cr_basic> ::=
+          ':='
+        | ':=union'
+        | ':=where' | ':=!where' | ':=not-where'
+        | ':=intersect' | ':=minus' | ':=except'
+        | ':=!matching' | ':=not-matching' | ':=antijoin | ':=semiminus'
+        | ':=matching' | ':=semijoin'
+        | ':=exclude' | ':=symdiff'
+
+    <imp_nonsym_dyadic_infix_op__op_cr_extended> ::=
+          <imp_nonsym_dyadic_infix_op__op_cr_basic>
+        | ':=∪'
+        | ':=∩' | ':=∖' | ':=⊿' | ':=⋉'
+        | ':=∆'
+
+An C<imp_nonsym_dyadic_infix_op_invo> node is for using infix notation to
+invoke a non-symmetric dyadic operator imperative routine.  Such an
+imperative routine takes exactly 2 arguments.  A single
+C<imp_nonsym_dyadic_infix_op_invo> node is equivalent to a single
+C<imus_imp_invo> or C<iproc_imp_invo> node whose C<imus_imp_arg_list> or
+C<iproc_imp_arg_list> element defines 2 arguments, and the 2 C<var_name>
+elements of the C<imp_nonsym_dyadic_infix_op_invo> supply the values of
+those arguments, which are associated in the appropriate sequence.  When
+using this infix syntax, the C<&> cosigil isn't used to mark the
+subject-to-update argument(s).
+
+Some of the keywords are aliases for each other:
+
+    keyword     | aliases
+    ------------+--------
+    :=union     | :=∪
+    :=!where    | :=not-where
+    :=intersect | :=∩
+    :=minus     | :=∖ :=except
+    :=!matching | :=⊿ :=not-matching :=antijoin :=semiminus
+    :=matching  | :=⋉ :=semijoin
+    :=exclude   | :=∆ :=symdiff
+
+This table indicates which imperative routine is invoked by each keyword:
+
+    :=          -> Core.Universal.assign( &$lhs_var, $rhs_var )
+    :=union     -> Core.Relation.assign_union( &$lhs_var, $rhs_var )
+    :=where     -> Core.Relation.assign_restriction( &$lhs_var, $rhs_var )
+    :=!where    -> Core.Relation.assign_cmpl_restr( &$lhs_var, $rhs_var )
+    :=intersect -> Core.Relation.assign_intersection( &$lhs_var, $rhs_var )
+    :=minus     -> Core.Relation.assign_diff( &$lhs_var, $rhs_var )
+    :=!matching -> Core.Relation.assign_semidiff( &$lhs_var, $rhs_var )
+    :=matching  -> Core.Relation.assign_semijoin( &$lhs_var, $rhs_var )
+    :=exclude   -> Core.Relation.assign_exclusion( &$lhs_var, $rhs_var )
+
+Examples:
+
+    # assign 3 to $foo #
+    $foo := 3
+
+    # delete every person in $people whose age is either 10 or 20 #
+    $people :=!matching Relation:{ { age => 10 }, { age => 20 } }
 
 =head1 NESTING PRECEDENCE RULES
 
