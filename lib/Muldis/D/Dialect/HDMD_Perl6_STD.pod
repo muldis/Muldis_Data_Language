@@ -1461,6 +1461,19 @@ Examples:
     [ '|::=', 'bar_stmt', [ 'iproc-imp-invo', 'nlx.lib.swap',
         {first => ['&',['$','first']], second => ['&',['$','second']]} ] ]
 
+=head2 Procedure Value Expressions
+
+A C<var_name> node has 2 ordered elements:  The first element is the Perl
+C<Str> value C<$>.  The second element is a C<Name_payload>.
+
+A C<nil_func_invo> node has 2 ordered elements:  The first element is the
+Perl C<Str> value C<func-invo>.  The second element is a
+C<PNSQNameChain_payload>, which names the function to invoke.
+
+A C<var_name> or C<nil_func_invo> node may alternately be formatted as a
+Perl Pair whose key and value are what would otherwise be the first and
+second node elements, respectively.
+
 =head2 Generic In-Procedure Imperative Invocation Statements
 
 An C<iproc_imp_invo> node has 2-4 ordered elements:  The first element is
@@ -1473,19 +1486,19 @@ element is for any anonymous (and ordered if multiple exist) arguments, and
 the C<Tuple_payload> 3rd/4th element is for any named arguments; each
 C<Array_payload> element or C<Tuple_payload> element value is the
 I<possibly tagged argument value> (PTAV).  For each PTAV, if the argument
-is for a read-only parameter, then the PTAV is just a C<var_name> node
+is for a read-only parameter, then the PTAV is just a C<proc_expr> node
 which is the argument value; if the argument is for a subject-to-update
 parameter, then the PTAV is a Perl C<Seq|Array> with exactly 2 elements,
 where the first element is the Perl C<Str> value C<&>, and the second
-element is the same C<var_name> node that the PTAV would have been were
-this for a read-only parameter.
+element is a C<var_name> node, which is the same node that the PTAV would
+have been were this for a read-only parameter with a C<var_name> argument.
 
 Examples:
 
     [ 'iproc-imp-invo', 'fetch_curr_instant', [ ['&',['$','now']] ] ]
 
     [ 'iproc-imp-invo', 'prompt_Text_line',
-        [ ['&',['$','user_input']], ['$','message'] ] ]
+        [ ['&',['$','name']], 'Enter a person\'s name: ' ] ]
 
     [ 'iproc-imp-invo', 'Integer.fetch_random',
         [ ['&',['$','rand']], ['$','interval'] ] ]
@@ -1775,6 +1788,13 @@ args> would just contain a single element, such as when it is for a monadic
 operator, it may alternately be formatted as what is otherwise just its
 sole (node) element iff that node is not formatted as a Perl C<Seq|Array>.
 
+Note that, with each of the main imperative invocation alternate syntax
+statement nodes documented in this main POD section, any occurrences of
+child C<var_name> or C<proc_expr> nodes should be read as being C<expr>
+nodes instead in contexts where instances of the main nodes are being
+composed beneath C<updater> or C<recipe> nodes, and just as C<var_name> or
+C<proc_expr> nodes when composed beneath C<procedure> nodes.
+
 =head2 Imperative Simple Monadic Postfix Operators
 
 An C<imp_monadic_postfix_op_invo> node has exactly 1 main op arg, which is
@@ -1788,9 +1808,9 @@ Examples:
 
 =head2 Imperative Simple Non-symmetric Dyadic Infix Operators
 
-An C<imp_nonsym_dyadic_infix_op_invo> node has exactly 2 main op args, each
-of which is a C<var_name> node; the first and second main op args are
-C<lhs_var> and C<rhs_var>, respectively.
+An C<imp_nonsym_dyadic_infix_op_invo> node has exactly 2 main op args; the
+first and second main op args are C<lhs_var> (a C<var_name> node) and
+C<rhs_expr> (a C<proc_expr> node), respectively.
 
 Examples:
 
