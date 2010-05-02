@@ -1,10 +1,31 @@
                                  Muldis::D
 ---------------------------------------------------------------------------
 
-2010-04-xx  Darren Duncan <darren@DarrenDuncan.net>
+2010-05-xx  Darren Duncan <darren@DarrenDuncan.net>
 
     * Muldis::D version 0.124.0 is released on CPAN as
     Muldis-D-0.124.0.tar.gz.
+
+    * This release features something that has been a long time in coming,
+    which is the addition of concrete syntax in all 3 Muldis D dialects for
+    specifying the scaffolding and interfaces/signatures of all 4 main
+    kinds of routines, as well as the concrete syntax for inlining a
+    material inside a routine ("with" clause).  And so now the Muldis D
+    spec is complete with regard to how to specify all parts of atomic
+    routines (functions, updaters, recipes), meaning how to specify the
+    vast majority of database query and data manipulation code.  This
+    release also adds to the specs of how to write nonatomic procedure
+    bodies, including lexical variable declarations and static value
+    assignments, and adds the ability to inline static values for arguments
+    to imperative routine invocations by procedures.  Following this
+    release, which addresses the single largest remaining hole in the
+    Muldis D spec, subsequent releases only have left to address
+    progressively smaller holes.  The first next release should add
+    concrete syntax for defining data types, meaning the vast majority of
+    database data definition code.  After that would come things like
+    conditionals and loops in procedures, more kinds of constraints, more
+    on procedure exception handling, more on stimulus-response-rules, etc.
+TODO: STILL TO CHECK-IN MOST OF THE ABOVE
 
     * (PTMD_STD.pod)  Updated the "Material Reference Selector Expressions"
     pod sub-section to clarify that a "material_ref" (and "curried_func")
@@ -25,6 +46,37 @@
     add the name-prefix "Nil", removed its "args" 5th attribute, and
     updated its description.  Also updated the "StmtNodeSet" catalog type
     to rename its "func_invo_stmts" attribute adding th name-prefix "nil_".
+
+    * (HDMD_Perl[6|5]_STD.pod)  Fixed a fossil from release 0.123.0 where a
+    grammar detail in PTMD_STD was changed but the corresponding detail in
+    the 2 Perl dialects was not; the "depot_catalog_payload" node now
+    composes "named_material" rather than "material".
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  In the "Scalar Selectors"
+    pod sub-section, updated a couple code examples to use abbrev versions
+    of sys-def type names, to reflect more typical real-life usage.
+
+    * (HDMD_Perl[6|5]_STD.pod)  Updated all code examples showing a
+    "function" node so that they reflect changes in the planned spec for
+    routine-specifying "material" nodes.  The old plan grouped all the
+    details of a routine sans its name into a "payload" third (or second)
+    element of a "material" node, and for the "function" examples these
+    "payload" were arrays with the 3 elements: result type, parameters,
+    function body.  The new plan groups all the payload elements except the
+    function body into a single function heading element, so that a payload
+    for a routine now always has exactly 2 elements.  In HDMD_Perl6_STD,
+    the new "payload" is now a Perl "Pair" value, while in HDMD_Perl5_STD,
+    the new "payload" is expressed as a 2-element array ref that represents
+    a Pair without actually being one, same as some other 2-e in Perl5_STD.
+
+    * (HDMD_Perl5_STD.pod)  In the "DEPOT SPECIFICATION" main pod section,
+    updated the second and third elements of a "depot" node
+    ("depot-catalog" and "depot-data") so that each is now a 2-element Perl
+    array ref rather than a 1-element Perl hash ref; but the conception of
+    these hasn't changed, and is still intended to represent a Perl 6
+    "Pair" value (as HTMD_Perl6_STD still has) without actually being one. 
+    Also updated any relevant code examples in that section plus in the
+    "CATALOG ABSTRACTION LEVELS" section.
 
     * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  Formalized the syntax for
     static value expressions and assignments in procedures.  Now it is
