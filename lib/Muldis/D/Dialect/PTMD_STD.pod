@@ -2693,18 +2693,222 @@ sans its name.  Format varies with C<material_kind>.
 
 For material examples, see the subsequent documentation sections.
 
+Note that, for simplicity, the subsequent sections assume for now that
+C<named_material> is the only valid option, and so the
+C<material_declared_name> isn't optional, and the only way to embed a
+material in another is using a C<with_clause>.
+
 =head2 Function Specification
 
-I<TODO.>
+Grammar:
+
+    <function> ::=
+        <function_kind>
+        <ws> <material_declared_name>
+        <ws> <function_payload>
+
+    <function_kind> ::=
+          function
+        | 'named-value'
+        | 'value-map'
+        | 'value-map-unary'
+        | 'value-filter'
+        | 'value-constraint'
+        | 'transition-constraint'
+        | 'value-reduction'
+        | 'order-determination'
+
+    <function_payload> ::=
+        <function_heading> <ws> <function_body>
+
+    <function_heading> ::=
+        <func_signature> [<ws> <implements_clause>]*
+
+    <func_signature> ::=
+        '(' <ws>?
+            <result_type> <ws>? '<--'
+            [<ws>? <func_param> ** [<ws>? ',' <ws>?]]?
+        <ws>? ')'
+
+    <result_type> ::=
+        <type_name>
+
+    <func_param> ::=
+        <ro_reg_param>
+
+    <function_body> ::=
+        <nonempty_function_body> | <empty_routine_body>
+
+    <nonempty_function_body> ::=
+        '{' <ws>?
+            [[<with_clause> | <named_expr>] <ws>]*
+            <expr>
+        <ws>? '}'
+
+A C<function> node specifies a new function that lives in a depot or
+subdepot.  A C<function> node in the PTMD_STD grammar corresponds directly
+to a tuple of the C<functions> attribute of a value of the catalog data
+type C<sys.std.Core.Type.Cat.Depot>, which is how a function specification
+is actually represented in Muldis D's nonsugared form, which is as a
+component of the system catalog.  The C<functions> tuple has 2 primary
+attributes, C<name> and C<material>, which are valued from the C<function>
+node's C<material_declared_name> and C<function_payload> elements,
+respectively.
+
+A C<function_payload> specifies an entire function besides its name.  It is
+interpreted as a Muldis D C<sys.std.Core.Type.Cat.Function> value.  The
+C<function_heading> element specifies the function's public interface,
+which is these 5 attributes of the new C<Function>: C<result_type>,
+C<params>, C<opt_params>, C<dispatch_params>, C<implements>.  The
+C<function_body> element specifies the function's implementation, which is
+the 1 attribute C<expr> of the new C<Function>.
+
+The C<function_kind> has no impact at all on the interpretation of a
+C<function>.  However, it can serve to apply additional constraints on the
+allowed values of the resulting C<Function>, in the manner of simple
+subset-type constraints, and similarly it can serve to add
+self-documentation to the intended purpose or use of the function.  Iff
+C<function_kind> is C<function> then there are no such subset-type
+constraints applied, as the node is simply denoting a generic function; any
+other value of C<function_kind> means that the node is denoting a value of
+a proper subtype of C<Function>, and so that subtype's respective
+constraints are applied to the new C<Function>.  The various
+C<function_kind> map to C<Function> subtypes as follows:
+
+    function kind         | catalog data type
+    ----------------------+------------------
+    function              | Function
+    named-value           | NamedValFunc
+    value-map             | ValMapFunc
+    value-map-unary       | ValMapUFunc
+    value-filter          | ValFiltFunc
+    value-constraint      | ValConstrFunc
+    transition-constraint | TransConstrFunc
+    value-reduction       | ValRedFunc
+    order-determination   | OrdDetFunc
+
+The C<function_heading>'s C<result_type> is interpreted as the
+C<Function>'s C<result_type> attribute.
+
+Any of these kinds of components of a C<function> node are interpreted in
+exactly the same manner as for an C<updater> node, as a C<Function> is to
+an C<Updater>: C<ro_reg_param> (but that the C<Function> attribute is named
+C<params> rather than C<ro_params>), C<implements_clause>,
+C<empty_routine_body>, C<with_clause>, C<named_expr>.
+
+A C<nonempty_function_body> must have at least one C<expr>, because a
+function must by definition result in a value, and that C<expr> says what
+this result value is.  Said result-determining C<expr> must either not be a
+C<named_expr> or it must be a C<named_expr> whose direct C<expr_name> is
+the empty string; the latter option is saying explicitly what the parser
+would otherwise name the C<expr> implicitly.  A C<nonempty_function_body>
+may have at most one C<expr> that isn't a C<named_expr>, because it can
+only have one result-determining C<expr>.
+
+Examples:
+
+    function cube (Int <-- $topic : Int) {
+        $topic exp 3
+    }
 
 =head2 Updater Specification
 
-I<TODO.>
+Grammar:
+
+    <updater> ::=
+        updater
+        <ws> <material_declared_name>
+        <ws> <updater_payload>
+
+    <updater_payload> ::=
+        <updater_heading> <ws> <updater_body>
+
+    <updater_heading> ::=
+        <upd_signature> [<ws> <implements_clause>]*
+
+    <upd_signature> ::=
+        '(' <ws>?
+            <upd_param> ** [<ws>? ',' <ws>?]
+        <ws>? ')'
+
+    <upd_param> ::=
+        <upd_reg_param> | <ro_reg_param>
+
+    <updater_body> ::=
+        <nonempty_updater_or_recipe_body> | <empty_routine_body>
+
+An C<updater> node specifies a new updater that lives in a depot or
+subdepot.  An C<updater> node in the PTMD_STD grammar corresponds directly
+to a tuple of the C<updaters> attribute of a value of the catalog data type
+C<sys.std.Core.Type.Cat.Depot>, which is how an updater specification is
+actually represented in Muldis D's nonsugared form, which is as a component
+of the system catalog.  The C<updaters> tuple has 2 primary attributes,
+C<name> and C<material>, which are valued from the C<updater> node's
+C<material_declared_name> and C<updater_payload> elements, respectively.
+
+An C<updater_payload> specifies an entire updater besides its name.  It is
+interpreted as a Muldis D C<sys.std.Core.Type.Cat.Updater> value.  The
+C<updater_heading> element specifies the updater's public interface, which
+is these 5 attributes of the new C<Updater>: C<upd_params>, C<ro_params>,
+C<opt_params>, C<dispatch_params>, C<implements>.  The C<updater_body>
+element specifies the updater's implementation, which is the 2 attributes
+C<exprs> and C<stmt> of the new C<Updater>.
+
+Any of these kinds of components of an C<updater> node are interpreted in
+exactly the same manner as for a C<recipe> node, as an C<Updater> is to a
+C<Recipe>: C<upd_reg_param>, C<ro_reg_param>, C<implements_clause>,
+C<empty_routine_body>, C<with_clause>, C<update_stmt>, C<named_expr>,
+C<expr>.  In fact, the only structural difference between an updater and a
+recipe is that a recipe has global parameters and an updater doesn't.
+
+Examples:
+
+    updater make_coprime (&$a : NNInt, &$b : NNInt) {
+        with function gcd (NNInt <-- $a : NNInt, $b : NNInt) {
+            $b = 0 ?? $a !! rtn( a => $b, b => $a mod $b round Down )
+        }
+        $gcd ::= nlx.lib.gcd( $>a, $>b )
+        $a := $a div $gcd round Down
+        $b := $b div $gcd round Down
+    }
 
 =head2 Recipe Specification
 
+Grammar:
+
+    <recipe> ::=
+        recipe
+        <ws> <material_declared_name>
+        <ws> <recipe_payload>
+
+    <recipe_payload> ::=
+        <recipe_heading> <ws> <recipe_body>
+
+    <recipe_heading> ::=
+        <rcp_signature> [<ws> <implements_clause>]*
+
+    <rcp_signature> ::=
+        '(' <ws>?
+            <rcp_param> ** [<ws>? ',' <ws>?]
+        <ws>? ')'
+
+    <rcp_param> ::=
+          <upd_reg_param>
+        | <ro_reg_param>
+        | <upd_global_param>
+        | <ro_global_param>
+
+    <upd_reg_param> ::=
+        <upd_cosigil> <ro_reg_param>
+
     <upd_cosigil> ::=
         '&'
+
+    <ro_reg_param> ::=
+        <param_name> <param_flag>? <ws>? ':' <ws>? <type_name>
+
+    <param_name> ::=
+        <lex_entity_name>
 
     <lex_entity_name> ::=
         <data_sigil> <Name_payload>
@@ -2712,17 +2916,247 @@ I<TODO.>
     <data_sigil> ::=
         '$'
 
+    <param_flag> ::=
+        <opt_param_flag> | <dispatch_param_flag>
+
+    <opt_param_flag> ::=
+        '?'
+
+    <dispatch_param_flag> ::=
+        '@'
+
+    <upd_global_param> ::=
+        <upd_cosigil> <ro_global_param>
+
+    <ro_global_param> ::=
+        <param_name> <ws>? <infix_bind_op> <ws>? <global_var_name>
+
     <infix_bind_op> ::=
         '::='
+
+    <global_var_name> ::=
+        <PNSQNameChain_payload>
+
+    <implements_clause> ::=
+        implements <ws> <routine_name>
 
     <routine_name> ::=
         <PNSQNameChain_payload>
 
-I<TODO.>
+    <recipe_body> ::=
+        <nonempty_updater_or_recipe_body> | <empty_routine_body>
+
+    <nonempty_updater_or_recipe_body> ::=
+        '{' <ws>?
+            [[<with_clause> | <named_expr> | <update_stmt>] <ws>]*
+            <update_stmt>
+        <ws>? '}'
+
+    <with_clause> ::=
+        with <ws> <named_material>
+
+    <empty_routine_body> ::=
+        '{' <ws>? '...' <ws>? '}'
+
+A C<recipe> node specifies a new recipe that lives in a depot or subdepot.
+A C<recipe> node in the PTMD_STD grammar corresponds directly to a tuple of
+the C<recipes> attribute of a value of the catalog data type
+C<sys.std.Core.Type.Cat.Depot>, which is how a recipe specification is
+actually represented in Muldis D's nonsugared form, which is as a component
+of the system catalog.  The C<recipes> tuple has 2 primary attributes,
+C<name> and C<material>, which are valued from the C<recipe> node's
+C<material_declared_name> and C<recipe_payload> elements, respectively.
+
+A C<recipe_payload> specifies an entire recipe besides its name.  It is
+interpreted as a Muldis D C<sys.std.Core.Type.Cat.Recipe> value.  The
+C<recipe_heading> element specifies the recipe's public interface, which is
+these 7 attributes of the new C<Recipe>: C<upd_params>, C<ro_params>,
+C<opt_params>, C<upd_global_params>, C<ro_global_params>,
+C<dispatch_params>, C<implements>.  The C<recipe_body> element specifies
+the recipe's implementation, which is the 2 attributes C<exprs> and C<stmt>
+of the new C<Recipe>.
+
+Iff the C<recipe_heading> has at least one C<upd_reg_param> or
+C<ro_reg_param>, then the recipe has one or more regular parameters, which
+are what another routine can explicitly supply arguments for in an
+invocation of the recipe; each regular parameter is either
+subject-to-update or read-only.  Each C<upd_reg_param> is primarily
+interpreted as a tuple of the C<Recipe>'s C<upd_params> attribute, and each
+C<ro_reg_param> is primarily interpreted as a tuple of the C<Recipe>'s
+C<ro_params> attribute; for each tuple, the C<param_name> and C<type_name>,
+respectively, of the C<upd_reg_param> or C<ro_reg_param> provide the
+tuple's C<name> and C<type> attribute.  Iff any of the parameters have an
+C<opt_param_flag>, then those parameters are optional to supply arguments
+for; for each parameter with an C<opt_param_flag>, the C<Recipe>'s
+C<opt_params> attribute has a tuple with the parameter's C<param_name>.
+Iff any of the parameters have a C<dispatch_param_flag>, then the recipe is
+being explicitly declared to be a virtual recipe, and so the C<recipe_body>
+must be C<empty_routine_body>; for each parameter with a
+C<dispatch_param_flag>, the C<Recipe>'s C<dispatch_params> attribute has a
+tuple with the parameter's C<param_name>.
+
+Iff the C<recipe_heading> has at least one C<upd_global_param> or
+C<ro_global_param>, then the recipe has one or more global parameters,
+which are lexical aliases for global variables; each global parameter is
+either subject-to-update or read-only.  Each C<upd_global_param> is
+primarily interpreted as a tuple of the C<Recipe>'s C<upd_global_params>
+attribute, and each C<ro_global_param> is primarily interpreted as a tuple
+of the C<Recipe>'s C<ro_global_params> attribute; for each tuple, the
+C<param_name> and C<global_var_name>, respectively, of the
+C<upd_global_param> or C<ro_global_param> provide the tuple's C<name> and
+C<global> attribute.
+
+Iff the C<recipe_heading> has at least one C<implements_clause>, then the
+recipe is explicitly declaring that it implements one or more virtual
+recipe, one being named by each C<implements_clause>.  Each
+C<implements_clause> is interpreted as a tuple of the C<Recipe>'s
+C<implements> attribute.
+
+Iff the C<recipe_body> is an C<empty_routine_body>, then the C<Recipe>'s
+C<exprs> and C<stmt> attributes are both empty.
+
+Iff the C<recipe_body> has at least one C<with_clause>, then the recipe is
+explicitly declaring that it has one or more inner materials, such that the
+other materials are conceptually part of the implementation of the recipe;
+each C<with_clause> specifies one inner material in its C<named_material>
+element.  A C<with_clause> is not interpreted as any part of the C<Recipe>
+but rather results in other additions to its parent C<Depot>, in a manner
+similar to as if the C<named_material> were specified externally of the
+C<recipe> node; but see the L</MATERIAL SPECIFICATION> main description for
+details on the complete effects of specifying an inner material.
+
+A C<nonempty_updater_or_recipe_body> must have at least one C<update_stmt>,
+because a recipe must by definition update at least one of its (regular or
+global) parameters, though possibly to the same value it already has, lest
+it otherwise be an unconditional no-op.  Each C<update_stmt> is interpreted
+as a tuple of the C<Recipe>'s C<stmt> attribute.
+
+Iff the C<recipe_body> directly has at least one C<named_expr>, then each
+such C<named_expr> is interpreted as a tuple of an attribute of the
+C<Recipe>'s C<exprs> attribute such that said tuple's C<name> is explicitly
+user-defined rather than generated by the parser.  Any C<expr> contained in
+a C<recipe_body> by way of one of its direct C<update_stmt> or
+C<named_expr> will similarly be interpreted as a tuple of an attribute of
+the C<Recipe>'s C<exprs> attribute, where said tuple's C<name> is either
+user-defined or generated as appropriate for the kind of C<expr>.
+
+Examples:
+
+    recipe count_heads (&$count : NNInt, $search : Text,
+            $people ::= $fed.data.db1.people) {
+        with value-filter filt (Bool <-- $topic : Tuple, $search : Text) {
+            $.name like ('%' ~ $search ~ '%')
+        }
+        $count := r# ($people where <nlx.lib.filt>( $>search ))
+    }
 
 =head2 Procedure Specification
 
-I<TODO.>
+Grammar:
+
+    <procedure> ::=
+        <procedure_kind>
+        <ws> <material_declared_name>
+        <ws> <procedure_payload>
+
+    <procedure_kind> ::=
+        procedure | 'system-service' | transaction
+
+    <procedure_payload> ::=
+        <procedure_heading> <ws> <procedure_body>
+
+    <procedure_heading> ::=
+        <proc_signature> [<ws> <implements_clause>]*
+
+    <proc_signature> ::=
+        '(' <ws>?
+            [<proc_param> ** [<ws>? ',' <ws>?]]?
+        <ws>? ')'
+
+    <proc_param> ::=
+        <upd_reg_param> | <ro_reg_param>
+
+    <procedure_body> ::=
+        <nonempty_procedure_body> | <empty_routine_body>
+
+    <nonempty_procedure_body> ::=
+        '{' <ws>?
+            [[<with_clause> | <proc_var> | <proc_stmt>] <ws>]*
+            <proc_stmt>
+        <ws>? '}'
+
+    <proc_var> ::=
+        var <ws> <var_name> <ws>? ':' <ws>? <type_name>
+
+A C<procedure> node specifies a new procedure that lives in a depot or
+subdepot.  A C<procedure> node in the PTMD_STD grammar corresponds directly
+to a tuple of the C<procedures> attribute of a value of the catalog data
+type C<sys.std.Core.Type.Cat.Depot>, which is how a procedure specification
+is actually represented in Muldis D's nonsugared form, which is as a
+component of the system catalog.  The C<procedures> tuple has 2 primary
+attributes, C<name> and C<material>, which are valued from the C<procedure>
+node's C<material_declared_name> and C<procedure_payload> elements,
+respectively.
+
+A C<procedure_payload> specifies an entire procedure besides its name.  It
+is interpreted as a Muldis D C<sys.std.Core.Type.Cat.Procedure> value.  The
+C<procedure_heading> element specifies the procedure's public interface,
+which is these 7 attributes of the new C<Procedure>: C<upd_params>,
+C<ro_params>, C<opt_params>, C<dispatch_params>, C<implements>,
+C<is_system_service>, C<is_transaction>.  The C<procedure_body> element
+specifies the procedure's implementation, which is the 2 attributes
+C<vars> and C<stmt> of the new C<Procedure>.
+
+The C<procedure_kind> element of a C<procedure> node is the sole
+determinant of the values of the C<is_system_service> and C<is_transaction>
+attributes of the resulting C<Procedure>; for each valid combination there
+also exists a C<Procedure> subtype.  It also can serve to add
+self-documentation to the intended purpose or use of the procedure.  The
+various C<procedure_kind> map to attribute values and C<Procedure> subtypes
+as follows:
+
+    procedure kind | is_system_service | is_transaction | catalog data type
+    ---------------+-------------------+----------------+------------------
+    procedure      | Bool:False        | Bool:False     | Procedure
+    system-service | Bool:True         | Bool:True      | SystemService
+    transaction    | Bool:False        | Bool:True      | Transaction
+
+Any of these kinds of components of a C<procedure> node are interpreted in
+exactly the same manner as for an C<updater> node, as a C<Procedure> is to
+an C<Updater>: C<upd_reg_param>, C<ro_reg_param>, C<implements_clause>,
+C<empty_routine_body>, C<with_clause>.
+
+Iff the C<procedure_body> has at least one C<proc_var>, then the procedure
+has one or more regular lexical variables, whose names are explicitly
+user-defined rather than generated by the parser, which are the exclusive
+means (besides its own subject-to-update parameters) for a procedure to
+directly shuttle transient data between its statements for use as their
+arguments or logic branch conditions.  Each C<proc_var> is interpreted as a
+tuple of the C<Procedure>'s C<vars> attribute; for each tuple, the
+C<var_name> and C<type_name>, respectively, of the C<proc_var> provide the
+tuple's C<name> and C<type> attribute.
+
+A C<nonempty_procedure_body> must have at least one C<proc_stmt>, although
+that C<proc_stmt> can simply cause the procedure to exit, making the
+procedure a no-op.  Each C<proc_stmt> is interpreted as a tuple of an
+attribute of the the C<Procedure>'s C<stmt> attribute.  A C<proc_stmt> may
+also, and typically does, also have nested C<proc_stmt>, thereby forming a
+tree, and that tree is flattened with each nested C<proc_stmt> becoming its
+own tuple under C<stmt> like with the first.
+
+Examples:
+
+    procedure print_curr_time () {
+        var $now : Instant
+        fetch_curr_instant( &$now )
+        with updater compose_message (&$message : Text, $now : Instant) {
+            $message := 'The current time is: '
+                ~ nlx.par.lib.utils.time_as_text( time => $now )
+        }
+        var $message : Text
+        nlx.lib.compose_message( &$>message, $>now )
+        write_Text_line( $message )
+    }
 
 =head2 Scalar Type Specification
 

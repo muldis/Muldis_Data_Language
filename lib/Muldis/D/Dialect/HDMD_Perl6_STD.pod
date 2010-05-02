@@ -1198,21 +1198,226 @@ sans its name.  Format varies with C<material_kind>.
 
 For material examples, see the subsequent documentation sections.
 
+Note that, for simplicity, the subsequent sections assume for now that
+C<named_material> is the only valid option, and so the
+C<material_declared_name> isn't optional, and the only way to embed a
+material in another is using a C<with_clause>.
+
 =head2 Function Specification
 
-I<TODO.>
+A C<function> node specifies a new function that lives in a depot or
+subdepot.  A C<function> node has 3 ordered elements:  The first element
+is one of these 9 Perl C<Str> values: C<function>, C<named-value>,
+C<value-map>, C<value-map-unary>, C<value-filter>, C<value-constraint>,
+C<transition-constraint>, C<value-reduction>, C<order-determination>.  The
+second element is a C<Name_payload>, which is the function's declared name.
+The third element is a C<function_payload>.  A C<function_payload> is a
+Perl C<Pair> whose key and value are designated, in order,
+C<function_heading> and C<function_body>.
+
+A C<function_heading> is a Perl C<Seq|Array> with 2-3 ordered elements.
+The first element is designated C<result_type> and is mandatory.  The
+second element is designated C<func_params> and is mandatory.  The third
+element is designated C<implements> and is optional.
+
+A C<result_type> is a C<type_name> which is a C<PNSQNameChain_payload>.
+
+A C<func_params> is structurally a proper subset of an C<rcp_params>; every
+valid C<rcp_params> is also a structurally valid C<func_params> except for
+any C<recipe_payload> that has either a C<::=> element or a C<&> element;
+in other words, a function has neither global nor subject-to-update
+parameters; it just has regular read-only parameters; another exception is
+that a function may have zero parameters while a recipe must have more.
+
+A C<function_body> must be either the Perl character string C<...>, in
+which case it is an C<empty_routine_body>, or it must be a Perl
+C<Seq|Array>, having at least one element which is an C<expr>, and each
+other element of said Perl C<Seq|Array> must be either a C<with_clause> or
+a C<named_expr>.
+
+Each of C<implements> and C<with_clause> of a C<function_payload> is
+structurally identical to one of a C<recipe_payload>.
+
+Examples:
+
+    [ 'function', 'cube', [ 'Int', { topic => 'Int' } ] => [
+        [ 'op', 'exp', [ ['$','topic'], 3 ] ]
+    ] ]
 
 =head2 Updater Specification
 
-I<TODO.>
+An C<updater> node specifies a new updater that lives in a depot or
+subdepot.  An C<updater> node has 3 ordered elements:  The first element
+is the Perl C<Str> value C<updater>.  The second element is a
+C<Name_payload>, which is the updater's declared name.  The third element
+is an C<updater_payload>.  An C<updater_payload> is structurally a proper
+subset of a C<recipe_payload>; every valid C<recipe_payload> is also a
+structurally valid C<updater_payload> except for any C<recipe_payload> that
+has a C<::=> element; the only structural difference between an updater and
+a recipe is that a recipe has global parameters and an updater doesn't.
+
+Examples:
+
+    [ 'updater', 'make_coprime', {a=>['&','NNInt'],b=>['&','NNInt']} => [
+        'with' => [ 'function', 'gcd',
+            [ 'NNInt', { a => 'NNInt', b => 'NNInt' } ]
+            => [
+                [ '??!!', [ [ 'op', '=', [ ['$','b'], 0 ] ]
+                    => ['$','a'] ],
+                    [ 'func-invo', 'rtn', { a => ['$','b'],
+                        b => [ 'op', 'mod', [ ['$','a'], ['$','b'],
+                            :RoundMeth<Down> ] ] } ]
+                ]
+            ]
+        ],
+        [ '::=', 'gcd', [ 'func-invo', 'nlx.lib.gcd',
+            { a => ['$','a'], b => ['$','b'] } ] ],
+        [ 'op', ':=', [ ['$','a'], [ 'op', 'div',
+            [ ['$','a'], ['$','gcd'], :RoundMeth<Down> ] ] ] ],
+        [ 'op', ':=', [ ['$','b'], [ 'op', 'div',
+            [ ['$','b'], ['$','gcd'], :RoundMeth<Down> ] ] ] ],
+    ] ]
 
 =head2 Recipe Specification
 
-I<TODO.>
+A C<recipe> node specifies a new recipe that lives in a depot or subdepot.
+A C<recipe> node has 3 ordered elements:  The first element is the Perl
+C<Str> value C<recipe>.  The second element is a C<Name_payload>, which
+is the recipe's declared name.  The third element is a C<recipe_payload>.
+A C<recipe_payload> is a Perl C<Pair> whose key and value are
+designated, in order, C<recipe_heading> and C<recipe_body>.
+
+Iff the C<recipe_heading> is a Perl C<Seq|Array>, then it has 1-2 ordered
+elements.  The first element is designated C<rcp_params> and is mandatory.
+The second element is designated C<implements> and is optional.  Iff the
+C<recipe_heading> is a Perl C<Mapping|Hash>, then it is designated
+C<rcp_params> and there is no C<implements>.
+
+An C<rcp_params> is a Perl C<Mapping|Hash>; it must have at least one
+element, meaning the recipe has one or more parameters; each hash element
+specifies one parameter, and for each hash element, the hash element's key
+and value, respectively, are designated C<param_name> and C<param_details>.
+Iff C<param_details> is a Perl C<Seq|Array> with at least two elements, and
+its first element is not a non-empty Perl C<Str> value consisting of just
+the characters <[ a..z A..Z 0..9 _ - ]>, then the C<param_details> is a
+C<param_multi_meta>; otherwise, C<param_details> is a C<param_single_meta>.
+
+Iff a parameter's C<param_details> is a C<param_single_meta>, then the
+latter must be either a C<PNSQNameChain_payload> or a single-element array
+whose sole element is one of those; then the parameter is a
+C<ro_reg_param>, its C<param_details> is designated C<type_name>, and it
+has no C<param_flag>.
+
+Iff a parameter's C<param_details> is a C<param_multi_meta>, then the
+latter's last element must be a C<PNSQNameChain_payload>, and each of the
+C<param_details>' other elements must be a distinct one of these 4 Perl
+C<Str> values: C<&>, C<?>, C<@>, C<::=>.  A C<param_multi_meta> must
+have at least 1 of those 4 and at most 2 of them, and furthermore only
+certain permutations are allowed.  A C<&> may be used either alone or in
+combination with exactly one of the other 3; its presence means that the
+parameter is subject-to-update; its absence means the parameter is
+read-only; iff a C<&> is used then it must be the first C<param_details>
+element.  The 3 of C<?>, C<@>, C<::=> are mutually exclusive so a
+C<param_details> may have at most one of them, either alone or with a C<&>.
+
+Iff a parameter's C<param_details> is a C<param_multi_meta> and it does not
+have a C<::=> element, then the parameter is a regular parameter.  A
+regular parameter's last (C<PNSQNameChain_payload>) element is designated
+C<type_name>.  Iff a regular parameter has a C<&> element then the
+parameter is an C<upd_reg_param; otherwise it is a C<ro_reg_param>.  Iff a
+regular parameter has a C<?> then the parameter has an C<opt_param_flag>.
+Iff a regular parameter has a C<@> then the parameter has a
+C<dispatch_param_flag>.
+
+Iff a parameter's C<param_details> is a C<param_multi_meta> and it does
+have a C<::=> element, then the parameter is a global parameter.  A global
+parameter's last (C<PNSQNameChain_payload>) element is designated
+C<global_var_name>.  Iff a global parameter has a C<&> element then the
+parameter is an C<upd_global_param; otherwise it is a C<ro_global_param>.
+
+An C<implements> must be either a C<PNSQNameChain_payload> or a Perl
+C<Seq|Array> having zero or more elements where every element is a
+C<PNSQNameChain_payload>; each C<PNSQNameChain_payload> names a virtual
+recipe which the current recipe is declaring that it implements.
+
+A C<recipe_body> must be either the Perl C<Str> value C<...>, in which case
+it is an C<empty_routine_body>, or it must be a Perl C<Seq|Array>, having
+at least one element which is an C<update_stmt>, and each other element of
+said Perl C<Seq|Array> must be either a C<with_clause> or a C<named_expr>
+or an C<update_stmt>.
+
+A C<with_clause> is a Perl C<Pair> whose key is the Perl C<Str> value
+C<with> and whose value is a C<material> node.
+
+Examples:
+
+    [ 'recipe', 'count_heads', { count => ['&','NNInt'], search => 'Text',
+            people => ['::=','fed.data.db1.people'] } => [
+        'with' => [ 'value-filter', 'filt', [
+            [ 'Bool', { topic => 'Tuple', search => 'Text' } ]
+            => [
+                [ 'op', 'like', [ ['$.','topic.name'],
+                    [ 'op', '~', [ '%', ['$','search'], '%' ] ] ] ]
+            ]
+        ] ],
+        [ 'op', ':=', [ ['$','count'], [ 'op', 'r#', [
+            [ 'op', 'where', [ ['$','people'],
+                ['curried-func', 'nlx.lib.filt', {search=>['$','search']}]
+            ] ]
+        ] ] ] ],
+    ] ]
 
 =head2 Procedure Specification
 
-I<TODO.>
+A C<procedure> node specifies a new procedure that lives in a depot or
+subdepot.  A C<procedure> node has 3 ordered elements:  The first element
+is one of these 3 Perl C<Str> values: C<procedure>, C<system-service>,
+C<transaction>.  The second element is a C<Name_payload>, which is the
+procedure's declared name.  The third element is a C<procedure_payload>.  A
+C<procedure_payload> is a Perl C<Pair> whose key and value are
+designated, in order, C<procedure_heading> and C<procedure_body>.
+
+A C<procedure_heading> is structurally a proper subset of a
+C<recipe_heading>; every valid C<recipe_heading> is also a structurally
+valid C<procedure_heading> except for any C<recipe_heading> that has a
+C<::=> element; the only structural difference between a
+C<procedure_heading> and a C<recipe_heading> is that a recipe has global
+parameters and an procedure doesn't; another exception is that a procedure
+may have zero parameters while a recipe must have more.
+
+A C<procedure_body> must be either the Perl C<Str> value C<...>, in which
+case it is an C<empty_routine_body>, or it must be a Perl C<Seq|Array>,
+having at least one element which is a C<proc_stmt>, and each other element
+of said Perl C<Seq|Array> must be either a C<with_clause> or a C<proc_var>
+or a C<proc_stmt>.
+
+A C<with_clause> of a C<procedure_body> is structurally identical to one of
+a C<recipe_body>.
+
+A C<proc_var> is a 3-element Perl C<Seq|Array> whose first element is the
+Perl C<Str> value C<var>, whose second element is a C<Name_payload>, and
+whose third element is a C<type_name> which is a C<PNSQNameChain_payload>.
+
+Examples:
+
+    [ 'procedure', 'print_curr_time', {} => [
+        [ 'var', 'now', 'Instant' ],
+        [ 'iproc-imp-invo', 'fetch_curr_instant', [ ['&',['$','now']] ] ],
+        'with' => [ 'updater', 'compose_message', [
+            { message => ['&','Text'], now => 'Instant' }
+            => [
+                [ 'op', ':=', [ ['$','message'], [ 'op', '~', [
+                    'The current time is: ',
+                    [ 'func-invo', 'nlx.par.lib.utils.time_as_text',
+                        { time => ['$','now'] } ]
+                ] ] ] ]
+            ]
+        ] ],
+        [ 'var', 'message', 'Text' ],
+        [ 'iproc-imp-invo', 'nlx.lib.compose_message',
+            { message => ['&',['$','message']], now => ['$','now'] } ],
+        [ 'iproc-imp-invo', 'write_Text_line', [ ['$','message'] ] ],
+    ] ]
 
 =head2 Scalar Type Specification
 
@@ -1478,7 +1683,7 @@ second node elements, respectively.
 
 An C<iproc_imp_invo> node has 2-4 ordered elements:  The first element is
 the Perl C<Str> value C<iproc-imp-invo>.  The second element is a
-C<PNSQNameChain_payload>, which names the imperative routine to invoke. 
+C<PNSQNameChain_payload>, which names the imperative routine to invoke.
 The last 1-2 elements provide arguments to the imperative routine
 invocation; either or both or none of an C<Array_payload> element and a
 C<Tuple_payload> element may be given.  The C<Array_payload> 3rd/4th
