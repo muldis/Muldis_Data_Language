@@ -2737,7 +2737,7 @@ Grammar:
         <ro_reg_param>
 
     <function_body> ::=
-        <nonempty_function_body> | <empty_routine_body>
+        <nonempty_function_body> | <empty_atomic_body>
 
     <nonempty_function_body> ::=
         '{' <ws>?
@@ -2794,7 +2794,7 @@ Any of these kinds of components of a C<function> node are interpreted in
 exactly the same manner as for an C<updater> node, as a C<Function> is to
 an C<Updater>: C<ro_reg_param> (but that the C<Function> attribute is named
 C<params> rather than C<ro_params>), C<implements_clause>,
-C<empty_routine_body>, C<with_clause>, C<named_expr>.
+C<empty_atomic_body>, C<with_clause>, C<named_expr>.
 
 A C<nonempty_function_body> must have at least one C<expr>, because a
 function must by definition result in a value, and that C<expr> says what
@@ -2835,7 +2835,7 @@ Grammar:
         <upd_reg_param> | <ro_reg_param>
 
     <updater_body> ::=
-        <nonempty_updater_or_recipe_body> | <empty_routine_body>
+        <nonempty_updater_or_recipe_body> | <empty_atomic_body>
 
 An C<updater> node specifies a new updater that lives in a depot or
 subdepot.  An C<updater> node in the PTMD_STD grammar corresponds directly
@@ -2857,7 +2857,7 @@ C<exprs> and C<stmt> of the new C<Updater>.
 Any of these kinds of components of an C<updater> node are interpreted in
 exactly the same manner as for a C<recipe> node, as an C<Updater> is to a
 C<Recipe>: C<upd_reg_param>, C<ro_reg_param>, C<implements_clause>,
-C<empty_routine_body>, C<with_clause>, C<update_stmt>, C<named_expr>,
+C<empty_atomic_body>, C<with_clause>, C<update_stmt>, C<named_expr>,
 C<expr>.  In fact, the only structural difference between an updater and a
 recipe is that a recipe has global parameters and an updater doesn't.
 
@@ -2944,7 +2944,7 @@ Grammar:
         <PNSQNameChain_payload>
 
     <recipe_body> ::=
-        <nonempty_updater_or_recipe_body> | <empty_routine_body>
+        <nonempty_updater_or_recipe_body> | <empty_atomic_body>
 
     <nonempty_updater_or_recipe_body> ::=
         '{' <ws>?
@@ -2955,7 +2955,7 @@ Grammar:
     <with_clause> ::=
         with <ws> <named_material>
 
-    <empty_routine_body> ::=
+    <empty_atomic_body> ::=
         '{' <ws>? '...' <ws>? '}'
 
 A C<recipe> node specifies a new recipe that lives in a depot or subdepot.
@@ -2991,7 +2991,7 @@ for; for each parameter with an C<opt_param_flag>, the C<Recipe>'s
 C<opt_params> attribute has a tuple with the parameter's C<param_name>.
 Iff any of the parameters have a C<dispatch_param_flag>, then the recipe is
 being explicitly declared to be a virtual recipe, and so the C<recipe_body>
-must be C<empty_routine_body>; for each parameter with a
+must be C<empty_atomic_body>; for each parameter with a
 C<dispatch_param_flag>, the C<Recipe>'s C<dispatch_params> attribute has a
 tuple with the parameter's C<param_name>.
 
@@ -3012,7 +3012,7 @@ recipe, one being named by each C<implements_clause>.  Each
 C<implements_clause> is interpreted as a tuple of the C<Recipe>'s
 C<implements> attribute.
 
-Iff the C<recipe_body> is an C<empty_routine_body>, then the C<Recipe>'s
+Iff the C<recipe_body> is an C<empty_atomic_body>, then the C<Recipe>'s
 C<exprs> and C<stmt> attributes are both empty.
 
 Iff the C<recipe_body> has at least one C<with_clause>, then the recipe is
@@ -3077,16 +3077,19 @@ Grammar:
         <upd_reg_param> | <ro_reg_param>
 
     <procedure_body> ::=
-        <nonempty_procedure_body> | <empty_routine_body>
+        <nonempty_procedure_body> | <empty_procedure_body>
 
     <nonempty_procedure_body> ::=
-        '{' <ws>?
+        '[' <ws>?
             [[<with_clause> | <proc_var> | <proc_stmt>] <ws>]*
             <proc_stmt>
-        <ws>? '}'
+        <ws>? ']'
 
     <proc_var> ::=
         var <ws> <var_name> <ws>? ':' <ws>? <type_name>
+
+    <empty_procedure_body> ::=
+        '[' <ws>? '...' <ws>? ']'
 
 A C<procedure> node specifies a new procedure that lives in a depot or
 subdepot.  A C<procedure> node in the PTMD_STD grammar corresponds directly
@@ -3124,7 +3127,7 @@ as follows:
 Any of these kinds of components of a C<procedure> node are interpreted in
 exactly the same manner as for an C<updater> node, as a C<Procedure> is to
 an C<Updater>: C<upd_reg_param>, C<ro_reg_param>, C<implements_clause>,
-C<empty_routine_body>, C<with_clause>.
+C<empty_procedure_body> (as per C<empty_atomic_body>), C<with_clause>.
 
 Iff the C<procedure_body> has at least one C<proc_var>, then the procedure
 has one or more regular lexical variables, whose names are explicitly
@@ -3146,7 +3149,7 @@ own tuple under C<stmt> like with the first.
 
 Examples:
 
-    procedure print_curr_time () {
+    procedure print_curr_time () [
         var $now : Instant
         fetch_curr_instant( &$now )
         with updater compose_message (&$message : Text, $now : Instant) {
@@ -3156,7 +3159,7 @@ Examples:
         var $message : Text
         nlx.lib.compose_message( &$>message, $>now )
         write_Text_line( $message )
-    }
+    ]
 
 =head2 Scalar Type Specification
 
