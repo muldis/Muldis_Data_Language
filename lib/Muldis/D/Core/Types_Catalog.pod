@@ -2741,11 +2741,8 @@ This defines the statement tree that comprises the entire procedure body.
 
 Iff a C<Procedure> has no specified I<body>, then C<stmt> must have zero
 member nodes and C<vars> must have zero member tuples; otherwise, C<stmt>
-must have at least 1 member node.  (If you actually want to have a
-procedure with a specified body that is a no-op, there are a variety of
-single statement bodies that could do it, such as using a "leave" statement
-node as the root node, or such as by invoking the C<sys.std.Core.Cat.noop>
-procedure; the former is simpler.)
+must have at least 1 member node, which is a compound statement node
+(having just that 1 node means the procedure is an unconditional no-op).
 
 A C<Procedure> with a specified I<body>
 specifies a simple statement tree of named statement
@@ -2755,12 +2752,14 @@ all member nodes must define a simple statement node tree, such
 that every member except one (which is the root node) has one of its peers
 as a parent node, and no direct cycles between members are permitted (only
 indirect cycles based on procedure invocations are allowed); the
-name of the root node must be the empty string.  Note that the
-composed-into procedure's parameters are also implicitly tree
-nodes, and are referenced by name into the statement tree the same way as
-any other named statement node is.  The statement tree should reference all
-of the parameters and lexical variables that the procedure has,
-but this isn't a strict requirement.
+name of the root node must be the empty string.  The root node must also be
+a compound statement node, meaning a tuple of the procedure's
+C<stmt.compound_stmts> attribute; while making this requirement isn't
+strictly necessary in general, that requirement allows the corresponding
+concrete Muldis D grammars to be simpler, and a compound statement node
+would end up being the root anyway in 99% of likely real procedures.  The
+statement tree should reference all of the parameters and lexical variables
+that the procedure has, but this isn't a strict requirement.
 
 C<Procedure> has a distributed primary key over the C<name> attributes of
 C<upd_params> and C<ro_params> and C<vars> and the C<name> attributes of

@@ -1386,10 +1386,10 @@ parameters and an procedure doesn't; another exception is that a procedure
 may have zero parameters while a recipe must have more.
 
 A C<procedure_body> must be either the Perl C<Str> value C<...>, in which
-case it is an C<empty_routine_body>, or it must be a Perl C<Seq|Array>,
-having at least one element which is a C<proc_stmt>, and each other element
-of said Perl C<Seq|Array> must be either a C<with_clause> or a C<proc_var>
-or a C<proc_stmt>.
+case it is an C<empty_routine_body>, or it must be a Perl C<Seq|Array>
+having zero or more elements where each element must be either a
+C<with_clause> or a C<proc_var> or a C<proc_stmt>; zero elements means that
+the procedure is an unconditional no-op.
 
 A C<with_clause> of a C<procedure_body> is structurally identical to one of
 a C<recipe_body>.
@@ -1665,6 +1665,22 @@ Examples:
     # a named_stmt node #
     [ '|::=', 'bar_stmt', [ 'iproc-imp-invo', 'nlx.lib.swap',
         {first => ['&',['$','first']], second => ['&',['$','second']]} ] ]
+
+=head2 Generic Compound Statements
+
+A C<compound_stmt> node has 2 ordered elements:  The first element is the
+Perl character string C<compound-stmt>.  The second element is a Perl
+C<Seq|Array> having zero or more elements where each element must be either
+a C<with_clause> or a C<proc_var> or a C<proc_stmt>; it is interpreted as
+per a nonempty procedure body, which has exactly the same format.
+
+Examples:
+
+    :compound-stmt[
+        [ 'var', 'message', 'Text' ],
+        [ 'iproc-imp-invo', 'read_Text_line', [ ['&',['$','message']] ] ],
+        [ 'iproc-imp-invo', 'write_Text_line', [ ['$','message'] ] ],
+    ]
 
 =head2 Procedure Value Expressions
 

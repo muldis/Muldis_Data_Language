@@ -3080,9 +3080,11 @@ Grammar:
         <nonempty_procedure_body> | <empty_procedure_body>
 
     <nonempty_procedure_body> ::=
+        <nonempty_procedure_body_or_compound_stmt>
+
+    <nonempty_procedure_body_or_compound_stmt> ::=
         '[' <ws>?
             [[<with_clause> | <proc_var> | <proc_stmt>] <ws>]*
-            <proc_stmt>
         <ws>? ']'
 
     <proc_var> ::=
@@ -3139,13 +3141,17 @@ tuple of the C<Procedure>'s C<vars> attribute; for each tuple, the
 C<var_name> and C<type_name>, respectively, of the C<proc_var> provide the
 tuple's C<name> and C<type> attribute.
 
-A C<nonempty_procedure_body> must have at least one C<proc_stmt>, although
-that C<proc_stmt> can simply cause the procedure to exit, making the
-procedure a no-op.  Each C<proc_stmt> is interpreted as a tuple of an
-attribute of the the C<Procedure>'s C<stmt> attribute.  A C<proc_stmt> may
-also, and typically does, also have nested C<proc_stmt>, thereby forming a
-tree, and that tree is flattened with each nested C<proc_stmt> becoming its
-own tuple under C<stmt> like with the first.
+Each C<proc_stmt> of a C<nonempty_procedure_body> is interpreted as a tuple
+of an attribute of the the C<Procedure>'s C<stmt> attribute.  A
+C<proc_stmt> may also, and typically does, also have nested C<proc_stmt>,
+thereby forming a tree, and that tree is flattened with each nested
+C<proc_stmt> becoming its own tuple under C<stmt> like with the first.  In
+fact, all of a procedure's statements form a single statement tree, and the
+root node of this tree is an implicit compound statement node (whose name
+is the empty string) whose direct child statements are all of the direct
+child C<proc_stmt> elements of the C<nonempty_procedure_body>, in order.
+Iff a C<nonempty_procedure_body> has no C<proc_stmt> member elements, then
+the procedure has a defined body that is an unconditional no-op.
 
 Examples:
 
@@ -3692,11 +3698,11 @@ Grammar:
     <proc_stmt__plain_rtn_inv> ::=
           <stmt_name>
         | <named_stmt>
+        | <compound_stmt>
         | <iproc_imp_invo>
         | <try_catch_stmt>
         | <if_else_stmt>
         | <given_when_def_stmt>
-        | <compound_stmt>
         | <leave_stmt>
         | <iterate_stmt>
         | <loop_stmt>
@@ -3741,6 +3747,11 @@ explicit name rather than inline, same as the corresponding system catalog
 entry would do, and then the C<stmt_name> is the invocation name of that
 child.
 
+Note that, regarding Muldis D's feature of a statement node having an
+explicit name that can be referenced by "leave" and "iterate" control
+flow statements to leave or re-iterate the corresponding block, both SQL
+and Perl have native counterpart features in the form of block labels.
+
 Examples:
 
     # a stmt_name node #
@@ -3748,6 +3759,35 @@ Examples:
 
     # a named_stmt node #
     |bar_stmt ::= nlx.lib.swap( &$>first, &$>second )
+
+=head2 Generic Compound Statements
+
+Grammar:
+
+    <compound_stmt> ::=
+        <nonempty_procedure_body_or_compound_stmt>
+
+A C<compound_stmt> node specifies a procedure compound statement composed
+of a sequence of 0..N other statements such that those other statements
+execute in this given sequence; it lies at the heart of what makes a
+procedure nonatomic, because each statement of the sequence conceptually
+executes at a different time.  It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.CompoundStmtNodeSet> value.  Each C<proc_stmt>
+element of a C<compound_statement> is a nested statement that is
+interpreted as its own tuple of an attribute of the C<stmt> attribute of
+the host C<Procedure>; for each said tuple, there exists an element of the
+C<CompoundStmtNodeSet>'s C<stmts> attribute which matches the C<name>
+attribute of the tuple.  Any C<with_clause> or C<proc_var> direct elements
+of a C<compound_stmt> are interpreted as if they were directly in the
+C<nonempty_procedure_body> that the C<compound_stmt> is under.
+
+Examples:
+
+    [
+        var $message : Text
+        read_Text_line( &$message )
+        write_Text_line( $message )
+    ]
 
 =head2 Procedure Value Expressions
 
