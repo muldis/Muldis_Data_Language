@@ -3940,6 +3940,97 @@ Examples:
 
     Integer.fetch_random( &$rand, $interval )
 
+=head2 Generic If-Else Statements
+
+Grammar:
+
+    <if_else_stmt> ::=
+        if <ws> <if_proc_expr> <ws> then <ws> <then_stmt>
+        [<ws> else <ws> if <ws> <if_proc_expr> <ws> then <ws> <then_stmt>]*
+        [<ws> else <ws> <else_stmt>]?
+
+    <if_proc_expr> ::=
+        <proc_expr>
+
+    <then_stmt> ::=
+        <proc_stmt>
+
+    <else_stmt> ::=
+        <proc_stmt>
+
+An C<if_else_stmt> node represents an N-way if-else control flow statement.
+It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.IfElseStmtNodeSet> value.  The whole collection of
+sequential 1..N C<if_proc_expr> + C<then_stmt> elements specifies the
+C<if_then> attribute of the new C<IfElseStmtNodeSet>, which is a sequence
+of arbitrary but C<Bool>-valued I<if> lexical variables (possibly
+sugar-coated with static-value expressions), and for just the first one of
+those in the sequence that at runtime is valued with C<Bool:True>, its
+associated I<then> statement is executed as if it were the whole
+C<if_else_stmt>.  The C<else_stmt> element, if it is provided, specifies
+the C<else> attribute, which determines the statement to execute as if it
+were the whole C<if_else_stmt> at runtime if either C<if_then> is an empty
+sequence or all of its conditionals are valued with C<Bool:False>.  (Note
+that while an C<IfElseStmtNodeSet> tuple can represent zero C<if_proc_expr>
++ C<then_stmt> elements, that isn't an option in this concrete grammar
+because such an C<if_else_stmt> is indistinguishable from the generic
+C<proc_stmt> that C<else_stmt> is.)
+
+Examples:
+
+    if $out_of_options then
+        give_up()
+    else
+        keep_going()
+
+=head2 Generic Given-When-Default Statements
+
+Grammar:
+
+    <given_when_def_stmt> ::=
+        given <ws> <given_proc_expr> <ws>
+        [when <ws> <when_proc_expr> <ws> then <ws> <then_stmt> <ws>]*
+        [default <ws> <default_stmt>]?
+
+    <given_proc_expr> ::=
+        <proc_expr>
+
+    <when_proc_expr> ::=
+        <proc_expr>
+
+    <then_stmt> ::=
+        <proc_stmt>
+
+    <default_stmt> ::=
+        <proc_stmt>
+
+A C<given_when_def_stmt> node represents an N-way given-when-default switch
+control flow statement that dispatches based on matching a single value
+with several options.  It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet> value.  The
+C<given_proc_expr> element specifies the C<given> attribute of the new
+C<GivenWhenDefStmtNodeSet>, which is the control value for the statement.
+The whole collection of nonordered 0..N C<when_proc_expr> + C<then_stmt>
+elements specifies the C<when_then> attribute, which is a set of I<when>
+comparands; if any of these I<when> values matches the value of C<given>,
+its associated I<then> statement is executed as if it were the whole
+C<given_when_def_stmt>.  The C<default_stmt> element specifies the
+C<default> attribute, which determines the statement that is executed at
+runtime as if it were the whole C<given_when_def_stmt> if either
+C<proc_when_then> is an empty set or none of its comparands match C<given>.
+
+Examples:
+
+    given $picked_menu_item
+        when 'v' then
+            screen_view_record()
+        when 'a' then
+            screen_add_record()
+        when 'd' then
+            screen_delete_record()
+        default
+            display_bad_choice_error()
+
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
 Grammar:

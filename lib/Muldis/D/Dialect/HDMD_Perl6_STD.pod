@@ -1724,6 +1724,50 @@ Examples:
     [ 'iproc-imp-invo', 'Integer.fetch_random',
         [ ['&',['$','rand']], ['$','interval'] ] ]
 
+=head2 Generic If-Else Statements
+
+An C<if_else_stmt> node has 2-3 ordered elements:  The first element is the
+2 Perl C<Str> value C<if-else-stmt>.  The optional second element is
+I<if_then>, a Perl C<Seq|Array> with 0..N elements, each of those being a
+2-element Perl C<Seq|Array> or a Perl Pair; the first element / key is an
+I<if> condition statement (a C<proc_expr> node), and the second element /
+value is the associated I<then> result statement (a C<proc_stmt> node).
+The optional 3rd/last element of an C<if_else_stmt> node is I<else>
+statement, which is a C<proc_stmt> node.
+
+Examples:
+
+    [ 'if-else-stmt',
+        [
+            ['$','out_of_options'] => :iproc-imp-invo<give_up>,
+        ],
+        :iproc-imp-invo<keep_going>
+    ]
+
+=head2 Generic Given-When-Default Statements
+
+A C<given_when_def_stmt> node has 3-4 ordered elements:  The first element
+is the Perl C<Str> value C<given-when-def-stmt>.  The second element is
+a C<proc_expr> node which is the I<given> common comparand.  The optional
+third element is I<proc_when_then>, a Perl C<Seq|Array> with 0..N elements,
+each of those being a 2-element Perl C<Seq|Array> or a Perl Pair; the first
+element / key is a I<when> comparand (a C<proc_expr> node), and the second
+element / value is the associated I<then> result statement (a C<proc_stmt>
+node).  The optional 4th/last element of a C<given_when_def_stmt> node is
+I<default_stmt> statement, which is a C<proc_stmt> node.
+
+Examples:
+
+    [ 'given-when-def-stmt',
+        ['$','picked_menu_item'],
+        [
+            'v' => :iproc-imp-invo<screen_view_record>,
+            'a' => :iproc-imp-invo<screen_add_record>,
+            'd' => :iproc-imp-invo<screen_delete_record>,
+        ],
+        :iproc-imp-invo<display_bad_choice_error>,
+    ]
+
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
 A C<func_invo_alt_syntax> node has 3-4 ordered elements:  The first element
