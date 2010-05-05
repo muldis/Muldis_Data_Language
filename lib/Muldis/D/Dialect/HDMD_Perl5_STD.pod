@@ -1581,19 +1581,14 @@ Examples:
     [ 'procedure', 'print_curr_time', [ {} => [
         [ 'var', 'now', 'Instant' ],
         [ 'iproc-imp-invo', 'fetch_curr_instant', [ ['&',['$','now']] ] ],
-        [ 'with' => [ 'updater', 'compose_message', [
-            { message => ['&','Text'], now => 'Instant' }
-            => [
-                [ 'op', ':=', [ ['$','message'], [ 'op', '~', [
-                    'The current time is: ',
-                    [ 'func-invo', 'nlx.par.lib.utils.time_as_text',
-                        { time => ['$','now'] } ]
-                ] ] ] ]
-            ]
-        ] ] ],
         [ 'var', 'message', 'Text' ],
-        [ 'iproc-imp-invo', 'nlx.lib.compose_message',
-            { message => ['&',['$','message']], now => ['$','now'] } ],
+        [ 'atomic-stmt' => [
+            [ 'op', ':=', [ ['$','message'], [ 'op', '~', [
+                'The current time is: ',
+                [ 'func-invo', 'nlx.par.lib.utils.time_as_text',
+                    { 'time' => ['$','now'] } ]
+            ] ] ] ]
+        ] ],
         [ 'iproc-imp-invo', 'write_Text_line', [ ['$','message'] ] ],
     ] ] ]
 
@@ -1846,6 +1841,20 @@ Examples:
         [ 'var', 'message', 'Text' ],
         [ 'iproc-imp-invo', 'read_Text_line', [ ['&',['$','message']] ] ],
         [ 'iproc-imp-invo', 'write_Text_line', [ ['$','message'] ] ],
+    ] ]
+
+=head2 Procedure Atomic Statements
+
+An C<atomic_stmt> node has 2 ordered elements:  The first element is the
+Perl character string C<atomic-stmt>.  The second element is a Perl
+array ref; it is interpreted as per a nonempty updater body, which has
+exactly the same format.
+
+Examples:
+
+    [ 'atomic-stmt' => [
+        [ 'op', ':=', [ ['$','x'], ['$','y'] ] ],
+        [ 'op', ':=', [ ['$','y'], ['$','x'] ] ],
     ] ]
 
 =head2 Procedure Value Expressions

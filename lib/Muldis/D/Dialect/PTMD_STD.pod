@@ -3158,12 +3158,11 @@ Examples:
     procedure print_curr_time () [
         var $now : Instant
         fetch_curr_instant( &$now )
-        with updater compose_message (&$message : Text, $now : Instant) {
+        var $message : Text
+        {
             $message := 'The current time is: '
                 ~ nlx.par.lib.utils.time_as_text( time => $now )
         }
-        var $message : Text
-        nlx.lib.compose_message( &$>message, $>now )
         write_Text_line( $message )
     ]
 
@@ -3699,6 +3698,7 @@ Grammar:
           <stmt_name>
         | <named_stmt>
         | <compound_stmt>
+        | <atomic_stmt>
         | <iproc_imp_invo>
         | <try_catch_stmt>
         | <if_else_stmt>
@@ -3788,6 +3788,46 @@ Examples:
         read_Text_line( &$message )
         write_Text_line( $message )
     ]
+
+=head2 Procedure Atomic Statements
+
+Grammar:
+
+    <atomic_stmt> ::=
+        <nonempty_updater_or_recipe_body>
+
+An C<atomic_stmt> node is a special shorthand syntax that is equivalent to
+the combination of a C<with_clause> node that defines an inner updater of a
+procedure plus an C<iproc_imp_invo> node that is a procedure statement
+invoking said updater.  It entirely takes the form of an updater body
+specification, which is delimited by a pair of curly braces; conceptually
+an C<atomic_stmt> is analogous to a C<compound_stmt>, the latter entirely
+taking the form of a procedure body; these are distinguished from each
+other primarily by the different delimiter characters they use.  The inner
+updater derived from a C<atomic_stmt> has an entirely parser-generated
+updater heading, which is derived from information gleaned from both the
+C<atomic_stmt> node and from other parts of the procedure specification in
+which the latter is embedded.  The inner updater has a regular parameter
+for every distinct C<expr_name> node in the C<atomic_stmt> which matches
+the unqualified name of either a parameter or a lexical variable of the
+procedure, meaning that the C<expr_name> refers to an updater parameter
+rather than some updater body expression node, and the updater invocation
+is passing an argument to each parameter from a same-named C<var_name>.
+For each updater parameter, the declared type of that parameter is
+identical to the declared type of the corresponding procedure parameter or
+lexical variable.  For each updater parameter, that parameter is declared
+subject-to-update iff the updater uses it as an argument to a
+subject-to-update parameter in one of its C<update_stmt> nodes; otherwise
+that parameter is declared read-only.  No parameters are optional nor
+dispatch, and the updater doesn't implement a virtual.  The unqualified
+name of the updater is parser-generated; see L</MATERIAL SPECIFICATION>.
+
+Examples:
+
+    {
+        $x := $y
+        $y := $x
+    }
 
 =head2 Procedure Value Expressions
 

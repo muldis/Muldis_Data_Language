@@ -1259,7 +1259,7 @@ a recipe is that a recipe has global parameters and an updater doesn't.
 Examples:
 
     [ 'updater', 'make_coprime', {a=>['&','NNInt'],b=>['&','NNInt']} => [
-        'with' => [ 'function', 'gcd',
+        :with[ 'function', 'gcd',
             [ 'NNInt', { a => 'NNInt', b => 'NNInt' } ]
             => [
                 [ '??!!', [ [ 'op', '=', [ ['$','b'], 0 ] ]
@@ -1353,7 +1353,7 @@ Examples:
 
     [ 'recipe', 'count_heads', { count => ['&','NNInt'], search => 'Text',
             people => ['::=','fed.data.db1.people'] } => [
-        'with' => [ 'value-filter', 'filt', [
+        :with[ 'value-filter', 'filt', [
             [ 'Bool', { topic => 'Tuple', search => 'Text' } ]
             => [
                 [ 'op', 'like', [ ['$.','topic.name'],
@@ -1403,19 +1403,14 @@ Examples:
     [ 'procedure', 'print_curr_time', {} => [
         [ 'var', 'now', 'Instant' ],
         [ 'iproc-imp-invo', 'fetch_curr_instant', [ ['&',['$','now']] ] ],
-        'with' => [ 'updater', 'compose_message', [
-            { message => ['&','Text'], now => 'Instant' }
-            => [
-                [ 'op', ':=', [ ['$','message'], [ 'op', '~', [
-                    'The current time is: ',
-                    [ 'func-invo', 'nlx.par.lib.utils.time_as_text',
-                        { time => ['$','now'] } ]
-                ] ] ] ]
-            ]
-        ] ],
         [ 'var', 'message', 'Text' ],
-        [ 'iproc-imp-invo', 'nlx.lib.compose_message',
-            { message => ['&',['$','message']], now => ['$','now'] } ],
+        :atomic-stmt[
+            [ 'op', ':=', [ ['$','message'], [ 'op', '~', [
+                'The current time is: ',
+                [ 'func-invo', 'nlx.par.lib.utils.time_as_text',
+                    { time => ['$','now'] } ]
+            ] ] ] ]
+        ]
         [ 'iproc-imp-invo', 'write_Text_line', [ ['$','message'] ] ],
     ] ]
 
@@ -1669,7 +1664,7 @@ Examples:
 =head2 Generic Compound Statements
 
 A C<compound_stmt> node has 2 ordered elements:  The first element is the
-Perl character string C<compound-stmt>.  The second element is a Perl
+Perl C<Str> value C<compound-stmt>.  The second element is a Perl
 C<Seq|Array> having zero or more elements where each element must be either
 a C<with_clause> or a C<proc_var> or a C<proc_stmt>; it is interpreted as
 per a nonempty procedure body, which has exactly the same format.
@@ -1680,6 +1675,20 @@ Examples:
         [ 'var', 'message', 'Text' ],
         [ 'iproc-imp-invo', 'read_Text_line', [ ['&',['$','message']] ] ],
         [ 'iproc-imp-invo', 'write_Text_line', [ ['$','message'] ] ],
+    ]
+
+=head2 Procedure Atomic Statements
+
+An C<atomic_stmt> node has 2 ordered elements:  The first element is the
+Perl C<Str> value C<atomic-stmt>.  The second element is a Perl
+C<Seq|Array>; it is interpreted as per a nonempty updater body, which has
+exactly the same format.
+
+Examples:
+
+    :atomic-stmt[
+        [ 'op', ':=', [ ['$','x'], ['$','y'] ] ],
+        [ 'op', ':=', [ ['$','y'], ['$','x'] ] ],
     ]
 
 =head2 Procedure Value Expressions
