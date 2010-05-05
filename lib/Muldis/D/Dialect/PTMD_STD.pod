@@ -3980,6 +3980,42 @@ Examples:
 
     Integer.fetch_random( &$rand, $interval )
 
+=head2 Generic Try-Catch Statements
+
+Grammar:
+
+    <try_catch_stmt> ::=
+        try <ws> <try_stmt>
+        [<ws> catch <ws> <catch_stmt>]?
+
+    <try_stmt> ::=
+        <proc_stmt>
+
+    <catch_stmt> ::=
+        <proc_stmt>
+
+A C<try_catch_stmt> node represents a try-catch control flow statement.  It
+is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.TryCatchStmtNodeSet> value.  The C<try_stmt> and
+C<catch_stmt> elements specify the C<try> and C<catch> attributes,
+respectively, of the new C<TryCatchStmtNodeSet>, which are the names or
+definitions of statements that represent the invocation of named imperative
+routines.  The C<try> routine is unconditionally invoked first and then iff
+C<try> throws an exception then it will be caught and the C<catch> routine,
+if any, will be invoked immediately after to handle it; if C<catch> also
+throws an exception then it will not be caught.  It is invalid for
+C<try_stmt> or C<catch_stmt> to name or define a procedure statement that
+isn't just a routine invocation, though the grammar itself doesn't say so;
+mainly the valid options are: C<iproc_imp_invo>, C<atomic_stmt>,
+C<imp_invo_alt_syntax>, and C<stmt_name> or C<named_stmt> for the first 3.
+
+Examples:
+
+    try
+        attempt_the_work()
+    catch
+        deal_with_failure()
+
 =head2 Generic If-Else Statements
 
 Grammar:
