@@ -2905,8 +2905,6 @@ represented, but "return" is still easy to recognize because the root node
 always has the empty string as its name.  If the parent node in question is
 an iterating or looping statement, then any remaining iterations it might
 have had are skipped, especially useful if it was an infinite loop.
-Alternately, a C<LeaveStmtNodeSet> node may name itself as the node to exit
-as a form of a no-op.
 
 A C<LeaveStmtNodeSet> has these 3 attributes:
 
@@ -3229,7 +3227,8 @@ statement node, and then start at the beginning of the next iteration of
 that loop if there are any left ("normal" is to simply execute to the end
 of the block before starting the next iteration).  The same semantics apply
 for the beginning of the next loop as if the current block iteration had
-executed to the end before repeating.
+executed to the end before repeating.  In fact, a looping block isn't even
+required; an iterate node can also be used to "redo" any parent statement.
 
 An C<IterateStmtNodeSet> has these 3 attributes:
 
@@ -3275,7 +3274,7 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<do> - C<Name>
+=item C<loop> - C<Name>
 
 This is the name of the local statement node that will get executed for
 each iteration of the loop; typically it has a sub-tree of statement nodes.

@@ -1906,8 +1906,8 @@ I<catch> routine to execute iff I<try> throws an exception.
 Examples:
 
     [ 'try-catch',
-        [ 'iproc-imp-invo', 'attempt_the_work' ],
-        [ 'iproc-imp-invo', 'deal_with_failure' ]
+        [ 'iproc-imp-invo', 'nlx.lib.attempt_the_work' ],
+        [ 'iproc-imp-invo', 'nlx.lib.deal_with_failure' ]
     ]
 
 =head2 Generic If-Else Statements
@@ -1925,9 +1925,10 @@ Examples:
 
     [ 'if-else-stmt',
         [
-            [ ['$','out_of_options'] => [ 'iproc-imp-invo', 'give_up' ] ],
+            [ ['$','out_of_options']
+                => [ 'iproc-imp-invo', 'nlx.lib.give_up' ] ],
         ],
-        [ 'iproc-imp-invo', 'keep_going' ]
+        [ 'iproc-imp-invo', 'nlx.lib.keep_going' ]
     ]
 
 =head2 Generic Given-When-Default Statements
@@ -1947,12 +1948,47 @@ Examples:
     [ 'given-when-def-stmt',
         ['$','picked_menu_item'],
         [
-            [ 'v' => [ 'iproc-imp-invo', 'screen_view_record' ] ],
-            [ 'a' => [ 'iproc-imp-invo', 'screen_add_record' ] ],
-            [ 'd' => [ 'iproc-imp-invo', 'screen_delete_record' ] ],
+            [ 'v' => [ 'iproc-imp-invo', 'nlx.lib.screen_view_record' ] ],
+            [ 'a' => [ 'iproc-imp-invo', 'nlx.lib.screen_add_record' ] ],
+            [ 'd' => [ 'iproc-imp-invo', 'nlx.lib.screen_delete_record' ] ]
         ],
-        [ 'iproc-imp-invo', 'display_bad_choice_error' ],
+        [ 'iproc-imp-invo', 'nlx.lib.display_bad_choice_error' ],
     ]
+
+=head2 Procedure Leave, Iterate, and Loop Statements
+
+A C<leave_stmt> node has 1-2 ordered elements:  The first element is the
+Perl character string C<leave>.  The optional second element is a
+C<Name_payload> which names the parent statement node to abort; it defaults
+to the empty string if not specified.
+
+An C<iterate_stmt> node has 1-2 ordered elements:  The first element is the
+Perl character string C<iterate>.  The optional second element is a
+C<Name_payload> which names the parent statement node to redo; it defaults
+to the empty string if not specified.
+
+A C<loop_stmt> node has 2 ordered elements:  The first element is the Perl
+character string C<loop>.  The second element is a C<proc_stmt> node having
+the statement to repeatedly execute.
+
+Examples:
+
+    [ '|::=', 'lookup_person', [ loop => [ 'compound-stmt' => [
+        [ 'iproc-imp-invo', 'prompt_Text_line',
+            [ ['&',['$','name']], 'Enter a name to search for: ' ] ],
+        [ 'given-when-def-stmt', ['$','name'],
+            [ ['' => ['leave','lookup_person']] ] ],
+        [ 'iproc-imp-invo', 'nlx.lib.do_search', {
+            name => ['$','name'],
+            not_found => ['&',['$','not_found']],
+            report_text => ['&',['$','report_text']]
+        } ],
+        [ 'if-else-stmt', [ [['$','not_found'] => [ 'compound-stmt' => [
+            [ 'iproc-imp-invo', 'write_Text_line', ['No person matched'] ],
+            ['iterate','lookup_person']
+        ] ]] ] ],
+        [ 'iproc-imp-invo', 'write_Text_line', [ ['$','report_text'] ] ],
+    ] ] ] ]
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 

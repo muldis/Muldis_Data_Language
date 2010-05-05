@@ -3703,9 +3703,7 @@ Grammar:
         | <try_catch_stmt>
         | <if_else_stmt>
         | <given_when_def_stmt>
-        | <leave_stmt>
-        | <iterate_stmt>
-        | <loop_stmt>
+        | <leave_or_iterate_or_loop_stmt>
 
     <proc_stmt__rtn_inv_alt_syn> ::=
           <proc_stmt__plain_rtn_inv>
@@ -4012,9 +4010,9 @@ C<imp_invo_alt_syntax>, and C<stmt_name> or C<named_stmt> for the first 3.
 Examples:
 
     try
-        attempt_the_work()
+        nlx.lib.attempt_the_work()
     catch
-        deal_with_failure()
+        nlx.lib.deal_with_failure()
 
 =head2 Generic If-Else Statements
 
@@ -4055,9 +4053,9 @@ C<proc_stmt> that C<else_stmt> is.)
 Examples:
 
     if $out_of_options then
-        give_up()
+        nlx.lib.give_up()
     else
-        keep_going()
+        nlx.lib.keep_going()
 
 =head2 Generic Given-When-Default Statements
 
@@ -4099,13 +4097,95 @@ Examples:
 
     given $picked_menu_item
         when 'v' then
-            screen_view_record()
+            nlx.lib.screen_view_record()
         when 'a' then
-            screen_add_record()
+            nlx.lib.screen_add_record()
         when 'd' then
-            screen_delete_record()
+            nlx.lib.screen_delete_record()
         default
-            display_bad_choice_error()
+            nlx.lib.display_bad_choice_error()
+
+=head2 Procedure Leave, Iterate, and Loop Statements
+
+Grammar:
+
+    <leave_or_iterate_or_loop_stmt> ::=
+          <leave_stmt>
+        | <iterate_stmt>
+        | <loop_stmt>
+
+    <leave_stmt> ::=
+        leave [<ws> <stmt_name>]?
+
+    <iterate_stmt> ::=
+        iterate [<ws> <stmt_name>]?
+
+    <loop_stmt> ::=
+        loop <ws> <proc_stmt>
+
+The 3 node kinds C<leave_stmt>, C<iterate_stmt>, C<loop_stmt> are all very
+useable independently and are also commonly used together.
+
+A C<leave_stmt> node represents an instruction to abnormally exit the block
+defined by a parent statement node (a normal exit is to simply execute to
+the end of the block).  If the parent node in question is the root
+(compound) statement node for the host procedure, that is, if the parent
+node has the empty string as its name, then the latter will be exited; this
+is how a "return" statement is represented.  If the parent node in question
+is an iterating or looping statement, then any remaining iterations it
+might have had are skipped, especially useful if it was an infinite loop.
+A C<leave_stmt> node is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.LeaveStmtNodeSet> value.  The optional C<stmt_name>
+element specifies the name of the parent statement node to completely
+abort; that name becomes the C<iterate> attribute of the new
+C<LeaveStmtNodeSet> tuple.  Iff the C<leave_stmt> has no C<stmt_name>
+element then the parser will automatically generate said element with a
+value of the empty string, meaning it is a "return" statement.
+
+An C<iterate_stmt> node represents an instruction to abnormally end the
+current iteration of a looping block defined by a parent statement node,
+and then start at the beginning of the next iteration of that loop if there
+are any left; or, it can also be used to "redo" any non-looping parent
+statement.  It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.IterateStmtNodeSet> value.  The optional
+C<stmt_name> element specifies the name of the parent statement node to
+continue execution at the beginning of; that name becomes the C<iterate>
+attribute of the new C<IterateStmtNodeSet> tuple.  Iff the C<iterate_stmt>
+has no C<stmt_name> element then the parser will automatically generate
+said element with a value of the empty string.  Having the C<stmt_name>
+value of the empty string means that the root (compound) statement of the
+host procedure is being referenced, in which case the C<iterate_stmt> is
+saying to redo the whole procedure.
+
+A C<loop_stmt> node represents a generic looping statement block which
+iterates until a child "leave" statement executes.  It is interpreted as a
+tuple of a Muldis D C<sys.std.Core.Type.Cat.LoopStmtNodeSet> value.  The
+C<proc_stmt> element specifies the name or definition of the child
+statement node to be repeatedly executed; the name of that statement
+becomes the C<loop> attribute of the new C<LoopStmtNodeSet> tuple.
+
+A C<loop_stmt> node in combination with C<leave_stmt> or C<iterate_stmt>
+nodes is useful for a more ad-hoc means of performing nonatomic iteration
+as well as for effectively simulating the syntax of common "while" or "for
+i" loops, so Muldis D doesn't include special "while" or "for i" syntax.
+A C<loop_stmt> is I<not> an effective "for each item in list" replacement,
+however; Muldis D currently doesn't provide a nonatomic "foreach", but
+typically any tasks for such can effectively be performed in atomic code
+using various list-processing relational routines; if a case can be made
+for nonatomic "foreach" then Muldis D may gain this feature in the future.
+
+Examples:
+
+    |lookup_person ::= loop [
+        prompt_Text_line( &$name, 'Enter a name to search for: ' )
+        given $name when '' leave |lookup_person
+        nlx.lib.do_search( $>name, &$>not_found, &$>report_text )
+        if $not_found then [
+            write_Text_line( 'No person matched' )
+            iterate |lookup_person
+        ]
+        write_Text_line( $report_text )
+    ]
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
