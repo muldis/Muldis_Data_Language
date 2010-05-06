@@ -2546,6 +2546,7 @@ Grammar:
         | <domain_type>
         | <subset_type>
         | <mixin_type>
+        | <stim_resp_rule>
 
 A C<material> node specifies a new material (routine or type) that lives in
 a depot or subdepot.
@@ -2651,6 +2652,7 @@ Every material has 2-3 elements, illustrated by this grammar:
         | 'domain-type'
         | 'subset-type'
         | 'mixin-type'
+        | 'stimulus-response-rule'
 
     <material_declared_name> ::=
         <Name_payload>
@@ -2666,6 +2668,7 @@ Every material has 2-3 elements, illustrated by this grammar:
         | <domain_type_payload>
         | <subset_type_payload>
         | <mixin_type_payload>
+        | <stim_resp_rule_payload>
 
 So a C<x_material>|C<material> node has 2-3 elements in general:
 
@@ -3189,6 +3192,44 @@ I<TODO.>
 =head2 Mixin Type Specification
 
 I<TODO.>
+
+=head2 Stimulus-Response Rule Specification
+
+Grammar:
+
+    <stim_resp_rule> ::=
+        'stimulus-response-rule'
+        <ws> <material_declared_name>
+        <ws> <stim_resp_rule_payload>
+
+    <stim_resp_rule_payload> ::=
+        when <ws> <stimulus> <ws> invoke <ws> <response>
+
+    <stimulus> ::=
+        'after-mount'
+
+    <response> ::=
+        <routine_name>
+
+A C<stim_resp_rule> node specifies a new stimulus-response rule that lives
+in a depot or subdepot.  A C<stim_resp_rule> node in the PTMD_STD grammar
+corresponds directly to a tuple of the C<stim_resp_rules> attribute of a
+value of the catalog data type C<sys.std.Core.Type.Cat.Depot>, which is how
+a stimulus-response rule specification is actually represented in Muldis
+D's nonsugared form, which is as a component of the system catalog.  The
+C<stim_resp_rules> tuple has 2 primary attributes, C<name> and C<material>,
+which are valued from the C<stim_resp_rule> node's
+C<material_declared_name> and C<stim_resp_rule_payload> elements,
+respectively.
+
+I<TODO.>
+
+Examples:
+
+    stimulus-response-rule myonmount {
+        when after-mount
+        invoke mymain
+    }
 
 =head1 GENERIC VALUE EXPRESSIONS
 

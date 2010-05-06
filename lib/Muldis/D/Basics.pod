@@ -812,6 +812,24 @@ being done together in the general case, where one needs to have
 non-mutating definitions of user-defined types in order to do manipulation
 of data having those types.
 
+Another consequence of this design is that users actually don't ever have
+to define any data types if they don't want to.  All empowering features of
+Muldis D are provided just by the ability to make user-defined routines.
+Generally speaking, the only primary purpose of having user-defined data
+types is is to effectively provide constraints that restrict users from
+doing things, and they are in no way necessary for enabling users to do
+things.  This said, being restrictive is one of the primary reasons to use
+a relational database, and types serve as a strong safeguard against users
+doing bad things, particularly by accident, and any database intended to be
+used in production should exploit user-defined types and constraints.  Also
+user-defined types are very useful as metadata to explain the intended
+interpretation of particular data and code working with it.
+
+One might say that Muldis D is using I<progressive nominal typing>, where
+values in databases move between structural and nominal typing as
+user-defined types whose names match their declared types come in and out
+of existence or mutate.
+
 B<TODO: REWRITE THIS SINGLE PARAGRAPH:>  A data type that is an atomic or
 structure or external type is also called a I<root type>; a data type that
 is an enumeration is also called a I<nonroot type>.  A I<leaf type> is a
@@ -2436,6 +2454,55 @@ system-defined as long as all of the user-defined members are in the same
 depot.  Or at least that is the case for all implementing functions of a
 virtual function that is used in the definition of a data type, all of
 which must be in the same depot aside from system-defined members.
+
+=head1 STIMULUS-RESPONSE RULES
+
+Muldis D natively supports the concept of I<stimulus-response rules>,
+otherwise known as I<triggered routines>.  The concept involves the
+automatic execution of a recipe or procedure in response to a particular
+defined stimulus.  This is in contrast with the normal way to execute a
+routine which is in response to an explicit invocation in code.
+
+The single most important use of a stimulus-response rule is to bootstrap a
+pure Muldis D application by causing the application's "main" routine to
+execute when the DBMS starts up and mounts the depot containing it, as
+there is no other Muldis D routine to invoke the first one in any call
+chain.  A Muldis D implementation that doesn't support stimulus-response
+rules is one that can only support mixed-language applications, such that
+code in some other language has to be the start of any call chain involving
+Muldis D routines.
+
+Muldis D is expected to support stimulus-response rules for a wide variety
+of stimuli, and so support the general case of any kind of trigger in any
+kind of SQL DBMS, or to support event-driven systems like general-purpose
+programming languages.
+
+However, for now, Muldis D only supports exactly one kind of
+stimulus-response rule, which is the C<after-mount> rule used for
+bootstrapping a pure Muldis D application call stack.  With C<after-mount>,
+the stimulus is the act of a depot being mounted in the DBMS, and the
+response is the execution of a recipe or procedure in that depot, such that
+the latter occurs at a separate but immediately subsequent point in time
+from the point in time than where the depot is mounted.  Said depot is
+typically the initial one in the DBMS, and its name plus necessary
+credentials are given as DBMS startup parameters, similarly to naming a
+source code file as the main parameter to a compiler of a typical
+programming language.  Alternately, said depot can be a noninitial one and
+be mounted by code in another depot by way of a system-catalog
+depot-mount-controls update.  What happens is that once a depot is mounted,
+the DBMS scans it for any materials which are C<after-mount> rules and it
+executes the routine that each such rule names, which must live in the same
+depot as the rule, so everything is self-contained.  Other uses of an
+C<after-mount> rule include some kinds of initialization activities that
+would best precede other uses of the depot, but these might be rare.
+
+To be clear, stimulus-response rules are I<not> intended to be used to
+implement database constraints in general; rather, constraint functions
+associated with the types of the database should be used by default, and
+only stimulus-response rules be considered for constraints if the
+constraints can't be served by the functions, such as because the
+constraints are non-deterministic, such as that they compare a date value
+to the current system time.
 
 =head1 USERS AND PRIVILEGES
 

@@ -150,6 +150,7 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.DomainType
                 sys.std.Core.Type.Cat.SubsetType
                 sys.std.Core.Type.Cat.MixinType
+                sys.std.Core.Type.Cat.StimRespRule
                 sys.std.Core.Type.Cat.OrderByName
 
                 sys.std.Core.Type.Database
@@ -181,6 +182,7 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.[Function|Updater|Recipe|Procedure]Set
                 sys.std.Core.Type.Cat.[Scalar|Tuple|Relation]TypeSet
                 sys.std.Core.Type.Cat.[Domain|Subset|Mixin]TypeSet
+                sys.std.Core.Type.Cat.StimRespRuleSet
                 sys.std.Core.Type.Cat.OVLScaValExprNodeSet
                 sys.std.Core.Type.Cat.ScaSelExprNodeSet
                 sys.std.Core.Type.Cat.TupSelExprNodeSet
@@ -1273,7 +1275,7 @@ subdepots, and any that exist are arranged in a hierarchy with the depot as
 the root.  The system catalog variable named C<nlx.cat> is of the C<Depot>
 type.
 
-A C<Depot> has these 13 attributes:
+A C<Depot> has these 14 attributes:
 
 =over
 
@@ -1298,6 +1300,11 @@ C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>
 These are all the definitions that this [|sub]depot contains of scalar
 types with possreps, complete tuple and relation types, domain types, and
 subset types, and mixin types.
+
+=item C<stim_resp_rules> - C<StimRespRuleSet>
+
+These are all the definitions that this [|sub]depot contains of
+stimulus-response rules.
 
 =item C<data> - C<maybe_of.RPTypeNC>
 
@@ -1438,6 +1445,46 @@ its name.
 A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has a binary
 primary key on the C<parent> plus C<name> attributes.  Its default value is
 empty.
+
+=head2 sys.std.Core.Type.Cat.StimRespRuleSet
+
+A C<StimRespRuleSet> is a C<DHRelation> that specifies a set of
+stimulus-response rules that a [|sub]depot might directly contain.
+
+A C<StimRespRuleSet> has these 5 attributes:
+
+=over
+
+=item C<parent> - C<NameChain>
+
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace of
+any hypothetical immediate child namespace of the depot, of the
+stimulus-response rule's parent [|sub]depot.
+
+=item C<name> - C<Name>
+
+This is the declared name of the stimulus-response rule within the
+namespace defined by C<parent>; other Muldis D code would reference it with
+the combination of C<parent> and C<name>.
+
+=item C<scm_comment> - C<Comment>
+
+This is an optional programmer comment about the stimulus-response rule as
+a whole.
+
+=item C<scm_vis_ord> - C<NNInt>
+
+This is the visible order of this routine's declaration relative to all of
+the named entities directly within the namespace defined by C<parent>.
+
+=item C<material> - C<StimRespRule>
+
+This defines the entire stimulus-response rule sans its name.
+
+=back
+
+A C<StimRespRuleSet> has a binary primary key on the C<parent> plus C<name>
+attributes.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING ROUTINES
 
@@ -4457,6 +4504,32 @@ indirectly, composes the mixin type.
 The default value of C<MixinType> defines a mixin type that is identical to
 C<Boolean>; its C<composed_mixins> is empty and its default value is
 the default value of C<Bool>.  I<This paragraph is subject to change.>
+
+=head1 TYPES FOR DEFINING STIMULUS-RESPONSE RULES
+
+=head2 sys.std.Core.Type.Cat.StimRespRule
+
+A C<StimRespRule> is a C<DHTuple>.  It defines a new stimulus-response rule
+which invokes a recipe or procedure automatically in response to some
+stimulus; for now just the act of a depot being mounted is supported.
+
+A C<StimRespRule> has these 3 attributes:
+
+=over
+
+=item C<scm_comment> - C<Comment>
+
+This is an optional programmer comment about the rule as a whole.
+
+=item C<stimulus> - C<Name>
+
+This is always the value C<after-mount> for now.
+
+=item C<response> - C<MaterialNC>
+
+This is the name of the recipe or procedure being invoked.
+
+=back
 
 =head1 SIMPLE GENERIC NONSCALAR TYPES
 
