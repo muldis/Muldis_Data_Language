@@ -28,6 +28,25 @@
     general purpose languages that have to quit and restart the program
     following an upgrade.
 
+    * (Types_Catalog.pod)  Refactored the catalog types for defining scalar
+    types so that they are now fundamentally defined in terms of tuple
+    types, which define their attribute lists and basic constraints,
+    similarly to how relation types are defined; this change was made to
+    simplify the spec and grammar by cutting down on redundancy.  Updated
+    the catalog type "PossrepSet" to replace its 2 attributes "attrs",
+    "constraint" with the 1 attribute "tuple_type", which names the tuple
+    type that defines the attributes/etc of each scalar possrep; also
+    updated the catalog type "PossrepMapSet" to update the description of
+    its "p2_from_p1" (and implicitly "p1_from_p2") so that the named
+    possrep-map function must now use the same tuple types as used in
+    "type_type" for its declared parameter and result types.  A consequence
+    of this change item is that it is now mandatory to also explicitly
+    declare a tuple type over which a possrep is partly directly defined,
+    every time, and not just for use by a possrep-map when more than one
+    possrep exists for a scalar type.  In support of this status quo, also
+    added new singleton tuple type C<sys.std.Core.Type.Cat.D0> whose sole
+    value is C<Tuple:D0>; use it as th tuple type for singleton scalar tps.
+
 2010-05-05  Darren Duncan <darren@DarrenDuncan.net>
 
     * Muldis::D version 0.125.0 is released on CPAN as

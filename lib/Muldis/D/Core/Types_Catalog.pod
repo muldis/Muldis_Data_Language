@@ -163,6 +163,7 @@ This graph slice shows all of the catalog nonscalar types:
                     sys.std.Core.Type.Cat.Depot
                     sys.std.Core.Type.Cat.ExprNodeSet
                     sys.std.Core.Type.Cat.StmtNodeSet
+                    sys.std.Core.Type.Cat.D0
 
         sys.std.Core.Type.Relation
             sys.std.Core.Type.DHRelation
@@ -3495,7 +3496,7 @@ it is a singleton type, whose default value is its only value.
 A C<PossrepSet> is a C<DHRelation> that specifies a set of possreps that
 a scalar [|sub]type might consist primarily of.
 
-A C<PossrepSet> has these 6 attributes:
+A C<PossrepSet> has these 5 attributes:
 
 =over
 
@@ -3512,33 +3513,26 @@ This is an optional programmer comment about the possrep as a whole.
 This is the visible order of this possrep's declaration relative to all of
 the other possreps of this scalar type declaration.
 
-=item C<attrs> - C<NameTypeMap>
+=item C<tuple_type> - C<RPTypeNC>
 
-This defines the 0..N attributes of the possrep.
-
-=item C<constraint> - C<maybe_of.RPFunctionNC>
-
-Iff it is a C<Single>, then C<constraint>
-matches the invocation name of a C<type-constraint> function that
-determines what combinations of possrep attribute values denote values of
-the [|sub]type, besides the restrictions imposed by the declared types of
-the attributes individually.  The function that this names
-must have a single C<topic> parameter whose declared type is a tuple whose
-attributes match those declared by C<attrs> and whose argument denotes the
-value to test; the function's result type must be C<Bool>.  If the
-function unconditionally results in C<Bool:True>, then all possible
-combinations of attribute-allowable values are collectively allowed.  Note
-that, strictly speaking, any constraint defined as part of a possrep (where
+This is the name of the tuple type from which the possrep being defined
+composes its list of attributes (C<attrs>) and the basic constraints on
+those as a collection (C<constraints>).  Said tuple type will most likely,
+but isn't constrained to, not include any of the more complicated
+specifications that typically are just used by tuples of relations or
+tuples that are databases, such as virtual attribute maps or subset
+constraints.  Note that, strictly speaking, any
+constraint defined as part of (the tuple type defining) a possrep (where
 there are multiple possreps) may actually be less restrictive than the
-total constraint of [|sub]type as a whole, because the total constraint is
+total constraint of the possreps' host
+scalar [|sub]type as a whole, because the total constraint is
 defined by I<and>-ing the constraints of all the possreps of the
 [|sub]type (and, in the case of defining a subtype, with the
 C<subtype_constraint> of the subtype and all base type constraints);
 therefore, mainly any given possrep's constraints need to be just
 restricting enough so that the inter-possrep mapping functions can handle
 the arguments that it accepts, so it is possible to apply the other
-possreps' constraints.  Iff C<constraint> is C<Nothing>, then semantics are
-as if it were a defined name that unconditionally resulted in C<Bool:True>.
+possreps' constraints.
 
 =item C<is_base> - C<Bool>
 
@@ -3556,8 +3550,8 @@ tie-breaker if applicable.
 
 A C<PossrepSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.  The default value of a tuple of C<PossrepSet>
-has a C<name> that is the empty string, its C<attrs> is empty, and its
-C<constraint> is C<Nothing>.
+has a C<name> that is the empty string and its C<tuple_type> is C<D0>; and
+so the default is suitable for declaring a singleton scalar type.
 
 =head2 sys.std.Core.Type.Cat.PossrepMapSet
 
@@ -3588,10 +3582,11 @@ constraint defines a C<PossrepMapSet>'s canonical form.
 
 This matches the invocation name of a C<possrep-map> function that
 derives the representation of the possrep named by C<p2> from that of the
-possrep named by C<p1>.  The function that this names must
-have a single C<topic> parameter whose declared type is a tuple whose
-attributes match those of C<p1>; the function's result type must be a
-tuple whose attributes match those of C<p2>.  Note that every distinct
+possrep named by C<p1>.  The function that this names must have a single
+C<topic> parameter whose declared type is the tuple type named by the
+C<tuple_type> attribute of the possrep named by C<p1>; the function's
+declared result type must be the tuple type named by the C<tuple_type>
+attribute of the possrep named by C<p2>.  Note that every distinct
 argument (domain) value of this function must have a distinct result
 (range) value.
 
@@ -4536,6 +4531,14 @@ stimulus is C<after-mount> and whose response is an invocation of the
 procedure C<sys.std.Core.Cat.fail>.
 
 =head1 SIMPLE GENERIC NONSCALAR TYPES
+
+=head2 sys.std.Core.Type.Cat.D0
+
+A C<D0> is a C<Database>.  It has exactly zero attributes; it is a
+singleton type whose only value is also known as C<Tuple:D0>.  This exists
+as a data type as a convenience for the definition of scalar singleton
+types, which would typically use this as the tuple type which their possrep
+is defined partially in terms of.
 
 =head2 sys.std.Core.Type.Cat.NameTypeMap
 
