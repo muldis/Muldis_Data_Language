@@ -218,8 +218,8 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.PossrepSet
                 sys.std.Core.Type.Cat.PossrepMapSet
                 sys.std.Core.Type.Cat.VirtualAttrMapSet
-                sys.std.Core.Type.Cat.KeySet
-                sys.std.Core.Type.Cat.DistribKeySet
+                sys.std.Core.Type.Cat.KeyConstrSet
+                sys.std.Core.Type.Cat.DistribKeyConstrSet
                 sys.std.Core.Type.Cat.DKMemRelAttrMap
                 sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
                 sys.std.Core.Type.Cat.SubsetConstrSet
@@ -3678,13 +3678,13 @@ invoked either once to test a tuple value of the type being defined, or
 multiple times to individually test every tuple in a relation value of a
 type defined over the first type.
 
-=item C<distrib_keys> - C<DistribKeySet>
+=item C<distrib_key_constraints> - C<DistribKeyConstrSet>
 
-These are the 0..N explicit simple distributed (unique) keys that are
+These are the 0..N explicit simple distributed (unique) key constraints that are
 applicable to tuple/database values of the type being defined, that range
 over specified relation-typed attributes of it.  At most one key in
-C<distrib_keys> may be privileged as the I<primary key>.  Note that
-C<distrib_keys> is logically an abstraction syntax (the canonical simplest
+C<distrib_key_constraints> may be privileged as the I<primary key>.  Note that
+C<distrib_key_constraints> is logically an abstraction syntax (the canonical simplest
 form) for a particular kind of I<tuple constraint> of the type being
 defined, one that compares the cardinality of the union of the projection
 of distributed key attributes of all key-participating relation-valued
@@ -3695,7 +3695,7 @@ cardinalities are equal.
 =item C<subset_constraints> - C<SubsetConstrSet>
 
 These are the 0..N explicit simple (non-distributed) subset constraints
-(foreign keys) that are applicable to tuple/database values of the type
+(foreign key constraints) that are applicable to tuple/database values of the type
 being defined, that range over and relate tuples of specified
 relation-typed attributes of it; they are a kind of referential constraint.
 Each tuple of a child attribute must have a corresponding tuple in a
@@ -3713,7 +3713,7 @@ tuples that violate the subset constraint.
 =item C<distrib_subset_constraints> - C<DistribSubsetConstrSet>
 
 These are the 0..N explicit simple distributed subset constraints (foreign
-keys) that are applicable to tuple/database values of the type being
+key constraints) that are applicable to tuple/database values of the type being
 defined, that range over and relate tuples of specified relation-typed
 attributes of it; they are a kind of referential constraint.  Each tuple of
 a child attribute must have a corresponding tuple in one member of a
@@ -3745,7 +3745,7 @@ C<Nothing> is invalid and C<default> must be a C<Single>.
 
 There is a distributed primary key over the elements of
 C<constraints> and the C<name> attributes of
-C<distrib_keys> and C<[|distrib_]subset_constraints>.
+C<distrib_key_constraints> and C<[|distrib_]subset_constraints>.
 
 The default value of C<TupleType> defines a singleton tuple type that has
 zero attributes and whose default value is its only value.
@@ -3801,22 +3801,22 @@ C<TupleType> but that each function's parameter is
 relation-typed rather than tuple-typed; each is a generalized type
 constraint that validates a relation as a whole.
 
-=item C<keys> - C<KeySet>
+=item C<key_constraints> - C<KeyConstrSet>
 
-These are the 0..N explicit (unique) keys that are applicable to relation
+These are the 0..N explicit (unique) key constraints that are applicable to relation
 values of the type being defined; they apply either as candidate keys or as
 unique key constraints, depending on context.  If there are no explicit
-keys, then there is an implicit (unique) key over all attributes of the
+key constraints, then there is an implicit (unique) key over all attributes of the
 relation type being defined, meaning that every possible tuple that may
 individually be an element of a relation value of the type being defined,
-may be in it at once.  If any explicit keys are defined, then every one
+may be in it at once.  If any explicit key constraints are defined, then every one
 must be over a distinct proper subset of the type's attributes, and
 moreover no key's attributes may be a subset of any other key's
 attributes; if 2 such candidates appear, just use the one that has the
 subset.  It is valid for a key to consist of zero attributes; in this case,
 that key is the only key of the type, and values of the type may each
-consist of no more than one tuple.  At most one key in C<keys> may be
-privileged as the I<primary key>.  Note that C<keys> is logically an
+consist of no more than one tuple.  At most one key in C<key_constraints> may be
+privileged as the I<primary key>.  Note that C<key_constraints> is logically an
 abstraction syntax (the canonical simplest form) for a particular kind of
 I<relation constraint> of the type being defined, one that compares the
 cardinality of a projection of a relation on its key attributes with the
@@ -3841,7 +3841,7 @@ invalid and C<default> must be a C<Single>.
 =back
 
 There is a distributed primary key over the elements of C<constraints> and
-the C<name> attributes of C<keys>, and the similar elements or C<name>
+the C<name> attributes of C<key_constraints>, and the similar elements or C<name>
 attributes of the C<TupleType> composed into this type.
 
 The default value of C<RelationType> defines a relation type that has
@@ -3993,13 +3993,13 @@ plus C<dependent_attrs> attributes; it also has a distributed primary key
 over the C<dependent_attrs> attribute of all tuples.  Its default value is
 empty.
 
-=head2 sys.std.Core.Type.Cat.KeySet
+=head2 sys.std.Core.Type.Cat.KeyConstrSet
 
-A C<KeySet> is a C<DHRelation> that specifies a set of candidate keys or
+A C<KeyConstrSet> is a C<DHRelation> that specifies a set of candidate keys or
 unique key constraints for a relation type; each tuple specifies one
 candidate key.
 
-A C<KeySet> has these 5 attributes:
+A C<KeyConstrSet> has these 5 attributes:
 
 =over
 
@@ -4030,7 +4030,7 @@ is C<Bool:False> otherwise.  A primary key is privileged over candidate
 keys in general, in that all of the attributes comprising the primary key
 are likely to be treated as immutable in practice for the relation's
 tuples, and hence are the best candidates for identifying tuples within
-a relation over an extended term (if multiple keys conceptually have all
+a relation over an extended term (if multiple key constraints conceptually have all
 those qualities, then you could choose either as the primary, or perhaps
 such a situation may indicate a flaw in your database design).  The common
 concept of a tuple having an identity that is distinct from the sum total
@@ -4052,16 +4052,16 @@ automatically relate a split relation on.
 
 =back
 
-A C<KeySet> has a unary primary key on the C<name> attribute, and a unary
+A C<KeyConstrSet> has a unary primary key on the C<name> attribute, and a unary
 (unique) key on its C<attrs> attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.DistribKeySet
+=head2 sys.std.Core.Type.Cat.DistribKeyConstrSet
 
-A C<DistribKeySet> is a C<DHRelation> that specifies a set of candidate
-distributed (unique) keys over relation-valued attributes of a
+A C<DistribKeyConstrSet> is a C<DHRelation> that specifies a set of candidate
+distributed (unique) key constraints over relation-valued attributes of a
 tuple/database; each tuple specifies one distributed (unique) key.
 
-A C<DistribKeySet> has these 6 attributes:
+A C<DistribKeyConstrSet> has these 6 attributes:
 
 =over
 
@@ -4098,12 +4098,12 @@ attribute of C<relations> must be identical to C<attrs>.
 
 =item C<is_primary> - C<Bool>
 
-This has the same meaning as C<is_primary> of C<KeySet> but for being
+This has the same meaning as C<is_primary> of C<KeyConstrSet> but for being
 distributed as if the relations distributed over were one relation.
 
 =back
 
-A C<DistribKeySet> has a unary primary key on the C<name> attribute, and a
+A C<DistribKeyConstrSet> has a unary primary key on the C<name> attribute, and a
 unary (unique) key on its C<relations> attribute.  Its default value is
 empty.
 
@@ -4155,7 +4155,7 @@ key.  Its default value has zero tuples.
 =head2 sys.std.Core.Type.Cat.SubsetConstrSet
 
 A C<SubsetConstrSet> is a C<DHRelation> that specifies a set of
-(non-distributed) subset constraints (foreign keys) over relation-valued
+(non-distributed) subset constraints (foreign key constraints) over relation-valued
 attributes of a tuple/database; each tuple specifies one subset constraint,
 which is a kind of referential constraint, that relates tuples of such
 attributes.  Each tuple of a child attribute must have a corresponding
@@ -4219,7 +4219,7 @@ default value is empty.
 =head2 sys.std.Core.Type.Cat.DistribSubsetConstrSet
 
 A C<DistribSubsetConstrSet> is a C<DHRelation> that specifies a set of
-distributed subset constraints (foreign keys) over relation-valued
+distributed subset constraints (foreign key constraints) over relation-valued
 attributes of a tuple/database; each tuple specifies one subset constraint,
 which is a kind of referential constraint, that relates tuples of such
 attributes.  Each tuple of a child attribute must have a corresponding
