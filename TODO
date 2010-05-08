@@ -48,26 +48,6 @@ Update the STD dialects with special syntax for some nonscalar catalog
 types.  Here are some keywords that can then be added: type,
 subtype, key, possrep, etc.
 
-* Remove the "default" attribute from "MixinType" and instead allow a
-composing type to declare that it provides its default value.  This is
-conceptually the proper way to do it.  Change the declared type of
-"composed_mixins" to some new binary tuple type with "type" (RPTypeNC) and
-"provides_its_default" (Bool).  A providing composing type always gives its
-own default value for the mixin's default; they can't be different; if you
-want different, declare a subtype of the value provider to be what composes
-the mixin.  No more than one visible type may declare provision of the
-default value for a mixin.  If a system-defined type claims to provide a
-default for a mixin, no user-defined type ever can (see "Ordered",
-"Ordinal", "Numeric", "Stringy"); if a system-defined mixin exists that no
-system-defined type composes (see "Instant", "Duration") then exactly one
-user-defined type in a mounted depot may claim to provide its default, and
-that only affects code in that depot which asks for the default value of
-said types.  A user-defined mixin type can only be composed by user-defined
-types in the same depot.  Asking a mixin type for its default will fail
-unless a visible type claims its default.  Maybe, if exactly one visible
-type composes a mixin, that one could provide the mixin's default value
-implicitly even if it doesn't claim to?  This might work better.
-
 ----------
 
 * Create the following mixins and group types and ops under them:

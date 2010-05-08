@@ -3399,7 +3399,7 @@ A C<ScalarType> has these 7 attributes:
 This is an optional programmer comment about the scalar
 [|sub]type as a whole.
 
-=item C<composed_mixins> - C<set_of.RPTypeNC>
+=item C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N mixin types, if any, that the new scalar
 type composes, and therefore the new type is a subtype of all of them.
@@ -3627,7 +3627,7 @@ A C<TupleType> has these 10 attributes:
 This is an optional programmer comment about the tuple
 [|sub]type as a whole.
 
-=item C<composed_mixins> - C<set_of.RPTypeNC>
+=item C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N mixin types, if any, that the new tuple
 type composes, and therefore the new type is a subtype of all of them.
@@ -3772,7 +3772,7 @@ A C<RelationType> has these 7 attributes:
 This is an optional programmer comment about the relation
 [|sub]type as a whole.
 
-=item C<composed_mixins> - C<set_of.RPTypeNC>
+=item C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N mixin types, if any, that the new relation
 type composes, and therefore the new type is a subtype of all of them.
@@ -4321,7 +4321,7 @@ A C<DomainType> has these 8 attributes:
 
 This is an optional programmer comment about the domain type as a whole.
 
-=item C<composed_mixins> - C<set_of.RPTypeNC>
+=item C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N mixin types, if any, that the new domain
 type composes, and therefore the new type is a subtype of all of them.
@@ -4409,7 +4409,7 @@ A C<SubsetType> has these 5 attributes:
 
 This is an optional programmer comment about the subset type as a whole.
 
-=item C<composed_mixins> - C<set_of.RPTypeNC>
+=item C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N mixin types, if any, that the new subset
 type composes, and therefore the new type is a subtype of all of them.
@@ -4453,7 +4453,7 @@ type being mandatory.
 =head2 sys.std.Core.Type.Cat.MixinType
 
 A C<MixinType> is a C<DHTuple>.  It defines a new data type whose values
-are a union of those from the one or more other not-C<Empty> types that
+are a union of those from the zero or more other not-C<Empty> types that
 specify themselves to be part of that union.  For all practical purposes, a
 C<MixinType> declares a I<mixin> or I<interface> or I<role> (the last as
 Perl 6 uses the term) which is meant to be composed into other types, such
@@ -4471,7 +4471,7 @@ system-defined domain-type (such as C<Bool>).  A data type defined by a
 C<MixinType> is typically not considered to exist when the system wants to
 determine the MST (most specific type) of one of its values.
 
-A C<MixinType> has these 3 attributes:
+A C<MixinType> has these 2 attributes:
 
 =over
 
@@ -4479,7 +4479,7 @@ A C<MixinType> has these 3 attributes:
 
 This is an optional programmer comment about the mixin type as a whole.
 
-=item C<composed_mixins> - C<set_of.RPTypeNC>
+=item C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N other mixin types, if any, that the new
 mixin type composes.  Any other type that explicitly composes the new mixin
@@ -4487,18 +4487,37 @@ type will also implicitly compose all of the other mixin types that the new
 mixin type composes, recursively; note that a mixin type is forbidden from
 composing itself, directly or indirectly.
 
-=item C<default> - C<RPFunctionNC>
-
-This matches the invocation name of a C<named-value> function that results
-in the default value of the mixin type; it has zero parameters and its
-result type is the same as one of the other types that, directly or
-indirectly, composes the mixin type.
-
 =back
 
-The default value of C<MixinType> defines a mixin type that is identical to
-C<Boolean>; its C<composed_mixins> is empty and its default value is
-the default value of C<Bool>.  I<This paragraph is subject to change.>
+The default value of C<MixinType> defines a mixin type has no comment and
+composes no other mixins and that in isolation has no default value.
+
+=head2 sys.std.Core.Type.Cat.ComposedMixinSet
+
+A C<ComposedMixinSet> is a C<DHRelation>.  It defines a set of names of
+declared mixin data types which are being composed by another type, and for
+each it indicates whether the composing type is asserting that it will
+provide the default value of the mixin type.  A C<ComposedMixinSet> has 4
+attributes, C<type> (a C<RPTypeNC>), C<provides_its_default> (a C<Bool>),
+C<scm_comment> (a C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<type>
+is the declared name of the mixin type being composed, and comprises a
+unary key.  Its default value has zero tuples.
+
+A providing composing type always gives its own default value for the
+mixin's default; they can't be different; if you want different, declare a
+subtype of the value provider to be what composes the mixin.  No more than
+one visible type may declare provision of the default value for a mixin.
+If a system-defined type claims to provide a default for a mixin, no
+user-defined type ever can (see C<Ordered>, C<Ordinal>, C<Numeric>,
+C<Stringy>).  If a system-defined mixin exists that no system-defined type
+composes (see C<Instant>, C<Duration>) then exactly one user-defined type
+in a mounted depot may claim to provide its default, and that only affects
+code in that depot which asks for the default value of said types.  A
+user-defined mixin type can only be composed by user-defined types in the
+same depot.  Asking a mixin type for its default will fail unless a visible
+type claims its default.  Iff exactly one visible type composes a mixin,
+that one will provide the mixin's default value implicitly if it doesn't
+explicitly claim to.
 
 =head1 TYPES FOR DEFINING STIMULUS-RESPONSE RULES
 
