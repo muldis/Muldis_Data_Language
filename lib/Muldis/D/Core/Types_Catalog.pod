@@ -220,10 +220,11 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.VirtualAttrMapSet
                 sys.std.Core.Type.Cat.KeyConstrSet
                 sys.std.Core.Type.Cat.DistribKeyConstrSet
-                sys.std.Core.Type.Cat.DKMemRelAttrMap
-                sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
                 sys.std.Core.Type.Cat.SubsetConstrSet
                 sys.std.Core.Type.Cat.DistribSubsetConstrSet
+                sys.std.Core.Type.Cat.ComposedMixinSet
+                sys.std.Core.Type.Cat.DKMemRelAttrMap
+                sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
                 sys.std.Core.Type.Cat.SCChildAttrParentAttrMap
                 sys.std.Core.Type.Cat.NameTypeMap
                 sys.std.Core.Type.Cat.NameExprMap
@@ -4107,51 +4108,6 @@ A C<DistribKeyConstrSet> has a unary primary key on the C<name> attribute, and a
 unary (unique) key on its C<relations> attribute.  Its default value is
 empty.
 
-=head2 sys.std.Core.Type.Cat.DKMemRelAttrMap
-
-A C<DKMemRelAttrMap> is a C<DHRelation> that names the 0..N relation-valued
-attributes of a host tuple/database type that are participating in a
-distributed key, and says which of each of their attributes maps to the
-attributes of the distributed key itself.
-
-A C<DKMemRelAttrMap> has these 3 attributes:
-
-=over
-
-=item C<rel_name> - C<NameChain>
-
-This is the name of the relation-valued attribute that is participating
-in the distributed key.  But the attribute named by C<rel_name> is only a
-direct attribute of the host type if C<rel_name> has 1 chain element; if it
-has more, then the host type attribute is a tuple/database and any
-further elements serve to make C<rel_name> actually address a component of
-said.
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the participation.
-
-=item C<attr_map> - C<DKRelAttrKeyAttrMap>
-
-This maps 0..N attributes of the relation with the same number of
-attributes of the distributed key.  Every tuple of C<attr_map> must have an
-identical value for the unary projection on its C<key_attr> attribute; in
-other words, they must all map with the same distributed key attributes.
-
-=back
-
-A C<DKMemRelAttrMap> has a unary primary key on the C<rel_name> attribute.
-Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
-
-A C<DKRelAttrKeyAttrMap> is a C<DHRelation>.  It maps 0..N attributes of a
-relation-valued attribute of a host tuple/database type participating
-in a distributed key, to the same number of attributes of the distributed
-key itself.  A C<DKRelAttrKeyAttrMap> has 2 attributes, C<rel_attr> and
-C<key_attr>, each of those being a C<Name>, and each of those being a unary
-key.  Its default value has zero tuples.
-
 =head2 sys.std.Core.Type.Cat.SubsetConstrSet
 
 A C<SubsetConstrSet> is a C<DHRelation> that specifies a set of
@@ -4279,17 +4235,6 @@ may not be the same.
 
 A C<DistribSubsetConstrSet> has a unary primary key on the C<name>
 attribute. Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.SCChildAttrParentAttrMap
-
-A C<SCChildAttrParentAttrMap> is a C<DHRelation>.  It maps 0..N attributes
-of a child relation-valued attribute of a host tuple/database type
-participating in a non-distributed or distributed subset constraint
-(foreign key), to the same number of attributes of a parent such attribute
-or a distributed key of the host.  A C<SCChildAttrParentAttrMap> has 2
-attributes, C<child_attr> and C<parent_attr>, each of those being a
-C<Name>, and each of those being a unary key.  Its default value has zero
-tuples.
 
 =head2 sys.std.Core.Type.Cat.DomainType
 
@@ -4518,6 +4463,62 @@ same depot.  Asking a mixin type for its default will fail unless a visible
 type claims its default.  Iff exactly one visible type composes a mixin,
 that one will provide the mixin's default value implicitly if it doesn't
 explicitly claim to.
+
+=head2 sys.std.Core.Type.Cat.DKMemRelAttrMap
+
+A C<DKMemRelAttrMap> is a C<DHRelation> that names the 0..N relation-valued
+attributes of a host tuple/database type that are participating in a
+distributed key, and says which of each of their attributes maps to the
+attributes of the distributed key itself.
+
+A C<DKMemRelAttrMap> has these 3 attributes:
+
+=over
+
+=item C<rel_name> - C<NameChain>
+
+This is the name of the relation-valued attribute that is participating
+in the distributed key.  But the attribute named by C<rel_name> is only a
+direct attribute of the host type if C<rel_name> has 1 chain element; if it
+has more, then the host type attribute is a tuple/database and any
+further elements serve to make C<rel_name> actually address a component of
+said.
+
+=item C<scm_comment> - C<Comment>
+
+This is an optional programmer comment about the participation.
+
+=item C<attr_map> - C<DKRelAttrKeyAttrMap>
+
+This maps 0..N attributes of the relation with the same number of
+attributes of the distributed key.  Every tuple of C<attr_map> must have an
+identical value for the unary projection on its C<key_attr> attribute; in
+other words, they must all map with the same distributed key attributes.
+
+=back
+
+A C<DKMemRelAttrMap> has a unary primary key on the C<rel_name> attribute.
+Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
+
+A C<DKRelAttrKeyAttrMap> is a C<DHRelation>.  It maps 0..N attributes of a
+relation-valued attribute of a host tuple/database type participating
+in a distributed key, to the same number of attributes of the distributed
+key itself.  A C<DKRelAttrKeyAttrMap> has 2 attributes, C<rel_attr> and
+C<key_attr>, each of those being a C<Name>, and each of those being a unary
+key.  Its default value has zero tuples.
+
+=head2 sys.std.Core.Type.Cat.SCChildAttrParentAttrMap
+
+A C<SCChildAttrParentAttrMap> is a C<DHRelation>.  It maps 0..N attributes
+of a child relation-valued attribute of a host tuple/database type
+participating in a non-distributed or distributed subset constraint
+(foreign key), to the same number of attributes of a parent such attribute
+or a distributed key of the host.  A C<SCChildAttrParentAttrMap> has 2
+attributes, C<child_attr> and C<parent_attr>, each of those being a
+C<Name>, and each of those being a unary key.  Its default value has zero
+tuples.
 
 =head1 TYPES FOR DEFINING STIMULUS-RESPONSE RULES
 
