@@ -201,7 +201,7 @@ data types; they can not create or drop relvars.
 =head2 sys.std.Core.Cat.create_depot_mount
 
 C<recipe sys.std.Core.Cat.create_depot_mount ($name : Name,
-$comment? : Comment, $is_temporary? : Bool, $create_on_mount? : Bool,
+$scm_comment? : Comment, $is_temporary? : Bool, $create_on_mount? : Bool,
 $delete_on_unmount? : Bool, $we_may_update? : Bool,
 $allow_auto_run? : Bool, $details? : OVLScaValExprNodeSet,
 &$mounts ::= $mnt.cat.mounts) {...}>
@@ -238,8 +238,8 @@ C<Bool:False>.
 =head2 sys.std.Core.Cat.create_subdepot
 
 C<recipe sys.std.Core.Cat.create_subdepot ($depot : Name,
-$parent? : NameChain, $name : Name, $comment? : Comment,
-&$cat ::= $fed.cat, &$data ::= $fed.data) {...}>
+$parent? : NameChain, $name : Name, $scm_comment? : Comment,
+$scm_vis_ord? : NNInt, &$cat ::= $fed.cat, &$data ::= $fed.data) {...}>
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.subdepots>.  It will create a
@@ -264,7 +264,8 @@ statement or an Oracle DROP PACKAGE statement.
 =head2 sys.std.Core.Cat.create_function
 
 C<recipe sys.std.Core.Cat.create_function ($depot : Name,
-$subdepot? : NameChain, $name : Name, $comment? : Comment,
+$subdepot? : NameChain, $name : Name,
+$scm_comment? : Comment, $scm_vis_ord? : NNInt,
 $material : Function, &$cat ::= $fed.cat, &$data ::= $fed.data) {...}>
 
 This recipe is an abstraction over inserting a tuple into the catalog
@@ -286,7 +287,8 @@ depot function.  This recipe is analogous to a SQL DROP FUNCTION statement.
 =head2 sys.std.Core.Cat.create_[updater|recipe|procedure]
 
 C<recipe sys.std.Core.Cat.create_[updater|recipe|procedure] ($depot : Name,
-$subdepot? : NameChain, $name : Name, $comment? : Comment,
+$subdepot? : NameChain, $name : Name,
+$scm_comment? : Comment, $scm_vis_ord? : NNInt,
 $material : [Updater|Recipe|Procedure], &$cat ::= $fed.cat) {...}>
 
 This recipe is an abstraction over inserting a tuple into the catalog
@@ -309,7 +311,8 @@ to a SQL DROP PROCEDURE statement.
 =head2 sys.std.Core.Cat.create_[scalar|tuple|relation|domain|subset|mixin]_type
 
 C<recipe sys.std.Core.Cat.create_[scalar|tuple|relation|domain|subset|mixin]_type
-($depot : Name, $subdepot? : NameChain, $name : Name, $comment? : Comment,
+($depot : Name, $subdepot? : NameChain, $name : Name,
+$scm_comment? : Comment, $scm_vis_ord? : NNInt,
 $material : [Scalar|Tuple|Relation|Domain|Subset|Mixin]Type,
 &$cat ::= $fed.cat, &$data ::= $fed.data) {...}>
 
@@ -332,11 +335,36 @@ C<fed.cat.mounts{name=$depot}.depot
 It will drop an existing depot type.  This recipe is analogous to a SQL
 DROP TYPE|DOMAIN statement.
 
+=head2 sys.std.Core.Cat.create_[|distrib_][key|subset]_constraint
+
+C<recipe sys.std.Core.Cat.create_[|distrib_][key|subset]_constraint
+($depot : Name, $subdepot? : NameChain, $name : Name,
+$scm_comment? : Comment, $scm_vis_ord? : NNInt,
+$material : [|Distrib][Key|Subset]Constr,
+&$cat ::= $fed.cat, &$data ::= $fed.data) {...}>
+
+This recipe is an abstraction over inserting a tuple into the catalog
+relvar
+C<fed.cat.mounts{name=$depot}.depot.[|distrib_][key|subset]_constraints>.
+It will create a new constraint, in the depot mounted under the name given
+by the C<depot> argument, whose name and other details match the other
+arguments.
+
+=head2 sys.std.Core.Cat.drop_[|distrib_][key|subset]_constraint
+
+C<recipe sys.std.Core.Cat.drop_[|distrib_][key|subset]_constraint
+($depot : Name, $subdepot? : NameChain, $name : Name,
+&$cat ::= $fed.cat, &$data ::= $fed.data) {...}>
+
+This recipe is an abstraction over deleting a tuple from the catalog relvar
+C<fed.cat.mounts{name=$depot}.depot.[|distrib_][key|subset]_constraints>.
+It will drop an existing depot constraint.
+
 =head2 sys.std.Core.Cat.create_stim_resp_rule
 
 C<recipe sys.std.Core.Cat.create_stim_resp_rule ($depot : Name,
-$subdepot? : NameChain, $name : Name, $comment? : Comment,
-$material : StimRespRule, &$cat ::= $fed.cat) {...}>
+$subdepot? : NameChain, $name : Name, $scm_comment? : Comment,
+$scm_vis_ord? : NNInt, $material : StimRespRule, &$cat ::= $fed.cat) {...}>
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar C<fed.cat.mounts{name=$depot}.depot.stim_resp_rules>.  It will

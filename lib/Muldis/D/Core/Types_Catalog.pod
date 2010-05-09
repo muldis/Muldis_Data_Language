@@ -534,10 +534,9 @@ value is a reference to the C<sys.std.Core.Universal.assign> updater.
 
 =head2 sys.std.Core.Type.Cat.APTypeNC
 
-C<APTypeNC> is a proper subtype of
-C<AbsPathMaterialNC> that excludes the C<rtn> value and a subset of the
-C<sys>-prefix values.  Its default value is a reference to the
-C<sys.std.Core.Type.Universal> data type.
+C<APTypeNC> is a proper subtype of C<AbsPathMaterialNC> that excludes a
+subset of the C<sys>-prefix values.  Its default value is a reference to
+the C<sys.std.Core.Type.Universal> data type.
 
 =head2 sys.std.Core.Type.Cat.RelPathMaterialNC
 
@@ -549,18 +548,23 @@ invoked directly when both the invoker and invoked are in the same depot.
 
 =head2 sys.std.Core.Type.Cat.RPFunctionNC
 
-C<RPFunctionNC> is a non-proper subtype
-of C<RelPathMaterialNC> and is analogous to the C<APFunctionNC> type.
+C<RPFunctionNC> is a proper subtype of C<RelPathMaterialNC> that excludes
+the C<type>-prefix values and a subset of the C<sys>-prefix values.  Its
+default value is a reference to the C<sys.std.Core.Universal.is_identical>
+function.
 
 =head2 sys.std.Core.Type.Cat.RPImperativeNC
 
-C<RPImperativeNC> is a non-proper subtype of C<RelPathMaterialNC> and is
-analogous to the C<APImperativeNC> type.
+C<RPImperativeNC> is a proper subtype of C<RelPathMaterialNC> that excludes
+the C<type>-prefix values and a subset of the C<sys>-prefix values.  Its
+default value is a reference to the C<sys.std.Core.Universal.assign>
+updater.
 
 =head2 sys.std.Core.Type.Cat.RPTypeNC
 
-C<RPTypeNC> is a non-proper subtype of
-C<RelPathMaterialNC> and is analogous to the C<APTypeNC> type.
+C<RPTypeNC> is a proper subtype of C<RelPathMaterialNC> that excludes the
+C<rtn> value and a subset of the C<sys>-prefix values.  Its default value
+is a reference to the C<sys.std.Core.Type.Universal> data type.
 
 =head2 sys.std.Core.Type.Cat.DataNC
 
@@ -720,7 +724,7 @@ specifically all the relcons and relvars with the names
 C<[sys|mnt|fed|nlx].cat>.  The system catalog constant named
 C<sys.cat> is of the C<System> type.
 
-A C<System> has these 14 attributes:
+A C<System> has these 18 attributes:
 
 =over
 
@@ -771,6 +775,11 @@ C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>
 These are all the system-defined scalar types, except for C<Int> because it
 can't be defined like user-defined types, and complete tuple and relation
 types, and domain types, and subset types, and mixin types.
+
+=item C<[|distrib_][key|subset]_constraints> -
+C<[|Distrib][Key|Subset]ConstrSet>
+
+These are all the system-defined |distributed key|subset constraints.
 
 =item C<catalogs> - C<SysCatSet>
 
@@ -904,7 +913,7 @@ C<name> attributes.  Its default value is empty.
 
 A C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> is a
 C<DHRelation> that specifies a set of
-scalar|tuple|relation|domain|subset|mixin system-defined types.
+system-defined scalar|tuple|relation|domain|subset|mixin types.
 
 A C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has these 5
 attributes:
@@ -943,6 +952,45 @@ its name.
 A C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has a binary
 primary key on the C<parent> plus C<name> attributes.  Its default value is
 empty.
+
+=head2 sys.std.Core.Type.Cat.Sys[|Distrib][Key|Subset]ConstrSet
+
+A C<Sys[|Distrib][Key|Subset]ConstrSet> is a C<DHRelation> that specifies a
+set of system-defined |distributed key|subset constraints.
+
+A C<Sys[|Distrib][Key|Subset]ConstrSet> has these 5 attributes:
+
+=over
+
+=item C<parent> - C<NameChain>
+
+This is the fully-qualified name, in the nameless global root namespace, of
+the |distributed key|subset constraint's parent system namespace.
+
+=item C<name> - C<Name>
+
+This is the declared name of the |distributed key|subset constraint within
+the namespace defined by C<parent>; other Muldis D code would reference it
+with the combination of C<parent> and C<name>.
+
+=item C<scm_comment> - C<Comment>
+
+This is an optional programmer comment about the |distributed key|subset
+constraint as a whole.
+
+=item C<scm_vis_ord> - C<NNInt>
+
+This is the visible order of this constraint's declaration relative to all
+of the named entities directly within the namespace defined by C<parent>.
+
+=item C<material> - C<[|Distrib][Key|Subset]Constr>
+
+This defines the entire |distributed key|subset constraint sans its name.
+
+=back
+
+A C<Sys[|Distrib][Key|Subset]ConstrSet> has a binary primary key on the
+C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysCatSet
 
@@ -1274,7 +1322,7 @@ subdepots, and any that exist are arranged in a hierarchy with the depot as
 the root.  The system catalog variable named C<nlx.cat> is of the C<Depot>
 type.
 
-A C<Depot> has these 14 attributes:
+A C<Depot> has these 18 attributes:
 
 =over
 
@@ -1299,6 +1347,12 @@ C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>
 These are all the definitions that this [|sub]depot contains of scalar
 types with possreps, complete tuple and relation types, domain types, and
 subset types, and mixin types.
+
+=item C<[|distrib_][key|subset]_constraints> -
+C<[|Distrib][Key|Subset]ConstrSet>
+
+These are all the definitions that this [|sub]depot contains of
+|distributed key|subset constraints.
 
 =item C<stim_resp_rules> - C<StimRespRuleSet>
 
@@ -1444,6 +1498,47 @@ its name.
 A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has a binary
 primary key on the C<parent> plus C<name> attributes.  Its default value is
 empty.
+
+=head2 sys.std.Core.Type.Cat.[|Distrib][Key|Subset]ConstrSet
+
+A C<[|Distrib][Key|Subset]ConstrSet> is a C<DHRelation> that specifies a
+set of |distributed key|subset constraints that a [|sub]depot might
+directly contain.
+
+A C<[|Distrib][Key|Subset]ConstrSet> has these 5 attributes:
+
+=over
+
+=item C<parent> - C<NameChain>
+
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace of
+any hypothetical immediate child namespace of the depot, of the
+|distributed key|subset constraint's parent [|sub]depot.
+
+=item C<name> - C<Name>
+
+This is the declared name of the |distributed key|subset constraint within
+the namespace defined by C<parent>; other Muldis D code would reference it
+with the combination of C<parent> and C<name>.
+
+=item C<scm_comment> - C<Comment>
+
+This is an optional programmer comment about the |distributed key|subset
+constraint as a whole.
+
+=item C<scm_vis_ord> - C<NNInt>
+
+This is the visible order of this constraint's declaration relative to all
+of the named entities directly within the namespace defined by C<parent>.
+
+=item C<material> - C<[|Distrib][Key|Subset]Constr>
+
+This defines the entire |distributed key|subset constraint sans its name.
+
+=back
+
+A C<[|Distrib][Key|Subset]ConstrSet> has a binary primary key on the
+C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.StimRespRuleSet
 
@@ -3676,9 +3771,10 @@ invoked either once to test a tuple value of the type being defined, or
 multiple times to individually test every tuple in a relation value of a
 type defined over the first type.
 
-=item C<distrib_key_constraints> - C<DistribKeyConstrSet>
+=item C<distrib_key_constraints> - C<RelPathMaterialNC>
 
-These are the 0..N explicit simple distributed (unique) key constraints that are
+This matches the invocation names of
+0..N explicit simple distributed (unique) key constraints that are
 applicable to tuple/database values of the type being defined, that range
 over specified relation-typed attributes of it.  At most one key in
 C<distrib_key_constraints> may be privileged as the I<primary key>.  Note that
@@ -3690,9 +3786,10 @@ attributes, with the sum of cardinalities of the source relation-valued
 attributes; the attribute values comprise a distributed key if the
 cardinalities are equal.
 
-=item C<subset_constraints> - C<SubsetConstrSet>
+=item C<subset_constraints> - C<RelPathMaterialNC>
 
-These are the 0..N explicit simple (non-distributed) subset constraints
+This matches the invocation names of
+0..N explicit simple (non-distributed) subset constraints
 (foreign key constraints) that are applicable to tuple/database values of the type
 being defined, that range over and relate tuples of specified
 relation-typed attributes of it; they are a kind of referential constraint.
@@ -3708,9 +3805,10 @@ an empty relation; if the difference is an empty relation, then the subset
 constraint is satisfied; otherwise, any difference tuples are from child
 tuples that violate the subset constraint.
 
-=item C<distrib_subset_constraints> - C<DistribSubsetConstrSet>
+=item C<distrib_subset_constraints> - C<RelPathMaterialNC>
 
-These are the 0..N explicit simple distributed subset constraints (foreign
+This matches the invocation names of
+0..N explicit simple distributed subset constraints (foreign
 key constraints) that are applicable to tuple/database values of the type being
 defined, that range over and relate tuples of specified relation-typed
 attributes of it; they are a kind of referential constraint.  Each tuple of
@@ -3799,9 +3897,10 @@ C<TupleType> but that each function's parameter is
 relation-typed rather than tuple-typed; each is a generalized type
 constraint that validates a relation as a whole.
 
-=item C<key_constraints> - C<KeyConstrSet>
+=item C<key_constraints> - C<RelPathMaterialNC>
 
-These are the 0..N explicit (unique) key constraints that are applicable to relation
+This matches the invocation names of
+0..N explicit (unique) key constraints that are applicable to relation
 values of the type being defined; they apply either as candidate keys or as
 unique key constraints, depending on context.  If there are no explicit
 key constraints, then there is an implicit (unique) key over all attributes of the
@@ -3990,136 +4089,6 @@ A C<VirtualAttrMapSet> has a binary primary key on the C<determinant_attrs>
 plus C<dependent_attrs> attributes; it also has a distributed primary key
 over the C<dependent_attrs> attribute of all tuples.  Its default value is
 empty.
-
-=head2 sys.std.Core.Type.Cat.KeyConstrSet
-
-A C<KeyConstrSet> is a C<DHRelation> that specifies a set of
-unique key constraints for a relation type.
-
-A C<KeyConstrSet> has these 4 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the key.
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the key as a whole.
-
-=item C<scm_vis_ord> - C<NNInt>
-
-This is the visible order of this declaration relative to all of
-the other declarations beneath this relation type declaration.
-
-=item C<material> - C<KeyConstr>
-
-This defines the entire constraint sans its name.
-
-=back
-
-A C<KeyConstrSet> has a unary primary key on the C<name> attribute.  Its
-default value is empty.
-
-=head2 sys.std.Core.Type.Cat.DistribKeyConstrSet
-
-A C<DistribKeyConstrSet> is a C<DHRelation> that specifies a set of
-distributed (unique) key constraints over relation-valued attributes of a
-tuple/database.
-
-A C<DistribKeyConstrSet> has these 4 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the distributed (unique) key.
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the distributed (unique) key
-as a whole.
-
-=item C<scm_vis_ord> - C<NNInt>
-
-This is the visible order of this declaration relative to all of
-the other declarations beneath this tuple type declaration.
-
-=item C<material> - C<DistribKeyConstr>
-
-This defines the entire constraint sans its name.
-
-=back
-
-A C<DistribKeyConstrSet> has a unary primary key on the C<name> attribute.
-Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.SubsetConstrSet
-
-A C<SubsetConstrSet> is a C<DHRelation> that specifies a set of
-(non-distributed) subset constraints over relation-valued
-attributes of a tuple/database.
-
-A C<SubsetConstrSet> has these 4 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the subset constraint.
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the subset constraint as a
-whole.
-
-=item C<scm_vis_ord> - C<NNInt>
-
-This is the visible order of this declaration relative to all of
-the other declarations beneath this tuple type declaration.
-
-=item C<material> - C<SubsetConstr>
-
-This defines the entire constraint sans its name.
-
-=back
-
-A C<SubsetConstrSet> has a unary primary key on the C<name> attribute.  Its
-default value is empty.
-
-=head2 sys.std.Core.Type.Cat.DistribSubsetConstrSet
-
-A C<DistribSubsetConstrSet> is a C<DHRelation> that specifies a set of
-distributed subset constraints over relation-valued
-attributes of a tuple/database.
-
-A C<DistribSubsetConstrSet> has these 4 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the subset constraint.
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the subset constraint as a
-whole.
-
-=item C<scm_vis_ord> - C<NNInt>
-
-This is the visible order of this declaration relative to all of
-the other declarations beneath this tuple type declaration.
-
-=item C<material> - C<DistribSubsetConstr>
-
-This defines the entire constraint sans its name.
-
-=back
-
-A C<DistribSubsetConstrSet> has a unary primary key on the C<name>
-attribute. Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.DomainType
 
