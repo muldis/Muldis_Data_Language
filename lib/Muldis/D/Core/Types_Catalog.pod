@@ -150,6 +150,10 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.DomainType
                 sys.std.Core.Type.Cat.SubsetType
                 sys.std.Core.Type.Cat.MixinType
+                sys.std.Core.Type.Cat.KeyConstr
+                sys.std.Core.Type.Cat.DistribKeyConstr
+                sys.std.Core.Type.Cat.SubsetConstr
+                sys.std.Core.Type.Cat.DistribSubsetConstr
                 sys.std.Core.Type.Cat.StimRespRule
                 sys.std.Core.Type.Cat.OrderByName
 
@@ -3996,11 +4000,10 @@ empty.
 
 =head2 sys.std.Core.Type.Cat.KeyConstrSet
 
-A C<KeyConstrSet> is a C<DHRelation> that specifies a set of candidate keys or
-unique key constraints for a relation type; each tuple specifies one
-candidate key.
+A C<KeyConstrSet> is a C<DHRelation> that specifies a set of
+unique key constraints for a relation type.
 
-A C<KeyConstrSet> has these 5 attributes:
+A C<KeyConstrSet> has these 4 attributes:
 
 =over
 
@@ -4017,52 +4020,22 @@ This is an optional programmer comment about the key as a whole.
 This is the visible order of this declaration relative to all of
 the other declarations beneath this relation type declaration.
 
-=item C<attrs> - C<set_of.Name>
+=item C<material> - C<KeyConstr>
 
-This defines the 0..N host relation attributes comprising the key.  If
-this set is empty, then we have a nullary key which restricts the host
-relation to have a maximum of 1 tuple.
-
-=item C<is_primary> - C<Bool>
-
-This is C<Bool:True> if this key has been designated the I<primary key> of
-the relation (a relation may have at most one, or none, of those); it
-is C<Bool:False> otherwise.  A primary key is privileged over candidate
-keys in general, in that all of the attributes comprising the primary key
-are likely to be treated as immutable in practice for the relation's
-tuples, and hence are the best candidates for identifying tuples within
-a relation over an extended term (if multiple key constraints conceptually have all
-those qualities, then you could choose either as the primary, or perhaps
-such a situation may indicate a flaw in your database design).  The common
-concept of a tuple having an identity that is distinct from the sum total
-of all its attribute values, such that one can say that a tuple is being
-"updated" (rather than its host relation being the only thing that is
-updated to hold a different set of tuples) is dependent in Muldis D on
-the host relation having a primary key; if a tuple in a relation is
-replaced by a distinct tuple whose values in the primary key attributes
-are identical, it is only in this situation that we can consider that we
-still have the same tuple, which was just updated, and that we have not
-lost the old tuple and gained a new one.  The relation attributes
-comprising a primary key are the best mapping values for automatic new
-subset constraints and join conditions if the host relation type has to be
-auto-split into several associated ones, for example because the physical
-representation of this relation doesn't support RVAs; in fact, some
-implementations may require that any relation having an RVA must also
-have an explicit primary key, so it is easier for them to choose the key to
-automatically relate a split relation on.
+This defines the entire constraint sans its name.
 
 =back
 
-A C<KeyConstrSet> has a unary primary key on the C<name> attribute, and a unary
-(unique) key on its C<attrs> attribute.  Its default value is empty.
+A C<KeyConstrSet> has a unary primary key on the C<name> attribute.  Its
+default value is empty.
 
 =head2 sys.std.Core.Type.Cat.DistribKeyConstrSet
 
-A C<DistribKeyConstrSet> is a C<DHRelation> that specifies a set of candidate
+A C<DistribKeyConstrSet> is a C<DHRelation> that specifies a set of
 distributed (unique) key constraints over relation-valued attributes of a
-tuple/database; each tuple specifies one distributed (unique) key.
+tuple/database.
 
-A C<DistribKeyConstrSet> has these 6 attributes:
+A C<DistribKeyConstrSet> has these 4 attributes:
 
 =over
 
@@ -4080,48 +4053,22 @@ as a whole.
 This is the visible order of this declaration relative to all of
 the other declarations beneath this tuple type declaration.
 
-=item C<attrs> - C<set_of.Name>
+=item C<material> - C<DistribKeyConstr>
 
-This declares the 0..N attributes comprising the distributed (unique) key.
-If this set is empty, then we have a nullary key which restricts all of the
-relations participating in the distributed key to have a maximum of 1
-tuple between them.  Note that the distributed key attribute names don't
-have to match the names of any participating relation attributes.
-
-=item C<relations> - C<DKMemRelAttrMap>
-
-This names the 0..N relation-valued attributes of the host
-tuple/database type that are participating in the distributed key, and
-says which of each of their attributes maps to the attributes of the
-distributed key itself.  If this set is empty, then the distributed key has
-no effect.  The unary projection of every tuple of the C<key_attr>
-attribute of C<relations> must be identical to C<attrs>.
-
-=item C<is_primary> - C<Bool>
-
-This has the same meaning as C<is_primary> of C<KeyConstrSet> but for being
-distributed as if the relations distributed over were one relation.
+This defines the entire constraint sans its name.
 
 =back
 
-A C<DistribKeyConstrSet> has a unary primary key on the C<name> attribute, and a
-unary (unique) key on its C<relations> attribute.  Its default value is
-empty.
+A C<DistribKeyConstrSet> has a unary primary key on the C<name> attribute.
+Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SubsetConstrSet
 
 A C<SubsetConstrSet> is a C<DHRelation> that specifies a set of
-(non-distributed) subset constraints (foreign key constraints) over relation-valued
-attributes of a tuple/database; each tuple specifies one subset constraint,
-which is a kind of referential constraint, that relates tuples of such
-attributes.  Each tuple of a child attribute must have a corresponding
-tuple in a specific single parent attribute, where they correspond on the
-attributes of the parent attribute that comprise a (unique) key of the
-latter.  Note that it is valid to define a subset constraint involving zero
-attributes, in which case the constraint is that the parent relation must
-have at least one tuple when the child relation has at least one tuple.
+(non-distributed) subset constraints over relation-valued
+attributes of a tuple/database.
 
-A C<SubsetConstrSet> has these 7 attributes:
+A C<SubsetConstrSet> has these 4 attributes:
 
 =over
 
@@ -4139,33 +4086,9 @@ whole.
 This is the visible order of this declaration relative to all of
 the other declarations beneath this tuple type declaration.
 
-=item C<parent> - C<NameChain>
+=item C<material> - C<SubsetConstr>
 
-This is the name of the relation-valued attribute that is the parent in the
-(non-distributed) subset constraint relationship.  But the attribute named
-by C<parent> is only a direct attribute of the host type if C<parent> has 1
-chain element; if it has more, then the host type attribute is a
-tuple/database and any further elements serve to make C<parent> actually
-address a component of said.
-
-=item C<parent_key> - C<Name>
-
-This is the name of the explicitly declared candidate key or unique key
-constraint of C<parent> which defines the attributes of C<parent> that are
-being matched on in the subset constraint.
-
-=item C<child> - C<NameChain>
-
-This is the name of the relation-valued attribute that is the child in the
-(non-distributed) subset constraint relationship; its structure is as per
-C<parent>.  Note that C<child> and C<parent> are allowed to be one and the
-same.
-
-=item C<attr_map> - C<SCChildAttrParentAttrMap>
-
-This maps 0..N attributes of the child relation with the same number of
-attributes of the parent relation; the mapped attribute names may or may
-not be the same.
+This defines the entire constraint sans its name.
 
 =back
 
@@ -4175,19 +4098,10 @@ default value is empty.
 =head2 sys.std.Core.Type.Cat.DistribSubsetConstrSet
 
 A C<DistribSubsetConstrSet> is a C<DHRelation> that specifies a set of
-distributed subset constraints (foreign key constraints) over relation-valued
-attributes of a tuple/database; each tuple specifies one subset constraint,
-which is a kind of referential constraint, that relates tuples of such
-attributes.  Each tuple of a child attribute must have a corresponding
-tuple in one member of a specific set of parent-alternative attributes
-(that have a distributed key ranging over them), where they correspond on
-the attributes of the parent-alternative attribute that comprise a
-distributed key on the latter.  Note that it is valid to define a subset
-constraint involving zero attributes, in which case the constraint is that
-at least one of the parent relations must have at least one tuple when the
-child relation has at least one tuple.
+distributed subset constraints over relation-valued
+attributes of a tuple/database.
 
-A C<DistribSubsetConstrSet> has these 6 attributes:
+A C<DistribSubsetConstrSet> has these 4 attributes:
 
 =over
 
@@ -4205,31 +4119,9 @@ whole.
 This is the visible order of this declaration relative to all of
 the other declarations beneath this tuple type declaration.
 
-=item C<parent_distrib_key> - C<NameChain>
+=item C<material> - C<DistribSubsetConstr>
 
-This is the name of the explicitly declared distributed (unique) key that
-is the parent in the distributed subset constraint relationship; it defines
-by proxy the attributes that are being matched on in the subset constraint.
-But the distributed key named by C<parent_distrib_key> may not be directly
-declared by the host type of this subset constraint; it might be declared
-by the type of an attribute of the host type, if said attribute is a
-tuple/database; so the only or last C<parent_distrib_key> chain element is
-a key name, and any preceeding names are attribute names.
-
-=item C<child> - C<NameChain>
-
-This is the name of the relation-valued attribute that is the child in the
-distributed subset constraint relationship.  But the attribute named by
-C<child> is only a direct attribute of the host type if C<child> has 1
-chain element; if it has more, then the host type attribute is a
-tuple/database and any further elements serve to make C<child> actually
-address a component of said.
-
-=item C<attr_map> - C<SCChildAttrParentAttrMap>
-
-This maps 0..N attributes of the child relation with the same number of
-attributes of the parent distributed key; the mapped attribute names may or
-may not be the same.
+This defines the entire constraint sans its name.
 
 =back
 
@@ -4463,6 +4355,206 @@ same depot.  Asking a mixin type for its default will fail unless a visible
 type claims its default.  Iff exactly one visible type composes a mixin,
 that one will provide the mixin's default value implicitly if it doesn't
 explicitly claim to.
+
+=head2 sys.std.Core.Type.Cat.KeyConstr
+
+A C<KeyConstr> is a C<DHTuple>.  It specifies a candidate key or
+unique key constraint for a relation type.
+
+A C<KeyConstr> has these 3 attributes:
+
+=over
+
+=item C<scm_comment> - C<Comment>
+
+This is an optional programmer comment about the key as a whole.
+
+=item C<attrs> - C<set_of.Name>
+
+This defines the 0..N host relation attributes comprising the key.  If
+this set is empty, then we have a nullary key which restricts the host
+relation to have a maximum of 1 tuple.
+
+=item C<is_primary> - C<Bool>
+
+This is C<Bool:True> if this key has been designated the I<primary key> of
+the relation (a relation may have at most one, or none, of those); it
+is C<Bool:False> otherwise.  A primary key is privileged over candidate
+keys in general, in that all of the attributes comprising the primary key
+are likely to be treated as immutable in practice for the relation's
+tuples, and hence are the best candidates for identifying tuples within
+a relation over an extended term (if multiple key constraints conceptually have all
+those qualities, then you could choose either as the primary, or perhaps
+such a situation may indicate a flaw in your database design).  The common
+concept of a tuple having an identity that is distinct from the sum total
+of all its attribute values, such that one can say that a tuple is being
+"updated" (rather than its host relation being the only thing that is
+updated to hold a different set of tuples) is dependent in Muldis D on
+the host relation having a primary key; if a tuple in a relation is
+replaced by a distinct tuple whose values in the primary key attributes
+are identical, it is only in this situation that we can consider that we
+still have the same tuple, which was just updated, and that we have not
+lost the old tuple and gained a new one.  The relation attributes
+comprising a primary key are the best mapping values for automatic new
+subset constraints and join conditions if the host relation type has to be
+auto-split into several associated ones, for example because the physical
+representation of this relation doesn't support RVAs; in fact, some
+implementations may require that any relation having an RVA must also
+have an explicit primary key, so it is easier for them to choose the key to
+automatically relate a split relation on.
+
+=back
+
+The default value of C<KeyConstr> defines a nullary key.
+
+=head2 sys.std.Core.Type.Cat.DistribKeyConstr
+
+A C<DistribKeyConstr> is a C<DHTuple>.  It specifies a candidate
+distributed (unique) key constraint over relation-valued attributes of a
+tuple/database.
+
+A C<DistribKeyConstr> has these 4 attributes:
+
+=over
+
+=item C<scm_comment> - C<Comment>
+
+This is an optional programmer comment about the distributed (unique) key
+as a whole.
+
+=item C<attrs> - C<set_of.Name>
+
+This declares the 0..N attributes comprising the distributed (unique) key.
+If this set is empty, then we have a nullary key which restricts all of the
+relations participating in the distributed key to have a maximum of 1
+tuple between them.  Note that the distributed key attribute names don't
+have to match the names of any participating relation attributes.
+
+=item C<relations> - C<DKMemRelAttrMap>
+
+This names the 0..N relation-valued attributes of the host
+tuple/database type that are participating in the distributed key, and
+says which of each of their attributes maps to the attributes of the
+distributed key itself.  If this set is empty, then the distributed key has
+no effect.  The unary projection of every tuple of the C<key_attr>
+attribute of C<relations> must be identical to C<attrs>.
+
+=item C<is_primary> - C<Bool>
+
+This has the same meaning as C<is_primary> of C<KeyConstr> but for being
+distributed as if the relations distributed over were one relation.
+
+=back
+
+The default value of C<DistribKeyConstr> has all-empty attributes.
+
+=head2 sys.std.Core.Type.Cat.SubsetConstr
+
+A C<SubsetConstr> is a C<DHTuple>.  It specifies a (non-distributed) subset
+constraint (foreign key constraint) over relation-valued
+attributes of a tuple/database; a subset constraint
+is a kind of referential constraint, that relates tuples of such
+attributes.  Each tuple of a child attribute must have a corresponding
+tuple in a specific single parent attribute, where they correspond on the
+attributes of the parent attribute that comprise a (unique) key of the
+latter.  Note that it is valid to define a subset constraint involving zero
+attributes, in which case the constraint is that the parent relation must
+have at least one tuple when the child relation has at least one tuple.
+
+A C<SubsetConstr> has these 5 attributes:
+
+=over
+
+=item C<scm_comment> - C<Comment>
+
+This is an optional programmer comment about the subset constraint as a
+whole.
+
+=item C<parent> - C<NameChain>
+
+This is the name of the relation-valued attribute that is the parent in the
+(non-distributed) subset constraint relationship.  But the attribute named
+by C<parent> is only a direct attribute of the host type if C<parent> has 1
+chain element; if it has more, then the host type attribute is a
+tuple/database and any further elements serve to make C<parent> actually
+address a component of said.
+
+=item C<parent_key> - C<Name>
+
+This is the name of the explicitly declared candidate key or unique key
+constraint of C<parent> which defines the attributes of C<parent> that are
+being matched on in the subset constraint.
+
+=item C<child> - C<NameChain>
+
+This is the name of the relation-valued attribute that is the child in the
+(non-distributed) subset constraint relationship; its structure is as per
+C<parent>.  Note that C<child> and C<parent> are allowed to be one and the
+same.
+
+=item C<attr_map> - C<SCChildAttrParentAttrMap>
+
+This maps 0..N attributes of the child relation with the same number of
+attributes of the parent relation; the mapped attribute names may or may
+not be the same.
+
+=back
+
+The default value of C<SubsetConstr> has all-empty attributes.
+
+=head2 sys.std.Core.Type.Cat.DistribSubsetConstr
+
+A C<DistribSubsetConstr> is a C<DHTuple>.  It specifies a distributed
+subset constraint (foreign key constraint) over relation-valued
+attributes of a tuple/database; a distributed subset constraint
+is a kind of referential constraint, that relates tuples of such
+attributes.  Each tuple of a child attribute must have a corresponding
+tuple in one member of a specific set of parent-alternative attributes
+(that have a distributed key ranging over them), where they correspond on
+the attributes of the parent-alternative attribute that comprise a
+distributed key on the latter.  Note that it is valid to define a subset
+constraint involving zero attributes, in which case the constraint is that
+at least one of the parent relations must have at least one tuple when the
+child relation has at least one tuple.
+
+A C<DistribSubsetConstr> has these 4 attributes:
+
+=over
+
+=item C<scm_comment> - C<Comment>
+
+This is an optional programmer comment about the subset constraint as a
+whole.
+
+=item C<parent_distrib_key> - C<NameChain>
+
+This is the name of the explicitly declared distributed (unique) key that
+is the parent in the distributed subset constraint relationship; it defines
+by proxy the attributes that are being matched on in the subset constraint.
+But the distributed key named by C<parent_distrib_key> may not be directly
+declared by the host type of this subset constraint; it might be declared
+by the type of an attribute of the host type, if said attribute is a
+tuple/database; so the only or last C<parent_distrib_key> chain element is
+a key name, and any preceeding names are attribute names.
+
+=item C<child> - C<NameChain>
+
+This is the name of the relation-valued attribute that is the child in the
+distributed subset constraint relationship.  But the attribute named by
+C<child> is only a direct attribute of the host type if C<child> has 1
+chain element; if it has more, then the host type attribute is a
+tuple/database and any further elements serve to make C<child> actually
+address a component of said.
+
+=item C<attr_map> - C<SCChildAttrParentAttrMap>
+
+This maps 0..N attributes of the child relation with the same number of
+attributes of the parent distributed key; the mapped attribute names may or
+may not be the same.
+
+=back
+
+The default value of C<DistribSubsetConstr> has all-empty attributes.
 
 =head2 sys.std.Core.Type.Cat.DKMemRelAttrMap
 
