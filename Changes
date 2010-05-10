@@ -1,15 +1,47 @@
                                  Muldis::D
 ---------------------------------------------------------------------------
 
+2010-05-xx  Darren Duncan <darren@DarrenDuncan.net>
+
+    * Muldis::D version 0.128.0 is released on CPAN as
+    Muldis-D-0.128.0.tar.gz.
+
+    * (Types_Catalog.pod, PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  Completed
+    the change item begun in release 0.127.0 concerning
+    non-function-defined type constraints becoming full-fledged materials.
+    In Types_Catalog.pod, corrected the error with the 4 "RelationType" or
+    "TupleType" attributes that each should have had
+    "set_of.RelPathMaterialNC" as its declared type rather than
+    "RelPathMaterialNC".  In all 3 STD.pod, updated the "MATERIAL
+    SPECIFICATION" main pod section to pre-declare the 4 new material node
+    kinds "[|distrib_][key|subset]_constr".
+
 2010-05-08  Darren Duncan <darren@DarrenDuncan.net>
 
     * Muldis::D version 0.127.0 is released on CPAN as
     Muldis-D-0.127.0.tar.gz.
 
-    * (Routines_Catalog.pod)  Updated these all 12 "create_\w+" recipes,
-    with a "comment" parameter, to rename said to "scm_comment", and for
-    all but one of those, also added a "scm_vis_ord" parameter, this all
-    corresponding to the catalog types they work with.
+    * This release features some significant changes to the way that
+    non-function-defined type constraints are declared and referenced.
+    Previously, these 4 kinds of constraint definitions were embedded in
+    relation or tuple type definitions: (unique) key constraint,
+    distributed (unique) key constraint, subset constraint (foreign key),
+    distributed subset constraint.  And yet, each of these had a declared
+    name that was conceptually in the general materials namespace, such
+    that these names had to be distinct from other materials, and attribute
+    names.  Now, these 4 constraint definition kinds have been promoted
+    into 4 new full-fledged material kinds, which complements the other 11
+    existing regular material kinds (4 routine, 6 type, 1 stimulus-response
+    rule).  Now, instead of embedding the constraints, the relation and
+    tuple types now refer to them by name, same as with function-defined
+    type constraints, and the reality now closely matches the conception.
+
+    * (Routines_Catalog.pod)  Fixed a couple related kinds of fossils from
+    release 0.116.0 where catalog types in Types_Catalog.pod had "comment"
+    attribues renamed to "scm_comment", and "scm_vis_ord" attributes added,
+    but any corresponding "create_\w+" recipes in Routines_Catalog.pod
+    weren't updated accordingly.  In Routines_Catalog.pod, updated 12
+    recipes for "scm_comment" and 11 of those for "scm_vis_ord".
 
     * (Routines_Catalog.pod)  Added 2 new recipes
     "sys.std.Core.Cat.[create|drop]_stim_resp_rule", which should have been
@@ -47,14 +79,33 @@
     "SubsetConstr", the 4 "parent", "parent_key", "child", "attr_map"; with
     "DistribSubsetConstr", the 3 "parent_distrib_key", "child", "attr_map".
 
-    * (Types_Catalog.pod)  Changed "[|Distrib][Key|Subset]ConstrSet" types
-    to full-fledged materials, and tuple/relation types now just refer to
-    them by name rather than embedding them.  TODO, flesh this change desc.
+    * (Types_Catalog.pod)  Updated each of the 4 catalog types
+    "[|Distrib][Key|Subset]ConstrSet" to add a "parent" 5th attribute, and
+    otherwise updated its documentation so that it now is completely
+    properly formatted like a list of materials, such as "FunctionSet" is.
+    Then moved the declarations of these 4 types upwards to immediately
+    follow the "MixinTypeSet" et al declaration, in the process also
+    combining them into a single multi-definition section for brevity as
+    they all have exactly the same 5-attribute main format.  Also cloned
+    from those 4 catalog types the 4 additional
+    "Sys[Tuple|Relation]TypeSet" types.  Also updated each of the 2 catalog
+    types "System", "Depot" to add the 4 attributes
+    "[|distrib_][key|subset]_constraints" having the appropriate 4 types.
+    Also updated the 1 "RelationType" attribute "key_constraints", plus the
+    3 "TupleType" attributes "distrib_key_constraints",
+    "[|distrib_]subset_constraints", to change each of their declared types
+    to "RelPathMaterialNC" (but that should have been
+    "set_of.RelPathMaterialNC"), as they now reference the constraints by
+    material invocation name rather than embedding them.
 
-    * (Routines_Catalog.pod)  Added 8 create/drop routines re the above.
+    * (Routines_Catalog.pod)  Added 8 new recipes
+    "sys.std.Core.Cat.[create|drop]_[|distrib_][key|subset]_constraint", in
+    correspondence to the previous change item.
 
-    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  Added 4 initially empty
-    sections ... todo finish change item.
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  In the "MATERIAL
+    SPECIFICATION" main pod section, added these 4 empty placeholder pod
+    sub-sections, which will be populated in near-future spec releases:
+    "[|Distributed ][Key|Subset] Constraint Specification".
 
 2010-05-07  Darren Duncan <darren@DarrenDuncan.net>
 
