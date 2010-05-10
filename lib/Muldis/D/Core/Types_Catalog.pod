@@ -3709,7 +3709,7 @@ doesn't have to), because a C<RelationType> requires one in terms of which
 it is partly defined; each tuple of a value of the latter type is a value
 of the former type.
 
-A C<TupleType> has these 10 attributes:
+A C<TupleType> has these 7 attributes:
 
 =over
 
@@ -3751,51 +3751,51 @@ and how they are defined in terms of the rest of this type's attributes.
 Note that the special functional dependencies between attributes defined
 herein mean that some kinds of tuple constraints would be redundant.
 
-=item C<constraints> - C<set_of.RPFunctionNC>
+=item C<constraints> - C<set_of.RelPathMaterialNC>
 
 This, I<tuple constraints>,
-matches the invocation names of 0..N C<type-constraint> functions
+matches the invocation names of 0..N tuple-constraint-defining materials
 that (when I<and>-ed together) determine what combinations of tuple
 attribute values denote values of the [|sub]type, besides the restrictions
 imposed by the declared types of the attributes individually; they are
-generalized type constraints that together validate a tuple as a whole.
-The function that each of these names must have a single
-C<topic> parameter whose declared type is a tuple whose attributes match
-those declared by C<attrs> and whose argument denotes the value to test;
-the function's result type must be C<Bool>.  If the functions
-unconditionally result in C<Bool:True>, then all possible combinations of
-attribute-allowable values are collectively allowed.  Each function is
+tuple type constraints that together validate a tuple as a whole.
+Each tuple-constraint-defining material is one of these 4 material kinds:
+C<value-constraint>, C<distrib-key-constraint>, C<subset-constraint>,
+C<distrib-subset-constraint>.
+
+A C<value-constraint> is a generalized type constraint function that must
+have a single C<topic> parameter whose declared type is a tuple whose
+attributes match those declared by C<attrs> and whose argument denotes the
+value to test; the function's result type must be C<Bool>.  If the function
+unconditionally results in C<Bool:True>, then all possible combinations of
+attribute-allowable values are collectively allowed.  The function is
 invoked either once to test a tuple value of the type being defined, or
 multiple times to individually test every tuple in a relation value of a
 type defined over the first type.
 
-=item C<distrib_key_constraints> - C<set_of.RelPathMaterialNC>
-
-This matches the invocation names of
-0..N explicit simple distributed (unique) key constraints that are
+A C<distrib-key-constraint> is a
+simple distributed (unique) key constraint that is
 applicable to tuple/database values of the type being defined, that range
-over specified relation-typed attributes of it.  At most one key in
-C<distrib_key_constraints> may be privileged as the I<primary key>.  Note that
-C<distrib_key_constraints> is logically an abstraction syntax (the canonical simplest
-form) for a particular kind of I<tuple constraint> of the type being
+over specified relation-typed attributes of it.  At most one of a type's
+C<distrib-key-constraint> may be privileged as the I<primary key>.
+Note that a C<distrib-key-constraint>
+is logically an abstraction syntax (the canonical simplest
+form) for a particular kind of C<value-constraint> of the type being
 defined, one that compares the cardinality of the union of the projection
 of distributed key attributes of all key-participating relation-valued
 attributes, with the sum of cardinalities of the source relation-valued
 attributes; the attribute values comprise a distributed key if the
 cardinalities are equal.
 
-=item C<subset_constraints> - C<set_of.RelPathMaterialNC>
-
-This matches the invocation names of
-0..N explicit simple (non-distributed) subset constraints
-(foreign key constraints) that are applicable to tuple/database values of the type
+A C<subset-constraint> is a simple (non-distributed) subset constraint
+(foreign key) that is applicable to tuple/database values of the type
 being defined, that range over and relate tuples of specified
 relation-typed attributes of it; they are a kind of referential constraint.
 Each tuple of a child attribute must have a corresponding tuple in a
 specific single parent attribute, where they correspond on the attributes
 of the parent attribute that comprise a (unique) key of the latter.  Note
-that C<subset_constraints> is logically an abstraction syntax (the
-canonical simplest form) for a particular kind of I<tuple constraint> of
+that a C<subset-constraint> is logically an abstraction syntax (the
+canonical simplest form) for a particular kind of C<value-constraint> of
 the type being defined, one that tests if the relational difference, where
 a projection of the parent relation is subtracted from a corresponding
 projection of the child relation (with attribute renaming if necessary), is
@@ -3803,20 +3803,17 @@ an empty relation; if the difference is an empty relation, then the subset
 constraint is satisfied; otherwise, any difference tuples are from child
 tuples that violate the subset constraint.
 
-=item C<distrib_subset_constraints> - C<set_of.RelPathMaterialNC>
-
-This matches the invocation names of
-0..N explicit simple distributed subset constraints (foreign
-key constraints) that are applicable to tuple/database values of the type being
+A C<distrib-subset-constraint> is a simple distributed subset constraint
+(foreign key) that is applicable to tuple/database values of the type being
 defined, that range over and relate tuples of specified relation-typed
 attributes of it; they are a kind of referential constraint.  Each tuple of
 a child attribute must have a corresponding tuple in one member of a
 specific set of parent-alternative attributes (that have a distributed key
 ranging over them), where they correspond on the attributes of the
 parent-alternative attribute that comprise a distributed key on the latter.
-Note that C<distrib_subset_constraints> is logically an abstraction syntax
-(the canonical simplest form) for a particular kind of I<tuple constraint>
-of the type being defined; it is as per C<subset_constraints> except that
+Note that a C<distrib-subset-constraint> is logically an abstraction syntax
+(the canonical simplest form) for a particular kind of C<value-constraint>
+of the type being defined; it is as per C<subset-constraint> except that
 the parent relation is the result of unioning appropriately renamed
 projections of the member relations of the distributed key.
 
@@ -3837,10 +3834,6 @@ C<Nothing> is invalid and C<default> must be a C<Single>.
 
 =back
 
-There is a distributed primary key over the elements of
-C<constraints> and the C<name> attributes of
-C<distrib_key_constraints> and C<[|distrib_]subset_constraints>.
-
 The default value of C<TupleType> defines a singleton tuple type that has
 zero attributes and whose default value is its only value.
 
@@ -3857,7 +3850,7 @@ first exist a separate C<TupleType> in terms of which it is partly defined
 value of the latter type.  Note that a single tuple type definition may be
 shared by multiple relation type definitions, or it may be system-defined.
 
-A C<RelationType> has these 7 attributes:
+A C<RelationType> has these 6 attributes:
 
 =over
 
@@ -3888,32 +3881,40 @@ referenced by the C<tuple_type> of the type being defined; that is, there
 must be a diamond relationship (but both C<tuple_type> may reference
 exactly the same tuple type).
 
-=item C<constraints> - C<set_of.RPFunctionNC>
+=item C<constraints> - C<set_of.RelPathMaterialNC>
 
-This, I<relation constraints>, is like the I<tuple constraints> of a
+This, I<relation constraints>, matches the invocation names of 0..N
+relation-constraint-defining materials that (when I<and>-ed together)
+determine what sets of tuples of the type of C<tuple_type> comprise the
+bodies of values of the relation [|sub]type; they are relation type
+constraints that together validate a relation as a whole.  Each
+relation-constraint-defining material is one of these 2 material kinds:
+C<value-constraint>, C<key-constraint>.
+
+A C<value-constraint> for a relation type is like
+the C<value-constraint> of a
 C<TupleType> but that each function's parameter is
-relation-typed rather than tuple-typed; each is a generalized type
+relation-typed rather than tuple-typed; it is a generalized type
 constraint that validates a relation as a whole.
 
-=item C<key_constraints> - C<set_of.RelPathMaterialNC>
-
-This matches the invocation names of
-0..N explicit (unique) key constraints that are applicable to relation
-values of the type being defined; they apply either as candidate keys or as
-unique key constraints, depending on context.  If there are no explicit
-key constraints, then there is an implicit (unique) key over all attributes of the
-relation type being defined, meaning that every possible tuple that may
-individually be an element of a relation value of the type being defined,
-may be in it at once.  If any explicit key constraints are defined, then every one
-must be over a distinct proper subset of the type's attributes, and
-moreover no key's attributes may be a subset of any other key's
-attributes; if 2 such candidates appear, just use the one that has the
-subset.  It is valid for a key to consist of zero attributes; in this case,
-that key is the only key of the type, and values of the type may each
-consist of no more than one tuple.  At most one key in C<key_constraints> may be
-privileged as the I<primary key>.  Note that C<key_constraints> is logically an
+A C<key-constraint> is an
+explicit (unique) key constraint that is applicable to relation
+values of the type being defined; it applies either as a candidate key or
+as a unique key constraint, depending on context.  If there are no explicit
+key constraints, then there is an implicit (unique) key over all attributes
+of the relation type being defined, meaning that every possible tuple that
+may individually be an element of a relation value of the type being
+defined, may be in it at once.  If any explicit key constraints are
+defined, then every one must be over a distinct proper subset of the type's
+attributes, and moreover no key's attributes may be a subset of any other
+key's attributes; if 2 such candidates appear, just use the one that has
+the subset.  It is valid for a key to consist of zero attributes; in this
+case, that key is the only key of the type, and values of the type may each
+consist of no more than one tuple.  At most one one of a type's
+C<key-constraint> may be privileged
+as the I<primary key>.  Note that a C<key-constraint> is logically an
 abstraction syntax (the canonical simplest form) for a particular kind of
-I<relation constraint> of the type being defined, one that compares the
+C<value-constraint> of the type being defined, one that compares the
 cardinality of a projection of a relation on its key attributes with the
 cardinality of the original relation; the attribute values comprise a key
 if the cardinalities are equal.
@@ -3934,10 +3935,6 @@ set excludes said value, then a C<default> of C<Nothing> is
 invalid and C<default> must be a C<Single>.
 
 =back
-
-There is a distributed primary key over the elements of C<constraints> and
-the C<name> attributes of C<key_constraints>, and the similar elements or C<name>
-attributes of the C<TupleType> composed into this type.
 
 The default value of C<RelationType> defines a relation type that has
 zero attributes and whose default value is the one with zero tuples.
@@ -4343,7 +4340,7 @@ is C<Bool:False> otherwise.  A primary key is privileged over candidate
 keys in general, in that all of the attributes comprising the primary key
 are likely to be treated as immutable in practice for the relation's
 tuples, and hence are the best candidates for identifying tuples within
-a relation over an extended term (if multiple key constraints conceptually have all
+a relation over an extended term (if multiple keys conceptually have all
 those qualities, then you could choose either as the primary, or perhaps
 such a situation may indicate a flaw in your database design).  The common
 concept of a tuple having an identity that is distinct from the sum total
