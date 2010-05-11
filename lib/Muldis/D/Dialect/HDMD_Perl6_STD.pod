@@ -1441,7 +1441,27 @@ I<TODO.>
 
 =head2 Key Constraint Specification
 
-I<TODO.>
+A C<key_constr> node specifies a new unique key constraint or candidate
+key, for a relation type, that lives in a depot or subdepot.  A
+C<key_constr> node has 3 ordered elements:  The first element is one of
+these 2 Perl C<Str> values: C<key-constraint>, C<primary-key>.  The
+second element is a C<Name_payload>, which is the constraint's declared
+name.  The third element is a C<key_constr_payload>, which is just a Perl
+C<Set|KeySet> of 0..N elements where each of said elements is a
+C<Name_payload>, which is the name of an attribute that the key ranges
+over; alternately, a C<key_constr_payload> may be just a C<Name_payload>,
+which is equivalent to the C<Set|KeySet> format with 1 element.
+
+Examples:
+
+    # at most one tuple allowed #
+    [ 'key-constraint', 'maybe_one', Set.new() ]
+
+    # relation type's $artist_id attr is its primary key #
+    [ 'primary-key', 'pk_artist_id', 'artist_id' ]
+
+    # relation type has surrogate key over both name attrs #
+    [ 'key-constraint', 'sk_name', Set.new( 'last_name', 'first_name' ) ]
 
 =head2 Distributed Key Constraint Specification
 

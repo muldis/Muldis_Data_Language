@@ -3209,7 +3209,53 @@ I<TODO.>
 
 =head2 Key Constraint Specification
 
-I<TODO.>
+Grammar:
+
+    <key_constr> ::=
+        <key_constr_kind>
+        <ws> <material_declared_name>
+        <ws> <key_constr_payload>
+
+    <key_constr_kind> ::=
+        'key-constraint' | 'primary-key'
+
+    <key_constr_payload> ::=
+        '{' <ws>?
+            [<attr_name_lex> ** [<ws>? ',' <ws>?]]?
+        <ws>? '}'
+
+A C<key_constr> node specifies a new unique key constraint or candidate
+key, for a relation type, that lives in a depot or subdepot.  A
+C<key_constr> node in the PTMD_STD grammar corresponds directly to a tuple
+of the C<key_constrs> attribute of a value of the catalog data type
+C<sys.std.Core.Type.Cat.Depot>, which is how a unique key constraint
+specification is actually represented in Muldis D's nonsugared form, which
+is as a component of the system catalog.  The C<key_constrs> tuple has 2
+primary attributes, C<name> and C<material>, which are valued from the
+C<key_constr> node's C<material_declared_name> and C<key_constr_payload>
+elements, respectively.
+
+A C<key_constr_payload> specifies an entire unique key constraint or
+candidate key, for a relation type, besides its name.  It is interpreted as
+a Muldis D C<sys.std.Core.Type.Cat.KeyConstr> value.  Each C<attr_name_lex>
+element of a C<key_constr_payload> is interpreted as a tuple of the
+C<KeyConstr>'s C<attrs> attribute.  Iff there are no C<attr_name_lex>, then
+we have a nullary key which restricts the relation to have a maximum of 1
+tuple.  The C<key_constr_kind> element of a C<key_constr> node is the sole
+determinant of the value of the C<is_primary> attribute of the resulting
+C<KeyConstr>; C<primary-key> means C<Bool:True>, while C<key-constraint>
+means C<Bool:False>.
+
+Examples:
+
+    # at most one tuple allowed #
+    key-constraint maybe_one {}
+
+    # relation type's $artist_id attr is its primary key #
+    primary-key pk_artist_id { $artist_id }
+
+    # relation type has surrogate key over both name attrs #
+    key-constraint sk_name { $last_name, $first_name }
 
 =head2 Distributed Key Constraint Specification
 
