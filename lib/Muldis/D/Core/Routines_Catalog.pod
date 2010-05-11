@@ -335,9 +335,9 @@ C<fed.cat.mounts{name=$depot}.depot
 It will drop an existing depot type.  This recipe is analogous to a SQL
 DROP TYPE|DOMAIN statement.
 
-=head2 sys.std.Core.Cat.create_[|distrib_][key|subset]_constraint
+=head2 sys.std.Core.Cat.create_[|distrib_][key|subset]_constr
 
-C<recipe sys.std.Core.Cat.create_[|distrib_][key|subset]_constraint
+C<recipe sys.std.Core.Cat.create_[|distrib_][key|subset]_constr
 ($depot : Name, $subdepot? : NameChain, $name : Name,
 $scm_comment? : Comment, $scm_vis_ord? : NNInt,
 $material : [|Distrib][Key|Subset]Constr,
@@ -345,19 +345,19 @@ $material : [|Distrib][Key|Subset]Constr,
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar
-C<fed.cat.mounts{name=$depot}.depot.[|distrib_][key|subset]_constraints>.
+C<fed.cat.mounts{name=$depot}.depot.[|distrib_][key|subset]_constrs>.
 It will create a new constraint, in the depot mounted under the name given
 by the C<depot> argument, whose name and other details match the other
 arguments.
 
-=head2 sys.std.Core.Cat.drop_[|distrib_][key|subset]_constraint
+=head2 sys.std.Core.Cat.drop_[|distrib_][key|subset]_constr
 
-C<recipe sys.std.Core.Cat.drop_[|distrib_][key|subset]_constraint
+C<recipe sys.std.Core.Cat.drop_[|distrib_][key|subset]_constr
 ($depot : Name, $subdepot? : NameChain, $name : Name,
 &$cat ::= $fed.cat, &$data ::= $fed.data) {...}>
 
 This recipe is an abstraction over deleting a tuple from the catalog relvar
-C<fed.cat.mounts{name=$depot}.depot.[|distrib_][key|subset]_constraints>.
+C<fed.cat.mounts{name=$depot}.depot.[|distrib_][key|subset]_constrs>.
 It will drop an existing depot constraint.
 
 =head2 sys.std.Core.Cat.create_stim_resp_rule
@@ -382,6 +382,25 @@ This recipe is an abstraction over deleting a tuple from the catalog relvar
 C<fed.cat.mounts{name=$depot}.depot.stim_resp_rules>.  It will drop an
 existing depot stimulus-response rule.  This recipe is analogous to a SQL
 DROP TRIGGER statement.
+
+=head1 SYSTEM-DEFINED CONSTRAINT MATERIALS
+
+=head2 sys.std.Core.Cat.nil_key_constr
+
+C<key-constraint sys.std.Core.Cat.nil_key_constr {}>
+
+This is a unique key constraint or candidate key, for a relation type,
+which ranges over zero attributes, and is not designated a I<primary key>.
+This exists as a C<key-constraint> material as a convenience for the
+definition of relation types whose values are allowed to have at most one
+tuple (C<Maybe> being an example).
+
+=head2 sys.std.Core.Cat.nil_prim_key
+
+C<key-constraint sys.std.Core.Cat.nil_prim_key {}>
+
+This is exactly the same as C<sys.std.Core.Cat.nil_key_constr>, a key over
+zero attributes, but that it I<is> designated a I<primary key>.
 
 =head1 SEE ALSO
 
