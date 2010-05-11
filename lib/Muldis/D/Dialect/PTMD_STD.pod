@@ -3185,27 +3185,216 @@ Examples:
 
 =head2 Scalar Type Specification
 
-I<TODO.>
+Grammar:
+
+    <scalar_type> ::=
+        'scalar-type'
+        <ws> <material_declared_name>
+        <ws> <scalar_type_payload>
+
+    <scalar_type_payload> ::=
+        '{' <ws>?
+            [
+                  <with_clause>
+                | <composes_clause>
+                | <base_type_clause>
+                | <subtype_constr_clause>
+                | <possrep>
+                | <possrep_map>
+                | <default_clause>
+            ] ** <ws>
+        <ws>? '}'
+
+    <subtype_constr_clause> ::=
+        'subtype-constraint' <ws> <routine_name>
+
+    <possrep> ::=
+        possrep <ws>
+        <possrep_name> <ws>
+        '{' <ws>?
+            <tuple_type_clause>
+            [<ws> <is_base_clause>]?
+        <ws>? '}'
+
+    <is_base_clause> ::=
+        'is-base'
+
+    <possrep_map> ::=
+        'possrep-map' <ws>
+        '{' <ws>?
+            <p2> <ws> from <ws> <p1> <ws> using <ws> <routine_name>
+            <ws>
+            <p1> <ws> from <ws> <p2> <ws> using <ws> <routine_name>
+        <ws>? '}'
+
+    <p1> ::=
+        <possrep_name>
+
+    <p2> ::=
+        <possrep_name>
+
+I<TODO: Description and Examples.>
 
 =head2 Tuple Type Specification
 
-I<TODO.>
+Grammar:
+
+    <tuple_type> ::=
+        <tuple_type_kind>
+        <ws> <material_declared_name>
+        <ws> <tuple_type_payload>
+
+    <tuple_type_kind> ::=
+        'tuple-type' | 'database-type'
+
+    <tuple_type_payload> ::=
+        '{' <ws>?
+            [
+                  <with_clause>
+                | <composes_clause>
+                | <base_type_clause>
+                | <tuple_attr>
+                | <virtual_attr_map>
+                | <constraint_clause>
+                | <default_clause>
+            ] ** <ws>
+        <ws>? '}'
+
+    <tuple_attr> ::=
+        attr <ws> <attr_name_lex> <ws>? ':' <ws>? <type_name>
+
+    <attr_name_lex> ::=
+        <lex_entity_name>
+
+    <virtual_attr_map> ::=
+        !!TODO!!
+
+I<TODO: Description and Examples.>
 
 =head2 Relation Type Specification
 
-I<TODO.>
+Grammar:
+
+    <relation_type> ::=
+        'relation-type'
+        <ws> <material_declared_name>
+        <ws> <relation_type_payload>
+
+    <relation_type_payload> ::=
+        '{' <ws>?
+            [
+                  <with_clause>
+                | <composes_clause>
+                | <base_type_clause>
+                | <tuple_type_clause>
+                | <constraint_clause>
+                | <default_clause>
+            ] ** <ws>
+        <ws>? '}'
+
+    <tuple_type_clause> ::=
+        tuple-type <ws> <type_name>
+
+I<TODO: Description and Examples.>
 
 =head2 Domain Type Specification
 
-I<TODO.>
+Grammar:
+
+    <domain_type> ::=
+        'domain-type'
+        <ws> <material_declared_name>
+        <ws> <domain_type_payload>
+
+    <domain_type_payload> ::=
+        '{' <ws>?
+            [
+                  <with_clause>
+                | <composes_clause>
+                | <domain_sources>
+                | <domain_filters>
+                | <constraint_clause>
+                | <default_clause>
+            ] ** <ws>
+        <ws>? '}'
+
+    <domain_sources> ::=
+        ['source-union' | 'source-intersection'] <ws>
+        '{' <ws>?
+            <type_name> ** [<ws>? ',' <ws>?]
+        <ws>? '}'
+
+    <domain_filters> ::=
+        ['filter-union' | 'filter-intersection'] <ws>
+        '{' <ws>?
+            [<type_name> ** [<ws>? ',' <ws>?]]?
+        <ws>? '}'
+
+I<TODO: Description and Examples.>
 
 =head2 Subset Type Specification
 
-I<TODO.>
+Grammar:
+
+    <subset_type> ::=
+        'subset-type'
+        <ws> <material_declared_name>
+        <ws> <subset_type_payload>
+
+    <subset_type_payload> ::=
+        <subset_type_pl_long> | <subset_type_pl_short>
+
+    <subset_type_pl_long> ::=
+        '{' <ws>?
+            [
+                  <with_clause>
+                | <composes_clause>
+                | <base_type_clause>
+                | <constraint_clause>
+                | <default_clause>
+            ] ** <ws>
+        <ws>? '}'
+
+    <base_type_clause> ::=
+        ['base-type' | of] <ws> <type_name>
+
+    <constraint_clause> ::=
+        [constraint | where] <ws> <routine_name>
+
+    <default_clause> ::=
+        default <ws> <routine_name>
+
+    <subset_type_pl_short> ::=
+        <base_type_clause>
+        [<ws> <constraint_clause>]?
+        [<ws> <default_clause>]?
+
+I<TODO: Description and Examples.>
 
 =head2 Mixin Type Specification
 
-I<TODO.>
+Grammar:
+
+    <mixin_type> ::=
+        'mixin-type'
+        <ws> <material_declared_name>
+        <ws> <mixin_type_payload>
+
+    <mixin_type_payload> ::=
+        '{' <ws>?
+            [[
+                  <with_clause>
+                | <composes_clause>
+            ] ** <ws>]?
+        <ws>? '}'
+
+    <composes_clause> ::=
+        composes <ws> <type_name> [<ws> <prov_def_clause>]?
+
+    <prov_def_clause> ::=
+        'and-provides-its-default'
+
+I<TODO: Description and Examples.>
 
 =head2 Key Constraint Specification
 
