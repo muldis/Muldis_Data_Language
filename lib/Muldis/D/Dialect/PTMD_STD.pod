@@ -979,6 +979,20 @@ to a system-defined type, then the C<type_name> assertion is done at
 compile time, and then the C<type_name> element is simply eliminated, so
 the C<value> ends up simply as itself with no new C<func_invo> parent.
 
+In another common special case, iff a C<value> node with a C<type_name>
+element is a C<coll_value_selector> and its C<type_name> names a
+system-defined tuple type or relation type with a specified set of
+attributes, then the parser will automatically generate any missing
+attribute values of the C<value> node, where each has the default value of
+its declared type as per C<type_name>.  This will be done prior to the
+other use of C<type_name> which applies a constraint, so the latter acts as
+if the original code had specified the missing attributes.  In the case of
+the type being a relation type, the relation value literal doesn't even
+need to be well-formed (have the attributes per tuple) in the code, as the
+attribute generation is done per tuple.  Since it only works for
+system-defined types, this special case is primarily useful for code
+involving values that represent code.
+
 =item C<value_payload>
 
 This is mandatory for all C<value>.
@@ -3198,14 +3212,14 @@ Grammar:
                   <with_clause>
                 | <composes_clause>
                 | <base_type_clause>
-                | <subtype_constr_clause>
+                | <subtype_constraint_clause>
                 | <possrep>
                 | <possrep_map>
                 | <default_clause>
             ] ** <ws>
         <ws>? '}'
 
-    <subtype_constr_clause> ::=
+    <subtype_constraint_clause> ::=
         'subtype-constraint' <ws> <routine_name>
 
     <possrep> ::=
@@ -3222,9 +3236,9 @@ Grammar:
     <possrep_map> ::=
         'possrep-map' <ws>
         '{' <ws>?
-            <p2> <ws> from <ws> <p1> <ws> using <ws> <routine_name>
-            <ws>
-            <p1> <ws> from <ws> <p2> <ws> using <ws> <routine_name>
+            <p2> <ws> from <ws> <p1>
+            <ws> using <ws> <routine_name>
+            <ws> 'reverse-using' <ws> <routine_name>
         <ws>? '}'
 
     <p1> ::=
@@ -4704,6 +4718,7 @@ Grammar:
           '=' | '!='
         | nand | nor
         | '|-|'
+        | compose
 
     <sym_dyadic_infix_op__op_cr_extended> ::=
           <sym_dyadic_infix_op__op_cr_basic>
@@ -4730,11 +4745,12 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
-    =    -> Core.Universal.is_identical( $expr[0], $expr[1] )
-    !=   -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
-    nand -> Core.Boolean.nand( $expr[0], $expr[1] )
-    nor  -> Core.Boolean.nor( $expr[0], $expr[1] )
-    |-|  -> Core.Numeric.abs_diff( $expr[0], $expr[1] )
+    =       -> Core.Universal.is_identical( $expr[0], $expr[1] )
+    !=      -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
+    nand    -> Core.Boolean.nand( $expr[0], $expr[1] )
+    nor     -> Core.Boolean.nor( $expr[0], $expr[1] )
+    |-|     -> Core.Numeric.abs_diff( $expr[0], $expr[1] )
+    compose -> Core.Relation.composition( $expr[0], $expr[1] )
 
 Examples:
 

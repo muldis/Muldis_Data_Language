@@ -37,6 +37,19 @@ basic invoker-setup file piping, as well as display diagnostics to standard
 error.  These routines are not exhaustive, and their details are subject to
 future revision.
 
+=head2 sys.std.Core.STDIO.end_of_line_Text
+
+C<system-service sys.std.Core.STDIO.end_of_line_Text (&$target : Text)
+[...]>
+
+This system-service routine will update the variable supplied as its
+C<target> argument so that it holds the same implementation-defined
+end-of-line character or character sequence that C<write_Text_line> appends
+to its output, and that C<read_Text_line> looks out for to terminate its
+input.  The purpose of this routine is to support users that want to
+catenate Text within Muldis D for output with a single C<write_Text> that
+is intended to display over multiple implementation-defined lines.
+
 =head2 sys.std.Core.STDIO.read_Text
 
 C<system-service sys.std.Core.STDIO.read_Text (&$target : Text,
@@ -76,11 +89,12 @@ errors occur.
 
 =head2 sys.std.Core.STDIO.write_Text_line
 
-C<system-service sys.std.Core.STDIO.write_Text_line ($v : Text) [...]>
+C<system-service sys.std.Core.STDIO.write_Text_line ($v? : Text) [...]>
 
 This system-service routine is the same as C<sys.std.Core.STDIO.write_Text>
 except that it will additionally write an implementation-defined
-end-of-line character after writing C<v>.
+end-of-line character after writing C<v>.  If the C<v> argument is omitted,
+then this routine simply writes the end-of-line.
 
 =head2 sys.std.Core.STDIO.prompt_Text_line
 
@@ -102,7 +116,7 @@ except that it will write to standard error rather than standard output.
 
 =head2 sys.std.Core.STDIO.error_Text_line
 
-C<system-service sys.std.Core.STDIO.error_Text_line ($v : Text) [...]>
+C<system-service sys.std.Core.STDIO.error_Text_line ($v? : Text) [...]>
 
 This system-service routine is the same as
 C<sys.std.Core.STDIO.write_Text_line> except that it will write to standard
