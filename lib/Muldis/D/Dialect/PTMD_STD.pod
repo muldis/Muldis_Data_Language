@@ -3296,7 +3296,25 @@ Grammar:
         <lex_entity_name>
 
     <virtual_attr_map> ::=
-        !!TODO!!
+        'virtual-attr-map' <ws>
+        '{' <ws>?
+            'determinant-attrs' <ws> <aliased_attr_list>
+            <ws> 'dependent-attrs' <ws> <aliased_attr_list>
+            <ws> 'map-function' <ws> <routine_name>
+            [<ws> <is_updateable_clause>]?
+        <ws>? '}'
+
+    <aliased_attr_list> ::=
+        '{' <ws>?
+            [[<aliased_attr_pair> | <same_named_nonord_atvl>]
+                ** [<ws>? ',' <ws>?]]?
+        <ws>? '}'
+
+    <aliased_attr_pair> ::=
+        <attr_name_lex> <ws>? '=>' <ws>? <attr_nc_lex>
+
+    <is_updateable_clause> ::=
+        'is-updateable'
 
 A C<tuple_type> node specifies a new tuple type that lives in a depot or
 subdepot.  A C<tuple_type> node in the PTMD_STD grammar corresponds
@@ -3444,7 +3462,10 @@ Grammar:
         ['base-type' | of] <ws> <type_name>
 
     <constraint_clause> ::=
-        [constraint | where] <ws> <routine_name>
+        [constraint | where] <ws> <constraint_name>
+
+    <constraint_name> ::=
+        <PNSQNameChain_payload>
 
     <default_clause> ::=
         default <ws> <routine_name>
@@ -3567,7 +3588,48 @@ I<TODO.>
 
 =head2 Subset Constraint Specification
 
-I<TODO: The grammar.>
+Grammar:
+
+    <subset_constr> ::=
+        'subset-constraint'
+        <ws> <material_declared_name>
+        <ws> <subset_constr_payload>
+
+    <subset_constr_payload> ::=
+        '{' <ws>?
+            parent <ws> <parent> <ws> 'using-key' <ws> <parent_key>
+            <ws> child <ws> <child> <ws> 'using-attrs' <ws> <sc_attr_map>
+        <ws>? '}'
+
+    <parent> ::=
+        <attr_nc_lex>
+
+    <attr_nc_lex> ::=
+        <lex_entity_nc>
+
+    <lex_entity_nc> ::=
+        <data_sigil> <NameChain_payload>
+
+    <parent_key> ::=
+        <constraint_name>
+
+    <child> ::=
+        <attr_nc_lex>
+
+    <sc_attr_map> ::=
+        '{' <ws>?
+            [[<sc_attr_pair> | <same_named_nonord_atvl>]
+                ** [<ws>? ',' <ws>?]]?
+        <ws>? '}'
+
+    <sc_attr_pair> ::=
+        <child_attr> <ws>? '=>' <ws>? <parent_attr>
+
+    <child_attr> ::=
+        <attr_name_lex>
+
+    <parent_attr> ::=
+        <attr_name_lex>
 
 A C<subset_constr> node specifies a (non-distributed) subset constraint
 (foreign key constraint) over relation-valued attributes, for a tuple type,
@@ -3735,7 +3797,7 @@ Grammar:
         <acc_via_named> | <acc_via_topic> | <acc_via_anon>
 
     <acc_via_named> ::=
-        <data_sigil> <NameChain_payload>
+        <lex_entity_nc>
 
     <acc_via_topic> ::=
         <data_sigil> '.' <NameChain_payload>
