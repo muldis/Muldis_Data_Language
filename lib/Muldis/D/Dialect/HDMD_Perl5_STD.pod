@@ -1615,7 +1615,63 @@ name.  The third element is a C<tuple_type_payload>.
 
 I<TODO: The remaining description.>
 
-I<TODO: Examples.>
+Examples:
+
+    # db schema with 3 relvars, 2 subset constrs, the 5 def separately #
+    [ 'database-type', 'CD_DB', [
+        [ 'attr', 'artists', 'nlx.lib.Artists' ],
+        [ 'attr', 'cds'    , 'nlx.lib.CDs'     ],
+        [ 'attr', 'tracks' , 'nlx.lib.Tracks'  ],
+        [ 'constraint', 'nlx.lib.sc_artist_has_cds' ],
+        [ 'constraint', 'nlx.lib.sc_cd_has_tracks'  ],
+    ] ]
+
+    # relation type using tuple virtual-attr-map for case-insen key attr #
+    # where primary text data is case-sensitive, case-preserving #
+    [ 'relation-type', 'Locations', [
+        [ 'tuple-type', 'nlx.lib.Location' ],
+        [ 'with' => [ 'tuple-type', 'Location', [
+            [ 'attr', 'loc_name'   , 'Text' ],
+            [ 'attr', 'loc_name_uc', 'Text' ],
+            [ 'virtual-attr-map' => {
+                'determinant-attrs' => { loc_name => 'loc_name' },
+                'dependent-attrs'   => { loc_name_uc => 'loc_name_uc' },
+                'map-function'      => 'nlx.lib.uc_loc_name'
+            } ],
+            [ 'with' => [ 'value-map-unary', 'uc_loc_name', [
+                [ 'Tuple', { topic => 'Tuple' } ]
+                => [
+                    [ 'Tuple', { loc_name_uc => [ 'func-invo', 'upper',
+                        [ ['$.','topic.loc_name'] ] ] } ]
+                ]
+            ] ] ],
+        ] ] ],
+        [ 'constraint', 'nlx.lib.sk_loc_name_uc' ],
+        [ 'with' => ['key-constraint', 'sk_loc_name_uc', 'loc_name_uc'] ],
+    ] ]
+
+    # db schema with 2 real relvars, 1 virtual relvar; all are updateable #
+    # real $products has attrs { product_id, name } #
+    # real $sales has attrs { product_id, qty } #
+    # virtual $combines has attrs { product_id, name, qty } #
+    [ 'database-type', 'DB', [
+        [ 'attr', 'products', 'nlx.lib.Products' ],
+        [ 'attr', 'sales'   , 'nlx.lib.Sales'    ],
+        [ 'attr', 'combines', 'nlx.lib.Combines' ],
+        [ 'virtual-attr-map' => {
+            'determinant-attrs' => {products=>'products', sales=>'sales'},
+            'dependent-attrs'   => { combines => 'combines' },
+            'map-function'      => 'nlx.lib.combine_p_s',
+            'is-updateable'     => 1
+        } ],
+        [ 'with' => [ 'value-map-unary', 'combine_p_s', [
+            [ 'Database', { topic => 'Database' } ]
+            => [
+                [ 'Database', { combines => [ 'op', 'join',
+                    [ ['$.','topic.products'], ['$.','topic.sales'] ] ] } ]
+            ]
+        ] ] ],
+    ] ]
 
 =head2 Relation Type Specification
 
@@ -1627,7 +1683,32 @@ third element is a C<relation_type_payload>.
 
 I<TODO: The remaining description.>
 
-I<TODO: Examples.>
+Examples:
+
+    [ 'relation-type', 'Artists', [
+        [ 'with' => [ 'tuple-type', 'Artist', [
+            [ 'attr', 'artist_id'  , 'Int'  ],
+            [ 'attr', 'artist_name', 'Text' ],
+        ] ] ],
+        [ 'with' => [ 'primary-key', 'pk_artist_id', 'artist_id' ] ],
+        [ 'with' => ['key-constraint', 'sk_artist_name', 'artist_name'] ],
+        [ 'tuple-type', 'nlx.lib.Artist' ],
+        [ 'constraint', 'nlx.lib.pk_artist_id' ],
+        [ 'constraint', 'nlx.lib.sk_artist_name' ],
+    ] ]
+
+    [ 'relation-type', 'CDs', [
+        [ 'with' => [ 'tuple-type', 'CD', [
+            [ 'attr', 'cd_id'    , 'Int'  ],
+            [ 'attr', 'artist_id', 'Int'  ],
+            [ 'attr', 'cd_title' , 'Text' ],
+        ] ] ],
+        [ 'with' => [ 'primary-key', 'pk_cd_id', 'cd_id' ] ],
+        [ 'with' => [ 'key-constraint', 'sk_cd_title', 'cd_title' ] ],
+        [ 'tuple-type', 'nlx.lib.CD' ],
+        [ 'constraint', 'nlx.lib.pk_cd_id' ],
+        [ 'constraint', 'nlx.lib.sk_cd_title' ],
+    ] ]
 
 =head2 Domain Type Specification
 
@@ -1705,7 +1786,22 @@ C<subset_constr_payload>.
 
 I<TODO: The remaining description.>
 
-I<TODO: Examples.>
+Examples:
+
+    # relation $foo must have exactly 1 tuple when $bar has at least 1 #
+    [ 'subset-constraint', 'sc_mutual_inclusion', {
+        parent        => 'foo',
+        'using-key'   => 'nlx.lib.maybe_one',
+        child         => 'bar',
+        'using-attrs' => {}
+    } ]
+
+    [ 'subset-constraint', 'sc_artist_has_cds', {
+        parent        => 'artists',
+        'using-key'   => 'nlx.lib.Artists.pk_artist_id',
+        child         => 'cds',
+        'using-attrs' => { artist_id => 'artist_id' }
+    } ]
 
 =head2 Distributed Subset Constraint Specification
 
