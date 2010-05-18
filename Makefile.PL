@@ -30,7 +30,7 @@ WriteMakefile(
          resources => {
             homepage => 'http://www.muldis.com/',
             license => 'http://www.fsf.org/licensing/licenses/gpl.html',
-            MailingList => 'http://mm.DarrenDuncan.net/mailman/listinfo',
+            MailingList => 'http://mm.darrenduncan.net/mailman/listinfo',
             repository => 'http://github.com/muldis/Muldis-D',
          },
       },
