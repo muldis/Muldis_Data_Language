@@ -363,13 +363,13 @@ subscriptions to, or view the archives of, the following:
 
 =over
 
-=item C<muldis-db-announce@mm.DarrenDuncan.net>
+=item C<muldis-db-announce@mm.darrenduncan.net>
 
 This low-volume list is mainly for official announcements from the Muldis
 Rosetta developers, though developers of Muldis Rosetta extensions can also
 post their announcements here.  This is not a discussion list.
 
-=item C<muldis-db-users@mm.DarrenDuncan.net>
+=item C<muldis-db-users@mm.darrenduncan.net>
 
 This list is for general discussion among people who are using Muldis
 Rosetta, which is not concerned with the implementation of Muldis Rosetta
@@ -378,7 +378,7 @@ Rosetta installed on your machine or to make it do what you want.  You
 could also submit feature requests or report perceived bugs here, if you
 don't want to use CPAN's RT system.
 
-=item C<muldis-db-devel@mm.DarrenDuncan.net>
+=item C<muldis-db-devel@mm.darrenduncan.net>
 
 This list is for discussion among people who are designing or implementing
 the Muldis Rosetta core API (including Muldis D language design), or who
