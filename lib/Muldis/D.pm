@@ -354,10 +354,13 @@ None yet.
 
 =head1 FORUMS
 
-Several public email-based forums exist whose main topic is all
-implementations of the L<Muldis D|Muldis::D> language, especially the
-L<Muldis Rosetta|Muldis::Rosetta> reference implementation, but also the
-L<Set::Relation> module.  All of these you can reach via
+Several public email-based forums exist whose main topic is
+the L<Muldis D|Muldis::D> language and its implementations, especially
+the L<Muldis Rosetta|Muldis::Rosetta> reference implementation, but also
+the L<Set::Relation> module.  They exist so that users of Muldis D or
+Muldis Rosetta can help each other, or so that help coming from the
+projects' developers can be said once to many people, rather than
+necessarily to each individually.  All of these you can reach via
 L<http://mm.darrenduncan.net/mailman/listinfo>; go there to manage your
 subscriptions to, or view the archives of, the following:
 
@@ -365,26 +368,35 @@ subscriptions to, or view the archives of, the following:
 
 =item C<muldis-db-announce@mm.darrenduncan.net>
 
-This low-volume list is mainly for official announcements from the Muldis
-Rosetta developers, though developers of Muldis Rosetta extensions can also
+This low-volume list is mainly for official announcements from Muldis D or
+Muldis Rosetta developers, though developers of related projects can also
 post their announcements here.  This is not a discussion list.
 
 =item C<muldis-db-users@mm.darrenduncan.net>
 
-This list is for general discussion among people who are using Muldis
-Rosetta, which is not concerned with the implementation of Muldis Rosetta
-itself.  This is the best place to ask for basic help in getting Muldis
-Rosetta installed on your machine or to make it do what you want.  You
-could also submit feature requests or report perceived bugs here, if you
-don't want to use CPAN's RT system.
+This list is for general discussion among people who are using Muldis D or
+any of its implementations, especially the Muldis Rosetta reference
+implementation.  This is the best place to ask for basic help in getting
+Muldis Rosetta installed on your machine or to make it do what you want.
+If you are in doubt on which list to use, then use this one by default.
+You could also submit feature requests for Muldis Rosetta or report
+perceived bugs here, if you don't want to use CPAN's RT system.
+
+=item C<muldis-d-language@mm.darrenduncan.net>
+
+This list is mainly for discussion among people who are designing the
+Muldis D language specification, or who are implementing or adapting Muldis
+D in some form, or who are writing Muldis D documentation, tests, or
+examples.  It is not the main forum for any Muldis D implementations, nor
+is it the place for non-implementers to get help in using said.
 
 =item C<muldis-db-devel@mm.darrenduncan.net>
 
 This list is for discussion among people who are designing or implementing
-the Muldis Rosetta core API (including Muldis D language design), or who
-are implementing Muldis Rosetta Engines, or who are writing core
-documentation, tests, or examples.  It is not the place for
-non-implementers to get help in using said.
+the Muldis Rosetta DBMS framework core, or who are implementing Muldis
+Rosetta Engines, or who are writing Muldis Rosetta core documentation,
+tests, or examples.  It is not the main forum for the Muldis D language
+itself, nor is it the place for non-implementers to get help in using said.
 
 =back
 
