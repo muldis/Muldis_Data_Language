@@ -41,6 +41,26 @@ implementations over multiple SQL DBMSs.  Curr est end 2010 or early 2011.
 
 ----------
 
+* Eliminate the mnemonic that "$" means "data".  In PTMD_STD.pod, remove
+the "data sigil", so now all lexical entities (vars, params, exprs, attrs)
+don't have the sigil and are ostensibly barewords.  This means a potential
+conflict with some language keywords, but that can be worked around by
+using the double-quoted form of the lexical entity names.  In the 2
+Perl-STD, find some other node kind name for expr_name nodes than "$", such
+as "d" (data) or "e" (expr); this also means the Perl 6 form can now be
+:d<foo> or :e<foo> rather
+than having to be ['$','foo'].  Similar with "$." or whatever its called.
+Also eliminate the "|" sigil for named statement nodes, as they should also
+function without trouble as barewords; the stmt_name nodes can use "s"
+(statement) rather than "|" perhaps, and Perl 6 is :s<foo> etc.  These
+changes then help to free up "$" and "|" for other possible syntactical
+uses.  Also rename the tokens for "&" and ">" so they don't say "cosigil"
+and look for any other tokens whose names have "sigil" and rename them.
+Also take inspiration from these changes and make other improving changes.
+Don't forget to look for other things impacted by this chg, consequences.
+
+----------
+
 * In all 3 STD.pod, add code examples for each of these 4 material kinds:
 scalar-type, domain-type, subset-type, mixin-type.
 
