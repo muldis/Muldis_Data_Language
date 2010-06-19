@@ -1862,7 +1862,7 @@ Grammar:
         <Name_payload>
 
     <same_named_nonord_atvl> ::=
-        <data_sigil> '>' <attr_name>
+        '=>' <data_sigil> <attr_name>
 
     <tuple_D0> ::=
         D0
@@ -1890,8 +1890,8 @@ C<same_named_nonord_atvl>, which may be used only if the C<expr> of the
 otherwise-C<nonord_atvl> is an C<expr_name> and that C<expr_name> is
 identical to the C<attr_name>.  In this situation, the identical name can
 be specified just once, which is the shorthand; for example, the attribute
-C<< foo => $foo >> may alternately be written out as C<< $>foo >> (the C<<
-> >> being meant to evoke the C<< => >>).  This shorthand is to help with
+C<< foo => $foo >> may alternately be written out as C<< =>$foo >>.
+This shorthand is to help with
 the possibly common situation where attributes of a tuple (or relation or
 scalar) selection are being valued from same-named expression nodes / etc.
 (This shorthand is like Perl 6's C<:$a> being short for C<< a => $a >>.)
@@ -1920,7 +1920,7 @@ Examples:
         age  => 17
     }
 
-    Tuple:{ w => 'foo', $>x, y => 4, $>z }
+    Tuple:{ w => 'foo', =>$x, y => 4, =>$z }
 
 =head2 Database Selectors
 
@@ -2895,7 +2895,7 @@ Examples:
         with function gcd (NNInt <-- $a : NNInt, $b : NNInt) {
             $b = 0 ?? $a !! rtn( a => $b, b => $a mod $b round Down )
         }
-        $gcd ::= nlx.lib.gcd( $>a, $>b )
+        $gcd ::= nlx.lib.gcd( =>$a, =>$b )
         $a := $a div $gcd round Down
         $b := $b div $gcd round Down
     }
@@ -3075,7 +3075,7 @@ Examples:
         with value-filter filt (Bool <-- $topic : Tuple, $search : Text) {
             $.name like ('%' ~ $search ~ '%')
         }
-        $count := r# ($people where <nlx.lib.filt>( $>search ))
+        $count := r# ($people where <nlx.lib.filt>( =>$search ))
     }
 
 =head2 Procedure Specification
@@ -3357,8 +3357,8 @@ Examples:
             attr $loc_name    : Text
             attr $loc_name_uc : Text
             virtual-attr-map {
-                determinant-attrs { $>loc_name }
-                dependent-attrs { $>loc_name_uc }
+                determinant-attrs { =>$loc_name }
+                dependent-attrs { =>$loc_name_uc }
                 map-function nlx.lib.uc_loc_name
             }
             with value-map-unary uc_loc_name (Tuple <-- $topic : Tuple) {
@@ -3378,8 +3378,8 @@ Examples:
         attr $sales    : nlx.lib.Sales
         attr $combines : nlx.lib.Combines
         virtual-attr-map {
-            determinant-attrs { $>products, $>sales }
-            dependent-attrs { $>combines }
+            determinant-attrs { =>$products, =>$sales }
+            dependent-attrs { =>$combines }
             map-function nlx.lib.combine_p_s
             is-updateable
         }
@@ -3729,7 +3729,7 @@ Examples:
 
     subset-constraint sc_artist_has_cds {
         parent $artists using-key nlx.lib.Artists.pk_artist_id
-        child $cds using-attrs { $>artist_id }
+        child $cds using-attrs { =>$artist_id }
     }
 
 =head2 Distributed Subset Constraint Specification
@@ -3937,7 +3937,7 @@ Grammar:
         <expr>
 
     <same_named_ro_arg> ::=
-        <data_sigil> '>' <invo_param_name>
+        '=>' <data_sigil> <invo_param_name>
 
 A C<func_invo> node represents the result of invoking a named
 function with specific arguments.  It is interpreted as a tuple of a
@@ -3992,8 +3992,8 @@ an C<expr_name> and that C<expr_name> is identical to the
 C<invo_param_name>.
 In this situation, the identical name can be specified just once, which is
 the shorthand; for example, the named argument C<< foo => $foo >> may
-alternately be written out as C<< $>foo >> (the C<< > >> being meant to
-evoke the C<< => >>).  This shorthand is to help with the possibly common
+alternately be written out as C<< =>$foo >>.
+This shorthand is to help with the possibly common
 situation where two successive routines in a call-chain have any same-named
 parameters and arguments are simply being passed through.
 (This shorthand is like Perl 6's C<:$a> being short for C<< a => $a >>.)
@@ -4031,7 +4031,7 @@ Examples:
     rtn( $x, $y )
 
     # three named params taking 2 same-named args, 1 diff-named arg #
-    nlx.lib.passed_thru( $>a, b => 5, $>c )
+    nlx.lib.passed_thru( =>$a, b => 5, =>$c )
 
 =head2 Generic If-Else Expressions
 
@@ -4176,7 +4176,7 @@ argument list.
 Examples:
 
     # a higher-order function curried with 1 argument #
-    <nlx.lib.filter>( $>search_term )
+    <nlx.lib.filter>( =>$search_term )
 
     # a reference to an updater #
     <nlx.lib.swap>
@@ -4279,7 +4279,7 @@ Examples:
     assign( &target => $foo, v => 3 )
 
     # three mandatory params #
-    nlx.lib.lookup( &$>addr, $>people, $>name )
+    nlx.lib.lookup( &=>$addr, =>$people, =>$name )
 
 =head1 GENERIC PROCEDURE STATEMENTS
 
@@ -4344,7 +4344,7 @@ Examples:
     foo_stmt
 
     # a named_stmt node #
-    bar_stmt ::= nlx.lib.swap( &$>first, &$>second )
+    bar_stmt ::= nlx.lib.swap( &=>$first, &=>$second )
 
 =head2 Generic Compound Statements
 
@@ -4514,10 +4514,10 @@ Grammar:
         <proc_expr>
 
     <iproc_same_named_upd_arg> ::=
-        <upd_sigil> <data_sigil> '>' <invo_param_name>
+        <upd_sigil> '=>' <data_sigil> <invo_param_name>
 
     <iproc_same_named_ro_arg> ::=
-        <data_sigil> '>' <invo_param_name>
+        '=>' <data_sigil> <invo_param_name>
 
 An C<iproc_imp_invo> node represents the invocation of a named imperative
 routine, with specific subject-to-update or read-only arguments, as a
@@ -4767,7 +4767,7 @@ Examples:
     lookup_person ::= loop [
         prompt_Text_line( &$name, 'Enter a name to search for: ' )
         given $name when '' leave lookup_person
-        nlx.lib.do_search( $>name, &$>not_found, &$>report_text )
+        nlx.lib.do_search( =>$name, &=>$not_found, &=>$report_text )
         if $not_found then [
             write_Text_line( 'No person matched' )
             iterate lookup_person
@@ -5477,7 +5477,7 @@ This table indicates which function is invoked by each format-keyword:
                    count_attr_name => $count_atnm,
                    group_per => Set:{ $cmpl_inner_atnms[0], ... } )
 
-    .[] -> Core.Array.value( $expr, $>index )
+    .[] -> Core.Array.value( $expr, =>$index )
     []  -> Core.Array.slice( $expr, index_interval => SPInterval:{
                 $min_index $interval_boundary_kind $max_index } )
 
@@ -5587,16 +5587,16 @@ appropriate sequence.
 This table indicates which function is invoked by each keyword:
 
     div -> Core.Numeric.whole_quotient( dividend => $lhs, divisor => $rhs,
-                $>round_meth )
+                =>$round_meth )
     mod -> Core.Numeric.remainder( dividend => $lhs, divisor => $rhs,
-                $>round_meth )
+                =>$round_meth )
 
-          -> Core.Rational.round( $expr, $>round_rule )
+          -> Core.Rational.round( $expr, =>$round_rule )
     **    -> Core.Rational.power( radix => $lhs, exponent => $rhs,
-                $>round_rule )
-    log   -> Core.Rational.log( $lhs, radix => $rhs, $>round_rule )
-    e**   -> Core.Rational.natural_power( $expr, $>round_rule )
-    log-e -> Core.Rational.natural_log( $expr, $>round_rule )
+                =>$round_rule )
+    log   -> Core.Rational.log( $lhs, radix => $rhs, =>$round_rule )
+    e**   -> Core.Rational.natural_power( $expr, =>$round_rule )
+    log-e -> Core.Rational.natural_log( $expr, =>$round_rule )
 
 Examples:
 
