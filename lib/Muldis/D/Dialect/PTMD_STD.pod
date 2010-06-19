@@ -4304,10 +4304,7 @@ Grammar:
         | <imp_invo_alt_syntax>
 
     <stmt_name> ::=
-        <stmt_sigil> <Name_payload>
-
-    <stmt_sigil> ::=
-        '|'
+        <Name_payload>
 
     <named_stmt> ::=
         <stmt_name> <ws> <infix_bind_op> <ws> <proc_stmt>
@@ -4347,10 +4344,10 @@ and Perl have native counterpart features in the form of block labels.
 Examples:
 
     # a stmt_name node #
-    |foo_stmt
+    foo_stmt
 
     # a named_stmt node #
-    |bar_stmt ::= nlx.lib.swap( &$>first, &$>second )
+    bar_stmt ::= nlx.lib.swap( &$>first, &$>second )
 
 =head2 Generic Compound Statements
 
@@ -4770,13 +4767,13 @@ for nonatomic "foreach" then Muldis D may gain this feature in the future.
 
 Examples:
 
-    |lookup_person ::= loop [
+    lookup_person ::= loop [
         prompt_Text_line( &$name, 'Enter a name to search for: ' )
-        given $name when '' leave |lookup_person
+        given $name when '' leave lookup_person
         nlx.lib.do_search( $>name, &$>not_found, &$>report_text )
         if $not_found then [
             write_Text_line( 'No person matched' )
-            iterate |lookup_person
+            iterate lookup_person
         ]
         write_Text_line( $report_text )
     ]
@@ -5894,6 +5891,24 @@ Examples:
 
     # delete every person in $people whose age is either 10 or 20 #
     $people :=!matching Relation:{ { age => 10 }, { age => 20 } }
+
+=head1 RESOLVING AMBIGUITY
+
+A user-defined entity name may be any character string at all.  In the
+general case, one must appear formatted as a C<quoted_name_str>, but if the
+entity name only uses a limited set of characters, then it may appear
+formatted as a C<nonquoted_name_str> instead, which is essentially the same
+bareword format as the PTMD_STD language keywords.
+
+When any PTMD_STD code contains a bareword whose meaning is ambiguous, in
+that it could be interpreted as either a reference to a user-defined entity
+or as a specific context-appropriate language keyword (including a routine
+invocation alternate syntax), then the parser must always resolve it to the
+keyword.  In these contexts, you must format a user-defined entity name as
+a C<quoted_name_str> in order for it to be interpreted correctly.
+
+Similarly, a user-defined entity name in C<nonquoted_name_str> format is
+guaranteed to never be confused with a language keyword.
 
 =head1 NESTING PRECEDENCE RULES
 
