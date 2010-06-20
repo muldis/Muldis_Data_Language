@@ -4075,11 +4075,10 @@ Examples:
 
     if is_empty($ary) then $empty_result else $ary.[0]
 
-    if $x = ∅ or $y = ∅ then ∅
-        else s ((v $x) + ((v $y) exp 3)
+    if $x = ∅ or $y = ∅ then ∅ else Maybe:{$x.{} + $y.{} exp 3}
 
     if $val isa <Int> then $val exp 3
-        else if $val isa <Text> then $val x 5
+        else if $val isa <Text> then $val ~# 5
         else True
 
     'My answer is: ' ~ ($maybe ?? 'yes' !! 'no')
@@ -4922,7 +4921,7 @@ Grammar:
         <expr> ** [<ws> <noncomm_infix_reduce_op> <ws>]
 
     <noncomm_infix_reduce_op> ::=
-        '[<=>]' | '~' | '//' | '//d'
+        '[<=>]' | '~' | '//'
 
 A C<noncomm_infix_reduce_op_invo> node is for using infix notation to
 invoke a (homogeneous) non-commutative N-adic reduction operator function.
@@ -4951,8 +4950,6 @@ This table indicates which function is invoked by each keyword:
     ~     -> Core.Stringy.catenation( Array:{ $expr[0], ..., $expr[n] } )
     //    -> Core.Set.Maybe.attr_or_value(
                 Array:{ $expr[0], ..., $expr[n-1] }, value => $expr[n] )
-    //d   -> Core.Set.Maybe.attr_or_default(
-                Array:{ $expr[0], ..., $expr[n-1] }, default => $expr[n] )
 
 Examples:
 
@@ -4965,8 +4962,6 @@ Examples:
     Array:[ 24, 52 ] ~ Array:[ -9 ] ~ Array:[ 0, 11, 24, 7 ]
 
     $a // $b // 42
-
-    $a //d $b //d <nlx.lib.foo_type>
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -5128,7 +5123,7 @@ This table indicates which function is invoked by each keyword:
     ^    -> Core.Numeric.power_with_whole_exp( radix => $lhs,
                 exponent => $rhs )
     exp  -> Core.Integer.power( radix => $lhs, exponent => $rhs )
-    x    -> Core.Stringy.replication( $lhs, count => $rhs )
+    ~#   -> Core.Stringy.replication( $lhs, count => $rhs )
 
     where  -> Core.Relation.restriction( $lhs, func => $rhs )
     !where -> Core.Relation.cmpl_restr( $lhs, func => $rhs )
@@ -5188,7 +5183,7 @@ Examples:
 
     1;101.01 / 1;11.0
 
-    '-' x 80
+    '-' ~# 80
 
     Set:{ 8, 4, 6, 7 } ∖ Set:{ 9, 0, 7 }
 
@@ -5202,7 +5197,7 @@ Grammar:
         <monadic_prefix_op> <ws> <expr>
 
     <monadic_prefix_op__op_cr_basic> ::=
-        d | not | '!' | '||' | 'r#' | t | r | s | v
+        not | '!' | '||' | 'r#' | '%' | '@'
 
     <monadic_prefix_op__op_cr_extended> ::=
           <monadic_prefix_op__op_cr_basic>
@@ -5223,18 +5218,13 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
-    d   -> Core.Universal.default( of => $expr )
     not -> Core.Boolean.not( $expr )
     ||  -> Core.Numeric.abs( $expr )
     r#  -> Core.Relation.cardinality( $expr )
-    t   -> Core.Cast.Tuple_from_Relation( $expr )
-    r   -> Core.Cast.Relation_from_Tuple( $expr )
-    s   -> Core.Set.Maybe.single( value => $expr )
-    v   -> Core.Set.Maybe.attr( $expr )
+    %   -> Core.Cast.Tuple_from_Relation( $expr )
+    @   -> Core.Cast.Relation_from_Tuple( $expr )
 
 Examples:
-
-    d <nlx.lib.foo_type>
 
     not True
 
@@ -5244,11 +5234,9 @@ Examples:
 
     r# Set:{ 5, -1, 2 }
 
-    t $relvar
+    % $relvar
 
-    r $tupvar
-
-    s ((v $a) + (v $b))
+    @ $tupvar
 
 =head2 Simple Monadic Postfix Operators
 
@@ -5288,7 +5276,7 @@ Grammar:
     <postcircumfix_op_invo> ::=
           <pcf_acc_op_invo>
         | <s_pcf_op_invo> | <t_pcf_op_invo> | <r_pcf_op_invo>
-        | <pcf_ary_op_invo>
+        | <pcf_mbe_op_invo> | <pcf_ary_op_invo>
 
     <pcf_acc_op_invo> ::=
         <pcf_s_acc_op_invo> | <pcf_t_acc_op_invo>
@@ -5382,6 +5370,9 @@ Grammar:
 
     <cmpl_inner_atnms> ::=
         <pcf_atnms>
+
+    <pcf_mbe_op_invo> ::=
+        <expr> '.{}'
 
     <pcf_ary_op_invo> ::=
         <pcf_ary_acc_op_invo> | <pcf_ary_slice_op_invo>
@@ -5477,6 +5468,8 @@ This table indicates which function is invoked by each format-keyword:
                    count_attr_name => $count_atnm,
                    group_per => Set:{ $cmpl_inner_atnms[0], ... } )
 
+    .{} -> Core.Set.Maybe.attr( $expr )
+
     .[] -> Core.Array.value( $expr, =>$index )
     []  -> Core.Array.slice( $expr, index_interval => SPInterval:{
                 $min_index $interval_boundary_kind $max_index } )
@@ -5526,6 +5519,8 @@ Examples:
     $orders@{vendor <- @vendors}
 
     $people@{#@count_per_age_ctry <- !age,ctry}
+
+    $maybe_foo.{}
 
     $ary.[3]
 
