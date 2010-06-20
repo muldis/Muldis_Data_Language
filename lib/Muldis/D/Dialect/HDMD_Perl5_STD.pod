@@ -331,7 +331,7 @@ Examples:
         [ 'depot', [ 'depot-catalog' => [
             [ 'function', 'cube', [ [ 'Int', { topic => 'Int' } ] => [
                 [ 'func-invo', 'Integer.power',
-                    { radix => ['$','topic'], exponent => 3 } ]
+                    { radix => ['d','topic'], exponent => 3 } ]
             ] ] ]
         ] ] ]
     ]
@@ -355,7 +355,7 @@ Examples:
         } ],
         [ 'depot', [ 'depot-catalog' => [
             [ 'function', 'cube', [ [ 'Int', { topic => 'Int' } ] => [
-                [ 'op', 'exp', [ ['$','topic'], 3 ] ]
+                [ 'op', 'exp', [ ['d','topic'], 3 ] ]
             ] ] ]
         ] ] ]
     ]
@@ -1330,7 +1330,7 @@ Examples:
     # A depot having just one function and no dbvar. #
     [ 'depot', [ 'depot-catalog' => [
         [ 'function', 'cube', [ [ 'Int', { topic => 'Int' } ] => [
-            [ 'op', 'exp', [ ['$','topic'], 3 ] ]
+            [ 'op', 'exp', [ ['d','topic'], 3 ] ]
         ] ] ]
     ] ] ]
 
@@ -1419,7 +1419,7 @@ structurally identical to one of a C<recipe_payload>.
 Examples:
 
     [ 'function', 'cube', [ [ 'Int', { topic => 'Int' } ] => [
-        [ 'op', 'exp', [ ['$','topic'], 3 ] ]
+        [ 'op', 'exp', [ ['d','topic'], 3 ] ]
     ] ] ]
 
 =head2 Updater Specification
@@ -1440,20 +1440,20 @@ Examples:
         [ 'with' => [ 'function', 'gcd', [
             [ 'NNInt', { a => 'NNInt', b => 'NNInt' } ]
             => [
-                [ '??!!', [ [[ 'op', '=', [ ['$','b'], 0 ] ]
-                    => ['$','a']] ],
-                    [ 'func-invo', 'rtn', { a => ['$','b'],
-                        b => [ 'op', 'mod', [ ['$','a'], ['$','b'],
+                [ '??!!', [ [[ 'op', '=', [ ['d','b'], 0 ] ]
+                    => ['d','a']] ],
+                    [ 'func-invo', 'rtn', { a => ['d','b'],
+                        b => [ 'op', 'mod', [ ['d','a'], ['d','b'],
                             ['RoundMeth','Down'] ] ] } ]
                 ]
             ]
         ] ] ],
         [ '::=', 'gcd', [ 'func-invo', 'nlx.lib.gcd',
-            { a => ['$','a'], b => ['$','b'] } ] ],
-        [ 'op', ':=', [ ['$','a'], [ 'op', 'div',
-            [ ['$','a'], ['$','gcd'], ['RoundMeth','Down'] ] ] ] ],
-        [ 'op', ':=', [ ['$','b'], [ 'op', 'div',
-            [ ['$','b'], ['$','gcd'], ['RoundMeth','Down'] ] ] ] ],
+            { a => ['d','a'], b => ['d','b'] } ] ],
+        [ 'op', ':=', [ ['d','a'], [ 'op', 'div',
+            [ ['d','a'], ['d','gcd'], ['RoundMeth','Down'] ] ] ] ],
+        [ 'op', ':=', [ ['d','b'], [ 'op', 'div',
+            [ ['d','b'], ['d','gcd'], ['RoundMeth','Down'] ] ] ] ],
     ] ] ]
 
 =head2 Recipe Specification
@@ -1536,12 +1536,12 @@ Examples:
             [ 'Bool', { topic => 'Tuple', search => 'Text' } ]
             => [
                 [ 'op', 'like', [ ['$.','topic.name'],
-                    [ 'op', '~', [ '%', ['$','search'], '%' ] ] ] ]
+                    [ 'op', '~', [ '%', ['d','search'], '%' ] ] ] ]
             ]
         ] ] ],
-        [ 'op', ':=', [ ['$','count'], [ 'op', 'r#', [
-            [ 'op', 'where', [ ['$','people'],
-                ['curried-func', 'nlx.lib.filt', {search=>['$','search']}]
+        [ 'op', ':=', [ ['d','count'], [ 'op', 'r#', [
+            [ 'op', 'where', [ ['d','people'],
+                ['curried-func', 'nlx.lib.filt', {search=>['d','search']}]
             ] ]
         ] ] ] ],
     ] ] ]
@@ -1581,16 +1581,16 @@ Examples:
 
     [ 'procedure', 'print_curr_time', [ {} => [
         [ 'var', 'now', 'Instant' ],
-        [ 'iproc-imp-invo', 'fetch_curr_instant', [ ['&',['$','now']] ] ],
+        [ 'iproc-imp-invo', 'fetch_curr_instant', [ ['&',['d','now']] ] ],
         [ 'var', 'message', 'Text' ],
         [ 'atomic-stmt' => [
-            [ 'op', ':=', [ ['$','message'], [ 'op', '~', [
+            [ 'op', ':=', [ ['d','message'], [ 'op', '~', [
                 'The current time is: ',
                 [ 'func-invo', 'nlx.par.lib.utils.time_as_text',
-                    { 'time' => ['$','now'] } ]
+                    { 'time' => ['d','now'] } ]
             ] ] ] ]
         ] ],
-        [ 'iproc-imp-invo', 'write_Text_line', [ ['$','message'] ] ],
+        [ 'iproc-imp-invo', 'write_Text_line', [ ['d','message'] ] ],
     ] ] ]
 
 =head2 Scalar Type Specification
@@ -1828,7 +1828,7 @@ Examples:
 =head1 GENERIC VALUE EXPRESSIONS
 
 An C<expr_name> node has 2 ordered elements:  The first element is the Perl
-character string C<$>.  The second element is a C<Name_payload>.
+character string C<d>.  The second element is a C<Name_payload>.
 
 A C<named_expr> node has 3 ordered elements:  The first element is the Perl
 character string C<::=>.  The second element is a C<Name_payload> and the
@@ -1838,10 +1838,10 @@ expression node name for the third element.
 Examples:
 
     # an expr_name node #
-    ['$','foo_expr']
+    ['d','foo_expr']
 
     # a named_expr node #
-    [ '::=', 'bar_expr', [ 'func-invo', 'factorial', [['$','foo_expr']] ] ]
+    [ '::=', 'bar_expr', [ 'func-invo', 'factorial', [['d','foo_expr']] ] ]
 
 =head2 Generic Expression Attribute Accessors
 
@@ -1860,7 +1860,7 @@ Examples:
     ['$.','foo_t.bar_attr']
 
     # an accessor node of an anonymous tuple-valued node #
-    ['$.',['func-invo','nlx.lib.tuple_res_func',[['$','arg']]],'quux_attr']
+    ['$.',['func-invo','nlx.lib.tuple_res_func',[['d','arg']]],'quux_attr']
 
 =head2 Generic Function Invocation Expressions
 
@@ -1890,18 +1890,18 @@ Examples:
     [ 'func-invo', 'frac_quotient', { dividend => 43.7, divisor => 16.9 } ]
 
     # one mandatory 'topic' param, two optional #
-    [ 'func-invo', 'nlx.lib.barfunc', [ ['$','mand_arg'] ],
-        { oa1 => ['$','opt_arg1'], oa2 => ['$','opt_arg2'] } ]
+    [ 'func-invo', 'nlx.lib.barfunc', [ ['d','mand_arg'] ],
+        { oa1 => ['d','opt_arg1'], oa2 => ['d','opt_arg2'] } ]
 
     # a user-defined function #
     [ 'func-invo', 'nlx.lib.foodb.bazfunc',
         { a1 => 52, a2 => 'hello world' } ]
 
     # two params named 'topic' and 'other' #
-    [ 'func-invo', 'is_identical', [ ['$','foo'], ['$','bar'] ] ]
+    [ 'func-invo', 'is_identical', [ ['d','foo'], ['d','bar'] ] ]
 
     # invoke the lexically innermost routine with 2 args #
-    [ 'func-invo', 'rtn', [ ['$','x'], ['$','y'] ] ]
+    [ 'func-invo', 'rtn', [ ['d','x'], ['d','y'] ] ]
 
 =head2 Generic If-Else Expressions
 
@@ -1918,21 +1918,21 @@ Examples:
 
     [ 'if-else-expr',
         [
-            [[ 'op', '>', [['$','foo'], 5] ] => ['$','bar']],
+            [[ 'op', '>', [['d','foo'], 5] ] => ['d','bar']],
         ],
-        ['$','baz']
+        ['d','baz']
     ]
 
     [ 'if-else-expr',
         [
-            [[ 'func-invo', 'is_empty', [['$','ary']] ]
-                => ['$','empty_result']],
+            [[ 'func-invo', 'is_empty', [['d','ary']] ]
+                => ['d','empty_result']],
         ],
-        [ 'op', '.[]', [['$','ary'], 0] ]
+        [ 'op', '.[]', [['d','ary'], 0] ]
     ]
 
     [ 'op', '~', ['My answer is: ',
-        [ '??!!', [ [['$','maybe'] => 'yes'] ], 'no' ]] ]
+        [ '??!!', [ [['d','maybe'] => 'yes'] ], 'no' ]] ]
 
 =head2 Generic Given-When-Default Expressions
 
@@ -1949,12 +1949,12 @@ C<expr> node.
 Examples:
 
     [ 'given-when-def-expr',
-        ['$','digit'],
+        ['d','digit'],
         [
             [ 'T' => 10 ],
             [ 'E' => 11 ],
         ],
-        ['$','digit'],
+        ['d','digit'],
     ]
 
 =head2 Material Reference Selector Expressions
@@ -1973,7 +1973,7 @@ Examples:
 
     # a higher-order function curried with 1 argument #
     [ 'curried-func', 'nlx.lib.filter',
-        { search_term => ['$','search_term'] } ]
+        { search_term => ['d','search_term'] } ]
 
     # a reference to an updater #
     ['material-ref','nlx.lib.swap']
@@ -2005,17 +2005,17 @@ for a read-only parameter.
 Examples:
 
     # two mandatory params, one s-t-u, one r-o #
-    [ 'imus-imp-invo', 'assign', [ ['&',['$','foo']], 3 ] ]
+    [ 'imus-imp-invo', 'assign', [ ['&',['d','foo']], 3 ] ]
 
     # same as previous #
-    [ 'imus-imp-invo', 'assign', [ 3, ['&',['$','foo']] ] ]
+    [ 'imus-imp-invo', 'assign', [ 3, ['&',['d','foo']] ] ]
 
     # still same as previous but with all-named syntax #
-    [ 'imus-imp-invo', 'assign', { target => ['&',['$','foo']], v => 3 } ]
+    [ 'imus-imp-invo', 'assign', { target => ['&',['d','foo']], v => 3 } ]
 
     # three mandatory params #
-    [ 'imus-imp-invo', 'nlx.lib.lookup', { addr => ['&',['$','addr']],
-        people => ['$','people'], name => ['$','name'] } ]
+    [ 'imus-imp-invo', 'nlx.lib.lookup', { addr => ['&',['d','addr']],
+        people => ['d','people'], name => ['d','name'] } ]
 
 =head1 GENERIC PROCEDURE STATEMENTS
 
@@ -2023,7 +2023,7 @@ A C<stmt_name> node has 2 ordered elements:  The first element is the Perl
 character string C<s>.  The second element is a C<Name_payload>.
 
 A C<named_stmt> node has 3 ordered elements:  The first element is the Perl
-character string C<s::=>.  The second element is a C<Name_payload> and the
+character string C<::=>.  The second element is a C<Name_payload> and the
 third element is a C<proc_stmt> node; the second element declares an
 explicit statement node name for the third element.
 
@@ -2033,8 +2033,8 @@ Examples:
     ['s','foo_stmt']
 
     # a named_stmt node #
-    [ 's::=', 'bar_stmt', [ 'iproc-imp-invo', 'nlx.lib.swap',
-        {first => ['&',['$','first']], second => ['&',['$','second']]} ] ]
+    [ '::=', 'bar_stmt', [ 'iproc-imp-invo', 'nlx.lib.swap',
+        {first => ['&',['d','first']], second => ['&',['d','second']]} ] ]
 
 =head2 Generic Compound Statements
 
@@ -2048,8 +2048,8 @@ Examples:
 
     [ 'compound-stmt' => [
         [ 'var', 'message', 'Text' ],
-        [ 'iproc-imp-invo', 'read_Text_line', [ ['&',['$','message']] ] ],
-        [ 'iproc-imp-invo', 'write_Text_line', [ ['$','message'] ] ],
+        [ 'iproc-imp-invo', 'read_Text_line', [ ['&',['d','message']] ] ],
+        [ 'iproc-imp-invo', 'write_Text_line', [ ['d','message'] ] ],
     ] ]
 
 =head2 Procedure Atomic Statements
@@ -2062,14 +2062,14 @@ exactly the same format.
 Examples:
 
     [ 'atomic-stmt' => [
-        [ 'op', ':=', [ ['$','x'], ['$','y'] ] ],
-        [ 'op', ':=', [ ['$','y'], ['$','x'] ] ],
+        [ 'op', ':=', [ ['d','x'], ['d','y'] ] ],
+        [ 'op', ':=', [ ['d','y'], ['d','x'] ] ],
     ] ]
 
 =head2 Procedure Value Expressions
 
 A C<var_name> node has 2 ordered elements:  The first element is the Perl
-character string C<$>.  The second element is a C<Name_payload>.
+character string C<d>.  The second element is a C<Name_payload>.
 
 A C<nil_func_invo> node has 2 ordered elements:  The first element is the
 Perl character string C<func-invo>.  The second element is a
@@ -2096,13 +2096,13 @@ have been were this for a read-only parameter with a C<var_name> argument.
 
 Examples:
 
-    [ 'iproc-imp-invo', 'fetch_curr_instant', [ ['&',['$','now']] ] ]
+    [ 'iproc-imp-invo', 'fetch_curr_instant', [ ['&',['d','now']] ] ]
 
     [ 'iproc-imp-invo', 'prompt_Text_line',
-        [ ['&',['$','name']], 'Enter a person\'s name: ' ] ]
+        [ ['&',['d','name']], 'Enter a person\'s name: ' ] ]
 
     [ 'iproc-imp-invo', 'Integer.fetch_random',
-        [ ['&',['$','rand']], ['$','interval'] ] ]
+        [ ['&',['d','rand']], ['d','interval'] ] ]
 
 =head2 Generic Try-Catch Statements
 
@@ -2134,7 +2134,7 @@ Examples:
 
     [ 'if-else-stmt',
         [
-            [ ['$','out_of_options']
+            [ ['d','out_of_options']
                 => [ 'iproc-imp-invo', 'nlx.lib.give_up' ] ],
         ],
         [ 'iproc-imp-invo', 'nlx.lib.keep_going' ]
@@ -2155,7 +2155,7 @@ I<default_stmt> statement, which is a C<proc_stmt> node.
 Examples:
 
     [ 'given-when-def-stmt',
-        ['$','picked_menu_item'],
+        ['d','picked_menu_item'],
         [
             [ 'v' => [ 'iproc-imp-invo', 'nlx.lib.screen_view_record' ] ],
             [ 'a' => [ 'iproc-imp-invo', 'nlx.lib.screen_add_record' ] ],
@@ -2182,21 +2182,21 @@ the statement to repeatedly execute.
 
 Examples:
 
-    [ 's::=', 'lookup_person', [ loop => [ 'compound-stmt' => [
+    [ '::=', 'lookup_person', [ loop => [ 'compound-stmt' => [
         [ 'iproc-imp-invo', 'prompt_Text_line',
-            [ ['&',['$','name']], 'Enter a name to search for: ' ] ],
-        [ 'given-when-def-stmt', ['$','name'],
+            [ ['&',['d','name']], 'Enter a name to search for: ' ] ],
+        [ 'given-when-def-stmt', ['d','name'],
             [ ['' => ['leave','lookup_person']] ] ],
         [ 'iproc-imp-invo', 'nlx.lib.do_search', {
-            name => ['$','name'],
-            not_found => ['&',['$','not_found']],
-            report_text => ['&',['$','report_text']]
+            name => ['d','name'],
+            not_found => ['&',['d','not_found']],
+            report_text => ['&',['d','report_text']]
         } ],
-        [ 'if-else-stmt', [ [['$','not_found'] => [ 'compound-stmt' => [
+        [ 'if-else-stmt', [ [['d','not_found'] => [ 'compound-stmt' => [
             [ 'iproc-imp-invo', 'write_Text_line', ['No person matched'] ],
             ['iterate','lookup_person']
         ] ]] ] ],
-        [ 'iproc-imp-invo', 'write_Text_line', [ ['$','report_text'] ] ],
+        [ 'iproc-imp-invo', 'write_Text_line', [ ['d','report_text'] ] ],
     ] ] ] ]
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
@@ -2260,7 +2260,7 @@ Examples:
     [ 'op', '~', [ [ 'Array', [ 24, 52 ] ],
         [ 'Array', [ -9 ] ], [ 'Array', [ 0, 11, 24, 7 ] ] ] ]
 
-    [ 'op', '//', [ ['$','a'], ['$','b'], 42 ] ]
+    [ 'op', '//', [ ['d','a'], ['d','b'], 42 ] ]
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -2270,9 +2270,9 @@ isn't significant.
 
 Examples:
 
-    [ 'op', '=', [ ['$','foo'], ['$','bar'] ] ]
+    [ 'op', '=', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', '≠', [ ['$','foo'], ['$','bar'] ] ]
+    [ 'op', '≠', [ ['d','foo'], ['d','bar'] ] ]
 
     [ 'op', 'nand', [ ['Bool','False'], ['Bool','True'] ] ]
 
@@ -2288,13 +2288,13 @@ C<rhs>, respectively.
 
 Examples:
 
-    [ 'op', 'isa', [ ['$','bar'], ['material-ref','nlx.lib.foo_type'] ] ]
+    [ 'op', 'isa', [ ['d','bar'], ['material-ref','nlx.lib.foo_type'] ] ]
 
-    [ 'op', '!isa', [ ['$','bar'], ['material-ref','nlx.lib.foo_type'] ] ]
+    [ 'op', '!isa', [ ['d','bar'], ['material-ref','nlx.lib.foo_type'] ] ]
 
-    [ 'op', 'as', [ ['$','scalar'], ['material-ref','Int'] ] ]
+    [ 'op', 'as', [ ['d','scalar'], ['material-ref','Int'] ] ]
 
-    [ 'op', 'asserting', [['$','int'], [ 'op', '≠', [['$','int'], 0] ]] ]
+    [ 'op', 'asserting', [['d','int'], [ 'op', '≠', [['d','int'], 0] ]] ]
 
     [ 'op', 'implies', [ ['Bool','True'], ['Bool','False'] ] ]
 
@@ -2328,9 +2328,9 @@ Examples:
 
     [ 'op', 'r#', [[ 'Set', [ 5, -1, 2 ] ]] ]
 
-    [ 'op', '%', [['$','relvar']] ]
+    [ 'op', '%', [['d','relvar']] ]
 
-    [ 'op', '@', [['$','tupvar']] ]
+    [ 'op', '@', [['d','tupvar']] ]
 
 =head2 Simple Monadic Postfix Operators
 
@@ -2358,56 +2358,56 @@ node payload that defines an C<sp_interval_of.NNInt>.
 
 Examples:
 
-    [ 'op', '.${}', [['$','birthday'], 'date', 'day'] ]
+    [ 'op', '.${}', [['d','birthday'], 'date', 'day'] ]
 
-    [ 'op', '.%{}', [['$','pt'], 'city'] ]
+    [ 'op', '.%{}', [['d','pt'], 'city'] ]
 
-    [ 'op', '%{<-}', [['$','pt'], {pnum=>'pno', locale=>'city'}] ]
+    [ 'op', '%{<-}', [['d','pt'], {pnum=>'pno', locale=>'city'}] ]
 
-    [ 'op', '@{<-}', [['$','pr'], {pnum=>'pno', locale=>'city'}] ]
+    [ 'op', '@{<-}', [['d','pr'], {pnum=>'pno', locale=>'city'}] ]
 
-    [ 'op', '${}', [['$','birthday'], 'date', ['year','month']] ]
+    [ 'op', '${}', [['d','birthday'], 'date', ['year','month']] ]
 
-    [ 'op', '%{}', [['$','pt'], ['color','city']] ]
+    [ 'op', '%{}', [['d','pt'], ['color','city']] ]
 
-    [ 'op', '@{}', [['$','pr'], ['color','city']] ]
+    [ 'op', '@{}', [['d','pr'], ['color','city']] ]
 
-    [ 'op', '%{}', [['$','pt'], []] ]  # null projection #
+    [ 'op', '%{}', [['d','pt'], []] ]  # null projection #
 
-    [ 'op', '@{}', [['$','pr'], []] ]  # null projection #
+    [ 'op', '@{}', [['d','pr'], []] ]  # null projection #
 
-    [ 'op', '${!}', [['$','rnd_rule'], ['round_meth']] ]  # radix,min_exp #
+    [ 'op', '${!}', [['d','rnd_rule'], ['round_meth']] ]  # radix,min_exp #
 
-    [ 'op', '%{!}', [['$','pt'], ['pno','pname','weight']] ]
+    [ 'op', '%{!}', [['d','pt'], ['pno','pname','weight']] ]
 
-    [ 'op', '@{!}', [['$','pr'], ['pno','pname','weight']] ]
+    [ 'op', '@{!}', [['d','pr'], ['pno','pname','weight']] ]
 
-    [ 'op', '%{%<-}', [['$','person'], 'name', ['fname','lname']] ]
+    [ 'op', '%{%<-}', [['d','person'], 'name', ['fname','lname']] ]
 
-    [ 'op', '@{%<-}', [['$','people'], 'name', ['fname','lname']] ]
+    [ 'op', '@{%<-}', [['d','people'], 'name', ['fname','lname']] ]
 
-    [ 'op', '%{%<-!}', [['$','person'],'all_but_name',['fname','lname']] ]
+    [ 'op', '%{%<-!}', [['d','person'],'all_but_name',['fname','lname']] ]
 
-    [ 'op', '@{%<-!}', [['$','people'],'all_but_name',['fname','lname']] ]
+    [ 'op', '@{%<-!}', [['d','people'],'all_but_name',['fname','lname']] ]
 
-    [ 'op', '%{<-%}', [['$','person'], ['fname','lname'], 'name'] ]
+    [ 'op', '%{<-%}', [['d','person'], ['fname','lname'], 'name'] ]
 
-    [ 'op', '@{<-%}', [['$','people'], ['fname','lname'], 'name'] ]
+    [ 'op', '@{<-%}', [['d','people'], ['fname','lname'], 'name'] ]
 
-    [ 'op', '@{@<-}', [['$','orders'], 'vendors', ['vendor']] ]
+    [ 'op', '@{@<-}', [['d','orders'], 'vendors', ['vendor']] ]
 
-    [ 'op', '@{@<-!}', [['$','orders'], 'all_but_vendors', ['vendor']] ]
+    [ 'op', '@{@<-!}', [['d','orders'], 'all_but_vendors', ['vendor']] ]
 
-    [ 'op', '@{<-@}', [['$','orders'], ['vendor'], 'vendors'] ]
+    [ 'op', '@{<-@}', [['d','orders'], ['vendor'], 'vendors'] ]
 
     [ 'op', '@{#@<-!}',
-        [['$','people'], 'count_per_age_ctry', ['age','ctry']] ]
+        [['d','people'], 'count_per_age_ctry', ['age','ctry']] ]
 
-    [ 'op', '.{}', [['$','maybe_foo']] ]
+    [ 'op', '.{}', [['d','maybe_foo']] ]
 
-    [ 'op', '.[]', [['$','ary'], 3] ]
+    [ 'op', '.[]', [['d','ary'], 3] ]
 
-    [ 'op', '[]', [['$','ary'], [10,'..',14]] ]
+    [ 'op', '[]', [['d','ary'], [10,'..',14]] ]
 
 =head2 Numeric Operators That Do Rounding
 
@@ -2423,7 +2423,7 @@ Examples:
 
     [ 'op', 'mod', [ 5, 3, ['RoundMeth','ToZero'] ] ]
 
-    [ 'op', 'round', [ ['$','foo'],
+    [ 'op', 'round', [ ['d','foo'],
         [ 'RatRoundRule', [10,-2,'HalfEven'] ] ] ]
 
     [ 'op', '**', [ 2.0, 0.5, [ 'RatRoundRule', [2,-7,'ToZero'] ] ] ]
@@ -2445,24 +2445,24 @@ extra op args are pending.>
 
 Examples (for now sans any use of extra op args, which are atypical):
 
-    [ 'op', '<=>', [ ['$','foo'], ['$','bar'] ] ]
+    [ 'op', '<=>', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', 'min', [ ['$','a'], ['$','b'], ['$','c'] ] ]
+    [ 'op', 'min', [ ['d','a'], ['d','b'], ['d','c'] ] ]
 
-    [ 'op', 'max', [ ['$','a'], ['$','b'], ['$','c'] ] ]
+    [ 'op', 'max', [ ['d','a'], ['d','b'], ['d','c'] ] ]
 
-    [ 'op', '<', [ ['$','foo'], ['$','bar'] ] ]
+    [ 'op', '<', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', '>', [ ['$','foo'], ['$','bar'] ] ]
+    [ 'op', '>', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', '≤', [ ['$','foo'], ['$','bar'] ] ]
+    [ 'op', '≤', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', '≥', [ ['$','foo'], ['$','bar'] ] ]
+    [ 'op', '≥', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', '∈i', [ ['$','a'], [ 'SPInterval', [1,'..',5] ] ] ]
+    [ 'op', '∈i', [ ['d','a'], [ 'SPInterval', [1,'..',5] ] ] ]
 
-    [ 'op', '∉i', [ ['$','foo'],
-        [ 'SPInterval', [['$','min'],'..^',['$','max']] ] ] ]
+    [ 'op', '∉i', [ ['d','foo'],
+        [ 'SPInterval', [['d','min'],'..^',['d','max']] ] ] ]
 
 =head1 IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS
 
@@ -2494,9 +2494,9 @@ a C<var_name> node.
 
 Examples:
 
-    [ 'op', ':=++', [['$','counter']] ]
+    [ 'op', ':=++', [['d','counter']] ]
 
-    [ 'op', ':=--', [['$','countdown']] ]
+    [ 'op', ':=--', [['d','countdown']] ]
 
 =head2 Imperative Simple Non-symmetric Dyadic Infix Operators
 
@@ -2507,10 +2507,10 @@ C<rhs_expr> (a C<proc_expr> node), respectively.
 Examples:
 
     # assign 3 to $foo #
-    [ 'op', ':=', [ ['$','foo'], 3 ] ]
+    [ 'op', ':=', [ ['d','foo'], 3 ] ]
 
     # delete every person in $people whose age is either 10 or 20 #
-    [ 'op', ':=!matching', [ ['$','people'],
+    [ 'op', ':=!matching', [ ['d','people'],
         [ 'Relation', [ { age => 10 }, { age => 20 } ] ] ] ]
 
 =head1 SEE ALSO

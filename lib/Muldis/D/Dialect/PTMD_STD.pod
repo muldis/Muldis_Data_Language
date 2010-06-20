@@ -550,8 +550,8 @@ Examples:
         op_char_repertoire => basic
     }
     depot-catalog {
-        function cube (Int <-- $topic : Int) {
-            Integer.power( radix => $topic, exponent => 3 )
+        function cube (Int <-- topic : Int) {
+            Integer.power( radix => topic, exponent => 3 )
         }
     }
 
@@ -615,8 +615,8 @@ Examples:
         op_char_repertoire => basic
     }
     depot-catalog {
-        function cube (Int <-- $topic : Int) {
-            $topic exp 3
+        function cube (Int <-- topic : Int) {
+            topic exp 3
         }
     }
 
@@ -1862,7 +1862,7 @@ Grammar:
         <Name_payload>
 
     <same_named_nonord_atvl> ::=
-        '=>' <data_sigil> <attr_name>
+        '=>' <attr_name>
 
     <tuple_D0> ::=
         D0
@@ -1890,7 +1890,7 @@ C<same_named_nonord_atvl>, which may be used only if the C<expr> of the
 otherwise-C<nonord_atvl> is an C<expr_name> and that C<expr_name> is
 identical to the C<attr_name>.  In this situation, the identical name can
 be specified just once, which is the shorthand; for example, the attribute
-C<< foo => $foo >> may alternately be written out as C<< =>$foo >>.
+C<< foo => foo >> may alternately be written out as C<< =>foo >>.
 This shorthand is to help with
 the possibly common situation where attributes of a tuple (or relation or
 scalar) selection are being valued from same-named expression nodes / etc.
@@ -1920,7 +1920,7 @@ Examples:
         age  => 17
     }
 
-    Tuple:{ w => 'foo', =>$x, y => 4, =>$z }
+    Tuple:{ w => 'foo', =>x, y => 4, =>z }
 
 =head2 Database Selectors
 
@@ -2537,8 +2537,8 @@ Examples:
 
     # A depot having just one function and no dbvar. #
     depot-catalog {
-        function cube (Int <-- $topic : Int) {
-            $topic exp 3
+        function cube (Int <-- topic : Int) {
+            topic exp 3
         }
     }
 
@@ -2835,8 +2835,8 @@ only have one result-determining C<expr>.
 
 Examples:
 
-    function cube (Int <-- $topic : Int) {
-        $topic exp 3
+    function cube (Int <-- topic : Int) {
+        topic exp 3
     }
 
 =head2 Updater Specification
@@ -2891,13 +2891,13 @@ recipe is that a recipe has global parameters and an updater doesn't.
 
 Examples:
 
-    updater make_coprime (&$a : NNInt, &$b : NNInt) {
-        with function gcd (NNInt <-- $a : NNInt, $b : NNInt) {
-            $b = 0 ?? $a !! rtn( a => $b, b => $a mod $b round Down )
+    updater make_coprime (&a : NNInt, &b : NNInt) {
+        with function gcd (NNInt <-- a : NNInt, b : NNInt) {
+            b = 0 ?? a !! rtn( a => b, b => a mod b round Down )
         }
-        $gcd ::= nlx.lib.gcd( =>$a, =>$b )
-        $a := $a div $gcd round Down
-        $b := $b div $gcd round Down
+        gcd ::= nlx.lib.gcd( =>a, =>b )
+        a := a div gcd round Down
+        b := b div gcd round Down
     }
 
 =head2 Recipe Specification
@@ -2939,10 +2939,7 @@ Grammar:
         <lex_entity_name>
 
     <lex_entity_name> ::=
-        <data_sigil> <Name_payload>
-
-    <data_sigil> ::=
-        '$'
+        <Name_payload>
 
     <param_flag> ::=
         <opt_param_flag> | <dispatch_param_flag>
@@ -3070,12 +3067,12 @@ user-defined or generated as appropriate for the kind of C<expr>.
 
 Examples:
 
-    recipe count_heads (&$count : NNInt, $search : Text,
-            $people ::= $fed.data.db1.people) {
-        with value-filter filt (Bool <-- $topic : Tuple, $search : Text) {
-            $.name like ('%' ~ $search ~ '%')
+    recipe count_heads (&count : NNInt, search : Text,
+            people ::= fed.data.db1.people) {
+        with value-filter filt (Bool <-- topic : Tuple, search : Text) {
+            .name like ('%' ~ search ~ '%')
         }
-        $count := r# ($people where <nlx.lib.filt>( =>$search ))
+        count := r# (people where <nlx.lib.filt>( =>search ))
     }
 
 =head2 Procedure Specification
@@ -3184,14 +3181,14 @@ the procedure has a defined body that is an unconditional no-op.
 Examples:
 
     procedure print_curr_time () [
-        var $now : Instant
-        fetch_curr_instant( &$now )
-        var $message : Text
+        var now : Instant
+        fetch_curr_instant( &now )
+        var message : Text
         {
-            $message := 'The current time is: '
-                ~ nlx.par.lib.utils.time_as_text( time => $now )
+            message := 'The current time is: '
+                ~ nlx.par.lib.utils.time_as_text( time => now )
         }
-        write_Text_line( $message )
+        write_Text_line( message )
     ]
 
 =head2 Scalar Type Specification
@@ -3342,9 +3339,9 @@ Examples:
 
     # db schema with 3 relvars, 2 subset constrs, the 5 def separately #
     database-type CD_DB {
-        attr $artists : nlx.lib.Artists
-        attr $cds     : nlx.lib.CDs
-        attr $tracks  : nlx.lib.Tracks
+        attr artists : nlx.lib.Artists
+        attr cds     : nlx.lib.CDs
+        attr tracks  : nlx.lib.Tracks
         constraint nlx.lib.sc_artist_has_cds
         constraint nlx.lib.sc_cd_has_tracks
     }
@@ -3354,37 +3351,37 @@ Examples:
     relation-type Locations {
         tuple-type nlx.lib.Location
         with tuple-type Location {
-            attr $loc_name    : Text
-            attr $loc_name_uc : Text
+            attr loc_name    : Text
+            attr loc_name_uc : Text
             virtual-attr-map {
-                determinant-attrs { =>$loc_name }
-                dependent-attrs { =>$loc_name_uc }
+                determinant-attrs { =>loc_name }
+                dependent-attrs { =>loc_name_uc }
                 map-function nlx.lib.uc_loc_name
             }
-            with value-map-unary uc_loc_name (Tuple <-- $topic : Tuple) {
-                Tuple:{ loc_name_uc => upper( $.loc_name ) }
+            with value-map-unary uc_loc_name (Tuple <-- topic : Tuple) {
+                Tuple:{ loc_name_uc => upper( .loc_name ) }
             }
         }
         constraint nlx.lib.sk_loc_name_uc
-        with key-constraint sk_loc_name_uc { $loc_name_uc }
+        with key-constraint sk_loc_name_uc { loc_name_uc }
     }
 
     # db schema with 2 real relvars, 1 virtual relvar; all are updateable #
-    # real $products has attrs { product_id, name } #
-    # real $sales has attrs { product_id, qty } #
-    # virtual $combines has attrs { product_id, name, qty } #
+    # real products has attrs { product_id, name } #
+    # real sales has attrs { product_id, qty } #
+    # virtual combines has attrs { product_id, name, qty } #
     database-type DB {
-        attr $products : nlx.lib.Products
-        attr $sales    : nlx.lib.Sales
-        attr $combines : nlx.lib.Combines
+        attr products : nlx.lib.Products
+        attr sales    : nlx.lib.Sales
+        attr combines : nlx.lib.Combines
         virtual-attr-map {
-            determinant-attrs { =>$products, =>$sales }
-            dependent-attrs { =>$combines }
+            determinant-attrs { =>products, =>sales }
+            dependent-attrs { =>combines }
             map-function nlx.lib.combine_p_s
             is-updateable
         }
-        with value-map-unary combine_p_s (Database <-- $topic : Database) {
-            Database:{ combines => $.products join $.sales }
+        with value-map-unary combine_p_s (Database <-- topic : Database) {
+            Database:{ combines => .products join .sales }
         }
     }
 
@@ -3432,11 +3429,11 @@ Examples:
 
     relation-type Artists {
         with tuple-type Artist {
-            attr $artist_id   : Int
-            attr $artist_name : Text
+            attr artist_id   : Int
+            attr artist_name : Text
         }
-        with primary-key pk_artist_id { $artist_id }
-        with key-constraint sk_artist_name { $artist_name }
+        with primary-key pk_artist_id { artist_id }
+        with key-constraint sk_artist_name { artist_name }
         tuple-type nlx.lib.Artist
         constraint nlx.lib.pk_artist_id
         constraint nlx.lib.sk_artist_name
@@ -3444,12 +3441,12 @@ Examples:
 
     relation-type CDs {
         with tuple-type CD {
-            attr $cd_id     : Int
-            attr $artist_id : Int
-            attr $cd_title  : Text
+            attr cd_id     : Int
+            attr artist_id : Int
+            attr cd_title  : Text
         }
-        with primary-key pk_cd_id { $cd_id }
-        with key-constraint sk_cd_title { $cd_title }
+        with primary-key pk_cd_id { cd_id }
+        with key-constraint sk_cd_title { cd_title }
         tuple-type nlx.lib.CD
         constraint nlx.lib.pk_cd_id
         constraint nlx.lib.sk_cd_title
@@ -3646,11 +3643,11 @@ Examples:
     # at most one tuple allowed #
     key-constraint maybe_one {}
 
-    # relation type's $artist_id attr is its primary key #
-    primary-key pk_artist_id { $artist_id }
+    # relation type's artist_id attr is its primary key #
+    primary-key pk_artist_id { artist_id }
 
     # relation type has surrogate key over both name attrs #
-    key-constraint sk_name { $last_name, $first_name }
+    key-constraint sk_name { last_name, first_name }
 
 =head2 Distributed Key Constraint Specification
 
@@ -3678,7 +3675,7 @@ Grammar:
         <lex_entity_nc>
 
     <lex_entity_nc> ::=
-        <data_sigil> <NameChain_payload>
+        <NameChain_payload>
 
     <parent_key> ::=
         <constraint_name>
@@ -3721,15 +3718,15 @@ I<TODO: The remaining description.>
 
 Examples:
 
-    # relation $foo must have exactly 1 tuple when $bar has at least 1 #
+    # relation foo must have exactly 1 tuple when bar has at least 1 #
     subset-constraint sc_mutual_inclusion {
-        parent $foo using-key nlx.lib.maybe_one
-        child $bar using-attrs {}
+        parent foo using-key nlx.lib.maybe_one
+        child bar using-attrs {}
     }
 
     subset-constraint sc_artist_has_cds {
-        parent $artists using-key nlx.lib.Artists.pk_artist_id
-        child $cds using-attrs { =>$artist_id }
+        parent artists using-key nlx.lib.Artists.pk_artist_id
+        child cds using-attrs { =>artist_id }
     }
 
 =head2 Distributed Subset Constraint Specification
@@ -3865,10 +3862,10 @@ declaring an alias for another node, namely the C<expr> element.
 Examples:
 
     # an expr_name node #
-    $foo_expr
+    foo_expr
 
     # a named_expr node #
-    $bar_expr ::= factorial( $foo_expr )
+    bar_expr ::= factorial( foo_expr )
 
 =head2 Generic Expression Attribute Accessors
 
@@ -3881,7 +3878,7 @@ Grammar:
         <lex_entity_nc>
 
     <acc_via_topic> ::=
-        <data_sigil> '.' <NameChain_payload>
+        '.' <NameChain_payload>
 
     <acc_via_anon> ::=
         <expr> <unspace> '.' <nc_nonempty>
@@ -3894,7 +3891,7 @@ the C<target> attribute of the new C<AccExprNodeSet>.  If an C<accessor> is
 an C<acc_via_topic>, then it is interpreted in exactly the same manner as
 for an C<acc_via_named> except that the C<NameChain_payload> element is
 interpreted with a C<topic> element prepended to it; so for example a
-C<$.foo> is treated as being C<$topic.foo>.  If an C<accessor> is
+C<.foo> is treated as being C<topic.foo>.  If an C<accessor> is
 an C<acc_via_anon>, then the C<target> is derived from a catenation of the
 node name that C<expr> has (explicitly or that will be generated for it by
 the parser) with the C<nc_nonempty> in that order.  Note that an
@@ -3904,13 +3901,13 @@ C<acc_via_named>, and vice-versa.
 Examples:
 
     # an accessor node of a named tuple-valued node #
-    $foo_t.bar_attr
+    foo_t.bar_attr
 
     # an accessor node of a tuple-valued node named "topic" #
-    $.attr  # same as $topic.attr #
+    .attr  # same as topic.attr #
 
     # an accessor node of an anonymous tuple-valued node #
-    nlx.lib.tuple_res_func( $arg ).quux_attr
+    nlx.lib.tuple_res_func( arg ).quux_attr
 
 =head2 Generic Function Invocation Expressions
 
@@ -3937,7 +3934,7 @@ Grammar:
         <expr>
 
     <same_named_ro_arg> ::=
-        '=>' <data_sigil> <invo_param_name>
+        '=>' <invo_param_name>
 
 A C<func_invo> node represents the result of invoking a named
 function with specific arguments.  It is interpreted as a tuple of a
@@ -3991,8 +3988,8 @@ which may be used only if the C<expr> of the otherwise-C<named_ro_arg> is
 an C<expr_name> and that C<expr_name> is identical to the
 C<invo_param_name>.
 In this situation, the identical name can be specified just once, which is
-the shorthand; for example, the named argument C<< foo => $foo >> may
-alternately be written out as C<< =>$foo >>.
+the shorthand; for example, the named argument C<< foo => foo >> may
+alternately be written out as C<< =>foo >>.
 This shorthand is to help with the possibly common
 situation where two successive routines in a call-chain have any same-named
 parameters and arguments are simply being passed through.
@@ -4016,22 +4013,22 @@ Examples:
     frac_quotient( divisor => 16.9, dividend => 43.7 )
 
     # one mandatory 'topic' param, two optional #
-    nlx.lib.barfunc( $mand_arg, oa1 => $opt_arg1, oa2 => $opt_arg2 )
+    nlx.lib.barfunc( mand_arg, oa1 => opt_arg1, oa2 => opt_arg2 )
 
     # same as previous #
-    nlx.lib.barfunc( oa2 => $opt_arg2, $mand_arg, oa1 => $opt_arg1 )
+    nlx.lib.barfunc( oa2 => opt_arg2, mand_arg, oa1 => opt_arg1 )
 
     # a user-defined function #
     nlx.lib.foodb.bazfunc( a1 => 52, a2 => 'hello world' )
 
     # two params named 'topic' and 'other' #
-    is_identical( $foo, $bar )
+    is_identical( foo, bar )
 
     # invoke the lexically innermost routine with 2 args #
-    rtn( $x, $y )
+    rtn( x, y )
 
     # three named params taking 2 same-named args, 1 diff-named arg #
-    nlx.lib.passed_thru( =>$a, b => 5, =>$c )
+    nlx.lib.passed_thru( =>a, b => 5, =>c )
 
 =head2 Generic If-Else Expressions
 
@@ -4071,17 +4068,17 @@ C<expr> that C<else_expr> is.)
 
 Examples:
 
-    if $foo > 5 then $bar else $baz
+    if foo > 5 then bar else baz
 
-    if is_empty($ary) then $empty_result else $ary.[0]
+    if is_empty(ary) then empty_result else ary.[0]
 
-    if $x = ∅ or $y = ∅ then ∅ else Maybe:{$x.{} + $y.{} exp 3}
+    if x = ∅ or y = ∅ then ∅ else Maybe:{x.{} + y.{} exp 3}
 
-    if $val isa <Int> then $val exp 3
-        else if $val isa <Text> then $val ~# 5
+    if val isa <Int> then val exp 3
+        else if val isa <Text> then val ~# 5
         else True
 
-    'My answer is: ' ~ ($maybe ?? 'yes' !! 'no')
+    'My answer is: ' ~ (maybe ?? 'yes' !! 'no')
 
 =head2 Generic Given-When-Default Expressions
 
@@ -4121,10 +4118,10 @@ none of its comparands match C<given>.
 
 Examples:
 
-    given $digit
+    given digit
         when 'T' then 10
         when 'E' then 11
-        default $digit
+        default digit
 
 =head2 Material Reference Selector Expressions
 
@@ -4175,7 +4172,7 @@ argument list.
 Examples:
 
     # a higher-order function curried with 1 argument #
-    <nlx.lib.filter>( =>$search_term )
+    <nlx.lib.filter>( =>search_term )
 
     # a reference to an updater #
     <nlx.lib.swap>
@@ -4269,16 +4266,16 @@ C<imus_imp_invo>'s version also works with subject-to-update arguments.
 Examples:
 
     # two mandatory params, one s-t-u, one r-o #
-    assign( &$foo, 3 )
+    assign( &foo, 3 )
 
     # same as previous #
-    assign( 3, &$foo )
+    assign( 3, &foo )
 
     # still same as previous but with all-named syntax #
-    assign( &target => $foo, v => 3 )
+    assign( &target => foo, v => 3 )
 
     # three mandatory params #
-    nlx.lib.lookup( &=>$addr, =>$people, =>$name )
+    nlx.lib.lookup( &=>addr, =>people, =>name )
 
 =head1 GENERIC PROCEDURE STATEMENTS
 
@@ -4343,7 +4340,7 @@ Examples:
     foo_stmt
 
     # a named_stmt node #
-    bar_stmt ::= nlx.lib.swap( &=>$first, &=>$second )
+    bar_stmt ::= nlx.lib.swap( &=>first, &=>second )
 
 =head2 Generic Compound Statements
 
@@ -4369,9 +4366,9 @@ C<nonempty_procedure_body> that the C<compound_stmt> is under.
 Examples:
 
     [
-        var $message : Text
-        read_Text_line( &$message )
-        write_Text_line( $message )
+        var message : Text
+        read_Text_line( &message )
+        write_Text_line( message )
     ]
 
 =head2 Procedure Atomic Statements
@@ -4410,8 +4407,8 @@ name of the updater is parser-generated; see L</MATERIAL SPECIFICATION>.
 Examples:
 
     {
-        $x := $y
-        $y := $x
+        x := y
+        y := x
     }
 
 =head2 Procedure Value Expressions
@@ -4513,10 +4510,10 @@ Grammar:
         <proc_expr>
 
     <iproc_same_named_upd_arg> ::=
-        <upd_sigil> '=>' <data_sigil> <invo_param_name>
+        <upd_sigil> '=>' <invo_param_name>
 
     <iproc_same_named_ro_arg> ::=
-        '=>' <data_sigil> <invo_param_name>
+        '=>' <invo_param_name>
 
 An C<iproc_imp_invo> node represents the invocation of a named imperative
 routine, with specific subject-to-update or read-only arguments, as a
@@ -4559,11 +4556,11 @@ is used to define tuples of 4 different C<StmtNodeSet> attributes.
 
 Examples:
 
-    fetch_curr_instant( &$now )
+    fetch_curr_instant( &now )
 
-    prompt_Text_line( &$name, 'Enter a person\as name: ' )
+    prompt_Text_line( &name, 'Enter a person\as name: ' )
 
-    Integer.fetch_random( &$rand, $interval )
+    Integer.fetch_random( &rand, interval )
 
 =head2 Generic Try-Catch Statements
 
@@ -4639,7 +4636,7 @@ C<proc_stmt> that C<else_stmt> is.)
 
 Examples:
 
-    if $out_of_options then
+    if out_of_options then
         nlx.lib.give_up()
     else
         nlx.lib.keep_going()
@@ -4682,7 +4679,7 @@ C<proc_when_then> is an empty set or none of its comparands match C<given>.
 
 Examples:
 
-    given $picked_menu_item
+    given picked_menu_item
         when 'v' then
             nlx.lib.screen_view_record()
         when 'a' then
@@ -4764,14 +4761,14 @@ for nonatomic "foreach" then Muldis D may gain this feature in the future.
 Examples:
 
     lookup_person ::= loop [
-        prompt_Text_line( &$name, 'Enter a name to search for: ' )
-        given $name when '' leave lookup_person
-        nlx.lib.do_search( =>$name, &=>$not_found, &=>$report_text )
-        if $not_found then [
+        prompt_Text_line( &name, 'Enter a name to search for: ' )
+        given name when '' leave lookup_person
+        nlx.lib.do_search( =>name, &=>not_found, &=>report_text )
+        if not_found then [
             write_Text_line( 'No person matched' )
             iterate lookup_person
         ]
-        write_Text_line( $report_text )
+        write_Text_line( report_text )
     ]
 
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
@@ -4879,19 +4876,19 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
-    and  -> Core.Boolean.and( Set:{ $expr[0], ..., $expr[n] } )
-    or   -> Core.Boolean.or( Set:{ $expr[0], ..., $expr[n] } )
-    xnor -> Core.Boolean.xnor( Bag:{ $expr[0], ..., $expr[n] } )
-    xor  -> Core.Boolean.xor( Bag:{ $expr[0], ..., $expr[n] } )
-    +    -> Core.Numeric.sum( Bag:{ $expr[0], ..., $expr[n] } )
-    *    -> Core.Numeric.product( Bag:{ $expr[0], ..., $expr[n] } )
+    and  -> Core.Boolean.and( Set:{ expr[0], ..., expr[n] } )
+    or   -> Core.Boolean.or( Set:{ expr[0], ..., expr[n] } )
+    xnor -> Core.Boolean.xnor( Bag:{ expr[0], ..., expr[n] } )
+    xor  -> Core.Boolean.xor( Bag:{ expr[0], ..., expr[n] } )
+    +    -> Core.Numeric.sum( Bag:{ expr[0], ..., expr[n] } )
+    *    -> Core.Numeric.product( Bag:{ expr[0], ..., expr[n] } )
 
-    union     -> Core.Relation.union( Set:{ $expr[0], ..., $expr[n] } )
+    union     -> Core.Relation.union( Set:{ expr[0], ..., expr[n] } )
     intersect -> Core.Relation.intersection(
-                    Set:{ $expr[0], ..., $expr[n] } )
-    exclude   -> Core.Relation.exclusion( Bag:{ $expr[0], ..., $expr[n] } )
-    join      -> Core.Relation.join( Set:{ $expr[0], ..., $expr[n] } )
-    times     -> Core.Relation.product( Set:{ $expr[0], ..., $expr[n] } )
+                    Set:{ expr[0], ..., expr[n] } )
+    exclude   -> Core.Relation.exclusion( Bag:{ expr[0], ..., expr[n] } )
+    join      -> Core.Relation.join( Set:{ expr[0], ..., expr[n] } )
+    times     -> Core.Relation.product( Set:{ expr[0], ..., expr[n] } )
 
 Examples:
 
@@ -4946,10 +4943,10 @@ different type of value, from the last op input list element.
 
 This table indicates which function is invoked by each keyword:
 
-    [<=>] -> Core.Cat.Order.reduction( Array:{ $expr[0], ..., $expr[n] } )
-    ~     -> Core.Stringy.catenation( Array:{ $expr[0], ..., $expr[n] } )
+    [<=>] -> Core.Cat.Order.reduction( Array:{ expr[0], ..., expr[n] } )
+    ~     -> Core.Stringy.catenation( Array:{ expr[0], ..., expr[n] } )
     //    -> Core.Set.Maybe.attr_or_value(
-                Array:{ $expr[0], ..., $expr[n-1] }, value => $expr[n] )
+                Array:{ expr[0], ..., expr[n-1] }, value => expr[n] )
 
 Examples:
 
@@ -4961,7 +4958,7 @@ Examples:
 
     Array:[ 24, 52 ] ~ Array:[ -9 ] ~ Array:[ 0, 11, 24, 7 ]
 
-    $a // $b // 42
+    a // b // 42
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -5001,18 +4998,18 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
-    =       -> Core.Universal.is_identical( $expr[0], $expr[1] )
-    !=      -> Core.Universal.is_not_identical( $expr[0], $expr[1] )
-    nand    -> Core.Boolean.nand( $expr[0], $expr[1] )
-    nor     -> Core.Boolean.nor( $expr[0], $expr[1] )
-    |-|     -> Core.Numeric.abs_diff( $expr[0], $expr[1] )
-    compose -> Core.Relation.composition( $expr[0], $expr[1] )
+    =       -> Core.Universal.is_identical( expr[0], expr[1] )
+    !=      -> Core.Universal.is_not_identical( expr[0], expr[1] )
+    nand    -> Core.Boolean.nand( expr[0], expr[1] )
+    nor     -> Core.Boolean.nor( expr[0], expr[1] )
+    |-|     -> Core.Numeric.abs_diff( expr[0], expr[1] )
+    compose -> Core.Relation.composition( expr[0], expr[1] )
 
 Examples:
 
-    $foo = $bar
+    foo = bar
 
-    $foo ≠ $bar
+    foo ≠ bar
 
     False nand True
 
@@ -5108,55 +5105,55 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
-    isa  -> Core.Universal.is_value_of_type( $lhs, type => $rhs )
-    !isa -> Core.Universal.is_not_value_of_type( $lhs, type => $rhs )
-    as   -> Core.Universal.treated( $lhs, as => $rhs )
-    asserting -> Core.Universal.assertion( $lhs, is_true => $rhs )
+    isa  -> Core.Universal.is_value_of_type( lhs, type => rhs )
+    !isa -> Core.Universal.is_not_value_of_type( lhs, type => rhs )
+    as   -> Core.Universal.treated( lhs, as => rhs )
+    asserting -> Core.Universal.assertion( lhs, is_true => rhs )
     assuming -> sys.std.Core.Cat.curried_func_static_exten(
-                function => $lhs, args => $rhs )
-    imp  -> Core.Boolean.imp( $lhs, $rhs )
-    nimp -> Core.Boolean.nimp( $lhs, $rhs )
-    if   -> Core.Boolean.if( $lhs, $rhs )
-    nif  -> Core.Boolean.nif( $lhs, $rhs )
-    -    -> Core.Numeric.diff( minuend => $lhs, subtrahend => $rhs )
-    /    -> Core.Numeric.frac_quotient( dividend => $lhs, divisor => $rhs )
-    ^    -> Core.Numeric.power_with_whole_exp( radix => $lhs,
-                exponent => $rhs )
-    exp  -> Core.Integer.power( radix => $lhs, exponent => $rhs )
-    ~#   -> Core.Stringy.replication( $lhs, count => $rhs )
+                function => lhs, args => rhs )
+    imp  -> Core.Boolean.imp( lhs, rhs )
+    nimp -> Core.Boolean.nimp( lhs, rhs )
+    if   -> Core.Boolean.if( lhs, rhs )
+    nif  -> Core.Boolean.nif( lhs, rhs )
+    -    -> Core.Numeric.diff( minuend => lhs, subtrahend => rhs )
+    /    -> Core.Numeric.frac_quotient( dividend => lhs, divisor => rhs )
+    ^    -> Core.Numeric.power_with_whole_exp( radix => lhs,
+                exponent => rhs )
+    exp  -> Core.Integer.power( radix => lhs, exponent => rhs )
+    ~#   -> Core.Stringy.replication( lhs, count => rhs )
 
-    where  -> Core.Relation.restriction( $lhs, func => $rhs )
-    !where -> Core.Relation.cmpl_restr( $lhs, func => $rhs )
+    where  -> Core.Relation.restriction( lhs, func => rhs )
+    !where -> Core.Relation.cmpl_restr( lhs, func => rhs )
 
-    in-r   -> Core.Relation.tuple_is_member( t => $lhs, r => $rhs )
-    !in-r  -> Core.Relation.tuple_is_not_member( t => $lhs, r => $rhs )
-    r-has  -> Core.Relation.has_member( r => $lhs, t => $rhs )
-    r-!has -> Core.Relation.has_not_member( r => $lhs, t => $rhs )
-    in-s   -> Core.Set.value_is_member( value => $lhs, set => $rhs )
-    !in-s  -> Core.Set.value_is_not_member( value => $lhs, set => $rhs )
-    s-has  -> Core.Set.has_member( set => $lhs, value => $rhs )
-    s-!has -> Core.Set.has_not_member( set => $lhs, value => $rhs )
-    in-b   -> Core.Bag.value_is_member( value => $lhs, bag => $rhs )
-    !in-b  -> Core.Bag.value_is_not_member( value => $lhs, bag => $rhs )
-    b-has  -> Core.Bag.has_member( bag => $lhs, value => $rhs )
-    b-!has -> Core.Bag.has_not_member( bag => $lhs, value => $rhs )
+    in-r   -> Core.Relation.tuple_is_member( t => lhs, r => rhs )
+    !in-r  -> Core.Relation.tuple_is_not_member( t => lhs, r => rhs )
+    r-has  -> Core.Relation.has_member( r => lhs, t => rhs )
+    r-!has -> Core.Relation.has_not_member( r => lhs, t => rhs )
+    in-s   -> Core.Set.value_is_member( value => lhs, set => rhs )
+    !in-s  -> Core.Set.value_is_not_member( value => lhs, set => rhs )
+    s-has  -> Core.Set.has_member( set => lhs, value => rhs )
+    s-!has -> Core.Set.has_not_member( set => lhs, value => rhs )
+    in-b   -> Core.Bag.value_is_member( value => lhs, bag => rhs )
+    !in-b  -> Core.Bag.value_is_not_member( value => lhs, bag => rhs )
+    b-has  -> Core.Bag.has_member( bag => lhs, value => rhs )
+    b-!has -> Core.Bag.has_not_member( bag => lhs, value => rhs )
 
-    sub     -> Core.Relation.is_subset( $lhs, $rhs )
-    !sub    -> Core.Relation.is_not_subset( $lhs, $rhs )
-    super   -> Core.Relation.is_superset( $lhs, $rhs )
-    !super  -> Core.Relation.is_not_superset( $lhs, $rhs )
-    psub    -> Core.Relation.is_proper_subset( $lhs, $rhs )
-    !psub   -> Core.Relation.is_not_proper_subset( $lhs, $rhs )
-    psuper  -> Core.Relation.is_proper_superset( $lhs, $rhs )
-    !psuper -> Core.Relation.is_not_proper_superset( $lhs, $rhs )
+    sub     -> Core.Relation.is_subset( lhs, rhs )
+    !sub    -> Core.Relation.is_not_subset( lhs, rhs )
+    super   -> Core.Relation.is_superset( lhs, rhs )
+    !super  -> Core.Relation.is_not_superset( lhs, rhs )
+    psub    -> Core.Relation.is_proper_subset( lhs, rhs )
+    !psub   -> Core.Relation.is_not_proper_subset( lhs, rhs )
+    psuper  -> Core.Relation.is_proper_superset( lhs, rhs )
+    !psuper -> Core.Relation.is_not_proper_superset( lhs, rhs )
 
-    minus    -> Core.Relation.diff( source => $lhs, filter => $rhs )
-    !matching -> Core.Relation.semidiff( source => $lhs, filter => $rhs )
-    matching -> Core.Relation.semijoin( source => $lhs, filter => $rhs )
-    divideby -> Core.Relation.quotient( dividend => $lhs, divisor => $rhs )
+    minus    -> Core.Relation.diff( source => lhs, filter => rhs )
+    !matching -> Core.Relation.semidiff( source => lhs, filter => rhs )
+    matching -> Core.Relation.semijoin( source => lhs, filter => rhs )
+    divideby -> Core.Relation.quotient( dividend => lhs, divisor => rhs )
 
-    like  -> Core.Text.is_like( look_in => $lhs, look_for => $rhs )
-    !like -> Core.Text.is_not_like( look_in => $lhs, look_for => $rhs )
+    like  -> Core.Text.is_like( look_in => lhs, look_for => rhs )
+    !like -> Core.Text.is_not_like( look_in => lhs, look_for => rhs )
 
 Note that while the C<is[|_not]_like> functions also have an optional third
 parameter C<escape>, you will have to use a C<func_invo> node to exploit
@@ -5165,13 +5162,13 @@ customization; but most actual uses of like/etc don't use C<escape> anyway.
 
 Examples:
 
-    $bar isa <nlx.lib.foo_type>
+    bar isa <nlx.lib.foo_type>
 
-    $bar !isa <nlx.lib.foo_type>
+    bar !isa <nlx.lib.foo_type>
 
-    $scalar as <Int>
+    scalar as <Int>
 
-    $int asserting ($int ≠ 0)
+    int asserting (int ≠ 0)
 
     True implies False
 
@@ -5218,11 +5215,11 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
-    not -> Core.Boolean.not( $expr )
-    ||  -> Core.Numeric.abs( $expr )
-    r#  -> Core.Relation.cardinality( $expr )
-    %   -> Core.Cast.Tuple_from_Relation( $expr )
-    @   -> Core.Cast.Relation_from_Tuple( $expr )
+    not -> Core.Boolean.not( expr )
+    ||  -> Core.Numeric.abs( expr )
+    r#  -> Core.Relation.cardinality( expr )
+    %   -> Core.Cast.Tuple_from_Relation( expr )
+    @   -> Core.Cast.Relation_from_Tuple( expr )
 
 Examples:
 
@@ -5234,9 +5231,9 @@ Examples:
 
     r# Set:{ 5, -1, 2 }
 
-    % $relvar
+    % relvar
 
-    @ $tupvar
+    @ tupvar
 
 =head2 Simple Monadic Postfix Operators
 
@@ -5257,9 +5254,9 @@ C<monadic_postfix_op_invo> supplies the value of that argument.
 
 This table indicates which function is invoked by each keyword:
 
-    ++ -> Core.Ordered.Ordinal.succ( $expr )
-    -- -> Core.Ordered.Ordinal.pred( $expr )
-    i! -> Core.Integer.factorial( $expr )
+    ++ -> Core.Ordered.Ordinal.succ( expr )
+    -- -> Core.Ordered.Ordinal.pred( expr )
+    i! -> Core.Integer.factorial( expr )
 
 Examples:
 
@@ -5411,120 +5408,120 @@ arguments, which are associated in the appropriate sequence.
 
 This table indicates which function is invoked by each format-keyword:
 
-    .${} -> Core.Scalar.attr( $expr, possrep => $possrep_name,
-                name => $attr_name )
-    .%{} -> Core.Tuple.attr( $expr, name => $attr_name )
+    .${} -> Core.Scalar.attr( expr, possrep => possrep_name,
+                name => attr_name )
+    .%{} -> Core.Tuple.attr( expr, name => attr_name )
 
-    %{<-} -> Core.Tuple.rename( $expr,
+    %{<-} -> Core.Tuple.rename( expr,
                 map => Relation:{
-                    { after => $atnm_after[0], before => $atnm_before[0] },
+                    { after => atnm_after[0], before => atnm_before[0] },
                     ...,
-                    { after => $atnm_after[n], before => $atnm_before[n] },
+                    { after => atnm_after[n], before => atnm_before[n] },
                 } )
-    @{<-} -> Core.Relation.rename( $expr,
+    @{<-} -> Core.Relation.rename( expr,
                 map => Relation:{
-                    { after => $atnm_after[0], before => $atnm_before[0] },
+                    { after => atnm_after[0], before => atnm_before[0] },
                     ...,
-                    { after => $atnm_after[n], before => $atnm_before[n] },
+                    { after => atnm_after[n], before => atnm_before[n] },
                 } )
 
-    ${}  -> Core.Scalar.projection( $expr, possrep => $possrep_name,
-                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
-    %{}  -> Core.Tuple.projection( $expr,
-                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
-    @{}  -> Core.Relation.projection( $expr,
-                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
-    ${!} -> Core.Scalar.cmpl_proj( $expr, possrep => $possrep_name,
-                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
-    %{!} -> Core.Tuple.cmpl_proj( $expr,
-                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
-    @{!} -> Core.Relation.cmpl_proj( $expr,
-                attr_names => Set:{ $pcf_atnms[0], ..., $pcf_atnms[n] } )
+    ${}  -> Core.Scalar.projection( expr, possrep => possrep_name,
+                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+    %{}  -> Core.Tuple.projection( expr,
+                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+    @{}  -> Core.Relation.projection( expr,
+                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+    ${!} -> Core.Scalar.cmpl_proj( expr, possrep => possrep_name,
+                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+    %{!} -> Core.Tuple.cmpl_proj( expr,
+                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+    @{!} -> Core.Relation.cmpl_proj( expr,
+                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
 
-    %{%<-}  -> Core.Tuple.wrap( $expr, outer => $outer_atnm,
-                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] } )
-    @{%<-}  -> Core.Relation.wrap( $expr, outer => $outer_atnm,
-                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] } )
-    %{%<-!} -> Core.Tuple.cmpl_wrap( $expr, outer => $outer_atnm,
-                   cmpl_inner => Set:{ $cmpl_inner_atnms[0], ... } )
-    @{%<-!} -> Core.Relation.cmpl_wrap( $expr, outer => $outer_atnm,
-                   cmpl_inner => Set:{ $cmpl_inner_atnms[0], ... } )
-    %{<-%}  -> Core.Tuple.unwrap( $expr,
-                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] },
-                   outer => $outer_atnm )
-    @{<-%}  -> Core.Relation.unwrap( $expr,
-                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] },
-                   outer => $outer_atnm )
+    %{%<-}  -> Core.Tuple.wrap( expr, outer => outer_atnm,
+                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] } )
+    @{%<-}  -> Core.Relation.wrap( expr, outer => outer_atnm,
+                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] } )
+    %{%<-!} -> Core.Tuple.cmpl_wrap( expr, outer => outer_atnm,
+                   cmpl_inner => Set:{ cmpl_inner_atnms[0], ... } )
+    @{%<-!} -> Core.Relation.cmpl_wrap( expr, outer => outer_atnm,
+                   cmpl_inner => Set:{ cmpl_inner_atnms[0], ... } )
+    %{<-%}  -> Core.Tuple.unwrap( expr,
+                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] },
+                   outer => outer_atnm )
+    @{<-%}  -> Core.Relation.unwrap( expr,
+                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] },
+                   outer => outer_atnm )
 
-    @{@<-}  -> Core.Relation.group( $expr, outer => $outer_atnm,
-                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] } )
-    @{@<-!} -> Core.Relation.cmpl_group( $expr, outer => $outer_atnm,
-                   group_per => Set:{ $cmpl_inner_atnms[0], ... } )
-    @{<-@}  -> Core.Relation.ungroup( $expr,
-                   inner => Set:{ $inner_atnms[0], ..., $inner_atnms[n] },
-                   outer => $outer_atnm )
+    @{@<-}  -> Core.Relation.group( expr, outer => outer_atnm,
+                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] } )
+    @{@<-!} -> Core.Relation.cmpl_group( expr, outer => outer_atnm,
+                   group_per => Set:{ cmpl_inner_atnms[0], ... } )
+    @{<-@}  -> Core.Relation.ungroup( expr,
+                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] },
+                   outer => outer_atnm )
 
-    @{#@<-!} -> Core.Relation.cardinality_per_group( $expr,
-                   count_attr_name => $count_atnm,
-                   group_per => Set:{ $cmpl_inner_atnms[0], ... } )
+    @{#@<-!} -> Core.Relation.cardinality_per_group( expr,
+                   count_attr_name => count_atnm,
+                   group_per => Set:{ cmpl_inner_atnms[0], ... } )
 
-    .{} -> Core.Set.Maybe.attr( $expr )
+    .{} -> Core.Set.Maybe.attr( expr )
 
-    .[] -> Core.Array.value( $expr, =>$index )
-    []  -> Core.Array.slice( $expr, index_interval => SPInterval:{
-                $min_index $interval_boundary_kind $max_index } )
+    .[] -> Core.Array.value( expr, =>index )
+    []  -> Core.Array.slice( expr, index_interval => SPInterval:{
+                min_index interval_boundary_kind max_index } )
 
 Examples:
 
-    $birthday.${date;day}
+    birthday.${date;day}
 
-    $pt.%{city}
+    pt.%{city}
 
-    $pt%{pnum<-pno, locale<-city}
+    pt%{pnum<-pno, locale<-city}
 
-    $pr@{pnum<-pno, locale<-city}
+    pr@{pnum<-pno, locale<-city}
 
-    $birthday${date;year,month}
+    birthday${date;year,month}
 
-    $pt%{color,city}
+    pt%{color,city}
 
-    $pr@{color,city}
+    pr@{color,city}
 
-    $pt%{}  # null projection #
+    pt%{}  # null projection #
 
-    $pr@{}  # null projection #
+    pr@{}  # null projection #
 
-    $rnd_rule${!round_meth}  # radix,min_exp #
+    rnd_rule${!round_meth}  # radix,min_exp #
 
-    $pt%{!pno,pname,weight}
+    pt%{!pno,pname,weight}
 
-    $pr@{!pno,pname,weight}
+    pr@{!pno,pname,weight}
 
-    $person%{%name <- fname,lname}
+    person%{%name <- fname,lname}
 
-    $people@{%name <- fname,lname}
+    people@{%name <- fname,lname}
 
-    $person%{%all_but_name <- !fname,lname}
+    person%{%all_but_name <- !fname,lname}
 
-    $people@{%all_but_name <- !fname,lname}
+    people@{%all_but_name <- !fname,lname}
 
-    $person%{fname,lname <- %name}
+    person%{fname,lname <- %name}
 
-    $people@{fname,lname <- %name}
+    people@{fname,lname <- %name}
 
-    $orders@{@vendors <- vendor}
+    orders@{@vendors <- vendor}
 
-    $orders@{@all_but_vendors <- !vendor}
+    orders@{@all_but_vendors <- !vendor}
 
-    $orders@{vendor <- @vendors}
+    orders@{vendor <- @vendors}
 
-    $people@{#@count_per_age_ctry <- !age,ctry}
+    people@{#@count_per_age_ctry <- !age,ctry}
 
-    $maybe_foo.{}
+    maybe_foo.{}
 
-    $ary.[3]
+    ary.[3]
 
-    $ary[10..14]
+    ary[10..14]
 
 =head2 Numeric Operators That Do Rounding
 
@@ -5581,17 +5578,17 @@ appropriate sequence.
 
 This table indicates which function is invoked by each keyword:
 
-    div -> Core.Numeric.whole_quotient( dividend => $lhs, divisor => $rhs,
-                =>$round_meth )
-    mod -> Core.Numeric.remainder( dividend => $lhs, divisor => $rhs,
-                =>$round_meth )
+    div -> Core.Numeric.whole_quotient( dividend => lhs, divisor => rhs,
+                =>round_meth )
+    mod -> Core.Numeric.remainder( dividend => lhs, divisor => rhs,
+                =>round_meth )
 
-          -> Core.Rational.round( $expr, =>$round_rule )
-    **    -> Core.Rational.power( radix => $lhs, exponent => $rhs,
-                =>$round_rule )
-    log   -> Core.Rational.log( $lhs, radix => $rhs, =>$round_rule )
-    e**   -> Core.Rational.natural_power( $expr, =>$round_rule )
-    log-e -> Core.Rational.natural_log( $expr, =>$round_rule )
+          -> Core.Rational.round( expr, =>round_rule )
+    **    -> Core.Rational.power( radix => lhs, exponent => rhs,
+                =>round_rule )
+    log   -> Core.Rational.log( lhs, radix => rhs, =>round_rule )
+    e**   -> Core.Rational.natural_power( expr, =>round_rule )
+    log-e -> Core.Rational.natural_log( expr, =>round_rule )
 
 Examples:
 
@@ -5599,7 +5596,7 @@ Examples:
 
     5 mod 3 round ToZero
 
-    $foo round RatRoundRule:[10,-2,HalfEven]
+    foo round RatRoundRule:[10,-2,HalfEven]
 
     2.0 ** 0.5 round RatRoundRule:[2,-7,ToZero]
 
@@ -5682,45 +5679,45 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
-    <=> -> Core.Ordered.order( $lhs, $rhs )
+    <=> -> Core.Ordered.order( lhs, rhs )
 
-    min -> Core.Ordered.min( Set:{ $expr[0], ..., $expr[n] } )
-    max -> Core.Ordered.max( Set:{ $expr[0], ..., $expr[n] } )
+    min -> Core.Ordered.min( Set:{ expr[0], ..., expr[n] } )
+    max -> Core.Ordered.max( Set:{ expr[0], ..., expr[n] } )
 
-    <      -> Core.Ordered.is_before( $lhs, $rhs )
-    >      -> Core.Ordered.is_after( $lhs, $rhs )
-    <=     -> Core.Ordered.is_before_or_same( $lhs, $rhs )
-    >=     -> Core.Ordered.is_after_or_same( $lhs, $rhs )
-    in-i   -> Core.Interval.value_is_member( value => $lhs,
-                interval => $rhs )
-    !in-i  -> Core.Interval.value_is_not_member( value => $lhs,
-                interval => $rhs )
-    i-has  -> Core.Interval.has_member( interval => $lhs, value => $rhs )
-    i-!has -> Core.Interval.has_not_member( interval => $lhs,
-                value => $rhs )
+    <      -> Core.Ordered.is_before( lhs, rhs )
+    >      -> Core.Ordered.is_after( lhs, rhs )
+    <=     -> Core.Ordered.is_before_or_same( lhs, rhs )
+    >=     -> Core.Ordered.is_after_or_same( lhs, rhs )
+    in-i   -> Core.Interval.value_is_member( value => lhs,
+                interval => rhs )
+    !in-i  -> Core.Interval.value_is_not_member( value => lhs,
+                interval => rhs )
+    i-has  -> Core.Interval.has_member( interval => lhs, value => rhs )
+    i-!has -> Core.Interval.has_not_member( interval => lhs,
+                value => rhs )
 
 Details regarding the extra op args is pending.  But most of the time you
 wouldn't be using them, so just the main args represents typical usage.
 
 Examples (for now sans any use of extra op args, which are atypical):
 
-    $foo <=> $bar
+    foo <=> bar
 
-    $a min $b min $c
+    a min b min c
 
-    $a max $b max $c
+    a max b max c
 
-    $foo < $bar
+    foo < bar
 
-    $foo > $bar
+    foo > bar
 
-    $foo ≤ $bar
+    foo ≤ bar
 
-    $foo ≥ $bar
+    foo ≥ bar
 
-    $a ∈i SPInterval:{1..5}
+    a ∈i SPInterval:{1..5}
 
-    $foo ∉i SPInterval:{$min..^$max}
+    foo ∉i SPInterval:{min..^max}
 
 =head1 IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS
 
@@ -5804,14 +5801,14 @@ argument and takes its result.
 
 This table indicates which imperative routine is invoked by each keyword:
 
-    :=++ -> Core.Ordered.Ordinal.assign_succ( $var_name )
-    :=-- -> Core.Ordered.Ordinal.assign_pred( $var_name )
+    :=++ -> Core.Ordered.Ordinal.assign_succ( var_name )
+    :=-- -> Core.Ordered.Ordinal.assign_pred( var_name )
 
 Examples:
 
-    $counter :=++
+    counter :=++
 
-    $countdown :=--
+    countdown :=--
 
 =head2 Imperative Simple Non-symmetric Dyadic Infix Operators
 
@@ -5866,23 +5863,23 @@ Some of the keywords are aliases for each other:
 
 This table indicates which imperative routine is invoked by each keyword:
 
-    :=          -> Core.Universal.assign( &$lhs_var, $rhs_expr )
-    :=union     -> Core.Relation.assign_union( &$lhs_var, $rhs_expr )
-    :=where     -> Core.Relation.assign_restriction( &$lhs_var, $rhs_expr )
-    :=!where    -> Core.Relation.assign_cmpl_restr( &$lhs_var, $rhs_expr )
-    :=intersect -> Core.Relation.assign_intersection( &$lhs_var,$rhs_expr )
-    :=minus     -> Core.Relation.assign_diff( &$lhs_var, $rhs_expr )
-    :=!matching -> Core.Relation.assign_semidiff( &$lhs_var, $rhs_expr )
-    :=matching  -> Core.Relation.assign_semijoin( &$lhs_var, $rhs_expr )
-    :=exclude   -> Core.Relation.assign_exclusion( &$lhs_var, $rhs_expr )
+    :=          -> Core.Universal.assign( &lhs_var, rhs_expr )
+    :=union     -> Core.Relation.assign_union( &lhs_var, rhs_expr )
+    :=where     -> Core.Relation.assign_restriction( &lhs_var, rhs_expr )
+    :=!where    -> Core.Relation.assign_cmpl_restr( &lhs_var, rhs_expr )
+    :=intersect -> Core.Relation.assign_intersection( &lhs_var,rhs_expr )
+    :=minus     -> Core.Relation.assign_diff( &lhs_var, rhs_expr )
+    :=!matching -> Core.Relation.assign_semidiff( &lhs_var, rhs_expr )
+    :=matching  -> Core.Relation.assign_semijoin( &lhs_var, rhs_expr )
+    :=exclude   -> Core.Relation.assign_exclusion( &lhs_var, rhs_expr )
 
 Examples:
 
-    # assign 3 to $foo #
-    $foo := 3
+    # assign 3 to foo #
+    foo := 3
 
-    # delete every person in $people whose age is either 10 or 20 #
-    $people :=!matching Relation:{ { age => 10 }, { age => 20 } }
+    # delete every person in people whose age is either 10 or 20 #
+    people :=!matching Relation:{ { age => 10 }, { age => 20 } }
 
 =head1 RESOLVING AMBIGUITY
 
@@ -5963,16 +5960,16 @@ and C<< <compare_reduce_op_invo> >>.  These are left-associative.
 =item B<Conditional>
 
 Every C<< <if_else_expr> >> and C<< <given_when_def_expr> >>.  The C<??!!>
-form is right-associative, meaning that C<$a ?? $b !! $c ?? $d !! $e> will
-parse as C<$a ?? $b !! ($c ?? $d !! $e)> (like most languages) and not as
-C<($a ?? $b !! $c) ?? $d !! $e> (like PHP).  The C<if-then-else> and
+form is right-associative, meaning that C<a ?? b !! c ?? d !! e> will
+parse as C<a ?? b !! (c ?? d !! e)> (like most languages) and not as
+C<(a ?? b !! c) ?? d !! e> (like PHP).  The C<if-then-else> and
 C<given-when-default> forms are unambiguous for associativity.
 
 =item B<Naming>
 
 Every C<< <named_expr> >>, that is, associating an explicit name with an
 expression node/tree.  These are right-associative, meaning that given a
-C<$a ::= $b ::= 5>, the expression node of value C<5> has the name C<b> and
+C<a ::= b ::= 5>, the expression node of value C<5> has the name C<b> and
 another, alias node for C<b> has the name C<a>.
 
 =back
