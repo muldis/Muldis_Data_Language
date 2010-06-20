@@ -41,26 +41,6 @@ implementations over multiple SQL DBMSs.  Curr est end 2010 or early 2011.
 
 ----------
 
-* Eliminate the mnemonic that "$" means "data".  In PTMD_STD.pod, remove
-the "data sigil", so now all lexical entities (vars, params, exprs, attrs)
-don't have the sigil and are ostensibly barewords.  This means a potential
-conflict with some language keywords, but that can be worked around by
-using the double-quoted form of the lexical entity names.  In the 2
-Perl-STD, find some other node kind name for expr_name nodes than "$", such
-as "d" (data) or "e" (expr); this also means the Perl 6 form can now be
-:d<foo> or :e<foo> rather
-than having to be ['$','foo'].  Similar with "$." or whatever its called.
-Also eliminate the "|" sigil for named statement nodes, as they should also
-function without trouble as barewords; the stmt_name nodes can use "s"
-(statement) rather than "|" perhaps, and Perl 6 is :s<foo> etc.  These
-changes then help to free up "$" and "|" for other possible syntactical
-uses.  Also rename the tokens for "&" and ">" so they don't say "cosigil"
-and look for any other tokens whose names have "sigil" and rename them.
-Also take inspiration from these changes and make other improving changes.
-Don't forget to look for other things impacted by this chg, consequences.
-
-----------
-
 * In all 3 STD.pod, add code examples for each of these 4 material kinds:
 scalar-type, domain-type, subset-type, mixin-type.
 
@@ -321,7 +301,7 @@ Tutorial D language has, and a one() op that is between any() and none().
 Maybe some pure boolean ops can be added analogous to the above also; eg
 any() an alias for or() and all() an alias for and().
 is_(any|all|one|none|notall|etc)_of_(restr|semijoin|semidiff|etc)
-$source is any|etc matching|where|etc $filter|etc
+source is any|etc matching|where|etc filter|etc
 ADD RELATIONAL OPERATORS THAT COMBINE BOOL OPS ADDED IN 0.80.0 WITH
 RELATIONAL MAP/RESTRICTION/ETC AND ... The new functions are modelled after
 some in Perl 5's List::MoreUtils module.
@@ -379,15 +359,15 @@ plug into DBI or whatever, without the explicit framing.  May not work
 anywhere, but should help where it does.  Maybe use $$foo rather than $foo
 to indicate that the 'foo' wasn't explicitly declared in the current
 lexical scope and we are referring to the caller or a bind variable.  Or
-rather than $$foo, have something like "(param $foo : Bar)" for an
+rather than $$foo, have something like "(param foo : Bar)" for an
 expression-inline parameter definition and use, where the part after the
 "param" has all the same syntax as an actual param list; this is the one
 for host language bind parameters.  Actually that might be useful by
-itself.  Similarly "(caller $foo)" would be the look to parent Muldis D
+itself.  Similarly "(caller foo)" would be the look to parent Muldis D
 lexical scope, or $$foo would just do that maybe, unless this should have
 an explicit type declaration still.  Note, if same inline-declared host
-param used more than once, you just need "(param $foo : Bar)" form once and
-other uses can just say $foo as per usual; in fact, it must be this way.
+param used more than once, you just need "(param foo : Bar)" form once and
+other uses can just say foo as per usual; in fact, it must be this way.
 
 * Consider in PTMD_STD using a token similar to the Perl 6 "<ws>" concept
 of something that is treated as insignificant whitespace as
@@ -458,9 +438,9 @@ such that "Enum" is the immutable "Pair" and "EnumMap" was renamed from
 "Mapping", and "FatRat" is now the "Rat" of unlimited size, etc.
 
 * Consider using postcircumfix syntax for extracting single relation
-attrs into Set or Bag etc, meaning wrap_attr; eg "$r.@S{a}", "$r.@B{a}".
+attrs into Set or Bag etc, meaning wrap_attr; eg "r.@S{a}", "r.@B{a}".
 Now that might not work for Array extraction, unless done like
-"($r.@A{a} ordered ...)" or some such, which isn't pure postcircumfix,
+"(r.@A{a} ordered ...)" or some such, which isn't pure postcircumfix,
 but that may be for the best anyway.
 
 * Consider adding concrete syntax that is shorthand for multiple
@@ -468,26 +448,26 @@ single-attribute extractions where each goes to a separate named expression
 node (or variable) but the source is a single collection-typed expr/var.
 Or the source could be a multiplicity as well, or mix and match.
 The idea here is to replicate some common idioms in Perl such as
-"($x, $y) = @xy[0,1]" or "($x, $y) = %xy{'x','y'}", this being more useful
+"(x, y) = @xy[0,1]" or "(x, y) = %xy{'x','y'}", this being more useful
 when the source is an anonymous arbitrary expression.
 Proposed syntax is that, on each side of the "::=" or ":=", the source and
 target lists are bounded in square brackets, indicating named items assign
 in order, and syntax for collections supplying/taking multiple items are
 ident to single-attr accessors (having a ".") but that a list is in the
-braces/brackets; for example: "[$x, $y] ::= [3, 4]",
-"[$a, $b] ::= $t.%{a,b}", "[$c, $d] ::= $ary.[3,5]".  This syntax would
+braces/brackets; for example: "[x, y] ::= [3, 4]",
+"[a, b] ::= t.%{a,b}", "[c, d] ::= ary.[3,5]".  This syntax would
 resolve into multiple single-attr accessors when app in system catalog.
 
 * In PTMD_STD, consider loosening the grammar regarding some of the normal
 prefix or postfix or infix operators so that rather than mandating
 whitespace be present between the operators and their arguments, the
 whitespace is optional where it wouldn't cause a problem.  On the other
-hand, is "! $foo" really such a problem?  People might often write "not
-$foo" there anyway as that is a preferred form for boolean ops.  In
-particular, while someone may want to write say "$foo++" or "$foo--", the
+hand, is "! foo" really such a problem?  People might often write "not
+foo" there anyway as that is a preferred form for boolean ops.  In
+particular, while someone may want to write say "foo++" or "foo--", the
 latter is problematic since "-" are allowed in bareword identifiers and
 that could mis-parse, and someone would probably prefer to then write
-[$foo --] rather than [$"foo"--] anyway.
+[foo --] rather than ["foo"--] anyway.
 
 ----------
 
@@ -550,10 +530,10 @@ value or object as its payload; this is treated completely as a black box
 in general within the Muldis D implementation.  For matters of identity
 within the Muldis D envirnment, it works as follows:  Under Perl 6, the
 Perl value's .WHICH result determines its identity.  Under Perl 5, if the
-value is a Perl ref ('ref $obj' returns true) then its memory address is
+value is a Perl ref ('ref obj' returns true) then its memory address is
 used, and this applies to all objects also (since all refs are mutable,
-this seems to be the safest bet); otherwise ('ref $obj' is false) then the
-value's result in a string context, "$obj", is used as the identity; the
+this seems to be the safest bet); otherwise ('ref obj' is false) then the
+value's result in a string context, "obj", is used as the identity; the
 mem addr and stringification would both be prefixed with some constant to
 distinguish the 2 that might stringify the same.  By default, an
 External supports no operators but is/not_identical.
