@@ -1217,7 +1217,7 @@ homogeneous relation type.  A I<deeply homogeneous scalar type> is a
 I<scalar type> whose values are all deeply homogeneous scalar values.
 
 And so, the 10 system-defined enumeration types [C<DHTuple>, C<Database>,
-C<DHRelation>, C<DHSet>, C<DHMaybe>, C<DHSingle>, C<DHArray>, C<DHBag>,
+C<DHRelation>, C<DHSet>, C<DHMaybe>, C<DHJust>, C<DHArray>, C<DHBag>,
 C<DH[S|M]PInterval>] are
 actually not deeply homogeneous nonscalar types like their namesakes at
 all, but they are all nonscalar types; no deeply homogeneous types could
@@ -3416,7 +3416,7 @@ proxying feature can I<not> be used to reference a subdepot or depot itself
 whose name is the empty string, for hopefully obvious reasons.
 
 Iff a depot or subdepot has a self-local dbvar (specifically, iff the
-former's C<fed.cat.mydb.data> is a C<Single>), then the
+former's C<fed.cat.mydb.data> is a C<Just>), then the
 recommended convention is that the declared type of said dbvar is defined
 by a type immediately contained in said depot/subdepot whose declared name
 is the empty string.  (This also means that C<fed.lib.mydb> alone will
@@ -3473,7 +3473,7 @@ I<not> have a self-local dbvar; this means by default the depot is just a
 repository for code, able to contain only types and routines, and that
 depot's C<nlx.data> doesn't exist at all.  Later on, if a depot's catalog
 is updated to say that the depot I<does> have a self-local dbvar, which is
-accomplished by setting that depot's C<nlx.cat.data> to a C<Single> value
+accomplished by setting that depot's C<nlx.cat.data> to a C<Just> value
 that names the declared database type of that depot's C<nlx.data>;
 typically said named type is a material also added to the depot's root
 namespace, which typically has the empty string entity declaration name.
@@ -3502,7 +3502,7 @@ below as, strictly speaking, some database values can't be in C<nlx.data>.
 
 If a depot has any subdepots, then for each subdepot, iff the subdepot has
 a self-local dbvar, that is iff the subdepot's C<nlx.cat.data> is a
-C<Single>, then the value of C<fed.data.mydb> must have a corresponding
+C<Just>, then the value of C<fed.data.mydb> must have a corresponding
 database-typed attribute that matches by name, recursively.  For example,
 if a depot mounted as C<mydb> has a root-child subdepot named C<foo> and a
 child subdepot of that named C<bar>, and C<bar> expects to have a
@@ -3620,7 +3620,7 @@ the effect of implicitly declaring simple nonscalar collection
 types over that type; but these implicit extra types only appear when you
 attempt to use them, in the form of adding yet another syntax element to
 all of the aforementioned forms, which is
-C<[.[|dh_][set|maybe|single|array|bag|[s|m]p_interval]_of]**0..*>;
+C<[.[|dh_][set|maybe|just|array|bag|[s|m]p_interval]_of]**0..*>;
 this C<of> element takes the same position as the C<from> element in the
 syntax, just after the C<type> (which likewise you add if you didn't
 already have it); or they can both be used together in which case all the

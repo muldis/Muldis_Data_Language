@@ -893,7 +893,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | Database
         | DH? Relation
         | DH? Set
-        | DH? [Maybe | Single]
+        | DH? [Maybe | Just]
         | DH? Array
         | DH? Bag
         | DH? SPInterval
@@ -1612,7 +1612,7 @@ referenced using the C<type> namespace prefix feature described in
 L<Muldis::D::Basics/Referencing Data Types>.  In such a context, when the
 namespace prefix contains either of the optional chain elements
 C<[|dh_]tuple_from> or
-C<[|dh_][set|maybe|single|array|bag|[s|m]p_interval]_of>, programmers may
+C<[|dh_][set|maybe|just|array|bag|[s|m]p_interval]_of>, programmers may
 omit the single prefix-leading C<type> chain element.  So for example, one
 can just write C<array_of.Rat> rather than C<type.array_of.Rat>, or
 C<tuple_from.var.nlx.myrelvar> rather than
@@ -2109,7 +2109,7 @@ Examples:
 Grammar:
 
     <Maybe> ::=
-        DH? [Maybe | Single] ':' <unspace>
+        DH? [Maybe | Just] ':' <unspace>
         [<type_name> ':' <unspace>]?
         <Maybe_payload>
 
@@ -2134,7 +2134,7 @@ Iff the C<Maybe_payload> is a C<maybe_list> then it defines either zero or
 one C<expr>; in the case of one, the C<expr> defines the unary tuple of the
 new maybe, which is a 'single'; the C<expr> defines the C<value> attribute
 of the tuple.  If the C<value_kind> of a C<value> node is C<DHMaybe> or
-C<[|DH]Single> rather than C<Maybe>, then the C<value> node is further
+C<[|DH]Just> rather than C<Maybe>, then the C<value> node is further
 restricted, either to having only deeply homogeneous resulting C<expr> or
 to having exactly one C<expr>, as appropriate.
 
@@ -4072,7 +4072,7 @@ Examples:
 
     if is_empty(ary) then empty_result else ary.[0]
 
-    if x = ∅ or y = ∅ then ∅ else Maybe:{x.{} + y.{} exp 3}
+    if x = ∅ or y = ∅ then ∅ else Just:{x.{} + y.{} exp 3}
 
     if val isa <Int> then val exp 3
         else if val isa <Text> then val ~# 5

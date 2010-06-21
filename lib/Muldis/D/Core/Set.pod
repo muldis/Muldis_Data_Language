@@ -151,20 +151,20 @@ This C<named-value> selector function results in the only zero-tuple Maybe
 value, which is known by the special name C<Maybe:Nothing>, aka C<Nothing>,
 aka I<empty set> aka C<∅>.
 
-=head2 sys.std.Core.Set.Maybe.single
+=head2 sys.std.Core.Set.Maybe.just
 
-C<< function single (Single <-- value : Universal) {...} >>
+C<< function just (Just <-- value : Universal) {...} >>
 
 This selector function results in the Maybe value with a single tuple
 whose C<value> attribute's value is the C<value> argument.
 
 =head2 sys.std.Core.Set.Maybe.attr
 
-C<< function attr (Universal <-- topic : Single) {...} >>
+C<< function attr (Universal <-- topic : Just) {...} >>
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of its argument, which always exists when the
-argument is a C<Single>.  Note that this operation is also known as C<.{}>.
+argument is a C<Just>.  Note that this operation is also known as C<.{}>.
 
 =head2 sys.std.Core.Set.Maybe.attr_or_default
 
@@ -196,20 +196,20 @@ this function is analogous to the N-adic SQL COALESCE function.
 =head2 sys.std.Core.Set.Maybe.order
 
 C<< function order (Order <-- topic : Maybe,
-other : Maybe, S_ord_func? : OrdDetCFuncNC, S_is_reverse_order? : Bool,
-N_is_after_all_S : Bool, is_reverse_order? : Bool) {...} >>
+other : Maybe, J_ord_func? : OrdDetCFuncNC, J_is_reverse_order? : Bool,
+N_is_after_all_J : Bool, is_reverse_order? : Bool) {...} >>
 
 This function is a generic (total) C<order-determination> function for
 C<Maybe> values.  Iff both of its C<topic> and C<other> arguments are
 identical, this function results in C<Order:Same>.  Otherwise, iff both of
-those 2 arguments are C<Single> values, then the result of this function
+those 2 arguments are C<Just> values, then the result of this function
 is the result of applying to those 2 arguments the (total)
-C<order-determination> function given in its C<S_ord_func> argument, as
-curried by its C<S_is_reverse_order> argument; to be specific, the
+C<order-determination> function given in its C<J_ord_func> argument, as
+curried by its C<J_is_reverse_order> argument; to be specific, the
 C<order-determination> function takes the attribute values of C<topic> and
-C<other>, not the whole C<Single> values.  Otherwise, iff C<topic> is
+C<other>, not the whole C<Just> values.  Otherwise, iff C<topic> is
 C<Nothing>, this function results in C<Order:Increase> or C<Order:Decrease>
-respectively when C<N_is_after_all_S> is C<Bool:False> (the default) or
+respectively when C<N_is_after_all_J> is C<Bool:False> (the default) or
 C<Bool:True>.  Otherwise (iff C<other> is C<Nothing>), this function
 results in the reverse of when only C<topic> is C<Nothing>.  The
 C<is_reverse_order> argument is applied to the result of this function
@@ -217,8 +217,8 @@ I<after> all of the other arguments are applied; if it is C<Bool:False>, it
 does not change the result; if it is C<Bool:True>, then it reverses the
 result.  In situations where a C<Maybe> is used analogously to a SQL
 nullable value and this function is analogous to the dyadic comparison
-underlying a SQL "ORDER BY", then C<S_is_reverse_order> designates SQL's
-"ASC|DESC" and C<N_is_after_all_S> designates SQL's "NULLS FIRST|LAST".
+underlying a SQL "ORDER BY", then C<J_is_reverse_order> designates SQL's
+"ASC|DESC" and C<N_is_after_all_J> designates SQL's "NULLS FIRST|LAST".
 
 =head1 SEE ALSO
 
