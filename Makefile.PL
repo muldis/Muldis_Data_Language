@@ -12,7 +12,7 @@ sub OPTIONAL {
 
 WriteMakefile(
    NAME => 'Muldis::D',
-   VERSION => '0.131.0',
+   VERSION => '0.132.0',
    ABSTRACT => 'Formal spec of Muldis D relational DBMS lang',
    AUTHOR => 'Darren Duncan <darren@DarrenDuncan.net>',
    PREREQ_PM => {},
@@ -20,7 +20,7 @@ WriteMakefile(
       MIN_PERL_VERSION => '5.006',
    ),
    OPTIONAL( '6.31',
-      LICENSE => 'gpl',
+      LICENSE => 'gpl_3',
    ),
    OPTIONAL( '6.46',
       META_ADD => {
