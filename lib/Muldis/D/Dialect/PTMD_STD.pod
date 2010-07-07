@@ -131,7 +131,8 @@ grammar itself; rather, whitespace rules in the grammar are spelled out
 explicitly such as with C<< <ws>? >> (optional whitespace) and C<< <ws> >>
 (mandatory whitespace) and C<< <unspace> >> (nothing at all may go here
 except a pair of backslashes (C<\>) surrounding an optional run of
-whitespace, which would be stripped).  4. The meanings
+whitespace, which would be stripped) and C<< <splitter> >> (same as C<<
+<unspace> >> but that surrounded whitespace is mandatory.  4. The meanings
 of C<< <ws> >> and C<< <unspace> >> are explicitly defined in this file's
 grammar and do not match the C<< <ws> >> and C<< <unspace> >> that are
 defined by Perl 6; this file's versions are simpler for one thing.
@@ -194,7 +195,7 @@ Grammar:
 
     <quoted_ln_elem_str> ::=
         '"'
-            [<[\ ..~]-[\\"]> | '\b'|'\a'|'\q'|'\g'|'\h'|'\s' | <unspace>]+
+            [<[\ ..~]-[\\"]> | '\b'|'\a'|'\q'|'\g'|'\h'|'\s' | <splitter>]+
         '"'
 
     <ln_extensions> ::=
@@ -1166,7 +1167,7 @@ Grammar:
         <[ 1..9 A..Z ]>
 
     <pint_tail> ::=
-        [[_?<[ 0..9 A..Z ]>+]+] ** <unspace>
+        [[_?<[ 0..9 A..Z ]>+]+] ** <splitter>
 
     <d_int_body> ::=
         0 | '-'?<d_pint_body>
@@ -1181,7 +1182,7 @@ Grammar:
         <[ 1..9 ]>
 
     <d_pint_tail> ::=
-        [[_?<[ 0..9 ]>+]+] ** <unspace>
+        [[_?<[ 0..9 ]>+]+] ** <splitter>
 
 An C<Int> node represents an integer numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Int> value as follows:
@@ -1203,11 +1204,11 @@ number in [10..35].  A I<body> may optionally contain underscore characters
 (C<_>), which exist just to help with visual formatting, such as for
 C<10_000_000>, and these are ignored/stripped by the parser.  A I<body> may
 optionally be split into 1..N segments where each pair of consecutive
-segments is separated by an I<unspace> token, which is a
+segments is separated by a I<splitter> token, which is a
 pair of backslashes (C<\>) surrounding
-an optional run of whitespace; this segmenting ability is provided to
+a run of whitespace; this segmenting ability is provided to
 support code that contains very long numeric literals while still being
-well formatted (no extra long lines); the I<unspace> tokens are also
+well formatted (no extra long lines); the I<splitter> tokens are also
 ignored/stripped by the parser, and the I<body> is interpreted as if all
 its alphanumeric characters were contiguous.
 
@@ -1332,7 +1333,7 @@ Grammar:
 
     <blob_body> ::=
         '\''
-            [<[ 0..9 A..F ]> | <unspace>]*
+            [<[ 0..9 A..F ]> | <splitter>]*
         '\''
 
 A C<Blob> node represents a general purpose bit string.  It is interpreted
@@ -1372,7 +1373,7 @@ Grammar:
 
     <Text_payload> ::=
         '\''
-            [<-[\\\'\t\n\f\r]> | <escaped_char> | <unspace>]*
+            [<-[\\\'\t\n\f\r]> | <escaped_char> | <splitter>]*
         '\''
 
     <escaped_char> ::=
@@ -1386,6 +1387,9 @@ Grammar:
           ] '>'
 
     <unspace> ::=
+        '\\' <ws>? '\\'
+
+    <splitter> ::=
         '\\' <ws> '\\'
 
     <ws> ::=
@@ -1398,11 +1402,11 @@ The C<Text_payload> is interpreted generally as is usual for a programming
 language with such a delimited character string literal.
 
 A C<Text_payload> may optionally be split into 1..N segments where each
-pair of consecutive segments is separated by an I<unspace> token, which is
-a pair of backslashes (C<\>) surrounding an optional run of whitespace;
-this segmenting
-ability is provided to support code that contains long value literals while
-still being well formatted (no extra long lines); the I<unspace> tokens are
+pair of consecutive segments is separated by a I<splitter> token, which is
+a pair of backslashes (C<\>) surrounding a run of whitespace; this
+segmenting ability is provided to support code that contains long value
+literals while still being well formatted (no extra long lines); the
+I<splitter> tokens are
 ignored/stripped by the parser, and the C<Text_payload> is interpreted as
 if it just consisted of the rest of the delimited string contiguously.
 
@@ -1443,8 +1447,8 @@ character string from its surrounding code.
 
 Another design decision of PTMD_STD that is distinct at least from Perl is
 that non-"space" whitespace characters in character string literals must
-never appear literally (except within an
-I<unspace> token), but must instead be denoted with escape sequences.
+never appear literally (except within a
+I<splitter> token), but must instead be denoted with escape sequences.
 The main reason for this is to ensure that the actual values being selected
 by the string literals were not variable per the kind of linebreaks used to
 format the Muldis D source code itself.
@@ -1489,7 +1493,7 @@ Grammar:
 
     <quoted_name_str> ::=
         '"'
-            [<-[\\\"\t\n\f\r]> | <escaped_char> | <unspace>]*
+            [<-[\\\"\t\n\f\r]> | <escaped_char> | <splitter>]*
         '"'
 
     <NameChain> ::=
@@ -1650,14 +1654,14 @@ Grammar:
 
     <Comment_payload> ::=
         '`'
-            [<-[\\\`\t\n\f\r]> | <escaped_char> | <unspace>]*
+            [<-[\\\`\t\n\f\r]> | <escaped_char> | <splitter>]*
         '`'
 
     <non_value_comment> ::=
         [
             '#' ** 2..*
           | '#' ' '*
-                [<-[\\\#\t\n\f\r]> | <escaped_char> | <unspace>]*
+                [<-[\\\#\t\n\f\r]> | <escaped_char> | <splitter>]*
             ' '* '#'
         ] ** <ws>
 
