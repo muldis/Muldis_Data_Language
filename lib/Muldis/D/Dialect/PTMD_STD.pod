@@ -195,7 +195,9 @@ Grammar:
 
     <quoted_ln_elem_str> ::=
         '"'
-            [<[\ ..~]-[\\"]> | '\b'|'\a'|'\q'|'\g'|'\h'|'\s' | <splitter>]+
+              [<[\ ..~]-[\\"]>
+            | '\\\\' | '\\\'' | '\\"' | '\\`' | '\\#' | '\\ '
+            | <splitter>]+
         '"'
 
     <ln_extensions> ::=
@@ -1377,10 +1379,10 @@ Grammar:
         '\''
 
     <escaped_char> ::=
-          '\b' | '\a' | '\q' | '\g' | '\h'
-        | '\s'
-        | '\t' | '\n' | '\f' | '\r'
-        | '\c<' [
+          '\\\\' | '\\\'' | '\\"' | '\\`' | '\\#'
+        | '\\ '
+        | '\\t' | '\\n' | '\\f' | '\\r'
+        | '\\c<' [
               [<[ A..Z ]>+] ** ' '
             | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
             | <[ 1..9 A..Z ]> ';' [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
@@ -1422,30 +1424,18 @@ The meanings of the simple escape sequences are:
     Esc | Unicode   | Unicode         | Chr | Literal character used
     Seq | Codepoint | Character Name  | Lit | for when not escaped
     ----+-----------+-----------------+-----+------------------------------
-    \b  | F;5C      | REVERSE SOLIDUS | \   | esc seq lead (aka backslash)
-    \a  | F;27      | APOSTROPHE      | '   | delim Text literals
-    \q  | F;22      | QUOTATION MARK  | "   | delim quoted Name literals
-    \g  | F;60      | GRAVE ACCENT    | `   | delim as-val Comment literals
-    \h  | F;23      | NUMBER SIGN     | #   | dlm no-val Comment (aka hash)
-    \s  | F;20      | SPACE           |     | space char
+    \\  | F;5C      | REVERSE SOLIDUS | \   | esc seq lead (aka backslash)
+    \'  | F;27      | APOSTROPHE      | '   | delim Text literals
+    \"  | F;22      | QUOTATION MARK  | "   | delim quoted Name literals
+    \`  | F;60      | GRAVE ACCENT    | `   | delim as-val Comment literals
+    \#  | F;23      | NUMBER SIGN     | #   | delim no-val Comment literals
+    \   | F;20      | SPACE           |     | space char
     \t  | F;9       | CHAR... TAB...  |     | control char horizontal tab
     \n  | F;A       | LINE FEED (LF)  |     | ctrl char line feed / newline
     \f  | F;C       | FORM FEED (FF)  |     | control char form feed
     \r  | F;D       | CARR. RET. (CR) |     | control char carriage return
 
-One design decision of PTMD_STD that is distinct from typical other
-languages is that an escape sequence for any character used as a delimiter
-I<never> contains that literal character.  For example, while in SQL or
-Perl character strings delimited by C<'>, they typically escape literal
-apostrophes/single-quotes as C<''> or C<\'>; while this is unambiguous, the
-task of parsing such code is considerably more difficult than it could be.
-In contrast, while in PTMD_STD character strings delimited by C<'>, a
-literal of the same is escaped with C<\a>; so parsing such code is an order
-of magnitude easier because the parser doesn't have to understand the
-internals of any character string literal in order to separate out the
-character string from its surrounding code.
-
-Another design decision of PTMD_STD that is distinct at least from Perl is
+A design decision of PTMD_STD that is distinct at least from Perl is
 that non-"space" whitespace characters in character string literals must
 never appear literally (except within a
 I<splitter> token), but must instead be denoted with escape sequences.
@@ -1704,7 +1694,7 @@ Note that any leading or trailing space (F;20) characters inside the C<#>
 delimiters of a C<non_value_comment> are also part of the delimiters, and
 are not part of the selected C<Comment> value; if you want to denote a
 C<Comment> value with leading or trailing space chars, you must write those
-space chars in an escaped form such as with C<\s>.
+space chars in an escaped form such as with C<\ >.
 
 Note that a run of 3+ C<#> is equivalent to exactly 2 adjacent ones, which
 denotes an empty comment segment.  This feature exists to empower things
@@ -4562,7 +4552,7 @@ Examples:
 
     fetch_curr_instant( &now )
 
-    prompt_Text_line( &name, 'Enter a person\as name: ' )
+    prompt_Text_line( &name, 'Enter a person\'s name: ' )
 
     Integer.fetch_random( &rand, interval )
 
