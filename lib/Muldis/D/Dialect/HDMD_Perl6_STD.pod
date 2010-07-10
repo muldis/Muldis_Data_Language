@@ -262,10 +262,10 @@ Examples:
             catalog_abstraction_level => 'code_as_data',
             op_char_repertoire => 'basic'
         } ],
-        :Relation( Set.new(
+        '@' => Set.new(
             { food => 'Carrots', qty => 100 },
             { food => 'Kiwis', qty => 30 }
-        ) )
+        )
     ]
 
     [
@@ -274,32 +274,32 @@ Examples:
           op_char_repertoire => 'basic'
        } ],
        [ 'depot', :depot-catalog[ 'Database', 'Depot', {
-          functions => :Relation( Set.new(
+          functions => '@' => Set.new(
              {
                 name => :Name<cube>,
-                material => [ 'Tuple', 'Function', {
+                material => [ '%', 'Function', {
                    result_type => :PNSQNameChain<Int>,
-                   params => [ 'Relation', 'NameTypeMap', Set.new(
+                   params => [ '@', 'NameTypeMap', Set.new(
                       { name => :Name<topic>, type => :PNSQNameChain<Int> }
                    ) ],
                    expr => [ 'Database', 'ExprNodeSet', {
-                      sca_val_exprs => :Relation( Set.new(
+                      sca_val_exprs => '@' => Set.new(
                          { name => :Name<INT_3>, value => 3 }
-                      ) ),
-                      func_invo_exprs => :Relation( Set.new(
+                      ),
+                      func_invo_exprs => '@' => Set.new(
                          {
                             name => :Name(''),
                             function => :PNSQNameChain<Integer.power>,
-                            args => [ 'Relation', 'NameExprMap', [
+                            args => [ '@', 'NameExprMap', [
                                {name=>:Name<radix>, expr=>:Name<topic>},
                                {name=>:Name<exponent>, expr=>:Name<INT_3>}
                             ] ]
                          }
-                      ) )
+                      )
                    } ]
                 } ]
              }
-          ) )
+          )
        } ] ]
     ]
 
@@ -443,17 +443,18 @@ Every GCVL has 1-3 ordered elements:
 
 =item C<value_kind>
 
-This is a Perl C<Str> value of the format C<< <[A..Z]> <[ a..z A..Z ]>+ >>;
+This is a Perl C<Str> value of the format
+C<< <[A..Z]> <[ a..z A..Z ]>+ | '$'|'%'|'@' >>;
 it identifies the data type of the value literal in broad terms and is the
 only external metadata of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
 just on C<value_kind>.
 
-Between the various kinds of C<value> node, these 40 values are allowed for
+Between the various kinds of C<value> node, these 43 values are allowed for
 C<value_kind>:  C<Singleton>, C<Bool>, C<Order>, C<RoundMeth>,
 C<[|NN|P]Int>, C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>,
-C<NameChain>, C<PNSQNameChain>, C<Comment>, C<RatRoundRule>,
-C<[|DH]Scalar>, C<[|DH]Tuple>, C<Database>, C<[|DH]Relation>, C<[|DH]Set>,
+C<[|PNSQ]NameChain>, C<Comment>, C<RatRoundRule>, C<[|DH]Scalar|$>,
+C<[|DH]Tuple|%>, C<Database>, C<[|DH]Relation|@>, C<[|DH]Set>,
 C<[|DH][Maybe|Just]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH][S|M]PInterval>,
 C<List>.
 
@@ -779,13 +780,13 @@ Examples:
 
     [ 'Scalar', 'Name', { '' => 'the_thing' } ]
 
-    [ 'Scalar', 'Rat', float => {
+    [ '$', 'Rat', float => {
         mantissa => 45207196,
         radix    => 10,
         exponent => 37,
     } ]
 
-    [ 'Scalar', 'fed.lib.the_db.UTCDateTime', datetime => {
+    [ '$', 'fed.lib.the_db.UTCDateTime', datetime => {
         year   => 2003,
         month  => 10,
         day    => 26,
@@ -794,11 +795,11 @@ Examples:
         second => 0.0,
     } ]
 
-    [ 'Scalar', 'fed.lib.the_db.WeekDay', name => {
+    [ '$', 'fed.lib.the_db.WeekDay', name => {
         '' => 'monday',
     } ]
 
-    [ 'Scalar', 'fed.lib.the_db.WeekDay', number => {
+    [ '$', 'fed.lib.the_db.WeekDay', number => {
         '' => 5,
     } ]
 
@@ -816,13 +817,13 @@ Examples:
 
     :Tuple{}
 
-    [ 'Tuple', 'type.tuple_from.var.fed.data.the_db.account.users', {
+    [ '%', 'type.tuple_from.var.fed.data.the_db.account.users', {
         login_name => 'hartmark',
         login_pass => 'letmein',
         is_special => Bool::True,
     } ]
 
-    :Tuple{
+    '%' => {
         name => 'Michelle',
         age  => 17,
     }
@@ -889,19 +890,19 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
     :Relation( Set.new() )  # zero attrs + zero tuples #
 
-    :Relation( Set.new(<x y z>) )  # 3 attrs + zero tuples #
+    '@' => Set.new(<x y z>)  # 3 attrs + zero tuples #
 
-    :Relation( Set.new( {} ) )  # zero attrs + 1 tuple #
+    '@' => Set.new( {} )  # zero attrs + 1 tuple #
 
-    :Relation( Set.new(
+    '@' => Set.new(
         {
             login_name => 'hartmark',
             login_pass => 'letmein',
             is_special => Bool::True,
         },
-    ) )  # 3 attrs + 1 tuple #
+    )  # 3 attrs + 1 tuple #
 
-    [ 'Relation', 'fed.lib.the_db.gene.Person', <name age> => Set.new(
+    [ '@', 'fed.lib.the_db.gene.Person', <name age> => Set.new(
         [ 'Michelle', 17 ],
     ) ]  # 2 attrs + 1 tuple #
 
@@ -1066,10 +1067,10 @@ Examples:
     # UCPString : Unicode abstract codepoints = 'Perl' #
     :List[1,-4,:List[80,101,114,109]]
 
-    # Tuple:{} #
+    # %:{} #
     :List[2,:List[],:List[]]
 
-    # Relation:{} #
+    # @:{} #
     :List[3,:List[],:List[]]
 
     # Set:{17,42,5} #
@@ -1100,7 +1101,7 @@ Examples:
         ],
         # possrep name : 'nfd_codes' #
         :List[1,-4,:List[110,102,100,95,99,111,100,101,115]],
-        # possrep attributes : Tuple:{""=>"Perl"} #
+        # possrep attributes : %:{""=>"Perl"} #
         :List[2,
             :List[:List[1,-4,:List[]]],
             :List[:List[1,-4,:List[80,101,114,109]]]
@@ -1463,7 +1464,7 @@ Examples:
             :with[ 'value-map-unary', 'uc_loc_name',
                 [ 'Tuple', { topic => 'Tuple' } ]
                 => [
-                    [ 'Tuple', { loc_name_uc => [ 'func-invo', 'upper',
+                    [ '%', { loc_name_uc => [ 'func-invo', 'upper',
                         [ :acc<topic.loc_name> ] ] } ]
                 ]
             ],
@@ -2145,8 +2146,8 @@ Examples:
 
     [ 'op', '∖', [:Set(Set.new( 8, 4, 6, 7 )), :Set(Set.new( 9, 0, 7 ))] ]
 
-    [ 'op', '÷', [ :Relation( <x y> => Set.new( [ 5, 6 ], [ 3, 6 ] ) ),
-        :Relation( Set.new( { y => 6 } ) ) ] ]
+    [ 'op', '÷', [ '@' => <x y> => Set.new( [ 5, 6 ], [ 3, 6 ] ),
+        '@' => Set.new( { y => 6 } ) ] ]
 
 =head2 Simple Monadic Prefix Operators
 
@@ -2346,7 +2347,7 @@ Examples:
 
     # delete every person in people whose age is either 10 or 20 #
     [ 'op', ':=!matching', [ :d<people>,
-        :Relation( Set.new( { age => 10 }, { age => 20 } ) ) ] ]
+        '@' => Set.new( { age => 10 }, { age => 20 } ) ] ]
 
 =head1 SEE ALSO
 
