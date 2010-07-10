@@ -944,18 +944,36 @@ only external metadata of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
 just on C<value_kind>.
 
-For all values of just the 9 data types [C<Singleton>, C<Bool>, C<Order>,
-C<RoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>, C<Comment>], the
-C<value_kind> portion of a GCVL may be omitted for brevity, but the code
-parser should still be able to infer it easily by examining the first few
-characters of the C<value_payload>, which for each of said 9 data types has
-a mutually uniquely identifying format, which is also distinct from all
-possible C<value_kind>.  Note that omission of C<value_kind> is only
-allowed when the GCVL doesn't include a C<type_name> element.
+For all values of just the 11 data types [C<Singleton>, C<Bool>, C<Order>,
+C<RoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>, C<Comment>, C<Set>,
+C<Array>], the C<value_kind> portion of a GCVL may be omitted for brevity,
+but the code parser should still be able to infer it easily by examining
+the first few characters of the C<value_payload>, which for each of said 11
+data types has a mutually uniquely identifying format, which is also
+distinct from all possible C<value_kind>.  Note that, for the purposes of
+this discussion, the C<Maybe> type is subsumed into the C<Set> type.
+
+For many values of the 3 data types [C<Bag>, C<[S|M]PInterval>], the
+C<value_kind> portion of a GCVL may be omitted for brevity; specifically,
+this may be done just for the [C<Bag>, C<[S|M]PInterval>] GCVL whose
+C<value_payload> are not valid C<value_payload> of a C<Set> GCVL.  For a
+C<Bag> GCVL, all of those formatted as C<< => >> separated pairs may have
+their C<value_kind> omitted, while all of those that are not formatted as
+pairs may not.  For a C<SPInterval> GCVL, all of those that are formatted
+as a range pair with C<..>/etc may have their C<value_kind> omitted, while
+all of those formatted using the single value shorthand with no C<..>/etc
+may not.  For a C<MPInterval> GCVL, all of those that are formatted as a
+comma-delimited list with at least 2 list elements, where at least one of
+those elements is formatted as a range pair with C<..>/etc, may have their
+C<value_kind> omitted, while all of those either having 0..1 list elements
+or having just single value shorthand elements with no C<..>/etc may not.
+
+Note that omission of C<value_kind> is only allowed when the GCVL doesn't
+include a C<type_name> element.
 
 For just these certain special values of other data types, the same option
 of omitting the C<value_kind> (and C<type_name>) applies: C<Tuple:D0>,
-C<Relation:D0C0>, C<Relation:D0C1>, C<Maybe:Nothing>.
+C<Relation:D0C0>, C<Relation:D0C1>.
 
 =item C<type_name>
 
@@ -2062,8 +2080,10 @@ Examples:
 Grammar:
 
     <Set> ::=
-        DH? Set ':' <unspace>
-        [<type_name> ':' <unspace>]?
+        [
+            DH? Set ':' <unspace>
+            [<type_name> ':' <unspace>]?
+        ]?
         <Set_payload>
 
     <Set_payload> ::=
@@ -2093,7 +2113,7 @@ Examples:
         'Thailand'
     }
 
-    Set:{
+    {
         3,
         16,
         85
@@ -2104,8 +2124,10 @@ Examples:
 Grammar:
 
     <Maybe> ::=
-        DH? [Maybe | Just] ':' <unspace>
-        [<type_name> ':' <unspace>]?
+        [
+            DH? [Maybe | Just] ':' <unspace>
+            [<type_name> ':' <unspace>]?
+        ]?
         <Maybe_payload>
 
     <Maybe_payload> ::=
@@ -2162,8 +2184,10 @@ Examples:
 Grammar:
 
     <Array> ::=
-        DH? Array ':' <unspace>
-        [<type_name> ':' <unspace>]?
+        [
+            DH? Array ':' <unspace>
+            [<type_name> ':' <unspace>]?
+        ]?
         <Array_payload>
 
     <Array_payload> ::=
@@ -2189,7 +2213,7 @@ C<depot> node, as it describes some semantics.
 
 Examples:
 
-    Array:[
+    [
         'Alphonse',
         'Edward',
         'Winry'
@@ -2207,8 +2231,10 @@ Examples:
 Grammar:
 
     <Bag> ::=
-        DH? Bag ':' <unspace>
-        [<type_name> ':' <unspace>]?
+        [
+            DH? Bag ':' <unspace>
+            [<type_name> ':' <unspace>]?
+        ]?
         <Bag_payload>
 
     <Bag_payload> ::=
@@ -2266,7 +2292,7 @@ values, then you must use a C<Relation> node rather than a C<Bag> node.
 
 Examples:
 
-    Bag:fed.lib.the_db.inventory.Fruit:{
+    {
         'Apple'  => 500,
         'Orange' => 300,
         'Banana' => 400
@@ -2286,8 +2312,10 @@ Examples:
 Grammar:
 
     <SPInterval> ::=
-        DH? SPInterval ':' <unspace>
-        [<type_name> ':' <unspace>]?
+        [
+            DH? SPInterval ':' <unspace>
+            [<type_name> ':' <unspace>]?
+        ]?
         <SPInterval_payload>
 
     <SPInterval_payload> ::=
@@ -2314,8 +2342,10 @@ Grammar:
         <expr>
 
     <MPInterval> ::=
-        DH? MPInterval ':' <unspace>
-        [<type_name> ':' <unspace>]?
+        [
+            DH? MPInterval ':' <unspace>
+            [<type_name> ':' <unspace>]?
+        ]?
         <MPInterval_payload>
 
     <MPInterval_payload> ::=
@@ -2357,13 +2387,13 @@ context of a C<depot> node, as it describes some semantics.
 
 Examples:
 
-    SPInterval:{1..10}
+    {1..10}
 
-    SPInterval:{2.7..^9.3}
+    {2.7..^9.3}
 
-    SPInterval:{'a'^..'z'}
+    {'a'^..'z'}
 
-    SPInterval:{UTCInstant:[2002,12,6,,,] ^..^ UTCInstant:[2002,12,20,,,]}
+    {UTCInstant:[2002,12,6,,,] ^..^ UTCInstant:[2002,12,20,,,]}
 
     SPInterval:{'abc'}  # 1 element #
 
@@ -2371,9 +2401,9 @@ Examples:
 
     MPInterval:{1..10}  # 10 elements #
 
-    MPInterval:{1..3,6,8..9}  # 6 elements #
+    {1..3,6,8..9}  # 6 elements #
 
-    MPInterval:{-Inf..3,14..21,29..Inf}  # all Int besides {4..13,22..28} #
+    {-Inf..3,14..21,29..Inf}  # all Int besides {4..13,22..28} #
 
 =head2 Low Level List Selectors
 
@@ -2414,7 +2444,7 @@ Examples:
     # @:{} #
     List:[3,List:[],List:[]]
 
-    # Set:{17,42,5} #
+    # Set : {17,42,5} #
     List:[3,
         List:[List:[1,-4,List:[118,97,108,117,101]]],
         List:[
@@ -4871,19 +4901,18 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
-    and  -> Core.Boolean.and( Set:{ expr[0], ..., expr[n] } )
-    or   -> Core.Boolean.or( Set:{ expr[0], ..., expr[n] } )
+    and  -> Core.Boolean.and( { expr[0], ..., expr[n] } )
+    or   -> Core.Boolean.or( { expr[0], ..., expr[n] } )
     xnor -> Core.Boolean.xnor( Bag:{ expr[0], ..., expr[n] } )
     xor  -> Core.Boolean.xor( Bag:{ expr[0], ..., expr[n] } )
     +    -> Core.Numeric.sum( Bag:{ expr[0], ..., expr[n] } )
     *    -> Core.Numeric.product( Bag:{ expr[0], ..., expr[n] } )
 
-    union     -> Core.Relation.union( Set:{ expr[0], ..., expr[n] } )
-    intersect -> Core.Relation.intersection(
-                    Set:{ expr[0], ..., expr[n] } )
+    union     -> Core.Relation.union( { expr[0], ..., expr[n] } )
+    intersect -> Core.Relation.intersection( { expr[0], ..., expr[n] } )
     exclude   -> Core.Relation.exclusion( Bag:{ expr[0], ..., expr[n] } )
-    join      -> Core.Relation.join( Set:{ expr[0], ..., expr[n] } )
-    times     -> Core.Relation.product( Set:{ expr[0], ..., expr[n] } )
+    join      -> Core.Relation.join( { expr[0], ..., expr[n] } )
+    times     -> Core.Relation.product( { expr[0], ..., expr[n] } )
 
 Examples:
 
@@ -4901,9 +4930,9 @@ Examples:
 
     69.3 * 15*2^6 * 49/23
 
-    Set:{ 1, 3, 5 } ∪ Set:{ 4, 5, 6 } ∪ Set:{ 0, 9 }
+    { 1, 3, 5 } ∪ { 4, 5, 6 } ∪ { 0, 9 }
 
-    Set:{ 1, 3, 5, 7, 9 } ∩ Set:{ 3, 4, 5, 6, 7, 8 } ∩ Set:{ 2, 5, 9 }
+    { 1, 3, 5, 7, 9 } ∩ { 3, 4, 5, 6, 7, 8 } ∩ { 2, 5, 9 }
 
 =head2 Simple Non-commutative N-adic Infix Reduction Operators
 
@@ -4938,10 +4967,10 @@ different type of value, from the last op input list element.
 
 This table indicates which function is invoked by each keyword:
 
-    [<=>] -> Core.Cat.Order.reduction( Array:{ expr[0], ..., expr[n] } )
-    ~     -> Core.Stringy.catenation( Array:{ expr[0], ..., expr[n] } )
+    [<=>] -> Core.Cat.Order.reduction( [ expr[0], ..., expr[n] ] )
+    ~     -> Core.Stringy.catenation( [ expr[0], ..., expr[n] ] )
     //    -> Core.Set.Maybe.attr_or_value(
-                Array:{ expr[0], ..., expr[n-1] }, value => expr[n] )
+                [ expr[0], ..., expr[n-1] ], value => expr[n] )
 
 Examples:
 
@@ -4951,7 +4980,7 @@ Examples:
 
     'hello' ~ ' ' ~ 'world'
 
-    Array:[ 24, 52 ] ~ Array:[ -9 ] ~ Array:[ 0, 11, 24, 7 ]
+    [ 24, 52 ] ~ [ -9 ] ~ [ 0, 11, 24, 7 ]
 
     a // b // 42
 
@@ -5177,7 +5206,7 @@ Examples:
 
     '-' ~# 80
 
-    Set:{ 8, 4, 6, 7 } ∖ Set:{ 9, 0, 7 }
+    { 8, 4, 6, 7 } ∖ { 9, 0, 7 }
 
     @:[ x, y ];{ [ 5, 6 ], [ 3, 6 ] } ÷ @:{ { y => 6 } }
 
@@ -5224,7 +5253,7 @@ Examples:
 
     || -4.59
 
-    r# Set:{ 5, -1, 2 }
+    r# { 5, -1, 2 }
 
     % relvar
 
@@ -5421,49 +5450,49 @@ This table indicates which function is invoked by each format-keyword:
                 } )
 
     ${}  -> Core.Scalar.projection( expr, possrep => possrep_name,
-                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+                attr_names => { pcf_atnms[0], ..., pcf_atnms[n] } )
     %{}  -> Core.Tuple.projection( expr,
-                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+                attr_names => { pcf_atnms[0], ..., pcf_atnms[n] } )
     @{}  -> Core.Relation.projection( expr,
-                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+                attr_names => { pcf_atnms[0], ..., pcf_atnms[n] } )
     ${!} -> Core.Scalar.cmpl_proj( expr, possrep => possrep_name,
-                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+                attr_names => { pcf_atnms[0], ..., pcf_atnms[n] } )
     %{!} -> Core.Tuple.cmpl_proj( expr,
-                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+                attr_names => { pcf_atnms[0], ..., pcf_atnms[n] } )
     @{!} -> Core.Relation.cmpl_proj( expr,
-                attr_names => Set:{ pcf_atnms[0], ..., pcf_atnms[n] } )
+                attr_names => { pcf_atnms[0], ..., pcf_atnms[n] } )
 
     %{%<-}  -> Core.Tuple.wrap( expr, outer => outer_atnm,
-                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] } )
+                   inner => { inner_atnms[0], ..., inner_atnms[n] } )
     @{%<-}  -> Core.Relation.wrap( expr, outer => outer_atnm,
-                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] } )
+                   inner => { inner_atnms[0], ..., inner_atnms[n] } )
     %{%<-!} -> Core.Tuple.cmpl_wrap( expr, outer => outer_atnm,
-                   cmpl_inner => Set:{ cmpl_inner_atnms[0], ... } )
+                   cmpl_inner => { cmpl_inner_atnms[0], ... } )
     @{%<-!} -> Core.Relation.cmpl_wrap( expr, outer => outer_atnm,
-                   cmpl_inner => Set:{ cmpl_inner_atnms[0], ... } )
+                   cmpl_inner => { cmpl_inner_atnms[0], ... } )
     %{<-%}  -> Core.Tuple.unwrap( expr,
-                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] },
+                   inner => { inner_atnms[0], ..., inner_atnms[n] },
                    outer => outer_atnm )
     @{<-%}  -> Core.Relation.unwrap( expr,
-                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] },
+                   inner => { inner_atnms[0], ..., inner_atnms[n] },
                    outer => outer_atnm )
 
     @{@<-}  -> Core.Relation.group( expr, outer => outer_atnm,
-                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] } )
+                   inner => { inner_atnms[0], ..., inner_atnms[n] } )
     @{@<-!} -> Core.Relation.cmpl_group( expr, outer => outer_atnm,
-                   group_per => Set:{ cmpl_inner_atnms[0], ... } )
+                   group_per => { cmpl_inner_atnms[0], ... } )
     @{<-@}  -> Core.Relation.ungroup( expr,
-                   inner => Set:{ inner_atnms[0], ..., inner_atnms[n] },
+                   inner => { inner_atnms[0], ..., inner_atnms[n] },
                    outer => outer_atnm )
 
     @{#@<-!} -> Core.Relation.cardinality_per_group( expr,
                    count_attr_name => count_atnm,
-                   group_per => Set:{ cmpl_inner_atnms[0], ... } )
+                   group_per => { cmpl_inner_atnms[0], ... } )
 
     .{} -> Core.Set.Maybe.attr( expr )
 
     .[] -> Core.Array.value( expr, =>index )
-    []  -> Core.Array.slice( expr, index_interval => SPInterval:{
+    []  -> Core.Array.slice( expr, index_interval => {
                 min_index interval_boundary_kind max_index } )
 
 Examples:
@@ -5676,8 +5705,8 @@ This table indicates which function is invoked by each keyword:
 
     <=> -> Core.Ordered.order( lhs, rhs )
 
-    min -> Core.Ordered.min( Set:{ expr[0], ..., expr[n] } )
-    max -> Core.Ordered.max( Set:{ expr[0], ..., expr[n] } )
+    min -> Core.Ordered.min( { expr[0], ..., expr[n] } )
+    max -> Core.Ordered.max( { expr[0], ..., expr[n] } )
 
     <      -> Core.Ordered.is_before( lhs, rhs )
     >      -> Core.Ordered.is_after( lhs, rhs )
@@ -5688,8 +5717,7 @@ This table indicates which function is invoked by each keyword:
     !in-i  -> Core.Interval.value_is_not_member( value => lhs,
                 interval => rhs )
     i-has  -> Core.Interval.has_member( interval => lhs, value => rhs )
-    i-!has -> Core.Interval.has_not_member( interval => lhs,
-                value => rhs )
+    i-!has -> Core.Interval.has_not_member( interval => lhs, value => rhs )
 
 Details regarding the extra op args is pending.  But most of the time you
 wouldn't be using them, so just the main args represents typical usage.
@@ -5710,9 +5738,9 @@ Examples (for now sans any use of extra op args, which are atypical):
 
     foo ≥ bar
 
-    a ∈i SPInterval:{1..5}
+    a ∈i {1..5}
 
-    foo ∉i SPInterval:{min..^max}
+    foo ∉i {"min"..^"max"}
 
 =head1 IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS
 
