@@ -618,7 +618,7 @@ the closest thing Perl 5 has in core to a "big integer".
 
 If the payload is a Perl hash ref, then it must have 1 element, whose key
 and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string composed of a single C<[ 1..9 A..Z ]>
+max-col-val must be a Perl string composed of a single C<[1..9 A..Z bodx]>
 character, and the main payload must be a Perl character string of the
 format C<0> or C<< '-'?<[ 1..9 A..Z ]>['_'?<[ 0..9 A..Z ]>+]* >>.  The
 main payload is interpreted as a base-I<N> integer where I<N> might be
@@ -626,22 +626,23 @@ between 2 and 36, and the given max-col-val says which possible value of
 I<N> to use.  Assuming all column values are between zero and
 I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
 specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].
+Alternately (recommended), use [b,o,d,x] for the common bases [2,8,10,16].
 
 =back
 
 Examples:
 
-    [ 'Int', { 1 => '11001001' } ] # binary #
+    [ 'Int', { b => '11001001' } ] # binary #
 
-    [ 'Int', { 7 => '0' } ] # octal #
+    [ 'Int', { o => '0' } ] # octal #
 
-    [ 'Int', { 7 => '644' } ] # octal #
+    [ 'Int', { o => '644' } ] # octal #
 
     -34 # decimal #
 
     42 # decimal #
 
-    [ 'Int', { F => 'DEADBEEF' } ] # hexadecimal #
+    [ 'Int', { 'x' => 'DEADBEEF' } ] # hexadecimal #
 
     [ 'Int', { Z => '-HELLOWORLD' } ] # base-36 #
 
@@ -685,7 +686,7 @@ the second element (a radix) taken to the power of the third (an exponent).
 
 If the payload is a Perl hash ref, then it must have 1 element, whose key
 and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string composed of a single C<[ 1..9 A..Z ]>
+max-col-val must be a Perl string composed of a single C<[1..9 A..Z bodx]>
 character.  If the main payload is a Perl scalar, then the main payload
 must be a Perl character string of the format C<< 0'.'['_'?<[ 0..9 A..Z
 ]>+]+ >> or C<< '-'?<[ 1..9 A..Z ]>['_'?<[ 0..9 A..Z ]>+]*'.'['_'?<[ 0..9
@@ -693,7 +694,8 @@ A..Z ]>+]+ >>.  The main payload is interpreted as a base-I<N> rational
 where I<N> might be between 2 and 36, and the given max-col-val says which
 possible value of I<N> to use.  Assuming all column values are between zero
 and I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
-specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].  If the main
+specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].  Alternately
+(recommended), use [b,o,d,x] for the common bases [2,8,10,16].  If the main
 payload is a Perl array ref, then the main payload must have exactly 2 or 3
 elements, and every pairwise combination of the max-col-val with the
 elements of the main payload must, when appropriately wrapped in a Perl
@@ -705,7 +707,7 @@ payload elements mentioned in the previous bullet point.
 
 Examples:
 
-    [ 'Rat', { 1 => '-1.1' } ]
+    [ 'Rat', { b => '-1.1' } ]
 
     -1.5 # same val as prev #
 
@@ -713,7 +715,7 @@ Examples:
 
     [ 'Rat', { A => '0.0' } ]
 
-    [ 'Rat', { F => 'DEADBEEF.FACE' } ]
+    [ 'Rat', { 'x' => 'DEADBEEF.FACE' } ]
 
     [ 'Rat', { Z => '0.000AZE' } ]
 
@@ -721,7 +723,7 @@ Examples:
 
     [ 'Rat', { B => ['A09B','A'] } ]
 
-    [ 'Rat', { 1 => ['1011101101','10','-11011'] } ]
+    [ 'Rat', { b => ['1011101101','10','-11011'] } ]
 
     [ 'Rat', [45207196,10,37] ]
 
@@ -746,22 +748,23 @@ directly.
 
 If the payload is a Perl hash ref, then it must have 1 element, whose key
 and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string composed of a single C<[137F]> character,
+max-col-val must be a Perl string composed of a single C<[137Fbox]>
+character,
 and the main payload must be a Perl character string of the format C<< <[
 0..9 A..F ]>* >>.  Each column of the main payload specifies a sequence of
-one of [1,2,3,4] bits, depending on whether max-col-val is [1,3,7,F].
+one of [1,2,3,4] bits, depending on whether max-col-val is [1|b,3,7|o,F|x].
 
 =back
 
 Examples:
 
-    [ 'Blob', { 1 => '00101110100010' } ] # binary #
+    [ 'Blob', { b => '00101110100010' } ] # binary #
 
     [ 'Blob', { 3 => '' } ]
 
-    [ 'Blob', { F => 'A705E' } ] # hexadecimal #
+    [ 'Blob', { 'x' => 'A705E' } ] # hexadecimal #
 
-    [ 'Blob', { 7 => '523504376' } ]
+    [ 'Blob', { o => '523504376' } ]
 
     [ 'Blob', (pack 'H2', 'P') ]
 
@@ -2253,8 +2256,8 @@ Examples:
     [ 'op', '[<=>]', [ ['Order','Same'],
         ['Order','Increase'], ['Order','Decrease'] ] ]
 
-    [ 'op', '~', [ [ 'Blob', { F => 'DEAD' } ],
-        [ 'Blob', { 1 => '10001101' } ], [ 'Blob', { F => 'BEEF' } ] ] ]
+    [ 'op', '~', [ [ 'Blob', { 'x' => 'DEAD' } ],
+        [ 'Blob', { b => '10001101' } ], [ 'Blob', { 'x' => 'BEEF' } ] ] ]
 
     [ 'op', '~', [ 'hello', ' ', 'world' ] ]
 
@@ -2305,7 +2308,7 @@ Examples:
 
     [ 'op', '-', [ 9.2, 0.1 ] ]
 
-    [ 'op', '/', [[ 'Rat', {1 => '101.01'} ], [ 'Rat', {1 => '11.0'} ]] ]
+    [ 'op', '/', [[ 'Rat', {b => '101.01'} ], [ 'Rat', {b => '11.0'} ]] ]
 
     [ 'op', '~#', [ '-', 80 ] ]
 

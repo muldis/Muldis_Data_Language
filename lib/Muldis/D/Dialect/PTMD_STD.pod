@@ -1172,7 +1172,7 @@ Grammar:
         | <d_int_body>
 
     <num_max_col_val> ::=
-        <pint_head>
+        <pint_head> | <[bodx]>
 
     <int_body> ::=
         0 | '-'?<pint_body>
@@ -1213,6 +1213,7 @@ be between 2 and 36, and the C<num_max_col_val> says which possible value
 of I<N> to use.  Assuming all C<int_body> column values are between zero
 and I<N>-minus-one, the C<num_max_col_val> contains that I<N>-minus-one.
 So to specify, eg, bases [2,8,10,16], use C<num_max_col_val> of [1,7,9,F].
+Alternately (recommended), use [b,o,d,x] for the common bases [2,8,10,16].
 
 If the C<Int_payload> is a C<d_int_body>, then it is interpreted as a base
 10 integer.
@@ -1239,17 +1240,17 @@ appropriately further restricted.
 
 Examples:
 
-    Int:1;11001001 # binary #
+    Int:b;11001001 # binary #
 
-    7;0 # octal #
+    o;0 # octal #
 
-    7;644 # octal #
+    o;644 # octal #
 
     -34 # decimal #
 
     42 # decimal #
 
-    F;DEADBEEF # hexadecimal #
+    x;DEADBEEF # hexadecimal #
 
     Z;-HELLOWORLD # base-36 #
 
@@ -1318,7 +1319,7 @@ Examples:
 
     A;0.0
 
-    F;DEADBEEF.FACE
+    x;DEADBEEF.FACE
 
     Z;0.000AZE
 
@@ -1326,7 +1327,7 @@ Examples:
 
     B;A09B/A
 
-    Rat:1;1011101101*10^-11011
+    Rat:b;1011101101*10^-11011
 
     45207196*10^37
 
@@ -1349,7 +1350,7 @@ Grammar:
         <blob_max_col_val> ';' <unspace> <blob_body>
 
     <blob_max_col_val> ::=
-        <[137F]>
+        <[137Fbox]>
 
     <blob_body> ::=
         '\''
@@ -1362,23 +1363,24 @@ the I<body> part of a C<Blob> node consists of a delimited string of digits
 and uppercased (but not lowercased) letters, where each digit (C<0..9>)
 represents its own number and each letter (C<A..F>) represents a number in
 [10..15]; this string is qualified with a C<blob_max_col_val> character
-(C<[137F]>), similarly to how an C<int_body> is qualified by a
+(C<[137Fbox]>), similarly to how an C<int_body> is qualified by a
 C<num_max_col_val>.  Each character of the delimited string specifies a
 sequence of one of [1,2,3,4] bits, depending on whether C<blob_max_col_val>
-is [1,3,7,F].  If the C<value_kind> of a C<value> node is C<OctetBlob>
+is [1|b,3,7|o,F|x].  If the C<value_kind> of a C<value> node is
+C<OctetBlob>
 rather than C<Blob>, then the C<value> node is interpreted simply as a
 C<Blob> node whose C<type_name> is C<OctetBlob>, and the delimited string
 is appropriately further restricted.
 
 Examples:
 
-    Blob:1;'00101110100010' # binary #
+    Blob:b;'00101110100010' # binary #
 
     3;''
 
-    F;'A705E' # hexadecimal #
+    x;'A705E' # hexadecimal #
 
-    7;'523504376'
+    o;'523504376'
 
 =head2 General Purpose Character String Literals
 
@@ -1402,7 +1404,8 @@ Grammar:
         | '\\c<' [
               [<[ A..Z ]>+] ** ' '
             | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
-            | <[ 1..9 A..Z ]> ';' [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
+            | <[ 1..9 A..Z bodx ]> ';'
+                [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
           ] '>'
 
     <unspace> ::=
@@ -1441,15 +1444,15 @@ The meanings of the simple escape sequences are:
     Esc | Unicode   | Unicode         | Chr | Literal character used
     Seq | Codepoint | Character Name  | Lit | for when not escaped
     ----+-----------+-----------------+-----+------------------------------
-    \\  | F;5C      | REVERSE SOLIDUS | \   | esc seq lead (aka backslash)
-    \'  | F;27      | APOSTROPHE      | '   | delim Text literals
-    \"  | F;22      | QUOTATION MARK  | "   | delim quoted Name literals
-    \`  | F;60      | GRAVE ACCENT    | `   | delim as-val Comment literals
-    \#  | F;23      | NUMBER SIGN     | #   | delim no-val Comment literals
-    \t  | F;9       | CHAR... TAB...  |     | control char horizontal tab
-    \n  | F;A       | LINE FEED (LF)  |     | ctrl char line feed / newline
-    \f  | F;C       | FORM FEED (FF)  |     | control char form feed
-    \r  | F;D       | CARR. RET. (CR) |     | control char carriage return
+    \\  | x;5C      | REVERSE SOLIDUS | \   | esc seq lead (aka backslash)
+    \'  | x;27      | APOSTROPHE      | '   | delim Text literals
+    \"  | x;22      | QUOTATION MARK  | "   | delim quoted Name literals
+    \`  | x;60      | GRAVE ACCENT    | `   | delim as-val Comment literals
+    \#  | x;23      | NUMBER SIGN     | #   | delim no-val Comment literals
+    \t  | x;9       | CHAR... TAB...  |     | control char horizontal tab
+    \n  | x;A       | LINE FEED (LF)  |     | ctrl char line feed / newline
+    \f  | x;C       | FORM FEED (FF)  |     | control char form feed
+    \r  | x;D       | CARR. RET. (CR) |     | control char carriage return
 
 A design decision of PTMD_STD that is distinct at least from Perl is
 that non-"space" whitespace characters in character string literals must
@@ -1480,7 +1483,7 @@ Examples:
 
     'Perl'
 
-    '\c<LATIN SMALL LETTER OU>\c<F;263A>\c<65>'
+    '\c<LATIN SMALL LETTER OU>\c<x;263A>\c<65>'
 
 =head2 DBMS Entity Name Literals
 
@@ -1706,11 +1709,11 @@ Syntactically, a C<non_value_comment> node differs from C<Comment_payload>
 only in that each string segment is delimited by number-signs/hash-marks
 rather than backticks/grave-accents, and also that:
 
-Note that any leading or trailing space (F;20) characters inside the C<#>
+Note that any leading or trailing space (x;20) characters inside the C<#>
 delimiters of a C<non_value_comment> are also part of the delimiters, and
 are not part of the selected C<Comment> value; if you want to denote a
 C<Comment> value with leading or trailing space chars, you must write those
-space chars in an escaped form such as with C<< \c<F;20> >>.
+space chars in an escaped form such as with C<< \c<x;20> >>.
 
 Note that a run of 3+ C<#> is equivalent to exactly 2 adjacent ones, which
 denotes an empty comment segment.  This feature exists to empower things
@@ -4976,7 +4979,7 @@ Examples:
 
     Same [<=>] Increase [<=>] Decrease
 
-    F;'DEAD' ~ 1;'10001101' ~ F;'BEEF'
+    x;'DEAD' ~ b;'10001101' ~ x;'BEEF'
 
     'hello' ~ ' ' ~ 'world'
 
@@ -5202,7 +5205,7 @@ Examples:
 
     9.2 - 0.1
 
-    1;101.01 / 1;11.0
+    b;101.01 / b;11.0
 
     '-' ~# 80
 
