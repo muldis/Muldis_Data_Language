@@ -55,6 +55,33 @@ examples: distrib-key-constraint, distrib-subset-constraint.
 
 ----------
 
+* Remove the "between" aliases for "in-i" since they don't read well.
+
+* Create new mixin composed by types with named attributes, which at the
+most could include all [Tuple,Relation,ScalarWP], or alternately and more
+likely would include just [Tuple,Relation].  Possible names include
+"AttrColl" (more inclusive) or "Nonscalar","TupRel" (less inclusive).
+
+* Also create virtual ops for all ops that Tup and Rel have in common
+(project, rename, wrap, cmpl_wrap, unwrap, static_exten, etc) + consolidate
+the postcircumfix ops appropriately; these are the new ops:
+    - .{;}    - Scalar attr
+    - .{}     - Tuple|Maybe attr
+    - {<-}    - T|R rename
+    - {;}     - Scalar projection
+    - {}      - T|R projection
+    - {;!}    - Scalar cmpl_proj
+    - {!}     - T|R cmpl_proj
+    - {%<-}   - T|R wrap
+    - {%<-!}  - T|R cmpl_wrap
+    - {<-%}   - T|R unwrap
+    - {@<-}   - R group
+    - {@<-!}  - R cmpl_group
+    - {<-@}   - R ungroup
+    - {#@<-!} - R count_per_group
+    - .[]     - Array value
+    - []      - Array slice
+
 * Create the following mixins and group types and ops under them:
     - Collective :
         - tps: Set, Array, Bag, SPInterval, MPInterval
@@ -63,6 +90,15 @@ And these types have these similar ops:
     - Relation :
         - ops: r-has/r∋
         - ops: in-r/∈r
+Look in thesaurus for synonyms of "in" and "has", then use those for the
+"r" versions so "in" and "has" can be used for Set|Bag|etc.
+But there's still the question on what to do with the Unicode versions.
+Maybe instead, add bracketing punctuation usable with both text and Uni.
+
+* Rename non-uni sub/super/etc versions to something ASCII-symbolic since
+"sub","psuper" etc doesn't read so well.  A candidate is quasi-overloading
+the comparison ops, with bracketing, such as like: |<| proper subset,
+|!<| not proper subset, |>=| superset, |!>=| not proper superset, etc.
 
 * Update the mixins feature to add support for mixins that define
 attributes that types can compose, whereby we support some approximation of
