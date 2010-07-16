@@ -26,28 +26,7 @@ relational operators (for generic relations).
 
 I<This documentation is pending.>
 
-=head1 GENERIC RELATIONAL FUNCTIONS WITH SINGLE INPUT RELATION
-
-These functions are applicable to mainly relation types, but are generic
-in that they typically work with any relation types.
-
-=head2 sys.std.Core.Relation.D0C0
-
-C<< function D0C0 (Relation <--) {...} >>
-
-This C<named-value> selector function results in the only zero-attribute,
-zero-tuple Relation value, which is known by the special name
-C<Relation:D0C0>, aka C<D0C0>.  Note that I<The Third Manifesto> also
-refers to this value by the special shorthand name I<TABLE_DUM>.
-
-=head2 sys.std.Core.Relation.D0C1
-
-C<< function D0C1 (Relation <--) {...} >>
-
-This C<named-value> selector function results in the only zero-attribute,
-single-tuple Relation value, which is known by the special name
-C<Relation:D0C1>, aka C<D0C1>.  Note that I<The Third Manifesto> also
-refers to this value by the special shorthand name I<TABLE_DEE>.
+=head1 FUNCTIONS IMPLEMENTING VIRTUAL ATTRIBUTIVE FUNCTIONS
 
 =head2 sys.std.Core.Relation.degree
 
@@ -90,6 +69,115 @@ C<< function attr_names (set_of.Name <-- topic : Relation) {...} >>
 
 This function results in the set of the names of the attributes of its
 argument.
+
+=head2 sys.std.Core.Relation.rename
+
+C<< function rename (Relation <-- topic : Relation,
+map : AttrRenameMap) {...} >>
+
+This function is the same as C<sys.std.Core.Tuple.rename> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>.  Note
+that this operation is also known as C<< @{<-} >>.
+
+=head2 sys.std.Core.Relation.projection
+
+C<< function projection (Relation <--
+topic : Relation, attr_names : set_of.Name) {...} >>
+
+This function is the same as C<sys.std.Core.Tuple.projection> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>.  But
+note that the result relation will have fewer tuples than C<topic> if
+any C<topic> tuples were non-distinct for just the projected attributes.
+Note that this operation is also known as C<@{}>.
+
+=head2 sys.std.Core.Relation.cmpl_proj
+
+C<< function cmpl_proj (Relation <--
+topic : Relation, attr_names : set_of.Name) {...} >>
+
+This function is the same as C<sys.std.Core.Tuple.cmpl_proj> but
+that it operates on and results in a C<Relation> rather than a C<Tuple>.
+Note that this operation is also known as C<@{!}>.
+
+=head2 sys.std.Core.Relation.static_exten
+
+C<< function static_exten (Relation <--
+topic : Relation, attrs : Tuple) {...} >>
+
+This function is a simpler-syntax alternative to both
+C<sys.std.Core.Relation.extension> and C<sys.std.Core.Relation.product>
+in the typical scenario of extending a relation, given in the C<topic>
+argument, such that every tuple has mutually identical values for each of
+the new attributes; the new attribute names and common values are given in
+the C<attrs> argument.
+
+=head2 sys.std.Core.Relation.wrap
+
+C<< function wrap (Relation <-- topic : Relation,
+outer : Name, inner : set_of.Name) {...} >>
+
+This function is the same as C<sys.std.Core.Tuple.wrap> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>, where
+each of its member tuples was transformed as per
+C<sys.std.Core.Tuple.wrap>.  The result relation has the same cardinality
+as C<topic>.  Note that this operation is also known as C<< @{%<-} >>.
+
+=head2 sys.std.Core.Relation.cmpl_wrap
+
+C<< function cmpl_wrap (Relation <--
+topic : Relation, outer : Name, cmpl_inner : set_of.Name) {...} >>
+
+This function is the same as C<sys.std.Core.Tuple.cmpl_wrap> but that it
+operates on and results in a C<Relation> rather than a C<Tuple>, where
+each of its member tuples was transformed as per
+C<sys.std.Core.Tuple.cmpl_wrap>.  Note that this operation is also known as
+C<< @{%<-!} >>.
+
+=head2 sys.std.Core.Relation.unwrap
+
+C<< function unwrap (Relation <-- topic : Relation,
+inner : set_of.Name, outer : Name) {...} >>
+
+This function is the inverse of C<sys.std.Core.Relation.wrap> as
+C<sys.std.Core.Tuple.unwrap> is to C<sys.std.Core.Tuple.wrap>.  But
+unlike the simplest concept of a
+C<Tuple> variant of C<unwrap>, this current function requires
+the extra C<inner> argument to prevent ambiguity in the general case where
+C<topic> might have zero tuples, because in that situation the
+most-specific-type of C<topic{outer}> would be C<Empty>, and the names of
+the attributes to add to C<topic> in place of C<topic{outer}> are not
+known.  This function will fail if C<topic> has at least 1 tuple and
+C<inner> does not match the names of the attributes of C<topic{outer}>.
+This function will fail with a non-C<DHRelation> valued C<topic> unless,
+for every tuple of C<topic>, the attribute specified by C<outer> is valued
+with a tuple of the same degree and heading (attribute names); this
+failure is because there would be no consistent set of attribute names to
+extend C<topic> with (a problem that would never happen by definition with
+a deeply homogeneous relation C<topic>).  Note that this operation is also
+known as C<< @{<-%} >>.
+
+=head1 GENERIC RELATIONAL FUNCTIONS WITH SINGLE INPUT RELATION
+
+These functions are applicable to mainly relation types, but are generic
+in that they typically work with any relation types.
+
+=head2 sys.std.Core.Relation.D0C0
+
+C<< function D0C0 (Relation <--) {...} >>
+
+This C<named-value> selector function results in the only zero-attribute,
+zero-tuple Relation value, which is known by the special name
+C<Relation:D0C0>, aka C<D0C0>.  Note that I<The Third Manifesto> also
+refers to this value by the special shorthand name I<TABLE_DUM>.
+
+=head2 sys.std.Core.Relation.D0C1
+
+C<< function D0C1 (Relation <--) {...} >>
+
+This C<named-value> selector function results in the only zero-attribute,
+single-tuple Relation value, which is known by the special name
+C<Relation:D0C1>, aka C<D0C1>.  Note that I<The Third Manifesto> also
+refers to this value by the special shorthand name I<TABLE_DEE>.
 
 =head2 sys.std.Core.Relation.cardinality
 
@@ -210,80 +298,6 @@ This function results in a C<Relation> that is the relational difference
 from C<r> of a relation whose sole tuple is C<t>; that is, conceptually
 the result is C<t> deleted from C<r>.  As a trivial case, if C<t> already
 doesn't exist in C<r>, then the result is just C<r>.
-
-=head2 sys.std.Core.Relation.rename
-
-C<< function rename (Relation <-- topic : Relation,
-map : AttrRenameMap) {...} >>
-
-This function is the same as C<sys.std.Core.Tuple.rename> but that it
-operates on and results in a C<Relation> rather than a C<Tuple>.  Note
-that this operation is also known as C<< @{<-} >>.
-
-=head2 sys.std.Core.Relation.projection
-
-C<< function projection (Relation <--
-topic : Relation, attr_names : set_of.Name) {...} >>
-
-This function is the same as C<sys.std.Core.Tuple.projection> but that it
-operates on and results in a C<Relation> rather than a C<Tuple>.  But
-note that the result relation will have fewer tuples than C<topic> if
-any C<topic> tuples were non-distinct for just the projected attributes.
-Note that this operation is also known as C<@{}>.
-
-=head2 sys.std.Core.Relation.cmpl_proj
-
-C<< function cmpl_proj (Relation <--
-topic : Relation, attr_names : set_of.Name) {...} >>
-
-This function is the same as C<sys.std.Core.Tuple.cmpl_proj> but
-that it operates on and results in a C<Relation> rather than a C<Tuple>.
-Note that this operation is also known as C<@{!}>.
-
-=head2 sys.std.Core.Relation.wrap
-
-C<< function wrap (Relation <-- topic : Relation,
-outer : Name, inner : set_of.Name) {...} >>
-
-This function is the same as C<sys.std.Core.Tuple.wrap> but that it
-operates on and results in a C<Relation> rather than a C<Tuple>, where
-each of its member tuples was transformed as per
-C<sys.std.Core.Tuple.wrap>.  The result relation has the same cardinality
-as C<topic>.  Note that this operation is also known as C<< @{%<-} >>.
-
-=head2 sys.std.Core.Relation.cmpl_wrap
-
-C<< function cmpl_wrap (Relation <--
-topic : Relation, outer : Name, cmpl_inner : set_of.Name) {...} >>
-
-This function is the same as C<sys.std.Core.Tuple.cmpl_wrap> but that it
-operates on and results in a C<Relation> rather than a C<Tuple>, where
-each of its member tuples was transformed as per
-C<sys.std.Core.Tuple.cmpl_wrap>.  Note that this operation is also known as
-C<< @{%<-!} >>.
-
-=head2 sys.std.Core.Relation.unwrap
-
-C<< function unwrap (Relation <-- topic : Relation,
-inner : set_of.Name, outer : Name) {...} >>
-
-This function is the inverse of C<sys.std.Core.Relation.wrap> as
-C<sys.std.Core.Tuple.unwrap> is to C<sys.std.Core.Tuple.wrap>.  But
-unlike the simplest concept of a
-C<Tuple> variant of C<unwrap>, this current function requires
-the extra C<inner> argument to prevent ambiguity in the general case where
-C<topic> might have zero tuples, because in that situation the
-most-specific-type of C<topic{outer}> would be C<Empty>, and the names of
-the attributes to add to C<topic> in place of C<topic{outer}> are not
-known.  This function will fail if C<topic> has at least 1 tuple and
-C<inner> does not match the names of the attributes of C<topic{outer}>.
-This function will fail with a non-C<DHRelation> valued C<topic> unless,
-for every tuple of C<topic>, the attribute specified by C<outer> is valued
-with a tuple of the same degree and heading (attribute names); this
-failure is because there would be no consistent set of attribute names to
-extend C<topic> with (a problem that would never happen by definition with
-a deeply homogeneous relation C<topic>).  Note that this operation is also
-known as C<< @{<-%} >>.
 
 =head2 sys.std.Core.Relation.group
 
@@ -473,18 +487,6 @@ C<extension> can reverse-engineer C<func> to see what attributes it would
 have resulted in).  This function will fail if C<topic> has at least 1
 tuple and the result of C<func> does not have matching attribute names to
 those named by C<attr_names>.
-
-=head2 sys.std.Core.Relation.static_exten
-
-C<< function static_exten (Relation <--
-topic : Relation, attrs : Tuple) {...} >>
-
-This function is a simpler-syntax alternative to both
-C<sys.std.Core.Relation.extension> and C<sys.std.Core.Relation.product>
-in the typical scenario of extending a relation, given in the C<topic>
-argument, such that every tuple has mutually identical values for each of
-the new attributes; the new attribute names and common values are given in
-the C<attrs> argument.
 
 =head2 sys.std.Core.Relation.map
 
@@ -1164,7 +1166,7 @@ extension on the un-matched C<primary> tuples such that each said result
 tuple is determined by applying the function named in C<exten_func> to
 each said C<primary> tuple.
 
-=head1 GENERIC UPDATERS FOR RELATION VARIABLES
+=head1 UPDATERS IMPLEMENTING VIRTUAL ATTRIBUTIVE UPDATERS
 
 =head1 Updaters That Rename Attributes
 
@@ -1181,15 +1183,6 @@ COLUMN statement; each tuple of C<map> corresponds to a renamed SQL table
 column.
 
 =head1 Updaters That Add Attributes
-
-=head2 sys.std.Core.Relation.assign_extension
-
-C<updater assign_extension (&topic : Relation,
-attr_names : set_of.Name, func : ValMapCFuncNC) {...}>
-
-This update operator is a short-hand for first invoking the
-C<sys.std.Core.Relation.extension> function with the same arguments, and
-then assigning the result of that function to C<topic>.
 
 =head2 sys.std.Core.Relation.assign_static_exten
 
@@ -1225,6 +1218,19 @@ and then assigning the result of that function to C<topic>.  This procedure
 is analogous to the data-manipulation phase of a SQL ALTER TABLE|VIEW DROP
 COLUMN statement; each attribute named by C<attr_names> corresponds to a
 dropped SQL table column.
+
+=head1 GENERIC UPDATERS FOR RELATION VARIABLES
+
+=head1 More Updaters That Add Attributes
+
+=head2 sys.std.Core.Relation.assign_extension
+
+C<updater assign_extension (&topic : Relation,
+attr_names : set_of.Name, func : ValMapCFuncNC) {...}>
+
+This update operator is a short-hand for first invoking the
+C<sys.std.Core.Relation.extension> function with the same arguments, and
+then assigning the result of that function to C<topic>.
 
 =head1 Updaters That Add Tuples
 
