@@ -222,6 +222,11 @@ compose:
             sys.std.Core.Type.Text
             sys.std.Core.Type.Array
 
+        sys.std.Core.Type.Attributive
+
+            sys.std.Core.Type.Tuple
+            sys.std.Core.Type.Relation
+
 =head1 MAXIMAL AND MINIMAL DATA TYPES
 
 These core data types are special and are the only Muldis D types (except
@@ -323,6 +328,19 @@ are stringy types, including C<Blob>, C<Text>, and C<Array>.  The
 cardinality of C<Stringy> is infinity.  The default value of C<Stringy> is
 the C<Text> value empty string.  The C<Stringy> type is not itself ordered,
 but often a type which is stringy is also ordered.
+
+=head2 sys.std.Core.Type.Attributive
+
+The C<Attributive> type is a mixin (union) type that is intended to be
+explicitly composed by other types that are considered to be collections of
+named attributes, such as generic tuples and relations.  Just a few primary
+system-defined types are attributive types, namely C<Tuple> and
+C<Relation>.  The cardinality of C<Attributive> is infinity.  The default
+value of C<Attributive> is C<Tuple:D0>.  I<The C<ScalarWP> type could
+conceivably compose C<Attributive> as well, but for now it doesn't, because
+it still differs from C<Tuple> and C<Relation> in several ways such that
+virtual routines composed for C<Tuple> and C<Relation> would be impractical
+to compose for C<ScalarWP> in general, but that might change later.>
 
 =head1 GENERIC SCALAR DATA TYPES
 
@@ -562,7 +580,8 @@ data types they are composed of.
 
 The C<Tuple> type is the maximal type of
 all Muldis D tuple (nonscalar) types, and contains every
-tuple value that could possibly exist.  A C<Tuple> is an unordered
+tuple value that could possibly exist.  The C<Tuple> type explicitly
+composes the C<Attributive> mixin type.  A C<Tuple> is an unordered
 heterogeneous collection of 0..N named attributes (the count of attributes
 being its I<degree>), where all attribute names are mutually distinct, and
 each attribute may be of distinct types; the mapping of a tuple's
@@ -727,7 +746,8 @@ of C<DHSPInterval> is the same as that of C<SPInterval>.
 
 The C<Relation> type is the maximal type
 of all Muldis D relation (nonscalar) types, and contains every
-relation value that could possibly exist.  A C<Relation> is
+relation value that could possibly exist.  The C<Relation> type explicitly
+composes the C<Attributive> mixin type.  A C<Relation> is
 analogous to a set of 0..N tuples where all tuples have the
 same heading (the degrees match and all attribute names, and typically
 corresponding declared data types, match), but that a C<Relation> data
