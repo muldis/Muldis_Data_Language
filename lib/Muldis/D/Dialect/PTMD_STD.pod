@@ -4100,7 +4100,7 @@ Examples:
 
     if is_empty(ary) then empty_result else ary.[0]
 
-    if x = ∅ or y = ∅ then ∅ else Just:{x.{} + y.{} exp 3}
+    if x = ∅ or y = ∅ then ∅ else Just:{x.{*} + y.{*} exp 3}
 
     if val isa <Int> then val exp 3
         else if val isa <Text> then val ~# 5
@@ -5306,15 +5306,15 @@ Grammar:
         <pcf_s_acc_op_invo> | <pcf_t_acc_op_invo>
 
     <pcf_s_acc_op_invo> ::=
-        <expr> <unspace> '.${' [<ws>? <possrep_name> ';']? <ws>?
+        <expr> <unspace> '.{' [<ws>? <possrep_name>]? ';' <ws>?
             <attr_name>
         <ws>? '}'
 
     <pcf_t_acc_op_invo> ::=
-        <expr> <unspace> '.%{' <ws>? <attr_name> <ws>? '}'
+        <expr> <unspace> '.{' <ws>? <attr_name> <ws>? '}'
 
     <s_pcf_op_invo> ::=
-        <expr> <unspace> '${' [<ws>? <possrep_name> ';']? <ws>?
+        <expr> <unspace> '{' [<ws>? <possrep_name>]? ';' <ws>?
             [<pcf_projection> | <pcf_cmpl_proj>]
         <ws>? '}'
 
@@ -5329,7 +5329,7 @@ Grammar:
         <ws>? '}'
 
     <r_pcf_op_invo> ::=
-        <expr> <unspace> '@{' <ws>?
+        <expr> <unspace> '{' <ws>?
             [
                   <pcf_group> | <pcf_cmpl_group>
                 | <pcf_ungroup>
@@ -5392,7 +5392,7 @@ Grammar:
         <pcf_atnms>
 
     <pcf_mbe_op_invo> ::=
-        <expr> '.{}'
+        <expr> '.{*}'
 
     <pcf_ary_op_invo> ::=
         <pcf_ary_acc_op_invo> | <pcf_ary_slice_op_invo>
@@ -5431,9 +5431,9 @@ arguments, which are associated in the appropriate sequence.
 
 This table indicates which function is invoked by each format-keyword:
 
-    .${} -> Core.Scalar.attr( expr, possrep => possrep_name,
+    .{;} -> Core.Scalar.attr( expr, possrep => possrep_name,
                 name => attr_name )
-    .%{} -> Core.Tuple.attr( expr, name => attr_name )
+    .{} -> Core.Tuple.attr( expr, name => attr_name )
 
     {<-} -> Core.Attributive.rename( expr,
                 map => @:{
@@ -5442,11 +5442,11 @@ This table indicates which function is invoked by each format-keyword:
                     { after => atnm_after.[n], before => atnm_before.[n] },
                 } )
 
-    ${}  -> Core.Scalar.projection( expr, possrep => possrep_name,
+    {;}  -> Core.Scalar.projection( expr, possrep => possrep_name,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
     {}  -> Core.Attributive.projection( expr,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
-    ${!} -> Core.Scalar.cmpl_proj( expr, possrep => possrep_name,
+    {;!} -> Core.Scalar.cmpl_proj( expr, possrep => possrep_name,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
     {!} -> Core.Attributive.cmpl_proj( expr,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
@@ -5459,19 +5459,19 @@ This table indicates which function is invoked by each format-keyword:
                    inner => { inner_atnms.[0], ..., inner_atnms.[n] },
                    outer => outer_atnm )
 
-    @{@<-}  -> Core.Relation.group( expr, outer => outer_atnm,
+    {@<-}  -> Core.Relation.group( expr, outer => outer_atnm,
                    inner => { inner_atnms.[0], ..., inner_atnms.[n] } )
-    @{@<-!} -> Core.Relation.cmpl_group( expr, outer => outer_atnm,
+    {@<-!} -> Core.Relation.cmpl_group( expr, outer => outer_atnm,
                    group_per => { cmpl_inner_atnms.[0], ... } )
-    @{<-@}  -> Core.Relation.ungroup( expr,
+    {<-@}  -> Core.Relation.ungroup( expr,
                    inner => { inner_atnms.[0], ..., inner_atnms.[n] },
                    outer => outer_atnm )
 
-    @{#@<-!} -> Core.Relation.cardinality_per_group( expr,
+    {#@<-!} -> Core.Relation.cardinality_per_group( expr,
                    count_attr_name => count_atnm,
                    group_per => { cmpl_inner_atnms.[0], ... } )
 
-    .{} -> Core.Set.Maybe.attr( expr )
+    .{*} -> Core.Set.Maybe.attr( expr )
 
     .[] -> Core.Array.value( expr, =>index )
     []  -> Core.Array.slice( expr, index_interval => {
@@ -5479,15 +5479,15 @@ This table indicates which function is invoked by each format-keyword:
 
 Examples:
 
-    birthday.${date;day}
+    birthday.{date;day}
 
-    pt.%{city}
+    pt.{city}
 
     pt{pnum<-pno, locale<-city}
 
     pr{pnum<-pno, locale<-city}
 
-    birthday${date;year,month}
+    birthday{date;year,month}
 
     pt{color,city}
 
@@ -5497,7 +5497,7 @@ Examples:
 
     pr{}  # null projection #
 
-    rnd_rule${!round_meth}  # radix,min_exp #
+    rnd_rule{;!round_meth}  # radix,min_exp #
 
     pt{!pno,pname,weight}
 
@@ -5515,15 +5515,15 @@ Examples:
 
     people{fname,lname <- %name}
 
-    orders@{@vendors <- vendor}
+    orders{@vendors <- vendor}
 
-    orders@{@all_but_vendors <- !vendor}
+    orders{@all_but_vendors <- !vendor}
 
-    orders@{vendor <- @vendors}
+    orders{vendor <- @vendors}
 
-    people@{#@count_per_age_ctry <- !age,ctry}
+    people{#@count_per_age_ctry <- !age,ctry}
 
-    maybe_foo.{}
+    maybe_foo.{*}
 
     ary.[3]
 
