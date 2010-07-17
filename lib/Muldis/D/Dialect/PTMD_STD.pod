@@ -4853,12 +4853,14 @@ Grammar:
         | '+' | '*'
         | union | intersect | exclude | symdiff
         | join | times | 'cross-join'
+        | 'union+' | 'union++' | 'intersect+'
 
     <comm_infix_reduce_op__op_cr_extended> ::=
           <comm_infix_reduce_op__op_cr_basic>
         | '∧' | '∨' | '↔' | '⊻' | '↮'
         | '∪' | '∩' | '∆'
         | '⋈' | '×'
+        | '∪+' | '∪++' | '∩+'
 
 A C<comm_infix_reduce_op_invo> node is for using infix notation to invoke a
 (homogeneous) commutative N-adic reduction operator function.  Such a
@@ -4880,17 +4882,20 @@ matches must be identical / the same operator.
 
 Some of the keywords are aliases for each other:
 
-    keyword   | aliases
-    ----------+--------
-    and       | ∧
-    or        | ∨
-    xnor      | ↔ iff
-    xor       | ⊻ ↮
-    union     | ∪
-    intersect | ∩
-    exclude   | ∆ symdiff
-    join      | ⋈
-    times     | × cross-join
+    keyword    | aliases
+    -----------+--------
+    and        | ∧
+    or         | ∨
+    xnor       | ↔ iff
+    xor        | ⊻ ↮
+    union      | ∪
+    intersect  | ∩
+    exclude    | ∆ symdiff
+    join       | ⋈
+    times      | × cross-join
+    union+     | ∪+
+    union++    | ∪++
+    intersect+ | ∩+
 
 This table indicates which function is invoked by each keyword:
 
@@ -4906,6 +4911,10 @@ This table indicates which function is invoked by each keyword:
     exclude   -> Core.Relation.exclusion( Bag:{ expr.[0], ..., expr.[n] } )
     join      -> Core.Relation.join( { expr.[0], ..., expr.[n] } )
     times     -> Core.Relation.product( { expr.[0], ..., expr.[n] } )
+
+    union+     -> Core.Bag.union( { expr.[0], ..., expr.[n] } )
+    union++    -> Core.Bag.union_sum( Bag:{ expr.[0], ..., expr.[n] } )
+    intersect+ -> Core.Bag.intersection( { expr.[0], ..., expr.[n] } )
 
 Examples:
 
@@ -5058,10 +5067,13 @@ Grammar:
         | in-b | '!in-b' | 'not-in-b' | b-has | 'b-!has' | 'b-not-has'
         | '{<=}' | '{!<=}' | '{>=}' | '{!>=}'
         | '{<}'  | '{!<}'  | '{>}'  | '{!>}'
+        | '{<=}+' | '{!<=}+' | '{>=}+' | '{!>=}+'
+        | '{<}+'  | '{!<}+'  | '{>}+'  | '{!>}+'
         | minus | except
         | '!matching' | 'not-matching' | antijoin | semiminus
         | matching | semijoin
         | divideby
+        | 'minus+' | 'except+'
         | like | '!like' | 'not-like'
 
     <nonsym_dyadic_infix_op__op_cr_extended> ::=
@@ -5072,7 +5084,10 @@ Grammar:
         | '∈b' | '∉b' | 'b∋' | 'b∌'
         | '⊆' | '⊈' | '⊇' | '⊉'
         | '⊂' | '⊄' | '⊃' | '⊅'
+        | '⊆+' | '⊈+' | '⊇+' | '⊉+'
+        | '⊂+' | '⊄+' | '⊃+' | '⊅+'
         | '∖' | '⊿' | '⋉' | '÷'
+        | '∖+'
 
 A C<nonsym_dyadic_infix_op_invo> node is for using infix notation to
 invoke a non-symmetric dyadic operator function.  Such a function takes
@@ -5114,10 +5129,19 @@ Some of the keywords are aliases for each other:
     {!<}      | ⊄
     {>}       | ⊃
     {!>}      | ⊅
+    {<=}+     | ⊆+
+    {!<=}+    | ⊈+
+    {>=}+     | ⊇+
+    {!>=}+    | ⊉+
+    {<}+      | ⊂+
+    {!<}+     | ⊄+
+    {>}+      | ⊃+
+    {!>}+     | ⊅+
     minus     | ∖ except
     !matching | ⊿ not-matching antijoin semiminus
     matching  | ⋉ semijoin
     divideby  | ÷
+    minus+    | ∖+ except+
     !like     | not-like
 
 This table indicates which function is invoked by each keyword:
@@ -5164,10 +5188,21 @@ This table indicates which function is invoked by each keyword:
     {>}   -> Core.Relation.is_proper_superset( lhs, rhs )
     {!>}  -> Core.Relation.is_not_proper_superset( lhs, rhs )
 
+    {<=}+  -> Core.Bag.is_subset( lhs, rhs )
+    {!<=}+ -> Core.Bag.is_not_subset( lhs, rhs )
+    {>=}+  -> Core.Bag.is_superset( lhs, rhs )
+    {!>=}+ -> Core.Bag.is_not_superset( lhs, rhs )
+    {<}+   -> Core.Bag.is_proper_subset( lhs, rhs )
+    {!<}+  -> Core.Bag.is_not_proper_subset( lhs, rhs )
+    {>}+   -> Core.Bag.is_proper_superset( lhs, rhs )
+    {!>}+  -> Core.Bag.is_not_proper_superset( lhs, rhs )
+
     minus    -> Core.Relation.diff( source => lhs, filter => rhs )
     !matching -> Core.Relation.semidiff( source => lhs, filter => rhs )
     matching -> Core.Relation.semijoin( source => lhs, filter => rhs )
     divideby -> Core.Relation.quotient( dividend => lhs, divisor => rhs )
+
+    minus+ -> Core.Bag.diff( source => lhs, filter => rhs )
 
     like  -> Core.Text.is_like( look_in => lhs, look_for => rhs )
     !like -> Core.Text.is_not_like( look_in => lhs, look_for => rhs )
@@ -5211,7 +5246,7 @@ Grammar:
         <monadic_prefix_op> <ws> <expr>
 
     <monadic_prefix_op__op_cr_basic> ::=
-        not | '!' | '||' | '#' | '%' | '@'
+        not | '!' | '||' | '#' | '#+' | '%' | '@'
 
     <monadic_prefix_op__op_cr_extended> ::=
           <monadic_prefix_op__op_cr_basic>
@@ -5235,6 +5270,7 @@ This table indicates which function is invoked by each keyword:
     not -> Core.Boolean.not( expr )
     ||  -> Core.Numeric.abs( expr )
     #   -> Core.Relation.cardinality( expr )
+    #+  -> Core.Bag.cardinality( expr )
     %   -> Core.Cast.Tuple_from_Relation( expr )
     @   -> Core.Cast.Relation_from_Tuple( expr )
 
