@@ -20,7 +20,7 @@ WriteMakefile(
       MIN_PERL_VERSION => '5.006',
    ),
    OPTIONAL( '6.31',
-      LICENSE => 'gpl3',
+      LICENSE => 'gpl_3',
    ),
    OPTIONAL( '6.46',
       META_ADD => {
