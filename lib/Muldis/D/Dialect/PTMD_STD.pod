@@ -5299,7 +5299,7 @@ Grammar:
 
     <postcircumfix_op_invo> ::=
           <pcf_acc_op_invo>
-        | <s_pcf_op_invo> | <t_pcf_op_invo> | <r_pcf_op_invo>
+        | <s_pcf_op_invo> | <atb_pcf_op_invo> | <r_pcf_op_invo>
         | <pcf_mbe_op_invo> | <pcf_ary_op_invo>
 
     <pcf_acc_op_invo> ::=
@@ -5318,8 +5318,8 @@ Grammar:
             [<pcf_projection> | <pcf_cmpl_proj>]
         <ws>? '}'
 
-    <t_pcf_op_invo> ::=
-        <expr> <unspace> '%{' <ws>?
+    <atb_pcf_op_invo> ::=
+        <expr> <unspace> '{' <ws>?
             [
                   <pcf_rename>
                 | <pcf_projection> | <pcf_cmpl_proj>
@@ -5331,11 +5331,7 @@ Grammar:
     <r_pcf_op_invo> ::=
         <expr> <unspace> '@{' <ws>?
             [
-                  <pcf_rename>
-                | <pcf_projection> | <pcf_cmpl_proj>
-                | <pcf_wrap> | <pcf_cmpl_wrap>
-                | <pcf_unwrap>
-                | <pcf_group> | <pcf_cmpl_group>
+                  <pcf_group> | <pcf_cmpl_group>
                 | <pcf_ungroup>
                 | <pcf_count_per_group>
             ]
@@ -5439,13 +5435,7 @@ This table indicates which function is invoked by each format-keyword:
                 name => attr_name )
     .%{} -> Core.Tuple.attr( expr, name => attr_name )
 
-    %{<-} -> Core.Tuple.rename( expr,
-                map => @:{
-                    { after => atnm_after.[0], before => atnm_before.[0] },
-                    ...,
-                    { after => atnm_after.[n], before => atnm_before.[n] },
-                } )
-    @{<-} -> Core.Relation.rename( expr,
+    {<-} -> Core.Attributive.rename( expr,
                 map => @:{
                     { after => atnm_after.[0], before => atnm_before.[0] },
                     ...,
@@ -5454,29 +5444,18 @@ This table indicates which function is invoked by each format-keyword:
 
     ${}  -> Core.Scalar.projection( expr, possrep => possrep_name,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
-    %{}  -> Core.Tuple.projection( expr,
-                attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
-    @{}  -> Core.Relation.projection( expr,
+    {}  -> Core.Attributive.projection( expr,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
     ${!} -> Core.Scalar.cmpl_proj( expr, possrep => possrep_name,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
-    %{!} -> Core.Tuple.cmpl_proj( expr,
-                attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
-    @{!} -> Core.Relation.cmpl_proj( expr,
+    {!} -> Core.Attributive.cmpl_proj( expr,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
 
-    %{%<-}  -> Core.Tuple.wrap( expr, outer => outer_atnm,
+    {%<-}  -> Core.Attributive.wrap( expr, outer => outer_atnm,
                    inner => { inner_atnms.[0], ..., inner_atnms.[n] } )
-    @{%<-}  -> Core.Relation.wrap( expr, outer => outer_atnm,
-                   inner => { inner_atnms.[0], ..., inner_atnms.[n] } )
-    %{%<-!} -> Core.Tuple.cmpl_wrap( expr, outer => outer_atnm,
+    {%<-!} -> Core.Attributive.cmpl_wrap( expr, outer => outer_atnm,
                    cmpl_inner => { cmpl_inner_atnms.[0], ... } )
-    @{%<-!} -> Core.Relation.cmpl_wrap( expr, outer => outer_atnm,
-                   cmpl_inner => { cmpl_inner_atnms.[0], ... } )
-    %{<-%}  -> Core.Tuple.unwrap( expr,
-                   inner => { inner_atnms.[0], ..., inner_atnms.[n] },
-                   outer => outer_atnm )
-    @{<-%}  -> Core.Relation.unwrap( expr,
+    {<-%}  -> Core.Attributive.unwrap( expr,
                    inner => { inner_atnms.[0], ..., inner_atnms.[n] },
                    outer => outer_atnm )
 
@@ -5504,37 +5483,37 @@ Examples:
 
     pt.%{city}
 
-    pt%{pnum<-pno, locale<-city}
+    pt{pnum<-pno, locale<-city}
 
-    pr@{pnum<-pno, locale<-city}
+    pr{pnum<-pno, locale<-city}
 
     birthday${date;year,month}
 
-    pt%{color,city}
+    pt{color,city}
 
-    pr@{color,city}
+    pr{color,city}
 
-    pt%{}  # null projection #
+    pt{}  # null projection #
 
-    pr@{}  # null projection #
+    pr{}  # null projection #
 
     rnd_rule${!round_meth}  # radix,min_exp #
 
-    pt%{!pno,pname,weight}
+    pt{!pno,pname,weight}
 
-    pr@{!pno,pname,weight}
+    pr{!pno,pname,weight}
 
-    person%{%name <- fname,lname}
+    person{%name <- fname,lname}
 
-    people@{%name <- fname,lname}
+    people{%name <- fname,lname}
 
-    person%{%all_but_name <- !fname,lname}
+    person{%all_but_name <- !fname,lname}
 
-    people@{%all_but_name <- !fname,lname}
+    people{%all_but_name <- !fname,lname}
 
-    person%{fname,lname <- %name}
+    person{fname,lname <- %name}
 
-    people@{fname,lname <- %name}
+    people{fname,lname <- %name}
 
     orders@{@vendors <- vendor}
 
