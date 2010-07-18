@@ -7,6 +7,22 @@
     * Muldis::D version 0.136.0 is released on CPAN as
     Muldis-D-0.136.0.tar.gz.
 
+    * This release features improvements to the handling of comments and
+    whitespace, and the addition of bag function syntaxes.
+
+    * (PTMD_STD.pod)  The grammar now considers whitespace to be anything
+    matched by "\s", meaning Perl's/Unicode's concept of it, rather than it
+    just being composed of the 5 characters [\ \t\n\f\r].
+
+    * (PTMD_STD.pod)  Changed how whitespace in delimited string literals
+    is handled.  Previously, non-SPACE whitespace was disallowed from
+    appearing literally in strings except as a "splitter" token, where it
+    was delimited by a backslash pair which told the parser to ignore/strip
+    said whitespace.  Now, any characters are allowed literally in strings
+    and all non-SPACE whitespace is automatically ignored/stripped by the
+    parser.  To actually select such whitespace as part of the string, it
+    now has to be encoded as an escape sequence such as "\n".
+
     * (PTMD_STD.pod, Basics.pod)  Reformatted non-value-comment literals so
     that they are now delimited by both backticks and number signs, the
     former nested in the latter, rather than just number signs; for example
@@ -17,6 +33,12 @@
     including by itself as an operator.  The second consequence of this is
     that all comments are now delimited by backticks, rather than some just
     by backticks and others just by num signs.  Also more comments changes.
+
+    * (PTMD_STD.pod)  Updated the grammar to explicitly include support for
+    embedding non-value comments anywhere that whitespace may appear that
+    is outside of a scalar value lit; the "<ws>" token now includes them.
+    Previously, the non-value comments were defined but not actually
+    invoked anywhere by the main grammar.  Details subject to be refined.
 
     * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod, Relation.pod)  Renamed the
     prefix operator for set/relation cardinality to "#" from "r#".

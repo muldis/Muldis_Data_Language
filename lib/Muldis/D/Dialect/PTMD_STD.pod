@@ -128,14 +128,9 @@ definition body, is formatted like EBNF, as C<< <footok> ::= ... >> rather
 than the Perl 6 way like C<token footok { ... }> or C<rule footok { ... }>.
 3. All non-quoted whitespace is not significant and just is formatting the
 grammar itself; rather, whitespace rules in the grammar are spelled out
-explicitly such as with C<< <ws>? >> (optional whitespace) and C<< <ws> >>
-(mandatory whitespace) and C<< <unspace> >> (nothing at all may go here
-except a pair of backslashes (C<\>) surrounding an optional run of
-whitespace, which would be stripped) and C<< <splitter> >> (same as C<<
-<unspace> >> but that surrounded whitespace is mandatory.  4. The meanings
-of C<< <ws> >> and C<< <unspace> >> are explicitly defined in this file's
-grammar and do not match the C<< <ws> >> and C<< <unspace> >> that are
-defined by Perl 6; this file's versions are simpler for one thing.
+explicitly.  4. The meanings of any tokens with the same names as ones
+built-in to Perl 6 but that are explicitly defined in this grammar may have
+different definitions.
 
 The root grammar token for the entire dialect is C<Muldis_D>.
 
@@ -195,9 +190,7 @@ Grammar:
 
     <quoted_ln_elem_str> ::=
         '"'
-              [<[\ ..~]-[\\"]>
-            | '\\\\' | '\\\'' | '\\"' | '\\`'
-            | <splitter>]+
+            [<[\ ..~]-["]> | '\\"']+
         '"'
 
     <ln_extensions> ::=
@@ -1354,7 +1347,7 @@ Grammar:
 
     <blob_body> ::=
         '\''
-            [<[ 0..9 A..F ]> | <splitter>]*
+            <[ 0..9 A..F _ \s ]>*
         '\''
 
 A C<Blob> node represents a general purpose bit string.  It is interpreted
@@ -1366,8 +1359,11 @@ represents its own number and each letter (C<A..F>) represents a number in
 (C<[137Fbox]>), similarly to how an C<int_body> is qualified by a
 C<num_max_col_val>.  Each character of the delimited string specifies a
 sequence of one of [1,2,3,4] bits, depending on whether C<blob_max_col_val>
-is [1|b,3,7|o,F|x].  If the C<value_kind> of a C<value> node is
-C<OctetBlob>
+is [1|b,3,7|o,F|x].  The I<body> may also contain underscore or whitespace
+characters between the delimiters, to aid formatting; these are
+ignored/stripped by the parser, and the I<body> is interpreted as if it
+just consisted of the rest of the delimited string contiguously.  If the
+C<value_kind> of a C<value> node is C<OctetBlob>
 rather than C<Blob>, then the C<value> node is interpreted simply as a
 C<Blob> node whose C<type_name> is C<OctetBlob>, and the delimited string
 is appropriately further restricted.
@@ -1395,7 +1391,7 @@ Grammar:
 
     <Text_payload> ::=
         '\''
-            [<-[\\\'\t\n\f\r]> | <escaped_char> | <splitter>]*
+            [<-[\']> | <escaped_char>]*
         '\''
 
     <escaped_char> ::=
@@ -1412,10 +1408,10 @@ Grammar:
         '\\' <ws>? '\\'
 
     <splitter> ::=
-        '\\' <ws> '\\'
+        '\\' \s* '\\'
 
     <ws> ::=
-        <[\ \t\n\f\r]>+
+        \s+ [[<non_value_comment> | <visual_dividing_line>] \s+]*
 
 A C<Text> node represents a general purpose character string.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Text> value as follows:
@@ -1423,14 +1419,20 @@ interpreted as a Muldis D C<sys.std.Core.Type.Text> value as follows:
 The C<Text_payload> is interpreted generally as is usual for a programming
 language with such a delimited character string literal.
 
-A C<Text_payload> may optionally be split into 1..N segments where each
-pair of consecutive segments is separated by a I<splitter> token, which is
-a pair of backslashes (C<\>) surrounding a run of whitespace; this
-segmenting ability is provided to support code that contains long value
-literals while still being well formatted (no extra long lines); the
-I<splitter> tokens are
+A C<Text_payload> may contain any literal characters at all, except that
+any literal occurrences of a backslash (C<\>) or single-quote (C<'>) must
+have a leading backslash.  All literal characters that are whitespace or
+control characters, except for the C<SPACE> char (C<x;20>), are
 ignored/stripped by the parser, and the C<Text_payload> is interpreted as
 if it just consisted of the rest of the delimited string contiguously.
+
+The main reason for this stripping feature is to ensure that the actual
+values being selected by string literals are not variable per the kind of
+linebreaks used to format the Muldis D source code itself.  The feature is
+provided to support code that contains long value literals while still
+being well formatted (no extra-long lines).  If you want to have actual
+non-C<SPACE> whitespace or control characters in your strings, then they
+must be formatted as escape sequences such as C<\n>.
 
 All Muldis D delimited character string literals (generally the 3 C<Text>,
 C<Name>, C<Comment>) may contain some characters denoted with escape
@@ -1452,14 +1454,6 @@ The meanings of the simple escape sequences are:
     \n  | x;A       | LINE FEED (LF)  |     | ctrl char line feed / newline
     \f  | x;C       | FORM FEED (FF)  |     | control char form feed
     \r  | x;D       | CARR. RET. (CR) |     | control char carriage return
-
-A design decision of PTMD_STD that is distinct at least from Perl is
-that non-"space" whitespace characters in character string literals must
-never appear literally (except within a
-I<splitter> token), but must instead be denoted with escape sequences.
-The main reason for this is to ensure that the actual values being selected
-by the string literals were not variable per the kind of linebreaks used to
-format the Muldis D source code itself.
 
 There is currently just one complex escape sequence, of the format C<<
 \c<...> >>, that supports specifying characters in terms of their Unicode
@@ -1501,7 +1495,7 @@ Grammar:
 
     <quoted_name_str> ::=
         '"'
-            [<-[\\\"\t\n\f\r]> | <escaped_char> | <splitter>]*
+            [<-[\"]> | <escaped_char>]*
         '"'
 
     <NameChain> ::=
@@ -1537,7 +1531,8 @@ C<Text_payload> literal which must always be delimited, a C<Name_payload>
 has 2 variants, one delimited (C<quoted_name_str>) and one not
 (C<nonquoted_name_str>).  The delimited C<Name_payload> form differs from
 C<Text_payload> only in that the string is delimited by
-double-quotes rather than apostrophes/single-quotes.
+double-quotes rather than apostrophes/single-quotes, meaning also that
+literal double-quotes instead of apostrophes must be escaped.
 
 A C<nonquoted_name_str> is composed of a single alphabetic or underscore
 character followed by zero or more characters that are each alphanumeric or
@@ -1662,7 +1657,7 @@ Grammar:
 
     <Comment_payload> ::=
         '`'
-            [<-[\\\`\t\n\f\r]> | <escaped_char> | <splitter>]*
+            [<-[\`]> | <escaped_char>]*
         '`'
 
     <non_value_comment> ::=
