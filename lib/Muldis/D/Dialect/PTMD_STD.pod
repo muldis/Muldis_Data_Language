@@ -677,9 +677,6 @@ following grammar definitions are in effect:
     <monadic_prefix_op> ::=
         <monadic_prefix_op__op_cr_basic>
 
-    <dyadic_compare_op> ::=
-        <dyadic_compare_op__op_cr_basic>
-
     <imp_nonsym_dyadic_infix_op> ::=
         <imp_nonsym_dyadic_infix_op__op_cr_basic>
 
@@ -730,9 +727,6 @@ following grammar definitions are in effect:
 
     <monadic_prefix_op> ::=
         <monadic_prefix_op__op_cr_extended>
-
-    <dyadic_compare_op> ::=
-        <dyadic_compare_op__op_cr_extended>
 
     <imp_nonsym_dyadic_infix_op> ::=
         <imp_nonsym_dyadic_infix_op__op_cr_extended>
@@ -4844,7 +4838,8 @@ Grammar:
         <expr> ** [<ws> <comm_infix_reduce_op> <ws>]
 
     <comm_infix_reduce_op__op_cr_basic> ::=
-          and | or | xnor | iff | xor
+          min | max
+        | and | or | xnor | iff | xor
         | '+' | '*'
         | union | intersect | exclude | symdiff
         | join | times | 'cross-join'
@@ -4894,6 +4889,9 @@ Some of the keywords are aliases for each other:
 
 This table indicates which function is invoked by each keyword:
 
+    min -> Core.Ordered.min( { expr.[0], ..., expr.[n] } )
+    max -> Core.Ordered.max( { expr.[0], ..., expr.[n] } )
+
     and  -> Core.Boolean.and( { expr.[0], ..., expr.[n] } )
     or   -> Core.Boolean.or( { expr.[0], ..., expr.[n] } )
     xnor -> Core.Boolean.xnor( Bag:{ expr.[0], ..., expr.[n] } )
@@ -4912,6 +4910,10 @@ This table indicates which function is invoked by each keyword:
     intersect+ -> Core.Bag.intersection( { expr.[0], ..., expr.[n] } )
 
 Examples:
+
+    a min b min c
+
+    a max b max c
 
     True and False and True
 
@@ -5053,6 +5055,7 @@ Grammar:
 
     <nonsym_dyadic_infix_op__op_cr_basic> ::=
           isa | '!isa' | 'not-isa' | as | asserting | assuming
+        | '<' | '<=' | '>' | '>='
         | imp | implies | nimp | if | nif
         | '-' | '/' | '^' | exp
         | '~#'
@@ -5060,6 +5063,7 @@ Grammar:
         | in-r | '!in-r' | 'not-in-r' | r-has | 'r-!has' | 'r-not-has'
         | in-s | '!in-s' | 'not-in-s' | s-has | 's-!has' | 's-not-has'
         | in-b | '!in-b' | 'not-in-b' | b-has | 'b-!has' | 'b-not-has'
+        | in-i | '!in-i' | 'not-in-i' | i-has | 'i-!has' | 'i-not-has'
         | '{<=}' | '{!<=}' | '{>=}' | '{!>=}'
         | '{<}'  | '{!<}'  | '{>}'  | '{!>}'
         | '{<=}+' | '{!<=}+' | '{>=}+' | '{!>=}+'
@@ -5073,10 +5077,12 @@ Grammar:
 
     <nonsym_dyadic_infix_op__op_cr_extended> ::=
           <nonsym_dyadic_infix_op__op_cr_basic>
+        | '≤' | '≥'
         | '→' | '↛' | '←' | '↚'
         | '∈r' | '∉r' | 'r∋' | 'r∌'
         | '∈s' | '∉s' | 's∋' | 's∌'
         | '∈b' | '∉b' | 'b∋' | 'b∌'
+        | '∈i' | '∉i' | 'i∋' | 'i∌'
         | '⊆' | '⊈' | '⊇' | '⊉'
         | '⊂' | '⊄' | '⊃' | '⊅'
         | '⊆+' | '⊈+' | '⊇+' | '⊉+'
@@ -5099,6 +5105,8 @@ Some of the keywords are aliases for each other:
     keyword   | aliases
     ----------+--------
     !isa      | not-isa
+    <=        | ≤
+    >=        | ≥
     imp       | → implies
     nimp      | ↛
     if        | ←
@@ -5116,6 +5124,10 @@ Some of the keywords are aliases for each other:
     !in-b     | ∉b not-in-b
     b-has     | b∋
     b-!has    | b∌ b-not-has
+    in-i      | ∈i
+    !in-i     | ∉i not-in-i
+    i-has     | i∋
+    i-!has    | i∌ i-not-has
     {<=}      | ⊆
     {!<=}     | ⊈
     {>=}      | ⊇
@@ -5147,6 +5159,10 @@ This table indicates which function is invoked by each keyword:
     asserting -> Core.Universal.assertion( lhs, is_true => rhs )
     assuming -> sys.std.Core.Cat.curried_func_static_exten(
                 function => lhs, args => rhs )
+    <    -> Core.Ordered.is_before( lhs, rhs )
+    >    -> Core.Ordered.is_after( lhs, rhs )
+    <=   -> Core.Ordered.is_before_or_same( lhs, rhs )
+    >=   -> Core.Ordered.is_after_or_same( lhs, rhs )
     imp  -> Core.Boolean.imp( lhs, rhs )
     nimp -> Core.Boolean.nimp( lhs, rhs )
     if   -> Core.Boolean.if( lhs, rhs )
@@ -5173,6 +5189,12 @@ This table indicates which function is invoked by each keyword:
     !in-b  -> Core.Bag.value_is_not_member( value => lhs, bag => rhs )
     b-has  -> Core.Bag.has_member( bag => lhs, value => rhs )
     b-!has -> Core.Bag.has_not_member( bag => lhs, value => rhs )
+    in-i   -> Core.Interval.value_is_member( value => lhs,
+                interval => rhs )
+    !in-i  -> Core.Interval.value_is_not_member( value => lhs,
+                interval => rhs )
+    i-has  -> Core.Interval.has_member( interval => lhs, value => rhs )
+    i-!has -> Core.Interval.has_not_member( interval => lhs, value => rhs )
 
     {<=}  -> Core.Relation.is_subset( lhs, rhs )
     {!<=} -> Core.Relation.is_not_subset( lhs, rhs )
@@ -5219,6 +5241,14 @@ Examples:
 
     True implies False
 
+    foo < bar
+
+    foo > bar
+
+    foo ≤ bar
+
+    foo ≥ bar
+
     34 - 21
 
     2 exp 63
@@ -5228,6 +5258,10 @@ Examples:
     b;101.01 / b;11.0
 
     '-' ~# 80
+
+    a ∈i {1..5}
+
+    foo ∉i {"min"..^"max"}
 
     { 8, 4, 6, 7 } ∖ { 9, 0, 7 }
 
@@ -5647,111 +5681,20 @@ Examples:
 Grammar:
 
     <ord_compare_op_invo> ::=
-        <sca_ord_det_op_invo> | <gen_compare_op_invo>
-
-    <sca_ord_det_op_invo> ::=
         <lhs> <ws> '<=>' <ws> <rhs>
             [<ws> <assuming_clause>]?
             [<ws> <reversed_clause>]?
 
-    <gen_compare_op_invo> ::=
-        [
-              <compare_reduce_op_invo>
-            | <dyadic_compare_op_invo>
-        ]
-        [<ws> <gen_compare_op_ordered_clause>]?
-
-    <compare_reduce_op_invo> ::=
-        <expr> ** [<ws> <compare_reduce_op> <ws>]
-
-    <compare_reduce_op> ::=
-        min | max
-
-    <dyadic_compare_op_invo> ::=
-        <lhs> <ws> <dyadic_compare_op> <ws> <rhs>
-
-    <dyadic_compare_op__op_cr_basic> ::=
-          '<' | '<=' | '>' | '>='
-        | in-i | '!in-i' | 'not-in-i' | i-has | 'i-!has' | 'i-not-has'
-
-    <dyadic_compare_op__op_cr_extended> ::=
-          <dyadic_compare_op__op_cr_basic>
-        | '≤' | '≥'
-        | '∈i' | '∉i' | 'i∋' | 'i∌'
-
-    <gen_compare_op_ordered_clause> ::=
-        ordered <ws> <using_clause> | <ordered_by_clause>
-
 An C<ord_compare_op_invo> node is for using infix notation to invoke an
-order comparison operator function.  Such a function takes exactly 2
-(C<lhs> and C<rhs>) or N/2+ (C<expr>)
-main op args, which are the inputs of the operation, plus 2 extra op args
-(C<assuming> and C<reversed> for the C<< <=> >> op, or C<func> and
-C<assuming> for any other op) which let you customize the semantics of the
-operation.  A single C<ord_compare_op_invo> node is equivalent to a single
-C<func_invo> node whose C<func_arg_list> element defines 2-N arguments, and
-the C<expr|lhs|rhs|func|assuming|reversed> elements of the
-C<ord_compare_op_invo> supply the values of those arguments, which are
-associated in the appropriate sequence, except for the N-adic operators
-which are commutative (and associative and idempotent) so the relative
-order of the main op args isn't significant.  I<Details on the extra op
-args are pending.>
-
-B<TODO: Update the above paragraph because the referenced func-assuming
-pair isn't actually in grammar yet, as it would be within "using_clause",
-and "ordered_by_clause" isn't defined yet,  may have parts.>
-
-Some of the keywords are aliases for each other:
-
-    keyword | aliases
-    --------+--------
-    <=      | ≤
-    >=      | ≥
-    in-i    | ∈i
-    !in-i   | ∉i | not-in-i
-    i-has   | i∋
-    i-!has  | i∌ | i-not-has
+order comparison operator function.  I<Details are pending.>
 
 This table indicates which function is invoked by each keyword:
 
     <=> -> Core.Ordered.order( lhs, rhs )
 
-    min -> Core.Ordered.min( { expr.[0], ..., expr.[n] } )
-    max -> Core.Ordered.max( { expr.[0], ..., expr.[n] } )
-
-    <      -> Core.Ordered.is_before( lhs, rhs )
-    >      -> Core.Ordered.is_after( lhs, rhs )
-    <=     -> Core.Ordered.is_before_or_same( lhs, rhs )
-    >=     -> Core.Ordered.is_after_or_same( lhs, rhs )
-    in-i   -> Core.Interval.value_is_member( value => lhs,
-                interval => rhs )
-    !in-i  -> Core.Interval.value_is_not_member( value => lhs,
-                interval => rhs )
-    i-has  -> Core.Interval.has_member( interval => lhs, value => rhs )
-    i-!has -> Core.Interval.has_not_member( interval => lhs, value => rhs )
-
-Details regarding the extra op args is pending.  But most of the time you
-wouldn't be using them, so just the main args represents typical usage.
-
-Examples (for now sans any use of extra op args, which are atypical):
+Examples:
 
     foo <=> bar
-
-    a min b min c
-
-    a max b max c
-
-    foo < bar
-
-    foo > bar
-
-    foo ≤ bar
-
-    foo ≥ bar
-
-    a ∈i {1..5}
-
-    foo ∉i {"min"..^"max"}
 
 =head1 IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS
 
@@ -5982,14 +5925,14 @@ right-associative.
 
 The I<dyadic infix operators>, which includes every kind of C<<
 <sym_dyadic_infix_op_invo> >> and C<< <nonsym_dyadic_infix_op_invo> >> and
-C<< <infix_num_op_invo> >> and every C<< <ord_compare_op_invo> >> that is
-not also a C<< <compare_reduce_op_invo> >>.  These are left-associative.
+C<< <infix_num_op_invo> >> and every C<< <ord_compare_op_invo> >>.
+These are left-associative.
 
 =item B<Reducing Infix>
 
 The I<infix reduction operators>, which includes every kind of C<<
-<comm_infix_reduce_op_invo> >> and C<< <noncomm_infix_reduce_op_invo> >>
-and C<< <compare_reduce_op_invo> >>.  These are left-associative.
+<comm_infix_reduce_op_invo> >> and C<< <noncomm_infix_reduce_op_invo> >>.
+These are left-associative.
 
 =item B<Conditional>
 

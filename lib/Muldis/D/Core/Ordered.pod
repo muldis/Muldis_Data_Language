@@ -32,8 +32,7 @@ I<This documentation is pending.>
 Rather than having a whole set of virtual functions for the C<Ordered>
 mixin, such as before/after/min/max/between/etc, we have just the one
 C<order> for each ordered type to implement, and then all the other
-ordered-sensitive routines (before/etc) just take C<order> (or some other
-C<order-determination> function), with a higher-order-function parameter.
+ordered-sensitive routines (before/etc) just wrap the virtual C<order>.
 
 =head2 sys.std.Core.Ordered.order
 
@@ -120,33 +119,28 @@ They can potentially be used with values of any data type as long as said
 data type has a (total) C<order-determination> function defined for it,
 and all system-defined conceptually-ordered Muldis D scalar root types do.
 
-Each of these functions which has the parameter named C<func> is a wrapper
-over the C<order-determination> function named in its C<func> argument when
-the latter function is curried by a calling-function-specific
-C<is_reverse_order> argument value.  For any scalar root type's
-type-default order function, the argument for C<func> is
-C<sys.std.Core.Ordered.order>.  Each C<func> parameter is optional and
-defaults to C<sys.std.Core.Ordered.order> if no explicit argument is given
-to it.
+Each of these functions is a wrapper over the C<order-determination>
+function named C<sys.std.Core.Ordered.order> when the latter function is
+curried by a C<misc_args> argument of C<Tuple:D0> and by
+a calling-function-specific C<is_reverse_order> argument value.
 
 =head2 sys.std.Core.Ordered.is_before
 
-C<< function is_before (Bool <-- topic : Universal,
-other : Universal, func? : OrdDetCFuncNC) {...} >>
+C<< function is_before (Bool <-- topic : Ordered, other : Ordered) {...} >>
 
-This function results in C<Bool:True> iff the wrapped function would result
+This function results in C<Bool:True> iff C<sys.std.Core.Ordered.order>
+would result
 in C<Order:Increase> when given the same corresponding 2 arguments plus an
 C<is_reverse_order> argument of C<Bool:False>, and C<Bool:False> otherwise.
 Note that this operation is also known as I<less than> or C<< < >>.
 
 =head2 sys.std.Core.Ordered.is_after
 
-C<< function is_after (Bool <-- topic : Universal,
-other : Universal, func? : OrdDetCFuncNC) {...} >>
+C<< function is_after (Bool <-- topic : Ordered, other : Ordered) {...} >>
 
 This function is an alias for C<sys.std.Core.Ordered.is_before> except
 that it transposes the C<topic> and C<other> arguments.  This function
-results in C<Bool:True> iff the wrapped function would result in
+results in C<Bool:True> iff C<sys.std.Core.Ordered.order> would result in
 C<Order:Decrease> when given the same corresponding 2 arguments plus an
 C<is_reverse_order> argument of C<Bool:False>, and C<Bool:False> otherwise.
 Note that this operation is also known as I<greater than> or C<< > >>.
@@ -154,7 +148,7 @@ Note that this operation is also known as I<greater than> or C<< > >>.
 =head2 sys.std.Core.Ordered.is_before_or_same
 
 C<< function is_before_or_same (Bool <--
-topic : Universal, other : Universal, func? : OrdDetCFuncNC) {...} >>
+topic : Ordered, other : Ordered) {...} >>
 
 This function is exactly the same as C<sys.std.Core.Ordered.is_before>
 except that it results in C<Bool:True> if its 2 primary arguments are
@@ -164,7 +158,7 @@ to> or C<≤>.
 =head2 sys.std.Core.Ordered.is_after_or_same
 
 C<< function is_after_or_same (Bool <--
-topic : Universal, other : Universal, func? : OrdDetCFuncNC) {...} >>
+topic : Ordered, other : Ordered) {...} >>
 
 This function is an alias for C<sys.std.Core.Ordered.is_before_or_same>
 except that it transposes the C<topic> and C<other> arguments.  This
@@ -175,8 +169,7 @@ C<≥>.
 
 =head2 sys.std.Core.Ordered.min
 
-C<< function min (Universal <-- topic : Set,
-func? : OrdDetCFuncNC) {...} >>
+C<< function min (Ordered <-- topic : set_of.Ordered) {...} >>
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and picks the minimum of the 2 (which is
@@ -187,8 +180,7 @@ for C<min>.
 
 =head2 sys.std.Core.Ordered.max
 
-C<< function max (Universal <-- topic : Set,
-func? : OrdDetCFuncNC) {...} >>
+C<< function max (Ordered <-- topic : set_of.Ordered) {...} >>
 
 This function is exactly the same as C<sys.std.Core.Ordered.min> except
 that it results in the maximum input element value rather than the minimum
@@ -196,8 +188,7 @@ one, and that C<max>'s identity value is C<-Inf> (negative infinity).
 
 =head2 sys.std.Core.Ordered.minmax
 
-C<< function minmax (Tuple <-- topic : Set,
-func? : OrdDetCFuncNC) {...} >>
+C<< function minmax (Tuple <-- topic : set_of.Ordered) {...} >>
 
 This function results in a binary tuple whose attribute names are C<min>
 and C<max> and whose respective attribute values are what
