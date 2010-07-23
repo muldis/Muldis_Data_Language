@@ -1415,18 +1415,25 @@ language with such a delimited character string literal.
 
 A C<Text_payload> may contain any literal characters at all, except that
 any literal occurrences of a backslash (C<\>) or single-quote (C<'>) must
-have a leading backslash.  All literal characters that are whitespace or
-control characters, except for the C<SPACE> char (C<x;20>), are
-ignored/stripped by the parser, and the C<Text_payload> is interpreted as
-if it just consisted of the rest of the delimited string contiguously.
+have a leading backslash.  Every run of 1+ literal whitespace or control
+characters, that is not composed just of the C<SPACE> char (C<x;20>), is
+substituted for a single C<SPACE> character by the parser, and the
+C<Text_payload> is interpreted as if the post-substitution string had been
+the original string.  However, if said run of whitespace is immediately
+preceded by an escape sequence denoting a whitespace or control character,
+then the run is simply stripped rather than a C<SPACE> taking its place.
 
-The main reason for this stripping feature is to ensure that the actual
-values being selected by string literals are not variable per the kind of
-linebreaks used to format the Muldis D source code itself.  The feature is
-provided to support code that contains long value literals while still
-being well formatted (no extra-long lines).  If you want to have actual
-non-C<SPACE> whitespace or control characters in your strings, then they
-must be formatted as escape sequences such as C<\n>.
+The main reason for this substitution/stripping feature is to ensure that
+the actual values being selected by string literals are not variable per
+the kind of linebreaks or indenting used to format the Muldis D source code
+itself.  The feature is provided to support code that contains long value
+literals while still being well formatted (no extra-long lines).  If you
+want to have actual non-C<SPACE> whitespace or control characters in your
+strings, then they must be formatted as escape sequences such as C<\n>.  If
+you want to end up with multiple C<SPACE> characters at the point where a
+line is broken, you have to format some as escape sequences.  If you want
+to end up with no C<SPACE> at all where a line is broken, then you'll have
+to employ some other workaround, such as catenating several quoted strings.
 
 All Muldis D delimited character string literals (generally the 3 C<Text>,
 C<Name>, C<Comment>) may contain some characters denoted with escape
