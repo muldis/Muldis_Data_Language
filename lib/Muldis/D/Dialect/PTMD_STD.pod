@@ -5068,9 +5068,7 @@ Grammar:
         | '~#'
         | where | '!where' | 'not-where'
         | inside | '!inside'|'not-inside' | holds | '!holds'|'not-holds'
-        | in-s | '!in-s' | 'not-in-s' | s-has | 's-!has' | 's-not-has'
-        | in-b | '!in-b' | 'not-in-b' | b-has | 'b-!has' | 'b-not-has'
-        | in-i | '!in-i' | 'not-in-i' | i-has | 'i-!has' | 'i-not-has'
+        | in | '!in' | 'not-in' | has | '!has' | 'not-has'
         | '{<=}' | '{!<=}' | '{>=}' | '{!>=}'
         | '{<}'  | '{!<}'  | '{>}'  | '{!>}'
         | '{<=}+' | '{!<=}+' | '{>=}+' | '{!>=}+'
@@ -5087,9 +5085,7 @@ Grammar:
         | '≤' | '≥'
         | '→' | '↛' | '←' | '↚'
         | '∈@' | '∉@' | '@∋' | '@∌'
-        | '∈s' | '∉s' | 's∋' | 's∌'
-        | '∈b' | '∉b' | 'b∋' | 'b∌'
-        | '∈i' | '∉i' | 'i∋' | 'i∌'
+        | '∈' | '∉' | '∋' | '∌'
         | '⊆' | '⊈' | '⊇' | '⊉'
         | '⊂' | '⊄' | '⊃' | '⊅'
         | '⊆+' | '⊈+' | '⊇+' | '⊉+'
@@ -5123,18 +5119,10 @@ Some of the keywords are aliases for each other:
     !inside   | ∉@ not-inside
     holds     | @∋
     !holds    | @∌ not-holds
-    in-s      | ∈s
-    !in-s     | ∉s not-in-s
-    s-has     | s∋
-    s-!has    | s∌ s-not-has
-    in-b      | ∈b
-    !in-b     | ∉b not-in-b
-    b-has     | b∋
-    b-!has    | b∌ b-not-has
-    in-i      | ∈i
-    !in-i     | ∉i not-in-i
-    i-has     | i∋
-    i-!has    | i∌ i-not-has
+    in        | ∈
+    !in       | ∉ not-in
+    has       | ∋
+    !has      | ∌ not-has
     {<=}      | ⊆
     {!<=}     | ⊈
     {>=}      | ⊇
@@ -5188,20 +5176,10 @@ This table indicates which function is invoked by each keyword:
     !inside -> Core.Relation.tuple_is_not_member( t => lhs, r => rhs )
     holds   -> Core.Relation.has_member( r => lhs, t => rhs )
     !holds  -> Core.Relation.has_not_member( r => lhs, t => rhs )
-    in-s   -> Core.Set.value_is_member( value => lhs, coll => rhs )
-    !in-s  -> Core.Set.value_is_not_member( value => lhs, coll => rhs )
-    s-has  -> Core.Set.has_member( coll => lhs, value => rhs )
-    s-!has -> Core.Set.has_not_member( coll => lhs, value => rhs )
-    in-b   -> Core.Bag.value_is_member( value => lhs, coll => rhs )
-    !in-b  -> Core.Bag.value_is_not_member( value => lhs, coll => rhs )
-    b-has  -> Core.Bag.has_member( coll => lhs, value => rhs )
-    b-!has -> Core.Bag.has_not_member( coll => lhs, value => rhs )
-    in-i   -> Core.Interval.value_is_member( value => lhs,
-                coll => rhs )
-    !in-i  -> Core.Interval.value_is_not_member( value => lhs,
-                coll => rhs )
-    i-has  -> Core.Interval.has_member( coll => lhs, value => rhs )
-    i-!has -> Core.Interval.has_not_member( coll => lhs, value => rhs )
+    in      -> Core.Collective.value_is_member( value => lhs, coll => rhs )
+    !in     -> Core.Collective.value_is_not_member( value=>lhs, coll=>rhs )
+    has     -> Core.Collective.has_member( coll => lhs, value => rhs )
+    !has    -> Core.Collective.has_not_member( coll => lhs, value => rhs )
 
     {<=}  -> Core.Relation.is_subset( lhs, rhs )
     {!<=} -> Core.Relation.is_not_subset( lhs, rhs )
@@ -5266,9 +5244,9 @@ Examples:
 
     '-' ~# 80
 
-    a ∈i {1..5}
+    a ∈ {1..5}
 
-    foo ∉i {"min"..^"max"}
+    foo ∉ {"min"..^"max"}
 
     { 8, 4, 6, 7 } ∖ { 9, 0, 7 }
 
