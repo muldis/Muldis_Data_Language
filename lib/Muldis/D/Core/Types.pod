@@ -227,6 +227,14 @@ compose:
             sys.std.Core.Type.Tuple
             sys.std.Core.Type.Relation
 
+        sys.std.Core.Type.Collective
+
+            sys.std.Core.Type.Set
+            sys.std.Core.Type.Array
+            sys.std.Core.Type.Bag
+            sys.std.Core.Type.SPInterval
+            sys.std.Core.Type.MPInterval
+
 =head1 MAXIMAL AND MINIMAL DATA TYPES
 
 These core data types are special and are the only Muldis D types (except
@@ -341,6 +349,16 @@ conceivably compose C<Attributive> as well, but for now it doesn't, because
 it still differs from C<Tuple> and C<Relation> in several ways such that
 virtual routines composed for C<Tuple> and C<Relation> would be impractical
 to compose for C<ScalarWP> in general, but that might change later.>
+
+=head2 sys.std.Core.Type.Collective
+
+The C<Collective> type is a mixin (union) type that is intended to be
+explicitly composed by other types that are effectively simple homogeneous
+collections of values, and something more specific than relations in
+general.  Just a few primary system-defined types are collective types,
+including C<Set>, C<Array>, C<Bag>, C<SPInterval>, and C<MPInterval>.  The
+cardinality of C<Collective> is infinity.  The default value of
+C<Collective> is C<Nothing>.
 
 =head1 GENERIC SCALAR DATA TYPES
 
@@ -666,7 +684,8 @@ C<DHBag> to be defined partly in terms of it.
 
 =head2 sys.std.Core.Type.SPInterval
 
-An C<SPInterval> (single-piece interval) is a C<Tuple>.  It typically
+An C<SPInterval> (single-piece interval) is a C<Tuple>.  The C<SPInterval>
+type explicitly composes the C<Collective> mixin type.  It typically
 defines a single I<bounded interval>/I<finite interval> in terms of 2
 I<endpoint> values plus an indicator of whether either, both, or none of
 the endpoint values are included in the interval.  It can also define an
@@ -792,7 +811,8 @@ the special shorthand names I<TABLE_DUM> and I<TABLE_DEE>, respectively.
 
 C<Set> is a proper subtype of
 C<Relation> that has 1 attribute, and its name is C<value>; it can be of
-any declared type.  A C<Set> subtype is normally used by any
+any declared type.  The C<Set> type explicitly composes the C<Collective>
+mixin type.  A C<Set> subtype is normally used by any
 system-defined N-adic operators where the order of their argument elements
 or result is not significant, and that duplicate values are not
 significant.  Its default value has zero tuples.  Note that, for any
@@ -859,7 +879,8 @@ infinite.
 C<Array> is a proper subtype of
 C<Relation> that has 2 attributes, and their names are C<index> and
 C<value>, where C<index> is a unary primary key and its declared type is a
-C<NNInt> subtype (C<value> can be non-unique and of any declared type).  An
+C<NNInt> subtype (C<value> can be non-unique and of any declared type).
+The C<Array> type explicitly composes the C<Collective> mixin type.  An
 C<Array> is considered dense, and all C<index> values in one are numbered
 consecutively from 0 to 1 less than the count of tuples, like array
 indices in typical programming languages.  An C<Array> subtype is normally
@@ -879,7 +900,8 @@ C<Array> and C<DHRelation>.  The cardinality of this type is infinite.
 C<Bag> (or I<multiset>) is a
 proper subtype of C<Relation> that has 2 attributes, and their names are
 C<value> and C<count>, where C<value> is a unary primary key (that can have
-any declared type) and C<count> is a C<PInt> subtype.  A C<Bag> subtype is
+any declared type) and C<count> is a C<PInt> subtype.  The C<Bag> type
+explicitly composes the C<Collective> mixin type.  A C<Bag> subtype is
 normally used by any system-defined N-adic operators where the order of
 their argument elements or result is not significant, but that duplicate
 values are significant; specifically, C<count> defines an explicit count of
@@ -896,9 +918,10 @@ C<Bag> and C<DHRelation>.  The cardinality of this type is infinite.
 C<MPInterval> (multi-piece interval) is a proper subtype of
 C<Relation> that is defined directly partly in terms of the tuple type
 C<SPInterval>, thereby sharing its I<heading>, but defines no further
-constraints of its own.  It defines a single I<multi-piece interval>, which
-is conceptually either a set of 0..N intervals or a single larger interval
-that had 0..N sub-intervals sliced out.  An C<MPInterval> is the
+constraints of its own.  The C<MPInterval> type explicitly composes the
+C<Collective> mixin type.  It defines a single I<multi-piece interval>,
+which is conceptually either a set of 0..N intervals or a single larger
+interval that had 0..N sub-intervals sliced out.  An C<MPInterval> is the
 canonical means that Muldis D provides of representing the result of
 set-unioning 2 C<SPInterval> where the latter do not touch or overlap.
 Moreover, an C<MPInterval> also empowers Muldis D to have a single
