@@ -50,11 +50,12 @@ count : NNInt) implements sys.std.Core.Stringy.replication {...} >>
 
 This function results in the catenation of C<count> instances of C<topic>.
 
-=head1 GENERIC RELATIONAL FUNCTIONS FOR ARRAYS
+=head1 FUNCTIONS IMPLEMENTING VIRTUAL COLLECTIVE FUNCTIONS
 
 =head2 sys.std.Core.Array.has_elem
 
-C<< function has_elem (Bool <-- coll : Array, value : Universal) {...} >>
+C<< function has_elem (Bool <-- coll : Array, value : Universal)
+implements sys.std.Core.Collective.has_member {...} >>
 
 This function results in C<Bool:True> iff its C<value> argument matches the
 C<value> attribute of at least one tuple of its C<coll> argument (that
@@ -64,12 +65,35 @@ incompatible as per C<update_value>.
 
 =head2 sys.std.Core.Array.has_not_elem
 
-C<< function has_not_elem (Bool <-- coll : Array,
-value : Universal) {...} >>
+C<< function has_not_elem (Bool <-- coll : Array, value : Universal)
+implements sys.std.Core.Collective.has_not_member {...} >>
 
 This function is exactly the same as C<sys.std.Core.Array.has_elem> except
 that
 it results in the opposite boolean value when given the same arguments.
+
+=head2 sys.std.Core.Array.value_is_elem
+
+C<< function value_is_elem (Bool <-- value : Universal, coll : Array)
+implements sys.std.Core.Collective.value_is_member {...} >>
+
+This function is an alias for C<sys.std.Core.Array.has_elem>.  This
+function results in C<Bool:True> iff its C<value> argument matches the
+C<value> attribute of at least one tuple of its C<coll> argument (that is,
+iff conceptually C<value> is an element of C<coll>), and C<Bool:False>
+otherwise.
+
+=head2 sys.std.Core.Array.value_is_not_elem
+
+C<< function value_is_not_elem (Bool <-- value : Universal, coll : Array)
+implements sys.std.Core.Collective.value_is_not_member {...} >>
+
+This function is an alias for C<sys.std.Core.Array.has_elem>.  This
+function is exactly the same as C<sys.std.Core.Array.value_is_elem> except
+that it results in the opposite boolean value when given the same
+arguments.
+
+=head1 GENERIC RELATIONAL FUNCTIONS FOR ARRAYS
 
 =head2 sys.std.Core.Array.value
 
