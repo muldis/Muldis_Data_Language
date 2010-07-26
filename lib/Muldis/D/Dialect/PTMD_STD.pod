@@ -5868,76 +5868,60 @@ precedence rules, meaning how it accepts Muldis D code lacking explicit
 expression delimiters and implicitly delimits the expressions therein, in a
 fully deterministic manner.
 
-Unlike many languages which can have over a dozen precedence levels, such
-as Perl (about 24) or C, PTMD_STD only has about 7 precedence levels in the
-interest of simplicity, and so you will likely have to use more explicit
-expression delimiters to force the nesting precedence you want.  That 7
-figure assumes the C<catalog_abstraction_level> pragma is
-C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 3 of the levels
-can be eliminated, so then PTMD_STD has just 4; if it is C<code_as_data>
-instead, then 3 more can be eliminated, leaving just 1.
+Muldis D has 21 precedence levels when the C<catalog_abstraction_level>
+pragma is C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 16 of
+the levels can be eliminated, so then PTMD_STD has just 5; if it is
+C<code_as_data> instead, then 4 more can be eliminated, leaving just 1.
 
-Here we list the 7 levels from "tightest" to "loosest":
+Here we list the levels from "tightest" to "loosest", along with a few
+examples of each level:
 
-=over
-
-=item B<Terms>
-
-The I<terms> and I<delimited expressions> and I<tagged delimiteds>, which
-includes every kind of C<< <expr> >> that is also a C<< <value> >> (meaning
-any C<< <opaque_value_literal> >> and C<< <coll_value_selector> >>), as
-well as any C<< <non_value_comment> >> and
-C<< <delim_expr> >> and C<< <expr_name> >> and C<< <func_invo>
->> and C<< <material_ref_sel_expr> >>.  In general these are very simple
-or are entirely or mostly surrounded by some kind of delimiters.  These are
-non-associative or associativity is not applicable.
-
-=item B<Postfix>
-
-The I<accessors> and I<postcircumfix operators> and I<postfix operators>,
-which includes every kind of C<< <accessor> >> and C<<
-<postcircumfix_op_invo> >> and C<< <monadic_postfix_op_invo> >> and C<<
-<postfix_num_op_invo> >> and C<< <num_op_invo> <ws>
-<rounded_with_rule_clause> >>.  These are left-associative.
-
-=item B<Prefix>
-
-The I<prefix operators>, which includes every kind of
-C<< <monadic_prefix_op_invo> >> and C<< <prefix_num_op_invo> >>.  These are
-right-associative.
-
-=item B<Dyadic Infix>
-
-The I<dyadic infix operators>, which includes every kind of C<<
-<sym_dyadic_infix_op_invo> >> and C<< <nonsym_dyadic_infix_op_invo> >> and
-C<< <infix_num_op_invo> >> and every C<< <ord_compare_op_invo> >>.
-These are left-associative.
-
-=item B<Reducing Infix>
-
-The I<infix reduction operators>, which includes every kind of C<<
-<comm_infix_reduce_op_invo> >> and C<< <noncomm_infix_reduce_op_invo> >>.
-These are left-associative.
-
-=item B<Conditional>
-
-Every C<< <if_else_expr> >> and C<< <given_when_def_expr> >>.  The C<??!!>
-form is right-associative, meaning that C<a ?? b !! c ?? d !! e> will
-parse as C<a ?? b !! (c ?? d !! e)> (like most languages) and not as
-C<(a ?? b !! c) ?? d !! e> (like PHP).  The C<if-then-else> and
-C<given-when-default> forms are unambiguous for associativity.
-
-=item B<Naming>
-
-Every C<< <named_expr> >>, that is, associating an explicit name with an
-expression node/tree.  These are right-associative, meaning that given a
-C<a ::= b ::= 5>, the expression node of value C<5> has the name C<b> and
-another, alias node for C<b> has the name C<a>.
-
-=back
+    Level            | Assoc | Examples
+    -----------------+-------+---------------------------------------------
+    Terms            | N/A   | Inf True Order:Same Down 42 3.14 -5/7 3*2^8
+                     |       | F;'27E04' 'eek' foo "x" <Int> #`comment!`#
+                     |       | {43,9,5} [1,2,3] {'Carrots'=>42} {11..20}
+                     |       | $:{...} %:{...} @:{...} nlx.lib.MyType
+                     |       | (1+2) myfunc(...)
+    Accessor Postfix | N/A   | nlx.data.quux .age foo().bar
+                     |       | p.{...} r{...} x.[...] y[...]
+    Ordinal Postfix  | N/A   | ++ -- i!
+    Generic Prefix   | N/A   | || # #+ % @
+    Currying Infix   | left  | assuming
+    Exponentiation   | right | ^ exp ** log e** log-e
+    Multiplicative   | left  | * / div mod intersect join times divideby
+                     |       | compose intersect+
+    Rounding 2-Infix | left  | round
+    Filtering Infix  | left  | where !where matching !matching
+    Additive         | left  | + - |-| ~ ~# union exclude minus
+                     |       | union+ union++ minus+
+    Ordering Infix   | left  | <=>
+    Selecting Infix  | left  | as asserting min max [<=>] //
+    Comparison       | left  | isa !isa = != < > <= >= like !like
+                     |       | inside !inside holds !holds in !in has !has
+                     |       | {<=} {!<=} {>=} {!>=} {<} {!<} {>} {!>}
+                     |       | {<=}+ {!<=}+ {>=}+ {!>=}+ {<}+ {!<}+ {>}+ {!>}+
+    Logical Negation | N/A   | not ! ¬
+    Conjunction      | left  | and ∧
+    Disjunction      | left  | or ∨ xor ⊻ ↮
+    Implies          | left  | imp → nimp ↛ if ← nif ↚ nand ⊼ ↑ nor ⊽ ↓
+    Equivalence      | left  | xnor ↔
+    Conditional      | right | ??!! if-else-expr given-when-def-expr
+    Naming           | right | ::=
+    Assignment       | non   | := :=++ :=-- :=foo
 
 Any imperative code that embeds a value expression has looser precedence
 than all value expressions.
+
+Using two C<!> symbols below generically to represent any pair of operators
+that have the same precedence, the associativities specified above
+for binary, ternary, or N-ary operators are interpreted as follows:
+
+    Assoc | Meaning of $a ! $b ! $c
+    ------+------------------------
+    left  | ($a ! $b) ! $c
+    right | $a ! ($b ! $c)
+    non   | ILLEGAL
 
 =head1 SEE ALSO
 
