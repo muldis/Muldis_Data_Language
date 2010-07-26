@@ -5868,10 +5868,10 @@ precedence rules, meaning how it accepts Muldis D code lacking explicit
 expression delimiters and implicitly delimits the expressions therein, in a
 fully deterministic manner.
 
-Muldis D has 21 precedence levels when the C<catalog_abstraction_level>
-pragma is C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 16 of
-the levels can be eliminated, so then PTMD_STD has just 5; if it is
-C<code_as_data> instead, then 4 more can be eliminated, leaving just 1.
+Muldis D has 22 precedence levels when the C<catalog_abstraction_level>
+pragma is C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 18 of
+the levels can be eliminated, so then PTMD_STD has just 4; if it is
+C<code_as_data> instead, then 3 more can be eliminated, leaving just 1.
 
 Here we list the levels from "tightest" to "loosest", along with a few
 examples of each level:
@@ -5883,8 +5883,10 @@ examples of each level:
                      |       | {43,9,5} [1,2,3] {'Carrots'=>42} {11..20}
                      |       | $:{...} %:{...} @:{...} nlx.lib.MyType
                      |       | (1+2) myfunc(...)
+    -----------------+-------+---------------------------------------------
     Accessor Postfix | N/A   | nlx.data.quux .age foo().bar
-                     |       | p.{...} r{...} x.[...] y[...]
+    -----------------+-------+---------------------------------------------
+    Postcircumfix    | N/A   | p.{...} r{...} x.[...] y[...]
     Ordinal Postfix  | N/A   | ++ -- i!
     Generic Prefix   | N/A   | || # #+ % @
     Currying Infix   | left  | assuming
@@ -5906,9 +5908,14 @@ examples of each level:
     Disjunction      | left  | or ∨ xor ⊻ ↮
     Implies          | left  | imp → nimp ↛ if ← nif ↚ nand ⊼ ↑ nor ⊽ ↓
     Equivalence      | left  | xnor ↔
+    -----------------+-------+---------------------------------------------
     Conditional      | right | ??!! if-else-expr given-when-def-expr
     Naming           | right | ::=
+    -----------------+-------+---------------------------------------------
     Assignment       | non   | := :=++ :=-- :=foo
+
+I<The large block of 17 levels above is the least rigorous and will likely
+need many changes.  The 4 small blocks are rigorous and should be okay.>
 
 Any imperative code that embeds a value expression has looser precedence
 than all value expressions.

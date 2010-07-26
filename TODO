@@ -306,6 +306,16 @@ source is any|etc matching|where|etc filter|etc
 ADD RELATIONAL OPERATORS THAT COMBINE BOOL OPS ADDED IN 0.80.0 WITH
 RELATIONAL MAP/RESTRICTION/ETC AND ... The new functions are modelled after
 some in Perl 5's List::MoreUtils module.
+That is, add prefix ops exactly|all|any|one|none|etc
+which take a relation and result in True or False depending on what that
+relation's cardinality is.  In some cases, an extra arg is needed:
+    - exactly((s⋉t),n) = (#(s⋉t) = n)
+    - none((s⋉t)) = exactly((s⋉t),0) = !#(s⋉t)
+    - any((s⋉t)) = !exactly((s⋉t),0) = ?#(s⋉t)
+    - all((s⋉t),#s) = exactly((s⋉t),#s) = (#(s⋉t) = #s)
+    - notall((s⋉t),#s) = !exactly((s⋉t),#s) = (#(s⋉t) != #s)
+    - one((s⋉t)) = exactly((s⋉t),1) = (#(s⋉t) = 1)
+OR MAYBE THESE AREN'T ANY MORE USEFUL THAN THEIR EQUIVALENT EXPRS.
 
 * Consider adding sequence generator updaters|procedures in Integer.pod.
 
