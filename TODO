@@ -55,6 +55,31 @@ examples: distrib-key-constraint, distrib-subset-constraint.
 
 ----------
 
+* Change the basic exception throwing mechanism from a function/procedure
+to its own expression/statement node kind.  Call the new node kind "fail"
+or "failure" or "throw" or "raise" something.  The "fail" node has a child
+expression node or references a variable node which defines an Exception
+value.  Simply evaluating a "fail" expression node will throw the exception
+so a "fail" expr node is expected to only be the child of a short-circuit
+expression like ??!!.
+- Add a "fail" term, which throws a generic/default Exception value,
+and/or a tight-binding "fail" prefix-keyword which takes an Exception arg;
+that term/prefix is the concrete syntax for the new fail node.
+- The "assertion" function can then go away; instead of writing
+[$foo asserting $foo != 0], say [$foo = 0 ?? fail !! $foo].
+- Add a few simple functions that each result in a kind of generic
+Exception value.  At least have a niladic one for the most gen exception.
+Then one could write [<cond-expr> ?? gen_exception() !! <expr-when-ok>].
+- The treated() function then is just a wrapper over ??!! + isa.
+- The fail() procedure will go away, replaced with a term/keyword also,
+which maps to the "fail" statement node.
+- Maybe use 'fail' for niladic term and 'raise' for prefix term?
+- New keyword speelings:
+    - failure
+    - raised <expr>
+    - fail
+    - raise <var>
+
 * Add special syntax for more ops:
     - ?#foo - "has 1+ elements" - is_not_empty(foo)
     - !#foo - "has zero elements" - is_empty(foo)
