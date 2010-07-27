@@ -5868,54 +5868,54 @@ precedence rules, meaning how it accepts Muldis D code lacking explicit
 expression delimiters and implicitly delimits the expressions therein, in a
 fully deterministic manner.
 
-PTMD_STD has 23 precedence levels when the C<catalog_abstraction_level>
-pragma is C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 18 of
-the levels can be eliminated, so then PTMD_STD has just 5; if it is
-C<code_as_data> instead, then 4 more can be eliminated, leaving just 1.
+PTMD_STD has 17 precedence levels when the C<catalog_abstraction_level>
+pragma is C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 13.5
+of the levels can be eliminated, so then PTMD_STD has just 3.5; if it is
+C<code_as_data> instead, then 2.5 more can be eliminated, leaving just 1.
 
 Here we list the levels from "tightest" to "loosest", along with a few
 examples of each level:
 
     Level            | Assoc | Examples
     -----------------+-------+---------------------------------------------
-    Data Terms       | N/A   | Inf True Order:Same Down 42 3.14 -5/7 3*2^8
+    Terms            | N/A   | Inf True Order:Same Down 42 3.14 -5/7 3*2^8
                      |       | F;'27E04' 'eek' foo "x" #`comment!`#
                      |       | {43,9,5} [1,2,3] {'Carrots'=>42} {11..20}
                      |       | $:{...} %:{...} @:{...} nlx.lib.MyType
+                     |       | (1+2) myfunc(...) <Int> nlx.data.quux .age
     -----------------+-------+---------------------------------------------
-    Routine Terms    | N/A   | (1+2) myfunc(...) <Int>
-    Accessor Postfix | N/A   | nlx.data.quux .age foo().bar
+    Postfix          | N/A   | f().a p.{...} r{...} x.[...] y[...] ++ -- i!
     -----------------+-------+---------------------------------------------
-    Postcircumfix    | N/A   | p.{...} r{...} x.[...] y[...]
-    Ordinal Postfix  | N/A   | ++ -- i!
     Generic Prefix   | N/A   | || # #+ % @
     Currying Infix   | left  | assuming
     Exponentiation   | right | ^ exp ** log e** log-e
     Multiplicative   | left  | * / div mod intersect join times divideby
-                     |       | compose intersect+
-    Rounding 2-Infix | left  | round
-    Filtering Infix  | left  | where !where matching !matching
+                     |       | where !where matching !matching compose
+                     |       | intersect+
     Additive         | left  | + - |-| ~ ~# union exclude minus
-                     |       | union+ union++ minus+
-    Ordering Infix   | left  | <=>
-    Selecting Infix  | left  | as asserting min max [<=>] //
-    Comparison       | left  | isa !isa = != < > <= >= like !like
+                     |       | union+ union++ minus+ round
+    Selecting Infix  | left  | as asserting min max //
+    -----------------+-------+---------------------------------------------
+    Comparison       | left  | <=> = != < > <= >= isa !isa like !like
                      |       | inside !inside holds !holds in !in has !has
                      |       | {<=} {!<=} {>=} {!>=} {<} {!<} {>} {!>}
                      |       | {<=}+ {!<=}+ {>=}+ {!>=}+ {<}+ {!<}+ {>}+ {!>}+
-    Logical Negation | N/A   | not ! ¬
-    Conjunction      | left  | and ∧
+    -----------------+-------+---------------------------------------------
+    Negation Prefix  | N/A   | not ! ¬
+    Conjunction      | left  | and ∧ [<=>]
     Disjunction      | left  | or ∨ xor ⊻ ↮
     Implies          | left  | imp → nimp ↛ if ← nif ↚ nand ⊼ ↑ nor ⊽ ↓
     Equivalence      | left  | xnor ↔
     -----------------+-------+---------------------------------------------
-    Conditional      | right | ??!! if-else-expr given-when-def-expr
-    Binding          | right | ::=
+    Shorting Infix   | right | ??!! if-else-expr given-when-def-expr
+    Binding Infix    | right | ::=
     -----------------+-------+---------------------------------------------
     Assignment       | non   | := :=++ :=-- :=foo
 
-I<The large block of 17 levels above is the least rigorous and will likely
-need many changes.  The 4 small blocks are rigorous and should be okay.>
+I<The block of 6 numeric/string/relation levels above is the least rigorous
+and will likely need many changes.  The block of 4 boolean levels also
+needs some work.  The other 5 blocks of 1 or 2 levels are more rigorous and
+should be okay.>
 
 Any imperative code that embeds a value expression has looser precedence
 than all value expressions.
