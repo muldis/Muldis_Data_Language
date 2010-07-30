@@ -106,6 +106,91 @@ This will all take some work to get right; not /all/ Rat/etc can be subst.
 Probably *only* those operators that Rational/etc explicitly declares can
 be delegated to Rat/etc by TAIInstant/etc.
 
+* Replace many N-adic routines with dyadic ones, specifically
+those whose definition is a repetition of a dyadic operation (so, 'sum' or
+'join' etc yes but 'mean' no), which users then can invoke by way of a
+reduction function if they want N-adic syntax.  Also let system catalog
+store more information such as whether or not functions are commutative or
+associative or idempotent or symmetric etc; likewise, the function def can
+store what the operation's identity value is, if it has one, as meta-data,
+useable when comm/assoc; the reduction func can read this using a
+meta-programming function or something.  Reduction will fail if used on a
+base func that doesn't define an identity if given an empty list.
+The point of this change is to make the common dyadic case of N-adic
+operators simpler, and also set a foundation for user-defined operators
+that provide more information such that a compiler can be more effective
+in optimizing them, or something.
+The explicit/normal way, then, to indicate in code whether you want the
+parser to produce a reduce op wrapper call rather than nested direct
+invocations in the system catalog, is to just invoke the reduction
+operator directly and explicitly pass an operand list; but the reduce op
+would have special syntax, taking normal collection exprs, such as:
+    [+] {5,23,5}
+    [~] ['hello', 'world']
+    [join] {order,inventory}
+    [*] {1..5}
+... or something.  Not using that would parse into nested dyadic calls
+instead though the compiler can still rearrange.
+Once we do that, its also simple to add hyper-operators, though arguably
+these are redundant with 'map' or 'extension' etc.
+Or this would be better for simplicity, given it won't be used as often,
+and any dyadic infix function at all may be used, spelled the same way:
+    reducing + {4,23,5}
+    reducing ~ [...]
+    reducing join {...}
+    reducing * {...}
+    reducing <nlx.lib.myfunc>(a=>3) {...}
+... and so the regular operators can be parsed as usual.
+Or maybe:
+    reduced {4,23,5} using +
+    reduced {...} using <nlx.lib.myfunc(a=>3)
+... but that might have an end-weight problem?
+Or, still go symbolic like the first one, but use prefix notation so that
+it works well with both symbolic and wordy or inline-defined operators:
+    []+ {5,23,5}
+    []~ ['hello', 'world']
+    []join {order,inventory}
+    []* {1..5}
+    []<nlx.lib.myfunc>(a=>3) {...}
+
+* Furthering the above, add somewhat generalized support for what Perl 6
+calls "meta" operators, at least in that we define and exploit several.
+The general reducer above would be one of these.  Another is the negated
+relational, whose syntax is putting ! or not- in front of any Bool-resu op.
+Another is the assignment, putting := in front of any function.
+For !, we can then eliminate all the "not" variants of any Bool-resulting
+functions, so eg "x != y" parses into "not(is_identical(x,y))", same as if
+they had said "!(x = y)".  As for the old intended purpose of all the not-
+variants, which is to preserve the user's intent of how code should look,
+we could simply have an alias for the not() function which is what is
+parsed into when != is used, and the old not() is just parsed into when the
+separate prefix op is used.  On the other hand, while lots of not- variants
+would go away, we'll keep the alias-but-param-order-reversed dualities such
+as less-than/greater-than and sub-superset; unlike these, what we're
+eliminating would not result in losing track of which args are lhs/rhs.
+A related change is infix ops like ≠ or ⊈ would parse into not(foo()) even
+though they don't have the !; these would be aliases for the combos, same
+as Perl 6 has != as an alias for !==.
+For :=, we can eliminate all the updaters that are just shorthands for
+doing an op and assigning the result to one of the args.  And so a
+"foo :=union bar" would parse to "assign(&foo,union(foo,bar))".  Once
+again, an alias for assign() can exist which such combos are parsed into,
+where the regular assign() is used when users write "foo := foo union bar".
+Of course, despite Muldis D requiring operator combos where singles used to
+work, we assume that implementations will be smart enough to, say, use a
+single "!=" or "insert into foo ..." etc when it sees the combination, so
+there is no performance loss.
+Probably, any meta'd operator would have the same precedence as the base
+operator that it is modifying.
+Adding the hyper-meta may not be useful since we already have map()/etc;
+or alternately it might be useful in avoiding some uses of map or extend
+or substitute etc where users are just adding/defining one attr.
+Or maybe hyper-meta would only be useful with Set/Array/Bag because the
+general map/extend/etc would require naming the attribute explicitly.
+As for ASCII vs Unicode etc, that preference is never encoded in the system
+catalog, so when code would be generated from the system catalog, it would
+be up to the generator's configuration for which versions are used.
+
 ----------
 
 * Update the virtual attributes maps so there is a way to manually specify
@@ -359,17 +444,6 @@ the input relations don't need to have the same headings.
 in strings/etc are done.  For example, whether the simple escape sequence
 for each string delimiter char may be used in all kinds of strings (as they
 are now) or just in strings having the same delim char as is being escaped.
-
-* Consider updating PTMD_STD only to add more precedence levels.  For
-example by splitting math into exponentiative, multiplicative, additive,
-these being crossed with dyadic-infox, reducing-infix.  Or for example by
-making 'and' higher than 'or', 'join' higher than 'union', etc.  Or for
-example making most ops higher than comparison ops, which are in turn
-higher than logical connectives.  On the other hand, it is possible that
-some code may be more readable when we have more parenthesis in the
-expressions anyway, and the current rules are fairly simple.  Of course,
-the Perl-STD grammars are not affected by all this, as they effectively
-always use parenthesis to force desired precedence.
 
 * IN PROGRESS ...
 Update the STD dialects to support inline definition of basic
