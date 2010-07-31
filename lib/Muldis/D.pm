@@ -47,7 +47,7 @@ The fully-qualified name of this multi-part document and the language
 specification it contains (as a single composition) is
 C<Muldis_D:"http://muldis.com":0.137.0>.  It is the official/original (not
 embraced and extended) Muldis D language specification by the authority
-Darren Duncan (C<http://muldis.com>), version C<0.137.0> (this number
+Muldis Data Systems (C<http://muldis.com>), version C<0.137.0> (this number
 matches the VERSION pod in this file).  This multi-part document is named
 and organized with the expectation that many dialects, extensions, and core
 versions of it will exist over time, some of those under the original
@@ -93,7 +93,8 @@ from or influenced by Perl 6, other general-purpose languages (particularly
 functional ones like Haskell), B<Tutorial D>, various B<D> implementations,
 and various SQL implementations (see the L<Muldis::D::SeeAlso>
 file).  It also appears in retrospect that Muldis D has some designs in
-common with FoxPro or xBase, and with the Ada and Lua languages.
+common with FoxPro or xBase, and with the Ada and Lua languages.  The
+newer L<C'Dent|http://cdent.org/> language has some similarities as well.
 
 In any event, the Muldis D documentation will be focusing mainly on how
 Muldis D itself works, and will spend little time in providing rationale;
@@ -103,6 +104,10 @@ Continue reading the language spec in L<Muldis::D::Basics>.
 
 Also look at the separately distributed L<Muldis::Rosetta>, which is the
 first main implementation of Muldis D.
+
+Muldis D is an L<Acmeist|http://www.acmeism.org/> programming language for
+writing portable database modules, that work with any DBMS and with any
+other programming language, for superior database interoperability.
 
 =head1 VERSIONING
 
