@@ -13,15 +13,26 @@
     something that was only implied by convention before.
 
     * (PTMD_STD.pod)  Mostly rewrote the "NESTING PRECEDENCE RULES" main
-    pod section so that it now has 17 precedence levels rather than 7, and
+    pod section so that it now has 10 precedence levels rather than 7, and
     so the operator precedences should now be more user-friendly.  This
-    rewrite is strongly influenced by the Perl 6 operator precedence table.
-    The rewrite entirely retains the 2 tightest (terms, postcircumfix) and
-    2 loosest (conditional, naming) precedence levels from the original 7,
-    and 12 of the new levels are a result of splitting and reordering
-    the other 3 (prefix, dyadic infix, reducing infix) original levels.
-    Just one new, loosest, level (assignment) is not from the original 7.
-STILL TODO: UPDATE EXAMPLE CODE TO REFLECT NEW PRECEDENCES WHERE NEEDED.
+    rewrite is strongly influenced by the Perl 6 operator precedence table,
+    and also by the Postgres operator precedence table.  This rewrite is
+    mainly about format, and partially about content.  The 2 tightest
+    (terms, postfix) and 2 loosest (shorting infix, binding infix) levels
+    are unchanged from the original 7.  The 3 middle levels (prefix, dyadic
+    infix, reducing infix) were reorganized into 5 different middle levels
+    (generic prefix, generic infix, comparison, logical prefix, logical
+    infix).  Just one new, loosest, level (assignment) is not from the
+    original 7.  The misguided concept of all dyadic infix (eg, -, /)
+    having tighter precedence than all N-adic infix (eg, +, *) was
+    eliminated, with these 2 levels now being merged into a single level;
+    this single level was then divided into 3 levels, with all logical ops
+    having the lowest precedence, then all comparison ops higher, and all
+    remaining ops such as maths higher.  The single logical prefix op,
+    'not', now has lower prec than the math/compare ops rather than higher.
+    In the future, the generic and logical infix levels will need splitting
+    so they conform better to people's expectations, but meanwhile, making
+    them all the same is an improvement over the old dyadic/N-adic thing.
 
     * (D.pm)  Added declaration that Muldis D is an "Acmeist" language.
 

@@ -4089,7 +4089,7 @@ Examples:
 
     if is_empty(ary) then empty_result else ary.[0]
 
-    if x = ∅ or y = ∅ then ∅ else Just:{x.{*} + y.{*} exp 3}
+    if x = ∅ or y = ∅ then ∅ else Just:{x.{*} + (y.{*} exp 3)}
 
     if val isa <Int> then val exp 3
         else if val isa <Text> then val ~# 5
@@ -5871,8 +5871,8 @@ precedence rules, meaning how it accepts Muldis D code lacking explicit
 expression delimiters and implicitly delimits the expressions therein, in a
 fully deterministic manner.
 
-PTMD_STD has 17 precedence levels when the C<catalog_abstraction_level>
-pragma is C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 13.5
+PTMD_STD has 10 precedence levels when the C<catalog_abstraction_level>
+pragma is C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 6.5
 of the levels can be eliminated, so then PTMD_STD has just 3.5; if it is
 C<code_as_data> instead, then 2.5 more can be eliminated, leaving just 1.
 
@@ -5891,35 +5891,30 @@ examples of each level:
                      |       | ++ -- i! log-e
     -----------------+-------+---------------------------------------------
     Generic Prefix   | N/A   | || # #+ % @ e**
-    Currying Infix   | left  | assuming
-    Exponentiation   | right | ^ exp ** log
-    Multiplicative   | left  | * / div mod intersect join times divideby
+    Generic Infix    | left  | assuming
+                     |       | ^ exp ** log
+                     |       | * / div mod intersect join times divideby
                      |       | where !where matching !matching compose
                      |       | intersect+
-    Additive         | left  | + - |-| ~ ~# union exclude minus
+                     |       | + - |-| ~ ~# union exclude minus
                      |       | union+ union++ minus+ round
-    Selecting Infix  | left  | as asserting min max //
+                     |       | as asserting min max //
     -----------------+-------+---------------------------------------------
     Comparison       | left  | <=> = != < > <= >= isa !isa like !like
                      |       | inside !inside holds !holds in !in has !has
                      |       | {<=} {!<=} {>=} {!>=} {<} {!<} {>} {!>}
                      |       | {<=}+ {!<=}+ {>=}+ {!>=}+ {<}+ {!<}+ {>}+ {!>}+
     -----------------+-------+---------------------------------------------
-    Negation Prefix  | N/A   | not ! ¬
-    Conjunction      | left  | and ∧ [<=>]
-    Disjunction      | left  | or ∨ xor ⊻ ↮
-    Implies          | left  | imp → nimp ↛ if ← nif ↚ nand ⊼ ↑ nor ⊽ ↓
-    Equivalence      | left  | xnor ↔
+    Logical Prefix   | N/A   | not ! ¬
+    Logical Infix    | left  | and ∧ [<=>]
+                     |       | or ∨ xor ⊻ ↮
+                     |       | imp → nimp ↛ if ← nif ↚ nand ⊼ ↑ nor ⊽ ↓
+                     |       | xnor ↔
     -----------------+-------+---------------------------------------------
     Shorting Infix   | right | ??!! if-else-expr given-when-def-expr
     Binding Infix    | right | ::=
     -----------------+-------+---------------------------------------------
     Assignment       | non   | := :=++ :=-- :=foo
-
-I<The block of 6 numeric/string/relation levels above is the least rigorous
-and will likely need many changes.  The block of 4 boolean levels also
-needs some work.  The other 5 blocks of 1 or 2 levels are more rigorous and
-should be okay.>
 
 Any imperative code that embeds a value expression has looser precedence
 than all value expressions.
