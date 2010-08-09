@@ -80,6 +80,43 @@ which maps to the "fail" statement node.
     - fail
     - raise <var>
 
+* Add support for routine parameters to have aliases, that is, for a named
+parameter to be able to bind with a named argument where the argument may
+have several possible names.  One use for this would be to support
+parameters where it is desired to refer to them within their routine using
+one name, but to use a different name in the argument, such as because the
+latter is shorter or reads better (the Perl 6 spec should have some
+examples of this).  Another use for this is to provide better support for
+mixtures of arbitrary numbers each of positional and named routine
+arguments; any parameters that would be reasonable to have a positional
+argument would have 2 names, where one is an integer and one is text.  All
+Muldis D grammars would be updated to no longer consider 'topic' and
+'other' as special, which is a contrived notion, and instead consider
+'0','1',... special.  And so, for all system-defined or user-defined
+routines, any `op(foo,&bar,baz)` would be parsed into the same thing as
+`op("0"=>foo,&"1"=>bar,"2"=>baz)`, and `.name` would be `"0".name`.  Now it
+will so happen that "topic","other" will be commonly used in parameter
+names, typically paired with "0","1" but we can now be a lot freer to name
+parameters something more descriptive, such as "addends", and not
+artificially make them topic/other simply so they support positional
+syntax.  An idea for declaration syntax when aliases exist is to use the
+"|" char; eg `function foo (Int <-- topic|"0" : Int, other|"1" : Int)`.
+Of course, this complexity is only in param lists; arg lists are unchanged
+and still are plain tuples with a single name per attr/arg.
+For simplicity, a single param name will be more important than the others,
+and only that would be its "expression node name" or "variable name" within
+its routine, by which it must be referenced; therefore, the current
+system catalog for declaring parameters can remain unchanged, and new
+rtn-decl-type rtn-heading-attrs can be added to declare aliases.
+Largely for flexibility, and correctness where they don't make sense,
+parameters will never automatically have a number alias, but rather only
+when the routine definer explicitly gives it one.
+Of course, these aliases only apply to regular params, not global params.
+One result of this change is that the Muldis D grammars will no longer
+consider positional ro and rw args in separate spaces such that they can
+appear in either order; now all positional args must be in the correct
+mixed relative order, as there is only one "0", not one per ro and rw.
+
 * Add special syntax for more ops:
     - ?#foo - "has 1+ elements" - is_not_empty(foo)
     - !#foo - "has zero elements" - is_empty(foo)
