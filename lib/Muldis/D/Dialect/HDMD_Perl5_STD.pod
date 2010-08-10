@@ -355,7 +355,7 @@ Examples:
         } ],
         [ 'depot', [ 'depot-catalog' => [
             [ 'function', 'cube', [ [ 'Int', { topic => 'Int' } ] => [
-                [ 'op', 'exp', [ ['d','topic'], 3 ] ]
+                [ 'i-op', 'exp', [ ['d','topic'], 3 ] ]
             ] ] ]
         ] ] ]
     ]
@@ -1335,7 +1335,7 @@ Examples:
     # A depot having just one function and no dbvar. #
     [ 'depot', [ 'depot-catalog' => [
         [ 'function', 'cube', [ [ 'Int', { topic => 'Int' } ] => [
-            [ 'op', 'exp', [ ['d','topic'], 3 ] ]
+            [ 'i-op', 'exp', [ ['d','topic'], 3 ] ]
         ] ] ]
     ] ] ]
 
@@ -1424,7 +1424,7 @@ structurally identical to one of a C<recipe_payload>.
 Examples:
 
     [ 'function', 'cube', [ [ 'Int', { topic => 'Int' } ] => [
-        [ 'op', 'exp', [ ['d','topic'], 3 ] ]
+        [ 'i-op', 'exp', [ ['d','topic'], 3 ] ]
     ] ] ]
 
 =head2 Updater Specification
@@ -1445,19 +1445,19 @@ Examples:
         [ 'with' => [ 'function', 'gcd', [
             [ 'NNInt', { a => 'NNInt', b => 'NNInt' } ]
             => [
-                [ '??!!', [ [[ 'op', '=', [ ['d','b'], 0 ] ]
+                [ '??!!', [ [[ 'i-op', '=', [ ['d','b'], 0 ] ]
                     => ['d','a']] ],
                     [ 'func-invo', 'rtn', { a => ['d','b'],
-                        b => [ 'op', 'mod', [ ['d','a'], ['d','b'],
+                        b => [ 'i-op', 'mod', [ ['d','a'], ['d','b'],
                             ['RoundMeth','Down'] ] ] } ]
                 ]
             ]
         ] ] ],
         [ '::=', 'gcd', [ 'func-invo', 'nlx.lib.gcd',
             { a => ['d','a'], b => ['d','b'] } ] ],
-        [ 'op', ':=', [ ['d','a'], [ 'op', 'div',
+        [ 'i-op', ':=', [ ['d','a'], [ 'i-op', 'div',
             [ ['d','a'], ['d','gcd'], ['RoundMeth','Down'] ] ] ] ],
-        [ 'op', ':=', [ ['d','b'], [ 'op', 'div',
+        [ 'i-op', ':=', [ ['d','b'], [ 'i-op', 'div',
             [ ['d','b'], ['d','gcd'], ['RoundMeth','Down'] ] ] ] ],
     ] ] ]
 
@@ -1540,12 +1540,12 @@ Examples:
         [ 'with' => [ 'value-filter', 'filt', [
             [ 'Bool', { topic => 'Tuple', search => 'Text' } ]
             => [
-                [ 'op', 'like', [ ['acc','topic.name'],
-                    [ 'op', '~', [ '%', ['d','search'], '%' ] ] ] ]
+                [ 'i-op', 'like', [ ['acc','topic.name'],
+                    [ 'i-op', '~', [ '%', ['d','search'], '%' ] ] ] ]
             ]
         ] ] ],
-        [ 'op', ':=', [ ['d','count'], [ 'op', '#', [
-            [ 'op', 'where', [ ['d','people'],
+        [ 'i-op', ':=', [ ['d','count'], [ 'pre-op', '#, [
+            [ 'i-op', 'where', [ ['d','people'],
                 ['curried-func', 'nlx.lib.filt', {search=>['d','search']}]
             ] ]
         ] ] ] ],
@@ -1589,7 +1589,7 @@ Examples:
         [ 'iproc-imp-invo', 'fetch_curr_instant', [ ['&',['d','now']] ] ],
         [ 'var', 'message', 'Text' ],
         [ 'atomic-stmt' => [
-            [ 'op', ':=', [ ['d','message'], [ 'op', '~', [
+            [ 'i-op', ':=', [ ['d','message'], [ 'i-op', '~', [
                 'The current time is: ',
                 [ 'func-invo', 'nlx.par.lib.utils.time_as_text',
                     { 'time' => ['d','now'] } ]
@@ -1672,7 +1672,7 @@ Examples:
         [ 'with' => [ 'value-map-unary', 'combine_p_s', [
             [ 'Database', { topic => 'Database' } ]
             => [
-                [ 'Database', { combines => [ 'op', 'join',
+                [ 'Database', { combines => [ 'i-op', 'join',
                     [['acc','topic.products'], ['acc','topic.sales']] ] } ]
             ]
         ] ] ],
@@ -1923,7 +1923,7 @@ Examples:
 
     [ 'if-else-expr',
         [
-            [[ 'op', '>', [['d','foo'], 5] ] => ['d','bar']],
+            [[ 'i-op', '>', [['d','foo'], 5] ] => ['d','bar']],
         ],
         ['d','baz']
     ]
@@ -1933,10 +1933,10 @@ Examples:
             [[ 'func-invo', 'is_empty', [['d','ary']] ]
                 => ['d','empty_result']],
         ],
-        [ 'op', '.[]', [['d','ary'], 0] ]
+        [ 'post-op', '.[]', [['d','ary'], 0] ]
     ]
 
-    [ 'op', '~', ['My answer is: ',
+    [ 'i-op', '~', ['My answer is: ',
         [ '??!!', [ [['d','maybe'] => 'yes'] ], 'no' ]] ]
 
 =head2 Generic Given-When-Default Expressions
@@ -2067,8 +2067,8 @@ exactly the same format.
 Examples:
 
     [ 'atomic-stmt' => [
-        [ 'op', ':=', [ ['d','x'], ['d','y'] ] ],
-        [ 'op', ':=', [ ['d','y'], ['d','x'] ] ],
+        [ 'i-op', ':=', [ ['d','x'], ['d','y'] ] ],
+        [ 'i-op', ':=', [ ['d','y'], ['d','x'] ] ],
     ] ]
 
 =head2 Procedure Value Expressions
@@ -2207,7 +2207,9 @@ Examples:
 =head1 FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
 A C<func_invo_alt_syntax> node has 3-4 ordered elements:  The first element
-is the Perl character string C<op>.  The second element is a Perl character
+is one of the 3 Perl character strings [C<i-op>, C<pre-op>, C<post-op>],
+depending on whether it represents infix, prefix, or postfix syntax,
+respectively.  The second element is a Perl character
 string, hereafter referred to as I<op> or I<keyword>, which determines the
 function to invoke.  The third element is (usually) a Perl array ref,
 hereafter referred to as I<main op args>, which is an ordered list of 1-N
@@ -2227,28 +2229,28 @@ is an C<expr> node.
 
 Examples:
 
-    [ 'op', 'min', [ ['d','a'], ['d','b'], ['d','c'] ] ]
+    [ 'i-op', 'min', [ ['d','a'], ['d','b'], ['d','c'] ] ]
 
-    [ 'op', 'max', [ ['d','a'], ['d','b'], ['d','c'] ] ]
+    [ 'i-op', 'max', [ ['d','a'], ['d','b'], ['d','c'] ] ]
 
-    [ 'op', 'and', [ ['Bool','True'], ['Bool','False'], ['Bool','True'] ] ]
+    [ 'i-op', 'and', [ ['Bool','True'], ['Bool','False'], ['Bool','True'] ] ]
 
-    [ 'op', 'or', [ ['Bool','True'], ['Bool','False'], ['Bool','True'] ] ]
+    [ 'i-op', 'or', [ ['Bool','True'], ['Bool','False'], ['Bool','True'] ] ]
 
-    [ 'op', 'xor', [ ['Bool','True'], ['Bool','False'], ['Bool','True'] ] ]
+    [ 'i-op', 'xor', [ ['Bool','True'], ['Bool','False'], ['Bool','True'] ] ]
 
-    [ 'op', '+', [ 14, 3, -5 ] ]
+    [ 'i-op', '+', [ 14, 3, -5 ] ]
 
-    [ 'op', '*', [ -6, 2, 25 ] ]
+    [ 'i-op', '*', [ -6, 2, 25 ] ]
 
-    [ 'op', '+', [ 4.25, -0.002, 1.0 ] ]
+    [ 'i-op', '+', [ 4.25, -0.002, 1.0 ] ]
 
-    [ 'op', '*', [ 69.3, [ 'Rat', [15,2,6] ], [ 'Rat', [49,23] ] ] ]
+    [ 'i-op', '*', [ 69.3, [ 'Rat', [15,2,6] ], [ 'Rat', [49,23] ] ] ]
 
-    [ 'op', '∪', [ [ 'Set', [ 1, 3, 5 ] ],
+    [ 'i-op', '∪', [ [ 'Set', [ 1, 3, 5 ] ],
         [ 'Set', [ 4, 5, 6 ] ], [ 'Set', [ 0, 9 ] ] ] ]
 
-    [ 'op', '∩', [ [ 'Set', [ 1, 3, 5, 7, 9 ] ],
+    [ 'i-op', '∩', [ [ 'Set', [ 1, 3, 5, 7, 9 ] ],
         [ 'Set', [ 3, 4, 5, 6, 7, 8 ] ], [ 'Set', [ 2, 5, 9 ] ] ] ]
 
 =head2 Simple Non-commutative N-adic Infix Reduction Operators
@@ -2258,18 +2260,18 @@ is an C<expr> node.
 
 Examples:
 
-    [ 'op', '[<=>]', [ ['Order','Same'],
+    [ 'i-op', '[<=>]', [ ['Order','Same'],
         ['Order','Increase'], ['Order','Decrease'] ] ]
 
-    [ 'op', '~', [ [ 'Blob', { 'x' => 'DEAD' } ],
+    [ 'i-op', '~', [ [ 'Blob', { 'x' => 'DEAD' } ],
         [ 'Blob', { b => '10001101' } ], [ 'Blob', { 'x' => 'BEEF' } ] ] ]
 
-    [ 'op', '~', [ 'hello', ' ', 'world' ] ]
+    [ 'i-op', '~', [ 'hello', ' ', 'world' ] ]
 
-    [ 'op', '~', [ [ 'Array', [ 24, 52 ] ],
+    [ 'i-op', '~', [ [ 'Array', [ 24, 52 ] ],
         [ 'Array', [ -9 ] ], [ 'Array', [ 0, 11, 24, 7 ] ] ] ]
 
-    [ 'op', '//', [ ['d','a'], ['d','b'], 42 ] ]
+    [ 'i-op', '//', [ ['d','a'], ['d','b'], 42 ] ]
 
 =head2 Simple Symmetric Dyadic Infix Operators
 
@@ -2279,15 +2281,15 @@ isn't significant.
 
 Examples:
 
-    [ 'op', '=', [ ['d','foo'], ['d','bar'] ] ]
+    [ 'i-op', '=', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', '≠', [ ['d','foo'], ['d','bar'] ] ]
+    [ 'i-op', '≠', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', 'nand', [ ['Bool','False'], ['Bool','True'] ] ]
+    [ 'i-op', 'nand', [ ['Bool','False'], ['Bool','True'] ] ]
 
-    [ 'op', '|-|', [ 15, 17 ] ]
+    [ 'i-op', '|-|', [ 15, 17 ] ]
 
-    [ 'op', '|-|', [ 7.5, 9.0 ] ]
+    [ 'i-op', '|-|', [ 7.5, 9.0 ] ]
 
 =head2 Simple Non-symmetric Dyadic Infix Operators
 
@@ -2297,42 +2299,42 @@ C<rhs>, respectively.
 
 Examples:
 
-    [ 'op', 'isa', [ ['d','bar'], ['material-ref','nlx.lib.foo_type'] ] ]
+    [ 'i-op', 'isa', [ ['d','bar'], ['material-ref','nlx.lib.foo_type'] ] ]
 
-    [ 'op', '!isa', [ ['d','bar'], ['material-ref','nlx.lib.foo_type'] ] ]
+    [ 'i-op', '!isa', [ ['d','bar'], ['material-ref','nlx.lib.foo_type'] ] ]
 
-    [ 'op', 'as', [ ['d','scalar'], ['material-ref','Int'] ] ]
+    [ 'i-op', 'as', [ ['d','scalar'], ['material-ref','Int'] ] ]
 
-    [ 'op', 'asserting', [['d','int'], [ 'op', '≠', [['d','int'], 0] ]] ]
+    [ 'i-op', 'asserting', [['d','int'], [ 'i-op', '≠', [['d','int'], 0] ]] ]
 
-    [ 'op', 'implies', [ ['Bool','True'], ['Bool','False'] ] ]
+    [ 'i-op', 'implies', [ ['Bool','True'], ['Bool','False'] ] ]
 
-    [ 'op', '<', [ ['d','foo'], ['d','bar'] ] ]
+    [ 'i-op', '<', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', '>', [ ['d','foo'], ['d','bar'] ] ]
+    [ 'i-op', '>', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', '≤', [ ['d','foo'], ['d','bar'] ] ]
+    [ 'i-op', '≤', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', '≥', [ ['d','foo'], ['d','bar'] ] ]
+    [ 'i-op', '≥', [ ['d','foo'], ['d','bar'] ] ]
 
-    [ 'op', '-', [ 34, 21 ] ]
+    [ 'i-op', '-', [ 34, 21 ] ]
 
-    [ 'op', 'exp', [ 2, 63 ] ]
+    [ 'i-op', 'exp', [ 2, 63 ] ]
 
-    [ 'op', '-', [ 9.2, 0.1 ] ]
+    [ 'i-op', '-', [ 9.2, 0.1 ] ]
 
-    [ 'op', '/', [[ 'Rat', {b => '101.01'} ], [ 'Rat', {b => '11.0'} ]] ]
+    [ 'i-op', '/', [[ 'Rat', {b => '101.01'} ], [ 'Rat', {b => '11.0'} ]] ]
 
-    [ 'op', '~#', [ '-', 80 ] ]
+    [ 'i-op', '~#', [ '-', 80 ] ]
 
-    [ 'op', '∈', [ ['d','a'], [ 'SPInterval', [1,'..',5] ] ] ]
+    [ 'i-op', '∈', [ ['d','a'], [ 'SPInterval', [1,'..',5] ] ] ]
 
-    [ 'op', '∉', [ ['d','foo'],
+    [ 'i-op', '∉', [ ['d','foo'],
         [ 'SPInterval', [['d','min'],'..^',['d','max']] ] ] ]
 
-    [ 'op', '∖', [ [ 'Set', [ 8, 4, 6, 7 ] ], [ 'Set', [ 9, 0, 7 ] ] ] ]
+    [ 'i-op', '∖', [ [ 'Set', [ 8, 4, 6, 7 ] ], [ 'Set', [ 9, 0, 7 ] ] ] ]
 
-    [ 'op', '÷', [ [ '@', [ ['x', 'y'] => [ [5, 6], [3, 6] ] ] ],
+    [ 'i-op', '÷', [ [ '@', [ ['x', 'y'] => [ [5, 6], [3, 6] ] ] ],
         [ '@', [ { y => 6 } ] ] ] ]
 
 =head2 Simple Monadic Prefix Operators
@@ -2342,17 +2344,17 @@ C<expr> node.
 
 Examples:
 
-    [ 'op', 'not', [['Bool','True']] ]
+    [ 'pre-op', 'not, [['Bool','True']] ]
 
-    [ 'op', 'abs', -23 ]
+    [ 'pre-op', 'abs, -23 ]
 
-    [ 'op', 'abs', -4.59 ]
+    [ 'pre-op', 'abs, -4.59 ]
 
-    [ 'op', '#', [[ 'Set', [ 5, -1, 2 ] ]] ]
+    [ 'pre-op', '#, [[ 'Set', [ 5, -1, 2 ] ]] ]
 
-    [ 'op', '%', [['d','relvar']] ]
+    [ 'pre-op', '%, [['d','relvar']] ]
 
-    [ 'op', '@', [['d','tupvar']] ]
+    [ 'pre-op', '@, [['d','tupvar']] ]
 
 =head2 Simple Monadic Postfix Operators
 
@@ -2361,11 +2363,11 @@ C<expr> node.
 
 Examples:
 
-    [ 'op', '++', 13 ]
+    [ 'post-op', '++', 13 ]
 
-    [ 'op', '--', 4 ]
+    [ 'post-op', '--', 4 ]
 
-    [ 'op', 'i!', 5 ]
+    [ 'post-op', 'i!', 5 ]
 
 =head2 Simple Postcircumfix Operators
 
@@ -2380,56 +2382,56 @@ node payload that defines an C<sp_interval_of.NNInt>.
 
 Examples:
 
-    [ 'op', '.{;}', [['d','birthday'], 'date', 'day'] ]
+    [ 'post-op', '.{;}', [['d','birthday'], 'date', 'day'] ]
 
-    [ 'op', '.{}', [['d','pt'], 'city'] ]
+    [ 'post-op', '.{}', [['d','pt'], 'city'] ]
 
-    [ 'op', '{<-}', [['d','pt'], {pnum=>'pno', locale=>'city'}] ]
+    [ 'post-op', '{<-}', [['d','pt'], {pnum=>'pno', locale=>'city'}] ]
 
-    [ 'op', '{<-}', [['d','pr'], {pnum=>'pno', locale=>'city'}] ]
+    [ 'post-op', '{<-}', [['d','pr'], {pnum=>'pno', locale=>'city'}] ]
 
-    [ 'op', '{;}', [['d','birthday'], 'date', ['year','month']] ]
+    [ 'post-op', '{;}', [['d','birthday'], 'date', ['year','month']] ]
 
-    [ 'op', '{}', [['d','pt'], ['color','city']] ]
+    [ 'post-op', '{}', [['d','pt'], ['color','city']] ]
 
-    [ 'op', '{}', [['d','pr'], ['color','city']] ]
+    [ 'post-op', '{}', [['d','pr'], ['color','city']] ]
 
-    [ 'op', '{}', [['d','pt'], []] ]  # null projection #
+    [ 'post-op', '{}', [['d','pt'], []] ]  # null projection #
 
-    [ 'op', '{}', [['d','pr'], []] ]  # null projection #
+    [ 'post-op', '{}', [['d','pr'], []] ]  # null projection #
 
-    [ 'op', '{;!}', [['d','rnd_rule'], ['round_meth']] ]  # radix,min_exp #
+    [ 'post-op', '{;!}', [['d','rnd_rule'], ['round_meth']] ]  # radix,min_exp #
 
-    [ 'op', '{!}', [['d','pt'], ['pno','pname','weight']] ]
+    [ 'post-op', '{!}', [['d','pt'], ['pno','pname','weight']] ]
 
-    [ 'op', '{!}', [['d','pr'], ['pno','pname','weight']] ]
+    [ 'post-op', '{!}', [['d','pr'], ['pno','pname','weight']] ]
 
-    [ 'op', '{%<-}', [['d','person'], 'name', ['fname','lname']] ]
+    [ 'post-op', '{%<-}', [['d','person'], 'name', ['fname','lname']] ]
 
-    [ 'op', '{%<-}', [['d','people'], 'name', ['fname','lname']] ]
+    [ 'post-op', '{%<-}', [['d','people'], 'name', ['fname','lname']] ]
 
-    [ 'op', '{%<-!}', [['d','person'],'all_but_name',['fname','lname']] ]
+    [ 'post-op', '{%<-!}', [['d','person'],'all_but_name',['fname','lname']] ]
 
-    [ 'op', '{%<-!}', [['d','people'],'all_but_name',['fname','lname']] ]
+    [ 'post-op', '{%<-!}', [['d','people'],'all_but_name',['fname','lname']] ]
 
-    [ 'op', '{<-%}', [['d','person'], ['fname','lname'], 'name'] ]
+    [ 'post-op', '{<-%}', [['d','person'], ['fname','lname'], 'name'] ]
 
-    [ 'op', '{<-%}', [['d','people'], ['fname','lname'], 'name'] ]
+    [ 'post-op', '{<-%}', [['d','people'], ['fname','lname'], 'name'] ]
 
-    [ 'op', '{@<-}', [['d','orders'], 'vendors', ['vendor']] ]
+    [ 'post-op', '{@<-}', [['d','orders'], 'vendors', ['vendor']] ]
 
-    [ 'op', '{@<-!}', [['d','orders'], 'all_but_vendors', ['vendor']] ]
+    [ 'post-op', '{@<-!}', [['d','orders'], 'all_but_vendors', ['vendor']] ]
 
-    [ 'op', '{<-@}', [['d','orders'], ['vendor'], 'vendors'] ]
+    [ 'post-op', '{<-@}', [['d','orders'], ['vendor'], 'vendors'] ]
 
-    [ 'op', '{#@<-!}',
+    [ 'post-op', '{#@<-!}',
         [['d','people'], 'count_per_age_ctry', ['age','ctry']] ]
 
-    [ 'op', '.{*}', [['d','maybe_foo']] ]
+    [ 'post-op', '.{*}', [['d','maybe_foo']] ]
 
-    [ 'op', '.[]', [['d','ary'], 3] ]
+    [ 'post-op', '.[]', [['d','ary'], 3] ]
 
-    [ 'op', '[]', [['d','ary'], [10,'..',14]] ]
+    [ 'post-op', '[]', [['d','ary'], [10,'..',14]] ]
 
 =head2 Numeric Operators That Do Rounding
 
@@ -2441,20 +2443,20 @@ second and third args are C<lhs>, C<rhs> and C<round_rule>, respectively.
 
 Examples:
 
-    [ 'op', 'div', [ 5, 3, ['RoundMeth','ToZero'] ] ]
+    [ 'i-op', 'div', [ 5, 3, ['RoundMeth','ToZero'] ] ]
 
-    [ 'op', 'mod', [ 5, 3, ['RoundMeth','ToZero'] ] ]
+    [ 'i-op', 'mod', [ 5, 3, ['RoundMeth','ToZero'] ] ]
 
-    [ 'op', 'round', [ ['d','foo'],
+    [ 'i-op', 'round', [ ['d','foo'],
         [ 'RatRoundRule', [10,-2,'HalfEven'] ] ] ]
 
-    [ 'op', '**', [ 2.0, 0.5, [ 'RatRoundRule', [2,-7,'ToZero'] ] ] ]
+    [ 'i-op', '**', [ 2.0, 0.5, [ 'RatRoundRule', [2,-7,'ToZero'] ] ] ]
 
-    [ 'op', 'log', [ 309.1, 5.4, [ 'RatRoundRule', [10,-4,'HalfUp'] ] ] ]
+    [ 'i-op', 'log', [ 309.1, 5.4, [ 'RatRoundRule', [10,-4,'HalfUp'] ] ] ]
 
-    [ 'op', 'e**', [ 6.3, [ 'RatRoundRule', [10,-6,'Up'] ] ] ]
+    [ 'pre-op', 'e**, [ 6.3, [ 'RatRoundRule', [10,-6,'Up'] ] ] ]
 
-    [ 'op', 'log-e', [ 17.0, [ 'RatRoundRule', [3,-5,'Down'] ] ] ]
+    [ 'post-op', 'log-e', [ 17.0, [ 'RatRoundRule', [3,-5,'Down'] ] ] ]
 
 =head2 Order Comparison Operators
 
@@ -2464,12 +2466,14 @@ C<rhs>, respectively.  I<Details on the extra op args are pending.>
 
 Examples:
 
-    [ 'op', '<=>', [ ['d','foo'], ['d','bar'] ] ]
+    [ 'i-op', '<=>', [ ['d','foo'], ['d','bar'] ] ]
 
 =head1 IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS
 
 An C<imp_invo_alt_syntax> node has 3-4 ordered elements:  The first element
-is the Perl character string C<op>.  The second element is a Perl character
+is one of the 3 Perl character strings [C<i-op>, C<pre-op>, C<post-op>],
+depending on whether it represents infix, prefix, or postfix syntax,
+respectively.  The second element is a Perl character
 string, hereafter referred to as I<op> or I<keyword>, which determines the
 imperative routine to invoke.  The third element is (usually) a Perl
 array ref, hereafter referred to as I<main op args>, which is an ordered
@@ -2496,9 +2500,9 @@ a C<var_name> node.
 
 Examples:
 
-    [ 'op', ':=++', [['d','counter']] ]
+    [ 'post-op', ':=++', [['d','counter']] ]
 
-    [ 'op', ':=--', [['d','countdown']] ]
+    [ 'post-op', ':=--', [['d','countdown']] ]
 
 =head2 Imperative Simple Non-symmetric Dyadic Infix Operators
 
@@ -2509,10 +2513,10 @@ C<rhs_expr> (a C<proc_expr> node), respectively.
 Examples:
 
     # assign 3 to foo #
-    [ 'op', ':=', [ ['d','foo'], 3 ] ]
+    [ 'i-op', ':=', [ ['d','foo'], 3 ] ]
 
     # delete every person in people whose age is either 10 or 20 #
-    [ 'op', ':=!matching', [ ['d','people'],
+    [ 'i-op', ':=!matching', [ ['d','people'],
         [ '@', [ { age => 10 }, { age => 20 } ] ] ] ]
 
 =head1 SEE ALSO
