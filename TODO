@@ -92,6 +92,46 @@ common use could be to provide both "prefix" and "infix" reading names,
 such as both "product" and "multiply", and especially to give shorthands.
 Example: "function product|multiply|mul (Int <-- x : Int, y : Int) {...}".
 The first one in the list is the primary name, remainder are the aliases.
+Or actually, it would probably be better for FunctionSet et al to *not*
+internalize aliases, but rather have each alias exist as a separate
+material which cites what it aliases.  And then that version could exist in
+any public namespace (usually nlx), and not just the same subdepot as what
+is being aliased.
+The SYNONYM schema object of Oracle and other dbs corresponds to this, and
+maybe "synonym" is what I should call mine too, being what the specific
+material kind is called, leaving "alias" as a more generic term.
+Even if we have separate synonym materials for routines/etc, one can still
+declare them bundled into their originals like in the above foo|bar example
+as that would just be a dialect shorthand but produce separate materials.
+Also useful in support of users having their own home subdepots which have
+aliases to the things they use, without them having to know where they are.
+Add alias for every 'op' node 2nd element for a routine, meaning eg add
+"+" and "⋈" as aliases, and so then a Muldis D parser can then produce
+calls to those, as if one said `"+"(4,5)` or `"⋈"(foo,bar)`, and so we can
+better remember the individual syntactic choices that the users made.
+But then, how do we deal with the idea of making logical-not into a meta-op
+so that there is no actual is_not_identical|"≠" function etc; how do we
+preserve user's individual syntactic choices then?  So think about that.
+While SQL synonyms can also be used for relvars, mine would probably only
+be used for materials - types, routines, stim-resp-rules, themselves, etc;
+perhaps leave relvar aliases to be handled by virtual attributes.
+
+* With the improvements from having aliases or supporting "+"(x,y) etc, and
+other language improvements, it becomes a lot more feasible for users to
+settle for users to be satisfied with "plain_rtn_inv", that being
+sufficiently terse, and so there is less need for "rtn_inv_alt_syn" to be
+implemented or available.
+
+* Maybe also treat material names like `function "infix<+>" (...) {...}` as
+special such that if a parser encounters a random "foo + bar" then it would
+parse it as if it were `"infix<+>"(foo,bar)` maybe I guess.  But if this is
+going to work in a general sense, including for user-defined things, then
+general format rules have to be set out for the parser so that if it sees
+anything like X, without knowing what ops are declared, then it treats it
+as an operator rather than some other construct.  On the other hand, we're
+sure to run into trouble in trying to support non foo(x,y) syntax for
+user-defined operators (besides those overloading system-defined virtuals),
+and so better off just not doing this period; "infix<+>" is not special.
 
 * Add support for routine parameters to have aliases, that is, for a named
 parameter to be able to bind with a named argument where the argument may
