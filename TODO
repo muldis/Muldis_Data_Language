@@ -30,7 +30,7 @@ core, or a significant and computationally complete working subset thereof,
 and so the language spec is then considered sufficiently complete with
 corner cases exposed; Muldis Rosetta would also be updated to "alpha"
 status et al simultaneously.  There are no other preconditions to consider
-either project "alpha" status.  Curr est circa Aug..Sep of 2010 for this.
+either project "alpha" status.  Curr est circa Nov..Dec of 2010 for this.
 
 * Preconditions for considering the Muldis D language spec to be either
 "beta" or "released" status or "1.0" incl:  A significant, computationally
@@ -38,6 +38,52 @@ complete working core or subset thereof as a Parrot hosted language, a
 TAP speaking test suite with significant feature coverage, a serious level
 of post-alpha-status design input solicited of other interested parties,
 implementations over multiple SQL DBMSs.  Curr est end 2010 or early 2011.
+
+----------
+
+* TOP PRIORITY:  Create a branch of the Muldis D spec (and of the Muldis D
+Manual) which retains all of the current spec features, and subsequently
+strip out the whole rtn_inv_alt_syn catalog abstraction level in trunk so
+that we can more radically evolve the language design at the more
+fundamental level which plain_rtn_inv has access to, without worrying about
+clashes or the complexity of a dozen-plus-precedence-level grammar.
+Ideally the more fundamental level can evolve to the point that a
+lot of what rtn_inv_alt_syn offers is no longer necessary in practice
+with regards to making the code more terse.  The branch would merge in the
+more fundamental changes with the old retained rtn_inv_alt_syn to see how
+they might look together, or show how the new is absorbing the old; ideally
+their differences would reduce over time without th branch losing features.
+In the interest of marketing, the reduced trunk would retain all or much of
+the example code using the then-removed features, as well as gain ones
+using not yet specced features.  Each examples section would potentially be
+split in 2, with the normal "Examples" just using the reduced spec features
+and a new "Potential Future Examples" having anything not yet specced.
+Also, the 3 Dialect files wouldn't actually lose the rtn_inv_alt_syn
+precedence level but rather it would be made impotent as the grammar would
+just define it as a non-proper superset of plain_rtn_inv for now; mainly
+the change is that the 2 main pod sections "FUNCTION INVOCATION ALTERNATE
+SYNTAX EXPRESSIONS" and "IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS"
+would be removed, or alternately stripped down to collection of "Potential
+Future Examples" sections with a bit of commentary to explain if needed.
+BUT RELEASE 0.139.0 FIRST AS IT HAS UNRELEASED CHANGES THAT WOULD GO AWAY.
+
+* The new version may be a lot easier to learn, considering that SQL + many
+other C-like languages actually don't have too many non "f()" format ops.
+Perhaps the main use of rtn_inv_alt_syn later is for people that want their
+code to look like math/logic/etc exprs rather than named function calls.
+IDEA:  Split rtn_inv_alt_syn into 2 abstraction levels where the lower one
+has just 1-2 dozen or so plain prefix/infix ops such as
+[:=, =,≠,!=, <,>,≤,<=,≥,>=,--,++, not,!,and,or,xor, +,-,|-|,*,/, ~, @,%,#]
+and few are allowed having modifiers or that aren't in most languages.
+Likely disallowed in lower level are [<=>,abs,div,mod,exp,^,**,log], the
+other math ops, all other or Unicode variants of logic ops, all hyper-ops
+including hypers of := or !, practically all relational/set/array/etc ops
+including membership or sub/super tests.  As a middle-ground, for which we
+could probably have a middle-third level from the split, are all the
+postcircumfix ops that do restricted-to-constants shorthands of the likes
+of array element access, projection, rename, un/group, un/wrap etc.
+Things like the full set of infix logic ops are reserved for highest level,
+and likewise for majority of Unicode ops and their ASCII-symbolic versions.
 
 ----------
 
@@ -54,6 +100,24 @@ material kinds, to provide concrete grammar, description text, and code
 examples: distrib-key-constraint, distrib-subset-constraint.
 
 ----------
+
+* Eliminate the simple monadic postfix special syntax category.  Convert ++
+and -- into simple prefix ops, which carries a number of benefits, such as
+that whitespace is no longer necessary because leading dashes would never
+be parsed as within an entity name, and such as that an expression with
+that in it is no longer end-weighted, and it would be less likely to
+confuse people into thinking the op is variable increment rather than just
+returning a result.  Removing the category also simplifies the parser as
+there are no longer pre vs post precedence conflicts, and helps open the
+door to the parser being more generic.  Simply eliminate postfix "!"
+factorial or change it to prefix "fact".
+
+* Update Basics.pod or other places to distinguish between the 2 main ways
+that a type can be infinite, such as with "outwardly infinite" and
+"inwardly infinite"; the later is when any 2 values have an infinite number
+of others between them, so eg a time-of-day type could be infinite in the
+inward sense but not in th outward sense; th result type of sin() likewise.
+Also, the singleton types -Inf, Inf only refer to outwardly infinite types.
 
 * Change the basic exception throwing mechanism from a function/procedure
 to its own expression/statement node kind.  Call the new node kind "fail"
@@ -242,6 +306,13 @@ it works well with both symbolic and wordy or inline-defined operators:
     []join {order,inventory}
     []* {1..5}
     []<nlx.lib.myfunc>(a=>3) {...}
+Another consideration is that, when combined with routine synonyms that are
+symbolic, the plain_rtn_inv alone would let you do this:
+    reduce( <"+">(), {5,23,5} )
+    reduce( <"~">(), ['hello', 'world'] )
+    reduce( <join>(), {order,inventory} )
+    reduce( <"*">(), {1..5} )
+    reduce( <nlx.lib.myfunc>(a=>3), {...} )
 
 * Furthering the above, add somewhat generalized support for what Perl 6
 calls "meta" operators, at least in that we define and exploit several.
