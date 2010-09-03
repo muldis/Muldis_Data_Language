@@ -41,7 +41,7 @@ implementations over multiple SQL DBMSs.  Curr est end 2010 or early 2011.
 
 ----------
 
-* TOP PRIORITY:  Create a branch of the Muldis D spec (and of the Muldis D
+* Create a branch of the Muldis D spec (and of the Muldis D
 Manual) which retains all of the current spec features, and subsequently
 strip out the whole rtn_inv_alt_syn catalog abstraction level in trunk so
 that we can more radically evolve the language design at the more
@@ -65,7 +65,6 @@ the change is that the 2 main pod sections "FUNCTION INVOCATION ALTERNATE
 SYNTAX EXPRESSIONS" and "IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS"
 would be removed, or alternately stripped down to collection of "Potential
 Future Examples" sections with a bit of commentary to explain if needed.
-BUT RELEASE 0.139.0 FIRST AS IT HAS UNRELEASED CHANGES THAT WOULD GO AWAY.
 
 * The new version may be a lot easier to learn, considering that SQL + many
 other C-like languages actually don't have too many non "f()" format ops.
@@ -143,6 +142,21 @@ which maps to the "fail" statement node.
     - raised <expr>
     - fail
     - raise <var>
+- Maybe alternatively, make an assertion into a lexical entity that is like
+an expr node but doesn't have its own node name, and so is always used
+either inline or offside, the main point being that users don't have to
+come up with another node name when the node represents the same value as
+another node and should naturally just have the same name.
+Example:
+    foo ::= ...
+    asserts bar( foo )
+    baz( foo )
+... here, the assertion only happens when baz() is going to be evaluated;
+the spelling is "asserts" since it should be an adjective.
+There also needs to be a version that can assert multiple exprs.
+Or actually, the ??!! version may still be better?
+
+* Change generic assertion mechanism from a function/procedure to its own
 
 * Add support for materials to have aliases.  But this kind of alias would
 be simple, just an alternate unqualified name that exists in the same
