@@ -41,7 +41,45 @@ implementations over multiple SQL DBMSs.  Curr est end 2010 or early 2011.
 
 ----------
 
-* Create a branch of the Muldis D spec (and of the Muldis D
+* Considering the following items where non-ASCII chars are much more
+pervasive (though strictly optional), replace the "op_char_repertoire"
+pragma with a pragma that affects all non-quoted code in general, including
+all nonquoted (but not quoted) entity names.  The options would be, at
+least, the 3: ASCII, Unicode_5.2.0_canon, Unicode_5.2.0_compat.  There
+would separately be options for each kind of quoted character string:
+quoted entity names, texts, comments; see later TODO item about this; as
+per that, all of these could be part of a single pragma.  A simpler
+implementation could support only ASCII across the board as literal
+characters, while non-ASCII data could be supported as escape sequences.
+
+* Update the PTMD_STD grammar to split up the "Name_payload" or its parts
+further so that, rather than just the 2 "[|non]quoted_name_str", there is
+at least the additional "nonquoted_rtn_invo_name_str" which is only allowed
+to be used in a routine invocation context like <op><unspace>(...), with
+trailing parenthesis, and not in a context lacking trailing parenthesis.  A
+"nonquoted_rtn_invo_name_str" is a nonquoted string containing no
+whitespace and, in addition to all the chars nonquoted_name_str allows,
+also many other symbolic chars such that wouldn't confuse the parser, so
+bracketing chars would likely be disallowed, at least as leading or
+trailing characters in the string, and trailing colon could be disallowed,
+and leading comma or leading => etc.  The idea here is that people can then
+write "+(foo,bar)" for addition or "++(foo)" for increment, or "=(foo,bar)"
+for comparison, "@(t)" or "%(r)", or ":=(target,value)" for assign.
+In this case, if infix ops are allowed, they'd have to have mandatory
+surrounding whitespace.
+We also generally have to revisit Unicode for what is allowed in bareword
+variable/etc names such as non-Latin or accented letters in general.  The
+parser would have to use Unicode character classes in its definitions,
+then.  Look at what Perl 6 does for some guidance.
+As per another change, also assume that the idea of the internal catalog
+no longer using Unicode for sys-def entity names is no longer true.
+So Muldis D would then much more be Polish notation (with parens) by
+default, and it should be much easier to just use the whole language that
+way when it is more terse like this.  Supporting polish without parens
+would be up to rtn-inv-alt-syn replacemnts while above is in plain-rtn-inv.
+See also the 2nd(+?) next TODO item on splitting rtn-inv-alt-syn.
+
+* Consider creating a branch of the Muldis D spec (and of the Muldis D
 Manual) which retains all of the current spec features, and subsequently
 strip out the whole rtn_inv_alt_syn catalog abstraction level in trunk so
 that we can more radically evolve the language design at the more
@@ -83,6 +121,18 @@ postcircumfix ops that do restricted-to-constants shorthands of the likes
 of array element access, projection, rename, un/group, un/wrap etc.
 Things like the full set of infix logic ops are reserved for highest level,
 and likewise for majority of Unicode ops and their ASCII-symbolic versions.
+Now assuming we get generic <sym-op>(...) in plain-rtn-inv, and so
+"+(foo,bar)" etc is an option, then we should reprioritize the above 3
+post-split levels so that a level adding just postcircumfix syntax for
+project/group/ary-acc/rename/etc should be the lowest additional level, so
+one can be able to say "foo{...}" without also needing support for foo+bar.
+Maybe call that new lowest "rtn_inv_pcfx_alt_syn".  Making postcircumfix
+the lowest alt syn is also fitting because just it is like some of the
+lower levels such as code-as-data where using some syntaxes make certain
+inputs hard-coded, such as the attr names or interval-endpoint-flags,
+versus those taking variables in the the more verbose generic syntaxes.
+Presumably all levels higher than rtn_inv_pcfx_alt_syn are plain infix
+or paren-less prefix with fully-variable arguments like generic functions.
 
 ----------
 
