@@ -41,6 +41,41 @@ implementations over multiple SQL DBMSs.  Curr est end 2010 or early 2011.
 
 ----------
 
+* FIRST PRIORITY, THIS PACKAGE:
+- Support variant of "<[ a..z A..Z _ ]><[ a..z A..Z 0..9 _ - ]>*" nonquoted
+name strs that's more liberal "<[ a..z A..Z 0..9 _ - ]>+" for just atnms,
+possrep names, param and arg names, so any of "-foo", "3", "-4" can be bw.
+- Update system catalog and grammars to add lightweight aliasing support
+for whole materials, as a new "synonym" (name?) material.  These have no
+mutual order but the actual non-synonym target is the "primary" name.
+Grammar can be "synonym foo of nlx.lib.bar" et al in general form, or
+"function foo|bar|baz (...) {...}" where original is the first one "foo"
+and the other synonyms all live in the same subdepot, and in particular the
+others are "not" inner materials of "foo".
+- Update system catalog and grammars to add support for routine parameter
+aliases, built-in to the definitions of the routines; all names for a param
+are defined in an array, that ordering being source-code-metadata, and the
+first item in the list being the "primary" name.
+Grammar can be "function foo (Int <-- topic|0 : Int, other|1 : Int) {...}".
+This is not supported for param names in generic expr context except for
+the shorthand "=>foo", so "=>1 is allowed".
+- Change grammar so any number positionals supported for both s-d and u-d,
+always map to "0","1".."N" and *not* "topic","other".
+Also, any ".foo" now is short for "0.foo" rather than "topic.foo".
+- Consider changing param names of special routines like value-filter etc,
+or at least change any "topic" to "0" (other "1") so it works with ".foo".
+- Update the documented signatures of all system-defined routines to use
+the updated grammars reflecting the above additions.  Add param aliases of
+"0" and "1" for every "topic" and "other" respectively, keeping said old
+names too, and add other aliases as appropriate.  Add routine synonyms for
+every distinct way of spelling a routine that rtn-invo-alt-syn provided, so
+one can then always use that spelling in "foo(...)" plain-rtn-inv syntax;
+update all routine docs so that the "also known as" comments no longer
+mention any declared synonyms, no longer mention anything as "C<foo>" but
+rather just anything as "I<foo>".
+- Just stick to that, basically, leave anything else such as Unicode or
+rtn-invo-alt-syn alone/not-removed for this release.
+
 * Considering the following items where non-ASCII chars are much more
 pervasive (though strictly optional), replace the "op_char_repertoire"
 pragma with a pragma that affects all non-quoted code in general, including
@@ -78,6 +113,11 @@ default, and it should be much easier to just use the whole language that
 way when it is more terse like this.  Supporting polish without parens
 would be up to rtn-inv-alt-syn replacemnts while above is in plain-rtn-inv.
 See also the 2nd(+?) next TODO item on splitting rtn-inv-alt-syn.
+Also add yet another nonquoted...name_str that is just for use with
+attribute/param/arg names and is only slightly less restrictive than the
+old nonquoted_name_str in that it also allows strings of just or leading
+digit chars; this is mainly so one can write positional params wo quotes.
+Maybe just this last one can be added ASAP, and the other wait longer.
 
 * Consider creating a branch of the Muldis D spec (and of the Muldis D
 Manual) which retains all of the current spec features, and subsequently
