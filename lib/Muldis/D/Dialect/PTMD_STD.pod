@@ -635,6 +635,10 @@ and this pragma determines secondarily whether or not a few special value
 literals (effectively nullary operators) composed of non-ASCII Unicode
 characters may exist.
 
+The pragma also determines whether or not any nonquoted DBMS entity names
+in the general case may contain non-ASCII Unicode alphanumeric characters.
+I<TODO:  Consider renaming this pragma.>
+
 There are currently 2 specified operator character repertoires: C<basic>,
 C<extended>.  The latter is a proper superset of the former.
 
@@ -671,6 +675,9 @@ following grammar definitions are in effect:
 
     <Bool_payload> ::=
         <Bool_payload__op_cr_basic>
+
+    <nonquoted_name_str> ::=
+        <nonquoted_name_str__op_cr_basic>
 
     <maybe_Nothing> ::=
         <maybe_Nothing__op_cr_basic>
@@ -722,6 +729,9 @@ following grammar definitions are in effect:
 
     <Bool_payload> ::=
         <Bool_payload__op_cr_extended>
+
+    <nonquoted_name_str> ::=
+        <nonquoted_name_str__op_cr_extended>
 
     <maybe_Nothing> ::=
         <maybe_Nothing__op_cr_extended>
@@ -1501,8 +1511,11 @@ Grammar:
     <Name_payload> ::=
         <nonquoted_name_str> | <quoted_name_str>
 
-    <nonquoted_name_str> ::=
-        <[ a..z A..Z _ ]><[ a..z A..Z 0..9 _ - ]>*
+    <nonquoted_name_str__op_cr_basic> ::=
+        [<[ a..z A..Z _ ]> <[ a..z A..Z 0..9 _ ]>*] ** '-'
+
+    <nonquoted_name_str__op_cr_extended> ::=
+        [<alpha> \w*] ** '-'
 
     <quoted_name_str> ::=
         '"'
@@ -1545,14 +1558,15 @@ C<Text_payload> only in that the string is delimited by
 double-quotes rather than apostrophes/single-quotes, meaning also that
 literal double-quotes instead of apostrophes must be escaped.
 
-A C<nonquoted_name_str> is composed of a single alphabetic or underscore
-character followed by zero or more characters that are each alphanumeric or
-underscore or hyphen.  It can not be segmented, so you will have to use the
-C<quoted_name_str> equivalent if you want a segmented string.  The
-definitions of alphabetic and numeric in this context are expressly limited
-to the ASCII repertoire, for various reasons including simplicity and a
-better degree of security; if you want to include any other Unicode
-alphanumeric characters, you will have to use a C<quoted_name_str>.
+A C<nonquoted_name_str> is composed of an alphabetic character followed by
+any sequence of alphanumeric characters.  It can not be segmented, so you
+will have to use the C<quoted_name_str> equivalent if you want a segmented
+string.  The definitions of alphabetic and alphanumeric in this context
+include appropriate Unicode characters, iff the C<op_char_repertoire> is
+C<extended>; for C<basic>, they are expressly limited to the ASCII
+repertoire.  An underscore is always considered alphabetic.  A
+C<nonquoted_name_str> may also contain isolated hyphens provided the next
+character is alphabetic.
 
 A C<NameChain> node represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short
