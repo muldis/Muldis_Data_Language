@@ -52,6 +52,11 @@ Grammar can be "synonym foo of nlx.lib.bar" et al in general form, or
 "function foo|bar|baz (...) {...}" where original is the first one "foo"
 and the other synonyms all live in the same subdepot, and in particular the
 others are "not" inner materials of "foo".
+- Likewise (and necessarily), subdepots themselves can have synonyms.
+- Also update tuple (and by extension) database types to add attribute
+synonyms which semantically are lightweight virtual attribute maps that
+simply make 2 attributes always-identical so only one ever needs storing
+and no map function is required.  Not the same as material/sdp synonyms.
 - Update system catalog and grammars to add support for routine parameter
 aliases, built-in to the definitions of the routines; all names for a param
 are defined in an array, that ordering being source-code-metadata, and the
@@ -75,6 +80,45 @@ mention any declared synonyms, no longer mention anything as "C<foo>" but
 rather just anything as "I<foo>".
 - Just stick to that, basically, leave anything else such as Unicode or
 rtn-invo-alt-syn alone/not-removed for this release.
+
+* Make the fully qualified language names declarable by code to be more
+flexible than the names declared by the language spec itself, so that the
+ones in code can specify multiple language versions that they conform to,
+as if the code is declaring that it only uses the parts of the language
+spec that are unchanged or that intersect between all the specified
+versions.  For example, let one say:
+    Muldis_D:"http://muldis.com":{0.112..0.125,0.127..0.136}:PTMD_STD
+... and then any implementation which takes one of those versions will
+parse the code according to any of those same that it supports.  The idea
+is to make code more easily compatible with a wider range of interpreters,
+such as newer ones designed for version 25 who don't explicitly know how
+to emulate version 23 or know what its differences are, and are just
+trusting the code to be valid for version 25 even if declaring 23; by the
+code declaring a range, it is declaring it is willing to take its chances.
+- A multiplicity of stated authorities is also possible.
+- A number of consequences still have to be thought out here.
+- Specifying a closed range is the code saying it *knows* it is compatible
+with all those versions, specifying an open range says take chances or is
+not recommended and maybe won't be supported.
+
+* Consider adding a midweight version of virtual-attribute-maps which is
+like the fullweight version but that it expressly maps 1 attr to 1 attr; it
+still uses a map function but that is no longer Tuple<--Tuple.
+
+* Demote the "[array|set|etc]_of" types from a special concept knowable by
+the backend (and explained in Basics.pod), where you can essentially use
+some data types without them being declared as system catalog materials, so
+that instead actual s-c materials *are* required; this syntax will remain
+only as a dialect feature which is a shorthand for inline type definitions;
+eg, these are now all equivalent:
+    - param : set_of.Foo
+    - param : relation-type { over tuple-type T { value : Foo } }
+    - param : set-type over Foo
+... or we might consider more material kinds specif to [set|array|etc]-type
+so to help preserve the user's syntax and be more compact, maybe, but those
+6 or so could probably be repr by single m-k which has an enum type attr.
+Also thanks to the change about replacing N-adic with dyadic s-d routines,
+and its precedent, there is less need for "foo_of" shorthands anyway.
 
 * Considering the following items where non-ASCII chars are much more
 pervasive (though strictly optional), replace the "op_char_repertoire"
