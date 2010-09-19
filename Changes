@@ -20,8 +20,16 @@
     multiple versions of data in an auditing fashion, such as
     "temporal/historical databases" do.  These matters may be arbitrarily
     complex and seem best suited to be user-definable rather than in core.
-    See also the bullet point on temporal/historical in the TODO file of at
-    least this release 0.140.0 for thoughts affecting this decision.
+    At the very least, the previous "transition constraint" concept was
+    flawed in significant ways, such as that: 1. It couldn't take any other
+    states into account other than the immediately last and next one, where
+    in real life what is a valid transition can depend on multiple prior
+    states; 2. When what looks like multiple successive distinct
+    transactions to one user would look like a single larger transaction to
+    another user due to how the MVCC or serializability etc works, what are
+    the consistent semantics for a constraint saying a status must go
+    A->B->C and not A->C?; 3. Reverting certain user mistakes could require
+    circumventing / temporarily disabling a direction-enforcing constraint.
 
     * (PTMD_STD.pod)  Made nonquoted DBMS entity names subject to the
     "op_char_repertoire" pragma such that the old limited-to-ASCII format
