@@ -285,8 +285,16 @@ Example:
     baz( foo )
 ... here, the assertion only happens when baz() is going to be evaluated;
 the spelling is "asserts" since it should be an adjective.
-There also needs to be a version that can assert multiple exprs.
-Or actually, the ??!! version may still be better?
+- There also needs to be a version that can assert multiple exprs.
+- Or actually, the ??!! version may still be better?
+- Naming the "duplicate" isn't actually that hard; just use a leading
+underscore, eg:
+    _foo ::= foo asserting bar
+    _foo ::= bar ?? foo !! failure
+... so maybe that's best?
+- A BIG THING TO CONSIDER HERE IS, HOW DO FUNCTIONAL LANGUAGES MAKE
+ASSERTIONS ON COMBINATIONS OF ARGUMENTS ... OR IS THE ANSWER THAT ALL
+FUNCTIONS HAVE EXACTLY ONE ARGUMENT?  SEE WHAT HASKELL/ETC DOES.
 
 * Change generic assertion mechanism from a function/procedure to its own
 
@@ -510,11 +518,79 @@ operations, separately for insert/substitute/delete.
 * Add new "material" kinds that define state constraints (address as simple
 nlx.*.data.*), like type constraints but ref in reverse.
 
-* Add new "material" kinds that define
+* Consider to add new "material" kinds that define
 transition constraints.  The initial version would simply take a
 'before' and an 'after' state argument.  But it may be good to provide an
 alternative where arguments show the delta since often that is what
 constraint writers want to know anyway.
+- Note, however, that transition constraints can be problematic in
+environments where mistakes were made and need to be corrected.  For
+example, take the constraint that an employee's salary must never decrease;
+what do you do if it was increased by mistake, at all or too much, and this
+needs to be corrected?
+- This suggests transition constraints can't generally be taken as absolute
+so much like state constraints.
+- If a constraint can be overridden by a user with extra privileges, such
+as to correct an error, then they might be better generlized into being
+part of a security system.
+- An other issue, more with constraints that enforce say that statuses
+must transition in a strict sequence without skipping steps, would by
+itself strongly say that a transition constraint can only be applied at the
+time of committing the main-most transaction, and the prior state being
+compared against is that which would be rolled back to if the main aborted.
+Such transactions then could not be merged with other transactions
+affecting that constraint, such as with a git-rebase.
+- Temporal/historical databases can avoid the issue because for them all
+transition constraints are state constraints, applied on the valid-time of
+the data, and so the transaction-time is no longer a binding issue and
+corrections can be made, albeit maybe by only certain users.
+
+* Consider to make Muldis D include USER-VISIBLE temporal/historical
+database features, as an extension of it being multi-versioned, such as
+associating time intervals of valid-time and optionally transaction-time to
+each variable and pseudo-variable as applicable.  Officially, a time
+interval would only apply to a version of the state of a depot as a whole,
+and seeing intervals for individual relvars or relvar tuples etc would be
+derived from diffing depot versions and seeing where individual portions
+were unchanged or changed.  A transition constraint can then be formulated
+as saying that 2 consecutive versions of the depot must compare in a
+particular way.  So the concept of relvar tuple identity defined by pk
+attributes is no longer a factor with respect to transition constraints,
+except as for building a shorthand; the pk then is more reduced to the role
+of assisting automated splitting or joining of relvars.
+- Matters of historical versions being changeable (revisionist history) or
+deletable (usually to save disk space) become more of a security or
+privilege policy concern than a technical issue.  But by default, no
+historical changes may be made at all.
+- If we store transaction time also, then if a historical version is
+retconned, we can have both versions, with the same valid time but
+different transaction time.
+- But make sure not to confuse valid-time for facts generally considered
+true in the present vs facts about historial events.  I should read more
+the literature on temporal databases so to get this right.  And we have to
+differentiate facts that we assume to be true because it is in the database
+vs facts we are just recording as possibly true according to x source
+because it is a historic record.  And it gets more complicated from there.
+- The question remains as to whether anything in the depot is not tied to
+being part of a version; by default everything is tied to a version,
+whether normal data relvars or catalog relvars or user/priv info etc.
+The version with the latest valid-time is what would be enforced generally.
+- But what to do when running an as-of-x-time historical query, where the
+query code itself had changed over time; do you run old version or new one?
+- Or maybe you also qualify which version of code is running, separately
+from which version of data it looks at.
+- Strictly speaking, a valid-time interval doesn't have to be represented
+in terms of any particular calendar.
+- But it needs to be possible to insert a version between any other 2
+versions, not just after the latest one, just in case.  But versions could
+have internal integer ids and there would then just be an internal mapping
+table associating each with a date in some calendar ... or possible with
+multiple dates each a diff calendar, or so t calendar could be fixed later.
+Maybe table has [v-id-int,v-ord-int,v-date-lbl-1,...].
+- OR MAYBE THIS TEMPORAL/HISTORIAL DB STUFF SHOULD JUST BE A LANGUAGE
+EXTENSION OR SOMETHING DEFINABLE ENTIRELY OVER TOP OF A NON-TEMP/HIST
+MULDIS D DATABASE ... MEANING CORE ALSO DOES *NOT* HAVE TRANSITION CONSTR.
+MAYBE USER-DEF BEST AS THIS CAN BE ARBITRARILY COMPLICATED.
 
 * Update the "material" kinds that def stimulus-response rules / triggered
 routines so that they work for more kinds of stimuli, and maybe change the
