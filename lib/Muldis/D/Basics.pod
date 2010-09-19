@@ -2183,17 +2183,17 @@ finishes executing.
 Various subsets from all the possible functions have special significance
 in Muldis D, each of which is intended for particular tasks, and all
 functions allowed to be used for each particular task must have a certain
-structure.  This documentation sub-section describes a set of 8 function
+structure.  This documentation sub-section describes a set of 7 function
 kinds where each kind is named after either its required structure or its
 intended use:  C<named-value>, C<value-map>, C<value-map-unary>,
-C<value-filter>, C<value-constraint>, C<transition-constraint>,
+C<value-filter>, C<value-constraint>,
 C<value-reduction>, C<order-determination>.  Taking analogy to the type
 system, if functions in general were a maximal type, then each of these
 function kinds is a proper subtype of that maximal type.  Similarly, just
 as the catalog data type C<Function> will define any function, these proper
 subtypes of C<Function> will define functions of just their corresponding
 kinds:  C<NamedValFunc>, C<ValMapFunc>, C<ValMapUFunc>, C<ValFiltFunc>,
-C<ValConstrFunc>, C<TransConstrFunc>, C<ValRedFunc>, C<OrdDetFunc>.
+C<ValConstrFunc>, C<ValRedFunc>, C<OrdDetFunc>.
 
 A C<named-value> is a function that is nullary / has exactly zero
 parameters and unconditionally results in the same single value.  This kind
@@ -2205,11 +2205,6 @@ exactly one parameter (just the C<topic> parameter).  A C<value-filter> is
 a C<value-map> whose result's declared type is C<Bool>.  A
 C<value-constraint> is any function that is both a C<value-filter> and a
 C<value-map-unary>.
-
-A C<transition-constraint> is a function that is binary / has exactly 2
-parameters, and those 2 are named C<before> and C<after>, and the declared
-types of those 2 parameters are identical, and the declared type of the
-function's result is C<Bool>.
 
 A C<value-reduction> is a function that has at least 2 parameters, and
 those 2 are named C<v1> and C<v2>, and the declared types of those 2
@@ -2224,9 +2219,8 @@ function's result is C<Order>.
 
 =head2 Constraint Function Kinds by Purpose
 
-There are 3 main kinds of constraint functions when considered in terms of
-their purpose of place of usage:  C<type-constraint>, C<state-constraint>,
-C<transition-constraint>; the first 2 have the same structure.
+There are 2 main kinds of constraint functions when considered in terms of
+their purpose of place of usage:  C<type-constraint>, C<state-constraint>.
 
 A C<type-constraint> is a C<value-constraint> that is
 part of the definition of a data type (every data type composes 0..N
@@ -2278,24 +2272,7 @@ of the variable, and other users of that type aren't affected.  When
 multiple C<state-constraint> are applied to the same variable, then a
 I<total state constraint> is in effect on the variable equivalent to the
 logical C<and> of the individual constraints.  Conceptually speaking, a
-C<state-constraint> will execute after all C<type-constraint> and before
-all C<transition-constraint>.
-
-A C<transition-constraint> is the same as a C<state-constraint> except that
-rather than 1 C<topic> parameter, it has exactly 2 same-typed parameters
-whose names are C<before> and C<after>; it returns C<Bool:True> if the
-variable is allowed (according to current business rules) to transition
-directly from the C<before> state to the C<after> state, or C<Bool:False>
-if not; in the latter case, the DBMS would then throw a
-transition-constraint-violation exception (resulting in a transaction
-rollback of at least the statement that attempted the update), or in the
-former case, it would consider the update a success (barring other causes
-for failure).  Conceptually speaking, a C<transition-constraint> will
-execute as the ending part of a statement, right at the moment of trying to
-update any variable's state, with the result of a value expression or
-otherwise; in the case of a multi-update statement, all the updates would
-happen simultaneously, so a transition failure for any update would prevent
-all that statement's updates from occurring.
+C<state-constraint> will execute after all C<type-constraint>.
 
 =head2 Other Function Kinds by Purpose
 
@@ -3487,9 +3464,6 @@ declared type of C<nlx.data> includes everything that SQL would define as
 table definitions, table unique key constraints, subset (foreign key)
 constraints, and generic database or table state constraints, but state
 constraints can also be associated with just variables rather than types.
-Only database transition constraints are not part of the database's type,
-and are applied directly to the C<nlx.data> variable (and C<fed.data> also)
-by the depot's catalog in another way.
 
 Conceptually speaking, for the ultimate freedom from constraints, the
 declared type of C<nlx.data> can be a simple alias for the C<Database>
