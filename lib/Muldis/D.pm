@@ -74,7 +74,7 @@ however, the language should lend itself to making fast implementations.)
 Muldis D is intended to qualify as a "B<D>" language as defined by
 "I<Databases, Types, and The Relational Model: The Third Manifesto>"
 (I<TTM>), a formal proposal for a solid foundation for data and database
-management systems, written by Christopher J. Date and Hugh Darwen; see
+management systems, written by Chris Date (C.J. Date) and Hugh Darwen; see
 L<http://www.aw-bc.com/catalog/academic/product/0,1144,0321399420,00.html>
 for a publishers link to the book that formally publishes I<TTM>.  See
 L<http://www.thethirdmanifesto.com/> for some references to what I<TTM> is,
