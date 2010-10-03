@@ -121,6 +121,111 @@ so to help preserve the user's syntax and be more compact, maybe, but those
 Also thanks to the change about replacing N-adic with dyadic s-d routines,
 and its precedent, there is less need for "foo_of" shorthands anyway.
 
+* Externalize all the details of character string repertoires or encodings
+from the Muldis D core, such that say all the details of Unicode become
+part of a Muldis D extension instead, and maybe ASCII likewise.
+- Change "String" from [N,[N,N,...,N]] to just [N,N,...,N] so the
+repertoire is provided by context rather than internally.
+- Change each of "Name", "Text", etc so that its only core-defined possrep
+just has an Integer attribute, or alternately a [N,N,...,N] String whose
+repertoire is officially a proprietary Muldis D repertoire, and said
+repertoire is officially of unlimited size, maybe taking NFG influence;
+unofficially the repertoire would likely just happen to superset Unicode.
+Then, each Muldis D text-repertoire extension would define a subtype of
+Name/Text/etc which adds a possrep with an attribute that is a [N,N,...,N]
+String whose elements are actual codepoints for the repertoire that said
+extension is adding support for.  Each extension similarly defines the
+2-way mapping between the proprietary core repertoire and the added one.
+And so, we can then write text in or consider it to be of a particular
+character set or encoding and logically corresponding characters would
+happen to compare as equal when they need to.
+- One officially composes a Name/Text/etc value using a selector that
+specifies the value in terms of an Integer or String of the core
+proprietary format, but the extensions would provide other selectors so you
+can use Unicode/ASCII/etc instead which are then mapped.
+- Several extensions would be standard, and the Muldis D standard dialects
+can abstract away these numeric selector calls; when you specify a source
+code char repertoire in your code declared language name, that causes the
+parser to interpret the source in that repertoire and automatically
+select text using the specific selectors of the extension associated with
+that char repertoire.
+- We still have to figure out matters related to users having differing
+expectations of when character strings are equal/entirely-substitutable or
+not, it should be entirely possible for users to define this, which is
+helped by being non-core.
+- Although it is nice to be able to say that a Name can be any character
+string at all, and it be defined over Text, it may actually be liberating
+to Muldis D to have Name and Text at arms length, where for example the
+Text for user data can be allowed to be much more complex needing to
+represent user data while Name could intentionally be more restricted in
+order to have a more consistent and portable standard, and in particular it
+should be perfectly okay for Name to not be subject to per-user variability
+of equality or sorting rules.
+- Maybe it would be best to simply say that Name's possrep attr is just an
+Integer, and that associating this with a character string label would be
+done using a lookup table in the sys-cat, and the language can provide
+features in the right places so that users can essentially write their Name
+out normally as text and the parser basically treats this similar to C
+"#define" or trivial macro.
+- Maybe a natural consequence of the previous point is that a depot's
+system catalog would also #define locally a name for each of the
+system-defined entitity name chain parts that it wants to directly
+reference, so that the depot ensures for itself that there is no conflict
+between the strings it uses for itself and that it references the system
+with, and that when the same character string is used in both places, it
+maps to the same integer.
+- Going further, there could be multiple char strs defined for the same
+sys-def entities, so users could maybe localize Muldis D to their own
+language and different languages match up on shared numbers.
+- Keep in mind that a lot of the above is at the quasi-parser level, so
+this feature is partially like letting users program the parser.
+- That is, and keep ignoring Text data for now, we could just say that Name
+are always Integer in the system catalog, that human-readable names only
+exist at the source code level such as C #defines, and that the human-read
+names defined in the Muldis D spec are just canonical English labels for
+the Integer identifiers of system-defined entities.
+This could actually make a lot of things simpler in many ways.
+So the lookup table is sort of a parser-level abstraction but that the
+system catalog will also remember it for convenience, but that then the
+labels would be more along the lines of source code metadata, just like
+scm_comment or scm_vis_ord are ... maybe call it scm_vis_name?
+- HOW ABOUT DEAL WITH MBE-CONCEPTUALLY SIMPLER Name FIRST AND THEN DO TEXT
+LATER ... SO NAME JUST WRAPS AN INTEGER AND CONTEXT-ASSOCIATED scm_vis_name
+WILL BE A Text THAT STORES WHAT THE USER CONCEIVES THE NAME TO BE; THIS IS
+SIMPLER SINCE DON'T HAVE TO THINK ABOUT CHAR-REPRS/ENCS TO DO THIS AND
+String CAN BE SIMPLIFIED.  WE'LL NEED SOME UNIQUENESS CONSTRAINTS.
+- The number-centric approach also provides an elegant way to support both
+users that want case-sensitive identifiers and those wanting
+case-insensitive-but-case-preserving ones at the same time; in the latter
+case, we just have, in different places, different char strs labelling the
+same integer; since the text-to-int mapping is done
+automatically/implicitly by the parser, it can behave differently when
+looking up declarations of text in order to assign the corresponding int.
+But making that work might somewhat strip away the desire to be able to
+parse without seeing the system catalog.
+On the other hand, if the Text type is made more complicated, such as to
+become a Mixin type that can be composed by say CSText and CIText, or
+otherwise we have many actual Text types, one for each desired nationality
+semantic, then the parser doesn't have to do any lookups and the type of
+the scm_vis_name can be considered to recompute the associated integer
+sometimes.  Er, these details need more thought, eg what parser has to do.
+- With Text being a mixin type, consider that core, so it is still useable
+without any exts, has a composing type that is even simpler than ASCII,
+consisting just of [A-Za-z_0-9], and then all sys-def entities defined by
+the core just use those in their names ... which are case-sensitive.  Doing
+this would then put all symbolic ops in the same boat, whether ASCII or
+trans-ASCII, in only being defined by extensions (also ASCII vs EBCDIC
+agnostic).  We'd then clearly have an ASCII extension which defines a
+different Text-composing type plus synonyms of core entities that are
+symbolic like "=" or "+" etc, and a Unicode ext would do likewise.
+- Note that ejecting practically all text details from core isn't really
+that strange, but is good because those details are externally defined such
+as by countries or Unicode or whatever, same as with dates.  While as
+complicated as they might be, numbers or collections are natural concepts
+and so anything I explicitly def of them in core isn't extern invalidated.
+Also both char data *and* dates need time-mutable lookup tables and numbers
+or whatever don't.
+
 * Considering the following items where non-ASCII chars are much more
 pervasive (though strictly optional), replace the "op_char_repertoire"
 pragma with a pragma that affects all non-quoted code in general, including
