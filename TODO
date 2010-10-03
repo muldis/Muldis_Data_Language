@@ -52,6 +52,7 @@ Grammar can be "synonym foo of nlx.lib.bar" et al in general form, or
 "function foo|bar|baz (...) {...}" where original is the first one "foo"
 and the other synonyms all live in the same subdepot, and in particular the
 others are "not" inner materials of "foo".
+- Also add [Integer, Rational, Boolean], make [Int,Rat,Bool] into synonyms.
 - Likewise (and necessarily), subdepots themselves can have synonyms.
 - Also update tuple (and by extension) database types to add attribute
 synonyms which semantically are lightweight virtual attribute maps that
@@ -130,6 +131,19 @@ quoted entity names, texts, comments; see later TODO item about this; as
 per that, all of these could be part of a single pragma.  A simpler
 implementation could support only ASCII across the board as literal
 characters, while non-ASCII data could be supported as escape sequences.
+
+* Enhance the cat-type/syntax for defining tuple types as attr lists (and
+by extension, relations and scalar possreps) to let users provide an
+optional hint for the order that tuple/sca-pr/etc attributes should be
+consulted when doing an equality test between 2 tuples/etc so to direct the
+DBMS to do the least expensive comparisons first, eg integer attributes,
+prior to more expensive ones, eg blob attributes; since the test
+short-circuits, and assuming the vast majority of compares would return
+false, this should aid performance in a clean way without users resorting
+to overload operators or something for performance reasons.  This is a
+separate hint from that garnered by marking relation attrs as key attrs,
+and could work within that eg to suggest order within multi-attr keys.
+Other areas in the language could probably be assisted by hints also.
 
 * Update the PTMD_STD grammar to split up the "Name_payload" or its parts
 further so that, rather than just the 2 "[|non]quoted_name_str", there is
@@ -328,7 +342,7 @@ Add alias for every 'op' node 2nd element for a routine, meaning eg add
 calls to those, as if one said `"+"(4,5)` or `"⋈"(foo,bar)`, and so we can
 better remember the individual syntactic choices that the users made.
 But then, how do we deal with the idea of making logical-not into a meta-op
-so that there is no actual is_not_identical|"≠" function etc; how do we
+so that there is no actual is_not_same|"≠" function etc; how do we
 preserve user's individual syntactic choices then?  So think about that.
 While SQL synonyms can also be used for relvars, mine would probably only
 be used for materials - types, routines, stim-resp-rules, themselves, etc;
@@ -474,7 +488,7 @@ The general reducer above would be one of these.  Another is the negated
 relational, whose syntax is putting ! or not- in front of any Bool-resu op.
 Another is the assignment, putting := in front of any function.
 For !, we can then eliminate all the "not" variants of any Bool-resulting
-functions, so eg "x != y" parses into "not(is_identical(x,y))", same as if
+functions, so eg "x != y" parses into "not(is_same(x,y))", same as if
 they had said "!(x = y)".  As for the old intended purpose of all the not-
 variants, which is to preserve the user's intent of how code should look,
 we could simply have an alias for the not() function which is what is
@@ -756,6 +770,18 @@ can't better be used for those tasks instead.
 
 ----------
 
+* Flesh out some window/partition funcs, which are kind of like a
+generalization of aggregation/reduction functions.  A window()/partition()
+wrapper func is like the summary() wrapper func but it has the same number
+of output tuples as input ones; when wrapping an agg/reduc func, all output
+tuples have the same value per tuple in the same group; when wrapping a
+window/partition-oriented func, such as rank(), each tuple in the group
+gets or can get a different value.
+See these:
+- http://www.postgresql.org/docs/9.0/interactive/tutorial-window.html
+- http://www.postgresql.org/docs/9.0/interactive/functions-window.html
+- http://www.postgresql.org/docs/9.0/interactive/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS
+
 * Add a round-rule param to rat division, I suppose, since in general we'll
 need it if we want to maintain a rational radix through every op (+,-,*
 will already do so when all their args are in the desired radix).
@@ -1002,7 +1028,7 @@ all foreign values are treated as black boxes by Muldis D, it is assumed
 that the Muldis D implementation's bindings to the peer/host language will
 be providing something akin to a simple pointer value, and that it would
 provide the means to know what foreign values are mutually distinct or
-implement is_identical for them.  One thing for certain is that every
+implement is_same for them.  One thing for certain is that every
 foreign value is disjoint from every Muldis D value, and by default every
 foreign value is mutually distinct from every other foreign too, unless
 identity is overloaded by the foreign, like how Perl 6's .WHICH works.
@@ -1023,7 +1049,7 @@ this seems to be the safest bet); otherwise ('ref obj' is false) then the
 value's result in a string context, "obj", is used as the identity; the
 mem addr and stringification would both be prefixed with some constant to
 distinguish the 2 that might stringify the same.  By default, an
-External supports no operators but is/not_identical.
+External supports no operators but is/not_same.
 
 ----------
 
