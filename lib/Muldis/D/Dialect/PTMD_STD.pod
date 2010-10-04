@@ -801,7 +801,6 @@ Grammar:
         | <Name>
         | <NameChain>
         | <PNSQNameChain>
-        | <Comment>
         | <RatRoundRule>
 
     <coll_value_selector> ::=
@@ -896,7 +895,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | Name
         | NameChain
         | PNSQNameChain
-        | Comment
         | RatRoundRule
         | DH? Scalar | '$'
         | DH? Tuple | '%'
@@ -925,7 +923,6 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <Name_payload>
         | <NameChain_payload>
         | <PNSQNameChain_payload>
-        | <Comment_payload>
         | <RatRoundRule_payload>
         | <Scalar_payload>
         | <Tuple_payload>
@@ -951,8 +948,8 @@ only external metadata of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
 just on C<value_kind>.
 
-For all values of just the 11 data types [C<Singleton>, C<Bool>, C<Order>,
-C<RoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>, C<Comment>, C<Set>,
+For all values of just the 10 data types [C<Singleton>, C<Bool>, C<Order>,
+C<RoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>, C<Set>,
 C<Array>], the C<value_kind> portion of a GCVL may be omitted for brevity,
 but the code parser should still be able to infer it easily by examining
 the first few characters of the C<value_payload>, which for each of said 11
@@ -1427,6 +1424,16 @@ Grammar:
     <ws> ::=
         \s+ [[<non_value_comment> | <visual_dividing_line>] \s+]*
 
+    <non_value_comment> ::=
+        '#' \s*
+            '`' \s*
+                [<-[\`]> | <escaped_char>]*
+            \s* '`'
+        \s* '#'
+
+    <visual_dividing_line> ::=
+        '#' ** 2..*
+
 A C<Text> node represents a general purpose character string.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Text> value as follows:
 
@@ -1456,7 +1463,7 @@ to end up with no C<SPACE> at all where a line is broken, then you'll have
 to employ some other workaround, such as catenating several quoted strings.
 
 All Muldis D delimited character string literals (generally the 3 C<Text>,
-C<Name>, C<Comment>) may contain some characters denoted with escape
+C<Name>, code comments) may contain some characters denoted with escape
 sequences rather than literally.  The Muldis D parser would substitute the
 escape sequences with the characters they represent, so the resulting
 character string values don't contain those escape sequences.  Currently
@@ -1470,7 +1477,7 @@ The meanings of the simple escape sequences are:
     \\  | x;5C      | REVERSE SOLIDUS | \   | esc seq lead (aka backslash)
     \'  | x;27      | APOSTROPHE      | '   | delim Text literals
     \"  | x;22      | QUOTATION MARK  | "   | delim quoted Name literals
-    \`  | x;60      | GRAVE ACCENT    | `   | delim Comment literals
+    \`  | x;60      | GRAVE ACCENT    | `   | delim for code comments
     \t  | x;9       | CHAR... TAB...  |     | control char horizontal tab
     \n  | x;A       | LINE FEED (LF)  |     | ctrl char line feed / newline
     \f  | x;C       | FORM FEED (FF)  |     | control char form feed
@@ -1498,6 +1505,29 @@ Examples:
     'Perl'
 
     '\c<LATIN SMALL LETTER OU>\c<x;263A>\c<65>'
+
+A C<non_value_comment> node is strictly not part of the code
+proper; Muldis D code can contain these almost anywhere as metadata for
+the code, and in large part it is treated as if it were part of the
+insignificant whitespace; that all being said, generally speaking any
+C<non_value_comment> is retained in the parse tree adjusted to live in the
+contextually nearest place where a resulting system catalog node has a
+C<scm_comment> attribute.  I<Details of determining the contextually
+nearest place for these comments to go is pending.>
+
+Syntactically, a C<non_value_comment> node differs from C<Text_payload>
+only in that it is delimited by number-signs/hash-marks in addition to
+backticks/grave-accents.
+
+A C<visual_dividing_line> is a run of 2+ C<#> that may be used in all of
+the same places as a C<non_value_comment> but it does I<not> denote a
+comment and will be stripped out by the parser as if it was insignificant
+whitespace.  This feature exists to empower things like making visual
+dividing lines in the code just out of hash-marks.
+
+Examples:
+
+    #`This does something.`#
 
 =head2 DBMS Entity Name Literals
 
@@ -1668,81 +1698,6 @@ Examples:
     PNSQNameChain:fed.data.the_db.gene.sorted_person_names
 
     PNSQNameChain:fed.data.the_db.stats."samples by order"
-
-=head2 Code Comment Literals
-
-Grammar:
-
-    <Comment> ::=
-        [
-            Comment ':' <unspace>
-            [<type_name> ':' <unspace>]?
-        ]?
-        <Comment_payload>
-
-    <Comment_payload> ::=
-        '`'
-            [<-[\`]> | <escaped_char>]*
-        '`'
-
-    <non_value_comment> ::=
-        '#' \s*
-            <Comment_payload>
-        \s* '#'
-
-    <visual_dividing_line> ::=
-        '#' ** 2..*
-
-A C<Comment> node represents the text of a Muldis D code comment; it is a
-character string type, that is disjoint from both C<Text> and C<Name>.  It
-is interpreted as a Muldis D C<sys.std.Core.Type.Cat.Comment> value as
-follows:
-
-Fundamentally a C<Comment> node is formatted and interpreted like a C<Text>
-node, and any similarities won't be repeated here.  The C<Comment_payload>
-differs from C<Text_payload> only in that the string is delimited
-by backticks/grave-accents (C<`>) rather than apostrophes/single-quotes,
-meaning also that literal backticks instead of apostrophes must be escaped.
-
-A C<non_value_comment> node is I<also> interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.Comment> value in essentially the same way as a
-C<Comment>, but for a few formatting differences described further below.
-The primary reason for both C<Comment> and C<non_value_comment> to exist is
-so that code comments can be placed in Muldis D code in very different ways
-without there being any confusion on interpretation.
-
-A C<Comment> node is used when the comment is normal data that is an
-integral part of the Muldis D code proper, same as every part of the code
-that isn't a comment, such as when the comment I<is> an C<expr> or C<value>
-node.
-
-A C<non_value_comment> node, in contrast, is strictly not part of the code
-proper; Muldis D code can contain these almost anywhere as metadata for
-the code, and in large part it is treated as if it were part of the
-insignificant whitespace; that all being said, generally speaking any
-C<non_value_comment> is retained in the parse tree adjusted to live in the
-contextually nearest place where a resulting system catalog node has a
-C<scm_comment> attribute.  I<Details of determining the contextually
-nearest place for these comments to go is pending.>
-
-Syntactically, a C<non_value_comment> node differs from C<Comment_payload>
-only in that it is delimited by number-signs/hash-marks in addition to
-backticks/grave-accents, such that the latter is nested inside the former,
-and optional insignificant whitespace is allowed between the two.
-
-A C<visual_dividing_line> is a run of 2+ C<#> that may be used in all of
-the same places as a C<non_value_comment> but it does I<not> denote a
-comment and will be stripped out by the parser as if it was insignificant
-whitespace.  This feature exists to empower things like making visual
-dividing lines in the code just out of hash-marks.
-
-Examples (the first 2 are as values, the third is not as a value):
-
-    Comment:`This does something.`
-
-    `So does this.`
-
-    #`And also this.`#
 
 =head2 Rational Rounding Rule Literals
 

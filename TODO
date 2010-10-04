@@ -211,7 +211,7 @@ the scm_vis_name can be considered to recompute the associated integer
 sometimes.  Er, these details need more thought, eg what parser has to do.
 - With Text being a mixin type, consider that core, so it is still useable
 without any exts, has a composing type that is even simpler than ASCII,
-consisting just of [A-Za-z_0-9], and then all sys-def entities defined by
+consisting just of [A-Za-z0-9_], and then all sys-def entities defined by
 the core just use those in their names ... which are case-sensitive.  Doing
 this would then put all symbolic ops in the same boat, whether ASCII or
 trans-ASCII, in only being defined by extensions (also ASCII vs EBCDIC
@@ -225,6 +225,37 @@ complicated as they might be, numbers or collections are natural concepts
 and so anything I explicitly def of them in core isn't extern invalidated.
 Also both char data *and* dates need time-mutable lookup tables and numbers
 or whatever don't.
+- We will need a stricture such that all Name labels in a depot must have
+the same char repertoire; that is, they are all the same Text-compos type.
+- Let's call our core-def Text-composing type, that has a repertoire of
+exactly 63 characters, "TextB64S1".  The codepoints for the 63 characters
+are as follows:
+         0 | <not used>
+     1..26 | 'A'..'Z'
+    27..52 | 'a'..'z'
+    53..62 | '0'..'9'
+        63 | '_'
+The name represents that this looks just like a "Base64" but that all
+the codepoints are shifted by 1; while Base64 had 0 for 'A', we have 1;
+while Base64 has variants differing on the non-alphanumeric characters, we
+use the underscore as our sole one.  A TextB64S1 has a single possrep attr
+that is a List of 0..N Int in 1..63, or call that String[1..63].
+- A possible context-free scheme to map a human-readable entity name in
+the TextB64S1 repertoire to an integer Name is to take each character and
+use its codepoint as a column of an integer literal in base-64 notation.
+The empty character string would be represented by the integer zero which
+would be distinct from all nonempty strings whose integers are 1 or more.
+Likewise, a canonical character set to use when writing out a thusly
+restricted integer as base-64 is TextB64S1.
+Examples:
+    ''     | []            | 0                                 |       0
+    'D'    | [4]           | 0+4*64^0                          |       4
+    'Perl' | [16,31,44,38] | 0+16*64^3+31*64^2+44*64^1+38*64^0 | 4324134
+So that scheme is completely predictable and has no collisions but it only
+fits 5 or 10 chars in a 32 or 64 bit int respectively; then off to bigints.
+- While the above would probably have its uses, a lookup table may likely
+still be best in practice so eg we can support a few billion names of any
+human-length using just 32 bit integers.
 
 * Considering the following items where non-ASCII chars are much more
 pervasive (though strictly optional), replace the "op_char_repertoire"
@@ -1032,15 +1063,15 @@ consortium to use canonical for general data but to use compatibility for
 things like identifiers or to avoid some kinds of security problems; see
 http://www.unicode.org/faq/normalization.html.  Note that compatibility is
 a smaller repertoire than canonical, so converting from the latter to the
-former will lose information.  The text|name|cmnt affect how delimited char
-strs that are Text|Name|Comment are interpreted, and the effects are
+former will lose information.  The text|name affect how delimited char
+strs that are Text|Name are interpreted, and the effects are
 orthogonal to whether characters are specified literally or in escaped
 (eg "\c<...>" form); canonical will preserve exactly what is stated (but
 for normalization to NFD) and compatibility will take what is stated and
 fold it so semantically same characters become the same codepoints (like as
 normalizing to NFKD).  The suggested usage is compatibility for Name to
 help avoid security or other problems, and canonical for Text; as for
-Comment, I currently don't know which is better.  If ASCII is chosen, the
+comments, I currently don't know which is better.  If ASCII is chosen, the
 semantics are different; with both Unicode any input is accepted but folded
 if needed; for ASCII, it is more likely an exception would be raised if
 there are any codepoints outside the 0..127 range in character strings.
