@@ -156,6 +156,25 @@ including all SQL DBMSs such as Oracle, PostgreSQL and SQLite, though they
 usually give lip-service to the relational data model and approximate a
 RDBMS to varying degrees.
 
+=item module
+
+A I<module> is an analogy of a I<depot> that is for system-defined DBMS
+entities rather than user-defined ones.  The two are similar in that they
+both define a library of materials organized in a public namespace
+hierarchy.  The two differ in that a I<depot> is defined entirely in pure
+Muldis D, such as a DBMS user can do, while a I<module> is defined at least
+partially in some other language, such as that of the DBMS' own source
+code.  Alternately, they differ in that all I<depot> are visible in the
+DBMS under the public namespace for user-defined entities while all
+I<module> are treated specially by the DBMS and are visible under the
+public namespace for system-defined entities.
+
+=item package
+
+A I<package> is the common generalization of a I<module> and a I<depot>;
+within this documentation, the term I<package> is typically used as a
+shorthand where it would otherwise say I<module or depot>.
+
 =item sequence / array, sequence generator
 
 Within this documentation, a I<sequence> or I<array> generically refers to
@@ -2751,9 +2770,10 @@ should carry identical semantics so user entities that just use the
 provided subset are still portable.
 
 System-defined types and routines are grouped into multiple dynamically
-loadable libraries.  One of these libraries, named C<Core>, is loaded by
+loadable libraries called I<modules>.  One of these modules, named C<Core>,
+is loaded by
 default at DBMS startup, and provides the most fundamental resources that
-everything else needs.  Other system-defined libraries will load
+everything else needs.  Other system-defined modules will load
 automatically when something in them is referenced by user code; users
 never explicitly ask to use a system-defined extension, or at least not
 from within Muldis D code.  It is up to each Muldis D implementation to
@@ -2922,16 +2942,13 @@ This is the hierarchy of invocation namespaces of DBMS entities:
     sys  # system-defined builtin types, routines, and catalogs
         sys.cat  # read-only sys cat db desc entities under sys|mnt, *.cat
         sys.std  # sys-def types and routines defined by standard Muldis D
-            sys.std.Core
-                sys.std.Core[.<sys-nsp>]**0..*
-                    sys.std.Core[.<sys-nsp>]**0..*.<material>
-            sys.std.<extension>
-                sys.std.<extension>[.<sys-nsp>]**0..*
-                    sys.std.<extension>[.<sys-nsp>]**0..*.<material>
+            sys.std.<module-name>
+                sys.std.<module-name>[.<chi-nlx-nsp>]**0..*
+                    sys.std.<module-name>[.<chi-nlx-nsp>]**0..*.<material>
         sys.imp  # sys-def types, rtns added by, specif to implementations
-            sys.imp.<auth-or-impl-name>
-                sys.imp.<auth-or-impl-name>[.<sys-nsp>]**0..*
-                   sys.imp.<auth-or-impl-name>[.<sys-nsp>]**0..*.<material>
+            sys.imp.<module-name>
+                sys.imp.<module-name>[.<chi-nlx-nsp>]**0..*
+                   sys.imp.<module-name>[.<chi-nlx-nsp>]**0..*.<material>
     mnt  # controls for mapping external storage devices etc with depots
         mnt.cat  # updateable sys cat controlling what depot mounts exist
     fed  # the transac-synced federation of curr mounted depots w mount nms
@@ -2941,13 +2958,13 @@ This is the hierarchy of invocation namespaces of DBMS entities:
                 fed.lib.<depot-mnt-nm>[.<chi-nlx-nsp>]**0..*
                     fed.lib.<depot-mnt-nm>[.<chi-nlx-nsp>]**0..*.<material>
         fed.data  # updateable db of normal user data in this federation
-    nlx  # non-lex entities ref own immed parent non-lex namespace w this
+    nlx  # non-lex s-d,u-d entities ref own immed parent non-lex nsp w this
         nlx[.par]**0..*
-            nlx[.par]**0..*.cat  # upd s-c db desc ent under fed.[lib|data]
+            nlx[.par]**0..*.cat  # ro/upd s-c db desc ent under [sys|fed].[lib|data]
             nlx[.par]**0..*.lib  # invokable tps|rtns in this namespace
                 nlx[.par]**0..*.lib[.chi-nlx-nsp]**0..*
                     nlx[.par]**0..*.lib[.chi-nlx-nsp]**0..*.<material>
-            nlx[.par]**0..*.data  # upd db of normal user data in this nsp
+            nlx[.par]**0..*.data  # nothing or upd db of normal user data
     rtn  # entities in a possib-anon-declared rtn can ref that rtn w this
 
 Conceptually speaking, there is also this, but not actually; see
@@ -2959,10 +2976,6 @@ L</Lexical Entities> for an explanation:
         lex.<var>
         lex.<stmt>
 
-Note that the 3 tokens [C<Core>, C<< <extension> >>, C<<
-<auth-or-impl-name> >>] under C<sys> are all actually C<< <sys-nsp> >> as
-far as the system catalog that describes built-ins is concerned.
-
 Further details of each namespace follow below.
 
 =head2 User Data Variables and System Catalog Variables
@@ -2973,8 +2986,8 @@ which is actually constant) and user data variables.  The global system
 catalog variables all exist as the C<[sys|mnt|fed|nlx].cat>
 secondary namespaces (C<sys.cat> is a constant).  The global user data
 variables all live as the C<[fed|nlx].data> secondary namespaces.
-All non-global variables are just of the user data variety, can be of any
-types, and use the C<lex> primary namespace.
+All non-global variables can be of any types, and conceptually use the
+C<lex> primary namespace, of both system and user-defined routines.
 
 The purpose of user data variables is hold user data, and are what gets
 read or updated by database users the vast majority of the time; working
@@ -3001,7 +3014,8 @@ one or more other variables (sometimes by way of a function), where
 updating the virtual variables is akin to updating the other variables; if
 the other variables are system catalog variables, then effectively so are
 the user defined virtual ones; this is the only way users can effectively
-define magical variables, which otherwise isn't possible.
+define magical variables, which otherwise isn't possible; but all such
+user-defined magical variables can only be lexical variables.
 
 The system catalog namespaces of Muldis D can be considered analogous to
 the "information schema" of SQL, but that the latter is just read-only.
@@ -3011,19 +3025,23 @@ The individual catalog namespaces are described in other sections.
 =head2 Standard System-Defined Entities
 
 All system-defined data types and routines are globally visible and
-invokable.
+invokable.  Each of these exists in a I<module> (which is a I<package>).
 
 Each standard system-defined type and routine exists under the C<sys.std>
-primary namespace, and its fully qualified name has at least 2 parts
-besides the C<sys.std>.  The most fundamental standard types and routines,
-those that are ideally the least that every Muldis D implementation would
-provide, are further under the C<Core> secondary namespace; less
-fundamental but still standard types and routines are grouped under various
-other secondary "extension" namespaces, with each secondary namespace
-conceptually representing a dynamically loadable plug-in library.  Finally,
-each of the C<Core> and any other extensions has at least a 1-level
-namespace, where types and routines are optionally grouped under common
-extra name spaces.
+primary namespace, where it is referred to with an absolute path, and its
+fully qualified name along this absolute path has at least 2 parts besides
+the C<sys.std>.  Beneath C<sys.std>, each secondary namespace is the name
+of a module.  The most fundamental standard types and routines, those that
+are ideally the least that every Muldis D implementation would provide, are
+in the C<Core> module; less fundamental but still standard types and
+routines are grouped under various other "extension" modules, with each
+module conceptually representing a dynamically loadable plug-in library.
+Under each module name is an optional tree of generic namespaces, adding
+0..N name parts, each of which we refer to simply as a I<submodule> (which
+is a I<subpackage>).  After that, we have the lowest layer, which are
+globally addressable type and routine unqualified names.  So the
+fully-qualified names of most user-defined entities by way of C<sys.std>
+are 4-5 parts.
 
 The catalog namespace C<sys.cat.system> is where all the relcons that
 describe, in a machine-readable way, all of the standard system-defined
@@ -3054,9 +3072,12 @@ that C<sys.std> is for the standard system-defined types and routines.
 Keeping this separate namespace now allows for implementations to continue
 supporting an evolving standard without becoming conflicted with their own
 legacy extensions.  Non-standard system-defined entities have fully
-qualified names with at least 2 parts besides the C<sys.imp>.  The
+qualified names, where they are referred to with an absolute path,
+with at least 2 parts besides the C<sys.imp>.  The
 secondary namespace is always some authority-like identifier which could
-alternately be an implementation name.  If some implementation ended up
+alternately be an implementation name, both of these being referred to
+here generically as a module name, which might itself actually use multiple
+namespace levels to be fully-qualified.  If some implementation ended up
 supporting not only its own extensions, but also the extensions of other
 implementations, then the secondary namespace would say who declared the
 entity in question; or, that is still useful for external processors of the
@@ -3073,26 +3094,29 @@ C<sys.cat.[system|impl]>.>
 =head2 User-Defined Entities
 
 Users of Muldis D can define their own data types, routines, and variables,
-and each of these exists in a I<depot>, which is the means provided by
-Muldis D for persistence.
+and each of these exists in a I<depot> (which is a I<package>), which is
+the means provided by Muldis D for persistence.
 
-The C<fed> primary namespace is for all non-lexical user-defined entities.
+The C<fed> primary namespace is for all non-lexical user-defined entities
+to be referred to with absolute paths.
 Beneath C<fed>, each secondary namespace is the name that a depot is
 mounted with by the current process/thread in the virtual machine, and
 there is one distinct second-level name per depot mount, and often there is
 just one of those at a time.  Under each mount name is an optional tree of
 generic namespaces, adding 0..N name parts, each of which we refer to
-simply as a I<subdepot>.  After that, we have the lowest layer, which are
-globally
+simply as a I<subdepot> (which is a I<subpackage>).  After that, we have
+the lowest layer, which are globally
 addressable pseudo-relvar, type, and routine unqualified names.  So the
 fully-qualified names of most user-defined entities by way of C<fed> are
 3-4 parts.
 
+=head2 Non-Lexical Entities
+
 The C<nlx> primary namespace empowers non-lexical entities declared in the
-same depot or subdepot to refer to each other using relative paths rather
-than using absolute paths which is what C<fed> provides for.  For example,
+same [|sub]package to refer to each other using relative paths rather than
+using absolute paths which is what C<fed|sys> provides for.  For example,
 if 2 functions whose unqualified names are C<f1> and C<f2> live directly in
-the same depot or subdepot, each one can reference the other, or itself,
+the same [|sub]package, each one can reference the other, or itself,
 using C<nlx.lib.f1> or C<nlx.lib.f2> respectively.  Referring to an entity
 in a child namespace of the invoker's own direct parent works as you might
 expect, by adding an element per level after the C<lib|data>, for example
@@ -3100,8 +3124,8 @@ C<nlx.lib.mychild.f3>.  Referring to an entity in a parent namespace of the
 invoker's own direct parent involves adding a C<par> ("parent") element per
 level immediately after the C<nlx>, for example C<nlx.par.lib.f4>.
 
-Using C<nlx> rather than C<fed> allows depot entities to be coded in a
-portable way, not having to know too much about how they would be used,
+Using C<nlx> rather than C<fed|sys> allows package entities to be coded in
+a portable way, not having to know too much about how they would be used,
 such as not knowing what name they are mounted under C<fed> with.  Details
 of material definitions as seen in a live in-DBMS mount can remain
 invariant and match their actual stored definitions despite where in their
@@ -3119,9 +3143,9 @@ exists.  All user-defined functions and types may only be referenced using
 C<nlx> (but that a host language is exempted if it exists).
 
 Note that a C<nlx> may I<not> navigate outside of the referencer's own
-depot; from its point of view, the root namespace inside its own depot is
-the root beyond which a relative path can not traverse; attempting this is
-an error.
+package; from its point of view, the root namespace inside its own package
+is the root beyond which a relative path can not traverse; attempting this
+is an error.
 
 This also means that a namespace of a physical depot may not be mounted in
 a DBMS as a "depot" if any of its contents reference outside that namespace
@@ -3221,11 +3245,11 @@ composed inside another one, such as if the former is a closure, the former
 actually has to be composed outside the other one, and be invoked by name.
 And so, it is often considered a good practice that when a conceptual type
 or routine is split into several actual ones, then these will be grouped
-into a subdepot, named after the conceptual main, and the actual main has
-the empty string for its name within this subdepot; this grouping means
+into a subpackage, named after the conceptual main, and the actual main has
+the empty string for its name within this subpackage; this grouping means
 that the ordinary namespace for conceptual entities is not polluted by
 these post-split artifacts.  This presumably common practice would mean
-that a depot will typically have 1 more subdepot layer than otherwise,
+that a package will typically have 1 more subpackage layer than otherwise,
 meaning typically 2-3 layers total (corresponding to SQL schema, Oracle
 package, each non-trivial SQL stored routine or type, or SQL table with
 built-in type definition and constraints).  So the primary namespace C<nlx>
@@ -3367,30 +3391,30 @@ and the lifetime of an in-DBMS process isn't controlled by the lifetime of
 a Muldis D procedure's execution, then the empty-name depot mount may
 simply be empty at process startup.
 
-Iff a subdepot (or a depot) directly contains a material (routine or type)
-whose declared name is the empty string, then that entire subdepot is
-considered to be a proxy for that material, as if the material had been
-declared one level up in place of the subdepot, and so any syntax which is
-valid for directly referencing the material may instead (and is recommended
-to) directly reference its parent subdepot instead as if it were the
-material itself.  So for example, if a material C<fed.lib.mydb.foo."">
-exists,
+Iff a subpackage (or a package) directly contains a material (routine or
+type) whose declared name is the empty string, then that entire subpackage
+is considered to be a proxy for that material, as if the material had been
+declared one level up in place of the subpackage, and so any syntax which
+is valid for directly referencing the material may instead (and is
+recommended to) directly reference its parent subpackage instead as if it
+were the material itself.  So for example, if a material
+C<fed.lib.mydb.foo.""> exists,
 then C<fed.lib.mydb.foo> will implicitly refer to the same material in any
 context that expects the name of a material.  This feature should be
 immensely helpful in supporting encapsulation of materials, such that if
 one wanted to change the implementation of a material to add support
 materials, they can conceptually embed the latter into the former, by
-actually replacing the original material with a subdepot holding the
+actually replacing the original material with a subpackage holding the
 components of the new version, keeping those from messing up the namespace
 that the original lived in, and no external code has to know about this
 implementation change of the material, and can keep referencing it in the
 same way.  Note that this proxying feature I<will> cascade, such as when a
-subdepot whose name is the empty string contains a material whose name is
+subpackage whose name is the empty string contains a material whose name is
 the empty string; so for example, a material C<fed.lib.mydb.foo."".""> can
 also be referenced by both C<fed.lib.mydb.foo>
 and C<fed.lib.mydb.foo."">.  Note that this
-proxying feature can I<not> be used to reference a subdepot or depot itself
-whose name is the empty string, for hopefully obvious reasons.
+proxying feature can I<not> be used to reference a subpackage or package
+itself whose name is the empty string, for hopefully obvious reasons.
 
 Iff a depot or subdepot has a self-local dbvar (specifically, iff the
 former's C<fed.cat.mydb.data> is a C<Just>), then the
@@ -3533,8 +3557,8 @@ normal behaviour of embedding a table's type into the table's declaration.
 
 Some data types are explicitly defined as their own distinct named
 entities, for the purpose of reuse in multiple places, the same as
-explicitly defined routines; these live directly in depots or subdepots
-(or the system namespace) and typically can be directly invoked by
+explicitly defined routines; these live directly in packages or subpackages
+and typically can be directly invoked by
 any other entity external to themselves.
 
 Arguably most distinct data types, by contrast, are embedded into the

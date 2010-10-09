@@ -7,6 +7,65 @@
     * Muldis::D version 0.140.0 is released on CPAN as
     Muldis-D-0.140.0.tar.gz.
 
+    * This release features a consolidation of the system catalog and
+    associated revised conceptions of Muldis D's language structure, such
+    that all the system defined materials plus all non-special
+    system-defined namespaces are now organized in the same way as
+    user-defined materials, which is into "packages"; a "depot" is a pure
+    Muldis D package loaded by the DBMS in user space while a "module" is a
+    typically mixed-language package loaded by the DBMS readonly in system
+    space.  So "Core" and each official or unofficial Muldis D language
+    extension is now a named module and it is now normal for all entities
+    within each such system module to reference each other in the "nlx"
+    relative path namespace rather than "sys", and so "sys" is now more
+    like "fed", mainly just used to reference entities outside the
+    referencer's own package using an absolute path.  This also means it is
+    now more or less official that one can define a system package using
+    exactly the same Muldis D dialects/syntaxes as to define user packages.
+    (This release didn't actually tweak the dialects themselves, but that
+    could be done later, and they're still correct as is regarding depots.)
+
+    * (Basics.pod)  In the "NOTES ON TERMINOLOGY" main pod section, added
+    definitions of the 2 terms "module" and "package".  In the "ENTITY
+    NAMES" main pod section, updated the namespace hierarchy diagram to
+    simplify the "sys" portion and clarify the "nlx" portion.  Also split
+    the "User-Defined Entities" sub-section into itself and "Non-Lexical
+    Entities" and updated those plus various other "ENTITY NAMES"
+    sub-sections plus a few other bits in the file.
+
+    * (Types_Catalog.pod)  Renamed the main POD section "TYPES FOR DEFINING
+    DEPOTS AND SUBDEPOTS" to substitute "PACKAGE" for each "DEPOT".  Split
+    the catalog type "Depot" into itself plus the 2 new "Package" and
+    "Module" such that "Package" is initially identical to the old "Depot"
+    but for the name and the new "Depot" plus "Module" are defined as
+    initially non-proper subtypes of "Package".  Renamed but otherwise
+    initially left unchanged the 3 catalog types "SubdepotSet",
+    "SysSpecTypeSet", "SysNspSet" to "SubpackageSet", "SpecialTypeSet,
+    "SpecialNspSet" respectively.  Renamed the "Package" attribute
+    "subdepots" to "subpackages" and the "System" catalog type attribute
+    "namespaces" to "special_namespaces".  Then added new catalog type
+    "ModuleSet" and updated the "System" type to add a new "modules"
+    attribute of that type; the new type/attribute is structured like the
+    many other types/attributes of "System" that embed materials but that
+    they instead embed "Module".  Then eliminated the 14 catalog types
+    "Sys[Function|Updater|Recipe|Procedure]Set",
+    "Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet",
+    "Sys[|Distrib][Key|Subset]ConstrSet" and updated the "System" catalog
+    type to eliminate its 14 attributes of those same types, since the 1
+    new "modules" attribute and all the corresponding types that are used
+    for defining "Depot" attributes can now be used as is for all
+    system-defined namespaces and materials that are defined in the catalog
+    as a user material would be defined.  Also updated the description of
+    the "System" attribute "special_namespaces" to reflect that it no
+    longer defines most namespaces, such as "Core" or "Core.Type" etc,
+    since "materials" now takes over that role more elegantly, and now
+    "special_namespaces" just declares the 15 special ones like "sys.std".
+    Then moved the "special_types" attribute from "System" to "Package" and
+    updated the "Depot" subtype to require that attribute be empty.  Also
+    the "Module" subtype was updated to require the "Package" attributes
+    "stim_resp_rules", "data" to be empty, but those may be relaxed later.
+    Updated a few other related bits of documentation in the file.
+
     * (Basics.pod, Types_Catalog.pod, PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)
     Muldis D no longer has the core concept of a "transition constraint",
     which was an assertion on whether a variable is allowed (according to

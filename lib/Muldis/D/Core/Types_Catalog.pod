@@ -161,7 +161,9 @@ This graph slice shows all of the catalog nonscalar types:
                     sys.std.Core.Type.Cat.System
                     sys.std.Core.Type.Cat.MountControlCat
                     sys.std.Core.Type.Cat.Federation
-                    sys.std.Core.Type.Cat.Depot
+                    sys.std.Core.Type.Cat.Package
+                        sys.std.Core.Type.Cat.Module
+                        sys.std.Core.Type.Cat.Depot
                     sys.std.Core.Type.Cat.ExprNodeSet
                     sys.std.Core.Type.Cat.StmtNodeSet
                     sys.std.Core.Type.Cat.D0
@@ -171,18 +173,15 @@ This graph slice shows all of the catalog nonscalar types:
 
                 # The following are all regular relation types.
 
-                sys.std.Core.Type.Cat.SysNspSet
-                sys.std.Core.Type.Cat.Sys[Function|Updater|Recipe|Procedure]Set
-                sys.std.Core.Type.Cat.SysSpecTypeSet
-                sys.std.Core.Type.Cat.Sys[Scalar|Tuple|Relation]TypeSet
-                sys.std.Core.Type.Cat.Sys[Domain|Subset|Mixin]TypeSet
-                sys.std.Core.Type.Cat.Sys[|Distrib][Key|Subset]ConstrSet
+                sys.std.Core.Type.Cat.SpecialNspSet
+                sys.std.Core.Type.Cat.ModuleSet
                 sys.std.Core.Type.Cat.SysCatSet
                 sys.std.Core.Type.Cat.MountControlSet
                 sys.std.Core.Type.Cat.DepotMountSet
                 sys.std.Core.Type.Cat.FedTypeMapSet
-                sys.std.Core.Type.Cat.SubdepotSet
+                sys.std.Core.Type.Cat.SubpackageSet
                 sys.std.Core.Type.Cat.[Function|Updater|Recipe|Procedure]Set
+                sys.std.Core.Type.Cat.SpecialTypeSet
                 sys.std.Core.Type.Cat.[Scalar|Tuple|Relation]TypeSet
                 sys.std.Core.Type.Cat.[Domain|Subset|Mixin]TypeSet
                 sys.std.Core.Type.Cat.[|Distrib][Key|Subset]ConstrSet
@@ -444,8 +443,8 @@ A C<NameChain> (scalar) is a canonical long
 name for invoking or referring to a DBMS entity, when its name needs to be
 qualified with a namespace.  A C<NameChain> is used in declaring system
 catalogs where DBMS entities live under a potentially N-depth namespace,
-such as depot entities grouped in a
-subdepot hierarchy.  The C<NameChain> type explicitly composes the
+such as package entities grouped in a
+subpackage hierarchy.  The C<NameChain> type explicitly composes the
 C<Stringy> mixin type.  A C<NameChain> is conceptually a sequence of
 0..N C<Name>, the 0..N elements being ordered from parent-most to
 child-most component name.  A C<NameChain> has 1 system-defined possrep
@@ -538,7 +537,7 @@ C<RelPathMaterialNC> is a proper subtype
 of C<MaterialNC> where every member value's chain starts with either C<sys>
 or C<nlx> or C<rtn> (or a C<type>-prefix followed by those) but not C<fed>.
 One is used in a context where a user-defined routine or type may only be
-invoked directly when both the invoker and invoked are in the same depot.
+invoked directly when both the invoker and invoked are in the same package.
 
 =head2 sys.std.Core.Type.Cat.RPFunctionNC
 
@@ -703,7 +702,7 @@ specifically all the relcons and relvars with the names
 C<[sys|mnt|fed|nlx].cat>.  The system catalog constant named
 C<sys.cat> is of the C<System> type.
 
-A C<System> has these 18 attributes:
+A C<System> has these 4 attributes:
 
 =over
 
@@ -712,53 +711,25 @@ A C<System> has these 18 attributes:
 This is an optional programmer comment about the collection of
 system-defined entities as a whole.
 
-=item C<namespaces> - C<SysNspSet>
+=item C<special_namespaces> - C<SpecialNspSet>
 
-These are all the system-defined namespaces where not-lexical DBMS entities
-may live, or that otherwise always exist due to being system-defined.
-Specifically, it declares these 18 standard language namespaces:
+These are all the special system-defined namespaces where not-lexical DBMS
+entities may live, or that otherwise always exist due to being
+system-defined, which are not defined like users can define namespaces;
+all non-special system namespaces are defined by modules instead.
+Specifically, it declares these 15 standard language namespaces:
 C<[sys|mnt|fed|nlx|rtn]> (which have the nameless global
 root namespace as their parent, spelled as the empty C<NameChain>
 value, that isn't also declared here), C<sys.[cat|std|imp]>,
-C<mnt.cat>, C<[fed|nlx].[cat|lib|data]>, C<sys.std.Core>,
-C<sys.std.Core.Type>, C<sys.std.Core.Type.Cat>; it also declares other
-C<Core> namespaces, and where applicable, standard extensions or
-implementation-specific extensions.
+C<mnt.cat>, C<[fed|nlx].[cat|lib|data]>; it also declares,
+where applicable, implementation-specific extensions (none are yet known).
 
-=item C<functions|updaters|recipes|procedures> -
-C<Sys[Function|Updater|Recipe|Procedure]Set>
+=item C<modules> - C<ModuleSet>
 
-These are the interfaces, or definitions in some cases, of all the
-system-defined functions|updaters|recipes|procedures.
-
-=item C<special_types> - C<SysSpecTypeSet>
-
-These are the few central system-defined data types that have special
-hard-coded meanings and are not defined like any other types; these are
-declarations of all of the native Muldis D types that can't be defined like
-user-defined types.  Specifically, it declares these 4 standard types: in
-the C<sys.std.Core.Type> namespace: C<Universal>, C<Empty>, C<Int>; in the
-C<sys.std.Core.Type.Cat> namespace: C<List>.  These constitute all 2 Muldis
-D declaration types, all 2 Muldis D type system maximal and minimal
-(enumeration) types.  Note that, while conceptually both C<Universal> and
-C<Empty> I<can> be defined like user-defined types, as the union or
-intersection of C<Int> and C<List>, respectively, in practice that wouldn't
-work for C<Empty> at least because all user-defined types are required to
-have a default value and it can't, and C<Universal> is also kept here at
-least to balance C<Empty>; actually, the maximal and minimal types are used
-in many places as default semantics in non-special type definitions.
-
-=item C<[scalar|tuple|relation|domain|subset|mixin]_types> -
-C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>
-
-These are all the system-defined scalar types, except for C<Int> because it
-can't be defined like user-defined types, and complete tuple and relation
-types, and domain types, and subset types, and mixin types.
-
-=item C<[|distrib_][key|subset]_constrs> -
-C<[|Distrib][Key|Subset]ConstrSet>
-
-These are all the system-defined |distributed key|subset constraints.
+These are all the system-defined modules, which have all the system-defined
+routines and types.  This always contains at least the single standard
+C<Core> module and optionally contains other standard or
+implementation-specific modules, as the current DBMS provides.
 
 =item C<catalogs> - C<SysCatSet>
 
@@ -770,33 +741,33 @@ C<[sys|mnt|fed|nlx].cat>; the first is a relcon, the others not.
 
 The default value of C<System> defines a system with zero builtins.
 
-=head2 sys.std.Core.Type.Cat.SysNspSet
+=head2 sys.std.Core.Type.Cat.SpecialNspSet
 
-A C<SysNspSet> is a C<DHRelation> that specifies the set of system
-namespaces that exist for organizing DBMS public entities, mostly the
-system-defined ones; these system namespaces are organized into a tree
-whose root has no name.  A C<SysNspSet> only specifies that a system
-namespace exists, not which public entities it contains; see the
-C<System> which contains it for that.
+A C<SpecialNspSet> is a C<DHRelation> that specifies the set of special
+system namespaces that exist for organizing all other DBMS public entities;
+these special system namespaces are organized into a tree whose root has no
+name.  A C<SpecialNspSet> only specifies that a special system namespace
+exists, not which public entities it contains; see the C<System> which
+contains it for that.
 
-A C<SysNspSet> has these 4 attributes:
+A C<SpecialNspSet> has these 4 attributes:
 
 =over
 
 =item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
-the system namespace's parent system namespace.
+the special system namespace's parent special system namespace.
 
 =item C<name> - C<Name>
 
-This is the declared name of the system namespace within the namespace
-defined by C<parent>; other Muldis D code would reference it with the
-combination of C<parent> and C<name>.
+This is the declared name of the special system namespace within the
+special namespace defined by C<parent>; other Muldis D code would reference
+it with the combination of C<parent> and C<name>.
 
 =item C<scm_comment> - C<Text>
 
-This is an optional programmer comment about this specific system
+This is an optional programmer comment about this specific special system
 namespace.
 
 =item C<scm_vis_ord> - C<NNInt>
@@ -806,170 +777,47 @@ of the named entities directly within the namespace defined by C<parent>.
 
 =back
 
-A C<SysNspSet> has a binary primary key on the C<parent> plus
+A C<SpecialNspSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Sys[Function|Updater|Recipe|Procedure]Set
+=head2 sys.std.Core.Type.Cat.ModuleSet
 
-A C<Sys[Function|Updater|Recipe|Procedure]Set> is a C<DHRelation> that
-specifies a set of system-defined functions|updaters|recipes|procedures.
+A C<ModuleSet> is a C<DHRelation> that specifies a set of system-defined
+modules, such that each tuple is a single module.
 
-A C<Sys[Function|Updater|Recipe|Procedure]Set> has these 5 attributes:
-
-=over
-
-=item C<parent> - C<NameChain>
-
-This is the fully-qualified name, in the nameless global root namespace, of
-the function|updater|recipe|procedure's parent system namespace.
-
-=item C<name> - C<Name>
-
-This is the declared name of the function|updater|recipe|procedure within
-the namespace defined by C<parent>; other Muldis D code would reference it
-with the combination of C<parent> and C<name>.
-
-=item C<scm_comment> - C<Text>
-
-This is an optional programmer comment about the
-function|updater|recipe|procedure as a whole.
-
-=item C<scm_vis_ord> - C<NNInt>
-
-This is the visible order of this routine's declaration relative to all of
-the named entities directly within the namespace defined by C<parent>.
-
-=item C<material> - C<Function|Updater|Recipe|Procedure>
-
-This defines the entire function|updater|recipe|procedure sans its name.
-Note that it is not mandatory for a system-defined routine to have a
-specified I<body> (just a specified I<heading> is mandatory), and often it
-won't; but often it will, especially if it is a function used in the
-definition of a system-defined data type.
-
-=back
-
-A C<Sys[Function|Updater|Recipe|Procedure]Set> has a binary primary key on
-the C<parent> plus C<name> attributes.  Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.SysSpecTypeSet
-
-A C<SysSpecTypeSet> is a C<DHRelation> that specifies a set of
-system-defined types which are particularly special and unlike other types;
-it is used for declaring all system types that can't be defined like user
-types.
-
-A C<SysSpecTypeSet> has these 4 attributes:
+A C<ModuleSet> has these 5 attributes:
 
 =over
 
 =item C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
-the type's parent system namespace.
+the module's parent special system namespace.  This is always either
+C<sys.std> or C<sys.imp>.
 
 =item C<name> - C<Name>
 
-This is the declared name of the type within the namespace defined by
-C<parent>; other Muldis D code would reference it with the combination of
-C<parent> and C<name>.
+This is the declared name of the module within the
+special namespace defined by C<parent>; other Muldis D code would reference
+it with the combination of C<parent> and C<name>.
 
 =item C<scm_comment> - C<Text>
 
-This is an optional programmer comment about the type as a whole.
+This is an optional programmer comment about this specific module.
 
 =item C<scm_vis_ord> - C<NNInt>
 
-This is the visible order of this type's declaration relative to all of
-the named entities directly within the namespace defined by C<parent>.
-
-=back
-
-A C<SysSpecTypeSet> has a binary primary key on the C<parent> plus
-C<name> attributes.  Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet
-
-A C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> is a
-C<DHRelation> that specifies a set of
-system-defined scalar|tuple|relation|domain|subset|mixin types.
-
-A C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has these 5
-attributes:
-
-=over
-
-=item C<parent> - C<NameChain>
-
-This is the fully-qualified name, in the nameless global root namespace, of
-the scalar|tuple|relation|domain|subset|mixin type's parent system
-namespace.
-
-=item C<name> - C<Name>
-
-This is the declared name of the scalar|tuple|relation|domain|subset|mixin
-type within the namespace defined by C<parent>; other Muldis D code would
-reference it with the combination of C<parent> and C<name>.
-
-=item C<scm_comment> - C<Text>
-
-This is an optional programmer comment about the
-scalar|tuple|relation|domain|subset|mixin type as a whole.
-
-=item C<scm_vis_ord> - C<NNInt>
-
-This is the visible order of this type's declaration relative to all of
-the named entities directly within the namespace defined by C<parent>.
-
-=item C<material> - C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]Type>
-
-This defines the entire scalar|tuple|relation|domain|subset|mixin type sans
-its name.
-
-=back
-
-A C<Sys[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has a binary
-primary key on the C<parent> plus C<name> attributes.  Its default value is
-empty.
-
-=head2 sys.std.Core.Type.Cat.Sys[|Distrib][Key|Subset]ConstrSet
-
-A C<Sys[|Distrib][Key|Subset]ConstrSet> is a C<DHRelation> that specifies a
-set of system-defined |distributed key|subset constraints.
-
-A C<Sys[|Distrib][Key|Subset]ConstrSet> has these 5 attributes:
-
-=over
-
-=item C<parent> - C<NameChain>
-
-This is the fully-qualified name, in the nameless global root namespace, of
-the |distributed key|subset constraint's parent system namespace.
-
-=item C<name> - C<Name>
-
-This is the declared name of the |distributed key|subset constraint within
-the namespace defined by C<parent>; other Muldis D code would reference it
-with the combination of C<parent> and C<name>.
-
-=item C<scm_comment> - C<Text>
-
-This is an optional programmer comment about the |distributed key|subset
-constraint as a whole.
-
-=item C<scm_vis_ord> - C<NNInt>
-
-This is the visible order of this constraint's declaration relative to all
+This is the visible order of this module's declaration relative to all
 of the named entities directly within the namespace defined by C<parent>.
 
-=item C<material> - C<[|Distrib][Key|Subset]Constr>
+=item C<module> - C<Module>
 
-This defines the entire |distributed key|subset constraint sans its name.
+This defines the entire system catalog of the module.
 
 =back
 
-A C<Sys[|Distrib][Key|Subset]ConstrSet> has a binary primary key on the
-C<parent> plus C<name> attributes.  Its default value is empty.
+A C<ModuleSet> has a unary primary key on the C<name> attribute.
+Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SysCatSet
 
@@ -1287,116 +1135,153 @@ interchangeably by the DBMS.
 A C<FedTypeMapSet> has a primary key on the C<map> attribute.  Its
 default value is empty.
 
-=head1 TYPES FOR DEFINING DEPOTS AND SUBDEPOTS
+=head1 TYPES FOR DEFINING PACKAGES AND SUBPACKAGES
 
-=head2 sys.std.Core.Type.Cat.Depot
+=head2 sys.std.Core.Type.Cat.Package
 
-A C<Depot> is a C<Database>.  It specifies the entire system
-catalog of a single depot, that is, the widest scope within which all
-entities must be fully defined in terms of just user-defined entities
-within the same scope or of system-defined entities.  It also doubles to
-specify the system catalog of a subdepot, which is an arbitrary subset of a
-depot's entities that internally looks like a depot; a depot can have 0..N
-subdepots, and any that exist are arranged in a hierarchy with the depot as
-the root.  The system catalog variable named C<nlx.cat> is of the C<Depot>
-type.
+A C<Package> is a C<Database>.  It specifies the entire system catalog of a
+single package, that is, the widest scope within which all entities must be
+fully defined in terms of just user-defined entities within the same scope
+or of system-defined entities.  It also doubles to specify the system
+catalog of a subpackage, which is an arbitrary subset of a package's
+entities that internally looks like a package; a package can have 0..N
+subpackages, and any that exist are arranged in a hierarchy with the
+package as the root.  The system catalog variable named C<nlx.cat> is of
+the C<Package> type.
 
-A C<Depot> has these 18 attributes:
+A C<Package> has these 19 attributes:
 
 =over
 
 =item C<scm_comment> - C<just_of.Text>
 
-This is an optional programmer comment about the [|sub]depot as a whole.
+This is an optional programmer comment about the [|sub]package as a whole.
 
-=item C<subdepots> - C<SubdepotSet>
+=item C<subpackages> - C<SubpackageSet>
 
-These are all the subdepots that this system catalog contains (which might
-be none).
+These are all the subpackages that this system catalog contains (which
+might be none).
 
 =item C<functions|updaters|recipes|procedures> -
 C<[Function|Updater|Recipe|Procedure]Set>
 
-These are all the definitions that this [|sub]depot contains of functions,
-updaters, recipes, procedures.
+These are all the definitions that this [|sub]package contains of
+functions, updaters, recipes, procedures.
+
+=item C<special_types> - C<SpecialTypeSet>
+
+These are the few central system-defined data types that have special
+hard-coded meanings and are not defined like any other types; these are
+declarations of all of the native Muldis D types that can't be defined like
+user-defined types.  Specifically, it declares these 4 standard types in
+the C<Core> module: in the C<Type> namespace: C<Universal>, C<Empty>,
+C<Int>; in the C<Type.Cat> namespace: C<List>.  These constitute all 2
+Muldis D declaration types, all 2 Muldis D type system maximal and minimal
+(enumeration) types.  Note that, while conceptually both C<Universal> and
+C<Empty> I<can> be defined like user-defined types, as the union or
+intersection of C<Int> and C<List>, respectively, in practice that wouldn't
+work for C<Empty> at least because all user-defined types are required to
+have a default value and it can't, and C<Universal> is also kept here at
+least to balance C<Empty>; actually, the maximal and minimal types are used
+in many places as default semantics in non-special type definitions.
+B<Only the C<Core> module has a nonempty C<special_types>; all other
+packages must have an empty one.>
 
 =item C<[scalar|tuple|relation|domain|subset|mixin]_types> -
 C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>
 
-These are all the definitions that this [|sub]depot contains of scalar
+These are all the definitions that this [|sub]package contains of scalar
 types with possreps, complete tuple and relation types, domain types, and
 subset types, and mixin types.
 
 =item C<[|distrib_][key|subset]_constrs> -
 C<[|Distrib][Key|Subset]ConstrSet>
 
-These are all the definitions that this [|sub]depot contains of
+These are all the definitions that this [|sub]package contains of
 |distributed key|subset constraints.
 
 =item C<stim_resp_rules> - C<StimRespRuleSet>
 
-These are all the definitions that this [|sub]depot contains of
-stimulus-response rules.
+These are all the definitions that this [|sub]package contains of
+stimulus-response rules.  I<For any system-defined package,
+C<stim_resp_rules> is probably always empty.>
 
 =item C<data> - C<maybe_of.RPTypeNC>
 
 This is the declared data type of the self-local dbvar that this
-[|sub]depot contains, iff C<data> is a C<Just>; if C<data> is C<Nothing>
-(the default), then this [|sub]depot does not have a self-local dbvar.
+[|sub]package contains, iff C<data> is a C<Just>; if C<data> is C<Nothing>
+(the default), then this [|sub]package does not have a self-local dbvar.
+I<For any system-defined package, C<data> is probably always C<Nothing>.>
 
 =back
 
 There is a distributed binary primary key over the C<parent> plus C<name>
-attributes of all 8 of a C<Depot>'s main C<DHRelation>-typed attributes.
+attributes of all 8 of a C<Package>'s main C<DHRelation>-typed attributes.
 
-The default value of C<Depot> defines an empty [|sub]depot
+The default value of C<Package> defines an empty [|sub]package
 that does not have any self-local dbvar.
 
-=head2 sys.std.Core.Type.Cat.SubdepotSet
+=head2 sys.std.Core.Type.Cat.Module
 
-A C<SubdepotSet> is a C<DHRelation> that specifies the set of subdepots
-that a depot might optionally have for organizing its entities;
-these subdepots are organized into a tree whose root is the depot.  A
-C<SubdepotSet> only specifies that a subdepot exists, not which depot
-entities it contains; see the C<Depot> which contains it for that.
+A C<Module> specifies the entire system catalog of a single module (or
+submodule), which is a kind of package (or subpackage).  C<Module> is a
+proper subtype of C<Package> where for every member value its
+C<stim_resp_rules> and C<data> attributes are empty.  I<It is possible in
+the future that C<Module> may change to a non-proper subtype of C<Package>
+should system-defined stimulus-response rules or data dbcons be useful.>
 
-A C<SubdepotSet> has these 4 attributes:
+=head2 sys.std.Core.Type.Cat.Depot
+
+A C<Depot> specifies the entire system catalog of a single depot (or
+subdepot), which is a kind of package (or subpackage).  C<Depot> is a
+proper subtype of C<Package> where for every member value its
+C<special_types> attribute is empty.
+
+=head2 sys.std.Core.Type.Cat.SubpackageSet
+
+A C<SubpackageSet> is a C<DHRelation> that specifies the set of subpackages
+that a package might optionally have for organizing its entities;
+these subpackages are organized into a tree whose root is the package.  A
+C<SubpackageSet> only specifies that a subpackage exists, not which package
+entities it contains; see the C<Package> which contains it for that.
+
+A C<SubpackageSet> has these 4 attributes:
 
 =over
 
 =item C<parent> - C<NameChain>
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
-of any hypothetical immediate child namespace of the depot,
-of the subdepot's parent subdepot, which is often just the depot itself.
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+of any hypothetical immediate child namespace of the package, of the
+subpackage's parent subpackage, which is often just the package itself.
 
 =item C<name> - C<Name>
 
-This is the declared name of the subdepot within the namespace defined by
+This is the declared name of the subpackage within the namespace defined by
 C<parent>; other Muldis D code would reference it with the combination of
 C<parent> and C<name>.
 
 =item C<scm_comment> - C<Text>
 
-This is an optional programmer comment about this specific subdepot as
-associated with this subdepot name.
+This is an optional programmer comment about this specific subpackage as
+associated with this subpackage name.
 
 =item C<scm_vis_ord> - C<NNInt>
 
-This is the visible order of this subdepot's declaration relative to all of
-the named entities directly within the namespace defined by C<parent>.
+This is the visible order of this subpackage's declaration relative to all
+of the named entities directly within the namespace defined by C<parent>.
 
 =back
 
-A C<SubdepotSet> has a binary primary key on the C<parent> plus
+A C<SubpackageSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.[Function|Updater|Recipe|Procedure]Set
 
 A C<[Function|Updater|Recipe|Procedure]Set> is a C<DHRelation> that
-specifies a set of functions|updaters|recipes|procedures that a [|sub]depot
-might directly contain.  I<TODO: each routine may be either public for the
-DBMS as a whole or private to the subdepot.>
+specifies a set of functions|updaters|recipes|procedures
+that a [|sub]package might directly contain.  I<TODO: each routine may be
+either public for the DBMS as a whole or private to the subpackage.>
 
 A C<[Function|Updater|Recipe|Procedure]Set> has these 5 attributes:
 
@@ -1404,9 +1289,9 @@ A C<[Function|Updater|Recipe|Procedure]Set> has these 5 attributes:
 
 =item C<parent> - C<NameChain>
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace of
-any hypothetical immediate child namespace of the depot, of the
-function|updater|recipe|procedure's parent [|sub]depot.
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+of any hypothetical immediate child namespace of the package, of the
+function|updater|recipe|procedure's parent [|sub]package.
 
 =item C<name> - C<Name>
 
@@ -1427,18 +1312,59 @@ the named entities directly within the namespace defined by C<parent>.
 =item C<material> - C<Function|Updater|Recipe|Procedure>
 
 This defines the entire function|updater|recipe|procedure sans its name.
+Note that it is not mandatory for a system-defined routine to have a
+specified I<body> (just a specified I<heading> is mandatory), and often it
+won't; but often it will, especially if it is a function used in the
+definition of a system-defined data type.
 
 =back
 
 A C<[Function|Updater|Recipe|Procedure]Set> has a binary primary key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
 
+=head2 sys.std.Core.Type.Cat.SpecialTypeSet
+
+A C<SpecialTypeSet> is a C<DHRelation> that specifies a set of
+system-defined types which are particularly special and unlike other types;
+it is used for declaring all system types that can't be defined like user
+types.  It is only nonempty for the C<Core> module.
+
+A C<SpecialTypeSet> has these 4 attributes:
+
+=over
+
+=item C<parent> - C<NameChain>
+
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+of any hypothetical immediate child namespace of the package, of the
+special type's parent [|sub]package.
+
+=item C<name> - C<Name>
+
+This is the declared name of the special type within the namespace defined
+by C<parent>; other Muldis D code would reference it with the combination
+of C<parent> and C<name>.
+
+=item C<scm_comment> - C<Text>
+
+This is an optional programmer comment about the special type as a whole.
+
+=item C<scm_vis_ord> - C<NNInt>
+
+This is the visible order of this type's declaration relative to all of
+the named entities directly within the namespace defined by C<parent>.
+
+=back
+
+A C<SpecialTypeSet> has a binary primary key on the C<parent> plus
+C<name> attributes.  Its default value is empty.
+
 =head2 sys.std.Core.Type.Cat.[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet
 
 A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> is a C<DHRelation>
 that specifies a set of scalar|tuple|relation|domain|subset|mixin types
-that a [|sub]depot might directly contain.  I<TODO: each type may be either
-public for the DBMS as a whole or private to the subdepot.>
+that a [|sub]package might directly contain.  I<TODO: each type may be
+either public for the DBMS as a whole or private to the subpackage.>
 
 A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has these 5
 attributes:
@@ -1447,9 +1373,9 @@ attributes:
 
 =item C<parent> - C<NameChain>
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace
-of any hypothetical immediate child namespace of the depot,
-of the scalar|tuple|relation|domain|subset|mixin type's parent [|sub]depot.
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+of any hypothetical immediate child namespace of the package, of the
+scalar|tuple|relation|domain|subset|mixin type's parent [|sub]package.
 
 =item C<name> - C<Name>
 
@@ -1481,7 +1407,7 @@ empty.
 =head2 sys.std.Core.Type.Cat.[|Distrib][Key|Subset]ConstrSet
 
 A C<[|Distrib][Key|Subset]ConstrSet> is a C<DHRelation> that specifies a
-set of |distributed key|subset constraints that a [|sub]depot might
+set of |distributed key|subset constraints that a [|sub]package might
 directly contain.
 
 A C<[|Distrib][Key|Subset]ConstrSet> has these 5 attributes:
@@ -1490,9 +1416,9 @@ A C<[|Distrib][Key|Subset]ConstrSet> has these 5 attributes:
 
 =item C<parent> - C<NameChain>
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace of
-any hypothetical immediate child namespace of the depot, of the
-|distributed key|subset constraint's parent [|sub]depot.
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+of any hypothetical immediate child namespace of the package, of the
+|distributed key|subset constraint's parent [|sub]package.
 
 =item C<name> - C<Name>
 
@@ -1522,7 +1448,7 @@ C<parent> plus C<name> attributes.  Its default value is empty.
 =head2 sys.std.Core.Type.Cat.StimRespRuleSet
 
 A C<StimRespRuleSet> is a C<DHRelation> that specifies a set of
-stimulus-response rules that a [|sub]depot might directly contain.
+stimulus-response rules that a [|sub]package might directly contain.
 
 A C<StimRespRuleSet> has these 5 attributes:
 
@@ -1530,9 +1456,9 @@ A C<StimRespRuleSet> has these 5 attributes:
 
 =item C<parent> - C<NameChain>
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace of
-any hypothetical immediate child namespace of the depot, of the
-stimulus-response rule's parent [|sub]depot.
+This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+of any hypothetical immediate child namespace of the package, of the
+stimulus-response rule's parent [|sub]package.
 
 =item C<name> - C<Name>
 
@@ -1571,7 +1497,7 @@ necessary about how it is implemented.  The I<body> defines the function's
 entire implementation (or the main body of a function), besides its
 name/etc and what the I<heading> defines.  The function's name is
 provided by the larger context that embeds the
-C<Function>, which is either a C<Depot> or C<System>.  Every C<Function>
+C<Function>, which is either a C<Package> or C<System>.  Every C<Function>
 must have a specified I<heading>, but having a specified I<body> is
 optional iff the C<Function> is embedded in a C<System>, because often the
 implementations of system-defined routines are not defined in terms of
@@ -2498,7 +2424,7 @@ necessary about how it is implemented.  The I<body> defines the updater's
 entire implementation (or the main body of an updater), besides its
 name/etc and what the I<heading> defines.  The updater's name is
 provided by the larger context that embeds the
-C<Updater>, which is either a C<Depot> or C<System>.  Every C<Updater>
+C<Updater>, which is either a C<Package> or C<System>.  Every C<Updater>
 must have a specified I<heading>, but having a specified I<body> is
 optional iff the C<Updater> is embedded in a C<System>, because often the
 implementations of system-defined routines are not defined in terms of
@@ -2656,7 +2582,7 @@ for its name, and no more detail than necessary about how it is
 implemented.  The I<body> defines the recipe's entire implementation (or
 the main body of an recipe), besides its name/etc and what the I<heading>
 defines.  The recipe's name is provided by the larger context that embeds
-the C<Recipe>, which is either a C<Depot> or C<System>.  Every C<Recipe>
+the C<Recipe>, which is either a C<Package> or C<System>.  Every C<Recipe>
 must have a specified I<heading>, but having a specified I<body> is
 optional iff the C<Recipe> is embedded in a C<System>, because often the
 implementations of system-defined routines are not defined in terms of
@@ -2765,8 +2691,8 @@ it, except for its name, and no more detail than
 necessary about how it is implemented.  The I<body> defines the procedure's
 entire implementation (or the main body of a procedure), besides its
 name/etc and what the I<heading> defines.  The procedure's name is
-provided by the larger context that embeds the
-C<Procedure>, which is either a C<Depot> or C<System>.  Every C<Procedure>
+provided by the larger context that embeds the C<Procedure>,
+which is either a C<Package> or C<System>.  Every C<Procedure>
 must have a specified I<heading>, but having a specified I<body> is
 optional iff the C<Procedure> is embedded in a C<System>, because often the
 implementations of system-defined routines are not defined in terms of
@@ -3515,7 +3441,7 @@ requires all of the possreps of all scalar types having a common scalar
 root type to have mutually distinct names, regardless of whether any
 subtypes have values in common; this can be enforced at
 type-definition-in-catalog time since all types that can interact are in
-the same depot.
+the same package.
 
 =item C<possrep_maps> - C<PossrepMapSet>
 
