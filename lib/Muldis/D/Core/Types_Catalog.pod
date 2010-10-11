@@ -100,6 +100,7 @@ This graph slice shows all of the catalog scalar types:
                                     sys.std.Core.Type.Cat.RPImperativeNC
                                     sys.std.Core.Type.Cat.RPTypeNC
                             sys.std.Core.Type.Cat.DataNC
+                    sys.std.Core.Type.Cat.Comment
                     sys.std.Core.Type.Cat.Order
                         sys.std.Core.Type.Cat.Order.*
 
@@ -571,6 +572,19 @@ value is a reference to the C<sys.cat> catalog relcon.
 I<Conjecture:  Subtypes like C<[Abs|Rel]PathDataNC> might also be defined
 later if we have some situation where such a restriction might be useful.>
 
+=head2 sys.std.Core.Type.Cat.Comment
+
+A C<Comment> (scalar) is the text of a
+Muldis D code comment, which programmers can populate as an attribute of
+several catalog data types, such as whole routines or statements or
+expression nodes.  Every detail of C<Comment>'s representation (its 1
+possrep and its default value) is the same as C<Name>
+but it is explicitly disjoint due to having a different intended
+interpretation; it is intended just for commenting Muldis D code.  One main
+intended use of this type is to help preserve comments in code translated
+to or from other languages; though only a subset of those (FoxPro?) keep
+comments in the AST rather than discarding them.
+
 =head2 sys.std.Core.Type.Cat.Order
 
 The C<Order> (order determination) type
@@ -706,7 +720,7 @@ A C<System> has these 4 attributes:
 
 =over
 
-=item C<scm_comment> - C<just_of.Text>
+=item C<scm_comment> - C<just_of.Comment>
 
 This is an optional programmer comment about the collection of
 system-defined entities as a whole.
@@ -765,7 +779,7 @@ This is the declared name of the special system namespace within the
 special namespace defined by C<parent>; other Muldis D code would reference
 it with the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this specific special system
 namespace.
@@ -801,7 +815,7 @@ This is the declared name of the module within the
 special namespace defined by C<parent>; other Muldis D code would reference
 it with the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this specific module.
 
@@ -832,7 +846,7 @@ A C<CatalogSet> has these 5 attributes:
 
 This is the fully-qualified name of the catalog dbvar.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the catalog dbvar as a whole.
 
@@ -874,7 +888,7 @@ A C<MountControlCat> has these 2 attributes:
 
 =over
 
-=item C<scm_comment> - C<just_of.Text>
+=item C<scm_comment> - C<just_of.Comment>
 
 This is an optional programmer comment about the depot mount control
 catalog as a whole.
@@ -907,7 +921,7 @@ A C<MountControlSet> has these 8 attributes:
 This is the declared name of the depot mount; other Muldis D code would
 reference it with this name.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this specific mount of the
 depot.
@@ -1051,7 +1065,7 @@ A C<Federation> has these 3 attributes:
 
 =over
 
-=item C<scm_comment> - C<just_of.Text>
+=item C<scm_comment> - C<just_of.Comment>
 
 This is an optional programmer comment about the federation as a whole.
 
@@ -1094,7 +1108,7 @@ A C<DepotMountSet> has these 3 attributes:
 This is the declared name of the depot mount; other Muldis D code would
 reference it with this name.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this specific mount of the
 depot.
@@ -1120,7 +1134,7 @@ A C<FedTypeMapSet> has these 2 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this type mapping.
 
@@ -1153,7 +1167,7 @@ A C<Package> has these 19 attributes:
 
 =over
 
-=item C<scm_comment> - C<just_of.Text>
+=item C<scm_comment> - C<just_of.Comment>
 
 This is an optional programmer comment about the [|sub]package as a whole.
 
@@ -1261,7 +1275,7 @@ This is the declared name of the subpackage within the namespace defined by
 C<parent>; other Muldis D code would reference it with the combination of
 C<parent> and C<name>.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this specific subpackage as
 associated with this subpackage name.
@@ -1299,7 +1313,7 @@ This is the declared name of the function|updater|recipe|procedure within
 the namespace defined by C<parent>; other Muldis D code would reference it
 with the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the
 function|updater|recipe|procedure as a whole.
@@ -1345,7 +1359,7 @@ This is the declared name of the special type within the namespace defined
 by C<parent>; other Muldis D code would reference it with the combination
 of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the special type as a whole.
 
@@ -1383,7 +1397,7 @@ This is the declared name of the scalar|tuple|relation|domain|subset|mixin
 type within the namespace defined by C<parent>; other Muldis D code would
 reference it with the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the
 scalar|tuple|relation|domain|subset|mixin type as a whole.
@@ -1426,7 +1440,7 @@ This is the declared name of the |distributed key|subset constraint within
 the namespace defined by C<parent>; other Muldis D code would reference it
 with the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the |distributed key|subset
 constraint as a whole.
@@ -1466,7 +1480,7 @@ This is the declared name of the stimulus-response rule within the
 namespace defined by C<parent>; other Muldis D code would reference it with
 the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the stimulus-response rule as
 a whole.
@@ -1510,7 +1524,7 @@ I<heading> and the 1 C<expr> defines the I<body>:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the function as a whole.
 
@@ -1776,7 +1790,7 @@ An C<SysScaValExprNodeSet> has these 4 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the expression (leaf) node.
 
@@ -1813,7 +1827,7 @@ A C<ScaSelExprNodeSet> has these 6 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -1855,7 +1869,7 @@ A C<TupSelExprNodeSet> has these 4 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -1888,7 +1902,7 @@ A C<RelSelExprNodeSet> has these 5 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -1928,7 +1942,7 @@ A C<SetSelExprNodeSet> has these 4 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -1964,7 +1978,7 @@ An C<ArySelExprNodeSet> has these 4 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -1996,7 +2010,7 @@ A C<BagSelExprNodeSet> has these 4 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -2043,7 +2057,7 @@ An C<SPIvlSelExprNodeSet> has these 4 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -2086,7 +2100,7 @@ An C<MPIvlSelExprNodeSet> has these 4 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -2133,7 +2147,7 @@ An C<ListSelExprNodeSet> has these 4 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -2167,7 +2181,7 @@ An C<AccExprNodeSet> has these 4 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the expression (leaf) node.
 
@@ -2200,7 +2214,7 @@ A C<FuncInvoExprNodeSet> has these 5 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -2257,7 +2271,7 @@ An C<IfElseExprNodeSet> has these 5 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -2321,7 +2335,7 @@ A C<GivenWhenDefExprNodeSet> has these 6 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
@@ -2393,7 +2407,7 @@ An C<APMaterialNCSelExprNodeSet> has these 4 attributes:
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the expression (leaf) node.
 
@@ -2437,7 +2451,7 @@ I<heading> and the 2 C<exprs>, C<stmt> define the I<body>:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the updater as a whole.
 
@@ -2536,7 +2550,7 @@ A C<MultiUpdStmt> has these 5 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the single update statement as
 a whole.
@@ -2596,7 +2610,7 @@ C<exprs>, C<stmt> define the I<body>:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the recipe as a whole.
 
@@ -2678,7 +2692,7 @@ variable names, with a declared global variable for each.  It is used to
 define lexical variables of recipes that are aliases for global variables,
 for reading or updating.  A C<RcpGlobalVarAliasMap> has 4 attributes,
 C<name> (a C<Name>), C<global> (a C<DataNC>), C<scm_comment> (a
-C<Text>), and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of
+C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of
 the lexical alias, and comprises a unary key; the C<global> is the
 invocation name of the global variable.  Its default value has zero tuples.
 
@@ -2706,7 +2720,7 @@ I<heading> and the 2 C<vars>, C<stmt> define the I<body>:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the procedure as a whole.
 
@@ -2910,7 +2924,7 @@ An C<SysScaValStmtNodeSet> has these 4 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the statement (leaf) node.
 
@@ -2950,7 +2964,7 @@ A C<LeaveStmtNodeSet> has these 3 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the statement leaf node.
 
@@ -2980,7 +2994,7 @@ A C<CompoundStmtNodeSet> has these 3 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
@@ -3016,7 +3030,7 @@ A C<NilFuncInvoStmtNodeSet> has these 4 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the statement (leaf) node.
 
@@ -3051,7 +3065,7 @@ An C<ImpInvoStmtNodeSet> has these 5 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
@@ -3111,7 +3125,7 @@ A C<TryCatchStmtNodeSet> has these 4 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
@@ -3157,7 +3171,7 @@ An C<IfElseStmtNodeSet> has these 4 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
@@ -3211,7 +3225,7 @@ A C<GivenWhenDefStmtNodeSet> has these 5 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
@@ -3274,7 +3288,7 @@ An C<IterateStmtNodeSet> has these 3 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the statement leaf node.
 
@@ -3305,7 +3319,7 @@ A C<LoopStmtNodeSet> has these 3 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
@@ -3340,7 +3354,7 @@ An C<APMaterialNCSelStmtNodeSet> has these 4 attributes:
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the statement leaf node.
 
@@ -3382,7 +3396,7 @@ A C<ScalarType> has these 7 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the scalar
 [|sub]type as a whole.
@@ -3492,7 +3506,7 @@ A C<PossrepSet> has these 5 attributes:
 
 This is the declared name of the possrep.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the possrep as a whole.
 
@@ -3551,7 +3565,7 @@ A C<PossrepMapSet> has these 5 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this bidirectional mapping.
 
@@ -3610,7 +3624,7 @@ A C<TupleType> has these 7 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the tuple
 [|sub]type as a whole.
@@ -3751,7 +3765,7 @@ A C<RelationType> has these 6 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the relation
 [|sub]type as a whole.
@@ -3925,7 +3939,7 @@ A C<VirtualAttrMapSet> has these 6 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this virtual attribute map.
 
@@ -4008,7 +4022,7 @@ A C<DomainType> has these 8 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the domain type as a whole.
 
@@ -4096,7 +4110,7 @@ A C<SubsetType> has these 5 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the subset type as a whole.
 
@@ -4166,7 +4180,7 @@ A C<MixinType> has these 2 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the mixin type as a whole.
 
@@ -4190,7 +4204,7 @@ declared mixin data types which are being composed by another type, and for
 each it indicates whether the composing type is asserting that it will
 provide the default value of the mixin type.  A C<ComposedMixinSet> has 4
 attributes, C<type> (a C<RPTypeNC>), C<provides_its_default> (a C<Bool>),
-C<scm_comment> (a C<Text>), and C<scm_vis_ord> (a C<NNInt>); the C<type>
+C<scm_comment> (a C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<type>
 is the declared name of the mixin type being composed, and comprises a
 unary key.  Its default value has zero tuples.
 
@@ -4219,7 +4233,7 @@ A C<KeyConstr> has these 3 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the key as a whole.
 
@@ -4271,7 +4285,7 @@ A C<DistribKeyConstr> has these 4 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the distributed (unique) key
 as a whole.
@@ -4319,7 +4333,7 @@ A C<SubsetConstr> has these 5 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the subset constraint as a
 whole.
@@ -4376,7 +4390,7 @@ A C<DistribSubsetConstr> has these 4 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the subset constraint as a
 whole.
@@ -4432,7 +4446,7 @@ has more, then the host type attribute is a tuple/database and any
 further elements serve to make C<rel_name> actually address a component of
 said.
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the participation.
 
@@ -4480,7 +4494,7 @@ A C<StimRespRule> has these 3 attributes:
 
 =over
 
-=item C<scm_comment> - C<Text>
+=item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the rule as a whole.
 
@@ -4517,7 +4531,7 @@ tuple and relation types (for which it is named I<heading>), and it is
 used also for the components list of a scalar possrep.  It is also used
 to define parameter lists for routines.  A C<NameTypeMap> has 4 attributes,
 C<name> (a C<Name>), C<type> (a C<RPTypeNC>), C<scm_comment> (a
-C<Text>), and C<scm_vis_ord> (a C<NNInt>); the C<name> is the
+C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<name> is the
 declared name of the attribute or parameter, and comprises a unary key; the
 C<type> is the declared data type of the attribute or parameter.  Its
 default value has zero tuples.
