@@ -68,7 +68,7 @@ non-core catalog types for context:
                 sys.std.Core.Type.Int
                 sys.std.Core.Type.Cat.String
                 sys.std.Core.Type.Cat.DHScalarWP
-                sys.std.Core.Type.Cat.OVLScalar
+                sys.std.Core.Type.Cat.SysScalar
 
 This graph slice shows all of the catalog scalar types:
 
@@ -175,7 +175,7 @@ This graph slice shows all of the catalog nonscalar types:
 
                 sys.std.Core.Type.Cat.SpecialNspSet
                 sys.std.Core.Type.Cat.ModuleSet
-                sys.std.Core.Type.Cat.SysCatSet
+                sys.std.Core.Type.Cat.CatalogSet
                 sys.std.Core.Type.Cat.MountControlSet
                 sys.std.Core.Type.Cat.DepotMountSet
                 sys.std.Core.Type.Cat.FedTypeMapSet
@@ -186,7 +186,7 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.[Domain|Subset|Mixin]TypeSet
                 sys.std.Core.Type.Cat.[|Distrib][Key|Subset]ConstrSet
                 sys.std.Core.Type.Cat.StimRespRuleSet
-                sys.std.Core.Type.Cat.OVLScaValExprNodeSet
+                sys.std.Core.Type.Cat.SysScaValExprNodeSet
                 sys.std.Core.Type.Cat.ScaSelExprNodeSet
                 sys.std.Core.Type.Cat.TupSelExprNodeSet
                 sys.std.Core.Type.Cat.RelSelExprNodeSet
@@ -204,7 +204,7 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet
                 sys.std.Core.Type.Cat.MultiUpdStmt
                 sys.std.Core.Type.Cat.RcpGlobalVarAliasMap
-                sys.std.Core.Type.Cat.OVLScaValStmtNodeSet
+                sys.std.Core.Type.Cat.SysScaValStmtNodeSet
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
                 sys.std.Core.Type.Cat.CompoundStmtNodeSet
                 sys.std.Core.Type.Cat.NilFuncInvoStmtNodeSet
@@ -337,18 +337,18 @@ cardinality of this type is infinity.  All Muldis D scalar values that are
 allowed to be stored in a global/persisting relational database, besides
 C<Int> and C<String> values, are C<DHScalarWP> values.
 
-=head2 sys.std.Core.Type.Cat.OVLScalar
+=head2 sys.std.Core.Type.Cat.SysScalar
 
-The C<OVLScalar> type is explicitly
-defined as a union type over all system-defined C<DHScalar> types, and just
+The C<SysScalar> type is explicitly defined as a domain-union type over all
+system-defined C<DHScalar> root types, and just
 those types, for whose values all of the Muldis D standard dialects provide
 "opaque value literal" syntax for:  C<Bool>, C<Int>, C<Rat>, C<Blob>,
 C<Text>, C<Name>, C<NameChain>, C<Order>,
-C<RoundMeth>, C<RatRoundRule>, C<Singleton>.  The C<OVLScalar> type is
+C<RoundMeth>, C<RatRoundRule>, C<Singleton>.  The C<SysScalar> type is
 mainly intended to be used as the declared type of some attributes of some
 other system-defined catalog types, as a compact or hard-coded way to
 represent scalar values that are I<not> being specified explicitly in terms
-of possrep attributes.  The C<OVLScalar> type is I<not> intended to be used
+of possrep attributes.  The C<SysScalar> type is I<not> intended to be used
 as the declared type of any user type attributes, generally speaking; if
 they would even consider it, they should be using C<DHScalar> instead.  Its
 default value is C<Bool:False>.  The cardinality of this type is infinity.
@@ -731,7 +731,7 @@ routines and types.  This always contains at least the single standard
 C<Core> module and optionally contains other standard or
 implementation-specific modules, as the current DBMS provides.
 
-=item C<catalogs> - C<SysCatSet>
+=item C<catalogs> - C<CatalogSet>
 
 These are the interfaces of all the catalog relcons and relvars.
 Specifically, it declares these 4 standard catalogs:
@@ -819,12 +819,12 @@ This defines the entire system catalog of the module.
 A C<ModuleSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.SysCatSet
+=head2 sys.std.Core.Type.Cat.CatalogSet
 
-A C<SysCatSet> is a C<DHRelation> that specifies a set of system-defined
+A C<CatalogSet> is a C<DHRelation> that specifies a set of system-defined
 catalog dbvars; each tuple specifies one catalog dbvar.
 
-A C<SysCatSet> has these 5 attributes:
+A C<CatalogSet> has these 5 attributes:
 
 =over
 
@@ -852,7 +852,7 @@ This is the declared data type of the catalog dbvar.
 
 =back
 
-A C<SysCatSet> has a unary primary key on the C<name> attribute.  Its
+A C<CatalogSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.
 
 =head1 TYPES FOR DEFINING MOUNT CONTROLS
@@ -1012,7 +1012,7 @@ the malware can still do all sorts of harm, since stimulus-response rules
 in general can do anything a C<procedure> can, including various I/O or
 manipulating other depots.
 
-=item C<details> - C<OVLScaValExprNodeSet>
+=item C<details> - C<SysScaValExprNodeSet>
 
 These are the 0..N other miscellaneous details that define this depot mount
 control.  Each tuple in C<details> specifies an implementation-specific
@@ -1672,7 +1672,7 @@ An C<ExprNodeSet> has these 15 attributes:
 
 =over
 
-=item C<ovl_sca_val_exprs> - C<OVLScaValExprNodeSet>
+=item C<sys_sca_val_exprs> - C<SysScaValExprNodeSet>
 
 These are expression nodes that represent scalar values of types such that
 all of the standard Muldis D dialects provide special "opaque value
@@ -1760,15 +1760,15 @@ the sole determinant of whether to nest any given expression node under
 another expression or statement node, or not, is based on whether its
 C<scm_vis_ord> is zero or not; zero means nested, non-zero means otherwise.
 
-=head2 sys.std.Core.Type.Cat.OVLScaValExprNodeSet
+=head2 sys.std.Core.Type.Cat.SysScaValExprNodeSet
 
-An C<OVLScaValExprNodeSet> is a C<DHRelation> that specifies a set of value
+An C<SysScaValExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node is a hard-coded scalar literal that is
 I<not> being specified explicitly in terms of possrep attributes, but
 rather is specified using special "opaque value literal" syntax that all
 of the Muldis D standard dialects provide.
 
-An C<OVLScaValExprNodeSet> has these 4 attributes:
+An C<SysScaValExprNodeSet> has these 4 attributes:
 
 =over
 
@@ -1785,13 +1785,13 @@ This is an optional programmer comment about the expression (leaf) node.
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<value> - C<OVLScalar>
+=item C<value> - C<SysScalar>
 
 This is the actual scalar value that the expression node represents.
 
 =back
 
-An C<OVLScaValExprNodeSet> has a unary primary key on the C<name>
+An C<SysScaValExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.ScaSelExprNodeSet
@@ -1802,7 +1802,7 @@ selection that is specified explicitly in terms of possrep attributes.
 This node kind may be used for values of absolutely any scalar type at all,
 including all system-defined types, except for values of C<Int>
 and C<String>, although
-optimized Muldis D code will likely use C<OVLScaValExprNodeSet> where it
+optimized Muldis D code will likely use C<SysScaValExprNodeSet> where it
 can do so instead of C<ScaSelExprNodeSet>.
 
 A C<ScaSelExprNodeSet> has these 6 attributes:
@@ -2833,7 +2833,7 @@ A C<StmtNodeSet> has these 11 attributes:
 
 =over
 
-=item C<ovl_sca_val_stmts> - C<OVLScaValStmtNodeSet>
+=item C<sys_sca_val_stmts> - C<SysScaValStmtNodeSet>
 
 These are statement nodes that represent the assignment to local variables
 of newly selected scalar values of types such that all of the standard
@@ -2890,9 +2890,9 @@ of newly selected routine or type reference values.
 There is a distributed primary key over the C<name> attributes of all of a
 C<StmtNodeSet>'s attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.OVLScaValStmtNodeSet
+=head2 sys.std.Core.Type.Cat.SysScaValStmtNodeSet
 
-An C<OVLScaValStmtNodeSet> is a C<DHRelation> that specifies a set of
+An C<SysScaValStmtNodeSet> is a C<DHRelation> that specifies a set of
 atomic statement nodes where each node represents the assignment to a
 variable (or parameter) of a hard-coded scalar literal that is I<not> being
 specified explicitly in terms of possrep attributes, but rather is
@@ -2902,7 +2902,7 @@ should be an effective alternative to either declaring a niladic function
 or declaring (or extending) an updater that simply combines a simple scalar
 selecting expression node with an C<assign> updater call.
 
-An C<OVLScaValStmtNodeSet> has these 4 attributes:
+An C<SysScaValStmtNodeSet> has these 4 attributes:
 
 =over
 
@@ -2919,13 +2919,13 @@ This is an optional programmer comment about the statement (leaf) node.
 This is name of the local parameter or variable that will have the newly
 selected scalar value assigned to it.
 
-=item C<value> - C<OVLScalar>
+=item C<value> - C<SysScalar>
 
 This is the actual scalar value that the statement node is selecting.
 
 =back
 
-An C<OVLScaValStmtNodeSet> has a unary primary key on the C<name>
+An C<SysScaValStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.LeaveStmtNodeSet
