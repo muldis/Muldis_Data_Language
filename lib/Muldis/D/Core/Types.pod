@@ -46,6 +46,7 @@ user's point of view:
                 sys.std.Core.Type.Int
                 sys.std.Core.Type.Rat
                 sys.std.Core.Type.Blob
+                sys.std.Core.Type.Minimal_Text
                 sys.std.Core.Type.Unicode_Text
         sys.std.Core.Type.Tuple
             sys.std.Core.Type.DHTuple
@@ -81,6 +82,7 @@ as is relevant from the implementer's point of view:
                         sys.std.Core.Type.Bool
                         sys.std.Core.Type.Rat
                         sys.std.Core.Type.Blob
+                        sys.std.Core.Type.Minimal_Text
                         sys.std.Core.Type.Unicode_Text
                 sys.std.Core.Type.External
             sys.std.Core.Type.Cat.Nonstructure
@@ -114,6 +116,7 @@ types:
                             sys.std.Core.Type.PRat
                     sys.std.Core.Type.Blob
                         sys.std.Core.Type.OctetBlob
+                    sys.std.Core.Type.Minimal_Text
                     sys.std.Core.Type.Unicode_Text
 
 To be clear, C<ScalarWP> is the intersection type of C<List> and C<Scalar>,
@@ -204,6 +207,7 @@ compose:
 
             sys.std.Core.Type.Rat
             sys.std.Core.Type.Blob
+            sys.std.Core.Type.Minimal_Text
             sys.std.Core.Type.Unicode_Text
 
             sys.std.Core.Type.Ordinal
@@ -223,6 +227,7 @@ compose:
 
             sys.std.Core.Type.Text
 
+                sys.std.Core.Type.Minimal_Text
                 sys.std.Core.Type.Unicode_Text
 
         sys.std.Core.Type.Attributive
@@ -277,7 +282,7 @@ them on a line such that each value is definatively considered I<before>
 all of the values one one side and I<after> all of the values on the other
 side.  A typical ordered type is a scalar type, but not-scalar types can
 also be ordered.  Almost all system-defined scalar types are also ordered
-types, including: C<Bool>, C<Int>, C<Rat>, C<Blob>, C<Unicode_Text>.  The
+types, including: C<Bool>, C<Int>, C<Rat>, C<Blob>, C<Minimal_Text>.  The
 cardinality of C<Ordered> is infinity.  The default value of C<Ordered> is
 C<Bool:False>.  The minimum and maximum values of C<Ordered> are C<-Inf>
 and C<Inf>, respectively; these 2 values are special singleton scalar types
@@ -337,7 +342,7 @@ whose values it would be reasonable to apply all of the common string or
 array operators like C<~> or C<~#>.  Just a few primary system-defined
 types are stringy types, including C<Blob>, C<Text>, and C<Array>.  The
 cardinality of C<Stringy> is infinity.  The default value of C<Stringy> is
-the C<Unicode_Text> value empty string.  The C<Stringy> type is not itself
+the C<Minimal_Text> value empty string.  The C<Stringy> type is not itself
 ordered, but often a type which is stringy is also ordered.
 
 =head2 sys.std.Core.Type.Text
@@ -355,9 +360,9 @@ types, but directly mappable.  The C<Text> type explicitly composes the
 C<Stringy> mixin type, and so every type which explicitly composes C<Text>
 also implicitly composes C<Stringy>.  Most existing or likely
 system-defined stringy types are also text types, including
-C<Unicode_Text>.
+C<Minimal_Text>, C<Unicode_Text>.
 The cardinality of C<Text> is infinity.  The default value of C<Text> is
-the C<Unicode_Text> value empty string.  The C<Text> type is not itself
+the C<Minimal_Text> value empty string.  The C<Text> type is not itself
 ordered, but often a type which is a text type is also ordered.
 
 =head2 sys.std.Core.Type.Attributive
@@ -586,6 +591,49 @@ reason the C<OctetBlob> type is system-defined as distinct from C<Blob> is
 for convenience of users since it is likely the vast majority of C<Blob>
 values consist of whole octets and users would want to work with them in
 those terms.
+
+=head2 sys.std.Core.Type.Minimal_Text
+
+A C<Minimal_Text> is a string of abstract characters which is formatted as
+a sequence of abstract codepoints of a conceptually Muldis D proprietary
+I<minimal> character repertoire, which consists of exactly 64 characters.
+
+This table says what those 64 characters are and what codepoint numbers
+they have (the codepoints are expressed in base-10):
+
+     0..25 | 'A'..'Z' | LATIN CAPITAL LETTER A .. LATIN CAPITAL LETTER Z
+    26..51 | 'a'..'z' | LATIN SMALL LETTER A .. LATIN SMALL LETTER Z
+    52..61 | '0'..'9' | DIGIT ZERO .. DIGIT NINE
+        62 | '-'      | HYPHEN-MINUS
+        63 | '_'      | LOW LINE (underscore)
+
+The purpose of C<Minimal_Text> is to provide the absolute minimum of
+support for character strings such that one can write the least common
+denominator of identifier strings with them such as the names of types or
+routines or attributes or variables, these usually being comprised of Latin
+alphabetic and numeric characters plus underscore and hyphen for word
+separation.  C<Minimal_Text> could also be used for some user data, such as
+some basic alphanumeric codes, but use by the system catalog is its primary
+intended purpose.  The C<Minimal_Text> type explicitly composes the C<Text>
+mixin type, and by extension also implicitly composes the C<Stringy> mixin
+type.  C<Minimal_Text> is the only explicit composing type of C<Text> that
+is in the Muldis D language core; all others are provided by extensions.
+All system-defined entity names in the core use only this repertoire.
+
+The C<Minimal_Text> repertoire and codepoints also happen to exactly
+correspond to a Base64 flavor called "base64url encoding" or "Modified
+Base64 for URL applications".  I<TODO: Cite some official reference.>
+
+A C<Minimal_Text> has 1 system-defined possrep named C<mini_codes> which
+consists of 1 C<MCPString>-typed attribute whose name is the empty string;
+each element of C<mini_codes> represents a codepoint number.  The
+C<Minimal_Text> type explicitly composes the C<Ordered> mixin type.  A
+C<Minimal_Text> is a simple wrapper for a C<MCPString> and all of its other
+details such as default and minimum and maximum values and cardinality and
+default ordering algorithm (sorting is numeric by abstract codepoint
+number) all correspond directly.  But C<Minimal_Text> is explicitly
+disjoint from C<MCPString> due to having a different intended
+interpretation.
 
 =head2 sys.std.Core.Type.Unicode_Text
 

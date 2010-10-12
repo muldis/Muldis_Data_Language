@@ -82,6 +82,7 @@ This graph slice shows all of the catalog scalar types:
                 sys.std.Core.Type.Cat.String
                     sys.std.Core.Type.Cat.BString
                     sys.std.Core.Type.Cat.OString
+                    sys.std.Core.Type.Cat.MCPString
                     sys.std.Core.Type.Cat.UCPString
 
                 sys.std.Core.Type.Cat.DHScalarWP
@@ -345,7 +346,8 @@ The C<SysScalar> type is explicitly defined as a domain-union type over all
 system-defined C<DHScalar> root types, which typically corresponds to
 those types for whose values all of the Muldis D standard dialects provide
 "opaque value literal" syntax for:  C<Bool>, C<Int>, C<Rat>, C<Blob>,
-C<Unicode_Text>, C<Name>, C<NameChain>, C<Comment>, C<Order>,
+C<Minimal_Text>, C<Unicode_Text>,
+C<Name>, C<NameChain>, C<Comment>, C<Order>,
 C<RoundMeth>, C<RatRoundRule>, C<Singleton>.  The C<SysScalar> type is
 mainly intended to be used as the declared type of some attributes of some
 other system-defined catalog types, as a compact or hard-coded way to
@@ -359,13 +361,13 @@ default value is C<Bool:False>.  The cardinality of this type is infinity.
 
 The C<SysText> type is explicitly defined as a domain-union type over all
 system-defined character string root types, and just those types: 
-C<Unicode_Text>.
+C<Minimal_Text>, C<Unicode_Text>.
 The C<SysText> type is mainly intended to be used as the declared type of
 some attributes of some other system-defined catalog types.  The C<SysText>
 type is I<not> intended to be used as the declared type of any user type
 attributes, generally speaking; if they would even consider it, they should
 be using C<Text> instead.  Its default value is the empty string value of
-the C<Unicode_Text> type.  The cardinality of this type is infinity.
+the C<Minimal_Text> type.  The cardinality of this type is infinity.
 
 =head2 sys.std.Core.Type.Cat.String
 
@@ -411,6 +413,15 @@ value elements are between zero and 255 inclusive.  One can be used to
 represent a string of octets.  Considering the low-level type system, for
 every C<OString> value, its second C<Structure> element is the C<Int> value
 C<-2> (octet string).
+
+=head2 sys.std.Core.Type.Cat.MCPString
+
+C<MCPString> (minimal abstract codepoint string) is a proper subtype of
+C<String> where all member value elements are between zero and 63
+inclusive.  One can be used to represent a string of characters of a
+64-character repertoire.  Considering the low-level type system, for every
+C<MCPString> value, its second C<Structure> element is the C<Int> value
+C<-6> (text with Muldis D proprietary minimal repertoire like base64url).
 
 =head2 sys.std.Core.Type.Cat.UCPString
 
