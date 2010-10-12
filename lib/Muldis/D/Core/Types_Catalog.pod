@@ -50,7 +50,7 @@ multiple slices, some of which are different views of the same type
 relationships.  See L<Muldis::D::Core::Types/TYPE SUMMARY> for context.
 
 This graph slice shows all of the top-level catalog types, plus some
-non-core catalog types for context:
+non-catalog core types for context:
 
     sys.std.Core.Type.Universal
         sys.std.Core.Type.Cat.List
@@ -69,6 +69,7 @@ non-core catalog types for context:
                 sys.std.Core.Type.Cat.String
                 sys.std.Core.Type.Cat.DHScalarWP
                 sys.std.Core.Type.Cat.SysScalar
+                    sys.std.Core.Type.Cat.SysText
 
 This graph slice shows all of the catalog scalar types:
 
@@ -341,10 +342,10 @@ C<Int> and C<String> values, are C<DHScalarWP> values.
 =head2 sys.std.Core.Type.Cat.SysScalar
 
 The C<SysScalar> type is explicitly defined as a domain-union type over all
-system-defined C<DHScalar> root types, and just
-those types, for whose values all of the Muldis D standard dialects provide
+system-defined C<DHScalar> root types, which typically corresponds to
+those types for whose values all of the Muldis D standard dialects provide
 "opaque value literal" syntax for:  C<Bool>, C<Int>, C<Rat>, C<Blob>,
-C<Text>, C<Name>, C<NameChain>, C<Order>,
+C<Unicode_Text>, C<Name>, C<NameChain>, C<Comment>, C<Order>,
 C<RoundMeth>, C<RatRoundRule>, C<Singleton>.  The C<SysScalar> type is
 mainly intended to be used as the declared type of some attributes of some
 other system-defined catalog types, as a compact or hard-coded way to
@@ -353,6 +354,18 @@ of possrep attributes.  The C<SysScalar> type is I<not> intended to be used
 as the declared type of any user type attributes, generally speaking; if
 they would even consider it, they should be using C<DHScalar> instead.  Its
 default value is C<Bool:False>.  The cardinality of this type is infinity.
+
+=head2 sys.std.Core.Type.Cat.SysText
+
+The C<SysText> type is explicitly defined as a domain-union type over all
+system-defined character string root types, and just those types: 
+C<Unicode_Text>.
+The C<SysText> type is mainly intended to be used as the declared type of
+some attributes of some other system-defined catalog types.  The C<SysText>
+type is I<not> intended to be used as the declared type of any user type
+attributes, generally speaking; if they would even consider it, they should
+be using C<Text> instead.  Its default value is the empty string value of
+the C<Unicode_Text> type.  The cardinality of this type is infinity.
 
 =head2 sys.std.Core.Type.Cat.String
 
@@ -429,12 +442,12 @@ using just its C<Name>, depending on the context; other times, a
 C<NameChain> must be used instead to also qualify the reference with a
 namespace.  The C<Name> type explicitly composes the C<Stringy> mixin
 type.  A C<Name> has 1 system-defined possrep whose name is the empty
-string, which has 1 C<Text>-typed attribute whose name is the empty
+string, which has 1 C<SysText>-typed attribute whose name is the empty
 string.  The C<Name> type explicitly composes the C<Ordered> mixin type.
-A C<Name> is a simple wrapper for a C<Text> and all of its other
+A C<Name> is a simple wrapper for a C<SysText> and all of its other
 details such as default and minimum and maximum values and cardinality and
 default ordering algorithm all correspond directly.  But C<Name> is
-explicitly disjoint from C<Text> due to having a different intended
+explicitly disjoint from C<SysText> due to having a different intended
 interpretation; it is specifically intended for use in naming DBMS entities
 rather than being for general-purpose user data.
 
@@ -578,7 +591,7 @@ A C<Comment> (scalar) is the text of a
 Muldis D code comment, which programmers can populate as an attribute of
 several catalog data types, such as whole routines or statements or
 expression nodes.  Every detail of C<Comment>'s representation (its 1
-possrep and its default value) is the same as C<Name>
+C<SysText>-based possrep and its default value) is the same as C<Name>
 but it is explicitly disjoint due to having a different intended
 interpretation; it is intended just for commenting Muldis D code.  One main
 intended use of this type is to help preserve comments in code translated

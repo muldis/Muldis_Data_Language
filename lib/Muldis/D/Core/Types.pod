@@ -46,7 +46,7 @@ user's point of view:
                 sys.std.Core.Type.Int
                 sys.std.Core.Type.Rat
                 sys.std.Core.Type.Blob
-                sys.std.Core.Type.Text
+                sys.std.Core.Type.Unicode_Text
         sys.std.Core.Type.Tuple
             sys.std.Core.Type.DHTuple
                 sys.std.Core.Type.Database
@@ -81,7 +81,7 @@ as is relevant from the implementer's point of view:
                         sys.std.Core.Type.Bool
                         sys.std.Core.Type.Rat
                         sys.std.Core.Type.Blob
-                        sys.std.Core.Type.Text
+                        sys.std.Core.Type.Unicode_Text
                 sys.std.Core.Type.External
             sys.std.Core.Type.Cat.Nonstructure
 
@@ -114,7 +114,7 @@ types:
                             sys.std.Core.Type.PRat
                     sys.std.Core.Type.Blob
                         sys.std.Core.Type.OctetBlob
-                    sys.std.Core.Type.Text
+                    sys.std.Core.Type.Unicode_Text
 
 To be clear, C<ScalarWP> is the intersection type of C<List> and C<Scalar>,
 and C<DHScalarWP> is the intersection type of C<ScalarWP> and C<DHScalar>;
@@ -204,7 +204,7 @@ compose:
 
             sys.std.Core.Type.Rat
             sys.std.Core.Type.Blob
-            sys.std.Core.Type.Text
+            sys.std.Core.Type.Unicode_Text
 
             sys.std.Core.Type.Ordinal
 
@@ -219,8 +219,11 @@ compose:
         sys.std.Core.Type.Stringy
 
             sys.std.Core.Type.Blob
-            sys.std.Core.Type.Text
             sys.std.Core.Type.Array
+
+            sys.std.Core.Type.Text
+
+                sys.std.Core.Type.Unicode_Text
 
         sys.std.Core.Type.Attributive
 
@@ -274,7 +277,7 @@ them on a line such that each value is definatively considered I<before>
 all of the values one one side and I<after> all of the values on the other
 side.  A typical ordered type is a scalar type, but not-scalar types can
 also be ordered.  Almost all system-defined scalar types are also ordered
-types, including: C<Bool>, C<Int>, C<Rat>, C<Blob>, C<Text>.  The
+types, including: C<Bool>, C<Int>, C<Rat>, C<Blob>, C<Unicode_Text>.  The
 cardinality of C<Ordered> is infinity.  The default value of C<Ordered> is
 C<Bool:False>.  The minimum and maximum values of C<Ordered> are C<-Inf>
 and C<Inf>, respectively; these 2 values are special singleton scalar types
@@ -334,8 +337,28 @@ whose values it would be reasonable to apply all of the common string or
 array operators like C<~> or C<~#>.  Just a few primary system-defined
 types are stringy types, including C<Blob>, C<Text>, and C<Array>.  The
 cardinality of C<Stringy> is infinity.  The default value of C<Stringy> is
-the C<Text> value empty string.  The C<Stringy> type is not itself ordered,
-but often a type which is stringy is also ordered.
+the C<Unicode_Text> value empty string.  The C<Stringy> type is not itself
+ordered, but often a type which is stringy is also ordered.
+
+=head2 sys.std.Core.Type.Text
+
+The C<Text> type is a mixin (union) type that is intended to be explicitly
+composed by all other types that are considered character string types.  A
+C<Text> is a string of abstract characters which is formatted as a sequence
+of abstract codepoints of some character repertoire.  In the general case,
+two distinct scalar root types that compose C<Text> would have at least
+partially disjoint repertoires, where even when they represent the same
+conceptual characters, these are represented with different codepoint
+numbers.  In some cases a C<Text>-composing root type would have a proper
+superset of another's repertoire; for these, they would still be disjoint
+types, but directly mappable.  The C<Text> type explicitly composes the
+C<Stringy> mixin type, and so every type which explicitly composes C<Text>
+also implicitly composes C<Stringy>.  Most existing or likely
+system-defined stringy types are also text types, including
+C<Unicode_Text>.
+The cardinality of C<Text> is infinity.  The default value of C<Text> is
+the C<Unicode_Text> value empty string.  The C<Text> type is not itself
+ordered, but often a type which is a text type is also ordered.
 
 =head2 sys.std.Core.Type.Attributive
 
@@ -564,28 +587,31 @@ for convenience of users since it is likely the vast majority of C<Blob>
 values consist of whole octets and users would want to work with them in
 those terms.
 
-=head2 sys.std.Core.Type.Text
+=head2 sys.std.Core.Type.Unicode_Text
 
-A C<Text> is a string of Unicode abstract
+A C<Unicode_Text> is a string of Unicode abstract
 characters which is formatted as a sequence of Unicode abstract codepoints
-in canonical decomposed normal form (NFD).  The C<Text> type explicitly
-composes the C<Stringy> mixin type.  Two C<Text> will generally
-match at the grapheme abstraction level.  Of course, a Muldis D
+in canonical decomposed normal form (NFD).  The C<Unicode_Text> type
+explicitly composes the C<Text> mixin type, and by extension also
+implicitly composes the C<Stringy> mixin type.  Two C<Unicode_Text> will
+generally match at the grapheme abstraction level.  Of course, a Muldis D
 implementation doesn't actually have to store character data in NFD; but
-default matching semantics need to be as if it did.  A C<Text> has 1
-system-defined possrep named C<nfd_codes> which consists of 1
+default matching semantics need to be as if it did.  A C<Unicode_Text> has
+1 system-defined possrep named C<nfd_codes> which consists of 1
 C<UCPString>-typed attribute whose name is the empty string; each element
 of C<nfd_codes> represents a Unicode standard version 5.2.0 character
-abstract codepoint number.  The C<Text> type explicitly composes the
-C<Ordered> mixin type.  A C<Text> is a simple wrapper for a
+abstract codepoint number.  The C<Unicode_Text> type explicitly composes
+the C<Ordered> mixin type.  A C<Unicode_Text> is a simple wrapper for a
 C<UCPString> and all of its other details such as default and minimum and
 maximum values and cardinality and default ordering algorithm (sorting is
-numeric by abstract codepoint number) all correspond directly.  But C<Text>
+numeric by abstract codepoint number) all correspond directly.  But
+C<Unicode_Text>
 is explicitly disjoint from C<UCPString> due to having a different intended
 interpretation.  In regards to ordering, possibly the standard Unicode
 Collation Algorithm (UCA) also works this way, assuming it is totally
 ordered, but that's unsure.  I<TODO: Support customization parameters for
-default text sorting.>
+default text sorting, or make C<Unicode_Text> into a mixin type composing
+a multiplicity of other nationality-specific types perhaps.>
 
 =head1 GENERIC NONSCALAR DATA TYPES
 
@@ -701,7 +727,7 @@ An C<SPInterval> has these 4 attributes:
 These are the interval endpoint values; C<min> defines the
 I<left|start|from> endpoint and C<max> defines the I<right|end|to>
 endpoint.  The endpoint values conceptually must be of the same,
-totally-ordered type (typically one of C<Int>, C<Rat>, C<Text>,
+totally-ordered type (typically one of C<Int>, C<Rat>, C<Unicode_Text>,
 C<TAIInstant>, etc), although strictly speaking they may be of any types at
 all; in the latter case, to actually make practical use of such intervals,
 an C<order-determination> function must explicitly be employed.
