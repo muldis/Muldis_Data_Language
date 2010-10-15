@@ -1694,42 +1694,26 @@ as a C<List>-hierarchy of C<Int> determines them to be identical, then this
 is the result; a defined-separately is only allowed to differ when the
 simple comparison determines them to be non-identical.
 
-A C<String> is a C<Structure> having exactly 2 ordered payload elements,
-that are designated in order: I<element repertoire>, I<elements>.  The
-I<element repertoire> is an C<Int> value that is either any positive C<Int>
-value or one of the 6 non-positive C<Int> values in the range C<-5..0>.
-The I<elements> is a C<List> of 0..N C<Int> (or possibly C<List>) where the
-intended interpretation of I<elements> is indicated by I<element
-repertoire>.
-
-This table says how to interpret a C<String> based on its repertoire:
-
-    +1..* | interpretation is user-defined in the same depot
-     0    | unrestricted / elements are any integers at all
-    -1    | blob as bit string; each element in 0..1
-    -2    | blob as octet string; each element in 0..255
-    -3    | text with 7-bit ASCII char repertoire; each elem in 0..127
-    -4    | text w Unicode 5.2.0 canonical reper; each elem a codepoint
-    -5    | text w Unicode 5.2.0 compatibility repertoire
-
-Two C<String> are only considered identical if they have the same I<element
-repertoire> value, and for two C<String> with the same repertoire, the
-rules for determining equality vary per repertoire; it is often useful to
-fold two C<String> to the same repertoire, but that will never happen
-automatically for generic comparisons.  For the 4 system-defined
-repertoires C<-3..0>, the order of elements in I<elements> is entirely
-significant, and two C<String> match iff their I<elements> have the same
-element count and all corresponding element values are identical.  For the
-2 system-defined repertoires C<-4,-5>, the order is entirely significant
-but that the Unicode normal form is only partially significant; identity
-semantics are as if the I<elements> of both C<String> were normalized in
-Unicode normal form C<NFD> or C<NFKD>, respectively, prior to the
-comparison, so their identities are more grapheme-based.  For two C<String>
-with the same positive C<Int> element repertoire, iff there is no
-user-defined repertoire known to the DBMS matching that C<Int>, then
-interpretation is as per a C<0> repertoire; iff there is a matching
-user-defined repertoire, then identity semantics are determined by that
-repertoire's definition.
+A C<String> is a C<Structure> having exactly 1 payload element that is
+designated I<elements>.  The I<elements> is a C<List> of 0..N C<Int> where
+the intended interpretation of I<elements> is provided by the element
+repertoire of the larger context in which the C<String> exists.
+For example, if a C<String> is the primary component of a bit/octet string
+type, then each string element is interpreted as a single bit/octet.  Or,
+if a C<String> is the primary component of a character string type, then
+each string element is interpreted as a single codepoint of the character
+repertoire of the character string type.  Or, if a C<String> is used in the
+I<heading> of a C<Tuple>/etc, then it is like with a character string but
+that the character repertoire is defined by the package in which it is
+defined by way of that all C<Name> in a package must have the same
+character repertoire.
+Two C<String> are only considered identical if they have the same element
+repertoire applied to them, and for two C<String> with the same repertoire,
+the rules for determining equality vary per repertoire.  It is often useful
+to fold two C<String> to the same repertoire, but that will never happen
+automatically for generic comparisons.  But it will happen automatically
+where possible when comparing DBMS entity names in C<Tuple>/etc headings,
+so that addressing DBMS entities would just work across package boundaries.
 
 A C<Tuple> is a C<Structure> having either of 2 formats, designated
 I<row-oriented tuple> and I<column-oriented tuple>; the first has exactly 2
