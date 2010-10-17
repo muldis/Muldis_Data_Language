@@ -202,6 +202,7 @@ Grammar:
             <ws>? ',' <ws>? op_char_repertoire <ws>? '=>' <ws>? <op_cr>
             [<ws>? ',' <ws>? standard_syntax_extensions
                 <ws>? => <ws>? <std_syn_ext_list>]?
+            [<ws>? ',']?
         <ws>? '}'
 
     <cat_abstr_level> ::=
@@ -215,7 +216,7 @@ Grammar:
 
     <std_syn_ext_list> ::=
         '{' <ws>?
-            [<std_syn_ext_list_item> ** [<ws>? ',' <ws>?]]?
+            [<std_syn_ext_list_item> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
     <std_syn_ext_list_item> ::=
@@ -1796,7 +1797,7 @@ Examples:
     $:Rat:float;{
         mantissa => 45207196,
         radix    => 10,
-        exponent => 37
+        exponent => 37,
     }
 
     $:fed.lib.the_db.UTCDateTime:datetime;{
@@ -1805,15 +1806,15 @@ Examples:
         day    => 26,
         hour   => 1,
         minute => 30,
-        second => 0.0
+        second => 0.0,
     }
 
     $:fed.lib.the_db.WeekDay:name;{
-        "" => "monday"
+        "" => "monday",
     }
 
     $:fed.lib.the_db.WeekDay:number;{
-        "" => 5
+        "" => 5,
     }
 
 =head2 Tuple Selectors
@@ -1831,7 +1832,7 @@ Grammar:
     <tuple_list> ::=
         '{' <ws>?
             [[<nonord_atvl> | <same_named_nonord_atvl>]
-                ** [<ws>? ',' <ws>?]]?
+                ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
     <nonord_atvl> ::=
@@ -1892,12 +1893,12 @@ Examples:
     %:type.tuple_from.var.fed.data.the_db.account.users:{
         login_name => 'hartmark',
         login_pass => 'letmein',
-        is_special => True
+        is_special => True,
     }
 
     %:{
         name => 'Michelle',
-        age  => 17
+        age  => 17,
     }
 
     %:{ w => 'foo', =>x, y => 4, =>z }
@@ -1945,26 +1946,26 @@ Grammar:
 
     <r_empty_body_payload> ::=
         '{' <ws>?
-            [<attr_name> ** [<ws>? ',' <ws>?]]?
+            [<attr_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
     <r_nonordered_attr_payload> ::=
         '{' <ws>?
-            [<tuple_list> ** [<ws>? ',' <ws>?]]?
+            [<tuple_list> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
     <r_ordered_attr_payload> ::=
         '[' <ws>?
-            [<attr_name> ** [<ws>? ',' <ws>?]]?
+            [<attr_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
         ';' <unspace>
         '{' <ws>?
-            [<ordered_tuple_attrs> ** [<ws>? ',' <ws>?]]?
+            [<ordered_tuple_attrs> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
     <ordered_tuple_attrs> ::=
         '[' <ws>?
-            [<expr> ** [<ws>? ',' <ws>?]]?
+            [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
 
     <relation_D0> ::=
@@ -2035,12 +2036,12 @@ Examples:
         {
             login_name => 'hartmark',
             login_pass => 'letmein',
-            is_special => True
-        }
+            is_special => True,
+        },
     }  #`3 attrs + 1 tuple`#
 
     @:fed.lib.the_db.gene.Person:[ name, age ];{
-        [ 'Michelle', 17 ]
+        [ 'Michelle', 17 ],
     }  #`2 attrs + 1 tuple`#
 
 =head2 Set Selectors
@@ -2056,7 +2057,7 @@ Grammar:
 
     <Set_payload> ::=
         '{' <ws>?
-            [<expr> ** [<ws>? ',' <ws>?]]?
+            [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
 A C<Set> node represents a literal or selector invocation for a set
@@ -2078,13 +2079,13 @@ Examples:
         'Canada',
         'Spain',
         'Jordan',
-        'Thailand'
+        'Thailand',
     }
 
     {
         3,
         16,
-        85
+        85,
     }
 
 =head2 Maybe Selectors
@@ -2160,7 +2161,7 @@ Grammar:
 
     <Array_payload> ::=
         '[' <ws>?
-            [<expr> ** [<ws>? ',' <ws>?]]?
+            [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
 
 An C<Array> node represents a literal or selector invocation for an
@@ -2184,14 +2185,14 @@ Examples:
     [
         'Alphonse',
         'Edward',
-        'Winry'
+        'Winry',
     ]
 
     Array:fed.lib.the_db.stats.Samples_By_Order:[
         57,
         45,
         63,
-        61
+        61,
     ]
 
 =head2 Bag Selectors
@@ -2211,7 +2212,8 @@ Grammar:
 
     <bag_payload_counted_values> ::=
         '{' <ws>?
-            [[<expr> <ws>? '=>' <ws>? <count>] ** [<ws>? ',' <ws>?]]?
+            [[<expr> <ws>? '=>' <ws>? <count>] ** [<ws>? ',' <ws>?]
+                [<ws>? ',']?]?
         <ws>? '}'
 
     <count> ::=
@@ -2220,7 +2222,7 @@ Grammar:
 
     <bag_payload_repeated_values> ::=
         '{' <ws>?
-            [<expr> ** [<ws>? ',' <ws>?]]?
+            [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
 A C<Bag> node represents a literal or selector invocation for a bag
@@ -2263,7 +2265,7 @@ Examples:
     {
         'Apple'  => 500,
         'Orange' => 300,
-        'Banana' => 400
+        'Banana' => 400,
     }
 
     Bag:{
@@ -2272,7 +2274,7 @@ Examples:
         'Foo',
         'Bar',
         'Baz',
-        'Baz'
+        'Baz',
     }
 
 =head2 Interval Selectors
@@ -2318,7 +2320,7 @@ Grammar:
 
     <MPInterval_payload> ::=
         '{' <ws>?
-            [<interval> ** [<ws>? ',' <ws>?]]?
+            [<interval> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
 An C<SPInterval> node represents a literal or selector invocation for a
@@ -2384,7 +2386,7 @@ Grammar:
 
     <List_payload> ::=
         '[' <ws>?
-            [<expr> ** [<ws>? ',' <ws>?]]?
+            [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
 
 A C<List> node represents a literal or selector invocation for a
@@ -2746,7 +2748,7 @@ Grammar:
     <func_signature> ::=
         '(' <ws>?
             <result_type> <ws>? '<--'
-            [<ws>? <func_param> ** [<ws>? ',' <ws>?]]?
+            [<ws>? <func_param> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ')'
 
     <result_type> ::=
@@ -2846,7 +2848,7 @@ Grammar:
 
     <upd_signature> ::=
         '(' <ws>?
-            <upd_param> ** [<ws>? ',' <ws>?]
+            [<upd_param> | <upd_param> ** [<ws>? ',' <ws>?] [<ws>? ',']?]
         <ws>? ')'
 
     <upd_param> ::=
@@ -2907,7 +2909,7 @@ Grammar:
 
     <rcp_signature> ::=
         '(' <ws>?
-            <rcp_param> ** [<ws>? ',' <ws>?]
+            [<rcp_param> | <rcp_param> ** [<ws>? ',' <ws>?] [<ws>? ',']?]
         <ws>? ')'
 
     <rcp_param> ::=
@@ -3085,7 +3087,7 @@ Grammar:
 
     <proc_signature> ::=
         '(' <ws>?
-            [<proc_param> ** [<ws>? ',' <ws>?]]?
+            [<proc_param> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ')'
 
     <proc_param> ::=
@@ -3291,7 +3293,7 @@ Grammar:
     <aliased_attr_list> ::=
         '{' <ws>?
             [[<aliased_attr_pair> | <same_named_nonord_atvl>]
-                ** [<ws>? ',' <ws>?]]?
+                ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
     <aliased_attr_pair> ::=
@@ -3466,13 +3468,13 @@ Grammar:
     <domain_sources> ::=
         ['source-union' | 'source-intersection'] <ws>
         '{' <ws>?
-            <type_name> ** [<ws>? ',' <ws>?]
+            [<type_name> | <type_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]
         <ws>? '}'
 
     <domain_filters> ::=
         ['filter-union' | 'filter-intersection'] <ws>
         '{' <ws>?
-            [<type_name> ** [<ws>? ',' <ws>?]]?
+            [<type_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
 A C<domain_type> node specifies a new domain type that lives in a depot or
@@ -3603,7 +3605,7 @@ Grammar:
 
     <key_constr_payload> ::=
         '{' <ws>?
-            [<attr_name_lex> ** [<ws>? ',' <ws>?]]?
+            [<attr_name_lex> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
 A C<key_constr> node specifies a new unique key constraint or candidate
@@ -3676,7 +3678,7 @@ Grammar:
     <sc_attr_map> ::=
         '{' <ws>?
             [[<sc_attr_pair> | <same_named_nonord_atvl>]
-                ** [<ws>? ',' <ws>?]]?
+                ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
     <sc_attr_pair> ::=
@@ -3908,7 +3910,7 @@ Grammar:
 
     <func_arg_list> ::=
         '(' <ws>?
-            [<func_arg> ** [<ws>? ',' <ws>?]]?
+            [<func_arg> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ')'
 
     <func_arg> ::=
@@ -4197,7 +4199,7 @@ Grammar:
 
     <imus_imp_arg_list> ::=
         '(' <ws>?
-            [<imus_imp_arg> ** [<ws>? ',' <ws>?]]?
+            [<imus_imp_arg> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ')'
 
     <imus_imp_arg> ::=
@@ -4476,7 +4478,7 @@ Grammar:
 
     <iproc_imp_arg_list> ::=
         '(' <ws>?
-            [<iproc_imp_arg> ** [<ws>? ',' <ws>?]]?
+            [<iproc_imp_arg> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ')'
 
     <iproc_imp_arg> ::=
@@ -5366,7 +5368,10 @@ Grammar:
         <pcf_rename_map>
 
     <pcf_rename_map> ::=
-        [<atnm_after> <ws>? '<-' <ws>? <atnm_before>] ** [<ws>? ',' <ws>?]
+        [<atnm_aft_bef> | <atnm_aft_bef> ** [<ws>? ',' <ws>?] [<ws>? ',']?]
+
+    <atnm_aft_bef> ::=
+        <atnm_after> <ws>? '<-' <ws>? <atnm_before>
 
     <atnm_after> ::=
         <attr_name>
@@ -5381,7 +5386,7 @@ Grammar:
         '!' <ws>? <pcf_atnms>
 
     <pcf_atnms> ::=
-        <attr_name> ** [<ws>? ',' <ws>?]
+        [<attr_name> | <attr_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]
 
     <pcf_wrap> ::=
         '%' <outer_atnm> <ws>? '<-' <ws>? <inner_atnms>
