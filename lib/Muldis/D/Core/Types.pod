@@ -119,6 +119,7 @@ types:
                     sys.std.Core.Type.CoreText
                     sys.std.Core.Type.Text.Unicode
                         sys.std.Core.Type.Text.ASCII
+                        sys.std.Core.Type.Text.Latin1
 
 To be clear, C<ScalarWP> is the intersection type of C<List> and C<Scalar>,
 and C<DHScalarWP> is the intersection type of C<ScalarWP> and C<DHScalar>;
@@ -579,7 +580,7 @@ intended interpretation.
 
 C<OctetBlob> is a proper subtype of
 C<Blob> where all member values have a length in bits that is an even
-multiple of 8 (or is zero).  An C<OctetBlob> adds 1 system-defined possrep
+multiple of 8 (or is zero).  C<OctetBlob> adds 1 system-defined possrep
 named C<octets> which consists of 1 C<OString>-typed attribute whose name
 is the empty string.  The C<octets> and C<bits> possreps correspond as you
 might expect, such that each element of the sole attribute of C<octets>
@@ -606,7 +607,7 @@ users could still do the same things as are supported by least common
 denominator text data support in general purpose languages and DBMSs.
 The character repertoire of C<CoreText> is presently defined to be the
 same 128 7-bit ASCII characters, with codepoints in 0..127, which both
-ISO8859-1/Latin1 and all versions of Unicode are proper supersets of.
+ISO-8859-1/Latin1 and all versions of Unicode are proper supersets of.
 The detail of this might change in the future, but the spirit should stay.
 C<CoreText> is the only explicit composing type of C<Text> that
 is in the Muldis D language core; all others are provided by extensions.
@@ -655,11 +656,28 @@ a multiplicity of other nationality-specific types perhaps.>
 =head2 sys.std.Core.Type.Text.ASCII
 
 C<Text.ASCII> is a proper subtype of C<Text.Unicode> where all member
-values have just characters whose codepoints are in the range 0..127.
+values have just the abstract characters in the 128-character repertoire of
+7-bit ASCII.  C<Text.ASCII> adds 1 system-defined
+possrep named C<ascii_codes> which consists of 1 C<String>-typed attribute
+whose name is the empty string and each of whose elements is a codepoint in
+the range 0..127 inclusive.  The C<ascii_codes> and C<nfd_codes> possreps
+correspond as you might expect, such that both represent the same abstract
+characters using the appropriate codepoints of their repertoires.
 C<Text.ASCII> has the same character repertoire as C<CoreText> but the
 former is comparable with C<Text.Unicode> while the latter isn't.
 C<Text.ASCII> is what you should be using by default on all Muldis D
 implementations that support it, when you would otherwise use C<CoreText>.
+
+=head2 sys.std.Core.Type.Text.Latin1
+
+C<Text.Latin1> is a proper subtype of C<Text.Unicode> where all member
+values have just the abstract characters in the 256-character repertoire of
+8-bit ISO Latin 1 / ISO-8859-1.  C<Text.Latin1> adds 1 system-defined
+possrep named C<latin1_codes> which consists of 1 C<String>-typed attribute
+whose name is the empty string and each of whose elements is a codepoint in
+the range 0..255 inclusive.  The C<latin1_codes> and C<nfd_codes> possreps
+correspond as you might expect, such that both represent the same abstract
+characters using the appropriate codepoints of their repertoires.
 
 =head1 GENERIC NONSCALAR DATA TYPES
 
