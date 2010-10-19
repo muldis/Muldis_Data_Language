@@ -69,7 +69,6 @@ non-catalog core types for context:
                 sys.std.Core.Type.Cat.String
                 sys.std.Core.Type.Cat.DHScalarWP
                 sys.std.Core.Type.Cat.SysScalar
-                    sys.std.Core.Type.Cat.SysText
 
 This graph slice shows all of the catalog scalar types:
 
@@ -82,10 +81,14 @@ This graph slice shows all of the catalog scalar types:
                 sys.std.Core.Type.Cat.String
                     sys.std.Core.Type.Cat.BString
                     sys.std.Core.Type.Cat.OString
-                    sys.std.Core.Type.Cat.CCPString
-                    sys.std.Core.Type.Cat.UCPString
 
                 sys.std.Core.Type.Cat.DHScalarWP
+
+                    sys.std.Core.Type.Text
+
+                        # The following are all regular ord scalar types.
+
+                        sys.std.Core.Type.Cat.CoreText
 
                     # The following are all regular ordered scalar types.
 
@@ -257,6 +260,7 @@ types, shown grouped under the mixin types that they compose:
             sys.std.Core.Type.Cat.String
             sys.std.Core.Type.Cat.Name
             sys.std.Core.Type.Cat.NameChain
+            sys.std.Core.Type.Cat.Comment
 
             sys.std.Core.Type.Ordinal
 
@@ -269,6 +273,7 @@ types, shown grouped under the mixin types that they compose:
             sys.std.Core.Type.Cat.String
             sys.std.Core.Type.Cat.Name
             sys.std.Core.Type.Cat.NameChain
+            sys.std.Core.Type.Cat.Comment
 
 =head1 LOW-LEVEL STRUCTURE TYPES
 
@@ -346,8 +351,7 @@ The C<SysScalar> type is explicitly defined as a domain-union type over all
 system-defined C<DHScalar> root types, which typically corresponds to
 those types for whose values all of the Muldis D standard dialects provide
 "opaque value literal" syntax for:  C<Bool>, C<Int>, C<Rat>, C<Blob>,
-C<CoreText>, C<Text.Unicode>,
-C<Name>, C<NameChain>, C<Comment>, C<Order>,
+C<Text>, C<Name>, C<NameChain>, C<Comment>, C<Order>,
 C<RoundMeth>, C<RatRoundRule>, C<Singleton>.  The C<SysScalar> type is
 mainly intended to be used as the declared type of some attributes of some
 other system-defined catalog types, as a compact or hard-coded way to
@@ -356,18 +360,6 @@ of possrep attributes.  The C<SysScalar> type is I<not> intended to be used
 as the declared type of any user type attributes, generally speaking; if
 they would even consider it, they should be using C<DHScalar> instead.  Its
 default value is C<Bool:False>.  The cardinality of this type is infinity.
-
-=head2 sys.std.Core.Type.Cat.SysText
-
-The C<SysText> type is explicitly defined as a domain-union type over all
-system-defined character string root types, and just those types: 
-C<CoreText>, C<Text.Unicode>.
-The C<SysText> type is mainly intended to be used as the declared type of
-some attributes of some other system-defined catalog types.  The C<SysText>
-type is I<not> intended to be used as the declared type of any user type
-attributes, generally speaking; if they would even consider it, they should
-be using C<Text> instead.  Its default value is the empty string value of
-the C<CoreText> type.  The cardinality of this type is infinity.
 
 =head2 sys.std.Core.Type.Cat.String
 
@@ -410,28 +402,21 @@ C<OString> (octet string) is a proper subtype of C<String> where all member
 value elements are between zero and 255 inclusive.  One can be used to
 represent a string of octets.
 
-=head2 sys.std.Core.Type.Cat.CCPString
+=head2 sys.std.Core.Type.Cat.CoreText
 
-C<CCPString> (core abstract codepoint string) is a proper subtype of
-C<String> where all member value elements are between zero and 127
-inclusive.  One can be used to represent a string of characters of a
-128-character repertoire.
-
-=head2 sys.std.Core.Type.Cat.UCPString
-
-C<UCPString> (Unicode abstract codepoint string) is a proper subtype of
-C<String> where all member value elements are between zero and x;D7FF
-inclusive or x;E000 and x;10FFFF inclusive.  As of the Unicode standard
-version 5.2.0, all character abstract codepoints exist within that range,
-and so each element could be used to represent any Unicode character and
-the whole string can be used to represent a string of Unicode characters.
-
-There are no Unicode abstract codepoints between x;D800 and x;DFFF
-inclusive; those numbers would only represent special surrogates that do
-not define extra abstract characters and only have any meaning in
-conjunction with the UTF-16 character encoding form; and so the
-C<UCPString> type specifically excludes them from use in its member values;
-you must just use the normal character abstract codepoints instead.
+C<CoreText> is a proper subtype of C<Text> (and of C<Text.ASCII>) where all
+member values have just the abstract characters in the 95-character
+repertoire of 7-bit ASCII which are its 94 printable characters or its 1
+space character but are not its 33 control characters.  C<CoreText> adds 1
+system-defined possrep named C<coretext_chars> which consists of 1
+C<OString>-typed attribute whose name is the empty string and whose element
+values are all in the range 33..126 inclusive, each element being a
+codepoint representing the same abstract character as the same codepoint of
+7-bit ASCII.  The purpose of C<CoreText> is to provide a reasonable minimum
+of support for character strings in the Muldis D language core.  All
+system-defined entity names in the core and in most official modules use
+only the C<CoreText> repertoire, and this type's primary purpose is to be
+used for entity names.  It can also be employed for user data though.
 
 =head2 sys.std.Core.Type.Cat.Name
 
@@ -443,12 +428,12 @@ using just its C<Name>, depending on the context; other times, a
 C<NameChain> must be used instead to also qualify the reference with a
 namespace.  The C<Name> type explicitly composes the C<Stringy> mixin
 type.  A C<Name> has 1 system-defined possrep whose name is the empty
-string, which has 1 C<SysText>-typed attribute whose name is the empty
+string, which has 1 C<Text>-typed attribute whose name is the empty
 string.  The C<Name> type explicitly composes the C<Ordered> mixin type.
-A C<Name> is a simple wrapper for a C<SysText> and all of its other
+A C<Name> is a simple wrapper for a C<Text> and all of its other
 details such as default and minimum and maximum values and cardinality and
 default ordering algorithm all correspond directly.  But C<Name> is
-explicitly disjoint from C<SysText> due to having a different intended
+explicitly disjoint from C<Text> due to having a different intended
 interpretation; it is specifically intended for use in naming DBMS entities
 rather than being for general-purpose user data.
 
@@ -591,8 +576,10 @@ later if we have some situation where such a restriction might be useful.>
 A C<Comment> (scalar) is the text of a
 Muldis D code comment, which programmers can populate as an attribute of
 several catalog data types, such as whole routines or statements or
-expression nodes.  Every detail of C<Comment>'s representation (its 1
-C<SysText>-based possrep and its default value) is the same as C<Name>
+expression nodes.  The C<Comment> type explicitly composes the C<Stringy>
+mixin type.  The C<Comment> type explicitly composes the
+C<Ordered> mixin type.  Every detail of C<Comment>'s representation (its 1
+possrep, default value and ordering algorithm, etc) is the same as C<Name>
 but it is explicitly disjoint due to having a different intended
 interpretation; it is intended just for commenting Muldis D code.  One main
 intended use of this type is to help preserve comments in code translated
@@ -1247,11 +1234,11 @@ There is a distributed binary primary key over the C<parent> plus C<name>
 attributes of all 8 of a C<Package>'s main C<DHRelation>-typed attributes.
 
 A C<Package> is constrained such that all of its C<Name>-typed components
-must have possrep attribute values of the same C<Text>-composing scalar
-root type (such as C<CoreText> or C<Text.Unicode>), and hence are all
-directly comparable.  Similarly, a C<Package> is constrained such that all
-of its C<Comment>-typed components must have possrep attribute values of
-the same C<Text>-composing scalar root type.
+must have possrep attribute values of the same system-defined
+possrep-adding C<Text> subtype (such as C<CoreText> or C<Text.Unicode>),
+and hence are all directly comparable.  Similarly, a C<Package> is
+constrained such that all of its C<Comment>-typed components must have
+possrep attribute values of the same possrep-adding C<Text> subtype.
 
 The default value of C<Package> defines an empty [|sub]package
 that does not have any self-local dbvar.

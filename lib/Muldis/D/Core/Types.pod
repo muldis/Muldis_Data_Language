@@ -46,8 +46,7 @@ user's point of view:
                 sys.std.Core.Type.Int
                 sys.std.Core.Type.Rat
                 sys.std.Core.Type.Blob
-                sys.std.Core.Type.CoreText
-                sys.std.Core.Type.Text.Unicode
+                sys.std.Core.Type.Text
         sys.std.Core.Type.Tuple
             sys.std.Core.Type.DHTuple
                 sys.std.Core.Type.Database
@@ -82,8 +81,7 @@ as is relevant from the implementer's point of view:
                         sys.std.Core.Type.Bool
                         sys.std.Core.Type.Rat
                         sys.std.Core.Type.Blob
-                        sys.std.Core.Type.CoreText
-                        sys.std.Core.Type.Text.Unicode
+                        sys.std.Core.Type.Text
                 sys.std.Core.Type.External
             sys.std.Core.Type.Cat.Nonstructure
 
@@ -116,10 +114,12 @@ types:
                             sys.std.Core.Type.PRat
                     sys.std.Core.Type.Blob
                         sys.std.Core.Type.OctetBlob
-                    sys.std.Core.Type.CoreText
-                    sys.std.Core.Type.Text.Unicode
-                        sys.std.Core.Type.Text.ASCII
-                        sys.std.Core.Type.Text.Latin1
+                    sys.std.Core.Type.Text
+                        sys.std.Core.Type.Text.Unicode
+                            sys.std.Core.Type.Text.Unicode.Canon
+                                sys.std.Core.Type.Text.Unicode.Compat
+                            sys.std.Core.Type.Text.ASCII
+                            sys.std.Core.Type.Text.Latin1
 
 To be clear, C<ScalarWP> is the intersection type of C<List> and C<Scalar>,
 and C<DHScalarWP> is the intersection type of C<ScalarWP> and C<DHScalar>;
@@ -209,8 +209,7 @@ compose:
 
             sys.std.Core.Type.Rat
             sys.std.Core.Type.Blob
-            sys.std.Core.Type.CoreText
-            sys.std.Core.Type.Text.Unicode
+            sys.std.Core.Type.Text
 
             sys.std.Core.Type.Ordinal
 
@@ -227,10 +226,9 @@ compose:
             sys.std.Core.Type.Blob
             sys.std.Core.Type.Array
 
-            sys.std.Core.Type.Text
+            sys.std.Core.Type.Textual
 
-                sys.std.Core.Type.CoreText
-                sys.std.Core.Type.Text.Unicode
+                sys.std.Core.Type.Text
 
         sys.std.Core.Type.Attributive
 
@@ -284,7 +282,7 @@ them on a line such that each value is definatively considered I<before>
 all of the values one one side and I<after> all of the values on the other
 side.  A typical ordered type is a scalar type, but not-scalar types can
 also be ordered.  Almost all system-defined scalar types are also ordered
-types, including: C<Bool>, C<Int>, C<Rat>, C<Blob>, C<CoreText>.  The
+types, including: C<Bool>, C<Int>, C<Rat>, C<Blob>, C<Text>.  The
 cardinality of C<Ordered> is infinity.  The default value of C<Ordered> is
 C<Bool:False>.  The minimum and maximum values of C<Ordered> are C<-Inf>
 and C<Inf>, respectively; these 2 values are special singleton scalar types
@@ -344,28 +342,20 @@ whose values it would be reasonable to apply all of the common string or
 array operators like C<~> or C<~#>.  Just a few primary system-defined
 types are stringy types, including C<Blob>, C<Text>, and C<Array>.  The
 cardinality of C<Stringy> is infinity.  The default value of C<Stringy> is
-the C<CoreText> value empty string.  The C<Stringy> type is not itself
+the C<Text> value empty string.  The C<Stringy> type is not itself
 ordered, but often a type which is stringy is also ordered.
 
-=head2 sys.std.Core.Type.Text
+=head2 sys.std.Core.Type.Textual
 
-The C<Text> type is a mixin (union) type that is intended to be explicitly
-composed by all other types that are considered character string types.  A
-C<Text> is a string of abstract characters which is formatted as a sequence
-of abstract codepoints of some character repertoire.  In the general case,
-two distinct scalar root types that compose C<Text> would have at least
-partially disjoint repertoires, where even when they represent the same
-conceptual characters, these are represented with different codepoint
-numbers.  In some cases a C<Text>-composing root type would have a proper
-superset of another's repertoire; for these, they would still be disjoint
-types, but directly mappable.  The C<Text> type explicitly composes the
-C<Stringy> mixin type, and so every type which explicitly composes C<Text>
-also implicitly composes C<Stringy>.  Most existing or likely
-system-defined stringy types are also text types, including
-C<CoreText>, C<Text.Unicode>.
-The cardinality of C<Text> is infinity.  The default value of C<Text> is
-the C<CoreText> value empty string.  The C<Text> type is not itself
-ordered, but often a type which is a text type is also ordered.
+The C<Textual> type is a mixin (union) type that is intended to be
+explicitly composed by all other types that are considered I<textual>, that
+is those types whose values are strings of characters.  The C<Textual> type
+explicitly composes the C<Stringy> mixin type, and so every type which
+explicitly composes C<Textual> also implicitly composes C<Stringy>.  Most
+existing or likely system-defined stringy types are also textual types,
+including C<Text>.  The cardinality of C<Textual> is infinity.  The default
+value of C<Textual> is the C<Text> value empty string.  The C<Textual> type
+is not itself ordered, but often a type which is textual is also ordered.
 
 =head2 sys.std.Core.Type.Attributive
 
@@ -594,88 +584,112 @@ for convenience of users since it is likely the vast majority of C<Blob>
 values consist of whole octets and users would want to work with them in
 those terms.
 
-=head2 sys.std.Core.Type.CoreText
+=head2 sys.std.Core.Type.Text
 
-A C<CoreText> is a string of abstract characters which is formatted as a
-sequence of abstract codepoints of a conceptually Muldis D proprietary
-minimal character repertoire.  The C<CoreText> type explicitly composes
-the C<Text> mixin type, and by extension also implicitly composes the
-C<Stringy> mixin type.  The purpose of C<CoreText> is to provide a
-reasonable minimum of support for character strings in the Muldis D
-language core, such that if this was the only character string support,
-users could still do the same things as are supported by least common
-denominator text data support in general purpose languages and DBMSs.
-The character repertoire of C<CoreText> is presently defined to be the
-same 128 7-bit ASCII characters, with codepoints in 0..127, which both
-ISO-8859-1/Latin1 and all versions of Unicode are proper supersets of.
-The detail of this might change in the future, but the spirit should stay.
-C<CoreText> is the only explicit composing type of C<Text> that
-is in the Muldis D language core; all others are provided by extensions.
-All system-defined entity names in the core use only this repertoire.
-A C<CoreText> has 1 system-defined possrep named C<core_codes> which
-consists of 1 C<CCPString>-typed attribute whose name is the empty string;
-each element of C<core_codes> represents a codepoint number.  The
-C<CoreText> type explicitly composes the C<Ordered> mixin type.  A
-C<CoreText> is a simple wrapper for a C<CCPString> and all of its other
-details such as default and minimum and maximum values and cardinality and
-default ordering algorithm (sorting is numeric by abstract codepoint
-number) all correspond directly.  But C<CoreText> is explicitly disjoint
-from C<CCPString> due to having a different intended interpretation.
-C<CoreText> is mainly intended for use in the system catalog and should
-only be applied to user data on less capable Muldis D implementations that
-don't support C<Text.Unicode> and the latter's proper subtype
-C<Text.ASCII>; on more capable implementations that support C<Text.ASCII>,
-you should use that by default when you would otherwise use C<CoreText>.
+A C<Text> is a string of abstract characters.  The C<Text> type explicitly
+composes the C<Textual> mixin type, and by extension also implicitly
+composes the C<Stringy> mixin type.  A C<Text> has 1 system-defined possrep
+named C<maximal_chars> which consists of 1 C<String>-typed attribute whose
+name is the empty string; each element of C<maximal_chars> is an integer
+representing an abstract character codepoint of an infinite-size
+proprietary abstract character repertoire, with each unique integer
+corresponding to a unique character.  The C<Text> type explicitly composes
+the C<Ordered> mixin type.  A C<Text> is a simple wrapper for a C<String>
+and all of its other details such as default and minimum and maximum values
+and cardinality and default ordering algorithm (matching and sorting is
+numeric by codepoint integer) all correspond directly.  But C<Text> is
+explicitly disjoint from C<String> due to having a different intended
+interpretation.  The formal definition of the C<Text> type does not define
+any abstract characters itself.  Rather, the actual abstract characters in
+C<Text>'s repertoire are all defined by the proper subtypes of C<Text> that
+each formally declare a character set, and the union of these is the
+repertoire of C<Text>; how such a said proper subtype declares a character
+set is by adding at least one possrep capable of representing strings of
+characters of that set.  The set of such subtypes of C<Text> would
+collectively define mappings between their own possreps and
+C<maximal_chars>, either directly or indirectly.  The C<Text> type is
+officially compatible with the Unicode standard version 6.0.0, and so all
+proper subtypes of C<Text> may only define character sets whose common
+characters with Unicode would cleanly map bidirectionally with the latter;
+most well known character sets do this, but for any others, they would be
+defined as some C<Textual>-composing type that is disjoint from C<Text>.
+I<TODO: Investigate on what side of the fence Unicode alternatives such as
+ISO/IEC 2022 or Mojikyo or HKSCS would fall.>
+Officially the actual integer strings used by C<maximal_chars> for abstract
+characters is both implementation-defined and unstable, so user code should
+typically never reference this possrep directly; similarly, the natural
+ordering of C<Text> is officially implementation-defined and unstable.  The
+official way to have character string types that naturally sort in a way
+that is correct for some particular nationality is by having a disjoint
+C<Textual>-composing type with a C<Text>-typed possrep attribute and the
+wrapper type would define the desired ordering algorithm itself. 
+Similarly, any concept of nationality-specific graphemes is best expressed
+in a wrapper.  C<Text> is more agnostic and generic in these matters.
+It is likely each implementation will make C<maximal_chars> resemble the
+largest well known character set that it knows about, typically Unicode.
+I<TODO: Consider making C<maximal_chars> formally identical to Unicode for
+all element integers in 0..2^21, and to ASCII for all in 0..127, and then
+the subtypes could be defined in a normal and independent/portable way.
+Maybe we need to formally define what higher ranges HKSCS/etc map to.>
 
 =head2 sys.std.Core.Type.Text.Unicode
 
-A C<Text.Unicode> is a string of Unicode abstract
-characters which is formatted as a sequence of Unicode abstract codepoints
-in canonical decomposed normal form (NFD).  The C<Text.Unicode> type
-explicitly composes the C<Text> mixin type, and by extension also
-implicitly composes the C<Stringy> mixin type.  Two C<Text.Unicode> will
-generally match at the grapheme abstraction level.  Of course, a Muldis D
-implementation doesn't actually have to store character data in NFD; but
-default matching semantics need to be as if it did.  A C<Text.Unicode> has
-1 system-defined possrep named C<nfd_codes> which consists of 1
-C<UCPString>-typed attribute whose name is the empty string; each element
-of C<nfd_codes> represents a Unicode standard version 5.2.0 character
-abstract codepoint number.  The C<Text.Unicode> type explicitly composes
-the C<Ordered> mixin type.  A C<Text.Unicode> is a simple wrapper for a
-C<UCPString> and all of its other details such as default and minimum and
-maximum values and cardinality and default ordering algorithm (sorting is
-numeric by abstract codepoint number) all correspond directly.  But
-C<Text.Unicode>
-is explicitly disjoint from C<UCPString> due to having a different intended
-interpretation.  In regards to ordering, possibly the standard Unicode
-Collation Algorithm (UCA) also works this way, assuming it is totally
-ordered, but that's unsure.  I<TODO: Support customization parameters for
-default text sorting, or make C<Text.Unicode> into a mixin type composing
-a multiplicity of other nationality-specific types perhaps.>
+C<Text.Unicode> is a proper subtype of C<Text> where all member values have
+just the abstract characters in the character repertoire of the Unicode
+standard version 6.0.0; the integer codepoint space that Unicode reserves
+for itself is 0..x;10FFFF, of which it currently has about 10% allocated.
+C<Text.Unicode> adds the 1 system-defined possrep named C<unicode_codes>
+which consists of 1 C<String>-typed attribute whose name is the empty
+string; each element of C<unicode_codes> represents a Unicode standard
+version 6.0.0 character abstract codepoint number.  C<Text.Unicode> values
+in general do not conform to any Unicode normal form, so the same string
+can contain graphemes in both composed and decomposed formats, and two
+strings with the same graphemes in different such formats will compare as
+unequal.  C<Text.Unicode> also adds the 1 system-defined possrep named
+C<unicode_utf8_octets> which consists of 1 C<OString>-typed attribute whose
+name is the empty string; C<unicode_utf8_octets> represents each codepoint
+as a sequence of 1..3 octets in the UTF-8 encoding.
+
+=head2 sys.std.Core.Type.Text.Unicode.Canon
+
+C<Text.Unicode.Canon> is a proper subtype of C<Text.Unicode> where all
+member values are semantically in canonical decomposed normal form (NFD)
+and whose C<Text.Unicode>-defined possreps are properly formatted NFD.
+Two C<Text.Unicode.Canon> will generally match at the grapheme abstraction
+level.  Of course, a Muldis D implementation doesn't actually have to store
+character data in NFD; but default matching semantics need to be as if it
+did, and NFD is what the aforementioned possreps would format it in.
+
+=head2 sys.std.Core.Type.Text.Unicode.Compat
+
+C<Text.Unicode.Compat> is a proper subtype of C<Text.Unicode.Canon> where
+all member values are semantically in compatibility decomposed normal form
+(NFKD) and whose C<Text.Unicode>-defined possreps are properly formatted
+NFKD.  While typical applications would likely prefer C<Canon>, more
+security-conscious applications may likely prefer C<Compat>.
 
 =head2 sys.std.Core.Type.Text.ASCII
 
-C<Text.ASCII> is a proper subtype of C<Text.Unicode> where all member
-values have just the abstract characters in the 128-character repertoire of
-7-bit ASCII.  C<Text.ASCII> adds 1 system-defined
-possrep named C<ascii_codes> which consists of 1 C<String>-typed attribute
-whose name is the empty string and each of whose elements is a codepoint in
-the range 0..127 inclusive.  The C<ascii_codes> and C<nfd_codes> possreps
-correspond as you might expect, such that both represent the same abstract
-characters using the appropriate codepoints of their repertoires.
-C<Text.ASCII> has the same character repertoire as C<CoreText> but the
-former is comparable with C<Text.Unicode> while the latter isn't.
-C<Text.ASCII> is what you should be using by default on all Muldis D
-implementations that support it, when you would otherwise use C<CoreText>.
+C<Text.ASCII> is a proper subtype of C<Text.Unicode> (and of
+C<Text.Unicode.Compat>) where all member values have just the abstract
+characters in the 128-character repertoire of 7-bit ASCII.  For these
+values, the C<unicode_codes> and C<unicode_utf8_octets> possreps have
+identical (C<OString>) attribute values, each element in which is in the
+range 0..127 inclusive.  C<Text.ASCII> adds 1 system-defined possrep named
+C<ascii_chars> which consists of 1 C<OString>-typed attribute whose name is
+the empty string and whose value is identical to said other two possrep
+attribute values.
 
 =head2 sys.std.Core.Type.Text.Latin1
 
-C<Text.Latin1> is a proper subtype of C<Text.Unicode> where all member
-values have just the abstract characters in the 256-character repertoire of
-8-bit ISO Latin 1 / ISO-8859-1.  C<Text.Latin1> adds 1 system-defined
-possrep named C<latin1_codes> which consists of 1 C<String>-typed attribute
-whose name is the empty string and each of whose elements is a codepoint in
-the range 0..255 inclusive.  The C<latin1_codes> and C<nfd_codes> possreps
+C<Text.Latin1> is a proper subtype of C<Text.Unicode> (and a proper
+supertype of C<Text.ASCII>) where all member values have just the abstract
+characters in the 256-character repertoire of 8-bit ISO Latin 1 /
+ISO-8859-1.  C<Text.Latin1> adds 1 system-defined possrep named
+C<latin1_chars> which consists of 1 C<OString>-typed attribute whose name
+is the empty string and each of whose elements is a codepoint in the range
+0..255 inclusive, and also doubles as the octet format of said codepoint in
+the Latin 1 encoding.  The C<latin1_chars> and C<unicode_codes> possreps
 correspond as you might expect, such that both represent the same abstract
 characters using the appropriate codepoints of their repertoires.
 
@@ -793,7 +807,7 @@ An C<SPInterval> has these 4 attributes:
 These are the interval endpoint values; C<min> defines the
 I<left|start|from> endpoint and C<max> defines the I<right|end|to>
 endpoint.  The endpoint values conceptually must be of the same,
-totally-ordered type (typically one of C<Int>, C<Rat>, C<Text.Unicode>,
+totally-ordered type (typically one of C<Int>, C<Rat>, C<Text>,
 C<TAIInstant>, etc), although strictly speaking they may be of any types at
 all; in the latter case, to actually make practical use of such intervals,
 an C<order-determination> function must explicitly be employed.
