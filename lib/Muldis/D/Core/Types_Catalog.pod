@@ -1193,17 +1193,9 @@ functions, updaters, recipes, procedures.
 These are the few central system-defined data types that have special
 hard-coded meanings and are not defined like any other types; these are
 declarations of all of the native Muldis D types that can't be defined like
-user-defined types.  Specifically, it declares these 4 standard types in
-the C<Core> module: in the C<Type> namespace: C<Universal>, C<Empty>,
-C<Int>; in the C<Type.Cat> namespace: C<List>.  These constitute all 2
-Muldis D declaration types, all 2 Muldis D type system maximal and minimal
-(enumeration) types.  Note that, while conceptually both C<Universal> and
-C<Empty> I<can> be defined like user-defined types, as the union or
-intersection of C<Int> and C<List>, respectively, in practice that wouldn't
-work for C<Empty> at least because all user-defined types are required to
-have a default value and it can't, and C<Universal> is also kept here at
-least to balance C<Empty>; actually, the maximal and minimal types are used
-in many places as default semantics in non-special type definitions.
+user-defined types.  Specifically, it declares all 2 Muldis D declaration
+types in the C<Core> module, and only declaration types: in the C<Type>
+namespace: C<Int>; in the C<Type.Cat> namespace: C<List>.
 B<Only the C<Core> module has a nonempty C<special_types>; all other
 packages must have an empty one.>
 
@@ -1212,7 +1204,9 @@ C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>
 
 These are all the definitions that this [|sub]package contains of scalar
 types with possreps, complete tuple and relation types, domain types, and
-subset types, and mixin types.
+subset types, and mixin types.  This includes the 2 Muldis D type system
+maximal and minimal (enumeration) types, C<Universal> and C<Empty>, which
+are declared as domain types.  This includes all enumeration types, period.
 
 =item C<[|distrib_][key|subset]_constrs> -
 C<[|Distrib][Key|Subset]ConstrSet>
@@ -3499,6 +3493,8 @@ C<Just>.  Iff C<default> is C<Nothing> and C<base_type> is a C<Just>,
 then the subtype will use the same default value as its base type; but if
 the subtype's value set excludes said value, then a C<default> of
 C<Nothing> is invalid and C<default> must be a C<Just>.
+Overriding the above, C<default> must be C<Nothing> if the type being
+defined is an alias for C<Empty>.
 
 =back
 
@@ -3548,6 +3544,11 @@ therefore, mainly any given possrep's constraints need to be just
 restricting enough so that the inter-possrep mapping functions can handle
 the arguments that it accepts, so it is possible to apply the other
 possreps' constraints.
+If this tuple type declares an alias for C<Empty> (because it has an
+attribute whose declared type is C<Empty> or an alias, or because it has a
+type constraint that unconditionally results in C<Bool:False>), then the
+scalar type being defined over it can have no member values, so is an alias
+of C<Empty>, since this scalar possrep of it can't represent any values.
 
 =item C<is_base> - C<Bool>
 
@@ -3666,7 +3667,9 @@ done using matching C<name> attribute values of C<attrs>.  It is indeed
 valid for a tuple type to have zero attributes (which is then just a
 dh-tuple type by definition); in this case, a tuple type consists of
 exactly one value, and any relation type defined over it consists of
-exactly two values.
+exactly two values.  The declared type of an attribute may be any type at
+all; if that declared type is C<Empty> or an alias thereof, then the tuple
+type being defined can have no member values, so is an alias of C<Empty>.
 
 =item C<virtual_attr_maps> - C<VirtualAttrMapSet>
 
@@ -3755,6 +3758,8 @@ C<default> is C<Nothing> and C<base_type> is a C<Just>, then the
 subtype will use the same default tuple value as its base type; but if the
 subtype's value set excludes said value, then a C<default> of
 C<Nothing> is invalid and C<default> must be a C<Just>.
+Overriding the above, C<default> must be C<Nothing> if the type being
+defined is an alias for C<Empty>.
 
 =back
 
@@ -3799,6 +3804,12 @@ whose sole element is the name of that other type.
 
 This is the name of the tuple type from which the relation type being
 defined composes its list of attributes and most of its other details.
+If this tuple type declares an alias for C<Empty> (because it has an
+attribute whose declared type is C<Empty> or an alias, or because it has a
+type constraint that unconditionally results in C<Bool:False>), then the
+relation type being defined over it has exactly 1 member value, which is
+the only relation value having the same heading plus an empty body, unless
+C<base_type> defines a type that is C<Empty> or an alias.
 Note that any other relation type referenced by C<base_type> must compose a
 C<tuple_type> that has a common tuple supertype with the tuple type
 referenced by the C<tuple_type> of the type being defined; that is, there
@@ -3857,6 +3868,8 @@ C<Nothing> and C<base_type> is a C<Just>, then the subtype will use the
 same default relation value as its base type; but if the subtype's value
 set excludes said value, then a C<default> of C<Nothing> is
 invalid and C<default> must be a C<Just>.
+Overriding the above, C<default> must be C<Nothing> if the type being
+defined is an alias for C<Empty>.
 
 =back
 
@@ -4012,8 +4025,8 @@ empty.
 =head2 sys.std.Core.Type.Cat.DomainType
 
 A C<DomainType> is a C<DHTuple>.  It defines a new data type whose
-values are all drawn from one or more specified other types (which can be
-any not-C<Empty> types at all), and that generally speaking it is an
+values are all drawn from a list of specified other types (which can be
+any types at all), and that generally speaking it is an
 arbitrary subset of C<Universal> (and it has its own default value).  The
 value set of the new data type is determined by taking a set of source
 types' values and subtracting from it a set of filter types' values (and
@@ -4046,7 +4059,7 @@ type composes, and therefore the new type is a subtype of all of them.
 
 =item C<sources> - C<set_of.RPTypeNC>
 
-These are the names of the 1..N other not-C<Empty> types that all the
+These are the names of the 0..N other types that all the
 values of the new data type are drawn from; the complete set of source
 values is determined by either unioning (the default) or intersecting the
 values of these types.
@@ -4054,9 +4067,11 @@ values of these types.
 =item C<is_source_intersection> - C<Bool>
 
 Iff this is C<Bool:True> then the set of source data types will be
-intersected to determine the complete set of source values; iff this is
-C<Bool:False> then the set of source data types will be unioned to
-determine the complete set of source values.
+intersected to determine the complete set of source values, and if
+C<sources> has no elements then the source set is just C<Universal>; iff
+this is C<Bool:False> then the set of source data types will be unioned to
+determine the complete set of source values, and if C<sources> has no
+elements then the source set is just C<Empty>.
 
 =item C<filters> - C<set_of.RPTypeNC>
 
@@ -4086,29 +4101,29 @@ argument is the value to test; the function's result type must be
 C<Bool>.  If the functions unconditionally result in C<Bool:True>, then all
 filter-type-passing values are allowed.
 
-=item C<default> - C<RPFunctionNC>
+=item C<default> - C<maybe_of.RPFunctionNC>
 
-This matches the invocation name of a C<named-value> function that results
+Iff it is a C<Just>, then C<default>
+matches the invocation name of a C<named-value> function that results
 in the default value of the domain type; it has zero parameters and its
 result type is the same as the domain type being defined.
+In contrast, C<default> must be C<Nothing> if the type being
+defined is C<Empty> or an alias of that.
 
 =back
 
-The default value of C<DomainType> defines an alias for C<Universal>,
-with the same default value; it has just the source type C<Universal> and
-zero filter types, both type lists are unioned, and C<constraints> is empty
-(unconditionally C<Bool:True>).  Note that there is no valid combination of
-C<DomainType> attribute values that would result in an alias for the
-C<Empty> type, due to a default value for the type being mandatory.
+The default value of C<DomainType> defines the C<Empty> type; it has
+zero source and filter types, both type lists are unioned, C<constraints>
+is empty (unconditionally C<Bool:True>), and there is no default value.
 
 =head2 sys.std.Core.Type.Cat.SubsetType
 
 A C<SubsetType> is a C<DHTuple>.  It provides a relatively terse
 method to define a simple subset-defined subtype of a single other
-type (which can be any not-C<Empty> type at all), which is a common kind of
+type (which can be any type at all), which is a common kind of
 type to have.  The new type is either a proper or non-proper subset of the
 other type, whose values are determined from applying 0..N type constraint
-functions to the parent type; either way, the new type does declare its own
+functions to the parent type; either way, the new type may declare its own
 default value.  An alternate common scenario is to define a non-proper
 subtype of its parent type that serves just to supply a different default
 value for the context in which the new type is used.  A subset type
@@ -4134,7 +4149,7 @@ type composes, and therefore the new type is a subtype of all of them.
 
 =item C<base_type> - C<RPTypeNC>
 
-This is the name of the not-C<Empty> other type that all the values of the
+This is the name of the other type that all the values of the
 new data type are drawn from; the new type is being declared as a subtype
 of that named by C<base_type>.
 
@@ -4158,20 +4173,19 @@ being defined.  Iff C<default> is C<Nothing>, then the
 subset type will use the same default value as its base type; but if
 the subset type's value set excludes said value, then a C<default> of
 C<Nothing> is invalid and C<default> must be a C<Just>.
+Overriding the above, C<default> must be C<Nothing> if the type being
+defined is an alias for C<Empty>.
 
 =back
 
 The default value of C<SubsetType> defines an alias for C<Universal>,
 with the same default value; it has the base type C<Universal> and
-C<constraints> is empty (unconditionally C<Bool:True>).  Note that there is
-no valid combination of C<SubsetType> attribute values that would
-result in an alias for the C<Empty> type, due to a default value for the
-type being mandatory.
+C<constraints> is empty (unconditionally C<Bool:True>).
 
 =head2 sys.std.Core.Type.Cat.MixinType
 
 A C<MixinType> is a C<DHTuple>.  It defines a new data type whose values
-are a union of those from the zero or more other not-C<Empty> types that
+are a union of those from the zero or more other types that
 specify themselves to be part of that union.  For all practical purposes, a
 C<MixinType> declares a I<mixin> or I<interface> or I<role> (the last as
 Perl 6 uses the term) which is meant to be composed into other types, such
