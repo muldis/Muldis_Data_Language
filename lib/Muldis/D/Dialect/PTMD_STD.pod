@@ -1174,10 +1174,14 @@ Grammar:
 
     <Int_payload> ::=
           <num_max_col_val> ';' <unspace> <int_body>
+        | <num_radix_mark> <unspace> <int_body>
         | <d_int_body>
 
     <num_max_col_val> ::=
-        <pint_head> | <[bodx]>
+        <pint_head>
+
+    <num_radix_mark> ::=
+        0<[bodx]>
 
     <int_body> ::=
         0 | '-'?<pint_body>
@@ -1218,7 +1222,11 @@ be between 2 and 36, and the C<num_max_col_val> says which possible value
 of I<N> to use.  Assuming all C<int_body> column values are between zero
 and I<N>-minus-one, the C<num_max_col_val> contains that I<N>-minus-one.
 So to specify, eg, bases [2,8,10,16], use C<num_max_col_val> of [1,7,9,F].
-Alternately (recommended), use [b,o,d,x] for the common bases [2,8,10,16].
+
+Using a C<num_radix_mark> is a recommended alternative for using a
+C<num_max_col_val> when the former can be used, which is when the
+C<num_max_col_val> would be one of [1,7,9,F]; in those cases, [0b,0o,0d,0x]
+correspond respectively, and the rules for the C<int_body> are the same.
 
 If the C<Int_payload> is a C<d_int_body>, then it is interpreted as a base
 10 integer.
@@ -1245,17 +1253,17 @@ appropriately further restricted.
 
 Examples:
 
-    Int:b;11001001 #`binary`#
+    Int:0b11001001 #`binary`#
 
-    o;0 #`octal`#
+    0o0 #`octal`#
 
-    o;644 #`octal`#
+    0o644 #`octal`#
 
     -34 #`decimal`#
 
     42 #`decimal`#
 
-    x;DEADBEEF #`hexadecimal`#
+    0xDEADBEEF #`hexadecimal`#
 
     Z;-HELLOWORLD #`base-36`#
 
@@ -1276,6 +1284,7 @@ Grammar:
 
     <Rat_payload> ::=
           <num_max_col_val> ';' <unspace> <rat_body>
+        | <num_radix_mark> <unspace> <rat_body>
         | <d_rat_body>
 
     <rat_body> ::=
@@ -1294,7 +1303,8 @@ Muldis D C<sys.std.Core.Type.Rat> value as follows:
 
 Fundamentally a C<Rat> node is formatted and interpreted like an C<Int>
 node, and any similarities won't be repeated here.  The differences of
-interpreting a C<Rat_payload> being composed of a C<num_max_col_val> plus
+interpreting a C<Rat_payload> being composed of a C<num_max_col_val>
+or C<num_radix_mark> plus
 C<rat_body> versus the C<Rat_payload> being a C<d_rat_body> are as per the
 corresponding differences of interpreting an C<Int_payload>.  Also
 interpreting a C<NNRat> or C<PRat> is as per a C<NNInt> or C<PInt>.
@@ -1316,7 +1326,7 @@ possrep of the C<Rat> type.
 
 Examples:
 
-    Rat:b;-1.1
+    Rat:0b-1.1
 
     -1.5 #`same val as prev`#
 
@@ -1324,7 +1334,7 @@ Examples:
 
     A;0.0
 
-    x;DEADBEEF.FACE
+    0xDEADBEEF.FACE
 
     Z;0.000AZE
 
@@ -1332,7 +1342,7 @@ Examples:
 
     B;A09B/A
 
-    Rat:b;1011101101*10^-11011
+    Rat:0b1011101101*10^-11011
 
     45207196*10^37
 
@@ -1352,10 +1362,14 @@ Grammar:
         <Blob_payload>
 
     <Blob_payload> ::=
-        <blob_max_col_val> ';' <unspace> <blob_body>
+          <blob_max_col_val> ';' <unspace> <blob_body>
+        | <blob_radix_mark> <unspace> <blob_body>
 
     <blob_max_col_val> ::=
-        <[137Fbox]>
+        <[137F]>
+
+    <blob_radix_mark> ::=
+        0<[box]>
 
     <blob_body> ::=
         '\''
@@ -1368,11 +1382,12 @@ the I<body> part of a C<Blob> node consists of a delimited string of digits
 and uppercased (but not lowercased) letters, where each digit (C<0..9>)
 represents its own number and each letter (C<A..F>) represents a number in
 [10..15]; this string is qualified with a C<blob_max_col_val> character
-(C<[137Fbox]>), similarly to how an C<int_body> is qualified by a
-C<num_max_col_val>.  Each character of the delimited string specifies a
+(C<[137F]>) or a C<blob_radix_mark> (C<[0b,0o,0x]>),
+similarly to how an C<int_body> is qualified by a C<num_max_col_val>
+or C<num_radix_mark>.  Each character of the delimited string specifies a
 sequence of one of [1,2,3,4] bits, depending on whether C<blob_max_col_val>
-is [1|b,3,7|o,F|x].  The I<body> may also contain underscore or whitespace
-characters between the delimiters, to aid formatting; these are
+is [1|0b,3,7|0o,F|0x].  The I<body> may also contain underscore or
+whitespace characters between the delimiters, to aid formatting; these are
 ignored/stripped by the parser, and the I<body> is interpreted as if it
 just consisted of the rest of the delimited string contiguously.  If the
 C<value_kind> of a C<value> node is C<OctetBlob>
@@ -1382,13 +1397,13 @@ is appropriately further restricted.
 
 Examples:
 
-    Blob:b;'00101110100010' #`binary`#
+    Blob:0b'00101110100010' #`binary`#
 
     3;''
 
-    x;'A705E' #`hexadecimal`#
+    0x'A705E' #`hexadecimal`#
 
-    o;'523504376'
+    0o'523504376'
 
 =head2 General Purpose Character String Literals
 
@@ -1412,8 +1427,8 @@ Grammar:
         | '\\c<' [
               [<[ A..Z ]>+] ** ' '
             | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
-            | <[ 1..9 A..Z bodx ]> ';'
-                [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
+            | <[ 1..9 A..Z ]> ';' [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
+            | 0<[ bodx ]> [0 | <[ 1..9 A..F ]> <[ 0..9 A..F ]>*]
           ] '>'
 
     <unspace> ::=
@@ -1444,7 +1459,7 @@ language with such a delimited character string literal.
 A C<Text_payload> may contain any literal characters at all, except that
 any literal occurrences of a backslash (C<\>) or single-quote (C<'>) must
 have a leading backslash.  Every run of 1+ literal whitespace or control
-characters, that is not composed just of the C<SPACE> char (C<x;20>), is
+characters, that is not composed just of the C<SPACE> char (C<0x20>), is
 substituted for a single C<SPACE> character by the parser, and the
 C<Text_payload> is interpreted as if the post-substitution string had been
 the original string.  However, if said run of whitespace is immediately
@@ -1475,14 +1490,14 @@ The meanings of the simple escape sequences are:
     Esc | Unicode   | Unicode         | Chr | Literal character used
     Seq | Codepoint | Character Name  | Lit | for when not escaped
     ----+-----------+-----------------+-----+------------------------------
-    \\  | x;5C      | REVERSE SOLIDUS | \   | esc seq lead (aka backslash)
-    \'  | x;27      | APOSTROPHE      | '   | delim Text literals
-    \"  | x;22      | QUOTATION MARK  | "   | delim quoted Name literals
-    \`  | x;60      | GRAVE ACCENT    | `   | delim for code comments
-    \t  | x;9       | CHAR... TAB...  |     | control char horizontal tab
-    \n  | x;A       | LINE FEED (LF)  |     | ctrl char line feed / newline
-    \f  | x;C       | FORM FEED (FF)  |     | control char form feed
-    \r  | x;D       | CARR. RET. (CR) |     | control char carriage return
+    \\  | 0x5C      | REVERSE SOLIDUS | \   | esc seq lead (aka backslash)
+    \'  | 0x27      | APOSTROPHE      | '   | delim Text literals
+    \"  | 0x22      | QUOTATION MARK  | "   | delim quoted Name literals
+    \`  | 0x60      | GRAVE ACCENT    | `   | delim for code comments
+    \t  | 0x9       | CHAR... TAB...  |     | control char horizontal tab
+    \n  | 0xA       | LINE FEED (LF)  |     | ctrl char line feed / newline
+    \f  | 0xC       | FORM FEED (FF)  |     | control char form feed
+    \r  | 0xD       | CARR. RET. (CR) |     | control char carriage return
 
 There is currently just one complex escape sequence, of the format C<<
 \c<...> >>, that supports specifying characters in terms of their Unicode
@@ -1505,7 +1520,7 @@ Examples:
 
     'Perl'
 
-    '\c<LATIN SMALL LETTER OU>\c<x;263A>\c<65>'
+    '\c<LATIN SMALL LETTER OU>\c<0x263A>\c<65>'
 
 A C<non_value_comment> node is strictly not part of the code
 proper; Muldis D code can contain these almost anywhere as metadata for
@@ -2218,6 +2233,7 @@ Grammar:
 
     <count> ::=
           <num_max_col_val> ';' <unspace> <pint_body>
+        | <num_radix_mark> <unspace> <pint_body>
         | <d_pint_body>
 
     <bag_payload_repeated_values> ::=
@@ -4960,7 +4976,7 @@ Examples:
 
     Same [<=>] Increase [<=>] Decrease
 
-    x;'DEAD' ~ b;'10001101' ~ x;'BEEF'
+    0x'DEAD' ~ 0b'10001101' ~ 0x'BEEF'
 
     'hello' ~ ' ' ~ 'world'
 
@@ -5218,7 +5234,7 @@ Examples:
 
     9.2 - 0.1
 
-    b;101.01 / b;11.0
+    0b101.01 / 0b11.0
 
     '-' ~# 80
 
@@ -5432,6 +5448,7 @@ Grammar:
 
     <index> ::=
           <num_max_col_val> ';' <unspace> <nnint_body>
+        | <num_radix_mark> <unspace> <nnint_body>
         | <d_nnint_body>
 
     <pcf_ary_slice_op_invo> ::=

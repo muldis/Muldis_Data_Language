@@ -624,8 +624,11 @@ the closest thing Perl 5 has in core to a "big integer".
 =item *
 
 If the payload is a Perl hash ref, then it must have 1 element, whose key
-and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string composed of a single C<[1..9 A..Z bodx]>
+and value are designated, in order, I<max-col-val>|I<radix-mark> and I<main
+payload>; a key of a single character is a I<max-col-val> and a
+2-character-string is a I<radix-mark>.
+
+The max-col-val must be a Perl string composed of a single C<[1..9 A..Z]>
 character, and the main payload must be a Perl character string of the
 format C<0> or C<< '-'?<[ 1..9 A..Z ]>['_'?<[ 0..9 A..Z ]>+]* >>.  The
 main payload is interpreted as a base-I<N> integer where I<N> might be
@@ -633,7 +636,11 @@ between 2 and 36, and the given max-col-val says which possible value of
 I<N> to use.  Assuming all column values are between zero and
 I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
 specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].
-Alternately (recommended), use [b,o,d,x] for the common bases [2,8,10,16].
+
+Using a I<radix-mark> is a recommended alternative for using a
+I<max-col-val> when the former can be used, which is when the
+I<max-col-val> would be one of [1,7,9,F]; in those cases, [0b,0o,0d,0x]
+correspond respectively, and the rules for the main payload are the same.
 
 =back
 
@@ -641,7 +648,7 @@ Examples:
 
     [ 'Int', 0b11001001 ] # binary #
 
-    [ 'Int', { o => '0' } ] # octal #
+    [ 'Int', { 0o => '0' } ] # octal #
 
     0644 # octal #
 
@@ -693,8 +700,11 @@ the second element (a radix) taken to the power of the third (an exponent).
 =item *
 
 If the payload is a Perl hash ref, then it must have 1 element, whose key
-and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string composed of a single C<[1..9 A..Z bodx]>
+and value are designated, in order, I<max-col-val>|I<radix-mark> and I<main
+payload>; a key of a single character is a I<max-col-val> and a
+2-character-string is a I<radix-mark>.
+
+The max-col-val must be a Perl string composed of a single C<[1..9 A..Z]>
 character.  If the main payload is a Perl scalar, then the main payload
 must be a Perl character string of the format C<< 0'.'['_'?<[ 0..9 A..Z
 ]>+]+ >> or C<< '-'?<[ 1..9 A..Z ]>['_'?<[ 0..9 A..Z ]>+]*'.'['_'?<[ 0..9
@@ -702,12 +712,18 @@ A..Z ]>+]+ >>.  The main payload is interpreted as a base-I<N> rational
 where I<N> might be between 2 and 36, and the given max-col-val says which
 possible value of I<N> to use.  Assuming all column values are between zero
 and I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
-specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].  Alternately
-(recommended), use [b,o,d,x] for the common bases [2,8,10,16].  If the main
+specify, eg, bases [2,8,10,16], use max-col-val of [1,7,9,F].
+
+Using a I<radix-mark> is a recommended alternative for using a
+I<max-col-val> when the former can be used, which is when the
+I<max-col-val> would be one of [1,7,9,F]; in those cases, [0b,0o,0d,0x]
+correspond respectively, and the rules for the main payload are the same.
+
+If the main
 payload is a Perl array ref, then the main payload must have exactly 2 or 3
 elements, and every pairwise combination of the max-col-val with the
 elements of the main payload must, when appropriately wrapped in a Perl
-hash ref, must constitute a valid hash ref payload for an C<Int>  node;
+hash ref, must constitute a valid hash ref payload for an C<Int> node;
 the meaning of the 2 or 3 main payload elements is the same as the 2 or 3
 payload elements mentioned in the previous bullet point.
 
@@ -715,7 +731,7 @@ payload elements mentioned in the previous bullet point.
 
 Examples:
 
-    [ 'Rat', { b => '-1.1' } ]
+    [ 'Rat', { 0b => '-1.1' } ]
 
     -1.5 # same val as prev #
 
@@ -723,7 +739,7 @@ Examples:
 
     [ 'Rat', { A => '0.0' } ]
 
-    [ 'Rat', { 'x' => 'DEADBEEF.FACE' } ]
+    [ 'Rat', { 0x => 'DEADBEEF.FACE' } ]
 
     [ 'Rat', { Z => '0.000AZE' } ]
 
@@ -731,7 +747,7 @@ Examples:
 
     [ 'Rat', { B => ['A09B','A'] } ]
 
-    [ 'Rat', { b => ['1011101101','10','-11011'] } ]
+    [ 'Rat', { 0b => ['1011101101','10','-11011'] } ]
 
     [ 'Rat', [45207196,10,37] ]
 
@@ -755,24 +771,25 @@ directly.
 =item *
 
 If the payload is a Perl hash ref, then it must have 1 element, whose key
-and value are designated, in order, I<max-col-val> and I<main payload>; the
-max-col-val must be a Perl string composed of a single C<[137Fbox]>
-character,
-and the main payload must be a Perl character string of the format C<< <[
-0..9 A..F ]>* >>.  Each column of the main payload specifies a sequence of
-one of [1,2,3,4] bits, depending on whether max-col-val is [1|b,3,7|o,F|x].
+and value are designated, in order, I<max-col-val>|I<radix-mark> and I<main
+payload>; the max-col-val must be a Perl string composed of a single
+C<[137F]> character, the radix-mark must be one of the 3 strings
+['0b','0o','0x'], and the main payload must be a Perl character string of
+the format C<< <[ 0..9 A..F ]>* >>.  Each column of the main payload
+specifies a sequence of one of [1,2,3,4] bits, depending on whether
+max-col-val|radix-mark is [1|0b,3,7|0o,F|0x].
 
 =back
 
 Examples:
 
-    [ 'Blob', { b => '00101110100010' } ] # binary #
+    [ 'Blob', { 0b => '00101110100010' } ] # binary #
 
     [ 'Blob', { 3 => '' } ]
 
-    [ 'Blob', { 'x' => 'A705E' } ] # hexadecimal #
+    [ 'Blob', { 0x => 'A705E' } ] # hexadecimal #
 
-    [ 'Blob', { o => '523504376' } ]
+    [ 'Blob', { 0o => '523504376' } ]
 
     [ 'Blob', (pack 'H2', 'P') ]
 
@@ -2256,8 +2273,8 @@ Examples:
     [ 'i-op', '[<=>]', [ ['Order','Same'],
         ['Order','Increase'], ['Order','Decrease'] ] ]
 
-    [ 'i-op', '~', [ [ 'Blob', { 'x' => 'DEAD' } ],
-        [ 'Blob', { b => '10001101' } ], [ 'Blob', { 'x' => 'BEEF' } ] ] ]
+    [ 'i-op', '~', [ [ 'Blob', { 0x => 'DEAD' } ],
+        [ 'Blob', { 0b => '10001101' } ], [ 'Blob', { 0x => 'BEEF' } ] ] ]
 
     [ 'i-op', '~', [ 'hello', ' ', 'world' ] ]
 
