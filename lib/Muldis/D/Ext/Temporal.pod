@@ -175,18 +175,23 @@ its 2 arguments.
 
 =head1 VIRTUAL SYSTEM-SERVICES FOR CURRENT DATES AND TIMES
 
-=head2 sys.std.Temporal.Instant.fetch_curr_instant
+=head2 sys.std.Temporal.Instant.fetch_trans_instant
 
-C<system-service fetch_curr_instant
-(&target@ : Instant) [...]>
+C<system-service fetch_trans_instant (&target@ : Instant) [...]>
 
 This virtual system-service routine will update the variable supplied as
 its C<target> argument so that it holds the value of the current instant as
 taken from the implementation's system clock or the time server it uses.
+Or to be more accurate, the fetched instant is the one that was current
+when the parent-most transaction was started within which this routine was
+invoked; this means that multiple invocations of C<fetch_trans_instant>
+within the same transaction are guaranteed to fetch the same value; if
+this routine is not invoked within the context of an explicit transaction,
+then then routine call by itself is its own transaction for that purpose.
 The implementing system-service which this dispatches to is determined by
-the the type of the value that C<target> has at the moment that
-C<fetch_curr_instant> is invoked; typically that value is the default value
-of the declared type of the invoker variable that C<target>'s argument;
+the type of the value that C<target> has at the moment when
+C<fetch_trans_instant> is invoked; typically that value is the default
+of the declared type of the invoker variable which is C<target>'s argument;
 this routine might fail if said declared type isn't a subset of C<Instant>.
 
 =head1 SEE ALSO
