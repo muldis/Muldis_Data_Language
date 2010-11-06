@@ -2779,8 +2779,11 @@ Grammar:
     <nonempty_function_body> ::=
         '{' <ws>?
             [[<with_clause> | <named_expr>] <ws>]*
-            <expr>
+            <result_expr>
         <ws>? '}'
+
+    <result_expr> ::=
+        <expr>
 
 A C<function> node specifies a new function that lives in a depot or
 subdepot.  A C<function> node in the PTMD_STD grammar corresponds directly
@@ -2903,7 +2906,7 @@ Examples:
         with function gcd (NNInt <-- a : NNInt, b : NNInt) {
             b = 0 ?? a !! rtn( a => b, b => a mod b round Down )
         }
-        gcd ::= nlx.lib.gcd( =>a, =>b )
+        let gcd ::= nlx.lib.gcd( =>a, =>b )
         a := a div gcd round Down
         b := b div gcd round Down
     }
@@ -3783,7 +3786,7 @@ Examples:
 
     stimulus-response-rule bootstrap {
         when after-mount
-        invoke main
+        invoke nlx.lib.main
     }
 
 =head1 GENERIC VALUE EXPRESSIONS
@@ -3812,7 +3815,7 @@ Grammar:
         <lex_entity_name>
 
     <named_expr> ::=
-        <expr_name> <ws> <infix_bind_op> <ws> <expr>
+        [let <ws>]? <expr_name> <ws> <infix_bind_op> <ws> <expr>
 
 An C<expr> node is the general case of a Muldis D value expression tree
 (which normally denotes a Muldis D value selector), which must be composed
@@ -3873,7 +3876,7 @@ Examples:
     foo_expr
 
     #`a named_expr node`#
-    bar_expr ::= factorial( foo_expr )
+    let bar_expr ::= factorial( foo_expr )
 
 =head2 Generic Expression Attribute Accessors
 
@@ -4308,7 +4311,7 @@ Grammar:
         <Name_payload>
 
     <named_stmt> ::=
-        <stmt_name> <ws> <infix_bind_op> <ws> <proc_stmt>
+        [let <ws>]? <stmt_name> <ws> <infix_bind_op> <ws> <proc_stmt>
 
 A C<proc_stmt> node is the general case of a Muldis D statement tree, which
 must be composed beneath a C<depot>, or specifically into a procedure
@@ -4348,7 +4351,7 @@ Examples:
     foo_stmt
 
     #`a named_stmt node`#
-    bar_stmt ::= nlx.lib.swap( &=>first, &=>second )
+    let bar_stmt ::= nlx.lib.swap( &=>first, &=>second )
 
 =head2 Generic Compound Statements
 
@@ -4768,7 +4771,7 @@ for nonatomic "foreach" then Muldis D may gain this feature in the future.
 
 Examples:
 
-    lookup_person ::= loop [
+    let lookup_person ::= loop [
         prompt_Text_line( &name, 'Enter a name to search for: ' )
         given name when '' leave lookup_person
         nlx.lib.do_search( =>name, &=>not_found, &=>report_text )
