@@ -1193,10 +1193,10 @@ Grammar:
         <pint_head> <pint_tail>?
 
     <pint_head> ::=
-        <[ 1..9 A..Z ]>
+        <[ 1..9 A..Z a..z ]>
 
     <pint_tail> ::=
-        [[_?<[ 0..9 A..Z ]>+]+] ** <splitter>
+        [[_?<[ 0..9 A..Z a..z ]>+]+] ** <splitter>
 
     <d_int_body> ::=
         0 | '-'?<d_pint_body>
@@ -1232,7 +1232,7 @@ If the C<Int_payload> is a C<d_int_body>, then it is interpreted as a base
 10 integer.
 
 Fundamentally the I<body> part of an C<Int> node consists of a string of
-digits and uppercased (but not lowercased) letters, where each digit
+digits and plain uppercased or lowercased letters, where each digit
 (C<0..9>) represents its own number and each letter (C<A..Z>) represents a
 number in [10..35].  A I<body> may optionally contain underscore characters
 (C<_>), which exist just to help with visual formatting, such as for
@@ -1373,13 +1373,13 @@ Grammar:
 
     <blob_body> ::=
         '\''
-            <[ 0..9 A..F _ \s ]>*
+            <[ 0..9 A..F a..f _ \s ]>*
         '\''
 
 A C<Blob> node represents a general purpose bit string.  It is interpreted
 as a Muldis D C<sys.std.Core.Type.Blob> value as follows:  Fundamentally
 the I<body> part of a C<Blob> node consists of a delimited string of digits
-and uppercased (but not lowercased) letters, where each digit (C<0..9>)
+and plain uppercased or lowercased letters, where each digit (C<0..9>)
 represents its own number and each letter (C<A..F>) represents a number in
 [10..15]; this string is qualified with a C<blob_max_col_val> character
 (C<[137F]>) or a C<blob_radix_mark> (C<[0b,0o,0x]>),
@@ -1427,8 +1427,9 @@ Grammar:
         | '\\c<' [
               [<[ A..Z ]>+] ** ' '
             | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
-            | <[ 1..9 A..Z ]> ';' [0 | <[ 1..9 A..Z ]> <[ 0..9 A..Z ]>*]
-            | 0<[ bodx ]> [0 | <[ 1..9 A..F ]> <[ 0..9 A..F ]>*]
+            | <[ 1..9 A..Z a..z ]> ';'
+                [0 | <[ 1..9 A..Z a..z ]> <[ 0..9 A..Z a..z ]>*]
+            | 0<[ bodx ]> [0 | <[ 1..9 A..F a..f ]> <[ 0..9 A..F a..f ]>*]
           ] '>'
 
     <unspace> ::=
