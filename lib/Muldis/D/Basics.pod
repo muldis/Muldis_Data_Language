@@ -2556,6 +2556,8 @@ to privileges on a computer's file system, or a typical SQL database.
 
 B<TODO: REWRITE THIS DOCUMENTATION SECTION!>
 
+=head2 ACID
+
 This official specification of the Muldis D DBMS includes full ACID
 compliance as part of the core feature set; moreover, all types of changes
 within a repository are subject to transactions and can be rolled back,
@@ -2583,6 +2585,8 @@ data-definition outside of an explicit transaction; in this way, the
 implementation is still following all the Muldis D safety rules, and hence
 should be relatively safe to use, even if it lacks Muldis D features.>
 
+=head2 Virtual Machine
+
 Each individual instance of the Muldis D DBMS is conceptually a multiple
 concurrent process / multi-threaded virtual machine, and conceptually there
 may be several things happening in it simultaneously.  This design helps a
@@ -2596,18 +2600,9 @@ system-defined functions will automatically use multiple threads to do
 their work, which is often highly symmetrical and order-independent, as set
 based or relational operations often are.  This said, Muldis D has a high
 level of isolation between any concurrent processes so to reduce the
-complexity of using them and avoid the common pitfalls of concurrency; in
-particular, there is generally no data sharing between processes, and any
-access to common updateable resources, typically repositories, is
-serialized by the system; for example, only one process at a time may hold
-a for-update transaction on the same depot.  Speaking in terms of SQL, the
-Muldis D DBMS supports only the serializable transaction isolation level.
-
-To be more accurate, Muldis D uses a multi-versioned concurrency model,
-such that writers don't block waiting for readers to complete, and readers
-always see a consistent view of the database.  Therefore, no resource
-locking is necessary except when there is contention by multiple updaters,
-and possibly not even then if they wouldn't conflict.
+complexity of using them and avoid some common pitfalls of concurrency; in
+particular, the only data that is generally shared between processes is
+the repositories themselves that are mounted by multiple processes.
 
 Within each thread of execution, conceptually only one thing is happening
 in it at a time; each individual Muldis D statement executes in sequence,
@@ -2626,22 +2621,17 @@ complicating the issue due to environment updates occurring during their
 invoker statement's first phase.  I<Semantics when there are defined
 stimulus-response rules that perform updates are still to be defined.>
 
-In account to situations where external processes are concurrently using
-the same persistent (and externally visible) repository as a Muldis D DBMS
-instance, the Muldis D DBMS will maintain a lock on the whole repository
-(or appropriate subset thereof) during any active read-only and/or
-for-update transaction, to ensure that the transaction sees a consistent
-environment during its life.  The lock is a shared lock if the transaction
-only does reading, and it is an exclusive lock if the transaction also does
-writing.  Similar management happens to handle multiple Muldis D internal
-processes.  To be more accurate, Muldis D uses multi-versioned concurrency.
-
 The rest of this documentation section is written just within the context
 of a single in-DBMS process, unless explicitly stated otherwise.
 
 A single multi-update statement may target both catalog and non-catalog
 variables, as long as there aren't both writes to depot mount control
 variables and either catalog or data variables in a depot.
+
+=head2 Transactions and YYY
+
+B<TODO: Some things that the spec calls "transaction" will instead be
+called YYY, in particular "nested transaction".>
 
 Transactions can be nested, by starting a new one before concluding a
 previous one, and the parent-most transaction has the final say on whether
@@ -2735,10 +2725,35 @@ C<procedure> etc or the host language, the main examples being those that
 mount or unmount a persistent repository; this is because such a change in
 the environment mid-transaction would result in an inconsistent state.
 
-I<Muldis D lets you explicitly place locks on resources that you don't want
-external processes to change out from under you, and these locks do not
-automatically expire when transactions end; or maybe they do; this feature
-has to be thought out more.>
+=head2 Concurrency
+
+Muldis D generally doesn't specify anything related to matters of
+multi-process concurrency, such as what other processes see when one
+process commits on a commonly mounted repository.  So the language is
+officially agnostic to the concurrency model in use by the implementing
+DBMS, and so a multiplicity of different models might be considered
+conformant.  So, for example, both models based on locks and models using
+MVCC may be used with it, as well as other reasonable models.
+
+However, Muldis D does minimally require that only successful commits by a
+process will register to other processes on a commonly mounted repository.
+In other words a fully-conformant Muldis D implementation will not permit
+the "READ UNCOMMITTED" SQL standard isolation level, but all of the other 3
+are permitted: "READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE".  This
+is required at least because users must always perceive a database to be in
+a consistent state, and there are other good reasons besides that.
+
+Muldis D also generally requires that commonly mounted repositories be the
+only point of contact between multiple processes.  No other variables can
+be shared, though immutable data can of course be shared.  If shared
+"application" variables are desired, use a common temporary repository or
+a message-passing or listen/notify mechanism.  I<Not yet specified.>
+
+I<Assuming that a DBMS supports multiple concurrency models or levels of
+process isolation, then Muldis D would conceivably provide ways for users
+to specify which they want to use.  Still to specify, details related to
+accessing and exploiting the concurrency models of the DBMS, such as how to
+set locks or such things.>
 
 =head1 RESOURCE MODULARITY AND PERSISTENCE
 
