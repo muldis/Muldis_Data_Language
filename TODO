@@ -41,6 +41,37 @@ implementations over multiple SQL DBMSs.  Curr est mid-late 2011.
 
 ----------
 
+* Consider adding some way of generating a type specification from a value
+of that type and consider having something like a system catalog which
+describes the actual database value rather than a prescribed database type,
+such as to help introspection of a database whose declared type is just
+'Database'.  The MST thing of TTM may tie into this.
+See also how the "Pick" DBMS works, or something.
+
+* Add a scm_foo to the system catalog next to any place that declares a
+DBMS entity name, particularly an expr/var/material, to indicate whether
+the declared name is considered explicitly user-specified or parser-gen.
+There may be more than 2 possible values (making this an enum rather than a
+Bool) that relate, say, to distinguishing explicitly named but inlined
+items versus explicitly named and not inlined items.  The sys-cat might
+restrict based on this such that it doesn't allow certain references to
+entities whose names are marked parser-generated, because any generated
+source code would have to make the references visible.  A related
+implication is that any entity names marked as generated are not sacred and
+are free to be automatically renamed by different catalog-updating actions
+such as source code optimizers.  Maybe also have something to distinguish
+things declared in positional format so "0"=> etc don't appear, maybe.
+
+* Numeric updates ...
+See http://archive.adaic.com/standards/83lrm/html/lrm-02-04.html .
+Excise the M;N format for bases 17..36 leaving just 2..16, absolutely.
+Use "#" as separator rather than ";".
+Write M as a base-10 integer rather than a single character.
+These are more like Ada "based" literals then, read better, frees up ";".
+So 16#FF is an integer, 16#'FF' is a blob.
+Maybe also add Perl-6 inspired commalists, like this:
+60#[43,5,12] (integer); no good reason for a blob analogy.
+
 * IN PROGRESS ...
 Rewrite/update anything talking about matters affected by process isolation
 to both declare that Muldis D is generally orthogonal or agnostic to such
