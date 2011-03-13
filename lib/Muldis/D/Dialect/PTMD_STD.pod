@@ -541,7 +541,7 @@ position of code elements.
 Code written to the C<plain_rtn_inv> level can employ all of the language
 grammar constructs that C<code_as_data> can, plus all of those
 described in these main pod sections: L</MATERIAL SPECIFICATION>,
-L</GENERIC VALUE EXPRESSIONS>, L</GENERIC UPDATER OR RECIPE STATEMENTS>,
+L</GENERIC VALUE EXPRESSIONS>, L</GENERIC RECIPE STATEMENTS>,
 L</GENERIC PROCEDURE STATEMENTS>.
 
 Examples:
@@ -823,7 +823,7 @@ of a Muldis D value selector.
 
 Unlike value selectors in general, which must be composed beneath a
 C<depot> because they actually represent a Muldis D value expression tree
-of a function or updater or recipe or type definition, a C<value>
+of a function or recipe or type definition, a C<value>
 node does I<not> represent an expression tree, but rather a value constant;
 by definition, a C<value> can be completely evaluated at compile time.  A
 C<Muldis_D> node with a C<value> second element is hence just a serialized
@@ -2561,7 +2561,6 @@ Grammar:
 
     <material> ::=
           <function>
-        | <updater>
         | <recipe>
         | <procedure>
         | <scalar_type>
@@ -2667,8 +2666,8 @@ Every material has 2-3 elements, illustrated by this grammar:
             | 'value-constraint'
             | 'value-reduction'
             | 'order-determination'
-        | updater
         | recipe
+            | updater
         | procedure
             | 'system-service'
             | transaction
@@ -2692,7 +2691,6 @@ Every material has 2-3 elements, illustrated by this grammar:
 
     <material_payload> ::=
           <function_payload>
-        | <updater_payload>
         | <recipe_payload>
         | <procedure_payload>
         | <scalar_type_payload>
@@ -2832,8 +2830,8 @@ The C<function_heading>'s C<result_type> is interpreted as the
 C<Function>'s C<result_type> attribute.
 
 Any of these kinds of components of a C<function> node are interpreted in
-exactly the same manner as for an C<updater> node, as a C<Function> is to
-an C<Updater>: C<ro_reg_param> (but that the C<Function> attribute is named
+exactly the same manner as for a C<recipe> node, as a C<Function> is to
+a C<Recipe>: C<ro_reg_param> (but that the C<Function> attribute is named
 C<params> rather than C<ro_params>), C<implements_clause>,
 C<empty_atomic_body>, C<with_clause>, C<named_expr>.
 
@@ -2852,75 +2850,17 @@ Examples:
         topic exp 3
     }
 
-=head2 Updater Specification
-
-Grammar:
-
-    <updater> ::=
-        updater
-        <ws> <material_declared_name>
-        <ws> <updater_payload>
-
-    <updater_payload> ::=
-        <updater_heading> <ws> <updater_body>
-
-    <updater_heading> ::=
-        <upd_signature> [<ws> <implements_clause>]*
-
-    <upd_signature> ::=
-        '(' <ws>?
-            [<upd_param> | <upd_param> ** [<ws>? ',' <ws>?] [<ws>? ',']?]
-        <ws>? ')'
-
-    <upd_param> ::=
-        <upd_reg_param> | <ro_reg_param>
-
-    <updater_body> ::=
-        <nonempty_updater_or_recipe_body> | <empty_atomic_body>
-
-An C<updater> node specifies a new updater that lives in a depot or
-subdepot.  An C<updater> node in the PTMD_STD grammar corresponds directly
-to a tuple of the C<updaters> attribute of a value of the catalog data type
-C<sys.std.Core.Type.Cat.Depot>, which is how an updater specification is
-actually represented in Muldis D's nonsugared form, which is as a component
-of the system catalog.  The C<updaters> tuple has 2 primary attributes,
-C<name> and C<material>, which are valued from the C<updater> node's
-C<material_declared_name> and C<updater_payload> elements, respectively.
-
-An C<updater_payload> specifies an entire updater besides its name.  It is
-interpreted as a Muldis D C<sys.std.Core.Type.Cat.Updater> value.  The
-C<updater_heading> element specifies the updater's public interface, which
-is these 5 attributes of the new C<Updater>: C<upd_params>, C<ro_params>,
-C<opt_params>, C<dispatch_params>, C<implements>.  The C<updater_body>
-element specifies the updater's implementation, which is the 2 attributes
-C<exprs> and C<stmt> of the new C<Updater>.
-
-Any of these kinds of components of an C<updater> node are interpreted in
-exactly the same manner as for a C<recipe> node, as an C<Updater> is to a
-C<Recipe>: C<upd_reg_param>, C<ro_reg_param>, C<implements_clause>,
-C<empty_atomic_body>, C<with_clause>, C<update_stmt>, C<named_expr>,
-C<expr>.  In fact, the only structural difference between an updater and a
-recipe is that a recipe has global parameters and an updater doesn't.
-
-Examples:
-
-    updater make_coprime (&a : NNInt, &b : NNInt) {
-        with function gcd (NNInt <-- a : NNInt, b : NNInt) {
-            b = 0 ?? a !! rtn( a => b, b => a mod b round Down )
-        }
-        let gcd ::= nlx.lib.gcd( =>a, =>b )
-        a := a div gcd round Down
-        b := b div gcd round Down
-    }
-
 =head2 Recipe Specification
 
 Grammar:
 
     <recipe> ::=
-        recipe
+        <recipe_kind>
         <ws> <material_declared_name>
         <ws> <recipe_payload>
+
+    <recipe_kind> ::=
+        recipe | updater
 
     <recipe_payload> ::=
         <recipe_heading> <ws> <recipe_body>
@@ -2982,9 +2922,9 @@ Grammar:
         <PNSQNameChain_payload>
 
     <recipe_body> ::=
-        <nonempty_updater_or_recipe_body> | <empty_atomic_body>
+        <nonempty_recipe_body> | <empty_atomic_body>
 
-    <nonempty_updater_or_recipe_body> ::=
+    <nonempty_recipe_body> ::=
         '{' <ws>?
             [[<with_clause> | <named_expr> | <update_stmt>] <ws>]*
             <update_stmt>
@@ -3013,6 +2953,23 @@ C<opt_params>, C<upd_global_params>, C<ro_global_params>,
 C<dispatch_params>, C<implements>.  The C<recipe_body> element specifies
 the recipe's implementation, which is the 2 attributes C<exprs> and C<stmt>
 of the new C<Recipe>.
+
+The C<recipe_kind> has no impact at all on the interpretation of a
+C<recipe>.  However, it can serve to apply additional constraints on the
+allowed values of the resulting C<Recipe>, in the manner of simple
+subset-type constraints, and similarly it can serve to add
+self-documentation to the intended purpose or use of the recipe.  Iff
+C<recipe_kind> is C<recipe> then there are no such subset-type
+constraints applied, as the node is simply denoting a generic recipe; any
+other value of C<recipe_kind> means that the node is denoting a value of
+a proper subtype of C<Recipe>, and so that subtype's respective
+constraints are applied to the new C<Recipe>.  The various
+C<recipe_kind> map to C<Recipe> subtypes as follows:
+
+    recipe kind | catalog data type
+    ------------+------------------
+    recipe      | Recipe
+    updater     | Updater
 
 Iff the C<recipe_heading> has at least one C<upd_reg_param> or
 C<ro_reg_param>, then the recipe has one or more regular parameters, which
@@ -3063,7 +3020,7 @@ similar to as if the C<named_material> were specified externally of the
 C<recipe> node; but see the L</MATERIAL SPECIFICATION> main description for
 details on the complete effects of specifying an inner material.
 
-A C<nonempty_updater_or_recipe_body> must have at least one C<update_stmt>,
+A C<nonempty_recipe_body> must have at least one C<update_stmt>,
 because a recipe must by definition update at least one of its (regular or
 global) parameters, though possibly to the same value it already has, lest
 it otherwise be an unconditional no-op.  Each C<update_stmt> is interpreted
@@ -3086,6 +3043,15 @@ Examples:
             .name like ('%' ~ search ~ '%')
         }
         count := #(people where <nlx.lib.filt>( =>search ))
+    }
+
+    updater make_coprime (&a : NNInt, &b : NNInt) {
+        with function gcd (NNInt <-- a : NNInt, b : NNInt) {
+            b = 0 ?? a !! rtn( a => b, b => a mod b round Down )
+        }
+        let gcd ::= nlx.lib.gcd( =>a, =>b )
+        a := a div gcd round Down
+        b := b div gcd round Down
     }
 
 =head2 Procedure Specification
@@ -3165,8 +3131,8 @@ as follows:
     transaction    | Bool:False        | Bool:True      | Transaction
 
 Any of these kinds of components of a C<procedure> node are interpreted in
-exactly the same manner as for an C<updater> node, as a C<Procedure> is to
-an C<Updater>: C<upd_reg_param>, C<ro_reg_param>, C<implements_clause>,
+exactly the same manner as for a C<recipe> node, as a C<Procedure> is to
+a C<Recipe>: C<upd_reg_param>, C<ro_reg_param>, C<implements_clause>,
 C<empty_procedure_body> (as per C<empty_atomic_body>), C<with_clause>.
 
 Iff the C<procedure_body> has at least one C<proc_var>, then the procedure
@@ -3821,7 +3787,7 @@ Grammar:
 
 An C<expr> node is the general case of a Muldis D value expression tree
 (which normally denotes a Muldis D value selector), which must be composed
-beneath a C<depot>, or specifically into a function or updater or recipe or
+beneath a C<depot>, or specifically into a function or recipe or
 type or constraint (etc) definition, because in the general case
 an C<expr> can I<not> be completely evaluated at compile time.
 
@@ -4193,7 +4159,7 @@ Examples:
     #`a reference to a data type`#
     <nlx.lib.foo_type>
 
-=head1 GENERIC UPDATER OR RECIPE STATEMENTS
+=head1 GENERIC RECIPE STATEMENTS
 
 Grammar:
 
@@ -4206,7 +4172,7 @@ Grammar:
 
 An C<update_stmt> node is a single member statement of a multi-update
 statement, which must be composed beneath a C<depot>, or specifically into
-an updater or recipe definition, because in the general case a
+a recipe definition, because in the general case a
 C<update_stmt> can I<not> be completely evaluated at compile time.  It is
 interpreted as a tuple of a Muldis D C<sys.std.Core.Type.Cat.MultiUpdStmt>
 value.
@@ -4240,19 +4206,19 @@ Grammar:
     <same_named_upd_arg> ::=
         <upd_sigil> <same_named_ro_arg>
 
-An C<imus_imp_invo> node represents the invocation of a named updater
-or recipe, with specific subject-to-update or read-only arguments, as a
-single member statement of a multi-update statement of an updater or
+An C<imus_imp_invo> node represents the invocation of a named
+recipe, with specific subject-to-update or read-only arguments, as a
+single member statement of a multi-update statement of a
 recipe.  It is interpreted as a tuple of a Muldis D
 C<sys.std.Core.Type.Cat.MultiUpdStmt> value.  The C<routine_name> element
 specifies the C<imperative> attribute of the new C<MultiUpdStmt>, which is
-the name of the updater or recipe being invoked, and the
+the name of the recipe being invoked, and the
 C<imus_imp_arg_list> element specifies the C<upd_args> plus C<ro_args>
 attributes, one tuple thereof per C<imus_imp_arg>; each C<imus_imp_arg>
 having an C<upd_sigil> yields an C<upd_args> tuple, and each
 C<imus_imp_arg> without one yields a C<ro_args> tuple.
 
-In the general case of an updater or recipe invocation, all of the
+In the general case of a recipe invocation, all of the
 arguments are named, as per C<named_[upd|ro]_arg>, and formatting an
 C<imus_imp_invo> node that way is always allowed.  In some (common) special
 cases, some (which might be all) arguments may be anonymous, as per
@@ -4268,7 +4234,7 @@ effectively have independent namespaces with respect to that the presence
 or absence of an C<upd_sigil> can always be counted on to distinguish the
 groups.  This means, for example, that you can have an anonymous
 subject-to-update argument plus an anonymous read-only argument to a
-system-defined updater or recipe where none of the corresponding parameters
+system-defined recipe where none of the corresponding parameters
 are named C<topic>.
 
 The C<imus_imp_invo> node kind also has the same special shorthand for
@@ -4389,7 +4355,7 @@ Examples:
 Grammar:
 
     <atomic_stmt> ::=
-        <nonempty_updater_or_recipe_body>
+        <nonempty_recipe_body>
 
 An C<atomic_stmt> node is a special shorthand syntax that is equivalent to
 the combination of a C<with_clause> node that defines an inner updater of a
@@ -4544,7 +4510,7 @@ have, including when arguments may be anonymous or be written out in
 shorthand, see the C<imus_imp_invo> node kind, under L</Generic
 In-Multi-Update-Statement Imperative Invocation Statements>, because the
 rules regarding these things are the same for imperatives invoked by a
-procedure as for imperatives invoked by an updater or recipe.  The only
+procedure as for imperatives invoked by a recipe.  The only
 main difference between an C<iproc_imp_invo> and a C<imus_imp_invo> is that
 the former may only name its host procedure's variables (or parameters) as
 arguments while the latter can use arbitrary value expressions for that.
@@ -5729,20 +5695,19 @@ statement nodes documented in this main POD section (members of
 C<imp_invo_alt_syntax> etc), any occurrences of child C<var_name> or
 C<proc_expr> nodes should be read as being C<expr> nodes instead in
 contexts where instances of the main nodes are being composed beneath
-C<updater> or C<recipe> nodes, and just as C<var_name> or C<proc_expr>
+C<recipe> nodes, and just as C<var_name> or C<proc_expr>
 nodes when composed beneath C<procedure> nodes.  This is because any
 argument to an imperative invocation may be any value or pseudo-variable
-expression (including a parameter) when that invocation is in an updater or
+expression (including a parameter) when that invocation is in a
 recipe, but said argument can only be a lexical variable or parameter name
 when in a procedure, except that arguments to read-only parameters in a
 procedure may alternately be an opaque value literal or niladic function
 invocation, those being an abstraction over the assignment to and use of a
 temporary lexical variable for the argument.
 
-Note that the imperative routines with alternate syntax include updaters,
-recipes, and procedures, and they are all shown in one list for simplicity.
-But only alternate syntax for updaters is valid in an updater, and only
-alternate syntax for updaters and recipes is valid in a recipe; all of
+Note that the imperative routines with alternate syntax include
+recipes and procedures, and they are all shown in one list for simplicity.
+But only alternate syntax for recipes is valid in a recipe; all of
 these alternate syntaxes are valid in a procedure.
 
 =head2 Imperative Simple Monadic Postfix Operators

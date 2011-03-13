@@ -141,8 +141,8 @@ This graph slice shows all of the catalog nonscalar types:
                     sys.std.Core.Type.Cat.ValRedFunc
                     sys.std.Core.Type.Cat.OrdDetFunc
                 sys.std.Core.Type.Cat.IfThenExprMap
-                sys.std.Core.Type.Cat.Updater
                 sys.std.Core.Type.Cat.Recipe
+                    sys.std.Core.Type.Cat.Updater
                 sys.std.Core.Type.Cat.Procedure
                     sys.std.Core.Type.Cat.SystemService
                     sys.std.Core.Type.Cat.Transaction
@@ -186,7 +186,7 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.DepotMountSet
                 sys.std.Core.Type.Cat.FedTypeMapSet
                 sys.std.Core.Type.Cat.SubpackageSet
-                sys.std.Core.Type.Cat.[Function|Updater|Recipe|Procedure]Set
+                sys.std.Core.Type.Cat.[Function|Recipe|Procedure]Set
                 sys.std.Core.Type.Cat.SpecialTypeSet
                 sys.std.Core.Type.Cat.[Scalar|Tuple|Relation]TypeSet
                 sys.std.Core.Type.Cat.[Domain|Subset|Mixin]TypeSet
@@ -1169,7 +1169,7 @@ subpackages, and any that exist are arranged in a hierarchy with the
 package as the root.  The system catalog variable named C<nlx.cat> is of
 the C<Package> type.
 
-A C<Package> has these 19 attributes:
+A C<Package> has these 18 attributes:
 
 =over
 
@@ -1182,11 +1182,11 @@ This is an optional programmer comment about the [|sub]package as a whole.
 These are all the subpackages that this system catalog contains (which
 might be none).
 
-=item C<functions|updaters|recipes|procedures> -
-C<[Function|Updater|Recipe|Procedure]Set>
+=item C<functions|recipes|procedures> -
+C<[Function|Recipe|Procedure]Set>
 
 These are all the definitions that this [|sub]package contains of
-functions, updaters, recipes, procedures.
+functions, recipes, procedures.
 
 =item C<special_types> - C<SpecialTypeSet>
 
@@ -1297,14 +1297,14 @@ of the named entities directly within the namespace defined by C<parent>.
 A C<SubpackageSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Function|Updater|Recipe|Procedure]Set
+=head2 sys.std.Core.Type.Cat.[Function|Recipe|Procedure]Set
 
-A C<[Function|Updater|Recipe|Procedure]Set> is a C<DHRelation> that
-specifies a set of functions|updaters|recipes|procedures
+A C<[Function|Recipe|Procedure]Set> is a C<DHRelation> that
+specifies a set of functions|recipes|procedures
 that a [|sub]package might directly contain.  I<TODO: each routine may be
 either public for the DBMS as a whole or private to the subpackage.>
 
-A C<[Function|Updater|Recipe|Procedure]Set> has these 5 attributes:
+A C<[Function|Recipe|Procedure]Set> has these 5 attributes:
 
 =over
 
@@ -1312,27 +1312,27 @@ A C<[Function|Updater|Recipe|Procedure]Set> has these 5 attributes:
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
 of any hypothetical immediate child namespace of the package, of the
-function|updater|recipe|procedure's parent [|sub]package.
+function|recipe|procedure's parent [|sub]package.
 
 =item C<name> - C<Name>
 
-This is the declared name of the function|updater|recipe|procedure within
+This is the declared name of the function|recipe|procedure within
 the namespace defined by C<parent>; other Muldis D code would reference it
 with the combination of C<parent> and C<name>.
 
 =item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the
-function|updater|recipe|procedure as a whole.
+function|recipe|procedure as a whole.
 
 =item C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this routine's declaration relative to all of
 the named entities directly within the namespace defined by C<parent>.
 
-=item C<material> - C<Function|Updater|Recipe|Procedure>
+=item C<material> - C<Function|Recipe|Procedure>
 
-This defines the entire function|updater|recipe|procedure sans its name.
+This defines the entire function|recipe|procedure sans its name.
 Note that it is not mandatory for a system-defined routine to have a
 specified I<body> (just a specified I<heading> is mandatory), and often it
 won't; but often it will, especially if it is a function used in the
@@ -1340,7 +1340,7 @@ definition of a system-defined data type.
 
 =back
 
-A C<[Function|Updater|Recipe|Procedure]Set> has a binary primary key on the
+A C<[Function|Recipe|Procedure]Set> has a binary primary key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SpecialTypeSet
@@ -1672,22 +1672,22 @@ C<Bool:False> before C<Bool:True>.
 
 An C<ExprNodeSet> is a C<Database> that specifies a set of named value
 expression nodes.  It is typically composed into a
-function|updater|recipe.  Each tuple of an C<ExprNodeSet> attribute is a
+function|recipe.  Each tuple of an C<ExprNodeSet> attribute is a
 named expression node, which is the majority component of functional Muldis
 D code.  All arbitrarily complex Muldis D expression trees, including
 relational queries, are composed of just expression nodes, either directly,
 or indirectly by way of function invocations, as each function body is
 itself composed entirely of a single expression tree (of at least 1 node).
-Only functions and updaters and recipes may contain expression
+Only functions and recipes may contain expression
 nodes, so for any procedures that would conceptually include them, those
 portions of the procedures need to be separated out and encapsulated by
-named functions or updaters or recipes.  Note that, while the
+named functions or recipes.  Note that, while the
 general case has expression trees simply denoting a value, in some cases
 they may instead define a pseudo-variable / virtual variable; that only
-happens in updaters or recipes where the expression is used as an argument
-for a subject-to-update parameter of an updater or recipe call; in
+happens or recipes where the expression is used as an argument
+for a subject-to-update parameter of a recipe call; in
 that case the leaf nodes / only node of the expression must map to a
-subject-to-update parameter of the expression-containing updater or recipe.
+subject-to-update parameter of the expression-containing recipe.
 
 An C<ExprNodeSet> has these 15 attributes:
 
@@ -1776,7 +1776,7 @@ update statements if applicable, of the host routine, and all update
 statements of said host routine; otherwise, iff the expression node is
 nested beneath another expression node or a statement node, then the
 C<scm_vis_ord> attribute isn't applicable, and is zero.  In other words,
-when generating concrete Muldis D code from a C<Function|Updater|Recipe>,
+when generating concrete Muldis D code from a C<Function|Recipe>,
 the sole determinant of whether to nest any given expression node under
 another expression or statement node, or not, is based on whether its
 C<scm_vis_ord> is zero or not; zero means nested, non-zero means otherwise.
@@ -2435,123 +2435,28 @@ An C<APMaterialNCSelExprNodeSet> has a unary (unique) key on the C<name>
 attribute, plus another such key on the C<referencing> attribute.  Its
 default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Updater
-
-An C<Updater> is a C<DHTuple>.  It defines a new updater, which has 2
-main parts, called I<heading> and I<body>:  The I<heading> defines the
-updater's entire public interface, which is all the details of how to use
-it, except for its name, and no more detail than
-necessary about how it is implemented.  The I<body> defines the updater's
-entire implementation (or the main body of an updater), besides its
-name/etc and what the I<heading> defines.  The updater's name is
-provided by the larger context that embeds the
-C<Updater>, which is either a C<Package> or C<System>.  Every C<Updater>
-must have a specified I<heading>, but having a specified I<body> is
-optional iff the C<Updater> is embedded in a C<System>, because often the
-implementations of system-defined routines are not defined in terms of
-other Muldis D routines, but that the I<body> must not be specified if the
-C<Updater> is virtual.
-
-An C<Updater> has these 8 attributes, of which the 5 C<upd_params>,
-C<ro_params>, C<opt_params>, C<dispatch_params>, C<implements> define the
-I<heading> and the 2 C<exprs>, C<stmt> define the I<body>:
-
-=over
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the updater as a whole.
-
-=item C<upd_params> - C<NameTypeMap>
-
-This is the declared subject-to-update parameter list of the updater, which
-has 1..N named and typed such parameters.  It must have at least 1 element.
-
-=item C<ro_params> - C<NameTypeMap>
-
-This is the declared read-only parameter list of the updater, which has
-0..N named and typed such parameters.
-
-=item C<opt_params> - C<set_of.Name>
-
-This indicates the subset of the updater's subject-to-update or read-only
-parameters that are optional, that is, do not need to be supplied explicit
-arguments when the function is invoked; any updater parameters not named
-here must be supplied explicit arguments.  Any parameter marked as optional
-which is not given an explicit argument will implicitly default to the
-default value of its declared type; any subject-to-update parameter marked
-as optional which is not given an explicit argument will implicitly bind to
-a new anonymous variable (with the aforementioned default value) which is
-discarded after the updater finishes executing.  Each element of
-C<opt_params> must match a parameter name in either C<upd_params> or
-C<ro_params>.
-
-=item C<dispatch_params> - C<set_of.Name>
-
-Iff C<dispatch_params> is nonempty then this updater is a virtual
-updater; otherwise, empty means not virtual.  A virtual updater must
-have no I<body> specified.  This attribute indicates the subset of the
-updater's parameters whose invocation arguments' types are consulted to
-determine which other updater, that explicitly implements this virtual
-one, is automatically dispatched to.  Each element of C<dispatch_params>
-must match a parameter name in C<upd_params> or C<ro_params>.  Any given
-parameter can not be both a dispatch parameter and an optional parameter.
-
-=item C<implements> - C<set_of.RPImperativeNC>
-
-Iff C<implements> is nonempty then this updater is explicitly declaring
-that it implements the other (typically just one), virtual updaters named
-by its elements; otherwise, empty means not implementing any virtuals.  An
-implementing updater must have the same parameter list as its virtuals,
-save that the implementer's parameters' declared types must be
-subtypes of the corresponding ones of the virtuals.
-
-=item C<exprs> - C<ExprNodeSet>
-
-This defines the expression trees that are arguments to the update
-operators that C<stmt> invokes.  These expression trees must reference all
-of the read-only parameters that the update operator has.
-
-=item C<stmt> - C<MultiUpdStmt>
-
-This defines the entire body of the updater, which is composed of
-a single multi-update statement.  This multi-update statement must
-reference all of the parameters that the updater has.
-
-=back
-
-Iff an C<Updater> has no specified I<body>, then C<exprs> must have zero
-member nodes and C<stmt> must have zero member tuples; otherwise, C<stmt>
-must have at least 1 member tuple.
-
-C<Updater> has a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params> and the C<name> attributes of all the
-attributes of C<exprs>.  Its default value has 1 subject-to-update,
-non-optional parameter whose name is C<topic> and whose declared type is
-C<Bool>; it has zero read-only parameters; it has no specified I<body>.
-
 =head2 sys.std.Core.Type.Cat.MultiUpdStmt
 
 A C<MultiUpdStmt> is a C<DHRelation> that specifies a multi-update
 statement (of 1..N variables), which is the narrowest scope implicitly
 atomic component of procedural Muldis D code.  It is the most fundamental
 component of procedural Muldis D code.  The variables being updated are
-accessed via the host updater's or recipe's subject-to-update parameters
+accessed via the host recipe's subject-to-update parameters
 (or via the host updater's lexical-alias variables).  All
 arbitrarily complex Muldis D value assignments, including relational
 assignments, are composed of just C<MultiUpdStmt>, either directly, or
-indirectly by way of updater or recipe invocations, as each updater and
+indirectly by way of recipe invocations, as each
 recipe body is itself composed entirely of 1 multi-update statement (plus
-supporting value expressions).  Only updaters and recipes may contain
+supporting value expressions).  Only recipes may contain
 C<MultiUpdStmt>, so for any procedures that would conceptually include
 them, those portions of the procedures need to be separated out and
-encapsulated by named updaters or recipes.  Each tuple of a multi-update
+encapsulated by named recipes.  Each tuple of a multi-update
 statement is a single update statement, which represents a single
-invocation of an updater or recipe.  C<MultiUpdStmt> itself has no
+invocation of an recipe.  C<MultiUpdStmt> itself has no
 restriction on the number of tuples it consists of, but:  At least 1 tuple
 is required iff the multi-update statement is composed into a specified
-updater or recipe body; otherwise there must be only be zero tuples for an
-unspecified updater or recipe body.
+recipe body; otherwise there must be only be zero tuples for an
+unspecified recipe body.
 
 A C<MultiUpdStmt> has these 5 attributes:
 
@@ -2566,11 +2471,11 @@ a whole.
 
 This is the visible order of this single update statement relative to all
 of its sibling statements, or non-nested expression nodes, of its host
-updater's or recipe's multi-update statement.
+recipe's multi-update statement.
 
 =item C<imperative> - C<MaterialNC>
 
-This is the name of the updater or recipe being invoked.
+This is the name of the recipe being invoked.
 
 =item C<upd_args> - C<NameExprMap>
 
@@ -2584,7 +2489,7 @@ trivial (and common) case, the parameter is referenced directly.
 
 =item C<ro_args> - C<NameExprMap>
 
-These are the 0..N read-only arguments to the updater or recipe invocation.
+These are the 0..N read-only arguments to the recipe invocation.
 Each element defines one argument value, with the element C<name> matching
 the invoked routine's parameter name, and the element C<expr> naming a
 local expression node (or parameter) which defines the value.
@@ -2633,7 +2538,17 @@ This is the declared read-only parameter list of the recipe, which has
 
 =item C<opt_params> - C<set_of.Name>
 
-This is as per the same-named attribute of C<Updater>.
+This indicates the subset of the recipe's subject-to-update or read-only
+parameters that are optional, that is, do not need to be supplied explicit
+arguments when the function is invoked; any recipe parameters not named
+here must be supplied explicit arguments.  Any parameter marked as optional
+which is not given an explicit argument will implicitly default to the
+default value of its declared type; any subject-to-update parameter marked
+as optional which is not given a explicit argument will implicitly bind to
+a new anonymous variable (with the aforementioned default value) which is
+discarded after the recipe finishes executing.  Each element of
+C<opt_params> must match a parameter name in either C<upd_params> or
+C<ro_params>.
 
 =item C<upd_global_params> - C<RcpGlobalVarAliasMap>
 
@@ -2690,7 +2605,16 @@ C<Recipe> has a distributed primary key over the C<name> attributes of
 C<upd_params> and C<ro_params> and C<upd_global_params> and
 C<ro_global_params> and the
 C<name> attributes of all the attributes of C<exprs>.  Its default value
-has zero parameters and has no specified I<body>.
+has 1 subject-to-update, non-optional parameter whose name is C<topic> and
+whose declared type is C<Bool>; it has zero read-only parameters and zero
+lexical-alias variables; it has no specified I<body>.
+
+=head2 sys.std.Core.Type.Cat.Updater
+
+An C<Updater> defines an C<updater>, which is a kind of recipe.
+C<Updater> is a proper subtype of C<Recipe> where for every member value
+its C<upd_global_params> and C<ro_global_params> attributes are empty and
+its C<upd_params> attribute is nonempty.
 
 =head2 sys.std.Core.Type.Cat.RcpGlobalVarAliasMap
 
@@ -2743,7 +2667,7 @@ This is the declared read-only parameter list of the procedure, which has
 
 =item C<opt_params> - C<set_of.Name>
 
-This is as per the same-named attribute of C<Updater>.
+This is as per the same-named attribute of C<Recipe>.
 
 =item C<dispatch_params> - C<set_of.Name>
 
@@ -2877,8 +2801,8 @@ the assignment to local variables of the results of those invocations.
 
 =item C<imp_invo_stmts> - C<ImpInvoStmtNodeSet>
 
-These are statement nodes that represent imperative routine (updater,
-recipe, or procedure) invocations.
+These are statement nodes that represent imperative routine
+(updater or procedure) invocations.
 
 =item C<try_catch_stmts> - C<TryCatchStmtNodeSet>
 
@@ -3059,9 +2983,9 @@ attribute.  Its default value is empty.
 
 An C<ImpInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node is an invocation of an imperative routine
-(updater, recipe, or procedure) with specific arguments.  The invoked
+(recipe or procedure) with specific arguments.  The invoked
 routine can be either user-defined or system-defined.  Iff the invoked
-routine is an updater or a recipe, then that statement node is an atomic
+routine is a recipe, then that statement node is an atomic
 statement node.
 
 An C<ImpInvoStmtNodeSet> has these 5 attributes:
@@ -4569,7 +4493,7 @@ A C<NameExprMap> is a C<DHRelation>.  It defines a basic component-values
 list, meaning a set of names, with a declared local expression node (or
 parameter) name for each.  It is used to define collection literals; one
 C<NameExprMap> defines a whole C<Tuple> value.  It is also used to define
-argument lists for routine invocations by functions or updaters or recipes.
+argument lists for routine invocations by functions or recipes.
 A C<NameExprMap> has 3 attributes, C<name> and C<expr>, each of those being
 a C<Name>, and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of the
 tuple/etc attribute or routine argument, and comprises a unary key; the

@@ -318,7 +318,7 @@ general use.
 Code written to the C<plain_rtn_inv> level can employ all of the language
 grammar constructs that C<code_as_data> can, plus all of those
 described in these main pod sections: L</MATERIAL SPECIFICATION>,
-L</GENERIC VALUE EXPRESSIONS>, L</GENERIC UPDATER OR RECIPE STATEMENTS>,
+L</GENERIC VALUE EXPRESSIONS>, L</GENERIC RECIPE STATEMENTS>,
 L</GENERIC PROCEDURE STATEMENTS>.
 
 Examples:
@@ -1356,8 +1356,8 @@ Examples:
 A C<material> node specifies a new material (routine or type) that lives in
 a depot or subdepot.
 
-There are 15 main varieties of C<material> node, each of which is a named
-node kind of its own:  C<function>, C<updater>, C<recipe>, C<procedure>,
+There are 14 main varieties of C<material> node, each of which is a named
+node kind of its own:  C<function>, C<recipe>, C<procedure>,
 C<scalar_type>, C<tuple_type>, C<relation_type>, C<domain_type>,
 C<subset_type>, C<mixin_type>, C<key_constr>, C<distrib_key_constr>,
 C<subset_constr>, C<distrib_subset_constr>, C<stim_resp_rule>.
@@ -1439,45 +1439,12 @@ Examples:
         [ 'i-op', 'exp', [ ['d','topic'], 3 ] ]
     ] ] ]
 
-=head2 Updater Specification
-
-An C<updater> node specifies a new updater that lives in a depot or
-subdepot.  An C<updater> node has 3 ordered elements:  The first element
-is the Perl character string C<updater>.  The second element is a
-C<Name_payload>, which is the updater's declared name.  The third element
-is an C<updater_payload>.  An C<updater_payload> is structurally a proper
-subset of a C<recipe_payload>; every valid C<recipe_payload> is also a
-structurally valid C<updater_payload> except for any C<recipe_payload> that
-has a C<::=> element; the only structural difference between an updater and
-a recipe is that a recipe has global parameters and an updater doesn't.
-
-Examples:
-
-    [ 'updater', 'make_coprime', [ {a=>['&','NNInt'],b=>['&','NNInt']} => [
-        [ 'with' => [ 'function', 'gcd', [
-            [ 'NNInt', { a => 'NNInt', b => 'NNInt' } ]
-            => [
-                [ '??!!', [ [[ 'i-op', '=', [ ['d','b'], 0 ] ]
-                    => ['d','a']] ],
-                    [ 'func-invo', 'rtn', { a => ['d','b'],
-                        b => [ 'i-op', 'mod', [ ['d','a'], ['d','b'],
-                            ['RoundMeth','Down'] ] ] } ]
-                ]
-            ]
-        ] ] ],
-        [ '::=', 'gcd', [ 'func-invo', 'nlx.lib.gcd',
-            { a => ['d','a'], b => ['d','b'] } ] ],
-        [ 'i-op', ':=', [ ['d','a'], [ 'i-op', 'div',
-            [ ['d','a'], ['d','gcd'], ['RoundMeth','Down'] ] ] ] ],
-        [ 'i-op', ':=', [ ['d','b'], [ 'i-op', 'div',
-            [ ['d','b'], ['d','gcd'], ['RoundMeth','Down'] ] ] ] ],
-    ] ] ]
-
 =head2 Recipe Specification
 
 A C<recipe> node specifies a new recipe that lives in a depot or subdepot.
-A C<recipe> node has 3 ordered elements:  The first element is the Perl
-character string C<recipe>.  The second element is a C<Name_payload>, which
+A C<recipe> node has 3 ordered elements:  The first element is
+one of these 2 Perl character strings:
+C<recipe>, C<updater>.  The second element is a C<Name_payload>, which
 is the recipe's declared name.  The third element is a C<recipe_payload>.
 A C<recipe_payload> is a 2-element Perl array ref whose elements are
 designated, in order, C<recipe_heading> and C<recipe_body>.
@@ -1561,6 +1528,26 @@ Examples:
                 ['curried-func', 'nlx.lib.filt', {search=>['d','search']}]
             ] ]
         ] ] ] ],
+    ] ] ]
+
+    [ 'updater', 'make_coprime', [ {a=>['&','NNInt'],b=>['&','NNInt']} => [
+        [ 'with' => [ 'function', 'gcd', [
+            [ 'NNInt', { a => 'NNInt', b => 'NNInt' } ]
+            => [
+                [ '??!!', [ [[ 'i-op', '=', [ ['d','b'], 0 ] ]
+                    => ['d','a']] ],
+                    [ 'func-invo', 'rtn', { a => ['d','b'],
+                        b => [ 'i-op', 'mod', [ ['d','a'], ['d','b'],
+                            ['RoundMeth','Down'] ] ] } ]
+                ]
+            ]
+        ] ] ],
+        [ '::=', 'gcd', [ 'func-invo', 'nlx.lib.gcd',
+            { a => ['d','a'], b => ['d','b'] } ] ],
+        [ 'i-op', ':=', [ ['d','a'], [ 'i-op', 'div',
+            [ ['d','a'], ['d','gcd'], ['RoundMeth','Down'] ] ] ] ],
+        [ 'i-op', ':=', [ ['d','b'], [ 'i-op', 'div',
+            [ ['d','b'], ['d','gcd'], ['RoundMeth','Down'] ] ] ] ],
     ] ] ]
 
 =head2 Procedure Specification
@@ -1999,14 +1986,14 @@ Examples:
     # a reference to a data type #
     ['material-ref','nlx.lib.foo_type']
 
-=head1 GENERIC UPDATER OR RECIPE STATEMENTS
+=head1 GENERIC RECIPE STATEMENTS
 
 =head2 Generic In-Multi-Update-Statement Imperative Invocation Statements
 
 An C<imus_imp_invo> node has 2-4 ordered elements:  The first element is
 the Perl character string C<imus-imp-invo>.  The second element is a
-C<PNSQNameChain_payload>, which names the updater or recipe to invoke.  The
-last 1-2 elements provide arguments to the updater or recipe invocation;
+C<PNSQNameChain_payload>, which names the recipe to invoke.  The
+last 1-2 elements provide arguments to the recipe invocation;
 either or both or none of an C<Array_payload> element and a
 C<Tuple_payload> element may be given.  The C<Array_payload> 3rd/4th
 element is for any anonymous (and ordered if multiple exist) arguments, and
@@ -2074,7 +2061,7 @@ Examples:
 
 An C<atomic_stmt> node has 2 ordered elements:  The first element is the
 Perl character string C<atomic-stmt>.  The second element is a Perl
-array ref; it is interpreted as per a nonempty updater body, which has
+array ref; it is interpreted as per a nonempty recipe body, which has
 exactly the same format.
 
 Examples:
@@ -2503,7 +2490,7 @@ Note that, with each of the main imperative invocation alternate syntax
 statement nodes documented in this main POD section, any occurrences of
 child C<var_name> or C<proc_expr> nodes should be read as being C<expr>
 nodes instead in contexts where instances of the main nodes are being
-composed beneath C<updater> or C<recipe> nodes, and just as C<var_name> or
+composed beneath C<recipe> nodes, and just as C<var_name> or
 C<proc_expr> nodes when composed beneath C<procedure> nodes.
 
 =head2 Imperative Simple Monadic Postfix Operators

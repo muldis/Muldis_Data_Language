@@ -114,28 +114,21 @@ will fail if its C<function> and C<args> arguments have any same-named
 arguments for the curried function.  Note that this operation is also known
 as C<assuming>.
 
-=head2 sys.std.Core.Cat.upd_invo
-
-C<updater upd_invo (updater : APImperativeNC,
-&upd_args : Tuple, ro_args? : Tuple) {...}>
-
-This update operator has the same purpose and features as
-C<sys.std.Core.Cat.func_invo> but that it invokes an updater rather
-than a function; there is no result to deal with, and there are both
-subject-to-update parameters and read-only parameters of the invoked
-updater to bind to; they are bound with the attributes of this updater's
-C<upd_args> and C<ro_args> arguments, respectively.  The C<ro_args>
-parameter is optional and defaults as per the C<args> parameter of
-C<func_invo>; the C<upd_args> parameter is non-optional because an updater
-must always be invoked with at least one subject-to-update argument.
-
 =head2 sys.std.Core.Cat.rcp_invo
 
 C<recipe rcp_invo (recipe : APImperativeNC,
 &upd_args? : Tuple, ro_args? : Tuple) {...}>
 
-This recipe is the same as C<sys.std.Core.Cat.upd_invo> but that it
-invokes a recipe rather than an updater, and that C<upd_args> is optional.
+This recipe has the same purpose and features as
+C<sys.std.Core.Cat.func_invo> but that it invokes a recipe rather
+than a function; there is no result to deal with, and there are both
+subject-to-update parameters and read-only parameters of the invoked
+recipe to bind to; they are bound with the attributes of this recipe's
+C<upd_args> and C<ro_args> arguments, respectively.  The C<ro_args>
+parameter is optional and defaults as per the C<args> parameter of
+C<func_invo>; the C<upd_args> parameter is non-optional if the invoked is
+an updater, because an updater must always be invoked with at least one
+subject-to-update argument, and it is optional otherwise.
 
 =head2 sys.std.Core.Cat.proc_invo
 
@@ -280,28 +273,28 @@ This recipe is an abstraction over deleting a tuple from the catalog relvar
 C<fed.cat.mounts{name=depot}.depot.functions>.  It will drop an existing
 depot function.  This recipe is analogous to a SQL DROP FUNCTION statement.
 
-=head2 sys.std.Core.Cat.create_[updater|recipe|procedure]
+=head2 sys.std.Core.Cat.create_[recipe|procedure]
 
-C<recipe create_[updater|recipe|procedure] (depot : Name,
+C<recipe create_[recipe|procedure] (depot : Name,
 subdepot? : NameChain, name : Name,
 scm_comment? : Comment, scm_vis_ord? : NNInt,
-material : [Updater|Recipe|Procedure], &cat ::= fed.cat) {...}>
+material : [Recipe|Procedure], &cat ::= fed.cat) {...}>
 
 This recipe is an abstraction over inserting a tuple into the catalog
-relvar C<fed.cat.mounts{name=depot}.depot.[updater|recipe|procedure]s>.
-It will create a new updater|recipe|procedure, in the depot mounted under
+relvar C<fed.cat.mounts{name=depot}.depot.[recipe|procedure]s>.
+It will create a new recipe|procedure, in the depot mounted under
 the name given by the C<depot> argument, whose name and other details match
 the other arguments.  This recipe is analogous to a SQL CREATE PROCEDURE
 statement.
 
-=head2 sys.std.Core.Cat.drop_[updater|recipe|procedure]
+=head2 sys.std.Core.Cat.drop_[recipe|procedure]
 
-C<recipe drop_[updater|recipe|procedure] (depot : Name,
+C<recipe drop_[recipe|procedure] (depot : Name,
 subdepot? : NameChain, name : Name, &cat ::= fed.cat) {...}>
 
 This recipe is an abstraction over deleting a tuple from the catalog relvar
-C<fed.cat.mounts{name=depot}.depot.[updater|recipe|procedure]s>.  It will
-drop an existing depot updater|recipe|procedure.  This recipe is analogous
+C<fed.cat.mounts{name=depot}.depot.[recipe|procedure]s>.  It will
+drop an existing depot recipe|procedure.  This recipe is analogous
 to a SQL DROP PROCEDURE statement.
 
 =head2 sys.std.Core.Cat.create_[scalar|tuple|relation|domain|subset|mixin]_type
