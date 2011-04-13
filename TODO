@@ -41,6 +41,107 @@ implementations over multiple SQL DBMSs.  Curr est late 2011.
 
 ----------
 
+* Demote the numeric operators that are more statistics-oriented from the
+language core into a new Statistics extension or some such.  Specifically
+this means these 5 in [Numeric|Rational|Integer]: range, frac_mean, median,
+frac_mean_of_median, mode; and these 2 in Integer: whole_mean,
+whole_mean_of_median.  Also, this "mean" is "arithmetic mean" (division of
+sum); there is also "geometric mean" (root of product), etc.  After the
+demotion, this set of ops can be changed or expanded to be something more
+appropriate for statistical applications; some yet-missing SQL-standard
+functions like pop-etc can then come in also.  Now these core-removed
+functions are just shorthands for not-too-complicated expressions that
+users can define for themselves with core ops, so they're not really
+missing anything important if they only get the core.
+For example, the current (arithmetic) mean is just:
+    arith_mean ::= function (Rat <-- topic : bag_of.Rat)
+        ([+]topic / #+topic)
+... and geometric mean is something like:
+    geom_mean ::= function (PRat <-- topic : bag_of.PRat)
+        ([*]topic ** (0 - #+topic))
+... but any vers in the dedic Statistics could be impl more efficiently.
+
+* Drop special entity name embedded support for inline type declarations
+like "foobag : bag_of.Foo"/etc; instead, this syntax is demoted to a
+dialect-specific thing that is just sugar for something like "foobag :
+relation-type Bar { attr value : Foo, attr count : PInt, primary-key {
+value } }".  That way, we can always point to a specific material that
+actually exists when asked what is the declared type of "foobag", and also
+we are psychologically more free to just declare things as relation types
+anyway, and the added flexibility that comes with that, such as in the
+definition of the system catalog itself, and also then the concept of an
+entity name chain is no longer overloaded.
+
+* Generalize the Set/Array/Bag/Maybe-specific operators so that: 1. the
+names of the value/index/count attributes can be specified with arguments
+(that are optional, and default to the current ones if not given); 2. they
+work with relations of arbitrary degree.  For example, merge the Counted
+extension into Bag and call it Counted, and generalize Array into something
+("Ordered" is already taken and best left as is) which also absorbs the
+ranking and quota functions from Relation.pod, and generalize Set into
+Relation.  The Counted|Bag is then any 1+ degree relation with a
+positive-integer typed attribute C that has a key (or superkey) on all of
+the attributes except for C; it is treated as special by the functions,
+which are analogies to general relational functions that work as normal on
+all attributes but C and merge C.  The Array|foo is then any 1+ degree
+relation with a nonnegative-integer typed attribute I that has a key on I
+and is further constrained that "max(r{I})+1 = #r"; I is treated as special
+by the functions.  The Maybe is then any relation with a nullary key.  With
+these generalizations, some concrete syntax like .[N] will just compile
+into special cases such as assuming certain special attribute names, and
+you can use the foo() syntax when that isn't the case.  After these
+generalizations, some Counted|Array|Maybe|etc functions can be core and
+others can be pushed into extensions, as is appropriate.  After these
+generalizations, we may or may not still have named Array|Bag|etc types,
+which will probably keep their definitions, as special cases of the
+generalized where the attribute names match the canonical ones.  After the
+generalizations, the distinct usefulness of Set would decrease somewhat.
+Note: For a generalization of Maybe, consider the Zoo name, inspired by
+Database Explorations that discusses MD's canonical missing info solution,
+or alternately call it C01 in the spirit of D0C0/D0C1/D0.
+Still in question is what if anything to change about [S|M]PInterval/etc.
+
+* Add official support for functions/expressions to be able to do some
+things that they otherwise couldn't, such as have side-effects or be
+quasi-non-deterministic.  To be specific, add support for side-effects that
+occur external to the current in-DBMS process, such as output via some
+side-channel like STDERR or a message queue, which can be used for
+debugging a function.  But any such functionality can't directly affect the
+current process, and in particular it can't affect the
+function/expression's result value.  On the other hand, it is acceptable
+for something to cause the function/expression to abort with a thrown
+exception, since this isn't changing the result value.  There should be
+metadata for any function which does or might do something like this, to
+declare the fact.  In addition, we could support a limited form of
+non-determinism, such as allowing a rand() or now() function that does
+affect the calling function/expression's result, but that this is
+constrained to be mutually deterministic within the whole of a single
+Muldis D multi-update-statement.  That is, given the same arguments (or
+none), now() would always return the same value within a
+multi-update-statement, and might only change between different
+multi-update-statements, and rand() likewise.  This might also give some
+support for partial-sort functions, as long as they are consistent within
+multiple calls in the same multi-update-statement.  Once again, such things
+would need to be tagged with metadata.  Normal deterministic functions
+always have the same result no matter how far apart.
+
+* Make autonomous transactions / in-DBMS processes not so much startable
+directly by a process but rather that the kernal/etc process always does it
+directly and any other process asks to have such done by sending a message
+to the kernal.  Similarly, DBMS-clients just become message passers, and
+they start a process the same way as internally, by sending a message to
+the kernal/etc to please call this procedure for me, and the result to the
+client is also a message.  This also generalizes the stateful/stateless
+thing and streaming/cursor or not thing.  Now also tied into this is
+stimulus-response-rules, in that all stimuli are messages.  The kernal can
+also initiate messages, such as this depot did mount, or whatever.
+
+* Consider relaxing the restriction of how much of a depot must be defined
+just in terms of itself.  So, for example, only a depot's data types (and
+dbvar) must be defined wholly internally to the depot.  But any routines in
+a depot may invoke routines outside of the depot if the former aren't used
+in the definition of a data type or dbvar.
+
 * Consider adding some way of generating a type specification from a value
 of that type and consider having something like a system catalog which
 describes the actual database value rather than a prescribed database type,
@@ -810,6 +911,23 @@ ident to single-attr accessors (having a ".") but that a list is in the
 braces/brackets; for example: "[x, y] ::= [3, 4]",
 "[a, b] ::= t.{a,b}", "[c, d] ::= ary.[3,5]".  This syntax would
 resolve into multiple single-attr accessors when app in system catalog.
+The assignment variants of the above would naturally fall out the ability
+to have arbitrary expressions on both sides of the ":=", so what you do is
+have an array-valued expression on both sides, eg "[x,y] := [y,x]" works
+because "[...]" is an array literal now.
+We can overload ".[]" for tuples in general so they extract like projection
+but return an array rather than a tuple, so we can then say
+"[a,b] ::= t.[a,b]" or even "t1.[x,y] := t2.[a,b]" to multi-substitute,
+that being a shorthand for "t1.x := t2.a, t1.y := t2.b".  We can't do that
+for general relations though since the array subtype of rel is using it.
+This mechanism also provides a general way for a function to have multiple
+ord retv; eg, "[x,y,z] := foo(...)"; like Perl's "($x,$y,$z) = foo(...)".
+A variable (or subject-to-update parameter), "bar", may be aliased using
+"foo ::= bar" such that "foo" is an expr node, but like all named exprs in
+procedures, "foo" is conceptually reevaluated per mu-statement.
+Ordered tuples can be used instead of arrays, and in fact might be a better
+solution for multiple reasons.  To do this, just say "%:{x,y,z}" rather
+than "[x,y,z]"; the former is shorthand for '%:{"0"=>x,"1"=>y,"2"=>z}'.
 
 * In PTMD_STD, consider loosening the grammar regarding some of the normal
 prefix or postfix or infix operators so that rather than mandating
