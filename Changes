@@ -2,6 +2,111 @@
                                   Changes
 ---------------------------------------------------------------------------
 
+2011-04-xx
+
+    * Muldis::D version 0.147.0 is released on CPAN as
+    Muldis-D-0.147.0.tar.gz.
+
+    * This release consists of just one particularly significant change,
+    which is to redefine a recipe (and hence an updater) as being a special
+    case of a procedure rather than being a disjoint kind of routine; but
+    this is mainly just a system catalog and grammar consolidation; there
+    is no change to the syntax of the language.  Between this release and
+    release 0.146.0, all kinds of imperative routines are consolidated into
+    procedure, so now all routines are just functions xor procedures.
+    Additionally, the general case of a procedure can now directly
+    reference/update globals/"the database" and it can now directly contain
+    arbitrarily complex value expressions plus arbitrary multi-update
+    statements and pseudo-variable definitions and it is no longer
+    necessary to farm out to functions or recipes for most common
+    procedural work, and so coding Muldis D should be more like what
+    programmers expect from typical other languages and SQL, without the
+    needless seemingly arbitrary constraints and associated complexity.
+    This 3-way consolidation brings a very considerable streamlining to
+    Muldis D; between release 0.145.0 and 0.147.0, the total size of the
+    language spec proper (all 34 files in lib/) has decreased by 34.3KB or
+    2.8%; this without losing any functionality, and in fact gaining some.
+
+    * (Basics.pod)  Under the main pod section "ROUTINES", renamed the pod
+    sub-section "Functions, Recipes, and Procedures" to "Functions and
+    Procedures", and made substantial updates to that sub-section so that
+    "recipe" is no longer a distinct one of 3 main routine kinds; rather
+    there are now just the 2 "function" and "procedure", and "recipe" is
+    now considered a special case of "procedure", and the general case of
+    a procedure can now do directly everything that a recipe can.
+
+    * (Types_Catalog.pod)  Redefined the catalog type "Recipe" (and hence
+    "Updater") as being a proper subtype of "Transaction" (and hence
+    "Procedure") rather than a disjoint type.  Removed the catalog type
+    "RecipeSet" (use "ProcedureSet" instead).  Updated the catalog type
+    "Package" to remove its "recipes" attribute of that type.  Merged the
+    definition/attributes of the old "Recipe" catalog type into the
+    "Procedure" type; of the 12 substantial attrs that "Procedure" now has,
+    only "Recipe" had the 3 ["[upd|ro]_global_params", "exprs"], only
+    "Procedure" had the 3 attrs ["is_system_service", "is_transaction",
+    "vars"], and both had the 5 attrs ["[upd|ro|opt|dispatch]_params",
+    "implements"], and both had a "stmt" attr but Recipe's was a
+    "MultiUpdStmt" and Procedure's was and is a "StmtNodeSet".  Renamed the
+    catalog type "ImpInvoStmtNodeSet" to "ProcInvoStmtNodeSet" (and updated
+    "StmtNodeSet" to rename its attribute of that type), renamed its
+    "imperative" attr to "procedure", retyped its 2 attrs "[upd|ro]_args"
+    from "IISArgVarMap" (that type was then removed) to "NameExprMap".
+    Replaced the catalog type "MultiUpdStmt" partially with the new catalog
+    type "MultiUpdStmtNodeSet", and "ProcInvoStmtNodeSet" takes care of the
+    remaining part; updated "StmtNodeSet" to add a "multi_upd_stmts" attr
+    of the new type.  Removed the 3 catalog types
+    "[SysScaVal|NilFuncInvo|APMaterialNCSel]StmtNodeSet" (use
+    "[SysScaVal|FuncInvo|APMaterialNCSel]ExprNodeSet" in concert with
+    "ProcInvoStmtNodeSet" instead); updated "StmtNodeSet" to remove its
+    3 attrs of those types.  Renamed the catalog types
+    "[If|When]ThenVarStmtMap" to "[If|When]ThenExprStmtMap", and
+    "RcpGlobalVarAliasMap" to "ProcGlobalVarAliasMap", and
+    "[A|R]PImperativeNC" to "[A|R]PProcedureNC".
+
+    * (Routines_Catalog.pod)  Removed the catalog routine "rcp_invo" (use
+    "proc_invo" instead).  Removed the 2 catalog routines
+    "[create|drop]_recipe" (use "[create|drop]_procedure" instead).
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  For all 3 STDs, consolidated
+    the grammar specific to recipes into the grammar specific to
+    procedures.  A "recipe" grammar node is now just a "procedure" node
+    with additional constraints.  The "Recipe Specification" pod
+    sub-section is now merged into "Procedure Specification".  The "GENERIC
+    RECIPE STATEMENTS" pod main section is now merged into "GENERIC
+    PROCEDURE STATEMENTS".  The 2 pod sub-sections "Generic
+    In-[Multi-Update-Statement|Procedure] Imperative Invocation Statements"
+    were merged into the 1 "Generic Procedure Invocation Statements"; in
+    just PTMD_STD, the latter also had a portion of "Generic Function
+    Invocation Expressions" moved into it; in just the 2 Perl STDs, where
+    there used to be 2 statement node kinds "i[mus|proc]-imp-invo", there
+    is now the 1 "proc-invo".  Replaced the "Procedure Atomic Statements"
+    pod sub-section with "Multi-Update Statements", which takes over the
+    same syntax (but that, in just the 2 Perl STDs, the statement node kind
+    "atomic-stmt" was replaced with "multi-upd-stmt") and maintains its
+    semantics while compiling it differently into the catalog, as procedure
+    multi-update statements rather than as nested recipe definitions; the
+    code example for this sub-section was also replaced, so it shows
+    multiple insert statements into different relvars rather than a pair of
+    generic assignments, because the latter can now more easily be written
+    without using the multi-update statement syntax this section describes.
+    Removed the pod sub-section "Procedure Value Expressions" and with it
+    the 3 main node kinds ["proc_expr", "var_name", "nil_func_invo"] (use
+    ["expr", "expr_name", "func_invo"] instead).  The "IMPERATIVE
+    INVOCATION ALTERNATE SYNTAX STATEMENTS" main pod section is now renamed
+    to "PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS"; its 2 pod
+    sub-sections "Imperative Simple [Monadic Post|Non-symmetric Dyadic
+    In]fix Operators" were renamed to substitute "Procedure".
+
+    * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  For all 3 STDs, added a code
+    example to "Procedure Simple Non-symmetric Dyadic Infix Operators" that
+    demonstrates the use of pseudo-tuple-variables in a single ":="
+    statement to swap the values of two variables.
+
+    * (PTMD_STD.pod)  In the main pod section "RESOLVING AMBIGUITY",
+    created new sub-section "Entity Names vs Keywords" for its existing
+    content, and added new sub-section "Statements vs Expressions" with new
+    content.  Also, in "NESTING PRECEDENCE RULES", tweaked "Logical Infix".
+
 2011-03-12
 
     * Muldis::D version 0.146.0 is released on CPAN as
@@ -30,7 +135,7 @@
     "[create|drop]_updater" (use "[create|drop]_recipe" instead).
 
     * (PTMD_STD.pod, HDMD_Perl[6|5]_STD.pod)  For all 3 STD, consolidated
-    the grammar specific to updaters into the grammar specific to recipes. 
+    the grammar specific to updaters into the grammar specific to recipes.
     An "updater" grammar node is now just a "recipe" node with additional
     constraints.  The "Updater Specification" pod sub-section is now merged
     into "Recipe Specification".  Th "GENERIC UPDATER OR RECIPE STATEMENTS"

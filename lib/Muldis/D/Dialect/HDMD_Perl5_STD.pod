@@ -318,8 +318,7 @@ general use.
 Code written to the C<plain_rtn_inv> level can employ all of the language
 grammar constructs that C<code_as_data> can, plus all of those
 described in these main pod sections: L</MATERIAL SPECIFICATION>,
-L</GENERIC VALUE EXPRESSIONS>, L</GENERIC RECIPE STATEMENTS>,
-L</GENERIC PROCEDURE STATEMENTS>.
+L</GENERIC VALUE EXPRESSIONS>, L</GENERIC PROCEDURE STATEMENTS>.
 
 Examples:
 
@@ -351,7 +350,7 @@ for general use.
 Code written to the C<rtn_inv_alt_syn> level can employ all of the language
 grammar constructs that C<plain_rtn_inv> can, plus all of those described
 in these main pod sections: L</DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX
-EXPRESSIONS>, L</DEPRECATED - IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS>.
+EXPRESSIONS>, L</DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS>.
 
 Examples:
 
@@ -1356,8 +1355,8 @@ Examples:
 A C<material> node specifies a new material (routine or type) that lives in
 a depot or subdepot.
 
-There are 14 main varieties of C<material> node, each of which is a named
-node kind of its own:  C<function>, C<recipe>, C<procedure>,
+There are 13 main varieties of C<material> node, each of which is a named
+node kind of its own:  C<function>, C<procedure>,
 C<scalar_type>, C<tuple_type>, C<relation_type>, C<domain_type>,
 C<subset_type>, C<mixin_type>, C<key_constr>, C<distrib_key_constr>,
 C<subset_constr>, C<distrib_subset_constr>, C<stim_resp_rule>.
@@ -1418,12 +1417,11 @@ element is designated C<implements> and is optional.
 
 A C<result_type> is a C<type_name> which is a C<PNSQNameChain_payload>.
 
-A C<func_params> is structurally a proper subset of an C<rcp_params>; every
-valid C<rcp_params> is also a structurally valid C<func_params> except for
-any C<recipe_payload> that has either a C<::=> element or a C<&> element;
-in other words, a function has neither global nor subject-to-update
-parameters; it just has regular read-only parameters; another exception is
-that a function may have zero parameters while a recipe must have more.
+A C<func_params> is structurally a proper subset of an C<proc_params>;
+every valid C<proc_params> is also a structurally valid C<func_params>
+except for any C<procedure_payload> that has either a C<::=> element or a
+C<&> element; in other words, a function has neither global nor
+subject-to-update parameters; it just has regular read-only parameters.
 
 A C<function_body> must be either the Perl character string C<...>, in
 which case it is an C<empty_routine_body>, or it must be a Perl array ref,
@@ -1431,7 +1429,7 @@ having at least one element which is an C<expr>, and each other element of
 said Perl array ref must be either a C<with_clause> or a C<named_expr>.
 
 Each of C<implements> and C<with_clause> of a C<function_payload> is
-structurally identical to one of a C<recipe_payload>.
+structurally identical to one of a C<procedure_payload>.
 
 Examples:
 
@@ -1439,30 +1437,32 @@ Examples:
         [ 'i-op', 'exp', [ ['d','topic'], 3 ] ]
     ] ] ]
 
-=head2 Recipe Specification
+=head2 Procedure Specification
 
-A C<recipe> node specifies a new recipe that lives in a depot or subdepot.
-A C<recipe> node has 3 ordered elements:  The first element is
-one of these 2 Perl character strings:
-C<recipe>, C<updater>.  The second element is a C<Name_payload>, which
-is the recipe's declared name.  The third element is a C<recipe_payload>.
-A C<recipe_payload> is a 2-element Perl array ref whose elements are
-designated, in order, C<recipe_heading> and C<recipe_body>.
+A C<procedure> node specifies a new procedure that lives in a depot or
+subdepot.  A C<procedure> node has 3 ordered elements:  The first element
+is one of these 5 Perl character strings: C<procedure>, C<system-service>,
+C<transaction>, C<recipe>, C<updater>.
+The second element is a C<Name_payload>, which is the
+procedure's declared name.  The third element is a C<procedure_payload>.  A
+C<procedure_payload> is a 2-element Perl array ref whose elements are
+designated, in order, C<procedure_heading> and C<procedure_body>.
 
-Iff the C<recipe_heading> is a Perl array ref, then it has 1-2 ordered
-elements.  The first element is designated C<rcp_params> and is mandatory.
-The second element is designated C<implements> and is optional.  Iff the
-C<recipe_heading> is a Perl hash ref, then it is designated
-C<rcp_params> and there is no C<implements>.
+Iff the C<procedure_heading> is a Perl array ref, then it has 1-2
+ordered elements.  The first element is designated C<proc_params> and is
+mandatory.  The second element is designated C<implements> and is optional.
+Iff the C<procedure_heading> is a Perl hash ref, then it is
+designated C<proc_params> and there is no C<implements>.
 
-An C<rcp_params> is a Perl hash ref; it must have at least one element,
-meaning the recipe has one or more parameters; each hash element specifies
-one parameter, and for each hash element, the hash element's key and value,
-respectively, are designated C<param_name> and C<param_details>.  Iff
-C<param_details> is a Perl array ref with at least two elements, and its
-first element is not a non-empty Perl character string consisting of just
-the characters <[ a..z A..Z 0..9 _ - ]>, then the C<param_details> is a
-C<param_multi_meta>; otherwise, C<param_details> is a C<param_single_meta>.
+A C<proc_params> is a Perl hash ref; it must have at least one
+element, meaning the procedure has one or more parameters; each hash
+element specifies one parameter, and for each hash element, the hash
+element's key and value, respectively, are designated C<param_name> and
+C<param_details>.  Iff C<param_details> is a Perl array ref with at
+least two elements, and its first element is not a non-empty Perl character
+string consisting of just the characters <[ a..z A..Z 0..9 _ - ]>, then the
+C<param_details> is a C<param_multi_meta>; otherwise, C<param_details> is a
+C<param_single_meta>.
 
 Iff a parameter's C<param_details> is a C<param_single_meta>, then the
 latter must be either a C<PNSQNameChain_payload> or a single-element array
@@ -1500,19 +1500,34 @@ parameter is an C<upd_global_param; otherwise it is a C<ro_global_param>.
 An C<implements> must be either a C<PNSQNameChain_payload> or a Perl
 array ref having zero or more elements where every element is a
 C<PNSQNameChain_payload>; each C<PNSQNameChain_payload> names a virtual
-recipe which the current recipe is declaring that it implements.
+procedure which the current procedure is declaring that it implements.
 
-A C<recipe_body> must be either the Perl character string C<...>, in which
-case it is an C<empty_routine_body>, or it must be a Perl array ref, having
-at least one element which is an C<update_stmt>, and each other element of
-said Perl array ref must be either a C<with_clause> or a C<named_expr>
-or an C<update_stmt>.
+A C<procedure_body> must be either the Perl character string C<...>, in
+which case it is an C<empty_routine_body>, or it must be a Perl array ref
+having zero or more elements where each element must be either a
+C<with_clause> or a C<proc_var> or a
+C<named_expr> or a C<proc_stmt>; zero elements means that
+the procedure is an unconditional no-op.
 
 A C<with_clause> is a 2-element Perl array ref whose first element is the
 Perl character string C<with> and whose second element is a C<material>
 node.
 
+A C<proc_var> is a 3-element Perl array ref whose first element is the Perl
+character string C<var>, whose second element is a C<Name_payload>, and
+whose third element is a C<type_name> which is a C<PNSQNameChain_payload>.
+
 Examples:
+
+    [ 'procedure', 'print_curr_time', [ {} => [
+        [ 'var', 'now', 'Instant' ],
+        [ 'proc-invo', 'fetch_trans_instant', [ ['&',['d','now']] ] ],
+        [ 'proc-invo', 'write_Text_line', [ [ 'i-op', '~', [
+            'The current time is: ',
+            [ 'func-invo', 'nlx.par.lib.utils.time_as_text',
+                { 'time' => ['d','now'] } ]
+        ] ] ] ],
+    ] ] ]
 
     [ 'recipe', 'count_heads', [ { count => ['&','NNInt'],search => 'Text',
             people => ['::=','fed.data.db1.people'] } => [
@@ -1548,53 +1563,6 @@ Examples:
             [ ['d','a'], ['d','gcd'], ['RoundMeth','Down'] ] ] ] ],
         [ 'i-op', ':=', [ ['d','b'], [ 'i-op', 'div',
             [ ['d','b'], ['d','gcd'], ['RoundMeth','Down'] ] ] ] ],
-    ] ] ]
-
-=head2 Procedure Specification
-
-A C<procedure> node specifies a new procedure that lives in a depot or
-subdepot.  A C<procedure> node has 3 ordered elements:  The first element
-is one of these 3 Perl character strings: C<procedure>, C<system-service>,
-C<transaction>.  The second element is a C<Name_payload>, which is the
-procedure's declared name.  The third element is a C<procedure_payload>.  A
-C<procedure_payload> is a 2-element Perl array ref whose elements are
-designated, in order, C<procedure_heading> and C<procedure_body>.
-
-A C<procedure_heading> is structurally a proper subset of a
-C<recipe_heading>; every valid C<recipe_heading> is also a structurally
-valid C<procedure_heading> except for any C<recipe_heading> that has a
-C<::=> element; the only structural difference between a
-C<procedure_heading> and a C<recipe_heading> is that a recipe has global
-parameters and an procedure doesn't; another exception is that a procedure
-may have zero parameters while a recipe must have more.
-
-A C<procedure_body> must be either the Perl character string C<...>, in
-which case it is an C<empty_routine_body>, or it must be a Perl array ref
-having zero or more elements where each element must be either a
-C<with_clause> or a C<proc_var> or a C<proc_stmt>; zero elements means that
-the procedure is an unconditional no-op.
-
-A C<with_clause> of a C<procedure_body> is structurally identical to one of
-a C<recipe_body>.
-
-A C<proc_var> is a 3-element Perl array ref whose first element is the Perl
-character string C<var>, whose second element is a C<Name_payload>, and
-whose third element is a C<type_name> which is a C<PNSQNameChain_payload>.
-
-Examples:
-
-    [ 'procedure', 'print_curr_time', [ {} => [
-        [ 'var', 'now', 'Instant' ],
-        [ 'iproc-imp-invo', 'fetch_trans_instant', [ ['&',['d','now']] ] ],
-        [ 'var', 'message', 'Text' ],
-        [ 'atomic-stmt' => [
-            [ 'i-op', ':=', [ ['d','message'], [ 'i-op', '~', [
-                'The current time is: ',
-                [ 'func-invo', 'nlx.par.lib.utils.time_as_text',
-                    { 'time' => ['d','now'] } ]
-            ] ] ] ]
-        ] ],
-        [ 'iproc-imp-invo', 'write_Text_line', [ ['d','message'] ] ],
     ] ] ]
 
 =head2 Scalar Type Specification
@@ -1833,7 +1801,7 @@ Examples:
 =head1 GENERIC VALUE EXPRESSIONS
 
 An C<expr_name> node has 2 ordered elements:  The first element is the Perl
-character string C<d>.  The second element is a C<Name_payload>.
+character string C<d> ("data").  The second element is a C<Name_payload>.
 
 A C<named_expr> node has 3 ordered elements:  The first element is either
 of the 2 Perl character strings [C<::=>, C<let>].  The second element is
@@ -1986,42 +1954,6 @@ Examples:
     # a reference to a data type #
     ['material-ref','nlx.lib.foo_type']
 
-=head1 GENERIC RECIPE STATEMENTS
-
-=head2 Generic In-Multi-Update-Statement Imperative Invocation Statements
-
-An C<imus_imp_invo> node has 2-4 ordered elements:  The first element is
-the Perl character string C<imus-imp-invo>.  The second element is a
-C<PNSQNameChain_payload>, which names the recipe to invoke.  The
-last 1-2 elements provide arguments to the recipe invocation;
-either or both or none of an C<Array_payload> element and a
-C<Tuple_payload> element may be given.  The C<Array_payload> 3rd/4th
-element is for any anonymous (and ordered if multiple exist) arguments, and
-the C<Tuple_payload> 3rd/4th element is for any named arguments; each
-C<Array_payload> element or C<Tuple_payload> element value is the
-I<possibly tagged argument value> (PTAV).  For each PTAV, if the argument
-is for a read-only parameter, then the PTAV is just an C<expr> node which
-is the argument value; if the argument is for a subject-to-update
-parameter, then the PTAV is a Perl array ref with exactly 2 elements,
-where the first element is the Perl character string C<&>, and the second
-element is the same C<expr> node that the PTAV would have been were this
-for a read-only parameter.
-
-Examples:
-
-    # two mandatory params, one s-t-u, one r-o #
-    [ 'imus-imp-invo', 'assign', [ ['&',['d','foo']], 3 ] ]
-
-    # same as previous #
-    [ 'imus-imp-invo', 'assign', [ 3, ['&',['d','foo']] ] ]
-
-    # still same as previous but with all-named syntax #
-    [ 'imus-imp-invo', 'assign', { target => ['&',['d','foo']], v => 3 } ]
-
-    # three mandatory params #
-    [ 'imus-imp-invo', 'nlx.lib.lookup', { addr => ['&',['d','addr']],
-        people => ['d','people'], name => ['d','name'] } ]
-
 =head1 GENERIC PROCEDURE STATEMENTS
 
 A C<stmt_name> node has 2 ordered elements:  The first element is the Perl
@@ -2038,7 +1970,7 @@ Examples:
     ['s','foo_stmt']
 
     # a named_stmt node #
-    [ '::=', 'bar_stmt', [ 'iproc-imp-invo', 'nlx.lib.swap',
+    [ '::=', 'bar_stmt', [ 'proc-invo', 'nlx.lib.swap',
         {first => ['&',['d','first']], second => ['&',['d','second']]} ] ]
 
 =head2 Generic Compound Statements
@@ -2046,67 +1978,91 @@ Examples:
 A C<compound_stmt> node has 2 ordered elements:  The first element is the
 Perl character string C<compound-stmt>.  The second element is a Perl
 array ref having zero or more elements where each element must be either
-a C<with_clause> or a C<proc_var> or a C<proc_stmt>; it is interpreted as
+a C<with_clause> or a C<proc_var> or a C<named_expr> or a C<proc_stmt>;
+it is interpreted as
 per a nonempty procedure body, which has exactly the same format.
 
 Examples:
 
     [ 'compound-stmt' => [
         [ 'var', 'message', 'Text' ],
-        [ 'iproc-imp-invo', 'read_Text_line', [ ['&',['d','message']] ] ],
-        [ 'iproc-imp-invo', 'write_Text_line', [ ['d','message'] ] ],
+        [ 'proc-invo', 'read_Text_line', [ ['&',['d','message']] ] ],
+        [ 'proc-invo', 'write_Text_line', [ ['d','message'] ] ],
     ] ]
 
-=head2 Procedure Atomic Statements
+=head2 Multi-Update Statements
 
-An C<atomic_stmt> node has 2 ordered elements:  The first element is the
-Perl character string C<atomic-stmt>.  The second element is a Perl
+A C<multi_upd_stmt> node has 2 ordered elements:  The first element is the
+Perl character string C<multi-upd-stmt>.  The second element is a Perl
 array ref; it is interpreted as per a nonempty recipe body, which has
 exactly the same format.
 
 Examples:
 
-    [ 'atomic-stmt' => [
-        [ 'i-op', ':=', [ ['d','x'], ['d','y'] ] ],
-        [ 'i-op', ':=', [ ['d','y'], ['d','x'] ] ],
+    [ 'multi-upd-stmt' => [
+        [ '::=', 'order_id', [ '??!!',
+            [
+                [[ 'func-invo', 'is_empty', [['d','orders']] ] => 1],
+            ],
+            [ 'post-op', '++', [[ 'func-invo', 'max', [
+                [ 'func-invo', 'Set_from_attr',
+                    [['d','orders']], {name => ['Name','order_id']} ]
+            ] ]] ]
+        ] ],
+
+        [ 'proc-invo', 'assign_insertion', [ ['&',['d','orders']],
+            [ '%', { order_id => ['d','order_id'], date => '2011-03-04' } ]
+        ] ],
+
+        [ 'proc-invo', 'assign_union', [ ['&',['d','order_details']],
+            [ '@' => [ [ 'order_id', 'prod_code', 'qty' ] => [
+                [ ['d','order_id'], 'COG' , 20, ],
+                [ ['d','order_id'], 'CAM' , 10, ],
+                [ ['d','order_id'], 'BOLT', 70, ],
+            ] ] ]
+        ] ],
     ] ]
 
-=head2 Procedure Value Expressions
+=head2 Generic Procedure Invocation Statements
 
-A C<var_name> node has 2 ordered elements:  The first element is the Perl
-character string C<d>.  The second element is a C<Name_payload>.
-
-A C<nil_func_invo> node has 2 ordered elements:  The first element is the
-Perl character string C<func-invo>.  The second element is a
-C<PNSQNameChain_payload>, which names the function to invoke.
-
-=head2 Generic In-Procedure Imperative Invocation Statements
-
-An C<iproc_imp_invo> node has 2-4 ordered elements:  The first element is
-the Perl character string C<iproc-imp-invo>.  The second element is a
-C<PNSQNameChain_payload>, which names the imperative routine to invoke.
-The last 1-2 elements provide arguments to the imperative routine
+A C<proc_invo> node has 2-4 ordered elements:  The first element is
+the Perl character string C<proc-invo>.  The second element is a
+C<PNSQNameChain_payload>, which names the procedure to invoke.
+The last 1-2 elements provide arguments to the procedure
 invocation; either or both or none of an C<Array_payload> element and a
 C<Tuple_payload> element may be given.  The C<Array_payload> 3rd/4th
 element is for any anonymous (and ordered if multiple exist) arguments, and
 the C<Tuple_payload> 3rd/4th element is for any named arguments; each
 C<Array_payload> element or C<Tuple_payload> element value is the
 I<possibly tagged argument value> (PTAV).  For each PTAV, if the argument
-is for a read-only parameter, then the PTAV is just a C<proc_expr> node
+is for a read-only parameter, then the PTAV is just an C<expr> node
 which is the argument value; if the argument is for a subject-to-update
 parameter, then the PTAV is a Perl array ref with exactly 2 elements,
 where the first element is the Perl character string C<&>, and the second
-element is a C<var_name> node, which is the same node that the PTAV would
-have been were this for a read-only parameter with a C<var_name> argument.
+element is the same C<expr> node that the PTAV would have been were this
+for a read-only parameter.
 
 Examples:
 
-    [ 'iproc-imp-invo', 'fetch_trans_instant', [ ['&',['d','now']] ] ]
+    # two mandatory params, one s-t-u, one r-o #
+    [ 'proc-invo', 'assign', [ ['&',['d','foo']], 3 ] ]
 
-    [ 'iproc-imp-invo', 'prompt_Text_line',
+    # same as previous #
+    [ 'proc-invo', 'assign', [ 3, ['&',['d','foo']] ] ]
+
+    # still same as previous but with all-named syntax #
+    [ 'proc-invo', 'assign', { target => ['&',['d','foo']], v => 3 } ]
+
+    # three mandatory params #
+    [ 'proc-invo', 'nlx.lib.lookup', { addr => ['&',['d','addr']],
+        people => ['d','people'], name => ['d','name'] } ]
+
+    [ 'proc-invo', 'fetch_trans_instant', [ ['&',['d','now']] ] ]
+
+    [ 'proc-invo', 'prompt_Text_line',
         [ ['&',['d','name']], 'Enter a person\'s name: ' ] ]
 
-    [ 'iproc-imp-invo', 'Integer.fetch_random',
+    [ 'proc-invo', 'Integer.fetch_random',
         [ ['&',['d','rand']], ['d','interval'] ] ]
 
 =head2 Generic Try-Catch Statements
@@ -2120,8 +2076,8 @@ I<catch> routine to execute iff I<try> throws an exception.
 Examples:
 
     [ 'try-catch',
-        [ 'iproc-imp-invo', 'nlx.lib.attempt_the_work' ],
-        [ 'iproc-imp-invo', 'nlx.lib.deal_with_failure' ]
+        [ 'proc-invo', 'nlx.lib.attempt_the_work' ],
+        [ 'proc-invo', 'nlx.lib.deal_with_failure' ]
     ]
 
 =head2 Generic If-Else Statements
@@ -2130,7 +2086,7 @@ An C<if_else_stmt> node has 2-3 ordered elements:  The first element is the
 2 Perl character string C<if-else-stmt>.  The optional second element is
 I<if_then>, a Perl array ref with 0..N elements, each of those being a
 2-element Perl array ref; the first element is an
-I<if> condition variable (a C<proc_expr> node), and the second element
+I<if> condition variable (an C<expr> node), and the second element
 is the associated I<then> result statement (a C<proc_stmt> node).
 The optional 3rd/last element of an C<if_else_stmt> node is I<else>
 statement, which is a C<proc_stmt> node.
@@ -2140,19 +2096,19 @@ Examples:
     [ 'if-else-stmt',
         [
             [ ['d','out_of_options']
-                => [ 'iproc-imp-invo', 'nlx.lib.give_up' ] ],
+                => [ 'proc-invo', 'nlx.lib.give_up' ] ],
         ],
-        [ 'iproc-imp-invo', 'nlx.lib.keep_going' ]
+        [ 'proc-invo', 'nlx.lib.keep_going' ]
     ]
 
 =head2 Generic Given-When-Default Statements
 
 A C<given_when_def_stmt> node has 3-4 ordered elements:  The first element
 is the Perl character string C<given-when-def-stmt>.  The second element is
-a C<proc_expr> node which is the I<given> common comparand.  The optional
+an C<expr> node which is the I<given> common comparand.  The optional
 third element is I<proc_when_then>, a Perl array ref with 0..N elements,
 each of those being a 2-element Perl array ref; the first
-element is a I<when> comparand (a C<proc_expr> node), and the second
+element is a I<when> comparand (an C<expr> node), and the second
 element is the associated I<then> result statement (a C<proc_stmt>
 node).  The optional 4th/last element of a C<given_when_def_stmt> node is
 I<default_stmt> statement, which is a C<proc_stmt> node.
@@ -2162,11 +2118,11 @@ Examples:
     [ 'given-when-def-stmt',
         ['d','picked_menu_item'],
         [
-            [ 'v' => [ 'iproc-imp-invo', 'nlx.lib.screen_view_record' ] ],
-            [ 'a' => [ 'iproc-imp-invo', 'nlx.lib.screen_add_record' ] ],
-            [ 'd' => [ 'iproc-imp-invo', 'nlx.lib.screen_delete_record' ] ]
+            [ 'v' => [ 'proc-invo', 'nlx.lib.screen_view_record' ] ],
+            [ 'a' => [ 'proc-invo', 'nlx.lib.screen_add_record' ] ],
+            [ 'd' => [ 'proc-invo', 'nlx.lib.screen_delete_record' ] ]
         ],
-        [ 'iproc-imp-invo', 'nlx.lib.display_bad_choice_error' ],
+        [ 'proc-invo', 'nlx.lib.display_bad_choice_error' ],
     ]
 
 =head2 Procedure Leave, Iterate, and Loop Statements
@@ -2188,20 +2144,20 @@ the statement to repeatedly execute.
 Examples:
 
     [ '::=', 'lookup_person', [ loop => [ 'compound-stmt' => [
-        [ 'iproc-imp-invo', 'prompt_Text_line',
+        [ 'proc-invo', 'prompt_Text_line',
             [ ['&',['d','name']], 'Enter a name to search for: ' ] ],
         [ 'given-when-def-stmt', ['d','name'],
             [ ['' => ['leave','lookup_person']] ] ],
-        [ 'iproc-imp-invo', 'nlx.lib.do_search', {
+        [ 'proc-invo', 'nlx.lib.do_search', {
             name => ['d','name'],
             not_found => ['&',['d','not_found']],
             report_text => ['&',['d','report_text']]
         } ],
         [ 'if-else-stmt', [ [['d','not_found'] => [ 'compound-stmt' => [
-            [ 'iproc-imp-invo', 'write_Text_line', ['No person matched'] ],
+            [ 'proc-invo', 'write_Text_line', ['No person matched'] ],
             ['iterate','lookup_person']
         ] ]] ] ],
-        [ 'iproc-imp-invo', 'write_Text_line', [ ['d','report_text'] ] ],
+        [ 'proc-invo', 'write_Text_line', [ ['d','report_text'] ] ],
     ] ] ] ]
 
 =head1 DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
@@ -2468,35 +2424,28 @@ Examples:
 
     [ 'i-op', '<=>', [ ['d','foo'], ['d','bar'] ] ]
 
-=head1 DEPRECATED - IMPERATIVE INVOCATION ALTERNATE SYNTAX STATEMENTS
+=head1 DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS
 
-An C<imp_invo_alt_syntax> node has 3-4 ordered elements:  The first element
+A C<proc_invo_alt_syntax> node has 3-4 ordered elements:  The first element
 is one of the 3 Perl character strings [C<i-op>, C<pre-op>, C<post-op>],
 depending on whether it represents infix, prefix, or postfix syntax,
 respectively.  The second element is a Perl character
 string, hereafter referred to as I<op> or I<keyword>, which determines the
-imperative routine to invoke.  The third element is (usually) a Perl
+procedure to invoke.  The third element is (usually) a Perl
 array ref, hereafter referred to as I<main op args>, which is an ordered
-list of 1-N mandatory inputs to the imperative routine invocation.  The
+list of 1-N mandatory inputs to the procedure invocation.  The
 (optional) fourth element is a Perl hash ref, hereafter referred to
-as I<extra op args>, which is a named list of optional imperative routine
+as I<extra op args>, which is a named list of optional procedure
 inputs.  The number and format of elements of either I<main op args> or
 I<extra op args> varies depending on I<op>.  Note that, when a I<main op
 args> would just contain a single element, such as when it is for a monadic
 operator, it may alternately be formatted as what is otherwise just its
 sole (node) element iff that node is not formatted as a Perl array ref.
 
-Note that, with each of the main imperative invocation alternate syntax
-statement nodes documented in this main POD section, any occurrences of
-child C<var_name> or C<proc_expr> nodes should be read as being C<expr>
-nodes instead in contexts where instances of the main nodes are being
-composed beneath C<recipe> nodes, and just as C<var_name> or
-C<proc_expr> nodes when composed beneath C<procedure> nodes.
+=head2 Procedure Simple Monadic Postfix Operators
 
-=head2 Imperative Simple Monadic Postfix Operators
-
-An C<imp_monadic_postfix_op_invo> node has exactly 1 main op arg, which is
-a C<var_name> node.
+An C<proc_monadic_postfix_op_invo> node has exactly 1 main op arg, which is
+an C<expr> node.
 
 Examples:
 
@@ -2504,16 +2453,22 @@ Examples:
 
     [ 'post-op', ':=--', [['d','countdown']] ]
 
-=head2 Imperative Simple Non-symmetric Dyadic Infix Operators
+=head2 Procedure Simple Non-symmetric Dyadic Infix Operators
 
-An C<imp_nonsym_dyadic_infix_op_invo> node has exactly 2 main op args; the
-first and second main op args are C<lhs_var> (a C<var_name> node) and
-C<rhs_expr> (a C<proc_expr> node), respectively.
+A C<proc_nonsym_dyadic_infix_op_invo> node has exactly 2 main op args, each
+of which is an C<expr> node; the first and second main op args are C<lhs>
+and C<rhs>, respectively.
 
 Examples:
 
     # assign 3 to foo #
     [ 'i-op', ':=', [ ['d','foo'], 3 ] ]
+
+    # swap x and y using pseudo-variables #
+    [ 'i-op', ':=', [
+        ['%',{0=>['d','x'],1=>['d','y']}],
+        ['%',{0=>['d','y'],1=>['d','x']}]
+    ] ]
 
     # delete every person in people whose age is either 10 or 20 #
     [ 'i-op', ':=!matching', [ ['d','people'],

@@ -98,11 +98,11 @@ This graph slice shows all of the catalog scalar types:
                             sys.std.Core.Type.Cat.MaterialNC
                                 sys.std.Core.Type.Cat.AbsPathMaterialNC
                                     sys.std.Core.Type.Cat.APFunctionNC
-                                    sys.std.Core.Type.Cat.APImperativeNC
+                                    sys.std.Core.Type.Cat.APProcedureNC
                                     sys.std.Core.Type.Cat.APTypeNC
                                 sys.std.Core.Type.Cat.RelPathMaterialNC
                                     sys.std.Core.Type.Cat.RPFunctionNC
-                                    sys.std.Core.Type.Cat.RPImperativeNC
+                                    sys.std.Core.Type.Cat.RPProcedureNC
                                     sys.std.Core.Type.Cat.RPTypeNC
                             sys.std.Core.Type.Cat.DataNC
                     sys.std.Core.Type.Cat.Comment
@@ -141,12 +141,12 @@ This graph slice shows all of the catalog nonscalar types:
                     sys.std.Core.Type.Cat.ValRedFunc
                     sys.std.Core.Type.Cat.OrdDetFunc
                 sys.std.Core.Type.Cat.IfThenExprMap
-                sys.std.Core.Type.Cat.Recipe
-                    sys.std.Core.Type.Cat.Updater
                 sys.std.Core.Type.Cat.Procedure
                     sys.std.Core.Type.Cat.SystemService
                     sys.std.Core.Type.Cat.Transaction
-                sys.std.Core.Type.Cat.IfThenVarStmtMap
+                        sys.std.Core.Type.Cat.Recipe
+                            sys.std.Core.Type.Cat.Updater
+                sys.std.Core.Type.Cat.IfThenExprStmtMap
                 sys.std.Core.Type.Cat.ScalarType
                 sys.std.Core.Type.Cat.TupleType
                 sys.std.Core.Type.Cat.RelationType
@@ -186,7 +186,7 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.DepotMountSet
                 sys.std.Core.Type.Cat.FedTypeMapSet
                 sys.std.Core.Type.Cat.SubpackageSet
-                sys.std.Core.Type.Cat.[Function|Recipe|Procedure]Set
+                sys.std.Core.Type.Cat.[Function|Procedure]Set
                 sys.std.Core.Type.Cat.SpecialTypeSet
                 sys.std.Core.Type.Cat.[Scalar|Tuple|Relation]TypeSet
                 sys.std.Core.Type.Cat.[Domain|Subset|Mixin]TypeSet
@@ -208,21 +208,17 @@ This graph slice shows all of the catalog nonscalar types:
                 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
                 sys.std.Core.Type.Cat.WhenThenExprMap
                 sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet
-                sys.std.Core.Type.Cat.MultiUpdStmt
-                sys.std.Core.Type.Cat.RcpGlobalVarAliasMap
-                sys.std.Core.Type.Cat.SysScaValStmtNodeSet
+                sys.std.Core.Type.Cat.ProcGlobalVarAliasMap
                 sys.std.Core.Type.Cat.LeaveStmtNodeSet
                 sys.std.Core.Type.Cat.CompoundStmtNodeSet
-                sys.std.Core.Type.Cat.NilFuncInvoStmtNodeSet
-                sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
-                sys.std.Core.Type.Cat.IISArgVarMap
+                sys.std.Core.Type.Cat.MultiUpdStmtNodeSet
+                sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
                 sys.std.Core.Type.Cat.TryCatchStmtNodeSet
                 sys.std.Core.Type.Cat.IfElseStmtNodeSet
                 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
-                sys.std.Core.Type.Cat.WhenThenVarStmtMap
+                sys.std.Core.Type.Cat.WhenThenExprStmtMap
                 sys.std.Core.Type.Cat.IterateStmtNodeSet
                 sys.std.Core.Type.Cat.LoopStmtNodeSet
-                sys.std.Core.Type.Cat.APMaterialNCSelStmtNodeSet
                 sys.std.Core.Type.Cat.PossrepSet
                 sys.std.Core.Type.Cat.PossrepMapSet
                 sys.std.Core.Type.Cat.VirtualAttrMapSet
@@ -522,9 +518,9 @@ C<AbsPathMaterialNC> that excludes the C<type>-prefix values and a subset
 of the C<sys>-prefix values.  Its default value is a reference to the
 C<sys.std.Core.Universal.is_same> function.
 
-=head2 sys.std.Core.Type.Cat.APImperativeNC
+=head2 sys.std.Core.Type.Cat.APProcedureNC
 
-C<APImperativeNC> is a proper subtype of
+C<APProcedureNC> is a proper subtype of
 C<AbsPathMaterialNC> that excludes the C<type>-prefix values and a subset
 of the C<sys>-prefix values.  Its default
 value is a reference to the C<sys.std.Core.Universal.assign> updater.
@@ -550,9 +546,9 @@ the C<type>-prefix values and a subset of the C<sys>-prefix values.  Its
 default value is a reference to the C<sys.std.Core.Universal.is_same>
 function.
 
-=head2 sys.std.Core.Type.Cat.RPImperativeNC
+=head2 sys.std.Core.Type.Cat.RPProcedureNC
 
-C<RPImperativeNC> is a proper subtype of C<RelPathMaterialNC> that excludes
+C<RPProcedureNC> is a proper subtype of C<RelPathMaterialNC> that excludes
 the C<type>-prefix values and a subset of the C<sys>-prefix values.  Its
 default value is a reference to the C<sys.std.Core.Universal.assign>
 updater.
@@ -1169,7 +1165,7 @@ subpackages, and any that exist are arranged in a hierarchy with the
 package as the root.  The system catalog variable named C<nlx.cat> is of
 the C<Package> type.
 
-A C<Package> has these 18 attributes:
+A C<Package> has these 17 attributes:
 
 =over
 
@@ -1182,11 +1178,10 @@ This is an optional programmer comment about the [|sub]package as a whole.
 These are all the subpackages that this system catalog contains (which
 might be none).
 
-=item C<functions|recipes|procedures> -
-C<[Function|Recipe|Procedure]Set>
+=item C<functions|procedures> - C<[Function|Procedure]Set>
 
 These are all the definitions that this [|sub]package contains of
-functions, recipes, procedures.
+functions, procedures.
 
 =item C<special_types> - C<SpecialTypeSet>
 
@@ -1297,14 +1292,14 @@ of the named entities directly within the namespace defined by C<parent>.
 A C<SubpackageSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Function|Recipe|Procedure]Set
+=head2 sys.std.Core.Type.Cat.[Function|Procedure]Set
 
-A C<[Function|Recipe|Procedure]Set> is a C<DHRelation> that
-specifies a set of functions|recipes|procedures
+A C<[Function|Procedure]Set> is a C<DHRelation> that
+specifies a set of functions|procedures
 that a [|sub]package might directly contain.  I<TODO: each routine may be
 either public for the DBMS as a whole or private to the subpackage.>
 
-A C<[Function|Recipe|Procedure]Set> has these 5 attributes:
+A C<[Function|Procedure]Set> has these 5 attributes:
 
 =over
 
@@ -1312,27 +1307,27 @@ A C<[Function|Recipe|Procedure]Set> has these 5 attributes:
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
 of any hypothetical immediate child namespace of the package, of the
-function|recipe|procedure's parent [|sub]package.
+function|procedure's parent [|sub]package.
 
 =item C<name> - C<Name>
 
-This is the declared name of the function|recipe|procedure within
+This is the declared name of the function|procedure within
 the namespace defined by C<parent>; other Muldis D code would reference it
 with the combination of C<parent> and C<name>.
 
 =item C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the
-function|recipe|procedure as a whole.
+function|procedure as a whole.
 
 =item C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this routine's declaration relative to all of
 the named entities directly within the namespace defined by C<parent>.
 
-=item C<material> - C<Function|Recipe|Procedure>
+=item C<material> - C<Function|Procedure>
 
-This defines the entire function|recipe|procedure sans its name.
+This defines the entire function|procedure sans its name.
 Note that it is not mandatory for a system-defined routine to have a
 specified I<body> (just a specified I<heading> is mandatory), and often it
 won't; but often it will, especially if it is a function used in the
@@ -1340,7 +1335,7 @@ definition of a system-defined data type.
 
 =back
 
-A C<[Function|Recipe|Procedure]Set> has a binary primary key on the
+A C<[Function|Procedure]Set> has a binary primary key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.SpecialTypeSet
@@ -1597,7 +1592,7 @@ are also implicitly tree nodes, and are referenced by name into the
 expression the same way as any other named expression node is.  The
 tree must denote a value
 expression whose result type is of the result type of the function
-it is composed into, and which invokes all of the function's parameters.
+it is composed into, and which references all of the function's parameters.
 
 C<Function> has a distributed primary key over the C<name> attributes of
 C<params> and the C<name> attributes of all the attributes of C<expr>.  Its
@@ -1672,22 +1667,20 @@ C<Bool:False> before C<Bool:True>.
 
 An C<ExprNodeSet> is a C<Database> that specifies a set of named value
 expression nodes.  It is typically composed into a
-function|recipe.  Each tuple of an C<ExprNodeSet> attribute is a
+function or procedure.  Each tuple of an C<ExprNodeSet> attribute is a
 named expression node, which is the majority component of functional Muldis
 D code.  All arbitrarily complex Muldis D expression trees, including
 relational queries, are composed of just expression nodes, either directly,
 or indirectly by way of function invocations, as each function body is
 itself composed entirely of a single expression tree (of at least 1 node).
-Only functions and recipes may contain expression
-nodes, so for any procedures that would conceptually include them, those
-portions of the procedures need to be separated out and encapsulated by
-named functions or recipes.  Note that, while the
+Note that, while the
 general case has expression trees simply denoting a value, in some cases
 they may instead define a pseudo-variable / virtual variable; that only
-happens or recipes where the expression is used as an argument
-for a subject-to-update parameter of a recipe call; in
-that case the leaf nodes / only node of the expression must map to a
-subject-to-update parameter of the expression-containing recipe.
+happens with procedures where the expression is used as an argument
+for a subject-to-update parameter of a procedure call, or in the target
+position of a generic assignment statement; in that case the leaf nodes /
+only node of the expression must map to a subject-to-update parameter or
+variable of the expression-containing procedure.
 
 An C<ExprNodeSet> has these 15 attributes:
 
@@ -1769,14 +1762,14 @@ There is a distributed primary key over the C<name> attributes of all of an
 C<ExprNodeSet>'s attributes.  Its default value is empty.
 
 Note that, for each expression node in an C<ExprNodeSet>, iff the
-expression node is declared directly within its host atomic routine's body,
+expression node is declared directly within its host routine's body,
 then its C<scm_vis_ord> attribute is non-zero, and the latter gives the
 node's visible order relative to all other such expression nodes, and all
 update statements if applicable, of the host routine, and all update
 statements of said host routine; otherwise, iff the expression node is
 nested beneath another expression node or a statement node, then the
 C<scm_vis_ord> attribute isn't applicable, and is zero.  In other words,
-when generating concrete Muldis D code from a C<Function|Recipe>,
+when generating concrete Muldis D code from a C<Function> or C<Procedure>,
 the sole determinant of whether to nest any given expression node under
 another expression or statement node, or not, is based on whether its
 C<scm_vis_ord> is zero or not; zero means nested, non-zero means otherwise.
@@ -2435,198 +2428,6 @@ An C<APMaterialNCSelExprNodeSet> has a unary (unique) key on the C<name>
 attribute, plus another such key on the C<referencing> attribute.  Its
 default value is empty.
 
-=head2 sys.std.Core.Type.Cat.MultiUpdStmt
-
-A C<MultiUpdStmt> is a C<DHRelation> that specifies a multi-update
-statement (of 1..N variables), which is the narrowest scope implicitly
-atomic component of procedural Muldis D code.  It is the most fundamental
-component of procedural Muldis D code.  The variables being updated are
-accessed via the host recipe's subject-to-update parameters
-(or via the host updater's lexical-alias variables).  All
-arbitrarily complex Muldis D value assignments, including relational
-assignments, are composed of just C<MultiUpdStmt>, either directly, or
-indirectly by way of recipe invocations, as each
-recipe body is itself composed entirely of 1 multi-update statement (plus
-supporting value expressions).  Only recipes may contain
-C<MultiUpdStmt>, so for any procedures that would conceptually include
-them, those portions of the procedures need to be separated out and
-encapsulated by named recipes.  Each tuple of a multi-update
-statement is a single update statement, which represents a single
-invocation of an recipe.  C<MultiUpdStmt> itself has no
-restriction on the number of tuples it consists of, but:  At least 1 tuple
-is required iff the multi-update statement is composed into a specified
-recipe body; otherwise there must be only be zero tuples for an
-unspecified recipe body.
-
-A C<MultiUpdStmt> has these 5 attributes:
-
-=over
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the single update statement as
-a whole.
-
-=item C<scm_vis_ord> - C<NNInt>
-
-This is the visible order of this single update statement relative to all
-of its sibling statements, or non-nested expression nodes, of its host
-recipe's multi-update statement.
-
-=item C<imperative> - C<MaterialNC>
-
-This is the name of the recipe being invoked.
-
-=item C<upd_args> - C<NameExprMap>
-
-These are the 1..N subject-to-update arguments to the updater
-invocation, or the 0..N subject-to-update arguments to the recipe
-invocation, as-per C<ro_args>.  But since each expression tree in
-C<upd_args> is binding to a subject-to-update parameter, the expression
-tree actually is defining a pseudo-variable / virtual-variable over 1..N
-statement-containing-updater subject-to-update parameters; in the most
-trivial (and common) case, the parameter is referenced directly.
-
-=item C<ro_args> - C<NameExprMap>
-
-These are the 0..N read-only arguments to the recipe invocation.
-Each element defines one argument value, with the element C<name> matching
-the invoked routine's parameter name, and the element C<expr> naming a
-local expression node (or parameter) which defines the value.
-
-=back
-
-C<MultiUpdStmt> has a distributed primary key over the C<name>
-attributes of C<upd_args> and C<ro_args>.  Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.Recipe
-
-A C<Recipe> is a C<DHTuple>.  It defines a new recipe, which has 2 main
-parts, called I<heading> and I<body>:  The I<heading> defines the recipe's
-entire public interface, which is all the details of how to use it, except
-for its name, and no more detail than necessary about how it is
-implemented.  The I<body> defines the recipe's entire implementation (or
-the main body of an recipe), besides its name/etc and what the I<heading>
-defines.  The recipe's name is provided by the larger context that embeds
-the C<Recipe>, which is either a C<Package> or C<System>.  Every C<Recipe>
-must have a specified I<heading>, but having a specified I<body> is
-optional iff the C<Recipe> is embedded in a C<System>, because often the
-implementations of system-defined routines are not defined in terms of
-other Muldis D routines, but that the I<body> must not be specified if the
-C<Recipe> is virtual.
-
-A C<Recipe> has these 10 attributes, of which the 7 C<upd_params>,
-C<ro_params>, C<opt_params>, C<upd_global_params>, C<ro_global_params>
-C<dispatch_params>, C<implements>, define the I<heading> and the 2
-C<exprs>, C<stmt> define the I<body>:
-
-=over
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the recipe as a whole.
-
-=item C<upd_params> - C<NameTypeMap>
-
-This is the declared subject-to-update parameter list of the recipe, which
-has 0..N named and typed such parameters.
-
-=item C<ro_params> - C<NameTypeMap>
-
-This is the declared read-only parameter list of the recipe, which has
-0..N named and typed such parameters.
-
-=item C<opt_params> - C<set_of.Name>
-
-This indicates the subset of the recipe's subject-to-update or read-only
-parameters that are optional, that is, do not need to be supplied explicit
-arguments when the function is invoked; any recipe parameters not named
-here must be supplied explicit arguments.  Any parameter marked as optional
-which is not given an explicit argument will implicitly default to the
-default value of its declared type; any subject-to-update parameter marked
-as optional which is not given a explicit argument will implicitly bind to
-a new anonymous variable (with the aforementioned default value) which is
-discarded after the recipe finishes executing.  Each element of
-C<opt_params> must match a parameter name in either C<upd_params> or
-C<ro_params>.
-
-=item C<upd_global_params> - C<RcpGlobalVarAliasMap>
-
-This declares 0..N lexical aliases for global variables which will
-serve as implicit subject-to-update parameters of the recipe.
-
-=item C<ro_global_params> - C<RcpGlobalVarAliasMap>
-
-This declares 0..N lexical aliases for global variables which will
-serve as implicit read-only parameters of the recipe.
-
-=item C<dispatch_params> - C<set_of.Name>
-
-Iff C<dispatch_params> is nonempty then this recipe is a virtual
-recipe; otherwise, empty means not virtual.  A virtual recipe must
-have no I<body> specified.  This attribute indicates the subset of the
-recipe's parameters whose invocation arguments' types are consulted to
-determine which other recipe, that explicitly implements this virtual
-one, is automatically dispatched to.  Each element of C<dispatch_params>
-must match a parameter name in C<upd_params> or C<ro_params>.  Any given
-parameter can not be both a dispatch parameter and an optional parameter.
-
-=item C<implements> - C<set_of.RPImperativeNC>
-
-Iff C<implements> is nonempty then this recipe is explicitly declaring
-that it implements the other (typically just one), virtual recipes named
-by its elements; otherwise, empty means not implementing any virtuals.  An
-implementing recipe must have the same parameter list as its virtuals,
-save that the implementer's parameters' declared types must be
-subtypes of the corresponding ones of the virtuals.
-
-=item C<exprs> - C<ExprNodeSet>
-
-This defines the expression trees that are arguments to the update
-operators that C<stmt> invokes.  These expression trees must reference all
-of the read-only parameters that the update operator has.
-
-=item C<stmt> - C<MultiUpdStmt>
-
-This defines the entire body of the recipe, which is composed of
-a single multi-update statement.  This multi-update statement must
-reference all of the parameters and global-aliases that the recipe has.
-
-=back
-
-Iff an C<Recipe> has no specified I<body>, then C<exprs> must have zero
-member nodes and C<stmt> must have zero member tuples; otherwise, C<stmt>
-must have at least 1 member tuple.
-
-C<Recipe> must have at least one subject-to-update parameter or
-subject-to-update lexical-alias variable.
-
-C<Recipe> has a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params> and C<upd_global_params> and
-C<ro_global_params> and the
-C<name> attributes of all the attributes of C<exprs>.  Its default value
-has 1 subject-to-update, non-optional parameter whose name is C<topic> and
-whose declared type is C<Bool>; it has zero read-only parameters and zero
-lexical-alias variables; it has no specified I<body>.
-
-=head2 sys.std.Core.Type.Cat.Updater
-
-An C<Updater> defines an C<updater>, which is a kind of recipe.
-C<Updater> is a proper subtype of C<Recipe> where for every member value
-its C<upd_global_params> and C<ro_global_params> attributes are empty and
-its C<upd_params> attribute is nonempty.
-
-=head2 sys.std.Core.Type.Cat.RcpGlobalVarAliasMap
-
-A C<RcpGlobalVarAliasMap> is a C<DHRelation>.  It defines a set of lexical
-variable names, with a declared global variable for each.  It is used to
-define lexical variables of recipes that are aliases for global variables,
-for reading or updating.  A C<RcpGlobalVarAliasMap> has 4 attributes,
-C<name> (a C<Name>), C<global> (a C<DataNC>), C<scm_comment> (a
-C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of
-the lexical alias, and comprises a unary key; the C<global> is the
-invocation name of the global variable.  Its default value has zero tuples.
-
 =head2 sys.std.Core.Type.Cat.Procedure
 
 A C<Procedure> is a C<DHTuple>.  It defines a new procedure, which has 2
@@ -2644,10 +2445,11 @@ implementations of system-defined routines are not defined in terms of
 other Muldis D routines, but that the I<body> must not be specified if the
 C<Procedure> is virtual.
 
-A C<Procedure> has these 10 attributes, of which the 7 C<upd_params>,
-C<ro_params>, C<opt_params>, C<dispatch_params>, C<implements>,
-C<is_system_service>, C<is_transaction> define the
-I<heading> and the 2 C<vars>, C<stmt> define the I<body>:
+A C<Procedure> has these 13 attributes, of which the 9 C<upd_params>,
+C<ro_params>, C<opt_params>, C<upd_global_params>, C<ro_global_params>,
+C<dispatch_params>, C<implements>, C<is_system_service>, C<is_transaction>
+define the I<heading> and the 3 C<vars>, C<exprs>, C<stmt> define the
+I<body>:
 
 =over
 
@@ -2667,7 +2469,27 @@ This is the declared read-only parameter list of the procedure, which has
 
 =item C<opt_params> - C<set_of.Name>
 
-This is as per the same-named attribute of C<Recipe>.
+This indicates the subset of the procedure's subject-to-update or read-only
+parameters that are optional, that is, do not need to be supplied explicit
+arguments when the function is invoked; any procedure parameters not named
+here must be supplied explicit arguments.  Any parameter marked as optional
+which is not given an explicit argument will implicitly default to the
+default value of its declared type; any subject-to-update parameter marked
+as optional which is not given a explicit argument will implicitly bind to
+a new anonymous variable (with the aforementioned default value) which is
+discarded after the procedure finishes executing.  Each element of
+C<opt_params> must match a parameter name in either C<upd_params> or
+C<ro_params>.
+
+=item C<upd_global_params> - C<ProcGlobalVarAliasMap>
+
+This declares 0..N lexical aliases for global variables which will
+serve as implicit subject-to-update parameters of the procedure.
+
+=item C<ro_global_params> - C<ProcGlobalVarAliasMap>
+
+This declares 0..N lexical aliases for global variables which will
+serve as implicit read-only parameters of the procedure.
 
 =item C<dispatch_params> - C<set_of.Name>
 
@@ -2680,7 +2502,7 @@ one, is automatically dispatched to.  Each element of C<dispatch_params>
 must match a parameter name in C<upd_params> or C<ro_params>.  Any given
 parameter can not be both a dispatch parameter and an optional parameter.
 
-=item C<implements> - C<set_of.RPImperativeNC>
+=item C<implements> - C<set_of.RPProcedureNC>
 
 Iff C<implements> is nonempty then this procedure is explicitly declaring
 that it implements the other (typically just one), virtual procedures named
@@ -2693,7 +2515,7 @@ subtypes of the corresponding ones of the virtuals.
 
 Iff this is C<Bool:True> then the procedure is explicitly declared to be a
 C<system-service>, meaning it will be subject to tighter constraints on its
-allowed actions (it may not invoke any recipes / globals) and its execution
+allowed actions (it may not invoke any globals) and its execution
 will automatically be entirely contained within a single transaction of the
 highest possible isolation level, "serializable", same as an recipe is;
 iff this is C<Bool:False> then the procedure is I<not> explicitly declared
@@ -2716,13 +2538,22 @@ C<is_transaction> may be either C<Bool:True> or C<Bool:False>.
 This defines the 0..N (non-parameter) lexical variables of the
 procedure; they initialize to the default values of their declared types.
 
+=item C<exprs> - C<ExprNodeSet>
+
+This defines the expression trees that are composed into the statements
+comprising the procedure body.  They may either be defined inline of the
+statements or offside; in the latter case they are given explicit names by
+the programmers and common expression trees may be reused in multiple
+statements, wherein they are semantically like macros.
+
 =item C<stmt> - C<StmtNodeSet>
 
 This defines the statement tree that comprises the entire procedure body.
 
 =back
 
-Iff a C<Procedure> has no specified I<body>, then C<stmt> must have zero
+Iff a C<Procedure> has no specified I<body>, then C<stmt> and
+C<exprs> must have zero
 member nodes and C<vars> must have zero member tuples; otherwise, C<stmt>
 must have at least 1 member node, which is a compound statement node
 (having just that 1 node means the procedure is an unconditional no-op).
@@ -2735,9 +2566,13 @@ all member nodes must define a simple statement node tree, such
 that every member except one (which is the root node) has one of its peers
 as a parent node, and no direct cycles between members are permitted (only
 indirect cycles based on procedure invocations are allowed); the
-name of the root node must be the empty string.  The root node must also be
-a compound statement node, meaning a tuple of the procedure's
-C<stmt.compound_stmts> attribute; while making this requirement isn't
+name of the root node must be the empty string.  Note that the
+composed-into procedure's parameters (regular and global) and lexical
+variables are also implicitly expression tree nodes, and are referenced by
+name into the statements the same way as any other named expression node
+is.  The root node must also be a compound statement node, meaning a tuple
+of either the procedure's C<stmt.compound_stmts> attribute or its
+C<stmt.multi_upd_stmts> attribute; while making this requirement isn't
 strictly necessary in general, that requirement allows the corresponding
 concrete Muldis D grammars to be simpler, and a compound statement node
 would end up being the root anyway in 99% of likely real procedures.  The
@@ -2745,7 +2580,8 @@ statement tree should reference all of the parameters and lexical variables
 that the procedure has, but this isn't a strict requirement.
 
 C<Procedure> has a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params> and C<vars> and the C<name> attributes of
+C<upd_params> and C<ro_params> and C<upd_global_params> and
+C<ro_global_params> and C<vars> and the C<name> attributes of
 all the attributes of C<stmt>.  Its default value has zero parameters and
 has no specified I<body>.
 
@@ -2762,28 +2598,50 @@ C<Transaction> is a proper subtype of C<Procedure> where for every member
 value its C<is_transaction> attribute is C<Bool:True> and its
 C<is_system_service> attribute is C<Bool:False>.
 
+=head2 sys.std.Core.Type.Cat.Recipe
+
+A C<Recipe> defines a C<recipe>, which is a kind of C<transaction>.
+C<Recipe> is a proper subtype of C<Transaction> where for every member
+value its C<vars> attribute is empty, and at least one of its C<upd_params>
+and C<upd_global_params> attributes is nonempty, and for its C<stmt>
+attribute, the root node is a C<multi_upd_stmt> node.  Its default value
+has 1 subject-to-update, non-optional parameter whose name is C<topic> and
+whose declared type is C<Bool>; it has zero read-only parameters and zero
+lexical-alias variables; it has no specified I<body>.
+
+=head2 sys.std.Core.Type.Cat.Updater
+
+An C<Updater> defines an C<updater>, which is a kind of recipe.
+C<Updater> is a proper subtype of C<Recipe> where for every member value
+its C<upd_global_params> and C<ro_global_params> attributes are empty and
+its C<upd_params> attribute is nonempty.
+
+=head2 sys.std.Core.Type.Cat.ProcGlobalVarAliasMap
+
+A C<ProcGlobalVarAliasMap> is a C<DHRelation>.  It defines a set of lexical
+variable names, with a declared global variable for each.  It is used to
+define lexical variables of procedures that are aliases for global
+variables, for reading or updating.  A C<ProcGlobalVarAliasMap> has 4
+attributes, C<name> (a C<Name>), C<global> (a C<DataNC>), C<scm_comment> (a
+C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of
+the lexical alias, and comprises a unary key; the C<global> is the
+invocation name of the global variable.  Its default value has zero tuples.
+
 =head2 sys.std.Core.Type.Cat.StmtNodeSet
 
 A C<StmtNodeSet> is a C<Database> that specifies a set of named
 statement nodes.  It is typically composed into a procedure.  Each
 tuple of a C<StmtNodeSet> attribute is a named statement node, from
-which non-implicitly-atomic procedural Muldis D code is composed.
+which procedural Muldis D code is composed.
 
 Note that, regarding Muldis D's feature of a statement node having an
 explicit C<name> that can be referenced by "leave" and "iterate" control
 flow statements to leave or re-iterate the corresponding block, both SQL
 and Perl have native counterpart features in the form of block labels.
 
-A C<StmtNodeSet> has these 11 attributes:
+A C<StmtNodeSet> has these 9 attributes:
 
 =over
-
-=item C<sys_sca_val_stmts> - C<SysScaValStmtNodeSet>
-
-These are statement nodes that represent the assignment to local variables
-of newly selected scalar values of types such that all of the standard
-Muldis D dialects provide special "opaque value literal" syntax specific to
-the type.
 
 =item C<leave_stmts> - C<LeaveStmtNodeSet>
 
@@ -2792,17 +2650,20 @@ These are statement nodes that represent abnormal block exit statements.
 =item C<compound_stmts> - C<CompoundStmtNodeSet>
 
 These are statement nodes that each represent a compound statement having a
-sequence of 0..N procedure statements.
+sequence of 0..N procedure statements that conceptually are executed in
+order and at distinct points in time.
 
-=item C<nil_func_invo_stmts> - C<NilFuncInvoStmtNodeSet>
+=item C<multi_upd_stmts> - C<MultiUpdStmtNodeSet>
 
-These are statement nodes that represent niladic function invocations and
-the assignment to local variables of the results of those invocations.
+These are statement nodes that each represent a multi-update statement,
+which is a compound statement having a set of 0..N procedure statements
+that conceptually are executed all as one and collectively at a single
+point in time, as if the collection were a single statement that did all
+the work of the component statements itself.
 
-=item C<imp_invo_stmts> - C<ImpInvoStmtNodeSet>
+=item C<proc_invo_stmts> - C<ProcInvoStmtNodeSet>
 
-These are statement nodes that represent imperative routine
-(updater or procedure) invocations.
+These are statement nodes that represent procedure invocations.
 
 =item C<try_catch_stmts> - C<TryCatchStmtNodeSet>
 
@@ -2825,53 +2686,10 @@ These are statement nodes that represent abnormal block restart statements.
 
 These are statement nodes that represent generic looping block statements.
 
-=item C<ap_material_nc_sel_stmts> - C<APMaterialNCSelStmtNodeSet>
-
-These are statement nodes that represent the assignment to local variables
-of newly selected routine or type reference values.
-
 =back
 
 There is a distributed primary key over the C<name> attributes of all of a
 C<StmtNodeSet>'s attributes.  Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.SysScaValStmtNodeSet
-
-An C<SysScaValStmtNodeSet> is a C<DHRelation> that specifies a set of
-atomic statement nodes where each node represents the assignment to a
-variable (or parameter) of a hard-coded scalar literal that is I<not> being
-specified explicitly in terms of possrep attributes, but rather is
-specified using special "opaque value literal" syntax that all of the
-Muldis D standard dialects provide.  Using one of these statement nodes
-should be an effective alternative to either declaring a niladic function
-or declaring (or extending) an updater that simply combines a simple scalar
-selecting expression node with an C<assign> updater call.
-
-An C<SysScaValStmtNodeSet> has these 4 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the statement node.
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the statement (leaf) node.
-
-=item C<target> - C<Name>
-
-This is name of the local parameter or variable that will have the newly
-selected scalar value assigned to it.
-
-=item C<value> - C<SysScalar>
-
-This is the actual scalar value that the statement node is selecting.
-
-=back
-
-An C<SysScaValStmtNodeSet> has a unary primary key on the C<name>
-attribute.  Its default value is empty.
 
 =head2 sys.std.Core.Type.Cat.LeaveStmtNodeSet
 
@@ -2915,7 +2733,8 @@ empty.
 
 A C<CompoundStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node is a compound statement composed of a
-sequence of 0..N other statements.
+sequence of 0..N other statements that conceptually are executed in
+order and at distinct points in time.
 
 A C<CompoundStmtNodeSet> has these 3 attributes:
 
@@ -2941,54 +2760,20 @@ execute in this given sequence.
 A C<CompoundStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.NilFuncInvoStmtNodeSet
+=head2 sys.std.Core.Type.Cat.MultiUpdStmtNodeSet
 
-A C<NilFuncInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
-atomic statement nodes where each node represents the assignment to a
-variable (or parameter) of the result of an invocation of a niladic
-function (with no arguments).  The invoked function can be either
-user-defined or system-defined.  Using one of these statement nodes should
-be an effective alternative to declaring (or extending) an updater that
-simply combines a single niladic-function-invoking expression node with an
-C<assign> updater call, such as when you want to set a variable to an
-arbitrarily complex but statically defined value.
+A C<MultiUpdStmtNodeSet> is a C<DHRelation> that specifies a set of
+statement nodes where each node is a multi-update statement, which is a
+compound statement composed of a set of 0..N procedure statements that
+conceptually are executed all as one and collectively at a single point in
+time, as if the collection were a single statement that did all the work of
+the component statements itself.  All arbitrarily complex Muldis D value
+assignments, including relational assignments, are composed of just
+multi-update statements, either directly, or indirectly by way of recipe
+invocations, as each recipe body is itself composed entirely of 1
+multi-update statement (plus supporting value expressions).
 
-A C<NilFuncInvoStmtNodeSet> has these 4 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the statement node.
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the statement (leaf) node.
-
-=item C<target> - C<Name>
-
-This is name of the local parameter or variable that will have the result
-value of the function invocation assigned to it.
-
-=item C<function> - C<MaterialNC>
-
-This is the name of the function being invoked by the statement node.
-
-=back
-
-A C<NilFuncInvoStmtNodeSet> has a unary primary key on the C<name>
-attribute.  Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.ImpInvoStmtNodeSet
-
-An C<ImpInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
-statement nodes where each node is an invocation of an imperative routine
-(recipe or procedure) with specific arguments.  The invoked
-routine can be either user-defined or system-defined.  Iff the invoked
-routine is a recipe, then that statement node is an atomic
-statement node.
-
-An C<ImpInvoStmtNodeSet> has these 5 attributes:
+A C<MultiUpdStmtNodeSet> has these 3 attributes:
 
 =over
 
@@ -3001,48 +2786,74 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<imperative> - C<MaterialNC>
+=item C<stmts> - C<set_of.Name>
 
-This is the name of the imperative routine being invoked.
-
-=item C<upd_args> - C<IISArgVarMap>
-
-These are the 0..N subject-to-update arguments to the imperative routine
-invocation, as-per C<ro_args>; but iff the routine being invoked is an
-updater, then there must instead be 1..N subject-to-update arguments,
-because an updater must take at least 1 subject-to-update argument.
-
-=item C<ro_args> - C<IISArgVarMap>
-
-These are the 0..N read-only arguments to the imperative routine
-invocation.  Each element defines one argument value, with the element
-C<arg> matching the invoked routine's parameter name, and the element
-C<var> naming a local or global variable or statement-containing-procedure
-parameter which defines the value.
+This is a set of names of 0..N other local statement nodes; the current
+multi-update statement consists of having those other statements execute
+all as one.  Each of the other statements composed into a multi-update
+statement may only be either a C<proc_invo_stmt> node that invokes a
+recipe or an assignment; it may not be any non-deterministic statement.
 
 =back
 
-An C<ImpInvoStmtNodeSet> has a unary primary key on the C<name>
+A C<MultiUpdStmtNodeSet> has a unary primary key on the C<name> attribute.
+Its default value is empty.
+
+=head2 sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
+
+A C<ProcInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
+statement nodes where each node is an invocation of a named procedure
+with specific arguments.
+
+A C<ProcInvoStmtNodeSet> has these 5 attributes:
+
+=over
+
+=item C<name> - C<Name>
+
+This is the declared name of the statement node.
+
+=item C<scm_comment> - C<Comment>
+
+This is an optional programmer comment about either the statement node or
+the statement node (sub-)tree it is the root of.
+
+=item C<procedure> - C<MaterialNC>
+
+This is the name of the procedure being invoked.
+
+=item C<upd_args> - C<NameExprMap>
+
+These are the 0..N subject-to-update arguments to the procedure invocation,
+as-per C<ro_args>; but iff the routine being invoked is an updater, then
+there must instead be 1..N subject-to-update arguments, because an updater
+must take at least 1 subject-to-update argument.  But since each expression
+tree in C<upd_args> is binding to a subject-to-update regular/global
+parameter or lexical variable, the expression tree actually is defining a
+pseudo-variable / virtual-variable over 1..N parameters/variables; in the
+most trivial (and common) case, the parameter/variable is referenced
+directly.
+
+=item C<ro_args> - C<NameExprMap>
+
+These are the 0..N read-only arguments for the procedure invocation.  Each
+element defines one argument value, with the element C<name> matching the
+invoked procedure's parameter name, and the element C<expr> naming another
+local expression node (or regular/global parameter or variable) which
+defines the value.
+
+=back
+
+A C<ProcInvoStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.  There is a distributed primary
 key over the C<name> attributes of C<upd_args> and C<ro_args>.
-
-=head2 sys.std.Core.Type.Cat.IISArgVarMap
-
-An C<IISArgVarMap> is a C<DHRelation>.  It defines a set of argument names,
-with a declared local or global variable (or parameter or pseudo-variable)
-name for each.  It is used to define argument lists for routine invocations
-by procedures.  An C<IISArgVarMap> has 2 attributes, C<arg> (a C<Name>) and
-C<var> (a C<Name>); the C<arg> is the name of the routine argument,
-and comprises a unary key; the C<var> is the invocation name of the
-variable (or parameter or pseudo-variable) which defines the value for the
-argument.  Its default value has zero tuples.
 
 =head2 sys.std.Core.Type.Cat.TryCatchStmtNodeSet
 
 A C<TryCatchStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node represents a try-catch control flow
 statement.  A try-catch-stmt node is conceptually a wrapper over a pair
-of C<ImpInvoStmtNodeSet> named I<try> and I<catch>, where I<try> is
+of C<ProcInvoStmtNodeSet> named I<try> and I<catch>, where I<try> is
 unconditionally invoked first and then iff I<try> throws an exception then
 it will be caught and I<catch> will be invoked immediately after to handle
 it; if I<catch> also throws an exception then it will not be caught.  Each
@@ -3085,14 +2896,8 @@ attribute.  Its default value is empty.
 
 An C<IfElseStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node represents an N-way if-else control flow
-statement.  An C<IfElseStmtNodeSet> is essentially the imperative
-version of the functional C<IfElseExprNodeSet>, except that for design
-simplicity, all of the conditionals need to be pre-evaluated and their
-boolean results stored in variables (but this could be a lazy though still
-necessarily deterministic operation, so work isn't actually done if the
-results aren't needed); if any conditionals could only be conditionally
-evaluated, then the necessary logic means this if-else statement must be
-broken up into multiple nested if-else.
+statement.  An C<IfElseStmtNodeSet> is essentially the procedural
+version of the functional C<IfElseExprNodeSet>.
 
 An C<IfElseStmtNodeSet> has these 4 attributes:
 
@@ -3107,18 +2912,18 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<if_then> - C<array_of.IfThenVarStmtMap>
+=item C<if_then> - C<array_of.IfThenExprStmtMap>
 
-This is a sequence of 0..N conditional result variable names, each of which
-has an associated statement.  Each conditional result will be tested in
-order while the previous conditional result is C<Bool:False>; once a
-conditional result is C<Bool:True>, its associated statement will be
+This is a sequence of 0..N conditional expressions, each of which
+has an associated statement.  Each conditional expression will be tested in
+order while the previous conditional resulted in C<Bool:False>; once a
+conditional results in C<Bool:True>, its associated statement will be
 invoked; no statements will be invoked except the one with the true
-conditional result.
+conditional.
 
 =item C<else> - C<maybe_of.Name>
 
-Iff none of the conditional results in C<if_then> is C<Bool:True> (or as a
+Iff none of the conditionals in C<if_then> result in C<Bool:True> (or as a
 trivial case, if C<if_then> is an empty sequence), then the statement
 represented by the local statement node named by C<else> will be invoked
 iff C<else> is a C<Just>; if under the first circumstance C<else> is
@@ -3129,14 +2934,14 @@ C<Nothing>, then the whole if-else will have been a no-op.
 An C<IfElseStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.IfThenVarStmtMap
+=head2 sys.std.Core.Type.Cat.IfThenExprStmtMap
 
-An C<IfThenVarStmtMap> is a C<DHTuple>.  It defines an element of an
-if-else sequential statement.  An C<IfThenVarStmtMap> has 2 attributes,
+An C<IfThenExprStmtMap> is a C<DHTuple>.  It defines an element of an
+if-else sequential statement.  An C<IfThenExprStmtMap> has 2 attributes,
 C<if> (a C<Name>) and C<then> (a C<Name>); C<if> has the name of a
-local or global variable (or parameter), and C<then> has the name of a
-statement node.  The C<if> node is the conditional result variable name; if
-that conditional result is C<Bool:True>, then the C<then> statement node is
+local expression node (or parameter), and C<then> has the name of a
+statement node.  The C<if> node is the condition to evaluate; if that
+condition evaluates to C<Bool:True>, then the C<then> statement node is
 invoked; otherwise, C<then> is not invoked.  Its default value has the
 default value where each attribute is the default of its declared type.
 
@@ -3146,7 +2951,7 @@ A C<GivenWhenDefStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node represents an N-way given-when-default
 switch control flow statement that dispatches based on matching a single
 value with several options.  A C<GivenWhenDefStmtNodeSet> is essentially
-the imperative version of the functional C<GivenWhenDefExprNodeSet>.
+the procedural version of the functional C<GivenWhenDefExprNodeSet>.
 
 A C<GivenWhenDefStmtNodeSet> has these 5 attributes:
 
@@ -3163,11 +2968,11 @@ the statement node (sub-)tree it is the root of.
 
 =item C<given> - C<Name>
 
-This is name of the local parameter or variable that supplies the single
+This is name of the local expression node that supplies the single
 operand value that is common to all the conditions; it is the control value
 for the statement.
 
-=item C<when_then> - C<WhenThenVarStmtMap>
+=item C<when_then> - C<WhenThenExprStmtMap>
 
 This is a set of distinct condition operand values, each of which has an
 associated statement.  If a condition operand matches the value of
@@ -3188,12 +2993,12 @@ been a no-op.
 A C<GivenWhenDefStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.WhenThenVarStmtMap
+=head2 sys.std.Core.Type.Cat.WhenThenExprStmtMap
 
-A C<WhenThenVarStmtMap> is a C<DHRelation>.  It defines a set of dispatch
-options for a given-when-default statement.  A C<WhenThenVarStmtMap> has 2
+A C<WhenThenExprStmtMap> is a C<DHRelation>.  It defines a set of dispatch
+options for a given-when-default statement.  A C<WhenThenExprStmtMap> has 2
 attributes, C<when> (a C<Name>) and C<then> (a C<Name>); C<when> has
-the name of a local or global variable (or parameter), and C<then> has the
+the name of a local expression node (or parameter), and C<then> has the
 name of a statement node.  The C<when> node is the not-common / distinct
 operand for each condition.  If a C<when> value is matched, then the
 C<then> statement node is invoked; otherwise, C<then> is not invoked.  Its
@@ -3264,46 +3069,6 @@ each iteration of the loop; typically it has a sub-tree of statement nodes.
 
 A C<LoopStmtNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
-
-=head2 sys.std.Core.Type.Cat.APMaterialNCSelStmtNodeSet
-
-An C<APMaterialNCSelStmtNodeSet> is a C<DHRelation> that specifies a set of
-atomic statement nodes where each node represents the assignment to a
-variable (or parameter) of a newly selected value of the
-C<sys.std.Core.Type.Cat.AbsPathMaterialNC> type, which is selected in terms
-of a value of the C<sys.std.Core.Type.Cat.RelPathMaterialNC> type.  Using
-one of these statement nodes should be an effective alternative to either
-declaring a niladic function or declaring (or extending) an updater that
-simply combines an C<AbsPathMaterialNC> selecting expression node with an
-C<assign> updater call.
-
-An C<APMaterialNCSelStmtNodeSet> has these 4 attributes:
-
-=over
-
-=item C<name> - C<Name>
-
-This is the declared name of the statement node.
-
-=item C<scm_comment> - C<Comment>
-
-This is an optional programmer comment about the statement leaf node.
-
-=item C<target> - C<Name>
-
-This is name of the local parameter or variable that will have the newly
-selected C<AbsPathMaterialNC> value assigned to it.
-
-=item C<referencing> - C<RelPathMaterialNC>
-
-This is the name, from the point of view of the procedure embedding this
-statement node, of the routine or type that the new C<AbsPathMaterialNC>
-value is supposed to facilitate portable invoking of.
-
-=back
-
-An C<APMaterialNCSelStmtNodeSet> has a unary (unique) key on the C<name>
-attribute.  Its default value is empty.
 
 =head1 TYPES FOR DEFINING DATA TYPES
 
@@ -4438,7 +4203,7 @@ tuples.
 =head2 sys.std.Core.Type.Cat.StimRespRule
 
 A C<StimRespRule> is a C<DHTuple>.  It defines a new stimulus-response rule
-which invokes a recipe or procedure automatically in response to some
+which invokes a procedure automatically in response to some
 stimulus; for now just the act of a depot being mounted is supported.
 
 A C<StimRespRule> has these 3 attributes:
@@ -4455,7 +4220,7 @@ This is always the value C<after-mount> for now.
 
 =item C<response> - C<MaterialNC>
 
-This is the name of the recipe or procedure being invoked.
+This is the name of the procedure being invoked.
 
 =back
 
@@ -4493,7 +4258,7 @@ A C<NameExprMap> is a C<DHRelation>.  It defines a basic component-values
 list, meaning a set of names, with a declared local expression node (or
 parameter) name for each.  It is used to define collection literals; one
 C<NameExprMap> defines a whole C<Tuple> value.  It is also used to define
-argument lists for routine invocations by functions or recipes.
+argument lists for routine invocations.
 A C<NameExprMap> has 3 attributes, C<name> and C<expr>, each of those being
 a C<Name>, and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of the
 tuple/etc attribute or routine argument, and comprises a unary key; the

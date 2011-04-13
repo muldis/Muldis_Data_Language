@@ -1567,9 +1567,9 @@ By design, all Muldis D user-defined variables and routines must live in
 the same depot as all the user-defined types (and constraints) they are
 defined in terms of, and the same depot as all the functions that they
 invoke.  Only procedures may invoke things in depots other than their own,
-and only procedures and recipes may be what is thusly invoked.  Both
+and only procedures may be what is thusly invoked.  Both
 depots would have their own copies of data types and constraints of the
-invoked imperative routine's parameters.  So it is in fact possible for an
+invoked procedure's parameters.  So it is in fact possible for an
 entire depot to be proven internally free of type errors at the time of
 compilation for any entity living within it.  As for inter-depot type
 checking, that could be done at depot mount time.
@@ -1860,27 +1860,29 @@ by "statements" or "routines".
 
 =head1 ROUTINES
 
-Muldis D is designed such that, to the maximum degree possible, the
+B<WARNING: All statements in this documentation that mention atomicity or
+transactions or concurrency are considered out of date and partly untrue,
+and will need to be rewritten or excised.>
+
+Muldis D is designed such that, to nearly the maximum degree possible, the
 built-in language syntax is expressed just in terms of generic-syntax
 routine invocations, meaning that wherever possible the language features
 are defined in terms of being just routines.  This allows the fundamental
 Muldis D grammar to be as simple as possible and it empowers users to
 define additional features that can mimic nearly any built-in ones in both
-functionality and syntax.
+functionality and syntax.  There are only a few exceptions to this rule,
+where doing so has a large net benefit to the language design.
 
-=head2 Functions, Recipes, and Procedures
+=head2 Functions and Procedures
 
-Every Muldis D routine is exactly one of these 3 main routine kinds, where
-the 3 kinds are mutually exclusive: C<function>, C<recipe>,
-C<procedure>.  Each of these 3 kinds is very distinct with regards to what
+Every Muldis D routine is exactly one of 2 main routine kinds,
+C<function> and C<procedure>, where the 2 kinds are mutually exclusive.
+Each of these 2 kinds is very distinct with regards to what
 it conceptually represents or where it may be used, and Muldis D has
-disjoint catalog data types for defining routines of each of the 3 kinds:
-C<Function>, C<Recipe>, C<Procedure>.  Just functions and
-recipes are collectively also known as I<atomic routines>;
-just recipes and procedures are collectively also known as
-I<imperative routines>.
+disjoint catalog data types for defining routines of each of the 2 kinds,
+which are C<Function> and C<Procedure>.
 
-The 3 main routine kinds have some aspects in common.  Every routine,
+Functions and procedures have many aspects in common.  Every routine,
 regardless of kind, is a distinct material of a library, either built-in or
 user-defined, which has its own explicitly defined (name-space qualified)
 name and it is explicitly invokable using that name.  Any routine may be
@@ -1891,33 +1893,29 @@ documentation of code (and sometimes subdividing of a conceptually single
 routine may be mandatory for technical reasons).  Any routine may have
 explicit parameters which take corresponding arguments when the routine is
 invoked; every parameter has a declared type and the declared type may be
-any type at all.  All routine parameters are named, not positional; in the
+any type at all.  All routine parameters are named, not positional (but
+positional parameters can be faked using sequential integer names); in the
 case of N-adic routines, the N similar argument values come by way of a
-single nonscalar typed parameter.  Any routine may directly invoke niladic
-functions, and any routine definition may directly embed simple/"opaque"
-value literals.
+single nonscalar typed parameter.  Any routine's body may have arbitrarily
+complex value-expression trees, which consist of named nodes whose use by
+name can ease program writing like lexical variables would have.  Also,
+every routine's parameters, and any procedure's lexical variables, are
+effectively either value-expression nodes or lexical variables, even if the
+routine otherwise has none of those.  Any routine may directly invoke
+functions.
 
-The 3 main routine kinds have a strict ordered proper subset/superset
+Functions and procedures have a strict ordered proper subset/superset
 relationship with regard to what they can be used to I<do> from a user's
 perspective.  A procedure is all-powerful, and anything that can be done in
-Muldis D at all can be done by invoking a procedure.  A recipe's
+Muldis D at all can be done by invoking a procedure.  A function's
 capabilities are a proper subset of a procedure's; the most that can be
-accomplished just by invoking a recipe is any set of operations that can
-be expressed as a single atomic unit of work, and that is completely
-deterministic.  A function's capabilities are a proper subset of a
-recipe's; the most that can be accomplished just by invoking a function is
-any set of operations
-that can be accomplished just with values supplied
-as its explicit arguments, and also a function
-is more limited in how it can be invoked.
-A procedure may directly invoke any of the 3 kinds of routines, which is
-the means by which it can I<do> anything they can I<do>; but as an
-exception to this, a procedure can't directly invoke a non-niladic
-function, and to do so requires a recipe intermediary; a recipe
-may directly invoke only recipes or functions, and a function may only
-directly invoke functions.
+accomplished just by invoking a function is any set of operations that can
+be accomplished just with values supplied as its explicit arguments, and
+that is completely deterministic.  A procedure may directly invoke both
+procedures and functions, while a function may only directly invoke
+functions.
 
-Functions differ from imperative routines (recipes and procedures)
+Functions differ from procedures
 primarily in regards to how they are invoked and to how they return their
 outputs.  A function, also known as a I<read-only operator>, is the only
 routine kind whose invocation both results in and represents a value of a
@@ -1928,15 +1926,16 @@ a function is also itself a single value-expression (though its parts can
 be named for internal reuse).  All of a function's 0..N parameters are
 read-only / not subject to update.  And so, a function takes all of its
 inputs from its arguments and it returns all of its outputs as as a single
-function result value.  In contrast, an imperative routine exchanges data
+function result value.  In contrast, a procedure exchanges data
 directly with its invoking routine by exclusive means of its parameters,
-and an imperative routine's invocation does I<not> result in or represent a
-value.  An imperative routine is invoked as the root part of a statement of
-an imperative routine, and never within a value-expression.  Each of an
-imperative routine's 0..N parameters may be either read-only or subject to
-update; the routine may take input from both kinds of parameters but it may
+or through shared global variables (the database),
+and a procedure's invocation does I<not> result in or represent a
+value.  A procedure is invoked as the root part of a statement of
+a procedure, and never within a value-expression.  Each of a
+procedure's 0..N parameters may be either read-only or subject to update;
+the procedure may take input from both kinds of parameters but it may
 return output directly to its invoker just by means of updating its subject
-to update parameters.
+to update parameters, or shared global variables.
 
 Sometimes a function is composed as part of the definition of another
 material.  Conceptually speaking, the function is part of the definition of
@@ -1947,17 +1946,11 @@ conceptually be an anonymous function defined within its parent routine for
 use as a function-valued argument of some other routine call; or to
 implement what is conceptually a self-referencing/cyclic expression.
 
-Recipes differ from other kinds of routines (functions and
-procedures) primarily in regards to their difference of capabilities.  A
-recipe may directly see and update global variables (both catalog and
+A procedure may directly see and update global variables (both catalog and
 data), and is the only kind of routine that can; every call chain that is
-meant to work with a persisting (global) dbvar must include a recipe.  A
-function or procedure can I<not> directly see any global
-variables.  A procedure can only see or update any global variables by
-invoking a recipe to be its proxy for that purpose.
+meant to work with a persisting (global) dbvar must include a procedure.  A
+function can I<not> directly see any global variables.
 
-Procedures differ from atomic routines (functions and recipes)
-primarily in regards to their difference of capabilities.
 A procedure is allowed to be nondeterministic, meaning that its behaviour
 can be different between multiple executions where all have the same
 arguments and global (database) variable preconditions, and it is the only
@@ -1977,9 +1970,9 @@ procedure does not have exclusive access to all of its mounted depots, then
 even a procedure that does none of these things may be nondeterministic
 because other processes could modify global variables it is using during
 the course of its execution, and the actual postconditions could vary
-simply due to matters of timing.  An atomic routine is always deterministic
+simply due to matters of timing.  A function is always deterministic
 because it is forbidden from invoking any nondeterministic routine, which
-all happen to be procedures, and because an atomic routine's execution is
+all happen to be procedures, and because a function's execution is
 entirely contained within a single transaction of the highest possible
 isolation level, "serializable".  A procedure that does not have exclusive
 access to its depots can optionally gain back a measure of the determinism
@@ -1988,16 +1981,13 @@ transaction, or by being invoked within a larger transaction.  A procedure
 that is neither itself a transaction nor is invoked in one will only be
 guaranteed consistency separately within each recipe that it invokes.
 
-A procedure's body may have 0..N lexical variables while an atomic
-routine's body may not have any lexical variables.  On the other hand, an
-atomic routine's body may have arbitrarily complex value-expression trees,
-which consist of named nodes whose use by name can ease program writing
-like lexical variables would have, while a procedure's body generally may
-not have any value-expressions (but a procedure may have a few kinds of
-very simple value-expressions in order to save the necessity of subdividing
-out new atomic routines to cover common simple expressions).  Also, every
-routine's parameters are effectively either value-expression nodes or
-lexical variables, even if the routine otherwise has none of those.
+A procedure's body may have 0..N lexical variables while a function's
+body may not have any lexical variables.
+
+A C<recipe> is a special case of a procedure, such that it consists of a
+single multi-update statement whose components execute all at once, rather
+than a series of statements that execute sequentially at different times,
+and a recipe does not have any lexical variables besides its parameters.
 
 A recipe invocation is implicitly atomic, and a failure in the middle of
 one will at least rollback any partial update that it may conceptually have
@@ -2028,10 +2018,11 @@ both an updater and a function are I<pure> in the functional language
 sense, and can't see any data except from their own definition or their
 arguments, and they have no side-effects except via their result values.
 
-The body of an updater is a single statement (plus any support expressions)
+The body of an updater is a single multi-update statement
+(plus any support expressions)
 that invokes one or more updaters (recursively down to some system-defined
 variable assignment operator); if invoking several, it is a multi-update
-statement.  Unlike either functions, recipes, or procedures, which may
+statement.  Unlike either functions or other procedures, which may
 have zero
 parameters, an updater must have at least one parameter which is subject to
 update (because the only way it can return any output at all is by updating
@@ -2088,7 +2079,8 @@ more discussion on this matter.
 =head2 Emphasis on Purity
 
 Atomic routines constitute the vast majority of system-defined routines,
-and the vast majority of those are functions; procedures constitute a slim
+and the vast majority of those are functions; non-recipe
+procedures constitute a slim
 minority of system-defined routines.  System-defined functions include all
 value selectors, and the typical numeric, string, and relational operators,
 such that you would compose a typical database "select" query out of.
@@ -2102,11 +2094,11 @@ non-deterministic things, such as to initiate
 I/O of various kinds, or fetch the current date and time, or generate a
 random number.  Similarly to the built-ins, it is highly likely that there
 would be many more user-defined routines that are atomic than those that
-are not.  The vast majority of recipes or procedures that exist will be
-user-defined.
+are not.  The vast majority of recipes or non-recipe procedures that exist
+will be user-defined.
 
 Muldis D is generally optimized to prefer stateless immutable-value pure
-functional language paradigms over variable-mutating imperative language
+functional language paradigms over variable-mutating procedural language
 paradigms.  A Muldis D program will generally have any state-sensitive or
 side-effect-having code confined to as small a portion of it as possible,
 generally as close to the "main program" in the call chain as possible.
@@ -2147,7 +2139,7 @@ the one that performs the database query, and use variables as
 intermediaries to include the date or number in the database query.  Or, if
 converting a "function" from another language that is allowed to have
 side-effects or update its parameters, this will have to at least partially
-be rendered as a procedure or recipe in Muldis D.  In practice however,
+be rendered as a procedure in Muldis D.  In practice however,
 especially if you followed good design practices in the other languages,
 such alterations shouldn't be too common.
 
@@ -2157,9 +2149,9 @@ Conceptually speaking, all Muldis D routines actually have exactly 1 or
 2 positional parameters behind the scenes, each of which is C<Tuple>-typed,
 and it is the named attributes of these positional parameters that
 correspond to the official named parameters.  With all functions,
-there is exactly 1 positional parameter named C<args>; with all imperative
-routines, there are exactly 2 positional parameters named C<upd_args> and
-C<ro_args>.  This behind-the-scenes nature is exposed when you use
+there is exactly 1 positional parameter named C<args>; with all procedures,
+there are exactly 2 positional parameters named C<upd_args> and
+C<ro_args>.  This conceptual nature is exposed when you use
 system-defined routines such as C<sys.std.Core.Cat.func_invo>, where
 you actually are supplying a set of argument values for the routine to
 invoke as a C<Tuple> value.  Now this all being said, for the purposes of
@@ -2368,6 +2360,15 @@ with any procedure that isn't a C<system-service>, a C<transaction> may
 invoke any routine at all.  The catalog data type C<Transaction>,
 a proper subtype of C<Procedure>, will define any C<transaction>.
 
+A C<recipe> is a C<transaction> which has no non-parameter lexical
+variables and whose root statement is a multi-update statement (or recipe
+invocation or assignment statement).  A recipe may only invoke recipes and
+functions, and not procedures that aren't recipes.
+
+An C<updater> is a C<recipe> that does not see or update any global
+variables (the database) and that has at least one subject-to update
+parameter.  An updater may only invoke updaters and functions.
+
 =head2 Overloading With Virtual Routines
 
 Muldis D natively supports routine/operator overloading, in the sense that
@@ -2377,7 +2378,7 @@ single collective name, and one of the routines in the collection is
 dispatched to automatically based on the types of the invocation arguments.
 
 This overloading feature is utilized by way of I<virtual routines>.  A
-Muldis D routine of any kind (function, recipe, or procedure), that has at
+Muldis D routine of any kind (function or procedure), that has at
 least one parameter, is made I<virtual> by declaring that at least 1 of its
 parameters is a I<dispatch parameter>; moreover, said routine definition
 would only define its interface or I<heading> and not its implementation or
@@ -2456,7 +2457,7 @@ which must be in the same depot aside from system-defined members.
 
 Muldis D natively supports the concept of I<stimulus-response rules>,
 otherwise known as I<triggered routines>.  The concept involves the
-automatic execution of a recipe or procedure in response to a particular
+automatic execution of a procedure in response to a particular
 defined stimulus.  This is in contrast with the normal way to execute a
 routine which is in response to an explicit invocation in code.
 
@@ -2478,7 +2479,7 @@ However, for now, Muldis D only supports exactly one kind of
 stimulus-response rule, which is the C<after-mount> rule used for
 bootstrapping a pure Muldis D application call stack.  With C<after-mount>,
 the stimulus is the act of a depot being mounted in the DBMS, and the
-response is the execution of a recipe or procedure in that depot, such that
+response is the execution of a procedure in that depot, such that
 the latter occurs at a separate but immediately subsequent point in time
 from the point in time than where the depot is mounted.  Said depot is
 typically the initial one in the DBMS, and its name plus necessary
@@ -2646,7 +2647,7 @@ and end when that scope is exited; if the scope is exited normally, its
 transaction commits; if the scope terminates early due to a thrown
 exception, its transaction rolls back.  This lexically-scoped mechanism is
 the I<only> kind of explicit transaction that Muldis D code can perform
-(besides using a C<recipe> rather than a C<procedure>).
+(besides using a C<recipe> rather than a C<procedure> in general).
 
 Sometimes, a transaction-comprising procedure will be invoked by way of an
 exception-trapping I<try> control flow statement so that only that
@@ -3137,7 +3138,7 @@ same "schema" refer to each other with the relative syntax of
 C<nlx.lib.fX>, it will work exactly correctly either way.
 
 In fact, nothing is allowed to directly refer to user-defined entities
-using C<fed> except a procedure (or recipe?), or the host language if it
+using C<fed> except a procedure, or the host language if it
 exists.  All user-defined functions and types may only be referenced using
 C<nlx> (but that a host language is exempted if it exists).
 
@@ -3339,7 +3340,7 @@ or of relations, get the special short-hand where an extended entity name
 can be used as the full expression.
 
 B<Update:>  To be specific, when concerning general contexts such as any
-arbitrary Muldis D functional (value expressions) or imperative
+arbitrary Muldis D functional (value expressions) or procedural
 (statements) code, I<only> tuples may have their attributes accessed using
 this feature extension of DBMS entity names; in general contexts, the
 I<only> way to access scalar possrep or relation attributes is by using
