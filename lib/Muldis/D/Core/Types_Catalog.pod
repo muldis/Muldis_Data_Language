@@ -140,13 +140,11 @@ This graph slice shows all of the catalog nonscalar types:
                             sys.std.Core.Type.Cat.ValConstrFunc
                     sys.std.Core.Type.Cat.ValRedFunc
                     sys.std.Core.Type.Cat.OrdDetFunc
-                sys.std.Core.Type.Cat.IfThenExprMap
                 sys.std.Core.Type.Cat.Procedure
                     sys.std.Core.Type.Cat.SystemService
                     sys.std.Core.Type.Cat.Transaction
                         sys.std.Core.Type.Cat.Recipe
                             sys.std.Core.Type.Cat.Updater
-                sys.std.Core.Type.Cat.IfThenExprStmtMap
                 sys.std.Core.Type.Cat.ScalarType
                 sys.std.Core.Type.Cat.TupleType
                 sys.std.Core.Type.Cat.RelationType
@@ -2243,8 +2241,14 @@ attribute.  Its default value is empty.
 =head2 sys.std.Core.Type.Cat.IfElseExprNodeSet
 
 An C<IfElseExprNodeSet> is a C<DHRelation> that specifies a set of value
-expression nodes where each node represents an N-way if-else control flow
-expression.
+expression nodes where each node represents a ternary if-then-else control
+flow expression.  An if-then-else node has 3 child expression nodes (which
+may just be named references to expressions or parameters or variables)
+here designated C<if>, C<then>, and C<else>; the C<if> node is the
+condition to evaluate and must result in a C<Bool>; iff the result of that
+condition is C<Bool:True> then the C<then> node is evaluated and its result
+is the result of the whole if-then-else expression; otherwise, the C<else>
+node is evaluated and its result is the whole if-then-else's result.
 
 The reason that the C<IfElseExprNodeSet> expression node kind exists,
 rather than this functionality being provided by an ordinary function
@@ -2263,7 +2267,7 @@ for the certain data type (invoking it on something else would result in a
 failure/exception); so only known-safe/appropriate expressions then get
 evaluated.
 
-An C<IfElseExprNodeSet> has these 5 attributes:
+An C<IfElseExprNodeSet> has these 6 attributes:
 
 =over
 
@@ -2281,51 +2285,38 @@ the expression node (sub-)tree it is the root of.
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<if_then> - C<array_of.IfThenExprMap>
+=item C<if> - C<Name>
 
-This is a sequence of 0..N conditional expressions, each of which has an
-associated result expression.  Each conditional expression will evaluate in
-order while the previous conditional resulted in C<Bool:False>; once a
-conditional results in C<Bool:True>, its associated result expression will
-evaluate and be the result of the larger if-else sequence, and no more
-conditionals will be evaluated; no result expressions will be evaluated
-except the one with the true conditional.
+This is the name of the local C<Bool>-resulting conditional expression node
+that is unconditionally evaluated first.
+
+=item C<then> - C<Name>
+
+This is the name of the local expression node whose evaluation provides the
+result of the whole if-then-else expression iff C<if> is C<Bool:True>.
 
 =item C<else> - C<Name>
 
-Iff none of the conditionals in C<if_then> result in C<Bool:True> (or as a
-trivial case, if C<if_then> is an empty sequence), then the result
-expression represented by the local expression node (or parameter) named by
-C<else> will be evaluated, and be the result of the larger if-else.
+This is the name of the local expression node whose evaluation provides the
+result of the whole if-then-else expression iff C<if> is C<Bool:False>.
 
 =back
 
 An C<IfElseExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.IfThenExprMap
-
-An C<IfThenExprMap> is a C<DHTuple>.  It defines an element of an if-else
-sequential expression.  An C<IfThenExprMap> has 2 attributes, C<if> and
-C<then>, each of which is a C<Name>; C<if> has the name of a local
-expression node (or parameter), and C<then> has likewise.  The C<if> node
-is the condition to evaluate; if that condition evaluates to C<Bool:True>,
-then the C<then> node is evaluated and its result is the result of the
-whole if-else expression; otherwise, C<then> is not evaluated.  Its default
-value has the default value of the C<Name> type in both attributes.
-
 =head2 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
 
 A C<GivenWhenDefExprNodeSet> is a C<DHRelation> that specifies a set of
 value expression nodes where each node represents an N-way
-given-when-default switch control flow expression that dispatches based
-on matching a single value with several options.
+given-when-then-default switch control flow expression that dispatches
+based on matching a single value with several options.
 
-A C<GivenWhenDefExprNodeSet> is essentially a more specialized version
-of an C<IfElseExprNodeSet> where every condition expression is a simple
-value equality test and one of the operands is the same for all the
-conditions in the set; also, with a given-when-default it doesn't matter
-what order the conditionals are tested to find a true resulting one.
+A given-when-then-default is essentially a more specialized version of a
+chain of if-then-else expressions where every condition expression is a
+simple value equality test and one of the operands is the same for all the
+conditions in the set; also, with a given-when-then-default it doesn't
+matter what order the conditionals are tested to find a true resulting one.
 
 A C<GivenWhenDefExprNodeSet> has these 6 attributes:
 
@@ -2895,11 +2886,17 @@ attribute.  Its default value is empty.
 =head2 sys.std.Core.Type.Cat.IfElseStmtNodeSet
 
 An C<IfElseStmtNodeSet> is a C<DHRelation> that specifies a set of
-statement nodes where each node represents an N-way if-else control flow
-statement.  An C<IfElseStmtNodeSet> is essentially the procedural
-version of the functional C<IfElseExprNodeSet>.
+statement nodes where each node represents a ternary if-then-else control
+flow statement.  An C<IfElseStmtNodeSet> is essentially the procedural
+version of the functional C<IfElseExprNodeSet>.  An if-then-else node has 1
+child expression node (which may just be named references to expressions or
+parameters or variables) here designated C<if>, and 2 child statement nodes
+here designated C<then> and C<else>; the C<if> node is the condition to
+evaluate and must result in a C<Bool>; iff the result of that condition is
+C<Bool:True> then the C<else> node is invoked; otherwise, the C<then> node
+is invoked.
 
-An C<IfElseStmtNodeSet> has these 4 attributes:
+An C<IfElseStmtNodeSet> has these 5 attributes:
 
 =over
 
@@ -2912,19 +2909,19 @@ This is the declared name of the statement node.
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<if_then> - C<array_of.IfThenExprStmtMap>
+=item C<if> - C<Name>
 
-This is a sequence of 0..N conditional expressions, each of which
-has an associated statement.  Each conditional expression will be tested in
-order while the previous conditional resulted in C<Bool:False>; once a
-conditional results in C<Bool:True>, its associated statement will be
-invoked; no statements will be invoked except the one with the true
-conditional.
+This is the name of the local C<Bool>-resulting conditional expression node
+that is unconditionally evaluated first.
+
+=item C<then> - C<Name>
+
+This is the name of the local statement node that is invoked iff C<if> is
+C<Bool:True>.
 
 =item C<else> - C<maybe_of.Name>
 
-Iff none of the conditionals in C<if_then> result in C<Bool:True> (or as a
-trivial case, if C<if_then> is an empty sequence), then the statement
+Iff C<if> is C<Bool:False>, then the statement
 represented by the local statement node named by C<else> will be invoked
 iff C<else> is a C<Just>; if under the first circumstance C<else> is
 C<Nothing>, then the whole if-else will have been a no-op.
@@ -2934,21 +2931,10 @@ C<Nothing>, then the whole if-else will have been a no-op.
 An C<IfElseStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.IfThenExprStmtMap
-
-An C<IfThenExprStmtMap> is a C<DHTuple>.  It defines an element of an
-if-else sequential statement.  An C<IfThenExprStmtMap> has 2 attributes,
-C<if> (a C<Name>) and C<then> (a C<Name>); C<if> has the name of a
-local expression node (or parameter), and C<then> has the name of a
-statement node.  The C<if> node is the condition to evaluate; if that
-condition evaluates to C<Bool:True>, then the C<then> statement node is
-invoked; otherwise, C<then> is not invoked.  Its default value has the
-default value where each attribute is the default of its declared type.
-
 =head2 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
 
 A C<GivenWhenDefStmtNodeSet> is a C<DHRelation> that specifies a set of
-statement nodes where each node represents an N-way given-when-default
+statement nodes where each node represents an N-way given-when-then-default
 switch control flow statement that dispatches based on matching a single
 value with several options.  A C<GivenWhenDefStmtNodeSet> is essentially
 the procedural version of the functional C<GivenWhenDefExprNodeSet>.

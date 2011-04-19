@@ -3948,11 +3948,9 @@ Examples:
 Grammar:
 
     <if_else_expr> ::=
-        [
-             [if <ws> <if_expr> <ws> then <ws> <then_expr> <ws> else <ws>]+
-           | [<if_expr> <ws> '??' <ws> <then_expr> <ws> '!!' <ws>]+
-        ]
-        <else_expr>
+          if <ws> <if_expr> <ws> then <ws> <then_expr>
+            <ws> else <ws> <else_expr>
+        | <if_expr> <ws> '??' <ws> <then_expr> <ws> '!!' <ws> <else_expr>
 
     <if_expr> ::=
         <expr>
@@ -3963,21 +3961,16 @@ Grammar:
     <else_expr> ::=
         <expr>
 
-An C<if_else_expr> node represents an N-way if-else control flow
+An C<if_else_expr> node represents a ternary if-then-else control flow
 expression.  It is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.IfElseExprNodeSet> value.  The whole collection of
-sequential 1..N C<if_expr> + C<then_expr> elements specifies the C<if_then>
-attribute of the new C<IfElseExprNodeSet>, which is a sequence of arbitrary
-but C<Bool>-resulting I<if> expressions, and for just the first one of
-those in the sequence that at runtime evaluates to C<Bool:True>, its
-associated I<then> result value is the result of the C<if_else_expr>.  The
-C<else_expr> element specifies the C<else> attribute, which determines the
-result value of the C<if_else_expr> at runtime if either C<if_then> is an
-empty sequence or all of its conditionals evaluate to C<Bool:False>.  (Note
-that while an C<IfElseExprNodeSet> tuple can represent zero C<if_expr> +
-C<then_expr> elements, that isn't an option in this concrete grammar
-because such an C<if_else_expr> is indistinguishable from the generic
-C<expr> that C<else_expr> is.)
+C<sys.std.Core.Type.Cat.IfElseExprNodeSet> value.  The C<if_expr>,
+C<then_expr>, and C<else_expr> elements specify the C<if>, C<then>, and
+C<else> attributes, respectively, of the new C<IfElseExprNodeSet>;
+C<if_expr> is the condition to evaluate at runtime and must result in a
+C<Bool>; iff the result of that condition is C<Bool:True> then the
+C<then_expr> is evaluated and its result is the result of the whole
+if-then-else expression at runtime; otherwise, the C<else_expr> is
+evaluated and its result is the whole if-then-else's result.
 
 Examples:
 
@@ -4375,7 +4368,6 @@ Grammar:
 
     <if_else_stmt> ::=
         if <ws> <if_expr> <ws> then <ws> <then_stmt>
-        [<ws> else <ws> if <ws> <if_expr> <ws> then <ws> <then_stmt>]*
         [<ws> else <ws> <else_stmt>]?
 
     <then_stmt> ::=
@@ -4384,23 +4376,14 @@ Grammar:
     <else_stmt> ::=
         <proc_stmt>
 
-An C<if_else_stmt> node represents an N-way if-else control flow statement.
-It is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.IfElseStmtNodeSet> value.  The whole collection of
-sequential 1..N C<if_expr> + C<then_stmt> elements specifies the
-C<if_then> attribute of the new C<IfElseStmtNodeSet>, which is a sequence
-of arbitrary but C<Bool>-valued I<if> lexical variables (possibly
-sugar-coated with static-value expressions), and for just the first one of
-those in the sequence that at runtime is valued with C<Bool:True>, its
-associated I<then> statement is executed as if it were the whole
-C<if_else_stmt>.  The C<else_stmt> element, if it is provided, specifies
-the C<else> attribute, which determines the statement to execute as if it
-were the whole C<if_else_stmt> at runtime if either C<if_then> is an empty
-sequence or all of its conditionals are valued with C<Bool:False>.  (Note
-that while an C<IfElseStmtNodeSet> tuple can represent zero C<if_expr>
-+ C<then_stmt> elements, that isn't an option in this concrete grammar
-because such an C<if_else_stmt> is indistinguishable from the generic
-C<proc_stmt> that C<else_stmt> is.)
+An C<if_else_stmt> node represents a ternary if-then-else control flow
+statement.  It is interpreted as a tuple of a Muldis D
+C<sys.std.Core.Type.Cat.IfElseStmtNodeSet> value.  The C<if_expr>,
+C<then_stmt>, and C<else_stmt> elements specify the C<if>, C<then>, and
+C<else> attributes, respectively, of the new C<IfElseStmtNodeSet>;
+C<if_expr> is the condition to evaluate at runtime and must result in a
+C<Bool>; iff the result of that condition is C<Bool:True> then C<else_stmt>
+is invoked; otherwise, C<then_stmt> is invoked.
 
 Examples:
 
