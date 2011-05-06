@@ -41,6 +41,62 @@ implementations over multiple SQL DBMSs.  Curr est late 2011.
 
 ----------
 
+* FIRST PRIORITY...
+Reduce the general options for concrete value literals to have just the
+simple ones.  For any given "x:y:z", remove all "y" but for Scalar where it
+is necessary; people can wrap a literal in an explicit TREAT assertion/etc
+otherwise if they really want to.  Also remove all "x" where possible, so
+just the plain "z" is the only option, in general.  So then, to write an
+integer/rat/text literal, the only option then is to say "42/3.25/'hello'";
+you can't say "Int:42/Rat:3.25/Text:'hello'" any more.  So cascade these
+simplifications, and we also free up the ":" mostly for other uses.  This
+particularly applies to PTMD_STD, but we'll also simply the Perl-STDs where
+possible, which is easier in Perl 6.
+
+* ALSO...
+Get rid of the Set.new() options in Perl 6 and generally update the
+Perl-STDs to use just Array/Seq/arrayref and mostly not set/bag/hash/etc,
+partly for code brevity but particularly to preserve the visual order of
+elements from source to catalog and back again.  Also add scm_vis_ord to
+the catalog or change some catalog types to record order.
+
+* Maybe also but probably not yet be concerned w comments in Perl-STD/etc.
+
+* NEXT PRIORITY...
+Reformat all declarations, materials/subdepots particularly, to be of the
+format "name ::= kind ..." rather than "kind name ...".  Similarly, we may
+be able to just nix the "subdepot" keyword so a subdepot is then declared
+as just "foo ::= {...}", and a material as "foo ::= kind ...".
+
+* ALSO...
+Change function bodies from {...} to (...).  And make "..." expr/stmt kind.
+
+* THIRD PRIORITY...
+Add support for material and parameter synonyms.  And change what params
+any positional arguments implicitly go with from topic|other to 0|1|...
+But don't actually change any routines/params until later, except adding
+0|1 to all topic|other.
+
+* Update the array-specific postcircumfix concrete syntaxes to make them
+more generic such that the array index/es (what's inside the "[]") may be
+any arbitrary value expression rather than having to be an integer or
+interval literal.  But if nothing else changes, this means the slice will
+have to be spelled like "ary[{x..y}]" rather than "ary[x..y]", but
+individual element access like "ary.[x]" will still work.  But now you can
+actually have the x,y variables rather than those having to be constants.
+
+* Consider taking a more Perl 6 like approach by turning ".." and its 3
+friends into infix dyadic functions that take endpoint values and result in
+interval values.  Then the surrounding curly braces are no longer needed,
+and you can once again say "ary[x..y]".  Note that if ppl still want/need
+delimiters for an interval, they can always use parens, like "(x..y)".
+If we also redefine an MPInterval to be a set_of.SPInterval, then any
+{x..y} would unambiguously mean either a set or MPInterval, but we may then
+lose the shorthand "x" meaning "x..x", but this could be ok tradeoff.
+
+* Consider also making the likes of "," and "=>" into dyadic functions
+along the lines of Perl 6, though this would have further consequences.
+
 * Demote the numeric operators that are more statistics-oriented from the
 language core into a new Statistics extension or some such.  Specifically
 this means these 5 in [Numeric|Rational|Integer]: range, frac_mean, median,
