@@ -1173,7 +1173,7 @@ Grammar:
         <Int_payload>
 
     <Int_payload> ::=
-          <num_max_col_val> ';' <unspace> <int_body>
+          <num_max_col_val> '#' <unspace> <int_body>
         | <num_radix_mark> <unspace> <int_body>
         | <d_int_body>
 
@@ -1265,11 +1265,11 @@ Examples:
 
     0xDEADBEEF #`hexadecimal`#
 
-    Z;-HELLOWORLD #`base-36`#
+    Z#-HELLOWORLD #`base-36`#
 
-    3;301 #`base-4`#
+    3#301 #`base-4`#
 
-    B;A09B #`base-12`#
+    B#A09B #`base-12`#
 
 =head2 General Purpose Rational Numeric Literals
 
@@ -1283,7 +1283,7 @@ Grammar:
         <Rat_payload>
 
     <Rat_payload> ::=
-          <num_max_col_val> ';' <unspace> <rat_body>
+          <num_max_col_val> '#' <unspace> <rat_body>
         | <num_radix_mark> <unspace> <rat_body>
         | <d_rat_body>
 
@@ -1332,15 +1332,15 @@ Examples:
 
     3.14159
 
-    A;0.0
+    A#0.0
 
     0xDEADBEEF.FACE
 
-    Z;0.000AZE
+    Z#0.000AZE
 
-    Rat:6;500001/1000
+    Rat:6#500001/1000
 
-    B;A09B/A
+    B#A09B/A
 
     Rat:0b1011101101*10^-11011
 
@@ -1362,7 +1362,7 @@ Grammar:
         <Blob_payload>
 
     <Blob_payload> ::=
-          <blob_max_col_val> ';' <unspace> <blob_body>
+          <blob_max_col_val> '#' <unspace> <blob_body>
         | <blob_radix_mark> <unspace> <blob_body>
 
     <blob_max_col_val> ::=
@@ -1399,7 +1399,7 @@ Examples:
 
     Blob:0b'00101110100010' #`binary`#
 
-    3;''
+    3#''
 
     0x'A705E' #`hexadecimal`#
 
@@ -1427,7 +1427,7 @@ Grammar:
         | '\\c<' [
               [<[ A..Z ]>+] ** ' '
             | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
-            | <[ 1..9 A..Z a..z ]> ';'
+            | <[ 1..9 A..Z a..z ]> '#'
                 [0 | <[ 1..9 A..Z a..z ]> <[ 0..9 A..Z a..z ]>*]
             | 0<[ bodx ]> [0 | <[ 1..9 A..F a..f ]> <[ 0..9 A..F a..f ]>*]
           ] '>'
@@ -1774,7 +1774,7 @@ Grammar:
         <Scalar_payload>
 
     <Scalar_payload> ::=
-          <possrep_name> ';' <unspace> <possrep_attrs>
+          <possrep_name> ':' <unspace> <possrep_attrs>
         | <possrep_attrs>
 
     <possrep_name> ::=
@@ -1810,13 +1810,13 @@ Examples:
 
     Scalar:Name:{ "" => 'the_thing' }
 
-    $:Rat:float;{
+    $:Rat:float:{
         mantissa => 45207196,
         radix    => 10,
         exponent => 37,
     }
 
-    $:fed.lib.the_db.UTCDateTime:datetime;{
+    $:fed.lib.the_db.UTCDateTime:datetime:{
         year   => 2003,
         month  => 10,
         day    => 26,
@@ -1825,11 +1825,11 @@ Examples:
         second => 0.0,
     }
 
-    $:fed.lib.the_db.WeekDay:name;{
+    $:fed.lib.the_db.WeekDay:name:{
         "" => "monday",
     }
 
-    $:fed.lib.the_db.WeekDay:number;{
+    $:fed.lib.the_db.WeekDay:number:{
         "" => 5,
     }
 
@@ -1974,7 +1974,7 @@ Grammar:
         '[' <ws>?
             [<attr_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
-        ';' <unspace>
+        ':' <unspace>
         '{' <ws>?
             [<ordered_tuple_attrs> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
@@ -2056,7 +2056,7 @@ Examples:
         },
     }  #`3 attrs + 1 tuple`#
 
-    @:fed.lib.the_db.gene.Person:[ name, age ];{
+    @:fed.lib.the_db.gene.Person:[ name, age ]:{
         [ 'Michelle', 17 ],
     }  #`2 attrs + 1 tuple`#
 
@@ -2233,7 +2233,7 @@ Grammar:
         <ws>? '}'
 
     <count> ::=
-          <num_max_col_val> ';' <unspace> <pint_body>
+          <num_max_col_val> '#' <unspace> <pint_body>
         | <num_radix_mark> <unspace> <pint_body>
         | <d_pint_body>
 
@@ -4221,7 +4221,7 @@ Examples:
         )
 
         assign_union( &order_details,
-            @:[ order_id, prod_code, qty ];{
+            @:[ order_id, prod_code, qty ]:{
                 [ order_id, 'COG' , 20, ],
                 [ order_id, 'CAM' , 10, ],
                 [ order_id, 'BOLT', 70, ],
@@ -4981,7 +4981,7 @@ Examples:
 
     { 8, 4, 6, 7 } ∖ { 9, 0, 7 }
 
-    @:[ x, y ];{ [ 5, 6 ], [ 3, 6 ] } ÷ @:{ { y => 6 } }
+    @:[ x, y ]:{ [ 5, 6 ], [ 3, 6 ] } ÷ @:{ { y => 6 } }
 
 =head2 Simple Monadic Prefix Operators
 
@@ -5086,7 +5086,7 @@ Grammar:
         <pcf_s_acc_op_invo> | <pcf_t_acc_op_invo>
 
     <pcf_s_acc_op_invo> ::=
-        <expr> <unspace> '.{' [<ws>? <possrep_name>]? ';' <ws>?
+        <expr> <unspace> '.{' [<ws>? <possrep_name>]? ':' <ws>?
             <attr_name>
         <ws>? '}'
 
@@ -5094,7 +5094,7 @@ Grammar:
         <expr> <unspace> '.{' <ws>? <attr_name> <ws>? '}'
 
     <s_pcf_op_invo> ::=
-        <expr> <unspace> '{' [<ws>? <possrep_name>]? ';' <ws>?
+        <expr> <unspace> '{' [<ws>? <possrep_name>]? ':' <ws>?
             [<pcf_projection> | <pcf_cmpl_proj>]
         <ws>? '}'
 
@@ -5184,7 +5184,7 @@ Grammar:
         <expr> <unspace> '.[' <ws>? <index> <ws>? ']'
 
     <index> ::=
-          <num_max_col_val> ';' <unspace> <nnint_body>
+          <num_max_col_val> '#' <unspace> <nnint_body>
         | <num_radix_mark> <unspace> <nnint_body>
         | <d_nnint_body>
 
@@ -5215,7 +5215,7 @@ arguments, which are associated in the appropriate sequence.
 
 This table indicates which function is invoked by each format-keyword:
 
-    .{;} -> Core.Scalar.attr( expr, possrep => possrep_name,
+    .{:} -> Core.Scalar.attr( expr, possrep => possrep_name,
                 name => attr_name )
     .{} -> Core.Tuple.attr( expr, name => attr_name )
 
@@ -5226,11 +5226,11 @@ This table indicates which function is invoked by each format-keyword:
                     { after => atnm_after.[n], before => atnm_before.[n] },
                 } )
 
-    {;}  -> Core.Scalar.projection( expr, possrep => possrep_name,
+    {:}  -> Core.Scalar.projection( expr, possrep => possrep_name,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
     {}  -> Core.Attributive.projection( expr,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
-    {;!} -> Core.Scalar.cmpl_proj( expr, possrep => possrep_name,
+    {:!} -> Core.Scalar.cmpl_proj( expr, possrep => possrep_name,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
     {!} -> Core.Attributive.cmpl_proj( expr,
                 attr_names => { pcf_atnms.[0], ..., pcf_atnms.[n] } )
@@ -5263,7 +5263,7 @@ This table indicates which function is invoked by each format-keyword:
 
 Examples:
 
-    birthday.{date;day}
+    birthday.{date:day}
 
     pt.{city}
 
@@ -5271,7 +5271,7 @@ Examples:
 
     pr{pnum<-pno, locale<-city}
 
-    birthday{date;year,month}
+    birthday{date:year,month}
 
     pt{color,city}
 
@@ -5281,7 +5281,7 @@ Examples:
 
     pr{}  #`null projection`#
 
-    rnd_rule{;!round_meth}  #`radix,min_exp`#
+    rnd_rule{:!round_meth}  #`radix,min_exp`#
 
     pt{!pno,pname,weight}
 
@@ -5612,7 +5612,7 @@ examples of each level:
     Level            | Assoc | Examples
     -----------------+-------+---------------------------------------------
     Terms            | N/A   | Inf True Order:Same Down 42 3.14 -5/7 3*2^8
-                     |       | F;'27E04' 'eek' foo "x" #`comment!`#
+                     |       | F#'27E04' 'eek' foo "x" #`comment!`#
                      |       | {43,9,5} [1,2,3] {'Carrots'=>42} {11..20}
                      |       | $:{...} %:{...} @:{...} nlx.lib.MyType
                      |       | (1+2) myfunc(...) <Int> nlx.data.quux .age
