@@ -5560,6 +5560,103 @@ Examples:
     #`delete every person in people whose age is either 10 or 20`#
     people :=!matching @:{ { age => 10 }, { age => 20 } }
 
+=head1 LANGUAGE MNEMONICS
+
+PTMD_STD is designed to respect a variety of mnemonics that bring it some
+self-similarity and an association between syntax and semantics so that it
+is easier to read and write Muldis D code.  Some of these mnemonics are
+more about self-similarity and others are more about shared traits with
+other languages.
+
+I<Note that some of these details aren't yet otherwise specified and
+describe near-future planned changes.>
+
+=head2 Bareword Strings
+
+All barewords, meaning runs of non-quoted non-whitespace alphanumeric
+characters plus {C<_>,C<->,C<.>}, are generally either of these 3 things:
+language keywords, entity names (including declarations or invocations of
+routines/operators, types, variables), numeric literals (which may also
+contain {C<#>,C</>,C<*>,C<^>}).
+
+=head2 Quoted Strings
+
+All quoted strings, meaning runs of characters delimited with any of
+{C<'>,C<">,C<`>}, are generally either of these 3 things: entity names (iff
+C<">-quoted), value literals for general purpose string-like types (if
+C<'>-quoted), code comments (iff C<`>-quoted, and typically also
+C<#>-delimited forming double-character delimiters).
+
+=head2 C<#>
+
+The C<#> character is mainly associated with numbers in some way but is
+also associated with code comments, though in the latter case it always
+appears together with C<`>.  Iff C<#> appears as part of a numeric value
+literal, it is in a manner like and inspired by the "based" literals of the
+Ada language, and separates the radix specifier from the main part of the
+literal that it describes.  If C<#> appears other than for a code comment
+or numeric literal then it generally means "count" or "cardinality".
+
+=head2 {C<$>,C<%>,C<@>}
+
+The {C<$>,C<%>,C<@>} characters are mainly associated with scalars, tuples,
+and relations, respectively.  They are used both to distinguish value
+literals of those types as well as operators for those types.  In addition,
+the C<@> character is used to indicate routine "dispatch" parameters.
+
+=head2 Bracketing Characters
+
+Pairs of corresponding bracketing characters, meaning {C<()>,C<[]>,C<{}>},
+are generally associated with groupings or lists of various kinds and serve
+to delimit such.  The C<()> round-parenthesis pair is associated with
+routine signatures (parameter list or result declarations), routine
+invocations (argument list consisting of ordered or named arguments), and
+disambiguating any functional code or value expressions (any
+parenthesis-delimited routine body or code block therein is a function or a
+value expression).  The C<[]> square-bracket pair is associated with
+ordered lists and is used for: delimiting sequences of procedure
+statements, delimiting array value literals, and in array-subscripting
+operators, and for the reduction meta-operator.  The C<{}> pair is
+associated with unordered lists and is used for: delimiting multi-update
+statements, delimiting value literals of {tuples, relations,
+(component-wise) scalars, sets, bags}, and in postcircumfix operators for
+those same types.
+
+=head2 List-Separating Characters
+
+The C<,> and C<;> characters are mainly used to separate (or trail) each of
+the 0..N members of groupings or lists.  The C<,> comma is considered
+tighter and is used for most groupings or lists, including: routine
+signatures, routine invocations, collection value literals, postcircumfix
+operators.  The C<;> semicolon is considered looser and is used for such
+things as separating off-side-defined things like named value expressions
+or variables or statements or inner materials.
+
+=head2 C<::=>
+
+The C<::=> infix token is used for name binding; it declares that
+whatever is on the right-hand side is associated with the entity name given
+on the left-hand side.  The C<::=> is thusly used to explicitly name value
+expressions, procedure statements, library materials, and to associate
+global variables with lexical aliases.
+
+=head2 Pairs
+
+The infix tokens {C<:>,C<< => >>,C<< <- >>,C<< <-- >>} are mainly used
+between two items to designate that the they form a pair of some kind.  The
+C<:> is the most common and is used for any context where the left-hand
+side of the pair is always an entity name or heading, including: a
+variable/parameter/attribute-like typed entity declaration
+(var/param/attr-name : type-name), a named argument or tuple literal
+attribute (arg/attr-name : value-expr), and a routine heading from a
+routine body; a C<:> also separates the main parts of some value literals,
+such as the literal kind keyword from the main literal.  The C<< => >> is
+used for any context where two arbitrary value expressions are paired such
+as in a C<Bag> literal or a C<Dict> literal.  The C<< <- >> is used just
+between 2 entity names in the postcircumfix renaming operator.  The C<< <--
+>> is used just in a function signature between the result type and
+parameter list.
+
 =head1 RESOLVING AMBIGUITY
 
 =head2 Entity Names vs Keywords
