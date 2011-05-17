@@ -41,6 +41,9 @@ implementations over multiple SQL DBMSs.  Curr est late 2011.
 
 ----------
 
+* Add references to or adoptions of ISO/IEC 11404:2007(E) "Information
+technology -- General-Purpose Datatypes (GPD)" which could be very useful.
+
 * FIRST PRIORITY...
 Reduce the general options for concrete value literals to have just the
 simple ones.  For any given "x:y:z", remove all "y" but for Scalar where it
@@ -67,13 +70,17 @@ Reformat all declarations, materials/subdepots particularly, to be of the
 format "name ::= kind ..." rather than "kind name ...".  Similarly, we may
 be able to just nix the "subdepot" keyword so a subdepot is then declared
 as just "foo ::= {...}", and a material as "foo ::= kind ...".
+So the name on the left of the ::= is no longer part of the material node
+itself but rather is part of the larger thing into which the material node
+is composed; the material node is now just eg ['function', <payload>].
+Material nodes themselves just declare anonymous entities.
 
 * ALSO...
 Change function bodies from {...} to (...).  And make "..." expr/stmt kind.
 
 * ALSO...
 Use colons to separate any kind of heading/body pairs, both materials and
-values.  For example, Relation now "@:[...]:{...}" not "@:[...];{...}".
+values.  Take Relation now "@:[...]:{...}" as example to follow.
 Also, routines now "function (...): (...)" or "updater (...): {...}" or
 "procedure (...): [...]"; this for routines is inspired by Python.  This
 then opens the door for routine body bounding chars to be opt sometimes,
@@ -84,9 +91,16 @@ something more specific; eg Python uses ":" in dicts rather than =>; or do
 the opposite; keep "=>" for named param/attr/etc lists and use the ":" for
 things like Bag literals or generic dicts that are binary relations ... use
 one for atvl:atvl (bags/dicts), other for atnm:atvl (tuples, arg-lists).
-Maybe use ":" rather than ";" btwn possrep names and attrs, freeing ";".
 Also consider using "::" for something, maybe type conversion, as Pg does.
 Keep "::=" as for explicitly associating names with what they are naming.
+
+* Have ";" as separator (opt lead or term) for both statements/vars/exprs
+etc as well as whole materials.  This also comes together nicely for the
+simpler routines that don't need to have bounders because they are just
+single statements or expressions, for example:
+    cube ::= function (Int <-- topic : Int) :
+        topic ^ 3;
+... and that's it.
 
 * THIRD PRIORITY...
 Add support for material and parameter synonyms.  And change what params
