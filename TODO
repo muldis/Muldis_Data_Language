@@ -44,6 +44,13 @@ implementations over multiple SQL DBMSs.  Curr est late 2011.
 * Add references to or adoptions of ISO/IEC 11404:2007(E) "Information
 technology -- General-Purpose Datatypes (GPD)" which could be very useful.
 
+* ZEROTH PRIORITY...
+Make the system catalog into something much closer to a *concrete* syntax
+tree-like-thing.  See various following TODO items for details.
+Mostly do this as its own spec release with minimal dialect/etc/other chgs,
+that is, dialect changes to fill in new slots not needed, but anything the
+catalog would break could be altered.
+
 * FIRST PRIORITY...
 Reduce the general options for concrete value literals to have just the
 simple ones.  For any given "x:y:z", remove all "y" but for Scalar where it
@@ -55,6 +62,20 @@ you can't say "Int:42/Rat:3.25/Text:'hello'" any more.  So cascade these
 simplifications, and we also free up the ":" mostly for other uses.  This
 particularly applies to PTMD_STD, but we'll also simply the Perl-STDs where
 possible, which is easier in Perl 6.
+Unlike "[$|%|@]:..." for generic value literals, only %|@ without the colon
+are in use, I believe, as prefix operators, meaning cast-tuple-as-relation
+and vice-versa, but there is no colon-less $ prefix in use nor does it make
+sense for any similar purpose.
+So, use $ for name literals, that is, "$foo" means "Name:foo"
+and then say "$<>foo" means "NameChain:foo".
+And then we're a long way towards being able to ditch the postcircumfix
+syntaxes for eg projection since, say "r keep {$foo,$bar}" is terse enough.
+Then come up with something for rename, maybe a set of name-pair literals.
+After this, keep postcircumfixes rare and common, like for array elements.
+In fact, we could just say foo[x] and bar{x} are then array/dict lookups.
+Or the dotted forms are elem lookups and no dots are for slices, like Perl.
+And then "<expr>.attr" is then its own thing rather than being a shorthand
+for "<expr>.{attr}" although it may still be a function shorthand.
 
 * ALSO...
 Get rid of the Set.new() options in Perl 6 and generally update the
@@ -75,8 +96,39 @@ itself but rather is part of the larger thing into which the material node
 is composed; the material node is now just eg ['function', <payload>].
 Material nodes themselves just declare anonymous entities.
 
+* Example of function in Perl with context ...
+The FunctionSet tuple:
+    ['cube','opt comment of FunctionSet',<Function>]
+The Function tuple:
+    ['opt comment of Function',<heading>,<body>]
+... and so on.  The comments are first so they're like leading comments
+as is common with whole-routine definitions and such, and they tend to be
+terser besides.
+
 * ALSO...
 Change function bodies from {...} to (...).  And make "..." expr/stmt kind.
+
+* Likewise make a code comment a stmt/expr kind or otherwise provide for
+specifying where it goes visually in code in a statement position.
+Consider reworking scm_vis_ord to be external for some things it describes,
+eg mapping an order to a declared name.  In fact, if this is done, then it
+becomes much easier to add/remove/reorder code pieces because their
+sequence numbers are stored separately and so code diffs on the system
+catalog itself may not show much in the way of spurrious diffs, especially
+if the mapping is simply an array_of.Name.
+Consider pulling out code comments in a similar fashion, just putting them
+as their own named (as stmts/etc are named) code bits, which are then
+associated by name with other code bits, and are listed in the vis-ord too.
+In fact, then where comments are physically visible and what things they
+are semantically connected to are then not joined at the hip.
+The comment names are optionally user-specifiable too, like with statemnts.
+For example:
+    cmt_on_x ::= `This roxors!`;
+... or:
+    comment cmt_on_x ::= `This roxors!`;
+... and other details still to fill in like saying what it applies to.
+Maybe a new infix-op-bind-like syntax will fit the bill for association.
+Also make blank code lines or visual dividing lines recordable in syscat.
 
 * ALSO...
 Use colons to separate any kind of heading/body pairs, both materials and
@@ -101,6 +153,17 @@ single statements or expressions, for example:
     cube ::= function (Int <-- topic : Int) :
         topic ^ 3;
 ... and that's it.
+
+* Remove the "var" and "attr" keywords or make them optional noisewords.
+Simply having "foo : bar" in a procedure statement position should be
+enough to know it is a variable declaration.
+Likewise, "foo : bar" in a sca/tup/rel typedef can be known an attr def.
+Then, other things can gain optional noisewords, such as "result" before
+the type in function sigs, or "param" before a param in routine sigs,
+or "expr" or "stmt" optionally before those things in a routine, etc.
+
+* Update system catalog, if necessary, to support specifying where a named
+expression, or a variable declaration, lives visually in a statement list.
 
 * THIRD PRIORITY...
 Add support for material and parameter synonyms.  And change what params
