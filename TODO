@@ -265,78 +265,48 @@ along the lines of Perl 6, though this would have further consequences.
 * Add boolean monadic function "so"/"?" which returns its argument;
 it serves as a useful noiseword in code, helping parity with "not"/"!".
 
-* Reconsider the notion of "exceptions" or "fail" in that there are various
-reasons why something may not work should be divided into several
-categories that are treated differently from each other, and have different
-available code constructs for dealing with them.
-Quoth Semyon Kholodnov: `There is avoiding. One refuses the very conception
-of "exceptional situations" and treats every possible outcome as a regular.`
-So consider these following 4 distinct categories:
-1.  Type constraint violations, where an operation that expects a value of
-type A as input a value not of type A.  This kind of exception is fully
-deterministic at runtime.  These are considered to be a programmer error,
-pure and simple, and should immediately abort at least the innermost
-statement attempting the violation, or the program if there isn't an
-exception handler.  These may often be caught at compile time, but at the
-very least must be at runtime.
-2.  Some other kind of fully deterministic exception, meaning we can always
-know without a doubt when specific conditions will lead to specific
-exceptions, and so these are logic based.  This category is the best fit
-for either running operations conditionally or having special result
-values, so that the operations in question would unconditionally have
-"regular" results.  Like what Erwin's quote talks about.
-A subset of these is exceptions that should be independent of language
-implementation, such as division by zero or mean of an empty set; they
-would have the exceptions occur at only the same circumstances on all
-hardware.
-A complementary subset is exceptions that are likely to be
-implementation-specific, such as numeric overflow or underflow, because the
-data types in question are hardware-specific.
-Where it particularly makes sense for some operators to return special
-values rather than expecting users to call them conditionally is if the
-conditions are either complicated or expensive to test without doing the
-operation, and particularly if the exception only happens with certain
-combinations of multiple inputs rather than just due to one, an example
-being real number exponentiation that only will return real numbers rather
-than complex ones.
-I believe that it is best for category 2 operators to always return special
-values rather than die; for example, division would always return either a
-number or a DIV_BY_ZERO special value.  When we do that, users have full
-flexibility to either treat the special value as part of their numeric
-domain or to treat it as an error, and this happens in the most efficient
-manner possible.
-Assuming that the normal NUMBER type does not include any special values,
-and that it would be possible to define a NUMBER_OR_NAN type as a type
-union, we could define the DIVIDE operator with INTEGER-typed parameters
-and NUMBER_OR_NAN-typed result.
-In Muldis D, one might define it like this:
-  Div_By_Zero ::= singleton-type
-  divide ::= function (Int|Div_By_Zero <-- lhs : Int, rhs : Int) ...
-If all the standard numeric operations were so defined, not taking special
-values as input but possibly returning special values, then a divide by
-zero will still be a fatal exception by default, which we want for safety,
-but it will be fatal as a category 1 exception (attempt to use DIV_BY_ZERO
-in a context expecting an INTEGER, and a type constraint error message
-specifying both types is fully descriptive); but users who explicitly test
-the result of the function for the special values, such as with IF()
-expressions, can do so, meaning no type constraint violation occurs.
-Similarly, users who want the full flexibility of IEEE floats, complete
-with NaNs, where you can *store* NaNs, are able to do so.  And there is no
-weakening of the type system as a result.
-3.  Nondeterministic exceptions that are generally outside the control of
-the DBMS, such as failures due to running out of memory or disk space, or
-I/O issues or cosmic rays flipping bits, etc.  We have to assume these can
-happen anywhere and anytime and often you can't test for them in advance. 
-These are not generally user errors but rather "real world" problems
-intruding.  But these are also in 2 complementary categories of recoverable
-and nonrecoverable.  Depending on the example, these could either throw
-exceptions or return special values, as the developer fancies; I figure
-what to do best is case-by-case.  For many of these users should be able to
-use exception handlers to try and recover.
-4.  Nondeterministic exceptions that are generally inside the control of
-the DBMS, such as when you have multiple concurrent users that want to make
-database updates that conflict with each other.  These should be dealt with
-in a way distinct from all of the other categories.
+* Account for that we can't generally have a virtual N-adic operator that
+accepts the empty set as input, where that is implemented by type-specific
+N-adic operators that accept the empty set as input, because it wouldn't
+know which type-specific N-adic to dispatch to for the empty set.
+Instead, make the type-specific N-adic virtual with 2 implementers, one
+taking just the empty set and one taking nonempty sets; the type-specific
+0..N virtual will not implement the type-generic 0..N; rather the
+type-specific 1..N will implement both 0..N virtuals directly; the
+type-specific 0 will only implement the type-specific 0..N; there would
+also be, as applicable, a type-generic 0 implementing just the generic
+0..N.  Eg, so we have just Num-0..N, Num-0, Int-0..N, Int-0, Int-1..N at
+least for ops that have identity values, and no -0 where there aren't.
+
+* Don't worry about declaring identity values somehow attached to dyadic
+function definitions in the catalog; instead, use the virtuals mechanism
+we have to just declare the triple {0..N,0,1..N}, um, or something.
+
+* Make all system-defined functions generally return special values on
+failure rather than throw exceptions.  For example, make division return
+the NaN.DivByZero singleton and so on.  But functions whose whole role is
+to assert, such as treat(), would still throw actual exceptions, and some
+other kinds of problems may be better suited to thrown exceptions.  This
+gives users the choice to either explicitly accept such situations or not.
+If users don't handle such situations, then often-times they will
+immediately get a type constraint violation exception (which is an actual
+exception, not a special value), and the description of the exception
+message is still informative enough, eg
+"Nan.DivByZero isn't a value of type Integer".  This works because typical
+system-defined type-specific functions will not accept special values as
+input, even when they might return them, so in nested expressions we still
+get exceptions in about the same places for the same reasons.
+But now the Muldis D analogy of "@foo = map { $_.x / $.y } @ints" in Perl
+won't itself throw an exception, if @foo is a Universal-array, but it will
+throw an exception if @foo is an just-Integer-array.
+I suppose one might say this could lead to action-at-a-distance problems
+such as what exceptions are meant to help prevent in the first place,
+but when code is written with fairly narrow declared types, then errors
+would not tend to get very far before detection, I would think.
+Now subject-to-update parameters of procedures can be tricker, because what
+if the param decl type is Text|IOErr but the variable argument is a
+just-Text var?  Is that something we would expect to fail at compile time
+or just optionally at runtime only if a IOErr is to be returned?
 
 * Demote the numeric operators that are more statistics-oriented from the
 language core into a new Statistics extension or some such.  Specifically
