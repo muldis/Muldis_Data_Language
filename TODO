@@ -37,12 +37,32 @@ either project "alpha" status.  Curr est mid-late 2011 for this.
 complete working core or subset thereof as a Parrot hosted language, a
 TAP speaking test suite with significant feature coverage, a serious level
 of post-alpha-status design input solicited of other interested parties,
-implementations over multiple SQL DBMSs.  Curr est late 2011.
+implementations over multiple SQL DBMSs.  Curr est late 2011 / early 2012.
 
 ----------
 
 * Add references to or adoptions of ISO/IEC 11404:2007(E) "Information
 technology -- General-Purpose Datatypes (GPD)" which could be very useful.
+
+* ZEROERITH PRIORITY ...
+Rename Muldis::D::Dialect::PTMD_STD to Muldis::D::PTMD_STD.
+Rename Muldis::D::Dialect::HDMD_Perl[6|5]_STD to remove the ::Dialect.
+Split off the Perl STDs from Muldis::D so they're no longer core
+but they're still official, and distribute the HDMD_Perl5_STD in the same
+distro as the Perl 5 Rosetta Engine API documentation.
+(SEE ALSO THE TODO FOR MULDIS::ROSETTA FOR CONTEXT.)
+Lets call that documentation distro Muldis::D::Perl5.
+Create it like how we created Muldis::D::Manual ... empty then transfer.
+The meat module lib/Muldis/D/HDMD_Perl5_STD.pod is renamed as such so it
+can also have its version reset to 0.0.0 and then the new distro can
+advance versions on its own without needing to match or incorporate the
+Muldis D versions which would become onerous.  But the language declaration
+name would not change, except to add more vnums, eg to have:
+[ 'Muldis_D', 'http://muldis.com', '0.148.0', ['HDMD_Perl5_STD', '0.0.0'] ]
+Add new directory mod lib/Muldis/D/Perl5.pod like Manual.pod.
+All of this likewise for the Perl 6 versions.
+THIS GIVES US MORE FLEXIBILITY TO NOT HAVE TO UPDATE THE PERL-STD SPECS ON
+THE SAME SCHEDULE AS THE TEXT-STD/REST.
 
 * ZEROTH PRIORITY...
 Make the system catalog into something much closer to a *concrete* syntax
@@ -50,6 +70,38 @@ tree-like-thing.  See various following TODO items for details.
 Mostly do this as its own spec release with minimal dialect/etc/other chgs,
 that is, dialect changes to fill in new slots not needed, but anything the
 catalog would break could be altered.
+Includes:
+1.  Get rid of the "scm_" prefix for cat attrs, since we're more formally
+storing concrete syntax anyway, so treat those as normally significant.
+Also update or remove/move SCM section in Basics.pod since we aren't really
+differentiating between "metadata" and normal code anymore.
+2.  Add Bool-typed scm_foo cat attr everywhere we have a "name" attr that
+says whether the name is user-specified or compiler-generated.  See below.
+3.  Refactor the scm_vis_ord and scm_comment attrs as described below.
+4.  Refactor the FooSelExprNodeSet types to merge most of them into one
+that just stores an ordered list of Name attrs; eg, [rank|vis_ord]:name
+pairs; the existing ArySel would be the closest fit.
+5.  Add attr for func-invo etc that specifies whether prefix or infix or
+postcircumfix etc form was used, where applicable.
+So ultimately distinctions of func-invo-alt-syn are recorded in catalog.
+6.  Likewise for := op, to say if "x :=foo y" or "x := x foo y" used,
+and so on concerning meta-ops, maybe.
+7.  Add attr to other expression kinds saying which forms were used,
+eg for if-then-else, whether that or ??!! used.  Or for relation literals,
+whether ordered or named form used.
+
+* Maybe add Pair and Dict generator types while we're at it; Pair and Dict
+have the same binary heading like "(key : Universal, value : Universal)"
+where Pair is the tuple type and Dict is the relation type; and "key" is
+also defined to be a unary key.
+Consider redefining Array to be a subtype of Dict where the key is
+a nonnegative integer and its values are dense; in other words, the new
+Array is the same as the old one but renaming "index" to "key".
+Then you can use a lot of the same operators on Array and Dict like Perl 6.
+Theoretically we could also make Bag a subtype of Dict where its "value"
+is a positive integer; so then "key" is its payload rather than "value";
+this then would also be like Perl 6 and it might be worth it.
+But if we do this then we'll have to relook at the set membership/etc ops.
 
 * FIRST PRIORITY...
 Reduce the general options for concrete value literals to have just the
@@ -145,6 +197,10 @@ things like Bag literals or generic dicts that are binary relations ... use
 one for atvl:atvl (bags/dicts), other for atnm:atvl (tuples, arg-lists).
 Also consider using "::" for something, maybe type conversion, as Pg does.
 Keep "::=" as for explicitly associating names with what they are naming.
+DESPITE WHAT MNEUMONICS SAYS, lets use the : for name/name and value/value
+pairs within delimiters also (unless <- still better for rename) and so
+maybe the only place => is used is as a binary infix op to construct Pair
+tuples, same as .. is an infix op to construct intervals maybe I guess.
 
 * Have ";" as separator (opt lead or term) for both statements/vars/exprs
 etc as well as whole materials.  This also comes together nicely for the
@@ -164,6 +220,21 @@ or "expr" or "stmt" optionally before those things in a routine, etc.
 
 * Update system catalog, if necessary, to support specifying where a named
 expression, or a variable declaration, lives visually in a statement list.
+
+* Consider dropping the special support for dot-accessors as their own
+expression node kinds in the system catalog, meaning AccExprNodeSet, and
+code can just use an ordinary function invocation on Tuple.attr() instead;
+or that node kind can be downgraded to just be doing aliasing, like when
+you write "a ::= b ::= c" (target is then just a Name, not a NameChain).
+This change would improve internal language consistency.
+As part of this change, the formal syntax "t.{x}" goes away so just "t.x"
+remains.  Then "." becomes an ordinary dyadic infix operator in the context
+of referring to a data entity, same as "."(t,x) where "." synonyms "attr".
+But when referring to a routine/type the whole dotted name is a NameChain.
+But if "." is just an infix operator, then "t.x" means
+"attr(<value-of-t>,<value-of-x>)" so things aren't actually that simple.
+Regardless, if there may be separate "." for relations or scalars then
+"t.x" may actually point to a virtual op, only func forms disambiguate.
 
 * THIRD PRIORITY...
 Add support for material and parameter synonyms.  And change what params
@@ -190,6 +261,82 @@ lose the shorthand "x" meaning "x..x", but this could be ok tradeoff.
 
 * Consider also making the likes of "," and "=>" into dyadic functions
 along the lines of Perl 6, though this would have further consequences.
+
+* Add boolean monadic function "so"/"?" which returns its argument;
+it serves as a useful noiseword in code, helping parity with "not"/"!".
+
+* Reconsider the notion of "exceptions" or "fail" in that there are various
+reasons why something may not work should be divided into several
+categories that are treated differently from each other, and have different
+available code constructs for dealing with them.
+Quoth Semyon Kholodnov: `There is avoiding. One refuses the very conception
+of "exceptional situations" and treats every possible outcome as a regular.`
+So consider these following 4 distinct categories:
+1.  Type constraint violations, where an operation that expects a value of
+type A as input a value not of type A.  This kind of exception is fully
+deterministic at runtime.  These are considered to be a programmer error,
+pure and simple, and should immediately abort at least the innermost
+statement attempting the violation, or the program if there isn't an
+exception handler.  These may often be caught at compile time, but at the
+very least must be at runtime.
+2.  Some other kind of fully deterministic exception, meaning we can always
+know without a doubt when specific conditions will lead to specific
+exceptions, and so these are logic based.  This category is the best fit
+for either running operations conditionally or having special result
+values, so that the operations in question would unconditionally have
+"regular" results.  Like what Erwin's quote talks about.
+A subset of these is exceptions that should be independent of language
+implementation, such as division by zero or mean of an empty set; they
+would have the exceptions occur at only the same circumstances on all
+hardware.
+A complementary subset is exceptions that are likely to be
+implementation-specific, such as numeric overflow or underflow, because the
+data types in question are hardware-specific.
+Where it particularly makes sense for some operators to return special
+values rather than expecting users to call them conditionally is if the
+conditions are either complicated or expensive to test without doing the
+operation, and particularly if the exception only happens with certain
+combinations of multiple inputs rather than just due to one, an example
+being real number exponentiation that only will return real numbers rather
+than complex ones.
+I believe that it is best for category 2 operators to always return special
+values rather than die; for example, division would always return either a
+number or a DIV_BY_ZERO special value.  When we do that, users have full
+flexibility to either treat the special value as part of their numeric
+domain or to treat it as an error, and this happens in the most efficient
+manner possible.
+Assuming that the normal NUMBER type does not include any special values,
+and that it would be possible to define a NUMBER_OR_NAN type as a type
+union, we could define the DIVIDE operator with INTEGER-typed parameters
+and NUMBER_OR_NAN-typed result.
+In Muldis D, one might define it like this:
+  Div_By_Zero ::= singleton-type
+  divide ::= function (Int|Div_By_Zero <-- lhs : Int, rhs : Int) ...
+If all the standard numeric operations were so defined, not taking special
+values as input but possibly returning special values, then a divide by
+zero will still be a fatal exception by default, which we want for safety,
+but it will be fatal as a category 1 exception (attempt to use DIV_BY_ZERO
+in a context expecting an INTEGER, and a type constraint error message
+specifying both types is fully descriptive); but users who explicitly test
+the result of the function for the special values, such as with IF()
+expressions, can do so, meaning no type constraint violation occurs.
+Similarly, users who want the full flexibility of IEEE floats, complete
+with NaNs, where you can *store* NaNs, are able to do so.  And there is no
+weakening of the type system as a result.
+3.  Nondeterministic exceptions that are generally outside the control of
+the DBMS, such as failures due to running out of memory or disk space, or
+I/O issues or cosmic rays flipping bits, etc.  We have to assume these can
+happen anywhere and anytime and often you can't test for them in advance. 
+These are not generally user errors but rather "real world" problems
+intruding.  But these are also in 2 complementary categories of recoverable
+and nonrecoverable.  Depending on the example, these could either throw
+exceptions or return special values, as the developer fancies; I figure
+what to do best is case-by-case.  For many of these users should be able to
+use exception handlers to try and recover.
+4.  Nondeterministic exceptions that are generally inside the control of
+the DBMS, such as when you have multiple concurrent users that want to make
+database updates that conflict with each other.  These should be dealt with
+in a way distinct from all of the other categories.
 
 * Demote the numeric operators that are more statistics-oriented from the
 language core into a new Statistics extension or some such.  Specifically
@@ -404,6 +551,14 @@ such as newer ones designed for version 25 who don't explicitly know how
 to emulate version 23 or know what its differences are, and are just
 trusting the code to be valid for version 25 even if declaring 23; by the
 code declaring a range, it is declaring it is willing to take its chances.
+- When an implementation provides or emulates multiple of the language
+versions that the code declares itself to be valid for, the implementation
+is free to treat the code as if it was just any one of those versions, and
+which version is chosen is formally undefined; the implementation can just
+pick any version that it chooses and the code compiles/runs or not as such.
+If the code fails to compile/run as any random version it claims to be
+compatible with, the implementation shall *not* try again as another
+version in the list as a fallback, probably.
 - A multiplicity of stated authorities is also possible.
 - A number of consequences still have to be thought out here.
 - Specifying a closed range is the code saying it *knows* it is compatible
