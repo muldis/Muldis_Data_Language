@@ -175,12 +175,44 @@ In fact, then where comments are physically visible and what things they
 are semantically connected to are then not joined at the hip.
 The comment names are optionally user-specifiable too, like with statemnts.
 For example:
-    cmt_on_x ::= `This roxors!`;
+    cmt_on_x ::= C:'This roxors!';
 ... or:
-    comment cmt_on_x ::= `This roxors!`;
+    comment cmt_on_x ::= C:'This roxors!';
 ... and other details still to fill in like saying what it applies to.
 Maybe a new infix-op-bind-like syntax will fit the bill for association.
 Also make blank code lines or visual dividing lines recordable in syscat.
+
+* Invent some lightweight syntax for the general case of infix operators,
+whose use is optional for system-defined infixes, so users can define infix
+operators or invoke their routines infix, and the parser will interpret the
+infix-using code correctly in a context-free environment where the parser
+doesn't have access to other user-defined-stuff definitions, mainly telling
+routines apart from variables, since the latter don't have special markings
+on purpose.  This syntax will need to be something that users or Muldis D
+are unlikely to want to use for some other purpose.  By "lightweight" we
+mean something that is visually small but also short to type.
+One possibly best choice is the GRAVE ACCENT; for example:
+    x `foo` y `bar` z
+... or:
+    [`foo`] ...
+... for user-def reduction, which couldn't be "[foo()]" for arry confusion.
+But then we'd need something else for code comments, though code
+comments are probably much more amenable to having double-delimiters;
+or better yet, lets use single-quotes for comments now, same as for Text or
+Blob, and have some kind of prefix like with a Blob to know its a Comment.
+We could similarly use that for user-defined prefix operators sans parens,
+where context (terms-in-a-row/etc) could differentiate from infix, although
+the value of this is lower relative to foo() compared with supp infix.
+We would probably never support unary postfix or circumfix operators,
+save the few built-in special syntaxes.
+Lets just say that there is no part of the catalog for declaring routines
+as infix but that rather any user-defined (or system-defined routine can be
+used both "foo(x,y) and "x `foo` y" iff it has exactly 2 positional
+parameters that are mandatory (names are "0" and "1") and so any other,
+optional, parameters may only be caller-specified in the "foo(x,y)" form.
+The system catalog would specify if that a routine *invocation* is foo() or
+infix etc but the routine *definition* knows no difference; both forms use
+exactly the same choices of routine names, whether alpha or symbolic.
 
 * ALSO...
 Use colons to separate any kind of heading/body pairs, both materials and
@@ -278,6 +310,17 @@ also be, as applicable, a type-generic 0 implementing just the generic
 0..N.  Eg, so we have just Num-0..N, Num-0, Int-0..N, Int-0, Int-1..N at
 least for ops that have identity values, and no -0 where there aren't.
 
+* Consider creating an analogy to virtual routines that is to existing
+virtual routines what domain-union types are to mixin-union types.  That
+is, define a kind of virtual that declares what other routines implement
+it, and so is not user-extensible.  This is essentially an alternative way
+for users to write wrappers for related routines that dispatch on argument
+types.  An example is we can have separate "ungroup" and "unwrap" functions
+that take only nonempty relations vs those that take empty ones too; the
+nonempty-only ones don't need the extra parameter to say what attributes to
+extend with when the relation is empty.  Or maybe those should be normal
+functions and better examples for the new kind of virtual will come around.
+
 * Don't worry about declaring identity values somehow attached to dyadic
 function definitions in the catalog; instead, use the virtuals mechanism
 we have to just declare the triple {0..N,0,1..N}, um, or something.
@@ -299,6 +342,9 @@ get exceptions in about the same places for the same reasons.
 But now the Muldis D analogy of "@foo = map { $_.x / $.y } @ints" in Perl
 won't itself throw an exception, if @foo is a Universal-array, but it will
 throw an exception if @foo is an just-Integer-array.
+One could say that a significant portion of the exception throw/catch
+system has been made redundant by the type system.  For example, a routine
+signature formally declares exception-like conditions as its result types.
 I suppose one might say this could lead to action-at-a-distance problems
 such as what exceptions are meant to help prevent in the first place,
 but when code is written with fairly narrow declared types, then errors
@@ -307,6 +353,26 @@ Now subject-to-update parameters of procedures can be tricker, because what
 if the param decl type is Text|IOErr but the variable argument is a
 just-Text var?  Is that something we would expect to fail at compile time
 or just optionally at runtime only if a IOErr is to be returned?
+Make sure *don't* call the special values "exceptions"; use something else?
+See also the list of IEEE float special values, and Mathematica/etc such as
+http://mathworld.wolfram.com/Indeterminate.html / etc.
+
+* Support at least a base level of controlled override-overloading with
+virtual operators, meaning where multiple impls overlap in their domains.
+Normally, if several implementation signatures match the arguments to the
+virtual, it is undefined which one is called, and in general it is onerous
+to determine which one is more "specific" than another to pick that.
+The base proposal is that the virtual operator itself can name, or be its
+own, default implementor, where this default is invoked if all of the other
+implementors don't match the arguments, rather than there being a type
+constraint violation.  Actually, best for a virtual to not be its own
+default, so users are able to always invoke the default implementation
+directly without worry of it being overridden by something.
+A natural extension to this is that in any cases where an implementer of a
+virtual is itself a virtual, it can do likewise, providing a default.
+In this way, on an operator-by-operator basis, we can support a hierarchy
+of sorts like in a multiple-inheritence OO system.
+This idea still needs thought to flesh out details of course.
 
 * Demote the numeric operators that are more statistics-oriented from the
 language core into a new Statistics extension or some such.  Specifically
@@ -582,6 +648,13 @@ to overload operators or something for performance reasons.  This is a
 separate hint from that garnered by marking relation attrs as key attrs,
 and could work within that eg to suggest order within multi-attr keys.
 Other areas in the language could probably be assisted by hints also.
+
+* Consider making the generic equality test operator virtual, so
+user-defined scalar types can explicitly define it for themselves (or it is
+generated if they don't explicitly say otherwise), but it is still
+system-defined for tuples and relations.  The semantics of this operator
+then are treated not so much as "is same" but rather as "is substitutable",
+which is how the system would treat it.  This still needs a lot of thought.
 
 * Update the PTMD_STD grammar to split up the "Name_payload" or its parts
 further so that, rather than just the 2 "[|non]quoted_name_str", there is
