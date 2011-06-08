@@ -22,7 +22,7 @@ table for these items; they are simply to be done "as soon as possible".
 * Add references to or adoptions of ISO/IEC 11404:2007(E) "Information
 technology -- General-Purpose Datatypes (GPD)" which could be very useful.
 
-* ZEROERITH PRIORITY ...
+* NEXT PRIORITY ...
 Rename Muldis::D::Dialect::PTMD_STD to Muldis::D::PTMD_STD.
 Rename Muldis::D::Dialect::HDMD_Perl[6|5]_STD to remove the ::Dialect.
 Split off the Perl STDs from Muldis::D so they're no longer core
@@ -42,7 +42,80 @@ All of this likewise for the Perl 6 versions.
 THIS GIVES US MORE FLEXIBILITY TO NOT HAVE TO UPDATE THE PERL-STD SPECS ON
 THE SAME SCHEDULE AS THE TEXT-STD/REST.
 
-* ZEROTH PRIORITY...
+* NEXT PRIORITY...
+Rework routine headings/definitions, especially functions:
+1.  Remove native concept of optional parameters; this lack can be worked
+around in various ways such as with wrappers or multiple routine versions
+or polymorphism or currying or system design that emphasizes greater
+specialization or fewer parameters.
+2.  Make public routine parameter aliases a wrapper thing.  Each routine
+has exactly 1 native name for each of its parameters, which is the only
+name shared by the routine's internals and its users, and both sides have
+their own independent alias namespaces.  For any function that explicitly
+declares itself to be symmetric or commutative or associative or whatever
+in its routine heading, it *must* use the positional names "0","1",etc as
+its native parameter names.  Or for that matter, we could say that in
+general any routine intended to be used infix must have exactly 2
+parameters, with positional names, and any with more than 2 would not be
+used infix.  The routine-internal alias namespace is simply ordinary
+expression node aliasing, such as [numerator ::= "0"], or that's what it
+is fundamentally, anyway, though syntactic sugar may be provided for this
+kind of aliasing.  The routine-external aliasing would involve auto-gen
+wrappers, in a manner of speaking, that are like the tuple RENAME operator,
+or certainly the semantics are the same.  There would also be syntactic
+sugar provided for defining sets of external parameter aliases along with
+a routine definition.  To be clear, while synonym aliases for whole
+routines don't add routine definitions, parameter aliases do add routines.
+3.  Make all functions without exception have exactly 1 actually defined
+parameter, which is a tuple-typed positional parameter, so that the
+functions' conceptually defined named parameters are actually attributes of
+this tuple.  And so all functions will take 1 argument and produce 1
+result.  The result type does *not* have to be a tuple (this is important)
+and is typically the normal result type the function otherwise has.  We now
+will always use a tuple type definition to define a function's fundamental
+named parameter list, meaning its parameter names and their declared types.
+But an added benefit of the change is that we can define what
+*combinations* of named arguments are valid for the function in order for
+the function to produce a normal result; a predicate or contract for the
+combined argument list is now defined quasi-declaratively as a
+boolean-resulting expression in the tuple type constraint.
+Theoretically, the parameters' tuple type can now just define all the
+allowed public-side aliases itself, or any other variations of parameters
+including optional or what-have-you.  But in practice for most functions
+we will still just want exactly 1 variant defined, so that the body of the
+function only has to deal with 1 variant.
+In practice there will exist an automatic RENAME-alike operation that maps
+the tuple of a caller with 1 set of argument names to the names that the
+called function actually wants, and this would probably be auto-generated
+per spot of invoking code for efficiency.
+Using tuples like this would enhance polymorphism, as now a lot of the same
+logic can be shared, and in particular, dispatch would always be determined
+using a single actual tuple parameter; the automatic generated code that
+dispatches a virtual call can simply invoke "isa" once per candidate to
+find an implementer.
+No change to the empty-string-named expr node; it is the function-result.
+Inside the function body, the tuple argument would be referrable to with a
+reserved expr node name, maybe "args".  Perhaps the leading-dot syntactic
+sugar would be best used here; eg, ".numerator" for "args.numerator";
+I would not automatically alias expr nodes to args attributes because in
+the general case which ones exist may be caller-defined; however we could
+have sugar for declaring explicit expr nodes E from explicit args.E.
+Tuple selectors need to have special expr node syntax to avoid chicken-egg.
+Tuple attribute accessors don't need special syntax, strictly speaking,
+because functions don't have to return tuples.
+4.  Making procedures also have exactly 1 tuple-typed positional parameter
+should theoretically also work, thanks to pseudo-variables, and because
+even subject-to-update parameters are always passed values,
+a type constraint or virtual dispatcher can include those too.
+However, in the general case, we would expect procedures to have *two*
+predicates, because there may be values allowed for output that aren't
+allowed for input, and vice-versa, in theory.
+Related issues are still marking params/args as subject-to-update or not.
+I would expect global-params to remain separate from the parameters-tuple.
+5.  We should be able to retain existing signature/etc syntax a large part.
+6.  See also what Perl 6 does about routine parameters.
+
+* NEXT PRIORITY...
 Make the system catalog into something much closer to a *concrete* syntax
 tree-like-thing.  See various following TODO items for details.
 Mostly do this as its own spec release with minimal dialect/etc/other chgs,
@@ -81,7 +154,7 @@ is a positive integer; so then "key" is its payload rather than "value";
 this then would also be like Perl 6 and it might be worth it.
 But if we do this then we'll have to relook at the set membership/etc ops.
 
-* FIRST PRIORITY...
+* NEXT PRIORITY...
 Reduce the general options for concrete value literals to have just the
 simple ones.  For any given "x:y:z", remove all "y" but for Scalar where it
 is necessary; people can wrap a literal in an explicit TREAT assertion/etc
@@ -246,7 +319,7 @@ But if "." is just an infix operator, then "t.x" means
 Regardless, if there may be separate "." for relations or scalars then
 "t.x" may actually point to a virtual op, only func forms disambiguate.
 
-* THIRD PRIORITY...
+* NEXT PRIORITY...
 Add support for material and parameter synonyms.  And change what params
 any positional arguments implicitly go with from topic|other to 0|1|...
 But don't actually change any routines/params until later, except adding
