@@ -66,7 +66,13 @@ or certainly the semantics are the same.  There would also be syntactic
 sugar provided for defining sets of external parameter aliases along with
 a routine definition.  To be clear, while synonym aliases for whole
 routines don't add routine definitions, parameter aliases do add routines.
-3.  Make all functions without exception have exactly 1 actually defined
+3.  Change the normal format for tuple-type and relation-type to look just
+like a routine definition, sort of, in that the attribute list is declared
+with the same appearance as a parameter list.
+For example:
+    Dict ::= relation-type (word : Text, definition : Text) key (word)
+        where (<boolean-valued-expr>);
+4.  Make all functions without exception have exactly 1 actually defined
 parameter, which is a tuple-typed positional parameter, so that the
 functions' conceptually defined named parameters are actually attributes of
 this tuple.  And so all functions will take 1 argument and produce 1
@@ -94,16 +100,26 @@ using a single actual tuple parameter; the automatic generated code that
 dispatches a virtual call can simply invoke "isa" once per candidate to
 find an implementer.
 No change to the empty-string-named expr node; it is the function-result.
-Inside the function body, the tuple argument would be referrable to with a
-reserved expr node name, maybe "args".  Perhaps the leading-dot syntactic
-sugar would be best used here; eg, ".numerator" for "args.numerator";
-I would not automatically alias expr nodes to args attributes because in
-the general case which ones exist may be caller-defined; however we could
-have sugar for declaring explicit expr nodes E from explicit args.E.
+Inside the routine body, the tuple argument as a whole is like an inner
+expr node, in that one can optionally name it (but using : rather than ::=)
+and if they don't then a name will be automatically generated, and then for
+all practical purposes it would not be explicitly referenceable; regardless
+of that naming, all of the tuple's attributes can be referred to using the
+special leading-dot syntax, such as ".numerator"; the leading dot syntax is
+no longer a shorthand into the "0" or "topic" argument.
+Examples:
+    function (ResType <-- ArgsType) : ...;
+    function (ResType <-- args : ArgsType) : ...;
+    function (ResType <-- tuple-type (x : Text, y : Int) where ...) : ...;
+    function (ResType <-- x : Text, y : Int) : ...;
+Still todo, how to distinguish 2nd from a single named arg in 4th?
+Still todo, sugar for auto-declaring auto-nodes from args, eg so we can
+just refer to "x" and "y", though the 3rd/4th syntax may just do that
+because we declared the tuple type inline.
 Tuple selectors need to have special expr node syntax to avoid chicken-egg.
 Tuple attribute accessors don't need special syntax, strictly speaking,
 because functions don't have to return tuples.
-4.  Making procedures also have exactly 1 tuple-typed positional parameter
+5.  Making procedures also have exactly 1 tuple-typed positional parameter
 should theoretically also work, thanks to pseudo-variables, and because
 even subject-to-update parameters are always passed values,
 a type constraint or virtual dispatcher can include those too.
@@ -111,9 +127,16 @@ However, in the general case, we would expect procedures to have *two*
 predicates, because there may be values allowed for output that aren't
 allowed for input, and vice-versa, in theory.
 Related issues are still marking params/args as subject-to-update or not.
+Or we could just conceptualize that the single procedure tuple parameter is
+*always* subject to update fundamentally, as a function's is read-only, and
+any further markings on its attributes, probably only happening if declared
+inline, the "&" or absense of said would be more for optimization and
+adding of constraints that variables or non-variable exprs are allowed.
+Where the 1st and 2nd formats are used, there can also be a separate
+declaration list to indicate ro/rw or alias-exprs etc.
 I would expect global-params to remain separate from the parameters-tuple.
-5.  We should be able to retain existing signature/etc syntax a large part.
-6.  See also what Perl 6 does about routine parameters.
+6.  We should be able to retain existing signature/etc syntax a large part.
+7.  See also what Perl 6 does about routine parameters.
 
 * NEXT PRIORITY...
 Make the system catalog into something much closer to a *concrete* syntax
