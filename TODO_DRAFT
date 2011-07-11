@@ -22,6 +22,8 @@ table for these items; they are simply to be done "as soon as possible".
 * Add references to or adoptions of ISO/IEC 11404:2007(E) "Information
 technology -- General-Purpose Datatypes (GPD)" which could be very useful.
 
+* Add mention of http://rubydoc.info/github/blambeau/alf/master/Alf .
+
 * NEXT PRIORITY ...
 Rename Muldis::D::Dialect::PTMD_STD to Muldis::D::PTMD_STD.
 Rename Muldis::D::Dialect::HDMD_Perl[6|5]_STD to remove the ::Dialect.
@@ -138,6 +140,8 @@ I would expect global-params to remain separate from the parameters-tuple.
 6.  We should be able to retain existing signature/etc syntax a large part.
 7.  See also what Perl 6 does about routine parameters.
 
+* Do away with TREAT as seems to be useless now.  See TTM chat c2011.06.11.
+
 * NEXT PRIORITY...
 Make the system catalog into something much closer to a *concrete* syntax
 tree-like-thing.  See various following TODO items for details.
@@ -203,12 +207,21 @@ Or the dotted forms are elem lookups and no dots are for slices, like Perl.
 And then "<expr>.attr" is then its own thing rather than being a shorthand
 for "<expr>.{attr}" although it may still be a function shorthand.
 
+* The SQL-92 Standard CREATE ASSERTION is like a generalized db-level CHECK
+constraint but few SQL DBMSs support it.  Note this in the spec.  RDB from
+DEC had it, but they got bought by Oracle when DEC went out of business.
+
 * ALSO...
 Get rid of the Set.new() options in Perl 6 and generally update the
 Perl-STDs to use just Array/Seq/arrayref and mostly not set/bag/hash/etc,
 partly for code brevity but particularly to preserve the visual order of
 elements from source to catalog and back again.  Also add scm_vis_ord to
 the catalog or change some catalog types to record order.
+
+* Also add to Perl5-STD explicit support for some more Perl modules whose
+objects we would implicitly treat as built-in scalar values.  We already
+have BigInt, BigRat etc, but add Ingy's "boolean" (which is expressly
+intended for cross-language interchange in its POD) and Juerd's "BLOB".
 
 * Maybe also but probably not yet be concerned w comments in Perl-STD/etc.
 
@@ -581,6 +594,40 @@ So 16#FF is an integer, 16#'FF' is a blob.
 Maybe also add Perl-6 inspired commalists, like this:
 60#[43,5,12] (integer); no good reason for a blob analogy.
 
+* Define some generic framework for units and measures, so to make it
+easier to perform the large fraction of math involving such things, and it
+can be more strongly typed and bug free.
+The core of the system would have the domain-union type "Measurement" (or
+more general), whose composing types should be named after the kind of
+thing being measured (eg, "Mass" or "Duration") or the names of the
+relevant units (eg, "Kilograms" or "Seconds"), and there would likely be a
+variety of subtypes that are union types themselves for further
+categorization.  These likely all scalar types.  Subcategories include:
+1. Single-unit (eg, just seconds) or multi-unit (eg, any/all of YMDHIS).
+2. Approximate (carries amount plus margin/sigfigs) vs exact (no margin).
+3. Semantics, such as where versus howmuch, or continuous v discrete field.
+4. What can be added or differenced or multiplied or divided etc, either
+two of the same measure or a measure and a bare num, what result type is;
+we may possibly have a separate domain-union type for each of those.
+- When units are always directly convertable, they can be possreps of the
+same scalar type, such as {seconds, minutes, hours}?.
+- When not directly convertable, should be separate types, such as either
+seconds vs months or ...
+- For simplicity, we could consider all units flat, such that rather than
+adding multiple dimensions orthogonal to everything else, we would just
+have MetresPerSecondSquared etc types, this especially because many
+plain-sounding units are actually defined as such, eg "Watts"="Amps*Volts".
+- With this very basic structure, nearly all the complexity would be in the
+operators, and generally one would explicitly define separate functions
+for every kind of unit-measures they wish to pair up; eg, dividing distance
+by time to get speed would be "(MetresPSecondSq <-- 0:Metres, 1:Seconds)"
+but of course that func could overload the generic "/" virtual, +just work.
+
+* To simplify the units and measures framework to not have to deal with
+margin/sigfigs directly, we could have a framework for general inexact math
+that tracks margin/sigfigs, but this is probably no more complicated than
+supporting rationals when we have integers.
+
 * IN PROGRESS ...
 Rewrite/update anything talking about matters affected by process isolation
 to both declare that Muldis D is generally orthogonal or agnostic to such
@@ -709,6 +756,9 @@ quoted entity names, texts, comments; see later TODO item about this; as
 per that, all of these could be part of a single pragma.  A simpler
 implementation could support only ASCII across the board as literal
 characters, while non-ASCII data could be supported as escape sequences.
+
+* Look at this for a long list of Unicode gotchas / false assumptions, etc:
+http://stackoverflow.com/questions/6162484/why-does-modern-perl-avoid-utf-8-by-default
 
 * Enhance the cat-type/syntax for defining tuple types as attr lists (and
 by extension, relations and scalar possreps) to let users provide an
@@ -1709,6 +1759,20 @@ See also the PGTemporal project and its 'Period' type.
 types, maybe overhaul the types.
 
 * Consider another dialect that is JSON ... like HDMD in form, but stringy.
+
+* Fundamentally, a Muldis D DBMS API or client-server protocol has a
+command pattern where the request is Muldis D code and so is the response.
+This is like the relationship between Javascript and JSON, where the data
+is expressed in the same syntax as code.  PTMD_STD by default.
+Actually, this brings up an interesting thought in that a DBMS shell could
+be analagous to writing HTTP requests manually like telnet to port 80.
+But a different Muldis D dialect would be optimized for machine-to-machine
+like client-server stuff.
+If we ignore parameter binding, a programmer API could also be a function
+or procedure call that takes Muldis D code as a single argument and has
+Muldis D code as the result; the argument is code defining a tuple value.
+
+* Mention in the DBMS or learn from "Cego" (http://www.lemke-it.com/).
 
 ----------
 
