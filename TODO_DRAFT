@@ -235,6 +235,9 @@ itself but rather is part of the larger thing into which the material node
 is composed; the material node is now just eg ['function', <payload>].
 Material nodes themselves just declare anonymous entities.
 
+* Rename the "subdepot" concept to "schema", even if this term is broad
+enough to include what Oracle calls "package" and not just SQL "schema".
+
 * Example of function in Perl with context ...
 The FunctionSet tuple:
     ['cube','opt comment of FunctionSet',<Function>]
@@ -268,6 +271,22 @@ For example:
 ... and other details still to fill in like saying what it applies to.
 Maybe a new infix-op-bind-like syntax will fit the bill for association.
 Also make blank code lines or visual dividing lines recordable in syscat.
+See also Postgres "COMMENT ON ..." syntax.
+
+* Don't use any quote-like characters for delimiting code comments after
+all, but instead use nonidentical multi-symbolic-character delimiting
+tokens, such as a "/* */" pair as in C/etc.  The tokens would be ones not
+valid as normal operators, and they would be visually "heavy" rather than
+"light" such as quote-like string delimiters are.  To make it easier to
+comment-out code blocks that may already contain comments or have literal
+strings that contain comment delimiters, the comment delimiters may be
+extended to an arbitrary length using repetition, where both ends must
+match.  Perl 6 is used as inspiration for this.  We would presumably use a
+bracketing character for the extender, for example "/*{ }*/" or "/*{{ }}*/"
+etc.  This means there is NO ESCAPING in code comments for the comments.
+On the other hand, maybe some certain escaping is still needed such as for
+whitespace like linebreaks and indentation, as with text/etc literals, to
+control exactly what is captured, or we have a version of comment for each.
 
 * Invent some lightweight syntax for the general case of infix operators,
 whose use is optional for system-defined infixes, so users can define infix
@@ -383,6 +402,15 @@ along the lines of Perl 6, though this would have further consequences.
 
 * Add boolean monadic function "so"/"?" which returns its argument;
 it serves as a useful noiseword in code, helping parity with "not"/"!".
+
+* Have a Boolish mixin-union type which Boolean or Bit etc compose.
+By having "so" and "not" in this union type, users can compose Boolish
+into ostensibly less-Boolean-like types like numbers or strings and so they
+can define implementations for "so" and "not" that are like the Perl
+operators when one treats numbers or strings like booleans.
+But the system-defined numeric and string types *won't* compose Boolish/etc
+as we prefer stronger typing or more explicitness by default.
+The details of this will require more thought, maybe more mixin types.
 
 * Account for that we can't generally have a virtual N-adic operator that
 accepts the empty set as input, where that is implemented by type-specific
@@ -1773,6 +1801,9 @@ or procedure call that takes Muldis D code as a single argument and has
 Muldis D code as the result; the argument is code defining a tuple value.
 
 * Mention in the DBMS or learn from "Cego" (http://www.lemke-it.com/).
+
+* Apparently Postgres has no built in scheduler feature, and
+PgAgent is designed to cover that need.
 
 ----------
 
