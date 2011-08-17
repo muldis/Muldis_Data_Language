@@ -328,6 +328,16 @@ ternary+ infix format and make a set of dyadic functions that break it
 down, kind of like how the creation of a distinct "assuming" function
 allowed numerous 3-arg functions to generalize into a pair of 2-arg.
 
+* Consider making the "lib" or "cat" or "data" portions of namechains
+optional in contexts where they would always be the same, especially "lib",
+so for example one can just say "nlx.myfunc" rather than "nlx.lib.myfunc";
+this would be loosely similar to the elimination of "lex".
+
+* For that matter, consider restructuring the namespace tree in Basics.pod
+so the lib|cat|data|etc are the namechain first element, with fed|nlx|etc
+the second element; and sys doesn't have lib|cat|data already, or in fact
+that would all be grouped under "lib" arguably.
+
 * Consider the provision of a limited search path functionality for
 user-defined functions and types so that they could be invoked tersely or
 unqualified like builtins, particularly so reasonable infix syntax or
@@ -344,7 +354,11 @@ together, where one is expanded and the other isn't.  A "shp.foo" would be
 interpreted as follows: 1. first all system-defined possibilities would be
 explored and exhausted; 2. then user-defined possibilities that are
 siblings of the invoker or siblings of ancestors from closest to farthest,
-and then failure.  A "shp" can be included along with other special chain
+and then failure.  To be specific, in a given "shp.foo.bar.baz", just the
+"foo" is looked for as siblings of ancestors, and then the first one that
+is found would then be dug into as usual, to succeed or fail, same as if
+one had said "par" instead.
+A "shp" can be included along with other special chain
 elements so to further customize the search path so that say #2 can be
 followed relative to a specific place in the namespace rather than from
 where it is actually invoked; for example "fed.lib.db.foo.bar.shp.baz" but
@@ -850,7 +864,8 @@ and could work within that eg to suggest order within multi-attr keys.
 Other areas in the language could probably be assisted by hints also.
 
 * Consider support for functions that aren't fully deterministic but for
-which it is reaonable to cache their results.  For example, a function
+which it is reaonable to cache their results.  For example, a function ...
+THIS THOUGHT REMAINS UNFINISHED.
 
 * Consider making the generic equality test operator virtual, so
 user-defined scalar types can explicitly define it for themselves (or it is
