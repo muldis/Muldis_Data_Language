@@ -100,7 +100,9 @@ Using tuples like this would enhance polymorphism, as now a lot of the same
 logic can be shared, and in particular, dispatch would always be determined
 using a single actual tuple parameter; the automatic generated code that
 dispatches a virtual call can simply invoke "isa" once per candidate to
-find an implementer.
+find an implementer.  So then the logic becomes a lot more like the
+multi-sub/method dispatch logic of Perl 6, wherein variants of the same
+virtual routine can now have different numbers of or names for parameters.
 No change to the empty-string-named expr node; it is the function-result.
 Inside the routine body, the tuple argument as a whole is like an inner
 expr node, in that one can optionally name it (but using : rather than ::=)
@@ -319,6 +321,52 @@ optional, parameters may only be caller-specified in the "foo(x,y)" form.
 The system catalog would specify if that a routine *invocation* is foo() or
 infix etc but the routine *definition* knows no difference; both forms use
 exactly the same choices of routine names, whether alpha or symbolic.
+
+* A tangent to the above is that where appropriate we can take any function
+of 3+ parameters which conceivably would be made easier to use in a
+ternary+ infix format and make a set of dyadic functions that break it
+down, kind of like how the creation of a distinct "assuming" function
+allowed numerous 3-arg functions to generalize into a pair of 2-arg.
+
+* Consider the provision of a limited search path functionality for
+user-defined functions and types so that they could be invoked tersely or
+unqualified like builtins, particularly so reasonable infix syntax or
+singleton types could be supported.  The fully-qualified invocation of such
+a floating name would have another special name token, in the same way that
+"par" and "nlx" etc are special.  Maybe "shp" (SearcH Path).  So, in the
+system catalog, all unqualified names "foo" become explicit shp-prefixed
+names "shp.foo", which includes references to all system-defined routines
+as typically used.  On a tangent, we can revise how NameChain are expanded
+in the system catalog, due to wanting to make it as close to the user's raw
+syntax as possible, so eg not expanding unqualified to sys.*; if necessary
+for ease of scanning the catalog, we might store 2 versions of a namechain
+together, where one is expanded and the other isn't.  A "shp.foo" would be
+interpreted as follows: 1. first all system-defined possibilities would be
+explored and exhausted; 2. then user-defined possibilities that are
+siblings of the invoker or siblings of ancestors from closest to farthest,
+and then failure.  A "shp" can be included along with other special chain
+elements so to further customize the search path so that say #2 can be
+followed relative to a specific place in the namespace rather than from
+where it is actually invoked; for example "fed.lib.db.foo.bar.shp.baz" but
+that this example wouldn't actually work, so details still to figure out;
+on the other hand, we could say that this last feature would be unnecessary
+because the existing APMaterialNCSelExprNode feature would make stuff work.
+Or possibly APMaterialNCSelExprNode/etc could be employed with an expanded
+role to translate shp.foo to abs-paths which then could be used as usual.
+And so, the parser doesn't have to resolve paths so much from unqualified
+to qualified, this functionality being pushed back, but instead the parser
+still has to resolve what a reference is to, whether a function or a type
+or a data-entity etc so users will still have to provide enough clarity in
+their syntax to disambiguate this.
+
+* Note that Postgres and MySQL both support an UPDATE statement extension
+where you can mention multiple tables besides those being updated, where
+semantics are that all of the tables are joined with the one being updated
+and so you can use data from other tables in the SET clause.
+This is a *very* useful feature and Muldis D should have an analogy,
+or this feature would be helpful in implementing Muldis D features
+like certain kinds of relational assignment involving self joined with foo.
+As of Postgres 9.1 the UPDATE also supports the WITH clause.
 
 * ALSO...
 Use colons to separate any kind of heading/body pairs, both materials and
@@ -801,12 +849,30 @@ separate hint from that garnered by marking relation attrs as key attrs,
 and could work within that eg to suggest order within multi-attr keys.
 Other areas in the language could probably be assisted by hints also.
 
+* Consider support for functions that aren't fully deterministic but for
+which it is reaonable to cache their results.  For example, a function
+
 * Consider making the generic equality test operator virtual, so
 user-defined scalar types can explicitly define it for themselves (or it is
 generated if they don't explicitly say otherwise), but it is still
 system-defined for tuples and relations.  The semantics of this operator
 then are treated not so much as "is same" but rather as "is substitutable",
 which is how the system would treat it.  This still needs a lot of thought.
+To be more specific, "=(Int,Int)" and "=(Int,List)" are system-defined and
+can't be overridden, but "=(List,List)" isn't at that level.
+Perhaps the answer is for "=" to be defined at the lower type level only
+and "=(Any,Any)" be undefined and a type-mismatch error as TTM suggests?
+And rather certain other operators are more universal and over which "="
+can be defined?  Maybe have multple =-like ops for different purposes.
+
+* Consider adding native concepts of "value instance identifiers" (or
+substitute "occurrence" or "sample" etc for "identifier") where these are
+analogous to Perl "references", and provide system "functions" for
+obtaining the VII of values, like Perl has "ref".  Note that given the same
+instance X, multiple vii(X) must give the same result.
+Especially in a system where the generic equality test operator is virtual,
+VII can provide an implementation-influenced baseline something or other.
+THIS THOUGHT REMAINS UNFINISHED.
 
 * Update the PTMD_STD grammar to split up the "Name_payload" or its parts
 further so that, rather than just the 2 "[|non]quoted_name_str", there is
