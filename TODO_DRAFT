@@ -289,6 +289,9 @@ etc.  This means there is NO ESCAPING in code comments for the comments.
 On the other hand, maybe some certain escaping is still needed such as for
 whitespace like linebreaks and indentation, as with text/etc literals, to
 control exactly what is captured, or we have a version of comment for each.
+Apparently both Tutorial D and SQL support /* */ block comments too.
+All Muldis D comments are block comments on purpose; there are no line
+comments, because of a desire to make it line-ending-chars-generic.
 
 * Invent some lightweight syntax for the general case of infix operators,
 whose use is optional for system-defined infixes, so users can define infix
@@ -327,6 +330,71 @@ of 3+ parameters which conceivably would be made easier to use in a
 ternary+ infix format and make a set of dyadic functions that break it
 down, kind of like how the creation of a distinct "assuming" function
 allowed numerous 3-arg functions to generalize into a pair of 2-arg.
+
+* Note, apparently Haskell has no prefix operators except for unary minus,
+and normally all of its infix operators are symbolic where normally all
+alpha operators must be used in "foo()" notation.  Also, you can take a
+foo() operator and use it infix using backquotes, eg "x `foo` y", meaning
+my thought of doing this has a precedent.  Haskell says you can take a
+symbolic infix and make it prefix using parens, eg, "x + y" -> "(+) x y".
+
+* PTMD_STD Syntax/parsing cluster:
+- A general rule is, the parser has zero knowledge of what specific
+operators or vars/etc exist, and must be able to derive a concrete syntax
+tree using just basic grammatical knowledge, such as knowing the difference
+between whitespace and alphanum and symbolic and quoting and bracketing
+characters, and so the parsing rules are based on those restrictions.
+In particular, the behavior of a parser or how a piece of code is parsed
+does not vary depending on what user-defined entities are declared at the
+time, which should aid on security and predictability and simplicity.
+There are only a small amount of disambiguating rules that say certain
+tokens are system-defined operators, so otherwise no knowledge.
+The hardest work then, in the face of Unicode, is specifically identifying
+what characters count as alpha or symbolic; eg what are Greek letters?
+Generally speaking we would whitelist; any characters or groups we don't
+whitelist into a particular category are disallowed from appearing outside
+of a quoted context.
+- Remove dash from bareword ident, leaving just alphanum and underscore;
+people can quote names with dashes when they want them.
+- There are no postfix operators; eg, ++ is prefix.
+- Namespace-qualified/dotty operator calls must be in foo() syntax; plain
+prefix or infix operator calls must be unqualified.
+- Whitespace affects parsing.  Any consecutive 2 alphanum or 2 symbolic
+tokens must have intervening whitespace.  Quoting '"` or bracketing (){}[]
+characters count as neither alphanum nor symbolic in general.  Whitespace
+may be omitted between any 2 of these distinct things in general: alphanum
+tokens, symbolic tokens, quoting or bracketing characters.
+- Default to treating any bareword run of 1+ alphanums as a var name or
+foo(), treat any bareword run of 1+ symbolics as a non-foo() operator.
+- All bareword symbolic tokens are plain infix/prefix op calls.
+- All grave-accent-delimited (`) tokens are plain infix/prefix op calls.
+- All double-quoted (") tokens are var/etc references or foo() calls.
+- All single-quoted (') tokens are string value literals.
+- All namespace-qualified/dotty tokens are var/etc refs for foo().
+- All tokens followed by an open-paren with no ws between are foo() calls
+if the token is bareword alphanum and a plain prefix op if symbolic.
+- Any code enclosed by a pair of bracketing chars is treated as a var/etc,
+except when they contain only a symbolic token and no whitespace, in which
+case they instead are taken as an extension of said symbolic token, eg [+].
+- When 2 or more plain op calls appear consecutively, all but the first are
+taken as prefix ops; the first op is taken as an infix op if it follows a
+var/etc and a prefix op if it doesn't.  Eg "x + -y".
+- When a symbolic token appears between 2 alphanum tokens, the symbolic
+token is taken as a plain prefix op if there is no whitespace between it
+and the following alphanum and there is whitespace between it and the
+leading alphanum, while it is treated as plain infix if there either is or
+is not whitespace on both sides, or there is whitespace just following it.
+- When disambiguation isn't present, sequences of bareword alphanums are
+interpreted as alternations of var/etc and plain infix op calls, always
+ending with the former, like "var op var op var" or "op var op var".
+- Certain bareword tokens are special-cased to always be interpreted as
+prefix ops, namely {not,so} (there might be more).
+- All operators with more than 2 parameters must be called in foo() syntax.
+- All prefix ops have 1 param named "0", all infix just 2, named {"0","1"}.
+- All bareword prefix ops are symbolic except for a small number of special
+cases such as "not" and "so"; all other bareword alphanum ops are infix.
+- The only infix syntax taking more than 2 inputs is special syntax with
+its own kinds of parse nodes, not op calls, such as ??!! and if-then-else.
 
 * Consider making the "lib" or "cat" or "data" portions of namechains
 optional in contexts where they would always be the same, especially "lib",
@@ -611,6 +679,10 @@ Note: For a generalization of Maybe, consider the Zoo name, inspired by
 Database Explorations that discusses MD's canonical missing info solution,
 or alternately call it C01 in the spirit of D0C0/D0C1/D0.
 Still in question is what if anything to change about [S|M]PInterval/etc.
+
+* Consider removing MPInterval as a s-d type and rename SP to "Interval";
+then, either one can just use "Interval" as a "Set" element to get the same
+effect, or a relation over "Interval" can at least be demoted from core.
 
 * Add official support for functions/expressions to be able to do some
 things that they otherwise couldn't, such as have side-effects or be
@@ -975,6 +1047,16 @@ inputs hard-coded, such as the attr names or interval-endpoint-flags,
 versus those taking variables in the the more verbose generic syntaxes.
 Presumably all levels higher than rtn_inv_pcfx_alt_syn are plain infix
 or paren-less prefix with fully-variable arguments like generic functions.
+
+* Consider making ASCII lookalikes for as many Unicode symbolic operators
+as possible; for example:
+ - join: ⋈ -> |X|
+ - semijoin: ⋉ -> |X
+ - semidiff: ⊿ -> |>
+ - diff: ∖ -> \
+Well it's a thought anyway, though may not be worth the trouble in general.
+If the backslash is allowed to be used this way, then we'll have to put
+limits on its other uses for starting escape sequences, otherwise work out.
 
 * Maybe this isn't feasible, but ...
 Consider formally making every function map 1:1 from a tuple input to a
