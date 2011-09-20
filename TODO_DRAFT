@@ -19,6 +19,14 @@ table for these items; they are simply to be done "as soon as possible".
 
 ----------
 
+* PRIORITY LIST:
+1.  Split off Perl stuff to separate distros/etc.
+2.  Canonicalize low-level tp-sys so that simple "=" just works everywhere.
+3.  Redefine all routines to have exactly 1 parameter, tuple-typed.
+    - Have minimal other changes, including minimal syntax changes.
+    - Syntax changes mainly re pass/def tup literally or not ala Perl 6.
+4.  ...
+
 * Add references to or adoptions of ISO/IEC 11404:2007(E) "Information
 technology -- General-Purpose Datatypes (GPD)" which could be very useful.
 
@@ -208,6 +216,64 @@ In fact, we could just say foo[x] and bar{x} are then array/dict lookups.
 Or the dotted forms are elem lookups and no dots are for slices, like Perl.
 And then "<expr>.attr" is then its own thing rather than being a shorthand
 for "<expr>.{attr}" although it may still be a function shorthand.
+
+* Consider having unary virtual functions for some common kinds of casts,
+such as "?" for boolean, "+" for number, "~" for char str.  This terse
+syntax would always deal in just base-10 for numbers-with-char.  As for
+whether to produce an Integer or Rational or etc from a string, the parsing
+rules would be like for PTMD_STD, eg, presence or absense of a radix point
+or a division/fraction slash, etc.
+Casting to the same type produces the same value as the input.
+The functions might be transitive, or whatever the term, so eg saying
+"~somebool" produces the same result as "~+somebool" and so on.
+Likely booleans would translate to integer 0|1 or string '0','1'.
+Likewise in reverse, any number equal to zero, or any string that casts as
+a number equal to zero, would become bool false, and otherwise bool true,
+at least speaking for strings that successfully numify.
+So 0 and 0.0 and '0' and '0.0' are false, and other numifyable are true.
+Attempts to numify a string that isn't a number will throw an exception.
+Attempts to boolify any string will succeed, where the above zeros plus
+the empty string are false, and other strings are true; to be specific, any
+string that would successfully numify would use numeric rules for truth,
+and any string that doesn't successfully numify would be true unless empty.
+ON THE OTHER HAND, it would probably be much better and more predictable
+and extensible to forget about transitivity, and so, boolifying a string
+will only produce false for the empty string and true for all other strings
+and to get the '0'=false behavior you have to say ?+str; MUCH BETTER.
+Unlike Perl 6, the prefix !foo will *not* be system-overloaded to mean
+!?foo as doing so would likely introd accidental logic errors of implicit
+casting when one considers ! is widely used when just bool inputs expected.
+Similarly, unlike Perl 6, no other ops will implicitly cast like infix ~,+.
+If this is adopted, "so" will therefore be virt rather than a "not" mirror,
+though for the boolean composer it becomes the same as otherwise.
+ON THE OTHER HAND, since there is so little standardization and wildly
+different expectations on what strings are considered true or false, it
+would seem best for strings to *not* provide system-defined terse bool
+casting at all, and instead force people to be explicit, which would
+typically mean either going by way of a number, either from a numify cast
+of the string or a length-test of the string, or some explicit boolean test
+like comparing the string against a list of values.  Similarly, a boolify
+of many other things like collection values is best done by way of some
+intermediary like a number such as a length or elements count test.
+So eg the so/not-empty prefix for a relation/array is then ?#r or !#r for
+consistency with "? #r" or "! ? #r", and #?r or #!r is probably invalid.
+
+* Grammar spec related to separating/trailing chars like ',' or ';' could
+look like this:
+  <foolist> ::=
+    <open>
+      [<item>? <sep>]* <item>?
+    <close>
+... which says every item may have a trailing separator, and every item
+must have a trailing separator except the last/only one, and any item may
+have a leading separator or separators may appear several in a row; the
+semantics are that extra separators do not introd any implicit extra items.
+The above would be for a 0..n list; here is a 1..n list:
+  <foolist> ::=
+    <open>
+      [[<item>? <sep>]+ | <item>]
+    <close>
+... but there are probably cleaner versions of both.
 
 * The SQL-92 Standard CREATE ASSERTION is like a generalized db-level CHECK
 constraint but few SQL DBMSs support it.  Note this in the spec.  RDB from
@@ -960,6 +1026,49 @@ instance X, multiple vii(X) must give the same result.
 Especially in a system where the generic equality test operator is virtual,
 VII can provide an implementation-influenced baseline something or other.
 THIS THOUGHT REMAINS UNFINISHED.
+
+* Taking further the idea of how various Text subtypes are defined, eg that
+normalization is required, so that the Text generic equality operator would
+"just work":  Consider defining that formally a Tuple or Relation etc value
+has a canonical form in the low-level type system, meaning the member
+attributes and tuples are always sorted in a specific system-defined way,
+and so any operators that are sensitive to the low-level type system would
+be fully deterministic, and the regular "=" operator would just work
+without that having to be virtual or have special cases.  The only wrinkle
+with that then relates to scalars and their multiple possreps.  Of course,
+this is just the canon, but most normal operators wouldn't be sensitive to
+this and so tuples/relations are still effectively unsorted, and more
+important, an implementation doesn't actually have to store them sorted
+normally, same as the "NFD" character strings don't actually have to be
+stored that way by the system.  The canonical order is as follows: 1. Two
+Int always sort as is normal for integers; 2. Two List always sort as is
+normal for comparing strings, by comparing their elements pairwise; 3. An
+Int always sorts before a List.  Further to this canonicalization, we no
+longer offer multiple forms for Tuple and Relation; now, the payload of
+each has 2 elements, heading and body, where the heading is sorted by
+attribute name String and each tuple-body corresponds as usual, and a
+relation body is a list of 1 element per tuple-body, and the elements of
+that list are sorted by tuple-body List value.  So now the main thing to
+figure out how to work this is in regard to multiple scalar possreps, so
+that "=" has the correct semantics at the user level.  Ostensibly the
+solution is quite simple, which is to mandate that a specific possrep is
+the scalar type's canonical low-level form, and that moreover the name of
+this possrep must be the empty string, meaning that if you actually want
+that possrep to have a different name you must have a second possrep whose
+form is identical to it.  A consequence of this is that, in the low-level
+type system, every scalar type only has 1 possrep, and hence the possrep
+name doesn't actually have to be stored, so then a scalar value then just
+becomes a 2-element payload where the first is the scalar type name and the
+second is a tuple value payload.  A benefit of all this canonicalization is
+also that certain operations like a function to extract "a" tuple from a
+relation can be fully deterministic, or similarly that we have a way of
+finding a default "total sort order" for the entire type system that is
+fully deterministic, even if not generally useful.  The function for this
+low-level sorting, that works on Universal, is *disjoint* from the ordering
+routines that users normally deal with, and is just intended for use in
+canonicalization of List etc for "="; it is a plain real function like "="
+and not a virtual like "<=>" etc.  Regardless, this whole paragraph
+requires more thought.
 
 * Update the PTMD_STD grammar to split up the "Name_payload" or its parts
 further so that, rather than just the 2 "[|non]quoted_name_str", there is
