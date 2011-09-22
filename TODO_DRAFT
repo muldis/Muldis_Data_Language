@@ -152,6 +152,9 @@ I would expect global-params to remain separate from the parameters-tuple.
 
 * Do away with TREAT as seems to be useless now.  See TTM chat c2011.06.11.
 
+* Recheck my terminology.  Perhaps "consume" is better than "compose" when
+referring to what one does with roles/mixins.  See Perl 5.15.3 perlootut.
+
 * NEXT PRIORITY...
 Make the system catalog into something much closer to a *concrete* syntax
 tree-like-thing.  See various following TODO items for details.
@@ -949,6 +952,23 @@ version in the list as a fallback, probably.
 - Specifying a closed range is the code saying it *knows* it is compatible
 with all those versions, specifying an open range says take chances or is
 not recommended and maybe won't be supported.
+- Or, rather than having open ranges, we could stick to just closed but
+have both whitelist and blacklist ranges, where we explicitly specify what
+versions we *know* either are or are not compatible, and so then any
+versions not explicitly named in one of those 2 lists is considered unknown
+as to compatibility.
+- Similarly, an implementation could be introspectable for the same 2 lists
+white and black that it supports for implementing.
+- It would be possibly implementation-defined or externally
+user-configurable for what happens if the implementation only supports
+language versions outside the whitelist including versions outside the
+blacklist.  A stricter setting would say reject, permissive may say accept.
+- For permissive, its possible that if vnums are fully orderable, then a
+nonmatching implemented vnum directly between or just next to versions in
+the whitelist could be considered to work, likewise for blacklist
+considered not, and between one in each list considered not.  Eg, if the
+program code declares {!1..5,6..10} and the implementation just provides
+version 12, then it could be considered to work by default.
 
 * Consider adding a midweight version of virtual-attribute-maps which is
 like the fullweight version but that it expressly maps 1 attr to 1 attr; it
