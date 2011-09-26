@@ -475,6 +475,77 @@ so the lib|cat|data|etc are the namechain first element, with fed|nlx|etc
 the second element; and sys doesn't have lib|cat|data already, or in fact
 that would all be grouped under "lib" arguably.
 
+* For that matter, lets just eliminate the special namespace prefixes
+entirely, even as an option, because typically certain contexts only allow
+certain kinds of things anyway, such as just lib or data, and so one should
+never have to or be able to write chain elements that mean anything other
+than their literal selves.
+- Rewrite ENTITY NAMES in Basics.pod to get rid of the formally structured
+shared namespace as it currently is, and instead have that pod divided into
+context-based sections, saying for example "in this lexical context a
+namechain means this" and "in this nonlexical context it means this".
+- Where one needs to explicitly use an absolute path vs an explicit
+relative path vs a searching relative path, we can provide a new data type
+which wraps the basic name chain of old to provide this.
+For examples (new arrayish structure <-- old way of stating):
+  ['abs',['mydb','myschema','myfoo']] <-- fed.{lib|data}.mydb.myschema.myfoo
+  ['rel',2,['myschema','myfoo'] <-- nlx.par.par.{lib|data}.myschema.myfoo
+  ['rel',0,['mybar']] <-- nlx.{lib|data}.mybar
+  ['shp',['myschema','myfoo'] <-- shp.{lib|data}.myschema.myfoo
+The above could possibly be written like this:
+  .$mydb.myschema.myfoo or abs$mydb.myschema.myfoo
+  2$myschema.myfoo or rel$2$myschema.myfoo
+  0$mybar or rel$0$mybar
+  myschema.myfoo or shp$myschema.myfoo
+I'm still missing an example when one wants to say "sys", maybe, though
+both "abs" and "shp" kind of apply there but kind of not.
+Note that in the above it is mandatory for there to be no whitespace
+around the "$" ... the formatting is like with "#" in numeric literals.
+- Now while there are {$:,%:,@:} prefixes for {S,T,R} value literals, and
+the colon-less {%,@} mean cast between tuple and relation,
+the colon-less $ doesn't make sense for a similar purpose,
+so use $ for name literals, that is, "$foo" means "Name:foo",
+so one can write projection like "r keep {$foo,$bar}" not "r{foo,bar}",
+and then for example "$<>foo" means "NameChain:foo" (and "$<>" the emp nc).
+- Also add the ability to use namechains in declarations too, which is
+essentially a shorthand; for example, this:
+  foo.bar ::= function ...
+... is logically equivalent to:
+  foo ::= schema {
+    bar ::= function ...
+  }
+Now technically this new way only lets one declare a nonempty schema but
+to make an empty one one can still always say:
+  foo ::= schema;
+- The scalar type name stored inside a ScalarWP is always an 'abs' one,
+or some separate canonical ns that takes into account type name aliasing.
+- The scalar type name of a scalar value actually stored in a depot
+can/should be exactly what the user wrote as per source code; it only is
+resolved to some global namespace when compiled from the system catalog;
+this is visible to the user of course in the low-level type system when
+looking at scalar values, but not in the system catalog / source code.
+
+* IDEA: Add a concept kind of like a distinct depot/package catalog but it
+is system-generated and not directly editable by the user; in here would
+live copies of all of the canonical type definitions, especially scalar
+types, from both the system and user namespaces.  The copies in this
+package are the ones cited by a ScalarWP value in the low-level type system
+as being the scalar type name.  When there is just one normal copy of the
+type def, it is more of a redirection.  When multiple user depots declare a
+copy of a type and then the mounting commands further specify that they are
+to be considered the same data types, then just a single copy exists in the
+new sys-gen package for both, rather than one for each.  This has various
+benefits like saving a chicken and egg problem concerning say transient
+values in the system when various depots that may declare types for it can
+come and go.  It means the low level type system type name for an
+(immutable) ScalarWP value never has to be changed for the life of the DBMS
+process no matter what happens with the depots user types are declared in
+or as copies come and go.  For that matter, we can just identify this copy
+of the type name with a plain integer, this separately being mapped to
+namechains for the various normal copies it is aliased with, so we get
+memory efficiency too.  This all probably has wider design implications or
+can inspire other changes.
+
 * Consider the provision of a limited search path functionality for
 user-defined functions and types so that they could be invoked tersely or
 unqualified like builtins, particularly so reasonable infix syntax or
