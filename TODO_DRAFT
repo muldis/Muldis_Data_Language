@@ -52,6 +52,76 @@ All of this likewise for the Perl 6 versions.
 THIS GIVES US MORE FLEXIBILITY TO NOT HAVE TO UPDATE THE PERL-STD SPECS ON
 THE SAME SCHEDULE AS THE TEXT-STD/REST.
 
+* Refactor, and establish as distinct concepts, Muldis D stores that are
+code-only, which we will call "modules", versus those that are primarily
+for data, which we will call "depots".
+- The "modules" are where any code that should be shared by multiple
+databases would live, and include all system-defined code plus all
+user-defined code that is packaged and useable like system-defined code.
+- The "modules" represent all functionality that is either traditionally
+built-in to a DBMS, whether considered part of the Muldis D core or
+implementation-specific, or is providable by third-party exten (including
+Postgres' "extension" concept) or is conceivably low-level enough that it
+would likely be implemented at least partially in a manner external to the
+Muldis D environment so its internals aren't visible to the user.
+- The "modules" *can* be an external declared dependency of a depot (and
+of each other), that is, something which must be present in order to
+interpret/use the depot, so like the system itself, that is ostensibly
+this is an exception to the rule about depots must be self-contained.
+- The modules are written physically differently on disk, at least with a
+different primary keyword, so they can't accidentally be used as depots.
+- The modules are always readonly to the DBMS.
+- Modules are introspectable by system catalog but that is readonly.
+- Modules are all individually versioned as per Muldis D itself and all
+entities using such must declare the dependency using full version names,
+so to ensure the dependent, especially a depot depending on it to be
+understood, is interpreted correctly.  So when a depot or module is
+declaring its language version, it is declaring a list of all determinant
+modules with the same level of detail.
+- The "depots" are the only stores that are possibly writable by the DBMS,
+when mounted as such, and are what are normally considered "the database",
+and are where all user data lives.  These can also contain code and often
+do, and only code living here can be updated at runtime.
+- In theory or practice a depot could be entirely devoid of code and just
+contain data, in which case unless its declared database type is "Database"
+it *must* depend on a (readonly) module to define its constraints/etc.
+A big advantage of that is to support the common paradigm where data and
+code *are* separate, which is frequently the case.  Even more so when
+implementing Muldis D over simple data stores without the native concept
+of stored user code.
+- Ostensibly a primary difference between a module and a depot is that a
+module is written as a plain text code file in exactly the same way that
+programmers normally write code such as Perl or C or whatever, done
+externally to the DBMS in a text editor with direct access to the
+filesystem, and then this is considered static in running programs, while a
+depot is read and edited from within the DBMS at runtime, using
+data-definition statements.
+- The point of this new module emphasis is to reduce the problem of having
+to duplicate or alias type definitions and such to make multiple depots
+work together; for example, often the types shared by a database and an
+application might be in a module so each of the latter doesn't need their
+own copies.
+- Muldis D will provide 2 completely distinct namespaces for modules and
+depots, where routines/types in modules are referenced in the manners
+typical for programming languages, often fully-qualified, though I suppose
+modules, depots can optionally choose to create synonyms within themselves
+for such things outside themselves (only to modules) for brevity.
+- Modules always declare their own namespaces as per typical programming
+languages and they do not vary by or can be controlled by DBMS users.  So
+such naming will need to be managed by external convention such as that
+the modules declare their own versions with distinct base names that
+indicate their namespace, ala Perl modules.  Only depots are under the
+user's control for what base namespace they mount into.
+- Modules would still support "data" sections, but these would be readonly
+and intended for static data resources of nontrivial size, which would be
+more efficiently maintained that way than in the "catalog", theoretically.
+- For various reasons, including security, with searched namechain
+invocations, modules are always searched before depots.
+- Lets say for good compromise on various things that various shorthand
+syntaxes for operators, such as using non-foo() notation, are only
+available for invoking those in modules maybe and that otherwise there is a
+different qualification for module and depot thing invocation.  Maybe.
+
 * NEXT PRIORITY...
 Rework routine headings/definitions, especially functions:
 1.  Remove native concept of optional parameters; this lack can be worked
