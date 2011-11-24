@@ -20,7 +20,7 @@ table for these items; they are simply to be done "as soon as possible".
 ----------
 
 * PRIORITY LIST:
-1.  Split off Perl stuff to separate distros/etc.
+1.  Split off Perl stuff to separate distros/etc, chg language name fmts.
 2.  Canonicalize low-level tp-sys so that simple "=" just works everywhere.
 3.  Redefine all routines to have exactly 1 parameter, tuple-typed.
     - Have minimal other changes, including minimal syntax changes.
@@ -46,11 +46,30 @@ can also have its version reset to 0.0.0 and then the new distro can
 advance versions on its own without needing to match or incorporate the
 Muldis D versions which would become onerous.  But the language declaration
 name would not change, except to add more vnums, eg to have:
-[ 'Muldis_D', 'http://muldis.com', '0.148.0', ['HDMD_Perl5_STD', '0.0.0'] ]
+[ 'Muldis_D', 'http://muldis.com', '0.149.0', ['HDMD_Perl5_STD', '0.0.0'] ]
 Add new directory mod lib/Muldis/D/Perl5.pod like Manual.pod.
 All of this likewise for the Perl 6 versions.
 THIS GIVES US MORE FLEXIBILITY TO NOT HAVE TO UPDATE THE PERL-STD SPECS ON
 THE SAME SCHEDULE AS THE TEXT-STD/REST.
+
+* SAME TIME AS ABOVE ...
+Actually, take this opportunity to overhaul the concept of qualified
+language names and such.  Promote "dialects" from being subservient to
+language into being full languages of their own that are derived from
+Muldis D.  That is, say that what was "PTMD_STD" is now simply *the*
+concrete syntax of the official "Muldis D" language, and that what was the
+Perl dialects are now 2 full languages whose definitions are derived from
+the standard text-based one, and have their own versioning.
+- So, here are new examples of fully-qualified language declaration names:
+    Muldis_D_PT_STD:"http://muldis.com":"0.149.0"
+    ['Muldis_D_HD_Perl5_STD','http://muldis.com','0.0.0']
+    ['Muldis_D_HD_Perl6_STD','http://muldis.com','0.0.0']
+- In theory, we could separately version the Muldis D system catalog that
+these ostensibly might have in common, so that the above language versions
+talk more about the version of the concrete syntax, and a separate
+declaration could talk about the system catalog, so that if say concrete
+syntax details don't change that often but other parts of the spec do, code
+can leave the static vnum alone while just altering vnum for the catalog.
 
 * Refactor, and establish as distinct concepts, Muldis D stores that are
 code-only, which we will call "modules", versus those that are primarily
@@ -89,6 +108,12 @@ A big advantage of that is to support the common paradigm where data and
 code *are* separate, which is frequently the case.  Even more so when
 implementing Muldis D over simple data stores without the native concept
 of stored user code.
+- Maybe we should consider separate code and data files to be the
+recommended default way of doing things, and that putting code in data
+files be the less common option, so more like typical programming and
+further distanced from the paradigm that Muldis D has long had.
+If nothing else it would probably be simpler to start implementing Muldis D
+if we assume that is the normal way of doing things.
 - Ostensibly a primary difference between a module and a depot is that a
 module is written as a plain text code file in exactly the same way that
 programmers normally write code such as Perl or C or whatever, done
@@ -121,6 +146,34 @@ invocations, modules are always searched before depots.
 syntaxes for operators, such as using non-foo() notation, are only
 available for invoking those in modules maybe and that otherwise there is a
 different qualification for module and depot thing invocation.  Maybe.
+- For data sections of both modules and depots, we could consider something
+like an "inclusion node", which may appear anywhere a value node may appear
+and pulls in that value from an external source, typically another file,
+and then the semantics are as if it were defined inline instead.  This is
+kind of like C's include or maybe PHP's include or something or other.
+An inclusion node would be formatted like a tuple literal and its details
+would be implementation-specific, like specifiers for depot mounts etc, but
+in the default case would probably just point to a file in the filesystem.
+
+* Add core support for an analogy to SQL TABLESPACES, with that support
+somewhat resembling the depots concept in form in that it has
+implementation-specific parameters such as filenames/paths/etc.  The idea
+is users can help optimize some things say by storing different parts of a
+depot in different file layouts as would be more optimal for that section
+of the depot, eg code vs data, and particularly insert-only data versus
+frequently updated or deleted data.  But it is important to note that the
+depot is still generally the scope of self-definedness or ACID, and so only
+DBMSs that support this across multiple tablespaces may use the Muldis D
+analogy to said, and our "tablespace" would map directly to theirs.
+- With this concept supported, we theoretically could relax certain
+requirements that "temporary relvars" need to be defined by existing in
+"temporary depots".  Or caches.  This matter requires more thinking.
+In fact, multiple DBMSs already seem to use tablespaces for temp stuff,
+including Postgres and Oracle.
+- We might repurpose the term "subdepot" for the tablespace analogy, or
+call it "storage space" or "storage pool" or "pool" etc.
+- See also the TTM list thread circa 2011 Nov 16, and "Fragmentation" of
+http://www.softwaregems.com.au/Documents/Sybase%20GEM%20Documents/ .
 
 * NEXT PRIORITY...
 Rework routine headings/definitions, especially functions:
@@ -273,6 +326,8 @@ Theoretically we could also make Bag a subtype of Dict where its "value"
 is a positive integer; so then "key" is its payload rather than "value";
 this then would also be like Perl 6 and it might be worth it.
 But if we do this then we'll have to relook at the set membership/etc ops.
+- Note: The Postgres hstore type may be relevant for a nested one of these,
+where I think the keys and values are all text.
 
 * NEXT PRIORITY...
 Reduce the general options for concrete value literals to have just the
@@ -368,6 +423,11 @@ Perl-STDs to use just Array/Seq/arrayref and mostly not set/bag/hash/etc,
 partly for code brevity but particularly to preserve the visual order of
 elements from source to catalog and back again.  Also add scm_vis_ord to
 the catalog or change some catalog types to record order.
+
+* Note that Perl 5.15.4+ fleshes out / completes the support for having
+Unicode in identifiers, to treat them properly, such as not ignore the
+UTF-8 flag; it also fleshes out support for the null character "\0" so that
+eg regexes with them work properly.  See perl5154delta.
 
 * Also add to Perl5-STD explicit support for some more Perl modules whose
 objects we would implicitly treat as built-in scalar values.  We already
@@ -670,6 +730,13 @@ or this feature would be helpful in implementing Muldis D features
 like certain kinds of relational assignment involving self joined with foo.
 As of Postgres 9.1 the UPDATE also supports the WITH clause.
 
+* On 2011 Oct 17 I made a comment on Andrew Dunstan's blog that in the
+context of foreign keys, making changes to parent and child
+tables simultaneously in a single statement is much better than trying to
+determine correct order of operations.  In response Andrew said "That might
+be possible in 9.1 with writeable CTEs, but I happen to be on 9.0 with this
+client, and the constraints are not deferrable."
+
 * ALSO...
 Use colons to separate any kind of heading/body pairs, both materials and
 values.  Take Relation now "@:[...]:{...}" as example to follow.
@@ -858,6 +925,8 @@ For example, the current (arithmetic) mean is just:
     geom_mean ::= function (PRat <-- topic : bag_of.PRat)
         ([*]topic ** (0 - #+topic))
 ... but any vers in the dedic Statistics could be impl more efficiently.
+
+* Note that general case of "median" is "quantile" (median is 2-quantile).
 
 * Drop special entity name embedded support for inline type declarations
 like "foobag : bag_of.Foo"/etc; instead, this syntax is demoted to a
@@ -1907,6 +1976,12 @@ Maybe the type name 'Range' can be used for something.
 Maybe the type name 'Span' or 'SpanSet' can be used for something;
 there are Perl modules with those names concerning date ranges.
 Input is welcome as to what interval-savvy functions Muldis D should have.
+
+* Consider renaming Interval to Range, even if that is less specific,
+for brevity, and also so we have a word that looks less like Integer
+or that an Int abbreviation would be less ambiguous.
+- Update, upon discussion, I decided to stay with "interval", which both
+Hugh, Philip, Derek agree is the best term, with none arguing differently.
 
 * Flesh out some window/partition funcs, which are kind of like a
 generalization of aggregation/reduction functions.  A window()/partition()
