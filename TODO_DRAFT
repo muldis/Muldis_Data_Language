@@ -61,15 +61,48 @@ concrete syntax of the official "Muldis D" language, and that what was the
 Perl dialects are now 2 full languages whose definitions are derived from
 the standard text-based one, and have their own versioning.
 - So, here are new examples of fully-qualified language declaration names:
-    Muldis_D_PT_STD:"http://muldis.com":"0.149.0"
+    Muldis_D_PT_STD:"http://muldis.com":0.149.0
     ['Muldis_D_HD_Perl5_STD','http://muldis.com','0.0.0']
     ['Muldis_D_HD_Perl6_STD','http://muldis.com','0.0.0']
-- In theory, we could separately version the Muldis D system catalog that
-these ostensibly might have in common, so that the above language versions
-talk more about the version of the concrete syntax, and a separate
-declaration could talk about the system catalog, so that if say concrete
-syntax details don't change that often but other parts of the spec do, code
-can leave the static vnum alone while just altering vnum for the catalog.
+- Actually, we are best to split things up so that Muldis D code typically
+declares 2 main versions separately, which are the concrete syntax version
+and the system catalog / core libraries version.  Also, the Muldis D spec
+itself would start using different version numbers for different parts,
+so the concrete syntax and system catalog or core libraries would be
+differently versioned and would only increment when those parts change.
+- The Muldis D core spec could use at least 3-4 version series:
+    - The version of the documentation distribution: 0.149.0 is next.
+    - The version of the Core (name subject to change) library, which
+    determines the data types and routines intended for users to use.
+    - The version of the system catalog schema, that is the version of the
+    "real" Muldis D concrete syntax / data structures as seen by code.
+    - The version of the PT_STD concrete string syntax that users write in,
+    which a parser needs to know but the system catalog doesn't.
+    - All of the above would start at version 0.0.0 except the first item.
+    - The second item Core is what is expected to change the most often,
+    while the catalog or string syntax are expected to change less often.
+    - The second/Core and third/Catalog might be stay merged into one item
+    as they are kind of inter-dependent, but we may review minimizing Core.
+- Example of Muldis D code declaration of language:
+    Muldis_D_PT_STD:"http://muldis.com":0.0.0;
+    concrete_syntax
+      {
+        str_char_repertoire => { text => Unicode_6.0.0_canon,
+            name => Unicode_6.0.0_compat, cmnt => Unicode_6.0.0_compat },
+        catalog_abstraction_level : rtn_inv_alt_syn,
+        op_char_repertoire : extended,
+        standard_syntax_extensions : {},
+      };
+    requires Muldis_D.Core:"http://muldis.com":0.0.0;
+    requires Muldis_D.Spatial:"http://muldis.com":0.0.0;
+    requires VendorXYZ.FooLib:"http://vendorxyz.com":0.0.0;
+    requires MyAppBar.Lulz:"http://mybusiness.com":0.0.0;
+    ... then our own module/depot/value/etc content follows ...
+
+* Note, http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-three
+clarifies what "setting" means in Perl 6, and there can be more than one of 
+them at a time that are layered; it does not mean "language core"; Perl 6
+has the separate CORE concept, so staying with Core seems approp for MD.
 
 * Refactor, and establish as distinct concepts, Muldis D stores that are
 code-only, which we will call "modules", versus those that are primarily
