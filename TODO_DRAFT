@@ -19,6 +19,12 @@ table for these items; they are simply to be done "as soon as possible".
 
 ----------
 
+* BEFORE DOING ANY OTHER LARGE THING, CREATE A GIT BRANCH THAT I JUST DO A
+PILE OF CHANGES IN TOGETHER, AND THEN SEPARATELY I CAN MANUALLY MERGE BITS
+OF THAT TO TRUNK WHEN READY TO DO A SERIES OF MORE ORDERLY RELEAESES.
+- I SUPPOSE PROBABLY BEST TO DO THE BRANCH ON GITHUB'S END?  RESEARCH!
+- I KNOW I WANT TO SEE THE BRANCH AND TRUNK SAME TIME BOTH THERE AND HERE.
+
 * PRIORITY LIST:
 1.  Split off Perl stuff to separate distros/etc, chg language name fmts.
 2.  Canonicalize low-level tp-sys so that simple "=" just works everywhere.
@@ -85,24 +91,78 @@ differently versioned and would only increment when those parts change.
     as they are kind of inter-dependent, but we may review minimizing Core.
 - Example of Muldis D code declaration of language:
     Muldis_D_PT_STD:"http://muldis.com":0.0.0;
-    concrete_syntax
-      {
+    syntax
+    {
         str_char_repertoire => { text => Unicode_6.0.0_canon,
             name => Unicode_6.0.0_compat, cmnt => Unicode_6.0.0_compat },
         catalog_abstraction_level : rtn_inv_alt_syn,
         op_char_repertoire : extended,
         standard_syntax_extensions : {},
-      };
-    requires Muldis_D.Core:"http://muldis.com":0.0.0;
-    requires Muldis_D.Spatial:"http://muldis.com":0.0.0;
-    requires VendorXYZ.FooLib:"http://vendorxyz.com":0.0.0;
-    requires MyAppBar.Lulz:"http://mybusiness.com":0.0.0;
+    };
+    using Muldis_D.Core:"http://muldis.com":0.0.0;
+    using Muldis_D.Spatial:"http://muldis.com":0.0.0;
+    using DBMS.Postgres ... emulations of all Pg types/routines/sys-cat/etc
+        ... this is defined as a wrapper over Muldis_D/etc, but in a MD
+        impl over Postgres, these would likely be implemented natively
+        and then Muldis_D.* is implemented as a wrapper over these
+    using DBMS.foo ... emulate other DBMS
+    using lang.Perl ... emulate Perl
+    using lang.foo ... emulate foo
+    using VendorXYZ.FooLib:"http://vendorxyz.com":0.0.0;
+    using MyAppBar.Lulz:"http://mybusiness.com":0.0.0;
     ... then our own module/depot/value/etc content follows ...
+- Note, "using" is the C# keyword for this.  Note, "System" is C# core lib.
+- Note, "java.lang" is core Java package; it is precedent for "Muldis_D.*".
+- Note, a Java "package" is like MD's package/module concept, in that it
+can define multiple classes/interfaces etc as per my multiple types/etc.
+- Having DBMS.* and lang.* etc makes it easier to build compatibility layers
+as eg a SQL parser just has to parse into DBMS.foo stuff and that's it.
 
 * Note, http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-three
 clarifies what "setting" means in Perl 6, and there can be more than one of 
 them at a time that are layered; it does not mean "language core"; Perl 6
 has the separate CORE concept, so staying with Core seems approp for MD.
+
+* Make Muldis D self-hosted.  Have it support parsing PTMD_STD code using a
+read-only operator into trees of scalars that are the new native Muldis D
+code, which the older system catalog is just views on.  Make it support
+writing the full Muldis D compiler in Muldis D, that can eg generate Perl
+code, and then the Muldis D compiler can compile itself.  That is, the
+reference implementation would be compiled to Perl, and that Perl code is
+capable of translating equivalent Muldis D code into that same Perl code.
+
+* Ooh! Oooooh! The trees of scalars form of Muldis D code might just then
+give us the option of more comprehensive higher order functions, where you
+actually pass the function definition as the argument, rather than its
+name, as you do now, though the latter would still be perhaps easier to
+implement on more foundations. We'll see if that's necessary or works.
+That would certainly be more of the true anonymous function nature.
+
+* POSSIBLE PARADIGM SHIFT!
+Consider that most of the DB programming that is done on the internet is
+extremely trivial, and developers are currently doing it using SQL plus
+some other language such as PHP/Perl/Ruby/etc.
+- So how much would these developers save if they had a simpler way?
+- This could be a very interesting and strong business case for Muldis D.
+- While I am keeping my focus on doing databases well as the priority, I
+can see the use case also that people may actually want to write simple
+apps and have them written entirely in one easy to use language, where say
+the web app code and the database code are seamlessly integrated, rather
+than the SQL-foo impedance mismatch.  So maybe for the many common simple
+web/etc apps, one can just use Muldis D for the entire app, so the likes of
+Perl/PHP/Ruby/etc are just cut out of the picture.
+- While I designed Muldis D to be possible to write a full app in, I
+assumed that most people wouldn't do this and would combine with another
+language like Perl/Ruby/etc.  But maybe I assumed wrong.
+- Maybe for the many very simple apps, using Muldis D for the whole thing
+actually *is* the preferential option.
+- I think I'm going to have to start pushing this angle more.  Don't just
+compete with SQL, but also work to eat PHP's lunch, without doing PHP's
+numerous lameness (including baking the kitchen sink into the language
+itself).  So push that I make simple apps simpler, but without losing
+actual power or flexibility.
+- Of course, Muldis D would absolutely not have web stuff in its core, so
+an extension would be needed for the web stuff.
 
 * Refactor, and establish as distinct concepts, Muldis D stores that are
 code-only, which we will call "modules", versus those that are primarily
@@ -378,7 +438,7 @@ are in use, I believe, as prefix operators, meaning cast-tuple-as-relation
 and vice-versa, but there is no colon-less $ prefix in use nor does it make
 sense for any similar purpose.
 So, use $ for name literals, that is, "$foo" means "Name:foo"
-and then say "$<>foo" means "NameChain:foo".
+and then say "$$foo" means "NameChain:foo" (doubleup for chain).
 And then we're a long way towards being able to ditch the postcircumfix
 syntaxes for eg projection since, say "r keep {$foo,$bar}" is terse enough.
 Then come up with something for rename, maybe a set of name-pair literals.
@@ -449,6 +509,8 @@ The above would be for a 0..n list; here is a 1..n list:
 * The SQL-92 Standard CREATE ASSERTION is like a generalized db-level CHECK
 constraint but few SQL DBMSs support it.  Note this in the spec.  RDB from
 DEC had it, but they got bought by Oracle when DEC went out of business.
+
+* FYI, PgOpenCL exists, run intensive db tasks in the GPU.
 
 * ALSO...
 Get rid of the Set.new() options in Perl 6 and generally update the
