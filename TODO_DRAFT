@@ -48,11 +48,11 @@ distro as the Perl 5 Rosetta Engine API documentation.
 Lets call that documentation distro Muldis::D::Perl5.
 Create it like how we created Muldis::D::Manual ... empty then transfer.
 The meat module lib/Muldis/D/HDMD_Perl5_STD.pod is renamed as such so it
-can also have its version reset to 0.0.0 and then the new distro can
+can also have its version reset to 0 and then the new distro can
 advance versions on its own without needing to match or incorporate the
 Muldis D versions which would become onerous.  But the language declaration
 name would not change, except to add more vnums, eg to have:
-[ 'Muldis_D', 'http://muldis.com', '0.149.0', ['HDMD_Perl5_STD', '0.0.0'] ]
+[ 'Muldis_D', 'http://muldis.com', '0.149', ['HDMD_Perl5_STD', '0'] ]
 Add new directory mod lib/Muldis/D/Perl5.pod like Manual.pod.
 All of this likewise for the Perl 6 versions.
 THIS GIVES US MORE FLEXIBILITY TO NOT HAVE TO UPDATE THE PERL-STD SPECS ON
@@ -67,9 +67,9 @@ concrete syntax of the official "Muldis D" language, and that what was the
 Perl dialects are now 2 full languages whose definitions are derived from
 the standard text-based one, and have their own versioning.
 - So, here are new examples of fully-qualified language declaration names:
-    Muldis_D_PT_STD:"http://muldis.com":0.149.0
-    ['Muldis_D_HD_Perl5_STD','http://muldis.com','0.0.0']
-    ['Muldis_D_HD_Perl6_STD','http://muldis.com','0.0.0']
+    Muldis_D:PT_STD:"http://muldis.com":0.149
+    ['Muldis_D','HD_Perl5_STD','http://muldis.com','0']
+    ['Muldis_D','HD_Perl6_STD','http://muldis.com','0']
 - Actually, we are best to split things up so that Muldis D code typically
 declares 2 main versions separately, which are the concrete syntax version
 and the system catalog / core libraries version.  Also, the Muldis D spec
@@ -77,20 +77,20 @@ itself would start using different version numbers for different parts,
 so the concrete syntax and system catalog or core libraries would be
 differently versioned and would only increment when those parts change.
 - The Muldis D core spec could use at least 3-4 version series:
-    - The version of the documentation distribution: 0.149.0 is next.
+    - The version of the documentation distribution: 0.149 is next.
     - The version of the Core (name subject to change) library, which
     determines the data types and routines intended for users to use.
     - The version of the system catalog schema, that is the version of the
     "real" Muldis D concrete syntax / data structures as seen by code.
     - The version of the PT_STD concrete string syntax that users write in,
     which a parser needs to know but the system catalog doesn't.
-    - All of the above would start at version 0.0.0 except the first item.
+    - All of the above would start at version 0 except the first item.
     - The second item Core is what is expected to change the most often,
     while the catalog or string syntax are expected to change less often.
     - The second/Core and third/Catalog might be stay merged into one item
     as they are kind of inter-dependent, but we may review minimizing Core.
 - Example of Muldis D code declaration of language:
-    Muldis_D_PT_STD:"http://muldis.com":0.0.0;
+    Muldis_D:PT_STD:"http://muldis.com":0;
     syntax
     {
         str_char_repertoire => { text => Unicode_6.0.0_canon,
@@ -99,24 +99,104 @@ differently versioned and would only increment when those parts change.
         op_char_repertoire : extended,
         standard_syntax_extensions : {},
     };
-    using Muldis_D.Core:"http://muldis.com":0.0.0;
-    using Muldis_D.Spatial:"http://muldis.com":0.0.0;
-    using DBMS.Postgres ... emulations of all Pg types/routines/sys-cat/etc
+    using Muldis_D:"http://muldis.com":0;
+    using Muldis_D::Spatial:"http://muldis.com":0;
+    using DBMS::Postgres ... emulations of all Pg types/routines/sys-cat/etc
         ... this is defined as a wrapper over Muldis_D/etc, but in a MD
         impl over Postgres, these would likely be implemented natively
-        and then Muldis_D.* is implemented as a wrapper over these
-    using DBMS.foo ... emulate other DBMS
-    using lang.Perl ... emulate Perl
-    using lang.foo ... emulate foo
-    using VendorXYZ.FooLib:"http://vendorxyz.com":0.0.0;
-    using MyAppBar.Lulz:"http://mybusiness.com":0.0.0;
+        and then Muldis_D::* is implemented as a wrapper over these
+    using DBMS::foo ... emulate other DBMS
+    using lang::Perl ... emulate Perl
+    using lang::foo ... emulate foo
+    using VendorXYZ::FooLib:"http://vendorxyz.com":0;
+    using MyAppBar::Lulz:"http://mybusiness.com":0;
     ... then our own module/depot/value/etc content follows ...
 - Note, "using" is the C# keyword for this.  Note, "System" is C# core lib.
-- Note, "java.lang" is core Java package; it is precedent for "Muldis_D.*".
+- Note, "java.lang" is core Java package; it is precedent for "Muldis_D::*".
 - Note, a Java "package" is like MD's package/module concept, in that it
 can define multiple classes/interfaces etc as per my multiple types/etc.
-- Having DBMS.* and lang.* etc makes it easier to build compatibility layers
-as eg a SQL parser just has to parse into DBMS.foo stuff and that's it.
+- Having DBMS::* and lang::* etc makes it easier to build compatibility layers
+as eg a SQL parser just has to parse into DBMS::foo stuff and that's it.
+- We use "::" as separators in package/module/extension names because those
+are more public namespaces, whereas "." is used for internal namespaces
+that subdivide each individual package/etc.  By doing this, if package Foo
+exists with internal namespace Bar and routine baz, there won't be any
+ambiguity if Foo::Bar comes to exist with a baz() in its root namespace;
+they are invoked as Foo.Bar.baz versus Foo::Bar.baz so a clear distinction.
+- The package name of the Muldis D language core is simply "Muldis_D"
+(keeping it simple/terse); so no reason to explicitly say "Core"/etc.
+- Strictly speaking, all other packages don't need to have any particular
+hierarchy or be in any particular package namespace, though it would be
+good to come up with something early on.
+
+* Version numbers of anything by authority http://muldis.com are formatted
+as strings of 1..N nonnegative integers, where each string element is
+separated by a period, and strings sort pairwise one element at a time from
+start to end, where each element sorts numerically and shorter strings sort
+before longer ones whose leading substring they are equal to.
+- By default, version numbers are just a single string element and add more
+when they feel they need to; most of the time, just 2 explicit elements are
+used, and the initial version of any project tends to be the single zero.
+
+* Make the fully qualified language names declarable by code to be more
+flexible than the names declared by the language spec itself, so that the
+ones in code can specify multiple language versions that they conform to,
+as if the code is declaring that it only uses the parts of the language
+spec that are unchanged or that intersect between all the specified
+versions.  For example, let one say:
+    Muldis_D:PT_STD:"http://muldis.com":{0.112..0.125,0.127..0.136}
+... and then any implementation which takes one of those versions will
+parse the code according to any of those same that it supports.  The idea
+is to make code more easily compatible with a wider range of interpreters,
+such as newer ones designed for version 25 who don't explicitly know how
+to emulate version 23 or know what its differences are, and are just
+trusting the code to be valid for version 25 even if declaring 23; by the
+code declaring a range, it is declaring it is willing to take its chances.
+- When an implementation provides or emulates multiple of the language
+versions that the code declares itself to be valid for, the implementation
+is free to treat the code as if it was just any one of those versions, and
+which version is chosen is formally undefined; the implementation can just
+pick any version that it chooses and the code compiles/runs or not as such.
+If the code fails to compile/run as any random version it claims to be
+compatible with, the implementation shall *not* try again as another
+version in the list as a fallback, probably.
+- A multiplicity of stated authorities is also possible.
+- A number of consequences still have to be thought out here.
+- Specifying a closed range is the code saying it *knows* it is compatible
+with all those versions, specifying an open range says take chances or is
+not recommended and maybe won't be supported.
+- Or, rather than having open ranges, we could stick to just closed but
+have both whitelist and blacklist ranges, where we explicitly specify what
+versions we *know* either are or are not compatible, and so then any
+versions not explicitly named in one of those 2 lists is considered unknown
+as to compatibility.
+- Similarly, an implementation could be introspectable for the same 2 lists
+white and black that it supports for implementing.
+- It would be possibly implementation-defined or externally
+user-configurable for what happens if the implementation only supports
+language versions outside the whitelist including versions outside the
+blacklist.  A stricter setting would say reject, permissive may say accept.
+- For permissive, its possible that if vnums are fully orderable, then a
+nonmatching implemented vnum directly between or just next to versions in
+the whitelist could be considered to work, likewise for blacklist
+considered not, and between one in each list considered not.  Eg, if the
+program code declares {!1..5,6..10} and the implementation just provides
+version 12, then it could be considered to work by default.
+- In the interest of being nullary, we could permit code not specifying any
+version number at all, or authority, same as Perl 6, meaning that the code
+does not explicitly consider that it would work or not work with any
+specific language/module/etc version at all.  So a strict implementation
+would reject all such code out of hand and a permissive one would accept
+all such.  On the other hand, in the interest of preventing bad habits from
+starting, where people just leave out the auth/vnum specifiers and then
+people seeing that code not realizing that being specific is even possible,
+we could say that it is always mandatory to specify at least a
+single authority+vnum that the code is known/declared to work with, so that
+any implementation has at least some idea to work with as to the likely age
+of the code or what implicit expectations it might have.  The writer of the
+code had presumably been testing it with *something* before releasing it.
+And even neophytes who copy-paste whole code would be getting either
+correct behavior or a rejection by an implementation from version diffs.
 
 * Note, http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-three
 clarifies what "setting" means in Perl 6, and there can be more than one of 
@@ -1239,51 +1319,6 @@ mention any declared synonyms, no longer mention anything as "C<foo>" but
 rather just anything as "I<foo>".
 - Just stick to that, basically, leave anything else such as Unicode or
 rtn-invo-alt-syn alone/not-removed for this release.
-
-* Make the fully qualified language names declarable by code to be more
-flexible than the names declared by the language spec itself, so that the
-ones in code can specify multiple language versions that they conform to,
-as if the code is declaring that it only uses the parts of the language
-spec that are unchanged or that intersect between all the specified
-versions.  For example, let one say:
-    Muldis_D:"http://muldis.com":{0.112..0.125,0.127..0.136}:PTMD_STD
-... and then any implementation which takes one of those versions will
-parse the code according to any of those same that it supports.  The idea
-is to make code more easily compatible with a wider range of interpreters,
-such as newer ones designed for version 25 who don't explicitly know how
-to emulate version 23 or know what its differences are, and are just
-trusting the code to be valid for version 25 even if declaring 23; by the
-code declaring a range, it is declaring it is willing to take its chances.
-- When an implementation provides or emulates multiple of the language
-versions that the code declares itself to be valid for, the implementation
-is free to treat the code as if it was just any one of those versions, and
-which version is chosen is formally undefined; the implementation can just
-pick any version that it chooses and the code compiles/runs or not as such.
-If the code fails to compile/run as any random version it claims to be
-compatible with, the implementation shall *not* try again as another
-version in the list as a fallback, probably.
-- A multiplicity of stated authorities is also possible.
-- A number of consequences still have to be thought out here.
-- Specifying a closed range is the code saying it *knows* it is compatible
-with all those versions, specifying an open range says take chances or is
-not recommended and maybe won't be supported.
-- Or, rather than having open ranges, we could stick to just closed but
-have both whitelist and blacklist ranges, where we explicitly specify what
-versions we *know* either are or are not compatible, and so then any
-versions not explicitly named in one of those 2 lists is considered unknown
-as to compatibility.
-- Similarly, an implementation could be introspectable for the same 2 lists
-white and black that it supports for implementing.
-- It would be possibly implementation-defined or externally
-user-configurable for what happens if the implementation only supports
-language versions outside the whitelist including versions outside the
-blacklist.  A stricter setting would say reject, permissive may say accept.
-- For permissive, its possible that if vnums are fully orderable, then a
-nonmatching implemented vnum directly between or just next to versions in
-the whitelist could be considered to work, likewise for blacklist
-considered not, and between one in each list considered not.  Eg, if the
-program code declares {!1..5,6..10} and the implementation just provides
-version 12, then it could be considered to work by default.
 
 * Consider adding a midweight version of virtual-attribute-maps which is
 like the fullweight version but that it expressly maps 1 attr to 1 attr; it
