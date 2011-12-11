@@ -218,6 +218,100 @@ name, as you do now, though the latter would still be perhaps easier to
 implement on more foundations. We'll see if that's necessary or works.
 That would certainly be more of the true anonymous function nature.
 
+* The new system catalog would have several main namespaces where each
+comprises a different view of the same package code.
+- The primary view, maybe call it "trees", would present each complete
+package/module/extension as a single scalar value that is a concrete syntax
+tree package node, whose attributes contain the rest of the tree defining
+the whole package.  These trees are composed of the nodes that are now the
+native Muldis D code format, which PT_STD very closely approximates, and
+the HD_Perl*_STD slightly less closely approximate.
+Preserves details such as: whether child expressions were written nested
+under parents without explicit node names vs nested with explicit names vs
+off-side with explicit names, and
+all code comments that are explicitly bound to names or parts of code like
+named declared entities, and the visual sequence of code elements in the
+string source, and whether operators are invoked prefix or infix, etc.
+Does not preserve details like the actual whitespace in the code, or the
+actual string escape sequences, or whether identifiers were quoted or not,
+or the exact format of the numeric literals, and so on.
+Does not explicitly hold gen names for nodes that were anon to programmer.
+- Another view, maybe call it "relations", can be loosely what the
+current/old system catalog is, having all of the same information as
+"trees" but all broken out into a flat namespace, like the current/old but
+that all the RVAs/etc are basically ungrouped or split off into separate
+relvars.  Or maybe it would be partially flattened and partially not,
+whatever makes for the easiest use by people, or there could be multiple
+sub-views showing varying degrees of being flattened.
+For various reasons it may be wise for "relations" and "trees" to
+be information-equivalent, so each is fully updateable with changes
+propagating to the other deterministically and losslessly.
+- As "relations" has explicit names for all expr/etc nodes while "trees"
+only does when the programmer explicitly provided them, names must be
+generated when deriving "relations" from "trees" and stripped the other
+way; the names must be generated deterministically, and a constraint must
+exist on "relations" so explicitly setting them differently is disallowed
+while the "generated name" attr is also true on that node; expect that said
+gen name is probably something like catenating the names of the ancestor
+nodes in the expr/etc trees starting with the nearest non-generated one;
+the generated names could take the form of a chain of integers, one integer
+per ancestor level, where the integer is the ordinal position of each node
+beneath its parent, starting at zero.
+- Another view, which is not information-equivalent to the others, would
+have further derived information, say more resembling the SQL system
+catalog, say showing in one place what all the actual attributes or known
+keys constraints of a relvar are, regardless of whether they are defined
+using special syntax or as value expressions.
+This view would be writeable, but as it is a dependent on the others,
+changes to it would propagate in certain ways, such as how changes to a
+lowercase attribute would propagate to a mixed-case determinant one.
+- The above views, or at least the 2 information-equivalent primary ones,
+would be provided by the language core; the last one might be an extension.
+- To clarify, views are allowed between modules, so eg one can define
+another kind of system catalog, but only between modules that are loaded as
+extensions rather than depots, I think.
+
+* An EXTENSION module, eg Muldis_D::PT_STD, is what provides the routines
+to translate PT_STD code strings into Muldis D's native dialect, the trees
+of scalar nodes that the "trees" catalog view uses, and said extension also
+provides the reverse translator; working with PT_STD code strings is *not*
+part of the Muldis_D core module, and such would only be needed in a
+Muldis D program implementing a REPL or a compiler or one that uses PT_STD
+as its disk storage format.
+- This extension would also define another set of syntax node types which
+holds a lot more concrete syntax details than the native node trees, such
+as the actual whitespace used between things or the actual format of
+identifiers (bareword vs quoted) or any extra/explicit nesting parenthesis
+and so on, such that the exact same PT_STD
+code string could be reproduced from it; mainly these would just be used
+internally to the extension, except say when someone wanted to extend it.
+- The PT_STD->native translator function would probably have 3 main other
+functions that it invokes serially, where one is a tokenizer that just
+converts the PT_STD string into a flat array of tokens, where each token
+may be represented by some token-type-specific scalar value rather than
+being a Text value, so eg each end of a delimiter pair and whitespace hunk
+would be a separate token value here, and the second function takes this
+token array and converts it to a tree, eg combining delimiter pairs into a
+single value with children from 2 without; the third converts this full
+concrete tree to the quasi-concrete tree of the native Muldis_D.
+- It is expected that some level of Muldis_D::PT_STD is what deals with
+unescaping string literals or compat-normalizing Unicode etc or otherwise
+following the wishes of concrete syntax directives.
+- Similarly, the extension would be what determines whether a string is
+valid PT_STD, including that it provides a "is this PT_STD" bool func.
+- Similarly, Muldis_D::PT_STD would provide config options for the
+translater to PT_STD from native, say on what num format opts to prefer
+or what length to wrap lines etc.
+
+* It remains to be specified how to support code expecting different
+versions of Muldis D or other modules, such as where to say no and where to
+emulate and at what level to emulate.  Perl 6's solution may be a guide.
+We might consider multiple packages as a solution where different packages
+provide different versions of the Muldis D API, and they can be used at
+once, similar to having packages provide the APIs of SQL / other languages,
+so that the parsers eg for PT_STD don't have to do it themselves for
+modules but rather just for concrete syntax vers.  Still open to debate.
+
 * POSSIBLE PARADIGM SHIFT!
 Consider that most of the DB programming that is done on the internet is
 extremely trivial, and developers are currently doing it using SQL plus
