@@ -128,6 +128,8 @@ they are invoked as Foo.Bar.baz versus Foo::Bar.baz so a clear distinction.
 - Strictly speaking, all other packages don't need to have any particular
 hierarchy or be in any particular package namespace, though it would be
 good to come up with something early on.
+- Note that say a code file that is simply a direct translation of, say,
+SQL, may not "using" Muldis_D::* at all, but just the DBMS::* in question.
 
 * Version numbers of anything by authority http://muldis.com are formatted
 as strings of 1..N nonnegative integers, where each string element is
@@ -187,7 +189,8 @@ version number at all, or authority, same as Perl 6, meaning that the code
 does not explicitly consider that it would work or not work with any
 specific language/module/etc version at all.  So a strict implementation
 would reject all such code out of hand and a permissive one would accept
-all such.  On the other hand, in the interest of preventing bad habits from
+all such.
+- On the other hand, in the interest of preventing bad habits from
 starting, where people just leave out the auth/vnum specifiers and then
 people seeing that code not realizing that being specific is even possible,
 we could say that it is always mandatory to specify at least a
@@ -197,6 +200,9 @@ of the code or what implicit expectations it might have.  The writer of the
 code had presumably been testing it with *something* before releasing it.
 And even neophytes who copy-paste whole code would be getting either
 correct behavior or a rejection by an implementation from version diffs.
+And savvy people that go around the internet can more easily spot bad or
+outdated code examples in tutorials or script archives because they'll just
+have an old dependency version specifier and not mention newer versions.
 
 * Note, http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-three
 clarifies what "setting" means in Perl 6, and there can be more than one of 
@@ -311,6 +317,133 @@ provide different versions of the Muldis D API, and they can be used at
 once, similar to having packages provide the APIs of SQL / other languages,
 so that the parsers eg for PT_STD don't have to do it themselves for
 modules but rather just for concrete syntax vers.  Still open to debate.
+- The best way to do this emulation cleanly, for package/module versions,
+is that in the general case we consider every name+auth+vnum permutation
+to be a distinct module, and that permutation is the actual name of the
+module, so code expecting/using different module versions is using
+different names to refer to its entities.
+- It is mandatory for a package/etc to, for each of its explicit module
+dependencies, to also declare a package-local alias for that dependency,
+by which name it must always refer to the package or its entities.
+- The effect that this has is like that of the global params of recipe
+routines; there is no longer a global namespace of used packages in the
+DBMS, but that rather each package's code only ever directly sees within
+the same package, and any used packages' contents are aliased to namespaces
+within the using package; the language core pkg is treated the same way.
+- An implementation may provide packages for different versions of the same
+base package at once.  When a package's "using" statement indicates that a
+range of versions are suitable, the DBMS implementation would just pick a
+single one of those for which it actually has that dependency package
+version and associate the user's local package alias to that specific
+version longer name.  Since a "using" specifying multiple versions means
+any of those should have the same semantics for features used, the DBMS is
+also free to remap at runtime which of several satisfying versions it has
+to the alias, so that say if multiple dependent modules specify overlapping
+but unlike dependency versions, the DBMS can choose to use the same version
+it has for both in the intersection of those ranges, without breakage.
+A package's code should not generally need to know which specific
+dependency version it actually got or has, though there might be rationale.
+- The package-specified alias specifier might conceivably be more generic
+than just a Name; it might be a path in the using package's namespace into
+which to "mount" the other package's namespace.
+- Depending on how the aliasing works, conceivably if package Y explicitly
+uses X and Z explicitly uses just Y, Z can also access X's namespace within
+Y's namespace that it sees.
+- Regardless, when dealing with higher-order functions and such, those
+functions are a closure of sorts wherein all references to package entities
+in the function code are resolved relative to the packages where the
+functions are declared, not relative to where they are actually invoked.
+- We also need to revisit matters of depot mounting and such, and see if
+the aliases we declare there and for packages can be generalized together.
+- Perhaps from each package's perspective, the entity namespace is this ...
+    /local/*  - current package's namespaces/entities
+    /used/<alias>/*  - each used package's (or core's) namespaces/entities
+... those being the absolute paths.
+- Or perhaps better yet, if each package is also required to declare an
+internal alias to refer to itself with, the above can be flat, just:
+    /<alias>/*  - current or each used or core pkg's namespaces/entities
+- Separately, each package needs to declare an explicit ordered list of
+search paths that it will use internally by its own code to resolve
+unqualified entity references in its own code.  Typically the first 2 items
+in the list will be the package's own self and then the core language
+package.  The list can be either empty or include all the used packages;
+searching will only look in this list, and one can't use search/unqualified
+syntax to reference anything outside this list, just relative or absolute.
+- Example:
+    Muldis_D:PT_STD:"http://muldis.com":0;
+    syntax {...};
+    local my;
+    using MD ::= Muldis_D:"http://muldis.com":0;
+    using Pg ::= DBMS::Postgres ...
+    using Spatial ::= Muldis_D::Spatial:"http://muldis.com":0;
+    searching [my,MD];
+... uses alias "my" for current package, "MD" for core, and so on.
+- Making the explicit search pattern list mandatory in order to get
+unqualified referencing is important because then neophytes can't just
+copy-paste parts of code from random online tutorials or script archives
+without being explicit about resolving any references therein, which can
+trip up people where the same code may resolve to different operator calls
+depending on what modules are used.
+
+* Consider making the "lib" or "cat" or "data" portions of namechains
+optional in contexts where they would always be the same, especially "lib",
+so for example one can just say "nlx.myfunc" rather than "nlx.lib.myfunc";
+this would be loosely similar to the elimination of "lex".
+
+* For that matter, consider restructuring the namespace tree in Basics.pod
+so the lib|cat|data|etc are the namechain first element, with fed|nlx|etc
+the second element; and sys doesn't have lib|cat|data already, or in fact
+that would all be grouped under "lib" arguably.
+
+* For that matter, lets just eliminate the special namespace prefixes
+entirely, even as an option, because typically certain contexts only allow
+certain kinds of things anyway, such as just lib or data, and so one should
+never have to or be able to write chain elements that mean anything other
+than their literal selves.
+- Rewrite ENTITY NAMES in Basics.pod to get rid of the formally structured
+shared namespace as it currently is, and instead have that pod divided into
+context-based sections, saying for example "in this lexical context a
+namechain means this" and "in this nonlexical context it means this".
+- Where one needs to explicitly use an absolute path vs an explicit
+relative path vs a searching relative path, we can provide a new data type
+which wraps the basic name chain of old to provide this.
+For examples (new arrayish structure <-- old way of stating):
+  ['abs',['mydb','myschema','myfoo']] <-- fed.{lib|data}.mydb.myschema.myfoo
+  ['rel',2,['myschema','myfoo'] <-- nlx.par.par.{lib|data}.myschema.myfoo
+  ['rel',0,['mybar']] <-- nlx.{lib|data}.mybar
+  ['shp',['myschema','myfoo'] <-- shp.{lib|data}.myschema.myfoo
+The above could possibly be written like this:
+  .$mydb.myschema.myfoo or abs$mydb.myschema.myfoo
+  2$myschema.myfoo or rel$2$myschema.myfoo
+  0$mybar or rel$0$mybar
+  myschema.myfoo or shp$myschema.myfoo
+I'm still missing an example when one wants to say "sys", maybe, though
+both "abs" and "shp" kind of apply there but kind of not.
+Note that in the above it is mandatory for there to be no whitespace
+around the "$" ... the formatting is like with "#" in numeric literals.
+- Now while there are {$:,%:,@:} prefixes for {S,T,R} value literals, and
+the colon-less {%,@} mean cast between tuple and relation,
+the colon-less $ doesn't make sense for a similar purpose,
+so use $ for name literals, that is, "$foo" means "Name:foo",
+so one can write projection like "r keep {$foo,$bar}" not "r{foo,bar}",
+and then for example "$<>foo" means "NameChain:foo" (and "$<>" the emp nc).
+- Also add the ability to use namechains in declarations too, which is
+essentially a shorthand; for example, this:
+  foo.bar ::= function ...
+... is logically equivalent to:
+  foo ::= schema {
+    bar ::= function ...
+  }
+Now technically this new way only lets one declare a nonempty schema but
+to make an empty one one can still always say:
+  foo ::= schema;
+- The scalar type name stored inside a ScalarWP is always an 'abs' one,
+or some separate canonical ns that takes into account type name aliasing.
+- The scalar type name of a scalar value actually stored in a depot
+can/should be exactly what the user wrote as per source code; it only is
+resolved to some global namespace when compiled from the system catalog;
+this is visible to the user of course in the low-level type system when
+looking at scalar values, but not in the system catalog / source code.
 
 * POSSIBLE PARADIGM SHIFT!
 Consider that most of the DB programming that is done on the internet is
@@ -873,66 +1006,6 @@ prefix ops, namely {not,so} (there might be more).
 cases such as "not" and "so"; all other bareword alphanum ops are infix.
 - The only infix syntax taking more than 2 inputs is special syntax with
 its own kinds of parse nodes, not op calls, such as ??!! and if-then-else.
-
-* Consider making the "lib" or "cat" or "data" portions of namechains
-optional in contexts where they would always be the same, especially "lib",
-so for example one can just say "nlx.myfunc" rather than "nlx.lib.myfunc";
-this would be loosely similar to the elimination of "lex".
-
-* For that matter, consider restructuring the namespace tree in Basics.pod
-so the lib|cat|data|etc are the namechain first element, with fed|nlx|etc
-the second element; and sys doesn't have lib|cat|data already, or in fact
-that would all be grouped under "lib" arguably.
-
-* For that matter, lets just eliminate the special namespace prefixes
-entirely, even as an option, because typically certain contexts only allow
-certain kinds of things anyway, such as just lib or data, and so one should
-never have to or be able to write chain elements that mean anything other
-than their literal selves.
-- Rewrite ENTITY NAMES in Basics.pod to get rid of the formally structured
-shared namespace as it currently is, and instead have that pod divided into
-context-based sections, saying for example "in this lexical context a
-namechain means this" and "in this nonlexical context it means this".
-- Where one needs to explicitly use an absolute path vs an explicit
-relative path vs a searching relative path, we can provide a new data type
-which wraps the basic name chain of old to provide this.
-For examples (new arrayish structure <-- old way of stating):
-  ['abs',['mydb','myschema','myfoo']] <-- fed.{lib|data}.mydb.myschema.myfoo
-  ['rel',2,['myschema','myfoo'] <-- nlx.par.par.{lib|data}.myschema.myfoo
-  ['rel',0,['mybar']] <-- nlx.{lib|data}.mybar
-  ['shp',['myschema','myfoo'] <-- shp.{lib|data}.myschema.myfoo
-The above could possibly be written like this:
-  .$mydb.myschema.myfoo or abs$mydb.myschema.myfoo
-  2$myschema.myfoo or rel$2$myschema.myfoo
-  0$mybar or rel$0$mybar
-  myschema.myfoo or shp$myschema.myfoo
-I'm still missing an example when one wants to say "sys", maybe, though
-both "abs" and "shp" kind of apply there but kind of not.
-Note that in the above it is mandatory for there to be no whitespace
-around the "$" ... the formatting is like with "#" in numeric literals.
-- Now while there are {$:,%:,@:} prefixes for {S,T,R} value literals, and
-the colon-less {%,@} mean cast between tuple and relation,
-the colon-less $ doesn't make sense for a similar purpose,
-so use $ for name literals, that is, "$foo" means "Name:foo",
-so one can write projection like "r keep {$foo,$bar}" not "r{foo,bar}",
-and then for example "$<>foo" means "NameChain:foo" (and "$<>" the emp nc).
-- Also add the ability to use namechains in declarations too, which is
-essentially a shorthand; for example, this:
-  foo.bar ::= function ...
-... is logically equivalent to:
-  foo ::= schema {
-    bar ::= function ...
-  }
-Now technically this new way only lets one declare a nonempty schema but
-to make an empty one one can still always say:
-  foo ::= schema;
-- The scalar type name stored inside a ScalarWP is always an 'abs' one,
-or some separate canonical ns that takes into account type name aliasing.
-- The scalar type name of a scalar value actually stored in a depot
-can/should be exactly what the user wrote as per source code; it only is
-resolved to some global namespace when compiled from the system catalog;
-this is visible to the user of course in the low-level type system when
-looking at scalar values, but not in the system catalog / source code.
 
 * IDEA: Add a concept kind of like a distinct depot/package catalog but it
 is system-generated and not directly editable by the user; in here would
