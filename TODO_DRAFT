@@ -25,6 +25,48 @@ OF THAT TO TRUNK WHEN READY TO DO A SERIES OF MORE ORDERLY RELEAESES.
 - I SUPPOSE PROBABLY BEST TO DO THE BRANCH ON GITHUB'S END?  RESEARCH!
 - I KNOW I WANT TO SEE THE BRANCH AND TRUNK SAME TIME BOTH THERE AND HERE.
 
+* Create another Git repository and release series or three that just
+contain Muldis D code, these being analagous to Larry Wall's STD.pm / Perl
+6 grammar written in Perl 6, and the Perl 6 Prelude and standard libraries
+written in Perl 6, and the Perl 6 test suite written in Perl 6.
+- Contained therein is all of the "official" muldis.com Muldis D packages,
+just as PT_STD text files, and the Muldis D compilers written in PT_STD,
+and the Muldis D official test suite written in PT_STD.
+- This release series is *not* expected to be released as an executable
+product by itself; rather it is more of a data product whose files are then
+copied into other projects that actually have the bootstrap or framing or
+whatever Perl or whatever code so that the other projects are executables;
+they include the as-data files to save themselves work and test themselves.
+- Said other Perl/etc projects would synchronize themselves periodically
+with the PT_STD-only project for releases, but the latter has no Perl/etc
+in it.
+- Think of the PT_STD-only product like the data files that the Unicode
+consortium releases, and the latter being like Perl etc which bundles said
+Unicode data files as effectively parts of the Perl/etc executables.
+- Maybe the modules, compilers, and test suite will all live in one
+repository, but those parts may be released as separate product distros.
+- The repository can have lib/, bin/, and t/ dirs to group the above into.
+- The above PT_STD-only alone probably would *not* be distributed on CPAN.
+- Even http://www.unicode.org/Public/UNIDATA/ has both spec-data+test fils.
+- Maybe name this repository "Muldis-D-Standard"?
+- This new repository doesn't have to be held back for any work in existing
+repositories such as "Muldis-D" or whatever, and in fact would probably be
+the development process leader for a little while.
+
+* Create another Git repository and release series "Muldis-D-Ref-Perl5" or
+such that would have the Perl 5 based reference implementation, and it is
+bundled into this that "Muldis-D-Standard" would be distributed on CPAN,
+and it is this that would actually run.  The "Muldis-D-Ref-Perl5" would
+include both a module for embedding in Perl programs ala DBI which succeeds
+"Muldis-Rosetta" and also a script for compiling standalone Muldis D
+programs.  Any or all of the Perl in this distro may be generated from
+PT_STD code in Muldis-D-Standard, or at least the script and shared parts
+would be, but the public parts of the module might not be.
+The bundled DBD-alike module may have the name "Muldis::D::RefEng".
+- Yet another repository, say "Muldis-D-Perl5", can specify HD_Perl5_STD
+as "Muldis-D" soon wouldn't, and also specify a common Perl 5 API for both
+"Muldis::D::RefEng" and other DBD analogies sharing the API to follow.
+
 * PRIORITY LIST:
 1.  Split off Perl stuff to separate distros/etc, chg language name fmts.
 2.  Canonicalize low-level tp-sys so that simple "=" just works everywhere.
@@ -67,7 +109,7 @@ concrete syntax of the official "Muldis D" language, and that what was the
 Perl dialects are now 2 full languages whose definitions are derived from
 the standard text-based one, and have their own versioning.
 - So, here are new examples of fully-qualified language declaration names:
-    Muldis_D:PT_STD:"http://muldis.com":0.149
+    Muldis_D:PT_STD:Unicode(UTF8,canon):"http://muldis.com":0.149
     ['Muldis_D','HD_Perl5_STD','http://muldis.com','0']
     ['Muldis_D','HD_Perl6_STD','http://muldis.com','0']
 - Actually, we are best to split things up so that Muldis D code typically
@@ -90,26 +132,20 @@ differently versioned and would only increment when those parts change.
     - The second/Core and third/Catalog might be stay merged into one item
     as they are kind of inter-dependent, but we may review minimizing Core.
 - Example of Muldis D code declaration of language:
-    Muldis_D:PT_STD:"http://muldis.com":0;
-    syntax
-    {
-        str_char_repertoire => { text => Unicode_6.0.0_canon,
-            name => Unicode_6.0.0_compat, cmnt => Unicode_6.0.0_compat },
-        catalog_abstraction_level : rtn_inv_alt_syn,
-        op_char_repertoire : extended,
-        standard_syntax_extensions : {},
-    };
-    using Muldis_D:"http://muldis.com":0;
-    using Muldis_D::Spatial:"http://muldis.com":0;
-    using DBMS::Postgres ... emulations of all Pg types/routines/sys-cat/etc
+    Muldis_D:PT_STD:Unicode(UTF8,canon):"http://muldis.com":0;
+    pkg ::= package FooLib:"http://foo.com":0;
+    MD ::= using Muldis_D:"http://muldis.com":0;
+    Spatial ::= using Muldis_D::Spatial:"http://muldis.com":0;
+    Pg ::= using DBMS::Postgres ... emulations of all Pg types/routines/sys-cat/etc
         ... this is defined as a wrapper over Muldis_D/etc, but in a MD
         impl over Postgres, these would likely be implemented natively
         and then Muldis_D::* is implemented as a wrapper over these
-    using DBMS::foo ... emulate other DBMS
-    using lang::Perl ... emulate Perl
-    using lang::foo ... emulate foo
-    using VendorXYZ::FooLib:"http://vendorxyz.com":0;
-    using MyAppBar::Lulz:"http://mybusiness.com":0;
+    dfoo ::= using DBMS::foo ... emulate other DBMS
+    Perl ::= using lang::Perl ... emulate Perl
+    lfoo ::= using lang::foo ... emulate foo
+    vxyz ::= using VendorXYZ::FooLib:"http://vendorxyz.com":0;
+    Lulz ::= using MyAppBar::Lulz:"http://mybusiness.com":0;
+    searching [pkg,MD];
     ... then our own module/depot/value/etc content follows ...
 - Note, "using" is the C# keyword for this.  Note, "System" is C# core lib.
 - Note, "java.lang" is core Java package; it is precedent for "Muldis_D::*".
@@ -308,6 +344,23 @@ valid PT_STD, including that it provides a "is this PT_STD" bool func.
 - Similarly, Muldis_D::PT_STD would provide config options for the
 translater to PT_STD from native, say on what num format opts to prefer
 or what length to wrap lines etc.
+- To help specify a pure functional parser that is both resistant to having
+too-deep levels of recursion (say, a process defined on head+rest), we
+should utilize some of Muldis D's more unique features, mainly the
+relational operators, and define the parser largely in terms of say
+relational join and such, so it is more conceptually parallel than
+recursive (or iterative).
+- Have a function that derives an Array-of-Codepoint (or similar relation)
+from a String, then use it on the PT_STD source string as the first step,
+and then say do tokenizing in terms of joining that relation against a
+static relation having say 1 tuple per distinct character in the text
+repertoire, mapping for example traits like is-whitespace or is-symbol or
+is-alphanum or is-string-delimiter or is-escape-char (\), so say the result
+of the join is the indexes into the original string of where tokens are.
+Filtering out say escaped chars from unescaped ones is easy; find all
+occurrences of the char and then set-minus those with a "\" just before.
+- This same design would scale transparently to different repertoires,
+eg ASCII vs Unicode; just the static tables of characters are larger.
 
 * It remains to be specified how to support code expecting different
 versions of Muldis D or other modules, such as where to say no and where to
@@ -348,7 +401,8 @@ than just a Name; it might be a path in the using package's namespace into
 which to "mount" the other package's namespace.
 - Depending on how the aliasing works, conceivably if package Y explicitly
 uses X and Z explicitly uses just Y, Z can also access X's namespace within
-Y's namespace that it sees.
+Y's namespace that it sees.  ACTUALLY, NO, that's a bad idea; Z should not
+see any part of Z by way of Y but for Y's explicit synonyms of things of X.
 - Regardless, when dealing with higher-order functions and such, those
 functions are a closure of sorts wherein all references to package entities
 in the function code are resolved relative to the packages where the
@@ -370,20 +424,36 @@ package.  The list can be either empty or include all the used packages;
 searching will only look in this list, and one can't use search/unqualified
 syntax to reference anything outside this list, just relative or absolute.
 - Example:
-    Muldis_D:PT_STD:"http://muldis.com":0;
-    syntax {...};
-    local my;
+    Muldis_D:PT_STD:ASCII:"http://muldis.com":0;
+    package pkg ::= FooLib:"http://foo.com":0;
     using MD ::= Muldis_D:"http://muldis.com":0;
     using Pg ::= DBMS::Postgres ...
     using Spatial ::= Muldis_D::Spatial:"http://muldis.com":0;
-    searching [my,MD];
-... uses alias "my" for current package, "MD" for core, and so on.
-- Making the explicit search pattern list mandatory in order to get
+    searching [pkg,MD];
+... uses alias "pkg" for current package, "MD" for core, and so on.
+- Making the explicit search path list mandatory in order to get
 unqualified referencing is important because then neophytes can't just
 copy-paste parts of code from random online tutorials or script archives
 without being explicit about resolving any references therein, which can
 trip up people where the same code may resolve to different operator calls
 depending on what modules are used.
+- Perhaps having just the language core in the search path list and not
+even the current package is best in some circumstances.
+- Note http://www.postgresql.org/docs/current/static/ddl-schemas.html#DDL-SCHEMAS-PATH
+which has a "search_path" setting that works similar to this.
+- But the aforementioned is for schemas; therefore Muldis D may be best to
+offer a more finely-grained option, where Muldis D's search path takes a
+list of name-chains rather than names.  This has an advantage of letting
+one select just parts of a package to search, or the order within a package
+to search, etc.  Each name-chain in a search-path list can be either
+absolute or relative, the latter being resolved relative to each individual
+reference; or better yet, make each search-path item absolute only and that
+the language separately has the option to search relative to the
+referencing entity first.  This needs more thought.
+
+* We also need some distinct syntax for defining that a package definition
+is split into multiple pieces for storage, which for source code typically
+means one disk file per piece, but they are logically still one package.
 
 * Consider making the "lib" or "cat" or "data" portions of namechains
 optional in contexts where they would always be the same, especially "lib",
@@ -444,6 +514,74 @@ can/should be exactly what the user wrote as per source code; it only is
 resolved to some global namespace when compiled from the system catalog;
 this is visible to the user of course in the low-level type system when
 looking at scalar values, but not in the system catalog / source code.
+
+* To keep things simple, the core Muldis D language does *not* for the most
+part have any Unicode knowledge or knowledge of any character repertoires
+beyond what common legacy 8-bit encodings handle; extensions are where
+Unicode/etc goes because it is sooo complicated and large.
+- The Muldis D core still fundamentally considers String/Name/Text to just
+be a sequence of "big" integers, and so still supports Unicode etc, but
+what the core lacks is any knowledge say about what Unicode characters are
+letters vs symbols vs whitespace etc or base vs combining or normal forms
+or canon vs compatibility or case folding rules and collations so on.
+- The Muldis D core has the "Text" type which just has the integer string
+possrep, and it has proper subtypes for ASCII,Latin1,etc (maybe EBCDIC?)
+where each adds a possrep.  The Muldis D core knows a small amount of
+Unicode, but just the subsets of its repertoire and character codes/names
+for characters in Latin1/etc, such that the base number string possrep
+still is valid Unicode character numbers for those characters.
+- An extension, say Muldis_D::Unicode, adds the complexity of knowledge for
+the rest of Unicode, including the NFD and NFKD Text subtypes/possreps etc.
+- The Muldis_D::PT_STD string code parser also comes in 2 or more versions,
+where said base version only can work with source with th same simple/8-bit
+knowledge as the Muldis D core, and you need another version say
+Muldis_D::PT_STD::Unicode to handle source using the wider repertoire,
+at the very least so it can parse code properly where the parsing semantics
+depends on the notion of what characters are letters or symbols or ws
+and on canonical vs compatibility notions of equivalence.
+- The Muldis_D declaration at the top of a code file also indicates what
+character repertoire or encoding or etc the file is written in (which may
+even include the "auth" part of the name), so it appears almost-first,
+say like this:
+    Muldis_D:PT_STD:ASCII:"http://muldis.com":0;
+    Muldis_D:PT_STD:Unicode(UTF8,canon):"http://muldis.com":0;
+    Muldis_D:PT_STD:Unicode(UTF8,compat):"http://muldis.com":0;
+- There may be further variants for diff versions of Unicode standard.
+- Muldis_D::Unicode also adds the synonyms for core routines/etc that have
+Unicode character names, while the core just has the Latin1 char names.
+- There is still the question about avoiding combinatorial explosions about
+lots of other modules that want Unicode op names but that should also
+degrade gracefully for implementations lacking them.  Probably one easy way
+out is that these can just declare these with declared delimited entity
+names using numeric escape sequences rather than literal Unicode chars.
+- We should be using subtype polymorphism to our advantage.  The Muldis_D
+core package should declare a mixin type "SourceCode" or several such like
+"PackageSourceCode" or "ValueSourceCode" etc and then declare a virtual
+parser function whose input type is "SourceCode" and whose result type is a
+node of the native Muldis D language.  Then Muldis_D::PT_STD would declare
+a subtype of Text that composes the mixins say "PT_STD_SourceCode_ASCII" as
+well as a function implementing said virtual parser which takes that ASCII
+type as input, while Muldis_D::PT_STD::Unicode does a corresponding thing
+but for a different subtype of Text as appropriate.  These Text subtypes
+would have their defining constraint as, Text value that starts with the
+string "Muldis_D:PT_STD:ASCII:" and such.  And so the logic for what parser
+to select in a generic case just comes down to regular multi-dispatch based
+on analysis of the Text values for characteristics specific to a language,
+and it is easy to auto-extend the system with support for new languages,
+simply by somewhere "using" a package that decl an impl of the virt func;
+but a main importance is that the Unicode vs not thing is no longer a
+complicating factor for users.
+
+* Note http://blog.endpoint.com/2011/12/sanitizing-supposed-utf-8-data.html
+the Perl modules like IsUTF8, Encoding::FixLatin, Search::Tools::UTF8,
+Encode::Detect, Unicode::Tussle.
+
+* TODO: Declare explicit subtypes of String in core:
+String.U1,String.U7,String.U8,String.U32,String.U64
+so String values can be explicitly marked as such and one can know quickly
+whether the String is known to be just bits, ASCII chars, octets, etc
+and so treat it more efficiently rather than defaulting to "big" semantics.
+The U8 and U32 versions correspond to Perl 5's strings with isutf8 off/on.
 
 * POSSIBLE PARADIGM SHIFT!
 Consider that most of the DB programming that is done on the internet is
