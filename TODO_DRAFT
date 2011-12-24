@@ -109,7 +109,7 @@ concrete syntax of the official "Muldis D" language, and that what was the
 Perl dialects are now 2 full languages whose definitions are derived from
 the standard text-based one, and have their own versioning.
 - So, here are new examples of fully-qualified language declaration names:
-    Muldis_D:PT_STD:Unicode(UTF8,canon):"http://muldis.com":0.149
+    Muldis_D:PT_STD:Unicode(6.0,canon):"http://muldis.com":0.149
     ['Muldis_D','HD_Perl5_STD','http://muldis.com','0']
     ['Muldis_D','HD_Perl6_STD','http://muldis.com','0']
 - Actually, we are best to split things up so that Muldis D code typically
@@ -132,7 +132,7 @@ differently versioned and would only increment when those parts change.
     - The second/Core and third/Catalog might be stay merged into one item
     as they are kind of inter-dependent, but we may review minimizing Core.
 - Example of Muldis D code declaration of language:
-    Muldis_D:PT_STD:Unicode(UTF8,canon):"http://muldis.com":0;
+    Muldis_D:PT_STD:Unicode(6.0,canon):"http://muldis.com":0;
     pkg ::= package FooLib:"http://foo.com":0;
     MD ::= using Muldis_D:"http://muldis.com":0;
     Spatial ::= using Muldis_D::Spatial:"http://muldis.com":0;
@@ -359,8 +359,26 @@ is-alphanum or is-string-delimiter or is-escape-char (\), so say the result
 of the join is the indexes into the original string of where tokens are.
 Filtering out say escaped chars from unescaped ones is easy; find all
 occurrences of the char and then set-minus those with a "\" just before.
+It is useful to do edge detection early by joining a folded (to char kind)
+string to itself offset by one index position and seeing where the pairwise
+characters are not of the same character kind.
+The static relation of characters may be best stored in code in a compacted
+range-defined form, and if expanding is needed, do it when needed;
+then we may only need to store a few dozen tuples rather than thousands.
 - This same design would scale transparently to different repertoires,
 eg ASCII vs Unicode; just the static tables of characters are larger.
+- The very first step in parsing PT_STD:Unicode(...) is to bring the source
+Text to a normal form, either "canon" or "compat" (with semantics of NFD or
+NFKD in the spec) and then the PT_STD parser proper then works with that
+Unicode normal form as its input.
+- We would have a whitelist of codepoints that may appear outside of a
+quoted string in the source, and all others are illegal outside, for
+security purposes (lookalikes) if nothing else; it is applied post-normal.
+This makes it similar to pigeonhole charcters into symbol vs alpha for
+example, where that distinction mainly just matters for barewords.
+- We have to figure out how best t work w Unicode combin chars for parsing.
+- Note, according to http://en.wikipedia.org/wiki/Unicode_symbols, Unicode
+has a main distinction between "scripts" and "symbols".
 
 * It remains to be specified how to support code expecting different
 versions of Muldis D or other modules, such as where to say no and where to
@@ -544,8 +562,8 @@ character repertoire or encoding or etc the file is written in (which may
 even include the "auth" part of the name), so it appears almost-first,
 say like this:
     Muldis_D:PT_STD:ASCII:"http://muldis.com":0;
-    Muldis_D:PT_STD:Unicode(UTF8,canon):"http://muldis.com":0;
-    Muldis_D:PT_STD:Unicode(UTF8,compat):"http://muldis.com":0;
+    Muldis_D:PT_STD:Unicode(6.0,canon):"http://muldis.com":0;
+    Muldis_D:PT_STD:Unicode(6.0,compat):"http://muldis.com":0;
 - There may be further variants for diff versions of Unicode standard.
 - Muldis_D::Unicode also adds the synonyms for core routines/etc that have
 Unicode character names, while the core just has the Latin1 char names.
