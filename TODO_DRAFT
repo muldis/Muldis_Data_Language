@@ -240,10 +240,72 @@ And savvy people that go around the internet can more easily spot bad or
 outdated code examples in tutorials or script archives because they'll just
 have an old dependency version specifier and not mention newer versions.
 
+* See also Jesse Vincent's "Perl 5.16 and beyond" talk, where Perl 5 core
+policy or Jesse's proposals for such are discussed that when you say "use
+v5.xy" then no matter what the actual (newer) executing Perl 5 version is,
+you have declared that you expect it to behave with the same semantics as
+the same version 5.xy that you named in your code.
+
+* See also
+http://tech.valgog.com/2012/01/schema-based-versioning-and-deployment.html .
+
 * Note, http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-three
 clarifies what "setting" means in Perl 6, and there can be more than one of 
 them at a time that are layered; it does not mean "language core"; Perl 6
 has the separate CORE concept, so staying with Core seems approp for MD.
+
+* Make a depot/etc have 3 main payload sections (each of them being a
+"Database") rather than 2; where we had "catalog" and "data" before, now
+add "constants"; names of the 3 subject to change.
+- The purpose of "constants" is to be the most effective way to represent
+the bodies of non-trivial niladic functions, or the values of non-trivial
+expression trees with no free variables.
+- The "constants" are semantically part of the code, and changing them is
+considered a data-definition rather than a data-manipulation; however they
+are stored directly as the values they represent, same as things in "data",
+rather than as trees of expression nodes in the catalog.
+- Unlike things in "data", you can refer to "constants" directly in the
+bodies of function or type definitions.
+- Each constant typically lives in its own RVA of the constants database,
+or several may be in the same if they have the same structure or type.
+- An example usage is that the Unicode character database could be
+accessable to Muldis D within a "constants" database of some appropriate
+module.  Another example is parser rules defined as relations.  Another
+example usage is for the user text of programs, or exception/error
+messages, especially multi-lingual ones.
+- Where one wishes to comment individual items in a collection constant,
+they do so by adding extra RVA attributes for the comment text.
+- You do not normally use constants to define enumerated data types that
+define new values, such as Boolean etc, which are unions of singleton
+types; but you can use constants to define enumerated types that are subset
+types of others.  Constants are analagous to values/functions, not types.
+- Constants live in the same shared schema-namespaces that are shared by
+types/routines/etc and relvars, and all must have distinct names therein.
+It is as if the "constants" and "data" databases are superimposed, so no
+RVAs in one may have the same names as those in others, but schema/TVAs may
+exist in common.
+- One always uses function syntax to refer to "constants" RVA/TVA within
+routines, as if each one was in fact declared as a niladic function.
+- The only way to refer to "constants" as variables in routines, for
+dynamic data-definition, is in procedure pseudo-parameters, same as when
+referring to the catalog database or "data".
+- We would probably have special/shorthand syntax for declaring constants
+in code like we have for declaring types or routines, etc; for example:
+    FOO ::= constant (...);
+    dbname.schemaname.BAR ::= constant (...);
+- Similarly, whatever syntax we use for nesting a higher-order function
+definition or a type definition in a routine, we use something similar for
+nesting a named constant declaration in a routine, in order that it be
+treated as a "constants" item rather than an expression tree that it would
+otherwise be.
+- You can't use "constants" for values that are not deeply-homogeneous,
+like something kept in a "Database" must be; for those you have to use
+regular expression trees.  But it is expected that in practice any values
+that aren't deeply-homogeneous would be transient or generated at least
+partly from free variables, so this limitation shouldn't be a problem;
+or you should likely be able to refactor the values down into
+deeply-homogeneous inputs to a simple regular value expression or niladic
+function which then gives the actual desired vaulue.
 
 * Make Muldis D self-hosted.  Have it support parsing PTMD_STD code using a
 read-only operator into trees of scalars that are the new native Muldis D
@@ -259,6 +321,10 @@ actually pass the function definition as the argument, rather than its
 name, as you do now, though the latter would still be perhaps easier to
 implement on more foundations. We'll see if that's necessary or works.
 That would certainly be more of the true anonymous function nature.
+
+* Note that the typical action of Muldis D implementations could be called
+"transcompiler" or "source-to-source compiler" because they translate
+between high-level languages rather than directly to machine code.
 
 * The new system catalog would have several main namespaces where each
 comprises a different view of the same package code.
@@ -468,6 +534,10 @@ absolute or relative, the latter being resolved relative to each individual
 reference; or better yet, make each search-path item absolute only and that
 the language separately has the option to search relative to the
 referencing entity first.  This needs more thought.
+- For implementation, we are probably best to preindex all the packages,
+where all possible unqualified or semiqualified namechains are mapped to a
+list of all fully qualified chains they match the endings of, so no actual
+"search" is necessary; we just have to evaluate on arguments later.
 
 * We also need some distinct syntax for defining that a package definition
 is split into multiple pieces for storage, which for source code typically
@@ -626,6 +696,21 @@ itself).  So push that I make simple apps simpler, but without losing
 actual power or flexibility.
 - Of course, Muldis D would absolutely not have web stuff in its core, so
 an extension would be needed for the web stuff.
+
+* BUT SEE ALSO
+http://www.infoworld.com/d/application-development/introducing-opa-web-dev-language-rule-them-all-172060
+as it seems that Opa makes many of the same claims as the above paragraph,
+such as one language to do the database and server and client side web,
+where the DBMS and web server are built-in.  However, Opa's database is
+apparently hierarchical, and it has 1 implementation, written in Ocaml.
+A commentor says its like ASP.NET WebForms, that being bad.
+Fortunately then that Muldis D doesn't actually concern itself with
+generating HTML; Muldis D is only meant to replace the SQL+{PHP/Perl/etc}
+pair and not also HTML/etc.
+Actually, http://opalang.org/ shows examples that look like PHP when that
+is mixed into HTML, and Opa calls itself "the cloud language"; different goals really.
+See also http://www.infoworld.com/d/application-development/10-programming-languages-could-shake-it-181548
+for multiple language mentions.
 
 * Refactor, and establish as distinct concepts, Muldis D stores that are
 code-only, which we will call "modules", versus those that are primarily
