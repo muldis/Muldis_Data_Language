@@ -660,6 +660,38 @@ simply by somewhere "using" a package that decl an impl of the virt func;
 but a main importance is that the Unicode vs not thing is no longer a
 complicating factor for users.
 
+* To keep things simpler, don't have a distinct "value" parser node but
+rather just use "expr" instead; when we only want a "value" we can then
+either do further constraints on the parse tree from using "expr" or do
+constant folding or both as applicable.
+
+* A (Unicode-savvy) parser should treat Greek/etc letters in the same way
+as Latin letters, as to where they may appear as barewords and how they are
+interpreted, so eg "απΣθ" is parsed the same as "abcd", so these are all
+var or foo() and not prefix/infix when barewords.
+This should work well with how Greek is commonly used in maths.
+
+* I should really be exploiting the variety of mature parser generators out
+there to do the hard work for me, certainly in development, but also to
+help any Muldis D implementations.
+See http://en.wikipedia.org/wiki/Comparison_of_parser_generators for lists.
+Dave Voorhis of TTM forum tersely recommends ANTLR (http://www.antlr.org/).
+David Barrett-Lennard of TTM forum recommends Coco/R.
+Quoth DBL: "Coco/R validates an LL(1) EBNF quite well, but uses a non-ISO
+syntax (which seems to resemble Wirth syntax notation). Section 3.6 of the
+Coco/R user manual discusses the errors it is able to identity."
+The comparison url suggests I should try ANTLR first, as it seems to
+generate parsers in more of the languages I'd be interested in, esp Perl.
+Including: C, C++, C#, Java, JavaScript, Objective-C, Perl, Python, Ruby.
+Or the ANTLR homepage actually says Perl support is at early prototype.
+Also ANTLR is BSD, runs on the JVM, takes EBNF as input, generates lexers,
+and it has an IDE, and its algorithm is LL(*).
+See http://www.antlr.org/grammar/list for various already written language
+grammars, including ISO SQL 2003, other dialects;
+I should probably use the PHP grammar example to go by for mine.
+http://www.antlr.org/wiki/display/ANTLR3/Quick+Starter+on+Parser+Grammars+-+No+Past+Experience+Required\
+has the tutorial for the flavor of EBNF that ANTLR uses.
+
 * Note http://blog.endpoint.com/2011/12/sanitizing-supposed-utf-8-data.html
 the Perl modules like IsUTF8, Encoding::FixLatin, Search::Tools::UTF8,
 Encode::Detect, Unicode::Tussle.
@@ -670,6 +702,23 @@ so String values can be explicitly marked as such and one can know quickly
 whether the String is known to be just bits, ASCII chars, octets, etc
 and so treat it more efficiently rather than defaulting to "big" semantics.
 The U8 and U32 versions correspond to Perl 5's strings with isutf8 off/on.
+
+* Change all the routines that take "Set of Name"/etc as arguments so they
+instead take empty/no-tuple relations as arguments instead, such that the
+headings of these relations convey the same set of Name.
+- They're both relations anyway, but using headings for this is more
+efficient, and make more semantic sense for such as projection or ungroup,
+such as to say, "make the result look like this".
+- Also make the last part of a relation literal optional for empty
+relations; eg, so one can just say "@:{foo,bar,baz}" without the ":{}".
+- So eg the prior example replaces "{$foo,$bar,$baz}" as project/etc arg.
+- Also, the arg to rename can be a tuple rather than a binary relation.
+- So eg one can say "%:{x:y,a:b}" rather than "@:[bef,aft]:{[x,y],[a,b]}".
+- But we still need an alternative when we want to define attribute lists
+dynamically at runtime; so we prob want "Set of Name"<->"emp rel" mappers.
+
+* The generic reduce op (and meta) should be virtual/overloaded, so syntax
+is the same whether the inputs are an Array or Set or Bag etc.
 
 * POSSIBLE PARADIGM SHIFT!
 Consider that most of the DB programming that is done on the internet is
@@ -1756,7 +1805,7 @@ More plans pending.
 pervasive (though strictly optional), replace the "op_char_repertoire"
 pragma with a pragma that affects all non-quoted code in general, including
 all nonquoted (but not quoted) entity names.  The options would be, at
-least, the 3: ASCII, Unicode_6.0.0_canon, Unicode_6.0.0_compat.  There
+least, the 3: ASCII, Unicode_6.1.0_canon, Unicode_6.1.0_compat.  There
 would separately be options for each kind of quoted character string:
 quoted entity names, texts, comments; see later TODO item about this; as
 per that, all of these could be part of a single pragma.  A simpler
@@ -2629,11 +2678,11 @@ Example PTMD_STD grammar additions:
         all | text | name | cmnt
     <str_char_reper> ::=
           ASCII
-        | Unicode_6.0.0_canon
-        | Unicode_6.0.0_compat
+        | Unicode_6.1.0_canon
+        | Unicode_6.1.0_compat
 Example PTMD_STD code additions:
-    str_char_repertoire => { text => Unicode_6.0.0_canon,
-        name => Unicode_6.0.0_compat, cmnt => Unicode_6.0.0_compat },
+    str_char_repertoire => { text => Unicode_6.1.0_canon,
+        name => Unicode_6.1.0_compat, cmnt => Unicode_6.1.0_compat },
     str_char_repertoire => { all => ASCII },
 Of particular interest is the Unicode canonical vs compatibility, that is
 NFC|D vs NFKC|D; it is generally recommended such as by the Unicode
