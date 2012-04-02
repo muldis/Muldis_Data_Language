@@ -109,7 +109,7 @@ concrete syntax of the official "Muldis D" language, and that what was the
 Perl dialects are now 2 full languages whose definitions are derived from
 the standard text-based one, and have their own versioning.
 - So, here are new examples of fully-qualified language declaration names:
-    Muldis_D:PT_STD:Unicode(6.0,canon):"http://muldis.com":0.149
+    Muldis_D:PT_STD:Unicode(6.1.0,UTF-8,canon):"http://muldis.com":0.149
     ['Muldis_D','HD_Perl5_STD','http://muldis.com','0']
     ['Muldis_D','HD_Perl6_STD','http://muldis.com','0']
 - Actually, we are best to split things up so that Muldis D code typically
@@ -132,7 +132,7 @@ differently versioned and would only increment when those parts change.
     - The second/Core and third/Catalog might be stay merged into one item
     as they are kind of inter-dependent, but we may review minimizing Core.
 - Example of Muldis D code declaration of language:
-    Muldis_D:PT_STD:Unicode(6.0,canon):"http://muldis.com":0;
+    Muldis_D:PT_STD:Unicode({1..6.1},UTF-8,canon):"http://muldis.com":{0..42};
     pkg ::= package FooLib:"http://foo.com":0;
     MD ::= using Muldis_D:"http://muldis.com":0;
     Spatial ::= using Muldis_D::Spatial:"http://muldis.com":0;
@@ -158,7 +158,9 @@ as eg a SQL parser just has to parse into DBMS::foo stuff and that's it.
     Scalar types from Muldis D's perspective and loosely are Tuple/Relation
     wrappers but that extra meta-data is included such as a concept of
     attribute order that is built-in to each value, or of attributes being
-    allowed to have non-distinct names, or of having certain 3VL etc.
+    allowed to have non-distinct/anon names, or of having certain 3VL etc.
+    - Probably make the "real" names as numbers, like SQL does, and the
+    text names are then aliases.
     - Our letter case of package entity names matches the folding rules for
     that DBMS with unquoted identifiers; in Pg they're lower, others upper.
 - We use "::" as separators in package/module/extension names because those
@@ -174,6 +176,9 @@ hierarchy or be in any particular package namespace, though it would be
 good to come up with something early on.
 - Note that say a code file that is simply a direct translation of, say,
 SQL, may not "using" Muldis_D::* at all, but just the DBMS::* in question.
+- In fact, we should emphasize a feature of Muldis D where it is suitable
+as a very good alternate syntax for SQL, easier for ORMs to build, etc.
+It can exactly repr semantics of each SQL dialect while being cleaner syn.
 
 * Version numbers of anything by authority http://muldis.com are formatted
 as strings of 1..N nonnegative integers, where each string element is
@@ -454,6 +459,11 @@ example, where that distinction mainly just matters for barewords.
 - Note, according to http://en.wikipedia.org/wiki/Unicode_symbols, Unicode
 has a main distinction between "scripts" and "symbols".
 
+* Thanks to syntax/package separation, we have a nice semi-orthogonal
+situation where PT_STD syntax can be used to write Muldis D or SQL,
+and SQL syntax can likewise be used to write both, in theory.
+- That is, the package determines the "semantics", the grammar the syntax.
+
 * It remains to be specified how to support code expecting different
 versions of Muldis D or other modules, such as where to say no and where to
 emulate and at what level to emulate.  Perl 6's solution may be a guide.
@@ -640,8 +650,8 @@ character repertoire or encoding or etc the file is written in (which may
 even include the "auth" part of the name), so it appears almost-first,
 say like this:
     Muldis_D:PT_STD:ASCII:"http://muldis.com":0;
-    Muldis_D:PT_STD:Unicode(6.0,canon):"http://muldis.com":0;
-    Muldis_D:PT_STD:Unicode(6.0,compat):"http://muldis.com":0;
+    Muldis_D:PT_STD:Unicode({1..6.1},UTF-8,canon):"http://muldis.com":{0..42};
+    Muldis_D:PT_STD:Unicode(6.0,UTF-8,compat):"http://muldis.com":0;
 - There may be further variants for diff versions of Unicode standard.
 - Muldis_D::Unicode also adds the synonyms for core routines/etc that have
 Unicode character names, while the core just has the Latin1 char names.
