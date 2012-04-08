@@ -320,6 +320,51 @@ or you should likely be able to refactor the values down into
 deeply-homogeneous inputs to a simple regular value expression or niladic
 function which then gives the actual desired vaulue.
 
+* CHANGE AFFECTING THE ABOVE ...
+Change the "Database" type so its attributes may be "Relation" in general
+and don't have to be "DHRelation"; that is, the type of a database relvar
+attribute may now be anything up to "Universal".  Or alternately, perhaps
+go for some kind of middle ground where we say that every relvar tuple
+attribute value must be a Scalar|Tuple|Relation and not some other List.
+- Or alternately, the language supports "Universal", but users can request
+varying levels of strictness for their databases, such that it should be
+very easy for them to declare they only want to allow DHRelations; then
+again, the existing facilities already let them ... the declared db type.
+- This should simplify Muldis D in some respects, because we would be
+removing a language limitation that is more arbitrary than essential.
+- Now this change might seem to complicate certain database design or
+implementation issues, in that the general case of a relvar TVA/RVA would
+no longer be refactorable into a single other relvar per TVA/RVA, if
+different relvar tuples might have tup/rel attrs of different headings;
+each possible one would then have to become a separate relvar, or otherwise
+such refactor just wouldn't be possible.
+- However, in practice we already face this problem by our TTM-blessed
+support for scalar union types in relvar attributes, generalized to
+"Scalar" typed relvar attributes, should we, say, wish to unpack such
+scalar values into relvars, or implement as such behind the scenes in some
+engine that just likes to have simple homogeneous scalar relvar attributes.
+And so, allowing it for TVAs/RVAs just makes things more consistent.
+- I also don't see any logical issues with this support, in general.
+- This change also means that a "constants" db *doesn't* have to be DH.
+- In theory we could also take a next step and have Muldis D support
+"databases" that aren't relational at all, as an option, but rather let the
+"database" value be of any type at all.
+- Or to keep things more manageable, we still require that a "database" is
+some kind of "Tuple", but then it is no further restricted than that.
+That is, we require "Tuple" so it can be overloaded as a namespace for
+types and routines etc, including the restriction on when type/routine
+namespaces and attributes may be equal or not, if the current language
+grammar even requires them to align, but we will assume that it does.
+- So then, the system-defined type "Database" simply goes away, as "the
+database" is just a "Tuple", but we can make it very easy for a user to
+define a "Relational_Database"/etc subtype with whatever level of
+restrictiveness they desire.
+- And then, one can also more directly represent a SQL database in Muldis D
+(or some other non-relational db/storage du jour), not just by using the
+appropriate packages that define DBMS-specific types/routines, but by also
+declaring that "the database" is of some DBMS-specific/allowed type, such
+as, that all database tuple attrs are "Table" typed rather than "Relation".
+
 * Make Muldis D self-hosted.  Have it support parsing PTMD_STD code using a
 read-only operator into trees of scalars that are the new native Muldis D
 code, which the older system catalog is just views on.  Make it support
