@@ -1031,6 +1031,9 @@ I would expect global-params to remain separate from the parameters-tuple.
 * Recheck my terminology.  Perhaps "consume" is better than "compose" when
 referring to what one does with roles/mixins.  See Perl 5.15.3 perlootut.
 
+* Perl 5.16.0 introduces the __SUB__ token, which is a ref to the current
+subroutine, so Perl now has a direct counterpart to rtn(), which is nice.
+
 * Bring back, with enhancements, the "transition constraint" support
 removed in version 0.140.0 as I changed my mind again on its utility.
 As per my comments to the TTM list on 2011 Oct 16, I consider the primary
@@ -1079,8 +1082,17 @@ Theoretically we could also make Bag a subtype of Dict where its "value"
 is a positive integer; so then "key" is its payload rather than "value";
 this then would also be like Perl 6 and it might be worth it.
 But if we do this then we'll have to relook at the set membership/etc ops.
+Maybe while we're at it, rename Set's attribute to "key" for consistency.
 - Note: The Postgres hstore type may be relevant for a nested one of these,
 where I think the keys and values are all text.
+- Note: The "hyper" meta-op would be particularly for Dict then, such that
+when we say "foo >>op<< bar", then foo/bar are both Dict and the result is
+also a Dict, where "key" match the "key" of both inputs and "value" is the
+result of applying "op" pairwise to the "value" of foo/bar.  This would
+just work for Array and Bag ostensibly.  What to do when
+"foo^{key} != bar^{key}" is an open question though; the simplest answer is
+that the result just has the set-intersection of the input keys, like a
+join would produce; or we might want to define some "outer" version?.
 
 * NEXT PRIORITY...
 Reduce the general options for concrete value literals to have just the
@@ -1432,6 +1444,19 @@ determine correct order of operations.  In response Andrew said "That might
 be possible in 9.1 with writeable CTEs, but I happen to be on 9.0 with this
 client, and the constraints are not deferrable."
 
+* Note that Postgres databases default to SQL_ASCII (7-bit) encoding when
+an explicit encoding (such as UTF8) is not specified upon their creation.
+"The SQL_ASCII setting behaves considerably differently from the other
+settings. When the server character set is SQL_ASCII, the server interprets
+byte values 0-127 according to the ASCII standard, while byte values
+128-255 are taken as uninterpreted characters. No encoding conversion will
+be done when the setting is SQL_ASCII. Thus, this setting is not so much a
+declaration that a specific encoding is in use, as a declaration of
+ignorance about the encoding. In most cases, if you are working with any
+non-ASCII data, it is unwise to use the SQL_ASCII setting because
+PostgreSQL will be unable to help you by converting or validating non-ASCII
+characters."
+
 * ALSO...
 Use colons to separate any kind of heading/body pairs, both materials and
 values.  Take Relation now "@:[...]:{...}" as example to follow.
@@ -1702,6 +1727,9 @@ client is also a message.  This also generalizes the stateful/stateless
 thing and streaming/cursor or not thing.  Now also tied into this is
 stimulus-response-rules, in that all stimuli are messages.  The kernal can
 also initiate messages, such as this depot did mount, or whatever.
+
+* Note that Oracle's autonomous transaction support looks like this:
+    create procedure foo as pragma autonomous_transaction; begin ... end;
 
 * Consider relaxing the restriction of how much of a depot must be defined
 just in terms of itself.  So, for example, only a depot's data types (and
@@ -2070,6 +2098,10 @@ own expression/etc node kind and not just a function ... though they kind
 of are already as an alternative; also, variable assignment would have to
 be a special node kind and not just an updater; in both cases, to save
 their definitions from being mutually recursive.
+
+Note that the first relational database system was the IBM IS/1, in 1970-2,
+and the second one was IBM Peterlee Relational Test Vehicle (PRTV); the
+latter's command language was Information Systems Base Language (ISBL).
 
 ----------
 
