@@ -267,6 +267,70 @@ clarifies what "setting" means in Perl 6, and there can be more than one of
 them at a time that are layered; it does not mean "language core"; Perl 6
 has the separate CORE concept, so staying with Core seems approp for MD.
 
+* Remove TTM concept/language of "possrep" from Muldis D spec, at least in
+the way it is presently used.  Instead, each scalar base type is simply
+defined in terms of exactly 1 list of components/attributes, which doesn't
+have a name (or corresponds to the empty string).  Also, the idea of
+"possible representation" actually applies to the whole language, including
+nonscalar types, because the DBMS can still choose any physical
+representation it wants; its not like scalars are special there to reserve
+the term "possrep".  Additional "possrep" are just syntactic sugar for
+wrapper routines or such or pseudovariables.
+
+* Quoth Anthony Clayden: "Specialisation by constraint is the defining
+characteristic of the TTM model".
+
+* Don't use the term "scalar" to refer to things that are neither relations
+nor tuples as TTM does; conversely don't use a term to refer to things that
+are either relations or tuples but not something else; just say "tuples or
+relations" when that is meant, which wouldn't be terribly often, and
+similarly "values/types that are neither tuples nor relations" when meant.
+
+* Change Array/Set/Bag/Dict/Interval/Maybe/etc so that they are no longer
+relation subtypes but rather are disjoint.  Generally eliminate any
+system-defined tuple or relation subtypes, leaving all such to users.
+This should help eliminate a number of gotchas from Muldis D that could
+trip users up, such as users sometimes having to know the names of the
+special relation attributes despite those being hidden in practice.
+Also we would not confuse semantics; eg, tuples and relations
+have predicates but sets/arrays/etc do not.
+Emphasize the fact that Arrays are quite different from all the those other
+types, in that they have a dense keyspace starting at a fixed point, where
+the others are all sparse; eg, never make Array a subtype of Dict or such.
+Similarly, consider defining Array directly in terms of List rather than
+say in terms of a "scalar" with a Relation component like with Dict/etc,
+because List can be used natively; but leave unordered types as over rels.
+So Array's like, but disjoint from, String; list of anything versus of int.
+The various details need more thought.
+
+* Have the 10 Relation subtypes
+"Relation.{K0,K0C0,K0C1,D0,D0C0,D0C1,D1,D1K0,D1C0,D1C1}" where "D" means
+"degree", "C" means "cardinality", "K" means "degree of minimal key".
+Having D0 implies K0 but K0 does not imply D0; also, K0 bi-implies C0,C1.
+And thus we have names for all the relations that can be used unambiguously
+without any need to know their attribute names for special purposes.
+The D0s are the boolean or identity values for join.
+The K0s (and D0s) are the "maybe" types with C0->"nothing", C1->"just";
+but there is no single "nothing" value anymore, rather an infinity;
+for that matter, redefine the type "Maybe" as an alias for "K0"; despite
+the heritage, we may want to ditch the "nothing"/"just" names actually.
+The D1s are convenient in that one may reference their attribute
+unambiguously without knowing its name.
+
+* In an attribute list, the first of these is a shorthand for the others,
+or specifically for the second, but the third has the same semantics:
+    maybe foo : Bar;
+    foo : maybe_type { foo : Bar };
+    foo : relation_type { foo : Bar; primary_key {} };
+... but while the first can only do D1K0, the latter can do K0 in general:
+    foo : maybe_type { x : Bar; y : Baz };
+    foo : relation_type { x : Bar; y : Baz ; primary_key {} };
+So the new maybe is a more workable/flexible way of handling nullability.
+Actually, the "maybe foo : Bar" reads interestingly because it might
+suggest to some readers that having the "foo" at all is optional;
+however the latter thought is not one that we want to encourage per se.
+Remember, "maybe" and "set"/etc are now completely disjoint.
+
 * Make a depot/etc have 3 main payload sections (each of them being a
 "Database") rather than 2; where we had "catalog" and "data" before, now
 add "constants"; names of the 3 subject to change.
