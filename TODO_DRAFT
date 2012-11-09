@@ -25,6 +25,8 @@ OF THAT TO TRUNK WHEN READY TO DO A SERIES OF MORE ORDERLY RELEAESES.
 - I SUPPOSE PROBABLY BEST TO DO THE BRANCH ON GITHUB'S END?  RESEARCH!
 - I KNOW I WANT TO SEE THE BRANCH AND TRUNK SAME TIME BOTH THERE AND HERE.
 
+* "ideomatic" - "Peculiar to or characteristic of a given language."
+
 * Create another Git repository and release series or three that just
 contain Muldis D code, these being analagous to Larry Wall's STD.pm / Perl
 6 grammar written in Perl 6, and the Perl 6 Prelude and standard libraries
@@ -317,6 +319,10 @@ the heritage, we may want to ditch the "nothing"/"just" names actually.
 The D1s are convenient in that one may reference their attribute
 unambiguously without knowing its name.
 
+* All the selector syntax specific to Set/Array/Bag/etc would produce
+non-relation values, as if it did, the attr names would be implicit.
+But Set-taking functions should also take any D1 relation as an alternate.
+
 * In an attribute list, the first of these is a shorthand for the others,
 or specifically for the second, but the third has the same semantics:
     maybe foo : Bar;
@@ -330,6 +336,19 @@ Actually, the "maybe foo : Bar" reads interestingly because it might
 suggest to some readers that having the "foo" at all is optional;
 however the latter thought is not one that we want to encourage per se.
 Remember, "maybe" and "set"/etc are now completely disjoint.
+
+* Operators like "//" that deal with maybes need to be closed, where both
+arguments must be maybes and the result is a maybe.  This means that the
+final/default value in a //-chain must be a just, eg:
+  x // y // :@{{3}}
+... where each arg can be any zoo relation, and :@{{3}} means :@{{0:3}}.
+And so the //-chain is then followed by attr extraction when that's wanted,
+eg: "attr(x // y // :@{{3}})" for D1K0s or "(%(x // y // :@{{3}})).foo" or
+something for K0s in general where we must name the attr.
+Note that a // defined this way can't have an identity value since multiple
+values would qualify for the semantics, same as with bitwise-or.
+Note that overloading //, eg to work with some "special" value to mean
+null, can only accept non-relation args in practice so not to overlap.
 
 * Make a depot/etc have 3 main payload sections (each of them being a
 "Database") rather than 2; where we had "catalog" and "data" before, now
@@ -786,6 +805,56 @@ and it is easy to auto-extend the system with support for new languages,
 simply by somewhere "using" a package that decl an impl of the virt func;
 but a main importance is that the Unicode vs not thing is no longer a
 complicating factor for users.
+
+* The main program of a Muldis D script runner could look like this;
+such as that should be the shim through which we run the parser from the
+start, which builds/runs its own Perl equivalent:
+
+    Muldis_D:PT_STD:ASCII:"http://muldis.com":0;
+
+    package App_Runner ::= App_Runner:"http://example.com":0
+    {
+        using Muldis_D          ::= Muldis_D:"http://muldis.com":0;
+        using Muldis_D::Runtime ::= Muldis_D::Runtime:"http://muldis.com":0;
+        using Muldis_D::PT_STD  ::= Muldis_D::PT_STD:"http://muldis.com":0;
+
+        searching [Muldis_D,Muldis_D::Runtime,Muldis_D::PT_STD,App_Runner];
+
+        bootstrap ::= stimulus_response_rule
+            when loaded invoke main;
+
+    /*************************************************************************/
+
+    main ::= procedure () :
+    [
+        /* Read the PT_STD source code from STDIN until end-of-file.
+           Today we'll just assume that it defines a "main program" package. */
+        var input_source : Text;
+        read_Text_file( &input_source );
+
+        /* Validate the input source code and exit if bad syntax. */
+        if not (input_source isa $PT_STD_Package_Source_Code_ASCII) then
+        [
+            write_Text_line( 'Sorry, that source code has a syntax error.' );
+            leave;
+        ];
+
+        /* Parse the input source code into a Package-defining AST value.
+           This AST is the "native source code" of Muldis D. */
+        var parsed : Package;
+        parsed := Package_from_Source_Code( input_source );
+
+        /* Load the Package-defining AST into the system catalog.
+           Also allow its "main program" to run automatically. */
+        load_Package( parsed, allow_auto_run : :$True );
+
+        /* When the input "main program" ends, so do we. */
+    ];
+
+    /*************************************************************************/
+
+    };
+    /* package App_Runner */
 
 * To keep things simpler, don't have a distinct "value" parser node but
 rather just use "expr" instead; when we only want a "value" we can then
@@ -1501,6 +1570,12 @@ or this feature would be helpful in implementing Muldis D features
 like certain kinds of relational assignment involving self joined with foo.
 As of Postgres 9.1 the UPDATE also supports the WITH clause.
 
+* Note, http://facility9.com/2011/12/ten-reasons-postgresql-is-better-than-sql-server/
+which gives some interesting details or explanations of Postgres (per 9.1)
+features, including use cases for writeable CTEs, and compares with SQL
+Server; a response also lists some of Postgres' weaknesses in comparison.
+Also, re unlogged tables, and serializable transactions.
+
 * On 2011 Oct 17 I made a comment on Andrew Dunstan's blog that in the
 context of foreign keys, making changes to parent and child
 tables simultaneously in a single statement is much better than trying to
@@ -1794,6 +1869,12 @@ also initiate messages, such as this depot did mount, or whatever.
 
 * Note that Oracle's autonomous transaction support looks like this:
     create procedure foo as pragma autonomous_transaction; begin ... end;
+
+* Quoth http://ledgersmbdev.blogspot.ca/2012/09/or-modelling-interlude-postgresql-vs.html :
+"A simple description of the difference [between MySQL and Postgres] is:
+MySQL is what you get when application developers build an RDBMS.
+PostgreSQL is what you get when database developers build an application
+development platform."
 
 * Consider relaxing the restriction of how much of a depot must be defined
 just in terms of itself.  So, for example, only a depot's data types (and
