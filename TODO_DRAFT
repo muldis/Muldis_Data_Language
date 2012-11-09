@@ -806,19 +806,30 @@ simply by somewhere "using" a package that decl an impl of the virt func;
 but a main importance is that the Unicode vs not thing is no longer a
 complicating factor for users.
 
-* The main program of a Muldis D script runner could look like this;
-such as that should be the shim through which we run the parser from the
-start, which builds/runs its own Perl equivalent:
+* Here is the main program of a possible Muldis D cross-compiler to Perl 5
+written in Muldis D; it reads PT_STD Muldis D code from STDIN and writes
+equivalent Perl 5 code to STDOUT.  One of the first goals of implementing
+Muldis D should be to empower this being able to compile itself. 
+Presumably all of its dependencies would start out as shims that are
+written directly in Perl, which are gradually converted.  Of course, the
+following would initially also have to be written directly in Perl too, to
+bootstrap. This is a static compiler, which by default would succeed in
+producing valid Perl 5 code just as long as the input Muldis D code is
+syntactically correct (and defines a Muldis D package), in which case its
+output would compile successfully in Perl 5.  Generally all errors which
+would not be caught in that process are of the nature of invoking or
+referencing some entity that doesn't exist or is of a mismatched type etc,
+and then by default those would produce errors when running the Perl code.
 
     Muldis_D:PT_STD:ASCII:"http://muldis.com":0;
 
-    package App_Runner ::= App_Runner:"http://example.com":0
+    package perl5_from_mdpt ::= perl5_from_mdpt:"http://example.com":0
     {
-        using Muldis_D          ::= Muldis_D:"http://muldis.com":0;
-        using Muldis_D::Runtime ::= Muldis_D::Runtime:"http://muldis.com":0;
-        using Muldis_D::PT_STD  ::= Muldis_D::PT_STD:"http://muldis.com":0;
+        using Muldis_D         ::= Muldis_D:"http://muldis.com":0;
+        using Muldis_D::PT_STD ::= Muldis_D::PT_STD:"http://muldis.com":0;
+        using Muldis_D::Perl5  ::= Muldis_D::Perl5:"http://muldis.com":0;
 
-        searching [Muldis_D,Muldis_D::Runtime,Muldis_D::PT_STD,App_Runner];
+        searching [Muldis_D,Muldis_D::PT_STD,Muldis_D::Perl5,perl5_from_mdpt];
 
         bootstrap ::= stimulus_response_rule
             when loaded invoke main;
@@ -828,33 +839,36 @@ start, which builds/runs its own Perl equivalent:
     main ::= procedure () :
     [
         /* Read the PT_STD source code from STDIN until end-of-file.
-           Today we'll just assume that it defines a "main program" package. */
+           Today we'll just assume that it defines a package. */
         var input_source : Text;
         read_Text_file( &input_source );
 
-        /* Validate the input source code and exit if bad syntax. */
+        /* Validate the input source code and exit if bad PT_STD syntax or
+           it doesn't define a package. */
         if not (input_source isa $PT_STD_Package_Source_Code_ASCII) then
         [
-            write_Text_line( 'Sorry, that source code has a syntax error.' );
+            write_STDERR_Text_line( 'Sorry, that source code has a syntax error.' );
             leave;
         ];
 
         /* Parse the input source code into a Package-defining AST value.
            This AST is the "native source code" of Muldis D. */
-        var parsed : Package;
-        parsed := Package_from_Source_Code( input_source );
+        var package_AST : Package;
+        package_AST := Package_from_Source_Code( input_source );
 
-        /* Load the Package-defining AST into the system catalog.
-           Also allow its "main program" to run automatically. */
-        load_Package( parsed, allow_auto_run : :$True );
+        /* Compile the Package-defining AST into Perl 5 source code which
+           when run has the same semantics. */
+        var output_Perl : Text;
+        output_Perl := Perl5_from_Package( package_AST );
 
-        /* When the input "main program" ends, so do we. */
+        /* Write that Perl to STDOUT. */
+        write_Text_file( output_Perl );
     ];
 
     /*************************************************************************/
 
     };
-    /* package App_Runner */
+    /* package perl5_from_mdpt */
 
 * To keep things simpler, don't have a distinct "value" parser node but
 rather just use "expr" instead; when we only want a "value" we can then
