@@ -82,6 +82,15 @@ technology -- General-Purpose Datatypes (GPD)" which could be very useful.
 
 * Add mention of http://rubydoc.info/github/blambeau/alf/master/Alf .
 
+* Apparently Windows 8 extends the use of shared pages to allow any pages
+that just happen to be identical to be shared. It periodically sweeps
+through all the memory in the system, identifies pages that have the same
+contents, makes them shared, and frees up some physical memory. If one
+process should then try to modify the newly shared page, Windows uses COW.
+http://arstechnica.com/information-technology/2012/10/better-on-the-inside-under-the-hood-of-windows-8/3/
+So my plan to do similar in Muldis D impls (when = is invoked) does not
+seem that unprecedented, though in my case its both memory+performance.
+
 * NEXT PRIORITY ...
 Rename Muldis::D::Dialect::PTMD_STD to Muldis::D::PTMD_STD.
 Rename Muldis::D::Dialect::HDMD_Perl[6|5]_STD to remove the ::Dialect.
@@ -254,6 +263,14 @@ correct behavior or a rejection by an implementation from version diffs.
 And savvy people that go around the internet can more easily spot bad or
 outdated code examples in tutorials or script archives because they'll just
 have an old dependency version specifier and not mention newer versions.
+
+* Lets say that language name declarations are mandatory in code files but
+are optional in ad-hoc code read from a shell or fed from a host language,
+because in the non-file cases the shell context or host language could
+previously/separately set the context for what language is expected.  In
+the case of a shell, lets just say that a language name declaration is
+written just like a shell statement or command; we know its that kind of
+command if it looks like a language declaration, as no normal code would.
 
 * See also Jesse Vincent's "Perl 5.16 and beyond" talk, where Perl 5 core
 policy or Jesse's proposals for such are discussed that when you say "use
@@ -1518,6 +1535,27 @@ prefix ops, namely {not,so} (there might be more).
 cases such as "not" and "so"; all other bareword alphanum ops are infix.
 - The only infix syntax taking more than 2 inputs is special syntax with
 its own kinds of parse nodes, not op calls, such as ??!! and if-then-else.
+
+* We have just a small number of precedence levels, here from highest to
+lowest, loosely speaking:
+  - base literals or selectors or delimited whatevers or foo() etc
+  - general symbolic prefix (tilde-quotes-or-bareword make no difference)
+  - general symbolic infix (tilde no diff)
+  - general alpha prefix (tilde no diff)
+  - general alpha infix (tilde no diff)
+  - general other prefix (tilde-quoted only option, can't be bareword)
+  - general other infix ("other" if any chars outside symbol+alpha set)
+  - short-circuiting / ??!! / if-then-else / given-when-def
+  - assignment := (base statement-only)
+  - binding infix ::= (binds to statement if possible, else expression)
+
+* Pegex grammar should work at some level midway between a pure tokenizer
+and the resulting AST.  It should form trees where easy to do without
+non-trivial lookahead.  In particular, sequences of barewords and etc where
+interpretation of what is a pre/infix op and what is a var/expr/etc depends
+on the number of barewords and what they're next to, should be output as a
+flat list and no attempt to form a tree in the grammar.  Also, the Pegex
+grammar perhaps should capture everything, including ws, just in case.
 
 * IDEA: Add a concept kind of like a distinct depot/package catalog but it
 is system-generated and not directly editable by the user; in here would
