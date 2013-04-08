@@ -1642,6 +1642,8 @@ we want is spelled out, or alternately just the default value itself.
 At the lowest, most primitive levels of Muldis D, everything is integers or
 sequences of integers; data types in general are just abstractions of this.
 
+I<The following is out of date and needs updating.>
+
 The fundamental Muldis D type system has 3 compositional abstraction
 levels, which are, from lowest to highest: I<atomic value>,
 I<nonnamed-element collection>, I<named-element collection>.
@@ -1682,14 +1684,101 @@ indicates how to interpret the remainder of the C<Structure> elements; the
 I<structure kind> is an C<Int>; all of the remaining elements are
 collectively called the I<payload elements>.
 
+...
+
+Every C<Structure> is a C<List> having exactly 2 elements, the first being
+the I<structure kind> and the second being the I<payload>.
+
 This table says which I<structure kind> values indicate which of the 5
 types:
 
-    1 | String
-    2 | Tuple
-    3 | Relation
-    4 | ScalarWP
-    5 | External
+     1 | String     | ideas are :+[expr,...] and :~[expr,...] and Blob-inspired versions like 0x[lit,...]/etc
+     2 | Array      | [expr,...] or ([expr,...]) to disambiguate from procedure block
+     3 | Boolean    | false or true - term keywords
+     4 | Heading    | :~{lit,...} - T/R heading as userland value - arg for project/etc
+     5 | Renaming   | :<{lit<-lit,...} - use in routine predicate defs a lot to normalize params, arg for rename
+     6 | Tuple      | :%{lit:expr,...}
+     7 | Relation   | :@{{lit:expr,...},...} or :@[lit,...]:{[expr,...],...}
+     8 | Identifier | $lit etc - also special syntax :*expr will produce Global_Identifier from Identifier expr
+     9 | Capsule    | expr->expr - that is Global_Identifier->Tuple eg :*$Date=>:%{year:500,month:4,day:24}
+    10 | Stream     | stream expr - prefix keyword; foo is an Integer
+    11 | External   | external expr - prefix keyword; foo is a Universal
+
+Generic List syntax:
+
+    List | :|[...]
+
+Subtypes of Capsule:
+
+    Set      | {expr,...} or ({expr,...}) to disambiguate within recipe block
+    Bag      | :+{expr,...}
+    Interval | expr..expr etc
+
+These are the I<payload> structures for those:
+
+    String : List[0..N] of Integer
+    Array  : List[0..N] of Universal
+    Boolean : Integer in 0..1
+    Heading : List[M in 0..N] of String-payload - elems must be sorted
+    Renaming : List[2] :
+        0 : map-to : Heading-payload
+        1 : map-from : Heading-payload
+    Tuple  : List[2] :
+        0 : heading : Heading-payload
+        1 : body : List[M] of Universal - elems correspond to heading
+    Relation : List[2] :
+        0 : heading : Heading-payload
+        1 : List[0..P] of same as Tuple body
+    Identifier : List[3] :
+        0 : kind : Integer in 1..3
+            1 : absolute
+            2 : relative
+            3 : search
+        1 : package name base : List[0..N] of String-payload - nonempty iff kind=1
+        2 : package name extensions : List[0..2] of String-payload - nonempty iff kind=1
+            0 : authority
+            1 : version number
+        3 : path beneath package : List[0..P] of String-payload
+        4 : relative starts K levels up : Integer in 0..J - nonzero iff kind=2
+        ==> proper subtype Global_Identifier
+            - kind must = 1
+            - package name base, extensions, path must all be fully-qualified
+                - these are the full declared name of the package actually
+                  linked in, not what was requested by users
+            - relative starts K must = 0
+    Capsule : List[2] :
+        0 : Identifier-payload
+        1 : Tuple-payload
+    Stream : Integer
+    External : Universal
+
+The C<Identifier> type in general represents every variety of name-chain
+identifier that can be present in Muldis D source code, from
+fully-qualified to partially-qualified to unqualified, and thus matches
+exactly what the user wrote, without context-based interpretation.
+
+At program runtime, some contexts require the C<Global_Identifier> subtype,
+the most fully-qualified possible version of an C<Identifier> in order to
+work properly.  One main context is the type name portion of a C<Capsule>,
+so that its values compare for equality properly in any package's routines
+no matter what package's routines the values were selected in.  The other
+main context is when for example a routine is declared in one package and
+invoked in another, so that any types or entities that I<it> invokes are
+still relative to its place of declaration.
+
+Typically in Muldis D code a special expression node must be wrapped around
+any C<Identifier> selector so that it is resolved to a C<Global_Identifier>
+in the appropriate context-based interpretation right where selected.
+
+B<TODO: THE ABOVE DOESN'T YET HANDLE ANONYMOUSLY DECLARED TYPES OR ROUTINES
+OR WHATEVER, IF WE WANT TO SUPPORT THAT.  IF SO, WE NEED TO ADD ANOTHER
+Identifier COMPONENT OR FEW TO INDICATE NAMED VS ANON ETC.
+RELATED TO THAT, DO WE WANT TO SUPPORT TREATING AT RUNTIME SEVERAL
+INDEPENDENTLY DEFINED Capsule TYPES AS BEING THE SAME TYPE AND THEIR VALUES
+COMPARE EQUAL; THEN WE WOULD NEED TO REMAP ALL AT RUNTIME AS IF EVERYTHING
+WAS THEN ANONYMOUS TYPES OR GENERATED NAMES ETC.>
+
+...
 
 Rules for determining whether two C<List> are identical are defined
 separately per each of the 5 C<Structure> subtypes; but two C<List> are

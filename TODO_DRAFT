@@ -120,7 +120,7 @@ concrete syntax of the official "Muldis D" language, and that what was the
 Perl dialects are now 2 full languages whose definitions are derived from
 the standard text-based one, and have their own versioning.
 - So, here are new examples of fully-qualified language declaration names:
-    Muldis_D:PT_STD:Unicode(6.1.0,UTF-8,canon):"http://muldis.com":0.149
+    Muldis_D:PT_STD:Unicode(6.2.0,UTF-8,canon):"http://muldis.com":0.149
     ['Muldis_D','HD_Perl5_STD','http://muldis.com','0']
     ['Muldis_D','HD_Perl6_STD','http://muldis.com','0']
 - Actually, we are best to split things up so that Muldis D code typically
@@ -263,6 +263,8 @@ correct behavior or a rejection by an implementation from version diffs.
 And savvy people that go around the internet can more easily spot bad or
 outdated code examples in tutorials or script archives because they'll just
 have an old dependency version specifier and not mention newer versions.
+
+* Consider use of the term "curator"/ed/ion/etc with respect to authorities.
 
 * Lets say that language name declarations are mandatory in code files but
 are optional in ad-hoc code read from a shell or fed from a host language,
@@ -1091,6 +1093,11 @@ including Postgres and Oracle.
 call it "storage space" or "storage pool" or "pool" etc.
 - See also the TTM list thread circa 2011 Nov 16, and "Fragmentation" of
 http://www.softwaregems.com.au/Documents/Sybase%20GEM%20Documents/ .
+- Note that Postgres tablespaces are actually not disposable; that is,
+losing one is significant damage to the whole database that takes some
+non-clean effort to recover from; so just saying you will put transient
+data in a tablespace on unreliable storage won't actually work
+(clearly this is a missing feature in Postgres).
 
 * NEXT PRIORITY...
 Rework routine headings/definitions, especially functions:
@@ -1928,6 +1935,12 @@ MySQL is what you get when application developers build an RDBMS.
 PostgreSQL is what you get when database developers build an application
 development platform."
 
+* For real work projects in the short term where one would conceivably use
+a Postgres enum, I should just use a "text check value in ('foo',...)"
+instead, as it is much easier to manage/change those types.  For example,
+if we want to temporarily add extra enum values outside normal range for
+testing so the system ignores those values, eg status_code='WASQ'.
+
 * Consider relaxing the restriction of how much of a depot must be defined
 just in terms of itself.  So, for example, only a depot's data types (and
 dbvar) must be defined wholly internally to the depot.  But any routines in
@@ -2093,7 +2106,7 @@ More plans pending.
 pervasive (though strictly optional), replace the "op_char_repertoire"
 pragma with a pragma that affects all non-quoted code in general, including
 all nonquoted (but not quoted) entity names.  The options would be, at
-least, the 3: ASCII, Unicode_6.1.0_canon, Unicode_6.1.0_compat.  There
+least, the 3: ASCII, Unicode_6.2.0_canon, Unicode_6.2.0_compat.  There
 would separately be options for each kind of quoted character string:
 quoted entity names, texts, comments; see later TODO item about this; as
 per that, all of these could be part of a single pragma.  A simpler
@@ -2970,11 +2983,11 @@ Example PTMD_STD grammar additions:
         all | text | name | cmnt
     <str_char_reper> ::=
           ASCII
-        | Unicode_6.1.0_canon
-        | Unicode_6.1.0_compat
+        | Unicode_6.2.0_canon
+        | Unicode_6.2.0_compat
 Example PTMD_STD code additions:
-    str_char_repertoire => { text => Unicode_6.1.0_canon,
-        name => Unicode_6.1.0_compat, cmnt => Unicode_6.1.0_compat },
+    str_char_repertoire => { text => Unicode_6.2.0_canon,
+        name => Unicode_6.2.0_compat, cmnt => Unicode_6.2.0_compat },
     str_char_repertoire => { all => ASCII },
 Of particular interest is the Unicode canonical vs compatibility, that is
 NFC|D vs NFKC|D; it is generally recommended such as by the Unicode
