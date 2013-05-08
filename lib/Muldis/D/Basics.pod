@@ -1699,8 +1699,8 @@ types:
      5 | Renaming   | :<{lit<-lit,...} - use in routine predicate defs a lot to normalize params, arg for rename
      6 | Tuple      | :%{lit:expr,...}
      7 | Relation   | :@{{lit:expr,...},...} or :@[lit,...]:{[expr,...],...}
-     8 | Identifier | $lit etc - also special syntax :*expr will produce Global_Identifier from Identifier expr
-     9 | Capsule    | expr->expr - that is Global_Identifier->Tuple eg :*$Date=>:%{year:500,month:4,day:24}
+     8 | Identifier | $lit etc - also special syntax :*expr will produce Reference from Identifier expr
+     9 | Capsule    | expr->expr - that is Reference->Tuple eg :*$Date=>:%{year:500,month:4,day:24}
     10 | Stream     | stream expr - prefix keyword; foo is an Integer
     11 | External   | external expr - prefix keyword; foo is a Universal
 
@@ -1740,7 +1740,7 @@ These are the I<payload> structures for those:
             1 : version number
         3 : path beneath package : List[0..P] of String-payload
         4 : relative starts K levels up : Integer in 0..J - nonzero iff kind=2
-        ==> proper subtype Global_Identifier
+        ==> proper subtype Reference (aka "Global Identifier")
             - kind must = 1
             - package name base, extensions, path must all be fully-qualified
                 - these are the full declared name of the package actually
@@ -1757,17 +1757,20 @@ identifier that can be present in Muldis D source code, from
 fully-qualified to partially-qualified to unqualified, and thus matches
 exactly what the user wrote, without context-based interpretation.
 
-At program runtime, some contexts require the C<Global_Identifier> subtype,
+At program runtime, some contexts require the C<Reference> subtype,
 the most fully-qualified possible version of an C<Identifier> in order to
 work properly.  One main context is the type name portion of a C<Capsule>,
 so that its values compare for equality properly in any package's routines
 no matter what package's routines the values were selected in.  The other
 main context is when for example a routine is declared in one package and
 invoked in another, so that any types or entities that I<it> invokes are
-still relative to its place of declaration.
+still relative to its place of declaration.  Conceptually this could be
+called "Global_Identifier" but it was expected that users would be
+declaring signatures with this type frequently, much more often than the
+more generic "Identifier", and so a shorter type name was chosen.
 
 Typically in Muldis D code a special expression node must be wrapped around
-any C<Identifier> selector so that it is resolved to a C<Global_Identifier>
+any C<Identifier> selector so that it is resolved to a C<Reference>
 in the appropriate context-based interpretation right where selected.
 
 B<TODO: THE ABOVE DOESN'T YET HANDLE ANONYMOUSLY DECLARED TYPES OR ROUTINES
