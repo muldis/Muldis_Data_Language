@@ -25,6 +25,14 @@ OF THAT TO TRUNK WHEN READY TO DO A SERIES OF MORE ORDERLY RELEAESES.
 - I SUPPOSE PROBABLY BEST TO DO THE BRANCH ON GITHUB'S END?  RESEARCH!
 - I KNOW I WANT TO SEE THE BRANCH AND TRUNK SAME TIME BOTH THERE AND HERE.
 
+* Update ordering type per change to Perl 6 (instead of [Inc|Dec]rease):
+https://github.com/perl6/specs/commit/5e2c4205
+"These operators compare their operands using numeric, string, or C<eqv>
+semantics respectively, and if the left operand is smaller, the same,
+or larger than the right operator, return respectively C<Order::Less>,
+C<Order::Same>, or C<Order::More> (which numerify to -1, 0, or +1,
+the customary values in most C-derived languages)."
+
 * "ideomatic" - "Peculiar to or characteristic of a given language."
 
 * Create another Git repository and release series or three that just
@@ -77,10 +85,45 @@ as "Muldis-D" soon wouldn't, and also specify a common Perl 5 API for both
     - Syntax changes mainly re pass/def tup literally or not ala Perl 6.
 4.  ...
 
+* Add "is deprecated" flags to materials so that definers can say in
+advance that something is going away in future versions before it actually
+does, and users can be warned.  I think Perl 6 or Rakudo has it for
+subroutines and such.
+
 * Add references to or adoptions of ISO/IEC 11404:2007(E) "Information
 technology -- General-Purpose Datatypes (GPD)" which could be very useful.
 
 * Add mention of http://rubydoc.info/github/blambeau/alf/master/Alf .
+
+* Actually the next point is obsolete; I'm renaming List to Universal and
+redefining Integer in terms of it.  Except that Natural (0..N) is the new
+base type, represented by a Universal of N elements where each element is
+the Universal with zero elements.  We'll do full integer in terms of that.
+So eg, boolean false is [], boolean true is [[]], naturals are [[],[...]]
+(zero is [[],[]], one is [[],[[]]], two is [[],[[],[]]]), generic arrays
+are eg [[[]],[...]] (empty array is [[[]],[]] and so on).
+
+* Revamp the low-level type system to do something like certain maths or
+programming languages, redefining Universal to be a concrete type of its
+own where each value is a generic set, and each set element is also a
+Universal value.  Redefine Integer and List in terms of being a subset
+type of Universal.  Maybe promote a few other types to be direct subtypes
+of Universal rather than of List, eg have 2-element Universal instead of
+2-element List.  Also promote boolean more so that False is {} and True is
+{{}} and everything else is some more complicated nested set value.
+In theory then ALL of the built-in functions could have defined bodies,
+including the eg "do for this array" etc ... or those might be replaced
+with set related ones eg is this member in the set or whatever.
+This can also simplify a lot, such that canonicalization of values no
+longer requires list elements to be sorted, typically, and also equality
+tests can just say, does the set contain this value etc.
+Fundamental ops would be eg, is_empty_set, is_value_in_set,
+add_value_to_set, remove_value_from_set, get_value_from_set (enumerate).
+
+* See http://www.sqlite.org/lang_savepoint.html ; apparently SQL savepoints
+are already a generalization of "transaction" that can be nested and don't
+have to require a parent "transaction" to be active; the first "savepoint"
+could take that role itself; this is a lot like my design plans actually.
 
 * Apparently Windows 8 extends the use of shared pages to allow any pages
 that just happen to be identical to be shared. It periodically sweeps
@@ -90,6 +133,10 @@ process should then try to modify the newly shared page, Windows uses COW.
 http://arstechnica.com/information-technology/2012/10/better-on-the-inside-under-the-hood-of-windows-8/3/
 So my plan to do similar in Muldis D impls (when = is invoked) does not
 seem that unprecedented, though in my case its both memory+performance.
+
+* PostgreSQL's model about transaction ids, and that it has special {1..2}
+reserved values may be useful in my design.
+http://www.depesz.com/2013/12/06/what-does-fix-vacuums-tests-to-see-whether-it-can-update-relfrozenxid-really-mean/
 
 * NEXT PRIORITY ...
 Rename Muldis::D::Dialect::PTMD_STD to Muldis::D::PTMD_STD.
@@ -1422,6 +1469,14 @@ Maybe a new infix-op-bind-like syntax will fit the bill for association.
 Also make blank code lines or visual dividing lines recordable in syscat.
 See also Postgres "COMMENT ON ..." syntax.
 
+* Note: Postgres $$...$$ delimiters are actually general string delimiters
+and can be used anywhere '...' are, not just function definitions.  They
+also generalize to heredocs, eg, $foo$...$foo$ so maybe PT_STD should
+support this kind of thing too, maybe.  For that matter, I should have a
+function that takes a string as input and outputs some delimiter suitable
+for quoting it without escapes because it doesn't occur in the string.
+This, as well as other escaping functions, would be used by a code gen.
+
 * Don't use any quote-like characters for delimiting code comments after
 all, but instead use nonidentical multi-symbolic-character delimiting
 tokens, such as a "/* */" pair as in C/etc.  The tokens would be ones not
@@ -1634,6 +1689,13 @@ which gives some interesting details or explanations of Postgres (per 9.1)
 features, including use cases for writeable CTEs, and compares with SQL
 Server; a response also lists some of Postgres' weaknesses in comparison.
 Also, re unlogged tables, and serializable transactions.
+
+* Note, see http://en.wikipedia.org/wiki/Vector_clock and such things.
+
+* Note that in Postgres, db encoding SQL_ASCII just means text has no
+encoding and Postgres just treats it as bytes, so any values can be stored.
+Other encoding choices are basically constraints to ensure your
+data is valid according to that encoding.
 
 * On 2011 Oct 17 I made a comment on Andrew Dunstan's blog that in the
 context of foreign keys, making changes to parent and child
