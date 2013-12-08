@@ -95,6 +95,7 @@ and various SQL implementations (see the L<Muldis::D::SeeAlso>
 file).  It also appears in retrospect that Muldis D has some designs in
 common with FoxPro or xBase, and with the Ada and Lua languages.  The
 newer L<C'Dent|http://cdent.org/> language has some similarities as well.
+Most recently Lisp became a larger influence.
 
 In any event, the Muldis D documentation will be focusing mainly on how
 Muldis D itself works, and will spend little time in providing rationale;
