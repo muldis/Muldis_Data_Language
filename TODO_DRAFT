@@ -25,6 +25,15 @@ OF THAT TO TRUNK WHEN READY TO DO A SERIES OF MORE ORDERLY RELEAESES.
 - I SUPPOSE PROBABLY BEST TO DO THE BRANCH ON GITHUB'S END?  RESEARCH!
 - I KNOW I WANT TO SEE THE BRANCH AND TRUNK SAME TIME BOTH THERE AND HERE.
 
+* It must be mandatory for each grouping () paren pair in an expression to
+have a sub-expression which is not explicitly named with ::= because that
+is the root sub-expression of the grouping () ... or alternately we change
+the definition of ["" ::=] to simply indicate which sub-expression in a
+grouping () is its root; but then we actually should have a keyword,
+and maybe "<--" could be that keyword ... the keyword would be optional
+and the simple absense of leading ::= from one sub-expr marks it as main;
+but if all sub-exprs are named then the keyword is mandatory.
+
 * Update ordering type per change to Perl 6 (instead of [Inc|Dec]rease):
 https://github.com/perl6/specs/commit/5e2c4205
 "These operators compare their operands using numeric, string, or C<eqv>
@@ -34,6 +43,17 @@ C<Order::Same>, or C<Order::More> (which numerify to -1, 0, or +1,
 the customary values in most C-derived languages)."
 
 * "ideomatic" - "Peculiar to or characteristic of a given language."
+
+* Note the following change in Perl 5.18.0; I should do the same in the STD
+parser, that is treat all 11 of the same characters as white space such
+that literal occurrences of said are treated as equivalent to a SPACE etc.
+"When a regular expression pattern is compiled with /x, Perl treats 6
+characters as white space to ignore, such as SPACE and TAB. However,
+Unicode recommends 11 characters be treated thusly. We will conform with
+this in a future Perl version. In the meantime, use of any of the missing
+characters will raise a deprecation warning, unless turned off.
+The five characters are: U+0085 NEXT LINE U+200E LEFT-TO-RIGHT MARK
+U+200F RIGHT-TO-LEFT MARK U+2028 LINE SEPARATOR U+2029 PARAGRAPH SEPARATOR"
 
 * Create another Git repository and release series or three that just
 contain Muldis D code, these being analagous to Larry Wall's STD.pm / Perl
@@ -94,31 +114,6 @@ subroutines and such.
 technology -- General-Purpose Datatypes (GPD)" which could be very useful.
 
 * Add mention of http://rubydoc.info/github/blambeau/alf/master/Alf .
-
-* Actually the next point is obsolete; I'm renaming List to Universal and
-redefining Integer in terms of it.  Except that Natural (0..N) is the new
-base type, represented by a Universal of N elements where each element is
-the Universal with zero elements.  We'll do full integer in terms of that.
-So eg, boolean false is [], boolean true is [[]], naturals are [[],[...]]
-(zero is [[],[]], one is [[],[[]]], two is [[],[[],[]]]), generic arrays
-are eg [[[]],[...]] (empty array is [[[]],[]] and so on).
-
-* Revamp the low-level type system to do something like certain maths or
-programming languages, redefining Universal to be a concrete type of its
-own where each value is a generic set, and each set element is also a
-Universal value.  Redefine Integer and List in terms of being a subset
-type of Universal.  Maybe promote a few other types to be direct subtypes
-of Universal rather than of List, eg have 2-element Universal instead of
-2-element List.  Also promote boolean more so that False is {} and True is
-{{}} and everything else is some more complicated nested set value.
-In theory then ALL of the built-in functions could have defined bodies,
-including the eg "do for this array" etc ... or those might be replaced
-with set related ones eg is this member in the set or whatever.
-This can also simplify a lot, such that canonicalization of values no
-longer requires list elements to be sorted, typically, and also equality
-tests can just say, does the set contain this value etc.
-Fundamental ops would be eg, is_empty_set, is_value_in_set,
-add_value_to_set, remove_value_from_set, get_value_from_set (enumerate).
 
 * See http://www.sqlite.org/lang_savepoint.html ; apparently SQL savepoints
 are already a generalization of "transaction" that can be nested and don't
