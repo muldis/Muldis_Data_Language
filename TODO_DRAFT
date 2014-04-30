@@ -26,13 +26,170 @@ OF THAT TO TRUNK WHEN READY TO DO A SERIES OF MORE ORDERLY RELEAESES.
 - I KNOW I WANT TO SEE THE BRANCH AND TRUNK SAME TIME BOTH THERE AND HERE.
 
 * It must be mandatory for each grouping () paren pair in an expression to
-have a sub-expression which is not explicitly named with ::= because that
+have exactly one sub-expression which is not explicitly named with ::= because that
 is the root sub-expression of the grouping () ... or alternately we change
 the definition of ["" ::=] to simply indicate which sub-expression in a
 grouping () is its root; but then we actually should have a keyword,
 and maybe "<--" could be that keyword ... the keyword would be optional
 and the simple absense of leading ::= from one sub-expr marks it as main;
 but if all sub-exprs are named then the keyword is mandatory.
+
+* Eliminate uses of |,&,- to mean union/or,intersection/and,minus with
+respect to type defs or {schema object, param/attr} alias declarations.
+- We should discourage aliasing even if supporting it, and the best way is
+to not provide special/terse syntax for doing so that isn't generalizable.
+- For schema object aliasing, people can just do this:
+    sum ::= add ::= "+" ::= function ...;
+... assuming all of said aliases are okay to have identical signatures/etc.
+- In practice, explicit union/intersect/minus types probably aren't that
+common except for say enum declarations, so just support those with the
+likes of:
+    Int_or_Text ::= Universal where (.0 isa $Integer or .0 isa $Text);
+- Provide appropriate generic expression syntax / functions such that one
+can use them effectively for declaring routine signatures/etc without those
+needing special syntax.
+- As such, the general form of the declaration of function foo would be
+in terms of 5 mutually isolated (having their own expression node
+namespaces) generic expression trees, any of which or parts thereof may
+optionally be factored out into (the bodies of) other functions;
+within each tree, "_" is a keyword / the default name of the (locally)
+singleton expression node representing the topical input value of the
+expression aka its sole parameter; these are those 5 trees:
+    1. A e(Boolean<--Universal) that declares the (usually Tuple) dispatch
+    type of foo's input parameter; that is, a call to "foo(x)" will cause
+    this particular foo to be dispatched to if True<--e(x) assuming also
+    this particular foo is the first so-matching one found during dispatch.
+    2. A e(Universal<--Universal) that normalizes foo's input parameter
+    from whatever conceptual multiple parameter aliases may exist to one.
+    3. A e(Boolean<--Universal) that declares any further constraints on
+    the input parameter, eg that denominator may not be zero, when we want
+    to explicitly fail certain function calls rather than the dispatcher
+    simply falling back to no-such-routine when you call say divide(4,0);
+    a result of False means fail and True means accept.
+    4. A e(Universal<--Universal) that declares the main body of the
+    function, that which does the real work the function exists for.
+    5. A e(Boolean<--Universal) that declares foo's result type; for a
+    function this is the other part of foo's main signature besides #1.
+- A general procedure declaration would follow a similar pattern, except
+that there wouldn't be a #5 so to speak and inverse expressions may be
+necessary (ideally generated) for #2 etc considering the common practice
+of subject-to-update parameters; procedures need more thought.
+- Generic system-defined functions such as Tuple_follows_template() can
+provide conveniently short syntax for signature declarations, including
+whether each attr is mandatory or optional, what aliases an attr may
+have, whether the attr list is exhaustive or a subset, whether attrs have
+positional-alike/integer names, etc.
+- Generic system-defined functions for testing multiple "isa" on the same
+value can be given, eg "v is_any_of {$Int,$Text}", which also works for
+declaring enumerated types, or "v is_all_of {$Odd,$HundredPlus}" etc.
+- Remove ":" from function declaration as the line between function head
+and body is more fuzzy, but have some terse way of marking each part of the
+function.  Also make bounding parens optional for the 5 expression trees so
+eg you don't have to say "(5)" when "5" would do; the bounding parens would
+just be needed when it isn't otherwise clear where the expression ends and
+the next part of the function declaration or next schema object declaration
+begins.  These should all work equally well when a function declaration is
+embedded within another value expression, such as for the meat of generic
+relational restrictions.  Perhaps something like this:
+    foo ::= function --> (_ isa $Integer) <-- (_ follows ...) : (#_);
+    foo ::= function to (_ isa $Integer) from (_ follows ...) how (#_);
+... noting that the 5 parts may come in any order and are all optional.
+Clearly this will take a lot of thought.
+- See Perl 6 design for guidance, it already does a lot of that stuff.
+- Have function shorthand eg "tup?.attr" that returns a VoidLike value
+rather than dying if the tuple doesn't have an attribute of that name.
+- Maybe go further and make "?" a parser-recognized meta-operator, similar
+to how "!" is; so while "bar !x foo" means "not(bar x foo)",
+"bar ?. foo" means "has_attr(bar,$foo) ?? bar.foo !! :$Void" or some such.
+- So then defaulting an optional parameter can be like "_?.mynum // 3".
+- Have shorthand to choose, among multiple possible attribute names, to
+determine under which name, if any, the attribute exists, take its value;
+it would also assert no more than one of the attr names exists at once.
+- We can also say that technically the only actual required part of a
+function definition is #4 the main body expression.
+
+* Change how routines work so that the actual sole input argument may be a
+Universal rather than having to be a Tuple.  Also create a new core type
+that represents the actual argument which has both an Array and a Tuple
+component, which is the canonical way to represent effective argument lists
+that have either or both ordered and named arguments.  So we then eliminate
+the kludge where ordered parameters are represented by Tuple attributes
+named "0" and "1" etc, which is partly bad due to being base-10-centric.
+Along with that new type is new special syntax for selecting a value of it,
+where that syntax resembles the existing complexities of an argument list.
+Then alter the general syntax of a routine call to be more like that of a
+Capsule value selector ("=>"), in that it takes the appearance of an infix
+operator, eg "<-" (like "." does), like this:
+  rtn <- args
+eg:
+  $div <- :( x, y )
+where that particular example also has the shorthand:
+  div(x,y)
+or:
+  x div y
+Within a routine, the sole parameter is named "_" and where the new special
+type is used, the value composes both ArrayLike and TupleLike, so you can
+access the actual parameters like this:
+  _.[0]
+or
+  _.foo
+... or as ".[0]" or ".foo" respectively.
+There would also be normal operators for merging a Tuple+Array into one of
+the new types, or extracting the whole Tuple or Array component.
+Obviously the default value of the new type is an empty array+empty tuple.
+The "rtn" input to "<-" could also be an anonymous function declaration,
+which in its general form is just a body-defining expression; but in that
+case, for legibility, we may want to offer "->" as well so one can say:
+  args -> rtn
+Actually, we may want the "args -> rtn" form to be the "normal" general
+form, assuming it is mainly used with anonymous routines, and that use with
+named routines is uncommon, and then simply not support "<-" at all.
+We will likely replace "v->op(...)" with some other syntax then or drop it.
+We will want to use Perl 6 for guidance on how this type/etc works.
+Or use "args --> rtn" and leave "v->op(...)"?  But what is more common?
+In Perl 6 ":(...)" creates a Signature while "\(...)" makes a Capture.
+
+* Formally make all functions be unary Universal-->Universal and deal with
+it re consequences on relationship to other languages or whatever.
+- This gives Muldis D more theoretical purity and means that special types
+for representing arguments or parameter decls don't have to be low-level.
+- But if all functions are unary, how to represent nullary avoiding
+recursion eg of the definition of its placeholder argument?
+Maybe one way is to say a function may be invoked without an explicit
+argument and in that case it is the empty LL_List that the function gets.
+- All Low_Level.foo will explicitly not use the new input argument type
+that combines Array+Tuple etc, only non-Low_Level foo would.
+Instead they would explicitly use LL_List of particular arity for any
+functions that conceptually take multiple arguments, and just the argument
+directly when just one.  As such, all invocations any LL_foo would by
+necessity use the general form of function calling eg args-->func or
+func(*args) which would be another way to discourage direct use of LL_foo
+in general code.
+- All non-Low_Level.foo explicitly will use the special args type.
+- The new args type definitely will be a Capsule, a SC_foo to be specific.
+- All invocation syntax like "x op y" or "op x" or "op(x,y)" or "op(...)"
+will always mean use the new args type, and so they'll only be for non-LL.
+
+* Make backslash "\" only mean escaping within delimited strings; outside
+said it has no mnemonic and can be used as generally as any symbolic chars.
+
+* Also, make it so function decl type is essentially just a tuple of
+traits, where body and params decl etc are just traits same as
+is-commutative or default or whatever.  Every trait is a key-value pair
+with the key being the trait name and the value either being a boolean or
+some other type, typically an expression node set.
+
+* First task - we need to build a list of expression and stmt node types.
+- Topic_Expr_node - represents the real function input argument
+- ...
+
+* Schema objects can be easily indexed for fast(er) dispatch.  To be
+specific, we can pre-make a map from each abbreviation (particularly the
+fully-unqualified) object names to a list of the fully-qualified names that
+said short one is short for, so an actual scan isn't needed per dispatch.
+We rebuild/alter the map whenever a data definition action occurs.
+Similarly, there is also a map for each fully-qualified schema object name
+and the data types of its arguments, though that one might be lazily built.
 
 * Update ordering type per change to Perl 6 (instead of [Inc|Dec]rease):
 https://github.com/perl6/specs/commit/5e2c4205
@@ -43,6 +200,57 @@ C<Order::Same>, or C<Order::More> (which numerify to -1, 0, or +1,
 the customary values in most C-derived languages)."
 
 * "ideomatic" - "Peculiar to or characteristic of a given language."
+
+* Consider signing up with https://www.gittip.com or other such venues as a
+way to collect miscellaneous revenue to support Muldis D / etc development.
+Just start this after I make my first deliverable and so supporters have
+something already in exchange.  Would treat as business income by way of
+Muldis Data Systems.  Not sure if I can identify Canadians from the givers
+but if I can I'd treat part of theirs as GST collected.
+See also communities such as https://www.gittip.com/for/perl/ .
+See http://www.dagolden.com/index.php/2325/why-i-finally-joined-gittip-and-why-you-should-too/
+and other blog posts it links to.
+
+* How to make a generic join-like operator that is like SQL's and not like
+normal natural join.  SQL's is fundanentally a cartesion product and each
+input relation has its own namespace in the output; in Muldis D we will
+have to specify said namespace as data, it isn't just gleaned from the
+expression or variable names in source code, we do this with a tuple.
+  :%{artists:db.artists} xjoin :%{albums:db.albums}
+Each tuple of the result has 2 tuple-typed attrs named {artists,albums}
+and the values are the tuples of the source relations.
+One can then use where() to define a generic join condition like SQL eg:
+  artists_tup xjoin albums_tup where :(.0.albums.artist_id = .0.artists.id)
+Or another signature of xjoin itself could take more than 2 args where a
+third etc provides join conditions etc; but then xjoin(a,b,c) call needed.
+To support this in an N-ary fashion, xjoin has 2 signatures (both marked
+commutative) which are tup*rel and rel*rel restricted such that a tup must
+be unary with a relation-type attr and any rel may be N-ary where every
+attribute is tuple-typed, and thus everything should just work.
+The output of xjoin is the same type as said rel input type.
+In the standard scenario xjoin requires that the primary attr names of all
+inputs are mutually distinct since the result is a disjoint union of them.
+So this should work:
+  [xjoin] {a, b, c, d}
+or
+  a xjoin b xjoin c xjoin d
+This is all basically an alternate way of doing:
+  (a wrap all as a) join (b wrap all as b) etc
+
+* It should be worth pointing out explicitly that when I write SQL I
+automatically keep wanting to put the WHERE clause earlier in an expression
+than SQL allows it to go, eg:
+  update x where y set z;
+or:
+  select ... from x where y join a using (b) ...
+... and so on.  And in Muldis D such intuitive actions are actually valid.
+So an example of how Muldis D makes common tasks easier than SQL,
+especially ad-hoc queries.
+
+* Apparently Perl 6 doesn't have union types after all, eg Int|Str where a
+type name could go.  Closest is "subset IntStr of Any where Int|Str".  See
+http://www.nntp.perl.org/group/perl.perl6.compiler/2014/03/msg9483.html .
+So | is always a junction.
 
 * Note the following change in Perl 5.18.0; I should do the same in the STD
 parser, that is treat all 11 of the same characters as white space such
@@ -115,10 +323,81 @@ technology -- General-Purpose Datatypes (GPD)" which could be very useful.
 
 * Add mention of http://rubydoc.info/github/blambeau/alf/master/Alf .
 
+* See http://scale-out-blog.blogspot.ca/2014/02/why-arent-all-data-immutable.html .
+
+* See http://docs.python.org/2/library/datatypes.html .  Also, Python uses
+the type name Counter for what Muldis D calls Bag it seems.
+Also a lot of Python and Perl 6 type names are the same, suggesting influence.
+
+* Apparently names like_this are called "snake case".
+https://en.wikipedia.org/wiki/Snake_case .
+
+* Apparently this is valid in Perl 5 (trailing ::), and can be disambiguating:
+    Package::->method();
+
+* Perl 5.19.x/20.x add native sub signatures.
+
+* See https://github.com/wbraswell/rperl/ for something that might be
+relevant to translating Perl code to Muldis D code.
+Or I can support RPerl as a compilation target; faster subset of Perl.
+See also http://perl11.org and stuff.
+
+* See newish DBMS FoundationDB that's about widely-scalable ACID supporting
+both relational and non-relational.  A prime DBMS candidate to target, may
+possibly be easier due to its design to support than Postgres, or maybe
+not; it is also closed source.  Supports Linux (main) + Mac and Win (dev).
+See also https://foundationdb.com/blog/call-me-maybe-foundationdb-vs-jepsen
+for some stuff on how it works, and also the separate party Jepsen.
+
+* See also Google's Spanner and F1 which are much the same, but internal.
+
+* I probably want to use LMDB http://symas.com/mdb/ for my second
+implementation, or alternately support it as an option in the first/ref.
+There is lots of precedents for doing this too, eg SQLite4, multi "nosql".
+
+* Use same node type to represent bounding parens as used for synonyms.
+Eg `foo ::= bar ::= 3` the foo is a synonym/aliasing node.
+But aliasing nodes can have generated node names same as other anon exprs
+so eg `1 + ((2+3))` the outer paren is an aliasing/syn node.
+Parens themselves are general metadata that can go on any kind of node,
+eg, is this surrounded by explicit parens in the text source or not.
+Whether explicit node names are quoted or not is also metadata.
+
+* Postgres 9.3 has ddl event triggers so eg you can block accidental
+drop table and such if you want with a trigger.
+
+* The Oracle foreign data wrapper for Postgres is declared stable now;
+see http://oracle-fdw.projects.pgfoundry.org .
+
+* Postgres 9.4 supports this apparently:
+coalesce(min(val) filter (where val > 0), 0)
+http://www.depesz.com/2013/07/23/waiting-for-9-4-implement-the-filter-clause-for-aggregate-function-calls/
+
+* Note http://rhaas.blogspot.ca/2014/03/vacuum-full-doesnt-mean-vacuum-but.html
+that VACUUM FULL is actually quite different than VACUUM, and in particular,
+plain VACUUM is needed to accomplish certain things; generally plain VACUUM
+is what you want during regular maintenance, unless eg your relation is
+mostly empty and you want to return the space to the operating system;
+VACUUM FULL does not deal with the id wraparound as VACUUM does.
+Pg 9.4 changes some of this, so FULL deals with id wraparound too, somewhat.
+Also, in Pg prior to 9.0, FULL worked differently.
+
+* See http://blog.endpoint.com/2014/02/dbdpg-utf-8-perl-postgresql.html and
+why we really should use DBD::Pg 3.0+ if we have non-ascii chars, it is much
+smarter than 2.x, actually paying attention to client encoding.
+
+* See http://blog.endpoint.com/2014/02/mysql-ascii-null-and-data-migration.html .
+
 * See http://www.sqlite.org/lang_savepoint.html ; apparently SQL savepoints
 are already a generalization of "transaction" that can be nested and don't
 have to require a parent "transaction" to be active; the first "savepoint"
 could take that role itself; this is a lot like my design plans actually.
+
+* Things even SQLite can do (as can Postgres) but MySQL can not do:
+- subject data definition to transactions
+- savepoints
+- WITH clause, including recursive
+- EXCEPT clause
 
 * Apparently Windows 8 extends the use of shared pages to allow any pages
 that just happen to be identical to be shared. It periodically sweeps
@@ -129,9 +408,30 @@ http://arstechnica.com/information-technology/2012/10/better-on-the-inside-under
 So my plan to do similar in Muldis D impls (when = is invoked) does not
 seem that unprecedented, though in my case its both memory+performance.
 
+* Apparently C# has a "where" construct useable like this (it is lazy):
+    var q1 = q0.Where(MoreThanTwenty);
+... note that MoreThanTwenty is the name of a predicate function.
+Also it has a "select" that works like "map":
+    q = xs.Select(x=>1/x);
+
+* See http://queue.acm.org/detail.cfm?id=2611829 - The Curse of the
+Excluded Middle.
+
+* See also "Haxe" language/platform.
+
+* See also Test::Database the likes of which I can also support.
+Its HISTORY.  http://www.nntp.perl.org/group/perl.qa/2008/10/msg11645.html
+Quoting Michael Schwern:
+"There's plenty of modules which need a database, and they all have to be
+configured differently and they're always a PITA when you first install and
+each and every time they upgrade."
+
 * PostgreSQL's model about transaction ids, and that it has special {1..2}
 reserved values may be useful in my design.
 http://www.depesz.com/2013/12/06/what-does-fix-vacuums-tests-to-see-whether-it-can-update-relfrozenxid-really-mean/
+
+* This is probably useful, concerning timestamps:
+http://www.depesz.com/2014/04/04/how-to-deal-with-timestamps/
 
 * NEXT PRIORITY ...
 Rename Muldis::D::Dialect::PTMD_STD to Muldis::D::PTMD_STD.
