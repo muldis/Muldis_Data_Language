@@ -108,6 +108,9 @@ it would also assert no more than one of the attr names exists at once.
 - We can also say that technically the only actual required part of a
 function definition is #4 the main body expression.
 
+- Add keyword "type" that is like "function" but just takes a body def expr
+where that body is a predicate, and implicitly is Universal-->Boolean.
+
 * Change how routines work so that the actual sole input argument may be a
 Universal rather than having to be a Tuple.  Also create a new core type
 that represents the actual argument which has both an Array and a Tuple
@@ -169,9 +172,20 @@ in general code.
 - The new args type definitely will be a Capsule, a SC_foo to be specific.
 - All invocation syntax like "x op y" or "op x" or "op(x,y)" or "op(...)"
 will always mean use the new args type, and so they'll only be for non-LL.
+- All predicate functions intended to be used in the position of defining a
+type must be bare Universal-->Boolean; that is, the type of the "topic" is
+NOT a SC_Func_Args in the general case.
+- Similarly, all predicate functions used in defining routine headings,
+that is dispatch type, input normalizer, input constraint, result type,
+for these type type of "topic" is also NOT a SC_Func_Args in the general.
+- So, Universal."=" will have to be changed to be a wrapper of LL_same
+rather than a synonym of it, since the former will use a SC_Func_Args while
+the latter will not.  Some other similar splits would happen as approp.
 
 * Make backslash "\" only mean escaping within delimited strings; outside
 said it has no mnemonic and can be used as generally as any symbolic chars.
+However some special syntax starts with a \, eg relation literals, which
+will override in the case of ambiguity.
 
 * Also, make it so function decl type is essentially just a tuple of
 traits, where body and params decl etc are just traits same as
@@ -179,9 +193,30 @@ is-commutative or default or whatever.  Every trait is a key-value pair
 with the key being the trait name and the value either being a boolean or
 some other type, typically an expression node set.
 
+* Let "isa" have prefix shorthand so "isa $foo" means "topic isa $foo".
+
 * First task - we need to build a list of expression and stmt node types.
-- Topic_Expr_node - represents the real function input argument
+- Topic_Expr_Node - represents the real function input argument
+- Resolved_Expr_Node - represents the "resolved" keyword; turns Ident to Ref
 - ...
+
+* Function call syntax:
+    args --> rtn
+    \(x,y) --> $"+"
+    $SC_Func_Args=>\%{ordered=>[x,y],named=>\%{}} --> $"+"
+    "+"(x,y)
+    x->"+"(y)
+    x + y
+    div(x,y,round_meth:$=>To_Zero)
+    \(x,y) --> (function (Integer <-- Integer, Integer) :
+    \(x,y) --> (function to (isa $Integer) from (isa \:(Integer,Integer))
+    \(x,y) --> (function --> (isa $Integer) <-- (isa \:(Integer,Integer))
+    42 --> $some_func_taking_Integer_directly_without_SC_Func_Args_wrapper
+
+* Function declare syntax general form:
+    0. keyword "function" followed by 0 or 1 of each of next in any order:
+    1. keyword "to" or "-->" followed by predicate expr taking "_" as input
+    ...
 
 * Schema objects can be easily indexed for fast(er) dispatch.  To be
 specific, we can pre-make a map from each abbreviation (particularly the

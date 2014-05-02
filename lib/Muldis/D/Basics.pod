@@ -1685,42 +1685,54 @@ are defined in terms of those, especially C<Capsule>.
 This table says which I<structure kind> values indicate which of the 11
 structure types, plus examples of literal syntax:
 
-     0 | Integer       | 42 or 0 or -3
-     1 | String        | ideas are :+[expr,...] and :~[expr,...] and Blob-inspired versions like 0x[lit,...]/etc
+     0 | Integer       | 42 or 0 or -3 or 0xDEADBEEF or 0o644 or 0b11001001
+     1 | String        | ideas are \+[expr,...] and \~[expr,...] and Blob-inspired versions like 0x[lit,...]/etc
      2 | Array         | [expr,...] or ([expr,...]) to disambiguate from procedure block
-     3 | SC_Heading    | :~{lit,...} - T/R heading as userland value - arg for project/etc
-     4 | SC_Renaming   | :<{lit<-lit,...} - use in routine predicate defs a lot to normalize params, arg for rename
-     5 | Tuple         | :%{lit:expr,...}
-     6 | Relation      | :@{{lit:expr,...},...} or :@[lit,...]:{[expr,...],...}
-     7 | SC_Identifier | $lit etc - also special syntax :*expr will produce Reference from Identifier expr
-     8 | Capsule       | expr=>expr - that is Reference=>Tuple eg :*$Date=>:%{year:500,month:4,day:24}
+     3 | SC_Heading    | \~{lit,...} - T/R heading as userland value - arg for project/etc
+                       |    and SC_Name is one with =1 elem, eg \~{lit}
+     4 | SC_Renaming   | \<-{lit:lit,...} - use in routine predicate defs a lot to normalize params, arg for rename
+     5 | Tuple         | \%{lit:expr,...}
+     6 | Relation      | \@{{lit:expr,...},...} or \@[lit,...]:{[expr,...],...}
+     7 | SC_Identifier | \$lit etc - also special syntax "resolved expr" will
+                       |    produce Reference from Identifier expr eg "resolved \$foo"
+                       |    and $lit is shorthand for Identifier eg $Bag short for "resolved \$Bag"
+     8 | Capsule       | expr=>expr - that is Reference=>Tuple eg $Date=>\%{year:500,month:4,day:24}
+                       |    and Singleton is one with nullary tuple eg $To_Zero=>\%{}
+                       |    and $=>lit is shorthand for Singleton value eg $=>To_Zero
      9 | Stream        | stream expr - prefix keyword; foo is an Integer-payload
     10 | External      | external expr - prefix keyword; foo is a Universal
 
 Literal syntax for C<Boolean> is just the keywords C<false> and C<true>.
 
-There is no literal syntax specific to C<LL_Natural>; instead use the
-literal syntax for an C<Integer> and call an unwrap function on it.
+A literal syntax for C<LL_Natural> also exists and looks like this:
+C<\*42>; however, this syntax only exists for completeness and no one
+should ever be using it in practice, as users should be using C<Integer>
+instead for all normal situations.
 
 A literal syntax for C<Universal> also exists and one can use it to select
 a value of any type of the entire type system, and it looks like this:
-C<:|[...]>; however, no one should ever be using it in practice, as better
+C<\*[...]>; however, no one should ever be using it in practice, as better
 syntax exists for all types that users should be using, and the general
 C<Universal> literal syntax only exists for completeness, should one need
 to serialize some strange C<Universal> value that isn't one of the other
 system-defined types, such as a C<Universal> of 3 elements in isolation
-from some wrapping structure value.  Mnemonic, C<|> as ultimate type union.
+from some wrapping structure value.
 
 Subtypes of Capsule:
 
-    Bag      | :+{expr,...} or :+{expr:posint-expr,...}
-    Blob     | 0x'27EO4'
-    Dict     | :~{expr:expr,...} or something
+    Bag      | \+{expr,...} or \+{expr:posint-expr,...}
+    Blob     | 0x'27EO4' or 0o'350261' or 0b'101100110'
+    Dict     | \~{expr:expr,...} or something
     Float    | 29*10**30 or 4.5209E19 or something?
     Interval | expr..expr etc
     Ratio    | 5/3 or 3.14159
     Set      | {expr,...} or ({expr,...}) to disambiguate within recipe block
     Text     | 'Hello'
+
+    SC_Func_Args   | \(expr,...) or \(lit:expr,...) or \(expr,...,lit:expr,...) or \(:lit,...) or etc
+    SC_Func_Params | \:(typeref-expr,...) or \:(lit:typeref-expr,...) or etc
+    SC_Proc_Args   | \&(expr,...) or \&(&var-expr,...) or \&(lit:expr,...) or etc
+    SC_Proc_Params | \&:(typeref-expr,...) or \&:(&typeref-expr,...) or etc
 
 These are the I<payload> structures for the 11 structure types:
 
