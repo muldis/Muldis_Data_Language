@@ -1693,9 +1693,18 @@ structure types, plus examples of literal syntax:
      4 | SC_Renaming   | \<-{lit:lit,...} - use in routine predicate defs a lot to normalize params, arg for rename
      5 | Tuple         | \%{lit:expr,...}
      6 | Relation      | \@{{lit:expr,...},...} or \@[lit,...]:{[expr,...],...}
-     7 | SC_Identifier | \$lit etc - also special syntax "resolved expr" will
-                       |    produce Reference from Identifier expr eg "resolved \$foo"
-                       |    and $lit is shorthand for Identifier eg $Bag short for "resolved \$Bag"
+     7 | SC_Identifier | Several kinds:
+                       |    - canon    : \$=pkg-canon-name.litpath  eg \$=Muldis_D:"http://muldis.com":0.Integer.sum
+                       |    - local    : \$~loc-pkg-alias.litpath   eg \$~MD.Integer.sum
+                       |    - relative : \$<nn-int-expr>litpath     eg \$<2>foo.bar or \$<0>quux
+                       |    - search   : \$?litpath                 eg \$?Bag
+                       |    also special syntax "resolved expr" will
+                       |    produce canon/Reference from all kinds of Identifier expr eg "resolved \$?foo"
+                       |    and $lit is shorthand for "resolved \$?lit" eg $Bag short for "resolved \$?Bag"
+                       |    To mneumonics, = means identity, ? means where-is-it,
+                       |    for rel read eg go-back-2-then-forward-this-path or "<" means relative-to.
+                       |    For non-literals rtn call replace \$ with & eg "&~pkg.foo.bar()"
+                       |    but non-prefixed forms like "foo.bar()" are assumed to be "search".
      8 | Capsule       | expr=>expr - that is Reference=>Tuple eg $Date=>\%{year:500,month:4,day:24}
                        |    and Singleton is one with nullary tuple eg $To_Zero=>\%{}
                        |    and $=>lit is shorthand for Singleton value eg $=>To_Zero
@@ -1716,7 +1725,9 @@ syntax exists for all types that users should be using, and the general
 C<Universal> literal syntax only exists for completeness, should one need
 to serialize some strange C<Universal> value that isn't one of the other
 system-defined types, such as a C<Universal> of 3 elements in isolation
-from some wrapping structure value.
+from some wrapping structure value.  A variant literal syntax C<\*:[...]>
+also exists which is specific to a C<Universal> with exactly 2 elements and
+it exists just to help logically bootstrap the language's lowest levels.
 
 Subtypes of Capsule:
 
@@ -1752,21 +1763,25 @@ These are the I<payload> structures for the 11 structure types:
         0 : heading : Heading-payload
         1 : Universal[0..P] of same as Tuple body
     Identifier : Universal[5] :
-        0 : identifier_kind : LL_Natural in 0..2
-            0 : absolute
-            1 : relative
-            2 : search
-        1 : package name base : Universal[0..N] of String-payload - nonempty iff kind=0
-        2 : package name extensions : Universal[0..2] of String-payload - nonempty iff kind=0
+        0 : identifier_kind : LL_Natural in 0..3
+            0 : canon
+            1 : local
+            2 : relative
+            3 : search
+        1 : package name base : Universal[0..N] of String-payload - is nonempty iff kind in 0..1
+        2 : package name extensions : Universal[0..E] of String-payload - may be nonempty iff kind=0
             0 : authority
             1 : version number
+            2+ : available for something else?
         3 : path beneath package : Universal[0..P] of String-payload
-        4 : relative starts K levels up : Integer-payload in 0..J - nonzero iff kind=1
+        4 : relative starts K levels up : Integer-payload in 0..J - is nonzero iff kind=2
         ==> proper subtype Reference (aka "Global Identifier")
-            - kind must = 1
+            - kind must = 0
             - package name base, extensions, path must all be fully-qualified
                 - these are the full declared name of the package actually
                   linked in, not what was requested by users
+                - extensions might be an empty list though, whatever was
+                  declared (we might decide to disallow such declarations)
             - relative starts K must = 0
     Capsule : Universal[2] :
         0 : Reference-payload (subtype of Identifier-payload)

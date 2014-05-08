@@ -92,7 +92,7 @@ begins.  These should all work equally well when a function declaration is
 embedded within another value expression, such as for the meat of generic
 relational restrictions.  Perhaps something like this:
     foo ::= function --> (_ isa $Integer) <-- (_ follows ...) : (#_);
-    foo ::= function to (_ isa $Integer) from (_ follows ...) how (#_);
+    foo ::= function to (_ isa $Integer) from (_ follows ...) through (#_);
 ... noting that the 5 parts may come in any order and are all optional.
 Clearly this will take a lot of thought.
 - See Perl 6 design for guidance, it already does a lot of that stuff.
@@ -108,8 +108,34 @@ it would also assert no more than one of the attr names exists at once.
 - We can also say that technically the only actual required part of a
 function definition is #4 the main body expression.
 
-- Add keyword "type" that is like "function" but just takes a body def expr
+* Add keyword "type" that is like "function" but just takes a body def expr
 where that body is a predicate, and implicitly is Universal-->Boolean.
+- Actually, it would take a binding def too in the general form, like this:
+    type of Foo where ...
+    function from Foo to Boolean through ...
+- So "of" means "from" and "where" means "through".
+- The "type" also takes "default" expr, optional only if inherited.
+
+* Have keyword "constant" that is like function but just takes a body def
+expr and explicitly has no input.  As all "function" must have exactly 1
+argument, they can not be used to define constants or singletons properly,
+so we have "constant" to fill in a critical gap; it looks like this:
+    constant expr
+    constant 3
+    constant foo(6)
+    constant ...
+- Practially speaking, the concept of embedding constants in an expression
+tree would only ever make a named expression node and not also a schema
+object, unlike say when embedding a function or type.
+- The body expr of a singleton may still be empty/... though if it is
+expected the implementation will fill it in as a special case.
+- The implementation will likely fold any constant declarations at compile.
+- A type 'default' is a constant and a function 'identity' is too.
+
+* Invocation differences:
+    foo()  - calls a 'constant' only
+    foo(...)  - calls a 'function' only
+    foo  - either an expr node name or a prefix/infix style 'function'
 
 * Change how routines work so that the actual sole input argument may be a
 Universal rather than having to be a Tuple.  Also create a new core type
@@ -151,6 +177,8 @@ We will likely replace "v->op(...)" with some other syntax then or drop it.
 We will want to use Perl 6 for guidance on how this type/etc works.
 Or use "args --> rtn" and leave "v->op(...)"?  But what is more common?
 In Perl 6 ":(...)" creates a Signature while "\(...)" makes a Capture.
+* SC_Func_Args will compose both the TupleLike and ArrayLike interfaces,
+that is, one can say foo.bar or foo.[1] on SDFA which just goes to attr elems.
 
 * Formally make all functions be unary Universal-->Universal and deal with
 it re consequences on relationship to other languages or whatever.
@@ -178,6 +206,10 @@ NOT a SC_Func_Args in the general case.
 - Similarly, all predicate functions used in defining routine headings,
 that is dispatch type, input normalizer, input constraint, result type,
 for these type type of "topic" is also NOT a SC_Func_Args in the general.
+- Consider for general predicates as well eg for relational "where".
+- Consider making it "normal" for routines to often take Array or Tuple
+rather than SC_Func_Args ... or don't ... but the fact that SC_Func_Args
+can "do" both Array and Tuple could mean such practice could be transparent.
 - So, Universal."=" will have to be changed to be a wrapper of LL_same
 rather than a synonym of it, since the former will use a SC_Func_Args while
 the latter will not.  Some other similar splits would happen as approp.
@@ -195,13 +227,41 @@ some other type, typically an expression node set.
 
 * Let "isa" have prefix shorthand so "isa $foo" means "topic isa $foo".
 
+
+
 * First task - we need to build a list of expression and stmt node types.
-- Topic_Expr_Node - represents the real function input argument
-- Resolved_Expr_Node - represents the "resolved" keyword; turns Ident to Ref
+- SC_Topic - represents the real function input argument
+- SC_Resolved - represents the "resolved" keyword; turns Ident to Ref
+- SC_Inlined - represents the Reference name of an entity that was
+    declared inline with the expr, typically a function (or type, which is
+    a function); this name is generated unless function def preceded with bind
+- SC_Routine_Name -
+- SC_ISA - represents "isa" keyword
+- SC_Default_Of - represents "default_of" keyword
+- SC_Meta_Op_Not - represents "!foo" meta-op
+- SC_Meta_Op_Reduce - represents "[foo]" meta-op
+- SC_Meta_Op_Assign - represents "::=foo" meta-op
+- SC_Meta_Op_
+- SC_Lit_Universal - represents "\*[...]" literal syntax for Universal
+    values; also has "\*:[...]" variant that asserts exactly 2 elements
+- SC_Bootstrap_Singleton - represents "\*^1[...]" special syntax for
+    bootstrap singletons, each of which may exist exactly once in the
+    codebase, and since they're all used once each in Low_Level.mdpt, means
+    they are otherwise non-invokable by users; possible singletons are:
+    - \*^1[maximal_type] - what Universal/LL_List is defined in terms of
+    - \*^1[constant_EMPTY] - what constant LL_EMPTY is defined in terms of
+    - \*^1[function_prepend,expr,expr] - function LL_prepend
+    - \*^1[function_empty,expr]        - function LL_empty
+    - \*^1[function_first,expr]        - function LL_first
+    - \*^1[function_nonfirst,expr]     - function LL_nonfirst
+    Note that only the first term in the list defines each singleton.
+    Due to these, exactly zero of all system-defined constants or functions
+    have "..." bodies, other than to mean TODO.
 - ...
 
 * Function call syntax:
     args --> rtn
+    rtn(*args)
     \(x,y) --> $"+"
     $SC_Func_Args=>\%{ordered=>[x,y],named=>\%{}} --> $"+"
     "+"(x,y)
@@ -212,11 +272,42 @@ some other type, typically an expression node set.
     \(x,y) --> (function to (isa $Integer) from (isa \:(Integer,Integer))
     \(x,y) --> (function --> (isa $Integer) <-- (isa \:(Integer,Integer))
     42 --> $some_func_taking_Integer_directly_without_SC_Func_Args_wrapper
+- Note that "self" can appear anywhere "rtn" does, and means call-myself
+as long as it isn't quoted.
+- Note that "rtn()" with nothing in the parens now explicitly calls a
+"constant" and not a "function"; you only get a "function" call if
+something is in the parens.
 
-* Function declare syntax general form:
+* Inline function declare syntax:
+    expr_node_name_containing_Ref_of_func_name ::= function ...
+    function ...
+So both of these result in expr node whose value is like one said $foo
+but the former the user decides what it is and otherwise its generated.
+Note that all expressions of inner function have their own namespace and
+are completely independent of the expression containing the function decl.
+
+* NOTE THAT INLINE DECLARATION OF A FUNCTION/ETC THE NAME OF SAID WILL DUAL
+AS A LOCAL EXPR NODE NAME AND ALSO A SCHEMA OBJECT NAME, IN THE PRIVATE
+SCHEMA CREATED FROM THE PARENT FUNCTION BY VIRTUAL OF AN INLINE EXISTING,
+TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
+
+* Function declare syntax general form (same as inline actually?):
     0. keyword "function" followed by 0 or 1 of each of next in any order:
-    1. keyword "to" or "-->" followed by predicate expr taking "_" as input
+    1. keyword "signature" is alternative for {2,3,4}
+        - if used, may omit keyword but then must appear immediately after
+        the "function" keyword
+    2. keyword "to" or "-->" followed by predicate expr taking "_" as input
+    3. keyword "from" or "<--" followed by expr
+    4. keyword "normalize" followed by expr
+    5. keyword "requires" followed by predicate expr
+    6. keyword "is" is optional, followed by set of trait name keywords in
+        braces: "associative", "commutative", "idempotent"
+        and other terms like bijective etc may be added
+    7. keyword "identity" is optional (when associative), has associated expr
+    8. keyword "implements" is optional, has associated entity name
+    9. keyword "through" or ":" followed by expr
     ...
+- Note that "symmetric" is obsolete here; it meant what "commutative" does.
 
 * Schema objects can be easily indexed for fast(er) dispatch.  To be
 specific, we can pre-make a map from each abbreviation (particularly the
@@ -233,6 +324,11 @@ semantics respectively, and if the left operand is smaller, the same,
 or larger than the right operator, return respectively C<Order::Less>,
 C<Order::Same>, or C<Order::More> (which numerify to -1, 0, or +1,
 the customary values in most C-derived languages)."
+
+* Useful info at http://www.mathsisfun.com/ for examples:
+- http://www.mathsisfun.com/sets/function.html
+- http://www.mathsisfun.com/sets/injective-surjective-bijective.html
+- http://www.mathsisfun.com/sets/function-inverse.html
 
 * "ideomatic" - "Peculiar to or characteristic of a given language."
 
