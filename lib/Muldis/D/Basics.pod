@@ -1693,18 +1693,23 @@ structure types, plus examples of literal syntax:
      4 | SC_Renaming   | \<-{lit:lit,...} - use in routine predicate defs a lot to normalize params, arg for rename
      5 | Tuple         | \%{lit:expr,...}
      6 | Relation      | \@{{lit:expr,...},...} or \@[lit,...]:{[expr,...],...}
-     7 | SC_Identifier | Several kinds:
-                       |    - canon    : \$=pkg-canon-name.litpath  eg \$=Muldis_D:"http://muldis.com":0.Integer.sum
-                       |    - local    : \$~loc-pkg-alias.litpath   eg \$~MD.Integer.sum
-                       |    - relative : \$<nn-int-expr>litpath     eg \$<2>foo.bar or \$<0>quux
-                       |    - search   : \$?litpath                 eg \$?Bag
-                       |    also special syntax "resolved expr" will
-                       |    produce canon/Reference from all kinds of Identifier expr eg "resolved \$?foo"
-                       |    and $lit is shorthand for "resolved \$?lit" eg $Bag short for "resolved \$?Bag"
-                       |    To mneumonics, = means identity, ? means where-is-it,
-                       |    for rel read eg go-back-2-then-forward-this-path or "<" means relative-to.
-                       |    For non-literals rtn call replace \$ with & eg "&~pkg.foo.bar()"
-                       |    but non-prefixed forms like "foo.bar()" are assumed to be "search".
+     7 | SC_Identifier | Several kinds, all mutually disjoint:
+                       |    - identity : \$pkg-canon-name.litpath   eg \$Muldis_D:"http://muldis.com":0.Integer.sum
+                       |    - absolute : \$::loc-pkg-alias.litpath  eg \$::MD.Integer.sum
+                       |    - relative : \$nn-int-expr.litpath      eg \$2.foo.bar or \$0
+                       |    - floating : \$litpath                  eg \$Bag
+                       |    For non-literals rtn call remove \$
+                       |    eg "::pkg.foo.bar()" or "0()" or "foo.bar()".
+                       |    Note that leading "0" means "self" / same routine,
+                       |    and "0.foo()" is not allowed; leading "1" means
+                       |    the schema that directly contains current routine
+                       |    so a routine with nested routines would behind
+                       |    scenes refer to each with "1.nest_rtn_name()"
+                       |    but if invoker routine has no nested, then its
+                       |    explicitly decl neighbors ref'd with "1.foo()".
+                       |    Also special syntax "resolved expr" will
+                       |    produce identity from all kinds of Identifier expr eg "resolved \$foo"
+                       |    and $lit is shorthand for "resolved \$lit" eg $Bag short for "resolved \$Bag"
      8 | Capsule       | expr=>expr - that is Reference=>Tuple eg $Date=>\%{year:500,month:4,day:24}
                        |    and Singleton is one with nullary tuple eg $To_Zero=>\%{}
                        |    and $=>lit is shorthand for Singleton value eg $=>To_Zero
@@ -1762,32 +1767,39 @@ These are the I<payload> structures for the 11 structure types:
     Relation : Universal[2] :
         0 : heading : Heading-payload
         1 : Universal[0..P] of same as Tuple body
-    Identifier : Universal[5] :
-        0 : identifier_kind : LL_Natural in 0..3
-            0 : canon
-            1 : local
-            2 : relative
-            3 : search
-        1 : package name base : Universal[0..N] of String-payload - is nonempty iff kind in 0..1
-        2 : package name extensions : Universal[0..E] of String-payload - may be nonempty iff kind=0
+    Identifier : Universal[4] :
+        0 : package name base : Universal[0..N] of String-payload
+        1 : package name extensions : Universal[0..E] of String-payload
             0 : authority
             1 : version number
             2+ : available for something else?
+        2 : relative starts K levels up : Integer-payload in 0..J
         3 : path beneath package : Universal[0..P] of String-payload
-        4 : relative starts K levels up : Integer-payload in 0..J - is nonzero iff kind=2
+        - There are 4 kinds of Identifier that are all mutually disjoint:
+            - identity : when +base, +ext, -levels, -path
+                      or when +base, +ext, -levels, +path
+            - absolute : when +base, -ext, -levels, -path
+                      or when +base, -ext, -levels, +path
+            - relative : when -base, -ext, -levels, -path
+                      or when -base, -ext, +levels, +path
+            - floating : when -base, -ext, -levels, +path
+        - For base,ext,path : + means nonempty, - means empty
+        - For levels        : + means nonzero , - means zero
+        - The other 9 possible combos of Identifier elems are illegal.
+        - The relative val of 4x- means "self", is Identifier default val.
+        - The identity subtype is the full declared name of the package
+              actually linked in, not what was requested by users
         ==> proper subtype Reference (aka "Global Identifier")
-            - kind must = 0
-            - package name base, extensions, path must all be fully-qualified
-                - these are the full declared name of the package actually
-                  linked in, not what was requested by users
-                - extensions might be an empty list though, whatever was
-                  declared (we might decide to disallow such declarations)
-            - relative starts K must = 0
+            - where Identifier kind is "identity"
     Capsule : Universal[2] :
         0 : Reference-payload (subtype of Identifier-payload)
         1 : Tuple-payload
     Stream : Integer-payload
     External : Universal
+
+...
+
+I<The following is out of date and needs updating.>
 
 The C<Identifier> type in general represents every variety of name-chain
 identifier that can be present in Muldis D source code, from
