@@ -28,8 +28,6 @@ having to explicitly deal with the underlying List or Natural representations,
 and so later Low_Level could, particularly in implementations, be swapped
 out just by itself for some other implementations, but the language core
 proper would continue to work unchanged.
-- Remove LL_ prefixes from things in Low_Level since searches restricted to
-just that or just Muldis_D will no longer confuse entities between the two.
 - Probably represent a lot of internals using Array wrappers.
 - Most Natural math ops might be ejected / moved into Integer, maybe.
 - Some selection ops might be tricky if they have to do canon list sorting
@@ -38,6 +36,278 @@ eg for relation values to meet relation constraints; "put_in_order" etc.
 on types not declared therein; in particular, add versions of not(), and(),
 or() etc to Low_Level so the code can be easier to understand without
 excessive runaround from being forced to just use ??!! for purity.
+
+* ACTUALLY:
+- New rool - any literals for a type may be used in package declaring said
+type or in packages using said, but I can still be selective; eg, Array
+lits and Integer and Boolean lits can be used in lowest level package.
+- Split Low_Level into 2 modules, otherwise more formally nesting things.
+- New lowest level has just ordered or lowest common denominator types:
+Universal, Boolean, Natural/Integer, Array, Structure.
+- A Structure is lower level analogy to a Capsule; unlike a Capsule,
+the tag is an Integer and the payload is an Array.
+- The only purpose of Structure is to give us an arbitrary number of types
+that are disjoint from both themselves and from Array.
+- Name "Structure" will no longer be used for its current purpose; that will
+either go without a name or get some other name.
+- Above the new lowest level we have stuff that doesn't know anything about preceding 
+types' internals and are generally defined just in terms of the 4 types
+{Boolean,Integer,Array,Structure}
+: String, Heading, Renaming, Tuple, Relation, Identifier, Capsule, External.
+- And demote Stream to being just a Capsule subtype like most things.
+- Maybe call them Muldis_D::Low_Level_0 and Muldis_D::Low_Level_1
+- Maybe add Muldis_D::Low_Level_2 which declares: Text, Blob, Rational,
+Float, and basically everything else that has its own special literal
+syntax or would typically be available system-defined on common prog langs.
+- Core or each layer does only interface directly with adjacent layer.
+- Maybe rename "Low_Level" to something else, eg Sub_Level, Foundation, etc.
+- Consider stratifying everything and turning plain "Muldis_D" into nothing
+but synonym declarations.  As such, no internal implementation details
+including nested functions are exposed in the namespace.
+- Maybe have Muldis_D::Internals::* packages for everything underneath.
+- Or we could have a convention that for any package Foo, a separate
+package Foo::_/::* optionally may exist that has internals for it, like a
+separated public and private namespace, analagous to .h and .c, but that
+the public is a subset of the private depending on the latter, rather than
+the reverse.  So Muldis_D::_::*.  Mneumonic is both "topic" and "private".
+- Where routines have multiple aliases, convention saves them all for the
+public interface, and in private there is just one name each;
+aliases for parameters is a different matter.
+- In any event, all generated names will either start with an underscore or
+with a digit, the latter being illegal bareword identifier syntax.
+
+* For a Universal topic:
+    if topic has 0 elems then
+        topic is Boolean.false
+    else if topic has 1 elem then
+        if topic[0] has 0 elems then
+            topic is Boolean.true
+        else topic[0] has >0 elems so
+            topic is abnormal
+    else if topic has 2 elems then
+        if topic[0] has 0 elems then
+            if topic[1] has 0 elems then
+                topic is the Integer zero
+            else if topic[1] has >0 elems that all have 0 elems then
+                topic is a positive Integer, the count of topic[1] elems
+            else topic is abnormal
+        else if topic[0] has 1 elem that has 0 elems then
+            if topic[1] has 0 elems then
+                topic is abnormal (negative zero is not supported)
+            else topic[1] has >0 elems that all have 0 elems then
+                topic is a negative Integer, the count of topic[1] elems
+            else topic is abnormal
+        else if topic[0] has 2 elems that all have 0 elems then
+            topic is an Array and topic[1] is its elems
+        else topic is abnormal
+    else if topic has 3 elems then
+        if topic[0..1] is a valid Integer then
+            topic is a Structure where topic[0..1] define its kind
+            and topic[2] define its Array elements
+        else topic is abnormal
+    else topic is abnormal
+
+* Regarding abstract types, virtual functions, 'composes', 'implements':
+- Need to evaluate how useful these actually are.
+- Something something about association being tied to specific names rather
+than implicitly to all synonyms.
+
+* The key feature of abstract types is that operators defined over them
+have different visibility status.
+- Normally within a package, identifiers only ever resolve to things that
+are explicitly either in that package or explicitly used directly by that
+package, and so the internal behavior of a package can never be changed at
+a distance but when the package itself or any of its explicit dependencies
+(recursively) are changed.  A polymorphic call will only consider options
+within that context to dispatch to, and will ignore / not see any other
+overloads of that operator in the program.
+- But abstract types provide a lone exception.  If a package uses an
+abstract type or an operator defined over said, then an invocation of such
+an operator will see / consider overloads over the whole program.  Or to be
+specific, if the normal more restricted resolution ends up picking a
+virtual operator, then other operators over the program that claim to
+'implements' said virtual will be considered; but if a non-virtual and
+non-implements version is found the normal way which satisfies the argument
+types, it will be chosen instead.
+- To be more clear, the entities are subject to two-class rules; in effect,
+2 namespace searches will be done; if a candidate visible under normal
+rules is found which is not a virtual and satisfies the argument, it will
+be chosen regardless of if a virtual also exists that satisfies; a virtual
+will only be chosen, on a second effective pass, if no non-virtual matches.
+
+* When a 'search' identifier-chain resolution is performed, the algorithm
+is like this (ignoring checks for type or abstract vs not):
+0. Set BASE to be the actual invoking entity, which is almost always a
+routine but possibly might be something else; we will pretend it is
+possible for an invoker to be a schema; go to step 1.
+1. If the unqualified name of BASE matches the initial identifier-chain
+element and the rest of the chain matches corresponding children of BASE,
+we found a match, then stop, else go to step 2.
+2. If BASE is a schema then search within its children in a breadth-first
+manner, first considering every immediate / first-degree child of BASE per
+step 1, then every second-degree child, onwards until either a match is
+found (and we stop) or all descendants are checked, and then go to step 3. 
+Within each level, the candidates should be visited in a truly random /
+non-repeatable order (so visiting order within siblings can't be relied on
+for semantics between successive invocations, depending on said is a bug;
+more generally, having multiple matches on the same type within found
+candidates is possibly or often a bug itself).
+3. If BASE has no parent then we can't keep searching; no match was found,
+so stop, else go to step 4.
+4. Set BASE to become the immediate parent of the current BASE, and then go
+to step 2, but that we ignore / don't revisit the same child that
+previously was BASE.
+Amendments:
+- The entirety of those 5 steps applies only if the invoker lives within a
+search path, in which case the root of its search path is treated as being
+the BASE with no parent per step 3.
+- For search paths that don't include the invoker, step 0 instead defaults
+BASE to being the root of the search path, and then only the descendent
+search per step 2 applies.
+- As a general rule of thumb, all 'private'/embedded entities should never
+be invoked using 'search' syntax, but rather use relative (often this is
+automatically generated anyway) so attempts to invoke some embedded thing
+don't accidentally call something farther away due to search paths order.
+
+* The Muldis D compiler/runtime/etc written in Muldis D (eg, particularly
+to make cross-compiling easier or reduce manual code per language) should
+generally be procedural in nature.  It should use one or more nested array
+variables to represent the main memory data structures, basically mimicking
+what would be done in Perl with its Memory objects and such.
+- HERE'S A KEY POINT: To avoid recursive implementation issues, there would
+actually be 2 instances of Muldis D running, where the outer one is
+implementing a virtual machine in which the inner one is running, and
+values do not directly cross between them at all.  That is to say, a "value"
+that lives inside the VM is represented by a DIFFERENT "value" (or variable)
+outside the VM.  The wrapper on the outside contains extra stuff such as
+indexes or whatever that are not semantically part of the inner "value" but
+are used in implementing it.  The outside instance of Muldis D is what would
+typically get substituted for by Perl or whatever.
+- Outer instance would use a minimum of types, in particular no relations.
+- Outer analagous to miniperl or NQP or something.
+- Outer natively just ASCII source or something.
+- Outer possibly slimmed syntax, eg, PT_STD_MINI.
+- Things and stuff.
+
+* Create sibling project called "Muldis D Lite" (MDL) which is essentially
+to Muldis D (MD) what Not Quite Perl (NQP) is to Perl 6.
+- MDL is officially disjoint from MD but also corresponds directly, such
+that all syntax in MDL is also valid MD syntax, with the same effective
+semantics, but that formally each is declared into separate package and
+syntax namespaces.
+- For example, using `Muldis_D_Lite:PT_STD:"http://muldis.com":0` rather
+than leading with `Muldis_D`.  The different first element implies
+different language and not just different syntax for the same language.
+- MDL is intended to be useful by itself but it is also as minimalist as
+reasonably possible while still meeting that goal.  The main differences
+from MD are those things which are a lot tricker or more verbose to
+implement and mainly provide convenient niceties that programmers expect to
+have or that may aid making larger programs.
+- The intent is to build MDL first, its reference implementation being
+bootstrapped in Perl and otherwise self-defined and able to compile itself,
+to Perl and NQP and various other things.  Then the reference
+implementation of the full MD would be built next and be bootstrapped in
+MDL and otherwise be self-defined and able to compile itself, though
+initially compiling itself may just compile to MDL.  To be clear, one would
+write a Muldis D VM/compiler/etc in MDL as if they were writing it in say
+Perl, so for example what the Muldis D inside the machine sees as value X
+would not be the same value X to the code outside/implementing the VM, but
+rather some value Y which represents X but has extra meta-data such as
+indexes or whatever, so one can have multiple host values Y which on the
+host side are not the same value but to the language in the VM they are.
+- Formally, MDL is treated as a foreign language by MD, so invoking MDL
+modules in MD modules would be done like invoking Perl or a host language;
+at the same time, MDL can be made native in the same way as SQL or other
+languages, albeit trivially.
+- Definitions of some corresponding features would differ, eg on traits
+for Integer or whatever, and particularly the catalog types would differ.
+- Parts:
+    - Muldis_D_Lite
+    - Muldis_D_Lite::Primitives
+        - Logically declares {Boolean,Integer,Array,Structure} over
+        Universal, so rest of MDL code can just assume these things exist
+        as primitives and would make no attempt to divine internals.
+    - Muldis_D_Lite::Memory
+    - Muldis_D_Lite::Types
+        - Declares likes of String, Tuple, Capsule, etc and a bunch of
+        catalog types as needed to represent MDL code.
+        - Or maybe Tuple not included, and perhaps we use Structure instead
+        of Capsule.
+    - Muldis_D_Lite::Storage
+    - Muldis_D_Lite::Compiler
+    - Muldis_D_Lite::Parser
+- Features included:
+    - 7-bit ASCII
+    - non-abstract types
+    - non-virtual functions
+    - hierarchical namespace
+    - absolute and relative identifiers
+    - polymorphism in the sense that operators may take Universal/etc
+    - positional collections / types / arguments
+    - invoking routines with `args --> foo` or `foo(*args)`
+    - non-streaming parser / regular-size code files / small db dumps
+    - non-embedded / side-by-side defs of eg routines and types
+    - higher-order routines (by name-passing only or that is "-->name")
+    - Universal, Boolean, Integer, Array, Structure
+    - String, Heading, Renaming, Tuple, Identifier, Capsule, Stream
+    - Blob, Text
+    - type-specific sorting and ordering, for Integer, minimal other types
+    - minimal operators for included types
+    - minimal selector syntax for included types
+    - generic file I/O as byte streams or memory byte mapping
+    - in memory databases
+    - single concurrent users of in memory databases
+    - trivial expressions / arrays on left hand of assignment
+- Features NOT included:
+    - non-ASCII
+    - abstract types
+    - virtual functions
+    - 'search' identifiers
+    - polymorphism in the sense of operator overloading
+    - meta-operators
+    - named collections
+    - named arguments
+    - infix/etc notation eg `arg foo arg` or `foo arg` or `foo(arg)`
+    - streaming parser / parsing very large files / typical/large db dumps
+    - embedded defs of eg routines and types
+    - generic sorting and ordering and intervals
+    - most / trans-minimal operators for MDL types
+    - most traits such as associative or whatever
+    - most alternative selector syntax for included types
+    - persisting databases / tied variables
+    - multiple concurrent users of in memory databases / memory merging
+    - non-trivial assignment left-hand expressions / views in general
+- Features could go either way:
+    - named collections / types / arguments
+    - Relation
+    - Set, Bag
+    - type-specific intervals for eg Integer, minimal other types
+    - some traits, maybe
+
+* ACTUALLY, Muldis D Lite is not necessarily a pure subset of Muldis D; for
+core/main language operations it probably is, but in some cases there might
+expressly be a break.  For example, every call to foo(*arg) we might decide
+to not require the *; in regular Muldis D not having that * means an
+implicit Func_Args or whatever wrapper is created around arg, but in MDL
+there is no such wrapper and we could for helping brevity to say that in
+MDL the leading * is just a noiseword; it is allowed for compatibility with
+Muldis D but not required.  A more common example is the hierarchy or
+existence of the catalog types in general, eg, the same string syntax may
+not parse into the same catalog types.
+
+* Make first Muldis D Lite implementation in Pure Perl.  If I have to write
+any of Muldis D Lite in MDL itself, the language is too big.
+- Any MDL impl in MDL would be a separate second implementation later,
+which would really just be a cross-compiler.
+- In contrast, Muldis D proper though implemented in MDL fundamentally
+would also have a full self-definition in Muldis D.
+- At each abstraction level, a level should really conceptually just be
+about translating code from one layer to another.  Conceptually, a MDL
+implementation is really just a compiler for MDL to some other language
+(eg Perl) and also conceptually the VM it runs in is also provided by said
+target language (eg Perl).  Likewise, a Muldis D implementation is really
+just a compiler for Muldis D to either MDL or Perl or whatever.  This might
+be muddied though by implementing one MD version in another MD version.
 
 * BEFORE DOING ANY OTHER LARGE THING, CREATE A GIT BRANCH THAT I JUST DO A
 PILE OF CHANGES IN TOGETHER, AND THEN SEPARATELY I CAN MANUALLY MERGE BITS
@@ -247,7 +517,7 @@ some other type, typically an expression node set.
 
 * Let "isa" have prefix shorthand so "isa $foo" means "topic isa $foo".
 
-
+* Ruby has 'assert' and 'refute' keywords, also 'alias'.
 
 * First task - we need to build a list of expression and stmt node types.
 - SC_Topic - represents the real function input argument
@@ -337,6 +607,11 @@ We rebuild/alter the map whenever a data definition action occurs.
 Similarly, there is also a map for each fully-qualified schema object name
 and the data types of its arguments, though that one might be lazily built.
 
+* Perl 5.20+ supports a long-desired analogy to tuple projection.
+The new C<%hash{...}> and C<%array[...]> syntax returns a list of key/value
+(or index/value) pairs.  See L<perldata/"Key/Value Hash Slices">.
+- While older @hash{...} can be used as lvalues, new feature can't, seems.
+
 * Update ordering type per change to Perl 6 (instead of [Inc|Dec]rease):
 https://github.com/perl6/specs/commit/5e2c4205
 "These operators compare their operands using numeric, string, or C<eqv>
@@ -344,6 +619,8 @@ semantics respectively, and if the left operand is smaller, the same,
 or larger than the right operator, return respectively C<Order::Less>,
 C<Order::Same>, or C<Order::More> (which numerify to -1, 0, or +1,
 the customary values in most C-derived languages)."
+
+* Have a look at the "active object" design pattern.
 
 * Useful info at http://www.mathsisfun.com/ for examples:
 - http://www.mathsisfun.com/sets/function.html
@@ -353,6 +630,20 @@ the customary values in most C-derived languages)."
 * http://arstechnica.com/science/2014/05/scientific-computings-future-can-any-coding-language-top-a-1950s-behemoth/
 
 * "ideomatic" - "Peculiar to or characteristic of a given language."
+
+* See http://terrancalendar.com for something interesting.
+
+* From http://www.reddit.com/r/PostgreSQL/comments/26u0wk/why_is_postgresql_becoming_more_popular_than_mysql/
+Some features missing in Oracle [that PostgreSQL has]:
+- Range types
+- Exclusion constraints
+- True serializable
+- PL/R
+- Indexed KNN
+- Transactional DDL
+- Transaction level control of synchronous replication
+- UNIX domain sockets with user based auth
+- psql (the by far best SQL client I have used)
 
 * Consider signing up with https://www.gittip.com or other such venues as a
 way to collect miscellaneous revenue to support Muldis D / etc development.
@@ -507,6 +798,13 @@ for some stuff on how it works, and also the separate party Jepsen.
 * I probably want to use LMDB http://symas.com/mdb/ for my second
 implementation, or alternately support it as an option in the first/ref.
 There is lots of precedents for doing this too, eg SQLite4, multi "nosql".
+
+* Quoth Richard Hipp:
+Creating an index is essentially the same thing as sorting the whole table
+- sorting in index order.  So you are going to have to sort the whole table
+three times, once for each index.  The time to do the sort dominates.  The
+time needed to scan the original table in order to pull out the elements is
+usually negligible compared to the sorting time.
 
 * Use same node type to represent bounding parens as used for synonyms.
 Eg `foo ::= bar ::= 3` the foo is a synonym/aliasing node.
