@@ -19,6 +19,158 @@ table for these items; they are simply to be done "as soon as possible".
 
 ----------
 
+* NOTE: See latest Perl 6 synopsis 11 and 22 as my concept of Perl 6 long
+names and package management is rather out of date, more there I should follow.
+- See CompUnitRepo .
+- Figure some reasonable code directory pattern to account for storing
+multiple versions of the same base name, and also dealing with segments
+while also allowing :: in module names to correspond to directory
+boundaries.  There could be more than one pattern, see CompUnitRepo.
+- Perl 6 has distinct 'need','import','use' where 'use' is simply a shorthand
+for the prior 2 in order.  A 'need' is like Perl 5's "use Foo ();" or
+alternatively like a compile-time Perl 5 'require'; in Perl 6, 'require'
+will also import symbols, at runtime.
+- Also, "assuming" keyword is not about "currying" but rather "priming" or
+"partial function application"; P6 spec changed in 2011 Oct to more correct
+terminology.
+
+* Make Muldis_D::Low_Level package API correspond exactly to what would be
+hand-implemented in each host language.  API provides and uses just the
+disjoint types {Boolean,Integer,Array,String,Set,Tuple,Capsule,Identifier}
+plus Universal however Universal is treated as a union type over said and
+its internal representation is hidden.  API provides no means to introspect
+a Universal in terms of its own possrep, the latter being for now relegated
+to a concept rather than something exposed in the language. All selectors
+and routines in the API just have parameter or return types that are of
+those same 8 types.  The API will include the fundamental operators of each
+of the 8 types, at least the minimum needed in terms of which all others
+can be defined, eg basic math ops.  The API will include the generic =
+operator.  Each host language will have its own hand-written package
+providing the same API.  The Muldis_D package will just be written in
+PT_STD and a parser/compiler hand-written in each host language will
+translate it into equivalent host language code, same as with user code.
+Also, for now, special features that would only be used for defining
+Low_Level in Muldis D itself will be left out of the standard
+Source_Code/etc types and out of the PT_STD grammar, including Universal's
+own literal.  Thus we avoid unnecessary work done only for theory.
+Selecting Universal values not one of the 8 won't be supported.
+Any Low_Level package written in Muldis D will just be illustrative.
+Leave the name Low_Level rather than say Foundation/etc as its direct use
+by users is not recommended; all of its API will have shims in Muldis_D.
+The package Muldis_D::Low_Level actually supplied will have ... in the
+appropriate places of all type and routine definitions, and nothing will
+be synonyms of eg Muldis_D::Low_Level::_ something; the latter won't exist.
+As such, the Muldis_D LL will be strictly be interface definitions.
+As to the public/private separation of Muldis_D, that will probably remain,
+where the public is just synonyms of some of the private.
+
+* To help prove the above point, maybe skip actually trying to define and
+compile Muldis_D at the start, and rather write some user-like test
+programs that just use Low_Level directly, which users can do anyway.  As
+such, Low_Level will need to include procedures like for STDIO as well ...
+which, makes sense. Said programs would be more mathlike though maybe as
+Text isn't in low level; or minimal Muldis_D could be defined that adds it?
+
+* Maybe skip the parser initially too, and just test natively in Perl too,
+as if the host-native Low_Level API were just providing a Perl package for
+Perl programs.
+
+* Add expression node types/etc which let one add hidden meta-data to
+values or variables or whatever, particularly for performance hints or
+indexing strategies etc.  These are expressly write-only from the point of
+view of Muldis D programs, or at least they are within
+expressions/functions, so that this can't be used to change the semantics
+of functional/pure code, as no logical decisions can be made based on
+meta-data read in-situ.  The only places code can read meta-data is in
+procedures.  Said hidden meta-data is also often useful for debugging and
+the like, not just performance.  Maybe good to also have expr nodes that
+can cause side-effects outside the logical flow of the current transaction,
+such as message sending to other processes or autonomous transactions.
+Still write-only, reading can only be done by procedural code.
+The initial point in this bullet is a better alternative to adding traits
+to type definitions or whatever about indexing strategies.
+Having this may also reduce the need to swap out Set and Dictionary.
+
+* How about make Dictionary (name?) a Low_Level type and demote Set+Tuple
+to each being Capsule types defined over said.  A Set is a Dict where the
+keys are the set elements and the values are always the value False (or
+alternately always True); a Bag is a Dict where the values are always
+positive integers; a Tuple is a Dict where the keys are always String. 
+This change would put Tuple and Relation on the same level, and it could
+more easily mark when just parts of a set rather than a whole need to
+actually be unique or not; the thing about multiple relation keys is a
+separate issue. - We still need a clear way to indicate how to index things
+without the index criteria being part of a value's identity, eg affecting
+"=". - Or maybe better to still keep Tuple a low level type and it is just
+Set switched out with Dictionary.  Tuples are meant to be hetrogeneous and
+Capsule is like them, while Dictionary in general is meant to be
+homogeneous.  Apples and oranges.
+
+* Maybe rename Low_Level to Muldis_D::Foundation/etc to reflect that maybe
+it isn't actually a problem after all for people to use it directly, though
+those uses should still be limited, and the longer name than plain Muldis_D
+suggests this.
+
+* Any non-lexical entity may be referenced or invoked directly by code that
+knows what its fully-qualified name is and refers to it explicitly using a
+Reference literal, even if the invoking code didn't explicitly "use" the
+package declaring said entity.  But declaring package "use" must be done
+for any non-Reference Identifier to resolve.
+
+* Everything the standard Muldis D parser knows about must be expressible
+just in terms of what Low_Level provides, meaning all the meta-operators
+like ! and [] and >><< etc must be defined by Low_Level.  But types such as
+Relation or Text etc don't have to be because the parser can take their
+special syntax and just parse them into something like Capsule literals.
+- As to the matter of, what does the standard parser know what auth+vnum of
+Low_Level etc to use if the code being parsed didn't declare directly or
+indirectly, well the parser module itself did "use" Low_Level itself, so
+that does answer the question.
+- Idea, make the package providing the Muldis D parser just "use" Low_Level
+and not "Muldis_D" in general; ditto the Unicode-understanding flavor.
+
+* Demote Relation from lower level to the level of {Float,Text,etc},
+replace with generic Set at lower level.  Relation is now a Capsule whose
+body attribute is a Set of Tuple.  Maybe add other Relation variants that
+are also Capsule and are peer to it.
+Example variants:
+  - heading isn't stored, just emergent from body, just 1 empty relation value
+  - stored heading just attr names (the current way)
+  - stored heading includes declared types of attributes
+  - things meant to emulate SQL now on more equal footing re implement level
+ACTUALLY, just keep Muldis D's current paradigm (#2) as the one true
+Relation, and simply refer to #1 as a set of tuples, and keep the likes of
+#3 out of the core, that considerably more complicated option can be the
+domain of an extension library, especially as it would need its own tuple
+etc types maybe?
+- Maybe generalize the @ sigil to mean homogeneous collection, and apply it
+to both arrays and relations and sets etc, having twigils as necessary.
+- Canonically a Relation is over a Set of Tuple, and often done similarly
+at implementation level as many languages have Set analogies; in particular
+users aren't to think about this in terms of relations being arrays or
+whatever.
+- Indexing is implemented at the Set level, such that the data types of the
+elements can declare routines that guide optimal indexing strategies, in
+particular can define multiple indexes per type, mainly useful for indexing
+sets of tuples, as indexes can be explicitly candidate keys or not.
+An index function will take a value of the type as input and return an
+ordered array of values that the Set implementation can then use as keys
+in the index, analagous to key declarations in SQL.  Somehow, relation-level
+operators can also ask the system to create particular indexes on things
+maybe, eg the columns about to be joined, or something.  Or not.
+Something like want_index() or whatever.  Indexes are somewhat first class
+or the system would be savvy enough with the Set type that they could be
+properly done both at the memory or disk level.  But generally the lower
+implementations don't have to know about relations specifically, this would
+be generalized away, so eg SQL table emulations would be same level or such.
+- Set ops would include replace-element or such, some generalization of
+replacing or updating a tuple, particularly for implementing a bag, eg
+updating the count for an existing thing.
+
+* Note that BS12's UNION is Tropashko's (inner) union.
+BS12's UNION was actually what became UNION CORRESPONDING in SQL about a
+decade later, meaning union of projections of inputs over their common attrs.
+
 * DO FIRST:
 - Split Low_Level into namespaces as appropriate and add the minimal sufficient
 operators specific to each of the 11 or so low-level types that a maximal
@@ -43,21 +195,17 @@ type or in packages using said, but I can still be selective; eg, Array
 lits and Integer and Boolean lits can be used in lowest level package.
 - Split Low_Level into 2 modules, otherwise more formally nesting things.
 - New lowest level has just ordered or lowest common denominator types:
-Universal, Boolean, Natural/Integer, Array, Structure.
-- A Structure is lower level analogy to a Capsule; unlike a Capsule,
-the tag is an Integer and the payload is an Array.
-- The only purpose of Structure is to give us an arbitrary number of types
-that are disjoint from both themselves and from Array.
-- Name "Structure" will no longer be used for its current purpose; that will
-either go without a name or get some other name.
+Universal, Boolean, Natural/Integer, Array, String, Set, Tuple, Capsule, Identifier.
+- We eliminate "Structure"; see a TODO point below for identifying priors.
 - Above the new lowest level we have stuff that doesn't know anything about preceding 
-types' internals and are generally defined just in terms of the 4 types
-{Boolean,Integer,Array,Structure}
-: String, Heading, Renaming, Tuple, Relation, Identifier, Capsule, External.
-- And demote Stream to being just a Capsule subtype like most things.
-- Maybe call them Muldis_D::Low_Level_0 and Muldis_D::Low_Level_1
-- Maybe add Muldis_D::Low_Level_2 which declares: Text, Blob, Rational,
-Float, and basically everything else that has its own special literal
+types' internals and are generally defined just in terms of the 8 types
+{Boolean,Integer,Array,String,Set,Tuple,Capsule,Identifier}.
+- Maybe actually give a name to the complementary subset of Universal that
+isn't one of the above 8, such as "SC_Abnormal" say.
+- Most everything else is a Capsule subtype.
+- New higher low level declares: Text, Blob, Rational, Float, Relation, 
+Heading, Renaming, Stream, External, and basically everything else that has
+its own special literal
 syntax or would typically be available system-defined on common prog langs.
 - Core or each layer does only interface directly with adjacent layer.
 - Maybe rename "Low_Level" to something else, eg Sub_Level, Foundation, etc.
@@ -99,11 +247,38 @@ with a digit, the latter being illegal bareword identifier syntax.
             else topic is abnormal
         else if topic[0] has 2 elems that all have 0 elems then
             topic is an Array and topic[1] is its elems
+        else if topic[0] has 3 elems that all have 0 elems then
+            if every element of topic[1] is a valid Integer then
+                topic is a String and topic[1] is its elems
+            else topic is abnormal
+        else if topic[0] has 4 elems that all have 0 elems then
+            if the elements of topic[1] are mutually low-level-sorted then
+                topic is a Set and topic[1] is its elems
+            else topic is abnormal
+        else if topic[0] has 5 elems that all have 0 elems then
+            if the elements of topic[1] are mutually low-level-sorted then
+                if every element of topic[1] has 2 elems then
+                    if the first elem of every elem of topic[1] is a valid String then
+                        topic is a Tuple and topic[1] is its attrs, as name-value pairs
+                    else topic is abnormal
+                else topic is abnormal
+            else topic is abnormal
         else topic is abnormal
     else if topic has 3 elems then
-        if topic[0..1] is a valid Integer then
-            topic is a Structure where topic[0..1] define its kind
-            and topic[2] define its Array elements
+        if topic[0] is a valid Identifier then
+            if topic [1] is a valid Tuple then
+                if topic[2] has 0 elems then
+                    topic is a Capsule and topic[0..1] define its type and attrs
+                else topic is abnormal
+            else topic is abnormal
+        else topic is abnormal
+    else if topic has 4 elems then
+        if a certain host of conditions on topic[0..3] are met then
+            topic is an Identifier whose elements in order are:
+                pkg_name_base - 0..N String elems
+                pkg_name_ext - 0..N String elems
+                rel_starts_n_lev_up - a positive Integer elem
+                path_beneath_pkg - 0..N String elems
         else topic is abnormal
     else topic is abnormal
 
@@ -308,6 +483,32 @@ implementation is really just a compiler for MDL to some other language
 target language (eg Perl).  Likewise, a Muldis D implementation is really
 just a compiler for Muldis D to either MDL or Perl or whatever.  This might
 be muddied though by implementing one MD version in another MD version.
+
+* See this: http://www.unicode.org/reports/tr39/#Restriction_Level_Detection .
+
+* If possible add functions corresponding to same_base_type() and
+same_low_level_type() that are unary and just return some value that
+uniquely identifies the type, a generalization of returning the name of the
+type; perhaps it would be the default value of the type;
+for example, which_base_type(42) returns 0 and which_base_type('hello')
+returns '' etc; which_low_level_type() is the same but that for all
+Capsule it just returns the default Capsule value.
+- Idea is that for misc Universal types, every one of which is treated as
+its own low level singleton type, we just return the same value.
+- However, this idea falls apart if there are multiple independently
+defined Capsule types that have the same Capsule_type, so which to choose
+in order to determine the default value?
+- So maybe then what we actually want to do is just hardcode in the new
+which function its own idea of a consistent default value that probably
+may not even be a valid default value in the normal sense, and so:
+  - For each Capsule, just return the value Capsule_type(topic)=>\%{}.
+    - Above was for which_base_type(); for which_low_..., default Capsule.
+  - For all normal other Universal, return their default value.
+  - For all SC_Abnormal just return the argument given to which().
+- Maybe also have a which_types() that returns a list of Reference for all
+known types that the given value is a member of, if practical;
+running this might be slow, though implementations can try maintaining a
+type graph that may help this and other things.
 
 * BEFORE DOING ANY OTHER LARGE THING, CREATE A GIT BRANCH THAT I JUST DO A
 PILE OF CHANGES IN TOGETHER, AND THEN SEPARATELY I CAN MANUALLY MERGE BITS
@@ -586,8 +787,10 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
     1. keyword "signature" is alternative for {2,3,4}
         - if used, may omit keyword but then must appear immediately after
         the "function" keyword
-    2. keyword "to" or "-->" followed by predicate expr taking "_" as input
+    2. keyword "to" or "-->" followed by predicate expr taking "topic" as input
+        - defaults to isa $Universal if omitted
     3. keyword "from" or "<--" followed by expr
+        - defaults to isa $Universal if omitted
     4. keyword "normalize" followed by expr
     5. keyword "requires" followed by predicate expr
     6. keyword "is" is optional, followed by set of trait name keywords in
@@ -598,6 +801,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
     9. keyword "through" or ":" followed by expr
     ...
 - Note that "symmetric" is obsolete here; it meant what "commutative" does.
+- Every part has a default value that is used if omitted
 
 * Schema objects can be easily indexed for fast(er) dispatch.  To be
 specific, we can pre-make a map from each abbreviation (particularly the
@@ -633,6 +837,18 @@ the customary values in most C-derived languages)."
 
 * See http://terrancalendar.com for something interesting.
 
+* Useful:
+http://www.itworld.com/slideshow/163234/head-scratchers-10-confounding-programming-language-features-434442
+Example: Java will automatically convert primitives types to objects
+(autoboxing), such as int to an Integer object. It will also, by default,
+cache Integer objects for values from -128 and 127. This can lead to
+unexpected behavior when using == to compare autoboxed Integers with the
+same value (TRUE from -128 and 127; FALSE otherwise).
+Also number zero is TRUE in Ruby.
+Also C/C++ have trigraphs like SQL does, say for people who don't have
+curly braces on their keyboards.  They are processed before anything else,
+as if they were part of the character encoding or such.
+
 * From http://www.reddit.com/r/PostgreSQL/comments/26u0wk/why_is_postgresql_becoming_more_popular_than_mysql/
 Some features missing in Oracle [that PostgreSQL has]:
 - Range types
@@ -644,6 +860,13 @@ Some features missing in Oracle [that PostgreSQL has]:
 - Transaction level control of synchronous replication
 - UNIX domain sockets with user based auth
 - psql (the by far best SQL client I have used)
+
+* Postgres 9.3+ event triggers probably very useful for DBMS wrappers to
+efficiently know when a schema has changed or not, and when their memoized
+schema information are still valid or not.
+http://www.postgresql.org/docs/9.3/static/event-triggers.html
+Also as an extra way to help prevent unwanted schema changes.
+http://www.postgresql.org/docs/9.3/static/sql-createeventtrigger.html
 
 * Consider signing up with https://www.gittip.com or other such venues as a
 way to collect miscellaneous revenue to support Muldis D / etc development.
@@ -779,6 +1002,11 @@ https://en.wikipedia.org/wiki/Snake_case .
 * Apparently this is valid in Perl 5 (trailing ::), and can be disambiguating:
     Package::->method();
 
+* About MySQL: For a multiple-row insert, LAST_INSERT_ID() and
+mysql_insert_id() actually return the AUTO_INCREMENT key from the first of
+the inserted rows. This enables multiple-row inserts to be reproduced
+correctly on other servers in a replication setup.
+
 * Perl 5.19.x/20.x add native sub signatures.
 
 * See https://github.com/wbraswell/rperl/ for something that might be
@@ -833,6 +1061,9 @@ VACUUM FULL does not deal with the id wraparound as VACUUM does.
 Pg 9.4 changes some of this, so FULL deals with id wraparound too, somewhat.
 Also, in Pg prior to 9.0, FULL worked differently.
 
+* Postgres 9.5 adds row-level security:
+http://michael.otacoo.com/postgresql-2/postgres-9-5-feature-highlight-row-level-security/
+
 * See http://blog.endpoint.com/2014/02/dbdpg-utf-8-perl-postgresql.html and
 why we really should use DBD::Pg 3.0+ if we have non-ascii chars, it is much
 smarter than 2.x, actually paying attention to client encoding.
@@ -883,6 +1114,14 @@ http://www.depesz.com/2013/12/06/what-does-fix-vacuums-tests-to-see-whether-it-c
 
 * This is probably useful, concerning timestamps:
 http://www.depesz.com/2014/04/04/how-to-deal-with-timestamps/
+
+* http://www.craigkerstiens.com/2014/10/01/a-simple-guide-for-db-migrations/
+What happens when you have a not null constraint on a table is it will
+re-write the entire table. Under the cover Postgres is really just an
+append only log. So when you update or delete data it’s really just writing
+new data. This means when you add a column with a new value it has to write
+a new record. If you do this requiring columns to not be null then you’re
+re-writing your entire table.
 
 * NEXT PRIORITY ...
 Rename Muldis::D::Dialect::PTMD_STD to Muldis::D::PTMD_STD.
@@ -1783,6 +2022,9 @@ is mixed into HTML, and Opa calls itself "the cloud language"; different goals r
 See also http://www.infoworld.com/d/application-development/10-programming-languages-could-shake-it-181548
 for multiple language mentions.
 
+* This might have similarities to what I'm doing: https://dsl-platform.com .
+At first glance seems to have a lot in common actually.  Also a lot not.
+
 * Refactor, and establish as distinct concepts, Muldis D stores that are
 code-only, which we will call "modules", versus those that are primarily
 for data, which we will call "depots".
@@ -1896,7 +2138,7 @@ data in a tablespace on unreliable storage won't actually work
 Rework routine headings/definitions, especially functions:
 1.  Remove native concept of optional parameters; this lack can be worked
 around in various ways such as with wrappers or multiple routine versions
-or polymorphism or currying or system design that emphasizes greater
+or polymorphism or priming (partial function application) or system design that emphasizes greater
 specialization or fewer parameters.
 2.  Make public routine parameter aliases a wrapper thing.  Each routine
 has exactly 1 native name for each of its parameters, which is the only
