@@ -75,6 +75,13 @@ Text isn't in low level; or minimal Muldis_D could be defined that adds it?
 as if the host-native Low_Level API were just providing a Perl package for
 Perl programs.
 
+* All the concrete Source_Code types should be defined just in terms of
+Low_Level types; in particular, none should be defined in terms of
+Relation, generally Capsule and Array should do it for collection types
+as far as what the canonical Muldis D code is composed of, what PT_STD
+parses into, what the compiler needs to generate Perl/etc.
+- Source_Code will not define system catalog relvars, those are elsewhere.
+
 * Add expression node types/etc which let one add hidden meta-data to
 values or variables or whatever, particularly for performance hints or
 indexing strategies etc.  These are expressly write-only from the point of
@@ -91,20 +98,15 @@ The initial point in this bullet is a better alternative to adding traits
 to type definitions or whatever about indexing strategies.
 Having this may also reduce the need to swap out Set and Dictionary.
 
-* How about make Dictionary (name?) a Low_Level type and demote Set+Tuple
-to each being Capsule types defined over said.  A Set is a Dict where the
-keys are the set elements and the values are always the value False (or
-alternately always True); a Bag is a Dict where the values are always
-positive integers; a Tuple is a Dict where the keys are always String. 
-This change would put Tuple and Relation on the same level, and it could
-more easily mark when just parts of a set rather than a whole need to
-actually be unique or not; the thing about multiple relation keys is a
-separate issue. - We still need a clear way to indicate how to index things
-without the index criteria being part of a value's identity, eg affecting
-"=". - Or maybe better to still keep Tuple a low level type and it is just
-Set switched out with Dictionary.  Tuples are meant to be hetrogeneous and
-Capsule is like them, while Dictionary in general is meant to be
-homogeneous.  Apples and oranges.
+* How about make Dictionary a Low_Level type and demote Set to being
+Capsule type defined over said.  A Set is a Dict where the keys are the set
+elements and the values are always the value False (or alternately always
+True); a Bag is a Dict where the values are always positive integers.  This
+change brings uniformity to Low_Level types in practice such that all
+collection types are essentially a map of unique-key to
+possibly-nonunique-value pairs, where the key is either a dense sequential
+integer (String,Array) or a non-dense String (Tuple,Capsule) or a non-dense
+Universal (Dictionary).
 
 * Maybe rename Low_Level to Muldis_D::Foundation/etc to reflect that maybe
 it isn't actually a problem after all for people to use it directly, though
@@ -286,6 +288,9 @@ with a digit, the latter being illegal bareword identifier syntax.
 - Need to evaluate how useful these actually are.
 - Something something about association being tied to specific names rather
 than implicitly to all synonyms.
+
+* See http://www.javaworld.com/article/2073649/core-java/why-extends-is-evil.html
+as to why in principle we want to do more in terms of interfaces/abstracts.
 
 * The key feature of abstract types is that operators defined over them
 have different visibility status.
@@ -861,6 +866,28 @@ Some features missing in Oracle [that PostgreSQL has]:
 - UNIX domain sockets with user based auth
 - psql (the by far best SQL client I have used)
 
+* http://blog.2ndquadrant.com/progress-online-upgrade/ gives good
+explanation on doing zero/etc-downtime DBMS upgrades, how the new logical
+replication of Pg 9.4 helps, and how pg_upgrade works (dumps and reloads
+just db schema, and copies over disk files for data as-is or something).
+
+* http://blog.2ndquadrant.com/bdr-postgresql-present-future/ is about how
+bi-directional asynchronous multi-master replication support for PostgreSQL
+has been converted from a branch/extension over time into core piecemeal,
+including {Background workers (9.3), Event Triggers (9.3), Replication
+slots (9.4), Logical decoding (9.4), REPLICA IDENTITY (9.4)} and the merge
+may be done by 9.6 perhaps.  See BDR project.
+
+* http://blog.heapanalytics.com/postgresqls-powerful-new-join-type-lateral/
+shows how Pg 9.3's LATERAL join is useful in practice, letting you do in
+declarational SQL what you may have needed procedural code for before.
+
+* http://michael.otacoo.com/postgresql-2/postgres-9-5-feature-highlight-pg-dump-snapshots/
+seems to give a way for multiple independent connections etc to see the
+same database state, where one sets up named snapshot others can refer to.
+
+* http://blog.endpoint.com/2014/11/mysql-to-postgresql-migration-tips.html
+
 * Postgres 9.3+ event triggers probably very useful for DBMS wrappers to
 efficiently know when a schema has changed or not, and when their memoized
 schema information are still valid or not.
@@ -1090,6 +1117,11 @@ http://arstechnica.com/information-technology/2012/10/better-on-the-inside-under
 So my plan to do similar in Muldis D impls (when = is invoked) does not
 seem that unprecedented, though in my case its both memory+performance.
 
+* Apparently Windows applications can have an "application manifest" which
+Windows looks at to determine the behavior of some APIs it provides, eg
+Vista behavior vs Windows 7.  See also
+http://arstechnica.com/information-technology/2014/11/why-windows-10-isnt-version-6-any-more-and-why-it-will-probably-work/ .
+
 * Apparently C# has a "where" construct useable like this (it is lazy):
     var q1 = q0.Where(MoreThanTwenty);
 ... note that MoreThanTwenty is the name of a predicate function.
@@ -1097,7 +1129,7 @@ Also it has a "select" that works like "map":
     q = xs.Select(x=>1/x);
 
 * See http://queue.acm.org/detail.cfm?id=2611829 - The Curse of the
-Excluded Middle.
+Excluded Middle - "Mostly functional" programming does not work.
 
 * See also "Haxe" language/platform.
 
@@ -1107,6 +1139,9 @@ Quoting Michael Schwern:
 "There's plenty of modules which need a database, and they all have to be
 configured differently and they're always a PITA when you first install and
 each and every time they upgrade."
+
+* See http://www.pgbarman.org about Pg disaster recovery tools and
+http://thebuild.com/blog/2014/10/24/be-very-afraid-backup-and-disaster-planning-at-pgconf-eu/ .
 
 * PostgreSQL's model about transaction ids, and that it has special {1..2}
 reserved values may be useful in my design.
@@ -2389,6 +2424,16 @@ constraint but few SQL DBMSs support it.  Note this in the spec.  RDB from
 DEC had it, but they got bought by Oracle when DEC went out of business.
 
 * FYI, PgOpenCL exists, run intensive db tasks in the GPU.
+
+* See http://vitessedata.com for beta (2014 Oct 28) of Postgres fork that
+uses LLVM as backend for better performance of some things.
+
+* See http://people.umass.edu/klement/russell-imp.html for free restored
+copy 1920ish "Bertrand Russell: Introduction to Mathematical Philosophy".
+
+* Note that Perl module PQL::Cache released at the end of 2014, which has
+some semblance to Set::Relation but has DBIx::Class like query API and it
+intentionally has no non-core Perl dependencies.
 
 * ALSO...
 Get rid of the Set.new() options in Perl 6 and generally update the
