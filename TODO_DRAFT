@@ -19,6 +19,28 @@ table for these items; they are simply to be done "as soon as possible".
 
 ----------
 
+* Make Muldis_D::Low_Level provide multiple selectors for Set values where
+some are shorthands/optimized to produce the kind of Set values that are
+sets of Tuple eg for implementing Bag or Relation.  The Bag alternate
+selectors will for example merge any tuples adding the counts rather than
+just eliminating or keeping duplicates; they would also set a property so
+that this can be lazy, eg when same() is run and deduplication must occur,
+the flag will cause counts to add rather than eliminate.
+Or just make Set and Bag disjoint Low_Level types that happen to share
+nearly all implementation code, and that distinction is the flag, ok then.
+
+* To keep the first Muldis D implementations much simpler, that is to give
+us our 80% solution with 20% of the work, don't try and support any kind of
+pseudo-variables.  This means all database updates are direct assignments
+to the whole dbvar.  While somewhat awkward for updates, a lot of the power
+in Muldis D is demonstratable with what we have left, everything you can
+do in SQL SELECTs plus all the typical stuff of general purpose languages,
+albeit with some degree of circumlocution, but most non-db variable
+assignments are often done directly anyhow and not updating elements,
+and that can be done with eg "ary := assign_elem(ary,index,v)" for now.
+Or maybe just supporting array elems and tuple elems etc as subject to update
+targets will go a long way for usability with little effort.
+
 * NOTE: See latest Perl 6 synopsis 11 and 22 as my concept of Perl 6 long
 names and package management is rather out of date, more there I should follow.
 - See CompUnitRepo .
@@ -107,6 +129,14 @@ collection types are essentially a map of unique-key to
 possibly-nonunique-value pairs, where the key is either a dense sequential
 integer (String,Array) or a non-dense String (Tuple,Capsule) or a non-dense
 Universal (Dictionary).
+
+* Actually, Set is going back to the Low_Level and Dict is being demoted,
+the latter had problems with semantics, eg what to do if one adds multiple
+elements to a Dict at once where there are duplicate keys with distinct
+values.  So Set is the Low_Level, Relation is a Capsule over it, and both
+Bag plus Dict are Capsule over Relation, or in parallel to it.
+That's not to say that Low_Level can't expose useful functions for Set that
+are specific to certain Set of Tuple maybe?
 
 * Maybe rename Low_Level to Muldis_D::Foundation/etc to reflect that maybe
 it isn't actually a problem after all for people to use it directly, though
@@ -1022,6 +1052,7 @@ technology -- General-Purpose Datatypes (GPD)" which could be very useful.
 * See http://docs.python.org/2/library/datatypes.html .  Also, Python uses
 the type name Counter for what Muldis D calls Bag it seems.
 Also a lot of Python and Perl 6 type names are the same, suggesting influence.
+Also a Python Dict key can be any immutable type {string,number,tuple,etc}.
 
 * Apparently names like_this are called "snake case".
 https://en.wikipedia.org/wiki/Snake_case .
