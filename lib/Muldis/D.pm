@@ -27,12 +27,12 @@ This document is Muldis::D version 0.148.1.
 This is the root document of the Muldis D language specification; the
 documents that comprise the remaining parts of the specification, in their
 suggested reading order (but that all follow the root), are:
-L<Muldis::D::Basics>, L<Muldis::D::Core> (which has its own tree of parts
-to follow), L<Muldis::D::Dialect::PTMD_STD>,
-L<Muldis::D::Dialect::HDMD_Perl6_STD>,
-L<Muldis::D::Dialect::HDMD_Perl5_STD>, L<Muldis::D::Conventions>,
-L<Muldis::D::Ext::Counted>, L<Muldis::D::Ext::Temporal>,
-L<Muldis::D::Ext::Spatial>.
+L<Muldis::D::Outdated::Basics>, L<Muldis::D::Outdated::Core> (which has its own tree of parts
+to follow), L<Muldis::D::Outdated::Dialect::PTMD_STD>,
+L<Muldis::D::Outdated::Dialect::HDMD_Perl6_STD>,
+L<Muldis::D::Outdated::Dialect::HDMD_Perl5_STD>, L<Muldis::D::Outdated::Conventions>,
+L<Muldis::D::Outdated::Ext::Counted>, L<Muldis::D::Outdated::Ext::Temporal>,
+L<Muldis::D::Outdated::Ext::Spatial>.
 
 =head1 DESCRIPTION
 
@@ -101,7 +101,7 @@ In any event, the Muldis D documentation will be focusing mainly on how
 Muldis D itself works, and will spend little time in providing rationale;
 you can read the aforementioned external documentation for much of that.
 
-Continue reading the language spec in L<Muldis::D::Basics>.
+Continue reading the language spec in L<Muldis::D::Outdated::Basics>.
 
 Also look at the separately distributed L<Muldis::Rosetta>, which is the
 first main implementation of Muldis D.
@@ -266,8 +266,8 @@ code's behavior.
 
 See the following parts of the current multi-document for descriptions of
 bundled dialects (names subject to change):
-L<Muldis::D::Dialect::PTMD_STD>, L<Muldis::D::Dialect::HDMD_Perl6_STD>,
-L<Muldis::D::Dialect::HDMD_Perl5_STD>.
+L<Muldis::D::Outdated::Dialect::PTMD_STD>, L<Muldis::D::Outdated::Dialect::HDMD_Perl6_STD>,
+L<Muldis::D::Outdated::Dialect::HDMD_Perl5_STD>.
 
 =head2 Extensions
 
