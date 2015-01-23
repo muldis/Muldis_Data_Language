@@ -9,7 +9,7 @@ External resources that you really ought to look at
 
 =head1 VERSION
 
-This document is Muldis::D::SeeAlso version 0.148.2.
+This document is Muldis::D::SeeAlso version 0.200.
 
 =head1 DESCRIPTION
 
@@ -25,35 +25,25 @@ of the Muldis D language.
 
 =over
 
-=item B<Muldis Rosetta for Perl 5> - L<Muldis::Rosetta>
+=item B<Muldis D Reference Engine for Perl 5> - L<Muldis::D::RefEng>
 
 This is the first full implementation of Muldis D that is intended for
 production use, written in Perl 5 by Muldis Data Systems, Inc., and
-licensed under the GNU LGPL version 3 or later.  It is a sub-language
-implementation, in a manner of speaking, such that users would typically
-specify Hosted Data Muldis D code using native Perl 5 data structures and
-compile/execute them against a Perl 5 module embedded in their otherwise
-Perl 5 application.
-
-=item B<Muldis Rosetta for Perl 6>
-
-This is another implementation whose only main difference is that it is
-written in Perl 6, for embedding in Perl 6 programs.  Also, it is currently
-distributed only with the Perl 6 implementation called Pugs
-(L<http://www.pugscode.org/>) in its C<ext/> directory.  This Perl 6
-version started out being developed in parallel with the Perl 5 version,
-but then focus shifted to just develop the Perl 5 version; eventually the
-further improved Perl 5 version will be translated to Perl 6, but that
-hasn't happened yet.  Eventually this Perl 6 version will become the main
-version, when Perl 6 implementations are in common use; meanwhile, the Perl
-5 version is the only main one.
+licensed under the GNU LGPL version 3 or later.  It is a full-fledged
+language implementation intended to be used in the same manner as "perl"
+itself, where a "muldisdre" binary exists that is used to compile or run
+Muldis D Plain Text source code ("foo.mdpt" files).  Alternately, its bulk
+is a Perl 5 module that lets Muldis D be used directly by Perl 5 programs
+as a sub-language in the same manner as the Perl DBI module; moreover,
+users would typically specify Muldis D code in a Hosted Data format
+consisting of native Perl 5 data structures.
 
 =item B<Set::Relation for Perl 5> - L<Set::Relation>
 
 Set::Relation provides a simple Perl-native facility for an application to
 organize and process information using the relational model of data,
 without having to employ a separate DBMS, and without having to employ a
-whole separate sub-language (such as Muldis::Rosetta does).  Rather, it is
+whole separate language (such as Muldis::D::RefEng does).  Rather, it is
 integrated a lot more into the Perl way of doing things, and you use it
 much like a Perl array or hash, or like some other third-party Set::
 modules available for Perl.  This is a standalone Perl 5 object class that
@@ -67,7 +57,8 @@ version 3 or later.
 This is the Perl 6 version of the same-named Perl 5 module.  This version
 as it currently exists is actually a lot older than the Perl 5 one, and the
 Perl 5 one is a rewrite of it.  In the near future, the current Perl 5
-module will be ported to Perl 6 again to replace it.
+module may be ported to Perl 6 again to replace it, unless there's no point
+in the face of a more useful Muldis::D::RefEng port.
 
 =back
 
@@ -78,13 +69,25 @@ of the Muldis D language.
 
 =over
 
-=item B<Parrot Hosted Muldis D>
+=item B<Muldis D Reference Engine for Not Quite Perl>
 
-It is desired to make a Parrot (L<http://www.parrot.org/>) hosted
-implementation of Muldis D.  This would be the most like a typical
-application programming language implementation, such that applications or
-libraries are written in Plain Text Muldis D source files, compiled, and
-executed, the same way as Perl itself or any other Parrot hosted language.
+The Muldis D Reference Engine would also be ported to Not Quite Perl (NQP),
+the same language that Rakudo Perl 6 is written in, and this would be the
+most effective way to run Muldis D Plain Text on all the backends/VMs that
+Not Quite Perl supports, including Parrot, the JVM, and MoarVM.  As NQP is
+specifically designed for writing other languages in, this would let Muldis
+D operate closer to the metal than an implementation over Perl or another
+typical high-level language would, while at the same time still saving a
+lot of the work that would be involved in writing it in C.  In any event,
+as the Muldis D Reference Engine is largely bootstrapped, most of it being
+written in Muldis D itself, each port involves relatively little manual
+translation to just get it working.
+
+=item B<Muldis D Reference Engine for Other Languages>
+
+The Muldis D Reference Engine would also be ported to a variety of other
+general purpose languages, giving them the same benefits that Perl 5
+programs have, and making Muldis D more universal.
 
 =back
 
@@ -155,7 +158,7 @@ Topics>
 Chris Date (C.J. Date), Hugh Darwen - "I<Database Explorations: Essays on
 The Third Manifesto and Related Topics>, 1st edition, Trafford, 2010 July
 (ISBN: 9781426937231)"; see
-L<http://www.trafford.com/Bookstore/BookDetail.aspx?BookId=SKU-000177853>.
+L<http://bookstore.trafford.com/Products/SKU-000177853/Database-Explorations.aspx>.
 
 This book is a followup to the prior-mentioned 2006 one and contains both
 an updated version of the I<Manifesto> itself and also a collection of both
@@ -243,7 +246,7 @@ such as MySQL and SQLite were regularly consulted, and various other sites.
 
 =head1 SOME FULLY TTM/D RELATED DBMS PROJECTS
 
-Besides the Muldis::Rosetta framework, other projects exist which attempt
+Besides the Muldis::D::RefEng framework, other projects exist which attempt
 to implement I<The Third Manifesto> fully and without compromise (that lack
 anti-I<TTM> features), though their current implementations may be
 incomplete and/or in development.  None of these use 'SQL' as their native
@@ -252,22 +255,22 @@ language.
 =head2 Free and Open Source Software
 
 These software projects are released under a free and open source license,
-as Muldis::Rosetta is, so you have the freedom to use the software for any
+as Muldis::D::RefEng is, so you have the freedom to use the software for any
 purpose, to examine the project source code, change it, and redistribute
 it:
 
 =over
 
-=item B<Rel> - L<http://dbappbuilder.sourceforge.net/Rel.html>
+=item B<Rel> - L<http://reldb.org>
 
 Rel is a relational database server, written by Dave Voorhis
 (C<d.voorhis@derby.ac.uk>), that implements Date and Darwen's "B<Tutorial
 D>" language mainly "by the book".  It is written in Java (version 1.5) and
 is operating-system independent.  It is licensed under the GNU GPL.
 
-=item B<Duro> - L<http://duro.sourceforge.net/>
+=item B<DuroDBMS> - L<http://duro.sourceforge.net/>
 
-Duro is a relational database library, written by René Hartmann
+DuroDBMS is a relational database library, written by René Hartmann
 (C<rhartmann@users.sourceforge.net>).  It is written in C (with a Tcl
 interface), is implemented on top of the Berkeley DB database library, and
 runs on all POSIX/Unix-like and 32-bit Windows operating systems.  It is
@@ -313,12 +316,12 @@ code or permission to change them, though some are available at zero cost:
 
 =over
 
-=item B<Opus> - L<http://ca.geocities.com/dcauz@rogers.com/opus/>
+=item B<Opus>
 
 Opus is a command-line relational database development system, written by
 David Cauz (C<dcauz@rogers.com>) and Paul Church, that implements its own
 "Opus" language (that has the syntactic style of C).  It is written in C
-and only runs on Windows.
+and only runs on Windows.  (Link no longer available.)
 
 =back
 
@@ -352,10 +355,6 @@ Genezzo is a micro kernel style enterprise-strength SQL database server,
 written mainly by Jeffrey Cohen (C<jcohen@cpan.org>), currently under
 construction.  It is written in a hybrid of C and Perl 5, and runs on any
 operating system.  It is licensed under the GNU GPL.
-
-I<Note: Genezzo sans its SQL interface is currently a front-line candidate
-for implementing a production / industrial strength Muldis::Rosetta
-Engine.>
 
 =back
 
@@ -480,7 +479,7 @@ Darren Duncan (C<darren@DarrenDuncan.net>)
 
 This file is part of the formal specification of the Muldis D language.
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+Muldis D is Copyright © 2002-2015, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
 

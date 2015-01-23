@@ -2,7 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 package Muldis::D;
-our $VERSION = '0.148002';
+our $VERSION = '0.200000';
 $VERSION = eval $VERSION;
 # Note that Perl code only exists at all in this file in order to help
 # the CPAN indexer handle the distribution properly.
@@ -20,19 +20,17 @@ Formal spec of Muldis D relational DBMS lang
 
 =head1 VERSION
 
-This document is Muldis::D version 0.148.2.
+This document is Muldis::D version 0.200.
 
 =head1 PREFACE
 
 This is the root document of the Muldis D language specification; the
 documents that comprise the remaining parts of the specification, in their
-suggested reading order (but that all follow the root), are:
-L<Muldis::D::Outdated::Basics>, L<Muldis::D::Outdated::Core> (which has its own tree of parts
-to follow), L<Muldis::D::Outdated::Dialect::PTMD_STD>,
-L<Muldis::D::Outdated::Dialect::HDMD_Perl6_STD>,
-L<Muldis::D::Outdated::Dialect::HDMD_Perl5_STD>, L<Muldis::D::Outdated::Conventions>,
-L<Muldis::D::Outdated::Ext::Counted>, L<Muldis::D::Outdated::Ext::Temporal>,
-L<Muldis::D::Outdated::Ext::Spatial>.
+suggested reading order (but that all follow the root), are yet to appear.
+
+See also L<Muldis::D::Outdated> (which has its own tree of parts to follow)
+for a prior and outdated version of this document, since the current
+specification has yet to cover all of the same subject areas.
 
 =head1 DESCRIPTION
 
@@ -40,19 +38,20 @@ This distribution / multi-part document is the human readable authoritative
 formal specification of the B<Muldis D> language, and of the virtual
 environment in which it executes.  If there's a conflict between any other
 document and this one, then either the other document is in error, or the
-developers were negligent in updating it before this one, so you can yell
-at them.
+developers were negligent in updating it before this one.
 
 The fully-qualified name of this multi-part document and the language
 specification it contains (as a single composition) is
-C<Muldis_D:"http://muldis.com":0.148.2>.  It is the official/original (not
-embraced and extended) Muldis D language specification by the authority
-Muldis Data Systems (C<http://muldis.com>), version C<0.148.2> (this number
-matches the VERSION pod in this file).  This multi-part document is named
-and organized with the expectation that many dialects, extensions, and core
-versions of it will exist over time, some of those under the original
-author's control, and some under the control of other parties.  The
-L</VERSIONING> pod section in this file presents a formal method for
+C<Muldis_D:Plain_Text:"http://muldis.com":"0.200"> (B<MDPT>).  It is the
+official/original (not embraced and extended) Muldis D Plain Text language
+specification by the authority Muldis Data Systems (C<http://muldis.com>),
+version number C<0.200> (this number matches the VERSION pod in this file).
+
+This multi-part document is named and organized with the expectation that,
+in the Muldis D language family, many versions (core languages, grammars,
+vocabularies, etc) for it will exist over time, some of those under the
+original author's control, and some under the control of other parties.
+The L</VERSIONING> pod section in this file presents a formal method for
 specifying the fully-qualified name of a complete language derived from
 Muldis D, including any common base plus any dialects and extensions.  All
 code written in any dialect or derivation of Muldis D should begin by
@@ -60,6 +59,26 @@ specifying the fully-qualified name of the language that it is written in,
 the format of the name as defined by said method, to make the code
 unambiguous to both human and machine (eg, implementing) readers of the
 code.  The method should be very future-proof.
+
+This multi-part document is in the process of being mostly rewritten, with
+large layout and language design changes that were conceived since the
+middle of 2011 but that weren't formally published, and which are now
+largely being implementation-driven.  The last release of the language
+specification prior to the rewrite by authority C<http://muldis.com> had
+the version number C<0.148.2>, and the first release after the rewrite
+began had version number C<0.200>; there were no releases by
+C<http://muldis.com> with version numbers between those two.
+
+During the transition period, the Muldis-D distribution contains parts of
+two distinct Muldis D specifications, the newer
+C<Muldis_D:Plain_Text:"http://muldis.com":"0.200"> which is being regularly
+fleshed out, and the older C<Muldis_D:"http://muldis.com":0.148.2:PTMD_STD>
+which is a static archive.  The parts of the older are all indexed by
+L<Muldis::D::Outdated> and live under its namespace, while the parts of the
+newer all live outside the C<Outdated> namespace.  You should always read
+the newer parts first, and just refer to the older parts for subject areas
+not yet rewritten.  Older parts are subject to be removed piecemeal when
+their content has been rewritten, and should all eventually go away.
 
 Muldis D is a computationally / Turing complete (and industrial strength)
 high-level programming language with fully integrated database
@@ -74,11 +93,10 @@ however, the language should lend itself to making fast implementations.)
 Muldis D is intended to qualify as a "B<D>" language as defined by
 "I<Databases, Types, and The Relational Model: The Third Manifesto>"
 (I<TTM>), a formal proposal for a solid foundation for data and database
-management systems, written by Chris Date (C.J. Date) and Hugh Darwen; see
-L<http://www.aw-bc.com/catalog/academic/product/0,1144,0321399420,00.html>
-for a publishers link to the book that formally publishes I<TTM>.  See
-L<http://www.thethirdmanifesto.com/> for some references to what I<TTM> is,
-and also copies of some documents that were used in writing Muldis D.
+management systems, written by Chris Date (C.J. Date) and Hugh Darwen.  See
+L<http://thethirdmanifesto.com> and its "Documents and Books" section for
+that book, and the website also has other resources explaining what I<TTM>
+is, and has copies of some documents that were used in writing Muldis D.
 
 It should be noted that Muldis D, being quite new, may omit some features
 that are mandatory for a "B<D>" language initially, to speed the way to a
@@ -95,7 +113,9 @@ and various SQL implementations (see the L<Muldis::D::SeeAlso>
 file).  It also appears in retrospect that Muldis D has some designs in
 common with FoxPro or xBase, and with the Ada and Lua languages.  The
 newer L<C'Dent|http://cdent.org/> language has some similarities as well.
-Most recently Lisp became a larger influence.
+Most recently Lisp became a larger influence, as well as Python.  At some
+point a section will be added that lists the various influences as well as
+similarities with other languages, whether by influence or by coincidence.
 
 In any event, the Muldis D documentation will be focusing mainly on how
 Muldis D itself works, and will spend little time in providing rationale;
@@ -103,7 +123,7 @@ you can read the aforementioned external documentation for much of that.
 
 Continue reading the language spec in L<Muldis::D::Outdated::Basics>.
 
-Also look at the separately distributed L<Muldis::Rosetta>, which is the
+Also look at the separately distributed L<Muldis::D::RefEng>, which is the
 first main implementation of Muldis D.
 
 Muldis D is an L<Acmeist|http://www.acmeism.org/> programming language for
@@ -111,6 +131,13 @@ writing portable database modules, that work with any DBMS and with any
 other programming language, for superior database interoperability.
 
 =head1 VERSIONING
+
+Strictly speaking, Muldis D is not just a single language but rather is a
+family of similar languages.  Each language in the family can be referred
+to informally as just B<Muldis D> but formally each one should have a
+distinct fully-qualified name.  In this documentation, terms like
+I<variant> or I<version> or I<dialect> may be used to mean any particular
+specific language rather than the whole family.
 
 All code written in any variant of Muldis D should begin with metadata
 that explicitly states that it is written in Muldis D, and that fully
@@ -134,8 +161,12 @@ In documentation, it is typical to use a Muldis D language name involving
 just a sub-sequence of the allowed elements that is missing child-most
 allowed elements; in that case, this language name implicitly refers to the
 entire language sub-tree having the specified elements in common; an
-example of this is the 3-element name mentioned in this file's DESCRIPTION
+example of this is the 4-element name mentioned in this file's DESCRIPTION
 section.  Even in code, sometimes certain child-most elements are optional.
+
+For the official B<Muldis D Plain Text> language, a fully-qualified
+language name, as would be declared by code, has exactly 5 parts: B<Family
+Name>, B<Syntax Name>, B<Script Name>, B<Authority>, B<Version Number>.
 
 While not mandatory for Muldis D variants in general, it is strongly
 recommended that all elements of a Muldis D language name would, when
@@ -168,6 +199,14 @@ this name string would be the first characters in the file, and only
 following them would be the characters for the actual Muldis D code that
 the name is metadata for.
 
+For examples:
+
+    Muldis_D:Plain_Text:ASCII:"http://muldis.com":"0.200"
+
+    Muldis_D:Plain_Text:"Unicode(6.2.0,UTF-8,canon)":"http://muldis.com":"0.200"
+
+    Muldis_D:Plain_Text:ASCII:"http://example.com":"42"
+
 With all hosted data variants, the Muldis D code is represented by
 collection-typed values that are of some native type of some other
 programming language (eg, Perl) which is the host of Muldis D, so the
@@ -175,19 +214,57 @@ actual format (of the language name defining sequence and its elements) is
 simply a sequence-typed value of the host programming language.  The Muldis
 D code is written here by way of writing code in the host language.
 
-=head2 Base Name
+=head2 Family Name
 
-The first element of the Muldis D language name is simply the character
+The first element of a Muldis D language name is simply the character
 string C<Muldis_D>.  Any language which wants to claim to be a variant of
 Muldis D should have this exact first element; only have some other value
 if you don't want to claim a connection to Muldis D at all, and in that
 case feel free to just ignore everything else in this multi-document.
 
-=head2 Base Authority
+=head2 Syntax Name
 
-The second element of the Muldis D language name is some character string
+The second element of a Muldis D language name indicates the primary syntax
+of the Muldis D code, meaning its implicit vocabulary and its grammar.  For
+the canonical Muldis D by C<http://muldis.com>, it is simply the character
+string C<Plain_Text>.  Any other Muldis D grammars not intended to be the
+canonical one would likely be some other character string, such as
+C<Perlish> or C<SQL> or C<Tutorial_D>.
+
+=head2 Script Name
+
+The third element of a Muldis D language name, at least for
+C<Muldis_D:Plain_Text>, indicates the primary script of the Muldis D code,
+meaning is character repertoire and/or character encoding and/or character
+normalization.  Under the assumption that a C<Muldis_D:Plain_Text> parser
+might be reading the source code as binary data or otherwise as
+unnormalized character data, declaring the Script Name makes it completely
+unambiguous as to what characters it is to be treating the input as.
+
+For a simple example, a Script Name of C<ASCII> says every literal source
+code character is a 7-bit ASCII character (and representing any non-ASCII
+characters is being done with escape sequences), and this is recommended
+for any C<Muldis_D:Plain_Text> file that doesn't need to be something else.
+For various legacy 8-bit formats the Script Name can tell us if we're using
+C<Latin1> or C<CP1252> or C<EBCDIC> etc.  For Unicode the Script Name would
+have multiple parts, such as C<Unicode(6.2.0,UTF-8,canon)>, indicating
+expected repertoire, and encoding (useful more with ones lacking BOMs); but
+at the very least it is useful with normalization; if C<compat> is declared
+then the source code is folded before it is parsed so possibly distinct
+literal characters in the original code are seen as identical character
+strings by the main parser, while C<canon> would not do this folding.
+
+A Muldis D parser would possibly scan through the same source code multiple
+times filtering by a variety of text encodings until it can read a Muldis D
+language name declaring the same encoding that the name is itself written
+in, and then from that point it would expect the whole file to be that
+declared encoding or it would consider the code invalid.
+
+=head2 Authority
+
+The fourth element of the Muldis D language name is some character string
 whose value uniquely identifies the authority or author of the variant's
-base language specification.  Generally speaking, the community at large
+language specification.  Generally speaking, the community at large
 should self-regulate authority identifier strings so they are reasonable
 formats and so each prospective authority/author has one of their own that
 everyone recognizes as theirs.  Note that an authority/author doesn't have
@@ -224,56 +301,25 @@ following a change of who is the official maintainer.
 
 Releasing a delta document for a version of this current multi-document
 where the referenced original is released by someone else, and where the
-delta either makes incompatible changes or adds DBMS entities in the
-C<sys.std> top-level namespace (as opposed to in C<sys.imp>).
+delta either makes incompatible syntax changes or makes changes to the
+C<Muldis_D> or C<Muldis_D::Low_Level> packages.
 
 =back
 
-=head2 Base Version Number
+=head2 Version Number
 
-The third element of the Muldis D language name, at the very least when the
-base authority is C<http://muldis.com>, is a multi-part base version
-number, which identifies the base language spec version between all those
+The fifth element of the Muldis D language name, at the very least when the
+authority is C<http://muldis.com>, is a multi-part version
+number, which identifies the language spec version between all those
 by the same authority, typically indicating the relative ages of the
 versions, the relative sizes of their deltas, and perhaps which development
-branches the versions are on.  The base version number is a sequence of
-non-negative integers that consists of at least 1 element, and either 3 or
-4 elements is recommended (the official base version number has 3
+branches the versions are on.  The version number is a sequence of
+non-negative integers that consists of at least 1 element, and 2-4 elements
+is recommended (the official version number typically has 2-3
 elements); elements are ordered from most significant to least (eg, [major,
 minor, bug-fix]).  At the present time, the official spec version number to
 use is shown in the VERSION and DESCRIPTION pod of the current file, when
 corresponding to the spec containing that file.
-
-=head2 Dialect
-
-The fourth element of the Muldis D language name, at the very least when
-the base authority is C<http://muldis.com>, uniquely identifies which
-Muldis D language primary dialect the Muldis D code (that this
-fully-qualified language name is metadata for) is formatted in; for
-example this may be one of several non-hosted plain-text variants, or one
-of several hosted data variants (each host language has its own ones).
-This fourth element can either be some character string or be a sequence of
-3+ elements.  In the first case, the character string is interpreted as the
-name of one of the several dialects included in the current multi-document,
-and the specific variant of said dialect is assumed to be whichever one is
-bundled with the already named base language authority+version.  In the
-second case, the sequence of elements is a dialect name plus authority plus
-version plus whatever, for some spec definition not bundled with the
-current multi-document.  Note that a dialect specification can appear to
-provide features not in the underlying main spec, but code written in any
-dialect needs to be translatable to a standard dialect without changing the
-code's behavior.
-
-See the following parts of the current multi-document for descriptions of
-bundled dialects (names subject to change):
-L<Muldis::D::Outdated::Dialect::PTMD_STD>, L<Muldis::D::Outdated::Dialect::HDMD_Perl6_STD>,
-L<Muldis::D::Outdated::Dialect::HDMD_Perl5_STD>.
-
-=head2 Extensions
-
-Whether or not the Muldis D language name has a fifth or further elements
-depends on the dialect.  See the documentation for each individual dialect
-to see what it supports or requires.
 
 =head1 SEE ALSO
 
@@ -288,7 +334,7 @@ Darren Duncan (C<darren@DarrenDuncan.net>)
 
 This file is part of the formal specification of the Muldis D language.
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+Muldis D is Copyright © 2002-2015, Muldis Data Systems, Inc.
 
 L<http://www.muldis.com/>
 
@@ -341,8 +387,8 @@ for our official works.  You can always use either the C<MuldisX::>
 namespace for related unofficial works, or some other namespace that is
 completely different.  Also as per conventions, its fine to use C<Muldis>
 within a Perl package name where that word is nested under some other
-project-specific namespace (for example, C<Foo::Storage::Muldis_Rosetta> or
-C<Bar::Interface::Muldis_Rosetta>), and the package serves to interact with
+project-specific namespace (for example, C<Foo::Storage::Muldis_D_RefEng> or
+C<Bar::Interface::Muldis_D_RefEng>), and the package serves to interact with
 a Muldis Data Systems work or service.
 
 If you have made a language variant or extension based on the B<Muldis D>
@@ -362,9 +408,9 @@ None yet.
 
 Several public email-based forums exist whose main topic is
 the L<Muldis D|Muldis::D> language and its implementations, especially
-the L<Muldis Rosetta|Muldis::Rosetta> reference implementation, but also
+the L<Muldis::D::RefEng> reference implementation, but also
 the L<Set::Relation> module.  They exist so that users of Muldis D or
-Muldis Rosetta can help each other, or so that help coming from the
+Muldis::D::RefEng can help each other, or so that help coming from the
 projects' developers can be said once to many people, rather than
 necessarily to each individually.  All of these you can reach via
 L<http://mm.darrenduncan.net/mailman/listinfo>; go there to manage your
@@ -374,18 +420,18 @@ subscriptions to, or view the archives of, the following:
 
 =item C<muldis-db-announce@mm.darrenduncan.net>
 
-This low-volume list is mainly for official announcements from Muldis D or
-Muldis Rosetta developers, though developers of related projects can also
-post their announcements here.  This is not a discussion list.
+This low-volume list is mainly for official announcements from Muldis D
+language or implementation developers, though developers of related projects
+can also post their announcements here.  This is not a discussion list.
 
 =item C<muldis-db-users@mm.darrenduncan.net>
 
 This list is for general discussion among people who are using Muldis D or
-any of its implementations, especially the Muldis Rosetta reference
+any of its implementations, especially the Muldis::D::RefEng reference
 implementation.  This is the best place to ask for basic help in getting
-Muldis Rosetta installed on your machine or to make it do what you want.
+Muldis::D::RefEng installed on your machine or to make it do what you want.
 If you are in doubt on which list to use, then use this one by default.
-You could also submit feature requests for Muldis Rosetta or report
+You could also submit feature requests for Muldis D projects or report
 perceived bugs here, if you don't want to use CPAN's RT system.
 
 =item C<muldis-d-language@mm.darrenduncan.net>
@@ -399,8 +445,8 @@ is it the place for non-implementers to get help in using said.
 =item C<muldis-db-devel@mm.darrenduncan.net>
 
 This list is for discussion among people who are designing or implementing
-the Muldis Rosetta DBMS framework core, or who are implementing Muldis
-Rosetta Engines, or who are writing Muldis Rosetta core documentation,
+Muldis::D::RefEng, or other Muldis D implementations,
+or who are writing Muldis::D::RefEng core documentation,
 tests, or examples.  It is not the main forum for the Muldis D language
 itself, nor is it the place for non-implementers to get help in using said.
 
@@ -410,7 +456,7 @@ An official IRC channel for Muldis D and its implementations is also
 intended, but not yet started.
 
 Alternately, you can purchase more advanced commercial support for various
-Muldis D implementations, particularly Muldis Rosetta, from its author by
+Muldis D implementations, particularly Muldis::D::RefEng, from its author by
 way of Muldis Data Systems; see L<http://www.muldis.com/> for details.
 
 =cut
