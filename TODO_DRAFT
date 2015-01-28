@@ -12,12 +12,76 @@ repository, not in the packaged Muldis D distributions on CPAN, so it is
 still available for interested parties to read but doesn't waste the
 resources of everyone else.
 
-The following list is loosely ordered by priority, and is organized into
-groups by approximate subject area, but list items may
-actually be addressed in a different order.  There is no specific time
-table for these items; they are simply to be done "as soon as possible".
-
 ----------
+
+* Or we CAN specify a "complete" grammar but that as written you couldn't
+actually execute it without help, eg interpreting several barewords in a row,
+and so it is still more illustrative; you wouldn't gen a parser from it.
+Call the file that defines this illustrative grammer Muldis/D/Plain_Text.pod
+and so actually that is a replacement for PTMD_STD.pod but it also more
+explains the meaning of things rather than referring to Catalog_Types.
+Focus example code here probably though Basics etc can have some too.
+
+* In grammar, make it so 2 consecutive quoted string tokens, those enclosed
+in single-quotes or double-quotes, will catenate at the parser level and be
+treated as a single quoted string token.  This is a way of splitting long
+strings over multiple lines without explicit catenation or special
+linebreak treatment.  In particular should be useful for splitting
+identifiers, as you can't just use ~ for those.  This feature will
+emphaticly not be available for backtick-quoted string tokens, both as it
+would conflict with things like "x inop preop y" and also no one should be
+using such long names with that format; they can use foo() syntax then. 
+We still want to remember what happened as meta-data though, probably.
+Apparently "infix blank operator" actually quite popular among languages.
+
+* 20150126 comment on TTM list:
+The @" convention of C# (and others?) is very useful for multiline string
+constants, where you want the final string to look like what is written in
+the code (including carriage returns etc). Especially where the string
+contains code in another language (eg GLSL code embedded in C#).
+- Also, different post same day, perhaps "discriminated union type"
+might be a term for describing what an abstract type is?
+
+* Make Low_Level just have Integer division func that rounds in one way,
+specifically round to zero, and let any other options be implemented at a
+higher level in Muldis_D proper.  Or at least the single function taking an
+enum of rounding method is not in Low_Level; the closest is Low_Level might
+give more than one distinct divide operator if reasonable.
+
+* In new Basics.pod, start out by introducing the concept of packages and
+how all code lives in one or another.
+Then say you can only invoke any types or routines, including standard ones,
+by default if you explicitly use the packages declaring them.
+As an exception, some routines or value literals are implicitly made available by
+the Muldis D Plain Text syntax itself, specifically those that the grammer
+as special syntax for, such as assign() and not() and reduce() etc but that list is small.
+First introduce the things you get just because your code is standard Plain Text
+and distinguishing what you have to 'use' a standard package for to get.
+All invocations due to implicit grammar will use the 'identity' identifiers
+so there's no chance of some 'use' changing their behavior.
+Then introduce the most commonly used things that you wuould explicitly use
+::Low_Level or Muldis_D proper or ::Unicode etc for, for each one.
+An open question is whether using '=>' or '..' etc requires a 'use'.
+Declaring :Plain_Text:Unicode just says what literals may exist in the source
+eg as identifier or Text values, it doesn't give you the sysdef unicode operators.
+Introduce the literal syntax for common data types like numbers etc or
+everything that has a special parser-recognized syntax.
+Generally speaking Basics.pod should now feature what used to be PTMD_STD.pod,
+not specifying a complete grammar but by outlining it and giving examples.
+
+* Consider reserving the usage of terms like 'operator' and 'operand' to
+being a syntax/grammar feature describing what syntax a routine call takes,
+rather than it just being an alias for 'function' etc.  For example, if you
+have 3 barewords in a row and either no external context or external
+context says that is the whole row, eg delimited by parens, then we say
+those barewords are (<operand> <operator> <operand>).  So, we say
+backtick-quoting something will force it to be an 'operator' while
+doublequote-quoting something will force it to be an 'operand'.  Or maybe
+better yet, say 'term' or such rather than 'operand', so eg (<term>
+<operator> <term>) and that may be standard practice; so then the operand
+isn't a specific thing, it could be a whole multi-part expression itself.
+A syntax rule is no 2 terms in a row, but 2 operators may appear in a row
+iff the one on the right is a prefix op.
 
 * Make Muldis_D::Low_Level provide multiple selectors for Set values where
 some are shorthands/optimized to produce the kind of Set values that are
@@ -895,6 +959,21 @@ Some features missing in Oracle [that PostgreSQL has]:
 - Transaction level control of synchronous replication
 - UNIX domain sockets with user based auth
 - psql (the by far best SQL client I have used)
+
+* Actually, it seems transactional DDL support is much more widespread, and
+hence MySQL is the main thing lacking it in modern days (InnoDB might have
+supported it but the MySQL interface forces implicit commit on DDL),
+although various DBMSs still have limitations.  See
+https://wiki.postgresql.org/wiki/Transactional_DDL_in_PostgreSQL:_A_Competitive_Analysis
+For PostgreSQL itself, you can't alter an ENUM in a transaction, but you
+can basically do anything else (other than modify tablespaces).
+http://www.postgresql.org/docs/9.4/static/sql-altertype.html
+As of Oracle Database 11g Release 2, Oracle supports Edition-Based
+Redefinition, which basically gives the feature, and otherwise performing
+DDL is an implicit commit to prior operations, like MySQL does.
+Also supporting DDL in transactions: SQL Server (in read-committed
+isolation, more limmited in higher isolation levels), Sybase Adaptive
+Server, DB2 UDB, Informix, Firebird (Interbase).
 
 * http://blog.2ndquadrant.com/progress-online-upgrade/ gives good
 explanation on doing zero/etc-downtime DBMS upgrades, how the new logical
@@ -2665,6 +2744,7 @@ its own kinds of parse nodes, not op calls, such as ??!! and if-then-else.
 * We have just a small number of precedence levels, here from highest to
 lowest, loosely speaking:
   - base literals or selectors or delimited whatevers or foo() etc
+    - for foo() there must be zero whitespace (or unspace) before opening paren
   - general symbolic prefix (tilde-quotes-or-bareword make no difference)
   - general symbolic infix (tilde no diff)
   - general alpha prefix (tilde no diff)
@@ -2674,6 +2754,11 @@ lowest, loosely speaking:
   - short-circuiting / ??!! / if-then-else / given-when-def
   - assignment := (base statement-only)
   - binding infix ::= (binds to statement if possible, else expression)
+ACTUALLY, in fact tilde actually should make a difference, eg quoting
+automatically pushes precedence to "other" level.  That would be best I
+think, a principle of least surprise, so users don't look at a quoted
+identifier and have to guess on its precedence.  Also security implications
+for lookalike graphemes.
 
 * Pegex grammar should work at some level midway between a pure tokenizer
 and the resulting AST.  It should form trees where easy to do without
