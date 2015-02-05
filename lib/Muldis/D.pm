@@ -26,7 +26,8 @@ This document is Muldis::D version 0.200.
 
 This is the root document of the Muldis D language specification; the
 documents that comprise the remaining parts of the specification, in their
-suggested reading order (but that all follow the root), are yet to appear.
+suggested reading order (but that all follow the root), are:
+L<Muldis::D::Plain_Text>.
 
 See also L<Muldis::D::Outdated> (which has its own tree of parts to follow)
 for a prior and outdated version of this document, since the current
@@ -121,7 +122,8 @@ In any event, the Muldis D documentation will be focusing mainly on how
 Muldis D itself works, and will spend little time in providing rationale;
 you can read the aforementioned external documentation for much of that.
 
-Continue reading the language spec in L<Muldis::D::Outdated::Basics>.
+Continue reading the language spec in L<Muldis::D::Plain_Text>, and then in
+L<Muldis::D::Outdated::Basics>.
 
 Also look at the separately distributed L<Muldis::D::RefEng>, which is the
 first main implementation of Muldis D.
