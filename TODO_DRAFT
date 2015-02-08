@@ -14,6 +14,103 @@ resources of everyone else.
 
 ----------
 
+* NEW PLAN (overrides 'syntax_using' etc) ...
+Eliminate Muldis_D::Low_Level package and merge the appropriate parts into
+the standard grammar itself.  This brings consistency as not only do the
+value literals for Integer etc have their own grammar nodes, now all the
+low-level routines do too.
+- See also SC_Bootstrap_Singleton further below for a related concept.
+- So now there is no question what behavior keywords like "not"/"!", whether
+meta-op or not, bind to; they always bind to grammar nodes.
+- Now nothing in Plain_Text or its parse tree / native Muldis D binds to
+something declared in a package.
+- If there are zero 'using' in a module, then there are also zero ordinary
+references to either type names or routine names, except for those declared
+in the current module.
+- The Muldis_D standard package has no dependencies and is defined entirely
+in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
+- A lot of Muldis_D routines are just shims over the nodes, consistently.
+- Example nodes:
+    - SC_Bootstrap_Func_Invo - use like "args --> $name" or "name(*args)" for low-level
+        - \*^[Universal_same,expr,expr]
+        - \*^[Boolean_not,expr]
+        - \*^[Integer_plus,expr,expr]
+    - SC_Bootstrap_Proc_Invo - as you would expect
+        - \*^[Universal_assign,target_expr,source_expr]
+- Note that we don't need to do this for constants because the constants
+that the grammar knows about have their own node types as with previously.
+- Nodes look unpleasant/verbose on purpose as people aren't supposed to use
+them directly, but rather by way of the Muldis_D package shims.
+- All normal low level foundation types are now declared by Muldis_D package
+including Universal and Integer etc; for example:
+    MD.Universal ::= type where true default false;
+    MD.Empty ::= type of Universal where false;
+    MD.Integer ::= type of Universal where \*^[isa_Integer,topic] default 0;
+- Generally, \*^[isa_foo,topic] only exist once; other code uses "isa foo".
+- The "isa" node looks up any "type" per the same visibility rules as normal
+dispatch to "constant" or "function" and invokes the chain of "where"
+predicates starting with the parentmost "of" back down to the invoked type,
+and results in true iff all the "where" resulted in true.
+
+* Need to add something to Plain_Text et al like
+"syntax_using <alias> ::= <package name>"
+which is like "using" but that it has the additional effect of defining
+what Plain_Text itself implicitly uses for its various keywords or special
+syntax and what they bind to.  Mainly affects what its meta-operators bind
+to such as "not" or "reduce" etc, and they bind with "absolute" paths.
+- The alias declared with syntax_using is forbidden from appearing in 'searching';
+if you want to search the package, you have to declare it with 'using' also.
+- Specifying syntax_using is optional, and if omitted, the alias defaults to
+the empty string, eg `::""`, and what the package defaults to is
+parser-implementation-defined, typically Muldis_D::Plain_Text.
+- As such the empty string package lexical alias is reserved.
+
+* Lookup 'abstract' further down this file regarding how identifier resolution
+works.  The rest of this paragraph either amends or supplements that.
+
+* Make parser and compiler as simple as possible such that each one has
+practically zero knowledge of runtime issues such as the routine dispatch
+system.  Each Muldis D package becomes a Perl 5 package, 1:1, and every
+Muldis D routine call is mediated by a runtime routine like
+call_function(ident,args) so the compiled Muldis D code is isolated from
+all that complexity.  Since most MD code goes through Low_Level to eg do
+all the math or array stuff or whatever, there's no Perl equivalent
+translation to worry about.  All binding between compiled packages is done
+strictly at runtime and call_function(ident,args) is the thing savvy to it.
+Actually it is resolve() or something that provides a set of 0..N candidates,
+each a Reference, based just on the names, and call_function() then picks
+one based on the argument data type.  Only 'search' can produce more than
+one result, all others produce exactly one, which fails if it doesn't exist;
+for relative and absolute we can know this at compile time, and search only
+if the current package doesn't use any others, and identity only if pointing
+to the current package.
+
+* Have 2 main classes of comments, where the first class is treated as
+documentation and the second class is treated as whitespace.
+- The /*...*/ form is treated as whitespace and is preserved in the parse
+tree in exactly the same way as whitespace is, and round-trips in the same
+way.  It is not useful to introspect these kinds of comments, and they are
+mainly for things like visual dividing lines or commenting-out code.
+Given especially the latter use, arbitrary bracketing strings may be used
+like with heredocs or quoted-printable, so commenting out code with comments
+is easy enough.
+- Where we desire the comments to be introspectable, they appear as part of
+regular the regular code as Text literals along with some keyword or syntax
+or routine name to associate them with particular things, eg :::= .
+- Where ::= is what-binding, :::= is why-binding, maybe call ::?= ?
+- Any parse node can be given a comment.
+- :::= binds tighter than ::= which is tight.
+- You can do:
+    x :::= 'the answer';
+    x ::= 42;
+  or 
+    x ::= 42 :::= 'the answer';
+  or
+    x :::= 'the answer' ::= 42;
+  which all do the same thing.
+- Parens may be needed like with ::= to ensure binding is to the right thing.
+- Same method works for whole routines etc, todo how to work with param decls etc.
+
 * Let routines/types/etc have traits like public/private whose effect is
 making them visible or invisible to partially-qualified identifier
 resolution to identity identifier operations.  If not explicitly stated,
@@ -27,12 +124,15 @@ may be private/public separation.
 Note that the public/private trait would attach to the namespace/name of
 the material, not to its definition; eg, it belongs on the left hand side
 of the eg "name ::= function...".
+* OR WE HAVE THE CONCEPT OF LEXICAL ROUTINES INSTEAD OR ADDITIONALLY;
+ALL ROUTINES DECLARED INLINE ARE OF THIS KIND.  THEY CAN STILL BE INVOKED
+ANYWHERE IF YOU KNOW THEIR IDENTITY BUT SEARCH WOULD NEVER FIND THEM.
 
 * Or we CAN specify a "complete" grammar but that as written you couldn't
 actually execute it without help, eg interpreting several barewords in a row,
 and so it is still more illustrative; you wouldn't gen a parser from it.
 Call the file that defines this illustrative grammer Muldis/D/Plain_Text.pod
-and so actually that is a replacement for PTMD_STD.pod but it also more
+and so actually that is a replacement for Plain_Text.pod but it also more
 explains the meaning of things rather than referring to Catalog_Types.
 Focus example code here probably though Basics etc can have some too.
 
@@ -80,7 +180,7 @@ Declaring :Plain_Text:Unicode just says what literals may exist in the source
 eg as identifier or Text values, it doesn't give you the sysdef unicode operators.
 Introduce the literal syntax for common data types like numbers etc or
 everything that has a special parser-recognized syntax.
-Generally speaking Basics.pod should now feature what used to be PTMD_STD.pod,
+Generally speaking Basics.pod should now feature what used to be Plain_Text.pod,
 not specifying a complete grammar but by outlining it and giving examples.
 
 * Consider reserving the usage of terms like 'operator' and 'operand' to
@@ -154,11 +254,11 @@ of the 8 types, at least the minimum needed in terms of which all others
 can be defined, eg basic math ops.  The API will include the generic =
 operator.  Each host language will have its own hand-written package
 providing the same API.  The Muldis_D package will just be written in
-PT_STD and a parser/compiler hand-written in each host language will
+Plain_Text and a parser/compiler hand-written in each host language will
 translate it into equivalent host language code, same as with user code.
 Also, for now, special features that would only be used for defining
 Low_Level in Muldis D itself will be left out of the standard
-Source_Code/etc types and out of the PT_STD grammar, including Universal's
+Source_Code/etc types and out of the Plain_Text grammar, including Universal's
 own literal.  Thus we avoid unnecessary work done only for theory.
 Selecting Universal values not one of the 8 won't be supported.
 Any Low_Level package written in Muldis D will just be illustrative.
@@ -185,7 +285,7 @@ Perl programs.
 * All the concrete Source_Code types should be defined just in terms of
 Low_Level types; in particular, none should be defined in terms of
 Relation, generally Capsule and Array should do it for collection types
-as far as what the canonical Muldis D code is composed of, what PT_STD
+as far as what the canonical Muldis D code is composed of, what Plain_Text
 parses into, what the compiler needs to generate Perl/etc.
 - Source_Code will not define system catalog relvars, those are elsewhere.
 
@@ -549,7 +649,7 @@ to Muldis D (MD) what Not Quite Perl (NQP) is to Perl 6.
 that all syntax in MDL is also valid MD syntax, with the same effective
 semantics, but that formally each is declared into separate package and
 syntax namespaces.
-- For example, using `Muldis_D_Lite:PT_STD:"http://muldis.com":0` rather
+- For example, using `Muldis_D_Lite:Plain_Text:"http://muldis.com":0` rather
 than leading with `Muldis_D`.  The different first element implies
 different language and not just different syntax for the same language.
 - MDL is intended to be useful by itself but it is also as minimalist as
@@ -910,7 +1010,7 @@ some other type, typically an expression node set.
 - SC_Default_Of - represents "default_of" keyword
 - SC_Meta_Op_Not - represents "!foo" meta-op
 - SC_Meta_Op_Reduce - represents "[foo]" meta-op
-- SC_Meta_Op_Assign - represents "::=foo" meta-op
+- SC_Meta_Op_Assign - represents ":=foo" meta-op
 - SC_Meta_Op_
 - SC_Lit_Universal - represents "\*[...]" literal syntax for Universal
     values; also has "\*:[...]" variant that asserts exactly 2 elements
@@ -919,9 +1019,9 @@ some other type, typically an expression node set.
     codebase, and since they're all used once each in Low_Level.mdpt, means
     they are otherwise non-invokable by users; possible singletons are:
     - \*^1[maximal_type] - what Universal/LL_List is defined in terms of
-    - \*^1[constant_EMPTY] - what constant LL_EMPTY is defined in terms of
+    - \*^1[constant_empty] - what constant LL_empty is defined in terms of
     - \*^1[function_prepend,expr,expr] - function LL_prepend
-    - \*^1[function_empty,expr]        - function LL_empty
+    - \*^1[function_is_empty,expr]     - function LL_is_empty
     - \*^1[function_first,expr]        - function LL_first
     - \*^1[function_nonfirst,expr]     - function LL_nonfirst
     Note that only the first term in the list defines each singleton.
@@ -935,6 +1035,7 @@ some other type, typically an expression node set.
     \(x,y) --> $"+"
     $SC_Func_Args=>\%{ordered=>[x,y],named=>\%{}} --> $"+"
     "+"(x,y)
+    "+"(*\(x,y))
     x->"+"(y)
     x + y
     div(x,y,round_meth:$=>To_Zero)
@@ -947,6 +1048,12 @@ as long as it isn't quoted.
 - Note that "rtn()" with nothing in the parens now explicitly calls a
 "constant" and not a "function"; you only get a "function" call if
 something is in the parens.
+- If you want the above treated like a function call you instead say like:
+    foo(*\())
+    \() --> $foo
+- How you call a constant in both forms:
+    foo()
+    (--> $foo)
 
 * Inline function declare syntax:
     expr_node_name_containing_Ref_of_func_name ::= function ...
@@ -971,16 +1078,37 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
     3. keyword "from" or "<--" followed by expr
         - defaults to isa $Universal if omitted
     4. keyword "normalize" followed by expr
+        - defaults to topic if omitted
     5. keyword "requires" followed by predicate expr
+        - defaults to true if omitted
     6. keyword "is" is optional, followed by set of trait name keywords in
         braces: "associative", "commutative", "idempotent"
         and other terms like bijective etc may be added
     7. keyword "identity" is optional (when associative), has associated expr
     8. keyword "implements" is optional, has associated entity name
     9. keyword "through" or ":" followed by expr
+        - defaults to topic if omitted
     ...
 - Note that "symmetric" is obsolete here; it meant what "commutative" does.
 - Every part has a default value that is used if omitted
+
+* Constant declare syntax general form:
+    0. keyword "constant" followed by expr
+
+* Type declare syntax general form:
+    0. keyword "type" followed by 0 or 1 of each of next in any order,
+        but with the restriction that {of,default} may not both be omitted:
+    1. keyword "of" is optional, followed by the name of another type
+        - if omitted system treats as if unnamed system maximal type specified;
+        its optionality exists in particular so Universal can be defined,
+        and omitting it is effectively the same as specifying Universal
+    2. keyword "where" followed by predicate expr
+        - defaults to true if omitted
+    3. keyword "default" is optional, followed by expr
+        - if omitted, system follows "of" chain until it finds a "default"
+        and then uses that value
+        - as a special case, if "where" is false anywhere up the "of" chain,
+        there is no default
 
 * Schema objects can be easily indexed for fast(er) dispatch.  To be
 specific, we can pre-make a map from each abbreviation (particularly the
@@ -1151,23 +1279,23 @@ contain Muldis D code, these being analagous to Larry Wall's STD.pm / Perl
 6 grammar written in Perl 6, and the Perl 6 Prelude and standard libraries
 written in Perl 6, and the Perl 6 test suite written in Perl 6.
 - Contained therein is all of the "official" muldis.com Muldis D packages,
-just as PT_STD text files, and the Muldis D compilers written in PT_STD,
-and the Muldis D official test suite written in PT_STD.
+just as Plain_Text text files, and the Muldis D compilers written in Plain_Text,
+and the Muldis D official test suite written in Plain_Text.
 - This release series is *not* expected to be released as an executable
 product by itself; rather it is more of a data product whose files are then
 copied into other projects that actually have the bootstrap or framing or
 whatever Perl or whatever code so that the other projects are executables;
 they include the as-data files to save themselves work and test themselves.
 - Said other Perl/etc projects would synchronize themselves periodically
-with the PT_STD-only project for releases, but the latter has no Perl/etc
+with the Plain_Text-only project for releases, but the latter has no Perl/etc
 in it.
-- Think of the PT_STD-only product like the data files that the Unicode
+- Think of the Plain_Text-only product like the data files that the Unicode
 consortium releases, and the latter being like Perl etc which bundles said
 Unicode data files as effectively parts of the Perl/etc executables.
 - Maybe the modules, compilers, and test suite will all live in one
 repository, but those parts may be released as separate product distros.
 - The repository can have lib/, bin/, and t/ dirs to group the above into.
-- The above PT_STD-only alone probably would *not* be distributed on CPAN.
+- The above Plain_Text-only alone probably would *not* be distributed on CPAN.
 - Even http://www.unicode.org/Public/UNIDATA/ has both spec-data+test fils.
 - Maybe name this repository "Muldis-D-Standard"?
 - This new repository doesn't have to be held back for any work in existing
@@ -1181,7 +1309,7 @@ and it is this that would actually run.  The "Muldis-D-Ref-Perl5" would
 include both a module for embedding in Perl programs ala DBI which succeeds
 "Muldis-Rosetta" and also a script for compiling standalone Muldis D
 programs.  Any or all of the Perl in this distro may be generated from
-PT_STD code in Muldis-D-Standard, or at least the script and shared parts
+Plain_Text code in Muldis-D-Standard, or at least the script and shared parts
 would be, but the public parts of the module might not be.
 The bundled DBD-alike module may have the name "Muldis::D::RefEng".
 - Yet another repository, say "Muldis-D-Perl5", can specify HD_Perl5_STD
@@ -1349,7 +1477,7 @@ a new record. If you do this requiring columns to not be null then you’re
 re-writing your entire table.
 
 * NEXT PRIORITY ...
-Rename Muldis::D::Outdated::Dialect::PTMD_STD to Muldis::D::Outdated::PTMD_STD.
+Rename Muldis::D::Outdated::Dialect::Plain_Text to Muldis::D::Outdated::Plain_Text.
 Rename Muldis::D::Outdated::Dialect::HDMD_Perl[6|5]_STD to remove the ::Dialect.
 Split off the Perl STDs from Muldis::D so they're no longer core
 but they're still official, and distribute the HDMD_Perl5_STD in the same
@@ -1372,12 +1500,12 @@ THE SAME SCHEDULE AS THE TEXT-STD/REST.
 Actually, take this opportunity to overhaul the concept of qualified
 language names and such.  Promote "dialects" from being subservient to
 language into being full languages of their own that are derived from
-Muldis D.  That is, say that what was "PTMD_STD" is now simply *the*
+Muldis D.  That is, say that what was "Plain_Text" is now simply *the*
 concrete syntax of the official "Muldis D" language, and that what was the
 Perl dialects are now 2 full languages whose definitions are derived from
 the standard text-based one, and have their own versioning.
 - So, here are new examples of fully-qualified language declaration names:
-    Muldis_D:PT_STD:Unicode(6.2.0,UTF-8,canon):"http://muldis.com":0.149
+    Muldis_D:Plain_Text:Unicode(6.2.0,UTF-8,canon):"http://muldis.com":0.149
     ['Muldis_D','HD_Perl5_STD','http://muldis.com','0']
     ['Muldis_D','HD_Perl6_STD','http://muldis.com','0']
 - Actually, we are best to split things up so that Muldis D code typically
@@ -1392,7 +1520,7 @@ differently versioned and would only increment when those parts change.
     determines the data types and routines intended for users to use.
     - The version of the system catalog schema, that is the version of the
     "real" Muldis D concrete syntax / data structures as seen by code.
-    - The version of the PT_STD concrete string syntax that users write in,
+    - The version of the Plain_Text concrete string syntax that users write in,
     which a parser needs to know but the system catalog doesn't.
     - All of the above would start at version 0 except the first item.
     - The second item Core is what is expected to change the most often,
@@ -1400,7 +1528,7 @@ differently versioned and would only increment when those parts change.
     - The second/Core and third/Catalog might be stay merged into one item
     as they are kind of inter-dependent, but we may review minimizing Core.
 - Example of Muldis D code declaration of language:
-    Muldis_D:PT_STD:Unicode({1..6.1},UTF-8,canon):"http://muldis.com":{0..42};
+    Muldis_D:Plain_Text:Unicode({1..6.1},UTF-8,canon):"http://muldis.com":{0..42};
     pkg ::= package FooLib:"http://foo.com":0;
     MD ::= using Muldis_D:"http://muldis.com":0;
     Spatial ::= using Muldis_D::Spatial:"http://muldis.com":0;
@@ -1463,7 +1591,7 @@ ones in code can specify multiple language versions that they conform to,
 as if the code is declaring that it only uses the parts of the language
 spec that are unchanged or that intersect between all the specified
 versions.  For example, let one say:
-    Muldis_D:PT_STD:"http://muldis.com":{0.112..0.125,0.127..0.136}
+    Muldis_D:Plain_Text:"http://muldis.com":{0.112..0.125,0.127..0.136}
 ... and then any implementation which takes one of those versions will
 parse the code according to any of those same that it supports.  The idea
 is to make code more easily compatible with a wider range of interpreters,
@@ -1724,7 +1852,7 @@ appropriate packages that define DBMS-specific types/routines, but by also
 declaring that "the database" is of some DBMS-specific/allowed type, such
 as, that all database tuple attrs are "Table" typed rather than "Relation".
 
-* Make Muldis D self-hosted.  Have it support parsing PTMD_STD code using a
+* Make Muldis D self-hosted.  Have it support parsing Plain_Text code using a
 read-only operator into trees of scalars that are the new native Muldis D
 code, which the older system catalog is just views on.  Make it support
 writing the full Muldis D compiler in Muldis D, that can eg generate Perl
@@ -1749,7 +1877,7 @@ comprises a different view of the same package code.
 package/module/extension as a single scalar value that is a concrete syntax
 tree package node, whose attributes contain the rest of the tree defining
 the whole package.  These trees are composed of the nodes that are now the
-native Muldis D code format, which PT_STD very closely approximates, and
+native Muldis D code format, which Plain_Text very closely approximates, and
 the HD_Perl*_STD slightly less closely approximate.
 Preserves details such as: whether child expressions were written nested
 under parents without explicit node names vs nested with explicit names vs
@@ -1796,36 +1924,36 @@ would be provided by the language core; the last one might be an extension.
 another kind of system catalog, but only between modules that are loaded as
 extensions rather than depots, I think.
 
-* An EXTENSION module, eg Muldis_D::PT_STD, is what provides the routines
-to translate PT_STD code strings into Muldis D's native dialect, the trees
+* An EXTENSION module, eg Muldis_D::Plain_Text, is what provides the routines
+to translate Plain_Text code strings into Muldis D's native dialect, the trees
 of scalar nodes that the "trees" catalog view uses, and said extension also
-provides the reverse translator; working with PT_STD code strings is *not*
+provides the reverse translator; working with Plain_Text code strings is *not*
 part of the Muldis_D core module, and such would only be needed in a
-Muldis D program implementing a REPL or a compiler or one that uses PT_STD
+Muldis D program implementing a REPL or a compiler or one that uses Plain_Text
 as its disk storage format.
 - This extension would also define another set of syntax node types which
 holds a lot more concrete syntax details than the native node trees, such
 as the actual whitespace used between things or the actual format of
 identifiers (bareword vs quoted) or any extra/explicit nesting parenthesis
-and so on, such that the exact same PT_STD
+and so on, such that the exact same Plain_Text
 code string could be reproduced from it; mainly these would just be used
 internally to the extension, except say when someone wanted to extend it.
-- The PT_STD->native translator function would probably have 3 main other
+- The Plain_Text->native translator function would probably have 3 main other
 functions that it invokes serially, where one is a tokenizer that just
-converts the PT_STD string into a flat array of tokens, where each token
+converts the Plain_Text string into a flat array of tokens, where each token
 may be represented by some token-type-specific scalar value rather than
 being a Text value, so eg each end of a delimiter pair and whitespace hunk
 would be a separate token value here, and the second function takes this
 token array and converts it to a tree, eg combining delimiter pairs into a
 single value with children from 2 without; the third converts this full
 concrete tree to the quasi-concrete tree of the native Muldis_D.
-- It is expected that some level of Muldis_D::PT_STD is what deals with
+- It is expected that some level of Muldis_D::Plain_Text is what deals with
 unescaping string literals or compat-normalizing Unicode etc or otherwise
 following the wishes of concrete syntax directives.
 - Similarly, the extension would be what determines whether a string is
-valid PT_STD, including that it provides a "is this PT_STD" bool func.
-- Similarly, Muldis_D::PT_STD would provide config options for the
-translater to PT_STD from native, say on what num format opts to prefer
+valid Plain_Text, including that it provides a "is this Plain_Text" bool func.
+- Similarly, Muldis_D::Plain_Text would provide config options for the
+translater to Plain_Text from native, say on what num format opts to prefer
 or what length to wrap lines etc.
 - To help specify a pure functional parser that is both resistant to having
 too-deep levels of recursion (say, a process defined on head+rest), we
@@ -1834,7 +1962,7 @@ relational operators, and define the parser largely in terms of say
 relational join and such, so it is more conceptually parallel than
 recursive (or iterative).
 - Have a function that derives an Array-of-Codepoint (or similar relation)
-from a String, then use it on the PT_STD source string as the first step,
+from a String, then use it on the Plain_Text source string as the first step,
 and then say do tokenizing in terms of joining that relation against a
 static relation having say 1 tuple per distinct character in the text
 repertoire, mapping for example traits like is-whitespace or is-symbol or
@@ -1850,9 +1978,9 @@ range-defined form, and if expanding is needed, do it when needed;
 then we may only need to store a few dozen tuples rather than thousands.
 - This same design would scale transparently to different repertoires,
 eg ASCII vs Unicode; just the static tables of characters are larger.
-- The very first step in parsing PT_STD:Unicode(...) is to bring the source
+- The very first step in parsing Plain_Text:Unicode(...) is to bring the source
 Text to a normal form, either "canon" or "compat" (with semantics of NFD or
-NFKD in the spec) and then the PT_STD parser proper then works with that
+NFKD in the spec) and then the Plain_Text parser proper then works with that
 Unicode normal form as its input.
 - We would have a whitelist of codepoints that may appear outside of a
 quoted string in the source, and all others are illegal outside, for
@@ -1864,7 +1992,7 @@ example, where that distinction mainly just matters for barewords.
 has a main distinction between "scripts" and "symbols".
 
 * Thanks to syntax/package separation, we have a nice semi-orthogonal
-situation where PT_STD syntax can be used to write Muldis D or SQL,
+situation where Plain_Text syntax can be used to write Muldis D or SQL,
 and SQL syntax can likewise be used to write both, in theory.
 - That is, the package determines the "semantics", the grammar the syntax.
 
@@ -1874,7 +2002,7 @@ emulate and at what level to emulate.  Perl 6's solution may be a guide.
 We might consider multiple packages as a solution where different packages
 provide different versions of the Muldis D API, and they can be used at
 once, similar to having packages provide the APIs of SQL / other languages,
-so that the parsers eg for PT_STD don't have to do it themselves for
+so that the parsers eg for Plain_Text don't have to do it themselves for
 modules but rather just for concrete syntax vers.  Still open to debate.
 - The best way to do this emulation cleanly, for package/module versions,
 is that in the general case we consider every name+auth+vnum permutation
@@ -1930,7 +2058,7 @@ package.  The list can be either empty or include all the used packages;
 searching will only look in this list, and one can't use search/unqualified
 syntax to reference anything outside this list, just relative or absolute.
 - Example:
-    Muldis_D:PT_STD:ASCII:"http://muldis.com":0;
+    Muldis_D:Plain_Text:ASCII:"http://muldis.com":0;
     package pkg ::= FooLib:"http://foo.com":0;
     using MD ::= Muldis_D:"http://muldis.com":0;
     using Pg ::= DBMS::Postgres ...
@@ -2042,10 +2170,10 @@ for characters in Latin1/etc, such that the base number string possrep
 still is valid Unicode character numbers for those characters.
 - An extension, say Muldis_D::Unicode, adds the complexity of knowledge for
 the rest of Unicode, including the NFD and NFKD Text subtypes/possreps etc.
-- The Muldis_D::PT_STD string code parser also comes in 2 or more versions,
+- The Muldis_D::Plain_Text string code parser also comes in 2 or more versions,
 where said base version only can work with source with th same simple/8-bit
 knowledge as the Muldis D core, and you need another version say
-Muldis_D::PT_STD::Unicode to handle source using the wider repertoire,
+Muldis_D::Plain_Text::Unicode to handle source using the wider repertoire,
 at the very least so it can parse code properly where the parsing semantics
 depends on the notion of what characters are letters or symbols or ws
 and on canonical vs compatibility notions of equivalence.
@@ -2053,9 +2181,9 @@ and on canonical vs compatibility notions of equivalence.
 character repertoire or encoding or etc the file is written in (which may
 even include the "auth" part of the name), so it appears almost-first,
 say like this:
-    Muldis_D:PT_STD:ASCII:"http://muldis.com":0;
-    Muldis_D:PT_STD:Unicode({1..6.1},UTF-8,canon):"http://muldis.com":{0..42};
-    Muldis_D:PT_STD:Unicode(6.0,UTF-8,compat):"http://muldis.com":0;
+    Muldis_D:Plain_Text:ASCII:"http://muldis.com":0;
+    Muldis_D:Plain_Text:Unicode({1..6.1},UTF-8,canon):"http://muldis.com":{0..42};
+    Muldis_D:Plain_Text:Unicode(6.0,UTF-8,compat):"http://muldis.com":0;
 - There may be further variants for diff versions of Unicode standard.
 - Muldis_D::Unicode also adds the synonyms for core routines/etc that have
 Unicode character names, while the core just has the Latin1 char names.
@@ -2068,13 +2196,13 @@ names using numeric escape sequences rather than literal Unicode chars.
 core package should declare a mixin type "SourceCode" or several such like
 "PackageSourceCode" or "ValueSourceCode" etc and then declare a virtual
 parser function whose input type is "SourceCode" and whose result type is a
-node of the native Muldis D language.  Then Muldis_D::PT_STD would declare
+node of the native Muldis D language.  Then Muldis_D::Plain_Text would declare
 a subtype of Text that composes the mixins say "PT_STD_SourceCode_ASCII" as
 well as a function implementing said virtual parser which takes that ASCII
-type as input, while Muldis_D::PT_STD::Unicode does a corresponding thing
+type as input, while Muldis_D::Plain_Text::Unicode does a corresponding thing
 but for a different subtype of Text as appropriate.  These Text subtypes
 would have their defining constraint as, Text value that starts with the
-string "Muldis_D:PT_STD:ASCII:" and such.  And so the logic for what parser
+string "Muldis_D:Plain_Text:ASCII:" and such.  And so the logic for what parser
 to select in a generic case just comes down to regular multi-dispatch based
 on analysis of the Text values for characteristics specific to a language,
 and it is easy to auto-extend the system with support for new languages,
@@ -2083,7 +2211,7 @@ but a main importance is that the Unicode vs not thing is no longer a
 complicating factor for users.
 
 * Here is the main program of a possible Muldis D cross-compiler to Perl 5
-written in Muldis D; it reads PT_STD Muldis D code from STDIN and writes
+written in Muldis D; it reads Plain_Text Muldis D code from STDIN and writes
 equivalent Perl 5 code to STDOUT.  One of the first goals of implementing
 Muldis D should be to empower this being able to compile itself.
 Presumably all of its dependencies would start out as shims that are
@@ -2097,15 +2225,15 @@ would not be caught in that process are of the nature of invoking or
 referencing some entity that doesn't exist or is of a mismatched type etc,
 and then by default those would produce errors when running the Perl code.
 
-    Muldis_D:PT_STD:ASCII:"http://muldis.com":0;
+    Muldis_D:Plain_Text:ASCII:"http://muldis.com":0;
 
     package perl5_from_mdpt ::= perl5_from_mdpt:"http://example.com":0
     {
         using Muldis_D         ::= Muldis_D:"http://muldis.com":0;
-        using Muldis_D::PT_STD ::= Muldis_D::PT_STD:"http://muldis.com":0;
+        using Muldis_D::Plain_Text ::= Muldis_D::Plain_Text:"http://muldis.com":0;
         using Muldis_D::Perl5  ::= Muldis_D::Perl5:"http://muldis.com":0;
 
-        searching [Muldis_D,Muldis_D::PT_STD,Muldis_D::Perl5,perl5_from_mdpt];
+        searching [Muldis_D,Muldis_D::Plain_Text,Muldis_D::Perl5,perl5_from_mdpt];
 
         bootstrap ::= stimulus_response_rule
             when loaded invoke main;
@@ -2114,12 +2242,12 @@ and then by default those would produce errors when running the Perl code.
 
     main ::= procedure () :
     [
-        /* Read the PT_STD source code from STDIN until end-of-file.
+        /* Read the Plain_Text source code from STDIN until end-of-file.
            Today we'll just assume that it defines a package. */
         var input_source : Text;
         read_Text_file( &input_source );
 
-        /* Validate the input source code and exit if bad PT_STD syntax or
+        /* Validate the input source code and exit if bad Plain_Text syntax or
            it doesn't define a package. */
         if not (input_source isa $PT_STD_Package_Source_Code_ASCII) then
         [
@@ -2534,7 +2662,7 @@ just the plain "z" is the only option, in general.  So then, to write an
 integer/rat/text literal, the only option then is to say "42/3.25/'hello'";
 you can't say "Int:42/Rat:3.25/Text:'hello'" any more.  So cascade these
 simplifications, and we also free up the ":" mostly for other uses.  This
-particularly applies to PTMD_STD, but we'll also simply the Perl-STDs where
+particularly applies to Plain_Text, but we'll also simply the Perl-STDs where
 possible, which is easier in Perl 6.
 Unlike "[$|%|@]:..." for generic value literals, only %|@ without the colon
 are in use, I believe, as prefix operators, meaning cast-tuple-as-relation
@@ -2555,7 +2683,7 @@ for "<expr>.{attr}" although it may still be a function shorthand.
 such as "?" for boolean, "+" for number, "~" for char str.  This terse
 syntax would always deal in just base-10 for numbers-with-char.  As for
 whether to produce an Integer or Rational or etc from a string, the parsing
-rules would be like for PTMD_STD, eg, presence or absense of a radix point
+rules would be like for Plain_Text, eg, presence or absense of a radix point
 or a division/fraction slash, etc.
 Casting to the same type produces the same value as the input.
 The functions might be transitive, or whatever the term, so eg saying
@@ -2694,7 +2822,7 @@ See also Postgres "COMMENT ON ..." syntax.
 
 * Note: Postgres $$...$$ delimiters are actually general string delimiters
 and can be used anywhere '...' are, not just function definitions.  They
-also generalize to heredocs, eg, $foo$...$foo$ so maybe PT_STD should
+also generalize to heredocs, eg, $foo$...$foo$ so maybe Plain_Text should
 support this kind of thing too, maybe.  For that matter, I should have a
 function that takes a string as input and outputs some delimiter suitable
 for quoting it without escapes because it doesn't occur in the string.
@@ -2763,7 +2891,7 @@ foo() operator and use it infix using backquotes, eg "x `foo` y", meaning
 my thought of doing this has a precedent.  Haskell says you can take a
 symbolic infix and make it prefix using parens, eg, "x + y" -> "(+) x y".
 
-* PTMD_STD Syntax/parsing cluster:
+* Plain_Text Syntax/parsing cluster:
 - A general rule is, the parser has zero knowledge of what specific
 operators or vars/etc exist, and must be able to derive a concrete syntax
 tree using just basic grammatical knowledge, such as knowing the difference
@@ -3323,7 +3451,7 @@ isolation are best not legislated by Muldis D but be left up to the
 implementations and users.  Muldis D just has to require that the database
 is always in a consistent state on statement boundaries et al.
 
-* Define how one can split a PTMD_STD depot into multiple text files since
+* Define how one can split a Plain_Text depot into multiple text files since
 you would conceptually put an entire potentially large program in one.
 
 * Tweak the STD dialects to account for defining system modules with them.
@@ -3491,7 +3619,7 @@ canonicalization of List etc for "="; it is a plain real function like "="
 and not a virtual like "<=>" etc.  Regardless, this whole paragraph
 requires more thought.
 
-* Update the PTMD_STD grammar to split up the "Name_payload" or its parts
+* Update the Plain_Text grammar to split up the "Name_payload" or its parts
 further so that, rather than just the 2 "[|non]quoted_name_str", there is
 at least the additional "nonquoted_rtn_invo_name_str" which is only allowed
 to be used in a routine invocation context like <op><unspace>(...), with
@@ -3612,7 +3740,7 @@ latter's command language was Information Systems Base Language (ISBL).
 scalar-type, domain-type, subset-type, mixin-type.
 
 * In all 3 STD.pod, complete the description text, defining interpretation
-in PTMD_STD and structure in the 2 Perl-STD, for each of these 7 material
+in Plain_Text and structure in the 2 Perl-STD, for each of these 7 material
 kinds: scalar-type, tuple-type, relation-type, domain-type, subset-type,
 mixin-type, subset-constraint.
 
@@ -4219,7 +4347,7 @@ the input relations don't need to have the same headings.
 
 ----------
 
-* In PTMD_STD, consider further changes to how character escape sequences
+* In Plain_Text, consider further changes to how character escape sequences
 in strings/etc are done.  For example, whether the simple escape sequence
 for each string delimiter char may be used in all kinds of strings (as they
 are now) or just in strings having the same delim char as is being escaped.
@@ -4265,7 +4393,7 @@ other uses can just say foo as per usual; in fact, it must be this way.
 
 * Consider in all STD adding a new pragma that concerns whether data in
 delimited character string literals is ASCII or Unicode etc.
-Example PTMD_STD grammar additions:
+Example Plain_Text grammar additions:
             <ws>? ',' <ws>? str_char_repertoire <ws>? '=>' <ws>? <str_cr>
     <str_cr> ::=
         '{' <ws>?
@@ -4278,7 +4406,7 @@ Example PTMD_STD grammar additions:
           ASCII
         | Unicode_6.2.0_canon
         | Unicode_6.2.0_compat
-Example PTMD_STD code additions:
+Example Plain_Text code additions:
     str_char_repertoire => { text => Unicode_6.2.0_canon,
         name => Unicode_6.2.0_compat, cmnt => Unicode_6.2.0_compat },
     str_char_repertoire => { all => ASCII },
@@ -4355,7 +4483,7 @@ Ordered tuples can be used instead of arrays, and in fact might be a better
 solution for multiple reasons.  To do this, just say "%:{x,y,z}" rather
 than "[x,y,z]"; the former is shorthand for '%:{"0"=>x,"1"=>y,"2"=>z}'.
 
-* In PTMD_STD, consider loosening the grammar regarding some of the normal
+* In Plain_Text, consider loosening the grammar regarding some of the normal
 prefix or postfix or infix operators so that rather than mandating
 whitespace be present between the operators and their arguments, the
 whitespace is optional where it wouldn't cause a problem.
@@ -4494,7 +4622,7 @@ types, maybe overhaul the types.
 * Fundamentally, a Muldis D DBMS API or client-server protocol has a
 command pattern where the request is Muldis D code and so is the response.
 This is like the relationship between Javascript and JSON, where the data
-is expressed in the same syntax as code.  PTMD_STD by default.
+is expressed in the same syntax as code.  Plain_Text by default.
 Actually, this brings up an interesting thought in that a DBMS shell could
 be analagous to writing HTTP requests manually like telnet to port 80.
 But a different Muldis D dialect would be optimized for machine-to-machine
@@ -4510,14 +4638,14 @@ PgAgent is designed to cover that need.
 
 ----------
 
-* Add one or more files to the distro that are straight PTMD_STD code like
+* Add one or more files to the distro that are straight Plain_Text code like
 for defining a whole depot (as per the above) but instead these files
 define all the system entities.  Or more specifically they define just the
 interfaces/heads of all the system-defined routines, and they have the
 complete definitions of all system-defined types, and they declare all the
 system catalog dbvars/dbcons.  In other words these files contain
 everything that is in the sys.cat dbcon; anything that users can introspect
-from sys.cat can also be read from these files in the form of PTMD_STD
+from sys.cat can also be read from these files in the form of Plain_Text
 code, more or less.  The function of these files is analogous to the Perl 6
 Setting files described in the Perl 6 Synopsis 32, except that the Muldis D
 analogy explicitly does not define the bodies of any built-in routines.  An
@@ -4525,7 +4653,7 @@ idea is that Muldis D implementations could take these files as is and
 parse them to populate their sys.cat that users see; of course, the
 implementations can actually implement the routines/types as they want.
 Note that although this Muldis D code would be bundled with the spec, it is
-most likely that the PTMD_STD-written standard impl test suite will not.
+most likely that the Plain_Text-written standard impl test suite will not.
 Note that these files will not go in lib/ but in some other new dir.  Note
 that it is likely any implementation will bundle a clone of these files
 (suitably integrated as desired) rather than having an actual external
@@ -4537,7 +4665,7 @@ legalities concern existing tutorial/etc books that have sample code.
 
 * Create another distribution, maybe called Muldis::D::Validator, which
 consists essentially of just a t/ directory holding a large number of files
-that are straight PTMD_STD code, and that emit the TAP protocol when
+that are straight Plain_Text code, and that emit the TAP protocol when
 executed.  The structure and purpose of this collection is essentially
 identical to the official Perl 6 test suite.  A valid Muldis D
 implementation could conceivably be defined as any interpreter which runs
