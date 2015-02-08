@@ -32,11 +32,17 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
 - A lot of Muldis_D routines are just shims over the nodes, consistently.
 - Example nodes:
     - SC_Bootstrap_Func_Invo - use like "args --> $name" or "name(*args)" for low-level
-        - \*^[Universal_same,expr,expr]
-        - \*^[Boolean_not,expr]
-        - \*^[Integer_plus,expr,expr]
+        - \*^[Universal_same,expr,expr]        # used just like this
+        - \*^[Boolean_not,bool_expr]           # used by not/! keyword
+        - \*^[Integer_plus,int_expr,int_expr]  # used just like this
+        - \*^[Array_elem,ary_expr,nnint_expr]  # used by x.[y] syntax
+        - \*^[Tuple_attr,tup_expr,atnm_lit]    # used by foo.bar syntax
+        - \*^[select_Capsule,ref_expr,tup_expr]  # used by x=>y syntax
     - SC_Bootstrap_Proc_Invo - as you would expect
-        - \*^[Universal_assign,target_expr,source_expr]
+        - \*^&[Universal_assign,target_expr,source_expr]  # used by x := y
+        - \*^&[Array_elem,ary_expr,nnint_expr,expr]  # used by x.[y] ::= foo
+        - \*^&[Tuple_attr,tup_expr,atnm_lit,expr]    # used by x.y ::= foo
+- Note that some of the above operations may instead get their own nodes.
 - Note that we don't need to do this for constants because the constants
 that the grammar knows about have their own node types as with previously.
 - Nodes look unpleasant/verbose on purpose as people aren't supposed to use
