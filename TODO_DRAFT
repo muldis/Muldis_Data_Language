@@ -52,6 +52,8 @@ including Universal and Integer etc; for example:
     MD.Universal ::= type where true default false;
     MD.Empty ::= type of Universal where false;
     MD.Integer ::= type of Universal where \*^[isa_Integer,topic] default 0;
+    MD.Integer.NN ::= type of Integer where topic >= 0;
+    MD.Integer.P ::= type of Integer.NN where topic > 0 default 1;
 - Generally, \*^[isa_foo,topic] only exist once; other code uses "isa foo".
 - The "isa" node looks up any "type" per the same visibility rules as normal
 dispatch to "constant" or "function" and invokes the chain of "where"
@@ -1103,18 +1105,22 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
 
 * Type declare syntax general form:
     0. keyword "type" followed by 0 or 1 of each of next in any order,
-        but with the restriction that {of,default} may not both be omitted:
+        but with some restrictions:
     1. keyword "of" is optional, followed by the name of another type
-        - if omitted system treats as if unnamed system maximal type specified;
-        its optionality exists in particular so Universal can be defined,
-        and omitting it is effectively the same as specifying Universal
+        - "of" is optional iff "where" is just true and "default" is defined
+        - in other words, "of" must be defined for every type except for the
+        system maximal type, and therefore we are making it mandatory that
+        to declare any type one must first declare an explicit name for the
+        system maximal type or use a package that does, such as Muldis_D/Universal.
     2. keyword "where" followed by predicate expr
         - defaults to true if omitted
+        - if "where" is false, "default" must be omitted; is the empty type
     3. keyword "default" is optional, followed by expr
         - if omitted, system follows "of" chain until it finds a "default"
         and then uses that value
+        - it is invalid for any used "default" to specify a value that "where" rejects
         - as a special case, if "where" is false anywhere up the "of" chain,
-        there is no default
+        there is no default, such as with the system minimal/empty type
 
 * Schema objects can be easily indexed for fast(er) dispatch.  To be
 specific, we can pre-make a map from each abbreviation (particularly the
