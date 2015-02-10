@@ -37,6 +37,7 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
         - \*^[Integer_plus,int_expr,int_expr]  # used just like this
         - \*^[Array_elem,ary_expr,nnint_expr]  # used by x.[y] syntax
         - \*^[Tuple_attr,tup_expr,atnm_lit]    # used by foo.bar syntax
+        - \*^[Tuple_has_attr,tup_expr,atnm_lit]  # used by foo.?bar syntax
         - \*^[select_Capsule,ref_expr,tup_expr]  # used by x=>y syntax
     - SC_Bootstrap_Proc_Invo - as you would expect
         - \*^&[Universal_assign,target_expr,source_expr]  # used by x := y
@@ -118,6 +119,24 @@ or routine name to associate them with particular things, eg :::= .
   which all do the same thing.
 - Parens may be needed like with ::= to ensure binding is to the right thing.
 - Same method works for whole routines etc, todo how to work with param decls etc.
+
+* Make it ideomatic that if a tuple or especially a capsule type
+conceptually has an optional attribute, that attribute is actually missing
+in values where it isn't populated, rather than eg some special sentinel
+value.  Related to this, the terse infix ".?" like "tup.?atnm" is provided
+to test the existence of an attribute.  Mainly this ideom is for cases
+where there isn't any reasonable "default" value for the attribute to
+conceptually use when it isn't explicitly provided.  Case in point for a
+type defining a type; "of" and "default" should be missing if not defined;
+only "where" can default (to "true"), and even then, should ideally be
+missing as well when not explicit.  Mainly this is for situations where it
+should be possible to tell in context as to why the attribute is missing,
+such that because attributes x and y may never appear together.  It is
+intended as a different use case for typical reasons attributes might be
+missing normal values in a relation.  Extending this idea into relations
+means we have TTM multi-relations essentially, however Muldis D does not
+(yet) define an ideomatic analogy there, preferring to let users choose how
+they want to represent leaving something out.
 
 * Let routines/types/etc have traits like public/private whose effect is
 making them visible or invisible to partially-qualified identifier
@@ -2965,22 +2984,20 @@ its own kinds of parse nodes, not op calls, such as ??!! and if-then-else.
 lowest, loosely speaking:
   - base literals or selectors or delimited whatevers or foo() etc
     - for foo() there must be zero whitespace (or unspace) before opening paren
-  - general symbolic prefix (tilde-quotes-or-bareword make no difference)
-  - general symbolic infix (tilde no diff)
-  - general alpha prefix (tilde no diff)
-  - general alpha infix (tilde no diff)
-  - general other prefix (tilde-quoted only option, can't be bareword)
-  - general other infix ("other" if any chars outside symbol+alpha set)
+    - includes "." of tup.attr etc since "." changes how its RHS is parsed, its not a normal infix
+  - why-binding infix ::?= (binds tighter than ::=)
+  - what-expr-binding infix ::= (binds to innermost expression, use parens to force looser)
+  - general symbolic prefix (only bareword symbolic)
+  - general symbolic infix (only bareword symbolic)
+  - general alpha/other prefix (bareword alpha or tilde-quoted)
+  - general alpha/other infix (bareword alpha or tilde-quoted)
   - short-circuiting / ??!! / if-then-else / given-when-def
-  - assignment := (base statement-only)
-  - binding infix ::= (binds to statement if possible, else expression)
-ACTUALLY, in fact tilde actually should make a difference, eg quoting
-automatically pushes precedence to "other" level.  That would be best I
-think, a principle of least surprise, so users don't look at a quoted
-identifier and have to guess on its precedence.  Also security implications
+  - assignment := (both base statement and any derived meta-op eg :=+)
+  - statement-binding infix ::&= (because plain ::= binds to lvalue expr if used there)
+Note that tilde-quoting should have an impact on precedence, for principle
+of least surprise, otherwise users have to guess if something is symbolic
+or not to determine precedence.  Also security implications
 for lookalike graphemes.
-ALSO, I should probably merge general other into general alpha so there's
-just the unquoted general symbolic and then everything else.
 
 * Pegex grammar should work at some level midway between a pure tokenizer
 and the resulting AST.  It should form trees where easy to do without
