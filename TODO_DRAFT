@@ -14,6 +14,21 @@ resources of everyone else.
 
 ----------
 
+* Consider providing 2 implementations of the Muldis D parser in Muldis D,
+one functional that parses a Text value to Source_Code, and one procedural
+that parses from an input stream instead.  Conceptually the former is what
+we really want, but the question is how to work with arbitrarily large
+input.  Maybe the answer is for the former to be the canonical parser that
+the reference implementation includes and latter can be a third-party-alike
+add-on.  Possibly for the best as RefEng keeps the result in memory anyway
+so even if the parser works on streams what it feeds to doesn't.
+
+* Adjust or prevent any language grammar features that would make it too
+hard to implement a parser functionally as essentially a finite series of
+map-reduce-ish operations, eg an early round is tokenize
+simply into is-inside-quoted-string from is-outside-quoted-string, so
+perhaps things like here-doc quoting might be an issue?
+
 * NEW PLAN (overrides 'syntax_using' etc) ...
 Eliminate Muldis_D::Low_Level package and merge the appropriate parts into
 the standard grammar itself.  This brings consistency as not only do the
@@ -32,7 +47,7 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
 - A lot of Muldis_D routines are just shims over the nodes, consistently.
 - Example nodes:
     - SC_Bootstrap_Func_Invo - use like "args --> $name" or "name(*args)" for low-level
-        - \*^[Universal_same,expr,expr]        # used just like this
+        - \*^[same,expr,expr]                  # used by = syntax
         - \*^[Boolean_not,bool_expr]           # used by not/! keyword
         - \*^[Integer_plus,int_expr,int_expr]  # used just like this
         - \*^[Array_elem,ary_expr,nnint_expr]  # used by x.[y] syntax
@@ -44,6 +59,10 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
         - \*^&[Array_elem,ary_expr,nnint_expr,expr]  # used by x.[y] := foo
         - \*^&[Tuple_attr,tup_expr,atnm_lit,expr]    # used by x.y := foo
 - Note that some of the above operations may instead get their own nodes.
+- ACTUALLY, THE ONLY PLACES SYNTAX LIKE THE ABOVE WOULD BE USED IS WHEN
+THAT WOULD ALWAYS BE USED TO BOOTSTRAP ORDINARY ROUTINE OPERATORS; WHEN
+THE GRAMMAR ITSELF HAS SPECIAL SYNTAX FOR AN OPERATOR, IT DOES NOT GET ONE
+OF THE ABOVE NODE TYPES BUT RATHER ITS OWN.
 - Note that we don't need to do this for constants because the constants
 that the grammar knows about have their own node types as with previously.
 - Nodes look unpleasant/verbose on purpose as people aren't supposed to use
@@ -60,6 +79,16 @@ including Universal and Integer etc; for example:
 dispatch to "constant" or "function" and invokes the chain of "where"
 predicates starting with the parentmost "of" back down to the invoked type,
 and results in true iff all the "where" resulted in true.
+- So "=" (equality test) is now specially recognized by the grammar, same
+as each of "!",":=","::=",":","=>","-->" as it just seems appropriate; as a
+side-effect using a package declaring a symbolic "=" must now be invoked
+quoted to get that one, where bareword = now means the standard one.
+- Likewise ":=" is a special grammar node with no \*^[] for it.  Ah er?
+- Note that zero boolean operators are necessary at the grammar level,
+other than the constants false and true; they can all be defined in terms
+of ??!! and canonically are in the Boolean package.  The only reason
+there's a grammar node for "not" is because its a meta-operator, and this
+grammar node just short for "<predicate>??false!!true" (no \*^[] for it).
 
 * Need to add something to Plain_Text et al like
 "syntax_using <alias> ::= <package name>"
@@ -531,7 +560,7 @@ with a digit, the latter being illegal bareword identifier syntax.
                   |    and Singleton is one with nullary tuple eg $To_Zero=>\%{}
                   |    and $=>lit is shorthand for Singleton value eg $=>To_Zero
     SC_Identifier | Several kinds, all mutually disjoint:
-                  |    - identity : \$pkg-canon-name.litpath   eg \$Muldis_D:"http://muldis.com":0.Integer.sum
+                  |    - identity : \$pkg-canon-name.litpath   eg \$Muldis_D:"http://muldis.com":"0".Integer.sum
                   |    - absolute : \$::loc-pkg-alias.litpath  eg \$::MD.Integer.sum
                   |    - relative : \$nn-int-expr.litpath      eg \$2.foo.bar or \$0
                   |    - floating : \$litpath                  eg \$Bag
@@ -1119,13 +1148,11 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
     0. keyword "type" followed by 0 or 1 of each of next in any order,
         but with some restrictions:
     1. keyword "of" is optional, followed by the name of another type
-        - "of" is optional iff "where" is just true and "default" is defined
-        - in other words, "of" must be defined for every type except for the
-        system maximal type, and therefore we are making it mandatory that
-        to declare any type one must first declare an explicit name for the
-        system maximal type or use a package that does, such as Muldis_D/Universal.
-    2. keyword "where" followed by predicate expr
-        - defaults to true if omitted
+        - if omitted, the unnamed system maximal type is implicitly used,
+        and so the new type consists of all values in the type system but
+        where otherwise restricted by its explicit "where"
+    2. keyword "where" is optional, followed by predicate expr
+        - if omitted, system treats it as if it were unconditionally true
         - if "where" is false, "default" must be omitted; is the empty type
     3. keyword "default" is optional, followed by expr
         - if omitted, system follows "of" chain until it finds a "default"
@@ -1133,6 +1160,19 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         - it is invalid for any used "default" to specify a value that "where" rejects
         - as a special case, if "where" is false anywhere up the "of" chain,
         there is no default, such as with the system minimal/empty type
+    4. keyword "composes" is optional, is followed by name of abstract type
+
+* Type declare syntax special case for singletons that have their own
+Capsule type; the keyword "singleton_type" replaces all 4 keywords
+{type,of,where,default} from the type declare syntax general form;
+these 2 declarations are equivalent:
+    foo.bar.baz ::= singleton_type;
+    foo.bar.baz ::= type where !\*^[isa_Capsule,topic] ?? false
+        !! \*^[Capsule_type,topic] = $1 and \*^[Capsule_attrs,topic] = \%{}
+        default $=>1;
+
+* Type declare syntax for abstract types is just the keyword "abstract_type"
+but that it may optionally have the "composes" keyword as with other types.
 
 * Schema objects can be easily indexed for fast(er) dispatch.  To be
 specific, we can pre-make a map from each abbreviation (particularly the
