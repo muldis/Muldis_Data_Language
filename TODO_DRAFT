@@ -14,6 +14,35 @@ resources of everyone else.
 
 ----------
 
+* Provide alternate versions of expressional if-else/??!! and
+given-when-otherwise that either do or don't shortcut respectively; the
+former exists to provide a way to gate code that is only valid to execute
+in some circumstances, while the latter is a logical foundation for
+many/all expression operations but that it is valid to execute both
+branches; we should have the latter so that these expressions don't act as
+an optimization barrier forcing conditional exec when they don't need to.
+
+* Add several new expression node types / fundamental operations which are
+list map and list reduce etc.  Syntactically they would be like a generic
+function call syntax but that they call the other function per element of
+the provided collection-typed value rather than exactly once.  Have
+distinct ones for Array and for Bag; the former is needed for
+non-commutative operators.  These are not low-level routines so they can
+properly see the execution environment same as routine call syntax does
+such as for resolving what to invoke and also for reading the declared
+traits of routines such as is-commutative etc.  See also
+http://en.wikipedia.org/wiki/MapReduce including the map-shuffle-reduce
+threesome and key-1 plus key-2, I would want to support a similar
+algorithm.  When calling map on a Bag source, there would be a single
+routine call per distinct Bag element, and that call will be given the
+key-quantity pair so can act appropriately; for a non-idempotent routine
+preserving or acting on the quantity is important while for an idempotent
+routine the quantity can be nullified.  Defining list operations in terms
+of these should make it much easier for implementations to parallelize them
+including over engines based on map-reduce.  That article should also give
+me a clue on a parallel Plain_Text parser definition.  All the standard
+relational operators etc should be definable in terms of these.
+
 * Consider providing 2 implementations of the Muldis D parser in Muldis D,
 one functional that parses a Text value to Source_Code, and one procedural
 that parses from an input stream instead.  Conceptually the former is what
@@ -54,8 +83,8 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
         - \*^[Tuple_attr,tup_expr,atnm_lit]    # used by foo.bar syntax
         - \*^[Tuple_has_attr,tup_expr,atnm_lit]  # used by foo.?bar syntax
         - \*^[select_Capsule,ref_expr,tup_expr]  # used by x=>y syntax
-        - \*^[Capsule_attr,cap_expr,atnm_lit]    # used by foo->bar syntax
-        - \*^[Capsule_has_attr,cap_expr,atnm_lit]  # used by foo->?bar syntax
+        - \*^[Capsule_attr,cap_expr,atnm_lit]    # used by foo.>bar syntax
+        - \*^[Capsule_has_attr,cap_expr,atnm_lit]  # used by foo.>?bar syntax
     - SC_Bootstrap_Proc_Invo - as you would expect
         - \*^&[Universal_assign,target_expr,source_expr]  # used by x := y
         - \*^&[Array_elem,ary_expr,nnint_expr,expr]  # used by x.[y] := foo
