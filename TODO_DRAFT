@@ -14,6 +14,57 @@ resources of everyone else.
 
 ----------
 
+* Type correspondance between Muldis D and Perl 6:
+Abstract:
+    Boolish - Boolean
+    Integral - Integral
+    Rational - Rational
+    ? - Real
+    Numeric - Numeric
+    Stringy - Stringy
+    Textual - ?
+    Arrayish - Positional
+    ? - List
+    ? - Associative
+    Setty - Setty
+    Baggy - Baggy
+    ? - Mixy
+    Orderable/Ordered - Ordered
+Concrete:
+    Boolean - Bool (boolean)
+    ? - Bit
+    Integer - Int (arbitrary precision integer)
+    Ratio - FatRat (arbitrary precision ratio)
+    String - Buf|Blob (stringish view of an array of integers)
+    Blob - Blob|Buf (undifferentiated mass of ints)
+    Text - Str (string of characters)
+    Array - Array
+    Set - Set/SetHash/QuantHash[Bool] (unord collection of values no dups)
+    Bag - Bag/BagHash/QuantHash[UInt] (unord collection of values allows dups)
+    ? - Mix/MixHash/QuantHash[Real] (unordered collection of values with weights)
+    ? - Enum/Pair (a single key-to-value association)
+    ? - EnumMap/Hash (mapping of k-v pairs with no dupl keys)
+    Tuple - ?/Stash (a symbol table hash for package, class, lexpad, etc)
+    Interval - Range (pair of Ordered endpoints)
+    Quantity - ?
+    SC_Func_Args - Capture (function arguments)
+    SC_Func_Params - Signature (function parameters)
+    ? - Instant (point on continuous atomic timeline)
+    ? - Duration (diff btwn 2 Instant)
+Literals:
+    1/2 - <1/2> (general case, or 1/2 depending on context as that is constant folding)
+        but <1/2> produces a value that is both a Rat and a Str,
+        see http://design.perl6.org/S02.html#Allomorphic_value_semantics
+    0x'A705E' - :16{A705E}
+Note that Muldis D purposefully excludes Complex numbers from core, so Perl
+6's <5.2+3i> has no core analogy.  Part of the rationale is the
+combinatorial explosion of Complex types, eg cartesian vs polar times ratio
+vs float etc.  More broadly speaking, anything that depends on irrational
+or symbolic math values like pi are excluded from core.
+Typedefs:
+    Odd ::= type of Int where ?(topic mod 2);
+        subset Odd of Int where { $^n % 2 };
+
 * Provide alternate versions of expressional if-else/??!! and
 given-when-otherwise that either do or don't shortcut respectively; the
 former exists to provide a way to gate code that is only valid to execute
@@ -21,6 +72,7 @@ in some circumstances, while the latter is a logical foundation for
 many/all expression operations but that it is valid to execute both
 branches; we should have the latter so that these expressions don't act as
 an optimization barrier forcing conditional exec when they don't need to.
+Note, see also http://design.perl6.org/S02.html#Lists eg re eager/hyper/race.
 
 * Add several new expression node types / fundamental operations which are
 list map and list reduce etc.  Syntactically they would be like a generic
@@ -207,6 +259,7 @@ of the eg "name ::= function...".
 * OR WE HAVE THE CONCEPT OF LEXICAL ROUTINES INSTEAD OR ADDITIONALLY;
 ALL ROUTINES DECLARED INLINE ARE OF THIS KIND.  THEY CAN STILL BE INVOKED
 ANYWHERE IF YOU KNOW THEIR IDENTITY BUT SEARCH WOULD NEVER FIND THEM.
+See also http://design.perl6.org/S02.html#Scope_declarators eg 'anon'.
 
 * Or we CAN specify a "complete" grammar but that as written you couldn't
 actually execute it without help, eg interpreting several barewords in a row,
@@ -886,11 +939,15 @@ but if all sub-exprs are named then the keyword is mandatory.
 
 * Eliminate uses of |,&,- to mean union/or,intersection/and,minus with
 respect to type defs or {schema object, param/attr} alias declarations.
+- NOTE, NEWER VERSIONS OF SOME OF THE FOLLOWING POINTS ARE FURTHER BELOW.
 - We should discourage aliasing even if supporting it, and the best way is
 to not provide special/terse syntax for doing so that isn't generalizable.
 - For schema object aliasing, people can just do this:
     sum ::= add ::= "+" ::= function ...;
-... assuming all of said aliases are okay to have identical signatures/etc.
+... assuming all of said aliases are okay to have identical signatures/etc;
+actually, better just make them say
+    bar ::= function ...;
+    foo ::= synonym of bar;
 - In practice, explicit union/intersect/minus types probably aren't that
 common except for say enum declarations, so just support those with the
 likes of:
@@ -1116,7 +1173,7 @@ some other type, typically an expression node set.
     $SC_Func_Args=>\%{ordered=>[x,y],named=>\%{}} --> $"+"
     "+"(x,y)
     "+"(*\(x,y))
-    x->"+"(y)  - THIS ONE IS OBSOLETE; x->y NOW MEANS SOMETHING ELSE
+    x->"+"(y)  - THIS ONE IS OBSOLETE; x->y NOW RESERVED FOR SOMETHING ELSE
     x + y
     div(x,y,round_meth:$=>To_Zero)
     \(x,y) --> (function (Integer <-- Integer, Integer) :
@@ -1150,13 +1207,22 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
 
 * Function declare syntax general form (same as inline actually?):
     0. keyword "function" followed by 0 or 1 of each of next in any order:
-    1. keyword "signature" is alternative for {2,3,4}
-        - if used, may omit keyword but then must appear immediately after
-        the "function" keyword
-    2. keyword "to" or "-->" followed by predicate expr taking "topic" as input
-        - defaults to isa $Universal if omitted
-    3. keyword "from" or "<--" followed by expr
-        - defaults to isa $Universal if omitted
+    2. keyword "to" or "-->" followed by the name of a type
+        - the definition of the type may appear in place of the name using
+        the syntax "type ..."
+        - if omitted, the unnamed system maximal type is implicitly used
+    3. keyword "from" or "<--" or "signature" followed by the name of a type
+        - the definition of the type may appear in place of the name using
+        the syntax "type ..."
+        - a simplified form of a SC_Func_Params literal may appear in place
+        of the name using the syntax "(...)" where the "..." is a commalist
+        of 0..N tokens each of which is either the name/def of a type or a
+        lit:type pair; they declare positional/named params respectively;
+        these are basically equivalent:
+            function <-- (Integer,foo:Integer) : ...;
+            function <-- type of SC_Func_Args
+                where (topic matching \:($Integer,foo:$Integer)) : ...;
+        - if omitted, the unnamed system maximal type is implicitly used
     4. keyword "normalize" followed by expr
         - defaults to topic if omitted
     5. keyword "requires" followed by predicate expr
@@ -1171,6 +1237,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
     ...
 - Note that "symmetric" is obsolete here; it meant what "commutative" does.
 - Every part has a default value that is used if omitted
+- Many of the numbered items above correspond to Perl 6 sub traits
 
 * Constant declare syntax general form:
     0. keyword "constant" followed by expr
@@ -1191,16 +1258,18 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         - it is invalid for any used "default" to specify a value that "where" rejects
         - as a special case, if "where" is false anywhere up the "of" chain,
         there is no default, such as with the system minimal/empty type
-    4. keyword "composes" is optional, is followed by name of abstract type
-
-* Type declare syntax special case for singletons that have their own
-Capsule type; the keyword "singleton_type" replaces all 4 keywords
-{type,of,where,default} from the type declare syntax general form;
-these 2 declarations are equivalent:
-    foo.bar.baz ::= singleton_type;
-    foo.bar.baz ::= type where !\*^[isa_Capsule,topic] ?? false
-        !! \*^[Capsule_type,topic] = $1 and \*^[Capsule_attrs,topic] = \%{}
-        default $=>1;
+    4. keyword "singleton" is optional, not followed by anything of its own
+        - if used, replaces all 3 keywords {of,where,default}
+        - is for singletons that have their own Capsule type
+        - these 2 declarations are equivalent:
+            foo.bar.baz ::= type singleton;
+            foo.bar.baz ::= type where !\*^[isa_Capsule,topic] ?? false
+                !! \*^[Capsule_type,topic] = $1 and \*^[Capsule_attrs,topic] = \%{}
+                default $=>1;
+    5. keyword "union" is optional, followed by set of type names in braces
+        - if used, replaces the 2 keywords {of,where}
+        - if used, the "default" keyword is mandatory
+    6. keyword "composes" is optional, is followed by name of abstract type
 
 * Type declare syntax for abstract types is just the keyword "abstract_type"
 but that it may optionally have the "composes" keyword as with other types.
