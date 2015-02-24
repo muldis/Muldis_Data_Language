@@ -14,6 +14,73 @@ resources of everyone else.
 
 ----------
 
+* Add or rename-to the keyword/concept semantic_type which exists mainly to
+be composed by other types for the purpose giving semantic meaning to a
+type, eg this represents money or this represents a duration, and that in
+particular these have nothing to do with defining a common interface or
+there is no implication that types sharing a semantic_type would have any
+operators or interchangeability in common.
+- As such, the abstract_type concept which does imply / is intended for
+having a common interface, eg Orderable, this is a different thing.
+- Both of the above are open union types cited by the types they are
+comprised of, and not the other way around.
+- In any event, the fact that semantic/abstract types are cited as parents
+of other types is important as something that can be introspected, and its
+not okay for them to just disappear or merge into a 'where' definition.
+In that respect they are more like type traits associated with a specific
+type name, and they are orthogonal in some ways to the concept of a type as
+a set of values, as here the name is important.
+- Logically then, semantic/abstract types actually can not be named in type
+constraints per se and rather they only have a program behavior role in
+resolving routine dispatch by extending the candidate list beyond those
+normally visible in a scope.  As far as type constraints are concerned,
+they are just equivalent to Universal.  Perhaps as far as routine dispatch
+is concerned, maybe they can only be used in the signatures of abstract
+routines and not concrete ones?
+- Perhaps what we want is for this semantic/etc stuff to actually just be
+additional traits of a "type ..." definition and not a separate thing.
+After all, the "default" keyword of a type has nothing to do with its
+definition as a set of values either.
+- But types would still have to compose these using separate keywords
+since we don't want them to contribute to the set of values, eg don't use
+"of" because that would make the composer like Universal.
+- ACTUALLY, if these semantic types are considered equivalent to Empty,
+that is explicitly consisting of no values themselves, then they can be
+named in "type union {...}" with the regular "of" types, so the composing
+types then just inherit its "semantic ..." keyword/etc and not any values.
+- Maybe lets merge {of,union} into one keyword, which may be spelled either
+way for user choice/illustration (as they have the -->|to etc choice),
+which takes a set of type names (if missing it defaults to the set of 1
+item that is the maximal type) and the curly braces may be omitted if
+exactly 1 item is named ... we can make the braces optional for other
+commalist-set traits too; with this merger, "where" may be used with union
+types, and also the canonical way to specify the empty type is to say "of
+{}" (empty set).  As such, "default" is mandatory if "of" lists multiple
+non-empty types where empty is defined by their own type defs having an
+empty set for "of", recursively plus no "where" ... er, think this through.
+On default values, make a set of all the parent types' default values and
+then filter it by the current type's constraints; if the resulting set
+doesn't have exactly 1 value, the current type must declare a "default".
+- Any time a module Y calls X routine, non-abstract X directly visible to Y
+are used first if any match the called signature, otherwise abstract X
+directly visible to Y are used if any match the called signature, in which
+case implementations anywhere on the system may be invoked if declared
+somewhere to which the same abstract X is also visible to.  In order for Y
+to prevent its call to X being implemented by some unknown remote code, it
+must declare its own non-abstract X matching the signature or explicitly
+use one such.
+- Routines need to have some keyword(s) declaring them as abstract/virtual;
+only those may be referred to with 'implements' by some other routine.
+- Idea, let routines declare that they 'implement' other non-virtual
+routines, as a way of overriding polymorphism, or declaring somewhat how
+search-based calls should be resolved when several matching candidates are
+found, useful in particular for subtype-specific implementations that are
+more efficient, maybe use keyword 'overrides' or such.  However, this is
+only respected when the overriding candidate in question is visible
+directly to the caller, so such an override definition can't cause action
+at a distance.  See also Perl 6 syntax/terms for this.
+- TODO: Think about stuff and things.
+
 * Type correspondance between Muldis D and Perl 6:
 Abstract:
     Boolish - Boolean
@@ -1245,19 +1312,24 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
 * Type declare syntax general form:
     0. keyword "type" followed by 0 or 1 of each of next in any order,
         but with some restrictions:
-    1. keyword "of" is optional, followed by the name of another type
+    1. keyword "of" or "union" is optional, followed by set of 0..N
+        type names in braces or exactly 1 not in braces
         - if omitted, the unnamed system maximal type is implicitly used,
         and so the new type consists of all values in the type system but
         where otherwise restricted by its explicit "where"
+        - if exactly zero type names, the current type has zero values
     2. keyword "where" is optional, followed by predicate expr
         - if omitted, system treats it as if it were unconditionally true
-        - if "where" is false, "default" must be omitted; is the empty type
+        - while one could declare an empty type with a "where" of false,
+        the canonical way to do it is with an empty set for "of"
     3. keyword "default" is optional, followed by expr
-        - if omitted, system follows "of" chain until it finds a "default"
-        and then uses that value
         - it is invalid for any used "default" to specify a value that "where" rejects
-        - as a special case, if "where" is false anywhere up the "of" chain,
-        there is no default, such as with the system minimal/empty type
+        - if omitted, system follows "of" chain until it finds a "default"
+        and then uses that value; to be specific if the set of effective
+        "default" for all immediate "of" types has exactly 1 member that
+        is a member of the current type, then that is used, otherwise the
+        current type must declare its own "default", except if the current
+        type has no values at all, such as with the system minimal/empty type
     4. keyword "singleton" is optional, not followed by anything of its own
         - if used, replaces all 3 keywords {of,where,default}
         - is for singletons that have their own Capsule type
@@ -1266,13 +1338,20 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
             foo.bar.baz ::= type where !\*^[isa_Capsule,topic] ?? false
                 !! \*^[Capsule_type,topic] = $1 and \*^[Capsule_attrs,topic] = \%{}
                 default $=>1;
-    5. keyword "union" is optional, followed by set of type names in braces
-        - if used, replaces the 2 keywords {of,where}
-        - if used, the "default" keyword is mandatory
-    6. keyword "composes" is optional, is followed by name of abstract type
-
-* Type declare syntax for abstract types is just the keyword "abstract_type"
-but that it may optionally have the "composes" keyword as with other types.
+    5. keyword "abstract" is optional, not followed by anything of its own
+        - if used, the 2 keywords {of,where} must be omitted
+        - until another type composes an abstract type, that abstract type
+        is equivalent to the empty type and any attempt to have a variable
+        of the abstract type will fail at runtime in the same way
+        - TODO: figure out where best the default value of an abstract type
+        should be declared
+    6. keyword "composes" is optional, is followed by set of 0..N
+        names of abstract types
+        - if omitted, semantics are equivalent to if an explicit empty set
+        - when type A composes type B, the behavior of the system when
+        doing "isa" tests is as if B was defined with "B ::= type of {A,...}"
+        but that the definition is done backwards
+        - no need to rename "composes" to something else, meaning is approp
 
 * Schema objects can be easily indexed for fast(er) dispatch.  To be
 specific, we can pre-make a map from each abbreviation (particularly the
