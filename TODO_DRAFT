@@ -14,6 +14,8 @@ resources of everyone else.
 
 ----------
 
+* Allow foo(:.bar) or \%{:.bar} which mean foo(bar:.bar) or \%{bar:.bar}.
+
 * Add or rename-to the keyword/concept semantic_type which exists mainly to
 be composed by other types for the purpose giving semantic meaning to a
 type, eg this represents money or this represents a duration, and that in
@@ -1243,9 +1245,8 @@ some other type, typically an expression node set.
     x->"+"(y)  - THIS ONE IS OBSOLETE; x->y NOW RESERVED FOR SOMETHING ELSE
     x + y
     div(x,y,round_meth:$=>To_Zero)
-    \(x,y) --> (function (Integer <-- Integer, Integer) :
-    \(x,y) --> (function to (isa $Integer) from (isa \:(Integer,Integer))
-    \(x,y) --> (function --> (isa $Integer) <-- (isa \:(Integer,Integer))
+    \(x,y) --> (function to Integer from (Integer,Integer) through ...)
+    \(x,y) --> (function --> Integer <-- (Integer,Integer) : ...)
     42 --> $some_func_taking_Integer_directly_without_SC_Func_Args_wrapper
 - Note that "self" can appear anywhere "rtn" does, and means call-myself
 as long as it isn't quoted.
@@ -1274,6 +1275,8 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
 
 * Function declare syntax general form (same as inline actually?):
     0. keyword "function" followed by 0 or 1 of each of next in any order:
+    1. keyword "virtual" is optional, not followed by anything of its own
+        - if used, the keywords "through"/":" must be omitted
     2. keyword "to" or "-->" followed by the name of a type
         - the definition of the type may appear in place of the name using
         the syntax "type ..."
@@ -1290,15 +1293,15 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
             function <-- type of SC_Func_Args
                 where (topic matching \:($Integer,foo:$Integer)) : ...;
         - if omitted, the unnamed system maximal type is implicitly used
-    4. keyword "normalize" followed by expr
+    4. keyword "implements" is optional, has associated function name
+    5. keyword "normalize" followed by expr
         - defaults to topic if omitted
-    5. keyword "requires" followed by predicate expr
+    6. keyword "requires" followed by predicate expr
         - defaults to true if omitted
-    6. keyword "is" is optional, followed by set of trait name keywords in
+    7. keyword "is" is optional, followed by set of trait name keywords in
         braces: "associative", "commutative", "idempotent"
         and other terms like bijective etc may be added
-    7. keyword "identity" is optional (when associative), has associated expr
-    8. keyword "implements" is optional, has associated entity name
+    8. keyword "identity" is optional (when associative), has associated expr
     9. keyword "through" or ":" followed by expr
         - defaults to topic if omitted
     ...
@@ -1308,29 +1311,22 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
 
 * Constant declare syntax general form:
     0. keyword "constant" followed by expr
+- Note that unlike with functions, "virtual"/"implements" don't make sense
+for constants because there's no way for them to be polymorphic dispatching
+on a nonexistant argument, so all references to constants need to be
+sufficiently name-qualified that the name is unique in the caller context.
+- TODO: Consider some other mechanism to declare that a set of routines or
+constants for a virtual type should be composed by implementing types.
 
 * Type declare syntax general form:
     0. keyword "type" followed by 0 or 1 of each of next in any order,
         but with some restrictions:
-    1. keyword "of" or "union" is optional, followed by set of 0..N
-        type names in braces or exactly 1 not in braces
-        - if omitted, the unnamed system maximal type is implicitly used,
-        and so the new type consists of all values in the type system but
-        where otherwise restricted by its explicit "where"
-        - if exactly zero type names, the current type has zero values
-    2. keyword "where" is optional, followed by predicate expr
-        - if omitted, system treats it as if it were unconditionally true
-        - while one could declare an empty type with a "where" of false,
-        the canonical way to do it is with an empty set for "of"
-    3. keyword "default" is optional, followed by expr
-        - it is invalid for any used "default" to specify a value that "where" rejects
-        - if omitted, system follows "of" chain until it finds a "default"
-        and then uses that value; to be specific if the set of effective
-        "default" for all immediate "of" types has exactly 1 member that
-        is a member of the current type, then that is used, otherwise the
-        current type must declare its own "default", except if the current
-        type has no values at all, such as with the system minimal/empty type
-    4. keyword "singleton" is optional, not followed by anything of its own
+    1. keyword "abstract" is optional, not followed by anything of its own
+        - if used, the 2 keywords {of,where} must be omitted
+        - until another type composes an abstract type, that abstract type
+        is equivalent to the empty type and any attempt to have a variable
+        of the abstract type will fail at runtime in the same way
+    2. keyword "singleton" is optional, not followed by anything of its own
         - if used, replaces all 3 keywords {of,where,default}
         - is for singletons that have their own Capsule type
         - these 2 declarations are equivalent:
@@ -1338,11 +1334,24 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
             foo.bar.baz ::= type where !\*^[isa_Capsule,topic] ?? false
                 !! \*^[Capsule_type,topic] = $1 and \*^[Capsule_attrs,topic] = \%{}
                 default $=>1;
-    5. keyword "abstract" is optional, not followed by anything of its own
-        - if used, the 2 keywords {of,where} must be omitted
-        - until another type composes an abstract type, that abstract type
-        is equivalent to the empty type and any attempt to have a variable
-        of the abstract type will fail at runtime in the same way
+    3. keyword "of" or "union" is optional, followed by set of 0..N
+        type names in braces or exactly 1 not in braces
+        - if omitted, the unnamed system maximal type is implicitly used,
+        and so the new type consists of all values in the type system but
+        where otherwise restricted by its explicit "where"
+        - if exactly zero type names, the current type has zero values
+    4. keyword "where" is optional, followed by predicate expr
+        - if omitted, system treats it as if it were unconditionally true
+        - while one could declare an empty type with a "where" of false,
+        the canonical way to do it is with an empty set for "of"
+    5. keyword "default" is optional, followed by expr
+        - it is invalid for any used "default" to specify a value that "where" rejects
+        - if omitted, system follows "of" chain until it finds a "default"
+        and then uses that value; to be specific if the set of effective
+        "default" for all immediate "of" types has exactly 1 member that
+        is a member of the current type, then that is used, otherwise the
+        current type must declare its own "default", except if the current
+        type has no values at all, such as with the system minimal/empty type
     6. keyword "composes" is optional, is followed by set of 0..N
         names of abstract types
         - if omitted, semantics are equivalent to if an explicit empty set
