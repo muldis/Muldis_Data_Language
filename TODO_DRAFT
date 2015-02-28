@@ -135,13 +135,32 @@ Typedefs:
         subset Odd of Int where { $^n % 2 };
 
 * Provide alternate versions of expressional if-else/??!! and
-given-when-otherwise that either do or don't shortcut respectively; the
+given-when-default that either do or don't shortcut respectively; the
 former exists to provide a way to gate code that is only valid to execute
 in some circumstances, while the latter is a logical foundation for
 many/all expression operations but that it is valid to execute both
 branches; we should have the latter so that these expressions don't act as
 an optimization barrier forcing conditional exec when they don't need to.
 Note, see also http://design.perl6.org/S02.html#Lists eg re eager/hyper/race.
+- So what we'll do is make the alpha syntax if-then-else and
+given-when-then-default the one that does shortcut, which is consistent
+between the expression and statement versions of said as well as common
+practice / expectations in the world.
+- The ??!! syntax is altered to be non-shortcut version of if-then-else and
+it has a separate expr node type from if-then-else; users can optionally
+wrap it in a function if they wanted to.
+- A new ???{}!!! syntax is a non-shortcut version of given-when and in
+parallel to ??!! it is infix.  Example:
+    .round_rule ??? {
+        $=>To_Zero : ...,
+        $=>Up : ...,
+        ...,
+    } !!! fail
+- So generally the language is such that for operator-like things which
+have more than 1 argument and aren't called like foo(), everything that
+doesn't shortcut is used infix-only, eg "foo and bar" or "x ?? y !! z"
+while things that do shortcut have a keyword before the first argument in
+addition to having infixes, eg "if x then y else z".
 
 * Add several new expression node types / fundamental operations which are
 list map and list reduce etc.  Syntactically they would be like a generic
