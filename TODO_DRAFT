@@ -14,6 +14,60 @@ resources of everyone else.
 
 ----------
 
+* Formalize layout of package logical contents somewhat.
+- A "material" is a {type,constant,function,procedure,synonym,etc}.
+- A "folder" is a logical namespace that in/directly organizes materials.
+- A folder may not directly contain both folders and materials; the
+children of an folder must either be all folders or all materials.
+- A "binder" is an folder that has at least 1 child material, and exactly 1
+of those child materials is the binder's "cover" and must have the
+unqualified name "" (empty string).
+- A binder is conceptually a proxy for the material that is its cover from
+the point of view of external users, and the other materials in that binder
+are conceptually components of the cover.  A binder is a pseudo-private
+namespace for its parts to reference each other but is automatically
+excluded from "search" identifier resolution; "search" identifier
+resolution will only ever resolve to a binder's cover.
+- All explicitly named public "material" declarations actually are naming a
+binder for which that material is its cover.
+- All material declarations embedded in other materials
+live in the same binder as what they are embedded in, the binder providing
+a flat namespace for them.  Any non-cover materials in a binder may have
+automatically generated names but could have explicit names.
+- A "package" is a folder that has no parent folder.
+- The term "schema" is not used to describe any kind of entity in the above
+sense and is left available for use as generic database terminology.
+
+* Distinguish logical compilation units from their repositories.
+- Muldis D code is often compiled per "bundle", and one can be completely
+parsed and to some extent be compiled in complete isolation from others.
+- A "bundle" is typically a set of 1 or more packages preceded a Muldis D
+language name declaration which provides context on how to understand the
+rest of the bundle, such as what grammar should be used where applicable.
+- A "package" is the primary logical unit for Muldis D code and consists of
+a set of type/routine/constant declarations organized into a multi-level
+hierarchical namespace.  Every package is versioned, its fully-qualified
+name typically including a base name plus an authority and version number,
+logical references to a package's contents are fully-qualified with such.
+- Often a bundle will include multiple versions of a package (common base
+name), which is its primary/current version plus shims for older versions.
+- A bundle may also or alternately have a set of 1 or more named values,
+the definition of each being completely self-defined in general, or they
+may be defined in terms of each other for factoring purposes; these are the
+typical form that "the database" takes.
+- A "repository" is somewhere on or accessible to the system where bundles
+live, such as a "local" or "installed" OS file system, or some "object
+store" service, or some version control system say.  When a user or
+packages wishes to "use" a package, the available repositories are
+consulted when looking for it.
+- Perl 6 concepts of CompUnit and CompUnitRepo loosely correspond to the
+above bundle and repository respectively.
+- A "module" is a bundle that is read-only during the course of program
+execution while a "depot" is allowed to be written/updated also.
+- TODO: Expand on what read-only vs writeable means.
+- TODO: Possibly rename the module/depot terms.
+- TODO: Use the term "library" somewhere.
+
 * Allow foo(:.bar) or \%{:.bar} which mean foo(bar:.bar) or \%{bar:.bar}.
 
 * Add or rename-to the keyword/concept semantic_type which exists mainly to
@@ -222,6 +276,7 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
         - \*^[Array_elem,ary_expr,nnint_expr]  # used by x.[y] syntax
         - \*^[Tuple_attr,tup_expr,atnm_lit]    # used by foo.bar syntax
         - \*^[Tuple_has_attr,tup_expr,atnm_lit]  # used by foo.?bar syntax
+                # related foo.!bar shorthand "foo.?bar ?? foo.bar !! $=>Void"
         - \*^[select_Capsule,ref_expr,tup_expr]  # used by x=>y syntax
         - \*^[Capsule_attr,cap_expr,atnm_lit]    # used by foo.>bar syntax
         - \*^[Capsule_has_attr,cap_expr,atnm_lit]  # used by foo.>?bar syntax
@@ -348,6 +403,8 @@ of the eg "name ::= function...".
 ALL ROUTINES DECLARED INLINE ARE OF THIS KIND.  THEY CAN STILL BE INVOKED
 ANYWHERE IF YOU KNOW THEIR IDENTITY BUT SEARCH WOULD NEVER FIND THEM.
 See also http://design.perl6.org/S02.html#Scope_declarators eg 'anon'.
+* The need for public/private is lessened by more recent developments, eg
+the binder/schema split.
 
 * Or we CAN specify a "complete" grammar but that as written you couldn't
 actually execute it without help, eg interpreting several barewords in a row,
