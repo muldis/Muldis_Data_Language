@@ -14,9 +14,20 @@ resources of everyone else.
 
 ----------
 
+* TODO: Excise the Script_Name portion from the Muldis D language name,
+leaving that as optionally provided meta-data given separately depending on
+the context as to whether or not it is actually applicable, and so the
+Muldis D language name would just then have 4 parts.
+
 * Formalize layout of package logical contents somewhat.
+- A "package" is the primary logical unit for Muldis D code and consists of
+a set of type/routine/constant declarations organized into a multi-level
+hierarchical namespace.  Every package is versioned, its fully-qualified
+name typically including a base name plus an authority and version number,
+logical references to a package's contents are fully-qualified with such.
 - A "material" is a {type,constant,function,procedure,synonym,etc}.
 - A "folder" is a logical namespace that in/directly organizes materials.
+- A "package" is a folder that has no parent folder.
 - A folder may not directly contain both folders and materials; the
 children of an folder must either be all folders or all materials.
 - A "binder" is an folder that has at least 1 child material, and exactly 1
@@ -34,38 +45,35 @@ binder for which that material is its cover.
 live in the same binder as what they are embedded in, the binder providing
 a flat namespace for them.  Any non-cover materials in a binder may have
 automatically generated names but could have explicit names.
-- A "package" is a folder that has no parent folder.
 - The term "schema" is not used to describe any kind of entity in the above
 sense and is left available for use as generic database terminology.
+- A "constant" with a true "folded" trait is the canonical way to represent
+the current value of "the database".  In practice "the database" may be a
+"binder" whose cover is a folded constant representing the database as a
+whole, and other folded constants are in there too representing its parts
+for easier human readability when serialized; in any event, on
+serialization the folded constant's format/structure would be generated.
 
 * Distinguish logical compilation units from their repositories.
-- Muldis D code is often compiled per "bundle", and one can be completely
-parsed and to some extent be compiled in complete isolation from others.
-- A "bundle" is typically a set of 1 or more packages preceded a Muldis D
-language name declaration which provides context on how to understand the
-rest of the bundle, such as what grammar should be used where applicable.
-- A "package" is the primary logical unit for Muldis D code and consists of
-a set of type/routine/constant declarations organized into a multi-level
-hierarchical namespace.  Every package is versioned, its fully-qualified
-name typically including a base name plus an authority and version number,
-logical references to a package's contents are fully-qualified with such.
-- Often a bundle will include multiple versions of a package (common base
-name), which is its primary/current version plus shims for older versions.
-- A bundle may also or alternately have a set of 1 or more named values,
-the definition of each being completely self-defined in general, or they
-may be defined in terms of each other for factoring purposes; these are the
-typical form that "the database" takes.
-- A "repository" is somewhere on or accessible to the system where bundles
+- A "repository" is somewhere on or accessible to the system where packages
 live, such as a "local" or "installed" OS file system, or some "object
 store" service, or some version control system say.  When a user or
 packages wishes to "use" a package, the available repositories are
 consulted when looking for it.
+- A "module" is a more physical manifestation of a package which includes
+metadata of what version of the Muldis D language/grammar it is declaring
+conformance to, as a Muldis D language name.  Usually this is something
+like Muldis_D:Plain_Text:"http://muldis.com":"0.200" but depending on
+context it might optionally declare the character encoding etc in use,
+depending on whether the module is logically already in the form of a
+character string versusan octet string for example.
+- Muldis D code is often compiled per "module", and one can be completely
+parsed and to some extent be compiled in complete isolation from others.
 - Perl 6 concepts of CompUnit and CompUnitRepo loosely correspond to the
-above bundle and repository respectively.
-- A "module" is a bundle that is read-only during the course of program
-execution while a "depot" is allowed to be written/updated also.
+above package/module and repository respectively.
+- A "module" may either be read-only or writeable during the course of
+program execution depending on the context.
 - TODO: Expand on what read-only vs writeable means.
-- TODO: Possibly rename the module/depot terms.
 - TODO: Use the term "library" somewhere.
 
 * Allow foo(:.bar) or \%{:.bar} which mean foo(bar:.bar) or \%{bar:.bar}.
@@ -1385,12 +1393,25 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
 - Every part has a default value that is used if omitted
 - Many of the numbered items above correspond to Perl 6 sub traits
 
-* Constant declare syntax general form:
-    0. keyword "constant" followed by expr
+* Constant / named value declare syntax general form:
+    0. keyword "constant"
+    1. optional keyword "folded"
+    2. expr
 - Note that unlike with functions, "virtual"/"implements" don't make sense
 for constants because there's no way for them to be polymorphic dispatching
 on a nonexistant argument, so all references to constants need to be
 sufficiently name-qualified that the name is unique in the caller context.
+- Iff "folded" is absent, the original value expression source code
+is guaranteed to be preserved and introspectable in the same manner as
+types and routines etc as if it were a niladic function.
+- Iff "folded" is present, there is no such guarantee, and the
+expression will officially be folded into a single value, so only the value
+itself remains and how it was derived is not, aside from it being
+maintained as a named constant that can be referenced.  Muldis D source
+code produced from this value would be generated by the system, and is not
+guaranteed to match the formatting of user-written source code.
+- A folded constant is now the canonical way to represent the current value
+of "the database" at any given point in time.
 - TODO: Consider some other mechanism to declare that a set of routines or
 constants for a virtual type should be composed by implementing types.
 
