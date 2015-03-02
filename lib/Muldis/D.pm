@@ -114,7 +114,7 @@ and various SQL implementations (see the L<Muldis::D::SeeAlso>
 file).  It also appears in retrospect that Muldis D has some designs in
 common with FoxPro or xBase, and with the Ada and Lua languages.  The
 newer L<C'Dent|http://cdent.org/> language has some similarities as well.
-Most recently Lisp became a larger influence, as well as Python.  At some
+More recently Lisp became a larger influence, as well as Python.  At some
 point a section will be added that lists the various influences as well as
 similarities with other languages, whether by influence or by coincidence.
 
@@ -152,23 +152,16 @@ the original author and by other parties.
 
 At the highest level, a fully-qualified Muldis D language name is a
 (ordered) sequence of values having a minimum of 2 elements, and typically
-about 4-6 elements.  The elements are read one at a time, starting with the
+about 3-5 elements.  The elements are read one at a time, starting with the
 first; the value of each element, combined with those before it, determine
 what number and kind of elements are valid to follow it in the sequence.
 So all Muldis D variants are organized into a single hierarchy where each
 child node represents a language derived from or extending the language
 represented by its parent node.
 
-In documentation, it is typical to use a Muldis D language name involving
-just a sub-sequence of the allowed elements that is missing child-most
-allowed elements; in that case, this language name implicitly refers to the
-entire language sub-tree having the specified elements in common; an
-example of this is the 4-element name mentioned in this file's DESCRIPTION
-section.  Even in code, sometimes certain child-most elements are optional.
-
 For the official B<Muldis D Plain Text> language, a fully-qualified
-language name, as would be declared by code, has exactly 5 parts: B<Family
-Name>, B<Syntax Name>, B<Script Name>, B<Authority>, B<Version Number>.
+language name, as would be declared by code, has exactly 4 parts: B<Family
+Name>, B<Syntax Name>, B<Authority>, B<Version Number>.
 
 While not mandatory for Muldis D variants in general, it is strongly
 recommended that all elements of a Muldis D language name would, when
@@ -203,11 +196,9 @@ the name is metadata for.
 
 For examples:
 
-    Muldis_D:Plain_Text:ASCII:"http://muldis.com":"0.200"
+    Muldis_D:Plain_Text:"http://muldis.com":"0.200"
 
-    Muldis_D:Plain_Text:"Unicode(6.2.0,UTF-8,canon)":"http://muldis.com":"0.200"
-
-    Muldis_D:Plain_Text:ASCII:"http://example.com":"42"
+    Muldis_D:Plain_Text:"http://example.com":"42"
 
 With all hosted data variants, the Muldis D code is represented by
 collection-typed values that are of some native type of some other
@@ -233,38 +224,9 @@ string C<Plain_Text>.  Any other Muldis D grammars not intended to be the
 canonical one would likely be some other character string, such as
 C<Perlish> or C<SQL> or C<Tutorial_D>.
 
-=head2 Script Name
-
-The third element of a Muldis D language name, at least for
-C<Muldis_D:Plain_Text>, indicates the primary script of the Muldis D code,
-meaning is character repertoire and/or character encoding and/or character
-normalization.  Under the assumption that a C<Muldis_D:Plain_Text> parser
-might be reading the source code as binary data or otherwise as
-unnormalized character data, declaring the Script Name makes it completely
-unambiguous as to what characters it is to be treating the input as.
-
-For a simple example, a Script Name of C<ASCII> says every literal source
-code character is a 7-bit ASCII character (and representing any non-ASCII
-characters is being done with escape sequences), and this is recommended
-for any C<Muldis_D:Plain_Text> file that doesn't need to be something else.
-For various legacy 8-bit formats the Script Name can tell us if we're using
-C<Latin1> or C<CP1252> or C<EBCDIC> etc.  For Unicode the Script Name would
-have multiple parts, such as C<Unicode(6.2.0,UTF-8,canon)>, indicating
-expected repertoire, and encoding (useful more with ones lacking BOMs); but
-at the very least it is useful with normalization; if C<compat> is declared
-then the source code is folded before it is parsed so possibly distinct
-literal characters in the original code are seen as identical character
-strings by the main parser, while C<canon> would not do this folding.
-
-A Muldis D parser would possibly scan through the same source code multiple
-times filtering by a variety of text encodings until it can read a Muldis D
-language name declaring the same encoding that the name is itself written
-in, and then from that point it would expect the whole file to be that
-declared encoding or it would consider the code invalid.
-
 =head2 Authority
 
-The fourth element of the Muldis D language name is some character string
+The third element of the Muldis D language name is some character string
 whose value uniquely identifies the authority or author of the variant's
 language specification.  Generally speaking, the community at large
 should self-regulate authority identifier strings so they are reasonable
@@ -310,8 +272,8 @@ C<Muldis_D> or C<Muldis_D::Low_Level> packages.
 
 =head2 Version Number
 
-The fifth element of the Muldis D language name, at the very least when the
-authority is C<http://muldis.com>, is a multi-part version
+The fourth element of the Muldis D language name, at the very least when
+the authority is C<http://muldis.com>, is a multi-part version
 number, which identifies the language spec version between all those
 by the same authority, typically indicating the relative ages of the
 versions, the relative sizes of their deltas, and perhaps which development

@@ -130,6 +130,10 @@ I<TODO: Talk about how modules are versioned and depots are not.>
 I<TODO: Talk about value literals or things in the context of host languages,
 each of the former is a depot from the perspective of the grammar.>
 
+I<TODO: Talk about the post-20150226-concept of packages vs modules etc and
+what Script Name declarations apply to or don't eg Muldis D source code
+in the form of Blob vs Text values or files vs not files.>
+
 The root grammar token for Muldis D Plain Text is C<MDPT>.
 
 =head1 START
@@ -139,10 +143,12 @@ Grammar:
     <MDPT> ::=
         ^ <shebang_line>? <ws>?
             <language_name> <ws>
+            [<script_name> <ws>]?
             [<module> | <depot>]
         <ws>? $
 
 See the sections in this file named L<SHEBANG LINE>, L</LANGUAGE NAME>,
+L</SCRIPT NAME>,
 L</MODULE SPECIFICATION>, and L</DEPOT SPECIFICATION>, for more details.
 
 =head1 SHEBANG LINE
@@ -180,7 +186,6 @@ Grammar:
     <language_name> ::=
         <ln_family_name>
         <unspace> ':' <ln_syntax_name>
-        <unspace> ':' <ln_script_name>
         <unspace> ':' <ln_authority>
         <unspace> ':' <ln_version_number>
 
@@ -189,9 +194,6 @@ Grammar:
 
     <ln_syntax_name> ::=
         Plain_Text
-
-    <ln_script_name> ::=
-        <ln_elem_str>
 
     <ln_authority> ::=
         <ln_elem_str>
@@ -218,11 +220,48 @@ fully-qualified Muldis D language name it is written in.
 
 Examples:
 
-    Muldis_D:Plain_Text:ASCII:"http://muldis.com":"0.200"
+    Muldis_D:Plain_Text:"http://muldis.com":"0.200"
 
-    Muldis_D:Plain_Text:"Unicode(6.2.0,UTF-8,canon)":"http://muldis.com":"0.200"
+    Muldis_D:Plain_Text:"http://example.com":"42"
 
-    Muldis_D:Plain_Text:ASCII:"http://example.com":"42"
+=head1 SCRIPT NAME
+
+Grammar:
+
+    <script_name> ::=
+        ...
+
+The Script Name indicates the primary script of the Muldis D code,
+meaning is character repertoire and/or character encoding and/or character
+normalization.  Under the assumption that a C<Muldis_D:Plain_Text> parser
+might be reading the source code as binary data or otherwise as
+unnormalized character data, declaring the Script Name makes it completely
+unambiguous as to what characters it is to be treating the input as.
+
+For a simple example, a Script Name of C<ASCII> says every literal source
+code character is a 7-bit ASCII character (and representing any non-ASCII
+characters is being done with escape sequences), and this is recommended
+for any C<Muldis_D:Plain_Text> file that doesn't need to be something else.
+For various legacy 8-bit formats the Script Name can tell us if we're using
+C<Latin1> or C<CP1252> or C<EBCDIC> etc.  For Unicode the Script Name would
+have multiple parts, such as C<Unicode(6.2.0,UTF-8,canon)>, indicating
+expected repertoire, and encoding (useful more with ones lacking BOMs); but
+at the very least it is useful with normalization; if C<compat> is declared
+then the source code is folded before it is parsed so possibly distinct
+literal characters in the original code are seen as identical character
+strings by the main parser, while C<canon> would not do this folding.
+
+A Muldis D parser would possibly scan through the same source code multiple
+times filtering by a variety of text encodings until it can read a Muldis D
+language name declaring the same encoding that the name is itself written
+in, and then from that point it would expect the whole file to be that
+declared encoding or it would consider the code invalid.
+
+Examples:
+
+    script ASCII;
+
+    script Unicode:6.2.0:UTF-8:canon;
 
 =head1 SEE ALSO
 
