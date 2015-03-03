@@ -17,6 +17,24 @@ resources of everyone else.
 * Update Plain_Text.pod concerning how and where the Script Name applies,
 update the other parts on the post-20150226 design of packages vs modules
 vs repositories etc.
+- Split Script Name into 2 declarations, on encoding and on normalization.
+- Example declarations at the top of a Module:
+    Muldis_D:Plain_Text:"http://muldis.com":"0.200";
+    script_encoding:ASCII;
+    script_normalize:ASCII;
+- Or:
+    Muldis_D:Plain_Text:"http://muldis.com":"0.200";
+    script_encoding:Unicode:"6.2.0":"UTF-8";
+    script_normalize:Unicode:"6.2.0":canon;
+- Only the script_encoding says how to map a Blob to a Text, and this is
+possibly round-trippable losslessly depending on whether an encoding allows
+multiple octet sequences for the same character codepoint.
+- Note that valid options for script_normalize are {none,canon,compat}
+which correspond to {none,NFD,NFKD} respectively.  There are possibly extra
+terms for script_normalize if eg the compat rules changed independently of
+Unicode main versions, eg with independent changes of annex versions.  It
+is recommended to use canon by default as that most closely corresponds to
+what users expect, probably, or compat possibly for security.
 
 * Formalize layout of package logical contents somewhat.
 - A "package" is the primary logical unit for Muldis D code and consists of
@@ -72,8 +90,44 @@ parsed and to some extent be compiled in complete isolation from others.
 above package/module and repository respectively.
 - A "module" may either be read-only or writeable during the course of
 program execution depending on the context.
+- A "module" is the level of concept that knows about segments, so for
+example the module for Muldis_D is composed of several segments, one per
+disk file, and the multiple segments are reflected in the homoiconic/native
+form.  But the module as a whole then maps to a package, and at the package
+abstraction level the package is in a single piece and is not split up.
 - TODO: Expand on what read-only vs writeable means.
 - TODO: Use the term "library" somewhere.
+
+* Alternatives we have re Muldis D source code:
+- A Blob value whose octets are of some potentially unknown raw format,
+this is what is natively read from a generic file system or object store,
+if it is composed of character data then repertoire and encoding unknown.
+- A Text value where we know we have a string of codepoints; the repertoire
+(eg ASCII or Unicode) is known and the encoding (eg UTF-8) is not relevant
+or ceased to be relevant at the language level during the process of
+conversion from Blob.  Mapping from the Blob to this Text value involved
+the scanning for the declared script name or otherwise determing what the
+character encoding was in the Blob, and mapping the string of octets to the
+string of character codepoints.
+- A Text value that, in the case of Unicode, has been effectively
+normalized to NFD per declaration of canon vs compat, this decision also
+driven by the script name declaration.  The script declaration is retained
+for maintaining intent should we round-trip to Blob, but Unicode normalize
+transforms are lossy, we don't remember the original codepoints as they
+should not be considered logically significant.
+- A Source_Code value derived from parsing the latter Text value according
+to the language name declaration, where this Source_Code defines a module
+or segment thereof etc; at this point the language name declaration is no
+longer needed to understand the Source_Code, but it would be retained as
+meta-data for the purpose of inserting the same declaration in code
+round-tripped to the Text form (subject to changes while in SC form not
+invalidating the language name declaration like compatible version numbers).
+- A Source_Code value derived from mapping the Module to a Package or etc.
+- So the sequence of parsing, where each is conceptually a different pass,
+mapping a value to another value, but can be implemented in a combined pass
+is: Blob -> Text anormal -> Text normal -> SC_Module, SC_Package.
+- A Repository can validly store a Package in any of the above forms
+directly, or others.
 
 * Allow foo(:.bar) or \%{:.bar} which mean foo(bar:.bar) or \%{bar:.bar}.
 
