@@ -14,6 +14,40 @@ resources of everyone else.
 
 ----------
 
+* Have procedure statement grammar nodes or \*^[...] for loading or
+unloading or reloading etc packages at runtime.  Or call it mounting/etc.
+- The loading version take a SC_Package value as input, which other than
+any sanity checking it has to do, will cause that SC_Package to appear
+verbatim in the system catalog, under the identity (base+auth+vnum) it
+declares with 'package', will make it visible to identifier resolution and
+routine dispatch code, and will compile it as applicable.  The loading node
+will explicitly not load dependencies, and will fail if the package cites
+any 'using' dependencies that are not loaded first.  It is invalid to have
+circular 'using' dependencies between packages.  The act of actually going
+to repositories or parsing to SC_Package values or introspecting the latter
+to then go get dependencies, that is the job of higher-level code, and once
+bootstrapped is performed in Muldis D code.  The loading code will fail if
+a package with the same identity is already loaded.
+- The unloading version either takes a SC_Package for consistency, though
+it only needs package identity name, or it takes just a Reference of said.
+- The reloading version is like an unloading followed by a loading, this is
+used say when there is runtime manipulation / data definition of a package.
+- Perhaps the nodes may be split into separate compile/register and
+link/make-available nodes.
+- When registering a package, it can also be marked as immutable, and as
+such later attempts to unregister or reregister will be rejected.  This can
+be done for practical or security reasons for "built-in" packages or others
+that should be treated as read-only rather than updateable.  To change
+those the DBMS/application itself would have to be restarted.
+- The separate register/mount stage is like a name reservation but the code
+doesn't explicitly use memory when it isn't needed (or it still can behind
+the scenes but users don't see it so its like its not there).
+- Perhaps the data dictionary is implemented at a higher level, as normal
+variables, and updates to them would cause a reload/etc behind the scenes.
+- So matters of persistence are orthogonal to execution.
+- We would do persistence or repositories somewhat in terms of tied
+variables or various kinds of I/O facilities whether files or otherwise.
+
 * Update Plain_Text.pod concerning how and where the Script Name applies,
 update the other parts on the post-20150226 design of packages vs modules
 vs repositories etc.
