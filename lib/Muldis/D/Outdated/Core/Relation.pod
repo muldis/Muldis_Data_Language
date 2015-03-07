@@ -400,7 +400,7 @@ problem of finding all components, at all levels, of some specified part).
 =head2 sys.std.Core.Relation.restriction
 
 C<< function restriction (Relation <--
-topic : Relation, func : ValFiltCFuncNC) {...} >>
+topic : Relation, func : ValFiltPFuncNC) {...} >>
 
 This function results in the relational restriction of its C<topic>
 argument as determined by applying the C<value-filter> function named in
@@ -420,7 +420,7 @@ value equality.
 =head2 sys.std.Core.Relation.restr_and_cmpl
 
 C<< function restr_and_cmpl (Tuple <--
-topic : Relation, func : ValFiltCFuncNC) {...} >>
+topic : Relation, func : ValFiltPFuncNC) {...} >>
 
 This function performs a 2-way partitioning of all the tuples of C<topic>
 and results in a binary tuple whose attribute values are each relations
@@ -433,7 +433,7 @@ when given the same arguments.
 =head2 sys.std.Core.Relation.cmpl_restr
 
 C<< function cmpl_restr (Relation <--
-topic : Relation, func : ValFiltCFuncNC) {...} >>
+topic : Relation, func : ValFiltPFuncNC) {...} >>
 
 This function is the same as C<restriction> but that it results in the
 complementary subset of tuples of C<topic> when given the same arguments.
@@ -443,7 +443,7 @@ operation is also known as C<!where> or C<not-where>.
 =head2 sys.std.Core.Relation.classification
 
 C<< function classification (Relation <--
-topic : Relation, func : ValMapCFuncNC, class_attr_name : Name,
+topic : Relation, func : ValMapPFuncNC, class_attr_name : Name,
 group_attr_name : Name) {...} >>
 
 This function conceptually is to C<sys.std.Core.Relation.restriction> what
@@ -467,7 +467,7 @@ into exactly 2 groups (and returning one) using arbitrary criteria.
 =head2 sys.std.Core.Relation.extension
 
 C<< function extension (Relation <--
-topic : Relation, attr_names : set_of.Name, func : ValMapCFuncNC) {...} >>
+topic : Relation, attr_names : set_of.Name, func : ValMapPFuncNC) {...} >>
 
 This function results in the relational extension of its C<topic> argument
 as determined by applying the C<Tuple>-resulting C<value-map> function
@@ -494,7 +494,7 @@ those named by C<attr_names>.
 =head2 sys.std.Core.Relation.map
 
 C<< function map (Relation <-- topic : Relation,
-result_attr_names : set_of.Name, func : ValMapCFuncNC) {...} >>
+result_attr_names : set_of.Name, func : ValMapPFuncNC) {...} >>
 
 This function provides a convenient one-place generalization of per-tuple
 transformations that otherwise might require the chaining of up to a
@@ -525,7 +525,7 @@ attribute names to those named by C<result_attr_names>.
 
 C<< function summary (Relation <--
 topic : Relation, group_per : set_of.Name,
-summ_attr_names : set_of.Name, summ_func : ValMapCFuncNC) {...} >>
+summ_attr_names : set_of.Name, summ_func : ValMapPFuncNC) {...} >>
 
 This function provides a convenient context for using aggregate functions
 to derive a per-group summary relation, which is its result, from another
@@ -585,7 +585,7 @@ C<sys.std.Core.Relation.cardinality_per_group>.
 =head2 sys.std.Core.Relation.reduction
 
 C<< function reduction (Tuple <-- topic : Relation,
-func : ValRedCFuncNC, identity : Tuple) {...} >>
+func : ValRedPFuncNC, identity : Tuple) {...} >>
 
 This function is a generic reduction operator that recursively takes each
 pair of tuples in C<topic> and applies an argument-specified tuple
@@ -942,7 +942,7 @@ These additional functions are specific to supporting ranking and quotas.
 =head2 sys.std.Core.Relation.rank
 
 C<< function rank (Relation <-- topic : Relation,
-name : Name, ord_func : OrdDetCFuncNC, is_reverse_order? : Bool,
+name : Name, ord_func : OrdDetPFuncNC, is_reverse_order? : Bool,
 first_rank? : NNInt) {...} >>
 
 This function results in the relational extension of its C<topic> argument
@@ -950,7 +950,7 @@ by a single C<NNInt>-typed attribute whose name is provided by the C<name>
 argument, where the value of the new attribute for each tuple is the rank
 of that tuple as determined by the (total) C<order-determination>
 function named in the C<ord_func> argument when the latter function is
-curried by the C<is_reverse_order> argument.  The C<order-determination>
+primed by the C<is_reverse_order> argument.  The C<order-determination>
 function compares tuples, with each invocation of it getting a C<topic>
 tuple as each its C<topic> and C<other> arguments.  The new attribute of
 C<rank>'s result has the value of the C<first_rank> argument (that defaults
@@ -978,12 +978,12 @@ is_reverse_order? : Bool, first_rank? : NNInt) {...} >>
 
 This function is a short-hand for invoking C<rank> with the function
 C<sys.std.Core.Tuple.order_by_attr_names> as its C<ord_func> argument after
-the latter is curried with this function's C<order_by> argument.
+the latter is primed with this function's C<order_by> argument.
 
 =head2 sys.std.Core.Relation.limit
 
 C<< function limit (Relation <-- topic : Relation,
-ord_func : OrdDetCFuncNC, is_reverse_order? : Bool,
+ord_func : OrdDetPFuncNC, is_reverse_order? : Bool,
 rank_interval : sp_interval_of.NNInt) {...} >>
 
 This function results in the relational restriction of its C<topic>
@@ -1016,7 +1016,7 @@ These additional functions are specific to supporting substitutions.
 =head2 sys.std.Core.Relation.substitution
 
 C<< function substitution (Relation <--
-topic : Relation, attr_names : set_of.Name, func : ValMapCFuncNC) {...} >>
+topic : Relation, attr_names : set_of.Name, func : ValMapPFuncNC) {...} >>
 
 This function is similar to C<extension> except that it substitutes values
 of existing relation attributes rather than adding new attributes.  The
@@ -1056,8 +1056,8 @@ given in the C<attrs> argument.
 =head2 sys.std.Core.Relation.subst_in_restr
 
 C<< function subst_in_restr (Relation <--
-topic : Relation, restr_func : ValFiltCFuncNC,
-subst_attr_names : set_of.Name, subst_func : ValMapCFuncNC) {...} >>
+topic : Relation, restr_func : ValFiltPFuncNC,
+subst_attr_names : set_of.Name, subst_func : ValMapPFuncNC) {...} >>
 
 This function is like C<substitution> except that it only transforms a
 subset of the tuples of C<topic> rather than all of them.  It is a
@@ -1073,7 +1073,7 @@ simply of anded or ored tests for attribute value equality.
 =head2 sys.std.Core.Relation.static_subst_in_restr
 
 C<< function static_subst_in_restr (Relation <--
-topic : Relation, restr_func : ValFiltCFuncNC, subst : Tuple) {...} >>
+topic : Relation, restr_func : ValFiltPFuncNC, subst : Tuple) {...} >>
 
 This function is to C<sys.std.Core.Relation.subst_in_restr> what
 C<sys.std.Core.Relation.static_subst> is to
@@ -1084,7 +1084,7 @@ C<static_subst_in_semijoin> function.
 
 C<< function subst_in_semijoin (Relation <--
 topic : Relation, restr : Relation, subst_attr_names : set_of.Name,
-subst_func : ValMapCFuncNC) {...} >>
+subst_func : ValMapPFuncNC) {...} >>
 
 This function is like C<subst_in_restr> except that the subset of the
 tuples of C<topic> to be transformed is determined by those matched by a
@@ -1159,7 +1159,7 @@ use for those missing attribute values.
 =head2 sys.std.Core.Relation.outer_join_with_exten
 
 C<< function outer_join_with_exten (Relation <-- primary : Relation,
-secondary : Relation, exten_func : ValMapCFuncNC) {...} >>
+secondary : Relation, exten_func : ValMapPFuncNC) {...} >>
 
 This function is the same as
 C<sys.std.Core.Relation.outer_join_with_static_exten> but that the result
@@ -1228,7 +1228,7 @@ dropped SQL table column.
 =head2 sys.std.Core.Relation.assign_extension
 
 C<updater assign_extension (&topic : Relation,
-attr_names : set_of.Name, func : ValMapCFuncNC) {...}>
+attr_names : set_of.Name, func : ValMapPFuncNC) {...}>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.extension> function with the same arguments, and
@@ -1295,7 +1295,7 @@ then assigning the result of that function to C<r>.
 =head2 sys.std.Core.Relation.assign_restriction
 
 C<updater assign_restriction (&topic : Relation,
-func : ValFiltCFuncNC) {...}>
+func : ValFiltPFuncNC) {...}>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.restriction> function with the same arguments, and
@@ -1305,7 +1305,7 @@ this operation is also known as C<:=where>.
 =head2 sys.std.Core.Relation.assign_cmpl_restr
 
 C<updater assign_cmpl_restr
-(&topic : Relation, func : ValFiltCFuncNC) {...}>
+(&topic : Relation, func : ValFiltPFuncNC) {...}>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.cmpl_restr> function with the same arguments, and
@@ -1376,7 +1376,7 @@ also known as C<:=exclude> or C<:=symdiff> or C<:=∆>.
 =head2 sys.std.Core.Relation.assign_substitution
 
 C<updater assign_substitution (&topic : Relation,
-attr_names : set_of.Name, func : ValMapCFuncNC) {...}>
+attr_names : set_of.Name, func : ValMapPFuncNC) {...}>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.substitution> function with the same arguments,
@@ -1395,8 +1395,8 @@ arguments, and then assigning the result of that function to C<topic>.
 =head2 sys.std.Core.Relation.assign_subst_in_restr
 
 C<updater assign_subst_in_restr (&topic : Relation,
-restr_func : ValFiltCFuncNC, subst_attr_names : set_of.Name,
-subst_func : ValMapCFuncNC) {...}>
+restr_func : ValFiltPFuncNC, subst_attr_names : set_of.Name,
+subst_func : ValMapPFuncNC) {...}>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.subst_in_restr> function with the same arguments,
@@ -1406,7 +1406,7 @@ is analogous to the general case of the conditional SQL "UPDATE" statement.
 =head2 sys.std.Core.Relation.assign_static_subst_in_restr
 
 C<updater assign_static_subst_in_restr
-(&topic : Relation, restr_func : ValFiltCFuncNC, subst : Tuple) {...}>
+(&topic : Relation, restr_func : ValFiltPFuncNC, subst : Tuple) {...}>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.static_subst_in_restr> function with the same
@@ -1415,7 +1415,7 @@ arguments, and then assigning the result of that function to C<topic>.
 =head2 sys.std.Core.Relation.assign_subst_in_semijoin
 
 C<updater assign_subst_in_semijoin (&topic : Relation, restr : Relation,
-subst_attr_names : set_of.Name, subst_func : ValMapCFuncNC) {...}>
+subst_attr_names : set_of.Name, subst_func : ValMapPFuncNC) {...}>
 
 This update operator is a short-hand for first invoking the
 C<sys.std.Core.Relation.subst_in_semijoin> function with the same
