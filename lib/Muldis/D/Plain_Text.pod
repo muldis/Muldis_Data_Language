@@ -355,12 +355,18 @@ the exact character escape sequences and whitespace used.  Also maintained
 as useful for debugging is knowledge of what line numbers and character
 positions within a line each token ranged over in the original source.
 
+Note that it is assumed that every token indicated as being a I<character
+string> would in likely practice be some other type whose payload is the
+character string and it is tagged to say how the string was interpreted,
+so that tokens can more easily be further processed in isolation, the work
+to consider their wider context having already been done.
+
 =head2 Pipeline Stage 1
 
-Stage 1 in the parsing pipeline is to separate out any leading
-C<shebang_line> that might prefix the code.  The primary output of stage 1
-is a single character string token with the code itself, and any leading
-shebang is metadata.
+Stage 1 in the parsing pipeline is to split off any leading C<shebang_line>
+that might prefix the code.  The primary output of stage 1 is a single
+character string token with the code itself, and any leading shebang is
+metadata.  Further stages below only consider this primary as their input.
 
 Grammar:
 
@@ -381,6 +387,9 @@ contexts.  The output of stage 2 is an array of character string tokens
 such that catenating them in order gives the input token.  Each output
 token is either one of the delimiters by itself, or is the characters
 between a delimiter pair, or is the characters between 2 delimited strings.
+Alternately, the output of stage 2 is an array of parse nodes where each
+node either represents a nonquoted context or a quoted context, the latter
+bundling up what its delimiters were.
 
 Grammar:
 
@@ -391,68 +400,44 @@ Grammar:
         <-['"`]>*
 
     <ps2_quoted> ::=
-          ['\'' <-[']>* '\'']
-        | ['"'  <-["]>* '"' ]
-        | ['`'  <-[`]>* '`' ]
+        <ps2_single_quoted> | <ps2_double_quoted> | <ps2_backtick_quoted>
+
+    <ps2_single_quoted> ::=
+        '\'' <-[']>* '\''
+
+    <ps2_double_quoted> ::=
+        '"' <-["]>* '"'
+
+    <ps2_backtick_quoted> ::=
+        '`' <-[`]>* '`' 
 
 =head3 Pipeline Stage 3
 
 Stage 3 in the parsing pipeline is to take any tokens from stage 2
-representing a quoted context, and for each one, if it contains any
-character escape sequences, to replace those escape sequences with the
-actual characters they represent.  The output of stage 3 has the same
-format as the output of stage 2 but that there are no escape sequences in
-any of the character strings.
-
-Grammar:
-
-    <ps3_quoted_sans_delimiters> ::=
-        <ps3_nonescaped> | <ps3_escaped>
-
-    <ps3_nonescaped> ::=
-        [<-[\\]> .*]?
-
-    <ps3_escaped> ::=
-        '\\' [<-[\\]> | <escaped_char>]*
-
-Note that the definition of C<escaped_char> includes an escape sequence
-each for a single-quote and a double-quote.  Note that the C<escaped_char>
-option doesn't exist for C<`>, just C<'> and C<">.
-
-=head3 Pipeline Stage 4
-
-Stage 4 in the parsing pipeline is to merge runs of consecutive (apart from
-any invervening whitespace) quoted context tokens of the same kind,
-specifically those delimited by either single-quotes or double-quotes, into
-a single quoted context token of that same kind, because such runs are
-logically a single token that just would have been split for readability.
-An exception is backtick-quoted strings, which are left unmerged, and in
-the end they would be merged back into whitespace tokens anyway.
-The output of stage 4 is of the same format as of stage 2 or 3.
-
-=head3 Pipeline Stage 5
-
-Stage 5 in the parsing pipeline is to take any tokens from stage 2
 representing a nonquoted context, and for each one, split it into tokens by
 character class, that is just on the transition between any 2 characters
-not of the same one of the 5 character groups shown.
+not of the same one of the 5 character groups shown.  The output of stage 3
+is an array of character string tokens such that each output token is
+either the same as an input token or is a non-overlapping substring of one.
+Alternately, each parse node from stage 2 representing a nonquoted context
+has been replaced by an array of 1..N parse nodes, one per new substring.
 
 Grammar:
 
-    <ps5_nonquoted> ::=
-          <ps5_alphanumeric_char>+
-        | <ps5_standalone_char>+
-        | <ps5_symbolic_char>+
-        | <ps5_whitespace_char>+
-        | <ps5_illegal_char>+
+    <ps3_nonquoted> ::=
+          <ps3_alphanumeric_char>+
+        | <ps3_standalone_char>+
+        | <ps3_symbolic_char>+
+        | <ps3_whitespace_char>+
+        | <ps3_illegal_char>+
 
-    <ps5_alphanumeric_char> ::=
+    <ps3_alphanumeric_char> ::=
         <[ a..z A..Z 0..9 _ ]>
 
-    <ps5_standalone_char> ::=
+    <ps3_standalone_char> ::=
         '\\' | ',' | ';' | '(' | ')' | '[' | ']' | '{' | '}'
 
-    <ps5_symbolic_char> ::=
+    <ps3_symbolic_char> ::=
           '!' | '#' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/'
         | ':' | '<' | '=' | '>' | '?' | '@' | '^' | '|' | '~'
         | '¬' | '±' | '×' | '÷'
@@ -463,7 +448,10 @@ Grammar:
         | '⊽' | '⊿' | '⋊' | '⋈' | '⋉'
         | '▷' | '⟕' | '⟖' | '⟗' | '⨝' | '⨯'
 
-    <ps5_illegal_char> ::=
+    <ps3_whitespace_char> ::=
+        ' ' | '\t' | '\n' | '\f' | '\r'
+
+    <ps3_illegal_char> ::=
         ...
 
 Note that the illegal category includes all characters not explicitly
@@ -479,22 +467,24 @@ confusion with similar-looking ASCII letters, and because its hard to know
 where to draw the line if one wanted to include the whole un-accented Greek
 alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
 
-=head3 Pipeline Stage 6
+=head3 Pipeline Stage 4
 
-Stage 6 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple <ps5_standalone_char> into multiple tokens such that
-each such individual character becomes its own token.
+Stage 4 in the parsing pipeline is to split any nonquoted context tokens
+consisting of multiple C<ps3_standalone_char> into multiple tokens such that
+each such individual character becomes its own token.  The output of stage
+4 is an array of character string tokens, or parse nodes, as per stage 3.
 
-=head3 Pipeline Stage 7
+=head3 Pipeline Stage 5
 
-Stage 7 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple <ps5_symbolic_char> into multiple tokens where those
+Stage 5 in the parsing pipeline is to split any nonquoted context tokens
+consisting of multiple C<ps3_symbolic_char> into multiple tokens where those
 tokens contain characters well-known to C<Plain_Text> for special uses such
-as meta-operator characters.
+as meta-operator characters.  The output of stage 5 is an array of
+character string tokens, or parse nodes, as per stage 3.
 
 Grammar:
 
-    <ps7_nonquoted_symbolic_grouping> ::=
+    <ps5_nonquoted_symbolic_grouping> ::=
           '???'
         | '!!!'
         | '??'
@@ -517,33 +507,96 @@ their own token also.  When looking for sequences, evaluation is
 left-to-right and the longest match wins between multiple matches.
 
 Generally speaking, the parsing of nonquoted context symbolic character
-runs is complete following stage 7, and each remaining token is not likely
+runs is complete following stage 5, and each remaining token is not likely
 to be split again or be merged with other tokens.
 
 Because the above sequences are special to C<Plain_Text>, whitespace is
 optional between them and symbolic operator calls/syntax because there is
 considered no ambiguity.
 
+=head3 Pipeline Stage 6
+
+Stages 6 and later in the parsing pipeline focus more on combining adjacent
+tokens or parse nodes of known kinds into subtrees of other node types,
+that progressively add more semantic meaning to the parse tree, and the
+syntax becomes metadata rather than something needed to execute the code.
+
+Stage 6 in the parsing pipeline is to collect any runs of consecutive
+tokens or parse nodes, where each represents either a backtick-quoted
+string or nonquoted C<ps3_whitespace_char>, beneath a parse node
+representing the run; this new node is logically treated as insignificant
+(other than for its role in separating otherwise adjacent things)
+whitespace, and becomes non-semantic metadata for its wider context.
+
+=head3 Pipeline Stage 7
+
+Stage 7 in the parsing pipeline is to collect any runs of consecutive
+(apart from any invervening whitespace) quoted context tokens or parse
+nodes of the same kind, specifically those delimited by either
+single-quotes or double-quotes, beneath a parse node representing the run.
+Such runs are logically a single contiguous quoted string (except possibly
+for matters of escape sequences) but were split for readability.
+
 =head3 Pipeline Stage 8
 
-Stage 8 in the parsing pipeline is about distinguishing nonquoted context
-tokens consisting of C<ps5_alphanumeric_char> between alpha and numeric,
-where the former are typically keywords or bareword identifiers and the
-latter are typically numeric literals.
+Stage 8 in the parsing pipeline is to isolate any literals specific to the
+C<Blob> type, which are a particular run of C<ps3_alphanumeric_char>
+followed immediately by a logically single-quoted string, where the latter
+may actually be a run of said that was collected by stage 7.
+
+    <ps6_blob> ::=
+        '0' <[box]> <ps2_single_quoted>
+
+Note that the single C<ps2_single_quoted> above actually represents a run.
+
+Note that the above actually allows invalid C<Blob> literals, however
+anything matching the above pattern will be a syntax error if it doesn't
+otherwise match the stricter C<Blob> definition.
+
+=head3 Pipeline Stage 9
+
+Stage 9 in the parsing pipeline is to take any tokens from stage 2
+representing a quoted context, and for each one, if it contains any
+character escape sequences, to replace those escape sequences with the
+actual characters they represent.  This applies only to single-quoted and
+double-quoted strings, and for the former, only to those not already
+collected into a literal specific to the C<Blob> type.  These all represent
+character data, either C<Text> literals or quoted identifiers, and the
+valid formats for both within the quoted contexts are identical.  Note that
+for a run, each individual quoted context is treated in isolation, as some
+may be formatted for escape sequences and some may not.
 
 Grammar:
 
-    <ps8_alphanumeric> ::=
-        <ps8_alpha> | <ps8_numeric>
+    <ps9_quoted_sans_delimiters> ::=
+        <ps9_nonescaped> | <ps9_escaped>
 
-    <ps8_alpha> ::=
-        <[ a..z A..Z _ ]> <[ a..z A..Z 0..9 _ ]>*
+    <ps9_nonescaped> ::=
+        [<-[\\]> .*]?
 
-    <ps8_numeric> ::=
-        <[ 0..9 ]> <[ a..z A..Z 0..9 _ ]>*
+    <ps9_escaped> ::=
+        '\\' [<-[\\]> | <escaped_char>]*
 
-Note that this shown split is very broad and includes invalid tokens;
-further details are in the regular grammar.
+Note that the definition of C<escaped_char> includes an escape sequence
+each for a single-quote and a double-quote.
+
+=head3 Pipeline Stage 10
+
+Stage 10 in the parsing pipeline is to isolate any literals specific to
+certain numeric types, which are a particular run of
+C<ps3_alphanumeric_char> optionally with some C<ps3_symbolic_char>.
+
+    <ps10_numeric> ::=
+          [<[0..9]> <[ 0..9 _ ]>* ['.' <[ 0..9 _ ]>+]?]
+        | ['0' <[bodx]> <ps3_alphanumeric_char>+
+            ['.' <ps3_alphanumeric_char>+]?]
+
+Note that the above actually allows invalid numeric literals, however
+anything matching the above pattern will be a syntax error if it doesn't
+otherwise match a stricter numeric definition.
+
+I<TODO: Figure out some extended syntax to support very long numeric
+literals such that they can be broken with whitespace.>
 
 =head1 SEE ALSO
 
