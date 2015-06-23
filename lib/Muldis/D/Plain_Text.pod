@@ -82,6 +82,13 @@ parser would use context to supply default values for those elements.
 I<TODO: Describe the grammar itself and how to interpret it.  Meanwhile,
 keep in mind that the grammar is inspired by both EBNF and Perl 6 rules.>
 
+B<WARNING: THE PERL 6 GRAMMAR USED TO DEFINE THE SYNTAX IS OUT OF DATE WITH
+THE LATEST PERL 6; FOR EXAMPLE, I NEED TO USE '%'|'%%' RATHER THAN OR IN
+ADDITION TO THE '**' FOR SEPARATOR-DEFINED REPETITIONS ... SEE SYNOPSIS 5.>
+- ** takes number or range on right
+- % takes list item separator on right, eg allows "x,y" but not "x,y,"
+- %% is like % but allows separator to end the list, eg allows "x,y,"
+
 =head1 GENERAL STRUCTURE
 
 Each Muldis D Plain Text code file is either a I<module> or a I<depot>.  A
@@ -134,6 +141,14 @@ I<TODO: Talk about the post-20150226-concept of packages vs modules etc and
 what Script Name declarations apply to or don't eg Muldis D source code
 in the form of Blob vs Text values or files vs not files.>
 
+I<TODO: Talk about that the main reason for declaring most entities with
+absolute-qualified names like eg Pkgname.NS.NS.foo is because packages are
+multi-level namespaces and with unqualified names like most programming
+languages one would have to do a lot more code scanning to know what entity
+they were actually looking at.  A further reason is it means declarations
+can be grouped more logically for human reading than being forced to put
+everything with a common namespace together.>
+
 The root grammar token for Muldis D Plain Text is C<MDPT>.
 
 =head1 START
@@ -141,27 +156,22 @@ The root grammar token for Muldis D Plain Text is C<MDPT>.
 Grammar:
 
     <MDPT> ::=
-        ^ <shebang_line>? <ws>?
-            <language_name> <ws>
-            [<script_name> <ws>]?
-            [<module> | <depot>]
-        <ws>? $
+        ^ <shebang_line>? <versioned_grammar> $
 
-See the sections in this file named L<SHEBANG LINE>, L</LANGUAGE NAME>,
-L</SCRIPT NAME>,
-L</MODULE SPECIFICATION>, and L</DEPOT SPECIFICATION>, for more details.
+See the sections in this file named L<SHEBANG LINE> and L</VERSIONED
+GRAMMAR> for more details.
 
 =head1 SHEBANG LINE
 
 Grammar:
 
     <shebang_line> ::=
-        '#!' <shebang_directive> <ws_break>
+        '#!' <shebang_directive> <shebang_ws_break>
 
     <shebang_directive> ::=
         ...
 
-    <ws_break> ::=
+    <shebang_ws_break> ::=
         ...
 
 A C<shebang_line>, if it exists, must be the first characters of the text
@@ -179,15 +189,29 @@ Examples:
 
     #!/usr/bin/env muldisdre
 
+=head1 VERSIONED GRAMMAR
+
+Grammar:
+
+    <versioned_grammar> ::=
+        <ws>?
+            <language_name> <ws> ';'
+            [<script_name> <ws> ';']?
+            <unversioned_grammar>
+        <ws>?
+
+See the sections in this file named L</LANGUAGE NAME>, L</SCRIPT NAME>,
+and L</UNVERSIONED GRAMMAR> for more details.
+
 =head1 LANGUAGE NAME
 
 Grammar:
 
     <language_name> ::=
         <ln_family_name>
-        <unspace> ':' <ln_syntax_name>
-        <unspace> ':' <ln_authority>
-        <unspace> ':' <ln_version_number>
+        ':' <ln_syntax_name>
+        ':' <ln_authority>
+        ':' <ln_version_number>
 
     <ln_family_name> ::=
         Muldis_D
@@ -196,27 +220,16 @@ Grammar:
         Plain_Text
 
     <ln_authority> ::=
-        <ln_elem_str>
+        <gen_ctx_name>
 
     <ln_version_number> ::=
-        <ln_elem_str>
-
-    <ln_elem_str> ::=
-        <nonquoted_ln_elem_str> | <quoted_ln_elem_str>
-
-    <nonquoted_ln_elem_str> ::=
-        <[ a..z A..Z _ ]> <[ a..z A..Z 0..9 _ ]>+
-
-    <quoted_ln_elem_str> ::=
-        '"'
-            [<[\ ..~]-["]> | '\\"']+
-        '"'
-
-I<TODO: Simply make ln_elem_str the same format as an unqualified identifier.>
+        <gen_ctx_name>
 
 As per the VERSIONING section of L<Muldis::D>, code written in Muldis D
 Plain Text, whether I<module> or I<depot>, must start by declaring the
 fully-qualified Muldis D language name it is written in.
+
+SEE ALSO http://design.perl6.org/S11.html#Versioning FOR GUIDANCE...
 
 Examples:
 
@@ -262,6 +275,275 @@ Examples:
     script ASCII;
 
     script Unicode:6.2.0:UTF-8:canon;
+
+=head1 WHITESPACE
+
+Grammar:
+
+    <ws> ::=
+        <ws_sans_comments> % <quoted_ws_comment_str>
+
+    <ws_sans_comments> ::=
+        [' ' | '\t' | '\n' | '\f' | '\r']*
+
+    <quoted_ws_comment_str> ::=
+        '`' <-[`]>* '`'
+
+Note that C<ws_sans_comments> is meant to be more comprehensive and include
+any character that Unicode considers to be whitespace.
+
+=head1 IDENTIFIERS
+
+Grammar:
+
+    <gen_ctx_name> ::=
+        <nonquoted_name_str> | <quoted_name_str>
+
+    <nonquoted_name_str> ::=
+        <[ a..z A..Z _ ]> <[ a..z A..Z 0..9 _ ]>*
+
+    <quoted_name_str> ::=
+        '"' <-[\"]>* '"'
+
+    <field_name> ::=
+        <nonord_field_name> | <ord_field_name>
+
+    <nonord_field_name> ::=
+        <gen_ctx_name>
+
+    <ord_field_name> ::=
+        <Integer>
+
+    <expr_name> ::=
+        <gen_ctx_name>
+
+=head1 UNVERSIONED GRAMMAR
+
+Grammar:
+
+    <unversioned_grammar> ::=
+        <module> | <depot>
+
+See the sections in this file named
+L</MODULE SPECIFICATION>, and L</DEPOT SPECIFICATION>, for more details.
+
+=head1 STRATEGIES FOR PARSING
+
+Muldis D Plain Text is designed to be easy to parse, where one can use a
+multi-stage pipeline with simple rules at each step, and typically the work
+of parsing can be done in a highly parallel fashion, where each part of the
+code can be parsed properly with very little or no knowledge of what came
+before or after it.
+
+In particular, earlier stages of the pipeline can complete successfully
+even in the face of syntax errors, as the latter would be caught in a later
+pipeline stage where more meaningful error messages can be given.
+
+For the purposes of this documentation section, we will assume that the
+source code has already been processed from any binary or other formats
+into a single character string token having a well-known
+character repertoire that is compatible with Unicode.  This may have
+involved scanning ahead for a C<language_name> or in particular a
+C<script_name> directive should that have been needed to resolve ambiguity.
+
+Note that it is assumed that all parsing stages following the above
+assumption are completely lossless, and that any stages which conceptually
+would lose information actually maintain all of it in (generally)
+C<Plain_Text>-specific metadata so the original source string could be
+reassembled from the parse form in all its details, including for example
+the exact character escape sequences and whitespace used.  Also maintained
+as useful for debugging is knowledge of what line numbers and character
+positions within a line each token ranged over in the original source.
+
+=head2 Pipeline Stage 1
+
+Stage 1 in the parsing pipeline is to separate out any leading
+C<shebang_line> that might prefix the code.  The primary output of stage 1
+is a single character string token with the code itself, and any leading
+shebang is metadata.
+
+Grammar:
+
+    <ps1> ::=
+        ^ <shebang_line>? <ps2> $
+
+=head2 Pipeline Stage 2
+
+Broadly speaking, Muldis D Plain Text code is made up of 2 primary
+grammatical contexts which are mutually disjoint and complementary; one of
+these is anywhere outside all quoted strings, and its complement is
+anywhere inside any quoted string; quoted strings don't overlap or nest, or
+if they appear to, any inner ones are just regular string contents.
+
+Stage 2 in the parsing pipeline is to split the single input
+character string token on all transition points between those grammatical
+contexts.  The output of stage 2 is an array of character string tokens
+such that catenating them in order gives the input token.  Each output
+token is either one of the delimiters by itself, or is the characters
+between a delimiter pair, or is the characters between 2 delimited strings.
+
+Grammar:
+
+    <ps2> ::=
+        <ps2_nonquoted> % <ps2_quoted>
+
+    <ps2_nonquoted> ::=
+        <-['"`]>*
+
+    <ps2_quoted> ::=
+          ['\'' <-[']>* '\'']
+        | ['"'  <-["]>* '"' ]
+        | ['`'  <-[`]>* '`' ]
+
+=head3 Pipeline Stage 3
+
+Stage 3 in the parsing pipeline is to take any tokens from stage 2
+representing a quoted context, and for each one, if it contains any
+character escape sequences, to replace those escape sequences with the
+actual characters they represent.  The output of stage 3 has the same
+format as the output of stage 2 but that there are no escape sequences in
+any of the character strings.
+
+Grammar:
+
+    <ps3_quoted_sans_delimiters> ::=
+        <ps3_nonescaped> | <ps3_escaped>
+
+    <ps3_nonescaped> ::=
+        [<-[\\]> .*]?
+
+    <ps3_escaped> ::=
+        '\\' [<-[\\]> | <escaped_char>]*
+
+Note that the definition of C<escaped_char> includes an escape sequence
+each for a single-quote and a double-quote.  Note that the C<escaped_char>
+option doesn't exist for C<`>, just C<'> and C<">.
+
+=head3 Pipeline Stage 4
+
+Stage 4 in the parsing pipeline is to merge runs of consecutive (apart from
+any invervening whitespace) quoted context tokens of the same kind,
+specifically those delimited by either single-quotes or double-quotes, into
+a single quoted context token of that same kind, because such runs are
+logically a single token that just would have been split for readability.
+An exception is backtick-quoted strings, which are left unmerged, and in
+the end they would be merged back into whitespace tokens anyway.
+The output of stage 4 is of the same format as of stage 2 or 3.
+
+=head3 Pipeline Stage 5
+
+Stage 5 in the parsing pipeline is to take any tokens from stage 2
+representing a nonquoted context, and for each one, split it into tokens by
+character class, that is just on the transition between any 2 characters
+not of the same one of the 5 character groups shown.
+
+Grammar:
+
+    <ps5_nonquoted> ::=
+          <ps5_alphanumeric_char>+
+        | <ps5_standalone_char>+
+        | <ps5_symbolic_char>+
+        | <ps5_whitespace_char>+
+        | <ps5_illegal_char>+
+
+    <ps5_alphanumeric_char> ::=
+        <[ a..z A..Z 0..9 _ ]>
+
+    <ps5_standalone_char> ::=
+        '\\' | ',' | ';' | '(' | ')' | '[' | ']' | '{' | '}'
+
+    <ps5_symbolic_char> ::=
+          '!' | '#' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/'
+        | ':' | '<' | '=' | '>' | '?' | '@' | '^' | '|' | '~'
+        | '¬' | '±' | '×' | '÷'
+        | '←' | '↑' | '→' | '↓' | '↔' | '↚' | '↛' | '↮'
+        | '∀' | '∃' | '∄' | '∅' | '∆' | '∈' | '∉' | '∋' | '∌' | '∖'
+        | '∞' | '∧' | '∨' | '∩' | '∪' | '≠' | '≤' | '≥' | '⊂' | '⊃'
+        | '⊄' | '⊅' | '⊆' | '⊇' | '⊈' | '⊉' | '⊤' | '⊥' | '⊻' | '⊼'
+        | '⊽' | '⊿' | '⋊' | '⋈' | '⋉'
+        | '▷' | '⟕' | '⟖' | '⟗' | '⨝' | '⨯'
+
+    <ps5_illegal_char> ::=
+        ...
+
+Note that the illegal category includes all characters not explicitly
+mentioned in the other categories; in general these are only allowed to
+appear literally in quoted context.
+
+Note that the symbolic category is arbitrary in the trans-ASCII range and
+is highly subject to gain or lose characters over time.
+
+Note that, while in theory supporting bareword Greek letters may make math
+or logic expressions more pleasant, for now they aren't partly to avoid
+confusion with similar-looking ASCII letters, and because its hard to know
+where to draw the line if one wanted to include the whole un-accented Greek
+alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
+
+=head3 Pipeline Stage 6
+
+Stage 6 in the parsing pipeline is to split any nonquoted context tokens
+consisting of multiple <ps5_standalone_char> into multiple tokens such that
+each such individual character becomes its own token.
+
+=head3 Pipeline Stage 7
+
+Stage 7 in the parsing pipeline is to split any nonquoted context tokens
+consisting of multiple <ps5_symbolic_char> into multiple tokens where those
+tokens contain characters well-known to C<Plain_Text> for special uses such
+as meta-operator characters.
+
+Grammar:
+
+    <ps7_nonquoted_symbolic_grouping> ::=
+          '???'
+        | '!!!'
+        | '??'
+        | '!!'
+        | '!'
+        | '::='
+        | '::'
+        | ':='
+        | ':'
+        | '-->'
+        | '<--'
+        | '->'
+        | '<-'
+        | '...'
+        | '$'
+
+Where any of the shown symbolic character sequences exist, each sequence
+becomes its own token, and any runs of symbolics besides those each become
+their own token also.  When looking for sequences, evaluation is
+left-to-right and the longest match wins between multiple matches.
+
+Generally speaking, the parsing of nonquoted context symbolic character
+runs is complete following stage 7, and each remaining token is not likely
+to be split again or be merged with other tokens.
+
+Because the above sequences are special to C<Plain_Text>, whitespace is
+optional between them and symbolic operator calls/syntax because there is
+considered no ambiguity.
+
+=head3 Pipeline Stage 8
+
+Stage 8 in the parsing pipeline is about distinguishing nonquoted context
+tokens consisting of C<ps5_alphanumeric_char> between alpha and numeric,
+where the former are typically keywords or bareword identifiers and the
+latter are typically numeric literals.
+
+Grammar:
+
+    <ps8_alphanumeric> ::=
+        <ps8_alpha> | <ps8_numeric>
+
+    <ps8_alpha> ::=
+        <[ a..z A..Z _ ]> <[ a..z A..Z 0..9 _ ]>*
+
+    <ps8_numeric> ::=
+        <[ 0..9 ]> <[ a..z A..Z 0..9 _ ]>*
+
+Note that this shown split is very broad and includes invalid tokens;
+further details are in the regular grammar.
 
 =head1 SEE ALSO
 
