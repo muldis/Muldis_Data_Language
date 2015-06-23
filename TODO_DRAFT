@@ -14,6 +14,527 @@ resources of everyone else.
 
 ----------
 
+* Figure out what escape sequences are best for tersely representing
+single-quotes and double-quotes context-free; \qs and \qd are candidates,
+or \a and \q etc.
+
+* Even though it takes more space, make the Muldis D code have possibly
+several levels of meta that keeps copies of the raw string source, so that
+it actually is possible to regenerate the original string source to the
+smallest detail, including individual parts of runs of string literal
+tokens, and the original escape sequences in strings, etc.
+- That is, each stage of the parsing that would otherwise do some kind of
+lossy normalization would keep a copy of the pre-normalized tokens.
+- To save space/complexity, only save the extra copy if it adds information
+such as if the string actually either did have escape sequences or was
+split into segments etc.  Otherwise, the non-meta version is identical to
+the source string token.
+- Besides perfect round-tripping, this will also make it easier to give
+meaningful error messages or debugging messages showing the context in
+terms of the original source code.
+- But its still safe to start this only after the level of Unicode NFD/NFKD
+folding; if users REALLY cared about that level of raw, they have the
+original Blob/Text as applicable.
+
+* Now ALL string-like contexts in Muldis D are quoted using ['"`] pairs,
+including ALL comments.
+- Now / and * are treated as ordinary symbolic chars in all outside-string
+contexts, and /* or */ are valid as ordinary entity names.
+- Now an ordinary backtick-quoted string is a treated-as-whitespace comment
+and this is just a simple take contents literally there is no escaping.
+- So only '' and "" support escape sequences and run-catenating, `` neither.
+
+* Backticks are no longer available (comments took them) to use with generic
+prefix/infix/postfix operator call syntax.  Any operator name that is not
+syntactically valid as a bareword eg "op arg" or "arg op arg" or "arg->op"
+may no longer be called that way and must instead use either the foo() or
+()-->foo form.
+- All the other disambiguation options eg `op op "arg"` are still available.
+- As a side benefit, quoting an op no longer possibly changes its precedence
+level, so its much cleaner now, just alpha precedence and symbolic precedence.
+- Now there is the new disambiguator '<-' which is the mirror of '->' and
+lets you force prefix interpretation rather than infix, eg "op<-op arg" or
+"op op<-arg" etc where none means "arg op arg".
+- Perhaps for completeness we can support -><- to be explicit / have parity
+for that third option, eg `arg->op<-arg`.
+
+* Now :: is the namespace separator for names within a package, eg
+Muldis_D::Integer::NN etc.
+- The : is special anyway and the :: mnemonic already assoc with naming things.
+- Leading :: means we have an absolute path rather than a floating one.
+- Having whitespace around the :: is allowed and doesn't change the meaning.
+- Now . is treated as ordinary symbolic char in all outside-string contexts
+and . is valid as ordinary entity names, presumably used for infix operators.
+- Now :: is no longer a namespace separator within a package name itself,
+that is for organizing packages themselves relative to other packages,
+and we have to come up with some other scheme to use there.
+- Languages using :: for namespace separators include C++, Perl.
+
+* Consider namespace-block syntax to provide a syntactic shortcut for declaring
+entities, which would prefix that to any entities declared within, for example:
+  namespace Muldis_D::Integer
+  {
+    add ::= function ...
+    NN ::= type ...
+  }
+... which has the same effect as:
+  Muldis_D::Integer::add ::= function ...
+  Muldis_D::Integer::NN ::= type ...
+- See both C++ and C# for prior art that use that exact syntax.
+
+* It turns out C# also like Perl supports trailing commas in lists.
+So does Python.
+
+* This is useful http://www.hl7.org/ example http://hl7.org/fhir/2015May/datatypes.html .
+
+* See http://design.perl6.org/S22.html about packaging stuff, which is also
+relevant to compilation unit long names etc.  Also not to be confused with
+distribution names.
+- A compilation unit is just something that can be compiled on its own,
+typically a file or a string.
+- Saying 'use foo' may get foo from the file system or from an installation
+repository (not the same thing) or from the network etc; the compunitrepo
+in use determines where to look.
+
+* Eliminate 'floating' identifiers as they were previously known such that
+they traversed namespaces and tried to match on leaf nodes, which had a
+variety of issues and led to other complexities.
+- Instead, inspired by C#, the replacement 'floating' identifiers just look
+at the 'searching' list and directly catenate the identifiers to all of the
+prefixes given and those are the full candidate names to try and dispatch
+on where corresponding materials exist.  Corresponds to C# 'using'.
+- Note, C++ also has a 'using' keyword which appears similar maybe.
+
+* Fundamental reorganize in-package namespaces to be more like
+MD."+".Integer rather than MD.Integer."+" for several reasons.
+- One is this works much better with the redef of 'floating' operators.
+- Another is this makes the organization a lot more like typical languages
+that support multiple instances of the same routine base name in a
+namespace and generate a unique name etc on the parameter types; the
+overloaded variants now are more clearly bundled visually.
+- How this typically works is we would cluster overloaded ops like this:
+    MD."+"."" ::= function virtual ...;
+    MD."+".Integer ::= function ... implements "" ...;
+    MD."+".Ratio ::= function ... implements "" ...;
+    MD.NumericOrSomeSuch ::= type abstract;
+    MD.Integer ::= type ...;
+    MD.Ratio ::= type ...;
+- We can still have namespaces to group things under, eg MD.Source_Code or
+MD.Integer etc but then those are more for less common or optional things.
+
+* Make Reference disjoint from Identifier where the latter is what users
+write and the former the system generates/resolves at runtime that is
+sensitive to context like what packages are loaded/etc, a Reference probably
+is just an integer payload like with a filehandle etc, both are Structure.
+- As before, identifiers have the absolute/relative/floating variants.
+
+* Fully separate the designs of the fully-qualified language names of
+Muldis D syntax/low-level itself and of packages / compilation units.
+- Keep the syntax name declarations simpler in principle as in theory this
+is less likely to have incompatible versions develop or code wanting to
+declare multiple authority support rather than just one; they can declare
+just one and the onus is more on forks to figure out how to be compatible.
+In theory more variation would happen in the core library than the syntax,
+or anyone forking the syntax would be good and use a different Syntax Name.
+- Package / compilation unit names can become more complicated and in
+particular become data structures definable by routines or possibly able to
+evaluate their environments, such as is the case with Perl 6 comp units.
+They can then for example declare different vnum ranges per declared auth.
+- Make local package short names and their long names logic separate; only
+the former is used for referencing in a package and the latter is mainly
+just for instructing the package loader / comp unit finder etc.
+- While Perl 6 has the more complexity in the language name too, that one
+declaration covers both the syntax and core library while mine doesn't.
+- Review how segmenting of packages is declared/done.
+
+* http://peter.eisentraut.org/blog/2015/03/03/the-history-of-replication-in-postgresql/
+
+* DBIx::PreQL looks interesting ... and SQL::Interpol maybe.
+
+* See https://www.snip2code.com/Snippet/454117/Relational-data-languages
+or https://github.com/seinokatsuhiro/koshucode-design/tree/master/note/relational-language
+or http://c2.com/cgi/wiki?QueryLanguageComparison .
+
+* Apparently here-docs Perl inherited from shells; eg:
+psql <<EOF
+\x
+SELECT * FROM foo;
+EOF
+
+* https://www.simple-talk.com/sql/learn-sql-server/sql-server-sequence-basics/
+- Also says: A sequence is a list of numbers. A series is a sum of numbers.
+
+* SQLite list comment:
+Artifact IDs used by fossil are the SHA-1 hash of the file contents, and 
+the checkin IDs are the SHA-1 hash of the check-in manifest contents.  They 
+are *NOT* random but rather, are 100% deterministic -- that is if you run 
+the sha-1 hash over the same input data you will ALWAYS get the same result.
+
+* Add new abstract types Boolable and Numable which contract that composing
+types each have a single canonical way to cast their values as a Boolish or
+a Numeric respectively, where said cast operators are the unary ? and #.
+- For a numeric type, ? always means is-nonzero, and for a collection type,
+? always means has at least one element, for a boolish type, ? just results
+in its operand.  For a collection type, # is a count of its elements (a Bag
+counts each instance of a quantified value as 1 towards the total), for a
+boolish type, # is 1 for true and 0 for false, for a numeric type, # just
+results in the # operand.
+- Both ? and # are only defined for homogeneous collection types and not
+heterogeneous collection types.  For a Relation, they count the tuples not
+the attributes.  For Array/Bag/Set/String they count elements.  They are
+not defined for a Tuple to eg count attributes, nor for a Structure.
+- Whether or not to define ? or # for a Blob or Text is questionable since
+there isn't such a clear 1:1, especially for #.
+- Note that Perl 6 has removed special cases so while empty string is
+False, any nonempty string including '0' is True.  Many other languages are
+similar I think.
+
+* It looks like C# has a feature analagous to Perl 6's "trusts:
+internal members are visible to all code in the assembly they are declared in.
+(And to other assemblies referenced using the [InternalsVisibleTo] attribute)
+
+* In C#, "extension methods" act like methods defined within a class but
+aren't actually defined in or alter that class.  Muldis D analogy is all
+in-scope routines for a type whose first parameter is the class object analogy.
+Or it seems to me that you can have divide a class's methods into bundles
+so some bundles are loaded optionally by the user if they want to use them.
+
+* Derived from / assumed based on http://www.pipelinedb.com/beta (based on
+Pg 9.4) how a real-time or streaming DBMS works is that SQL/etc queries are
+always active, and continue to send new result rows as new data arrives
+that satisfies the query; queries are not constantly re-issued.
+
+* Date: 	Wed, 8 Apr 2015 09:58:24 +1000
+From: 	David Bennett <david@yorkage.com>
+The point of this is to avoid having to copy the relation. If I have a relation 
+of 1 million rows and an update affecting 10 of them, then the update can be 
+expressed as the removal of (at most) 10 tuples and the insertion of (at most) 
+10 tuples. Then if the relation fails a constraint, reversing the operation can 
+be accomplished by the removal of (at most) 10 new tuples and the insertion of 
+(at most) 10 old tuples.
+Full scale DBMS do something similar by creating all the required tuples as 
+blocks in temporary storage and then just switching around the links. If every 
+block has a serial identifier then it becomes possible for every user to see a 
+consistent view at all times, with no locks.
+As part of this approach to updates it is straightforward for the implementation 
+to add a unique identifier (to A and B) so that the deleted tuple and the 
+inserted tuple can be paired up. This makes them accessible to a transition 
+constraint using RA operations.
+
+* Demote SC_Identifier and Capsule from low level.
+- We then have: Boolean,Integer,Pair,Array,String,Bag,Structure,External.
+- SC_Identifier and Capsule are now subtypes of Structure instead.
+- A SC_Identifier is just a Structure of the 4 elements where each element
+is typically a Structure of String, or an Integer.
+- A Capsule is just a Structure whose first positional element is a SC_Reference.
+- All Source_Code types plus core-defined Source_Code_Meta are now typically
+just Structure whose first positional element is a string saying what main
+type that value is of.
+- Generally speaking, anything related to identity-qualified identifiers has
+been booted from the low level.
+- Generally speaking, the Plain_Text parser and compiler need to be able to
+work entirely in the absense of the Muldis_D package and all of the data types
+composing the native form of Muldis D code need to be simplified so each is
+identified with a simple single-level string rather than a SC_Reference.
+- Now typically most types defined by the Muldis_D package are unlikely to
+be defined as Capsule but rather just as Structure with a leading positional
+element giving its main type.
+- So coin a new set of simple strings that are the identifiers for
+the non-low-level core types, such as Ratio etc.  The existing core types
+that are Capsule are now instead these new kinds, and their definitions are
+still essentially unchanged, eg: \(\Ratio,numerator:5,denominator:8).  That
+value we can use as-is in the absense of the Muldis_D package; the package
+would still declare though:
+    Muldis_D::Ratio ::= type of Structure where topic ^?= \(
+        0 : type of SC_Attr_Name where topic = \Ratio,
+        numerator : $Integer,
+        denominator : $Integer,
+    );
+- We need some generalized shorthand for declaring a singleton type whose
+value is drawn from another type, such as the above example.
+- The $Foo will still resolve to an SC_Reference like before, because
+actually testing the $Integer thing formally is still at runtime, though
+while bootstrapping and we don't have the Muldis_D package, that check
+doesn't actually have a SC_Reference to contend with, um stuff.
+- Generally any system-defined type that a typical compiler would have
+special knowledge of, such as Ratio or Relation etc, would have the new
+simpler form of specification.
+- The standard hosted-data variants of Muldis D and this new form will then
+also very closely resemble each other as much as possible.
+- It will generally be all pure Muldis D code that both resolves non-identity
+Identifiers to identity ones, and likewise it is pure Muldis D code that tells
+the low level register/load-package routines what their identity namespace
+actually is, never mind what the package actually declares itself.
+
+* Add abstract type Handle, to be composed by types whose values are each
+associated with some possibly mutable state kept 'somewhere' such that the
+package defining the composing type may typically know where that is but
+the type user might not.  This may be the closest we get in practice to
+mutable OO where value identity is per object itself rather than its
+payload.  Routines would mainly be procedures rather than functions.
+Example API procedures may be analagous to those for explicit memory
+management in say C++ or where one explicitly has allocate() and free() etc
+calls, plus fetch() and store() etc values there.  The value of the handle
+type would have some kind of lookup key into an external data structure and
+the value of that key would typically be generated by allocate() etc like
+with C's malloc.  Explicit free() would likely be necessary but that for
+performance reasons we could probably attach directly-write-only meta-data
+to the handle value that lets it auto-release when no one refers to it,
+similar to the write-only meta-data that helps say with indexing
+Bags/derived etc.  So Handle is a root class in some senses like Object is
+in some OO languages with respect to mutable objects.
+- Related to this, we might want some global database with an attribute per
+loaded fully qualified package and abstracted access to that, where some
+packages can keep their squirreled away data?
+
+* Simplify parser by an order of magnitude.  All delimited strings do not
+contain a literal occurrance of their delimiter, or to be specific of their
+trailing delimiter if different, and all characters between the delimiter
+pairs simply represent themselves, including backslashes, iff the string
+does not contain a backslash as its very first literal character.  If the
+string does contain said leading backslash, then it is stripped from the
+input and the subsequent characters are interpreted as including escape
+sequences of various kinds.  A trailing single backslash either represents
+itself or is an error but won't prevent string from being parsed out of
+surroundings.  Optionally/ideally we can forbid some other characters from
+appearing literally, particularly all control characters, or at least say
+that the canonical Plain_Text form will escape them, eg so they survive
+unscathed through various transports, but having them appear literally is
+not strictly forbidden.
+- Any consecutive delimited strings of the same kind are treated as 1 token
+that is 'foo''bar' is equivalent to 'foobar' and "foo""bar" to "foobar";
+this feature is not allowed for `foo``bar` which still counts as 2 tokens.
+Among said consecutives, the internal leading backslash to indicate
+escaping behavior only applies to one segment, so for example you can have
+'foo''\bar''baz' and only the middle part is escaped while the end parts
+are treated as is, especially useful if the literal contains something like
+a regex or the middle part has a single-quote character in the data.
+- In an escaped string, \q stands for a character of whatever the delimiter
+is, so '\\q' is a single-quote and "\\q" is a double-quote while 'x\q' or
+"x\q" is exactly what they contain.
+
+* See http://en.wikipedia.org/wiki/Dependency_injection and
+http://en.wikipedia.org/wiki/Inversion_of_control which describe some
+things we already are doing as well as that we could do significantly more
+of.  In particular, if for every regular system-defined type intended to be
+used for user data, there was an associated abstract type which defines its
+entire API, and users always defined their code in terms of the abstract
+type, or other abstract types that defined portions of its API that they
+cared about, then it would maximize the amount of library code that would
+be reusable with different user code and user-defined data types.  That
+said certain type definitions may be a notable exception where users may
+prefer to name the composing types directly, eg for database relations.
+
+* Remember when translating to/from SQL, "from foo" means "from foo foo"
+and that with "from foo bar" that means "for each foo as bar".
+
+* It turns out that RefEng implements the "flyweight pattern" re its design
+to share object state where possible, though I'd never heard of "flyweight"
+at the time I designed that feature.
+
+* Make a new Muldis D codeless language module for BBEdit replacing the old
+one that is completely obsolete.  Use things like "::= function" etc as
+search pattern for the generated routines/etc menu.
+
+* Add one or more new node types that make available the compilation/etc
+context of code to that code, or other contextual information known at
+compile or link time.  The source code of any registered or loaded package
+could be returned as a Source_Code etc value and then studied like any data
+structure at runtime.  Particularly important also is context-sensitive
+info such as, what is the fully-qualified name of the routine asking the
+question.  With these bits, we could basically implement all the
+complicated stuff such as resolving partially-qualified names to absolute
+or identity ones, or looking up or testing dispatch candidates, or reading
+traits or other meta-data of types or routines, can be done in Muldis D
+itself.  What actually needs to be low level is simpler stuff like "call
+this (fully-qualified-named) routine".  This is valid to have in purely
+functional code because, during the context of any single higher-level
+statement execution, the values returned by such are constant, so its as if
+these questions were asked and answered at compile time, as if the answers
+were baked literally into the source code of the function asking the
+question.  The "current" source code can not change but possibly between
+statement boundaries, and it is infrequent.  Logically it is like every
+function has been given and is passing an extra read-only argument etc.  An
+example use case of this general feature, besides implementing $foo or foo
+isa bar or default_of foo etc or "what is the type or MST of this value" is
+letting one have multi-dispatch for "constants", eg, one could declare a
+virtual constant, or more likely actually a function taking a type name or
+example value, and then ask, eg call the function named "one()" for that
+type, so eg the Numeric role could call a particular type's selector for
+the number 1 in a generic way.  This is largely where one gets a lot of the
+introspection power of Muldis D, eg meta-model etc access, eg, given a
+value, you can then ask details about its type or what routines are
+implemented for it etc.  Also makes the language more self-hosted.  This
+stuff may possibly lead the way to being able to invoke functions on their
+definitions rather than names, eg more truly higher order functions? 
+Runtime information such as "tell me about my call stack" is not part of
+this so there should be no worries about this breaking pure-functionality
+or memoization etc.
+
+* Make abstract types try and implement all operations where logically
+possible, shades of Low_Level.mdpt, eg multiply in terms of add etc, and so
+the logical semantics are recorded, but then implementing types would then
+'implement' these non-virtual abstract type operators in order to be
+faster, eg dispatching to \*^[integer-multiply] etc.  Of course we still
+want to minimize the number of \*^[] and emphasize each implementation
+choosing to override for itself for efficiency, but what I'm talking about
+here is for the use cases where it would just be insane to not always
+override, like integer-multiply, and so by having the \*^[] we declare we
+expect all implementations must provide it, or something.  This policy can
+be relaxed.
+
+* We want to figure out rules for where particular syntaxes are overloaded
+so to help consistency and predictability.
+- The "." generally says "accessor" but its a question of how far one can
+go with that.  In general it can't have both the Attributive and Collective
+applications because Relation satisfies both, and then there's also the
+question as to which of those two Tuple should satisfy.  Or alternately
+there is some other role that "." is used for that is distinct from those.
+- Where we have accessors that access single elements, we also need variants
+for questioning the presence of that element or some other aspect.
+- Where we have accessors for single elements, we need something for dealing
+with multiple elements, though those would generally return another value of
+the collection type and may more likely be type specific.
+- Would be nice to have some symbolic syntax for has_attrs, has_just_attrs,
+and for each versions that both do and don't check the types of those attrs,
+these would be used a lot in definitions of attributive types.
+- Is \foo just shorthand for \~{foo} or \$foo or something distinct?
+Especially given the accessor context we probably want it to be distinct,
+eg, maybe that's the new SC_Name or SC_Attr_Name.
+- .? for has_attrs, .?= for has_just_attrs; variants take Heading or Tuple
+to either not or so check the data type; SC_Name for singular of Heading
+to check one attr name; you still need Tuple for the singluar due to needing
+name plus type.
+- Or ^? plus ^?= for the multiple versions of the above which looks like
+projection, though don't forget that ^ has a host for complement or to-set
+or to-bag etc so we need to play nice with that.
+- We should reserve the dot for things that return single elements and not
+slices of the collection, and something else for the slices, it really cuts
+on confusion, and then one can use a single item in place of a list when
+doing a slice and still get a slice, that's more the dwimmy we want.
+So single elem accessors (always by key/index) or does-exists or exists-or-voids (vert+horiz or horiz):
+  tup . \atnm
+  tup .? \atnm
+  tup .! \atnm
+  cpsl .> \atnm
+  cpsl .>? \atnm
+  cpsl .>! \atnm
+  ary . index
+  ary .? index
+  ary .! index  - returns elem val if exists or void
+  dict . key
+  dict .? key
+  dict .! key
+  bagsetrel .# member  - returns quantity for bag, else 1 if exists, 0 if no exist
+  bagsetrel .? member aka 'has'  - returns bool based on existence
+  bagsetrel .! member  - returns member if exists or void
+So attributive (always by key/index) slices or tests (vert slice):
+  tuprel ^ \atnm or tuprel ^ \~{atnm} aka 'on'
+  tuprel ^? \atnm or tuprel ^? \~{atnm} aka has_attr_names
+  tuprel ^?= \atnm or tuprel ^?= \~{atnm} aka has_just_attr_names
+  tuprel ^? \%{atnm:$Integer} aka has_attrs
+  tuprel ^?= \%{atnm:$Integer} aka has_just_attrs
+  cpsl ^> \atnm or cpsl ^> \~{atnm}  -- returns as tuple
+  cpsl ^>? \atnm or cpsl ^>? \~{atnm} aka has_attr_names
+  cpsl ^>?= \atnm or cpsl ^>?= \~{atnm} aka has_just_attr_names
+  cpsl ^>? \%{atnm:$Integer} aka has_attrs
+  cpsl ^>?= \%{atnm:$Integer} aka has_just_attrs
+  tuprel -^ \atnm or tuprel -^ \~{atnm} aka 'but'
+  cpsl -^> \atnm or cpsl -^> \~{atnm}  -- returns as tuple
+  rel ^+ \atnm  - project to Bag - if someone wants multiple attrs they can wrap() first
+  rel ^+? \atnm  - project to Set
+For collective (always by key/index) slices or tests (horiz slice):
+  ary .+ 4 or ary .+ [4] or ary .+ [4,5,6] or ary .+ {4,5,6} or ary .+ (4..6)
+  ary .+? 4 or ary .+? [4] or ary .+? [4,5,6] or ary .+? {4,5,6} or ary .+? (4..6)
+  ary .+? $Integer  - do we want this?
+
+* TODO: Think about matters of allowing strictness.
+MD.Universal.Comparable ::= type abstract;
+MD.Universal.Comparable.may_be_compared ::= function virtual
+    --> Boolean <-- (Comparable, Comparable)
+    is {commutative};
+MD.Universal.same_Universal ::= function
+    --> Boolean <-- (Universal, Universal)
+    is {commutative}
+    : \*^[same_Universal,topic.0,topic.1];
+MD.Universal."=" ::= function --> Boolean <-- (Universal, Universal)
+    is {commutative}
+    : same_Universal(*topic) ?? true !! may_be_compared(*topic) ?? false !! fail;
+Alternately forget about doing this here and just make checks for such to
+be a domain of add-on code analyzers.
+
+* It seems C# has a lot in common with what I designed so far of Muldis D
+independently of that knowledge.
+- Has both 'using' keyword and also local aliases for used 'namespaces':
+    using Net = System.Net;
+    using DirInfo = System.IO.DirectoryInfo;
+- Also namespace disambiguation / like fully qualified names:
+    global::System.Console.WriteLine(number);
+    # Above works if someone declared a local thing named 'System'
+- But C# 'using' seems to do both Muldis D 'using' and Muldis D 'searching'
+since Muldis D 'using' doesn't possibly point to sub-namespace.
+Or C# 'using' may be more like Muldis D 'searching'
+and C# References declarations in project are more like Muldis D 'using',
+or the 2 'using' may in fact directly correspond as all,
+since 'using' not required to call identity/global things in either case.
+- In C#, 'using' can appear either inside or outside a 'namespace' declaration.
+- Regarding implementation of Muldis D over C#, see C# "dynamic" type.
+    dynamic x = new Foo();
+    x.DoSomething();  // Will compile and resolved at runtime. An exception will be thrown if invalid.
+- In C# the 'set' accessor routine has the implicit parameter named 'value'
+which would seem analagous to Muldis D's 'topic' at least there.
+
+* In MS SQL Server:
+- The money and smallmoney data types are accurate to a ten-thousandth of
+the monetary units that they represent, so 4 decimal places rather than 2.
+- The sql_variant type is a union type of sorts that can be used in db
+columns among other places, though it is limited in its options.
+- Given "select top 5 with ties ... order by foo", what the 'with ties'
+does is, when multiple rows might sort equally into the 5th place, all such
+rows are returned, even if more than 5 total rows may then be returned.
+
+* I should consider a re-look or merger of Muldis D using/searching concepts
+considering that to some extent they overlap functionality.
+
+* Define some shorter-hand for common formats of types restricted from
+generic collection types, analagous to eg Array<Text> or Set<Integer> etc
+that many other modern languages have.  The shorterhand would take the
+place of the "where" in common cases, or supplement it.  We'd want versions
+both for restricting simple collections like
+Array,Set,Bag,Interval,Quantity but also attributive ones like
+Tuple,Relation.  That being said, we can see how short the likes of
+has_attrs() or forall() can get, may be good enough.  But we still probably
+want a few extra keywords for 'type' for the ones that can be really short,
+eg "type of Array member Text" or "type of Tuple attrs (x:Integer,y:Ratio)"
+where in the latter case we take the same input as a function's "from" but
+disallow positionals for Tuple.  Both member/attrs are sugar for where with
+function calls and those functions are defined by abstract types, so a wide
+variety of Collective or Attributive types could take advantage of this ...
+or maybe this would be a problem if the package doesn't use Muldis_D pkg?
+
+* Define as many routines as possible just against abstract types, so only
+a minimal number of routines need to be virtual.  For example, many of the
+Numeric ops or Collective ops etc don't need to be defined per composing
+type.  Likewise, define most Boolean/Integer/String/etc ops at
+Boolish/Integral/Stringy level etc.
+- Keep in mind that a routine can still declare that it implements another
+routine even when the other routine isn't virtual, and in that case the
+former is actively overloading the latter, and calls directly to the latter
+will be redirected to the former if the signature is compatible.  That
+is, when X implements Y, X will always take precedence over Y for callers
+for whom X is directly visible, but when Y is not virtual then X won't be
+called, so to avoid action at a distance.
+- In that case maybe we want keyword to be 'overrides' instead so it is
+more explicit that the named routine already has an implementation.
+- Likewise define as many synonyms as possible against just the abstract
+versions of things, to minimize duplication, even when there is an
+implementing routine, unless synonym only applies to specific composers.
+- See also requires_implements for type declarations which helps with
+defining a contract and so we have more of a full interface definition.
+
+* Look up Perl 6 Iterable role and other roles to see what we can mimic in
+our abstracts/virtuals eg where routines are useful across types.
+
 * Have procedure statement grammar nodes or \*^[...] for loading or
 unloading or reloading etc packages at runtime.  Or call it mounting/etc.
 - The loading version take a SC_Package value as input, which other than
@@ -34,6 +555,9 @@ it only needs package identity name, or it takes just a Reference of said.
 used say when there is runtime manipulation / data definition of a package.
 - Perhaps the nodes may be split into separate compile/register and
 link/make-available nodes.
+- Maybe use 'activate' for the term of when it is linked / made vislble to
+run, thinking like the term with chemicals etc or military; similarly or
+etc 'reserve' could be the namespace locking or compile/register.
 - When registering a package, it can also be marked as immutable, and as
 such later attempts to unregister or reregister will be rejected.  This can
 be done for practical or security reasons for "built-in" packages or others
@@ -42,11 +566,19 @@ those the DBMS/application itself would have to be restarted.
 - The separate register/mount stage is like a name reservation but the code
 doesn't explicitly use memory when it isn't needed (or it still can behind
 the scenes but users don't see it so its like its not there).
+- For that matter, perhaps also have it defined to an extent in Muldis D
+code canonically how to resolve Identifier in general to Reference, since
+if we have to activate dependencies first, we can see all the candidates we
+have to choose from already for resolution, what the invoker can "see".
 - Perhaps the data dictionary is implemented at a higher level, as normal
 variables, and updates to them would cause a reload/etc behind the scenes.
 - So matters of persistence are orthogonal to execution.
 - We would do persistence or repositories somewhat in terms of tied
 variables or various kinds of I/O facilities whether files or otherwise.
+- There may be multiple versions, eg original Source_Code and other that
+has been optimized or folded, what was written vs what actually runs, may
+be relevant for debugging or other meta-model related querying in functions.
+- http://en.wikipedia.org/wiki/Java_Classloader may also be relevant.
 
 * Update Plain_Text.pod concerning how and where the Script Name applies,
 update the other parts on the post-20150226 design of packages vs modules
@@ -69,6 +601,7 @@ terms for script_normalize if eg the compat rules changed independently of
 Unicode main versions, eg with independent changes of annex versions.  It
 is recommended to use canon by default as that most closely corresponds to
 what users expect, probably, or compat possibly for security.
+- See http://en.wikipedia.org/wiki/UTF-16 for explanations of surrogates etc.
 
 * Formalize layout of package logical contents somewhat.
 - A "package" is the primary logical unit for Muldis D code and consists of
@@ -162,6 +695,16 @@ mapping a value to another value, but can be implemented in a combined pass
 is: Blob -> Text anormal -> Text normal -> SC_Module, SC_Package.
 - A Repository can validly store a Package in any of the above forms
 directly, or others.
+
+* Potentially packages could be used to represent symbolic math etc, eg the
+numeric values ARE source code specifying how to calculate it etc as applicable.
+- A multi-versioned database could be represented on disk as Muldis D
+source code where each version is a constant-defining package that refers
+to its parent version(s) as 'using' and its value is a constant derived
+from those.
+- A graph could be similarly represented.
+- A non-small database could be represented in multiple files similarly where
+different parts are constants which compose by reference each other.
 
 * Allow foo(:.bar) or \%{:.bar} which mean foo(bar:.bar) or \%{bar:.bar}.
 
@@ -282,6 +825,8 @@ or symbolic math values like pi are excluded from core.
 Typedefs:
     Odd ::= type of Int where ?(topic mod 2);
         subset Odd of Int where { $^n % 2 };
+Perl 6 Multi-method dispatch goes only on parameters, return type not
+considered, which is the same thing we do / how it should be done.
 
 * Provide alternate versions of expressional if-else/??!! and
 given-when-default that either do or don't shortcut respectively; the
@@ -331,6 +876,194 @@ of these should make it much easier for implementations to parallelize them
 including over engines based on map-reduce.  That article should also give
 me a clue on a parallel Plain_Text parser definition.  All the standard
 relational operators etc should be definable in terms of these.
+- http://search.cpan.org/~drrho/Parallel-MapReduce-0.09/lib/Parallel/MapReduce.pm
+is also instructive.
+- http://en.wikipedia.org/wiki/Map_(higher-order_function)#Language_comparison
+- http://en.wikipedia.org/wiki/Fold_(higher-order_function)#Folds_in_various_languages
+
+* See http://en.wikipedia.org/wiki/Language_Integrated_Query (LINQ) also for
+inspiration of what operators to have etc.
+
+* Leave -> available to be defined at the function level, hence it can be
+overloaded for a wide variety of function types; we have use variants of
+--> instead specifically defined in the grammar where we need those.
+
+* The 2 main user-defined stages of the generic map-reduce algorithm
+correspond more to our 'classify' and 'summarize' and Muldis D will use
+terms more like the latter for referring to parts of the map-reduce
+algorithm; the Muldis D terms 'map' and 'reduce' will have simpler meanings
+corresponding to those of Perl or many other languages.
+
+* The following is partly obsolete;
+- The fundamental Collective ops now look like:
+    - is_empty(list)->bool  # like count(list)==0 if most count work saved
+    - count(list)->nninteger
+    - has(list,universal)->boolean
+    - where(list,func)->list like Perl 5 grep is
+    - map(list,func)->list like Perl 5 has
+    - reduce(list,func)->universal
+    - group(list-of-pair)->list-of-pair
+    - ungroup(list-of-pair)->list-of-pair
+- Non-fundamental Collective ops:
+    - in(universal,list)->boolean
+    - any(list,func)->boolean  # short for map to bool plus [or]
+    - all(list,func)->boolean  # short for map to bool plus [and]
+    - none(list,func)->boolean  # short for map to bool plus ![or]
+    - one(list,func)->boolean
+    - does forall or exists go here / are they other names for all/any?
+    - etc
+        # To optimize we need a way to annotate functions so we know we can
+        # stop once a particular condition is met, for example, with 'or'
+        # reduction we stop once we see a true, 'and' when we see a false.
+    - generate(state[func,args,list],nninteger)->state
+    - ...
+- The additional fundamental Array ops:
+    - has_index(list,nninteger)->boolean
+    - elem(list,nninteger)->universal
+    - replace_elem(list,nninteger,universal)->list
+    - slice(list,range)->list
+    - replace_slice(list,range,list)->list
+    - sort(list,func)->list
+    - zip(list-of-list)->list-of-list
+    - index_first_diff_elem(list,list)->nnint
+        # For making in_order(list,list) efficient in both cpu, stack use,
+        # result index may be just after last element of either input.
+        # Alternately we could maybe express by piping simpler ops if we
+        # can declare that we keep processing only while elements match.
+- Non-fundamental Array ops:
+    - subsequence_of(list,list)->boolean
+    - supersequence_of(list,list)->boolean
+    - ...
+
+* TODO: Add further traits or external declarations that further help with
+optimization, such as declaring distributivity, transitivity, negator,
+commutator, inverse, monotonicity, truth preserving, false preserving,
+symmetry, injective, surjective, bijective, isomorphic, other things.
+- More broadly speaking, it is useful for an implementation to be able to
+pipe several chained list operations when there is some declaration saying
+it is safe to do so, especially say chaining map to reduce so we know the
+map can stop when the reduce produces a particular result part way through.
+The concept of http://en.wikipedia.org/wiki/Monad_(functional_programming)
+may be relevant here.
+- Have trait declaring on routine R1 that when we have a repetition of
+calls with the same argument/s, we can instead call routine R2 once for the
+whole sequence, which will do the same result more directly.  This is
+useful when doing a reduction on R1 with a Bag of non-zero quantity
+elements, or reduction on an Array with consecutive same elements, etc.
+This trait should be useable in principle with any routine, doesn't have to
+be commutative or whatever, but it would be invalid to declare for a
+routine also declared as idempotent.  Examples are:
+    - counting -> add
+    - adding -> multiply
+    - multiply -> exponent
+    - catenation -> replication (Perl 5's "x" op)
+
+* Per http://en.wikipedia.org/wiki/List_comprehension the main thing we're
+missing is a generic generator function or three.  For example:
+    - MD.Generator.init(func,seed)->state
+    - MD.Generator.next(state,nninteger)->state
+... where state is some Capsule type whose attributes are:
+    - a CS_Reference to the generator function
+    - a CS_Func_Args of arguments to give the next exec of that function
+    - the last values that the function generated
+    - note that besides the generated value, the function returns a new set
+    of args to give its next invocation, which lets it maintain its state
+    and lets us have effectively a generator of an infinite sequence
+... and a simple common example, the function just wraps Integer.succ.
+- In some way the Ordinal role is related to this, as anything which
+composes Ordinal can generate sequences.  However, the same base type eg
+Integer could produce any number of different sequences, for example the
+Fibonacci or multiply by -1 etc.
+- We need to look up how Perl 6 or other things do lazy lists including the
+Iterable role and x...y syntax etc.
+- We want an Iterable abstract such that every composer provides functions
+like curr_val(state) and next_val(state) etc.
+
+* What Muldis D would have as fundamental operators ...
+- read List as either Array or Bag but not both in the same function
+- map() takes 1 monadic function plus N inputs and has N outputs.
+    - The monadic function is --> Universal <-- Universal
+    - map() itself is --> List <-- (Reference,List)
+- reduce() takes 1 dyadic function plus N inputs of the kind that map takes
+or outputs and has 1 output.
+    - the dyadic function is --> Universal <-- (Universal,Universal)
+    - reduce itself is --> Universal <-- (Reference,List)
+- sort takes 1 ...
+... actually that still needs a lot of work.
+- classify takes 1 monadic function of the same kind that map takes or
+outputs plus N inputs of the same kind that map takes or outputs and has M
+outputs where each output is a class-members pair such that there is 1
+distinct 'class' per distinct output of the function and 'members' is a
+collection of all the pristine inputs that mapped to this particular
+function output, so the count of elements of members across the M outputs
+is N.
+    - the monadic function is --> Universal <-- Universal
+    - classify itself is
+    --> (List of Tuple{class:Universal,members:List}) <-- (Reference,List)
+- summarize takes 1 dyadic function of the same kind that reduce takes plus
+M inputs of the kind that classify returns and has M outputs where each
+output is a class-summary pair, the summary produced by running reduce on
+the group.
+    - the dyadic function is --> Universal <-- (Universal,Universal)
+    - classify itself is
+    --> (List of Tuple{class:Universal,summary:Universal})
+    <-- (Reference,(List of Tuple{class:Universal,members:List}))
+- At the low level, for each of the above 4 functions, there are 2 variants
+where one is Array to Array and the other is Bag to Bag.
+- For reduce/summarize, all dyadic functions are permitted to be used with
+their Array variants, but only dyadic functions which are both associative
+and commutative may be used with the Bag variants.
+
+* About low-level 'map' ...
+- Very simple, processing each input element yields exactly 1 output
+element, and each element is processed entirely in isolation from the
+others.
+- Where several input elements are the same value, their corresponding
+output elements will all be the same value.  The 'map' is pure, and the
+system can choose to memoize to arbitrary degrees, either calculating the
+output for each distinct input element once, or once per instance, or
+somewhere in between, this is an implementation detail that has no logical
+effect, aside possibly from debugging.
+- There are 2 variants, one being Array-->Array and one Bag-->Bag; use the
+first when you have elements in order and their corresponding output
+elements need to preserve that order; use the second when your elements are
+not conceptually in order and you don't need to preserve that order, but
+just the relative number of corresponding values.
+- The processor function for 'map' will never be given context information
+like index of the input in the source Array or like quantity for the
+distinct element in the source Bag, rather the 'topic' will just be the
+distinct element itself, and the output is just the direct transform
+without any mandatory-for-all-map output format eg specific to a followup
+classification or reduction use case.  One reason is to keep the API simpler
+and more consistent no matter the source collection type or intended use
+case of the output.  Another is so that the processor function's answer
+can't possibly change due to factors that should be agnostic to what
+sibling elements exist in the collection.  In particular, giving quantity
+information to a 'map' processor function per distinct element would
+require deduplicating the whole input data set, either unnecessarily or
+prematurely, in order to give guaranteed consistent results for map
+processors that pay attention to said quantity, and so would either break
+our ability to parallelize the operation effectively or force an eager
+classifying when otherwise not logically useful.
+
+* Possible 'map' syntax based on general function call ...
+    args --> func  # call func once with pristine args
+    array_of_args [-->] func  # call func once per array element
+    bag_of_args {-->} func  # call func once per distinct bag element, input is element+quantity pair
+Or maybe:
+    array_of_args -->~ func
+    bag_of_args -->+ func
+    set_of_args -->? func
+Or better:
+    ~-->
+    +-->
+    ?-->
+... so the variant is on the same side as the input it varies on.
+Then there's the reduce version, needs versions for: not assoc or commut,
+assoc only, commut and assoc; commut only doesn't work in this context or
+we treat as not assoc or commut.
+Maybe have version like chaining associativity in Perl 6, so its a different
+kind of reduce.
 
 * Consider providing 2 implementations of the Muldis D parser in Muldis D,
 one functional that parses a Text value to Source_Code, and one procedural
@@ -346,6 +1079,9 @@ hard to implement a parser functionally as essentially a finite series of
 map-reduce-ish operations, eg an early round is tokenize
 simply into is-inside-quoted-string from is-outside-quoted-string, so
 perhaps things like here-doc quoting might be an issue?
+
+* See "Coding an operator to test a string for numeric" thread on TTM list
+for 2015-03-24 for a related discussion.
 
 * NEW PLAN (overrides 'syntax_using' etc) ...
 Eliminate Muldis_D::Low_Level package and merge the appropriate parts into
@@ -368,11 +1104,15 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
         - \*^[same,expr,expr]                  # used by = syntax
         - \*^[Boolean_not,bool_expr]           # used by not/! keyword
         - \*^[Integer_plus,int_expr,int_expr]  # used just like this
+        - \*^[select_Pair,expr,expr]
+        - \*^[Pair_key,pair_expr]
+        - \*^[Pair_asset,pair_expr]
+        - \*^[String_elem,str_expr,nnint_expr] # used by x.+[y] syntax
         - \*^[Array_elem,ary_expr,nnint_expr]  # used by x.[y] syntax
         - \*^[Tuple_attr,tup_expr,atnm_lit]    # used by foo.bar syntax
         - \*^[Tuple_has_attr,tup_expr,atnm_lit]  # used by foo.?bar syntax
                 # related foo.!bar shorthand "foo.?bar ?? foo.bar !! $=>Void"
-        - \*^[select_Capsule,ref_expr,tup_expr]  # used by x=>y syntax
+        - \*^[select_Capsule,ref_expr,tup_expr]  # wrapped by x=>y function
         - \*^[Capsule_attr,cap_expr,atnm_lit]    # used by foo.>bar syntax
         - \*^[Capsule_has_attr,cap_expr,atnm_lit]  # used by foo.>?bar syntax
     - SC_Bootstrap_Proc_Invo - as you would expect
@@ -400,8 +1140,11 @@ including Universal and Integer etc; for example:
 dispatch to "constant" or "function" and invokes the chain of "where"
 predicates starting with the parentmost "of" back down to the invoked type,
 and results in true iff all the "where" resulted in true.
+ACTUALLY "isa" shouldn't do any coercion like that, one should have to say
+for example "foo isa $Bar" and not "foo isa Bar".
+- Demote isa to a function over \*^[isa,expr,ref_expr].
 - So "=" (equality test) is now specially recognized by the grammar, same
-as each of "!",":=","::=",":","=>","-->" as it just seems appropriate; as a
+as each of "!",":=","::=",":","-->" as it just seems appropriate; as a
 side-effect using a package declaring a symbolic "=" must now be invoked
 quoted to get that one, where bareword = now means the standard one.
 - Likewise ":=" is a special grammar node with no \*^[] for it.  Ah er?
@@ -568,7 +1311,12 @@ better yet, say 'term' or such rather than 'operand', so eg (<term>
 <operator> <term>) and that may be standard practice; so then the operand
 isn't a specific thing, it could be a whole multi-part expression itself.
 A syntax rule is no 2 terms in a row, but 2 operators may appear in a row
-iff the one on the right is a prefix op.
+iff the one on the right is a prefix op or the one on the left is a postfix
+op, this being disambiguated in general by postfix having a -> marker.
+
+* Note the following is valid Haskell syntax:
+    r1 `compose` r2 = (r1 `join` r2) `remove` (r1 `meld` r2)
+- the function in backticks is Haskell's standard infix apply
 
 * Make Muldis_D::Low_Level provide multiple selectors for Set values where
 some are shorthands/optimized to produce the kind of Set values that are
@@ -611,6 +1359,8 @@ terminology.
 is generic.  It associates unit names with numbers.
 TODO, FLESH THIS OUT PER DETAIL AT: See 2015 Jan 31 - Feb 1 TTM list discussion about it.
 But "Subtypes of Capsule" literal syntax list further down this file also says a lot.
+- A normalization, eg between cm-cubed and in-cubed, or W = A*V, is simply
+defined as a Quantity that is multiplied by one to get the other, or such.
 
 * See http://www.boost.org/doc/libs/1_57_0/doc/html/boost_units/Quick_Start.html .
 
@@ -872,17 +1622,91 @@ with a digit, the latter being illegal bareword identifier syntax.
         else topic is abnormal
     else topic is abnormal
 
+* A Collection is a set of Pair<key,asset>.
+    - Array is homogeneous collection of Element: Ordinal+Universal
+    - Bag is homogeneous collection of Member: Universal+Cardinal
+    - Structure is heterogeneous collection of Field: Nominal+Universal
+
+* Generally, paren delimiters are for structures/tuples/etc, brackets are
+for arrays/strings/etc, braces for bags/sets/etc, relations are hybrid.
+
+* MODIFY OF LOW LEVEL TYPES:
+- A Structure field name is now always a String.  A named field has the
+regular codepoints/string in all elements as usual.  A positional field has
+exactly 2 elements, the first being 0 and the second being any integer.  A
+positional is equal to a named of 2 characters where the first character is
+the ASCII NUL character, that is positional is a proper subset of named
+that has an additional special syntax.
+- In practice we shouldn't have to worry about name collisions as no
+ordinary character based name would start with an ASCII NUL, and if we were
+ever mapping structures from some programming language where the 2 were
+truly disjoint and could otherwise collide, we can deal with such things as
+some other translation over top.
+- The positional/integer names are also sparse like the named.  We have the
+sparseness to give consistent handling between the 2 kinds of field names,
+in particular with regard to substitution or merging of Structure values.
+- Any logic concerning infix/prefix/etc operators or associative/etc traits
+still expects fields named \+[0,0] and \+[0,1] corresponding to before,
+aka "\\c[0,0]" and "\\c[0,1]".
+
 * This table shows the low level types, plus examples of literal syntax:
 
     Boolean       | just the keywords false and true
     Integer       | 42 or 0 or -3 or 0xDEADBEEF or 0o644 or 0b11001001
+    Pair          | \:[expr,expr]
+                  |    When working element-wise with a collection, how each element represented.
+                  |    User data should use dyadic Structure instead.
     Array         | [expr,...] or ([expr,...]) to disambiguate from procedure block
-    String        | \+[expr,...]
+    String        | \+[nnint-expr,...]
     Bag           | \+{expr,...} or \+{expr:posint-expr,...}
-    Tuple         | \%{lit:expr,...}
-    Capsule       | expr=>expr - that is Reference=>Tuple eg $Date=>\%{year:500,month:4,day:24}
-                  |    and Singleton is one with nullary tuple eg $To_Zero=>\%{}
-                  |    and $=>lit is shorthand for Singleton value eg $=>To_Zero
+    Structure     | \(expr,...) or \(lit:expr,...) or \(expr,...,lit:expr,...)
+                  |    or \(:lit,...) or etc where lit
+                  |    is one of: nnint or alpha or "whatever".
+                  |    Is a set of named fields where each field name is
+                  |    either a non-negative Integer or a String; a bare
+                  |    nnint literal is the Integer, else is the String.
+                  |    A field whose name is a String is also called an attribute.
+                  |    Where any fields named with Integers, then for 1..N
+                  |    such fields, the Integers must be 0..N-1 like Array.
+                  |    - Tuple is proper subtype with only attributes;
+                  |    it has special alt syntax \%(lit:expr,...).
+                  |     ACTUALLY, Tuple is a proper subtype having 1
+                  |     positional element of SC_Field_Name value \Tuple,
+                  |     plus 1 named element of any Structure value its payload.
+                  |    - SC_Field is proper subtype with exactly 1 field.
+                  |    - SC_Field_Name is proper subtype of SC_Field
+                  |    whose value for that field is true; it has the
+                  |    special alternate syntax \lit; it identifies a field
+                  |    of a Structure/Capsule.
+                  |    - SC_Attr_Name is proper subtype of SC_Field_Name whose
+                  |    name is a String; identifies attr of Tuple/Relation.
+                  |    - SC_Signature is proper subtype where the value for
+                  |    every field is either true or is a SC_Reference;
+                  |    this is used when defining a type in terms of a set
+                  |    of typed fields, or when defining a function
+                  |    signature likewise, or when defining a set of SC_Name;
+                  |    a SC_Reference is naming the expected field type,
+                  |    or true means either type inapplicable (we just have
+                  |    a set of SC_Name) or it means Universal / any value.
+                  |    - SC_Field_Names is proper subtype of SC_Signature where
+                  |    every field value is just true;
+                  |    it has special alt syntax \~(lit,...).
+                  |    - SC_Heading is intersect type of SC_Signature,Tuple.
+                  |    - SC_Attr_Names is intersect of SC_Heading,SC_Field_Names;
+                  |    is T/R heading as userland value, arg for project/etc.
+                  |    - SC_Renaming is proper subtype where the value for
+                  |    each field is either a non-negative Integer or a
+                  |    String, that is, something valid to be a field name;
+                  |    it has special alt syntax \<-(lit:lit,...);
+                  |    use in routine defs to normalize args, arg for rename.
+    OBSOLETE; USE A STRUCTURE SUBTYPE INSTEAD, FREE UP => FOR NON-CORE / USER TYPES:
+    Capsule       | expr=>expr - that is Reference=>Structure eg $Date=>\%{year:500,month:4,day:24}
+                  |    and Singleton is one with nullary tuple eg $To_Zero=>\()
+                  |    and $=>lit is shorthand for Singleton value eg $=>To_Zero.
+                  |    Normally a Capsule's Reference is a type name, making
+                  |    the Capsule a type, but structurally one is identical
+                  |    to a partially applied function if the Reference is to a function name.
+    OBSOLETE; USE A STRUCTURE SUBTYPE INSTEAD:
     SC_Identifier | Several kinds, all mutually disjoint:
                   |    - identity : \$pkg-canon-name.litpath   eg \$Muldis_D:"http://muldis.com":"0".Integer.sum
                   |    - absolute : \$::loc-pkg-alias.litpath  eg \$::MD.Integer.sum
@@ -899,8 +1723,8 @@ with a digit, the latter being illegal bareword identifier syntax.
                   |    explicitly decl neighbors ref'd with "1.foo()".
                   |    Also special syntax "resolved expr" will
                   |    produce identity from all kinds of Identifier expr eg "resolved \$foo"
-                  |    and $lit is shorthand for "resolved \$lit" eg $Bag short for "resolved \$Bag"
-                  |    Reference is proper subtype has all "identity" values.
+                  |    and $lit is shorthand for "resolved \$lit" eg $Bag short for "resolved \$Bag".
+                  |    - SC_Reference is proper subtype has all "identity" values.
                   |    Note that any consecutive double-quoted tokens are treated as 1 token.
     External      | \~external~'...' - the "..." are implementation-dependent
                   |    but typically is source code of some kind for
@@ -918,18 +1742,29 @@ with a digit, the latter being illegal bareword identifier syntax.
     Quantity    | expr+expr or expr-expr or expr*expr or expr/expr or
                 |    expr**posint-expr where at least one expr is a (Singleton)
                 |    Reference or a Quantity eg 5.7*$Meter/($Second**2)
+                | Optionally consider unit part allowed to be any value not just a Reference? ... or not
     Interval    | expr..expr  or expr^..^expr etc
     Set         | {expr,...} or ({expr,...}) to disambiguate within recipe block
-    Relation    | \@{{lit:expr,...},...} or \@[lit,...]:{[expr,...],...}
+    Relation    | \@{(lit:expr,...),...} or \@[lit,...]:{[expr,...],...}
     Dictionary  | \~{expr:expr,...} or something
-    SC_Heading  | \~{lit,...} - T/R heading as userland value - arg for project/etc
-                |    and SC_Name is one with =1 elem, eg \~{lit}
-    SC_Renaming | \<-{lit:lit,...} - use in routine predicate defs a lot to normalize params, arg for rename
 
-    SC_Func_Args   | \(expr,...) or \(lit:expr,...) or \(expr,...,lit:expr,...) or \(:lit,...) or etc
+    SC_Func_Args   | synonym for Structure 
     SC_Func_Params | \:(typeref-expr,...) or \:(lit:typeref-expr,...) or etc
     SC_Proc_Args   | \&(expr,...) or \&(&var-expr,...) or \&(lit:expr,...) or etc
     SC_Proc_Params | \&:(typeref-expr,...) or \&:(&typeref-expr,...) or etc
+
+* Allow -0 and -0.0 etc in numeric syntax but they just fold to 0 or 0.0.
+
+* Math recognizes different kinds of infinities, eg countable or
+non-countable, eg based on repeated add or multiply or exponentiate or
+whatever double-up-arrow is etc, and each possibly deserves its own
+infinity singletons.  But we probably want a generic infinity singleton
+that doesn't care, for generic ranges etc ...
+Ooh, ooooohhh ... lets make 'Infinite' an abstract type which is then
+composed by the likes of those different infinities or +Inf or -Inf etc.
+Or otherwise deal with infinities in a similar sense to units, as these are
+units eg for use with Quantity in a matter of speaking.  But where is the
+boundary with symbolic math?
 
 * Regarding abstract types, virtual functions, 'composes', 'implements':
 - Need to evaluate how useful these actually are.
@@ -1239,7 +2074,7 @@ begins.  These should all work equally well when a function declaration is
 embedded within another value expression, such as for the meat of generic
 relational restrictions.  Perhaps something like this:
     foo ::= function --> (_ isa $Integer) <-- (_ follows ...) : (#_);
-    foo ::= function to (_ isa $Integer) from (_ follows ...) through (#_);
+    foo ::= function to (_ isa $Integer) from (_ follows ...) via (#_);
 ... noting that the 5 parts may come in any order and are all optional.
 Clearly this will take a lot of thought.
 - See Perl 6 design for guidance, it already does a lot of that stuff.
@@ -1259,8 +2094,8 @@ function definition is #4 the main body expression.
 where that body is a predicate, and implicitly is Universal-->Boolean.
 - Actually, it would take a binding def too in the general form, like this:
     type of Foo where ...
-    function from Foo to Boolean through ...
-- So "of" means "from" and "where" means "through".
+    function from Foo to Boolean via ...
+- So "of" means "from" and "where" means "via".
 - The "type" also takes "default" expr, optional only if inherited.
 
 * Have keyword "constant" that is like function but just takes a body def
@@ -1282,7 +2117,7 @@ expected the implementation will fill it in as a special case.
 * Invocation differences:
     foo()  - calls a 'constant' only
     foo(...)  - calls a 'function' only
-    foo  - either an expr node name or a prefix/infix style 'function'
+    foo  - either an expr node name or a pre/post/infix style 'function'
 
 * Change how routines work so that the actual sole input argument may be a
 Universal rather than having to be a Tuple.  Also create a new core type
@@ -1410,13 +2245,16 @@ some other type, typically an expression node set.
     args --> rtn
     rtn(*args)
     \(x,y) --> $"+"
+        # some example Haskell looks similar (and Perl 6 uses -> in 'for')
+        \x y -> concat ["(",x,"+",y,")"]
     $SC_Func_Args=>\%{ordered=>[x,y],named=>\%{}} --> $"+"
     "+"(x,y)
     "+"(*\(x,y))
-    x->"+"(y)  - THIS ONE IS OBSOLETE; x->y NOW RESERVED FOR SOMETHING ELSE
+    x->"+"(y)  - THIS ONE IS OBSOLETE; x->y NOW A MONADIC POSTFIX MARKER
+        # New use is, for example "arg ->op" for example "list ->group".
     x + y
     div(x,y,round_meth:$=>To_Zero)
-    \(x,y) --> (function to Integer from (Integer,Integer) through ...)
+    \(x,y) --> (function to Integer from (Integer,Integer) via ...)
     \(x,y) --> (function --> Integer <-- (Integer,Integer) : ...)
     42 --> $some_func_taking_Integer_directly_without_SC_Func_Args_wrapper
 - Note that "self" can appear anywhere "rtn" does, and means call-myself
@@ -1447,7 +2285,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
 * Function declare syntax general form (same as inline actually?):
     0. keyword "function" followed by 0 or 1 of each of next in any order:
     1. keyword "virtual" is optional, not followed by anything of its own
-        - if used, the keywords "through"/":" must be omitted
+        - if used, the keywords "via"/":" must be omitted
     2. keyword "to" or "-->" followed by the name of a type
         - the definition of the type may appear in place of the name using
         the syntax "type ..."
@@ -1464,16 +2302,22 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
             function <-- type of SC_Func_Args
                 where (topic matching \:($Integer,foo:$Integer)) : ...;
         - if omitted, the unnamed system maximal type is implicitly used
-    4. keyword "implements" is optional, has associated function name
-    5. keyword "normalize" followed by expr
+    4. keyword "implements" is optional,
+        followed by set of 0..N associated function names
+    5. keyword "overrides" is optional,
+        followed by set of 0..N associated function names
+        - while referant of implements must be virtual, overrides must not
+        be virtual; they are essentially the same but we're being explicit
+        as to what's going on and users can avoid easy mistakes
+    6. keyword "normalize" followed by expr
         - defaults to topic if omitted
-    6. keyword "requires" followed by predicate expr
+    7. keyword "requires" followed by predicate expr
         - defaults to true if omitted
-    7. keyword "is" is optional, followed by set of trait name keywords in
+    8. keyword "is" is optional, followed by set of trait name keywords in
         braces: "associative", "commutative", "idempotent"
         and other terms like bijective etc may be added
-    8. keyword "identity" is optional (when associative), has associated expr
-    9. keyword "through" or ":" followed by expr
+    9. keyword "identity" is optional (when associative), has associated expr
+    10. keyword "via" or ":" followed by expr
         - defaults to topic if omitted
     ...
 - Note that "symmetric" is obsolete here; it meant what "commutative" does.
@@ -1550,6 +2394,14 @@ constants for a virtual type should be composed by implementing types.
         some particular scope to be defined of each place where the
         abstract type is otherwise referenced, or it is an error;
         TODO, figure out that scope, but its probably per package
+    7. keyword "requires_implements" is optional iff "abstract" is true,
+        followed by set of 0..N names of virtual routines whose signatures
+        use the current type, and live in same package as the current type
+        - if present, then for every type X which "composes" current one,
+        the package declaring X must also declare routines which "implement"
+        the named virtual routines and signatures have X in the place of
+        the current abstract type
+        - this is a means for abstract types to declare a contract
 
 * Schema objects can be easily indexed for fast(er) dispatch.  To be
 specific, we can pre-make a map from each abbreviation (particularly the
@@ -1571,6 +2423,19 @@ semantics respectively, and if the left operand is smaller, the same,
 or larger than the right operator, return respectively C<Order::Less>,
 C<Order::Same>, or C<Order::More> (which numerify to -1, 0, or +1,
 the customary values in most C-derived languages)."
+
+* From http://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)
+it would seem Muldis D qualifies as "covariant" everywhere, such is the
+nature of subtyping by constraint.
+Or perhaps more accurately, every Muldis D function is covariant, as this
+is more a property of routines than of types.
+See https://msdn.microsoft.com/en-us/library/dd799517(v=vs.110).aspx also.
+- Covariance
+Enables you to use a more specific type than originally specified.
+- Contravariance
+Enables you to use a more generic (less derived) type than originally specified.
+- Invariance
+Means that you can use only the type originally specified; so an invariant generic type parameter is neither covariant nor contravariant.
 
 * Have a look at the "active object" design pattern.
 
@@ -1608,6 +2473,10 @@ Some features missing in Oracle [that PostgreSQL has]:
 - Transaction level control of synchronous replication
 - UNIX domain sockets with user based auth
 - psql (the by far best SQL client I have used)
+
+* Here's an article comparing how MVCC works in different DBMSs,
+mainly focusing on PostgreSQL, Oracle, and SQL Server:
+http://amitkapila16.blogspot.ca/2015/03/different-approaches-for-mvcc-used-in.html
 
 * Actually, it seems transactional DDL support is much more widespread, and
 hence MySQL is the main thing lacking it in modern days (InnoDB might have
