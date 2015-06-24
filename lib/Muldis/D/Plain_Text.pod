@@ -292,6 +292,10 @@ Grammar:
 Note that C<ws_sans_comments> is meant to be more comprehensive and include
 any character that Unicode considers to be whitespace.
 
+I<TODO: Figure out how to say in grammar when (insignificant) whitespace is
+only conditionally needed such as to mark the transition points between
+otherwise-adjacent significant tokens where that can't be told otherwise.>
+
 =head1 IDENTIFIERS
 
 Grammar:
@@ -426,7 +430,7 @@ Grammar:
 
     <ps3_nonquoted> ::=
           <ps3_alphanumeric_char>+
-        | <ps3_standalone_char>+
+        | <ps3_bracketing_char>+
         | <ps3_symbolic_char>+
         | <ps3_whitespace_char>+
         | <ps3_illegal_char>+
@@ -434,12 +438,12 @@ Grammar:
     <ps3_alphanumeric_char> ::=
         <[ a..z A..Z 0..9 _ ]>
 
-    <ps3_standalone_char> ::=
-        '\\' | ',' | ';' | '(' | ')' | '[' | ']' | '{' | '}'
+    <ps3_bracketing_char> ::=
+        '(' | ')' | '[' | ']' | '{' | '}'
 
     <ps3_symbolic_char> ::=
-          '!' | '#' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/'
-        | ':' | '<' | '=' | '>' | '?' | '@' | '^' | '|' | '~'
+          '!' | '#' | '$' | '%' | '&' | '*' | '+' | ',' | '-' | '.' | '/'
+        | ':' | ';' | '<' | '=' | '>' | '?' | '@' | '\\' | '^' | '|' | '~'
         | '¬' | '±' | '×' | '÷'
         | '←' | '↑' | '→' | '↓' | '↔' | '↚' | '↛' | '↮'
         | '∀' | '∃' | '∄' | '∅' | '∆' | '∈' | '∉' | '∋' | '∌' | '∖'
@@ -470,7 +474,7 @@ alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
 =head3 Pipeline Stage 4
 
 Stage 4 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple C<ps3_standalone_char> into multiple tokens such that
+consisting of multiple C<ps3_bracketing_char> into multiple tokens such that
 each such individual character becomes its own token.  The output of stage
 4 is an array of character string tokens, or parse nodes, as per stage 3.
 
@@ -494,12 +498,17 @@ Grammar:
         | '::'
         | ':='
         | ':'
+        | ';;'
+        | ';'
+        | ',,'
+        | ','
         | '-->'
         | '<--'
         | '->'
         | '<-'
         | '...'
         | '$'
+        | '\\'
 
 Where any of the shown symbolic character sequences exist, each sequence
 becomes its own token, and any runs of symbolics besides those each become
@@ -586,21 +595,20 @@ each for a single-quote and a double-quote.
 
 Stage 10 in the parsing pipeline is to isolate any literals specific to
 certain numeric types, which are a particular run of
-C<ps3_alphanumeric_char> optionally with some C<ps3_symbolic_char>.
+C<ps3_alphanumeric_char> optionally with some C<ps3_symbolic_char>,
+and further optionally split (when long) using whitespace.
 
 Grammar:
 
     <ps10_numeric> ::=
-          [<[0..9]> <[ 0..9 _ ]>* ['.' <[ 0..9 _ ]>+]?]
-        | ['0' <[bodx]> <ps3_alphanumeric_char>+
-            ['.' <ps3_alphanumeric_char>+]?]
+        <[0..9]> <ps10_numeric_seg>? ['.' <ps10_numeric_seg>]?
+
+    <ps10_numeric_seg> ::=
+        <ps3_alphanumeric_char>+ % [<ws> ',,' <ws>]
 
 Note that the above actually allows invalid numeric literals, however
 anything matching the above pattern will be a syntax error if it doesn't
 otherwise match a stricter numeric definition.
-
-I<TODO: Figure out some extended syntax to support very long numeric
-literals such that they can be broken with whitespace.>
 
 =head1 SEE ALSO
 
