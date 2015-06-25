@@ -166,12 +166,12 @@ GRAMMAR> for more details.
 Grammar:
 
     <shebang_line> ::=
-        '#!' <shebang_directive> <shebang_ws_break>
+        '#!' <shebang_directive> <shebang_whitespace_break>
 
     <shebang_directive> ::=
         ...
 
-    <shebang_ws_break> ::=
+    <shebang_whitespace_break> ::=
         ...
 
 A C<shebang_line>, if it exists, must be the first characters of the text
@@ -194,11 +194,11 @@ Examples:
 Grammar:
 
     <versioned_grammar> ::=
-        <ws>?
-            <language_name> <ws> ';'
-            [<script_name> <ws> ';']?
+        <sp>
+            <language_name> <sp> ';' <sp>
+            [<script_name> <sp> ';' <sp>]?
             <unversioned_grammar>
-        <ws>?
+        <sp>
 
 See the sections in this file named L</LANGUAGE NAME>, L</SCRIPT NAME>,
 and L</UNVERSIONED GRAMMAR> for more details.
@@ -276,25 +276,27 @@ Examples:
 
     script Unicode:6.2.0:UTF-8:canon;
 
-=head1 WHITESPACE
+=head1 DIVIDING SPACE
 
 Grammar:
 
-    <ws> ::=
-        <ws_sans_comments> % <quoted_ws_comment_str>
+    <sp> ::=
+        [<whitespace> | <quoted_sp_comment_str>]*
 
-    <ws_sans_comments> ::=
-        [' ' | '\t' | '\n' | '\f' | '\r']*
+    <whitespace> ::=
+        [' ' | '\t' | '\n' | '\f' | '\r']+
 
-    <quoted_ws_comment_str> ::=
+    <quoted_sp_comment_str> ::=
         '`' <-[`]>* '`'
 
-Note that C<ws_sans_comments> is meant to be more comprehensive and include
+Note that C<whitespace> is meant to be more comprehensive and include
 any character that Unicode considers to be whitespace.
 
-I<TODO: Figure out how to say in grammar when (insignificant) whitespace is
+I<TODO: Figure out how to say in grammar when (insignificant) dividing space is
 only conditionally needed such as to mark the transition points between
 otherwise-adjacent significant tokens where that can't be told otherwise.>
+I<Clues would seem to be at http://doc.perl6.org/language/regexes#Look-around_assertions
+and http://doc.perl6.org/language/regexes#Matching_Whitespace .>
 
 =head1 IDENTIFIERS
 
@@ -517,7 +519,7 @@ Generally speaking, the parsing of nonquoted context symbolic character
 runs is complete following stage 5, and each remaining token is not likely
 to be split again or be merged with other tokens.
 
-Because the above sequences are special to C<Plain_Text>, whitespace is
+Because the above sequences are special to C<Plain_Text>, dividing space is
 optional between them and symbolic operator calls/syntax because there is
 considered no ambiguity.
 
@@ -539,12 +541,12 @@ tokens or parse nodes, where each represents either a backtick-quoted
 string or nonquoted C<ps3_whitespace_char>, beneath a parse node
 representing the run; this new node is logically treated as insignificant
 (other than for its role in separating otherwise adjacent things)
-whitespace, and becomes non-semantic metadata for its wider context.
+dividing space, and becomes non-semantic metadata for its wider context.
 
 =head3 Pipeline Stage 7
 
 Stage 7 in the parsing pipeline is to collect any runs of consecutive
-(apart from any invervening whitespace) quoted context tokens or parse
+(apart from any invervening dividing space) quoted context tokens or parse
 nodes of the same kind, specifically those delimited by either
 single-quotes or double-quotes, beneath a parse node representing the run.
 Such runs are logically a single contiguous quoted string (except possibly
@@ -600,7 +602,7 @@ each for a single-quote and a double-quote.
 Stage 10 in the parsing pipeline is to isolate any literals specific to
 certain numeric types, which are a particular run of
 C<ps3_alphanumeric_char> optionally with some C<ps3_symbolic_char>,
-and further optionally split (when long) using whitespace.
+and further optionally split (when long) using dividing space.
 
 Grammar:
 
@@ -608,7 +610,7 @@ Grammar:
         <[0..9]> <ps10_numeric_seg>? ['.' <ps10_numeric_seg>]?
 
     <ps10_numeric_seg> ::=
-        <ps3_alphanumeric_char>+ % [<ws> ',,' <ws>]
+        <ps3_alphanumeric_char>+ % [<sp> ',,' <sp>]
 
 Note that the above actually allows invalid numeric literals, however
 anything matching the above pattern will be a syntax error if it doesn't
