@@ -82,12 +82,10 @@ parser would use context to supply default values for those elements.
 I<TODO: Describe the grammar itself and how to interpret it.  Meanwhile,
 keep in mind that the grammar is inspired by both EBNF and Perl 6 rules.>
 
-B<WARNING: THE PERL 6 GRAMMAR USED TO DEFINE THE SYNTAX IS OUT OF DATE WITH
-THE LATEST PERL 6; FOR EXAMPLE, I NEED TO USE '%'|'%%' RATHER THAN OR IN
-ADDITION TO THE '**' FOR SEPARATOR-DEFINED REPETITIONS ... SEE SYNOPSIS 5.>
-- ** takes number or range on right
-- % takes list item separator on right, eg allows "x,y" but not "x,y,"
-- %% is like % but allows separator to end the list, eg allows "x,y,"
+    About separator-defined repetitions:
+    - ** takes number or range on right
+    - % takes list item separator on right, eg allows "x,y" but not "x,y,"
+    - %% is like % but allows separator to end the list, eg allows "x,y,"
 
 =head1 GENERAL STRUCTURE
 
@@ -289,14 +287,63 @@ Grammar:
     <quoted_sp_comment_str> ::=
         '`' <-[`]>* '`'
 
-Note that C<whitespace> is meant to be more comprehensive and include
-any character that Unicode considers to be whitespace.
+The primary function of I<dividing space>, represented by C<< <sp> >>, is
+to disambiguate the boundaries of otherwise-consecutive grammar tokens.
 
-I<TODO: Figure out how to say in grammar when (insignificant) dividing space is
-only conditionally needed such as to mark the transition points between
-otherwise-adjacent significant tokens where that can't be told otherwise.>
-I<Clues would seem to be at http://doc.perl6.org/language/regexes#Look-around_assertions
-and http://doc.perl6.org/language/regexes#Matching_Whitespace .>
+Once Muldis D Plain Text code is parsed, any dividing space is just
+discardable non-semantic metadata for its wider context, but during a parse
+its presence is often critical to properly interpret the wider context.
+
+The grammar doesn't specify this explicitly for simplicity, but anywhere a
+C<< <sp> >> token appears, it should be interpreted as carrying a number of
+look-around assertions regarding adjacent tokens.
+
+In the context of any C<< <foo> <sp> <bar> >>, these syntax rules apply:
+
+=over
+
+=item *
+
+If C<< <foo> >> and C<< <bar> >> are of different character classes
+(alphanumeric vs quoting vs bracketing vs symbolic vs whitespace) then C<<
+<sp> >> is allowed to be empty.
+
+=item *
+
+Otherwise, if C<< <foo> >> and C<< <bar> >> are both alphanumeric then C<<
+<sp> >> must be nonempty.
+
+=item *
+
+Otherwise, if C<< <foo> >> and C<< <bar> >> are both quoting or bracketing
+or whitespace then C<< <sp> >> is allowed to be empty.
+
+=item *
+
+Otherwise, C<< <foo> >> and C<< <bar> >> are both symbolic; whether or not
+C<< <sp> >> is allowed to be empty or not depends on the specific sequence
+of symbolic characters in the original source code.  I<Details pending.>
+
+=back
+
+The secondary function of I<dividing space> is to empower users to format
+their code for easier readability through appropriate linebreaks,
+indentation, and other kinds of spacing, as they see fit; what they choose
+here has no impact on the behavior of the code.
+
+The tertiary function of I<dividing space> is to empower the placement of
+code comments or visual dividers almost anywhere, but with the caveat that
+comments written this way are not introspectable as comments in the parsed
+code, and rather are treated like insignificant whitespace.  This style of
+comment defined with backtick-quoted strings should just be used for the
+likes of visual dividers or less important comments or for when you want to
+quickly "comment out" some source code rather than deleting it.
+
+For more important comments that are introspectable as such, see the
+section in this file named C<INTROSPECTABLE COMMENTS>.
+
+Note that C<< <whitespace> >> is meant to be more comprehensive and include
+any character that Unicode considers to be whitespace.
 
 =head1 IDENTIFIERS
 
