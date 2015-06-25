@@ -147,7 +147,7 @@ they were actually looking at.  A further reason is it means declarations
 can be grouped more logically for human reading than being forced to put
 everything with a common namespace together.>
 
-The root grammar token for Muldis D Plain Text is C<MDPT>.
+The root grammar token for Muldis D Plain Text is C<< <MDPT> >>.
 
 =head1 START
 
@@ -172,13 +172,13 @@ Grammar:
     <shebang_whitespace_break> ::=
         ...
 
-A C<shebang_line>, if it exists, must be the first characters of the text
+A C<< <shebang_line> >>, if it exists, must be the first characters of the text
 file, and consists of a magic number which expressed as ASCII or UTF-8 is
 C<#!>, followed by a Unix-like interpreter directive or path to an
 executable that can interpret Muldis D Plain Text files.  When a Muldis D
 Plain Text file starts with a shebang line, it can be invoked directly as
 if it were an executable on a Unix-like system.  The format of
-C<shebang_directive> isn't defined in this document; see the appropriate
+C<< <shebang_directive> >> isn't defined in this document; see the appropriate
 external Unix/etc documentation for that; however, the Muldis D Plain Text
 file must have at least one line-breaking whitespace character of some kind
 following it, which is how we know where the Muldis D code begins.
@@ -396,8 +396,8 @@ For the purposes of this documentation section, we will assume that the
 source code has already been processed from any binary or other formats
 into a single character string token having a well-known
 character repertoire that is compatible with Unicode.  This may have
-involved scanning ahead for a C<language_name> or in particular a
-C<script_name> directive should that have been needed to resolve ambiguity.
+involved scanning ahead for a C<< <language_name> >> or in particular a
+C<< <script_name> >> directive should that have been needed to resolve ambiguity.
 
 Note that it is assumed that all parsing stages following the above
 assumption are completely lossless, and that any stages which conceptually
@@ -416,7 +416,7 @@ to consider their wider context having already been done.
 
 =head2 Pipeline Stage 1
 
-Stage 1 in the parsing pipeline is to split off any leading C<shebang_line>
+Stage 1 in the parsing pipeline is to split off any leading C<< <shebang_line> >>
 that might prefix the code.  The primary output of stage 1 is a single
 character string token with the code itself, and any leading shebang is
 metadata.  Further stages below only consider this primary as their input.
@@ -523,14 +523,14 @@ alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
 =head3 Pipeline Stage 4
 
 Stage 4 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple C<ps3_bracketing_char> into multiple tokens such that
+consisting of multiple C<< <ps3_bracketing_char> >> into multiple tokens such that
 each such individual character becomes its own token.  The output of stage
 4 is an array of character string tokens, or parse nodes, as per stage 3.
 
 =head3 Pipeline Stage 5
 
 Stage 5 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple C<ps3_symbolic_char> into multiple tokens where those
+consisting of multiple C<< <ps3_symbolic_char> >> into multiple tokens where those
 tokens contain characters well-known to C<Plain_Text> for special uses such
 as meta-operator characters.  The output of stage 5 is an array of
 character string tokens, or parse nodes, as per stage 3.
@@ -574,7 +574,7 @@ As this special group is minimized as possible, just to the 10 characters
 C<< !,-:;<=>?\ >>, that leaves 12 more ASCII symbolic characters completely
 free in any combination for user-definable nonquoted operator names, though
 the former 10 are also still available for nonquoted operator names that
-aren't superstrings of any C<ps5_nonquoted_symbolic_grouping>.
+aren't superstrings of any C<< <ps5_nonquoted_symbolic_grouping> >>.
 
 =head3 Pipeline Stage 6
 
@@ -585,7 +585,7 @@ syntax becomes metadata rather than something needed to execute the code.
 
 Stage 6 in the parsing pipeline is to collect any runs of consecutive
 tokens or parse nodes, where each represents either a backtick-quoted
-string or nonquoted C<ps3_whitespace_char>, beneath a parse node
+string or nonquoted C<< <ps3_whitespace_char> >>, beneath a parse node
 representing the run; this new node is logically treated as insignificant
 (other than for its role in separating otherwise adjacent things)
 dividing space, and becomes non-semantic metadata for its wider context.
@@ -602,7 +602,7 @@ for matters of escape sequences) but were split for readability.
 =head3 Pipeline Stage 8
 
 Stage 8 in the parsing pipeline is to isolate any literals specific to the
-C<Blob> type, which are a particular run of C<ps3_alphanumeric_char>
+C<Blob> type, which are a particular run of C<< <ps3_alphanumeric_char> >>
 followed immediately by a logically single-quoted string, where the latter
 may actually be a run of said that was collected by stage 7.
 
@@ -611,7 +611,7 @@ Grammar:
     <ps6_blob> ::=
         '0' <[box]> <ps2_single_quoted>
 
-Note that the single C<ps2_single_quoted> above actually represents a run.
+Note that the single C<< <ps2_single_quoted> >> above actually represents a run.
 
 Note that the above actually allows invalid C<Blob> literals, however
 anything matching the above pattern will be a syntax error if it doesn't
@@ -641,14 +641,14 @@ Grammar:
     <ps9_escaped> ::=
         '\\' [<-[\\]> | <escaped_char>]*
 
-Note that the definition of C<escaped_char> includes an escape sequence
+Note that the definition of C<< <escaped_char> >> includes an escape sequence
 each for a single-quote and a double-quote.
 
 =head3 Pipeline Stage 10
 
 Stage 10 in the parsing pipeline is to isolate any literals specific to
 certain numeric types, which are a particular run of
-C<ps3_alphanumeric_char> optionally with some C<ps3_symbolic_char>,
+C<< <ps3_alphanumeric_char> >> optionally with some C<< <ps3_symbolic_char> >>,
 and further optionally split (when long) using dividing space.
 
 Grammar:
