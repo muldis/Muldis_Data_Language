@@ -274,6 +274,80 @@ Examples:
 
     script Unicode:6.2.0:UTF-8:canon;
 
+=head1 CHARACTER CLASSES
+
+Grammar:
+
+    <unrestricted_char> ::=
+          <alphanumeric_char>
+        | <quoting_char>
+        | <bracketing_char>
+        | <symbolic_char>
+        | <whitespace_char>
+
+    <alphanumeric_char> ::=
+        <alpha_char> | <digit_char>
+
+    <alpha_char> ::=
+        <[ A..Z _ a..z ]>
+
+    <digit_char> ::=
+        <[ 0..9 ]>
+
+    <quoting_char> ::=
+        <["'`]>
+
+    <bracketing_char> ::=
+        '(' | ')' | '[' | ']' | '{' | '}'
+
+    <symbolic_char> ::=
+          '!' | '#' | '$' | '%' | '&' | '*' | '+' | ',' | '-' | '.' | '/'
+        | ':' | ';' | '<' | '=' | '>' | '?' | '@' | '\\' | '^' | '|' | '~'
+        | '¬' | '±' | '×' | '÷'
+        | '←' | '↑' | '→' | '↓' | '↔' | '↚' | '↛' | '↮'
+        | '∀' | '∃' | '∄' | '∅' | '∆' | '∈' | '∉' | '∋' | '∌' | '∖'
+        | '∞' | '∧' | '∨' | '∩' | '∪' | '≠' | '≤' | '≥' | '⊂' | '⊃'
+        | '⊄' | '⊅' | '⊆' | '⊇' | '⊈' | '⊉' | '⊤' | '⊥' | '⊻' | '⊼'
+        | '⊽' | '⊿' | '⋊' | '⋈' | '⋉'
+        | '▷' | '⟕' | '⟖' | '⟗' | '⨝' | '⨯'
+
+    <whitespace_char> ::=
+        ' ' | '\t' | '\n' | '\f' | '\r'
+
+The Muldis D Plain Text grammar recognizes 7 distinct character classes,
+which are mutually disjoint proper subsets of the character repertoire
+identified by the Script Name: I<alphanumeric>, I<quoting>, I<bracketing>,
+I<symbolic>, I<whitespace>, I<restricted>, I<illegal>; the first 5 are
+collectively I<unrestricted>.
+
+The 5 I<unrestricted> classes are the more syntactically interesting ones
+and represent characters that may appear anywhere in Plain Text source
+code.  In contrast, I<restricted> characters may only appear literally
+inside of a quoted string, and I<illegal> characters may not appear
+literally in source code at all.
+
+All printable characters of the ASCII repertoire are I<unrestricted>, as
+are the small number of non-printable ASCII characters named in C<<
+<whitespace_char> >>; all other (non-printable) ASCII characters are
+I<illegal>.
+
+The vast majority of non-ASCII Unicode characters are I<restricted>, the
+only exceptions being the small number named in C<< <symbolic_char> >> or
+C<< <whitespace_char> >>; any non-ASCII Unicode control characters not
+otherwise named are I<illegal>.
+
+Regardless of character class, all characters may be logically represented
+in terms of character escape sequences, but only inside of a quoted string.
+
+Note that the symbolic category is arbitrary in the trans-ASCII range and
+is highly subject to gain or lose characters over time.
+
+Note that, while in theory supporting bareword Greek letters may make math
+or logic expressions more pleasant, for now they aren't partly to avoid
+confusion with similar-looking ASCII letters, and because its hard to know
+where to draw the line if one wanted to include the whole un-accented Greek
+alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
+
 =head1 DIVIDING SPACE
 
 Grammar:
@@ -282,7 +356,7 @@ Grammar:
         [<whitespace> | <quoted_sp_comment_str>]*
 
     <whitespace> ::=
-        [' ' | '\t' | '\n' | '\f' | '\r']+
+        <whitespace_char>+
 
     <quoted_sp_comment_str> ::=
         '`' <-[`]>* '`'
@@ -342,9 +416,6 @@ quickly "comment out" some source code rather than deleting it.
 For more important comments that are introspectable as such, see the
 section in this file named C<INTROSPECTABLE COMMENTS>.
 
-Note that C<< <whitespace> >> is meant to be more comprehensive and include
-any character that Unicode considers to be whitespace.
-
 =head1 IDENTIFIERS
 
 Grammar:
@@ -353,7 +424,7 @@ Grammar:
         <nonquoted_name_str> | <quoted_name_str>
 
     <nonquoted_name_str> ::=
-        <[ a..z A..Z _ ]> <[ a..z A..Z 0..9 _ ]>*
+        <alpha_char> <alphanumeric_char>*
 
     <quoted_name_str> ::=
         '"' <-[\"]>* '"'
@@ -478,59 +549,22 @@ has been replaced by an array of 1..N parse nodes, one per new substring.
 Grammar:
 
     <ps3_nonquoted> ::=
-          <ps3_alphanumeric_char>+
-        | <ps3_bracketing_char>+
-        | <ps3_symbolic_char>+
-        | <ps3_whitespace_char>+
-        | <ps3_illegal_char>+
-
-    <ps3_alphanumeric_char> ::=
-        <[ a..z A..Z 0..9 _ ]>
-
-    <ps3_bracketing_char> ::=
-        '(' | ')' | '[' | ']' | '{' | '}'
-
-    <ps3_symbolic_char> ::=
-          '!' | '#' | '$' | '%' | '&' | '*' | '+' | ',' | '-' | '.' | '/'
-        | ':' | ';' | '<' | '=' | '>' | '?' | '@' | '\\' | '^' | '|' | '~'
-        | '¬' | '±' | '×' | '÷'
-        | '←' | '↑' | '→' | '↓' | '↔' | '↚' | '↛' | '↮'
-        | '∀' | '∃' | '∄' | '∅' | '∆' | '∈' | '∉' | '∋' | '∌' | '∖'
-        | '∞' | '∧' | '∨' | '∩' | '∪' | '≠' | '≤' | '≥' | '⊂' | '⊃'
-        | '⊄' | '⊅' | '⊆' | '⊇' | '⊈' | '⊉' | '⊤' | '⊥' | '⊻' | '⊼'
-        | '⊽' | '⊿' | '⋊' | '⋈' | '⋉'
-        | '▷' | '⟕' | '⟖' | '⟗' | '⨝' | '⨯'
-
-    <ps3_whitespace_char> ::=
-        ' ' | '\t' | '\n' | '\f' | '\r'
-
-    <ps3_illegal_char> ::=
-        ...
-
-Note that the illegal category includes all characters not explicitly
-mentioned in the other categories; in general these are only allowed to
-appear literally in quoted context.
-
-Note that the symbolic category is arbitrary in the trans-ASCII range and
-is highly subject to gain or lose characters over time.
-
-Note that, while in theory supporting bareword Greek letters may make math
-or logic expressions more pleasant, for now they aren't partly to avoid
-confusion with similar-looking ASCII letters, and because its hard to know
-where to draw the line if one wanted to include the whole un-accented Greek
-alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
+          <alphanumeric_char>
+        | <bracketing_char>
+        | <symbolic_char>
+        | <whitespace_char>
 
 =head3 Pipeline Stage 4
 
 Stage 4 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple C<< <ps3_bracketing_char> >> into multiple tokens such that
+consisting of multiple C<< <bracketing_char> >> into multiple tokens such that
 each such individual character becomes its own token.  The output of stage
 4 is an array of character string tokens, or parse nodes, as per stage 3.
 
 =head3 Pipeline Stage 5
 
 Stage 5 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple C<< <ps3_symbolic_char> >> into multiple tokens where those
+consisting of multiple C<< <symbolic_char> >> into multiple tokens where those
 tokens contain characters well-known to C<Plain_Text> for special uses such
 as meta-operator characters.  The output of stage 5 is an array of
 character string tokens, or parse nodes, as per stage 3.
@@ -585,7 +619,7 @@ syntax becomes metadata rather than something needed to execute the code.
 
 Stage 6 in the parsing pipeline is to collect any runs of consecutive
 tokens or parse nodes, where each represents either a backtick-quoted
-string or nonquoted C<< <ps3_whitespace_char> >>, beneath a parse node
+string or nonquoted C<< <whitespace> >>, beneath a parse node
 representing the run; this new node is logically treated as insignificant
 (other than for its role in separating otherwise adjacent things)
 dividing space, and becomes non-semantic metadata for its wider context.
@@ -602,7 +636,7 @@ for matters of escape sequences) but were split for readability.
 =head3 Pipeline Stage 8
 
 Stage 8 in the parsing pipeline is to isolate any literals specific to the
-C<Blob> type, which are a particular run of C<< <ps3_alphanumeric_char> >>
+C<Blob> type, which are a particular run of C<< <alphanumeric_char> >>
 followed immediately by a logically single-quoted string, where the latter
 may actually be a run of said that was collected by stage 7.
 
@@ -648,16 +682,16 @@ each for a single-quote and a double-quote.
 
 Stage 10 in the parsing pipeline is to isolate any literals specific to
 certain numeric types, which are a particular run of
-C<< <ps3_alphanumeric_char> >> optionally with some C<< <ps3_symbolic_char> >>,
+C<< <alphanumeric_char> >> optionally with some C<< <symbolic_char> >>,
 and further optionally split (when long) using dividing space.
 
 Grammar:
 
     <ps10_numeric> ::=
-        <[0..9]> <ps10_numeric_seg>? ['.' <ps10_numeric_seg>]?
+        <digit_char> <ps10_numeric_seg>? ['.' <ps10_numeric_seg>]?
 
     <ps10_numeric_seg> ::=
-        <ps3_alphanumeric_char>+ % [<sp> ',,' <sp>]
+        <alphanumeric_char>+ % [<sp> ',,' <sp>]
 
 Note that the above actually allows invalid numeric literals, however
 anything matching the above pattern will be a syntax error if it doesn't
