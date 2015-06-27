@@ -14,6 +14,10 @@ resources of everyone else.
 
 ----------
 
+* http://rajeevrastogi.blogspot.ca/2015/06/presented-paper-in-pgcon-2015-on-native.html
+
+* http://www.frozennorth.org/C509291565/E1939404619/ - The Cult of the NDA
+
 * Free up $ to just be for generic operator use.
 - Make \$foo mean what $foo used to mean, and \\$foo for \$foo, or we could
 do other alternatives, but the main point is $foo is not special syntax.
@@ -2292,8 +2296,9 @@ some other type, typically an expression node set.
     \(x,y) --> (function --> Integer <-- (Integer,Integer) : ...)
     42 --> $some_func_taking_Integer_directly_without_SC_Func_Args_wrapper
 - Note that "self" can appear anywhere "rtn" does, and means call-myself
-as long as it isn't quoted.
-- Note that "rtn()" with nothing in the parens now explicitly calls a
+as long as it isn't quoted.  OBSOLETE!
+
+* Note that "rtn()" with nothing in the parens now explicitly calls a
 "constant" and not a "function"; you only get a "function" call if
 something is in the parens.
 - If you want the above treated like a function call you instead say like:
@@ -2302,6 +2307,29 @@ something is in the parens.
 - How you call a constant in both forms:
     foo()
     (--> $foo)
+
+* Support symbolic constant calls with not "foo"() syntax.  A bare symbolic
+is considered a constant (niladic function) call under many of the
+conditions when it appears where a bareword token that would be interpreted
+as an expression or variable name would appear.  Examples demonstrated here
+with ∅ being the symbolic constant.
+- Sole item in brackets:
+    (∅)
+    [∅]
+    {∅}
+- Whole item in commalist:
+    x, y, ∅, z
+    foo : ∅, baz: quux
+- On tail-end of a routine precedence arrow (arrows point towards all functions):
+    foo<-∅
+    ∅->foo
+    ++ <- ∅
+    ∅ -> ++
+- Right hand side of another symbolic with no precedence arrows:
+    ++ ∅
+    foo + ∅
+- Right hand of a binding or assignment is no because confuses with
+function call / hyper-op probably.
 
 * Inline function declare syntax:
     expr_node_name_containing_Ref_of_func_name ::= function ...
