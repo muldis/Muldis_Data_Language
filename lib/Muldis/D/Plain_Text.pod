@@ -416,30 +416,82 @@ quickly "comment out" some source code rather than deleting it.
 For more important comments that are introspectable as such, see the
 section in this file named C<INTROSPECTABLE COMMENTS>.
 
+Examples:
+
+    `This does something.`
+
 =head1 IDENTIFIERS
 
 Grammar:
 
-    <gen_ctx_name> ::=
-        <nonquoted_name_str> | <quoted_name_str>
-
-    <nonquoted_name_str> ::=
+    <alphanumeric_name> ::=
         <alpha_char> <alphanumeric_char>*
 
-    <quoted_name_str> ::=
-        '"' <-[\"]>* '"'
+    <symbolic_name> ::=
+        <symbolic_char>+
+
+    <quoted_name> ::=
+        <quoted_name_seg> % <sp>
+
+    <quoted_name_seg> ::=
+        <qns_nonescaped> | <qns_escaped>
+
+    <qns_nonescaped> ::=
+        '"' [<-["\\]> <-["]>*]? '"'
+
+    <qns_escaped> ::=
+        '"' '\\' [<-["\\]> | <escaped_char>]* '"'
+
+    <generic_name> ::=
+        <alphanumeric_name> | <quoted_name>
+
+    <fixed_name> ::=
+        <alphanumeric_name> | <symbolic_name>
 
     <field_name> ::=
         <nonord_field_name> | <ord_field_name>
 
     <nonord_field_name> ::=
-        <gen_ctx_name>
+        <generic_name>
 
     <ord_field_name> ::=
         <Integer>
 
     <expr_name> ::=
-        <gen_ctx_name>
+        <generic_name>
+
+    <var_name> ::=
+        <generic_name>
+
+    <pkg_entity_name> ::=
+          <absolute_name>
+        | <relative_name>
+        | <floating_name>
+
+    <absolute_name> ::=
+        '::' <sp> <floating_name>
+
+    <relative_name> ::=
+        <digit_char>+ [<sp> '::' <sp> <floating_name>]?
+
+    <floating_name> ::=
+        <generic_name> % [<sp> '::' <sp>]
+
+A C<< <generic_name> >> is a I<generic context entity name>, which can be
+used in any context that is expecting I<a> Muldis D entity name in the
+general sense, without restrictions.  Examples of use are when declaring
+any named entity or with general type/routine/etc invocation syntax that
+allows any entity of the respective kind, or for field names.
+
+A C<< <fixed_name> >> is for use within value expressions with certain
+common cases of function (or constant) invocations where an unqualified
+operator name appears next to its operands without any parenthesis to group
+the operands under the operator.  The I<fixed> name comes from such
+invocations being usually qualified as I<prefix> or I<infix> or I<postfix>.
+
+A C<< <pkg_entity_name> >> is for use when either declaring or referencing
+package entities (types, constants, functions, procedures, synonyms, etc)
+which live within a multi-level namespace.
 
 =head1 UNVERSIONED GRAMMAR
 
@@ -450,6 +502,471 @@ Grammar:
 
 See the sections in this file named
 L</MODULE SPECIFICATION>, and L</DEPOT SPECIFICATION>, for more details.
+
+=head1 GENERIC VALUE EXPRESSIONS
+
+Grammar:
+
+    <expr> ::=
+        <named_expr> | <anon_expr>
+
+    <named_expr> ::=
+          <expr_name>
+        | <naming_expr>
+        | <aliasing_expr>
+
+    <naming_expr> ::=
+        <expr_name> <sp> '::=' <sp> <anon_expr>
+
+    <aliasing_expr> ::=
+        <expr_name> <sp> '::=' <sp> <named_expr>
+
+    <anon_expr> ::=
+          <delimiting_expr>
+        | <opaque_literal_expr>
+        | <collection_selector_expr>
+        | <invocation_expr>
+        | <conditional_expr>
+        | <fail_expr>
+        | ...
+
+    <delimiting_expr> ::=
+        '(' <sp> <expr> <sp> ')'
+
+    <fail_expr> ::=
+        fail
+
+An C<< <expr> >> is a Muldis D I<generic context value expression>, which
+can be used in any context that is expecting I<a> value but has no
+expectation that said value belongs to a specific data type.  In the
+general case, an expression denoting any value of the C<Universal> type may
+be used where you see C<< <expr> >>, any further restrictions would be
+provided by the context.
+
+Iff an C<< <expr> >> is an C<< <expr_name> >>, then this typically means
+that the parent C<< <expr> >> is having at least one of its children
+declared with an explicit name rather than inline, and then the C<<
+<expr_name> >> is the invocation name of that child.  Alternately, the C<<
+<expr_name> >> may be the invocation name of one of the
+expression-containing routine's parameters, in which case the C<< <expr> >>
+in question represents the current argument to that parameter.
+
+Iff an C<< <expr> >> is a C<< <naming_expr> >>, then the C<< <anon_expr> >>
+element of the C<< <named_expr> >> is being declared with an explicit name,
+and the C<< <expr_name> >> element of the C<< <named_expr> >> is that name.
+Outside of the context of a C<< <naming_expr> >>, the system will generate
+an implicitly-used name for the C<< <anon_expr> >> element.  Iff an C<<
+<expr> >> is instead an C<< <aliasing_expr> >>, then it is in fact
+declaring a new node itself (rather than simply naming its child node); the
+new node is simply declaring an alias for another node, namely its C<<
+<named_expr> >> element.
+
+Iff an C<< <expr> >> is a C<< <delimiting_expr> >>, then it is interpreted
+simply as if it were its child C<< <expr> >> element; the primary reason
+that the C<< <delimiting_expr> >> grammar element exists is to assist the
+parser in determining the boundaries of an C<< <expr> >> where code
+otherwise might be ambiguous or be interpreted differently than desired due
+to nesting precedence rules.
+
+Iff an C<< <expr> >> is a C<< <fail_expr> >>, then any attempt at runtime
+to take that node's value will throw an exception, and so it should only
+appear as a child of a C<< <conditional_expr> >> node, one that is
+performing an assertion that its other inputs are reasonable.
+
+See the sections in this file named L</OPAQUE LITERAL EXPRESSIONS>,
+L</COLLECTION SELECTOR EXPRESSIONS>, L</INVOCATION EXPRESSIONS>, and
+L</CONDITIONAL EXPRESSIONS> for more details.
+
+Examples:
+
+    `an expr_name node`
+    foo_expr
+
+    `a naming_expr node`
+    bar_expr ::= factorial( foo_expr )
+
+    `a delimiting_expr node`
+    (x + y)
+
+I<TODO: ADD SIGNAL SENDING AND OTHER MISC EXPRESSIONS.>
+
+=head1 OPAQUE LITERAL EXPRESSIONS
+
+Grammar:
+
+    <opaque_literal_expr> ::=
+          <Boolean>
+        | <Integer>
+        | <dec_bin_Ratio>
+        | <Blob>
+        | <Text>
+        | <External>
+
+An C<< <opaque_literal_expr> >> is an C<< <expr> >> that denotes a value
+literal specific to some system-defined data type that has its own special
+Muldis D Plain Text selector syntax, and this literal syntax explicitly has
+no child C<< <expr> >> nodes, as in conventional terms it is for selecting
+scalar values.
+
+=head2 Boolean Literals
+
+Grammar:
+
+    <Boolean> ::=
+        false | true
+
+A C<< <Boolean> >> node represents a value of the Muldis D C<Boolean>
+type, which is a general purpose logical boolean value.  The C<Boolean>
+type is a fundamental type of the Muldis D type system, and this is the
+canonical grammar for them.
+
+Examples:
+
+    true
+
+    false
+
+=head2 Integer Literals
+
+Grammar:
+
+    <Integer> ::=
+        <Int_2> | <Int_8> | <Int_10> | <Int_16>
+
+    <Int_2> ::=
+        '-'? '0b' <[ 0..1 _ ]>+ % <num_sp>
+
+    <Int_8> ::=
+        '-'? '0o' <[ 0..7 _ ]>+ % <num_sp>
+
+    <Int_10> ::=
+        '-'? '0d'? <[ 0..9 _ ]>+ % <num_sp>
+
+    <Int_16> ::=
+        '-'? '0x' <[ 0..9 A..F _ a..f ]>+ % <num_sp>
+
+    <num_sp> ::=
+        <sp> [',,' <sp>]?
+
+An C<< <Integer> >> node represents a value of the Muldis D C<Integer>
+type, which is a general purpose integer numeric value.  The C<Integer>
+type is a fundamental type of the Muldis D type system, and this is the
+canonical grammar for them.
+
+This grammar supports writing C<Integer> literals in any of the numeric
+bases {2,8,10,16} using conventional syntax.  The literal may optionally
+contain underscore characters (C<_>), which exist just to help with visual
+formatting, such as for C<10_000_000>.  An C<< <Integer> >> may optionally
+be split into 1..N segments where each pair of consecutive segments is
+separated by dividing space or the optional token C<,,> which is mainly
+valuable to prevent mis-parsing of hexadecimal literals when the first
+character of a non-first segment isn't a digit.
+
+Examples:
+
+    0b11001001 `binary`
+
+    0o0 `octal`
+
+    0o644 `octal`
+
+    -34 `decimal`
+
+    42 `decimal`
+
+    0xDEADBEEF `hexadecimal`
+
+=head2 Decimal/Binary Ratio Literals
+
+Grammar:
+
+    <dec_bin_Ratio> ::=
+        <dec_bin_2> | <dec_bin_8> | <dec_bin_10> | <dec_bin_16>
+
+    <dec_bin_2> ::=
+        '-'? '0b' <[ 0..1 _ ]>+ % <num_sp> '.' <[ 0..1 _ ]>+ % <num_sp>
+
+    <dec_bin_8> ::=
+        '-'? '0o' <[ 0..7 _ ]>+ % <num_sp> '.' <[ 0..7 _ ]>+ % <num_sp>
+
+    <dec_bin_10> ::=
+        '-'? '0d'? <[ 0..9 _ ]>+ % <num_sp> '.' <[ 0..9 _ ]>+ % <num_sp>
+
+    <dec_bin_16> ::=
+        '-'? '0x' <[ 0..9 A..F _ a..f ]>+ % <num_sp>
+            '.' <[ 0..9 A..F _ a..f ]>+ % <num_sp>
+
+A C<< <dec_bin_Ratio> >> node represents a value of the Muldis D C<Ratio>
+type, which is a general purpose rational numeric value.  To be specific,
+C<< <dec_bin_Ratio> >> only provides for a subset of C<Ratio> values,
+namely those whose denominators are integral powers of 2 or 10.
+
+The C<Ratio> type is not a fundamental type of the Muldis D type system,
+but rather is a subtype by constraint of the C<Structure> type, and all
+C<Ratio> values can be selected in terms of C<< <Structure> >> grammar
+nodes.  However, C<< <dec_bin_Ratio> >> is the canonical grammar for all
+C<Ratio> values whose denominators are integral powers of 2 or 10, and the
+canonical syntax for all other C<Ratio> is a value expression that divides
+2 coprime C<Integer> values where the divisor is positive.
+
+Examples:
+
+    -0b1.1
+
+    -1.5 `same val as prev`
+
+    3.14159
+
+    0xDEADBEEF.FACE
+
+=head2 Blob Literals
+
+Grammar:
+
+    <Blob> ::=
+        <Blob_2> | <Blob_8> | <Blob_16>
+
+    <Blob_2> ::=
+        '0b' ['\'' <[ 0..1 _ ]>* '\''] % <sp>
+
+    <Blob_8> ::=
+        '0o' ['\'' <[ 0..7 _ ]>* '\''] % <sp>
+
+    <Blob_16> ::=
+        '0x' ['\'' <[ 0..9 A..F _ a..f ]>* '\''] % <sp>
+
+A C<< <Blob> >> node represents a value of the Muldis D C<Blob> type, which
+is a general purpose bit string.
+
+The C<Blob> type is not a fundamental type of the Muldis D type system, but
+rather is a subtype by constraint of the C<Structure> type, and all C<Blob>
+values can be selected in terms of C<< <Structure> >> grammar nodes.
+However, C<< <Blob> >> is the canonical grammar for all C<Blob> values.
+
+This grammar supports writing C<Blob> literals in any of the numeric bases
+{2,8,16} using conventional syntax.  The literal may optionally contain
+underscore characters (C<_>), which exist just to help with visual
+formatting.  A C<< <Blob> >> may optionally be split into 1..N segments
+where each pair of consecutive segments is separated by dividing space.
+
+Examples:
+
+    0b'00101110100010' `binary`
+
+    0x''
+
+    0x'A705E' `hexadecimal`
+
+    0o'523504376'
+
+=head2 Text Literals
+
+Grammar:
+
+    <Text> ::=
+        <Text_seg> % <sp>
+
+    <Text_seg> ::=
+        <ts_nonescaped> | <ts_escaped>
+
+    <ts_nonescaped> ::=
+        '\'' [<-['\\]> <-[']>*]? '\''
+
+    <ts_escaped> ::=
+        '\'' '\\' [<-['\\]> | <escaped_char>]* '\''
+
+    <escaped_char> ::=
+          '\\a' | '\\q'
+        | '\\t' | '\\n' | '\\f' | '\\r'
+        | '\\c<' [
+              <[ A..Z ]>+ % ' '
+            | ['0b' <[ 0..1 ]>+]
+            | ['0o' <[ 0..7 ]>+]
+            | ['0d'? <[ 0..9 ]>+]
+            | ['0x' <[ 0..9 A..F a..f ]>+]
+          ] '>'
+
+A C<< <Text> >> node represents a value of the Muldis D C<Text> type, which
+is a general purpose character string.
+
+The C<Text> type is not a fundamental type of the Muldis D type system, but
+rather is a subtype by constraint of the C<Structure> type, and all C<Text>
+values can be selected in terms of C<< <Structure> >> grammar nodes.
+However, C<< <Text> >> is the canonical grammar for all C<Text> values.
+
+The meanings of the simple escape sequences are:
+
+    Esc | Unicode   | Unicode         | Chr | Literal character used
+    Seq | Codepoint | Character Name  | Lit | for when not escaped
+    ----+-----------+-----------------+-----+------------------------------
+    \a  | 0x27      | APOSTROPHE      | '   | delimit Text literals
+    \q  | 0x22      | QUOTATION MARK  | "   | delimit quoted names
+    \t  | 0x9       | CHAR... TAB...  |     | control char horizontal tab
+    \n  | 0xA       | LINE FEED (LF)  |     | ctrl char line feed / newline
+    \f  | 0xC       | FORM FEED (FF)  |     | control char form feed
+    \r  | 0xD       | CARR. RET. (CR) |     | control char carriage return
+
+There is currently just one complex escape sequence, of the format C<<
+\c<...> >>, that supports specifying characters in terms of their Unicode
+abstract codepoint name or number.  If the C<...> consists of just
+uppercased (not lowercased) letters and the space character, then the
+C<...> is interpreted as a Unicode character name.  If the C<...> looks
+like an C<< <Integer> >>, sans that underscores and dividing space aren't
+allowed here, then the C<...> is interpreted as a Unicode abstract
+codepoint number.  One reason for this feature is to empower more elegant
+passing of Unicode-savvy Plain_Text source code through a communications
+channel that is more limited, such as to 7-bit ASCII.
+
+Examples:
+
+    'Ceres'
+
+    'サンプル'
+
+    ''
+
+    '\c<LATIN SMALL LETTER OU>\C<0x263A>\C<65>'
+
+=head2 External Literals
+
+Grammar:
+
+    <External> ::=
+        '\~external~' <Text>
+
+An C<< <External> >> node represents a value of the Muldis D C<External>
+type, which represents a native value of some other programming language,
+typically expressed in Muldis D Plain Text as source code of the other
+programming language.  In practice however, C<External> values tend to be
+strictly transient and their content implementation-dependent on whatever
+the host environment of the Muldis D implementation is, and they are not
+typically serialized to persistent source code, Muldis D Plain Text or
+otherwise.  The C<External> type is a fundamental type of the Muldis D type
+system, and this is the canonical grammar for them within Plain Text code.
+
+Examples:
+
+    `With a Perl 5 host, the Perl undef.`
+    \~external~'undef'
+
+=head1 COLLECTION SELECTOR EXPRESSIONS
+
+Grammar:
+
+    <collection_selector_expr> ::=
+          <Array>
+        | <String>
+        | <Bag>
+        | <Structure>
+        | <Tuple>
+        | <Set>
+        | <Relation>
+        | <source_code_selector_expr>
+
+A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
+value literal specific to some system-defined data type that has its own
+special Muldis D Plain Text selector syntax, and this literal syntax
+explicitly does have child C<< <expr> >> nodes in the general case, as in
+conventional terms it is for selecting values representing collections of
+other values.
+
+=head2 Array Selectors
+
+I<TODO.>
+
+=head2 String Selectors
+
+I<TODO.>
+
+=head2 Bag Selectors
+
+I<TODO.>
+
+=head2 Structure Selectors
+
+I<TODO.>
+
+=head2 Tuple Selectors
+
+I<TODO.>
+
+=head2 Set Selectors
+
+I<TODO.>
+
+=head2 Relation Selectors
+
+I<TODO.>
+
+=head2 Selectors For Source Code Elements
+
+Grammar:
+
+    <source_code_selector_expr> ::=
+          <Pair>
+        | <SC_Identifier>
+        | <SC_Heading>
+        | <SC_Renaming>
+        | ...
+
+I<TODO.>
+
+=head1 INVOCATION EXPRESSIONS
+
+Grammar:
+
+    <invocation_expr> ::=
+          <constant_invo_expr>
+        | <generic_func_invo_expr>
+        | <fixed_func_invo_expr>
+        | <bootstrap_func_invo_expr>
+
+I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF --> WHERE THE FUNCTION
+OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
+
+=head2 Constant Invocation Expressions
+
+I<TODO.>
+
+=head2 Generic Function Invocation Expressions
+
+I<TODO.>
+
+=head2 Fixed Function Invocation Expressions
+
+I<TODO.>
+
+I<FORGET NOT THE ps5_nonquoted_symbolic_grouping.>
+
+=head2 Bootstrap Function Invocation Expressions
+
+I<TODO.>
+
+=head1 CONDITIONAL EXPRESSIONS
+
+Grammar:
+
+    <conditional_expr> ::=
+          <nonshort_if_else_expr>
+        | <short_if_else_expr>
+        | <nonshort_given_when_def_expr>
+        | <short_given_when_def_expr>
+
+=head2 Non-Short-Circuiting If-Else Expressions
+
+I<TODO.>
+
+=head2 Short-Circuiting If-Else Expressions
+
+I<TODO.>
+
+=head2 Non-Short-Circuiting Given-When-Default Expressions
+
+I<TODO.>
+
+=head2 Short-Circuiting Given-When-Default Expressions
+
+I<TODO.>
 
 =head1 STRATEGIES FOR PARSING
 
@@ -643,7 +1160,7 @@ may actually be a run of said that was collected by stage 7.
 Grammar:
 
     <ps6_blob> ::=
-        '0' <[box]> <ps2_single_quoted>
+        0 <[box]> <ps2_single_quoted>
 
 Note that the single C<< <ps2_single_quoted> >> above actually represents a run.
 
@@ -691,7 +1208,7 @@ Grammar:
         <digit_char> <ps10_numeric_seg>? ['.' <ps10_numeric_seg>]?
 
     <ps10_numeric_seg> ::=
-        <alphanumeric_char>+ % [<sp> ',,' <sp>]
+        <alphanumeric_char>+ % [<sp> [',,' <sp>]?]
 
 Note that the above actually allows invalid numeric literals, however
 anything matching the above pattern will be a syntax error if it doesn't
