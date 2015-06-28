@@ -17,8 +17,8 @@ resources of everyone else.
 * Since Muldis D Plain Text has no literal syntax for negative integers or
 ratios as per its non-negative counterparts, there must be an appropriate
 unary-minus prefix function in scope anywhere one wants to write the likes
-of -3 or -4.72; otherwise the canonical form is \*^[Integer_opposite,3] or
-\*^[Integer_opposite,472]/100 or other such routine calls.
+of -3 or -4.72; otherwise the canonical form is 3-->\^Integer_opposite or
+472-->\^Integer_opposite/100 or other such routine calls.
 - After parsing Plain Text, a folding phase of compilation which in general
 can only happen at runtime / when the definitions of all 'used' packages
 are known, can convert the above into an actual -3 Integer value etc.
@@ -35,7 +35,7 @@ have you; Integer doesn't have to be different just because its a low-level.
 - For code being serialized that doesn't have any metadata, such as with
 the bodies of folded constants, we can generate negative integers in any
 efficient format we want, typically either 'using' the core package or
-inlining definitions of monadic-minus etc as wrappers around \*^....
+inlining definitions of monadic-minus etc as wrappers around -->\^....
 - Bottom line, the missing negative number syntax in Plain Text is nothing
 to worry too much about.
 
@@ -51,7 +51,7 @@ do other alternatives, but the main point is $foo is not special syntax.
 "definition not given here" or such, which could either be a visual TODO
 marker that compiles but dies if run, or which is for use by extensions to
 mean the implementation must supply a meaning as it is eg low-level.
-- Instead have some \*^[] or other syntax to mean implementation defines.
+- Instead have some -->\^... or other syntax to mean implementation defines.
 - Thus ... is freed up for use as an ordinary symbolic operator, such as
 for "x...y" sequence specs etc like Perl 6 has.
 - One is still free to user-define a ... operator that means die, though
@@ -435,11 +435,11 @@ or memoization etc.
 possible, shades of Low_Level.mdpt, eg multiply in terms of add etc, and so
 the logical semantics are recorded, but then implementing types would then
 'implement' these non-virtual abstract type operators in order to be
-faster, eg dispatching to \*^[integer-multiply] etc.  Of course we still
-want to minimize the number of \*^[] and emphasize each implementation
+faster, eg dispatching to -->\^integer-multiply etc.  Of course we still
+want to minimize the number of -->\^ and emphasize each implementation
 choosing to override for itself for efficiency, but what I'm talking about
 here is for the use cases where it would just be insane to not always
-override, like integer-multiply, and so by having the \*^[] we declare we
+override, like integer-multiply, and so by having the -->\^ we declare we
 expect all implementations must provide it, or something.  This policy can
 be relaxed.
 
@@ -516,7 +516,7 @@ MD.Universal.Comparable.may_be_compared ::= function virtual
 MD.Universal.same_Universal ::= function
     --> Boolean <-- (Universal, Universal)
     is {commutative}
-    : \*^[same_Universal,topic.0,topic.1];
+    : \(topic.0,topic.1) --> \^same_Universal;
 MD.Universal."=" ::= function --> Boolean <-- (Universal, Universal)
     is {commutative}
     : same_Universal(*topic) ?? true !! may_be_compared(*topic) ?? false !! fail;
@@ -595,7 +595,7 @@ defining a contract and so we have more of a full interface definition.
 * Look up Perl 6 Iterable role and other roles to see what we can mimic in
 our abstracts/virtuals eg where routines are useful across types.
 
-* Have procedure statement grammar nodes or \*^[...] for loading or
+* Have procedure statement grammar nodes or -->\^ for loading or
 unloading or reloading etc packages at runtime.  Or call it mounting/etc.
 - The loading version take a SC_Package value as input, which other than
 any sanity checking it has to do, will cause that SC_Package to appear
@@ -1161,20 +1161,20 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
 - A lot of Muldis_D routines are just shims over the nodes, consistently.
 - Example nodes:
     - SC_Bootstrap_Func_Invo - use like "args --> $name" or "name(*args)" for low-level
-        - \*^[same,expr,expr]                  # used by = syntax
-        - \*^[Boolean_not,bool_expr]           # used by not/! keyword
-        - \*^[Integer_plus,int_expr,int_expr]  # used just like this
-        - \*^[select_Pair,expr,expr]
-        - \*^[Pair_key,pair_expr]
-        - \*^[Pair_asset,pair_expr]
-        - \*^[String_elem,str_expr,nnint_expr] # used by x.+[y] syntax
-        - \*^[Array_elem,ary_expr,nnint_expr]  # used by x.[y] syntax
-        - \*^[Tuple_attr,tup_expr,atnm_lit]    # used by foo.bar syntax
-        - \*^[Tuple_has_attr,tup_expr,atnm_lit]  # used by foo.?bar syntax
+        - \(expr,expr) --> \^same                  # used by = syntax
+        - \(bool_expr) --> \^Boolean_not           # used by not/! keyword
+        - \(int_expr,int_expr) --> \^Integer_plus  # used just like this
+        - \(expr,expr) --> \^select_Pair
+        - \(pair_expr) --> \^Pair_key
+        - \(pair_expr) --> \^Pair_asset
+        - \(str_expr,nnint_expr) --> \^String_elem # used by x.+[y] syntax
+        - \(ary_expr,nnint_expr) --> \^Array_elem  # used by x.[y] syntax
+        - \(tup_expr,atnm_lit) --> \^Tuple_attr    # used by foo.bar syntax
+        - \(tup_expr,atnm_lit) --> \^Tuple_has_attr  # used by foo.?bar syntax
                 # related foo.!bar shorthand "foo.?bar ?? foo.bar !! $=>Void"
-        - \*^[select_Capsule,ref_expr,tup_expr]  # wrapped by x=>y function
-        - \*^[Capsule_attr,cap_expr,atnm_lit]    # used by foo.>bar syntax
-        - \*^[Capsule_has_attr,cap_expr,atnm_lit]  # used by foo.>?bar syntax
+        - \(ref_expr,tup_expr) --> \^select_Capsule  # wrapped by x=>y function
+        - \(cap_expr,atnm_lit) --> \^Capsule_attr    # used by foo.>bar syntax
+        - \(cap_expr,atnm_lit) --> \^Capsule_has_attr  # used by foo.>?bar syntax
     - SC_Bootstrap_Proc_Invo - as you would expect
         - \*^&[Universal_assign,target_expr,source_expr]  # used by x := y
         - \*^&[Array_elem,ary_expr,nnint_expr,expr]  # used by x.[y] := foo
@@ -1192,27 +1192,27 @@ them directly, but rather by way of the Muldis_D package shims.
 including Universal and Integer etc; for example:
     MD.Universal ::= type where true default false;
     MD.Empty ::= type of Universal where false;
-    MD.Integer ::= type of Universal where \*^[isa_Integer,topic] default 0;
+    MD.Integer ::= type of Universal where \(topic) --> \^isa_Integer default 0;
     MD.Integer.NN ::= type of Integer where topic >= 0;
     MD.Integer.P ::= type of Integer.NN where topic > 0 default 1;
-- Generally, \*^[isa_foo,topic] only exist once; other code uses "isa foo".
+- Generally, \(topic) --> \^isa_foo only exist once; other code uses "isa foo".
 - The "isa" node looks up any "type" per the same visibility rules as normal
 dispatch to "constant" or "function" and invokes the chain of "where"
 predicates starting with the parentmost "of" back down to the invoked type,
 and results in true iff all the "where" resulted in true.
 ACTUALLY "isa" shouldn't do any coercion like that, one should have to say
 for example "foo isa $Bar" and not "foo isa Bar".
-- Demote isa to a function over \*^[isa,expr,ref_expr].
+- Demote isa to a function over \(expr,ref_expr) --> \^isa.
 - So "=" (equality test) is now specially recognized by the grammar, same
 as each of "!",":=","::=",":","-->" as it just seems appropriate; as a
 side-effect using a package declaring a symbolic "=" must now be invoked
 quoted to get that one, where bareword = now means the standard one.
-- Likewise ":=" is a special grammar node with no \*^[] for it.  Ah er?
+- Likewise ":=" is a special grammar node with no -->\^ for it.  Ah er?
 - Note that zero boolean operators are necessary at the grammar level,
 other than the constants false and true; they can all be defined in terms
 of ??!! and canonically are in the Boolean package.  The only reason
 there's a grammar node for "not" is because its a meta-operator, and this
-grammar node just short for "<predicate>??false!!true" (no \*^[] for it).
+grammar node just short for "<predicate>??false!!true" (no -->\^ for it).
 
 * Need to add something to Plain_Text et al like
 "syntax_using <alias> ::= <package name>"
@@ -2334,6 +2334,16 @@ something is in the parens.
     foo()
     (--> $foo)
 
+* Bootstrap function call syntax (only option):
+    arg_expr --> \^opnamelitbarealphastr
+eg:
+    3 --> \^Integer_opposite
+- This is in contrast with a regular generic function call:
+    arg_expr --> op_expr
+- Mnemonic of ^ / up-pointer for raise/bootstrap remains.
+- The parser can tell them apart as easily as it does naming_expr vs aliasing_expr.
+- As usual, whitespace around the --> is optional, no ws allowed after \^.
+
 * Support symbolic constant calls with not "foo"() syntax.  A bare symbolic
 is considered a constant (niladic function) call under many of the
 conditions when it appears where a bareword token that would be interpreted
@@ -2448,8 +2458,8 @@ constants for a virtual type should be composed by implementing types.
         - is for singletons that have their own Capsule type
         - these 2 declarations are equivalent:
             foo.bar.baz ::= type singleton;
-            foo.bar.baz ::= type where !\*^[isa_Capsule,topic] ?? false
-                !! \*^[Capsule_type,topic] = $1 and \*^[Capsule_attrs,topic] = \%{}
+            foo.bar.baz ::= type where !\(topic) --> \^isa_Capsule ?? false
+                !! \(topic) --> \^Capsule_type = $1 and \(topic) --> \^Capsule_attrs = \%{}
                 default $=>1;
     3. keyword "of" or "union" is optional, followed by set of 0..N
         type names in braces or exactly 1 not in braces
