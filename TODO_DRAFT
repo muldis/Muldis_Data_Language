@@ -14,6 +14,31 @@ resources of everyone else.
 
 ----------
 
+* Since Muldis D Plain Text has no literal syntax for negative integers or
+ratios as per its non-negative counterparts, there must be an appropriate
+unary-minus prefix function in scope anywhere one wants to write the likes
+of -3 or -4.72; otherwise the canonical form is \*^[Integer_opposite,3] or
+\*^[Integer_opposite,472]/100 or other such routine calls.
+- After parsing Plain Text, a folding phase of compilation which in general
+can only happen at runtime / when the definitions of all 'used' packages
+are known, can convert the above into an actual -3 Integer value etc.
+- When generating Plain Text, with respect to negative Integer values it
+can be treated like the typical task of generating any syntax, namely an
+un-folding process takes place prior to stringification so an appropriate
+routine call is used with a positive Integer.
+- Any Plain Text code that keeps its metadata and is otherwise unmodified
+can be round-tripped back to Plain Text in the exact syntax it started with,
+as presumably the declaring packages are still valid and unchanged.
+- Really we act the same as serializing code that used package-defined
+operator combinations for various other types like Ratio or Float or what
+have you; Integer doesn't have to be different just because its a low-level.
+- For code being serialized that doesn't have any metadata, such as with
+the bodies of folded constants, we can generate negative integers in any
+efficient format we want, typically either 'using' the core package or
+inlining definitions of monadic-minus etc as wrappers around \*^....
+- Bottom line, the missing negative number syntax in Plain Text is nothing
+to worry too much about.
+
 * http://rajeevrastogi.blogspot.ca/2015/06/presented-paper-in-pgcon-2015-on-native.html
 
 * http://www.frozennorth.org/C509291565/E1939404619/ - The Cult of the NDA
@@ -37,10 +62,6 @@ Example:
 * In the Perl 5 parser, at every stage of the pipeline, the input and
 output are both node trees consisting usually of nested Perl 5 arrays.
 The input of stage 1 is something like ['source_code','...'] and so on.
-
-* Figure out some extended syntax to support very long numeric literals
-such that they can be broken with whitespace.
-- Perhaps ,, is suitable for this?
 
 * Muldis D structs, particularly source code, should be represented in
 foo-hosted language variants by their native concepts of structs or generic
@@ -1666,7 +1687,7 @@ with a digit, the latter being illegal bareword identifier syntax.
     - Bag is homogeneous collection of Member: Universal+Cardinal
     - Structure is heterogeneous collection of Field: Nominal+Universal
 
-* Generally, paren delimiters are for structures/tuples/etc, brackets are
+* Generally, paren delimiters are for structures/tuples/pairs/etc, brackets are
 for arrays/strings/etc, braces for bags/sets/etc, relations are hybrid.
 
 * MODIFY OF LOW LEVEL TYPES:
@@ -1691,8 +1712,9 @@ aka "\\c[0,0]" and "\\c[0,1]".
 * This table shows the low level types, plus examples of literal syntax:
 
     Boolean       | just the keywords false and true
-    Integer       | 42 or 0 or -3 or 0xDEADBEEF or 0o644 or 0b11001001
-    Pair          | \:[expr,expr]
+    Integer       | 42 or 0 or 0xDEADBEEF or 0o644 or 0b11001001
+                  |     There is no Plain Text syntax specific to negatives like -3, that's routine call.
+    Pair          | \:(expr,expr)
                   |    When working element-wise with a collection, how each element represented.
                   |    User data should use dyadic Structure instead.
     Array         | [expr,...] or ([expr,...]) to disambiguate from procedure block
@@ -1777,23 +1799,25 @@ aka "\\c[0,0]" and "\\c[0,1]".
                 |    Note that any consecutive single-quoted tokens are treated as 1 token.
     Text        | 'Hello'
                 |    Note that any consecutive single-quoted tokens are treated as 1 token.
-    Ratio       | 5/3 or 3.14159
+    Ratio       | 3.14159
+                |   There is no Plain Text syntax specific to non-decimal/binary like 5/3, that's routine call.
     Float       | 29*10**30 or 4.5209E19 but how to not interp first as Integer expr?
+                |   Float has no Plain Text syntax; this is all routine calls.
     Quantity    | expr+expr or expr-expr or expr*expr or expr/expr or
                 |    expr**posint-expr where at least one expr is a (Singleton)
                 |    Reference or a Quantity eg 5.7*$Meter/($Second**2)
                 | Optionally consider unit part allowed to be any value not just a Reference? ... or not
+                |   Quantity has no Plain Text syntax; this is all routine calls.
     Interval    | expr..expr  or expr^..^expr etc
+                |   Interval has no Plain Text syntax; this is all routine calls.
     Set         | {expr,...} or ({expr,...}) to disambiguate within recipe block
     Relation    | \@{(lit:expr,...),...} or \@[lit,...]:{[expr,...],...}
     Dictionary  | \~{expr:expr,...} or something
 
     SC_Func_Args   | synonym for Structure 
-    SC_Func_Params | \:(typeref-expr,...) or \:(lit:typeref-expr,...) or etc
+    SC_Func_Params | \$(typeref-expr,...) or \$(lit:typeref-expr,...) or etc
     SC_Proc_Args   | \&(expr,...) or \&(&var-expr,...) or \&(lit:expr,...) or etc
-    SC_Proc_Params | \&:(typeref-expr,...) or \&:(&typeref-expr,...) or etc
-
-* Allow -0 and -0.0 etc in numeric syntax but they just fold to 0 or 0.0.
+    SC_Proc_Params | \&$(typeref-expr,...) or \&$(&typeref-expr,...) or etc
 
 * Math recognizes different kinds of infinities, eg countable or
 non-countable, eg based on repeated add or multiply or exponentiate or
