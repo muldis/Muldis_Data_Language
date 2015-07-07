@@ -14,30 +14,22 @@ resources of everyone else.
 
 ----------
 
-* Since Muldis D Plain Text has no literal syntax for negative integers or
-ratios as per its non-negative counterparts, there must be an appropriate
-unary-minus prefix function in scope anywhere one wants to write the likes
-of -3 or -4.72; otherwise the canonical form is 3-->\^Integer_opposite or
-472-->\^Integer_opposite/100 or other such routine calls.
-- After parsing Plain Text, a folding phase of compilation which in general
-can only happen at runtime / when the definitions of all 'used' packages
-are known, can convert the above into an actual -3 Integer value etc.
-- When generating Plain Text, with respect to negative Integer values it
-can be treated like the typical task of generating any syntax, namely an
-un-folding process takes place prior to stringification so an appropriate
-routine call is used with a positive Integer.
-- Any Plain Text code that keeps its metadata and is otherwise unmodified
-can be round-tripped back to Plain Text in the exact syntax it started with,
-as presumably the declaring packages are still valid and unchanged.
-- Really we act the same as serializing code that used package-defined
-operator combinations for various other types like Ratio or Float or what
-have you; Integer doesn't have to be different just because its a low-level.
-- For code being serialized that doesn't have any metadata, such as with
-the bodies of folded constants, we can generate negative integers in any
-efficient format we want, typically either 'using' the core package or
-inlining definitions of monadic-minus etc as wrappers around -->\^....
-- Bottom line, the missing negative number syntax in Plain Text is nothing
-to worry too much about.
+* See http://rigaux.org/language-study/syntax-across-languages.html .
+
+* Idea of naming math ops after result also used in Logo language, with
+those exact names: {sum / difference / product / quotient}.
+
+* See https://en.wikipedia.org/wiki/List_of_numeral_systems .
+
+* Per https://en.wikipedia.org/wiki/Tetration and
+https://en.wikipedia.org/wiki/Hyperoperation there are 4 commonly used math
+hyper-operators, in succession: addition (repeated successor),
+multiplication (repeated addition), exponentiation (repeated
+multiplication), and tetration (repeated exponentiation).
+
+* The mnemonics of : are pairing (visually a pair of dots also),
+whether pair literal or generally name-value
+pairings either in structs or for naming entities or for assignment.
 
 * http://rajeevrastogi.blogspot.ca/2015/06/presented-paper-in-pgcon-2015-on-native.html
 
@@ -51,13 +43,23 @@ do other alternatives, but the main point is $foo is not special syntax.
 "definition not given here" or such, which could either be a visual TODO
 marker that compiles but dies if run, or which is for use by extensions to
 mean the implementation must supply a meaning as it is eg low-level.
-- Instead have some -->\^... or other syntax to mean implementation defines.
+- Instead have some -->^... or other syntax to mean implementation defines.
 - Thus ... is freed up for use as an ordinary symbolic operator, such as
 for "x...y" sequence specs etc like Perl 6 has.
 - One is still free to user-define a ... operator that means die, though
 some alpha name is probably more appropriate.
 Example:
     MD.Universal."..." ::= constant fail;
+- ACTUALLY, per what its influence Perl 6 does with its yada-yada-yada
+http://doc.perl6.org/language/operators the ... only has that meaning when
+it is the only statement in the routine/type, and so it is an alternative
+to a top-level expression/statement rather than a generic expr/stmt node.
+- SO WHAT WE REALLY WANT is for -->^foo to be used for all things expected
+to be implemented at the implementation level, analagous to a Perl 5
+bootstrap call; the foo may either be system-defined in core or provided by
+some implementation-level extension, but syntactically it is all the same.
+- Hence the sole use of ... is as a TODO for users, so why not that just be
+an ordinary routine, maybe even call it TODO() or such.
 
 * In the Perl 5 parser, at every stage of the pipeline, the input and
 output are both node trees consisting usually of nested Perl 5 arrays.
@@ -435,11 +437,11 @@ or memoization etc.
 possible, shades of Low_Level.mdpt, eg multiply in terms of add etc, and so
 the logical semantics are recorded, but then implementing types would then
 'implement' these non-virtual abstract type operators in order to be
-faster, eg dispatching to -->\^integer-multiply etc.  Of course we still
-want to minimize the number of -->\^ and emphasize each implementation
+faster, eg dispatching to -->^integer-multiply etc.  Of course we still
+want to minimize the number of -->^ and emphasize each implementation
 choosing to override for itself for efficiency, but what I'm talking about
 here is for the use cases where it would just be insane to not always
-override, like integer-multiply, and so by having the -->\^ we declare we
+override, like integer-multiply, and so by having the -->^ we declare we
 expect all implementations must provide it, or something.  This policy can
 be relaxed.
 
@@ -508,6 +510,15 @@ For collective (always by key/index) slices or tests (horiz slice):
   ary .+? 4 or ary .+? [4] or ary .+? [4,5,6] or ary .+? {4,5,6} or ary .+? (4..6)
   ary .+? $Integer  - do we want this?
 
+* The operator // in Perl and ?? in C# has generic term "null coalescing
+operator" https://en.wikipedia.org/wiki/Null_coalescing_operator and most
+languages that provide it spell it either ?? or ?: where the latter is
+shorthand for x-exists ? x : y.
+- As such, ?! or ??!! might be the best-fit analogy for Muldis D
+considering x ?? y !! z is already in use like with Perl 6.
+- Note that we have precedents for overloading the mnemonics of ! to refer
+to both false/not and void/not-exists.
+
 * TODO: Think about matters of allowing strictness.
 MD.Universal.Comparable ::= type abstract;
 MD.Universal.Comparable.may_be_compared ::= function virtual
@@ -516,7 +527,7 @@ MD.Universal.Comparable.may_be_compared ::= function virtual
 MD.Universal.same_Universal ::= function
     --> Boolean <-- (Universal, Universal)
     is {commutative}
-    : \(topic.0,topic.1) --> \^same_Universal;
+    : \(topic.0,topic.1) -->^same_Universal;
 MD.Universal."=" ::= function --> Boolean <-- (Universal, Universal)
     is {commutative}
     : same_Universal(*topic) ?? true !! may_be_compared(*topic) ?? false !! fail;
@@ -595,7 +606,7 @@ defining a contract and so we have more of a full interface definition.
 * Look up Perl 6 Iterable role and other roles to see what we can mimic in
 our abstracts/virtuals eg where routines are useful across types.
 
-* Have procedure statement grammar nodes or -->\^ for loading or
+* Have procedure statement grammar nodes or -->^ for loading or
 unloading or reloading etc packages at runtime.  Or call it mounting/etc.
 - The loading version take a SC_Package value as input, which other than
 any sanity checking it has to do, will cause that SC_Package to appear
@@ -1161,20 +1172,20 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
 - A lot of Muldis_D routines are just shims over the nodes, consistently.
 - Example nodes:
     - SC_Bootstrap_Func_Invo - use like "args --> $name" or "name(*args)" for low-level
-        - \(expr,expr) --> \^same                  # used by = syntax
-        - \(bool_expr) --> \^Boolean_not           # used by not/! keyword
-        - \(int_expr,int_expr) --> \^Integer_plus  # used just like this
-        - \(expr,expr) --> \^select_Pair
-        - \(pair_expr) --> \^Pair_key
-        - \(pair_expr) --> \^Pair_asset
-        - \(str_expr,nnint_expr) --> \^String_elem # used by x.+[y] syntax
-        - \(ary_expr,nnint_expr) --> \^Array_elem  # used by x.[y] syntax
-        - \(tup_expr,atnm_lit) --> \^Tuple_attr    # used by foo.bar syntax
-        - \(tup_expr,atnm_lit) --> \^Tuple_has_attr  # used by foo.?bar syntax
+        - \(expr,expr) -->^same                  # used by = syntax
+        - \(bool_expr) -->^Boolean_not           # used by not/! keyword
+        - \(int_expr,int_expr) -->^Integer_plus  # used just like this
+        - \(expr,expr) -->^select_Pair
+        - \(pair_expr) -->^Pair_key
+        - \(pair_expr) -->^Pair_asset
+        - \(str_expr,nnint_expr) -->^String_elem # used by x.+[y] syntax
+        - \(ary_expr,nnint_expr) -->^Array_elem  # used by x.[y] syntax
+        - \(tup_expr,atnm_lit) -->^Tuple_attr    # used by foo.bar syntax
+        - \(tup_expr,atnm_lit) -->^Tuple_has_attr  # used by foo.?bar syntax
                 # related foo.!bar shorthand "foo.?bar ?? foo.bar !! $=>Void"
-        - \(ref_expr,tup_expr) --> \^select_Capsule  # wrapped by x=>y function
-        - \(cap_expr,atnm_lit) --> \^Capsule_attr    # used by foo.>bar syntax
-        - \(cap_expr,atnm_lit) --> \^Capsule_has_attr  # used by foo.>?bar syntax
+        - \(ref_expr,tup_expr) -->^select_Capsule  # wrapped by x=>y function
+        - \(cap_expr,atnm_lit) -->^Capsule_attr    # used by foo.>bar syntax
+        - \(cap_expr,atnm_lit) -->^Capsule_has_attr  # used by foo.>?bar syntax
     - SC_Bootstrap_Proc_Invo - as you would expect
         - \*^&[Universal_assign,target_expr,source_expr]  # used by x := y
         - \*^&[Array_elem,ary_expr,nnint_expr,expr]  # used by x.[y] := foo
@@ -1192,27 +1203,27 @@ them directly, but rather by way of the Muldis_D package shims.
 including Universal and Integer etc; for example:
     MD.Universal ::= type where true default false;
     MD.Empty ::= type of Universal where false;
-    MD.Integer ::= type of Universal where \(topic) --> \^isa_Integer default 0;
+    MD.Integer ::= type of Universal where \(topic) -->^isa_Integer default 0;
     MD.Integer.NN ::= type of Integer where topic >= 0;
     MD.Integer.P ::= type of Integer.NN where topic > 0 default 1;
-- Generally, \(topic) --> \^isa_foo only exist once; other code uses "isa foo".
+- Generally, \(topic) -->^isa_foo only exist once; other code uses "isa foo".
 - The "isa" node looks up any "type" per the same visibility rules as normal
 dispatch to "constant" or "function" and invokes the chain of "where"
 predicates starting with the parentmost "of" back down to the invoked type,
 and results in true iff all the "where" resulted in true.
 ACTUALLY "isa" shouldn't do any coercion like that, one should have to say
 for example "foo isa $Bar" and not "foo isa Bar".
-- Demote isa to a function over \(expr,ref_expr) --> \^isa.
+- Demote isa to a function over \(expr,ref_expr) -->^isa.
 - So "=" (equality test) is now specially recognized by the grammar, same
 as each of "!",":=","::=",":","-->" as it just seems appropriate; as a
 side-effect using a package declaring a symbolic "=" must now be invoked
 quoted to get that one, where bareword = now means the standard one.
-- Likewise ":=" is a special grammar node with no -->\^ for it.  Ah er?
+- Likewise ":=" is a special grammar node with no -->^ for it.  Ah er?
 - Note that zero boolean operators are necessary at the grammar level,
 other than the constants false and true; they can all be defined in terms
 of ??!! and canonically are in the Boolean package.  The only reason
 there's a grammar node for "not" is because its a meta-operator, and this
-grammar node just short for "<predicate>??false!!true" (no -->\^ for it).
+grammar node just short for "<predicate>??false!!true" (no -->^ for it).
 
 * Need to add something to Plain_Text et al like
 "syntax_using <alias> ::= <package name>"
@@ -1258,17 +1269,17 @@ like with heredocs or quoted-printable, so commenting out code with comments
 is easy enough.
 - Where we desire the comments to be introspectable, they appear as part of
 regular the regular code as Text literals along with some keyword or syntax
-or routine name to associate them with particular things, eg :::= .
-- Where ::= is what-binding, :::= is why-binding, maybe call ::?= ?
+or routine name to associate them with particular things, eg ::?= .
+- Where ::= is what-binding, ::?= is why-binding.
 - Any parse node can be given a comment.
 - :::= binds tighter than ::= which is tight.
 - You can do:
-    x :::= 'the answer';
+    x ::?= 'the answer';
     x ::= 42;
   or 
-    x ::= 42 :::= 'the answer';
+    x ::= 42 ::?= 'the answer';
   or
-    x :::= 'the answer' ::= 42;
+    x ::?= 'the answer' ::= 42;
   which all do the same thing.
 - Parens may be needed like with ::= to ensure binding is to the right thing.
 - Same method works for whole routines etc, todo how to work with param decls etc.
@@ -1712,8 +1723,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
 * This table shows the low level types, plus examples of literal syntax:
 
     Boolean       | just the keywords false and true
-    Integer       | 42 or 0 or 0xDEADBEEF or 0o644 or 0b11001001
-                  |     There is no Plain Text syntax specific to negatives like -3, that's routine call.
+    Integer       | 42 or 0 or or \+'-3' or 0d39 or 0xDEADBEEF or 0o644 or 0b11001001
     Pair          | \:(expr,expr)
                   |    When working element-wise with a collection, how each element represented.
                   |    User data should use dyadic Structure instead.
@@ -1799,13 +1809,12 @@ aka "\\c[0,0]" and "\\c[0,1]".
                 |    Note that any consecutive single-quoted tokens are treated as 1 token.
     Text        | 'Hello'
                 |    Note that any consecutive single-quoted tokens are treated as 1 token.
-    Ratio       | 3.14159
-                |   There is no Plain Text syntax specific to non-decimal/binary like 5/3, that's routine call.
-    Float       | 29*10**30 or 4.5209E19 but how to not interp first as Integer expr?
-                |   Float has no Plain Text syntax; this is all routine calls.
+    Ratio       | 3.14159 or 0.0 or \+'5/3'
+    Float       | \+'29*10^30' or 4.5209p19
+                |   Note that Perl 5 uses 'p' rather than 'e' so it works with base-16.
     Quantity    | expr+expr or expr-expr or expr*expr or expr/expr or
-                |    expr**posint-expr where at least one expr is a (Singleton)
-                |    Reference or a Quantity eg 5.7*$Meter/($Second**2)
+                |    expr^posint-expr where at least one expr is a (Singleton)
+                |    Reference or a Quantity eg 5.7*$Meter/($Second^2)
                 | Optionally consider unit part allowed to be any value not just a Reference? ... or not
                 |   Quantity has no Plain Text syntax; this is all routine calls.
     Interval    | expr..expr  or expr^..^expr etc
@@ -2335,9 +2344,9 @@ something is in the parens.
     (--> $foo)
 
 * Bootstrap function call syntax (only option):
-    arg_expr --> \^opnamelitbarealphastr
+    arg_expr -->^opnamelitbarealphastr
 eg:
-    3 --> \^Integer_opposite
+    3 -->^Integer_opposite
 - This is in contrast with a regular generic function call:
     arg_expr --> op_expr
 - Mnemonic of ^ / up-pointer for raise/bootstrap remains.
@@ -2458,8 +2467,8 @@ constants for a virtual type should be composed by implementing types.
         - is for singletons that have their own Capsule type
         - these 2 declarations are equivalent:
             foo.bar.baz ::= type singleton;
-            foo.bar.baz ::= type where !\(topic) --> \^isa_Capsule ?? false
-                !! \(topic) --> \^Capsule_type = $1 and \(topic) --> \^Capsule_attrs = \%{}
+            foo.bar.baz ::= type where !\(topic) -->^isa_Capsule ?? false
+                !! \(topic) -->^Capsule_type = $1 and \(topic) -->^Capsule_attrs = \%{}
                 default $=>1;
     3. keyword "of" or "union" is optional, followed by set of 0..N
         type names in braces or exactly 1 not in braces

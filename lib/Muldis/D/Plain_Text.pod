@@ -301,8 +301,14 @@ Grammar:
         '(' | ')' | '[' | ']' | '{' | '}'
 
     <symbolic_char> ::=
-          '!' | '#' | '$' | '%' | '&' | '*' | '+' | ',' | '-' | '.' | '/'
-        | ':' | ';' | '<' | '=' | '>' | '?' | '@' | '\\' | '^' | '|' | '~'
+        <special_symbolic_char> | <regular_symbolic_char>
+
+    <special_symbolic_char> ::=
+        '!' | ',' | ':' | ';' | '\\'
+
+    <regular_symbolic_char> ::=
+          '#' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/'
+        | '<' | '=' | '>' | '?' | '@' | '^' | '|' | '~'
         | '¬' | '±' | '×' | '÷'
         | '←' | '↑' | '→' | '↓' | '↔' | '↚' | '↛' | '↮'
         | '∀' | '∃' | '∄' | '∅' | '∆' | '∈' | '∉' | '∋' | '∌' | '∖'
@@ -396,7 +402,27 @@ or whitespace then C<< <sp> >> is allowed to be empty.
 
 Otherwise, C<< <foo> >> and C<< <bar> >> are both symbolic; whether or not
 C<< <sp> >> is allowed to be empty or not depends on the specific sequence
-of symbolic characters in the original source code.  I<Details pending.>
+of symbolic characters in the original source code, as described by the
+subsequent syntax rules.
+
+=item *
+
+If either C<< <foo> >> or C<< <bar> >> or both are either C<,> or C<;> or
+C<\> then C<< <sp> >> is allowed to be empty.
+
+=item *
+
+Otherwise, if exactly one of C<< <foo> >> or C<< <bar> >> is C<:> and the
+other doesn't have that character then C<< <sp> >> is allowed to be empty.
+
+=item *
+
+Otherwise, if C<< <foo> >> is either C<!> or C<:=> then C<< <sp> >> is
+allowed to be empty.
+
+=item *
+
+Otherwise, C<< <sp> >> must be nonempty.
 
 =back
 
@@ -414,11 +440,126 @@ likes of visual dividers or less important comments or for when you want to
 quickly "comment out" some source code rather than deleting it.
 
 For more important comments that are introspectable as such, see the
-section in this file named C<INTROSPECTABLE COMMENTS>.
+section in this file named C<GENERIC VALUE EXPRESSIONS>.
 
 Examples:
 
     `This does something.`
+
+=head1 KEYWORDS
+
+Muldis D Plain Text has a number of keywords, both alphanumeric and
+symbolic, which have special meaning in certain contexts.  However, it does
+not have any reserved words so users can still define identifiers having
+any character string they want.
+
+The keywords use a proper subset of the same syntax otherwise available for
+user-defined identifiers.  In any contexts where it would otherwise be
+ambiguous as to whether a term is a keyword versus the name of some entity,
+the parser will always take the keyword interpretation.  For all such
+cases, Muldis D Plain Text provides syntax options that explicitly
+disambiguate in favor of the non-keyword choice.  Since every entity name
+C<foo> is allowed to be double-quoted anywhere it appears like C<"foo">,
+while all keywords only have a single syntax each which is non-quoted, a
+non-quoted C<foo> will always favor the keyword while a quoted C<"foo">
+will always favor the entity name.
+
+These are keywords within a C<< <language_name> >>:
+
+    Muldis_D
+    Plain_Text
+
+These are keywords within the outer areas of source code:
+
+    has_segment
+    package
+    package_segment
+    script
+    searching
+    using
+    ::?=
+    ::=
+
+These are keywords within the heading of a package entity declaration:
+
+    abstract
+    and_provides_its_default
+    associative
+    commutative
+    composes
+    constant
+    default
+    folded
+    from
+    function
+    idempotent
+    identity
+    implements
+    is
+    normalize
+    of
+    overrides
+    procedure
+    requires
+    requires_implements
+    signature
+    singleton
+    synonym
+    to
+    type
+    union
+    via
+    virtual
+    where
+    ::?=
+    ::=
+    :
+    -->
+    <--
+
+These are keywords only within an C<< <expr> >> or C<< <stmt> >>, not
+including the headings of nested package entity declarations:
+
+    default
+    else
+    fail
+    false
+    given
+    if
+    not
+    then
+    true
+    when
+    ::?=
+    ::=
+    :=
+    -->
+    <--
+    ->
+    <-
+    ???
+    !!!
+    ??
+    !!
+    !
+
+These are used as list/pair separators in various places:
+
+    ::
+    :
+    ;;
+    ;
+    ,
+
+Finally, the backslash C<\> is used heavily to indicate value literals of
+many different kinds, disambiguating them from other things.
+
+Muldis D Plain Text purposefully keeps its set of keywords small, therefore
+giving users the maximum amount of flexibility to effectively define
+whatever operator/etc names they want for use as barewords, and the full
+complement of system-defined types and operators are defined using the same
+tools users have, so if you don't see something in the lists you would
+expect to be system-defined, i's likely they're defined in libraries.
 
 =head1 IDENTIFIERS
 
@@ -508,7 +649,7 @@ L</MODULE SPECIFICATION>, and L</DEPOT SPECIFICATION>, for more details.
 Grammar:
 
     <expr> ::=
-        <named_expr> | <anon_expr>
+        <named_expr> | <commented_expr> | <anon_expr>
 
     <named_expr> ::=
           <expr_name>
@@ -520,6 +661,9 @@ Grammar:
 
     <aliasing_expr> ::=
         <expr_name> <sp> '::=' <sp> <named_expr>
+
+    <commented_expr> ::=
+        <expr> '::?=' <Text>
 
     <anon_expr> ::=
           <delimiting_expr>
@@ -561,6 +705,12 @@ declaring a new node itself (rather than simply naming its child node); the
 new node is simply declaring an alias for another node, namely its C<<
 <named_expr> >> element.
 
+Iff an C<< <expr> >> is a C<< <commented_expr> >>, then the C<< <expr> >>
+element of the C<< <commented_expr> >> is being given an explicit
+introspectable code comment whose text is the C<< <Text> >> element.  Keep
+in mind that C<::?=> binds tighter than nearly anything, so you may have to
+use parenthesis when you want the comment to associate with a non-leaf node.
+
 Iff an C<< <expr> >> is a C<< <delimiting_expr> >>, then it is interpreted
 simply as if it were its child C<< <expr> >> element; the primary reason
 that the C<< <delimiting_expr> >> grammar element exists is to assist the
@@ -585,6 +735,10 @@ Examples:
     `a naming_expr node`
     bar_expr ::= factorial( foo_expr )
 
+    5 + 42 ::?= 'this is an introspectable comment attached to the 42'
+
+    myfoo ::?= 'this is a comment on the elsewhere-declared node named foo'
+
     `a delimiting_expr node`
     (x + y) * z
 
@@ -599,8 +753,9 @@ Grammar:
 
     <opaque_literal_expr> ::=
           <Boolean>
-        | <nn_Integer>
-        | <nn_dec_bin_Ratio>
+        | <Integer>
+        | <Ratio>
+        | <Float>
         | <Blob>
         | <Text>
         | <External>
@@ -629,137 +784,233 @@ Examples:
 
     false
 
-=head2 Non-Negative Integer Literals
+=head2 Integer Literals
 
 Grammar:
 
-    <nn_Integer> ::=
-        <nnint_2> | <nnint_8> | <nnint_10> | <nnint_16>
+    <Integer> ::=
+        <nonquoted_int> | <quoted_int>
 
-    <nnint_2> ::=
-        '0b' <[ 0..1 _ ]>+ % <num_sp>
+    <nonquoted_int> ::=
+        <nonsigned_int>
 
-    <nnint_8> ::=
-        '0o' <[ 0..7 _ ]>+ % <num_sp>
+    <quoted_int> ::=
+        <qu_num_head> <qu_asigned_int> <qu_num_tail>
 
-    <nnint_10> ::=
-        '0d'? <[ 0..9 _ ]>+ % <num_sp>
+    <qu_num_head> ::=
+        '\\+' '\''
 
-    <nnint_16> ::=
-        '0x' <[ 0..9 A..F _ a..f ]>+ % <num_sp>
+    <qu_asigned_int> ::=
+        <asigned_int> <qu_num_mid>?
 
-    <num_sp> ::=
-        <sp> [',,' <sp>]?
+    <qu_num_mid> ::=
+        <num_seg> % <qu_num_sp>
 
-A C<< <nn_Integer> >> node represents a value of the Muldis D C<Integer>
-type, which is a general purpose integer numeric value.  To be specific,
-C<< <nn_Integer> >> only provides for a subset of C<Integer> values,
-namely those which are non-negative.
+    <qu_num_sp> ::=
+        '\'' <sp> '\''
 
-The C<Integer> type is a fundamental type of the Muldis D type system and
-includes both negative and non-negative integers.  In the Muldis D Plain
-Text language however, the C<Integer>-specific C<< <nn_Integer> >> only
-provides the canonical syntax for non-negative C<Integer> values, and the
-canonical syntax for negative C<Integer> values is a value expression that
-takes the opposite or additive inverse of a positive C<Integer> value.
+    <qu_num_tail> ::=
+        '\''
 
-Compared with most common programming languages, this Muldis D Plain Text
-restriction of negative values from its most fundamental numeric literal
-formats is probably strange.  However, the primary rationale is that this
-keeps the Muldis D Plain Text grammar simpler by avoiding the only special
-case for a symbolic character immediately preceding an alphanumeric token.
-There should be no surprise or ambiguity for users when a digit is preceded
-by a run of symbolics C<ω> as to how it will be interpreted; for example,
-C<ω3> and C<ω(3)> and C<ωx> (where C<x> is 3) will be parsed in exactly the
-same way with respect to the symbolic even when it contains a C<->.  Since
-the customary unary C<-> operator is system-defined however, users may not
-even notice what is missing, since C<-3> will still yield what they expect.
-Note that the non-plain-text Muldis D native source code syntax in terms of
-data structures still supports negative values in its nodes for C<Integer>
-literals, but Muldis D Plain Text just doesn't use it, without folding.
+    <asigned_int> ::=
+        <num_sign>? <nonsigned_int>
+
+    <num_sign> ::=
+        '+' | '-'
+
+    <nonsigned_int> ::=
+        <num_radix_mark>? <num_seg>
+
+    <num_radix_mark> ::=
+        0 <[bodx]>
+
+    <num_seg> ::=
+        <num_char>+
+
+    <num_char> ::=
+        <nc2> | <nc8> | <nc10> | <nc16>
+
+    <nc2> ::=
+        <[ 0..1 _ ]>
+
+    <nc8> ::=
+        <[ 0..7 _ ]>
+
+    <nc10> ::=
+        <[ 0..9 _ ]>
+
+    <nc16> ::=
+        <[ 0..9 A..F _ a..f ]>
+
+An C<< <Integer> >> node represents a value of the Muldis D C<Integer>
+type, which is a general purpose integer exact numeric value.  The C<Integer>
+type is a fundamental type of the Muldis D type system, and this is the
+canonical grammar for them.
 
 This grammar supports writing C<Integer> literals in any of the numeric
 bases {2,8,10,16} using conventional syntax.  The literal may optionally
 contain underscore characters (C<_>), which exist just to help with visual
-formatting, such as for C<10_000_000>.  A C<< <nn_Integer> >> may
-optionally be split into 1..N segments where each pair of consecutive
-segments is separated by dividing space or the optional token C<,,> which
-is mainly valuable to prevent mis-parsing of hexadecimal literals when the
-first character of a non-first segment isn't a digit.
+formatting, such as for C<10_000_000>.
+
+This grammar is subject to the following additional rules:
+
+=over
+
+=item *
+
+If C<< <num_radix_mark> >> is omitted or is C<0d> then every
+C<< <num_char> >> must be a C<< <nc10> >>.
+
+=item *
+
+Otherwise, if C<< <num_radix_mark> >> is C<0b> or C<0o> or C<0x> then every
+C<< <num_char> >> must be a C<< <nc2> >> or C<< <nc8> >> or C<< <nc16> >>
+respectively.
+
+=back
+
+Unlike with most common programming languages, the Muldis D Plain Text
+canonical syntax for its simpler numeric types requires each literal to be
+quoted like C<\+'foo'> when the literal C<foo> contains anything other than
+digits or any of the characters C<[bodx._]>.  This includes all negative
+numbers plus all rational numbers whose denominators are integral powers of
+neither 2 nor 10, for example C<\+'-3'> and C<\+'1/43'>.  The quoted syntax
+is permitted for all simpler numeric literals but the simpler bareword
+syntax is canonical for non-negatives such as C<0x420F> and C<3.14159>.
+
+Muldis D Plain Text still permits the restricted numeric values to be
+expressed bare as users are accustomed to, for example C<-3> or C<1/43>,
+but in that case they would be interpreted as more complicated value
+expressions having operator calls, such as the additive inverse of a
+positive integer or the rational division of 2 integers, respectively.
+
+Typically these bare or quoted alternatives would logically denote the same
+values as each other as users would expect, assuming that code is using the
+core package C<Muldis_D> which defines C<-> and C</> etc over C<Integer>;
+however, that might not be the case if alternate definitions of C<-> etc
+are in scope of the code; the quoted forms are guaranteed to not change
+meaning no matter what packages or routines are in scope of the code.
+
+The primary rationale for this design is that that the Muldis D Plain Text
+grammar is kept simpler by avoiding the only special
+cases for a symbolic character immediately preceding an alphanumeric token.
+There should be no surprise or ambiguity for users when a digit is preceded
+by a run of symbolics C<ω> as to how it will be interpreted; for example,
+C<ω3> and C<ω(3)> and C<ωx> (where C<x> is 3) will be parsed in exactly the
+same way with respect to the symbolic even when it contains a C<-> etc.
+
+A quoted C<< <Integer> >> may optionally be split into 1..N quoted segments
+where each pair of consecutive segments is separated by dividing space;
+this segmenting ability is provided to support code that contains very long
+numeric literals while still being well formatted (no extra long lines).
 
 Examples:
 
-    0b11001001 `binary`
+    42
 
-    0o0 `octal`
+    0
 
-    0o644 `octal`
+    \+'-3'
 
-    42 `decimal`
+    0d39
 
-    0d39 `decimal`
+    0xDEADBEEF
 
-    0xDEADBEEF `hexadecimal`
+    0o644
 
-=head2 Non-Negative Decimal/Binary Ratio Literals
+    0b11001001
+
+=head2 Ratio Literals
 
 Grammar:
 
-    <nn_dec_bin_Ratio> ::=
-        <nnrat_2> | <nnrat_8> | <nnrat_10> | <nnrat_16>
+    <Ratio> ::=
+        <nonquoted_ratio> | <quoted_ratio>
 
-    <nnrat_2> ::=
-        '0b' <[ 0..1 _ ]>+ % <num_sp> '.' <[ 0..1 _ ]>+ % <num_sp>
+    <nonquoted_ratio> ::=
+        <nonsigned_int> '.' <num_seg>
 
-    <nnrat_8> ::=
-        '0o' <[ 0..7 _ ]>+ % <num_sp> '.' <[ 0..7 _ ]>+ % <num_sp>
+    <quoted_ratio> ::=
+        <qu_num_head> [
+              [<qu_asigned_int> '.' <qu_num_mid>]
+            | [<qu_asigned_int> '/' <qu_asigned_int>]
+        ] <qu_num_tail>
 
-    <nnrat_10> ::=
-        '0d'? <[ 0..9 _ ]>+ % <num_sp> '.' <[ 0..9 _ ]>+ % <num_sp>
+A C<< <Ratio> >> node represents a value of the Muldis D C<Ratio>
+type, which is a general purpose rational exact numeric value.
 
-    <nnrat_16> ::=
-        '0x' <[ 0..9 A..F _ a..f ]>+ % <num_sp>
-            '.' <[ 0..9 A..F _ a..f ]>+ % <num_sp>
-
-A C<< <nn_dec_bin_Ratio> >> node represents a value of the Muldis D
-C<Ratio> type, which is a general purpose rational numeric value.  To be
-specific, C<< <nn_dec_bin_Ratio> >> only provides for a subset of C<Ratio>
-values, namely those which are non-negative and whose denominators are
-integral powers of 2 or 10.
-
-The C<Ratio> type is not a fundamental type of the Muldis D type system,
-but rather is a subtype by constraint of the C<Structure> type, and all
-C<Ratio> values can be selected in terms of C<< <Structure> >> grammar
-nodes.  However, C<< <nn_dec_bin_Ratio> >> is the canonical grammar for all
-non-negative C<Ratio> values whose denominators are integral powers of 2 or
-10, and the canonical syntax for all other C<Ratio> is a value expression
-that divides 2 coprime C<Integer> values where the divisor is positive.
+The C<Ratio> type is not a fundamental type of the Muldis D type system, but
+rather is a subtype by constraint of the C<Structure> type, and all C<Ratio>
+values can be selected in terms of C<< <Structure> >> grammar nodes.
+However, C<< <Ratio> >> is the canonical grammar for all C<Ratio> values.
 
 Examples:
 
-    0b1.1
-
-    1.5 `same val as prev`
-
     3.14159
 
+    0.0
+
+    \+'5/3'
+
+    \+'-4.72'
+
+    \+'-472/100'
+
     0xDEADBEEF.FACE
+
+    \+'-0o402'
+
+    0b1.1
+
+=head2 Float Literals
+
+Grammar:
+
+    <Float> ::=
+        <nonquoted_float> | <quoted_float>
+
+    <nonquoted_float> ::=
+        <nonsigned_int> ['.' <num_seg>]? 'p' <num_seg>
+
+    <quoted_float> ::=
+        <qu_num_head> [
+              [<qu_asigned_int> ['.' <qu_num_mid>]?
+                'p' <num_sign>? <qu_num_mid>]
+            | [<qu_asigned_int> '*' <qu_asigned_int> '^' <qu_asigned_int>]
+        ] <qu_num_tail>
+
+A C<< <Float> >> node represents a value of the Muldis D C<Float>
+type, which is a general purpose floating-point exact numeric value.
+
+The C<Float> type is not a fundamental type of the Muldis D type system, but
+rather is a subtype by constraint of the C<Structure> type, and all C<Float>
+values can be selected in terms of C<< <Structure> >> grammar nodes.
+However, C<< <Float> >> is the canonical grammar for all C<Float> values.
+
+Examples:
+
+    4.5207196p37
+
+    0p0
+
+    \+'314159*10^-5'
+
+    0x1f.0p3
+
+    0x1.aaaaaaaaaaaabp1
+
+    \+'0b1011101101*10^-11011'
 
 =head2 Blob Literals
 
 Grammar:
 
     <Blob> ::=
-        <Blob_2> | <Blob_8> | <Blob_16>
-
-    <Blob_2> ::=
-        '0b' ['\'' <[ 0..1 _ ]>* '\''] % <sp>
-
-    <Blob_8> ::=
-        '0o' ['\'' <[ 0..7 _ ]>* '\''] % <sp>
-
-    <Blob_16> ::=
-        '0x' ['\'' <[ 0..9 A..F _ a..f ]>* '\''] % <sp>
+        '\\~' ['\'' [
+              ['0b' <nc2>*]
+            | ['0o' <nc8>*]
+            | ['0x' <nc16>*]
+        ]? '\''] % <sp>
 
 A C<< <Blob> >> node represents a value of the Muldis D C<Blob> type, which
 is a general purpose bit string.
@@ -777,13 +1028,13 @@ where each pair of consecutive segments is separated by dividing space.
 
 Examples:
 
-    0b'00101110100010' `binary`
+    \~''
 
-    0x''
+    \~'0xA705E'
 
-    0x'A705E' `hexadecimal`
+    \~'0o523504376'
 
-    0o'523504376'
+    \~'0b00101110100010'
 
 =head2 Text Literals
 
@@ -806,10 +1057,10 @@ Grammar:
         | '\\t' | '\\n' | '\\f' | '\\r'
         | '\\c<' [
               <[ A..Z ]>+ % ' '
-            | ['0b' <[ 0..1 ]>+]
-            | ['0o' <[ 0..7 ]>+]
-            | ['0d'? <[ 0..9 ]>+]
-            | ['0x' <[ 0..9 A..F a..f ]>+]
+            | ['0b' <nc2>+]
+            | ['0o' <nc8>+]
+            | ['0d'? <nc10>+]
+            | ['0x' <nc16>+]
           ] '>'
 
 A C<< <Text> >> node represents a value of the Muldis D C<Text> type, which
@@ -825,7 +1076,7 @@ The meanings of the simple escape sequences are:
     Esc | Unicode   | Unicode         | Chr | Literal character used
     Seq | Codepoint | Character Name  | Lit | for when not escaped
     ----+-----------+-----------------+-----+------------------------------
-    \a  | 0x27      | APOSTROPHE      | '   | delimit Text literals
+    \a  | 0x27      | APOSTROPHE      | '   | delimit Text/opaque literals
     \q  | 0x22      | QUOTATION MARK  | "   | delimit quoted names
     \t  | 0x9       | CHAR... TAB...  |     | control char horizontal tab
     \n  | 0xA       | LINE FEED (LF)  |     | ctrl char line feed / newline
@@ -837,7 +1088,7 @@ There is currently just one complex escape sequence, of the format C<<
 abstract codepoint name or number.  If the C<...> consists of just
 uppercased (not lowercased) letters and the space character, then the
 C<...> is interpreted as a Unicode character name.  If the C<...> looks
-like an C<< <Integer> >>, sans that underscores and dividing space aren't
+like an C<< <Integer> >>, sans that dividing space isn't
 allowed here, then the C<...> is interpreted as a Unicode abstract
 codepoint number.  One reason for this feature is to empower more elegant
 passing of Unicode-savvy Plain_Text source code through a communications
@@ -851,7 +1102,9 @@ Examples:
 
     ''
 
-    '\c<LATIN SMALL LETTER OU>\c<0x263A>\c<65>'
+    '\This isn\at not escaped.\n'
+
+    '\\c<LATIN SMALL LETTER OU>\c<0x263A>\c<65>'
 
 =head2 External Literals
 
@@ -996,6 +1249,18 @@ I<TODO.>
 
 I<TODO.>
 
+=head1 LANGUAGE MNEMONICS
+
+Muldis D Plain Text is designed to respect a variety of mnemonics that
+bring it some self-similarity and an association between syntax and
+semantics so that it is easier to read and write Muldis D code.  Some of
+these mnemonics are more about self-similarity and others are more about
+shared traits with other languages.
+
+I<TODO.>
+
+A C<::=> is I<what-binding> while a C<::?=> is I<why-binding>.
+
 =head1 STRATEGIES FOR PARSING
 
 Muldis D Plain Text is designed to be easy to parse, where one can use a
@@ -1117,24 +1382,15 @@ character string tokens, or parse nodes, as per stage 3.
 Grammar:
 
     <ps5_nonquoted_symbolic_grouping> ::=
-          '\\'
-        | '???'
-        | '!!!'
-        | '??'
-        | '!!'
-        | '!'
+          '!'
+        | ','
+        | '::?='
         | '::='
         | '::'
         | ':='
         | ':'
-        | ';;'
         | ';'
-        | ',,'
-        | ','
-        | '-->'
-        | '<--'
-        | '->'
-        | '<-'
+        | '\\'
 
 Where any of the shown symbolic character sequences exist, each sequence
 becomes its own token, and any runs of symbolics besides those each become
@@ -1144,16 +1400,6 @@ left-to-right and the longest match wins between multiple matches.
 Generally speaking, the parsing of nonquoted context symbolic character
 runs is complete following stage 5, and each remaining token is not likely
 to be split again or be merged with other tokens.
-
-Because the above sequences are special to C<Plain_Text>, dividing space is
-optional between them and symbolic operator calls/syntax because there is
-considered no ambiguity.
-
-As this special group is minimized as possible, just to the 10 characters
-C<< !,-:;<=>?\ >>, that leaves 12 more ASCII symbolic characters completely
-free in any combination for user-definable nonquoted operator names, though
-the former 10 are also still available for nonquoted operator names that
-aren't superstrings of any C<< <ps5_nonquoted_symbolic_grouping> >>.
 
 =head3 Pipeline Stage 6
 
@@ -1180,63 +1426,50 @@ for matters of escape sequences) but were split for readability.
 
 =head3 Pipeline Stage 8
 
-Stage 8 in the parsing pipeline is to isolate any literals specific to the
-C<Blob> type, which are a particular run of C<< <alphanumeric_char> >>
-followed immediately by a logically single-quoted string, where the latter
-may actually be a run of said that was collected by stage 7.
+Stage 8 in the parsing pipeline is to take any tokens from stage 2
+representing a single-quoted or double-quoted context, and for each one, if
+it contains any character escape sequences, to replace those escape
+sequences with the actual characters they represent.  Any C<'...'> or
+C<\~external~'...'> or C<"..."> represent character data, either C<Text> or
+C<External> literals or quoted identifiers, and the valid formats for both
+within the quoted contexts are identical.  Note that for a run, each
+individual quoted context is treated in isolation, as some may be formatted
+for escape sequences and some may not.  Also using single-quoted contexts
+for some or all of their literals are the C<Blob> (C<\~'...'>) or
+C<Integer> or C<Ratio> or C<Float> (C<\+'...'> for all 3) and they have
+their own interpretation formats different from those of character strings.
 
 Grammar:
 
-    <ps6_blob> ::=
-        0 <[box]> <ps2_single_quoted>
+    <ps8_quoted_sans_delimiters> ::=
+        <ps8_chars_nonescaped> | <ps8_chars_escaped>
 
-Note that the single C<< <ps2_single_quoted> >> above actually represents a run.
-
-Note that the above actually allows invalid C<Blob> literals, however
-anything matching the above pattern will be a syntax error if it doesn't
-otherwise match the stricter C<Blob> definition.
-
-=head3 Pipeline Stage 9
-
-Stage 9 in the parsing pipeline is to take any tokens from stage 2
-representing a quoted context, and for each one, if it contains any
-character escape sequences, to replace those escape sequences with the
-actual characters they represent.  This applies only to single-quoted and
-double-quoted strings, and for the former, only to those not already
-collected into a literal specific to the C<Blob> type.  These all represent
-character data, either C<Text> literals or quoted identifiers, and the
-valid formats for both within the quoted contexts are identical.  Note that
-for a run, each individual quoted context is treated in isolation, as some
-may be formatted for escape sequences and some may not.
-
-Grammar:
-
-    <ps9_quoted_sans_delimiters> ::=
-        <ps9_nonescaped> | <ps9_escaped>
-
-    <ps9_nonescaped> ::=
+    <ps8_chars_nonescaped> ::=
         [<-[\\]> .*]?
 
-    <ps9_escaped> ::=
+    <ps8_chars_escaped> ::=
         '\\' [<-[\\]> | <escaped_char>]*
 
 Note that the definition of C<< <escaped_char> >> includes an escape sequence
 each for a single-quote and a double-quote.
 
-=head3 Pipeline Stage 10
+=head3 Pipeline Stage 9
 
-Stage 10 in the parsing pipeline is to isolate any literals specific to
+Stage 9 in the parsing pipeline is to isolate any literals specific to
 certain numeric types, which are a particular run of
 C<< <alphanumeric_char> >> optionally with some C<< <symbolic_char> >>,
 and further optionally split (when long) using dividing space.
 
 Grammar:
 
-    <ps10_numeric> ::=
-        <digit_char> <ps10_numeric_seg>? ['.' <ps10_numeric_seg>]?
+    <ps9_numeric> ::=
+        <ps9_nonquoted_numeric> | <ps9_quoted_numeric>
 
-    <ps10_numeric_seg> ::=
-        <alphanumeric_char>+ % <num_sp>
+    <ps9_nonquoted_numeric> ::=
+        <digit_char> <alphanumeric_char>* ['.' <alphanumeric_char>]?
+
+    <ps9_quoted_numeric> ::=
+        '\\+' <ps2_single_quoted> % <sp>
 
 Note that the above actually allows invalid numeric literals, however
 anything matching the above pattern will be a syntax error if it doesn't
