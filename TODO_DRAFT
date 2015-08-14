@@ -14,6 +14,213 @@ resources of everyone else.
 
 ----------
 
+* Make String a special case of an Array rather than a fundamental type.
+- Similarly the String-specific special syntax is now gone.
+
+* TODO: Demote any special Source_Code syntax for core types that are not bootstrap types,
+eg Blob/Text/Rat/Tuple/Relation etc so they are treated like Source_Code_Meta;
+eg, a Relation literal in Plain_Text just turns into Source_Code for a tree
+of Structure/Bag/etc and has Source_Code_Meta to specify that the Plain_Text \?%{} etc syntax was used.
+- And so, embedded type names even for those in Muldis_D package can be fully-version-qualified.
+- The Source_Code_Meta as applicable embeds version info from the language name declaration / Plain_Text itself.
+- So at the implementation level, Plain_Text is treated the same as other grammars.
+- Just things that bootstrap routines need to know about, or eg a format of routine args, needs non-versioned values.
+- Add Plain_Text_Bootstrap grammar which has no literals but for bootstrap types,
+and possibly doesn't use any Source_Code_Meta either ... Muldis_D could be written in it perhaps
+and Plain_Text is a proper superset of it ... it still needs Comments.
+
+* Consider support for declaring that certain contracts are exclusive, for
+example, a type composing Foo must not compose Bar.  Based on the idea that
+an abstract type may be partly defined by what it doesn't do.
+
+* I maybe should emphasize the use of interface types as much as possible
+to declare all routines as possible, minimizing those declared over
+enumeration types specifically.
+- Maybe this could be an analogy to things declared in .h vs .c ?
+- This includes having actual accessor functions per type and not relying on
+accessors provided by Structure etc.
+- Any such accessors specific to attributes can then be called with the
+standard val->attr notation where 'attr' is actually a monadic function.
+- Consider turning all the standard built-ins into interface types, eg
+Integer etc, then have the implementing enumerated types be things like BigInt or Int32 etc;
+we then don't need Integral; Integer takes its place.
+- If Point is an interface, Point_Cartesian and Point_Polar could be composers.
+- If Relation is made into an interface, the standard composer could be eg
+Relation_Name_Value while an alternate could be Relation_Name_Type_Value say,
+where the latter incorporates the declared-type-as-part-of-attribute-identity
+semantics.  For the latter case etc we may want the concept of a type factory?
+The former case is semantically like a special case of the latter where the
+declared type is Universal for all attributes.
+- There can be an interface type for the general case of
+declared-type-as-part-of-value-identity.
+- If Ratio is an interface implementers could be normalized or not.
+- But then what do the standard literal syntax / selectors yield?
+- Lots of DBMS:: or lang:: types/routines could compose the Integer etc interfaces maybe.
+- Define interfaces in terms of, what would ALL things of this type have.
+- Split into more interfaces with fewer routines if necesscellery.
+
+* Get rid of package segmenting feature?  Live with big or learn to split.
+Or make the segmenting logically external to packages, eg make it part of
+the repository logic, and a logical package has no such thing.
+
+* Packages are now inherently anonymous same as with materials etc.
+- Note: see also https://github.com/perl6/specs/blob/master/S22-package-format.pod
+- Packages now instead declare that they 'provide' a pseudo-package interface;
+this is declaring that they 'are' that pseudo-package; it is fully-qualified with auth, version;
+it also indicates a package-private alias that it refers to itself with.
+- Packages may declare that they 'emulate' zero or more pseudo-package interfaces.
+- Packages may declare that they 'use' zero or more pseudo-package interfaces;
+for each of the latter, they indicate a package-private alias that the
+dependency is referred to with.
+- 'requisite' is another word for dependency, what one uses
+
+* New files' layout:
+    lib/Muldis/D/Overview.pod
+        - type system
+            - values and types and variables,
+            - abstract/interface and concrete/by-constraint types.
+            - how to define a type, the parts of the def and meaning
+            - requires_implements is what makes a contract
+        - namespaces
+            - packages, materials, etc
+            - what using does
+            - what floating does
+    lib/Muldis/D/Low_Level.pod
+        - define the 8 built-in types descriptively
+        - define all the bootstrap routines
+    lib/Muldis/D/Packages/Muldis_D.pod
+        - index to Muldis_D/*
+        - OR JUST PUT THE WHOLE PACKAGE IN THIS ONE FILE, MAKE IT BIG
+        - THE MULDIS D PACKAGE DOESN'T NEED TO BE SO LARGE NOW REALLY,
+        TRULY LOW-LEVEL IS THE CORE CORE, Muldis_D CAN BE SPLIT UP
+        - IN PARTICULAR, Source_Code CAN BE ANOTHER PACKAGE SURELY...
+        EXCEPT THEN THERE'S A CIRCULAR DEPENDENCY, SO LETS NOT DO THAT
+        - SO LETS MAKE IT JUST:
+            - ALL THE SHIMS FOR LOW LEVEL
+            - DECLARE ALL TYPES THAT Plain_Text HAS SPECIAL SYNTAX FOR
+            AND ALL VIRTUAL TYPES THEY COMPOSE
+            - AND ALL TYPES USED IN THE DECLARATION OF THOSE TYPES
+            - AND THE TYPES USED TO DEFINE SOURCE CODE
+            - AND THE MINIMAL OPERATORS FOR THOSE, MAINLY THOSE WITH VIRTUALS
+        - "ADDITIONAL" OPERATORS FOR CORE TYPES CAN GO IN MOAR PACKAGES
+    lib/Muldis/D/Packages/Muldis_D/General.pod
+        - define all the types and routines that are declared as immediate
+        children of "Muldis_D"
+        - visible unqualified when one says "floating Muldis_D;"
+        - these are all the general purpose ones that users use most often,
+        and for routines, especially if they are interface-defining
+        / virtual/abstract types/routines
+    lib/Muldis/D/Packages/Muldis_D/Source_Code.pod
+        - define all the types and routines that are declared as immediate
+        children of or descendents of "Muldis_D::Source_Code"
+
+* Note that http://dlang.org/contracts.html generally considers "contracts"
+to be predicate expressions used in various places such as on the input or
+result values of a function.
+
+* Create Muldis/D/Types.pod right away and populate it with descriptions of
+all the data types defined by the Muldis_D package which are expected to be
+exposed to the user either for their data or for defining code.  It will
+contain some details currently on Plain_Text.pod, eg this is an integral
+numeric or whatever.  The user data or general use types including Relation
+will appear first in sections, and the ones intended just for code
+including Pair appear after; Structure is kind of a middle ground but will
+be with the first group.  Plain_Text.pod can or should then be interpreted
+in the context of Types.pod, as the former can assume people know what the
+types are and how they are composed in terms of each other, while the former
+just adds syntax-specific details.
+- To start off with just declare them without the namespace, unqualified;
+anything that should be in the file should have a single-level name, more or less,
+Plain_Text is an example of such naming.  Or qualify it from the start just in the heading.
+- Include an indented is-a hierarchy tree as well as composes trees.
+
+* "The following Unicode character values are considered whitespace in D4:
+0x0009 (tab), 0x000a (line feed), 0x000b (vertical tab), 0x000c (form feed),
+0x000d (carriage return), 0x0085, 0x2028, and 0x2029." - its manual
+
+* Have some way to support partial indexes on Bag (and in turn on
+everything else) and not just full indexes; a partial index is defined in
+terms of a predicate function associated with the map function that defines
+the index proper, the predicate says whether the key is found by the index
+or not; see also how Postgres implements partial indexes.
+
+* Note, see also https://github.com/Ancestry/DotQL which Nathan Allan made.
+
+* Re Oracle databases, see for example
+http://stackoverflow.com/questions/1209039/oracle-gotchas-for-an-experienced-newb
+- This returns nothing:
+    SELECT  *
+    FROM    dual
+    WHERE   '' = ''
+- "Don't forget to use nvl(column) around any column in a rowset that might
+be filled entirely with null values. Otherwise, the column will be missing
+from the rowset. That's right, missing entirely!"
+- http://www.codeproject.com/Articles/704385/Gotcha-Oracle-Null
+- SELECT 'empty string is null' FROM dual WHERE '' IS NULL;
+- Catenating foo with null results in foo, not null.
+- "NULL;" as a statement is a no-op, needed in otherwise-empty blocks.
+
+* Add MUMPS to the list of (decades old) languages worth looking at.
+Focused on the medical field, this is intended/designed for building
+database applications, has numerous relevant features built-in.
+See https://en.wikipedia.org/wiki/MUMPS for moar.
+http://motherboard.vice.com/read/meet-mumps-the-archaic-health-care-programming-language-that-predicted-big-data-2
+MUMPS stores data in arrays, and some arrays can be persistant on server
+and shared, those arrays use different variable name syntax.
+
+* Where reasonably possible, make system-defined dyadic operators come in
+pairs when they are not commutative so users have more choice on how they
+order their arguments; for examples:
+    item in container
+    container has item
+    container subset container
+    container superset container
+    rel rename atpairs
+    atpairs renaming rel
+    rel on attrs
+    attrs from rel
+    rel where func
+    func filtering rel
+    y divideby x
+    x dividing y
+- Sometimes symbolic forms naturally come in pairs, other times symbols
+only exist in one direction.
+
+* Replacement for literal syntax (arrows can go either direction or mixed):
+    \@:(->foo,->bar,->baz)
+    renaming
+    \?%{(1,2,3),(5,6,8),(2,5,4)}
+- That expression effective shorthand for:
+    \?%{(foo:1,bar:2,baz:3),...}
+
+* Casts:
+    % to Tuple from C1 Relation or C1 Tuple_Bag
+    ?% to Relation from Tuple or Tuple_Bag or C1+ Set or Bag of Tuple
+    +% to Tuple_Set from Tuple or Relation or C1+ Set or Bag of Tuple
+    ? to Set from Relation or Tuple_Bag
+    + to Bag from Relation or Tuple_Bag
+    # to (non-negative) Integer from Set or Bag or Relation or Tuple_Bag
+    ?# to Boolean from Array or String or Set or Bag or Relation or Tuple_Bag
+    ? to Boolean from Integer or Ratio or Float
+- Note that # or ? or ?# would most likely NOT be defined on Blob/Text
+as there is no single most reasonable canonical interpretation.
+- There is no casting to or from Structure, just longer-form routines/exprs.
+- If one wants to compose a Relation or Tuple_Bag from tuple expressions,
+use cast eg ?%{t1,t2,t3} or +%\+{t1:7,t2,t2} as there's no literal for that.
+
+* TODO: Think of namespace issues since bootstrap routine calls, both
+function and procedure, are both for built-ins that the parser expects, and
+for third-party extensions implemented low-level.
+- Also tied to this is how to invoke routines implemented in peer languages
+like External is meant to be about, not just host languages.
+- Do we want to make bootstrap routine names multi-level themselves, or use
+the single-level management way that C libraries tend to?
+- So, eg:
+    -->  is for routines defined natively with Muldis D code, live in packages
+    -->^ is for routines defined outside Muldis D code
+- All -->^ calls are core-defined; to call third-party host or peer
+routines, do it by way of a core-defined generic proxy or three.
+
 * See http://rigaux.org/language-study/syntax-across-languages.html .
 
 * Idea of naming math ops after result also used in Logo language, with
@@ -73,10 +280,6 @@ Perl 5 hashes should represent structs in general, with 'ordered' keys just
 being strings like "\x0" or "\x1" etc; if hashes displayed in sorted key
 order those would sort first presumably.  Or Perl/etc arrays could still be
 used sometimes as an alternate terser syntax.
-
-* Figure out what escape sequences are best for tersely representing
-single-quotes and double-quotes context-free; \qs and \qd are candidates,
-or \a and \q etc.
 
 * Even though it takes more space, make the Muldis D code have possibly
 several levels of meta that keeps copies of the raw string source, so that
@@ -1722,14 +1925,15 @@ aka "\\c[0,0]" and "\\c[0,1]".
 
 * This table shows the low level types, plus examples of literal syntax:
 
-    Boolean       | just the keywords false and true
-    Integer       | 42 or 0 or or \+'-3' or 0d39 or 0xDEADBEEF or 0o644 or 0b11001001
+    Boolean       | just the keywords false and true or \?false or \?true
+    Integer       | 42 or 0 or or \-3 or \+'-3''50_897' or 0d39 or 0xDEADBEEF or 0o644 or 0b11001001
     Pair          | \:(expr,expr)
                   |    When working element-wise with a collection, how each element represented.
                   |    User data should use dyadic Structure instead.
-    Array         | [expr,...] or ([expr,...]) to disambiguate from procedure block
-    String        | \+[nnint-expr,...]
+    Array         | [expr,...] or \~[expr,...] to disambiguate from procedure block
+    String        | \~+[nnint-expr,...]
     Bag           | \+{expr,...} or \+{expr:posint-expr,...}
+                  |   Eg: \+{x:4,y:7} or \+{x,x,x,x,y:7}
     Structure     | \(expr,...) or \(lit:expr,...) or \(expr,...,lit:expr,...)
                   |    or \(:lit,...) or etc where lit
                   |    is one of: nnint or alpha or "whatever".
@@ -1747,7 +1951,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    - SC_Field is proper subtype with exactly 1 field.
                   |    - SC_Field_Name is proper subtype of SC_Field
                   |    whose value for that field is true; it has the
-                  |    special alternate syntax \lit; it identifies a field
+                  |    special alternate syntax \@lit; it identifies a field
                   |    of a Structure/Capsule.
                   |    - SC_Attr_Name is proper subtype of SC_Field_Name whose
                   |    name is a String; identifies attr of Tuple/Relation.
@@ -1761,24 +1965,25 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    a set of SC_Name) or it means Universal / any value.
                   |    - SC_Field_Names is proper subtype of SC_Signature where
                   |    every field value is just true;
-                  |    it has special alt syntax \~(lit,...).
+                  |    it has special alt syntax \@(lit,...).
                   |    - SC_Heading is intersect type of SC_Signature,Tuple.
                   |    - SC_Attr_Names is intersect of SC_Heading,SC_Field_Names;
                   |    is T/R heading as userland value, arg for project/etc.
                   |    - SC_Renaming is proper subtype where the value for
                   |    each field is either a non-negative Integer or a
                   |    String, that is, something valid to be a field name;
-                  |    it has special alt syntax \<-(lit:lit,...);
+                  |    it has special alt syntax \@:(lit<-lit,...);
                   |    use in routine defs to normalize args, arg for rename.
     OBSOLETE; USE A STRUCTURE SUBTYPE INSTEAD, FREE UP => FOR NON-CORE / USER TYPES:
-    Capsule       | expr=>expr - that is Reference=>Structure eg $Date=>\%{year:500,month:4,day:24}
-                  |    and Singleton is one with nullary tuple eg $To_Zero=>\()
+    Capsule       | expr=>expr - that is Reference=>Structure eg $Date=>\%(year:500,month:4,day:24)
+                  |    and Singleton is one with nullary tuple eg $To_Zero=>\%()
                   |    and $=>lit is shorthand for Singleton value eg $=>To_Zero.
                   |    Normally a Capsule's Reference is a type name, making
                   |    the Capsule a type, but structurally one is identical
                   |    to a partially applied function if the Reference is to a function name.
     OBSOLETE; USE A STRUCTURE SUBTYPE INSTEAD:
     AND TODO: MAKE \$foo mean what $foo used to mean, \\$foo what was \$foo.
+    AND TODO: USE ~@ rather than $ meaning string of field name ... BUT WHAT OF THE PRIOR LINE?
     SC_Identifier | Several kinds, all mutually disjoint:
                   |    - identity : \$pkg-canon-name.litpath   eg \$Muldis_D:"http://muldis.com":"0".Integer.sum
                   |    - absolute : \$::loc-pkg-alias.litpath  eg \$::MD.Integer.sum
@@ -1805,28 +2010,84 @@ aka "\\c[0,0]" and "\\c[0,1]".
 
 * Subtypes of Capsule:
 
-    Blob        | 0x'27EO4' or 0o'350261' or 0b'101100110'
+    Blob        | \~+'0x27EO4' or \~+'0o350261' or \~+'0b101100110'
                 |    Note that any consecutive single-quoted tokens are treated as 1 token.
-    Text        | 'Hello'
+    Text        | 'Hello' or \~'Goodbye'
                 |    Note that any consecutive single-quoted tokens are treated as 1 token.
-    Ratio       | 3.14159 or 0.0 or \+'5/3'
+    Ratio       | 3.14159 or 0.0 or \-4.72 or \+'5/3'
+    Scaled      | 4.720s3 or 4.72s3 or 4.720sv1000 or 4.72sv1000 or \+'4720//1000'
+                |   or \+'472/100s3' or \+'472/100sv1000' or 4720//1000 (all are same value, last 1 actually expr)
+                |   A fixed scale but unlimited precision rational number.
+                |   Note the 's' means 'positions Scaled down' not 'significant figures'.
+                |   Note the 'sv' means 'Scaled down by Value'.
+                |   Note that <int>//X means <int>/SsvX; there is also a regular // operator.
+                |   Everything is Integer math but with meta-data of a scale divisor >= 1.
+                |   Two Scaled can not compare equal unless they have the same scale divisor.
+                |   A generic Scaled is disjoint from Ratio but has the same components
+                |   (numerator/denominator), it is still bignum math, but the denominators
+                |   of 2 operands must already be equal, and they are not GCD.
+                |   This is not about limited storage size, that's to other types.
+                |   This is also not about 'significant figures', as outside add/subtract that breaks down.
+                |   For all practical purposes a Scaled behaves like an Integer,
+                |   its semantics are like Integer, succ() and pred() are defined
+                |   for it like for Integer, that is, it is discrete rather than continuous,
+                |   whole division etc is defined etc.
+                |   We should have an abstract type defined that covers
+                |   Integer and Scaled but not Ratio etc, maybe call it Discrete ... actually, Enumerable.
+                |   Actually, Scaled is also unlike Integer and more like Quantity,
+                |   in that while it is closed under +,-, it isn't under *,/ etc,
+                |   at least assuming the Scaled is semantically like a Ratio.
+                |   A Scaled in general is just partially ordered, unlike Integer or Ratio;
+                |   It is only totally ordered within common scales.
+                |   Lets make Scaled just a Quantity like N*(1/1000)^1 or N*(10)^-3;
+                |   or Scaled is a Quantity with a single unit of type Integer (scale factor) and power of 1;
+                |   but, is that what we want?
+                |   CHANGES!  Given that it is likely we'd only really care
+                |   about fixed-scale numbers in the context of units, for
+                |   example currency or various such, and given the various
+                |   possible semantics we might want eg disallow multiply
+                |   versus what kinds of results to give, we shall demote
+                |   Scaled to just be examples of Quantity in use; each scale factor becomes a unit.
     Float       | \+'29*10^30' or 4.5209p19
                 |   Note that Perl 5 uses 'p' rather than 'e' so it works with base-16.
+                |   Note that 'p' here means 'power' not 'precision'.
+    Unit        | Unit(expr) or \(\Unit,expr)
+                |   A tagged value of any type.
+                |   Or make this a subtype of Quantity.
     Quantity    | expr+expr or expr-expr or expr*expr or expr/expr or
-                |    expr^posint-expr where at least one expr is a (Singleton)
-                |    Reference or a Quantity eg 5.7*$Meter/($Second^2)
-                | Optionally consider unit part allowed to be any value not just a Reference? ... or not
+                |    expr^posint-expr where at least one expr is a
+                |    Unit or a Quantity eg 5.7*$Meter/($Second^2)
                 |   Quantity has no Plain Text syntax; this is all routine calls.
+                |   Subtype Unit is Quantity with single term like 1*Unit^1.
+                |   Quantity is like certain special cases of symbolic math, esp if the unit is also a number.
     Interval    | expr..expr  or expr^..^expr etc
                 |   Interval has no Plain Text syntax; this is all routine calls.
-    Set         | {expr,...} or ({expr,...}) to disambiguate within recipe block
-    Relation    | \@{(lit:expr,...),...} or \@[lit,...]:{[expr,...],...}
-    Dictionary  | \~{expr:expr,...} or something
+    Set         | {expr,...} or \?{expr,...} to disambiguate within recipe block
+                |   Eg: {x,y,z} or \?{x,y,z}
+    Tuple       | \%(lit:expr,...) or \%(expr,...) or \(\Tuple,\(...)) etc
+                |   Eg: \%(name:'Joy',age:17)
+    Relation    | \?%{(lit:expr,...),...} or \?%{(expr,...),...} etc
+                |   The first syntax has stringy attr names, the second has numeric, mix allowed
+                |   Eg: \?%(name,age) or \?%{ (name:'Joy',age:17), (name:'Envy',age:23) }
+    Tuple_Bag   | \+%{(lit:expr,...):posint-expr,...} or \+%{(expr,...),...} etc
+                |   Tuple_Bag is to Relation what Bag is to Set; common heading, allows duplicates
+                |   Eg: \+%{ (name:'Joy',age:17), (name:'Envy',age:23), (name:'Joy',age:17) }
+                |   or \+%{ (name:'Joy',age:17) : 2, (name:'Envy',age:23) : 1 }
+    Dictionary  | \?:{expr:expr,...} or something
+
+    SC_Heading  | \@(lit,...) or \@(posint-lit..posint-lit)
+                |   The first syntax is list of attr names, any kind but explicit;
+                |   the second syntax is numeric range for numeric names, eg \@(0..3).
+    SC_Renaming | \@:(lit<-lit,...) or \@:(<-lit,...) or \@:(lit<-,...)
+                |   If one lit is absent, means implicit positional/numeric name.
+                |   Arrow also allowed to point the other way.
 
     SC_Func_Args   | synonym for Structure 
     SC_Func_Params | \$(typeref-expr,...) or \$(lit:typeref-expr,...) or etc
     SC_Proc_Args   | \&(expr,...) or \&(&var-expr,...) or \&(lit:expr,...) or etc
     SC_Proc_Params | \&$(typeref-expr,...) or \&$(&typeref-expr,...) or etc
+
+* Note that $ is free to assign some mnemonic to.
 
 * Math recognizes different kinds of infinities, eg countable or
 non-countable, eg based on repeated add or multiply or exponentiate or
@@ -2344,14 +2605,19 @@ something is in the parens.
     (--> $foo)
 
 * Bootstrap function call syntax (only option):
-    arg_expr -->^opnamelitbarealphastr
+    arg_expr -->^ opnamelitbarealphastr
 eg:
-    3 -->^Integer_opposite
+    3 -->^ Integer_opposite
 - This is in contrast with a regular generic function call:
     arg_expr --> op_expr
 - Mnemonic of ^ / up-pointer for raise/bootstrap remains.
 - The parser can tell them apart as easily as it does naming_expr vs aliasing_expr.
-- As usual, whitespace around the --> is optional, no ws allowed after \^.
+- As usual, whitespace around the -->^ is optional.
+
+* In terms of regular function calls, a bootstrap function call is one that
+always has a -->/from/signature of Universal, that is it is like a
+multi-dispatch that binds to all types, and then it has a 'requires' which
+asserts the actual allowed inputs, such as must be 2 ints.
 
 * Support symbolic constant calls with not "foo"() syntax.  A bare symbolic
 is considered a constant (niladic function) call under many of the
