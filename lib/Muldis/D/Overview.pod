@@ -90,7 +90,7 @@ define additional features that can mimic nearly any built-in ones in both
 functionality and syntax.  There are only a few exceptions to this rule,
 where doing so has a large net benefit to the language design.
 
-=head1 GENERAL STRUCTURE
+=head1 FUNDAMENTAL CONCEPTS
 
 The most fundamental concepts of Muldis D are I<values>, I<variables>,
 I<functions>, and I<procedures>.
@@ -124,6 +124,32 @@ its users or various external systems.
 All other Muldis D concepts relate directly to or are defined in terms of
 those 4, including I<types>, I<contracts>, I<packages>, I<constants>,
 I<databases>, I<expressions>, I<statements>, and so on.
+
+=head1 ENVIRONMENT
+
+The Muldis D DBMS / virtual machine, which by definition is the environment
+in which Muldis D executes, conceptually resembles a hardware PC, having
+command processors (CPUs), standard user input and output channels,
+persistent read-only memory (ROM), volatile read-write memory (RAM), and
+persistent read-write disk or network storage.
+
+The virtual machine effectively has multiple concurrent processes, where
+each process effectively handles just one (possibly complex) command at a
+time (a command being realized as a "statement"), and executes each
+separately and in the order received; any results or side-effects of each
+command provide a context for the next command, both in the current process
+and, where applicable, in other processes.
+
+The normal context of a command is a single process.  Within a process is
+where a routine call chain exists, where statements execute, where program
+variables exist, where the scope of "atomic" operations and transactions
+lie, and so on.  However, some commands could cause other processes to
+start or end, and some could send messages to or receive messages from
+other processes, either individuals or groups of processes.  When a Muldis
+D virtual machine first starts up, there is an initial root process which
+in turn starts any others and which is the last to end on shutdown.  Each
+concurrent user connection or autonomous transaction is represented by its
+own process.
 
 =head1 DATA TYPES
 
@@ -198,7 +224,7 @@ functions) applied to it in particular contexts, and so fake the type being
 ordered, in either one or multiple ways.  Moreover, many of the common use
 cases here have system-defined functionality to support them.
 
-=head1 CONTRACTS
+=head2 Contracts
 
 A I<contract> is an association with a I<data type> of various metadata
 which can be applied where that contract is used.  The most common such
@@ -306,7 +332,7 @@ values alternately do or don't belong to named types/contracts; values can
 often include a declaration of a nominal type in their composition,
 regardless of whether such a type/contract exists at the time.
 
-=head1 TYPE SAFETY
+=head2 Type Safety
 
 Muldis D should qualify as a I<type-safe> language by many, if not all,
 definitions of the term I<type-safe>.
@@ -415,13 +441,26 @@ takes a dividend plus a divisor and gives a quotient plus a remainder.
 
 A Muldis D function is composed fundamentally of one or more arbitrarily
 complex value expressions, and the former is essentially just a wrapper for
-the latter.  A function has no lexical variables at all, although they can
-be faked for code factoring purposes by giving explicit names to its
-component sub-expressions, the current value for each of which is
-defined/set once within a function call but referenceable multiple times.
-A function call, like any value expression in general, is logically an
-atomic operation.  Value expressions are also conceptually lazy and can be
-gated to only be evaluated conditionally.
+the latter.  Complementary to this, a function can only be invoked as part
+of a value expression, such that its result value is the value of the
+expression, and similarly, the function call's argument must be defined by
+a value expression.  The ultimate roots of value expression call chains are
+typically procedure statements.
+
+A function has no lexical variables at all, although they can be faked for
+code factoring purposes by giving explicit names to its component
+sub-expressions, the current value for each of which is defined/set once
+within a function call but referenceable multiple times.  Value expressions
+are also conceptually lazy and can be gated to only be evaluated
+conditionally.
+
+A function call, like any value expression evaluation in general, is an
+implicitly atomic operation.  From the perspective of Muldis D code or its
+users, there is no discrete instant within its host process at which a
+function/expression has partially evaluated or that any involved variables
+are in a partly-changed state; at one instant there is the system state
+just prior to the outermost function/expression of the call chain being
+evaluated, and at the subsequent instant that outermost has terminated.
 
 A function can not read from any dynamic portion of the wider environment
 such as program variables or user input or disk or network or a system
@@ -451,7 +490,7 @@ even the likes of NaN, are considered to be normal termination.
 
 I<TODO: Other related notes.  Especially the parts of a function definition.>
 
-=head1 CONSTANTS
+=head2 Constants
 
 A I<constant> is similar to a I<function> but that it takes no argument at
 all and it always gives the same result.  A constant may be invoked
@@ -473,10 +512,35 @@ context, all kinds of database updates, both I<data definition> and I<data
 manipulation>, occur using the same basic tools, updating Muldis D package
 source-code-as-data, at runtime.
 
-I<TODO: Other related notes.  A folded option is idiomatic for a database
-while not using that option is idiomatic for normal code.>
+Normally, when Muldis D source code is parsed, the details of its actual
+user-written syntax are preserved as data, so that it is possible to
+losslessly round trip the source code to a form identical to what the users
+wrote.  However, in the case of constants used to represent a database,
+especially one previously created or changed at runtime as ordinary user
+data values, there is no value to maintaining that syntax meta-data when
+parsing such constants, and it takes up a lot of extra space.  For a given
+I<constant>, since the Muldis D parser can never otherwise know for sure of
+its source code's origin or purpose, the constant can explicitly declare
+that it is I<folded>, in which case the parser can throw away any syntax
+meta-data and just store the constant's result value.  It is idiomatic for
+a constant that is produced with a database dump to be declared I<folded>
+while a constant hand-written by a user to not be declared so.
+
+=head1 EXPRESSIONS
+
+I<TODO.>
 
 =head1 PROCEDURES
+
+A I<procedure> (a special case of which is known as an I<update operator>)
+is a set of instructions for either enacting possibly non-deterministic
+change over time in a set of variables or for reading from or writing to
+the external environment of the application, including its users or various
+external systems.
+
+I<TODO.>
+
+=head1 STATEMENTS
 
 I<TODO.>
 
