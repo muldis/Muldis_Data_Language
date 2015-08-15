@@ -172,9 +172,9 @@ Grammar:
     <shebang_whitespace_break> ::=
         ...
 
-A C<< <shebang_line> >>, if it exists, must be the first characters of the text
-file, and consists of a magic number which expressed as ASCII or UTF-8 is
-C<#!>, followed by a Unix-like interpreter directive or path to an
+A C<< <shebang_line> >>, if it exists, must be the first characters of the
+text file, and consists of a magic number which expressed as ASCII or UTF-8
+is C<#!>, followed by a Unix-like interpreter directive or path to an
 executable that can interpret Muldis D Plain Text files.  When a Muldis D
 Plain Text file starts with a shebang line, it can be invoked directly as
 if it were an executable on a Unix-like system.  The format of
@@ -667,6 +667,15 @@ Grammar:
     <floating_name> ::=
         <generic_name> % [<sp> '::' <sp>]
 
+    <generic_func_name> ::=
+        <pkg_entity_name>
+
+    <bootstrap_func_name> ::=
+          foo
+        | bar
+        | baz
+        | ...
+
 A C<< <generic_name> >> is a I<generic context entity name>, which can be
 used in any context that is expecting I<a> Muldis D entity name in the
 general sense, without restrictions.  Examples of use are when declaring
@@ -724,7 +733,13 @@ Grammar:
         | ...
 
     <delimiting_expr> ::=
-        '(' <sp> <expr> <sp> ')'
+        '(' <sp> [
+            <naming_expr> | <aliasing_expr> | <result_expr> | <sp>
+        ] % ';' <sp> ')'
+
+    <result_expr> ::=
+          ['<--' <sp> <expr>]
+        | [['<--' <sp>]? <anon_expr>]
 
     <fail_expr> ::=
         fail
@@ -767,6 +782,9 @@ parser in determining the boundaries of an C<< <expr> >> where code
 otherwise might be ambiguous or be interpreted differently than desired due
 to nesting precedence rules.
 
+A C<< <delimiting_expr> >> is subject to the additional rule that it must
+contain exactly one C<< <result_expr> >> element, which provides its value.
+
 Iff an C<< <expr> >> is a C<< <fail_expr> >>, then any attempt at runtime
 to take that node's value will throw an exception, and so it should only
 appear as a child of a C<< <conditional_expr> >> node, one that is
@@ -789,6 +807,9 @@ Examples:
     myfoo ::?= 'this is a comment on the elsewhere-declared node named foo'
 
     `a delimiting_expr node`
+    (x ::= y + 2; <-- x * x)
+
+    `this uses one too`
     (x + y) * z
 
     `some assertion failed`
@@ -820,7 +841,7 @@ scalar values.
 Grammar:
 
     <Boolean> ::=
-        false | true
+        '\\?'? [false | true]
 
 A C<< <Boolean> >> node represents a value of the Muldis D C<Boolean>
 type, which is a general purpose logical boolean value.  The C<Boolean>
@@ -833,6 +854,8 @@ Examples:
 
     false
 
+    \?true
+
 =head2 Integer Literals
 
 Grammar:
@@ -841,7 +864,7 @@ Grammar:
         <nonquoted_int> | <quoted_int>
 
     <nonquoted_int> ::=
-        <nonsigned_int>
+        ['\\+' | '\\-']? <nonsigned_int>
 
     <quoted_int> ::=
         <qu_num_head> <qu_asigned_int> <qu_num_tail>
@@ -918,6 +941,7 @@ respectively.
 
 =back
 
+TODO: UPDATE THIS!
 Unlike with most common programming languages, the Muldis D Plain Text
 canonical syntax for its simpler numeric types requires each literal to be
 quoted like C<\+'foo'> when the literal C<foo> contains anything other than
@@ -959,7 +983,9 @@ Examples:
 
     0
 
-    \+'-3'
+    \-3
+
+    \+'-3' '50_897'
 
     0d39
 
@@ -977,7 +1003,7 @@ Grammar:
         <nonquoted_ratio> | <quoted_ratio>
 
     <nonquoted_ratio> ::=
-        <nonsigned_int> '.' <num_seg>
+        ['\\+' | '\\-']? <nonsigned_int> '.' <num_seg>
 
     <quoted_ratio> ::=
         <qu_num_head> [
@@ -1001,7 +1027,7 @@ Examples:
 
     \+'5/3'
 
-    \+'-4.72'
+    \-4.72
 
     \+'-472/100'
 
@@ -1019,7 +1045,7 @@ Grammar:
         <nonquoted_float> | <quoted_float>
 
     <nonquoted_float> ::=
-        <nonsigned_int> ['.' <num_seg>]? 'p' <num_seg>
+        ['\\+' | '\\-']? <nonsigned_int> ['.' <num_seg>]? 'p' <num_seg>
 
     <quoted_float> ::=
         <qu_num_head> [
@@ -1042,6 +1068,8 @@ Examples:
 
     0p0
 
+    \-17.62p15
+
     \+'314159*10^-5'
 
     0x1f.0p3
@@ -1055,7 +1083,7 @@ Examples:
 Grammar:
 
     <Blob> ::=
-        '\\~' ['\'' [
+        '\\~+' ['\'' [
               ['0b' <nc2>*]
             | ['0o' <nc8>*]
             | ['0x' <nc16>*]
@@ -1077,13 +1105,13 @@ where each pair of consecutive segments is separated by dividing space.
 
 Examples:
 
-    \~''
+    \~+''
 
-    \~'0xA705E'
+    \~+'0xA705E'
 
-    \~'0o523504376'
+    \~+'0o523504376'
 
-    \~'0b00101110100010'
+    \~+'0b00101110100010'
 
 =head2 Text Literals
 
@@ -1149,12 +1177,12 @@ Grammar:
 
     <collection_selector_expr> ::=
           <Array>
-        | <String>
+        | <Set>
         | <Bag>
         | <Structure>
         | <Tuple>
-        | <Set>
         | <Relation>
+        | <Tuple_Bag>
         | <source_code_selector_expr>
 
 A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
@@ -1168,7 +1196,7 @@ other values.
 
 I<TODO.>
 
-=head2 String Selectors
+=head2 Set Selectors
 
 I<TODO.>
 
@@ -1184,11 +1212,11 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Set Selectors
+=head2 Relation Selectors
 
 I<TODO.>
 
-=head2 Relation Selectors
+=head2 Tuple-Bag Selectors
 
 I<TODO.>
 
@@ -1203,7 +1231,20 @@ Grammar:
         | <SC_Renaming>
         | ...
 
+    <Pair> ::=
+        '\\:' '(' <sp> <p_key_expr> <sp> ',' <sp> <p_asset_expr> <sp> ')'
+
+    <p_key_expr> ::=
+        <expr>
+
+    <p_asset_expr> ::=
+        <expr>
+
 I<TODO.>
+
+Examples:
+
+    \:(key, asset)
 
 =head1 INVOCATION EXPRESSIONS
 
@@ -1220,9 +1261,22 @@ OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
 
 =head2 Constant Invocation Expressions
 
+Grammar:
+
+    <constant_invo_expr> ::=
+        ...
+
 I<TODO.>
 
 =head2 Generic Function Invocation Expressions
+
+Grammar:
+
+    <generic_func_invo_expr> ::=
+        <generic_func_args> <sp> '-->' <sp> <generic_func_name>
+
+    <generic_func_args> ::=
+        <expr>
 
 I<TODO.>
 
@@ -1230,13 +1284,43 @@ I<FORGET NOT THE OPTIONAL TRAILING :: IN FOO().>
 
 =head2 Fixed Function Invocation Expressions
 
+Grammar:
+
+    <fixed_func_invo_expr> ::=
+        ...
+
+    <infix_func_invo_expr> ::=
+        ...
+
+    <infix_func_name_or_op_same> ::=
+        <special_infix_op_same> | <regular_infix_func_name>
+
+    <special_infix_op_same> ::=
+        '='
+
+I<TODO: Note, special_infix_op_same etc are subject to be renamed maybe.
+Say that it is just syntactic sugar for a specific bootstrap_func_invo_expr
+but we special-case it because we don't want "=" to change based on what
+packages are in scope, same as "!" meta or "??!!" or ":=" etc don't change.
+Note, this only affects '=' when called like an infix op syntactically,
+same as with ! etc; calling it as -->"=" or "="() gets the reg func if exists.>
+
 I<TODO.>
 
-I<FORGET NOT THE ps5_nonquoted_symbolic_grouping.>
+I<TODO: FORGET NOT THE ps5_nonquoted_symbolic_grouping.>
 
 =head2 Bootstrap Function Invocation Expressions
 
+Grammar:
+
+    <bootstrap_func_invo_expr> ::=
+        <generic_func_args> <sp> '-->^' <sp> <bootstrap_func_name>
+
 I<TODO.>
+
+I<Because all non-core low-levels will be invoked via a generic core proxy
+or three, the list of core routines SHOULD be spelled out in Plain_Text,
+as changes to them WOULD change the Plain_Text version.>
 
 =head1 CONDITIONAL EXPRESSIONS
 
@@ -1244,6 +1328,7 @@ Grammar:
 
     <conditional_expr> ::=
           <nonshort_if_else_expr>
+        | <logical_not_meta_expr>
         | <short_if_else_expr>
         | <nonshort_given_when_def_expr>
         | <short_given_when_def_expr>
@@ -1251,6 +1336,15 @@ Grammar:
 =head2 Non-Short-Circuiting If-Else Expressions
 
 I<TODO.>
+
+=head2 Logical-Not Meta Operator Expressions
+
+I<TODO.>
+
+I<The grammar-recognized not/!x is just syntactic sugar for x??f!!t and will
+parse into a ??!! node having source-code-meta indicating not/! was used;
+the meta also distinguishes !(foo = bar) from foo != bar; the not/!
+empathetically does NOT parse into a routine call, not even a bootstrap.>
 
 =head2 Short-Circuiting If-Else Expressions
 
@@ -1275,6 +1369,20 @@ shared traits with other languages.
 I<TODO.>
 
 A C<::=> is I<what-binding> while a C<::?=> is I<why-binding>.
+
+    : - pairs or dicts (and renamings) - also key/asset separator in most pairwise collections
+    ? - booleans or sets (and relations)
+    + - numbers or bags (and tuple-bags)
+    ~ - arrays (and text and blob)
+    % - tuples or relations (and tuple-bags)
+    @ - field names or headings (and chain-identifiers and renamings)
+    \ - value literal or selector
+    & - subject-to-update parameter/etc or procedure
+    ! - booleans or voidlikes
+
+    [] - homogeneous ordered collection of element - arrays/statements/etc - ordinal+universal
+    {} - homogeneous nonordered collection of member - bags/sets/etc - universal+ordinal
+    () - heterogeneous aordered collection of field - structures/tuples/pairs - nominal+universal
 
 =head1 STRATEGIES FOR PARSING
 
@@ -1450,7 +1558,7 @@ C<External> literals or quoted identifiers, and the valid formats for both
 within the quoted contexts are identical.  Note that for a run, each
 individual quoted context is treated in isolation, as some may be formatted
 for escape sequences and some may not.  Also using single-quoted contexts
-for some or all of their literals are the C<Blob> (C<\~'...'>) or
+for some or all of their literals are the C<Blob> (C<\~+'...'>) or
 C<Integer> or C<Ratio> or C<Float> (C<\+'...'> for all 3) and they have
 their own interpretation formats different from those of character strings.
 
