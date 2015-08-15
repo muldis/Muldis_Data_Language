@@ -366,10 +366,9 @@ Grammar:
             | ['0o' <nc8>+]
             | ['0d'? <nc10>+]
             | ['0x' <nc16>+]
-            | <[ A..Z ]>+ % ' '
           ] '>'
 
-The meanings of the simple escape sequences are:
+The meanings of the simple character escape sequences are:
 
     Esc | Unicode   | Unicode         | Chr | Literal character used
     Seq | Codepoint | Character Name  | Lit | for when not escaped
@@ -383,14 +382,9 @@ The meanings of the simple escape sequences are:
 
 There is currently just one complex escape sequence, of the format C<<
 \c<...> >>, that supports specifying characters in terms of their Unicode
-abstract codepoint number or name.  If the C<...> looks like an C<<
-<Integer> >>, sans that dividing space isn't allowed here, then the C<...>
-is interpreted as a Unicode abstract codepoint number.  If the C<...>
-consists of just uppercased (not lowercased) letters and the space
-character, then the C<...> is interpreted as a Unicode character name.  One
-reason for this feature is to empower more elegant passing of Unicode-savvy
-Plain_Text source code through a communications channel that is more
-limited, such as to 7-bit ASCII.
+abstract codepoint number.  One reason for this feature is to empower more
+elegant passing of Unicode-savvy Plain_Text source code through a
+communications channel that is more limited, such as to 7-bit ASCII.
 
 Examples:
 
@@ -398,11 +392,16 @@ Examples:
 
     \n
 
-    \c<LATIN SMALL LETTER OU>
-
     \c<0x263A>
 
     \c<65>
+
+Note that Plain_Text eschews built-in support for a C<< \c<...> >> format
+that specifies characters in terms of their Unicode character name, for
+example C<< \c<LATIN SMALL LETTER OU> >>.  Instead, it is left to the
+domain of non-core Muldis D packages to support such a feature.  The main
+reason for this is to avoid an unconditionally-mandatory complex dependency
+that is the Unicode character database.
 
 =head1 DIVIDING SPACE
 
@@ -1120,7 +1119,7 @@ Examples:
 
     '\This isn\at not escaped.\n'
 
-    '\\c<LATIN SMALL LETTER OU>\c<0x263A>\c<65>'
+    '\\c<0x263A>\c<65>'
 
 =head2 External Literals
 
