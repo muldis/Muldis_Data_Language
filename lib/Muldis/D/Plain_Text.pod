@@ -354,6 +354,56 @@ confusion with similar-looking ASCII letters, and because its hard to know
 where to draw the line if one wanted to include the whole un-accented Greek
 alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
 
+=head1 ESCAPED CHARACTERS
+
+Grammar:
+
+    <escaped_char> ::=
+          '\\a' | '\\q'
+        | '\\t' | '\\n' | '\\f' | '\\r'
+        | '\\c<' [
+              ['0b' <nc2>+]
+            | ['0o' <nc8>+]
+            | ['0d'? <nc10>+]
+            | ['0x' <nc16>+]
+            | <[ A..Z ]>+ % ' '
+          ] '>'
+
+The meanings of the simple escape sequences are:
+
+    Esc | Unicode   | Unicode         | Chr | Literal character used
+    Seq | Codepoint | Character Name  | Lit | for when not escaped
+    ----+-----------+-----------------+-----+------------------------------
+    \a  | 0x27      | APOSTROPHE      | '   | delimit Text/opaque literals
+    \q  | 0x22      | QUOTATION MARK  | "   | delimit quoted names
+    \t  | 0x9       | CHAR... TAB...  |     | control char horizontal tab
+    \n  | 0xA       | LINE FEED (LF)  |     | ctrl char line feed / newline
+    \f  | 0xC       | FORM FEED (FF)  |     | control char form feed
+    \r  | 0xD       | CARR. RET. (CR) |     | control char carriage return
+
+There is currently just one complex escape sequence, of the format C<<
+\c<...> >>, that supports specifying characters in terms of their Unicode
+abstract codepoint number or name.  If the C<...> looks like an C<<
+<Integer> >>, sans that dividing space isn't allowed here, then the C<...>
+is interpreted as a Unicode abstract codepoint number.  If the C<...>
+consists of just uppercased (not lowercased) letters and the space
+character, then the C<...> is interpreted as a Unicode character name.  One
+reason for this feature is to empower more elegant passing of Unicode-savvy
+Plain_Text source code through a communications channel that is more
+limited, such as to 7-bit ASCII.
+
+Examples:
+
+    \a
+
+    \n
+
+    \c<LATIN SMALL LETTER OU>
+
+    \c<0x263A>
+
+    \c<65>
+
 =head1 DIVIDING SPACE
 
 Grammar:
@@ -1052,17 +1102,6 @@ Grammar:
     <ts_escaped> ::=
         '\'' '\\' [<-['\\]> | <escaped_char>]* '\''
 
-    <escaped_char> ::=
-          '\\a' | '\\q'
-        | '\\t' | '\\n' | '\\f' | '\\r'
-        | '\\c<' [
-              <[ A..Z ]>+ % ' '
-            | ['0b' <nc2>+]
-            | ['0o' <nc8>+]
-            | ['0d'? <nc10>+]
-            | ['0x' <nc16>+]
-          ] '>'
-
 A C<< <Text> >> node represents a value of the Muldis D C<Text> type, which
 is a general purpose character string.
 
@@ -1070,29 +1109,6 @@ The C<Text> type is not a fundamental type of the Muldis D type system, but
 rather is a subtype by constraint of the C<Structure> type, and all C<Text>
 values can be selected in terms of C<< <Structure> >> grammar nodes.
 However, C<< <Text> >> is the canonical grammar for all C<Text> values.
-
-The meanings of the simple escape sequences are:
-
-    Esc | Unicode   | Unicode         | Chr | Literal character used
-    Seq | Codepoint | Character Name  | Lit | for when not escaped
-    ----+-----------+-----------------+-----+------------------------------
-    \a  | 0x27      | APOSTROPHE      | '   | delimit Text/opaque literals
-    \q  | 0x22      | QUOTATION MARK  | "   | delimit quoted names
-    \t  | 0x9       | CHAR... TAB...  |     | control char horizontal tab
-    \n  | 0xA       | LINE FEED (LF)  |     | ctrl char line feed / newline
-    \f  | 0xC       | FORM FEED (FF)  |     | control char form feed
-    \r  | 0xD       | CARR. RET. (CR) |     | control char carriage return
-
-There is currently just one complex escape sequence, of the format C<<
-\c<...> >>, that supports specifying characters in terms of their Unicode
-abstract codepoint name or number.  If the C<...> consists of just
-uppercased (not lowercased) letters and the space character, then the
-C<...> is interpreted as a Unicode character name.  If the C<...> looks
-like an C<< <Integer> >>, sans that dividing space isn't
-allowed here, then the C<...> is interpreted as a Unicode abstract
-codepoint number.  One reason for this feature is to empower more elegant
-passing of Unicode-savvy Plain_Text source code through a communications
-channel that is more limited, such as to 7-bit ASCII.
 
 Examples:
 
