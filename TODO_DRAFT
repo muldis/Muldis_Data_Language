@@ -14,6 +14,32 @@ resources of everyone else.
 
 ----------
 
+* Add expression node kind to represent an opaque value, that is, the value
+of the node is its payload itself, this is distinct from literal/selector nodes.
+- Use often for values of types with their own Plain_Text 'opaque' literal
+syntax where PT Bootstrap or the catalog itself has no type-specific literal
+nodes for them, eg Text,Blob,Ratio,etc rather than using an Array sel node +
+Integer lit nodes; the sc meta still remembers Text etc lit were used.
+- Also used a lot with 'hosted data' variants when eg passing host-native string values.
+- For that matter, any 'opaque' literal types even for Bootstrap types can
+just use this too, {Boolean,Integer,External}, no need for their own node types.
+- Save dedicated node types for when there may be child nodes.
+- The effect of putting the 'folded' trait on a constant is to give the
+implementation carte blanche permission to eagerly evaluate its expression
+and then replace that expression with an expression consisting of just an
+'opaque' expression node housing its value; while in the general case that
+can't be done until package registration time, and all dependencies it uses
+are also registered, the constant can still be selectively folded earlier
+where there aren't external dependencies or at the very least any sc meta
+can be discarded at parse time; in any event, the actual source code as
+data value of a folded constant's expression at any given point in time
+is implementation-defined.
+- ACTUALLY, the folded trait is probably something that needs to be known
+about at a fundamental level in the implementation type system, so that the
+right thing happens re normalization when the value is actually 'used';
+or maybe no more so than ordinary lazy execution optimization, so then
+really 'folded' mainly means don't keep sc meta?
+
 * Make String a special case of an Array rather than a fundamental type.
 - Similarly the String-specific special syntax is now gone.
 
@@ -28,6 +54,11 @@ of Structure/Bag/etc and has Source_Code_Meta to specify that the Plain_Text \?%
 - Add Plain_Text_Bootstrap grammar which has no literals but for bootstrap types,
 and possibly doesn't use any Source_Code_Meta either ... Muldis_D could be written in it perhaps
 and Plain_Text is a proper superset of it ... it still needs Comments.
+- Also don't support non-ASCII scripts.
+- Also drop 'fixed' function invo formats and foo(); arg-->func only option.
+- Also drop meta ops ! and :=.
+- Even Plain_Text_Bootstrap still keeps all the meta like whitespace etc in sc metas,
+so core libraries still just as round-trippable.
 
 * Consider support for declaring that certain contracts are exclusive, for
 example, a type composing Foo must not compose Bar.  Based on the idea that
@@ -1931,7 +1962,6 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    When working element-wise with a collection, how each element represented.
                   |    User data should use dyadic Structure instead.
     Array         | [expr,...] or \~[expr,...] to disambiguate from procedure block
-    String        | \~+[nnint-expr,...]
     Bag           | \+{expr,...} or \+{expr:posint-expr,...}
                   |   Eg: \+{x:4,y:7} or \+{x,x,x,x,y:7}
     Structure     | \(expr,...) or \(lit:expr,...) or \(expr,...,lit:expr,...)
@@ -2086,6 +2116,9 @@ aka "\\c[0,0]" and "\\c[0,1]".
     SC_Func_Params | \$(typeref-expr,...) or \$(lit:typeref-expr,...) or etc
     SC_Proc_Args   | \&(expr,...) or \&(&var-expr,...) or \&(lit:expr,...) or etc
     SC_Proc_Params | \&$(typeref-expr,...) or \&$(&typeref-expr,...) or etc
+
+* Consider using \~+[nnint-expr,...] for something like numerics or Blob
+now that String no longer exists to use it.
 
 * Note that $ is free to assign some mnemonic to.
 
