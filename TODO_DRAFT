@@ -14,6 +14,28 @@ resources of everyone else.
 
 ----------
 
+* A key difference between packages and other entities is that packages
+explicitly declare their name inside themselves, they are never anonymous,
+while definitions of everything else (materials, expressions, etc) are
+always anonymous themselves and only have names that are externally
+associated with them.
+- A package declaration is the keyword 'package' followed by an unordered
+whitespace-separated non-delimited list of keyword-asset pairs same as
+'function' or 'type' etc declarations, and like those, individual list item
+assets are delimited if necessary.
+    - identity
+    - uses
+    - materials
+- Alternately, the 'package' has its whole list curly brace delimited and
+its contents separated by semicolons.
+- The 'uses' and 'materials' are always curly brace delimited and their contents
+separated by semicolons and structurally are loosely like routine bodys etc.
+- The 'floating' lives inside 'materials' since its not a public API detail.
+
+* Canonical way for a package to separate public and private materials is
+to use the "_" top level namespace for the latter.  So users of package Foo
+would just "floating Foo" while inside Foo it would "Floating {Foo,Foo::_}".
+
 * Add Foundation.pod file which has these 4 main sections:
 1. List foundation types.  Their 'names' are I<foo>.  They would have
 corresponding but different C<foo> names defined in Muldis_D package.
@@ -84,13 +106,13 @@ of Structure/Bag/etc and has Source_Code_Meta to specify that the Plain_Text \?%
 - The Source_Code_Meta as applicable embeds version info from the language name declaration / Plain_Text itself.
 - So at the implementation level, Plain_Text is treated the same as other grammars.
 - Just things that foundation routines need to know about, or eg a format of routine args, needs non-versioned values.
-- Add Plain_Text_Foundation grammar which has no literals but for foundation types,
+- Add Plain_Text_Lite grammar which has no literals but for foundation types,
 and possibly doesn't use any Source_Code_Meta either ... Muldis_D could be written in it perhaps
 and Plain_Text is a proper superset of it ... it still needs Comments.
 - Also don't support non-ASCII scripts.
 - Also drop 'fixed' function invo formats and foo(); arg-->func only option.
 - Also drop meta ops ! and :=.
-- Even Plain_Text_Foundation still keeps all the meta like whitespace etc in sc metas,
+- Even Plain_Text_Lite still keeps all the meta like whitespace etc in sc metas,
 so core libraries still just as round-trippable.
 
 * Consider support for declaring that certain contracts are exclusive, for
