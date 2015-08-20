@@ -194,12 +194,13 @@ Grammar:
     <versioned_grammar> ::=
         <sp>
             <language_name> <sp> ';' <sp>
+            [<foundational_indicator> <sp> ';' <sp>]?
             [<script_name> <sp> ';' <sp>]?
             <unversioned_grammar>
         <sp>
 
-See the sections in this file named L</LANGUAGE NAME>, L</SCRIPT NAME>,
-and L</UNVERSIONED GRAMMAR> for more details.
+See the sections in this file named L</LANGUAGE NAME>, L<FOUNDATIONAL
+INDICATOR>, L</SCRIPT NAME>, and L</UNVERSIONED GRAMMAR> for more details.
 
 =head1 LANGUAGE NAME
 
@@ -234,6 +235,21 @@ Examples:
     Muldis_D:Plain_Text:"http://muldis.com":"0.200.1"
 
     Muldis_D:Plain_Text:"http://example.com":"42"
+
+=head1 FOUNDATIONAL INDICATOR
+
+Grammar:
+
+    <foundational_indicator> ::=
+        foundational
+
+The C<foundational_indicator> pragma determines with a broad granularity
+how large the effective Muldis D grammar is that a programmer may employ
+with their Muldis D code.
+
+minimal subset, directly correspond,...
+
+I<TODO.>
 
 =head1 SCRIPT NAME
 
@@ -577,6 +593,7 @@ including the headings of nested package entity declarations:
     if
     not
     then
+    topic
     true
     when
     ::?=
@@ -670,7 +687,7 @@ Grammar:
     <generic_func_name> ::=
         <pkg_entity_name>
 
-    <bootstrap_func_name> ::=
+    <foundation_func_name> ::=
           foo
         | bar
         | baz
@@ -1256,7 +1273,7 @@ Grammar:
           <constant_invo_expr>
         | <generic_func_invo_expr>
         | <fixed_func_invo_expr>
-        | <bootstrap_func_invo_expr>
+        | <foundation_func_invo_expr>
 
 I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF --> WHERE THE FUNCTION
 OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
@@ -1301,7 +1318,7 @@ Grammar:
         '='
 
 I<TODO: Note, special_infix_op_same etc are subject to be renamed maybe.
-Say that it is just syntactic sugar for a specific bootstrap_func_invo_expr
+Say that it is just syntactic sugar for a specific foundation_func_invo_expr
 but we special-case it because we don't want "=" to change based on what
 packages are in scope, same as "!" meta or "??!!" or ":=" etc don't change.
 Note, this only affects '=' when called like an infix op syntactically,
@@ -1310,7 +1327,7 @@ same as with ! etc; calling it as -->"=" or "="() gets the reg func if exists.>
 I<The grammar-recognized not/!x is just syntactic sugar for x??f!!t and will
 parse into a ??!! node having source-code-meta indicating not/! was used;
 the meta also distinguishes !(foo = bar) from foo != bar; the not/!
-empathetically does NOT parse into a routine call, not even a bootstrap.
+empathetically does NOT parse into a routine call, not even a foundation.
 The grammar for Logical-Not Meta Operator Expressions is discussed with
 Fixed Function Invocation Expressions since syntactically it modifies that;
 but its result combines a generic function invo expr with a conditional expr.>
@@ -1319,12 +1336,12 @@ I<TODO.>
 
 I<TODO: FORGET NOT THE ps5_nonquoted_symbolic_grouping.>
 
-=head2 Bootstrap Function Invocation Expressions
+=head2 Foundation Function Invocation Expressions
 
 Grammar:
 
-    <bootstrap_func_invo_expr> ::=
-        <generic_func_args> <sp> '-->^' <sp> <bootstrap_func_name>
+    <foundation_func_invo_expr> ::=
+        <generic_func_args> <sp> '-->^' <sp> <foundation_func_name>
 
 I<TODO.>
 
@@ -1370,19 +1387,23 @@ I<TODO.>
 
 A C<::=> is I<what-binding> while a C<::?=> is I<why-binding>.
 
-    : - pairs or dicts (and renamings) - also key/asset separator in most pairwise collections
+    : - key/asset separator in most pairwise collections
     ? - booleans or sets (and relations)
     + - numbers or bags (and tuple-bags)
     ~ - arrays (and text and blob)
     % - tuples or relations (and tuple-bags)
     @ - field names or headings (and chain-identifiers and renamings)
-    \ - value literal or selector
+    \ - value literal or selector (or topic field accessor)
     & - subject-to-update parameter/etc or procedure
     ! - booleans or voidlikes
 
     [] - homogeneous ordered collection of element - arrays/statements/etc - ordinal+universal
-    {} - homogeneous nonordered collection of member - bags/sets/etc - universal+ordinal
-    () - heterogeneous aordered collection of field - structures/tuples/pairs - nominal+universal
+    {} - homogeneous nonordered collection of member - bags/sets/dictionaries/etc - universal+ordinal
+    () - heterogeneous aordered collection of field - structures/tuples - nominal+universal
+
+When combining symbols to represent both collection type and element type,
+show collection first as master and element next as subservient,
+so eg ?% is relation, +% is tuple-bag while ~+ is blob.
 
 =head1 STRATEGIES FOR PARSING
 

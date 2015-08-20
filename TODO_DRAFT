@@ -14,25 +14,47 @@ resources of everyone else.
 
 ----------
 
-* Add Bootstrap.pod file which has these 4 main sections:
-1. List bootstrap types.  Their 'names' are I<foo>.  They would have
+* Add Foundation.pod file which has these 4 main sections:
+1. List foundation types.  Their 'names' are I<foo>.  They would have
 corresponding but different C<foo> names defined in Muldis_D package.
 2. List subtypes of the above used to define source code as data, because
 the compiler at package registration actually needs to know.  Their 'names'
 are I<foo> and are defined in terms of predicates.  They would likely have
 corresponding but different C<foo> names defined in Muldis_D package.
 - Yes, #1 and #2 I<foo> above are types, just their C<foo> are contracts.
-3. List bootstrap functions.  Their names are C<foo>.
-4. List bootstrap procedures.  Their names are C<foo>.
+3. List foundation functions.  Their names are C<foo>.
+4. List foundation procedures.  Their names are C<foo>.
+
+* In order to ACTUALLY implement a Plain_Text parser in pure Muldis D, or
+other parsers likewise, every literal / selector ACTUALLY has to have a
+corresponding foundation function, because the real parser logic is, when
+you see this series of integers representing these character codepoints,
+you need to map them to eg a logical boolean or integer or whatever.
+- So we need foundation functions to select boolean true false, and
+foundation functions of the str2num variety, assuming its better to push
+down that common logic than to, say, subtract 32 from the codepoint integer
+then multiply to the radix times the position from the end and then add,
+etc, though users should have the latter option available too, and even
+then, we have to select the 32 somehow, and repeated succ() from zero is
+kind of too far on the micro-boost side of things.
+- The parser calls the str2num or whatever and produces an 'opaque' node
+which is the source code as data result.
+
+* Have Muldis_D::Foundation package be written in the PT foundational
+subset, and this primarily defines the full Plain_Text parser.  MD::B has
+no other package dependencies, and no other packages declares synonyms to
+things in MD::B.  Muldis_D package proper is written in regular Plain_Text
+so it looks nicer / is more maintainable.  MD::B may declare contracts for
+the same types as other packages independently if it needs them.
 
 * Add expression node kind to represent an opaque value, that is, the value
 of the node is its payload itself, this is distinct from literal/selector nodes.
 - Use often for values of types with their own Plain_Text 'opaque' literal
-syntax where PT Bootstrap or the catalog itself has no type-specific literal
+syntax where PT Foundation or the catalog itself has no type-specific literal
 nodes for them, eg Text,Blob,Ratio,etc rather than using an Array sel node +
 Integer lit nodes; the sc meta still remembers Text etc lit were used.
 - Also used a lot with 'hosted data' variants when eg passing host-native string values.
-- For that matter, any 'opaque' literal types even for Bootstrap types can
+- For that matter, any 'opaque' literal types even for Foundation types can
 just use this too, {Boolean,Integer,External}, no need for their own node types.
 - Save dedicated node types for when there may be child nodes.
 - The effect of putting the 'folded' trait on a constant is to give the
@@ -54,21 +76,21 @@ really 'folded' mainly means don't keep sc meta?
 * Make String a special case of an Array rather than a fundamental type.
 - Similarly the String-specific special syntax is now gone.
 
-* TODO: Demote any special Source_Code syntax for core types that are not bootstrap types,
+* TODO: Demote any special Source_Code syntax for core types that are not foundation types,
 eg Blob/Text/Rat/Tuple/Relation etc so they are treated like Source_Code_Meta;
 eg, a Relation literal in Plain_Text just turns into Source_Code for a tree
 of Structure/Bag/etc and has Source_Code_Meta to specify that the Plain_Text \?%{} etc syntax was used.
 - And so, embedded type names even for those in Muldis_D package can be fully-version-qualified.
 - The Source_Code_Meta as applicable embeds version info from the language name declaration / Plain_Text itself.
 - So at the implementation level, Plain_Text is treated the same as other grammars.
-- Just things that bootstrap routines need to know about, or eg a format of routine args, needs non-versioned values.
-- Add Plain_Text_Bootstrap grammar which has no literals but for bootstrap types,
+- Just things that foundation routines need to know about, or eg a format of routine args, needs non-versioned values.
+- Add Plain_Text_Foundation grammar which has no literals but for foundation types,
 and possibly doesn't use any Source_Code_Meta either ... Muldis_D could be written in it perhaps
 and Plain_Text is a proper superset of it ... it still needs Comments.
 - Also don't support non-ASCII scripts.
 - Also drop 'fixed' function invo formats and foo(); arg-->func only option.
 - Also drop meta ops ! and :=.
-- Even Plain_Text_Bootstrap still keeps all the meta like whitespace etc in sc metas,
+- Even Plain_Text_Foundation still keeps all the meta like whitespace etc in sc metas,
 so core libraries still just as round-trippable.
 
 * Consider support for declaring that certain contracts are exclusive, for
@@ -129,7 +151,7 @@ dependency is referred to with.
             - what floating does
     lib/Muldis/D/Low_Level.pod
         - define the 8 built-in types descriptively
-        - define all the bootstrap routines
+        - define all the foundation routines
     lib/Muldis/D/Packages/Muldis_D.pod
         - index to Muldis_D/*
         - OR JUST PUT THE WHOLE PACKAGE IN THIS ONE FILE, MAKE IT BIG
@@ -250,12 +272,12 @@ as there is no single most reasonable canonical interpretation.
 - If one wants to compose a Relation or Tuple_Bag from tuple expressions,
 use cast eg ?%{t1,t2,t3} or +%\+{t1:7,t2,t2} as there's no literal for that.
 
-* TODO: Think of namespace issues since bootstrap routine calls, both
+* TODO: Think of namespace issues since foundation routine calls, both
 function and procedure, are both for built-ins that the parser expects, and
 for third-party extensions implemented low-level.
 - Also tied to this is how to invoke routines implemented in peer languages
 like External is meant to be about, not just host languages.
-- Do we want to make bootstrap routine names multi-level themselves, or use
+- Do we want to make foundation routine names multi-level themselves, or use
 the single-level management way that C libraries tend to?
 - So, eg:
     -->  is for routines defined natively with Muldis D code, live in packages
@@ -1404,7 +1426,7 @@ Eliminate Muldis_D::Low_Level package and merge the appropriate parts into
 the standard grammar itself.  This brings consistency as not only do the
 value literals for Integer etc have their own grammar nodes, now all the
 low-level routines do too.
-- See also SC_Bootstrap_Singleton further below for a related concept.
+- See also SC_Foundation_Singleton further below for a related concept.
 - So now there is no question what behavior keywords like "not"/"!", whether
 meta-op or not, bind to; they always bind to grammar nodes.
 - Now nothing in Plain_Text or its parse tree / native Muldis D binds to
@@ -1416,7 +1438,7 @@ in the current module.
 in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
 - A lot of Muldis_D routines are just shims over the nodes, consistently.
 - Example nodes:
-    - SC_Bootstrap_Func_Invo - use like "args --> $name" or "name(*args)" for low-level
+    - SC_Foundation_Func_Invo - use like "args --> $name" or "name(*args)" for low-level
         - \(expr,expr) -->^same                  # used by = syntax
         - \(bool_expr) -->^Boolean_not           # used by not/! keyword
         - \(int_expr,int_expr) -->^Integer_plus  # used just like this
@@ -1431,7 +1453,7 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
         - \(ref_expr,tup_expr) -->^select_Capsule  # wrapped by x=>y function
         - \(cap_expr,atnm_lit) -->^Capsule_attr    # used by foo.>bar syntax
         - \(cap_expr,atnm_lit) -->^Capsule_has_attr  # used by foo.>?bar syntax
-    - SC_Bootstrap_Proc_Invo - as you would expect
+    - SC_Foundation_Proc_Invo - as you would expect
         - \*^&[Universal_assign,target_expr,source_expr]  # used by x := y
         - \*^&[Array_elem,ary_expr,nnint_expr,expr]  # used by x.[y] := foo
         - \*^&[Tuple_attr,tup_expr,atnm_lit,expr]    # used by x.y := foo
@@ -1969,52 +1991,32 @@ aka "\\c[0,0]" and "\\c[0,1]".
 
     Boolean       | just the keywords false and true or \?false or \?true
     Integer       | 42 or 0 or or \-3 or \+'-3''50_897' or 0d39 or 0xDEADBEEF or 0o644 or 0b11001001
-    Pair          | \:(expr,expr)
-                  |    When working element-wise with a collection, how each element represented.
-                  |    User data should use dyadic Structure instead.
     Array         | [expr,...] or \~[expr,...] to disambiguate from procedure block
     Bag           | \+{expr,...} or \+{expr:posint-expr,...}
                   |   Eg: \+{x:4,y:7} or \+{x,x,x,x,y:7}
     Structure     | \(expr,...) or \(lit:expr,...) or \(expr,...,lit:expr,...)
                   |    or \(:lit,...) or etc where lit
-                  |    is one of: nnint or alpha or "whatever".
+                  |    is one of: nnint or alpha or "whatever" (what is "whatever" again?).
                   |    Is a set of named fields where each field name is
-                  |    either a non-negative Integer or a String; a bare
-                  |    nnint literal is the Integer, else is the String.
-                  |    A field whose name is a String is also called an attribute.
-                  |    Where any fields named with Integers, then for 1..N
-                  |    such fields, the Integers must be 0..N-1 like Array.
-                  |    - Tuple is proper subtype with only attributes;
-                  |    it has special alt syntax \%(lit:expr,...).
-                  |     ACTUALLY, Tuple is a proper subtype having 1
-                  |     positional element of SC_Field_Name value \Tuple,
-                  |     plus 1 named element of any Structure value its payload.
-                  |    - SC_Field is proper subtype with exactly 1 field.
-                  |    - SC_Field_Name is proper subtype of SC_Field
-                  |    whose value for that field is true; it has the
-                  |    special alternate syntax \@lit; it identifies a field
-                  |    of a Structure/Capsule.
-                  |    - SC_Attr_Name is proper subtype of SC_Field_Name whose
-                  |    name is a String; identifies attr of Tuple/Relation.
-                  |    - SC_Signature is proper subtype where the value for
+                  |    a string (isomorphic to Array of Integer).
+                  |    - SC_Signature is proper subtype of Structure where the value for
                   |    every field is either true or is a SC_Reference;
                   |    this is used when defining a type in terms of a set
                   |    of typed fields, or when defining a function
-                  |    signature likewise, or when defining a set of SC_Name;
-                  |    a SC_Reference is naming the expected field type,
+                  |    signature likewise, or when defining a set of SC_Field_Name;
+                  |    a SC_Reference is naming the expected field contract (type),
                   |    or true means either type inapplicable (we just have
-                  |    a set of SC_Name) or it means Universal / any value.
+                  |    a set of SC_Field_Name) or it means Universal / any value.
                   |    - SC_Field_Names is proper subtype of SC_Signature where
-                  |    every field value is just true;
-                  |    it has special alt syntax \@(lit,...).
-                  |    - SC_Heading is intersect type of SC_Signature,Tuple.
-                  |    - SC_Attr_Names is intersect of SC_Heading,SC_Field_Names;
-                  |    is T/R heading as userland value, arg for project/etc.
-                  |    - SC_Renaming is proper subtype where the value for
-                  |    each field is either a non-negative Integer or a
-                  |    String, that is, something valid to be a field name;
-                  |    it has special alt syntax \@:(lit<-lit,...);
-                  |    use in routine defs to normalize args, arg for rename.
+                  |    every field value is just true; it has special alt syntaxes
+                  |    \@(lit,...) or \@(posint-lit..posint-lit).
+                  |    The first syntax is list of field names, any kind but explicit;
+                  |    the second syntax is numeric range for numeric field names, eg \@(0..3).
+                  |    - SC_Field_Name is proper subtype of SC_Field_Names
+                  |    with degree of 1; it has special alt syntax of \foo or \@foo.
+                  |    - SC_Key_Asset_Pair is proper subtype of Structure
+                  |    with exactly 2 fields named 'key' and 'asset';
+                  |    When working element-wise with a collection, how each element represented.
     OBSOLETE; USE A STRUCTURE SUBTYPE INSTEAD, FREE UP => FOR NON-CORE / USER TYPES:
     Capsule       | expr=>expr - that is Reference=>Structure eg $Date=>\%(year:500,month:4,day:24)
                   |    and Singleton is one with nullary tuple eg $To_Zero=>\%()
@@ -2114,19 +2116,21 @@ aka "\\c[0,0]" and "\\c[0,1]".
                 |   Tuple_Bag is to Relation what Bag is to Set; common heading, allows duplicates
                 |   Eg: \+%{ (name:'Joy',age:17), (name:'Envy',age:23), (name:'Joy',age:17) }
                 |   or \+%{ (name:'Joy',age:17) : 2, (name:'Envy',age:23) : 1 }
-    Dictionary  | \?:{expr:expr,...} or something
+    Dictionary  | \{expr:expr,...} or something
 
-    SC_Heading  | \@(lit,...) or \@(posint-lit..posint-lit)
-                |   The first syntax is list of attr names, any kind but explicit;
-                |   the second syntax is numeric range for numeric names, eg \@(0..3).
-    SC_Renaming | \@:(lit<-lit,...) or \@:(<-lit,...) or \@:(lit<-,...)
-                |   If one lit is absent, means implicit positional/numeric name.
-                |   Arrow also allowed to point the other way.
+    SC_Field_Renaming | \@:(lit<-lit,...) or \@:(<-lit,...) or \@:(lit<-,...)
+                      |   If one lit is absent, means implicit positional/numeric name.
+                      |   Arrow also allowed to point the other way.
 
-    SC_Func_Args   | synonym for Structure 
-    SC_Func_Params | \$(typeref-expr,...) or \$(lit:typeref-expr,...) or etc
-    SC_Proc_Args   | \&(expr,...) or \&(&var-expr,...) or \&(lit:expr,...) or etc
-    SC_Proc_Params | \&$(typeref-expr,...) or \&$(&typeref-expr,...) or etc
+* Make \\foo a syntactic shorthand for topic field \foo when topic is a
+Structure; that is, \\foo is syntactic shorthand for:
+    \(topic,\foo) -->^ BS_Structure_Field
+
+* Don't have catalog types specific to defining routine parameters.
+- Regular contracts / type defs / shorthands do the job.
+- But see SC_Signature type.
+- Make any updateable vs not details of procedure parameters into a
+separate declaration like 'requires' etc are separate.
 
 * Consider using \~+[nnint-expr,...] for something like numerics or Blob
 now that String no longer exists to use it.
@@ -2604,8 +2608,8 @@ some other type, typically an expression node set.
 - SC_Meta_Op_
 - SC_Lit_Universal - represents "\*[...]" literal syntax for Universal
     values; also has "\*:[...]" variant that asserts exactly 2 elements
-- SC_Bootstrap_Singleton - represents "\*^1[...]" special syntax for
-    bootstrap singletons, each of which may exist exactly once in the
+- SC_Foundation_Singleton - represents "\*^1[...]" special syntax for
+    foundation singletons, each of which may exist exactly once in the
     codebase, and since they're all used once each in Low_Level.mdpt, means
     they are otherwise non-invokable by users; possible singletons are:
     - \*^1[maximal_type] - what Universal/LL_List is defined in terms of
@@ -2648,7 +2652,7 @@ something is in the parens.
     foo()
     (--> $foo)
 
-* Bootstrap function call syntax (only option):
+* Foundation function call syntax (only option):
     arg_expr -->^ opnamelitbarealphastr
 eg:
     3 -->^ Integer_opposite
@@ -2658,7 +2662,7 @@ eg:
 - The parser can tell them apart as easily as it does naming_expr vs aliasing_expr.
 - As usual, whitespace around the -->^ is optional.
 
-* In terms of regular function calls, a bootstrap function call is one that
+* In terms of regular function calls, a foundation function call is one that
 always has a -->/from/signature of Universal, that is it is like a
 multi-dispatch that binds to all types, and then it has a 'requires' which
 asserts the actual allowed inputs, such as must be 2 ints.
@@ -3011,7 +3015,7 @@ just as Plain_Text text files, and the Muldis D compilers written in Plain_Text,
 and the Muldis D official test suite written in Plain_Text.
 - This release series is *not* expected to be released as an executable
 product by itself; rather it is more of a data product whose files are then
-copied into other projects that actually have the bootstrap or framing or
+copied into other projects that actually have the foundation or framing or
 whatever Perl or whatever code so that the other projects are executables;
 they include the as-data files to save themselves work and test themselves.
 - Said other Perl/etc projects would synchronize themselves periodically
