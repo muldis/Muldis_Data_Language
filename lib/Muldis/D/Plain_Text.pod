@@ -89,6 +89,8 @@ keep in mind that the grammar is inspired by both EBNF and Perl 6 rules.>
 
 =head1 GENERAL STRUCTURE
 
+I<TODO: Rewrite the following to just use "package".>
+
 Each Muldis D Plain Text code file is either a I<module> or a I<depot>.  A
 I<module> is a strictly read-only store featuring executable code, and if
 it has any data, that data takes the form of constant declarations.  A
@@ -154,10 +156,10 @@ The root grammar token for Muldis D Plain Text is C<< <MDPT> >>.
 Grammar:
 
     <MDPT> ::=
-        ^ <shebang_line>? <versioned_grammar> $
+        ^ <shebang_line>? <versioned_source_code> $
 
 See the sections in this file named L<SHEBANG LINE> and L</VERSIONED
-GRAMMAR> for more details.
+SOURCE CODE> for more details.
 
 =head1 SHEBANG LINE
 
@@ -187,20 +189,20 @@ Examples:
 
     #!/usr/bin/env muldisdre
 
-=head1 VERSIONED GRAMMAR
+=head1 VERSIONED SOURCE CODE
 
 Grammar:
 
-    <versioned_grammar> ::=
+    <versioned_source_code> ::=
         <sp>
             <language_name> <sp> ';' <sp>
             [<foundational_indicator> <sp> ';' <sp>]?
             [<script_name> <sp> ';' <sp>]?
-            <unversioned_grammar>
+            [<package> <sp> ';' <sp>]*
         <sp>
 
 See the sections in this file named L</LANGUAGE NAME>, L<FOUNDATIONAL
-INDICATOR>, L</SCRIPT NAME>, and L</UNVERSIONED GRAMMAR> for more details.
+INDICATOR>, L</SCRIPT NAME>, and L</PACKAGE SPECIFICATION>, for more details.
 
 =head1 LANGUAGE NAME
 
@@ -256,7 +258,7 @@ I<TODO.>
 Grammar:
 
     <script_name> ::=
-        ...
+        script ...
 
 The Script Name indicates the primary script of the Muldis D code,
 meaning is character repertoire and/or character encoding and/or character
@@ -684,6 +686,12 @@ Grammar:
     <floating_name> ::=
         <generic_name> % [<sp> '::' <sp>]
 
+    <folder_name> ::=
+        <absolute_name>
+
+    <material_name> ::=
+        <absolute_name>
+
     <generic_func_name> ::=
         <pkg_entity_name>
 
@@ -709,15 +717,97 @@ A C<< <pkg_entity_name> >> is for use when either declaring or referencing
 package entities (types, constants, functions, procedures, synonyms, etc)
 which live within a multi-level namespace.
 
-=head1 UNVERSIONED GRAMMAR
+=head1 PACKAGE SPECIFICATION
 
 Grammar:
 
-    <unversioned_grammar> ::=
-        <module> | <depot>
+    <package> ::=
+        package <sp>
+        '{' <sp>
+            <pkg_identity> <sp> ';' <sp>
+            [<pkg_uses> <sp> ';' <sp>]?
+            [<pkg_materials> <sp> ';' <sp>]?
+        <sp> '}'
 
-See the sections in this file named
-L</MODULE SPECIFICATION>, and L</DEPOT SPECIFICATION>, for more details.
+    <pkg_identity> ::=
+        identity <sp> <x> <sp> '::=' <sp> <x>
+
+    <pkg_uses> ::=
+        uses <sp>
+        '{' <sp>
+            [<x> <sp> '::=' <sp> <x> <sp> ';' <sp>]*
+        <sp> '}'
+
+    <pkg_materials> ::=
+        materials <sp>
+        '{' <sp>
+            [<pkg_materials_floating> <sp> ';' <sp>]?
+            folders...
+            binders...
+            [<named_material> <sp> ';' <sp>]*
+        <sp> '}'
+
+    <pkg_materials_floating> ::=
+        floating <sp>
+        '{' <sp>
+            [<folder_name> <sp> ',' <sp>]*
+        <sp> '}'
+
+    <named_material> ::=
+        <material_name> <sp> '::=' <sp> <material>
+
+I<TODO.  See also about binders, folder declarations, etc.>
+
+=head1 MATERIAL SPECIFICATION
+
+Grammar:
+
+    <material> ::=
+        <synonym> | <contract> | <constant> | <function> | <procedure>
+
+    <synonym> ::=
+        synonym <sp> of <sp> <pkg_entity_name>
+
+I<TODO.>
+
+A C<< <material> >> specifies a new material (routine or contract) that
+lives in a package.
+
+=head2 Contract Specification
+
+Grammar:
+
+    <contract> ::=
+        ...
+
+I<TODO.>
+
+=head2 Constant Specification
+
+Grammar:
+
+    <constant> ::=
+        ...
+
+I<TODO.>
+
+=head2 Function Specification
+
+Grammar:
+
+    <function> ::=
+        ...
+
+I<TODO.>
+
+=head2 Procedure Specification
+
+Grammar:
+
+    <procedure> ::=
+        ...
+
+I<TODO.>
 
 =head1 GENERIC VALUE EXPRESSIONS
 
@@ -1244,26 +1334,12 @@ I<TODO.>
 Grammar:
 
     <source_code_selector_expr> ::=
-          <Pair>
-        | <SC_Identifier>
+          <SC_Identifier>
         | <SC_Heading>
         | <SC_Renaming>
         | ...
 
-    <Pair> ::=
-        '\\:' '(' <sp> <p_key_expr> <sp> ',' <sp> <p_asset_expr> <sp> ')'
-
-    <p_key_expr> ::=
-        <expr>
-
-    <p_asset_expr> ::=
-        <expr>
-
 I<TODO.>
-
-Examples:
-
-    \:(key, asset)
 
 =head1 INVOCATION EXPRESSIONS
 
@@ -1292,12 +1368,18 @@ I<TODO.>
 Grammar:
 
     <generic_func_invo_expr> ::=
-        <generic_func_args> <sp> '-->' <sp> <generic_func_name>
+        <generic_func_args> <sp> '-->' <sp> <generic_func_ref>
+
+    <generic_func_ref> ::=
+        <expr>
 
     <generic_func_args> ::=
         <expr>
 
 I<TODO.>
+
+A C<< <generic_func_ref> >> denotes a C<Reference> value naming a function;
+it may be either a C<Reference> value literal or an inline-defined C<function>.
 
 I<FORGET NOT THE OPTIONAL TRAILING :: IN FOO().>
 
