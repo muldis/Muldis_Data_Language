@@ -59,7 +59,7 @@ From one source:
         identity MD ::= Muldis_D:"http://muldis.com":"0.200.1";
         materials
         {
-            floating {::MD};
+            floating {::MD, ::MD::Source_Code};
             ...
         };
     };
@@ -138,6 +138,12 @@ exactly the same value, and C<true> otherwise.
 
 I<TODO.>
 
+=head2 in_order
+
+    ::MD::in_order::"" ::= function virtual --> Boolean <-- (Orderable);
+
+I<TODO.>
+
 =head1 ENUMERABLE DATA TYPES
 
 =head2 Enumerable
@@ -145,6 +151,18 @@ I<TODO.>
     ::MD::Enumerable ::= type abstract
         composes Orderable and_provides_its_default
         requires_implements {in_order,pred,succ};
+
+I<TODO.>
+
+=head2 pred
+
+    ::MD::pred::"" ::= function virtual --> Enumerable <-- (Enumerable);
+
+I<TODO.>
+
+=head2 succ
+
+    ::MD::succ::"" ::= function virtual --> Enumerable <-- (Enumerable);
 
 I<TODO.>
 
@@ -175,6 +193,9 @@ I<TODO.>
 
     ::MD::Bool ::= synonym of Boolean;
 
+    ::MD::False ::= type of Boolean where !topic default false;
+    ::MD::True  ::= type of Boolean where topic default true;
+
 The enumeration contract C<Boolean> represents the finite Muldis D
 Foundation type I<FDN__Boolean>.  A C<Boolean> value is a general purpose
 2-valued logic boolean, or specifically it is one of the 2 values C<false>
@@ -187,6 +208,32 @@ Examples:
     true
 
     false
+
+=head2 in_order
+
+    ::MD::in_order::Boolean ::= function --> Boolean <-- (Boolean)
+        implements 1::""
+        : !\\0 or \\1;
+
+I<TODO.>
+
+=head2 pred
+
+    ::MD::pred::Boolean ::= function
+    	--> type union {False,"-Inf"} <-- (Boolean)
+        implements 1::""
+        : \\0 ?? false !! \(\"-Inf");
+
+I<TODO.>
+
+=head2 succ
+
+    ::MD::succ::Boolean ::= function
+    	--> type union {True,"+Inf"} <-- (Boolean)
+        implements 1::""
+        : !\\0 ?? true !! \(\"+Inf");
+
+I<TODO.>
 
 =head2 ?
 
@@ -233,7 +280,7 @@ I<TODO.>
 
     ::MD::Integral ::= type abstract
         composes {Enumerable, Boolable, Numeric and_provides_its_default}
-        requires_implements {...,is_zero,...};
+        requires_implements {in_order,pred,succ,is_zero,...};
 
 I<TODO.>
 
@@ -256,7 +303,7 @@ I<TODO.>
 =head2 Inf_Integer
 
     ::MD::Inf_Integer ::= type where topic -->^ FDN__isa_Inf_Integer
-        default 0 
+        default 0
         composes Integral and_provides_its_default;
 
     ::MD::Integer ::= synonym of Inf_Integer;
@@ -287,11 +334,101 @@ Examples:
 
     0b11001001
 
+=head2 in_order
+
+    ::MD::in_order::Inf_Integer ::= function --> Boolean <-- (Inf_Integer)
+        implements 1::""
+        : topic -->^ FDN__Integers_in_order;
+
+I<TODO.>
+
+=head2 pred
+
+    ::MD::pred::Inf_Integer ::= function --> Inf_Integer <-- (Inf_Integer)
+        implements 1::""
+        : \\0 - 1;
+
+I<TODO.>
+
+=head2 succ
+
+    ::MD::succ::Inf_Integer ::= function --> Inf_Integer <-- (Inf_Integer)
+        implements 1::""
+        : \\0 + 1;
+
+I<TODO.>
+
 =head2 is_zero
 
     ::MD::is_zero::Inf_Integer ::= function --> Boolean <-- (Inf_Integer)
         implements 1::""
         : \\0 = 0;
+
+I<TODO.>
+
+=head1 ARRAY DATA TYPES
+
+=head2 Inf_Array
+
+    ::MD::Inf_Array ::= type where topic -->^ FDN__isa_Inf_Array
+        default []
+        composes Arrayish and_provides_its_default;
+
+The enumeration contract C<Inf_Array> represents the infinite Muldis D
+Foundation type I<FDN__Inf_Array>.  An C<Inf_Array> value is ...
+
+I<TODO.>
+
+=head1 BAG DATA TYPES
+
+=head2 Inf_Bag
+
+    ::MD::Inf_Bag ::= type where topic -->^ FDN__isa_Inf_Bag
+        default \+{}
+        composes Baggy and_provides_its_default;
+
+The enumeration contract C<Inf_Bag> represents the infinite Muldis D
+Foundation type I<FDN__Inf_Bag>.  An C<Inf_Bag> value is ...
+
+I<TODO.>
+
+=head1 STRUCTURE DATA TYPES
+
+=head2 Inf_Structure
+
+    ::MD::Inf_Structure ::= type where topic -->^ FDN__isa_Inf_Structure
+        default \();
+
+The enumeration contract C<Inf_Structure> represents the infinite Muldis D
+Foundation type I<FDN__Inf_Structure>.  An C<Inf_Structure> value is ...
+
+I<TODO.>
+
+=head1 EXTERNAL DATA TYPES
+
+=head2 External
+
+    ::MD::External ::= type where topic -->^ FDN__isa_External
+        default \~external~'';
+
+The enumeration contract C<External> represents the infinite Muldis D
+Foundation type I<FDN__External>.  An C<External> value is ...
+
+I<TODO.>
+
+=head1 SOURCE CODE DEFINING DATA TYPES
+
+=head2 Source_Code_Meta
+
+    ::MD::Source_Code::Source_Code_Meta_AT ::= type abstract;
+
+    ::MD::Source_Code::Source_Code_Meta ::= type ... intersect ...;
+
+I<TODO.>
+
+=head2 Package
+
+    ::MD::Source_Code::Package ::= type ...;
 
 I<TODO.>
 
