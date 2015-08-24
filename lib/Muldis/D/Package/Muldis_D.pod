@@ -152,57 +152,17 @@ I<TODO.>
 
 =head2 Boolable
 
-    ::MD::Boolable ::= type abstract requires_implements to_Boolean;
+    ::MD::Boolable ::= type abstract requires_implements "?";
 
 I<TODO.>
 
-=head2 to_Boolean
+=head2 ?
 
-    ::MD::to_Boolean::"" ::= function virtual --> Boolean <-- (Boolable);
+    ::MD::"?"::"" ::= function virtual --> Boolean <-- (Boolable);
 
-    ::MD::"?" ::= synonym of to_Boolean;
-
-I<TODO.>
-
-=head1 BOOLISH DATA TYPES
-
-=head2 Boolish
-
-    ::MD::Boolish ::= type abstract
-        composes {Enumerable and_provides_its_default,
-            Boolable and_provides_its_default}
-        requires_implements {to_Boolean, not};
+    ::MD::so ::= synonym of "?";
 
 I<TODO.>
-
-=head2 so
-
-    ::MD::so ::= function --> Boolish <-- (Boolish)
-        : to_Boolean \\0 ?? \\0 !! not \\0;
-
-    ::MD::proposition ::= synonym of so;
-
-I<TODO.>
-
-=head2 not
-
-    ::MD::not::"" ::= function virtual --> Boolish <-- (Boolish);
-
-    ::MD::"!"      ::= synonym of not;
-    ::MD::negation ::= synonym of not;
-    ::MDS::"¬"     ::= synonym of not;
-
-I<TODO.>
-
-=head2 and
-
-    ::MD::and ::= function --> Boolish <-- (Boolish, Boolish)
-        is {commutative,associative,idempotent}
-        : to_Boolean \\0 ?? \\1 !! \\0;
-
-I<TODO. Note that while this operation conceptually has an identity value,
-in practice you can only exploit that automatically by directly invoking a
-variant specific to the composing type.>
 
 =head1 BOOLEAN DATA TYPES
 
@@ -210,7 +170,8 @@ variant specific to the composing type.>
 
     ::MD::Boolean::"" ::= type where topic -->^ FDN__isa_Boolean
         default false
-        composes Boolish and_provides_its_default;
+        composes {Enumerable and_provides_its_default,
+            Boolable and_provides_its_default};
 
     ::MD::Bool ::= synonym of Boolean;
 
@@ -227,30 +188,35 @@ Examples:
 
     false
 
-=head2 to_Boolean
+=head2 ?
 
-    ::MD::to_Boolean::Boolean ::= function --> Boolean <-- (Boolean)
+    ::MD::"?"::Boolean ::= function --> Boolean <-- (Boolean)
         implements 1::""
-        : topic;
+        : \\0;
 
 I<TODO.>
 
 =head2 not
 
-    ::MD::not::Boolean ::= function --> Boolean <-- (Boolean)
-        implements 1::""
-        : topic ?? false !! true;
+    ::MD::not ::= function --> Boolean <-- (Boolean)
+        : \\0 ?? false !! true;
+
+    ::MD::"!"  ::= synonym of not;
+    ::MDS::"¬" ::= synonym of not;
 
 I<TODO.>
 
 =head2 and
 
-    ::MD::Boolean::and ::= function --> Boolean <-- (Boolean, Boolean)
+    ::MD::and ::= function --> Boolean <-- (Boolean, Boolean)
         is {commutative,associative,idempotent} identity true
-        : (.0 ?? .1 !! false);
+        : (\\0 ?? \\1 !! false);
 
-I<TODO. Variant for direct invoking when you want to use the identity value
-automatically.>
+    ::MD::all   ::= synonym of and;
+    ::MD::every ::= synonym of and;
+    ::MDS::"∧"  ::= synonym of and;
+
+I<TODO.>
 
 =head1 NUMERIC DATA TYPES
 
@@ -271,9 +237,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 to_Boolean
+=head2 ?
 
-    ::MD::to_Boolean::Integral ::= function --> Boolean <-- (Integral)
+    ::MD::"?"::Integral ::= function --> Boolean <-- (Integral)
         implements 1::""
         : \\0->is_zero->not;
 
