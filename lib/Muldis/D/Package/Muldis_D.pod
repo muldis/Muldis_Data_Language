@@ -26,11 +26,11 @@ before you read this one, which provides subservient details.
         identity My_App ::= My_App:"http://mycorp.com":"0";
         uses
         {
-            Muldis_D ::= Muldis_D:"http://muldis.com":"0.200.1";
+            MD ::= Muldis_D:"http://muldis.com":"0.200.1";
         };
         materials
         {
-            floating {::My_App, ::Muldis_D};
+            floating {::My_App, ::MD};
 
             `TODO: Put example routines etc here.`
 
@@ -44,16 +44,40 @@ C<Muldis_D:"http://muldis.com":"0.200.1"> which provides the common core
 system-defined data types and operators that regular users of the language
 would employ directly in their applications and schemas.
 
-=head1 PACKAGE
+This document I<also> defines the Muldis D Plain Text package
+C<Muldis_D::Synonyms:"http://muldis.com":"0.200.1"> which adds trans-ASCII
+Unicode synonyms to C<Muldis_D> package entities.
+
+=head1 PACKAGES
+
+From one source:
 
     Muldis_D:Plain_Text:"http://muldis.com":"0.200.1";
     script ASCII;
     package
     {
-        identity Muldis_D ::= Muldis_D:"http://muldis.com":"0.200.1";
+        identity MD ::= Muldis_D:"http://muldis.com":"0.200.1";
         materials
         {
-            floating {::Muldis_D};
+            floating {::MD};
+            ...
+        };
+    };
+
+From a separate source:
+
+    Muldis_D:Plain_Text:"http://muldis.com":"0.200.1";
+    script Unicode:6.2.0:UTF-8:canon;
+    package
+    {
+        identity MDS ::= Muldis_D::Synonyms:"http://muldis.com":"0.200.1";
+        uses
+        {
+            MD ::= Muldis_D:"http://muldis.com":"0.200.1";
+        };
+        materials
+        {
+            floating {::MD, ::MDS};
             ...
         };
     };
@@ -62,36 +86,58 @@ would employ directly in their applications and schemas.
 
 =head2 Anything
 
-    ::Muldis_D::Anything ::= type default false;
+    ::MD::Anything ::= type default false;
 
-    ::Muldis_D::Any ::= synonym of Anything;
+    ::MD::Any ::= synonym of Anything;
 
 The enumeration contract C<Anything> represents the infinite I<universal
 type>, which is the maximal data type of the entire Muldis D type system
 and consists of all values which can possibly exist.  It also represents
 the infinite Muldis D Foundation type I<FDN__Anything>.  Its default value
 is C<false>.  Other programming languages may name their corresponding
-types I<Any> or I<Object> or I<Universal>.
+types I<Any> or I<Object> or I<Anything>.
 
 =head2 Nothing
 
-    ::Muldis_D::Nothing ::= type of {};
+    ::MD::Nothing ::= type of {};
 
 The enumeration contract C<Nothing> represents the finite I<empty type>,
 which is the minimal data type of the entire Muldis D type system and
 consists of exactly zero values.  It can not have any default value.
 
+=head2 =
+
+    ::MD::"=" ::= function --> Boolean <-- (Anything, Anything)
+        is {commutative}
+        : topic -->^ FDN__same;
+
+    ::MD::same ::= synonym of "=";
+
+The function C<=> results in C<true> iff its 2 conceptual arguments are
+exactly the same value, and C<false> otherwise.  Other programming
+languages may name their corresponding operators I<==> or I<===>.
+
+=head2 !=
+
+    ::MD::"!=" ::= function --> Boolean <-- (Anything, Anything)
+        is {commutative}
+        : topic --> "=" ?? false !! true;
+
+    ::MD::not_same ::= synonym of "!=";
+    ::MDS::"≠"     ::= synonym of "!=";
+
+The function C<!=> results in C<false> iff its 2 conceptual arguments are
+exactly the same value, and C<true> otherwise.
+
 =head1 GENERIC SIMPLE DATA TYPES
 
 =head2 Boolean
 
-    ::Muldis_D::Boolean ::= type
-        where topic -->^ FDN__isa_Boolean
-        default false
+    ::MD::Boolean ::= type where topic -->^ FDN__isa_Boolean default false
         composes {Boolish and_provides_its_default,
             Orderable and_provides_its_default};
 
-    ::Muldis_D::Bool ::= synonym of Boolean;
+    ::MD::Bool ::= synonym of Boolean;
 
 The enumeration contract C<Boolean> represents the finite Muldis D
 Foundation type I<FDN__Boolean>.  A C<Boolean> value is a general purpose
@@ -108,14 +154,13 @@ Examples:
 
 =head2 Inf_Integer
 
-    ::Muldis_D::Inf_Integer ::= type
-        where topic -->^ FDN__isa_Inf_Integer
+    ::MD::Inf_Integer ::= type where topic -->^ FDN__isa_Inf_Integer
         default 0 
         composes {Integral and_provides_its_default,
             Cardinal and_provides_its_default, Ordinal};
 
-    ::Muldis_D::Integer ::= synonym of Inf_Integer;
-    ::Muldis_D::Int     ::= synonym of Inf_Integer;
+    ::MD::Integer ::= synonym of Inf_Integer;
+    ::MD::Int     ::= synonym of Inf_Integer;
 
 The enumeration contract C<Inf_Integer> represents the infinite Muldis D
 Foundation type I<FDN__Inf_Integer>.  An C<Inf_Integer> value is a general
