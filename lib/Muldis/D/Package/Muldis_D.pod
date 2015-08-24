@@ -129,13 +129,88 @@ languages may name their corresponding operators I<==> or I<===>.
 The function C<!=> results in C<false> iff its 2 conceptual arguments are
 exactly the same value, and C<true> otherwise.
 
-=head1 GENERIC SIMPLE DATA TYPES
+=head1 ORDERABLE DATA TYPES
+
+=head2 Orderable
+
+    ::MD::Orderable ::= type abstract
+        requires_implements in_order;
+
+I<TODO.>
+
+=head1 ENUMERABLE DATA TYPES
+
+=head2 Enumerable
+
+    ::MD::Enumerable ::= type abstract
+        composes Orderable and_provides_its_default
+        requires_implements {in_order,pred,succ};
+
+I<TODO.>
+
+=head1 BOOLABLE DATA TYPES
+
+=head2 Boolable
+
+    ::MD::Boolable ::= type abstract requires_implements to_Boolean;
+
+I<TODO.>
+
+=head2 to_Boolean
+
+    ::MD::to_Boolean::"" ::= function virtual --> Boolean <-- (Boolable);
+
+    ::MD::"?" ::= synonym of to_Boolean;
+
+I<TODO.>
+
+=head1 BOOLISH DATA TYPES
+
+=head2 Boolish
+
+    ::MD::Boolish ::= type abstract
+        composes {Enumerable and_provides_its_default,
+            Boolable and_provides_its_default}
+        requires_implements {to_Boolean, not};
+
+I<TODO.>
+
+=head2 so
+
+    ::MD::so ::= function --> Boolish <-- (Boolish)
+        : to_Boolean \\0 ?? \\0 !! not \\0;
+
+    ::MD::proposition ::= synonym of so;
+
+I<TODO.>
+
+=head2 not
+
+    ::MD::not::"" ::= function virtual --> Boolish <-- (Boolish);
+
+    ::MD::"!"      ::= synonym of not;
+    ::MD::negation ::= synonym of not;
+    ::MDS::"¬"     ::= synonym of not;
+
+I<TODO.>
+
+=head2 and
+
+    ::MD::and ::= function --> Boolish <-- (Boolish, Boolish)
+        is {commutative,associative,idempotent}
+        : to_Boolean \\0 ?? \\1 !! \\0;
+
+I<TODO. Note that while this operation conceptually has an identity value,
+in practice you can only exploit that automatically by directly invoking a
+variant specific to the composing type.>
+
+=head1 BOOLEAN DATA TYPES
 
 =head2 Boolean
 
-    ::MD::Boolean ::= type where topic -->^ FDN__isa_Boolean default false
-        composes {Boolish and_provides_its_default,
-            Orderable and_provides_its_default};
+    ::MD::Boolean::"" ::= type where topic -->^ FDN__isa_Boolean
+        default false
+        composes Boolish and_provides_its_default;
 
     ::MD::Bool ::= synonym of Boolean;
 
@@ -152,12 +227,71 @@ Examples:
 
     false
 
+=head2 to_Boolean
+
+    ::MD::to_Boolean::Boolean ::= function --> Boolean <-- (Boolean)
+        implements 1::""
+        : topic;
+
+I<TODO.>
+
+=head2 not
+
+    ::MD::not::Boolean ::= function --> Boolean <-- (Boolean)
+        implements 1::""
+        : topic ?? false !! true;
+
+I<TODO.>
+
+=head2 and
+
+    ::MD::Boolean::and ::= function --> Boolean <-- (Boolean, Boolean)
+        is {commutative,associative,idempotent} identity true
+        : (.0 ?? .1 !! false);
+
+I<TODO. Variant for direct invoking when you want to use the identity value
+automatically.>
+
+=head1 NUMERIC DATA TYPES
+
+=head2 Numeric
+
+    ::MD::Numeric ::= type abstract
+        requires_implements {"-"::monadic,"+","-","*","/","div"};
+
+I<TODO.>
+
+=head1 INTEGRAL DATA TYPES
+
+=head2 Integral
+
+    ::MD::Integral ::= type abstract
+        composes {Enumerable, Boolable, Numeric and_provides_its_default}
+        requires_implements {...,is_zero,...};
+
+I<TODO.>
+
+=head2 to_Boolean
+
+    ::MD::to_Boolean::Integral ::= function --> Boolean <-- (Integral)
+        implements 1::""
+        : \\0->is_zero->not;
+
+I<TODO.>
+
+=head2 is_zero
+
+    ::MD::is_zero::"" ::= function virtual --> Boolean <-- (Integral);
+
+I<TODO.>
+
+=head1 INTEGER DATA TYPES
+
 =head2 Inf_Integer
 
     ::MD::Inf_Integer ::= type where topic -->^ FDN__isa_Inf_Integer
         default 0 
-        composes {Integral and_provides_its_default,
-            Cardinal and_provides_its_default, Ordinal};
+        composes Integral and_provides_its_default;
 
     ::MD::Integer ::= synonym of Inf_Integer;
     ::MD::Int     ::= synonym of Inf_Integer;
@@ -187,7 +321,11 @@ Examples:
 
     0b11001001
 
-=head2 ...
+=head2 is_zero
+
+    ::MD::is_zero::Inf_Integer ::= function --> Boolean <-- (Inf_Integer)
+        implements 1::""
+        : \\0 = 0;
 
 I<TODO.>
 
