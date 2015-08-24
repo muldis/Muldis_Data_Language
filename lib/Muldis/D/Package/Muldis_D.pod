@@ -113,7 +113,7 @@ consists of exactly zero values.  It can not have any default value.
 
     ::MD::"=" ::= function --> Boolean <-- (Anything, Anything)
         is {commutative}
-        : topic -->^ FDN__same;
+        : (topic -->^ FDN__same);
 
     ::MD::same ::= synonym of "=";
 
@@ -125,7 +125,7 @@ languages may name their corresponding operators I<==> or I<===>.
 
     ::MD::"!=" ::= function --> Boolean <-- (Anything, Anything)
         is {commutative}
-        : topic --> "=" ?? false !! true;
+        : (topic --> "=" ?? false !! true);
 
     ::MD::not_same ::= synonym of "!=";
     ::MDS::"≠"     ::= synonym of "!=";
@@ -218,7 +218,7 @@ Examples:
 
     ::MD::in_order::Boolean ::= function --> Boolean <-- (Boolean, Boolean)
         implements 1::""
-        : !\\0 or \\1;
+        : (!\\0 or \\1);
 
 I<TODO.>
 
@@ -227,7 +227,7 @@ I<TODO.>
     ::MD::pred::Boolean ::= function
         --> type union {False,"-Inf"} <-- (Boolean)
         implements 1::""
-        : \\0 ?? false !! \(\"-Inf");
+        : (\\0 ?? false !! \(\"-Inf"));
 
 I<TODO.>
 
@@ -236,15 +236,7 @@ I<TODO.>
     ::MD::succ::Boolean ::= function
         --> type union {True,"+Inf"} <-- (Boolean)
         implements 1::""
-        : !\\0 ?? true !! \(\"+Inf");
-
-I<TODO.>
-
-=head2 ?
-
-    ::MD::"?"::Boolean ::= function --> Boolean <-- (Boolean)
-        implements 1::""
-        : \\0;
+        : (!\\0 ?? true !! \(\"+Inf"));
 
 I<TODO.>
 
@@ -264,10 +256,18 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 ?
+
+    ::MD::"?"::Boolean ::= function --> Boolean <-- (Boolean)
+        implements 1::""
+        : \\0;
+
+I<TODO.>
+
 =head2 not
 
     ::MD::not ::= function --> Boolean <-- (Boolean)
-        : \\0 ?? false !! true;
+        : (\\0 ?? false !! true);
 
     ::MD::"!"  ::= synonym of not;
     ::MDS::"¬" ::= synonym of not;
@@ -283,6 +283,103 @@ I<TODO.>
     ::MD::all   ::= synonym of and;
     ::MD::every ::= synonym of and;
     ::MDS::"∧"  ::= synonym of and;
+
+I<TODO.>
+
+=head2 nand
+
+    ::MD::nand ::= function --> Boolean <-- (Boolean, Boolean)
+        is {commutative}
+        : (.0 !and .1);
+
+    ::MD::not_and ::= synonym of nand;
+    ::MDS::"⊼"    ::= synonym of nand;
+    ::MDS::"↑"    ::= synonym of nand;
+
+I<TODO.>
+
+=head2 or
+
+    ::MD::or ::= function --> Boolean <-- (Boolean, Boolean)
+        is {commutative,associative,idempotent} identity false
+        : (\\0 ?? true !! \\1);
+
+    ::MD::any  ::= synonym of or;
+    ::MD::some ::= synonym of or;
+    ::MDS::"∨" ::= synonym of or;
+
+I<TODO.>
+
+=head2 nor
+
+    ::MD::nor ::= function --> Boolean <-- (Boolean, Boolean)
+        is {commutative}
+        : (\\0 !or \\1);
+
+    ::MD::not_or ::= synonym of nor;
+    ::MDS::"⊽"   ::= synonym of nor;
+    ::MDS::"↓"   ::= synonym of nor;
+
+I<TODO.>
+
+=head2 xnor
+
+    ::MD::xnor ::= function --> Boolean <-- (Boolean, Boolean)
+        is {commutative,associative} identity true
+        : (\\0 = \\1);
+
+    ::MD::iff  ::= synonym of xnor;
+    ::MDS::"↔" ::= synonym of xnor;
+
+I<TODO.>
+
+=head2 xor
+
+    ::MD::xor ::= function --> Boolean <-- (Boolean, Boolean)
+        is {commutative,associative} identity false
+        : (\\0 != \\1);
+
+    ::MDS::"⊻" ::= synonym of xor;
+    ::MDS::"↮" ::= synonym of xor;
+
+I<TODO.>
+
+=head2 imp
+
+    ::MD::imp ::= function --> Boolean <-- (Boolean, Boolean)
+        : (\\0 ?? \\1 !! true);
+
+    ::MD::implies ::= synonym of imp;
+    ::MDS::"→"    ::= synonym of imp;
+
+I<TODO.>
+
+=head2 nimp
+
+    ::MD::nimp ::= function --> Boolean <-- (Boolean, Boolean)
+        : (\\0 !imp \\1);
+
+    ::MD::not_implies ::= synonym of nimp;
+    ::MDS::"↛"        ::= synonym of nimp;
+
+I<TODO.>
+
+=head2 if
+
+    ::MD::if ::= function --> Boolean <-- (Boolean, Boolean)
+        : (\\1 imp \\0);
+
+    ::MDS::"←" ::= synonym of if;
+
+I<TODO.>
+
+=head2 nif
+
+    ::MD::nif ::= function --> Boolean <-- (Boolean, Boolean)
+        : (\\1 nimp \\0);
+
+    ::MD::not_if ::= synonym of nif;
+    ::MDS::"↚"   ::= synonym of nif;
 
 I<TODO.>
 
@@ -360,7 +457,7 @@ Examples:
     ::MD::in_order::Inf_Integer ::= function
         --> Boolean <-- (Inf_Integer, Inf_Integer)
         implements 1::""
-        : topic -->^ FDN__Integers_in_order;
+        : (topic -->^ FDN__Integers_in_order);
 
 I<TODO.>
 
@@ -368,7 +465,7 @@ I<TODO.>
 
     ::MD::pred::Inf_Integer ::= function --> Inf_Integer <-- (Inf_Integer)
         implements 1::""
-        : \\0 - 1;
+        : (\\0 - 1);
 
 I<TODO.>
 
@@ -376,7 +473,7 @@ I<TODO.>
 
     ::MD::succ::Inf_Integer ::= function --> Inf_Integer <-- (Inf_Integer)
         implements 1::""
-        : \\0 + 1;
+        : (\\0 + 1);
 
 I<TODO.>
 
@@ -384,7 +481,7 @@ I<TODO.>
 
     ::MD::is_zero::Inf_Integer ::= function --> Boolean <-- (Inf_Integer)
         implements 1::""
-        : \\0 = 0;
+        : (\\0 = 0);
 
 I<TODO.>
 
