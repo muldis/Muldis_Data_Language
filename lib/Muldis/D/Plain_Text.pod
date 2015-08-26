@@ -814,7 +814,7 @@ I<TODO.>
 Grammar:
 
     <expr> ::=
-        <named_expr> | <commented_expr> | <anon_expr>
+        <named_expr> | <annotating_expr> | <anon_expr>
 
     <named_expr> ::=
           <expr_name>
@@ -827,11 +827,18 @@ Grammar:
     <aliasing_expr> ::=
         <expr_name> <sp> '::=' <sp> <named_expr>
 
-    <commented_expr> ::=
-        <expr> '::?=' <Text>
+    <annotating_expr> ::=
+        <annotated_expr> '::?=' <annotation_expr>
+
+    <annotated_expr> ::=
+        <expr>
+
+    <annotation_expr> ::=
+        <expr>
 
     <anon_expr> ::=
           <delimiting_expr>
+        | <topic_expr>
         | <opaque_literal_expr>
         | <collection_selector_expr>
         | <invocation_expr>
@@ -848,6 +855,9 @@ Grammar:
           ['<--' <sp> <expr>]
         | [['<--' <sp>]? <anon_expr>]
 
+    <topic_expr> ::=
+        topic
+
     <fail_expr> ::=
         fail
 
@@ -858,13 +868,10 @@ general case, an expression denoting any value of the C<Anything> type may
 be used where you see C<< <expr> >>, any further restrictions would be
 provided by the context.
 
-Iff an C<< <expr> >> is an C<< <expr_name> >>, then this typically means
+Iff an C<< <expr> >> is an C<< <expr_name> >>, then this means
 that the parent C<< <expr> >> is having at least one of its children
 declared with an explicit name rather than inline, and then the C<<
-<expr_name> >> is the invocation name of that child.  Alternately, the C<<
-<expr_name> >> may be the invocation name of one of the
-expression-containing routine's parameters, in which case the C<< <expr> >>
-in question represents the current argument to that parameter.
+<expr_name> >> is the invocation name of that child.
 
 Iff an C<< <expr> >> is a C<< <naming_expr> >>, then the C<< <anon_expr> >>
 element of the C<< <named_expr> >> is being declared with an explicit name,
@@ -876,11 +883,14 @@ declaring a new node itself (rather than simply naming its child node); the
 new node is simply declaring an alias for another node, namely its C<<
 <named_expr> >> element.
 
-Iff an C<< <expr> >> is a C<< <commented_expr> >>, then the C<< <expr> >>
-element of the C<< <commented_expr> >> is being given an explicit
-introspectable code comment whose text is the C<< <Text> >> element.  Keep
-in mind that C<::?=> binds tighter than nearly anything, so you may have to
-use parenthesis when you want the comment to associate with a non-leaf node.
+Iff an C<< <expr> >> is an C<< <annotating_expr> >>, then the C<<
+<annotated_expr> >> element of the C<< <annotating_expr> >> is being given
+an explicit introspectable code annotation whose value is the C<<
+<annotation_expr> >> element.  Keep in mind that C<::?=> binds tighter than
+nearly anything, so you may have to use parenthesis when you want the
+annotation to associate with a non-leaf node.  The most typical kind of
+annotation is a code comment expressed as a C<Comment> literal, or it may
+be a C<Set> of what would otherwise be individual annotations.
 
 Iff an C<< <expr> >> is a C<< <delimiting_expr> >>, then it is interpreted
 simply as if it were its child C<< <expr> >> element; the primary reason
@@ -891,6 +901,9 @@ to nesting precedence rules.
 
 A C<< <delimiting_expr> >> is subject to the additional rule that it must
 contain exactly one C<< <result_expr> >> element, which provides its value.
+
+Iff an C<< <expr> >> is a C<< <topic_expr> >>, then it represents the value
+of the expression-containing routine's sole argument.
 
 Iff an C<< <expr> >> is a C<< <fail_expr> >>, then any attempt at runtime
 to take that node's value will throw an exception, and so it should only
@@ -909,15 +922,18 @@ Examples:
     `a naming_expr node`
     bar_expr ::= factorial( foo_expr )
 
-    5 + 42 ::?= 'this is an introspectable comment attached to the 42'
+    5 + 42 ::?= \~?'this is an introspectable comment attached to the 42'
 
-    myfoo ::?= 'this is a comment on the elsewhere-declared node named foo'
+    myfoo ::?= \~?'this is a comment on the elsewhere-declared node named foo'
 
     `a delimiting_expr node`
     (x ::= y + 2; <-- x * x)
 
     `this uses one too`
     (x + y) * z
+
+    `this is the routine's argument`
+    topic
 
     `some assertion failed`
     fail
