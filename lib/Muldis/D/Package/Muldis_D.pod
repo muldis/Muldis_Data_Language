@@ -17,10 +17,6 @@ This document is part of the Muldis D language specification, whose root
 document is L<Muldis::D>; you should read that root document
 before you read this one, which provides subservient details.
 
-I<TODO: If it turns out that any POD renderer fails to generate proper
-internal hyperlinks due to this file reusing same =head2 (under different
-=head1), then duplicates will be suffixed to make them unique.>
-
 =head1 SYNOPSIS
 
     Muldis_D:Plain_Text:"http://muldis.com":"0.200.1";
@@ -88,7 +84,7 @@ From a separate source:
 
 =head1 MAXIMAL AND MINIMAL DATA TYPES
 
-=head2 Anything
+=head2 Anything Any
 
     ::MD::Anything ::= type default false;
 
@@ -109,7 +105,7 @@ The enumeration contract C<Nothing> represents the finite I<empty type>,
 which is the minimal data type of the entire Muldis D type system and
 consists of exactly zero values.  It can not have any default value.
 
-=head2 =
+=head2 = same
 
     ::MD::"=" ::= function --> Boolean <-- (Anything, Anything)
         is {commutative}
@@ -121,7 +117,7 @@ The function C<=> results in C<true> iff its 2 conceptual arguments are
 exactly the same value, and C<false> otherwise.  Other programming
 languages may name their corresponding operators I<==> or I<===>.
 
-=head2 !=
+=head2 != not_same ≠
 
     ::MD::"!=" ::= function --> Boolean <-- (Anything, Anything)
         is {commutative}
@@ -146,6 +142,69 @@ I<TODO.>
 
     ::MD::in_order::"" ::= function virtual
         --> Boolean <-- (Orderable, Orderable);
+
+I<TODO.>
+
+=head2 < before
+
+    ::MD::"<" ::= function --> Boolean <-- (Orderable, Orderable)
+        : (topic --> in_order and topic --> "!=");
+
+    ::MD::before ::= synonym of "<";
+
+I<TODO.>
+
+=head2 > after
+
+    ::MD::">" ::= function --> Boolean <-- (Orderable, Orderable)
+        : (not topic --> in_order);
+
+    ::MD::after ::= synonym of ">";
+
+I<TODO.>
+
+=head2 <= before_or_same ≤
+
+    ::MD::"<=" ::= function --> Boolean <-- (Orderable, Orderable)
+        : (topic --> in_order);
+
+    ::MD::before_or_same ::= synonym of "<=";
+    ::MDS::"≤"           ::= synonym of "<=";
+
+I<TODO.>
+
+=head2 >= after_or_same ≥
+
+    ::MD::">=" ::= function --> Boolean <-- (Orderable, Orderable)
+        : (not topic --> in_order or topic --> "=");
+
+    ::MD::after_or_same ::= synonym of ">=";
+    ::MDS::"≥"          ::= synonym of ">=";
+
+I<TODO.>
+
+=head2 min
+
+    ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
+        is {commutative,associative,idempotent} identity \(\"+Inf")
+        : (topic --> in_order ?? \\0 !! \\1);
+
+I<TODO.>
+
+=head2 max
+
+    ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
+        is {commutative,associative,idempotent} identity \(\"-Inf")
+        : (topic --> in_order ?? \\1 !! \\0);
+
+I<TODO.>
+
+=head2 minmax
+
+    ::MD::minmax ::= function
+        --> (Orderable, Orderable) <-- (Orderable, Orderable)
+        is commutative
+        : (topic --> in_order ?? topic !! \(\\1, \\0));
 
 I<TODO.>
 
@@ -179,7 +238,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 ?
+=head2 ? so
 
     ::MD::"?"::"" ::= function virtual --> Boolean <-- (Boolable);
 
@@ -189,7 +248,7 @@ I<TODO.>
 
 =head1 BOOLEAN DATA TYPES
 
-=head2 Boolean
+=head2 Boolean Bool False True
 
     ::MD::Boolean::"" ::= type where topic -->^ FDN__isa_Boolean
         default false
@@ -214,7 +273,7 @@ Examples:
 
     false
 
-=head2 in_order
+=head2 in_order (Boolean)
 
     ::MD::in_order::Boolean ::= function --> Boolean <-- (Boolean, Boolean)
         implements 1::""
@@ -222,7 +281,7 @@ Examples:
 
 I<TODO.>
 
-=head2 pred
+=head2 pred (Boolean)
 
     ::MD::pred::Boolean ::= function
         --> type union {False,"-Inf"} <-- (Boolean)
@@ -231,7 +290,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 succ
+=head2 succ (Boolean)
 
     ::MD::succ::Boolean ::= function
         --> type union {True,"+Inf"} <-- (Boolean)
@@ -240,7 +299,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 false
+=head2 false ⊥
 
     ::MD::false ::= constant false;
 
@@ -248,7 +307,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 true
+=head2 true ⊤
 
     ::MD::true ::= constant true;
 
@@ -256,7 +315,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 ?
+=head2 ? (Boolean)
 
     ::MD::"?"::Boolean ::= function --> Boolean <-- (Boolean)
         implements 1::""
@@ -264,7 +323,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 not
+=head2 not ! ¬
 
     ::MD::not ::= function --> Boolean <-- (Boolean)
         : (\\0 ?? false !! true);
@@ -274,7 +333,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 and
+=head2 and all every ∧
 
     ::MD::and ::= function --> Boolean <-- (Boolean, Boolean)
         is {commutative,associative,idempotent} identity true
@@ -286,7 +345,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 nand
+=head2 nand not_and ⊼ ↑
 
     ::MD::nand ::= function --> Boolean <-- (Boolean, Boolean)
         is {commutative}
@@ -298,7 +357,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 or
+=head2 or any some ∨
 
     ::MD::or ::= function --> Boolean <-- (Boolean, Boolean)
         is {commutative,associative,idempotent} identity false
@@ -310,7 +369,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 nor
+=head2 nor not_or ⊽ ↓
 
     ::MD::nor ::= function --> Boolean <-- (Boolean, Boolean)
         is {commutative}
@@ -322,7 +381,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 xnor
+=head2 xnor iff ↔
 
     ::MD::xnor ::= function --> Boolean <-- (Boolean, Boolean)
         is {commutative,associative} identity true
@@ -333,7 +392,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 xor
+=head2 xor ⊻ ↮
 
     ::MD::xor ::= function --> Boolean <-- (Boolean, Boolean)
         is {commutative,associative} identity false
@@ -344,7 +403,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 imp
+=head2 imp implies →
 
     ::MD::imp ::= function --> Boolean <-- (Boolean, Boolean)
         : (\\0 ?? \\1 !! true);
@@ -354,7 +413,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 nimp
+=head2 nimp not_implies ↛
 
     ::MD::nimp ::= function --> Boolean <-- (Boolean, Boolean)
         : (\\0 !imp \\1);
@@ -364,7 +423,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 if
+=head2 if ←
 
     ::MD::if ::= function --> Boolean <-- (Boolean, Boolean)
         : (\\1 imp \\0);
@@ -373,7 +432,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 nif
+=head2 nif not_if ↚
 
     ::MD::nif ::= function --> Boolean <-- (Boolean, Boolean)
         : (\\1 nimp \\0);
@@ -402,7 +461,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 ?
+=head2 ? (Integral)
 
     ::MD::"?"::Integral ::= function --> Boolean <-- (Integral)
         implements 1::""
@@ -418,7 +477,7 @@ I<TODO.>
 
 =head1 INTEGER DATA TYPES
 
-=head2 Inf_Integer
+=head2 Inf_Integer Integer Int
 
     ::MD::Inf_Integer ::= type where topic -->^ FDN__isa_Inf_Integer
         default 0
@@ -452,7 +511,7 @@ Examples:
 
     0b11001001
 
-=head2 in_order
+=head2 in_order (Inf_Integer)
 
     ::MD::in_order::Inf_Integer ::= function
         --> Boolean <-- (Inf_Integer, Inf_Integer)
@@ -461,7 +520,7 @@ Examples:
 
 I<TODO.>
 
-=head2 pred
+=head2 pred (Inf_Integer)
 
     ::MD::pred::Inf_Integer ::= function --> Inf_Integer <-- (Inf_Integer)
         implements 1::""
@@ -469,7 +528,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 succ
+=head2 succ (Inf_Integer)
 
     ::MD::succ::Inf_Integer ::= function --> Inf_Integer <-- (Inf_Integer)
         implements 1::""
@@ -477,7 +536,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 is_zero
+=head2 is_zero (Inf_Integer)
 
     ::MD::is_zero::Inf_Integer ::= function --> Boolean <-- (Inf_Integer)
         implements 1::""
