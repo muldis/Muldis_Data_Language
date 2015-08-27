@@ -695,10 +695,23 @@ Grammar:
     <generic_func_name> ::=
         <pkg_entity_name>
 
+    <foundation_const_name> ::=
+          FDN__false
+        | FDN__true
+        | FDN__default_External
+        | ...
+
     <foundation_func_name> ::=
-          foo
-        | bar
-        | baz
+          FDN__isa_Boolean
+        | FDN__isa_Inf_Integer
+        | FDN__isa_Inf_Array
+        | FDN__isa_Inf_Bag
+        | FDN__isa_Inf_Structure
+        | FDN__isa_External
+        | FDN__same
+        | FDN__Int_from_Text_10
+        | FDN__Int_from_Text_16
+        | FDN__Integers_in_order
         | ...
 
 A C<< <generic_name> >> is a I<generic context entity name>, which can be
@@ -954,7 +967,6 @@ Grammar:
         | <Float>
         | <Blob>
         | <Text>
-        | <External>
 
 An C<< <opaque_literal_expr> >> is an C<< <expr> >> that denotes a value
 literal specific to some system-defined data type that has its own special
@@ -1277,28 +1289,6 @@ Examples:
 
     \~'Green'
 
-=head2 External Literals
-
-Grammar:
-
-    <External> ::=
-        '\~external~' <Text>
-
-An C<< <External> >> node represents a value of the Muldis D C<External>
-type, which represents a native value of some other programming language,
-typically expressed in Muldis D Plain Text as source code of the other
-programming language.  In practice however, C<External> values tend to be
-strictly transient and their content implementation-dependent on whatever
-the host environment of the Muldis D implementation is, and they are not
-typically serialized to persistent source code, Muldis D Plain Text or
-otherwise.  The C<External> type is a fundamental type of the Muldis D type
-system, and this is the canonical grammar for them within Plain Text code.
-
-Examples:
-
-    `With a Perl 5 host, the Perl undef.`
-    \~external~'undef'
-
 =head1 COLLECTION SELECTOR EXPRESSIONS
 
 Grammar:
@@ -1368,7 +1358,7 @@ Grammar:
           <constant_invo_expr>
         | <generic_func_invo_expr>
         | <fixed_func_invo_expr>
-        | <foundation_func_invo_expr>
+        | <foundation_invo_expr>
 
 I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF --> WHERE THE FUNCTION
 OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
@@ -1437,9 +1427,15 @@ I<TODO.>
 
 I<TODO: FORGET NOT THE ps5_nonquoted_symbolic_grouping.>
 
-=head2 Foundation Function Invocation Expressions
+=head2 Foundation Invocation Expressions
 
 Grammar:
+
+    <foundation_invo_expr> ::=
+        <foundation_const_invo_expr> | <foundation_func_invo_expr>
+
+    <foundation_const_invo_expr> ::=
+        '(' <sp> '-->^' <sp> <foundation_const_name> <sp> ')'
 
     <foundation_func_invo_expr> ::=
         <generic_func_args> <sp> '-->^' <sp> <foundation_func_name>
@@ -1675,8 +1671,8 @@ Stage 8 in the parsing pipeline is to take any tokens from stage 2
 representing a single-quoted or double-quoted context, and for each one, if
 it contains any character escape sequences, to replace those escape
 sequences with the actual characters they represent.  Any C<'...'> or
-C<\~external~'...'> or C<"..."> represent character data, either C<Text> or
-C<External> literals or quoted identifiers, and the valid formats for both
+C<\?'...'> or C<"..."> represent character data, either C<Text> or
+C<SC_Comment> literals or quoted identifiers, and the valid formats for both
 within the quoted contexts are identical.  Note that for a run, each
 individual quoted context is treated in isolation, as some may be formatted
 for escape sequences and some may not.  Also using single-quoted contexts

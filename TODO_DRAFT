@@ -14,6 +14,57 @@ resources of everyone else.
 
 ----------
 
+* Make the External type more of a host-bound concept than before, such
+that the Plain_Text grammar has no literal/selector syntax specific to it
+at all, except for a dummy `external` singleton (like with false and true),
+and so trying to map any value is External or has an External component to
+a Plain_Text source code string will be a lossy operation.
+- This lossyness is similar to how any source code syntax meta not specific
+to Plain_Text will be lost when mapping to Plain_Text, and sometimes even
+some specific to Plain_Text if it can't be reconciled with the regular code
+as the actual semantic regular code takes precedence in a conflict.
+- Mapping from Plain_Text will turn that token into whatever is the current
+host language's closest concept to a generic undefined value, or whatever
+is the External type's "default" value in that host.
+- ACTUALLY, Plain_Text doesn't even get a keyword for External; instead we
+map to a Foundation routine call:
+    (-->^ FDN__default_External)
+- Generally the only place where an External value is lossless is either as
+a normal value at runtime (under the host it is native to) or in Muldis D
+Hosted Data source code (specific to the host it is native to).
+- When one wishes to persist External values in Plain_Text code, they must
+map to a non-External value, which at the very least could be a
+serialization to a simple Muldis D Blob that only the host knows the
+mechanism of.
+- As with false/true, there would be a Foundation level constant routine
+that gives the "default" value of the External type for its host.
+
+* An expression tree can be represented in data as a list of node name /
+node definition pairs, possibly as a tuple.  The list of package entities
+could be similar, but that their names have a hierarchy.
+
+* Annotation expressions, that is ::?= stuff, are explicitly meant to be
+syntax-agnostic meta-data.
+- Example uses include:
+    - Important code comments.
+    - Guides for generating a user interface / forms related to the code/types.
+    - Optimization hints such as how to index collections or expected cardinalities.
+    - Maybe consolidate certain routine trait info which can help
+    with optimization.  That being said, a lot of routine traits CAN'T be
+    demoted to annotations because they determine whether certain
+    operations are even legal semantically; for example, only commutative
+    and associative functions can be used for a deterministic reduction of
+    an unordered collection type.
+- Plain Text may provide special syntax for some of the uses of annotations
+eg routine traits but they would parse to the same?  Other grammars may too.
+- Annos are NOT intended for syntax-specific metadata such as is used to
+exactly remember the format of code such as literal format or whitespace etc;
+rather remembering that is orthogonal and can apply to annotations too as
+annotations are considered important code-alikes that appear literally.
+- Annotations must be completely foldable compile-time constants so they
+can not reference 'topic' and should not have any semantic effects such as
+side-channel writes unless those are desired to run at "compile time".
+
 * Make collection types support ?/to-boolean directly, rather than requring
 ?#, but it means the same thing, and the interface type with # composes
 boolable; one logically shouldn't have to count a collection to know if it
@@ -406,6 +457,7 @@ contexts, and /* or */ are valid as ordinary entity names.
 - Now an ordinary backtick-quoted string is a treated-as-whitespace comment
 and this is just a simple take contents literally there is no escaping.
 - So only '' and "" support escape sequences and run-catenating, `` neither.
+- (Note: VBScript uses leading single quote to indicate code comments.)
 
 * Backticks are no longer available (comments took them) to use with generic
 prefix/infix/postfix operator call syntax.  Any operator name that is not
@@ -2089,6 +2141,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    and $lit is shorthand for "resolved \$lit" eg $Bag short for "resolved \$Bag".
                   |    - SC_Reference is proper subtype has all "identity" values.
                   |    Note that any consecutive double-quoted tokens are treated as 1 token.
+    OBSOLETE; EXTERNAL HAS NO VALUE LITERAL SYNTAX IN Plain_Text.
     External      | \~external~'...' - the "..." are implementation-dependent
                   |    but typically is source code of some kind for
                   |    whatever the host environment is, eg Perl code
@@ -2706,6 +2759,10 @@ eg:
 - Mnemonic of ^ / up-pointer for raise/bootstrap remains.
 - The parser can tell them apart as easily as it does naming_expr vs aliasing_expr.
 - As usual, whitespace around the -->^ is optional.
+- Foundation constant call syntax (only option):
+    (-->^ opnamelit)
+eg:
+    (-->^ FDN__default_External)
 
 * In terms of regular function calls, a foundation function call is one that
 always has a -->/from/signature of Universal, that is it is like a
