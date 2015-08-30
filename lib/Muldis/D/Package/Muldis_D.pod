@@ -582,22 +582,28 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 "."
+=head2 . item
 
     ::MD::"."::"" ::= function virtual --> Any <-- (Accessible, Any);
 
+    ::MD::item ::= synonym of ".";
+
 I<TODO.>
 
-=head2 ".?"
+=head2 .? has_item
 
     ::MD::".?"::"" ::= function virtual --> Boolean <-- (Accessible, Any);
 
+    ::MD::has_item ::= synonym of ".?";
+
 I<TODO.>
 
-=head2 ".!"
+=head2 .! item_or_void
 
     ::MD::".!"::"" ::= function --> Any <-- (Accessible, Any)
         : (topic --> \$".?" ?? topic --> \$"." !! \(\Void));
+
+    ::MD::item_or_void ::= synonym of ".!";
 
 I<TODO.>
 
@@ -611,7 +617,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 "." (Arrayish)
+=head2 . (Arrayish)
 
     ::MD::"."::Arrayish ::= function virtual
         --> Any <-- (Arrayish, Integral)
@@ -619,7 +625,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 ".?" (Arrayish)
+=head2 .? (Arrayish)
 
     ::MD::".?"::Arrayish ::= function virtual
         --> Boolean <-- (Arrayish, Integral)
@@ -642,7 +648,7 @@ Foundation type I<FDN__Array_Inf>.  An C<Array_Inf> value is ...
 
 I<TODO.>
 
-=head2 "." (Array)
+=head2 . (Array)
 
     ::MD::"."::Array ::= function --> Any <-- (Array, Integer)
         implements 1::Arrayish
@@ -650,7 +656,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 ".?" (Array)
+=head2 .? (Array)
 
     ::MD::".?"::Array ::= function --> Boolean <-- (Array, Integer)
         implements 1::Arrayish
@@ -692,17 +698,100 @@ C<Structure_Inf>, the latter intentionally does not compose any interface
 contracts, and only has the minimal set of its own operators, so to
 minimize interference with other types' interfaces.
 
-=head2 ".>"
+=head2 .> field
 
-    ::MD::".>" ::= function --> Any <-- (Structure, SC_Name)
+    ::MD::".>" ::= function --> Any <-- (Structure, SC_Field_Name)
         (topic -->^ FDN__Structure_field);
 
 I<TODO.>
 
-=head2 ".>?"
+=head2 .>? has_field
 
-    ::MD::".>?" ::= function --> Boolean <-- (Structure, SC_Name)
+    ::MD::".>?" ::= function --> Boolean <-- (Structure, SC_Field_Name)
         (topic -->^ FDN__Structure_has_field);
+
+I<TODO.>
+
+=head2 ^> on_fields
+
+    ::MD::"^>" ::= function --> Structure <-- (Structure, SC_Field_Names)
+        (...);
+
+    ::MD::on_fields ::= synonym of "^>";
+
+I<TODO.>
+
+=head2 -^> but_fields
+
+    ::MD::"-^>" ::= function --> Structure <-- (Structure, SC_Field_Names)
+        (...);
+
+    ::MD::but_fields ::= synonym of "^>";
+
+I<TODO.>
+
+=head2 ^>? has_fields
+
+    ::MD::"^>?" ::= function --> Boolean <-- (Structure, SC_Signature)
+        (...);
+
+    ::MD::has_fields ::= synonym of "^>";
+
+I<TODO.>
+
+=head2 ^>?= has_just_fields
+
+    ::MD::"^>?=" ::= function --> Boolean <-- (Structure, SC_Signature)
+        (...);
+
+    ::MD::has_just_fields ::= synonym of "^>";
+
+I<TODO.>
+
+=head1 ATTRIBUTIVE DATA TYPES
+
+=head2 Attributive
+
+    ::MD::Attributive ::= type abstract
+        requires_implements {"^","-^","^?","^?="};
+
+I<TODO.>
+
+=head2 ^ on project
+
+    ::MD::"^"::"" ::= function virtual
+        --> Attributive <-- (Attributive, SC_Field_Names);
+
+    ::MD::on      ::= synonym of "^";
+    ::MD::project ::= synonym of "^";
+
+I<TODO.>
+
+=head2 -^ but project_all_but
+
+    ::MD::"-^"::"" ::= function virtual
+        --> Attributive <-- (Attributive, SC_Field_Names);
+
+    ::MD::but             ::= synonym of "-^";
+    ::MD::project_all_but ::= synonym of "-^";
+
+I<TODO.>
+
+=head2 ^? has_attrs
+
+    ::MD::"^?"::"" ::= function virtual
+        --> Boolean <-- (Attributive, SC_Signature);
+
+    ::MD::has_attrs ::= synonym of "^?";
+
+I<TODO.>
+
+=head2 ^?= has_just_attrs
+
+    ::MD::"^?="::"" ::= function virtual
+        --> Boolean <-- (Attributive, SC_Signature);
+
+    ::MD::has_just_attrs ::= synonym of "^?=";
 
 I<TODO.>
 
@@ -710,27 +799,61 @@ I<TODO.>
 
 =head2 Tuple_Inf Tuple
 
-    ::MD::Tuple_Inf ::= type of Structure where ...
+    ::MD::Tuple_Inf ::= type of Structure
+        where topic has_just_fields \(constant \Tuple, \$Structure)
         default \%()
-        composes {Accessible and_provides_its_default};
+        composes {Accessible and_provides_its_default,
+            Attributive and_provides_its_default};
 
     ::MD::Tuple ::= synonym of Tuple_Inf;
 
 I<TODO.>
 
-=head2 "." (Tuple)
+=head2 . (Tuple)
 
-    ::MD::"."::Tuple ::= function --> Any <-- (Tuple, SC_Name)
+    ::MD::"."::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
         implements 1::""
         (\\0 .> \1 .> \\1);
 
 I<TODO.>
 
-=head2 ".?" (Tuple)
+=head2 .? (Tuple)
 
-    ::MD::".?"::Tuple ::= function --> Boolean <-- (Tuple, SC_Name)
+    ::MD::".?"::Tuple ::= function --> Boolean <-- (Tuple, SC_Field_Name)
         implements 1::""
         (\\0 .> \1 .>? \\1);
+
+I<TODO.>
+
+=head2 ^ (Tuple)
+
+    ::MD::"^"::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
+        implements 1::""
+        (\\0 .> \1 ^> \\1);
+
+I<TODO.>
+
+=head2 -^ (Tuple)
+
+    ::MD::"-^"::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
+        implements 1::""
+        (\\0 .> \1 -^> \\1);
+
+I<TODO.>
+
+=head2 ^? (Tuple)
+
+    ::MD::"^?"::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
+        implements 1::""
+        (\\0 .> \1 ^>? \\1);
+
+I<TODO.>
+
+=head2 ^?= (Tuple)
+
+    ::MD::"^?="::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
+        implements 1::""
+        (\\0 .> \1 ^>?= \\1);
 
 I<TODO.>
 
