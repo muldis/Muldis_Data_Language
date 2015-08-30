@@ -573,6 +573,60 @@ I<TODO.>
 
 I<TODO.>
 
+=head1 ACCESSIBLE DATA TYPES
+
+=head2 Accessible
+
+    ::MD::Accessible ::= type abstract
+        requires_implements {".",".?"};
+
+I<TODO.>
+
+=head2 "."
+
+    ::MD::"."::"" ::= function virtual --> Any <-- (Accessible, Any);
+
+I<TODO.>
+
+=head2 ".?"
+
+    ::MD::".?"::"" ::= function virtual --> Boolean <-- (Accessible, Any);
+
+I<TODO.>
+
+=head2 ".!"
+
+    ::MD::".!"::"" ::= function --> Any <-- (Accessible, Any)
+        : (topic --> \$".?" ?? topic --> \$"." !! \(\Void));
+
+I<TODO.>
+
+=head1 ARRAYISH DATA TYPES
+
+=head2 Arrayish
+
+    ::MD::Arrayish ::= type abstract
+        composes {Accessible,...}
+        requires_implements {".",".?",...};
+
+I<TODO.>
+
+=head2 "." (Arrayish)
+
+    ::MD::"."::Arrayish ::= function virtual
+        --> Any <-- (Arrayish, Integral)
+        implements 1::"";
+
+I<TODO.>
+
+=head2 ".?" (Arrayish)
+
+    ::MD::".?"::Arrayish ::= function virtual
+        --> Boolean <-- (Arrayish, Integral)
+        implements 1::"";
+
+I<TODO.>
+
 =head1 ARRAY DATA TYPES
 
 =head2 Array_Inf Array
@@ -585,6 +639,22 @@ I<TODO.>
 
 The enumeration contract C<Array_Inf> represents the infinite Muldis D
 Foundation type I<FDN__Array_Inf>.  An C<Array_Inf> value is ...
+
+I<TODO.>
+
+=head2 "." (Array)
+
+    ::MD::"."::Array ::= function --> Any <-- (Array, Integer)
+        implements 1::Arrayish
+        (topic -->^ FDN__Array_elem);
+
+I<TODO.>
+
+=head2 ".?" (Array)
+
+    ::MD::".?"::Array ::= function --> Boolean <-- (Array, Integer)
+        implements 1::Arrayish
+        (topic -->^ FDN__Array_has_elem);
 
 I<TODO.>
 
@@ -614,6 +684,53 @@ I<TODO.>
 
 The enumeration contract C<Structure_Inf> represents the infinite Muldis D
 Foundation type I<FDN__Structure_Inf>.  A C<Structure_Inf> value is ...
+
+I<TODO.>
+
+Given that almost every enumeration contract is a subset of
+C<Structure_Inf>, the latter intentionally does not compose any interface
+contracts, and only has the minimal set of its own operators, so to
+minimize interference with other types' interfaces.
+
+=head2 ".>"
+
+    ::MD::".>" ::= function --> Any <-- (Structure, SC_Name)
+        (topic -->^ FDN__Structure_field);
+
+I<TODO.>
+
+=head2 ".>?"
+
+    ::MD::".>?" ::= function --> Boolean <-- (Structure, SC_Name)
+        (topic -->^ FDN__Structure_has_field);
+
+I<TODO.>
+
+=head1 TUPLE DATA TYPES
+
+=head2 Tuple_Inf Tuple
+
+    ::MD::Tuple_Inf ::= type of Structure where ...
+        default \%()
+        composes {Accessible and_provides_its_default};
+
+    ::MD::Tuple ::= synonym of Tuple_Inf;
+
+I<TODO.>
+
+=head2 "." (Tuple)
+
+    ::MD::"."::Tuple ::= function --> Any <-- (Tuple, SC_Name)
+        implements 1::""
+        (\\0 .> \1 .> \\1);
+
+I<TODO.>
+
+=head2 ".?" (Tuple)
+
+    ::MD::".?"::Tuple ::= function --> Boolean <-- (Tuple, SC_Name)
+        implements 1::""
+        (\\0 .> \1 .>? \\1);
 
 I<TODO.>
 
