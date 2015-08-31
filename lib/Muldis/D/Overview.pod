@@ -238,7 +238,8 @@ it is either an I<enumeration contract> or an I<interface contract>; these
 two declaration methods are polar opposites of each other.
 
 Each given I<enumeration contract>, I<E1>, explicitly declares for itself
-what its associated type / value set is.  The form this takes is a set of
+what its associated type / value set is.  The form this takes in the
+general case is a set of
 (typically exactly one) other contracts' names, I<S1>, plus a predicate
 expression, I<P1>.  The type of I<E1> is defined as taking the union of the
 types of I<S1> as source values and then applying I<P1> as a filter; the
@@ -249,6 +250,15 @@ for an I<E1> without a I<P1>, its implicit predicate is unconditionally
 I<true>.  The canonical way to associate an I<E1> with the universal type
 is to omit both its I<S1> and I<P1>; the canonical way to associate with
 the empty type is to have an explicit empty I<S1> and omit I<P1>.
+
+An enumeration contract associated with a I<singleton type> is
+idiomatically declared in a different way, by declaring a I<constant> whose
+value is the type's only value.  For any context in Muldis D where a
+reference to or a definition of an enumeration contract is allowed, a
+reference to or a definition of a constant is allowed in its place.  A
+given constant for value I<V1> is semantically identical for such uses as a
+general form enumeration contract with an omitted I<S1>, a I<P1> that tests
+its argument for equality with I<V1>, and a default value of I<V1>.
 
 Each given I<interface contract>, I<I1>, explicitly does I<not> declare its
 associated type.  Instead, I<I1> relies on other contracts, I<S1>, to
@@ -525,6 +535,11 @@ that it is I<folded>, in which case the parser can throw away any syntax
 meta-data and just store the constant's result value.  It is idiomatic for
 a constant that is produced with a database dump to be declared I<folded>
 while a constant hand-written by a user to not be declared so.
+
+A third idiomatic purpose of a I<constant> is to provide a terse alternate
+means to define an enumeration contract associated with a singleton type;
+as such a reference to a constant can be used both where a contract or a
+value is expected.
 
 =head1 EXPRESSIONS
 
