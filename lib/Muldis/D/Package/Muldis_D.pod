@@ -121,7 +121,7 @@ languages may name their corresponding operators I<==> or I<===>.
 
     ::MD::not_same ::= function --> Boolean <-- (Any, Any)
         is commutative
-        : (topic --> \$same ?? False !! True);
+        : (topic --> \@same ?? False !! True);
 
     ::MD::"!=" ::= synonym of not_same;
     ::MDS::"≠" ::= synonym of not_same;
@@ -148,7 +148,7 @@ I<TODO.>
 =head2 before <
 
     ::MD::before ::= function --> Boolean <-- (Orderable, Orderable)
-        : (topic --> \$in_order and topic --> \$"!=");
+        : (topic --> \@in_order and topic --> \@"!=");
 
     ::MD::"<" ::= synonym of before;
 
@@ -157,7 +157,7 @@ I<TODO.>
 =head2 after >
 
     ::MD::after ::= function --> Boolean <-- (Orderable, Orderable)
-        : (not topic --> \$in_order);
+        : (not topic --> \@in_order);
 
     ::MD::">" ::= synonym of after;
 
@@ -166,7 +166,7 @@ I<TODO.>
 =head2 before_or_same <= ≤
 
     ::MD::before_or_same ::= function --> Boolean <-- (Orderable, Orderable)
-        : (topic --> \$in_order);
+        : (topic --> \@in_order);
 
     ::MD::"<=" ::= synonym of before_or_same;
     ::MDS::"≤" ::= synonym of before_or_same;
@@ -176,7 +176,7 @@ I<TODO.>
 =head2 after_or_same >= ≥
 
     ::MD::after_or_same ::= function --> Boolean <-- (Orderable, Orderable)
-        : (not topic --> \$in_order or topic --> \$"=");
+        : (not topic --> \@in_order or topic --> \@"=");
 
     ::MD::">=" ::= synonym of after_or_same;
     ::MDS::"≥" ::= synonym of after_or_same;
@@ -187,7 +187,7 @@ I<TODO.>
 
     ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity \(\"+Inf")
-        : (topic --> \$in_order ?? \\0 !! \\1);
+        : (topic --> \@in_order ?? \\0 !! \\1);
 
 I<TODO.>
 
@@ -195,7 +195,7 @@ I<TODO.>
 
     ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity \(\"-Inf")
-        : (topic --> \$in_order ?? \\1 !! \\0);
+        : (topic --> \@in_order ?? \\1 !! \\0);
 
 I<TODO.>
 
@@ -204,7 +204,7 @@ I<TODO.>
     ::MD::minmax ::= function
         --> (Orderable, Orderable) <-- (Orderable, Orderable)
         is commutative
-        : (topic --> \$in_order ?? topic !! \(\\1, \\0));
+        : (topic --> \@in_order ?? topic !! \(\\1, \\0));
 
 I<TODO.>
 
@@ -346,7 +346,7 @@ I<TODO.>
 
     ::MD::nand ::= function --> Boolean <-- (Boolean, Boolean)
         is commutative
-        : (not topic --> \$and);
+        : (not topic --> \@and);
 
     ::MD::not_and ::= synonym of nand;
     ::MDS::"⊼"    ::= synonym of nand;
@@ -370,7 +370,7 @@ I<TODO.>
 
     ::MD::nor ::= function --> Boolean <-- (Boolean, Boolean)
         is commutative
-        : (not topic --> \$or);
+        : (not topic --> \@or);
 
     ::MD::not_or ::= synonym of nor;
     ::MDS::"⊽"   ::= synonym of nor;
@@ -382,7 +382,7 @@ I<TODO.>
 
     ::MD::xnor ::= function --> Boolean <-- (Boolean, Boolean)
         is {associative,commutative} identity True
-        : (topic --> \$"=");
+        : (topic --> \@"=");
 
     ::MD::iff  ::= synonym of xnor;
     ::MDS::"↔" ::= synonym of xnor;
@@ -393,7 +393,7 @@ I<TODO.>
 
     ::MD::xor ::= function --> Boolean <-- (Boolean, Boolean)
         is {associative,commutative} identity False
-        : (topic --> \$"!=");
+        : (topic --> \@"!=");
 
     ::MDS::"⊻" ::= synonym of xor;
     ::MDS::"↮" ::= synonym of xor;
@@ -413,7 +413,7 @@ I<TODO.>
 =head2 nimp not_implies ↛
 
     ::MD::nimp ::= function --> Boolean <-- (Boolean, Boolean)
-        : (not topic --> \$imp);
+        : (not topic --> \@imp);
 
     ::MD::not_implies ::= synonym of nimp;
     ::MDS::"↛"        ::= synonym of nimp;
@@ -520,16 +520,16 @@ I<TODO.>
 
     ::MD::"-"::"" ::= function --> Numeric
         <-- type of SC_Signature
-            where (topic ^>?= \(\$Numeric)
-                or topic ^>?= \(\$Numeric, \$Numeric))
-        : (topic --> (##>topic = 1 ?? \$opposite !! \$minus));
+            where (topic ^>?= \(\@Numeric)
+                or topic ^>?= \(\@Numeric, \@Numeric))
+        : (topic --> (##>topic = 1 ?? \@opposite !! \@minus));
 
 I<TODO.>
 
 =head2 modulus_minus abs_minus |-|
 
     ::MD::modulus_minus ::= function --> Numeric <-- (Numeric, Numeric)
-        : (modulus topic --> \$minus);
+        : (modulus topic --> \@minus);
 
     ::MD::abs_minus ::= synonym of modulus_minus;
     ::MD::"|-|"     ::= synonym of modulus_minus;
@@ -698,7 +698,7 @@ I<TODO.>
 =head2 item_or_void .!
 
     ::MD::item_or_void::"" ::= function --> Any <-- (Accessible, Any)
-        : (topic --> \$".?" ?? topic --> \$"." !! \(\Void));
+        : (topic --> \@".?" ?? topic --> \@"." !! \(\Void));
 
     ::MD::".!" ::= synonym of item_or_void;
 
@@ -902,7 +902,7 @@ I<TODO.>
 =head2 Tuple_Inf Tuple
 
     ::MD::Tuple_Inf ::= type of Structure
-        where topic has_just_fields \(constant \Tuple, \$Structure)
+        where topic has_just_fields \(constant \Tuple, \@Structure)
         default \%()
         composes {Accessible and_provides_its_default,
             Attributive and_provides_its_default};
