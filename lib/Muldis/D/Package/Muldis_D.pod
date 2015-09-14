@@ -105,29 +105,29 @@ The enumeration contract C<Nothing> represents the finite I<empty type>,
 which is the minimal data type of the entire Muldis D type system and
 consists of exactly zero values.  It can not have any default value.
 
-=head2 = same
+=head2 same =
 
-    ::MD::"=" ::= function --> Boolean <-- (Any, Any)
+    ::MD::same ::= function --> Boolean <-- (Any, Any)
         is commutative
         : (topic -->^ FDN__same);
 
-    ::MD::same ::= synonym of "=";
+    ::MD::"=" ::= synonym of same;
 
-The function C<=> results in C<True> iff its 2 conceptual arguments are
+The function C<same> results in C<True> iff its 2 conceptual arguments are
 exactly the same value, and C<False> otherwise.  Other programming
 languages may name their corresponding operators I<==> or I<===>.
 
-=head2 != not_same ≠
+=head2 not_same != ≠
 
-    ::MD::"!=" ::= function --> Boolean <-- (Any, Any)
+    ::MD::not_same ::= function --> Boolean <-- (Any, Any)
         is commutative
-        : (topic --> \$"=" ?? False !! True);
+        : (topic --> \$same ?? False !! True);
 
-    ::MD::not_same ::= synonym of "!=";
-    ::MDS::"≠"     ::= synonym of "!=";
+    ::MD::"!=" ::= synonym of not_same;
+    ::MDS::"≠" ::= synonym of not_same;
 
-The function C<!=> results in C<False> iff its 2 conceptual arguments are
-exactly the same value, and C<True> otherwise.
+The function C<not_same> results in C<False> iff its 2 conceptual arguments
+are exactly the same value, and C<True> otherwise.
 
 =head1 ORDERABLE DATA TYPES
 
@@ -145,41 +145,41 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 < before
+=head2 before <
 
-    ::MD::"<" ::= function --> Boolean <-- (Orderable, Orderable)
+    ::MD::before ::= function --> Boolean <-- (Orderable, Orderable)
         : (topic --> \$in_order and topic --> \$"!=");
 
-    ::MD::before ::= synonym of "<";
+    ::MD::"<" ::= synonym of before;
 
 I<TODO.>
 
-=head2 > after
+=head2 after >
 
-    ::MD::">" ::= function --> Boolean <-- (Orderable, Orderable)
+    ::MD::after ::= function --> Boolean <-- (Orderable, Orderable)
         : (not topic --> \$in_order);
 
-    ::MD::after ::= synonym of ">";
+    ::MD::">" ::= synonym of after;
 
 I<TODO.>
 
-=head2 <= before_or_same ≤
+=head2 before_or_same <= ≤
 
-    ::MD::"<=" ::= function --> Boolean <-- (Orderable, Orderable)
+    ::MD::before_or_same ::= function --> Boolean <-- (Orderable, Orderable)
         : (topic --> \$in_order);
 
-    ::MD::before_or_same ::= synonym of "<=";
-    ::MDS::"≤"           ::= synonym of "<=";
+    ::MD::"<=" ::= synonym of before_or_same;
+    ::MDS::"≤" ::= synonym of before_or_same;
 
 I<TODO.>
 
-=head2 >= after_or_same ≥
+=head2 after_or_same >= ≥
 
-    ::MD::">=" ::= function --> Boolean <-- (Orderable, Orderable)
+    ::MD::after_or_same ::= function --> Boolean <-- (Orderable, Orderable)
         : (not topic --> \$in_order or topic --> \$"=");
 
-    ::MD::after_or_same ::= synonym of ">=";
-    ::MDS::"≥"          ::= synonym of ">=";
+    ::MD::">=" ::= synonym of after_or_same;
+    ::MDS::"≥" ::= synonym of after_or_same;
 
 I<TODO.>
 
@@ -234,15 +234,15 @@ I<TODO.>
 
 =head2 Boolable
 
-    ::MD::Boolable ::= type abstract requires_implements "?";
+    ::MD::Boolable ::= type abstract requires_implements so;
 
 I<TODO.>
 
-=head2 ? so
+=head2 so ?
 
-    ::MD::"?"::"" ::= function virtual --> Boolean <-- (Boolable);
+    ::MD::so::"" ::= function virtual --> Boolean <-- (Boolable);
 
-    ::MD::so ::= synonym of "?";
+    ::MD::"?" ::= synonym of so;
 
 I<TODO.>
 
@@ -312,9 +312,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 ? (Boolean)
+=head2 so (Boolean)
 
-    ::MD::"?"::Boolean ::= function --> Boolean <-- (Boolean)
+    ::MD::so::Boolean ::= function --> Boolean <-- (Boolean)
         implements 1::""
         : \\0;
 
@@ -444,7 +444,7 @@ I<TODO.>
 =head2 Numeric
 
     ::MD::Numeric ::= type abstract
-        requires_implements {"+","-","*","/","div"};
+        requires_implements {opposite,abs,plus,minus,times,...};
 
 I<TODO.>
 
@@ -458,9 +458,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 ? (Integral)
+=head2 so (Integral)
 
-    ::MD::"?"::Integral ::= function --> Boolean <-- (Integral)
+    ::MD::so::Integral ::= function --> Boolean <-- (Integral)
         implements 1::""
         : \\0->is_zero->not;
 
@@ -545,32 +545,32 @@ I<TODO.>
 =head2 Accessible
 
     ::MD::Accessible ::= type abstract
-        requires_implements {".",".?"};
+        requires_implements {item,has_item};
 
 I<TODO.>
 
-=head2 . item
+=head2 item .
 
-    ::MD::"."::"" ::= function virtual --> Any <-- (Accessible, Any);
+    ::MD::item::"" ::= function virtual --> Any <-- (Accessible, Any);
 
-    ::MD::item ::= synonym of ".";
-
-I<TODO.>
-
-=head2 .? has_item
-
-    ::MD::".?"::"" ::= function virtual --> Boolean <-- (Accessible, Any);
-
-    ::MD::has_item ::= synonym of ".?";
+    ::MD::"." ::= synonym of item;
 
 I<TODO.>
 
-=head2 .! item_or_void
+=head2 has_item .?
 
-    ::MD::".!"::"" ::= function --> Any <-- (Accessible, Any)
+    ::MD::has_item::"" ::= function virtual --> Boolean <-- (Accessible, Any);
+
+    ::MD::".?" ::= synonym of has_item;
+
+I<TODO.>
+
+=head2 item_or_void .!
+
+    ::MD::item_or_void::"" ::= function --> Any <-- (Accessible, Any)
         : (topic --> \$".?" ?? topic --> \$"." !! \(\Void));
 
-    ::MD::item_or_void ::= synonym of ".!";
+    ::MD::".!" ::= synonym of item_or_void;
 
 I<TODO.>
 
@@ -580,7 +580,7 @@ I<TODO.>
 
     ::MD::Arrayish ::= type abstract
         composes {Accessible,...}
-        requires_implements {".",".?",...};
+        requires_implements {item,has_item,...};
 
 I<TODO.>
 
@@ -599,17 +599,17 @@ Foundation type I<FDN__Array_Inf>.  An C<Array_Inf> value is ...
 
 I<TODO.>
 
-=head2 . (Array)
+=head2 item (Array)
 
-    ::MD::"."::Array ::= function --> Any <-- (Array, Integer)
+    ::MD::item::Array ::= function --> Any <-- (Array, Integer)
         implements 1::""
         : (topic -->^ FDN__Array_elem);
 
 I<TODO.>
 
-=head2 .? (Array)
+=head2 has_item (Array)
 
-    ::MD::".?"::Array ::= function --> Boolean <-- (Array, Integer)
+    ::MD::has_item::Array ::= function --> Boolean <-- (Array, Integer)
         implements 1::""
         : (topic -->^ FDN__Array_has_elem);
 
@@ -649,53 +649,57 @@ C<Structure_Inf>, the latter intentionally does not compose any interface
 contracts, and only has the minimal set of its own operators, so to
 minimize interference with other types' interfaces.
 
-=head2 .> field
+=head2 field .>
 
-    ::MD::".>" ::= function --> Any <-- (Structure, SC_Field_Name)
+    ::MD::field ::= function --> Any <-- (Structure, SC_Field_Name)
         : (topic -->^ FDN__Structure_field);
 
+    ::MD::".>" ::= synonym of field;
+
 I<TODO.>
 
-=head2 .>? has_field
+=head2 has_field .>?
 
-    ::MD::".>?" ::= function --> Boolean <-- (Structure, SC_Field_Name)
+    ::MD::has_field ::= function --> Boolean <-- (Structure, SC_Field_Name)
         : (topic -->^ FDN__Structure_has_field);
 
-I<TODO.>
-
-=head2 ^> on_fields
-
-    ::MD::"^>" ::= function --> Structure <-- (Structure, SC_Field_Names)
-        : (...);
-
-    ::MD::on_fields ::= synonym of "^>";
+    ::MD::".>?" ::= synonym of has_field;
 
 I<TODO.>
 
-=head2 -^> but_fields
+=head2 on_fields ^>
 
-    ::MD::"-^>" ::= function --> Structure <-- (Structure, SC_Field_Names)
+    ::MD::on_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
         : (...);
 
-    ::MD::but_fields ::= synonym of "^>";
+    ::MD::"^>" ::= synonym of on_fields;
 
 I<TODO.>
 
-=head2 ^>? has_fields
+=head2 but_fields -^>
 
-    ::MD::"^>?" ::= function --> Boolean <-- (Structure, SC_Signature)
+    ::MD::but_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
         : (...);
 
-    ::MD::has_fields ::= synonym of "^>";
+    ::MD::"^>" ::= synonym of but_fields;
 
 I<TODO.>
 
-=head2 ^>?= has_just_fields
+=head2 has_fields ^>?
 
-    ::MD::"^>?=" ::= function --> Boolean <-- (Structure, SC_Signature)
+    ::MD::has_fields ::= function --> Boolean <-- (Structure, SC_Signature)
         : (...);
 
-    ::MD::has_just_fields ::= synonym of "^>";
+    ::MD::"^>" ::= synonym of has_fields;
+
+I<TODO.>
+
+=head2 has_just_fields ^>?=
+
+    ::MD::has_just_fields ::= function --> Boolean <-- (Structure, SC_Signature)
+        : (...);
+
+    ::MD::"^>" ::= synonym of has_just_fields;
 
 I<TODO.>
 
@@ -704,45 +708,45 @@ I<TODO.>
 =head2 Attributive
 
     ::MD::Attributive ::= type abstract
-        requires_implements {"^","-^","^?","^?="};
+        requires_implements {on,but,has_attrs,has_just_attrs};
 
 I<TODO.>
 
-=head2 ^ on project
+=head2 on ^ project
 
-    ::MD::"^"::"" ::= function virtual
+    ::MD::on::"" ::= function virtual
         --> Attributive <-- (Attributive, SC_Field_Names);
 
-    ::MD::on      ::= synonym of "^";
-    ::MD::project ::= synonym of "^";
+    ::MD::"^"     ::= synonym of on;
+    ::MD::project ::= synonym of on;
 
 I<TODO.>
 
-=head2 -^ but project_all_but
+=head2 but -^ project_all_but
 
-    ::MD::"-^"::"" ::= function virtual
+    ::MD::but::"" ::= function virtual
         --> Attributive <-- (Attributive, SC_Field_Names);
 
-    ::MD::but             ::= synonym of "-^";
-    ::MD::project_all_but ::= synonym of "-^";
+    ::MD::"-^"            ::= synonym of but;
+    ::MD::project_all_but ::= synonym of but;
 
 I<TODO.>
 
-=head2 ^? has_attrs
+=head2 has_attrs ^?
 
-    ::MD::"^?"::"" ::= function virtual
+    ::MD::has_attrs::"" ::= function virtual
         --> Boolean <-- (Attributive, SC_Signature);
 
-    ::MD::has_attrs ::= synonym of "^?";
+    ::MD::"^?" ::= synonym of has_attrs;
 
 I<TODO.>
 
-=head2 ^?= has_just_attrs
+=head2 has_just_attrs ^?=
 
-    ::MD::"^?="::"" ::= function virtual
+    ::MD::has_just_attrs::"" ::= function virtual
         --> Boolean <-- (Attributive, SC_Signature);
 
-    ::MD::has_just_attrs ::= synonym of "^?=";
+    ::MD::"^?=" ::= synonym of has_just_attrs;
 
 I<TODO.>
 
@@ -760,49 +764,49 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 . (Tuple)
+=head2 item (Tuple)
 
-    ::MD::"."::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
+    ::MD::item::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
         implements 1::""
         : (\\0 .> \1 .> \\1);
 
 I<TODO.>
 
-=head2 .? (Tuple)
+=head2 has_item (Tuple)
 
-    ::MD::".?"::Tuple ::= function --> Boolean <-- (Tuple, SC_Field_Name)
+    ::MD::has_item::Tuple ::= function --> Boolean <-- (Tuple, SC_Field_Name)
         implements 1::""
         : (\\0 .> \1 .>? \\1);
 
 I<TODO.>
 
-=head2 ^ (Tuple)
+=head2 on (Tuple)
 
-    ::MD::"^"::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
+    ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
         implements 1::""
         : (\\0 .> \1 ^> \\1);
 
 I<TODO.>
 
-=head2 -^ (Tuple)
+=head2 but (Tuple)
 
-    ::MD::"-^"::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
+    ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
         implements 1::""
         : (\\0 .> \1 -^> \\1);
 
 I<TODO.>
 
-=head2 ^? (Tuple)
+=head2 has_attrs (Tuple)
 
-    ::MD::"^?"::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
+    ::MD::has_attrs::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
         implements 1::""
         : (\\0 .> \1 ^>? \\1);
 
 I<TODO.>
 
-=head2 ^?= (Tuple)
+=head2 has_just_attrs (Tuple)
 
-    ::MD::"^?="::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
+    ::MD::has_just_attrs::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
         implements 1::""
         : (\\0 .> \1 ^>?= \\1);
 
