@@ -444,13 +444,143 @@ I<TODO.>
 =head2 Numeric
 
     ::MD::Numeric ::= type abstract
-        requires_implements {is_zero,opposite,abs,plus,minus,times,...};
+        requires_implements {is_zero,opposite,reciprocal,modulus,
+            plus,minus,frac_divide,whole_divide,...};
+
+I<TODO.>
+
+=head2 Round_Meth
+
+    ::MD::Round_Meth ::= type
+        union {Round_Down,Round_Up
+            ,Round_To_Zero,Round_To_Inf
+            ,Round_Half_Down,Round_Half_Up
+            ,Round_Half_To_Zero,Round_Half_To_Inf
+            ,Round_Half_Even}
+        default Round_To_Zero();
+
+    ::MD::Round_Down         ::= constant \Round_Down;
+    ::MD::Round_Up           ::= constant \Round_Up;
+    ::MD::Round_To_Zero      ::= constant \Round_To_Zero;
+    ::MD::Round_To_Inf       ::= constant \Round_To_Inf;
+    ::MD::Round_Half_Down    ::= constant \Round_Half_Down;
+    ::MD::Round_Half_Up      ::= constant \Round_Half_Up;
+    ::MD::Round_Half_To_Zero ::= constant \Round_Half_To_Zero;
+    ::MD::Round_Half_To_Inf  ::= constant \Round_Half_To_Inf;
+    ::MD::Round_Half_Even    ::= constant \Round_Half_Even;
 
 I<TODO.>
 
 =head2 is_zero
 
     ::MD::is_zero::"" ::= function virtual --> Boolean <-- (Numeric);
+
+I<TODO.>
+
+=head2 opposite
+
+    ::MD::opposite::"" ::= function virtual --> Numeric <-- (Numeric);
+
+    ::MD::additive_inverse ::= synonym of opposite;
+
+I<TODO.>
+
+=head2 reciprocal
+
+    ::MD::reciprocal::"" ::= function virtual --> Numeric <-- (Numeric)
+        requires (\\0->is_zero->not);
+
+    ::MD::multiplicative_inverse ::= synonym of reciprocal;
+
+I<TODO.>
+
+=head2 modulus abs
+
+    ::MD::modulus::"" ::= function virtual --> Numeric <-- (Numeric);
+
+    ::MD::abs ::= synonym of modulus;
+
+I<TODO.>
+
+=head2 plus +
+
+    ::MD::plus::"" ::= function virtual --> Numeric <-- (Numeric, Numeric);
+
+    ::MD::"+" ::= synonym of plus;
+
+I<TODO.>
+
+=head2 minus
+
+    ::MD::minus::"" ::= function virtual --> Numeric <-- (Numeric, Numeric);
+
+I<TODO.>
+
+=head2 -
+
+    ::MD::"-"::"" ::= function --> Numeric
+        <-- type of SC_Signature
+            where (topic ^>?= \(\$Numeric)
+                or topic ^>?= \(\$Numeric, \$Numeric))
+        : (topic --> (##>topic = 1 ?? \$opposite !! \$minus));
+
+I<TODO.>
+
+=head2 modulus_minus abs_minus |-|
+
+    ::MD::modulus_minus ::= function --> Numeric <-- (Numeric, Numeric)
+        : (modulus topic --> \$minus);
+
+    ::MD::abs_minus ::= synonym of modulus_minus;
+    ::MD::"|-|"     ::= synonym of modulus_minus;
+
+I<TODO.>
+
+=head2 times *
+
+    ::MD::times::"" ::= function virtual --> Numeric <-- (Numeric, Numeric);
+
+    ::MD::"*" ::= synonym of times;
+
+I<TODO.>
+
+=head2 frac_divide /
+
+    ::MD::frac_divide::"" ::= function virtual
+        --> Numeric <-- (Numeric, Numeric)
+        requires (\\1->is_zero->not);
+
+    ::MD::"/" ::= synonym of frac_divide;
+
+I<TODO.>
+
+=head2 whole_divide div
+
+    ::MD::whole_divide::"" ::= function virtual
+        --> Numeric <-- (Numeric, Numeric, Round_Meth)
+        requires (\\1->is_zero->not);
+
+    ::MD::div ::= synonym of whole_divide;
+
+I<TODO.>
+
+=head2 modulo mod
+
+    ::MD::modulo::"" ::= function
+        --> Numeric <-- (Numeric, Numeric, Round_Meth)
+        requires (\\1->is_zero->not)
+        : (\\0 - (\\1 * div(*topic)));
+
+    ::MD::mod ::= synonym of modulo;
+
+I<TODO.>
+
+=head2 divide_and_modulo
+
+    ::MD::divide_and_modulo::"" ::= function
+        --> ... <-- (Numeric, Numeric, Round_Meth)
+        requires (\\1->is_zero->not)
+        : (...);
 
 I<TODO.>
 
@@ -462,7 +592,7 @@ I<TODO.>
         composes {Enumerable, Boolable, Numeric and_provides_its_default}
         requires_implements {in_order,pred,succ,is_zero,...};
 
-I<TODO.>
+I<TODO.  Also, do something about the unimplemented Numeric operators.>
 
 =head2 so (Integral)
 
@@ -488,7 +618,7 @@ Foundation type I<FDN__Integer_Inf>.  An C<Integer_Inf> value is a general
 purpose integer exact numeric.  Its default value is C<0>.  Other
 programming languages may name their corresponding types I<BigInt>.
 
-I<TODO.>
+I<TODO.  Also, do something about the unimplemented Numeric operators.>
 
 Examples:
 
