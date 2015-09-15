@@ -451,25 +451,23 @@ I<TODO.>
 
 =head2 Round_Meth
 
-    ::MD::Round_Meth ::= type
-        union {Round_Down,Round_Up
-            ,Round_To_Zero,Round_To_Inf
-            ,Round_Half_Down,Round_Half_Up
-            ,Round_Half_To_Zero,Round_Half_To_Inf
-            ,Round_Half_Even}
-        default Round_To_Zero();
+    ::MD::Round_Meth::"" ::= type
+        union {1::Down,1::Up,1::To_Zero,1::To_Inf
+            ,1::Half_Down,1::Half_Up,1::Half_To_Zero,1::Half_To_Inf
+            ,1::Half_Even}
+        default 1::To_Zero();
 
-    ::MD::Round_Down         ::= constant \Round_Down;
-    ::MD::Round_Up           ::= constant \Round_Up;
-    ::MD::Round_To_Zero      ::= constant \Round_To_Zero;
-    ::MD::Round_To_Inf       ::= constant \Round_To_Inf;
-    ::MD::Round_Half_Down    ::= constant \Round_Half_Down;
-    ::MD::Round_Half_Up      ::= constant \Round_Half_Up;
-    ::MD::Round_Half_To_Zero ::= constant \Round_Half_To_Zero;
-    ::MD::Round_Half_To_Inf  ::= constant \Round_Half_To_Inf;
-    ::MD::Round_Half_Even    ::= constant \Round_Half_Even;
+    ::MD::Round_Meth::Down         ::= constant \Round_Down;
+    ::MD::Round_Meth::Up           ::= constant \Round_Up;
+    ::MD::Round_Meth::To_Zero      ::= constant \Round_To_Zero;
+    ::MD::Round_Meth::To_Inf       ::= constant \Round_To_Inf;
+    ::MD::Round_Meth::Half_Down    ::= constant \Round_Half_Down;
+    ::MD::Round_Meth::Half_Up      ::= constant \Round_Half_Up;
+    ::MD::Round_Meth::Half_To_Zero ::= constant \Round_Half_To_Zero;
+    ::MD::Round_Meth::Half_To_Inf  ::= constant \Round_Half_To_Inf;
+    ::MD::Round_Meth::Half_Even    ::= constant \Round_Half_Even;
 
-I<TODO.>
+I<TODO.  Also, review most appropriate values for the constants.>
 
 =head2 is_zero
 
@@ -779,15 +777,6 @@ C<Structure_Inf>, the latter intentionally does not compose any interface
 contracts, and only has the minimal set of its own operators, so to
 minimize interference with other types' interfaces.
 
-=head2 Structure_degree ##>
-
-    ::MD::field ::= function --> Any <-- (Structure, SC_Field_Name)
-        : (topic -->^ FDN__Structure_degree);
-
-    ::MD::"##>" ::= synonym of Structure_degree;
-
-I<TODO.>
-
 =head2 field .>
 
     ::MD::field ::= function --> Any <-- (Structure, SC_Field_Name)
@@ -803,6 +792,24 @@ I<TODO.>
         : (topic -->^ FDN__Structure_has_field);
 
     ::MD::".>?" ::= synonym of has_field;
+
+I<TODO.>
+
+=head2 has_any_fields ?^>
+
+    ::MD::has_any_fields ::= function --> Boolean <-- (Structure)
+        : (topic -->^ FDN__Structure_has_any_fields);
+
+    ::MD::"?^>" ::= synonym of has_any_fields;
+
+I<TODO.>
+
+=head2 count_fields #^>
+
+    ::MD::Structure_degree ::= function --> Integer <-- (Structure)
+        : (topic -->^ FDN__Structure_count_fields);
+
+    ::MD::"#^>" ::= synonym of count_fields;
 
 I<TODO.>
 
@@ -847,15 +854,24 @@ I<TODO.>
 =head2 Attributive
 
     ::MD::Attributive ::= type abstract
-        requires_implements {degree,on,but,has_attrs,has_just_attrs};
+        requires_implements {has_any_attrs,degree,on,but,has_attrs,has_just_attrs};
 
 I<TODO.>
 
-=head2 degree ##
+=head2 has_any_attrs ?^
+
+    ::MD::has_any_attrs::"" ::= function virtual --> Boolean <-- (Attributive);
+
+    ::MD::"?^" ::= synonym of has_any_attrs;
+
+I<TODO.>
+
+=head2 degree count_attrs #^
 
     ::MD::degree::"" ::= function virtual --> Integral <-- (Attributive);
 
-    ::MD::"##" ::= synonym of degree;
+    ::MD::count_attrs ::= synonym of degree;
+    ::MD::"#^"        ::= synonym of degree;
 
 I<TODO.>
 
@@ -927,11 +943,19 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 has_any_attrs (Tuple)
+
+    ::MD::has_any_attrs::Tuple ::= function --> Boolean <-- (Tuple)
+        implements 1::""
+        : (?^>(\\0 .> \1));
+
+I<TODO.>
+
 =head2 degree (Tuple)
 
     ::MD::degree::Tuple ::= function --> Integer <-- (Tuple)
         implements 1::""
-        : (##>(\\0 .> \1));
+        : (#^>(\\0 .> \1));
 
 I<TODO.>
 
