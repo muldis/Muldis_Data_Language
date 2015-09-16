@@ -234,30 +234,30 @@ keyword C<type> actually declares a I<contract>, despite its contrary name;
 for all practical purposes its users are talking about its associated type.
 
 Every I<contract> is of exactly 1 of 2 kinds based on how it is declared;
-it is either an I<enumeration contract> or an I<interface contract>; these
+it is either a I<selection contract> or an I<interface contract>; these
 two declaration methods are polar opposites of each other.
 
-Each given I<enumeration contract>, I<E1>, explicitly declares for itself
+Each given I<selection contract>, I<R1>, explicitly declares for itself
 what its associated type / value set is.  The form this takes in the
 general case is a set of
 (typically exactly one) other contracts' names, I<S1>, plus a predicate
-expression, I<P1>.  The type of I<E1> is defined as taking the union of the
+expression, I<P1>.  The type of I<R1> is defined as taking the union of the
 types of I<S1> as source values and then applying I<P1> as a filter; the
-type of I<E1> consists of just the values for which I<P1> results in
-I<true>.  Having a I<S1> is optional; the value source of an I<E1> without
+type of I<R1> consists of just the values for which I<P1> results in
+I<true>.  Having a I<S1> is optional; the value source of an I<R1> without
 a I<S1> is implicitly the universal type.  Having a I<P1> is also optional;
-for an I<E1> without a I<P1>, its implicit predicate is unconditionally
-I<true>.  The canonical way to associate an I<E1> with the universal type
+for an I<R1> without a I<P1>, its implicit predicate is unconditionally
+I<true>.  The canonical way to associate an I<R1> with the universal type
 is to omit both its I<S1> and I<P1>; the canonical way to associate with
 the empty type is to have an explicit empty I<S1> and omit I<P1>.
 
-An enumeration contract associated with a I<singleton type> is
+A selection contract associated with a I<singleton type> is
 idiomatically declared in a different way, by declaring a I<constant> whose
 value is the type's only value.  For any context in Muldis D where a
-reference to or a definition of an enumeration contract is allowed, a
+reference to or a definition of a selection contract is allowed, a
 reference to or a definition of a constant is allowed in its place.  A
 given constant for value I<V1> is semantically identical for such uses as a
-general form enumeration contract with an omitted I<S1>, a I<P1> that tests
+general form selection contract with an omitted I<S1>, a I<P1> that tests
 its argument for equality with I<V1>, and a default value of I<V1>.
 
 Each given I<interface contract>, I<I1>, explicitly does I<not> declare its
@@ -267,19 +267,19 @@ a type union that includes all of the values of I<S1>.
 
 Each given contract, with the sole exception of one associating with the
 empty type, must have exactly 1 associated I<default value>.  Any
-enumeration contract, I<E1>, may explicitly declare this value for itself;
-if I<E1> does not do this, then the default value of its immediate sources
+selection contract, I<R1>, may explicitly declare this value for itself;
+if I<R1> does not do this, then the default value of its immediate sources
 is implicitly inherited as its own; if the set of default values of the
-direct sources of I<E1>, after being filtered by the predicate of I<E1>, is
+direct sources of I<R1>, after being filtered by the predicate of I<R1>, is
 not a singleton, this is an error.  Any interface contract I<I1> must have
 exactly 1 composing contract I<S1> that also explicitly declares that it
 provides the default value of I<I1>; that is, the default value of I<S1> is
 also the default value of I<I1>.
 
 Any kind of contract may compose an I<interface contract>, and so the
-latter may be chained, but ultimately each end composer must be an
-I<enumeration contract> as only they can originate default values.  For
-example, one may have 2 interface contracts and an enumeration contract to
+latter may be chained, but ultimately each end composer must be a
+I<selection contract> as only they can originate default values.  For
+example, one may have 2 interface contracts and a selection contract to
 represent, respectively, a general numeric type, a rational numeric type,
 and a 64-bit ratio type; these ordered from most general to most specific.
 
@@ -295,7 +295,7 @@ interface contract must implement the latter's required interface; failing
 to do so is an error.
 
 And so, regardless of whether types are manifested in a program by way of a
-an enumeration contract or an interface contract, users can be confident
+a selection contract or an interface contract, users can be confident
 that if some code declares acceptance of a particular supertype, they
 should be able to easily predict the manners and circumstances where they
 may use all of its subtypes interchangeably, with more general code,
@@ -316,10 +316,10 @@ In contrast, an interface contract which declares at least one required
 virtual routine exists mainly to aid generic code reuse, but may optionally
 provide a semantic label as well.
 
-The primary determinant for whether you would declare a contract as an
-enumeration contract or an interface contract is whether you want the
-contract's definition to be closed, or open, respectively.  If you use an
-enumeration contract, then assuming you have control over all the types it
+The primary determinant for whether you would declare a contract as a
+selection contract or an interface contract is whether you want the
+contract's definition to be closed, or open, respectively.  If you use a
+selection contract, then assuming you have control over all the types it
 unions (or they are system-defined), you are fairly guaranteed that your
 contract will remain static and continue to contain exactly the same values
 indefinitely, or in other words that the type will continue to mean exactly
@@ -537,7 +537,7 @@ a constant that is produced with a database dump to be declared I<folded>
 while a constant hand-written by a user to not be declared so.
 
 A third idiomatic purpose of a I<constant> is to provide a terse alternate
-means to define an enumeration contract associated with a singleton type;
+means to define a selection contract associated with a singleton type;
 as such a reference to a constant can be used both where a contract or a
 value is expected.
 
