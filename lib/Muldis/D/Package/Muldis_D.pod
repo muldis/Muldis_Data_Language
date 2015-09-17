@@ -516,7 +516,7 @@ I<TODO.>
 
 =head2 -
 
-    ::MD::"-"::"" ::= function --> Numeric
+    ::MD::"-" ::= function --> Numeric
         <-- type of SC_Signature
             where (topic ^>?= \(\@Numeric)
                 or topic ^>?= \(\@Numeric, \@Numeric))
@@ -695,7 +695,7 @@ I<TODO.>
 
 =head2 item_or_void .!
 
-    ::MD::item_or_void::"" ::= function --> Any <-- (Accessible, Any)
+    ::MD::item_or_void ::= function --> Any <-- (Accessible, Any)
         : (topic --> \@".?" ?? topic --> \@"." !! \(\Void));
 
     ::MD::".!" ::= synonym of item_or_void;
@@ -882,24 +882,6 @@ C<Structure_Inf>, the latter intentionally does not compose any interface
 contracts, and only has the minimal set of its own operators, so to
 minimize interference with other types' interfaces.
 
-=head2 field .>
-
-    ::MD::field ::= function --> Any <-- (Structure, SC_Field_Name)
-        : (topic -->^ FDN__Structure_field);
-
-    ::MD::".>" ::= synonym of field;
-
-I<TODO.>
-
-=head2 has_field .>?
-
-    ::MD::has_field ::= function --> Boolean <-- (Structure, SC_Field_Name)
-        : (topic -->^ FDN__Structure_has_field);
-
-    ::MD::".>?" ::= synonym of has_field;
-
-I<TODO.>
-
 =head2 has_any_fields ?^>
 
     ::MD::has_any_fields ::= function --> Boolean <-- (Structure)
@@ -927,6 +909,33 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 field .>
+
+    ::MD::field ::= function --> Any <-- (Structure, SC_Field_Name)
+        : (topic -->^ FDN__Structure_field);
+
+    ::MD::".>" ::= synonym of field;
+
+I<TODO.>
+
+=head2 has_field .>?
+
+    ::MD::has_field ::= function --> Boolean <-- (Structure, SC_Field_Name)
+        : (topic -->^ FDN__Structure_has_field);
+
+    ::MD::".>?" ::= synonym of has_field;
+
+I<TODO.>
+
+=head2 field_or_void .>!
+
+    ::MD::field_or_void ::= function --> Any <-- (Structure, SC_Field_Name)
+        : (topic --> \@".>?" ?? topic --> \@".>" !! \(\Void));
+
+    ::MD::".>!" ::= synonym of field_or_void;
+
+I<TODO.>
+
 =head2 on_fields ^>
 
     ::MD::on_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
@@ -941,7 +950,16 @@ I<TODO.>
     ::MD::but_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
         : (topic -->^ FDN__Structure_but_fields);
 
-    ::MD::"^>" ::= synonym of but_fields;
+    ::MD::"-^>" ::= synonym of but_fields;
+
+I<TODO.>
+
+=head2 Structure_extend +^>
+
+    ::MD::Structure_extend ::= function --> Boolean <-- (Structure, Structure)
+        : (topic -->^ FDN__Structure_extend);
+
+    ::MD::"+^>" ::= synonym of Structure_extend;
 
 I<TODO.>
 
@@ -950,7 +968,7 @@ I<TODO.>
     ::MD::has_fields ::= function --> Boolean <-- (Structure, SC_Signature)
         : (...);
 
-    ::MD::"^>" ::= synonym of has_fields;
+    ::MD::"^>?" ::= synonym of has_fields;
 
 I<TODO.>
 
@@ -959,7 +977,7 @@ I<TODO.>
     ::MD::has_just_fields ::= function --> Boolean <-- (Structure, SC_Signature)
         : (...);
 
-    ::MD::"^>" ::= synonym of has_just_fields;
+    ::MD::"^>?=" ::= synonym of has_just_fields;
 
 I<TODO.>
 
@@ -968,7 +986,7 @@ I<TODO.>
 =head2 Attributive
 
     ::MD::Attributive ::= type abstract
-        requires_implements {is_nullary,degree,on,but,has_attrs,has_just_attrs};
+        requires_implements {is_nullary,degree,on,but,extend,has_attrs,has_just_attrs};
 
 I<TODO.>
 
@@ -1005,7 +1023,7 @@ I<TODO.>
     ::MD::"^"     ::= synonym of on;
     ::MD::project ::= synonym of on;
 
-I<TODO.>
+I<TODO.  Also, this is analagous to set intersect.>
 
 =head2 but -^ project_all_but
 
@@ -1015,7 +1033,21 @@ I<TODO.>
     ::MD::"-^"            ::= synonym of but;
     ::MD::project_all_but ::= synonym of but;
 
-I<TODO.>
+I<TODO.  Also, this is analagous to set difference.>
+
+=head2 extend +^
+
+    ::MD::extend::"" ::= function virtual
+        --> Attributive <-- (Attributive, Attributive);
+
+    ::MD::"+^" ::= synonym of extend;
+
+I<TODO.  Also, this is analagous to set union (disjoint).>
+
+I<Note: There is no version of 'extend' that takes a routine; one can just
+use the above version plus an eg-tuple selector. In the case of relation
+extend, one can do the aforementioned within a 'map' routine, for the
+routine version; they can use join/cross-product for the static version.>
 
 =head2 has_attrs ^?
 
@@ -1049,22 +1081,6 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 item (Tuple)
-
-    ::MD::item::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
-        implements 1::""
-        : (\\0 .> \1 .> \\1);
-
-I<TODO.>
-
-=head2 has_item (Tuple)
-
-    ::MD::has_item::Tuple ::= function --> Boolean <-- (Tuple, SC_Field_Name)
-        implements 1::""
-        : (\\0 .> \1 .>? \\1);
-
-I<TODO.>
-
 =head2 is_nullary (Tuple)
 
     ::MD::is_nullary::Tuple ::= function --> Boolean <-- (Tuple)
@@ -1081,11 +1097,27 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 item (Tuple)
+
+    ::MD::item::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
+        implements 1::""
+        : (\\0 .> \1 .> \\1);
+
+I<TODO.>
+
+=head2 has_item (Tuple)
+
+    ::MD::has_item::Tuple ::= function --> Boolean <-- (Tuple, SC_Field_Name)
+        implements 1::""
+        : (\\0 .> \1 .>? \\1);
+
+I<TODO.>
+
 =head2 on (Tuple)
 
     ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
         implements 1::""
-        : (\\0 .> \1 ^> \\1);
+        : (\(\Tuple, \\0 .> \1 ^> \\1));
 
 I<TODO.>
 
@@ -1093,7 +1125,15 @@ I<TODO.>
 
     ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
         implements 1::""
-        : (\\0 .> \1 -^> \\1);
+        : (\(\Tuple, \\0 .> \1 -^> \\1));
+
+I<TODO.>
+
+=head2 extend (Tuple)
+
+    ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
+        implements 1::""
+        : (\(\Tuple, (\\0 .> \1) +^> (\\1 .> \1)));
 
 I<TODO.>
 
