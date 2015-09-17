@@ -720,9 +720,11 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 is_empty
+=head2 is_empty !?
 
     ::MD::is_empty::"" ::= function virtual --> Boolean <-- (Collective);
+
+    ::MD::"!?" ::= synonym of is_empty;
 
 I<TODO.>
 
@@ -901,25 +903,34 @@ I<TODO.>
 =head2 has_any_fields ?^>
 
     ::MD::has_any_fields ::= function --> Boolean <-- (Structure)
-        : (topic -->^ FDN__Structure_has_any_fields);
+        : (topic != \());
 
     ::MD::"?^>" ::= synonym of has_any_fields;
 
 I<TODO.>
 
-=head2 count_fields #^>
+=head2 Structure_is_nullary !?^>
+
+    ::MD::Structure_is_nullary ::= function --> Boolean <-- (Structure)
+        : (topic = \());
+
+    ::MD::"!?^>" ::= synonym of Structure_is_nullary;
+
+I<TODO.>
+
+=head2 Structure_degree #^>
 
     ::MD::Structure_degree ::= function --> Integer <-- (Structure)
-        : (topic -->^ FDN__Structure_count_fields);
+        : (topic -->^ FDN__Structure_degree);
 
-    ::MD::"#^>" ::= synonym of count_fields;
+    ::MD::"#^>" ::= synonym of Structure_degree;
 
 I<TODO.>
 
 =head2 on_fields ^>
 
     ::MD::on_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
-        : (...);
+        : (topic -->^ FDN__Structure_on_fields);
 
     ::MD::"^>" ::= synonym of on_fields;
 
@@ -928,7 +939,7 @@ I<TODO.>
 =head2 but_fields -^>
 
     ::MD::but_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
-        : (...);
+        : (topic -->^ FDN__Structure_but_fields);
 
     ::MD::"^>" ::= synonym of but_fields;
 
@@ -957,24 +968,32 @@ I<TODO.>
 =head2 Attributive
 
     ::MD::Attributive ::= type abstract
-        requires_implements {has_any_attrs,degree,on,but,has_attrs,has_just_attrs};
+        requires_implements {is_nullary,degree,on,but,has_attrs,has_just_attrs};
 
 I<TODO.>
 
 =head2 has_any_attrs ?^
 
-    ::MD::has_any_attrs::"" ::= function virtual --> Boolean <-- (Attributive);
+    ::MD::has_any_attrs ::= function --> Boolean <-- (Attributive):
+        : (\\0->is_nullary->not);
 
     ::MD::"?^" ::= synonym of has_any_attrs;
 
 I<TODO.>
 
-=head2 degree count_attrs #^
+=head2 is_nullary !?^
+
+    ::MD::is_nullary::"" ::= function virtual --> Boolean <-- (Attributive);
+
+    ::MD::"!?^" ::= synonym of is_nullary;
+
+I<TODO.>
+
+=head2 degree #^
 
     ::MD::degree::"" ::= function virtual --> Integral <-- (Attributive);
 
-    ::MD::count_attrs ::= synonym of degree;
-    ::MD::"#^"        ::= synonym of degree;
+    ::MD::"#^" ::= synonym of degree;
 
 I<TODO.>
 
@@ -1046,11 +1065,11 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 has_any_attrs (Tuple)
+=head2 is_nullary (Tuple)
 
-    ::MD::has_any_attrs::Tuple ::= function --> Boolean <-- (Tuple)
+    ::MD::is_nullary::Tuple ::= function --> Boolean <-- (Tuple)
         implements 1::""
-        : (?^>(\\0 .> \1));
+        : (topic = \%());
 
 I<TODO.>
 
