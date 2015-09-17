@@ -679,7 +679,8 @@ I<TODO.>
 
 =head2 item .
 
-    ::MD::item::"" ::= function virtual --> Any <-- (Accessible, Any);
+    ::MD::item::"" ::= function virtual --> Any <-- (Accessible, Any)
+        requires (topic --> \@".?");
 
     ::MD::"." ::= synonym of item;
 
@@ -775,14 +776,14 @@ I<TODO.>
 =head2 group
 
     ::MD::group::"" ::= function virtual --> Collective <-- (Collective)
-        requires ...;
+        requires (...);
 
 I<TODO.>
 
 =head2 ungroup
 
     ::MD::ungroup::"" ::= function virtual --> Collective <-- (Collective)
-        requires ...;
+        requires (...);
 
 I<TODO.>
 
@@ -836,6 +837,7 @@ I<TODO.>
 
     ::MD::item::Array ::= function --> Any <-- (Array, Integer)
         implements 1::""
+        requires (topic --> \@".?")
         : (topic -->^ FDN__Array_elem);
 
 I<TODO.>
@@ -939,6 +941,7 @@ I<TODO.>
 =head2 on_fields ^>
 
     ::MD::on_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
+        requires (...)
         : (topic -->^ FDN__Structure_on_fields);
 
     ::MD::"^>" ::= synonym of on_fields;
@@ -948,6 +951,7 @@ I<TODO.>
 =head2 but_fields -^>
 
     ::MD::but_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
+        requires (...)
         : (topic -->^ FDN__Structure_but_fields);
 
     ::MD::"-^>" ::= synonym of but_fields;
@@ -957,6 +961,8 @@ I<TODO.>
 =head2 Structure_extend +^>
 
     ::MD::Structure_extend ::= function --> Boolean <-- (Structure, Structure)
+        requires (...)
+        is {associative,commutative} identity \()
         : (topic -->^ FDN__Structure_extend);
 
     ::MD::"+^>" ::= synonym of Structure_extend;
@@ -1018,7 +1024,8 @@ I<TODO.>
 =head2 on ^ project
 
     ::MD::on::"" ::= function virtual
-        --> Attributive <-- (Attributive, SC_Field_Names);
+        --> Attributive <-- (Attributive, SC_Field_Names)
+        requires (...);
 
     ::MD::"^"     ::= synonym of on;
     ::MD::project ::= synonym of on;
@@ -1028,7 +1035,8 @@ I<TODO.  Also, this is analagous to set intersect.>
 =head2 but -^ project_all_but
 
     ::MD::but::"" ::= function virtual
-        --> Attributive <-- (Attributive, SC_Field_Names);
+        --> Attributive <-- (Attributive, SC_Field_Names)
+        requires (...);
 
     ::MD::"-^"            ::= synonym of but;
     ::MD::project_all_but ::= synonym of but;
@@ -1038,7 +1046,9 @@ I<TODO.  Also, this is analagous to set difference.>
 =head2 extend +^
 
     ::MD::extend::"" ::= function virtual
-        --> Attributive <-- (Attributive, Attributive);
+        --> Attributive <-- (Attributive, Attributive)
+        requires (...)
+        is {associative,commutative};
 
     ::MD::"+^" ::= synonym of extend;
 
@@ -1101,6 +1111,7 @@ I<TODO.>
 
     ::MD::item::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
         implements 1::""
+        requires (topic --> \@".?")
         : (\\0 .> \1 .> \\1);
 
 I<TODO.>
@@ -1117,6 +1128,7 @@ I<TODO.>
 
     ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
         implements 1::""
+        requires (...)
         : (\(\Tuple, \\0 .> \1 ^> \\1));
 
 I<TODO.>
@@ -1125,6 +1137,7 @@ I<TODO.>
 
     ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
         implements 1::""
+        requires (...)
         : (\(\Tuple, \\0 .> \1 -^> \\1));
 
 I<TODO.>
@@ -1133,6 +1146,8 @@ I<TODO.>
 
     ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
         implements 1::""
+        requires (...)
+        is {associative,commutative} identity \%()
         : (\(\Tuple, (\\0 .> \1) +^> (\\1 .> \1)));
 
 I<TODO.>
