@@ -14,6 +14,42 @@ resources of everyone else.
 
 ----------
 
+* Consider formally unifying functions and contracts at the native
+source code level, such that contracts are just syntactical shorthand.
+- Need appropriate representation for an interface contract then.
+Or that remains a separate thing, perhaps just call it 'interface' rather
+than 'type/contract'?  Or not.  It is still *used* as a function?
+- Need appropriate requires-implements then.
+- Any Boolean-resulting function ... or any function really ... can have an
+associated 'default' trait, which is just a reference to a constant; the
+'default' trait is similar to associative/etc traits in how actually used,
+or alternately default-foo is always just explicitly invoked when needed eg
+to default a variable.
+- The in/out/requires/etc traits of a function can just be other functions.
+- Consider making the higher level routine call syntax --> just syntactic
+shorthand for a Foundation 'call_function' routine combined with a runtime
+access to the source code to know the fully qualified name of the routine
+to call (analagous to Perl's caller() etc) and/or pass in the source code
+itself which might then be a true higher-order function.
+
+* Lets say that one can reference any contract name where a function name
+is expected, and in that case it is equivalent to invoking the complete
+predicate of the associated type; so eg "42 --> \@Integer" means "42 isa
+\@Integer" and returns true, as does Integer(*42).
+- Similarly, generalizing the constants thing, referencing any contract
+where a constant name is expected, is equivalent to fetching the associated
+default value, so eg (--> \@Integer) returns 0 as does Integer().
+- Maybe conversely anywhere a type name is expected we may put the name of
+a predicate function but that the predicate function must take the payload
+value as its real argument, not wrapped in a unary Structure.
+- Thus the difference between functions and contracts is essentially none,
+or contracts really are just a subset of functions, or such.
+- But what about the allowance or not of multiple functions matching the
+same floating name, pick one or die?
+- Either way we should think about formal function<->contract equivalencies;
+eg, a function behaving as a type must have Any as its argument and have
+no 'requires' and its body is the predicate.
+
 * See also brand new written http://design.perl6.org/S07.html ok.
 
 * Try and keep from reusing operator names for conceptually unrelated uses,
@@ -114,8 +150,18 @@ the compiler at package registration actually needs to know.  Their 'names'
 are I<foo> and are defined in terms of predicates.  They would likely have
 corresponding but different C<foo> names defined in Muldis_D package.
 - Yes, #1 and #2 I<foo> above are types, just their C<foo> are contracts.
+- #2 just eg don't use Tuple, but Structure directly, save complexity.
 3. List foundation functions.  Their names are C<foo>.
 4. List foundation procedures.  Their names are C<foo>.
+
+* The core grammar can stick to selector node types for just the
+fundamental type collections - array,bag,structure - and distinguishing
+whether selector syntax specific to set or relation or tuple etc was used,
+that is just in the Plain_Text metadata.
+- We will however not fold any collection type selections into an 'opaque'
+node when there is a lack of arguments etc referenced, so the code still
+has a semblence of what the user wrote, and their explicit node names or
+comments etc are preserved most appropriately.
 
 * In order to ACTUALLY implement a Plain_Text parser in pure Muldis D, or
 other parsers likewise, every literal / selector ACTUALLY has to have a
