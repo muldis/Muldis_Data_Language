@@ -14,6 +14,58 @@ resources of everyone else.
 
 ----------
 
+* A Muldis D feature to emphasize is how one can do a single query to get
+all the related data they want at once rather than many serial queries.
+ORMs/etc implemented over this can exploit this, group requests together,
+then MD impl gathers the parts efficiently as possible.
+
+* Structurally we can just have these materials:
+    - alias
+    - constant
+    - selection
+    - interface
+    - function
+    - procedure
+- Any of {selection,interface,constant} can be used as a type; while
+conceivably a function could too, we will require a function to be wrapped
+in a selection in order to be used that way.
+- Anything that can be used as a type can also be invoked as a function or
+as a constant, which will be a predicate function or default value respectively.
+
+* New function trait keywords (ignores implements/is/etc for now):
+    returns --> to    - ((True))
+    matches <-- from  - ((True))
+    accepts requires  - ((True))
+    via :             - (topic)
+- All traits are optional, effective default if missing is given with them.
+- In ... cases, {returns,matches,accepts,of} will also take syntactic
+shorthands for lists of type names or Structure defs while {via,where} don't.
+
+* A thought:  Fundamentally a function is simply a mapping of values of the
+universal type.  All that to/from/requires does is provide metadata on when
+the function is expected to be well-behaved or not with certain input, and
+strictly speaking they are all optional.  From and Requires are
+fundamentally alike, specifying preconditions / constraints on input, but
+the one to use is determined by what semantics are desired from the system.
+To is a constraint on output.  Normalize is just a factoring convenience.
+- From an optimization standpoint, a program known to be correct can have
+the 'requires' and 'to' checks disabled, that is assuming we know for sure
+they would never be tripped.  As to the 'from', that is only needed in the
+context of overloading to select a candidate.
+- Actually, lets say Normalize is obsolete, not really that useful.
+- As such, a function is effectively a wrapper for this logic:
+    if not from-expr then reject_match
+    else with normal-expr:
+        if not requires-expr then accept_match_fail_input
+        else with body-expr:
+            if not to-expr then accept_match_fail_output
+            else accept_match_success_return body-expr
+- But if unifying types into functions, we actually need 2 predicates and
+the logic is instead like this:
+    if first-pred then second-pred else false
+... that is, there is no from/to/requires/normalize logic, no multiple
+candidates per se, no exception throws like to/requires etc.
+
 * Consider formally unifying functions and contracts at the native
 source code level, such that contracts are just syntactical shorthand.
 - Need appropriate representation for an interface contract then.
@@ -90,6 +142,8 @@ syntax-agnostic meta-data.
     - Important code comments.
     - Guides for generating a user interface / forms related to the code/types.
     - Optimization hints such as how to index collections or expected cardinalities.
+    - Hints specific to implementations, such as that something is specifically
+    meant to correspond to a table in a SQL implementation.
     - Maybe consolidate certain routine trait info which can help
     with optimization.  That being said, a lot of routine traits CAN'T be
     demoted to annotations because they determine whether certain
@@ -2925,14 +2979,14 @@ of "the database" at any given point in time.
 constants for a virtual type should be composed by implementing types.
 
 * Type declare syntax general form:
-    0. keyword "type" followed by 0 or 1 of each of next in any order,
+    0. keyword "selection" or "interface" followed by 0 or 1 of each of next in any order,
         but with some restrictions:
-    1. keyword "abstract" is optional, not followed by anything of its own
+    1. OBSOLETE: keyword "abstract" is optional, not followed by anything of its own
         - if used, the 2 keywords {of,where} must be omitted
         - until another type composes an abstract type, that abstract type
         is equivalent to the empty type and any attempt to have a variable
         of the abstract type will fail at runtime in the same way
-    2. keyword "singleton" is optional, not followed by anything of its own
+    2. OBSOLETE: keyword "singleton" is optional, not followed by anything of its own
         - if used, replaces all 3 keywords {of,where,default}
         - is for singletons that have their own Capsule type
         - these 2 declarations are equivalent:

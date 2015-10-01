@@ -86,9 +86,9 @@ From a separate source:
 
 =head2 Anything Any
 
-    ::MD::Anything ::= type default False;
+    ::MD::Anything ::= selection default False;
 
-    ::MD::Any ::= synonym of Anything;
+    ::MD::Any ::= alias of Anything;
 
 The selection contract C<Anything> represents the infinite I<universal
 type>, which is the maximal data type of the entire Muldis D type system
@@ -99,7 +99,7 @@ types I<Any> or I<Object> or I<Anything>.
 
 =head2 Nothing
 
-    ::MD::Nothing ::= type of {};
+    ::MD::Nothing ::= selection of {};
 
 The selection contract C<Nothing> represents the finite I<empty type>,
 which is the minimal data type of the entire Muldis D type system and
@@ -111,7 +111,7 @@ consists of exactly zero values.  It can not have any default value.
         is commutative
         : (topic -->^ FDN__same);
 
-    ::MD::"=" ::= synonym of same;
+    ::MD::"=" ::= alias of same;
 
 The function C<same> results in C<True> iff its 2 conceptual arguments are
 exactly the same value, and C<False> otherwise.  Other programming
@@ -123,8 +123,8 @@ languages may name their corresponding operators I<==> or I<===>.
         is commutative
         : (topic --> \@same ?? False !! True);
 
-    ::MD::"!=" ::= synonym of not_same;
-    ::MDS::"≠" ::= synonym of not_same;
+    ::MD::"!=" ::= alias of not_same;
+    ::MDS::"≠" ::= alias of not_same;
 
 The function C<not_same> results in C<False> iff its 2 conceptual arguments
 are exactly the same value, and C<True> otherwise.
@@ -133,7 +133,7 @@ are exactly the same value, and C<True> otherwise.
 
 =head2 Orderable
 
-    ::MD::Orderable ::= type abstract
+    ::MD::Orderable ::= interface
         requires_implements in_order;
 
 I<TODO.>
@@ -150,7 +150,7 @@ I<TODO.>
     ::MD::before ::= function --> Boolean <-- (Orderable, Orderable)
         : (topic --> \@in_order and topic --> \@"!=");
 
-    ::MD::"<" ::= synonym of before;
+    ::MD::"<" ::= alias of before;
 
 I<TODO.>
 
@@ -159,7 +159,7 @@ I<TODO.>
     ::MD::after ::= function --> Boolean <-- (Orderable, Orderable)
         : (not topic --> \@in_order);
 
-    ::MD::">" ::= synonym of after;
+    ::MD::">" ::= alias of after;
 
 I<TODO.>
 
@@ -168,8 +168,8 @@ I<TODO.>
     ::MD::before_or_same ::= function --> Boolean <-- (Orderable, Orderable)
         : (topic --> \@in_order);
 
-    ::MD::"<=" ::= synonym of before_or_same;
-    ::MDS::"≤" ::= synonym of before_or_same;
+    ::MD::"<=" ::= alias of before_or_same;
+    ::MDS::"≤" ::= alias of before_or_same;
 
 I<TODO.>
 
@@ -178,8 +178,8 @@ I<TODO.>
     ::MD::after_or_same ::= function --> Boolean <-- (Orderable, Orderable)
         : (not topic --> \@in_order or topic --> \@"=");
 
-    ::MD::">=" ::= synonym of after_or_same;
-    ::MDS::"≥" ::= synonym of after_or_same;
+    ::MD::">=" ::= alias of after_or_same;
+    ::MDS::"≥" ::= alias of after_or_same;
 
 I<TODO.>
 
@@ -212,7 +212,7 @@ I<TODO.>
 
 =head2 Enumerable
 
-    ::MD::Enumerable ::= type abstract
+    ::MD::Enumerable ::= interface
         composes Orderable and_provides_its_default
         requires_implements {in_order,pred,succ};
 
@@ -234,7 +234,7 @@ I<TODO.>
 
 =head2 Boolable
 
-    ::MD::Boolable ::= type abstract requires_implements so;
+    ::MD::Boolable ::= interface requires_implements so;
 
 I<TODO.>
 
@@ -242,7 +242,7 @@ I<TODO.>
 
     ::MD::so::"" ::= function virtual --> Boolean <-- (Boolable);
 
-    ::MD::"?" ::= synonym of so;
+    ::MD::"?" ::= alias of so;
 
 I<TODO.>
 
@@ -250,12 +250,12 @@ I<TODO.>
 
 =head2 Boolean Bool
 
-    ::MD::Boolean::"" ::= type where topic -->^ FDN__isa_Boolean
+    ::MD::Boolean::"" ::= selection where topic -->^ FDN__isa_Boolean
         default False
         composes {Enumerable and_provides_its_default,
             Boolable and_provides_its_default};
 
-    ::MD::Bool ::= synonym of Boolean;
+    ::MD::Bool ::= alias of Boolean;
 
 The selection contract C<Boolean> represents the finite Muldis D
 Foundation type I<FDN__Boolean>.  A C<Boolean> value is a general purpose
@@ -298,7 +298,7 @@ I<TODO.>
 
     ::MD::False ::= constant False;
 
-    ::MDS::"⊥" ::= synonym of False;
+    ::MDS::"⊥" ::= alias of False;
 
 I<TODO.>
 
@@ -306,7 +306,7 @@ I<TODO.>
 
     ::MD::True ::= constant True;
 
-    ::MDS::"⊤" ::= synonym of True;
+    ::MDS::"⊤" ::= alias of True;
 
 I<TODO.>
 
@@ -323,8 +323,8 @@ I<TODO.>
     ::MD::not ::= function --> Boolean <-- (Boolean)
         : (\\0 ?? False !! True);
 
-    ::MD::"!"  ::= synonym of not;
-    ::MDS::"¬" ::= synonym of not;
+    ::MD::"!"  ::= alias of not;
+    ::MDS::"¬" ::= alias of not;
 
 I<TODO.>
 
@@ -334,9 +334,9 @@ I<TODO.>
         is {associative,commutative,idempotent} identity True
         : (\\0 ?? \\1 !! False);
 
-    ::MD::all   ::= synonym of and;
-    ::MD::every ::= synonym of and;
-    ::MDS::"∧"  ::= synonym of and;
+    ::MD::all   ::= alias of and;
+    ::MD::every ::= alias of and;
+    ::MDS::"∧"  ::= alias of and;
 
 I<TODO.>
 
@@ -346,9 +346,9 @@ I<TODO.>
         is commutative
         : (not topic --> \@and);
 
-    ::MD::not_and ::= synonym of nand;
-    ::MDS::"⊼"    ::= synonym of nand;
-    ::MDS::"↑"    ::= synonym of nand;
+    ::MD::not_and ::= alias of nand;
+    ::MDS::"⊼"    ::= alias of nand;
+    ::MDS::"↑"    ::= alias of nand;
 
 I<TODO.>
 
@@ -358,9 +358,9 @@ I<TODO.>
         is {associative,commutative,idempotent} identity False
         : (\\0 ?? True !! \\1);
 
-    ::MD::any  ::= synonym of or;
-    ::MD::some ::= synonym of or;
-    ::MDS::"∨" ::= synonym of or;
+    ::MD::any  ::= alias of or;
+    ::MD::some ::= alias of or;
+    ::MDS::"∨" ::= alias of or;
 
 I<TODO.>
 
@@ -370,9 +370,9 @@ I<TODO.>
         is commutative
         : (not topic --> \@or);
 
-    ::MD::not_or ::= synonym of nor;
-    ::MDS::"⊽"   ::= synonym of nor;
-    ::MDS::"↓"   ::= synonym of nor;
+    ::MD::not_or ::= alias of nor;
+    ::MDS::"⊽"   ::= alias of nor;
+    ::MDS::"↓"   ::= alias of nor;
 
 I<TODO.>
 
@@ -382,8 +382,8 @@ I<TODO.>
         is {associative,commutative} identity True
         : (topic --> \@"=");
 
-    ::MD::iff  ::= synonym of xnor;
-    ::MDS::"↔" ::= synonym of xnor;
+    ::MD::iff  ::= alias of xnor;
+    ::MDS::"↔" ::= alias of xnor;
 
 I<TODO.>
 
@@ -393,8 +393,8 @@ I<TODO.>
         is {associative,commutative} identity False
         : (topic --> \@"!=");
 
-    ::MDS::"⊻" ::= synonym of xor;
-    ::MDS::"↮" ::= synonym of xor;
+    ::MDS::"⊻" ::= alias of xor;
+    ::MDS::"↮" ::= alias of xor;
 
 I<TODO.>
 
@@ -403,8 +403,8 @@ I<TODO.>
     ::MD::imp ::= function --> Boolean <-- (Boolean, Boolean)
         : (\\0 ?? \\1 !! True);
 
-    ::MD::implies ::= synonym of imp;
-    ::MDS::"→"    ::= synonym of imp;
+    ::MD::implies ::= alias of imp;
+    ::MDS::"→"    ::= alias of imp;
 
 I<TODO.>
 
@@ -413,8 +413,8 @@ I<TODO.>
     ::MD::nimp ::= function --> Boolean <-- (Boolean, Boolean)
         : (not topic --> \@imp);
 
-    ::MD::not_implies ::= synonym of nimp;
-    ::MDS::"↛"        ::= synonym of nimp;
+    ::MD::not_implies ::= alias of nimp;
+    ::MDS::"↛"        ::= alias of nimp;
 
 I<TODO.>
 
@@ -423,7 +423,7 @@ I<TODO.>
     ::MD::if ::= function --> Boolean <-- (Boolean, Boolean)
         : (\\1 imp \\0);
 
-    ::MDS::"←" ::= synonym of if;
+    ::MDS::"←" ::= alias of if;
 
 I<TODO.>
 
@@ -432,8 +432,8 @@ I<TODO.>
     ::MD::nif ::= function --> Boolean <-- (Boolean, Boolean)
         : (\\1 nimp \\0);
 
-    ::MD::not_if ::= synonym of nif;
-    ::MDS::"↚"   ::= synonym of nif;
+    ::MD::not_if ::= alias of nif;
+    ::MDS::"↚"   ::= alias of nif;
 
 I<TODO.>
 
@@ -441,7 +441,7 @@ I<TODO.>
 
 =head2 Numeric
 
-    ::MD::Numeric ::= type abstract
+    ::MD::Numeric ::= interface
         requires_implements {is_zero,opposite,reciprocal,modulus,
             plus,minus,frac_divide,whole_divide,...};
 
@@ -449,7 +449,7 @@ I<TODO.>
 
 =head2 Round_Meth
 
-    ::MD::Round_Meth::"" ::= type
+    ::MD::Round_Meth::"" ::= selection
         union {1::Down,1::Up,1::To_Zero,1::To_Inf
             ,1::Half_Down,1::Half_Up,1::Half_To_Zero,1::Half_To_Inf
             ,1::Half_Even}
@@ -477,7 +477,7 @@ I<TODO.>
 
     ::MD::opposite::"" ::= function virtual --> Numeric <-- (Numeric);
 
-    ::MD::additive_inverse ::= synonym of opposite;
+    ::MD::additive_inverse ::= alias of opposite;
 
 I<TODO.>
 
@@ -486,7 +486,7 @@ I<TODO.>
     ::MD::reciprocal::"" ::= function virtual --> Numeric <-- (Numeric)
         requires (\\0->is_zero->not);
 
-    ::MD::multiplicative_inverse ::= synonym of reciprocal;
+    ::MD::multiplicative_inverse ::= alias of reciprocal;
 
 I<TODO.>
 
@@ -494,7 +494,7 @@ I<TODO.>
 
     ::MD::modulus::"" ::= function virtual --> Numeric <-- (Numeric);
 
-    ::MD::abs ::= synonym of modulus;
+    ::MD::abs ::= alias of modulus;
 
 I<TODO.>
 
@@ -502,7 +502,7 @@ I<TODO.>
 
     ::MD::plus::"" ::= function virtual --> Numeric <-- (Numeric, Numeric);
 
-    ::MD::"+" ::= synonym of plus;
+    ::MD::"+" ::= alias of plus;
 
 I<TODO.>
 
@@ -524,8 +524,8 @@ I<TODO.>
     ::MD::modulus_minus ::= function --> Numeric <-- (Numeric, Numeric)
         : (modulus topic --> \@minus);
 
-    ::MD::abs_minus ::= synonym of modulus_minus;
-    ::MD::"|-|"     ::= synonym of modulus_minus;
+    ::MD::abs_minus ::= alias of modulus_minus;
+    ::MD::"|-|"     ::= alias of modulus_minus;
 
 I<TODO.>
 
@@ -533,7 +533,7 @@ I<TODO.>
 
     ::MD::times::"" ::= function virtual --> Numeric <-- (Numeric, Numeric);
 
-    ::MD::"*" ::= synonym of times;
+    ::MD::"*" ::= alias of times;
 
 I<TODO.>
 
@@ -543,7 +543,7 @@ I<TODO.>
         --> Numeric <-- (Numeric, Numeric)
         requires (\\1->is_zero->not);
 
-    ::MD::"/" ::= synonym of frac_divide;
+    ::MD::"/" ::= alias of frac_divide;
 
 I<TODO.>
 
@@ -553,7 +553,7 @@ I<TODO.>
         --> Numeric <-- (Numeric, Numeric, Round_Meth)
         requires (\\1->is_zero->not);
 
-    ::MD::div ::= synonym of whole_divide;
+    ::MD::div ::= alias of whole_divide;
 
 I<TODO.>
 
@@ -564,7 +564,7 @@ I<TODO.>
         requires (\\1->is_zero->not)
         : (\\0 - (\\1 * div(*topic)));
 
-    ::MD::mod ::= synonym of modulo;
+    ::MD::mod ::= alias of modulo;
 
 I<TODO.>
 
@@ -581,7 +581,7 @@ I<TODO.>
 
 =head2 Integral
 
-    ::MD::Integral ::= type abstract
+    ::MD::Integral ::= interface
         composes {Enumerable, Boolable, Numeric and_provides_its_default}
         requires_implements {in_order,pred,succ,is_zero,...};
 
@@ -599,12 +599,12 @@ I<TODO.>
 
 =head2 Integer_Inf Integer Int
 
-    ::MD::Integer_Inf ::= type where topic -->^ FDN__isa_Integer_Inf
+    ::MD::Integer_Inf ::= selection where topic -->^ FDN__isa_Integer_Inf
         default 0
         composes Integral and_provides_its_default;
 
-    ::MD::Integer ::= synonym of Integer_Inf;
-    ::MD::Int     ::= synonym of Integer_Inf;
+    ::MD::Integer ::= alias of Integer_Inf;
+    ::MD::Int     ::= alias of Integer_Inf;
 
 The selection contract C<Integer_Inf> represents the infinite Muldis D
 Foundation type I<FDN__Integer_Inf>.  An C<Integer_Inf> value is a general
@@ -667,7 +667,7 @@ I<TODO.>
 
 =head2 Accessible
 
-    ::MD::Accessible ::= type abstract
+    ::MD::Accessible ::= interface
         requires_implements {item,has_item};
 
 I<TODO.>
@@ -677,7 +677,7 @@ I<TODO.>
     ::MD::item::"" ::= function virtual --> Any <-- (Accessible, Any)
         requires (topic --> \@".?");
 
-    ::MD::"." ::= synonym of item;
+    ::MD::"." ::= alias of item;
 
 I<TODO.>
 
@@ -685,7 +685,7 @@ I<TODO.>
 
     ::MD::has_item::"" ::= function virtual --> Boolean <-- (Accessible, Any);
 
-    ::MD::".?" ::= synonym of has_item;
+    ::MD::".?" ::= alias of has_item;
 
 I<TODO.>
 
@@ -694,7 +694,7 @@ I<TODO.>
     ::MD::item_or_void ::= function --> Any <-- (Accessible, Any)
         : (topic --> \@".?" ?? topic --> \@"." !! \(\Void));
 
-    ::MD::".!" ::= synonym of item_or_void;
+    ::MD::".!" ::= alias of item_or_void;
 
 I<TODO.>
 
@@ -702,7 +702,7 @@ I<TODO.>
 
 =head2 Collective
 
-    ::MD::Collective::"" ::= type abstract
+    ::MD::Collective::"" ::= interface
         composes Boolable
         requires_implements {is_empty,count,has,group,ungroup,where,map,reduce,...};
 
@@ -720,7 +720,7 @@ I<TODO.>
 
     ::MD::is_empty::"" ::= function virtual --> Boolean <-- (Collective);
 
-    ::MD::"!?" ::= synonym of is_empty;
+    ::MD::"!?" ::= alias of is_empty;
 
 I<TODO.>
 
@@ -728,8 +728,8 @@ I<TODO.>
 
     ::MD::count::"" ::= function virtual --> Integral <-- (Collective);
 
-    ::MD::cardinality ::= synonym of count;
-    ::MD::"#"         ::= synonym of count;
+    ::MD::cardinality ::= alias of count;
+    ::MD::"#"         ::= alias of count;
 
 I<TODO.>
 
@@ -737,7 +737,7 @@ I<TODO.>
 
     ::MD::has::"" ::= function virtual --> Boolean <-- (Collective, Any);
 
-    ::MDS::"∋" ::= synonym of has;
+    ::MDS::"∋" ::= alias of has;
 
 I<TODO.>
 
@@ -746,7 +746,7 @@ I<TODO.>
     ::MD::not_has ::= function --> Boolean <-- (Collective, Any)
         : (not topic --> \@has);
 
-    ::MDS::"∌" ::= synonym of not_has;
+    ::MDS::"∌" ::= alias of not_has;
 
 I<TODO.>
 
@@ -755,7 +755,7 @@ I<TODO.>
     ::MD::in ::= function --> Boolean <-- (Any, Collective)
         : (\\1 has \\0);
 
-    ::MDS::"∈" ::= synonym of in;
+    ::MDS::"∈" ::= alias of in;
 
 I<TODO.>
 
@@ -764,7 +764,7 @@ I<TODO.>
     ::MD::not_in ::= function --> Boolean <-- (Any, Collective)
         : (\\1 not_has \\0);
 
-    ::MDS::"∉" ::= synonym of not_in;
+    ::MDS::"∉" ::= alias of not_in;
 
 I<TODO.>
 
@@ -807,7 +807,7 @@ I<TODO.>
 
 =head2 Arrayish
 
-    ::MD::Arrayish ::= type abstract
+    ::MD::Arrayish ::= interface
         composes {Accessible,...}
         requires_implements {item,has_item,...};
 
@@ -817,11 +817,11 @@ I<TODO.>
 
 =head2 Array_Inf Array
 
-    ::MD::Array_Inf ::= type where topic -->^ FDN__isa_Array_Inf
+    ::MD::Array_Inf ::= selection where topic -->^ FDN__isa_Array_Inf
         default []
         composes Arrayish and_provides_its_default;
 
-    ::MD::Array ::= synonym of Array_Inf;
+    ::MD::Array ::= alias of Array_Inf;
 
 The selection contract C<Array_Inf> represents the infinite Muldis D
 Foundation type I<FDN__Array_Inf>.  An C<Array_Inf> value is ...
@@ -849,11 +849,11 @@ I<TODO.>
 
 =head2 Bag_Inf Bag
 
-    ::MD::Bag_Inf ::= type where topic -->^ FDN__isa_Bag_Inf
+    ::MD::Bag_Inf ::= selection where topic -->^ FDN__isa_Bag_Inf
         default \+{}
         composes Baggy and_provides_its_default;
 
-    ::MD::Bag ::= synonym of Bag_Inf;
+    ::MD::Bag ::= alias of Bag_Inf;
 
 The selection contract C<Bag_Inf> represents the infinite Muldis D
 Foundation type I<FDN__Bag_Inf>.  A C<Bag_Inf> value is ...
@@ -864,10 +864,10 @@ I<TODO.>
 
 =head2 Structure_Inf Structure
 
-    ::MD::Structure_Inf ::= type where topic -->^ FDN__isa_Structure_Inf
+    ::MD::Structure_Inf ::= selection where topic -->^ FDN__isa_Structure_Inf
         default \();
 
-    ::MD::Structure ::= synonym of Structure_Inf;
+    ::MD::Structure ::= alias of Structure_Inf;
 
 The selection contract C<Structure_Inf> represents the infinite Muldis D
 Foundation type I<FDN__Structure_Inf>.  A C<Structure_Inf> value is ...
@@ -884,7 +884,7 @@ minimize interference with other types' interfaces.
     ::MD::has_any_fields ::= function --> Boolean <-- (Structure)
         : (topic != \());
 
-    ::MD::"?^>" ::= synonym of has_any_fields;
+    ::MD::"?^>" ::= alias of has_any_fields;
 
 I<TODO.>
 
@@ -893,7 +893,7 @@ I<TODO.>
     ::MD::Structure_is_nullary ::= function --> Boolean <-- (Structure)
         : (topic = \());
 
-    ::MD::"!?^>" ::= synonym of Structure_is_nullary;
+    ::MD::"!?^>" ::= alias of Structure_is_nullary;
 
 I<TODO.>
 
@@ -902,7 +902,7 @@ I<TODO.>
     ::MD::Structure_degree ::= function --> Integer <-- (Structure)
         : (topic -->^ FDN__Structure_degree);
 
-    ::MD::"#^>" ::= synonym of Structure_degree;
+    ::MD::"#^>" ::= alias of Structure_degree;
 
 I<TODO.>
 
@@ -911,7 +911,7 @@ I<TODO.>
     ::MD::field ::= function --> Any <-- (Structure, SC_Field_Name)
         : (topic -->^ FDN__Structure_field);
 
-    ::MD::".>" ::= synonym of field;
+    ::MD::".>" ::= alias of field;
 
 I<TODO.>
 
@@ -920,7 +920,7 @@ I<TODO.>
     ::MD::has_field ::= function --> Boolean <-- (Structure, SC_Field_Name)
         : (topic -->^ FDN__Structure_has_field);
 
-    ::MD::".>?" ::= synonym of has_field;
+    ::MD::".>?" ::= alias of has_field;
 
 I<TODO.>
 
@@ -929,7 +929,7 @@ I<TODO.>
     ::MD::field_or_void ::= function --> Any <-- (Structure, SC_Field_Name)
         : (topic --> \@".>?" ?? topic --> \@".>" !! \(\Void));
 
-    ::MD::".>!" ::= synonym of field_or_void;
+    ::MD::".>!" ::= alias of field_or_void;
 
 I<TODO.>
 
@@ -939,7 +939,7 @@ I<TODO.>
         requires (...)
         : (topic -->^ FDN__Structure_on_fields);
 
-    ::MD::"^>" ::= synonym of on_fields;
+    ::MD::"^>" ::= alias of on_fields;
 
 I<TODO.>
 
@@ -949,7 +949,7 @@ I<TODO.>
         requires (...)
         : (topic -->^ FDN__Structure_but_fields);
 
-    ::MD::"-^>" ::= synonym of but_fields;
+    ::MD::"-^>" ::= alias of but_fields;
 
 I<TODO.>
 
@@ -960,7 +960,7 @@ I<TODO.>
         is {associative,commutative} identity \()
         : (topic -->^ FDN__Structure_extend);
 
-    ::MD::"+^>" ::= synonym of Structure_extend;
+    ::MD::"+^>" ::= alias of Structure_extend;
 
 I<TODO.>
 
@@ -969,7 +969,7 @@ I<TODO.>
     ::MD::has_fields ::= function --> Boolean <-- (Structure, SC_Signature)
         : (...);
 
-    ::MD::"^>?" ::= synonym of has_fields;
+    ::MD::"^>?" ::= alias of has_fields;
 
 I<TODO.>
 
@@ -978,7 +978,7 @@ I<TODO.>
     ::MD::has_just_fields ::= function --> Boolean <-- (Structure, SC_Signature)
         : (...);
 
-    ::MD::"^>?=" ::= synonym of has_just_fields;
+    ::MD::"^>?=" ::= alias of has_just_fields;
 
 I<TODO.>
 
@@ -986,7 +986,7 @@ I<TODO.>
 
 =head2 Attributive
 
-    ::MD::Attributive ::= type abstract
+    ::MD::Attributive ::= interface
         requires_implements {is_nullary,degree,on,but,extend,has_attrs,has_just_attrs};
 
 I<TODO.>
@@ -996,7 +996,7 @@ I<TODO.>
     ::MD::has_any_attrs ::= function --> Boolean <-- (Attributive):
         : (\\0->is_nullary->not);
 
-    ::MD::"?^" ::= synonym of has_any_attrs;
+    ::MD::"?^" ::= alias of has_any_attrs;
 
 I<TODO.>
 
@@ -1004,7 +1004,7 @@ I<TODO.>
 
     ::MD::is_nullary::"" ::= function virtual --> Boolean <-- (Attributive);
 
-    ::MD::"!?^" ::= synonym of is_nullary;
+    ::MD::"!?^" ::= alias of is_nullary;
 
 I<TODO.>
 
@@ -1012,7 +1012,7 @@ I<TODO.>
 
     ::MD::degree::"" ::= function virtual --> Integral <-- (Attributive);
 
-    ::MD::"#^" ::= synonym of degree;
+    ::MD::"#^" ::= alias of degree;
 
 I<TODO.>
 
@@ -1022,8 +1022,8 @@ I<TODO.>
         --> Attributive <-- (Attributive, SC_Field_Names)
         requires (...);
 
-    ::MD::"^"     ::= synonym of on;
-    ::MD::project ::= synonym of on;
+    ::MD::"^"     ::= alias of on;
+    ::MD::project ::= alias of on;
 
 I<TODO.  Also, this is analagous to set intersect.>
 
@@ -1033,8 +1033,8 @@ I<TODO.  Also, this is analagous to set intersect.>
         --> Attributive <-- (Attributive, SC_Field_Names)
         requires (...);
 
-    ::MD::"-^"            ::= synonym of but;
-    ::MD::project_all_but ::= synonym of but;
+    ::MD::"-^"            ::= alias of but;
+    ::MD::project_all_but ::= alias of but;
 
 I<TODO.  Also, this is analagous to set difference.>
 
@@ -1045,7 +1045,7 @@ I<TODO.  Also, this is analagous to set difference.>
         requires (...)
         is {associative,commutative};
 
-    ::MD::"+^" ::= synonym of extend;
+    ::MD::"+^" ::= alias of extend;
 
 I<TODO.  Also, this is analagous to set union (disjoint).>
 
@@ -1059,7 +1059,7 @@ routine version; they can use join/cross-product for the static version.>
     ::MD::has_attrs::"" ::= function virtual
         --> Boolean <-- (Attributive, SC_Signature);
 
-    ::MD::"^?" ::= synonym of has_attrs;
+    ::MD::"^?" ::= alias of has_attrs;
 
 I<TODO.>
 
@@ -1068,7 +1068,7 @@ I<TODO.>
     ::MD::has_just_attrs::"" ::= function virtual
         --> Boolean <-- (Attributive, SC_Signature);
 
-    ::MD::"^?=" ::= synonym of has_just_attrs;
+    ::MD::"^?=" ::= alias of has_just_attrs;
 
 I<TODO.>
 
@@ -1076,13 +1076,13 @@ I<TODO.>
 
 =head2 Tuple_Inf Tuple
 
-    ::MD::Tuple_Inf ::= type of Structure
+    ::MD::Tuple_Inf ::= selection of Structure
         where topic has_just_fields \(constant \Tuple, \@Structure)
         default \%()
         composes {Accessible and_provides_its_default,
             Attributive and_provides_its_default};
 
-    ::MD::Tuple ::= synonym of Tuple_Inf;
+    ::MD::Tuple ::= alias of Tuple_Inf;
 
 I<TODO.>
 
@@ -1167,7 +1167,7 @@ I<TODO.>
 
 =head2 External
 
-    ::MD::External ::= type where topic -->^ FDN__isa_External
+    ::MD::External ::= selection where topic -->^ FDN__isa_External
         default (-->^ FDN__default_External);
 
 The selection contract C<External> represents the infinite Muldis D
@@ -1179,15 +1179,15 @@ I<TODO.>
 
 =head2 Source_Code_Meta
 
-    ::MD::Source_Code::Source_Code_Meta_AT ::= type abstract;
+    ::MD::Source_Code::Source_Code_Meta_AT ::= interface;
 
-    ::MD::Source_Code::Source_Code_Meta ::= type ... intersect ...;
+    ::MD::Source_Code::Source_Code_Meta ::= selection ... intersect ...;
 
 I<TODO.>
 
 =head2 Package
 
-    ::MD::Source_Code::Package ::= type ...;
+    ::MD::Source_Code::Package ::= selection ...;
 
 I<TODO.>
 
