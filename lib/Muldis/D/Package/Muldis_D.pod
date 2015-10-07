@@ -241,6 +241,14 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 not_so !?
+
+    ::MD::not_so ::= function negates so;
+
+    ::MD::"!?" ::= alias of not_so;
+
+I<TODO.>
+
 =head1 BOOLEAN DATA TYPES
 
 =head2 Boolean Bool
@@ -430,7 +438,8 @@ I<TODO.>
 =head2 Numeric
 
     ::MD::Numeric ::= interface
-        requires_implements {is_zero,opposite,reciprocal,modulus,
+        composes Boolable
+        requires_implements {so,opposite,reciprocal,modulus,
             plus,minus,frac_divide,whole_divide,...};
 
 I<TODO.>
@@ -455,9 +464,16 @@ I<TODO.>
 
 I<TODO.  Also, review most appropriate values for the constants.>
 
+=head2 so (Numeric)
+
+    ::MD::so::Numeric ::= function virtual --> Boolean <-- (Numeric)
+        implements 1::"";
+
+I<TODO.>
+
 =head2 is_zero
 
-    ::MD::is_zero::"" ::= function virtual --> Boolean <-- (Numeric);
+    ::MD::is_zero ::= function negates so::Numeric;
 
 I<TODO.>
 
@@ -472,7 +488,7 @@ I<TODO.>
 =head2 reciprocal
 
     ::MD::reciprocal::"" ::= function virtual --> Numeric <-- (Numeric)
-        requires (\\0->is_zero->not);
+        requires (?\\0);
 
     ::MD::multiplicative_inverse ::= alias of reciprocal;
 
@@ -529,7 +545,7 @@ I<TODO.>
 
     ::MD::frac_divide::"" ::= function virtual
         --> Numeric <-- (Numeric, Numeric)
-        requires (\\1->is_zero->not);
+        requires (?\\1);
 
     ::MD::"/" ::= alias of frac_divide;
 
@@ -539,7 +555,7 @@ I<TODO.>
 
     ::MD::whole_divide::"" ::= function virtual
         --> Numeric <-- (Numeric, Numeric, Round_Meth)
-        requires (\\1->is_zero->not);
+        requires (?\\1);
 
     ::MD::div ::= alias of whole_divide;
 
@@ -549,7 +565,7 @@ I<TODO.>
 
     ::MD::modulo::"" ::= function
         --> Numeric <-- (Numeric, Numeric, Round_Meth)
-        requires (\\1->is_zero->not)
+        requires (?\\1)
         : (\\0 - (\\1 * div(*topic)));
 
     ::MD::mod ::= alias of modulo;
@@ -560,7 +576,7 @@ I<TODO.>
 
     ::MD::divide_and_modulo::"" ::= function
         --> (Numeric, Numeric) <-- (Numeric, Numeric, Round_Meth)
-        requires (\\1->is_zero->not)
+        requires (?\\1)
         : (\(div(*topic), mod(*topic)));
 
 I<TODO.>
@@ -570,17 +586,10 @@ I<TODO.>
 =head2 Integral
 
     ::MD::Integral ::= interface
-        composes {Enumerable, Boolable, Numeric and_provides_its_default}
-        requires_implements {in_order,pred,succ,is_zero,...};
+        composes {Enumerable, Numeric and_provides_its_default}
+        requires_implements {in_order,pred,succ,so,...};
 
 I<TODO.  Also, do something about the unimplemented Numeric operators.>
-
-=head2 so (Integral)
-
-    ::MD::so::Integral ::= function negates is_zero
-        implements 1::"";
-
-I<TODO.>
 
 =head1 INTEGER DATA TYPES
 
@@ -642,11 +651,11 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 is_zero (Integer)
+=head2 so (Integer)
 
-    ::MD::is_zero::Integer ::= function --> Boolean <-- (Integer)
+    ::MD::so::Integer ::= function --> Boolean <-- (Integer)
         implements 1::""
-        : (\\0 = 0);
+        : (\\0 != 0);
 
 I<TODO.>
 
@@ -691,22 +700,20 @@ I<TODO.>
 
     ::MD::Collective::"" ::= interface
         composes Boolable
-        requires_implements {is_empty,count,has,group,ungroup,where,map,reduce,...};
+        requires_implements {so,count,has,group,ungroup,where,map,reduce,...};
 
 I<TODO.>
 
 =head2 so (Collective)
 
-    ::MD::so::Collective ::= function negates is_empty
+    ::MD::so::Collective ::= function virtual --> Boolean <-- (Collective)
         implements 1::"";
 
 I<TODO.>
 
-=head2 is_empty !?
+=head2 is_empty
 
-    ::MD::is_empty::"" ::= function virtual --> Boolean <-- (Collective);
-
-    ::MD::"!?" ::= alias of is_empty;
+    ::MD::is_empty ::= function negates so::Collective;
 
 I<TODO.>
 
@@ -873,8 +880,7 @@ I<TODO.>
 
 =head2 Structure_is_nullary !?^>
 
-    ::MD::Structure_is_nullary ::= function --> Boolean <-- (Structure)
-        : (topic = \());
+    ::MD::Structure_is_nullary ::= function negates has_any_fields;
 
     ::MD::"!?^>" ::= alias of Structure_is_nullary;
 
@@ -970,14 +976,13 @@ I<TODO.>
 =head2 Attributive
 
     ::MD::Attributive ::= interface
-        requires_implements {is_nullary,degree,on,but,extend,has_attrs,has_just_attrs};
+        requires_implements {has_any_attrs,degree,on,but,extend,has_attrs,has_just_attrs};
 
 I<TODO.>
 
 =head2 has_any_attrs ?^
 
-    ::MD::has_any_attrs ::= function --> Boolean <-- (Attributive):
-        : (\\0->is_nullary->not);
+    ::MD::has_any_attrs::"" ::= function virtual --> Boolean <-- (Attributive);
 
     ::MD::"?^" ::= alias of has_any_attrs;
 
@@ -985,7 +990,7 @@ I<TODO.>
 
 =head2 is_nullary !?^
 
-    ::MD::is_nullary::"" ::= function virtual --> Boolean <-- (Attributive);
+    ::MD::is_nullary ::= function negates has_any_attrs;
 
     ::MD::"!?^" ::= alias of is_nullary;
 
@@ -1069,11 +1074,11 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 is_nullary (Tuple)
+=head2 has_any_attrs (Tuple)
 
-    ::MD::is_nullary::Tuple ::= function --> Boolean <-- (Tuple)
+    ::MD::has_any_attrs::Tuple ::= function --> Boolean <-- (Tuple)
         implements 1::""
-        : (topic = \%());
+        : (topic != \%());
 
 I<TODO.>
 
