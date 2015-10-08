@@ -14,6 +14,202 @@ resources of everyone else.
 
 ----------
 
+* THIRD TRY:
+- Amend the SECOND TRY by eliminating the 4th position 'maturity' and
+instead say that versions with an alpha suffix eg -dev, -alpha, -beta, -rc
+mean pre-production while no suffix means production.  This indicator is
+still just boolean (presence or absense), the actual letters are for humans.
+- The patch moves to the 4th position from the 5th, and does NOT reset to
+zero when transitioning from pre-production to production.
+- Commit numbers/ids from the version control system can be a further
+suffix; they should not be used as the patch number, too much information.
+
+* SECOND TRY:
+- This is a proposed scheme for software projects, particularly those that
+feature a programmatic API (programming languages, libraries, DBMSs etc)
+would use.  It is a semantic versioning scheme such that the numbers have
+meaning.  There is a sequence of non-negative integers arranged greatest to
+least; semantics are such that an infinite trailing list of zeros exist;
+normally, incrementing a position will truncate/zero all subsequent ones.
+- Parts are: [automata.branch.feature.maturity.patch]
+- Incrementing a part has nothing to say about the size of the change, just
+on how the change should be treated.
+- Incrementing automata primarily means a distinct product from the user's
+perspective that happens to share the same marketing name as and be similar
+to a number of other such distinct products.  Versions with different
+automata have no expectation of cross-compatibility; their APIs might have
+no useful common subset; they might not be able to read or write each
+others' data files, either user data or config data.  Users wanting to use
+both versions might install them in parallel and invoke them separately
+such as for different data files.  Incrementing automata should also, if
+applicable to the project, have a completely separate namespace both in API
+and in used filesystem locations, so that the two versions may coexist and
+be used in the same project as if they otherwise had no relation.  As an
+exception to this, an automata of 0 is meant to indicate a new product
+under experimental development and versions sharing an automata of 0 may be
+arbitrarily mutually incompatible in ways that otherwise should only happen
+between different automata; incrementing automata to 1 should indicate that
+this period is over.  Analogies in SQLite are 2.0 vs 3.0 (both data files
+and API), in Postgres are 9.3 vs 9.4 (with respect to data files), in Perl
+are 5.0 vs 6.0 (ignoring emulation), etc.
+- Incrementing branch primarily means a distinct island of stability from
+the user's perspective, such that as long as they only upgrade versions
+within a common branch, it is unlikely they would suffer any breaks except
+perhaps in edge cases, or any breaks they are likely to be able to adapt to
+without much difficulty in such a way that their updated code would still
+work with all versions within that common branch.  From a production
+standpoint, each branch is likely to be a distinct maintenance branch in
+the version control system (though the newest 'branch' may be its trunk),
+where each of those would possibly but not necessarily have its own series
+of further releases.  A branch is free to be completely
+backwards-compatible with previous branches.  Analogies in SQLite are 3.7
+vs 3.8, in Postgres are 9.3 vs 9.4 (with respect to API), Perl are 5.16 vs
+5.18, in Mac OS are 10.8 vs 10.9, etc.
+- Incrementing 'feature' primarily means a new batch of one or more
+features or changes of significant size or complexity have been made within
+a common branch such that a pre-production release (experimental or alpha
+or beta or release-candidate etc) is likely desired to occur for those
+changes prior to a production release.  In this context, a shared 'feature'
+groups together the versions that are essentially the same but for
+development status.  Or, 'feature' should be incremented whenever a change
+is made that is known to break backwards-compatibility.  'Feature' is the
+finest granularity for which dependencies on particular versions should be
+declared, except for where one wants to declare avoidance of a bug.
+Analogies in SQLite are 3.7.0 vs 3.7.1, in Perl are 5.8.0 vs 5.8.1, in Mac
+OS are 10.9.0 vs 10.9.1, etc.
+- Incrementing maturity primarily means that a 'feature' has transitioned
+from being some pre-production status to production status.  Unlike the
+other parts, maturity is always just 0 or 1, with 0 meaning pre-production
+and 1 meaning production.  Note that a 'feature' is not required to have
+both pre-production and production maturity versions under it.  Analogies
+in Perl are 5.15.0 (pre-prod) versus 5.16.0 (prod) or 5.16.0-RC1 vs 5.16.0.
+- Incrementing patch within a common 'feature' primarily means different
+things depending on whether the maturity is pre-production or production.
+Between 2 production releases of the same 'feature', an incremented patch
+means there should only be non-API-affecting internals changes for fixing
+bugs or for security or performance, or minor API changes that are a
+consequence of bug or security fixes.  Note that if it is known or
+anticipated that any users may be depending on buggy behavior, the fix for
+the bug should be made with an incremented 'feature' instead; likewise with
+a security fix that disallows previously allowed user actions.  Between 2
+pre-production releases of the same 'feature' any arbitrary level of
+changes are allowed of the same kind that one would otherwise increment
+'feature' for.  Analogies in SQLite are 3.8.11.0 vs 3.8.11.1, in Postgres
+are 3.4.0 vs 3.4.1, in Perl are 5.16.0 vs 5.16.1, in Mac OS are some
+security patches, etc.
+- To be clear, all versions considered for production must have a 1 in the
+4th position.  For example, the first feature-complete reasonably-stable
+production release would be version 1.0.0.1 (or 1.0.0.1.0) whereas version
+1.0 (1.0.0.0.0) is suitable as a release-candidate version number.
+
+* FIRST TRY:
+- This is a proposed scheme for software projects, particularly those that
+feature a programmatic API (programming languages, libraries, DBMSs etc)
+would use.  It is a semantic versioning scheme such that the numbers have
+meaning.  There is a sequence of non-negative integers arranged greatest to
+least; semantics are such that an infinite trailing list of zeros exist;
+normally, incrementing a position will truncate/zero all subsequent ones.
+- Parts are: [parallel-major.parallel-minor.sequential-incompatible.sequential-compatible].
+- Incrementing a part has nothing to say about the size of the change, just
+on how the change should be treated.
+- Incrementing 'parallel' means a distinct product from the user's
+perspective that happens to share the same marketing name as and be similar
+to a number of other such distinct products.  Sometimes each parallel-minor
+would install into a distinct directory from other parallel-minor and be
+used at the same time as each other.  Each parallel-minor typically means a
+distinct maintenance branch that can have further versions sharing the
+parallel-major-minor for an arbitrarily long time.  Analogies in Postgres
+are 9.3 vs 9.4, in Perl are 5.16 vs 5.18, in Mac OS are 10.8 vs 10.9 etc.
+- Inspired by Perl, parallel-minor even numbers specifically mean
+production release while parallel-minor odd numbers mean pre-production
+(snapshot/experimental/alpha/beta/etc) release; each odd N is the
+pre-production series for the even N+1 series.  Typically in version
+control the pre-production releases (except when stabilizing for a release)
+would come from trunk, and then production releases would come from a
+branch named for the production version number, eg 5.18 comes from a 5.18
+branch while 5.17 come either from trunk or from an earlier version of the
+5.18 branch.  Notably, all releases have distinct numbers, there is never a
+text portion of the version such as the word "alpha" or whatever.
+- A parallel-minor is free to be completely backwards-compatible with prior
+parallel-minor, or not; the fundamental purpose of these is to distinguish
+releases of versions not considered ready for production.
+- The parallel-major is only incremented arbitrarily if one wants to put
+extra marketing emphasis on what would otherwise be a parallel-minor; for
+example, Postgres 8.4->9.0 instead of 8.4->8.5.  For practical purposes,
+there is no need to ever increment parallel-major.
+- As a major exception, a parallel-major of 0 is meant to indicate a new
+product under development that is not considered feature-complete, while a
+parallel-major version of 1 or greater should be considered
+feature-complete.  Parallel-major zero versions can still reasonably be
+considered production versions, as in safe for production, but its just
+declaring that major features are known to be missing.  Many projects may
+just have versions 0.x and 1.x and never a 2+.x.
+- So 0.1 is the first pre-production release version, 0.2 is the first
+production version declared to be feature-incomplete, 1.0 is the first
+production version declared to be feature-complete, 1.1 is the first
+pre-production release following 1.0, and so on; version 0.0 is the
+pre-development version, when creating a new project without any code yet.
+- Incrementing 'sequential' means a point release within a single product
+from the user's perspective, such that upgrading typically means replacing
+the older version with the newer one; while replacement isn't mandatory,
+there usually isn't a reason to keep both around at once aside from testing
+during the transition.  All 'sequential' within the same parallel-minor
+typically come from the same maintenance branch.
+- Loosely speaking, all 'sequential' under the same 'parallel' are expected
+to be compatible with each other, or backwards-compatible in particular, so
+anything working in an older version also works unchanged in a newer one;
+however in practice there is no guarantee, and all a common 'parallel'
+means is they are from the same maintenance branch in practice.
+- The sequential-incompatible is incremented when making changes with a
+'parallel' that are not necessarily backwards-compatible and should be
+treated with greater caution by users.  In particular, this at least must
+be incremented whenever there is a known break in backwards-compatibility,
+which normally would also be documented for users to know about, but
+incrementing this may also happen just when substantial internal changes
+happen for which the author is not confident it doesn't break something.
+This is also incremented even if the change is purely for security
+purposes, but would be disallowing a previously allowed action.
+Analogies in Mac OS include 10.9.1 and 10.9.2 etc.
+- The sequential-compatible is incremented when making changes that are
+known to be completely backwards-compatible with the prior 'parallel';
+often these are bug fixes, but they can also be feature additions that
+don't change the behavior of existing uses.
+- To clarify, whether a bug fix means an -incompatible or -compatible
+increment depends on whether it is believed that any users may have been
+relying on the incorrect behavior (thus it was an unintended feature); if
+they were, increment -incompatible; if they were not, increment -compatible.
+- Generally speaking, it should be safe for users to upgrade to the latest
+sequential-compatible at any time for their current sequential-incompatible,
+and it should also be possible for them to upgrade to the latest
+sequential-incompatible within a 'parallel' with only relatively small if
+any adjustments to their usage.
+- It is generally valid to use non-consecutive numbers when incrementing if
+one wants to, but later versions should be higher numbers than earlier ones.
+- Likewise, as an option, one can choose to say just use a build number or
+commit number etc as their sequential-compatible value; they don't have to
+reset it to zero when incrementing the other numbers, the main semantic
+inference logic should still work regardless.
+- There is no obligation to have an actual maintenance branch for each
+even-numbered parallel-minor; one could decide to have short turnaround
+between say version 1.2 and 1.4 and not actually provide further 1.2.x
+versions at all, but at the same time the opening is there to retroactively
+do more 1.2.x later in a branch added at that time.
+- As to release candidates, that depends.  When a 'parallel' is about to
+hit production status but hasn't yet, a release candidate can be in the
+same manner as alphas/betas etc by being one of the last x.N.y.z before
+incrementing to x.N+1.0.0.  When a non-first/0 sequential-incompatible
+x.y.N.z wants to do a release candidate x.y.N+1.0, they can simply release
+it as x.y.N+1.0 with a warning, and be ready to quickly do another release
+if a problem is found with it; in practice this probably isn't any
+different than the common skepticism users have of .0 releases anyway, that
+they are used to waiting for others to take the chance first etc.
+- Generally one should be able to treat every
+sequential-incompatible/-compatible release as a release candidate, and if
+they aren't that confident, they should be doing a parallel-minor cycle
+instead.  Except possibly during the 0.x.y.z period, all sizeable
+development should be done in parallel-minor cycles anyway, with all
+'sequential' generally staying with minor features or bug-fixes.
+
 * Bootstrapping aside, it probably actually IS easiest to write all Muldis
 D compilers IN Muldis D, for example the code that takes user-defined
 Muldis D code (native data structures format) and generates equivalent Perl
@@ -408,6 +604,8 @@ everything else) and not just full indexes; a partial index is defined in
 terms of a predicate function associated with the map function that defines
 the index proper, the predicate says whether the key is found by the index
 or not; see also how Postgres implements partial indexes.
+- Also, as of version 3.8.12, SQLite supports partial indexes too
+see https://www.sqlite.org/draft/partialindex.html .
 
 * Note, see also https://github.com/Ancestry/DotQL which Nathan Allan made.
 
