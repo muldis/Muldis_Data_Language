@@ -128,6 +128,30 @@ languages may name their corresponding operators I<==> or I<===>.
 The function C<not_same> results in C<False> iff its 2 conceptual arguments
 are exactly the same value, and C<True> otherwise.
 
+=head1 EXCUSE DATA TYPES
+
+=head2 Excuse
+
+    ::MD::Excuse::"" ::= interface;
+
+I<TODO.>
+
+=head2 Excuse::No_Reason
+
+    ::MD::Excuse::No_Reason ::= constant (\@0)
+        composes Excuse and_provides_its_default;
+
+I<TODO.>
+
+=head2 coalesce ?!
+
+    ::MD::coalesce ::= function --> Any <-- (Any, Any)
+        : (\\0 isa \@Excuse ?? \\1 !! \\0);
+
+    ::MD::"?!" ::= alias of coalesce;
+
+I<TODO.  Also, isa() needs defining.>
+
 =head1 ORDERABLE DATA TYPES
 
 =head2 Orderable
@@ -137,10 +161,46 @@ are exactly the same value, and C<True> otherwise.
 
 I<TODO.>
 
+=head2 Neg_Inf -∞
+
+    ::MD::Neg_Inf ::= constant (\@0) composes {Orderable, Excuse};
+
+    ::MDA::"-∞" ::= alias of Neg_Inf;
+
+I<TODO.>
+
+=head2 Pos_Inf +∞
+
+    ::MD::Pos_Inf ::= constant (\@0) composes {Orderable, Excuse};
+
+    ::MDA::"+∞" ::= alias of Pos_Inf;
+
+I<TODO.>
+
 =head2 in_order
 
     ::MD::in_order::"" ::= function virtual
         --> Boolean <-- (Orderable, Orderable);
+
+I<TODO.>
+
+=head2 in_order (Neg_Inf, Pos_Inf)
+
+    ::MD::in_order::Neg_Inf_L ::= function --> Boolean <-- (Neg_Inf, Orderable)
+        implements 1::""
+        : (True);
+
+    ::MD::in_order::Neg_Inf_R ::= function --> Boolean <-- (Orderable, Neg_Inf)
+        implements 1::""
+        : (topic --> \@same);
+
+    ::MD::in_order::Pos_Inf_L ::= function --> Boolean <-- (Pos_Inf, Orderable)
+        implements 1::""
+        : (topic --> \@same);
+
+    ::MD::in_order::Pos_Inf_R ::= function --> Boolean <-- (Orderable, Pos_Inf)
+        implements 1::""
+        : (True);
 
 I<TODO.>
 
@@ -181,7 +241,7 @@ I<TODO.>
 =head2 min
 
     ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
-        is {associative,commutative,idempotent} identity \(\"+Inf")
+        is {associative,commutative,idempotent} identity Pos_Inf()
         : (topic --> \@in_order ?? \\0 !! \\1);
 
 I<TODO.>
@@ -189,7 +249,7 @@ I<TODO.>
 =head2 max
 
     ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
-        is {associative,commutative,idempotent} identity \(\"-Inf")
+        is {associative,commutative,idempotent} identity Neg_Inf()
         : (topic --> \@in_order ?? \\1 !! \\0);
 
 I<TODO.>
@@ -283,23 +343,23 @@ I<TODO.>
 
 =head2 pred (Boolean)
 
-    ::MD::pred::Boolean ::= function --> {False, "-Inf"} <-- (Boolean)
+    ::MD::pred::Boolean ::= function --> {False, Neg_Inf} <-- (Boolean)
         implements 1::""
-        : (\\0 ?? False !! \(\"-Inf"));
+        : (\\0 ?? False !! Neg_Inf());
 
 I<TODO.>
 
 =head2 succ (Boolean)
 
-    ::MD::succ::Boolean ::= function --> {True, "+Inf"} <-- (Boolean)
+    ::MD::succ::Boolean ::= function --> {True, Pos_Inf} <-- (Boolean)
         implements 1::""
-        : (!\\0 ?? True !! \(\"+Inf"));
+        : (!\\0 ?? True !! Pos_Inf());
 
 I<TODO.>
 
 =head2 False ⊥
 
-    ::MD::False ::= constant False;
+    ::MD::False ::= constant (False);
 
     ::MDA::"⊥" ::= alias of False;
 
@@ -307,7 +367,7 @@ I<TODO.>
 
 =head2 True ⊤
 
-    ::MD::True ::= constant True;
+    ::MD::True ::= constant (True);
 
     ::MDA::"⊤" ::= alias of True;
 
@@ -452,15 +512,15 @@ I<TODO.>
             ,1::Half_Even}
         default 1::To_Zero();
 
-    ::MD::Round_Meth::Down         ::= constant \Round_Down;
-    ::MD::Round_Meth::Up           ::= constant \Round_Up;
-    ::MD::Round_Meth::To_Zero      ::= constant \Round_To_Zero;
-    ::MD::Round_Meth::To_Inf       ::= constant \Round_To_Inf;
-    ::MD::Round_Meth::Half_Down    ::= constant \Round_Half_Down;
-    ::MD::Round_Meth::Half_Up      ::= constant \Round_Half_Up;
-    ::MD::Round_Meth::Half_To_Zero ::= constant \Round_Half_To_Zero;
-    ::MD::Round_Meth::Half_To_Inf  ::= constant \Round_Half_To_Inf;
-    ::MD::Round_Meth::Half_Even    ::= constant \Round_Half_Even;
+    ::MD::Round_Meth::Down         ::= constant \@0;
+    ::MD::Round_Meth::Up           ::= constant \@0;
+    ::MD::Round_Meth::To_Zero      ::= constant \@0;
+    ::MD::Round_Meth::To_Inf       ::= constant \@0;
+    ::MD::Round_Meth::Half_Down    ::= constant \@0;
+    ::MD::Round_Meth::Half_Up      ::= constant \@0;
+    ::MD::Round_Meth::Half_To_Zero ::= constant \@0;
+    ::MD::Round_Meth::Half_To_Inf  ::= constant \@0;
+    ::MD::Round_Meth::Half_Even    ::= constant \@0;
 
 I<TODO.  Also, review most appropriate values for the constants.>
 
@@ -668,6 +728,12 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 Excuse::No_Such_Item
+
+    ::MD::Excuse::No_Such_Item ::= constant (\@0) composes Excuse;
+
+I<TODO.>
+
 =head2 item .
 
     ::MD::item::"" ::= function virtual --> Any <-- (Accessible, Any)
@@ -685,12 +751,12 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 item_or_void .!
+=head2 item_or_excuse .!
 
-    ::MD::item_or_void ::= function --> Any <-- (Accessible, Any)
-        : (topic --> \@".?" ?? topic --> \@"." !! \(\Void));
+    ::MD::item_or_excuse ::= function --> Any <-- (Accessible, Any)
+        : (topic --> \@".?" ?? topic --> \@"." !! Excuse::No_Such_Item());
 
-    ::MD::".!" ::= alias of item_or_void;
+    ::MD::".!" ::= alias of item_or_excuse;
 
 I<TODO.>
 
@@ -869,6 +935,12 @@ C<Structure_Inf>, the latter intentionally does not compose any interface
 contracts, and only has the minimal set of its own operators, so to
 minimize interference with other types' interfaces.
 
+=head2 Excuse::No_Such_Field
+
+    ::MD::Excuse::No_Such_Field ::= constant (\@0) composes Excuse;
+
+I<TODO.>
+
 =head2 has_any_fields ?^>
 
     ::MD::has_any_fields ::= function --> Boolean <-- (Structure)
@@ -898,6 +970,7 @@ I<TODO.>
 =head2 field .>
 
     ::MD::field ::= function --> Any <-- (Structure, SC_Field_Name)
+        requires (topic --> \@".>?")
         : (topic -->^ FDN__Structure_field);
 
     ::MD::".>" ::= alias of field;
@@ -913,12 +986,12 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 field_or_void .>!
+=head2 field_or_excuse .>!
 
-    ::MD::field_or_void ::= function --> Any <-- (Structure, SC_Field_Name)
-        : (topic --> \@".>?" ?? topic --> \@".>" !! \(\Void));
+    ::MD::field_or_excuse ::= function --> Any <-- (Structure, SC_Field_Name)
+        : (topic --> \@".>?" ?? topic --> \@".>" !! Excuse::No_Such_Field());
 
-    ::MD::".>!" ::= alias of field_or_void;
+    ::MD::".>!" ::= alias of field_or_excuse;
 
 I<TODO.>
 

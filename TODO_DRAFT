@@ -14,6 +14,54 @@ resources of everyone else.
 
 ----------
 
+* We really should have the Voidlike interface or some such rather than
+just a Void selection type.  Then make the various built-ins that otherwise
+possibly return Void instead return a specific composing type that is more
+specific to the reason for being Void, eg No_Such_Field etc.  It is
+analogous to Exception types.  Tests should then be for isa Voidlike rather
+than = Void etc.  That being said, we want these to be treated like Unit,
+essentially just being a name without extra info, unlike Exception which
+probably has extra info.  Or something.  See also ?! coalesce op, which can
+also be named 'coalesce'.  While loosely resembling exceptions, these are
+not in that sense as one throws exceptions while one returns these values
+and moreover these values are part of the declared function result type
+while exceptions are not so declared.  It could be argued that the main
+purpose of Voidlike, or Void, is to be an intermediary in implementing a
+ternary operator like "tup .! atnm ?! val_if_missing" eg it lets one
+overload that syntax while still having custom reasons for can't-do-it.
+- Anyway, voidlikes should be direct restrictions on Structure without
+being members of other types, so all regular operators fail on them.
+- How about declaring say Excuse is a selection type of Structure where
+.>0 is \Excuse and .>1 is any \foo; there would also be a special
+Plain_Text syntax, eg \!foo eg \!No_Such_Field etc.  Then there's no
+interfaces here, its just a selection type loosely like Text.  Or better
+yet .>1 is a Reference, or Excuse is itself isomorphic to Reference.  One
+can/does still declare subtypes of Excuse or
+constants/singletons so to use specific ones in signatures etc.
+- Actually, Excuse should just be an interface; as ?! etc can still be a
+non-abstract function, it doesn't need an implementation per value.
+- Note, Excuse is declared as a regular type, not as a source code type.
+- Use it as one would have used null/void/etc.
+- A ?! mnemonic is "why not?".  Perhaps "orelse" instead of "coalesce"?
+
+* Consider that cross-compiling Muldis D to the host language might not
+actually be that valuable in practice for a default reference
+implementation, considering how much would still have to be done in
+wrappered ways anyhow, such as any operator calls or implementing lazy
+evaluation, and that a straight interpreter based design may actually be
+the best thing to default to.  Especially with host languages that don't
+support runtime invocation of the compiler.  Also that would be more like
+how SQL DBMSs work.  There can still be alternate implementations that
+cross-compile though, such as for better performance.
+
+* Quoth a perl6-language post:
+"Keep in mind that what Perl 6 calls a "type object" isn't quite the
+same as class objects in other languages -- a Perl 6 typename is
+really an undefined instance of a class.  In other words, the
+identifiers C<Int>, C<Rat>, C<Array> etc. refer to instances of
+those classes just like the literals C<3>, C<4/5>, and C<[1,2,3]> are
+instances of those classes.  They share the same method spaces."
+
 * THIRD TRY:
 - Amend the SECOND TRY by eliminating the 4th position 'maturity' and
 instead say that versions with an alpha suffix eg -dev, -alpha, -beta, -rc
@@ -3187,7 +3235,8 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
 * Constant / named value declare syntax general form:
     0. keyword "constant"
     1. optional keyword "folded"
-    2. expr
+    2. keyword "composes" is optional, rules as on a "selection"
+    3. expr
 - Note that unlike with functions, "virtual"/"implements" don't make sense
 for constants because there's no way for them to be polymorphic dispatching
 on a nonexistant argument, so all references to constants need to be
