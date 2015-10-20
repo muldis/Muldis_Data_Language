@@ -579,7 +579,7 @@ I<TODO.>
 =head2 -
 
     ::MD::"-" ::= function --> Numeric <-- {(Numeric), (Numeric, Numeric)}
-        : (topic --> (#^>topic = 1 ?? \@opposite !! \@minus));
+        : (topic --> (Structure_degree(topic) = 1 ?? \@opposite !! \@minus));
 
 I<TODO.>
 
@@ -941,106 +941,84 @@ minimize interference with other types' interfaces.
 
 I<TODO.>
 
-=head2 has_any_fields ?^>
+=head2 has_any_fields
 
     ::MD::has_any_fields ::= function --> Boolean <-- (Structure)
         : (topic != \());
 
-    ::MD::"?^>" ::= alias of has_any_fields;
-
 I<TODO.>
 
-=head2 Structure_is_nullary !?^>
+=head2 Structure_is_nullary
 
     ::MD::Structure_is_nullary ::= function negates has_any_fields;
 
-    ::MD::"!?^>" ::= alias of Structure_is_nullary;
-
 I<TODO.>
 
-=head2 Structure_degree #^>
+=head2 Structure_degree
 
     ::MD::Structure_degree ::= function --> Integer <-- (Structure)
         : (topic -->^ FDN__Structure_degree);
 
-    ::MD::"#^>" ::= alias of Structure_degree;
-
 I<TODO.>
 
-=head2 field .>
+=head2 field
 
     ::MD::field ::= function --> Any <-- (Structure, SC_Field_Name)
-        requires (topic --> \@".>?")
+        requires (topic --> \@has_field)
         : (topic -->^ FDN__Structure_field);
-
-    ::MD::".>" ::= alias of field;
 
 I<TODO.>
 
-=head2 has_field .>?
+=head2 has_field
 
     ::MD::has_field ::= function --> Boolean <-- (Structure, SC_Field_Name)
         : (topic -->^ FDN__Structure_has_field);
 
-    ::MD::".>?" ::= alias of has_field;
-
 I<TODO.>
 
-=head2 field_or_excuse .>!
+=head2 field_or_excuse
 
     ::MD::field_or_excuse ::= function --> Any <-- (Structure, SC_Field_Name)
-        : (topic --> \@".>?" ?? topic --> \@".>" !! Excuse::No_Such_Field());
-
-    ::MD::".>!" ::= alias of field_or_excuse;
+        : (topic --> \@has_field ?? topic --> \@field !! Excuse::No_Such_Field());
 
 I<TODO.>
 
-=head2 on_fields ^>
+=head2 on_fields
 
     ::MD::on_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
         requires (...)
         : (topic -->^ FDN__Structure_on_fields);
 
-    ::MD::"^>" ::= alias of on_fields;
-
 I<TODO.>
 
-=head2 but_fields -^>
+=head2 but_fields
 
     ::MD::but_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
         requires (...)
         : (topic -->^ FDN__Structure_but_fields);
 
-    ::MD::"-^>" ::= alias of but_fields;
-
 I<TODO.>
 
-=head2 Structure_extend +^>
+=head2 Structure_extend
 
     ::MD::Structure_extend ::= function --> Structure <-- (Structure, Structure)
         requires (...)
         is {associative,commutative} identity \()
         : (topic -->^ FDN__Structure_extend);
 
-    ::MD::"+^>" ::= alias of Structure_extend;
-
 I<TODO.>
 
-=head2 has_fields ^>?
+=head2 has_fields
 
     ::MD::has_fields ::= function --> Boolean <-- (Structure, SC_Signature)
         : (...);
 
-    ::MD::"^>?" ::= alias of has_fields;
-
 I<TODO.>
 
-=head2 has_just_fields ^>?=
+=head2 has_just_fields
 
     ::MD::has_just_fields ::= function --> Boolean <-- (Structure, SC_Signature)
         : (...);
-
-    ::MD::"^>?=" ::= alias of has_just_fields;
 
 I<TODO.>
 
@@ -1159,7 +1137,7 @@ I<TODO.>
 
     ::MD::degree::Tuple ::= function --> Integer <-- (Tuple)
         implements 1::""
-        : (#^>(\\0 .> \1));
+        : (Structure_degree(\\0 field \1));
 
 I<TODO.>
 
@@ -1167,8 +1145,8 @@ I<TODO.>
 
     ::MD::item::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
         implements 1::""
-        requires (topic --> \@".?")
-        : (\\0 .> \1 .> \\1);
+        requires (topic --> \@has_item)
+        : (\\0 field \1 field \\1);
 
 I<TODO.>
 
@@ -1176,7 +1154,7 @@ I<TODO.>
 
     ::MD::has_item::Tuple ::= function --> Boolean <-- (Tuple, SC_Field_Name)
         implements 1::""
-        : (\\0 .> \1 .>? \\1);
+        : (\\0 field \1 has_field \\1);
 
 I<TODO.>
 
@@ -1185,7 +1163,7 @@ I<TODO.>
     ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
         implements 1::""
         requires (...)
-        : (\(\Tuple, \\0 .> \1 ^> \\1));
+        : (\(\Tuple, \\0 field \1 on_fields \\1));
 
 I<TODO.>
 
@@ -1194,7 +1172,7 @@ I<TODO.>
     ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
         implements 1::""
         requires (...)
-        : (\(\Tuple, \\0 .> \1 -^> \\1));
+        : (\(\Tuple, \\0 field \1 but_fields \\1));
 
 I<TODO.>
 
@@ -1204,7 +1182,7 @@ I<TODO.>
         implements 1::""
         requires (...)
         is {associative,commutative} identity \%()
-        : (\(\Tuple, (\\0 .> \1) +^> (\\1 .> \1)));
+        : (\(\Tuple, (\\0 field \1) Structure_extend (\\1 field \1)));
 
 I<TODO.>
 
@@ -1212,7 +1190,7 @@ I<TODO.>
 
     ::MD::has_attrs::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
         implements 1::""
-        : (\\0 .> \1 ^>? \\1);
+        : (\\0 field \1 has_fields \\1);
 
 I<TODO.>
 
@@ -1220,7 +1198,7 @@ I<TODO.>
 
     ::MD::has_just_attrs::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
         implements 1::""
-        : (\\0 .> \1 ^>?= \\1);
+        : (\\0 field \1 has_just_fields \\1);
 
 I<TODO.>
 

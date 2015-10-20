@@ -14,6 +14,59 @@ resources of everyone else.
 
 ----------
 
+* Effectively we have a master system catalog variable after all, in a
+manner of speaking, behind the scenes in the Foundation.  This variable is
+a Structure with an attribute per registered package, possibly a hierarchy
+of base:auth:vnum etc.  When a package is registered/"compiled" etc a field
+is added to this variable; unregistering removes one.  One can read fields
+to introspect code for either interpreting or compiling or implementing
+various things like "isa" etc.  Unlike normal variables, this one is
+directly visible to functions, because we don't want to explicitly pass it
+as an extra function argument, or something.  Or its not so much a variable
+as an implicit extra argument passed in addition to 'topic'.  For that
+matter, we also want an implicit extra argument visible to each material
+that says what its fully qualified name is, eg, what \@0 resolves to.
+Maybe also one with current call stack information.
+- Perhaps we shall say that every routine (and type 'where') actually has 2 arguments:
+    - topic (a keyword) is what is explicitly passed in by calling code
+    - context (a keyword) is implicitly passed extra information, a Structure:
+        - self - a Reference to / fully qualified name of the routine, eg \@0
+        - catalog - the variable listing all the registered/invokable packages;
+            one can lookup self in this to get info on where are we now
+        - ?callers - information on the present call stack of the routine;
+            or strictly speaking maybe the ability to read this in a function/type
+            is bad because it means the function is not deterministic on its
+            topic; at the very least though, an alternative to this in
+            functions is a write-only/debugging feature that says, write or
+            track a stack trace of where we are now, whatever it is
+    - generally we need to distinguish compile time info vs runtime, and only
+    the former is available to functions but via 'topic'; self/catalog is
+    compile time, assuming each new package register conceptually recompiles
+    everything, while call stack is runtime; likewise, "the database" is in
+    the general case runtime / is not a constant in the registered packages,
+    and we don't want functions to see it outside of 'topic'
+    - see also what Perl 6 does again re context
+
+* Idea, a package version number is just implemented as a string like an
+unqualified identifier, where each integer is a codepoint like with the
+names of positional field names.  Thus all parts of a fully qualified
+package name or a Reference are just field names / strings.
+
+* Quoth I: "I think of 1st normal form as when you don't have multiple
+relation attributes with the same meaning. That is, common examples of 1NF
+violations are when you have say phone_1 and phone_2 fields or email_1 and
+email_2 fields in a people relvar. This is what "multi-valued" or "single
+values of a domain" etc refer to in practice as far as the prescription on
+eliminating such to achieve 1NF. The problem was never about array-valued
+attributes or complex types or what have you."
+
+* Don't use References as \\0 etc in types the Foundation needs to know
+about, such as anything Plain_Text has syntax for or anything likely to
+have an internal special representation for or any type defining source
+code.  Save References for things only a bootstrapped system would see.
+- References as they are versioned by package version can cause problems at
+the Foundation level just because.
+
 * We really should have the Voidlike interface or some such rather than
 just a Void selection type.  Then make the various built-ins that otherwise
 possibly return Void instead return a specific composing type that is more
