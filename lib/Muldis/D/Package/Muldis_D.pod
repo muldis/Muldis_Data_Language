@@ -291,7 +291,13 @@ I<TODO.>
 
     ::MD::Boolable ::= interface requires_implements so;
 
-I<TODO.>
+I<TODO.  For types that have a canonical way of being cast to booleans;
+for collection types an empty collection is false and nonempty is true;
+for numeric types, a zero is false and a nonzero is true.
+Composed by: Boolean, Numeric (Integer, ...), Homogeneous (Array, Set, Relation, Bag,...).
+(Conceptually but not actually composed by Attributive (Tuple, Relation,...)
+and Structure due to overlap and conflicting meaning with some other composers;
+Attributive and Structure instead have their own different-named versions of the Boolable ops.)>
 
 =head2 so ?
 
@@ -726,7 +732,14 @@ I<TODO.>
     ::MD::Accessible ::= interface
         requires_implements {item,has_item};
 
-I<TODO.>
+I<TODO.  For types that support simple accessor-based lookup of single values;
+for one-dimensional collections of pairs that support lookup by one
+pair element of the other pair element, and every pair in the
+collection has a distinct first element.
+Does not have anything to say related to either enumerating elements or
+to slicing a subset elements into a new collection.
+Composed by: Positional (Array, String,...), Tuple, Dict, etc.
+(Conceptually also composed by Capsule, but isn't to avoid conflicts.)>
 
 =head2 Excuse::No_Such_Item
 
@@ -760,32 +773,37 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 COLLECTIVE DATA TYPES
+=head1 HOMOGENEOUS DATA TYPES
 
-=head2 Collective
+=head2 Homogeneous
 
-    ::MD::Collective::"" ::= interface
+    ::MD::Homogeneous::"" ::= interface
         composes Boolable
-        requires_implements {so,count,has,group,ungroup,where,map,reduce,...};
+        requires_implements {so,count,has,nest,unnest,where,map,reduce,...};
 
-I<TODO.>
+I<TODO.  For types whose values are conceptually homogeneous collections.
+Composed by: Positional (Array, String, etc), Setty (Set, Relation), Baggy (Bag, Tuple_Bag).
+(Conceptually more or less all collection types can be thought of as being
+collections over 2 dimensions, heterogeneous/Attributive and Homogeneous;
+Relation and Tuple_Bag formally are multiples in both dimensions, while the
+other types are formally multiples in just one of those dimensions.)>
 
-=head2 so (Collective)
+=head2 so (Homogeneous)
 
-    ::MD::so::Collective ::= function virtual --> Boolean <-- (Collective)
+    ::MD::so::Homogeneous ::= function virtual --> Boolean <-- (Homogeneous)
         implements 1::"";
 
 I<TODO.>
 
 =head2 is_empty
 
-    ::MD::is_empty ::= function negates so::Collective;
+    ::MD::is_empty ::= function negates so::Homogeneous;
 
 I<TODO.>
 
 =head2 count cardinality #
 
-    ::MD::count::"" ::= function virtual --> Integral <-- (Collective);
+    ::MD::count::"" ::= function virtual --> Integral <-- (Homogeneous);
 
     ::MD::cardinality ::= alias of count;
     ::MD::"#"         ::= alias of count;
@@ -794,7 +812,7 @@ I<TODO.>
 
 =head2 has ∋
 
-    ::MD::has::"" ::= function virtual --> Boolean <-- (Collective, Any);
+    ::MD::has::"" ::= function virtual --> Boolean <-- (Homogeneous, Any);
 
     ::MDA::"∋" ::= alias of has;
 
@@ -824,16 +842,16 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 group
+=head2 nest
 
-    ::MD::group::"" ::= function virtual --> Collective <-- (Collective)
+    ::MD::nest::"" ::= function virtual --> Homogeneous <-- (Homogeneous)
         requires (...);
 
 I<TODO.>
 
-=head2 ungroup
+=head2 unnest
 
-    ::MD::ungroup::"" ::= function virtual --> Collective <-- (Collective)
+    ::MD::unnest::"" ::= function virtual --> Homogeneous <-- (Homogeneous)
         requires (...);
 
 I<TODO.>
@@ -841,33 +859,36 @@ I<TODO.>
 =head2 where
 
     ::MD::where::"" ::= function virtual
-        --> Collective <-- (Collective, SC_Primed_Func_Ref);
+        --> Homogeneous <-- (Homogeneous, SC_Primed_Func_Ref);
 
 I<TODO.>
 
 =head2 map
 
     ::MD::map::"" ::= function virtual
-        --> Collective <-- (Collective, SC_Primed_Func_Ref);
+        --> Homogeneous <-- (Homogeneous, SC_Primed_Func_Ref);
 
 I<TODO.>
 
 =head2 reduce
 
     ::MD::reduce::"" ::= function virtual
-        --> Collective <-- (Collective, SC_Primed_Func_Ref);
+        --> Homogeneous <-- (Homogeneous, SC_Primed_Func_Ref);
 
 I<TODO.>
 
-=head1 ARRAYISH DATA TYPES
+=head1 POSITIONAL DATA TYPES
 
-=head2 Arrayish
+=head2 Positional
 
-    ::MD::Arrayish ::= interface
-        composes {Accessible,...}
-        requires_implements {item,has_item,...};
+    ::MD::Positional ::= interface
+        composes {Accessible, Homogeneous and_provides_its_default, ...}
+        requires_implements {item,has_item,so,count,has,nest,unnest,where,map,reduce,catenate,...};
 
-I<TODO.>
+I<TODO.  For types that support integer-index-based lookup of values;
+for collections of index-value pairs where all indexes are distinct;
+for collections you can enumerate in canonical order.
+Composed by: Array, String, Blob, Text, etc.>
 
 =head1 ARRAY DATA TYPES
 
@@ -875,7 +896,7 @@ I<TODO.>
 
     ::MD::Array_Inf ::= selection where topic -->^ FDN__isa_Array_Inf
         default []
-        composes Arrayish and_provides_its_default;
+        composes Positional and_provides_its_default;
 
     ::MD::Array ::= alias of Array_Inf;
 
@@ -1029,7 +1050,11 @@ I<TODO.>
     ::MD::Attributive ::= interface
         requires_implements {has_any_attrs,degree,on,but,extend,has_attrs,has_just_attrs};
 
-I<TODO.>
+I<TODO.  For types that support attribute-name-based lookup of values;
+for collections of name-value pairs where all names are distinct;
+for typically heterogeneous collections.
+Composed by: Tuple, Relation, Tuple_Bag.
+(Conceptually also composed by Capsule, but isn't to avoid conflicts.)>
 
 =head2 has_any_attrs ?^
 
