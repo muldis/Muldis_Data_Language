@@ -922,6 +922,57 @@ I<TODO.>
 
 I<TODO.>
 
+=head1 ASSOCIATIVE DATA TYPES
+
+=head2 Associative
+
+    ::MD::Associative ::= interface
+        composes Accessible
+        requires_implements {item,has_item};
+
+I<TODO.  For types that support key-based lookup of values;
+for collections of key-value pairs where all keys are distinct;
+for collections you can enumerate with no canonical order.
+Currently Associative is just Accessible plus a semantic, not adding its own API.
+Composed by: Setty (Set, Relation), Baggy (Bag, Tuple_Bag), Dict, etc.>
+
+=head1 SETTY DATA TYPES
+
+=head2 Setty
+
+    ::MD::Setty ::= interface
+        composes {Associative,Homogeneous}
+        requires_implements {so,count,has,nest,unnest,where,map,reduce,...};
+
+I<TODO.  For collections that make sure each element can only appear once;
+for collections of key-true pairs.
+Composed by: Set, Relation.>
+
+=head1 SET DATA TYPES
+
+=head2 Set_Inf Set
+
+    ::MD::Set_Inf ::= selection of Structure
+        where topic has_just_fields \(constant \Set, \@Bag) and ...
+        default {}
+        composes Setty and_provides_its_default;
+
+    ::MD::Set ::= synonym of Set_Inf;
+
+I<TODO.>
+
+=head1 BAGGY DATA TYPES
+
+=head2 Baggy
+
+    ::MD::Baggy ::= interface
+        composes {Associative,Homogeneous}
+        requires_implements {so,count,has,nest,unnest,where,map,reduce,...};
+
+I<TODO.  For collections of weighted objects;
+for collections of key-quantity pairs.
+Composed by: Bag, Tuple_Bag.>
+
 =head1 BAG DATA TYPES
 
 =head2 Bag_Inf Bag
@@ -1224,6 +1275,32 @@ I<TODO.>
     ::MD::has_just_attrs::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
         implements 1::""
         : (\\0 field \1 has_just_fields \\1);
+
+I<TODO.>
+
+=head1 RELATION DATA TYPES
+
+=head2 Relation_Inf Relation
+
+    ::MD::Relation_Inf ::= selection of Structure
+        where topic has_just_fields \(constant \Relation, \@Structure) ...
+        default \?%{}
+        composes {Setty, Attributive};
+
+    ::MD::Relation ::= synonym of Relation_Inf;
+
+I<TODO.>
+
+=head1 TUPLE-BAG DATA TYPES
+
+=head2 Tuple_Bag_Inf Tuple_Bag
+
+    ::MD::Tuple_Bag_Inf ::= selection of Structure
+        where topic has_just_fields \(constant \Tuple_Bag, \@Structure) ...
+        default \+%{}
+        composes {Baggy, Attributive};
+
+    ::MD::Tuple_Bag ::= alias of Tuple_Bag_Inf;
 
 I<TODO.>
 
