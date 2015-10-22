@@ -894,13 +894,35 @@ I<TODO.>
 =head2 Positional
 
     ::MD::Positional ::= interface
-        composes {Accessible, Homogeneous and_provides_its_default, ...}
-        requires_implements {item,has_item,so,count,has,nest,unnest,where,map,reduce,catenate,...};
+        composes {Orderable, Accessible, Homogeneous and_provides_its_default, ...}
+        requires_implements {item,has_item,so,count,has,nest,unnest,where,map,reduce,
+            catenate,first_nonmatching_index,...};
 
 I<TODO.  For types that support integer-index-based lookup of values;
 for collections of index-value pairs where all indexes are distinct;
 for collections you can enumerate in canonical order.
 Composed by: Array, String, Blob, Text, etc.>
+
+=head2 in_order (Positional)
+
+    ::MD::in_order::Positional ::= function
+        --> Boolean <-- (Positional, Positional)
+        implements 1::""
+    : (
+        i ::= topic --> \@first_nonmatching_index;
+      <--
+        if not \\0 .? i then
+            e1 ::= True
+        else if not \\1 .? i then
+            False
+        else
+            e2 ::= (\\0.i in_order \\1.i);
+
+        e1 ::?= \~?'This is the case where LHS is a leading subsequence of or is equal to RHS.';
+        e2 ::?= \~?'This will succeed iff in_order() is defined for the element type.';
+    );
+
+I<TODO.>
 
 =head2 catenate ~
 
@@ -909,6 +931,14 @@ Composed by: Array, String, Blob, Text, etc.>
         is associative;
 
     ::MD::"~" ::= alias of catenate;
+
+I<TODO.>
+
+=head2 first_nonmatching_index
+
+    ::MD::first_nonmatching_index::"" ::= function virtual
+        --> Integral <-- (Positional, Positional)
+        is commutative;
 
 I<TODO.>
 
@@ -1018,6 +1048,17 @@ I<TODO.>
         : (topic -->^ FDN__Array_catenate);
 
 I<TODO.>
+
+=head2 first_nonmatching_index (Array)
+
+    ::MD::first_nonmatching_index::Array ::= function
+        --> Integer_NN <-- (Array, Array)
+        implements 1::""
+        is commutative
+        : (topic -->^ FDN__Array_first_nonmatching_index);
+
+I<TODO.  While conceivably implementable at a higher level, make low level
+for perceived efficiency.>
 
 =head1 ASSOCIATIVE DATA TYPES
 
