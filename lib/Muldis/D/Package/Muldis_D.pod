@@ -896,11 +896,12 @@ I<TODO.>
     ::MD::Positional ::= interface
         composes {Orderable, Accessible, Homogeneous and_provides_its_default, ...}
         requires_implements {item,has_item,so,count,has,nest,unnest,where,map,reduce,
-            catenate,first_nonmatching_index,...};
+            first_index,last_index,slice,catenate,index_succ_all_matches,...};
 
 I<TODO.  For types that support integer-index-based lookup of values;
 for collections of index-value pairs where all indexes are distinct;
-for collections you can enumerate in canonical order.
+for collections you can enumerate in canonical order;
+the collection indexes might not be zero-based in the general case but must be dense.
 Composed by: Array, String, Blob, Text, etc.>
 
 =head2 in_order (Positional)
@@ -909,7 +910,7 @@ Composed by: Array, String, Blob, Text, etc.>
         --> Boolean <-- (Positional, Positional)
         implements 1::""
     : (
-        i ::= topic --> \@first_nonmatching_index;
+        i ::= (topic --> \@index_succ_all_matches);
       <--
         if not \\0 .? i then
             e1 ::= True
@@ -924,6 +925,60 @@ Composed by: Array, String, Blob, Text, etc.>
 
 I<TODO.>
 
+=head2 first_index
+
+    ::MD::first_index::"" ::= function virtual --> Integral <-- (Positional)
+        requires (?\\0);
+
+I<TODO.>
+
+=head2 last_index
+
+    ::MD::last_index::"" ::= function virtual --> Integral <-- (Positional)
+        requires (?\\0);
+
+I<TODO.>
+
+=head2 slice
+
+    ::MD::slice::"" ::= function virtual
+        --> Positional <-- (Positional, Interval);
+
+I<TODO.  Need to clarify constraints, eg is this a strict subsequence
+operation or is it more like an intersection.>
+
+=head2 first
+
+    ::MD::first ::= function --> Any <-- (Positional)
+        requires (?\\0)
+        : (\\0 . first_index(\\0));
+
+I<TODO.>
+
+=head2 nonfirst
+
+    ::MD::nonfirst ::= function --> Positional <-- (Positional)
+        requires (?\\0)
+        : (\\0 slice first_index(\\0)^..last_index(\\0));
+
+I<TODO.>
+
+=head2 last
+
+    ::MD::last ::= function --> Any <-- (Positional)
+        requires (?\\0)
+        : (\\0 . last_index(\\0));
+
+I<TODO.>
+
+=head2 nonlast
+
+    ::MD::nonlast ::= function --> Positional <-- (Positional)
+        requires (?\\0)
+        : (\\0 slice first_index(\\0)..^last_index(\\0));
+
+I<TODO.>
+
 =head2 catenate ~
 
     ::MD::catenate::"" ::= function virtual
@@ -934,9 +989,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 first_nonmatching_index
+=head2 index_succ_all_matches
 
-    ::MD::first_nonmatching_index::"" ::= function virtual
+    ::MD::index_succ_all_matches::"" ::= function virtual
         --> Integral <-- (Positional, Positional)
         is commutative;
 
@@ -1040,6 +1095,32 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 first_index
+
+    ::MD::first_index::Array ::= function --> Integer_NN <-- (Array)
+        implements 1::""
+        requires (?\\0)
+        : (0);
+
+I<TODO.>
+
+=head2 last_index
+
+    ::MD::last_index::Array ::= function --> Integer_NN <-- (Array)
+        implements 1::""
+        requires (?\\0)
+        : (-- #\\0);
+
+I<TODO.>
+
+=head2 slice
+
+    ::MD::slice::Array ::= function --> Array <-- (Array, Interval)
+        implements 1::""
+        : (topic -->^ FDN__Array_slice);
+
+I<TODO.>
+
 =head2 catenate (Array)
 
     ::MD::catenate::Array ::= function --> Array <-- (Array, Array)
@@ -1049,13 +1130,13 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 first_nonmatching_index (Array)
+=head2 index_succ_all_matches (Array)
 
-    ::MD::first_nonmatching_index::Array ::= function
+    ::MD::index_succ_all_matches::Array ::= function
         --> Integer_NN <-- (Array, Array)
         implements 1::""
         is commutative
-        : (topic -->^ FDN__Array_first_nonmatching_index);
+        : (topic -->^ FDN__Array_index_succ_all_matches);
 
 I<TODO.  While conceivably implementable at a higher level, make low level
 for perceived efficiency.>
