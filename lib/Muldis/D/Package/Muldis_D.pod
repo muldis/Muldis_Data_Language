@@ -241,7 +241,7 @@ I<TODO.>
 =head2 min
 
     ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
-        is {associative,commutative,idempotent} identity Pos_Inf()
+        is {associative,commutative,idempotent} identity (Pos_Inf())
         : (topic --> \@in_order ?? \\0 !! \\1);
 
 I<TODO.>
@@ -249,7 +249,7 @@ I<TODO.>
 =head2 max
 
     ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
-        is {associative,commutative,idempotent} identity Neg_Inf()
+        is {associative,commutative,idempotent} identity (Neg_Inf())
         : (topic --> \@in_order ?? \\1 !! \\0);
 
 I<TODO.>
@@ -383,7 +383,7 @@ I<TODO.>
 
     ::MD::so::Boolean ::= function --> Boolean <-- (Boolean)
         implements 1::""
-        : \\0;
+        : (\\0);
 
 I<TODO.>
 
@@ -396,14 +396,12 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 and all every ∧
+=head2 and ∧
 
     ::MD::and ::= function --> Boolean <-- (Boolean, Boolean)
-        is {associative,commutative,idempotent} identity True
+        is {associative,commutative,idempotent} identity (True)
         : (\\0 ?? \\1 !! False);
 
-    ::MD::all   ::= alias of and;
-    ::MD::every ::= alias of and;
     ::MDA::"∧"  ::= alias of and;
 
 I<TODO.>
@@ -419,14 +417,12 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 or any some ∨
+=head2 or ∨
 
     ::MD::or ::= function --> Boolean <-- (Boolean, Boolean)
-        is {associative,commutative,idempotent} identity False
+        is {associative,commutative,idempotent} identity (False)
         : (\\0 ?? True !! \\1);
 
-    ::MD::any  ::= alias of or;
-    ::MD::some ::= alias of or;
     ::MDA::"∨" ::= alias of or;
 
 I<TODO.>
@@ -445,7 +441,7 @@ I<TODO.>
 =head2 xnor iff ↔
 
     ::MD::xnor ::= function --> Boolean <-- (Boolean, Boolean)
-        is {associative,commutative} identity True
+        is {associative,commutative} identity (True)
         : (topic --> \@same);
 
     ::MD::iff  ::= alias of xnor;
@@ -456,7 +452,7 @@ I<TODO.>
 =head2 xor ⊻ ↮
 
     ::MD::xor ::= function negates xnor
-        is {associative,commutative} identity False;
+        is {associative,commutative} identity (False);
 
     ::MDA::"⊻" ::= alias of xor;
     ::MDA::"↮" ::= alias of xor;
@@ -668,6 +664,10 @@ I<TODO.  Also, do something about the unimplemented Numeric operators.>
     ::MD::Integer ::= alias of Integer_Inf;
     ::MD::Int     ::= alias of Integer_Inf;
 
+    ::MD::Integer_NN ::= selection of Integer where (topic >= 0);
+
+    ::MD::Integer_P ::= selection of Integer_NN where (topic > 0) default (1);
+
 The selection contract C<Integer_Inf> represents the infinite Muldis D
 Foundation type I<FDN__Integer_Inf>.  An C<Integer_Inf> value is a general
 purpose integer exact numeric.  Its default value is C<0>.  Other
@@ -738,7 +738,7 @@ pair element of the other pair element, and every pair in the
 collection has a distinct first element.
 Does not have anything to say related to either enumerating elements or
 to slicing a subset elements into a new collection.
-Composed by: Positional (Array, String,...), Tuple, Dict, etc.
+Composed by: Positional (Array, String,...), Tuple, Dictionary, etc.
 (Conceptually also composed by Capsule, but isn't to avoid conflicts.)>
 
 =head2 Excuse::No_Such_Item
@@ -788,10 +788,12 @@ collections over 2 dimensions, heterogeneous/Attributive and Homogeneous;
 Relation and Tuple_Bag formally are multiples in both dimensions, while the
 other types are formally multiples in just one of those dimensions.)>
 
-=head2 so (Homogeneous)
+=head2 so (Homogeneous) has_any_members
 
     ::MD::so::Homogeneous ::= function virtual --> Boolean <-- (Homogeneous)
         implements 1::"";
+
+    ::MD::has_any_members ::= alias of so::Homogeneous;
 
 I<TODO.>
 
@@ -842,17 +844,21 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 nest
+=head2 nest group
 
     ::MD::nest::"" ::= function virtual --> Homogeneous <-- (Homogeneous)
         requires (...);
 
+    ::MD::group ::= alias of nest;
+
 I<TODO.>
 
-=head2 unnest
+=head2 unnest ungroup
 
     ::MD::unnest::"" ::= function virtual --> Homogeneous <-- (Homogeneous)
         requires (...);
+
+    ::MD::ungroup ::= alias of unnest;
 
 I<TODO.>
 
@@ -907,7 +913,7 @@ I<TODO.>
 
 =head2 item (Array)
 
-    ::MD::item::Array ::= function --> Any <-- (Array, Integer)
+    ::MD::item::Array ::= function --> Any <-- (Array, Integer_NN)
         implements 1::""
         requires (topic --> \@has_item)
         : (topic -->^ FDN__Array_elem);
@@ -916,25 +922,23 @@ I<TODO.>
 
 =head2 has_item (Array)
 
-    ::MD::has_item::Array ::= function --> Boolean <-- (Array, Integer)
+    ::MD::has_item::Array ::= function --> Boolean <-- (Array, Integer_NN)
         implements 1::""
         : (topic -->^ FDN__Array_has_elem);
 
-I<TODO.>
+I<TODO.  True if given array index exists.>
 
 =head1 ASSOCIATIVE DATA TYPES
 
 =head2 Associative
 
-    ::MD::Associative ::= interface
-        composes Accessible
-        requires_implements {item,has_item};
+    ::MD::Associative ::= interface;
 
 I<TODO.  For types that support key-based lookup of values;
-for collections of key-value pairs where all keys are distinct;
+for collections of key-asset pairs where all keys are distinct;
 for collections you can enumerate with no canonical order.
-Currently Associative is just Accessible plus a semantic, not adding its own API.
-Composed by: Setty (Set, Relation), Baggy (Bag, Tuple_Bag), Dict, etc.>
+Currently Associative is just semantic, not adding its own API.
+Composed by: Setty (Set, Relation), Baggy (Bag, Tuple_Bag), Dictionary, etc.>
 
 =head1 SETTY DATA TYPES
 
@@ -959,7 +963,7 @@ Composed by: Set, Relation.>
 
     ::MD::Set ::= synonym of Set_Inf;
 
-I<TODO.>
+I<TODO. Update 'where' to say quantity for each distinct member is 1.>
 
 =head1 BAGGY DATA TYPES
 
@@ -1016,7 +1020,7 @@ I<TODO.>
 =head2 has_any_fields
 
     ::MD::has_any_fields ::= function --> Boolean <-- (Structure)
-        : (topic != \());
+        : (\\0 != \());
 
 I<TODO.>
 
@@ -1028,7 +1032,7 @@ I<TODO.>
 
 =head2 Structure_degree
 
-    ::MD::Structure_degree ::= function --> Integer <-- (Structure)
+    ::MD::Structure_degree ::= function --> Integer_NN <-- (Structure)
         : (topic -->^ FDN__Structure_degree);
 
 I<TODO.>
@@ -1075,7 +1079,7 @@ I<TODO.>
 
     ::MD::Structure_extend ::= function --> Structure <-- (Structure, Structure)
         requires (...)
-        is {associative,commutative} identity \()
+        is {associative,commutative} identity (\())
         : (topic -->^ FDN__Structure_extend);
 
 I<TODO.>
@@ -1205,13 +1209,13 @@ I<TODO.>
 
     ::MD::has_any_attrs::Tuple ::= function --> Boolean <-- (Tuple)
         implements 1::""
-        : (topic != \%());
+        : (\\0 != \%());
 
 I<TODO.>
 
 =head2 degree (Tuple)
 
-    ::MD::degree::Tuple ::= function --> Integer <-- (Tuple)
+    ::MD::degree::Tuple ::= function --> Integer_NN <-- (Tuple)
         implements 1::""
         : (Structure_degree(\\0 field \1));
 
@@ -1257,7 +1261,7 @@ I<TODO.>
     ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
         implements 1::""
         requires (...)
-        is {associative,commutative} identity \%()
+        is {associative,commutative} identity (\%())
         : (\(\Tuple, (\\0 field \1) Structure_extend (\\1 field \1)));
 
 I<TODO.>
