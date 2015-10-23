@@ -779,7 +779,7 @@ I<TODO.>
 
     ::MD::Homogeneous::"" ::= interface
         composes Boolable
-        requires_implements {so,count,has,nest,unnest,where,map,reduce,...};
+        requires_implements {so,count,has,nest,unnest,any,where,map,reduce,...};
 
 I<TODO.  For types whose values are conceptually homogeneous collections.
 Composed by: Positional (Array, String, etc), Setty (Set, Relation), Baggy (Bag, Tuple_Bag).
@@ -862,12 +862,49 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 any there_exists ∃
+
+    ::MD::any::"" ::= function virtual
+        --> Boolean <-- (Homogeneous, SC_Primed_Func_Ref);
+
+    ::MD::there_exists ::= alias of any;
+    ::MDA::"∃"         ::= alias of any;
+
+I<TODO.  Result is true when at least one member evaluates to true.
+This is logically equivalent to testing if a same-topic 'where' result is nonempty,
+but 'any' is instead virtual with applicable Foundation-level functions to
+aid efficiency with less-savvy optimizers that don't know to short-circuit.>
+
+=head2 none there_does_not_exist ∄
+
+    ::MD::none ::= function negates any;
+
+    ::MD::there_does_not_exist ::= alias of none;
+    ::MDA::"∄"                 ::= alias of none;
+
+I<TODO.  Result is true when no member evaluates to true.>
+
+=head2 all for_all ∀
+
+    ::MD::all ::= function --> Boolean <-- (Homogeneous, SC_Primed_Func_Ref)
+        : (\\0 none negated_func(of : \\1, passing_args : \@(0)));
+
+    ::MD::for_all ::= alias of all;
+    ::MDA::"∀"    ::= alias of all;
+
+I<TODO.  Result is true when no member evaluates to false.>
+
 =head2 where
 
     ::MD::where::"" ::= function virtual
         --> Homogeneous <-- (Homogeneous, SC_Primed_Func_Ref);
 
-I<TODO.>
+I<TODO.  The primed-func-ref is expected to be a Structure with 2 fields
+named 'func' and 'args', which are a SC_Reference and a Structure respectively.
+The 'args' can be any Structure that doesn't have a '0' field.
+The function referenced by 'func' is expected to take a Structure argument
+whose '0' field is a member of the collection and whose other fields match
+those given in 'args'.>
 
 =head2 filtering
 
@@ -880,14 +917,20 @@ I<TODO.>
     ::MD::map::"" ::= function virtual
         --> Homogeneous <-- (Homogeneous, SC_Primed_Func_Ref);
 
-I<TODO.>
+I<TODO.  The primed-func-ref is as per that of 'where'.>
 
 =head2 reduce
 
     ::MD::reduce::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, SC_Primed_Func_Ref);
+        --> Any <-- (Homogeneous, SC_Primed_Func_Ref);
 
-I<TODO.>
+I<TODO.  The primed-func-ref is expected to be a Structure with 2 fields
+named 'func' and 'args', which are a SC_Reference and a Structure respectively.
+The 'args' can be any Structure that doesn't have either '0' or '1' fields.
+The function referenced by 'func' is expected to take a Structure argument
+whose '0' and '1' fields are members of the collection and whose other fields match
+those given in 'args'.
+Depending on the collection subtype, order of 0,1 may or may not be significant.>
 
 =head1 POSITIONAL DATA TYPES
 
@@ -895,7 +938,7 @@ I<TODO.>
 
     ::MD::Positional ::= interface
         composes {Orderable, Accessible, Homogeneous and_provides_its_default, ...}
-        requires_implements {item,has_item,so,count,has,nest,unnest,where,map,reduce,
+        requires_implements {item,has_item,so,count,has,nest,unnest,any,where,map,reduce,
             first_index,last_index,slice,catenate,index_succ_all_matches,...};
 
 I<TODO.  For types that support integer-index-based lookup of values;
@@ -1071,6 +1114,14 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 any (Array)
+
+    ::MD::any::Array ::= function --> Boolean <-- (Array, SC_Primed_Func_Ref)
+        implements 1::""
+        : (topic -->^ FDN__Array_any);
+
+I<TODO.>
+
 =head2 where (Array)
 
     ::MD::where::Array ::= function --> Array <-- (Array, SC_Primed_Func_Ref)
@@ -1089,7 +1140,7 @@ I<TODO.>
 
 =head2 reduce (Array)
 
-    ::MD::reduce::Array ::= function --> Array <-- (Array, SC_Primed_Func_Ref)
+    ::MD::reduce::Array ::= function --> Any <-- (Array, SC_Primed_Func_Ref)
         implements 1::""
         : (topic -->^ FDN__Array_reduce);
 
@@ -1159,7 +1210,7 @@ Composed by: Setty (Set, Relation), Baggy (Bag, Tuple_Bag), Dictionary, etc.>
 
     ::MD::Setty ::= interface
         composes {Associative,Homogeneous}
-        requires_implements {so,count,has,nest,unnest,where,map,reduce,...};
+        requires_implements {so,count,has,nest,unnest,any,where,map,reduce,...};
 
 I<TODO.  For collections that make sure each element can only appear once;
 for collections of key-true pairs.
@@ -1220,6 +1271,14 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 any (Set)
+
+    ::MD::any::Set ::= function --> Boolean <-- (Set, SC_Primed_Func_Ref)
+        implements 1::""
+        : (\\0 field \1 any \\1);
+
+I<TODO.>
+
 =head2 where (Set)
 
     ::MD::where::Set ::= function --> Set <-- (Set, SC_Primed_Func_Ref)
@@ -1238,7 +1297,7 @@ I<TODO.>
 
 =head2 reduce (Set)
 
-    ::MD::reduce::Set ::= function --> Set <-- (Set, SC_Primed_Func_Ref)
+    ::MD::reduce::Set ::= function --> Any <-- (Set, SC_Primed_Func_Ref)
         implements 1::""
         : (\(\Set, \\0 field \1 reduce \\1));
 
@@ -1250,7 +1309,7 @@ I<TODO.>
 
     ::MD::Baggy ::= interface
         composes {Associative,Homogeneous}
-        requires_implements {so,count,has,nest,unnest,where,map,reduce,...};
+        requires_implements {so,count,has,nest,unnest,any,where,map,reduce,...};
 
 I<TODO.  For collections of weighted objects;
 for collections of key-quantity pairs.
@@ -1313,6 +1372,14 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 any (Bag)
+
+    ::MD::any::Bag ::= function --> Boolean <-- (Bag, SC_Primed_Func_Ref)
+        implements 1::""
+        : (topic -->^ FDN__Bag_any);
+
+I<TODO.>
+
 =head2 where (Bag)
 
     ::MD::where::Bag ::= function --> Bag <-- (Bag, SC_Primed_Func_Ref)
@@ -1331,7 +1398,7 @@ I<TODO.>
 
 =head2 reduce (Bag)
 
-    ::MD::reduce::Bag ::= function --> Bag <-- (Bag, SC_Primed_Func_Ref)
+    ::MD::reduce::Bag ::= function --> Any <-- (Bag, SC_Primed_Func_Ref)
         implements 1::""
         : (topic -->^ FDN__Bag_reduce);
 
@@ -1686,6 +1753,23 @@ I<TODO.>
     ::MD::Source_Code::Package ::= selection ...;
 
 I<TODO.>
+
+=head2 negated_func
+
+    ::MD::negated_func ::= function --> SC_Primed_Func_Ref
+        <-- (of : SC_Primed_Func_Ref, passing_args : SC_Field_Names)
+    : (
+        (function : (
+            not(
+                (
+                    \\of field args
+                        Structure_extend (topic on_fields \\passing_args)
+                ) --> (\\of field func)
+            )
+        )) assuming topic
+    );
+
+I<TODO.  This expects the original function is from Structure to Boolean.>
 
 =head1 SEE ALSO
 
