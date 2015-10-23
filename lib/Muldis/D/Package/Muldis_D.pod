@@ -730,7 +730,7 @@ I<TODO.>
 =head2 Accessible
 
     ::MD::Accessible ::= interface
-        requires_implements {item,has_item};
+        requires_implements {".",".?",".!"};
 
 I<TODO.  For types that support simple accessor-based lookup of single values;
 for one-dimensional collections of pairs that support lookup by one
@@ -738,38 +738,27 @@ pair element of the other pair element, and every pair in the
 collection has a distinct first element.
 Does not have anything to say related to either enumerating elements or
 to slicing a subset elements into a new collection.
+Accessible just provides certain convenient shared names for operators that
+otherwise have distinct names on the composing types.
 Composed by: Positional (Array, String,...), Tuple, Dictionary, etc.
 (Conceptually also composed by Capsule, but isn't to avoid conflicts.)>
 
-=head2 Excuse::No_Such_Item
+=head2 .
 
-    ::MD::Excuse::No_Such_Item ::= constant (\@0) composes Excuse;
-
-I<TODO.>
-
-=head2 item .
-
-    ::MD::item::"" ::= function virtual --> Any <-- (Accessible, Any)
-        requires (topic --> \@has_item);
-
-    ::MD::"." ::= alias of item;
+    ::MD::"."::"" ::= function virtual --> Any <-- (Accessible, Any)
+        requires (topic --> \@".?");
 
 I<TODO.>
 
-=head2 has_item .?
+=head2 .?
 
-    ::MD::has_item::"" ::= function virtual --> Boolean <-- (Accessible, Any);
-
-    ::MD::".?" ::= alias of has_item;
+    ::MD::".?"::"" ::= function virtual --> Boolean <-- (Accessible, Any);
 
 I<TODO.>
 
-=head2 item_or_excuse .!
+=head2 .!
 
-    ::MD::item_or_excuse ::= function --> Any <-- (Accessible, Any)
-        : (topic --> \@has_item ?? topic --> \@item !! Excuse::No_Such_Item());
-
-    ::MD::".!" ::= alias of item_or_excuse;
+    ::MD::".!"::"" ::= function virtual --> Any <-- (Accessible, Any);
 
 I<TODO.>
 
@@ -938,7 +927,7 @@ Depending on the collection subtype, order of 0,1 may or may not be significant.
 
     ::MD::Positional ::= interface
         composes {Orderable, Accessible, Homogeneous and_provides_its_default, ...}
-        requires_implements {item,has_item,so,count,has,nest,unnest,any,where,map,reduce,
+        requires_implements {so,count,elem,has_index,has,nest,unnest,any,where,map,reduce,
             first_index,last_index,slice,catenate,index_succ_all_matches,...};
 
 I<TODO.  For types that support integer-index-based lookup of values;
@@ -946,6 +935,12 @@ for collections of index-value pairs where all indexes are distinct;
 for collections you can enumerate in canonical order;
 the collection indexes might not be zero-based in the general case but must be dense.
 Composed by: Array, String, Blob, Text, etc.>
+
+=head2 Excuse::No_Such_Index
+
+    ::MD::Excuse::No_Such_Index ::= constant (\@0) composes Excuse;
+
+I<TODO.>
 
 =head2 in_order (Positional)
 
@@ -965,6 +960,39 @@ Composed by: Array, String, Blob, Text, etc.>
         e1 ::?= \~?'This is the case where LHS is a leading subsequence of or is equal to RHS.';
         e2 ::?= \~?'This will succeed iff in_order() is defined for the element type.';
     );
+
+I<TODO.>
+
+=head2 elem . (Positional)
+
+    ::MD::elem::"" ::= function virtual --> Any <-- (Positional, Integral)
+        requires (topic --> \@has_index);
+
+    ::MD::"."::Positional ::= function --> Any <-- (Positional, Integral)
+        implements 1::""
+        requires (topic --> \@has_index)
+        : (topic --> \@elem);
+
+I<TODO.>
+
+=head2 has_index .? (Positional)
+
+    ::MD::has_index::"" ::= function virtual --> Boolean <-- (Positional, Integral);
+
+    ::MD::".?"::Positional ::= function --> Boolean <-- (Positional, Integral)
+        implements 1::""
+        : (topic --> \@has_index);
+
+I<TODO.>
+
+=head2 elem_or_excuse .! (Positional)
+
+    ::MD::elem_or_excuse ::= function --> Any <-- (Positional, Integral)
+        : (topic --> \@has_index ?? topic --> \@elem !! Excuse::No_Such_Index());
+
+    ::MD::".!"::Positional ::= function --> Any <-- (Positional, Integral)
+        implements 1::""
+        : (topic --> \@elem_or_excuse);
 
 I<TODO.>
 
@@ -1055,23 +1083,6 @@ Foundation type I<FDN__Array_Inf>.  An C<Array_Inf> value is ...
 
 I<TODO.>
 
-=head2 item (Array)
-
-    ::MD::item::Array ::= function --> Any <-- (Array, Integer_NN)
-        implements 1::""
-        requires (topic --> \@has_item)
-        : (topic -->^ FDN__Array_elem);
-
-I<TODO.>
-
-=head2 has_item (Array)
-
-    ::MD::has_item::Array ::= function --> Boolean <-- (Array, Integer_NN)
-        implements 1::""
-        : (topic -->^ FDN__Array_has_elem);
-
-I<TODO.  True if given array index exists.>
-
 =head2 so (Array)
 
     ::MD::so::Array ::= function --> Boolean <-- (Array)
@@ -1087,6 +1098,23 @@ I<TODO.>
         : (topic -->^ FDN__Array_count);
 
 I<TODO.>
+
+=head2 elem (Array)
+
+    ::MD::elem::Array ::= function --> Any <-- (Array, Integer_NN)
+        implements 1::""
+        requires (topic --> \@has_index)
+        : (topic -->^ FDN__Array_elem);
+
+I<TODO.>
+
+=head2 has_index (Array)
+
+    ::MD::has_index::Array ::= function --> Boolean <-- (Array, Integer_NN)
+        implements 1::""
+        : (topic -->^ FDN__Array_has_index);
+
+I<TODO.  True if given array index exists.>
 
 =head2 has (Array)
 
@@ -1523,6 +1551,12 @@ for typically heterogeneous collections.
 Composed by: Tuple, Relation, Tuple_Bag.
 (Conceptually also composed by Capsule, but isn't to avoid conflicts.)>
 
+=head2 Excuse::No_Such_Attr
+
+    ::MD::Excuse::No_Such_Attr ::= constant (\@0) composes Excuse;
+
+I<TODO.>
+
 =head2 has_any_attrs ?^
 
     ::MD::has_any_attrs::"" ::= function virtual --> Boolean <-- (Attributive);
@@ -1639,20 +1673,38 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 item (Tuple)
+=head2 attr . (Tuple)
 
-    ::MD::item::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
-        implements 1::""
-        requires (topic --> \@has_item)
+    ::MD::attr ::= function --> Any <-- (Tuple, SC_Field_Name)
+        requires (topic --> \@has_attr)
         : (\\0 field \1 field \\1);
+
+    ::MD::"."::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
+        implements 1::""
+        requires (topic --> \@has_attr)
+        : (topic --> \@attr);
 
 I<TODO.>
 
-=head2 has_item (Tuple)
+=head2 has_attr .? (Tuple)
 
-    ::MD::has_item::Tuple ::= function --> Boolean <-- (Tuple, SC_Field_Name)
-        implements 1::""
+    ::MD::has_attr ::= function --> Boolean <-- (Tuple, SC_Field_Name)
         : (\\0 field \1 has_field \\1);
+
+    ::MD::".?"::Tuple ::= function --> Boolean <-- (Tuple, SC_Field_Name)
+        implements 1::""
+        : (topic --> \@has_attr);
+
+I<TODO.>
+
+=head2 attr_or_excuse .! (Tuple)
+
+    ::MD::attr_or_excuse ::= function --> Any <-- (Tuple, SC_Field_Name)
+        : (topic --> \@has_attr ?? topic --> \@attr !! Excuse::No_Such_Attr());
+
+    ::MD::".!"::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
+        implements 1::""
+        : (topic --> \@attr_or_excuse);
 
 I<TODO.>
 
