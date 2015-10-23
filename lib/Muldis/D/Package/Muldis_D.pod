@@ -259,7 +259,7 @@ I<TODO.>
     ::MD::minmax ::= function
         --> (Orderable, Orderable) <-- (Orderable, Orderable)
         is commutative
-        : (topic --> \@in_order ?? topic !! \(\\1, \\0));
+        : (topic --> \@in_order ?? topic !! \%(\\1, \\0));
 
 I<TODO.>
 
@@ -296,8 +296,8 @@ for collection types an empty collection is false and nonempty is true;
 for numeric types, a zero is false and a nonzero is true.
 Composed by: Boolean, Numeric (Integer, ...), Homogeneous (Array, Set, Relation, Bag,...).
 (Conceptually but not actually composed by Attributive (Tuple, Relation,...)
-and Structure due to overlap and conflicting meaning with some other composers;
-Attributive and Structure instead have their own different-named versions of the Boolable ops.)>
+due to overlap and conflicting meaning with some other composers;
+Attributive instead has its own different-named versions of the Boolable ops.)>
 
 =head2 so ?
 
@@ -581,7 +581,7 @@ I<TODO.>
 =head2 -
 
     ::MD::"-" ::= function --> Numeric <-- {(Numeric), (Numeric, Numeric)}
-        : (topic --> (Structure_degree(topic) = 1 ?? \@opposite !! \@minus));
+        : (topic --> (degree(topic) = 1 ?? \@opposite !! \@minus));
 
 I<TODO.>
 
@@ -639,7 +639,7 @@ I<TODO.>
     ::MD::divide_and_modulo::"" ::= function
         --> (Numeric, Numeric) <-- (Numeric, Numeric, Round_Meth)
         requires (?\\1)
-        : (\(div(*topic), mod(*topic)));
+        : (\%(div(*topic), mod(*topic)));
 
 I<TODO.>
 
@@ -888,11 +888,11 @@ I<TODO.  Result is true when no member evaluates to false.>
     ::MD::where::"" ::= function virtual
         --> Homogeneous <-- (Homogeneous, SC_Primed_Func_Ref);
 
-I<TODO.  The primed-func-ref is expected to be a Structure with 2 fields
-named 'func' and 'args', which are a SC_Reference and a Structure respectively.
-The 'args' can be any Structure that doesn't have a '0' field.
-The function referenced by 'func' is expected to take a Structure argument
-whose '0' field is a member of the collection and whose other fields match
+I<TODO.  The primed-func-ref is expected to be a Capsule with 2 asset attrs
+named 'func' and 'args', which are a SC_Reference and a Tuple respectively.
+The 'args' can be any Tuple that doesn't have a '0' attr.
+The function referenced by 'func' is expected to take a Tuple argument
+whose '0' attr is a member of the collection and whose other attrs match
 those given in 'args'.>
 
 =head2 filtering
@@ -913,11 +913,11 @@ I<TODO.  The primed-func-ref is as per that of 'where'.>
     ::MD::reduce::"" ::= function virtual
         --> Any <-- (Homogeneous, SC_Primed_Func_Ref);
 
-I<TODO.  The primed-func-ref is expected to be a Structure with 2 fields
-named 'func' and 'args', which are a SC_Reference and a Structure respectively.
-The 'args' can be any Structure that doesn't have either '0' or '1' fields.
-The function referenced by 'func' is expected to take a Structure argument
-whose '0' and '1' fields are members of the collection and whose other fields match
+I<TODO.  The primed-func-ref is expected to be a Capsule with 2 asset attrs
+named 'func' and 'args', which are a SC_Reference and a Tuple respectively.
+The 'args' can be any Tuple that doesn't have either '0' or '1' attrs.
+The function referenced by 'func' is expected to take a Tuple argument
+whose '0' and '1' attrs are members of the collection and whose other attrs match
 those given in 'args'.
 Depending on the collection subtype, order of 0,1 may or may not be significant.>
 
@@ -1248,8 +1248,8 @@ Composed by: Set, Relation.>
 
 =head2 Set_Inf Set
 
-    ::MD::Set_Inf ::= selection of Structure
-        where (topic has_just_fields \(constant (\Set), \@Bag) and ...)
+    ::MD::Set_Inf ::= selection of Capsule
+        where (Capsule_tag(topic) = \Set and (Capsule_asset(topic) isa \@Bag) ...)
         default ({})
         composes Setty and_provides_its_default;
 
@@ -1269,7 +1269,7 @@ I<TODO.>
 
     ::MD::count::Set ::= function --> Integer_NN <-- (Set)
         implements 1::""
-        : (\\0 field \1 ->count);
+        : (Capsule_asset(\\0) ->count);
 
 I<TODO.>
 
@@ -1277,7 +1277,7 @@ I<TODO.>
 
     ::MD::has::Set ::= function --> Boolean <-- (Set, Any)
         implements 1::""
-        : (\\0 field \1 has \\1);
+        : (Capsule_asset(\\0) has \\1);
 
 I<TODO.>
 
@@ -1286,7 +1286,7 @@ I<TODO.>
     ::MD::nest::Set ::= function --> Set <-- (Set)
         implements 1::""
         requires (...)
-        : (\(\Set, \\0 field \1 ->nest));
+        : (Capsule_select(\Set, Capsule_asset(\\0) ->nest));
 
 I<TODO.>
 
@@ -1295,7 +1295,7 @@ I<TODO.>
     ::MD::unnest::Set ::= function --> Set <-- (Set)
         implements 1::""
         requires (...)
-        : (\(\Set, \\0 field \1 ->unnest));
+        : (Capsule_select(\Set, Capsule_asset(\\0) ->unnest));
 
 I<TODO.>
 
@@ -1303,7 +1303,7 @@ I<TODO.>
 
     ::MD::any::Set ::= function --> Boolean <-- (Set, SC_Primed_Func_Ref)
         implements 1::""
-        : (\\0 field \1 any \\1);
+        : (Capsule_asset(\\0) any \\1);
 
 I<TODO.>
 
@@ -1311,7 +1311,7 @@ I<TODO.>
 
     ::MD::where::Set ::= function --> Set <-- (Set, SC_Primed_Func_Ref)
         implements 1::""
-        : (\(\Set, \\0 field \1 where \\1));
+        : (Capsule_select(\Set, Capsule_asset(\\0) where \\1));
 
 I<TODO.>
 
@@ -1319,7 +1319,7 @@ I<TODO.>
 
     ::MD::map::Set ::= function --> Set <-- (Set, SC_Primed_Func_Ref)
         implements 1::""
-        : (\(\Set, \\0 field \1 map \\1));
+        : (Capsule_select(\Set, Capsule_asset(\\0) map \\1));
 
 I<TODO.>
 
@@ -1327,7 +1327,7 @@ I<TODO.>
 
     ::MD::reduce::Set ::= function --> Any <-- (Set, SC_Primed_Func_Ref)
         implements 1::""
-        : (\(\Set, \\0 field \1 reduce \\1));
+        : (Capsule_select(\Set, Capsule_asset(\\0) reduce \\1));
 
 I<TODO.>
 
@@ -1432,153 +1432,6 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 STRUCTURE DATA TYPES
-
-=head2 Structure_Inf Structure
-
-    ::MD::Structure_Inf ::= selection where (topic -->^ FDN__isa_Structure_Inf)
-        default (\());
-
-    ::MD::Structure ::= alias of Structure_Inf;
-
-The selection contract C<Structure_Inf> represents the infinite Muldis D
-Foundation type I<FDN__Structure_Inf>.  A C<Structure_Inf> value is ...
-
-I<TODO.>
-
-Given that almost every selection contract is a subset of
-C<Structure_Inf>, the latter intentionally does not compose any interface
-contracts, and only has the minimal set of its own operators, so to
-minimize interference with other types' interfaces.
-
-=head2 Excuse::No_Such_Field
-
-    ::MD::Excuse::No_Such_Field ::= constant (\@0) composes Excuse;
-
-I<TODO.>
-
-=head2 has_any_fields
-
-    ::MD::has_any_fields ::= function --> Boolean <-- (Structure)
-        : (\\0 != \());
-
-I<TODO.>
-
-=head2 Structure_is_nullary
-
-    ::MD::Structure_is_nullary ::= function negates has_any_fields;
-
-I<TODO.>
-
-=head2 Structure_degree
-
-    ::MD::Structure_degree ::= function --> Integer_NN <-- (Structure)
-        : (topic -->^ FDN__Structure_degree);
-
-I<TODO.>
-
-=head2 field
-
-    ::MD::field ::= function --> Any <-- (Structure, SC_Field_Name)
-        requires (topic --> \@has_field)
-        : (topic -->^ FDN__Structure_field);
-
-I<TODO.>
-
-=head2 has_field
-
-    ::MD::has_field ::= function --> Boolean <-- (Structure, SC_Field_Name)
-        : (topic -->^ FDN__Structure_has_field);
-
-I<TODO.>
-
-=head2 field_or_excuse
-
-    ::MD::field_or_excuse ::= function --> Any <-- (Structure, SC_Field_Name)
-        : (topic --> \@has_field ?? topic --> \@field !! Excuse::No_Such_Field());
-
-I<TODO.>
-
-=head2 on_fields
-
-    ::MD::on_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
-        requires (...)
-        : (topic -->^ FDN__Structure_on_fields);
-
-I<TODO.>
-
-=head2 but_fields
-
-    ::MD::but_fields ::= function --> Structure <-- (Structure, SC_Field_Names)
-        requires (...)
-        : (topic -->^ FDN__Structure_but_fields);
-
-I<TODO.>
-
-=head2 Structure_extend
-
-    ::MD::Structure_extend ::= function --> Structure <-- (Structure, Structure)
-        requires (...)
-        is {associative,commutative} identity (\())
-        : (topic -->^ FDN__Structure_extend);
-
-I<TODO.>
-
-=head2 has_fields
-
-    ::MD::has_fields ::= function --> Boolean <-- (Structure, SC_Signature)
-        : (...);
-
-I<TODO.>
-
-=head2 has_just_fields
-
-    ::MD::has_just_fields ::= function --> Boolean <-- (Structure, SC_Signature)
-        : (...);
-
-I<TODO.>
-
-=head2 any_fields
-
-    ::MD::any_fields ::= function --> Boolean <-- (Structure, SC_Primed_Func_Ref)
-        : (topic -->^ FDN__Structure_any_fields);
-
-I<TODO.>
-
-=head2 none_of_fields
-
-    ::MD::none_of_fields ::= function negates any_fields;
-
-I<TODO.>
-
-=head2 all_fields
-
-    ::MD::all_fields ::= function --> Boolean <-- (Structure, SC_Primed_Func_Ref)
-        : (\\0 none_of_fields negated_func(of : \\1, passing_args : \@(0)));
-
-I<TODO.>
-
-=head2 fields_where
-
-    ::MD::fields_where ::= function --> Structure <-- (Structure, SC_Primed_Func_Ref)
-        : (topic -->^ FDN__Structure_fields_where);
-
-I<TODO.>
-
-=head2 fields_map
-
-    ::MD::fields_map ::= function --> Structure <-- (Structure, SC_Primed_Func_Ref)
-        : (topic -->^ FDN__Structure_fields_map);
-
-I<TODO.>
-
-=head2 fields_reduce
-
-    ::MD::fields_reduce ::= function --> Any <-- (Structure, SC_Primed_Func_Ref)
-        : (topic -->^ FDN__Structure_fields_reduce);
-
-I<TODO.>
-
 =head1 ATTRIBUTIVE DATA TYPES
 
 =head2 Attributive
@@ -1625,7 +1478,7 @@ I<TODO.>
 =head2 on ^ project
 
     ::MD::on::"" ::= function virtual
-        --> Attributive <-- (Attributive, SC_Field_Names)
+        --> Attributive <-- (Attributive, SC_Attr_Names)
         requires (...);
 
     ::MD::"^"     ::= alias of on;
@@ -1642,7 +1495,7 @@ I<TODO.>
 =head2 but -^ project_all_but
 
     ::MD::but::"" ::= function virtual
-        --> Attributive <-- (Attributive, SC_Field_Names)
+        --> Attributive <-- (Attributive, SC_Attr_Names)
         requires (...);
 
     ::MD::"-^"            ::= alias of but;
@@ -1688,13 +1541,15 @@ I<TODO.>
 
 =head2 Tuple_Inf Tuple
 
-    ::MD::Tuple_Inf ::= selection of Structure
-        where (topic has_just_fields \(constant (\Tuple), \@Structure))
+    ::MD::Tuple_Inf ::= selection where (topic -->^ FDN__isa_Tuple_Inf)
         default (\%())
         composes {Accessible and_provides_its_default,
             Attributive and_provides_its_default};
 
     ::MD::Tuple ::= alias of Tuple_Inf;
+
+The selection contract C<Tuple_Inf> represents the infinite Muldis D
+Foundation type I<FDN__Tuple_Inf>.  A C<Tuple_Inf> value is ...
 
 I<TODO.>
 
@@ -1710,17 +1565,17 @@ I<TODO.>
 
     ::MD::degree::Tuple ::= function --> Integer_NN <-- (Tuple)
         implements 1::""
-        : (Structure_degree(\\0 field \1));
+        : (topic -->^ FDN__Tuple_degree);
 
 I<TODO.>
 
 =head2 attr . (Tuple)
 
-    ::MD::attr ::= function --> Any <-- (Tuple, SC_Field_Name)
+    ::MD::attr ::= function --> Any <-- (Tuple, SC_Attr_Name)
         requires (topic --> \@has_attr)
-        : (\\0 field \1 field \\1);
+        : (topic -->^ FDN__Tuple_attr);
 
-    ::MD::"."::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
+    ::MD::"."::Tuple ::= function --> Any <-- (Tuple, SC_Attr_Name)
         implements 1::""
         requires (topic --> \@has_attr)
         : (topic --> \@attr);
@@ -1729,10 +1584,10 @@ I<TODO.>
 
 =head2 has_attr .? (Tuple)
 
-    ::MD::has_attr ::= function --> Boolean <-- (Tuple, SC_Field_Name)
-        : (\\0 field \1 has_field \\1);
+    ::MD::has_attr ::= function --> Boolean <-- (Tuple, SC_Attr_Name)
+        : (topic -->^ FDN__Tuple_has_attr);
 
-    ::MD::".?"::Tuple ::= function --> Boolean <-- (Tuple, SC_Field_Name)
+    ::MD::".?"::Tuple ::= function --> Boolean <-- (Tuple, SC_Attr_Name)
         implements 1::""
         : (topic --> \@has_attr);
 
@@ -1740,10 +1595,10 @@ I<TODO.>
 
 =head2 attr_or_excuse .! (Tuple)
 
-    ::MD::attr_or_excuse ::= function --> Any <-- (Tuple, SC_Field_Name)
+    ::MD::attr_or_excuse ::= function --> Any <-- (Tuple, SC_Attr_Name)
         : (topic --> \@has_attr ?? topic --> \@attr !! Excuse::No_Such_Attr());
 
-    ::MD::".!"::Tuple ::= function --> Any <-- (Tuple, SC_Field_Name)
+    ::MD::".!"::Tuple ::= function --> Any <-- (Tuple, SC_Attr_Name)
         implements 1::""
         : (topic --> \@attr_or_excuse);
 
@@ -1751,19 +1606,19 @@ I<TODO.>
 
 =head2 on (Tuple)
 
-    ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
+    ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, SC_Attr_Names)
         implements 1::""
         requires (...)
-        : (\(\Tuple, \\0 field \1 on_fields \\1));
+        : (topic -->^ FDN__Tuple_on);
 
 I<TODO.>
 
 =head2 but (Tuple)
 
-    ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, SC_Field_Names)
+    ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, SC_Attr_Names)
         implements 1::""
         requires (...)
-        : (\(\Tuple, \\0 field \1 but_fields \\1));
+        : (topic -->^ FDN__Tuple_but);
 
 I<TODO.>
 
@@ -1773,7 +1628,7 @@ I<TODO.>
         implements 1::""
         requires (...)
         is {associative,commutative} identity (\%())
-        : (\(\Tuple, (\\0 field \1) Structure_extend (\\1 field \1)));
+        : (topic -->^ FDN__Tuple_extend);
 
 I<TODO.>
 
@@ -1781,7 +1636,7 @@ I<TODO.>
 
     ::MD::has_attrs::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
         implements 1::""
-        : (\\0 field \1 has_fields \\1);
+        : (...);
 
 I<TODO.>
 
@@ -1789,14 +1644,14 @@ I<TODO.>
 
     ::MD::has_just_attrs::Tuple ::= function --> Boolean <-- (Tuple, SC_Signature)
         implements 1::""
-        : (\\0 field \1 has_just_fields \\1);
+        : (...);
 
 I<TODO.>
 
 =head2 any_attrs
 
     ::MD::any_attrs ::= function --> Boolean <-- (Tuple, SC_Primed_Func_Ref)
-        : (\\0 field \1 any_fields \\1);
+        : (topic -->^ FDN__Tuple_any_attrs);
 
 I<TODO.>
 
@@ -1816,21 +1671,21 @@ I<TODO.>
 =head2 attrs_where
 
     ::MD::attrs_where ::= function --> Tuple <-- (Tuple, SC_Primed_Func_Ref)
-        : (\(\Tuple, \\0 field \1 fields_where \\1));
+        : (topic -->^ FDN__Tuple_attrs_where);
 
 I<TODO.>
 
 =head2 attrs_map
 
     ::MD::attrs_map ::= function --> Tuple <-- (Tuple, SC_Primed_Func_Ref)
-        : (\(\Tuple, \\0 field \1 fields_map \\1));
+        : (topic -->^ FDN__Tuple_attrs_map);
 
 I<TODO.>
 
 =head2 attrs_reduce
 
     ::MD::attrs_reduce ::= function --> Any <-- (Tuple, SC_Primed_Func_Ref)
-        : (\\0 field \1 fields_reduce \\1);
+        : (topic -->^ FDN__Tuple_attrs_reduce);
 
 I<TODO.>
 
@@ -1838,8 +1693,8 @@ I<TODO.>
 
 =head2 Relation_Inf Relation
 
-    ::MD::Relation_Inf ::= selection of Structure
-        where (topic has_just_fields \(constant (\Relation), \@Structure) ...)
+    ::MD::Relation_Inf ::= selection of Capsule
+        where (Capsule_tag(topic) = \Relation and (Capsule_asset(topic) isa \@Tuple) ...)
         default (\?%{})
         composes {Setty, Attributive};
 
@@ -1851,12 +1706,51 @@ I<TODO.>
 
 =head2 Tuple_Bag_Inf Tuple_Bag
 
-    ::MD::Tuple_Bag_Inf ::= selection of Structure
-        where (topic has_just_fields \(constant (\Tuple_Bag), \@Structure) ...)
+    ::MD::Tuple_Bag_Inf ::= selection of Capsule
+        where (Capsule_tag(topic) = \Relation and (Capsule_asset(topic) isa \@Tuple_Bag) ...)
         default (\+%{})
         composes {Baggy, Attributive};
 
     ::MD::Tuple_Bag ::= alias of Tuple_Bag_Inf;
+
+I<TODO.>
+
+=head1 CAPSULE DATA TYPES
+
+=head2 Capsule
+
+    ::MD::Capsule ::= selection where (topic -->^ FDN__isa_Capsule)
+        default (Capsule_select(False, False));
+
+The selection contract C<Capsule> represents the infinite Muldis D
+Foundation type I<FDN__Capsule>.  An C<Capsule> value is ...
+
+I<TODO.  We will want a literal syntax for Capsule values, and probably
+more tersely named tag/asset operator names.>
+
+Given that almost every selection contract is a subset of
+C<Capsule>, the latter intentionally does not compose any interface
+contracts, and only has the minimal set of its own operators, so to
+minimize interference with other types' interfaces.
+
+=head2 Capsule_select
+
+    ::MD::Capsule_select ::= function --> Capsule <-- (Any, Any)
+        : (topic -->^ FDN__Capsule_select);
+
+I<TODO.>
+
+=head2 Capsule_tag
+
+    ::MD::Capsule_tag ::= function --> Any <-- (Capsule)
+        : (topic -->^ FDN__Capsule_tag);
+
+I<TODO.>
+
+=head2 Capsule_asset
+
+    ::MD::Capsule_asset ::= function --> Any <-- (Capsule)
+        : (topic -->^ FDN__Capsule_asset);
 
 I<TODO.>
 
@@ -1891,19 +1785,16 @@ I<TODO.>
 =head2 negated_func
 
     ::MD::negated_func ::= function --> SC_Primed_Func_Ref
-        <-- (of : SC_Primed_Func_Ref, passing_args : SC_Field_Names)
+        <-- (of : SC_Primed_Func_Ref, passing_args : SC_Attr_Names)
     : (
         (function : (
             not(
-                (
-                    \\of field args
-                        Structure_extend (topic on_fields \\passing_args)
-                ) --> (\\of field func)
+                (\\of.args +^ (topic ^ \\passing_args)) --> (\\of.func)
             )
         )) assuming topic
     );
 
-I<TODO.  This expects the original function is from Structure to Boolean.>
+I<TODO.  This expects the original function is from Tuple to Boolean.>
 
 =head1 SEE ALSO
 

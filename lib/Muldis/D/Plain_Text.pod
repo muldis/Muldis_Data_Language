@@ -658,13 +658,13 @@ Grammar:
     <fixed_name> ::=
         <alphanumeric_name> | <symbolic_name>
 
-    <field_name> ::=
-        <nonord_field_name> | <ord_field_name>
+    <attr_name> ::=
+        <nonord_attr_name> | <ord_attr_name>
 
-    <nonord_field_name> ::=
+    <nonord_attr_name> ::=
         <generic_name>
 
-    <ord_field_name> ::=
+    <ord_attr_name> ::=
         <nn_Integer>
 
     <expr_name> ::=
@@ -707,7 +707,8 @@ Grammar:
         | FDN__isa_Integer_Inf
         | FDN__isa_Array_Inf
         | FDN__isa_Bag_Inf
-        | FDN__isa_Structure_Inf
+        | FDN__isa_Tuple_Inf
+        | FDN__isa_Capsule
         | FDN__isa_External
         | FDN__same
         | FDN__Int_from_Text_10
@@ -734,23 +735,26 @@ Grammar:
         | FDN__Bag_where
         | FDN__Bag_map
         | FDN__Bag_reduce);
-        | FDN__Structure_degree
-        | FDN__Structure_field
-        | FDN__Structure_has_field
-        | FDN__Structure_on_fields
-        | FDN__Structure_but_fields
-        | FDN__Structure_extend
-        | FDN__Structure_any_fields
-        | FDN__Structure_fields_where
-        | FDN__Structure_fields_map
-        | FDN__Structure_fields_reduce);
+        | FDN__Tuple_degree
+        | FDN__Tuple_attr
+        | FDN__Tuple_has_attr
+        | FDN__Tuple_on
+        | FDN__Tuple_but
+        | FDN__Tuple_extend
+        | FDN__Tuple_any_attrs
+        | FDN__Tuple_attrs_where
+        | FDN__Tuple_attrs_map
+        | FDN__Tuple_attrs_reduce);
+        | FDN__Capsule_select
+        | FDN__Capsule_tag
+        | FDN__Capsule_asset);
         | ...
 
 A C<< <generic_name> >> is a I<generic context entity name>, which can be
 used in any context that is expecting I<a> Muldis D entity name in the
 general sense, without restrictions.  Examples of use are when declaring
 any named entity or with general type/routine/etc invocation syntax that
-allows any entity of the respective kind, or for field names.
+allows any entity of the respective kind, or for attr names.
 
 A C<< <fixed_name> >> is for use within value expressions with certain
 common cases of function (or constant) invocations where an unqualified
@@ -1194,8 +1198,8 @@ A C<< <Ratio> >> node represents a value of the Muldis D C<Ratio>
 type, which is a general purpose rational exact numeric value.
 
 The C<Ratio> type is not a fundamental type of the Muldis D type system, but
-rather is a subtype by constraint of the C<Structure> type, and all C<Ratio>
-values can be selected in terms of C<< <Structure> >> grammar nodes.
+rather is a subtype by constraint of the C<Capsule> type, and all C<Ratio>
+values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Ratio> >> is the canonical grammar for all C<Ratio> values.
 
 Examples:
@@ -1237,8 +1241,8 @@ A C<< <Float> >> node represents a value of the Muldis D C<Float>
 type, which is a general purpose floating-point exact numeric value.
 
 The C<Float> type is not a fundamental type of the Muldis D type system, but
-rather is a subtype by constraint of the C<Structure> type, and all C<Float>
-values can be selected in terms of C<< <Structure> >> grammar nodes.
+rather is a subtype by constraint of the C<Capsule> type, and all C<Float>
+values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Float> >> is the canonical grammar for all C<Float> values.
 
 Examples:
@@ -1272,8 +1276,8 @@ A C<< <Blob> >> node represents a value of the Muldis D C<Blob> type, which
 is a general purpose bit string.
 
 The C<Blob> type is not a fundamental type of the Muldis D type system, but
-rather is a subtype by constraint of the C<Structure> type, and all C<Blob>
-values can be selected in terms of C<< <Structure> >> grammar nodes.
+rather is a subtype by constraint of the C<Capsule> type, and all C<Blob>
+values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Blob> >> is the canonical grammar for all C<Blob> values.
 
 This grammar supports writing C<Blob> literals in any of the numeric bases
@@ -1312,8 +1316,8 @@ A C<< <Text> >> node represents a value of the Muldis D C<Text> type, which
 is a general purpose character string.
 
 The C<Text> type is not a fundamental type of the Muldis D type system, but
-rather is a subtype by constraint of the C<Structure> type, and all C<Text>
-values can be selected in terms of C<< <Structure> >> grammar nodes.
+rather is a subtype by constraint of the C<Capsule> type, and all C<Text>
+values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Text> >> is the canonical grammar for all C<Text> values.
 
 Examples:
@@ -1338,10 +1342,10 @@ Grammar:
           <Array>
         | <Set>
         | <Bag>
-        | <Structure>
         | <Tuple>
         | <Relation>
         | <Tuple_Bag>
+        | <Capsule>
         | <source_code_selector_expr>
 
 A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
@@ -1363,10 +1367,6 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Structure Selectors
-
-I<TODO.>
-
 =head2 Tuple Selectors
 
 I<TODO.>
@@ -1376,6 +1376,10 @@ I<TODO.>
 I<TODO.>
 
 =head2 Tuple-Bag Selectors
+
+I<TODO.>
+
+=head2 Capsule Selectors
 
 I<TODO.>
 
@@ -1530,8 +1534,8 @@ A C<::=> is I<what-binding> while a C<::?=> is I<why-binding>.
     + - numbers or bags (and tuple-bags)
     ~ - arrays (and text and blob)
     % - tuples or relations (and tuple-bags)
-    @ - field names or headings (and chain-identifiers and renamings)
-    \ - value literal or selector (or topic field accessor)
+    @ - attr names or headings (and chain-identifiers and renamings)
+    \ - value literal or selector (or topic attr accessor)
     & - subject-to-update parameter/etc or procedure
     ! - booleans or excuses
     ^ - raising something up - bootstrap on foundation, or attribute projection, or number to a power
@@ -1540,7 +1544,7 @@ A C<::=> is I<what-binding> while a C<::?=> is I<why-binding>.
 
     [] - homogeneous ordered collection of element - arrays/statements/etc - ordinal+universal
     {} - homogeneous nonordered collection of member - bags/sets/dictionaries/etc - universal+ordinal
-    () - heterogeneous aordered collection of field - structures/tuples - nominal+universal
+    () - heterogeneous aordered collection of attr - tuples - nominal+universal
 
 When combining symbols to represent both collection type and element type,
 show collection first as master and element next as subservient,
