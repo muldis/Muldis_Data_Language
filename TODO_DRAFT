@@ -3230,17 +3230,17 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
     1. keyword "virtual" is optional, not followed by anything of its own
         - if used, the keywords "via"/":" must be omitted
     1.5 keyword "commutes" is optional, followed by a function name
-        - if used, replaces all keywords except {function,negates,implements,overrides}
+        - if used, replaces all keywords except {function,implements,overrides}
         - is for dyadic positional functions that just commute others, eg <= vs => or in vs has
         - these 2 declarations are equivalent:
             foo ::= function commutes bar;
             foo ::= function --> Any <-- (Any,Any) : (\.1 bar \.0);
         - a function may not name itself with "commutes" and must instead
         say "is commutative" when that applies
-        - it is assumed that any functions in a "commutes" pair are not
+        - it is expected that any functions in a "commutes" pair are not
         associative or idempotent etc
     1.6 keyword "negates" is optional, followed by a function name
-        - if used, replaces all keywords except {function,commutes,implements,overrides,is,identity}
+        - if used, replaces all keywords except {function,implements,overrides,is,identity}
         - is for functions that just negate others, eg != vs = or < vs >=
         - these 2 declarations are equivalent:
             foo ::= function negates bar;
@@ -3251,7 +3251,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         - 'to' and 'from' support all of and exactly the same options
     3. keyword "from" or "<--" or "signature" followed by the name of a type
         - the definition of the type may appear in place of the name using
-        the syntax "type ..."
+        the syntax "selection ..."
         - a simplified form of a SC_Func_Params literal may appear in place
         of the name using the syntax "(...)" where the "..." is a commalist
         of 0..N tokens each of which is either the name/def of a type or a
@@ -3279,7 +3279,23 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
     8. keyword "is" is optional, followed by set of trait name keywords in
         braces: "associative", "commutative", "idempotent"
         and other terms like bijective etc may be added
+        - when any of {a,c,i} are used, 'from' must be a Tuple type with 2
+        positional arguments {0,1} of the same type with no other options allowed
+        and of the same type as 'to'
+        - use in the context of a reduction over a collection type requires
+        at least "associative" to be set, and if the collection type is
+        unordered, then also "commutative" must be set
     9. keyword "identity" is optional (when associative), has associated expr
+    9.5 keyword "repeater" is optional, followed by a function name
+        - may only be used when associative true and idempotent false
+        - the named function must have a 'from' which is a Tuple type with 2
+        positional arguments {0,1} where 0 is the same type as both of those
+        of the current function and the type of 1 must be (a supertype of) Integer_NN
+        - this tells an optimizer that it may call the other function instead
+        of the current one were its {0,1} arguments to be the same value,
+        such as when doing a reduction over a collection with repeating members
+        - for example 'add' may indicate 'multiply' or the latter 'exponentiate'
+        or catenate may indicate replicate etc
     10. keyword "via" or ":" followed by expr
         - defaults to topic if omitted
     ...

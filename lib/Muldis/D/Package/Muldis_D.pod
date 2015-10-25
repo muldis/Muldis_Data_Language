@@ -771,11 +771,29 @@ I<TODO.>
         requires_implements {so,count,has,nest,unnest,any,where,map,reduce,...};
 
 I<TODO.  For types whose values are conceptually homogeneous collections.
-Composed by: Positional (Array, String, etc), Setty (Set, Relation), Baggy (Bag, Tuple_Bag).
+Composed by: Positional (Array, String, etc), Setty (Set, Relation),
+Baggy (Bag, Tuple_Bag), Dictionary, etc.
 (Conceptually more or less all collection types can be thought of as being
 collections over 2 dimensions, heterogeneous/Attributive and Homogeneous;
 Relation and Tuple_Bag formally are multiples in both dimensions, while the
 other types are formally multiples in just one of those dimensions.)>
+
+I<TODO.  Note that for all the regular function-taking element-wise
+Homogeneous operators that are logically supposed to work with each
+collection member in isolation and/or shouldn't put significance on either
+duplicate members or member position in the collection, including the likes
+of {any, where, map} etc, but not including the likes of {reduce}, the
+operators will only be passing the asset portion (where applicable) of the
+member to the higher-order function, and not say the index-asset pair for a
+Positional or the asset-count pair for a Baggy.  Note that for a Relation
+or Tuple_Bag each entire Tuple is the member asset, and for a Dictionary
+the pair is the asset.  (With the corresponding attribute-wise Tuple
+operators, they are given the whole attribute name-value pair.)  The main
+reason for this is to help ensure consistency of results while supporting a
+variety of collection implementations including ones that are lazy, such as
+by not eagerly counting duplicates, or that use distributed computation.
+For that matter, the likes of {reduce} should probably be treated the same
+way; see also the 'repeater' function trait that helps optimize it.>
 
 =head2 so (Homogeneous) has_any_members
 
@@ -1443,7 +1461,6 @@ I<TODO.  For types that support attribute-name-based lookup of values;
 for collections of name-value pairs where all names are distinct;
 for typically heterogeneous collections.
 Composed by: Tuple, Relation, Tuple_Bag.
-(Conceptually also composed by Capsule, but isn't to avoid conflicts.)>
 
 =head2 Excuse::No_Such_Attr
 
