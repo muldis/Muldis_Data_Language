@@ -146,7 +146,7 @@ I<TODO.>
 =head2 coalesce ?!
 
     ::MD::coalesce ::= function --> Any <-- (Any, Any)
-        : (\\0 isa \@Excuse ?? \\1 !! \\0);
+        : (\.0 isa \@Excuse ?? \.1 !! \.0);
 
     ::MD::"?!" ::= alias of coalesce;
 
@@ -242,7 +242,7 @@ I<TODO.>
 
     ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (Pos_Inf())
-        : (topic --> \@in_order ?? \\0 !! \\1);
+        : (topic --> \@in_order ?? \.0 !! \.1);
 
 I<TODO.>
 
@@ -250,7 +250,7 @@ I<TODO.>
 
     ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (Neg_Inf())
-        : (topic --> \@in_order ?? \\1 !! \\0);
+        : (topic --> \@in_order ?? \.1 !! \.0);
 
 I<TODO.>
 
@@ -259,7 +259,7 @@ I<TODO.>
     ::MD::minmax ::= function
         --> (Orderable, Orderable) <-- (Orderable, Orderable)
         is commutative
-        : (topic --> \@in_order ?? topic !! \%(\\1, \\0));
+        : (topic --> \@in_order ?? topic !! \%(\.1, \.0));
 
 I<TODO.>
 
@@ -343,7 +343,7 @@ Examples:
 
     ::MD::in_order::Boolean ::= function --> Boolean <-- (Boolean, Boolean)
         implements 1::""
-        : (!\\0 or \\1);
+        : (!\.0 or \.1);
 
 I<TODO.>
 
@@ -351,7 +351,7 @@ I<TODO.>
 
     ::MD::pred::Boolean ::= function --> {False, Neg_Inf} <-- (Boolean)
         implements 1::""
-        : (\\0 ?? False !! Neg_Inf());
+        : (\.0 ?? False !! Neg_Inf());
 
 I<TODO.>
 
@@ -359,7 +359,7 @@ I<TODO.>
 
     ::MD::succ::Boolean ::= function --> {True, Pos_Inf} <-- (Boolean)
         implements 1::""
-        : (!\\0 ?? True !! Pos_Inf());
+        : (!\.0 ?? True !! Pos_Inf());
 
 I<TODO.>
 
@@ -383,7 +383,7 @@ I<TODO.>
 
     ::MD::so::Boolean ::= function --> Boolean <-- (Boolean)
         implements 1::""
-        : (\\0);
+        : (\.0);
 
 I<TODO.>
 
@@ -400,7 +400,7 @@ I<TODO.>
 
     ::MD::and ::= function --> Boolean <-- (Boolean, Boolean)
         is {associative,commutative,idempotent} identity (True)
-        : (\\0 ?? \\1 !! False);
+        : (\.0 ?? \.1 !! False);
 
     ::MDA::"∧"  ::= alias of and;
 
@@ -421,7 +421,7 @@ I<TODO.>
 
     ::MD::or ::= function --> Boolean <-- (Boolean, Boolean)
         is {associative,commutative,idempotent} identity (False)
-        : (\\0 ?? True !! \\1);
+        : (\.0 ?? True !! \.1);
 
     ::MDA::"∨" ::= alias of or;
 
@@ -462,7 +462,7 @@ I<TODO.>
 =head2 imp implies →
 
     ::MD::imp ::= function --> Boolean <-- (Boolean, Boolean)
-        : (\\0 ?? \\1 !! True);
+        : (\.0 ?? \.1 !! True);
 
     ::MD::implies ::= alias of imp;
     ::MDA::"→"    ::= alias of imp;
@@ -550,7 +550,7 @@ I<TODO.>
 =head2 reciprocal
 
     ::MD::reciprocal::"" ::= function virtual --> Numeric <-- (Numeric)
-        requires (?\\0);
+        requires (?\.0);
 
     ::MD::multiplicative_inverse ::= alias of reciprocal;
 
@@ -607,7 +607,7 @@ I<TODO.>
 
     ::MD::frac_divide::"" ::= function virtual
         --> Numeric <-- (Numeric, Numeric)
-        requires (?\\1);
+        requires (?\.1);
 
     ::MD::"/" ::= alias of frac_divide;
 
@@ -617,7 +617,7 @@ I<TODO.>
 
     ::MD::whole_divide::"" ::= function virtual
         --> Numeric <-- (Numeric, Numeric, Round_Meth)
-        requires (?\\1);
+        requires (?\.1);
 
     ::MD::div ::= alias of whole_divide;
 
@@ -627,8 +627,8 @@ I<TODO.>
 
     ::MD::modulo::"" ::= function
         --> Numeric <-- (Numeric, Numeric, Round_Meth)
-        requires (?\\1)
-        : (\\0 - (\\1 * topic --> \@div));
+        requires (?\.1)
+        : (\.0 - (\.1 * topic --> \@div));
 
     ::MD::mod ::= alias of modulo;
 
@@ -638,7 +638,7 @@ I<TODO.>
 
     ::MD::divide_and_modulo::"" ::= function
         --> (Numeric, Numeric) <-- (Numeric, Numeric, Round_Meth)
-        requires (?\\1)
+        requires (?\.1)
         : (\%(topic --> \@div, topic --> \@mod));
 
 I<TODO.>
@@ -705,7 +705,7 @@ I<TODO.>
 
     ::MD::pred::Integer ::= function --> Integer <-- (Integer)
         implements 1::""
-        : (\\0 - 1);
+        : (\.0 - 1);
 
 I<TODO.>
 
@@ -713,7 +713,7 @@ I<TODO.>
 
     ::MD::succ::Integer ::= function --> Integer <-- (Integer)
         implements 1::""
-        : (\\0 + 1);
+        : (\.0 + 1);
 
 I<TODO.>
 
@@ -721,7 +721,7 @@ I<TODO.>
 
     ::MD::so::Integer ::= function --> Boolean <-- (Integer)
         implements 1::""
-        : (\\0 != 0);
+        : (\.0 != 0);
 
 I<TODO.>
 
@@ -876,7 +876,7 @@ I<TODO.  Result is true when no member evaluates to true.>
 =head2 all for_all ∀
 
     ::MD::all ::= function --> Boolean <-- (Homogeneous, SC_Primed_Func_Ref)
-        : (\\0 none negated_func(of : \\1, passing_args : \@(0)));
+        : (\.0 none negated_func(of : \.1, passing_args : \@(0)));
 
     ::MD::for_all ::= alias of all;
     ::MDA::"∀"    ::= alias of all;
@@ -950,12 +950,12 @@ I<TODO.>
     : (
         i ::= (topic --> \@index_succ_all_matches);
       <--
-        if not \\0 .? i then
+        if not \.0 .? i then
             e1 ::= True
-        else if not \\1 .? i then
+        else if not \.1 .? i then
             False
         else
-            e2 ::= (\\0.i in_order \\1.i);
+            e2 ::= (\.0.i in_order \.1.i);
 
         e1 ::?= \~?'This is the case where LHS is a leading subsequence of or is equal to RHS.';
         e2 ::?= \~?'This will succeed iff in_order() is defined for the element type.';
@@ -999,14 +999,14 @@ I<TODO.>
 =head2 first_index
 
     ::MD::first_index::"" ::= function virtual --> Integral <-- (Positional)
-        requires (?\\0);
+        requires (?\.0);
 
 I<TODO.>
 
 =head2 last_index
 
     ::MD::last_index::"" ::= function virtual --> Integral <-- (Positional)
-        requires (?\\0);
+        requires (?\.0);
 
 I<TODO.>
 
@@ -1021,32 +1021,32 @@ operation or is it more like an intersection.>
 =head2 first
 
     ::MD::first ::= function --> Any <-- (Positional)
-        requires (?\\0)
-        : (\\0 . first_index(\\0));
+        requires (?\.0)
+        : (\.0 . first_index(\.0));
 
 I<TODO.>
 
 =head2 nonfirst
 
     ::MD::nonfirst ::= function --> Positional <-- (Positional)
-        requires (?\\0)
-        : (\\0 slice first_index(\\0)^..last_index(\\0));
+        requires (?\.0)
+        : (\.0 slice first_index(\.0)^..last_index(\.0));
 
 I<TODO.>
 
 =head2 last
 
     ::MD::last ::= function --> Any <-- (Positional)
-        requires (?\\0)
-        : (\\0 . last_index(\\0));
+        requires (?\.0)
+        : (\.0 . last_index(\.0));
 
 I<TODO.>
 
 =head2 nonlast
 
     ::MD::nonlast ::= function --> Positional <-- (Positional)
-        requires (?\\0)
-        : (\\0 slice first_index(\\0)..^last_index(\\0));
+        requires (?\.0)
+        : (\.0 slice first_index(\.0)..^last_index(\.0));
 
 I<TODO.>
 
@@ -1087,7 +1087,7 @@ I<TODO.>
 
     ::MD::so::Array ::= function --> Boolean <-- (Array)
         implements 1::""
-        : (\\0 != []);
+        : (\.0 != []);
 
 I<TODO.>
 
@@ -1178,7 +1178,7 @@ I<TODO.>
 
     ::MD::first_index::Array ::= function --> Integer_NN <-- (Array)
         implements 1::""
-        requires (?\\0)
+        requires (?\.0)
         : (0);
 
 I<TODO.>
@@ -1187,8 +1187,8 @@ I<TODO.>
 
     ::MD::last_index::Array ::= function --> Integer_NN <-- (Array)
         implements 1::""
-        requires (?\\0)
-        : (-- #\\0);
+        requires (?\.0)
+        : (-- #\.0);
 
 I<TODO.>
 
@@ -1261,7 +1261,7 @@ I<TODO. Update 'where' to say quantity for each distinct member is 1.>
 
     ::MD::so::Set ::= function --> Boolean <-- (Set)
         implements 1::""
-        : (\\0 != {});
+        : (\.0 != {});
 
 I<TODO.>
 
@@ -1269,7 +1269,7 @@ I<TODO.>
 
     ::MD::count::Set ::= function --> Integer_NN <-- (Set)
         implements 1::""
-        : (Capsule::asset(\\0) ->count);
+        : (Capsule::asset(\.0) ->count);
 
 I<TODO.>
 
@@ -1277,7 +1277,7 @@ I<TODO.>
 
     ::MD::has::Set ::= function --> Boolean <-- (Set, Any)
         implements 1::""
-        : (Capsule::asset(\\0) has \\1);
+        : (Capsule::asset(\.0) has \.1);
 
 I<TODO.>
 
@@ -1286,7 +1286,7 @@ I<TODO.>
     ::MD::nest::Set ::= function --> Set <-- (Set)
         implements 1::""
         requires (...)
-        : (Capsule::select(\Set, Capsule::asset(\\0) ->nest));
+        : (Capsule::select(\Set, Capsule::asset(\.0) ->nest));
 
 I<TODO.>
 
@@ -1295,7 +1295,7 @@ I<TODO.>
     ::MD::unnest::Set ::= function --> Set <-- (Set)
         implements 1::""
         requires (...)
-        : (Capsule::select(\Set, Capsule::asset(\\0) ->unnest));
+        : (Capsule::select(\Set, Capsule::asset(\.0) ->unnest));
 
 I<TODO.>
 
@@ -1303,7 +1303,7 @@ I<TODO.>
 
     ::MD::any::Set ::= function --> Boolean <-- (Set, SC_Primed_Func_Ref)
         implements 1::""
-        : (Capsule::asset(\\0) any \\1);
+        : (Capsule::asset(\.0) any \.1);
 
 I<TODO.>
 
@@ -1311,7 +1311,7 @@ I<TODO.>
 
     ::MD::where::Set ::= function --> Set <-- (Set, SC_Primed_Func_Ref)
         implements 1::""
-        : (Capsule::select(\Set, Capsule::asset(\\0) where \\1));
+        : (Capsule::select(\Set, Capsule::asset(\.0) where \.1));
 
 I<TODO.>
 
@@ -1319,7 +1319,7 @@ I<TODO.>
 
     ::MD::map::Set ::= function --> Set <-- (Set, SC_Primed_Func_Ref)
         implements 1::""
-        : (Capsule::select(\Set, Capsule::asset(\\0) map \\1));
+        : (Capsule::select(\Set, Capsule::asset(\.0) map \.1));
 
 I<TODO.>
 
@@ -1327,7 +1327,7 @@ I<TODO.>
 
     ::MD::reduce::Set ::= function --> Any <-- (Set, SC_Primed_Func_Ref)
         implements 1::""
-        : (Capsule::select(\Set, Capsule::asset(\\0) reduce \\1));
+        : (Capsule::select(\Set, Capsule::asset(\.0) reduce \.1));
 
 I<TODO.>
 
@@ -1362,7 +1362,7 @@ I<TODO.>
 
     ::MD::so::Bag ::= function --> Boolean <-- (Bag)
         implements 1::""
-        : (\\0 != \+{});
+        : (\.0 != \+{});
 
 I<TODO.>
 
@@ -1557,7 +1557,7 @@ I<TODO.>
 
     ::MD::has_any_attrs::Tuple ::= function --> Boolean <-- (Tuple)
         implements 1::""
-        : (\\0 != \%());
+        : (\.0 != \%());
 
 I<TODO.>
 
@@ -1664,7 +1664,7 @@ I<TODO.>
 =head2 all_attrs
 
     ::MD::all_attrs ::= function --> Boolean <-- (Tuple, SC_Primed_Func_Ref)
-        : (\\0 none_of_attrs negated_func(of : \\1, passing_args : \@(0)));
+        : (\.0 none_of_attrs negated_func(of : \.1, passing_args : \@(0)));
 
 I<TODO.>
 
@@ -1789,7 +1789,7 @@ I<TODO.>
     : (
         (function : (
             not(
-                (\\of.args +^ (topic ^ \\passing_args)) --> (\\of.func)
+                (\.of.args +^ (topic ^ \.passing_args)) --> (\.of.func)
             )
         )) assuming topic
     );
