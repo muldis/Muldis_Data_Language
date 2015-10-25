@@ -396,7 +396,7 @@ itself which might then be a true higher-order function.
 * Lets say that one can reference any contract name where a function name
 is expected, and in that case it is equivalent to invoking the complete
 predicate of the associated type; so eg "42 --> \@Integer" means "42 isa
-\@Integer" and returns true, as does Integer(*42).
+\@Integer" and returns true.
 - Similarly, generalizing the constants thing, referencing any contract
 where a constant name is expected, is equivalent to fetching the associated
 default value, so eg (--> \@Integer) returns 0 as does Integer().
@@ -1075,10 +1075,10 @@ element giving its main type.
 - So coin a new set of simple strings that are the identifiers for
 the non-low-level core types, such as Ratio etc.  The existing core types
 that are Capsule are now instead these new kinds, and their definitions are
-still essentially unchanged, eg: \(\Ratio,numerator:5,denominator:8).  That
+still essentially unchanged, eg: \%(\Ratio,numerator:5,denominator:8).  That
 value we can use as-is in the absense of the Muldis_D package; the package
 would still declare though:
-    Muldis_D::Ratio ::= type of Structure where topic ^?= \(
+    Muldis_D::Ratio ::= type of Tuple where topic ^?= \%(
         0 : type of SC_Attr_Name where topic = \Ratio,
         numerator : $Integer,
         denominator : $Integer,
@@ -1298,7 +1298,7 @@ MD.Universal.Comparable.may_be_compared ::= function virtual
 MD.Universal.same_Universal ::= function
     --> Boolean <-- (Universal, Universal)
     is {commutative}
-    : \(topic.0,topic.1) -->^same_Universal;
+    : \%(topic.0,topic.1) -->^same_Universal;
 MD.Universal."=" ::= function --> Boolean <-- (Universal, Universal)
     is {commutative}
     : same_Universal(*topic) ?? true !! may_be_compared(*topic) ?? false !! fail;
@@ -1943,20 +1943,20 @@ in terms of the grammar nodes; eg Integer plus,minus etc are now nodes.
 - A lot of Muldis_D routines are just shims over the nodes, consistently.
 - Example nodes:
     - SC_Foundation_Func_Invo - use like "args --> $name" or "name(*args)" for low-level
-        - \(expr,expr) -->^same                  # used by = syntax
-        - \(bool_expr) -->^Boolean_not           # used by not/! keyword
-        - \(int_expr,int_expr) -->^Integer_plus  # used just like this
-        - \(expr,expr) -->^select_Pair
-        - \(pair_expr) -->^Pair_key
-        - \(pair_expr) -->^Pair_asset
-        - \(str_expr,nnint_expr) -->^String_elem # used by x.+[y] syntax
-        - \(ary_expr,nnint_expr) -->^Array_elem  # used by x.[y] syntax
-        - \(tup_expr,atnm_lit) -->^Tuple_attr    # used by foo.bar syntax
-        - \(tup_expr,atnm_lit) -->^Tuple_has_attr  # used by foo.?bar syntax
+        - \%(expr,expr) -->^same                  # used by = syntax
+        - \%(bool_expr) -->^Boolean_not           # used by not/! keyword
+        - \%(int_expr,int_expr) -->^Integer_plus  # used just like this
+        - \%(expr,expr) -->^select_Pair
+        - \%(pair_expr) -->^Pair_key
+        - \%(pair_expr) -->^Pair_asset
+        - \%(str_expr,nnint_expr) -->^String_elem # used by x.+[y] syntax
+        - \%(ary_expr,nnint_expr) -->^Array_elem  # used by x.[y] syntax
+        - \%(tup_expr,atnm_lit) -->^Tuple_attr    # used by foo.bar syntax
+        - \%(tup_expr,atnm_lit) -->^Tuple_has_attr  # used by foo.?bar syntax
                 # related foo.!bar shorthand "foo.?bar ?? foo.bar !! $=>Void"
-        - \(ref_expr,tup_expr) -->^select_Capsule  # wrapped by x=>y function
-        - \(cap_expr,atnm_lit) -->^Capsule_attr    # used by foo.>bar syntax
-        - \(cap_expr,atnm_lit) -->^Capsule_has_attr  # used by foo.>?bar syntax
+        - \%(ref_expr,tup_expr) -->^select_Capsule  # wrapped by x=>y function
+        - \%(cap_expr,atnm_lit) -->^Capsule_attr    # used by foo.>bar syntax
+        - \%(cap_expr,atnm_lit) -->^Capsule_has_attr  # used by foo.>?bar syntax
     - SC_Foundation_Proc_Invo - as you would expect
         - \*^&[Universal_assign,target_expr,source_expr]  # used by x := y
         - \*^&[Array_elem,ary_expr,nnint_expr,expr]  # used by x.[y] := foo
@@ -1974,17 +1974,17 @@ them directly, but rather by way of the Muldis_D package shims.
 including Universal and Integer etc; for example:
     MD.Universal ::= type where true default false;
     MD.Empty ::= type of Universal where false;
-    MD.Integer ::= type of Universal where \(topic) -->^isa_Integer default 0;
+    MD.Integer ::= type of Universal where \%(topic) -->^isa_Integer default 0;
     MD.Integer.NN ::= type of Integer where topic >= 0;
     MD.Integer.P ::= type of Integer.NN where topic > 0 default 1;
-- Generally, \(topic) -->^isa_foo only exist once; other code uses "isa foo".
+- Generally, \%(topic) -->^isa_foo only exist once; other code uses "isa foo".
 - The "isa" node looks up any "type" per the same visibility rules as normal
 dispatch to "constant" or "function" and invokes the chain of "where"
 predicates starting with the parentmost "of" back down to the invoked type,
 and results in true iff all the "where" resulted in true.
 ACTUALLY "isa" shouldn't do any coercion like that, one should have to say
 for example "foo isa $Bar" and not "foo isa Bar".
-- Demote isa to a function over \(expr,ref_expr) -->^isa.
+- Demote isa to a function over \%(expr,ref_expr) -->^isa.
 - So "=" (equality test) is now specially recognized by the grammar, same
 as each of "!",":=","::=",":","-->" as it just seems appropriate; as a
 side-effect using a package declaring a symbolic "=" must now be invoked
@@ -2498,32 +2498,41 @@ aka "\\c[0,0]" and "\\c[0,1]".
     Array         | [expr,...] or \~[expr,...] to disambiguate from procedure block
     Bag           | \+{expr,...} or \+{expr:posint-expr,...}
                   |   Eg: \+{x:4,y:7} or \+{x,x,x,x,y:7}
-    Structure     | \(expr,...) or \(lit:expr,...) or \(expr,...,lit:expr,...)
-                  |    or \(:lit,...) or etc where lit
-                  |    is one of: nnint or alpha or "whatever" (what is "whatever" again?).
-                  |    Is a set of named fields where each field name is
+    Tuple         | \%(expr,...) or \%(lit:expr,...) or \%(:lit,...) or \%(expr,...,lit:expr,...) etc
+                  |    where lit is one of: nnint or alpha or "whatever" (what is "whatever" again?).
+                  |   Eg: \%(name:'Joy',age:17)
+                  |    Is a set of named attributes where each attribute name is
                   |    a string (isomorphic to Array of Integer).
-                  |    - SC_Signature is proper subtype of Structure where the value for
-                  |    every field is either true or is a SC_Reference;
+                  |    - SC_Signature is proper subtype of Tuple where the value for
+                  |    every attribute is either true or is a SC_Reference;
                   |    this is used when defining a type in terms of a set
-                  |    of typed fields, or when defining a function
-                  |    signature likewise, or when defining a set of SC_Field_Name;
-                  |    a SC_Reference is naming the expected field contract (type)
+                  |    of typed attributes, or when defining a function
+                  |    signature likewise, or when defining a set of SC_Attr_Name;
+                  |    a SC_Reference is naming the expected attribute contract (type)
                   |    or constant which is treated as a singleton type of its value,
                   |    or true means either type inapplicable (we just have
-                  |    a set of SC_Field_Name) or it means Universal / any value.
-                  |    - SC_Field_Names is proper subtype of SC_Signature where
-                  |    every field value is just true; it has special alt syntaxes
+                  |    a set of SC_Attr_Name) or it means Universal / any value.
+                  |    - SC_Attr_Names is proper subtype of SC_Signature where
+                  |    every attribute value is just true; it has special alt syntaxes
                   |    \@(lit,...) or \@(nnint-lit..nnint-lit).
-                  |    The first syntax is list of field names, any kind but explicit;
-                  |    the second syntax is numeric range for numeric field names, eg \@(0..3).
-                  |    - SC_Field_Name is proper subtype of SC_Field_Names
+                  |    The first syntax is list of attribute names, any kind but explicit;
+                  |    the second syntax is numeric range for numeric attribute names, eg \@(0..3).
+                  |    - SC_Attr_Name is proper subtype of SC_Attr_Names
                   |    with degree of 1; it has special alt syntax of \foo or \@foo.
-                  |    - SC_Key_Asset_Pair is proper subtype of Structure
-                  |    with exactly 2 fields named 'key' and 'asset';
+                  |    - SC_Key_Asset_Pair is proper subtype of Tuple
+                  |    with exactly 2 attributes named 'key' and 'asset';
                   |    When working element-wise with a collection, how each element represented.
-    OBSOLETE; USE A STRUCTURE SUBTYPE INSTEAD, FREE UP => FOR NON-CORE / USER TYPES:
-    Capsule       | expr=>expr - that is Reference=>Structure eg $Date=>\%(year:500,month:4,day:24)
+    Capsule       | Capsule::select(tag,asset), eg Capsule::select(\Set,\+{...})
+                  |    This is the parent of most types, analagous to an 'object', namespacing things.
+                  |    SC_Reference is subtype like Capsule::select(\Reference,\%(...)).
+                  |    There are no symbolic ops on purpose so to not interfere with subtypes,
+                  |    and any alpha ops should have names unlikely to interfere.
+                  |    The tag, conceptually a base type name,
+                  |    is generally a Reference like \@foo for most subtypes
+                  |    but for main core types especially ones that Foundation
+                  |    needs to know, it is an SC_Attr_Name like \foo instead.
+    OBSOLETE SYNTAX, FREE UP => FOR NON-CORE / USER TYPES:
+                  |    expr=>expr - that is Reference=>Tuple eg $Date=>\%(year:500,month:4,day:24)
                   |    and Singleton is one with nullary tuple eg $To_Zero=>\%()
                   |    and $=>lit is shorthand for Singleton value eg $=>To_Zero.
                   |    Normally a Capsule's Reference is a type name, making
@@ -2531,7 +2540,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    to a partially applied function if the Reference is to a function name.
     OBSOLETE; USE A STRUCTURE SUBTYPE INSTEAD:
     AND TODO: MAKE \$foo mean what $foo used to mean, \\$foo what was \$foo.
-    AND TODO: USE ~@ rather than $ meaning string of field name ... BUT WHAT OF THE PRIOR LINE?
+    AND TODO: USE ~@ rather than $ meaning string of attribute name ... BUT WHAT OF THE PRIOR LINE?
     SC_Identifier | Several kinds, all mutually disjoint:
                   |    - identity : \$pkg-canon-name.litpath   eg \$Muldis_D:"http://muldis.com":"0".Integer.sum
                   |    - absolute : \$::loc-pkg-alias.litpath  eg \$::MD.Integer.sum
@@ -2571,7 +2580,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
     Text        | 'Hello' or \~'Goodbye'
                 |    Note that any consecutive single-quoted tokens are treated as 1 token.
     SC_Comment  | \~?'This is a comment.'
-                |    Below, something like \(\Comment,'The comment text.')
+                |    Below, something like \%(\Comment,'The comment text.')
     Ratio       | 3.14159 or 0.0 or \-4.72 or \+'5/3'
     Scaled      | 4.720s3 or 4.72s3 or 4.720sv1000 or 4.72sv1000 or \+'4720//1000'
                 |   or \+'472/100s3' or \+'472/100sv1000' or 4720//1000 (all are same value, last 1 actually expr)
@@ -2609,7 +2618,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
     Float       | \+'29*10^30' or 4.5209p19
                 |   Note that Perl 5 uses 'p' rather than 'e' so it works with base-16.
                 |   Note that 'p' here means 'power' not 'precision'.
-    Unit        | Unit(expr) or \(\Unit,expr)
+    Unit        | Unit(expr) or \%(\Unit,expr)
                 |   A tagged value of any type.
                 |   Or make this a subtype of Quantity.
     Quantity    | expr+expr or expr-expr or expr*expr or expr/expr or
@@ -2622,8 +2631,6 @@ aka "\\c[0,0]" and "\\c[0,1]".
                 |   Interval has no Plain Text syntax; this is all routine calls.
     Set         | {expr,...} or \?{expr,...} to disambiguate within recipe block
                 |   Eg: {x,y,z} or \?{x,y,z}
-    Tuple       | \%(lit:expr,...) or \%(expr,...) or \(\Tuple,\(...)) etc
-                |   Eg: \%(name:'Joy',age:17)
     Relation    | \?%{(lit:expr,...),...} or \?%{(expr,...),...} etc
                 |   The first syntax has stringy attr names, the second has numeric, mix allowed
                 |   Eg: \?%(name,age) or \?%{ (name:'Joy',age:17), (name:'Envy',age:23) }
@@ -2633,13 +2640,13 @@ aka "\\c[0,0]" and "\\c[0,1]".
                 |   or \+%{ (name:'Joy',age:17) : 2, (name:'Envy',age:23) : 1 }
     Dictionary  | \{expr:expr,...} or something
 
-    SC_Field_Renaming | \@:(lit<-lit,...) or \@:(<-lit,...) or \@:(lit<-,...)
+    SC_Attr_Renaming  | \@:(lit<-lit,...) or \@:(<-lit,...) or \@:(lit<-,...)
                       |   If one lit is absent, means implicit positional/numeric name.
                       |   Arrow also allowed to point the other way.
 
-* Make \\foo a syntactic shorthand for topic field \foo when topic is a
-Structure; that is, \\foo is syntactic shorthand for:
-    \(topic,\foo) -->^ BS_Structure_Field
+* Make \\foo a syntactic shorthand for topic attribute \foo when topic is a
+Tuple; that is, \\foo is syntactic shorthand for:
+    \%(topic,\foo) -->^ BS_Tuple_Attr
 
 * Don't have catalog types specific to defining routine parameters.
 - Regular contracts / type defs / shorthands do the job.
@@ -2803,7 +2810,7 @@ for Integer or whatever, and particularly the catalog types would differ.
     - absolute and relative identifiers
     - polymorphism in the sense that operators may take Universal/etc
     - positional collections / types / arguments
-    - invoking routines with `args --> foo` or `foo(*args)`
+    - invoking routines with `args --> foo`
     - non-streaming parser / regular-size code files / small db dumps
     - non-embedded / side-by-side defs of eg routines and types
     - higher-order routines (by name-passing only or that is "-->name")
@@ -2845,12 +2852,7 @@ for Integer or whatever, and particularly the catalog types would differ.
 
 * ACTUALLY, Muldis D Lite is not necessarily a pure subset of Muldis D; for
 core/main language operations it probably is, but in some cases there might
-expressly be a break.  For example, every call to foo(*arg) we might decide
-to not require the *; in regular Muldis D not having that * means an
-implicit Func_Args or whatever wrapper is created around arg, but in MDL
-there is no such wrapper and we could for helping brevity to say that in
-MDL the leading * is just a noiseword; it is allowed for compatibility with
-Muldis D but not required.  A more common example is the hierarchy or
+expressly be a break.  []  A more common example is the hierarchy or
 existence of the catalog types in general, eg, the same string syntax may
 not parse into the same catalog types.
 
@@ -3072,8 +3074,8 @@ that combines Array+Tuple etc, only non-Low_Level foo would.
 Instead they would explicitly use LL_List of particular arity for any
 functions that conceptually take multiple arguments, and just the argument
 directly when just one.  As such, all invocations any LL_foo would by
-necessity use the general form of function calling eg args-->func or
-func(*args) which would be another way to discourage direct use of LL_foo
+necessity use the general form of function calling eg args-->func
+which would be another way to discourage direct use of LL_foo
 in general code.
 - All non-Low_Level.foo explicitly will use the special args type.
 - The new args type definitely will be a Capsule, a SC_foo to be specific.
@@ -3140,19 +3142,19 @@ some other type, typically an expression node set.
 
 * Function call syntax:
     args --> rtn
-    rtn(*args)
-    \(x,y) --> $"+"
+    rtn(*args)  - OBSOLETE; USE PRIOR EXAMPLE INSTEAD
+    \%(x,y) --> $"+"
         # some example Haskell looks similar (and Perl 6 uses -> in 'for')
         \x y -> concat ["(",x,"+",y,")"]
     $SC_Func_Args=>\%{ordered=>[x,y],named=>\%{}} --> $"+"
     "+"(x,y)
-    "+"(*\(x,y))
+    "+"(*\%(x,y))  -- OBSOLETE
     x->"+"(y)  - THIS ONE IS OBSOLETE; x->y NOW A MONADIC POSTFIX MARKER
         # New use is, for example "arg ->op" for example "list ->group".
     x + y
     div(x,y,round_meth:$=>To_Zero)
-    \(x,y) --> (function to Integer from (Integer,Integer) via ...)
-    \(x,y) --> (function --> Integer <-- (Integer,Integer) : ...)
+    \%(x,y) --> (function to Integer from (Integer,Integer) via ...)
+    \%(x,y) --> (function --> Integer <-- (Integer,Integer) : ...)
     42 --> $some_func_taking_Integer_directly_without_SC_Func_Args_wrapper
 - Note that "self" can appear anywhere "rtn" does, and means call-myself
 as long as it isn't quoted.  OBSOLETE!
@@ -3161,8 +3163,8 @@ as long as it isn't quoted.  OBSOLETE!
 "constant" and not a "function"; you only get a "function" call if
 something is in the parens.
 - If you want the above treated like a function call you instead say like:
-    foo(*\())
-    \() --> $foo
+    foo(*\%())  - OBSOLETE; USE NEXT EXAMPLE INSTEAD
+    \%() --> $foo
 - How you call a constant in both forms:
     foo()
     (--> $foo)
@@ -3321,8 +3323,8 @@ constants for a virtual type should be composed by implementing types.
         - is for singletons that have their own Capsule type
         - these 2 declarations are equivalent:
             foo.bar.baz ::= type singleton;
-            foo.bar.baz ::= type where !\(topic) -->^isa_Capsule ?? false
-                !! \(topic) -->^Capsule_type = $1 and \(topic) -->^Capsule_attrs = \%{}
+            foo.bar.baz ::= type where !\%(topic) -->^isa_Capsule ?? false
+                !! \%(topic) -->^Capsule_type = $1 and \%(topic) -->^Capsule_attrs = \%{}
                 default $=>1;
     3. keyword "of" or "union" is optional, followed by set of 0..N
         type names in braces or exactly 1 not in braces
