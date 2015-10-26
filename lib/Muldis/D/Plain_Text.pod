@@ -507,7 +507,7 @@ likes of visual dividers or less important comments or for when you want to
 quickly "comment out" some source code rather than deleting it.
 
 For more important comments that are introspectable as such, see the
-section in this file named C<GENERIC VALUE EXPRESSIONS>.
+section in this file named L<Comment Literals>.
 
 Examples:
 
@@ -1012,6 +1012,7 @@ Grammar:
         | <Float>
         | <Blob>
         | <Text>
+        | <Comment>
 
 An C<< <opaque_literal_expr> >> is an C<< <expr> >> that denotes a value
 literal specific to some system-defined data type that has its own special
@@ -1334,6 +1335,30 @@ Examples:
 
     \~'Green'
 
+=head2 Comment Literals
+
+Grammar:
+
+    <Comment> ::=
+        '\\~?' [<Text_seg> % <sp>]
+
+A C<< <Comment> >> node represents a value of the Muldis D C<Comment> type,
+which is a generic character string comment for annotating source code when
+the comment is meant to be introspectable as such.
+
+The C<Comment> type is not a fundamental type of the Muldis D type system, but
+rather is a subtype by constraint of the C<Capsule> type, and all C<Comment>
+values can be selected in terms of C<< <Capsule> >> grammar nodes.
+However, C<< <Comment> >> is the canonical grammar for all C<Comment> values.
+
+For less important comments or visual dividers that are intended to be
+treated like insignificant whitespace and not be introspectable as
+comments, see the section in this file named L<DIVIDING SPACE>.
+
+Examples:
+
+    \~?'This is an introspectable comment.'
+
 =head1 COLLECTION SELECTOR EXPRESSIONS
 
 Grammar:
@@ -1388,9 +1413,9 @@ I<TODO.>
 Grammar:
 
     <source_code_selector_expr> ::=
-          <SC_Identifier>
-        | <SC_Heading>
-        | <SC_Renaming>
+          <Identifier>
+        | <Heading>
+        | <Renaming>
         | ...
 
 I<TODO.>
@@ -1735,7 +1760,7 @@ representing a single-quoted or double-quoted context, and for each one, if
 it contains any character escape sequences, to replace those escape
 sequences with the actual characters they represent.  Any C<'...'> or
 C<\?'...'> or C<"..."> represent character data, either C<Text> or
-C<SC_Comment> literals or quoted identifiers, and the valid formats for both
+C<Comment> literals or quoted identifiers, and the valid formats for both
 within the quoted contexts are identical.  Note that for a run, each
 individual quoted context is treated in isolation, as some may be formatted
 for escape sequences and some may not.  Also using single-quoted contexts
