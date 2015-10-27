@@ -770,9 +770,14 @@ I<TODO.>
         composes Boolable
         requires_implements {so,count,has,nest,unnest,any,where,map,reduce,...};
 
-I<TODO.  For types whose values are conceptually homogeneous collections.
+I<TODO.  For types whose values are conceptually homogeneous collections
+of distinct integral-weighted objects, where the weights may or may not be
+constrained to 1 (each element can only appear once),
+either with a canonical order of elements or with no canonical order.
 Composed by: Positional (Array, String, etc), Setty (Set, Relation),
-Baggy (Bag, Tuple_Bag), Dictionary, etc.
+Bag, Tuple_Bag, Dictionary, etc.
+Subtypes also composing Positional are ordered, and others are not.
+Subtypes also composing Setty ensure elements appear just once, others don't.
 (Conceptually more or less all collection types can be thought of as being
 collections over 2 dimensions, heterogeneous/Attributive and Homogeneous;
 Relation and Tuple_Bag formally are multiples in both dimensions, while the
@@ -1247,28 +1252,15 @@ I<TODO.>
 I<TODO.  While conceivably implementable at a higher level, make low level
 for perceived efficiency.>
 
-=head1 ASSOCIATIVE DATA TYPES
-
-=head2 Associative
-
-    ::MD::Associative ::= interface;
-
-I<TODO.  For types that support key-based lookup of values;
-for collections of key-asset pairs where all keys are distinct;
-for collections you can enumerate with no canonical order.
-Currently Associative is just semantic, not adding its own API.
-Composed by: Setty (Set, Relation), Baggy (Bag, Tuple_Bag), Dictionary, etc.>
-
 =head1 SETTY DATA TYPES
 
 =head2 Setty
 
     ::MD::Setty ::= interface
-        composes {Associative,Homogeneous}
+        composes Homogeneous
         requires_implements {so,count,has,nest,unnest,any,where,map,reduce,...};
 
-I<TODO.  For collections that make sure each element can only appear once;
-for collections of key-true pairs.
+I<TODO.  For collections that make sure each element can only appear once.
 Composed by: Set, Relation.>
 
 =head1 SET DATA TYPES
@@ -1362,25 +1354,13 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 BAGGY DATA TYPES
-
-=head2 Baggy
-
-    ::MD::Baggy ::= interface
-        composes {Associative,Homogeneous}
-        requires_implements {so,count,has,nest,unnest,any,where,map,reduce,...};
-
-I<TODO.  For collections of distinct weighted objects;
-for collections of key-quantity pairs.
-Composed by: Bag, Tuple_Bag.>
-
 =head1 BAG DATA TYPES
 
 =head2 Bag_Inf Bag
 
     ::MD::Bag_Inf ::= selection where (topic -->^ FDN__isa_Bag_Inf)
         default (\+{})
-        composes Baggy and_provides_its_default;
+        composes Homogeneous;
 
     ::MD::Bag ::= alias of Bag_Inf;
 
@@ -1742,7 +1722,7 @@ I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
     ::MD::Tuple_Bag_Inf::"" ::= selection of Capsule
         where (Capsule_has_tag_asset( topic, \Tuple_Bag, \@1::_Asset ))
         default (\+%{})
-        composes {Baggy, Attributive};
+        composes {Homogeneous, Attributive};
 
     ::MD::Tuple_Bag ::= alias of Tuple_Bag_Inf;
 
