@@ -903,6 +903,13 @@ I<TODO.  Result is true when no member evaluates to true.>
 
 I<TODO.  Result is true when no member evaluates to false.>
 
+=head2 all_isa
+
+    ::MD::all_isa ::= function --> Boolean <-- (Homogeneous, Reference)
+        : (\.0 all (\@isa assuming topic ^ \@(1)));
+
+I<TODO.>
+
 =head2 where
 
     ::MD::where::"" ::= function virtual
@@ -1774,6 +1781,14 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 Capsule::has_tag_asset
+
+    ::MD::Capsule::has_tag_asset ::= function
+        --> Boolean <-- (Capsule, Any, Reference)
+        : (Capsule::tag(\.0) = \.1 and (Capsule::asset(\.0) isa \.2));
+
+I<TODO.>
+
 =head1 EXTERNAL DATA TYPES
 
 =head2 External
@@ -1790,20 +1805,25 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Source_Code
+=head2 Source_Code::Package_List
 
-    ::MD::Source_Code::"" ::= selection
-        union {1::Package, ...}
-        default (...);
+    ::MD::Source_Code::Package_List::"" ::= selection of Capsule
+        where (Capsule::has_tag_asset( topic, \Package_List, \@Package_List::Asset ))
+        default (Capsule::select( \Package_List, [] ));
 
-I<TODO.  Is this actually useful?>
+    ::MD::Source_Code::Package_List::Asset ::= selection of Array
+        where (topic all_isa (selection of {Package, Decoration} default Package()));
+
+I<TODO.>
 
 =head2 Source_Code::Package
 
-    ::MD::Source_Code::Package ::= selection of Capsule
-        where (Capsule::tag(topic) = \Package and (Capsule::asset(topic) isa \@Tuple) ...)
-        default (...)
-        composes {...};
+    ::MD::Source_Code::Package::"" ::= selection of Capsule
+        where (Capsule::has_tag_asset( topic, \Package, \@Package::Asset ))
+        default (Capsule::select( \Package, Package::Asset() ));
+
+    ::MD::Source_Code::Package::Asset ::= selection of Tuple
+        where (...);
 
 I<TODO.>
 
@@ -1845,6 +1865,12 @@ I<TODO.>
 
 I<TODO.  Generally speaking, all Decoraction types are declared by a
 package that is not Muldis_D, such as in the Muldis_D::Plain_Text package.>
+
+I<TODO:  The decoration data types may loosely resemble template defs so
+that decorations don't necessarily have to be attached to all
+behavioral/annotation nodes they are conceptually adjacent / apply to but
+rather can be in some nearby parent context and refer to behavioral/etc
+nodes by name.>
 
 =head2 Source_Code::Decoration
 
