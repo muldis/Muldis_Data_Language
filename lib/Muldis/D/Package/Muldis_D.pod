@@ -361,7 +361,7 @@ D Foundation type I<FDN__Boolean>.  A C<Boolean> value is a general purpose
 is both C<Orderable> and C<Enumerable>; its minimum value is C<False> and
 its maximum value is C<True>.  Other programming languages frequently don't
 have a dedicated boolean type but rather consider values of other types,
-typically integer types, to be I<true> or I<false>.
+typically integer types, to be I<false> or I<true>.
 
 Examples:
 
@@ -1165,7 +1165,7 @@ I<TODO.>
 
     ::MDA::"~∅" ::= constant ([]);
 
-I<TODO.>
+The constant C<~∅> represents the only zero-member C<Array> value.
 
 =head2 so (Array)
 
@@ -1344,7 +1344,7 @@ using a Foundation function specific to that purpose.>
 
     ::MDA::"?∅" ::= constant ({});
 
-I<TODO.>
+The constant C<?∅> represents the only zero-member C<Set> value.
 
 =head2 so (Set)
 
@@ -1447,7 +1447,7 @@ I<TODO.>
 
     ::MDA::"+∅" ::= constant (\+{});
 
-I<TODO.>
+The constant C<+∅> represents the only zero-member C<Bag> value.
 
 =head2 so (Bag)
 
@@ -1536,7 +1536,7 @@ I<TODO.>
 =head2 Attributive
 
     ::MD::Attributive ::= interface
-        requires_implements {has_any_attrs,degree,on,but,extend,has_attrs,has_just_attrs};
+        requires_implements {has_any_attrs,degree,on,but,extend,rename,has_attrs,has_just_attrs};
 
 I<TODO.  For types that support attribute-name-based lookup of values;
 for collections of name-value pairs where all names are distinct;
@@ -1605,7 +1605,7 @@ I<TODO.  Also, this is analagous to set difference.>
 
     ::MD::extend::"" ::= function virtual
         --> Attributive <-- (Attributive, Attributive)
-        requires (...)
+        requires (topic --> \@atnms_disjoint)
         is {associative,commutative};
 
     ::MD::"+^" ::= alias of extend;
@@ -1616,6 +1616,29 @@ I<Note: There is no version of 'extend' that takes a routine; one can just
 use the above version plus an eg-tuple selector. In the case of relation
 extend, one can do the aforementioned within a 'map' routine, for the
 routine version; they can use join/cross-product for the static version.>
+
+=head2 rename
+
+    ::MD::rename::"" ::= function virtual
+        --> Attributive <-- (Attributive, Attr_Renaming)
+        requires (...);
+
+I<TODO.>
+
+=head2 renaming
+
+    ::MD::renaming ::= function commutes rename;
+
+I<TODO.>
+
+=head2 atnms_disjoint
+
+    ::MD::atnms_disjoint ::= function
+        --> Boolean <-- (Attributive, Attributive)
+        is commutative
+        : (...);
+
+I<TODO.>
 
 =head2 has_attrs ^?
 
@@ -1650,6 +1673,15 @@ The selection contract C<Tuple_Inf> represents the infinite Muldis D
 Foundation type I<FDN__Tuple_Inf>.  A C<Tuple_Inf> value is ...
 
 I<TODO.>
+
+=head2 Tuple_D0
+
+    ::MD::Tuple_D0 ::= constant (\%());
+
+    ::MD::D0 ::= alias of Tuple_D0;
+
+The constant C<Tuple_D0> aka C<D0> represents the only zero-attribute
+C<Tuple> value.
 
 =head2 has_any_attrs (Tuple)
 
@@ -1724,9 +1756,18 @@ I<TODO.>
 
     ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
         implements 1::""
-        requires (...)
+        requires (topic --> \@atnms_disjoint)
         is {associative,commutative} identity (\%())
         : (topic -->^ FDN__Tuple_extend);
+
+I<TODO.>
+
+=head2 rename (Tuple)
+
+    ::MD::rename::Tuple ::= function --> Tuple <-- (Tuple, Attr_Renaming)
+        implements 1::""
+        requires (...)
+        : (...);
 
 I<TODO.>
 
@@ -1793,7 +1834,7 @@ I<TODO.>
 
     ::MD::Relation_Inf::"" ::= selection of Capsule
         where (Capsule_has_tag_asset( topic, \Relation, \@1::_Asset ))
-        default (\?%{})
+        default (\?%())
         composes {Setty, Attributive};
 
     ::MD::Relation ::= alias of Relation_Inf;
@@ -1803,21 +1844,63 @@ I<TODO.>
 
 I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
 
+=head2 Relation_D0C0 D0C0
+
+    ::MD::Relation_D0C0 ::= constant (\+%());
+
+    ::MD::D0C0 ::= alias of Relation_D0C0;
+
+The constant C<Relation_D0C0> aka C<D0C0> represents the only
+zero-attribute, zero-tuple C<Relation> value.  Note that I<The Third
+Manifesto> also refers to this value by the special name I<TABLE_DUM>.
+
+=head2 Relation_D0C1 D0C1
+
+    ::MD::Relation_D0C1 ::= constant (\+%{()});
+
+    ::MD::D0C1 ::= alias of Relation_D0C1;
+
+The constant C<Relation_D0C1> aka C<D0C1> represents the only
+zero-attribute, single-tuple C<Relation> value.  Note that I<The Third
+Manifesto> also refers to this value by the special name I<TABLE_DEE>.
+
 =head1 TUPLE-BAG DATA TYPES
 
 =head2 Tuple_Bag_Inf Tuple_Bag
 
     ::MD::Tuple_Bag_Inf::"" ::= selection of Capsule
         where (Capsule_has_tag_asset( topic, \Tuple_Bag, \@1::_Asset ))
-        default (\+%{})
+        default (\+%())
         composes {Homogeneous, Attributive};
 
     ::MD::Tuple_Bag ::= alias of Tuple_Bag_Inf;
 
-    ::MD::Tuple_Bag_Inf::_Asset ::= selection of Tuple
-        where (...);
+    ::MD::Tuple_Bag_Inf::_Asset ::= selection of Tuple where
+    (
+        if topic ^?= \%( heading : \@Attr_Names, body : \@Bag ) then
+            if \.body all_isa \@Tuple then
+                \.body all (\@"^?=" assuming \.heading)
+            else
+                False
+        else
+            False
+    );
 
 I<TODO.>
+
+=head2 Tuple_Bag_D0C0
+
+    ::MD::Tuple_Bag_D0C0 ::= constant (\+%());
+
+The constant C<Tuple_Bag_D0C0> represents the only zero-attribute,
+zero-tuple C<Tuple_Bag> value.
+
+=head2 Tuple_Bag_D0C1
+
+    ::MD::Tuple_Bag_D0C1 ::= constant (\+%{()});
+
+The constant C<Tuple_Bag_D0C1> represents the only zero-attribute,
+single-tuple C<Tuple_Bag> value.
 
 =head1 CAPSULE DATA TYPES
 
@@ -1899,8 +1982,30 @@ I<TODO.>
         where (Capsule_has_tag_asset( topic, \Package, \@1::_Asset ))
         default (select_Capsule( \Package, 1::_Asset() ));
 
-    ::MD::Source_Code::Package::_Asset ::= selection of Tuple
-        where (...);
+    ::MD::Source_Code::Package::_Asset ::= selection of Tuple where
+    (
+        if
+            topic ^?= \%(
+                identity : (selection of Pkg_Decl_Map where (degree(topic) = 1)),
+                uses : \@Pkg_Decl_Map,
+                materials : \@Materials,
+            )
+        then
+            topic.uses atnms_disjoint topic.identity
+        else
+            False
+    );
+
+I<TODO.>
+
+=head2 Source_Code::Pkg_Decl_Map
+
+    ::MD::Source_Code::Pkg_Decl_Map::"" ::= selection of Capsule
+        where (Capsule_has_tag_asset( topic, \Pkg_Decl_Map, \@1::_Asset ))
+        default (select_Capsule( \Pkg_Decl_Map, 1::_Asset() ));
+
+    ::MD::Source_Code::Pkg_Decl_Map::_Asset ::= selection of Tuple
+        where (topic all_attrs (function : (\.asset --> \@Pkg_Canon_Name)));
 
 I<TODO.>
 
