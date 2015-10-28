@@ -95,12 +95,12 @@ From a separate source:
 
     ::MD::Any ::= alias of Anything;
 
-The selection contract C<Anything> represents the infinite I<universal
-type>, which is the maximal data type of the entire Muldis D type system
-and consists of all values which can possibly exist.  It also represents
-the infinite Muldis D Foundation type I<FDN__Anything>.  Its default value
-is C<False>.  Other programming languages may name their corresponding
-types I<Any> or I<Object> or I<Anything>.
+The selection contract C<Anything> aka C<Any> represents the infinite
+I<universal type>, which is the maximal data type of the entire Muldis D
+type system and consists of all values which can possibly exist.  It also
+represents the infinite Muldis D Foundation type I<FDN__Anything>.  Its
+default value is C<False>.  Other programming languages may name their
+corresponding types I<Any> or I<Object> or I<Anything>.
 
 =head2 Nothing
 
@@ -118,9 +118,9 @@ consists of exactly zero values.  It can not have any default value.
 
     ::MD::"=" ::= alias of same;
 
-The function C<same> results in C<True> iff its 2 arguments are
+The function C<same> aka C<=> results in C<True> iff its 2 arguments are
 exactly the same value, and C<False> otherwise.  Other programming
-languages may name their corresponding operators I<==> or I<===>.
+languages may name their corresponding operators I<==> or I<===> or I<eq>.
 
 =head2 not_same != ≠
 
@@ -130,8 +130,8 @@ languages may name their corresponding operators I<==> or I<===>.
     ::MD::"!=" ::= alias of not_same;
     ::MDA::"≠" ::= alias of not_same;
 
-The function C<not_same> results in C<False> iff its 2 arguments
-are exactly the same value, and C<True> otherwise.
+The function C<not_same> aka C<!=> aka C<≠> results in C<False> iff its 2
+arguments are exactly the same value, and C<True> otherwise.
 
 =head2 isa
 
@@ -354,12 +354,14 @@ I<TODO.>
 
     ::MD::Bool ::= alias of Boolean;
 
-The selection contract C<Boolean> represents the finite Muldis D
-Foundation type I<FDN__Boolean>.  A C<Boolean> value is a general purpose
-2-valued logic boolean, or specifically it is one of the 2 values C<False>
-and C<True>.  Its default value is C<False>.
-
-I<TODO.>
+The selection contract C<Boolean> aka C<Bool> represents the finite Muldis
+D Foundation type I<FDN__Boolean>.  A C<Boolean> value is a general purpose
+2-valued logic boolean or I<truth value>, or specifically it is one of the
+2 values C<False> and C<True>.  Its default value is C<False>.  C<Boolean>
+is both C<Orderable> and C<Enumerable>; its minimum value is C<False> and
+its maximum value is C<True>.  Other programming languages frequently don't
+have a dedicated boolean type but rather consider values of other types,
+typically integer types, to be I<true> or I<false>.
 
 Examples:
 
@@ -373,7 +375,9 @@ Examples:
 
     ::MDA::"⊥" ::= alias of False;
 
-I<TODO.>
+The constant C<False> aka C<⊥> represents the boolean logical truth value
+I<false> aka I<contradiction>.  Other programming languages frequently use
+the integer 0 to represent I<false>.
 
 =head2 True ⊤
 
@@ -381,7 +385,9 @@ I<TODO.>
 
     ::MDA::"⊤" ::= alias of True;
 
-I<TODO.>
+The constant C<True> aka C<⊤> represents the boolean logical truth value
+I<true> aka I<tautology>.  Other programming languages frequently use the
+integer 1 to represent I<true>.
 
 =head2 in_order (Boolean)
 
@@ -796,7 +802,7 @@ I<TODO.>
 
     ::MD::Homogeneous::"" ::= interface
         composes Boolable
-        requires_implements {so,count,has,nest,unnest,any,where,map,reduce,...};
+        requires_implements {so,empty,count,has,nest,unnest,any,where,map,reduce,...};
 
 I<TODO.  For types whose values are conceptually homogeneous collections
 of distinct integral-weighted objects, where the weights may or may not be
@@ -839,11 +845,23 @@ baggy count or positional index, its for a problem best solved differently.>
 
 I<TODO.>
 
-=head2 is_empty
+=head2 is_empty ∅?
 
     ::MD::is_empty ::= function negates so::Homogeneous;
 
+    ::MDA::"∅?" ::= alias of is_empty;
+
 I<TODO.>
+
+=head2 empty ∅
+
+    ::MD::empty::"" ::= function virtual --> Homogeneous <-- (Homogeneous);
+
+    ::MDA::"∅" ::= alias of empty;
+
+I<TODO.  Returns the 'empty' value of the argument's collection type.
+For plain {Array,Set,Bag} this is a constant value, but for a Relation or
+a Tuple_Bag this is distinct per each heading.>
 
 =head2 count cardinality #
 
@@ -987,7 +1005,7 @@ Depending on the collection subtype, order of 0,1 may or may not be significant.
 
     ::MD::Positional ::= interface
         composes {Orderable, Accessible, Homogeneous and_provides_its_default, ...}
-        requires_implements {so,count,elem,has_index,has,nest,unnest,any,where,map,reduce,
+        requires_implements {so,empty,count,elem,has_index,has,nest,unnest,any,where,map,reduce,
             first_index,last_index,slice,catenate,index_succ_all_matches,...};
 
 I<TODO.  For types that support integer-index-based lookup of values;
@@ -1143,11 +1161,25 @@ Foundation type I<FDN__Array_Inf>.  An C<Array_Inf> value is ...
 
 I<TODO.>
 
+=head2 ~∅
+
+    ::MDA::"~∅" ::= constant ([]);
+
+I<TODO.>
+
 =head2 so (Array)
 
     ::MD::so::Array ::= function --> Boolean <-- (Array)
         implements 1::""
         : (\.0 != []);
+
+I<TODO.>
+
+=head2 empty (Array)
+
+    ::MD::empty::Array ::= function --> Array <-- (Array)
+        implements 1::""
+        : ([]);
 
 I<TODO.>
 
@@ -1286,7 +1318,7 @@ for perceived efficiency.>
 
     ::MD::Setty ::= interface
         composes Homogeneous
-        requires_implements {so,count,has,nest,unnest,any,where,map,reduce,...};
+        requires_implements {so,empty,count,has,nest,unnest,any,where,map,reduce,...};
 
 I<TODO.  For collections that make sure each element can only appear once.
 Composed by: Set, Relation.>
@@ -1308,11 +1340,25 @@ Composed by: Set, Relation.>
 I<TODO. Update 'where' to say quantity for each distinct member is 1,
 using a Foundation function specific to that purpose.>
 
+=head2 ?∅
+
+    ::MDA::"?∅" ::= constant ({});
+
+I<TODO.>
+
 =head2 so (Set)
 
     ::MD::so::Set ::= function --> Boolean <-- (Set)
         implements 1::""
         : (\.0 != {});
+
+I<TODO.>
+
+=head2 empty (Set)
+
+    ::MD::empty::Set ::= function --> Set <-- (Set)
+        implements 1::""
+        : ({});
 
 I<TODO.>
 
@@ -1397,11 +1443,25 @@ Foundation type I<FDN__Bag_Inf>.  A C<Bag_Inf> value is ...
 
 I<TODO.>
 
+=head2 +∅
+
+    ::MDA::"+∅" ::= constant (\+{});
+
+I<TODO.>
+
 =head2 so (Bag)
 
     ::MD::so::Bag ::= function --> Boolean <-- (Bag)
         implements 1::""
         : (\.0 != \+{});
+
+I<TODO.>
+
+=head2 empty (Bag)
+
+    ::MD::empty::Bag ::= function --> Bag <-- (Bag)
+        implements 1::""
+        : (\+{});
 
 I<TODO.>
 
