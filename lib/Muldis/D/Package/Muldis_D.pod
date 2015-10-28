@@ -48,6 +48,11 @@ This document I<also> defines the Muldis D Plain Text package
 C<Muldis_D::Aliases:"http://muldis.com":"0.200.1"> which adds trans-ASCII
 Unicode aliases to C<Muldis_D> package entities.
 
+Note that for brevity this document will use the unqualified term
+I<argument> to refer to a function's conceptual argument that is actually
+an attribute of a I<FDN__Tuple_Inf> typed actual argument; the latter will
+be qualified as I<topic> in the rarer circumstance where that is meant.
+
 =head1 PACKAGES
 
 From one source:
@@ -113,7 +118,7 @@ consists of exactly zero values.  It can not have any default value.
 
     ::MD::"=" ::= alias of same;
 
-The function C<same> results in C<True> iff its 2 conceptual arguments are
+The function C<same> results in C<True> iff its 2 arguments are
 exactly the same value, and C<False> otherwise.  Other programming
 languages may name their corresponding operators I<==> or I<===>.
 
@@ -125,8 +130,31 @@ languages may name their corresponding operators I<==> or I<===>.
     ::MD::"!=" ::= alias of not_same;
     ::MDA::"≠" ::= alias of not_same;
 
-The function C<not_same> results in C<False> iff its 2 conceptual arguments
+The function C<not_same> results in C<False> iff its 2 arguments
 are exactly the same value, and C<True> otherwise.
+
+=head2 isa
+
+    ::MD::isa ::= function --> Boolean <-- (Any, Reference)
+        : (\.0 --> \.1);
+
+The function C<isa> results in C<True> iff its C<0> argument is a
+member of the type specified by its C<1> argument, and C<False> otherwise.
+
+=head2 not_isa
+
+    ::MD::not_isa ::= function negates isa;
+
+The function C<not_isa> results in C<False> iff its C<0> argument is a
+member of the type specified by its C<1> argument, and C<True> otherwise.
+
+=head2 default
+
+    ::MD::default ::= function --> Any <-- (Reference)
+        : (--> \.0);
+
+The function C<default> results in the default value of the not-empty type
+specified by its C<0> argument.
 
 =head1 EXCUSE DATA TYPES
 
@@ -146,11 +174,11 @@ I<TODO.>
 =head2 coalesce ?!
 
     ::MD::coalesce ::= function --> Any <-- (Any, Any)
-        : (\.0 isa \@Excuse ?? \.1 !! \.0);
+        : (\.0 --> \@Excuse ?? \.1 !! \.0);
 
     ::MD::"?!" ::= alias of coalesce;
 
-I<TODO.  Also, isa() needs defining.>
+I<TODO.>
 
 =head1 ORDERABLE DATA TYPES
 
@@ -339,6 +367,22 @@ Examples:
 
     False
 
+=head2 False ⊥
+
+    ::MD::False ::= constant (False);
+
+    ::MDA::"⊥" ::= alias of False;
+
+I<TODO.>
+
+=head2 True ⊤
+
+    ::MD::True ::= constant (True);
+
+    ::MDA::"⊤" ::= alias of True;
+
+I<TODO.>
+
 =head2 in_order (Boolean)
 
     ::MD::in_order::Boolean ::= function --> Boolean <-- (Boolean, Boolean)
@@ -360,22 +404,6 @@ I<TODO.>
     ::MD::succ::Boolean ::= function --> {True, Pos_Inf} <-- (Boolean)
         implements 1::""
         : (!\.0 ?? True !! Pos_Inf());
-
-I<TODO.>
-
-=head2 False ⊥
-
-    ::MD::False ::= constant (False);
-
-    ::MDA::"⊥" ::= alias of False;
-
-I<TODO.>
-
-=head2 True ⊤
-
-    ::MD::True ::= constant (True);
-
-    ::MDA::"⊤" ::= alias of True;
 
 I<TODO.>
 
@@ -1774,7 +1802,7 @@ I<TODO.>
 
     ::MD::Capsule_has_tag_asset ::= function
         --> Boolean <-- (Capsule, Any, Reference)
-        : (Capsule_tag(\.0) = \.1 and (Capsule_asset(\.0) isa \.2));
+        : (Capsule_tag(\.0) = \.1 and Capsule_asset(\.0) --> \.2);
 
 I<TODO.>
 
