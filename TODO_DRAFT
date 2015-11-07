@@ -1482,6 +1482,17 @@ the current value of "the database".  In practice "the database" may be a
 whole, and other folded constants are in there too representing its parts
 for easier human readability when serialized; in any event, on
 serialization the folded constant's format/structure would be generated.
+- To be clear, every material declaration such as `::MD::foo ::= function...`
+is declaring a binder `::MD::foo` and the explicitly so-named material's
+name is `::MD::foo::""` even if the function/etc declares no nested materials.
+- Reference `0` always means the current material.
+- Reference `1` always means the binder containing the current material.
+- Reference `2` always means the folder (possibly a package) immediately
+containing the binder containing the current material.
+- Explicit declarations like `::MD::foo::""::"" ::= ...` are still only
+declaring binders with those names at the most, and never materials.
+- One can explicitly declare a binder using syntax loosely similar to a
+package or expression, like "binder {...}".
 
 * Distinguish logical compilation units from their repositories.
 - A "repository" is somewhere on or accessible to the system where packages
@@ -2554,13 +2565,13 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |            or My_App::Foo_Lib;;auth;;vnum
                   |            or ;;My_App::Foo_Lib
                   |        - absolute : ::X::Y::Z or ::X etc
-                  |        - relative : 0:: or 1::foo::bar or 1:: etc
+                  |        - relative : 0:: or 2::foo::bar or 1:: or 1::_priv etc
                   |        - floating : Z:: or Y::Z etc
                   |    For non-literals rtn call remove \$
                   |    eg "::pkg.foo.bar()" or "0()" or "foo.bar()".
                   |    Note that leading "0" means "self" / same routine,
                   |    and "0.foo()" is not allowed; leading "1" means
-                  |    the schema that directly contains current routine
+                  |    the binder that directly contains current routine
                   |    so a routine with nested routines would behind
                   |    scenes refer to each with "1.nest_rtn_name()"
                   |    but if invoker routine has no nested, then its
@@ -3269,6 +3280,10 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         simplified literals, each like previously described; this is useful
         for defining a list of alternatives, eg {(foo), (foo, foo)} means
         the function takes both unary and binary arguments, eg for "-" op
+        - the above list options are recursive; anywhere a type name may
+        appear either of the alternative forms (...) or {...} may appear,
+        allowing for example inline abbreviated Tuple argument definition
+        or alternatives within a Tuple argument
         - if omitted, the unnamed system maximal type is implicitly used
     4. keyword "implements" is optional,
         followed by set of 0..N associated function names
