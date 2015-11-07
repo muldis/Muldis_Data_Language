@@ -3158,37 +3158,39 @@ some other type, typically an expression node set.
 
 * Function call syntax:
     args --> rtn
-    rtn(*args)  - OBSOLETE; USE PRIOR EXAMPLE INSTEAD
-    \%(x,y) --> $"+"
+    rtn <-- args
+    \%(x,y) --> \@"+"
         # some example Haskell looks similar (and Perl 6 uses -> in 'for')
         \x y -> concat ["(",x,"+",y,")"]
-    $SC_Func_Args=>\%{ordered=>[x,y],named=>\%{}} --> $"+"
     "+"(x,y)
-    "+"(*\%(x,y))  -- OBSOLETE
+    "+" <-- \%(x,y)
     x->"+"(y)  - THIS ONE IS OBSOLETE; x->y NOW A MONADIC POSTFIX MARKER
         # New use is, for example "arg ->op" for example "list ->group".
     x + y
-    div(x,y,round_meth:$=>To_Zero)
+    div(x,y,round_meth:\@=>To_Zero)
     \%(x,y) --> (function to Integer from (Integer,Integer) via ...)
     \%(x,y) --> (function --> Integer <-- (Integer,Integer) : ...)
-    42 --> $some_func_taking_Integer_directly_without_SC_Func_Args_wrapper
-- Note that "self" can appear anywhere "rtn" does, and means call-myself
-as long as it isn't quoted.  OBSOLETE!
+    42 --> \@some_func_taking_Integer_directly_without_Tuple_wrapper
+- Note that "\@0" can appear anywhere "rtn" does, and means call-myself
+as long as it isn't quoted.
 
 * Note that "rtn()" with nothing in the parens now explicitly calls a
 "constant" and not a "function"; you only get a "function" call if
 something is in the parens.
 - If you want the above treated like a function call you instead say like:
-    foo(*\%())  - OBSOLETE; USE NEXT EXAMPLE INSTEAD
-    \%() --> $foo
+    \@foo <-- \%()
+    \%() --> \@foo
 - How you call a constant in both forms:
     foo()
-    (--> $foo)
+    (--> \@foo)
+    (\@foo <--)
 
 * Foundation function call syntax (only option):
     arg_expr -->^ opnamelitbarealphastr
+    opnamelitbarealphastr ^<-- arg_expr
 eg:
     3 -->^ Integer_opposite
+    Integer_opposite ^<-- 3
 - This is in contrast with a regular generic function call:
     arg_expr --> op_expr
 - Mnemonic of ^ / up-pointer for raise/bootstrap remains.
@@ -3196,8 +3198,10 @@ eg:
 - As usual, whitespace around the -->^ is optional.
 - Foundation constant call syntax (only option):
     (-->^ opnamelit)
+    (opnamelit ^<--)
 eg:
     (-->^ FDN__default_External)
+    (FDN__default_External ^<--)
 
 * In terms of regular function calls, a foundation function call is one that
 always has a -->/from/signature of Universal, that is it is like a
@@ -3231,7 +3235,7 @@ function call / hyper-op probably.
 * Inline function declare syntax:
     expr_node_name_containing_Ref_of_func_name ::= function ...
     function ...
-So both of these result in expr node whose value is like one said $foo
+So both of these result in expr node whose value is like one said \@foo
 but the former the user decides what it is and otherwise its generated.
 Note that all expressions of inner function have their own namespace and
 are completely independent of the expression containing the function decl.

@@ -602,6 +602,8 @@ including the headings of nested package entity declarations:
     ::?=
     ::=
     :=
+    -->^
+    ^<--
     -->
     <--
     ->
@@ -1430,7 +1432,7 @@ Grammar:
         | <fixed_func_invo_expr>
         | <foundation_invo_expr>
 
-I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF --> WHERE THE FUNCTION
+I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF -->/<-- WHERE THE FUNCTION
 OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
 
 =head2 Constant Invocation Expressions
@@ -1447,7 +1449,8 @@ I<TODO.>
 Grammar:
 
     <generic_func_invo_expr> ::=
-        <generic_func_args> <sp> '-->' <sp> <generic_func_ref>
+          [<generic_func_args> <sp> '-->' <sp> <generic_func_ref>]
+        | [<generic_func_ref> <sp> '<--' <sp> <generic_func_args>]
 
     <generic_func_ref> ::=
         <expr>
@@ -1505,10 +1508,12 @@ Grammar:
         <foundation_const_invo_expr> | <foundation_func_invo_expr>
 
     <foundation_const_invo_expr> ::=
-        '(' <sp> '-->^' <sp> <foundation_const_name> <sp> ')'
+          ['(' <sp> '-->^' <sp> <foundation_const_name> <sp> ')']
+        | ['(' <sp> <foundation_const_name> <sp> '^<--' <sp> ')']
 
     <foundation_func_invo_expr> ::=
-        <generic_func_args> <sp> '-->^' <sp> <foundation_func_name>
+          [<generic_func_args> <sp> '-->^' <sp> <foundation_func_name>]
+        | [<foundation_func_name> <sp> '^<--' <sp> <generic_func_args>]
 
 I<TODO.>
 
@@ -1583,7 +1588,7 @@ I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
         including inline func/type/etc decls, or foo::bar::etc or func/const foo()
     why-binding infix ::?=
     what-expr-binding-infix ::=
-    generic universal routine call infix: args --> rtn or args -->^ rtn
+    generic universal routine call infix: args --> rtn or rtn <-- args or args -->^ rtn or rtn ^<-- args
     symbolic in/pre/postfix and ! meta-op (bareword)
     alpha in/pre/postfix and 'not' meta-op (bareword)
     conditional ternaries or n-aries: ??!! / if-then-else / ???!!! / given-when-default
