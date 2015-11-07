@@ -131,7 +131,9 @@ languages may name their corresponding operators I<==> or I<===> or I<eq>.
     ::MDA::"≠" ::= alias of not_same;
 
 The function C<not_same> aka C<!=> aka C<≠> results in C<False> iff its 2
-arguments are exactly the same value, and C<True> otherwise.
+arguments are exactly the same value, and C<True> otherwise.  Other
+programming languages may name their corresponding operators I<< <> >> or
+I<!===> or I<ne>.
 
 =head2 isa
 
@@ -162,23 +164,49 @@ specified by its C<0> argument.
 
     ::MD::Excuse::"" ::= interface;
 
-I<TODO.>
+The semantic contract C<Excuse> is infinite.  An C<Excuse> value is an
+explicitly stated reason for why, given some particular problem domain, a
+value is not being used that is ordinary for that domain.  For example, the
+typical integer division operation is not defined to give an integer result
+when the divisor is zero, and so a Muldis D function for integer division
+could be defined to result in an C<Excuse> value rather than throw an
+exception in that case.  For another example, an C<Excuse> value could be
+used to declare that the information we are storing about a person is
+missing certain details and why those are missing, such as because the
+person left the birthdate field blank on their application form.  Its
+default value is C<Excuse::No_Reason>.  An C<Excuse> is isomorphic to an
+C<Exception> but that use of the former is not meant to terminate execution
+of code early unlike the latter which is.  Other programming languages that
+have typed exceptions are analogous.
 
 =head2 Excuse::No_Reason
 
     ::MD::Excuse::No_Reason ::= constant (\@0)
         composes Excuse and_provides_its_default;
 
-I<TODO.>
+The constant C<Excuse::No_Reason> represents the C<Excuse> value which
+simply says that an ordinary value for any given domain is missing and that
+there is simply no excuse that has been given for this; in other words,
+something has gone wrong without the slightest hint of an explanation.
+This is conceptually the most generic C<Excuse> value there is and it can
+be used by lazy programmers as a fallback for when they don't have even a
+semblance of a better explanation for why an ordinary value is missing.
+Other programming languages may name their corresponding values or
+quasi-values I<null> or I<nil> or I<none> or I<nothing> or I<undef> or
+I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
 
-=head2 coalesce ?!
+=head2 coalesce or_else ?!
 
     ::MD::coalesce ::= function --> Any <-- (Any, Any)
         : (\.0 --> \@Excuse ?? \.1 !! \.0);
 
-    ::MD::"?!" ::= alias of coalesce;
+    ::MD::or_else ::= alias of coalesce;
+    ::MD::"?!"    ::= alias of coalesce;
 
-I<TODO.>
+The function C<coalesce> aka C<or_else> aka C<?!> results in its C<0>
+argument iff the latter is not an C<Excuse>, and results in its C<1>
+argument otherwise.  This function is designed to be chained for any number
+of sequenced values in order to pick the first non-C<Excuse> in a list.
 
 =head1 ORDERABLE DATA TYPES
 
@@ -187,7 +215,31 @@ I<TODO.>
     ::MD::Orderable ::= interface
         requires_implements in_order;
 
-I<TODO.>
+The interface contract C<Orderable> is infinite.  An C<Orderable> value has
+all of the traditional comparison operators defined for it such that values
+of its type I<T> can be deterministically sorted by Muldis D into a
+canonical total order.  But I<T> otherwise does not necessarily have
+conceptually a total order in the normal sense or that order is different
+than what the provided comparison operators give you.  An C<Orderable> type
+is a type for which one can take all of its values and place them on a line
+such that each value is definitively considered I<before> all of the values
+one one side and I<after> all of the values on the other side.  Other
+programming languages may name their corresponding types I<IComparable> or
+I<Ord> or I<ordered> or I<ordinal>.
+
+The default value of C<Orderable> is C<False>.  The minimum and maximum
+values of C<Orderable> are C<Neg_Inf> and C<Pos_Inf>, respectively; these 2
+C<Excuse> values are canonically considered to be before and after,
+respectively, I<every> other value of the Muldis D type system, regardless
+of whether those values are members a type for which an
+C<Orderable>-composing contract exists.  The primary reason for having
+these values C<Neg_Inf> and C<Pos_Inf> is so Muldis D has an easy
+consistent way to define an C<Interval> that is partially or completely
+unbounded, and to use as identity values for chained order-comparisons.
+
+C<Orderable> is composed, directly or indirectly, by: C<Neg_Inf>,
+C<Pos_Inf>, C<Enumerable>, C<Boolean>, C<Integral>, C<Integer>,
+C<Positional>, C<Array>, C<String>, C<Blob>, C<Text>.
 
 =head2 Neg_Inf -∞
 
@@ -195,7 +247,11 @@ I<TODO.>
 
     ::MDA::"-∞" ::= alias of Neg_Inf;
 
-I<TODO.>
+The constant C<Neg_Inf> aka C<-∞> represents the type-agnostic concept of
+negative infinity, an C<Orderable> value that sorts I<before> all other
+values in the Muldis D type system.  This value is also an C<Excuse> that
+says the result of some operation is infinite in the negative direction.
+Note that IEEE floating-point standards define a negative infinity value.
 
 =head2 Pos_Inf +∞
 
@@ -203,14 +259,37 @@ I<TODO.>
 
     ::MDA::"+∞" ::= alias of Pos_Inf;
 
-I<TODO.>
+The constant C<Pos_Inf> aka C<-∞> represents the type-agnostic concept of
+positive infinity, an C<Orderable> value that sorts I<after> all other
+values in the Muldis D type system.  This value is also an C<Excuse> that
+says the result of some operation is infinite in the positive direction.
+Note that IEEE floating-point standards define a positive infinity value.
 
 =head2 in_order
 
     ::MD::in_order::"" ::= function virtual
         --> Boolean <-- (Orderable, Orderable);
 
-I<TODO.>
+The virtual function C<in_order> results in C<True> iff its 2 arguments are
+considered to already be I<in order> as given to the function, meaning that
+either both arguments are exactly the same value or otherwise that the C<0>
+argument value is definitively considered I<before> the C<1> argument
+value; if C<0> is considered I<after> C<1> then C<in_order> results in
+C<False>.  The primary reason for C<in_order> is to underlie all
+order-determination or value sorting operations in an easy consistent way;
+an C<Orderable>-composing contract only has to implement C<in_order> and
+then values of its type can be compared, sorted on, and have intervals
+defined in terms of them.
+
+Other programming languages may instead typically use a three-way
+comparison operator for this role, where its possible result values are
+I<before>, I<same>, and I<after>, and those 3 are typically represented by
+either the integers {-1,0,1} or a special 3-valued enumeration type.  Said
+operators may be named I<< <=> >> or I<cmp> or I<compare> or I<CompareTo>
+or I<memcmp> or I<strcmp>.  But Muldis D uses a C<Boolean> result instead
+partly to keep its core type system simpler (it would have gone the
+enumeration route) and partly because the logic for doing sorting or
+comparisons or validation is typically much simpler with this foundation.
 
 =head2 in_order (Neg_Inf, Pos_Inf)
 
@@ -230,7 +309,10 @@ I<TODO.>
         implements 2::""
         : (True);
 
-I<TODO.>
+The 4 functions {C<in_order::Neg_Inf_L>, C<in_order::Neg_Inf_R>,
+C<in_order::Pos_Inf_L>, C<in_order::Pos_Inf_R>} implement the C<Orderable>
+virtual function C<in_order> for the composing types C<Neg_Inf> and
+C<Pos_Inf>, specifically for comparing either value with any C<Orderable>.
 
 =head2 before <
 
@@ -238,7 +320,9 @@ I<TODO.>
 
     ::MD::"<" ::= alias of before;
 
-I<TODO.>
+The function C<before> aka C<< < >> results in C<True> iff its C<0>
+argument is I<before> its C<1> argument.  Other programming languages may
+name this operator I<lt>.
 
 =head2 after >
 
@@ -246,7 +330,9 @@ I<TODO.>
 
     ::MD::">" ::= alias of after;
 
-I<TODO.>
+The function C<after> aka C<< > >> results in C<True> iff its C<0>
+argument is I<after> its C<1> argument.  Other programming languages may
+name this operator I<gt>.
 
 =head2 before_or_same <= ≤
 
@@ -255,7 +341,9 @@ I<TODO.>
     ::MD::"<=" ::= alias of before_or_same;
     ::MDA::"≤" ::= alias of before_or_same;
 
-I<TODO.>
+The function C<before_or_same> aka C<< <= >> aka C<≤> results in C<True>
+iff its C<0> argument is I<before> its C<1> argument or they are the same
+value.  Other programming languages may name this operator I<le>.
 
 =head2 after_or_same >= ≥
 
@@ -264,7 +352,9 @@ I<TODO.>
     ::MD::">=" ::= alias of after_or_same;
     ::MDA::"≥" ::= alias of after_or_same;
 
-I<TODO.>
+The function C<after_or_same> aka C<< >= >> aka C<≥> results in C<True>
+iff its C<0> argument is I<after> its C<1> argument or they are the same
+value.  Other programming languages may name this operator I<ge>.
 
 =head2 min
 
@@ -272,7 +362,10 @@ I<TODO.>
         is {associative,commutative,idempotent} identity (Pos_Inf())
         : (topic --> \@in_order ?? \.0 !! \.1);
 
-I<TODO.>
+The function C<min> results in whichever of its 2 arguments is first when
+the 2 are sorted I<in order>.  This function is designed to be chained for
+any number of sequenced values in order to pick the one that sorts
+I<before> all of the others.
 
 =head2 max
 
@@ -280,7 +373,10 @@ I<TODO.>
         is {associative,commutative,idempotent} identity (Neg_Inf())
         : (topic --> \@in_order ?? \.1 !! \.0);
 
-I<TODO.>
+The function C<max> results in whichever of its 2 arguments is last when
+the 2 are sorted I<in order>.  This function is designed to be chained for
+any number of sequenced values in order to pick the one that sorts
+I<after> all of the others.
 
 =head2 minmax
 
@@ -289,7 +385,10 @@ I<TODO.>
         is commutative
         : (topic --> \@in_order ?? topic !! \%(\.1, \.0));
 
-I<TODO.>
+The function C<minmax> results in a binary C<Tuple> containing its 2
+arguments sorted I<in order>; the function's result is the same as its
+topic when the arguments are already in order, and the reverse of that
+otherwise, meaning the values of C<0> and C<1> are swapped.
 
 =head1 ENUMERABLE DATA TYPES
 
@@ -299,19 +398,53 @@ I<TODO.>
         composes Orderable and_provides_its_default
         requires_implements {in_order,pred,succ};
 
-I<TODO.>
+The interface contract C<Enumerable> is infinite.  An C<Enumerable> value
+is an C<Orderable> value for which, using the same canonical total order
+for its type, there exists a definitive I<predecessor> or I<successor>
+value, at least where the given value isn't the first or last value on the
+line respectively.  Similarly, one can take any two values of an
+C<Enumerable> type and produce an ordered list of all of that type's values
+which are on the line between those two values.  A primary quality of a
+type that is C<Orderable> but not C<Enumerable> is that you can take any
+two values of that type and then find a third value of that type which lies
+between the first two on the line; by definition for an C<Enumerable> type,
+there is no third value between one of its values and that value's
+predecessor or successor value.  Other programming languages may name their
+corresponding types I<ordinal> or categorically as I<enum>.  Note that
+while a generic rational numeric type may qualify as an ordinal type by
+some definitions of I<ordinal>, since it is possible to count all the
+rationals if arranged a particular way, these types would not qualify as
+C<Enumerable> here when that ordering is not the same as the one used for
+the same type's C<Orderable> comparisons.  The default and minimum and
+maximum values of C<Enumerable> are the same as those of C<Orderable>.
+C<Enumerable> is composed, directly or indirectly, by: C<Boolean>,
+C<Integral>, C<Integer>.
+
+For some C<Enumerable> types, there is the concept of a I<quantum> or
+I<step size>, where every consecutive pair of values on that type's value
+line are conceptually spaced apart at equal distances; this distance would
+be the quantum, and all steps along the value line are at exact multiples
+of that quantum.  However, C<Enumerable> types in general don't need to be
+like this, and there can be different amounts of conceivable distance
+between consecutive values; an C<Enumerable> type is just required to know
+where all the values are.  For example, C<Integer> has a quantum while a
+subtype consisting just of prime numbers does not.
 
 =head2 pred
 
     ::MD::pred::"" ::= function virtual --> Enumerable <-- (Enumerable);
 
-I<TODO.>
+The virtual function C<pred> results in the I<predecessor> value of its
+C<0> argument, or in C<Neg_Inf> if there is none.  Other programming
+languages may name their corresponding operators I<--> or I<decrement>.
 
 =head2 succ
 
     ::MD::succ::"" ::= function virtual --> Enumerable <-- (Enumerable);
 
-I<TODO.>
+The virtual function C<succ> results in the I<successor> value of its
+C<0> argument, or in C<Pos_Inf> if there is none.  Other programming
+languages may name their corresponding operators I<++> or I<increment>.
 
 =head1 BOOLABLE DATA TYPES
 
@@ -395,7 +528,8 @@ integer 1 to represent I<true>.
         implements 2::""
         : (!\.0 or \.1);
 
-I<TODO.>
+The function C<in_order::Boolean> implements the C<Orderable> virtual
+function C<in_order> for the composing type C<Boolean>.
 
 =head2 pred (Boolean)
 
@@ -403,7 +537,8 @@ I<TODO.>
         implements 2::""
         : (\.0 ?? False !! Neg_Inf());
 
-I<TODO.>
+The function C<pred::Boolean> implements the C<Enumerable> virtual
+function C<pred> for the composing type C<Boolean>.
 
 =head2 succ (Boolean)
 
@@ -411,7 +546,8 @@ I<TODO.>
         implements 2::""
         : (!\.0 ?? True !! Pos_Inf());
 
-I<TODO.>
+The function C<succ::Boolean> implements the C<Enumerable> virtual
+function C<succ> for the composing type C<Boolean>.
 
 =head2 so (Boolean)
 
@@ -748,7 +884,8 @@ value is C<1>; it has no maximum value.
         implements 2::""
         : (topic -->^ FDN__Integers_in_order);
 
-I<TODO.>
+The function C<in_order::Integer> implements the C<Orderable> virtual
+function C<in_order> for the composing type C<Integer>.
 
 =head2 pred (Integer)
 
@@ -756,7 +893,8 @@ I<TODO.>
         implements 2::""
         : (\.0 - 1);
 
-I<TODO.>
+The function C<pred::Integer> implements the C<Enumerable> virtual
+function C<pred> for the composing type C<Integer>.
 
 =head2 succ (Integer)
 
@@ -764,7 +902,8 @@ I<TODO.>
         implements 2::""
         : (\.0 + 1);
 
-I<TODO.>
+The function C<succ::Integer> implements the C<Enumerable> virtual
+function C<succ> for the composing type C<Integer>.
 
 =head2 so (Integer)
 
@@ -1054,7 +1193,8 @@ I<TODO.>
         e2 ::?= \~?'This will succeed iff in_order() is defined for the element type.';
     );
 
-I<TODO.>
+The function C<in_order::Positional> implements the C<Orderable> virtual
+function C<in_order> for the composing type C<Positional>.
 
 =head2 elem . (Positional)
 
