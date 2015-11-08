@@ -123,6 +123,16 @@ and C<1> are exactly the same value, and C<False> otherwise.  Other
 programming languages may name their corresponding operators I<==> or
 I<===> or I<eq>.
 
+Note that C<same> is guaranteed to result in C<False> when exactly one of
+its 2 arguments is an C<External> value but beyond that its behavior when
+both of its arguments are C<External> values is implementation defined, in
+that implementations are expected to make it completely deterministic
+according to appropriate rules of value distinctness for the external
+environment in question; for example, if the external entity referenced by
+an C<External> value is considered a mutable container, then 2 C<External>
+should only be considered I<same> if they both point to the same container,
+and not if two distinct containers have the same content.
+
 =head2 not_same != ≠
 
     ::MD::not_same ::= function negates same
@@ -2176,13 +2186,34 @@ I<TODO.>
 
 =head2 External
 
-    ::MD::External ::= selection where (topic -->^ FDN__isa_External)
+    ::MD::External::"" ::= selection where (topic -->^ FDN__isa_External)
         default (-->^ FDN__default_External);
 
 The selection contract C<External> represents the infinite Muldis D
-Foundation type I<FDN__External>.  An C<External> value is ...
+Foundation type I<FDN__External>.  An C<External> value is an opaque and
+transient reference to an entity that is defined and managed externally to
+the Muldis D language environment, either internally to the Muldis D host
+implementation or in some peer language that it mediates.  Its default
+value is implementation-defined.
 
-I<TODO.>
+As C<External> values are black boxes to Muldis D, it is the responsibility
+of their external manager to at the very least implement the C<same>
+function for them in a fully deterministic manner, as well as externally
+define any other operators for them that users may wish to invoke for those
+values from Muldis D code, including any to map with or marshal with Muldis
+D values.
+
+=head2 External::call_function
+
+    ::MD::External::call_function ::= function --> Any <-- Any
+        : (FDN__External_call_function ^<-- topic);
+
+The function C<External::call_function> is a proxy for invoking a function
+that is defined and managed externally to the Muldis D language
+environment.  Muldis D will assume said function is completely
+deterministic, and there would likely be problems if it isn't.  Using
+C<External::call_function> as a foundation, it is possible to define an
+arbitrarily complex type graph involving C<External> values.
 
 =head1 SOURCE CODE BEHAVIOURAL DATA TYPES
 
