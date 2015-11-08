@@ -118,9 +118,10 @@ consists of exactly zero values.  It can not have any default value.
 
     ::MD::"=" ::= alias of same;
 
-The function C<same> aka C<=> results in C<True> iff its 2 arguments are
-exactly the same value, and C<False> otherwise.  Other programming
-languages may name their corresponding operators I<==> or I<===> or I<eq>.
+The function C<same> aka C<=> results in C<True> iff its 2 arguments C<0>
+and C<1> are exactly the same value, and C<False> otherwise.  Other
+programming languages may name their corresponding operators I<==> or
+I<===> or I<eq>.
 
 =head2 not_same != ≠
 
@@ -131,9 +132,9 @@ languages may name their corresponding operators I<==> or I<===> or I<eq>.
     ::MDA::"≠" ::= alias of not_same;
 
 The function C<not_same> aka C<!=> aka C<≠> results in C<False> iff its 2
-arguments are exactly the same value, and C<True> otherwise.  Other
-programming languages may name their corresponding operators I<< <> >> or
-I<!===> or I<ne>.
+arguments C<0> and C<1> are exactly the same value, and C<True> otherwise.
+Other programming languages may name their corresponding operators
+I<< <> >> or I<!===> or I<ne>.
 
 =head2 isa
 
@@ -321,8 +322,8 @@ C<Pos_Inf>, specifically for comparing either value with any C<Orderable>.
     ::MD::"<" ::= alias of before;
 
 The function C<before> aka C<< < >> results in C<True> iff its C<0>
-argument is I<before> its C<1> argument.  Other programming languages may
-name this operator I<lt>.
+argument is I<before> its C<1> argument; otherwise it results in C<False>.
+Other programming languages may name this operator I<lt>.
 
 =head2 after >
 
@@ -331,8 +332,8 @@ name this operator I<lt>.
     ::MD::">" ::= alias of after;
 
 The function C<after> aka C<< > >> results in C<True> iff its C<0>
-argument is I<after> its C<1> argument.  Other programming languages may
-name this operator I<gt>.
+argument is I<after> its C<1> argument; otherwise it results in C<False>.
+Other programming languages may name this operator I<gt>.
 
 =head2 before_or_same <= ≤
 
@@ -343,7 +344,8 @@ name this operator I<gt>.
 
 The function C<before_or_same> aka C<< <= >> aka C<≤> results in C<True>
 iff its C<0> argument is I<before> its C<1> argument or they are the same
-value.  Other programming languages may name this operator I<le>.
+value; otherwise it results in C<False>.  Other programming languages may
+name this operator I<le>.
 
 =head2 after_or_same >= ≥
 
@@ -354,7 +356,8 @@ value.  Other programming languages may name this operator I<le>.
 
 The function C<after_or_same> aka C<< >= >> aka C<≥> results in C<True>
 iff its C<0> argument is I<after> its C<1> argument or they are the same
-value.  Other programming languages may name this operator I<ge>.
+value; otherwise it results in C<False>.  Other programming languages may
+name this operator I<ge>.
 
 =head2 min
 
@@ -452,13 +455,36 @@ languages may name their corresponding operators I<++> or I<increment>.
 
     ::MD::Boolable ::= interface requires_implements so;
 
-I<TODO.  For types that have a canonical way of being cast to booleans;
-for collection types an empty collection is false and nonempty is true;
-for numeric types, a zero is false and a nonzero is true.
-Composed by: Boolean, Numeric (Integer, ...), Homogeneous (Array, Set, Relation, Bag,...).
-(Conceptually but not actually composed by Attributive (Tuple, Relation,...)
-due to overlap and conflicting meaning with some other composers;
-Attributive instead has its own different-named versions of the Boolable ops.)>
+The interface contract C<Boolable> is infinite.  A C<Boolable> value has a
+canonical way of being cast to a C<Boolean> value in a context-free manner,
+as the answer to the non-specific question "Is that so?" on the value taken
+in isolation, whatever that would conceivably mean for the value's type.
+The idiomatic predicate being asked has to do with whether or not something
+exists; for composing numeric types it is asking whether the number is
+nonzero; for composing collection types it is asking whether the collection
+has any members.  The primary reason for C<Boolable> is to provide an easy
+consistent and terse way to ask a common predicate question such as this.
+The default value of C<Boolable> is C<False>.  Other programming languages
+often have the concept of particular values from a wide variety of types as
+being conceptually either I<false> or I<true>, and C<Boolable> is the
+formalization of that concept for Muldis D, allowing program code to be
+written in a similar style but with more type safety as any treatment of a
+value as a C<Boolean> must be made explicit.
+
+C<Boolable> is composed, directly or indirectly, by: C<Boolean>,
+C<Numeric>, C<Integral>, C<Integer>, C<Homogeneous>, C<Positional>,
+C<Array>, C<String>, C<Blob>, C<Text>, C<Setty>, C<Set>, C<Bag>,
+C<Relation>, C<Tuple_Bag>.
+
+While conceivably C<Boolable> could also be composed by C<Attributive>, and
+hence C<Tuple>, it isn't because that would set up a semantic conflict for
+C<Relation> and C<Tuple_Bag> which are collections across 2 dimensions, and
+it was decided for those latter types that C<Boolable> would apply to them
+explicitly in their C<Homogeneous> dimension and not in their
+C<Attributive> dimension.  As such, the C<Attributive> functions
+C<has_any_attrs> and C<is_nullary> are provided as that dimension's direct
+analogies to the C<Homogeneous> dimension's C<Boolable>-implementing
+C<has_any_members> (C<so>) and C<is_empty> (C<not_so>) functions.
 
 =head2 so ?
 
@@ -466,7 +492,10 @@ Attributive instead has its own different-named versions of the Boolable ops.)>
 
     ::MD::"?" ::= alias of so;
 
-I<TODO.>
+The virtual function C<so> aka C<?> results in C<True> typically when
+its C<0> argument is a nonzero number or a nonempty collection; otherwise
+it results in C<False>.  Other programming languages may name their
+corresponding operators I<ToBoolean> or use similar cast-like syntax.
 
 =head2 not_so !?
 
@@ -474,7 +503,9 @@ I<TODO.>
 
     ::MD::"!?" ::= alias of not_so;
 
-I<TODO.>
+The function C<not_so> aka C<!?> results in C<True> typically when
+its C<0> argument is a number zero or an empty collection; otherwise
+it results in C<False>.
 
 =head1 BOOLEAN DATA TYPES
 
@@ -549,7 +580,9 @@ function C<succ> for the composing type C<Boolean>.
         implements 2::""
         : (\.0);
 
-I<TODO.>
+The function C<so::Boolean> performs a logical I<proposition>; it simply
+results in its C<0> argument.  This function implements the C<Boolable>
+virtual function C<so> aka C<?> for the composing type C<Boolean>.
 
 =head2 not ! ¬
 
@@ -558,7 +591,10 @@ I<TODO.>
     ::MD::"!"  ::= alias of not;
     ::MDA::"¬" ::= alias of not;
 
-I<TODO.>
+The function C<not> aka C<!> aka C<¬> performs a logical I<negation> or
+I<logical complement>; it results in C<True> iff its C<0> argument is
+C<False> and vice-versa.  Other programming languages may name their
+corresponding operators I<~> or I<N>.
 
 =head2 and ∧
 
@@ -568,7 +604,10 @@ I<TODO.>
 
     ::MDA::"∧"  ::= alias of and;
 
-I<TODO.>
+The function C<and> aka C<∧> performs a logical I<conjunction>; it results
+in C<True> iff its 2 arguments C<0> and C<1> are both C<True>, and C<False>
+otherwise.  Other programming languages may name their corresponding
+operators I<&> or I<&&> or I<K>.
 
 =head2 nand not_and ⊼ ↑
 
@@ -579,7 +618,9 @@ I<TODO.>
     ::MDA::"⊼"    ::= alias of nand;
     ::MDA::"↑"    ::= alias of nand;
 
-I<TODO.>
+The function C<nand> aka C<not_and> aka C<⊼> aka C<↑> performs a logical
+I<alternative denial>; it results in C<False> iff its 2 arguments C<0> and
+C<1> are both C<True>, and C<True> otherwise.
 
 =head2 or ∨
 
@@ -589,7 +630,10 @@ I<TODO.>
 
     ::MDA::"∨" ::= alias of or;
 
-I<TODO.>
+The function C<or> aka C<∨> performs a logical I<disjunction>; it results
+in C<True> iff at least one of its 2 arguments C<0> and C<1> is C<True>,
+and C<False> otherwise.  Other programming languages may name their
+corresponding operators I<|> or I<||> or I<A>.
 
 =head2 nor not_or ⊽ ↓
 
@@ -600,7 +644,9 @@ I<TODO.>
     ::MDA::"⊽"   ::= alias of nor;
     ::MDA::"↓"   ::= alias of nor;
 
-I<TODO.>
+The function C<nor> aka C<not_or> aka C<⊽> aka C<↓> performs a logical
+I<joint denial>; it results in C<False> iff at least one of its 2 arguments
+C<0> and C<1> is C<True>, and C<True> otherwise.
 
 =head2 xnor iff ↔
 
@@ -611,7 +657,12 @@ I<TODO.>
     ::MD::iff  ::= alias of xnor;
     ::MDA::"↔" ::= alias of xnor;
 
-I<TODO.>
+The function C<xnor> aka C<iff> aka C<↔> performs a logical
+I<biconditional> or I<material equivalence> or I<even parity>; it results
+in C<True> iff its 2 arguments C<0> and C<1> are exactly the same value,
+and C<False> otherwise.  This function is effectively a C<Boolean>-specific
+alias of the function C<same> aka C<=>.  Other programming languages may
+name their corresponding operators I<E>.
 
 =head2 xor ⊻ ↮
 
@@ -621,7 +672,12 @@ I<TODO.>
     ::MDA::"⊻" ::= alias of xor;
     ::MDA::"↮" ::= alias of xor;
 
-I<TODO.>
+The function C<xor> aka C<⊻> aka C<↮> performs a logical I<exclusive
+disjunction> or I<odd parity>; it results in C<False> iff its 2 arguments
+C<0> and C<1> are exactly the same value, and C<True> otherwise.  This
+function is effectively a C<Boolean>-specific alias of the function
+C<not_same> aka C<!=> aka C<≠>.  Other programming languages may name their
+corresponding operators I<^>.
 
 =head2 imp implies →
 
@@ -631,7 +687,9 @@ I<TODO.>
     ::MD::implies ::= alias of imp;
     ::MDA::"→"    ::= alias of imp;
 
-I<TODO.>
+The function C<imp> aka C<implies> aka C<→> performs a logical I<material
+implication>; it results in C<False> when its C<0> argument is C<True> and
+its C<1> argument is C<False>, and C<True> otherwise.
 
 =head2 nimp not_implies ↛
 
@@ -640,7 +698,9 @@ I<TODO.>
     ::MD::not_implies ::= alias of nimp;
     ::MDA::"↛"        ::= alias of nimp;
 
-I<TODO.>
+The function C<nimp> aka C<not_implies> aka C<↛> performs a logical
+I<material nonimplication>; it results in C<True> when its C<0> argument is
+C<True> and its C<1> argument is C<False>, and C<False> otherwise.
 
 =head2 if ←
 
@@ -648,7 +708,10 @@ I<TODO.>
 
     ::MDA::"←" ::= alias of if;
 
-I<TODO.>
+The function C<if> aka C<←> performs a logical I<converse implication> or
+I<reverse material implication>; it results in C<False> when its C<0>
+argument is C<False> and its C<1> argument is C<True>, and C<True>
+otherwise.
 
 =head2 nif not_if ↚
 
@@ -657,7 +720,9 @@ I<TODO.>
     ::MD::not_if ::= alias of nif;
     ::MDA::"↚"   ::= alias of nif;
 
-I<TODO.>
+The function C<nif> aka C<not_if> aka C<↚> performs a logical I<converse
+nonimplication>; it results in C<True> when its C<0> argument is C<False>
+and its C<1> argument is C<True>, and C<False> otherwise.
 
 =head1 NUMERIC DATA TYPES
 
@@ -694,6 +759,9 @@ I<TODO.  Also, review most appropriate values for the constants.>
 
     ::MD::so::Numeric ::= function virtual --> Boolean <-- (Numeric)
         implements 2::"";
+
+The function C<so::Numeric> ...  This function implements the C<Boolable>
+virtual function C<so> aka C<?> for the composing type C<Numeric>.
 
 I<TODO.>
 
@@ -887,6 +955,9 @@ function C<succ> for the composing type C<Integer>.
         implements 2::""
         : (\.0 != 0);
 
+The function C<so::Integer> ...  This function implements the C<Boolable>
+virtual function C<so> aka C<?> for the composing type C<Integer>.
+
 I<TODO.>
 
 =head1 ACCESSIBLE DATA TYPES
@@ -972,6 +1043,9 @@ baggy count or positional index, its for a problem best solved differently.>
         implements 2::"";
 
     ::MD::has_any_members ::= alias of so::Homogeneous;
+
+The function C<so::Homogeneous> ...  This function implements the C<Boolable>
+virtual function C<so> aka C<?> for the composing type C<Homogeneous>.
 
 I<TODO.>
 
@@ -1304,6 +1378,9 @@ The constant C<~∅> represents the only zero-member C<Array> value.
         implements 2::""
         : (\.0 != []);
 
+The function C<so::Array> ...  This function implements the C<Boolable>
+virtual function C<so> aka C<?> for the composing type C<Array>.
+
 I<TODO.>
 
 =head2 empty (Array)
@@ -1486,6 +1563,9 @@ The constant C<?∅> represents the only zero-member C<Set> value.
         implements 2::""
         : (\.0 != {});
 
+The function C<so::Set> ...  This function implements the C<Boolable>
+virtual function C<so> aka C<?> for the composing type C<Set>.
+
 I<TODO.>
 
 =head2 empty (Set)
@@ -1589,6 +1669,9 @@ The constant C<+∅> represents the only zero-member C<Bag> value.
         implements 2::""
         : (\.0 != \+{});
 
+The function C<so::Bag> ...  This function implements the C<Boolable>
+virtual function C<so> aka C<?> for the composing type C<Bag>.
+
 I<TODO.>
 
 =head2 empty (Bag)
@@ -1675,7 +1758,7 @@ I<TODO.>
 I<TODO.  For types that support attribute-name-based lookup of values;
 for collections of name-value pairs where all names are distinct;
 for typically heterogeneous collections.
-Composed by: Tuple, Relation, Tuple_Bag.
+Composed by: Tuple, Relation, Tuple_Bag.>
 
 =head2 Excuse::No_Such_Attr
 
@@ -1716,7 +1799,7 @@ I<TODO.>
     ::MD::"^"     ::= alias of on;
     ::MD::project ::= alias of on;
 
-I<TODO.  Also, this is analagous to set intersect.>
+I<TODO.  Also, this is analogous to set intersect.>
 
 =head2 from
 
@@ -1733,7 +1816,7 @@ I<TODO.>
     ::MD::"-^"            ::= alias of but;
     ::MD::project_all_but ::= alias of but;
 
-I<TODO.  Also, this is analagous to set difference.>
+I<TODO.  Also, this is analogous to set difference.>
 
 =head2 extend +^
 
@@ -1744,7 +1827,7 @@ I<TODO.  Also, this is analagous to set difference.>
 
     ::MD::"+^" ::= alias of extend;
 
-I<TODO.  Also, this is analagous to set union (disjoint).>
+I<TODO.  Also, this is analogous to set union (disjoint).>
 
 I<Note: There is no version of 'extend' that takes a routine; one can just
 use the above version plus an eg-tuple selector. In the case of relation
