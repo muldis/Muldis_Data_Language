@@ -245,11 +245,51 @@ Grammar:
     <foundational_indicator> ::=
         foundational
 
-The C<foundational_indicator> pragma determines with a broad granularity
-how large the effective Muldis D grammar is that a programmer may employ
-with their Muldis D code.
+The C<< <foundational_indicator> >> pragma determines with a broad
+granularity how large the effective Muldis D grammar is that a programmer
+may employ with their Muldis D code.
 
-minimal subset, directly correspond,...
+When C<< <foundational_indicator> >> is present, the effective grammar is a
+reasonably minimal subset capable of representing all Muldis D code in a
+highly normalized manner, meaning that when the full Muldis D grammer gives
+multiple syntax options that all parse into the same C<Package> values
+ignoring the optional I<decoration> attributes, just the most generic of
+each set of alternate syntax options will be supported; when C<<
+<foundational_indicator> >> is absent, the full Muldis D grammar is
+supported, albeit still limited by the character repertoire specified by
+C<< <script_name> >>.
+
+Iff C<< <foundational_indicator> >> is present, then the following grammar
+definitions are in effect:
+
+    <script_name> ::=
+        <script_name__minimal>
+
+    <regular_symbolic_char> ::=
+        <regular_symbolic_char__minimal>
+
+    <escaped_char> ::=
+        <escaped_char__minimal>
+
+    <sp> ::=
+        <sp__minimal>
+
+I<TODO.>
+
+Alternately, iff C<< <foundational_indicator> >> is absent, then the
+following grammar definitions are in effect:
+
+    <script_name> ::=
+        <script_name__maximal>
+
+    <regular_symbolic_char> ::=
+        <regular_symbolic_char__maximal>
+
+    <escaped_char> ::=
+        <escaped_char__maximal>
+
+    <sp> ::=
+        <sp__maximal>
 
 I<TODO.>
 
@@ -257,7 +297,10 @@ I<TODO.>
 
 Grammar:
 
-    <script_name> ::=
+    <script_name__minimal> ::=
+        script ASCII
+
+    <script_name__maximal> ::=
         script ...
 
 The Script Name indicates the primary script of the Muldis D code,
@@ -324,9 +367,12 @@ Grammar:
     <special_symbolic_char> ::=
         '!' | ',' | ':' | ';' | '\\'
 
-    <regular_symbolic_char> ::=
+    <regular_symbolic_char__minimal> ::=
           '#' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/'
         | '<' | '=' | '>' | '?' | '@' | '^' | '|' | '~'
+
+    <regular_symbolic_char__maximal> ::=
+          <regular_symbolic_char__minimal>
         | '¬' | '±' | '×' | '÷'
         | '←' | '↑' | '→' | '↓' | '↔' | '↚' | '↛' | '↮'
         | '∀' | '∃' | '∄' | '∅' | '∆' | '∈' | '∉' | '∋' | '∌' | '∖'
@@ -376,13 +422,17 @@ alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
 
 Grammar:
 
-    <escaped_char> ::=
+    <escaped_char__minimal> ::=
           '\\a' | '\\q'
         | '\\t' | '\\n' | '\\f' | '\\r'
+        | ['\\c<' <nc10>+ '>']
+
+    <escaped_char__maximal> ::=
+          <escaped_char__minimal>
         | '\\c<' [
               ['0b' <nc2>+]
             | ['0o' <nc8>+]
-            | ['0d'? <nc10>+]
+            | ['0d' <nc10>+]
             | ['0x' <nc16>+]
           ] '>'
 
@@ -425,7 +475,10 @@ that is the Unicode character database.
 
 Grammar:
 
-    <sp> ::=
+    <sp__minimal> ::=
+        <whitespace>*
+
+    <sp__maximal> ::=
         [<whitespace> | <quoted_sp_comment_str>]*
 
     <whitespace> ::=
@@ -531,23 +584,27 @@ while all keywords only have a single syntax each which is non-quoted, a
 non-quoted C<foo> will always favor the keyword while a quoted C<"foo">
 will always favor the entity name.
 
-These are keywords within a C<< <language_name> >>:
+These are keywords within the outer areas of source code that are external
+to any package declaration:
 
+    foundational
     Muldis_D
     Plain_Text
-
-These are keywords within the outer areas of source code:
-
-    has_segment
-    package
-    package_segment
     script
-    searching
-    using
+
+These are keywords within a package declaration that are external to any
+material declaration:
+
+    binder
+    floating
+    foundation
+    identity
+    package
+    uses
     ::?=
     ::=
 
-These are keywords within the heading of a package entity declaration:
+These are keywords within the heading of a material declaration:
 
     alias
     and_provides_its_default
@@ -566,10 +623,10 @@ These are keywords within the heading of a package entity declaration:
     interface
     is
     negates
-    normalize
     of
     overrides
     procedure
+    ?repeater?
     requires
     requires_implements
     selection
@@ -586,7 +643,7 @@ These are keywords within the heading of a package entity declaration:
     <--
 
 These are keywords only within an C<< <expr> >> or C<< <stmt> >>, not
-including the headings of nested package entity declarations:
+including the headings of nested material declarations:
 
     default
     else
