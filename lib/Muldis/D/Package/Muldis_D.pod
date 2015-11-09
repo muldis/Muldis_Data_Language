@@ -24,17 +24,10 @@ before you read this one, which provides subservient details.
     package
     {
         identity My_App ::= My_App:"http://mycorp.com":"0";
-        uses
-        {
-            MD ::= Muldis_D:"http://muldis.com":"0.200.1";
-        };
-        materials
-        {
-            floating {::My_App, ::MD};
-
-            `TODO: Put example routines etc here.`
-
-        };
+        foundation "http://muldis.com":"0.200.1";
+        uses MD ::= Muldis_D:"http://muldis.com":"0.200.1";
+        floating {::My_App, ::MD};
+        `TODO: Put example routines etc here.`
     };
 
 =head1 DESCRIPTION
@@ -62,11 +55,9 @@ From one source:
     package
     {
         identity MD ::= Muldis_D:"http://muldis.com":"0.200.1";
-        materials
-        {
-            floating {::MD, ::MD::Source_Code};
-            ...
-        };
+        foundation "http://muldis.com":"0.200.1";
+        floating {::MD, ::MD::Source_Code};
+        ...
     };
 
 From a separate source:
@@ -76,15 +67,10 @@ From a separate source:
     package
     {
         identity MDA ::= Muldis_D::Aliases:"http://muldis.com":"0.200.1";
-        uses
-        {
-            MD ::= Muldis_D:"http://muldis.com":"0.200.1";
-        };
-        materials
-        {
-            floating {::MD, ::MDA};
-            ...
-        };
+        foundation "http://muldis.com":"0.200.1";
+        uses MD ::= Muldis_D:"http://muldis.com":"0.200.1";
+        floating {::MD, ::MDA};
+        ...
     };
 
 =head1 MAXIMAL AND MINIMAL DATA TYPES
@@ -2239,8 +2225,12 @@ I<TODO.>
             if
                 topic ^?= \%(
                     identity : (selection of Pkg_Decl_Map where (degree(topic) = 1)),
+                    foundation : ...,
                     uses : \@Pkg_Decl_Map,
-                    materials : \@Materials,
+                    floating : ...,
+                    materials : ...,
+                    annotation : ...,
+                    decoration : ...,
                 )
             then
                 topic.\uses atnms_disjoint topic.\identity
