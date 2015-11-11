@@ -97,6 +97,9 @@ non-abstract function, it doesn't need an implementation per value.
 - Use it as one would have used null/void/etc.
 - A ?! mnemonic is "why not?".  Perhaps "orelse" instead of "coalesce"?
 
+* SAS is another programming language to get operator name ideas from.
+One newly discovered thing, ^ is logical not, ^= is not-equals.
+
 * Consider that cross-compiling Muldis D to the host language might not
 actually be that valuable in practice for a default reference
 implementation, considering how much would still have to be done in
@@ -552,7 +555,7 @@ the same types as other packages independently if it needs them.
 of the node is its payload itself, this is distinct from literal/selector nodes.
 - Use often for values of types with their own Plain_Text 'opaque' literal
 syntax where PT Foundation or the catalog itself has no type-specific literal
-nodes for them, eg Text,Blob,Ratio,etc rather than using an Array sel node +
+nodes for them, eg Text,Blob,Fraction,etc rather than using an Array sel node +
 Integer lit nodes; the sc meta still remembers Text etc lit were used.
 - Also used a lot with 'hosted data' variants when eg passing host-native string values.
 - For that matter, any 'opaque' literal types even for Foundation types can
@@ -618,7 +621,7 @@ The former case is semantically like a special case of the latter where the
 declared type is Universal for all attributes.
 - There can be an interface type for the general case of
 declared-type-as-part-of-value-identity.
-- If Ratio is an interface implementers could be normalized or not.
+- If Fraction is an interface implementers could be normalized or not.
 - But then what do the standard literal syntax / selectors yield?
 - Lots of DBMS:: or lang:: types/routines could compose the Integer etc interfaces maybe.
 - Define interfaces in terms of, what would ALL things of this type have.
@@ -768,7 +771,7 @@ only exist in one direction.
     + to Bag from Relation or Tuple_Bag
     # to (non-negative) Integer from Set or Bag or Relation or Tuple_Bag
     ?# to Boolean from Array or String or Set or Bag or Relation or Tuple_Bag
-    ? to Boolean from Integer or Ratio or Float
+    ? to Boolean from Integer or Fraction or Float
 - Note that # or ? or ?# would most likely NOT be defined on Blob/Text
 as there is no single most reasonable canonical interpretation.
 - There is no casting to or from Structure, just longer-form routines/exprs.
@@ -948,10 +951,10 @@ overloaded variants now are more clearly bundled visually.
 - How this typically works is we would cluster overloaded ops like this:
     MD."+"."" ::= function virtual ...;
     MD."+".Integer ::= function ... implements "" ...;
-    MD."+".Ratio ::= function ... implements "" ...;
+    MD."+".Fraction ::= function ... implements "" ...;
     MD.NumericOrSomeSuch ::= type abstract;
     MD.Integer ::= type ...;
-    MD.Ratio ::= type ...;
+    MD.Fraction ::= type ...;
 - We can still have namespaces to group things under, eg MD.Source_Code or
 MD.Integer etc but then those are more for less common or optional things.
 
@@ -1076,13 +1079,13 @@ identified with a simple single-level string rather than a SC_Reference.
 be defined as Capsule but rather just as Structure with a leading positional
 element giving its main type.
 - So coin a new set of simple strings that are the identifiers for
-the non-low-level core types, such as Ratio etc.  The existing core types
+the non-low-level core types, such as Fraction etc.  The existing core types
 that are Capsule are now instead these new kinds, and their definitions are
-still essentially unchanged, eg: \%(\Ratio,numerator:5,denominator:8).  That
+still essentially unchanged, eg: \%(\Fraction,numerator:5,denominator:8).  That
 value we can use as-is in the absense of the Muldis_D package; the package
 would still declare though:
-    Muldis_D::Ratio ::= type of Tuple where topic ^?= \%(
-        0 : type of SC_Attr_Name where topic = \Ratio,
+    Muldis_D::Fraction ::= type of Tuple where topic ^?= \%(
+        0 : type of SC_Attr_Name where topic = \Fraction,
         numerator : $Integer,
         denominator : $Integer,
     );
@@ -1093,7 +1096,7 @@ actually testing the $Integer thing formally is still at runtime, though
 while bootstrapping and we don't have the Muldis_D package, that check
 doesn't actually have a SC_Reference to contend with, um stuff.
 - Generally any system-defined type that a typical compiler would have
-special knowledge of, such as Ratio or Relation etc, would have the new
+special knowledge of, such as Fraction or Relation etc, would have the new
 simpler form of specification.
 - The standard hosted-data variants of Muldis D and this new form will then
 also very closely resemble each other as much as possible.
@@ -1350,7 +1353,7 @@ Array,Set,Bag,Interval,Quantity but also attributive ones like
 Tuple,Relation.  That being said, we can see how short the likes of
 has_attrs() or forall() can get, may be good enough.  But we still probably
 want a few extra keywords for 'type' for the ones that can be really short,
-eg "type of Array member Text" or "type of Tuple attrs (x:Integer,y:Ratio)"
+eg "type of Array member Text" or "type of Tuple attrs (x:Integer,y:Fraction)"
 where in the latter case we take the same input as a function's "from" but
 disallow positionals for Tuple.  Both member/attrs are sugar for where with
 function calls and those functions are defined by abstract types, so a wide
@@ -1651,7 +1654,7 @@ Concrete:
     Boolean - Bool (boolean)
     ? - Bit
     Integer - Int (arbitrary precision integer)
-    Ratio - FatRat (arbitrary precision ratio)
+    Fraction - FatRat (arbitrary precision ratio)
     String - Buf|Blob (stringish view of an array of integers)
     Blob - Blob|Buf (undifferentiated mass of ints)
     Text - Str (string of characters)
@@ -2595,7 +2598,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
                 |    Note that any consecutive single-quoted tokens are treated as 1 token.
     Comment     | \~?'This is a comment.'
                 |    Below, something like \%(\Comment,'The comment text.')
-    Ratio       | 3.14159 or 0.0 or \-4.72 or \+'5/3'
+    Fraction    | 3.14159 or 0.0 or \-4.72 or \+'5/3'
     Scaled      | 4.720s3 or 4.72s3 or 4.720sv1000 or 4.72sv1000 or \+'4720//1000'
                 |   or \+'472/100s3' or \+'472/100sv1000' or 4720//1000 (all are same value, last 1 actually expr)
                 |   A fixed scale but unlimited precision rational number.
@@ -2604,7 +2607,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
                 |   Note that <int>//X means <int>/SsvX; there is also a regular // operator.
                 |   Everything is Integer math but with meta-data of a scale divisor >= 1.
                 |   Two Scaled can not compare equal unless they have the same scale divisor.
-                |   A generic Scaled is disjoint from Ratio but has the same components
+                |   A generic Scaled is disjoint from Fraction but has the same components
                 |   (numerator/denominator), it is still bignum math, but the denominators
                 |   of 2 operands must already be equal, and they are not GCD.
                 |   This is not about limited storage size, that's to other types.
@@ -2614,11 +2617,11 @@ aka "\\c[0,0]" and "\\c[0,1]".
                 |   for it like for Integer, that is, it is discrete rather than continuous,
                 |   whole division etc is defined etc.
                 |   We should have an abstract type defined that covers
-                |   Integer and Scaled but not Ratio etc, maybe call it Discrete ... actually, Enumerable.
+                |   Integer and Scaled but not Fraction etc, maybe call it Discrete ... actually, Enumerable.
                 |   Actually, Scaled is also unlike Integer and more like Quantity,
                 |   in that while it is closed under +,-, it isn't under *,/ etc,
-                |   at least assuming the Scaled is semantically like a Ratio.
-                |   A Scaled in general is just partially ordered, unlike Integer or Ratio;
+                |   at least assuming the Scaled is semantically like a Fraction.
+                |   A Scaled in general is just partially ordered, unlike Integer or Fraction;
                 |   It is only totally ordered within common scales.
                 |   Lets make Scaled just a Quantity like N*(1/1000)^1 or N*(10)^-3;
                 |   or Scaled is a Quantity with a single unit of type Integer (scale factor) and power of 1;
@@ -2632,6 +2635,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
     Float       | \+'29*10^30' or 4.5209p19
                 |   Note that Perl 5 uses 'p' rather than 'e' so it works with base-16.
                 |   Note that 'p' here means 'power' not 'precision'.
+                |   Actually, we gonna boot Float from core, since many ways to do it and no best pragmatic generic choice.
     Unit        | Unit(expr) or \%(\Unit,expr)
                 |   A tagged value of any type.
                 |   Or make this a subtype of Quantity.
