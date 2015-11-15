@@ -224,11 +224,11 @@ one one side and I<after> all of the values on the other side.  Other
 programming languages may name their corresponding types I<IComparable> or
 I<Ord> or I<ordered> or I<ordinal>.
 
-The default value of C<Orderable> is C<False>.  The minimum and maximum
-values of C<Orderable> are C<Neg_Inf> and C<Pos_Inf>, respectively; these 2
-C<Excuse> values are canonically considered to be before and after,
-respectively, I<every> other value of the Muldis D type system, regardless
-of whether those values are members a type for which an
+The default value of C<Orderable> is the C<Integer> value C<0>.  The
+minimum and maximum values of C<Orderable> are C<Neg_Inf> and C<Pos_Inf>,
+respectively; these 2 C<Excuse> values are canonically considered to be
+before and after, respectively, I<every> other value of the Muldis D type
+system, regardless of whether those values are members a type for which an
 C<Orderable>-composing contract exists.  The primary reason for having
 these values C<Neg_Inf> and C<Pos_Inf> is so Muldis D has an easy
 consistent way to define an C<Interval> that is partially or completely
@@ -427,34 +427,31 @@ of that quantum.  However, C<Enumerable> types in general don't need to be
 like this, and there can be different amounts of conceivable distance
 between consecutive values; an C<Enumerable> type is just required to know
 where all the values are.  For example, C<Integer> has a quantum while a
-subtype consisting just of prime numbers does not.
+type consisting just of prime integers does not.
 
 Note that while mathematics formally defines I<predecessor> and
 I<successor> for non-negative integers only, and some other programming
 languages extend this concept to real numbers with the meaning I<minus one>
 and I<plus one> respectively, Muldis D only formally associates these terms
 with the quantum of I<one> for types specifically representing integers;
-they are not defined to do that in general for other numeric types.
+for C<Enumerable> types in general, the terms just mean prior or next
+values and should not be conceptualized as mathematical operations.
 
 =head2 pred
 
     ::MD::pred::"" ::= function virtual --> {Enumerable, Neg_Inf} <-- (Enumerable);
 
-    ::MD::"--" ::= alias of pred;
-
-The virtual function C<pred> aka C<--> results in the I<predecessor> value
-of its C<0> argument, or in C<Neg_Inf> if there is none.  Other programming
-languages may name their corresponding operators I<decrement>.
+The virtual function C<pred> results in the I<predecessor> value of its
+C<0> argument, or in C<Neg_Inf> if there is none.  Other programming
+languages may name their corresponding operators I<prior> or I<previous>.
 
 =head2 succ
 
     ::MD::succ::"" ::= function virtual --> {Enumerable, Pos_Inf} <-- (Enumerable);
 
-    ::MD::"++" ::= alias of succ;
-
-The virtual function C<succ> aka C<++> results in the I<successor> value
-of its C<0> argument, or in C<Pos_Inf> if there is none.  Other programming
-languages may name their corresponding operators I<increment>.
+The virtual function C<succ> results in the I<successor> value of its
+C<0> argument, or in C<Pos_Inf> if there is none.  Other programming
+languages may name their corresponding operators I<next>.
 
 =head1 BOOLABLE DATA TYPES
 
@@ -520,8 +517,7 @@ it results in C<False>.
 
     ::MD::Boolean::"" ::= selection where (topic -->^ FDN__isa_Boolean)
         default (False)
-        composes {Enumerable and_provides_its_default,
-            Boolable and_provides_its_default};
+        composes {Enumerable, Boolable and_provides_its_default};
 
     ::MD::Bool ::= alias of Boolean;
 
@@ -570,7 +566,7 @@ function C<in_order> for the composing type C<Boolean>.
         : (\.0 ?? False !! Neg_Inf());
 
 The function C<pred::Boolean> implements the C<Enumerable> virtual
-function C<pred> aka C<--> for the composing type C<Boolean>.
+function C<pred> for the composing type C<Boolean>.
 
 =head2 succ (Boolean)
 
@@ -579,7 +575,7 @@ function C<pred> aka C<--> for the composing type C<Boolean>.
         : (!\.0 ?? True !! Pos_Inf());
 
 The function C<succ::Boolean> implements the C<Enumerable> virtual
-function C<succ> aka C<++> for the composing type C<Boolean>.
+function C<succ> for the composing type C<Boolean>.
 
 =head2 so (Boolean)
 
@@ -887,10 +883,35 @@ I<TODO.>
 =head2 Integral
 
     ::MD::Integral ::= interface
-        composes {Enumerable, Numeric and_provides_its_default}
+        composes {Enumerable and_provides_its_default,
+            Numeric and_provides_its_default}
         requires_implements {in_order,pred,succ,so,...};
 
 I<TODO.  Also, do something about the unimplemented Numeric operators.>
+
+=head2 pred (Integral)
+
+    ::MD::pred::Integral ::= function virtual --> Integral <-- (Integral)
+        implements 2::"";
+
+    ::MD::"--" ::= alias of pred::Integral;
+
+The virtual function C<pred::Integral> aka C<--> implements the
+C<Enumerable> virtual function C<pred> for the composing type C<Integral>. 
+Other programming languages may name their corresponding operators
+I<decrement>.
+
+=head2 succ (Integral)
+
+    ::MD::succ::Integral ::= function virtual --> Integral <-- (Integral)
+        implements 2::"";
+
+    ::MD::"++" ::= alias of succ::Integral;
+
+The virtual function C<succ::Integral> aka C<++> implements the
+C<Enumerable> virtual function C<succ> for the composing type C<Integral>. 
+Other programming languages may name their corresponding operators
+I<increment>.
 
 =head1 INTEGER DATA TYPES
 
@@ -941,20 +962,20 @@ function C<in_order> for the composing type C<Integer>.
 =head2 pred (Integer)
 
     ::MD::pred::Integer ::= function --> Integer <-- (Integer)
-        implements 2::""
+        implements 2::Integral
         : (\.0 - 1);
 
-The function C<pred::Integer> implements the C<Enumerable> virtual
-function C<pred> aka C<--> for the composing type C<Integer>.
+The function C<pred::Integer> implements the C<Enumerable>/C<Integral>
+virtual function C<pred> aka C<--> for the composing type C<Integer>.
 
 =head2 succ (Integer)
 
     ::MD::succ::Integer ::= function --> Integer <-- (Integer)
-        implements 2::""
+        implements 2::Integral
         : (\.0 + 1);
 
-The function C<succ::Integer> implements the C<Enumerable> virtual
-function C<succ> aka C<++> for the composing type C<Integer>.
+The function C<succ::Integer> implements the C<Enumerable>/C<Integral>
+virtual function C<succ> aka C<++> for the composing type C<Integer>.
 
 =head2 so (Integer)
 
@@ -1051,7 +1072,7 @@ baggy count or positional index, its for a problem best solved differently.>
 
     ::MD::has_any_members ::= alias of so::Homogeneous;
 
-The function C<so::Homogeneous> ...  This function implements the C<Boolable>
+The function C<so::Homogeneous> aka C<has_any_members> ...  This function implements the C<Boolable>
 virtual function C<so> aka C<?> for the composing type C<Homogeneous>.
 
 I<TODO.>
