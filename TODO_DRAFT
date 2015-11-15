@@ -14,6 +14,243 @@ resources of everyone else.
 
 ----------
 
+* enum is the successable - pred/succ not defined as 'by one'
+    - Perl 6 specifically defines pred/succ as adding/subtracting 1, and --/++ are wrappers for it
+    - maybe I should consider renaming my Enumerable routines to prev/next?
+- succable - succ/inc/++/pred/dec/--/zero/one/neg_one
+    - given ints is closed within ints
+    - ditto rats and above
+    - formally mathematics only defines successor for whole numbers, not fractions, decimals, or negatives
+- addable/plusable - opposite, plus, minus, absolute, etc, also ++/-- defined as 'by one'
+    - Perl 6 has operator precedence category named Additive
+    - given ints is closed within ints
+    - ditto rats and above
+- multiplicable/timesable - multiply, divide both kinds, remainder, gcd, lcm
+    - Perl 6 has operator precedence category named Multiplicative
+    - given ints can also produce rationals
+    - given rationals is closed within rationals
+    - ditto algebraic complex and above
+- exponentiable/powerable - powers and roots (not logs)
+    - given ints can also produce rationals
+        - iff exponent is negative
+    - given rationals can also produce algebraic complex
+        - iff base and exp both negative, or something
+- tetratable - leave that one to ::Math
+
+* On classifying collections ... or numbers:
+- homogeneous vs heterogeneous
+    - homo for Array, Set, Bag, Interval, etc
+    - het for Tuple, etc
+- discrete vs continuous
+    - can collection values be enumerated/iterated or not
+        - if so, is there a canonical order for the iteration or not,
+        that is, do we have a canonical mapping to a Positional;
+        if not, iteration in a procedure context order is implementation-dependent/quasi-random
+    - discrete for Array, Set, Bag
+    - continuous for Interval
+    - maybe make Continuous a type rather than Discrete, or do both and
+    expect they wouldn't both be used but in some strange but not impossible situation
+    - lets say that while Discrete can be bunches of Any in general case,
+    Continuous must entirely be Orderable composers, but in particular must
+    be the same Orderable composer, sort of, as defined by the existance of
+    an is_order routine; Continuous requires that every pair of defined
+    endpoints must have is_order defined that matches them
+        - in particular Interval at least would have that constraint
+    - if one wants to mix and match types in a Continuous, they'll have to
+    define another type that is a Discrete collection of Continuous elements,
+    that is a set of sets
+        - this is also how relations with interval elements would work
+    - so uh we DEFINITELY want Positional to be orthogonal to Discrete/etc rather than a subtype,
+    maybe of Homogeneous too, in which case we're saying Homogeneous is more, uh...
+    - actually we want Text to not have the concept of elements, only of substrings
+- ordinal numeric point vs bucket semantics
+    - date is more bucket
+    - datetime is more point
+- allows duplicates vs doesn't
+    - allows for Array, Bag
+    - doesn't for Set
+    - ostensibly doesn't for Interval, but might be some variant that does
+- integral weights vs real weights
+    - integral for Array, Set (=1), Bag
+- members addressable by position or not
+    - yes for Array
+    - no for Set, Bag, Interval
+    - but what is "position"?  does it have to be an integer with a fixed step size?
+        - is a Text considered positional, since doing it properly uses an abstract CharPos or whatever, see Perl 6
+        - is Textual and Blobby considered subtype of Positional or orthogonal to that?
+        - in some sense a Textual is continuous rather than discrete when looked at abstractly, like a line being sliced
+        - What Would Perl 6 Do?
+        - maybe Positional should be orthogonal to Discrete, same as Setty is
+    - have Position interface to go with Positional interface, they're a pair
+        - composed by Integer to go with Array
+        - composed by Text_Pos? to go with Text, Blob_Pos? for Blob
+        - don't need StrLen analogies as regular ol' Interval over Position does it
+    - apparently Perl 6 'Blob' is a role now, which does (disjoint) Stringy and Positional
+        - "The Blob role is an immutable interface to binary types, and offers 
+        a list-like interface to lists of integers, typically unsigned integers."
+        - Blob is composed by Buf: "A Buf is a mutable sequence of (usually unsigned) integers."
+        - so if I go with that, I don't need String, I can just call that Blob or something,
+        they both just mean array of integers basically
+        - Perl 6 Str does Stringy
+            - Str: "String of characters"
+            - Stringy: "Common role for string types (such as Str) and types that can act as strings (such as Cat)."
+- members have probability of being in collection vs being absolute yes or no
+    - absolute yes for Array, Set, Bag, Interval
+- finite vs infinite member count
+    - finite for Array, Set, Bag
+    - infinite for Interval
+        - note, there is also the concept of multi-dimensional intervals, eg a plot of land
+- quantities of units or not
+    - not for Array, Set, Bag, Interval
+    - yes for Quantity, ... see also general case that supports eg years+mons+days etc ... is this symbolic math?
+        - on one hand, Quantity should just be built over,
+        on the other hand, do we consider Blob, Text to implement these APIs
+        in full?
+        - note, Text/Blob are not Quantity, their numbers are nominal or ordinal,
+        emphathetically not cardinal like in a quantity
+- can test if an individual value exists in collection or not with boolean result, including exists within range
+    - yes for Array, Set, Bag, Interval
+- can ask multiplicity of an individual value in collection with numeric result, even on continuous collections (overlapping ranges)
+    - yes for Array, Set (=1), Bag, Interval (=1)
+- what members exist defined by a general predicate expression, like with a type definition, or not
+- can add an individual value to, or remove an individual value from, collection, or not
+- can ask if collection is a super/subset of another, or not
+- can ask if collections are disjoint, partially overlap, or one is contained wholly in another, or not
+- can collections be unioned, intersected, added, differenced, etc
+- can collection be filtered with 'where' or not
+    - in general case, expands its membership predicate with an 'and'
+- can collection be transformed with 'map' or not
+    - in general case, expands its membership predicate with an expression transform, or something?
+        - but normally the 'map' is in terms of individual elements, so may not work there
+- can collection be 'reduced' or not
+- ?fuzzy logic vs not?
+- for numbers, single dimension/real versus multi-dimension/complex/etc
+- ?for numbers, individual value vs range?
+- note, sequence generators in general are related but are optionally built over this,
+not part of it, because they have a state related to the ad-hoc iterating;
+the only sequence generators "built-in" are for Enumerable types like integer
+where the previous value is all you need to know to get the next one
+- On Perl 6 numbers:
+    - "Int objects store integral numbers of arbitrary size. Ints are immutable."
+    - Rat does Rational does Real does Numeric
+    - Rat has 64 bit denom, arbitrary numer; FatRat is also arbitrary denom.
+    - "Rational is the common role for numbers that are stored as pairs of 
+    numerator and denominator. It is parameterized by the types of the numerator and denominator."
+    - Real: "Common role for non-Complex numbers."
+    - Numeric: "Common role for numbers and types that can act as numbers."
+    - Num does Real etc.
+    - "A Num object stores a floating-point number. It is immutable. 
+    On most platforms, it's an IEEE 754 64-bit floating point numbers, aka "double precision"."
+    - Complex does Numeric.
+    - Complex: "Represents a number in the complex plane."
+- In Perl 6, purpose of Cool role is to be either a number or a string as needed,
+so basically like the Perl 5 scalar; numbers and strings compose it.
+- Various math readings say that Fractions is the complement to Integers
+where both are Rationals; likewise, Rationals and Irrationals complement
+under Reals, and Reals plus Imaginaries are disjoint subsets of Complex.
+- See also "complex number venn diagram" and "algebraic number"
+- See also https://en.wikipedia.org/wiki/Algebraic_number and links at bottom.
+- real algebraic number is a subset of real and superset of rational, eg sqrt-2
+- algebraic number is subset of complex where both parts are like the prior,
+something about integral roots of rational coefficients
+- transcendental number is the real or complex that are not algebraic, eg pi
+- So http://mathworld.wolfram.com/Mantissa.html sez
+"For a real number x, the mantissa is defined as the positive fractional 
+part x-|_x_|=frac(x), where |_x_| denotes the floor function.
+For example, for x=3.14159, the mantissa is 0.14159."
+- See http://mathworld.wolfram.com/Floating-PointNumber.html and stuff
+and http://mathworld.wolfram.com/Floating-PointArithmetic.html and stuff.
+- Now that it comes to it, it would seem that how I should be representing
+floating point numbers all along is to include in the value a count of
+significant figures.
+- Regarding a floating-point number, which seems more of a computer concept,
+the leading part is called the "significand" and stuff...
+- So lets make a Float have 4 parts, generalizing an IEEE float:
+    - r - radix (integer >= 2)
+    - p - precision (integer >= 1), in positions in the particular radix, eg in bits or digits
+    - s - significand (integer in -(r^(p-1))..(r^(p-1)))
+    - e - exponent (integer)
+- We normalize so exponent and significand balance out, such that exponent
+has precision subtracted from it to account for significand being an integer
+rather than a fraction or something.
+- So a Float's numeric value is: (s*(r^(-p)))*(r^e)
+    - eg, {r=2,p=2,s=3,e=0} = 3/4 = 0.75
+- But if we do that, the question arises of what should we do if asked to
+do math between values with different radix or precision.
+- Alternately we could skip the precision component and that problem goes away:
+    - s - significand (integer)
+    - r - radix (integer >= 2)
+    - e - exponent (integer)
+- So a Float's numeric value is: s*(r^e)
+    - eg, {s=3,r=2,e=0} = 3
+- But then there's the question of how valuable said type is in practice.
+- Perhaps the simple solution is just to boot Float from core, let extensions
+do it; the generic Fraction can handle it anyway, albeit taking more space
+with values unlikely to appear in normal usage.
+- Extensions have lots of choices, eg any of the above, or even a symbolic, etc.
+- A polynomial always has a rational result for rational variables/constants;
+"A polynomial is an expression that is the sum of a finite number of non-zero terms,
+each term consisting of the product of a constant and a finite number of
+variables raised to whole number powers."
+
+* Err on the side of fewer/larger non-core packages rather than more.
+- The following are generally still part of the Muldis D Plain Text language
+core spec, but some might be better separated / done by the experts, eg Spatial.
+- Muldis_D - the core that everyone should use
+    - all the boolean logic stuff
+    - just numbers that are unlimited-sized and rational
+    - just the simpler math ops especially ones that don't deal in irrationals mostly
+- Muldis_D::Aliases - Unicode aliases for Muldis_D
+- Muldis_D::Plain_Text
+    - parsers and generators for Plain_Text code that respect decorations
+    - only knows ASCII script
+- Muldis_D::Plain_Text::Unicode
+    - extended Muldis_D::Plain_Text that handles Unicode scripts etc also
+- Muldis_D::Math - all numeric (and logic) types and ops not in Muldis_D
+    - particularly everything not in Muldis_D that are common to GP languages
+    - fixed precision or scale rationals/ints
+    - exactly match hardware numbers
+    - scientific notation
+    - IEEE floats matched exactly
+    - complex nums
+    - nonexact math ops, especially listwise ones
+    - algebraic symbolic nums
+    - transcendental symbolic nums
+    - symbolic nums defined by a generic function
+    - trig functions
+    - probability
+    - significant figures
+    - fuzzy logic
+    - doesn't use Unicode
+- Muldis_D::Math::Aliases - if applicable, Unicode aliases for Muldis_D::Math
+- Muldis_D::Text - all character types and ops not in Muldis_D
+    - where knowlege of non-ASCII repertoires and encodings go
+    - Unicode knowledge such as normal forms and encodings
+    - Latin encodings
+    - subset types for eg Unicode, Latin, etc
+    - disjoint types that bundle in national/locale-specific orderings
+- Muldis_D::Temporal - all standard temporal types and ops
+    - continuum - a namespace
+    - epoch
+        - an epoch by itself is just a nominal or a namespace
+        - place or for-what is intrinsicly tied to time also
+    - instant - quantity of time relative to an epoch
+    - duration - quantity of time
+    - knowlege about calendars and timezones and what have you
+    - these are types of Quantity
+    - ops to read the system time
+    - ops to 'sleep' etc
+    - doesn't use Unicode
+- Muldis_D::Spatial - typical complement of spatial/geographic types, ops, etc
+    - what SQL/etc databases usually support
+    - lines, polygons, etc
+    - doesn't use Unicode
+
+* These things should not be part of the Muldis D Plain Text language spec
+but can be other libraries written in the language best by third parties.
+- Something with a complement of units and ops used in physical sciences.
+- Something with more elaborate business or banking related stuff.
+
 * For a generic sequence generator, where they are useful, advancing is one
 operator that returns the generator state, and getting the generated value
 is a separate function on that state value.
