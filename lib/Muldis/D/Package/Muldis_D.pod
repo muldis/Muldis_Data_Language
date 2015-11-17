@@ -192,15 +192,15 @@ Other programming languages may name their corresponding values or
 quasi-values I<null> or I<nil> or I<none> or I<nothing> or I<undef> or
 I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
 
-=head2 coalesce or_else ?!
+=head2 or_else coalesce
 
-    ::MD::coalesce ::= function --> Any <-- (Any, Any)
+    ::MD::or_else ::= function --> Any <-- (Any, Any)
+        is {associative,idempotent}
         : (\.0 --> \@Excuse ?? \.1 !! \.0);
 
-    ::MD::or_else ::= alias of coalesce;
-    ::MD::"?!"    ::= alias of coalesce;
+    ::MD::coalesce ::= alias of or_else;
 
-The function C<coalesce> aka C<or_else> aka C<?!> results in its C<0>
+The function C<or_else> aka C<coalesce> results in its C<0>
 argument iff the latter is not an C<Excuse>, and results in its C<1>
 argument otherwise.  This function is designed to be chained for any number
 of sequenced values in order to pick the first non-C<Excuse> in a list.
@@ -235,7 +235,7 @@ consistent way to define an C<Interval> that is partially or completely
 unbounded, and to use as identity values for chained order-comparisons.
 
 C<Orderable> is composed, directly or indirectly, by: C<Neg_Inf>,
-C<Pos_Inf>, C<Enumerable>, C<Boolean>, C<Integral>, C<Integer>,
+C<Pos_Inf>, C<Bicessable>, C<Boolean>, C<Integral>, C<Integer>,
 C<Positional>, C<Array>, C<String>, C<Blob>, C<Text>.
 
 =head2 Neg_Inf -∞
@@ -389,43 +389,43 @@ arguments sorted I<in order>; the function's result is the same as its
 topic when the arguments are already in order, and the reverse of that
 otherwise, meaning the values of C<0> and C<1> are swapped.
 
-=head1 ENUMERABLE DATA TYPES
+=head1 BICESSABLE DATA TYPES
 
-=head2 Enumerable
+=head2 Bicessable
 
-    ::MD::Enumerable ::= interface
+    ::MD::Bicessable ::= interface
         composes Orderable and_provides_its_default
         requires_implements {in_order,pred,succ};
 
-The interface contract C<Enumerable> is infinite.  An C<Enumerable> value
+The interface contract C<Bicessable> is infinite.  A C<Bicessable> value
 is an C<Orderable> value for which, using the same canonical total order
-for its type, there exists a definitive I<predecessor> or I<successor>
-value, at least where the given value isn't the first or last value on the
-line respectively.  Similarly, one can take any two values of an
-C<Enumerable> type and produce an ordered list of all of that type's values
+for its type, there exists definitive I<predecessor> and I<successor>
+values, at least where the given value isn't the first or last value on the
+line respectively.  Similarly, one can take any two values of a
+C<Bicessable> type and produce an ordered list of all of that type's values
 which are on the line between those two values.  A primary quality of a
-type that is C<Orderable> but not C<Enumerable> is that you can take any
+type that is C<Orderable> but not C<Bicessable> is that you can take any
 two values of that type and then find a third value of that type which lies
-between the first two on the line; by definition for an C<Enumerable> type,
+between the first two on the line; by definition for a C<Bicessable> type,
 there is no third value between one of its values and that value's
 predecessor or successor value.  Other programming languages may name their
 corresponding types I<ordinal> or categorically as I<enum>.  Note that
 while a generic rational numeric type may qualify as an ordinal type by
 some definitions of I<ordinal>, since it is possible to count all the
 rationals if arranged a particular way, these types would not qualify as
-C<Enumerable> here when that ordering is not the same as the one used for
+C<Bicessable> here when that ordering is not the same as the one used for
 the same type's C<Orderable> comparisons.  The default and minimum and
-maximum values of C<Enumerable> are the same as those of C<Orderable>.
-C<Enumerable> is composed, directly or indirectly, by: C<Boolean>,
+maximum values of C<Bicessable> are the same as those of C<Orderable>.
+C<Bicessable> is composed, directly or indirectly, by: C<Boolean>,
 C<Integral>, C<Integer>.
 
-For some C<Enumerable> types, there is the concept of a I<quantum> or
+For some C<Bicessable> types, there is the concept of a I<quantum> or
 I<step size>, where every consecutive pair of values on that type's value
 line are conceptually spaced apart at equal distances; this distance would
 be the quantum, and all steps along the value line are at exact multiples
-of that quantum.  However, C<Enumerable> types in general don't need to be
+of that quantum.  However, C<Bicessable> types in general don't need to be
 like this, and there can be different amounts of conceivable distance
-between consecutive values; an C<Enumerable> type is just required to know
+between consecutive values; a C<Bicessable> type is just required to know
 where all the values are.  For example, C<Integer> has a quantum while a
 type consisting just of prime integers does not.
 
@@ -434,12 +434,13 @@ I<successor> for non-negative integers only, and some other programming
 languages extend this concept to real numbers with the meaning I<minus one>
 and I<plus one> respectively, Muldis D only formally associates these terms
 with the quantum of I<one> for types specifically representing integers;
-for C<Enumerable> types in general, the terms just mean prior or next
+for C<Bicessable> types in general, the terms just mean prior or next
 values and should not be conceptualized as mathematical operations.
 
 =head2 pred
 
-    ::MD::pred::"" ::= function virtual --> {Enumerable, Neg_Inf} <-- (Enumerable);
+    ::MD::pred::"" ::= function virtual
+        --> {Bicessable, Neg_Inf} <-- (Bicessable);
 
 The virtual function C<pred> results in the I<predecessor> value of its
 C<0> argument, or in C<Neg_Inf> if there is none.  Other programming
@@ -447,7 +448,8 @@ languages may name their corresponding operators I<prior> or I<previous>.
 
 =head2 succ
 
-    ::MD::succ::"" ::= function virtual --> {Enumerable, Pos_Inf} <-- (Enumerable);
+    ::MD::succ::"" ::= function virtual
+        --> {Bicessable, Pos_Inf} <-- (Bicessable);
 
 The virtual function C<succ> results in the I<successor> value of its
 C<0> argument, or in C<Pos_Inf> if there is none.  Other programming
@@ -517,7 +519,7 @@ it results in C<False>.
 
     ::MD::Boolean::"" ::= selection where (topic -->^ FDN__isa_Boolean)
         default (False)
-        composes {Enumerable, Boolable and_provides_its_default};
+        composes {Bicessable, Boolable and_provides_its_default};
 
     ::MD::Bool ::= alias of Boolean;
 
@@ -525,7 +527,7 @@ The selection contract C<Boolean> aka C<Bool> represents the finite Muldis
 D Foundation type I<FDN__Boolean>.  A C<Boolean> value is a general purpose
 2-valued logic boolean or I<truth value>, or specifically it is one of the
 2 values C<False> and C<True>.  Its default value is C<False>.  C<Boolean>
-is both C<Orderable> and C<Enumerable>; its minimum value is C<False> and
+is both C<Orderable> and C<Bicessable>; its minimum value is C<False> and
 its maximum value is C<True>.  Other programming languages frequently don't
 have a dedicated boolean type but rather consider values of other types,
 typically integer types, to be I<false> or I<true>.
@@ -565,7 +567,7 @@ function C<in_order> for the composing type C<Boolean>.
         implements 2::""
         : (\.0 ?? False !! Neg_Inf());
 
-The function C<pred::Boolean> implements the C<Enumerable> virtual
+The function C<pred::Boolean> implements the C<Bicessable> virtual
 function C<pred> for the composing type C<Boolean>.
 
 =head2 succ (Boolean)
@@ -574,7 +576,7 @@ function C<pred> for the composing type C<Boolean>.
         implements 2::""
         : (!\.0 ?? True !! Pos_Inf());
 
-The function C<succ::Boolean> implements the C<Enumerable> virtual
+The function C<succ::Boolean> implements the C<Bicessable> virtual
 function C<succ> for the composing type C<Boolean>.
 
 =head2 so (Boolean)
@@ -883,7 +885,7 @@ I<TODO.>
 =head2 Integral
 
     ::MD::Integral ::= interface
-        composes {Enumerable and_provides_its_default,
+        composes {Bicessable and_provides_its_default,
             Numeric and_provides_its_default}
         requires_implements {in_order,pred,succ,so,...};
 
@@ -897,7 +899,7 @@ I<TODO.  Also, do something about the unimplemented Numeric operators.>
     ::MD::"--" ::= alias of pred::Integral;
 
 The virtual function C<pred::Integral> aka C<--> implements the
-C<Enumerable> virtual function C<pred> for the composing type C<Integral>. 
+C<Bicessable> virtual function C<pred> for the composing type C<Integral>.
 Other programming languages may name their corresponding operators
 I<decrement>.
 
@@ -909,7 +911,7 @@ I<decrement>.
     ::MD::"++" ::= alias of succ::Integral;
 
 The virtual function C<succ::Integral> aka C<++> implements the
-C<Enumerable> virtual function C<succ> for the composing type C<Integral>. 
+C<Bicessable> virtual function C<succ> for the composing type C<Integral>.
 Other programming languages may name their corresponding operators
 I<increment>.
 
@@ -929,7 +931,7 @@ the infinite Muldis D Foundation type I<FDN__Integer_Inf>.  An C<Integer>
 value is a general purpose integer exact numeric, which explicitly does not
 represent any kind of thing in particular, neither cardinal nor ordinal nor
 nominal.  Its default value is C<0>.  C<Integer> is both C<Orderable> and
-C<Enumerable>; it has no minimum or maximum value.  Other programming
+C<Bicessable>; it has no minimum or maximum value.  Other programming
 languages may name their corresponding types I<BigInt>.
 
 I<TODO.  Also, do something about the unimplemented Numeric operators.>
@@ -965,7 +967,7 @@ function C<in_order> for the composing type C<Integer>.
         implements 2::Integral
         : (\.0 - 1);
 
-The function C<pred::Integer> implements the C<Enumerable>/C<Integral>
+The function C<pred::Integer> implements the C<Bicessable>/C<Integral>
 virtual function C<pred> aka C<--> for the composing type C<Integer>.
 
 =head2 succ (Integer)
@@ -974,7 +976,7 @@ virtual function C<pred> aka C<--> for the composing type C<Integer>.
         implements 2::Integral
         : (\.0 + 1);
 
-The function C<succ::Integer> implements the C<Enumerable>/C<Integral>
+The function C<succ::Integer> implements the C<Bicessable>/C<Integral>
 virtual function C<succ> aka C<++> for the composing type C<Integer>.
 
 =head2 so (Integer)

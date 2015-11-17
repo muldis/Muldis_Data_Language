@@ -123,6 +123,7 @@ resources of everyone else.
     - in general case, expands its membership predicate with an expression transform, or something?
         - but normally the 'map' is in terms of individual elements, so may not work there
 - can collection be 'reduced' or not
+- note C# uses enumerator/enumerable for what Perl 6 calls iterator/iterable
 - ?fuzzy logic vs not?
 - for numbers, single dimension/real versus multi-dimension/complex/etc
 - ?for numbers, individual value vs range?
@@ -229,6 +230,17 @@ core spec, but some might be better separated / done by the experts, eg Spatial.
     - Latin encodings
     - subset types for eg Unicode, Latin, etc
     - disjoint types that bundle in national/locale-specific orderings
+- Muldis_D::Stream - read or write generic filehandles
+    - name subject to change
+    - read or write STDIN, STDOUT, STDERR etc
+    - read or write arbitrary filehandles
+    - read or write arbitrary stream-like interfaces
+    - this is all procedural code more or less
+    - fundamentally all streams are in terms of integers or bytes or etc
+    - border of Muldis D with the general system has no concept of characters,
+    just bytes etc
+    - this module itself doesn't know anything about character encodings,
+    rather layers over top / other modules do that; aka doesn't use Unicode
 - Muldis_D::Temporal - all standard temporal types and ops
     - continuum - a namespace
     - epoch
@@ -239,6 +251,13 @@ core spec, but some might be better separated / done by the experts, eg Spatial.
     - knowlege about calendars and timezones and what have you
     - these are types of Quantity
     - ops to read the system time
+        - specific type of result is implementation-dependent, composes some interface
+        - the key thing is that result is WHAT WE ACTUALLY KNOW from the
+        system, which may for example be a UNIX_Time wrapped-integral value
+        - result explicitly gives calendar, time zone, etc, where known, so
+        much as is needed to qualify the actual timestamp payload;
+        a timestamp without this info is treated as a 'generic floating
+        timestamp from local clock' or some such
     - ops to 'sleep' etc
     - doesn't use Unicode
 - Muldis_D::Spatial - typical complement of spatial/geographic types, ops, etc
@@ -256,6 +275,54 @@ operator that returns the generator state, and getting the generated value
 is a separate function on that state value.
 - Idea, perhaps seq gen ops could also emit values via write-only
 message-sending where that may be useful, which may be often.
+- A generator is expressly not like an Enumerable because the the former can
+go forwards/nextward only, and it expressly isn't expected to be able to go
+backwards; moreover, a generator has a concept of a 'first' value, kind of;
+actually to be more accurate.
+- Make Generator an interface requiring composers to implement these 2 methods:
+    - next_state(Generator) --> Generator
+    - nth_next_state(Generator) --> Generator
+    - curr_asset(Generator) --> Any
+- Exactly one of nth_/next_state can be virtual and the other defined over
+it, but for general efficiency purposes we would likely make nth_next_state
+the virtual so composers can jump more efficiently as applicable.
+- For a type composing Generator, its own generic selector routine is one
+and the same as the generator initializer.
+- Fundamentally the only requirement of a Generator value is to be a state
+that tells next_state() everything it needs to know to produce both the
+next state and, indirectly, all later states.
+- A generic Generator composer, that is a single type capable of
+representing a variety of different generated sequences in one type, would
+in general have a Reference to a next_state-alike function plus the
+necessary state-alike to seed it with, that is it is a wrapper.
+- But in the general case a Generator composer would be a distinct type for each
+generated sequence, and the function would be implied by its composer type.
+- We likely would make any Enumerable types also compose Generator just
+because; that is, Enumerable itself will compose Generator, and next_state()
+plus current_asset() would alias to succ() and return-argument respectively.
+- A Generator could be considered a lazily implemented sequence potentially,
+but that = is not expected to work on it like it would with an Array, where
+equality means the exact same value list is produced and expects such normalization.
+- A Generator composer could optionally take hints at initial selection
+time on how it intends to be used, eg about how many values it is likely to
+be asked for (eg 10 vs a million), so then if it needs to make different
+decisions earlier on in order to support later iterations, eg if it is
+calculating digits of pi and needs enough precision up front, it can.
+- Need to look up Perl 6 Iterator and Iterable again for guidance.
+- Lookup "list comprehension" again also for guidance.
+- IT APPEARS THAT LIST COMPREHENSION IS NOT THE SAME THING per se;
+that is, set-builder notation seems to start with a list,
+then perform a map combined with a filter to produce another list,
+whereas the generator I defined so far is either infinite or the stopping
+condition is defined in the function.
+- That being said, list comprehension examples usually start with a range,
+such as 1..10 or 1..inf, to define the source list; that is a list or an
+iterator, so at least that part is definitely related to the generator, and
+the generator can subsume the other stuff too.
+- Lets just say the general case of list comprehension is a higher level
+construct that can be built from a variety of interchangeable components or
+combinations, rather than being a more fundamental feature itself;
+this is similar to 'summarize' et al.
 
 * NEW: In Plain_Text, special case the chars '-','.','/' only when they are
 in front of or between digit chars, in which case they are part of the
@@ -1003,6 +1070,10 @@ See https://en.wikipedia.org/wiki/MUMPS for moar.
 http://motherboard.vice.com/read/meet-mumps-the-archaic-health-care-programming-language-that-predicted-big-data-2
 MUMPS stores data in arrays, and some arrays can be persistant on server
 and shared, those arrays use different variable name syntax.
+
+* Postgres has these:
+- insert into mytable values (default) returning my_id;
+- INSERT INTO foo DEFAULT VALUES;
 
 * Where reasonably possible, make system-defined dyadic operators come in
 pairs when they are not commutative so users have more choice on how they
