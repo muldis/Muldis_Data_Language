@@ -205,6 +205,17 @@ argument iff the latter is not an C<Excuse>, and results in its C<1>
 argument otherwise.  This function is designed to be chained for any number
 of sequenced values in order to pick the first non-C<Excuse> in a list.
 
+=head2 and_then
+
+    ::MD::and_then ::= function --> Any <-- (Any, Any)
+        is {associative,idempotent}
+        : (\.0 --> \@Excuse ?? \.0 !! \.1);
+
+The function C<and_then> results in its C<0> argument iff the latter is an
+C<Excuse>, and results in its C<1> argument otherwise.  This function is
+designed to be chained for any number of sequenced values in order to pick
+the first C<Excuse> in a list.
+
 =head1 ORDERABLE DATA TYPES
 
 =head2 Orderable
@@ -389,13 +400,105 @@ arguments sorted I<in order>; the function's result is the same as its
 topic when the arguments are already in order, and the reverse of that
 otherwise, meaning the values of C<0> and C<1> are swapped.
 
+=head1 SUCCESSABLE DATA TYPES
+
+=head2 Successable
+
+    ::MD::Successable ::= interface
+        requires_implements {asset,succ};
+
+The interface contract C<Successable> is infinite.  A C<Successable> value
+is a member of a conceptually noncontiguous totally ordered type; it has a
+definitive I<successor> value of that type, at least where the given value
+isn't the last value.
+
+The primary reason for C<Successable> is to provide an easy consistent and
+terse API for a generator of arbitrary sequences of values of any type.  In
+this context, a C<Successable> value defines a complete self-contained
+I<state> for a sequence generator, which is everything the generator needs
+to know to both emit a I<current> value, which we call the I<asset>, as
+well as determine all subsequent values of the sequence without any further
+input.  To keep the fundamental general case API simple, there is just the
+a monadic function to derive the next state from the current one, and a
+monadic function to extract the asset from the current state, so actually
+reading a sequence of values requires 2 function calls per value in the
+general case.  For some trivial cases of C<Successable>, the I<state> and
+I<asset> are one and the same, so just 1 function call per value is needed.
+Keep in mind that asset values may repeat in a sequence, so it is not them
+but rather the state values that have the total order property.  Other
+programming languages may name their corresponding types I<sequence> or
+I<iterator> or I<enumerator>.
+
+C<Successable> is a less rigorous analogy to C<Bicessable>, where the
+latter also requires the ability to produce the I<predecessor> value of the
+given value, as well as the ability to determine if 2 arbitrary values are
+in order.  While conceptually a C<Successable> has those features, formally
+it is not required to because for some types it may be onerous or
+unnecessary for its mandate to support those features; for example,
+producing a successor state may disgard information otherwise needed to
+recall any of its predecessors.
+
+The default and minimum and maximum values of C<Successable> are the same
+as those of C<Orderable>.  C<Successable> is composed, directly or
+indirectly, by: C<Bicessable>, C<Boolean>, C<Integral>, C<Integer>,
+C<Positional>, C<Array>, C<Interval>.
+
+C<Successable> is intended to be a generalized tool for performing I<list
+comprehension> or I<set comprehension>.  The typically idiomatic and more
+efficient way to do many kinds of such I<comprehensions> is to use the
+features of various C<Homogeneous> types to map an existing list or set to
+another using generic element mapping and filtering functions, such as a
+list of even integers less than a hundred.  With those cases, the
+map/filter approach can permit processing elements in any order or in
+parallel, and avoiding unnecessary intermediate values.  In contrast, the
+primary intended uses of C<Successable> is when either you want to produce
+or process a potentially infinite-sized list (lazily) or especially produce
+a sequence with uneven step sizes, such as an arbitrary number of
+Fibonacci.  This is for cases where it may be necessary to calculate all
+the intermediate values in order to arrive at a desired nth one, and doing
+them out of sequence or in parallel may not be an option.
+
+=head2 asset
+
+    ::MD::asset::"" ::= function virtual --> Any <-- (Successable);
+
+The virtual function C<asset> results in the I<asset> of its C<0> argument,
+which for trivial cases may simply be that same argument.
+
+=head2 succ
+
+    ::MD::succ::"" ::= function virtual
+        --> {Successable, Pos_Inf} <-- (Successable);
+
+The virtual function C<succ> results in the I<successor> value of its
+C<0> argument, or in C<Pos_Inf> if there is none.  Other programming
+languages may name their corresponding operators I<next>.
+
+=head2 nth_succ
+
+    ::MD::nth_succ ::= function
+        --> {Successable, Pos_Inf} <-- (Successable, Integer_NN)
+    : (
+        if !?\.1 then
+            \.0
+        else
+            if (s ::= succ \.0) --> \@Excuse then
+                s
+            else
+                s nth_succ --\.1
+    );
+
+The function C<nth_succ> results in the Nth I<successor> value of its C<0>
+argument, where N is its C<1> argument, or in C<Pos_Inf> if there is none.
+
 =head1 BICESSABLE DATA TYPES
 
 =head2 Bicessable
 
     ::MD::Bicessable ::= interface
-        composes Orderable and_provides_its_default
-        requires_implements {in_order,pred,succ};
+        composes {Orderable and_provides_its_default,
+            Successable and_provides_its_default}
+        requires_implements {in_order,asset,pred,succ};
 
 The interface contract C<Bicessable> is infinite.  A C<Bicessable> value
 is an C<Orderable> value for which, using the same canonical total order
@@ -446,14 +549,22 @@ The virtual function C<pred> results in the I<predecessor> value of its
 C<0> argument, or in C<Neg_Inf> if there is none.  Other programming
 languages may name their corresponding operators I<prior> or I<previous>.
 
-=head2 succ
+=head2 nth_pred
 
-    ::MD::succ::"" ::= function virtual
-        --> {Bicessable, Pos_Inf} <-- (Bicessable);
+    ::MD::nth_pred ::= function
+        --> {Bicessable, Neg_Inf} <-- (Bicessable, Integer_NN)
+    : (
+        if !?\.1 then
+            \.0
+        else
+            if (s ::= pred \.0) --> \@Excuse then
+                s
+            else
+                s nth_pred --\.1
+    );
 
-The virtual function C<succ> results in the I<successor> value of its
-C<0> argument, or in C<Pos_Inf> if there is none.  Other programming
-languages may name their corresponding operators I<next>.
+The function C<nth_pred> results in the Nth I<predecessor> value of its C<0>
+argument, where N is its C<1> argument, or in C<Neg_Inf> if there is none.
 
 =head1 BOOLABLE DATA TYPES
 
@@ -561,6 +672,16 @@ integer 1 to represent I<true>.
 The function C<in_order::Boolean> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Boolean>.
 
+=head2 asset (Boolean)
+
+    ::MD::asset::Boolean ::= function --> Boolean <-- (Boolean)
+        implements 2::""
+        : (\.0);
+
+The function C<asset::Boolean> simply results in its C<0> argument.
+This function implements the C<Successable> virtual function C<asset> for
+the composing type C<Boolean>.
+
 =head2 pred (Boolean)
 
     ::MD::pred::Boolean ::= function --> {False, Neg_Inf} <-- (Boolean)
@@ -576,7 +697,7 @@ function C<pred> for the composing type C<Boolean>.
         implements 2::""
         : (!\.0 ?? True !! Pos_Inf());
 
-The function C<succ::Boolean> implements the C<Bicessable> virtual
+The function C<succ::Boolean> implements the C<Successable> virtual
 function C<succ> for the composing type C<Boolean>.
 
 =head2 so (Boolean)
@@ -891,6 +1012,16 @@ I<TODO.>
 
 I<TODO.  Also, do something about the unimplemented Numeric operators.>
 
+=head2 asset (Integral)
+
+    ::MD::asset::Integral ::= function --> Integral <-- (Integral)
+        implements 2::""
+        : (\.0);
+
+The function C<asset::Integral> simply results in its C<0> argument.
+This function implements the C<Successable> virtual function C<asset> for
+the composing type C<Integral>.
+
 =head2 pred (Integral)
 
     ::MD::pred::Integral ::= function virtual --> Integral <-- (Integral)
@@ -911,7 +1042,7 @@ I<decrement>.
     ::MD::"++" ::= alias of succ::Integral;
 
 The virtual function C<succ::Integral> aka C<++> implements the
-C<Bicessable> virtual function C<succ> for the composing type C<Integral>.
+C<Successable> virtual function C<succ> for the composing type C<Integral>.
 Other programming languages may name their corresponding operators
 I<increment>.
 
@@ -976,7 +1107,7 @@ virtual function C<pred> aka C<--> for the composing type C<Integer>.
         implements 2::Integral
         : (\.0 + 1);
 
-The function C<succ::Integer> implements the C<Bicessable>/C<Integral>
+The function C<succ::Integer> implements the C<Successable>/C<Integral>
 virtual function C<succ> aka C<++> for the composing type C<Integer>.
 
 =head2 so (Integer)
