@@ -132,19 +132,19 @@ arguments C<0> and C<1> are exactly the same value, and C<True> otherwise.
 Other programming languages may name their corresponding operators
 I<< <> >> or I<!===> or or I<~=> or I<^=> or I<ne>.
 
-=head2 isa
+=head2 is_a
 
-    ::MD::isa ::= function --> Boolean <-- (Any, Reference)
+    ::MD::is_a ::= function --> Boolean <-- (Any, Reference)
         : (\.0 --> \.1);
 
-The function C<isa> results in C<True> iff its C<0> argument is a
+The function C<is_a> results in C<True> iff its C<0> argument is a
 member of the type specified by its C<1> argument, and C<False> otherwise.
 
-=head2 not_isa
+=head2 not_is_a
 
-    ::MD::not_isa ::= function negates isa;
+    ::MD::not_is_a ::= function negates is_a;
 
-The function C<not_isa> results in C<False> iff its C<0> argument is a
+The function C<not_is_a> results in C<False> iff its C<0> argument is a
 member of the type specified by its C<1> argument, and C<True> otherwise.
 
 =head2 default
@@ -204,6 +204,8 @@ The function C<or_else> aka C<coalesce> results in its C<0>
 argument iff the latter is not an C<Excuse>, and results in its C<1>
 argument otherwise.  This function is designed to be chained for any number
 of sequenced values in order to pick the first non-C<Excuse> in a list.
+Other programming languages may name their corresponding operators
+I<??> or I<//>.
 
 =head2 and_then
 
@@ -628,7 +630,7 @@ it results in C<False>.
 
 =head2 Boolean Bool
 
-    ::MD::Boolean::"" ::= selection where (topic -->^ FDN__isa_Boolean)
+    ::MD::Boolean::"" ::= selection where (topic -->^ FDN__is_a_Boolean)
         default (False)
         composes {Bicessable, Boolable and_provides_its_default};
 
@@ -1050,7 +1052,7 @@ I<increment>.
 
 =head2 Integer_Inf Integer Int
 
-    ::MD::Integer_Inf ::= selection where (topic -->^ FDN__isa_Integer_Inf)
+    ::MD::Integer_Inf ::= selection where (topic -->^ FDN__is_a_Integer_Inf)
         default (0)
         composes Integral and_provides_its_default;
 
@@ -1319,10 +1321,10 @@ I<TODO.  Result is true when no member evaluates to true.>
 
 I<TODO.  Result is true when no member evaluates to false.>
 
-=head2 all_isa
+=head2 all_is_a
 
-    ::MD::all_isa ::= function --> Boolean <-- (Homogeneous, Reference)
-        : (\.0 all (\@isa assuming topic ^ \@(1)));
+    ::MD::all_is_a ::= function --> Boolean <-- (Homogeneous, Reference)
+        : (\.0 all (\@is_a assuming topic ^ \@(1)));
 
 I<TODO.>
 
@@ -1516,7 +1518,7 @@ I<TODO.>
 
 =head2 Array_Inf Array
 
-    ::MD::Array_Inf ::= selection where (topic -->^ FDN__isa_Array_Inf)
+    ::MD::Array_Inf ::= selection where (topic -->^ FDN__is_a_Array_Inf)
         default ([])
         composes Positional and_provides_its_default;
 
@@ -1807,7 +1809,7 @@ I<TODO.>
 
 =head2 Bag_Inf Bag
 
-    ::MD::Bag_Inf ::= selection where (topic -->^ FDN__isa_Bag_Inf)
+    ::MD::Bag_Inf ::= selection where (topic -->^ FDN__is_a_Bag_Inf)
         default (\+{})
         composes Homogeneous;
 
@@ -2040,7 +2042,7 @@ I<TODO.>
 
 =head2 Tuple_Inf Tuple
 
-    ::MD::Tuple_Inf ::= selection where (topic -->^ FDN__isa_Tuple_Inf)
+    ::MD::Tuple_Inf ::= selection where (topic -->^ FDN__is_a_Tuple_Inf)
         default (\%())
         composes {Accessible and_provides_its_default,
             Attributive and_provides_its_default};
@@ -2259,7 +2261,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
         _Asset ::= selection of Tuple where
         (
             if topic ^?= \%( heading : \@Attr_Names, body : \@Bag ) then
-                if \.body all_isa \@Tuple then
+                if \.body all_is_a \@Tuple then
                     \.body all (\@"^?=" assuming \.heading)
                 else
                     False
@@ -2290,7 +2292,7 @@ single-tuple C<Tuple_Bag> value.
 
 =head2 Capsule
 
-    ::MD::Capsule::"" ::= selection where (topic -->^ FDN__isa_Capsule)
+    ::MD::Capsule::"" ::= selection where (topic -->^ FDN__is_a_Capsule)
         default (select_Capsule(False, False));
 
 The selection contract C<Capsule> represents the infinite Muldis D
@@ -2337,7 +2339,7 @@ I<TODO.>
 
 =head2 External
 
-    ::MD::External::"" ::= selection where (topic -->^ FDN__isa_External)
+    ::MD::External::"" ::= selection where (topic -->^ FDN__is_a_External)
         default (-->^ FDN__default_External);
 
 The selection contract C<External> represents the infinite Muldis D
@@ -2373,7 +2375,7 @@ I<TODO.>
 =head2 Source_Code::Package_List
 
     ::MD::Source_Code::Package_List ::= selection of Array
-        where (topic all_isa (selection of {Package, Decoration} default Package()));
+        where (topic all_is_a (selection of {Package, Decoration} default Package()));
 
 I<TODO.>
 
