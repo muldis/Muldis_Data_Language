@@ -591,7 +591,7 @@ written in a similar style but with more type safety as any treatment of a
 value as a C<Boolean> must be made explicit.
 
 C<Boolable> is composed, directly or indirectly, by: C<Boolean>,
-C<Numeric>, C<Integral>, C<Integer>, C<Homogeneous>, C<Positional>,
+C<Numerical>, C<Integral>, C<Integer>, C<Homogeneous>, C<Positional>,
 C<Array>, C<String>, C<Blob>, C<Text>, C<Setty>, C<Set>, C<Bag>,
 C<Relation>, C<Tuple_Bag>.
 
@@ -852,16 +852,7 @@ The function C<nif> aka C<not_if> aka C<↚> performs a logical I<converse
 nonimplication>; it results in C<True> when its C<0> argument is C<False>
 and its C<1> argument is C<True>, and C<False> otherwise.
 
-=head1 NUMERIC DATA TYPES
-
-=head2 Numeric
-
-    ::MD::Numeric ::= interface
-        composes Boolable
-        requires_implements {so,opposite,reciprocal,modulus,
-            plus,minus,frac_divide,whole_divide,...};
-
-I<TODO.>
+=head1 ROUNDING INSTRUCTION DATA TYPES
 
 =head2 Round_Meth
 
@@ -883,25 +874,36 @@ I<TODO.>
 
 I<TODO.  Also, review most appropriate values for the constants.>
 
-=head2 so (Numeric)
+=head1 NUMERICAL DATA TYPES
 
-    ::MD::so::Numeric ::= function virtual --> Boolean <-- (Numeric)
+=head2 Numerical
+
+    ::MD::Numerical ::= interface
+        composes Boolable
+        requires_implements {so,opposite,reciprocal,modulus,
+            plus,minus,frac_divide,whole_divide,...};
+
+I<TODO.>
+
+=head2 so (Numerical)
+
+    ::MD::so::Numerical ::= function virtual --> Boolean <-- (Numerical)
         implements 2::"";
 
-The function C<so::Numeric> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> for the composing type C<Numeric>.
+The function C<so::Numerical> ...  This function implements the C<Boolable>
+virtual function C<so> aka C<?> for the composing type C<Numerical>.
 
 I<TODO.>
 
 =head2 is_zero
 
-    ::MD::is_zero ::= function negates so::Numeric;
+    ::MD::is_zero ::= function negates so::Numerical;
 
 I<TODO.>
 
 =head2 opposite
 
-    ::MD::opposite::"" ::= function virtual --> Numeric <-- (Numeric);
+    ::MD::opposite::"" ::= function virtual --> Numerical <-- (Numerical);
 
     ::MD::additive_inverse ::= alias of opposite;
 
@@ -909,7 +911,7 @@ I<TODO.>
 
 =head2 reciprocal
 
-    ::MD::reciprocal::"" ::= function virtual --> Numeric <-- (Numeric)
+    ::MD::reciprocal::"" ::= function virtual --> Numerical <-- (Numerical)
         requires (?\.0);
 
     ::MD::multiplicative_inverse ::= alias of reciprocal;
@@ -918,7 +920,7 @@ I<TODO.>
 
 =head2 modulus abs
 
-    ::MD::modulus::"" ::= function virtual --> Numeric <-- (Numeric);
+    ::MD::modulus::"" ::= function virtual --> Numerical <-- (Numerical);
 
     ::MD::abs ::= alias of modulus;
 
@@ -926,7 +928,7 @@ I<TODO.>
 
 =head2 plus +
 
-    ::MD::plus::"" ::= function virtual --> Numeric <-- (Numeric, Numeric);
+    ::MD::plus::"" ::= function virtual --> Numerical <-- (Numerical, Numerical);
 
     ::MD::"+" ::= alias of plus;
 
@@ -934,20 +936,20 @@ I<TODO.>
 
 =head2 minus
 
-    ::MD::minus::"" ::= function virtual --> Numeric <-- (Numeric, Numeric);
+    ::MD::minus::"" ::= function virtual --> Numerical <-- (Numerical, Numerical);
 
 I<TODO.>
 
 =head2 -
 
-    ::MD::"-" ::= function --> Numeric <-- {(Numeric), (Numeric, Numeric)}
+    ::MD::"-" ::= function --> Numerical <-- {(Numerical), (Numerical, Numerical)}
         : (topic --> (degree(topic) = 1 ?? \@opposite !! \@minus));
 
 I<TODO.>
 
 =head2 modulus_minus abs_minus |-|
 
-    ::MD::modulus_minus ::= function --> Numeric <-- (Numeric, Numeric)
+    ::MD::modulus_minus ::= function --> Numerical <-- (Numerical, Numerical)
         : (modulus topic --> \@minus);
 
     ::MD::abs_minus ::= alias of modulus_minus;
@@ -957,7 +959,7 @@ I<TODO.>
 
 =head2 times *
 
-    ::MD::times::"" ::= function virtual --> Numeric <-- (Numeric, Numeric);
+    ::MD::times::"" ::= function virtual --> Numerical <-- (Numerical, Numerical);
 
     ::MD::"*" ::= alias of times;
 
@@ -966,7 +968,7 @@ I<TODO.>
 =head2 frac_divide /
 
     ::MD::frac_divide::"" ::= function virtual
-        --> Numeric <-- (Numeric, Numeric)
+        --> Numerical <-- (Numerical, Numerical)
         requires (?\.1);
 
     ::MD::"/" ::= alias of frac_divide;
@@ -976,7 +978,7 @@ I<TODO.>
 =head2 whole_divide div
 
     ::MD::whole_divide::"" ::= function virtual
-        --> Numeric <-- (Numeric, Numeric, Round_Meth)
+        --> Numerical <-- (Numerical, Numerical, Round_Meth)
         requires (?\.1);
 
     ::MD::div ::= alias of whole_divide;
@@ -986,7 +988,7 @@ I<TODO.>
 =head2 modulo mod
 
     ::MD::modulo::"" ::= function
-        --> Numeric <-- (Numeric, Numeric, Round_Meth)
+        --> Numerical <-- (Numerical, Numerical, Round_Meth)
         requires (?\.1)
         : (\.0 - (\.1 * topic --> \@div));
 
@@ -997,7 +999,7 @@ I<TODO.>
 =head2 divide_and_modulo
 
     ::MD::divide_and_modulo::"" ::= function
-        --> (Numeric, Numeric) <-- (Numeric, Numeric, Round_Meth)
+        --> (Numerical, Numerical) <-- (Numerical, Numerical, Round_Meth)
         requires (?\.1)
         : (\%(topic --> \@div, topic --> \@mod));
 
@@ -1009,10 +1011,10 @@ I<TODO.>
 
     ::MD::Integral ::= interface
         composes {Bicessable and_provides_its_default,
-            Numeric and_provides_its_default}
+            Numerical and_provides_its_default}
         requires_implements {in_order,pred,succ,so,...};
 
-I<TODO.  Also, do something about the unimplemented Numeric operators.>
+I<TODO.  Also, do something about the unimplemented Numerical operators.>
 
 =head2 asset (Integral)
 
@@ -1067,7 +1069,7 @@ nominal.  Its default value is C<0>.  C<Integer> is both C<Orderable> and
 C<Bicessable>; it has no minimum or maximum value.  Other programming
 languages may name their corresponding types I<BigInt>.
 
-I<TODO.  Also, do something about the unimplemented Numeric operators.>
+I<TODO.  Also, do something about the unimplemented Numerical operators.>
 
 =head2 Integer_NN
 
