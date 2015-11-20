@@ -904,7 +904,8 @@ The default value of C<Round_Meth> is C<To_Zero>, which is the simplest.
         requires_implements {so
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
-            ,fractional_divided_by,integral_divided_by};
+            ,fractional_divided_by,integral_divided_by
+            ,integral_power,integral_nn_power};
 
 The interface contract C<Numerical> is infinite.  A C<Numerical> value
 either is a simple number of some kind or is something that can act as a
@@ -939,6 +940,13 @@ attempting to divide a simple number by a simple, unsigned, number zero.
 Note that IEEE floating-point standards define a negative or positive
 infinity result value when dividing by an explicitly signed (negative or
 positive) zero, but the Muldis D core package lacks those concepts.
+
+=head2 Excuse::Zero_To_The_Zero
+
+    ::MD::Excuse::Zero_To_The_Zero ::= constant (\@0) composes Excuse;
+
+The constant C<Excuse::Zero_To_The_Zero> represents the I<undefined> result
+of attempting to exponentiate a number zero to the power of a number zero.
 
 =head2 so (Numerical)
 
@@ -988,7 +996,7 @@ The virtual function C<reciprocal> aka C<multiplicative_inverse> results in
 the numeric I<reciprocal> or I<multiplicative inverse> of its nonzero C<0>
 argument, and is a shorthand for dividing one by that argument.  By
 definition, the product of a number and its reciprocal is one.  The result
-is always C<Fractional> for both C<Integral> and C<Fractional> arguments. 
+is always C<Fractional> for both C<Integral> and C<Fractional> arguments.
 The result is only I<defined> when the argument is a nonzero number; it is
 an C<Excuse> otherwise.
 
@@ -1056,7 +1064,7 @@ C<1>, which is the (non-negative) distance between those arguments.
     ::MD::times::"" ::= function virtual
         --> Numerical <-- (Numerical, Numerical)
         is {associative,commutative,idempotent}
-        repeater power;
+        repeater integral_nn_power;
 
     ::MD::"*"  ::= alias of times;
     ::MDA::"×" ::= alias of times;
@@ -1096,15 +1104,15 @@ any C<Fraction> values in terms of C<Integer> values.  The result is only
 I<defined> when the C<1> argument is a nonzero number; it is an C<Excuse>
 otherwise.
 
-=head2 integral_divide_by div
+=head2 integral_divided_by div
 
-    ::MD::integral_divide_by::"" ::= function virtual
+    ::MD::integral_divided_by::"" ::= function virtual
         --> {Numerical, Excuse::Div_By_Zero}
         <-- (Numerical, Numerical, Round_Meth);
 
-    ::MD::div ::= alias of integral_divide_by;
+    ::MD::div ::= alias of integral_divided_by;
 
-The virtual function C<integral_divide_by> aka C<div> results in the
+The virtual function C<integral_divided_by> aka C<div> results in the
 integral numeric I<quotient> from performing I<division> of its 2 arguments
 C<0> (I<dividend> or I<numerator>) and C<1> (I<divisor> or I<denominator>)
 using the semantics of real number division, whereupon the real number
@@ -1125,23 +1133,54 @@ nonzero number; it is an C<Excuse> otherwise.
 
 The function C<modulo> aka C<mod> results in the possibly-fractional
 numeric I<remainder> from performing same I<division> operation as
-C<integral_divide_by> does with all of the same arguments; to be specific,
+C<integral_divided_by> does with all of the same arguments; to be specific,
 C<modulo> preserves the identity C<x mod y = x - y * (x div y)>.  The
 result is C<Integral> for C<Integral> arguments and is C<Fractional> for
 C<Fractional> arguments.  The result is only I<defined> when the C<1>
-argument is a nonzero number; it is an C<Excuse> otherwise.
+argument is a nonzero number; it is an C<Excuse> otherwise.  Other
+programming languages may name their corresponding operators I<%> or I<//>
+or I<\\> or I<div> or I<rem> or I<remainder> or various other things.
 
-=head2 divide_by_and_modulo
+=head2 divided_by_and_modulo
 
-    ::MD::divide_by_and_modulo::"" ::= function
+    ::MD::divided_by_and_modulo::"" ::= function
         --> ({Numerical, Excuse::Div_By_Zero}, {Numerical, Excuse::Div_By_Zero})
         <-- (Numerical, Numerical, Round_Meth)
         : (\%(topic --> \@div, topic --> \@mod));
 
-The function C<divide_by_and_modulo> results in a binary tuple whose C<0>
-and C<1> attributes have the exact same values that C<integral_divide_by>
+The function C<divided_by_and_modulo> results in a binary tuple whose C<0>
+and C<1> attributes have the exact same values that C<integral_divided_by>
 and C<modulo> would result in, respectively, when each is given all of the
 same arguments.  This function is a shorthand for invoking the other two.
+
+=head2 integral_power **
+
+    ::MD::integral_power::"" ::= function virtual
+        --> {Numerical, Excuse::Zero_To_The_Zero} <-- (Numerical, Integral);
+
+    ::MD::"**" ::= alias of integral_power;
+
+The virtual function C<integral_power> aka C<**> results in a
+typically-fractional number from performing I<exponentiation> of its 2
+arguments C<0> (I<base>) and C<1> (I<exponent> or I<power>).  The result is
+always C<Fractional> for both an C<Integral> and a C<Fractional> C<0>
+argument.  The result is only I<defined> when the C<0> and C<1> arguments
+are both nonzero numbers; it is an C<Excuse> otherwise.  Other programming
+languages may name their corresponding operators I<exp> or I<^>.
+
+=head2 integral_nn_power power
+
+    ::MD::integral_nn_power::"" ::= function virtual
+        --> {Numerical, Excuse::Zero_To_The_Zero} <-- (Numerical, Integral_NN);
+
+    ::MD::power ::= alias of integral_nn_power;
+
+The virtual function C<integral_nn_power> aka C<power> results in a
+possibly-fractional number from performing I<exponentiation> of its 2
+arguments C<0> (I<base>) and C<1> (I<exponent> or I<power>).  The result is
+C<Integral> for an C<Integral> C<0> argument and is C<Fractional> for a
+C<Fractional> C<0> argument.  The result is only I<defined> when the C<0>
+and C<1> arguments are both nonzero numbers; it is an C<Excuse> otherwise.
 
 =head1 INTEGRAL DATA TYPES
 
@@ -1153,9 +1192,28 @@ same arguments.  This function is a shorthand for invoking the other two.
         requires_implements {in_order,pred,succ,so
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
-            ,fractional_divided_by,integral_divided_by};
+            ,fractional_divided_by,integral_divided_by
+            ,integral_power,integral_nn_power};
 
 I<TODO.  Also, do something about the unimplemented Numerical operators.>
+
+=head2 Integral_NN
+
+    ::MD::Integral_NN ::= selection of Integral
+        where (topic >= zero(topic));
+
+The selection contract C<Integral_NN> represents the infinite type
+consisting just of the C<Integral> values that are non-negative.  Its
+default and minmum value is C<0>; it has no maximum value.
+
+=head2 Integral_P
+
+    ::MD::Integral_P ::= selection of Integral_NN
+        where (topic > zero(topic)) default (succ(Integral()));
+
+The selection contract C<Integral_P> represents the infinite type
+consisting just of the C<Integral_NN> values that are positive.  Its
+default and minmum value is C<1>; it has no maximum value.
 
 =head2 asset (Integral)
 
