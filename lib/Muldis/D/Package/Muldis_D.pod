@@ -872,7 +872,28 @@ and its C<1> argument is C<True>, and C<False> otherwise.
     ::MD::Round_Meth::Half_To_Inf  ::= constant (\@0);
     ::MD::Round_Meth::Half_Even    ::= constant (\@0);
 
-I<TODO.  Also, review most appropriate values for the constants.>
+The selection contract C<Round_Meth> is finite.  When a value of some
+C<Orderable> type needs to be mapped into a proper subtype that doesn't
+contain that value, such as when mapping an arbitrary number to one with
+less precision, some rounding method is applied to determine which value of
+the subtype is to be mapped to while most accurately reflecting the
+original value.  The C<Round_Meth> type enumerates the rounding methods
+that Muldis D operators can typically apply.
+
+With C<Down> (aka I<floor>), C<Up> (aka I<ceiling>), C<To_Zero> (aka
+I<truncate>), and C<To_Inf>, the original value will always be mapped to
+the single adjacent value that is lower than it, or higher than it, or
+towards "zero" from it, or towards the nearer infinity from it,
+respectively.  With C<Half_Down>, C<Half_Up>, C<Half_To_Zero>,
+C<Half_To_Inf>, and C<Half_Even> (aka I<unbiased rounding>, I<convergent
+rounding>, I<statistician's rounding>, or I<bankers' rounding>), the
+original value will be mapped to the single target value that it is closest
+to, if there is one; otherwise, if it is exactly half-way between 2
+adjacent target values, then C<Half_Down> will round towards negative
+infinity, C<Half_Up> will round towards positive infinity, C<Half_To_Zero>
+will round towards "zero", C<Half_To_Inf> will round towards the nearer
+infinity, and C<Half_Even> will round towards the nearest "even" target.
+The default value of C<Round_Meth> is C<To_Zero>, which is the simplest.
 
 =head1 NUMERICAL DATA TYPES
 
@@ -880,26 +901,69 @@ I<TODO.  Also, review most appropriate values for the constants.>
 
     ::MD::Numerical ::= interface
         composes Boolable
-        requires_implements {so,opposite,reciprocal,modulus,
-            plus,minus,frac_divide,whole_divide,...};
+        requires_implements {so
+            ,zero,opposite,reciprocal,modulus
+            ,plus,minus,times,multiple_of
+            ,fractional_divided_by,integral_divided_by};
 
-I<TODO.>
+The interface contract C<Numerical> is infinite.  A C<Numerical> value
+either is a simple number of some kind or is something that can act as a
+simple number.  A I<simple number> means, typically speaking, any rational
+real number, those numbers that can be derived simply by multiplying or
+dividing integers.  All operators defined by the C<Muldis_D> core package
+for C<Numerical> are expect to be closed over the real rational numbers,
+and consist mainly of addition, subtraction, multiplication, and division
+of any rationals, plus exponentiation of any rationals to integer powers
+only.  Idiomatically a C<Numerical> is a pure number which does not
+represent any kind of thing in particular, neither cardinal nor ordinal nor
+nominal; however some types which do represent such a particular kind of
+thing may choose to compose C<Numerical> because it makes sense to provide
+its operators.  The default value of C<Numerical> is the C<Integer> value
+C<0>.  A C<Numerical> in the general case is not C<Orderable>, but often a
+type that is numeric is also orderable.  Other programming languages may
+name their corresponding types I<Numeric>.
+
+C<Numerical> is composed, directly or indirectly, by: C<Integral>,
+C<Integer>, C<Fractional>, C<Fraction>, C<Quantity>.  It is also composed
+by a lot of additional contracts defined by other Muldis D packages such as
+L<Muldis::D::Package::Muldis_D::Math>; these include types for irrational
+or algebraic or complex numbers or quaternions or rational types with a
+fixed precision or scale or floating-point types and so on.
+
+=head2 Excuse::Div_By_Zero
+
+    ::MD::Excuse::Div_By_Zero ::= constant (\@0) composes Excuse;
+
+The constant C<Excuse::Div_By_Zero> represents the I<undefined> result of
+attempting to divide a simple number by a simple, unsigned, number zero.
+Note that IEEE floating-point standards define a negative or positive
+infinity result value when dividing by an explicitly signed (negative or
+positive) zero, but the Muldis D core package lacks those concepts.
 
 =head2 so (Numerical)
 
     ::MD::so::Numerical ::= function virtual --> Boolean <-- (Numerical)
         implements 2::"";
 
-The function C<so::Numerical> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> for the composing type C<Numerical>.
-
-I<TODO.>
+The virtual function C<so::Numerical> results in C<True> when its C<0>
+argument is a nonzero number; otherwise it results in C<False>.  This
+function implements the C<Boolable> virtual function C<so> aka C<?> aka
+C<to_Boolean> for the composing type C<Numerical>.
 
 =head2 is_zero
 
     ::MD::is_zero ::= function negates so::Numerical;
 
-I<TODO.>
+The function C<is_zero> results in C<True> when its C<0> argument is a
+number zero; otherwise it results in C<False>.
+
+=head2 zero
+
+    ::MD::zero::"" ::= function virtual --> Numerical <-- (Numerical);
+
+The virtual function C<zero> results in the number zero of its C<0>
+argument's numerical type, assuming that every type composing C<Numerical>
+has one.
 
 =head2 opposite
 
@@ -907,16 +971,26 @@ I<TODO.>
 
     ::MD::additive_inverse ::= alias of opposite;
 
-I<TODO.>
+The virtual function C<opposite> aka C<additive_inverse> aka unary C<-> aka
+unary C<−> results in the numeric I<opposite> or I<negation> or I<additive
+inverse> or I<unary minus> of its C<0> argument, and is a shorthand for
+either multiplying that argument by negative one or subtracting it from
+zero.  By definition, the sum of a number and its opposite is zero.
 
 =head2 reciprocal
 
-    ::MD::reciprocal::"" ::= function virtual --> Numerical <-- (Numerical)
-        requires (?\.0);
+    ::MD::reciprocal::"" ::= function virtual
+        --> {Numerical, Excuse::Div_By_Zero} <-- (Numerical);
 
     ::MD::multiplicative_inverse ::= alias of reciprocal;
 
-I<TODO.>
+The virtual function C<reciprocal> aka C<multiplicative_inverse> results in
+the numeric I<reciprocal> or I<multiplicative inverse> of its nonzero C<0>
+argument, and is a shorthand for dividing one by that argument.  By
+definition, the product of a number and its reciprocal is one.  The result
+is always C<Fractional> for both C<Integral> and C<Fractional> arguments. 
+The result is only I<defined> when the argument is a nonzero number; it is
+an C<Excuse> otherwise.
 
 =head2 modulus abs
 
@@ -924,86 +998,150 @@ I<TODO.>
 
     ::MD::abs ::= alias of modulus;
 
-I<TODO.>
+The virtual function C<modulus> aka C<abs> results in the numeric
+I<modulus> or I<absolute value> of its C<0> argument, which is the
+(non-negative) distance between that argument and zero.
 
 =head2 plus +
 
-    ::MD::plus::"" ::= function virtual --> Numerical <-- (Numerical, Numerical);
+    ::MD::plus::"" ::= function virtual
+        --> Numerical <-- (Numerical, Numerical)
+        is {associative,commutative,idempotent}
+        repeater times;
 
     ::MD::"+" ::= alias of plus;
 
-I<TODO.>
+The virtual function C<plus> aka C<+> results in the numeric I<sum> from
+performing I<addition> of its 2 I<summand> arguments C<0> (I<augend>) and
+C<1> (I<addend>).
 
 =head2 minus
 
-    ::MD::minus::"" ::= function virtual --> Numerical <-- (Numerical, Numerical);
+    ::MD::minus::"" ::= function virtual
+        --> Numerical <-- (Numerical, Numerical);
 
-I<TODO.>
+The virtual function C<minus> aka binary C<-> aka binary C<−> results in
+the numeric I<difference> from performing I<subtraction> of its 2 arguments
+C<0> (I<minuend>) and C<1> (I<subtrahend>).
 
-=head2 -
+=head2 - −
 
-    ::MD::"-" ::= function --> Numerical <-- {(Numerical), (Numerical, Numerical)}
+    ::MD::"-" ::= function
+        --> Numerical <-- {(Numerical), (Numerical, Numerical)}
         : (topic --> (degree(topic) = 1 ?? \@opposite !! \@minus));
 
-I<TODO.>
+    ::MDA::"−" ::= alias of "-";
 
-=head2 modulus_minus abs_minus |-|
+The function C<-> aka C<−> is a proxy for either of the virtual functions
+unary C<opposite> and binary C<minus>, depending on how many arguments it
+was invoked with.
 
-    ::MD::modulus_minus ::= function --> Numerical <-- (Numerical, Numerical)
+=head2 modulus_minus abs_minus |-| |−|
+
+    ::MD::modulus_minus ::= function
+        --> Numerical <-- (Numerical, Numerical)
+        is commutative
         : (modulus topic --> \@minus);
 
     ::MD::abs_minus ::= alias of modulus_minus;
     ::MD::"|-|"     ::= alias of modulus_minus;
+    ::MDA::"|−|"    ::= alias of modulus_minus;
 
-I<TODO.>
+The function C<modulus_minus> aka C<abs_minus> aka C<|-|> aka C<|−|>
+results in the numeric I<absolute difference> of its 2 arguments C<0> and
+C<1>, which is the (non-negative) distance between those arguments.
 
-=head2 times *
+=head2 times * ×
 
-    ::MD::times::"" ::= function virtual --> Numerical <-- (Numerical, Numerical);
-
-    ::MD::"*" ::= alias of times;
-
-I<TODO.>
-
-=head2 frac_divide /
-
-    ::MD::frac_divide::"" ::= function virtual
+    ::MD::times::"" ::= function virtual
         --> Numerical <-- (Numerical, Numerical)
-        requires (?\.1);
+        is {associative,commutative,idempotent}
+        repeater power;
 
-    ::MD::"/" ::= alias of frac_divide;
+    ::MD::"*"  ::= alias of times;
+    ::MDA::"×" ::= alias of times;
 
-I<TODO.>
+The virtual function C<times> aka C<*> aka C<×> results in the numeric
+I<product> from performing I<multiplication> of its 2 I<factor> arguments
+C<0> (I<multiplier>) and C<1> (I<multiplicand>).
 
-=head2 whole_divide div
+=head2 multiple_of
 
-    ::MD::whole_divide::"" ::= function virtual
-        --> Numerical <-- (Numerical, Numerical, Round_Meth)
-        requires (?\.1);
+    ::MD::multiple_of::"" ::= function virtual
+        --> {Boolean, Excuse::Div_By_Zero} <-- (Numerical, Numerical);
 
-    ::MD::div ::= alias of whole_divide;
+The virtual function C<multiple_of> results in C<True> iff its C<0>
+argument is an even multiple of its C<1> argument (that is, the former is
+evenly divisible by the latter), and C<False> otherwise.  The result is
+only I<defined> when the C<1> argument is a nonzero number; it is an
+C<Excuse> otherwise.  Other programming languages may name their
+corresponding operators I<%%>.
 
-I<TODO.>
+=head2 fractional_divided_by / ÷ ∕
+
+    ::MD::fractional_divided_by::"" ::= function virtual
+        --> {Numerical, Excuse::Div_By_Zero} <-- (Numerical, Numerical);
+
+    ::MD::"/"  ::= alias of fractional_divided_by;
+    ::MDA::"÷" ::= alias of fractional_divided_by;
+    ::MDA::"∕" ::= alias of fractional_divided_by;
+
+The virtual function C<fractional_divided_by> aka C</> aka C<÷> aka C<∕>
+results in the typically-fractional numeric I<quotient> from performing
+I<division> of its 2 arguments C<0> (I<dividend> or I<numerator>) and C<1>
+(I<divisor> or I<denominator>) using the semantics of real number division.
+The result is always C<Fractional> for both C<Integral> and C<Fractional>
+arguments; as such, C<fractional_divided_by> is the canonical way to select
+any C<Fraction> values in terms of C<Integer> values.  The result is only
+I<defined> when the C<1> argument is a nonzero number; it is an C<Excuse>
+otherwise.
+
+=head2 integral_divide_by div
+
+    ::MD::integral_divide_by::"" ::= function virtual
+        --> {Numerical, Excuse::Div_By_Zero}
+        <-- (Numerical, Numerical, Round_Meth);
+
+    ::MD::div ::= alias of integral_divide_by;
+
+The virtual function C<integral_divide_by> aka C<div> results in the
+integral numeric I<quotient> from performing I<division> of its 2 arguments
+C<0> (I<dividend> or I<numerator>) and C<1> (I<divisor> or I<denominator>)
+using the semantics of real number division, whereupon the real number
+result is rounded to the same or nearest integral number, where the nearest
+is determined by the rounding method specified by the C<2> argument.  The
+result is always C<Integral> for both C<Integral> and C<Fractional>
+arguments.  The result is only I<defined> when the C<1> argument is a
+nonzero number; it is an C<Excuse> otherwise.
 
 =head2 modulo mod
 
-    ::MD::modulo::"" ::= function
-        --> Numerical <-- (Numerical, Numerical, Round_Meth)
-        requires (?\.1)
+    ::MD::modulo ::= function
+        --> {Numerical, Excuse::Div_By_Zero}
+        <-- (Numerical, Numerical, Round_Meth)
         : (\.0 - (\.1 * topic --> \@div));
 
     ::MD::mod ::= alias of modulo;
 
-I<TODO.>
+The function C<modulo> aka C<mod> results in the possibly-fractional
+numeric I<remainder> from performing same I<division> operation as
+C<integral_divide_by> does with all of the same arguments; to be specific,
+C<modulo> preserves the identity C<x mod y = x - y * (x div y)>.  The
+result is C<Integral> for C<Integral> arguments and is C<Fractional> for
+C<Fractional> arguments.  The result is only I<defined> when the C<1>
+argument is a nonzero number; it is an C<Excuse> otherwise.
 
-=head2 divide_and_modulo
+=head2 divide_by_and_modulo
 
-    ::MD::divide_and_modulo::"" ::= function
-        --> (Numerical, Numerical) <-- (Numerical, Numerical, Round_Meth)
-        requires (?\.1)
+    ::MD::divide_by_and_modulo::"" ::= function
+        --> ({Numerical, Excuse::Div_By_Zero}, {Numerical, Excuse::Div_By_Zero})
+        <-- (Numerical, Numerical, Round_Meth)
         : (\%(topic --> \@div, topic --> \@mod));
 
-I<TODO.>
+The function C<divide_by_and_modulo> results in a binary tuple whose C<0>
+and C<1> attributes have the exact same values that C<integral_divide_by>
+and C<modulo> would result in, respectively, when each is given all of the
+same arguments.  This function is a shorthand for invoking the other two.
 
 =head1 INTEGRAL DATA TYPES
 
@@ -1012,7 +1150,10 @@ I<TODO.>
     ::MD::Integral ::= interface
         composes {Bicessable and_provides_its_default,
             Numerical and_provides_its_default}
-        requires_implements {in_order,pred,succ,so,...};
+        requires_implements {in_order,pred,succ,so
+            ,zero,opposite,reciprocal,modulus
+            ,plus,minus,times,multiple_of
+            ,fractional_divided_by,integral_divided_by};
 
 I<TODO.  Also, do something about the unimplemented Numerical operators.>
 
