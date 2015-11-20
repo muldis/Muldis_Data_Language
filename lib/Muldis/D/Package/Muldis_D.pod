@@ -56,7 +56,7 @@ From one source:
     {
         identity MD ::= Muldis_D:"http://muldis.com":"0.200.1";
         foundation "http://muldis.com":"0.200.1";
-        floating {::MD, ::MD::Source_Code};
+        floating {::MD, ::MD::Capsule, ::MD::Source_Code};
         ...
     };
 
@@ -1902,7 +1902,7 @@ Composed by: Set, Relation.>
     ::MD::Set_Inf ::= binder
     {
         "" ::= selection of Capsule
-            where (Capsule_has_tag_asset( topic, \Set, \@1::_Asset ))
+            where (has_wrapped( topic, \Set, \@1::_Asset ))
             default ({})
             composes Setty and_provides_its_default;
 
@@ -1944,7 +1944,7 @@ I<TODO.>
 
     ::MD::count::Set ::= function --> Integer_NN <-- (Set)
         implements 2::""
-        : (Capsule_asset(\.0) ->count);
+        : (unwrap(\.0) ->count);
 
 I<TODO.>
 
@@ -1952,7 +1952,7 @@ I<TODO.>
 
     ::MD::has::Set ::= function --> Boolean <-- (Set, Any)
         implements 2::""
-        : (Capsule_asset(\.0) has \.1);
+        : (unwrap(\.0) has \.1);
 
 I<TODO.>
 
@@ -1961,7 +1961,7 @@ I<TODO.>
     ::MD::nest::Set ::= function --> Set <-- (Set)
         implements 2::""
         requires (...)
-        : (select_Capsule(\Set, Capsule_asset(\.0) ->nest));
+        : (wrap(\Set, unwrap(\.0) ->nest));
 
 I<TODO.>
 
@@ -1970,7 +1970,7 @@ I<TODO.>
     ::MD::unnest::Set ::= function --> Set <-- (Set)
         implements 2::""
         requires (...)
-        : (select_Capsule(\Set, Capsule_asset(\.0) ->unnest));
+        : (wrap(\Set, unwrap(\.0) ->unnest));
 
 I<TODO.>
 
@@ -1978,7 +1978,7 @@ I<TODO.>
 
     ::MD::any::Set ::= function --> Boolean <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (Capsule_asset(\.0) any \.1);
+        : (unwrap(\.0) any \.1);
 
 I<TODO.>
 
@@ -1986,7 +1986,7 @@ I<TODO.>
 
     ::MD::where::Set ::= function --> Set <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (select_Capsule(\Set, Capsule_asset(\.0) where \.1));
+        : (wrap(\Set, unwrap(\.0) where \.1));
 
 I<TODO.>
 
@@ -1994,7 +1994,7 @@ I<TODO.>
 
     ::MD::map::Set ::= function --> Set <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (select_Capsule(\Set, Capsule_asset(\.0) map \.1));
+        : (wrap(\Set, unwrap(\.0) map \.1));
 
 I<TODO.>
 
@@ -2002,7 +2002,7 @@ I<TODO.>
 
     ::MD::reduce::Set ::= function --> Any <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (select_Capsule(\Set, Capsule_asset(\.0) reduce \.1));
+        : (wrap(\Set, unwrap(\.0) reduce \.1));
 
 I<TODO.>
 
@@ -2416,7 +2416,7 @@ I<TODO.>
     ::MD::Relation_Inf ::= binder
     {
         "" ::= selection of Capsule
-            where (Capsule_has_tag_asset( topic, \Relation, \@1::_Asset ))
+            where (has_wrapped( topic, \Relation, \@1::_Asset ))
             default (\?%())
             composes {Setty, Attributive};
 
@@ -2455,7 +2455,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
     ::MD::Tuple_Bag_Inf ::= binder
     {
         "" ::= selection of Capsule
-            where (Capsule_has_tag_asset( topic, \Tuple_Bag, \@1::_Asset ))
+            where (has_wrapped( topic, \Tuple_Bag, \@1::_Asset ))
             default (\+%())
             composes {Homogeneous, Attributive};
 
@@ -2494,7 +2494,7 @@ single-tuple C<Tuple_Bag> value.
 =head2 Capsule
 
     ::MD::Capsule::"" ::= selection where (topic -->^ FDN__is_a_Capsule)
-        default (select_Capsule(False, False));
+        default (wrap(False, False));
 
 The selection contract C<Capsule> represents the infinite Muldis D
 Foundation type I<FDN__Capsule>.  An C<Capsule> value is ...
@@ -2507,32 +2507,32 @@ C<Capsule>, the latter intentionally does not compose any interface
 contracts, and only has the minimal set of its own operators, so to
 minimize interference with other types' interfaces.
 
-=head2 select_Capsule
+=head2 Capsule::wrap
 
-    ::MD::select_Capsule ::= function --> Capsule <-- (Any, Any)
-        : (topic -->^ FDN__Capsule_select);
-
-I<TODO.>
-
-=head2 Capsule_tag
-
-    ::MD::Capsule_tag ::= function --> Any <-- (Capsule)
-        : (topic -->^ FDN__Capsule_tag);
+    ::MD::Capsule::wrap ::= function --> Capsule <-- (Any, Any)
+        : (topic -->^ FDN__Capsule_wrap);
 
 I<TODO.>
 
-=head2 Capsule_asset
+=head2 Capsule::wrapper
 
-    ::MD::Capsule_asset ::= function --> Any <-- (Capsule)
-        : (topic -->^ FDN__Capsule_asset);
+    ::MD::Capsule::wrapper ::= function --> Any <-- (Capsule)
+        : (topic -->^ FDN__Capsule_wrapper);
 
 I<TODO.>
 
-=head2 Capsule_has_tag_asset
+=head2 Capsule::unwrap
 
-    ::MD::Capsule_has_tag_asset ::= function
+    ::MD::Capsule::unwrap ::= function --> Any <-- (Capsule)
+        : (topic -->^ FDN__Capsule_unwrap);
+
+I<TODO.>
+
+=head2 Capsule::has_wrapped
+
+    ::MD::Capsule::has_wrapped ::= function
         --> Boolean <-- (Capsule, Any, Reference)
-        : (Capsule_tag(\.0) = \.1 and Capsule_asset(\.0) --> \.2);
+        : (wrapper(\.0) = \.1 and unwrap(\.0) --> \.2);
 
 I<TODO.>
 
@@ -2585,8 +2585,8 @@ I<TODO.>
     ::MD::Source_Code::Package ::= binder
     {
         "" ::= selection of Capsule
-            where (Capsule_has_tag_asset( topic, \Package, \@1::_Asset ))
-            default (select_Capsule( \Package, 1::_Asset() ));
+            where (has_wrapped( topic, \Package, \@1::_Asset ))
+            default (wrap( \Package, 1::_Asset() ));
 
         _Asset ::= selection of Tuple where
         (
@@ -2643,7 +2643,7 @@ I<TODO.>
 =head2 Source_Code::Annotation::Comment
 
     ::MD::Source_Code::Annotation::Comment ::= selection of Capsule
-        where (Capsule_has_tag_asset( topic, \Comment, \@Text ))
+        where (has_wrapped( topic, \Comment, \@Text ))
         default (\~?'')
         composes Annotation;
 
