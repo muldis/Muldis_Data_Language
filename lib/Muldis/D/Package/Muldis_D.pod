@@ -605,16 +605,16 @@ C<has_any_attrs> and C<is_nullary> are provided as that dimension's direct
 analogies to the C<Homogeneous> dimension's C<Boolable>-implementing
 C<has_any_members> (C<so>) and C<is_empty> (C<not_so>) functions.
 
-=head2 so ?
+=head2 so ? to_Boolean
 
     ::MD::so::"" ::= function virtual --> Boolean <-- (Boolable);
 
-    ::MD::"?" ::= alias of so;
+    ::MD::"?"        ::= alias of so;
+    ::MD::to_Boolean ::= alias of so;
 
-The virtual function C<so> aka C<?> results in C<True> typically when
-its C<0> argument is a nonzero number or a nonempty collection; otherwise
-it results in C<False>.  Other programming languages may name their
-corresponding operators I<ToBoolean> or use similar cast-like syntax.
+The virtual function C<so> aka C<?> aka C<to_Boolean> results in C<True>
+typically when its C<0> argument is a nonzero number or a nonempty
+collection; otherwise it results in C<False>.
 
 =head2 not_so !?
 
@@ -710,7 +710,8 @@ function C<succ> for the composing type C<Boolean>.
 
 The function C<so::Boolean> performs a logical I<proposition>; it simply
 results in its C<0> argument.  This function implements the C<Boolable>
-virtual function C<so> aka C<?> for the composing type C<Boolean>.
+virtual function C<so> aka C<?> aka C<to_Boolean> for the composing type
+C<Boolean>.
 
 =head2 not ! ¬
 
@@ -1189,13 +1190,26 @@ and C<1> arguments are both nonzero numbers; it is an C<Excuse> otherwise.
     ::MD::Integral ::= interface
         composes {Bicessable and_provides_its_default,
             Numerical and_provides_its_default}
-        requires_implements {in_order,pred,succ,so
+        requires_implements {in_order,asset,pred,succ
+            ,so,to_Integer
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
             ,fractional_divided_by,integral_divided_by
             ,integral_power,integral_nn_power};
 
-I<TODO.  Also, do something about the unimplemented Numerical operators.>
+The interface contract C<Integral> is infinite.  An C<Integral> value
+either is an integer exact numeric of some kind or is something that can
+act as such.  Idiomatically an C<Integral> is a pure integer which does not
+represent any kind of thing in particular, neither cardinal nor ordinal nor
+nominal; however some types which do represent such a particular kind of
+thing may choose to compose C<Integral> because it makes sense to provide
+its operators.  The default value of C<Integral> is the C<Integer> value
+C<0>.  C<Integral> is both C<Orderable> and C<Bicessable>.  For all types
+composing C<Integral>, the definition of I<predecessor> and I<successor> is
+exactly equal to subtracting or adding an integer positive-one
+respectively, while other C<Bicessable> don't generally mean that.  In the
+general case, C<Integral> has no minimum or maximum value, but often a type
+that is C<Integral> will have them.  C<Integral> is composed by C<Integer>.
 
 =head2 Integral_NN
 
@@ -1214,16 +1228,6 @@ default and minmum value is C<0>; it has no maximum value.
 The selection contract C<Integral_P> represents the infinite type
 consisting just of the C<Integral_NN> values that are positive.  Its
 default and minmum value is C<1>; it has no maximum value.
-
-=head2 asset (Integral)
-
-    ::MD::asset::Integral ::= function --> Integral <-- (Integral)
-        implements 2::""
-        : (\.0);
-
-The function C<asset::Integral> simply results in its C<0> argument.
-This function implements the C<Successable> virtual function C<asset> for
-the composing type C<Integral>.
 
 =head2 pred (Integral)
 
@@ -1249,6 +1253,17 @@ C<Successable> virtual function C<succ> for the composing type C<Integral>.
 Other programming languages may name their corresponding operators
 I<increment>.
 
+=head2 to_Integer
+
+    ::MD::to_Integer::"" ::= function virtual --> Integer <-- (Integral);
+
+The virtual function C<to_Integer> results in the C<Integer> value that
+represents the same integer value as its C<0> argument.  The purpose of
+C<to_Integer> is to canonicalize C<Integral> values so they can be compared
+abstractly as integers, or so that it is easier to do exact math with
+integers without running afoul of possible range limits of fixed-size
+C<Integral> types, just dealing with the latter for storage.
+
 =head1 INTEGER DATA TYPES
 
 =head2 Integer_Inf Integer Int
@@ -1262,11 +1277,12 @@ I<increment>.
 
 The selection contract C<Integer_Inf> aka C<Integer> aka C<Int> represents
 the infinite Muldis D Foundation type I<FDN__Integer_Inf>.  An C<Integer>
-value is a general purpose integer exact numeric, which explicitly does not
-represent any kind of thing in particular, neither cardinal nor ordinal nor
-nominal.  Its default value is C<0>.  C<Integer> is both C<Orderable> and
-C<Bicessable>; it has no minimum or maximum value.  Other programming
-languages may name their corresponding types I<BigInt>.
+value is a general purpose integer exact numeric having no explicit limit
+to its possible size, which explicitly does not represent any kind of thing
+in particular, neither cardinal nor ordinal nor nominal.  Its default value
+is C<0>.  C<Integer> is both C<Orderable> and C<Bicessable>; it has no
+minimum or maximum value.  Other programming languages may name their
+corresponding types I<BigInt>.
 
 I<TODO.  Also, do something about the unimplemented Numerical operators.>
 
@@ -1295,6 +1311,16 @@ value is C<1>; it has no maximum value.
 The function C<in_order::Integer> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Integer>.
 
+=head2 asset (Integer)
+
+    ::MD::asset::Integer ::= function --> Integer <-- (Integer)
+        implements 2::""
+        : (\.0);
+
+The function C<asset::Integer> simply results in its C<0> argument.
+This function implements the C<Successable> virtual function C<asset> for
+the composing type C<Integer>.
+
 =head2 pred (Integer)
 
     ::MD::pred::Integer ::= function --> Integer <-- (Integer)
@@ -1319,10 +1345,20 @@ virtual function C<succ> aka C<++> for the composing type C<Integer>.
         implements 2::""
         : (\.0 != 0);
 
-The function C<so::Integer> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> for the composing type C<Integer>.
+The function C<so::Integer> results in C<True> iff its C<0> argument is not
+C<0>, and in C<False> if it is C<0>.  This function implements the
+C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
+composing type C<Integer>.
 
-I<TODO.>
+=head2 to_Integer (Integer)
+
+    ::MD::to_Integer::Integer ::= function --> Integer <-- (Integer)
+        implements 2::""
+        : (\.0);
+
+The function C<to_Integer::Integer> simply results in its C<0> argument.
+This function implements the C<Integral> virtual function C<to_Integer> for
+the composing type C<Integer>.
 
 =head1 ACCESSIBLE DATA TYPES
 
@@ -1409,7 +1445,7 @@ baggy count or positional index, its for a problem best solved differently.>
     ::MD::has_any_members ::= alias of so::Homogeneous;
 
 The function C<so::Homogeneous> aka C<has_any_members> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> for the composing type C<Homogeneous>.
+virtual function C<so> aka C<?> aka C<to_Boolean> for the composing type C<Homogeneous>.
 
 I<TODO.>
 
@@ -1743,7 +1779,7 @@ The constant C<~∅> represents the only zero-member C<Array> value.
         : (\.0 != []);
 
 The function C<so::Array> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> for the composing type C<Array>.
+virtual function C<so> aka C<?> aka C<to_Boolean> for the composing type C<Array>.
 
 I<TODO.>
 
@@ -1928,7 +1964,7 @@ The constant C<?∅> represents the only zero-member C<Set> value.
         : (\.0 != {});
 
 The function C<so::Set> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> for the composing type C<Set>.
+virtual function C<so> aka C<?> aka C<to_Boolean> for the composing type C<Set>.
 
 I<TODO.>
 
@@ -2034,7 +2070,7 @@ The constant C<+∅> represents the only zero-member C<Bag> value.
         : (\.0 != \+{});
 
 The function C<so::Bag> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> for the composing type C<Bag>.
+virtual function C<so> aka C<?> aka C<to_Boolean> for the composing type C<Bag>.
 
 I<TODO.>
 
