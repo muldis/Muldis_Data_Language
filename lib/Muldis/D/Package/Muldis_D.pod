@@ -56,7 +56,7 @@ From one source:
     {
         identity MD ::= Muldis_D:"http://muldis.com":"0.200.1";
         foundation "http://muldis.com":"0.200.1";
-        floating {::MD, ::MD::Capsule, ::MD::Source_Code};
+        floating {::MD, ::MD::Round_Meth, ::MD::Capsule, ::MD::Source_Code};
         ...
     };
 
@@ -1015,7 +1015,7 @@ I<modulus> or I<absolute value> of its C<0> argument, which is the
 
     ::MD::plus::"" ::= function virtual
         --> Numerical <-- (Numerical, Numerical)
-        is {associative,commutative,idempotent}
+        is {associative,commutative}
         repeater times;
 
     ::MD::"+" ::= alias of plus;
@@ -1064,7 +1064,7 @@ C<1>, which is the (non-negative) distance between those arguments.
 
     ::MD::times::"" ::= function virtual
         --> Numerical <-- (Numerical, Numerical)
-        is {associative,commutative,idempotent}
+        is {associative,commutative}
         repeater integral_nn_power;
 
     ::MD::"*"  ::= alias of times;
@@ -1128,7 +1128,8 @@ nonzero number; it is an C<Excuse> otherwise.
     ::MD::modulo ::= function
         --> {Numerical, Excuse::Div_By_Zero}
         <-- (Numerical, Numerical, Round_Meth)
-        : (\.0 - (\.1 * topic --> \@div));
+        : (if \.1->is_zero then Excuse::Div_By_Zero()
+            else \.0 - (\.1 * topic --> \@div));
 
     ::MD::mod ::= alias of modulo;
 
@@ -1284,8 +1285,6 @@ is C<0>.  C<Integer> is both C<Orderable> and C<Bicessable>; it has no
 minimum or maximum value.  Other programming languages may name their
 corresponding types I<BigInt>.
 
-I<TODO.  Also, do something about the unimplemented Numerical operators.>
-
 =head2 Integer_NN
 
     ::MD::Integer_NN ::= selection of Integer where (topic >= 0);
@@ -1334,6 +1333,7 @@ virtual function C<pred> aka C<--> for the composing type C<Integer>.
 
     ::MD::succ::Integer ::= function --> Integer <-- (Integer)
         implements 2::Integral
+        repeater plus::Integer
         : (\.0 + 1);
 
 The function C<succ::Integer> implements the C<Successable>/C<Integral>
@@ -1359,6 +1359,200 @@ composing type C<Integer>.
 The function C<to_Integer::Integer> simply results in its C<0> argument.
 This function implements the C<Integral> virtual function C<to_Integer> for
 the composing type C<Integer>.
+
+=head2 zero (Integer)
+
+    ::MD::zero::Integer ::= function --> Integer <-- (Integer)
+        implements 2::""
+        : (0);
+
+The function C<zero::Integer> simply results in C<0>.  This function
+implements the C<Numerical> virtual function C<zero> for the composing type
+C<Integer>.
+
+=head2 opposite (Integer)
+
+    ::MD::opposite::Integer ::= function --> Integer <-- (Integer)
+        implements 2::""
+        : (topic -->^ FDN__Integer_opposite);
+
+The function C<opposite::Integer> implements the C<Numerical> virtual
+function C<opposite> aka C<additive_inverse> aka unary C<-> aka unary C<−>
+for the composing type C<Integer>.
+
+=head2 reciprocal (Integer)
+
+    ::MD::reciprocal::Integer ::= function
+        --> {Fraction, Excuse::Div_By_Zero} <-- (Integer)
+        implements 2::""
+        : (if \.0 = 0 then Excuse::Div_By_Zero() else ...);
+
+The function C<reciprocal::Integer> implements the C<Numerical> virtual
+function C<reciprocal> aka C<multiplicative_inverse> for the composing type
+C<Integer>.
+
+=head2 modulus (Integer)
+
+    ::MD::modulus::Integer ::= function --> Integer_NN <-- (Integer)
+        implements 2::""
+        : (topic -->^ FDN__Integer_modulus);
+
+The function C<modulus::Integer> implements the C<Numerical>
+virtual function C<modulus> aka C<abs> for the composing type C<Integer>.
+
+=head2 plus (Integer)
+
+    ::MD::plus::Integer ::= function --> Integer <-- (Integer, Integer)
+        implements 2::""
+        is {associative,commutative} identity (0)
+        repeater times::Integer
+        : (topic -->^ FDN__Integer_plus);
+
+The function C<plus::Integer> implements the C<Numerical>
+virtual function C<plus> aka C<+> for the composing type C<Integer>.
+
+=head2 minus (Integer)
+
+    ::MD::minus::Integer ::= function --> Integer <-- (Integer, Integer)
+        implements 2::""
+        : (topic -->^ FDN__Integer_minus);
+
+The function C<minus::Integer> implements the C<Numerical> virtual function
+C<minus> aka binary C<-> aka binary C<−> for the composing type C<Integer>.
+
+=head2 times (Integer)
+
+    ::MD::times::Integer ::= function --> Integer <-- (Integer, Integer)
+        implements 2::""
+        is {associative,commutative} identity (1)
+        repeater integral_nn_power::Integer
+        : (topic -->^ FDN__Integer_times);
+
+The function C<times::Integer> implements the C<Numerical> virtual function
+C<times> aka C<*> aka C<×> for the composing type C<Integer>.
+
+=head2 multiple_of (Integer)
+
+    ::MD::multiple_of::Integer ::= function
+        --> {Boolean, Excuse::Div_By_Zero} <-- (Integer, Integer)
+        implements 2::""
+        : (if \.1 = 0 then Excuse::Div_By_Zero()
+            else topic -->^ FDN__Integer_multiple_of);
+
+The function C<multiple_of::Integer> implements the C<Numerical>
+virtual function C<multiple_of> for the composing type C<Integer>.
+
+=head2 fractional_divided_by (Integer)
+
+    ::MD::fractional_divided_by::Integer ::= function
+        --> {Fraction, Excuse::Div_By_Zero} <-- (Integer, Integer)
+        implements 2::""
+        : (if \.1 = 0 then Excuse::Div_By_Zero() else ...);
+
+The function C<fractional_divided_by::Integer> implements the C<Numerical>
+virtual function C<fractional_divided_by> aka C</> aka C<÷> aka C<∕> for
+the composing type C<Integer>.
+
+=head2 integral_divided_by (Integer)
+
+    ::MD::integral_divided_by::Integer ::= function
+        --> {Integer, Excuse::Div_By_Zero}
+        <-- (Integer, Integer, Round_Meth)
+        implements 2::""
+    : (
+        dividend   ::= \.0;
+        divisor    ::= \.1;
+        round_meth ::= \.2;
+
+        <-- if divisor = 0 then Excuse::Div_By_Zero() else e1;
+
+        e1 ::?= \~?'This is the case where we are dividing by a non-zero.';
+
+        e1 ::= (
+               dividend = 0       ?? 0
+            !! divisor  = 1       ?? dividend
+            !! dividend = divisor ?? 1
+            !! divisor  = -1      ?? -dividend
+            !!                       e2
+        );
+
+        e2 ::?= \~?'This is the case where the divisor and dividend do not'
+            ' equal each other and neither of them is a zero or a one.';
+
+        e2 ::= (
+            real_q_is_neg ::= (dividend < 0 xor divisor < 0);
+            rtz_quotient  ::= (Integer_divided_by_rtz ^<-- \%(dividend,divisor));
+            rtz_remainder ::= (dividend - (divisor * rtz_quotient));
+
+            <-- rtz_remainder = 0 ?? rtz_quotient !! e3;
+        );
+
+        e3 ::?= \~?'This is the case where the divisor does not divide the'
+            ' dividend evenly and the real number division result would'
+            ' have a fractional part, so we decide how to round that.';
+
+        e3 ::= (
+            rti_quotient ::= (rtz_quotient + (real_q_is_neg ?? -1 !! 1));
+            rdn_quotient ::= (rtz_quotient + (real_q_is_neg ?? -1 !! 0));
+            rup_quotient ::= (rtz_quotient + (real_q_is_neg ??  0 !! 1));
+
+            <-- round_meth ??? {
+                Down()    : rdn_quotient,
+                Up()      : rup_quotient,
+                To_Zero() : rtz_quotient,
+                To_Inf()  : rti_quotient,
+            } !!!
+                   (2 * abs(rtz_remainder)) < abs(divisor) ?? rtz_quotient
+                !! (2 * abs(rtz_remainder)) > abs(divisor) ?? rti_quotient
+                !! e4
+            ;
+        );
+
+        e4 ::?= \~?'This is the case where real division remainder is'
+            ' exactly one-half so we decide how to round that.';
+
+        e4 ::= (
+            round_meth ??? {
+                Half_Down()    : rdn_quotient,
+                Half_Up()      : rup_quotient,
+                Half_To_Zero() : rtz_quotient,
+                Half_To_Inf()  : rti_quotient,
+                Half_Even()    :
+                  (
+                    q ::= (Integer_divided_by_rtz ^<-- \%(abs(rtz_quotient),2))
+                    r ::= (abs(rtz_quotient) - (2 * q));
+                    rtz_quotient_is_even ::= (r = 0);
+                    <-- rtz_quotient_is_even ?? rtz_quotient !! rti_quotient;
+                  ),
+            } !!! fail  `oops, an unhandled case`
+        );
+    );
+
+The function C<integral_divided_by::Integer> implements the C<Numerical>
+virtual function C<integral_divided_by> aka C<div> for the composing type
+C<Integer>.
+
+=head2 integral_power (Integer)
+
+    ::MD::integral_power::Integer ::= function
+        --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Integer, Integer)
+        implements 2::""
+        : (if \.0 = 0 and \.1 = 0 then Excuse::Zero_To_The_Zero() else ...);
+
+The function C<integral_power::Integer> implements the C<Numerical> virtual
+function C<integral_power> aka C<**> for the composing type C<Integer>.
+
+=head2 integral_nn_power (Integer)
+
+    ::MD::integral_nn_power::Integer ::= function
+        --> {Integer, Excuse::Zero_To_The_Zero} <-- (Integer, Integer_NN)
+        implements 2::""
+        : (if \.0 = 0 and \.1 = 0 then Excuse::Zero_To_The_Zero()
+            else topic -->^ FDN__Integer_nn_power);
+
+The function C<integral_nn_power::Integer> implements the C<Numerical>
+virtual function C<integral_nn_power> aka C<power> for the composing type
+C<Integer>.
 
 =head1 ACCESSIBLE DATA TYPES
 
