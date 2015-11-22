@@ -1009,7 +1009,8 @@ an C<Excuse> otherwise.
 
 The virtual function C<modulus> aka C<abs> results in the numeric
 I<modulus> or I<absolute value> of its C<0> argument, which is the
-(non-negative) distance between that argument and zero.
+(non-negative) distance between that argument and zero.  Note that typical
+mathematical notion writes this operator in circumfix like I<|n|>.
 
 =head2 plus +
 
@@ -1196,7 +1197,8 @@ and C<1> arguments are both nonzero numbers; it is an C<Excuse> otherwise.
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
             ,fractional_divided_by,integral_divided_by
-            ,integral_power,integral_nn_power};
+            ,integral_power,integral_nn_power
+            ,factorial};
 
 The interface contract C<Integral> is infinite.  An C<Integral> value
 either is an integer exact numeric of some kind or is something that can
@@ -1264,6 +1266,44 @@ C<to_Integer> is to canonicalize C<Integral> values so they can be compared
 abstractly as integers, or so that it is easier to do exact math with
 integers without running afoul of possible range limits of fixed-size
 C<Integral> types, just dealing with the latter for storage.
+
+=head2 factorial
+
+    ::MD::factorial::"" ::= function virtual --> Integral_P <-- (Integral_NN);
+
+The virtual function C<factorial> results in the integral numeric
+I<factorial> of its C<0> argument, and is a shorthand for the product of
+every integer between 1 and that argument; the factorial of zero is defined
+to result in positive one.  Note that typical mathematical notion writes
+this operator in postfix like I<n!>.
+
+=head2 gcd greatest_common_divisor
+
+    ::MD::gcd ::= function --> Integral_P <-- (Integral_NN, Integral_NN)
+        is {commutative,associative,idempotent}
+        : ((if \.1->is_zero then \.0 else 0::(\.1, mod(\.0, \.1, To_Zero())))
+            ::?= \~?'Calculate using the Euclidean algorithm.');
+
+    ::MD::greatest_common_divisor ::= alias of gcd;
+
+The function C<gcd> aka C<greatest_common_divisor> results in the integral
+numeric I<greatest common divisor> of its 2 arguments C<0> and C<1>, which
+is the largest integer that will divide both arguments evenly.
+I<TODO: Look into generalizing it to take negative integer arguments too.>
+
+=head2 lcm least_common_multiple
+
+    ::MD::lcm ::= function --> Integral_NN <-- (Integral_NN, Integral_NN)
+        is {commutative,associative,idempotent}
+        : (if \.0->is_zero or \.1->is_zero then \.0->zero
+            else div(\.0 * \.1, \.0 gcd \.1, To_Zero()));
+
+    ::MD::least_common_multiple ::= alias of lcm;
+
+The function C<lcm> aka C<least_common_multiple> results in the integral
+numeric I<least common multiple> of its 2 arguments C<0> and C<1>, which
+is the smallest integer that is an even multiple of both arguments.
+I<TODO: Look into generalizing it to take negative integer arguments too.>
 
 =head1 INTEGER DATA TYPES
 
@@ -1555,6 +1595,15 @@ function C<integral_power> aka C<**> for the composing type C<Integer>.
 The function C<integral_nn_power::Integer> implements the C<Numerical>
 virtual function C<integral_nn_power> aka C<power> for the composing type
 C<Integer>.
+
+=head2 factorial (Integer)
+
+    ::MD::factorial::Integer ::= function --> Integer_P <-- (Integer_NN)
+        implements 2::""
+        : (topic -->^ FDN__Integer_factorial);
+
+The function C<factorial::Integer> implements the C<Integral> virtual
+function C<factorial> for the composing type C<Integer>.
 
 =head1 ACCESSIBLE DATA TYPES
 
