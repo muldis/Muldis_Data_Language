@@ -1101,7 +1101,7 @@ results in the typically-fractional numeric I<quotient> from performing
 I<division> of its 2 arguments C<0> (I<dividend> or I<numerator>) and C<1>
 (I<divisor> or I<denominator>) using the semantics of real number division.
 The result is always C<Fractional> for both C<Integral> and C<Fractional>
-arguments; as such, C<fractional_divided_by> is the canonical way to select
+arguments; as such, C<fractional_divided_by> is the idiomatic way to select
 any C<Fraction> values in terms of C<Integer> values.  The result is only
 I<defined> when the C<1> argument is a nonzero number; it is an C<Excuse>
 otherwise.
@@ -1640,11 +1640,12 @@ function C<factorial> for the composing type C<Integer>.
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
             ,fractional_divided_by,integral_divided_by
-            ,integral_power,integral_nn_power};
+            ,integral_power,integral_nn_power
+            ,numerator,denominator};
 
 The interface contract C<Fractional> is infinite.  A C<Fractional> value
 either is a rational exact numeric of some kind, expressible as a coprime
-I<numerator>/I<denominator> pair of C<Integral> whose I<denominator> is
+I<numerator> / I<denominator> pair of C<Integral> whose I<denominator> is
 positive, or is something that can act as such.  Idiomatically a
 C<Fractional> is a pure rational number which does not represent any kind
 of thing in particular, neither cardinal nor ordinal nor nominal; however
@@ -1677,6 +1678,22 @@ compared abstractly as rationals, or so that it is easier to do exact math
 with rationals without running afoul of possible range limits of fixed-size
 C<Fractional> types, just dealing with the latter for storage.
 
+=head2 numerator
+
+    ::MD::numerator::"" ::= function virtual --> Integral <-- (Fractional);
+
+The virtual function C<numerator> results in the I<numerator> of its
+C<0> argument, when the latter is expressed as a coprime I<numerator> /
+I<denominator> pair of C<Integral> whose I<denominator> is positive.
+
+=head2 denominator
+
+    ::MD::denominator::"" ::= function virtual --> Integral_P <-- (Fractional);
+
+The virtual function C<denominator> results in the I<denominator> of its
+C<0> argument, when the latter is expressed as a coprime I<numerator> /
+I<denominator> pair of C<Integral> whose I<denominator> is positive.
+
 =head1 FRACTION DATA TYPES
 
 =head2 Fraction_Inf Fraction Int
@@ -1707,7 +1724,7 @@ C<Fractional> types, just dealing with the latter for storage.
 The selection contract C<Fraction_Inf> aka C<Fraction> is infinite.  A
 C<Fraction> value is a general purpose exact rational number of any
 magnitude and precision, expressible as a coprime
-I<numerator>/I<denominator> pair of C<Integer> whose I<denominator> is
+I<numerator> / I<denominator> pair of C<Integer> whose I<denominator> is
 positive, which explicitly does not represent any kind of thing in
 particular, neither cardinal nor ordinal nor nominal.  Its default value is
 C<0.0>.  C<Fraction> is C<Orderable>; it has no minimum or maximum value.
@@ -1726,14 +1743,14 @@ default and minmum value is C<0.0>; it has no maximum value.
     ::MD::in_order::Fraction ::= function --> Boolean <-- (Fraction, Fraction)
         implements 2::""
     : (
-        <-- \.0.\denominator = (\.1.\denominator)
-            ?? in_order(\.0.\numerator, \.1.\numerator)
+        <-- (\.0->denominator) = (\.1->denominator)
+            ?? in_order(\.0->numerator, \.1->numerator)
          !!
           (
-            common_d ::= lcm(\.0.\denominator, \.1.\denominator);
+            common_d ::= lcm(\.0->denominator, \.1->denominator);
             <-- in_order(
-                \.0.\numerator * div(common_d, \.0.\denominator, To_Zero()),
-                \.1.\numerator * div(common_d, \.1.\denominator, To_Zero()),
+                (\.0->numerator) * div(common_d, \.0->denominator, To_Zero()),
+                (\.1->numerator) * div(common_d, \.1->denominator, To_Zero()),
             );
           )
     );
@@ -1759,8 +1776,8 @@ composing type C<Fraction>.
         : (\.0);
 
 The function C<to_Fraction::Fraction> simply results in its C<0> argument.
-This function implements the C<Fractional> virtual function C<to_Fraction> for
-the composing type C<Fraction>.
+This function implements the C<Fractional> virtual function C<to_Fraction>
+for the composing type C<Fraction>.
 
 =head2 zero (Fraction)
 
@@ -1776,7 +1793,7 @@ C<Fraction>.
 
     ::MD::opposite::Fraction ::= function --> Fraction <-- (Fraction)
         implements 2::""
-        : (-(\.0.\numerator) / (\.0.\denominator));
+        : (-(\.0->numerator) / (\.0->denominator));
 
 The function C<opposite::Fraction> implements the C<Numerical> virtual
 function C<opposite> aka C<additive_inverse> aka unary C<-> aka unary C<−>
@@ -1788,7 +1805,7 @@ for the composing type C<Fraction>.
         --> {Fraction, Excuse::Div_By_Zero} <-- (Fraction)
         implements 2::""
         : (if \.0 = 0.0 then Excuse::Div_By_Zero()
-            else (\.0.\denominator) / (\.0.\numerator));
+            else (\.0->denominator) / (\.0->numerator));
 
 The function C<reciprocal::Fraction> implements the C<Numerical> virtual
 function C<reciprocal> aka C<multiplicative_inverse> for the composing type
@@ -1798,7 +1815,7 @@ C<Fraction>.
 
     ::MD::modulus::Fraction ::= function --> Fraction_NN <-- (Fraction)
         implements 2::""
-        : (abs(\.0.\numerator) / (\.0.\denominator));
+        : (abs(\.0->numerator) / (\.0->denominator));
 
 The function C<modulus::Fraction> implements the C<Numerical>
 virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
@@ -1810,13 +1827,13 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
         is {associative,commutative} identity (0.0)
         repeater times::Fraction
     : (
-        <-- \.0.\denominator = (\.1.\denominator)
-            ?? (\.0.\numerator + \.1.\numerator) / (\.0.\denominator)
+        <-- (\.0->denominator) = (\.1->denominator)
+            ?? (\.0->numerator) + (\.1->numerator) / (\.0->denominator)
          !!
           (
-            common_d ::= lcm(\.0.\denominator, \.1.\denominator);
-            <-- ((\.0.\numerator * div(common_d, \.0.\denominator, To_Zero()))
-                + (\.1.\numerator * div(common_d, \.1.\denominator, To_Zero())))
+            common_d ::= lcm(\.0->denominator, \.1->denominator);
+            <-- ((\.0->numerator) * div(common_d, \.0->denominator, To_Zero()))
+                + ((\.1->numerator) * div(common_d, \.1->denominator, To_Zero()))
                 / common_d;
             );
           )
@@ -1840,8 +1857,8 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Fraction>.
         implements 2::""
         is {associative,commutative} identity (1.0)
         repeater integral_nn_power::Fraction
-        : ((\.0.\numerator * \.1.\numerator)
-            / (\.0.\denominator * \.1.\denominator));
+        : (((\.0->numerator) * (\.1->numerator))
+            / ((\.0->denominator) * (\.1->denominator)));
 
 The function C<times::Fraction> implements the C<Numerical> virtual function
 C<times> aka C<*> aka C<×> for the composing type C<Fraction>.
@@ -1876,9 +1893,9 @@ the composing type C<Fraction>.
         <-- (Fraction, Fraction, Round_Meth)
         implements 2::""
     : (
-        d ::= lcm(\.0.\denominator, \.1.\denominator);
-        n0 ::= (\.0.\numerator * div(d, \.0.\denominator, To_Zero()));
-        n1 ::= (\.1.\numerator * div(d, \.1.\denominator, To_Zero()));
+        d ::= lcm(\.0->denominator, \.1->denominator);
+        n0 ::= ((\.0->numerator) * div(d, \.0->denominator, To_Zero()));
+        n1 ::= ((\.1->numerator) * div(d, \.1->denominator, To_Zero()));
         <-- if \.1 = 0.0 then Excuse::Div_By_Zero()
             else div(n0 * d, n1 * d, \.2);
     );
@@ -1904,11 +1921,27 @@ function C<integral_power> aka C<**> for the composing type C<Fraction>.
         --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Fraction, Integer_NN)
         implements 2::""
         : (if \.0 = 0.0 and \.1 = 0 then Excuse::Zero_To_The_Zero()
-            else (\.0.\numerator ** \.1) / (\.0.\denominator ** \.1));
+            else ((\.0->numerator) ** \.1) / ((\.0->denominator) ** \.1));
 
 The function C<integral_nn_power::Fraction> implements the C<Numerical>
 virtual function C<integral_nn_power> aka C<power> for the composing type
 C<Fraction>.
+
+=head2 numerator (Fraction)
+
+    ::MD::numerator::Fraction ::= function --> Integer <-- (Fraction)
+        : (unwrap(\.0).\numerator);
+
+The function C<numerator::Fraction> implements the C<Fractional> virtual
+function C<numerator> for the composing type C<Fraction>.
+
+=head2 denominator (Fraction)
+
+    ::MD::denominator::Fraction ::= function --> Integer_P <-- (Fraction)
+        : (unwrap(\.0).\denominator);
+
+The function C<denominator::Fraction> implements the C<Fractional> virtual
+function C<denominator> for the composing type C<Fraction>.
 
 =head1 ACCESSIBLE DATA TYPES
 
