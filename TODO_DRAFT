@@ -14,6 +14,28 @@ resources of everyone else.
 
 ----------
 
+* On implementations:
+- Tuple - low cardinality
+    - flat list, rewrite with each change
+- Array - high cardinality
+    - tree/graph with new root node to represent each distinct derived value
+    - each object representing a 'value' has
+        - (root) branch node that is an ordered list of either leaf nodes or
+        same-structured branch nodes (recursively)
+            - a leaf node is one of these:
+                - a single element representing a 'value'
+                - a sequence of same elements represented by 1 copy plus multiplier integer
+                    - prior case could be just this with multiplier of 1
+                - an ordered list of non-big integer elements
+                    - to tightly implement strings/blobs/texts
+        - a count of child elements for quick access, so count() is fast
+        - ?optionally extra indexes on value like with Bag?
+    - the structure could also be used simply to segment very large strings or lists
+- Bag - high cardinality
+    - tree/graph with new root node to represent each distinct derived value
+    - structure possibly exactly the same as Array but elems not considered ordered
+    - definitely support extra indexes on value
+
 * enum is the successable - pred/succ not defined as 'by one'
     - Perl 6 specifically defines pred/succ as adding/subtracting 1, and --/++ are wrappers for it
     - maybe I should consider renaming my Enumerable routines to prev/next?
@@ -94,6 +116,27 @@ resources of everyone else.
         - Perl 6 Str does Stringy
             - Str: "String of characters"
             - Stringy: "Common role for string types (such as Str) and types that can act as strings (such as Cat)."
+- positional are dense vs not
+    - array values are fixed length
+    - require use of [insert,catenate,replicate,etc] to increase the length of an array
+        - those 3 are all low-level ops
+    - ary.n etc accessors can only replace elements, not add or remove them
+    - Array is formally dense
+    - Array can be implemented in a sparse fashion using something like run-length encoding
+        - when several identical consecutive elements, store element once with a multiplier integer
+        - analagous to conception of a bag, but ordered
+        - replicate is low-level to easily exploit this implementation possibility
+        - if one wants to insert ary[1_000_000] elem first conceptually,
+        they first say something like ary.insert_replicate(null-marker,999_999)
+    - Array possible implementation is a list of lists, where each inner list
+    is either a regular list of items each stored 1:1, or it is an interval
+    that just says how many copies of an item
+        - length of whole array is sum of logical lengths of sub-arrays
+        - this is loosely analogous to a B+ tree or something
+    - Arrays overall have several likely-used implementation format alternatives
+        - dense regular array of plain integers, representing octets or codepoints
+        - dense regular array of arbitrary objects
+        - tree-like structure for example as previously described
 - members have probability of being in collection vs being absolute yes or no
     - absolute yes for Array, Set, Bag, Interval
 - finite vs infinite member count
@@ -323,6 +366,9 @@ the generator can subsume the other stuff too.
 construct that can be built from a variety of interchangeable components or
 combinations, rather than being a more fundamental feature itself;
 this is similar to 'summarize' et al.
+- REGARDLESS OF ALL OTHER FEATURES, WE WANT A LOW-LEVEL THAT JUST PRODUCES
+A LIST OF 0..N CONSECUTIVE INTEGER ELEMENTS WHICH CAN BE EASY INPUT TO A
+COMPREHENSION FUNCTION CHAIN ETC, also likely used for rank etc.
 
 * NEW: In Plain_Text, special case the chars '-','.','/' only when they are
 in front of or between digit chars, in which case they are part of the

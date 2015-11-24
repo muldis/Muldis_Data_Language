@@ -256,7 +256,7 @@ reference to or a definition of a selection contract is allowed, a
 reference to or a definition of a constant is allowed in its place.  A
 given constant for value I<V1> is semantically identical for such uses as a
 general form selection contract with an omitted I<S1>, a I<P1> that tests
-its argument for equality with I<V1>, and a default value of I<V1>.
+its actual argument for equality with I<V1>, and a default value of I<V1>.
 
 Each given I<interface contract>, I<I1>, explicitly does I<not> declare its
 associated type.  Instead, I<I1> relies on other contracts, I<S1>, to
@@ -284,13 +284,13 @@ and a 64-bit ratio type; these ordered from most general to most specific.
 Each interface contract I<I1> declares a set of zero or more virtual
 routine (function or procedure) names I<N1>.  For each name of I<N1> there
 must exist a virtual routine I<R1> of that name which takes at least 1
-argument I<A1> of the type associated with I<I1>.  For each given composing
-type I<S1> of I<I1>, for each virtual routine I<R1>, there must exist a
-(possibly virtual) routine I<R2> which explicitly declares that it
-I<implements> I<R1>, where the argument I<A2> corresponding to I<A1> is of
-the type associated with I<S1>.  That is, any contract composing an
-interface contract must implement the latter's required interface; failing
-to do so is an error.
+conceptual argument I<A1> of the type associated with I<I1>.  For each
+given composing type I<S1> of I<I1>, for each virtual routine I<R1>, there
+must exist a (possibly virtual) routine I<R2> which explicitly declares
+that it I<implements> I<R1>, where the conceptual argument I<A2>
+corresponding to I<A1> is of the type associated with I<S1>.  That is, any
+contract composing an interface contract must implement the latter's
+required interface; failing to do so is an error.
 
 And so, regardless of whether types are manifested in a program by way of a
 a selection contract or an interface contract, users can be confident
@@ -431,12 +431,13 @@ instructions for mapping a set of values to a set of values in a pure and
 deterministic manner.
 
 A Muldis D function is isomorphic to a mathematical function.  A function
-call/invocation takes exactly 1 input I<argument> value and gives exactly 1
-output I<result> value.  The result value of a function call is determined
-entirely by its argument value, and a function is guaranteed to give
-exactly the same single result value for every call with the same argument
-value.  Multiple distinct arguments may yield the same result, but multiple
-calls with the same argument never give different results.
+call/invocation takes exactly 1 input I<actual argument> aka I<topic> value
+and gives exactly 1 output I<result> value.  The result value of a function
+call is determined entirely by its actual argument value, and a function is
+guaranteed to give exactly the same single result value for every call with
+the same actual argument value.  Multiple distinct actual arguments may
+yield the same result, but multiple calls with the same actual argument
+never give different results.
 
 When implementing a mapping that conceptually wants to take multiple
 argument values, which is likely more common than not, the typical practice
@@ -447,13 +448,22 @@ elements of a single actual result value.  An example with multiple
 conceptual arguments and results is the common whole division operation; it
 takes a dividend plus a divisor and gives a quotient plus a remainder.
 
+Note that for brevity the Muldis D language specification will only use the
+unqualified term I<argument> in the context of a function whose actual
+argument is I<FDN__Tuple_Inf> typed, the latter being the case for most
+functions.  In that context, an I<argument> is a conceptual argument of the
+function that is actually an attribute of said actual argument.  Regardless
+of its type, the term I<topic> will always refer to a function's entire
+actual argument.  As an exception, in some contexts the unqualified
+I<argument> could mean either an actual or a conceptual argument.
+
 A Muldis D function is composed fundamentally of one or more arbitrarily
 complex value expressions, and the former is essentially just a wrapper for
 the latter.  Complementary to this, a function can only be invoked as part
 of a value expression, such that its result value is the value of the
-expression, and similarly, the function call's argument must be defined by
-a value expression.  The ultimate roots of value expression call chains are
-typically procedure statements.
+expression, and similarly, the function call's actual argument must be
+defined by a value expression.  The ultimate roots of value expression call
+chains are typically procedure statements.
 
 A function has no lexical variables at all, although they can be faked for
 code factoring purposes by giving explicit names to its component
@@ -491,7 +501,7 @@ to environmental conditions at the time, such as due to a lack of
 sufficient system memory.  A function or expression may not catch a thrown
 exception, so one will unwind the call stack up to some invoking procedure.
 If one wants to effectively trap failures within a function, then its
-expressions or called functions must explicitly return failure-indicating
+expressions or called functions must explicitly return excuse-indicating
 values among their possible results, such as IEEE NaN values, rather than
 throw exceptions; as far as Muldis D is concerned, all explicit results,
 even the likes of NaN, are considered to be normal termination.
@@ -499,19 +509,19 @@ even the likes of NaN, are considered to be normal termination.
 For any context in Muldis D where a reference to or a definition of a
 function is allowed, a reference to or a definition of a contract is
 allowed in its place.  An invocation as if it were a function of a given
-contract for type I<T1> where the argument is value I<V1> is semantically
-identical to (and is idiomatic for) testing if I<V1> is a member of the
-type I<T1>; the result is I<true> if so and I<false> otherwise.
+contract for type I<T1> where the actual argument is value I<V1> is
+semantically identical to (and is idiomatic for) testing if I<V1> is a
+member of the type I<T1>; the result is I<true> if so and I<false> otherwise.
 
 I<TODO: Other related notes.  Especially the parts of a function definition.>
 
 =head2 Constants
 
-A I<constant> is similar to a I<function> but that it takes no argument at
-all and it always gives the same result.  A constant may be invoked
-anywhere that a function may be, and a constant may invoke functions.  The
-single value a constant denotes may be arbitrarily complex, and repeated
-portions may be factored under their own names, like in a function.
+A I<constant> is similar to a I<function> but that it takes no actual
+argument at all and it always gives the same result.  A constant may be
+invoked anywhere that a function may be, and a constant may invoke functions.
+The single value a constant denotes may be arbitrarily complex, and
+repeated portions may be factored under their own names, like in a function.
 
 A primary use of a Muldis D I<constant> is for code factoring, so that
 multiple routines or dependent packages may share a common named constant.
