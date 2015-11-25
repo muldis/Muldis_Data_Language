@@ -14,6 +14,22 @@ resources of everyone else.
 
 ----------
 
+* Just do mapping of Integer:Text etc all high level, eg an integer literal
+represented by an array of ascii codepoints for each digit/hexit/etc can be
+converted with a simple map(-).map(*).reduce(+) or a loose analogy.
+- We don't need low-level text to num etc, or any such can override rather
+than being part of Foundation API, same as overrides for floats etc.
+- This code only runs at parse time in typical cases, having many num
+literals is rare in non-dump code.
+- Have generalized concept of a string/array-of-int representing positions
+in a numeric literal, little-endian so value is reduce of `ary[i] * base ** (i+1)`
+and each array element is in 0..1, 0..9, 0..15 etc after subtracting 31 or
+whatever and reversing array element order.
+- Users can write these various intermediate values directly if they want.
+- Same concept reusable to map binary numbers, so eg 0..255 elements or
+-128..127 as applicable, same for big-endian and little endian but array
+is or isn't reversed before the map-reduce.
+
 * On implementations:
 - Tuple - low cardinality
     - flat list, rewrite with each change
@@ -2928,11 +2944,12 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    - Key_Asset_Pair is proper subtype of Tuple
                   |    with exactly 2 attributes named 'key' and 'asset';
                   |    When working element-wise with a collection, how each element represented.
-    Capsule       | select_Capsule(tag,asset), eg select_Capsule(\Set,\+{...})
+    Capsule       | \:(wrapper,asset), eg \:(\Set,\+{...})
                   |    This is the parent of most types, analogous to an 'object', namespacing things.
-                  |    Reference is subtype like select_Capsule(\Reference,\%(...)).
+                  |    Reference is subtype like \:(\Reference,\%(...)).
                   |    There are no symbolic ops on purpose so to not interfere with subtypes,
                   |    and any alpha ops should have names unlikely to interfere.
+                  |    Examples, wrap(wrapper,asset), wrapper(capsule), unwrap(capsule).
                   |    The tag, conceptually a base type name,
                   |    is generally a Reference like \@foo for most subtypes
                   |    but for main core types especially ones that Foundation
@@ -3672,7 +3689,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         these are basically equivalent:
             function <-- (Integer,foo:Integer) : ...;
             function <-- type of SC_Func_Args
-                where (topic matching \:($Integer,foo:$Integer)) : ...;
+                where (topic matching \%($Integer,foo:$Integer)) : ...;
         - a brace-delimited list of 0..N type names / type defs /
         simplified literals, each like previously described; this is useful
         for defining a list of alternatives, eg {(foo), (foo, foo)} means
