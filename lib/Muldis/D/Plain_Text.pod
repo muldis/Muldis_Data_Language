@@ -1035,20 +1035,18 @@ scalar values.
 Grammar:
 
     <Boolean> ::=
-        '\\?'? [False | True]
+        False | True
 
-A C<< <Boolean> >> node represents a value of the Muldis D C<Boolean>
-type, which is a general purpose logical boolean value.  The C<Boolean>
-type is a fundamental type of the Muldis D type system, and this is the
-canonical grammar for them.
+A C<< <Boolean> >> node represents a value of the Muldis D C<Boolean> type,
+which is a general purpose 2-valued logic boolean or I<truth value>.  The
+C<Boolean> type is a foundational type of the Muldis D type system, and
+this is the canonical grammar for them.
 
 Examples:
 
     True
 
     False
-
-    \?True
 
 =head2 Integer Literals
 
@@ -1058,7 +1056,7 @@ Grammar:
         <nonquoted_int> | <quoted_int>
 
     <nonquoted_int> ::=
-        ['\\+' | '\\-']? <nonsigned_int>
+        <asigned_int>
 
     <quoted_int> ::=
         <qu_num_head> <qu_asigned_int> <qu_num_tail>
@@ -1109,9 +1107,11 @@ Grammar:
         <[ 0..9 A..F _ a..f ]>
 
 An C<< <Integer> >> node represents a value of the Muldis D C<Integer>
-type, which is a general purpose integer exact numeric value.  The C<Integer>
-type is a fundamental type of the Muldis D type system, and this is the
-canonical grammar for them.
+type, which is a general purpose exact integral number of any magnitude,
+which explicitly does not represent any kind of thing in particular,
+neither cardinal nor ordinal nor nominal.  The C<Integer> type is a
+foundational type of the Muldis D type system, and this is the canonical
+grammar for them.
 
 This grammar supports writing C<Integer> literals in any of the numeric
 bases {2,8,10,16} using conventional syntax.  The literal may optionally
@@ -1135,41 +1135,29 @@ respectively.
 
 =back
 
-TODO: UPDATE THIS!
-Unlike with most common programming languages, the Muldis D Plain Text
-canonical syntax for its simpler numeric types requires each literal to be
-quoted like C<\+'foo'> when the literal C<foo> contains anything other than
-digits or any of the characters C<[bodx._]>.  This includes all negative
-numbers plus all rational numbers whose denominators are integral powers of
-neither 2 nor 10, for example C<\+'-3'> and C<\+'1/43'>.  The quoted syntax
-is permitted for all simpler numeric literals but the simpler bareword
-syntax is canonical for non-negatives such as C<0x420F> and C<3.14159>.
-
-Muldis D Plain Text still permits the restricted numeric values to be
-expressed bare as users are accustomed to, for example C<-3> or C<1/43>,
-but in that case they would be interpreted as more complicated value
-expressions having operator calls, such as the additive inverse of a
-positive integer or the rational division of 2 integers, respectively.
-
-Typically these bare or quoted alternatives would logically denote the same
-values as each other as users would expect, assuming that code is using the
-core package C<Muldis_D> which defines C<-> and C</> etc over C<Integer>;
-however, that might not be the case if alternate definitions of C<-> etc
-are in scope of the code; the quoted forms are guaranteed to not change
-meaning no matter what packages or routines are in scope of the code.
-
-The primary rationale for this design is that that the Muldis D Plain Text
-grammar is kept simpler by avoiding the only special
-cases for a symbolic character immediately preceding an alphanumeric token.
-There should be no surprise or ambiguity for users when a digit is preceded
-by a run of symbolics C<ω> as to how it will be interpreted; for example,
-C<ω3> and C<ω(3)> and C<ωx> (where C<x> is 3) will be parsed in exactly the
-same way with respect to the symbolic even when it contains a C<-> etc.
-
 A quoted C<< <Integer> >> may optionally be split into 1..N quoted segments
 where each pair of consecutive segments is separated by dividing space;
 this segmenting ability is provided to support code that contains very long
 numeric literals while still being well formatted (no extra long lines).
+
+Note that the general grammar rules of Muldis D Plain Text will treat all
+nonquoted symbolic characters {-,+,.,/} as I<fixed> operator invocations,
+and nonquoted digit sequences as positive integer literals.  However,
+nonquoted numeric literals have a special exception for {-,+,.,/} iff they
+appear in very specific places, such that those symbolics are treated as
+part of a numeric literal instead of an operator call.  This is done so
+that all values of the core numeric types can be written in a clean and
+concise manner while avoiding any risk of the meanings of the literals
+changing depending what Muldis D packages are in scope, which would be the
+case if the symbolics were parsed as operator calls.  When writing Muldis D
+Plain Text code with unquoted numeric literals, having dividing space
+between any {-,+,.,/} and any C<< <num_char> >> should guarantee their
+interpretation as an operator call, while ensuring no dividing space
+between them should guarantee interpretation as part of the literal iff the
+symbolics are in specific positions expected for the latter.  This special
+exception breaks the general grammar rule where symbolics and alphanumerics
+are always considered separate tokens regardless of whether or not there is
+dividing space between them, however that is considered a lesser surprise.
 
 Examples:
 
@@ -1177,7 +1165,7 @@ Examples:
 
     0
 
-    \-3
+    -3
 
     \+'-3' '50_897'
 
@@ -1194,24 +1182,40 @@ Examples:
 Grammar:
 
     <Fraction> ::=
-        <nonquoted_ratio> | <quoted_ratio>
+        <nonquoted_frac> | <quoted_frac>
 
-    <nonquoted_ratio> ::=
-        ['\\+' | '\\-']? <nonsigned_int> '.' <num_seg>
+    <nonquoted_frac> ::=
+        <asigned_int> <frac_div> <num_seg>
 
-    <quoted_ratio> ::=
-        <qu_num_head> [
-              [<qu_asigned_int> '.' <qu_num_mid>]
-            | [<qu_asigned_int> '/' <qu_asigned_int>]
-        ] <qu_num_tail>
+    <quoted_frac> ::=
+        <qu_num_head> <qu_asigned_int> <frac_div> <qu_num_mid> <qu_num_tail>
+
+    <frac_div> ::=
+        '.' | '/'
 
 A C<< <Fraction> >> node represents a value of the Muldis D C<Fraction>
-type, which is a general purpose rational exact numeric value.
+type, which is a general purpose exact rational number of any magnitude and
+precision, expressible as a coprime I<numerator> / I<denominator> pair of
+C<Integer> whose I<denominator> is positive, which explicitly does not
+represent any kind of thing in particular, neither cardinal nor ordinal nor
+nominal.
 
-The C<Fraction> type is not a fundamental type of the Muldis D type system, but
-rather is a subtype by constraint of the C<Capsule> type, and all C<Fraction>
-values can be selected in terms of C<< <Capsule> >> grammar nodes.
-However, C<< <Fraction> >> is the canonical grammar for all C<Fraction> values.
+The C<Fraction> type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the C<Capsule> type, and
+all C<Fraction> values can be selected in terms of C<< <Capsule> >> grammar
+nodes.  However, C<< <Fraction> >> is the canonical grammar for all
+C<Fraction> values.
+
+An entire C<< <Fraction> >> literal has the same numeric base, both the
+part before the C<< <frac_div> >> and the part after it.  When the C<<
+<frac_div> >> is a C</>, the literal portion on the left is treated as the
+integral I<numerator> and the part on the right as the integral
+I<denominator>; the literal allows that pair to not be coprime, and it will
+be normalized in the derived C<Fraction> value.  When the C<< <frac_div> >>
+is a C<.>, the anormal I<numerator> is determined by treating all of the
+C<< <num_char> >> as an integral literal as if the C<.> wasn't there, and
+the anormal I<denominator> is determined by taking the numeric base to the
+power of the number of C<< <num_char> >> on the right side of the C<.>.
 
 Examples:
 
@@ -1219,15 +1223,15 @@ Examples:
 
     0.0
 
-    \+'5/3'
+    5/3
 
-    \-4.72
+    -4.72
 
-    \+'-472/100'
+    -472/100
 
     0xDEADBEEF.FACE
 
-    \+'-0o402'
+    -0o402
 
     0b1.1
 
@@ -1245,7 +1249,7 @@ Grammar:
 A C<< <Blob> >> node represents a value of the Muldis D C<Blob> type, which
 is a general purpose bit string.
 
-The C<Blob> type is not a fundamental type of the Muldis D type system, but
+The C<Blob> type is not a foundational type of the Muldis D type system, but
 rather is a subtype by constraint of the C<Capsule> type, and all C<Blob>
 values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Blob> >> is the canonical grammar for all C<Blob> values.
@@ -1285,7 +1289,7 @@ Grammar:
 A C<< <Text> >> node represents a value of the Muldis D C<Text> type, which
 is a general purpose character string.
 
-The C<Text> type is not a fundamental type of the Muldis D type system, but
+The C<Text> type is not a foundational type of the Muldis D type system, but
 rather is a subtype by constraint of the C<Capsule> type, and all C<Text>
 values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Text> >> is the canonical grammar for all C<Text> values.
@@ -1315,7 +1319,7 @@ A C<< <Comment> >> node represents a value of the Muldis D C<Comment> type,
 which is a generic character string comment for annotating source code when
 the comment is meant to be introspectable as such.
 
-The C<Comment> type is not a fundamental type of the Muldis D type system, but
+The C<Comment> type is not a foundational type of the Muldis D type system, but
 rather is a subtype by constraint of the C<Capsule> type, and all C<Comment>
 values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Comment> >> is the canonical grammar for all C<Comment> values.
@@ -1768,7 +1772,8 @@ Grammar:
         <ps9_nonquoted_numeric> | <ps9_quoted_numeric>
 
     <ps9_nonquoted_numeric> ::=
-        <digit_char> <alphanumeric_char>* ['.' <alphanumeric_char>]?
+        <num_sign>? <digit_char> <alphanumeric_char>*
+            [<frac_div> <alphanumeric_char>]?
 
     <ps9_quoted_numeric> ::=
         '\\+' <ps2_single_quoted> % <sp>
