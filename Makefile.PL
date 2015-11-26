@@ -6,7 +6,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
    NAME => 'Muldis::D',
-   VERSION => '0.200001',
+   VERSION => '0.201000_1',  # corresponding to 0.201.0.-9
    ABSTRACT => 'Formal spec of Muldis D relational DBMS lang',
    AUTHOR => 'Darren Duncan <darren@DarrenDuncan.net>',
    PREREQ_PM => {},
