@@ -16,7 +16,7 @@ This document is Muldis::D version 0.201.0.-9.
 This is the root document of the Muldis D language specification; the
 documents that comprise the remaining parts of the specification, in their
 suggested reading order (but that all follow the root), are:
-L<Muldis::D::Foundation>, L<Muldis::D::Package::Core>, L<Muldis::D::Plain_Text>.
+L<Muldis::D::Foundation>, L<Muldis::D::Plain_Text>, L<Muldis::D::Package::Core>.
 
 See also L<Muldis::D::Outdated> (which has its own tree of parts to follow)
 for a prior and outdated version of this document, since the current
@@ -24,35 +24,90 @@ specification has yet to cover all of the same subject areas.
 
 =head1 DESCRIPTION
 
-I<TODO, overhaul/refactor this document.>
-
-This distribution / multi-part document is the human readable authoritative
+This document aggregate is the human readable authoritative
 formal specification of the B<Muldis D> language, and of the virtual
 environment in which it executes.  If there's a conflict between any other
 document and this one, then either the other document is in error, or the
 developers were negligent in updating it before this one.
 
-The fully-qualified name of this multi-part document and the language
+The fully-qualified name of this document aggregate and the language
 specification it contains (as a single composition) is
-C<Muldis_D:Plain_Text:"http://muldis.com":"0.201.0.-9"> (B<MDPT>).  It is the
-official/original (not embraced and extended) Muldis D Plain Text language
+C<Muldis_D:"http://muldis.com":"0.201.0.-9">.  It is the
+official/original (not embraced and extended) Muldis D language
 specification by the authority Muldis Data Systems (C<http://muldis.com>),
-version number C<0.201.0.-9> (this number matches the VERSION pod in this file).
+version number C<0.201.0.-9> (this number matches the VERSION in this file).
 
-This multi-part document is named and organized with the expectation that,
-in the Muldis D language family, many versions (core languages, grammars,
-vocabularies, etc) for it will exist over time, some of those under the
+The B<Muldis D> language aggregate specification has 3 primary component
+specifications: B<Muldis D Foundation> (B<MDF>), B<Muldis D Plain Text>
+(B<MDPT>), and B<Muldis D Standard Library> (B<MDSL>).  Otherwise, the
+B<Muldis D> aggregate specification mainly just provides a high-level
+overview of the language as a whole and of how those 3 primary components
+work together; see the L</OVERVIEW> section in this file for that.
+
+The B<Muldis D Foundation> specification defines the fundamentals of Muldis
+D upon which everything else depends.  It is the language's expected
+lowest common behavioural/semantic denominator.  It defines how the type
+system works and other central language paradigms and features.  It defines
+the small number of foundational / low-level system-defined types and
+operators and other features which are canonically written in one or more
+third-party languages which are I<hosting> Muldis D; formally their
+implementation or internals are expected to be hidden from the Muldis D
+user, and differ in arbitrarily large ways between hosts, so to take
+advantage of the strengths of each host.  It is expressly agnostic to
+concrete language syntax and at this level all source code is homoiconic
+data structures, composed using function calls.
+
+The B<Muldis D Plain Text> specification defines the grammar of the
+concrete Muldis D language syntax that every Muldis D implementation is
+expected to support as an option.  It is the language's expected lowest
+common syntactic denominator.  It is intended to be a standard format of
+interchange of both code and data between all Muldis D implementations.  It
+is also expected to be the syntax of choice for users to write Muldis D
+applications or database schemas in, and is designed to have a similar
+level of conciseness and readability as what users get in both typical
+general purpose application programming languages as well as SQL.  That
+being said, Muldis D is designed to empower a variety of alternate language
+syntaxes to be used in different areas of a program, either in support of
+user tastes, or for better host/peer language integration (including their
+ORMs), or as a method of emulating other programming language environments
+or SQL DBMSs.
+
+The B<Muldis D Standard Library> specification comprises a documented
+library written entirely in Muldis D which provides its common core
+vocabulary, the system-defined data types and operators that regular users
+of the language would employ directly in their applications and schemas.
+It corresponds to the "standard library" that is intrinsic to or bundled
+with typical general purpose application programming languages or SQL
+DBMSs.  It is the bulk portion of Muldis D that is self-hosted and can be
+shared by all Muldis D implementations, though the latter can choose to
+internally substitute behaviour-maintaining host-native versions for
+performance.  It comprises a set of Muldis D I<packages> (compilation
+units) that users can choose from as dependencies of their applications and
+schemas.  None are mandatory, and users can choose alternatives, but they
+are recommended as the default options for their functionality.
+
+The Muldis D language specifications, both for each individual component and
+for the aggregate as a whole, are named and organized with the expectation that
+numerous versions for each will exist over time, some of those under the
 original author's control, and some under the control of other parties.
-The L</VERSIONING> pod section in this file presents a formal method for
-specifying the fully-qualified name of a complete language derived from
-Muldis D, including any common base plus any dialects and extensions.  All
-code written in any dialect or derivation of Muldis D should begin by
-specifying the fully-qualified name of the language that it is written in,
-the format of the name as defined by said method, to make the code
-unambiguous to both human and machine (eg, implementing) readers of the
-code.  The method should be very future-proof.
+The B<MDF> and B<MDPT> specifications each have their own
+independent version naming series, as does each package of the B<MDSL>, as
+does the B<Muldis D> aggregate specification.
+The L</VERSIONING> section in this file presents a formal and future-proofed
+method for specifying the fully-qualified names of each versioned entity.
 
-This multi-part document is in the process of being mostly rewritten, with
+All code written in Muldis D should begin by specifying the fully-qualified
+name of a concrete grammar it conforms to (either a B<MDPT> version or an
+alternative), except that this concept doesn't apply to the B<MDF>
+homoiconic native form.  Every Muldis D I<package> should both specify the
+fully-qualified name of a foundation (a B<MDF> version typically) that it
+is known to work with, as well as specify the fully-qualified names of all
+other packages that satisfy its direct requirements, whether system-defined
+(typically one or more C<MDSL>) or user-defined.  Doing all of this should
+make the code
+unambiguous to both human and machine (eg, implementing) readers of the code.
+
+This B<Muldis D> aggregate is in the process of being mostly rewritten, with
 large layout and language design changes that were conceived since the
 middle of 2011 but that weren't formally published, and which are now
 largely being implementation-driven.  The last release of the language
@@ -63,14 +118,18 @@ C<http://muldis.com> with version numbers between those two.
 
 During the transition period, the Muldis-D distribution contains parts of
 two distinct Muldis D specifications, the newer
-C<Muldis_D:Plain_Text:"http://muldis.com":"0.201.0.-9"> which is being regularly
-fleshed out, and the older C<Muldis_D:"http://muldis.com":0.148.2:PTMD_STD>
+C<Muldis_D:"http://muldis.com":"0.201.0.-9"> which is being regularly
+fleshed out, and the older C<Muldis_D:"http://muldis.com":0.148.2>
 which is a static archive.  The parts of the older are all indexed by
 L<Muldis::D::Outdated> and live under its namespace, while the parts of the
 newer all live outside the C<Outdated> namespace.  You should always read
 the newer parts first, and just refer to the older parts for subject areas
 not yet rewritten.  Older parts are subject to be removed piecemeal when
 their content has been rewritten, and should all eventually go away.
+
+=head1 OVERVIEW
+
+I<TODO, overhaul/refactor this section.>
 
 Muldis D is a computationally / Turing complete (and industrial strength)
 high-level programming language with fully integrated database
@@ -121,15 +180,6 @@ first main implementation of Muldis D.
 Muldis D is an L<Acmeist|http://www.acmeism.org/> programming language for
 writing portable database modules, that work with any DBMS and with any
 other programming language, for superior database interoperability.
-
-=head1 OVERVIEW
-
-I<TODO, overhaul/refactor this section.>
-
-This document provides a high-level view of the B<Muldis D Plain Text>
-language, or I<Muldis D> less formally.  It provides the basics of how the
-language is designed and works, as a foundation upon which to understand
-the other parts of the language spec.
 
 Muldis D is an industrial-strength computationally complete high-level
 application programming language with fully integrated database
