@@ -14,6 +14,35 @@ resources of everyone else.
 
 ----------
 
+* Next to C# and Perl 5, probably Javascript should be a top priority for
+porting Muldis D to, for the purpose of providing easy user demos of the
+langauge, where users can try it out in their web browsers simply and
+without installing anything.  The UI could just be a pair of editable text
+fields, one for an input program package, prefilled with an example and
+other examples available, and another field with the result.
+
+* There are formally independent versioning namespaces for MD,MDF,MDPT,MDSL
+so items in each don't need to explicitly say which they are.
+- Consider potential of multiple foundations, that is multiple languages.
+- All fully-qualified versions now just have 3 main parts: base name, authority, vnum.
+    - This is all the VERSIONING in D.pod should generally be saying, and
+    in particular it can dig into the meaning of authority and vnum which is shared.
+    - Detail of the first part is more left up to each component spec to explain.
+    - Generally VERSIONING can be chopped down quite a bit, not try to be so flexible for eg N parts.
+- Merge first 2 parts of grammar name, and add a first part for foundation, so...
+- Syntax (per file):
+    Muldis_D_Plain_Text:"http://muldis.com":"0.201.0.-9"
+- Behavior (per package):
+    Muldis_D_Foundation:"http://muldis.com":"0.201.0.-9"
+- Vocabulary (per package):
+    Core:"http://muldis.com":"0.201.0.-9"
+    Core::Aliases:"http://muldis.com":"0.201.0.-9"
+    Core::Math:"http://muldis.com":"0.201.0.-9"
+    ...
+- Requiring explicit 'Muldis_D' as its own token is largely redundant; each
+grammar or whatever will match or not holistically, and a lot of grammars
+are for emulating things without such declarations anyway.
+
 * TODO:
 - Consider renaming FDN entities to remove the FDN__ prefixes; these aren't actually
 needed as Foundation entities live in a separate namespace with different
@@ -129,10 +158,12 @@ is or isn't reversed before the map-reduce.
         - a count of child elements for quick access, so count() is fast
         - ?optionally extra indexes on value like with Bag?
     - the structure could also be used simply to segment very large strings or lists
+    - maybe have low-level indicator that we want to ensure elements all unique
 - Bag - high cardinality
     - tree/graph with new root node to represent each distinct derived value
     - structure possibly exactly the same as Array but elems not considered ordered
     - definitely support extra indexes on value
+    - should have low-level indicator that we want to ensure elements all unique
 
 * enum is the successable - pred/succ not defined as 'by one'
     - Perl 6 specifically defines pred/succ as adding/subtracting 1, and --/++ are wrappers for it

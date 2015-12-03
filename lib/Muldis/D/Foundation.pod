@@ -5,7 +5,7 @@
 =head1 NAME
 
 Muldis::D::Foundation -
-Fundamental low-level data types and operators of Muldis D
+Fundamental low-level architecture, types, and operators of Muldis D
 
 =head1 VERSION
 
@@ -21,6 +21,79 @@ it contains is C<Muldis_D:Foundation:"http://muldis.com":"0.201.0.-9">.
 See also L<Muldis::D> to read the B<Muldis D> language meta-specification.
 
 I<TODO, overhaul/refactor this document.>
+
+=head1 OVERVIEW
+
+This document provides a high-level view of the B<Muldis D>
+language.  It provides the basics of how the
+language is designed and works, as a foundation upon which to understand
+the other parts of the language spec.
+
+Muldis D is an industrial-strength computationally complete high-level
+application programming language with fully integrated database
+functionality; you can use it to define, query, and update ("object")
+relational databases, as well as write general purpose applications.  The
+language's paradigm is a mixture of declarative, homoiconic, functional,
+imperative, and object-oriented.  It is primarily focused on providing
+reliability, consistency, portability, and ease of use and extension.  The
+language should also lend itself to making fast implementations.
+
+Muldis D provides an effective means to reduce or avoid entirely the
+problem of "object-relational impedance mismatch".  The main way that it
+deals with that problem is that it natively supports user-defined types at
+the database level, which can be arbitrarily complex such as to support
+collection values as attribute values.  And so users can effectively use
+their same type definitions in both the databases and in their
+applications, with no non-trivial mapping required. This is in contrast
+with typical database ORM tools which only remap application objects into
+simpler built-in database types like plain numbers and strings.
+
+The syntax and feature set of Muldis D is like that of a general purpose
+programming language, and so shouldn't be too difficult to learn.  Multiple
+other languages influence its design in various ways, with Perl 6 in
+particular (and SQL of course) being a strong influence.
+
+In contrast to a typical SQL DBMS which uses multiple programming languages
+together, where SQL is used for queries and something else (possibly
+SQL-alike) for defining stored procedures, a Muldis D DBMS would use the
+same Muldis D language to assume both roles.
+
+Muldis D is rigorously defined and requires users to be explicit, which
+leaves little room for ambiguity and related bugs.  When something is
+specified in Muldis D, its semantics should be well known and fully
+portable (not implementation dependent).  If a conforming implementation
+(such as Muldis::D::RefEng) can't provide a specified
+behaviour, code using it will refuse to run at all, rather than silently
+changing its semantics; this also helps users to avoid bugs.  Moreover,
+Muldis D generally disallows any details of an implementation's "physical
+representation" or other internals to leak through into the language; eg,
+there is no "varchar" vs "char", simply "text".  Users should not have to
+know about this level of detail, and implementers should be free to
+adaptively pick optimum ways to satisfy user requests, and change later.
+
+Muldis D, being first and foremost a data processing language, provides a
+thorough means to both introspect and define all entities using just data
+processing operators.  In general purpose languages an analogous concept is
+I<reflection> and in SQL it is the I<system catalog>.
+
+The design and various features of Muldis D go a long way to help both its
+users and implementers alike.  A lot of flexibility is afforded to
+implementers of the language to be adaptive to changing constraints of
+their environment and deliver efficient solutions.  This also makes things
+a lot easier for users of the language because they can focus on the
+meaning of their data rather than worrying about implementation details;
+users can focus on defining what needs to be accomplished rather than how
+to accomplish that, which relieves burdens on their creativity, and saves
+them time.
+
+Muldis D is designed such that, to nearly the maximum degree possible, the
+built-in language syntax is expressed just in terms of generic-syntax
+routine invocations, meaning that wherever possible the language features
+are defined in terms of being just routines.  This allows the fundamental
+Muldis D grammar to be as simple as possible and it empowers users to
+define additional features that can mimic nearly any built-in ones in both
+functionality and syntax.  There are only a few exceptions to this rule,
+where doing so has a large net benefit to the language design.
 
 =head1 FUNDAMENTAL CONCEPTS
 
