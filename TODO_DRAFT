@@ -818,6 +818,8 @@ development should be done in parallel-minor cycles anyway, with all
 * This seems interesting:
 http://www.vertabelo.com/blog/notes-from-the-lab/why-sql-is-neither-legacy-nor-low-level-but-simply-awesome
 
+* Useful ta know: https://github.com/daoswald/JSON-Tiny/pull/1
+
 * Bootstrapping aside, it probably actually IS easiest to write all Muldis
 D compilers IN Muldis D, for example the code that takes user-defined
 Muldis D code (native data structures format) and generates equivalent Perl
@@ -1047,6 +1049,18 @@ then, we have to select the 32 somehow, and repeated succ() from zero is
 kind of too far on the micro-boost side of things.
 - The parser calls the str2num or whatever and produces an 'opaque' node
 which is the source code as data result.
+- Actually, no str2num, we just math it with 0/1/-1 primitives along with
+the Foundation math ops like add multiply etc, do that at parsing time and
+then constant folding would turn things back into effective literals of any number.
+- Generally don't have N-ary expression node types maybe but instead an
+expr node primitive for making a 1-tuple and a 2-tuple and between those
+and functions for for extension etc we can basically produce any literal
+values of collection types in the parsers, that can then be constant-folded
+to effectively make collection literals of any size collection.
+- But implementation would need to optimize certain N-ary things especially
+if we coded them with tail-recursion, like string construction.
+- The Hosted_Data syntaxes would need something to call in the Foundation
+for more direct N-ary mapping for fast data in/out.
 
 * Have Muldis_D::Foundation package be written in the PT foundational
 subset, and this primarily defines the full Plain_Text parser.  MD::B has
