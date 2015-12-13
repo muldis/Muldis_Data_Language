@@ -14,6 +14,34 @@ resources of everyone else.
 
 ----------
 
+* From "Webscale's dead; long live PostgreSQL!"
+by Joshua D. Drake
+https://www.youtube.com/watch?v=HtVLQD38yvU
+- PgConf US 2015.
+- "Webscale is a marketing term for everything professionals have been doing
+for decades.  Creating highly scalable systems."
+- Amazon literally charges twice as much for the same thing as otherwise.
+- Make replication / hot standby asynchronous unless you know what you're
+doing, else a loss of one slave makes everything wait.
+- PgPool valuable, transparently make writes to master, reads from slaves.
+- Minimum Postgres version that is reasonable to use is 9.2,
+not just a lot faster, but like Prius vs Farari.
+- Connection pooling important, Pg connection opening is expensive.
+- BDR - Bi-directional replication without million dollar licence fees and
+support contracts, with ACID compliance, proper controls, scaling to 48 nodes.
+- Banks like / ok with "eventually consistent".
+- Postgres XL if you just want sharding.
+- Lists about 33 things that there are foreign data wrappers for.
+- You can process credit cards inside Postgres, but don't.
+- Presenter hates PL/pgSQL, "so does everyone", write functions in other
+languages, eg Perl, Python, V8, etc.
+- Using DO lets you have scripts run in the database without living there.
+
+* http://bonesmoses.org/2015/12/11/pg-phriday-postgres-xl-and-horizontal-scaling/
+
+* https://metacpan.org/release/Time-Moment
+More appropriate than Perl DateTime perhaps or as a model for Muldis D.
+
 * Next to C# and Perl 5, probably Javascript should be a top priority for
 porting Muldis D to, for the purpose of providing easy user demos of the
 langauge, where users can try it out in their web browsers simply and
@@ -164,6 +192,11 @@ is or isn't reversed before the map-reduce.
     - structure possibly exactly the same as Array but elems not considered ordered
     - definitely support extra indexes on value
     - should have low-level indicator that we want to ensure elements all unique
+- Provide implementation hints analagous to locks that say things like
+whether a particular value is only intended for a single use, and so the
+next time it is input to a particular operation only the result and not the
+input needs to be kept.  For example, when adding a number of elements to
+a collection we can effectively just mutate the one we have rather than derive another.
 
 * enum is the successable - pred/succ not defined as 'by one'
     - Perl 6 specifically defines pred/succ as adding/subtracting 1, and --/++ are wrappers for it
@@ -365,6 +398,44 @@ with values unlikely to appear in normal usage.
 "A polynomial is an expression that is the sum of a finite number of non-zero terms,
 each term consisting of the product of a constant and a finite number of
 variables raised to whole number powers."
+
+* Its important to note that fixed-scale (even unlimited precision)
+rationals are in a strange place mathwise in that they are not closed under
+multiplicative or higher math operations that unlimited-scale+precision
+fractions are, rather they are only closed under additive operations.  So
+they are somewhere in a triangle whose corners are integers and fractions
+and floating-point numbers.  In practice, dealing with them on one hand is
+supposed to be like integers or quantities, given what they are used for,
+but in the general case it is like dealing with floats but with different
+truncation rules.  Because of this, while one might conceivably want to put
+a generic fixed-scale fraction type in core, it shouldn't be due to the
+variety of possible behaviours and hence variety of required operators to
+deal with them, such as how to deal with repeated operations.
+- On the other hand, perhaps it could be done if the rules are like this:
+    - Scaled is a pair of integers like Fraction but with different
+    normalization rules.
+    - Scaled are NOT coprime and the actual num/den pair is significant
+    for value identity.
+    - Scaled has a fixed step size per each distinct denominator, which is
+    simply incrementing or decrementing its numerator.
+        - We can haz add a new operator pair specific to this case.
+    - Math with Scaled+Fraction inputs are not defined, one must convert
+    first; this ensures deterministic results when adding say 2/4 fraction
+    with 2/4 Scaled, do you get 2/8 or 4/16 Scaled, we avoid that problem.
+    - Math with Scaled+Integer exist in very limited instances, equal to
+    how a few Fraction have Integer, specifically those related to division
+    or exponentiation; while for Scaled we conceivably could add
+    multiplication to that list, its probably better that we don't, and
+    require users to explicitly convert the integer to scaled first.
+    - Additive operations have the constraint that denominators must already
+    match, and its a fail if not; so additives are all closed within a denominator.
+    - Multiplying Scaled by Scaled - result denominator is product of input
+    denominators with no normalization; inputs don't have to match.
+    - Fractional dividing Scaled by Scaled will also alter the denominator,
+    or that is it will do the same as multiplying but without normalizing.
+    - Whole divide type operations including remainders will have rules
+    like additive operations, requiring denominators to be equal or fail.
+    - Exponentiation will follow appropriate rools also.
 
 * Err on the side of fewer/larger non-core packages rather than more.
 - The following are generally still part of the Muldis D Plain Text language
@@ -4048,7 +4119,9 @@ bi-directional asynchronous multi-master replication support for PostgreSQL
 has been converted from a branch/extension over time into core piecemeal,
 including {Background workers (9.3), Event Triggers (9.3), Replication
 slots (9.4), Logical decoding (9.4), REPLICA IDENTITY (9.4)} and the merge
-may be done by 9.6 perhaps.  See BDR project.
+may be done by 9.6 perhaps.  See BDR project.  And also
+http://blog.2ndquadrant.com/when-are-we-going-to-contribute-bdr-to-postgresql/
+is an updated blog post like the above.
 
 * http://blog.heapanalytics.com/postgresqls-powerful-new-join-type-lateral/
 shows how Pg 9.3's LATERAL join is useful in practice, letting you do in
