@@ -1110,9 +1110,10 @@ C<0> (I<dividend> or I<numerator>) and C<1> (I<divisor> or I<denominator>)
 using the semantics of real number division, whereupon the real number
 result is rounded to the same or nearest integral number, where the nearest
 is determined by the rounding method specified by the C<2> argument.  The
-result is always C<Integral> for both C<Integral> and C<Fractional>
-arguments.  The result is only I<defined> when the C<1> argument is a
-nonzero number; it is an C<Excuse> otherwise.
+result is C<Integral> for C<Integral> arguments and is C<Fractional> with a
+I<denominator> of one for C<Fractional> arguments.  The result is only
+I<defined> when the C<1> argument is a nonzero number; it is an C<Excuse>
+otherwise.
 
 =head2 modulo mod
 
@@ -1885,7 +1886,7 @@ the composing type C<Fraction>.
 =head2 integral_divided_by (Fraction)
 
     ::MD::integral_divided_by::Fraction ::= function
-        --> {Integer, Excuse::Div_By_Zero}
+        --> {Fraction, Excuse::Div_By_Zero}
         <-- (Fraction, Fraction, Round_Meth)
         implements 2::""
     : (
@@ -1893,7 +1894,7 @@ the composing type C<Fraction>.
         n0 ::= ((\.0->numerator) * div(d, \.0->denominator, To_Zero()));
         n1 ::= ((\.1->numerator) * div(d, \.1->denominator, To_Zero()));
         <-- if \.1 = 0.0 then Excuse::Div_By_Zero()
-            else div(n0 * d, n1 * d, \.2);
+            else div(n0 * d, n1 * d, \.2) / 1;
     );
 
 The function C<integral_divided_by::Fraction> implements the C<Numerical>
