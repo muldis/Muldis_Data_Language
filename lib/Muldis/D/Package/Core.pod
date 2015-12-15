@@ -850,7 +850,7 @@ and its C<1> argument is C<True>, and C<False> otherwise.
     ::MD::Round_Meth::"" ::= selection
         union {2::Down,2::Up,2::To_Zero,2::To_Inf
             ,2::Half_Down,2::Half_Up,2::Half_To_Zero,2::Half_To_Inf
-            ,2::Half_Even}
+            ,2::Half_Even,2::Half_Odd}
         default (2::To_Zero());
 
     ::MD::Round_Meth::Down         ::= constant (\@0);
@@ -862,6 +862,7 @@ and its C<1> argument is C<True>, and C<False> otherwise.
     ::MD::Round_Meth::Half_To_Zero ::= constant (\@0);
     ::MD::Round_Meth::Half_To_Inf  ::= constant (\@0);
     ::MD::Round_Meth::Half_Even    ::= constant (\@0);
+    ::MD::Round_Meth::Half_Odd     ::= constant (\@0);
 
 The selection contract C<Round_Meth> is finite.  When a value of some
 C<Orderable> type needs to be mapped into a proper subtype that doesn't
@@ -873,18 +874,22 @@ that Muldis D operators can typically apply.
 
 With C<Down> (aka I<floor>), C<Up> (aka I<ceiling>), C<To_Zero> (aka
 I<truncate>), and C<To_Inf>, the original value will always be mapped to
-the single adjacent value that is lower than it, or higher than it, or
+the single nearest value that is lower than it, or higher than it, or
 towards "zero" from it, or towards the nearer infinity from it,
 respectively.  With C<Half_Down>, C<Half_Up>, C<Half_To_Zero>,
-C<Half_To_Inf>, and C<Half_Even> (aka I<unbiased rounding>, I<convergent
-rounding>, I<statistician's rounding>, or I<bankers' rounding>), the
-original value will be mapped to the single target value that it is closest
-to, if there is one; otherwise, if it is exactly half-way between 2
-adjacent target values, then C<Half_Down> will round towards negative
-infinity, C<Half_Up> will round towards positive infinity, C<Half_To_Zero>
-will round towards "zero", C<Half_To_Inf> will round towards the nearer
-infinity, and C<Half_Even> will round towards the nearest "even" target.
+C<Half_To_Inf>, C<Half_Even> (aka I<unbiased rounding>, I<convergent
+rounding>, I<statistician's rounding>, or I<bankers' rounding>), and
+C<Half_Odd> the original value will be mapped to the single target value
+that it is nearest to, if there is one; otherwise, if it is exactly
+half-way between 2 adjacent target values, then C<Half_Down> will round
+towards negative infinity, C<Half_Up> will round towards positive infinity,
+C<Half_To_Zero> will round towards "zero", C<Half_To_Inf> will round
+towards the nearer infinity, while C<Half_Even> and C<Half_Odd> will round
+towards the nearest "even" or "odd" target respectively.
+
 The default value of C<Round_Meth> is C<To_Zero>, which is the simplest.
+Other programming languages may name their corresponding types
+I<RoundingMode> (Java) or I<MidpointRounding> (C#).
 
 =head1 NUMERICAL DATA TYPES
 
@@ -1585,19 +1590,19 @@ the composing type C<Integer>.
             ' exactly one-half so we decide how to round that.';
 
         e4 ::= (
-            round_meth ??? {
+            q ::= (FDN__Integer_divided_by_rtz ^<-- \%(abs(rtz_quotient),2))
+            r ::= (abs(rtz_quotient) - (2 * q));
+            rtz_quotient_is_even ::= (r = 0);
+
+            <-- round_meth ??? {
                 Half_Down()    : rdn_quotient,
                 Half_Up()      : rup_quotient,
                 Half_To_Zero() : rtz_quotient,
                 Half_To_Inf()  : rti_quotient,
                 Half_Even()    :
-                  (
-                    q ::= (FDN__Integer_divided_by_rtz
-                        ^<-- \%(abs(rtz_quotient),2))
-                    r ::= (abs(rtz_quotient) - (2 * q));
-                    rtz_quotient_is_even ::= (r = 0);
-                    <-- rtz_quotient_is_even ?? rtz_quotient !! rti_quotient;
-                  ),
+                  (rtz_quotient_is_even ?? rtz_quotient !! rti_quotient),
+                Half_Odd()     :
+                  (rtz_quotient_is_even ?? rti_quotient !! rtz_quotient),
             } !!! fail  `oops, an unhandled case`
         );
     );
