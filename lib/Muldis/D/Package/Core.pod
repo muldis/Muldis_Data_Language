@@ -1077,6 +1077,28 @@ only I<defined> when the C<1> argument is a nonzero number; it is an
 C<Excuse> otherwise.  Other programming languages may name their
 corresponding operators I<%%>.
 
+=head2 nearest_multiple_of round
+
+    ::MD::nearest_multiple_of ::= function
+        --> {Numerical, Excuse::Div_By_Zero}
+        <-- (Numerical, Numerical, Round_Meth)
+        : (if \.1->is_zero then Excuse::Div_By_Zero()
+            else \.1 * topic --> \@div);
+
+    ::MD::round ::= alias of nearest_multiple_of;
+
+The function C<nearest_multiple_of> aka C<round> results in the same or
+nearest number to its C<0> argument that is an even multiple of its C<1>
+argument (that is, the result is evenly divisible by the latter), where the
+nearest is determined by the rounding method specified by the C<2>
+argument.  For the common case of rounding to the nearest integer, use a
+C<1> argument of positive one.  The result is C<Integral> for C<Integral>
+arguments and is C<Fractional> for C<Fractional> arguments.  The result is
+only I<defined> when the C<1> argument is a nonzero number; it is an
+C<Excuse> otherwise.  Other programming languages may name their
+corresponding operators I<truncate> or I<int> or I<floor> or I<ceil> or
+other things, some of which would always round to a multiple of one.
+
 =head2 fractional_divided_by / ÷ ∕
 
     ::MD::fractional_divided_by::"" ::= function virtual
@@ -1121,7 +1143,7 @@ otherwise.
         --> {Numerical, Excuse::Div_By_Zero}
         <-- (Numerical, Numerical, Round_Meth)
         : (if \.1->is_zero then Excuse::Div_By_Zero()
-            else \.0 - (\.1 * topic --> \@div));
+            else \.0 - topic --> \@nearest_multiple_of);
 
     ::MD::mod ::= alias of modulo;
 
