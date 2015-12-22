@@ -2356,7 +2356,7 @@ I<TODO.>
         --> Integral <-- (Positional, Positional)
         is commutative;
 
-I<TODO.>
+I<TODO.  Also consider index_succ_common_prefix as name.>
 
 =head1 ARRAY DATA TYPES
 
@@ -2761,9 +2761,9 @@ for collections of name-value pairs where all names are distinct;
 for typically heterogeneous collections.
 Composed by: Tuple, Relation, Tuple_Bag.>
 
-=head2 Excuse::No_Such_Attr
+=head2 Excuse::No_Such_Attr_Name
 
-    ::MD::Excuse::No_Such_Attr ::= constant (\@0) composes Excuse;
+    ::MD::Excuse::No_Such_Attr_Name ::= constant (\@0) composes Excuse;
 
 I<TODO.>
 
@@ -2823,7 +2823,7 @@ I<TODO.  Also, this is analogous to set difference.>
 
     ::MD::extend::"" ::= function virtual
         --> Attributive <-- (Attributive, Attributive)
-        requires (topic --> \@atnms_disjoint)
+        requires (topic --> \@attr_names_disjoint)
         is {associative,commutative};
 
     ::MD::"+^" ::= alias of extend;
@@ -2849,9 +2849,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 atnms_disjoint
+=head2 attr_names_disjoint
 
-    ::MD::atnms_disjoint ::= function
+    ::MD::attr_names_disjoint ::= function
         --> Boolean <-- (Attributive, Attributive)
         is commutative
         : (...);
@@ -2918,31 +2918,31 @@ I<TODO.>
 =head2 attr . (Tuple)
 
     ::MD::attr ::= function --> Any <-- (Tuple, Attr_Name)
-        requires (topic --> \@has_attr)
+        requires (topic --> \@has_attr_name)
         : (topic -->^ FDN__Tuple_attr);
 
     ::MD::"."::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
         implements 2::""
-        requires (topic --> \@has_attr)
+        requires (topic --> \@has_attr_name)
         : (topic --> \@attr);
 
 I<TODO.>
 
-=head2 has_attr .? (Tuple)
+=head2 has_attr_name .? (Tuple)
 
-    ::MD::has_attr ::= function --> Boolean <-- (Tuple, Attr_Name)
-        : (topic -->^ FDN__Tuple_has_attr);
+    ::MD::has_attr_name ::= function --> Boolean <-- (Tuple, Attr_Name)
+        : (topic -->^ FDN__Tuple_has_attr_name);
 
     ::MD::".?"::Tuple ::= function --> Boolean <-- (Tuple, Attr_Name)
         implements 2::""
-        : (topic --> \@has_attr);
+        : (topic --> \@has_attr_name);
 
 I<TODO.>
 
 =head2 attr_or_excuse .! (Tuple)
 
     ::MD::attr_or_excuse ::= function --> Any <-- (Tuple, Attr_Name)
-        : (topic --> \@has_attr ?? topic --> \@attr !! Excuse::No_Such_Attr());
+        : (topic --> \@has_attr_name ?? topic --> \@attr !! Excuse::No_Such_Attr_Name());
 
     ::MD::".!"::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
         implements 2::""
@@ -2972,7 +2972,7 @@ I<TODO.>
 
     ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
         implements 2::""
-        requires (topic --> \@atnms_disjoint)
+        requires (topic --> \@attr_names_disjoint)
         is {associative,commutative} identity (\%())
         : (topic -->^ FDN__Tuple_extend);
 
@@ -3231,7 +3231,7 @@ I<TODO.>
                     decoration : ...,
                 )
             then
-                topic.\uses atnms_disjoint topic.\identity
+                topic.\uses attr_names_disjoint topic.\identity
             else
                 False
         );
@@ -3270,10 +3270,10 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Source_Code::Annotation::Comment
+=head2 Source_Code::Annotation::Internal_Comment
 
-    ::MD::Source_Code::Annotation::Comment ::= selection of Capsule
-        where (has_wrapped( topic, \Comment, \@Text ))
+    ::MD::Source_Code::Annotation::Internal_Comment ::= selection of Capsule
+        where (has_wrapped( topic, \@0, \@Text ))
         default (\~?'')
         composes Annotation;
 
