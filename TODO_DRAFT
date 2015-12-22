@@ -623,6 +623,19 @@ Maybe also one with current call stack information.
     the general case runtime / is not a constant in the registered packages,
     and we don't want functions to see it outside of 'topic'
     - see also what Perl 6 does again re context
+- Generic debugging should be handled like with compiled languages, where
+in order to step through a program or see trace information, one must
+explicitly compile it that way, which in the Muldis D case that generally
+means the MD source code is transformed to insert extra expression/etc nodes
+which publish messages.  The ability to trace is NOT built-in to the runtime
+because that would make everything slower when not needed.
+    - Normally all we need is a new root expression node in the root of each
+    function, since nearly every expr node calls a function anyway.
+- Have generic keyword like 'publish' or 'trace' which takes 2 inputs, the
+name of a channel and the value to write to it.  A third input says whether
+or not to include context info like a stack trace, so it isn't done if it
+doesn't need to be, this being something functions can't see as a value.
+- Channels can be optionally listened to by various parties for what they want to see.
 
 * Idea, a package version number is just implemented as a string like an
 unqualified identifier, where each integer is a codepoint like with the
