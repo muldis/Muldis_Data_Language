@@ -583,7 +583,7 @@ value as a C<Boolean> must be made explicit.
 C<Boolable> is composed, directly or indirectly, by: C<Boolean>,
 C<Numerical>, C<Integral>, C<Integer>, C<Homogeneous>, C<Positional>,
 C<Array>, C<String>, C<Blob>, C<Text>, C<Setty>, C<Set>, C<Bag>,
-C<Relation>, C<Tuple_Bag>.
+C<Relational>, C<Relation>, C<Tuple_Bag>.
 
 While conceivably C<Boolable> could also be composed by C<Attributive>, and
 hence C<Tuple>, it isn't because that would set up a semantic conflict for
@@ -1967,6 +1967,101 @@ function C<numerator> for the composing type C<Fraction>.
 The function C<denominator::Fraction> implements the C<Fractional> virtual
 function C<denominator> for the composing type C<Fraction>.
 
+=head1 COLLECTIVE DATA TYPES OVERVIEW
+
+A I<collective> value either is a generic regular aggregate of a
+multiplicity of other, I<component>, values whose composition is
+transparent to the user or is something that can act as such an aggregate.
+The C<Core> package provides I<collective> types with a variety of
+desirable alternative properties.
+
+Some I<collective> values are fully I<discrete> and so their components can
+be enumerated as individuals, while other collective values are at least
+partially I<continuous> and so at least some of their components can not be
+enumerated; however it is still possible to test the membership of a value
+in such a collective.  C<Interval> is an example of a typically-continuous
+type while most collective types provided by C<Core> are discrete; however,
+an C<Interval> can be treated as a discrete type iff the types it ranges
+over are C<Bicessable>.
+
+Some I<collective> values are I<setty>, ensuring that each of their
+components is unique, while other collective values are I<baggy>,
+permitting multiple components to be the same value.  Examples of setty
+types are C<Set> and C<Relation>, while examples of baggy types are
+C<Array> and C<Bag>.  Some setty types may silently avoid duplicate values,
+where adding the same value twice has the same effect as adding it once,
+while other setty types may raise an error if adding a duplicate value is
+attempted.
+
+Some I<collective> values are I<positional> and define an explicit total
+order for their components which does not necessarily depend on any order
+specific to the component values themselves, and which does not necessarily
+place multiple same-valued components consecutively.  Such a collective
+value can reliably and consistently enumerate its components in its defined
+order, and the collective also supports integral index-based lookup of its
+elements where each element lives at a distinct index.  In contrast,
+I<nonpositional> collective values simply track what values their
+components are and don't provide index-based lookup; those that are
+enumerable do not guarantee that components are returned in any particular
+order.  An example positional type is C<Array> while example nonpositional
+types are C<Set>, C<Bag>, and C<Relation>.  Some I<positional> types are
+I<sorted>, ensuring that components are organized in the collection
+corresponding to a total order that is specific to the component values
+themselves, meaning also that all same-valued components are consecutive;
+I<nonsorted> positional types don't do this.
+
+The I<collective> types provided by the C<Core> package all speak to a
+space having two orthogonal dimensions into which their components are
+logically arranged, where one dimension is called I<homogeneous> and the
+other dimension is called I<attributive>.  A I<collective> value's
+components addressed in terms of their location along its I<homogeneous>
+dimension are called I<members> of the collective, while components
+addressed in terms of their location along its I<attributive> dimension are
+called I<attributes>.  To be more accurate, a I<member> is a slice of the
+space that includes all components with the same single location along the
+homogeneous dimension, while an I<attribute> is a slice of the space that
+includes all components with the same single location along the attributive
+dimension; in many contexts, said slice is considered as a single value of
+its own.  Every I<member> of a collective value is conceptually of a common
+data type with its fellow members or should be interpreted logically in the
+same way.  Every I<attribute> of a collective value is conceptually of its
+own data type or should be interpreted logically in a distinct way from its
+fellow attributes.
+
+While many collective types just utilize one of the dimensions
+I<homogeneous> or I<attributive>, some utilize both.  Values of the
+C<Array>, C<Set>, C<Bag>, C<Interval> types each arrange their components
+along just the I<homogeneous> dimension and ignore I<attributive>, so for
+brevity we just say their components I<are> members.  Values of the
+C<Tuple> type each arrange their components along just the I<attributive>
+dimension and ignore I<homogeneous>, so for brevity we just say their
+components I<are> attributes.  Values of the C<Relation> and C<Tuple_Bag>
+types each arrange their components over both of the dimensions, so we say
+they have both members and attributes.
+
+Given that the I<homogeneous> and I<attributive> dimensions are to a large
+degree isomorphic, and so there are a lot of corresponding operations that
+apply to both, the C<Core> package uses different terminology and operator
+names for corresponding things so it is clear what dimension is being acted
+on.  For example, a C<Relation> value has no single concept of its
+component count, rather we say I<cardinality> is a count of its members
+while I<degree> is a count of its attributes.  When equally terse and
+pleasant terminology isn't available for a pair of corresponding concepts,
+the homogeneous dimension is given priority for the nicer API since that is
+expected to be the dominant one for typical usage patterns.
+
+See the C<Homogeneous> type which defines the common API for all collective
+types utilizing the I<homogeneous> dimension, and see the C<Attributive>
+type which defines the orthogonal common API for all collective types
+utilizing the I<attributive> dimension.  See the C<Relational> type which
+defines the common API for all collective types utilizing both dimensions.
+
+See also the C<Accessible> type which provides an extra API that can be
+applied on a type-by-type basis to either the I<homogeneous> dimension or
+the I<attributive> dimension (but not both) as makes the most sense for the
+composing types in question; example composers are C<Array> and C<Tuple>
+respectively for said dimensions.
+
 =head1 ACCESSIBLE DATA TYPES
 
 =head2 Accessible
@@ -2529,9 +2624,7 @@ for perceived efficiency.>
 
 =head2 Setty
 
-    ::MD::Setty ::= interface
-        composes Homogeneous
-        requires_implements {so,empty,count,has,nest,unnest,any,where,map,reduce,...};
+    ::MD::Setty ::= interface;
 
 I<TODO.  For collections that make sure each element can only appear once.
 Composed by: Set, Relation.>
@@ -2545,7 +2638,7 @@ Composed by: Set, Relation.>
         "" ::= selection of Capsule
             where (has_wrapped( topic, \Set, \@1::_Asset ))
             default ({})
-            composes Setty and_provides_its_default;
+            composes {Homogeneous, Setty and_provides_its_default};
 
         _Asset ::= selection of Bag
             where (...);
@@ -3044,6 +3137,16 @@ I<TODO.>
 
 I<TODO.>
 
+=head1 RELATIONAL DATA TYPES
+
+=head2 Relational
+
+    ::MD::Relational ::= interface
+        composes {Homogeneous, Attributive}
+        requires_implements {...};
+
+I<TODO.>
+
 =head1 RELATION DATA TYPES
 
 =head2 Relation
@@ -3053,7 +3156,7 @@ I<TODO.>
         "" ::= selection of Capsule
             where (has_wrapped( topic, \Relation, \@1::_Asset ))
             default (\?%())
-            composes {Setty, Attributive};
+            composes {Relational, Setty};
 
         _Asset ::= selection of Tuple_Bag
             where (...);
@@ -3090,7 +3193,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
         "" ::= selection of Capsule
             where (has_wrapped( topic, \Tuple_Bag, \@1::_Asset ))
             default (\+%())
-            composes {Homogeneous, Attributive};
+            composes Relational;
 
         _Asset ::= selection of Tuple where
         (
