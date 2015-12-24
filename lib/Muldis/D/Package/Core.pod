@@ -239,7 +239,8 @@ unbounded, and to use as identity values for chained order-comparisons.
 
 C<Orderable> is composed, directly or indirectly, by: C<Neg_Inf>,
 C<Pos_Inf>, C<Bicessable>, C<Boolean>, C<Integral>, C<Integer>,
-C<Positional>, C<Array>, C<String>, C<Blob>, C<Text>.
+C<Fractional>, C<Fraction>, C<Blob>, C<Text>, C<Positional>, C<Array>,
+C<String>.
 
 =head2 Neg_Inf -∞
 
@@ -581,9 +582,10 @@ written in a similar style but with more type safety as any treatment of a
 value as a C<Boolean> must be made explicit.
 
 C<Boolable> is composed, directly or indirectly, by: C<Boolean>,
-C<Numerical>, C<Integral>, C<Integer>, C<Homogeneous>, C<Positional>,
-C<Array>, C<String>, C<Blob>, C<Text>, C<Setty>, C<Set>, C<Bag>,
-C<Relational>, C<Relation>, C<Tuple_Bag>.
+C<Numerical>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>, C<Blob>,
+C<Text>, C<Homogeneous>, C<Discrete>, C<Positional>, C<Array>, C<String>,
+C<Setty>, C<Set>, C<Bag>, C<Relational>, C<Relation>, C<Tuple_Bag>,
+C<Interval>.
 
 While conceivably C<Boolable> could also be composed by C<Attributive>, and
 hence C<Tuple>, it isn't because that would set up a semantic conflict for
@@ -620,7 +622,7 @@ it results in C<False>.
 
 =head2 Boolean Bool
 
-    ::MD::Boolean::"" ::= selection where (topic -->^ FDN__is_a_Boolean)
+    ::MD::Boolean ::= selection where (topic -->^ FDN__is_a_Boolean)
         default (False)
         composes {Bicessable, Boolable and_provides_its_default};
 
@@ -1967,6 +1969,22 @@ function C<numerator> for the composing type C<Fraction>.
 The function C<denominator::Fraction> implements the C<Fractional> virtual
 function C<denominator> for the composing type C<Fraction>.
 
+=head1 BLOB DATA TYPES
+
+=head2 Blob
+
+    ::MD::Blob ::= selection ...;
+
+I<TODO.>
+
+=head1 TEXT DATA TYPES
+
+=head2 Text
+
+    ::MD::Text ::= selection ...;
+
+I<TODO.>
+
 =head1 COLLECTIVE DATA TYPES OVERVIEW
 
 A I<collective> value either is a generic regular aggregate of a
@@ -1976,13 +1994,14 @@ The C<Core> package provides I<collective> types with a variety of
 desirable alternative properties.
 
 Some I<collective> values are fully I<discrete> and so their components can
-be enumerated as individuals, while other collective values are at least
-partially I<continuous> and so at least some of their components can not be
-enumerated; however it is still possible to test the membership of a value
-in such a collective.  C<Interval> is an example of a typically-continuous
-type while most collective types provided by C<Core> are discrete; however,
-an C<Interval> can be treated as a discrete type iff the types it ranges
-over are C<Bicessable>.
+be enumerated as individuals and counted, while other collective values are
+at least partially I<continuous> and so at least some of their components
+can not be enumerated or counted (the count is effectively an infinity);
+however it is still possible to test the membership of a value in such a
+collective.  C<Interval> is an example of a typically-continuous type while
+most collective types provided by C<Core> are discrete; however, an
+C<Interval> can be treated as a discrete type iff the types it ranges over
+are C<Bicessable>.
 
 Some I<collective> values are I<setty>, ensuring that each of their
 components is unique, while other collective values are I<baggy>,
@@ -2103,22 +2122,33 @@ I<TODO.>
 
 =head2 Homogeneous
 
-    ::MD::Homogeneous::"" ::= interface
+    ::MD::Homogeneous ::= interface
         composes Boolable
-        requires_implements {so,empty,count,has,nest,unnest,any,where,map,reduce,...};
+        requires_implements {so,empty,has,nest,unnest,any,where,map,reduce,...};
 
-I<TODO.  For types whose values are conceptually homogeneous collections
-of distinct integral-weighted objects, where the weights may or may not be
-constrained to 1 (each element can only appear once),
-either with a canonical order of elements or with no canonical order.
-Composed by: Positional (Array, String, etc), Setty (Set, Relation),
-Bag, Tuple_Bag, Dictionary, etc.
-Subtypes also composing Positional are ordered, and others are not.
-Subtypes also composing Setty ensure elements appear just once, others don't.
-(Conceptually more or less all collection types can be thought of as being
-collections over 2 dimensions, heterogeneous/Attributive and Homogeneous;
-Relation and Tuple_Bag formally are multiples in both dimensions, while the
-other types are formally multiples in just one of those dimensions.)>
+The interface contract C<Homogeneous> is infinite.  A C<Homogeneous> value
+is a I<collective> value such that every one of its component I<members> is
+conceptually of a common data type with its fellow members or should be
+interpreted logically in the same way.  Idiomatically a C<Homogeneous> is a
+generic collection which does not as a whole represent any kind of thing in
+particular, such as a text or a graphic, and is simply the sum of its
+I<members>; however some types which do represent such a particular kind of
+thing may choose to compose C<Homogeneous> because it makes sense to
+provide its operators.  The default value of C<Homogeneous> is the C<Array>
+value with zero elements.
+
+If a C<Homogeneous> value is also C<Discrete>, all of its members can be
+enumerated as individuals and counted; otherwise, that may not be possible.
+If a C<Homogeneous> value is also C<Setty>, all of its members are
+guaranteed to be distinct values; otherwise, duplication of values may
+occur amongst members.  If a C<Homogeneous> value is also C<Positional>,
+all of its members are arranged in an explicit total order and can both be
+enumerated in that order as well as be looked up by integral indexed-based
+position against that order; otherwise, that may not be possible.
+
+C<Homogeneous> is composed, directly or indirectly, by: C<Discrete>,
+C<Positional>, C<Array>, C<String>, C<Setty>, C<Set>, C<Bag>,
+C<Relational>, C<Relation>, C<Tuple_Bag>, C<Interval>.
 
 I<TODO.  Note that for all the regular function-taking element-wise
 Homogeneous operators that are logically supposed to work with each
@@ -2168,15 +2198,6 @@ I<TODO.>
 I<TODO.  Returns the 'empty' value of the argument's collection type.
 For plain {Array,Set,Bag} this is a constant value, but for a Relation or
 a Tuple_Bag this is distinct per each heading.>
-
-=head2 count cardinality #
-
-    ::MD::count::"" ::= function virtual --> Integral <-- (Homogeneous);
-
-    ::MD::cardinality ::= alias of count;
-    ::MD::"#"         ::= alias of count;
-
-I<TODO.>
 
 =head2 has ∋
 
@@ -2305,20 +2326,41 @@ whose '0' and '1' attrs are members of the collection and whose other attrs matc
 those given in 'args'.
 Depending on the collection subtype, order of 0,1 may or may not be significant.>
 
+=head1 DISCRETE DATA TYPES
+
+=head2 Discrete
+
+    ::MD::Discrete ::= interface
+        composes Homogeneous and_provides_its_default
+        requires_implements {so,...,count,...};
+
+I<TODO.>
+
+=head2 count cardinality #
+
+    ::MD::count::"" ::= function virtual --> Integral <-- (Homogeneous);
+
+    ::MD::cardinality ::= alias of count;
+    ::MD::"#"         ::= alias of count;
+
+I<TODO.>
+
 =head1 POSITIONAL DATA TYPES
 
 =head2 Positional
 
     ::MD::Positional ::= interface
-        composes {Orderable, Accessible, Homogeneous and_provides_its_default, ...}
-        requires_implements {so,empty,count,elem,has_index,has,nest,unnest,any,where,map,reduce,
-            first_index,last_index,slice,catenate,index_succ_all_matches,...};
+        composes {Orderable, Accessible, Discrete and_provides_its_default, ...}
+        requires_implements {so
+            ,empty,count,elem,has_index,has,nest,unnest,any,where,map,reduce,...
+            ,count
+            ,first_index,last_index,slice,catenate,index_succ_all_matches,...};
 
 I<TODO.  For types that support integer-index-based lookup of values;
 for collections of index-value pairs where all indexes are distinct;
 for collections you can enumerate in canonical order;
 the collection indexes might not be zero-based in the general case but must be dense.
-Composed by: Array, String, Blob, Text, etc.>
+Composed by: Array, String, etc.>
 
 =head2 Excuse::No_Such_Index
 
@@ -2465,6 +2507,24 @@ The selection contract C<Array> represents the infinite
 Muldis D Foundation type I<FDN__Array>.  An C<Array> value is ...
 
 I<TODO.>
+
+=head2 String
+
+    ::MD::String ::= selection of Array where (topic all_is_a \@Integer);
+
+The selection contract C<String> represents the infinite type consisting
+just of the C<Array> values having just C<Integer> elements.  A C<String>
+value is a general purpose integer string, which explicitly does not
+represent any kind of thing in particular, neither octets nor characters
+nor anything else, simply a sequence of generic integers.  A C<String>
+value is isomorphic to an C<Attr_Name> value, and values of proper subtypes
+of C<String> are isomorphic to C<Blob> and C<Text> values.
+
+Other programming languages don't necessarily have a dedicated type
+representing a string of generic integers, but rather they may have generic
+arrays, or octet arrays with names like I<byte[]> or I<bytea>, or character
+arrays with names like I<string> or I<text> or I<varchar>, or types like
+I<string> that may represent either octets or characters.
 
 =head2 ~∅
 
@@ -3222,6 +3282,26 @@ zero-tuple C<Tuple_Bag> value.
 
 The constant C<Tuple_Bag_D0C1> represents the only zero-attribute,
 single-tuple C<Tuple_Bag> value.
+
+=head1 INTERVAL DATA TYPES
+
+=head2 Interval
+
+    ::MD::Interval ::= selection ...
+        composes Homogeneous
+        ...;
+
+I<TODO.>
+
+=head1 QUANTITY DATA TYPES
+
+=head2 Quantity
+
+    ::MD::Quantity ::= selection ...
+        composes Numerical
+        ...;
+
+I<TODO.>
 
 =head1 CAPSULE DATA TYPES
 
