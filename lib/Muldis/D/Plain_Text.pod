@@ -156,7 +156,7 @@ each of the former is a depot from the perspective of the grammar.>
 
 I<TODO: Talk about the post-20150226-concept of packages vs modules etc and
 what Script Name declarations apply to or don't eg Muldis D source code
-in the form of Blob vs Text values or files vs not files.>
+in the form of Blob/Bits vs Text values or files vs not files.>
 
 I<TODO: Talk about that the main reason for declaring most entities with
 absolute-qualified names like eg Pkgname.NS.NS.foo is because packages are
@@ -1034,6 +1034,7 @@ Grammar:
           <Boolean>
         | <Integer>
         | <Fraction>
+        | <Bits>
         | <Blob>
         | <Text>
 
@@ -1248,6 +1249,41 @@ Examples:
 
     0b1.1
 
+=head2 Bits Literals
+
+Grammar:
+
+    <Bits> ::=
+        '\\~?' ['\'' [
+              ['0b' <nc2>*]
+            | ['0o' <nc8>*]
+            | ['0x' <nc16>*]
+        ]? '\''] % <sp>
+
+A C<< <Bits> >> node represents a value of the Muldis D C<Bits> type, which
+is a general purpose bit string.
+
+The C<Bits> type is not a foundational type of the Muldis D type system, but
+rather is a subtype by constraint of the C<Capsule> type, and all C<Bits>
+values can be selected in terms of C<< <Capsule> >> grammar nodes.
+However, C<< <Bits> >> is the canonical grammar for all C<Bits> values.
+
+This grammar supports writing C<Bits> literals in any of the numeric bases
+{2,8,16} using conventional syntax.  The literal may optionally contain
+underscore characters (C<_>), which exist just to help with visual
+formatting.  A C<< <Bits> >> may optionally be split into 1..N segments
+where each pair of consecutive segments is separated by dividing space.
+
+Examples:
+
+    \~?''
+
+    \~?'0b00101110100010'
+
+    \~?'0o644'
+
+    \~?'0xA705E'
+
 =head2 Blob Literals
 
 Grammar:
@@ -1255,12 +1291,11 @@ Grammar:
     <Blob> ::=
         '\\~+' ['\'' [
               ['0b' <nc2>*]
-            | ['0o' <nc8>*]
             | ['0x' <nc16>*]
         ]? '\''] % <sp>
 
 A C<< <Blob> >> node represents a value of the Muldis D C<Blob> type, which
-is a general purpose bit string.
+is a general purpose octet string.
 
 The C<Blob> type is not a foundational type of the Muldis D type system, but
 rather is a subtype by constraint of the C<Capsule> type, and all C<Blob>
@@ -1268,20 +1303,21 @@ values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Blob> >> is the canonical grammar for all C<Blob> values.
 
 This grammar supports writing C<Blob> literals in any of the numeric bases
-{2,8,16} using conventional syntax.  The literal may optionally contain
+{2,16} using conventional syntax.  The literal may optionally contain
 underscore characters (C<_>), which exist just to help with visual
 formatting.  A C<< <Blob> >> may optionally be split into 1..N segments
 where each pair of consecutive segments is separated by dividing space.
+
+When using Ob, the bits must come in groups of 8; when using 0x, the hexits
+must come in groups of 2.
 
 Examples:
 
     \~+''
 
-    \~+'0xA705E'
+    \~+'0xA705E416'
 
-    \~+'0o523504376'
-
-    \~+'0b00101110100010'
+    \~+'0b00101110_10001011'
 
 =head2 Text Literals
 
@@ -1736,7 +1772,7 @@ literals or quoted identifiers, and the valid formats for both
 within the quoted contexts are identical.  Note that for a run, each
 individual quoted context is treated in isolation, as some may be formatted
 for escape sequences and some may not.  Also using single-quoted contexts
-for some or all of their literals are the C<Blob> (C<\~+'...'>) or
+for some or all of their literals are the C<Bits> (C<\~?'...'>) or C<Blob> (C<\~+'...'>) or
 C<Integer> or C<Fraction> (C<\+'...'> for both) and they have
 their own interpretation formats different from those of character strings.
 
