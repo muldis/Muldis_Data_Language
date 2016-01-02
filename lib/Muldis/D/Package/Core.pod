@@ -937,7 +937,7 @@ The constant C<Excuse::Div_By_Zero> represents the I<undefined> result of
 attempting to divide a simple number by a simple, unsigned, number zero.
 Note that IEEE floating-point standards define a negative or positive
 infinity result value when dividing by an explicitly signed (negative or
-positive) zero, but the Muldis D core package lacks those concepts.
+positive) zero, but the Muldis D C<Core> package lacks those concepts.
 
 =head2 Excuse::Zero_To_The_Zero
 
@@ -1020,7 +1020,7 @@ mathematical notion writes this operator in circumfix like I<|n|>.
 
 The virtual function C<plus> aka C<+> results in the numeric I<sum> from
 performing I<addition> of its 2 I<summand> arguments C<0> (I<augend>) and
-C<1> (I<addend>).
+C<1> (I<addend>).  This operation has an identity value of a number zero.
 
 =head2 minus
 
@@ -1070,7 +1070,8 @@ C<1>, which is the (non-negative) distance between those arguments.
 
 The virtual function C<times> aka C<*> aka C<×> results in the numeric
 I<product> from performing I<multiplication> of its 2 I<factor> arguments
-C<0> (I<multiplier>) and C<1> (I<multiplicand>).
+C<0> (I<multiplier>) and C<1> (I<multiplicand>).  This operation has an
+identity value of a number positive one.
 
 =head2 multiple_of
 
@@ -1975,7 +1976,7 @@ function C<denominator> for the composing type C<Fraction>.
 
     ::MD::Emptyable ::= interface
         composes Boolable
-        requires_implements {so, empty};
+        requires_implements {so,empty};
 
 The interface contract C<Emptyable> is infinite.  An C<Emptyable> value is
 an aggregate C<Boolable> value that can have either zero or more than zero
@@ -2020,6 +2021,68 @@ The virtual function C<empty> aka C<∅> results in the value of its C<0>
 argument's collection type that has zero members.  For most such types like
 C<Text> or C<Set>, this is a constant value, but for a C<Relation> or
 C<Tuple_Bag>, there is a distinct result for each distinct I<heading>.
+
+=head1 STRINGY DATA TYPES
+
+=head2 Stringy
+
+    ::MD::Stringy ::= interface
+        composes {Orderable, Emptyable and_provides_its_default}
+        requires_implements {so,empty,in_order,catenate,replicate};
+
+The interface contract C<Stringy> is infinite.  A C<Stringy> value is a
+homogeneous ordered aggregate of other values such that there may not
+necessarily be any single best interpretation of where each component value
+begins or ends, and as such the only generic interpretation of a C<Stringy>
+value is that it is a sequence of smaller C<Stringy> values of the same
+type.  Idiomatically a C<Stringy> type has opaque values that each
+represent something specific, such as a sequence of bits or of octets or of
+characters of some repertoire; that being said, by way of C<Positional>,
+some C<Stringy> types are in fact generic collections whose elements don't
+represent something specific.  The general case of a C<Stringy> type has
+operators for catenating or splitting C<Stringy> values, but it has no
+generic concept of counting or addressing individual members of the
+aggregate, with the lone special case exception that a count of zero can be
+distinguished from a count of more than zero.  Addressing or counting
+individual members can only be done properly in a composing type-specific
+way, and often a single composing type may provide multiple ways, such as
+character string types offering both codepoint and grapheme
+representations.  The default value of C<Stringy> is the C<Bits> value with
+zero members.  C<Stringy> expects every one of its composing types to be
+orderable, and idiomatically that is done by some kind of pairwise
+comparison of members.
+
+C<Stringy> is composed, directly or indirectly, by: C<Bits>, C<Blob>,
+C<Textual>, C<Text>, C<Positional>, C<Array>, C<String>.
+
+I<TODO:  Add other operators such as substr_of/superstr_of which are like
+subset/superset but only match in order.>
+
+=head2 catenate ~
+
+    ::MD::catenate::"" ::= function virtual
+        --> Stringy <-- (Stringy, Stringy)
+        is associative
+        repeater replicate;
+
+    ::MD::"~" ::= alias of catenate;
+
+The virtual function C<catenate> aka C<~> results in the catenation of its
+2 arguments C<0> and C<1> such that the result starts with the members of
+C<0> and ends with the members of C<1>.  This operation has an identity
+value of a collection with zero members.
+
+=head2 replicate ~#
+
+    ::MD::replicate::"" ::= function virtual
+        --> Stringy <-- (Stringy, Integral_NN);
+
+    ::MD::"~#" ::= alias of replicate;
+
+The virtual function C<replicate> aka C<~#> results in the catenation of N
+instances of its C<0> argument where N is defined by its C<1> argument.  If
+the C<1> argument is zero then the result is the value of the C<0>
+argument's collection type that has zero members.
 
 =head1 BITS DATA TYPES
 
@@ -2380,11 +2443,11 @@ I<TODO.>
 =head2 Positional
 
     ::MD::Positional ::= interface
-        composes {Orderable, Accessible, Discrete and_provides_its_default, ...}
-        requires_implements {so,empty
+        composes {Stringy, Accessible, Discrete and_provides_its_default}
+        requires_implements {so,empty,catenate,replicate
             ,count,elem,has_index,has,nest,unnest,any,where,map,reduce,...
             ,count
-            ,first_index,last_index,slice,catenate,index_succ_all_matches,...};
+            ,first_index,last_index,slice,index_succ_all_matches,...};
 
 I<TODO.  For types that support integer-index-based lookup of values;
 for collections of index-value pairs where all indexes are distinct;
@@ -2507,16 +2570,6 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 catenate ~
-
-    ::MD::catenate::"" ::= function virtual
-        --> Positional <-- (Positional, Positional)
-        is associative;
-
-    ::MD::"~" ::= alias of catenate;
-
-I<TODO.>
-
 =head2 index_succ_all_matches
 
     ::MD::index_succ_all_matches::"" ::= function virtual
@@ -2569,10 +2622,10 @@ The constant C<~∅> represents the only zero-member C<Array> value.
         implements 2::""
         : (\.0 != []);
 
-The function C<so::Array> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> aka C<to_Boolean> for the composing type C<Array>.
-
-I<TODO.>
+The function C<so::Array> results in C<True> iff its C<0> argument has any
+members, and in C<False> iff it has no members.  This function implements
+the C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
+composing type C<Array>.
 
 =head2 empty (Array)
 
@@ -2580,7 +2633,35 @@ I<TODO.>
         implements 2::""
         : ([]);
 
-I<TODO.>
+The function C<empty::Array> results in the only zero-member C<Array>
+value.  This function implements the C<Emptyable> virtual function C<empty>
+aka C<∅> for the composing type C<Array>.
+
+=head2 catenate (Array)
+
+    ::MD::catenate::Array ::= function --> Array <-- (Array, Array)
+        implements 2::""
+        is associative identity ([])
+        repeater replicate::Array
+        : (topic -->^ FDN__Array_catenate);
+
+The function C<catenate::Array> results in the catenation of its 2
+arguments C<0> and C<1> such that the result starts with the members of
+C<0> and ends with the members of C<1>.  This function implements the
+C<Stringy> virtual function C<catenate> aka C<~> for the composing type
+C<Array>.
+
+=head2 replicate (Array)
+
+    ::MD::replicate::Array ::= function --> Array <-- (Array, Integral_NN)
+        implements 2::""
+        : (topic -->^ FDN__Array_replicate);
+
+The function C<replicate::Array> results in the catenation of N instances
+of its C<0> argument where N is defined by its C<1> argument.  If the C<1>
+argument is zero then the result is the only zero-member C<Array>.  This
+function implements the C<Stringy> virtual function C<replicate> aka C<~#>
+for the composing type C<Array>.
 
 =head2 count (Array)
 
@@ -2688,15 +2769,6 @@ I<TODO.>
     ::MD::slice::Array ::= function --> Array <-- (Array, Interval)
         implements 2::""
         : (topic -->^ FDN__Array_slice);
-
-I<TODO.>
-
-=head2 catenate (Array)
-
-    ::MD::catenate::Array ::= function --> Array <-- (Array, Array)
-        implements 2::""
-        is associative identity ([])
-        : (topic -->^ FDN__Array_catenate);
 
 I<TODO.>
 
