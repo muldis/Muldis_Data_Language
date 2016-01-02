@@ -239,8 +239,8 @@ unbounded, and to use as identity values for chained order-comparisons.
 
 C<Orderable> is composed, directly or indirectly, by: C<Neg_Inf>,
 C<Pos_Inf>, C<Bicessable>, C<Boolean>, C<Integral>, C<Integer>,
-C<Fractional>, C<Fraction>, C<Bits>, C<Blob>, C<Text>, C<Positional>,
-C<Array>, C<String>.
+C<Fractional>, C<Fraction>, C<Stringy>, C<Bits>, C<Blob>, C<Textual>,
+C<Text>, C<Positional>, C<Array>, C<String>.
 
 =head2 Neg_Inf -∞
 
@@ -440,9 +440,9 @@ C<Successable> is intended to be a generalized tool for performing I<list
 comprehension> or I<set comprehension>.  The typically idiomatic and more
 efficient way to do many kinds of such I<comprehensions> is to use the
 features of various C<Homogeneous> types to map an existing list or set to
-another using generic element mapping and filtering functions, such as a
+another using generic member mapping and filtering functions, such as a
 list of even integers less than a hundred.  With those cases, the
-map/filter approach can permit processing elements in any order or in
+map/filter approach can permit processing members in any order or in
 parallel, and avoiding unnecessary intermediate values.  In contrast, the
 primary intended uses of C<Successable> is when either you want to produce
 or process a potentially infinite-sized list (lazily) or especially produce
@@ -582,17 +582,17 @@ written in a similar style but with more type safety as any treatment of a
 value as a C<Boolean> must be made explicit.
 
 C<Boolable> is composed, directly or indirectly, by: C<Boolean>,
-C<Numerical>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>, C<Bits>,
-C<Blob>, C<Text>, C<Homogeneous>, C<Discrete>, C<Positional>, C<Array>,
-C<String>, C<Setty>, C<Set>, C<Bag>, C<Relational>, C<Relation>,
-C<Tuple_Bag>, C<Interval>.
+C<Numerical>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>,
+C<Emptyable>, C<Stringy>, C<Bits>, C<Blob>, C<Textual>, C<Text>,
+C<Homogeneous>, C<Discrete>, C<Positional>, C<Array>, C<String>, C<Setty>,
+C<Set>, C<Bag>, C<Relational>, C<Relation>, C<Tuple_Bag>, C<Interval>.
 
 While conceivably C<Boolable> could also be composed by C<Attributive>, and
 hence C<Tuple>, it isn't because that would set up a semantic conflict for
 C<Relation> and C<Tuple_Bag> which are collections across 2 dimensions, and
 it was decided for those latter types that C<Boolable> would apply to them
-explicitly in their C<Homogeneous> dimension and not in their
-C<Attributive> dimension.  As such, the C<Attributive> functions
+explicitly in their C<Homogeneous> dimension (by way of C<Emptyable>) and
+not in their C<Attributive> dimension.  As such, the C<Attributive> functions
 C<has_any_attrs> and C<is_nullary> are provided as that dimension's direct
 analogies to the C<Homogeneous> dimension's C<Boolable>-implementing
 C<has_any_members> (C<so>) and C<is_empty> (C<not_so>) functions.
@@ -1673,7 +1673,7 @@ C<Fractional> is C<Orderable>; for each type composing C<Fractional>, a
 value closer to negative infinity is ordered before a value closer to
 positive infinity.  In the general case it is not C<Bicessable> nor does it
 have a minimum or maximum value, but sometimes a type that is C<Fractional>
-will have either of those. C<Fractional> is composed by C<Fraction>.
+will have either of those.  C<Fractional> is composed by C<Fraction>.
 
 =head2 Fractional_NN
 
@@ -1969,6 +1969,58 @@ function C<numerator> for the composing type C<Fraction>.
 The function C<denominator::Fraction> implements the C<Fractional> virtual
 function C<denominator> for the composing type C<Fraction>.
 
+=head1 EMPTYABLE DATA TYPES
+
+=head2 Emptyable
+
+    ::MD::Emptyable ::= interface
+        composes Boolable
+        requires_implements {so, empty};
+
+The interface contract C<Emptyable> is infinite.  An C<Emptyable> value is
+an aggregate C<Boolable> value that can have either zero or more than zero
+components.  The primary reason for C<Emptyable> is to provide easy
+consistent and terse ways to ask if an aggregate has any values, or to ask
+for the value with no members of the same type as a given aggregate value.
+The default value of C<Emptyable> is the C<Bits> value with zero members.
+
+C<Emptyable> is composed, directly or indirectly, by: C<Stringy>, C<Bits>,
+C<Blob>, C<Textual>, C<Text>, C<Homogeneous>, C<Discrete>, C<Positional>,
+C<Array>, C<String>, C<Setty>, C<Set>, C<Bag>, C<Relational>, C<Relation>,
+C<Tuple_Bag>, C<Interval>.
+
+=head2 so (Emptyable) has_any_members
+
+    ::MD::so::Emptyable ::= function virtual --> Boolean <-- (Emptyable)
+        implements 2::"";
+
+    ::MD::has_any_members ::= alias of so::Homogeneous;
+
+The virtual function C<so::Emptyable> aka C<has_any_members> results in
+C<True> iff its C<0> argument has any members, and in C<False> iff it has
+no members.  This function implements the C<Boolable> virtual function
+C<so> aka C<?> aka C<to_Boolean> for the composing type C<Emptyable>.
+
+=head2 is_empty ∅?
+
+    ::MD::is_empty ::= function negates so::Emptyable;
+
+    ::MDA::"∅?" ::= alias of is_empty;
+
+The function C<is_empty> aka C<∅?> results in C<True> iff its C<0> argument
+has no members, and in C<False> iff it has any members.
+
+=head2 empty ∅
+
+    ::MD::empty::"" ::= function virtual --> Emptyable <-- (Emptyable);
+
+    ::MDA::"∅" ::= alias of empty;
+
+The virtual function C<empty> aka C<∅> results in the value of its C<0>
+argument's collection type that has zero members.  For most such types like
+C<Text> or C<Set>, this is a constant value, but for a C<Relation> or
+C<Tuple_Bag>, there is a distinct result for each distinct I<heading>.
+
 =head1 BITS DATA TYPES
 
 =head2 Bits
@@ -2026,7 +2078,7 @@ specific to the component values themselves, and which does not necessarily
 place multiple same-valued components consecutively.  Such a collective
 value can reliably and consistently enumerate its components in its defined
 order, and the collective also supports integral index-based lookup of its
-elements where each element lives at a distinct index.  In contrast,
+members where each member lives at a distinct index.  In contrast,
 I<nonpositional> collective values simply track what values their
 components are and don't provide index-based lookup; those that are
 enumerable do not guarantee that components are returned in any particular
@@ -2131,7 +2183,7 @@ I<TODO.>
 =head2 Homogeneous
 
     ::MD::Homogeneous ::= interface
-        composes Boolable
+        composes Emptyable
         requires_implements {so,empty,has,nest,unnest,any,where,map,reduce,...};
 
 The interface contract C<Homogeneous> is infinite.  A C<Homogeneous> value
@@ -2143,7 +2195,7 @@ particular, such as a text or a graphic, and is simply the sum of its
 I<members>; however some types which do represent such a particular kind of
 thing may choose to compose C<Homogeneous> because it makes sense to
 provide its operators.  The default value of C<Homogeneous> is the C<Array>
-value with zero elements.
+value with zero members.
 
 If a C<Homogeneous> value is also C<Discrete>, all of its members can be
 enumerated as individuals and counted; otherwise, that may not be possible.
@@ -2158,7 +2210,7 @@ C<Homogeneous> is composed, directly or indirectly, by: C<Discrete>,
 C<Positional>, C<Array>, C<String>, C<Setty>, C<Set>, C<Bag>,
 C<Relational>, C<Relation>, C<Tuple_Bag>, C<Interval>.
 
-I<TODO.  Note that for all the regular function-taking element-wise
+I<TODO.  Note that for all the regular function-taking member-wise
 Homogeneous operators that are logically supposed to work with each
 collection member in isolation and/or shouldn't put significance on either
 duplicate members or member position in the collection, including the likes
@@ -2176,36 +2228,6 @@ For that matter, the likes of {reduce} should probably be treated the same
 way; see also the 'repeater' function trait that helps optimize it.
 Surely, any time when one may think these operations need to know the
 baggy count or positional index, its for a problem best solved differently.>
-
-=head2 so (Homogeneous) has_any_members
-
-    ::MD::so::Homogeneous ::= function virtual --> Boolean <-- (Homogeneous)
-        implements 2::"";
-
-    ::MD::has_any_members ::= alias of so::Homogeneous;
-
-The function C<so::Homogeneous> aka C<has_any_members> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> aka C<to_Boolean> for the composing type C<Homogeneous>.
-
-I<TODO.>
-
-=head2 is_empty ∅?
-
-    ::MD::is_empty ::= function negates so::Homogeneous;
-
-    ::MDA::"∅?" ::= alias of is_empty;
-
-I<TODO.>
-
-=head2 empty ∅
-
-    ::MD::empty::"" ::= function virtual --> Homogeneous <-- (Homogeneous);
-
-    ::MDA::"∅" ::= alias of empty;
-
-I<TODO.  Returns the 'empty' value of the argument's collection type.
-For plain {Array,Set,Bag} this is a constant value, but for a Relation or
-a Tuple_Bag this is distinct per each heading.>
 
 =head2 has ∋
 
@@ -2340,7 +2362,7 @@ Depending on the collection subtype, order of 0,1 may or may not be significant.
 
     ::MD::Discrete ::= interface
         composes Homogeneous and_provides_its_default
-        requires_implements {so,...,count,...};
+        requires_implements {so,empty,...,count,...};
 
 I<TODO.>
 
@@ -2359,8 +2381,8 @@ I<TODO.>
 
     ::MD::Positional ::= interface
         composes {Orderable, Accessible, Discrete and_provides_its_default, ...}
-        requires_implements {so
-            ,empty,count,elem,has_index,has,nest,unnest,any,where,map,reduce,...
+        requires_implements {so,empty
+            ,count,elem,has_index,has,nest,unnest,any,where,map,reduce,...
             ,count
             ,first_index,last_index,slice,catenate,index_succ_all_matches,...};
 
@@ -2392,7 +2414,7 @@ I<TODO.>
             e2 ::= (\.0.i in_order \.1.i);
 
         e1 ::?= 'This is the case where LHS is a leading subsequence of or is equal to RHS.';
-        e2 ::?= 'This will succeed iff in_order() is defined for the element type.';
+        e2 ::?= 'This will succeed iff in_order() is defined for the member type.';
     );
 
 The function C<in_order::Positional> implements the C<Orderable> virtual
@@ -2521,7 +2543,7 @@ I<TODO.>
     ::MD::String ::= selection of Array where (topic all_is_a \@Integer);
 
 The selection contract C<String> represents the infinite type consisting
-just of the C<Array> values having just C<Integer> elements.  A C<String>
+just of the C<Array> values having just C<Integer> members.  A C<String>
 value is a general purpose integer string, which explicitly does not
 represent any kind of thing in particular, neither octets nor characters
 nor anything else, simply a sequence of generic integers.  A C<String>
@@ -2591,7 +2613,7 @@ I<TODO.  True if given array index exists.>
         implements 2::""
         : (topic -->^ FDN__Array_has);
 
-I<TODO.  True if given element value exists at any index.>
+I<TODO.  True if given member value exists at any index.>
 
 =head2 nest (Array)
 
@@ -2695,7 +2717,7 @@ for perceived efficiency.>
 
     ::MD::Setty ::= interface;
 
-I<TODO.  For collections that make sure each element can only appear once.
+I<TODO.  For collections that make sure each member can only appear once.
 Composed by: Set, Relation.>
 
 =head1 SET DATA TYPES
