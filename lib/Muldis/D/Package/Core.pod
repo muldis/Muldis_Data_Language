@@ -925,9 +925,9 @@ name their corresponding types I<Numeric>.
 C<Numerical> is composed, directly or indirectly, by: C<Integral>,
 C<Integer>, C<Fractional>, C<Fraction>, C<Quantity>.  It is also composed
 by a lot of additional contracts defined by other Muldis D packages such as
-L<Muldis::D::Package::Core::Math>; these include types for irrational
-or algebraic or complex numbers or quaternions or rational types with a
-fixed precision or scale or floating-point types and so on.
+L<Core::Math|Muldis::D::Package::Core::Math>; these include types for
+irrational or algebraic or complex numbers or quaternions or rational types
+with a fixed precision or scale or floating-point types and so on.
 
 =head2 Excuse::Div_By_Zero
 
@@ -1214,12 +1214,12 @@ and C<1> arguments are both nonzero numbers; it is an C<Excuse> otherwise.
         composes {Bicessable and_provides_its_default,
             Numerical and_provides_its_default}
         requires_implements {in_order,asset,pred,succ
-            ,so,to_Integer
+            ,so
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
             ,fractional_divided_by,integral_divided_by
             ,integral_power,integral_nn_power
-            ,factorial};
+            ,to_Integer,factorial};
 
 The interface contract C<Integral> is infinite.  An C<Integral> value
 either is an exact integral number of some kind or is something that can
@@ -1417,16 +1417,6 @@ The function C<so::Integer> results in C<True> iff its C<0> argument is not
 C<0>, and in C<False> if it is C<0>.  This function implements the
 C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
 composing type C<Integer>.
-
-=head2 to_Integer (Integer)
-
-    ::MD::to_Integer::Integer ::= function --> Integer <-- (Integer)
-        implements 2::""
-        : (\.0);
-
-The function C<to_Integer::Integer> simply results in its C<0> argument.
-This function implements the C<Integral> virtual function C<to_Integer> for
-the composing type C<Integer>.
 
 =head2 zero (Integer)
 
@@ -1637,6 +1627,16 @@ The function C<integral_nn_power::Integer> implements the C<Numerical>
 virtual function C<integral_nn_power> aka C<power> for the composing type
 C<Integer>.
 
+=head2 to_Integer (Integer)
+
+    ::MD::to_Integer::Integer ::= function --> Integer <-- (Integer)
+        implements 2::""
+        : (\.0);
+
+The function C<to_Integer::Integer> simply results in its C<0> argument.
+This function implements the C<Integral> virtual function C<to_Integer> for
+the composing type C<Integer>.
+
 =head2 factorial (Integer)
 
     ::MD::factorial::Integer ::= function --> Integer_P <-- (Integer_NN)
@@ -1654,12 +1654,12 @@ function C<factorial> for the composing type C<Integer>.
         composes {Orderable and_provides_its_default,
             Numerical and_provides_its_default}
         requires_implements {in_order
-            ,so,to_Fraction
+            ,so
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
             ,fractional_divided_by,integral_divided_by
             ,integral_power,integral_nn_power
-            ,numerator,denominator};
+            ,to_Fraction,numerator,denominator};
 
 The interface contract C<Fractional> is infinite.  A C<Fractional> value
 either is a rational exact numeric of some kind, expressible as a coprime
@@ -1784,16 +1784,6 @@ The function C<so::Fraction> results in C<True> iff its C<0> argument is
 not C<0.0>, and in C<False> if it is C<0.0>.  This function implements the
 C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
 composing type C<Fraction>.
-
-=head2 to_Fraction (Fraction)
-
-    ::MD::to_Fraction::Fraction ::= function --> Fraction <-- (Fraction)
-        implements 2::""
-        : (\.0);
-
-The function C<to_Fraction::Fraction> simply results in its C<0> argument.
-This function implements the C<Fractional> virtual function C<to_Fraction>
-for the composing type C<Fraction>.
 
 =head2 zero (Fraction)
 
@@ -1954,6 +1944,16 @@ The function C<integral_nn_power::Fraction> implements the C<Numerical>
 virtual function C<integral_nn_power> aka C<power> for the composing type
 C<Fraction>.
 
+=head2 to_Fraction (Fraction)
+
+    ::MD::to_Fraction::Fraction ::= function --> Fraction <-- (Fraction)
+        implements 2::""
+        : (\.0);
+
+The function C<to_Fraction::Fraction> simply results in its C<0> argument.
+This function implements the C<Fractional> virtual function C<to_Fraction>
+for the composing type C<Fraction>.
+
 =head2 numerator (Fraction)
 
     ::MD::numerator::Fraction ::= function --> Integer <-- (Fraction)
@@ -2028,7 +2028,7 @@ C<Tuple_Bag>, there is a distinct result for each distinct I<heading>.
 
     ::MD::Stringy ::= interface
         composes {Orderable, Emptyable and_provides_its_default}
-        requires_implements {so,empty,in_order,catenate,replicate};
+        requires_implements {in_order,so,empty,catenate,replicate};
 
 The interface contract C<Stringy> is infinite.  A C<Stringy> value is a
 homogeneous ordered aggregate of other values such that there may not
@@ -2070,7 +2070,10 @@ subset/superset but only match in order.>
 The virtual function C<catenate> aka C<~> results in the catenation of its
 2 arguments C<0> and C<1> such that the result starts with the members of
 C<0> and ends with the members of C<1>.  This operation has an identity
-value of a collection with zero members.
+value of a collection with zero members.  Other programming languages may
+name their corresponding operators I<concat> or I<||> or I<+> or I<.> or
+I<strcat> or I<join>; some of them also have string interpolation syntax
+which logically does the same thing without an explicit operator.
 
 =head2 replicate ~#
 
@@ -2082,7 +2085,8 @@ value of a collection with zero members.
 The virtual function C<replicate> aka C<~#> results in the catenation of N
 instances of its C<0> argument where N is defined by its C<1> argument.  If
 the C<1> argument is zero then the result is the value of the C<0>
-argument's collection type that has zero members.
+argument's collection type that has zero members.  Other programming
+languages may name their corresponding operators I<x>.
 
 =head1 BITS DATA TYPES
 
