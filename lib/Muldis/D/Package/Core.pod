@@ -2104,13 +2104,226 @@ I<TODO.>
 
 I<TODO.>
 
+=head1 TEXTUAL DATA TYPES
+
+=head2 Textual
+
+    ::MD::Textual ::= interface
+        composes Stringy
+        requires_implements {in_order,so,empty,catenate,replicate,to_Text};
+
+The interface contract C<Textual> is infinite.  A C<Textual> value is a
+C<Stringy> value which is explicitly a sequence of characters of some
+repertoire, typically Unicode or a subset thereof such as ASCII.  Note that
+the C<Core> package has no concept of a I<single character> value in the
+abstract sense that some programming languages do; the closest analogy is a
+C<Stringy> value that just contains either one codepoint or grapheme or
+similar concept; this is something in common with the Perl 6 language.
+
+C<Textual> is composed by C<Text>, which implements C<Orderable> using the
+simple culture-agnostic method of ordering codepoints numerically.
+Idiomatically each culture-specific text collation method will have its own
+distinct C<Textual>-composing type that implements C<Orderable> in its own
+way, so the latter's operators will just work like users expect.
+
+The C<Core> package excludes the majority of useful operators specific to
+working with character strings; see instead other Muldis D packages such as
+L<Core::Text|Muldis::D::Package::Core::Text> for these things.  Such tasks
+include like case folding, pattern matching, whitespace trimming, Unicode
+normalization, encoding to and decoding from binary values, and so on.
+
+Muldis D is designed expressly to avoid mandatory external dependencies of
+large complexity, such as Unicode, in contrast with a lot of the more
+modern languages of its time.  The language is designed to seamlessly scale
+to other character repertoires and encodings than 7-bit ASCII, but all such
+support is canonically provided by non-C<Core> Muldis D packages, and a
+Muldis D implementation can choose whether or not to support them, allowing
+for a lower barrier to entry.  Unicode in particular requires a vast
+knowledge base to work properly with that is regularly updated, and Muldis
+D has a principle that it is better to have multiple specialized components
+that do their jobs well, such as handle Unicode intricacies, while the core
+language can focus on other core competencies that don't involve complex
+externally-defined moving targets.  The C<Core> package loosely just
+considers a character string to be a sequence of generic integers and
+doesn't ascribe very many distinct semantics to particular ones, while
+non-C<Core> code is empowered to do that instead.
+
+=head2 to_Text
+
+    ::MD::to_Text::"" ::= function virtual --> Text <-- (Textual);
+
+The virtual function C<to_Text> results in the C<Text> value that
+represents the same character string value as its C<0> argument.  The
+purpose of C<to_Text> is to canonicalize C<Textual> values so they can be
+compared or worked with as character strings in a manner agnostic to things
+like national collations or fixed-size types.
+
 =head1 TEXT DATA TYPES
 
 =head2 Text
 
-    ::MD::Text ::= selection ...;
+    ::MD::Text::"" ::= selection of Capsule
+        where (has_wrapped( topic, \Text, \@String::Maximal_Chars ))
+        default ('')
+        composes {Textual and_provides_its_default};
 
-I<TODO.>
+The selection contract C<Text> is infinite.  A C<Text> value is an
+arbitrarily-long sequence of abstract I<characters> where each character is
+a member of an infinite-size proprietary abstract character repertoire
+named I<maximal>.  A C<Text> value is canonically defined in terms of a
+C<String> value named C<Maximal_Chars>, where each member C<Integer> of the
+latter represents an abstract character I<codepoint>, with each unique
+integer corresponding to a unique character.  The default value of C<Text>
+is C<''> (the empty character string).  C<Text> is C<Orderable>; its
+minimum value is the same C<''> as its default value; it has no maximum
+value; its ordering algorithm corresponds directly to that of C<String>,
+pairwise as integer sequences.  Other programming languages may name their
+corresponding types I<Str> or I<string> or I<varchar> or I<char>.
+
+There are many defined character sets in the computing world that map
+agreed upon sets of symbols to integers, and Muldis D is designed to be
+implicitly compatible with all of them.  Officially speaking, C<Text>
+values are just sequences of integers and any mapping between these
+integers and commonly well-understood symbols is done externally to the
+C<Text> type.  While the canonical C<Maximal_Chars> representation does
+formally map symbols to integers in a well-defined way, this mapping is
+proprietary, intended only for internal usage, and is subject to change
+with different Muldis D versions.  All normal user interaction with the
+internals of a C<Text> should just be done in terms of explicit mappings
+with well-known public character sets such as 7-bit ASCII or Unicode.  As
+it happens, C<Maximal_Chars> is formally a proper superset of Unicode 8.0,
+itself a proper superset of 7-bit ASCII, so their corresponding codepoints
+are identical, but for other character sets such as ISO Latin 1 or EBCDIC
+or ISO/IEC 2022 or Mojikyo or HKSCS or others, they may not be.
+
+=head2 String::Maximal_Chars
+
+    ::MD::String::Maximal_Chars ::= alias of String;
+
+The selection contract C<String::Maximal_Chars> is an alias of C<String>
+which exists for convenient self-documentation of C<Text>-related code.
+
+=head2 Text::ASCII
+
+    ::MD::Text::ASCII ::= selection of Text
+        where (topic->Text_from_Maximal_Chars is_a \@String::ASCII_Chars);
+
+The selection contract C<Text::ASCII> represents the infinite type
+consisting just of the C<Text> values for which every one of their member
+characters is a member of the 128-character repertoire of 7-bit ASCII.
+This C<Text> subtype has is own canonical representation in terms of a
+C<String> value named C<ASCII_Chars> where each member codepoint matches
+the standard ASCII codes for the same symbols.
+
+=head2 String::ASCII_Chars
+
+    ::MD::String::ASCII_Chars ::= selection of String
+        where (topic all (function : (topic in 0..127)));
+
+The selection contract C<String::ASCII_Chars> represents the infinite type
+consisting just of the C<String> values for which every one of their member
+integers is in the range 0..127 inclusive.
+
+=head2 in_order (Text)
+
+    ::MD::in_order::Text ::= function --> Boolean <-- (Text, Text)
+        implements 2::""
+        : ((\.0->Text_to_Maximal_Chars) in_order (\.1->Text_to_Maximal_Chars));
+
+The function C<in_order::Text> implements the C<Orderable> virtual
+function C<in_order> for the composing type C<Text>.
+
+=head2 so (Text)
+
+    ::MD::so::Text ::= function --> Boolean <-- (Text)
+        implements 2::""
+        : (\.0 != '');
+
+The function C<so::Text> results in C<True> iff its C<0> argument is
+not C<''>, and in C<False> if it is C<''>.  This function implements the
+C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
+composing type C<Text>.
+
+=head2 empty (Text)
+
+    ::MD::empty::Text ::= function --> Text <-- (Text)
+        implements 2::""
+        : ('');
+
+The function C<empty::Text> simply results in C<''>.  This function
+implements the C<Emptyable> virtual function C<empty> for the composing
+type C<Text>.
+
+=head2 catenate (Text)
+
+    ::MD::catenate::Text ::= function --> Text <-- (Text, Text)
+        implements 2::""
+        is associative identity ('')
+        repeater replicate::Text
+        : (Text_from_Maximal_Chars((\.0->Text_to_Maximal_Chars)
+            ~ (\.1->Text_to_Maximal_Chars)));
+
+The function C<catenate::Text> implements the C<Stringy> virtual function
+C<catenate> aka C<~> for the composing type C<Text>.
+
+=head2 replicate (Text)
+
+    ::MD::replicate::Text ::= function --> Text <-- (Text, Integral_NN)
+        implements 2::""
+        : (Text_from_Maximal_Chars((\.0->Text_to_Maximal_Chars) ~# \.1));
+
+The function C<replicate::Text> implements the C<Stringy> virtual function
+C<replicate> aka C<~#> for the composing type C<Text>.
+
+=head2 to_Text (Text)
+
+    ::MD::to_Text::Text ::= function --> Text <-- (Text)
+        implements 2::""
+        : (\.0);
+
+The function C<to_Text::Text> simply results in its C<0> argument.
+This function implements the C<Textual> virtual function C<to_Text>
+for the composing type C<Text>.
+
+=head2 Text_from_Maximal_Chars
+
+    ::MD::Text_from_Maximal_Chars ::= function
+        --> Text <-- (String::Maximal_Chars)
+        : (\Text wrap \.0);
+
+The function C<Text_from_Maximal_Chars> results in the C<Text> value
+selected in terms of an integer sequence in the proprietary
+C<Maximal_Chars> character mapping of its C<0> argument.
+
+=head2 Text_to_Maximal_Chars
+
+    ::MD::Text_to_Maximal_Chars ::= function
+        --> String::Maximal_Chars <-- (Text)
+        : (\.0->unwrap);
+
+The function C<Text_to_Maximal_Chars> results in an integer sequence in the
+proprietary C<Maximal_Chars> character mapping that corresponds to its
+C<Text>-typed C<0> argument.
+
+=head2 Text_from_ASCII_Chars
+
+    ::MD::Text_from_ASCII_Chars ::= function
+        --> Text::ASCII <-- (String::ASCII_Chars)
+        : (\.0->Text_from_Maximal_Chars);
+
+The function C<Text_from_ASCII_Chars> results in the C<Text> value selected
+in terms of an integer sequence in the standard 7-bit ASCII character
+mapping of its C<0> argument.
+
+=head2 Text_to_ASCII_Chars
+
+    ::MD::Text_to_ASCII_Chars ::= function
+        --> String::ASCII_Chars <-- (Text::ASCII)
+        : (\.0->Text_to_Maximal_Chars);
+
+The function C<Text_to_ASCII_Chars> results in an integer sequence in the
+standard 7-bit ASCII character mapping that corresponds to its
+C<Text>-typed C<0> argument.
 
 =head1 COLLECTIVE DATA TYPES OVERVIEW
 
@@ -2597,7 +2810,7 @@ I<TODO.>
 
 =head2 String
 
-    ::MD::String ::= selection of Array where (topic all_is_a \@Integer);
+    ::MD::String::"" ::= selection of Array where (topic all_is_a \@Integer);
 
 The selection contract C<String> represents the infinite type consisting
 just of the C<Array> values having just C<Integer> members.  A C<String>
