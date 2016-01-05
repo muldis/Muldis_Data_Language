@@ -2092,17 +2092,187 @@ languages may name their corresponding operators I<x>.
 
 =head2 Bits
 
-    ::MD::Bits ::= selection ...;
+    ::MD::Bits ::= ::= selection of Capsule
+        where (has_wrapped( topic, \Bits, \@String::Bits ))
+        default (\~?'')
+        composes {Stringy and_provides_its_default};
 
-I<TODO.>
+The selection contract C<Bits> is infinite.  A C<Bits> value is an
+arbitrarily-long sequence of I<bits> where each bit is represented by
+an C<Integer> in the range 0..1.  The default value of C<Bits> is
+C<\~?''> (the empty bit string).  C<Bits> is C<Orderable>; its minimum
+value is the same C<\~?''> as its default value; it has no maximum value;
+its ordering algorithm corresponds directly to that of C<String>, pairwise
+as integer sequences.  Other programming languages may name their
+corresponding types I<bit> or I<bit varying>.
+
+=head2 String::Bits
+
+    ::MD::String::Bits ::= selection of String
+        where (topic all (function : (topic in 0..1)));
+
+The selection contract C<String::Bits> represents the infinite type
+consisting just of the C<String> values for which every one of their member
+integers is in the range 0..1 inclusive.
+
+=head2 in_order (Bits)
+
+    ::MD::in_order::Bits ::= function --> Boolean <-- (Bits, Bits)
+        implements 2::""
+        : ((\.0->Bits_to_Bits) in_order (\.1->Bits_to_Bits));
+
+The function C<in_order::Bits> implements the C<Orderable> virtual
+function C<in_order> for the composing type C<Bits>.
+
+=head2 so (Bits)
+
+    ::MD::so::Bits ::= function --> Boolean <-- (Bits)
+        implements 2::""
+        : (\.0 != \~?'');
+
+The function C<so::Bits> results in C<True> iff its C<0> argument is not
+C<\~?''>, and in C<False> if it is C<\~?''>.  This function implements the
+C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
+composing type C<Bits>.
+
+=head2 empty (Bits)
+
+    ::MD::empty::Bits ::= function --> Bits <-- (Bits)
+        implements 2::""
+        : (\~?'');
+
+The function C<empty::Bits> simply results in C<\~?''>.  This function
+implements the C<Emptyable> virtual function C<empty> for the composing
+type C<Bits>.
+
+=head2 catenate (Bits)
+
+    ::MD::catenate::Bits ::= function --> Bits <-- (Bits, Bits)
+        implements 2::""
+        is associative identity (\~?'')
+        repeater replicate::Bits
+        : (Bits_from_Bits((\.0->Bits_to_Bits) ~ (\.1->Bits_to_Bits)));
+
+The function C<catenate::Bits> implements the C<Stringy> virtual function
+C<catenate> aka C<~> for the composing type C<Bits>.
+
+=head2 replicate (Bits)
+
+    ::MD::replicate::Bits ::= function --> Bits <-- (Bits, Integral_NN)
+        implements 2::""
+        : (Bits_from_Bits((\.0->Bits_to_Bits) ~# \.1));
+
+The function C<replicate::Bits> implements the C<Stringy> virtual function
+C<replicate> aka C<~#> for the composing type C<Bits>.
+
+=head2 Bits_from_Bits
+
+    ::MD::Bits_from_Bits ::= function --> Bits <-- (String::Bits)
+        : (\Bits wrap \.0);
+
+The function C<Bits_from_Bits> results in the C<Bits> value selected in
+terms of the integer sequence of its C<0> argument.
+
+=head2 Bits_to_Bits
+
+    ::MD::Bits_to_Bits ::= function --> String::Bits <-- (Bits)
+        : (\.0->unwrap);
+
+The function C<Bits_to_Bits> results in an integer sequence defining the
+bits of its C<Bits>-typed C<0> argument.
 
 =head1 BLOB DATA TYPES
 
 =head2 Blob
 
-    ::MD::Blob ::= selection ...;
+    ::MD::Blob::"" ::= selection of Capsule
+        where (has_wrapped( topic, \Blob, \@String::Octets ))
+        default (\~+'')
+        composes Stringy;
 
-I<TODO.>
+The selection contract C<Blob> is infinite.  A C<Blob> value is an
+arbitrarily-long sequence of I<octets> where each octet is represented by
+an C<Integer> in the range 0..255.  The default value of C<Blob> is
+C<\~+''> (the empty octet string).  C<Blob> is C<Orderable>; its minimum
+value is the same C<\~+''> as its default value; it has no maximum value;
+its ordering algorithm corresponds directly to that of C<String>, pairwise
+as integer sequences.  Other programming languages may name their
+corresponding types I<Buf> or I<byte[]> or I<bytea>.
+
+=head2 String::Octets
+
+    ::MD::String::Octets ::= selection of String
+        where (topic all (function : (topic in 0..255)));
+
+The selection contract C<String::Octets> represents the infinite type
+consisting just of the C<String> values for which every one of their member
+integers is in the range 0..255 inclusive.
+
+=head2 in_order (Blob)
+
+    ::MD::in_order::Blob ::= function --> Boolean <-- (Blob, Blob)
+        implements 2::""
+        : ((\.0->Blob_to_Octets) in_order (\.1->Blob_to_Octets));
+
+The function C<in_order::Blob> implements the C<Orderable> virtual
+function C<in_order> for the composing type C<Blob>.
+
+=head2 so (Blob)
+
+    ::MD::so::Blob ::= function --> Boolean <-- (Blob)
+        implements 2::""
+        : (\.0 != \~+'');
+
+The function C<so::Blob> results in C<True> iff its C<0> argument is not
+C<\~+''>, and in C<False> if it is C<\~+''>.  This function implements the
+C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
+composing type C<Blob>.
+
+=head2 empty (Blob)
+
+    ::MD::empty::Blob ::= function --> Blob <-- (Blob)
+        implements 2::""
+        : (\~+'');
+
+The function C<empty::Blob> simply results in C<\~+''>.  This function
+implements the C<Emptyable> virtual function C<empty> for the composing
+type C<Blob>.
+
+=head2 catenate (Blob)
+
+    ::MD::catenate::Blob ::= function --> Blob <-- (Blob, Blob)
+        implements 2::""
+        is associative identity (\~+'')
+        repeater replicate::Blob
+        : (Blob_from_Octets((\.0->Blob_to_Octets) ~ (\.1->Blob_to_Octets)));
+
+The function C<catenate::Blob> implements the C<Stringy> virtual function
+C<catenate> aka C<~> for the composing type C<Blob>.
+
+=head2 replicate (Blob)
+
+    ::MD::replicate::Blob ::= function --> Blob <-- (Blob, Integral_NN)
+        implements 2::""
+        : (Blob_from_Octets((\.0->Blob_to_Octets) ~# \.1));
+
+The function C<replicate::Blob> implements the C<Stringy> virtual function
+C<replicate> aka C<~#> for the composing type C<Blob>.
+
+=head2 Blob_from_Octets
+
+    ::MD::Blob_from_Octets ::= function --> Blob <-- (String::Octets)
+        : (\Blob wrap \.0);
+
+The function C<Blob_from_Octets> results in the C<Blob> value selected in
+terms of the integer sequence of its C<0> argument.
+
+=head2 Blob_to_Octets
+
+    ::MD::Blob_to_Octets ::= function --> String::Octets <-- (Blob)
+        : (\.0->unwrap);
+
+The function C<Blob_to_Octets> results in an integer sequence defining the
+octets of its C<Blob>-typed C<0> argument.
 
 =head1 TEXTUAL DATA TYPES
 
