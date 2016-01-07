@@ -1055,7 +1055,8 @@ Grammar:
 A C<< <Boolean> >> node represents a value of the Muldis D C<Boolean> type,
 which is a general purpose 2-valued logic boolean or I<truth value>.  The
 C<Boolean> type is a foundational type of the Muldis D type system, and
-this is the canonical grammar for them.
+this is the canonical grammar for them.  Conceptually, but not actually, a
+C<< <Boolean> >> node is prefixed by C<\?>.
 
 Examples:
 
@@ -1126,7 +1127,8 @@ type, which is a general purpose exact integral number of any magnitude,
 which explicitly does not represent any kind of thing in particular,
 neither cardinal nor ordinal nor nominal.  The C<Integer> type is a
 foundational type of the Muldis D type system, and this is the canonical
-grammar for them.
+grammar for them.  Conceptually, but not actually, an C<< <Integer> >> node
+is always prefixed by C<\+>, whether quoted or not.
 
 This grammar supports writing C<Integer> literals in any of the numeric
 bases {2,8,10,16} using conventional syntax.  The literal may optionally
@@ -1213,7 +1215,8 @@ type, which is a general purpose exact rational number of any magnitude and
 precision, expressible as a coprime I<numerator> / I<denominator> pair of
 C<Integer> whose I<denominator> is positive, which explicitly does not
 represent any kind of thing in particular, neither cardinal nor ordinal nor
-nominal.
+nominal.  Conceptually, but not actually, a C<< <Fraction> >> node is
+always prefixed by C<\+>, whether quoted or not.
 
 The C<Fraction> type is not a foundational type of the Muldis D type
 system, but rather is a subtype by constraint of the C<Capsule> type, and
@@ -1255,18 +1258,19 @@ Examples:
 Grammar:
 
     <Bits> ::=
-        '\\~?' ['\'' [
-              ['0b' <nc2>*]
-            | ['0o' <nc8>*]
-            | ['0x' <nc16>*]
-        ]? '\''] % <sp>
+        '\\~?' [
+              [['\'' ['0b' <nc2>* ]? '\''] % <sp>]
+            | [['\'' ['0o' <nc8>* ]? '\''] % <sp>]
+            | [['\'' ['0x' <nc16>*]? '\''] % <sp>]
+        ]
 
 A C<< <Bits> >> node represents a value of the Muldis D C<Bits> type, which
-is a general purpose bit string.
+is an arbitrarily-long sequence of I<bits> where each bit is represented by
+an C<Integer> in the range 0..1.
 
-The C<Bits> type is not a foundational type of the Muldis D type system, but
-rather is a subtype by constraint of the C<Capsule> type, and all C<Bits>
-values can be selected in terms of C<< <Capsule> >> grammar nodes.
+The C<Bits> type is not a foundational type of the Muldis D type system,
+but rather is a subtype by constraint of the C<Capsule> type, and all
+C<Bits> values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Bits> >> is the canonical grammar for all C<Bits> values.
 
 This grammar supports writing C<Bits> literals in any of the numeric bases
@@ -1290,17 +1294,18 @@ Examples:
 Grammar:
 
     <Blob> ::=
-        '\\~+' ['\'' [
-              ['0b' <nc2>*]
-            | ['0x' <nc16>*]
-        ]? '\''] % <sp>
+        '\\~+' [
+              [['\'' ['0b' <nc2>* ]? '\''] % <sp>]
+            | [['\'' ['0x' <nc16>*]? '\''] % <sp>]
+        ]
 
 A C<< <Blob> >> node represents a value of the Muldis D C<Blob> type, which
-is a general purpose octet string.
+is an arbitrarily-long sequence of I<octets> where each octet is
+represented by an C<Integer> in the range 0..255.
 
-The C<Blob> type is not a foundational type of the Muldis D type system, but
-rather is a subtype by constraint of the C<Capsule> type, and all C<Blob>
-values can be selected in terms of C<< <Capsule> >> grammar nodes.
+The C<Blob> type is not a foundational type of the Muldis D type system,
+but rather is a subtype by constraint of the C<Capsule> type, and all
+C<Blob> values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Blob> >> is the canonical grammar for all C<Blob> values.
 
 This grammar supports writing C<Blob> literals in any of the numeric bases
@@ -1309,8 +1314,23 @@ underscore characters (C<_>), which exist just to help with visual
 formatting.  A C<< <Blob> >> may optionally be split into 1..N segments
 where each pair of consecutive segments is separated by dividing space.
 
-When using Ob, the bits must come in groups of 8; when using 0x, the hexits
-must come in groups of 2.
+This grammar is subject to the following additional rules:
+
+=over
+
+=item *
+
+If the C<< <Blob> >> segments are prefixed by C<0b> then the total count of
+C<< <nc2> >> in the C<< <Blob> >> excluding C<_> must be an even multiple
+of 8.
+
+=item *
+
+Otherwise, if the C<< <Blob> >> segments are prefixed by C<0x> then the
+total count of C<< <nc16> >> in the C<< <Blob> >> excluding C<_> must be an
+even multiple of 2.
+
+=back
 
 Examples:
 
@@ -1337,12 +1357,15 @@ Grammar:
         '\'' '\\' [<-['\\]> | <escaped_char>]* '\''
 
 A C<< <Text> >> node represents a value of the Muldis D C<Text> type, which
-is a general purpose character string.
+is an arbitrarily-long sequence of abstract I<characters>.
 
-The C<Text> type is not a foundational type of the Muldis D type system, but
-rather is a subtype by constraint of the C<Capsule> type, and all C<Text>
-values can be selected in terms of C<< <Capsule> >> grammar nodes.
+The C<Text> type is not a foundational type of the Muldis D type system,
+but rather is a subtype by constraint of the C<Capsule> type, and all
+C<Text> values can be selected in terms of C<< <Capsule> >> grammar nodes.
 However, C<< <Text> >> is the canonical grammar for all C<Text> values.
+
+A C<< <Text> >> may optionally be split into 1..N segments where each pair
+of consecutive segments is separated by dividing space.
 
 Examples:
 
@@ -1564,20 +1587,20 @@ I<TODO.>
 A C<::=> is I<what-binding> while a C<::?=> is I<why-binding>.
 
     : - key/asset separator in most pairwise collections
-    ? - booleans or sets (and relations) or some predicate eg for existence
-    + - numbers or bags (and tuple-bags)
-    ~ - arrays (and text and blob)
+    ? - booleans or sets (and bits and relations) or some predicate eg for existence
+    + - numbers or bags (and octets and tuple-bags)
+    ~ - arrays (and text and bits and blob)
     % - tuples or relations (and tuple-bags)
     @ - attr names or headings (and chain-identifiers and renamings)
     \ - value literal or selector (or topic attr accessor)
     & - subject-to-update parameter/etc or procedure
     ! - booleans or excuses
-    ^ - raising something up - bootstrap on foundation, or attribute projection, or number to a power
+    ^ - raising something up - bootstrap on foundation, or attribute projection (or number to a power, but not in Core)
     . - collection item accessor or existence test
     = - association of 2 things, either for comparison or binding or assignment
 
     [] - homogeneous ordered collection of element - arrays/statements/etc - ordinal+universal
-    {} - homogeneous nonordered collection of member - bags/sets/dictionaries/etc - universal+ordinal
+    {} - homogeneous nonordered collection of member - bags/sets/etc - universal+ordinal
     () - heterogeneous aordered collection of attr - tuples - nominal+universal
 
 When combining symbols to represent both collection type and element type,
