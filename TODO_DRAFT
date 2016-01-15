@@ -14,6 +14,62 @@ resources of everyone else.
 
 ----------
 
+* FIRST PRIORITY:
+- Make the core have basic Unicode knowledge after all.
+To be specific, make it know what the range of valid codepoints is, and
+implement UTF-8 encode and decode in core.
+- So core has support for the Unicode UTF-8 encoding only, which is a
+proper superset of ASCII, that the internal "maximal" Text is supposed to
+match anyway, and it has no endian-ness variations.
+- Core does not know about any other encodings, whether UTF-7,16,32 etc or
+any UCS or any Latin or whatever; those are still left to other modules.
+- Core does not know anything about Unicode normal forms or character
+properties; it can't normalize NFD or NFKD etc; it can't do upper/lower/etc;
+its really all that stuff where the actual Unicode complexity is.
+- Since UTF-8 encode/decode isn't actually a complexity burden on its own,
+it is safe for the Core package itself to have Unicode, so we can merge in
+the Core::Aliases package into Core.
+- Core may still want to exclude any Unichars that can change under
+normalization and just have those always represented by a single codepoint,
+which already happens I think.
+- We still retain ASCII names for everything system-defined.
+
+* Valuable to read: https://doc.perl6.org/language/faq
+- Including the start about versioning.
+- Including https://docs.perl6.org/language/nativecall .
+- And https://github.com/niner/Inline-Perl5/ .
+    use Inline::Perl5;
+    use DBI:from<Perl5>;
+    - "Perl 6' use statement allows you to load modules from other languages
+    as well. Inline::Perl5 registers as a handler for the Perl5 language."
+    - In theory that's how I'd best make Muldis D callable from Perl 6.
+
+* Add one or more features to assist in making some otherwise fatal
+actions non-fatal, while staying in pure functions.
+- Example use case, make it easy to define Interval type that is as
+forgiving as Set, such that one can test membership of a value in the
+Interval and let it just result in false when the ranges are defined over
+another type, this instead of throwing a type-mismatch exception because
+there is no implementation of in_order(Foo,Bar) for the combo in question.
+- An option is to have a simple way to declare a fallback for a virtual
+function, something that is chosen if no specific composing type handles
+the interface in question.  This gets into the realm of overrides.
+- Another option is to add either of several expression node types.
+    - Example, "foo x bar" that says if foo throws an exception such as no
+    matching type sig for a routine arg, return bar rather than dying.
+    - Example, variants of generic routine calls analagous to generic
+    Excuse routines:
+        - args -->? rtn results in true iff rtn matches something that accepts args as valid input
+        - args -->! rtn results in a particular Excuse in situations where
+        prior would be false and results in the normal result if prior would be true
+        - actually just make first a builtin/expr node type, latter should be function
+    - Above is just for input type mismatches, not failure to math a rtn name.
+    - To avoid over-reaching, those wouldn't neuter indirect call failures
+    like a "foo>bar" call, probably just use on a direct in_order() call.
+    - Actually, -->? also useful in constraint defs eg also in Interval
+    where one might require "\%(lhs, rhs) -->? \@in_order"
+    which is possibly more applicable than asking if they are the same type.
+
 * Postgres and MySQL (and in theory the standard) have distinct built-in
 types for representing byte arrays and bit arrays respectively; the latter
 are called BIT [VARYING] while the former are called BYTEA or BLOB.

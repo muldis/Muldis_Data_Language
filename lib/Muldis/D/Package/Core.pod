@@ -14,13 +14,13 @@ This document is Muldis::D::Package::Core version 0.201.0.-9.
 =head1 SYNOPSIS
 
     Muldis_D:Plain_Text:"http://muldis.com":"0.201.0.-9";
-    script ASCII;
+    script Unicode:8.0:UTF-8;
     package
     {
         identity My_App ::= My_App:"http://mycorp.com":"0";
         foundation "http://muldis.com":"0.201.0.-9";
         uses MD ::= Core:"http://muldis.com":"0.201.0.-9";
-        floating {::My_App, ::MD};
+        floating {::My_App, ::MD, ::MD::Unicode_Aliases};
         `TODO: Put example routines etc here.`
     };
 
@@ -31,37 +31,18 @@ C<Core:"http://muldis.com":"0.201.0.-9"> which provides the common core
 system-defined data types and operators that regular users of the language
 would employ directly in their applications and schemas.
 
-This document I<also> defines the Muldis D package
-C<Core::Aliases:"http://muldis.com":"0.201.0.-9"> which adds trans-ASCII
-Unicode aliases to C<Core> package entities.
-
 See also L<Muldis::D::Standard_Library> to read about the B<Muldis D
 Standard Library> specification, of which this document is a part.
 
 =head1 PACKAGES
 
-From one source:
-
     Muldis_D:Plain_Text:"http://muldis.com":"0.201.0.-9";
-    script ASCII;
+    script Unicode:8.0:UTF-8;
     package
     {
         identity MD ::= Core:"http://muldis.com":"0.201.0.-9";
         foundation "http://muldis.com":"0.201.0.-9";
         floating {::MD, ::MD::Round_Meth, ::MD::Capsule, ::MD::Source_Code};
-        ...
-    };
-
-From a separate source:
-
-    Muldis_D:Plain_Text:"http://muldis.com":"0.201.0.-9";
-    script Unicode:8.0:UTF-8:canon;
-    package
-    {
-        identity MDA ::= Core::Aliases:"http://muldis.com":"0.201.0.-9";
-        foundation "http://muldis.com":"0.201.0.-9";
-        uses MD ::= Core:"http://muldis.com":"0.201.0.-9";
-        floating {::MD, ::MDA};
         ...
     };
 
@@ -115,7 +96,8 @@ and not if two distinct containers have the same content.
         is commutative;
 
     ::MD::"!=" ::= alias of not_same;
-    ::MDA::"≠" ::= alias of not_same;
+
+    ::MD::Unicode_Aliases::"≠" ::= alias of not_same;
 
 The function C<not_same> aka C<!=> aka C<≠> results in C<False> iff its 2
 arguments C<0> and C<1> are exactly the same value, and C<True> otherwise.
@@ -246,7 +228,7 @@ C<Text>, C<Positional>, C<Array>, C<String>.
 
     ::MD::Neg_Inf ::= constant (\@0) composes {Orderable, Excuse};
 
-    ::MDA::"-∞" ::= alias of Neg_Inf;
+    ::MD::Unicode_Aliases::"-∞" ::= alias of Neg_Inf;
 
 The constant C<Neg_Inf> aka C<-∞> represents the type-agnostic concept of
 negative infinity, an C<Orderable> value that sorts I<before> all other
@@ -258,7 +240,7 @@ Note that IEEE floating-point standards define a negative infinity value.
 
     ::MD::Pos_Inf ::= constant (\@0) composes {Orderable, Excuse};
 
-    ::MDA::"+∞" ::= alias of Pos_Inf;
+    ::MD::Unicode_Aliases::"+∞" ::= alias of Pos_Inf;
 
 The constant C<Pos_Inf> aka C<-∞> represents the type-agnostic concept of
 positive infinity, an C<Orderable> value that sorts I<after> all other
@@ -340,7 +322,8 @@ Other programming languages may name this operator I<gt>.
     ::MD::before_or_same ::= alias of in_order;
 
     ::MD::"<=" ::= alias of before_or_same;
-    ::MDA::"≤" ::= alias of before_or_same;
+
+    ::MD::Unicode_Aliases::"≤" ::= alias of before_or_same;
 
 The function C<before_or_same> aka C<< <= >> aka C<≤> results in C<True>
 iff its C<0> argument is I<before> its C<1> argument or they are the same
@@ -352,7 +335,8 @@ name this operator I<le>.
     ::MD::after_or_same ::= function commutes before_or_same;
 
     ::MD::">=" ::= alias of after_or_same;
-    ::MDA::"≥" ::= alias of after_or_same;
+
+    ::MD::Unicode_Aliases::"≥" ::= alias of after_or_same;
 
 The function C<after_or_same> aka C<< >= >> aka C<≥> results in C<True>
 iff its C<0> argument is I<after> its C<1> argument or they are the same
@@ -641,7 +625,7 @@ typically integer types, to be I<false> or I<true>.
 
     ::MD::False ::= constant (False);
 
-    ::MDA::"⊥" ::= alias of False;
+    ::MD::Unicode_Aliases::"⊥" ::= alias of False;
 
 The constant C<False> aka C<⊥> represents the boolean logical truth value
 I<false> aka I<contradiction>.  Other programming languages frequently use
@@ -651,7 +635,7 @@ the integer 0 to represent I<false>.
 
     ::MD::True ::= constant (True);
 
-    ::MDA::"⊤" ::= alias of True;
+    ::MD::Unicode_Aliases::"⊤" ::= alias of True;
 
 The constant C<True> aka C<⊤> represents the boolean logical truth value
 I<true> aka I<tautology>.  Other programming languages frequently use the
@@ -709,8 +693,9 @@ C<Boolean>.
 
     ::MD::not ::= function negates so::Boolean;
 
-    ::MD::"!"  ::= alias of not;
-    ::MDA::"¬" ::= alias of not;
+    ::MD::"!" ::= alias of not;
+
+    ::MD::Unicode_Aliases::"¬" ::= alias of not;
 
 The function C<not> aka C<!> aka C<¬> performs a logical I<negation> or
 I<logical complement>; it results in C<True> iff its C<0> argument is
@@ -723,7 +708,7 @@ corresponding operators I<~> or I<^> or I<N>.
         is {associative,commutative,idempotent} identity (True)
         : (\.0 ?? \.1 !! False);
 
-    ::MDA::"∧"  ::= alias of and;
+    ::MD::Unicode_Aliases::"∧" ::= alias of and;
 
 The function C<and> aka C<∧> performs a logical I<conjunction>; it results
 in C<True> iff its 2 arguments C<0> and C<1> are both C<True>, and C<False>
@@ -736,8 +721,9 @@ operators I<&> or I<&&> or I<K>.
         is commutative;
 
     ::MD::not_and ::= alias of nand;
-    ::MDA::"⊼"    ::= alias of nand;
-    ::MDA::"↑"    ::= alias of nand;
+
+    ::MD::Unicode_Aliases::"⊼" ::= alias of nand;
+    ::MD::Unicode_Aliases::"↑" ::= alias of nand;
 
 The function C<nand> aka C<not_and> aka C<⊼> aka C<↑> performs a logical
 I<alternative denial>; it results in C<False> iff its 2 arguments C<0> and
@@ -749,7 +735,7 @@ C<1> are both C<True>, and C<True> otherwise.
         is {associative,commutative,idempotent} identity (False)
         : (\.0 ?? True !! \.1);
 
-    ::MDA::"∨" ::= alias of or;
+    ::MD::Unicode_Aliases::"∨" ::= alias of or;
 
 The function C<or> aka C<∨> performs a logical I<disjunction>; it results
 in C<True> iff at least one of its 2 arguments C<0> and C<1> is C<True>,
@@ -762,8 +748,9 @@ corresponding operators I<|> or I<||> or I<A>.
         is commutative;
 
     ::MD::not_or ::= alias of nor;
-    ::MDA::"⊽"   ::= alias of nor;
-    ::MDA::"↓"   ::= alias of nor;
+
+    ::MD::Unicode_Aliases::"⊽" ::= alias of nor;
+    ::MD::Unicode_Aliases::"↓" ::= alias of nor;
 
 The function C<nor> aka C<not_or> aka C<⊽> aka C<↓> performs a logical
 I<joint denial>; it results in C<False> iff at least one of its 2 arguments
@@ -775,8 +762,9 @@ C<0> and C<1> is C<True>, and C<True> otherwise.
         is {associative,commutative} identity (True)
         : (topic --> \@same);
 
-    ::MD::iff  ::= alias of xnor;
-    ::MDA::"↔" ::= alias of xnor;
+    ::MD::iff ::= alias of xnor;
+
+    ::MD::Unicode_Aliases::"↔" ::= alias of xnor;
 
 The function C<xnor> aka C<iff> aka C<↔> performs a logical
 I<biconditional> or I<material equivalence> or I<even parity>; it results
@@ -790,8 +778,8 @@ name their corresponding operators I<E>.
     ::MD::xor ::= function negates xnor
         is {associative,commutative} identity (False);
 
-    ::MDA::"⊻" ::= alias of xor;
-    ::MDA::"↮" ::= alias of xor;
+    ::MD::Unicode_Aliases::"⊻" ::= alias of xor;
+    ::MD::Unicode_Aliases::"↮" ::= alias of xor;
 
 The function C<xor> aka C<⊻> aka C<↮> performs a logical I<exclusive
 disjunction> or I<odd parity>; it results in C<False> iff its 2 arguments
@@ -806,7 +794,8 @@ corresponding operators I<^>.
         : (\.0 ?? \.1 !! True);
 
     ::MD::implies ::= alias of imp;
-    ::MDA::"→"    ::= alias of imp;
+
+    ::MD::Unicode_Aliases::"→" ::= alias of imp;
 
 The function C<imp> aka C<implies> aka C<→> performs a logical I<material
 implication>; it results in C<False> when its C<0> argument is C<True> and
@@ -817,7 +806,8 @@ its C<1> argument is C<False>, and C<True> otherwise.
     ::MD::nimp ::= function negates imp;
 
     ::MD::not_implies ::= alias of nimp;
-    ::MDA::"↛"        ::= alias of nimp;
+
+    ::MD::Unicode_Aliases::"↛" ::= alias of nimp;
 
 The function C<nimp> aka C<not_implies> aka C<↛> performs a logical
 I<material nonimplication>; it results in C<True> when its C<0> argument is
@@ -827,7 +817,7 @@ C<True> and its C<1> argument is C<False>, and C<False> otherwise.
 
     ::MD::if ::= function commutes imp;
 
-    ::MDA::"←" ::= alias of if;
+    ::MD::Unicode_Aliases::"←" ::= alias of if;
 
 The function C<if> aka C<←> performs a logical I<converse implication> or
 I<reverse material implication>; it results in C<False> when its C<0>
@@ -839,7 +829,8 @@ otherwise.
     ::MD::nif ::= function commutes nimp;
 
     ::MD::not_if ::= alias of nif;
-    ::MDA::"↚"   ::= alias of nif;
+
+    ::MD::Unicode_Aliases::"↚" ::= alias of nif;
 
 The function C<nif> aka C<not_if> aka C<↚> performs a logical I<converse
 nonimplication>; it results in C<True> when its C<0> argument is C<False>
@@ -1037,7 +1028,7 @@ C<0> (I<minuend>) and C<1> (I<subtrahend>).
         --> Numerical <-- {(Numerical), (Numerical, Numerical)}
         : (topic --> (degree(topic) = 1 ?? \@opposite !! \@minus));
 
-    ::MDA::"−" ::= alias of "-";
+    ::MD::Unicode_Aliases::"−" ::= alias of "-";
 
 The function C<-> aka C<−> is a proxy for either of the virtual functions
 unary C<opposite> and binary C<minus>, depending on how many arguments it
@@ -1052,7 +1043,8 @@ was invoked with.
 
     ::MD::abs_minus ::= alias of modulus_minus;
     ::MD::"|-|"     ::= alias of modulus_minus;
-    ::MDA::"|−|"    ::= alias of modulus_minus;
+
+    ::MD::Unicode_Aliases::"|−|" ::= alias of modulus_minus;
 
 The function C<modulus_minus> aka C<abs_minus> aka C<|-|> aka C<|−|>
 results in the numeric I<absolute difference> of its 2 arguments C<0> and
@@ -1065,8 +1057,9 @@ C<1>, which is the (non-negative) distance between those arguments.
         is {associative,commutative}
         repeater integral_nn_power;
 
-    ::MD::"*"  ::= alias of times;
-    ::MDA::"×" ::= alias of times;
+    ::MD::"*" ::= alias of times;
+
+    ::MD::Unicode_Aliases::"×" ::= alias of times;
 
 The virtual function C<times> aka C<*> aka C<×> results in the numeric
 I<product> from performing I<multiplication> of its 2 I<factor> arguments
@@ -1112,9 +1105,10 @@ other things, some of which would always round to a multiple of one.
     ::MD::fractional_divided_by::"" ::= function virtual
         --> {Numerical, Excuse::Div_By_Zero} <-- (Numerical, Numerical);
 
-    ::MD::"/"  ::= alias of fractional_divided_by;
-    ::MDA::"÷" ::= alias of fractional_divided_by;
-    ::MDA::"∕" ::= alias of fractional_divided_by;
+    ::MD::"/" ::= alias of fractional_divided_by;
+
+    ::MD::Unicode_Aliases::"÷" ::= alias of fractional_divided_by;
+    ::MD::Unicode_Aliases::"∕" ::= alias of fractional_divided_by;
 
 The virtual function C<fractional_divided_by> aka C</> aka C<÷> aka C<∕>
 results in the typically-fractional numeric I<quotient> from performing
@@ -2005,7 +1999,7 @@ C<so> aka C<?> aka C<to_Boolean> for the composing type C<Emptyable>.
 
     ::MD::is_empty ::= function negates so::Emptyable;
 
-    ::MDA::"∅?" ::= alias of is_empty;
+    ::MD::Unicode_Aliases::"∅?" ::= alias of is_empty;
 
 The function C<is_empty> aka C<∅?> results in C<True> iff its C<0> argument
 has no members, and in C<False> iff it has any members.
@@ -2014,7 +2008,7 @@ has no members, and in C<False> iff it has any members.
 
     ::MD::empty::"" ::= function virtual --> Emptyable <-- (Emptyable);
 
-    ::MDA::"∅" ::= alias of empty;
+    ::MD::Unicode_Aliases::"∅" ::= alias of empty;
 
 The virtual function C<empty> aka C<∅> results in the value of its C<0>
 argument's collection type that has zero members.  For most such types like
@@ -2682,7 +2676,7 @@ baggy count or positional index, its for a problem best solved differently.>
 
     ::MD::has::"" ::= function virtual --> Boolean <-- (Homogeneous, Any);
 
-    ::MDA::"∋" ::= alias of has;
+    ::MD::Unicode_Aliases::"∋" ::= alias of has;
 
 I<TODO.>
 
@@ -2690,7 +2684,7 @@ I<TODO.>
 
     ::MD::not_has ::= function negates has;
 
-    ::MDA::"∌" ::= alias of not_has;
+    ::MD::Unicode_Aliases::"∌" ::= alias of not_has;
 
 I<TODO.>
 
@@ -2698,7 +2692,7 @@ I<TODO.>
 
     ::MD::in ::= function commutes has;
 
-    ::MDA::"∈" ::= alias of in;
+    ::MD::Unicode_Aliases::"∈" ::= alias of in;
 
 I<TODO.>
 
@@ -2706,7 +2700,7 @@ I<TODO.>
 
     ::MD::not_in ::= function commutes not_has;
 
-    ::MDA::"∉" ::= alias of not_in;
+    ::MD::Unicode_Aliases::"∉" ::= alias of not_in;
 
 I<TODO.>
 
@@ -2734,7 +2728,8 @@ I<TODO.>
         --> Boolean <-- (Homogeneous, Primed_Func_Ref);
 
     ::MD::there_exists ::= alias of any;
-    ::MDA::"∃"         ::= alias of any;
+
+    ::MD::Unicode_Aliases::"∃" ::= alias of any;
 
 I<TODO.  Result is true when at least one member evaluates to true.
 This is logically equivalent to testing if a same-topic 'where' result is nonempty,
@@ -2746,7 +2741,8 @@ aid efficiency with less-savvy optimizers that don't know to short-circuit.>
     ::MD::none ::= function negates any;
 
     ::MD::there_does_not_exist ::= alias of none;
-    ::MDA::"∄"                 ::= alias of none;
+
+    ::MD::Unicode_Aliases::"∄" ::= alias of none;
 
 I<TODO.  Result is true when no member evaluates to true.>
 
@@ -2756,7 +2752,8 @@ I<TODO.  Result is true when no member evaluates to true.>
         : (\.0 none negated_func(of : \.1, passing_args : \@(0)));
 
     ::MD::for_all ::= alias of all;
-    ::MDA::"∀"    ::= alias of all;
+
+    ::MD::Unicode_Aliases::"∀" ::= alias of all;
 
 I<TODO.  Result is true when no member evaluates to false.>
 
@@ -2998,7 +2995,7 @@ I<string> that may represent either octets or characters.
 
 =head2 ~∅
 
-    ::MDA::"~∅" ::= constant ([]);
+    ::MD::Unicode_Aliases::"~∅" ::= constant ([]);
 
 The constant C<~∅> represents the only zero-member C<Array> value.
 
@@ -3198,7 +3195,7 @@ using a Foundation function specific to that purpose.>
 
 =head2 ?∅
 
-    ::MDA::"?∅" ::= constant ({});
+    ::MD::Unicode_Aliases::"?∅" ::= constant ({});
 
 The constant C<?∅> represents the only zero-member C<Set> value.
 
@@ -3302,7 +3299,7 @@ I<TODO.>
 
 =head2 +∅
 
-    ::MDA::"+∅" ::= constant (\+{});
+    ::MD::Unicode_Aliases::"+∅" ::= constant (\+{});
 
 The constant C<+∅> represents the only zero-member C<Bag> value.
 
