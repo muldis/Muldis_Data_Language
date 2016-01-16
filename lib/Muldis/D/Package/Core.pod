@@ -2293,13 +2293,22 @@ The C<Core> package excludes the majority of useful operators specific to
 working with character strings; see instead other Muldis D packages such as
 L<Core::Text|Muldis::D::Package::Core::Text> for these things.  Such tasks
 include like case folding, pattern matching, whitespace trimming, Unicode
-normalization, encoding to and decoding from binary values, and so on.
+normalization, encoding to and decoding from most binary formats, and so on.
 
 Muldis D is designed expressly to avoid mandatory external dependencies of
-large complexity, such as Unicode, in contrast with a lot of the more
-modern languages of its time.  The language is designed to seamlessly scale
-to other character repertoires and encodings than 7-bit ASCII, but all such
-support is canonically provided by non-C<Core> Muldis D packages, and a
+large complexity, such as most of the details of Unicode, in contrast with
+a lot of the more modern languages of its time.  The Muldis D Foundation
+and C<Core> package are strictly limited in their knowledge of Unicode;
+they know that a codepoint of the Unicode repertoire is just in the integer
+range C<0..0x10FFFF>, and that the leading subset C<0..127> is also 7-bit
+ASCII, and they know how to read and write the fairly simple and stable
+C<UTF-8> binary encoding for Unicode text, which is a proper superset of
+7-bit ASCII encoding and is CPU endian-agnostic.  In contrast, anything to
+do with knowing what abstract characters exist, and their various
+properties (upper or lowercase, combining or not, etc), anything to do with
+normalization or folding or pattern matching, and anything to do with other
+binary encodings or character repertoires especially endian-specific, this
+is all expressly I<not> part of the language core.  A
 Muldis D implementation can choose whether or not to support them, allowing
 for a lower barrier to entry.  Unicode in particular requires a vast
 knowledge base to work properly with that is regularly updated, and Muldis
@@ -2366,10 +2375,31 @@ or ISO/IEC 2022 or Mojikyo or HKSCS or others, they may not be.
 The selection contract C<String::Maximal_Chars> is an alias of C<String>
 which exists for convenient self-documentation of C<Text>-related code.
 
+=head2 Text::Unicode
+
+    ::MD::Text::Unicode ::= selection of Text
+        where (topic->Text_from_Maximal_Chars is_a \@String::Unicode_Codes);
+
+The selection contract C<Text::Unicode> represents the infinite type
+consisting just of the C<Text> values for which every one of their member
+characters is a member of the 0x110000-character repertoire of Unicode.
+This C<Text> subtype has is own canonical representation in terms of a
+C<String> value named C<Unicode_Codes> where each member codepoint matches
+the standard Unicode codepoints for the same symbols.
+
+=head2 String::Unicode_Codes
+
+    ::MD::String::Unicode_Codes ::= selection of String::Maximal_Chars
+        where (topic all (function : (topic in 0..0x10FFFF)));
+
+The selection contract C<String::Unicode_Codes> represents the infinite type
+consisting just of the C<String> values for which every one of their member
+integers is in the range 0..0x10FFFF inclusive.
+
 =head2 Text::ASCII
 
-    ::MD::Text::ASCII ::= selection of Text
-        where (topic->Text_from_Maximal_Chars is_a \@String::ASCII_Chars);
+    ::MD::Text::ASCII ::= selection of Text::Unicode
+        where (topic->Text_from_Unicode_Codes is_a \@String::ASCII_Chars);
 
 The selection contract C<Text::ASCII> represents the infinite type
 consisting just of the C<Text> values for which every one of their member
@@ -2380,7 +2410,7 @@ the standard ASCII codes for the same symbols.
 
 =head2 String::ASCII_Chars
 
-    ::MD::String::ASCII_Chars ::= selection of String
+    ::MD::String::ASCII_Chars ::= selection of String::Unicode_Codes
         where (topic all (function : (topic in 0..127)));
 
 The selection contract C<String::ASCII_Chars> represents the infinite type
@@ -2468,11 +2498,31 @@ The function C<Text_to_Maximal_Chars> results in an integer sequence in the
 proprietary C<Maximal_Chars> character mapping that corresponds to its
 C<Text>-typed C<0> argument.
 
+=head2 Text_from_Unicode_Codes
+
+    ::MD::Text_from_Unicode_Codes ::= function
+        --> Text::Unicode <-- (String::Unicode_Codes)
+        : (\.0->Text_from_Maximal_Chars);
+
+The function C<Text_from_Unicode_Codes> results in the C<Text> value selected
+in terms of an integer sequence in the standard Unicode codepoint
+mapping of its C<0> argument.
+
+=head2 Text_to_Unicode_Codes
+
+    ::MD::Text_to_Unicode_Codes ::= function
+        --> String::Unicode_Codes <-- (Text::Unicode)
+        : (\.0->Text_to_Maximal_Chars);
+
+The function C<Text_to_Unicode_Codes> results in an integer sequence in the
+standard Unicode codepoint mapping that corresponds to its
+C<Text>-typed C<0> argument.
+
 =head2 Text_from_ASCII_Chars
 
     ::MD::Text_from_ASCII_Chars ::= function
         --> Text::ASCII <-- (String::ASCII_Chars)
-        : (\.0->Text_from_Maximal_Chars);
+        : (\.0->Text_from_Unicode_Codes);
 
 The function C<Text_from_ASCII_Chars> results in the C<Text> value selected
 in terms of an integer sequence in the standard 7-bit ASCII character
@@ -2482,7 +2532,7 @@ mapping of its C<0> argument.
 
     ::MD::Text_to_ASCII_Chars ::= function
         --> String::ASCII_Chars <-- (Text::ASCII)
-        : (\.0->Text_to_Maximal_Chars);
+        : (\.0->Text_to_Unicode_Codes);
 
 The function C<Text_to_ASCII_Chars> results in an integer sequence in the
 standard 7-bit ASCII character mapping that corresponds to its
