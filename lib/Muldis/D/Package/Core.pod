@@ -3127,11 +3127,14 @@ or octet arrays with names like I<byte[]> or I<bytea>, or character
 arrays with names like I<string> or I<text> or I<varchar>, or types like
 I<string> that may represent either octets or characters.
 
-=head2 ~∅
+=head2 empty_Array ~∅
 
-    ::MD::Unicode_Aliases::"~∅" ::= constant ([]);
+    ::MD::empty_Array ::= constant ([]);
 
-The constant C<~∅> represents the only zero-member C<Array> value.
+    ::MD::Unicode_Aliases::"~∅" ::= alias of empty_Array;
+
+The constant C<empty_Array> aka C<~∅> represents the only zero-member
+C<Array> value.
 
 =head2 so (Array)
 
@@ -3359,11 +3362,14 @@ Composed by: Set, Relation.>
 I<TODO. Update 'where' to say quantity for each distinct member is 1,
 using a Foundation function specific to that purpose.>
 
-=head2 ?∅
+=head2 empty_Set ?∅
 
-    ::MD::Unicode_Aliases::"?∅" ::= constant ({});
+    ::MD::empty_Set ::= constant ({});
 
-The constant C<?∅> represents the only zero-member C<Set> value.
+    ::MD::Unicode_Aliases::"?∅" ::= alias of empty_Set;
+
+The constant C<empty_Set> aka C<?∅> represents the only zero-member
+C<Set> value.
 
 =head2 so (Set)
 
@@ -3371,10 +3377,10 @@ The constant C<?∅> represents the only zero-member C<Set> value.
         implements 2::""
         : (\.0 != {});
 
-The function C<so::Set> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> aka C<to_Boolean> for the composing type C<Set>.
-
-I<TODO.>
+The function C<so::Set> results in C<True> iff its C<0> argument has any
+members, and in C<False> iff it has no members.  This function implements
+the C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
+composing type C<Set>.
 
 =head2 empty (Set)
 
@@ -3382,13 +3388,15 @@ I<TODO.>
         implements 2::""
         : ({});
 
-I<TODO.>
+The function C<empty::Set> results in the only zero-member C<Set>
+value.  This function implements the C<Emptyable> virtual function C<empty>
+aka C<∅> for the composing type C<Set>.
 
 =head2 has_n (Set)
 
     ::MD::has_n::Set ::= function --> Boolean <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (has_n(\.0->unwrap, \.1, \.2));
+        : (has_n(\.0->unwrap, \.1, \.2 min 1));
 
 The function C<has_n::Set> results in C<True> iff, either its C<0> argument
 has a member equal to its C<1> argument and its C<2> argument is 1, or C<0>
@@ -3400,7 +3408,8 @@ composing type C<Set>.
 
     ::MD::insert_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (insert_n(\.0->unwrap, \.1, \.2));
+        : (\.0 has \.1 or \.2 = 0 ?? \.0
+            !! \Set wrap insert_n(\.0->unwrap, \.1, 1));
 
 The function C<insert_n::Set> results in the value of its C<0> argument's
 collection type that has all of the members of the function's C<0>
@@ -3413,7 +3422,7 @@ composing type C<Set>.
 
     ::MD::remove_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (remove_n(\.0->unwrap, \.1, \.2));
+        : (\Set wrap remove_n(\.0->unwrap, \.1, \.2 min 1));
 
 The function C<remove_n::Set> results in the value of its C<0> argument's
 collection type that has all of the members of the function's C<0>
@@ -3493,11 +3502,14 @@ D Foundation type I<FDN__Bag>.  A C<Bag> value is ...
 
 I<TODO.>
 
-=head2 +∅
+=head2 empty_Bag +∅
 
-    ::MD::Unicode_Aliases::"+∅" ::= constant (\+{});
+    ::MD::empty_Bag ::= constant (\+{});
 
-The constant C<+∅> represents the only zero-member C<Bag> value.
+    ::MD::Unicode_Aliases::"+∅" ::= alias of empty_Bag;
+
+The constant C<empty_Bag> aka C<+∅> represents the only zero-member
+C<Bag> value.
 
 =head2 so (Bag)
 
@@ -3505,10 +3517,10 @@ The constant C<+∅> represents the only zero-member C<Bag> value.
         implements 2::""
         : (\.0 != \+{});
 
-The function C<so::Bag> ...  This function implements the C<Boolable>
-virtual function C<so> aka C<?> aka C<to_Boolean> for the composing type C<Bag>.
-
-I<TODO.>
+The function C<so::Bag> results in C<True> iff its C<0> argument has any
+members, and in C<False> iff it has no members.  This function implements
+the C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
+composing type C<Bag>.
 
 =head2 empty (Bag)
 
@@ -3516,7 +3528,9 @@ I<TODO.>
         implements 2::""
         : (\+{});
 
-I<TODO.>
+The function C<empty::Bag> results in the only zero-member C<Bag>
+value.  This function implements the C<Emptyable> virtual function C<empty>
+aka C<∅> for the composing type C<Bag>.
 
 =head2 has_n (Bag)
 
