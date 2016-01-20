@@ -2947,7 +2947,7 @@ I<TODO.>
 
 =head2 count cardinality #
 
-    ::MD::count::"" ::= function virtual --> Integral <-- (Homogeneous);
+    ::MD::count::"" ::= function virtual --> Integral <-- (Discrete);
 
     ::MD::cardinality ::= alias of count;
     ::MD::"#"         ::= alias of count;
@@ -3348,19 +3348,14 @@ Composed by: Set, Relation.>
 
 =head2 Set
 
-    ::MD::Set ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped( topic, \Set, \@1::_Asset ))
-            default ({})
-            composes {Homogeneous, Setty and_provides_its_default};
+    ::MD::Set ::= selection where (topic -->^ FDN__is_a_Set)
+        default ({})
+        composes {Discrete, Setty and_provides_its_default};
 
-        _Asset ::= selection of Bag
-            where (...);
-    };
+The selection contract C<Set> represents the infinite Muldis
+D Foundation type I<FDN__Set>.  A C<Set> value is ...
 
-I<TODO. Update 'where' to say quantity for each distinct member is 1,
-using a Foundation function specific to that purpose.>
+I<TODO.>
 
 =head2 empty_Set ?∅
 
@@ -3396,7 +3391,7 @@ aka C<∅> for the composing type C<Set>.
 
     ::MD::has_n::Set ::= function --> Boolean <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (has_n(\.0->unwrap, \.1, \.2 min 1));
+        : (topic -->^ FDN__Set_has_n);
 
 The function C<has_n::Set> results in C<True> iff, either its C<0> argument
 has a member equal to its C<1> argument and its C<2> argument is 1, or C<0>
@@ -3408,8 +3403,7 @@ composing type C<Set>.
 
     ::MD::insert_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (\.0 has \.1 or \.2 = 0 ?? \.0
-            !! \Set wrap insert_n(\.0->unwrap, \.1, 1));
+        : (topic -->^ FDN__Set_insert_n);
 
 The function C<insert_n::Set> results in the value of its C<0> argument's
 collection type that has all of the members of the function's C<0>
@@ -3422,7 +3416,7 @@ composing type C<Set>.
 
     ::MD::remove_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (\Set wrap remove_n(\.0->unwrap, \.1, \.2 min 1));
+        : (topic -->^ FDN__Set_remove_n);
 
 The function C<remove_n::Set> results in the value of its C<0> argument's
 collection type that has all of the members of the function's C<0>
@@ -3436,7 +3430,7 @@ composing type C<Set>.
     ::MD::nest::Set ::= function --> Set <-- (Set)
         implements 2::""
         requires (...)
-        : (\Set wrap (\.0->unwrap->nest));
+        : (topic -->^ FDN__Set_nest);
 
 I<TODO.>
 
@@ -3445,7 +3439,7 @@ I<TODO.>
     ::MD::unnest::Set ::= function --> Set <-- (Set)
         implements 2::""
         requires (...)
-        : (\Set wrap (\.0->unwrap->unnest));
+        : (topic -->^ FDN__Set_unnest);
 
 I<TODO.>
 
@@ -3453,7 +3447,7 @@ I<TODO.>
 
     ::MD::any::Set ::= function --> Boolean <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (\.0->unwrap any \.1);
+        : (topic -->^ FDN__Set_any);
 
 I<TODO.>
 
@@ -3461,7 +3455,7 @@ I<TODO.>
 
     ::MD::where::Set ::= function --> Set <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (\Set wrap (\.0->unwrap where \.1));
+        : (topic -->^ FDN__Set_where);
 
 I<TODO.>
 
@@ -3469,7 +3463,7 @@ I<TODO.>
 
     ::MD::map::Set ::= function --> Set <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (\Set wrap (\.0->unwrap map \.1));
+        : (topic -->^ FDN__Set_map);
 
 I<TODO.>
 
@@ -3477,7 +3471,7 @@ I<TODO.>
 
     ::MD::reduce::Set ::= function --> Any <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (\Set wrap (\.0->unwrap reduce \.1));
+        : (topic -->^ FDN__Set_reduce);
 
 I<TODO.>
 
@@ -3485,7 +3479,7 @@ I<TODO.>
 
     ::MD::count::Set ::= function --> Integer_NN <-- (Set)
         implements 2::""
-        : (\.0->unwrap->count);
+        : (topic -->^ FDN__Set_count);
 
 I<TODO.>
 
@@ -3495,7 +3489,7 @@ I<TODO.>
 
     ::MD::Bag ::= selection where (topic -->^ FDN__is_a_Bag)
         default (\+{})
-        composes Homogeneous;
+        composes Discrete;
 
 The selection contract C<Bag> represents the infinite Muldis
 D Foundation type I<FDN__Bag>.  A C<Bag> value is ...
@@ -3927,7 +3921,7 @@ I<TODO.>
 =head2 Relational
 
     ::MD::Relational ::= interface
-        composes {Homogeneous, Attributive}
+        composes {Discrete, Attributive}
         requires_implements {...};
 
 I<TODO.>
@@ -3943,11 +3937,19 @@ I<TODO.>
             default (\?%())
             composes {Relational, Setty};
 
-        _Asset ::= selection of Tuple_Bag
-            where (...);
+        _Asset ::= selection of Tuple where
+        (
+            if topic ^?= \%( heading : \@Attr_Names, body : \@Set ) then
+                if \.body all_is_a \@Tuple then
+                    \.body all (\@"^?=" assuming \.heading)
+                else
+                    False
+            else
+                False
+        );
     };
 
-I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
+I<TODO.>
 
 =head2 Relation_D0C0 D0C0
 
