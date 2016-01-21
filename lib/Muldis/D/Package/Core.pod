@@ -2043,8 +2043,8 @@ way, and often a single composing type may provide multiple ways, such as
 character string types offering both codepoint and grapheme
 representations.  The default value of C<Stringy> is the C<Bits> value with
 zero members.  C<Stringy> expects every one of its composing types to be
-orderable, and idiomatically that is done by some kind of pairwise
-comparison of members.
+orderable (but that some C<Positional> are only conditionally so), and
+idiomatically that is done by some kind of pairwise comparison of members.
 
 C<Stringy> is composed, directly or indirectly, by: C<Bits>, C<Blob>,
 C<Textual>, C<Text>, C<Positional>, C<Array>, C<String>.
@@ -2691,7 +2691,7 @@ particular, such as a text or a graphic, and is simply the sum of its
 I<members>; however some types which do represent such a particular kind of
 thing may choose to compose C<Homogeneous> because it makes sense to
 provide its operators.  The default value of C<Homogeneous> is the C<Array>
-value with zero members.
+value with zero members, C<[]>.
 
 If a C<Homogeneous> value is also C<Discrete>, all of its members can be
 enumerated as individuals and counted; otherwise, that may not be possible.
@@ -2943,7 +2943,14 @@ Depending on the collection subtype, order of 0,1 may or may not be significant.
             ,nest,unnest,any,where,map,reduce,...
             ,count,...};
 
-I<TODO.>
+The interface contract C<Discrete> is infinite.  A C<Discrete> value is a
+C<Homogeneous> value such that all of its members can be enumerated as
+individuals and counted.  The default value of C<Discrete> is the C<Array>
+value with zero members, C<[]>.
+
+C<Discrete> is composed, directly or indirectly, by: C<Positional>,
+C<Array>, C<String>, C<Setty>, C<Set>, C<Bag>, C<Relational>, C<Relation>,
+C<Tuple_Bag>.
 
 =head2 count cardinality #
 
@@ -2952,7 +2959,8 @@ I<TODO.>
     ::MD::cardinality ::= alias of count;
     ::MD::"#"         ::= alias of count;
 
-I<TODO.>
+The virtual function C<count> aka C<cardinality> aka C<#> results in the
+integral count of the members of its C<0> argument.
 
 =head1 POSITIONAL DATA TYPES
 
@@ -2966,11 +2974,30 @@ I<TODO.>
             ,count,...
             ,elem,has_index,first_index,last_index,slice,index_succ_all_matches,...};
 
-I<TODO.  For types that support integer-index-based lookup of values;
-for collections of index-value pairs where all indexes are distinct;
-for collections you can enumerate in canonical order;
-the collection indexes might not be zero-based in the general case but must be dense.
-Composed by: Array, String, etc.>
+The interface contract C<Positional> is infinite.  A C<Positional> value is
+both a C<Stringy> value and a C<Discrete> value; it is a homogeneous
+aggregate of other, I<member> values that are arranged in an explicit total
+order and can both be enumerated in that order as well as be looked up by
+integral indexed-based position against that order; there is a single
+canonical interpretation of where each I<member> begins and ends within the
+aggregate.  A C<Positional> value is dense, meaning that every one of its
+members exists at a distinct adjacent integral position; a C<Positional>
+preserves the identity that the count of its members is equal to one plus
+the difference of its first and last index positions.  Idiomatically, a
+C<Positional> value is zero-based, meaning its first-ordered member is at
+index position C<0>, but that doesn't have to be the case.
+
+The default value of C<Positional> is the C<Array> value with zero members,
+C<[]>.  C<Positional> is C<Orderable> in the general case conditionally
+depending on whether all of its member values are mutually C<Orderable>
+themselves; its minimum value is the same C<[]> as its default value; it
+has no maximum value.  The ordering algorithm of C<Positional> is based on
+pairwise comparison of its members by matching index starting at the lowest
+index; iff C<Positional> value X is a leading sub-sequence of C<Positional>
+value Y, then X is ordered before Y; otherwise, the mutual ordering of the
+lowest-indexed non-matching members of X and Y determines that the ordering
+of X and Y as a whole are the same as said members.  C<Positional> is
+composed, directly or indirectly, by: C<Array>, C<String>.
 
 =head2 Excuse::No_Such_Index
 
@@ -3103,10 +3130,17 @@ I<TODO.  Also consider index_succ_common_prefix as name.>
         default ([])
         composes Positional and_provides_its_default;
 
-The selection contract C<Array> represents the infinite
-Muldis D Foundation type I<FDN__Array>.  An C<Array> value is ...
-
-I<TODO.>
+The selection contract C<Array> represents the infinite Muldis D Foundation
+type I<FDN__Array>.  An C<Array> value is a general purpose
+arbitrarily-long ordered sequence of any other, I<member> values, which
+explicitly does not represent any kind of thing in particular, and is
+simply the sum of its members.  An C<Array> in the general case may have
+multiple members that are the same value, and any duplicates may or may not
+exist at consecutive indexes.  The default value of C<Array> is C<[]>, the
+only zero-member C<Array> value.  C<Array> is C<Orderable>; its minimum
+value is the same C<[]> as its default value; it has no maximum value; its
+ordering algorithm is defined by C<Positional>.  Other programming
+languages may name their corresponding types I<List>.
 
 =head2 String
 
@@ -3134,7 +3168,7 @@ I<string> that may represent either octets or characters.
     ::MD::Unicode_Aliases::"~∅" ::= alias of empty_Array;
 
 The constant C<empty_Array> aka C<~∅> represents the only zero-member
-C<Array> value.
+C<Array> value, C<[]>.
 
 =head2 so (Array)
 
@@ -3279,7 +3313,10 @@ I<TODO.>
         implements 2::""
         : (topic -->^ FDN__Array_count);
 
-I<TODO.>
+The function C<count::Array> results in the integral count of the members
+of its C<0> argument.  This function implements the C<Discrete> virtual
+function C<count> aka C<cardinality> aka C<#> for the composing type
+C<Array>.
 
 =head2 elem (Array)
 
@@ -3341,8 +3378,11 @@ for perceived efficiency.>
 
     ::MD::Setty ::= interface;
 
-I<TODO.  For collections that make sure each member can only appear once.
-Composed by: Set, Relation.>
+The interface contract C<Setty> is infinite.  A C<Setty> value is a
+I<collective> value such that every one of its component I<members> is a
+distinct value.  The default value of C<Setty> is the C<Set> value with
+zero members, C<{}>.  C<Setty> is composed, directly or indirectly, by:
+C<Set>, C<Relation>.
 
 =head1 SET DATA TYPES
 
@@ -3359,6 +3399,13 @@ Composed by: Set, Relation.>
             where (...);
     };
 
+The selection contract C<Set> is infinite.  A C<Set> value is a general
+purpose arbitrarily-large unordered collection of any other, I<member>
+values, which explicitly does not represent any kind of thing in
+particular, and is simply the sum of its members.  A C<Set> ensures that no
+2 of its members are the same value.  The default value of C<Set> is C<{}>,
+the only zero-member C<Set> value.
+
 I<TODO. Update 'where' to say quantity for each distinct member is 1,
 using a Foundation function specific to that purpose.>
 
@@ -3369,7 +3416,7 @@ using a Foundation function specific to that purpose.>
     ::MD::Unicode_Aliases::"?∅" ::= alias of empty_Set;
 
 The constant C<empty_Set> aka C<?∅> represents the only zero-member
-C<Set> value.
+C<Set> value, C<{}>.
 
 =head2 so (Set)
 
@@ -3487,7 +3534,9 @@ I<TODO.>
         implements 2::""
         : (\.0->unwrap->count);
 
-I<TODO.>
+The function C<count::Set> results in the integral count of the members
+of its C<0> argument.  This function implements the C<Discrete> virtual
+function C<count> aka C<cardinality> aka C<#> for the composing type C<Set>.
 
 =head1 BAG DATA TYPES
 
@@ -3497,10 +3546,14 @@ I<TODO.>
         default (\+{})
         composes Discrete;
 
-The selection contract C<Bag> represents the infinite Muldis
-D Foundation type I<FDN__Bag>.  A C<Bag> value is ...
-
-I<TODO.>
+The selection contract C<Bag> represents the infinite Muldis D Foundation
+type I<FDN__Bag>.  A C<Bag> value is a general purpose arbitrarily-large
+unordered collection of any other, I<member> values, which explicitly does
+not represent any kind of thing in particular, and is simply the sum of its
+members.  A C<Bag> in the general case may have multiple members that are
+the same value.  The default value of C<Bag> is C<\+{}>, the only
+zero-member C<Bag> value.  Other programming languages may name their
+corresponding types I<Multiset>.
 
 =head2 empty_Bag +∅
 
@@ -3509,7 +3562,7 @@ I<TODO.>
     ::MD::Unicode_Aliases::"+∅" ::= alias of empty_Bag;
 
 The constant C<empty_Bag> aka C<+∅> represents the only zero-member
-C<Bag> value.
+C<Bag> value, C<\+{}>.
 
 =head2 so (Bag)
 
@@ -3625,7 +3678,9 @@ I<TODO.>
         implements 2::""
         : (topic -->^ FDN__Bag_count);
 
-I<TODO.>
+The function C<count::Bag> results in the integral count of the members
+of its C<0> argument.  This function implements the C<Discrete> virtual
+function C<count> aka C<cardinality> aka C<#> for the composing type C<Bag>.
 
 =head1 ATTRIBUTIVE DATA TYPES
 
