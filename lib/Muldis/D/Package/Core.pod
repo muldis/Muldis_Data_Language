@@ -2680,6 +2680,7 @@ I<TODO.>
         composes Emptyable
         requires_implements {so,empty
             ,has_n,insert_n,remove_n
+            ,all_unique,unique
             ,nest,unnest,any,where,map,reduce,...};
 
 The interface contract C<Homogeneous> is infinite.  A C<Homogeneous> value
@@ -2775,7 +2776,8 @@ C<False>.
 
 The virtual function C<has_n> results in C<True> iff its C<0> argument has
 at least N members such that each is equal to its C<1> argument, where N is
-defined by its C<2> argument; otherwise it results in C<False>.  Note that
+defined by its C<2> argument; otherwise it results in C<False>.  The
+result is always C<True> when the C<2> argument is zero.  Note that
 having a C<2> argument greater than 1 in combination with a C<Setty> typed
 C<0> argument will always result in C<False>.
 
@@ -2833,6 +2835,26 @@ those closest to the end of C<0>.  Note that C<remove_n> is designed to
 mirror C<insert_n> and so the identity C<c = remove_n(insert_n(c,x,n),x,n)>
 should hold for any C<Homogeneous> type, even a C<Positional> one, except
 with a C<Setty> C<c> that already has an C<x> element with a nonzero C<n>.
+
+=head2 all_unique
+
+    ::MD::all_unique::"" ::= function virtual --> Boolean <-- (Homogeneous);
+
+The virtual function C<all_unique> results in C<True> iff its C<0> argument
+has no 2 members that are the same value, and C<False> otherwise.  The
+result is always C<True> for a C<Setty> argument.
+
+=head2 unique
+
+    ::MD::unique::"" ::= function virtual --> Homogeneous <-- (Homogeneous);
+
+The virtual function C<unique> results in the value of its C<0> argument's
+collection type that has, for every distinct member value I<V> of the
+function's C<0> argument, exactly 1 member whose value is equal to I<V>.
+The result is always the same value as its argument when that is C<Setty>.
+If the result's type is C<Positional>, then each retained member is the one
+closest to the start of the argument out of those members sharing the
+retained member's value.  See also the C<Positional> function C<squish>.
 
 =head2 nest group
 
@@ -2940,6 +2962,7 @@ Depending on the collection subtype, order of 0,1 may or may not be significant.
         composes Homogeneous and_provides_its_default
         requires_implements {so,empty
             ,has_n,insert_n,remove_n
+            ,all_unique,unique
             ,nest,unnest,any,where,map,reduce,...
             ,count,...};
 
@@ -2970,6 +2993,7 @@ integral count of the members of its C<0> argument.
         composes {Stringy, Accessible, Discrete and_provides_its_default}
         requires_implements {so,empty,catenate,replicate
             ,has_n,insert_n,remove_n
+            ,all_unique,unique
             ,nest,unnest,any,where,map,reduce,...
             ,count,...
             ,elem,has_index,first_index,last_index,slice,index_succ_all_matches,...};
@@ -3059,6 +3083,19 @@ I<TODO.>
         : (topic --> \@elem_or_excuse);
 
 I<TODO.>
+
+=head2 squish
+
+    ::MD::squish ::= function --> Positional <-- (Positional)
+        : (\.0 map (function : (\%( group : \.0, member : False )))
+            ->nest map (function : (\.0.\group)));
+
+The function C<squish> results in the value of its C<0> argument's
+ordered collection type that has all of the members of the function's C<0>
+argument but that, for every run of 2 or more consecutive members that are
+all the same value, that run retains only 1 of those members.  Iff the
+argument is such that all appearances of each distinct value are adjacent
+members, the result of C<squish> is the same as that of C<unique>.
 
 =head2 first_index
 
@@ -3257,6 +3294,30 @@ argument.  The removed instances of C<1> are those closest to the end of
 C<0>.  This function implements the C<Homogeneous> virtual function
 C<remove_n> for the composing type C<Array>.
 
+=head2 all_unique (Array)
+
+    ::MD::all_unique::Array ::= function --> Boolean <-- (Array)
+        implements 2::""
+        : (topic -->^ FDN__Array_all_unique);
+
+The function C<all_unique::Array> results in C<True> iff its C<0> argument
+has no 2 members that are the same value, and C<False> otherwise.  This
+function implements the C<Homogeneous> virtual function C<all_unique> for
+the composing type C<Array>.
+
+=head2 unique (Array)
+
+    ::MD::unique::Array ::= function --> Array <-- (Array)
+        implements 2::""
+        : (topic -->^ FDN__Array_unique);
+
+The function C<unique::Array> results in the C<Array> value that has, for
+every distinct member value I<V> of the function's C<0> argument, exactly 1
+member whose value is equal to I<V>.  Each retained member is the one
+closest to the start of the argument out of those members sharing the
+retained member's value.  This function implements the C<Homogeneous>
+virtual function C<unique> for the composing type C<Array>.
+
 =head2 nest (Array)
 
     ::MD::nest::Array ::= function --> Array <-- (Array)
@@ -3396,7 +3457,7 @@ C<Set>, C<Relation>.
             composes {Discrete, Setty and_provides_its_default};
 
         _Asset ::= selection of Bag
-            where (...);
+            where (all_unique topic);
     };
 
 The selection contract C<Set> is infinite.  A C<Set> value is a general
@@ -3443,13 +3504,13 @@ aka C<∅> for the composing type C<Set>.
 
     ::MD::has_n::Set ::= function --> Boolean <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (has_n(\.0->unwrap, \.1, \.2 min 1));
+        : (has_n(\.0->unwrap, \.1, \.2));
 
-The function C<has_n::Set> results in C<True> iff, either its C<0> argument
-has a member equal to its C<1> argument and its C<2> argument is 1, or C<0>
-lacks that member and C<2> is zero; otherwise it results in C<False>.  This
-function implements the C<Homogeneous> virtual function C<has_n> for the
-composing type C<Set>.
+The function C<has_n::Set> results in C<True> iff either its C<2> argument
+is zero or its C<0> argument has a member equal to its C<1> argument and
+its C<2> argument is 1; otherwise it results in C<False>.  This function
+implements the C<Homogeneous> virtual function C<has_n> for the composing
+type C<Set>.
 
 =head2 insert_n (Set)
 
@@ -3469,13 +3530,33 @@ composing type C<Set>.
 
     ::MD::remove_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (\Set wrap remove_n(\.0->unwrap, \.1, \.2 min 1));
+        : (\Set wrap remove_n(\.0->unwrap, \.1, \.2));
 
 The function C<remove_n::Set> results in the value of its C<0> argument's
 collection type that has all of the members of the function's C<0>
 argument; but, if the C<2> argument is nonzero and C<0> had a member equal
 to the C<1> argument, the result lacks that member.  This function
 implements the C<Homogeneous> virtual function C<remove_n> for the
+composing type C<Set>.
+
+=head2 all_unique (Set)
+
+    ::MD::all_unique::Set ::= function --> Boolean <-- (Set)
+        implements 2::""
+        : (True);
+
+The function C<all_unique::Set> simply results in C<True>.  This function
+implements the C<Homogeneous> virtual function C<all_unique> for the
+composing type C<Set>.
+
+=head2 unique (Set)
+
+    ::MD::unique::Set ::= function --> Set <-- (Set)
+        implements 2::""
+        : (\.0);
+
+The function C<unique::Set> simply results in its C<0> argument.  This
+function implements the C<Homogeneous> virtual function C<unique> for the
 composing type C<Set>.
 
 =head2 nest (Set)
@@ -3621,6 +3702,28 @@ are each equal to its C<1> argument, where N is defined as the lesser of
 its C<2> argument and the count of members of C<0> equal to the C<1>
 argument.  This function implements the C<Homogeneous> virtual function
 C<remove_n> for the composing type C<Bag>.
+
+=head2 all_unique (Bag)
+
+    ::MD::all_unique::Bag ::= function --> Boolean <-- (Bag)
+        implements 2::""
+        : (topic -->^ FDN__Bag_all_unique);
+
+The function C<all_unique::Bag> results in C<True> iff its C<0> argument
+has no 2 members that are the same value, and C<False> otherwise.  This
+function implements the C<Homogeneous> virtual function C<all_unique> for
+the composing type C<Bag>.
+
+=head2 unique (Bag)
+
+    ::MD::unique::Bag ::= function --> Bag <-- (Bag)
+        implements 2::""
+        : (topic -->^ FDN__Bag_unique);
+
+The function C<unique::Bag> results in the C<Bag> value that has, for every
+distinct member value I<V> of the function's C<0> argument, exactly 1
+member whose value is equal to I<V>.  This function implements the
+C<Homogeneous> virtual function C<unique> for the composing type C<Bag>.
 
 =head2 nest (Bag)
 
@@ -3999,7 +4102,7 @@ I<TODO.>
             composes {Relational, Setty};
 
         _Asset ::= selection of Tuple_Bag
-            where (...);
+            where (all_unique topic);
     };
 
 I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
