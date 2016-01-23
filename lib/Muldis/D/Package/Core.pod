@@ -2681,6 +2681,7 @@ I<TODO.>
         requires_implements {so,empty
             ,has_n,insert_n,remove_n
             ,all_unique,unique
+            ,subset
             ,nest,unnest,any,where,map,reduce,...};
 
 The interface contract C<Homogeneous> is infinite.  A C<Homogeneous> value
@@ -2734,8 +2735,9 @@ baggy count or positional index, its for a problem best solved differently.>
 
 The function C<in> aka C<∈> results in C<True> iff its C<0> argument is
 equal to at least 1 member value of its C<1> argument; otherwise it results
-in C<False>.  Other programming languages may name their corresponding
-operators I<in_array>.
+in C<False>.  Note that this operation is also known as I<containment>.
+Other programming languages may name their corresponding operators
+I<in_array>.
 
 =head2 not_in ∉
 
@@ -2856,6 +2858,90 @@ If the result's type is C<Positional>, then each retained member is the one
 closest to the start of the argument out of those members sharing the
 retained member's value.  See also the C<Positional> function C<squish>.
 
+=head2 proper_subset ⊂
+
+    ::MD::proper_subset ::= function
+        --> Boolean <-- (Homogeneous, Homogeneous)
+        : (topic --> \@not_same and topic --> \@subset);
+
+    ::MD::Unicode_Aliases::"⊂" ::= alias of proper_subset;
+
+The function C<proper_subset> aka C<⊂> results in C<True> iff the
+multiset of members of its C<0> argument is a proper subset of the
+multiset of members of its C<1> argument; otherwise it results in C<False>.
+
+=head2 not_proper_subset ⊄
+
+    ::MD::not_proper_subset ::= function negates proper_subset;
+
+    ::MD::Unicode_Aliases::"⊄" ::= alias of not_proper_subset;
+
+The function C<not_proper_subset> aka C<⊄> results in C<True> iff the
+multiset of members of its C<0> argument is not a proper subset of the
+multiset of members of its C<1> argument; otherwise it results in C<False>.
+
+=head2 proper_superset ⊃
+
+    ::MD::proper_superset ::= function commutes proper_subset;
+
+    ::MD::Unicode_Aliases::"⊃" ::= alias of proper_superset;
+
+The function C<proper_superset> aka C<⊃> results in C<True> iff the
+multiset of members of its C<0> argument is a proper superset of the
+multiset of members of its C<1> argument; otherwise it results in C<False>.
+
+=head2 not_proper_superset ⊅
+
+    ::MD::not_proper_superset ::= function negates proper_superset;
+
+    ::MD::Unicode_Aliases::"⊅" ::= alias of not_proper_superset;
+
+The function C<not_proper_superset> aka C<⊅> results in C<True> iff the
+multiset of members of its C<0> argument is not a proper superset of the
+multiset of members of its C<1> argument; otherwise it results in C<False>.
+
+=head2 subset ⊆
+
+    ::MD::subset::"" ::= function virtual
+        --> Boolean <-- (Homogeneous, Homogeneous);
+
+    ::MD::Unicode_Aliases::"⊆" ::= alias of subset;
+
+The function C<subset> aka C<⊆> results in C<True> iff the multiset of
+members of its C<0> argument is a subset of the multiset of members of
+its C<1> argument; otherwise it results in C<False>.  Note that this
+operation is also known as I<multiset inclusion>.
+
+=head2 not_subset ⊈
+
+    ::MD::not_subset ::= function negates subset;
+
+    ::MD::Unicode_Aliases::"⊈" ::= alias of not_subset;
+
+The function C<not_subset> aka C<⊈> results in C<True> iff the multiset
+of members of its C<0> argument is not a subset of the multiset of
+members of its C<1> argument; otherwise it results in C<False>.
+
+=head2 superset ⊇
+
+    ::MD::superset ::= function commutes subset;
+
+    ::MD::Unicode_Aliases::"⊇" ::= alias of superset;
+
+The function C<superset> aka C<⊇> results in C<True> iff the multiset of
+members of its C<0> argument is a superset of the multiset of members of
+its C<1> argument; otherwise it results in C<False>.
+
+=head2 not_superset ⊉
+
+    ::MD::not_superset ::= function negates superset;
+
+    ::MD::Unicode_Aliases::"⊉" ::= alias of not_superset;
+
+The function C<not_superset> aka C<⊉> results in C<True> iff the multiset
+of members of its C<0> argument is not a superset of the multiset of
+members of its C<1> argument; otherwise it results in C<False>.
+
 =head2 nest group
 
     ::MD::nest::"" ::= function virtual --> Homogeneous <-- (Homogeneous)
@@ -2963,6 +3049,7 @@ Depending on the collection subtype, order of 0,1 may or may not be significant.
         requires_implements {so,empty
             ,has_n,insert_n,remove_n
             ,all_unique,unique
+            ,subset
             ,nest,unnest,any,where,map,reduce,...
             ,count,...};
 
@@ -2994,6 +3081,7 @@ integral count of the members of its C<0> argument.
         requires_implements {so,empty,catenate,replicate
             ,has_n,insert_n,remove_n
             ,all_unique,unique
+            ,subset
             ,nest,unnest,any,where,map,reduce,...
             ,count,...
             ,elem,has_index,first_index,last_index,slice,index_succ_all_matches,...};
@@ -3318,6 +3406,18 @@ closest to the start of the argument out of those members sharing the
 retained member's value.  This function implements the C<Homogeneous>
 virtual function C<unique> for the composing type C<Array>.
 
+=head2 subset (Array)
+
+    ::MD::subset::Array ::= function --> Boolean <-- (Array, Array)
+        implements 2::""
+        : (topic -->^ FDN__Array_subset);
+
+The function C<subset::Array> results in C<True> iff the multiset of
+members of its C<0> argument is a subset of the multiset of members of its
+C<1> argument; otherwise it results in C<False>.  This function implements
+the C<Homogeneous> virtual function C<subset> aka C<⊆> for the composing
+type C<Array>.
+
 =head2 nest (Array)
 
     ::MD::nest::Array ::= function --> Array <-- (Array)
@@ -3559,6 +3659,18 @@ The function C<unique::Set> simply results in its C<0> argument.  This
 function implements the C<Homogeneous> virtual function C<unique> for the
 composing type C<Set>.
 
+=head2 subset (Set)
+
+    ::MD::subset::Set ::= function --> Boolean <-- (Set, Set)
+        implements 2::""
+        : (subset(\.0->unwrap, \.1->unwrap));
+
+The function C<subset::Set> results in C<True> iff the set of members of
+its C<0> argument is a subset of the set of members of its C<1> argument;
+otherwise it results in C<False>.  This function implements the
+C<Homogeneous> virtual function C<subset> aka C<⊆> for the composing type
+C<Set>.
+
 =head2 nest (Set)
 
     ::MD::nest::Set ::= function --> Set <-- (Set)
@@ -3724,6 +3836,18 @@ The function C<unique::Bag> results in the C<Bag> value that has, for every
 distinct member value I<V> of the function's C<0> argument, exactly 1
 member whose value is equal to I<V>.  This function implements the
 C<Homogeneous> virtual function C<unique> for the composing type C<Bag>.
+
+=head2 subset (Bag)
+
+    ::MD::subset::Bag ::= function --> Boolean <-- (Bag, Bag)
+        implements 2::""
+        : (topic -->^ FDN__Bag_subset);
+
+The function C<subset::Bag> results in C<True> iff the multiset of members
+of its C<0> argument is a subset of the multiset of members of its C<1>
+argument; otherwise it results in C<False>.  This function implements the
+C<Homogeneous> virtual function C<subset> aka C<⊆> for the composing type
+C<Bag>.
 
 =head2 nest (Bag)
 
