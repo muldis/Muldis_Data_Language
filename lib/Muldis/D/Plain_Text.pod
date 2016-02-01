@@ -394,7 +394,7 @@ Grammar:
         | '←' | '↑' | '→' | '↓' | '↔' | '↚' | '↛' | '↮'
         | '∀' | '∃' | '∄' | '∅' | '∆' | '∈' | '∉' | '∋' | '∌' | '−' | '∕'
         | '∖' | '∞' | '∧' | '∨' | '∩' | '∪' | '≠' | '≤' | '≥' | '⊂' | '⊃'
-        | '⊄' | '⊅' | '⊆' | '⊇' | '⊈' | '⊉' | '⊤' | '⊥' | '⊻' | '⊼'
+        | '⊄' | '⊅' | '⊆' | '⊇' | '⊈' | '⊉' | '⊎' | '⊤' | '⊥' | '⊻' | '⊼'
         | '⊽' | '⊿' | '⋊' | '⋈' | '⋉'
         | '▷' | '⟕' | '⟖' | '⟗' | '⨝' | '⨯'
 
@@ -440,7 +440,7 @@ alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
 Grammar:
 
     <escaped_char__minimal> ::=
-          '\\a' | '\\q'
+          '\\q' | '\\a' | '\\g'
         | '\\t' | '\\n' | '\\f' | '\\r'
         | ['\\c<' <nc10>+ '>']
 
@@ -458,8 +458,9 @@ The meanings of the simple character escape sequences are:
     Esc | Unicode   | Unicode         | Chr | Literal character used
     Seq | Codepoint | Character Name  | Lit | for when not escaped
     ----+-----------+-----------------+-----+------------------------------
-    \a  | 0x27      | APOSTROPHE      | '   | delimit Text/opaque literals
     \q  | 0x22      | QUOTATION MARK  | "   | delimit quoted names
+    \a  | 0x27      | APOSTROPHE      | '   | delimit Text/opaque literals
+    \g  | 0x60      | GRAVE ACCENT    | `   | delimit dividing space comments
     \t  | 0x9       | CHAR... TAB...  |     | control char horizontal tab
     \n  | 0xA       | LINE FEED (LF)  |     | ctrl char line feed / newline
     \f  | 0xC       | FORM FEED (FF)  |     | control char form feed
@@ -718,13 +719,16 @@ Grammar:
         <quoted_name_seg> % <sp>
 
     <quoted_name_seg> ::=
-        <qns_nonescaped> | <qns_escaped>
+        '"' <qnots_content> '"'
 
-    <qns_nonescaped> ::=
-        '"' [<-["\\]> <-["]>*]? '"'
+    <qnots_content> ::=
+        <qns_nonescaped_content> | <qns_escaped_content>
 
-    <qns_escaped> ::=
-        '"' '\\' [<-["\\]> | <escaped_char>]* '"'
+    <qnots_nonescaped_content> ::=
+        [<-quoting_char-[\\]> <-quoting_char>*]?
+
+    <qnots_escaped_content> ::=
+        '\\' [<-quoting_char-[\\]> | <escaped_char>]*
 
     <generic_name> ::=
         <alphanumeric_name> | <quoted_name>
@@ -1348,13 +1352,7 @@ Grammar:
         '\\~'? [<Text_seg> % <sp>]
 
     <Text_seg> ::=
-        <ts_nonescaped> | <ts_escaped>
-
-    <ts_nonescaped> ::=
-        '\'' [<-['\\]> <-[']>*]? '\''
-
-    <ts_escaped> ::=
-        '\'' '\\' [<-['\\]> | <escaped_char>]* '\''
+        '\'' <qnots_content> '\''
 
 A C<< <Text> >> node represents a value of the Muldis D C<Text> type, which
 is an arbitrarily-long sequence of abstract I<characters>.
@@ -1687,22 +1685,35 @@ Alternately, the output of stage 2 is an array of parse nodes where each
 node either represents a nonquoted context or a quoted context, the latter
 bundling up what its delimiters were.
 
+Note that any possible quoting character nesting is in a strict hierarchy.
+That is, backtick-quoted strings may contain literal single/double-quote
+characters, but single/double-quoted strings both may not have literal
+quote characters of any kind.  Therefore, it should be trivially easy to
+implement Stage 2 in a fully parallel fashion, at least if divided into 2
+similar sub-stages of parsing out backtick-quoted strings first and then
+single/double-quoted strings second; in either case, it is guaranteed that
+each pair of consecutive delimiters in well-formed source code is a whole
+quoted context and no serial examination of found delimiters is necessary.
+
 Grammar:
 
     <ps2> ::=
-        <ps2_nonquoted> % <ps2_quoted>
+        <ps2_non_backtick_quoted> % <ps2_backtick_quoted>
+
+    <ps2_non_backtick_quoted> ::=
+        <ps2_nonquoted> % <ps2_double_or_single_quoted>
 
     <ps2_nonquoted> ::=
-        <-['"`]>*
+        <-quoting_char>*
 
-    <ps2_quoted> ::=
-        <ps2_single_quoted> | <ps2_double_quoted> | <ps2_backtick_quoted>
-
-    <ps2_single_quoted> ::=
-        '\'' <-[']>* '\''
+    <ps2_double_or_single_quoted> ::=
+        <ps2_double_quoted> | <ps2_single_quoted>
 
     <ps2_double_quoted> ::=
-        '"' <-["]>* '"'
+        '"' <-quoting_char>* '"'
+
+    <ps2_single_quoted> ::=
+        '\'' <-quoting_char>* '\''
 
     <ps2_backtick_quoted> ::=
         '`' <-[`]>* '`'
