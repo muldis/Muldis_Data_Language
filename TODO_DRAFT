@@ -14,6 +14,14 @@ resources of everyone else.
 
 ----------
 
+* Note re parsing:  After splitting nonquoted by character class, seek
+semicolons and parenthesis first.  Every material/etc declaration has a
+semicolon after it / doesn't cross a semicolon.  All bracketing characters
+are paired within a material.  Try counting brackets in inter-semicolon
+spaces to try and detect pairings complete vs unbalanced start vs unbalanced end.
+No need to distinguish [{( from each other, just opening from closing,
+initially, though on second pass pay attention to detect errors.
+
 * Muldis D makes catalog stuff explicit.  All data definition is data
 manipulation, producing values that are source code, canonically values of
 the Package data type.  Nothing can invoke code just because it exists, one
@@ -44,6 +52,8 @@ normalization and just have those always represented by a single codepoint,
 which already happens I think.
 - We still retain ASCII names for everything system-defined.
 
+* See also http://www.finitio.io data language by Bernard Lambeau.
+
 * Nice piece of work, this:
 http://www.theregister.co.uk/2016/01/13/stob_remember_the_monoids/
 
@@ -56,6 +66,10 @@ http://www.theregister.co.uk/2016/01/13/stob_remember_the_monoids/
     - "Perl 6' use statement allows you to load modules from other languages
     as well. Inline::Perl5 registers as a handler for the Perl5 language."
     - In theory that's how I'd best make Muldis D callable from Perl 6.
+
+* https://en.wikipedia.org/wiki/Primitive_recursive_function
+
+* https://en.wikipedia.org/wiki/Ackermann_function
 
 * Add one or more features to assist in making some otherwise fatal
 actions non-fatal, while staying in pure functions.
@@ -4016,6 +4030,9 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         - use in the context of a reduction over a collection type requires
         at least "associative" to be set, and if the collection type is
         unordered, then also "commutative" must be set
+        - OR RATHER, "associative" is needed in order for the operation
+        to be parallelizable; no "associative" means, at least naively,
+        it can only be serial, and it must also be an ordered collection type
     9. keyword "identity" is optional (when associative), has associated expr
     9.5 keyword "repeater" is optional, followed by a function name
         - may only be used when associative true and idempotent false

@@ -3039,7 +3039,11 @@ The 'args' can be any Tuple that doesn't have either '0' or '1' attrs.
 The function referenced by 'func' is expected to take a Tuple argument
 whose '0' and '1' attrs are members of the collection and whose other attrs match
 those given in 'args'.
-Depending on the collection subtype, order of 0,1 may or may not be significant.>
+Depending on the collection subtype, order of 0,1 may or may not be significant.
+If collection is unordered, func must be both associative and commutative,
+and reduce can always be parallelized.
+If collection is ordered, reduce can be parallelized if func is associative;
+otherwise the reduce is a serial operation, at least naively.>
 
 =head1 DISCRETE DATA TYPES
 
@@ -3260,7 +3264,10 @@ The selection contract C<Array> represents the infinite Muldis D Foundation
 type I<FDN__Array>.  An C<Array> value is a general purpose
 arbitrarily-long ordered sequence of any other, I<member> values, which
 explicitly does not represent any kind of thing in particular, and is
-simply the sum of its members.  An C<Array> in the general case may have
+simply the sum of its members.  An C<Array> value is dense; iff it has any
+members, then its first-ordered member is at index position C<0>, and its
+last-indexed member is at the index position that is one less than the
+count of its members.  An C<Array> in the general case may have
 multiple members that are the same value, and any duplicates may or may not
 exist at consecutive indexes.  The default value of C<Array> is C<[]>, the
 only zero-member C<Array> value.  C<Array> is C<Orderable>; its minimum
