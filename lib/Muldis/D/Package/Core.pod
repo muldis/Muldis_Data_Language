@@ -2022,7 +2022,8 @@ Other programming languages may name their corresponding operators I<clear>.
 
     ::MD::Stringy ::= interface
         composes {Orderable, Emptyable and_provides_its_default}
-        requires_implements {in_order,so,empty,catenate,replicate};
+        requires_implements {in_order,so,empty
+            ,substring_of,catenate,replicate};
 
 The interface contract C<Stringy> is infinite.  A C<Stringy> value is a
 homogeneous ordered aggregate of other values such that there may not
@@ -2049,8 +2050,28 @@ idiomatically that is done by some kind of pairwise comparison of members.
 C<Stringy> is composed, directly or indirectly, by: C<Bits>, C<Blob>,
 C<Textual>, C<Text>, C<Positional>, C<Array>, C<String>.
 
-I<TODO:  Add other operators such as substr_of/superstr_of which are like
-subset/superset but only match in order.>
+=head2 substring_of
+
+    ::MD::substring_of::"" ::= function virtual
+        --> Boolean <-- (Stringy, Stringy);
+
+The function C<substring_of> results in C<True> iff the sequence of
+members of its C<0> argument is a substring of the sequence of members of
+its C<1> argument; otherwise it results in C<False>.  Other programming
+languages may name their corresponding operators I<in>.
+
+=head2 superstring_of
+
+    ::MD::superstring_of ::= function commutes substring_of;
+
+The function C<superstring_of> results in C<True> iff the sequence of
+members of its C<0> argument is a superstring of the sequence of members of
+its C<1> argument; otherwise it results in C<False>.  Other programming
+languages may name their corresponding operators I<contains> or
+I<include?>; some of them instead provide more generalized pattern
+searching operators such as I<like> or I<~~> or I<=~>; some of them also
+provide operators that result in an ordinal position or nonmatch indicator
+rather than a boolean.
 
 =head2 catenate ~
 
@@ -2113,7 +2134,7 @@ integers is in the range 0..1 inclusive.
 
     ::MD::in_order::Bits ::= function --> Boolean <-- (Bits, Bits)
         implements 2::""
-        : ((\.0->Bits_to_Bits) in_order (\.1->Bits_to_Bits));
+        : ((\.0->Bits_to_String_Bits) in_order (\.1->Bits_to_String_Bits));
 
 The function C<in_order::Bits> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Bits>.
@@ -2139,13 +2160,23 @@ The function C<empty::Bits> simply results in C<\~?''>.  This function
 implements the C<Emptyable> virtual function C<empty> for the composing
 type C<Bits>.
 
+=head2 substring_of (Bits)
+
+    ::MD::substring_of::Bits ::= function --> Boolean <-- (Bits, Bits)
+        implements 2::""
+        : ((\.0->Bits_to_String_Bits) substring_of (\.1->Bits_to_String_Bits));
+
+The function C<substring_of::Bits> implements the C<Stringy> virtual
+function C<substring_of> for the composing type C<Bits>.
+
 =head2 catenate (Bits)
 
     ::MD::catenate::Bits ::= function --> Bits <-- (Bits, Bits)
         implements 2::""
         is associative identity (\~?'')
         repeater replicate::Bits
-        : (Bits_from_Bits((\.0->Bits_to_Bits) ~ (\.1->Bits_to_Bits)));
+        : (Bits_from_String_Bits((\.0->Bits_to_String_Bits)
+            ~ (\.1->Bits_to_String_Bits)));
 
 The function C<catenate::Bits> implements the C<Stringy> virtual function
 C<catenate> aka C<~> for the composing type C<Bits>.
@@ -2154,26 +2185,26 @@ C<catenate> aka C<~> for the composing type C<Bits>.
 
     ::MD::replicate::Bits ::= function --> Bits <-- (Bits, Integral_NN)
         implements 2::""
-        : (Bits_from_Bits((\.0->Bits_to_Bits) ~# \.1));
+        : (Bits_from_String_Bits((\.0->Bits_to_String_Bits) ~# \.1));
 
 The function C<replicate::Bits> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Bits>.
 
-=head2 Bits_from_Bits
+=head2 Bits_from_String_Bits
 
-    ::MD::Bits_from_Bits ::= function --> Bits <-- (String::Bits)
+    ::MD::Bits_from_String_Bits ::= function --> Bits <-- (String::Bits)
         : (\Bits wrap \.0);
 
-The function C<Bits_from_Bits> results in the C<Bits> value selected in
-terms of the integer sequence of its C<0> argument.
+The function C<Bits_from_String_Bits> results in the C<Bits> value selected
+in terms of the integer sequence of its C<0> argument.
 
-=head2 Bits_to_Bits
+=head2 Bits_to_String_Bits
 
-    ::MD::Bits_to_Bits ::= function --> String::Bits <-- (Bits)
+    ::MD::Bits_to_String_Bits ::= function --> String::Bits <-- (Bits)
         : (\.0->unwrap);
 
-The function C<Bits_to_Bits> results in an integer sequence defining the
-bits of its C<Bits>-typed C<0> argument.
+The function C<Bits_to_String_Bits> results in an integer sequence defining
+the bits of its C<Bits>-typed C<0> argument.
 
 =head1 BLOB DATA TYPES
 
@@ -2231,6 +2262,15 @@ composing type C<Blob>.
 The function C<empty::Blob> simply results in C<\~+''>.  This function
 implements the C<Emptyable> virtual function C<empty> for the composing
 type C<Blob>.
+
+=head2 substring_of (Blob)
+
+    ::MD::substring_of::Blob ::= function --> Boolean <-- (Blob, Blob)
+        implements 2::""
+        : ((\.0->Blob_to_Octets) substring_of (\.1->Blob_to_Octets));
+
+The function C<substring_of::Blob> implements the C<Stringy> virtual
+function C<substring_of> for the composing type C<Blob>.
 
 =head2 catenate (Blob)
 
@@ -2447,6 +2487,16 @@ composing type C<Text>.
 The function C<empty::Text> simply results in C<''>.  This function
 implements the C<Emptyable> virtual function C<empty> for the composing
 type C<Text>.
+
+=head2 substring_of (Text)
+
+    ::MD::substring_of::Text ::= function --> Boolean <-- (Text, Text)
+        implements 2::""
+        : ((\.0->Text_to_Maximal_Chars)
+            substring_of (\.1->Text_to_Maximal_Chars));
+
+The function C<substring_of::Text> implements the C<Stringy> virtual
+function C<substring_of> for the composing type C<Text>.
 
 =head2 catenate (Text)
 
@@ -3083,7 +3133,7 @@ integral count of the members of its C<0> argument.
 
     ::MD::Positional ::= interface
         composes {Stringy, Accessible, Discrete and_provides_its_default}
-        requires_implements {so,empty,catenate,replicate
+        requires_implements {so,empty,substring_of,catenate,replicate
             ,has_n,insert_n,remove_n
             ,all_unique,unique
             ,subset_of
@@ -3323,6 +3373,18 @@ composing type C<Array>.
 The function C<empty::Array> results in the only zero-member C<Array>
 value.  This function implements the C<Emptyable> virtual function C<empty>
 aka C<∅> for the composing type C<Array>.
+
+=head2 substring_of (Array)
+
+    ::MD::substring_of::Array ::= function --> Boolean <-- (Array, Array)
+        implements 2::""
+        : (topic -->^ FDN__Array_substring_of);
+
+The function C<substring_of::Array> results in C<True> iff the sequence of
+members of its C<0> argument is a substring of the sequence of members of
+its C<1> argument; otherwise it results in C<False>.  This function
+implements the C<Stringy> virtual function C<substring_of> for the
+composing type C<Array>.
 
 =head2 catenate (Array)
 
