@@ -3106,7 +3106,7 @@ otherwise the reduce is a serial operation, at least naively.>
             ,all_unique,unique
             ,subset_of
             ,nest,unnest,any,where,map,reduce,...
-            ,count,...};
+            ,to_Set,to_Bag,count,...};
 
 The interface contract C<Discrete> is infinite.  A C<Discrete> value is a
 C<Homogeneous> value such that all of its members can be enumerated as
@@ -3116,6 +3116,30 @@ value with zero members, C<[]>.
 C<Discrete> is composed, directly or indirectly, by: C<Positional>,
 C<Array>, C<String>, C<Setty>, C<Set>, C<Bag>, C<Relational>, C<Relation>,
 C<Tuple_Bag>.
+
+=head2 to_Set ?<
+
+    ::MD::to_Set::"" ::= function virtual --> Set <-- (Discrete);
+
+    ::MD::"?<" ::= alias of to_Set;
+
+The virtual function C<to_Set> results in the C<Set> value that represents
+the same set of distinct member values as its C<0> argument.  The purpose
+of C<to_Set> is to canonicalize C<Discrete> values so they can be treated
+abstractly as sets of discrete values, for operations where neither
+multiplicity nor order matters.
+
+=head2 to_Bag +<
+
+    ::MD::to_Bag::"" ::= function virtual --> Bag <-- (Discrete);
+
+    ::MD::"+<" ::= alias of to_Bag;
+
+The virtual function C<to_Bag> results in the C<Bag> value that represents
+the same multiset of members as its C<0> argument.  The purpose of
+C<to_Bag> is to canonicalize C<Discrete> values so they can be treated
+abstractly as multisets of discrete values, for operations where
+multiplicity possibly matters but order doesn't.
 
 =head2 count cardinality #
 
@@ -3138,8 +3162,8 @@ integral count of the members of its C<0> argument.
             ,all_unique,unique
             ,subset_of
             ,nest,unnest,any,where,map,reduce,...
-            ,count,...
-            ,elem,has_index,first_index,last_index,slice,index_succ_all_matches,...};
+            ,to_Bag,to_Set,count,...
+            ,to_Array,elem,has_index,first_index,last_index,slice,index_succ_all_matches,...};
 
 The interface contract C<Positional> is infinite.  A C<Positional> value is
 both a C<Stringy> value and a C<Discrete> value; it is a homogeneous
@@ -3193,6 +3217,17 @@ I<TODO.>
 
 The function C<in_order::Positional> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Positional>.
+
+=head2 to_Array
+
+    ::MD::to_Array::"" ::= function virtual --> Array <-- (Positional);
+
+    ::MD::"~<" ::= alias of to_Array;
+
+The virtual function C<to_Array> results in the C<Array> value that
+represents the same sequence of members as its C<0> argument.  The purpose
+of C<to_Array> is to canonicalize C<Positional> values so they can be
+treated abstractly as sequences of discrete values with minimal effort.
 
 =head2 elem . (Positional)
 
@@ -3538,6 +3573,29 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 to_Set (Array)
+
+    ::MD::to_Set::Array ::= function --> Set <-- (Array)
+        implements 2::""
+        : (\.0->to_Bag->to_Set);
+
+The function C<to_Set::Array> results in the C<Set> value that has, for
+every distinct member value I<V> of the function's C<0> argument, exactly 1
+member whose value is equal to I<V>.  This function implements the
+C<Discrete> virtual function C<to_Set> aka C<< ?< >> for the composing type
+C<Array>.
+
+=head2 to_Bag (Array)
+
+    ::MD::to_Bag::Array ::= function --> Bag <-- (Array)
+        implements 2::""
+        : (topic -->^ FDN__Array_to_Bag);
+
+The function C<to_Bag::Array> results in the C<Bag> value that has all of
+the members of the function's C<0> argument.  This function implements the
+C<Discrete> virtual function C<to_Bag> aka C<< +< >> for the composing type
+C<Array>.
+
 =head2 count (Array)
 
     ::MD::count::Array ::= function --> Integer_NN <-- (Array)
@@ -3548,6 +3606,16 @@ The function C<count::Array> results in the integral count of the members
 of its C<0> argument.  This function implements the C<Discrete> virtual
 function C<count> aka C<cardinality> aka C<#> for the composing type
 C<Array>.
+
+=head2 to_Array (Array)
+
+    ::MD::to_Array::Array ::= function --> Array <-- (Array)
+        implements 2::""
+        : (\.0);
+
+The function C<to_Array::Array> simply results in its C<0> argument.  This
+function implements the C<Positional> virtual function C<to_Array> aka
+C<< ~< >> for the composing type C<Array>.
 
 =head2 elem (Array)
 
@@ -3689,12 +3757,11 @@ type C<Set>.
         : (\.0 has \.1 or \.2 = 0 ?? \.0
             !! \Set wrap insert_n(\.0->unwrap, \.1, 1));
 
-The function C<insert_n::Set> results in the value of its C<0> argument's
-collection type that has all of the members of the function's C<0>
-argument; but, if the C<2> argument is nonzero then the result has a member
-equal to the C<1> argument, whether or not C<0> had it.  This function
-implements the C<Homogeneous> virtual function C<insert_n> for the
-composing type C<Set>.
+The function C<insert_n::Set> results in the C<Set> value that has all of
+the members of the function's C<0> argument; but, if the C<2> argument is
+nonzero then the result has a member equal to the C<1> argument, whether or
+not C<0> had it.  This function implements the C<Homogeneous> virtual
+function C<insert_n> for the composing type C<Set>.
 
 =head2 remove_n (Set)
 
@@ -3702,12 +3769,11 @@ composing type C<Set>.
         implements 2::""
         : (\Set wrap remove_n(\.0->unwrap, \.1, \.2));
 
-The function C<remove_n::Set> results in the value of its C<0> argument's
-collection type that has all of the members of the function's C<0>
-argument; but, if the C<2> argument is nonzero and C<0> had a member equal
-to the C<1> argument, the result lacks that member.  This function
-implements the C<Homogeneous> virtual function C<remove_n> for the
-composing type C<Set>.
+The function C<remove_n::Set> results in the C<Set> value that has all of
+the members of the function's C<0> argument; but, if the C<2> argument is
+nonzero and C<0> had a member equal to the C<1> argument, the result lacks
+that member.  This function implements the C<Homogeneous> virtual function
+C<remove_n> for the composing type C<Set>.
 
 =head2 all_unique (Set)
 
@@ -3790,6 +3856,27 @@ I<TODO.>
         : (\Set wrap (\.0->unwrap reduce \.1));
 
 I<TODO.>
+
+=head2 to_Set (Set)
+
+    ::MD::to_Set::Set ::= function --> Set <-- (Set)
+        implements 2::""
+        : (\.0);
+
+The function C<to_Set::Set> simply results in its C<0> argument.  This
+function implements the C<Discrete> virtual function C<to_Set> aka
+C<< ?< >> for the composing type C<Set>.
+
+=head2 to_Bag (Set)
+
+    ::MD::to_Bag::Set ::= function --> Bag <-- (Set)
+        implements 2::""
+        : (\.0->unwrap);
+
+The function C<to_Bag::Set> results in the C<Bag> value that has all of the
+members of the function's C<0> argument.  This function implements the
+C<Discrete> virtual function C<to_Bag> aka C<< +< >> for the composing type
+C<Set>.
 
 =head2 count (Set)
 
@@ -3968,6 +4055,28 @@ I<TODO.>
         : (topic -->^ FDN__Bag_reduce);
 
 I<TODO.>
+
+=head2 to_Set (Bag)
+
+    ::MD::to_Set::Bag ::= function --> Set <-- (Bag)
+        implements 2::""
+        : (\Set wrap (\.0->unique));
+
+The function C<to_Set::Bag> results in the C<Set> value that has, for every
+distinct member value I<V> of the function's C<0> argument, exactly 1
+member whose value is equal to I<V>.  This function implements the
+C<Discrete> virtual function C<to_Set> aka C<< ?< >> for the composing type
+C<Bag>.
+
+=head2 to_Bag (Bag)
+
+    ::MD::to_Bag::Bag ::= function --> Bag <-- (Bag)
+        implements 2::""
+        : (\.0);
+
+The function C<to_Bag::Bag> simply results in its C<0> argument.  This
+function implements the C<Discrete> virtual function C<to_Bag> aka
+C<< +< >> for the composing type C<Bag>.
 
 =head2 count (Bag)
 
