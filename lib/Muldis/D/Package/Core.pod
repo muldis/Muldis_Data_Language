@@ -2023,7 +2023,8 @@ Other programming languages may name their corresponding operators I<clear>.
     ::MD::Stringy ::= interface
         composes {Orderable, Emptyable and_provides_its_default}
         requires_implements {in_order,so,empty
-            ,substring_of,catenate,replicate};
+            ,substring_of,overlaps_string,disjoint_string
+            ,catenate,replicate};
 
 The interface contract C<Stringy> is infinite.  A C<Stringy> value is a
 homogeneous ordered aggregate of other values such that there may not
@@ -2072,6 +2073,56 @@ I<include?>; some of them instead provide more generalized pattern
 searching operators such as I<like> or I<~~> or I<=~>; some of them also
 provide operators that result in an ordinal position or nonmatch indicator
 rather than a boolean.
+
+=head2 proper_substring_or_superstring
+
+    ::MD::proper_substring_or_superstring ::= function
+        --> Boolean <-- (String, String)
+        is commutative
+        : (topic --> \@not_same and topic --> \@substring_or_superstring);
+
+The function C<proper_substring_or_superstring> results in C<True> iff the
+sequence of members of one of its 2 arguments C<0> and C<1> is a proper
+substring of the sequence of members of its other argument; otherwise it
+results in C<False>.
+
+=head2 substring_or_superstring
+
+    ::MD::substring_or_superstring ::= function
+        --> Boolean <-- (String, String)
+        is commutative
+        : (topic --> \@substring_of or topic --> \@superstring_of);
+
+The function C<substring_or_superstring> results in C<True> iff the
+sequence of members of one of its 2 arguments C<0> and C<1> is a substring
+of the sequence of members of its other argument; otherwise it results in
+C<False>.
+
+=head2 overlaps_string
+
+    ::MD::overlaps_string::"" ::= function virtual
+        --> Boolean <-- (String, String)
+        is commutative;
+
+The function C<overlaps_string> results in C<True> iff, given I<X> as the
+sequence of members of its argument C<0> and I<Y> as the sequence of
+members of its argument C<1>, when I<X> and I<Y> are overlapped to the
+greatest possible extent such that every corresponding member pair has 2 of
+the same value, the overlap of I<X> and I<Y> has at least 1 member, and
+each of I<X> and I<Y> has at least 1 member that is not overlapped;
+otherwise it results in C<False>.
+
+=head2 disjoint_string
+
+    ::MD::disjoint_string::"" ::= function virtual
+        --> Boolean <-- (String, String)
+        is commutative;
+
+The function C<disjoint_string> results in C<True> iff the sequence of
+members of its C<0> argument can not be overlapped with the sequence of
+members of its C<1> argument by at least 1 member such that every
+corresponding member pair has 2 of the same value; otherwise it results in
+C<False>.
 
 =head2 catenate ~
 
@@ -2168,6 +2219,28 @@ type C<Bits>.
 
 The function C<substring_of::Bits> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Bits>.
+
+=head2 overlaps_string (Bits)
+
+    ::MD::overlaps_string::Bits ::= function --> Boolean <-- (Bits, Bits)
+        implements 2::""
+        is commutative
+        : ((\.0->Bits_to_String_Bits)
+            overlaps_string (\.1->Bits_to_String_Bits));
+
+The function C<overlaps_string::Bits> implements the C<Stringy> virtual
+function C<overlaps_string> for the composing type C<Bits>.
+
+=head2 disjoint_string (Bits)
+
+    ::MD::disjoint_string::Bits ::= function --> Boolean <-- (Bits, Bits)
+        implements 2::""
+        is commutative
+        : ((\.0->Bits_to_String_Bits)
+            disjoint_string (\.1->Bits_to_String_Bits));
+
+The function C<disjoint_string::Bits> implements the C<Stringy> virtual
+function C<disjoint_string> for the composing type C<Bits>.
 
 =head2 catenate (Bits)
 
@@ -2271,6 +2344,26 @@ type C<Blob>.
 
 The function C<substring_of::Blob> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Blob>.
+
+=head2 overlaps_string (Blob)
+
+    ::MD::overlaps_string::Blob ::= function --> Boolean <-- (Blob, Blob)
+        implements 2::""
+        is commutative
+        : ((\.0->Blob_to_Octets) overlaps_string (\.1->Blob_to_Octets));
+
+The function C<overlaps_string::Blob> implements the C<Stringy> virtual
+function C<overlaps_string> for the composing type C<Blob>.
+
+=head2 disjoint_string (Blob)
+
+    ::MD::disjoint_string::Blob ::= function --> Boolean <-- (Blob, Blob)
+        implements 2::""
+        is commutative
+        : ((\.0->Blob_to_Octets) disjoint_string (\.1->Blob_to_Octets));
+
+The function C<disjoint_string::Blob> implements the C<Stringy> virtual
+function C<disjoint_string> for the composing type C<Blob>.
 
 =head2 catenate (Blob)
 
@@ -2497,6 +2590,28 @@ type C<Text>.
 
 The function C<substring_of::Text> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Text>.
+
+=head2 overlaps_string (Text)
+
+    ::MD::overlaps_string::Text ::= function --> Boolean <-- (Text, Text)
+        implements 2::""
+        is commutative
+        : ((\.0->Text_to_Maximal_Chars)
+            overlaps_string (\.1->Text_to_Maximal_Chars));
+
+The function C<overlaps_string::Text> implements the C<Stringy> virtual
+function C<overlaps_string> for the composing type C<Text>.
+
+=head2 disjoint_string (Text)
+
+    ::MD::disjoint_string::Text ::= function --> Boolean <-- (Text, Text)
+        implements 2::""
+        is commutative
+        : ((\.0->Text_to_Maximal_Chars)
+            disjoint_string (\.1->Text_to_Maximal_Chars));
+
+The function C<disjoint_string::Text> implements the C<Stringy> virtual
+function C<disjoint_string> for the composing type C<Text>.
 
 =head2 catenate (Text)
 
@@ -3157,7 +3272,9 @@ integral count of the members of its C<0> argument.
 
     ::MD::Positional ::= interface
         composes {Stringy, Accessible, Discrete and_provides_its_default}
-        requires_implements {so,empty,substring_of,catenate,replicate
+        requires_implements {so,empty
+            ,substring_of,overlaps_string,disjoint_string
+            ,catenate,replicate
             ,has_n,insert_n,remove_n
             ,all_unique,unique
             ,nest,unnest,any,where,map,reduce,...
@@ -3433,6 +3550,36 @@ members of its C<0> argument is a substring of the sequence of members of
 its C<1> argument; otherwise it results in C<False>.  This function
 implements the C<Stringy> virtual function C<substring_of> for the
 composing type C<Array>.
+
+=head2 overlaps_string (Array)
+
+    ::MD::overlaps_string::Array ::= function --> Boolean <-- (Array, Array)
+        implements 2::""
+        is commutative
+        : (topic -->^ FDN__Array_overlaps_string);
+
+The function C<overlaps_string::Array> results in C<True> iff, given I<X>
+as the sequence of members of its argument C<0> and I<Y> as the sequence of
+members of its argument C<1>, when I<X> and I<Y> are overlapped to the
+greatest possible extent such that every corresponding member pair has 2 of
+the same value, the overlap of I<X> and I<Y> has at least 1 member, and
+each of I<X> and I<Y> has at least 1 member that is not overlapped;
+otherwise it results in C<False>.  This function implements the C<Stringy>
+virtual function C<overlaps_string> for the composing type C<Array>.
+
+=head2 disjoint_string (Array)
+
+    ::MD::disjoint_string::Array ::= function --> Boolean <-- (Array, Array)
+        implements 2::""
+        is commutative
+        : (topic -->^ FDN__Array_disjoint_string);
+
+The function C<disjoint_string::Array> results in C<True> iff the sequence
+of members of its C<0> argument can not be overlapped with the sequence of
+members of its C<1> argument by at least 1 member such that every
+corresponding member pair has 2 of the same value; otherwise it results in
+C<False>.  This function implements the C<Stringy> virtual function
+C<disjoint_string> for the composing type C<Array>.
 
 =head2 catenate (Array)
 
