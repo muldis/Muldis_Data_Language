@@ -2056,7 +2056,7 @@ C<Textual>, C<Text>, C<Positional>, C<Array>, C<String>.
     ::MD::substring_of::"" ::= function virtual
         --> Boolean <-- (Stringy, Stringy);
 
-The function C<substring_of> results in C<True> iff the sequence of
+The virtual function C<substring_of> results in C<True> iff the sequence of
 members of its C<0> argument is a substring of the sequence of members of
 its C<1> argument; otherwise it results in C<False>.  Other programming
 languages may name their corresponding operators I<in>.
@@ -2104,8 +2104,8 @@ C<False>.
         --> Boolean <-- (String, String)
         is commutative;
 
-The function C<overlaps_string> results in C<True> iff, given I<X> as the
-sequence of members of its argument C<0> and I<Y> as the sequence of
+The virtual function C<overlaps_string> results in C<True> iff, given I<X>
+as the sequence of members of its argument C<0> and I<Y> as the sequence of
 members of its argument C<1>, when I<X> and I<Y> are overlapped to the
 greatest possible extent such that every corresponding member pair has 2 of
 the same value, the overlap of I<X> and I<Y> has at least 1 member, and
@@ -2118,8 +2118,8 @@ otherwise it results in C<False>.
         --> Boolean <-- (String, String)
         is commutative;
 
-The function C<disjoint_string> results in C<True> iff the sequence of
-members of its C<0> argument can not be overlapped with the sequence of
+The virtual function C<disjoint_string> results in C<True> iff the sequence
+of members of its C<0> argument can not be overlapped with the sequence of
 members of its C<1> argument by at least 1 member such that every
 corresponding member pair has 2 of the same value; otherwise it results in
 C<False>.
@@ -2846,7 +2846,7 @@ I<TODO.>
         requires_implements {so,empty
             ,has_n,insert_n,remove_n
             ,all_unique,unique
-            ,subset_of
+            ,subset_of,same_members,overlaps_members,disjoint_members
             ,nest,unnest,any,where,map,reduce,...};
 
 The interface contract C<Homogeneous> is infinite.  A C<Homogeneous> value
@@ -3108,6 +3108,65 @@ The function C<not_superset_of> aka C<⊉> results in C<True> iff the
 multiset of members of its C<0> argument is not a superset of the multiset
 of members of its C<1> argument; otherwise it results in C<False>.
 
+=head2 same_members
+
+    ::MD::same_members::"" ::= function virtual
+        --> Boolean <-- (Homogeneous, Homogeneous)
+        is commutative;
+
+The virtual function C<same_members> results in C<True> iff the multiset of
+members of its C<0> argument is the same as the multiset of members of its
+C<1> argument; otherwise it results in C<False>.  This function may result
+in C<True> for some C<Positional> arguments for which C<same> would result
+in C<False> because the latter considers member order significant while the
+former doesn't; for non-C<Positional> arguments, the 2 functions are
+typically the same.
+
+=head2 proper_subset_or_superset
+
+    ::MD::proper_subset_or_superset ::= function
+        --> Boolean <-- (Homogeneous, Homogeneous)
+        is commutative
+        : (not topic --> \@same_members and topic --> \@subset_or_superset);
+
+The function C<proper_subset_or_superset> results in C<True> iff the
+multiset of members of one of its 2 arguments C<0> and C<1> is a proper
+subset of the multiset of members of its other argument; otherwise it
+results in C<False>.
+
+=head2 subset_or_superset
+
+    ::MD::subset_or_superset ::= function
+        --> Boolean <-- (Homogeneous, Homogeneous)
+        is commutative
+        : (topic --> \@subset_of or topic --> \@superset_of);
+
+The function C<subset_or_superset> results in C<True> iff the multiset of
+members of one of its 2 arguments C<0> and C<1> is a subset of the multiset
+of members of its other argument; otherwise it results in C<False>.
+
+=head2 overlaps_members
+
+    ::MD::overlaps_members::"" ::= function virtual
+        --> Boolean <-- (Homogeneous, Homogeneous)
+        is commutative;
+
+The virtual function C<overlaps_members> results in C<True> iff, given I<X> as the
+multiset of members of its argument C<0> and I<Y> as the multiset of
+members of its argument C<1>, there exists at least 1 member that both I<X>
+and I<Y> have, and there also exists at least 1 other member each of I<X>
+and I<Y> that the other doesn't have; otherwise it results in C<False>.
+
+=head2 disjoint_members
+
+    ::MD::disjoint_members::"" ::= function virtual
+        --> Boolean <-- (Homogeneous, Homogeneous)
+        is commutative;
+
+The virtual function C<disjoint_members> results in C<True> iff the multiset of
+members of its C<0> argument has no member values in common with the
+multiset of members of its C<1> argument; otherwise it results in C<False>.
+
 =head2 nest group
 
     ::MD::nest::"" ::= function virtual --> Homogeneous <-- (Homogeneous)
@@ -3219,7 +3278,7 @@ otherwise the reduce is a serial operation, at least naively.>
         requires_implements {so,empty
             ,has_n,insert_n,remove_n
             ,all_unique,unique
-            ,subset_of
+            ,subset_of,same_members,overlaps_members,disjoint_members
             ,nest,unnest,any,where,map,reduce,...
             ,to_Set,to_Bag,count,...};
 
@@ -3346,6 +3405,52 @@ of members of its C<0> argument is a subset of the multiset of members of
 its C<1> argument; otherwise it results in C<False>.  This function
 implements the C<Homogeneous> virtual function C<subset_of> aka C<⊆> for
 the composing type C<Positional>.
+
+=head2 same_members (Positional)
+
+    ::MD::same_members::Positional ::= function
+        --> Boolean <-- (Positional, Positional)
+        implements 2::""
+        is commutative
+        : ((\.0->to_Bag) same_members (\.1->to_Bag));
+
+The function C<same_members::Positional> results in C<True> iff the
+multiset of members of its C<0> argument is the same as the multiset of
+members of its C<1> argument; otherwise it results in C<False>.  This
+function may result in C<True> for some arguments for which C<same> would
+result in C<False> because the latter considers member order significant
+while the former doesn't.  This function implements the C<Homogeneous>
+virtual function C<same_members> for the composing type C<Positional>.
+
+=head2 overlaps_members (Positional)
+
+    ::MD::overlaps_members::Positional ::= function
+        --> Boolean <-- (Positional, Positional)
+        implements 2::""
+        is commutative
+        : ((\.0->to_Bag) overlaps_members (\.1->to_Bag));
+
+The function C<overlaps_members::Positional> results in C<True> iff, given
+I<X> as the multiset of members of its argument C<0> and I<Y> as the
+multiset of members of its argument C<1>, there exists at least 1 member
+that both I<X> and I<Y> have, and there also exists at least 1 other member
+each of I<X> and I<Y> that the other doesn't have; otherwise it results in
+C<False>.  This function implements the C<Homogeneous> virtual function
+C<overlaps_members> for the composing type C<Positional>.
+
+=head2 disjoint_members (Positional)
+
+    ::MD::disjoint_members::Positional ::= function
+        --> Boolean <-- (Positional, Positional)
+        implements 2::""
+        is commutative
+        : ((\.0->to_Bag) disjoint_members (\.1->to_Bag));
+
+The function C<disjoint_members::Positional> results in C<True> iff the
+multiset of members of its C<0> argument has no member values in common
+with the multiset of members of its C<1> argument; otherwise it results in
+C<False>.  This function implements the C<Homogeneous> virtual function
+C<disjoint_members> for the composing type C<Positional>.
 
 =head2 to_Array ~<
 
@@ -3947,13 +4052,54 @@ composing type C<Set>.
 
     ::MD::subset_of::Set ::= function --> Boolean <-- (Set, Set)
         implements 2::""
-        : (subset_of(\.0->unwrap, \.1->unwrap));
+        : ((\.0->unwrap) subset_of (\.1->unwrap));
 
 The function C<subset_of::Set> results in C<True> iff the set of members of
 its C<0> argument is a subset of the set of members of its C<1> argument;
 otherwise it results in C<False>.  This function implements the
 C<Homogeneous> virtual function C<subset_of> aka C<⊆> for the composing
 type C<Set>.
+
+=head2 same_members (Set)
+
+    ::MD::same_members::Set ::= function --> Boolean <-- (Set, Set)
+        implements 2::""
+        is commutative
+        : (topic --> \@same);
+
+The function C<same_members::Set> results in C<True> iff its 2 arguments
+C<0> and C<1> are exactly the same C<Set> value, and C<False> otherwise;
+its behaviour is identical to that of the function C<same> when given the
+same arguments.  This function implements the C<Homogeneous> virtual
+function C<same_members> for the composing type C<Set>.
+
+=head2 overlaps_members (Set)
+
+    ::MD::overlaps_members::Set ::= function --> Boolean <-- (Set, Set)
+        implements 2::""
+        is commutative
+        : ((\.0->unwrap) overlaps_members (\.1->unwrap));
+
+The function C<overlaps_members::Set> results in C<True> iff, given
+I<X> as the set of members of its argument C<0> and I<Y> as the
+set of members of its argument C<1>, there exists at least 1 member
+that both I<X> and I<Y> have, and there also exists at least 1 other member
+each of I<X> and I<Y> that the other doesn't have; otherwise it results in
+C<False>.  This function implements the C<Homogeneous> virtual function
+C<overlaps_members> for the composing type C<Set>.
+
+=head2 disjoint_members (Set)
+
+    ::MD::disjoint_members::Set ::= function --> Boolean <-- (Set, Set)
+        implements 2::""
+        is commutative
+        : ((\.0->unwrap) disjoint_members (\.1->unwrap));
+
+The function C<disjoint_members::Set> results in C<True> iff the
+set of members of its C<0> argument has no member values in common
+with the set of members of its C<1> argument; otherwise it results in
+C<False>.  This function implements the C<Homogeneous> virtual function
+C<disjoint_members> for the composing type C<Set>.
 
 =head2 nest (Set)
 
@@ -4153,6 +4299,47 @@ members of its C<0> argument is a subset of the multiset of members of its
 C<1> argument; otherwise it results in C<False>.  This function implements
 the C<Homogeneous> virtual function C<subset_of> aka C<⊆> for the composing
 type C<Bag>.
+
+=head2 same_members (Bag)
+
+    ::MD::same_members::Bag ::= function --> Boolean <-- (Bag, Bag)
+        implements 2::""
+        is commutative
+        : (topic --> \@same);
+
+The function C<same_members::Bag> results in C<True> iff its 2 arguments
+C<0> and C<1> are exactly the same C<Bag> value, and C<False> otherwise;
+its behaviour is identical to that of the function C<same> when given the
+same arguments.  This function implements the C<Homogeneous> virtual
+function C<same_members> for the composing type C<Bag>.
+
+=head2 overlaps_members (Bag)
+
+    ::MD::overlaps_members::Bag ::= function --> Boolean <-- (Bag, Bag)
+        implements 2::""
+        is commutative
+        : (topic -->^ FDN__Bag_overlaps_members);
+
+The function C<overlaps_members::Bag> results in C<True> iff, given
+I<X> as the multiset of members of its argument C<0> and I<Y> as the
+multiset of members of its argument C<1>, there exists at least 1 member
+that both I<X> and I<Y> have, and there also exists at least 1 other member
+each of I<X> and I<Y> that the other doesn't have; otherwise it results in
+C<False>.  This function implements the C<Homogeneous> virtual function
+C<overlaps_members> for the composing type C<Bag>.
+
+=head2 disjoint_members (Bag)
+
+    ::MD::disjoint_members::Bag ::= function --> Boolean <-- (Bag, Bag)
+        implements 2::""
+        is commutative
+        : (topic -->^ FDN__Bag_disjoint_members);
+
+The function C<disjoint_members::Bag> results in C<True> iff the
+multiset of members of its C<0> argument has no member values in common
+with the multiset of members of its C<1> argument; otherwise it results in
+C<False>.  This function implements the C<Homogeneous> virtual function
+C<disjoint_members> for the composing type C<Bag>.
 
 =head2 nest (Bag)
 
