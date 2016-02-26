@@ -2135,7 +2135,8 @@ C<False>.
 
 The virtual function C<catenate> aka C<~> results in the catenation of its
 2 arguments C<0> and C<1> such that the result starts with the members of
-C<0> and ends with the members of C<1>.  This operation has an identity
+C<0> and ends with the members of C<1>, the members from both in the same
+order as in their respective arguments.  This operation has an identity
 value of a collection with zero members.  Other programming languages may
 name their corresponding operators I<concat> or I<||> or I<+> or I<.> or
 I<strcat> or I<join>; some of them also have string interpolation syntax
@@ -2144,7 +2145,7 @@ which logically does the same thing without an explicit operator.
 =head2 replicate ~#
 
     ::MD::replicate::"" ::= function virtual
-        --> Stringy <-- (Stringy, Integral_NN);
+        --> Stringy <-- (Stringy, Integer_NN);
 
     ::MD::"~#" ::= alias of replicate;
 
@@ -2256,7 +2257,7 @@ C<catenate> aka C<~> for the composing type C<Bits>.
 
 =head2 replicate (Bits)
 
-    ::MD::replicate::Bits ::= function --> Bits <-- (Bits, Integral_NN)
+    ::MD::replicate::Bits ::= function --> Bits <-- (Bits, Integer_NN)
         implements 2::""
         : (Bits_from_String_Bits((\.0->Bits_to_String_Bits) ~# \.1));
 
@@ -2378,7 +2379,7 @@ C<catenate> aka C<~> for the composing type C<Blob>.
 
 =head2 replicate (Blob)
 
-    ::MD::replicate::Blob ::= function --> Blob <-- (Blob, Integral_NN)
+    ::MD::replicate::Blob ::= function --> Blob <-- (Blob, Integer_NN)
         implements 2::""
         : (Blob_from_Octets((\.0->Blob_to_Octets) ~# \.1));
 
@@ -2627,7 +2628,7 @@ C<catenate> aka C<~> for the composing type C<Text>.
 
 =head2 replicate (Text)
 
-    ::MD::replicate::Text ::= function --> Text <-- (Text, Integral_NN)
+    ::MD::replicate::Text ::= function --> Text <-- (Text, Integer_NN)
         implements 2::""
         : (Text_from_Maximal_Chars((\.0->Text_to_Maximal_Chars) ~# \.1));
 
@@ -2844,7 +2845,7 @@ I<TODO.>
     ::MD::Homogeneous ::= interface
         composes Emptyable
         requires_implements {so,empty
-            ,has_n,insert_n,remove_n
+            ,has_n,multiplicity,insert_n,remove_n
             ,all_unique,unique
             ,subset_of,same_members,overlaps_members,disjoint_members
             ,nest,unnest,any,where,map,reduce,...};
@@ -2947,6 +2948,16 @@ defined by its C<2> argument; otherwise it results in C<False>.  The
 result is always C<True> when the C<2> argument is zero.  Note that
 having a C<2> argument greater than 1 in combination with a C<Setty> typed
 C<0> argument will always result in C<False>.
+
+=head2 multiplicity
+
+    ::MD::multiplicity::"" ::= function virtual
+        --> Integer_NN <-- (Homogeneous, Any);
+
+The virtual function C<multiplicity> results in the integral count of
+members of its C<0> argument such that each member value is equal to its
+C<1> argument.  For a C<Setty> typed C<0> argument, the result is always
+just 0 or 1.
 
 =head2 insert
 
@@ -3276,11 +3287,11 @@ otherwise the reduce is a serial operation, at least naively.>
     ::MD::Discrete ::= interface
         composes Homogeneous and_provides_its_default
         requires_implements {so,empty
-            ,has_n,insert_n,remove_n
+            ,has_n,multiplicity,insert_n,remove_n
             ,all_unique,unique
             ,subset_of,same_members,overlaps_members,disjoint_members
             ,nest,unnest,any,where,map,reduce,...
-            ,to_Set,to_Bag,count,...};
+            ,to_Set,to_Bag,count,unique_count};
 
 The interface contract C<Discrete> is infinite.  A C<Discrete> value is a
 C<Homogeneous> value such that all of its members can be enumerated as
@@ -3317,13 +3328,21 @@ multiplicity possibly is significant but order doesn't.
 
 =head2 count cardinality #
 
-    ::MD::count::"" ::= function virtual --> Integral <-- (Discrete);
+    ::MD::count::"" ::= function virtual --> Integer_NN <-- (Discrete);
 
     ::MD::cardinality ::= alias of count;
     ::MD::"#"         ::= alias of count;
 
 The virtual function C<count> aka C<cardinality> aka C<#> results in the
-integral count of the members of its C<0> argument.
+integral count of the members of its C<0> argument; when multiple members
+have the same member value, every member counts as 1 towards the total.
+
+=head2 unique_count
+
+    ::MD::unique_count::"" ::= function virtual --> Integer_NN <-- (Discrete);
+
+The virtual function C<unique_count> results in the integral count of the
+distinct member values of its C<0> argument.
 
 =head1 POSITIONAL DATA TYPES
 
@@ -3334,10 +3353,10 @@ integral count of the members of its C<0> argument.
         requires_implements {so,empty
             ,substring_of,overlaps_string,disjoint_string
             ,catenate,replicate
-            ,has_n,insert_n,remove_n
+            ,has_n,multiplicity,insert_n,remove_n
             ,all_unique,unique
             ,nest,unnest,any,where,map,reduce,...
-            ,to_Bag,to_Set,count,...
+            ,to_Bag,to_Set,count
             ,to_Array,elem,has_index,first_index,last_index,slice,index_succ_all_matches,...};
 
 The interface contract C<Positional> is infinite.  A C<Positional> value is
@@ -3451,6 +3470,17 @@ multiset of members of its C<0> argument has no member values in common
 with the multiset of members of its C<1> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<disjoint_members> for the composing type C<Positional>.
+
+=head2 unique_count (Positional)
+
+    ::MD::unique_count::Positional ::= function --> Integer_NN <-- (Positional)
+        implements 2::""
+        : (\.0->to_Set->count);
+
+The function C<unique_count::Positional> results in the integral count of
+the distinct member values of its C<0> argument.  This function implements
+the C<Discrete> virtual function C<unique_count> for the composing type
+C<Positional>.
 
 =head2 to_Array ~<
 
@@ -3702,7 +3732,7 @@ C<Array>.
 
 =head2 replicate (Array)
 
-    ::MD::replicate::Array ::= function --> Array <-- (Array, Integral_NN)
+    ::MD::replicate::Array ::= function --> Array <-- (Array, Integer_NN)
         implements 2::""
         : (topic -->^ FDN__Array_replicate);
 
@@ -3723,6 +3753,17 @@ at least N members at any indexes such that each is equal to its C<1>
 argument, where N is defined by its C<2> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<has_n> for the composing type C<Array>.
+
+=head2 multiplicity (Array)
+
+    ::MD::multiplicity::Array ::= function --> Integer_NN <-- (Array, Any)
+        implements 2::""
+        : (topic -->^ FDN__Array_multiplicity);
+
+The function C<multiplicity::Array> results in the integral count
+of members of its C<0> argument such that each member value is equal to its
+C<1> argument.  This function implements the C<Homogeneous> virtual
+function C<multiplicity> for the composing type C<Array>.
 
 =head2 insert_n (Array)
 
@@ -4003,6 +4044,17 @@ its C<2> argument is 1; otherwise it results in C<False>.  This function
 implements the C<Homogeneous> virtual function C<has_n> for the composing
 type C<Set>.
 
+=head2 multiplicity (Set)
+
+    ::MD::multiplicity::Set ::= function --> Integer_NN <-- (Set, Any)
+        implements 2::""
+        : (\.0->unwrap multiplicity \.1);
+
+The function C<multiplicity::Set> results in 1 if its C<0> argument
+has a member equal to its C<1> argument; otherwise it results in 0.  This
+function implements the C<Homogeneous> virtual function C<multiplicity> for
+the composing type C<Set>.
+
 =head2 insert_n (Set)
 
     ::MD::insert_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
@@ -4182,6 +4234,17 @@ The function C<count::Set> results in the integral count of the members
 of its C<0> argument.  This function implements the C<Discrete> virtual
 function C<count> aka C<cardinality> aka C<#> for the composing type C<Set>.
 
+=head2 unique_count (Set)
+
+    ::MD::unique_count::Set ::= function --> Integer_NN <-- (Set)
+        implements 2::""
+        : (\.0->count);
+
+The function C<unique_count::Set> results in the integral count of the
+members of its C<0> argument; its behavior is identical to C<count> given
+the same argument.  This function implements the C<Discrete> virtual
+function C<unique_count> for the composing type C<Set>.
+
 =head1 BAG DATA TYPES
 
 =head2 Bag
@@ -4240,6 +4303,17 @@ least N members such that each is equal to its C<1> argument, where N is
 defined by its C<2> argument; otherwise it results in C<False>.  This
 function implements the C<Homogeneous> virtual function C<has_n> for the
 composing type C<Bag>.
+
+=head2 multiplicity (Bag)
+
+    ::MD::multiplicity::Bag ::= function --> Integer_NN <-- (Bag, Any)
+        implements 2::""
+        : (topic -->^ FDN__Bag_multiplicity);
+
+The function C<multiplicity::Bag> results in the integral count
+of members of its C<0> argument such that each member value is equal to its
+C<1> argument.  This function implements the C<Homogeneous> virtual
+function C<multiplicity> for the composing type C<Bag>.
 
 =head2 insert_n (Bag)
 
@@ -4423,6 +4497,16 @@ The function C<count::Bag> results in the integral count of the members
 of its C<0> argument.  This function implements the C<Discrete> virtual
 function C<count> aka C<cardinality> aka C<#> for the composing type C<Bag>.
 
+=head2 unique_count (Bag)
+
+    ::MD::unique_count::Bag ::= function --> Integer_NN <-- (Bag)
+        implements 2::""
+        : (topic -->^ FDN__Bag_unique_count);
+
+The function C<unique_count::Bag> results in the integral count of the
+distinct member values of its C<0> argument.  This function implements the
+C<Discrete> virtual function C<unique_count> for the composing type C<Bag>.
+
 =head1 ATTRIBUTIVE DATA TYPES
 
 =head2 Attributive
@@ -4459,7 +4543,7 @@ I<TODO.>
 
 =head2 degree #^
 
-    ::MD::degree::"" ::= function virtual --> Integral <-- (Attributive);
+    ::MD::degree::"" ::= function virtual --> Integer_NN <-- (Attributive);
 
     ::MD::"#^" ::= alias of degree;
 
