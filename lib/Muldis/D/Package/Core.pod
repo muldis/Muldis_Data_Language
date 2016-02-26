@@ -2408,7 +2408,10 @@ octets of its C<Blob>-typed C<0> argument.
 
     ::MD::Textual ::= interface
         composes Stringy
-        requires_implements {in_order,so,empty,catenate,replicate,to_Text};
+        requires_implements {in_order,so,empty
+            ,substring_of,overlaps_string,disjoint_string
+            ,catenate,replicate
+            ,to_Text};
 
 The interface contract C<Textual> is infinite.  A C<Textual> value is a
 C<Stringy> value which is explicitly a sequence of characters of some
@@ -2848,6 +2851,7 @@ I<TODO.>
             ,has_n,multiplicity,insert_n,remove_n
             ,all_unique,unique
             ,subset_of,same_members,overlaps_members,disjoint_members
+            ,member_plus,except,intersect,union,exclusive
             ,nest,unnest,any,where,map,reduce,...};
 
 The interface contract C<Homogeneous> is infinite.  A C<Homogeneous> value
@@ -3178,6 +3182,132 @@ The virtual function C<disjoint_members> results in C<True> iff the multiset of
 members of its C<0> argument has no member values in common with the
 multiset of members of its C<1> argument; otherwise it results in C<False>.
 
+=head2 member_plus ⊎
+
+    ::MD::member_plus::"" ::= function virtual
+        --> Homogeneous <-- (Homogeneous, Homogeneous)
+        is associative;
+
+    ::MD::Unicode_Aliases::"⊎" ::= alias of member_plus;
+
+The virtual function C<member_plus> aka C<⊎> results in the I<multiset sum>
+of its 2 arguments C<0> and C<1>.  The result is a value of the function's
+C<0> argument's collection type that has all of the members of the
+function's C<0> argument plus all of the members of its C<1> argument.  For
+every distinct member value of the result, its multiplicity is the integral
+sum of the multiplicities of that same member value of each of the 2
+arguments; however, if the result's type is C<Setty>, the result will only
+have 1 member per distinct member value (any duplicates will be silently
+eliminated).  If the result's type is C<Positional>, then the result starts
+with all of the members of C<0> and ends with the members of C<1>, the
+members from both in the same order as in their respective arguments; that
+is, this function then behaves identically to C<catenate> aka C<~> when
+given the same arguments.  This operation has an identity value of a
+collection with zero members.  For non-ordered types, this operation is
+also commutative.  Other programming languages may name their corresponding
+operators I<union all> or I<+>.
+
+=head2 except ∖
+
+    ::MD::except::"" ::= function virtual
+        --> Homogeneous <-- (Homogeneous, Homogeneous);
+
+    ::MD::Unicode_Aliases::"∖" ::= alias of except;
+
+The virtual function C<except> aka C<∖> results in the I<multiset
+difference> between its 2 arguments C<0> (I<minuend>) and C<1>
+(I<subtrahend>).  The result is a value of the function's C<0> argument's
+collection type that has all of the members of the function's C<0> argument
+minus all of the matching members of its C<1> argument.  For every distinct
+member value of the result, its multiplicity is the integral difference of
+the multiplicities of that same member value of each of the 2 arguments
+(when subtracting the I<subtrahend> from the I<minuend>); a multiplicity is
+zero when it would otherwise be negative.  If the result's type is
+C<Positional>, then the removed instances of any distinct member value are
+those closest to the end of C<0>.  Note that C<except> is designed to
+mirror C<member_plus> and so the identity C<x = except(member_plus(x,y),y)>
+should hold for any C<Homogeneous> type, even a C<Positional> one, except
+with C<Setty> C<x> and C<y> that have any members that are the same value.
+Other programming languages may name their corresponding operators I<minus>
+or I<-> or I<difference> or I<\\> or I<complement> or I<setdiff> or I<diff>
+or I<--> etc or I<subtract>.
+
+=head2 intersect ∩
+
+    ::MD::intersect::"" ::= function virtual
+        --> Homogeneous <-- (Homogeneous, Homogeneous)
+        is {associative,idempotent};
+
+    ::MD::Unicode_Aliases::"∩" ::= alias of intersect;
+
+The virtual function C<intersect> aka C<∩> results in the I<multiset
+intersection> of its 2 arguments C<0> and C<1>.  The result is a value of
+the function's C<0> argument's collection type that has all of the members
+of the function's C<0> argument that match their own members of its C<1>
+argument.  For every distinct member value of the result, its multiplicity
+is the integral minimum of the multiplicities of that same member value of
+each of the 2 arguments (any nonmatched argument member does not appear in
+the result).  If the result's type is C<Positional>, then the removed
+instances of any distinct member value are those closest to the end of
+C<0>.  This operation conceptually has an identity value of a collection
+with an infinite number of members.  For non-ordered types, this operation
+is also commutative.  Other programming languages may name their
+corresponding operators I<&> or I<*>.
+
+=head2 union ∪
+
+    ::MD::union::"" ::= function virtual
+        --> Homogeneous <-- (Homogeneous, Homogeneous)
+        is idempotent;
+
+    ::MD::Unicode_Aliases::"∪" ::= alias of union;
+
+The virtual function C<union> aka C<∪> results in the I<multiset union> of
+its 2 arguments C<0> and C<1>.  The result is a value of the function's
+C<0> argument's collection type that has all of the members of the
+function's C<0> argument plus all of the nonmatching members of its C<1>
+argument.  For every distinct member value of the result, its multiplicity
+is the integral maximum of the multiplicities of that same member value of
+each of the 2 arguments.  If the result's type is C<Positional>, then the
+result starts with all of the members of C<0> and ends with the nonmatching
+members of C<1>, the members from both in the same order as in their
+respective arguments; the removed (due to matching) instances of any
+distinct member value are those closest to the end of C<1>.  Note that the
+identity C<union(x,y) = member_plus(x,except(y,x))> should hold for any
+C<Homogeneous> type, even a C<Positional> one.  This operation has an
+identity value of a collection with zero members.  For non-ordered types,
+this operation is also associative and commutative.  Other programming
+languages may name their corresponding operators I<|> or I<+>.
+
+=head2 exclusive symm_diff ∆
+
+    ::MD::exclusive::"" ::= function virtual
+        --> Homogeneous <-- (Homogeneous, Homogeneous);
+
+    ::MD::symm_diff ::= alias of exclusive;
+
+    ::MD::Unicode_Aliases::"∆" ::= alias of exclusive;
+
+The virtual function C<exclusive> aka C<symm_diff> aka C<∆> results in the
+I<multiset symmetric difference> of its 2 arguments C<0> and C<1>.  The
+result is a value of the function's C<0> argument's collection type that
+has all of the members of each of the function's C<0> and C<1> arguments
+that do not have matching members of their counterpart argument.  For every
+distinct member value of the result, its multiplicity is the integral
+maximum of the multiplicities of that same member value of each of the 2
+arguments, minus the integral minimum of the same.  If the result's type is
+C<Positional>, then the result starts with the nonmatching members of C<0>
+and ends with the nonmatching members of C<1>, the members from both in the
+same order as in their respective arguments; the removed (due to matching)
+instances of any distinct member value are those closest to the end of C<0>
+or C<1> respectively.  Note that the identity C<exclusive(x,y) =
+member_plus(except(x,y),except(y,x)) = except(union(x,y),intersect(x,y))>
+should hold for any C<Homogeneous> type, even a C<Positional> one.  This
+operation has an identity value of a collection with zero members.  For
+non-ordered types, this operation is also associative and commutative.
+Other programming languages may name their corresponding operators
+I<symmdiff> or I<^> or I<%>.
+
 =head2 nest group
 
     ::MD::nest::"" ::= function virtual --> Homogeneous <-- (Homogeneous)
@@ -3290,6 +3420,7 @@ otherwise the reduce is a serial operation, at least naively.>
             ,has_n,multiplicity,insert_n,remove_n
             ,all_unique,unique
             ,subset_of,same_members,overlaps_members,disjoint_members
+            ,member_plus,except,intersect,union,exclusive
             ,nest,unnest,any,where,map,reduce,...
             ,to_Set,to_Bag,count,unique_count};
 
@@ -3355,6 +3486,7 @@ distinct member values of its C<0> argument.
             ,catenate,replicate
             ,has_n,multiplicity,insert_n,remove_n
             ,all_unique,unique
+            ,except,intersect,union,exclusive
             ,nest,unnest,any,where,map,reduce,...
             ,to_Bag,to_Set,count
             ,to_Array,elem,has_index,first_index,last_index,slice,index_succ_all_matches,...};
@@ -3470,6 +3602,20 @@ multiset of members of its C<0> argument has no member values in common
 with the multiset of members of its C<1> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<disjoint_members> for the composing type C<Positional>.
+
+=head2 member_plus (Positional)
+
+    ::MD::member_plus::Positional ::= function
+        --> Positional <-- (Positional, Positional)
+        implements 2::""
+        is associative
+        : (topic --> \@catenate);
+
+The function C<member_plus::Positional> results in the I<multiset sum> of
+its 2 arguments C<0> and C<1>; it behaves identically to C<catenate> aka
+C<~> when given the same arguments.  This function implements the
+C<Homogeneous> virtual function C<member_plus> aka C<⊎> for the composing
+type C<Positional>.
 
 =head2 unique_count (Positional)
 
@@ -3817,6 +3963,71 @@ closest to the start of the argument out of those members sharing the
 retained member's value.  This function implements the C<Homogeneous>
 virtual function C<unique> for the composing type C<Array>.
 
+=head2 except (Array)
+
+    ::MD::except::Array ::= function --> Array <-- (Array, Array)
+        implements 2::""
+        : (topic -->^ FDN__Array_except);
+
+The function C<except::Array> results in the I<multiset difference> between
+its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
+the C<Array> value that has all of the members of the function's C<0>
+argument minus all of the matching members of its C<1> argument.  The
+removed instances of any distinct member value are those closest to the end
+of C<0>.  This function implements the C<Homogeneous> virtual function
+C<except> aka C<∖> for the composing type C<Array>.
+
+=head2 intersect (Array)
+
+    ::MD::intersect::Array ::= function --> Array <-- (Array, Array)
+        implements 2::""
+        is {associative,idempotent}
+        : (topic -->^ FDN__Array_intersect);
+
+The function C<intersect::Array> results in the I<multiset intersection> of
+its 2 arguments C<0> and C<1>.  The result is the C<Array> value that has
+all of the members of the function's C<0> argument that match their own
+members of its C<1> argument.  The removed instances of any distinct member
+value are those closest to the end of C<0>.  This operation conceptually
+has an identity value of a collection with an infinite number of members. 
+This function implements the C<Homogeneous> virtual function C<intersect>
+aka C<∩> for the composing type C<Array>.
+
+=head2 union (Array)
+
+    ::MD::union::Array ::= function --> Array <-- (Array, Array)
+        implements 2::""
+        is idempotent identity ([])
+        : (topic -->^ FDN__Array_union);
+
+The function C<union::Array> results in the I<multiset union> of its 2
+arguments C<0> and C<1>.  The result is the C<Array> value that has all of
+the members of the function's C<0> argument plus all of the nonmatching
+members of its C<1> argument.  The result starts with all of the members of
+C<0> and ends with the nonmatching members of C<1>, the members from both
+in the same order as in their respective arguments; the removed (due to
+matching) instances of any distinct member value are those closest to the
+end of C<1>.  This function implements the C<Homogeneous> virtual function
+C<union> aka C<∪> for the composing type C<Array>.
+
+=head2 exclusive (Array)
+
+    ::MD::exclusive::Array ::= function --> Array <-- (Array, Array)
+        implements 2::""
+        identity ([])
+        : (topic -->^ FDN__Array_exclusive);
+
+The function C<exclusive::Array> results in the I<multiset symmetric
+difference> of its 2 arguments C<0> and C<1>.  The result is the C<Array>
+value that has all of the members of each of the function's C<0> and C<1>
+arguments that do not have matching members of their counterpart argument. 
+The result starts with the nonmatching members of C<0> and ends with the
+nonmatching members of C<1>, the members from both in the same order as in
+their respective arguments; the removed (due to matching) instances of any
+distinct member value are those closest to the end of C<0> or C<1>
+respectively.  This function implements the C<Homogeneous> virtual function
+C<exclusive> aka C<symm_diff> aka C<∆> for the composing type C<Array>.
+
 =head2 nest (Array)
 
     ::MD::nest::Array ::= function --> Array <-- (Array)
@@ -4153,6 +4364,71 @@ with the set of members of its C<1> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<disjoint_members> for the composing type C<Set>.
 
+=head2 member_plus (Set)
+
+    ::MD::member_plus::Set ::= function --> Set <-- (Set, Set)
+        implements 2::""
+        is {associative,commutative,idempotent} identity ({})
+        : (topic --> \@union);
+
+The function C<member_plus::Set> results in the I<set union> of its 2
+arguments C<0> and C<1>; it behaves identically to C<union> aka C<∪> when
+given the same arguments.  This function implements the C<Homogeneous>
+virtual function C<member_plus> aka C<⊎> for the composing type C<Set>.
+
+=head2 except (Set)
+
+    ::MD::except::Set ::= function --> Set <-- (Set, Set)
+        implements 2::""
+        : (\Set wrap ((\.0->unwrap) except (\.1->unwrap)));
+
+The function C<except::Set> results in the I<set difference> between
+its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
+the C<Set> value that has all of the members of the function's C<0>
+argument minus all of the matching members of its C<1> argument.  This
+function implements the C<Homogeneous> virtual function C<except> aka C<∖>
+for the composing type C<Set>.
+
+=head2 intersect (Set)
+
+    ::MD::intersect::Set ::= function --> Set <-- (Set, Set)
+        implements 2::""
+        is {associative,commutative,idempotent}
+        : (\Set wrap ((\.0->unwrap) intersect (\.1->unwrap)));
+
+The function C<intersect::Set> results in the I<set intersection> of
+its 2 arguments C<0> and C<1>.  The result is the C<Set> value that has all
+of the members of the function's C<0> argument that match their own members
+of its C<1> argument.  This function implements the C<Homogeneous> virtual
+function C<intersect> aka C<∩> for the composing type C<Set>.
+
+=head2 union (Set)
+
+    ::MD::union::Set ::= function --> Set <-- (Set, Set)
+        implements 2::""
+        is {associative,commutative,idempotent} identity ({})
+        : (\Set wrap ((\.0->unwrap) union (\.1->unwrap)));
+
+The function C<union::Set> results in the I<set union> of its 2
+arguments C<0> and C<1>.  The result is the C<Set> value that has all of
+the members of the function's C<0> argument plus all of the nonmatching
+members of its C<1> argument.  This function implements the C<Homogeneous>
+virtual function C<union> aka C<∪> for the composing type C<Set>.
+
+=head2 exclusive (Set)
+
+    ::MD::exclusive::Set ::= function --> Set <-- (Set, Set)
+        implements 2::""
+        is {associative,commutative} identity ({})
+        : (\Set wrap ((\.0->unwrap) exclusive (\.1->unwrap)));
+
+The function C<exclusive::Set> results in the I<set symmetric
+difference> of its 2 arguments C<0> and C<1>.  The result is the C<Set>
+value that has all of the members of each of the function's C<0> and C<1>
+arguments that do not have matching members of their counterpart argument. 
+This function implements the C<Homogeneous> virtual function C<exclusive>
+aka C<symm_diff> aka C<∆> for the composing type C<Set>.
+
 =head2 nest (Set)
 
     ::MD::nest::Set ::= function --> Set <-- (Set)
@@ -4414,6 +4690,72 @@ multiset of members of its C<0> argument has no member values in common
 with the multiset of members of its C<1> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<disjoint_members> for the composing type C<Bag>.
+
+=head2 member_plus (Bag)
+
+    ::MD::member_plus::Bag ::= function --> Bag <-- (Bag, Bag)
+        implements 2::""
+        is {associative,commutative} identity (\+{})
+        : (topic -->^ FDN__Bag_member_plus);
+
+The function C<member_plus::Bag> results in the I<multiset sum> of its 2
+arguments C<0> and C<1>.  The result is the C<Bag> value that has all of
+the members of the function's C<0> argument plus all of the members of its
+C<1> argument.  This function implements the C<Homogeneous> virtual
+function C<member_plus> aka C<⊎> for the composing type C<Bag>.
+
+=head2 except (Bag)
+
+    ::MD::except::Bag ::= function --> Bag <-- (Bag, Bag)
+        implements 2::""
+        : (topic -->^ FDN__Bag_except);
+
+The function C<except::Bag> results in the I<multiset difference> between
+its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
+the C<Bag> value that has all of the members of the function's C<0>
+argument minus all of the matching members of its C<1> argument.  This
+function implements the C<Homogeneous> virtual function C<except> aka C<∖>
+for the composing type C<Bag>.
+
+=head2 intersect (Bag)
+
+    ::MD::intersect::Bag ::= function --> Bag <-- (Bag, Bag)
+        implements 2::""
+        is {associative,commutative,idempotent}
+        : (topic -->^ FDN__Bag_intersect);
+
+The function C<intersect::Bag> results in the I<multiset intersection> of
+its 2 arguments C<0> and C<1>.  The result is the C<Bag> value that has all
+of the members of the function's C<0> argument that match their own members
+of its C<1> argument.  This function implements the C<Homogeneous> virtual
+function C<intersect> aka C<∩> for the composing type C<Bag>.
+
+=head2 union (Bag)
+
+    ::MD::union::Bag ::= function --> Bag <-- (Bag, Bag)
+        implements 2::""
+        is {associative,commutative,idempotent} identity (\+{})
+        : (topic -->^ FDN__Bag_union);
+
+The function C<union::Bag> results in the I<multiset union> of its 2
+arguments C<0> and C<1>.  The result is the C<Bag> value that has all of
+the members of the function's C<0> argument plus all of the nonmatching
+members of its C<1> argument.  This function implements the C<Homogeneous>
+virtual function C<union> aka C<∪> for the composing type C<Bag>.
+
+=head2 exclusive (Bag)
+
+    ::MD::exclusive::Bag ::= function --> Bag <-- (Bag, Bag)
+        implements 2::""
+        is {associative,commutative} identity (\+{})
+        : (topic -->^ FDN__Bag_exclusive);
+
+The function C<exclusive::Bag> results in the I<multiset symmetric
+difference> of its 2 arguments C<0> and C<1>.  The result is the C<Bag>
+value that has all of the members of each of the function's C<0> and C<1>
+arguments that do not have matching members of their counterpart argument. 
+This function implements the C<Homogeneous> virtual function C<exclusive>
+aka C<symm_diff> aka C<∆> for the composing type C<Bag>.
 
 =head2 nest (Bag)
 
