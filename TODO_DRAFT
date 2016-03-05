@@ -66,6 +66,13 @@ of times", but not a substring.
 * Nice piece of work, this:
 http://www.theregister.co.uk/2016/01/13/stob_remember_the_monoids/
 
+* Quoth the raven:
+"In Haskell all operators are as-if user-defined.
+And therefore even library-supplied operators
+(like arithmetic and comparison)
+can be overloaded, redefined,
+and their fixity changed within a module."
+
 * Valuable to read: https://doc.perl6.org/language/faq
 - Including the start about versioning.
 - Including https://docs.perl6.org/language/nativecall .
@@ -79,6 +86,10 @@ http://www.theregister.co.uk/2016/01/13/stob_remember_the_monoids/
 * https://en.wikipedia.org/wiki/Primitive_recursive_function
 
 * https://en.wikipedia.org/wiki/Ackermann_function
+
+* https://proofwiki.org/
+
+* https://en.wikipedia.org/wiki/Relational_operator
 
 * Add one or more features to assist in making some otherwise fatal
 actions non-fatal, while staying in pure functions.
@@ -3750,7 +3761,7 @@ argument, they can not be used to define constants or singletons properly,
 so we have "constant" to fill in a critical gap; it looks like this:
     constant expr
     constant 3
-    constant foo(6)
+    constant foo::(6)
     constant ...
 - Practially speaking, the concept of embedding constants in an expression
 tree would only ever make a named expression node and not also a schema
@@ -3760,10 +3771,19 @@ expected the implementation will fill it in as a special case.
 - The implementation will likely fold any constant declarations at compile.
 - A type 'default' is a constant and a function 'identity' is too.
 
-* Invocation differences:
-    foo()  - calls a 'constant' only
-    foo(...)  - calls a 'function' only
-    foo  - either an expr node name or a pre/post/infix style 'function'
+* Invocation differences (`...` must include some non-whitespace):
+    foo::() - calls a 'constant' only
+        foo :: () - likewise
+        foo() - likewise
+        foo () - likewise
+        foo( ) - likewise
+    foo::(...) - calls a 'function' only
+        foo :: (...) - likewise
+    foo - either an expr node name or a pre/post/infix style 'function'
+
+* Note that foo(...) in an expression is no longer special and means the same as `foo (...)`.
+
+* Lets say :: is mandatory for procedure calls also, maybe?
 
 * Change how routines work so that the actual sole input argument may be a
 Universal rather than having to be a Tuple.  Also create a new core type
