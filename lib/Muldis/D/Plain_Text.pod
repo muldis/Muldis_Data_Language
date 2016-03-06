@@ -1054,19 +1054,22 @@ scalar values.
 Grammar:
 
     <Boolean> ::=
-        False | True
+        '\\?'? <sp> [False | True]
 
 A C<< <Boolean> >> node represents a value of the Muldis D C<Boolean> type,
 which is a general purpose 2-valued logic boolean or I<truth value>.  The
 C<Boolean> type is a foundational type of the Muldis D type system, and
-this is the canonical grammar for them.  Conceptually, but not actually, a
-C<< <Boolean> >> node is prefixed by C<\?>.
+this is the canonical grammar for them.
 
 Examples:
 
+    False
+
     True
 
-    False
+    \?False
+
+    \?True
 
 =head2 Integer Literals
 
@@ -1076,13 +1079,13 @@ Grammar:
         <nonquoted_int> | <quoted_int>
 
     <nonquoted_int> ::=
-        <asigned_int>
+        '\\+'? <sp> <asigned_int>
 
     <quoted_int> ::=
         <qu_num_head> <qu_asigned_int> <qu_num_tail>
 
     <qu_num_head> ::=
-        '\\+' '\''
+        '\\+' <sp> '\''
 
     <qu_asigned_int> ::=
         <asigned_int> <qu_num_mid>?
@@ -1190,6 +1193,8 @@ Examples:
 
     \+'-3' '50_897'
 
+    \+81
+
     0d39
 
     0xDEADBEEF
@@ -1206,7 +1211,7 @@ Grammar:
         <nonquoted_frac> | <quoted_frac>
 
     <nonquoted_frac> ::=
-        <asigned_int> <frac_div> <num_seg>
+        <nonquoted_int> <frac_div> <num_seg>
 
     <quoted_frac> ::=
         <qu_num_head> <qu_asigned_int> <frac_div> <qu_num_mid> <qu_num_tail>
@@ -1262,7 +1267,7 @@ Examples:
 Grammar:
 
     <Bits> ::=
-        '\\~?' [
+        '\\~?' <sp> [
               [['\'' ['0b' <nc2>* ]? '\''] % <sp>]
             | [['\'' ['0o' <nc8>* ]? '\''] % <sp>]
             | [['\'' ['0x' <nc16>*]? '\''] % <sp>]
@@ -1298,7 +1303,7 @@ Examples:
 Grammar:
 
     <Blob> ::=
-        '\\~+' [
+        '\\~+' <sp> [
               [['\'' ['0b' <nc2>* ]? '\''] % <sp>]
             | [['\'' ['0x' <nc16>*]? '\''] % <sp>]
         ]
@@ -1349,7 +1354,7 @@ Examples:
 Grammar:
 
     <Text> ::=
-        '\\~'? [<Text_seg> % <sp>]
+        '\\~'? <sp> [<Text_seg> % <sp>]
 
     <Text_seg> ::=
         '\'' <qnots_content> '\''
@@ -1429,7 +1434,7 @@ I<TODO.>
 Grammar:
 
     <Capsule> ::=
-        '\\:' '(' <sp> <wrapper_expr> <sp> ',' <sp> <c_asset_expr> <sp> ')'
+        '\\:' <sp> '(' <sp> <wrapper_expr> <sp> ',' <sp> <c_asset_expr> <sp> ')'
 
     <wrapper_expr> ::=
         <expr>
@@ -1844,7 +1849,7 @@ Grammar:
             [<frac_div> <alphanumeric_char>]?
 
     <ps9_quoted_numeric> ::=
-        '\\+' <ps2_single_quoted> % <sp>
+        '\\+' <sp> <ps2_single_quoted> % <sp>
 
 Note that the above actually allows invalid numeric literals, however
 anything matching the above pattern will be a syntax error if it doesn't
