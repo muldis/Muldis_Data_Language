@@ -356,12 +356,13 @@ Examples:
 
 Grammar:
 
-    <unrestricted_char> ::=
+    <enumerated_char> ::=
           <alphanumeric_char>
         | <quoting_char>
         | <bracketing_char>
         | <symbolic_char>
         | <whitespace_char>
+        | <illegal_char>
 
     <alphanumeric_char> ::=
         <alpha_char> | <digit_char>
@@ -399,32 +400,74 @@ Grammar:
         | '▷' | '⟕' | '⟖' | '⟗' | '⨝' | '⨯'
 
     <whitespace_char> ::=
-        ' ' | '\t' | '\n' | '\f' | '\r'
+        <ws_unrestricted_char> | <ws_restricted_outside_char>
 
-The Muldis D Plain Text grammar recognizes 7 distinct character classes,
+    <ws_unrestricted_char> ::=
+        ' '
+
+    <ws_restricted_outside_char> ::=
+        '\t' | '\n' | '\r'
+
+    <illegal_char> ::=
+        <[ \x<0>..\x<8> \x<B>..\x<C> \x<E>..\x<1F> \x<80>..\x<9F> ]>
+
+    <unrestricted_char> ::=
+          <alphanumeric_char>
+        | <bracketing_char>
+        | <symbolic_char>
+        | <ws_unrestricted_char>
+
+    <restricted_outside_char> ::=
+        <unrestricted_char> | <ws_restricted_outside_char>
+
+    <restricted_inside_char> ::=
+        <-quoting_char -illegal_char -ws_restricted_outside_char>
+
+The Muldis D Plain Text grammar recognizes 7 distinct character codepoint
+(hereafter referred to as I<character>) classes,
 which are mutually disjoint proper subsets of the character repertoire
 identified by the Script Name: I<alphanumeric>, I<quoting>, I<bracketing>,
-I<symbolic>, I<whitespace>, I<restricted>, I<illegal>; the first 5 are
-collectively I<unrestricted>.
+I<symbolic>, I<whitespace>, I<illegal>, I<nonenumerated>; the first 6 are
+collectively I<enumerated>.
 
-The 5 I<unrestricted> classes are the more syntactically interesting ones
-and represent characters that may appear anywhere in Plain Text source
-code.  In contrast, I<restricted> characters may only appear literally
+The first 5 I<enumerated> classes (all but I<illegal>) are the more
+syntactically interesting ones and are generally what the grammar are
+defined in terms of.
+
+Broadly speaking, Muldis D Plain Text code is made up of 2 primary
+grammatical contexts which are mutually disjoint and complementary; one of
+these is anywhere I<outside> all quoted strings, and its complement is
+anywhere I<inside> any quoted string; it is the I<quoting> characters that
+mark the transition between these 2 contexts.  Broadly speaking, all of the
+I<enumerated> classes (except I<illegal>) represent characters that are
+I<unrestricted> and may appear anywhere in Plain Text source code.  In
+contrast, I<nonenumerated> characters may only appear literally
 inside of a quoted string, and I<illegal> characters may not appear
 literally in source code at all.
 
-All printable characters of the ASCII repertoire are I<unrestricted>, as
+All characters of the ASCII repertoire are I<enumerated>; loosely speaking,
+all printable ASCII characters are I<unrestricted>, as
 are the small number of non-printable ASCII characters named in C<<
 <whitespace_char> >>; all other (non-printable) ASCII characters are
 I<illegal>.
 
-The vast majority of non-ASCII Unicode characters are I<restricted>, the
+The vast majority of non-ASCII Unicode characters are I<restricted> to
+appearing literally inside of a quoted string, loosely speaking the
 only exceptions being the small number named in C<< <symbolic_char> >> or
 C<< <whitespace_char> >>; any non-ASCII Unicode control characters not
 otherwise named are I<illegal>.
 
 Regardless of character class, all characters may be logically represented
 in terms of character escape sequences, but only inside of a quoted string.
+
+Note that the primary reason most enumerated whitespace characters are
+generally restricted from being inside of a quoted string is so that the
+Muldis D Plain Text code is resilient to passage through environments that
+might have different native line-breaking characters; the restriction
+guarantees that executing the code will produce logically identical values
+and behaviour for character string literals or quoted identifiers.  In
+contrast, changing the line-breaking whitespace outside of string literals
+is okay and doesn't change behavior, so code can be formatted with them.
 
 Note that the symbolic category is arbitrary in the trans-ASCII range and
 is highly subject to gain or lose characters over time.
@@ -441,7 +484,7 @@ Grammar:
 
     <escaped_char__minimal> ::=
           '\\q' | '\\a' | '\\g'
-        | '\\t' | '\\n' | '\\f' | '\\r'
+        | '\\t' | '\\n' | '\\r'
         | ['\\c<' <nc10>+ '>']
 
     <escaped_char__maximal> ::=
@@ -463,7 +506,6 @@ The meanings of the simple character escape sequences are:
     \g  | 0x60      | GRAVE ACCENT    | `   | delimit dividing space comments
     \t  | 0x9       | CHAR... TAB...  |     | control char horizontal tab
     \n  | 0xA       | LINE FEED (LF)  |     | ctrl char line feed / newline
-    \f  | 0xC       | FORM FEED (FF)  |     | control char form feed
     \r  | 0xD       | CARR. RET. (CR) |     | control char carriage return
 
 There is currently just one complex escape sequence, of the format C<<
@@ -725,10 +767,10 @@ Grammar:
         <qns_nonescaped_content> | <qns_escaped_content>
 
     <qnots_nonescaped_content> ::=
-        [<-quoting_char-[\\]> <-quoting_char>*]?
+        [<restricted_inside_char-[\\]> <restricted_inside_char>*]?
 
     <qnots_escaped_content> ::=
-        '\\' [<-quoting_char-[\\]> | <escaped_char>]*
+        '\\' [<restricted_inside_char-[\\]> | <escaped_char>]*
 
     <generic_name> ::=
         <alphanumeric_name> | <quoted_name>
