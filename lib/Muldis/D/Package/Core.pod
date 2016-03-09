@@ -3425,7 +3425,7 @@ otherwise the reduce is a serial operation, at least naively.>
             ,subset_of,same_members,overlaps_members,disjoint_members
             ,member_plus,except,intersect,union,exclusive
             ,nest,unnest,any,where,map,reduce,...
-            ,to_Set,to_Bag,count,unique_count};
+            ,to_Set,to_Bag,count,unique_count,order_by};
 
 The interface contract C<Discrete> is infinite.  A C<Discrete> value is a
 C<Homogeneous> value such that all of its members can be enumerated as
@@ -3478,6 +3478,31 @@ have the same member value, every member counts as 1 towards the total.
 The virtual function C<unique_count> results in the integral count of the
 distinct member values of its C<0> argument.
 
+=head2 order
+
+    ::MD::order ::= function --> Positional <-- (Discrete)
+        : (\.0 order_by (\@in_order assuming \%()));
+
+The function C<order> results in the C<Positional> value that represents
+the same multiset of members as its C<0> argument but that the members are
+arranged into a sequence in accordance with a total order defined by the
+function C<in_order>.  This function will succeed iff C<in_order> is
+defined for the types of the members or they are of an C<Orderable> type.
+
+=head2 order_by
+
+    ::MD::order_by::"" ::= function virtual
+        --> Positional <-- (Discrete, Primed_Func_Ref);
+
+The virtual function C<order_by> results in the C<Positional> value that
+represents the same multiset of members as its C<0> argument but that the
+members are arranged into a sequence in accordance with a total order
+defined by the function given in its C<1> argument.  Iff the members of the
+C<0> argument are all of the same C<Orderable>-composing type, then the
+generic C<in_order> function may be used as the C<1> argument; regardless,
+the C<1> argument can define any total order it likes for members that are
+of any type, both C<Orderable> or not.
+
 =head1 POSITIONAL DATA TYPES
 
 =head2 Positional
@@ -3491,7 +3516,7 @@ distinct member values of its C<0> argument.
             ,all_unique,unique
             ,except,intersect,union,exclusive
             ,nest,unnest,any,where,map,reduce,...
-            ,to_Bag,to_Set,count
+            ,to_Set,to_Bag,count,order_by
             ,to_Array,elem,has_index,first_index,last_index,slice,index_succ_all_matches,...};
 
 The interface contract C<Positional> is infinite.  A C<Positional> value is
@@ -3545,7 +3570,8 @@ I<TODO.>
     );
 
 The function C<in_order::Positional> implements the C<Orderable> virtual
-function C<in_order> for the composing type C<Positional>.
+function C<in_order> for the composing type C<Positional>.  This function
+will succeed iff C<in_order> is also defined for the types of the members.
 
 =head2 subset_of (Positional)
 
@@ -4115,6 +4141,19 @@ of its C<0> argument.  This function implements the C<Discrete> virtual
 function C<count> aka C<cardinality> aka C<#> for the composing type
 C<Array>.
 
+=head2 order_by (Array)
+
+    ::MD::order_by::Array ::= function --> Array <-- (Array, Primed_Func_Ref)
+        implements 2::""
+        : (topic -->^ FDN__Array_order_by);
+
+The function C<order_by::Array> results in the C<Array> value that
+represents the same multiset of members as its C<0> argument but that the
+members are arranged into a sequence in accordance with a total order
+defined by the function given in its C<1> argument.  This function
+implements the C<Discrete> virtual function C<order_by> for the composing
+type C<Array>.
+
 =head2 to_Array (Array)
 
     ::MD::to_Array::Array ::= function --> Array <-- (Array)
@@ -4212,9 +4251,6 @@ values, which explicitly does not represent any kind of thing in
 particular, and is simply the sum of its members.  A C<Set> ensures that no
 2 of its members are the same value.  The default value of C<Set> is C<{}>,
 the only zero-member C<Set> value.
-
-I<TODO. Update 'where' to say quantity for each distinct member is 1,
-using a Foundation function specific to that purpose.>
 
 =head2 empty_Set ?∅
 
@@ -4523,6 +4559,18 @@ The function C<unique_count::Set> results in the integral count of the
 members of its C<0> argument; its behavior is identical to C<count> given
 the same argument.  This function implements the C<Discrete> virtual
 function C<unique_count> for the composing type C<Set>.
+
+=head2 order_by (Set)
+
+    ::MD::order_by::Set ::= function --> Array <-- (Set, Primed_Func_Ref)
+        implements 2::""
+        : (\Set wrap (\.0->unwrap order_by \.1));
+
+The function C<order_by::Set> results in the C<Array> value that represents
+the same set of members as its C<0> argument but that the members are
+arranged into a sequence in accordance with a total order defined by the
+function given in its C<1> argument.  This function implements the
+C<Discrete> virtual function C<order_by> for the composing type C<Set>.
 
 =head1 BAG DATA TYPES
 
@@ -4851,6 +4899,18 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Bag>.
 The function C<unique_count::Bag> results in the integral count of the
 distinct member values of its C<0> argument.  This function implements the
 C<Discrete> virtual function C<unique_count> for the composing type C<Bag>.
+
+=head2 order_by (Bag)
+
+    ::MD::order_by::Bag ::= function --> Array <-- (Bag, Primed_Func_Ref)
+        implements 2::""
+        : (topic -->^ FDN__Bag_order_by);
+
+The function C<order_by::Bag> results in the C<Array> value that represents
+the same multiset of members as its C<0> argument but that the members are
+arranged into a sequence in accordance with a total order defined by the
+function given in its C<1> argument.  This function implements the
+C<Discrete> virtual function C<order_by> for the composing type C<Bag>.
 
 =head1 ATTRIBUTIVE DATA TYPES
 
