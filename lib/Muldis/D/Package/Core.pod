@@ -3517,7 +3517,7 @@ of any type, both C<Orderable> or not.
             ,except,intersect,union,exclusive
             ,nest,unnest,any,where,map,reduce,...
             ,to_Set,to_Bag,count,order_using
-            ,to_Array,elem,has_index,first_index,last_index,slice,index_succ_all_matches,...};
+            ,to_Array,elem,has_index,first_possible_index,slice,index_succ_all_matches,...};
 
 The interface contract C<Positional> is infinite.  A C<Positional> value is
 both a C<Stringy> value and a C<Discrete> value; it is a homogeneous
@@ -3530,7 +3530,11 @@ members exists at a distinct adjacent integral position; a C<Positional>
 preserves the identity that the count of its members is equal to one plus
 the difference of its first and last index positions.  Idiomatically, a
 C<Positional> value is zero-based, meaning its first-ordered member is at
-index position C<0>, but that doesn't have to be the case.
+index position C<0>, but that doesn't have to be the case.  C<Positional>
+requires that for every composing contract I<T> there is a single integral
+value I<I> such that the first index position of every value of I<T> is
+I<I>; as such, any catenation or slice of C<Positional> values would have
+well-definined shifting of member values between index positions.
 
 The default value of C<Positional> is the C<Array> value with zero members,
 C<[]>.  C<Positional> is C<Orderable> in the general case conditionally
@@ -3548,7 +3552,9 @@ composed, directly or indirectly, by: C<Array>, C<String>.
 
     ::MD::Excuse::No_Such_Index ::= constant (\@0) composes Excuse;
 
-I<TODO.>
+The constant C<Excuse::No_Such_Index> represents the I<undefined> result of
+attempting to use a member index I<I> of C<Positional> value I<V> while
+assuming incorrectly that I<V> already has a member whose index is I<I>.
 
 =head2 in_order (Positional)
 
@@ -3715,27 +3721,62 @@ all the same value, that run retains only 1 of those members.  Iff the
 argument is such that all appearances of each distinct value are adjacent
 members, the result of C<squish> is the same as that of C<unique>.
 
+=head2 first_possible_index
+
+    ::MD::first_possible_index::"" ::= function virtual
+        --> Integer <-- (Positional);
+
+The virtual function C<first_possible_index> results in the integral first
+possible index position I<I> that every value of its C<0> argument's
+collection type has in common.  Iff the C<0> argument I<C> is nonempty then
+the result is also equal to the actual index position of I<C>'s first
+member; otherwise I<I> is the index position that a subsequently-added
+first member of I<C> would have.
+
+=head2 first_unused_index
+
+    ::MD::first_unused_index ::= function --> Integer <-- (Positional)
+        : (first_possible_index::(\.0) + #\.0);
+
+The function C<first_unused_index> results in the integral first unused
+index position of its C<0> argument, which is the index position that the
+first subsequently-appended member would have.  Iff the C<0> argument I<C>
+is nonempty then the result is one greater than the last index position of
+I<C>; otherwise the result is equal to the first possible index.  For a
+zero-based C<Positional>, the result is equal to its C<count>.
+
 =head2 first_index
 
-    ::MD::first_index::"" ::= function virtual --> Integer <-- (Positional)
-        requires (?\.0);
+    ::MD::first_index ::= function --> Integer <-- (Positional)
+        requires (?\.0)
+        : (first_possible_index::(\.0));
 
-I<TODO.>
+The function C<first_index> results in the integral index position of its
+nonempty C<0> argument's first member.
 
 =head2 last_index
 
-    ::MD::last_index::"" ::= function virtual --> Integer <-- (Positional)
-        requires (?\.0);
+    ::MD::last_index ::= function --> Integer <-- (Positional)
+        requires (?\.0)
+        : (--first_unused_index::(\.0));
 
-I<TODO.>
+The function C<last_index> results in the integral index position of its
+nonempty C<0> argument's last member.
 
 =head2 slice
 
-    ::MD::slice::"" ::= function virtual
-        --> Positional <-- (Positional, Interval);
+    ::MD::slice::"" ::= function virtual --> Positional
+        <-- (Positional, first_index : Integer, count : NN_Integer)
+        requires (\.first_index + \.count <= first_unused_index::(\.0));
 
-I<TODO.  Need to clarify constraints, eg is this a strict subsequence
-operation or is it more like an intersection.>
+The function C<slice> results in the value of its C<0> argument's ordered
+collection type that has exactly I<N> consecutive members of the function's
+C<0> argument I<C>, in the same order, such that the first member existed
+at index position I<F> of I<C> where I<F> and I<N> are equal to the
+function's C<first_index> and C<count> arguments respectively.  The taken
+members do not necessarily occupy the same index positions in the result as
+they did in I<C>.  This function will fail if I<C> does not have members at
+any of the index positions requested.
 
 =head2 first
 
@@ -3743,15 +3784,19 @@ operation or is it more like an intersection.>
         requires (?\.0)
         : (\.0 . first_index::(\.0));
 
-I<TODO.>
+The function C<first> results in its nonempty C<0> argument's first member.
 
 =head2 nonfirst
 
     ::MD::nonfirst ::= function --> Positional <-- (Positional)
         requires (?\.0)
-        : (\.0 slice first_index::(\.0)^..last_index::(\.0));
+        : (slice::(\.0, first_index : ++first_index::(\.0), count : -- #\.0));
 
-I<TODO.>
+The function C<nonfirst> results in the value of its C<0> argument's
+ordered collection type that has all of the members of the function's
+nonempty C<0> argument, in the same order, except for its very first one.
+The taken members occupy index positions of exactly 1 less in the result as
+they did in the argument.
 
 =head2 last
 
@@ -3759,15 +3804,19 @@ I<TODO.>
         requires (?\.0)
         : (\.0 . last_index::(\.0));
 
-I<TODO.>
+The function C<last> results in its nonempty C<0> argument's last member.
 
 =head2 nonlast
 
     ::MD::nonlast ::= function --> Positional <-- (Positional)
         requires (?\.0)
-        : (\.0 slice first_index::(\.0)..^last_index::(\.0));
+        : (slice::(\.0, first_index : first_index::(\.0), count : -- #\.0));
 
-I<TODO.>
+The function C<nonlast> results in the value of its C<0> argument's ordered
+collection type that has all of the members of the function's nonempty C<0>
+argument, in the same order, except for its very last one.  The taken
+members occupy the exact same index positions in the result as they did in
+the argument.
 
 =head2 index_succ_all_matches
 
@@ -4018,7 +4067,7 @@ its 2 arguments C<0> and C<1>.  The result is the C<Array> value that has
 all of the members of the function's C<0> argument that match their own
 members of its C<1> argument.  The removed instances of any distinct member
 value are those closest to the end of C<0>.  This operation conceptually
-has an identity value of a collection with an infinite number of members. 
+has an identity value of a collection with an infinite number of members.
 This function implements the C<Homogeneous> virtual function C<intersect>
 aka C<∩> for the composing type C<Array>.
 
@@ -4049,7 +4098,7 @@ C<union> aka C<∪> for the composing type C<Array>.
 The function C<exclusive::Array> results in the I<multiset symmetric
 difference> of its 2 arguments C<0> and C<1>.  The result is the C<Array>
 value that has all of the members of each of the function's C<0> and C<1>
-arguments that do not have matching members of their counterpart argument. 
+arguments that do not have matching members of their counterpart argument.
 The result starts with the nonmatching members of C<0> and ends with the
 nonmatching members of C<1>, the members from both in the same order as in
 their respective arguments; the removed (due to matching) instances of any
@@ -4181,31 +4230,33 @@ I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
 
 I<TODO.  True if given array index exists.>
 
-=head2 first_index (Array)
+=head2 first_possible_index (Array)
 
-    ::MD::first_index::Array ::= function --> Integer_NN <-- (Array)
+    ::MD::first_possible_index::Array ::= function --> Integer_NN <-- (Array)
         implements 2::""
-        requires (?\.0)
         : (0);
 
-I<TODO.>
-
-=head2 last_index (Array)
-
-    ::MD::last_index::Array ::= function --> Integer_NN <-- (Array)
-        implements 2::""
-        requires (?\.0)
-        : (-- #\.0);
-
-I<TODO.>
+The function C<first_possible_index::Array> simply results in C<0>.  This
+function implements the C<Positional> virtual function
+C<first_possible_index> for the composing type C<Array>.
 
 =head2 slice (Array)
 
-    ::MD::slice::Array ::= function --> Array <-- (Array, Interval)
+    ::MD::slice::Array ::= function --> Array
+        <-- (Array, first_index : NN_Integer, count : NN_Integer)
         implements 2::""
+        requires (\.first_index + \.count <= #\.0)
         : (topic -->^ FDN__Array_slice);
 
-I<TODO.>
+The function C<slice::Array> results in the C<Array> value that has exactly
+I<N> consecutive members of the function's C<0> argument I<C>, in the same
+order, such that the first member existed at index position I<F> of I<C>
+where I<F> and I<N> are equal to the function's C<first_index> and C<count>
+arguments respectively.  The taken members do not necessarily occupy the
+same index positions in the result as they did in I<C>.  This function will
+fail if I<C> does not have members at any of the index positions requested.
+This function implements the C<Positional> virtual function C<slice> for
+the composing type C<Array>.
 
 =head2 index_succ_all_matches (Array)
 
@@ -4464,7 +4515,7 @@ virtual function C<union> aka C<∪> for the composing type C<Set>.
 The function C<exclusive::Set> results in the I<set symmetric
 difference> of its 2 arguments C<0> and C<1>.  The result is the C<Set>
 value that has all of the members of each of the function's C<0> and C<1>
-arguments that do not have matching members of their counterpart argument. 
+arguments that do not have matching members of their counterpart argument.
 This function implements the C<Homogeneous> virtual function C<exclusive>
 aka C<symm_diff> aka C<∆> for the composing type C<Set>.
 
@@ -4804,7 +4855,7 @@ virtual function C<union> aka C<∪> for the composing type C<Bag>.
 The function C<exclusive::Bag> results in the I<multiset symmetric
 difference> of its 2 arguments C<0> and C<1>.  The result is the C<Bag>
 value that has all of the members of each of the function's C<0> and C<1>
-arguments that do not have matching members of their counterpart argument. 
+arguments that do not have matching members of their counterpart argument.
 This function implements the C<Homogeneous> virtual function C<exclusive>
 aka C<symm_diff> aka C<∆> for the composing type C<Bag>.
 
