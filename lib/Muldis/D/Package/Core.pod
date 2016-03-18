@@ -3517,7 +3517,7 @@ of any type, both C<Orderable> or not.
             ,except,intersect,union,exclusive
             ,nest,unnest,any,where,map,reduce,...
             ,to_Set,to_Bag,count,order_using
-            ,to_Array,elem,has_index,first_possible_index,slice,index_succ_all_matches,...};
+            ,to_Array,elem,has_index,first_possible_index,slice_n,index_succ_all_matches,...};
 
 The interface contract C<Positional> is infinite.  A C<Positional> value is
 both a C<Stringy> value and a C<Discrete> value; it is a homogeneous
@@ -3763,20 +3763,40 @@ nonempty C<0> argument's first member.
 The function C<last_index> results in the integral index position of its
 nonempty C<0> argument's last member.
 
-=head2 slice
+=head2 slice_n
 
-    ::MD::slice::"" ::= function virtual --> Positional
-        <-- (Positional, first_index : Integer, count : NN_Integer)
-        requires (\.first_index + \.count <= first_unused_index::(\.0));
+    ::MD::slice_n::"" ::= function virtual
+        --> Positional <-- (Positional, Integer, NN_Integer)
+        requires (\.1 >= first_possible_index::(\.0)
+            and \.1 + \.2 <= first_unused_index::(\.0));
 
-The function C<slice> results in the value of its C<0> argument's ordered
-collection type that has exactly I<N> consecutive members of the function's
-C<0> argument I<C>, in the same order, such that the first member existed
-at index position I<F> of I<C> where I<F> and I<N> are equal to the
-function's C<first_index> and C<count> arguments respectively.  The taken
-members do not necessarily occupy the same index positions in the result as
-they did in I<C>.  This function will fail if I<C> does not have members at
-any of the index positions requested.
+The virtual function C<slice_n> results in the value of its C<0> argument's
+ordered collection type that has exactly I<N> consecutive members of the
+function's C<0> argument I<C>, in the same order, such that the first
+member existed at index position I<F> of I<C> where I<F> and I<N> are equal
+to the function's C<1> and C<2> arguments respectively.  The taken members
+do not necessarily occupy the same index positions in the result as they
+did in I<C>.  This function will fail if I<C> does not have members at any
+of the index positions requested.  Other programming languages may name
+their corresponding operators I<array_slice>.
+
+=head2 slice_range
+
+    ::MD::slice_range ::= function
+        --> Positional <-- (Positional, Integer, Integer)
+        requires (?\.0 and \.1 >= first_possible_index::(\.0)
+            and \.2 < first_unused_index::(\.0))
+        (slice_n::(\.0, \.1, \.2 - \.1 + 1));
+
+The function C<slice_range> results in the value of its C<0> argument's
+ordered collection type that has all of the members of the function's C<0>
+argument I<C>, in the same order, such that the first and last members
+existed at index positions equal to the function's C<1> and C<2> arguments
+respectively.  The taken members do not necessarily occupy the same index
+positions in the result as they did in I<C>.  This function will fail if
+I<C> does not have members at any of the index positions requested.  Other
+programming languages may name their corresponding operators I<slice> or
+may instead overload their array element subscripting syntax.
 
 =head2 first
 
@@ -3790,7 +3810,7 @@ The function C<first> results in its nonempty C<0> argument's first member.
 
     ::MD::nonfirst ::= function --> Positional <-- (Positional)
         requires (?\.0)
-        : (slice::(\.0, first_index : ++first_index::(\.0), count : -- #\.0));
+        : (slice_range::(\.0, ++first_index::(\.0), last_index::(\.0)));
 
 The function C<nonfirst> results in the value of its C<0> argument's
 ordered collection type that has all of the members of the function's
@@ -3810,7 +3830,7 @@ The function C<last> results in its nonempty C<0> argument's last member.
 
     ::MD::nonlast ::= function --> Positional <-- (Positional)
         requires (?\.0)
-        : (slice::(\.0, first_index : first_index::(\.0), count : -- #\.0));
+        : (slice_range::(\.0, first_index::(\.0), --last_index::(\.0)));
 
 The function C<nonlast> results in the value of its C<0> argument's ordered
 collection type that has all of the members of the function's nonempty C<0>
@@ -4240,22 +4260,22 @@ The function C<first_possible_index::Array> simply results in C<0>.  This
 function implements the C<Positional> virtual function
 C<first_possible_index> for the composing type C<Array>.
 
-=head2 slice (Array)
+=head2 slice_n (Array)
 
-    ::MD::slice::Array ::= function --> Array
-        <-- (Array, first_index : NN_Integer, count : NN_Integer)
+    ::MD::slice_n::Array ::= function
+        --> Array <-- (Array, NN_Integer, NN_Integer)
         implements 2::""
-        requires (\.first_index + \.count <= #\.0)
-        : (topic -->^ FDN__Array_slice);
+        requires (\.1 + \.2 <= #\.0)
+        : (topic -->^ FDN__Array_slice_n);
 
-The function C<slice::Array> results in the C<Array> value that has exactly
-I<N> consecutive members of the function's C<0> argument I<C>, in the same
-order, such that the first member existed at index position I<F> of I<C>
-where I<F> and I<N> are equal to the function's C<first_index> and C<count>
+The function C<slice_n::Array> results in the C<Array> value that has
+exactly I<N> consecutive members of the function's C<0> argument I<C>, in
+the same order, such that the first member existed at index position I<F>
+of I<C> where I<F> and I<N> are equal to the function's C<1> and C<2>
 arguments respectively.  The taken members do not necessarily occupy the
 same index positions in the result as they did in I<C>.  This function will
 fail if I<C> does not have members at any of the index positions requested.
-This function implements the C<Positional> virtual function C<slice> for
+This function implements the C<Positional> virtual function C<slice_n> for
 the composing type C<Array>.
 
 =head2 index_succ_all_matches (Array)
