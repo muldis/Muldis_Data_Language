@@ -32,6 +32,73 @@ Package can be saved to disk or loaded from disk, as regular data, and
 that's where you get persistence. Executing or persisting a Package is
 optional.  This is the fundamental paradigm.
 
+* Muldis D generally takes concerns related to either ACID or CAP and
+hoists them into the user space so Muldis D programs or databases can more
+explicitly define what behaviors they want.
+- Muldis D itself neither assumes nor leaves implementation-defined
+particular consistency or independence or availability or concurrency or
+synchronicity or partitioning or durability or atomicity or versioning etc
+concerns, but rather expects user code to be explicit about what of those
+it expects or account for implementation variability.
+- Muldis D is around 99% pure functional and expects all things of
+significance to be encoded explicitly as values or as introspectable
+functions, whose unified common representation is Package values.
+- A complete "database" state is represented as a Package, and each Package
+is logically a node in a graph that defines a "database" state either
+completely self-defined or defined in terms of a function applied to the
+"database" state(s) defined in one or more other Packages.
+- There can be anywhere from zero to many peered Muldis D DBMS processes,
+either on the same physical machine or spread out over a network, and each
+one has in memory a set of zero or more Package values; each process can
+exchange Package values with other processes, or store them to or retrieve
+them from process-external storage, of pass them to or from client
+applications etc.
+- In the general case, the DBMS processes are unique and don't necessarily
+have the same concept of what the "current" database value is, and they
+interact with each other asynchronously.  A client application should think
+of using the DBMS like using a queue; change requests go in one end and the
+results of those change requests come out the other.  A client should not
+assume that any change they made has stuck until they get the appropriate
+response out of the queue.
+- The DBMS processes can operate at different levels of trust, where they
+may or may not trust or accept what their peers say.  Interaction between
+them could conceivably be about a chain of claims or he-said-she-said
+rather than just cells within a brain that implicitly trust each other, or
+alternately they could implicitly trust.  But regardless, with multiple
+potential writers making changes at once, there would be policies for
+merging their change attempts, which may be clean or less so.  A version
+control system like git is a good model to look at.
+- Best practice for normal DBMS users is each change request ultimately is
+encoded as a function that will take some prior database value and applies
+various changes conditionally thereby deriving an updated database value.
+Due to concurrency issues, the actual database value seen for input to such
+a transformation function may not be the same database value seen by the
+client application that composed the change request in the first place, and
+so the function needs to be appropriately resilient to variations in the
+input, such as other records added/changed/removed/present by some other
+user, and either make its own changes in a way that appropriately maintains
+the changes by the other users, or to fail gracefully so telling the client
+to please try formulating a new function to try again.
+- The key here is to not leave it up to the DBMS to decide how to resolve
+possible conflicts, eg 2 users updating the same record, rather each user
+defines their update request to explicitly say how to act in the presence
+of a possible update by the other, and the DBMS makes no guarantees of
+whose function runs first.
+- Each DBMS in the general case would just respond to a client request with
+"request submitted" but the client should not assume anything about the
+state of the database until they're separately told their request was
+processed and to read the result.  The DBMS could also block on that result
+instead as the implementation chooses.
+- Things like talking to other processes or with filesystems etc could be
+implemented either in Muldis D itself for maximum user control (using eg
+sockets exchanging octets), or hidden from the users in
+implementation-specific ways, basically both options would be available, eg
+for abstracting away where DBMS processes are and how they are talked with.
+In any event, typically a specific DBMS process would be a user's proxy,
+running their session, for the group at large.
+- Package names in the general case could be UUIDs or such, ones representing
+database versions, and we can leave human-readable names for libraries etc.
+
 * FIRST PRIORITY:
 - Make the core have basic Unicode knowledge after all.
 To be specific, make it know what the range of valid codepoints is, and
@@ -90,6 +157,8 @@ and their fixity changed within a module."
 * https://proofwiki.org/
 
 * https://en.wikipedia.org/wiki/Relational_operator
+
+* http://www.dagolden.com/index.php/2633/no-more-dirty-reads-with-mongodb/
 
 * Add one or more features to assist in making some otherwise fatal
 actions non-fatal, while staying in pure functions.
@@ -471,6 +540,9 @@ under Reals, and Reals plus Imaginaries are disjoint subsets of Complex.
 - real algebraic number is a subset of real and superset of rational, eg sqrt-2
 - algebraic number is subset of complex where both parts are like the prior,
 something about integral roots of rational coefficients
+- See also http://foldoc.org/algebraic%20data%20type which is a related
+concept of a sort, a "sum of products type", which is defined in Haskell
+like how we may define a "union type".
 - transcendental number is the real or complex that are not algebraic, eg pi
 - So http://mathworld.wolfram.com/Mantissa.html sez
 "For a real number x, the mantissa is defined as the positive fractional
