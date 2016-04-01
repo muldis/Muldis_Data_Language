@@ -2850,11 +2850,11 @@ I<TODO.>
     ::MD::Homogeneous ::= interface
         composes Emptyable
         requires_implements {so,empty
-            ,has_n,multiplicity,insert_n,remove_n
+            ,has_n,multiplicity
             ,all_unique,unique
-            ,subset_of,same_members,overlaps_members,disjoint_members
-            ,member_plus,except,intersect,union,exclusive
-            ,nest,unnest,any,where,map,reduce,...};
+            ,subset_of,same_members,overlaps_members,disjoint_members,any
+            ,insert_n,remove_n,member_plus,except,intersect,union,exclusive
+            ,nest,unnest,where,map,reduce,...};
 
 The interface contract C<Homogeneous> is infinite.  A C<Homogeneous> value
 is a I<collective> value such that every one of its component I<members> is
@@ -2964,61 +2964,6 @@ The virtual function C<multiplicity> results in the integral count of
 members of its C<0> argument such that each member value is equal to its
 C<1> argument.  For a C<Setty> typed C<0> argument, the result is always
 just 0 or 1.
-
-=head2 insert
-
-    ::MD::insert ::= function --> Homogeneous <-- (Homogeneous, Any)
-        : (insert_n::(\.0, \.1, 1));
-
-The function C<insert> results in the value of its C<0> argument's
-collection type that has all of the members of the function's C<0> argument
-plus 1 additional member that is equal to its C<1> argument; its semantics
-are identical to those of C<insert_n> where N is 1.  Other programming
-languages may name their corresponding operators I<add>; it is also common
-to use assignment syntax.
-
-=head2 insert_n
-
-    ::MD::insert_n::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Any, Integer_NN);
-
-The virtual function C<insert_n> results in the value of its C<0>
-argument's collection type that has all of the members of the function's
-C<0> argument plus N additional members that are each equal to its C<1>
-argument, where N is defined by its C<2> argument; however, if the result's
-type is C<Setty>, the result will have no more than 1 member equal to the
-C<1> argument (any duplicates will be silently eliminated), so the result
-may equal the C<0> argument even when the C<2> argument is nonzero.  If the
-result's type is C<Positional>, then the result starts with all of the
-members of C<0> in the same order and ends with any added instances of C<1>.
-
-=head2 remove
-
-    ::MD::remove ::= function --> Homogeneous <-- (Homogeneous, Any)
-        : (remove_n::(\.0, \.1, 1));
-
-The function C<remove> results in the value of its C<0> argument's
-collection type that has all of the members of the function's C<0> argument
-minus 1 existing member that is each equal to its C<1> argument; its
-semantics are identical to those of C<remove_n> where N is 1.  Other
-programming languages may name their corresponding operators I<delete>.
-
-=head2 remove_n
-
-    ::MD::remove_n::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Any, Integer_NN);
-
-The virtual function C<remove_n> results in the value of its C<0>
-argument's collection type that has all of the members of the function's
-C<0> argument minus N existing members that are each equal to its C<1>
-argument, where N is defined as the lesser of its C<2> argument and the
-count of members of C<0> equal to the C<1> argument, so the result may
-equal the C<0> argument even when the C<2> argument is nonzero.  If the
-result's type is C<Positional>, then the removed instances of C<1> are
-those closest to the end of C<0>.  Note that C<remove_n> is designed to
-mirror C<insert_n> and so the identity C<c = remove_n(insert_n(c,x,n),x,n)>
-should hold for any C<Homogeneous> type, even a C<Positional> one, except
-with a C<Setty> C<c> that already has an C<x> element with a nonzero C<n>.
 
 =head2 all_unique
 
@@ -3184,6 +3129,103 @@ The virtual function C<disjoint_members> results in C<True> iff the multiset of
 members of its C<0> argument has no member values in common with the
 multiset of members of its C<1> argument; otherwise it results in C<False>.
 
+=head2 any there_exists ∃
+
+    ::MD::any::"" ::= function virtual
+        --> Boolean <-- (Homogeneous, Primed_Func_Ref);
+
+    ::MD::there_exists ::= alias of any;
+
+    ::MD::Unicode_Aliases::"∃" ::= alias of any;
+
+I<TODO.  Result is true when at least one member evaluates to true.
+This is logically equivalent to testing if a same-topic 'where' result is nonempty,
+but 'any' is instead virtual with applicable Foundation-level functions to
+aid efficiency with less-savvy optimizers that don't know to short-circuit.>
+
+=head2 none there_does_not_exist ∄
+
+    ::MD::none ::= function negates any;
+
+    ::MD::there_does_not_exist ::= alias of none;
+
+    ::MD::Unicode_Aliases::"∄" ::= alias of none;
+
+I<TODO.  Result is true when no member evaluates to true.>
+
+=head2 all for_all ∀
+
+    ::MD::all ::= function --> Boolean <-- (Homogeneous, Primed_Func_Ref)
+        : (\.0 none negated_func::(of : \.1, passing_args : \@(0)));
+
+    ::MD::for_all ::= alias of all;
+
+    ::MD::Unicode_Aliases::"∀" ::= alias of all;
+
+I<TODO.  Result is true when no member evaluates to false.>
+
+=head2 all_is_a
+
+    ::MD::all_is_a ::= function --> Boolean <-- (Homogeneous, Reference)
+        : (\.0 all (\@is_a assuming topic ^ \@(1)));
+
+I<TODO.>
+
+=head2 insert
+
+    ::MD::insert ::= function --> Homogeneous <-- (Homogeneous, Any)
+        : (insert_n::(\.0, \.1, 1));
+
+The function C<insert> results in the value of its C<0> argument's
+collection type that has all of the members of the function's C<0> argument
+plus 1 additional member that is equal to its C<1> argument; its semantics
+are identical to those of C<insert_n> where N is 1.  Other programming
+languages may name their corresponding operators I<add>; it is also common
+to use assignment syntax.
+
+=head2 insert_n
+
+    ::MD::insert_n::"" ::= function virtual
+        --> Homogeneous <-- (Homogeneous, Any, Integer_NN);
+
+The virtual function C<insert_n> results in the value of its C<0>
+argument's collection type that has all of the members of the function's
+C<0> argument plus N additional members that are each equal to its C<1>
+argument, where N is defined by its C<2> argument; however, if the result's
+type is C<Setty>, the result will have no more than 1 member equal to the
+C<1> argument (any duplicates will be silently eliminated), so the result
+may equal the C<0> argument even when the C<2> argument is nonzero.  If the
+result's type is C<Positional>, then the result starts with all of the
+members of C<0> in the same order and ends with any added instances of C<1>.
+
+=head2 remove
+
+    ::MD::remove ::= function --> Homogeneous <-- (Homogeneous, Any)
+        : (remove_n::(\.0, \.1, 1));
+
+The function C<remove> results in the value of its C<0> argument's
+collection type that has all of the members of the function's C<0> argument
+minus 1 existing member that is each equal to its C<1> argument; its
+semantics are identical to those of C<remove_n> where N is 1.  Other
+programming languages may name their corresponding operators I<delete>.
+
+=head2 remove_n
+
+    ::MD::remove_n::"" ::= function virtual
+        --> Homogeneous <-- (Homogeneous, Any, Integer_NN);
+
+The virtual function C<remove_n> results in the value of its C<0>
+argument's collection type that has all of the members of the function's
+C<0> argument minus N existing members that are each equal to its C<1>
+argument, where N is defined as the lesser of its C<2> argument and the
+count of members of C<0> equal to the C<1> argument, so the result may
+equal the C<0> argument even when the C<2> argument is nonzero.  If the
+result's type is C<Positional>, then the removed instances of C<1> are
+those closest to the end of C<0>.  Note that C<remove_n> is designed to
+mirror C<insert_n> and so the identity C<c = remove_n(insert_n(c,x,n),x,n)>
+should hold for any C<Homogeneous> type, even a C<Positional> one, except
+with a C<Setty> C<c> that already has an C<x> element with a nonzero C<n>.
+
 =head2 member_plus ⊎
 
     ::MD::member_plus::"" ::= function virtual
@@ -3328,48 +3370,6 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 any there_exists ∃
-
-    ::MD::any::"" ::= function virtual
-        --> Boolean <-- (Homogeneous, Primed_Func_Ref);
-
-    ::MD::there_exists ::= alias of any;
-
-    ::MD::Unicode_Aliases::"∃" ::= alias of any;
-
-I<TODO.  Result is true when at least one member evaluates to true.
-This is logically equivalent to testing if a same-topic 'where' result is nonempty,
-but 'any' is instead virtual with applicable Foundation-level functions to
-aid efficiency with less-savvy optimizers that don't know to short-circuit.>
-
-=head2 none there_does_not_exist ∄
-
-    ::MD::none ::= function negates any;
-
-    ::MD::there_does_not_exist ::= alias of none;
-
-    ::MD::Unicode_Aliases::"∄" ::= alias of none;
-
-I<TODO.  Result is true when no member evaluates to true.>
-
-=head2 all for_all ∀
-
-    ::MD::all ::= function --> Boolean <-- (Homogeneous, Primed_Func_Ref)
-        : (\.0 none negated_func::(of : \.1, passing_args : \@(0)));
-
-    ::MD::for_all ::= alias of all;
-
-    ::MD::Unicode_Aliases::"∀" ::= alias of all;
-
-I<TODO.  Result is true when no member evaluates to false.>
-
-=head2 all_is_a
-
-    ::MD::all_is_a ::= function --> Boolean <-- (Homogeneous, Reference)
-        : (\.0 all (\@is_a assuming topic ^ \@(1)));
-
-I<TODO.>
-
 =head2 where
 
     ::MD::where::"" ::= function virtual
@@ -3419,11 +3419,11 @@ otherwise the reduce is a serial operation, at least naively.>
     ::MD::Discrete ::= interface
         composes Homogeneous and_provides_its_default
         requires_implements {so,empty
-            ,has_n,multiplicity,insert_n,remove_n
+            ,has_n,multiplicity
             ,all_unique,unique
-            ,subset_of,same_members,overlaps_members,disjoint_members
-            ,member_plus,except,intersect,union,exclusive
-            ,nest,unnest,any,where,map,reduce,...
+            ,subset_of,same_members,overlaps_members,disjoint_members,any
+            ,insert_n,remove_n,member_plus,except,intersect,union,exclusive
+            ,nest,unnest,where,map,reduce,...
             ,to_Set,to_Bag,count,unique_count,order_using};
 
 The interface contract C<Discrete> is infinite.  A C<Discrete> value is a
@@ -3511,10 +3511,10 @@ of any type, both C<Orderable> or not.
         requires_implements {so,empty
             ,substring_of,overlaps_string,disjoint_string
             ,catenate,replicate
-            ,has_n,multiplicity,insert_n,remove_n
-            ,all_unique,unique
-            ,except,intersect,union,exclusive
-            ,nest,unnest,any,where,map,reduce,...
+            ,has_n,multiplicity
+            ,all_unique,unique,any
+            ,insert_n,remove_n,except,intersect,union,exclusive
+            ,nest,unnest,where,map,reduce,...
             ,to_Set,to_Bag,count,order_using
             ,to_Array,elem,has_index,first_possible_index,slice_n,index_succ_all_matches,...};
 
@@ -4008,6 +4008,38 @@ of members of its C<0> argument such that each member value is equal to its
 C<1> argument.  This function implements the C<Homogeneous> virtual
 function C<multiplicity> for the composing type C<Array>.
 
+=head2 all_unique (Array)
+
+    ::MD::all_unique::Array ::= function --> Boolean <-- (Array)
+        implements 2::""
+        : (topic -->^ FDN__Array_all_unique);
+
+The function C<all_unique::Array> results in C<True> iff its C<0> argument
+has no 2 members that are the same value, and C<False> otherwise.  This
+function implements the C<Homogeneous> virtual function C<all_unique> for
+the composing type C<Array>.
+
+=head2 unique (Array)
+
+    ::MD::unique::Array ::= function --> Array <-- (Array)
+        implements 2::""
+        : (topic -->^ FDN__Array_unique);
+
+The function C<unique::Array> results in the C<Array> value that has, for
+every distinct member value I<V> of the function's C<0> argument, exactly 1
+member whose value is equal to I<V>.  Each retained member is the one
+closest to the start of the argument out of those members sharing the
+retained member's value.  This function implements the C<Homogeneous>
+virtual function C<unique> for the composing type C<Array>.
+
+=head2 any (Array)
+
+    ::MD::any::Array ::= function --> Boolean <-- (Array, Primed_Func_Ref)
+        implements 2::""
+        : (topic -->^ FDN__Array_any);
+
+I<TODO.>
+
 =head2 insert_n (Array)
 
     ::MD::insert_n::Array ::= function --> Array <-- (Array, Any, Integer_NN)
@@ -4035,30 +4067,6 @@ of its C<2> argument and the count of members of C<0> equal to the C<1>
 argument.  The removed instances of C<1> are those closest to the end of
 C<0>.  This function implements the C<Homogeneous> virtual function
 C<remove_n> for the composing type C<Array>.
-
-=head2 all_unique (Array)
-
-    ::MD::all_unique::Array ::= function --> Boolean <-- (Array)
-        implements 2::""
-        : (topic -->^ FDN__Array_all_unique);
-
-The function C<all_unique::Array> results in C<True> iff its C<0> argument
-has no 2 members that are the same value, and C<False> otherwise.  This
-function implements the C<Homogeneous> virtual function C<all_unique> for
-the composing type C<Array>.
-
-=head2 unique (Array)
-
-    ::MD::unique::Array ::= function --> Array <-- (Array)
-        implements 2::""
-        : (topic -->^ FDN__Array_unique);
-
-The function C<unique::Array> results in the C<Array> value that has, for
-every distinct member value I<V> of the function's C<0> argument, exactly 1
-member whose value is equal to I<V>.  Each retained member is the one
-closest to the start of the argument out of those members sharing the
-retained member's value.  This function implements the C<Homogeneous>
-virtual function C<unique> for the composing type C<Array>.
 
 =head2 except (Array)
 
@@ -4140,14 +4148,6 @@ I<TODO.>
         implements 2::""
         requires (...)
         : (topic -->^ FDN__Array_unnest);
-
-I<TODO.>
-
-=head2 any (Array)
-
-    ::MD::any::Array ::= function --> Boolean <-- (Array, Primed_Func_Ref)
-        implements 2::""
-        : (topic -->^ FDN__Array_any);
 
 I<TODO.>
 
@@ -4375,31 +4375,6 @@ has a member equal to its C<1> argument; otherwise it results in 0.  This
 function implements the C<Homogeneous> virtual function C<multiplicity> for
 the composing type C<Set>.
 
-=head2 insert_n (Set)
-
-    ::MD::insert_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
-        implements 2::""
-        : (\.0 has \.1 or \.2 = 0 ?? \.0
-            !! \Set wrap insert_n::(\.0->unwrap, \.1, 1));
-
-The function C<insert_n::Set> results in the C<Set> value that has all of
-the members of the function's C<0> argument; but, if the C<2> argument is
-nonzero then the result has a member equal to the C<1> argument, whether or
-not C<0> had it.  This function implements the C<Homogeneous> virtual
-function C<insert_n> for the composing type C<Set>.
-
-=head2 remove_n (Set)
-
-    ::MD::remove_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
-        implements 2::""
-        : (\Set wrap remove_n::(\.0->unwrap, \.1, \.2));
-
-The function C<remove_n::Set> results in the C<Set> value that has all of
-the members of the function's C<0> argument; but, if the C<2> argument is
-nonzero and C<0> had a member equal to the C<1> argument, the result lacks
-that member.  This function implements the C<Homogeneous> virtual function
-C<remove_n> for the composing type C<Set>.
-
 =head2 all_unique (Set)
 
     ::MD::all_unique::Set ::= function --> Boolean <-- (Set)
@@ -4472,6 +4447,39 @@ set of members of its C<0> argument has no member values in common
 with the set of members of its C<1> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<disjoint_members> for the composing type C<Set>.
+
+=head2 any (Set)
+
+    ::MD::any::Set ::= function --> Boolean <-- (Set, Primed_Func_Ref)
+        implements 2::""
+        : (\.0->unwrap any \.1);
+
+I<TODO.>
+
+=head2 insert_n (Set)
+
+    ::MD::insert_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
+        implements 2::""
+        : (\.0 has \.1 or \.2 = 0 ?? \.0
+            !! \Set wrap insert_n::(\.0->unwrap, \.1, 1));
+
+The function C<insert_n::Set> results in the C<Set> value that has all of
+the members of the function's C<0> argument; but, if the C<2> argument is
+nonzero then the result has a member equal to the C<1> argument, whether or
+not C<0> had it.  This function implements the C<Homogeneous> virtual
+function C<insert_n> for the composing type C<Set>.
+
+=head2 remove_n (Set)
+
+    ::MD::remove_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
+        implements 2::""
+        : (\Set wrap remove_n::(\.0->unwrap, \.1, \.2));
+
+The function C<remove_n::Set> results in the C<Set> value that has all of
+the members of the function's C<0> argument; but, if the C<2> argument is
+nonzero and C<0> had a member equal to the C<1> argument, the result lacks
+that member.  This function implements the C<Homogeneous> virtual function
+C<remove_n> for the composing type C<Set>.
 
 =head2 member_plus (Set)
 
@@ -4553,14 +4561,6 @@ I<TODO.>
         implements 2::""
         requires (...)
         : (\Set wrap (\.0->unwrap->unnest));
-
-I<TODO.>
-
-=head2 any (Set)
-
-    ::MD::any::Set ::= function --> Boolean <-- (Set, Primed_Func_Ref)
-        implements 2::""
-        : (\.0->unwrap any \.1);
 
 I<TODO.>
 
@@ -4712,31 +4712,6 @@ of members of its C<0> argument such that each member value is equal to its
 C<1> argument.  This function implements the C<Homogeneous> virtual
 function C<multiplicity> for the composing type C<Bag>.
 
-=head2 insert_n (Bag)
-
-    ::MD::insert_n::Bag ::= function --> Bag <-- (Bag, Any, Integer_NN)
-        implements 2::""
-        : (topic -->^ FDN__Bag_insert_n);
-
-The function C<insert_n::Bag> results in the C<Bag> value that has all of
-the members of the function's C<0> argument plus N additional members that
-are each equal to its C<1> argument, where N is defined by its C<2>
-argument.  This function implements the C<Homogeneous> virtual function
-C<insert_n> for the composing type C<Bag>.
-
-=head2 remove_n (Bag)
-
-    ::MD::remove_n::Bag ::= function --> Bag <-- (Bag, Any, Integer_NN)
-        implements 2::""
-        : (topic -->^ FDN__Bag_remove_n);
-
-The function C<remove_n::Bag> results in the C<Bag> value that has all of
-the members of the function's C<0> argument minus N existing members that
-are each equal to its C<1> argument, where N is defined as the lesser of
-its C<2> argument and the count of members of C<0> equal to the C<1>
-argument.  This function implements the C<Homogeneous> virtual function
-C<remove_n> for the composing type C<Bag>.
-
 =head2 all_unique (Bag)
 
     ::MD::all_unique::Bag ::= function --> Boolean <-- (Bag)
@@ -4811,6 +4786,39 @@ multiset of members of its C<0> argument has no member values in common
 with the multiset of members of its C<1> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<disjoint_members> for the composing type C<Bag>.
+
+=head2 any (Bag)
+
+    ::MD::any::Bag ::= function --> Boolean <-- (Bag, Primed_Func_Ref)
+        implements 2::""
+        : (topic -->^ FDN__Bag_any);
+
+I<TODO.>
+
+=head2 insert_n (Bag)
+
+    ::MD::insert_n::Bag ::= function --> Bag <-- (Bag, Any, Integer_NN)
+        implements 2::""
+        : (topic -->^ FDN__Bag_insert_n);
+
+The function C<insert_n::Bag> results in the C<Bag> value that has all of
+the members of the function's C<0> argument plus N additional members that
+are each equal to its C<1> argument, where N is defined by its C<2>
+argument.  This function implements the C<Homogeneous> virtual function
+C<insert_n> for the composing type C<Bag>.
+
+=head2 remove_n (Bag)
+
+    ::MD::remove_n::Bag ::= function --> Bag <-- (Bag, Any, Integer_NN)
+        implements 2::""
+        : (topic -->^ FDN__Bag_remove_n);
+
+The function C<remove_n::Bag> results in the C<Bag> value that has all of
+the members of the function's C<0> argument minus N existing members that
+are each equal to its C<1> argument, where N is defined as the lesser of
+its C<2> argument and the count of members of C<0> equal to the C<1>
+argument.  This function implements the C<Homogeneous> virtual function
+C<remove_n> for the composing type C<Bag>.
 
 =head2 member_plus (Bag)
 
@@ -4893,14 +4901,6 @@ I<TODO.>
         implements 2::""
         requires (...)
         : (topic -->^ FDN__Bag_unnest);
-
-I<TODO.>
-
-=head2 any (Bag)
-
-    ::MD::any::Bag ::= function --> Boolean <-- (Bag, Primed_Func_Ref)
-        implements 2::""
-        : (topic -->^ FDN__Bag_any);
 
 I<TODO.>
 
