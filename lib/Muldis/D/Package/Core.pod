@@ -568,8 +568,9 @@ value as a C<Boolean> must be made explicit.
 C<Boolable> is composed, directly or indirectly, by: C<Boolean>,
 C<Numerical>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>,
 C<Emptyable>, C<Stringy>, C<Bits>, C<Blob>, C<Textual>, C<Text>,
-C<Homogeneous>, C<Discrete>, C<Positional>, C<Array>, C<String>,
-C<Set>, C<Bag>, C<Relational>, C<Relation>, C<Tuple_Bag>, C<Interval>.
+C<Homogeneous>, C<Unionable>, C<Discrete>, C<Positional>, C<Array>,
+C<String>, C<Set>, C<Bag>, C<Relational>, C<Relation>, C<Tuple_Bag>,
+C<Interval>.
 
 While conceivably C<Boolable> could also be composed by C<Attributive>, and
 hence C<Tuple>, it isn't because that would set up a semantic conflict for
@@ -1981,9 +1982,17 @@ for the value with no members of the same type as a given aggregate value.
 The default value of C<Emptyable> is the C<Bits> value with zero members.
 
 C<Emptyable> is composed, directly or indirectly, by: C<Stringy>, C<Bits>,
-C<Blob>, C<Textual>, C<Text>, C<Homogeneous>, C<Discrete>, C<Positional>,
-C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>, C<Relation>,
-C<Tuple_Bag>, C<Interval>.
+C<Blob>, C<Textual>, C<Text>, C<Homogeneous>, C<Unionable>, C<Discrete>,
+C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>,
+C<Relation>, C<Tuple_Bag>, C<Interval>.
+
+=head2 Excuse::No_Empty_Value
+
+    ::MD::Excuse::No_Empty_Value ::= constant (\@0) composes Excuse;
+
+The constant C<Excuse::No_Empty_Value> represents the I<undefined> result
+of attempting to request the value with zero members of some collection
+type that doesn't have a value with zero members.
 
 =head2 so (Emptyable) has_any_members
 
@@ -2008,7 +2017,8 @@ has no members, and in C<False> iff it has any members.
 
 =head2 empty ∅
 
-    ::MD::empty::"" ::= function virtual --> Emptyable <-- (Emptyable);
+    ::MD::empty::"" ::= function virtual
+        --> {Emptyable, Excuse::No_Empty_Value} <-- (Emptyable);
 
     ::MD::Unicode_Aliases::"∅" ::= alias of empty;
 
@@ -2852,9 +2862,8 @@ I<TODO.>
         requires_implements {so,empty
             ,has_n,multiplicity
             ,all_unique,unique
-            ,subset_of,same_members,overlaps_members,disjoint_members,any
-            ,insert_n,remove_n,member_plus,except,intersect,union,exclusive
-            ,nest,unnest,where,map,reduce,...};
+            ,subset_of,same_members,overlaps_members,disjoint_members
+            ,any};
 
 The interface contract C<Homogeneous> is infinite.  A C<Homogeneous> value
 is a I<collective> value such that every one of its component I<members> is
@@ -2867,6 +2876,10 @@ thing may choose to compose C<Homogeneous> because it makes sense to
 provide its operators.  The default value of C<Homogeneous> is the C<Array>
 value with zero members, C<[]>.
 
+If a C<Homogeneous> value is also C<Unionable>, then another value of its
+collection type can be derived by either inserting new members whose values
+are distinct from those already in the collection or by removing arbitrary
+members from the collection; otherwise, that may not be possible.
 If a C<Homogeneous> value is also C<Discrete>, all of its members can be
 enumerated as individuals and counted; otherwise, that may not be possible.
 If a C<Homogeneous> value is also C<Positional>, all of its members are
@@ -2876,8 +2889,8 @@ that order; otherwise, that may not be possible.  If a C<Homogeneous> value
 is also C<Setty>, all of its members are guaranteed to be distinct values;
 otherwise, duplication of values may occur amongst members.
 
-C<Homogeneous> is composed, directly or indirectly, by: C<Discrete>,
-C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>,
+C<Homogeneous> is composed, directly or indirectly, by: C<Unionable>,
+C<Discrete>, C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>,
 C<Relational>, C<Relation>, C<Tuple_Bag>, C<Interval>.
 
 I<TODO.  Note that for all the regular function-taking member-wise
@@ -3171,9 +3184,37 @@ I<TODO.  Result is true when no member evaluates to false.>
 
 I<TODO.>
 
+=head1 UNIONABLE DATA TYPES
+
+=head2 Unionable
+
+    ::MD::Unionable ::= interface
+        composes Homogeneous
+        requires_implements {so,empty
+            ,has_n,multiplicity
+            ,all_unique,unique
+            ,subset_of,same_members,overlaps_members,disjoint_members
+            ,any
+            ,insert_n,remove_n
+            ,member_plus,except,intersect,union,exclusive
+            ,nest,unnest,where,map,reduce,...};
+
+The interface contract C<Unionable> is infinite.  A C<Unionable> value is a
+C<Homogeneous> value such that another value of its collection type can be
+derived by either inserting new members whose values are distinct from
+those already in the collection or by removing arbitrary members from the
+collection.  The default value of C<Unionable> is the C<Array> value with
+zero members, C<[]>.
+
+C<Unionable> is composed, directly or indirectly, by: C<Discrete>,
+C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>,
+C<Relation>, C<Tuple_Bag>, I<TODO>.  A key type
+that composes C<Homogeneous> but not C<Unionable> is C<Interval>; use
+C<Interval_Set> instead for its C<Unionable> closest analogy.
+
 =head2 insert
 
-    ::MD::insert ::= function --> Homogeneous <-- (Homogeneous, Any)
+    ::MD::insert ::= function --> Unionable <-- (Unionable, Any)
         : (insert_n::(\.0, \.1, 1));
 
 The function C<insert> results in the value of its C<0> argument's
@@ -3186,7 +3227,7 @@ to use assignment syntax.
 =head2 insert_n
 
     ::MD::insert_n::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Any, Integer_NN);
+        --> Unionable <-- (Unionable, Any, Integer_NN);
 
 The virtual function C<insert_n> results in the value of its C<0>
 argument's collection type that has all of the members of the function's
@@ -3200,7 +3241,7 @@ members of C<0> in the same order and ends with any added instances of C<1>.
 
 =head2 remove
 
-    ::MD::remove ::= function --> Homogeneous <-- (Homogeneous, Any)
+    ::MD::remove ::= function --> Unionable <-- (Unionable, Any)
         : (remove_n::(\.0, \.1, 1));
 
 The function C<remove> results in the value of its C<0> argument's
@@ -3212,7 +3253,7 @@ programming languages may name their corresponding operators I<delete>.
 =head2 remove_n
 
     ::MD::remove_n::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Any, Integer_NN);
+        --> Unionable <-- (Unionable, Any, Integer_NN);
 
 The virtual function C<remove_n> results in the value of its C<0>
 argument's collection type that has all of the members of the function's
@@ -3223,13 +3264,13 @@ equal the C<0> argument even when the C<2> argument is nonzero.  If the
 result's type is C<Positional>, then the removed instances of C<1> are
 those closest to the end of C<0>.  Note that C<remove_n> is designed to
 mirror C<insert_n> and so the identity C<c = remove_n(insert_n(c,x,n),x,n)>
-should hold for any C<Homogeneous> type, even a C<Positional> one, except
+should hold for any C<Unionable> type, even a C<Positional> one, except
 with a C<Setty> C<c> that already has an C<x> element with a nonzero C<n>.
 
 =head2 member_plus ⊎
 
     ::MD::member_plus::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Homogeneous)
+        --> Unionable <-- (Unionable, Unionable)
         is associative;
 
     ::MD::Unicode_Aliases::"⊎" ::= alias of member_plus;
@@ -3254,7 +3295,7 @@ operators I<union all> or I<+>.
 =head2 except ∖
 
     ::MD::except::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Homogeneous);
+        --> Unionable <-- (Unionable, Unionable);
 
     ::MD::Unicode_Aliases::"∖" ::= alias of except;
 
@@ -3270,7 +3311,7 @@ zero when it would otherwise be negative.  If the result's type is
 C<Positional>, then the removed instances of any distinct member value are
 those closest to the end of C<0>.  Note that C<except> is designed to
 mirror C<member_plus> and so the identity C<x = except(member_plus(x,y),y)>
-should hold for any C<Homogeneous> type, even a C<Positional> one, except
+should hold for any C<Unionable> type, even a C<Positional> one, except
 with C<Setty> C<x> and C<y> that have any members that are the same value.
 Other programming languages may name their corresponding operators I<minus>
 or I<-> or I<difference> or I<\\> or I<complement> or I<setdiff> or I<diff>
@@ -3279,7 +3320,7 @@ or I<--> etc or I<subtract>.
 =head2 intersect ∩
 
     ::MD::intersect::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Homogeneous)
+        --> Unionable <-- (Unionable, Unionable)
         is {associative,idempotent};
 
     ::MD::Unicode_Aliases::"∩" ::= alias of intersect;
@@ -3301,7 +3342,7 @@ corresponding operators I<&> or I<*>.
 =head2 union ∪
 
     ::MD::union::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Homogeneous)
+        --> Unionable <-- (Unionable, Unionable)
         is idempotent;
 
     ::MD::Unicode_Aliases::"∪" ::= alias of union;
@@ -3318,7 +3359,7 @@ members of C<1>, the members from both in the same order as in their
 respective arguments; the removed (due to matching) instances of any
 distinct member value are those closest to the end of C<1>.  Note that the
 identity C<union(x,y) = member_plus(x,except(y,x))> should hold for any
-C<Homogeneous> type, even a C<Positional> one.  This operation has an
+C<Unionable> type, even a C<Positional> one.  This operation has an
 identity value of a collection with zero members.  For non-ordered types,
 this operation is also associative and commutative.  Other programming
 languages may name their corresponding operators I<|> or I<+>.
@@ -3326,7 +3367,7 @@ languages may name their corresponding operators I<|> or I<+>.
 =head2 exclusive symm_diff ∆
 
     ::MD::exclusive::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Homogeneous);
+        --> Unionable <-- (Unionable, Unionable);
 
     ::MD::symm_diff ::= alias of exclusive;
 
@@ -3346,7 +3387,7 @@ same order as in their respective arguments; the removed (due to matching)
 instances of any distinct member value are those closest to the end of C<0>
 or C<1> respectively.  Note that the identity C<exclusive(x,y) =
 member_plus(except(x,y),except(y,x)) = except(union(x,y),intersect(x,y))>
-should hold for any C<Homogeneous> type, even a C<Positional> one.  This
+should hold for any C<Unionable> type, even a C<Positional> one.  This
 operation has an identity value of a collection with zero members.  For
 non-ordered types, this operation is also associative and commutative.
 Other programming languages may name their corresponding operators
@@ -3354,7 +3395,7 @@ I<symmdiff> or I<^> or I<%>.
 
 =head2 nest group
 
-    ::MD::nest::"" ::= function virtual --> Homogeneous <-- (Homogeneous)
+    ::MD::nest::"" ::= function virtual --> Unionable <-- (Unionable)
         requires (...);
 
     ::MD::group ::= alias of nest;
@@ -3363,7 +3404,7 @@ I<TODO.>
 
 =head2 unnest ungroup
 
-    ::MD::unnest::"" ::= function virtual --> Homogeneous <-- (Homogeneous)
+    ::MD::unnest::"" ::= function virtual --> Unionable <-- (Unionable)
         requires (...);
 
     ::MD::ungroup ::= alias of unnest;
@@ -3373,7 +3414,7 @@ I<TODO.>
 =head2 where
 
     ::MD::where::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Primed_Func_Ref);
+        --> Unionable <-- (Unionable, Primed_Func_Ref);
 
 I<TODO.  The primed-func-ref is expected to be a Capsule with 2 asset attrs
 named 'func' and 'args', which are a Reference and a Tuple respectively.
@@ -3391,14 +3432,14 @@ I<TODO.>
 =head2 map
 
     ::MD::map::"" ::= function virtual
-        --> Homogeneous <-- (Homogeneous, Primed_Func_Ref);
+        --> Unionable <-- (Unionable, Primed_Func_Ref);
 
 I<TODO.  The primed-func-ref is as per that of 'where'.>
 
 =head2 reduce
 
     ::MD::reduce::"" ::= function virtual
-        --> Any <-- (Homogeneous, Primed_Func_Ref);
+        --> Any <-- (Unionable, Primed_Func_Ref);
 
 I<TODO.  The primed-func-ref is expected to be a Capsule with 2 asset attrs
 named 'func' and 'args', which are a Reference and a Tuple respectively.
@@ -3417,17 +3458,19 @@ otherwise the reduce is a serial operation, at least naively.>
 =head2 Discrete
 
     ::MD::Discrete ::= interface
-        composes Homogeneous and_provides_its_default
+        composes Unionable and_provides_its_default
         requires_implements {so,empty
             ,has_n,multiplicity
             ,all_unique,unique
-            ,subset_of,same_members,overlaps_members,disjoint_members,any
-            ,insert_n,remove_n,member_plus,except,intersect,union,exclusive
+            ,subset_of,same_members,overlaps_members,disjoint_members
+            ,any
+            ,insert_n,remove_n
+            ,member_plus,except,intersect,union,exclusive
             ,nest,unnest,where,map,reduce,...
             ,to_Set,to_Bag,count,unique_count,order_using};
 
 The interface contract C<Discrete> is infinite.  A C<Discrete> value is a
-C<Homogeneous> value such that all of its members can be enumerated as
+C<Unionable> value such that all of its members can be enumerated as
 individuals and counted.  The default value of C<Discrete> is the C<Array>
 value with zero members, C<[]>.
 
@@ -3512,8 +3555,10 @@ of any type, both C<Orderable> or not.
             ,substring_of,overlaps_string,disjoint_string
             ,catenate,replicate
             ,has_n,multiplicity
-            ,all_unique,unique,any
-            ,insert_n,remove_n,except,intersect,union,exclusive
+            ,all_unique,unique
+            ,any
+            ,insert_n,remove_n
+            ,except,intersect,union,exclusive
             ,nest,unnest,where,map,reduce,...
             ,to_Set,to_Bag,count,order_using
             ,to_Array,elem,has_index,first_possible_index,slice_n,index_succ_all_matches,...};
@@ -3648,7 +3693,7 @@ C<disjoint_members> for the composing type C<Positional>.
 The function C<member_plus::Positional> results in the I<multiset sum> of
 its 2 arguments C<0> and C<1>; it behaves identically to C<catenate> aka
 C<~> when given the same arguments.  This function implements the
-C<Homogeneous> virtual function C<member_plus> aka C<⊎> for the composing
+C<Unionable> virtual function C<member_plus> aka C<⊎> for the composing
 type C<Positional>.
 
 =head2 unique_count (Positional)
@@ -4051,7 +4096,7 @@ of the members of the function's C<0> argument plus N additional members
 that are each equal to its C<1> argument, where N is defined by its C<2>
 argument.  The result starts with all of the members of C<0> in the same
 order and ends with any added instances of C<1>.  This function implements
-the C<Homogeneous> virtual function C<insert_n> for the composing type
+the C<Unionable> virtual function C<insert_n> for the composing type
 C<Array>.
 
 =head2 remove_n (Array)
@@ -4065,7 +4110,7 @@ of the members of the function's C<0> argument minus N existing members
 that are each equal to its C<1> argument, where N is defined as the lesser
 of its C<2> argument and the count of members of C<0> equal to the C<1>
 argument.  The removed instances of C<1> are those closest to the end of
-C<0>.  This function implements the C<Homogeneous> virtual function
+C<0>.  This function implements the C<Unionable> virtual function
 C<remove_n> for the composing type C<Array>.
 
 =head2 except (Array)
@@ -4079,7 +4124,7 @@ its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
 the C<Array> value that has all of the members of the function's C<0>
 argument minus all of the matching members of its C<1> argument.  The
 removed instances of any distinct member value are those closest to the end
-of C<0>.  This function implements the C<Homogeneous> virtual function
+of C<0>.  This function implements the C<Unionable> virtual function
 C<except> aka C<∖> for the composing type C<Array>.
 
 =head2 intersect (Array)
@@ -4095,7 +4140,7 @@ all of the members of the function's C<0> argument that match their own
 members of its C<1> argument.  The removed instances of any distinct member
 value are those closest to the end of C<0>.  This operation conceptually
 has an identity value of a collection with an infinite number of members.
-This function implements the C<Homogeneous> virtual function C<intersect>
+This function implements the C<Unionable> virtual function C<intersect>
 aka C<∩> for the composing type C<Array>.
 
 =head2 union (Array)
@@ -4112,7 +4157,7 @@ members of its C<1> argument.  The result starts with all of the members of
 C<0> and ends with the nonmatching members of C<1>, the members from both
 in the same order as in their respective arguments; the removed (due to
 matching) instances of any distinct member value are those closest to the
-end of C<1>.  This function implements the C<Homogeneous> virtual function
+end of C<1>.  This function implements the C<Unionable> virtual function
 C<union> aka C<∪> for the composing type C<Array>.
 
 =head2 exclusive (Array)
@@ -4130,7 +4175,7 @@ The result starts with the nonmatching members of C<0> and ends with the
 nonmatching members of C<1>, the members from both in the same order as in
 their respective arguments; the removed (due to matching) instances of any
 distinct member value are those closest to the end of C<0> or C<1>
-respectively.  This function implements the C<Homogeneous> virtual function
+respectively.  This function implements the C<Unionable> virtual function
 C<exclusive> aka C<symm_diff> aka C<∆> for the composing type C<Array>.
 
 =head2 nest (Array)
@@ -4466,7 +4511,7 @@ I<TODO.>
 The function C<insert_n::Set> results in the C<Set> value that has all of
 the members of the function's C<0> argument; but, if the C<2> argument is
 nonzero then the result has a member equal to the C<1> argument, whether or
-not C<0> had it.  This function implements the C<Homogeneous> virtual
+not C<0> had it.  This function implements the C<Unionable> virtual
 function C<insert_n> for the composing type C<Set>.
 
 =head2 remove_n (Set)
@@ -4478,7 +4523,7 @@ function C<insert_n> for the composing type C<Set>.
 The function C<remove_n::Set> results in the C<Set> value that has all of
 the members of the function's C<0> argument; but, if the C<2> argument is
 nonzero and C<0> had a member equal to the C<1> argument, the result lacks
-that member.  This function implements the C<Homogeneous> virtual function
+that member.  This function implements the C<Unionable> virtual function
 C<remove_n> for the composing type C<Set>.
 
 =head2 member_plus (Set)
@@ -4490,7 +4535,7 @@ C<remove_n> for the composing type C<Set>.
 
 The function C<member_plus::Set> results in the I<set union> of its 2
 arguments C<0> and C<1>; it behaves identically to C<union> aka C<∪> when
-given the same arguments.  This function implements the C<Homogeneous>
+given the same arguments.  This function implements the C<Unionable>
 virtual function C<member_plus> aka C<⊎> for the composing type C<Set>.
 
 =head2 except (Set)
@@ -4503,7 +4548,7 @@ The function C<except::Set> results in the I<set difference> between
 its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
 the C<Set> value that has all of the members of the function's C<0>
 argument minus all of the matching members of its C<1> argument.  This
-function implements the C<Homogeneous> virtual function C<except> aka C<∖>
+function implements the C<Unionable> virtual function C<except> aka C<∖>
 for the composing type C<Set>.
 
 =head2 intersect (Set)
@@ -4516,7 +4561,7 @@ for the composing type C<Set>.
 The function C<intersect::Set> results in the I<set intersection> of
 its 2 arguments C<0> and C<1>.  The result is the C<Set> value that has all
 of the members of the function's C<0> argument that match their own members
-of its C<1> argument.  This function implements the C<Homogeneous> virtual
+of its C<1> argument.  This function implements the C<Unionable> virtual
 function C<intersect> aka C<∩> for the composing type C<Set>.
 
 =head2 union (Set)
@@ -4529,7 +4574,7 @@ function C<intersect> aka C<∩> for the composing type C<Set>.
 The function C<union::Set> results in the I<set union> of its 2
 arguments C<0> and C<1>.  The result is the C<Set> value that has all of
 the members of the function's C<0> argument plus all of the nonmatching
-members of its C<1> argument.  This function implements the C<Homogeneous>
+members of its C<1> argument.  This function implements the C<Unionable>
 virtual function C<union> aka C<∪> for the composing type C<Set>.
 
 =head2 exclusive (Set)
@@ -4543,7 +4588,7 @@ The function C<exclusive::Set> results in the I<set symmetric
 difference> of its 2 arguments C<0> and C<1>.  The result is the C<Set>
 value that has all of the members of each of the function's C<0> and C<1>
 arguments that do not have matching members of their counterpart argument.
-This function implements the C<Homogeneous> virtual function C<exclusive>
+This function implements the C<Unionable> virtual function C<exclusive>
 aka C<symm_diff> aka C<∆> for the composing type C<Set>.
 
 =head2 nest (Set)
@@ -4804,7 +4849,7 @@ I<TODO.>
 The function C<insert_n::Bag> results in the C<Bag> value that has all of
 the members of the function's C<0> argument plus N additional members that
 are each equal to its C<1> argument, where N is defined by its C<2>
-argument.  This function implements the C<Homogeneous> virtual function
+argument.  This function implements the C<Unionable> virtual function
 C<insert_n> for the composing type C<Bag>.
 
 =head2 remove_n (Bag)
@@ -4817,7 +4862,7 @@ The function C<remove_n::Bag> results in the C<Bag> value that has all of
 the members of the function's C<0> argument minus N existing members that
 are each equal to its C<1> argument, where N is defined as the lesser of
 its C<2> argument and the count of members of C<0> equal to the C<1>
-argument.  This function implements the C<Homogeneous> virtual function
+argument.  This function implements the C<Unionable> virtual function
 C<remove_n> for the composing type C<Bag>.
 
 =head2 member_plus (Bag)
@@ -4830,7 +4875,7 @@ C<remove_n> for the composing type C<Bag>.
 The function C<member_plus::Bag> results in the I<multiset sum> of its 2
 arguments C<0> and C<1>.  The result is the C<Bag> value that has all of
 the members of the function's C<0> argument plus all of the members of its
-C<1> argument.  This function implements the C<Homogeneous> virtual
+C<1> argument.  This function implements the C<Unionable> virtual
 function C<member_plus> aka C<⊎> for the composing type C<Bag>.
 
 =head2 except (Bag)
@@ -4843,7 +4888,7 @@ The function C<except::Bag> results in the I<multiset difference> between
 its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
 the C<Bag> value that has all of the members of the function's C<0>
 argument minus all of the matching members of its C<1> argument.  This
-function implements the C<Homogeneous> virtual function C<except> aka C<∖>
+function implements the C<Unionable> virtual function C<except> aka C<∖>
 for the composing type C<Bag>.
 
 =head2 intersect (Bag)
@@ -4856,7 +4901,7 @@ for the composing type C<Bag>.
 The function C<intersect::Bag> results in the I<multiset intersection> of
 its 2 arguments C<0> and C<1>.  The result is the C<Bag> value that has all
 of the members of the function's C<0> argument that match their own members
-of its C<1> argument.  This function implements the C<Homogeneous> virtual
+of its C<1> argument.  This function implements the C<Unionable> virtual
 function C<intersect> aka C<∩> for the composing type C<Bag>.
 
 =head2 union (Bag)
@@ -4869,7 +4914,7 @@ function C<intersect> aka C<∩> for the composing type C<Bag>.
 The function C<union::Bag> results in the I<multiset union> of its 2
 arguments C<0> and C<1>.  The result is the C<Bag> value that has all of
 the members of the function's C<0> argument plus all of the nonmatching
-members of its C<1> argument.  This function implements the C<Homogeneous>
+members of its C<1> argument.  This function implements the C<Unionable>
 virtual function C<union> aka C<∪> for the composing type C<Bag>.
 
 =head2 exclusive (Bag)
@@ -4883,7 +4928,7 @@ The function C<exclusive::Bag> results in the I<multiset symmetric
 difference> of its 2 arguments C<0> and C<1>.  The result is the C<Bag>
 value that has all of the members of each of the function's C<0> and C<1>
 arguments that do not have matching members of their counterpart argument.
-This function implements the C<Homogeneous> virtual function C<exclusive>
+This function implements the C<Unionable> virtual function C<exclusive>
 aka C<symm_diff> aka C<∆> for the composing type C<Bag>.
 
 =head2 nest (Bag)
@@ -5284,7 +5329,7 @@ I<TODO.>
 =head2 Relational
 
     ::MD::Relational ::= interface
-        composes {Homogeneous, Attributive}
+        composes {Unionable, Attributive}
         requires_implements {...};
 
 I<TODO.>
