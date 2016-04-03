@@ -2859,6 +2859,7 @@ I<TODO.>
     ::MD::Homogeneous ::= interface
         composes Emptyable
         requires_implements {so,empty
+            ,singular,only_member
             ,has_n,multiplicity
             ,all_unique,unique
             ,subset_of,same_members,overlaps_members,disjoint_members
@@ -2910,6 +2911,29 @@ For that matter, the likes of {reduce} should probably be treated the same
 way; see also the 'repeater' function trait that helps optimize it.
 Surely, any time when one may think these operations need to know the
 baggy count or positional index, its for a problem best solved differently.>
+
+=head2 singular
+
+    ::MD::singular::"" ::= function virtual --> Boolean <-- (Homogeneous);
+
+The virtual function C<singular> results in C<True> iff its C<0> argument
+has exactly 1 distinct member value, and C<False> otherwise.
+
+=head2 only_member
+
+    ::MD::only_member::"" ::= function virtual --> Any <-- (Homogeneous)
+        requires (topic --> \@singular);
+
+The virtual function C<only_member> results in its C<0> argument's only
+distinct member value.  This function will fail if the argument doesn't
+have exactly 1 distinct member value.  The general deterministic way to
+select a single possibly-unknown member of a C<Homogeneous> value is to
+first derive from the latter another C<Homogeneous> value with exactly 1
+distinct member (using means such as filtering or mapping or reducing) and
+then use this function on the derived one.  For types such as C<Set> or
+C<Bag> one can't select a member using an index, say, like with an
+C<Array>, and a general solution provided by other programming languages
+for simply picking I<a> member would give an effectively random one.
 
 =head2 in ∈
 
@@ -3190,6 +3214,7 @@ I<TODO.>
     ::MD::Unionable ::= interface
         composes Homogeneous
         requires_implements {so,empty
+            ,singular,only_member
             ,has_n,multiplicity
             ,all_unique,unique
             ,subset_of,same_members,overlaps_members,disjoint_members
@@ -3459,6 +3484,7 @@ otherwise the reduce is a serial operation, at least naively.>
     ::MD::Discrete ::= interface
         composes Unionable and_provides_its_default
         requires_implements {so,empty
+            ,singular,only_member
             ,has_n,multiplicity
             ,all_unique,unique
             ,subset_of,same_members,overlaps_members,disjoint_members
@@ -3621,6 +3647,30 @@ assuming incorrectly that I<V> already has a member whose index is I<I>.
 The function C<in_order::Positional> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Positional>.  This function
 will succeed iff C<in_order> is also defined for the types of the members.
+
+=head2 singular (Positional)
+
+    ::MD::singular::Positional ::= function --> Boolean <-- (Positional)
+        implements 2::""
+        : ((\.0->unique_count) = 1);
+
+The function C<singular::Positional> results in C<True> iff its C<0>
+argument has exactly 1 distinct member value, and C<False> otherwise.  This
+function implements the C<Homogeneous> virtual function C<singular> for the
+composing type C<Positional>.
+
+=head2 only_member (Positional)
+
+    ::MD::only_member::Positional ::= function --> Any <-- (Positional)
+        implements 2::""
+        requires (topic --> \@singular)
+        : (topic --> \@first);
+
+The function C<only_member::Positional> results in its C<0> argument's only
+distinct member value.  This function will fail if the argument doesn't
+have exactly 1 distinct member value.  This function implements the
+C<Homogeneous> virtual function C<only_member> for the composing type
+C<Positional>.
 
 =head2 subset_of (Positional)
 
@@ -4396,6 +4446,29 @@ The function C<empty::Set> results in the only zero-member C<Set>
 value.  This function implements the C<Emptyable> virtual function C<empty>
 aka C<∅> for the composing type C<Set>.
 
+=head2 singular (Set)
+
+    ::MD::singular::Set ::= function --> Boolean <-- (Set)
+        implements 2::""
+        : (\.0->unwrap->singular);
+
+The function C<singular::Set> results in C<True> iff its C<0> argument has
+exactly 1 member value, and C<False> otherwise.  This function implements
+the C<Homogeneous> virtual function C<singular> for the composing type
+C<Set>.
+
+=head2 only_member (Set)
+
+    ::MD::only_member::Set ::= function --> Any <-- (Set)
+        implements 2::""
+        requires (topic --> \@singular)
+        : (\.0->unwrap->only_member);
+
+The function C<only_member::Set> results in its C<0> argument's only member
+value.  This function will fail if the argument doesn't have exactly 1
+member value.  This function implements the C<Homogeneous> virtual function
+C<only_member> for the composing type C<Set>.
+
 =head2 has_n (Set)
 
     ::MD::has_n::Set ::= function --> Boolean <-- (Set, Any, Integer_NN)
@@ -4732,6 +4805,30 @@ composing type C<Bag>.
 The function C<empty::Bag> results in the only zero-member C<Bag>
 value.  This function implements the C<Emptyable> virtual function C<empty>
 aka C<∅> for the composing type C<Bag>.
+
+=head2 singular (Bag)
+
+    ::MD::singular::Bag ::= function --> Boolean <-- (Bag)
+        implements 2::""
+        : (topic -->^ FDN__Bag_singular);
+
+The function C<singular::Bag> results in C<True> iff its C<0> argument has
+exactly 1 distinct member value, and C<False> otherwise.  This function
+implements the C<Homogeneous> virtual function C<singular> for the
+composing type C<Bag>.
+
+=head2 only_member (Bag)
+
+    ::MD::only_member::Bag ::= function --> Any <-- (Bag)
+        implements 2::""
+        requires (topic --> \@singular)
+        : (topic -->^ FDN__Bag_only_member);
+
+The function C<only_member::Bag> results in its C<0> argument's only
+distinct member value.  This function will fail if the argument doesn't
+have exactly 1 distinct member value.  This function implements the
+C<Homogeneous> virtual function C<only_member> for the composing type
+C<Bag>.
 
 =head2 has_n (Bag)
 
