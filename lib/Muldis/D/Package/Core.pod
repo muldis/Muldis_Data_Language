@@ -2831,8 +2831,7 @@ Does not have anything to say related to either enumerating elements or
 to slicing a subset elements into a new collection.
 Accessible just provides certain convenient shared names for operators that
 otherwise have distinct names on the composing types.
-Composed by: Positional (Array, String,...), Tuple, Dictionary, etc.
-(Conceptually also composed by Capsule, but isn't to avoid conflicts.)>
+Composed by: Positional (Array, String,...), Structural (Tuple), Dictionary, etc.>
 
 =head2 .
 
@@ -3550,7 +3549,7 @@ of any type, both C<Orderable> or not.
 =head2 Positional
 
     ::MD::Positional ::= interface
-        composes {Stringy, Accessible, Discrete and_provides_its_default}
+        composes {Stringy, Discrete and_provides_its_default, Accessible}
         requires_implements {so,empty
             ,substring_of,overlaps_string,disjoint_string
             ,catenate,replicate
@@ -5156,14 +5155,57 @@ I<TODO.>
 
 I<TODO.>
 
+=head1 STRUCTURAL DATA TYPES
+
+=head2 Structural
+
+    ::MD::Structural ::= interface
+        composes {Attributive and_provides_its_default,
+            Accessible and_provides_its_default}
+        requires_implements {...,attr,has_attr_name,...};
+
+I<TODO.>
+
+=head2 attr . (Structural)
+
+    ::MD::attr::"" ::= function virtual --> Any <-- (Structural, Attr_Name)
+        requires (topic --> \@has_attr_name);
+
+    ::MD::"."::Structural ::= function --> Any <-- (Structural, Attr_Name)
+        implements 2::""
+        requires (topic --> \@has_attr_name)
+        : (topic --> \@attr);
+
+I<TODO.>
+
+=head2 has_attr_name .? (Structural)
+
+    ::MD::has_attr_name::"" ::= function virtual --> Boolean <-- (Structural, Attr_Name);
+
+    ::MD::".?"::Structural ::= function --> Boolean <-- (Structural, Attr_Name)
+        implements 2::""
+        : (topic --> \@has_attr_name);
+
+I<TODO.>
+
+=head2 attr_or_excuse .! (Structural)
+
+    ::MD::attr_or_excuse ::= function --> Any <-- (Structural, Attr_Name)
+        : (topic --> \@has_attr_name ?? topic --> \@attr !! Excuse::No_Such_Attr_Name());
+
+    ::MD::".!"::Structural ::= function --> Any <-- (Structural, Attr_Name)
+        implements 2::""
+        : (topic --> \@attr_or_excuse);
+
+I<TODO.>
+
 =head1 TUPLE DATA TYPES
 
 =head2 Tuple
 
     ::MD::Tuple ::= selection where (topic -->^ FDN__is_a_Tuple)
         default (\%())
-        composes {Accessible and_provides_its_default,
-            Attributive and_provides_its_default};
+        composes Structural and_provides_its_default;
 
 The selection contract C<Tuple> represents the infinite
 Muldis D Foundation type I<FDN__Tuple>.  A C<Tuple> value is ...
@@ -5195,38 +5237,20 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 attr . (Tuple)
+=head2 attr (Tuple)
 
-    ::MD::attr ::= function --> Any <-- (Tuple, Attr_Name)
+    ::MD::attr::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
+        implements 2::""
         requires (topic --> \@has_attr_name)
         : (topic -->^ FDN__Tuple_attr);
 
-    ::MD::"."::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
-        implements 2::""
-        requires (topic --> \@has_attr_name)
-        : (topic --> \@attr);
-
 I<TODO.>
 
-=head2 has_attr_name .? (Tuple)
+=head2 has_attr_name (Tuple)
 
-    ::MD::has_attr_name ::= function --> Boolean <-- (Tuple, Attr_Name)
+    ::MD::has_attr_name::Tuple ::= function --> Boolean <-- (Tuple, Attr_Name)
+        implements 2::""
         : (topic -->^ FDN__Tuple_has_attr_name);
-
-    ::MD::".?"::Tuple ::= function --> Boolean <-- (Tuple, Attr_Name)
-        implements 2::""
-        : (topic --> \@has_attr_name);
-
-I<TODO.>
-
-=head2 attr_or_excuse .! (Tuple)
-
-    ::MD::attr_or_excuse ::= function --> Any <-- (Tuple, Attr_Name)
-        : (topic --> \@has_attr_name ?? topic --> \@attr !! Excuse::No_Such_Attr_Name());
-
-    ::MD::".!"::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
-        implements 2::""
-        : (topic --> \@attr_or_excuse);
 
 I<TODO.>
 
@@ -5343,7 +5367,7 @@ I<TODO.>
         "" ::= selection of Capsule
             where (has_wrapped::( topic, \Relation, \@1::_Asset ))
             default (\?%())
-            composes {Relational, Setty};
+            composes {Relational and_provides_its_default, Setty};
 
         _Asset ::= selection of Tuple_Bag
             where (all_unique topic);
