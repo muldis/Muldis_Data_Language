@@ -3332,11 +3332,15 @@ aka "\\c[0,0]" and "\\c[0,1]".
     Array         | [expr,...] or \~[expr,...] to disambiguate from procedure block
     Bag           | \+{expr,...} or \+{expr:posint-expr,...}
                   |   Eg: \+{x:4,y:7} or \+{x,x,x,x,y:7}
-    Tuple         | \%(expr,...) or \%(lit:expr,...) or \%(:lit,...) or \%(expr,...,lit:expr,...) etc
+    Tuple         | (expr,...) or \%(expr,...) or (lit:expr,...) or (:lit,...) or (expr,...,lit:expr,...) etc
                   |    where lit is one of: nnint or alpha or "whatever" (what is "whatever" again?).
-                  |   Eg: \%(name:'Joy',age:17)
+                  |   Eg: (name:'Joy',age:17)
                   |    Is a set of named attributes where each attribute name is
                   |    a string (isomorphic to Array of Integer).
+                  |    - Tuple literal must contain a comma to differentiate
+                  |    from generic grouping parenthesis, unless it has the \% prefix;
+                  |    eg, `(x,)` is a unary tuple while `(x)` is an expression with the value of `x`;
+                  |    as an exception, `()` is always the niladic Tuple, and is invalid expr group.
                   |    - Signature is proper subtype of Tuple where the value for
                   |    every attribute is either true or is a Reference;
                   |    this is used when defining a type in terms of a set
@@ -3367,8 +3371,8 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    but for main core types especially ones that Foundation
                   |    needs to know, it is an Attr_Name like \foo instead.
     OBSOLETE SYNTAX, FREE UP => FOR NON-CORE / USER TYPES:
-                  |    expr=>expr - that is Reference=>Tuple eg $Date=>\%(year:500,month:4,day:24)
-                  |    and Singleton is one with nullary tuple eg $To_Zero=>\%()
+                  |    expr=>expr - that is Reference=>Tuple eg $Date=>(year:500,month:4,day:24)
+                  |    and Singleton is one with nullary tuple eg $To_Zero=>()
                   |    and $=>lit is shorthand for Singleton value eg $=>To_Zero.
                   |    Normally a Capsule's Reference is a type name, making
                   |    the Capsule a type, but structurally one is identical

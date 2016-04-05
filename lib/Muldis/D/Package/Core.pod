@@ -371,7 +371,7 @@ I<after> all of the others.
     ::MD::minmax ::= function
         --> (Orderable, Orderable) <-- (Orderable, Orderable)
         is commutative
-        : (topic --> \@in_order ?? topic !! \%(\.1, \.0));
+        : (topic --> \@in_order ?? topic !! (\.1, \.0));
 
 The function C<minmax> results in a binary C<Tuple> containing its 2
 arguments sorted I<in order>; the function's result is the same as its
@@ -1167,7 +1167,7 @@ or I<\\> or I<div> or I<rem> or I<remainder> or various other things.
     ::MD::divided_by_and_modulo::"" ::= function
         --> ({Numerical, Excuse::Div_By_Zero}, {Numerical, Excuse::Div_By_Zero})
         <-- (Numerical, Numerical, Round_Meth)
-        : (\%(topic --> \@div, topic --> \@mod));
+        : ((topic --> \@div, topic --> \@mod));
 
 The function C<divided_by_and_modulo> results in a binary tuple whose C<0>
 and C<1> attributes have the exact same values that C<integral_divided_by>
@@ -1508,7 +1508,7 @@ virtual function C<multiple_of> for the composing type C<Integer>.
 
         <-- if d = 0 then Excuse::Div_By_Zero() else q;
 
-        q ::= (\Fraction wrap \%(
+        q ::= (\Fraction wrap (
             numerator   : div::((d > 0 ?? n !! -n), gcd, To_Zero()),
             denominator : div::((d > 0 ?? d !! -d), gcd, To_Zero()),
         ));
@@ -1549,7 +1549,7 @@ the composing type C<Integer>.
         e2 ::= (
             real_q_is_neg ::= (dividend < 0 xor divisor < 0);
             rtz_quotient  ::= (FDN__Integer_divided_by_rtz
-                ^<-- \%(dividend, divisor));
+                ^<-- (dividend, divisor));
             rtz_remainder ::= (dividend - (divisor * rtz_quotient));
 
             <-- rtz_remainder = 0 ?? rtz_quotient !! e3;
@@ -1580,7 +1580,7 @@ the composing type C<Integer>.
             ' exactly one-half so we decide how to round that.';
 
         e4 ::= (
-            q ::= (FDN__Integer_divided_by_rtz ^<-- \%(abs::(rtz_quotient),2))
+            q ::= (FDN__Integer_divided_by_rtz ^<-- (abs::(rtz_quotient),2))
             r ::= (abs::(rtz_quotient) - (2 * q));
             rtz_quotient_is_even ::= (r = 0);
 
@@ -1723,7 +1723,7 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
         _Asset ::= selection of Tuple where
         (
             if
-                topic ^?= \%(
+                topic ^?= (
                     numerator : \@Integer,
                     denominator : \@Integer_P,
                 )
@@ -1923,7 +1923,7 @@ C<Fraction>.
         --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Fraction, Integer)
         implements 2::""
         : (\@integral_nn_power
-            <-- \.1 >= 0 ?? topic !! \%(reciprocal::(\.0), -\.1));
+            <-- \.1 >= 0 ?? topic !! (reciprocal::(\.0), -\.1));
 
 The function C<integral_power::Fraction> implements the C<Numerical> virtual
 function C<integral_power> aka C<**> for the composing type C<Fraction>.
@@ -3548,7 +3548,7 @@ distinct member values of its C<0> argument.
 =head2 order
 
     ::MD::order ::= function --> Positional <-- (Discrete)
-        : (\.0 order_using (\@in_order assuming \%()));
+        : (\.0 order_using (\@in_order assuming ()));
 
 The function C<order> results in the C<Positional> value that represents
 the same multiset of members as its C<0> argument but that the members are
@@ -3804,7 +3804,7 @@ I<TODO.>
 =head2 squish
 
     ::MD::squish ::= function --> Positional <-- (Positional)
-        : (\.0 map (function : (\%( group : \.0, member : False )))
+        : (\.0 map (function : (( group : \.0, member : False )))
             ->nest map (function : (\.0.\group)));
 
 The function C<squish> results in the value of its C<0> argument's
@@ -5301,7 +5301,7 @@ I<TODO.>
 =head2 Tuple
 
     ::MD::Tuple ::= selection where (topic -->^ FDN__is_a_Tuple)
-        default (\%())
+        default (())
         composes Structural and_provides_its_default;
 
 The selection contract C<Tuple> represents the infinite
@@ -5311,7 +5311,7 @@ I<TODO.>
 
 =head2 Tuple_D0 D0
 
-    ::MD::Tuple_D0 ::= constant (\%());
+    ::MD::Tuple_D0 ::= constant (());
 
     ::MD::D0 ::= alias of Tuple_D0;
 
@@ -5322,7 +5322,7 @@ C<Tuple> value.
 
     ::MD::has_any_attrs::Tuple ::= function --> Boolean <-- (Tuple)
         implements 2::""
-        : (\.0 != \%());
+        : (\.0 != ());
 
 I<TODO.>
 
@@ -5374,7 +5374,7 @@ I<TODO.>
     ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
         implements 2::""
         requires (topic --> \@attr_names_disjoint)
-        is {associative,commutative} identity (\%())
+        is {associative,commutative} identity (())
         : (topic -->^ FDN__Tuple_extend);
 
 I<TODO.>
@@ -5505,7 +5505,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
 
         _Asset ::= selection of Tuple where
         (
-            if topic ^?= \%( heading : \@Attr_Names, body : \@Bag ) then
+            if topic ^?= ( heading : \@Attr_Names, body : \@Bag ) then
                 if \.body all_is_a \@Tuple then
                     \.body all (\@"^?=" assuming \.heading)
                 else
@@ -5652,7 +5652,7 @@ I<TODO.>
         _Asset ::= selection of Tuple where
         (
             if
-                topic ^?= \%(
+                topic ^?= (
                     identity : (selection of Pkg_Decl_Map where (degree::(topic) = 1)),
                     foundation : ...,
                     uses : \@Pkg_Decl_Map,
