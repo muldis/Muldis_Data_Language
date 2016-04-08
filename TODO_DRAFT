@@ -3330,8 +3330,10 @@ aka "\\c[0,0]" and "\\c[0,1]".
     Boolean       | just the keywords false and true or \?false or \?true
     Integer       | 42 or 0 or or -3 or \+'-3''50_897' or 0d39 or 0xDEADBEEF or 0o644 or 0b11001001
     Array         | [expr,...] or \~[expr,...] to disambiguate from procedure block
+                  |   Also, [expr:posint-expr,...] with or without \~ also works like with Blob, adding N same elements.
     Bag           | \+{expr,...} or \+{expr:posint-expr,...}
                   |   Eg: \+{x:4,y:7} or \+{x,x,x,x,y:7}
+                  |   No need to support nnint-expr for parity with insert_n() since the n here is a literal and 0 is no-op.
     Tuple         | (expr,...) or \%(expr,...) or (lit:expr,...) or (:lit,...) or (expr,...,lit:expr,...) etc
                   |    where lit is one of: nnint or alpha or "whatever" (what is "whatever" again?).
                   |   Eg: (name:'Joy',age:17)
@@ -3414,7 +3416,8 @@ aka "\\c[0,0]" and "\\c[0,1]".
 
 * Subtypes of Capsule:
 
-    Blob        | \~+'0x27EO4' or \~+'0o350261' or \~+'0b101100110'
+    Bits        | \~?'0xA705E' or \~?'0o644' or \~?'0b00101110100010'
+    Blob        | \~+'0xA705E416' or \~+'0b00101110_10001011'
                 |    Note that any consecutive single-quoted tokens are treated as 1 token.
     Text        | 'Hello' or \~'Goodbye'
                 |    Note that any consecutive single-quoted tokens are treated as 1 token.
@@ -3481,11 +3484,21 @@ aka "\\c[0,0]" and "\\c[0,1]".
                 |   Eg: \+%{ (name:'Joy',age:17), (name:'Envy',age:23), (name:'Joy',age:17) }
                 |   or \+%{ (name:'Joy',age:17) : 2, (name:'Envy',age:23) : 1 }
                 |   D0C0 is \+%(), D0C1 is \+%{()}; \+%{} is invalid syntax (heading unknown)
+    Tuple_Array | D0C0 is \~%(), D0C1 is \~%[()]; \~%[] is invalid syntax (heading unknown)
+                |   Tuple_Array is to Tuple_Bag what Array is to Bag; common heading, allows duplicates, tuples in order
+                |   Syntax identical to Tuple_Bag but with square brackets instead of curlies, and ~ rather than +
+                |   If the (...):N syntax is used, the N elements are placed consecutively in the array
+                |   Eg: \~%[(lit:expr,...):posint-expr,...] or \~%[(expr,...),...] etc
+                |   Eg: \~%[ (name:'Joy',age:17), (name:'Envy',age:23), (name:'Joy',age:17) ]
+                |   or \~%[ (name:'Joy',age:17) : 2, (name:'Envy',age:23) : 1 ]
     Dictionary  | \{expr:expr,...} or something
 
     Attr_Renaming     | \@:(lit<-lit,...) or \@:(<-lit,...) or \@:(lit<-,...)
                       |   If one lit is absent, means implicit positional/numeric name.
                       |   Arrow also allowed to point the other way.
+
+* Generally speaking, what any commalist is parsed into is starting with an
+empty value of the collection type and insert()/insert_n()-ing each element.
 
 * Make \.foo a syntactic shorthand for topic attribute \foo when topic is a
 Tuple; that is, \.foo is syntactic shorthand for:
