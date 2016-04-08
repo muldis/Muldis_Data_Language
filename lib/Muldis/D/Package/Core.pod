@@ -178,7 +178,7 @@ argument iff the latter is not an C<Excuse>, and results in its C<1>
 argument otherwise.  This function is designed to be chained for any number
 of sequenced values in order to pick the first non-C<Excuse> in a list.
 Other programming languages may name their corresponding operators
-I<??> or I<//>.
+I<??> or I<//> or I<?:>.
 
 =head2 and_then
 
@@ -570,7 +570,8 @@ C<Numerical>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>,
 C<Emptyable>, C<Stringy>, C<Bits>, C<Blob>, C<Textual>, C<Text>,
 C<Homogeneous>, C<Unionable>, C<Discrete>, C<Positional>, C<Array>,
 C<String>, C<Set>, C<Bag>, C<Relational>, C<Discrete_Relational>,
-C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Interval>.
+C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Intervalish>, C<Interval>,
+C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
 
 While conceivably C<Boolable> could also be composed by C<Attributive>, and
 hence C<Tuple>, it isn't because that would set up a semantic conflict for
@@ -917,11 +918,12 @@ type that is numeric is also orderable.  Other programming languages may
 name their corresponding types I<Numeric>.
 
 C<Numerical> is composed, directly or indirectly, by: C<Integral>,
-C<Integer>, C<Fractional>, C<Fraction>, C<Quantity>.  It is also composed
-by a lot of additional contracts defined by other Muldis D packages such as
-L<Core::Math|Muldis::D::Package::Core::Math>; these include types for
-irrational or algebraic or complex numbers or quaternions or rational types
-with a fixed precision or scale or floating-point types and so on.
+C<Integer>, C<Fractional>, C<Fraction>, C<Quantitative>, C<Quantity>.
+It is also composed by a lot of additional contracts defined by other
+Muldis D packages such as L<Core::Math|Muldis::D::Package::Core::Math>;
+these include types for irrational or algebraic or complex numbers or
+quaternions or rational types with a fixed precision or scale or
+floating-point types and so on.
 
 =head2 Excuse::Div_By_Zero
 
@@ -1985,7 +1987,8 @@ C<Emptyable> is composed, directly or indirectly, by: C<Stringy>, C<Bits>,
 C<Blob>, C<Textual>, C<Text>, C<Homogeneous>, C<Unionable>, C<Discrete>,
 C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>,
 C<Discrete_Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>,
-C<Interval>.
+C<Intervalish>, C<Interval>, C<Unionable_Intervalish>, C<Interval_Set>,
+C<Interval_Bag>.
 
 =head2 Excuse::No_Empty_Value
 
@@ -2893,7 +2896,8 @@ otherwise, duplication of values may occur amongst members.
 C<Homogeneous> is composed, directly or indirectly, by: C<Unionable>,
 C<Discrete>, C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>,
 C<Relational>, C<Discrete_Relational>, C<Tuple_Array>, C<Relation>,
-C<Tuple_Bag>, C<Interval>.
+C<Tuple_Bag>, C<Intervalish>, C<Interval>, C<Unionable_Intervalish>,
+C<Interval_Set>, C<Interval_Bag>.
 
 I<TODO.  Note that for all the regular function-taking member-wise
 Homogeneous operators that are logically supposed to work with each
@@ -3235,7 +3239,7 @@ zero members, C<[]>.
 C<Unionable> is composed, directly or indirectly, by: C<Discrete>,
 C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>,
 C<Discrete_Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>,
-I<TODO>.  A key type
+C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.  A key type
 that composes C<Homogeneous> but not C<Unionable> is C<Interval>; use
 C<Interval_Set> instead for its C<Unionable> closest analogy.
 
@@ -4394,7 +4398,7 @@ The interface contract C<Setty> is infinite.  A C<Setty> value is a
 I<collective> value such that every one of its component I<members> is a
 distinct value.  The default value of C<Setty> is the C<Set> value with
 zero members, C<{}>.  C<Setty> is composed, directly or indirectly, by:
-C<Set>, C<Relation>, C<Interval>.
+C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
 
 =head1 SET DATA TYPES
 
@@ -5344,7 +5348,7 @@ I<TODO.>
 
 =head2 Tuple
 
-    ::MD::Tuple ::= selection where (topic -->^ FDN__is_a_Tuple)
+    ::MD::Tuple::"" ::= selection where (topic -->^ FDN__is_a_Tuple)
         default (())
         composes Structural and_provides_its_default;
 
@@ -5650,13 +5654,87 @@ zero-tuple C<Tuple_Bag> value.
 The constant C<Tuple_Bag_D0C1> represents the only zero-attribute,
 single-tuple C<Tuple_Bag> value.
 
+=head1 INTERVALISH DATA TYPES
+
+=head2 Intervalish
+
+    ::MD::Intervalish ::= interface
+        composes Homogeneous
+        requires_implements {...};
+
+I<TODO.>
+
 =head1 INTERVAL DATA TYPES
 
 =head2 Interval
 
-    ::MD::Interval ::= selection ...
-        composes {Homogeneous, Setty}
-        ...;
+    ::MD::Interval ::= selection of Capsule
+        where (has_wrapped::( topic, \Interval, \@Tuple::Interval ))
+        default (Neg_Inf()..Pos_Inf())
+        composes {Intervalish, Setty};
+
+I<TODO.>
+
+=head2 Tuple::Interval
+
+    ::MD::Tuple::Interval ::= selection of Tuple
+        where (...);
+
+I<TODO.>
+
+=head1 UNIONABLE INTERVALISH DATA TYPES
+
+=head2 Unionable_Intervalish
+
+    ::MD::Unionable_Intervalish ::= interface
+        composes {Intervalish, Unionable}
+        requires_implements {...};
+
+I<TODO.>
+
+=head1 INTERVAL-SET DATA TYPES
+
+=head2 Interval_Set
+
+    ::MD::Interval_Set ::= binder
+    {
+        "" ::= selection of Capsule
+            where (has_wrapped::( topic, \Interval_Set, \@1::_Asset ))
+            default (...)
+            composes {Unionable_Intervalish, Setty};
+
+        _Asset ::= selection of Interval_Bag
+            where (all_unique topic);
+    };
+
+I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.>
+
+=head1 INTERVAL-BAG DATA TYPES
+
+=head2 Interval_Bag
+
+    ::MD::Interval_Bag ::= binder
+    {
+        "" ::= selection of Capsule
+            where (has_wrapped::( topic, \Interval_Bag, \@1::_Asset ))
+            default (...)
+            composes Unionable_Intervalish;
+
+        _Asset ::= selection of Tuple_Bag where
+        (
+            ...
+        );
+    };
+
+I<TODO.>
+
+=head1 QUANTITATIVE DATA TYPES
+
+=head2 Quantitative
+
+    ::MD::Quantitative ::= interface
+        composes Numerical
+        requires_implements {...};
 
 I<TODO.>
 
@@ -5664,9 +5742,18 @@ I<TODO.>
 
 =head2 Quantity
 
-    ::MD::Quantity ::= selection ...
-        composes Numerical
-        ...;
+    ::MD::Quantity ::= binder
+    {
+        "" ::= selection of Capsule
+            where (has_wrapped::( topic, \Quantity, \@1::_Asset ))
+            default (...)
+            composes Quantitative;
+
+        _Asset ::= selection of Relation where
+        (
+            ...
+        );
+    };
 
 I<TODO.>
 
