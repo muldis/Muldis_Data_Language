@@ -3576,7 +3576,7 @@ of any type, both C<Orderable> or not.
 
     ::MD::Positional ::= interface
         composes {Stringy, Discrete and_provides_its_default, Accessible}
-        requires_implements {so,empty
+        requires_implements {in_order,so,empty
             ,substring_of,overlaps_string,disjoint_string
             ,catenate,replicate
             ,has_n,multiplicity
@@ -3624,29 +3624,6 @@ composed, directly or indirectly, by: C<Array>, C<String>.
 The constant C<Excuse::No_Such_Index> represents the I<undefined> result of
 attempting to use a member index I<I> of C<Positional> value I<V> while
 assuming incorrectly that I<V> already has a member whose index is I<I>.
-
-=head2 in_order (Positional)
-
-    ::MD::in_order::Positional ::= function
-        --> Boolean <-- (Positional, Positional)
-        implements 2::""
-    : (
-        i ::= (topic --> \@index_succ_all_matches);
-      <--
-        if not \.0 .? i then
-            e1 ::= True
-        else if not \.1 .? i then
-            False
-        else
-            e2 ::= (\.0.i in_order \.1.i);
-
-        e1 ::?= 'This is the case where LHS is a leading subsequence of or is equal to RHS.';
-        e2 ::?= 'This will succeed iff in_order() is defined for the member type.';
-    );
-
-The function C<in_order::Positional> implements the C<Orderable> virtual
-function C<in_order> for the composing type C<Positional>.  This function
-will succeed iff C<in_order> is also defined for the types of the members.
 
 =head2 singular (Positional)
 
@@ -3989,6 +3966,28 @@ I<string> that may represent either octets or characters.
 
 The constant C<empty_Array> aka C<~∅> represents the only zero-member
 C<Array> value, C<[]>.
+
+=head2 in_order (Array)
+
+    ::MD::in_order::Array ::= function --> Boolean <-- (Array, Array)
+        implements 2::""
+    : (
+        i ::= (topic --> \@index_succ_all_matches);
+      <--
+        if not \.0 .? i then
+            e1 ::= True
+        else if not \.1 .? i then
+            False
+        else
+            e2 ::= (\.0.i in_order \.1.i);
+
+        e1 ::?= 'This is the case where LHS is a leading subsequence of or is equal to RHS.';
+        e2 ::?= 'This will succeed iff in_order() is defined for the member type.';
+    );
+
+The function C<in_order::Array> implements the C<Orderable> virtual
+function C<in_order> for the composing type C<Array>.  This function
+will succeed iff C<in_order> is also defined for the types of the members.
 
 =head2 so (Array)
 
