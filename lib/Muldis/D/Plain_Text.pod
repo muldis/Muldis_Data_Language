@@ -785,7 +785,7 @@ Grammar:
         <generic_name>
 
     <ord_attr_name> ::=
-        <nn_Integer>
+        <digit_char>+
 
     <expr_name> ::=
         <generic_name>
@@ -978,8 +978,8 @@ Grammar:
 
     <delimiting_expr> ::=
         '(' <sp> [
-            <naming_expr> | <aliasing_expr> | <result_expr> | <sp>
-        ] % ';' <sp> ')'
+            <naming_expr> | <aliasing_expr> | <result_expr> | ''
+        ] % [<sp> ';' <sp>] <sp> ')'
 
     <result_expr> ::=
           ['<--' <sp> <expr>]
@@ -1096,7 +1096,7 @@ scalar values.
 Grammar:
 
     <Boolean> ::=
-        '\\?'? <sp> [False | True]
+        ['\\?' <sp>]? [False | True]
 
 A C<< <Boolean> >> node represents a value of the Muldis D C<Boolean> type,
 which is a general purpose 2-valued logic boolean or I<truth value>.  The
@@ -1121,7 +1121,7 @@ Grammar:
         <nonquoted_int> | <quoted_int>
 
     <nonquoted_int> ::=
-        '\\+'? <sp> <asigned_int>
+        ['\\+' <sp>]? <asigned_int>
 
     <quoted_int> ::=
         <qu_num_head> <qu_asigned_int> <qu_num_tail>
@@ -1396,7 +1396,7 @@ Examples:
 Grammar:
 
     <Text> ::=
-        '\\~'? <sp> [<Text_seg> % <sp>]
+        ['\\~' <sp>]? [<Text_seg> % <sp>]
 
     <Text_seg> ::=
         '\'' <qnots_content> '\''
@@ -1435,9 +1435,6 @@ Grammar:
         | <Set>
         | <Bag>
         | <Tuple>
-        | <Tuple_Array>
-        | <Relation>
-        | <Tuple_Bag>
         | <Capsule>
         | <source_code_selector_expr>
 
@@ -1463,18 +1460,6 @@ I<TODO.  Prefix \+ mandatory.>
 =head2 Tuple Selectors
 
 I<TODO.  Prefix \% optional.>
-
-=head2 Tuple-Array Selectors
-
-I<TODO.  Prefix \~% mandatory.>
-
-=head2 Relation Selectors
-
-I<TODO.  Prefix \?% mandatory.>
-
-=head2 Tuple-Bag Selectors
-
-I<TODO.  Prefix \+% mandatory.>
 
 =head2 Capsule Selectors
 

@@ -1585,19 +1585,26 @@ only exist in one direction.
 * Replacement for literal syntax (arrows can go either direction or mixed):
     \@:(->foo,->bar,->baz)
     renaming
-    \?%{(1,2,3),(5,6,8),(2,5,4)}
+    ?%{(1,2,3),(5,6,8),(2,5,4)}
 - That expression effective shorthand for:
-    \?%{(foo:1,bar:2,baz:3),...}
+    ?%{(foo:1,bar:2,baz:3),...}
 
-* Casts:
+* Casts (SOME OBSOLETE):
     % to Tuple from C1 Relation or C1 Tuple_Bag
+        - update, now: r->only_member and b->only_member
+        - or some symbolic may still be useful
     ?% to Relation from Tuple or Tuple_Bag or C1+ Set or Bag of Tuple
-    +% to Tuple_Set from Tuple or Relation or C1+ Set or Bag of Tuple
+        - update, Tuple version now: ?%{t}
+    +% to Tuple_Bag from Tuple or Relation or C1+ Set or Bag of Tuple
+        - update, Tuple version now: +%{t}
     ? to Set from Relation or Tuple_Bag
+        - update, now: ?<
     + to Bag from Relation or Tuple_Bag
+        - update, now: +<
     # to (non-negative) Integer from Set or Bag or Relation or Tuple_Bag
     ?# to Boolean from Array or String or Set or Bag or Relation or Tuple_Bag
-    ? to Boolean from Integer or Fraction or Float
+        - OBSOLETE, now just ?
+    ? to Boolean from Integer or Fraction or Float or anything stringy or homo
 - Note that # or ? or ?# would most likely NOT be defined on Blob/Text
 as there is no single most reasonable canonical interpretation.
 - There is no casting to or from Structure, just longer-form routines/exprs.
@@ -3486,22 +3493,24 @@ aka "\\c[0,0]" and "\\c[0,1]".
                 |   Interval has no Plain Text syntax; this is all routine calls.
     Set         | {expr,...} or \?{expr,...} to disambiguate within recipe block
                 |   Eg: {x,y,z} or \?{x,y,z}
-    Relation    | \?%{(lit:expr,...),...} or \?%{(expr,...),...} etc
+    NOTE: Relation et al Tuple collections don't have Plain_Text LITERAL SYNTAX ANYMORE, FOLLOWING ARE ROUTINE CALLS.
+    Relation    | ?%{(lit:expr,...),...} or ?%{(expr,...),...} etc
                 |   The first syntax has stringy attr names, the second has numeric, mix allowed
-                |   Eg: \?%(name,age) or \?%{ (name:'Joy',age:17), (name:'Envy',age:23) }
-                |   D0C0 is \?%(), D0C1 is \?%{()}; \?%{} is invalid syntax (heading unknown)
-    Tuple_Bag   | \+%{(lit:expr,...):posint-expr,...} or \+%{(expr,...),...} etc
+                |   Eg: ?%(name,age) or ?%{ (name:'Joy',age:17), (name:'Envy',age:23) }
+                |   D0C0 is ?%(), D0C1 is ?%{()}; ?%{} is invalid syntax (heading unknown)
+    Tuple_Bag   | +%\+{(lit:expr,...):posint-expr,...} or +%\+{(expr,...),...} etc
                 |   Tuple_Bag is to Relation what Bag is to Set; common heading, allows duplicates
-                |   Eg: \+%{ (name:'Joy',age:17), (name:'Envy',age:23), (name:'Joy',age:17) }
-                |   or \+%{ (name:'Joy',age:17) : 2, (name:'Envy',age:23) : 1 }
-                |   D0C0 is \+%(), D0C1 is \+%{()}; \+%{} is invalid syntax (heading unknown)
-    Tuple_Array | D0C0 is \~%(), D0C1 is \~%[()]; \~%[] is invalid syntax (heading unknown)
+                |   Eg: +%\+{ (name:'Joy',age:17), (name:'Envy',age:23), (name:'Joy',age:17) }
+                |   or +%\+{ (name:'Joy',age:17) : 2, (name:'Envy',age:23) : 1 }
+                |   D0C0 is +%(), D0C1 is +%{()}; +%{} is invalid syntax (heading unknown)
+    Tuple_Array | D0C0 is ~%(), D0C1 is ~%[()]; ~%[] is invalid syntax (heading unknown)
                 |   Tuple_Array is to Tuple_Bag what Array is to Bag; common heading, allows duplicates, tuples in order
                 |   Syntax identical to Tuple_Bag but with square brackets instead of curlies, and ~ rather than +
                 |   If the (...):N syntax is used, the N elements are placed consecutively in the array
-                |   Eg: \~%[(lit:expr,...):posint-expr,...] or \~%[(expr,...),...] etc
-                |   Eg: \~%[ (name:'Joy',age:17), (name:'Envy',age:23), (name:'Joy',age:17) ]
-                |   or \~%[ (name:'Joy',age:17) : 2, (name:'Envy',age:23) : 1 ]
+                |   Eg: ~%[(lit:expr,...):posint-expr,...] or ~%[(expr,...),...] etc
+                |   Eg: ~%[ (name:'Joy',age:17), (name:'Envy',age:23), (name:'Joy',age:17) ]
+                |   or ~%[ (name:'Joy',age:17) : 2, (name:'Envy',age:23) : 1 ]
+    SPECIAL SYNTAX FOR THIS LIKELY ALSO NO PURPOSE, COULD USE SOME PREFIX OP WITH A SET OF BINARY TUPLES
     Dictionary  | \{expr:expr,...} or something
 
     Attr_Renaming     | \@:(lit<-lit,...) or \@:(<-lit,...) or \@:(lit<-,...)
