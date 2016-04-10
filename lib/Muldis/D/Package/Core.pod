@@ -581,22 +581,22 @@ explicitly in their C<Homogeneous> dimension (by way of C<Emptyable>) and
 not in their C<Attributive> dimension.  As such, the C<Attributive> functions
 C<has_any_attrs> and C<is_nullary> are provided as that dimension's direct
 analogies to the C<Homogeneous> dimension's C<Boolable>-implementing
-C<has_any_members> (C<so>) and C<is_empty> (C<not_so>) functions.
+C<has_any_members> (C<to_Boolean>/C<so>) and C<is_empty> (C<not_so>) functions.
 
-=head2 so ? to_Boolean
+=head2 to_Boolean so ?
 
-    ::MD::so::"" ::= function virtual --> Boolean <-- (Boolable);
+    ::MD::to_Boolean::"" ::= function virtual --> Boolean <-- (Boolable);
 
-    ::MD::"?"        ::= alias of so;
-    ::MD::to_Boolean ::= alias of so;
+    ::MD::so  ::= alias of to_Boolean;
+    ::MD::"?" ::= alias of to_Boolean;
 
-The virtual function C<so> aka C<?> aka C<to_Boolean> results in C<True>
+The virtual function C<to_Boolean> aka C<so> aka C<?> results in C<True>
 typically when its C<0> argument is a nonzero number or a nonempty
 collection; otherwise it results in C<False>.
 
 =head2 not_so !?
 
-    ::MD::not_so ::= function negates so;
+    ::MD::not_so ::= function negates to_Boolean;
 
     ::MD::"!?" ::= alias of not_so;
 
@@ -680,20 +680,20 @@ function C<pred> for the composing type C<Boolean>.
 The function C<succ::Boolean> implements the C<Successable> virtual
 function C<succ> for the composing type C<Boolean>.
 
-=head2 so (Boolean)
+=head2 to_Boolean (Boolean)
 
-    ::MD::so::Boolean ::= function --> Boolean <-- (Boolean)
+    ::MD::to_Boolean::Boolean ::= function --> Boolean <-- (Boolean)
         implements 2::""
         : (\.0);
 
-The function C<so::Boolean> performs a logical I<proposition>; it simply
-results in its C<0> argument.  This function implements the C<Boolable>
-virtual function C<so> aka C<?> aka C<to_Boolean> for the composing type
-C<Boolean>.
+The function C<to_Boolean::Boolean> performs a logical I<proposition>; it
+simply results in its C<0> argument.  This function implements the
+C<Boolable> virtual function C<to_Boolean> aka C<so> aka C<?> for the
+composing type C<Boolean>.
 
 =head2 not ! ¬
 
-    ::MD::not ::= function negates so::Boolean;
+    ::MD::not ::= function negates to_Boolean::Boolean;
 
     ::MD::"!" ::= alias of not;
 
@@ -894,7 +894,7 @@ I<RoundingMode> (Java) or I<MidpointRounding> (C#).
 
     ::MD::Numerical ::= interface
         composes Boolable
-        requires_implements {so
+        requires_implements {to_Boolean
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
             ,fractional_divided_by,integral_divided_by
@@ -942,19 +942,19 @@ positive) zero, but the Muldis D C<Core> package lacks those concepts.
 The constant C<Excuse::Zero_To_The_Zero> represents the I<undefined> result
 of attempting to exponentiate a number zero to the power of a number zero.
 
-=head2 so (Numerical)
+=head2 to_Boolean (Numerical)
 
-    ::MD::so::Numerical ::= function virtual --> Boolean <-- (Numerical)
+    ::MD::to_Boolean::Numerical ::= function virtual --> Boolean <-- (Numerical)
         implements 2::"";
 
-The virtual function C<so::Numerical> results in C<True> when its C<0>
-argument is a nonzero number; otherwise it results in C<False>.  This
-function implements the C<Boolable> virtual function C<so> aka C<?> aka
-C<to_Boolean> for the composing type C<Numerical>.
+The virtual function C<to_Boolean::Numerical> results in C<True> when its
+C<0> argument is a nonzero number; otherwise it results in C<False>.  This
+function implements the C<Boolable> virtual function C<to_Boolean> aka
+C<so> aka C<?> for the composing type C<Numerical>.
 
 =head2 is_zero
 
-    ::MD::is_zero ::= function negates so::Numerical;
+    ::MD::is_zero ::= function negates to_Boolean::Numerical;
 
 The function C<is_zero> results in C<True> when its C<0> argument is a
 number zero; otherwise it results in C<False>.
@@ -1213,7 +1213,7 @@ and C<1> arguments are both nonzero numbers; it is an C<Excuse> otherwise.
         composes {Bicessable and_provides_its_default,
             Numerical and_provides_its_default}
         requires_implements {in_order,asset,pred,succ
-            ,so
+            ,to_Boolean
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
             ,fractional_divided_by,integral_divided_by
@@ -1406,16 +1406,16 @@ virtual function C<pred> aka C<--> for the composing type C<Integer>.
 The function C<succ::Integer> implements the C<Successable>/C<Integral>
 virtual function C<succ> aka C<++> for the composing type C<Integer>.
 
-=head2 so (Integer)
+=head2 to_Boolean (Integer)
 
-    ::MD::so::Integer ::= function --> Boolean <-- (Integer)
+    ::MD::to_Boolean::Integer ::= function --> Boolean <-- (Integer)
         implements 2::""
         : (\.0 != 0);
 
-The function C<so::Integer> results in C<True> iff its C<0> argument is not
-C<0>, and in C<False> if it is C<0>.  This function implements the
-C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
-composing type C<Integer>.
+The function C<to_Boolean::Integer> results in C<True> iff its C<0>
+argument is not C<0>, and in C<False> if it is C<0>.  This function
+implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
+C<?> for the composing type C<Integer>.
 
 =head2 zero (Integer)
 
@@ -1653,7 +1653,7 @@ function C<factorial> for the composing type C<Integer>.
         composes {Orderable and_provides_its_default,
             Numerical and_provides_its_default}
         requires_implements {in_order
-            ,so
+            ,to_Boolean
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
             ,fractional_divided_by,integral_divided_by
@@ -1773,16 +1773,16 @@ default and minmum value is C<0.0>; it has no maximum value.
 The function C<in_order::Fraction> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Fraction>.
 
-=head2 so (Fraction)
+=head2 to_Boolean (Fraction)
 
-    ::MD::so::Fraction ::= function --> Boolean <-- (Fraction)
+    ::MD::to_Boolean::Fraction ::= function --> Boolean <-- (Fraction)
         implements 2::""
         : (\.0 != 0.0);
 
-The function C<so::Fraction> results in C<True> iff its C<0> argument is
-not C<0.0>, and in C<False> if it is C<0.0>.  This function implements the
-C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
-composing type C<Fraction>.
+The function C<to_Boolean::Fraction> results in C<True> iff its C<0>
+argument is not C<0.0>, and in C<False> if it is C<0.0>.  This function
+implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
+C<?> for the composing type C<Fraction>.
 
 =head2 zero (Fraction)
 
@@ -1974,7 +1974,7 @@ function C<denominator> for the composing type C<Fraction>.
 
     ::MD::Emptyable ::= interface
         composes Boolable
-        requires_implements {so,empty};
+        requires_implements {to_Boolean,empty};
 
 The interface contract C<Emptyable> is infinite.  An C<Emptyable> value is
 an aggregate C<Boolable> value that can have either zero or more than zero
@@ -1998,21 +1998,22 @@ The constant C<Excuse::No_Empty_Value> represents the I<undefined> result
 of attempting to request the value with zero members of some collection
 type that doesn't have a value with zero members.
 
-=head2 so (Emptyable) has_any_members
+=head2 to_Boolean (Emptyable) has_any_members
 
-    ::MD::so::Emptyable ::= function virtual --> Boolean <-- (Emptyable)
+    ::MD::to_Boolean::Emptyable ::= function virtual --> Boolean <-- (Emptyable)
         implements 2::"";
 
-    ::MD::has_any_members ::= alias of so::Homogeneous;
+    ::MD::has_any_members ::= alias of to_Boolean::Emptyable;
 
-The virtual function C<so::Emptyable> aka C<has_any_members> results in
-C<True> iff its C<0> argument has any members, and in C<False> iff it has
-no members.  This function implements the C<Boolable> virtual function
-C<so> aka C<?> aka C<to_Boolean> for the composing type C<Emptyable>.
+The virtual function C<to_Boolean::Emptyable> aka C<has_any_members>
+results in C<True> iff its C<0> argument has any members, and in C<False>
+iff it has no members.  This function implements the C<Boolable> virtual
+function C<to_Boolean> aka C<so> aka C<?> for the composing type
+C<Emptyable>.
 
 =head2 is_empty ∅?
 
-    ::MD::is_empty ::= function negates so::Emptyable;
+    ::MD::is_empty ::= function negates to_Boolean::Emptyable;
 
     ::MD::Unicode_Aliases::"∅?" ::= alias of is_empty;
 
@@ -2038,7 +2039,7 @@ Other programming languages may name their corresponding operators I<clear>.
 
     ::MD::Stringy ::= interface
         composes {Orderable, Emptyable and_provides_its_default}
-        requires_implements {in_order,so,empty
+        requires_implements {in_order,to_Boolean,empty
             ,substring_of,overlaps_string,disjoint_string
             ,catenate,replicate};
 
@@ -2207,16 +2208,16 @@ integers is in the range 0..1 inclusive.
 The function C<in_order::Bits> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Bits>.
 
-=head2 so (Bits)
+=head2 to_Boolean (Bits)
 
-    ::MD::so::Bits ::= function --> Boolean <-- (Bits)
+    ::MD::to_Boolean::Bits ::= function --> Boolean <-- (Bits)
         implements 2::""
         : (\.0 != \~?'');
 
-The function C<so::Bits> results in C<True> iff its C<0> argument is not
-C<\~?''>, and in C<False> if it is C<\~?''>.  This function implements the
-C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
-composing type C<Bits>.
+The function C<to_Boolean::Bits> results in C<True> iff its C<0> argument
+is not C<\~?''>, and in C<False> if it is C<\~?''>.  This function
+implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
+C<?> for the composing type C<Bits>.
 
 =head2 empty (Bits)
 
@@ -2332,16 +2333,16 @@ integers is in the range 0..255 inclusive.
 The function C<in_order::Blob> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Blob>.
 
-=head2 so (Blob)
+=head2 to_Boolean (Blob)
 
-    ::MD::so::Blob ::= function --> Boolean <-- (Blob)
+    ::MD::to_Boolean::Blob ::= function --> Boolean <-- (Blob)
         implements 2::""
         : (\.0 != \~+'');
 
-The function C<so::Blob> results in C<True> iff its C<0> argument is not
-C<\~+''>, and in C<False> if it is C<\~+''>.  This function implements the
-C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
-composing type C<Blob>.
+The function C<to_Boolean::Blob> results in C<True> iff its C<0> argument
+is not C<\~+''>, and in C<False> if it is C<\~+''>.  This function
+implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
+C<?> for the composing type C<Blob>.
 
 =head2 empty (Blob)
 
@@ -2424,7 +2425,7 @@ octets of its C<Blob>-typed C<0> argument.
 
     ::MD::Textual ::= interface
         composes Stringy
-        requires_implements {in_order,so,empty
+        requires_implements {in_order,to_Boolean,empty
             ,substring_of,overlaps_string,disjoint_string
             ,catenate,replicate
             ,to_Text};
@@ -2580,15 +2581,15 @@ integers is in the range 0..127 inclusive.
 The function C<in_order::Text> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Text>.
 
-=head2 so (Text)
+=head2 to_Boolean (Text)
 
-    ::MD::so::Text ::= function --> Boolean <-- (Text)
+    ::MD::to_Boolean::Text ::= function --> Boolean <-- (Text)
         implements 2::""
         : (\.0 != '');
 
-The function C<so::Text> results in C<True> iff its C<0> argument is
-not C<''>, and in C<False> if it is C<''>.  This function implements the
-C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
+The function C<to_Boolean::Text> results in C<True> iff its C<0> argument
+is not C<''>, and in C<False> if it is C<''>.  This function implements the
+C<Boolable> virtual function C<to_Boolean> aka C<so> aka C<?> for the
 composing type C<Text>.
 
 =head2 empty (Text)
@@ -2862,7 +2863,7 @@ I<TODO.>
 
     ::MD::Homogeneous ::= interface
         composes Emptyable
-        requires_implements {so,empty
+        requires_implements {to_Boolean,empty
             ,singular,only_member
             ,has_n,multiplicity
             ,all_unique,unique
@@ -3219,7 +3220,7 @@ I<TODO.>
 
     ::MD::Unionable ::= interface
         composes Homogeneous
-        requires_implements {so,empty
+        requires_implements {to_Boolean,empty
             ,singular,only_member
             ,has_n,multiplicity
             ,all_unique,unique
@@ -3490,7 +3491,7 @@ otherwise the reduce is a serial operation, at least naively.>
 
     ::MD::Discrete ::= interface
         composes Unionable and_provides_its_default
-        requires_implements {so,empty
+        requires_implements {to_Boolean,empty
             ,singular,only_member
             ,has_n,multiplicity
             ,all_unique,unique
@@ -3583,7 +3584,7 @@ of any type, both C<Orderable> or not.
 
     ::MD::Positional ::= interface
         composes {Stringy, Discrete and_provides_its_default, Accessible}
-        requires_implements {in_order,so,empty
+        requires_implements {in_order,to_Boolean,empty
             ,substring_of,overlaps_string,disjoint_string
             ,catenate,replicate
             ,has_n,multiplicity
@@ -3996,16 +3997,16 @@ The function C<in_order::Array> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Array>.  This function
 will succeed iff C<in_order> is also defined for the types of the members.
 
-=head2 so (Array)
+=head2 to_Boolean (Array)
 
-    ::MD::so::Array ::= function --> Boolean <-- (Array)
+    ::MD::to_Boolean::Array ::= function --> Boolean <-- (Array)
         implements 2::""
         : (\.0 != []);
 
-The function C<so::Array> results in C<True> iff its C<0> argument has any
-members, and in C<False> iff it has no members.  This function implements
-the C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
-composing type C<Array>.
+The function C<to_Boolean::Array> results in C<True> iff its C<0> argument
+has any members, and in C<False> iff it has no members.  This function
+implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
+C<?> for the composing type C<Array>.
 
 =head2 empty (Array)
 
@@ -4431,16 +4432,16 @@ the only zero-member C<Set> value.
 The constant C<empty_Set> aka C<?∅> represents the only zero-member
 C<Set> value, C<{}>.
 
-=head2 so (Set)
+=head2 to_Boolean (Set)
 
-    ::MD::so::Set ::= function --> Boolean <-- (Set)
+    ::MD::to_Boolean::Set ::= function --> Boolean <-- (Set)
         implements 2::""
         : (\.0 != {});
 
-The function C<so::Set> results in C<True> iff its C<0> argument has any
-members, and in C<False> iff it has no members.  This function implements
-the C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
-composing type C<Set>.
+The function C<to_Boolean::Set> results in C<True> iff its C<0> argument
+has any members, and in C<False> iff it has no members.  This function
+implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
+C<?> for the composing type C<Set>.
 
 =head2 empty (Set)
 
@@ -4791,16 +4792,16 @@ corresponding types I<Multiset>.
 The constant C<empty_Bag> aka C<+∅> represents the only zero-member
 C<Bag> value, C<\+{}>.
 
-=head2 so (Bag)
+=head2 to_Boolean (Bag)
 
-    ::MD::so::Bag ::= function --> Boolean <-- (Bag)
+    ::MD::to_Boolean::Bag ::= function --> Boolean <-- (Bag)
         implements 2::""
         : (\.0 != \+{});
 
-The function C<so::Bag> results in C<True> iff its C<0> argument has any
-members, and in C<False> iff it has no members.  This function implements
-the C<Boolable> virtual function C<so> aka C<?> aka C<to_Boolean> for the
-composing type C<Bag>.
+The function C<to_Boolean::Bag> results in C<True> iff its C<0> argument
+has any members, and in C<False> iff it has no members.  This function
+implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
+C<?> for the composing type C<Bag>.
 
 =head2 empty (Bag)
 
