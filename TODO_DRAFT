@@ -170,6 +170,9 @@ on mathematical signs and symbols for use in physical sciences and technology
 * https://en.wikipedia.org/wiki/ISO_80000-2
 on Quantities and units — Part 2: Mathematical signs and symbols to be used in the natural sciences and technology
 
+* Note: A "covering index" is an index that contains the data you want to
+select, that is all the tuple attributes you want to select are in the index itself.
+
 * https://en.wikipedia.org/wiki/Kotlin_(programming_language)
 Kotlin makes a distinction between nullable and non-nullable datatypes. All
 nullable objects must be declared with a "?" postfix after the type name.
@@ -180,6 +183,9 @@ property of a possibly null object. If the object is null, the method will
 not be called and the expression evaluates to null.
 eg: foo ?. bar() ?. baz()
 ?: (null coalescing operator) often referred to as the Elvis operator:
+
+* Interesting article on methods for in-database queues.
+http://blog.2ndquadrant.com/what-is-select-skip-locked-for-in-postgresql-9-5
 
 * Add one or more features to assist in making some otherwise fatal
 actions non-fatal, while staying in pure functions.
@@ -4136,9 +4142,9 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
             foo ::= function --> Boolean <-- Any : (topic --> \@bar ?? False !! True);
         - it is assumed that function pairs in "negates" relationship
         may be different re associativity etc so each declares its own "is"
-    2. keyword "to" or "-->" followed by the name of a type
+    2. keyword "to" or "-->" is optional, followed by the name of a type
         - 'to' and 'from' support all of and exactly the same options
-    3. keyword "from" or "<--" or "signature" followed by the name of a type
+    3. keyword "from" or "<--" or "signature" is optional, followed by the name of a type
         - the definition of the type may appear in place of the name using
         the syntax "selection ..."
         - a simplified form of a SC_Func_Params literal may appear in place
@@ -4167,8 +4173,12 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         as to what's going on and users can avoid easy mistakes
     6. OBSOLETE: keyword "normalize" followed by expr
         - defaults to topic if omitted
-    7. keyword "requires" followed by predicate expr
+    7. keyword "requires" is optional, followed by predicate expr
         - defaults to true if omitted
+        - tests the argument over and above it being the type named in "from"
+    7.1 keyword "asserts" is optional, followed by predicate expr
+        - defaults to true if omitted
+        - tests the result over and above it being the type named in "to"
     8. keyword "is" is optional, followed by set of trait name keywords in
         braces: "associative", "commutative", "idempotent"
         and other terms like bijective etc may be added
@@ -4194,7 +4204,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         such as when doing a reduction over a collection with repeating members
         - for example 'add' may indicate 'multiply' or the latter 'exponentiate'
         or catenate may indicate replicate etc
-    10. keyword "via" or ":" followed by expr
+    10. keyword "via" or ":" is optional, followed by expr
         - defaults to topic if omitted
     ...
 - Note that "symmetric" is obsolete here; it meant what "commutative" does.
@@ -4272,7 +4282,8 @@ constants for a virtual type should be composed by implementing types.
         some particular scope to be defined of each place where the
         abstract type is otherwise referenced, or it is an error;
         TODO, figure out that scope, but its probably per package
-    7. keyword "requires_implements" is optional iff "abstract" is true,
+    7. keyword "requires_implements" is optional,
+        it may only be used if "abstract" is true,
         followed by set of 0..N names of virtual routines whose signatures
         use the current type, and live in same package as the current type
         - if present, then for every type X which "composes" current one,
@@ -4280,6 +4291,58 @@ constants for a virtual type should be composed by implementing types.
         the named virtual routines and signatures have X in the place of
         the current abstract type
         - this is a means for abstract types to declare a contract
+
+* Procedure declare syntax general form (same as inline actually?):
+    0. keyword "procedure" followed by 0 or 1 of each of next in any order:
+    1. keyword "virtual" is optional, not followed by anything of its own
+        - if used, the keywords "performs"/":" must be omitted
+    2. keyword "<-->" or "signature" is optional, followed by the name of a type
+        - 'signature' supports all of and exactly the same options
+        as 'signature' of a function
+        - the prior point also means that if "signature" is omitted then
+        callers may pass any value at all as its sole actual argument, so
+        explicitly declaring a constant signature such as the empty Tuple
+        will effectively declare there to be no conceptual arguments
+        - this is implicitly a variable in the general case readable and
+        writeable by both the invoked procedure and the invoking procedure;
+        that is, what the called procedure sees is a pseudo-variable defined
+        over some pseudo-/variable that the caller sees
+    3. keyword "updates" is optional, followed by set of 0..N
+        attr names in parens or just the keyword "topic" not in parens
+        - if omitted, the meaning is the same as if it had zero names
+        - "updates" declares that a particular subset of the conceptual
+        arguments, or the whole actual argument, or none, may be updated
+        by the procedure; a statement invoking this procedure must pass
+        pseudo-/variables where they are marked updateable, and it may pass
+        non-variables otherwise
+    4. keyword "implements" is optional,
+        followed by set of 0..N associated procedure names
+    5. keyword "overrides" is optional,
+        followed by set of 0..N associated procedure names
+        - see also "overrides" comment for function
+    6. keyword "requires" is optional, followed by predicate expr
+        - defaults to true if omitted
+        - test of topic beyond its signature type before procedure executes
+    7. keyword "asserts" is optional, followed by predicate expr
+        - defaults to true if omitted
+        - test of topic beyond its signature type after procedure executes
+        - normally would be omitted if "updates" is omitted
+    8. keyword "vars" is optional,
+        followed by set of 0..N variable declarations in braces,
+        where each variable declaration has the form "varname : vartype",
+        where varname is an attr name and vartype is a type name that
+        can be written with all and any of the same options as "signature"
+        - each declared variable can be referenced within "performs" with
+        the same syntax as referencing a named expression, as an attr name,
+        but unlike the latter it can be the target of assignments, etc
+    9. keyword "performs" or ":" is optional, followed by stmt
+        - defaults to no-op if omitted
+    ...
+- Every part has a default value that is used if omitted
+
+* See https://doc.perl6.org/type/Routine about Perl 6 routine traits that
+may be interesting to use.
+- These could become annotations: DEPRECATED, hidden-from-backtrace.
 
 * Schema objects can be easily indexed for fast(er) dispatch.  To be
 specific, we can pre-make a map from each abbreviation (particularly the
