@@ -569,9 +569,9 @@ C<Boolable> is composed, directly or indirectly, by: C<Boolean>,
 C<Numerical>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>,
 C<Emptyable>, C<Stringy>, C<Bits>, C<Blob>, C<Textual>, C<Text>,
 C<Homogeneous>, C<Unionable>, C<Discrete>, C<Positional>, C<Array>,
-C<String>, C<Set>, C<Bag>, C<Relational>, C<Discrete_Relational>,
-C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Intervalish>, C<Interval>,
-C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
+C<String>, C<Set>, C<Bag>, C<Relational>, C<Tuple_Array>, C<Relation>,
+C<Tuple_Bag>, C<Intervalish>, C<Interval>, C<Unionable_Intervalish>,
+C<Interval_Set>, C<Interval_Bag>.
 
 While conceivably C<Boolable> could also be composed by C<Attributive>, and
 hence C<Tuple>, it isn't because that would set up a semantic conflict for
@@ -1986,9 +1986,8 @@ The default value of C<Emptyable> is the C<Bits> value with zero members.
 C<Emptyable> is composed, directly or indirectly, by: C<Stringy>, C<Bits>,
 C<Blob>, C<Textual>, C<Text>, C<Homogeneous>, C<Unionable>, C<Discrete>,
 C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>,
-C<Discrete_Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>,
-C<Intervalish>, C<Interval>, C<Unionable_Intervalish>, C<Interval_Set>,
-C<Interval_Bag>.
+C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Intervalish>, C<Interval>,
+C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
 
 =head2 Excuse::No_Empty_Value
 
@@ -2896,9 +2895,8 @@ otherwise, duplication of values may occur amongst members.
 
 C<Homogeneous> is composed, directly or indirectly, by: C<Unionable>,
 C<Discrete>, C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>,
-C<Relational>, C<Discrete_Relational>, C<Tuple_Array>, C<Relation>,
-C<Tuple_Bag>, C<Intervalish>, C<Interval>, C<Unionable_Intervalish>,
-C<Interval_Set>, C<Interval_Bag>.
+C<Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Intervalish>,
+C<Interval>, C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
 
 I<TODO.  Note that for all the regular function-taking member-wise
 Homogeneous operators that are logically supposed to work with each
@@ -3239,10 +3237,10 @@ zero members, C<[]>.
 
 C<Unionable> is composed, directly or indirectly, by: C<Discrete>,
 C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>,
-C<Discrete_Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>,
-C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.  A key type
-that composes C<Homogeneous> but not C<Unionable> is C<Interval>; use
-C<Interval_Set> instead for its C<Unionable> closest analogy.
+C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Unionable_Intervalish>,
+C<Interval_Set>, C<Interval_Bag>.  A key type that composes C<Homogeneous>
+but not C<Unionable> is C<Interval>; use C<Interval_Set> instead for its
+C<Unionable> closest analogy.
 
 =head2 insert
 
@@ -3508,8 +3506,8 @@ individuals and counted.  The default value of C<Discrete> is the C<Array>
 value with zero members, C<[]>.
 
 C<Discrete> is composed, directly or indirectly, by: C<Positional>,
-C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>, C<Discrete_Relational>,
-C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
+C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>, C<Tuple_Array>,
+C<Relation>, C<Tuple_Bag>.
 
 =head2 to_Set ?|
 
@@ -5176,8 +5174,7 @@ isomorphic to a C<Homogeneous> collection each of whose I<members> is a
 C<Tuple>; otherwise, that may not be the case.
 
 C<Attributive> is composed, directly or indirectly, by: C<Structural>,
-C<Tuple>, C<Relational>, C<Discrete_Relational>, C<Tuple_Array>,
-C<Relation>, C<Tuple_Bag>.
+C<Tuple>, C<Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
 
 =head2 Excuse::No_Such_Attr_Name
 
@@ -5523,16 +5520,6 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 DISCRETE RELATIONAL DATA TYPES
-
-=head2 Discrete_Relational
-
-    ::MD::Discrete_Relational ::= interface
-        composes {Relational and_provides_its_default, Discrete}
-        requires_implements {...};
-
-I<TODO.  Add this to the various composed-by lists if we keep it.>
-
 =head1 TUPLE-ARRAY DATA TYPES
 
 =head2 Tuple_Array
@@ -5542,7 +5529,7 @@ I<TODO.  Add this to the various composed-by lists if we keep it.>
         "" ::= selection of Capsule
             where (has_wrapped::( topic, \Tuple_Array, \@1::_Asset ))
             default (~%@())
-            composes {Discrete_Relational, Positional};
+            composes {Relational, Positional};
 
         _Asset ::= selection of Tuple where
         (
@@ -5588,7 +5575,7 @@ single-tuple C<Tuple_Array> value.
         "" ::= selection of Capsule
             where (has_wrapped::( topic, \Relation, \@1::_Asset ))
             default (?%@())
-            composes {Discrete_Relational and_provides_its_default, Setty};
+            composes {Relational and_provides_its_default, Discrete, Setty};
 
         _Asset ::= selection of Tuple_Bag
             where (all_unique topic);
@@ -5625,7 +5612,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
         "" ::= selection of Capsule
             where (has_wrapped::( topic, \Tuple_Bag, \@1::_Asset ))
             default (+%@())
-            composes Discrete_Relational;
+            composes {Relational, Discrete};
 
         _Asset ::= selection of Tuple where
         (
