@@ -347,7 +347,7 @@ name this operator I<ge>.
 =head2 min
 
     ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
-        is {associative,commutative,idempotent} identity (Pos_Inf())
+        is {associative,commutative,idempotent} identity (+∞)
         : (topic --> \@in_order ?? \.0 !! \.1);
 
 The function C<min> results in whichever of its 2 arguments is first when
@@ -358,7 +358,7 @@ I<before> all of the others.
 =head2 max
 
     ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
-        is {associative,commutative,idempotent} identity (Neg_Inf())
+        is {associative,commutative,idempotent} identity (-∞)
         : (topic --> \@in_order ?? \.1 !! \.0);
 
 The function C<max> results in whichever of its 2 arguments is last when
@@ -666,7 +666,7 @@ the composing type C<Boolean>.
 
     ::MD::pred::Boolean ::= function --> {False, Neg_Inf} <-- (Boolean)
         implements 2::""
-        : (\.0 ?? False !! Neg_Inf());
+        : (\.0 ?? False !! -∞);
 
 The function C<pred::Boolean> implements the C<Bicessable> virtual
 function C<pred> for the composing type C<Boolean>.
@@ -675,7 +675,7 @@ function C<pred> for the composing type C<Boolean>.
 
     ::MD::succ::Boolean ::= function --> {True, Pos_Inf} <-- (Boolean)
         implements 2::""
-        : (!\.0 ?? True !! Pos_Inf());
+        : (!\.0 ?? True !! +∞);
 
 The function C<succ::Boolean> implements the C<Successable> virtual
 function C<succ> for the composing type C<Boolean>.
@@ -1248,7 +1248,7 @@ default and minmum value is C<0>; it has no maximum value.
 =head2 Integral_P
 
     ::MD::Integral_P ::= selection of Integral_NN
-        where (topic > zero::(topic)) default (succ::(Integral()));
+        where (topic > zero::(topic)) default (succ::(Integral::()));
 
 The selection contract C<Integral_P> represents the infinite type
 consisting just of the C<Integral_NN> values that are positive.  Its
@@ -1303,7 +1303,7 @@ this operator in postfix like I<n!>.
 
     ::MD::gcd ::= function --> Integral_P <-- (Integral_NN, Integral_NN)
         is {commutative,associative,idempotent}
-        : ((if \.1->is_zero then \.0 else 0::(\.1, mod::(\.0, \.1, To_Zero())))
+        : ((if \.1->is_zero then \.0 else 0::(\.1, mod::(\.0, \.1, To_Zero::())))
             ::?= 'Calculate using the Euclidean algorithm.');
 
     ::MD::greatest_common_divisor ::= alias of gcd;
@@ -1318,7 +1318,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
     ::MD::lcm ::= function --> Integral_NN <-- (Integral_NN, Integral_NN)
         is {commutative,associative,idempotent}
         : (if \.0->is_zero or \.1->is_zero then \.0->zero
-            else div::(\.0 * \.1, \.0 gcd \.1, To_Zero()));
+            else div::(\.0 * \.1, \.0 gcd \.1, To_Zero::()));
 
     ::MD::least_common_multiple ::= alias of lcm;
 
@@ -1511,8 +1511,8 @@ virtual function C<multiple_of> for the composing type C<Integer>.
         <-- if d = 0 then Excuse::Div_By_Zero() else q;
 
         q ::= (\Fraction wrap (
-            numerator   : div::((d > 0 ?? n !! -n), gcd, To_Zero()),
-            denominator : div::((d > 0 ?? d !! -d), gcd, To_Zero()),
+            numerator   : div::((d > 0 ?? n !! -n), gcd, To_Zero::()),
+            denominator : div::((d > 0 ?? d !! -d), gcd, To_Zero::()),
         ));
 
         gcd ::= gcd::(abs::(n), abs::(d));
@@ -1567,10 +1567,10 @@ the composing type C<Integer>.
             rup_quotient ::= (rtz_quotient + (real_q_is_neg ??  0 !! 1));
 
             <-- round_meth ??? {
-                Down()    : rdn_quotient,
-                Up()      : rup_quotient,
-                To_Zero() : rtz_quotient,
-                To_Inf()  : rti_quotient,
+                Down::()    : rdn_quotient,
+                Up::()      : rup_quotient,
+                To_Zero::() : rtz_quotient,
+                To_Inf::()  : rti_quotient,
             } !!!
                    (2 * abs::(rtz_remainder)) < abs::(divisor) ?? rtz_quotient
                 !! (2 * abs::(rtz_remainder)) > abs::(divisor) ?? rti_quotient
@@ -1587,13 +1587,13 @@ the composing type C<Integer>.
             rtz_quotient_is_even ::= (r = 0);
 
             <-- round_meth ??? {
-                Half_Down()    : rdn_quotient,
-                Half_Up()      : rup_quotient,
-                Half_To_Zero() : rtz_quotient,
-                Half_To_Inf()  : rti_quotient,
-                Half_Even()    :
+                Half_Down::()    : rdn_quotient,
+                Half_Up::()      : rup_quotient,
+                Half_To_Zero::() : rtz_quotient,
+                Half_To_Inf::()  : rti_quotient,
+                Half_Even::()    :
                   (rtz_quotient_is_even ?? rtz_quotient !! rti_quotient),
-                Half_Odd()     :
+                Half_Odd::()     :
                   (rtz_quotient_is_even ?? rti_quotient !! rtz_quotient),
             } !!! fail  `oops, an unhandled case`
         );
@@ -1764,8 +1764,8 @@ default and minmum value is C<0.0>; it has no maximum value.
           (
             common_d ::= lcm::(\.0->denominator, \.1->denominator);
             <-- in_order::(
-                (\.0->numerator) * div::(common_d, \.0->denominator, To_Zero()),
-                (\.1->numerator) * div::(common_d, \.1->denominator, To_Zero()),
+                (\.0->numerator) * div::(common_d, \.0->denominator, To_Zero::()),
+                (\.1->numerator) * div::(common_d, \.1->denominator, To_Zero::()),
             );
           )
     );
@@ -1837,8 +1837,8 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
          !!
           (
             common_d ::= lcm::(\.0->denominator, \.1->denominator);
-            <-- ((\.0->numerator) * div::(common_d, \.0->denominator, To_Zero()))
-                + ((\.1->numerator) * div::(common_d, \.1->denominator, To_Zero()))
+            <-- ((\.0->numerator) * div::(common_d, \.0->denominator, To_Zero::()))
+                + ((\.1->numerator) * div::(common_d, \.1->denominator, To_Zero::()))
                 / common_d;
           )
     );
@@ -1909,8 +1909,8 @@ the composing type C<Fraction>.
         implements 2::""
     : (
         d ::= lcm::(\.0->denominator, \.1->denominator);
-        n0 ::= ((\.0->numerator) * div::(d, \.0->denominator, To_Zero()));
-        n1 ::= ((\.1->numerator) * div::(d, \.1->denominator, To_Zero()));
+        n0 ::= ((\.0->numerator) * div::(d, \.0->denominator, To_Zero::()));
+        n1 ::= ((\.1->numerator) * div::(d, \.1->denominator, To_Zero::()));
         <-- if \.1 = 0.0 then Excuse::Div_By_Zero()
             else div::(n0 * d, n1 * d, \.2) / 1;
     );
@@ -5660,7 +5660,7 @@ I<TODO.>
 
     ::MD::Interval ::= selection of Capsule
         where (has_wrapped::( topic, \Interval, \@Tuple::Interval ))
-        default (Neg_Inf()..Pos_Inf())
+        default ((-∞)..(+∞))
         composes {Intervalish, Setty};
 
 I<TODO.>
@@ -5833,7 +5833,7 @@ I<TODO.>
 =head2 Source_Code::Package_List
 
     ::MD::Source_Code::Package_List ::= selection of Array
-        where (topic all_is_a (selection of {Package, Decoration} default Package()));
+        where (topic all_is_a (selection of {Package, Decoration} default Package::()));
 
 I<TODO.>
 
