@@ -1095,12 +1095,17 @@ Grammar:
         | <Bits>
         | <Blob>
         | <Text>
+        | <Attr_Name>
+        | <Attr_Names>
+        | <Renaming>
+        | <Identifier>
+        | <Reference>
 
 An C<< <opaque_literal_expr> >> is an C<< <expr> >> that denotes a value
 literal specific to some system-defined data type that has its own special
 Muldis D Plain Text selector syntax, and this literal syntax explicitly has
-no child C<< <expr> >> nodes, as in conventional terms it is for selecting
-scalar values.
+no child C<< <expr> >> nodes.  In conventional terms, one is typically for
+selecting scalar values, though many cases are also simple collections.
 
 =head2 Boolean Literals
 
@@ -1437,6 +1442,179 @@ Examples:
 
     \~'Green'
 
+=head2 Attribute Name Literals
+
+Grammar:
+
+    <Attr_Name> ::=
+        '\\' <sp> <attr_name>
+
+    <Attr_Names> ::=
+        '\\@' <sp> '(' <sp> <attr_name_commalist> <sp> ')'
+
+    <attr_name_commalist> ::=
+        [<attr_name> | <ord_attr_name_range> | ''] % [<sp> ',' <sp>]
+
+    <ord_attr_name_range> ::=
+        <min_ord_attr> <sp> '..' <sp> <max_ord_attr>
+
+    <min_ord_attr> ::=
+        <ord_attr_name>
+
+    <max_ord_attr> ::=
+        <ord_attr_name>
+
+An C<< <Attr_Names> >> node represents a value of the Muldis D
+C<Attr_Names> type, which is an arbitrarily-large unordered collection of
+attribute names.  An C<< <Attr_Name> node represents a value of the Muldis
+D C<Attr_Name> type, which is a subtype by constraint of the C<Attr_Names>
+type; C<< <Attr_Name> >> provides a terser alternative syntax for the
+common special case of C<< <Attr_Names> >> having exactly 1 attribute.
+
+An C<< <ord_attr_name_range> >> is subject to the additional rule that its
+integral C<< <min_ord_attr> >> value must be less than or equal to its
+integral C<< <max_ord_attr> >> value.
+
+The C<Attr_Names> type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the C<Tuple> type, and all
+C<Attr_Names> values can be selected in terms of C<< <Tuple> >> grammar
+nodes.  However, C<< <Attr_Names> >> is the canonical grammar for all
+C<Attr_Names> values, except for all C<Attr_Name> values, for which
+C<< <Attr_Name> is the canonical grammar.
+
+Examples:
+
+    `Zero attributes.`
+    \@()
+
+    `One named attribute.`
+    \sales
+
+    `Same thing.`
+    \@(sales)
+
+    `Same thing.`
+    \@("sales")
+
+    `One ordered attribute.`
+    \0
+
+    `Same thing.`
+    \"\\c<0>"
+
+    `Three nonordered attributes.`
+    \@(region,revenue,qty)
+
+    `Three ordered attributes.`
+    \@(0..2)
+
+    `One of each.`
+    \@(1,age)
+
+    `Some attribute names can only appear quoted.`
+    \"Street Address"
+
+    `A non-Latin name.`
+    \"サンプル"
+
+=head2 Attribute Renaming Specification Literals
+
+Grammar:
+
+    <Renaming> ::=
+        '\\@:' <sp> '(' <sp> <renaming_commalist> <sp> ')'
+
+    <renaming_commalist> ::=
+        [<anon_attr_rename> | <named_attr_rename> | ''] % [<sp> ',' <sp>]
+
+    <anon_attr_rename> ::=
+          ['->' <sp> <attr_name_after>]
+        | [<attr_name_after> <sp> '<-']
+        | [<attr_name_before> <sp> '->']
+        | ['<-' <sp> <attr_name_before>]
+
+    <named_attr_rename> ::=
+          [<attr_name_before> <sp> '->' <sp> <attr_name_after>]
+        | [<attr_name_after> <sp> '<-' <sp> <attr_name_before>]
+
+    <attr_name_before> ::=
+        <nonord_attr_name>
+
+    <attr_name_after> ::=
+        <nonord_attr_name>
+
+A C<< <Renaming> >> node represents a value of the Muldis D C<Renaming>
+type, which is an arbitrarily-large unordered collection of attribute
+renaming specifications.  Each attribute renaming specification is a pair
+of attribute names marked with a C<< -> >> or a C<< <- >> element; the
+associated C<< <attr_name_before> >> and C<< <attr_name_after> >> indicate
+the name that an attribute has I<before> and I<after> the renaming
+operation, respectively.  Iff the renaming specification is a C<<
+<anon_attr_rename> >> then either the I<before> or I<after> name is an
+ordered attribute name corresponding to the ordinal position of the
+renaming specification element in the C<< <renaming_commalist> >>, starting
+at zero.
+
+A C<< <renaming_commalist> >> is subject to the additional rule that no 2
+C<< <attr_name_before> >> may be the same attribute name and that no 2
+C<< <attr_name_after> >> may be the same attribute name.
+
+The C<Renaming> type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the C<Tuple> type, and all
+C<Renaming> values can be selected in terms of C<< <Tuple> >> grammar
+nodes.  However, C<< <Renaming> >> is the canonical grammar for all
+C<Renaming> values.
+
+Examples:
+
+    `Zero renamings, a no-op.`
+    \@:()
+
+    `Also a no-op.`
+    \@:(age->age)
+
+    `Rename one attribute.`
+    \@:(fname->first_name)
+
+    `Same thing.`
+    \@:(first_name<-fname)
+
+    `Swap 2 named attributes.`
+    \@:(foo->bar,foo<-bar)
+
+    `Convert ordered names to nonordered.`
+    \@:(->foo,->bar)
+
+    `Same thing.`
+    \@:(0->foo,1->bar)
+
+    `Convert nonordered names to ordered.`
+    \@:(<-foo,<-bar)
+
+    `Same thing.`
+    \@:(0<-foo,1<-bar)
+
+    `Swap 2 ordered attributes.`
+    \@:(0->1,0<-1)
+
+    `Same thing.`
+    \@:(->1,->0)
+
+    `Some attribute names can only appear quoted.`
+    \@:("First Name"->"Last Name")
+
+=head2 Identifier and Reference Literals
+
+Grammar:
+
+    <Identifier> ::=
+        ...
+
+    <Reference> ::=
+        ...
+
+I<TODO.>
+
 =head1 COLLECTION SELECTOR EXPRESSIONS
 
 Grammar:
@@ -1447,7 +1625,6 @@ Grammar:
         | <Bag>
         | <Tuple>
         | <Capsule>
-        | <source_code_selector_expr>
 
 A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
 value literal specific to some system-defined data type that has its own
@@ -1551,18 +1728,6 @@ C<Capsule> type, which is ...
 Examples:
 
     \:(\Fraction, (numerator : 5, denominator : 3))
-
-=head2 Selectors For Source Code Elements
-
-Grammar:
-
-    <source_code_selector_expr> ::=
-          <Identifier>
-        | <Heading>
-        | <Renaming>
-        | ...
-
-I<TODO.>
 
 =head1 INVOCATION EXPRESSIONS
 
