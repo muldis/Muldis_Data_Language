@@ -798,6 +798,9 @@ Grammar:
     <var_name> ::=
         <generic_name>
 
+    <stmt_name> ::=
+        <generic_name>
+
     <pkg_entity_name> ::=
           <absolute_name>
         | <relative_name>
@@ -817,6 +820,9 @@ Grammar:
 
     <material_name> ::=
         <absolute_name>
+
+    <generic_const_name> ::=
+        <pkg_entity_name>
 
     <generic_func_name> ::=
         <pkg_entity_name>
@@ -988,7 +994,7 @@ Grammar:
 
     <result_expr> ::=
           ['<--' <sp> <expr>]
-        | [['<--' <sp>]? <anon_expr>]
+        | <anon_expr>
 
     <topic_expr> ::=
         topic
@@ -1060,9 +1066,9 @@ Examples:
     `a naming_expr node`
     bar_expr ::= factorial::( foo_expr )
 
-    5 + 42 ::?= \~?'this is an introspectable comment attached to the 42'
+    5 + 42 ::?= 'this is an introspectable comment attached to the 42'
 
-    myfoo ::?= \~?'this is a comment on the elsewhere-declared node named myfoo'
+    myfoo ::?= 'this is a comment on the elsewhere-declared node named myfoo'
 
     `a delimiting_expr node`
     (x ::= y + 2; <-- x * x)
@@ -1520,6 +1526,12 @@ Grammar:
 A C<< <Tuple> >> node represents a value of the Muldis D
 C<Tuple> type, which is ...
 
+A C<< <Tuple> >> is subject to the additional rule that, iff its
+C<< <attr_commalist> >> has exactly 1 C<< <*_attr> >> element, either that
+element must have a leading or trailing comma, or the C<< <Tuple> >> must
+have the C<\%> prefix, so that the C<< <Tuple> >> can be distinguished from
+every possible C<< <delimiting_expr> >>.
+
 =head2 Capsule Selectors
 
 Grammar:
@@ -1557,32 +1569,30 @@ I<TODO.>
 Grammar:
 
     <invocation_expr> ::=
-          <constant_invo_expr>
-        | <generic_func_invo_expr>
-        | <fixed_func_invo_expr>
+          <generic_invo_expr>
+        | <pcf_invo_expr>
+        | <fixed_invo_expr>
         | <foundation_invo_expr>
-
-I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF -->/<-- WHERE THE FUNCTION
-OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
-
-=head2 Constant Invocation Expressions
-
-Grammar:
-
-    <constant_invo_expr> ::=
-        ...
 
 I<TODO.>
 
-I<TODO.  A :: is optional for a constant call, mandatory for function call.>
-
-=head2 Generic Function Invocation Expressions
+=head2 Generic Constant and Function Invocation Expressions
 
 Grammar:
+
+    <generic_invo_expr> ::=
+        <generic_const_invo_expr> | <generic_func_invo_expr>
+
+    <generic_const_invo_expr> ::=
+          ['(' <sp> '-->' <sp> <generic_const_ref> <sp> ')']
+        | ['(' <sp> <generic_const_ref> <sp> '<--' <sp> ')']
 
     <generic_func_invo_expr> ::=
           [<generic_func_args> <sp> '-->' <sp> <generic_func_ref>]
         | [<generic_func_ref> <sp> '<--' <sp> <generic_func_args>]
+
+    <generic_const_ref> ::=
+        <expr>
 
     <generic_func_ref> ::=
         <expr>
@@ -1592,14 +1602,40 @@ Grammar:
 
 I<TODO.>
 
-A C<< <generic_func_ref> >> denotes a C<Reference> value naming a function;
+A C<< <generic_[const|func]_ref> >> denotes a C<Reference> value naming a function;
 it may be either a C<Reference> value literal or an inline-defined C<function>.
 
-I<FORGET NOT THE MANDATORY :: IN FOO::(...).>
+I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF -->/<-- WHERE THE FUNCTION
+OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
 
-=head2 Fixed Function Invocation Expressions
+=head2 Postcircumfixed Constant and Function Invocation Expressions
 
 Grammar:
+
+    <pcf_invo_expr> ::=
+        <pcf_const_invo_expr> | <pcf_func_invo_expr>
+
+    <pcf_const_invo_expr> ::=
+        <generic_const_name> <sp> '::'? <sp> '(' <sp> ')'
+
+    <pcf_func_invo_expr> ::=
+        <generic_func_name> <sp> '::'? <sp> '(' <sp> <attr_commalist> <sp> ')'
+
+I<TODO.>
+
+A C<< <pcf_invo_expr> >> is subject to the additional rule that, iff its
+C<< <generic_*_name> >> element has no C<::> within itself, then that
+element must have a trailing C<::> element.
+
+A C<< <pcf_func_invo_expr> >> is subject to the additional rule that its
+C<< <attr_commalist> >> must have at least 1 C<< <*_attr> >> element.
+
+=head2 Fixed Constant and Function Invocation Expressions
+
+Grammar:
+
+    <fixed_invo_expr> ::=
+        ...
 
     <fixed_func_invo_expr> ::=
         ...
@@ -1620,11 +1656,14 @@ packages are in scope, same as "??!!" or ":=" etc don't change.
 Note, this only affects '=' when called like an infix op syntactically;
 calling it as -->"=" or "="::() gets the reg func if exists.>
 
+I<Generic allow multi-level or quoted identifiers,
+fixed allows only single-level unquoted identifiers.>
+
 I<TODO.>
 
 I<TODO: FORGET NOT THE ps5_nonquoted_symbolic_grouping.>
 
-=head2 Foundation Invocation Expressions
+=head2 Foundation Constant and Function Invocation Expressions
 
 Grammar:
 
@@ -1643,7 +1682,7 @@ I<TODO.>
 
 I<Because all non-core low-levels will be invoked via a generic core proxy
 or three, the list of core routines SHOULD be spelled out in Plain_Text,
-as changes to them WOULD change the Plain_Text version.>
+as changes to them WOULD change the Plain_Text version.  ?OBSOLETE?>
 
 =head1 CONDITIONAL EXPRESSIONS
 
