@@ -180,11 +180,21 @@ checks a value and returns true or false. Most constraints are represented
 by Specio::Constraint::Simple objects. However, there are other type
 constraint classes for specialized kinds of constraints."
 
+* https://metacpan.org/pod/Type::Tiny is recommended meanwhile for something
+working across Moose/Moo/etc, latest version from 2014.
+
 * https://en.wikipedia.org/wiki/ISO_31-11
 on mathematical signs and symbols for use in physical sciences and technology
 
 * https://en.wikipedia.org/wiki/ISO_80000-2
 on Quantities and units — Part 2: Mathematical signs and symbols to be used in the natural sciences and technology
+
+* http://www.r2d3.us/visual-intro-to-machine-learning-part-1/
+
+* https://www.sqlite.org/draft/sessionintro.html
+SQLite Session Extension included with version 3.13.0.
+This is about packaging a changeset of arbitrarily many table updates
+useful for patching or undo, analagous to "patch" or a version control system.
 
 * Note: A "covering index" is an index that contains the data you want to
 select, that is all the tuple attributes you want to select are in the index itself.
@@ -199,6 +209,8 @@ property of a possibly null object. If the object is null, the method will
 not be called and the expression evaluates to null.
 eg: foo ?. bar() ?. baz()
 ?: (null coalescing operator) often referred to as the Elvis operator:
+- ACTUALLY, other languages like Smalltalk and Swift have similar features.
+- See also https://en.wikipedia.org/wiki/Pyramid_of_doom_(programming) .
 
 * Interesting article on methods for in-database queues.
 http://blog.2ndquadrant.com/what-is-select-skip-locked-for-in-postgresql-9-5
@@ -863,6 +875,11 @@ name of a channel and the value to write to it.  A third input says whether
 or not to include context info like a stack trace, so it isn't done if it
 doesn't need to be, this being something functions can't see as a value.
 - Channels can be optionally listened to by various parties for what they want to see.
+
+* See also http://doc.perl6.org/routine/warn and things it references.
+Perl 6 has "note" which generally should be used instead of "warn" if you
+just want to print to STDERR; warn is like almost ready to throw exception but didn't.
+There are also "quietly" blocks alternative to "try" blocks.
 
 * Idea, a package version number is just implemented as a string like an
 unqualified identifier, where each integer is a codepoint like with the
@@ -3419,7 +3436,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    Normally a Capsule's Reference is a type name, making
                   |    the Capsule a type, but structurally one is identical
                   |    to a partially applied function if the Reference is to a function name.
-    OBSOLETE; USE A STRUCTURE SUBTYPE INSTEAD:
+    OBSOLETE; USE A CAPSULE SUBTYPE INSTEAD:
     AND TODO: MAKE \$foo mean what $foo used to mean, \\$foo what was \$foo.
     AND TODO: USE ~@ rather than $ meaning string of attribute name ... BUT WHAT OF THE PRIOR LINE?
     Identifier    | Several kinds, all mutually disjoint:
@@ -3434,6 +3451,9 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |        - absolute : ::X::Y::Z or ::X etc
                   |        - relative : 0:: or 2::foo::bar or 1:: or 1::_priv etc
                   |        - floating : Z:: or Y::Z etc
+                  |    NOTE that "floating" can NOT search the private namespace
+                  |    within a binder, it always stops resolving at a binder
+                  |    itself (plus ::""); only "relative" (or ident,abs) can ref private.
                   |    For non-literals rtn call remove \$
                   |    eg "::pkg.foo.bar()" or "0()" or "foo.bar()".
                   |    Note that leading "0" means "self" / same routine,
@@ -4231,9 +4251,10 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
 
 * Constant / named value declare syntax general form:
     0. keyword "constant"
-    1. optional keyword "folded"
+    1. keyword "folded" is optional
     2. keyword "composes" is optional, rules as on a "selection"
-    3. expr
+    3. keyword "value" is optional, followed by expr
+        - defaults to (\@0) if omitted
 - Note that unlike with functions, "virtual"/"implements" don't make sense
 for constants because there's no way for them to be polymorphic dispatching
 on a nonexistant argument, so all references to constants need to be
@@ -4309,6 +4330,22 @@ constants for a virtual type should be composed by implementing types.
         the named virtual routines and signatures have X in the place of
         the current abstract type
         - this is a means for abstract types to declare a contract
+
+* Enumeration (unordered) declare syntax general form:
+    0. keyword "enumeration"
+    1. keyword "of" or "union", followed by set of 1..N unqualified
+        identifiers in braces
+    2. keyword "default", followed by exactly 1 unqualified identifier
+- An "enumeration" is not a material kind itself, rather it is an idiomatic
+alternative syntax for declaring a set of 1..N "constant value (\@0)" plus
+a "selection" that is just a union of those constants.
+- When declaring a "Foo ::= enumeration" outside an explicit "binder" definition,
+every one of the "constant" and "selection" will each get their own "binder"
+housing just that material, and "Foo" is a folder containing those binders;
+this is done so one can use "floating Foo" and have it behave as expected.
+- In contrast, when declaring a "Foo ::= enumeration" inside an explicit
+"binder", then each "constant" and the "selection" will simply become
+materials private to that binder.
 
 * Procedure declare syntax general form (same as inline actually?):
     0. keyword "procedure" followed by 0 or 1 of each of next in any order:

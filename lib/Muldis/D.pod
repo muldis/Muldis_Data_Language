@@ -207,6 +207,8 @@ Implementations of other arbitrary programming language or data formats in
 terms of treating them as a Muldis D dialect can be arbitrarily complicated
 as far as knowing how to distinguish said alternatives from each other,
 depending on whether they have reliable simple format declarations or not.
+Note that a leading MDPT declaration in source code should be effective as
+a "magic number" for identifying it as being MDPT source code.
 
 =item *
 
@@ -291,7 +293,7 @@ least, with 4 positions [MAJOR,MINOR,PATCH,MATURITY] and further ones
 possible.  The version sequence may have have as few as 1
 most significant position.  Any omitted trailing position is treated as if
 it were zero.  Each of {MAJOR,MINOR,PATCH} must be a non-negative integer
-while MATURITY must not be a positive integer.  MAJOR is always (except when
+while MATURITY may be any integer.  MAJOR is always (except when
 it is zero) incremented when a change is made which breaks
 backwards-compatibility for functioning uses, such as when removing a
 feature; it may optionally be incremented at other times, such as for
@@ -305,10 +307,28 @@ improvements or some documentation changes or any test suite changes.  For
 fixes to bugs or security holes which users may have come to rely on in
 conceptually functioning uses, they should be treated like API changes.
 When MAJOR is zero, MINOR is incremented for any kind of breaking change.
-MATURITY must be zero for a production version, while it is a negative
-integer for a pre-production version (experimental, alpha, beta, RC, etc).
 There is no requirement that successive versions have adjacent integers,
-but they must be increases.  I<This is all subject to change.>
+but they must be increases.
+
+Strictly speaking a I<version number> reflects intention of the authority's
+release and not necessarily its actuality.  If PATCH is incremented but the
+release unknowingly had a breaking change, then once this is discovered
+another release should be made which increments PATCH again and undoes that
+breaking change, in order to safeguard upgrading users from surprises; an
+additional release can be made which instead increments MAJOR or MINOR with
+the breaking change if that change was actually desired.
+
+MATURITY must be a negative integer for a pre-production version
+(experimental, alpha, beta, RC, etc) and be a non-negative integer for a
+production version.  Typically the magnitude of MATURITY indicates
+perceived stability; zero is the default for production while a larger
+positive number can suggest greater confidence in quality; for
+pre-production it is suggested that a release candidate is negative-one,
+and other states such as beta are successively more negative.  A toolchain
+for installing or upgrading packages should default to ignoring any whose
+I<version number> has a negative integer in any position for users' safety.
+
+I<This is all subject to change.>
 
 =head1 SEE ALSO
 

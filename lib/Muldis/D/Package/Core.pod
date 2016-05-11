@@ -19,7 +19,10 @@ This document is Muldis::D::Package::Core version 0.201.0.-9.
     {
         identity My_App ::= My_App:"http://mycorp.com":"0";
         foundation "http://muldis.com":"0.201.0.-9";
-        uses MD ::= Core:"http://muldis.com":"0.201.0.-9";
+        uses
+        {
+            MD ::= Core:"http://muldis.com":"0.201.0.-9";
+        }
         floating {::My_App, ::MD, ::MD::Unicode_Aliases};
         `TODO: Put example routines etc here.`
     };
@@ -151,7 +154,7 @@ have typed exceptions are analogous.
 
 =head2 Excuse::No_Reason
 
-    ::MD::Excuse::No_Reason ::= constant (\@0)
+    ::MD::Excuse::No_Reason ::= constant
         composes Excuse and_provides_its_default;
 
 The constant C<Excuse::No_Reason> represents the C<Excuse> value which
@@ -227,7 +230,7 @@ C<Text>, C<Positional>, C<Array>, C<String>, C<Tuple_Array>.
 
 =head2 Neg_Inf -∞
 
-    ::MD::Neg_Inf ::= constant (\@0) composes {Orderable, Excuse};
+    ::MD::Neg_Inf ::= constant composes {Orderable, Excuse};
 
     ::MD::Unicode_Aliases::"-∞" ::= alias of Neg_Inf;
 
@@ -239,7 +242,7 @@ Note that IEEE floating-point standards define a negative infinity value.
 
 =head2 Pos_Inf +∞
 
-    ::MD::Pos_Inf ::= constant (\@0) composes {Orderable, Excuse};
+    ::MD::Pos_Inf ::= constant composes {Orderable, Excuse};
 
     ::MD::Unicode_Aliases::"+∞" ::= alias of Pos_Inf;
 
@@ -440,7 +443,8 @@ them out of sequence or in parallel may not be an option.
     ::MD::asset::"" ::= function virtual --> Any <-- (Successable);
 
 The virtual function C<asset> results in the I<asset> of its C<0> argument,
-which for trivial cases may simply be that same argument.
+which for trivial cases may simply be that same argument.  Other
+programming languages may name their corresponding operators I<Current>.
 
 =head2 succ
 
@@ -449,7 +453,7 @@ which for trivial cases may simply be that same argument.
 
 The virtual function C<succ> results in the I<successor> value of its
 C<0> argument, or in C<Pos_Inf> if there is none.  Other programming
-languages may name their corresponding operators I<next>.
+languages may name their corresponding operators I<next> or I<MoveNext>.
 
 =head2 nth_succ
 
@@ -844,22 +848,11 @@ and its C<1> argument is C<True>, and C<False> otherwise.
 
 =head2 Round_Meth
 
-    ::MD::Round_Meth::"" ::= selection
-        union {2::Down,2::Up,2::To_Zero,2::To_Inf
-            ,2::Half_Down,2::Half_Up,2::Half_To_Zero,2::Half_To_Inf
-            ,2::Half_Even,2::Half_Odd}
-        default (2::To_Zero());
-
-    ::MD::Round_Meth::Down         ::= constant (\@0);
-    ::MD::Round_Meth::Up           ::= constant (\@0);
-    ::MD::Round_Meth::To_Zero      ::= constant (\@0);
-    ::MD::Round_Meth::To_Inf       ::= constant (\@0);
-    ::MD::Round_Meth::Half_Down    ::= constant (\@0);
-    ::MD::Round_Meth::Half_Up      ::= constant (\@0);
-    ::MD::Round_Meth::Half_To_Zero ::= constant (\@0);
-    ::MD::Round_Meth::Half_To_Inf  ::= constant (\@0);
-    ::MD::Round_Meth::Half_Even    ::= constant (\@0);
-    ::MD::Round_Meth::Half_Odd     ::= constant (\@0);
+    ::MD::Round_Meth ::= enumeration
+        union {Down,Up,To_Zero,To_Inf
+            ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
+            ,Half_Even,Half_Odd}
+        default To_Zero;
 
 The selection contract C<Round_Meth> is finite.  When a value of some
 C<Orderable> type needs to be mapped into a proper subtype that doesn't
@@ -927,7 +920,7 @@ floating-point types and so on.
 
 =head2 Excuse::Div_By_Zero
 
-    ::MD::Excuse::Div_By_Zero ::= constant (\@0) composes Excuse;
+    ::MD::Excuse::Div_By_Zero ::= constant composes Excuse;
 
 The constant C<Excuse::Div_By_Zero> represents the I<undefined> result of
 attempting to divide a simple number by a simple, unsigned, number zero.
@@ -937,7 +930,7 @@ positive) zero, but the Muldis D C<Core> package lacks those concepts.
 
 =head2 Excuse::Zero_To_The_Zero
 
-    ::MD::Excuse::Zero_To_The_Zero ::= constant (\@0) composes Excuse;
+    ::MD::Excuse::Zero_To_The_Zero ::= constant composes Excuse;
 
 The constant C<Excuse::Zero_To_The_Zero> represents the I<undefined> result
 of attempting to exponentiate a number zero to the power of a number zero.
@@ -1991,7 +1984,7 @@ C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
 
 =head2 Excuse::No_Empty_Value
 
-    ::MD::Excuse::No_Empty_Value ::= constant (\@0) composes Excuse;
+    ::MD::Excuse::No_Empty_Value ::= constant composes Excuse;
 
 The constant C<Excuse::No_Empty_Value> represents the I<undefined> result
 of attempting to request the value with zero members of some collection
@@ -3205,6 +3198,8 @@ I<TODO.  Result is true when no member evaluates to true.>
 
 I<TODO.  Result is true when no member evaluates to false.>
 
+I<Other languages: "TrueForAll".>
+
 =head2 all_is_a
 
     ::MD::all_is_a ::= function --> Boolean <-- (Homogeneous, Reference)
@@ -3625,7 +3620,7 @@ composed, directly or indirectly, by: C<Array>, C<String>, C<Tuple_Array>.
 
 =head2 Excuse::No_Such_Index
 
-    ::MD::Excuse::No_Such_Index ::= constant (\@0) composes Excuse;
+    ::MD::Excuse::No_Such_Index ::= constant composes Excuse;
 
 The constant C<Excuse::No_Such_Index> represents the I<undefined> result of
 attempting to use a member index I<I> of C<Positional> value I<V> while
@@ -5178,7 +5173,7 @@ C<Tuple>, C<Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
 
 =head2 Excuse::No_Such_Attr_Name
 
-    ::MD::Excuse::No_Such_Attr_Name ::= constant (\@0) composes Excuse;
+    ::MD::Excuse::No_Such_Attr_Name ::= constant composes Excuse;
 
 I<TODO.>
 
@@ -5551,6 +5546,8 @@ expect to be meaningful any more than say the Boolean version...
 It needs to inline the in_order(Tuple,Tuple) used for its heading and for
 its first nonmatching member, rather than Tuple implementing an in_order(),
 since we don't want to infect the generic Tuple with all the Orderable ops.>
+I<Note: This type structurally resembles a spreadsheet or a .Net DataTable,
+or a subtype of it does.>
 
 =head2 Tuple_Array_D0C0
 
@@ -5865,6 +5862,7 @@ I<TODO.>
     };
 
 I<TODO.>
+I<Remember that "floating" can't search inside a binder, can only resolve to a binder or parent.>
 
 =head2 Source_Code::Pkg_Decl_Map
 

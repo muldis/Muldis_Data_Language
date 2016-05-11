@@ -246,6 +246,7 @@ Grammar:
 As per the VERSIONING section of L<Muldis::D>, code written in Muldis D
 Plain Text, whether I<module> or I<depot>, must start by declaring the
 fully-qualified Muldis D language name it is written in.
+This is effectively a "magic number" for identifying source code as MDPT.
 
 SEE ALSO http://design.perl6.org/S11.html#Versioning FOR GUIDANCE...
 
@@ -673,6 +674,7 @@ These are keywords within the heading of a material declaration:
     composes
     constant
     default
+    enumeration
     folded
     from
     function
@@ -696,6 +698,7 @@ These are keywords within the heading of a material declaration:
     topic
     union
     updates
+    value
     vars
     via
     virtual
@@ -857,26 +860,22 @@ Grammar:
         package <sp>
         '{' <sp>
             <pkg_identity> <sp> ';' <sp>
+            <pkg_foundation> <sp> ';' <sp>
             [<pkg_uses> <sp> ';' <sp>]?
+            [<pkg_materials_floating> <sp> ';' <sp>]?
             [<pkg_materials> <sp> ';' <sp>]?
         <sp> '}'
 
     <pkg_identity> ::=
         identity <sp> <x> <sp> '::=' <sp> <x>
 
+    <pkg_foundation> ::=
+        foundation <sp> <x>
+
     <pkg_uses> ::=
         uses <sp>
         '{' <sp>
             [<x> <sp> '::=' <sp> <x> <sp> ';' <sp>]*
-        <sp> '}'
-
-    <pkg_materials> ::=
-        materials <sp>
-        '{' <sp>
-            [<pkg_materials_floating> <sp> ';' <sp>]?
-            folders...
-            binders...
-            [<named_material> <sp> ';' <sp>]*
         <sp> '}'
 
     <pkg_materials_floating> ::=
@@ -885,17 +884,26 @@ Grammar:
             [<folder_name> <sp> ',' <sp>]*
         <sp> '}'
 
+    <pkg_materials> ::=
+        materials <sp>
+        '{' <sp>
+            folders...
+            binders...
+            [<named_material> <sp> ';' <sp>]*
+        <sp> '}'
+
     <named_material> ::=
         <material_name> <sp> '::=' <sp> <material>
 
 I<TODO.  See also about binders, folder declarations, etc.>
+I<Remember that "floating" can't search inside a binder, can only resolve to a binder or parent.>
 
 =head1 MATERIAL SPECIFICATION
 
 Grammar:
 
     <material> ::=
-        <alias> | <constant> | <selection> | <interface> | <function> | <procedure>
+        <alias> | <constant> | <selection> | <interface> | <enumeration> | <function> | <procedure>
 
     <alias> ::=
         alias <sp> of <sp> <pkg_entity_name>
@@ -928,6 +936,15 @@ I<TODO.>
 Grammar:
 
     <interface> ::=
+        ...
+
+I<TODO.>
+
+=head2 Enumeration Specification
+
+Grammar:
+
+    <enumeration> ::=
         ...
 
 I<TODO.>
@@ -1053,6 +1070,10 @@ Iff an C<< <expr> >> is a C<< <fail_expr> >>, then any attempt at runtime
 to take that node's value will throw an exception, and so it should only
 appear as a child of a C<< <conditional_expr> >> node, one that is
 performing an assertion that its other inputs are reasonable.
+
+I<TODO: Add something like 'publish' or 'trace' etc which writes to a
+side-channel but has no local effect.  Such as these and maybe 'fail'
+should be documented in another sub-section perhaps.>
 
 See the sections in this file named L</OPAQUE LITERAL EXPRESSIONS>,
 L</COLLECTION SELECTOR EXPRESSIONS>, L</INVOCATION EXPRESSIONS>, and
@@ -1741,6 +1762,9 @@ Grammar:
 
 I<TODO.>
 
+I<Also TODO is adding things like -->? and -->! etc to test if something
+is invokable or indicate a result if one isn't invokable.>
+
 =head2 Generic Constant and Function Invocation Expressions
 
 Grammar:
@@ -1874,6 +1898,10 @@ I<TODO.>
 =head2 Short-Circuiting Given-When-Default Expressions
 
 I<TODO.  Make 'given' keyword optional/noiseword, for parity with non-short.>
+
+=head1 GENERIC PERFORMANCE STATEMENTS
+
+I<TODO.>
 
 =head1 LANGUAGE MNEMONICS
 
