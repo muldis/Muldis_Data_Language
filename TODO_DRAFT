@@ -147,6 +147,10 @@ And therefore even library-supplied operators
 can be overloaded, redefined,
 and their fixity changed within a module."
 
+* See this on how to release a Perl 6 module including metadata examples,
+we can adopt such things:
+https://doc.perl6.org/language/modules
+
 * Valuable to read: https://doc.perl6.org/language/faq
 - Including the start about versioning.
 - Including https://docs.perl6.org/language/nativecall .
@@ -195,6 +199,11 @@ on Quantities and units — Part 2: Mathematical signs and symbols to be used in
 SQLite Session Extension included with version 3.13.0.
 This is about packaging a changeset of arbitrarily many table updates
 useful for patching or undo, analagous to "patch" or a version control system.
+
+* On how SQLite was and is based on Postgres specifically:
+- http://www.pgcon.org/2014/schedule/events/736.en.html - SQLite: Protégé of PostgreSQL
+- http://use-the-index-luke.com/blog/2014-05/what-i-learned-about-sqlite-at-a-postgresql-conference
+- Richard Hipp gave keynote at PgCon 2014.
 
 * Note: A "covering index" is an index that contains the data you want to
 select, that is all the tuple attributes you want to select are in the index itself.
@@ -4244,10 +4253,62 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         or catenate may indicate replicate etc
     10. keyword "via" or ":" is optional, followed by expr
         - defaults to topic if omitted
+        - this is the main body of the function F1; it takes the function's
+        actual argument (as topic) which conforms to "from"+"requires" and
+        produces the function's result which conforms to "to"+"intends"
+    11. keyword "inverse" or "-:" is optional, followed by expr
+        - has no default / doesn't exist if omitted
+        - this is the main body of the canonical inverse function F2 of the
+        main function F1 but existing specifically to support pseudo-variables
+        - an invocation of F1 may only be used within an expression denoting
+        a pseudo-variable (left-hand side of an assignment, or argument to
+        a subject-to-update parameter) if F2 is defined for it
+        - a few system-defined operators such as "." have "inverse" defined
+        for them, but the majority would need to be wrapped in user-defined
+        functions in order to have an appropriate inverse behavior for the
+        use cases at hand, eg this is how "database views" would often work
+        - the "topic" of F2 is a tuple with these attributes:
+            - arg_old - the pre-assignment value of the actual argument of the F1 call
+            - pvar_old - the pre-assignment value of the pseudo-variable that is the F1 call
+            - pvar_new - the post-assignment value of the pseudo-variable that is the F1 call
+        - the "result" of is "arg_new", the intended post-assignment value of the actual argument of the F1 call
+        - it is to be decided whether some syntax would be provided for invoking
+        F2 directly as if it were a regular function, eg such as by implementing
+        "inverse" by producing a nested function
+            - its not like there's a way to directly invoke the expression
+            in "default" or "identity" etc either, unless those become nested constants?
+        - meanwhile, for invoking a given F2 for foo simply, run this statement:
+            vars {old_topic : FooType};
+            foo::(old_topic) := new_result;
+        ... and then the variable old_topic will have the result of running F2
+        - when "inverse" defined, there is implicitly another constraint that
+        runs after F2 executes and produces "arg_new" (and "from"+"requires"
+        constraints have passed); it will run F1 again
+        with arg_new and check its result matches pvar_new; if they don't
+        match an exception will be thrown;
+        in other words we rigorously enforce "The Assignment Principle"
+        - inverse should work for any surjective (or bijective) function
+        - the fact we have this constraint means we might be able to have
+        some looser inverse functions which may not necessarily always
+        work, eg letting instances that work through and blocking those that don't,
+        as might happen with certain insert/remove/etc through joins
     ...
 - Note that "symmetric" is obsolete here; it meant what "commutative" does.
 - Every part has a default value that is used if omitted
 - Many of the numbered items above correspond to Perl 6 sub traits
+- Note that declarations of a/c/i/identity/repeater etc could potentially
+be tested automatically when a routine is called, eg run it twice with args
+swapped and check the result, however if any of this is provided it likely
+would be an optional feature to enable like a warning; however, given the
+complexity of doing "inverse" right, it would stand to be reasonable that
+this run-forwards constraint is just something that is always done, and in
+particular this is more likely something that would normally be an actual
+regular database constraint like type checks or key checks etc and that
+making it possible to turn this check off would be bad.
+- It may be interesting for any system-defined stuff conceivably used like
+a view would have a system-defined inverse defined.  Example is UTF-8
+encode/decode, or Plain_Text parse/generate, or different information schema,
+or emulators of other DBMSs, etc; some may only work with/without normalization constraints.
 
 * Constant / named value declare syntax general form:
     0. keyword "constant"
