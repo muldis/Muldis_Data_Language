@@ -14,6 +14,72 @@ resources of everyone else.
 
 ----------
 
+* For now, rather than providing general case of assignment LHS expressions,
+just provide simply simultaneous multiple-variable assignment.
+- Provide this very specific feature for functions AND procedures, where
+we provide terse multi-naming/aliasing syntax for expressions in any routine,
+and multi-variable assigning syntax in procedures.
+- This would be special syntax with its own node type probably.
+- Both resembling Tuple literals, or something.
+- For assigning to a tuple attribute, just use the attr update function.
+- Also use for terse unpacking topic into named exprs.
+
+* IMPORTANT: See the long block a few points down citing ACID/CAP in its
+first line, in particular the message-passing "request submitted" etc and
+what leads to it.  More notes...
+- It seems best to conceive that by default or fundamentally there is no
+magic in Muldis D for providing the illusion of working with large datasets
+that wouldn't normally be held in memory in a typical program as if they
+were in memory.  In particular this means not representing entire databases
+or database relvars in terms of lexical variables of routines that
+conceptually might run outside an actual DBMS such as in a regular
+application.  Rather, only routines that conceptually run inside the DBMS
+would do this.  So any lexical variable or expression node in a routine
+would conceptually represent data structures living in the local memory
+space of the process where the routine runs.
+- For working with large data sets conceptually living in an external DBMS,
+Muldis D would feature the paradigm of sending an inter-process message
+consisting of code/instructions intended to be run by the recipient.
+- Generally each message would take the form of a Package value intended to
+be interpreted (loaded and invoked) in the context of the recipient.  This
+could be as simple as a plain routine call, or also include definitions of
+things or carry associated data.
+- A message is a request for the recipient to do something for the caller,
+but the recipient is free to accept or decline the request.
+- Generally message passing is asynchronous and involves callbacks; a sent
+message includes an instructions on how to respond to the caller, such as
+what kind of response is desired and who to send that response to.  An
+initial response may be "heard your request" and later ones may relate to
+the outcome.
+- A remote and a local process can maintain a session such that multiple
+messages are passed back and forth and the outcomes of several messages are
+treated as a single transaction by the invoked side; indeed some messages
+may involve transaction controls.
+- Ideally a message would denote a self-contained transaction as applicable.
+- Each side maintains a queue for messages.
+- As processes within the same VM also pass messages between themselves,
+there should be at least 2 message passing systems, one that is implicitly
+local and lightweight, assuming both parties share the same memory space,
+and the other system which is implicitly remote and heavyweight, which
+involves marshalling.  Typically there would be local processes that are
+proxies for the second system and they are invoked by most code via the
+first system, so most code doesn't have to know for sure the locality, but
+just act as if they are talking to something that MIGHT be remote.
+- For version 1 all that actually needs to work is the local/lightweight version.
+- The paradigm naturally translates to working with distributed systems,
+where the actual work might be divided up or replicated, transparently to
+the original requestor.
+- Typically a "main program" interacts with the user and sends messages to
+do most of the grunt work, whether in a straight Muldis D or mixed-language program.
+- A Package should have an optional trait that names its "main routine" if
+there is one; this would obsolete the need for a "when loaded" trigger.
+
+* Consider using the greek-letter-looking symbols often used to denote some
+relational operations like selection, projection, and rename.  However note
+that typical usage of those in maths has the relation as the right-hand
+argument and the attr names etc are on the left (as subscripts), though the op name leftmost.
+In particular, we don't yet have a symbolic rename or restriction.
+
 * Note re parsing:  After splitting nonquoted by character class, seek
 semicolons and parenthesis first.  Every material/etc declaration has a
 semicolon after it / doesn't cross a semicolon.  All bracketing characters
@@ -60,6 +126,10 @@ of using the DBMS like using a queue; change requests go in one end and the
 results of those change requests come out the other.  A client should not
 assume that any change they made has stuck until they get the appropriate
 response out of the queue.
+- Internally, idiomatically have a DBMS process responsible for managing
+the official database state (which may or may not delegate), and then clients
+are represented by other DBMS processes, which send messages to the first one.
+Perhaps there is less reliance on tied variables in this case?
 - The DBMS processes can operate at different levels of trust, where they
 may or may not trust or accept what their peers say.  Interaction between
 them could conceivably be about a chain of claims or he-said-she-said
@@ -96,6 +166,7 @@ implementation-specific ways, basically both options would be available, eg
 for abstracting away where DBMS processes are and how they are talked with.
 In any event, typically a specific DBMS process would be a user's proxy,
 running their session, for the group at large.
+- Using possibly distributed implementations should benefit from this design.
 - Package names in the general case could be UUIDs or such, ones representing
 database versions, and we can leave human-readable names for libraries etc.
 
@@ -160,6 +231,20 @@ https://doc.perl6.org/language/modules
     - "Perl 6' use statement allows you to load modules from other languages
     as well. Inline::Perl5 registers as a handler for the Perl5 language."
     - In theory that's how I'd best make Muldis D callable from Perl 6.
+
+* Note that a Perl 5 "version" object internally uses the sequence of
+integers scheme, but the maturity is indicated separately:
+    bless( {
+      'original' => 'v1.2.3_4',
+      'alpha' => 1,
+      'qv' => 1,
+      'version' => [
+        1,
+        2,
+        3,
+        4
+      ]
+    }, 'version' );
 
 * https://en.wikipedia.org/wiki/Primitive_recursive_function
 
@@ -1692,6 +1777,8 @@ pairings either in structs or for naming entities or for assignment.
 * http://rajeevrastogi.blogspot.ca/2015/06/presented-paper-in-pgcon-2015-on-native.html
 
 * http://www.frozennorth.org/C509291565/E1939404619/ - The Cult of the NDA
+
+* Apparently APL has right-to-left associativity with no precedence.
 
 * Free up $ to just be for generic operator use.
 - Make \$foo mean what $foo used to mean, and \\$foo for \$foo, or we could
@@ -4309,6 +4396,16 @@ making it possible to turn this check off would be bad.
 a view would have a system-defined inverse defined.  Example is UTF-8
 encode/decode, or Plain_Text parse/generate, or different information schema,
 or emulators of other DBMSs, etc; some may only work with/without normalization constraints.
+
+* Let's explicitly say that any assignment to a variable, whether regular
+or pseudo-, of the same value it already has, is a no-op in every regard;
+it will NOT cause any inverse functions to fire, or any triggers to fire,
+etc.  This should be a significant optimization.  Also prevents an edge
+case where one might try to assign a pseudo-var to itself to "normalize"
+things at the source end.
+- This being said, applicable triggers should explicitly be named
+"when updating x" rather than "when assigning to x", or have both if we want
+to easily log the fact an assign was attempted even if it no-oped after.
 
 * Constant / named value declare syntax general form:
     0. keyword "constant"
