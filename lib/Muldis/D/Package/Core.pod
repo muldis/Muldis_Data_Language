@@ -112,7 +112,7 @@ or I<=\=>.
 =head2 is_a
 
     ::MD::is_a ::= function --> Boolean <-- (Any, Reference)
-        : (\.0 --> \.1);
+        : ((\.0,) --> \.1);
 
 The function C<is_a> results in C<True> iff its C<0> argument is a
 member of the type specified by its C<1> argument, and C<False> otherwise.
@@ -1234,7 +1234,7 @@ C<Integral> is composed by C<Integer>.
 =head2 Integral_NN
 
     ::MD::Integral_NN ::= selection of Integral
-        where (topic >= zero::(topic));
+        where (\.0 >= zero::(\.0));
 
 The selection contract C<Integral_NN> represents the infinite type
 consisting just of the C<Integral> values that are non-negative.  Its
@@ -1243,7 +1243,7 @@ default and minmum value is C<0>; it has no maximum value.
 =head2 Integral_P
 
     ::MD::Integral_P ::= selection of Integral_NN
-        where (topic > zero::(topic)) default (succ::(Integral::()));
+        where (\.0 > zero::(\.0)) default (succ::(Integral::()));
 
 The selection contract C<Integral_P> represents the infinite type
 consisting just of the C<Integral_NN> values that are positive.  Its
@@ -1349,7 +1349,7 @@ Other programming languages may name their corresponding types I<BigInt>.
 
 =head2 Integer_NN
 
-    ::MD::Integer_NN ::= selection of Integer where (topic >= 0);
+    ::MD::Integer_NN ::= selection of Integer where (\.0 >= 0);
 
 The selection contract C<Integer_NN> represents the infinite type
 consisting just of the C<Integer> values that are non-negative.  Its
@@ -1357,7 +1357,7 @@ default and minmum value is C<0>; it has no maximum value.
 
 =head2 Integer_P
 
-    ::MD::Integer_P ::= selection of Integer_NN where (topic > 0) default (1);
+    ::MD::Integer_P ::= selection of Integer_NN where (\.0 > 0) default (1);
 
 The selection contract C<Integer_P> represents the infinite type consisting
 just of the C<Integer_NN> values that are positive.  Its default and minmum
@@ -1673,7 +1673,7 @@ will have either of those.  C<Fractional> is composed by C<Fraction>.
 =head2 Fractional_NN
 
     ::MD::Fractional_NN ::= selection of Fractional
-        where (topic >= zero::(topic));
+        where (\.0 >= zero::(\.0));
 
 The selection contract C<Fractional_NN> represents the infinite type
 consisting just of the C<Fractional> values that are non-negative.  Its
@@ -1713,14 +1713,14 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
     ::MD::Fraction ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( topic, \Fraction, \@1::_Asset ))
+            where (has_wrapped::( \.0, \Fraction, \@1::_Asset ))
             default (0.0)
             composes Fractional and_provides_its_default;
 
         _Asset ::= selection of Tuple where
         (
             if
-                topic ^?= (
+                \.0 ^?= (
                     numerator : \@Integer,
                     denominator : \@Integer_P,
                 )
@@ -1742,7 +1742,7 @@ Other programming languages may name their corresponding types I<BigRat>.
 
 =head2 Fraction_NN
 
-    ::MD::Fraction_NN ::= selection of Fraction where (topic >= 0.0);
+    ::MD::Fraction_NN ::= selection of Fraction where (\.0 >= 0.0);
 
 The selection contract C<Fraction_NN> represents the infinite type
 consisting just of the C<Fraction> values that are non-negative.  Its
@@ -1920,7 +1920,7 @@ C<Fraction>.
         --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Fraction, Integer)
         implements 2::""
         : (\@integral_nn_power
-            <-- \.1 >= 0 ?? topic !! (reciprocal::(\.0), -\.1));
+            <-- (\.1 >= 0 ?? topic !! (reciprocal::(\.0), -\.1)));
 
 The function C<integral_power::Fraction> implements the C<Numerical> virtual
 function C<integral_power> aka C<**> for the composing type C<Fraction>.
@@ -2171,7 +2171,7 @@ languages may name their corresponding operators I<x>.
 =head2 Bits
 
     ::MD::Bits ::= ::= selection of Capsule
-        where (has_wrapped::( topic, \Bits, \@String::Bits ))
+        where (has_wrapped::( \.0, \Bits, \@String::Bits ))
         default (\~?'')
         composes {Stringy and_provides_its_default};
 
@@ -2187,7 +2187,7 @@ corresponding types I<bit> or I<bit varying>.
 =head2 String::Bits
 
     ::MD::String::Bits ::= selection of String
-        where (topic all ((function : (\.0 in 0..1)) assuming ()));
+        where (\.0 all ((function : (\.0 in 0..1)) assuming ()));
 
 The selection contract C<String::Bits> represents the infinite type
 consisting just of the C<String> values for which every one of their member
@@ -2296,7 +2296,7 @@ the bits of its C<Bits>-typed C<0> argument.
 =head2 Blob
 
     ::MD::Blob::"" ::= selection of Capsule
-        where (has_wrapped::( topic, \Blob, \@String::Octets ))
+        where (has_wrapped::( \.0, \Blob, \@String::Octets ))
         default (\~+'')
         composes Stringy;
 
@@ -2312,7 +2312,7 @@ corresponding types I<Buf> or I<byte[]> or I<bytea>.
 =head2 String::Octets
 
     ::MD::String::Octets ::= selection of String
-        where (topic all ((function : (\.0 in 0..255)) assuming ()));
+        where (\.0 all ((function : (\.0 in 0..255)) assuming ()));
 
 The selection contract C<String::Octets> represents the infinite type
 consisting just of the C<String> values for which every one of their member
@@ -2484,7 +2484,7 @@ like national collations or fixed-size types.
 =head2 Text
 
     ::MD::Text::"" ::= selection of Capsule
-        where (has_wrapped::( topic, \Text, \@String::Maximal_Chars ))
+        where (has_wrapped::( \.0, \Text, \@String::Maximal_Chars ))
         default ('')
         composes {Textual and_provides_its_default};
 
@@ -2527,7 +2527,7 @@ which exists for convenient self-documentation of C<Text>-related code.
 =head2 Text::Unicode
 
     ::MD::Text::Unicode ::= selection of Text
-        where (topic->Text_from_Maximal_Chars is_a \@String::Unicode_Codes);
+        where (\.0->Text_from_Maximal_Chars is_a \@String::Unicode_Codes);
 
 The selection contract C<Text::Unicode> represents the infinite type
 consisting just of the C<Text> values for which every one of their member
@@ -2539,7 +2539,7 @@ the standard Unicode codepoints for the same symbols.
 =head2 String::Unicode_Codes
 
     ::MD::String::Unicode_Codes ::= selection of String::Maximal_Chars
-        where (topic all ((function : (\.0 in 0..0x10FFFF)) assuming ()));
+        where (\.0 all ((function : (\.0 in 0..0x10FFFF)) assuming ()));
 
 The selection contract C<String::Unicode_Codes> represents the infinite type
 consisting just of the C<String> values for which every one of their member
@@ -2548,7 +2548,7 @@ integers is in the range 0..0x10FFFF inclusive.
 =head2 Text::ASCII
 
     ::MD::Text::ASCII ::= selection of Text::Unicode
-        where (topic->Text_from_Unicode_Codes is_a \@String::ASCII_Chars);
+        where (\.0->Text_from_Unicode_Codes is_a \@String::ASCII_Chars);
 
 The selection contract C<Text::ASCII> represents the infinite type
 consisting just of the C<Text> values for which every one of their member
@@ -2560,7 +2560,7 @@ the standard ASCII codes for the same symbols.
 =head2 String::ASCII_Chars
 
     ::MD::String::ASCII_Chars ::= selection of String::Unicode_Codes
-        where (topic all ((function : (\.0 in 0..127)) assuming ()));
+        where (\.0 all ((function : (\.0 in 0..127)) assuming ()));
 
 The selection contract C<String::ASCII_Chars> represents the infinite type
 consisting just of the C<String> values for which every one of their member
@@ -3944,7 +3944,7 @@ languages may name their corresponding types I<List>.
 
 =head2 String
 
-    ::MD::String::"" ::= selection of Array where (topic all_is_a \@Integer);
+    ::MD::String::"" ::= selection of Array where (\.0 all_is_a \@Integer);
 
 The selection contract C<String> represents the infinite type consisting
 just of the C<Array> values having just C<Integer> members.  A C<String>
@@ -4403,12 +4403,12 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
     ::MD::Set ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( topic, \Set, \@1::_Asset ))
+            where (has_wrapped::( \.0, \Set, \@1::_Asset ))
             default ({})
             composes {Discrete, Setty and_provides_its_default};
 
         _Asset ::= selection of Bag
-            where (all_unique topic);
+            where (all_unique \.0);
     };
 
 The selection contract C<Set> is infinite.  A C<Set> value is a general
@@ -5524,13 +5524,13 @@ I<TODO.>
     ::MD::Tuple_Array ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( topic, \Tuple_Array, \@1::_Asset ))
+            where (has_wrapped::( \.0, \Tuple_Array, \@1::_Asset ))
             default (~%@())
             composes {Relational, Positional};
 
         _Asset ::= selection of Tuple where
         (
-            if topic ^?= ( heading : \@Attr_Names, body : \@Array ) then
+            if \.0 ^?= ( heading : \@Attr_Names, body : \@Array ) then
                 if \.body all_is_a \@Tuple then
                     \.body all (\@"^?=" assuming \.heading)
                 else
@@ -5572,12 +5572,12 @@ single-tuple C<Tuple_Array> value.
     ::MD::Relation ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( topic, \Relation, \@1::_Asset ))
+            where (has_wrapped::( \.0, \Relation, \@1::_Asset ))
             default (?%@())
             composes {Relational and_provides_its_default, Discrete, Setty};
 
         _Asset ::= selection of Tuple_Bag
-            where (all_unique topic);
+            where (all_unique \.0);
     };
 
 I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
@@ -5609,13 +5609,13 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
     ::MD::Tuple_Bag ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( topic, \Tuple_Bag, \@1::_Asset ))
+            where (has_wrapped::( \.0, \Tuple_Bag, \@1::_Asset ))
             default (+%@())
             composes {Relational, Discrete};
 
         _Asset ::= selection of Tuple where
         (
-            if topic ^?= ( heading : \@Attr_Names, body : \@Bag ) then
+            if \.0 ^?= ( heading : \@Attr_Names, body : \@Bag ) then
                 if \.body all_is_a \@Tuple then
                     \.body all (\@"^?=" assuming \.heading)
                 else
@@ -5658,7 +5658,7 @@ I<TODO.>
 =head2 Interval
 
     ::MD::Interval ::= selection of Capsule
-        where (has_wrapped::( topic, \Interval, \@Tuple::Interval ))
+        where (has_wrapped::( \.0, \Interval, \@Tuple::Interval ))
         default ((-∞)..(+∞))
         composes {Intervalish, Setty};
 
@@ -5688,12 +5688,12 @@ I<TODO.>
     ::MD::Interval_Set ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( topic, \Interval_Set, \@1::_Asset ))
+            where (has_wrapped::( \.0, \Interval_Set, \@1::_Asset ))
             default (...)
             composes {Unionable_Intervalish, Setty};
 
         _Asset ::= selection of Interval_Bag
-            where (all_unique topic);
+            where (all_unique \.0);
     };
 
 I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.>
@@ -5705,7 +5705,7 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
     ::MD::Interval_Bag ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( topic, \Interval_Bag, \@1::_Asset ))
+            where (has_wrapped::( \.0, \Interval_Bag, \@1::_Asset ))
             default (...)
             composes Unionable_Intervalish;
 
@@ -5734,7 +5734,7 @@ I<TODO.>
     ::MD::Quantity ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( topic, \Quantity, \@1::_Asset ))
+            where (has_wrapped::( \.0, \Quantity, \@1::_Asset ))
             default (...)
             composes Quantitative;
 
@@ -5832,7 +5832,7 @@ I<TODO.>
 =head2 Source_Code::Package_List
 
     ::MD::Source_Code::Package_List ::= selection of Array
-        where (topic all_is_a (selection of {Package, Decoration} default Package::()));
+        where (\.0 all_is_a (selection of {Package, Decoration} default Package::()));
 
 I<TODO.>
 
@@ -5841,14 +5841,14 @@ I<TODO.>
     ::MD::Source_Code::Package ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( topic, \Package, \@1::_Asset ))
+            where (has_wrapped::( \.0, \Package, \@1::_Asset ))
             default (\Package wrap 1::_Asset());
 
         _Asset ::= selection of Tuple where
         (
             if
-                topic ^?= (
-                    identity : (selection of Pkg_Decl_Map where (degree::(topic) = 1)),
+                \.0 ^?= (
+                    identity : (selection of Pkg_Decl_Map where (degree::(\.0) = 1)),
                     foundation : ...,
                     uses : \@Pkg_Decl_Map,
                     entry : ...,
@@ -5858,7 +5858,7 @@ I<TODO.>
                     decoration : ...,
                 )
             then
-                topic.\uses attr_names_disjoint topic.\identity
+                \.0.\uses attr_names_disjoint \.0.\identity
             else
                 False
         );
@@ -5870,7 +5870,7 @@ I<Remember that "floating" can't search inside a binder, can only resolve to a b
 =head2 Source_Code::Pkg_Decl_Map
 
     ::MD::Source_Code::Pkg_Decl_Map ::= selection of Tuple
-        where (topic all_attrs
+        where (\.0 all_attrs
             ((function : (\.asset --> \@Pkg_Canon_Name)) assuming ()));
 
 I<TODO.>

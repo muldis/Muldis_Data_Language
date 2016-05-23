@@ -231,12 +231,13 @@ other types, and the I<empty type> is a proper subtype of all other types.
 
 Iff 2 data types have no values in common, they are said to be I<disjoint>.
 Iff a data type I<T1> has all of the values of two data types I<T2> and
-I<T3> and I<T1> has no values that are not also members of I<T2> or I<T3>,
+I<T3>, and I<T1> has no values that are not also members of I<T2> or I<T3>,
 then I<T1> is a I<union type> with respect to I<T2> and I<T3>.  Iff instead
 I<T1> has only but all of the values that I<T2> and I<T3> have in common,
 then I<T1> is an I<intersection type> with respect to I<T2> and I<T3>.  Iff
-2 data types, I<T1> and I<T2>, are disjoint and every value of the a third
-data type I<T3> is a member of one of them, then I<T1> and I<T2> are
+2 data types, I<T1> and I<T2>, are disjoint, and every value of a third
+data type I<T3> is a member of one of them, and every value of I<T1> and
+I<T2> is a member of I<T3>, then I<T1> and I<T2> are
 I<complementary types> with respect to I<T3>.  In this way, the I<universal
 type> is a union type of all other types, and the I<empty type> is the
 intersection of all others; the two are both disjoint and complementary.
@@ -246,8 +247,8 @@ Subtyping in Muldis D, as in any B<D> language, fundamentally takes the
 form of I<specialization by constraint>, not I<specialization by
 extension>.  (A consequence is that every Muldis D function is covariant.)
 
-So conceptually speaking, a "circle" value is an "ellipse" value, but a
-"coloured circle" is neither a "circle" value nor a "colour" value; the
+So conceptually speaking, a plain "circle" value is an "ellipse" value, but
+a "coloured circle" is neither a "circle" value nor a "colour" value; the
 type "circle" is a subtype of "ellipse", and "coloured circle" is neither a
 subtype of "circle" nor of "colour".  Rather, for example, a "coloured
 circle" is a multi-component type which has components of type "circle" and
@@ -277,7 +278,7 @@ cases here have system-defined functionality to support them.
 A I<contract> is an association with a I<data type> of various metadata
 which can be applied where that contract is used.  The most common such
 metadata are an explicit name or alias for the type, or a default value
-(not valid for the I<empty type>).
+(the latter not valid for the I<empty type>).
 
 Every I<contract> is of exactly 1 of 2 kinds based on how it is declared;
 it is either a I<selection contract> or an I<interface contract>; these
@@ -327,7 +328,7 @@ latter may be chained, but ultimately each end composer must be a
 I<selection contract> as only they can originate default values.  For
 example, one may have 2 interface contracts and a selection contract to
 represent, respectively, a general numeric type, a rational numeric type,
-and a 64-bit ratio type; these ordered from most general to most specific.
+and a 64-bit fraction type; these ordered from most general to most specific.
 
 Each interface contract I<I1> declares a set of zero or more virtual
 routine (function or procedure) names I<N1>.  For each name of I<N1> there
@@ -496,14 +497,24 @@ elements of a single actual result value.  An example with multiple
 conceptual arguments and results is the common whole division operation; it
 takes a dividend plus a divisor and gives a quotient plus a remainder.
 
-Note that for brevity the Muldis D language specifications will only use the
-unqualified term I<argument> in the context of a function whose actual
-argument is I<FDN__Tuple> typed, the latter being the case for most
-functions.  In that context, an I<argument> is a conceptual argument of the
-function that is actually an attribute of said actual argument.  Regardless
-of its type, the term I<topic> will always refer to a function's entire
-actual argument.  As an exception, in some contexts the unqualified
-I<argument> could mean either an actual or a conceptual argument.
+But in the interest of avoiding unnecessary complication for the design and
+users of the language, Muldis D requires that every I<actual argument> aka
+I<topic> of a function is I<FDN__Tuple> typed, and moreover that type must
+exclude the sole I<FDN__Tuple> value having zero attributes.  Therefore,
+what would otherwise be the case for most functions in practice is required
+for all functions, and so extra logic for dealing with edge cases can be
+avoided. To maintain consistency across functions, even functions that take
+exactly 1 conceptual argument should expect it wrapped in a I<FDN__Tuple>
+such that the actual argument is a I<FDN__Tuple> with exactly 1 attribute
+that is the conceptual argument.
+
+Note that for brevity the Muldis D language specifications will only use
+the unqualified term (function) I<argument> to refer to a conceptual
+argument of the function that is actually an attribute of its I<FDN__Tuple>
+typed actual argument.  Complementary to this, the term I<topic> will
+always refer to a function's entire actual argument.  As an exception, in
+some contexts the unqualified I<argument> could mean either an actual or a
+conceptual argument.
 
 Note that for brevity the Muldis D language specifications will refer to
 conceptual arguments with the same C<foo> syntax regardless of whether they
@@ -565,9 +576,11 @@ even the likes of NaN, are considered to be normal termination.
 For any context in Muldis D where a reference to or a definition of a
 function is allowed, a reference to or a definition of a contract is
 allowed in its place.  An invocation as if it were a function of a given
-contract for type I<T1> where the actual argument is value I<V1> is
-semantically identical to (and is idiomatic for) testing if I<V1> is a
-member of the type I<T1>; the result is I<true> if so and I<false> otherwise.
+contract for type I<T1> where the sole argument is value I<V1> (that is,
+the actual argument is a I<FDN__Tuple> with exactly 1 attribute whose name
+is C<0> and whose asset is I<V1>) is semantically identical to (and is
+idiomatic for) testing if I<V1> is a member of the type I<T1>; the result
+is I<true> if so and I<false> otherwise.
 
 I<TODO: Other related notes.  Especially the parts of a function definition.>
 
