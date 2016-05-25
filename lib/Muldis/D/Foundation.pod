@@ -305,7 +305,7 @@ reference to or a definition of a selection contract is allowed, a
 reference to or a definition of a constant is allowed in its place.  A
 given constant for value I<V1> is semantically identical for such uses as a
 general form selection contract with an omitted I<S1>, a I<P1> that tests
-its actual argument for equality with I<V1>, and a default value of I<V1>.
+its sole argument for equality with I<V1>, and a default value of I<V1>.
 
 Each given I<interface contract>, I<I1>, explicitly does I<not> declare its
 associated type.  Instead, I<I1> relies on other contracts, I<S1>, to
@@ -476,48 +476,32 @@ we want is spelled out, or alternately just the default value itself.
 =head1 FUNCTIONS
 
 A I<function> (also known as a I<read-only operator>) is a set of
-instructions for mapping a set of values to a set of values in a pure and
-deterministic manner.
+instructions for mapping a set of input values, its I<domain>, to a set of
+output values, its I<codomain>, in a pure and deterministic manner.
 
 A Muldis D function is isomorphic to a mathematical function.  A function
-call/invocation takes exactly 1 input I<actual argument> aka I<topic> value
-and gives exactly 1 output I<result> value.  The result value of a function
-call is determined entirely by its actual argument value, and a function is
-guaranteed to give exactly the same single result value for every call with
-the same actual argument value.  Multiple distinct actual arguments may
-yield the same result, but multiple calls with the same actual argument
-never give different results.
+call/invocation takes exactly 1 input I<topic> value and gives exactly 1
+output I<result> value.  The result value of a function call is determined
+entirely by its topic value, and a function is guaranteed to give exactly
+the same single result value for every call with the same topic value.
+Multiple distinct topics may yield the same result, but multiple calls with
+the same topic never give different results.
 
-When implementing a mapping that conceptually wants to take multiple
-argument values, which is likely more common than not, the typical practice
-is for the single actual argument to be a collection-typed value whose
-elements are the conceptual arguments.  Similarly, when multiple result
-values are conceptually desired (relatively uncommon), they would be member
-elements of a single actual result value.  An example with multiple
-conceptual arguments and results is the common whole division operation; it
-takes a dividend plus a divisor and gives a quotient plus a remainder.
-
-But in the interest of avoiding unnecessary complication for the design and
-users of the language, Muldis D requires that every I<actual argument> aka
-I<topic> of a function is I<FDN__Tuple> typed, and moreover that type must
-exclude the sole I<FDN__Tuple> value having zero attributes.  Therefore,
-what would otherwise be the case for most functions in practice is required
-for all functions, and so extra logic for dealing with edge cases can be
-avoided. To maintain consistency across functions, even functions that take
-exactly 1 conceptual argument should expect it wrapped in a I<FDN__Tuple>
-such that the actual argument is a I<FDN__Tuple> with exactly 1 attribute
-that is the conceptual argument.
-
-Note that for brevity the Muldis D language specifications will only use
-the unqualified term (function) I<argument> to refer to a conceptual
-argument of the function that is actually an attribute of its I<FDN__Tuple>
-typed actual argument.  Complementary to this, the term I<topic> will
-always refer to a function's entire actual argument.  As an exception, in
-some contexts the unqualified I<argument> could mean either an actual or a
-conceptual argument.
+A Muldis D function is more constrained than a mathematical function such
+that its input I<topic> may only be a I<tuple> (a value of the
+I<FDN__Tuple> type) and not some other value.  This is for the purpose of
+avoiding unnecessary complication for the design and users of the language.
+Each (distinctly named) member I<attribute> of the I<topic> is an input
+I<argument> to the function, and a function may thus take anywhere from
+zero to N arguments.  In contrast to this, there are no restrictions on
+what the type of a Muldis D I<result> may be; some functions might result
+in a tuple as the idiomatic way to give multiple outputs, but those are
+likely rare compared to those that don't.  An example with multiple inputs
+and outputs is the common whole division operation; it takes a dividend
+plus a divisor and gives a quotient plus a remainder.
 
 Note that for brevity the Muldis D language specifications will refer to
-conceptual arguments with the same C<foo> syntax regardless of whether they
+arguments with the same C<foo> syntax regardless of whether they
 are conceptually positional or named, examples being C<0> and C<1> for the
 former and C<of> or C<asset> for the latter.  However, while the latter are
 equivalent to the text characters they look like, the former are officially
@@ -528,7 +512,7 @@ A Muldis D function is composed fundamentally of one or more arbitrarily
 complex value expressions, and the former is essentially just a wrapper for
 the latter.  Complementary to this, a function can only be invoked as part
 of a value expression, such that its result value is the value of the
-expression, and similarly, the function call's actual argument must be
+expression, and similarly, the function call's topic must be
 defined by a value expression.  The ultimate roots of value expression call
 chains are typically procedure statements.
 
@@ -576,21 +560,21 @@ even the likes of NaN, are considered to be normal termination.
 For any context in Muldis D where a reference to or a definition of a
 function is allowed, a reference to or a definition of a contract is
 allowed in its place.  An invocation as if it were a function of a given
-contract for type I<T1> where the sole argument is value I<V1> (that is,
-the actual argument is a I<FDN__Tuple> with exactly 1 attribute whose name
-is C<0> and whose asset is I<V1>) is semantically identical to (and is
-idiomatic for) testing if I<V1> is a member of the type I<T1>; the result
-is I<true> if so and I<false> otherwise.
+contract for type I<T1> where the sole argument is value I<V1> is
+semantically identical to (and is idiomatic for) testing if I<V1> is a
+member of the type I<T1>; the result is I<true> if so and I<false>
+otherwise.
 
 I<TODO: Other related notes.  Especially the parts of a function definition.>
 
-=head2 Constants
+=head1 CONSTANTS
 
-A I<constant> is similar to a I<function> but that it takes no actual
-argument at all and it always gives the same result.  A constant may be
-invoked anywhere that a function may be, and a constant may invoke functions.
-The single value a constant denotes may be arbitrarily complex, and
-repeated portions may be factored under their own names, like in a function.
+A I<constant> is similar to a I<function> but that it takes no arguments at
+all (its I<topic> is the sole nullary/zero-attribute I<tuple>) and it
+always gives the same result.  A constant may be invoked anywhere that a
+function may be, and a constant may invoke functions.  The single value a
+constant denotes may be arbitrarily complex, and repeated portions may be
+factored under their own names, like in a function.
 
 A primary use of a Muldis D I<constant> is for code factoring, so that
 multiple routines or dependent packages may share a common named constant.
@@ -1274,7 +1258,7 @@ I<FDN__Tuple> value with just 1 attribute/argument named C<0>, where that
 argument may be any value.  This function is a proxy for
 invoking a function that is defined and managed externally to the Muldis D
 language environment where that external function receives the value of the
-C<0> attribute as its actual argument.  Its result type is I<FDN__Any>.
+C<0> attribute as its topic/arguments.  Its result type is I<FDN__Any>.
 
 =head1 FOUNDATION PROCEDURES
 

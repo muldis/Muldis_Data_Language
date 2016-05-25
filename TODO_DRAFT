@@ -4298,12 +4298,11 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         appear either of the alternative forms (...) or {...} may appear,
         allowing for example inline abbreviated Tuple argument definition
         or alternatives within a Tuple argument
-        - NEW RESTRICTION: "from"/"<--" now must have a non-nullary Tuple
+        - NEW RESTRICTION: "from"/"<--" now must have a Tuple
         as its actual argument, so we don't have to deal with less common
         edge cases in the system; "to"/etc is still unrestricted
         - if omitted, the unnamed system maximal type is implicitly used
-        - EXCEPTION for "from"/"<--": if omitted, the FDN__Tuple type excepting
-        the value with no attributes is implicitly used
+        - EXCEPTION for "from"/"<--": if omitted, the FDN__Tuple type is implicitly used
     4. keyword "implements" is optional,
         followed by set of 0..N associated function names
     5. keyword "overrides" is optional,
@@ -4415,7 +4414,7 @@ to easily log the fact an assign was attempted even if it no-oped after.
 
 * Constant / named value declare syntax general form:
     0. keyword "constant"
-    1. keyword "folded" is optional
+    1. keyword "folded" is optional, not followed by anything of its own
     2. keyword "composes" is optional, rules as on a "selection"
     3. keyword "value" is optional, followed by expr
         - defaults to (\@0) if omitted
@@ -4440,11 +4439,10 @@ constants for a virtual type should be composed by implementing types.
 * Type declare syntax general form:
     0. keyword "selection" or "interface" followed by 0 or 1 of each of next in any order,
         but with some restrictions:
-    1. OBSOLETE: keyword "abstract" is optional, not followed by anything of its own
-        - if used, the 2 keywords {of,where} must be omitted
-        - until another type composes an abstract type, that abstract type
+        - if "interface" used, the 3 keywords {of,where,default} must be omitted
+        - until another type composes an interface type, that interface type
         is equivalent to the empty type and any attempt to have a variable
-        of the abstract type will fail at runtime in the same way
+        of the interface type will fail at runtime in the same way
     2. OBSOLETE: keyword "singleton" is optional, not followed by anything of its own
         - if used, replaces all 3 keywords {of,where,default}
         - is for singletons that have their own Capsule type
@@ -4486,14 +4484,14 @@ constants for a virtual type should be composed by implementing types.
         abstract type is otherwise referenced, or it is an error;
         TODO, figure out that scope, but its probably per package
     7. keyword "requires_implements" is optional,
-        it may only be used if "abstract" is true,
+        it may only be used if keyword "interface" is used,
         followed by set of 0..N names of virtual routines whose signatures
         use the current type, and live in same package as the current type
         - if present, then for every type X which "composes" current one,
         the package declaring X must also declare routines which "implement"
         the named virtual routines and signatures have X in the place of
         the current abstract type
-        - this is a means for abstract types to declare a contract
+        - this is a means for interface types to declare a contract
 
 * Enumeration (unordered) declare syntax general form:
     0. keyword "enumeration"
