@@ -824,9 +824,6 @@ Grammar:
     <material_name> ::=
         <absolute_name>
 
-    <generic_const_name> ::=
-        <pkg_entity_name>
-
     <generic_func_name> ::=
         <pkg_entity_name>
 
@@ -835,9 +832,6 @@ Grammar:
 
     <entry_point_proc_name> ::=
         <absolute_name>
-
-    <foundation_const_name> ::=
-        <alphanumeric_name>
 
     <foundation_func_name> ::=
         <alphanumeric_name>
@@ -1770,10 +1764,10 @@ Examples:
 Grammar:
 
     <invocation_expr> ::=
-          <generic_invo_expr>
-        | <pcf_invo_expr>
-        | <fixed_invo_expr>
-        | <foundation_invo_expr>
+          <generic_func_invo_expr>
+        | <pcf_func_invo_expr>
+        | <fixed_func_invo_expr>
+        | <foundation_func_invo_expr>
 
 I<TODO.>
 
@@ -1784,19 +1778,9 @@ is invokable or indicate a result if one isn't invokable.>
 
 Grammar:
 
-    <generic_invo_expr> ::=
-        <generic_const_invo_expr> | <generic_func_invo_expr>
-
-    <generic_const_invo_expr> ::=
-          ['(' <sp> '-->' <sp> <generic_const_ref> <sp> ')']
-        | ['(' <sp> <generic_const_ref> <sp> '<--' <sp> ')']
-
     <generic_func_invo_expr> ::=
           [<generic_func_args> <sp> '-->' <sp> <generic_func_ref>]
         | [<generic_func_ref> <sp> '<--' <sp> <generic_func_args>]
-
-    <generic_const_ref> ::=
-        <expr>
 
     <generic_func_ref> ::=
         <expr>
@@ -1806,8 +1790,13 @@ Grammar:
 
 I<TODO.>
 
-A C<< <generic_[const|func]_ref> >> denotes a C<Reference> value naming a function;
+A C<< <generic_func_ref> >> denotes a C<Reference> value naming a function
+(or constant or type);
 it may be either a C<Reference> value literal or an inline-defined C<function>.
+
+Note that explicitly passing a nullary tuple will also match a constant,
+and explicitly passing a unary tuple with a positional argument will also
+match a type.
 
 I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF -->/<-- WHERE THE FUNCTION
 OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
@@ -1816,30 +1805,27 @@ OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
 
 Grammar:
 
-    <pcf_invo_expr> ::=
-        <pcf_const_invo_expr> | <pcf_func_invo_expr>
-
-    <pcf_const_invo_expr> ::=
-        <generic_const_name> <sp> '::'? <sp> '(' <sp> ')'
-
     <pcf_func_invo_expr> ::=
         <generic_func_name> <sp> '::'? <sp> '(' <sp> <attr_commalist> <sp> ')'
 
 I<TODO.>
 
-A C<< <pcf_invo_expr> >> is subject to the additional rule that, iff its
-C<< <generic_*_name> >> element has no C<::> within itself, then that
-element must have a trailing C<::> element.
+A C<< <pcf_func_invo_expr> >> is subject to the additional rule that, iff
+its C<< <generic_func_name> >> element has no C<::> within itself, then
+that element must have a trailing C<::> element.
 
-A C<< <pcf_func_invo_expr> >> is subject to the additional rule that its
-C<< <attr_commalist> >> must have at least 1 C<< <*_attr> >> element.
+A C<< <generic_func_name> >> may alternately be a constant name or a type
+name, and not just a function name, because those can be invoked like
+functions under certain circumstances.  When the C<< <attr_commalist> >>
+has exactly zero C<< <*_attr> >> elements, either a constant or a niladic
+function or a type (implicitly its default value) may be invoked; for
+exactly 1 C<< <*_attr> >> element which is positional, either a monadic
+function or a type (implicitly its membership predicate) may be invoked;
+for other arguments, only a function of corrisponding arity may be invoked.
 
 =head2 Fixed Constant and Function Invocation Expressions
 
 Grammar:
-
-    <fixed_invo_expr> ::=
-        ...
 
     <fixed_func_invo_expr> ::=
         ...
@@ -1872,13 +1858,6 @@ I<TODO: FORGET NOT THE ps5_nonquoted_symbolic_grouping.>
 =head2 Foundation Constant and Function Invocation Expressions
 
 Grammar:
-
-    <foundation_invo_expr> ::=
-        <foundation_const_invo_expr> | <foundation_func_invo_expr>
-
-    <foundation_const_invo_expr> ::=
-          ['(' <sp> '-->^' <sp> <foundation_const_name> <sp> ')']
-        | ['(' <sp> <foundation_const_name> <sp> '^<--' <sp> ')']
 
     <foundation_func_invo_expr> ::=
           [<generic_func_args> <sp> '-->^' <sp> <foundation_func_name>]
