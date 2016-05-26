@@ -112,7 +112,7 @@ or I<=\=>.
 =head2 is_a
 
     ::MD::is_a ::= function --> Boolean <-- (Any, Reference)
-        : ((\.0,) --> \.1);
+        : ((\<0,) --> \<1);
 
 The function C<is_a> results in C<True> iff its C<0> argument is a
 member of the type specified by its C<1> argument, and C<False> otherwise.
@@ -127,7 +127,7 @@ member of the type specified by its C<1> argument, and C<True> otherwise.
 =head2 default
 
     ::MD::default ::= function --> Any <-- (Reference)
-        : (() --> \.0);
+        : (() --> \<0);
 
 The function C<default> results in the default value of the not-empty type
 specified by its C<0> argument.
@@ -173,7 +173,7 @@ I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
 
     ::MD::or_else ::= function --> Any <-- (Any, Any)
         is {associative,idempotent}
-        : (\.0 is_a \@Excuse ?? \.1 !! \.0);
+        : (\<0 is_a \@Excuse ?? \<1 !! \<0);
 
     ::MD::coalesce ::= alias of or_else;
 
@@ -188,7 +188,7 @@ I<??> or I<//> or I<?:>.
 
     ::MD::and_then ::= function --> Any <-- (Any, Any)
         is {associative,idempotent}
-        : (\.0 is_a \@Excuse ?? \.0 !! \.1);
+        : (\<0 is_a \@Excuse ?? \<0 !! \<1);
 
 The function C<and_then> results in its C<0> argument iff the latter is an
 C<Excuse>, and results in its C<1> argument otherwise.  This function is
@@ -352,7 +352,7 @@ name this operator I<ge>.
 
     ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (+∞)
-        : (topic --> \@in_order ?? \.0 !! \.1);
+        : (topic --> \@in_order ?? \<0 !! \<1);
 
 The function C<min> results in whichever of its 2 arguments is first when
 the 2 are sorted I<in order>.  This function is designed to be chained for
@@ -363,7 +363,7 @@ I<before> all of the others.
 
     ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (-∞)
-        : (topic --> \@in_order ?? \.1 !! \.0);
+        : (topic --> \@in_order ?? \<1 !! \<0);
 
 The function C<max> results in whichever of its 2 arguments is last when
 the 2 are sorted I<in order>.  This function is designed to be chained for
@@ -375,7 +375,7 @@ I<after> all of the others.
     ::MD::minmax ::= function
         --> (Orderable, Orderable) <-- (Orderable, Orderable)
         is commutative
-        : (topic --> \@in_order ?? topic !! (\.1, \.0));
+        : (topic --> \@in_order ?? topic !! (\<1, \<0));
 
 The function C<minmax> results in a binary C<Tuple> containing its 2
 arguments sorted I<in order>; the function's result is the same as its
@@ -461,13 +461,13 @@ languages may name their corresponding operators I<next> or I<MoveNext>.
     ::MD::nth_succ ::= function
         --> {Successable, Pos_Inf} <-- (Successable, Integer_NN)
     : (
-        if !?\.1 then
-            \.0
+        if !?\<1 then
+            \<0
         else
-            if (s ::= succ \.0) is_a \@Excuse then
+            if (s ::= succ \<0) is_a \@Excuse then
                 s
             else
-                s nth_succ --\.1
+                s nth_succ --\<1
     );
 
 The function C<nth_succ> results in the Nth I<successor> value of its C<0>
@@ -536,13 +536,13 @@ languages may name their corresponding operators I<prior> or I<previous>.
     ::MD::nth_pred ::= function
         --> {Bicessable, Neg_Inf} <-- (Bicessable, Integer_NN)
     : (
-        if !?\.1 then
-            \.0
+        if !?\<1 then
+            \<0
         else
-            if (s ::= pred \.0) is_a \@Excuse then
+            if (s ::= pred \<0) is_a \@Excuse then
                 s
             else
-                s nth_pred --\.1
+                s nth_pred --\<1
     );
 
 The function C<nth_pred> results in the Nth I<predecessor> value of its C<0>
@@ -652,7 +652,7 @@ integer 1 to represent I<true>.
 
     ::MD::in_order::Boolean ::= function --> Boolean <-- (Boolean, Boolean)
         implements 2::""
-        : (!\.0 or \.1);
+        : (!\<0 or \<1);
 
 The function C<in_order::Boolean> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Boolean>.
@@ -661,7 +661,7 @@ function C<in_order> for the composing type C<Boolean>.
 
     ::MD::asset::Boolean ::= function --> Boolean <-- (Boolean)
         implements 2::""
-        : (\.0);
+        : (\<0);
 
 The function C<asset::Boolean> simply results in its C<0> argument.
 This function implements the C<Successable> virtual function C<asset> for
@@ -671,7 +671,7 @@ the composing type C<Boolean>.
 
     ::MD::pred::Boolean ::= function --> {False, Neg_Inf} <-- (Boolean)
         implements 2::""
-        : (\.0 ?? False !! -∞);
+        : (\<0 ?? False !! -∞);
 
 The function C<pred::Boolean> implements the C<Bicessable> virtual
 function C<pred> for the composing type C<Boolean>.
@@ -680,7 +680,7 @@ function C<pred> for the composing type C<Boolean>.
 
     ::MD::succ::Boolean ::= function --> {True, Pos_Inf} <-- (Boolean)
         implements 2::""
-        : (!\.0 ?? True !! +∞);
+        : (!\<0 ?? True !! +∞);
 
 The function C<succ::Boolean> implements the C<Successable> virtual
 function C<succ> for the composing type C<Boolean>.
@@ -689,7 +689,7 @@ function C<succ> for the composing type C<Boolean>.
 
     ::MD::to_Boolean::Boolean ::= function --> Boolean <-- (Boolean)
         implements 2::""
-        : (\.0);
+        : (\<0);
 
 The function C<to_Boolean::Boolean> performs a logical I<proposition>; it
 simply results in its C<0> argument.  This function implements the
@@ -713,7 +713,7 @@ corresponding operators I<~> or I<^> or I<N>.
 
     ::MD::and ::= function --> Boolean <-- (Boolean, Boolean)
         is {associative,commutative,idempotent} identity (True)
-        : (\.0 ?? \.1 !! False);
+        : (\<0 ?? \<1 !! False);
 
     ::MD::Unicode_Aliases::"∧" ::= alias of and;
 
@@ -740,7 +740,7 @@ C<1> are both C<True>, and C<True> otherwise.
 
     ::MD::or ::= function --> Boolean <-- (Boolean, Boolean)
         is {associative,commutative,idempotent} identity (False)
-        : (\.0 ?? True !! \.1);
+        : (\<0 ?? True !! \<1);
 
     ::MD::Unicode_Aliases::"∨" ::= alias of or;
 
@@ -800,7 +800,7 @@ corresponding operators I<^>.
 =head2 imp implies →
 
     ::MD::imp ::= function --> Boolean <-- (Boolean, Boolean)
-        : (\.0 ?? \.1 !! True);
+        : (\<0 ?? \<1 !! True);
 
     ::MD::implies ::= alias of imp;
 
@@ -1082,8 +1082,8 @@ corresponding operators I<%%>.
     ::MD::nearest_multiple_of ::= function
         --> {Numerical, Excuse::Div_By_Zero}
         <-- (Numerical, Numerical, Round_Meth)
-        : (if \.1->is_zero then Excuse::Div_By_Zero()
-            else \.1 * topic --> \@div);
+        : (if \<1->is_zero then Excuse::Div_By_Zero()
+            else \<1 * topic --> \@div);
 
     ::MD::round ::= alias of nearest_multiple_of;
 
@@ -1143,8 +1143,8 @@ otherwise.
     ::MD::modulo ::= function
         --> {Numerical, Excuse::Div_By_Zero}
         <-- (Numerical, Numerical, Round_Meth)
-        : (if \.1->is_zero then Excuse::Div_By_Zero()
-            else \.0 - topic --> \@nearest_multiple_of);
+        : (if \<1->is_zero then Excuse::Div_By_Zero()
+            else \<0 - topic --> \@nearest_multiple_of);
 
     ::MD::mod ::= alias of modulo;
 
@@ -1234,7 +1234,7 @@ C<Integral> is composed by C<Integer>.
 =head2 Integral_NN
 
     ::MD::Integral_NN ::= selection of Integral
-        where (\.0 >= zero::(\.0));
+        where (\<0 >= zero::(\<0));
 
 The selection contract C<Integral_NN> represents the infinite type
 consisting just of the C<Integral> values that are non-negative.  Its
@@ -1243,7 +1243,7 @@ default and minmum value is C<0>; it has no maximum value.
 =head2 Integral_P
 
     ::MD::Integral_P ::= selection of Integral_NN
-        where (\.0 > zero::(\.0)) default (succ::(Integral::()));
+        where (\<0 > zero::(\<0)) default (succ::(Integral::()));
 
 The selection contract C<Integral_P> represents the infinite type
 consisting just of the C<Integral_NN> values that are positive.  Its
@@ -1298,7 +1298,7 @@ this operator in postfix like I<n!>.
 
     ::MD::gcd ::= function --> Integral_P <-- (Integral_NN, Integral_NN)
         is {commutative,associative,idempotent}
-        : ((if \.1->is_zero then \.0 else 0::(\.1, mod::(\.0, \.1, To_Zero::())))
+        : ((if \<1->is_zero then \<0 else 0::(\<1, mod::(\<0, \<1, To_Zero::())))
             ::?= 'Calculate using the Euclidean algorithm.');
 
     ::MD::greatest_common_divisor ::= alias of gcd;
@@ -1312,8 +1312,8 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
 
     ::MD::lcm ::= function --> Integral_NN <-- (Integral_NN, Integral_NN)
         is {commutative,associative,idempotent}
-        : (if \.0->is_zero or \.1->is_zero then \.0->zero
-            else div::(\.0 * \.1, \.0 gcd \.1, To_Zero::()));
+        : (if \<0->is_zero or \<1->is_zero then \<0->zero
+            else div::(\<0 * \<1, \<0 gcd \<1, To_Zero::()));
 
     ::MD::least_common_multiple ::= alias of lcm;
 
@@ -1325,7 +1325,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
 =head2 coprime
 
     ::MD::coprime ::= function --> Boolean <-- (Integral, Integral)
-        : ((abs::(\.0) gcd abs::(\.1)) = (\.0->zero->succ));
+        : ((abs::(\<0) gcd abs::(\<1)) = (\<0->zero->succ));
 
 The function C<coprime> results in C<True> iff its 2 arguments C<0> and
 C<1> are coprime (their I<greatest common divisor> is 1), and C<False>
@@ -1349,7 +1349,7 @@ Other programming languages may name their corresponding types I<BigInt>.
 
 =head2 Integer_NN
 
-    ::MD::Integer_NN ::= selection of Integer where (\.0 >= 0);
+    ::MD::Integer_NN ::= selection of Integer where (\<0 >= 0);
 
 The selection contract C<Integer_NN> represents the infinite type
 consisting just of the C<Integer> values that are non-negative.  Its
@@ -1357,7 +1357,7 @@ default and minmum value is C<0>; it has no maximum value.
 
 =head2 Integer_P
 
-    ::MD::Integer_P ::= selection of Integer_NN where (\.0 > 0) default (1);
+    ::MD::Integer_P ::= selection of Integer_NN where (\<0 > 0) default (1);
 
 The selection contract C<Integer_P> represents the infinite type consisting
 just of the C<Integer_NN> values that are positive.  Its default and minmum
@@ -1376,7 +1376,7 @@ function C<in_order> for the composing type C<Integer>.
 
     ::MD::asset::Integer ::= function --> Integer <-- (Integer)
         implements 2::""
-        : (\.0);
+        : (\<0);
 
 The function C<asset::Integer> simply results in its C<0> argument.
 This function implements the C<Successable> virtual function C<asset> for
@@ -1386,7 +1386,7 @@ the composing type C<Integer>.
 
     ::MD::pred::Integer ::= function --> Integer <-- (Integer)
         implements 2::Integral
-        : (\.0 - 1);
+        : (\<0 - 1);
 
 The function C<pred::Integer> implements the C<Bicessable>/C<Integral>
 virtual function C<pred> aka C<--> for the composing type C<Integer>.
@@ -1396,7 +1396,7 @@ virtual function C<pred> aka C<--> for the composing type C<Integer>.
     ::MD::succ::Integer ::= function --> Integer <-- (Integer)
         implements 2::Integral
         repeater plus::Integer
-        : (\.0 + 1);
+        : (\<0 + 1);
 
 The function C<succ::Integer> implements the C<Successable>/C<Integral>
 virtual function C<succ> aka C<++> for the composing type C<Integer>.
@@ -1405,7 +1405,7 @@ virtual function C<succ> aka C<++> for the composing type C<Integer>.
 
     ::MD::to_Boolean::Integer ::= function --> Boolean <-- (Integer)
         implements 2::""
-        : (\.0 != 0);
+        : (\<0 != 0);
 
 The function C<to_Boolean::Integer> results in C<True> iff its C<0>
 argument is not C<0>, and in C<False> if it is C<0>.  This function
@@ -1437,7 +1437,7 @@ for the composing type C<Integer>.
     ::MD::reciprocal::Integer ::= function
         --> {Fraction, Excuse::Div_By_Zero} <-- (Integer)
         implements 2::""
-        : (1 / \.0);
+        : (1 / \<0);
 
 The function C<reciprocal::Integer> implements the C<Numerical> virtual
 function C<reciprocal> aka C<multiplicative_inverse> for the composing type
@@ -1488,7 +1488,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Integer>.
     ::MD::multiple_of::Integer ::= function
         --> {Boolean, Excuse::Div_By_Zero} <-- (Integer, Integer)
         implements 2::""
-        : (if \.1 = 0 then Excuse::Div_By_Zero()
+        : (if \<1 = 0 then Excuse::Div_By_Zero()
             else topic -->^ FDN__Integer_multiple_of);
 
 The function C<multiple_of::Integer> implements the C<Numerical>
@@ -1500,8 +1500,8 @@ virtual function C<multiple_of> for the composing type C<Integer>.
         --> {Fraction, Excuse::Div_By_Zero} <-- (Integer, Integer)
         implements 2::""
     : (
-        n ::= \.0;
-        d ::= \.1;
+        n ::= \<0;
+        d ::= \<1;
 
         <-- if d = 0 then Excuse::Div_By_Zero() else q;
 
@@ -1524,9 +1524,9 @@ the composing type C<Integer>.
         <-- (Integer, Integer, Round_Meth)
         implements 2::""
     : (
-        dividend   ::= \.0;
-        divisor    ::= \.1;
-        round_meth ::= \.2;
+        dividend   ::= \<0;
+        divisor    ::= \<1;
+        round_meth ::= \<2;
 
         <-- if divisor = 0 then Excuse::Div_By_Zero() else e1;
 
@@ -1603,8 +1603,8 @@ C<Integer>.
     ::MD::integral_power::Integer ::= function
         --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Integer, Integer)
         implements 2::""
-        : (if \.0 = 0 and \.1 = 0 then Excuse::Zero_To_The_Zero()
-            else \.0 / 1 ** \.1);
+        : (if \<0 = 0 and \<1 = 0 then Excuse::Zero_To_The_Zero()
+            else \<0 / 1 ** \<1);
 
 The function C<integral_power::Integer> implements the C<Numerical> virtual
 function C<integral_power> aka C<**> for the composing type C<Integer>.
@@ -1614,7 +1614,7 @@ function C<integral_power> aka C<**> for the composing type C<Integer>.
     ::MD::integral_nn_power::Integer ::= function
         --> {Integer, Excuse::Zero_To_The_Zero} <-- (Integer, Integer_NN)
         implements 2::""
-        : (if \.0 = 0 and \.1 = 0 then Excuse::Zero_To_The_Zero()
+        : (if \<0 = 0 and \<1 = 0 then Excuse::Zero_To_The_Zero()
             else topic -->^ FDN__Integer_nn_power);
 
 The function C<integral_nn_power::Integer> implements the C<Numerical>
@@ -1625,7 +1625,7 @@ C<Integer>.
 
     ::MD::to_Integer::Integer ::= function --> Integer <-- (Integer)
         implements 2::""
-        : (\.0);
+        : (\<0);
 
 The function C<to_Integer::Integer> simply results in its C<0> argument.
 This function implements the C<Integral> virtual function C<to_Integer> for
@@ -1673,7 +1673,7 @@ will have either of those.  C<Fractional> is composed by C<Fraction>.
 =head2 Fractional_NN
 
     ::MD::Fractional_NN ::= selection of Fractional
-        where (\.0 >= zero::(\.0));
+        where (\<0 >= zero::(\<0));
 
 The selection contract C<Fractional_NN> represents the infinite type
 consisting just of the C<Fractional> values that are non-negative.  Its
@@ -1713,19 +1713,19 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
     ::MD::Fraction ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( \.0, \Fraction, \@1::_Asset ))
+            where (has_wrapped::( \<0, \Fraction, \@1::_Asset ))
             default (0.0)
             composes Fractional and_provides_its_default;
 
         _Asset ::= selection of Tuple where
         (
             if
-                \.0 ^?= (
+                \<0 ^?= (
                     numerator : \@Integer,
                     denominator : \@Integer_P,
                 )
             then
-                \.numerator coprime \.denominator
+                \<<numerator coprime \<<denominator
             else
                 False
         );
@@ -1742,7 +1742,7 @@ Other programming languages may name their corresponding types I<BigRat>.
 
 =head2 Fraction_NN
 
-    ::MD::Fraction_NN ::= selection of Fraction where (\.0 >= 0.0);
+    ::MD::Fraction_NN ::= selection of Fraction where (\<0 >= 0.0);
 
 The selection contract C<Fraction_NN> represents the infinite type
 consisting just of the C<Fraction> values that are non-negative.  Its
@@ -1753,14 +1753,14 @@ default and minmum value is C<0.0>; it has no maximum value.
     ::MD::in_order::Fraction ::= function --> Boolean <-- (Fraction, Fraction)
         implements 2::""
     : (
-        <-- (\.0->denominator) = (\.1->denominator)
-            ?? in_order::(\.0->numerator, \.1->numerator)
+        <-- (\<0->denominator) = (\<1->denominator)
+            ?? in_order::(\<0->numerator, \<1->numerator)
          !!
           (
-            common_d ::= lcm::(\.0->denominator, \.1->denominator);
+            common_d ::= lcm::(\<0->denominator, \<1->denominator);
             <-- in_order::(
-                (\.0->numerator) * div::(common_d, \.0->denominator, To_Zero::()),
-                (\.1->numerator) * div::(common_d, \.1->denominator, To_Zero::()),
+                (\<0->numerator) * div::(common_d, \<0->denominator, To_Zero::()),
+                (\<1->numerator) * div::(common_d, \<1->denominator, To_Zero::()),
             );
           )
     );
@@ -1772,7 +1772,7 @@ function C<in_order> for the composing type C<Fraction>.
 
     ::MD::to_Boolean::Fraction ::= function --> Boolean <-- (Fraction)
         implements 2::""
-        : (\.0 != 0.0);
+        : (\<0 != 0.0);
 
 The function C<to_Boolean::Fraction> results in C<True> iff its C<0>
 argument is not C<0.0>, and in C<False> if it is C<0.0>.  This function
@@ -1793,7 +1793,7 @@ C<Fraction>.
 
     ::MD::opposite::Fraction ::= function --> Fraction <-- (Fraction)
         implements 2::""
-        : (-(\.0->numerator) / (\.0->denominator));
+        : (-(\<0->numerator) / (\<0->denominator));
 
 The function C<opposite::Fraction> implements the C<Numerical> virtual
 function C<opposite> aka C<additive_inverse> aka unary C<-> aka unary C<−>
@@ -1804,8 +1804,8 @@ for the composing type C<Fraction>.
     ::MD::reciprocal::Fraction ::= function
         --> {Fraction, Excuse::Div_By_Zero} <-- (Fraction)
         implements 2::""
-        : (if \.0 = 0.0 then Excuse::Div_By_Zero()
-            else (\.0->denominator) / (\.0->numerator));
+        : (if \<0 = 0.0 then Excuse::Div_By_Zero()
+            else (\<0->denominator) / (\<0->numerator));
 
 The function C<reciprocal::Fraction> implements the C<Numerical> virtual
 function C<reciprocal> aka C<multiplicative_inverse> for the composing type
@@ -1815,7 +1815,7 @@ C<Fraction>.
 
     ::MD::modulus::Fraction ::= function --> Fraction_NN <-- (Fraction)
         implements 2::""
-        : (abs::(\.0->numerator) / (\.0->denominator));
+        : (abs::(\<0->numerator) / (\<0->denominator));
 
 The function C<modulus::Fraction> implements the C<Numerical>
 virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
@@ -1827,13 +1827,13 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
         is {associative,commutative} identity (0.0)
         repeater times::Fraction_Integer
     : (
-        <-- (\.0->denominator) = (\.1->denominator)
-            ?? (\.0->numerator) + (\.1->numerator) / (\.0->denominator)
+        <-- (\<0->denominator) = (\<1->denominator)
+            ?? (\<0->numerator) + (\<1->numerator) / (\<0->denominator)
          !!
           (
-            common_d ::= lcm::(\.0->denominator, \.1->denominator);
-            <-- ((\.0->numerator) * div::(common_d, \.0->denominator, To_Zero::()))
-                + ((\.1->numerator) * div::(common_d, \.1->denominator, To_Zero::()))
+            common_d ::= lcm::(\<0->denominator, \<1->denominator);
+            <-- ((\<0->numerator) * div::(common_d, \<0->denominator, To_Zero::()))
+                + ((\<1->numerator) * div::(common_d, \<1->denominator, To_Zero::()))
                 / common_d;
           )
     );
@@ -1845,7 +1845,7 @@ virtual function C<plus> aka C<+> for the composing type C<Fraction>.
 
     ::MD::minus::Fraction ::= function --> Fraction <-- (Fraction, Fraction)
         implements 2::""
-        : (\.0 + (-\.1));
+        : (\<0 + (-\<1));
 
 The function C<minus::Fraction> implements the C<Numerical> virtual function
 C<minus> aka binary C<-> aka binary C<−> for the composing type C<Fraction>.
@@ -1856,8 +1856,8 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Fraction>.
         implements 2::""
         is {associative,commutative} identity (1.0)
         repeater integral_nn_power::Fraction
-        : (((\.0->numerator) * (\.1->numerator))
-            / ((\.0->denominator) * (\.1->denominator)));
+        : (((\<0->numerator) * (\<1->numerator))
+            / ((\<0->denominator) * (\<1->denominator)));
 
 The function C<times::Fraction> implements the C<Numerical> virtual function
 C<times> aka C<*> aka C<×> for the composing type C<Fraction>.
@@ -1867,7 +1867,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Fraction>.
     ::MD::times::Fraction_Integer ::= function
         --> Fraction <-- (Fraction, Integer)
         implements 2::""
-        : (((\.0->numerator) * \.1) / (\.0->denominator));
+        : (((\<0->numerator) * \<1) / (\<0->denominator));
 
 The function C<times::Fraction_Integer> implements the C<Numerical> virtual
 function C<times> aka C<*> aka C<×> for the composing type C<Fraction>,
@@ -1878,7 +1878,7 @@ specifically for multiplying one by an C<Integer>.
     ::MD::multiple_of::Fraction ::= function
         --> {Boolean, Excuse::Div_By_Zero} <-- (Fraction, Fraction)
         implements 2::""
-        : (if \.1 = 0.0 then Excuse::Div_By_Zero()
+        : (if \<1 = 0.0 then Excuse::Div_By_Zero()
             else \@mod <-- topic = 0.0);
 
 The function C<multiple_of::Fraction> implements the C<Numerical>
@@ -1889,8 +1889,8 @@ virtual function C<multiple_of> for the composing type C<Fraction>.
     ::MD::fractional_divided_by::Fraction ::= function
         --> {Fraction, Excuse::Div_By_Zero} <-- (Fraction, Fraction)
         implements 2::""
-        : (if \.1 = 0.0 then Excuse::Div_By_Zero()
-            else \.0 * reciprocal::(\.1));
+        : (if \<1 = 0.0 then Excuse::Div_By_Zero()
+            else \<0 * reciprocal::(\<1));
 
 The function C<fractional_divided_by::Fraction> implements the C<Numerical>
 virtual function C<fractional_divided_by> aka C</> aka C<÷> aka C<∕> for
@@ -1903,11 +1903,11 @@ the composing type C<Fraction>.
         <-- (Fraction, Fraction, Round_Meth)
         implements 2::""
     : (
-        d ::= lcm::(\.0->denominator, \.1->denominator);
-        n0 ::= ((\.0->numerator) * div::(d, \.0->denominator, To_Zero::()));
-        n1 ::= ((\.1->numerator) * div::(d, \.1->denominator, To_Zero::()));
-        <-- if \.1 = 0.0 then Excuse::Div_By_Zero()
-            else div::(n0 * d, n1 * d, \.2) / 1;
+        d ::= lcm::(\<0->denominator, \<1->denominator);
+        n0 ::= ((\<0->numerator) * div::(d, \<0->denominator, To_Zero::()));
+        n1 ::= ((\<1->numerator) * div::(d, \<1->denominator, To_Zero::()));
+        <-- if \<1 = 0.0 then Excuse::Div_By_Zero()
+            else div::(n0 * d, n1 * d, \<2) / 1;
     );
 
 The function C<integral_divided_by::Fraction> implements the C<Numerical>
@@ -1920,7 +1920,7 @@ C<Fraction>.
         --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Fraction, Integer)
         implements 2::""
         : (\@integral_nn_power
-            <-- (\.1 >= 0 ?? topic !! (reciprocal::(\.0), -\.1)));
+            <-- (\<1 >= 0 ?? topic !! (reciprocal::(\<0), -\<1)));
 
 The function C<integral_power::Fraction> implements the C<Numerical> virtual
 function C<integral_power> aka C<**> for the composing type C<Fraction>.
@@ -1930,8 +1930,8 @@ function C<integral_power> aka C<**> for the composing type C<Fraction>.
     ::MD::integral_nn_power::Fraction ::= function
         --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Fraction, Integer_NN)
         implements 2::""
-        : (if \.0 = 0.0 and \.1 = 0 then Excuse::Zero_To_The_Zero()
-            else ((\.0->numerator) ** \.1) / ((\.0->denominator) ** \.1));
+        : (if \<0 = 0.0 and \<1 = 0 then Excuse::Zero_To_The_Zero()
+            else ((\<0->numerator) ** \<1) / ((\<0->denominator) ** \<1));
 
 The function C<integral_nn_power::Fraction> implements the C<Numerical>
 virtual function C<integral_nn_power> aka C<power> for the composing type
@@ -1941,7 +1941,7 @@ C<Fraction>.
 
     ::MD::to_Fraction::Fraction ::= function --> Fraction <-- (Fraction)
         implements 2::""
-        : (\.0);
+        : (\<0);
 
 The function C<to_Fraction::Fraction> simply results in its C<0> argument.
 This function implements the C<Fractional> virtual function C<to_Fraction>
@@ -1950,7 +1950,7 @@ for the composing type C<Fraction>.
 =head2 numerator (Fraction)
 
     ::MD::numerator::Fraction ::= function --> Integer <-- (Fraction)
-        : (unwrap::(\.0).\numerator);
+        : (unwrap::(\<0).\numerator);
 
 The function C<numerator::Fraction> implements the C<Fractional> virtual
 function C<numerator> for the composing type C<Fraction>.
@@ -1958,7 +1958,7 @@ function C<numerator> for the composing type C<Fraction>.
 =head2 denominator (Fraction)
 
     ::MD::denominator::Fraction ::= function --> Integer_P <-- (Fraction)
-        : (unwrap::(\.0).\denominator);
+        : (unwrap::(\<0).\denominator);
 
 The function C<denominator::Fraction> implements the C<Fractional> virtual
 function C<denominator> for the composing type C<Fraction>.
@@ -2171,7 +2171,7 @@ languages may name their corresponding operators I<x>.
 =head2 Bits
 
     ::MD::Bits ::= ::= selection of Capsule
-        where (has_wrapped::( \.0, \Bits, \@String::Bits ))
+        where (has_wrapped::( \<0, \Bits, \@String::Bits ))
         default (\~?'')
         composes {Stringy and_provides_its_default};
 
@@ -2187,7 +2187,7 @@ corresponding types I<bit> or I<bit varying>.
 =head2 String::Bits
 
     ::MD::String::Bits ::= selection of String
-        where (\.0 all ((function : (\.0 in 0..1)) assuming ()));
+        where (\<0 all ((function : (\<0 in 0..1)) assuming ()));
 
 The selection contract C<String::Bits> represents the infinite type
 consisting just of the C<String> values for which every one of their member
@@ -2197,7 +2197,7 @@ integers is in the range 0..1 inclusive.
 
     ::MD::in_order::Bits ::= function --> Boolean <-- (Bits, Bits)
         implements 2::""
-        : ((\.0->Bits_to_String_Bits) in_order (\.1->Bits_to_String_Bits));
+        : ((\<0->Bits_to_String_Bits) in_order (\<1->Bits_to_String_Bits));
 
 The function C<in_order::Bits> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Bits>.
@@ -2206,7 +2206,7 @@ function C<in_order> for the composing type C<Bits>.
 
     ::MD::to_Boolean::Bits ::= function --> Boolean <-- (Bits)
         implements 2::""
-        : (\.0 != \~?'');
+        : (\<0 != \~?'');
 
 The function C<to_Boolean::Bits> results in C<True> iff its C<0> argument
 is not C<\~?''>, and in C<False> if it is C<\~?''>.  This function
@@ -2227,7 +2227,7 @@ type C<Bits>.
 
     ::MD::substring_of::Bits ::= function --> Boolean <-- (Bits, Bits)
         implements 2::""
-        : ((\.0->Bits_to_String_Bits) substring_of (\.1->Bits_to_String_Bits));
+        : ((\<0->Bits_to_String_Bits) substring_of (\<1->Bits_to_String_Bits));
 
 The function C<substring_of::Bits> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Bits>.
@@ -2237,8 +2237,8 @@ function C<substring_of> for the composing type C<Bits>.
     ::MD::overlaps_string::Bits ::= function --> Boolean <-- (Bits, Bits)
         implements 2::""
         is commutative
-        : ((\.0->Bits_to_String_Bits)
-            overlaps_string (\.1->Bits_to_String_Bits));
+        : ((\<0->Bits_to_String_Bits)
+            overlaps_string (\<1->Bits_to_String_Bits));
 
 The function C<overlaps_string::Bits> implements the C<Stringy> virtual
 function C<overlaps_string> for the composing type C<Bits>.
@@ -2248,8 +2248,8 @@ function C<overlaps_string> for the composing type C<Bits>.
     ::MD::disjoint_string::Bits ::= function --> Boolean <-- (Bits, Bits)
         implements 2::""
         is commutative
-        : ((\.0->Bits_to_String_Bits)
-            disjoint_string (\.1->Bits_to_String_Bits));
+        : ((\<0->Bits_to_String_Bits)
+            disjoint_string (\<1->Bits_to_String_Bits));
 
 The function C<disjoint_string::Bits> implements the C<Stringy> virtual
 function C<disjoint_string> for the composing type C<Bits>.
@@ -2260,8 +2260,8 @@ function C<disjoint_string> for the composing type C<Bits>.
         implements 2::""
         is associative identity (\~?'')
         repeater replicate::Bits
-        : (Bits_from_String_Bits::((\.0->Bits_to_String_Bits)
-            ~ (\.1->Bits_to_String_Bits)));
+        : (Bits_from_String_Bits::((\<0->Bits_to_String_Bits)
+            ~ (\<1->Bits_to_String_Bits)));
 
 The function C<catenate::Bits> implements the C<Stringy> virtual function
 C<catenate> aka C<~> for the composing type C<Bits>.
@@ -2270,7 +2270,7 @@ C<catenate> aka C<~> for the composing type C<Bits>.
 
     ::MD::replicate::Bits ::= function --> Bits <-- (Bits, Integer_NN)
         implements 2::""
-        : (Bits_from_String_Bits::((\.0->Bits_to_String_Bits) ~# \.1));
+        : (Bits_from_String_Bits::((\<0->Bits_to_String_Bits) ~# \<1));
 
 The function C<replicate::Bits> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Bits>.
@@ -2278,7 +2278,7 @@ C<replicate> aka C<~#> for the composing type C<Bits>.
 =head2 Bits_from_String_Bits
 
     ::MD::Bits_from_String_Bits ::= function --> Bits <-- (String::Bits)
-        : (\Bits wrap \.0);
+        : (\Bits wrap \<0);
 
 The function C<Bits_from_String_Bits> results in the C<Bits> value selected
 in terms of the integer sequence of its C<0> argument.
@@ -2286,7 +2286,7 @@ in terms of the integer sequence of its C<0> argument.
 =head2 Bits_to_String_Bits
 
     ::MD::Bits_to_String_Bits ::= function --> String::Bits <-- (Bits)
-        : (\.0->unwrap);
+        : (\<0->unwrap);
 
 The function C<Bits_to_String_Bits> results in an integer sequence defining
 the bits of its C<Bits>-typed C<0> argument.
@@ -2296,7 +2296,7 @@ the bits of its C<Bits>-typed C<0> argument.
 =head2 Blob
 
     ::MD::Blob::"" ::= selection of Capsule
-        where (has_wrapped::( \.0, \Blob, \@String::Octets ))
+        where (has_wrapped::( \<0, \Blob, \@String::Octets ))
         default (\~+'')
         composes Stringy;
 
@@ -2312,7 +2312,7 @@ corresponding types I<Buf> or I<byte[]> or I<bytea>.
 =head2 String::Octets
 
     ::MD::String::Octets ::= selection of String
-        where (\.0 all ((function : (\.0 in 0..255)) assuming ()));
+        where (\<0 all ((function : (\<0 in 0..255)) assuming ()));
 
 The selection contract C<String::Octets> represents the infinite type
 consisting just of the C<String> values for which every one of their member
@@ -2322,7 +2322,7 @@ integers is in the range 0..255 inclusive.
 
     ::MD::in_order::Blob ::= function --> Boolean <-- (Blob, Blob)
         implements 2::""
-        : ((\.0->Blob_to_Octets) in_order (\.1->Blob_to_Octets));
+        : ((\<0->Blob_to_Octets) in_order (\<1->Blob_to_Octets));
 
 The function C<in_order::Blob> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Blob>.
@@ -2331,7 +2331,7 @@ function C<in_order> for the composing type C<Blob>.
 
     ::MD::to_Boolean::Blob ::= function --> Boolean <-- (Blob)
         implements 2::""
-        : (\.0 != \~+'');
+        : (\<0 != \~+'');
 
 The function C<to_Boolean::Blob> results in C<True> iff its C<0> argument
 is not C<\~+''>, and in C<False> if it is C<\~+''>.  This function
@@ -2352,7 +2352,7 @@ type C<Blob>.
 
     ::MD::substring_of::Blob ::= function --> Boolean <-- (Blob, Blob)
         implements 2::""
-        : ((\.0->Blob_to_Octets) substring_of (\.1->Blob_to_Octets));
+        : ((\<0->Blob_to_Octets) substring_of (\<1->Blob_to_Octets));
 
 The function C<substring_of::Blob> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Blob>.
@@ -2362,7 +2362,7 @@ function C<substring_of> for the composing type C<Blob>.
     ::MD::overlaps_string::Blob ::= function --> Boolean <-- (Blob, Blob)
         implements 2::""
         is commutative
-        : ((\.0->Blob_to_Octets) overlaps_string (\.1->Blob_to_Octets));
+        : ((\<0->Blob_to_Octets) overlaps_string (\<1->Blob_to_Octets));
 
 The function C<overlaps_string::Blob> implements the C<Stringy> virtual
 function C<overlaps_string> for the composing type C<Blob>.
@@ -2372,7 +2372,7 @@ function C<overlaps_string> for the composing type C<Blob>.
     ::MD::disjoint_string::Blob ::= function --> Boolean <-- (Blob, Blob)
         implements 2::""
         is commutative
-        : ((\.0->Blob_to_Octets) disjoint_string (\.1->Blob_to_Octets));
+        : ((\<0->Blob_to_Octets) disjoint_string (\<1->Blob_to_Octets));
 
 The function C<disjoint_string::Blob> implements the C<Stringy> virtual
 function C<disjoint_string> for the composing type C<Blob>.
@@ -2383,7 +2383,7 @@ function C<disjoint_string> for the composing type C<Blob>.
         implements 2::""
         is associative identity (\~+'')
         repeater replicate::Blob
-        : (Blob_from_Octets::((\.0->Blob_to_Octets) ~ (\.1->Blob_to_Octets)));
+        : (Blob_from_Octets::((\<0->Blob_to_Octets) ~ (\<1->Blob_to_Octets)));
 
 The function C<catenate::Blob> implements the C<Stringy> virtual function
 C<catenate> aka C<~> for the composing type C<Blob>.
@@ -2392,7 +2392,7 @@ C<catenate> aka C<~> for the composing type C<Blob>.
 
     ::MD::replicate::Blob ::= function --> Blob <-- (Blob, Integer_NN)
         implements 2::""
-        : (Blob_from_Octets::((\.0->Blob_to_Octets) ~# \.1));
+        : (Blob_from_Octets::((\<0->Blob_to_Octets) ~# \<1));
 
 The function C<replicate::Blob> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Blob>.
@@ -2400,7 +2400,7 @@ C<replicate> aka C<~#> for the composing type C<Blob>.
 =head2 Blob_from_Octets
 
     ::MD::Blob_from_Octets ::= function --> Blob <-- (String::Octets)
-        : (\Blob wrap \.0);
+        : (\Blob wrap \<0);
 
 The function C<Blob_from_Octets> results in the C<Blob> value selected in
 terms of the integer sequence of its C<0> argument.
@@ -2408,7 +2408,7 @@ terms of the integer sequence of its C<0> argument.
 =head2 Blob_to_Octets
 
     ::MD::Blob_to_Octets ::= function --> String::Octets <-- (Blob)
-        : (\.0->unwrap);
+        : (\<0->unwrap);
 
 The function C<Blob_to_Octets> results in an integer sequence defining the
 octets of its C<Blob>-typed C<0> argument.
@@ -2484,7 +2484,7 @@ like national collations or fixed-size types.
 =head2 Text
 
     ::MD::Text::"" ::= selection of Capsule
-        where (has_wrapped::( \.0, \Text, \@String::Maximal_Chars ))
+        where (has_wrapped::( \<0, \Text, \@String::Maximal_Chars ))
         default ('')
         composes {Textual and_provides_its_default};
 
@@ -2527,7 +2527,7 @@ which exists for convenient self-documentation of C<Text>-related code.
 =head2 Text::Unicode
 
     ::MD::Text::Unicode ::= selection of Text
-        where (\.0->Text_from_Maximal_Chars is_a \@String::Unicode_Codes);
+        where (\<0->Text_from_Maximal_Chars is_a \@String::Unicode_Codes);
 
 The selection contract C<Text::Unicode> represents the infinite type
 consisting just of the C<Text> values for which every one of their member
@@ -2539,7 +2539,7 @@ the standard Unicode codepoints for the same symbols.
 =head2 String::Unicode_Codes
 
     ::MD::String::Unicode_Codes ::= selection of String::Maximal_Chars
-        where (\.0 all ((function : (\.0 in 0..0x10FFFF)) assuming ()));
+        where (\<0 all ((function : (\<0 in 0..0x10FFFF)) assuming ()));
 
 The selection contract C<String::Unicode_Codes> represents the infinite type
 consisting just of the C<String> values for which every one of their member
@@ -2548,7 +2548,7 @@ integers is in the range 0..0x10FFFF inclusive.
 =head2 Text::ASCII
 
     ::MD::Text::ASCII ::= selection of Text::Unicode
-        where (\.0->Text_from_Unicode_Codes is_a \@String::ASCII_Chars);
+        where (\<0->Text_from_Unicode_Codes is_a \@String::ASCII_Chars);
 
 The selection contract C<Text::ASCII> represents the infinite type
 consisting just of the C<Text> values for which every one of their member
@@ -2560,7 +2560,7 @@ the standard ASCII codes for the same symbols.
 =head2 String::ASCII_Chars
 
     ::MD::String::ASCII_Chars ::= selection of String::Unicode_Codes
-        where (\.0 all ((function : (\.0 in 0..127)) assuming ()));
+        where (\<0 all ((function : (\<0 in 0..127)) assuming ()));
 
 The selection contract C<String::ASCII_Chars> represents the infinite type
 consisting just of the C<String> values for which every one of their member
@@ -2570,7 +2570,7 @@ integers is in the range 0..127 inclusive.
 
     ::MD::in_order::Text ::= function --> Boolean <-- (Text, Text)
         implements 2::""
-        : ((\.0->Text_to_Maximal_Chars) in_order (\.1->Text_to_Maximal_Chars));
+        : ((\<0->Text_to_Maximal_Chars) in_order (\<1->Text_to_Maximal_Chars));
 
 The function C<in_order::Text> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Text>.
@@ -2579,7 +2579,7 @@ function C<in_order> for the composing type C<Text>.
 
     ::MD::to_Boolean::Text ::= function --> Boolean <-- (Text)
         implements 2::""
-        : (\.0 != '');
+        : (\<0 != '');
 
 The function C<to_Boolean::Text> results in C<True> iff its C<0> argument
 is not C<''>, and in C<False> if it is C<''>.  This function implements the
@@ -2600,8 +2600,8 @@ type C<Text>.
 
     ::MD::substring_of::Text ::= function --> Boolean <-- (Text, Text)
         implements 2::""
-        : ((\.0->Text_to_Maximal_Chars)
-            substring_of (\.1->Text_to_Maximal_Chars));
+        : ((\<0->Text_to_Maximal_Chars)
+            substring_of (\<1->Text_to_Maximal_Chars));
 
 The function C<substring_of::Text> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Text>.
@@ -2611,8 +2611,8 @@ function C<substring_of> for the composing type C<Text>.
     ::MD::overlaps_string::Text ::= function --> Boolean <-- (Text, Text)
         implements 2::""
         is commutative
-        : ((\.0->Text_to_Maximal_Chars)
-            overlaps_string (\.1->Text_to_Maximal_Chars));
+        : ((\<0->Text_to_Maximal_Chars)
+            overlaps_string (\<1->Text_to_Maximal_Chars));
 
 The function C<overlaps_string::Text> implements the C<Stringy> virtual
 function C<overlaps_string> for the composing type C<Text>.
@@ -2622,8 +2622,8 @@ function C<overlaps_string> for the composing type C<Text>.
     ::MD::disjoint_string::Text ::= function --> Boolean <-- (Text, Text)
         implements 2::""
         is commutative
-        : ((\.0->Text_to_Maximal_Chars)
-            disjoint_string (\.1->Text_to_Maximal_Chars));
+        : ((\<0->Text_to_Maximal_Chars)
+            disjoint_string (\<1->Text_to_Maximal_Chars));
 
 The function C<disjoint_string::Text> implements the C<Stringy> virtual
 function C<disjoint_string> for the composing type C<Text>.
@@ -2634,8 +2634,8 @@ function C<disjoint_string> for the composing type C<Text>.
         implements 2::""
         is associative identity ('')
         repeater replicate::Text
-        : (Text_from_Maximal_Chars::((\.0->Text_to_Maximal_Chars)
-            ~ (\.1->Text_to_Maximal_Chars)));
+        : (Text_from_Maximal_Chars::((\<0->Text_to_Maximal_Chars)
+            ~ (\<1->Text_to_Maximal_Chars)));
 
 The function C<catenate::Text> implements the C<Stringy> virtual function
 C<catenate> aka C<~> for the composing type C<Text>.
@@ -2644,7 +2644,7 @@ C<catenate> aka C<~> for the composing type C<Text>.
 
     ::MD::replicate::Text ::= function --> Text <-- (Text, Integer_NN)
         implements 2::""
-        : (Text_from_Maximal_Chars::((\.0->Text_to_Maximal_Chars) ~# \.1));
+        : (Text_from_Maximal_Chars::((\<0->Text_to_Maximal_Chars) ~# \<1));
 
 The function C<replicate::Text> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Text>.
@@ -2653,7 +2653,7 @@ C<replicate> aka C<~#> for the composing type C<Text>.
 
     ::MD::to_Text::Text ::= function --> Text <-- (Text)
         implements 2::""
-        : (\.0);
+        : (\<0);
 
 The function C<to_Text::Text> simply results in its C<0> argument.
 This function implements the C<Textual> virtual function C<to_Text>
@@ -2663,7 +2663,7 @@ for the composing type C<Text>.
 
     ::MD::Text_from_Maximal_Chars ::= function
         --> Text <-- (String::Maximal_Chars)
-        : (\Text wrap \.0);
+        : (\Text wrap \<0);
 
 The function C<Text_from_Maximal_Chars> results in the C<Text> value
 selected in terms of an integer sequence in the proprietary
@@ -2673,7 +2673,7 @@ C<Maximal_Chars> character mapping of its C<0> argument.
 
     ::MD::Text_to_Maximal_Chars ::= function
         --> String::Maximal_Chars <-- (Text)
-        : (\.0->unwrap);
+        : (\<0->unwrap);
 
 The function C<Text_to_Maximal_Chars> results in an integer sequence in the
 proprietary C<Maximal_Chars> character mapping that corresponds to its
@@ -2683,7 +2683,7 @@ C<Text>-typed C<0> argument.
 
     ::MD::Text_from_Unicode_Codes ::= function
         --> Text::Unicode <-- (String::Unicode_Codes)
-        : (\.0->Text_from_Maximal_Chars);
+        : (\<0->Text_from_Maximal_Chars);
 
 The function C<Text_from_Unicode_Codes> results in the C<Text> value selected
 in terms of an integer sequence in the standard Unicode codepoint
@@ -2693,7 +2693,7 @@ mapping of its C<0> argument.
 
     ::MD::Text_to_Unicode_Codes ::= function
         --> String::Unicode_Codes <-- (Text::Unicode)
-        : (\.0->Text_to_Maximal_Chars);
+        : (\<0->Text_to_Maximal_Chars);
 
 The function C<Text_to_Unicode_Codes> results in an integer sequence in the
 standard Unicode codepoint mapping that corresponds to its
@@ -2703,7 +2703,7 @@ C<Text>-typed C<0> argument.
 
     ::MD::Text_from_ASCII_Chars ::= function
         --> Text::ASCII <-- (String::ASCII_Chars)
-        : (\.0->Text_from_Unicode_Codes);
+        : (\<0->Text_from_Unicode_Codes);
 
 The function C<Text_from_ASCII_Chars> results in the C<Text> value selected
 in terms of an integer sequence in the standard 7-bit ASCII character
@@ -2713,7 +2713,7 @@ mapping of its C<0> argument.
 
     ::MD::Text_to_ASCII_Chars ::= function
         --> String::ASCII_Chars <-- (Text::ASCII)
-        : (\.0->Text_to_Unicode_Codes);
+        : (\<0->Text_to_Unicode_Codes);
 
 The function C<Text_to_ASCII_Chars> results in an integer sequence in the
 standard 7-bit ASCII character mapping that corresponds to its
@@ -2960,7 +2960,7 @@ C<False>.
 =head2 has ∋
 
     ::MD::has ::= function --> Boolean <-- (Homogeneous, Any)
-        (has_n::(\.0, \.1, 1));
+        (has_n::(\<0, \<1, 1));
 
     ::MD::Unicode_Aliases::"∋" ::= alias of has;
 
@@ -3192,7 +3192,7 @@ I<TODO.  Result is true when no member evaluates to true.>
 =head2 all for_all ∀
 
     ::MD::all ::= function --> Boolean <-- (Homogeneous, Primed_Func_Ref)
-        : (\.0 none negated_func::(of : \.1, passing_args : \@(0)));
+        : (\<0 none negated_func::(of : \<1, passing_args : \@(0)));
 
     ::MD::for_all ::= alias of all;
 
@@ -3205,7 +3205,7 @@ I<Other languages: "TrueForAll".>
 =head2 all_is_a
 
     ::MD::all_is_a ::= function --> Boolean <-- (Homogeneous, Reference)
-        : (\.0 all (\@is_a assuming topic ^ \@(1)));
+        : (\<0 all (\@is_a assuming topic ^ \@(1)));
 
 I<TODO.>
 
@@ -3242,7 +3242,7 @@ C<Unionable> closest analogy.
 =head2 insert
 
     ::MD::insert ::= function --> Unionable <-- (Unionable, Any)
-        : (insert_n::(\.0, \.1, 1));
+        : (insert_n::(\<0, \<1, 1));
 
 The function C<insert> results in the value of its C<0> argument's
 collection type that has all of the members of the function's C<0> argument
@@ -3269,7 +3269,7 @@ members of C<0> in the same order and ends with any added instances of C<1>.
 =head2 remove
 
     ::MD::remove ::= function --> Unionable <-- (Unionable, Any)
-        : (remove_n::(\.0, \.1, 1));
+        : (remove_n::(\<0, \<1, 1));
 
 The function C<remove> results in the value of its C<0> argument's
 collection type that has all of the members of the function's C<0> argument
@@ -3551,7 +3551,7 @@ distinct member values of its C<0> argument.
 =head2 order
 
     ::MD::order ::= function --> Positional <-- (Discrete)
-        : (\.0 order_using (\@in_order assuming ()));
+        : (\<0 order_using (\@in_order assuming ()));
 
 The function C<order> results in the C<Positional> value that represents
 the same multiset of members as its C<0> argument but that the members are
@@ -3632,7 +3632,7 @@ assuming incorrectly that I<V> already has a member whose index is I<I>.
 
     ::MD::singular::Positional ::= function --> Boolean <-- (Positional)
         implements 2::""
-        : ((\.0->unique_count) = 1);
+        : ((\<0->unique_count) = 1);
 
 The function C<singular::Positional> results in C<True> iff its C<0>
 argument has exactly 1 distinct member value, and C<False> otherwise.  This
@@ -3657,7 +3657,7 @@ C<Positional>.
     ::MD::subset_of::Positional ::= function
         --> Boolean <-- (Positional, Positional)
         implements 2::""
-        : ((\.0->to_Bag) subset_of (\.1->to_Bag));
+        : ((\<0->to_Bag) subset_of (\<1->to_Bag));
 
 The function C<subset_of::Positional> results in C<True> iff the multiset
 of members of its C<0> argument is a subset of the multiset of members of
@@ -3671,7 +3671,7 @@ the composing type C<Positional>.
         --> Boolean <-- (Positional, Positional)
         implements 2::""
         is commutative
-        : ((\.0->to_Bag) same_members (\.1->to_Bag));
+        : ((\<0->to_Bag) same_members (\<1->to_Bag));
 
 The function C<same_members::Positional> results in C<True> iff the
 multiset of members of its C<0> argument is the same as the multiset of
@@ -3687,7 +3687,7 @@ virtual function C<same_members> for the composing type C<Positional>.
         --> Boolean <-- (Positional, Positional)
         implements 2::""
         is commutative
-        : ((\.0->to_Bag) overlaps_members (\.1->to_Bag));
+        : ((\<0->to_Bag) overlaps_members (\<1->to_Bag));
 
 The function C<overlaps_members::Positional> results in C<True> iff, given
 I<X> as the multiset of members of its argument C<0> and I<Y> as the
@@ -3703,7 +3703,7 @@ C<overlaps_members> for the composing type C<Positional>.
         --> Boolean <-- (Positional, Positional)
         implements 2::""
         is commutative
-        : ((\.0->to_Bag) disjoint_members (\.1->to_Bag));
+        : ((\<0->to_Bag) disjoint_members (\<1->to_Bag));
 
 The function C<disjoint_members::Positional> results in C<True> iff the
 multiset of members of its C<0> argument has no member values in common
@@ -3729,7 +3729,7 @@ type C<Positional>.
 
     ::MD::unique_count::Positional ::= function --> Integer_NN <-- (Positional)
         implements 2::""
-        : (\.0->to_Set->count);
+        : (\<0->to_Set->count);
 
 The function C<unique_count::Positional> results in the integral count of
 the distinct member values of its C<0> argument.  This function implements
@@ -3784,8 +3784,8 @@ I<TODO.>
 =head2 squish
 
     ::MD::squish ::= function --> Positional <-- (Positional)
-        : (\.0 map ((function : (( group : \.0, member : False ))) assuming ())
-            ->nest map ((function : (\.0.\group)) assuming ()));
+        : (\<0 map ((function : (( group : \<0, member : False ))) assuming ())
+            ->nest map ((function : (\<<group)) assuming ()));
 
 The function C<squish> results in the value of its C<0> argument's
 ordered collection type that has all of the members of the function's C<0>
@@ -3809,7 +3809,7 @@ first member of I<C> would have.
 =head2 first_unused_index
 
     ::MD::first_unused_index ::= function --> Integer <-- (Positional)
-        : (first_possible_index::(\.0) + #\.0);
+        : (first_possible_index::(\<0) + #\<0);
 
 The function C<first_unused_index> results in the integral first unused
 index position of its C<0> argument, which is the index position that the
@@ -3821,8 +3821,8 @@ zero-based C<Positional>, the result is equal to its C<count>.
 =head2 first_index
 
     ::MD::first_index ::= function --> Integer <-- (Positional)
-        requires (?\.0)
-        : (first_possible_index::(\.0));
+        requires (?\<0)
+        : (first_possible_index::(\<0));
 
 The function C<first_index> results in the integral index position of its
 nonempty C<0> argument's first member.
@@ -3830,8 +3830,8 @@ nonempty C<0> argument's first member.
 =head2 last_index
 
     ::MD::last_index ::= function --> Integer <-- (Positional)
-        requires (?\.0)
-        : (--first_unused_index::(\.0));
+        requires (?\<0)
+        : (--first_unused_index::(\<0));
 
 The function C<last_index> results in the integral index position of its
 nonempty C<0> argument's last member.
@@ -3840,8 +3840,8 @@ nonempty C<0> argument's last member.
 
     ::MD::slice_n::"" ::= function virtual
         --> Positional <-- (Positional, Integer, NN_Integer)
-        requires (\.1 >= first_possible_index::(\.0)
-            and \.1 + \.2 <= first_unused_index::(\.0));
+        requires (\<1 >= first_possible_index::(\<0)
+            and \<1 + \<2 <= first_unused_index::(\<0));
 
 The virtual function C<slice_n> results in the value of its C<0> argument's
 ordered collection type that has exactly I<N> consecutive members of the
@@ -3857,9 +3857,9 @@ their corresponding operators I<array_slice>.
 
     ::MD::slice_range ::= function
         --> Positional <-- (Positional, Integer, Integer)
-        requires (?\.0 and \.1 >= first_possible_index::(\.0)
-            and \.2 < first_unused_index::(\.0))
-        : (slice_n::(\.0, \.1, \.2 - \.1 + 1));
+        requires (?\<0 and \<1 >= first_possible_index::(\<0)
+            and \<2 < first_unused_index::(\<0))
+        : (slice_n::(\<0, \<1, \<2 - \<1 + 1));
 
 The function C<slice_range> results in the value of its C<0> argument's
 ordered collection type that has all of the members of the function's C<0>
@@ -3874,16 +3874,16 @@ may instead overload their array element subscripting syntax.
 =head2 first
 
     ::MD::first ::= function --> Any <-- (Positional)
-        requires (?\.0)
-        : (\.0 . first_index::(\.0));
+        requires (?\<0)
+        : (\<0 . first_index::(\<0));
 
 The function C<first> results in its nonempty C<0> argument's first member.
 
 =head2 nonfirst
 
     ::MD::nonfirst ::= function --> Positional <-- (Positional)
-        requires (?\.0)
-        : (slice_range::(\.0, ++first_index::(\.0), last_index::(\.0)));
+        requires (?\<0)
+        : (slice_range::(\<0, ++first_index::(\<0), last_index::(\<0)));
 
 The function C<nonfirst> results in the value of its C<0> argument's
 ordered collection type that has all of the members of the function's
@@ -3894,16 +3894,16 @@ they did in the argument.
 =head2 last
 
     ::MD::last ::= function --> Any <-- (Positional)
-        requires (?\.0)
-        : (\.0 . last_index::(\.0));
+        requires (?\<0)
+        : (\<0 . last_index::(\<0));
 
 The function C<last> results in its nonempty C<0> argument's last member.
 
 =head2 nonlast
 
     ::MD::nonlast ::= function --> Positional <-- (Positional)
-        requires (?\.0)
-        : (slice_range::(\.0, first_index::(\.0), --last_index::(\.0)));
+        requires (?\<0)
+        : (slice_range::(\<0, first_index::(\<0), --last_index::(\<0)));
 
 The function C<nonlast> results in the value of its C<0> argument's ordered
 collection type that has all of the members of the function's nonempty C<0>
@@ -3944,7 +3944,7 @@ languages may name their corresponding types I<List>.
 
 =head2 String
 
-    ::MD::String::"" ::= selection of Array where (\.0 all_is_a \@Integer);
+    ::MD::String::"" ::= selection of Array where (\<0 all_is_a \@Integer);
 
 The selection contract C<String> represents the infinite type consisting
 just of the C<Array> values having just C<Integer> members.  A C<String>
@@ -3977,12 +3977,12 @@ C<Array> value, C<[]>.
     : (
         i ::= (topic --> \@index_succ_all_matches);
       <--
-        if not \.0 .? i then
+        if not \<0 .? i then
             e1 ::= True
-        else if not \.1 .? i then
+        else if not \<1 .? i then
             False
         else
-            e2 ::= (\.0.i in_order \.1.i);
+            e2 ::= (\<0.i in_order \<1.i);
 
         e1 ::?= 'This is the case where LHS is a leading subsequence of or is equal to RHS.';
         e2 ::?= 'This will succeed iff in_order() is defined for the member type.';
@@ -3996,7 +3996,7 @@ will succeed iff C<in_order> is also defined for the types of the members.
 
     ::MD::to_Boolean::Array ::= function --> Boolean <-- (Array)
         implements 2::""
-        : (\.0 != []);
+        : (\<0 != []);
 
 The function C<to_Boolean::Array> results in C<True> iff its C<0> argument
 has any members, and in C<False> iff it has no members.  This function
@@ -4275,7 +4275,7 @@ I<TODO.>
 
     ::MD::to_Set::Array ::= function --> Set <-- (Array)
         implements 2::""
-        : (\.0->to_Bag->to_Set);
+        : (\<0->to_Bag->to_Set);
 
 The function C<to_Set::Array> results in the C<Set> value that has, for
 every distinct member value I<V> of the function's C<0> argument, exactly 1
@@ -4322,7 +4322,7 @@ type C<Array>.
 
     ::MD::to_Array::Array ::= function --> Array <-- (Array)
         implements 2::""
-        : (\.0);
+        : (\<0);
 
 The function C<to_Array::Array> simply results in its C<0> argument.  This
 function implements the C<Positional> virtual function C<to_Array> aka
@@ -4360,7 +4360,7 @@ C<first_possible_index> for the composing type C<Array>.
     ::MD::slice_n::Array ::= function
         --> Array <-- (Array, NN_Integer, NN_Integer)
         implements 2::""
-        requires (\.1 + \.2 <= #\.0)
+        requires (\<1 + \<2 <= #\<0)
         : (topic -->^ FDN__Array_slice_n);
 
 The function C<slice_n::Array> results in the C<Array> value that has
@@ -4403,12 +4403,12 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
     ::MD::Set ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( \.0, \Set, \@1::_Asset ))
+            where (has_wrapped::( \<0, \Set, \@1::_Asset ))
             default ({})
             composes {Discrete, Setty and_provides_its_default};
 
         _Asset ::= selection of Bag
-            where (all_unique \.0);
+            where (all_unique \<0);
     };
 
 The selection contract C<Set> is infinite.  A C<Set> value is a general
@@ -4431,7 +4431,7 @@ C<Set> value, C<{}>.
 
     ::MD::to_Boolean::Set ::= function --> Boolean <-- (Set)
         implements 2::""
-        : (\.0 != {});
+        : (\<0 != {});
 
 The function C<to_Boolean::Set> results in C<True> iff its C<0> argument
 has any members, and in C<False> iff it has no members.  This function
@@ -4452,7 +4452,7 @@ aka C<∅> for the composing type C<Set>.
 
     ::MD::singular::Set ::= function --> Boolean <-- (Set)
         implements 2::""
-        : (\.0->unwrap->singular);
+        : (\<0->unwrap->singular);
 
 The function C<singular::Set> results in C<True> iff its C<0> argument has
 exactly 1 member value, and C<False> otherwise.  This function implements
@@ -4464,7 +4464,7 @@ C<Set>.
     ::MD::only_member::Set ::= function --> Any <-- (Set)
         implements 2::""
         requires (topic --> \@singular)
-        : (\.0->unwrap->only_member);
+        : (\<0->unwrap->only_member);
 
 The function C<only_member::Set> results in its C<0> argument's only member
 value.  This function will fail if the argument doesn't have exactly 1
@@ -4475,7 +4475,7 @@ C<only_member> for the composing type C<Set>.
 
     ::MD::has_n::Set ::= function --> Boolean <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (has_n::(\.0->unwrap, \.1, \.2));
+        : (has_n::(\<0->unwrap, \<1, \<2));
 
 The function C<has_n::Set> results in C<True> iff either its C<2> argument
 is zero or its C<0> argument has a member equal to its C<1> argument and
@@ -4487,7 +4487,7 @@ type C<Set>.
 
     ::MD::multiplicity::Set ::= function --> Integer_NN <-- (Set, Any)
         implements 2::""
-        : (\.0->unwrap multiplicity \.1);
+        : (\<0->unwrap multiplicity \<1);
 
 The function C<multiplicity::Set> results in 1 if its C<0> argument
 has a member equal to its C<1> argument; otherwise it results in 0.  This
@@ -4508,7 +4508,7 @@ composing type C<Set>.
 
     ::MD::unique::Set ::= function --> Set <-- (Set)
         implements 2::""
-        : (\.0);
+        : (\<0);
 
 The function C<unique::Set> simply results in its C<0> argument.  This
 function implements the C<Homogeneous> virtual function C<unique> for the
@@ -4518,7 +4518,7 @@ composing type C<Set>.
 
     ::MD::subset_of::Set ::= function --> Boolean <-- (Set, Set)
         implements 2::""
-        : ((\.0->unwrap) subset_of (\.1->unwrap));
+        : ((\<0->unwrap) subset_of (\<1->unwrap));
 
 The function C<subset_of::Set> results in C<True> iff the set of members of
 its C<0> argument is a subset of the set of members of its C<1> argument;
@@ -4544,7 +4544,7 @@ function C<same_members> for the composing type C<Set>.
     ::MD::overlaps_members::Set ::= function --> Boolean <-- (Set, Set)
         implements 2::""
         is commutative
-        : ((\.0->unwrap) overlaps_members (\.1->unwrap));
+        : ((\<0->unwrap) overlaps_members (\<1->unwrap));
 
 The function C<overlaps_members::Set> results in C<True> iff, given
 I<X> as the set of members of its argument C<0> and I<Y> as the
@@ -4559,7 +4559,7 @@ C<overlaps_members> for the composing type C<Set>.
     ::MD::disjoint_members::Set ::= function --> Boolean <-- (Set, Set)
         implements 2::""
         is commutative
-        : ((\.0->unwrap) disjoint_members (\.1->unwrap));
+        : ((\<0->unwrap) disjoint_members (\<1->unwrap));
 
 The function C<disjoint_members::Set> results in C<True> iff the
 set of members of its C<0> argument has no member values in common
@@ -4571,7 +4571,7 @@ C<disjoint_members> for the composing type C<Set>.
 
     ::MD::any::Set ::= function --> Boolean <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (\.0->unwrap any \.1);
+        : (\<0->unwrap any \<1);
 
 I<TODO.>
 
@@ -4579,8 +4579,8 @@ I<TODO.>
 
     ::MD::insert_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (\.0 has \.1 or \.2 = 0 ?? \.0
-            !! \Set wrap insert_n::(\.0->unwrap, \.1, 1));
+        : (\<0 has \<1 or \<2 = 0 ?? \<0
+            !! \Set wrap insert_n::(\<0->unwrap, \<1, 1));
 
 The function C<insert_n::Set> results in the C<Set> value that has all of
 the members of the function's C<0> argument; but, if the C<2> argument is
@@ -4592,7 +4592,7 @@ function C<insert_n> for the composing type C<Set>.
 
     ::MD::remove_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (\Set wrap remove_n::(\.0->unwrap, \.1, \.2));
+        : (\Set wrap remove_n::(\<0->unwrap, \<1, \<2));
 
 The function C<remove_n::Set> results in the C<Set> value that has all of
 the members of the function's C<0> argument; but, if the C<2> argument is
@@ -4616,7 +4616,7 @@ virtual function C<member_plus> aka C<⊎> for the composing type C<Set>.
 
     ::MD::except::Set ::= function --> Set <-- (Set, Set)
         implements 2::""
-        : (\Set wrap ((\.0->unwrap) except (\.1->unwrap)));
+        : (\Set wrap ((\<0->unwrap) except (\<1->unwrap)));
 
 The function C<except::Set> results in the I<set difference> between
 its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
@@ -4630,7 +4630,7 @@ for the composing type C<Set>.
     ::MD::intersect::Set ::= function --> Set <-- (Set, Set)
         implements 2::""
         is {associative,commutative,idempotent}
-        : (\Set wrap ((\.0->unwrap) intersect (\.1->unwrap)));
+        : (\Set wrap ((\<0->unwrap) intersect (\<1->unwrap)));
 
 The function C<intersect::Set> results in the I<set intersection> of
 its 2 arguments C<0> and C<1>.  The result is the C<Set> value that has all
@@ -4643,7 +4643,7 @@ function C<intersect> aka C<∩> for the composing type C<Set>.
     ::MD::union::Set ::= function --> Set <-- (Set, Set)
         implements 2::""
         is {associative,commutative,idempotent} identity ({})
-        : (\Set wrap ((\.0->unwrap) union (\.1->unwrap)));
+        : (\Set wrap ((\<0->unwrap) union (\<1->unwrap)));
 
 The function C<union::Set> results in the I<set union> of its 2
 arguments C<0> and C<1>.  The result is the C<Set> value that has all of
@@ -4656,7 +4656,7 @@ virtual function C<union> aka C<∪> for the composing type C<Set>.
     ::MD::exclusive::Set ::= function --> Set <-- (Set, Set)
         implements 2::""
         is {associative,commutative} identity ({})
-        : (\Set wrap ((\.0->unwrap) exclusive (\.1->unwrap)));
+        : (\Set wrap ((\<0->unwrap) exclusive (\<1->unwrap)));
 
 The function C<exclusive::Set> results in the I<set symmetric
 difference> of its 2 arguments C<0> and C<1>.  The result is the C<Set>
@@ -4670,7 +4670,7 @@ aka C<symm_diff> aka C<∆> for the composing type C<Set>.
     ::MD::nest::Set ::= function --> Set <-- (Set)
         implements 2::""
         requires (...)
-        : (\Set wrap (\.0->unwrap->nest));
+        : (\Set wrap (\<0->unwrap->nest));
 
 I<TODO.>
 
@@ -4679,7 +4679,7 @@ I<TODO.>
     ::MD::unnest::Set ::= function --> Set <-- (Set)
         implements 2::""
         requires (...)
-        : (\Set wrap (\.0->unwrap->unnest));
+        : (\Set wrap (\<0->unwrap->unnest));
 
 I<TODO.>
 
@@ -4687,7 +4687,7 @@ I<TODO.>
 
     ::MD::where::Set ::= function --> Set <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (\Set wrap (\.0->unwrap where \.1));
+        : (\Set wrap (\<0->unwrap where \<1));
 
 I<TODO.>
 
@@ -4695,7 +4695,7 @@ I<TODO.>
 
     ::MD::map::Set ::= function --> Set <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (\Set wrap (\.0->unwrap map \.1));
+        : (\Set wrap (\<0->unwrap map \<1));
 
 I<TODO.>
 
@@ -4703,7 +4703,7 @@ I<TODO.>
 
     ::MD::reduce::Set ::= function --> Any <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (\Set wrap (\.0->unwrap reduce \.1));
+        : (\Set wrap (\<0->unwrap reduce \<1));
 
 I<TODO.>
 
@@ -4711,7 +4711,7 @@ I<TODO.>
 
     ::MD::to_Set::Set ::= function --> Set <-- (Set)
         implements 2::""
-        : (\.0);
+        : (\<0);
 
 The function C<to_Set::Set> simply results in its C<0> argument.  This
 function implements the C<Discrete> virtual function C<to_Set> aka
@@ -4721,7 +4721,7 @@ C<< ?| >> for the composing type C<Set>.
 
     ::MD::to_Bag::Set ::= function --> Bag <-- (Set)
         implements 2::""
-        : (\.0->unwrap);
+        : (\<0->unwrap);
 
 The function C<to_Bag::Set> results in the C<Bag> value that has all of the
 members of the function's C<0> argument.  This function implements the
@@ -4732,7 +4732,7 @@ C<Set>.
 
     ::MD::count::Set ::= function --> Integer_NN <-- (Set)
         implements 2::""
-        : (\.0->unwrap->count);
+        : (\<0->unwrap->count);
 
 The function C<count::Set> results in the integral count of the members
 of its C<0> argument.  This function implements the C<Discrete> virtual
@@ -4742,7 +4742,7 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Set>.
 
     ::MD::unique_count::Set ::= function --> Integer_NN <-- (Set)
         implements 2::""
-        : (\.0->count);
+        : (\<0->count);
 
 The function C<unique_count::Set> results in the integral count of the
 members of its C<0> argument; its behavior is identical to C<count> given
@@ -4753,7 +4753,7 @@ function C<unique_count> for the composing type C<Set>.
 
     ::MD::order_using::Set ::= function --> Array <-- (Set, Primed_Func_Ref)
         implements 2::""
-        : (\Set wrap (\.0->unwrap order_using \.1));
+        : (\Set wrap (\<0->unwrap order_using \<1));
 
 The function C<order_using::Set> results in the C<Array> value that represents
 the same set of members as its C<0> argument but that the members are
@@ -4791,7 +4791,7 @@ C<Bag> value, C<\+{}>.
 
     ::MD::to_Boolean::Bag ::= function --> Boolean <-- (Bag)
         implements 2::""
-        : (\.0 != \+{});
+        : (\<0 != \+{});
 
 The function C<to_Boolean::Bag> results in C<True> iff its C<0> argument
 has any members, and in C<False> iff it has no members.  This function
@@ -5075,7 +5075,7 @@ I<TODO.>
 
     ::MD::to_Set::Bag ::= function --> Set <-- (Bag)
         implements 2::""
-        : (\Set wrap (\.0->unique));
+        : (\Set wrap (\<0->unique));
 
 The function C<to_Set::Bag> results in the C<Set> value that has, for every
 distinct member value I<V> of the function's C<0> argument, exactly 1
@@ -5087,7 +5087,7 @@ C<Bag>.
 
     ::MD::to_Bag::Bag ::= function --> Bag <-- (Bag)
         implements 2::""
-        : (\.0);
+        : (\<0);
 
 The function C<to_Bag::Bag> simply results in its C<0> argument.  This
 function implements the C<Discrete> virtual function C<to_Bag> aka
@@ -5384,7 +5384,7 @@ C<Tuple> value.
 
     ::MD::has_any_attrs::Tuple ::= function --> Boolean <-- (Tuple)
         implements 2::""
-        : (\.0 != ());
+        : (\<0 != ());
 
 I<TODO.>
 
@@ -5482,7 +5482,7 @@ I<TODO.>
 =head2 all_attrs
 
     ::MD::all_attrs ::= function --> Boolean <-- (Tuple, Primed_Func_Ref)
-        : (\.0 none_of_attrs negated_func::(of : \.1, passing_args : \@(0)));
+        : (\<0 none_of_attrs negated_func::(of : \<1, passing_args : \@(0)));
 
 I<TODO.>
 
@@ -5524,15 +5524,15 @@ I<TODO.>
     ::MD::Tuple_Array ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( \.0, \Tuple_Array, \@1::_Asset ))
+            where (has_wrapped::( \<0, \Tuple_Array, \@1::_Asset ))
             default (~%@())
             composes {Relational, Positional};
 
         _Asset ::= selection of Tuple where
         (
-            if \.0 ^?= ( heading : \@Attr_Names, body : \@Array ) then
-                if \.body all_is_a \@Tuple then
-                    \.body all (\@"^?=" assuming \.heading)
+            if \<0 ^?= ( heading : \@Attr_Names, body : \@Array ) then
+                if \<<body all_is_a \@Tuple then
+                    \<<body all (\@"^?=" assuming \<<heading)
                 else
                     False
             else
@@ -5572,12 +5572,12 @@ single-tuple C<Tuple_Array> value.
     ::MD::Relation ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( \.0, \Relation, \@1::_Asset ))
+            where (has_wrapped::( \<0, \Relation, \@1::_Asset ))
             default (?%@())
             composes {Relational and_provides_its_default, Discrete, Setty};
 
         _Asset ::= selection of Tuple_Bag
-            where (all_unique \.0);
+            where (all_unique \<0);
     };
 
 I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
@@ -5609,15 +5609,15 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
     ::MD::Tuple_Bag ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( \.0, \Tuple_Bag, \@1::_Asset ))
+            where (has_wrapped::( \<0, \Tuple_Bag, \@1::_Asset ))
             default (+%@())
             composes {Relational, Discrete};
 
         _Asset ::= selection of Tuple where
         (
-            if \.0 ^?= ( heading : \@Attr_Names, body : \@Bag ) then
-                if \.body all_is_a \@Tuple then
-                    \.body all (\@"^?=" assuming \.heading)
+            if \<0 ^?= ( heading : \@Attr_Names, body : \@Bag ) then
+                if \<<body all_is_a \@Tuple then
+                    \<<body all (\@"^?=" assuming \<<heading)
                 else
                     False
             else
@@ -5658,7 +5658,7 @@ I<TODO.>
 =head2 Interval
 
     ::MD::Interval ::= selection of Capsule
-        where (has_wrapped::( \.0, \Interval, \@Tuple::Interval ))
+        where (has_wrapped::( \<0, \Interval, \@Tuple::Interval ))
         default ((-∞)..(+∞))
         composes {Intervalish, Setty};
 
@@ -5688,12 +5688,12 @@ I<TODO.>
     ::MD::Interval_Set ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( \.0, \Interval_Set, \@1::_Asset ))
+            where (has_wrapped::( \<0, \Interval_Set, \@1::_Asset ))
             default (...)
             composes {Unionable_Intervalish, Setty};
 
         _Asset ::= selection of Interval_Bag
-            where (all_unique \.0);
+            where (all_unique \<0);
     };
 
 I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.>
@@ -5705,7 +5705,7 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
     ::MD::Interval_Bag ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( \.0, \Interval_Bag, \@1::_Asset ))
+            where (has_wrapped::( \<0, \Interval_Bag, \@1::_Asset ))
             default (...)
             composes Unionable_Intervalish;
 
@@ -5734,7 +5734,7 @@ I<TODO.>
     ::MD::Quantity ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( \.0, \Quantity, \@1::_Asset ))
+            where (has_wrapped::( \<0, \Quantity, \@1::_Asset ))
             default (...)
             composes Quantitative;
 
@@ -5788,7 +5788,7 @@ I<TODO.>
 
     ::MD::Capsule::has_wrapped ::= function
         --> Boolean <-- (Capsule, Any, Reference)
-        : (wrapper::(\.0) = \.1 and unwrap::(\.0) --> \.2);
+        : (wrapper::(\<0) = \<1 and unwrap::(\<0) --> \<2);
 
 I<TODO.>
 
@@ -5832,7 +5832,7 @@ I<TODO.>
 =head2 Source_Code::Package_List
 
     ::MD::Source_Code::Package_List ::= selection of Array
-        where (\.0 all_is_a (selection of {Package, Decoration} default Package::()));
+        where (\<0 all_is_a (selection of {Package, Decoration} default Package::()));
 
 I<TODO.>
 
@@ -5841,14 +5841,14 @@ I<TODO.>
     ::MD::Source_Code::Package ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( \.0, \Package, \@1::_Asset ))
+            where (has_wrapped::( \<0, \Package, \@1::_Asset ))
             default (\Package wrap 1::_Asset());
 
         _Asset ::= selection of Tuple where
         (
             if
-                \.0 ^?= (
-                    identity : (selection of Pkg_Decl_Map where (degree::(\.0) = 1)),
+                \<0 ^?= (
+                    identity : (selection of Pkg_Decl_Map where (degree::(\<0) = 1)),
                     foundation : ...,
                     uses : \@Pkg_Decl_Map,
                     entry : ...,
@@ -5858,7 +5858,7 @@ I<TODO.>
                     decoration : ...,
                 )
             then
-                \.0.\uses attr_names_disjoint \.0.\identity
+                \<<uses attr_names_disjoint \<<identity
             else
                 False
         );
@@ -5870,8 +5870,8 @@ I<Remember that "floating" can't search inside a binder, can only resolve to a b
 =head2 Source_Code::Pkg_Decl_Map
 
     ::MD::Source_Code::Pkg_Decl_Map ::= selection of Tuple
-        where (\.0 all_attrs
-            ((function : (\.asset is_a \@Pkg_Canon_Name)) assuming ()));
+        where (\<0 all_attrs
+            ((function : (\<<asset is_a \@Pkg_Canon_Name)) assuming ()));
 
 I<TODO.>
 
@@ -5882,7 +5882,7 @@ I<TODO.>
     : (
         (function : (
             not::(
-                (\.of.\args +^ (topic ^ \.passing_args)) --> (\.of.\func)
+                (\<of.\args +^ (topic ^ \<passing_args)) --> (\<of.\func)
             )
         )) assuming topic
     );

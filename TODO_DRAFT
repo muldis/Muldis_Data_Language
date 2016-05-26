@@ -988,7 +988,7 @@ values of a domain" etc refer to in practice as far as the prescription on
 eliminating such to achieve 1NF. The problem was never about array-valued
 attributes or complex types or what have you."
 
-* Don't use References as \.0 etc in types the Foundation needs to know
+* Don't use References as \<0 etc in types the Foundation needs to know
 about, such as anything Plain_Text has syntax for or anything likely to
 have an internal special representation for or any type defining source
 code.  Save References for things only a bootstrapped system would see.
@@ -3658,9 +3658,17 @@ aka "\\c[0,0]" and "\\c[0,1]".
 * Generally speaking, what any commalist is parsed into is starting with an
 empty value of the collection type and insert()/insert_n()-ing each element.
 
-* Make \.foo a syntactic shorthand for topic attribute \foo when topic is a
-Tuple; that is, \.foo is syntactic shorthand for:
+* Make \<foo a syntactic shorthand for topic attribute \foo when topic is a
+Tuple (EDIT: which is all the time); that is, \<foo is syntactic shorthand for:
     \%(topic,\foo) -->^ BS_Tuple_Attr
+... which is longhand for topic.\foo
+- Furthermore, make \<<foo shorthand for \0 attribute of \<foo;
+that is, \<<foo is shorthand for topic.\0.\foo
+mainly useful in list operators like where/map/any/etc when applied to
+relations or tuple collections, where they then are attrs of the "current tuple".
+- A related feature \<>foo refers to the procedure lexical variable or subject-to-update
+parameter "foo" by itself and isn't short for anything per se, that is a
+procedure doesn't have a "topic" fundamentally.
 
 * Don't have catalog types specific to defining routine parameters.
 - Regular contracts / type defs / shorthands do the job.
@@ -4264,7 +4272,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         - is for dyadic positional functions that just commute others, eg <= vs => or in vs has
         - these 2 declarations are equivalent:
             foo ::= function commutes bar;
-            foo ::= function --> Any <-- (Any,Any) : (\.1 bar \.0);
+            foo ::= function --> Any <-- (Any,Any) : (\<1 bar \<0);
         - a function may not name itself with "commutes" and must instead
         say "is commutative" when that applies
         - it is expected that any functions in a "commutes" pair are not
