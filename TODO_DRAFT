@@ -369,6 +369,8 @@ languages, eg Perl, Python, V8, etc.
 
 * http://bonesmoses.org/2015/12/11/pg-phriday-postgres-xl-and-horizontal-scaling/
 
+* http://sqitch.org - Sqitch is a database change management application.
+
 * https://metacpan.org/release/Time-Moment
 More appropriate than Perl DateTime perhaps or as a model for Muldis D.
 
@@ -3525,6 +3527,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    is generally a Reference like \@foo for most subtypes
                   |    but for main core types especially ones that Foundation
                   |    needs to know, it is an Attr_Name like \foo instead.
+                  |    Contract_Name is an alias for Reference, use for more descriptive parameter/etc types.
     OBSOLETE SYNTAX, FREE UP => FOR NON-CORE / USER TYPES:
                   |    expr=>expr - that is Reference=>Tuple eg $Date=>(year:500,month:4,day:24)
                   |    and Singleton is one with nullary tuple eg $To_Zero=>()
@@ -4172,6 +4175,76 @@ some other type, typically an expression node set.
     Due to these, exactly zero of all system-defined constants or functions
     have "..." bodies, other than to mean TODO.
 - ...
+
+* NEW FOR 20160527...
+- Unified syntax in general expression context for invoking or referencing
+functions and constants and types, all of which are invoked as if they were
+functions, which in an abstract sense they are.  An invoked name will match
+a package entity regardless of its kind, and then invocation will succeed
+or fail depending on whether the argument list matches or not.  A constant
+matches a nullary arg list only.  A type matches both a nullary arg list
+(returns default value) and a unary positional arg list (test of membership).
+A function matches any arg list at all potentially.
+- To yield result of evaluate now any of these when the "function" name is hard-coded and so
+are the arguments, its like this; there must be both "::" within the name
+somewhere, and parens immediately following the name (opt ws):
+    f1::() - const or default or func
+    f2::(x) - membership or func
+    f3::(x,y) - only func
+- A limited form of the call-it-now for either 1 or 2 positional args only:
+    f2 x
+    f2 <- x
+    x -> f2
+    x f3 y
+    x -> f3 <- y
+- To yield result that is a specification of a function call, specifically
+a value of the Function_Call type (a Reference-Tuple pair), which includes
+the name of a "function" and a (possibly either empty or total) subset of
+the arguments it expects, just prefix a backslash:
+    \f4::()
+    \f5::(x)
+    \f6::(x,y)
+- The above is the preferred form of the "function" argument to
+where/map/all/reduce/etc, though for such things the partially applied
+arguments, the x and y above, should be named args instead since we want to
+reserve "0" and maybe "1" for the "current element" provided by "where"/etc;
+or otherwise one has to do the remaining positionals like this:
+    \a::(1:x,2:y)
+- To yield result that is spec of func call where function name or args are
+supplied indirectly / via named exprs etc, this form:
+    fc \<-- args
+    args \--> fc
+- The "fc" here is a Function_Call value and "args" is a Tuple value;
+strictly speaking, what you are doing here is optionally applying further
+arguments to the function call.  While this seems to setup a recursive
+definition, how a normal user breaks out is to use the \f::() syntax the
+first time to yield the initial "fc", whatever the context it is defined.
+Further application is just extending the tuple in the "fc" with the "args" one;
+replacing is not allowed, so if any attr names duplicate, it is an error.
+- At the lower level for code implementing the Plain_Text parser, here is
+longhand for selecting the initial fc:
+    \Function_Call wrap (func: \@funcname::, args: ())
+- The \@foo syntax selects a Reference not wrapped in a Function_Call.
+- Contract_Name is an alias for Reference to help parameter self-documenting.
+- Subtypes by constraint of Function_Call:
+    Function_Call_But_0 - any Function_Call lacking a "0" argument
+    Function_Call_But_0_1 - any Function_Call lacking both "0" and "1" args
+- To yield result of evaluate now where function name or args are supplied
+indirectly / via named exprs etc, this form:
+    fc <-- args
+    args --> fc
+- The "fc" here is a Function_Call value and "args" is a Tuple value; as
+such this is also how you take a specification of a function call value and actually
+perform the call, optionally with extra arguments (use null Tuple if no more).
+- Calls to Foundation functions/constants (types are not distinct there)
+are still dealing with Tuple arg-lists to hard-coded names, like this:
+    fdnfuncname ^<-- args
+    args -->^ fdnfuncname
+... but the ^ is subject to be replaced by something else.
+- Embedded function definitions now result in a Function_Call rather than in
+a Reference; eg this results in a Function_Call:
+    (function : (\<0 + \<1))
+    (function : (topic --> "+"::()))
 
 * Function call syntax:
     args --> rtn

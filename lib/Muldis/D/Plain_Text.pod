@@ -1643,7 +1643,7 @@ Grammar:
     <Reference> ::=
         ...
 
-I<TODO.>
+I<TODO.  Note that Function_Name and Contract_Name are aliases for Reference.>
 
 =head1 COLLECTION SELECTOR EXPRESSIONS
 
@@ -1655,6 +1655,7 @@ Grammar:
         | <Bag>
         | <Tuple>
         | <Capsule>
+        | <Function_Call>
 
 A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
 value literal specific to some system-defined data type that has its own
@@ -1759,13 +1760,32 @@ Examples:
 
     \:(\Fraction, (numerator : 5, denominator : 3))
 
+=head2 Generic Constant and Function Call Specification Selectors
+
+Grammar:
+
+    <Function_Call> ::=
+        <long_arrowed_func_invo_sel> | <postcircumfixed_func_invo_sel>
+
+    <long_arrowed_func_invo_sel> ::=
+          [<generic_func_args> <sp> '\\-->' <sp> <generic_func_call>]
+        | [<generic_func_call> <sp> '\\<--' <sp> <generic_func_args>]
+
+    <postcircumfixed_func_invo_sel> ::=
+        '\\' <postcircumfixed_func_invo_expr>
+
+I<TODO.>
+I<Note that, yes, the generic_func_call input is also a Function_Call value,
+same type as the result of the Function_Call expression, so that is indeed
+recursively defined in the general case.  And so other syntax would be used
+to select the most-nested Function_Call value, often postcircumfixed_func_invo_expr.>
+
 =head1 INVOCATION EXPRESSIONS
 
 Grammar:
 
     <invocation_expr> ::=
           <generic_func_invo_expr>
-        | <pcf_func_invo_expr>
         | <fixed_func_invo_expr>
         | <foundation_func_invo_expr>
 
@@ -1779,20 +1799,28 @@ is invokable or indicate a result if one isn't invokable.>
 Grammar:
 
     <generic_func_invo_expr> ::=
-          [<generic_func_args> <sp> '-->' <sp> <generic_func_ref>]
-        | [<generic_func_ref> <sp> '<--' <sp> <generic_func_args>]
+        <long_arrowed_func_invo_expr> | <postcircumfixed_func_invo_expr>
 
-    <generic_func_ref> ::=
+    <long_arrowed_func_invo_expr> ::=
+          [<generic_func_args> <sp> '-->' <sp> <generic_func_call>]
+        | [<generic_func_call> <sp> '<--' <sp> <generic_func_args>]
+
+    <generic_func_call> ::=
         <expr>
 
     <generic_func_args> ::=
         <expr>
 
+    <postcircumfixed_func_invo_expr> ::=
+        <generic_func_name> <sp> '::'? <sp> '(' <sp> <attr_commalist> <sp> ')'
+
 I<TODO.>
 
-A C<< <generic_func_ref> >> denotes a C<Reference> value naming a function
-(or constant or type);
-it may be either a C<Reference> value literal or an inline-defined C<function>.
+A C<< <generic_func_call> >> denotes a C<Function_Call> value, which pairs
+a C<Function_Name> (C<Reference>) value naming a function (or constant or
+type) with a C<Tuple> value giving arguments to pass to it; typically this
+is defined either with a C<< <Function_Call> >> selector expression or with
+an inline-defined C<function>; the C<< <generic_func_args> >> gives more args.
 
 Note that explicitly passing a nullary tuple will also match a constant,
 and explicitly passing a unary tuple with a positional argument will also
@@ -1801,18 +1829,9 @@ match a type.
 I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF -->/<-- WHERE THE FUNCTION
 OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
 
-=head2 Postcircumfixed Constant and Function Invocation Expressions
-
-Grammar:
-
-    <pcf_func_invo_expr> ::=
-        <generic_func_name> <sp> '::'? <sp> '(' <sp> <attr_commalist> <sp> ')'
-
-I<TODO.>
-
-A C<< <pcf_func_invo_expr> >> is subject to the additional rule that, iff
-its C<< <generic_func_name> >> element has no C<::> within itself, then
-that element must have a trailing C<::> element.
+A C<< <postcircumfixed_func_invo_expr> >> is subject to the additional rule
+that, iff its C<< <generic_func_name> >> element has no C<::> within
+itself, then that element must have a trailing C<::> element.
 
 A C<< <generic_func_name> >> may alternately be a constant name or a type
 name, and not just a function name, because those can be invoked like
