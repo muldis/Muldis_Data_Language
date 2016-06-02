@@ -2534,7 +2534,7 @@ which exists for convenient self-documentation of C<Text>-related code.
 
 The selection contract C<Text::Unicode> represents the infinite type
 consisting just of the C<Text> values for which every one of their member
-characters is a member of the 0x110000-character repertoire of Unicode.
+characters is a member of the 0x10F7FF-character repertoire of Unicode.
 This C<Text> subtype has is own canonical representation in terms of a
 C<String> value named C<Unicode_Codes> where each member codepoint matches
 the standard Unicode codepoints for the same symbols.
@@ -2542,11 +2542,11 @@ the standard Unicode codepoints for the same symbols.
 =head2 String::Unicode_Codes
 
     ::MD::String::Unicode_Codes ::= selection of String::Maximal_Chars
-        where (\<0 all (function : (\<0 in 0..0x10FFFF)));
+        where (\<0 all (function : (\<0 in ?..{0..0xD7FF,0xE000..0x10FFFF})));
 
 The selection contract C<String::Unicode_Codes> represents the infinite type
 consisting just of the C<String> values for which every one of their member
-integers is in the range 0..0x10FFFF inclusive.
+integers is in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
 
 =head2 Text::ASCII
 
@@ -2721,6 +2721,113 @@ mapping of its C<0> argument.
 The function C<Text_to_ASCII_Chars> results in an integer sequence in the
 standard 7-bit ASCII character mapping that corresponds to its
 C<Text>-typed C<0> argument.
+
+=head2 Blob_is_UTF_8
+
+    ::MD::Blob_is_UTF_8 ::= function --> Boolean <-- (Blob)
+        : (...);
+
+I<TODO.  See also https://tools.ietf.org/html/rfc3629 for the UTF-8 definition.>
+
+I<TODO.  Note that while the UTF-8 encoding scheme can represent all Unicode
+codepoints in the range 0..0x1FFFFF with 4 octets (and all 0..0x7FFFFFFF
+with 6 octets), the UTF-8 standard further restricts the range to
+{0..0xD7FF,0xE000..0x10FFFF} to match the constraints of the limitations of UTF-16.>
+
+I<TODO.  Note that we don't define a Blob::UTF_8 type as
+it is superfluous with simply trying to decode one and see if it succeeded.>
+
+=head2 Text_from_UTF_8_Blob
+
+    ::MD::Text_from_UTF_8_Blob ::= function
+        --> {Text::Unicode, Excuse::Unicode::..., ...} <-- (Blob)
+        : (...);
+
+I<TODO.  As a code/implementation comment, say the parallel design is
+benefitting from the self-syncrhonizing nature that is a key feature of UTF-8.>
+
+I<TODO.  Note, the multiple Excuse options are used to indicate the
+different reasons why the Blob is not considered valid UTF-8, including
+that it doesn't use the fewest bytes possible for a character, or it
+represents codepoints greater than 0x10FFFF or it represents illegal
+codepoints in the 0xD800..0xDFFF range of UTF-16 surrogates, or it has the
+wrong number of continuation bytes following an ASCII char or starting byte
+etc.  If a Blob contains multiple errors, the returned Excuse is for the
+error closest to the start of the Blob; that is, chained and_then() is
+used. TODO, perhaps declare a union type collecting the Unicode errors like
+we have with rounding methods, or we actually may have multiple Unicode sets.>
+
+=head2 Text_from_UTF_8_Blob_with_repl_Text
+
+    ::MD::Text_from_UTF_8_Blob_with_repl_Text ::= function
+        --> Text::Unicode <-- (Blob, Text::Unicode)
+        : (...);
+
+I<TODO.  Each invalid octet encountered is replaced by the substitution text
+(which can be a single character, or several, or the empty string).  For
+consistency, even if the sequence decodes fine in one sense but is an out
+of range character, the instances of substitution are per count of octets
+not one per character.>
+
+=head2 Text_from_UTF_8_Blob_with_repl_char
+
+    ::MD::Text_from_UTF_8_Blob_with_repl_char ::= function
+        --> Text::Unicode <-- (Blob)
+        : (Text_from_UTF_8_Blob_with_repl_Text(\<0,'\\c<0xFFFD>');
+
+I<TODO.  The special Unicode char "REPLACEMENT CHARACTER" aka 0xFFFD is used.>
+
+=head2 Text_to_UTF_8_Blob
+
+    ::MD::Text_to_UTF_8_Blob ::= function --> Blob <-- (Text::Unicode)
+        : (...);
+
+I<TODO.  This should just work as Text::Unicode excludes the surrogate
+pairs and out of range etc stuff.>
+
+=head2 Blob_is_ASCII
+
+    ::MD::Blob_is_ASCII ::= function --> Boolean <-- (Blob)
+        : (String::ASCII_Chars(\<0->Blob_to_Octets));
+
+I<TODO.>
+
+=head2 Text_from_ASCII_Blob
+
+    ::MD::Text_from_ASCII_Blob ::= function
+        --> {Text::ASCII, Excuse::ASCII::High_Bit_Not_Zero} <-- (Blob)
+    : (
+        octets ::= \<0->Blob_to_Octets;
+        <-- if String::ASCII_Chars(octets)
+            then octets->Text_from_ASCII_Chars
+            else Excuse::ASCII::High_Bit_Not_Zero();
+    );
+
+I<TODO.  Note, still have to define that Excuse.>
+
+=head2 Text_from_ASCII_Blob_with_repl_Text
+
+    ::MD::Text_from_ASCII_Blob_with_repl_Text ::= function
+        --> Text::ASCII <-- (Blob, Text::ASCII)
+    : (
+        \<0->Blob_to_Octets
+            map ((function : (\<0 in 0..127 ?? [\<0] !! \<1))
+                \<-- (1 : \<1->Text_to_ASCII_Chars,))
+            reduce \catenate::()
+            ->Text_from_ASCII_Chars
+    );
+
+I<TODO.  Each invalid octet encountered is replaced by the substitution text
+(which can be a single character, or several, or the empty string).
+Note there is no alternate with a predefined substitution char as there
+is no good implicit default in ASCII, unlike with Unicode.>
+
+=head2 Text_to_ASCII_Blob
+
+    ::MD::Text_to_ASCII_Blob ::= function --> Blob <-- (Text::ASCII)
+        : (\<0->Text_to_ASCII_Chars->Blob_from_Octets);
+
+I<TODO.>
 
 =head1 COLLECTIVE DATA TYPES OVERVIEW
 
@@ -2937,6 +3044,8 @@ then use this function on the derived one.  For types such as C<Set> or
 C<Bag> one can't select a member using an index, say, like with an
 C<Array>, and a general solution provided by other programming languages
 for simply picking I<a> member would give an effectively random one.
+
+I<TODO: See also the C# methods "Single" and "SingleOrDefault" etc.>
 
 =head2 in ∈
 
