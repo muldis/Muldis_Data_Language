@@ -14,6 +14,11 @@ resources of everyone else.
 
 ----------
 
+* Don't use terminology like "multiple-assignment" assuming that TTM has a
+specific meaning about it involving the resolution of targets that might
+overlap behind the scenes; what Muldis D actually has can be more aptly
+described as "simultaneous assignment" or such.
+
 * For now, rather than providing general case of assignment LHS expressions,
 just provide simply simultaneous multiple-variable assignment.
 - Provide this very specific feature for functions AND procedures, where
@@ -211,6 +216,9 @@ of times", but not a substring.
 * Nice piece of work, this:
 http://www.theregister.co.uk/2016/01/13/stob_remember_the_monoids/
 
+* In more recent Perl 5, functions with a prototype of () might inline automatically.
+https://metacpan.org/pod/perlsub#Constant-Functions
+
 * Quoth the raven:
 "In Haskell all operators are as-if user-defined.
 And therefore even library-supplied operators
@@ -256,7 +264,17 @@ integers scheme, but the maturity is indicated separately:
 
 * http://www.dagolden.com/index.php/2633/no-more-dirty-reads-with-mongodb/
 
+* https://www.depesz.com/2016/05/04/picking-task-from-queue-revisit/
+SKIP LOCKED for implementing queues.
+
+* http://bonesmoses.org/2016/04/29/pg-phriday-derivation-deluge/
+About different Postgres forks that exist with a focus on scaling.
+Also: https://wiki.postgresql.org/wiki/PostgreSQL_derived_databases
+
 * http://www.depesz.com/2016/03/23/waiting-for-9-6-support-parallel-aggregation/
+
+* "PostgreSQL does not provide any infrastructure for capturing sequence changes [but is trying]".
+http://blog.2ndquadrant.com/pglogical-1-1/
 
 * https://6guts.wordpress.com/2016/02/09/a-few-words-on-perl-6-versioning-and-compatibility/
 
@@ -3665,10 +3683,14 @@ empty value of the collection type and insert()/insert_n()-ing each element.
 Tuple (EDIT: which is all the time); that is, \<foo is syntactic shorthand for:
     \%(topic,\foo) -->^ BS_Tuple_Attr
 ... which is longhand for topic.\foo
-- Furthermore, make \<<foo shorthand for \0 attribute of \<foo;
+- Furthermore, make \<<foo shorthand for \0 attribute named \<foo;
 that is, \<<foo is shorthand for topic.\0.\foo
 mainly useful in list operators like where/map/any/etc when applied to
 relations or tuple collections, where they then are attrs of the "current tuple".
+- Furthermore, make \>>foo shorthand for \1 attribute named \<foo;
+that is, \>>foo is shorthand for topic.\1.\foo,
+while that doesn't pair with \< plus 1 layer, it does pair with the notion
+of \<< drilling into binary op lhs arg, so \>> drills to binary op rhs arg.
 - A related feature \<>foo refers to the procedure lexical variable or subject-to-update
 parameter "foo" by itself and isn't short for anything per se, that is a
 procedure doesn't have a "topic" fundamentally.
@@ -4429,7 +4451,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         - this is the main body of the function F1; it takes the function's
         actual argument (as topic) which conforms to "from"+"requires" and
         produces the function's result which conforms to "to"+"intends"
-    11. keyword "inverse" or "-:" is optional, followed by expr
+    11. OBSOLETE: keyword "inverse" or "-:" is optional, followed by expr
         - has no default / doesn't exist if omitted
         - this is the main body of the canonical inverse function F2 of the
         main function F1 but existing specifically to support pseudo-variables
@@ -4469,7 +4491,8 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
 - Note that "symmetric" is obsolete here; it meant what "commutative" does.
 - Every part has a default value that is used if omitted
 - Many of the numbered items above correspond to Perl 6 sub traits
-- Note that declarations of a/c/i/identity/repeater etc could potentially
+- INVERSE IS OBSOLETE, THE REST NOT:
+Note that declarations of a/c/i/identity/repeater etc could potentially
 be tested automatically when a routine is called, eg run it twice with args
 swapped and check the result, however if any of this is provided it likely
 would be an optional feature to enable like a warning; however, given the
@@ -4478,7 +4501,7 @@ this run-forwards constraint is just something that is always done, and in
 particular this is more likely something that would normally be an actual
 regular database constraint like type checks or key checks etc and that
 making it possible to turn this check off would be bad.
-- It may be interesting for any system-defined stuff conceivably used like
+- OBSOLETE: It may be interesting for any system-defined stuff conceivably used like
 a view would have a system-defined inverse defined.  Example is UTF-8
 encode/decode, or Plain_Text parse/generate, or different information schema,
 or emulators of other DBMSs, etc; some may only work with/without normalization constraints.
@@ -4590,6 +4613,30 @@ this is done so one can use "floating Foo" and have it behave as expected.
 "binder", then each "constant" and the "selection" will simply become
 materials private to that binder.
 
+* New node syntaxes:
+    Ref function (and type) arguments iff topic is a Tuple:
+        - \.foo or \.0 means topic.foo or topic.0
+            - but we could make these their own node type since why the hell not?
+            - or merge that with node types for unpacking and packing tuples
+            we need anyway due to chicken and egg though all we really need is pack
+        - (:.foo,) in a tuple literal means (foo:\.foo,)
+    Ref read-only procedure arguments:
+        - \<foo or \<0 reference them directly, there is no topic
+        - (:<foo,) in a tuple literal means (foo:\<foo,)
+    Ref subject-to-update procedure arguments AND locally declared lexical vars:
+        - \&foo or \&0 reference them directly, there is no topic
+        - (:&foo,) in a tuple literal means (foo:\&foo,)
+    Ref (lexical) named expressions in functions (and types) and procedures:
+        - foo or "0" reference them directly
+        - (:foo,) in a tuple literal means (foo:foo,)
+
+TODO: SPLIT 'SIGNATURE' INTO 2 PARTS, ONE THAT IS A LIST OF 0..N SEPARATE
+READ-ONLY IN PARAMETERS, THE OTHER THAT IS A LIST
+OF 0..N SEPARATE VARIABLE IN+OUT PARAMETERS WHICH IS EACH ITS OWN BASE LEXICAL
+ITEM INSIDE THE ROUTINE AND EACH OF WHICH MUST BE PASSED A SEPARATE VARIABLE
+(NOT EXPRESSION) BY THE CALLER; SIMILARLY, 'VARS' NEEDS TO BE REIMAGINED AS
+A SET OF 0..N SEPARATE VARIABLES AND NOT A SINGLE USUALLY TUPLE-TYPED ONE;
+ALSO REVISE 'UPDATES' ETC AS APPROPRIATE.
 * Procedure declare syntax general form (same as inline actually?):
     0. keyword "procedure" followed by 0 or 1 of each of next in any order:
     1. keyword "virtual" is optional, not followed by anything of its own

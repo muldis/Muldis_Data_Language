@@ -656,6 +656,7 @@ These are keywords within a package declaration that are external to any
 material declaration:
 
     binder
+    entry
     floating
     foundation
     identity
@@ -830,7 +831,7 @@ Grammar:
     <generic_proc_name> ::=
         <pkg_entity_name>
 
-    <entry_point_proc_name> ::=
+    <entry_point_rtn_name> ::=
         <absolute_name>
 
     <foundation_func_name> ::=
@@ -883,7 +884,10 @@ Grammar:
         <sp> '}'
 
     <pkg_entry_point> ::=
-        entry <sp> <entry_point_proc_name>
+        entry <sp> <entry_point_kind> <sp> by <sp> <entry_point_rtn_name>
+
+    <entry_point_kind> ::=
+        performance | value | retrieval | replacement
 
     <pkg_materials_floating> ::=
         floating <sp>
@@ -906,6 +910,25 @@ I<TODO.  See also about binders, folder declarations, etc.>
 I<Remember that "floating" can't search inside a binder, can only resolve to a binder or parent.>
 I<Note that "entry" is the "entry point" for a program.  It is NOT automatically
 invoked when loading a package, but is informative for an explicit post-load call.>
+
+I<TODO.  Each entry point kind represents a distinct kind of routine or
+distinct expectation for how it would be used, mainly in the context of a
+Package being passed as a message between VM processes.
+A "performance" is an ordinary main program and has no parameters.
+A "value" is a constant, such as when the Package is a response message
+or alternately represents a serialized database.
+A "retrieval" is a function that takes a current database value as its main
+input argument and results in some report derived from said.  This performs
+some pure functional read-only usage of the database and is implicitly run
+inside a repeatable-read isolation level or something.  It is a direct
+analogy to a SQL SELECT query issued to a server.
+A "replacement" is a function that takes a current database value as its main
+input argument and results primarily in a derived database value (and also
+in a result value for the client as desired).  This performs some pure
+functional read-write usage of the database and is implicitly run
+inside a serializable isolation level or something.  It is a direct
+analogy to a SQL stored procedure call or set of change statements.
+This list of entry point kinds is subject to change.>
 
 =head1 MATERIAL SPECIFICATION
 
@@ -1943,8 +1966,8 @@ A C<::=> is I<what-binding> while a C<::?=> is I<why-binding>.
     ^ - raising something up - bootstrap on foundation, or attribute projection (or number to a power, but not in Core)
     . - collection item accessor or existence test
     = - association of 2 things, either for comparison or binding or assignment
-    < - "from" or "readonly" or "before" or "first"
-    > - "to" or "after"
+    < - "from" or "readonly" or "before" or "LHS" or "first"
+    > - "to" or "writeable" or "after" or "RHS" or "second"
 
     [] - homogeneous ordered collection of element - arrays/statements/etc - ordinal+universal
     {} - homogeneous nonordered collection of member - bags/sets/etc - universal+ordinal
@@ -1962,10 +1985,10 @@ Combining from/to eg as C<< \<>foo >> refers to variable or subject to update pa
 I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
 
     terms - base literals or delimited anything or special selector syntax,
-        including inline func/type/etc decls, or foo::bar::etc or func foo::(...) or const foo()
+        including inline func/type/etc decls, or foo::bar::etc or func foo::(...) or \foo::(...)
     why-binding infix ::?=
     what-expr-binding infix ::=
-    generic universal routine call infix: args --> rtn or rtn <-- args or args -->^ rtn or rtn ^<-- args
+    generic universal routine call infix: args --> rtn or rtn <-- args or args \--> rtn etc or args -->^ rtn etc
     symbolic in/pre/postfix (bareword)
     alpha in/pre/postfix (bareword)
     conditional ternaries or n-aries: ??!! / if-then-else / ???!!! / given-when-default

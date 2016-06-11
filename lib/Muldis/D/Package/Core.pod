@@ -2773,7 +2773,7 @@ not one per character.>
 
     ::MD::Text_from_UTF_8_Blob_with_repl_char ::= function
         --> Text::Unicode <-- (Blob)
-        : (Text_from_UTF_8_Blob_with_repl_Text(\<0,'\\c<0xFFFD>');
+        : (Text_from_UTF_8_Blob_with_repl_Text::(\<0,'\\c<0xFFFD>'));
 
 I<TODO.  The special Unicode char "REPLACEMENT CHARACTER" aka 0xFFFD is used.>
 
@@ -2810,11 +2810,23 @@ I<TODO.  Note, still have to define that Excuse.>
     ::MD::Text_from_ASCII_Blob_with_repl_Text ::= function
         --> Text::ASCII <-- (Blob, Text::ASCII)
     : (
-        \<0->Blob_to_Octets
-            map ((function : (\<0 in 0..127 ?? [\<0] !! \<1))
-                \<-- (1 : \<1->Text_to_ASCII_Chars,))
-            reduce \catenate::()
-            ->Text_from_ASCII_Chars
+        src_octets ::= (\<0->Blob_to_Octets);
+        repl_chars ::= (\<1->Text_to_ASCII_Chars);
+        result_chars ::= (
+            given #repl_chars
+                when 0 then
+                    src_octets where (function : (\<0 in 0..127))
+                when 1 then
+                    src_octets
+                        map (function : (\<0 in 0..127 ?? \<0 !! \<1))
+                            \<-- (1 : repl_chars.0,)
+                default
+                    src_octets
+                        map (function : (\<0 in 0..127 ?? [\<0] !! \<1))
+                            \<-- (1 : repl_chars,)
+                        reduce \catenate::()
+        );
+        <-- result_chars->Text_from_ASCII_Chars;
     );
 
 I<TODO.  Each invalid octet encountered is replaced by the substitution text
@@ -2947,19 +2959,19 @@ Composed by: Positional (Array, String,...), Structural (Tuple), Dictionary, etc
     ::MD::"."::"" ::= function virtual --> Any <-- (Accessible, Any)
         requires (topic --> \".?"::());
 
-I<TODO.>
+I<TODO.  Fetch item at existing location.>
 
 =head2 .?
 
     ::MD::".?"::"" ::= function virtual --> Boolean <-- (Accessible, Any);
 
-I<TODO.>
+I<TODO.  Check if location exists.>
 
 =head2 .!
 
     ::MD::".!"::"" ::= function virtual --> Any <-- (Accessible, Any);
 
-I<TODO.>
+I<TODO.  Fetch item at existing location if latter exists or else give an Excuse.>
 
 =head1 HOMOGENEOUS DATA TYPES
 
@@ -3617,7 +3629,7 @@ C<Relation>, C<Tuple_Bag>.
 
     ::MD::"?|" ::= alias of to_Set;
 
-The virtual function C<to_Set> aka C<< ?| >> results in the C<Set> value
+The virtual function C<to_Set> aka C<?|> results in the C<Set> value
 that represents the same set of distinct member values as its C<0>
 argument.  The purpose of C<to_Set> is to canonicalize C<Discrete> values
 so they can be treated abstractly as sets of discrete values, for
@@ -3629,7 +3641,7 @@ operations where neither multiplicity nor order is significant.
 
     ::MD::"+|" ::= alias of to_Bag;
 
-The virtual function C<to_Bag> aka C<< +| >> results in the C<Bag> value
+The virtual function C<to_Bag> aka C<+|> results in the C<Bag> value
 that represents the same multiset of members as its C<0> argument.  The
 purpose of C<to_Bag> is to canonicalize C<Discrete> values so they can be
 treated abstractly as multisets of discrete values, for operations where
@@ -3694,7 +3706,7 @@ of any type, both C<Orderable> or not.
             ,except,intersect,union,exclusive
             ,nest,unnest,where,map,reduce,...
             ,to_Set,to_Bag,count,order_using
-            ,to_Array,elem,has_index,first_possible_index,slice_n,index_succ_all_matches,...};
+            ,to_Array,elem,first_possible_index,slice_n,index_succ_all_matches,...};
 
 The interface contract C<Positional> is infinite.  A C<Positional> value is
 both a C<Stringy> value and a C<Discrete> value; it is a homogeneous
@@ -3847,7 +3859,7 @@ C<Positional>.
 
     ::MD::"~|" ::= alias of to_Array;
 
-The virtual function C<to_Array> aka C<< ~| >> results in the C<Array>
+The virtual function C<to_Array> aka C<~|> results in the C<Array>
 value that represents the same sequence of members as its C<0> argument.
 The purpose of C<to_Array> is to canonicalize C<Positional> values so they
 can be treated abstractly as sequences of discrete values with minimal
@@ -3863,17 +3875,19 @@ effort.
         requires (topic --> \has_index::())
         : (topic --> \elem::());
 
-I<TODO.>
+I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
 
 =head2 has_index .? (Positional)
 
-    ::MD::has_index::"" ::= function virtual --> Boolean <-- (Positional, Integer);
+    ::MD::has_index ::= function --> Boolean <-- (Positional, Integer)
+        : (\<1 >= first_possible_index::(\<0)
+            and \<1 < first_unused_index::(\<0));
 
     ::MD::".?"::Positional ::= function --> Boolean <-- (Positional, Integer)
         implements 2::""
         : (topic --> \has_index::());
 
-I<TODO.>
+I<TODO.  True if given array index exists.>
 
 =head2 elem_or_excuse .! (Positional)
 
@@ -4022,7 +4036,7 @@ the argument.
         --> Integer <-- (Positional, Positional)
         is commutative;
 
-I<TODO.  Also consider index_succ_common_prefix as name.>
+I<TODO.  Also consider index_first_diff_elem or index_succ_common_prefix as name.>
 
 =head1 ARRAY DATA TYPES
 
@@ -4385,7 +4399,7 @@ I<TODO.>
 The function C<to_Set::Array> results in the C<Set> value that has, for
 every distinct member value I<V> of the function's C<0> argument, exactly 1
 member whose value is equal to I<V>.  This function implements the
-C<Discrete> virtual function C<to_Set> aka C<< ?| >> for the composing type
+C<Discrete> virtual function C<to_Set> aka C<?|> for the composing type
 C<Array>.
 
 =head2 to_Bag (Array)
@@ -4396,7 +4410,7 @@ C<Array>.
 
 The function C<to_Bag::Array> results in the C<Bag> value that has all of
 the members of the function's C<0> argument.  This function implements the
-C<Discrete> virtual function C<to_Bag> aka C<< +| >> for the composing type
+C<Discrete> virtual function C<to_Bag> aka C<+|> for the composing type
 C<Array>.
 
 =head2 count (Array)
@@ -4431,7 +4445,7 @@ type C<Array>.
 
 The function C<to_Array::Array> simply results in its C<0> argument.  This
 function implements the C<Positional> virtual function C<to_Array> aka
-C<< ~| >> for the composing type C<Array>.
+C<~|> for the composing type C<Array>.
 
 =head2 elem (Array)
 
@@ -4441,14 +4455,6 @@ C<< ~| >> for the composing type C<Array>.
         : (topic -->^ FDN__Array_elem);
 
 I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
-
-=head2 has_index (Array)
-
-    ::MD::has_index::Array ::= function --> Boolean <-- (Array, Integer_NN)
-        implements 2::""
-        : (topic -->^ FDN__Array_has_index);
-
-I<TODO.  True if given array index exists.>
 
 =head2 first_possible_index (Array)
 
@@ -4820,7 +4826,7 @@ I<TODO.>
 
 The function C<to_Set::Set> simply results in its C<0> argument.  This
 function implements the C<Discrete> virtual function C<to_Set> aka
-C<< ?| >> for the composing type C<Set>.
+C<?|> for the composing type C<Set>.
 
 =head2 to_Bag (Set)
 
@@ -4830,7 +4836,7 @@ C<< ?| >> for the composing type C<Set>.
 
 The function C<to_Bag::Set> results in the C<Bag> value that has all of the
 members of the function's C<0> argument.  This function implements the
-C<Discrete> virtual function C<to_Bag> aka C<< +| >> for the composing type
+C<Discrete> virtual function C<to_Bag> aka C<+|> for the composing type
 C<Set>.
 
 =head2 count (Set)
@@ -5185,7 +5191,7 @@ I<TODO.>
 The function C<to_Set::Bag> results in the C<Set> value that has, for every
 distinct member value I<V> of the function's C<0> argument, exactly 1
 member whose value is equal to I<V>.  This function implements the
-C<Discrete> virtual function C<to_Set> aka C<< ?| >> for the composing type
+C<Discrete> virtual function C<to_Set> aka C<?|> for the composing type
 C<Bag>.
 
 =head2 to_Bag (Bag)
@@ -5196,7 +5202,7 @@ C<Bag>.
 
 The function C<to_Bag::Bag> simply results in its C<0> argument.  This
 function implements the C<Discrete> virtual function C<to_Bag> aka
-C<< +| >> for the composing type C<Bag>.
+C<+|> for the composing type C<Bag>.
 
 =head2 count (Bag)
 
