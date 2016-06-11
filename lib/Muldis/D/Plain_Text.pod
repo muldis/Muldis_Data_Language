@@ -696,7 +696,6 @@ These are keywords within the heading of a material declaration:
     selection
     signature
     to
-    topic
     union
     updates
     value
@@ -721,7 +720,6 @@ including the headings of nested material declarations:
     given
     if
     then
-    topic
     True
     when
     ::?=
@@ -1028,7 +1026,7 @@ Grammar:
 
     <anon_expr> ::=
           <delimiting_expr>
-        | <topic_expr>
+        | <source_expr>
         | <opaque_literal_expr>
         | <collection_selector_expr>
         | <invocation_expr>
@@ -1045,8 +1043,8 @@ Grammar:
           ['<--' <sp> <expr>]
         | <anon_expr>
 
-    <topic_expr> ::=
-        topic
+    <source_expr> ::=
+        '\\<*args'
 
     <fail_expr> ::=
         fail
@@ -1083,7 +1081,7 @@ annotation is an internal code comment expressed as a C<Text> literal,
 or it may be a C<Tuple> of what would otherwise be individual annotations.
 
 An C<< <annotation_expr> >> is subject to the additional rule that it must
-be a completely foldable constant.  It may not contain a C<< <topic_expr> >>.
+be a completely foldable constant.  It may not contain a C<< <source_expr> >>.
 
 Iff an C<< <expr> >> is a C<< <delimiting_expr> >>, then it is interpreted
 simply as if it were its child C<< <expr> >> element; the primary reason
@@ -1095,8 +1093,8 @@ to nesting precedence rules.
 A C<< <delimiting_expr> >> is subject to the additional rule that it must
 contain exactly one C<< <result_expr> >> element, which provides its value.
 
-Iff an C<< <expr> >> is a C<< <topic_expr> >>, then it represents the value
-of the expression-containing routine's sole argument.
+Iff an C<< <expr> >> is a C<< <source_expr> >>, then it represents the value
+of the expression-containing routine's I<source> / read-only arguments.
 
 Iff an C<< <expr> >> is a C<< <fail_expr> >>, then any attempt at runtime
 to take that node's value will throw an exception, and so it should only
@@ -1129,8 +1127,8 @@ Examples:
     `this uses one too`
     (x + y) * z
 
-    `this is the routine's argument`
-    topic
+    `this is the routine's argument list`
+    \<*args
 
     `some assertion failed`
     fail
@@ -1960,8 +1958,9 @@ A C<::=> is I<what-binding> while a C<::?=> is I<why-binding>.
     | - homogeneous collections of any type (arrays or sets or bags)
     % - heterogeneous collections / tuples or homos of tuples (relations and tuple-bags and tuple-arrays)
     @ - attr names or headings (and chain-identifiers and renamings)
-    \ - value literal or selector (or topic attr accessor)
+    \ - value literal or selector (or source attr accessor)
     & - OBSOLETE: subject-to-update parameter/etc or procedure
+    * - wildcard or "any" or "all" (example is \<*args expr node)
     ! - booleans or excuses
     ^ - raising something up - bootstrap on foundation, or attribute projection (or number to a power, but not in Core)
     . - collection item accessor or existence test

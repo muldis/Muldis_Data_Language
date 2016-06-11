@@ -75,7 +75,7 @@ consists of exactly zero values.  It can not have any default value.
 
     ::MD::same ::= function --> Boolean <-- (Any, Any)
         is commutative
-        : (topic -->^ FDN__same);
+        : (\<*args -->^ FDN__same);
 
     ::MD::"=" ::= alias of same;
 
@@ -290,11 +290,11 @@ comparisons or validation is typically much simpler with this foundation.
 
     ::MD::in_order::Neg_Inf_R ::= function --> Boolean <-- (Orderable, Neg_Inf)
         implements 2::""
-        : (topic --> \same::());
+        : (\<*args --> \same::());
 
     ::MD::in_order::Pos_Inf_L ::= function --> Boolean <-- (Pos_Inf, Orderable)
         implements 2::""
-        : (topic --> \same::());
+        : (\<*args --> \same::());
 
     ::MD::in_order::Pos_Inf_R ::= function --> Boolean <-- (Orderable, Pos_Inf)
         implements 2::""
@@ -355,7 +355,7 @@ name this operator I<ge>.
 
     ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (+∞)
-        : (topic --> \in_order::() ?? \<0 !! \<1);
+        : (\<*args --> \in_order::() ?? \<0 !! \<1);
 
 The function C<min> results in whichever of its 2 arguments is first when
 the 2 are sorted I<in order>.  This function is designed to be chained for
@@ -366,7 +366,7 @@ I<before> all of the others.
 
     ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (-∞)
-        : (topic --> \in_order::() ?? \<1 !! \<0);
+        : (\<*args --> \in_order::() ?? \<1 !! \<0);
 
 The function C<max> results in whichever of its 2 arguments is last when
 the 2 are sorted I<in order>.  This function is designed to be chained for
@@ -378,11 +378,11 @@ I<after> all of the others.
     ::MD::minmax ::= function
         --> (Orderable, Orderable) <-- (Orderable, Orderable)
         is commutative
-        : (topic --> \in_order::() ?? topic !! (\<1, \<0));
+        : (\<*args --> \in_order::() ?? \<*args !! (\<1, \<0));
 
 The function C<minmax> results in a binary C<Tuple> containing its 2
 arguments sorted I<in order>; the function's result is the same as its
-topic when the arguments are already in order, and the reverse of that
+source when the arguments are already in order, and the reverse of that
 otherwise, meaning the values of C<0> and C<1> are swapped.
 
 =head1 SUCCESSABLE DATA TYPES
@@ -616,7 +616,7 @@ it results in C<False>.
 
 =head2 Boolean Bool
 
-    ::MD::Boolean ::= selection where (topic -->^ FDN__is_a_Boolean)
+    ::MD::Boolean ::= selection where (\<*args -->^ FDN__is_a_Boolean)
         default (False)
         composes {Bicessable, Boolable and_provides_its_default};
 
@@ -770,7 +770,7 @@ C<0> and C<1> is C<True>, and C<True> otherwise.
 
     ::MD::xnor ::= function --> Boolean <-- (Boolean, Boolean)
         is {associative,commutative} identity (True)
-        : (topic --> \same::());
+        : (\<*args --> \same::());
 
     ::MD::iff ::= alias of xnor;
 
@@ -1028,7 +1028,7 @@ C<0> (I<minuend>) and C<1> (I<subtrahend>).
 
     ::MD::"-" ::= function
         --> Numerical <-- {(Numerical), (Numerical, Numerical)}
-        : (topic --> (degree::(topic) = 1 ?? \opposite::() !! \minus::()));
+        : (\<*args --> (degree::(\<*args) = 1 ?? \opposite::() !! \minus::()));
 
     ::MD::Unicode_Aliases::"−" ::= alias of "-";
 
@@ -1041,7 +1041,7 @@ was invoked with.
     ::MD::modulus_minus ::= function
         --> Numerical <-- (Numerical, Numerical)
         is commutative
-        : (modulus topic --> \minus::());
+        : (modulus \<*args --> \minus::());
 
     ::MD::abs_minus ::= alias of modulus_minus;
     ::MD::"|-|"     ::= alias of modulus_minus;
@@ -1086,7 +1086,7 @@ corresponding operators I<%%>.
         --> {Numerical, Excuse::Div_By_Zero}
         <-- (Numerical, Numerical, Round_Meth)
         : (if \<1->is_zero then Excuse::Div_By_Zero()
-            else \<1 * topic --> \div::());
+            else \<1 * \<*args --> \div::());
 
     ::MD::round ::= alias of nearest_multiple_of;
 
@@ -1147,7 +1147,7 @@ otherwise.
         --> {Numerical, Excuse::Div_By_Zero}
         <-- (Numerical, Numerical, Round_Meth)
         : (if \<1->is_zero then Excuse::Div_By_Zero()
-            else \<0 - topic --> \nearest_multiple_of::());
+            else \<0 - \<*args --> \nearest_multiple_of::());
 
     ::MD::mod ::= alias of modulo;
 
@@ -1166,7 +1166,7 @@ or I<\\> or I<div> or I<rem> or I<remainder> or various other things.
     ::MD::divided_by_and_modulo::"" ::= function
         --> ({Numerical, Excuse::Div_By_Zero}, {Numerical, Excuse::Div_By_Zero})
         <-- (Numerical, Numerical, Round_Meth)
-        : ((topic --> \div::(), topic --> \mod::()));
+        : ((\<*args --> \div::(), \<*args --> \mod::()));
 
 The function C<divided_by_and_modulo> results in a binary tuple whose C<0>
 and C<1> attributes have the exact same values that C<integral_divided_by>
@@ -1338,7 +1338,7 @@ otherwise.
 
 =head2 Integer
 
-    ::MD::Integer ::= selection where (topic -->^ FDN__is_a_Integer)
+    ::MD::Integer ::= selection where (\<*args -->^ FDN__is_a_Integer)
         default (0)
         composes Integral and_provides_its_default;
 
@@ -1370,7 +1370,7 @@ value is C<1>; it has no maximum value.
 
     ::MD::in_order::Integer ::= function --> Boolean <-- (Integer, Integer)
         implements 2::""
-        : (topic -->^ FDN__Integer_in_order);
+        : (\<*args -->^ FDN__Integer_in_order);
 
 The function C<in_order::Integer> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Integer>.
@@ -1429,7 +1429,7 @@ C<Integer>.
 
     ::MD::opposite::Integer ::= function --> Integer <-- (Integer)
         implements 2::""
-        : (topic -->^ FDN__Integer_opposite);
+        : (\<*args -->^ FDN__Integer_opposite);
 
 The function C<opposite::Integer> implements the C<Numerical> virtual
 function C<opposite> aka C<additive_inverse> aka unary C<-> aka unary C<−>
@@ -1450,7 +1450,7 @@ C<Integer>.
 
     ::MD::modulus::Integer ::= function --> Integer_NN <-- (Integer)
         implements 2::""
-        : (topic -->^ FDN__Integer_modulus);
+        : (\<*args -->^ FDN__Integer_modulus);
 
 The function C<modulus::Integer> implements the C<Numerical>
 virtual function C<modulus> aka C<abs> for the composing type C<Integer>.
@@ -1461,7 +1461,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Integer>.
         implements 2::""
         is {associative,commutative} identity (0)
         repeater times::Integer
-        : (topic -->^ FDN__Integer_plus);
+        : (\<*args -->^ FDN__Integer_plus);
 
 The function C<plus::Integer> implements the C<Numerical>
 virtual function C<plus> aka C<+> for the composing type C<Integer>.
@@ -1470,7 +1470,7 @@ virtual function C<plus> aka C<+> for the composing type C<Integer>.
 
     ::MD::minus::Integer ::= function --> Integer <-- (Integer, Integer)
         implements 2::""
-        : (topic -->^ FDN__Integer_minus);
+        : (\<*args -->^ FDN__Integer_minus);
 
 The function C<minus::Integer> implements the C<Numerical> virtual function
 C<minus> aka binary C<-> aka binary C<−> for the composing type C<Integer>.
@@ -1481,7 +1481,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Integer>.
         implements 2::""
         is {associative,commutative} identity (1)
         repeater integral_nn_power::Integer
-        : (topic -->^ FDN__Integer_times);
+        : (\<*args -->^ FDN__Integer_times);
 
 The function C<times::Integer> implements the C<Numerical> virtual function
 C<times> aka C<*> aka C<×> for the composing type C<Integer>.
@@ -1492,7 +1492,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Integer>.
         --> {Boolean, Excuse::Div_By_Zero} <-- (Integer, Integer)
         implements 2::""
         : (if \<1 = 0 then Excuse::Div_By_Zero()
-            else topic -->^ FDN__Integer_multiple_of);
+            else \<*args -->^ FDN__Integer_multiple_of);
 
 The function C<multiple_of::Integer> implements the C<Numerical>
 virtual function C<multiple_of> for the composing type C<Integer>.
@@ -1618,7 +1618,7 @@ function C<integral_power> aka C<**> for the composing type C<Integer>.
         --> {Integer, Excuse::Zero_To_The_Zero} <-- (Integer, Integer_NN)
         implements 2::""
         : (if \<0 = 0 and \<1 = 0 then Excuse::Zero_To_The_Zero()
-            else topic -->^ FDN__Integer_nn_power);
+            else \<*args -->^ FDN__Integer_nn_power);
 
 The function C<integral_nn_power::Integer> implements the C<Numerical>
 virtual function C<integral_nn_power> aka C<power> for the composing type
@@ -1638,7 +1638,7 @@ the composing type C<Integer>.
 
     ::MD::factorial::Integer ::= function --> Integer_P <-- (Integer_NN)
         implements 2::""
-        : (topic -->^ FDN__Integer_factorial);
+        : (\<*args -->^ FDN__Integer_factorial);
 
 The function C<factorial::Integer> implements the C<Integral> virtual
 function C<factorial> for the composing type C<Integer>.
@@ -1882,7 +1882,7 @@ specifically for multiplying one by an C<Integer>.
         --> {Boolean, Excuse::Div_By_Zero} <-- (Fraction, Fraction)
         implements 2::""
         : (if \<1 = 0.0 then Excuse::Div_By_Zero()
-            else \mod::() <-- topic = 0.0);
+            else \mod::() <-- \<*args = 0.0);
 
 The function C<multiple_of::Fraction> implements the C<Numerical>
 virtual function C<multiple_of> for the composing type C<Fraction>.
@@ -1923,7 +1923,7 @@ C<Fraction>.
         --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Fraction, Integer)
         implements 2::""
         : (\integral_nn_power::()
-            <-- (\<1 >= 0 ?? topic !! (reciprocal::(\<0), -\<1)));
+            <-- (\<1 >= 0 ?? \<*args !! (reciprocal::(\<0), -\<1)));
 
 The function C<integral_power::Fraction> implements the C<Numerical> virtual
 function C<integral_power> aka C<**> for the composing type C<Fraction>.
@@ -2093,7 +2093,7 @@ rather than a boolean.
     ::MD::proper_substring_or_superstring ::= function
         --> Boolean <-- (String, String)
         is commutative
-        : (topic --> \not_same::() and topic --> \substring_or_superstring::());
+        : (\<*args --> \not_same::() and \<*args --> \substring_or_superstring::());
 
 The function C<proper_substring_or_superstring> results in C<True> iff the
 sequence of members of one of its 2 arguments C<0> and C<1> is a proper
@@ -2105,7 +2105,7 @@ results in C<False>.
     ::MD::substring_or_superstring ::= function
         --> Boolean <-- (String, String)
         is commutative
-        : (topic --> \substring_of::() or topic --> \superstring_of::());
+        : (\<*args --> \substring_of::() or \<*args --> \superstring_of::());
 
 The function C<substring_or_superstring> results in C<True> iff the
 sequence of members of one of its 2 arguments C<0> and C<1> is a substring
@@ -2957,7 +2957,7 @@ Composed by: Positional (Array, String,...), Structural (Tuple), Dictionary, etc
 =head2 .
 
     ::MD::"."::"" ::= function virtual --> Any <-- (Accessible, Any)
-        requires (topic --> \".?"::());
+        requires (\<*args --> \".?"::());
 
 I<TODO.  Fetch item at existing location.>
 
@@ -3044,7 +3044,7 @@ has exactly 1 distinct member value, and C<False> otherwise.
 =head2 only_member
 
     ::MD::only_member::"" ::= function virtual --> Any <-- (Homogeneous)
-        requires (topic --> \singular::());
+        requires (\<*args --> \singular::());
 
 The virtual function C<only_member> results in its C<0> argument's only
 distinct member value.  This function will fail if the argument doesn't
@@ -3149,7 +3149,7 @@ retained member's value.  See also the C<Positional> function C<squish>.
 
     ::MD::proper_subset_of ::= function
         --> Boolean <-- (Homogeneous, Homogeneous)
-        : (topic --> \not_same::() and topic --> \subset_of::());
+        : (\<*args --> \not_same::() and \<*args --> \subset_of::());
 
     ::MD::Unicode_Aliases::"⊂" ::= alias of proper_subset_of;
 
@@ -3249,7 +3249,7 @@ typically the same.
     ::MD::proper_subset_or_superset ::= function
         --> Boolean <-- (Homogeneous, Homogeneous)
         is commutative
-        : (not topic --> \same_members::() and topic --> \subset_or_superset::());
+        : (not \<*args --> \same_members::() and \<*args --> \subset_or_superset::());
 
 The function C<proper_subset_or_superset> results in C<True> iff the
 multiset of members of one of its 2 arguments C<0> and C<1> is a proper
@@ -3261,7 +3261,7 @@ results in C<False>.
     ::MD::subset_or_superset ::= function
         --> Boolean <-- (Homogeneous, Homogeneous)
         is commutative
-        : (topic --> \subset_of::() or topic --> \superset_of::());
+        : (\<*args --> \subset_of::() or \<*args --> \superset_of::());
 
 The function C<subset_or_superset> results in C<True> iff the multiset of
 members of one of its 2 arguments C<0> and C<1> is a subset of the multiset
@@ -3299,7 +3299,7 @@ multiset of members of its C<1> argument; otherwise it results in C<False>.
     ::MD::Unicode_Aliases::"∃" ::= alias of any;
 
 I<TODO.  Result is true when at least one member evaluates to true.
-This is logically equivalent to testing if a same-topic 'where' result is nonempty,
+This is logically equivalent to testing if a same-source 'where' result is nonempty,
 but 'any' is instead virtual with applicable Foundation-level functions to
 aid efficiency with less-savvy optimizers that don't know to short-circuit.>
 
@@ -3760,8 +3760,8 @@ composing type C<Positional>.
 
     ::MD::only_member::Positional ::= function --> Any <-- (Positional)
         implements 2::""
-        requires (topic --> \singular::())
-        : (topic --> \first::());
+        requires (\<*args --> \singular::())
+        : (\<*args --> \first::());
 
 The function C<only_member::Positional> results in its C<0> argument's only
 distinct member value.  This function will fail if the argument doesn't
@@ -3834,7 +3834,7 @@ C<disjoint_members> for the composing type C<Positional>.
         --> Positional <-- (Positional, Positional)
         implements 2::""
         is associative
-        : (topic --> \catenate::());
+        : (\<*args --> \catenate::());
 
 The function C<member_plus::Positional> results in the I<multiset sum> of
 its 2 arguments C<0> and C<1>; it behaves identically to C<catenate> aka
@@ -3868,12 +3868,12 @@ effort.
 =head2 elem . (Positional)
 
     ::MD::elem::"" ::= function virtual --> Any <-- (Positional, Integer)
-        requires (topic --> \has_index::());
+        requires (\<*args --> \has_index::());
 
     ::MD::"."::Positional ::= function --> Any <-- (Positional, Integer)
         implements 2::""
-        requires (topic --> \has_index::())
-        : (topic --> \elem::());
+        requires (\<*args --> \has_index::())
+        : (\<*args --> \elem::());
 
 I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
 
@@ -3885,18 +3885,18 @@ I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
 
     ::MD::".?"::Positional ::= function --> Boolean <-- (Positional, Integer)
         implements 2::""
-        : (topic --> \has_index::());
+        : (\<*args --> \has_index::());
 
 I<TODO.  True if given array index exists.>
 
 =head2 elem_or_excuse .! (Positional)
 
     ::MD::elem_or_excuse ::= function --> Any <-- (Positional, Integer)
-        : (topic --> \has_index::() ?? topic --> \elem::() !! Excuse::No_Such_Index());
+        : (\<*args --> \has_index::() ?? \<*args --> \elem::() !! Excuse::No_Such_Index());
 
     ::MD::".!"::Positional ::= function --> Any <-- (Positional, Integer)
         implements 2::""
-        : (topic --> \elem_or_excuse::());
+        : (\<*args --> \elem_or_excuse::());
 
 I<TODO.>
 
@@ -4042,7 +4042,7 @@ I<TODO.  Also consider index_first_diff_elem or index_succ_common_prefix as name
 
 =head2 Array
 
-    ::MD::Array ::= selection where (topic -->^ FDN__is_a_Array)
+    ::MD::Array ::= selection where (\<*args -->^ FDN__is_a_Array)
         default ([])
         composes Positional and_provides_its_default;
 
@@ -4094,7 +4094,7 @@ C<Array> value, C<[]>.
     ::MD::in_order::Array ::= function --> Boolean <-- (Array, Array)
         implements 2::""
     : (
-        i ::= (topic --> \index_succ_all_matches::());
+        i ::= (\<*args --> \index_succ_all_matches::());
       <--
         if not \<0 .? i then
             e1 ::= True
@@ -4136,7 +4136,7 @@ aka C<∅> for the composing type C<Array>.
 
     ::MD::substring_of::Array ::= function --> Boolean <-- (Array, Array)
         implements 2::""
-        : (topic -->^ FDN__Array_substring_of);
+        : (\<*args -->^ FDN__Array_substring_of);
 
 The function C<substring_of::Array> results in C<True> iff the sequence of
 members of its C<0> argument is a substring of the sequence of members of
@@ -4149,7 +4149,7 @@ composing type C<Array>.
     ::MD::overlaps_string::Array ::= function --> Boolean <-- (Array, Array)
         implements 2::""
         is commutative
-        : (topic -->^ FDN__Array_overlaps_string);
+        : (\<*args -->^ FDN__Array_overlaps_string);
 
 The function C<overlaps_string::Array> results in C<True> iff, given I<X>
 as the sequence of members of its argument C<0> and I<Y> as the sequence of
@@ -4165,7 +4165,7 @@ virtual function C<overlaps_string> for the composing type C<Array>.
     ::MD::disjoint_string::Array ::= function --> Boolean <-- (Array, Array)
         implements 2::""
         is commutative
-        : (topic -->^ FDN__Array_disjoint_string);
+        : (\<*args -->^ FDN__Array_disjoint_string);
 
 The function C<disjoint_string::Array> results in C<True> iff the sequence
 of members of its C<0> argument can not be overlapped with the sequence of
@@ -4180,7 +4180,7 @@ C<disjoint_string> for the composing type C<Array>.
         implements 2::""
         is associative identity ([])
         repeater replicate::Array
-        : (topic -->^ FDN__Array_catenate);
+        : (\<*args -->^ FDN__Array_catenate);
 
 The function C<catenate::Array> results in the catenation of its 2
 arguments C<0> and C<1> such that the result starts with the members of
@@ -4192,7 +4192,7 @@ C<Array>.
 
     ::MD::replicate::Array ::= function --> Array <-- (Array, Integer_NN)
         implements 2::""
-        : (topic -->^ FDN__Array_replicate);
+        : (\<*args -->^ FDN__Array_replicate);
 
 The function C<replicate::Array> results in the catenation of N instances
 of its C<0> argument where N is defined by its C<1> argument.  If the C<1>
@@ -4204,7 +4204,7 @@ for the composing type C<Array>.
 
     ::MD::has_n::Array ::= function --> Boolean <-- (Array, Any, Integer_NN)
         implements 2::""
-        : (topic -->^ FDN__Array_has_n);
+        : (\<*args -->^ FDN__Array_has_n);
 
 The function C<has_n::Array> results in C<True> iff its C<0> argument has
 at least N members at any indexes such that each is equal to its C<1>
@@ -4216,7 +4216,7 @@ C<has_n> for the composing type C<Array>.
 
     ::MD::multiplicity::Array ::= function --> Integer_NN <-- (Array, Any)
         implements 2::""
-        : (topic -->^ FDN__Array_multiplicity);
+        : (\<*args -->^ FDN__Array_multiplicity);
 
 The function C<multiplicity::Array> results in the integral count
 of members of its C<0> argument such that each member value is equal to its
@@ -4227,7 +4227,7 @@ function C<multiplicity> for the composing type C<Array>.
 
     ::MD::all_unique::Array ::= function --> Boolean <-- (Array)
         implements 2::""
-        : (topic -->^ FDN__Array_all_unique);
+        : (\<*args -->^ FDN__Array_all_unique);
 
 The function C<all_unique::Array> results in C<True> iff its C<0> argument
 has no 2 members that are the same value, and C<False> otherwise.  This
@@ -4238,7 +4238,7 @@ the composing type C<Array>.
 
     ::MD::unique::Array ::= function --> Array <-- (Array)
         implements 2::""
-        : (topic -->^ FDN__Array_unique);
+        : (\<*args -->^ FDN__Array_unique);
 
 The function C<unique::Array> results in the C<Array> value that has, for
 every distinct member value I<V> of the function's C<0> argument, exactly 1
@@ -4251,7 +4251,7 @@ virtual function C<unique> for the composing type C<Array>.
 
     ::MD::any::Array ::= function --> Boolean <-- (Array, Function_Call_But_0)
         implements 2::""
-        : (topic -->^ FDN__Array_any);
+        : (\<*args -->^ FDN__Array_any);
 
 I<TODO.>
 
@@ -4259,7 +4259,7 @@ I<TODO.>
 
     ::MD::insert_n::Array ::= function --> Array <-- (Array, Any, Integer_NN)
         implements 2::""
-        : (topic -->^ FDN__Array_insert_n);
+        : (\<*args -->^ FDN__Array_insert_n);
 
 The function C<insert_n::Array> results in the C<Array> value that has all
 of the members of the function's C<0> argument plus N additional members
@@ -4273,7 +4273,7 @@ C<Array>.
 
     ::MD::remove_n::Array ::= function --> Array <-- (Array, Any, Integer_NN)
         implements 2::""
-        : (topic -->^ FDN__Array_remove_n);
+        : (\<*args -->^ FDN__Array_remove_n);
 
 The function C<remove_n::Array> results in the C<Array> value that has all
 of the members of the function's C<0> argument minus N existing members
@@ -4287,7 +4287,7 @@ C<remove_n> for the composing type C<Array>.
 
     ::MD::except::Array ::= function --> Array <-- (Array, Array)
         implements 2::""
-        : (topic -->^ FDN__Array_except);
+        : (\<*args -->^ FDN__Array_except);
 
 The function C<except::Array> results in the I<multiset difference> between
 its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
@@ -4302,7 +4302,7 @@ C<except> aka C<∖> for the composing type C<Array>.
     ::MD::intersect::Array ::= function --> Array <-- (Array, Array)
         implements 2::""
         is {associative,idempotent}
-        : (topic -->^ FDN__Array_intersect);
+        : (\<*args -->^ FDN__Array_intersect);
 
 The function C<intersect::Array> results in the I<multiset intersection> of
 its 2 arguments C<0> and C<1>.  The result is the C<Array> value that has
@@ -4318,7 +4318,7 @@ aka C<∩> for the composing type C<Array>.
     ::MD::union::Array ::= function --> Array <-- (Array, Array)
         implements 2::""
         is idempotent identity ([])
-        : (topic -->^ FDN__Array_union);
+        : (\<*args -->^ FDN__Array_union);
 
 The function C<union::Array> results in the I<multiset union> of its 2
 arguments C<0> and C<1>.  The result is the C<Array> value that has all of
@@ -4335,7 +4335,7 @@ C<union> aka C<∪> for the composing type C<Array>.
     ::MD::exclusive::Array ::= function --> Array <-- (Array, Array)
         implements 2::""
         identity ([])
-        : (topic -->^ FDN__Array_exclusive);
+        : (\<*args -->^ FDN__Array_exclusive);
 
 The function C<exclusive::Array> results in the I<multiset symmetric
 difference> of its 2 arguments C<0> and C<1>.  The result is the C<Array>
@@ -4353,7 +4353,7 @@ C<exclusive> aka C<symm_diff> aka C<∆> for the composing type C<Array>.
     ::MD::nest::Array ::= function --> Array <-- (Array)
         implements 2::""
         requires (...)
-        : (topic -->^ FDN__Array_nest);
+        : (\<*args -->^ FDN__Array_nest);
 
 I<TODO.>
 
@@ -4362,7 +4362,7 @@ I<TODO.>
     ::MD::unnest::Array ::= function --> Array <-- (Array)
         implements 2::""
         requires (...)
-        : (topic -->^ FDN__Array_unnest);
+        : (\<*args -->^ FDN__Array_unnest);
 
 I<TODO.>
 
@@ -4370,7 +4370,7 @@ I<TODO.>
 
     ::MD::where::Array ::= function --> Array <-- (Array, Function_Call_But_0)
         implements 2::""
-        : (topic -->^ FDN__Array_where);
+        : (\<*args -->^ FDN__Array_where);
 
 I<TODO.>
 
@@ -4378,7 +4378,7 @@ I<TODO.>
 
     ::MD::map::Array ::= function --> Array <-- (Array, Function_Call_But_0)
         implements 2::""
-        : (topic -->^ FDN__Array_map);
+        : (\<*args -->^ FDN__Array_map);
 
 I<TODO.>
 
@@ -4386,7 +4386,7 @@ I<TODO.>
 
     ::MD::reduce::Array ::= function --> Any <-- (Array, Function_Call_But_0_1)
         implements 2::""
-        : (topic -->^ FDN__Array_reduce);
+        : (\<*args -->^ FDN__Array_reduce);
 
 I<TODO.>
 
@@ -4406,7 +4406,7 @@ C<Array>.
 
     ::MD::to_Bag::Array ::= function --> Bag <-- (Array)
         implements 2::""
-        : (topic -->^ FDN__Array_to_Bag);
+        : (\<*args -->^ FDN__Array_to_Bag);
 
 The function C<to_Bag::Array> results in the C<Bag> value that has all of
 the members of the function's C<0> argument.  This function implements the
@@ -4417,7 +4417,7 @@ C<Array>.
 
     ::MD::count::Array ::= function --> Integer_NN <-- (Array)
         implements 2::""
-        : (topic -->^ FDN__Array_count);
+        : (\<*args -->^ FDN__Array_count);
 
 The function C<count::Array> results in the integral count of the members
 of its C<0> argument.  This function implements the C<Discrete> virtual
@@ -4428,7 +4428,7 @@ C<Array>.
 
     ::MD::order_using::Array ::= function --> Array <-- (Array, Function_Call_But_0_1)
         implements 2::""
-        : (topic -->^ FDN__Array_order_using);
+        : (\<*args -->^ FDN__Array_order_using);
 
 The function C<order_using::Array> results in the C<Array> value that
 represents the same multiset of members as its C<0> argument but that the
@@ -4451,8 +4451,8 @@ C<~|> for the composing type C<Array>.
 
     ::MD::elem::Array ::= function --> Any <-- (Array, Integer_NN)
         implements 2::""
-        requires (topic --> \has_index::())
-        : (topic -->^ FDN__Array_elem);
+        requires (\<*args --> \has_index::())
+        : (\<*args -->^ FDN__Array_elem);
 
 I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
 
@@ -4472,7 +4472,7 @@ C<first_possible_index> for the composing type C<Array>.
         --> Array <-- (Array, NN_Integer, NN_Integer)
         implements 2::""
         requires (\<1 + \<2 <= #\<0)
-        : (topic -->^ FDN__Array_slice_n);
+        : (\<*args -->^ FDN__Array_slice_n);
 
 The function C<slice_n::Array> results in the C<Array> value that has
 exactly I<N> consecutive members of the function's C<0> argument I<C>, in
@@ -4490,7 +4490,7 @@ the composing type C<Array>.
         --> Integer_NN <-- (Array, Array)
         implements 2::""
         is commutative
-        : (topic -->^ FDN__Array_index_succ_all_matches);
+        : (\<*args -->^ FDN__Array_index_succ_all_matches);
 
 I<TODO.  While conceivably implementable at a higher level, make low level
 for perceived efficiency.>
@@ -4574,7 +4574,7 @@ C<Set>.
 
     ::MD::only_member::Set ::= function --> Any <-- (Set)
         implements 2::""
-        requires (topic --> \singular::())
+        requires (\<*args --> \singular::())
         : (\<0->unwrap->only_member);
 
 The function C<only_member::Set> results in its C<0> argument's only member
@@ -4642,7 +4642,7 @@ type C<Set>.
     ::MD::same_members::Set ::= function --> Boolean <-- (Set, Set)
         implements 2::""
         is commutative
-        : (topic --> \same::());
+        : (\<*args --> \same::());
 
 The function C<same_members::Set> results in C<True> iff its 2 arguments
 C<0> and C<1> are exactly the same C<Set> value, and C<False> otherwise;
@@ -4716,7 +4716,7 @@ C<remove_n> for the composing type C<Set>.
     ::MD::member_plus::Set ::= function --> Set <-- (Set, Set)
         implements 2::""
         is {associative,commutative,idempotent} identity ({})
-        : (topic --> \union::());
+        : (\<*args --> \union::());
 
 The function C<member_plus::Set> results in the I<set union> of its 2
 arguments C<0> and C<1>; it behaves identically to C<union> aka C<∪> when
@@ -4876,7 +4876,7 @@ C<Discrete> virtual function C<order_using> for the composing type C<Set>.
 
 =head2 Bag
 
-    ::MD::Bag ::= selection where (topic -->^ FDN__is_a_Bag)
+    ::MD::Bag ::= selection where (\<*args -->^ FDN__is_a_Bag)
         default (\+{})
         composes Discrete;
 
@@ -4923,7 +4923,7 @@ aka C<∅> for the composing type C<Bag>.
 
     ::MD::singular::Bag ::= function --> Boolean <-- (Bag)
         implements 2::""
-        : (topic -->^ FDN__Bag_singular);
+        : (\<*args -->^ FDN__Bag_singular);
 
 The function C<singular::Bag> results in C<True> iff its C<0> argument has
 exactly 1 distinct member value, and C<False> otherwise.  This function
@@ -4934,8 +4934,8 @@ composing type C<Bag>.
 
     ::MD::only_member::Bag ::= function --> Any <-- (Bag)
         implements 2::""
-        requires (topic --> \singular::())
-        : (topic -->^ FDN__Bag_only_member);
+        requires (\<*args --> \singular::())
+        : (\<*args -->^ FDN__Bag_only_member);
 
 The function C<only_member::Bag> results in its C<0> argument's only
 distinct member value.  This function will fail if the argument doesn't
@@ -4947,7 +4947,7 @@ C<Bag>.
 
     ::MD::has_n::Bag ::= function --> Boolean <-- (Bag, Any, Integer_NN)
         implements 2::""
-        : (topic -->^ FDN__Bag_has_n);
+        : (\<*args -->^ FDN__Bag_has_n);
 
 The function C<has_n::Bag> results in C<True> iff its C<0> argument has at
 least N members such that each is equal to its C<1> argument, where N is
@@ -4959,7 +4959,7 @@ composing type C<Bag>.
 
     ::MD::multiplicity::Bag ::= function --> Integer_NN <-- (Bag, Any)
         implements 2::""
-        : (topic -->^ FDN__Bag_multiplicity);
+        : (\<*args -->^ FDN__Bag_multiplicity);
 
 The function C<multiplicity::Bag> results in the integral count
 of members of its C<0> argument such that each member value is equal to its
@@ -4970,7 +4970,7 @@ function C<multiplicity> for the composing type C<Bag>.
 
     ::MD::all_unique::Bag ::= function --> Boolean <-- (Bag)
         implements 2::""
-        : (topic -->^ FDN__Bag_all_unique);
+        : (\<*args -->^ FDN__Bag_all_unique);
 
 The function C<all_unique::Bag> results in C<True> iff its C<0> argument
 has no 2 members that are the same value, and C<False> otherwise.  This
@@ -4981,7 +4981,7 @@ the composing type C<Bag>.
 
     ::MD::unique::Bag ::= function --> Bag <-- (Bag)
         implements 2::""
-        : (topic -->^ FDN__Bag_unique);
+        : (\<*args -->^ FDN__Bag_unique);
 
 The function C<unique::Bag> results in the C<Bag> value that has, for every
 distinct member value I<V> of the function's C<0> argument, exactly 1
@@ -4992,7 +4992,7 @@ C<Homogeneous> virtual function C<unique> for the composing type C<Bag>.
 
     ::MD::subset_of::Bag ::= function --> Boolean <-- (Bag, Bag)
         implements 2::""
-        : (topic -->^ FDN__Bag_subset_of);
+        : (\<*args -->^ FDN__Bag_subset_of);
 
 The function C<subset_of::Bag> results in C<True> iff the multiset of
 members of its C<0> argument is a subset of the multiset of members of its
@@ -5005,7 +5005,7 @@ type C<Bag>.
     ::MD::same_members::Bag ::= function --> Boolean <-- (Bag, Bag)
         implements 2::""
         is commutative
-        : (topic --> \same::());
+        : (\<*args --> \same::());
 
 The function C<same_members::Bag> results in C<True> iff its 2 arguments
 C<0> and C<1> are exactly the same C<Bag> value, and C<False> otherwise;
@@ -5018,7 +5018,7 @@ function C<same_members> for the composing type C<Bag>.
     ::MD::overlaps_members::Bag ::= function --> Boolean <-- (Bag, Bag)
         implements 2::""
         is commutative
-        : (topic -->^ FDN__Bag_overlaps_members);
+        : (\<*args -->^ FDN__Bag_overlaps_members);
 
 The function C<overlaps_members::Bag> results in C<True> iff, given
 I<X> as the multiset of members of its argument C<0> and I<Y> as the
@@ -5033,7 +5033,7 @@ C<overlaps_members> for the composing type C<Bag>.
     ::MD::disjoint_members::Bag ::= function --> Boolean <-- (Bag, Bag)
         implements 2::""
         is commutative
-        : (topic -->^ FDN__Bag_disjoint_members);
+        : (\<*args -->^ FDN__Bag_disjoint_members);
 
 The function C<disjoint_members::Bag> results in C<True> iff the
 multiset of members of its C<0> argument has no member values in common
@@ -5045,7 +5045,7 @@ C<disjoint_members> for the composing type C<Bag>.
 
     ::MD::any::Bag ::= function --> Boolean <-- (Bag, Function_Call_But_0)
         implements 2::""
-        : (topic -->^ FDN__Bag_any);
+        : (\<*args -->^ FDN__Bag_any);
 
 I<TODO.>
 
@@ -5053,7 +5053,7 @@ I<TODO.>
 
     ::MD::insert_n::Bag ::= function --> Bag <-- (Bag, Any, Integer_NN)
         implements 2::""
-        : (topic -->^ FDN__Bag_insert_n);
+        : (\<*args -->^ FDN__Bag_insert_n);
 
 The function C<insert_n::Bag> results in the C<Bag> value that has all of
 the members of the function's C<0> argument plus N additional members that
@@ -5065,7 +5065,7 @@ C<insert_n> for the composing type C<Bag>.
 
     ::MD::remove_n::Bag ::= function --> Bag <-- (Bag, Any, Integer_NN)
         implements 2::""
-        : (topic -->^ FDN__Bag_remove_n);
+        : (\<*args -->^ FDN__Bag_remove_n);
 
 The function C<remove_n::Bag> results in the C<Bag> value that has all of
 the members of the function's C<0> argument minus N existing members that
@@ -5079,7 +5079,7 @@ C<remove_n> for the composing type C<Bag>.
     ::MD::member_plus::Bag ::= function --> Bag <-- (Bag, Bag)
         implements 2::""
         is {associative,commutative} identity (\+{})
-        : (topic -->^ FDN__Bag_member_plus);
+        : (\<*args -->^ FDN__Bag_member_plus);
 
 The function C<member_plus::Bag> results in the I<multiset sum> of its 2
 arguments C<0> and C<1>.  The result is the C<Bag> value that has all of
@@ -5091,7 +5091,7 @@ function C<member_plus> aka C<⊎> for the composing type C<Bag>.
 
     ::MD::except::Bag ::= function --> Bag <-- (Bag, Bag)
         implements 2::""
-        : (topic -->^ FDN__Bag_except);
+        : (\<*args -->^ FDN__Bag_except);
 
 The function C<except::Bag> results in the I<multiset difference> between
 its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
@@ -5105,7 +5105,7 @@ for the composing type C<Bag>.
     ::MD::intersect::Bag ::= function --> Bag <-- (Bag, Bag)
         implements 2::""
         is {associative,commutative,idempotent}
-        : (topic -->^ FDN__Bag_intersect);
+        : (\<*args -->^ FDN__Bag_intersect);
 
 The function C<intersect::Bag> results in the I<multiset intersection> of
 its 2 arguments C<0> and C<1>.  The result is the C<Bag> value that has all
@@ -5118,7 +5118,7 @@ function C<intersect> aka C<∩> for the composing type C<Bag>.
     ::MD::union::Bag ::= function --> Bag <-- (Bag, Bag)
         implements 2::""
         is {associative,commutative,idempotent} identity (\+{})
-        : (topic -->^ FDN__Bag_union);
+        : (\<*args -->^ FDN__Bag_union);
 
 The function C<union::Bag> results in the I<multiset union> of its 2
 arguments C<0> and C<1>.  The result is the C<Bag> value that has all of
@@ -5131,7 +5131,7 @@ virtual function C<union> aka C<∪> for the composing type C<Bag>.
     ::MD::exclusive::Bag ::= function --> Bag <-- (Bag, Bag)
         implements 2::""
         is {associative,commutative} identity (\+{})
-        : (topic -->^ FDN__Bag_exclusive);
+        : (\<*args -->^ FDN__Bag_exclusive);
 
 The function C<exclusive::Bag> results in the I<multiset symmetric
 difference> of its 2 arguments C<0> and C<1>.  The result is the C<Bag>
@@ -5145,7 +5145,7 @@ aka C<symm_diff> aka C<∆> for the composing type C<Bag>.
     ::MD::nest::Bag ::= function --> Bag <-- (Bag)
         implements 2::""
         requires (...)
-        : (topic -->^ FDN__Bag_nest);
+        : (\<*args -->^ FDN__Bag_nest);
 
 I<TODO.>
 
@@ -5154,7 +5154,7 @@ I<TODO.>
     ::MD::unnest::Bag ::= function --> Bag <-- (Bag)
         implements 2::""
         requires (...)
-        : (topic -->^ FDN__Bag_unnest);
+        : (\<*args -->^ FDN__Bag_unnest);
 
 I<TODO.>
 
@@ -5162,7 +5162,7 @@ I<TODO.>
 
     ::MD::where::Bag ::= function --> Bag <-- (Bag, Function_Call_But_0)
         implements 2::""
-        : (topic -->^ FDN__Bag_where);
+        : (\<*args -->^ FDN__Bag_where);
 
 I<TODO.>
 
@@ -5170,7 +5170,7 @@ I<TODO.>
 
     ::MD::map::Bag ::= function --> Bag <-- (Bag, Function_Call_But_0)
         implements 2::""
-        : (topic -->^ FDN__Bag_map);
+        : (\<*args -->^ FDN__Bag_map);
 
 I<TODO.>
 
@@ -5178,7 +5178,7 @@ I<TODO.>
 
     ::MD::reduce::Bag ::= function --> Any <-- (Bag, Function_Call_But_0_1)
         implements 2::""
-        : (topic -->^ FDN__Bag_reduce);
+        : (\<*args -->^ FDN__Bag_reduce);
 
 I<TODO.>
 
@@ -5208,7 +5208,7 @@ C<+|> for the composing type C<Bag>.
 
     ::MD::count::Bag ::= function --> Integer_NN <-- (Bag)
         implements 2::""
-        : (topic -->^ FDN__Bag_count);
+        : (\<*args -->^ FDN__Bag_count);
 
 The function C<count::Bag> results in the integral count of the members
 of its C<0> argument.  This function implements the C<Discrete> virtual
@@ -5218,7 +5218,7 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Bag>.
 
     ::MD::unique_count::Bag ::= function --> Integer_NN <-- (Bag)
         implements 2::""
-        : (topic -->^ FDN__Bag_unique_count);
+        : (\<*args -->^ FDN__Bag_unique_count);
 
 The function C<unique_count::Bag> results in the integral count of the
 distinct member values of its C<0> argument.  This function implements the
@@ -5228,7 +5228,7 @@ C<Discrete> virtual function C<unique_count> for the composing type C<Bag>.
 
     ::MD::order_using::Bag ::= function --> Array <-- (Bag, Function_Call_But_0_1)
         implements 2::""
-        : (topic -->^ FDN__Bag_order_using);
+        : (\<*args -->^ FDN__Bag_order_using);
 
 The function C<order_using::Bag> results in the C<Array> value that represents
 the same multiset of members as its C<0> argument but that the members are
@@ -5348,7 +5348,7 @@ I<TODO.  Also known as "remove" in some languages.>
 
     ::MD::extend::"" ::= function virtual
         --> Attributive <-- (Attributive, Attributive)
-        requires (topic --> \attr_names_disjoint::())
+        requires (\<*args --> \attr_names_disjoint::())
         is {associative,commutative};
 
     ::MD::"+^" ::= alias of extend;
@@ -5420,12 +5420,12 @@ C<Tuple>.
 =head2 attr . (Structural)
 
     ::MD::attr::"" ::= function virtual --> Any <-- (Structural, Attr_Name)
-        requires (topic --> \has_attr_name::());
+        requires (\<*args --> \has_attr_name::());
 
     ::MD::"."::Structural ::= function --> Any <-- (Structural, Attr_Name)
         implements 2::""
-        requires (topic --> \has_attr_name::())
-        : (topic --> \attr::());
+        requires (\<*args --> \has_attr_name::())
+        : (\<*args --> \attr::());
 
 I<TODO.>
 
@@ -5435,18 +5435,18 @@ I<TODO.>
 
     ::MD::".?"::Structural ::= function --> Boolean <-- (Structural, Attr_Name)
         implements 2::""
-        : (topic --> \has_attr_name::());
+        : (\<*args --> \has_attr_name::());
 
 I<TODO.>
 
 =head2 attr_or_excuse .! (Structural)
 
     ::MD::attr_or_excuse ::= function --> Any <-- (Structural, Attr_Name)
-        : (topic --> \has_attr_name::() ?? topic --> \attr::() !! Excuse::No_Such_Attr_Name());
+        : (\<*args --> \has_attr_name::() ?? \<*args --> \attr::() !! Excuse::No_Such_Attr_Name());
 
     ::MD::".!"::Structural ::= function --> Any <-- (Structural, Attr_Name)
         implements 2::""
-        : (topic --> \attr_or_excuse::());
+        : (\<*args --> \attr_or_excuse::());
 
 I<TODO.>
 
@@ -5454,7 +5454,7 @@ I<TODO.>
 
 =head2 Tuple
 
-    ::MD::Tuple::"" ::= selection where (topic -->^ FDN__is_a_Tuple)
+    ::MD::Tuple::"" ::= selection where (\<*args -->^ FDN__is_a_Tuple)
         default (())
         composes Structural and_provides_its_default;
 
@@ -5503,7 +5503,7 @@ I<TODO.>
 
     ::MD::degree::Tuple ::= function --> Integer_NN <-- (Tuple)
         implements 2::""
-        : (topic -->^ FDN__Tuple_degree);
+        : (\<*args -->^ FDN__Tuple_degree);
 
 I<TODO.>
 
@@ -5511,8 +5511,8 @@ I<TODO.>
 
     ::MD::attr::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
         implements 2::""
-        requires (topic --> \has_attr_name::())
-        : (topic -->^ FDN__Tuple_attr);
+        requires (\<*args --> \has_attr_name::())
+        : (\<*args -->^ FDN__Tuple_attr);
 
 I<TODO.>
 
@@ -5520,7 +5520,7 @@ I<TODO.>
 
     ::MD::has_attr_name::Tuple ::= function --> Boolean <-- (Tuple, Attr_Name)
         implements 2::""
-        : (topic -->^ FDN__Tuple_has_attr_name);
+        : (\<*args -->^ FDN__Tuple_has_attr_name);
 
 I<TODO.>
 
@@ -5529,7 +5529,7 @@ I<TODO.>
     ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, Attr_Names)
         implements 2::""
         requires (...)
-        : (topic -->^ FDN__Tuple_on);
+        : (\<*args -->^ FDN__Tuple_on);
 
 I<TODO.>
 
@@ -5538,7 +5538,7 @@ I<TODO.>
     ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, Attr_Names)
         implements 2::""
         requires (...)
-        : (topic -->^ FDN__Tuple_but);
+        : (\<*args -->^ FDN__Tuple_but);
 
 I<TODO.>
 
@@ -5546,9 +5546,9 @@ I<TODO.>
 
     ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
         implements 2::""
-        requires (topic --> \attr_names_disjoint::())
+        requires (\<*args --> \attr_names_disjoint::())
         is {associative,commutative} identity (())
-        : (topic -->^ FDN__Tuple_extend);
+        : (\<*args -->^ FDN__Tuple_extend);
 
 I<TODO.>
 
@@ -5580,7 +5580,7 @@ I<TODO.>
 =head2 any_attrs
 
     ::MD::any_attrs ::= function --> Boolean <-- (Tuple, Function_Call_But_0)
-        : (topic -->^ FDN__Tuple_any_attrs);
+        : (\<*args -->^ FDN__Tuple_any_attrs);
 
 I<TODO.>
 
@@ -5600,21 +5600,21 @@ I<TODO.>
 =head2 attrs_where
 
     ::MD::attrs_where ::= function --> Tuple <-- (Tuple, Function_Call_But_0)
-        : (topic -->^ FDN__Tuple_attrs_where);
+        : (\<*args -->^ FDN__Tuple_attrs_where);
 
 I<TODO.>
 
 =head2 attrs_map
 
     ::MD::attrs_map ::= function --> Tuple <-- (Tuple, Function_Call_But_0)
-        : (topic -->^ FDN__Tuple_attrs_map);
+        : (\<*args -->^ FDN__Tuple_attrs_map);
 
 I<TODO.>
 
 =head2 attrs_reduce
 
     ::MD::attrs_reduce ::= function --> Any <-- (Tuple, Function_Call_But_0_1)
-        : (topic -->^ FDN__Tuple_attrs_reduce);
+        : (\<*args -->^ FDN__Tuple_attrs_reduce);
 
 I<TODO.>
 
@@ -5861,7 +5861,7 @@ I<TODO.>
 
 =head2 Capsule
 
-    ::MD::Capsule::"" ::= selection where (topic -->^ FDN__is_a_Capsule)
+    ::MD::Capsule::"" ::= selection where (\<*args -->^ FDN__is_a_Capsule)
         default (False wrap False);
 
 The selection contract C<Capsule> represents the infinite Muldis D
@@ -5877,21 +5877,21 @@ minimize interference with other types' interfaces.
 =head2 Capsule::wrap
 
     ::MD::Capsule::wrap ::= function --> Capsule <-- (Any, Any)
-        : (topic -->^ FDN__Capsule_wrap);
+        : (\<*args -->^ FDN__Capsule_wrap);
 
 I<TODO.>
 
 =head2 Capsule::wrapper
 
     ::MD::Capsule::wrapper ::= function --> Any <-- (Capsule)
-        : (topic -->^ FDN__Capsule_wrapper);
+        : (\<*args -->^ FDN__Capsule_wrapper);
 
 I<TODO.>
 
 =head2 Capsule::unwrap
 
     ::MD::Capsule::unwrap ::= function --> Any <-- (Capsule)
-        : (topic -->^ FDN__Capsule_unwrap);
+        : (\<*args -->^ FDN__Capsule_unwrap);
 
 I<TODO.>
 
@@ -5907,7 +5907,7 @@ I<TODO.  Says wrapper equals a value and asset passes a filter.>
 
 =head2 External
 
-    ::MD::External::"" ::= selection where (topic -->^ FDN__is_a_External)
+    ::MD::External::"" ::= selection where (\<*args -->^ FDN__is_a_External)
         default (() -->^ FDN__default_External);
 
 The selection contract C<External> represents the infinite Muldis D
@@ -5927,7 +5927,7 @@ D values.
 =head2 External::call_function
 
     ::MD::External::call_function ::= function --> Any <-- (Any)
-        : (FDN__External_call_function ^<-- topic);
+        : (FDN__External_call_function ^<-- \<*args);
 
 The function C<External::call_function> is a proxy for invoking a function
 that is defined and managed externally to the Muldis D language

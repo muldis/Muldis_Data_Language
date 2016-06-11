@@ -21,13 +21,10 @@ described as "simultaneous assignment" or such.
 
 * For now, rather than providing general case of assignment LHS expressions,
 just provide simply simultaneous multiple-variable assignment.
-- Provide this very specific feature for functions AND procedures, where
-we provide terse multi-naming/aliasing syntax for expressions in any routine,
-and multi-variable assigning syntax in procedures.
+- Provide this very specific feature for procedures, where
+we provide terse multi-variable assigning syntax in procedures.
 - This would be special syntax with its own node type probably.
-- Both resembling Tuple literals, or something.
-- For assigning to a tuple attribute, just use the attr update function.
-- Also use for terse unpacking topic into named exprs.
+- Resembling Tuple literals, or something.
 
 * IMPORTANT: See the long block a few points down citing ACID/CAP in its
 first line, in particular the message-passing "request submitted" etc and
@@ -953,12 +950,13 @@ to introspect code for either interpreting or compiling or implementing
 various things like "isa" etc.  Unlike normal variables, this one is
 directly visible to functions, because we don't want to explicitly pass it
 as an extra function argument, or something.  Or its not so much a variable
-as an implicit extra argument passed in addition to 'topic'.  For that
+as an implicit extra argument passed in addition to 'source'.  For that
 matter, we also want an implicit extra argument visible to each material
 that says what its fully qualified name is, eg, what \@0 resolves to.
 Maybe also one with current call stack information.
+- ACTUALLY, ANY OF THESE ARE NO LONGER KEYWORDS; EG \<*args IS THE ARG LIST NOW.
 - Perhaps we shall say that every routine (and type 'where') actually has 2 arguments:
-    - topic (a keyword) is what is explicitly passed in by calling code
+    - source (a keyword) is what is explicitly passed in by calling code
     - context (a keyword) is implicitly passed extra information, a Structure:
         - self - a Reference to / fully qualified name of the routine, eg \@0
         - catalog - the variable listing all the registered/invokable packages;
@@ -966,15 +964,15 @@ Maybe also one with current call stack information.
         - ?callers - information on the present call stack of the routine;
             or strictly speaking maybe the ability to read this in a function/type
             is bad because it means the function is not deterministic on its
-            topic; at the very least though, an alternative to this in
+            source; at the very least though, an alternative to this in
             functions is a write-only/debugging feature that says, write or
             track a stack trace of where we are now, whatever it is
     - generally we need to distinguish compile time info vs runtime, and only
-    the former is available to functions but via 'topic'; self/catalog is
+    the former is available to functions but via 'source'; self/catalog is
     compile time, assuming each new package register conceptually recompiles
     everything, while call stack is runtime; likewise, "the database" is in
     the general case runtime / is not a constant in the registered packages,
-    and we don't want functions to see it outside of 'topic'
+    and we don't want functions to see it outside of 'source'
     - see also what Perl 6 does again re context
 - Generic debugging should be handled like with compiled languages, where
 in order to step through a program or see trace information, one must
@@ -1298,7 +1296,7 @@ as a constant, which will be a predicate function or default value respectively.
     returns --> to    - ((True))
     matches <-- from  - ((True))
     accepts requires  - ((True))
-    via :             - (topic)
+    via :             - (\<*args)
 - All traits are optional, effective default if missing is given with them.
 - In ... cases, {returns,matches,accepts,of} will also take syntactic
 shorthands for lists of type names or Structure defs while {via,where} don't.
@@ -1419,7 +1417,7 @@ exactly remember the format of code such as literal format or whitespace etc;
 rather remembering that is orthogonal and can apply to annotations too as
 annotations are considered important code-alikes that appear literally.
 - Annotations must be completely foldable compile-time constants so they
-can not reference 'topic' and should not have any semantic effects such as
+can not reference 'source' and should not have any semantic effects such as
 side-channel writes unless those are desired to run at "compile time".
 - Note, the used term "annotation" has a number of precedents including the
 C# DataAnnotations stuff or Java "compile time annotation" stuff or C++
@@ -3679,21 +3677,21 @@ aka "\\c[0,0]" and "\\c[0,1]".
 * Generally speaking, what any commalist is parsed into is starting with an
 empty value of the collection type and insert()/insert_n()-ing each element.
 
-* Make \<foo a syntactic shorthand for topic attribute \foo when topic is a
+* Make \<foo a syntactic shorthand for source attribute \foo when source is a
 Tuple (EDIT: which is all the time); that is, \<foo is syntactic shorthand for:
-    \%(topic,\foo) -->^ BS_Tuple_Attr
-... which is longhand for topic.\foo
+    \%(\<*args,\foo) -->^ BS_Tuple_Attr
+... which is longhand for \<*args.\foo
 - Furthermore, make \<<foo shorthand for \0 attribute named \<foo;
-that is, \<<foo is shorthand for topic.\0.\foo
+that is, \<<foo is shorthand for \<*args.\0.\foo
 mainly useful in list operators like where/map/any/etc when applied to
 relations or tuple collections, where they then are attrs of the "current tuple".
 - Furthermore, make \>>foo shorthand for \1 attribute named \<foo;
-that is, \>>foo is shorthand for topic.\1.\foo,
+that is, \>>foo is shorthand for \<*args.\1.\foo,
 while that doesn't pair with \< plus 1 layer, it does pair with the notion
 of \<< drilling into binary op lhs arg, so \>> drills to binary op rhs arg.
 - A related feature \<>foo refers to the procedure lexical variable or subject-to-update
 parameter "foo" by itself and isn't short for anything per se, that is a
-procedure doesn't have a "topic" fundamentally.
+procedure doesn't have a "source" fundamentally.
 
 * Don't have catalog types specific to defining routine parameters.
 - Regular contracts / type defs / shorthands do the job.
@@ -4266,7 +4264,7 @@ are still dealing with Tuple arg-lists to hard-coded names, like this:
 - Embedded function definitions now result in a Function_Call rather than in
 a Reference; eg this results in a Function_Call:
     (function : (\<0 + \<1))
-    (function : (topic --> "+"::()))
+    (function : (\<*args --> "+"::()))
 
 * Function call syntax:
     args --> rtn
@@ -4377,7 +4375,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         - is for functions that just negate others, eg != vs = or < vs >=
         - these 2 declarations are equivalent:
             foo ::= function negates bar;
-            foo ::= function --> Boolean <-- Any : (topic --> \@bar ?? False !! True);
+            foo ::= function --> Boolean <-- Any : (\<*args --> \@bar ?? False !! True);
         - it is assumed that function pairs in "negates" relationship
         may be different re associativity etc so each declares its own "is"
     2. keyword "to" or "-->" is optional, followed by the name of a type
@@ -4392,7 +4390,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         these are basically equivalent:
             function <-- (Integer,foo:Integer) : ...;
             function <-- type of SC_Func_Args
-                where (topic matching \%($Integer,foo:$Integer)) : ...;
+                where (\<0 matching \%($Integer,foo:$Integer)) : ...;
         - a brace-delimited list of 0..N type names / type defs /
         simplified literals, each like previously described; this is useful
         for defining a list of alternatives, eg {(foo), (foo, foo)} means
@@ -4414,7 +4412,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         be virtual; they are essentially the same but we're being explicit
         as to what's going on and users can avoid easy mistakes
     6. OBSOLETE: keyword "normalize" followed by expr
-        - defaults to topic if omitted
+        - defaults to source if omitted
     7. keyword "requires" is optional, followed by predicate expr
         - defaults to true if omitted
         - tests the argument over and above it being the type named in "from"
@@ -4447,9 +4445,9 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         - for example 'add' may indicate 'multiply' or the latter 'exponentiate'
         or catenate may indicate replicate etc
     10. keyword "via" or ":" is optional, followed by expr
-        - defaults to topic if omitted
+        - defaults to source if omitted
         - this is the main body of the function F1; it takes the function's
-        actual argument (as topic) which conforms to "from"+"requires" and
+        actual argument (as source) which conforms to "from"+"requires" and
         produces the function's result which conforms to "to"+"intends"
     11. OBSOLETE: keyword "inverse" or "-:" is optional, followed by expr
         - has no default / doesn't exist if omitted
@@ -4462,7 +4460,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         for them, but the majority would need to be wrapped in user-defined
         functions in order to have an appropriate inverse behavior for the
         use cases at hand, eg this is how "database views" would often work
-        - the "topic" of F2 is a tuple with these attributes:
+        - the "source" of F2 is a tuple with these attributes:
             - arg_old - the pre-assignment value of the actual argument of the F1 call
             - pvar_old - the pre-assignment value of the pseudo-variable that is the F1 call
             - pvar_new - the post-assignment value of the pseudo-variable that is the F1 call
@@ -4473,9 +4471,9 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
             - its not like there's a way to directly invoke the expression
             in "default" or "identity" etc either, unless those become nested constants?
         - meanwhile, for invoking a given F2 for foo simply, run this statement:
-            vars {old_topic : FooType};
-            foo::(old_topic) := new_result;
-        ... and then the variable old_topic will have the result of running F2
+            vars {old_source : FooType};
+            foo::(old_source) := new_result;
+        ... and then the variable old_source will have the result of running F2
         - when "inverse" defined, there is implicitly another constraint that
         runs after F2 executes and produces "arg_new" (and "from"+"requires"
         constraints have passed); it will run F1 again
@@ -4614,17 +4612,17 @@ this is done so one can use "floating Foo" and have it behave as expected.
 materials private to that binder.
 
 * New node syntaxes:
-    Ref function (and type) arguments iff topic is a Tuple:
-        - \.foo or \.0 means topic.foo or topic.0
+    Ref function (and type) arguments iff source is a Tuple:
+        - \<foo or \<0 means \<*args.\foo or \<*args.\0
             - but we could make these their own node type since why the hell not?
             - or merge that with node types for unpacking and packing tuples
             we need anyway due to chicken and egg though all we really need is pack
-        - (:.foo,) in a tuple literal means (foo:\.foo,)
+        - (:<foo,) in a tuple literal means (foo:\<foo,)
     Ref read-only procedure arguments:
-        - \<foo or \<0 reference them directly, there is no topic
+        - \<foo or \<0 reference them directly, there is no source
         - (:<foo,) in a tuple literal means (foo:\<foo,)
     Ref subject-to-update procedure arguments AND locally declared lexical vars:
-        - \&foo or \&0 reference them directly, there is no topic
+        - \&foo or \&0 reference them directly, there is no source
         - (:&foo,) in a tuple literal means (foo:\&foo,)
     Ref (lexical) named expressions in functions (and types) and procedures:
         - foo or "0" reference them directly
@@ -4653,7 +4651,7 @@ ALSO REVISE 'UPDATES' ETC AS APPROPRIATE.
         that is, what the called procedure sees is a pseudo-variable defined
         over some pseudo-/variable that the caller sees
     3. keyword "updates" is optional, followed by set of 0..N
-        attr names in parens or just the keyword "topic" not in parens
+        attr names in parens or just the keyword "source" not in parens
         - if omitted, the meaning is the same as if it had zero names
         - "updates" declares that a particular subset of the conceptual
         arguments, or the whole actual argument, or none, may be updated
@@ -4667,10 +4665,10 @@ ALSO REVISE 'UPDATES' ETC AS APPROPRIATE.
         - see also "overrides" comment for function
     6. keyword "requires" is optional, followed by predicate expr
         - defaults to true if omitted
-        - test of topic beyond its signature type before procedure executes
+        - test of source beyond its signature type before procedure executes
     7. keyword "intends" is optional, followed by predicate expr
         - defaults to true if omitted
-        - test of topic beyond its signature type after procedure executes
+        - test of source beyond its signature type after procedure executes
         - normally would be omitted if "updates" is omitted
     8. keyword "vars" is optional,
         followed by set of 0..N variable declarations in braces,
