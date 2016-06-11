@@ -1002,18 +1002,13 @@ I<TODO.>
 Grammar:
 
     <expr> ::=
-        <named_expr> | <annotating_expr> | <anon_expr>
-
-    <named_expr> ::=
-          <expr_name>
-        | <naming_expr>
-        | <aliasing_expr>
+        <expr_name> | <naming_expr> | <annotating_expr> | <anon_expr>
 
     <naming_expr> ::=
-        <expr_name> <sp> '::=' <sp> <anon_expr>
-
-    <aliasing_expr> ::=
         <expr_name> <sp> '::=' <sp> <named_expr>
+
+    <named_expr> ::=
+        <expr>
 
     <annotating_expr> ::=
         <annotated_expr> '::?=' <annotation_expr>
@@ -1036,11 +1031,13 @@ Grammar:
 
     <delimiting_expr> ::=
         '(' <sp> [
-            <naming_expr> | <aliasing_expr> | <result_expr> | ''
+            <naming_expr> | <result_expr> | ''
         ] % [<sp> ';' <sp>] <sp> ')'
 
     <result_expr> ::=
           ['<--' <sp> <expr>]
+        | <expr_name>
+        | <annotating_expr>
         | <anon_expr>
 
     <source_expr> ::=
@@ -1056,20 +1053,17 @@ general case, an expression denoting any value of the C<Any> type may
 be used where you see C<< <expr> >>, any further restrictions would be
 provided by the context.
 
-Iff an C<< <expr> >> is an C<< <expr_name> >>, then this means
-that the parent C<< <expr> >> is having at least one of its children
-declared with an explicit name rather than inline, and then the C<<
-<expr_name> >> is the invocation name of that child.
+Iff an C<< <expr> >> is an C<< <expr_name> >>, then this means that an
+ancestor C<< <expr> >> is having at least one of its descendents declared
+with an explicit name/alias rather than being anonymous inline, and then
+the C<< <expr_name> >> is the invocation name of that child.
 
-Iff an C<< <expr> >> is a C<< <naming_expr> >>, then the C<< <anon_expr> >>
-element of the C<< <named_expr> >> is being declared with an explicit name,
-and the C<< <expr_name> >> element of the C<< <named_expr> >> is that name.
-Outside of the context of a C<< <naming_expr> >>, the system will generate
-an implicitly-used name for the C<< <anon_expr> >> element.  Iff an C<<
-<expr> >> is instead an C<< <aliasing_expr> >>, then it is in fact
-declaring a new node itself (rather than simply naming its child node); the
-new node is simply declaring an alias for another node, namely its C<<
-<named_expr> >> element.
+Iff an C<< <expr> >> is a C<< <naming_expr> >>, then the C<< <named_expr>
+>> element of the C<< <naming_expr> >> is being declared with an explicit
+name/alias, and the C<< <expr_name> >> element of the C<< <naming_expr> >>
+is that name/alias.  Any C<< <expr> >> not thusly named/aliased is
+anonymous; there is no name to refer to it by in the system and it only can
+be used in the one place where it is declared.
 
 Iff an C<< <expr> >> is an C<< <annotating_expr> >>, then the C<<
 <annotated_expr> >> element of the C<< <annotating_expr> >> is being given
