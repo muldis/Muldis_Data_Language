@@ -76,6 +76,102 @@ do most of the grunt work, whether in a straight Muldis D or mixed-language prog
 - A Package should have an optional trait that names its "main routine" if
 there is one; this would obsolete the need for a "when loaded" trigger.
 
+* The concept of "two-phase commit" is somewhat related to the above.
+http://rajeevrastogi.blogspot.ca/2016/06/savepoint-andpreparetransaction.html
+
+* Explanation given on 20160606:
+1.  For some context, Muldis D executes in a multi-process virtual machine,
+each one analogous to either a normal program process or thread, or to a
+distinct DBMS client connection, or to a DBMS autonomous transaction.  Each
+process can spawn other processes which constitute independent parallel
+transactions. Processes can communicate with each other via message
+passing.
+2.  Muldis D is fundamentally an ordinary general purpose programming
+language and does NOT have a "built-in persisting ACID DBMS" in the same
+sense as a typical SQL DBMS.  Rather, it fundamentally provides in-memory
+data structures that are immutable and transactional, effectively, in a
+manner consistent with a purely functional language.  Structures are
+graph-like built add-only and if code throws an exception then aborted
+structures are never visible to users.  No automatic durability is
+included.  Instead, Muldis D provides ordinary access to the file system or
+STDIN/OUT etc or other general purpose ways of talking with the outside
+world that any general purpose language has, and the user-level code is
+responsible for actually writing databases out and reading them back using
+whatever method they want.  Muldis D provides built-in routines to
+serialize data or code (Package values) and parse it back again, so
+combining that with a write-to-file and read-to-file is one of the simplest
+ways to persist a database, which otherwise is just in memory.  For faster
+durability, new packages can just be deltas of prior ones, which they then
+name as dependencies.  So, Muldis D is also a language you write a DBMS in,
+not just a query language for that DBMS; or in other words, a default
+persistence aspect is also written in itself, the language is self-hosted
+there.
+3.  For normal recommended usage scenarios, the mechanics of how a database
+persists or otherwise managing one too large to fit in memory is abstracted
+away by the message passing mechanism.  One or more processes ("server")
+are actually responsible for managing a database including persistence, and
+other processes ("client") representing users communicate what the users
+wish to be retrieved from or modified in the database.  A message generally
+takes the form of a Package value declaring an entrypoint procedure, which
+is executed/interpreted in the context of the receiving process.  A message
+also constitutes a transaction for the receiver, it defines a
+self-contained unit of change to apply or of what data to fetch and return
+or both.  A message is completely non-interactive with the sender, it must
+include any conditionals on whether or not to do something based on the
+then-current state of the database etc; the sender then is informed that it
+either succeeded/committed or failed/rolledback with another message sent
+back.  Similarly there are no open-ended transactions, they only last as
+long as the server takes to process the message.  Transactions use
+serializable isolation and it generally shouldn't matter what order
+messages are actually applied to a database or there isn't a guarantee it
+is in the order received by the server.  Message passing is asynchronous so
+a client doesn't necessarily block waiting for its request to complete.
+There is also an optional security model where clients/servers don't have
+to trust each other, and a server could just say "denied" rather than doing
+the request.
+4.  And so, in such client/server setups, the Muldis D code running in
+client/user processes see ACID or whatever they should be seeing as if it
+were built-in to the DBMS.  How the server actually implements that is
+hidden away and as such the Muldis D code running in server processes could
+be written to do things a variety of different ways.  For standalone
+reference implementations of Muldis D they will basically just do the file
+serialization I previously mentioned, as the simplest thing that works.
+For other implementations such as over SQL DBMSs or other kinds of data
+stores the Muldis D code running in the server process could be translating
+the Muldis D code comprising the message (a Package value) into analogous
+SQL or whatever and then sending it off to the SQL DBMS, thus essentially
+being a proxy for it.  Or if the Muldis D implementation is on a
+distributed system the server process may be farming out the message to a
+multiplicity of other computers.  All of this should be relatively easy to
+do considering Muldis D's homoiconic and generally pure functional nature.
+But from the client/user perspective they just made use of "the database"
+via the message passing, as typical application code does with a SQL DBMS
+today.
+
+* The concept of using sequence generators for surrogate keys, eg auto-increment,
+should be strongly discouraged in principle for various reasons.
+- The generators are inefficient users of DBMS resources and are bottlenecks
+both for acquiring values and for DBMS replication, while in practice the actual
+serial nature isn't important to the data and could otherwise be something else random.
+- Something like a UUID is better suited and each record can be calculated indepedently.
+- Where sequence generators are used, typically the state should be maintained
+outside the main database and not be tied to its transactional mechanism.
+- Surrogate key geneation should typically be done application side so the
+database can just work with the records as if everything was using natural keys.
+- Handling of surrogate key generation should be done similarly to handling random numbers.
+- There should be some procedure (because it is officially non-deterministic)
+that takes a list and applies new generated values to it; a function can be
+used iff the values are in an array (including a tuple array) AND the sequence
+generator is deterministic, eg a serial, and that works best if the DBMS
+has a "reserve n" or "increment by n" in its native sequence generator.
+- Making sure sequence generation is untied from record inserts makes it
+easier for users to choose from various means to generate said sequences.
+- See also https://www.depesz.com/2016/06/14/incrementing-counters-in-database/
+
+* Actual random number/data generators should be procedures that produce an
+array of the random values, and these can then be applied to other records
+using an array-join like thing that joins on common indexes.
+
 * Consider using the greek-letter-looking symbols often used to denote some
 relational operations like selection, projection, and rename.  However note
 that typical usage of those in maths has the relation as the right-hand
@@ -89,6 +185,17 @@ are paired within a material.  Try counting brackets in inter-semicolon
 spaces to try and detect pairings complete vs unbalanced start vs unbalanced end.
 No need to distinguish [{( from each other, just opening from closing,
 initially, though on second pass pay attention to detect errors.
+
+* Consider making the catalog an explicit Structural/Tuple variable, and
+the act of registering/activating a package is nothing more than adding it
+to the variable.  Similarly, as functions no longer necessarily have to be
+named and could be passed around by value, the main purpose of this catalog
+is to provide an easy way for code that is otherwise anonymous and passed
+around to be factored into named reusable parts, which are then typically
+looked up in said catalog.  As such, conceptually routine/type lookup or
+composes/implements resolution takes place in the user / Muldis D layer,
+by (possibly) Muldis D code that is interpreting or compiling Muldis D code,
+in which case the Foundation corresponds to the CPU instruction set.
 
 * Muldis D makes catalog stuff explicit.  All data definition is data
 manipulation, producing values that are source code, canonically values of
@@ -260,6 +367,7 @@ integers scheme, but the maturity is indicated separately:
 * https://en.wikipedia.org/wiki/Relational_operator
 
 * http://www.dagolden.com/index.php/2633/no-more-dirty-reads-with-mongodb/
+See write concern level and read concern level etc.
 
 * https://www.depesz.com/2016/05/04/picking-task-from-queue-revisit/
 SKIP LOCKED for implementing queues.
@@ -294,6 +402,9 @@ on mathematical signs and symbols for use in physical sciences and technology
 on Quantities and units — Part 2: Mathematical signs and symbols to be used in the natural sciences and technology
 
 * http://www.r2d3.us/visual-intro-to-machine-learning-part-1/
+
+* An introduction to the new more modern Apple File System.
+https://developer.apple.com/library/prerelease/content/documentation/FileManagement/Conceptual/APFS_Guide/
 
 * https://www.sqlite.org/draft/sessionintro.html
 SQLite Session Extension included with version 3.13.0.
