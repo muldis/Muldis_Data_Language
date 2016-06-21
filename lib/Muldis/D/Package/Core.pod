@@ -2942,7 +2942,7 @@ respectively for said dimensions.
 =head2 Accessible
 
     ::MD::Accessible ::= interface
-        requires_implements {".",".?",".!"};
+        requires_implements {".?",".",".!"};
 
 I<TODO.  For types that support simple accessor-based lookup of single values;
 for one-dimensional collections of pairs that support lookup by one
@@ -2954,18 +2954,18 @@ Accessible just provides certain convenient shared names for operators that
 otherwise have distinct names on the composing types.
 Composed by: Positional (Array, String,...), Structural (Tuple), Dictionary, etc.>
 
+=head2 .?
+
+    ::MD::".?"::"" ::= function virtual --> Boolean <-- (Accessible, Any);
+
+I<TODO.  Check if location exists.>
+
 =head2 .
 
     ::MD::"."::"" ::= function virtual --> Any <-- (Accessible, Any)
         requires (\<*args --> \".?"::());
 
 I<TODO.  Fetch item at existing location.>
-
-=head2 .?
-
-    ::MD::".?"::"" ::= function virtual --> Boolean <-- (Accessible, Any);
-
-I<TODO.  Check if location exists.>
 
 =head2 .!
 
@@ -3706,7 +3706,9 @@ of any type, both C<Orderable> or not.
             ,except,intersect,union,exclusive
             ,nest,unnest,where,map,reduce,...
             ,to_Set,to_Bag,count,order_using
-            ,to_Array,elem,first_possible_index,slice_n,index_succ_all_matches,...};
+            ,elem
+            ,to_Array
+            ,first_possible_index,slice_n,index_succ_all_matches,...};
 
 The interface contract C<Positional> is infinite.  A C<Positional> value is
 both a C<Stringy> value and a C<Discrete> value; it is a homogeneous
@@ -3853,17 +3855,17 @@ the distinct member values of its C<0> argument.  This function implements
 the C<Discrete> virtual function C<unique_count> for the composing type
 C<Positional>.
 
-=head2 to_Array ~|
+=head2 has_index .? (Positional)
 
-    ::MD::to_Array::"" ::= function virtual --> Array <-- (Positional);
+    ::MD::has_index ::= function --> Boolean <-- (Positional, Integer)
+        : (\<1 >= first_possible_index::(\<0)
+            and \<1 < first_unused_index::(\<0));
 
-    ::MD::"~|" ::= alias of to_Array;
+    ::MD::".?"::Positional ::= function --> Boolean <-- (Positional, Integer)
+        implements 2::""
+        : (\<*args --> \has_index::());
 
-The virtual function C<to_Array> aka C<~|> results in the C<Array>
-value that represents the same sequence of members as its C<0> argument.
-The purpose of C<to_Array> is to canonicalize C<Positional> values so they
-can be treated abstractly as sequences of discrete values with minimal
-effort.
+I<TODO.  True if given array index exists.>
 
 =head2 elem . (Positional)
 
@@ -3877,18 +3879,6 @@ effort.
 
 I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
 
-=head2 has_index .? (Positional)
-
-    ::MD::has_index ::= function --> Boolean <-- (Positional, Integer)
-        : (\<1 >= first_possible_index::(\<0)
-            and \<1 < first_unused_index::(\<0));
-
-    ::MD::".?"::Positional ::= function --> Boolean <-- (Positional, Integer)
-        implements 2::""
-        : (\<*args --> \has_index::());
-
-I<TODO.  True if given array index exists.>
-
 =head2 elem_or_excuse .! (Positional)
 
     ::MD::elem_or_excuse ::= function --> Any <-- (Positional, Integer)
@@ -3899,6 +3889,18 @@ I<TODO.  True if given array index exists.>
         : (\<*args --> \elem_or_excuse::());
 
 I<TODO.>
+
+=head2 to_Array ~|
+
+    ::MD::to_Array::"" ::= function virtual --> Array <-- (Positional);
+
+    ::MD::"~|" ::= alias of to_Array;
+
+The virtual function C<to_Array> aka C<~|> results in the C<Array>
+value that represents the same sequence of members as its C<0> argument.
+The purpose of C<to_Array> is to canonicalize C<Positional> values so they
+can be treated abstractly as sequences of discrete values with minimal
+effort.
 
 =head2 squish
 
@@ -4437,6 +4439,15 @@ defined by the function given in its C<1> argument.  This function
 implements the C<Discrete> virtual function C<order_using> for the composing
 type C<Array>.
 
+=head2 elem (Array)
+
+    ::MD::elem::Array ::= function --> Any <-- (Array, Integer_NN)
+        implements 2::""
+        requires (\<*args --> \has_index::())
+        : (\<*args -->^ FDN__Array_elem);
+
+I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
+
 =head2 to_Array (Array)
 
     ::MD::to_Array::Array ::= function --> Array <-- (Array)
@@ -4446,15 +4457,6 @@ type C<Array>.
 The function C<to_Array::Array> simply results in its C<0> argument.  This
 function implements the C<Positional> virtual function C<to_Array> aka
 C<~|> for the composing type C<Array>.
-
-=head2 elem (Array)
-
-    ::MD::elem::Array ::= function --> Any <-- (Array, Integer_NN)
-        implements 2::""
-        requires (\<*args --> \has_index::())
-        : (\<*args -->^ FDN__Array_elem);
-
-I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
 
 =head2 first_possible_index (Array)
 
@@ -5408,7 +5410,9 @@ I<TODO.>
     ::MD::Structural ::= interface
         composes {Attributive and_provides_its_default,
             Accessible and_provides_its_default}
-        requires_implements {...,attr,has_attr_name,...};
+        requires_implements {...
+            ,has_attr_name,attr
+            ,...};
 
 The interface contract C<Structural> is infinite.  A C<Structural> value is
 an C<Attributive> value that has exactly 1 member, meaning the value is or
@@ -5416,6 +5420,16 @@ is isomorphic to a C<Tuple>, meaning each attribute name has exactly 1
 corresponding attribute asset.  The default value of C<Structural> is the
 C<Tuple> value with zero attributes, C<()>.  C<Structural> is composed by
 C<Tuple>.
+
+=head2 has_attr_name .? (Structural)
+
+    ::MD::has_attr_name::"" ::= function virtual --> Boolean <-- (Structural, Attr_Name);
+
+    ::MD::".?"::Structural ::= function --> Boolean <-- (Structural, Attr_Name)
+        implements 2::""
+        : (\<*args --> \has_attr_name::());
+
+I<TODO.>
 
 =head2 attr . (Structural)
 
@@ -5426,16 +5440,6 @@ C<Tuple>.
         implements 2::""
         requires (\<*args --> \has_attr_name::())
         : (\<*args --> \attr::());
-
-I<TODO.>
-
-=head2 has_attr_name .? (Structural)
-
-    ::MD::has_attr_name::"" ::= function virtual --> Boolean <-- (Structural, Attr_Name);
-
-    ::MD::".?"::Structural ::= function --> Boolean <-- (Structural, Attr_Name)
-        implements 2::""
-        : (\<*args --> \has_attr_name::());
 
 I<TODO.>
 
@@ -5507,23 +5511,6 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 attr (Tuple)
-
-    ::MD::attr::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
-        implements 2::""
-        requires (\<*args --> \has_attr_name::())
-        : (\<*args -->^ FDN__Tuple_attr);
-
-I<TODO.>
-
-=head2 has_attr_name (Tuple)
-
-    ::MD::has_attr_name::Tuple ::= function --> Boolean <-- (Tuple, Attr_Name)
-        implements 2::""
-        : (\<*args -->^ FDN__Tuple_has_attr_name);
-
-I<TODO.>
-
 =head2 on (Tuple)
 
     ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, Attr_Names)
@@ -5574,6 +5561,23 @@ I<TODO.>
     ::MD::has_just_attrs::Tuple ::= function --> Boolean <-- (Tuple, Signature)
         implements 2::""
         : (...);
+
+I<TODO.>
+
+=head2 has_attr_name (Tuple)
+
+    ::MD::has_attr_name::Tuple ::= function --> Boolean <-- (Tuple, Attr_Name)
+        implements 2::""
+        : (\<*args -->^ FDN__Tuple_has_attr_name);
+
+I<TODO.>
+
+=head2 attr (Tuple)
+
+    ::MD::attr::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
+        implements 2::""
+        requires (\<*args --> \has_attr_name::())
+        : (\<*args -->^ FDN__Tuple_attr);
 
 I<TODO.>
 
