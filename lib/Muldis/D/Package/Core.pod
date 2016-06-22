@@ -2943,7 +2943,10 @@ respectively for said dimensions.
 =head2 Accessible
 
     ::MD::Accessible ::= interface
-        requires_implements {has_any_at,at,maybe_at};
+        requires_implements {has_any_at
+            ,mapping_at,at,maybe_at
+            ,replace_at,shiftless_insert_at,shiftless_remove_at
+            ,replace_or_insert_at,shiftless_maybe_remove_at};
 
 The interface contract C<Accessible> is infinite.  An C<Accessible> value
 is an aggregate of other, I<mapping> values such that each I<mapping> is a
@@ -2990,6 +2993,20 @@ otherwise it results in C<False>.  Other programming languages may name
 their corresponding operators I<ContainsKey> or I<has_key?> or I<key?> or
 I<exists> or I<in> or I<array_key_exists>.
 
+=head2 mapping_at .:
+
+    ::MD::mapping_at::"" ::= function virtual
+        --> (Any, Any) <-- (Accessible, Any)
+        requires (\<0 .? \<1);
+
+    ::MD::".:" ::= alias of mapping_at;
+
+The virtual function C<mapping_at> aka C<.:> results in a binary C<Tuple>
+whose C<0> attribute is the function's C<1> argument and whose C<1>
+attribute is the asset value of the mapping of its C<0> argument where that
+mapping's key is equal to its C<1> argument.  Other programming languages
+may name their corresponding operators I<assoc>
+
 =head2 at .
 
     ::MD::at::"" ::= function virtual --> Any <-- (Accessible, Any)
@@ -3016,6 +3033,84 @@ C<1> argument, iff there is such a mapping; otherwise it results in an
 C<Excuse>.  Other programming languages may name their corresponding
 operators I<ElementAtOrDefault> or I<at> or I<get> or I<fetch>; it is also
 common to use subscript/postcircumfix syntax.
+
+=head2 replace_at .=
+
+    ::MD::replace_at::"" ::= function virtual
+        --> Accessible <-- (Accessible, (Any, Any))
+        requires (\<0 .? \>>0);
+
+    ::MD::".=" ::= alias of replace_at;
+
+The virtual function C<replace_at> aka C<.=> results in the value of its
+C<0> argument's collection type that has all of the mappings of the
+function's C<0> argument but that, for the 1 mapping of the C<0> argument
+whose key I<K> is equal to the function's C<1> argument's C<0> attribute,
+the result's mapping instead has an asset equal to the C<1> argument's C<1>
+attribute.  This function will fail if the C<0> argument doesn't have a
+mapping with the key I<K>.  Other programming languages commonly use
+assignment syntax.
+
+=head2 shiftless_insert_at .+
+
+    ::MD::shiftless_insert_at::"" ::= function virtual
+        --> Accessible <-- (Accessible, (Any, Any))
+        requires (not \<0 .? \>>0);
+
+    ::MD::".+" ::= alias of shiftless_insert_at;
+
+The virtual function C<shiftless_insert_at> aka C<.+> results in the value
+of its C<0> argument's collection type that has all of the mappings of the
+function's C<0> argument plus 1 additional mapping that is equal to its
+C<1> argument.  The C<1> argument is a binary C<Tuple> whose C<0> and C<1>
+attributes are the mapping key and asset respectively.  This function will
+fail if the C<0> argument already has a mapping with that key.  Other
+programming languages may name their corresponding operators I<Add>; it is
+also common to use assignment syntax.
+
+=head2 shiftless_remove_at .-
+
+    ::MD::shiftless_remove_at::"" ::= function virtual
+        --> Accessible <-- (Accessible, Any)
+        requires (\<0 .? \<1);
+
+    ::MD::".-" ::= alias of shiftless_remove_at;
+
+The virtual function C<shiftless_remove_at> aka C<.-> results in the value
+of its C<0> argument's collection type that has all of the mappings of the
+function's C<0> argument minus 1 existing mapping whose key is equal to its
+C<1> argument.  This function will fail if the C<0> argument doesn't have
+such a mapping.  Other programming languages may name their corresponding
+operators I<del> or I<delete_at>.
+
+=head2 replace_or_insert_at .=+
+
+    ::MD::replace_or_insert_at::"" ::= function virtual
+        --> Accessible <-- (Accessible, (Any, Any));
+
+    ::MD::".=+" ::= alias of replace_or_insert_at;
+
+The virtual function C<replace_or_insert_at> aka C<.=+> behaves identically
+in turn to each of the functions C<replace_at> and C<shiftless_insert_at>
+when given the same arguments, where the C<0> argument does or doesn't,
+respectively, have a mapping whose key is equal to the C<1> argument's C<0>
+attribute.  Other programming languages may name their corresponding
+operators I<Item> or I<set> or I<put> or I<store> or I<update>; it is also
+common to use subscript/postcircumfix syntax plus assignment syntax.
+
+=head2 shiftless_maybe_remove_at .?-
+
+    ::MD::shiftless_maybe_remove_at::"" ::= function virtual
+        --> Accessible <-- (Accessible, Any);
+
+    ::MD::".?-" ::= alias of shiftless_maybe_remove_at;
+
+The virtual function C<shiftless_maybe_remove_at> aka C<.?-> behaves
+identically to C<shiftless_remove_at> when given the same arguments but
+that it simply results in its C<0> argument when that has no mapping whose
+key matches its C<1> argument, rather than fail.  Other programming
+languages may name their corresponding operators I<Remove> or I<remove> or
+I<delete> or I<unset>.
 
 =head1 HOMOGENEOUS DATA TYPES
 
@@ -3917,6 +4012,22 @@ otherwise it results in C<False>.  This function implements the
 C<Accessible> virtual function C<has_any_at> aka C<.?> for the composing
 type C<Positional>.
 
+=head2 mapping_at (Positional)
+
+    ::MD::mapping_at::Positional ::= function
+        --> (Integer, Any) <-- (Positional, Integer)
+        implements 2::""
+        requires (\<0 .? \<1)
+        : ((\<1, \<0.\<1));
+
+The function C<mapping_at::Positional> results in a binary C<Tuple> whose
+C<0> attribute is the function's C<1> argument and whose C<1> attribute is
+the member value of the function's C<0> argument whose index position is
+equal to its C<1> argument.  This function will fail if the C<0> argument
+doesn't have such a member.  This function implements the C<Accessible>
+virtual function C<mapping_at> aka C<.:> for the composing type
+C<Positional>.
+
 =head2 maybe_at (Positional)
 
     ::MD::maybe_at::Positional ::= function
@@ -3929,6 +4040,103 @@ C<0> argument whose index position is equal to its C<1> argument, iff there
 is such a member; otherwise it results in an C<Excuse>.  This function
 implements the C<Accessible> virtual function C<maybe_at> aka C<.!> for the
 composing type C<Positional>.
+
+=head2 replace_at (Positional)
+
+    ::MD::replace_at::Positional ::= function
+        --> Positional <-- (Positional, (Integer, Any))
+        implements 2::""
+        requires (\<0 .? \>>0)
+    : (
+        src ::= \<0;
+        ri ::= \>>0;
+        repl_member ::= \>>1;
+        fi ::= first_index src;
+        li ::= last_index src;
+        emp ::= empty src;
+        <-- (if ri > fi then slice_range::(src, fi, --ri) else emp)
+            insert repl_member
+            catenate (if ri < li then slice_range::(src, ++ri, li) else emp);
+    );
+
+The function C<replace_at::Positional> results in the value of its C<0>
+argument's collection type that has all of the members of the function's
+C<0> argument in the same order but that, for the 1 member of the C<0>
+argument whose index position I<K> is equal to the function's C<1>
+argument's C<0> attribute, the result instead has at index position I<K> a
+member whose value is equal to the C<1> argument's C<1> attribute.  This
+function will fail if the C<0> argument doesn't have a member with the
+index position I<K>.  This function implements the C<Accessible> virtual
+function C<replace_at> aka C<.=> for the composing type C<Positional>.
+
+=head2 shiftless_insert_at (Positional)
+
+    ::MD::shiftless_insert_at::Positional ::= function
+        --> Positional <-- (Positional, (Integer, Any))
+        implements 2::""
+        requires (\>>0 = first_unused_index::(\<0))
+        : (\<0 insert \>>1);
+
+The function C<shiftless_insert_at::Positional> results in the value of its
+C<0> argument's collection type that has all of the members of the
+function's C<0> argument in the same order, plus 1 additional member I<M>
+that is equal to its C<1> argument's C<1> attribute, where the index
+position I<K> in the result of I<M> is equal to the C<1> argument's C<0>
+attribute.  This function will fail if I<K> is not equal to the C<0>
+argument's C<first_unused_index>.  This function implements the
+C<Accessible> virtual function C<shiftless_insert_at> aka C<.+> for the
+composing type C<Positional>.
+
+=head2 shiftless_remove_at (Positional)
+
+    ::MD::shiftless_remove_at::Positional ::= function
+        --> Positional <-- (Positional, Integer)
+        implements 2::""
+        requires (\<1 >= first_possible_index::(\<0)
+            and \<1 = --first_unused_index::(\<0))
+        : (nonlast \<0);
+
+The function C<shiftless_remove_at::Positional> results in the value of its
+C<0> argument's collection type that has all of the members of the
+function's C<0> argument in the same order minus 1 existing element whose
+index position I<K> is equal to its C<1> argument.  This function will fail
+if either the C<0> argument doesn't have any members or if I<K> is not
+equal to the C<0> argument's C<last_index>.  This function implements the
+C<Accessible> virtual function C<shiftless_remove_at> aka C<.->  for the
+composing type C<Positional>.
+
+=head2 replace_or_insert_at (Positional)
+
+    ::MD::replace_or_insert_at::Positional ::= function
+        --> Positional <-- (Positional, (Integer, Any))
+        implements 2::""
+        requires (\<1 >= first_possible_index::(\<0)
+            and \<1 <= first_unused_index::(\<0))
+        : (if \<0 .? \>>0 then \<0 .= \>>0 else \<0 .+ \>>0);
+
+The function C<replace_or_insert_at::Positional> behaves identically in
+turn to each of the functions C<replace_at> and C<shiftless_insert_at> when
+given the same arguments, where the C<0> argument does or doesn't,
+respectively, have a member whose index position is equal to the C<1>
+argument's C<0> attribute.  This function implements the C<Accessible>
+virtual function C<replace_or_insert_at> aka C<.=+> for the composing type
+C<Positional>.
+
+=head2 shiftless_maybe_remove_at (Positional)
+
+    ::MD::shiftless_maybe_remove_at::Positional ::= function
+        --> Positional <-- (Positional, Integer)
+        implements 2::""
+        requires (\<1 >= first_possible_index::(\<0)
+            and \<1 >= --first_unused_index::(\<0))
+        : (if \<1 = --first_unused_index::(\<0) then nonlast \<0 else \<0);
+
+The function C<shiftless_maybe_remove_at::Positional> behaves identically
+to C<shiftless_remove_at> when given the same arguments but that it simply
+results in its C<0> argument when that has no member whose index position
+matches its C<1> argument, rather than fail.  This function implements the
+C<Accessible> virtual function C<shiftless_maybe_remove_at> aka C<.?-> for
+the composing type C<Positional>.
 
 =head2 to_Array ~|
 
@@ -5456,6 +5664,7 @@ I<TODO.>
             Accessible and_provides_its_default}
         requires_implements {...
             ,has_any_at,at
+            ,replace_at,shiftless_insert_at,shiftless_remove_at
             ,...};
 
 The interface contract C<Structural> is infinite.  A C<Structural> value is
@@ -5464,6 +5673,22 @@ is isomorphic to a C<Tuple>, meaning each attribute name has exactly 1
 corresponding attribute asset.  The default value of C<Structural> is the
 C<Tuple> value with zero attributes, C<()>.  C<Structural> is composed by
 C<Tuple>.
+
+=head2 mapping_at (Structural)
+
+    ::MD::mapping_at::Structural ::= function
+        --> (Attr_Name, Any) <-- (Structural, Attr_Name)
+        implements 2::""
+        requires (\<0 .? \<1)
+        : ((\<1, \<0.\<1));
+
+The function C<mapping_at::Structural> results in a binary C<Tuple> whose
+C<0> attribute is the function's C<1> argument and whose C<1> attribute is
+the attribute asset value of the function's C<0> argument whose attribute
+name is equal to its C<1> argument.  This function will fail if the C<0>
+argument doesn't have such an attribute.  This function implements the
+C<Accessible> virtual function C<mapping_at> aka C<.:> for the composing
+type C<Structural>.
 
 =head2 maybe_at (Structural)
 
@@ -5477,6 +5702,35 @@ of its C<0> argument whose attribute name is equal to its C<1> argument,
 iff there is such an attribute; otherwise it results in an C<Excuse>.  This
 function implements the C<Accessible> virtual function C<maybe_at> aka
 C<.!> for the composing type C<Structural>.
+
+=head2 replace_or_insert_at (Structural)
+
+    ::MD::replace_or_insert_at::Structural ::= function
+        --> Structural <-- (Structural, (Attr_Name, Any))
+        implements 2::""
+        : (if \<0 .? \>>0 then \<0 .= \>>0 else \<0 .+ \>>0);
+
+The function C<replace_or_insert_at::Structural> behaves identically in
+turn to each of the functions C<replace_at> and C<shiftless_insert_at> when
+given the same arguments, where the C<0> argument does or doesn't,
+respectively, have an attribute whose attribute name is equal to the C<1>
+argument's C<0> attribute.  This function implements the C<Accessible>
+virtual function C<replace_or_insert_at> aka C<.=+> for the composing type
+C<Structural>.
+
+=head2 shiftless_maybe_remove_at (Structural)
+
+    ::MD::shiftless_maybe_remove_at::Structural ::= function
+        --> Structural <-- (Structural, Attr_Name)
+        implements 2::""
+        : (if \<0 .? \<1 then \<0 .- \<1 else \<0);
+
+The function C<shiftless_maybe_remove_at::Structural> behaves identically
+to C<shiftless_remove_at> when given the same arguments but that it simply
+results in its C<0> argument when that has no attribute whose attribute
+name matches its C<1> argument, rather than fail.  This function implements
+the C<Accessible> virtual function C<shiftless_maybe_remove_at> aka C<.?->
+for the composing type C<Structural>.
 
 =head1 TUPLE DATA TYPES
 
@@ -5613,6 +5867,54 @@ argument whose attribute name is equal to its C<1> argument.  This function
 will fail if the C<0> argument doesn't have such an attribute.  This
 function implements the C<Accessible> virtual function C<at> aka C<.> for
 the composing type C<Tuple>.
+
+=head2 replace_at (Tuple)
+
+    ::MD::replace_at::Tuple ::= function
+        --> Tuple <-- (Tuple, (Attr_Name, Any))
+        implements 2::""
+        requires (\<0 .? \>>0)
+    : (\<*args -->^ FDN__Tuple_replace_at);
+
+The function C<replace_at::Tuple> results in the C<Tuple> value that has
+all of the attributes of the function's C<0> argument but that, for the 1
+attribute of the C<0> argument whose attribute name is equal to the
+function's C<1> argument's C<0> attribute asset, the result's attribute
+instead has an asset equal to the C<1> argument's C<1> attribute asset.
+This function will fail if the C<0> argument doesn't have an attribute with
+that name.  This function implements the C<Accessible> virtual function
+C<replace_at> aka C<.=> for the composing type C<Tuple>.
+
+=head2 shiftless_insert_at (Tuple)
+
+    ::MD::shiftless_insert_at::Tuple ::= function
+        --> Tuple <-- (Tuple, (Attr_Name, Any))
+        implements 2::""
+        requires (not \<0 .? \>>0)
+        : (\<*args -->^ FDN__Tuple_shiftless_insert_at);
+
+The function C<shiftless_insert_at::Tuple> results in the C<Tuple> value
+that has all of the attributes of the function's C<0> argument plus 1
+additional attribute whose name and asset are equal to the function's C<1>
+argument's C<0> and C<1> attribute assets, respectively.  This function
+will fail if the C<0> argument already has an attribute with that name.
+This function implements the C<Accessible> virtual function
+C<shiftless_insert_at> aka C<.+> for the composing type C<Tuple>.
+
+=head2 shiftless_remove_at (Tuple)
+
+    ::MD::shiftless_remove_at::Tuple ::= function
+        --> Tuple <-- (Tuple, Attr_Name)
+        implements 2::""
+        requires (\<0 .? \<1)
+        : (\<*args -->^ FDN__Tuple_shiftless_remove_at);
+
+The function C<shiftless_remove_at::Tuple> results in the C<Tuple> value
+that has all of the attributes of the function's C<0> argument minus 1
+existing attribute whose name is equal to its C<1> argument.  This function
+will fail if the C<0> argument doesn't have such an attribute.  This
+function implements the C<Accessible> virtual function
+C<shiftless_remove_at> aka C<.-> for the composing type C<Tuple>.
 
 =head2 any_attrs
 
