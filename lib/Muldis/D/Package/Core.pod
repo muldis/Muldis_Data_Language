@@ -2016,6 +2016,7 @@ C<Emptyable>.
 
 The function C<is_empty> aka C<∅?> results in C<True> iff its C<0> argument
 has no members, and in C<False> iff it has any members.
+Other programming languages may name their corresponding operators I<empty?>.
 
 =head2 empty ∅
 
@@ -2942,36 +2943,79 @@ respectively for said dimensions.
 =head2 Accessible
 
     ::MD::Accessible ::= interface
-        requires_implements {".?",".",".!"};
+        requires_implements {has_any_at,at,maybe_at};
 
-I<TODO.  For types that support simple accessor-based lookup of single values;
-for one-dimensional collections of pairs that support lookup by one
-pair element of the other pair element, and every pair in the
-collection has a distinct first element.
-Does not have anything to say related to either enumerating elements or
-to slicing a subset elements into a new collection.
-Accessible just provides certain convenient shared names for operators that
-otherwise have distinct names on the composing types.
-Composed by: Positional (Array, String,...), Structural (Tuple), Dictionary, etc.>
+The interface contract C<Accessible> is infinite.  An C<Accessible> value
+is an aggregate of other, I<mapping> values such that each I<mapping> is a
+pair of associated other values, a I<key> and I<asset> respectively, such
+that no 2 I<key> of an C<Accessible> value are the same value.  The primary
+reason for C<Accessible> is to provide an easy consistent and terse
+accessor API for individual components in a collection of key-asset pairs,
+where the pair exists at a slot addressable by its key.  An C<Accessible>
+value is isomorphic to a space in which 0..N slots can exist; possible
+operations include testing if a slot exists, fetching the content of a
+slot, replacing the content of a slot, inserting another slot, removing an
+existing slot.  C<Accessible> does not have anything to say about other
+qualities of its composers, such as on matters of enumerating components or
+slicing a subset of components into a new collection, and so composers
+might have little in common besides sharing certain operator names.
 
-=head2 .?
+If an C<Accessible> value is also C<Positional>, then each of its
+I<key>/I<asset> pairs is actually an I<index>/I<member> pair, and all of
+its keys must be adjacent C<Integer>; therefore, since each C<Accessible>
+operation may only affect 1 slot at a time, it is only valid to insert or
+remove a slot at the C<first_unused_index> or C<last_index> respectively.
+Other composers of C<Accessible> may have their own restrictions on
+inserting or removing slots besides key uniqueness, but typically don't.
 
-    ::MD::".?"::"" ::= function virtual --> Boolean <-- (Accessible, Any);
+The default value of C<Accessible> is the C<Tuple> value with zero
+attributes, C<()>.  C<Accessible> is composed, directly or indirectly, by:
+C<Positional>, C<Array>, C<String>, C<Tuple_Array>, C<Structural>, C<Tuple>.
+I<TODO: Also composed by Dictionary.>
 
-I<TODO.  Check if location exists.>
+Note that this interface contract could have as easily been mamed
+I<Associative>, but it wasn't so that term could be reserved for the
+C<associative> function trait which has a different meaning.
 
-=head2 .
+=head2 has_any_at .?
 
-    ::MD::"."::"" ::= function virtual --> Any <-- (Accessible, Any)
-        requires (\<*args --> \".?"::());
+    ::MD::has_any_at::"" ::= function virtual
+        --> Boolean <-- (Accessible, Any);
 
-I<TODO.  Fetch item at existing location.>
+    ::MD::".?" ::= alias of has_any_at;
 
-=head2 .!
+The virtual function C<has_any_at> aka C<.?> results in C<True> iff its
+C<0> argument has a mapping whose key is equal to its C<1> argument;
+otherwise it results in C<False>.  Other programming languages may name
+their corresponding operators I<ContainsKey> or I<has_key?> or I<key?> or
+I<exists> or I<in> or I<array_key_exists>.
 
-    ::MD::".!"::"" ::= function virtual --> Any <-- (Accessible, Any);
+=head2 at .
 
-I<TODO.  Fetch item at existing location if latter exists or else give an Excuse.>
+    ::MD::at::"" ::= function virtual --> Any <-- (Accessible, Any)
+        requires (\<0 .? \<1);
+
+    ::MD::"." ::= alias of at;
+
+The virtual function C<at> aka C<.> results in the asset value of the
+mapping of its C<0> argument where that mapping's key is equal to its C<1>
+argument.  This function will fail if the C<0> argument doesn't have such a
+mapping.  Other programming languages may name their corresponding
+operators I<ElementAt> or I<fetch>; it is also common to use
+subscript/postcircumfix syntax.
+
+=head2 maybe_at .!
+
+    ::MD::maybe_at::"" ::= function virtual --> Any <-- (Accessible, Any);
+
+    ::MD::".!" ::= alias of maybe_at;
+
+The virtual function C<maybe_at> aka C<.!> results in the asset value of
+the mapping of its C<0> argument where that mapping's key is equal to its
+C<1> argument, iff there is such a mapping; otherwise it results in an
+C<Excuse>.  Other programming languages may name their corresponding
+operators I<ElementAtOrDefault> or I<at> or I<get> or I<fetch>; it is also
+common to use subscript/postcircumfix syntax.
 
 =head1 HOMOGENEOUS DATA TYPES
 
@@ -3091,7 +3135,7 @@ C<False>.
 The function C<has> aka C<∋> results in C<True> iff its C<0> argument has
 at least 1 member whose value is equal to its C<1> argument; otherwise it
 results in C<False>.  Other programming languages may name their
-corresponding operators I<contains>, I<exists>, I<includes>.
+corresponding operators I<contains> or I<exists> or I<includes>.
 
 =head2 not_has ∌
 
@@ -3566,6 +3610,9 @@ The 'args' can be any Tuple that doesn't have a '0' attr.
 The function referenced by 'func' is expected to take a Tuple argument
 whose '0' attr is a member of the collection and whose other attrs match
 those given in 'args'.>
+I<Ruby calls its version "select" (returns list) and a "keep_if" (mutates).>
+
+I<Note: Ruby has a "reject" and a "delete_if" function that is like SQL's delete.>
 
 =head2 filtering
 
@@ -3579,6 +3626,7 @@ I<TODO.>
         --> Unionable <-- (Unionable, Function_Call_But_0);
 
 I<TODO.  The function-call is as per that of 'where'.>
+I<Ruby calls its version "collect".>
 
 =head2 reduce
 
@@ -3706,7 +3754,7 @@ of any type, both C<Orderable> or not.
             ,except,intersect,union,exclusive
             ,nest,unnest,where,map,reduce,...
             ,to_Set,to_Bag,count,order_using
-            ,elem
+            ,at
             ,to_Array
             ,first_possible_index,slice_n,index_succ_all_matches,...};
 
@@ -3855,40 +3903,32 @@ the distinct member values of its C<0> argument.  This function implements
 the C<Discrete> virtual function C<unique_count> for the composing type
 C<Positional>.
 
-=head2 has_index .? (Positional)
+=head2 has_any_at (Positional)
 
-    ::MD::has_index ::= function --> Boolean <-- (Positional, Integer)
+    ::MD::has_any_at::Positional ::= function
+        --> Boolean <-- (Positional, Integer)
+        implements 2::""
         : (\<1 >= first_possible_index::(\<0)
             and \<1 < first_unused_index::(\<0));
 
-    ::MD::".?"::Positional ::= function --> Boolean <-- (Positional, Integer)
+The function C<has_any_at::Positional> results in C<True> iff its C<0>
+argument has a member whose index position is equal to its C<1> argument;
+otherwise it results in C<False>.  This function implements the
+C<Accessible> virtual function C<has_any_at> aka C<.?> for the composing
+type C<Positional>.
+
+=head2 maybe_at (Positional)
+
+    ::MD::maybe_at::Positional ::= function
+        --> Any <-- (Positional, Integer)
         implements 2::""
-        : (\<*args --> \has_index::());
+        : (if \<0 .? \<1 then \<0.\<1 else Excuse::No_Such_Index());
 
-I<TODO.  True if given array index exists.>
-
-=head2 elem . (Positional)
-
-    ::MD::elem::"" ::= function virtual --> Any <-- (Positional, Integer)
-        requires (\<*args --> \has_index::());
-
-    ::MD::"."::Positional ::= function --> Any <-- (Positional, Integer)
-        implements 2::""
-        requires (\<*args --> \has_index::())
-        : (\<*args --> \elem::());
-
-I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
-
-=head2 elem_or_excuse .! (Positional)
-
-    ::MD::elem_or_excuse ::= function --> Any <-- (Positional, Integer)
-        : (\<*args --> \has_index::() ?? \<*args --> \elem::() !! Excuse::No_Such_Index());
-
-    ::MD::".!"::Positional ::= function --> Any <-- (Positional, Integer)
-        implements 2::""
-        : (\<*args --> \elem_or_excuse::());
-
-I<TODO.>
+The function C<maybe_at::Positional> results in the member value of its
+C<0> argument whose index position is equal to its C<1> argument, iff there
+is such a member; otherwise it results in an C<Excuse>.  This function
+implements the C<Accessible> virtual function C<maybe_at> aka C<.!> for the
+composing type C<Positional>.
 
 =head2 to_Array ~|
 
@@ -4439,14 +4479,18 @@ defined by the function given in its C<1> argument.  This function
 implements the C<Discrete> virtual function C<order_using> for the composing
 type C<Array>.
 
-=head2 elem (Array)
+=head2 at (Array)
 
-    ::MD::elem::Array ::= function --> Any <-- (Array, Integer_NN)
+    ::MD::at::Array ::= function --> Any <-- (Array, Integer_NN)
         implements 2::""
-        requires (\<*args --> \has_index::())
-        : (\<*args -->^ FDN__Array_elem);
+        requires (\<0 .? \<1)
+        : (\<*args -->^ FDN__Array_at);
 
-I<TODO.  Note, Ruby calls this "a.at(n)" alternately to a[n].>
+The function C<at::Array> results in the member value of its C<0> argument
+whose index position is equal to its C<1> argument.  This function will
+fail if the C<0> argument doesn't have such a member.  This function
+implements the C<Accessible> virtual function C<at> aka C<.> for the
+composing type C<Array>.
 
 =head2 to_Array (Array)
 
@@ -5411,7 +5455,7 @@ I<TODO.>
         composes {Attributive and_provides_its_default,
             Accessible and_provides_its_default}
         requires_implements {...
-            ,has_attr_name,attr
+            ,has_any_at,at
             ,...};
 
 The interface contract C<Structural> is infinite.  A C<Structural> value is
@@ -5421,38 +5465,18 @@ corresponding attribute asset.  The default value of C<Structural> is the
 C<Tuple> value with zero attributes, C<()>.  C<Structural> is composed by
 C<Tuple>.
 
-=head2 has_attr_name .? (Structural)
+=head2 maybe_at (Structural)
 
-    ::MD::has_attr_name::"" ::= function virtual --> Boolean <-- (Structural, Attr_Name);
-
-    ::MD::".?"::Structural ::= function --> Boolean <-- (Structural, Attr_Name)
+    ::MD::maybe_at::Structural ::= function
+        --> Any <-- (Structural, Attr_Name)
         implements 2::""
-        : (\<*args --> \has_attr_name::());
+        : (if \<0 .? \<1 then \<0.\<1 else Excuse::No_Such_Attr_Name());
 
-I<TODO.>
-
-=head2 attr . (Structural)
-
-    ::MD::attr::"" ::= function virtual --> Any <-- (Structural, Attr_Name)
-        requires (\<*args --> \has_attr_name::());
-
-    ::MD::"."::Structural ::= function --> Any <-- (Structural, Attr_Name)
-        implements 2::""
-        requires (\<*args --> \has_attr_name::())
-        : (\<*args --> \attr::());
-
-I<TODO.>
-
-=head2 attr_or_excuse .! (Structural)
-
-    ::MD::attr_or_excuse ::= function --> Any <-- (Structural, Attr_Name)
-        : (\<*args --> \has_attr_name::() ?? \<*args --> \attr::() !! Excuse::No_Such_Attr_Name());
-
-    ::MD::".!"::Structural ::= function --> Any <-- (Structural, Attr_Name)
-        implements 2::""
-        : (\<*args --> \attr_or_excuse::());
-
-I<TODO.>
+The function C<maybe_at::Structural> results in the attribute asset value
+of its C<0> argument whose attribute name is equal to its C<1> argument,
+iff there is such an attribute; otherwise it results in an C<Excuse>.  This
+function implements the C<Accessible> virtual function C<maybe_at> aka
+C<.!> for the composing type C<Structural>.
 
 =head1 TUPLE DATA TYPES
 
@@ -5564,22 +5588,31 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 has_attr_name (Tuple)
+=head2 has_any_at (Tuple)
 
-    ::MD::has_attr_name::Tuple ::= function --> Boolean <-- (Tuple, Attr_Name)
+    ::MD::has_any_at::Tuple ::= function
+        --> Boolean <-- (Tuple, Attr_Name)
         implements 2::""
-        : (\<*args -->^ FDN__Tuple_has_attr_name);
+        : (\<*args -->^ FDN__Tuple_has_any_at);
 
-I<TODO.>
+The function C<has_any_at::Tuple> results in C<True> iff its C<0> argument
+has an attribute whose attribute name is equal to its C<1> argument;
+otherwise it results in C<False>.  This function implements the
+C<Accessible> virtual function C<has_any_at> aka C<.?> for the composing
+type C<Tuple>.
 
-=head2 attr (Tuple)
+=head2 at (Tuple)
 
-    ::MD::attr::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
+    ::MD::at::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
         implements 2::""
-        requires (\<*args --> \has_attr_name::())
-        : (\<*args -->^ FDN__Tuple_attr);
+        requires (\<0 .? \<1)
+        : (\<*args -->^ FDN__Tuple_at);
 
-I<TODO.>
+The function C<at::Tuple> results in the attribute asset value of its C<0>
+argument whose attribute name is equal to its C<1> argument.  This function
+will fail if the C<0> argument doesn't have such an attribute.  This
+function implements the C<Accessible> virtual function C<at> aka C<.> for
+the composing type C<Tuple>.
 
 =head2 any_attrs
 
