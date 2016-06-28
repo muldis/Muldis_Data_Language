@@ -381,6 +381,16 @@ Also: https://wiki.postgresql.org/wiki/PostgreSQL_derived_databases
 * "PostgreSQL does not provide any infrastructure for capturing sequence changes [but is trying]".
 http://blog.2ndquadrant.com/pglogical-1-1/
 
+* http://www.cybertec.at/2016/06/postgresql-instance-level-encryption/
+A patch for Postgres gives it full-cluster encryption at file block level.
+
+* https://www.commandprompt.com/blog/pgconf_2016_kicking_the_donkey_of_postgresql_replication/
+- Linux kernels 2.6 (EOL) and 3.8+ are best.
+- Don't use Slony except for complicated or obscure setups.
+- If you think you need multi-master you likely don't understand the problem.
+- Replicate from master to 1 slave then to other slaves (implied by Y diagram).
+- Pages of how-tos / checklists for setting up built-in replication features.
+
 * https://6guts.wordpress.com/2016/02/09/a-few-words-on-perl-6-versioning-and-compatibility/
 
 * https://github.com/agentm/project-m36 another TTM project.
@@ -3890,6 +3900,26 @@ search per step 2 applies.
 be invoked using 'search' syntax, but rather use relative (often this is
 automatically generated anyway) so attempts to invoke some embedded thing
 don't accidentally call something farther away due to search paths order.
+
+* Study how MoarVM is implemented, including how it manages memory, as
+informative on how Muldis D implementations can do it.
+
+* https://6guts.wordpress.com/2016/04/15/heap-heap-hooray/
+- Moar uses generational collection, based on objects being allocated in 2
+pools, and assuming that most objects are very short lived.
+- Moar uses memory write barrier.
+- Moar uses a boxed integer cache.
+- Moar can save and restore heap snapshots, useful for debugging.
+- File locks and unlocks should be placed on the same code-path rather
+than be far apart in the code.
+- "And, for all of you out there using Rakudo’s Lock class: first, don’t,
+and second, if you must use it, always prefer the $lock.protect({ ... })
+form over manual lock/unlock method calls."
+
+* https://6guts.wordpress.com/2016/04/21/framing-the-problem/
+- A call frame is also known as an invocation record.
+
+* https://6guts.wordpress.com/2016/04/30/refactoring-and-torture/
 
 * The Muldis D compiler/runtime/etc written in Muldis D (eg, particularly
 to make cross-compiling easier or reduce manual code per language) should

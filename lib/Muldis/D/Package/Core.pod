@@ -2026,9 +2026,9 @@ Other programming languages may name their corresponding operators I<empty?>.
     ::MD::Unicode_Aliases::"∅" ::= alias of empty;
 
 The virtual function C<empty> aka C<∅> results in the value of its C<0>
-argument's collection type that has zero members.  For most such types like
-C<Text> or C<Set>, this is a constant value, but for a C<Relation> or
-C<Tuple_Bag>, there is a distinct result for each distinct I<heading>.
+argument's collection type that has zero members.  For many types like
+C<Text> or C<Set>, this is a constant value, but for types like C<Relation>
+or C<Tuple_Bag>, there is a distinct result for each distinct I<heading>.
 Other programming languages may name their corresponding operators I<clear>.
 
 =head1 STRINGY DATA TYPES
@@ -5495,7 +5495,9 @@ C<Discrete> virtual function C<order_using> for the composing type C<Bag>.
 =head2 Attributive
 
     ::MD::Attributive ::= interface
-        requires_implements {has_any_attrs,degree,on,but,extend,rename,has_attrs,has_just_attrs};
+        requires_implements {has_any_attrs,nullary
+            ,is_unary,only_attr_name,degree,attr_names
+            ,on,but,extend,rename,has_attrs,has_just_attrs};
 
 The interface contract C<Attributive> is infinite.  An C<Attributive> value
 is a I<collective> value such that every one of its component I<attributes>
@@ -5542,31 +5544,80 @@ C<Tuple>, C<Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
 
     ::MD::Excuse::No_Such_Attr_Name ::= constant composes Excuse;
 
-I<TODO.>
+The constant C<Excuse::No_Such_Attr_Name> represents the I<undefined>
+result of attempting to use an attribute named I<N> of C<Attributive> value
+I<V> while assuming incorrectly that I<V> already has an attribute whose
+name is I<N>.
 
-=head2 has_any_attrs ?^
+=head2 has_any_attrs ?@
 
     ::MD::has_any_attrs::"" ::= function virtual --> Boolean <-- (Attributive);
 
-    ::MD::"?^" ::= alias of has_any_attrs;
+    ::MD::"?@" ::= alias of has_any_attrs;
 
-I<TODO.>
+The virtual function C<has_any_attrs> aka C<?@> results in C<True> iff its
+C<0> argument has any attributes, and in C<False> iff it has no attributes.
 
-=head2 is_nullary !?^
+=head2 is_nullary !?@
 
     ::MD::is_nullary ::= function negates has_any_attrs;
 
-    ::MD::"!?^" ::= alias of is_nullary;
+    ::MD::"!?@" ::= alias of is_nullary;
 
-I<TODO.>
+The function C<is_nullary> aka C<!?@> results in C<True> iff its C<0>
+argument has no attributes, and in C<False> iff it has any attributes.
 
-=head2 degree #^
+=head2 nullary
+
+    ::MD::nullary::"" ::= function virtual --> Attributive <-- (Attributive);
+
+The virtual function C<nullary> results in the value of its C<0> argument's
+collection type that has zero attributes.  For C<Structural> types like
+C<Tuple>, this is a constant value, but for types like C<Tuple_Bag>, there
+is a distinct result for each I<cardinality>; for types like C<Relation>
+there are exactly 2 possible result values.
+
+=head2 is_unary
+
+    ::MD::is_unary::"" ::= function virtual --> Boolean <-- (Attributive);
+
+The virtual function C<is_unary> results in C<True> iff its C<0> argument
+has exactly 1 attribute, and C<False> otherwise.
+
+=head2 only_attr_name
+
+    ::MD::only_attr_name::"" ::= function virtual
+        --> Attr_Name <-- (Attributive)
+        requires (is_unary \<0);
+
+The virtual function C<only_attr_name> results in its C<0> argument's only
+attribute's name.  This function will fail if the argument doesn't have
+exactly 1 attribute.
+
+=head2 degree #@
 
     ::MD::degree::"" ::= function virtual --> Integer_NN <-- (Attributive);
 
-    ::MD::"#^" ::= alias of degree;
+    ::MD::"#@" ::= alias of degree;
 
-I<TODO.>
+The virtual function C<degree> aka C<#@> results in the integral count of
+the attributes of its C<0> argument.
+
+=head2 attr_names heading @
+
+    ::MD::attr_names::"" ::= function virtual --> Attr_Names <-- (Attributive);
+
+    ::MD::heading ::= alias of attr_names;
+    ::MD::"@"     ::= alias of attr_names;
+
+The virtual function C<attr_names> aka C<heading> aka C<@> results in the
+relational I<heading> of its C<0> argument, that is its set of distinct
+attribute names.  The form that this takes is a C<Tuple> having just the
+same attribute names where every one of its assets is the value C<True>.
+The purpose of C<attr_names> is to canonicalize C<Attributive> values such
+that their headings can be reasoned about in isolation from their bodies.
+
+I<TODO: Consider making "heading" the canonical name of this function etc.>
 
 =head2 on ^ project
 
@@ -5662,10 +5713,12 @@ I<TODO.>
     ::MD::Structural ::= interface
         composes {Attributive and_provides_its_default,
             Accessible and_provides_its_default}
-        requires_implements {...
+        requires_implements {has_any_attrs,nullary
+            ,is_unary,only_attr_name,degree,attr_names
+            ,on,but,extend,rename,has_attrs,has_just_attrs
             ,has_any_at,at
             ,replace_at,shiftless_insert_at,shiftless_remove_at
-            ,...};
+            ,to_Tuple,only_attr_asset};
 
 The interface contract C<Structural> is infinite.  A C<Structural> value is
 an C<Attributive> value that has exactly 1 member, meaning the value is or
@@ -5732,6 +5785,26 @@ name matches its C<1> argument, rather than fail.  This function implements
 the C<Accessible> virtual function C<shiftless_maybe_remove_at> aka C<.?->
 for the composing type C<Structural>.
 
+=head2 to_Tuple %
+
+    ::MD::to_Tuple::"" ::= function virtual --> Tuple <-- (Structural);
+
+    ::MD::"%" ::= alias of to_Tuple;
+
+The virtual function C<to_Tuple> aka C<%> results in the C<Tuple> value
+that represents the same set of attributes as its C<0> argument.  The
+purpose of C<to_Tuple> is to canonicalize C<Structural> values so they can
+be treated abstractly as sets of attributes with minimal effort.
+
+=head2 only_attr_asset
+
+    ::MD::only_attr_asset::"" ::= function virtual --> Any <-- (Structural)
+        requires (is_unary \<0);
+
+The virtual function C<only_attr_asset> results in its C<0> argument's only
+attribute's asset.  This function will fail if the argument doesn't have
+exactly 1 attribute.
+
 =head1 TUPLE DATA TYPES
 
 =head2 Tuple
@@ -5779,7 +5852,44 @@ C<Tuple> value.
         implements 2::""
         : (\<0 != ());
 
-I<TODO.>
+The function C<has_any_attrs::Tuple> results in C<True> iff its C<0>
+argument has any attributes, and in C<False> iff it has no attributes.
+This function implements the C<Attributive> virtual function
+C<has_any_attrs> aka C<?@> for the composing type C<Tuple>.
+
+=head2 nullary (Tuple)
+
+    ::MD::nullary::Tuple ::= function --> Tuple <-- (Tuple)
+        implements 2::""
+        : (());
+
+The function C<nullary::Tuple> results in the only zero-attribute C<Tuple>
+value.  This function implements the C<Attributive> virtual function
+C<nullary> for the composing type C<Tuple>.
+
+=head2 is_unary (Tuple)
+
+    ::MD::is_unary::Tuple ::= function --> Boolean <-- (Tuple)
+        implements 2::""
+        : (degree::(\<0) = 1);
+
+The function C<is_unary::Tuple> results in C<True> iff its C<0> argument
+has exactly 1 attribute, and C<False> otherwise.  This function implements
+the C<Attributive> virtual function C<is_unary> for the composing type
+C<Tuple>.
+
+=head2 only_attr_name (Tuple)
+
+    ::MD::only_attr_name::Tuple ::= function
+        --> Attr_Name <-- (Tuple)
+        implements 2::""
+        requires (is_unary \<0)
+        : (\<*args -->^ FDN__Tuple_only_attr_name);
+
+The function C<only_attr_name::Tuple> results in its C<0> argument's only
+attribute's name.  This function will fail if the argument doesn't have
+exactly 1 attribute.  This function implements the C<Attributive> virtual
+function C<only_attr_name> for the composing type C<Tuple>.
 
 =head2 degree (Tuple)
 
@@ -5787,7 +5897,21 @@ I<TODO.>
         implements 2::""
         : (\<*args -->^ FDN__Tuple_degree);
 
-I<TODO.>
+The function C<degree::Tuple> results in the integral count of the
+attributes of its C<0> argument.  This function implements the
+C<Attributive> virtual function C<degree> aka C<#@> for the composing type
+C<Tuple>.
+
+=head2 attr_names (Tuple)
+
+    ::MD::attr_names::Tuple ::= function --> Attr_Names <-- (Tuple)
+        implements 2::""
+        : (\<*args -->^ FDN__Tuple_attr_names);
+
+The function C<attr_names> results in the relational I<heading> of its C<0>
+argument, that is its set of distinct attribute names.  This function
+implements the C<Attributive> virtual function C<attr_names> aka C<heading>
+aka C<@> for the composing type C<Tuple>.
 
 =head2 on (Tuple)
 
@@ -5915,6 +6039,28 @@ existing attribute whose name is equal to its C<1> argument.  This function
 will fail if the C<0> argument doesn't have such an attribute.  This
 function implements the C<Accessible> virtual function
 C<shiftless_remove_at> aka C<.-> for the composing type C<Tuple>.
+
+=head2 to_Tuple (Tuple)
+
+    ::MD::to_Tuple::Tuple ::= function --> Tuple <-- (Tuple)
+        implements 2::""
+        : (\<0);
+
+The function C<to_Tuple::Tuple> simply results in its C<0> argument.  This
+function implements the C<Structural> virtual function C<to_Tuple> aka C<%>
+for the composing type C<Tuple>.
+
+=head2 only_attr_asset (Tuple)
+
+    ::MD::only_attr_asset::Tuple ::= function --> Any <-- (Tuple)
+        implements 2::""
+        requires (is_unary \<0)
+        : (\<0 . only_attr_name::(\<0));
+
+The function C<only_attr_asset::Tuple> results in its C<0> argument's only
+attribute's asset.  This function will fail if the argument doesn't have
+exactly 1 attribute.  This function implements the C<Structural> virtual
+function C<only_attr_asset> for the composing type C<Tuple>.
 
 =head2 any_attrs
 
@@ -6282,7 +6428,7 @@ I<TODO.>
 =head2 Source_Code::Package_List
 
     ::MD::Source_Code::Package_List ::= selection of Array
-        where (\<0 all (selection of {Package, Decoration} default Package::()));
+        where (\<0 all (selection of {Package, Decoration}));
 
 I<TODO.>
 
@@ -6298,7 +6444,7 @@ I<TODO.>
         (
             if
                 \<0 ^?= (
-                    identity : (selection of Pkg_Decl_Map where (degree::(\<0) = 1)),
+                    identity : (selection of Pkg_Decl_Map where (is_unary \<0)),
                     foundation : ...,
                     uses : \Pkg_Decl_Map::(),
                     entry : ...,
@@ -6324,6 +6470,31 @@ I<Remember that "floating" can't search inside a binder, can only resolve to a b
 
 I<TODO.>
 
+=head2 Source_Code::Attr_Names
+
+    ::MD::Source_Code::Attr_Names ::= selection of Tuple
+        where (\<0 all_attrs (function : (\<<asset = True)));
+
+    ::MD::Heading ::= alias of Attr_Names;
+
+I<TODO.>
+
+I<TODO: Consider making "Heading" the canonical name of this type etc.>
+
+=head2 Source_Code::Attr_Name
+
+    ::MD::Source_Code::Attr_Name ::= selection of Attr_Names
+        where (is_unary \<0);
+
+I<TODO.>
+
+=head2 Source_Code::Key_Asset_Pair
+
+    ::MD::Source_Code::Key_Asset_Pair ::= selection of Tuple
+        where (\<0 ^?= (key : \Attr_Name::(), asset : True));
+
+I<TODO.>
+
 =head1 SOURCE CODE ANNOTATION DATA TYPES
 
 I<TODO.>
@@ -6333,6 +6504,11 @@ I<TODO.>
     ::MD::Source_Code::Annotation::"" ::= interface;
 
 I<TODO.>
+
+I<Annotations can include what otherwise would be a separate special table
+for higher level DBMS mappers such as Entity Framework or DBIx::Class to
+track their own metadata within a database, such as an easy way to tell if
+the database schema version matches what the application expects.>
 
 =head1 SOURCE CODE DECORATION DATA TYPES
 
@@ -6344,6 +6520,11 @@ that decorations don't necessarily have to be attached to all
 behavioral/annotation nodes they are conceptually adjacent / apply to but
 rather can be in some nearby parent context and refer to behavioral/etc
 nodes by name.>
+
+I<When representing extra info used by eg EF/DBIC, that should be split
+between Annotation and Decoration depending on whether it affects behavior
+in any way / would cause a problem if missing, or if it is purely cosmetic
+and would not cause a problem if missing.>
 
 =head2 Source_Code::Decoration
 
