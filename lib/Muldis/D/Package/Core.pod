@@ -5496,7 +5496,7 @@ C<Discrete> virtual function C<order_using> for the composing type C<Bag>.
 
     ::MD::Attributive ::= interface
         requires_implements {has_any_attrs,nullary
-            ,is_unary,only_attr_name,degree,attr_names
+            ,is_unary,only_attr_name,degree,heading
             ,on,but,extend,rename,has_attrs,has_just_attrs};
 
 The interface contract C<Attributive> is infinite.  An C<Attributive> value
@@ -5603,26 +5603,23 @@ exactly 1 attribute.
 The virtual function C<degree> aka C<#@> results in the integral count of
 the attributes of its C<0> argument.
 
-=head2 attr_names heading @
+=head2 heading @
 
-    ::MD::attr_names::"" ::= function virtual --> Attr_Names <-- (Attributive);
+    ::MD::heading::"" ::= function virtual --> Heading <-- (Attributive);
 
-    ::MD::heading ::= alias of attr_names;
-    ::MD::"@"     ::= alias of attr_names;
+    ::MD::"@" ::= alias of heading;
 
-The virtual function C<attr_names> aka C<heading> aka C<@> results in the
+The virtual function C<heading> aka C<@> results in the
 relational I<heading> of its C<0> argument, that is its set of distinct
 attribute names.  The form that this takes is a C<Tuple> having just the
 same attribute names where every one of its assets is the value C<True>.
-The purpose of C<attr_names> is to canonicalize C<Attributive> values such
+The purpose of C<heading> is to canonicalize C<Attributive> values such
 that their headings can be reasoned about in isolation from their bodies.
-
-I<TODO: Consider making "heading" the canonical name of this function etc.>
 
 =head2 on ^ project
 
     ::MD::on::"" ::= function virtual
-        --> Attributive <-- (Attributive, Attr_Names)
+        --> Attributive <-- (Attributive, Heading)
         requires (...);
 
     ::MD::"^"     ::= alias of on;
@@ -5640,7 +5637,7 @@ I<TODO.>
 =head2 but -^ project_all_but
 
     ::MD::but::"" ::= function virtual
-        --> Attributive <-- (Attributive, Attr_Names)
+        --> Attributive <-- (Attributive, Heading)
         requires (...);
 
     ::MD::"-^"            ::= alias of but;
@@ -5653,7 +5650,7 @@ I<TODO.  Also known as "remove" in some languages.>
 
     ::MD::extend::"" ::= function virtual
         --> Attributive <-- (Attributive, Attributive)
-        requires (\<*args --> \attr_names_disjoint::())
+        requires (\<*args --> \headings_disjoint::())
         is {associative,commutative};
 
     ::MD::"+^" ::= alias of extend;
@@ -5668,7 +5665,7 @@ routine version; they can use join/cross-product for the static version.>
 =head2 rename
 
     ::MD::rename::"" ::= function virtual
-        --> Attributive <-- (Attributive, Attr_Renaming)
+        --> Attributive <-- (Attributive, Renaming)
         requires (...);
 
 I<TODO.>
@@ -5679,9 +5676,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 attr_names_disjoint
+=head2 headings_disjoint
 
-    ::MD::attr_names_disjoint ::= function
+    ::MD::headings_disjoint ::= function
         --> Boolean <-- (Attributive, Attributive)
         is commutative
         : (...);
@@ -5714,7 +5711,7 @@ I<TODO.>
         composes {Attributive and_provides_its_default,
             Accessible and_provides_its_default}
         requires_implements {has_any_attrs,nullary
-            ,is_unary,only_attr_name,degree,attr_names
+            ,is_unary,only_attr_name,degree,heading
             ,on,but,extend,rename,has_attrs,has_just_attrs
             ,has_any_at,at
             ,replace_at,shiftless_insert_at,shiftless_remove_at
@@ -5902,20 +5899,20 @@ attributes of its C<0> argument.  This function implements the
 C<Attributive> virtual function C<degree> aka C<#@> for the composing type
 C<Tuple>.
 
-=head2 attr_names (Tuple)
+=head2 heading (Tuple)
 
-    ::MD::attr_names::Tuple ::= function --> Attr_Names <-- (Tuple)
+    ::MD::heading::Tuple ::= function --> Heading <-- (Tuple)
         implements 2::""
-        : (\<*args -->^ FDN__Tuple_attr_names);
+        : (\<*args -->^ FDN__Tuple_heading);
 
-The function C<attr_names> results in the relational I<heading> of its C<0>
+The function C<heading> results in the relational I<heading> of its C<0>
 argument, that is its set of distinct attribute names.  This function
-implements the C<Attributive> virtual function C<attr_names> aka C<heading>
+implements the C<Attributive> virtual function C<heading>
 aka C<@> for the composing type C<Tuple>.
 
 =head2 on (Tuple)
 
-    ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, Attr_Names)
+    ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, Heading)
         implements 2::""
         requires (...)
         : (\<*args -->^ FDN__Tuple_on);
@@ -5924,7 +5921,7 @@ I<TODO.>
 
 =head2 but (Tuple)
 
-    ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, Attr_Names)
+    ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, Heading)
         implements 2::""
         requires (...)
         : (\<*args -->^ FDN__Tuple_but);
@@ -5935,7 +5932,7 @@ I<TODO.>
 
     ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
         implements 2::""
-        requires (\<*args --> \attr_names_disjoint::())
+        requires (\<*args --> \headings_disjoint::())
         is {associative,commutative} identity (())
         : (\<*args -->^ FDN__Tuple_extend);
 
@@ -5943,7 +5940,7 @@ I<TODO.>
 
 =head2 rename (Tuple)
 
-    ::MD::rename::Tuple ::= function --> Tuple <-- (Tuple, Attr_Renaming)
+    ::MD::rename::Tuple ::= function --> Tuple <-- (Tuple, Renaming)
         implements 2::""
         requires (...)
         : (...);
@@ -6126,7 +6123,7 @@ I<TODO.>
 
         _Asset ::= selection of Tuple where
         (
-            if \<0 ^?= ( heading : \Attr_Names::(), body : \Array::() ) then
+            if \<0 ^?= ( heading : \Heading::(), body : \Array::() ) then
                 if \<<body all \Tuple::() then
                     \<<body all (function : (\"^?="::() \<-- \<<heading))
                 else
@@ -6211,7 +6208,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
 
         _Asset ::= selection of Tuple where
         (
-            if \<0 ^?= ( heading : \Attr_Names::(), body : \Bag::() ) then
+            if \<0 ^?= ( heading : \Heading::(), body : \Bag::() ) then
                 if \<<body all \Tuple::() then
                     \<<body all (function : (\"^?="::() \<-- \<<heading))
                 else
@@ -6454,7 +6451,7 @@ I<TODO.>
                     decoration : ...,
                 )
             then
-                \<<uses attr_names_disjoint \<<identity
+                \<<uses headings_disjoint \<<identity
             else
                 False
         );
@@ -6470,20 +6467,16 @@ I<Remember that "floating" can't search inside a binder, can only resolve to a b
 
 I<TODO.>
 
-=head2 Source_Code::Attr_Names
+=head2 Source_Code::Heading
 
-    ::MD::Source_Code::Attr_Names ::= selection of Tuple
+    ::MD::Source_Code::Heading ::= selection of Tuple
         where (\<0 all_attrs (function : (\<<asset = True)));
-
-    ::MD::Heading ::= alias of Attr_Names;
 
 I<TODO.>
 
-I<TODO: Consider making "Heading" the canonical name of this type etc.>
-
 =head2 Source_Code::Attr_Name
 
-    ::MD::Source_Code::Attr_Name ::= selection of Attr_Names
+    ::MD::Source_Code::Attr_Name ::= selection of Heading
         where (is_unary \<0);
 
 I<TODO.>
