@@ -14,6 +14,83 @@ resources of everyone else.
 
 ----------
 
+* See from the list of 100 or so functions in http://ramdajs.com/0.21.0/docs/
+to provide a checklist or reminder of ones I might want.
+
+* Notes on 20160704:
+- Most Tuple ops are either of 2 kinds:
+    - Predicates that ask about their headings like same/overlap/etc;
+    several of these would be implemented directly by Foundation.
+    - Generally non-commutative ops for projecting, substituting, extending,
+    or combos of those, including projections of left-only,common,right-only etc.
+- There are generally no ops for combining tuples where the anames overlap.
+- Relational ops eg join should generally be built in Muldis D code using similar
+logic to how Set::Relation works; first analyze how headings do or don't
+overlap, then split tuples along the same lines with overlapping vs not and
+then catenating appropriate pieces.
+- Basic ops to help joins etc should be Homo ops both cross-join and
+equi-join etc which generally result in homos of tuples of tuples etc,
+and some of these would be implemented in Foundation, same as nest/un.
+
+* Allow syntactical alternatives for Plain_Text such that one can write it
+in a way that resembles the native form of Muldis D code as much as possible;
+for examples:
+- Allow declaring packages like this:
+    package (
+        identity : ...,
+        uses : ...,
+        materials : (
+            ns1 : (
+                ns2 : (
+                    f1 : (function ...),
+                    p1 : (procedure ...),
+                    s1 : (selection ...),
+                ),
+            ),
+        ),
+    );
+... and so in that case any entities in the same namespace must be declared
+contiguously rather than in arbitrary places as might help documentation.
+- The grammar for the above would provide the 2 options
+"package {...}" or "package (...)" where the latter (...) is a strict subset of
+<Tuple> syntax.
+- Or, the "package" and "materials" can independently be of either format,
+in which case, such a "materials (...)" would be a bit like a function body
+inside wherein "x::y::z ::= foo" is like the named expr format.  THIS BEST.
+- Or, mostly just have the old version but add materials {} wrapper analagous
+to a routine body part of the package, and optionally allow any given namespace
+level to include its constituents like with binder, or have a hybrid where
+one can do the nested or directly addressed while allowing them to overlap.
+- Allow users to write array/set/bag/tuple literals that contain only other
+literals, that is, any time that something would be represented as a
+Value_Expr or whatever its called, the corresponding Plain_Text code would
+not have any sub-expressions that are function calls or named expression
+references etc.  Analagously, it is like stitching Perl strings where a
+string interpolation feature isn't used, so any runs of collection elements
+that are just literals are represented as a collection-typed Value_Expr
+which is then args to functions to combine sub-collections with ones derived
+from function calls or whatever.
+- Use of the "foundational" indicator would force these more like the real
+code alternatives to be used.
+
+* Don't be afraid for the Source_Code types, eg the expr node options, to
+be more comprehensive or overlap on purpose with Foundation routines, for
+example that certain basic Tuple operations would be canonically be expressed
+in code with their own expr node type rather than a call-fdn-func node;
+nevertheless, Foundation funcs for such things would still exist even if
+chicken and egg means they can't all actually be used in some code, but
+they can still be used by implementation routines.
+
+* How to bootstrap Tuples:
+- In Plain_Text, don't need any new syntax or keywords, we just use the
+generic (...) selector syntax, so () will make a nullary Tuple, (x:y) or
+(x,y) etc to make the other basics.  From there everything in Plain_Text is
+just defined in terms of Foundation func/const calls.
+- Foundation does provide functions for mapping String to Attr_Name and
+for selecting a unary tuple etc with a name from a String etc, but generally
+this is only used by the parser etc.
+- Extracting Tuple names or assets can just be done by calling Foundation funcs.
+
 * Don't use terminology like "multiple-assignment" assuming that TTM has a
 specific meaning about it involving the resolution of targets that might
 overlap behind the scenes; what Muldis D actually has can be more aptly
@@ -357,6 +434,18 @@ integers scheme, but the maturity is indicated separately:
         4
       ]
     }, 'version' );
+
+* The RPerl (Restricted Perl) project looks interesting, it compiles a
+subset of low-magic Perl 5 to C++/etc for a 7-fold or hundred-fold performance
+improvement.
+- http://rperl.org/faq.html
+- "Perl 11 is the philosophy that Perl should be made modular ("pluggable")
+on the 3 primary levels of source code lexer/parser, compiler/AST, and
+runtime/interpreter/VM. Perl 11 is not an actual version number Perl
+release like Perl 4, Perl 5, and Perl 6. One of the goals of Perl 11 is to
+work toward unification of Perl 5 and Perl 6, thus 5 + 6 = 11. There are
+multiple independent projects under the Perl 11 umbrella, one of which is RPerl."
+- http://perl11.org
 
 * https://en.wikipedia.org/wiki/Primitive_recursive_function
 
@@ -3702,8 +3791,10 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    Also special syntax "resolved expr" will
                   |    produce identity from all kinds of Identifier expr eg "resolved \$foo"
                   |    and $lit is shorthand for "resolved \$lit" eg $Bag short for "resolved \$Bag".
-                  |    - Reference is proper subtype has all "identity" values.
                   |    Note that any consecutive double-quoted tokens are treated as 1 token.
+                  |    OBSOLETE: A Reference is no longer a subtype of Identifier,
+                  |    rather it contains one, see further below.
+                  |    - Reference is proper subtype has all "identity" values.
     OBSOLETE; EXTERNAL HAS NO VALUE LITERAL SYNTAX IN Plain_Text.
     External      | \~external~'...' - the "..." are implementation-dependent
                   |    but typically is source code of some kind for
@@ -3791,7 +3882,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
     SPECIAL SYNTAX FOR THIS LIKELY ALSO NO PURPOSE, COULD USE SOME PREFIX OP WITH A SET OF BINARY TUPLES
     Dictionary  | \{expr:expr,...} or something
 
-    Attr_Renaming     | \@:(lit<-lit,...) or \@:(<-lit,...) or \@:(lit<-,...)
+    Renaming          | \@:(lit<-lit,...) or \@:(<-lit,...) or \@:(lit<-,...)
                       |   If one lit is absent, means implicit positional/numeric name.
                       |   Arrow also allowed to point the other way.
 
@@ -4336,6 +4427,86 @@ some other type, typically an expression node set.
     Due to these, exactly zero of all system-defined constants or functions
     have "..." bodies, other than to mean TODO.
 - ...
+
+* NEW FOR 20160628...
+- Any entity allowed to contain referrals to possibly-non-lexical things
+can introspect its own source code by way of a number of special
+context-specific constants etc.
+- The expr node \<*source yields a Source_Context Tuple with info on the
+host entity as it is known at declaration/interp/compilation time; it has
+the following attrs, many of which are optional:
+    MINIMUM SUBSET TO GET EVERYTHING:
+    - expr_name - an Attr_Name
+        - The expression node name E previously mentioned, if there is one.
+    - stmt_name - an Attr_Name
+        - The statement node name S for the prior, if there is one.
+    - trait_name - an Attr_Name
+        - Which trait the trait_code T is from.
+    - nested_material_code - a Material (eg Function)
+        - The entire anonymous innermost material containing the \<*source
+        iff it is a lambda; whereas, if \<*source is contained directly in
+        the only/outermost material, then there is no nested_material_code.
+        - No \@foo can refer to this because they must always be expandable
+        to names, which this doesn't have.
+    - material_name - an Attr_Name
+        - The unqualified externally-visible name of M,
+        that would be its "private" name inside its containing binder.
+        - This is what \@0 refers to.
+    - binder_path - an "absolute" Identifier, isomorphic to an Array of Attr_Name
+        - The fully-qualified "public" name for B within its package.
+        - This is what \@1 refers to.
+        - The first element of the path is the package-local alias of the
+        package containing the \<*source, per the definition of an "absolute"
+        identifier, until that changes.
+    - package_code - a Package
+        - The entire package containing the \<*source.  See its "identity"
+        attribute to identity-qualify any contained entities.
+    REDUNDANCY THAT COULD BE DONE IN FUNCTIONS:
+    - expr_code - an Expr_Node
+        - The entire anonymous expression node tree E the \<*source is a leaf
+        of, starting at its most distant ancestor.  Said ancestor typically
+        is the asset for some attr name of a Tuple that defines all the
+        named expression nodes in a routine/etc, or otherwise it may be an
+        argument for a procedure call.
+    - stmt_code - a Stmt_Node
+        - The entire anonymous statement tree S the \<*source is in etc.
+    - trait_code - ?
+        - The set of named expression nodes and/or statement nodes
+        comprising the innermost material trait T containing the \<*source;
+        it could be any of these things: constant "value", function
+        "requires" or "intends" or "via", selection "where" or "default",
+        procedure "requires" or "intends" or "performs"; this could
+        potentially be another trait such as "from" perhaps.
+    - material_code - a Material (eg Function)
+        - The entire only or outermost material M containing the \<*source.
+    - binder_code - a Binder (or Folder?)
+        - The entire binder B containing the \<*source.
+    - material_path - an "absolute" Identifier
+        - The fully-qualified "private" name for M within its package
+        (combines binder_path and material_name).
+- The expr node \<*inner produces a Reference to the innermost material
+containing it; it is analagous to \0::() but that its referent will be a
+Material rather than an Identifier if \<*inner is inside a lambda.  This
+can instead be done longhand using \<*source if one wants to.
+- A Reference value has these attributes:
+    - referent - either an Identifier or a Material or a Package
+        - The thing that should be invoked/called.
+        - If this is a Package, then its "entry" is what we invoke.
+        - If this is a Material, it must be a Function or Procedure or
+        Constant or Selection; it can't be an Interface or an Alias.
+    - referrer - a Tuple with attributes drawn from a Source_Context
+        - The thing that requested the invocation/call to occur; use this
+        to put a context on "referent" so eg paths can be resolved.
+        - Defaults to \<*source in many situations.
+        - ACTUALLY, these are the attrs referrer should have, all the time:
+            - package_identity
+            - binder_path
+            - material_name
+    - args - a Tuple
+        - Arguments to pass to referent when invoking it, if applicable.
+- A Function_Call is sort of a Reference alias, it uses args.  Also,
+Function_Call_* are further subtypes of that.
+- A Contract_Name is sort of a Reference alias, it doesn't use args.
 
 * NEW FOR 20160527...
 - Unified syntax in general expression context for invoking or referencing
