@@ -3223,7 +3223,7 @@ C<False>.
 =head2 has ∋
 
     ::MD::has ::= function --> Boolean <-- (Homogeneous, Any)
-        (has_n::(\<0, \<1, 1));
+        : (has_n::(\<0, \<1, 1));
 
     ::MD::Unicode_Aliases::"∋" ::= alias of has;
 
@@ -5616,6 +5616,83 @@ same attribute names where every one of its assets is the value C<True>.
 The purpose of C<heading> is to canonicalize C<Attributive> values such
 that their headings can be reasoned about in isolation from their bodies.
 
+=head2 subheading_of
+
+    ::MD::subheading_of ::= function
+        --> Boolean <-- (Attributive, Attributive)
+        : ((@\<0, @\<1) -->^ FDN__Tuple_subheading_of);
+
+The function C<subheading_of> results in C<True> iff the heading of its
+C<0> argument is a subset of the heading of its C<1> argument; otherwise it
+results in C<False>.
+
+=head2 superheading_of
+
+    ::MD::superheading_of ::= function commutes subheading_of;
+
+The function C<superheading_of> results in C<True> iff the heading of its
+C<0> argument is a superset of the heading of its C<1> argument; otherwise
+it results in C<False>.
+
+=head2 same_heading =@
+
+    ::MD::same_heading ::= function
+        --> Boolean <-- (Attributive, Attributive)
+        is commutative
+        : (@\<0 = @\<1);
+
+    ::MD::"=@" ::= alias of same_heading;
+
+The function C<same_heading> results in C<True> iff the heading of its C<0>
+argument is the same as the heading of its C<1> argument; otherwise it
+results in C<False>.
+
+=head2 proper_subheading_or_superheading
+
+    ::MD::proper_subheading_or_superheading ::= function
+        --> Boolean <-- (Attributive, Attributive)
+        is commutative
+        : (@\<0 != @\<1 and \<*args --> \subheading_or_superheading::());
+
+The function C<proper_subheading_or_superheading> results in C<True> iff
+the heading of one of its 2 arguments C<0> and C<1> is a proper subset of
+the heading of its other argument; otherwise it results in C<False>.
+
+=head2 subheading_or_superheading
+
+    ::MD::subheading_or_superheading ::= function
+        --> Boolean <-- (Attributive, Attributive)
+        is commutative
+        : (\<*args --> \subheading_of::() or \<*args --> \superheading_of::());
+
+The function C<subheading_or_superheading> results in C<True> iff the
+heading of one of its 2 arguments C<0> and C<1> is a subset of the heading
+of its other argument; otherwise it results in C<False>.
+
+=head2 overlaps_heading
+
+    ::MD::overlaps_heading ::= function
+        --> Boolean <-- (Attributive, Attributive)
+        is commutative
+        : ((@\<0, @\<1) -->^ FDN__Tuple_overlaps_heading);
+
+The function C<overlaps_heading> results in C<True> iff, given I<X> as the
+heading of its argument C<0> and I<Y> as the heading of its argument C<1>,
+there exists at least 1 attribute name that both I<X> and I<Y> have, and
+there also exists at least 1 other attribute name each of I<X> and I<Y>
+that the other doesn't have; otherwise it results in C<False>.
+
+=head2 disjoint_heading
+
+    ::MD::disjoint_heading ::= function
+        --> Boolean <-- (Attributive, Attributive)
+        is commutative
+        : ((@\<0, @\<1) -->^ FDN__Tuple_disjoint_heading);
+
+The function C<disjoint_heading> results in C<True> iff the heading of its
+C<0> argument has no attribute names in common with the heading of its C<1>
+argument; otherwise it results in C<False>.
+
 =head2 on ^ project
 
     ::MD::on::"" ::= function virtual
@@ -5650,7 +5727,7 @@ I<TODO.  Also known as "remove" in some languages.>
 
     ::MD::extend::"" ::= function virtual
         --> Attributive <-- (Attributive, Attributive)
-        requires (\<*args --> \headings_disjoint::())
+        requires (\<*args --> \disjoint_heading::())
         is {associative,commutative};
 
     ::MD::"+^" ::= alias of extend;
@@ -5673,15 +5750,6 @@ I<TODO.>
 =head2 renaming
 
     ::MD::renaming ::= function commutes rename;
-
-I<TODO.>
-
-=head2 headings_disjoint
-
-    ::MD::headings_disjoint ::= function
-        --> Boolean <-- (Attributive, Attributive)
-        is commutative
-        : (...);
 
 I<TODO.>
 
@@ -5932,7 +6000,7 @@ I<TODO.>
 
     ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
         implements 2::""
-        requires (\<*args --> \headings_disjoint::())
+        requires (\<*args --> \disjoint_heading::())
         is {associative,commutative} identity (())
         : (\<*args -->^ FDN__Tuple_extend);
 
@@ -5954,6 +6022,7 @@ I<TODO.>
         : (...);
 
 I<TODO.>
+I<TODO.  Like, we should be able to implement these in pure Muldis D simply.>
 
 =head2 has_just_attrs (Tuple)
 
@@ -6451,7 +6520,7 @@ I<TODO.>
                     decoration : ...,
                 )
             then
-                \<<uses headings_disjoint \<<identity
+                \<<uses disjoint_heading \<<identity
             else
                 False
         );
@@ -6474,6 +6543,10 @@ I<TODO.>
 
 I<TODO.>
 
+I<TODO.  For the likes of all_attrs etc consider making \<0 a unary tuple
+instead whereupon keywords analagous to name/asset are used, if we had such
+a thing for opening tuples as for creating them.>
+
 =head2 Source_Code::Attr_Name
 
     ::MD::Source_Code::Attr_Name ::= selection of Heading
@@ -6484,7 +6557,7 @@ I<TODO.>
 =head2 Source_Code::Key_Asset_Pair
 
     ::MD::Source_Code::Key_Asset_Pair ::= selection of Tuple
-        where (\<0 ^?= (key : \Attr_Name::(), asset : True));
+        where (@\<0 = \@(key,asset));
 
 I<TODO.>
 
