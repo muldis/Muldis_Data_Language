@@ -5496,7 +5496,7 @@ C<Discrete> virtual function C<order_using> for the composing type C<Bag>.
 
     ::MD::Attributive ::= interface
         requires_implements {has_any_attrs,nullary
-            ,is_unary,only_attr_name,degree,heading
+            ,is_unary,degree,heading
             ,on,but,extend,rename,has_attrs,has_just_attrs};
 
 The interface contract C<Attributive> is infinite.  An C<Attributive> value
@@ -5583,16 +5583,6 @@ there are exactly 2 possible result values.
 
 The virtual function C<is_unary> results in C<True> iff its C<0> argument
 has exactly 1 attribute, and C<False> otherwise.
-
-=head2 only_attr_name
-
-    ::MD::only_attr_name::"" ::= function virtual
-        --> Attr_Name <-- (Attributive)
-        requires (is_unary \<0);
-
-The virtual function C<only_attr_name> results in its C<0> argument's only
-attribute's name.  This function will fail if the argument doesn't have
-exactly 1 attribute.
 
 =head2 degree #@
 
@@ -5779,11 +5769,11 @@ I<TODO.>
         composes {Attributive and_provides_its_default,
             Accessible and_provides_its_default}
         requires_implements {has_any_attrs,nullary
-            ,is_unary,only_attr_name,degree,heading
+            ,is_unary,degree,heading
             ,on,but,extend,rename,has_attrs,has_just_attrs
             ,has_any_at,at
             ,replace_at,shiftless_insert_at,shiftless_remove_at
-            ,to_Tuple,only_attr_asset};
+            ,to_Tuple};
 
 The interface contract C<Structural> is infinite.  A C<Structural> value is
 an C<Attributive> value that has exactly 1 member, meaning the value is or
@@ -5861,15 +5851,6 @@ that represents the same set of attributes as its C<0> argument.  The
 purpose of C<to_Tuple> is to canonicalize C<Structural> values so they can
 be treated abstractly as sets of attributes with minimal effort.
 
-=head2 only_attr_asset
-
-    ::MD::only_attr_asset::"" ::= function virtual --> Any <-- (Structural)
-        requires (is_unary \<0);
-
-The virtual function C<only_attr_asset> results in its C<0> argument's only
-attribute's asset.  This function will fail if the argument doesn't have
-exactly 1 attribute.
-
 =head1 TUPLE DATA TYPES
 
 =head2 Tuple
@@ -5942,19 +5923,6 @@ The function C<is_unary::Tuple> results in C<True> iff its C<0> argument
 has exactly 1 attribute, and C<False> otherwise.  This function implements
 the C<Attributive> virtual function C<is_unary> for the composing type
 C<Tuple>.
-
-=head2 only_attr_name (Tuple)
-
-    ::MD::only_attr_name::Tuple ::= function
-        --> Attr_Name <-- (Tuple)
-        implements 2::""
-        requires (is_unary \<0)
-        : (\<*args -->^ FDN__Tuple_only_attr_name);
-
-The function C<only_attr_name::Tuple> results in its C<0> argument's only
-attribute's name.  This function will fail if the argument doesn't have
-exactly 1 attribute.  This function implements the C<Attributive> virtual
-function C<only_attr_name> for the composing type C<Tuple>.
 
 =head2 degree (Tuple)
 
@@ -6115,18 +6083,6 @@ C<shiftless_remove_at> aka C<.-> for the composing type C<Tuple>.
 The function C<to_Tuple::Tuple> simply results in its C<0> argument.  This
 function implements the C<Structural> virtual function C<to_Tuple> aka C<%>
 for the composing type C<Tuple>.
-
-=head2 only_attr_asset (Tuple)
-
-    ::MD::only_attr_asset::Tuple ::= function --> Any <-- (Tuple)
-        implements 2::""
-        requires (is_unary \<0)
-        : (\<0 . only_attr_name::(\<0));
-
-The function C<only_attr_asset::Tuple> results in its C<0> argument's only
-attribute's asset.  This function will fail if the argument doesn't have
-exactly 1 attribute.  This function implements the C<Structural> virtual
-function C<only_attr_asset> for the composing type C<Tuple>.
 
 =head2 any_attrs
 
