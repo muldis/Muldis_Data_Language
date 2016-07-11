@@ -2943,7 +2943,7 @@ respectively for said dimensions.
 =head2 Accessible
 
     ::MD::Accessible ::= interface
-        requires_implements {has_any_at
+        requires_implements {has_any_at,has_mapping_at
             ,mapping_at,at,maybe_at
             ,replace_at,shiftless_insert_at,shiftless_remove_at
             ,replace_or_insert_at,shiftless_maybe_remove_at};
@@ -2993,6 +2993,18 @@ otherwise it results in C<False>.  Other programming languages may name
 their corresponding operators I<ContainsKey> or I<has_key?> or I<key?> or
 I<exists> or I<in> or I<array_key_exists>.
 
+=head2 has_mapping_at .:?
+
+    ::MD::has_mapping_at::"" ::= function virtual
+        --> Boolean <-- (Accessible, (Any, Any));
+
+    ::MD::".:?" ::= alias of has_mapping_at;
+
+The virtual function C<has_mapping_at> aka C<.:?> results in C<True> iff
+its C<0> argument has a mapping that is equal to its C<1> argument;
+otherwise it results in C<False>.  The C<1> argument is a binary C<Tuple>
+whose C<0> and C<1> attributes are the mapping key and asset respectively.
+
 =head2 mapping_at .:
 
     ::MD::mapping_at::"" ::= function virtual
@@ -3005,7 +3017,7 @@ The virtual function C<mapping_at> aka C<.:> results in a binary C<Tuple>
 whose C<0> attribute is the function's C<1> argument and whose C<1>
 attribute is the asset value of the mapping of its C<0> argument where that
 mapping's key is equal to its C<1> argument.  Other programming languages
-may name their corresponding operators I<assoc>
+may name their corresponding operators I<assoc>.
 
 =head2 at .
 
@@ -4011,6 +4023,20 @@ argument has a member whose index position is equal to its C<1> argument;
 otherwise it results in C<False>.  This function implements the
 C<Accessible> virtual function C<has_any_at> aka C<.?> for the composing
 type C<Positional>.
+
+=head2 has_mapping_at (Positional)
+
+    ::MD::has_mapping_at::Positional ::= function
+        --> Boolean <-- (Positional, (Integer, Any))
+        implements 2::""
+        : (if \<0 .? \>>0 then \<0.\>>0 = \>>1 else False);
+
+The function C<has_mapping_at::Positional> results in C<True> iff its C<0>
+argument has a member that is equal to its C<1> argument's C<1> attribute,
+where the index position of that member is equal to the C<1> argument's
+C<0> attribute; otherwise it results in C<False>.  This function implements
+the C<Accessible> virtual function C<has_mapping_at> aka C<.:?> for the
+composing type C<Positional>.
 
 =head2 mapping_at (Positional)
 
@@ -5616,13 +5642,19 @@ The function C<subheading_of> results in C<True> iff the heading of its
 C<0> argument is a subset of the heading of its C<1> argument; otherwise it
 results in C<False>.
 
-=head2 superheading_of
+=head2 superheading_of has_subheading @?
 
     ::MD::superheading_of ::= function commutes subheading_of;
 
-The function C<superheading_of> results in C<True> iff the heading of its
-C<0> argument is a superset of the heading of its C<1> argument; otherwise
-it results in C<False>.
+    ::MD::has_subheading ::= alias of superheading_of;
+    ::MD::"@?"           ::= alias of superheading_of;
+
+The function C<superheading_of> aka C<has_subheading> aka C<@?> results in
+C<True> iff the heading of its C<0> argument is a superset of the heading
+of its C<1> argument; otherwise it results in C<False>.  Note that using
+this function with a C<Heading> as its C<1> argument is the idiomatic way
+to test if an C<Attributive> has all of a specific set of attribute names;
+whereas the C<.?> function is idiomatic for testing for exactly 1 name.
 
 =head2 same_heading =@
 
@@ -5633,9 +5665,9 @@ it results in C<False>.
 
     ::MD::"=@" ::= alias of same_heading;
 
-The function C<same_heading> results in C<True> iff the heading of its C<0>
-argument is the same as the heading of its C<1> argument; otherwise it
-results in C<False>.
+The function C<same_heading> aka C<=@> results in C<True> iff the heading
+of its C<0> argument is the same as the heading of its C<1> argument;
+otherwise it results in C<False>.
 
 =head2 proper_subheading_or_superheading
 
@@ -5781,6 +5813,19 @@ is isomorphic to a C<Tuple>, meaning each attribute name has exactly 1
 corresponding attribute asset.  The default value of C<Structural> is the
 C<Tuple> value with zero attributes, C<()>.  C<Structural> is composed by
 C<Tuple>.
+
+=head2 has_mapping_at (Structural)
+
+    ::MD::has_mapping_at::Structural ::= function
+        --> Boolean <-- (Structural, (Attr_Name, Any))
+        implements 2::""
+        : (if \<0 .? \>>0 then \<0.\>>0 = \>>1 else False);
+
+The function C<has_mapping_at::Structural> results in C<True> iff its C<0>
+argument has an attribute whose name and asset are equal to the function's
+C<1> argument's C<0> and C<1> attribute assets, respectively; otherwise it
+results in C<False>.  This function implements the C<Accessible> virtual
+function C<has_mapping_at> aka C<.:?> for the composing type C<Structural>.
 
 =head2 mapping_at (Structural)
 
