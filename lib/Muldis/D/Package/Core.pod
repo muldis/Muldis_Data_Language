@@ -5632,29 +5632,34 @@ same attribute names where every one of its assets is the value C<True>.
 The purpose of C<heading> is to canonicalize C<Attributive> values such
 that their headings can be reasoned about in isolation from their bodies.
 
-=head2 subheading_of
+=head2 subheading_of ⊆@
 
     ::MD::subheading_of ::= function
         --> Boolean <-- (Attributive, Attributive)
         : ((@\<0, @\<1) -->^ FDN__Tuple_subheading_of);
 
-The function C<subheading_of> results in C<True> iff the heading of its
-C<0> argument is a subset of the heading of its C<1> argument; otherwise it
-results in C<False>.
+    ::MD::Unicode_Aliases::"⊆@" ::= alias of subheading_of;
 
-=head2 superheading_of has_subheading @?
+The function C<subheading_of> aka C<⊆@> results in C<True> iff the heading
+of its C<0> argument is a subset of the heading of its C<1> argument;
+otherwise it results in C<False>.
+
+=head2 superheading_of has_subheading @? ⊇@
 
     ::MD::superheading_of ::= function commutes subheading_of;
 
     ::MD::has_subheading ::= alias of superheading_of;
     ::MD::"@?"           ::= alias of superheading_of;
 
-The function C<superheading_of> aka C<has_subheading> aka C<@?> results in
-C<True> iff the heading of its C<0> argument is a superset of the heading
-of its C<1> argument; otherwise it results in C<False>.  Note that using
-this function with a C<Heading> as its C<1> argument is the idiomatic way
-to test if an C<Attributive> has all of a specific set of attribute names;
-whereas the C<.?> function is idiomatic for testing for exactly 1 name.
+    ::MD::Unicode_Aliases::"⊇@" ::= alias of superheading_of;
+
+The function C<superheading_of> aka C<has_subheading> aka C<@?> aka C<⊇@>
+results in C<True> iff the heading of its C<0> argument is a superset of
+the heading of its C<1> argument; otherwise it results in C<False>.  Note
+that using this function with a C<Heading> as its C<1> argument is the
+idiomatic way to test if an C<Attributive> has all of a specific set of
+attribute names; whereas the C<.?> function is idiomatic for testing for
+exactly 1 name.
 
 =head2 same_heading =@
 
@@ -5714,6 +5719,67 @@ that the other doesn't have; otherwise it results in C<False>.
 The function C<disjoint_heading> results in C<True> iff the heading of its
 C<0> argument has no attribute names in common with the heading of its C<1>
 argument; otherwise it results in C<False>.
+
+=head2 except_heading ∖@
+
+    ::MD::except_heading ::= function
+        --> Heading <-- (Attributive, Attributive)
+        : ((@\<0, @\<1) -->^ FDN__Tuple_except_heading);
+
+    ::MD::Unicode_Aliases::"∖@" ::= alias of except_heading;
+
+The function C<except_heading> aka C<∖@> results in the I<set difference>
+between the I<headings> of its 2 arguments C<0> (I<minuend>) and C<1>
+(I<subtrahend>).  The result is the C<Heading> value that just has every
+attribute name that exists in the heading of the function's C<0> argument
+but not in the heading of its C<1> argument.
+
+=head2 intersect_heading ∩@
+
+    ::MD::intersect_heading ::= function
+        --> Heading <-- (Attributive, Attributive)
+        is {associative,commutative,idempotent}
+        : ((@\<0, @\<1) -->^ FDN__Tuple_intersect_heading);
+
+    ::MD::Unicode_Aliases::"∩@" ::= alias of intersect_heading;
+
+The function C<intersect_heading> aka C<∩@> results in the I<set
+intersection> of the I<headings> of its 2 arguments C<0> and C<1>.  The
+result is the C<Heading> value that just has every attribute name that
+exists in both of the headings of the function's C<0> and C<1> arguments.
+This operation conceptually has an identity value of a C<Heading> with an
+infinite number of attribute names.
+
+=head2 union_heading ∪@
+
+    ::MD::union_heading ::= function
+        --> Heading <-- (Attributive, Attributive)
+        is {associative,commutative,idempotent} identity (())
+        : ((@\<0, @\<1) -->^ FDN__Tuple_union_heading);
+
+    ::MD::Unicode_Aliases::"∪@" ::= alias of union_heading;
+
+The function C<union_heading> aka C<∪@> results in the I<set union> of the
+I<headings> of its 2 arguments C<0> and C<1>.  The result is the C<Heading>
+value that just has every attribute name that exists in either or both of
+the headings of the function's C<0> and C<1> arguments.
+
+=head2 exclusive_heading symm_diff_heading ∆@
+
+    ::MD::exclusive ::= function
+        --> Heading <-- (Attributive, Attributive)
+        is {associative,commutative} identity (())
+        : ((@\<0, @\<1) -->^ FDN__Tuple_exclusive_heading);
+
+    ::MD::symm_diff_heading ::= alias of exclusive_heading;
+
+    ::MD::Unicode_Aliases::"∆@" ::= alias of exclusive_heading;
+
+The function C<exclusive_heading> aka C<symm_diff_heading> aka C<∆@>
+results in the I<set symmetric difference> of the I<headings> of its 2
+arguments C<0> and C<1>.  The result is the C<Heading> value that just has
+every attribute name that exists in the heading of exactly one of the
+function's C<0> or C<1> arguments.
 
 =head2 on ^ project
 
