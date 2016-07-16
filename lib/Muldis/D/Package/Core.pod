@@ -5525,8 +5525,7 @@ C<Discrete> virtual function C<order_using> for the composing type C<Bag>.
     ::MD::Attributive ::= interface
         requires_implements {has_any_attrs,nullary
             ,is_unary,degree,heading,rename
-            ,can_project_matching,on,maybe_on
-            ,update,extend,but,update_or_extend,maybe_but
+            ,can_project_matching,on,update,extend
             ,has_attrs,has_just_attrs};
 
 The interface contract C<Attributive> is infinite.  An C<Attributive> value
@@ -5870,12 +5869,12 @@ when given the same arguments in swapped positions.
 
 =head2 maybe_on %!
 
-    ::MD::maybe_on::"" ::= function virtual
-        --> Attributive <-- (Attributive, Heading);
+    ::MD::maybe_on ::= function --> Attributive <-- (Attributive, Heading)
+        : (\<0 on (\<0 intersect_heading \<1));
 
     ::MD::"%!" ::= alias of maybe_on;
 
-The virtual function C<maybe_on> aka C<%!> behaves identically to C<on>
+The function C<maybe_on> aka C<%!> behaves identically to C<on>
 when given the same arguments but that it simply ignores the existence of
 attributes of its C<1> argument whose names don't match attributes of its
 C<0> argument rather than failing.
@@ -5939,14 +5938,14 @@ The Structural version is commutative and associative, but not Attributive in ge
 
 =head2 but project_all_but %-
 
-    ::MD::but::"" ::= function virtual
-        --> Attributive <-- (Attributive, Heading)
-        requires (\<0 @? \<1);
+    ::MD::but ::= function --> Attributive <-- (Attributive, Heading)
+        requires (\<0 @? \<1)
+        : (\<0 on (\<0 except_heading \<1));
 
     ::MD::project_all_but ::= alias of but;
     ::MD::"%-"            ::= alias of but;
 
-The virtual function C<but> aka C<project_all_but> aka C<%-> results in the
+The function C<but> aka C<project_all_but> aka C<%-> results in the
 I<relational projection> of its C<0> argument in terms of its C<1>
 argument.  The result is a value of the function's C<0> argument's
 collection type that has all of the attributes of the function's C<0>
@@ -5965,12 +5964,13 @@ operators I<remove>.
 
 =head2 update_or_extend %=+
 
-    ::MD::update_or_extend::"" ::= function virtual
-        --> Attributive <-- (Attributive, Structural);
+    ::MD::update_or_extend ::= function
+        --> Attributive <-- (Attributive, Structural)
+        : (\<0 on (\<0 except_heading \<1) extend \<1);
 
     ::MD::"%=+" ::= alias of update_or_extend;
 
-The virtual function C<update_or_extend> aka C<%=+> is a hybrid of the 2
+The function C<update_or_extend> aka C<%=+> is a hybrid of the 2
 functions C<update> and C<extend>.  The result is a value of the function's
 C<0> argument's collection type that has attribute assets substituted with
 those from the function's C<1> argument where the attribute names match,
@@ -5979,12 +5979,12 @@ latter's names don't match.
 
 =head2 maybe_but %?-
 
-    ::MD::maybe_but::"" ::= function virtual
-        --> Attributive <-- (Attributive, Heading);
+    ::MD::maybe_but ::= function --> Attributive <-- (Attributive, Heading)
+        : (\<0 but (\<0 intersect_heading \<1));
 
     ::MD::"%?-" ::= alias of maybe_but;
 
-The virtual function C<maybe_but> aka C<%?-> behaves identically to C<but>
+The function C<maybe_but> aka C<%?-> behaves identically to C<but>
 when given the same arguments but that it simply ignores the existence of
 attributes of its C<1> argument whose names don't match attributes of its
 C<0> argument rather than failing.
@@ -6012,7 +6012,7 @@ I<TODO.>
             Accessible and_provides_its_default}
         requires_implements {has_any_attrs,nullary
             ,is_unary,degree,heading,rename
-            ,on,extend,but,has_attrs,has_just_attrs
+            ,on,extend,has_attrs,has_just_attrs
             ,has_any_at,at
             ,replace_at,shiftless_insert_at,shiftless_remove_at
             ,to_Tuple};
@@ -6238,15 +6238,6 @@ I<TODO.>
         requires (\<*args --> \disjoint_heading::())
         is {associative,commutative} identity (())
         : (\<*args -->^ FDN__Tuple_extend);
-
-I<TODO.>
-
-=head2 but (Tuple)
-
-    ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, Heading)
-        implements 2::""
-        requires (...)
-        : (\<*args -->^ FDN__Tuple_but);
 
 I<TODO.>
 
