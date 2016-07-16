@@ -6014,8 +6014,7 @@ I<TODO.>
             ,is_unary,degree,heading,rename
             ,on,update,extend
             ,has_attrs,has_just_attrs
-            ,has_any_at,at
-            ,replace_at,shiftless_insert_at,shiftless_remove_at
+            ,at
             ,to_Tuple};
 
 The interface contract C<Structural> is infinite.  A C<Structural> value is
@@ -6040,6 +6039,19 @@ definition, the identity C<can_project_matching(update(a,s),s) = True> aka
 C<a %:= s %=? s = True> should hold for all valid C<a> and C<s>.  This
 function implements the C<Attributive> virtual function
 C<can_project_matching> aka C<%=?> for the composing type C<Structural>.
+
+=head2 has_any_at (Structure)
+
+    ::MD::has_any_at::Structure ::= function
+        --> Boolean <-- (Structure, Attr_Name)
+        implements 2::""
+        : (\<0 @? \<1);
+
+The function C<has_any_at::Structure> results in C<True> iff its C<0>
+argument has an attribute whose attribute name is equal to its C<1>
+argument; otherwise it results in C<False>.  This function implements the
+C<Accessible> virtual function C<has_any_at> aka C<.?> for the composing
+type C<Structure>.
 
 =head2 has_mapping_at (Structural)
 
@@ -6083,12 +6095,63 @@ iff there is such an attribute; otherwise it results in an C<Excuse>.  This
 function implements the C<Accessible> virtual function C<maybe_at> aka
 C<.!> for the composing type C<Structural>.
 
+=head2 replace_at (Structure)
+
+    ::MD::replace_at::Structure ::= function
+        --> Structure <-- (Structure, (Attr_Name, Any))
+        implements 2::""
+        requires (\<0 .? \>>0)
+    : (\<0 update \<1 --> \D1::());
+
+The function C<replace_at::Structure> results in the value of its C<0>
+argument's collection type that has all of the attributes of the function's
+C<0> argument but that, for the 1 attribute of the C<0> argument whose
+attribute name is equal to the function's C<1> argument's C<0> attribute
+asset, the result's attribute instead has an asset equal to the C<1>
+argument's C<1> attribute asset.  This function will fail if the C<0>
+argument doesn't have an attribute with that name.  This function
+implements the C<Accessible> virtual function C<replace_at> aka C<.:=> for
+the composing type C<Structure>.
+
+=head2 shiftless_insert_at (Structure)
+
+    ::MD::shiftless_insert_at::Structure ::= function
+        --> Structure <-- (Structure, (Attr_Name, Any))
+        implements 2::""
+        requires (not \<0 .? \>>0)
+        : (\<0 extend \<1 --> \D1::());
+
+The function C<shiftless_insert_at::Structure> results in the value of its
+C<0> argument's collection type that has all of the attributes of the
+function's C<0> argument plus 1 additional attribute whose name and asset
+are equal to the function's C<1> argument's C<0> and C<1> attribute assets,
+respectively.  This function will fail if the C<0> argument already has an
+attribute with that name.  This function implements the C<Accessible>
+virtual function C<shiftless_insert_at> aka C<.+> for the composing type
+C<Structure>.
+
+=head2 shiftless_remove_at (Structure)
+
+    ::MD::shiftless_remove_at::Structure ::= function
+        --> Structure <-- (Structure, Attr_Name)
+        implements 2::""
+        requires (\<0 .? \<1)
+        : (\<0 but \<1);
+
+The function C<shiftless_remove_at::Structure> results in the value of its
+C<0> argument's collection type that has all of the attributes of the
+function's C<0> argument minus 1 existing attribute whose name is equal to
+its C<1> argument.  This function will fail if the C<0> argument doesn't
+have such an attribute.  This function implements the C<Accessible> virtual
+function C<shiftless_remove_at> aka C<.-> for the composing type
+C<Structure>.
+
 =head2 replace_or_insert_at (Structural)
 
     ::MD::replace_or_insert_at::Structural ::= function
         --> Structural <-- (Structural, (Attr_Name, Any))
         implements 2::""
-        : (if \<0 .? \>>0 then \<0 .:= \>>0 else \<0 .+ \>>0);
+        : (\<0 update_or_extend \<1 --> \D1::());
 
 The function C<replace_or_insert_at::Structural> behaves identically in
 turn to each of the functions C<replace_at> and C<shiftless_insert_at> when
@@ -6103,7 +6166,7 @@ C<Structural>.
     ::MD::shiftless_maybe_remove_at::Structural ::= function
         --> Structural <-- (Structural, Attr_Name)
         implements 2::""
-        : (if \<0 .? \<1 then \<0 .- \<1 else \<0);
+        : (\<0 maybe_but \<1);
 
 The function C<shiftless_maybe_remove_at::Structural> behaves identically
 to C<shiftless_remove_at> when given the same arguments but that it simply
@@ -6163,6 +6226,25 @@ I<Stash> or I<record> or I<struct> or I<row> or I<DataRow> or I<Hash>.
 
 The constant C<Tuple_D0> aka C<D0> represents the only zero-attribute
 C<Tuple> value.
+
+=head2 Tuple_D1
+
+    ::MD::Tuple_D1 ::= selection of Tuple
+        where (is_unary \<0)
+        default ((False));
+
+The selection contract C<Tuple_D1> represents the infinite type consisting
+just of the C<Tuple> values having exactly 1 attribute.  Its default value
+has just the attribute with the name C<0> and asset value of C<False>.
+
+=head2 D1
+
+    ::MD::D1 ::= function --> Tuple_D1 <-- (Attr_Name, Any)
+        : (\<*args -->^ FDN__Tuple_D1_select);
+
+The function C<D1> results in the C<Tuple_D1> value whose sole attribute's
+name is is specified in its C<0> argument and that attribute's value is
+specified in its C<1> argument.
 
 =head2 has_any_attrs (Tuple)
 
@@ -6308,19 +6390,6 @@ I<TODO.  Like, we should be able to implement these in pure Muldis D simply.>
 
 I<TODO.>
 
-=head2 has_any_at (Tuple)
-
-    ::MD::has_any_at::Tuple ::= function
-        --> Boolean <-- (Tuple, Attr_Name)
-        implements 2::""
-        : (\<*args -->^ FDN__Tuple_has_any_at);
-
-The function C<has_any_at::Tuple> results in C<True> iff its C<0> argument
-has an attribute whose attribute name is equal to its C<1> argument;
-otherwise it results in C<False>.  This function implements the
-C<Accessible> virtual function C<has_any_at> aka C<.?> for the composing
-type C<Tuple>.
-
 =head2 at (Tuple)
 
     ::MD::at::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
@@ -6333,54 +6402,6 @@ argument whose attribute name is equal to its C<1> argument.  This function
 will fail if the C<0> argument doesn't have such an attribute.  This
 function implements the C<Accessible> virtual function C<at> aka C<.> for
 the composing type C<Tuple>.
-
-=head2 replace_at (Tuple)
-
-    ::MD::replace_at::Tuple ::= function
-        --> Tuple <-- (Tuple, (Attr_Name, Any))
-        implements 2::""
-        requires (\<0 .? \>>0)
-    : (\<*args -->^ FDN__Tuple_replace_at);
-
-The function C<replace_at::Tuple> results in the C<Tuple> value that has
-all of the attributes of the function's C<0> argument but that, for the 1
-attribute of the C<0> argument whose attribute name is equal to the
-function's C<1> argument's C<0> attribute asset, the result's attribute
-instead has an asset equal to the C<1> argument's C<1> attribute asset.
-This function will fail if the C<0> argument doesn't have an attribute with
-that name.  This function implements the C<Accessible> virtual function
-C<replace_at> aka C<.:=> for the composing type C<Tuple>.
-
-=head2 shiftless_insert_at (Tuple)
-
-    ::MD::shiftless_insert_at::Tuple ::= function
-        --> Tuple <-- (Tuple, (Attr_Name, Any))
-        implements 2::""
-        requires (not \<0 .? \>>0)
-        : (\<*args -->^ FDN__Tuple_shiftless_insert_at);
-
-The function C<shiftless_insert_at::Tuple> results in the C<Tuple> value
-that has all of the attributes of the function's C<0> argument plus 1
-additional attribute whose name and asset are equal to the function's C<1>
-argument's C<0> and C<1> attribute assets, respectively.  This function
-will fail if the C<0> argument already has an attribute with that name.
-This function implements the C<Accessible> virtual function
-C<shiftless_insert_at> aka C<.+> for the composing type C<Tuple>.
-
-=head2 shiftless_remove_at (Tuple)
-
-    ::MD::shiftless_remove_at::Tuple ::= function
-        --> Tuple <-- (Tuple, Attr_Name)
-        implements 2::""
-        requires (\<0 .? \<1)
-        : (\<*args -->^ FDN__Tuple_shiftless_remove_at);
-
-The function C<shiftless_remove_at::Tuple> results in the C<Tuple> value
-that has all of the attributes of the function's C<0> argument minus 1
-existing attribute whose name is equal to its C<1> argument.  This function
-will fail if the C<0> argument doesn't have such an attribute.  This
-function implements the C<Accessible> virtual function
-C<shiftless_remove_at> aka C<.-> for the composing type C<Tuple>.
 
 =head2 to_Tuple (Tuple)
 
