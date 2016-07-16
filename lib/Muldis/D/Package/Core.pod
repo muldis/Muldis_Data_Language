@@ -5524,8 +5524,8 @@ C<Discrete> virtual function C<order_using> for the composing type C<Bag>.
 
     ::MD::Attributive ::= interface
         requires_implements {has_any_attrs,nullary
-            ,is_unary,degree,heading
-            ,on,but,extend,rename,has_attrs,has_just_attrs};
+            ,is_unary,degree,heading,rename
+            ,on,extend,but,has_attrs,has_just_attrs};
 
 The interface contract C<Attributive> is infinite.  An C<Attributive> value
 is a I<collective> value such that every one of its component I<attributes>
@@ -5783,6 +5783,22 @@ arguments C<0> and C<1>.  The result is the C<Heading> value that just has
 every attribute name that exists in the heading of exactly one of the
 function's C<0> or C<1> arguments.
 
+=head2 rename ρ
+
+    ::MD::rename::"" ::= function virtual
+        --> Attributive <-- (Attributive, Renaming)
+        requires (...);
+
+    ::MD::Unicode_Aliases::"ρ" ::= alias of rename;
+
+I<TODO.>
+
+=head2 renaming
+
+    ::MD::renaming ::= function commutes rename;
+
+I<TODO.>
+
 =head2 on ^ project π
 
     ::MD::on::"" ::= function virtual
@@ -5803,18 +5819,6 @@ I<TODO.  Also known as "over" in some languages.>
 
 I<TODO.>
 
-=head2 but -^ project_all_but
-
-    ::MD::but::"" ::= function virtual
-        --> Attributive <-- (Attributive, Heading)
-        requires (...);
-
-    ::MD::"-^"            ::= alias of but;
-    ::MD::project_all_but ::= alias of but;
-
-I<TODO.  Also, this is analogous to set difference.>
-I<TODO.  Also known as "remove" in some languages.>
-
 =head2 extend +^
 
     ::MD::extend::"" ::= function virtual
@@ -5831,21 +5835,17 @@ use the above version plus an eg-tuple selector. In the case of relation
 extend, one can do the aforementioned within a 'map' routine, for the
 routine version; they can use join/cross-product for the static version.>
 
-=head2 rename ρ
+=head2 but -^ project_all_but
 
-    ::MD::rename::"" ::= function virtual
-        --> Attributive <-- (Attributive, Renaming)
+    ::MD::but::"" ::= function virtual
+        --> Attributive <-- (Attributive, Heading)
         requires (...);
 
-    ::MD::Unicode_Aliases::"ρ" ::= alias of rename;
+    ::MD::"-^"            ::= alias of but;
+    ::MD::project_all_but ::= alias of but;
 
-I<TODO.>
-
-=head2 renaming
-
-    ::MD::renaming ::= function commutes rename;
-
-I<TODO.>
+I<TODO.  Also, this is analogous to set difference.>
+I<TODO.  Also known as "remove" in some languages.>
 
 =head2 has_attrs
 
@@ -5869,8 +5869,8 @@ I<TODO.>
         composes {Attributive and_provides_its_default,
             Accessible and_provides_its_default}
         requires_implements {has_any_attrs,nullary
-            ,is_unary,degree,heading
-            ,on,but,extend,rename,has_attrs,has_just_attrs
+            ,is_unary,degree,heading,rename
+            ,on,extend,but,has_attrs,has_just_attrs
             ,has_any_at,at
             ,replace_at,shiftless_insert_at,shiftless_remove_at
             ,to_Tuple};
@@ -6059,21 +6059,21 @@ argument, that is its set of distinct attribute names.  This function
 implements the C<Attributive> virtual function C<heading>
 aka C<@> for the composing type C<Tuple>.
 
+=head2 rename (Tuple)
+
+    ::MD::rename::Tuple ::= function --> Tuple <-- (Tuple, Renaming)
+        implements 2::""
+        requires (...)
+        : (...);
+
+I<TODO.>
+
 =head2 on (Tuple)
 
     ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, Heading)
         implements 2::""
         requires (...)
         : (\<*args -->^ FDN__Tuple_on);
-
-I<TODO.>
-
-=head2 but (Tuple)
-
-    ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, Heading)
-        implements 2::""
-        requires (...)
-        : (\<*args -->^ FDN__Tuple_but);
 
 I<TODO.>
 
@@ -6087,12 +6087,12 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 rename (Tuple)
+=head2 but (Tuple)
 
-    ::MD::rename::Tuple ::= function --> Tuple <-- (Tuple, Renaming)
+    ::MD::but::Tuple ::= function --> Tuple <-- (Tuple, Heading)
         implements 2::""
         requires (...)
-        : (...);
+        : (\<*args -->^ FDN__Tuple_but);
 
 I<TODO.>
 
