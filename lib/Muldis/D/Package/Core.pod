@@ -5525,7 +5525,9 @@ C<Discrete> virtual function C<order_using> for the composing type C<Bag>.
     ::MD::Attributive ::= interface
         requires_implements {has_any_attrs,nullary
             ,is_unary,degree,heading,rename
-            ,on,extend,but,has_attrs,has_just_attrs};
+            ,can_project_matching,on,maybe_on
+            ,update,extend,but,update_or_extend,maybe_but
+            ,has_attrs,has_just_attrs};
 
 The interface contract C<Attributive> is infinite.  An C<Attributive> value
 is a I<collective> value such that every one of its component I<attributes>
@@ -5817,6 +5819,20 @@ is fully defined, for additional useful language for describing "rename".>
 The function C<renaming> behaves identically to the function C<rename> when
 given the same arguments in swapped positions.
 
+=head2 can_project_matching %=?
+
+    ::MD::can_project_matching::"" ::= function virtual
+        --> Boolean <-- (Attributive, Structural);
+
+    ::MD::"%=?" ::= alias of can_project_matching;
+
+The virtual function C<can_project_matching> aka C<%=?> results in C<True>
+iff the heading of its C<0> argument is a superset of the heading of its
+C<1> argument and every commonly-named attribute of the two arguments also
+has the same attribute asset; otherwise it results in C<False>.  Note that
+by definition, the identity C<can_project_matching(update(a,s),s) = True>
+aka C<a %:= s %=? s = True> should hold for all valid C<a> and C<s>.
+
 =head2 on project %= π
 
     ::MD::on::"" ::= function virtual
@@ -5828,14 +5844,68 @@ given the same arguments in swapped positions.
 
     ::MD::Unicode_Aliases::"π" ::= alias of on;
 
-I<TODO.  Also, this is analogous to set intersect.>
-I<TODO.  Also known as "over" in some languages.>
+The virtual function C<on> aka C<project> aka C<%=> aka C<π> results in the
+I<relational projection> of its C<0> argument in terms of its C<1>
+argument.  The result is a value of the function's C<0> argument's
+collection type that has all of the attributes of the function's C<0>
+argument whose names match the names of attributes of its C<1> argument.
+The I<degree> of the result is equal to the degree of the C<1> argument,
+and the I<cardinality> of the result is either equal to or less than the
+cardinality of the C<0> argument; a lesser cardinality would be the result
+of duplicate result member elimination for a I<setty> type.  For every
+member tuple or isomorphism I<X> in the C<0> argument, the result has a
+member tuple or isomorphism I<Y> that is equal to the result of projecting
+I<X> on all of the attribute names of the C<1> argument.  This function
+will fail if the I<heading> of the C<1> argument is not a subset of the
+I<heading> of the C<0> argument.  Other programming languages may name
+their corresponding operators I<over> or I<select>; it is also common to
+use subscript/postcircumfix syntax.
 
 =head2 from
 
     ::MD::from ::= function commutes on;
 
-I<TODO.>
+The function C<from> behaves identically to the function C<on>
+when given the same arguments in swapped positions.
+
+=head2 maybe_on %!
+
+    ::MD::maybe_on::"" ::= function virtual
+        --> Attributive <-- (Attributive, Heading);
+
+    ::MD::"%!" ::= alias of maybe_on;
+
+The virtual function C<maybe_on> aka C<%!> behaves identically to C<on>
+when given the same arguments but that it simply ignores the existence of
+attributes of its C<1> argument whose names don't match attributes of its
+C<0> argument rather than failing.
+
+=head2 update %:=
+
+    ::MD::update::"" ::= function virtual
+        --> Attributive <-- (Attributive, Structural)
+        requires (\<0 @? \<1);
+
+    ::MD::"%:=" ::= alias of update;
+
+The virtual function C<update> aka C<%:=> results in the value of its C<0>
+argument's collection type that has all of the attributes of the function's
+C<0> argument but that, for each attribute of the C<0> argument whose
+attribute name I<K> matches the name of an attribute of its C<1> argument,
+the result takes its corresponding attribute from the C<1> argument rather
+than from the C<0> argument.  The I<degree> of the result is equal to the
+degree of the C<0> argument, and the I<cardinality> of the result is either
+equal to or less than the cardinality of the C<0> argument; a lesser
+cardinality would be the result of duplicate result member elimination for
+a I<setty> type.  For every member tuple or isomorphism I<X> in the C<0>
+argument, the result has a member tuple or isomorphism I<Y> that is equal
+to I<X> but that, for each attribute name I<K> of I<X>, the asset of the
+attribute named I<K> of I<Y> is equal to the asset of the attribute named
+I<K> of the C<1> argument rather than its value from I<X>.  This function
+will fail if the I<heading> of the C<1> argument is not a subset of the
+I<heading> of the C<0> argument.  Other programming languages may name
+their corresponding operators I<update ... set>; it is also common to use
+subscript/postcircumfix syntax plus assignment syntax.
 
 =head2 extend %+
 
@@ -5845,12 +5915,27 @@ I<TODO.>
 
     ::MD::"%+" ::= alias of extend;
 
-I<TODO.  Also, this is analogous to set union (disjoint).>
+The virtual function C<extend> aka C<%+> results in the I<relational
+extension> of its C<0> argument in terms of its C<1> argument.  The result
+is a value of the function's C<0> argument's collection type that has all
+of the attributes of the function's C<0> argument plus all of the
+attributes of its C<1> argument.  The I<degree> of the result is equal to
+the integral sum of the degrees of the 2 arguments, and the I<cardinality>
+of the result is equal to the cardinality of the C<0> argument.  There is a
+bijection between the C<0> argument and the result with respect to their
+I<members>; for every tuple or isomorphism I<X> in the C<0> argument, the
+result has a tuple or isomorphism I<Y> that is equal to the result of
+extending I<X> with all of the attributes (names and assets) of the C<1>
+argument.  This function will fail if the I<headings> of the 2 arguments
+are not disjoint.  Other programming languages may name their corresponding
+operators I<join>.
 
-I<Note: There is no version of 'extend' that takes a routine; one can just
+I<TODO.  There is no version of 'extend' that takes a routine; one can just
 use the above version plus an eg-tuple selector. In the case of relation
 extend, one can do the aforementioned within a 'map' routine, for the
-routine version; they can use join/cross-product for the static version.>
+routine version; they can use join/cross-product for the static version.
+Also, this is analogous to set union (disjoint).
+The Structural version is commutative and associative, but not Attributive in general.>
 
 =head2 but project_all_but %-
 
@@ -5861,8 +5946,48 @@ routine version; they can use join/cross-product for the static version.>
     ::MD::project_all_but ::= alias of but;
     ::MD::"%-"            ::= alias of but;
 
-I<TODO.  Also, this is analogous to set difference.>
-I<TODO.  Also known as "remove" in some languages.>
+The virtual function C<but> aka C<project_all_but> aka C<%-> results in the
+I<relational projection> of its C<0> argument in terms of its C<1>
+argument.  The result is a value of the function's C<0> argument's
+collection type that has all of the attributes of the function's C<0>
+argument whose names do not match the names of attributes of its C<1>
+argument.  The I<degree> of the result is equal to the integral difference
+of the degrees of the 2 arguments, and the I<cardinality> of the result is
+either equal to or less than the cardinality of the C<0> argument; a lesser
+cardinality would be the result of duplicate result member elimination for
+a I<setty> type.  For every member tuple or isomorphism I<X> in the C<0>
+argument, the result has a member tuple or isomorphism I<Y> that is equal
+to the result of projecting I<X> on all of its attribute names except for
+those in common with the C<1> argument.  This function will fail if the
+I<heading> of the C<1> argument is not a subset of the I<heading> of the
+C<0> argument.  Other programming languages may name their corresponding
+operators I<remove>.
+
+=head2 update_or_extend %=+
+
+    ::MD::update_or_extend::"" ::= function virtual
+        --> Attributive <-- (Attributive, Structural);
+
+    ::MD::"%=+" ::= alias of update_or_extend;
+
+The virtual function C<update_or_extend> aka C<%=+> is a hybrid of the 2
+functions C<update> and C<extend>.  The result is a value of the function's
+C<0> argument's collection type that has attribute assets substituted with
+those from the function's C<1> argument where the attribute names match,
+and the result has new attributes added from the C<1> argument where the
+latter's names don't match.
+
+=head2 maybe_but %?-
+
+    ::MD::maybe_but::"" ::= function virtual
+        --> Attributive <-- (Attributive, Heading);
+
+    ::MD::"%?-" ::= alias of maybe_but;
+
+The virtual function C<maybe_but> aka C<%?-> behaves identically to C<but>
+when given the same arguments but that it simply ignores the existence of
+attributes of its C<1> argument whose names don't match attributes of its
+C<0> argument rather than failing.
 
 =head2 has_attrs
 
