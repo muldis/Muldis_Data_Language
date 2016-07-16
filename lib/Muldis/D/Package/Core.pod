@@ -6012,7 +6012,8 @@ I<TODO.>
             Accessible and_provides_its_default}
         requires_implements {has_any_attrs,nullary
             ,is_unary,degree,heading,rename
-            ,on,extend,has_attrs,has_just_attrs
+            ,on,update,extend
+            ,has_attrs,has_just_attrs
             ,has_any_at,at
             ,replace_at,shiftless_insert_at,shiftless_remove_at
             ,to_Tuple};
@@ -6023,6 +6024,22 @@ is isomorphic to a C<Tuple>, meaning each attribute name has exactly 1
 corresponding attribute asset.  The default value of C<Structural> is the
 C<Tuple> value with zero attributes, C<()>.  C<Structural> is composed by
 C<Tuple>.
+
+=head2 can_project_matching (Structural)
+
+    ::MD::can_project_matching::Structural ::= function
+        --> Boolean <-- (Structural, Structural)
+        implements 2::""
+        : (if \<0 @? \<1 then \<0 %= @\<1 = \<1 else False);
+
+The function C<can_project_matching::Structural> results in C<True> iff the
+heading of its C<0> argument is a superset of the heading of its C<1>
+argument and every commonly-named attribute of the two arguments also has
+the same attribute asset; otherwise it results in C<False>.  Note that by
+definition, the identity C<can_project_matching(update(a,s),s) = True> aka
+C<a %:= s %=? s = True> should hold for all valid C<a> and C<s>.  This
+function implements the C<Attributive> virtual function
+C<can_project_matching> aka C<%=?> for the composing type C<Structural>.
 
 =head2 has_mapping_at (Structural)
 
@@ -6226,20 +6243,53 @@ C<rename> aka C<@:=> aka C<ρ> for the composing type C<Tuple>.
 
     ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, Heading)
         implements 2::""
-        requires (...)
+        requires (\<0 @? \<1)
         : (\<*args -->^ FDN__Tuple_on);
 
-I<TODO.>
+The function C<on::Tuple> results in the I<relational projection> of its
+C<0> argument in terms of its C<1> argument.  The result is a C<Tuple>
+value that has all of the attributes of the function's C<0> argument whose
+names match the names of attributes of its C<1> argument. The I<degree> of
+the result is equal to the degree of the C<1> argument.  This function will
+fail if the I<heading> of the C<1> argument is not a subset of the
+I<heading> of the C<0> argument.  This function implements the
+C<Attributive> virtual function C<on> aka C<project> aka C<%=> aka C<π> for
+the composing type C<Tuple>.
+
+=head2 update (Tuple)
+
+    ::MD::update::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
+        implements 2::""
+        requires (\<0 @? \<1)
+        : (\<*args -->^ FDN__Tuple_update);
+
+The function C<update::Tuple> results in a C<Tuple> value that has all of
+the attributes of the function's C<0> argument but that, for each attribute
+of the C<0> argument whose attribute name I<K> matches the name of an
+attribute of its C<1> argument, the result takes its corresponding
+attribute from the C<1> argument rather than from the C<0> argument.  The
+I<degree> of the result is equal to the degree of the C<0> argument.  This
+function will fail if the I<heading> of the C<1> argument is not a subset
+of the I<heading> of the C<0> argument.  This function implements the
+C<Attributive> virtual function C<update> aka C<%:=> for the composing type
+C<Tuple>.
 
 =head2 extend (Tuple)
 
     ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
         implements 2::""
-        requires (\<*args --> \disjoint_heading::())
+        requires (\<0 disjoint_heading \<1)
         is {associative,commutative} identity (())
         : (\<*args -->^ FDN__Tuple_extend);
 
-I<TODO.>
+The function C<extend::Tuple> results in the I<relational extension> of its
+C<0> argument in terms of its C<1> argument.  The result is a C<Tuple>
+value that has all of the attributes of the function's C<0> argument plus
+all of the attributes of its C<1> argument.  The I<degree> of the result is
+equal to the integral sum of the degrees of the 2 arguments.  This function
+will fail if the I<headings> of the 2 arguments are not disjoint.  This
+function implements the C<Attributive> virtual function C<extend> aka C<%+>
+for the composing type C<Tuple>.
 
 =head2 has_attrs (Tuple)
 
