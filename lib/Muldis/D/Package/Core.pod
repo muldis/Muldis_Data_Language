@@ -3046,15 +3046,15 @@ C<Excuse>.  Other programming languages may name their corresponding
 operators I<ElementAtOrDefault> or I<at> or I<get> or I<fetch>; it is also
 common to use subscript/postcircumfix syntax.
 
-=head2 replace_at .=
+=head2 replace_at .:=
 
     ::MD::replace_at::"" ::= function virtual
         --> Accessible <-- (Accessible, (Any, Any))
         requires (\<0 .? \>>0);
 
-    ::MD::".=" ::= alias of replace_at;
+    ::MD::".:=" ::= alias of replace_at;
 
-The virtual function C<replace_at> aka C<.=> results in the value of its
+The virtual function C<replace_at> aka C<.:=> results in the value of its
 C<0> argument's collection type that has all of the mappings of the
 function's C<0> argument but that, for the 1 mapping of the C<0> argument
 whose key I<K> is equal to the function's C<1> argument's C<0> attribute,
@@ -4095,7 +4095,7 @@ argument's C<0> attribute, the result instead has at index position I<K> a
 member whose value is equal to the C<1> argument's C<1> attribute.  This
 function will fail if the C<0> argument doesn't have a member with the
 index position I<K>.  This function implements the C<Accessible> virtual
-function C<replace_at> aka C<.=> for the composing type C<Positional>.
+function C<replace_at> aka C<.:=> for the composing type C<Positional>.
 
 =head2 shiftless_insert_at (Positional)
 
@@ -4140,7 +4140,7 @@ composing type C<Positional>.
         implements 2::""
         requires (\<1 >= first_possible_index::(\<0)
             and \<1 <= first_unused_index::(\<0))
-        : (if \<0 .? \>>0 then \<0 .= \>>0 else \<0 .+ \>>0);
+        : (if \<0 .? \>>0 then \<0 .:= \>>0 else \<0 .+ \>>0);
 
 The function C<replace_or_insert_at::Positional> behaves identically in
 turn to each of the functions C<replace_at> and C<shiftless_insert_at> when
@@ -5783,30 +5783,48 @@ arguments C<0> and C<1>.  The result is the C<Heading> value that just has
 every attribute name that exists in the heading of exactly one of the
 function's C<0> or C<1> arguments.
 
-=head2 rename ρ
+=head2 rename @:= ρ
 
     ::MD::rename::"" ::= function virtual
         --> Attributive <-- (Attributive, Renaming)
         requires (...);
 
+    ::MD::"@:=" ::= alias of rename;
+
     ::MD::Unicode_Aliases::"ρ" ::= alias of rename;
 
-I<TODO.>
+The virtual function C<rename> aka C<@:=> aka C<ρ> results results in the
+I<relational rename> of its C<0> argument in terms of its C<1> argument.
+The result is a value of the function's C<0> argument's collection type
+that has all of the attributes of the function's C<0> argument but that,
+for each attribute of the C<0> argument whose attribute name matches a
+I<before> element of its C<1> argument, the result's corresponding
+attribute instead has an attribute name that matches the corresponding
+I<after> element of the C<1> argument.  The I<degree> and the
+I<cardinality> of the result are both equal to the degree and cardinality
+of the C<0> argument, respectively.  This function will fail if any
+I<before> element of the C<1> argument does not match the name of an
+attribute name of the C<0> argument, or if any I<after> element of the
+former does match an attribute name of the latter that isn't being renamed.
+
+I<TODO: Revisit the Outdated docs of this operator after the Renaming type
+is fully defined, for additional useful language for describing "rename".>
 
 =head2 renaming
 
     ::MD::renaming ::= function commutes rename;
 
-I<TODO.>
+The function C<renaming> behaves identically to the function C<rename> when
+given the same arguments in swapped positions.
 
-=head2 on ^ project π
+=head2 on project %= π
 
     ::MD::on::"" ::= function virtual
         --> Attributive <-- (Attributive, Heading)
-        requires (...);
+        requires (\<0 @? \<1);
 
-    ::MD::"^"     ::= alias of on;
     ::MD::project ::= alias of on;
+    ::MD::"%="    ::= alias of on;
 
     ::MD::Unicode_Aliases::"π" ::= alias of on;
 
@@ -5819,14 +5837,13 @@ I<TODO.  Also known as "over" in some languages.>
 
 I<TODO.>
 
-=head2 extend +^
+=head2 extend %+
 
     ::MD::extend::"" ::= function virtual
-        --> Attributive <-- (Attributive, Attributive)
-        requires (\<*args --> \disjoint_heading::())
-        is {associative,commutative};
+        --> Attributive <-- (Attributive, Structural)
+        requires (\<0 disjoint_heading \<1);
 
-    ::MD::"+^" ::= alias of extend;
+    ::MD::"%+" ::= alias of extend;
 
 I<TODO.  Also, this is analogous to set union (disjoint).>
 
@@ -5835,14 +5852,14 @@ use the above version plus an eg-tuple selector. In the case of relation
 extend, one can do the aforementioned within a 'map' routine, for the
 routine version; they can use join/cross-product for the static version.>
 
-=head2 but -^ project_all_but
+=head2 but project_all_but %-
 
     ::MD::but::"" ::= function virtual
         --> Attributive <-- (Attributive, Heading)
-        requires (...);
+        requires (\<0 @? \<1);
 
-    ::MD::"-^"            ::= alias of but;
     ::MD::project_all_but ::= alias of but;
+    ::MD::"%-"            ::= alias of but;
 
 I<TODO.  Also, this is analogous to set difference.>
 I<TODO.  Also known as "remove" in some languages.>
@@ -5929,7 +5946,7 @@ C<.!> for the composing type C<Structural>.
     ::MD::replace_or_insert_at::Structural ::= function
         --> Structural <-- (Structural, (Attr_Name, Any))
         implements 2::""
-        : (if \<0 .? \>>0 then \<0 .= \>>0 else \<0 .+ \>>0);
+        : (if \<0 .? \>>0 then \<0 .:= \>>0 else \<0 .+ \>>0);
 
 The function C<replace_or_insert_at::Structural> behaves identically in
 turn to each of the functions C<replace_at> and C<shiftless_insert_at> when
@@ -6054,19 +6071,31 @@ C<Tuple>.
         implements 2::""
         : (\<*args -->^ FDN__Tuple_heading);
 
-The function C<heading> results in the relational I<heading> of its C<0>
-argument, that is its set of distinct attribute names.  This function
-implements the C<Attributive> virtual function C<heading>
-aka C<@> for the composing type C<Tuple>.
+The function C<heading::Tuple> results in the relational I<heading> of its
+C<0> argument, that is its set of distinct attribute names.  This function
+implements the C<Attributive> virtual function C<heading> aka C<@> for the
+composing type C<Tuple>.
 
 =head2 rename (Tuple)
 
     ::MD::rename::Tuple ::= function --> Tuple <-- (Tuple, Renaming)
         implements 2::""
         requires (...)
-        : (...);
+        : (\<*args -->^ FDN__Tuple_rename);
 
-I<TODO.>
+The function C<rename::Tuple> results results in the I<relational rename>
+of its C<0> argument in terms of its C<1> argument.  The result is a
+C<Tuple> value that has all of the attributes of the function's C<0>
+argument but that, for each attribute of the C<0> argument whose attribute
+name matches a I<before> element of its C<1> argument, the result's
+corresponding attribute instead has an attribute name that matches the
+corresponding I<after> element of the C<1> argument.  The I<degree> of the
+result is equal to the degree of the C<0> argument.  This function will
+fail if any I<before> element of the C<1> argument does not match the name
+of an attribute name of the C<0> argument, or if any I<after> element of
+the former does match an attribute name of the latter that isn't being
+renamed.  This function implements the C<Attributive> virtual function
+C<rename> aka C<@:=> aka C<ρ> for the composing type C<Tuple>.
 
 =head2 on (Tuple)
 
@@ -6154,7 +6183,7 @@ function's C<1> argument's C<0> attribute asset, the result's attribute
 instead has an asset equal to the C<1> argument's C<1> attribute asset.
 This function will fail if the C<0> argument doesn't have an attribute with
 that name.  This function implements the C<Accessible> virtual function
-C<replace_at> aka C<.=> for the composing type C<Tuple>.
+C<replace_at> aka C<.:=> for the composing type C<Tuple>.
 
 =head2 shiftless_insert_at (Tuple)
 
