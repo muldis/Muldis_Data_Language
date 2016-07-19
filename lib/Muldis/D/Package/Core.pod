@@ -290,11 +290,11 @@ comparisons or validation is typically much simpler with this foundation.
 
     ::MD::in_order::Neg_Inf_R ::= function --> Boolean <-- (Orderable, Neg_Inf)
         implements 2::""
-        : (\<*args --> \same::());
+        : (\<0 = \<1);
 
     ::MD::in_order::Pos_Inf_L ::= function --> Boolean <-- (Pos_Inf, Orderable)
         implements 2::""
-        : (\<*args --> \same::());
+        : (\<0 = \<1);
 
     ::MD::in_order::Pos_Inf_R ::= function --> Boolean <-- (Orderable, Pos_Inf)
         implements 2::""
@@ -355,7 +355,7 @@ name this operator I<ge>.
 
     ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (+∞)
-        : (\<*args --> \in_order::() ?? \<0 !! \<1);
+        : (\<0 in_order \<1 ?? \<0 !! \<1);
 
 The function C<min> results in whichever of its 2 arguments is first when
 the 2 are sorted I<in order>.  This function is designed to be chained for
@@ -366,7 +366,7 @@ I<before> all of the others.
 
     ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (-∞)
-        : (\<*args --> \in_order::() ?? \<1 !! \<0);
+        : (\<0 in_order \<1 ?? \<1 !! \<0);
 
 The function C<max> results in whichever of its 2 arguments is last when
 the 2 are sorted I<in order>.  This function is designed to be chained for
@@ -378,7 +378,7 @@ I<after> all of the others.
     ::MD::minmax ::= function
         --> (Orderable, Orderable) <-- (Orderable, Orderable)
         is commutative
-        : (\<*args --> \in_order::() ?? \<*args !! (\<1, \<0));
+        : (\<0 in_order \<1 ?? \<*args !! (\<1, \<0));
 
 The function C<minmax> results in a binary C<Tuple> containing its 2
 arguments sorted I<in order>; the function's result is the same as its
@@ -770,7 +770,7 @@ C<0> and C<1> is C<True>, and C<True> otherwise.
 
     ::MD::xnor ::= function --> Boolean <-- (Boolean, Boolean)
         is {associative,commutative} identity (True)
-        : (\<*args --> \same::());
+        : (\<0 = \<1);
 
     ::MD::iff ::= alias of xnor;
 
@@ -1041,7 +1041,7 @@ was invoked with.
     ::MD::modulus_minus ::= function
         --> Numerical <-- (Numerical, Numerical)
         is commutative
-        : (modulus \<*args --> \minus::());
+        : (modulus \<0 - \<1);
 
     ::MD::abs_minus ::= alias of modulus_minus;
     ::MD::"|-|"     ::= alias of modulus_minus;
@@ -1086,7 +1086,7 @@ corresponding operators I<%%>.
         --> {Numerical, Excuse::Div_By_Zero}
         <-- (Numerical, Numerical, Round_Meth)
         : (if \<1->is_zero then Excuse::Div_By_Zero()
-            else \<1 * \<*args --> \div::());
+            else \<1 * (\<0 div \<1));
 
     ::MD::round ::= alias of nearest_multiple_of;
 
@@ -1147,7 +1147,7 @@ otherwise.
         --> {Numerical, Excuse::Div_By_Zero}
         <-- (Numerical, Numerical, Round_Meth)
         : (if \<1->is_zero then Excuse::Div_By_Zero()
-            else \<0 - \<*args --> \nearest_multiple_of::());
+            else \<0 - (\<0 nearest_multiple_of \<1));
 
     ::MD::mod ::= alias of modulo;
 
@@ -1166,7 +1166,7 @@ or I<\\> or I<div> or I<rem> or I<remainder> or various other things.
     ::MD::divided_by_and_modulo::"" ::= function
         --> ({Numerical, Excuse::Div_By_Zero}, {Numerical, Excuse::Div_By_Zero})
         <-- (Numerical, Numerical, Round_Meth)
-        : ((\<*args --> \div::(), \<*args --> \mod::()));
+        : ((\<0 div \<1, \<0 mod \<1));
 
 The function C<divided_by_and_modulo> results in a binary tuple whose C<0>
 and C<1> attributes have the exact same values that C<integral_divided_by>
@@ -1882,7 +1882,7 @@ specifically for multiplying one by an C<Integer>.
         --> {Boolean, Excuse::Div_By_Zero} <-- (Fraction, Fraction)
         implements 2::""
         : (if \<1 = 0.0 then Excuse::Div_By_Zero()
-            else \mod::() <-- \<*args = 0.0);
+            else (\<0 mod \<1) = 0.0);
 
 The function C<multiple_of::Fraction> implements the C<Numerical>
 virtual function C<multiple_of> for the composing type C<Fraction>.
@@ -2094,7 +2094,7 @@ rather than a boolean.
     ::MD::proper_substring_or_superstring ::= function
         --> Boolean <-- (String, String)
         is commutative
-        : (\<*args --> \not_same::() and \<*args --> \substring_or_superstring::());
+        : (\<0 != \<1 and (\<0 substring_or_superstring \<1));
 
 The function C<proper_substring_or_superstring> results in C<True> iff the
 sequence of members of one of its 2 arguments C<0> and C<1> is a proper
@@ -2106,7 +2106,7 @@ results in C<False>.
     ::MD::substring_or_superstring ::= function
         --> Boolean <-- (String, String)
         is commutative
-        : (\<*args --> \substring_of::() or \<*args --> \superstring_of::());
+        : ((\<0 substring_of \<1) or (\<0 superstring_of \<1));
 
 The function C<substring_or_superstring> results in C<True> iff the
 sequence of members of one of its 2 arguments C<0> and C<1> is a substring
@@ -3195,7 +3195,7 @@ has exactly 1 distinct member value, and C<False> otherwise.
 =head2 only_member
 
     ::MD::only_member::"" ::= function virtual --> Any <-- (Homogeneous)
-        requires (\<*args --> \singular::());
+        requires (singular \<0);
 
 The virtual function C<only_member> results in its C<0> argument's only
 distinct member value.  This function will fail if the argument doesn't
@@ -3300,7 +3300,7 @@ retained member's value.  See also the C<Positional> function C<squish>.
 
     ::MD::proper_subset_of ::= function
         --> Boolean <-- (Homogeneous, Homogeneous)
-        : (\<*args --> \not_same::() and \<*args --> \subset_of::());
+        : (\<0 != \<1 and (\<0 subset_of \<1));
 
     ::MD::Unicode_Aliases::"⊂" ::= alias of proper_subset_of;
 
@@ -3400,7 +3400,7 @@ typically the same.
     ::MD::proper_subset_or_superset ::= function
         --> Boolean <-- (Homogeneous, Homogeneous)
         is commutative
-        : (not \<*args --> \same_members::() and \<*args --> \subset_or_superset::());
+        : (not (\<0 same_members \<1) and (\<0 subset_or_superset \<1));
 
 The function C<proper_subset_or_superset> results in C<True> iff the
 multiset of members of one of its 2 arguments C<0> and C<1> is a proper
@@ -3412,7 +3412,7 @@ results in C<False>.
     ::MD::subset_or_superset ::= function
         --> Boolean <-- (Homogeneous, Homogeneous)
         is commutative
-        : (\<*args --> \subset_of::() or \<*args --> \superset_of::());
+        : ((\<0 subset_of \<1) or (\<0 superset_of \<1));
 
 The function C<subset_or_superset> results in C<True> iff the multiset of
 members of one of its 2 arguments C<0> and C<1> is a subset of the multiset
@@ -3453,6 +3453,12 @@ I<TODO.  Result is true when at least one member evaluates to true.
 This is logically equivalent to testing if a same-source 'where' result is nonempty,
 but 'any' is instead virtual with applicable Foundation-level functions to
 aid efficiency with less-savvy optimizers that don't know to short-circuit.>
+
+I<TODO.  Definition of any/none/all etc would have to be altered for
+intervalish types in general such that they only evaluate endpoints rather
+than all members, and therefore the result would only be valid for
+predicates that for the given member types would always produce the same
+results for endpoints as for non-endpoints the former bound.>
 
 =head2 none there_does_not_exist ∄
 
@@ -3723,6 +3729,11 @@ I<Ruby calls its version "select" (returns list) and a "keep_if" (mutates).>
 
 I<Note: Ruby has a "reject" and a "delete_if" function that is like SQL's delete.>
 
+I<TODO.  Definition of where/map/reduce etc would have to be altered for
+intervalish types in general such that they only evaluate endpoints rather
+than all members, and therefore the result may not be valid depending on
+what the function argument does or on the given member types.>
+
 =head2 filtering
 
     ::MD::filtering ::= function commutes where;
@@ -3736,6 +3747,13 @@ I<TODO.>
 
 I<TODO.  The function-call is as per that of 'where'.>
 I<Ruby calls its version "collect".>
+
+I<TODO.  For the general case of intervalish types, the result of map would
+only be valid when the function argument is order-preserving, for example a
+plain function that adds 3 to all members or multiplies all members by 2,
+etc.  Also note that for intervals over successable types, some operations
+may result in every member becoming discontinuous from the others, such as
+multiply with integers.>
 
 =head2 reduce
 
@@ -3802,7 +3820,7 @@ The virtual function C<to_Bag> aka C<+|> results in the C<Bag> value
 that represents the same multiset of members as its C<0> argument.  The
 purpose of C<to_Bag> is to canonicalize C<Discrete> values so they can be
 treated abstractly as multisets of discrete values, for operations where
-multiplicity possibly is significant but order doesn't.
+multiplicity possibly is significant but order isn't.
 
 =head2 count cardinality #
 
@@ -3919,8 +3937,8 @@ composing type C<Positional>.
 
     ::MD::only_member::Positional ::= function --> Any <-- (Positional)
         implements 2::""
-        requires (\<*args --> \singular::())
-        : (\<*args --> \first::());
+        requires (singular \<0)
+        : (first \<0);
 
 The function C<only_member::Positional> results in its C<0> argument's only
 distinct member value.  This function will fail if the argument doesn't
@@ -3993,7 +4011,7 @@ C<disjoint_members> for the composing type C<Positional>.
         --> Positional <-- (Positional, Positional)
         implements 2::""
         is associative
-        : (\<*args --> \catenate::());
+        : (\<0 ~ \<1);
 
 The function C<member_plus::Positional> results in the I<multiset sum> of
 its 2 arguments C<0> and C<1>; it behaves identically to C<catenate> aka
@@ -4372,7 +4390,7 @@ C<Array> value, C<[]>.
     ::MD::in_order::Array ::= function --> Boolean <-- (Array, Array)
         implements 2::""
     : (
-        i ::= (\<*args --> \index_succ_all_matches::());
+        i ::= (\<0 index_succ_all_matches \<1);
       <--
         if not \<0 .? i then
             e1 ::= True
@@ -4856,7 +4874,7 @@ C<Set>.
 
     ::MD::only_member::Set ::= function --> Any <-- (Set)
         implements 2::""
-        requires (\<*args --> \singular::())
+        requires (singular \<0)
         : (\<0->unwrap->only_member);
 
 The function C<only_member::Set> results in its C<0> argument's only member
@@ -4924,7 +4942,7 @@ type C<Set>.
     ::MD::same_members::Set ::= function --> Boolean <-- (Set, Set)
         implements 2::""
         is commutative
-        : (\<*args --> \same::());
+        : (\<0 = \<1);
 
 The function C<same_members::Set> results in C<True> iff its 2 arguments
 C<0> and C<1> are exactly the same C<Set> value, and C<False> otherwise;
@@ -4998,7 +5016,7 @@ C<remove_n> for the composing type C<Set>.
     ::MD::member_plus::Set ::= function --> Set <-- (Set, Set)
         implements 2::""
         is {associative,commutative,idempotent} identity ({})
-        : (\<*args --> \union::());
+        : (\<0 union \<1);
 
 The function C<member_plus::Set> results in the I<set union> of its 2
 arguments C<0> and C<1>; it behaves identically to C<union> aka C<∪> when
@@ -5216,7 +5234,7 @@ composing type C<Bag>.
 
     ::MD::only_member::Bag ::= function --> Any <-- (Bag)
         implements 2::""
-        requires (\<*args --> \singular::())
+        requires (singular \<0)
         : (\<*args -->^ FDN__Bag_only_member);
 
 The function C<only_member::Bag> results in its C<0> argument's only
@@ -5287,7 +5305,7 @@ type C<Bag>.
     ::MD::same_members::Bag ::= function --> Boolean <-- (Bag, Bag)
         implements 2::""
         is commutative
-        : (\<*args --> \same::());
+        : (\<0 = \<1);
 
 The function C<same_members::Bag> results in C<True> iff its 2 arguments
 C<0> and C<1> are exactly the same C<Bag> value, and C<False> otherwise;
@@ -5682,7 +5700,7 @@ otherwise it results in C<False>.
     ::MD::proper_subheading_or_superheading ::= function
         --> Boolean <-- (Attributive, Attributive)
         is commutative
-        : (@\<0 != @\<1 and \<*args --> \subheading_or_superheading::());
+        : (@\<0 != @\<1 and (\<0 subheading_or_superheading \<1));
 
 The function C<proper_subheading_or_superheading> results in C<True> iff
 the heading of one of its 2 arguments C<0> and C<1> is a proper subset of
@@ -5693,7 +5711,7 @@ the heading of its other argument; otherwise it results in C<False>.
     ::MD::subheading_or_superheading ::= function
         --> Boolean <-- (Attributive, Attributive)
         is commutative
-        : (\<*args --> \subheading_of::() or \<*args --> \superheading_of::());
+        : ((\<0 subheading_of \<1) or (\<0 superheading_of \<1));
 
 The function C<subheading_or_superheading> results in C<True> iff the
 heading of one of its 2 arguments C<0> and C<1> is a subset of the heading
@@ -6101,7 +6119,7 @@ C<.!> for the composing type C<Structural>.
         --> Structure <-- (Structure, (Attr_Name, Any))
         implements 2::""
         requires (\<0 .? \>>0)
-    : (\<0 update \<1 --> \D1::());
+    : (\<0 update D1::(\<1));
 
 The function C<replace_at::Structure> results in the value of its C<0>
 argument's collection type that has all of the attributes of the function's
@@ -6119,7 +6137,7 @@ the composing type C<Structure>.
         --> Structure <-- (Structure, (Attr_Name, Any))
         implements 2::""
         requires (not \<0 .? \>>0)
-        : (\<0 extend \<1 --> \D1::());
+        : (\<0 extend D1::(\<1));
 
 The function C<shiftless_insert_at::Structure> results in the value of its
 C<0> argument's collection type that has all of the attributes of the
@@ -6151,7 +6169,7 @@ C<Structure>.
     ::MD::replace_or_insert_at::Structural ::= function
         --> Structural <-- (Structural, (Attr_Name, Any))
         implements 2::""
-        : (\<0 update_or_extend \<1 --> \D1::());
+        : (\<0 update_or_extend D1::(\<1));
 
 The function C<replace_or_insert_at::Structural> behaves identically in
 turn to each of the functions C<replace_at> and C<shiftless_insert_at> when
