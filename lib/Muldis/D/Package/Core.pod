@@ -6478,9 +6478,60 @@ I<TODO.>
 
     ::MD::Relational ::= interface
         composes {Unionable, Attributive}
-        requires_implements {...};
+        requires_implements {to_Boolean,empty
+            ,singular,only_member
+            ,has_n,multiplicity
+            ,all_unique,unique
+            ,subset_of,same_members,overlaps_members,disjoint_members
+            ,any
+            ,insert_n,remove_n
+            ,member_plus,except,intersect,union,exclusive
+            ,nest,unnest,where,map,reduce,...
+            ,has_any_attrs,nullary
+            ,is_unary,degree,heading,rename
+            ,can_project_matching,on,update,extend
+            ,has_attrs,has_just_attrs
+            ,select_relational,body};
 
-I<TODO.>
+The interface contract C<Relational> is infinite.  A C<Relational> value is
+a C<Unionable> value that is also an C<Attributive> value.  This means the
+value is or is isomorphic to a C<Homogeneous> collection each of whose
+I<members> is a C<Tuple>, and every member has the same relational
+I<heading>; but a C<Relational> value still has a heading even if it has no
+members.  The default value of C<Relational> is the C<Relation> value with
+zero attributes and zero members, C<?%@()>.  C<Relational> is composed by
+C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
+
+=head2 select_relational
+
+    ::MD::select_relational::"" ::= function virtual
+        --> {Relational, Excuse::...}
+        <-- (like : Relational, heading : Heading, body : Unionable);
+
+The virtual function C<select_relational> results in the value of its
+C<like> argument's relational type that has the same I<heading> as its
+C<heading> argument and whose I<body> consists of just the member I<tuples>
+of its C<body> argument.  Note that the identity
+C<r = select_relational( like : r, heading : @r, body : |r )> should hold
+for any C<Relational> type.
+
+I<TODO: Flesh out the set of predefined Excuse values, such as for body
+members that aren't compatible with the heading, or possibly for composing
+types that restrict their possible headings at the type level.>
+
+=head2 body |
+
+    ::MD::body::"" ::= function virtual --> Unionable <-- (Relational);
+
+    ::MD::"|" ::= alias of body;
+
+The virtual function C<body> aka C<|> results in the relational I<body> of
+its C<0> argument, that is its multiset of member tuples.  The form that
+this takes is a generic C<Unionable> (such as a generic C<Array> or C<Set>
+or C<Bag>) each of whose members is a C<Structural> value.  Note that the 2
+functions C<heading> and C<body> are complementary for C<Relational>
+values; between the two of them, one can obtain all primary components of a
+typical C<Relational> value, and select that same value again.
 
 =head1 TUPLE-ARRAY DATA TYPES
 
@@ -6497,7 +6548,7 @@ I<TODO.>
         (
             if \<0 has_just_attrs ( heading : \Heading::(), body : \Array::() ) then
                 if \<<body all \Tuple::() then
-                    \<<body all (function : (\has_just_attrs::() \<-- \<<heading))
+                    \<<body all (function : (@\<0 = \<1)) \<-- \<<heading
                 else
                     False
             else
@@ -6582,7 +6633,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
         (
             if \<0 has_just_attrs ( heading : \Heading::(), body : \Bag::() ) then
                 if \<<body all \Tuple::() then
-                    \<<body all (function : (\has_just_attrs::() \<-- \<<heading))
+                    \<<body all (function : (@\<0 = \<1)) \<-- \<<heading
                 else
                     False
             else
