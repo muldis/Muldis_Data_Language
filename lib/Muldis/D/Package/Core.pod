@@ -5597,6 +5597,15 @@ result of attempting to use an attribute named I<N> of C<Attributive> value
 I<V> while assuming incorrectly that I<V> already has an attribute whose
 name is I<N>.
 
+=head2 Excuse::Not_Same_Heading
+
+    ::MD::Excuse::Not_Same_Heading ::= constant composes Excuse;
+
+The constant C<Excuse::Not_Same_Heading> represents the I<undefined> result
+of attempting to perform an operation that takes 2 C<Attributive> inputs
+and requires them to have the same relational I<heading> but the actual 2
+inputs have different headings.
+
 =head2 has_any_attrs ?@
 
     ::MD::has_any_attrs::"" ::= function virtual --> Boolean <-- (Attributive);
@@ -6479,16 +6488,7 @@ I<TODO.>
 
     ::MD::Relational ::= interface
         composes {Unionable, Attributive}
-        requires_implements {to_Boolean,empty
-            ,singular,only_member
-            ,has_n,multiplicity
-            ,all_unique,unique
-            ,subset_of,same_members,overlaps_members,disjoint_members
-            ,any
-            ,insert_n,remove_n
-            ,member_plus,except,intersect,union,exclusive
-            ,nest,unnest,where,map,reduce,...
-            ,has_any_attrs,nullary
+        requires_implements {has_any_attrs,nullary
             ,is_unary,degree,heading,rename
             ,can_project_matching,on,update,extend
             ,has_attrs,has_just_attrs
@@ -6502,6 +6502,414 @@ I<heading>; but a C<Relational> value still has a heading even if it has no
 members.  The default value of C<Relational> is the C<Relation> value with
 zero attributes and zero members, C<?%@()>.  C<Relational> is composed by
 C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
+
+=head2 to_Boolean (Relational)
+
+    ::MD::to_Boolean::Relational ::= function --> Boolean <-- (Relational)
+        implements 2::""
+        : (? |\<0);
+
+The function C<to_Boolean::Relational> results in C<True> iff its C<0>
+argument has any tuples, and in C<False> iff it has no tuples.  This
+function implements the C<Boolable> virtual function C<to_Boolean> aka
+C<so> aka C<?> for the composing type C<Relational>.
+
+=head2 empty (Relational)
+
+    ::MD::empty::Relational ::= function --> Relational <-- (Relational)
+        implements 2::""
+        : (select_relational::( like: \<0, heading: @\<0, body: empty |\<0 ));
+
+The function C<empty::Relational> results in the only zero-tuple
+C<Relational> value.  This function implements the C<Emptyable> virtual
+function C<empty> aka C<∅> for the composing type C<Relational>.
+
+=head2 singular (Relational)
+
+    ::MD::singular::Relational ::= function --> Boolean <-- (Relational)
+        implements 2::""
+        : (singular |\<0);
+
+The function C<singular::Relational> results in C<True> iff its C<0>
+argument has exactly 1 distinct tuple, and C<False> otherwise.  This
+function implements the C<Homogeneous> virtual function C<singular> for the
+composing type C<Relational>.
+
+=head2 only_member (Relational)
+
+    ::MD::only_member::Relational ::= function --> Structural <-- (Relational)
+        implements 2::""
+        requires (singular \<0)
+        : (only_member |\<0);
+
+The function C<only_member::Relational> results in its C<0> argument's only
+distinct tuple.  This function will fail if the argument doesn't have
+exactly 1 distinct tuple.  This function implements the C<Homogeneous>
+virtual function C<only_member> for the composing type C<Relational>.
+
+=head2 has_n (Relational)
+
+    ::MD::has_n::Relational ::= function
+        --> {Boolean, Excuse::Not_Same_Heading}
+        <-- (Relational, Structural, Integer_NN)
+        implements 2::""
+        : (if \<0 =@ \<1 then has_n::(|\<0, \<1, \<2)
+            else Excuse::Not_Same_Heading);
+
+The function C<has_n::Relational> results in C<True> iff its C<0> argument
+has at least N tuples such that each is equal to its C<1> argument, where N
+is defined by its C<2> argument; otherwise it results in C<False>.  The
+result is always C<True> when the C<2> argument is zero.  Note that having
+a C<2> argument greater than 1 in combination with a C<Setty> typed C<0>
+argument will always result in C<False>.  The result is only I<defined>
+when the C<0> and C<1> arguments have the same I<heading>; it is an
+C<Excuse> otherwise.  This function implements the C<Homogeneous> virtual
+function C<has_n> for the composing type C<Relational>.
+
+=head2 multiplicity (Relational)
+
+    ::MD::multiplicity::Relational ::= function
+        --> Integer_NN <-- (Relational, Structural)
+        implements 2::""
+        : (|\<0 multiplicity \<1);
+
+The function C<multiplicity::Relational> results in the integral count
+of tuples of its C<0> argument such that each tuple is equal to its
+C<1> argument.  For a C<Setty> typed C<0> argument, the result is always
+just 0 or 1.  This function implements the C<Homogeneous> virtual
+function C<multiplicity> for the composing type C<Relational>.
+
+=head2 all_unique (Relational)
+
+    ::MD::all_unique::Relational ::= function --> Boolean <-- (Relational)
+        implements 2::""
+        : (all_unique |\<0);
+
+The function C<all_unique::Relational> results in C<True> iff its C<0>
+argument has no 2 members that are the same tuple, and C<False> otherwise.
+The result is always C<True> for a C<Setty> argument.  This function
+implements the C<Homogeneous> virtual function C<all_unique> for the
+composing type C<Relational>.
+
+=head2 unique (Relational)
+
+    ::MD::unique::Relational ::= function --> Relational <-- (Relational)
+        implements 2::""
+        : (select_relational::( like: \<0, heading: @\<0, body: unique |\<0 ));
+
+The function C<unique::Relational> results in the value of its C<0>
+argument's relational type that has, for every distinct tuple I<V> of the
+function's C<0> argument, exactly 1 tuple that is equal to I<V>. The result
+is always the same value as its argument when that is C<Setty>.  If the
+result's type is C<Positional>, then each retained tuple is the one closest
+to the start of the argument out of those tuples sharing the retained
+tuple's value.  See also the C<Positional> function C<squish>.  This
+function implements the C<Homogeneous> virtual function C<unique> for the
+composing type C<Relational>.
+
+=head2 subset_of (Relational)
+
+    ::MD::subset_of::Relational ::= function
+        --> {Boolean, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        implements 2::""
+        : (if \<0 =@ \<1 then |\<0 subset_of |\<1
+            else Excuse::Not_Same_Heading);
+
+The function C<subset_of::Relational> results in C<True> iff the multiset
+of tuples of its C<0> argument is a subset of the multiset of tuples of its
+C<1> argument; otherwise it results in C<False>.  The result is only
+I<defined> when the 2 arguments have the same I<heading>; it is an
+C<Excuse> otherwise.  This function implements the C<Homogeneous> virtual
+function C<subset_of> aka C<⊆> for the composing type C<Relational>.
+
+=head2 same_members (Relational)
+
+    ::MD::same_members::Relational ::= function
+        --> {Boolean, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        implements 2::""
+        is commutative
+        : (if \<0 =@ \<1 then |\<0 same_members |\<1
+            else Excuse::Not_Same_Heading);
+
+The function C<same_members::Relational> results in C<True> iff the
+multiset of tuples of its C<0> argument is the same as the multiset of
+tuples of its C<1> argument; otherwise it results in C<False>.  This
+function may result in C<True> for some C<Positional> arguments for which
+C<same> would result in C<False> because the latter considers tuple order
+significant while the former doesn't; for non-C<Positional> arguments, the
+2 functions are typically the same.  The result is only I<defined> when the
+2 arguments have the same I<heading>; it is an C<Excuse> otherwise.  This
+function implements the C<Homogeneous> virtual function C<same_members> for
+the composing type C<Relational>.
+
+=head2 overlaps_members (Relational)
+
+    ::MD::overlaps_members::Relational ::= function
+        --> {Boolean, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        implements 2::""
+        is commutative
+        : (if \<0 =@ \<1 then |\<0 overlaps_members |\<1
+            else Excuse::Not_Same_Heading);
+
+The function C<overlaps_members::Relational> results in C<True> iff, given
+I<X> as the multiset of tuples of its argument C<0> and I<Y> as the
+multiset of tuples of its argument C<1>, there exists at least 1 tuple that
+both I<X> and I<Y> have, and there also exists at least 1 other tuple each
+of I<X> and I<Y> that the other doesn't have; otherwise it results in
+C<False>.  The result is only I<defined> when the 2 arguments have the same
+I<heading>; it is an C<Excuse> otherwise.  This function implements the
+C<Homogeneous> virtual function C<overlaps_members> for the composing type
+C<Relational>.
+
+=head2 disjoint_members (Relational)
+
+    ::MD::disjoint_members::Relational ::= function
+        --> {Boolean, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        implements 2::""
+        is commutative
+        : (if \<0 =@ \<1 then |\<0 disjoint_members |\<1
+            else Excuse::Not_Same_Heading);
+
+The function C<disjoint_members::Relational> results in C<True> iff the
+multiset of tuples of its C<0> argument has no tuples in common with the
+multiset of tuples of its C<1> argument; otherwise it results in C<False>.
+The result is only I<defined> when the 2 arguments have the same
+I<heading>; it is an C<Excuse> otherwise.  This function implements the
+C<Homogeneous> virtual function C<disjoint_members> for the composing type
+C<Relational>.
+
+=head2 any (Relational)
+
+    ::MD::any::Relational ::= function
+        --> Boolean <-- (Relational, Function_Call_But_0)
+        implements 2::""
+        : (|\<0 any \<1);
+
+I<TODO.>
+
+=head2 insert_n (Relational)
+
+    ::MD::insert_n::Relational ::= function
+        --> {Relational, Excuse::Not_Same_Heading}
+        <-- (Relational, Structural, Integer_NN)
+        implements 2::""
+        : (if \<0 =@ \<1 then select_relational::
+                ( like: \<0, heading: @\<0, body: insert_n::(|\<0, \<1, \<2) )
+            else Excuse::Not_Same_Heading);
+
+The function C<insert_n::Relational> results in the value of its C<0>
+argument's relational type that has all of the tuples of the function's
+C<0> argument plus N additional tuples that are each equal to its C<1>
+argument, where N is defined by its C<2> argument; however, if the result's
+type is C<Setty>, the result will have no more than 1 tuple equal to the
+C<1> argument (any duplicates will be silently eliminated), so the result
+may equal the C<0> argument even when the C<2> argument is nonzero.  If the
+result's type is C<Positional>, then the result starts with all of the
+tuples of C<0> in the same order and ends with any added instances of C<1>.
+The result is only I<defined> when the C<0> and C<1> arguments have the
+same I<heading>; it is an C<Excuse> otherwise. This function implements the
+C<Unionable> virtual function C<insert_n> for the composing type
+C<Relational>.
+
+=head2 remove_n (Relational)
+
+    ::MD::remove_n::Relational ::= function
+        --> {Relational, Excuse::Not_Same_Heading}
+        <-- (Relational, Structural, Integer_NN)
+        implements 2::""
+        : (if \<0 =@ \<1 then select_relational::
+                ( like: \<0, heading: @\<0, body: remove_n::(|\<0, \<1, \<2) )
+            else Excuse::Not_Same_Heading);
+
+The function C<remove_n::Relational> results in the value of its C<0>
+argument's relational type that has all of the tuples of the function's
+C<0> argument minus N existing tuples that are each equal to its C<1>
+argument, where N is defined as the lesser of its C<2> argument and the
+count of tuples of C<0> equal to the C<1> argument, so the result may equal
+the C<0> argument even when the C<2> argument is nonzero.  If the result's
+type is C<Positional>, then the removed instances of C<1> are those closest
+to the end of C<0>.  The result is only I<defined> when the C<0> and C<1>
+arguments have the same I<heading>; it is an C<Excuse> otherwise.  This
+function implements the C<Unionable> virtual function C<remove_n> for the
+composing type C<Relational>.
+
+=head2 member_plus (Relational)
+
+    ::MD::member_plus::Relational ::= function
+        --> {Relational, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        implements 2::""
+        is associative
+        : (if \<0 =@ \<1 then select_relational::
+                ( like: \<0, heading: @\<0, body: |\<0 member_plus |\<1 )
+            else Excuse::Not_Same_Heading);
+
+The function C<member_plus::Relational> results in the I<multiset sum> of
+its 2 arguments C<0> and C<1>.  The result is the value of its C<0>
+argument's relational type that has all of the tuples of the function's
+C<0> argument plus all of the tuples of its C<1> argument.  For every
+distinct tuple of the result, its multiplicity is the integral sum of the
+multiplicities of that same tuple of each of the 2 arguments; however, if
+the result's type is C<Setty>, the result will only have 1 tuple per
+distinct tuple (any duplicates will be silently eliminated).  If the
+result's type is C<Positional>, then the result starts with all of the
+members of C<0> and ends with the members of C<1>, the members from both in
+the same order as in their respective arguments; that is, this function
+then behaves identically to C<catenate> aka C<~> when given the same
+arguments.  This operation has an identity value of a collection with zero
+members.  For non-ordered types, this operation is also commutative.  The
+result is only I<defined> when the 2 arguments have the same I<heading>; it
+is an C<Excuse> otherwise.  This function implements the C<Unionable>
+virtual function C<member_plus> aka C<⊎> for the composing type
+C<Relational>.
+
+=head2 except (Relational)
+
+    ::MD::except::Relational ::= function
+        --> {Relational, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        implements 2::""
+        : (if \<0 =@ \<1 then select_relational::
+                ( like: \<0, heading: @\<0, body: |\<0 except |\<1 )
+            else Excuse::Not_Same_Heading);
+
+The function C<except::Relational> results in the I<multiset difference>
+between its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The
+result is the value of its C<0> argument's relational type that has all of
+the tuples of the function's C<0> argument minus all of the matching tuples
+of its C<1> argument.  For every distinct tuple of the result, its
+multiplicity is the integral difference of the multiplicities of that same
+tuple of each of the 2 arguments (when subtracting the I<subtrahend> from
+the I<minuend>); a multiplicity is zero when it would otherwise be
+negative.  If the result's type is C<Positional>, then the removed
+instances of any distinct tuple are those closest to the end of C<0>.  The
+result is only I<defined> when the 2 arguments have the same I<heading>; it
+is an C<Excuse> otherwise.  This function implements the C<Unionable>
+virtual function C<except> aka C<∖> for the composing type C<Relational>.
+
+=head2 intersect (Relational)
+
+    ::MD::intersect::Relational ::= function
+        --> {Relational, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        implements 2::""
+        is {associative,idempotent}
+        : (if \<0 =@ \<1 then select_relational::
+                ( like: \<0, heading: @\<0, body: |\<0 intersect |\<1 )
+            else Excuse::Not_Same_Heading);
+
+The function C<intersect::Relational> results in the I<multiset
+intersection> of its 2 arguments C<0> and C<1>.  The result is the value of
+its C<0> argument's relational type that has all of the tuples of the
+function's C<0> argument that match their own tuples of its C<1> argument.
+For every distinct tuple of the result, its multiplicity is the integral
+minimum of the multiplicities of that same tuple of each of the 2 arguments
+(any nonmatched argument tuple does not appear in the result).  If the
+result's type is C<Positional>, then the removed instances of any distinct
+tuple are those closest to the end of C<0>.  This operation conceptually
+has an identity value of a collection with an infinite number of members.
+For non-ordered types, this operation is also commutative.  The result is
+only I<defined> when the 2 arguments have the same I<heading>; it is an
+C<Excuse> otherwise.  This function implements the C<Unionable> virtual
+function C<intersect> aka C<∩> for the composing type C<Relational>.
+
+=head2 union (Relational)
+
+    ::MD::union::Relational ::= function
+        --> {Relational, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        implements 2::""
+        is idempotent
+        : (if \<0 =@ \<1 then select_relational::
+                ( like: \<0, heading: @\<0, body: |\<0 union |\<1 )
+            else Excuse::Not_Same_Heading);
+
+The function C<union::Relational> results in the I<multiset union> of its 2
+arguments C<0> and C<1>.  The result is the value of its C<0> argument's
+relational type that has all of the tuples of the function's C<0> argument
+plus all of the nonmatching tuples of its C<1> argument.  For every
+distinct tuple of the result, its multiplicity is the integral maximum of
+the multiplicities of that same tuple of each of the 2 arguments.  If the
+result's type is C<Positional>, then the result starts with all of the
+members of C<0> and ends with the nonmatching members of C<1>, the members
+from both in the same order as in their respective arguments; the removed
+(due to matching) instances of any distinct tuple are those closest to the
+end of C<1>.  This operation has an identity value of a collection with
+zero members.  For non-ordered types, this operation is also associative
+and commutative.  The result is only I<defined> when the 2 arguments have
+the same I<heading>; it is an C<Excuse> otherwise.  This function
+implements the C<Unionable> virtual function C<union> aka C<∪> for the
+composing type C<Relational>.
+
+=head2 exclusive (Relational)
+
+    ::MD::exclusive::Relational ::= function
+        --> {Relational, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        implements 2::""
+        is {associative,commutative}
+        : (if \<0 =@ \<1 then select_relational::
+                ( like: \<0, heading: @\<0, body: |\<0 exclusive |\<1 )
+            else Excuse::Not_Same_Heading);
+
+The function C<exclusive::Relational> results in the I<multiset symmetric
+difference> of its 2 arguments C<0> and C<1>.  The result is the value of
+its C<0> argument's relational type that has all of the tuples of each of
+the function's C<0> and C<1> arguments that do not have matching tuples of
+their counterpart argument.  For every distinct tuple of the result, its
+multiplicity is the integral maximum of the multiplicities of that same
+tuple of each of the 2 arguments, minus the integral minimum of the same.
+If the result's type is C<Positional>, then the result starts with the
+nonmatching members of C<0> and ends with the nonmatching members of C<1>,
+the members from both in the same order as in their respective arguments;
+the removed (due to matching) instances of any distinct tuple are those
+closest to the end of C<0> or C<1> respectively.  This operation has an
+identity value of a collection with zero members.  For non-ordered types,
+this operation is also associative and commutative.  The result is only
+I<defined> when the 2 arguments have the same I<heading>; it is an
+C<Excuse> otherwise. This function implements the C<Unionable> virtual
+function C<exclusive> aka C<symm_diff> aka C<∆> for the composing type
+C<Relational>.
+
+=head2 nest (Relational)
+
+    ::MD::nest::Relational ::= function --> Relational <-- (Relational)
+        implements 2::""
+        requires (...)
+        : (...);
+
+I<TODO.>
+
+=head2 unnest (Relational)
+
+    ::MD::unnest::Relational ::= function --> Relational <-- (Relational)
+        implements 2::""
+        requires (...)
+        : (...);
+
+I<TODO.>
+
+=head2 where (Relational)
+
+    ::MD::where::Relational ::= function
+        --> Relational <-- (Relational, Function_Call_But_0)
+        implements 2::""
+        : (select_relational::( like: \<0, heading: @\<0, body: |\<0 where \<1 ));
+
+I<TODO.>
+
+=head2 map (Relational)
+
+    ::MD::map::Relational ::= function
+        --> Relational <-- (Relational, Function_Call_But_0)
+        implements 2::""
+        : (...);
+
+I<TODO.>
+
+=head2 reduce (Relational)
+
+    ::MD::reduce::Relational ::= function
+        --> Any <-- (Relational, Function_Call_But_0_1)
+        implements 2::""
+        : (|\<0 reduce \<1);
+
+I<TODO.>
 
 =head2 select_relational
 
