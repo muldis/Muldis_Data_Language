@@ -6488,11 +6488,7 @@ I<TODO.>
 
     ::MD::Relational ::= interface
         composes {Unionable, Attributive}
-        requires_implements {has_any_attrs,nullary
-            ,is_unary,degree,heading,rename
-            ,can_project_matching,on,update,extend
-            ,has_attrs,has_just_attrs
-            ,select_relational,body};
+        requires_implements {heading,select_relational,body};
 
 The interface contract C<Relational> is infinite.  A C<Relational> value is
 a C<Unionable> value that is also an C<Attributive> value.  This means the
@@ -6908,6 +6904,191 @@ I<TODO.>
         --> Any <-- (Relational, Function_Call_But_0_1)
         implements 2::""
         : (|\<0 reduce \<1);
+
+I<TODO.>
+
+=head2 has_any_attrs (Relational)
+
+    ::MD::has_any_attrs::Relational ::= function --> Boolean <-- (Relational)
+        implements 2::""
+        : (@\<0 != ());
+
+The function C<has_any_attrs::Relational> results in C<True> iff its C<0>
+argument has any attributes, and in C<False> iff it has no attributes.
+This function implements the C<Attributive> virtual function
+C<has_any_attrs> aka C<?@> for the composing type C<Relational>.
+
+=head2 nullary (Relational)
+
+    ::MD::nullary::Relational ::= function --> Relational <-- (Relational)
+        implements 2::""
+        : (\<0 on ());
+
+The function C<nullary::Relational> results in the value of its C<0>
+argument's collection type that has zero attributes.  For types like
+C<Tuple_Bag>, there is a distinct result for each I<cardinality>; for types
+like C<Relation> there are exactly 2 possible result values.  This function
+implements the C<Attributive> virtual function C<nullary> for the composing
+type C<Relational>.
+
+=head2 is_unary (Relational)
+
+    ::MD::is_unary::Relational ::= function --> Boolean <-- (Relational)
+        implements 2::""
+        : (is_unary @\<0);
+
+The function C<is_unary::Relational> results in C<True> iff its C<0>
+argument has exactly 1 attribute, and C<False> otherwise.  This function
+implements the C<Attributive> virtual function C<is_unary> for the
+composing type C<Relational>.
+
+=head2 degree (Relational)
+
+    ::MD::degree::Relational ::= function --> Integer_NN <-- (Relational)
+        implements 2::""
+        : (degree @\<0);
+
+The function C<degree::Relational> results in the integral count of the
+attributes of its C<0> argument.  This function implements the
+C<Attributive> virtual function C<degree> aka C<#@> for the composing type
+C<Relational>.
+
+=head2 rename (Relational)
+
+    ::MD::rename::Relational ::= function
+        --> Relational <-- (Relational, Renaming)
+        implements 2::""
+        requires (...)
+        : (select_relational::( like: \<0, heading: @\<0 rename \<1,
+            body: |\<0 map \rename::(:<1) ));
+
+The function C<rename::Relational> results results in the I<relational
+rename> of its C<0> argument in terms of its C<1> argument.  The result is
+a value of the function's C<0> argument's collection type that has all of
+the attributes of the function's C<0> argument but that, for each attribute
+of the C<0> argument whose attribute name matches a I<before> element of
+its C<1> argument, the result's corresponding attribute instead has an
+attribute name that matches the corresponding I<after> element of the C<1>
+argument.  The I<degree> and the I<cardinality> of the result are both
+equal to the degree and cardinality of the C<0> argument, respectively.
+This function will fail if any I<before> element of the C<1> argument does
+not match the name of an attribute name of the C<0> argument, or if any
+I<after> element of the former does match an attribute name of the latter
+that isn't being renamed.  This function implements the C<Attributive>
+virtual function C<rename> aka C<@:=> aka C<ρ> for the composing type
+C<Relational>.
+
+=head2 can_project_matching (Relational)
+
+    ::MD::can_project_matching::Relational ::= function
+        --> Boolean <-- (Relational, Structural)
+        implements 2::""
+        : (if \<0 @? \<1
+            then |\<0 all (function : (\<0 %= @\<1 = \<1)) \<-- (:<1,)
+            else False);
+
+The function C<can_project_matching::Relational> results in C<True> iff the
+heading of its C<0> argument is a superset of the heading of its C<1>
+argument and every commonly-named attribute of the two arguments also has
+the same attribute asset; otherwise it results in C<False>.  Note that by
+definition, the identity C<can_project_matching::(update::(a,s),s) = True>
+aka C<a %:= s %=? s = True> should hold for all valid C<a> and C<s>.  This
+function implements the C<Attributive> virtual function
+C<can_project_matching> aka C<%=?> for the composing type C<Relational>.
+
+=head2 on (Relational)
+
+    ::MD::on::Relational ::= function
+        --> Relational <-- (Relational, Heading)
+        implements 2::""
+        requires (\<0 @? \<1)
+        : (select_relational::( like: \<0, heading: @\<0 on \<1,
+            body: |\<0 map \on::(:<1) ));
+
+The function C<on::Relational> results in the I<relational projection> of
+its C<0> argument in terms of its C<1> argument.  The result is a value of
+the function's C<0> argument's collection type that has all of the
+attributes of the function's C<0> argument whose names match the names of
+attributes of its C<1> argument.  The I<degree> of the result is equal to
+the degree of the C<1> argument, and the I<cardinality> of the result is
+either equal to or less than the cardinality of the C<0> argument; a lesser
+cardinality would be the result of duplicate result member elimination for
+a I<setty> type.  For every member tuple or isomorphism I<X> in the C<0>
+argument, the result has a member tuple or isomorphism I<Y> that is equal
+to the result of projecting I<X> on all of the attribute names of the C<1>
+argument.  This function will fail if the I<heading> of the C<1> argument
+is not a subset of the I<heading> of the C<0> argument.  This function
+implements the C<Attributive> virtual function C<on> aka C<project> aka
+C<%=> aka C<π> for the composing type C<Relational>.
+
+=head2 update (Relational)
+
+    ::MD::update::Relational ::= function
+        --> Relational <-- (Relational, Structural)
+        implements 2::""
+        requires (\<0 @? \<1)
+        : (select_relational::( like: \<0, heading: @\<0,
+            body: |\<0 map \update::(:<1) ));
+
+The function C<update::Relational> results in the value of its C<0>
+argument's collection type that has all of the attributes of the function's
+C<0> argument but that, for each attribute of the C<0> argument whose
+attribute name I<K> matches the name of an attribute of its C<1> argument,
+the result takes its corresponding attribute from the C<1> argument rather
+than from the C<0> argument.  The I<degree> of the result is equal to the
+degree of the C<0> argument, and the I<cardinality> of the result is either
+equal to or less than the cardinality of the C<0> argument; a lesser
+cardinality would be the result of duplicate result member elimination for
+a I<setty> type.  For every member tuple or isomorphism I<X> in the C<0>
+argument, the result has a member tuple or isomorphism I<Y> that is equal
+to I<X> but that, for each attribute name I<K> of I<X>, the asset of the
+attribute named I<K> of I<Y> is equal to the asset of the attribute named
+I<K> of the C<1> argument rather than its value from I<X>.  This function
+will fail if the I<heading> of the C<1> argument is not a subset of the
+I<heading> of the C<0> argument.  This function implements the
+C<Attributive> virtual function C<update> aka C<%:=> for the composing type
+C<Relational>.
+
+=head2 extend (Relational)
+
+    ::MD::extend::Relational ::= function
+        --> Relational <-- (Relational, Structural)
+        implements 2::""
+        requires (\<0 disjoint_heading \<1)
+        : (select_relational::( like: \<0, heading: @\<0 extend \<1,
+            body: |\<0 map \extend::(:<1) ));
+
+The function C<extend::Relational> results in the I<relational extension>
+of its C<0> argument in terms of its C<1> argument.  The result is a value
+of the function's C<0> argument's collection type that has all of the
+attributes of the function's C<0> argument plus all of the attributes of
+its C<1> argument.  The I<degree> of the result is equal to the integral
+sum of the degrees of the 2 arguments, and the I<cardinality> of the result
+is equal to the cardinality of the C<0> argument.  There is a bijection
+between the C<0> argument and the result with respect to their I<members>;
+for every tuple or isomorphism I<X> in the C<0> argument, the result has a
+tuple or isomorphism I<Y> that is equal to the result of extending I<X>
+with all of the attributes (names and assets) of the C<1> argument.  This
+function will fail if the I<headings> of the 2 arguments are not disjoint.
+This function implements the C<Attributive> virtual function C<extend> aka
+C<%+> for the composing type C<Relational>.
+
+=head2 has_attrs (Relational)
+
+    ::MD::has_attrs::Relational ::= function
+        --> Boolean <-- (Relational, Signature)
+        implements 2::""
+        : (...);
+
+I<TODO.>
+I<TODO.  Like, we should be able to implement these in pure Muldis D simply.>
+
+=head2 has_just_attrs (Relational)
+
+    ::MD::has_just_attrs::Relational ::= function
+        --> Boolean <-- (Relational, Signature)
+        implements 2::""
+        : (...);
 
 I<TODO.>
 
