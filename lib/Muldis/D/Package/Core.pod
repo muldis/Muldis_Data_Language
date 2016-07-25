@@ -390,7 +390,7 @@ otherwise, meaning the values of C<0> and C<1> are swapped.
 =head2 Successable
 
     ::MD::Successable ::= interface
-        requires_implements {asset,succ};
+        requires_implements {asset,nth_succ};
 
 The interface contract C<Successable> is infinite.  A C<Successable> value
 is a member of a conceptually noncontiguous totally ordered type; it has a
@@ -452,29 +452,21 @@ programming languages may name their corresponding operators I<Current>.
 
 =head2 succ
 
-    ::MD::succ::"" ::= function virtual
-        --> {Successable, Pos_Inf} <-- (Successable);
+    ::MD::succ ::= function --> {Successable, Pos_Inf} <-- (Successable)
+        : (\<0 nth_succ 1);
 
-The virtual function C<succ> results in the I<successor> value of its
+The function C<succ> results in the I<successor> value of its
 C<0> argument, or in C<Pos_Inf> if there is none.  Other programming
 languages may name their corresponding operators I<next> or I<MoveNext>.
 
 =head2 nth_succ
 
-    ::MD::nth_succ ::= function
-        --> {Successable, Pos_Inf} <-- (Successable, Integer_NN)
-    : (
-        if !?\<1 then
-            \<0
-        else
-            if Excuse::(s ::= succ \<0) then
-                s
-            else
-                s nth_succ --\<1
-    );
+    ::MD::nth_succ::"" ::= function virtual
+        --> {Successable, Pos_Inf} <-- (Successable, Integer_NN);
 
-The function C<nth_succ> results in the Nth I<successor> value of its C<0>
-argument, where N is its C<1> argument, or in C<Pos_Inf> if there is none.
+The virtual function C<nth_succ> results in the Nth I<successor> value of
+its C<0> argument, where N is its C<1> argument, or in C<Pos_Inf> if there
+is none.
 
 =head1 BICESSABLE DATA TYPES
 
@@ -483,7 +475,7 @@ argument, where N is its C<1> argument, or in C<Pos_Inf> if there is none.
     ::MD::Bicessable ::= interface
         composes {Orderable and_provides_its_default,
             Successable and_provides_its_default}
-        requires_implements {in_order,asset,pred,succ};
+        requires_implements {in_order,asset,nth_pred,nth_succ};
 
 The interface contract C<Bicessable> is infinite.  A C<Bicessable> value
 is an C<Orderable> value for which, using the same canonical total order
@@ -527,29 +519,21 @@ values and should not be conceptualized as mathematical operations.
 
 =head2 pred
 
-    ::MD::pred::"" ::= function virtual
-        --> {Bicessable, Neg_Inf} <-- (Bicessable);
+    ::MD::pred ::= function --> {Bicessable, Neg_Inf} <-- (Bicessable)
+        : (\<0 nth_pred 1);
 
-The virtual function C<pred> results in the I<predecessor> value of its
+The function C<pred> results in the I<predecessor> value of its
 C<0> argument, or in C<Neg_Inf> if there is none.  Other programming
 languages may name their corresponding operators I<prior> or I<previous>.
 
 =head2 nth_pred
 
-    ::MD::nth_pred ::= function
-        --> {Bicessable, Neg_Inf} <-- (Bicessable, Integer_NN)
-    : (
-        if !?\<1 then
-            \<0
-        else
-            if Excuse::(s ::= pred \<0) then
-                s
-            else
-                s nth_pred --\<1
-    );
+    ::MD::nth_pred::"" ::= function virtual
+        --> {Bicessable, Neg_Inf} <-- (Bicessable, Integer_NN);
 
-The function C<nth_pred> results in the Nth I<predecessor> value of its C<0>
-argument, where N is its C<1> argument, or in C<Neg_Inf> if there is none.
+The virtual function C<nth_pred> results in the Nth I<predecessor> value of
+its C<0> argument, where N is its C<1> argument, or in C<Neg_Inf> if there
+is none.
 
 =head1 BOOLABLE DATA TYPES
 
@@ -670,23 +654,25 @@ The function C<asset::Boolean> simply results in its C<0> argument.
 This function implements the C<Successable> virtual function C<asset> for
 the composing type C<Boolean>.
 
-=head2 pred (Boolean)
+=head2 nth_pred (Boolean)
 
-    ::MD::pred::Boolean ::= function --> {False, Neg_Inf} <-- (Boolean)
+    ::MD::nth_pred::Boolean ::= function
+        --> {False, Neg_Inf} <-- (Boolean, Integer_NN)
         implements 2::""
-        : (\<0 ?? False !! -∞);
+        : (\<1 = 0 ?? \<0 !! \<1 = 1 and \<0 ?? False !! -∞);
 
-The function C<pred::Boolean> implements the C<Bicessable> virtual
-function C<pred> for the composing type C<Boolean>.
+The function C<nth_pred::Boolean> implements the C<Bicessable> virtual
+function C<nth_pred> for the composing type C<Boolean>.
 
-=head2 succ (Boolean)
+=head2 nth_succ (Boolean)
 
-    ::MD::succ::Boolean ::= function --> {True, Pos_Inf} <-- (Boolean)
+    ::MD::nth_succ::Boolean ::= function
+        --> {True, Pos_Inf} <-- (Boolean, Integer_NN)
         implements 2::""
-        : (!\<0 ?? True !! +∞);
+        : (\<1 = 0 ?? \<0 !! \<1 = 1 and !\<0 ?? True !! +∞);
 
-The function C<succ::Boolean> implements the C<Successable> virtual
-function C<succ> for the composing type C<Boolean>.
+The function C<nth_succ::Boolean> implements the C<Successable> virtual
+function C<nth_succ> for the composing type C<Boolean>.
 
 =head2 to_Boolean (Boolean)
 
@@ -1210,7 +1196,7 @@ otherwise.
     ::MD::Integral ::= interface
         composes {Bicessable and_provides_its_default,
             Numerical and_provides_its_default}
-        requires_implements {in_order,asset,pred,succ
+        requires_implements {in_order,asset,nth_pred,nth_succ
             ,to_Boolean
             ,zero,opposite,reciprocal,modulus
             ,plus,minus,times,multiple_of
@@ -1252,29 +1238,25 @@ The selection contract C<Integral_P> represents the infinite type
 consisting just of the C<Integral_NN> values that are positive.  Its
 default and minmum value is C<1>; it has no maximum value.
 
-=head2 pred (Integral)
+=head2 --
 
-    ::MD::pred::Integral ::= function virtual --> Integral <-- (Integral)
-        implements 2::"";
+    ::MD::"--" ::= function --> {Integral, Neg_Inf} <-- (Integral)
+        : (pred \<0);
 
-    ::MD::"--" ::= alias of pred::Integral;
+The function C<--> results in the I<predecessor> value of its C<0>
+argument, or in C<Neg_Inf> if there is none.  It is an integral numeric
+specific alias for the C<Bicessable> virtual function C<pred>.  Other
+programming languages may name their corresponding operators I<decrement>.
 
-The virtual function C<pred::Integral> aka C<--> implements the
-C<Bicessable> virtual function C<pred> for the composing type C<Integral>.
-Other programming languages may name their corresponding operators
-I<decrement>.
+=head2 ++
 
-=head2 succ (Integral)
+    ::MD::"++" ::= function --> {Integral, Pos_Inf} <-- (Integral)
+        : (succ \<0);
 
-    ::MD::succ::Integral ::= function virtual --> Integral <-- (Integral)
-        implements 2::"";
-
-    ::MD::"++" ::= alias of succ::Integral;
-
-The virtual function C<succ::Integral> aka C<++> implements the
-C<Successable> virtual function C<succ> for the composing type C<Integral>.
-Other programming languages may name their corresponding operators
-I<increment>.
+The function C<++> results in the I<successor> value of its C<0> argument,
+or in C<Pos_Inf> if there is none.  It is an integral numeric specific
+alias for the C<Successable> virtual function C<succ>.  Other programming
+languages may name their corresponding operators I<increment>.
 
 =head2 to_Integer
 
@@ -1385,24 +1367,24 @@ The function C<asset::Integer> simply results in its C<0> argument.
 This function implements the C<Successable> virtual function C<asset> for
 the composing type C<Integer>.
 
-=head2 pred (Integer)
+=head2 nth_pred (Integer)
 
-    ::MD::pred::Integer ::= function --> Integer <-- (Integer)
+    ::MD::nth_pred::Integer ::= function --> Integer <-- (Integer, Integer_NN)
         implements 2::Integral
-        : (\<0 - 1);
+        : (\<0 - \<1);
 
-The function C<pred::Integer> implements the C<Bicessable>/C<Integral>
-virtual function C<pred> aka C<--> for the composing type C<Integer>.
+The function C<nth_pred::Integer> implements the C<Bicessable>
+virtual function C<nth_pred> for the composing type C<Integer>.
 
-=head2 succ (Integer)
+=head2 nth_succ (Integer)
 
-    ::MD::succ::Integer ::= function --> Integer <-- (Integer)
+    ::MD::nth_succ::Integer ::= function --> Integer <-- (Integer, Integer_NN)
         implements 2::Integral
         repeater plus::Integer
-        : (\<0 + 1);
+        : (\<0 + \<1);
 
-The function C<succ::Integer> implements the C<Successable>/C<Integral>
-virtual function C<succ> aka C<++> for the composing type C<Integer>.
+The function C<nth_succ::Integer> implements the C<Successable>
+virtual function C<nth_succ> for the composing type C<Integer>.
 
 =head2 to_Boolean (Integer)
 
