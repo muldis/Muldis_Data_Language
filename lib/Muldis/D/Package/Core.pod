@@ -6470,7 +6470,7 @@ I<TODO.>
 
     ::MD::Relational ::= interface
         composes {Unionable, Attributive}
-        requires_implements {heading,select_Relational,body};
+        requires_implements {heading,body,select_Relational};
 
 The interface contract C<Relational> is infinite.  A C<Relational> value is
 a C<Unionable> value that is also an C<Attributive> value.  This means the
@@ -7074,6 +7074,20 @@ I<TODO.  Like, we should be able to implement these in pure Muldis D simply.>
 
 I<TODO.>
 
+=head2 body |
+
+    ::MD::body::"" ::= function virtual --> Unionable <-- (Relational);
+
+    ::MD::"|" ::= alias of body;
+
+The virtual function C<body> aka C<|> results in the relational I<body> of
+its C<0> argument, that is its multiset of member tuples.  The form that
+this takes is a generic C<Unionable> (such as a generic C<Array> or C<Set>
+or C<Bag>) each of whose members is a C<Structural> value.  Note that the 2
+functions C<heading> and C<body> are complementary for C<Relational>
+values; between the two of them, one can obtain all primary components of a
+typical C<Relational> value, and select that same value again.
+
 =head2 select_Relational
 
     ::MD::select_Relational::"" ::= function virtual
@@ -7090,20 +7104,6 @@ for any C<Relational> type.
 I<TODO: Flesh out the set of predefined Excuse values, such as for body
 members that aren't compatible with the heading, or possibly for composing
 types that restrict their possible headings at the type level.>
-
-=head2 body |
-
-    ::MD::body::"" ::= function virtual --> Unionable <-- (Relational);
-
-    ::MD::"|" ::= alias of body;
-
-The virtual function C<body> aka C<|> results in the relational I<body> of
-its C<0> argument, that is its multiset of member tuples.  The form that
-this takes is a generic C<Unionable> (such as a generic C<Array> or C<Set>
-or C<Bag>) each of whose members is a C<Structural> value.  Note that the 2
-functions C<heading> and C<body> are complementary for C<Relational>
-values; between the two of them, one can obtain all primary components of a
-typical C<Relational> value, and select that same value again.
 
 =head1 TUPLE-ARRAY DATA TYPES
 
@@ -7153,6 +7153,42 @@ zero-tuple C<Tuple_Array> value.
 The constant C<Tuple_Array_D0C1> represents the only zero-attribute,
 single-tuple C<Tuple_Array> value.
 
+=head2 heading (Tuple_Array)
+
+    ::MD::heading::Tuple_Array ::= function --> Heading <-- (Tuple_Array)
+        implements 2::""
+        : (unwrap::(\<0).\heading);
+
+The function C<heading::Tuple_Array> results in the relational I<heading>
+of its C<0> argument, that is its set of distinct attribute names.  This
+function implements the C<Attributive> virtual function C<heading> aka C<@>
+for the composing type C<Tuple_Array>.
+
+=head2 body (Tuple_Array)
+
+    ::MD::body::Tuple_Array ::= function --> Array <-- (Tuple_Array)
+        implements 2::""
+        : (unwrap::(\<0).\body);
+
+The function C<body::Tuple_Array> results in the relational I<body> of its
+C<0> argument, that is its multiset of member tuples.  This function
+implements the C<Relational> virtual function C<body> aka C<|> for the
+composing type C<Tuple_Array>.
+
+=head2 select_Relational (Tuple_Array)
+
+    ::MD::select_Relational::Tuple_Array ::= function
+        --> {Relational, Excuse::...}
+        <-- (like : Tuple_Array, heading : Heading, body : Array)
+        implements 2::""
+        : (\Tuple_Array wrap (:<heading, :<body));
+
+The function C<select_Relational::Tuple_Array> results in the
+C<Tuple_Array> value that has the same I<heading> as its C<heading>
+argument and whose I<body> consists of just the member I<tuples> of its
+C<body> argument.  This function implements the C<Relational> virtual
+function C<select_Relational> for the composing type C<Tuple_Array>.
+
 =head1 RELATION DATA TYPES
 
 =head2 Relation
@@ -7164,8 +7200,16 @@ single-tuple C<Tuple_Array> value.
             default (?%@())
             composes {Relational and_provides_its_default, Discrete, Setty};
 
-        _Asset ::= selection of Tuple_Bag
-            where (all_unique \<0);
+        _Asset ::= selection of Tuple where
+        (
+            if \<0 has_just_attrs ( heading : \Heading::(), body : \Set::() ) then
+                if \<<body all \Tuple::() then
+                    \<<body all (function : (@\<0 = \<1)) \<-- \<<heading
+                else
+                    False
+            else
+                False
+        );
     };
 
 I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
@@ -7189,6 +7233,42 @@ Manifesto> also refers to this value by the special name I<TABLE_DUM>.
 The constant C<Relation_D0C1> aka C<D0C1> represents the only
 zero-attribute, single-tuple C<Relation> value.  Note that I<The Third
 Manifesto> also refers to this value by the special name I<TABLE_DEE>.
+
+=head2 heading (Relation)
+
+    ::MD::heading::Relation ::= function --> Heading <-- (Relation)
+        implements 2::""
+        : (unwrap::(\<0).\heading);
+
+The function C<heading::Relation> results in the relational I<heading>
+of its C<0> argument, that is its set of distinct attribute names.  This
+function implements the C<Attributive> virtual function C<heading> aka C<@>
+for the composing type C<Relation>.
+
+=head2 body (Relation)
+
+    ::MD::body::Relation ::= function --> Set <-- (Relation)
+        implements 2::""
+        : (unwrap::(\<0).\body);
+
+The function C<body::Relation> results in the relational I<body> of its
+C<0> argument, that is its set of member tuples.  This function
+implements the C<Relational> virtual function C<body> aka C<|> for the
+composing type C<Relation>.
+
+=head2 select_Relational (Relation)
+
+    ::MD::select_Relational::Relation ::= function
+        --> {Relational, Excuse::...}
+        <-- (like : Relation, heading : Heading, body : Set)
+        implements 2::""
+        : (\Relation wrap (:<heading, :<body));
+
+The function C<select_Relational::Relation> results in the
+C<Relation> value that has the same I<heading> as its C<heading>
+argument and whose I<body> consists of just the member I<tuples> of its
+C<body> argument.  This function implements the C<Relational> virtual
+function C<select_Relational> for the composing type C<Relation>.
 
 =head1 TUPLE-BAG DATA TYPES
 
@@ -7229,7 +7309,41 @@ zero-tuple C<Tuple_Bag> value.
 The constant C<Tuple_Bag_D0C1> represents the only zero-attribute,
 single-tuple C<Tuple_Bag> value.
 
-I<TODO: Note, yes, a Set rather than Bag arg is ok since multiplicity=1 here.>
+=head2 heading (Tuple_Bag)
+
+    ::MD::heading::Tuple_Bag ::= function --> Heading <-- (Tuple_Bag)
+        implements 2::""
+        : (unwrap::(\<0).\heading);
+
+The function C<heading::Tuple_Bag> results in the relational I<heading>
+of its C<0> argument, that is its set of distinct attribute names.  This
+function implements the C<Attributive> virtual function C<heading> aka C<@>
+for the composing type C<Tuple_Bag>.
+
+=head2 body (Tuple_Bag)
+
+    ::MD::body::Tuple_Bag ::= function --> Bag <-- (Tuple_Bag)
+        implements 2::""
+        : (unwrap::(\<0).\body);
+
+The function C<body::Tuple_Bag> results in the relational I<body> of its
+C<0> argument, that is its multiset of member tuples.  This function
+implements the C<Relational> virtual function C<body> aka C<|> for the
+composing type C<Tuple_Bag>.
+
+=head2 select_Relational (Tuple_Bag)
+
+    ::MD::select_Relational::Tuple_Bag ::= function
+        --> {Relational, Excuse::...}
+        <-- (like : Tuple_Bag, heading : Heading, body : Bag)
+        implements 2::""
+        : (\Tuple_Bag wrap (:<heading, :<body));
+
+The function C<select_Relational::Tuple_Bag> results in the
+C<Tuple_Bag> value that has the same I<heading> as its C<heading>
+argument and whose I<body> consists of just the member I<tuples> of its
+C<body> argument.  This function implements the C<Relational> virtual
+function C<select_Relational> for the composing type C<Tuple_Bag>.
 
 =head1 INTERVALISH DATA TYPES
 
