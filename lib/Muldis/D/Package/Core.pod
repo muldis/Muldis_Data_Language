@@ -3465,6 +3465,12 @@ I<TODO.  Result is true when no member evaluates to false.>
 
 I<Other languages: "TrueForAll".>
 
+=head2 not_all
+
+    ::MD::not_all ::= function negates all;
+
+I<TODO.  Result is true when at least one member evaluates to false.>
+
 =head1 UNIONABLE DATA TYPES
 
 =head2 Unionable
@@ -6498,9 +6504,11 @@ C<so> aka C<?> for the composing type C<Relational>.
         implements 2::""
         : (select_Relational::( like: \<0, heading: @\<0, body: empty |\<0 ));
 
-The function C<empty::Relational> results in the only zero-tuple
-C<Relational> value.  This function implements the C<Emptyable> virtual
-function C<empty> aka C<∅> for the composing type C<Relational>.
+The function C<empty::Relational> results in the only value of its C<0>
+argument's relational type that has the same I<heading> as that argument
+and whose I<body> has zero tuples.  This function implements the
+C<Emptyable> virtual function C<empty> aka C<∅> for the composing type
+C<Relational>.
 
 =head2 singular (Relational)
 
@@ -6907,7 +6915,7 @@ C<has_any_attrs> aka C<?@> for the composing type C<Relational>.
         : (\<0 on ());
 
 The function C<nullary::Relational> results in the value of its C<0>
-argument's collection type that has zero attributes.  For types like
+argument's relational type that has zero attributes.  For types like
 C<Tuple_Bag>, there is a distinct result for each I<cardinality>; for types
 like C<Relation> there are exactly 2 possible result values.  This function
 implements the C<Attributive> virtual function C<nullary> for the composing
@@ -6946,7 +6954,7 @@ C<Relational>.
 
 The function C<rename::Relational> results results in the I<relational
 rename> of its C<0> argument in terms of its C<1> argument.  The result is
-a value of the function's C<0> argument's collection type that has all of
+a value of the function's C<0> argument's relational type that has all of
 the attributes of the function's C<0> argument but that, for each attribute
 of the C<0> argument whose attribute name matches a I<before> element of
 its C<1> argument, the result's corresponding attribute instead has an
@@ -6989,7 +6997,7 @@ C<can_project_matching> aka C<%=?> for the composing type C<Relational>.
 
 The function C<on::Relational> results in the I<relational projection> of
 its C<0> argument in terms of its C<1> argument.  The result is a value of
-the function's C<0> argument's collection type that has all of the
+the function's C<0> argument's relational type that has all of the
 attributes of the function's C<0> argument whose names match the names of
 attributes of its C<1> argument.  The I<degree> of the result is equal to
 the degree of the C<1> argument, and the I<cardinality> of the result is
@@ -7013,7 +7021,7 @@ C<%=> aka C<π> for the composing type C<Relational>.
             body: |\<0 map \update::(:<1) ));
 
 The function C<update::Relational> results in the value of its C<0>
-argument's collection type that has all of the attributes of the function's
+argument's relational type that has all of the attributes of the function's
 C<0> argument but that, for each attribute of the C<0> argument whose
 attribute name I<K> matches the name of an attribute of its C<1> argument,
 the result takes its corresponding attribute from the C<1> argument rather
@@ -7042,7 +7050,7 @@ C<Relational>.
 
 The function C<extend::Relational> results in the I<relational extension>
 of its C<0> argument in terms of its C<1> argument.  The result is a value
-of the function's C<0> argument's collection type that has all of the
+of the function's C<0> argument's relational type that has all of the
 attributes of the function's C<0> argument plus all of the attributes of
 its C<1> argument.  The I<degree> of the result is equal to the integral
 sum of the degrees of the 2 arguments, and the I<cardinality> of the result
@@ -7097,9 +7105,10 @@ typical C<Relational> value, and select that same value again.
 The virtual function C<select_Relational> results in the value of its
 C<like> argument's relational type that has the same I<heading> as its
 C<heading> argument and whose I<body> consists of just the member I<tuples>
-of its C<body> argument.  Note that the identity
-C<r = select_Relational::( like : r, heading : @r, body : |r )> should hold
-for any C<Relational> type.
+of its C<body> argument.  The purpose of C<select_Relational> is to help
+facilitate ease of reuse of code between different C<Relational> types.
+Note that the identity C<r = select_Relational::( like : r, heading : @r,
+body : |r )> should hold for any C<Relational> type.
 
 I<TODO: Flesh out the set of predefined Excuse values, such as for body
 members that aren't compatible with the heading, or possibly for composing
