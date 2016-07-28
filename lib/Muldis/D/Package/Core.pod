@@ -2989,6 +2989,16 @@ otherwise it results in C<False>.  Other programming languages may name
 their corresponding operators I<ContainsKey> or I<has_key?> or I<key?> or
 I<exists> or I<in> or I<array_key_exists>.
 
+=head2 not_has_any_at .!?
+
+    ::MD::not_has_any_at ::= function negates has_any_at;
+
+    ::MD::".!?" ::= alias of not_has_any_at;
+
+The function C<not_has_any_at> aka C<.!?> results in C<True> iff its C<0>
+argument does not have any mapping whose key is equal to its C<1> argument;
+otherwise it results in C<False>.
+
 =head2 has_mapping_at .:?
 
     ::MD::has_mapping_at::"" ::= function virtual
@@ -6436,6 +6446,13 @@ I<TODO.>
 
 I<TODO.>
 
+=head2 all_attr_assets
+
+    ::MD::all_attr_assets ::= function --> Boolean <-- (Tuple, Function_Call_But_0)
+        : (\<0 all_attrs ((function : (\<1 <-- (\<<asset,))) \<-- (:<1,)));
+
+I<TODO.>
+
 =head2 attrs_where
 
     ::MD::attrs_where ::= function --> Tuple <-- (Tuple, Function_Call_But_0)
@@ -7441,6 +7458,10 @@ Given that almost every selection contract is a subset of
 C<Capsule>, the latter intentionally does not compose any interface
 contracts, and only has the minimal set of its own operators, so to
 minimize interference with other types' interfaces.
+For similar reasons, the Capsule-specific operators are grouped under the
+Capsule:: namespace to discourage their direct use in regular code on a
+common basis versus using type-specific accessors; any users would either
+have to prefix with Capsule:: or float that namespace to use them unqualified.
 
 =head2 Capsule::wrap
 
@@ -7520,19 +7541,19 @@ I<TODO.>
     ::MD::Source_Code::Package ::= binder
     {
         "" ::= selection of Capsule
-            where (has_wrapped::( \<0, \Package, \1::_Asset() ))
-            default (\Package wrap 1::_Asset());
+            where (has_wrapped::( \<0, \Package, \1::_Traits() ))
+            default (\Package wrap 1::_Traits());
 
-        _Asset ::= selection of Tuple where
+        _Traits ::= selection of Tuple where
         (
             if
                 \<0 is_a (
                     identity : (selection of Pkg_Decl_Map where (is_unary \<0)),
-                    foundation : ...,
+                    foundation : \Fdn_Canon_Name::(),
                     uses : \Pkg_Decl_Map::(),
-                    entry : ...,
-                    floating : ...,
-                    materials : ...,
+                    entry : \Entry_Point::(),
+                    floating : \Floating::(),
+                    materials : \Folder::(),
                     annotation : ...,
                     decoration : ...,
                 )
@@ -7549,9 +7570,100 @@ I<Remember that "floating" can't search inside a binder, can only resolve to a b
 =head2 Source_Code::Pkg_Decl_Map
 
     ::MD::Source_Code::Pkg_Decl_Map ::= selection of Tuple
-        where (\<0 all_attrs (function : (Pkg_Canon_Name \<<asset)));
+        where (\<0 .!? \"" and \<0 all_attr_assets \Pkg_Canon_Name::());
+
+I<TODO.  Each attribute name declares a single-element composing-package-local
+alias for (itself or) the used package.>
+
+=head2 Source_Code::Pkg_Canon_Name
+
+    ::MD::Source_Code::Pkg_Canon_Name ::= selection of Tuple where
+    (
+        if
+            \<0 is_a (
+                pkg_name_base : \Attr_Name_List::(),
+                pkg_name_ext  : \Attr_Name_List::(),
+                    `Element 0 is the package authority.`
+                    `Element 1 is the package version number.`
+            )
+        then
+                #@\<<pkg_name_base >= 1 and \<<pkg_name_base ∌ \""
+            and #@\<<pkg_name_ext  >= 2 and \<<pkg_name_ext  ∌ \""
+        else
+            False
+    );
 
 I<TODO.>
+
+=head2 Source_Code::Fdn_Canon_Name
+
+    ::MD::Source_Code::Fdn_Canon_Name ::= selection of Attr_Name_List
+        where (#\<0 >= 2 and \<0 ∌ \"");
+            `Element 0 is the Foundation authority.`
+            `Element 1 is the Foundation version number.`
+
+I<TODO.>
+
+=head2 Source_Code::Entry_Point
+
+    ::MD::Source_Code::Entry_Point ::= selection of Absolute_Name;
+
+I<TODO.  This type is subject to be expanded to some collection or have alternatives.>
+
+=head2 Source_Code::Floating
+
+    ::MD::Source_Code::Floating ::= selection of Set
+        where (\<0 all \Absolute_Name::());
+
+I<TODO.>
+
+=head2 Source_Code::Absolute_Name
+
+    ::MD::Source_Code::Absolute_Name ::= selection of Attr_Name_List
+        where (#\<0 >= 1 and \<0.0 != \"");
+            `Element 0 is the package local alias.`
+            `Elements 1+ are the folder or material names nested beneath it.`
+
+I<TODO.>
+
+=head2 Source_Code::Folder
+
+    ::MD::Source_Code::Folder ::= selection of Tuple
+        where (\<0 all_attr_assets
+            (function : (\<0 is_a {\Folder::(), \Binder::()})));
+
+I<TODO.>
+
+=head2 Source_Code::Binder
+
+    ::MD::Source_Code::Binder ::= binder
+    {
+        "" ::= selection of Capsule
+            where (has_wrapped::( \<0, \Binder, \1::_Asset() ))
+            default (\Binder wrap 1::_Asset());
+
+        _Asset ::= selection of Tuple where
+        (
+            \<0 is_a (
+                materials : \1::_Materials::(),
+                annotation : ...,
+                decoration : ...,
+            )
+        );
+
+        _Materials ::= selection of Tuple
+            where (\<0 .? \"" and \<0 all_attr_assets \Material::());
+    };
+
+I<TODO.>
+
+=head2 Source_Code::Material
+
+    ::MD::Source_Code::Material ::= selection
+        union {Alias, Constant, Selection, Interface, Function, Procedure}
+        default (...);
+
+I<TODO.  Enumeration only exists as a Plain_Text shorthand.>
 
 =head2 Source_Code::Signature
 
@@ -7571,14 +7683,14 @@ I<TODO.>
 =head2 Source_Code::Signature::Tuple
 
     ::MD::Source_Code::Signature::Tuple ::= selection of Tuple
-        where (\<0 all_attrs (function : (Signature \<<asset)));
+        where (\<0 all_attr_assets \Signature::());
 
 I<TODO.>
 
 =head2 Source_Code::Heading
 
     ::MD::Source_Code::Heading ::= selection of Signature::Tuple
-        where (\<0 all_attrs (function : (\<<asset = True)));
+        where (\<0 all_attr_assets \True::());
 
 I<TODO.>
 
@@ -7590,6 +7702,13 @@ a thing for opening tuples as for creating them.>
 
     ::MD::Source_Code::Attr_Name ::= selection of Heading
         where (is_unary \<0);
+
+I<TODO.>
+
+=head2 Source_Code::Attr_Name_List
+
+    ::MD::Source_Code::Attr_Name_List ::= selection of Array
+        where (\<0 all \Attr_Name::());
 
 I<TODO.>
 
