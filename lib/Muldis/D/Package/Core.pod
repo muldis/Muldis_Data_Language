@@ -112,25 +112,7 @@ or I<=\=>.
 =head2 is_a
 
     ::MD::is_a ::= function --> Boolean <-- (Any, Signature)
-    : (
-        if Boolean \<1 then
-            \<1
-        else if Function_Call_But_0 \<1 then
-            (\<0,) --> \<1
-        else if Signature::Set(\<1) then
-            \<1 any (function : (\<1 is_a \<0)) \<-- (1 : \<0)
-        else if Signature::Tuple(\<1) then
-            if Tuple \<0 then
-                if \<0 =@ \<1 then
-                    \<0 all_attrs
-                        (function : (\<<asset is_a \<1.\<<name)) \<-- (:<1,)
-                else
-                    False
-            else
-                False
-        else
-            fail  `We should never get here.`
-    );
+        : (\<0 --> Signature_to_Function_Call_But_0::(\<1));
 
 The function C<is_a> results in C<True> iff its C<0> argument is a
 member of the type specified by its C<1> argument, and C<False> otherwise.
@@ -3449,7 +3431,7 @@ multiset of members of its C<1> argument; otherwise it results in C<False>.
 =head2 any there_exists ∃
 
     ::MD::any::"" ::= function virtual
-        --> Boolean <-- (Homogeneous, Function_Call_But_0);
+        --> Boolean <-- (Homogeneous, Signature);
 
     ::MD::there_exists ::= alias of any;
 
@@ -3478,8 +3460,8 @@ I<TODO.  Result is true when no member evaluates to true.>
 
 =head2 all for_all ∀
 
-    ::MD::all ::= function --> Boolean <-- (Homogeneous, Function_Call_But_0)
-        : (\<0 none ((function : (not \<1 <-- (\<0,))) \<-- (:<1,)));
+    ::MD::all ::= function --> Boolean <-- (Homogeneous, Signature)
+        : (\<0 none \not_is_a::(:<1));
 
     ::MD::for_all ::= alias of all;
 
@@ -3728,7 +3710,7 @@ I<TODO.>
 =head2 where σ
 
     ::MD::where::"" ::= function virtual
-        --> Unionable <-- (Unionable, Function_Call_But_0);
+        --> Unionable <-- (Unionable, Signature);
 
     ::MD::Unicode_Aliases::"σ" ::= alias of where;
 
@@ -4558,9 +4540,9 @@ virtual function C<unique> for the composing type C<Array>.
 
 =head2 any (Array)
 
-    ::MD::any::Array ::= function --> Boolean <-- (Array, Function_Call_But_0)
+    ::MD::any::Array ::= function --> Boolean <-- (Array, Signature)
         implements 2::""
-        : (\<*args -->^ FDN__Array_any);
+        : ((\<0, Signature_to_Function_Call_But_0::(\<1)) -->^ FDN__Array_any);
 
 I<TODO.>
 
@@ -4677,9 +4659,10 @@ I<TODO.>
 
 =head2 where (Array)
 
-    ::MD::where::Array ::= function --> Array <-- (Array, Function_Call_But_0)
+    ::MD::where::Array ::= function --> Array <-- (Array, Signature)
         implements 2::""
-        : (\<*args -->^ FDN__Array_where);
+        : ((\<0, Signature_to_Function_Call_But_0::(\<1))
+            -->^ FDN__Array_where);
 
 I<TODO.>
 
@@ -4993,7 +4976,7 @@ C<disjoint_members> for the composing type C<Set>.
 
 =head2 any (Set)
 
-    ::MD::any::Set ::= function --> Boolean <-- (Set, Function_Call_But_0)
+    ::MD::any::Set ::= function --> Boolean <-- (Set, Signature)
         implements 2::""
         : (\<0->unwrap any \<1);
 
@@ -5109,7 +5092,7 @@ I<TODO.>
 
 =head2 where (Set)
 
-    ::MD::where::Set ::= function --> Set <-- (Set, Function_Call_But_0)
+    ::MD::where::Set ::= function --> Set <-- (Set, Signature)
         implements 2::""
         : (\Set wrap (\<0->unwrap where \<1));
 
@@ -5356,9 +5339,9 @@ C<disjoint_members> for the composing type C<Bag>.
 
 =head2 any (Bag)
 
-    ::MD::any::Bag ::= function --> Boolean <-- (Bag, Function_Call_But_0)
+    ::MD::any::Bag ::= function --> Boolean <-- (Bag, Signature)
         implements 2::""
-        : (\<*args -->^ FDN__Bag_any);
+        : ((\<0, Signature_to_Function_Call_But_0::(\<1)) -->^ FDN__Bag_any);
 
 I<TODO.>
 
@@ -5473,9 +5456,9 @@ I<TODO.>
 
 =head2 where (Bag)
 
-    ::MD::where::Bag ::= function --> Bag <-- (Bag, Function_Call_But_0)
+    ::MD::where::Bag ::= function --> Bag <-- (Bag, Signature)
         implements 2::""
-        : (\<*args -->^ FDN__Bag_where);
+        : ((\<0, Signature_to_Function_Call_But_0::(\<1)) -->^ FDN__Bag_where);
 
 I<TODO.>
 
@@ -6422,8 +6405,9 @@ for the composing type C<Tuple>.
 
 =head2 any_attrs
 
-    ::MD::any_attrs ::= function --> Boolean <-- (Tuple, Function_Call_But_0)
-        : (\<*args -->^ FDN__Tuple_any_attrs);
+    ::MD::any_attrs ::= function --> Boolean <-- (Tuple, Signature)
+        : ((\<0, Signature_to_Function_Call_But_0::(\<1))
+            -->^ FDN__Tuple_any_attrs);
 
 I<TODO.>
 
@@ -6435,8 +6419,8 @@ I<TODO.>
 
 =head2 all_attrs
 
-    ::MD::all_attrs ::= function --> Boolean <-- (Tuple, Function_Call_But_0)
-        : (\<0 none_of_attrs ((function : (not \<1 <-- (\<0,))) \<-- (:<1,)));
+    ::MD::all_attrs ::= function --> Boolean <-- (Tuple, Signature)
+        : (\<0 none_of_attrs \not_is_a::(:<1));
 
 I<TODO.>
 
@@ -6448,15 +6432,17 @@ I<TODO.>
 
 =head2 all_attr_assets
 
-    ::MD::all_attr_assets ::= function --> Boolean <-- (Tuple, Function_Call_But_0)
-        : (\<0 all_attrs ((function : (\<1 <-- (\<<asset,))) \<-- (:<1,)));
+    ::MD::all_attr_assets ::= function --> Boolean <-- (Tuple, Signature)
+        : (\<0 all_attrs (function : (\<1 <-- (\<<asset,)))
+            \<-- (1 : Signature_to_Function_Call_But_0::(\<1)));
 
 I<TODO.>
 
 =head2 attrs_where
 
-    ::MD::attrs_where ::= function --> Tuple <-- (Tuple, Function_Call_But_0)
-        : (\<*args -->^ FDN__Tuple_attrs_where);
+    ::MD::attrs_where ::= function --> Tuple <-- (Tuple, Signature)
+        : ((\<0, Signature_to_Function_Call_But_0::(\<1))
+            -->^ FDN__Tuple_attrs_where);
 
 I<TODO.>
 
@@ -6671,7 +6657,7 @@ C<Relational>.
 =head2 any (Relational)
 
     ::MD::any::Relational ::= function
-        --> Boolean <-- (Relational, Function_Call_But_0)
+        --> Boolean <-- (Relational, Signature)
         implements 2::""
         : (|\<0 any \<1);
 
@@ -6877,7 +6863,7 @@ I<TODO.>
 =head2 where (Relational)
 
     ::MD::where::Relational ::= function
-        --> Relational <-- (Relational, Function_Call_But_0)
+        --> Relational <-- (Relational, Signature)
         implements 2::""
         : (select_Relational::( like: \<0, heading: @\<0, body: |\<0 where \<1 ));
 
@@ -7487,8 +7473,9 @@ I<TODO.>
 =head2 Capsule::has_wrapped
 
     ::MD::Capsule::has_wrapped ::= function
-        --> Boolean <-- (Capsule, Any, Function_Call_But_0)
-        : ((wrapper \<0) = \<1 and (unwrap \<0,) --> \<2);
+        --> Boolean <-- (Capsule, Any, Signature)
+        : ((wrapper \<0) = \<1 and
+            (unwrap \<0,) --> Signature_to_Function_Call_But_0::(\<2));
 
 I<TODO.  Says wrapper equals a value and asset passes a filter.>
 
@@ -7718,6 +7705,37 @@ I<TODO.>
         where (@\<0 = \@(key,asset));
 
 I<TODO.>
+
+=head2 Source_Code::Signature_to_Function_Call_But_0
+
+    ::MD::Source_Code::Signature_to_Function_Call_But_0 ::= function
+        --> Function_Call_But_0 <-- (Signature)
+    : (
+        if Boolean \<0 then
+            \<0 ?? \True::() !! \False::()
+        else if Function_Call_But_0 \<0 then
+            \<0
+        else if Signature::Set(\<0) then
+            (function : (\<1 any (function : (\<1 is_a \<0)) \<-- (1 : \<0)))
+                \<-- (1 : \<0)
+        else if Signature::Tuple(\<0) then
+            (function : (
+                if Tuple \<0 then
+                    if \<0 =@ \<1 then
+                        \<0 all_attrs
+                            (function : (\<<asset is_a \<1.\<<name)) \<-- (:<1,)
+                    else
+                        False
+                else
+                    False
+            )) \<-- (1 : \<0)
+        else
+            fail  `We should never get here.`
+    );
+
+I<TODO.  Also double-check that all_attrs etc are not infinite-recursing
+by way of this function.  Also make sure Foundation implementations can
+recognize and short-circuit the simple boolean signatures.>
 
 =head1 SOURCE CODE ANNOTATION DATA TYPES
 
