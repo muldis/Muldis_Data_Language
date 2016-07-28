@@ -111,12 +111,36 @@ or I<=\=>.
 
 =head2 is_a
 
-    ::MD::is_a ::= function --> Boolean <-- (Any, Contract_Name)
-        : ((\<0,) --> (\Function_Call wrap (func: \<1, args: ())));
+    ::MD::is_a ::= function --> Boolean <-- (Any, Signature)
+    : (
+        if Boolean \<1 then
+            \<1
+        else if Function_Call_But_0 \<1 then
+            (\<0,) --> \<1
+        else if Signature::Set(\<1) then
+            \<1 any (function : (\<1 is_a \<0)) \<-- (1 : \<0)
+        else if Signature::Tuple(\<1) then
+            if Tuple \<0 then
+                if \<0 =@ \<1 then
+                    \<0 all_attrs
+                        (function : (\<<asset is_a \<1.\<<name)) \<-- (:<1,)
+                else
+                    False
+            else
+                False
+        else
+            fail  `We should never get here.`
+    );
 
 The function C<is_a> results in C<True> iff its C<0> argument is a
 member of the type specified by its C<1> argument, and C<False> otherwise.
-Note that C<v is_a \@T> is more idiomatically written C<T::(v)>.
+Note that the idiomatic syntax for simply testing if a given value C<v> is
+a member of a type named C<T> is C<T v> or C<T::(v)> or C<\T::() <-- (v,)>
+and no generic testing operator is used for the purpose.  And so, the prime
+operator name C<is_a> is freed up for its current higher-level use, such
+that the type specifier it takes has more of a template format suitable in
+particular for concisely defining common cases of structural types, and in
+particular routine input and output signatures.
 
 =head2 not_is_a
 
@@ -124,16 +148,6 @@ Note that C<v is_a \@T> is more idiomatically written C<T::(v)>.
 
 The function C<not_is_a> results in C<False> iff its C<0> argument is a
 member of the type specified by its C<1> argument, and C<True> otherwise.
-Note that C<v not_is_a \@T> is more idiomatically written C<!T::(v)>.
-
-=head2 default
-
-    ::MD::default ::= function --> Any <-- (Contract_Name)
-        : (() --> (\Function_Call wrap (func: \<0, args: ())));
-
-The function C<default> results in the default value of the not-empty type
-specified by its C<0> argument.
-Note that C<default \@T> is more idiomatically written C<T::()>.
 
 =head1 EXCUSE DATA TYPES
 
@@ -1705,7 +1719,7 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
         _Asset ::= selection of Tuple where
         (
             if
-                \<0 has_just_attrs (
+                \<0 is_a (
                     numerator : \Integer::(),
                     denominator : \Integer_P::(),
                 )
@@ -5532,8 +5546,7 @@ C<Discrete> virtual function C<order_using> for the composing type C<Bag>.
     ::MD::Attributive ::= interface
         requires_implements {has_any_attrs,nullary
             ,is_unary,degree,heading,rename
-            ,can_project_matching,on,update,extend
-            ,has_attrs,has_just_attrs};
+            ,can_project_matching,on,update,extend};
 
 The interface contract C<Attributive> is infinite.  An C<Attributive> value
 is a I<collective> value such that every one of its component I<attributes>
@@ -6005,20 +6018,6 @@ when given the same arguments but that it simply ignores the existence of
 attributes of its C<1> argument whose names don't match attributes of its
 C<0> argument rather than failing.
 
-=head2 has_attrs
-
-    ::MD::has_attrs::"" ::= function virtual
-        --> Boolean <-- (Attributive, Signature);
-
-I<TODO.>
-
-=head2 has_just_attrs
-
-    ::MD::has_just_attrs::"" ::= function virtual
-        --> Boolean <-- (Attributive, Signature);
-
-I<TODO.>
-
 =head1 STRUCTURAL DATA TYPES
 
 =head2 Structural
@@ -6029,7 +6028,6 @@ I<TODO.>
         requires_implements {has_any_attrs,nullary
             ,is_unary,degree,heading,rename
             ,on,update,extend
-            ,has_attrs,has_just_attrs
             ,at
             ,to_Tuple};
 
@@ -6389,23 +6387,6 @@ will fail if the I<headings> of the 2 arguments are not disjoint.  This
 function implements the C<Attributive> virtual function C<extend> aka C<%+>
 for the composing type C<Tuple>.
 
-=head2 has_attrs (Tuple)
-
-    ::MD::has_attrs::Tuple ::= function --> Boolean <-- (Tuple, Signature)
-        implements 2::""
-        : (...);
-
-I<TODO.>
-I<TODO.  Like, we should be able to implement these in pure Muldis D simply.>
-
-=head2 has_just_attrs (Tuple)
-
-    ::MD::has_just_attrs::Tuple ::= function --> Boolean <-- (Tuple, Signature)
-        implements 2::""
-        : (...);
-
-I<TODO.>
-
 =head2 at (Tuple)
 
     ::MD::at::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
@@ -6446,6 +6427,12 @@ I<TODO.>
 
     ::MD::all_attrs ::= function --> Boolean <-- (Tuple, Function_Call_But_0)
         : (\<0 none_of_attrs ((function : (not \<1 <-- (\<0,))) \<-- (:<1,)));
+
+I<TODO.>
+
+=head2 not_all_attrs
+
+    ::MD::not_all_attrs ::= function negates all_attrs;
 
 I<TODO.>
 
@@ -7063,25 +7050,6 @@ function will fail if the I<headings> of the 2 arguments are not disjoint.
 This function implements the C<Attributive> virtual function C<extend> aka
 C<%+> for the composing type C<Relational>.
 
-=head2 has_attrs (Relational)
-
-    ::MD::has_attrs::Relational ::= function
-        --> Boolean <-- (Relational, Signature)
-        implements 2::""
-        : (...);
-
-I<TODO.>
-I<TODO.  Like, we should be able to implement these in pure Muldis D simply.>
-
-=head2 has_just_attrs (Relational)
-
-    ::MD::has_just_attrs::Relational ::= function
-        --> Boolean <-- (Relational, Signature)
-        implements 2::""
-        : (...);
-
-I<TODO.>
-
 =head2 body |
 
     ::MD::body::"" ::= function virtual --> Unionable <-- (Relational);
@@ -7127,7 +7095,7 @@ types that restrict their possible headings at the type level.>
 
         _Asset ::= selection of Tuple where
         (
-            if \<0 has_just_attrs ( heading : \Heading::(), body : \Array::() ) then
+            if \<0 is_a ( heading : \Heading::(), body : \Array::() ) then
                 if \<<body all \Tuple::() then
                     \<<body all (function : (@\<0 = \<1)) \<-- \<<heading
                 else
@@ -7211,7 +7179,7 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
 
         _Asset ::= selection of Tuple where
         (
-            if \<0 has_just_attrs ( heading : \Heading::(), body : \Set::() ) then
+            if \<0 is_a ( heading : \Heading::(), body : \Set::() ) then
                 if \<<body all \Tuple::() then
                     \<<body all (function : (@\<0 = \<1)) \<-- \<<heading
                 else
@@ -7292,7 +7260,7 @@ function C<select_Relational> for the composing type C<Relation>.
 
         _Asset ::= selection of Tuple where
         (
-            if \<0 has_just_attrs ( heading : \Heading::(), body : \Bag::() ) then
+            if \<0 is_a ( heading : \Heading::(), body : \Bag::() ) then
                 if \<<body all \Tuple::() then
                     \<<body all (function : (@\<0 = \<1)) \<-- \<<heading
                 else
@@ -7558,7 +7526,7 @@ I<TODO.>
         _Asset ::= selection of Tuple where
         (
             if
-                \<0 has_just_attrs (
+                \<0 is_a (
                     identity : (selection of Pkg_Decl_Map where (is_unary \<0)),
                     foundation : ...,
                     uses : \Pkg_Decl_Map::(),
@@ -7585,9 +7553,31 @@ I<Remember that "floating" can't search inside a binder, can only resolve to a b
 
 I<TODO.>
 
+=head2 Source_Code::Signature
+
+    ::MD::Source_Code::Signature::"" ::= selection
+        union {Boolean, Function_Call_But_0, 2::Set, 2::Tuple}
+        default (True);
+
+I<TODO.>
+
+=head2 Source_Code::Signature::Set
+
+    ::MD::Source_Code::Signature::Set ::= selection of Set
+        where (\<0 all \Signature::());
+
+I<TODO.>
+
+=head2 Source_Code::Signature::Tuple
+
+    ::MD::Source_Code::Signature::Tuple ::= selection of Tuple
+        where (\<0 all_attrs (function : (Signature \<<asset)));
+
+I<TODO.>
+
 =head2 Source_Code::Heading
 
-    ::MD::Source_Code::Heading ::= selection of Tuple
+    ::MD::Source_Code::Heading ::= selection of Signature::Tuple
         where (\<0 all_attrs (function : (\<<asset = True)));
 
 I<TODO.>
