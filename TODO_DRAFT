@@ -36,6 +36,9 @@ normalization of integer intervals etc is simply more DWIMmy for interval
 identity if = is meant to say "consists of the same members".  Intervals
 over integers etc can then simply be a subtype by constraint maybe?
 
+* Note that another interesting use of list comprehension or successable
+types is generating mandelbrots etc, each iteration is the next value.
+
 * See from the list of 100 or so functions in http://ramdajs.com/0.21.0/docs/
 to provide a checklist or reminder of ones I might want.
 
@@ -252,6 +255,51 @@ But from the client/user perspective they just made use of "the database"
 via the message passing, as typical application code does with a SQL DBMS
 today.
 
+* ADDED ON 2016-08-08:
+- Muldis D should have a core security model including jails and feature
+white lists, inspired by the likes of Postgres trusted vs untrusted
+languages, Unixen chroot or irrevokable privilege reduction, or Mac OS'
+per-application filesystem containers or per-process feature whitelist.
+- For example, Muldis D Foundation features would be split into groups, so
+that say the base privileges only let one invoke pure functions and can't
+do anything besides return a calculation on input, and granular optional
+privileges could allow things like seeing or modifying "the database", or
+using STDIO on already provided filehandles, or accessing limited parts of
+the filesystem, or accessing the whole filesystem, or running other
+programs, or accessing routines provided by the host language as applicable.
+- Generally permissions are granted at the in-DBMS-process level, when the
+process is started, and a process may only be granted a subset of the
+privileges that the process which started it has.  A process may not seek
+to elevate its own privileges; it must pass a message to another process
+with higher privileges to operate on its behalf if desired.  The ability to
+invoke other processes is also whitelisted, which can include, can only
+invoke processes with or without certain privileges.
+- Conceptually each process can start with either a clean slate / no
+packages loaded, or it can start with a fork of the parent, starting with
+all of the same packages loaded and read-only memory shared, generally we
+want process starts to be a cheap operation in principle, like safe threads.
+- Loading a library is something that would work for a process under the
+tightest privileges assuming its source is provided as input to the
+process; a functional-only process can't "go out and get" the package.
+- As such, the fundamental paradigm of package use actually does have to be
+logically a pure interpreter model, and not a compiler model, although an
+implementation can choose to compile behind the scenes for performance.
+- A main point of all this is security and resilience against attackers
+injecting code either as data or as filesystem files where libraries live, etc.
+- Similarly, it should be optional as to whether the "entry" routine of a
+Package gets executed or not upon using the package.
+- Using packages expected to just be data and not code should be handled
+appropriately, including optional load config files.
+- See also http://ledgersmbdev.blogspot.ca/2016/08/postgresql-plperl-and-cve-2016-1238.html
+and http://ledgersmbdev.blogspot.ca/2016/07/notes-on-security-separation-of.html
+for some inspiration for this train of thought.
+- Orthogonal to this, there should be some way of specifying resource
+limits or priorities somehow on processes, so that even say pure functional
+ones can be prevented from using unexpectedly high amounts of CPU or memory
+such as for a denial of service attack.  This could be a "later" thing,
+though the ability to see or kill in-DBMS processes should exist early on
+at least for debugging purposes.
+
 * The concept of using sequence generators for surrogate keys, eg auto-increment,
 should be strongly discouraged in principle for various reasons.
 - The generators are inefficient users of DBMS resources and are bottlenecks
@@ -426,6 +474,10 @@ http://www.theregister.co.uk/2016/01/13/stob_remember_the_monoids/
 
 * In more recent Perl 5, functions with a prototype of () might inline automatically.
 https://metacpan.org/pod/perlsub#Constant-Functions
+
+* Lessons of JSON::Typist might be useful https://rjbs.manxome.org/rubric/entry/2101 .
+
+* A module SQL::Functional exists as of 2016 Jul 31 or so.
 
 * Quoth the raven:
 "In Haskell all operators are as-if user-defined.
