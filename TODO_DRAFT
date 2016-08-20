@@ -1195,7 +1195,7 @@ that tells next_state() everything it needs to know to produce both the
 next state and, indirectly, all later states.
 - A generic Generator composer, that is a single type capable of
 representing a variety of different generated sequences in one type, would
-in general have a Reference to a next_state-alike function plus the
+in general have a Identity_Identifier to a next_state-alike function plus the
 necessary state-alike to seed it with, that is it is a wrapper.
 - But in the general case a Generator composer would be a distinct type for each
 generated sequence, and the function would be implied by its composer type.
@@ -1262,7 +1262,7 @@ Maybe also one with current call stack information.
 - Perhaps we shall say that every routine (and type 'where') actually has 2 arguments:
     - source (a keyword) is what is explicitly passed in by calling code
     - context (a keyword) is implicitly passed extra information, a Structure:
-        - self - a Reference to / fully qualified name of the routine, eg \@0
+        - self - a Identity_Identifier to / fully qualified name of the routine, eg \@0
         - catalog - the variable listing all the registered/invokable packages;
             one can lookup self in this to get info on where are we now
         - ?callers - information on the present call stack of the routine;
@@ -1300,7 +1300,7 @@ There are also "quietly" blocks alternative to "try" blocks.
 * Idea, a package version number is just implemented as a string like an
 unqualified identifier, where each integer is a codepoint like with the
 names of positional field names.  Thus all parts of a fully qualified
-package name or a Reference are just field names / strings.
+package name or a Identity_Identifier are just field names / strings.
 
 * Quoth I: "I think of 1st normal form as when you don't have multiple
 relation attributes with the same meaning. That is, common examples of 1NF
@@ -1310,11 +1310,11 @@ values of a domain" etc refer to in practice as far as the prescription on
 eliminating such to achieve 1NF. The problem was never about array-valued
 attributes or complex types or what have you."
 
-* Don't use References as \<0 etc in types the Foundation needs to know
+* Don't use Identity_Identifiers as \<0 etc in types the Foundation needs to know
 about, such as anything Plain_Text has syntax for or anything likely to
 have an internal special representation for or any type defining source
-code.  Save References for things only a bootstrapped system would see.
-- References as they are versioned by package version can cause problems at
+code.  Save Identity_Identifiers for things only a bootstrapped system would see.
+- Identity_Identifiers as they are versioned by package version can cause problems at
 the Foundation level just because.
 
 * We really should have the Voidlike interface or some such rather than
@@ -1338,7 +1338,7 @@ being members of other types, so all regular operators fail on them.
 .>0 is \Excuse and .>1 is any \foo; there would also be a special
 Plain_Text syntax, eg \!foo eg \!No_Such_Field etc.  Then there's no
 interfaces here, its just a selection type loosely like Text.  Or better
-yet .>1 is a Reference, or Excuse is itself isomorphic to Reference.  One
+yet .>1 is a Identity_Identifier, or Excuse is itself isomorphic to Identity_Identifier.  One
 can/does still declare subtypes of Excuse or
 constants/singletons so to use specific ones in signatures etc.
 - Actually, Excuse should just be an interface; as ?! etc can still be a
@@ -2248,9 +2248,9 @@ overloaded variants now are more clearly bundled visually.
 - We can still have namespaces to group things under, eg MD.Source_Code or
 MD.Integer etc but then those are more for less common or optional things.
 
-* Make Reference disjoint from Identifier where the latter is what users
+* Make Identity_Identifier disjoint from Identifier where the latter is what users
 write and the former the system generates/resolves at runtime that is
-sensitive to context like what packages are loaded/etc, a Reference probably
+sensitive to context like what packages are loaded/etc, a Identity_Identifier probably
 is just an integer payload like with a filehandle etc, both are Structure.
 - As before, identifiers have the absolute/relative/floating variants.
 
@@ -2355,7 +2355,7 @@ constraint using RA operations.
 - SC_Identifier and Capsule are now subtypes of Structure instead.
 - A SC_Identifier is just a Structure of the 4 elements where each element
 is typically a Structure of String, or an Integer.
-- A Capsule is just a Structure whose first positional element is a SC_Reference.
+- A Capsule is just a Structure whose first positional element is a SC_Identity_Identifier.
 - All Source_Code types plus core-defined Source_Code_Meta are now typically
 just Structure whose first positional element is a string saying what main
 type that value is of.
@@ -2364,7 +2364,7 @@ been booted from the low level.
 - Generally speaking, the Plain_Text parser and compiler need to be able to
 work entirely in the absense of the Muldis_D package and all of the data types
 composing the native form of Muldis D code need to be simplified so each is
-identified with a simple single-level string rather than a SC_Reference.
+identified with a simple single-level string rather than a SC_Identity_Identifier.
 - Now typically most types defined by the Muldis_D package are unlikely to
 be defined as Capsule but rather just as Structure with a leading positional
 element giving its main type.
@@ -2381,10 +2381,10 @@ would still declare though:
     );
 - We need some generalized shorthand for declaring a singleton type whose
 value is drawn from another type, such as the above example.
-- The $Foo will still resolve to an SC_Reference like before, because
+- The $Foo will still resolve to an SC_Identity_Identifier like before, because
 actually testing the $Integer thing formally is still at runtime, though
 while bootstrapping and we don't have the Muldis_D package, that check
-doesn't actually have a SC_Reference to contend with, um stuff.
+doesn't actually have a SC_Identity_Identifier to contend with, um stuff.
 - Generally any system-defined type that a typical compiler would have
 special knowledge of, such as Fraction or Relation etc, would have the new
 simpler form of specification.
@@ -2612,7 +2612,7 @@ independently of that knowledge.
 - But C# 'using' seems to do both Muldis D 'using' and Muldis D 'searching'
 since Muldis D 'using' doesn't possibly point to sub-namespace.
 Or C# 'using' may be more like Muldis D 'searching'
-and C# References declarations in project are more like Muldis D 'using',
+and C# Identity_Identifiers declarations in project are more like Muldis D 'using',
 or the 2 'using' may in fact directly correspond as all,
 since 'using' not required to call identity/global things in either case.
 - In C#, 'using' can appear either inside or outside a 'namespace' declaration.
@@ -2688,7 +2688,7 @@ to then go get dependencies, that is the job of higher-level code, and once
 bootstrapped is performed in Muldis D code.  The loading code will fail if
 a package with the same identity is already loaded.
 - The unloading version either takes a SC_Package for consistency, though
-it only needs package identity name, or it takes just a Reference of said.
+it only needs package identity name, or it takes just a Identity_Identifier of said.
 - The reloading version is like an unloading followed by a loading, this is
 used say when there is runtime manipulation / data definition of a package.
 - Perhaps the nodes may be split into separate compile/register and
@@ -2705,7 +2705,7 @@ those the DBMS/application itself would have to be restarted.
 doesn't explicitly use memory when it isn't needed (or it still can behind
 the scenes but users don't see it so its like its not there).
 - For that matter, perhaps also have it defined to an extent in Muldis D
-code canonically how to resolve Identifier in general to Reference, since
+code canonically how to resolve Identifier in general to Identity_Identifier, since
 if we have to activate dependencies first, we can see all the candidates we
 have to choose from already for resolution, what the invoker can "see".
 - Perhaps the data dictionary is implemented at a higher level, as normal
@@ -2778,9 +2778,9 @@ serialization the folded constant's format/structure would be generated.
 - To be clear, every material declaration such as `::MD::foo ::= function...`
 is declaring a binder `::MD::foo` and the explicitly so-named material's
 name is `::MD::foo::""` even if the function/etc declares no nested materials.
-- Reference `0` always means the current material.
-- Reference `1` always means the binder containing the current material.
-- Reference `2` always means the folder (possibly a package) immediately
+- Identity_Identifier `0` always means the current material.
+- Identity_Identifier `1` always means the binder containing the current material.
+- Identity_Identifier `2` always means the folder (possibly a package) immediately
 containing the binder containing the current material.
 - Explicit declarations like `::MD::foo::""::"" ::= ...` are still only
 declaring binders with those names at the most, and never materials.
@@ -3112,7 +3112,7 @@ missing is a generic generator function or three.  For example:
     - MD.Generator.init(func,seed)->state
     - MD.Generator.next(state,nninteger)->state
 ... where state is some Capsule type whose attributes are:
-    - a CS_Reference to the generator function
+    - a CS_Identity_Identifier to the generator function
     - a CS_Func_Args of arguments to give the next exec of that function
     - the last values that the function generated
     - note that besides the generated value, the function returns a new set
@@ -3132,11 +3132,11 @@ like curr_val(state) and next_val(state) etc.
 - read List as either Array or Bag but not both in the same function
 - map() takes 1 monadic function plus N inputs and has N outputs.
     - The monadic function is --> Universal <-- Universal
-    - map() itself is --> List <-- (Reference,List)
+    - map() itself is --> List <-- (Identity_Identifier,List)
 - reduce() takes 1 dyadic function plus N inputs of the kind that map takes
 or outputs and has 1 output.
     - the dyadic function is --> Universal <-- (Universal,Universal)
-    - reduce itself is --> Universal <-- (Reference,List)
+    - reduce itself is --> Universal <-- (Identity_Identifier,List)
 - sort takes 1 ...
 ... actually that still needs a lot of work.
 - classify takes 1 monadic function of the same kind that map takes or
@@ -3148,7 +3148,7 @@ function output, so the count of elements of members across the M outputs
 is N.
     - the monadic function is --> Universal <-- Universal
     - classify itself is
-    --> (List of Tuple{class:Universal,members:List}) <-- (Reference,List)
+    --> (List of Tuple{class:Universal,members:List}) <-- (Identity_Identifier,List)
 - summarize takes 1 dyadic function of the same kind that reduce takes plus
 M inputs of the kind that classify returns and has M outputs where each
 output is a class-summary pair, the summary produced by running reduce on
@@ -3156,7 +3156,7 @@ the group.
     - the dyadic function is --> Universal <-- (Universal,Universal)
     - classify itself is
     --> (List of Tuple{class:Universal,summary:Universal})
-    <-- (Reference,(List of Tuple{class:Universal,members:List}))
+    <-- (Identity_Identifier,(List of Tuple{class:Universal,members:List}))
 - At the low level, for each of the above 4 functions, there are 2 variants
 where one is Array to Array and the other is Bag to Bag.
 - For reduce/summarize, all dyadic functions are permitted to be used with
@@ -3331,7 +3331,7 @@ all the math or array stuff or whatever, there's no Perl equivalent
 translation to worry about.  All binding between compiled packages is done
 strictly at runtime and call_function(ident,args) is the thing savvy to it.
 Actually it is resolve() or something that provides a set of 0..N candidates,
-each a Reference, based just on the names, and call_function() then picks
+each a Identity_Identifier, based just on the names, and call_function() then picks
 one based on the argument data type.  Only 'search' can produce more than
 one result, all others produce exactly one, which fails if it doesn't exist;
 for relative and absolute we can know this at compile time, and search only
@@ -3604,9 +3604,9 @@ suggests this.
 
 * Any non-lexical entity may be referenced or invoked directly by code that
 knows what its fully-qualified name is and refers to it explicitly using a
-Reference literal, even if the invoking code didn't explicitly "use" the
+Identity_Identifier literal, even if the invoking code didn't explicitly "use" the
 package declaring said entity.  But declaring package "use" must be done
-for any non-Reference Identifier to resolve.
+for any non-Identity_Identifier Identifier to resolve.
 
 * Everything the standard Muldis D parser knows about must be expressible
 just in terms of what Low_Level provides, meaning all the meta-operators
@@ -3819,11 +3819,11 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    eg, `(x,)` is a unary tuple while `(x)` is an expression with the value of `x`;
                   |    as an exception, `()` is always the niladic Tuple, and is invalid expr group.
                   |    - Signature is proper subtype of Tuple where the value for
-                  |    every attribute is either true or is a Reference;
+                  |    every attribute is either true or is a Identity_Identifier;
                   |    this is used when defining a type in terms of a set
                   |    of typed attributes, or when defining a function
                   |    signature likewise, or when defining a set of Attr_Name;
-                  |    a Reference is naming the expected attribute contract (type)
+                  |    a Identity_Identifier is naming the expected attribute contract (type)
                   |    or constant which is treated as a singleton type of its value,
                   |    or true means either type inapplicable (we just have
                   |    a set of Attr_Name) or it means Universal / any value.
@@ -3839,22 +3839,22 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    When working element-wise with a collection, how each element represented.
     Capsule       | \:(wrapper,asset), eg \:(\Set,\+{...})
                   |    This is the parent of most types, analogous to an 'object', namespacing things.
-                  |    Reference is subtype like \:(\Reference,\%(...)).
+                  |    Identity_Identifier is subtype like \:(\Identity_Identifier,\%(...)).
                   |    There are no symbolic ops on purpose so to not interfere with subtypes,
                   |    and any alpha ops should have names unlikely to interfere.
                   |    Examples, wrap(wrapper,asset), wrapper(capsule), unwrap(capsule).
                   |    The tag, conceptually a base type name,
-                  |    is generally a Reference like \@foo for most subtypes
+                  |    is generally a Identity_Identifier like \@foo for most subtypes
                   |    but for main core types especially ones that Foundation
                   |    needs to know, it is an Attr_Name like \foo instead.
-                  |    Contract_Name is an alias for Reference, use for more descriptive parameter/etc types.
+                  |    Contract_Name is an alias for Identity_Identifier, use for more descriptive parameter/etc types.
     OBSOLETE SYNTAX, FREE UP => FOR NON-CORE / USER TYPES:
-                  |    expr=>expr - that is Reference=>Tuple eg $Date=>(year:500,month:4,day:24)
+                  |    expr=>expr - that is Identity_Identifier=>Tuple eg $Date=>(year:500,month:4,day:24)
                   |    and Singleton is one with nullary tuple eg $To_Zero=>()
                   |    and $=>lit is shorthand for Singleton value eg $=>To_Zero.
-                  |    Normally a Capsule's Reference is a type name, making
+                  |    Normally a Capsule's Identity_Identifier is a type name, making
                   |    the Capsule a type, but structurally one is identical
-                  |    to a partially applied function if the Reference is to a function name.
+                  |    to a partially applied function if the Identity_Identifier is to a function name.
     OBSOLETE; USE A CAPSULE SUBTYPE INSTEAD:
     AND TODO: MAKE \$foo mean what $foo used to mean, \\$foo what was \$foo.
     AND TODO: USE ~@ rather than $ meaning string of attribute name ... BUT WHAT OF THE PRIOR LINE?
@@ -3886,9 +3886,9 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    produce identity from all kinds of Identifier expr eg "resolved \$foo"
                   |    and $lit is shorthand for "resolved \$lit" eg $Bag short for "resolved \$Bag".
                   |    Note that any consecutive double-quoted tokens are treated as 1 token.
-                  |    OBSOLETE: A Reference is no longer a subtype of Identifier,
+                  |    OBSOLETE: A Identity_Identifier is no longer a subtype of Identifier,
                   |    rather it contains one, see further below.
-                  |    - Reference is proper subtype has all "identity" values.
+                  |    - Identity_Identifier is proper subtype has all "identity" values.
     OBSOLETE; EXTERNAL HAS NO VALUE LITERAL SYNTAX IN Plain_Text.
     External      | \~external~'...' - the "..." are implementation-dependent
                   |    but typically is source code of some kind for
@@ -4276,7 +4276,7 @@ may not even be a valid default value in the normal sense, and so:
     - Above was for which_base_type(); for which_low_..., default Capsule.
   - For all normal other Universal, return their default value.
   - For all SC_Abnormal just return the argument given to which().
-- Maybe also have a which_types() that returns a list of Reference for all
+- Maybe also have a which_types() that returns a list of Identity_Identifier for all
 known types that the given value is a member of, if practical;
 running this might be slow, though implementations can try maintaining a
 type graph that may help this and other things.
@@ -4510,7 +4510,7 @@ some other type, typically an expression node set.
 * First task - we need to build a list of expression and stmt node types.
 - SC_Topic - represents the real function input argument
 - SC_Resolved - represents the "resolved" keyword; turns Ident to Ref
-- SC_Inlined - represents the Reference name of an entity that was
+- SC_Inlined - represents the Identity_Identifier name of an entity that was
     declared inline with the expr, typically a function (or type, which is
     a function); this name is generated unless function def preceded with bind
 - SC_Routine_Name -
@@ -4592,11 +4592,11 @@ the following attrs, many of which are optional:
     - material_path - an "absolute" Identifier
         - The fully-qualified "private" name for M within its package
         (combines binder_path and material_name).
-- The expr node \<*inner produces a Reference to the innermost material
+- The expr node \<*inner produces a Identity_Identifier to the innermost material
 containing it; it is analagous to \0::() but that its referent will be a
 Material rather than an Identifier if \<*inner is inside a lambda.  This
 can instead be done longhand using \<*source if one wants to.
-- A Reference value has these attributes:
+- A Identity_Identifier value has these attributes:
     - referent - either an Identifier or a Material or a Package
         - The thing that should be invoked/called.
         - If this is a Package, then its "entry" is what we invoke.
@@ -4612,9 +4612,9 @@ can instead be done longhand using \<*source if one wants to.
             - material_name
     - args - a Tuple
         - Arguments to pass to referent when invoking it, if applicable.
-- A Function_Call is sort of a Reference alias, it uses args.  Also,
+- A Function_Call is sort of a Identity_Identifier alias, it uses args.  Also,
 Function_Call_* are further subtypes of that.
-- A Contract_Name is sort of a Reference alias, it doesn't use args.
+- A Contract_Name is sort of a Identity_Identifier alias, it doesn't use args.
 
 * NEW FOR 20160527...
 - Unified syntax in general expression context for invoking or referencing
@@ -4638,7 +4638,7 @@ somewhere, and parens immediately following the name (opt ws):
     x f3 y
     x -> f3 <- y
 - To yield result that is a specification of a function call, specifically
-a value of the Function_Call type (a Reference-Tuple pair), which includes
+a value of the Function_Call type (a Identity_Identifier-Tuple pair), which includes
 the name of a "function" and a (possibly either empty or total) subset of
 the arguments it expects, just prefix a backslash:
     \f4::()
@@ -4664,8 +4664,8 @@ replacing is not allowed, so if any attr names duplicate, it is an error.
 - At the lower level for code implementing the Plain_Text parser, here is
 longhand for selecting the initial fc:
     \Function_Call wrap (func: \@funcname::, args: ())
-- The \@foo syntax selects a Reference not wrapped in a Function_Call.
-- Contract_Name is an alias for Reference to help parameter self-documenting.
+- The \@foo syntax selects a Identity_Identifier not wrapped in a Function_Call.
+- Contract_Name is an alias for Identity_Identifier to help parameter self-documenting.
 - Subtypes by constraint of Function_Call:
     Function_Call_But_0 - any Function_Call lacking a "0" argument
     Function_Call_But_0_1 - any Function_Call lacking both "0" and "1" args
@@ -4682,7 +4682,7 @@ are still dealing with Tuple arg-lists to hard-coded names, like this:
     args -->^ fdnfuncname
 ... but the ^ is subject to be replaced by something else.
 - Embedded function definitions now result in a Function_Call rather than in
-a Reference; eg this results in a Function_Call:
+a Identity_Identifier; eg this results in a Function_Call:
     (function : (\<0 + \<1))
     (function : (\<*args --> "+"::()))
 
