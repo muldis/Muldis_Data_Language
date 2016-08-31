@@ -1691,15 +1691,8 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
 
 =head2 Fraction
 
-    ::MD::Fraction ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( \<0, \Fraction, \1::_Asset() ))
-            default (0.0)
-            composes Fractional and_provides_its_default;
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Fraction ::= selection of Capsule
+        where (has_wrapped::( \<0, \Fraction, (function : (
             if
                 \<0 is_a (
                     numerator : \Integer::(),
@@ -1709,8 +1702,9 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
                 \<<numerator coprime \<<denominator
             else
                 False
-        );
-    };
+        )) ))
+        default (0.0)
+        composes Fractional and_provides_its_default;
 
 The selection contract C<Fraction> is infinite.  A
 C<Fraction> value is a general purpose exact rational number of any
@@ -4807,16 +4801,11 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
 
 =head2 Set
 
-    ::MD::Set ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( \<0, \Set, \1::_Asset() ))
-            default ({})
-            composes {Discrete, Setty and_provides_its_default};
-
-        _Asset ::= selection of Bag
-            where (all_unique \<0);
-    };
+    ::MD::Set ::= selection of Capsule
+        where (has_wrapped::( \<0, \Set,
+            (function : (if Bag \<0 then all_unique \<0 else False)) ))
+        default ({})
+        composes {Discrete, Setty and_provides_its_default};
 
 The selection contract C<Set> is infinite.  A C<Set> value is a general
 purpose arbitrarily-large unordered collection of any other, I<member>
@@ -7089,15 +7078,8 @@ types that restrict their possible headings at the type level.>
 
 =head2 Tuple_Array
 
-    ::MD::Tuple_Array ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( \<0, \Tuple_Array, \1::_Asset() ))
-            default (~%@())
-            composes {Relational, Positional};
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Tuple_Array ::= selection of Capsule
+        where (has_wrapped::( \<0, \Tuple_Array, (function : (
             if \<0 is_a ( heading : \Heading::(), body : \Array::() ) then
                 if \<<body all \Tuple::() then
                     \<<body all (function : (@\<0 = \<1)) \<-- \<<heading
@@ -7105,8 +7087,9 @@ types that restrict their possible headings at the type level.>
                     False
             else
                 False
-        );
-    };
+        )) ))
+        default (~%@())
+        composes {Relational, Positional};
 
 I<TODO.>
 
@@ -7173,15 +7156,8 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
 
 =head2 Relation
 
-    ::MD::Relation ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( \<0, \Relation, \1::_Asset() ))
-            default (?%@())
-            composes {Relational and_provides_its_default, Discrete, Setty};
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Relation ::= selection of Capsule
+        where (has_wrapped::( \<0, \Relation, (function : (
             if \<0 is_a ( heading : \Heading::(), body : \Set::() ) then
                 if \<<body all \Tuple::() then
                     \<<body all (function : (@\<0 = \<1)) \<-- \<<heading
@@ -7189,8 +7165,9 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
                     False
             else
                 False
-        );
-    };
+        )) ))
+        default (?%@())
+        composes {Relational and_provides_its_default, Discrete, Setty};
 
 I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
 
@@ -7254,15 +7231,8 @@ function C<select_Relational> for the composing type C<Relation>.
 
 =head2 Tuple_Bag
 
-    ::MD::Tuple_Bag ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( \<0, \Tuple_Bag, \1::_Asset() ))
-            default (+%@())
-            composes {Relational, Discrete};
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Tuple_Bag ::= selection of Capsule
+        where (has_wrapped::( \<0, \Tuple_Bag, (function : (
             if \<0 is_a ( heading : \Heading::(), body : \Bag::() ) then
                 if \<<body all \Tuple::() then
                     \<<body all (function : (@\<0 = \<1)) \<-- \<<heading
@@ -7270,8 +7240,9 @@ function C<select_Relational> for the composing type C<Relation>.
                     False
             else
                 False
-        );
-    };
+        )) ))
+        default (+%@())
+        composes {Relational, Discrete};
 
 I<TODO.>
 
@@ -7367,16 +7338,11 @@ I<TODO.>
 
 =head2 Interval_Set
 
-    ::MD::Interval_Set ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( \<0, \Interval_Set, \1::_Asset() ))
-            default (...)
-            composes {Unionable_Intervalish, Setty};
-
-        _Asset ::= selection of Interval_Bag
-            where (all_unique \<0);
-    };
+    ::MD::Interval_Set ::= selection of Capsule
+        where (has_wrapped::( \<0, \Interval_Set,
+            (function : (if Interval_Bag \<0 then all_unique \<0 else False)) ))
+        default (...)
+        composes {Unionable_Intervalish, Setty};
 
 I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.>
 
@@ -7384,18 +7350,12 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
 
 =head2 Interval_Bag
 
-    ::MD::Interval_Bag ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( \<0, \Interval_Bag, \1::_Asset() ))
-            default (...)
-            composes Unionable_Intervalish;
-
-        _Asset ::= selection of Tuple_Bag where
-        (
-            ...
-        );
-    };
+    ::MD::Interval_Bag ::= selection of Capsule
+        where (has_wrapped::( \<0, \Interval_Bag, (function : (
+            if Tuple_Bag \<0 then ... else False
+        )) ))
+        default (...)
+        composes Unionable_Intervalish;
 
 I<TODO.>
 
@@ -7413,18 +7373,12 @@ I<TODO.>
 
 =head2 Quantity
 
-    ::MD::Quantity ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( \<0, \Quantity, \1::_Asset() ))
-            default (...)
-            composes Quantitative;
-
-        _Asset ::= selection of Relation where
-        (
-            ...
-        );
-    };
+    ::MD::Quantity ::= selection of Capsule
+        where (has_wrapped::( \<0, \Quantity, (function : (
+            if Relation \<0 then ... else False
+        )) ))
+        default (...)
+        composes Quantitative;
 
 I<TODO.>
 
