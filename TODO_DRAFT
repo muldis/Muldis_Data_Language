@@ -1258,7 +1258,7 @@ as an implicit extra argument passed in addition to 'source'.  For that
 matter, we also want an implicit extra argument visible to each material
 that says what its fully qualified name is, eg, what \@0 resolves to.
 Maybe also one with current call stack information.
-- ACTUALLY, ANY OF THESE ARE NO LONGER KEYWORDS; EG \<*args IS THE ARG LIST NOW.
+- ACTUALLY, ANY OF THESE ARE NO LONGER KEYWORDS; EG "args" IS THE ARG LIST NOW.
 - Perhaps we shall say that every routine (and type 'where') actually has 2 arguments:
     - source (a keyword) is what is explicitly passed in by calling code
     - context (a keyword) is implicitly passed extra information, a Structure:
@@ -1310,7 +1310,7 @@ values of a domain" etc refer to in practice as far as the prescription on
 eliminating such to achieve 1NF. The problem was never about array-valued
 attributes or complex types or what have you."
 
-* Don't use Identity_Identifiers as \<0 etc in types the Foundation needs to know
+* Don't use Identity_Identifiers as args.\0 etc in types the Foundation needs to know
 about, such as anything Plain_Text has syntax for or anything likely to
 have an internal special representation for or any type defining source
 code.  Save Identity_Identifiers for things only a bootstrapped system would see.
@@ -1600,7 +1600,7 @@ as a constant, which will be a predicate function or default value respectively.
     returns --> to    - ((True))
     matches <-- from  - ((True))
     accepts requires  - ((True))
-    via :             - (\<*args)
+    via :             - (args)
 - All traits are optional, effective default if missing is given with them.
 - In ... cases, {returns,matches,accepts,of} will also take syntactic
 shorthands for lists of type names or Structure defs while {via,where} don't.
@@ -3981,7 +3981,8 @@ aka "\\c[0,0]" and "\\c[0,1]".
 * Generally speaking, what any commalist is parsed into is starting with an
 empty value of the collection type and insert()/insert_n()-ing each element.
 
-* Make \<foo a syntactic shorthand for source attribute \foo when source is a
+* OBSOLETE AS OF 2016-09-19; ALSO, "args" IS ARG LIST NOW:
+Make \<foo a syntactic shorthand for source attribute \foo when source is a
 Tuple (EDIT: which is all the time); that is, \<foo is syntactic shorthand for:
     \%(\<*args,\foo) -->^ BS_Tuple_Attr
 ... which is longhand for \<*args.\foo
@@ -4681,8 +4682,8 @@ are still dealing with Tuple arg-lists to hard-coded names, like this:
 ... but the ^ is subject to be replaced by something else.
 - Embedded function definitions now result in a Function_Call rather than in
 a Identity_Identifier; eg this results in a Function_Call:
-    (function : (\<0 + \<1))
-    (function : (\<*args --> "+"::()))
+    (function : (args.\0 + (args.\1)))
+    (function : (args --> "+"::()))
 
 * Function call syntax:
     args --> rtn
@@ -4783,7 +4784,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         - is for dyadic positional functions that just commute others, eg <= vs => or in vs has
         - these 2 declarations are equivalent:
             foo ::= function commutes bar;
-            foo ::= function --> Any <-- (Any,Any) : (\<1 bar \<0);
+            foo ::= function --> Any <-- (Any,Any) : (args.\1 bar args.\0);
         - a function may not name itself with "commutes" and must instead
         say "is commutative" when that applies
         - it is expected that any functions in a "commutes" pair are not
@@ -4793,7 +4794,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         - is for functions that just negate others, eg != vs = or < vs >=
         - these 2 declarations are equivalent:
             foo ::= function negates bar;
-            foo ::= function --> Boolean <-- Any : (\<*args --> \@bar ?? False !! True);
+            foo ::= function --> Boolean <-- Any : (args --> \@bar ?? False !! True);
         - it is assumed that function pairs in "negates" relationship
         may be different re associativity etc so each declares its own "is"
     2. keyword "to" or "-->" is optional, followed by the name of a type
@@ -4808,7 +4809,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         these are basically equivalent:
             function <-- (Integer,foo:Integer) : ...;
             function <-- type of SC_Func_Args
-                where (\<0 matching \%($Integer,foo:$Integer)) : ...;
+                where (args.\0 matching \%($Integer,foo:$Integer)) : ...;
         - a brace-delimited list of 0..N type names / type defs /
         simplified literals, each like previously described; this is useful
         for defining a list of alternatives, eg {(foo), (foo, foo)} means
@@ -5029,7 +5030,7 @@ this is done so one can use "floating Foo" and have it behave as expected.
 "binder", then each "constant" and the "selection" will simply become
 materials private to that binder.
 
-* New node syntaxes:
+* New node syntaxes (OBSOLETE AS OF 2016-09-19):
     Ref function (and type) arguments iff source is a Tuple:
         - \<foo or \<0 means \<*args.\foo or \<*args.\0
             - but we could make these their own node type since why the hell not?
