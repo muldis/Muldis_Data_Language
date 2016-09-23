@@ -14,6 +14,65 @@ resources of everyone else.
 
 ----------
 
+* Major syntax change for functions and other materials.
+- Specify this block starting in terms of the source code types and then
+see what Plain_Text syntactic shorthands are useful, or do both together.
+- New terse forms when only the body is declared are \(...) for functions
+and \[...] for procedures, instead of (function : (...)) etc.
+- New general forms are Tuple literals, but with a leading keyword that
+binds with the tightest precedence like with terms; example like this:
+    function (
+        traits : (
+            returns : \Integer::(),
+            matches : (\Integer::(), \Integer::()),
+            is_associative : True,
+            identity : 1,
+        ),
+        body : \(args.\0 plus args.\1),
+        annotation : ...,
+        decoration : ...,
+        args : (),
+        context : ...,
+    )
+- Above subject to change.
+- For embedded cases involving a partial application, one could do this:
+    function (args : (...,), body : \(...))
+... instead of this:
+    (...,) \--> \(...)
+... if they wanted to for illustration, but the latter brevity often wins.
+- Actually the above is more like a selector at runtime for a Function
+value, which also subsumes the attributes of a Function_Call value, "args"
+being any partial application (niladic tuple by default).
+- So eg that also means "\Function wrap (...)"
+- Any \(...) means the (...) gets its own 'args' context and is evaluated
+later, and it mirrors \foo::() on purpose as both return a nee-Function_Call
+for giving to higher-order functions.
+- Where there is no leading \, the expression instead gets evaluated in the
+context of the expression containing the "function", which includes the
+outermost tuple.
+- The "body" is the function proper, and recognized by the Foundation.
+- The "args" and possibly "context" are also used by the Foundation.
+- The "traits" are other things that are potentially recognized by the
+Foundation and might be used by it for enhancing performance but often they
+are made use of instead by the higher level runtime written in Muldis D and
+running over top of the foundation, just as implementing polymorphism and
+the concept of types is.
+- It stands to reason that the related "package ..." is similarly like
+"function ..." actually an expression node and that a source file
+containing one directly is implicitly the body of a niladic function whose
+args is (), and so material declarations are actually expression nodes more
+or less, so then perhaps the general case of a source code string being
+parsed should actually be a function body whose result is typically but
+doesn't have to be one or more Package values, that is, an Array of
+Packages value, this being shades of Perl, but presumably this outer-level
+function body isn't allowed to immediately invoke any non-Foundation routines,
+no matter what package they are declared in, any package-defined things
+can only be called delayed with \.  In this case, parsing would begin assuming
+the latest Foundation etc version supported by the implementation, and then
+change when an explicit Package declaration along with its declared expected
+Foundation version is encountered, or otherwise the process restarts several
+times potentially, same as with the syntax declaration that precedes this.
+
 * Use =: as the "fetch" operator to get from a variable, which is visually
 flipped from the := "store" operator; the former is a unary expression,
 the latter is a binary procedure.  So & and * etc are left free.

@@ -1713,7 +1713,7 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
 =head2 Fraction
 
     ::MD::Fraction ::= selection of Capsule
-        where (has_wrapped::( args.\0, \Fraction, (function : (
+        where (has_wrapped::( args.\0, \Fraction, \(
             if
                 args.\0 is_a (
                     numerator : \Integer::(),
@@ -1723,7 +1723,7 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
                 args.\0.\numerator coprime args.\0.\denominator
             else
                 False
-        )) ))
+        ) ))
         default (0.0)
         composes Fractional and_provides_its_default;
 
@@ -2816,11 +2816,11 @@ I<TODO.  Note, still have to define that Excuse.>
                     src_octets where \in::( 1: 0..127 )
                 when 1 then
                     src_octets
-                        map (function : (args.\0 in 0..127 ?? args.\0 !! args.\1))
+                        map \(args.\0 in 0..127 ?? args.\0 !! args.\1)
                             \<-- (1 : repl_chars.0,)
                 default
                     src_octets
-                        map (function : (args.\0 in 0..127 ?? [args.\0] !! args.\1))
+                        map \(args.\0 in 0..127 ?? [args.\0] !! args.\1)
                             \<-- (1 : repl_chars,)
                         reduce \catenate::()
         );
@@ -4213,9 +4213,10 @@ effort.
 =head2 squish
 
     ::MD::squish ::= function --> Positional <-- (Positional)
-        : (args.\0 map (function : (( group : args.\0, member : False )))
-            ->nest map (function : (args.\0.\group)));
+        : (args.\0 map \(( group : args.\0, member : False ))
+            ->nest map \(args.\0.\group));
 
+TODO CAN AVOID SECOND LAMBDA?
 The function C<squish> results in the value of its C<0> argument's
 ordered collection type that has all of the members of the function's C<0>
 argument but that, for every run of 2 or more consecutive members that are
@@ -4828,7 +4829,7 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
 
     ::MD::Set ::= selection of Capsule
         where (has_wrapped::( args.\0, \Set,
-            (function : (if Bag args.\0 then all_unique args.\0 else False)) ))
+            \(if Bag args.\0 then all_unique args.\0 else False) ))
         default ({})
         composes {Discrete, Setty and_provides_its_default};
 
@@ -6447,7 +6448,7 @@ I<TODO.>
 =head2 all_attr_assets
 
     ::MD::all_attr_assets ::= function --> Boolean <-- (Tuple, Signature)
-        : (args.\0 all_attrs (function : ((args.\1) <-- (args.\0.\asset,)))
+        : (args.\0 all_attrs \((args.\1) <-- (args.\0.\asset,))
             \<-- (1 : Signature_to_Function_Call_But_0::(args.\1)));
 
 I<TODO.>
@@ -6978,7 +6979,7 @@ C<Relational>.
         --> Boolean <-- (Relational, Structural)
         implements 2::""
         : (if args.\0 @? (args.\1)
-            then |(args.\0) all (function : (args.\0 %= @(args.\1) = (args.\1))) \<-- (1 : args.\1,)
+            then |(args.\0) all \(args.\0 %= @(args.\1) = (args.\1)) \<-- (1 : args.\1,)
             else False);
 
 The function C<can_project_matching::Relational> results in C<True> iff the
@@ -7104,15 +7105,15 @@ types that restrict their possible headings at the type level.>
 =head2 Tuple_Array
 
     ::MD::Tuple_Array ::= selection of Capsule
-        where (has_wrapped::( args.\0, \Tuple_Array, (function : (
+        where (has_wrapped::( args.\0, \Tuple_Array, \(
             if args.\0 is_a ( heading : \Heading::(), body : \Array::() ) then
                 if args.\0.\body all \Tuple::() then
-                    args.\0.\body all (function : (@(args.\0) = (args.\1))) \<-- (args.\0.\heading)
+                    args.\0.\body all \(@(args.\0) = (args.\1)) \<-- (args.\0.\heading)
                 else
                     False
             else
                 False
-        )) ))
+        ) ))
         default (~%@())
         composes {Relational, Positional};
 
@@ -7182,15 +7183,15 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
 =head2 Relation
 
     ::MD::Relation ::= selection of Capsule
-        where (has_wrapped::( args.\0, \Relation, (function : (
+        where (has_wrapped::( args.\0, \Relation, \(
             if args.\0 is_a ( heading : \Heading::(), body : \Set::() ) then
                 if args.\0.\body all \Tuple::() then
-                    args.\0.\body all (function : (@(args.\0) = (args.\1))) \<-- (args.\0.\heading)
+                    args.\0.\body all \(@(args.\0) = (args.\1)) \<-- (args.\0.\heading)
                 else
                     False
             else
                 False
-        )) ))
+        ) ))
         default (?%@())
         composes {Relational and_provides_its_default, Discrete, Setty};
 
@@ -7257,15 +7258,15 @@ function C<select_Relational> for the composing type C<Relation>.
 =head2 Tuple_Bag
 
     ::MD::Tuple_Bag ::= selection of Capsule
-        where (has_wrapped::( args.\0, \Tuple_Bag, (function : (
+        where (has_wrapped::( args.\0, \Tuple_Bag, \(
             if args.\0 is_a ( heading : \Heading::(), body : \Bag::() ) then
                 if args.\0.\body all \Tuple::() then
-                    args.\0.\body all (function : (@(args.\0) = (args.\1))) \<-- (args.\0.\heading)
+                    args.\0.\body all \(@(args.\0) = (args.\1)) \<-- (args.\0.\heading)
                 else
                     False
             else
                 False
-        )) ))
+        ) ))
         default (+%@())
         composes {Relational, Discrete};
 
@@ -7365,7 +7366,7 @@ I<TODO.>
 
     ::MD::Interval_Set ::= selection of Capsule
         where (has_wrapped::( args.\0, \Interval_Set,
-            (function : (if Interval_Bag args.\0 then all_unique args.\0 else False)) ))
+            \(if Interval_Bag args.\0 then all_unique args.\0 else False) ))
         default (...)
         composes {Unionable_Intervalish, Setty};
 
@@ -7376,9 +7377,9 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
 =head2 Interval_Bag
 
     ::MD::Interval_Bag ::= selection of Capsule
-        where (has_wrapped::( args.\0, \Interval_Bag, (function : (
+        where (has_wrapped::( args.\0, \Interval_Bag, \(
             if Tuple_Bag args.\0 then ... else False
-        )) ))
+        ) ))
         default (...)
         composes Unionable_Intervalish;
 
@@ -7399,9 +7400,9 @@ I<TODO.>
 =head2 Quantity
 
     ::MD::Quantity ::= selection of Capsule
-        where (has_wrapped::( args.\0, \Quantity, (function : (
+        where (has_wrapped::( args.\0, \Quantity, \(
             if Relation args.\0 then ... else False
-        )) ))
+        ) ))
         default (...)
         composes Quantitative;
 
@@ -8024,19 +8025,19 @@ I<TODO.  Note, this type currently isn't used anywhere.>
         if Function_Call_But_0 args.\0 then
             args.\0
         else if Signature::Set(args.\0) then
-            (function : (args.\1 any (function : (args.\1 is_a args.\0)) \<-- (1 : args.\0)))
+            \(args.\1 any \(args.\1 is_a args.\0) \<-- (1 : args.\0))
                 \<-- (1 : args.\0)
         else if Signature::Tuple(args.\0) then
-            (function : (
+            \(
                 if Tuple args.\0 then
                     if args.\0 =@ (args.\1) then
                         args.\0 all_attrs
-                            (function : (args.\0.\asset is_a args.\1.(args.\0.\name))) \<-- ( 1: args.\1, )
+                            \(args.\0.\asset is_a args.\1.(args.\0.\name)) \<-- ( 1: args.\1, )
                     else
                         False
                 else
                     False
-            )) \<-- (1 : args.\0)
+            ) \<-- (1 : args.\0)
         else
             fail  `We should never get here.`
     );
