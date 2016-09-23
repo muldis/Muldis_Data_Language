@@ -152,6 +152,27 @@ C<Exception> but that use of the former is not meant to terminate execution
 of code early unlike the latter which is.  Other programming languages that
 have typed exceptions are analogous.
 
+I<TODO:  Generally speaking, criteria for when it is better to use an
+Excuse result value rather than exception is like this.  In a function, any
+result which is non-determinisitic must always be as an exception; in a
+function it should generally not be possible to cause non-determinisim on
+purpose (except perhaps memory exhaustion), so such a failure would
+originate in the runtime environment and truly be exceptional.  Otherwise,
+in a function, Excuses should be used by default in most circumstances,
+typically where it is reasonable to expect a fraction of inputs may be bad
+and we are purposefully letting the function determine which is which and
+tell us (such as parsers say), or situations where it is reasonable to
+propagate errors while continuing to process good parts; in contrast,
+exceptions should be reserved for situations where the caller should easily
+have known better to either invoke it with correct inputs and doing
+otherwise is obviously wrong code the caller should fix.  In a procedure,
+the non-determinism factor categorically doesn't require an exception.  In
+general, exceptions are for exceptional circumstances that we shouldn't
+have to expect to account for within the normal code paths, where
+cancelling whole blocks of code is ok, while returning Excuses is for when
+we do expect to handle these things within the normal code flow and/or not
+automatically halt blocks of code.>
+
 =head2 Excuse::No_Reason
 
     ::MD::Excuse::No_Reason ::= constant
@@ -2729,6 +2750,10 @@ etc.  If a Blob contains multiple errors, the returned Excuse is for the
 error closest to the start of the Blob; that is, chained and_then() is
 used. TODO, perhaps declare a union type collecting the Unicode errors like
 we have with rounding methods, or we actually may have multiple Unicode sets.>
+
+I<TODO.  See also http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
+and http://cpansearch.perl.org/src/RJBS/perl-5.24.0/t/op/utf8decode.t for
+some decoder edge case testing.>
 
 =head2 Text_from_UTF_8_Blob_with_repl_Text
 
@@ -7432,6 +7457,83 @@ I<TODO.>
             (unwrap args.\0,) --> Signature_to_Function_Call_But_0::(args.\2));
 
 I<TODO.  Says wrapper equals a value and asset passes a filter.>
+
+=head1 REFERENCE DATA TYPES
+
+=head2 Reference
+
+    ::MD::Reference::"" ::= selection where (args -->^ FDN__is_a_Reference)
+        default (() -->^ FDN__default_Reference);
+
+The selection contract C<Reference> represents the infinite Muldis D
+Foundation type I<FDN__Reference>.  A C<Reference> value is an opaque and
+transient reference to a Muldis D I<variable> (the latter being a container
+for an appearance of a value).  The identity of a C<Reference> is just the
+identity of the (anonymous) variable that it points to, which is the
+latter's address; when C<same> is given two C<Reference> arguments it will
+result in C<True> iff they both point to the same variable.  Selection of a
+C<Reference> value is formally a non-deterministic niladic operation, and
+can only be performed in a I<procedure>, not in a I<function>.  Selecting a
+C<Reference> value will create a new variable which it points to, and the
+variable will be destroyed automatically when that C<Reference> value is no
+longer in use by the program.  Only a procedure may use a C<Reference> to
+access (read or mutate) the latter's variable; a function may only pass
+around a C<Reference> it is given or compare two (that they point to the
+same variable or not), and can not access the variable behind it.  The
+default value of C<Reference> is implementation-defined.
+
+As a function only can perceive a C<Reference> as a generic identifier, it
+doesn't make sense to subtype or constrain a C<Reference> as if it were the
+type of the underlying variable's current value.  However, a C<Reference>
+can be wrapped by another value on the basis of whose other components
+there can be subtyping or constraints.
+
+I<TODO: Consider whether it is logically necessary for functions to be able
+to read the variable behind a Reference, with a special expression node,
+albeit with the guarantee that the variable is immutable / repeatable-read
+during the life of the function call.  But if so, then that causes problems
+in theory for higher-order functions, because then captures do or don't
+have to be worried about should the function referring to the variable be
+passed between statements.  Restricting to procedure expressions may help,
+or not. Perhaps a solution to that is requiring functions to unwrap any
+Reference into regular values if it expects to be non-deterministic.  Or
+perhaps a more generic thing to do is split functions into 2 variants where
+one is allowed to be non-deterministic (and read variables behind
+References) while the other isn't.  The former can then also do certain
+other things like read random numbers or fetch random elements or whatever.
+ If we cross this line, then variable reads don't need special syntax,
+they're just a function of the appropriate kind.  We should probably use a
+keyword other than "function" to name the variant, then, but their
+structures are mostly alike.  Maybe call it a "reader"?  Note that this
+"reader" would exclude most functional traits, particularly any that give
+hints or imply commutativity etc.  Note that there are different kinds of
+nondeterminism, such as select implementation-dependent-random something,
+or scope over which a variable can be read repeatedly with same results, or
+environment-based stuff, and each could perhaps be allowed or disallowed
+individually.  MIND ALSO THE YAGNI PRINCIPLE, DON'T MOVE MORE OUT OF
+EXCLUSIVE DOMAIN OF PROCEDURES THAN WE REALLY NEED TO. So something we
+could do is NOT add the function variant, but supply a set of special
+purpose foundational procedures for the common reasons we might want them.
+FOR EXAMPLE, JUST CREATE A FOUNDATION 'SNAPSHOT' PROCEDURE WHICH WILL
+RECURSIVELY FOLLOW A STRUCTURE AND REPLACE ALL HANDLES WITH THE VALUES OF
+THEIR VARIABLES AT THAT TIME (THIS OP SHOULD BE CHEAP).  Regular deref
+keyword would work for the typical single level fine, give value of a
+variable to a function say.  Likewise, a proc to fetch a set of randoms.>
+
+I<<TODO, other notes.  A C<Reference> value also carries meta-data such as
+whether it is a strong or a weak reference.  The actual current value of
+the referenced variable is itself readonly, but if it or any of its
+elements is a Reference, then via that indirection one can have an
+arbitrarily complex graph of memory that is subject-to-update, and hence
+any programming language or hardware having the concept of memory pointers
+can be emulated or interfaced without too much indirection.  The default
+value of C<Reference> is one that explicitly doesn't point to any variable.
+A I<variable> itself also has meta-data such as its declared type (a
+contract) or registered stimulus-response rules etc.  Typically,
+externally-interfacing resources such as file or network streams are
+represented by C<Reference> values.  The generic assignment syntax C<:=>
+takes a C<Reference> as its left-hand argument and updates the variable
+that this points to to hold the value of its right-hand argument.>>
 
 =head1 EXTERNAL DATA TYPES
 
