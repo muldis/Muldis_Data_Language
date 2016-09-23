@@ -14,6 +14,238 @@ resources of everyone else.
 
 ----------
 
+* Use =: as the "fetch" operator to get from a variable, which is visually
+flipped from the := "store" operator; the former is a unary expression,
+the latter is a binary procedure.  So & and * etc are left free.
+
+* Note: TTM Multi-assign can just be an ordinary (system-defined) procedure
+call now, same as regular assign, it just takes collections of references
+and things to assign to them, more or less.
+
+* File this note ... func call to foundation also needs context because
+context package may require different version of foundation.
+
+* Eliminate the "binder" concept.  The only private namespaces are those
+inside the bodies/traits of materials.
+
+* Notes on 20160906:
+- Lets say that the actual variable a Reference points to contains several
+pieces of user-visible data that can be independently kept:  The regular
+current value of the variable, the declared type or currently applied or
+"expected-to-satisfy" constraint of the variable (a predicate function
+call), the declared default value of the variable (a niladic function
+call), perhaps other things.  Each of these would need Foundation routines
+for reading or writing them.  Or alternately we say there's just one piece
+of data, which is a Tuple, whose attributes are those mentioned things; if
+we do this, then more of the complexity is boosted to user space and is
+customizable.
+- Consider emphasizing Foundation more as being a specification of the API
+for a virtual machine or runtime for Muldis D, or otherwise have separate
+documents for those details versus the language overview that Foundation
+also serves the function of; eg, concepts like contracts are more of an
+overview than a foundation thing. Foundation is still a good name for the
+VM / runtime descriptor.
+
+* Notes on 20160816:
+- Effective immediately, Muldis D should be implementation-driven, meaning
+that I should now focus on writing one or more host language
+implementations of the Foundation etc.  I should do so using reasonably the
+least amount of code possible to speed the way so code written in Muldis D
+Plain Text would execute, and thus with the language bootstrapped we can
+save implementation of as much as possible such that as much as possible
+reasonably can be written in Muldis D itself.
+- The host language version of the Plain Text parser only needs to be able
+to handle UTF-8, the encoding of the Core files, and then any support for
+other encodings can just be implemented by Muldis D code.  And so on.
+- Start by making a simple Perl script that extracts a .mdpt file from a
+.pod file like with Core.pod etc; it may just process STDIN to STDOUT.
+
+* Notes on 20160820:
+- The Foundation should be formally simplified to know practically nothing
+about the "normal" Muldis D source code types, or the "normal" Plain_Text
+grammar, or even a lot of core concepts, and instead natively have an
+alternative and much simpler model.  Use the Perl 5 ecosystem as influence,
+where say the Foundation is akin to vanilla Perl 5 and the Muldis D proper
+is a distinct separate language implemented over top of it, like a
+combination of Perl 5 plus Moose plus more syntax plus a new runtime etc.
+Or Foundation is like MoarVM and Muldis D proper is like Perl 6 or NQP.
+- See also MoarVM etc bootstrap types like BOOTArray, BOOTInt, BOOTCode,
+VMString, NQPArray, QUAST::Op, BOOTCompUnit, etc.
+- The Foundation just knows about values, variables, functions, procedures
+and moreover its concept of the latter is a lot simpler, more like that of
+Perl 5.  Foundation knows nothing of constants or contracts or interfaces
+or operator overloading or multi-level namespaces etc and also
+types are just a convenient fiction that it doesn't formally know about.
+There are just values which happen to fit into 7-8 or so disjoint groupings
+and nothing knows about their distinction but internals.
+- Formally the Foundation provides a set of functions and procedures, each
+of which accepts a subset of all values and/or results in such, with no
+concept of type; bad input will throw an exception simply because the
+values are unacceptable etc.
+- At the Foundation level, like in Perl 5, functions and procedures have no
+traits other than their bodies, and the bodies will directly take their
+"args" input Tuple and either work with it or throw an exception.  A
+function body is just an expression that can be factored into named parts;
+a procedure body is just a sequence of statements plus such expressions.
+- Similarly to its builtins concept, the Muldis D runtime builtin to each
+host language implementation of the Foundation expects that all
+user-defined code consists of just the same kind of simple functions and
+procedures as its native ones, that only have bodies and not other traits,
+though the list of statement/expression node types is likely the same
+because it is already reduced / noninclusive of all Plain_Text etc options.
+- In order to be extensible, any (eg Tuple-based) data types the Foundation
+knows about only requires that certain attributes be present, but it allows
+other attributes to exist which it simply ignores.
+- All wrappered/Capsule types at the Foundation level use a simple
+Attr_Name as the wrapper, most likely named "FDN__Foo" or such.
+- The Foundation probably would also know about a simplified concept of a
+Package as well just as a container to keep named pieces of a refactored
+routine in, but generally speaking all user-defined functions and
+procedures intended to be evaluated directly by the host-language Runtime
+would be anonymous, and any higher-order whatsits would be taking or
+returning the entire source code, with typically nothing being called by
+name anywhere, except for builtin routines.  The low-level packages might
+also be anonymous, or alternately they would likely best be proper-subsets
+of full Muldis D packages with full identity names, so they can live in the
+same compilation unit repositories as whatever.
+- A simpler analogy to Plain_Text (or a proper subset calling itself
+Plain_Text plus foundational indicator) would be the only thing the host
+language parser knows, and it parses directly into the Foundational
+simplified package/function/procedure/the-end.
+- And so, the main Muldis D runtime AND plain text parser would be written
+in Muldis D itself, or specifically the proper subset the Foundation knows.
+OR, what we may actually have here is a single self-contained Muldis D
+package written in said subset which consists of a "main program" runtime
+plus parser etc, and it is actually THIS which is what is used to parse and
+interpret/compile/etc the normal Core.mdpt and other full grammar code.
+- Probably the Foundational grammar/mini-plain-text would be limited to
+ASCII, although strings would still be "any integer", and the bootstrapped
+Muldis-D-mini code that would parse the regular Core.mdpt would implement
+UTF-8 whatever.
+- At the simpler Foundational level, anything which counts as optional
+hints for performance eg indexes is realized as optional explicit arguments
+to the operators at hand, eg ones that output a Bag, and the effects of the
+hints would then propagate internally as useful; hints are of-course
+(presumably) write-only in the interest of portable determinism.
+- Maybe call the thing that parses/etc Core.mdpt for the first time
+Bootstrap, especially if it is used as a compiler that converts the more
+detailed Muldis D code into that simpler variant, which then the
+Foundation's built-in just runs directly in place of that Bootstrap.  In
+theory/practice this Bootstrap could run another main program written in
+full Muldis D, namely "Core" plus "Core::*" plus things which may implement
+compilers/etc of various kinds.  Users could choose whether their compilers
+are hand-written in the full Muldis D or in the minimal variant, same as
+users of MoarVM/etc can write in either NQP or full Perl 6.
+- Maybe "Core::Bootstrap" is what this bootstrap package should be named.
+
+* Notes on 20160819:
+- Have some explicit concurrency management features out of the gate, such
+as where multiple in-DBMS processes may be using the same variables at once
+keeping in mind that some variables are normally shared, some are normally
+private or lexical, some change statuses between those.
+- Each in-DBMS process has the concept of a process id and/or one or more
+transaction ids, the representation of each of which is also a Reference or
+otherwise a black box to / not seen by Muldis D code.
+- Each variable has associated with it a record of interested parties and
+it potentially has multiple versions where the versions are in a tree
+rather than a graph; the identity of a version is a combination of the
+singular logical location/identity of the variable plus a process and/or
+transaction id.  Each version has the appearance of a value, itself
+readonly; if any process/context has a repeatable read lock on a variable,
+then assigning to it will create a version.  A process/context creating a
+write lock on a variable will typically create a privileged path through
+the tree such that writing is then only allowed by that process or locks
+for such only by others who are seeing the value it set in contrast with
+some other version.  ... Something something multiple persisting versions...
+- Have 2 procedure traits each of which is an expression taking args as
+input and resulting in a Tuple each of whose attributes is a Reference; the
+first trait says we want repeatable-read-consistency on all of the
+corresponding variables for the duration of the procedure; the second trait
+says we may want to update/assign-to any of the corresponding variables and
+so we should get a reserved or write lock on them for the duration of the
+procedure; in either case, invocation of the procedure will block until all
+of the requested locks have been granted, prior to executing any
+precondition or main body blocks.  If the procedure can't get all of the
+locks it requests, it will throw an exception.  There can also be blocking
+or non-blocking versions.  What happens may vary by implementation.
+- UPDATE: The primary trait of interest is "synchronizes" which takes the
+expression denoting a list of Reference values whose variables we want to
+have exclusive access to, possibly for writing.  Only a single in-DBMS
+process may be synchronized on a variable at a time, and so any other such
+claims in progress must complete or rollback before it is granted;
+moreover, when one holds a sync on a variable then reads from it will get
+the newest and canonical version, based on which they can decide to update
+it or not with a newer value, which then becomes the canonical one.  During
+this time, other in-DBMS processes may see an earlier committed version of
+that variable with read-only access, which is fine as long as they don't
+assume it is the latest.  This is essentially serializable isolation.
+- Another trait "snapshots" takes the list of References expression and
+obtains a repeatable read lock on all of them.
+- Without either of the above traits in force, variables could potentially
+change between each innermost statement of a procedure stack, similar to
+read committed isolation perhaps, though within each individual inner
+statement there is repeatable read isolation, or something.
+- That all being said, at the Foundation level the synchronize/snapshot/etc
+mechanism needs to be a regular procedure call, meaning it can also be
+called directly as a procedure rather than requiring a declarative, meaning
+we have to use a scope guard or such.  How this could work say is the
+Foundation provides a proxy procedure that takes an argument specifying the
+normal procedure to execute plus another argument with a Tuple of Reference
+that it should synchronize or whatever; then, the proxy will apply and free
+the locks respectively around the procedure call.  This is somewhat
+low-level and doesn't know about a lot of Procedure details, it is meant to
+be invoked by a runtime written in Muldis D ... or alternately by users.
+
+* Notes on 20160815:
+- Muldis D would likely end up as a highly recursive compile-execute cycled
+environment such that every executing routine has data lexically available
+to it that includes its own source code, the package it was defined in, and
+all the packages that one uses, moreover the act of invoking a routine is
+actually taking the source code of the thing being invoked and interpreting
+it directly like a data processing operation.
+- Typically a routine invocation is on a named package entity declared in
+the same package or as the caller or a package that one "uses", in which
+case the interpreter would walk said packages to find the called routine's
+source and invoke it, which might be by way of a virtual/implements
+relationship; at other times, a routine or package might be generated at
+runtime, not the least of which by or for a higher-order function, and then
+invoking that is essentially the same code-walking interpretation process
+as when calling a named package entity after it is "found".
+- We want two similar Package-like types; the regular "Package" is the
+normal source format that can persist and is non-recursive, its "uses" are
+just identifier strings of the other packages; the alternate "Package_Tree",
+say, only manifests at runtime and has the actual sources of all "used"
+packages as its attributes; the latter is the result of a compilation of
+sorts, where a current package and all dependencies are pulled in from
+whatever repositories they live so the actual execution cycle doesn't have
+to worry about that; typically a procedure would do the gathering into a
+Package_Tree, and then execution could potentially be by a function.
+- Whenever a routine effectively changes its own source code, that is, when
+an analogy to a "data definition" operation happens, this generally results
+in the current interpreter, still being the old code version, spawning
+another interpreter to carry on in its place, where the latter is running
+the new code version.  So we may end up with multiple nested interpreters
+to an arbitrary recursive depth, although any interpreter can be structured
+in such a way to instead exit with a left instruction for its own caller to
+call the new version in its place.
+- It is possible that other languages such as Lisp do something like this,
+or I recall the act of defining routines in a Lisp shell to claim it had
+increased its execution level, or something or other.
+- This design can permit a high degree if isolation, where individual
+in-DBMS processes can arbitrarily change the executing code without
+impacting each other, aside from where they choose to share their results
+with commits.
+- A Function_Call value would have as its context attribute a Package_Tree
+value provided to its selector at runtime, rather than a Package value.
+(Providing it at compile time / inlining it probably bad / self-recursive.)
+- An interpreter procedure would likely by necessity use a collection-typed
+variable to keep the package sources in definitively after fetching from depots.
+
+* At Foundation level, a general routine for calling conceptual Foundation
+routines would take an extra optional argument or several which provide
+optimization hints including ones for indexing; at Foundation level things
+are more explicit as arguments.
+
 * In theory there should be disjoint interval types for successable vs
 not-successable member types.  Partly this is for distinguishing certain
 fundamental conceptual differences such as the interval being sparse (a set
@@ -599,6 +831,9 @@ on Quantities and units — Part 2: Mathematical signs and symbols to be used in
 * An introduction to the new more modern Apple File System.
 https://developer.apple.com/library/prerelease/content/documentation/FileManagement/Conceptual/APFS_Guide/
 
+* See https://github.com/timo/iperl6kernel and its inspiration
+http://ipython.org/ipython-doc/rel-0.13.1/development/messaging.html .
+
 * https://www.sqlite.org/draft/sessionintro.html
 SQLite Session Extension included with version 3.13.0.
 This is about packaging a changeset of arbitrarily many table updates
@@ -627,6 +862,8 @@ eg: foo ?. bar() ?. baz()
 
 * Interesting article on methods for in-database queues.
 http://blog.2ndquadrant.com/what-is-select-skip-locked-for-in-postgresql-9-5
+
+* https://pyrseas.wordpress.com/2013/10/02/multisets-and-the-relational-model/
 
 * Add one or more features to assist in making some otherwise fatal
 actions non-fatal, while staying in pure functions.
@@ -1099,18 +1336,38 @@ deal with them, such as how to deal with repeated operations.
 * Err on the side of fewer/larger non-core packages rather than more.
 - The following are generally still part of the Muldis D Plain Text language
 core spec, but some might be better separated / done by the experts, eg Spatial.
-- Muldis_D - the core that everyone should use
+- UPDATED 2016-08-15...
+- Core - the core that everyone should use
     - all the boolean logic stuff
     - just numbers that are unlimited-sized and rational
     - just the simpler math ops especially ones that don't deal in irrationals mostly
-- Muldis_D::Aliases - Unicode aliases for Muldis_D
-- Muldis_D::Plain_Text
+- Core::Source_Code
+    - declare all the main Package/Function/etc types for persistable/canonical
+    source code living in depots/files, but that are not for normal user data
+    - mainly behavioral but also some annotative or decorative
+- Core::Runtime
+    - declare an interpreter program that is a suitable main program
+    implementing Muldis D at runtime, that which walks over source code and
+    causes it to be performed as if it were processing data, when ordinary
+    Muldis D routines are invoked etc
+    - this would be bootstrapped by a simpler version for each host language
+    - this version would still use the native host implementations of
+    Foundation types and routines
+    - this version would invoke Core::Plain_Text etc for its functionality
+    - alternative Runtime-like modules could do cross-compilation or
+    remote federation or whatever
+- Core::Syntax::Plain_Text
     - parsers and generators for Plain_Text code that respect decorations
-    - only knows ASCII script
-- Muldis_D::Plain_Text::Unicode
-    - extended Muldis_D::Plain_Text that handles Unicode scripts etc also
-- Muldis_D::Math - all numeric (and logic) types and ops not in Muldis_D
-    - particularly everything not in Muldis_D that are common to GP languages
+    - probably only has to map Text values and not Blob, so caller Runtime
+    can alternatively try to parse Blob source as each encoding and then
+    ask Plain_Text to try and extract a language name plus script declaration
+    and see if they match up; the caller can just say scan the first few
+    hundred bytes for this purpose with each attempt
+    - other Syntax modules can map with both plain text and other structures
+    defined in Muldis D, and possibly even some host data (via Externals),
+    though the last might best be done by the host itself just because
+- Core::Math - all numeric (and logic) types and ops not in Core
+    - particularly everything not in Core that are common to GP languages
     - fixed precision or scale rationals/ints
     - exactly match hardware numbers
     - scientific notation
@@ -1125,14 +1382,15 @@ core spec, but some might be better separated / done by the experts, eg Spatial.
     - significant figures
     - fuzzy logic
     - doesn't use Unicode
-- Muldis_D::Math::Aliases - if applicable, Unicode aliases for Muldis_D::Math
-- Muldis_D::Text - all character types and ops not in Muldis_D
+- Core::Text - all character types and ops not in Core
     - where knowlege of non-ASCII repertoires and encodings go
     - Unicode knowledge such as normal forms and encodings
     - Latin encodings
     - subset types for eg Unicode, Latin, etc
     - disjoint types that bundle in national/locale-specific orderings
-- Muldis_D::Stream - read or write generic filehandles
+    - might be further divided into Core::Text::Unicode for normalization
+    or folding or non-UTF8 knowledge etc plus Core::Text::Latin etc
+- Core::Stream - read or write generic filehandles
     - name subject to change
     - read or write STDIN, STDOUT, STDERR etc
     - read or write arbitrary filehandles
@@ -1143,7 +1401,7 @@ core spec, but some might be better separated / done by the experts, eg Spatial.
     just bytes etc
     - this module itself doesn't know anything about character encodings,
     rather layers over top / other modules do that; aka doesn't use Unicode
-- Muldis_D::Temporal - all standard temporal types and ops
+- Core::Temporal - all standard temporal types and ops
     - continuum - a namespace
     - epoch
         - an epoch by itself is just a nominal or a namespace
@@ -1162,7 +1420,7 @@ core spec, but some might be better separated / done by the experts, eg Spatial.
         timestamp from local clock' or some such
     - ops to 'sleep' etc
     - doesn't use Unicode
-- Muldis_D::Spatial - typical complement of spatial/geographic types, ops, etc
+- Core::Spatial - typical complement of spatial/geographic types, ops, etc
     - what SQL/etc databases usually support
     - lines, polygons, etc
     - doesn't use Unicode
@@ -4623,6 +4881,20 @@ can instead be done longhand using \<*source if one wants to.
 Function_Call_* are further subtypes of that.
 - A Contract_Name is sort of a Identity_Identifier alias, it doesn't use args.
 
+* NEW FOR 20160809...
+- Unified Plain_Text syntax for invoking Foundation functions as with
+package functions, eg the same --> and \--> and f::() and \f::() etc.
+- Likewise, Function_Call needs to be able to represent both.
+- So Foundation things can have names that are data, and calls can be
+partially applied, etc.
+- A Foundation item name is represented just by an Attr_Name, that is,
+like a single-level Identifier or so.
+- We will formally give Foundation types names, maybe, or alternately we
+rename the unary isa funcs to eg FDN__Integer, and maybe we'll overload
+them to accept 0 arguments too, ... or not, handling defaults would change
+the result type and do we want that?
+- Idea, f1::^() means Foundation where f1::() doesn't.
+
 * NEW FOR 20160527...
 - Unified syntax in general expression context for invoking or referencing
 functions and constants and types, all of which are invoked as if they were
@@ -4797,6 +5069,7 @@ TRUE WHETHER GIVEN EXPLICIT NAME WITH ::= OR NOT.
         say "is commutative" when that applies
         - it is expected that any functions in a "commutes" pair are not
         associative or idempotent etc
+        - Note that Haskell has "flip" programming pattern that does this.
     1.6 keyword "negates" is optional, followed by a function name
         - if used, replaces all keywords except {function,implements,overrides,is,identity}
         - is for functions that just negate others, eg != vs = or < vs >=
@@ -4940,6 +5213,16 @@ things at the source end.
 - This being said, applicable triggers should explicitly be named
 "when updating x" rather than "when assigning to x", or have both if we want
 to easily log the fact an assign was attempted even if it no-oped after.
+
+* One option, update virtual routines to be more explicit, say, on when
+composers MUST have certain traits, but also be able to declare that some
+composers MIGHT have certain traits.  Basically encode some things that
+otherwise are just mentioned in documentation for the virtuals.  For
+example, that member_plus must be associative but may be commutative.
+- Another option is to make virtual routines declare less or very little,
+and simply have them being a shared name, and then each of their options
+is tried to check for "signature" matches, rather than also first checking
+whether the signature of the virtual matches.  This may be a less popular option.
 
 * Constant / named value declare syntax general form:
     0. keyword "constant"
