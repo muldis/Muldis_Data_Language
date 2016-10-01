@@ -14,9 +14,34 @@ resources of everyone else.
 
 ----------
 
+* Notes for 2016-10-01:
+- Major syntax changes involving generic expressions, which can be anywhere,
+and material declarations.
+- Have a set of alpha keywords or source code attr names for the common
+declarations or actions that presently use symbolics, so they're easier to
+understand in casual reading and also frees up symbols for package-def ops.
+- Now basically every keyword symbolic contains colon or backslash, or semicolon or comma.
+- keywords:
+    - expr "evaluate x" where x is a function call spec, results in the result of executing the function
+        - what any function call syntax desugars to
+    - stmt "perform x" where x is a procedure call spec, causes the procedure to execute now
+        - what any procedure call syntax desugars to
+    - expr "return x" (nee "<-- x") marks which expr in a semicolon-list is the aggregate result
+    - expr "fetch x" (or "=: x") where x is a Reference results in the current value of the variable that x points to
+    - stmt "t store v" (or "t := v") where t is a Reference results in the variable it points to getting new value v
+    - expr|stmt "x then y else z" (optional "if" noiseword) is short-circuiting ternary expr/stmt,
+        where x is a predicate expr and {y,z} are either exprs or stmts
+    - expr "x :? y :! z" (nee "x ?? y !! z") is non-short-circuiting ternary expr
+    - expr|stmt "w when x1 then y1 when x2 then y2 ... default z"
+        (optional "given" noiseword) is short-circuiting n-ary expr/stmt,
+        where {w,x1,x2} are exprs and {y1,y2,z} are either exprs or stmts
+    - expr "w :?? {x1 : y1, x2 : y2, ...} :!! z"
+        (nee "w ??? {x1 : y1, x2 : y2, ...} !!! z") is non-short-circuiting n-ary expr
+
 * Note that the latest / 2016 Sep 28 (and maybe prior) TTM IM prescriptions differ from Muldis D in ways including these:
 - IM 5: A supertype should declare an example value of a supertype that isn't part of its subtype.
 - IM 7: The term "overlap" is the complement of "disjoint", having at least 1 value in common, period.
+- The term "proper subtype" only means "proper subset" for TTM "scalar" types, otherwise it means "subtype".
 
 * Generalize the Foo::Bar syntax so it implies drilling through nested
 Tuples, and also special case support for nested tuples so that the same
@@ -44,7 +69,8 @@ tree branches can be recursed into more than once.  Examples
 otherwise allow :: as a tuple attribute accessor in general that is
 recognized at the Foundation level.
 
-* Major syntax change for functions and other materials.
+* Notes for 2016-09-xx:
+- Major syntax change for functions and other materials.
 - Specify this block starting in terms of the source code types and then
 see what Plain_Text syntactic shorthands are useful, or do both together.
 - New terse forms when only the body is declared are \(...) for functions

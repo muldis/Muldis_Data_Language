@@ -193,7 +193,7 @@ I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
 
     ::MD::or_else ::= function --> Any <-- (Any, Any)
         is {associative,idempotent}
-        : (Excuse args.\0 ?? args.\1 !! args.\0);
+        : (Excuse args.\0 :? args.\1 :! args.\0);
 
     ::MD::coalesce ::= alias of or_else;
 
@@ -208,7 +208,7 @@ I<??> or I<//> or I<?:>.
 
     ::MD::and_then ::= function --> Any <-- (Any, Any)
         is {associative,idempotent}
-        : (Excuse args.\0 ?? args.\0 !! args.\1);
+        : (Excuse args.\0 :? args.\0 :! args.\1);
 
 The function C<and_then> results in its C<0> argument iff the latter is an
 C<Excuse>, and results in its C<1> argument otherwise.  This function is
@@ -372,7 +372,7 @@ name this operator I<ge>.
 
     ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (+∞)
-        : (args.\0 in_order args.\1 ?? args.\0 !! args.\1);
+        : (args.\0 in_order args.\1 :? args.\0 :! args.\1);
 
 The function C<min> results in whichever of its 2 arguments is first when
 the 2 are sorted I<in order>.  This function is designed to be chained for
@@ -383,7 +383,7 @@ I<before> all of the others.
 
     ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (-∞)
-        : (args.\0 in_order args.\1 ?? args.\1 !! args.\0);
+        : (args.\0 in_order args.\1 :? args.\1 :! args.\0);
 
 The function C<max> results in whichever of its 2 arguments is last when
 the 2 are sorted I<in order>.  This function is designed to be chained for
@@ -395,7 +395,7 @@ I<after> all of the others.
     ::MD::minmax ::= function
         --> (Orderable, Orderable) <-- (Orderable, Orderable)
         is commutative
-        : (args.\0 in_order args.\1 ?? args !! (args.\1, args.\0));
+        : (args.\0 in_order args.\1 :? args :! (args.\1, args.\0));
 
 The function C<minmax> results in a binary C<Tuple> containing its 2
 arguments sorted I<in order>; the function's result is the same as its
@@ -676,7 +676,7 @@ the composing type C<Boolean>.
     ::MD::nth_pred::Boolean ::= function
         --> {False, Neg_Inf} <-- (Boolean, Integer_NN)
         implements 2::""
-        : (args.\1 = 0 ?? args.\0 !! args.\1 = 1 and args.\0 ?? False !! -∞);
+        : (args.\1 = 0 :? args.\0 :! args.\1 = 1 and args.\0 :? False :! -∞);
 
 The function C<nth_pred::Boolean> implements the C<Bicessable> virtual
 function C<nth_pred> for the composing type C<Boolean>.
@@ -686,7 +686,7 @@ function C<nth_pred> for the composing type C<Boolean>.
     ::MD::nth_succ::Boolean ::= function
         --> {True, Pos_Inf} <-- (Boolean, Integer_NN)
         implements 2::""
-        : (args.\1 = 0 ?? args.\0 !! args.\1 = 1 and !(args.\0) ?? True !! +∞);
+        : (args.\1 = 0 :? args.\0 :! args.\1 = 1 and !(args.\0) :? True :! +∞);
 
 The function C<nth_succ::Boolean> implements the C<Successable> virtual
 function C<nth_succ> for the composing type C<Boolean>.
@@ -719,7 +719,7 @@ corresponding operators I<~> or I<^> or I<N>.
 
     ::MD::and ::= function --> Boolean <-- (Boolean, Boolean)
         is {associative,commutative,idempotent} identity (True)
-        : (args.\0 ?? args.\1 !! False);
+        : (args.\0 :? args.\1 :! False);
 
     ::MD::Unicode_Aliases::"∧" ::= alias of and;
 
@@ -746,7 +746,7 @@ C<1> are both C<True>, and C<True> otherwise.
 
     ::MD::or ::= function --> Boolean <-- (Boolean, Boolean)
         is {associative,commutative,idempotent} identity (False)
-        : (args.\0 ?? True !! args.\1);
+        : (args.\0 :? True :! args.\1);
 
     ::MD::Unicode_Aliases::"∨" ::= alias of or;
 
@@ -806,7 +806,7 @@ corresponding operators I<^>.
 =head2 imp implies →
 
     ::MD::imp ::= function --> Boolean <-- (Boolean, Boolean)
-        : (args.\0 ?? args.\1 !! True);
+        : (args.\0 :? args.\1 :! True);
 
     ::MD::implies ::= alias of imp;
 
@@ -1031,7 +1031,7 @@ C<0> (I<minuend>) and C<1> (I<subtrahend>).
 
     ::MD::"-" ::= function
         --> Numerical <-- {(Numerical), (Numerical, Numerical)}
-        : (args --> (degree::(args) = 1 ?? \opposite::() !! \minus::()));
+        : (args --> (degree::(args) = 1 :? \opposite::() :! \minus::()));
 
     ::MD::Unicode_Aliases::"−" ::= alias of "-";
 
@@ -1508,8 +1508,8 @@ virtual function C<multiple_of> for the composing type C<Integer>.
         <-- if d = 0 then Excuse::Div_By_Zero() else q;
 
         q ::= (\Fraction wrap (
-            numerator   : div::((d > 0 ?? n !! -n), gcd, To_Zero::()),
-            denominator : div::((d > 0 ?? d !! -d), gcd, To_Zero::()),
+            numerator   : div::((d > 0 :? n :! -n), gcd, To_Zero::()),
+            denominator : div::((d > 0 :? d :! -d), gcd, To_Zero::()),
         ));
 
         gcd ::= gcd::(abs::(n), abs::(d));
@@ -1535,11 +1535,11 @@ the composing type C<Integer>.
         e1 ::?= 'This is the case where we are dividing by a non-zero.';
 
         e1 ::= (
-               dividend = 0       ?? 0
-            !! divisor  = 1       ?? dividend
-            !! dividend = divisor ?? 1
-            !! divisor  = -1      ?? -dividend
-            !!                       e2
+               dividend = 0       :? 0
+            :! divisor  = 1       :? dividend
+            :! dividend = divisor :? 1
+            :! divisor  = -1      :? -dividend
+            :!                       e2
         );
 
         e2 ::?= 'This is the case where the divisor and dividend do not'
@@ -1551,7 +1551,7 @@ the composing type C<Integer>.
                 ^<-- (dividend, divisor));
             rtz_remainder ::= (dividend - (divisor * rtz_quotient));
 
-            <-- rtz_remainder = 0 ?? rtz_quotient !! e3;
+            <-- rtz_remainder = 0 :? rtz_quotient :! e3;
         );
 
         e3 ::?= 'This is the case where the divisor does not divide the'
@@ -1559,19 +1559,19 @@ the composing type C<Integer>.
             ' have a fractional part, so we decide how to round that.';
 
         e3 ::= (
-            rti_quotient ::= (rtz_quotient + (real_q_is_neg ?? -1 !! 1));
-            rdn_quotient ::= (rtz_quotient + (real_q_is_neg ?? -1 !! 0));
-            rup_quotient ::= (rtz_quotient + (real_q_is_neg ??  0 !! 1));
+            rti_quotient ::= (rtz_quotient + (real_q_is_neg :? -1 :! 1));
+            rdn_quotient ::= (rtz_quotient + (real_q_is_neg :? -1 :! 0));
+            rup_quotient ::= (rtz_quotient + (real_q_is_neg :?  0 :! 1));
 
-            <-- round_meth ??? {
+            <-- round_meth :?? {
                 Down::()    : rdn_quotient,
                 Up::()      : rup_quotient,
                 To_Zero::() : rtz_quotient,
                 To_Inf::()  : rti_quotient,
-            } !!!
-                   (2 * abs::(rtz_remainder)) < abs::(divisor) ?? rtz_quotient
-                !! (2 * abs::(rtz_remainder)) > abs::(divisor) ?? rti_quotient
-                !! e4
+            } :!!
+                   (2 * abs::(rtz_remainder)) < abs::(divisor) :? rtz_quotient
+                :! (2 * abs::(rtz_remainder)) > abs::(divisor) :? rti_quotient
+                :! e4
             ;
         );
 
@@ -1583,16 +1583,16 @@ the composing type C<Integer>.
             r ::= (abs::(rtz_quotient) - (2 * q));
             rtz_quotient_is_even ::= (r = 0);
 
-            <-- round_meth ??? {
+            <-- round_meth :?? {
                 Half_Down::()    : rdn_quotient,
                 Half_Up::()      : rup_quotient,
                 Half_To_Zero::() : rtz_quotient,
                 Half_To_Inf::()  : rti_quotient,
                 Half_Even::()    :
-                  (rtz_quotient_is_even ?? rtz_quotient !! rti_quotient),
+                  (rtz_quotient_is_even :? rtz_quotient :! rti_quotient),
                 Half_Odd::()     :
-                  (rtz_quotient_is_even ?? rti_quotient !! rtz_quotient),
-            } !!! fail  `oops, an unhandled case`
+                  (rtz_quotient_is_even :? rti_quotient :! rtz_quotient),
+            } :!! fail  `oops, an unhandled case`
         );
     );
 
@@ -1750,8 +1750,8 @@ default and minmum value is C<0.0>; it has no maximum value.
         implements 2::""
     : (
         <-- (args.\0->denominator) = (args.\1->denominator)
-            ?? in_order::(args.\0->numerator, args.\1->numerator)
-         !!
+            :? in_order::(args.\0->numerator, args.\1->numerator)
+         :!
           (
             common_d ::= lcm::(args.\0->denominator, args.\1->denominator);
             <-- in_order::(
@@ -1824,8 +1824,8 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
         repeater times::Fraction_Integer
     : (
         <-- (args.\0->denominator) = (args.\1->denominator)
-            ?? (args.\0->numerator) + (args.\1->numerator) / (args.\0->denominator)
-         !!
+            :? (args.\0->numerator) + (args.\1->numerator) / (args.\0->denominator)
+         :!
           (
             common_d ::= lcm::(args.\0->denominator, args.\1->denominator);
             <-- ((args.\0->numerator) * div::(common_d, args.\0->denominator, To_Zero::()))
@@ -1916,7 +1916,7 @@ C<Fraction>.
         --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Fraction, Integer)
         implements 2::""
         : (\integral_nn_power::()
-            <-- (args.\1 >= 0 ?? args !! (reciprocal::(args.\0), -(args.\1))));
+            <-- (args.\1 >= 0 :? args :! (reciprocal::(args.\0), -(args.\1))));
 
 The function C<integral_power::Fraction> implements the C<Numerical> virtual
 function C<integral_power> aka C<**> for the composing type C<Fraction>.
@@ -2816,11 +2816,11 @@ I<TODO.  Note, still have to define that Excuse.>
                     src_octets where \in::( 1: 0..127 )
                 when 1 then
                     src_octets
-                        map \(args.\0 in 0..127 ?? args.\0 !! args.\1)
+                        map \(args.\0 in 0..127 :? args.\0 :! args.\1)
                             \<-- (1 : repl_chars.0,)
                 default
                     src_octets
-                        map \(args.\0 in 0..127 ?? [args.\0] !! args.\1)
+                        map \(args.\0 in 0..127 :? [args.\0] :! args.\1)
                             \<-- (1 : repl_chars,)
                         reduce \catenate::()
         );
@@ -5001,8 +5001,8 @@ I<TODO.>
 
     ::MD::insert_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
         implements 2::""
-        : (args.\0 has args.\1 or args.\2 = 0 ?? args.\0
-            !! \Set wrap insert_n::(args.\0->unwrap, args.\1, 1));
+        : (args.\0 has args.\1 or args.\2 = 0 :? args.\0
+            :! \Set wrap insert_n::(args.\0->unwrap, args.\1, 1));
 
 The function C<insert_n::Set> results in the C<Set> value that has all of
 the members of the function's C<0> argument; but, if the C<2> argument is
