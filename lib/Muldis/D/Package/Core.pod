@@ -73,7 +73,7 @@ consists of exactly zero values.  It can not have any default value.
 
 =head2 same =
 
-    ::MD::same ::= function --> Boolean <-- (Any, Any)
+    ::MD::same ::= function returns Boolean matches (Any, Any)
         is commutative
         : (args -->^ FDN__same);
 
@@ -111,7 +111,7 @@ or I<=\=>.
 
 =head2 is_a
 
-    ::MD::is_a ::= function --> Boolean <-- (Any, Signature)
+    ::MD::is_a ::= function returns Boolean matches (Any, Signature)
         : ((args.\0) --> Signature_to_Function_Call_But_0::(args.\1));
 
 The function C<is_a> results in C<True> iff its C<0> argument is a
@@ -191,7 +191,7 @@ I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
 
 =head2 or_else coalesce
 
-    ::MD::or_else ::= function --> Any <-- (Any, Any)
+    ::MD::or_else ::= function returns Any matches (Any, Any)
         is {associative,idempotent}
         : (Excuse args.\0 :? args.\1 :! args.\0);
 
@@ -206,7 +206,7 @@ I<??> or I<//> or I<?:>.
 
 =head2 and_then
 
-    ::MD::and_then ::= function --> Any <-- (Any, Any)
+    ::MD::and_then ::= function returns Any matches (Any, Any)
         is {associative,idempotent}
         : (Excuse args.\0 :? args.\0 :! args.\1);
 
@@ -276,7 +276,7 @@ Note that IEEE floating-point standards define a positive infinity value.
 =head2 in_order
 
     ::MD::in_order::"" ::= function virtual
-        --> Boolean <-- (Orderable, Orderable);
+        returns Boolean matches (Orderable, Orderable);
 
 The virtual function C<in_order> results in C<True> iff its 2 arguments are
 considered to already be I<in order> as given to the function, meaning that
@@ -301,19 +301,19 @@ comparisons or validation is typically much simpler with this foundation.
 
 =head2 in_order (Neg_Inf, Pos_Inf)
 
-    ::MD::in_order::Neg_Inf_L ::= function --> Boolean <-- (Neg_Inf, Orderable)
+    ::MD::in_order::Neg_Inf_L ::= function returns Boolean matches (Neg_Inf, Orderable)
         implements 2::""
         : (True);
 
-    ::MD::in_order::Neg_Inf_R ::= function --> Boolean <-- (Orderable, Neg_Inf)
+    ::MD::in_order::Neg_Inf_R ::= function returns Boolean matches (Orderable, Neg_Inf)
         implements 2::""
         : (args.\0 = (args.\1));
 
-    ::MD::in_order::Pos_Inf_L ::= function --> Boolean <-- (Pos_Inf, Orderable)
+    ::MD::in_order::Pos_Inf_L ::= function returns Boolean matches (Pos_Inf, Orderable)
         implements 2::""
         : (args.\0 = (args.\1));
 
-    ::MD::in_order::Pos_Inf_R ::= function --> Boolean <-- (Orderable, Pos_Inf)
+    ::MD::in_order::Pos_Inf_R ::= function returns Boolean matches (Orderable, Pos_Inf)
         implements 2::""
         : (True);
 
@@ -370,7 +370,7 @@ name this operator I<ge>.
 
 =head2 min
 
-    ::MD::min ::= function --> Orderable <-- (Orderable, Orderable)
+    ::MD::min ::= function returns Orderable matches (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (+∞)
         : (args.\0 in_order args.\1 :? args.\0 :! args.\1);
 
@@ -381,7 +381,7 @@ I<before> all of the others.
 
 =head2 max
 
-    ::MD::max ::= function --> Orderable <-- (Orderable, Orderable)
+    ::MD::max ::= function returns Orderable matches (Orderable, Orderable)
         is {associative,commutative,idempotent} identity (-∞)
         : (args.\0 in_order args.\1 :? args.\1 :! args.\0);
 
@@ -393,7 +393,7 @@ I<after> all of the others.
 =head2 minmax
 
     ::MD::minmax ::= function
-        --> (Orderable, Orderable) <-- (Orderable, Orderable)
+        returns (Orderable, Orderable) matches (Orderable, Orderable)
         is commutative
         : (args.\0 in_order args.\1 :? args :! (args.\1, args.\0));
 
@@ -461,7 +461,7 @@ them out of sequence or in parallel may not be an option.
 
 =head2 asset
 
-    ::MD::asset::"" ::= function virtual --> Any <-- (Successable);
+    ::MD::asset::"" ::= function virtual returns Any matches (Successable);
 
 The virtual function C<asset> results in the I<asset> of its C<0> argument,
 which for trivial cases may simply be that same argument.  Other
@@ -469,7 +469,7 @@ programming languages may name their corresponding operators I<Current>.
 
 =head2 succ
 
-    ::MD::succ ::= function --> {Successable, Pos_Inf} <-- (Successable)
+    ::MD::succ ::= function returns {Successable, Pos_Inf} matches (Successable)
         : (args.\0 nth_succ 1);
 
 The function C<succ> results in the I<successor> value of its
@@ -479,7 +479,7 @@ languages may name their corresponding operators I<next> or I<MoveNext>.
 =head2 nth_succ
 
     ::MD::nth_succ::"" ::= function virtual
-        --> {Successable, Pos_Inf} <-- (Successable, Integer_NN);
+        returns {Successable, Pos_Inf} matches (Successable, Integer_NN);
 
 The virtual function C<nth_succ> results in the Nth I<successor> value of
 its C<0> argument, where N is its C<1> argument, or in C<Pos_Inf> if there
@@ -536,7 +536,7 @@ values and should not be conceptualized as mathematical operations.
 
 =head2 pred
 
-    ::MD::pred ::= function --> {Bicessable, Neg_Inf} <-- (Bicessable)
+    ::MD::pred ::= function returns {Bicessable, Neg_Inf} matches (Bicessable)
         : (args.\0 nth_pred 1);
 
 The function C<pred> results in the I<predecessor> value of its
@@ -546,7 +546,7 @@ languages may name their corresponding operators I<prior> or I<previous>.
 =head2 nth_pred
 
     ::MD::nth_pred::"" ::= function virtual
-        --> {Bicessable, Neg_Inf} <-- (Bicessable, Integer_NN);
+        returns {Bicessable, Neg_Inf} matches (Bicessable, Integer_NN);
 
 The virtual function C<nth_pred> results in the Nth I<predecessor> value of
 its C<0> argument, where N is its C<1> argument, or in C<Neg_Inf> if there
@@ -594,7 +594,7 @@ C<has_any_members> (C<to_Boolean>/C<so>) and C<is_empty> (C<not_so>) functions.
 
 =head2 to_Boolean so ?
 
-    ::MD::to_Boolean::"" ::= function virtual --> Boolean <-- (Boolable);
+    ::MD::to_Boolean::"" ::= function virtual returns Boolean matches (Boolable);
 
     ::MD::so  ::= alias of to_Boolean;
     ::MD::"?" ::= alias of to_Boolean;
@@ -654,7 +654,7 @@ integer 1 to represent I<true>.
 
 =head2 in_order (Boolean)
 
-    ::MD::in_order::Boolean ::= function --> Boolean <-- (Boolean, Boolean)
+    ::MD::in_order::Boolean ::= function returns Boolean matches (Boolean, Boolean)
         implements 2::""
         : (!(args.\0) or args.\1);
 
@@ -663,7 +663,7 @@ function C<in_order> for the composing type C<Boolean>.
 
 =head2 asset (Boolean)
 
-    ::MD::asset::Boolean ::= function --> Boolean <-- (Boolean)
+    ::MD::asset::Boolean ::= function returns Boolean matches (Boolean)
         implements 2::""
         : (args.\0);
 
@@ -674,7 +674,7 @@ the composing type C<Boolean>.
 =head2 nth_pred (Boolean)
 
     ::MD::nth_pred::Boolean ::= function
-        --> {False, Neg_Inf} <-- (Boolean, Integer_NN)
+        returns {False, Neg_Inf} matches (Boolean, Integer_NN)
         implements 2::""
         : (args.\1 = 0 :? args.\0 :! args.\1 = 1 and args.\0 :? False :! -∞);
 
@@ -684,7 +684,7 @@ function C<nth_pred> for the composing type C<Boolean>.
 =head2 nth_succ (Boolean)
 
     ::MD::nth_succ::Boolean ::= function
-        --> {True, Pos_Inf} <-- (Boolean, Integer_NN)
+        returns {True, Pos_Inf} matches (Boolean, Integer_NN)
         implements 2::""
         : (args.\1 = 0 :? args.\0 :! args.\1 = 1 and !(args.\0) :? True :! +∞);
 
@@ -693,7 +693,7 @@ function C<nth_succ> for the composing type C<Boolean>.
 
 =head2 to_Boolean (Boolean)
 
-    ::MD::to_Boolean::Boolean ::= function --> Boolean <-- (Boolean)
+    ::MD::to_Boolean::Boolean ::= function returns Boolean matches (Boolean)
         implements 2::""
         : (args.\0);
 
@@ -717,7 +717,7 @@ corresponding operators I<~> or I<^> or I<N>.
 
 =head2 and ∧
 
-    ::MD::and ::= function --> Boolean <-- (Boolean, Boolean)
+    ::MD::and ::= function returns Boolean matches (Boolean, Boolean)
         is {associative,commutative,idempotent} identity (True)
         : (args.\0 :? args.\1 :! False);
 
@@ -744,7 +744,7 @@ C<1> are both C<True>, and C<True> otherwise.
 
 =head2 or ∨
 
-    ::MD::or ::= function --> Boolean <-- (Boolean, Boolean)
+    ::MD::or ::= function returns Boolean matches (Boolean, Boolean)
         is {associative,commutative,idempotent} identity (False)
         : (args.\0 :? True :! args.\1);
 
@@ -771,7 +771,7 @@ C<0> and C<1> is C<True>, and C<True> otherwise.
 
 =head2 xnor iff ↔
 
-    ::MD::xnor ::= function --> Boolean <-- (Boolean, Boolean)
+    ::MD::xnor ::= function returns Boolean matches (Boolean, Boolean)
         is {associative,commutative} identity (True)
         : (args.\0 = (args.\1));
 
@@ -805,7 +805,7 @@ corresponding operators I<^>.
 
 =head2 imp implies →
 
-    ::MD::imp ::= function --> Boolean <-- (Boolean, Boolean)
+    ::MD::imp ::= function returns Boolean matches (Boolean, Boolean)
         : (args.\0 :? args.\1 :! True);
 
     ::MD::implies ::= alias of imp;
@@ -944,7 +944,7 @@ of attempting to exponentiate a number zero to the power of a number zero.
 
 =head2 to_Boolean (Numerical)
 
-    ::MD::to_Boolean::Numerical ::= function virtual --> Boolean <-- (Numerical)
+    ::MD::to_Boolean::Numerical ::= function virtual returns Boolean matches (Numerical)
         implements 2::"";
 
 The virtual function C<to_Boolean::Numerical> results in C<True> when its
@@ -961,7 +961,7 @@ number zero; otherwise it results in C<False>.
 
 =head2 zero
 
-    ::MD::zero::"" ::= function virtual --> Numerical <-- (Numerical);
+    ::MD::zero::"" ::= function virtual returns Numerical matches (Numerical);
 
 The virtual function C<zero> results in the number zero of its C<0>
 argument's numerical type, assuming that every type composing C<Numerical>
@@ -969,7 +969,7 @@ has one.
 
 =head2 opposite
 
-    ::MD::opposite::"" ::= function virtual --> Numerical <-- (Numerical);
+    ::MD::opposite::"" ::= function virtual returns Numerical matches (Numerical);
 
     ::MD::additive_inverse ::= alias of opposite;
 
@@ -982,7 +982,7 @@ zero.  By definition, the sum of a number and its opposite is zero.
 =head2 reciprocal
 
     ::MD::reciprocal::"" ::= function virtual
-        --> {Numerical, Excuse::Div_By_Zero} <-- (Numerical);
+        returns {Numerical, Excuse::Div_By_Zero} matches (Numerical);
 
     ::MD::multiplicative_inverse ::= alias of reciprocal;
 
@@ -996,7 +996,7 @@ an C<Excuse> otherwise.
 
 =head2 modulus abs
 
-    ::MD::modulus::"" ::= function virtual --> Numerical <-- (Numerical);
+    ::MD::modulus::"" ::= function virtual returns Numerical matches (Numerical);
 
     ::MD::abs ::= alias of modulus;
 
@@ -1008,7 +1008,7 @@ mathematical notion writes this operator in circumfix like I<|n|>.
 =head2 plus +
 
     ::MD::plus::"" ::= function virtual
-        --> Numerical <-- (Numerical, Numerical)
+        returns Numerical matches (Numerical, Numerical)
         is {associative,commutative}
         repeater times;
 
@@ -1021,7 +1021,7 @@ C<1> (I<addend>).  This operation has an identity value of a number zero.
 =head2 minus
 
     ::MD::minus::"" ::= function virtual
-        --> Numerical <-- (Numerical, Numerical);
+        returns Numerical matches (Numerical, Numerical);
 
 The virtual function C<minus> aka binary C<-> aka binary C<−> results in
 the numeric I<difference> from performing I<subtraction> of its 2 arguments
@@ -1030,7 +1030,7 @@ C<0> (I<minuend>) and C<1> (I<subtrahend>).
 =head2 - −
 
     ::MD::"-" ::= function
-        --> Numerical <-- {(Numerical), (Numerical, Numerical)}
+        returns Numerical matches {(Numerical), (Numerical, Numerical)}
         : (args --> (degree::(args) = 1 :? \opposite::() :! \minus::()));
 
     ::MD::Unicode_Aliases::"−" ::= alias of "-";
@@ -1042,7 +1042,7 @@ was invoked with.
 =head2 modulus_minus abs_minus |-| |−|
 
     ::MD::modulus_minus ::= function
-        --> Numerical <-- (Numerical, Numerical)
+        returns Numerical matches (Numerical, Numerical)
         is commutative
         : (modulus args.\0 - (args.\1));
 
@@ -1058,7 +1058,7 @@ C<1>, which is the (non-negative) distance between those arguments.
 =head2 times * ×
 
     ::MD::times::"" ::= function virtual
-        --> Numerical <-- (Numerical, Numerical)
+        returns Numerical matches (Numerical, Numerical)
         is {associative,commutative}
         repeater integral_nn_power;
 
@@ -1074,7 +1074,7 @@ identity value of a number positive one.
 =head2 multiple_of
 
     ::MD::multiple_of::"" ::= function virtual
-        --> {Boolean, Excuse::Div_By_Zero} <-- (Numerical, Numerical);
+        returns {Boolean, Excuse::Div_By_Zero} matches (Numerical, Numerical);
 
 The virtual function C<multiple_of> results in C<True> iff its C<0>
 argument is an even multiple of its C<1> argument (that is, the former is
@@ -1086,8 +1086,8 @@ corresponding operators I<%%>.
 =head2 nearest_multiple_of round
 
     ::MD::nearest_multiple_of ::= function
-        --> {Numerical, Excuse::Div_By_Zero}
-        <-- (Numerical, Numerical, Round_Meth)
+        returns {Numerical, Excuse::Div_By_Zero}
+        matches (Numerical, Numerical, Round_Meth)
         : (if args.\1->is_zero then Excuse::Div_By_Zero()
             else args.\1 * (args.\0 div args.\1));
 
@@ -1108,7 +1108,7 @@ other things, some of which would always round to a multiple of one.
 =head2 fractional_divided_by / ÷ ∕
 
     ::MD::fractional_divided_by::"" ::= function virtual
-        --> {Numerical, Excuse::Div_By_Zero} <-- (Numerical, Numerical);
+        returns {Numerical, Excuse::Div_By_Zero} matches (Numerical, Numerical);
 
     ::MD::"/" ::= alias of fractional_divided_by;
 
@@ -1128,8 +1128,8 @@ otherwise.
 =head2 integral_divided_by div
 
     ::MD::integral_divided_by::"" ::= function virtual
-        --> {Numerical, Excuse::Div_By_Zero}
-        <-- (Numerical, Numerical, Round_Meth);
+        returns {Numerical, Excuse::Div_By_Zero}
+        matches (Numerical, Numerical, Round_Meth);
 
     ::MD::div ::= alias of integral_divided_by;
 
@@ -1147,8 +1147,8 @@ otherwise.
 =head2 modulo mod
 
     ::MD::modulo ::= function
-        --> {Numerical, Excuse::Div_By_Zero}
-        <-- (Numerical, Numerical, Round_Meth)
+        returns {Numerical, Excuse::Div_By_Zero}
+        matches (Numerical, Numerical, Round_Meth)
         : (if args.\1->is_zero then Excuse::Div_By_Zero()
             else args.\0 - (args.\0 nearest_multiple_of args.\1));
 
@@ -1167,8 +1167,8 @@ or I<\\> or I<div> or I<rem> or I<remainder> or various other things.
 =head2 divided_by_and_modulo
 
     ::MD::divided_by_and_modulo::"" ::= function
-        --> ({Numerical, Excuse::Div_By_Zero}, {Numerical, Excuse::Div_By_Zero})
-        <-- (Numerical, Numerical, Round_Meth)
+        returns ({Numerical, Excuse::Div_By_Zero}, {Numerical, Excuse::Div_By_Zero})
+        matches (Numerical, Numerical, Round_Meth)
         : ((args.\0 div args.\1, args.\0 mod args.\1));
 
 The function C<divided_by_and_modulo> results in a binary tuple whose C<0>
@@ -1179,7 +1179,7 @@ same arguments.  This function is a shorthand for invoking the other two.
 =head2 integral_power **
 
     ::MD::integral_power::"" ::= function virtual
-        --> {Numerical, Excuse::Zero_To_The_Zero} <-- (Numerical, Integral);
+        returns {Numerical, Excuse::Zero_To_The_Zero} matches (Numerical, Integral);
 
     ::MD::"**" ::= alias of integral_power;
 
@@ -1194,7 +1194,7 @@ programming languages may name their corresponding operators I<exp> or I<^>.
 =head2 integral_nn_power power
 
     ::MD::integral_nn_power::"" ::= function virtual
-        --> {Numerical, Excuse::Zero_To_The_Zero} <-- (Numerical, Integral_NN);
+        returns {Numerical, Excuse::Zero_To_The_Zero} matches (Numerical, Integral_NN);
 
     ::MD::power ::= alias of integral_nn_power;
 
@@ -1257,7 +1257,7 @@ default and minmum value is C<1>; it has no maximum value.
 
 =head2 --
 
-    ::MD::"--" ::= function --> {Integral, Neg_Inf} <-- (Integral)
+    ::MD::"--" ::= function returns {Integral, Neg_Inf} matches (Integral)
         : (pred args.\0);
 
 The function C<--> results in the I<predecessor> value of its C<0>
@@ -1267,7 +1267,7 @@ programming languages may name their corresponding operators I<decrement>.
 
 =head2 ++
 
-    ::MD::"++" ::= function --> {Integral, Pos_Inf} <-- (Integral)
+    ::MD::"++" ::= function returns {Integral, Pos_Inf} matches (Integral)
         : (succ args.\0);
 
 The function C<++> results in the I<successor> value of its C<0> argument,
@@ -1277,7 +1277,7 @@ languages may name their corresponding operators I<increment>.
 
 =head2 to_Integer
 
-    ::MD::to_Integer::"" ::= function virtual --> Integer <-- (Integral);
+    ::MD::to_Integer::"" ::= function virtual returns Integer matches (Integral);
 
 The virtual function C<to_Integer> results in the C<Integer> value that
 represents the same integer value as its C<0> argument.  The purpose of
@@ -1288,7 +1288,7 @@ C<Integral> types, just dealing with the latter for storage.
 
 =head2 factorial
 
-    ::MD::factorial::"" ::= function virtual --> Integral_P <-- (Integral_NN);
+    ::MD::factorial::"" ::= function virtual returns Integral_P matches (Integral_NN);
 
 The virtual function C<factorial> results in the integral numeric
 I<factorial> of its C<0> argument, and is a shorthand for the product of
@@ -1298,7 +1298,7 @@ this operator in postfix like I<n!>.
 
 =head2 gcd greatest_common_divisor
 
-    ::MD::gcd ::= function --> Integral_P <-- (Integral_NN, Integral_NN)
+    ::MD::gcd ::= function returns Integral_P matches (Integral_NN, Integral_NN)
         is {commutative,associative,idempotent}
         : ((if args.\1->is_zero then args.\0 else 0::(args.\1, mod::(args.\0, args.\1, To_Zero::())))
             ::?= 'Calculate using the Euclidean algorithm.');
@@ -1312,7 +1312,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
 
 =head2 lcm least_common_multiple
 
-    ::MD::lcm ::= function --> Integral_NN <-- (Integral_NN, Integral_NN)
+    ::MD::lcm ::= function returns Integral_NN matches (Integral_NN, Integral_NN)
         is {commutative,associative,idempotent}
         : (if args.\0->is_zero or args.\1->is_zero then args.\0->zero
             else div::(args.\0 * (args.\1), args.\0 gcd args.\1, To_Zero::()));
@@ -1326,7 +1326,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
 
 =head2 coprime
 
-    ::MD::coprime ::= function --> Boolean <-- (Integral, Integral)
+    ::MD::coprime ::= function returns Boolean matches (Integral, Integral)
         : ((abs::(args.\0) gcd abs::(args.\1)) = (args.\0->zero->succ));
 
 The function C<coprime> results in C<True> iff its 2 arguments C<0> and
@@ -1367,7 +1367,7 @@ value is C<1>; it has no maximum value.
 
 =head2 in_order (Integer)
 
-    ::MD::in_order::Integer ::= function --> Boolean <-- (Integer, Integer)
+    ::MD::in_order::Integer ::= function returns Boolean matches (Integer, Integer)
         implements 2::""
         : (args -->^ FDN__Integer_in_order);
 
@@ -1376,7 +1376,7 @@ function C<in_order> for the composing type C<Integer>.
 
 =head2 asset (Integer)
 
-    ::MD::asset::Integer ::= function --> Integer <-- (Integer)
+    ::MD::asset::Integer ::= function returns Integer matches (Integer)
         implements 2::""
         : (args.\0);
 
@@ -1386,7 +1386,7 @@ the composing type C<Integer>.
 
 =head2 nth_pred (Integer)
 
-    ::MD::nth_pred::Integer ::= function --> Integer <-- (Integer, Integer_NN)
+    ::MD::nth_pred::Integer ::= function returns Integer matches (Integer, Integer_NN)
         implements 2::Integral
         : (args.\0 - (args.\1));
 
@@ -1395,7 +1395,7 @@ virtual function C<nth_pred> for the composing type C<Integer>.
 
 =head2 nth_succ (Integer)
 
-    ::MD::nth_succ::Integer ::= function --> Integer <-- (Integer, Integer_NN)
+    ::MD::nth_succ::Integer ::= function returns Integer matches (Integer, Integer_NN)
         implements 2::Integral
         repeater plus::Integer
         : (args.\0 + (args.\1));
@@ -1405,7 +1405,7 @@ virtual function C<nth_succ> for the composing type C<Integer>.
 
 =head2 to_Boolean (Integer)
 
-    ::MD::to_Boolean::Integer ::= function --> Boolean <-- (Integer)
+    ::MD::to_Boolean::Integer ::= function returns Boolean matches (Integer)
         implements 2::""
         : (args.\0 != 0);
 
@@ -1416,7 +1416,7 @@ C<?> for the composing type C<Integer>.
 
 =head2 zero (Integer)
 
-    ::MD::zero::Integer ::= function --> Integer <-- (Integer)
+    ::MD::zero::Integer ::= function returns Integer matches (Integer)
         implements 2::""
         : (0);
 
@@ -1426,7 +1426,7 @@ C<Integer>.
 
 =head2 opposite (Integer)
 
-    ::MD::opposite::Integer ::= function --> Integer <-- (Integer)
+    ::MD::opposite::Integer ::= function returns Integer matches (Integer)
         implements 2::""
         : (args -->^ FDN__Integer_opposite);
 
@@ -1437,7 +1437,7 @@ for the composing type C<Integer>.
 =head2 reciprocal (Integer)
 
     ::MD::reciprocal::Integer ::= function
-        --> {Fraction, Excuse::Div_By_Zero} <-- (Integer)
+        returns {Fraction, Excuse::Div_By_Zero} matches (Integer)
         implements 2::""
         : (1 / (args.\0));
 
@@ -1447,7 +1447,7 @@ C<Integer>.
 
 =head2 modulus (Integer)
 
-    ::MD::modulus::Integer ::= function --> Integer_NN <-- (Integer)
+    ::MD::modulus::Integer ::= function returns Integer_NN matches (Integer)
         implements 2::""
         : (args -->^ FDN__Integer_modulus);
 
@@ -1456,7 +1456,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Integer>.
 
 =head2 plus (Integer)
 
-    ::MD::plus::Integer ::= function --> Integer <-- (Integer, Integer)
+    ::MD::plus::Integer ::= function returns Integer matches (Integer, Integer)
         implements 2::""
         is {associative,commutative} identity (0)
         repeater times::Integer
@@ -1467,7 +1467,7 @@ virtual function C<plus> aka C<+> for the composing type C<Integer>.
 
 =head2 minus (Integer)
 
-    ::MD::minus::Integer ::= function --> Integer <-- (Integer, Integer)
+    ::MD::minus::Integer ::= function returns Integer matches (Integer, Integer)
         implements 2::""
         : (args -->^ FDN__Integer_minus);
 
@@ -1476,7 +1476,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Integer>.
 
 =head2 times (Integer)
 
-    ::MD::times::Integer ::= function --> Integer <-- (Integer, Integer)
+    ::MD::times::Integer ::= function returns Integer matches (Integer, Integer)
         implements 2::""
         is {associative,commutative} identity (1)
         repeater integral_nn_power::Integer
@@ -1488,7 +1488,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Integer>.
 =head2 multiple_of (Integer)
 
     ::MD::multiple_of::Integer ::= function
-        --> {Boolean, Excuse::Div_By_Zero} <-- (Integer, Integer)
+        returns {Boolean, Excuse::Div_By_Zero} matches (Integer, Integer)
         implements 2::""
         : (if args.\1 = 0 then Excuse::Div_By_Zero()
             else args -->^ FDN__Integer_multiple_of);
@@ -1499,7 +1499,7 @@ virtual function C<multiple_of> for the composing type C<Integer>.
 =head2 fractional_divided_by (Integer)
 
     ::MD::fractional_divided_by::Integer ::= function
-        --> {Fraction, Excuse::Div_By_Zero} <-- (Integer, Integer)
+        returns {Fraction, Excuse::Div_By_Zero} matches (Integer, Integer)
         implements 2::""
     : (
         n ::= (args.\0);
@@ -1522,8 +1522,8 @@ the composing type C<Integer>.
 =head2 integral_divided_by (Integer)
 
     ::MD::integral_divided_by::Integer ::= function
-        --> {Integer, Excuse::Div_By_Zero}
-        <-- (Integer, Integer, Round_Meth)
+        returns {Integer, Excuse::Div_By_Zero}
+        matches (Integer, Integer, Round_Meth)
         implements 2::""
     : (
         dividend   ::= (args.\0);
@@ -1603,7 +1603,7 @@ C<Integer>.
 =head2 integral_power (Integer)
 
     ::MD::integral_power::Integer ::= function
-        --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Integer, Integer)
+        returns {Fraction, Excuse::Zero_To_The_Zero} matches (Integer, Integer)
         implements 2::""
         : (if args.\0 = 0 and args.\1 = 0 then Excuse::Zero_To_The_Zero()
             else args.\0 / 1 ** (args.\1));
@@ -1614,7 +1614,7 @@ function C<integral_power> aka C<**> for the composing type C<Integer>.
 =head2 integral_nn_power (Integer)
 
     ::MD::integral_nn_power::Integer ::= function
-        --> {Integer, Excuse::Zero_To_The_Zero} <-- (Integer, Integer_NN)
+        returns {Integer, Excuse::Zero_To_The_Zero} matches (Integer, Integer_NN)
         implements 2::""
         : (if args.\0 = 0 and args.\1 = 0 then Excuse::Zero_To_The_Zero()
             else args -->^ FDN__Integer_nn_power);
@@ -1625,7 +1625,7 @@ C<Integer>.
 
 =head2 to_Integer (Integer)
 
-    ::MD::to_Integer::Integer ::= function --> Integer <-- (Integer)
+    ::MD::to_Integer::Integer ::= function returns Integer matches (Integer)
         implements 2::""
         : (args.\0);
 
@@ -1635,7 +1635,7 @@ the composing type C<Integer>.
 
 =head2 factorial (Integer)
 
-    ::MD::factorial::Integer ::= function --> Integer_P <-- (Integer_NN)
+    ::MD::factorial::Integer ::= function returns Integer_P matches (Integer_NN)
         implements 2::""
         : (args -->^ FDN__Integer_factorial);
 
@@ -1683,7 +1683,7 @@ default and minmum value is C<0.0>; it has no maximum value.
 
 =head2 to_Fraction
 
-    ::MD::to_Fraction::"" ::= function virtual --> Fraction <-- (Fractional);
+    ::MD::to_Fraction::"" ::= function virtual returns Fraction matches (Fractional);
 
 The virtual function C<to_Fraction> results in the C<Fraction> value that
 represents the same rational value as its C<0> argument.  The purpose of
@@ -1694,7 +1694,7 @@ C<Fractional> types, just dealing with the latter for storage.
 
 =head2 numerator
 
-    ::MD::numerator::"" ::= function virtual --> Integral <-- (Fractional);
+    ::MD::numerator::"" ::= function virtual returns Integral matches (Fractional);
 
 The virtual function C<numerator> results in the I<numerator> of its
 C<0> argument, when the latter is expressed as a coprime I<numerator> /
@@ -1702,7 +1702,7 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
 
 =head2 denominator
 
-    ::MD::denominator::"" ::= function virtual --> Integral_P <-- (Fractional);
+    ::MD::denominator::"" ::= function virtual returns Integral_P matches (Fractional);
 
 The virtual function C<denominator> results in the I<denominator> of its
 C<0> argument, when the latter is expressed as a coprime I<numerator> /
@@ -1746,7 +1746,7 @@ default and minmum value is C<0.0>; it has no maximum value.
 
 =head2 in_order (Fraction)
 
-    ::MD::in_order::Fraction ::= function --> Boolean <-- (Fraction, Fraction)
+    ::MD::in_order::Fraction ::= function returns Boolean matches (Fraction, Fraction)
         implements 2::""
     : (
         <-- (args.\0->denominator) = (args.\1->denominator)
@@ -1766,7 +1766,7 @@ function C<in_order> for the composing type C<Fraction>.
 
 =head2 to_Boolean (Fraction)
 
-    ::MD::to_Boolean::Fraction ::= function --> Boolean <-- (Fraction)
+    ::MD::to_Boolean::Fraction ::= function returns Boolean matches (Fraction)
         implements 2::""
         : (args.\0 != 0.0);
 
@@ -1777,7 +1777,7 @@ C<?> for the composing type C<Fraction>.
 
 =head2 zero (Fraction)
 
-    ::MD::zero::Fraction ::= function --> Fraction <-- (Fraction)
+    ::MD::zero::Fraction ::= function returns Fraction matches (Fraction)
         implements 2::""
         : (0.0);
 
@@ -1787,7 +1787,7 @@ C<Fraction>.
 
 =head2 opposite (Fraction)
 
-    ::MD::opposite::Fraction ::= function --> Fraction <-- (Fraction)
+    ::MD::opposite::Fraction ::= function returns Fraction matches (Fraction)
         implements 2::""
         : (-(args.\0->numerator) / (args.\0->denominator));
 
@@ -1798,7 +1798,7 @@ for the composing type C<Fraction>.
 =head2 reciprocal (Fraction)
 
     ::MD::reciprocal::Fraction ::= function
-        --> {Fraction, Excuse::Div_By_Zero} <-- (Fraction)
+        returns {Fraction, Excuse::Div_By_Zero} matches (Fraction)
         implements 2::""
         : (if args.\0 = 0.0 then Excuse::Div_By_Zero()
             else (args.\0->denominator) / (args.\0->numerator));
@@ -1809,7 +1809,7 @@ C<Fraction>.
 
 =head2 modulus (Fraction)
 
-    ::MD::modulus::Fraction ::= function --> Fraction_NN <-- (Fraction)
+    ::MD::modulus::Fraction ::= function returns Fraction_NN matches (Fraction)
         implements 2::""
         : (abs::(args.\0->numerator) / (args.\0->denominator));
 
@@ -1818,7 +1818,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
 
 =head2 plus (Fraction)
 
-    ::MD::plus::Fraction ::= function --> Fraction <-- (Fraction, Fraction)
+    ::MD::plus::Fraction ::= function returns Fraction matches (Fraction, Fraction)
         implements 2::""
         is {associative,commutative} identity (0.0)
         repeater times::Fraction_Integer
@@ -1839,7 +1839,7 @@ virtual function C<plus> aka C<+> for the composing type C<Fraction>.
 
 =head2 minus (Fraction)
 
-    ::MD::minus::Fraction ::= function --> Fraction <-- (Fraction, Fraction)
+    ::MD::minus::Fraction ::= function returns Fraction matches (Fraction, Fraction)
         implements 2::""
         : (args.\0 + -(args.\1));
 
@@ -1848,7 +1848,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Fraction>.
 
 =head2 times (Fraction)
 
-    ::MD::times::Fraction ::= function --> Fraction <-- (Fraction, Fraction)
+    ::MD::times::Fraction ::= function returns Fraction matches (Fraction, Fraction)
         implements 2::""
         is {associative,commutative} identity (1.0)
         repeater integral_nn_power::Fraction
@@ -1861,7 +1861,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Fraction>.
 =head2 times (Fraction, Integer)
 
     ::MD::times::Fraction_Integer ::= function
-        --> Fraction <-- (Fraction, Integer)
+        returns Fraction matches (Fraction, Integer)
         implements 2::""
         : (((args.\0->numerator) * (args.\1)) / (args.\0->denominator));
 
@@ -1872,7 +1872,7 @@ specifically for multiplying one by an C<Integer>.
 =head2 multiple_of (Fraction)
 
     ::MD::multiple_of::Fraction ::= function
-        --> {Boolean, Excuse::Div_By_Zero} <-- (Fraction, Fraction)
+        returns {Boolean, Excuse::Div_By_Zero} matches (Fraction, Fraction)
         implements 2::""
         : (if args.\1 = 0.0 then Excuse::Div_By_Zero()
             else (args.\0 mod args.\1) = 0.0);
@@ -1883,7 +1883,7 @@ virtual function C<multiple_of> for the composing type C<Fraction>.
 =head2 fractional_divided_by (Fraction)
 
     ::MD::fractional_divided_by::Fraction ::= function
-        --> {Fraction, Excuse::Div_By_Zero} <-- (Fraction, Fraction)
+        returns {Fraction, Excuse::Div_By_Zero} matches (Fraction, Fraction)
         implements 2::""
         : (if args.\1 = 0.0 then Excuse::Div_By_Zero()
             else args.\0 * reciprocal::(args.\1));
@@ -1895,8 +1895,8 @@ the composing type C<Fraction>.
 =head2 integral_divided_by (Fraction)
 
     ::MD::integral_divided_by::Fraction ::= function
-        --> {Fraction, Excuse::Div_By_Zero}
-        <-- (Fraction, Fraction, Round_Meth)
+        returns {Fraction, Excuse::Div_By_Zero}
+        matches (Fraction, Fraction, Round_Meth)
         implements 2::""
     : (
         d ::= lcm::(args.\0->denominator, args.\1->denominator);
@@ -1913,7 +1913,7 @@ C<Fraction>.
 =head2 integral_power (Fraction)
 
     ::MD::integral_power::Fraction ::= function
-        --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Fraction, Integer)
+        returns {Fraction, Excuse::Zero_To_The_Zero} matches (Fraction, Integer)
         implements 2::""
         : (\integral_nn_power::()
             <-- (args.\1 >= 0 :? args :! (reciprocal::(args.\0), -(args.\1))));
@@ -1924,7 +1924,7 @@ function C<integral_power> aka C<**> for the composing type C<Fraction>.
 =head2 integral_nn_power (Fraction)
 
     ::MD::integral_nn_power::Fraction ::= function
-        --> {Fraction, Excuse::Zero_To_The_Zero} <-- (Fraction, Integer_NN)
+        returns {Fraction, Excuse::Zero_To_The_Zero} matches (Fraction, Integer_NN)
         implements 2::""
         : (if args.\0 = 0.0 and args.\1 = 0 then Excuse::Zero_To_The_Zero()
             else ((args.\0->numerator) ** (args.\1)) / ((args.\0->denominator) ** (args.\1)));
@@ -1935,7 +1935,7 @@ C<Fraction>.
 
 =head2 to_Fraction (Fraction)
 
-    ::MD::to_Fraction::Fraction ::= function --> Fraction <-- (Fraction)
+    ::MD::to_Fraction::Fraction ::= function returns Fraction matches (Fraction)
         implements 2::""
         : (args.\0);
 
@@ -1945,7 +1945,7 @@ for the composing type C<Fraction>.
 
 =head2 numerator (Fraction)
 
-    ::MD::numerator::Fraction ::= function --> Integer <-- (Fraction)
+    ::MD::numerator::Fraction ::= function returns Integer matches (Fraction)
         : (unwrap::(args.\0).\numerator);
 
 The function C<numerator::Fraction> implements the C<Fractional> virtual
@@ -1953,7 +1953,7 @@ function C<numerator> for the composing type C<Fraction>.
 
 =head2 denominator (Fraction)
 
-    ::MD::denominator::Fraction ::= function --> Integer_P <-- (Fraction)
+    ::MD::denominator::Fraction ::= function returns Integer_P matches (Fraction)
         : (unwrap::(args.\0).\denominator);
 
 The function C<denominator::Fraction> implements the C<Fractional> virtual
@@ -1990,7 +1990,7 @@ type that doesn't have a value with zero members.
 
 =head2 to_Boolean (Emptyable) has_any_members
 
-    ::MD::to_Boolean::Emptyable ::= function virtual --> Boolean <-- (Emptyable)
+    ::MD::to_Boolean::Emptyable ::= function virtual returns Boolean matches (Emptyable)
         implements 2::"";
 
     ::MD::has_any_members ::= alias of to_Boolean::Emptyable;
@@ -2014,7 +2014,7 @@ Other programming languages may name their corresponding operators I<empty?>.
 =head2 empty ∅
 
     ::MD::empty::"" ::= function virtual
-        --> {Emptyable, Excuse::No_Empty_Value} <-- (Emptyable);
+        returns {Emptyable, Excuse::No_Empty_Value} matches (Emptyable);
 
     ::MD::Unicode_Aliases::"∅" ::= alias of empty;
 
@@ -2062,7 +2062,7 @@ C<Textual>, C<Text>, C<Positional>, C<Array>, C<String>, C<Tuple_Array>.
 =head2 substring_of
 
     ::MD::substring_of::"" ::= function virtual
-        --> Boolean <-- (Stringy, Stringy);
+        returns Boolean matches (Stringy, Stringy);
 
 The virtual function C<substring_of> results in C<True> iff the sequence of
 members of its C<0> argument is a substring of the sequence of members of
@@ -2085,7 +2085,7 @@ rather than a boolean.
 =head2 proper_substring_or_superstring
 
     ::MD::proper_substring_or_superstring ::= function
-        --> Boolean <-- (String, String)
+        returns Boolean matches (String, String)
         is commutative
         : (args.\0 != (args.\1) and (args.\0 substring_or_superstring args.\1));
 
@@ -2097,7 +2097,7 @@ results in C<False>.
 =head2 substring_or_superstring
 
     ::MD::substring_or_superstring ::= function
-        --> Boolean <-- (String, String)
+        returns Boolean matches (String, String)
         is commutative
         : ((args.\0 substring_of args.\1) or (args.\0 superstring_of args.\1));
 
@@ -2109,7 +2109,7 @@ C<False>.
 =head2 overlaps_string
 
     ::MD::overlaps_string::"" ::= function virtual
-        --> Boolean <-- (String, String)
+        returns Boolean matches (String, String)
         is commutative;
 
 The virtual function C<overlaps_string> results in C<True> iff, given I<X>
@@ -2123,7 +2123,7 @@ otherwise it results in C<False>.
 =head2 disjoint_string
 
     ::MD::disjoint_string::"" ::= function virtual
-        --> Boolean <-- (String, String)
+        returns Boolean matches (String, String)
         is commutative;
 
 The virtual function C<disjoint_string> results in C<True> iff the sequence
@@ -2135,7 +2135,7 @@ C<False>.
 =head2 catenate ~
 
     ::MD::catenate::"" ::= function virtual
-        --> Stringy <-- (Stringy, Stringy)
+        returns Stringy matches (Stringy, Stringy)
         is associative
         repeater replicate;
 
@@ -2153,7 +2153,7 @@ which logically does the same thing without an explicit operator.
 =head2 replicate ~#
 
     ::MD::replicate::"" ::= function virtual
-        --> Stringy <-- (Stringy, Integer_NN);
+        returns Stringy matches (Stringy, Integer_NN);
 
     ::MD::"~#" ::= alias of replicate;
 
@@ -2192,7 +2192,7 @@ integers is in the range 0..1 inclusive.
 
 =head2 in_order (Bits)
 
-    ::MD::in_order::Bits ::= function --> Boolean <-- (Bits, Bits)
+    ::MD::in_order::Bits ::= function returns Boolean matches (Bits, Bits)
         implements 2::""
         : ((args.\0->Bits_to_String_Bits) in_order (args.\1->Bits_to_String_Bits));
 
@@ -2201,7 +2201,7 @@ function C<in_order> for the composing type C<Bits>.
 
 =head2 to_Boolean (Bits)
 
-    ::MD::to_Boolean::Bits ::= function --> Boolean <-- (Bits)
+    ::MD::to_Boolean::Bits ::= function returns Boolean matches (Bits)
         implements 2::""
         : (args.\0 != \~?'');
 
@@ -2212,7 +2212,7 @@ C<?> for the composing type C<Bits>.
 
 =head2 empty (Bits)
 
-    ::MD::empty::Bits ::= function --> Bits <-- (Bits)
+    ::MD::empty::Bits ::= function returns Bits matches (Bits)
         implements 2::""
         : (\~?'');
 
@@ -2222,7 +2222,7 @@ type C<Bits>.
 
 =head2 substring_of (Bits)
 
-    ::MD::substring_of::Bits ::= function --> Boolean <-- (Bits, Bits)
+    ::MD::substring_of::Bits ::= function returns Boolean matches (Bits, Bits)
         implements 2::""
         : ((args.\0->Bits_to_String_Bits) substring_of (args.\1->Bits_to_String_Bits));
 
@@ -2231,7 +2231,7 @@ function C<substring_of> for the composing type C<Bits>.
 
 =head2 overlaps_string (Bits)
 
-    ::MD::overlaps_string::Bits ::= function --> Boolean <-- (Bits, Bits)
+    ::MD::overlaps_string::Bits ::= function returns Boolean matches (Bits, Bits)
         implements 2::""
         is commutative
         : ((args.\0->Bits_to_String_Bits)
@@ -2242,7 +2242,7 @@ function C<overlaps_string> for the composing type C<Bits>.
 
 =head2 disjoint_string (Bits)
 
-    ::MD::disjoint_string::Bits ::= function --> Boolean <-- (Bits, Bits)
+    ::MD::disjoint_string::Bits ::= function returns Boolean matches (Bits, Bits)
         implements 2::""
         is commutative
         : ((args.\0->Bits_to_String_Bits)
@@ -2253,7 +2253,7 @@ function C<disjoint_string> for the composing type C<Bits>.
 
 =head2 catenate (Bits)
 
-    ::MD::catenate::Bits ::= function --> Bits <-- (Bits, Bits)
+    ::MD::catenate::Bits ::= function returns Bits matches (Bits, Bits)
         implements 2::""
         is associative identity (\~?'')
         repeater replicate::Bits
@@ -2265,7 +2265,7 @@ C<catenate> aka C<~> for the composing type C<Bits>.
 
 =head2 replicate (Bits)
 
-    ::MD::replicate::Bits ::= function --> Bits <-- (Bits, Integer_NN)
+    ::MD::replicate::Bits ::= function returns Bits matches (Bits, Integer_NN)
         implements 2::""
         : (Bits_from_String_Bits::((args.\0->Bits_to_String_Bits) ~# (args.\1)));
 
@@ -2274,7 +2274,7 @@ C<replicate> aka C<~#> for the composing type C<Bits>.
 
 =head2 Bits_from_String_Bits
 
-    ::MD::Bits_from_String_Bits ::= function --> Bits <-- (String::Bits)
+    ::MD::Bits_from_String_Bits ::= function returns Bits matches (String::Bits)
         : (\Bits wrap args.\0);
 
 The function C<Bits_from_String_Bits> results in the C<Bits> value selected
@@ -2282,7 +2282,7 @@ in terms of the integer sequence of its C<0> argument.
 
 =head2 Bits_to_String_Bits
 
-    ::MD::Bits_to_String_Bits ::= function --> String::Bits <-- (Bits)
+    ::MD::Bits_to_String_Bits ::= function returns String::Bits matches (Bits)
         : (args.\0->unwrap);
 
 The function C<Bits_to_String_Bits> results in an integer sequence defining
@@ -2317,7 +2317,7 @@ integers is in the range 0..255 inclusive.
 
 =head2 in_order (Blob)
 
-    ::MD::in_order::Blob ::= function --> Boolean <-- (Blob, Blob)
+    ::MD::in_order::Blob ::= function returns Boolean matches (Blob, Blob)
         implements 2::""
         : ((args.\0->Blob_to_Octets) in_order (args.\1->Blob_to_Octets));
 
@@ -2326,7 +2326,7 @@ function C<in_order> for the composing type C<Blob>.
 
 =head2 to_Boolean (Blob)
 
-    ::MD::to_Boolean::Blob ::= function --> Boolean <-- (Blob)
+    ::MD::to_Boolean::Blob ::= function returns Boolean matches (Blob)
         implements 2::""
         : (args.\0 != \~+'');
 
@@ -2337,7 +2337,7 @@ C<?> for the composing type C<Blob>.
 
 =head2 empty (Blob)
 
-    ::MD::empty::Blob ::= function --> Blob <-- (Blob)
+    ::MD::empty::Blob ::= function returns Blob matches (Blob)
         implements 2::""
         : (\~+'');
 
@@ -2347,7 +2347,7 @@ type C<Blob>.
 
 =head2 substring_of (Blob)
 
-    ::MD::substring_of::Blob ::= function --> Boolean <-- (Blob, Blob)
+    ::MD::substring_of::Blob ::= function returns Boolean matches (Blob, Blob)
         implements 2::""
         : ((args.\0->Blob_to_Octets) substring_of (args.\1->Blob_to_Octets));
 
@@ -2356,7 +2356,7 @@ function C<substring_of> for the composing type C<Blob>.
 
 =head2 overlaps_string (Blob)
 
-    ::MD::overlaps_string::Blob ::= function --> Boolean <-- (Blob, Blob)
+    ::MD::overlaps_string::Blob ::= function returns Boolean matches (Blob, Blob)
         implements 2::""
         is commutative
         : ((args.\0->Blob_to_Octets) overlaps_string (args.\1->Blob_to_Octets));
@@ -2366,7 +2366,7 @@ function C<overlaps_string> for the composing type C<Blob>.
 
 =head2 disjoint_string (Blob)
 
-    ::MD::disjoint_string::Blob ::= function --> Boolean <-- (Blob, Blob)
+    ::MD::disjoint_string::Blob ::= function returns Boolean matches (Blob, Blob)
         implements 2::""
         is commutative
         : ((args.\0->Blob_to_Octets) disjoint_string (args.\1->Blob_to_Octets));
@@ -2376,7 +2376,7 @@ function C<disjoint_string> for the composing type C<Blob>.
 
 =head2 catenate (Blob)
 
-    ::MD::catenate::Blob ::= function --> Blob <-- (Blob, Blob)
+    ::MD::catenate::Blob ::= function returns Blob matches (Blob, Blob)
         implements 2::""
         is associative identity (\~+'')
         repeater replicate::Blob
@@ -2387,7 +2387,7 @@ C<catenate> aka C<~> for the composing type C<Blob>.
 
 =head2 replicate (Blob)
 
-    ::MD::replicate::Blob ::= function --> Blob <-- (Blob, Integer_NN)
+    ::MD::replicate::Blob ::= function returns Blob matches (Blob, Integer_NN)
         implements 2::""
         : (Blob_from_Octets::((args.\0->Blob_to_Octets) ~# (args.\1)));
 
@@ -2396,7 +2396,7 @@ C<replicate> aka C<~#> for the composing type C<Blob>.
 
 =head2 Blob_from_Octets
 
-    ::MD::Blob_from_Octets ::= function --> Blob <-- (String::Octets)
+    ::MD::Blob_from_Octets ::= function returns Blob matches (String::Octets)
         : (\Blob wrap args.\0);
 
 The function C<Blob_from_Octets> results in the C<Blob> value selected in
@@ -2404,7 +2404,7 @@ terms of the integer sequence of its C<0> argument.
 
 =head2 Blob_to_Octets
 
-    ::MD::Blob_to_Octets ::= function --> String::Octets <-- (Blob)
+    ::MD::Blob_to_Octets ::= function returns String::Octets matches (Blob)
         : (args.\0->unwrap);
 
 The function C<Blob_to_Octets> results in an integer sequence defining the
@@ -2468,7 +2468,7 @@ non-C<Core> code is empowered to do that instead.
 
 =head2 to_Text
 
-    ::MD::to_Text::"" ::= function virtual --> Text <-- (Textual);
+    ::MD::to_Text::"" ::= function virtual returns Text matches (Textual);
 
 The virtual function C<to_Text> results in the C<Text> value that
 represents the same character string value as its C<0> argument.  The
@@ -2565,7 +2565,7 @@ integers is in the range 0..127 inclusive.
 
 =head2 in_order (Text)
 
-    ::MD::in_order::Text ::= function --> Boolean <-- (Text, Text)
+    ::MD::in_order::Text ::= function returns Boolean matches (Text, Text)
         implements 2::""
         : ((args.\0->Text_to_Maximal_Chars) in_order (args.\1->Text_to_Maximal_Chars));
 
@@ -2574,7 +2574,7 @@ function C<in_order> for the composing type C<Text>.
 
 =head2 to_Boolean (Text)
 
-    ::MD::to_Boolean::Text ::= function --> Boolean <-- (Text)
+    ::MD::to_Boolean::Text ::= function returns Boolean matches (Text)
         implements 2::""
         : (args.\0 != '');
 
@@ -2585,7 +2585,7 @@ composing type C<Text>.
 
 =head2 empty (Text)
 
-    ::MD::empty::Text ::= function --> Text <-- (Text)
+    ::MD::empty::Text ::= function returns Text matches (Text)
         implements 2::""
         : ('');
 
@@ -2595,7 +2595,7 @@ type C<Text>.
 
 =head2 substring_of (Text)
 
-    ::MD::substring_of::Text ::= function --> Boolean <-- (Text, Text)
+    ::MD::substring_of::Text ::= function returns Boolean matches (Text, Text)
         implements 2::""
         : ((args.\0->Text_to_Maximal_Chars)
             substring_of (args.\1->Text_to_Maximal_Chars));
@@ -2605,7 +2605,7 @@ function C<substring_of> for the composing type C<Text>.
 
 =head2 overlaps_string (Text)
 
-    ::MD::overlaps_string::Text ::= function --> Boolean <-- (Text, Text)
+    ::MD::overlaps_string::Text ::= function returns Boolean matches (Text, Text)
         implements 2::""
         is commutative
         : ((args.\0->Text_to_Maximal_Chars)
@@ -2616,7 +2616,7 @@ function C<overlaps_string> for the composing type C<Text>.
 
 =head2 disjoint_string (Text)
 
-    ::MD::disjoint_string::Text ::= function --> Boolean <-- (Text, Text)
+    ::MD::disjoint_string::Text ::= function returns Boolean matches (Text, Text)
         implements 2::""
         is commutative
         : ((args.\0->Text_to_Maximal_Chars)
@@ -2627,7 +2627,7 @@ function C<disjoint_string> for the composing type C<Text>.
 
 =head2 catenate (Text)
 
-    ::MD::catenate::Text ::= function --> Text <-- (Text, Text)
+    ::MD::catenate::Text ::= function returns Text matches (Text, Text)
         implements 2::""
         is associative identity ('')
         repeater replicate::Text
@@ -2639,7 +2639,7 @@ C<catenate> aka C<~> for the composing type C<Text>.
 
 =head2 replicate (Text)
 
-    ::MD::replicate::Text ::= function --> Text <-- (Text, Integer_NN)
+    ::MD::replicate::Text ::= function returns Text matches (Text, Integer_NN)
         implements 2::""
         : (Text_from_Maximal_Chars::((args.\0->Text_to_Maximal_Chars) ~# (args.\1)));
 
@@ -2648,7 +2648,7 @@ C<replicate> aka C<~#> for the composing type C<Text>.
 
 =head2 to_Text (Text)
 
-    ::MD::to_Text::Text ::= function --> Text <-- (Text)
+    ::MD::to_Text::Text ::= function returns Text matches (Text)
         implements 2::""
         : (args.\0);
 
@@ -2659,7 +2659,7 @@ for the composing type C<Text>.
 =head2 Text_from_Maximal_Chars
 
     ::MD::Text_from_Maximal_Chars ::= function
-        --> Text <-- (String::Maximal_Chars)
+        returns Text matches (String::Maximal_Chars)
         : (\Text wrap args.\0);
 
 The function C<Text_from_Maximal_Chars> results in the C<Text> value
@@ -2669,7 +2669,7 @@ C<Maximal_Chars> character mapping of its C<0> argument.
 =head2 Text_to_Maximal_Chars
 
     ::MD::Text_to_Maximal_Chars ::= function
-        --> String::Maximal_Chars <-- (Text)
+        returns String::Maximal_Chars matches (Text)
         : (args.\0->unwrap);
 
 The function C<Text_to_Maximal_Chars> results in an integer sequence in the
@@ -2679,7 +2679,7 @@ C<Text>-typed C<0> argument.
 =head2 Text_from_Unicode_Codes
 
     ::MD::Text_from_Unicode_Codes ::= function
-        --> Text::Unicode <-- (String::Unicode_Codes)
+        returns Text::Unicode matches (String::Unicode_Codes)
         : (args.\0->Text_from_Maximal_Chars);
 
 The function C<Text_from_Unicode_Codes> results in the C<Text> value selected
@@ -2689,7 +2689,7 @@ mapping of its C<0> argument.
 =head2 Text_to_Unicode_Codes
 
     ::MD::Text_to_Unicode_Codes ::= function
-        --> String::Unicode_Codes <-- (Text::Unicode)
+        returns String::Unicode_Codes matches (Text::Unicode)
         : (args.\0->Text_to_Maximal_Chars);
 
 The function C<Text_to_Unicode_Codes> results in an integer sequence in the
@@ -2699,7 +2699,7 @@ C<Text>-typed C<0> argument.
 =head2 Text_from_ASCII_Chars
 
     ::MD::Text_from_ASCII_Chars ::= function
-        --> Text::ASCII <-- (String::ASCII_Chars)
+        returns Text::ASCII matches (String::ASCII_Chars)
         : (args.\0->Text_from_Unicode_Codes);
 
 The function C<Text_from_ASCII_Chars> results in the C<Text> value selected
@@ -2709,7 +2709,7 @@ mapping of its C<0> argument.
 =head2 Text_to_ASCII_Chars
 
     ::MD::Text_to_ASCII_Chars ::= function
-        --> String::ASCII_Chars <-- (Text::ASCII)
+        returns String::ASCII_Chars matches (Text::ASCII)
         : (args.\0->Text_to_Unicode_Codes);
 
 The function C<Text_to_ASCII_Chars> results in an integer sequence in the
@@ -2718,7 +2718,7 @@ C<Text>-typed C<0> argument.
 
 =head2 Blob_is_UTF_8
 
-    ::MD::Blob_is_UTF_8 ::= function --> Boolean <-- (Blob)
+    ::MD::Blob_is_UTF_8 ::= function returns Boolean matches (Blob)
         : (...);
 
 I<TODO.  See also https://tools.ietf.org/html/rfc3629 for the UTF-8 definition.>
@@ -2734,7 +2734,7 @@ it is superfluous with simply trying to decode one and see if it succeeded.>
 =head2 Text_from_UTF_8_Blob
 
     ::MD::Text_from_UTF_8_Blob ::= function
-        --> {Text::Unicode, Excuse::Unicode::..., ...} <-- (Blob)
+        returns {Text::Unicode, Excuse::Unicode::..., ...} matches (Blob)
         : (...);
 
 I<TODO.  As a code/implementation comment, say the parallel design is
@@ -2758,7 +2758,7 @@ some decoder edge case testing.>
 =head2 Text_from_UTF_8_Blob_with_repl_Text
 
     ::MD::Text_from_UTF_8_Blob_with_repl_Text ::= function
-        --> Text::Unicode <-- (Blob, Text::Unicode)
+        returns Text::Unicode matches (Blob, Text::Unicode)
         : (...);
 
 I<TODO.  Each invalid octet encountered is replaced by the substitution text
@@ -2770,14 +2770,14 @@ not one per character.>
 =head2 Text_from_UTF_8_Blob_with_repl_char
 
     ::MD::Text_from_UTF_8_Blob_with_repl_char ::= function
-        --> Text::Unicode <-- (Blob)
+        returns Text::Unicode matches (Blob)
         : (Text_from_UTF_8_Blob_with_repl_Text::(args.\0,'\\c<0xFFFD>'));
 
 I<TODO.  The special Unicode char "REPLACEMENT CHARACTER" aka 0xFFFD is used.>
 
 =head2 Text_to_UTF_8_Blob
 
-    ::MD::Text_to_UTF_8_Blob ::= function --> Blob <-- (Text::Unicode)
+    ::MD::Text_to_UTF_8_Blob ::= function returns Blob matches (Text::Unicode)
         : (...);
 
 I<TODO.  This should just work as Text::Unicode excludes the surrogate
@@ -2785,7 +2785,7 @@ pairs and out of range etc stuff.>
 
 =head2 Blob_is_ASCII
 
-    ::MD::Blob_is_ASCII ::= function --> Boolean <-- (Blob)
+    ::MD::Blob_is_ASCII ::= function returns Boolean matches (Blob)
         : (String::ASCII_Chars(args.\0->Blob_to_Octets));
 
 I<TODO.>
@@ -2793,7 +2793,7 @@ I<TODO.>
 =head2 Text_from_ASCII_Blob
 
     ::MD::Text_from_ASCII_Blob ::= function
-        --> {Text::ASCII, Excuse::ASCII::High_Bit_Not_Zero} <-- (Blob)
+        returns {Text::ASCII, Excuse::ASCII::High_Bit_Not_Zero} matches (Blob)
     : (
         octets ::= (args.\0->Blob_to_Octets);
         return if String::ASCII_Chars(octets)
@@ -2806,7 +2806,7 @@ I<TODO.  Note, still have to define that Excuse.>
 =head2 Text_from_ASCII_Blob_with_repl_Text
 
     ::MD::Text_from_ASCII_Blob_with_repl_Text ::= function
-        --> Text::ASCII <-- (Blob, Text::ASCII)
+        returns Text::ASCII matches (Blob, Text::ASCII)
     : (
         src_octets ::= (args.\0->Blob_to_Octets);
         repl_chars ::= (args.\1->Text_to_ASCII_Chars);
@@ -2834,7 +2834,7 @@ is no good implicit default in ASCII, unlike with Unicode.>
 
 =head2 Text_to_ASCII_Blob
 
-    ::MD::Text_to_ASCII_Blob ::= function --> Blob <-- (Text::ASCII)
+    ::MD::Text_to_ASCII_Blob ::= function returns Blob matches (Text::ASCII)
         : (args.\0->Text_to_ASCII_Chars->Blob_from_Octets);
 
 I<TODO.>
@@ -2980,7 +2980,7 @@ C<associative> function trait which has a different meaning.
 =head2 has_any_at .?
 
     ::MD::has_any_at::"" ::= function virtual
-        --> Boolean <-- (Accessible, Any);
+        returns Boolean matches (Accessible, Any);
 
     ::MD::".?" ::= alias of has_any_at;
 
@@ -3003,7 +3003,7 @@ otherwise it results in C<False>.
 =head2 has_mapping_at .:?
 
     ::MD::has_mapping_at::"" ::= function virtual
-        --> Boolean <-- (Accessible, (Any, Any));
+        returns Boolean matches (Accessible, (Any, Any));
 
     ::MD::".:?" ::= alias of has_mapping_at;
 
@@ -3015,8 +3015,8 @@ whose C<0> and C<1> attributes are the mapping key and asset respectively.
 =head2 mapping_at .:
 
     ::MD::mapping_at::"" ::= function virtual
-        --> (Any, Any) <-- (Accessible, Any)
-        requires (args.\0 .? (args.\1));
+        returns (Any, Any) matches (Accessible, Any)
+        accepts (args.\0 .? (args.\1));
 
     ::MD::".:" ::= alias of mapping_at;
 
@@ -3028,8 +3028,8 @@ may name their corresponding operators I<assoc>.
 
 =head2 at .
 
-    ::MD::at::"" ::= function virtual --> Any <-- (Accessible, Any)
-        requires (args.\0 .? (args.\1));
+    ::MD::at::"" ::= function virtual returns Any matches (Accessible, Any)
+        accepts (args.\0 .? (args.\1));
 
     ::MD::"." ::= alias of at;
 
@@ -3042,7 +3042,7 @@ subscript/postcircumfix syntax.
 
 =head2 maybe_at .!
 
-    ::MD::maybe_at::"" ::= function virtual --> Any <-- (Accessible, Any);
+    ::MD::maybe_at::"" ::= function virtual returns Any matches (Accessible, Any);
 
     ::MD::".!" ::= alias of maybe_at;
 
@@ -3056,8 +3056,8 @@ common to use subscript/postcircumfix syntax.
 =head2 replace_at .:=
 
     ::MD::replace_at::"" ::= function virtual
-        --> Accessible <-- (Accessible, (Any, Any))
-        requires (args.\0 .? (args.\1.\0));
+        returns Accessible matches (Accessible, (Any, Any))
+        accepts (args.\0 .? (args.\1.\0));
 
     ::MD::".:=" ::= alias of replace_at;
 
@@ -3073,8 +3073,8 @@ assignment syntax.
 =head2 shiftless_insert_at .+
 
     ::MD::shiftless_insert_at::"" ::= function virtual
-        --> Accessible <-- (Accessible, (Any, Any))
-        requires (not args.\0 .? (args.\1.\0));
+        returns Accessible matches (Accessible, (Any, Any))
+        accepts (not args.\0 .? (args.\1.\0));
 
     ::MD::".+" ::= alias of shiftless_insert_at;
 
@@ -3090,8 +3090,8 @@ also common to use assignment syntax.
 =head2 shiftless_remove_at .-
 
     ::MD::shiftless_remove_at::"" ::= function virtual
-        --> Accessible <-- (Accessible, Any)
-        requires (args.\0 .? (args.\1));
+        returns Accessible matches (Accessible, Any)
+        accepts (args.\0 .? (args.\1));
 
     ::MD::".-" ::= alias of shiftless_remove_at;
 
@@ -3105,7 +3105,7 @@ operators I<del> or I<delete_at>.
 =head2 replace_or_insert_at .=+
 
     ::MD::replace_or_insert_at::"" ::= function virtual
-        --> Accessible <-- (Accessible, (Any, Any));
+        returns Accessible matches (Accessible, (Any, Any));
 
     ::MD::".=+" ::= alias of replace_or_insert_at;
 
@@ -3120,7 +3120,7 @@ common to use subscript/postcircumfix syntax plus assignment syntax.
 =head2 shiftless_maybe_remove_at .?-
 
     ::MD::shiftless_maybe_remove_at::"" ::= function virtual
-        --> Accessible <-- (Accessible, Any);
+        returns Accessible matches (Accessible, Any);
 
     ::MD::".?-" ::= alias of shiftless_maybe_remove_at;
 
@@ -3194,15 +3194,15 @@ baggy count or positional index, its for a problem best solved differently.>
 
 =head2 singular
 
-    ::MD::singular::"" ::= function virtual --> Boolean <-- (Homogeneous);
+    ::MD::singular::"" ::= function virtual returns Boolean matches (Homogeneous);
 
 The virtual function C<singular> results in C<True> iff its C<0> argument
 has exactly 1 distinct member value, and C<False> otherwise.
 
 =head2 only_member
 
-    ::MD::only_member::"" ::= function virtual --> Any <-- (Homogeneous)
-        requires (singular args.\0);
+    ::MD::only_member::"" ::= function virtual returns Any matches (Homogeneous)
+        accepts (singular args.\0);
 
 The virtual function C<only_member> results in its C<0> argument's only
 distinct member value.  This function will fail if the argument doesn't
@@ -3241,7 +3241,7 @@ C<False>.
 
 =head2 has ∋
 
-    ::MD::has ::= function --> Boolean <-- (Homogeneous, Any)
+    ::MD::has ::= function returns Boolean matches (Homogeneous, Any)
         : (has_n::(args.\0, args.\1, 1));
 
     ::MD::Unicode_Aliases::"∋" ::= alias of has;
@@ -3264,7 +3264,7 @@ otherwise it results in C<False>.
 =head2 has_n
 
     ::MD::has_n::"" ::= function virtual
-        --> Boolean <-- (Homogeneous, Any, Integer_NN);
+        returns Boolean matches (Homogeneous, Any, Integer_NN);
 
 The virtual function C<has_n> results in C<True> iff its C<0> argument has
 at least N members such that each is equal to its C<1> argument, where N is
@@ -3276,7 +3276,7 @@ C<0> argument will always result in C<False>.
 =head2 multiplicity
 
     ::MD::multiplicity::"" ::= function virtual
-        --> Integer_NN <-- (Homogeneous, Any);
+        returns Integer_NN matches (Homogeneous, Any);
 
 The virtual function C<multiplicity> results in the integral count of
 members of its C<0> argument such that each member value is equal to its
@@ -3285,7 +3285,7 @@ just 0 or 1.
 
 =head2 all_unique
 
-    ::MD::all_unique::"" ::= function virtual --> Boolean <-- (Homogeneous);
+    ::MD::all_unique::"" ::= function virtual returns Boolean matches (Homogeneous);
 
 The virtual function C<all_unique> results in C<True> iff its C<0> argument
 has no 2 members that are the same value, and C<False> otherwise.  The
@@ -3293,7 +3293,7 @@ result is always C<True> for a C<Setty> argument.
 
 =head2 unique
 
-    ::MD::unique::"" ::= function virtual --> Homogeneous <-- (Homogeneous);
+    ::MD::unique::"" ::= function virtual returns Homogeneous matches (Homogeneous);
 
 The virtual function C<unique> results in the value of its C<0> argument's
 collection type that has, for every distinct member value I<V> of the
@@ -3306,7 +3306,7 @@ retained member's value.  See also the C<Positional> function C<squish>.
 =head2 proper_subset_of ⊂
 
     ::MD::proper_subset_of ::= function
-        --> Boolean <-- (Homogeneous, Homogeneous)
+        returns Boolean matches (Homogeneous, Homogeneous)
         : (args.\0 != (args.\1) and (args.\0 subset_of args.\1));
 
     ::MD::Unicode_Aliases::"⊂" ::= alias of proper_subset_of;
@@ -3349,7 +3349,7 @@ multiset of members of its C<1> argument; otherwise it results in C<False>.
 =head2 subset_of ⊆
 
     ::MD::subset_of::"" ::= function virtual
-        --> Boolean <-- (Homogeneous, Homogeneous);
+        returns Boolean matches (Homogeneous, Homogeneous);
 
     ::MD::Unicode_Aliases::"⊆" ::= alias of subset_of;
 
@@ -3391,7 +3391,7 @@ of members of its C<1> argument; otherwise it results in C<False>.
 =head2 same_members
 
     ::MD::same_members::"" ::= function virtual
-        --> Boolean <-- (Homogeneous, Homogeneous)
+        returns Boolean matches (Homogeneous, Homogeneous)
         is commutative;
 
 The virtual function C<same_members> results in C<True> iff the multiset of
@@ -3405,7 +3405,7 @@ typically the same.
 =head2 proper_subset_or_superset
 
     ::MD::proper_subset_or_superset ::= function
-        --> Boolean <-- (Homogeneous, Homogeneous)
+        returns Boolean matches (Homogeneous, Homogeneous)
         is commutative
         : (not (args.\0 same_members args.\1) and (args.\0 subset_or_superset args.\1));
 
@@ -3417,7 +3417,7 @@ results in C<False>.
 =head2 subset_or_superset
 
     ::MD::subset_or_superset ::= function
-        --> Boolean <-- (Homogeneous, Homogeneous)
+        returns Boolean matches (Homogeneous, Homogeneous)
         is commutative
         : ((args.\0 subset_of args.\1) or (args.\0 superset_of args.\1));
 
@@ -3428,7 +3428,7 @@ of members of its other argument; otherwise it results in C<False>.
 =head2 overlaps_members
 
     ::MD::overlaps_members::"" ::= function virtual
-        --> Boolean <-- (Homogeneous, Homogeneous)
+        returns Boolean matches (Homogeneous, Homogeneous)
         is commutative;
 
 The virtual function C<overlaps_members> results in C<True> iff, given I<X> as the
@@ -3440,7 +3440,7 @@ and I<Y> that the other doesn't have; otherwise it results in C<False>.
 =head2 disjoint_members
 
     ::MD::disjoint_members::"" ::= function virtual
-        --> Boolean <-- (Homogeneous, Homogeneous)
+        returns Boolean matches (Homogeneous, Homogeneous)
         is commutative;
 
 The virtual function C<disjoint_members> results in C<True> iff the multiset of
@@ -3450,7 +3450,7 @@ multiset of members of its C<1> argument; otherwise it results in C<False>.
 =head2 any there_exists ∃
 
     ::MD::any::"" ::= function virtual
-        --> Boolean <-- (Homogeneous, Signature);
+        returns Boolean matches (Homogeneous, Signature);
 
     ::MD::there_exists ::= alias of any;
 
@@ -3479,7 +3479,7 @@ I<TODO.  Result is true when no member evaluates to true.>
 
 =head2 all for_all ∀
 
-    ::MD::all ::= function --> Boolean <-- (Homogeneous, Signature)
+    ::MD::all ::= function returns Boolean matches (Homogeneous, Signature)
         : (args.\0 none \not_is_a::( 1: args.\1 ));
 
     ::MD::for_all ::= alias of all;
@@ -3528,7 +3528,7 @@ C<Unionable> closest analogy.
 
 =head2 insert
 
-    ::MD::insert ::= function --> Unionable <-- (Unionable, Any)
+    ::MD::insert ::= function returns Unionable matches (Unionable, Any)
         : (insert_n::(args.\0, args.\1, 1));
 
 The function C<insert> results in the value of its C<0> argument's
@@ -3541,7 +3541,7 @@ to use assignment syntax.
 =head2 insert_n
 
     ::MD::insert_n::"" ::= function virtual
-        --> Unionable <-- (Unionable, Any, Integer_NN);
+        returns Unionable matches (Unionable, Any, Integer_NN);
 
 The virtual function C<insert_n> results in the value of its C<0>
 argument's collection type that has all of the members of the function's
@@ -3555,7 +3555,7 @@ members of C<0> in the same order and ends with any added instances of C<1>.
 
 =head2 remove
 
-    ::MD::remove ::= function --> Unionable <-- (Unionable, Any)
+    ::MD::remove ::= function returns Unionable matches (Unionable, Any)
         : (remove_n::(args.\0, args.\1, 1));
 
 The function C<remove> results in the value of its C<0> argument's
@@ -3567,7 +3567,7 @@ programming languages may name their corresponding operators I<delete>.
 =head2 remove_n
 
     ::MD::remove_n::"" ::= function virtual
-        --> Unionable <-- (Unionable, Any, Integer_NN);
+        returns Unionable matches (Unionable, Any, Integer_NN);
 
 The virtual function C<remove_n> results in the value of its C<0>
 argument's collection type that has all of the members of the function's
@@ -3584,7 +3584,7 @@ with a C<Setty> C<c> that already has an C<x> element with a nonzero C<n>.
 =head2 member_plus ⊎
 
     ::MD::member_plus::"" ::= function virtual
-        --> Unionable <-- (Unionable, Unionable)
+        returns Unionable matches (Unionable, Unionable)
         is associative;
 
     ::MD::Unicode_Aliases::"⊎" ::= alias of member_plus;
@@ -3609,7 +3609,7 @@ operators I<union all> or I<+>.
 =head2 except ∖
 
     ::MD::except::"" ::= function virtual
-        --> Unionable <-- (Unionable, Unionable);
+        returns Unionable matches (Unionable, Unionable);
 
     ::MD::Unicode_Aliases::"∖" ::= alias of except;
 
@@ -3634,7 +3634,7 @@ or I<--> etc or I<subtract>.
 =head2 intersect ∩
 
     ::MD::intersect::"" ::= function virtual
-        --> Unionable <-- (Unionable, Unionable)
+        returns Unionable matches (Unionable, Unionable)
         is {associative,idempotent};
 
     ::MD::Unicode_Aliases::"∩" ::= alias of intersect;
@@ -3656,7 +3656,7 @@ corresponding operators I<&> or I<*>.
 =head2 union ∪
 
     ::MD::union::"" ::= function virtual
-        --> Unionable <-- (Unionable, Unionable)
+        returns Unionable matches (Unionable, Unionable)
         is idempotent;
 
     ::MD::Unicode_Aliases::"∪" ::= alias of union;
@@ -3681,7 +3681,7 @@ languages may name their corresponding operators I<|> or I<+>.
 =head2 exclusive symm_diff ∆
 
     ::MD::exclusive::"" ::= function virtual
-        --> Unionable <-- (Unionable, Unionable);
+        returns Unionable matches (Unionable, Unionable);
 
     ::MD::symm_diff ::= alias of exclusive;
 
@@ -3710,8 +3710,8 @@ I<symmdiff> or I<^> or I<%>.
 
 =head2 nest group
 
-    ::MD::nest::"" ::= function virtual --> Unionable <-- (Unionable)
-        requires (...);
+    ::MD::nest::"" ::= function virtual returns Unionable matches (Unionable)
+        accepts (...);
 
     ::MD::group ::= alias of nest;
 
@@ -3719,8 +3719,8 @@ I<TODO.>
 
 =head2 unnest ungroup
 
-    ::MD::unnest::"" ::= function virtual --> Unionable <-- (Unionable)
-        requires (...);
+    ::MD::unnest::"" ::= function virtual returns Unionable matches (Unionable)
+        accepts (...);
 
     ::MD::ungroup ::= alias of unnest;
 
@@ -3729,7 +3729,7 @@ I<TODO.>
 =head2 where σ
 
     ::MD::where::"" ::= function virtual
-        --> Unionable <-- (Unionable, Signature);
+        returns Unionable matches (Unionable, Signature);
 
     ::MD::Unicode_Aliases::"σ" ::= alias of where;
 
@@ -3757,7 +3757,7 @@ I<TODO.>
 =head2 map
 
     ::MD::map::"" ::= function virtual
-        --> Unionable <-- (Unionable, Function_Call_But_0);
+        returns Unionable matches (Unionable, Function_Call_But_0);
 
 I<TODO.  The function-call is as per that of 'where'.>
 I<Ruby calls its version "collect".>
@@ -3772,7 +3772,7 @@ multiply with integers.>
 =head2 reduce
 
     ::MD::reduce::"" ::= function virtual
-        --> Any <-- (Unionable, Function_Call_But_0_1);
+        returns Any matches (Unionable, Function_Call_But_0_1);
 
 I<TODO.  The function-call is expected to be a Capsule with 2 asset attrs
 named 'func' and 'args', which are a Function_Name and a Tuple respectively.
@@ -3814,7 +3814,7 @@ C<Relation>, C<Tuple_Bag>.
 
 =head2 to_Set ?|
 
-    ::MD::to_Set::"" ::= function virtual --> Set <-- (Discrete);
+    ::MD::to_Set::"" ::= function virtual returns Set matches (Discrete);
 
     ::MD::"?|" ::= alias of to_Set;
 
@@ -3826,7 +3826,7 @@ operations where neither multiplicity nor order is significant.
 
 =head2 to_Bag +|
 
-    ::MD::to_Bag::"" ::= function virtual --> Bag <-- (Discrete);
+    ::MD::to_Bag::"" ::= function virtual returns Bag matches (Discrete);
 
     ::MD::"+|" ::= alias of to_Bag;
 
@@ -3838,7 +3838,7 @@ multiplicity possibly is significant but order isn't.
 
 =head2 count cardinality #
 
-    ::MD::count::"" ::= function virtual --> Integer_NN <-- (Discrete);
+    ::MD::count::"" ::= function virtual returns Integer_NN matches (Discrete);
 
     ::MD::cardinality ::= alias of count;
     ::MD::"#"         ::= alias of count;
@@ -3849,14 +3849,14 @@ have the same member value, every member counts as 1 towards the total.
 
 =head2 unique_count
 
-    ::MD::unique_count::"" ::= function virtual --> Integer_NN <-- (Discrete);
+    ::MD::unique_count::"" ::= function virtual returns Integer_NN matches (Discrete);
 
 The virtual function C<unique_count> results in the integral count of the
 distinct member values of its C<0> argument.
 
 =head2 order
 
-    ::MD::order ::= function --> Positional <-- (Discrete)
+    ::MD::order ::= function returns Positional matches (Discrete)
         : (args.\0 order_using \in_order::());
 
 The function C<order> results in the C<Positional> value that represents
@@ -3868,7 +3868,7 @@ defined for the types of the members or they are of an C<Orderable> type.
 =head2 order_using
 
     ::MD::order_using::"" ::= function virtual
-        --> Positional <-- (Discrete, Function_Call_But_0_1);
+        returns Positional matches (Discrete, Function_Call_But_0_1);
 
 The virtual function C<order_using> results in the C<Positional> value that
 represents the same multiset of members as its C<0> argument but that the
@@ -3938,7 +3938,7 @@ assuming incorrectly that I<V> already has a member whose index is I<I>.
 
 =head2 singular (Positional)
 
-    ::MD::singular::Positional ::= function --> Boolean <-- (Positional)
+    ::MD::singular::Positional ::= function returns Boolean matches (Positional)
         implements 2::""
         : ((args.\0->unique_count) = 1);
 
@@ -3949,9 +3949,9 @@ composing type C<Positional>.
 
 =head2 only_member (Positional)
 
-    ::MD::only_member::Positional ::= function --> Any <-- (Positional)
+    ::MD::only_member::Positional ::= function returns Any matches (Positional)
         implements 2::""
-        requires (singular args.\0)
+        accepts (singular args.\0)
         : (first args.\0);
 
 The function C<only_member::Positional> results in its C<0> argument's only
@@ -3963,7 +3963,7 @@ C<Positional>.
 =head2 subset_of (Positional)
 
     ::MD::subset_of::Positional ::= function
-        --> Boolean <-- (Positional, Positional)
+        returns Boolean matches (Positional, Positional)
         implements 2::""
         : ((args.\0->to_Bag) subset_of (args.\1->to_Bag));
 
@@ -3976,7 +3976,7 @@ the composing type C<Positional>.
 =head2 same_members (Positional)
 
     ::MD::same_members::Positional ::= function
-        --> Boolean <-- (Positional, Positional)
+        returns Boolean matches (Positional, Positional)
         implements 2::""
         is commutative
         : ((args.\0->to_Bag) same_members (args.\1->to_Bag));
@@ -3992,7 +3992,7 @@ virtual function C<same_members> for the composing type C<Positional>.
 =head2 overlaps_members (Positional)
 
     ::MD::overlaps_members::Positional ::= function
-        --> Boolean <-- (Positional, Positional)
+        returns Boolean matches (Positional, Positional)
         implements 2::""
         is commutative
         : ((args.\0->to_Bag) overlaps_members (args.\1->to_Bag));
@@ -4008,7 +4008,7 @@ C<overlaps_members> for the composing type C<Positional>.
 =head2 disjoint_members (Positional)
 
     ::MD::disjoint_members::Positional ::= function
-        --> Boolean <-- (Positional, Positional)
+        returns Boolean matches (Positional, Positional)
         implements 2::""
         is commutative
         : ((args.\0->to_Bag) disjoint_members (args.\1->to_Bag));
@@ -4022,7 +4022,7 @@ C<disjoint_members> for the composing type C<Positional>.
 =head2 member_plus (Positional)
 
     ::MD::member_plus::Positional ::= function
-        --> Positional <-- (Positional, Positional)
+        returns Positional matches (Positional, Positional)
         implements 2::""
         is associative
         : (args.\0 ~ (args.\1));
@@ -4035,7 +4035,7 @@ type C<Positional>.
 
 =head2 unique_count (Positional)
 
-    ::MD::unique_count::Positional ::= function --> Integer_NN <-- (Positional)
+    ::MD::unique_count::Positional ::= function returns Integer_NN matches (Positional)
         implements 2::""
         : (args.\0->to_Set->count);
 
@@ -4047,7 +4047,7 @@ C<Positional>.
 =head2 has_any_at (Positional)
 
     ::MD::has_any_at::Positional ::= function
-        --> Boolean <-- (Positional, Integer)
+        returns Boolean matches (Positional, Integer)
         implements 2::""
         : (args.\1 >= first_possible_index::(args.\0)
             and args.\1 < first_unused_index::(args.\0));
@@ -4061,7 +4061,7 @@ type C<Positional>.
 =head2 has_mapping_at (Positional)
 
     ::MD::has_mapping_at::Positional ::= function
-        --> Boolean <-- (Positional, (Integer, Any))
+        returns Boolean matches (Positional, (Integer, Any))
         implements 2::""
         : (if args.\0 .? (args.\1.\0) then args.\0.(args.\1.\0) = (args.\1.\1) else False);
 
@@ -4075,9 +4075,9 @@ composing type C<Positional>.
 =head2 mapping_at (Positional)
 
     ::MD::mapping_at::Positional ::= function
-        --> (Integer, Any) <-- (Positional, Integer)
+        returns (Integer, Any) matches (Positional, Integer)
         implements 2::""
-        requires (args.\0 .? (args.\1))
+        accepts (args.\0 .? (args.\1))
         : ((args.\1, args.\0.(args.\1)));
 
 The function C<mapping_at::Positional> results in a binary C<Tuple> whose
@@ -4091,7 +4091,7 @@ C<Positional>.
 =head2 maybe_at (Positional)
 
     ::MD::maybe_at::Positional ::= function
-        --> Any <-- (Positional, Integer)
+        returns Any matches (Positional, Integer)
         implements 2::""
         : (if args.\0 .? (args.\1) then args.\0.(args.\1) else Excuse::No_Such_Index());
 
@@ -4104,9 +4104,9 @@ composing type C<Positional>.
 =head2 replace_at (Positional)
 
     ::MD::replace_at::Positional ::= function
-        --> Positional <-- (Positional, (Integer, Any))
+        returns Positional matches (Positional, (Integer, Any))
         implements 2::""
-        requires (args.\0 .? (args.\1.\0))
+        accepts (args.\0 .? (args.\1.\0))
     : (
         src ::= (args.\0);
         ri ::= (args.\1.\0);
@@ -4132,9 +4132,9 @@ function C<replace_at> aka C<.:=> for the composing type C<Positional>.
 =head2 shiftless_insert_at (Positional)
 
     ::MD::shiftless_insert_at::Positional ::= function
-        --> Positional <-- (Positional, (Integer, Any))
+        returns Positional matches (Positional, (Integer, Any))
         implements 2::""
-        requires (args.\1.\0 = first_unused_index::(args.\0))
+        accepts (args.\1.\0 = first_unused_index::(args.\0))
         : (args.\0 insert args.\1.\1);
 
 The function C<shiftless_insert_at::Positional> results in the value of its
@@ -4150,9 +4150,9 @@ composing type C<Positional>.
 =head2 shiftless_remove_at (Positional)
 
     ::MD::shiftless_remove_at::Positional ::= function
-        --> Positional <-- (Positional, Integer)
+        returns Positional matches (Positional, Integer)
         implements 2::""
-        requires (args.\1 >= first_possible_index::(args.\0)
+        accepts (args.\1 >= first_possible_index::(args.\0)
             and args.\1 = --first_unused_index::(args.\0))
         : (nonlast args.\0);
 
@@ -4168,9 +4168,9 @@ composing type C<Positional>.
 =head2 replace_or_insert_at (Positional)
 
     ::MD::replace_or_insert_at::Positional ::= function
-        --> Positional <-- (Positional, (Integer, Any))
+        returns Positional matches (Positional, (Integer, Any))
         implements 2::""
-        requires (args.\1 >= first_possible_index::(args.\0)
+        accepts (args.\1 >= first_possible_index::(args.\0)
             and args.\1 <= first_unused_index::(args.\0))
         : (if args.\0 .? (args.\1.\0) then args.\0 .:= (args.\1.\0) else args.\0 .+ (args.\1.\0));
 
@@ -4185,9 +4185,9 @@ C<Positional>.
 =head2 shiftless_maybe_remove_at (Positional)
 
     ::MD::shiftless_maybe_remove_at::Positional ::= function
-        --> Positional <-- (Positional, Integer)
+        returns Positional matches (Positional, Integer)
         implements 2::""
-        requires (args.\1 >= first_possible_index::(args.\0)
+        accepts (args.\1 >= first_possible_index::(args.\0)
             and args.\1 >= --first_unused_index::(args.\0))
         : (if args.\1 = --first_unused_index::(args.\0) then nonlast args.\0 else args.\0);
 
@@ -4200,7 +4200,7 @@ the composing type C<Positional>.
 
 =head2 to_Array ~|
 
-    ::MD::to_Array::"" ::= function virtual --> Array <-- (Positional);
+    ::MD::to_Array::"" ::= function virtual returns Array matches (Positional);
 
     ::MD::"~|" ::= alias of to_Array;
 
@@ -4212,7 +4212,7 @@ effort.
 
 =head2 squish
 
-    ::MD::squish ::= function --> Positional <-- (Positional)
+    ::MD::squish ::= function returns Positional matches (Positional)
         : (args.\0 map \(( group : args.\0, member : False ))
             ->nest map \(args.\0.\group));
 
@@ -4227,7 +4227,7 @@ members, the result of C<squish> is the same as that of C<unique>.
 =head2 first_possible_index
 
     ::MD::first_possible_index::"" ::= function virtual
-        --> Integer <-- (Positional);
+        returns Integer matches (Positional);
 
 The virtual function C<first_possible_index> results in the integral first
 possible index position I<I> that every value of its C<0> argument's
@@ -4238,7 +4238,7 @@ first member of I<C> would have.
 
 =head2 first_unused_index
 
-    ::MD::first_unused_index ::= function --> Integer <-- (Positional)
+    ::MD::first_unused_index ::= function returns Integer matches (Positional)
         : (first_possible_index::(args.\0) + #(args.\0));
 
 The function C<first_unused_index> results in the integral first unused
@@ -4250,8 +4250,8 @@ zero-based C<Positional>, the result is equal to its C<count>.
 
 =head2 first_index
 
-    ::MD::first_index ::= function --> Integer <-- (Positional)
-        requires (?(args.\0))
+    ::MD::first_index ::= function returns Integer matches (Positional)
+        accepts (?(args.\0))
         : (first_possible_index::(args.\0));
 
 The function C<first_index> results in the integral index position of its
@@ -4259,8 +4259,8 @@ nonempty C<0> argument's first member.
 
 =head2 last_index
 
-    ::MD::last_index ::= function --> Integer <-- (Positional)
-        requires (?(args.\0))
+    ::MD::last_index ::= function returns Integer matches (Positional)
+        accepts (?(args.\0))
         : (--first_unused_index::(args.\0));
 
 The function C<last_index> results in the integral index position of its
@@ -4269,8 +4269,8 @@ nonempty C<0> argument's last member.
 =head2 slice_n
 
     ::MD::slice_n::"" ::= function virtual
-        --> Positional <-- (Positional, Integer, NN_Integer)
-        requires (args.\1 >= first_possible_index::(args.\0)
+        returns Positional matches (Positional, Integer, NN_Integer)
+        accepts (args.\1 >= first_possible_index::(args.\0)
             and args.\1 + (args.\2) <= first_unused_index::(args.\0));
 
 The virtual function C<slice_n> results in the value of its C<0> argument's
@@ -4286,8 +4286,8 @@ their corresponding operators I<array_slice>.
 =head2 slice_range
 
     ::MD::slice_range ::= function
-        --> Positional <-- (Positional, Integer, Integer)
-        requires (?(args.\0) and args.\1 >= first_possible_index::(args.\0)
+        returns Positional matches (Positional, Integer, Integer)
+        accepts (?(args.\0) and args.\1 >= first_possible_index::(args.\0)
             and args.\2 < first_unused_index::(args.\0))
         : (slice_n::(args.\0, args.\1, (args.\2) - (args.\1) + 1));
 
@@ -4303,16 +4303,16 @@ may instead overload their array element subscripting syntax.
 
 =head2 first
 
-    ::MD::first ::= function --> Any <-- (Positional)
-        requires (?(args.\0))
+    ::MD::first ::= function returns Any matches (Positional)
+        accepts (?(args.\0))
         : (args.\0 . first_index::(args.\0));
 
 The function C<first> results in its nonempty C<0> argument's first member.
 
 =head2 nonfirst
 
-    ::MD::nonfirst ::= function --> Positional <-- (Positional)
-        requires (?(args.\0))
+    ::MD::nonfirst ::= function returns Positional matches (Positional)
+        accepts (?(args.\0))
         : (slice_range::(args.\0, ++first_index::(args.\0), last_index::(args.\0)));
 
 The function C<nonfirst> results in the value of its C<0> argument's
@@ -4323,16 +4323,16 @@ they did in the argument.
 
 =head2 last
 
-    ::MD::last ::= function --> Any <-- (Positional)
-        requires (?(args.\0))
+    ::MD::last ::= function returns Any matches (Positional)
+        accepts (?(args.\0))
         : (args.\0 . last_index::(args.\0));
 
 The function C<last> results in its nonempty C<0> argument's last member.
 
 =head2 nonlast
 
-    ::MD::nonlast ::= function --> Positional <-- (Positional)
-        requires (?(args.\0))
+    ::MD::nonlast ::= function returns Positional matches (Positional)
+        accepts (?(args.\0))
         : (slice_range::(args.\0, first_index::(args.\0), --last_index::(args.\0)));
 
 The function C<nonlast> results in the value of its C<0> argument's ordered
@@ -4344,7 +4344,7 @@ the argument.
 =head2 index_succ_all_matches
 
     ::MD::index_succ_all_matches::"" ::= function virtual
-        --> Integer <-- (Positional, Positional)
+        returns Integer matches (Positional, Positional)
         is commutative;
 
 I<TODO.  Also consider index_first_diff_elem or index_succ_common_prefix as name.>
@@ -4402,7 +4402,7 @@ C<Array> value, C<[]>.
 
 =head2 in_order (Array)
 
-    ::MD::in_order::Array ::= function --> Boolean <-- (Array, Array)
+    ::MD::in_order::Array ::= function returns Boolean matches (Array, Array)
         implements 2::""
     : (
         i ::= (args.\0 index_succ_all_matches args.\1);
@@ -4424,7 +4424,7 @@ will succeed iff C<in_order> is also defined for the types of the members.
 
 =head2 to_Boolean (Array)
 
-    ::MD::to_Boolean::Array ::= function --> Boolean <-- (Array)
+    ::MD::to_Boolean::Array ::= function returns Boolean matches (Array)
         implements 2::""
         : (args.\0 != []);
 
@@ -4435,7 +4435,7 @@ C<?> for the composing type C<Array>.
 
 =head2 empty (Array)
 
-    ::MD::empty::Array ::= function --> Array <-- (Array)
+    ::MD::empty::Array ::= function returns Array matches (Array)
         implements 2::""
         : ([]);
 
@@ -4445,7 +4445,7 @@ aka C<∅> for the composing type C<Array>.
 
 =head2 substring_of (Array)
 
-    ::MD::substring_of::Array ::= function --> Boolean <-- (Array, Array)
+    ::MD::substring_of::Array ::= function returns Boolean matches (Array, Array)
         implements 2::""
         : (args -->^ FDN__Array_substring_of);
 
@@ -4457,7 +4457,7 @@ composing type C<Array>.
 
 =head2 overlaps_string (Array)
 
-    ::MD::overlaps_string::Array ::= function --> Boolean <-- (Array, Array)
+    ::MD::overlaps_string::Array ::= function returns Boolean matches (Array, Array)
         implements 2::""
         is commutative
         : (args -->^ FDN__Array_overlaps_string);
@@ -4473,7 +4473,7 @@ virtual function C<overlaps_string> for the composing type C<Array>.
 
 =head2 disjoint_string (Array)
 
-    ::MD::disjoint_string::Array ::= function --> Boolean <-- (Array, Array)
+    ::MD::disjoint_string::Array ::= function returns Boolean matches (Array, Array)
         implements 2::""
         is commutative
         : (args -->^ FDN__Array_disjoint_string);
@@ -4487,7 +4487,7 @@ C<disjoint_string> for the composing type C<Array>.
 
 =head2 catenate (Array)
 
-    ::MD::catenate::Array ::= function --> Array <-- (Array, Array)
+    ::MD::catenate::Array ::= function returns Array matches (Array, Array)
         implements 2::""
         is associative identity ([])
         repeater replicate::Array
@@ -4501,7 +4501,7 @@ C<Array>.
 
 =head2 replicate (Array)
 
-    ::MD::replicate::Array ::= function --> Array <-- (Array, Integer_NN)
+    ::MD::replicate::Array ::= function returns Array matches (Array, Integer_NN)
         implements 2::""
         : (args -->^ FDN__Array_replicate);
 
@@ -4513,7 +4513,7 @@ for the composing type C<Array>.
 
 =head2 has_n (Array)
 
-    ::MD::has_n::Array ::= function --> Boolean <-- (Array, Any, Integer_NN)
+    ::MD::has_n::Array ::= function returns Boolean matches (Array, Any, Integer_NN)
         implements 2::""
         : (args -->^ FDN__Array_has_n);
 
@@ -4525,7 +4525,7 @@ C<has_n> for the composing type C<Array>.
 
 =head2 multiplicity (Array)
 
-    ::MD::multiplicity::Array ::= function --> Integer_NN <-- (Array, Any)
+    ::MD::multiplicity::Array ::= function returns Integer_NN matches (Array, Any)
         implements 2::""
         : (args -->^ FDN__Array_multiplicity);
 
@@ -4536,7 +4536,7 @@ function C<multiplicity> for the composing type C<Array>.
 
 =head2 all_unique (Array)
 
-    ::MD::all_unique::Array ::= function --> Boolean <-- (Array)
+    ::MD::all_unique::Array ::= function returns Boolean matches (Array)
         implements 2::""
         : (args -->^ FDN__Array_all_unique);
 
@@ -4547,7 +4547,7 @@ the composing type C<Array>.
 
 =head2 unique (Array)
 
-    ::MD::unique::Array ::= function --> Array <-- (Array)
+    ::MD::unique::Array ::= function returns Array matches (Array)
         implements 2::""
         : (args -->^ FDN__Array_unique);
 
@@ -4560,7 +4560,7 @@ virtual function C<unique> for the composing type C<Array>.
 
 =head2 any (Array)
 
-    ::MD::any::Array ::= function --> Boolean <-- (Array, Signature)
+    ::MD::any::Array ::= function returns Boolean matches (Array, Signature)
         implements 2::""
         : ((args.\0, Signature_to_Function_Call_But_0::(args.\1)) -->^ FDN__Array_any);
 
@@ -4568,7 +4568,7 @@ I<TODO.>
 
 =head2 insert_n (Array)
 
-    ::MD::insert_n::Array ::= function --> Array <-- (Array, Any, Integer_NN)
+    ::MD::insert_n::Array ::= function returns Array matches (Array, Any, Integer_NN)
         implements 2::""
         : (args -->^ FDN__Array_insert_n);
 
@@ -4582,7 +4582,7 @@ C<Array>.
 
 =head2 remove_n (Array)
 
-    ::MD::remove_n::Array ::= function --> Array <-- (Array, Any, Integer_NN)
+    ::MD::remove_n::Array ::= function returns Array matches (Array, Any, Integer_NN)
         implements 2::""
         : (args -->^ FDN__Array_remove_n);
 
@@ -4596,7 +4596,7 @@ C<remove_n> for the composing type C<Array>.
 
 =head2 except (Array)
 
-    ::MD::except::Array ::= function --> Array <-- (Array, Array)
+    ::MD::except::Array ::= function returns Array matches (Array, Array)
         implements 2::""
         : (args -->^ FDN__Array_except);
 
@@ -4610,7 +4610,7 @@ C<except> aka C<∖> for the composing type C<Array>.
 
 =head2 intersect (Array)
 
-    ::MD::intersect::Array ::= function --> Array <-- (Array, Array)
+    ::MD::intersect::Array ::= function returns Array matches (Array, Array)
         implements 2::""
         is {associative,idempotent}
         : (args -->^ FDN__Array_intersect);
@@ -4626,7 +4626,7 @@ aka C<∩> for the composing type C<Array>.
 
 =head2 union (Array)
 
-    ::MD::union::Array ::= function --> Array <-- (Array, Array)
+    ::MD::union::Array ::= function returns Array matches (Array, Array)
         implements 2::""
         is idempotent identity ([])
         : (args -->^ FDN__Array_union);
@@ -4643,7 +4643,7 @@ C<union> aka C<∪> for the composing type C<Array>.
 
 =head2 exclusive (Array)
 
-    ::MD::exclusive::Array ::= function --> Array <-- (Array, Array)
+    ::MD::exclusive::Array ::= function returns Array matches (Array, Array)
         implements 2::""
         identity ([])
         : (args -->^ FDN__Array_exclusive);
@@ -4661,25 +4661,25 @@ C<exclusive> aka C<symm_diff> aka C<∆> for the composing type C<Array>.
 
 =head2 nest (Array)
 
-    ::MD::nest::Array ::= function --> Array <-- (Array)
+    ::MD::nest::Array ::= function returns Array matches (Array)
         implements 2::""
-        requires (...)
+        accepts (...)
         : (args -->^ FDN__Array_nest);
 
 I<TODO.>
 
 =head2 unnest (Array)
 
-    ::MD::unnest::Array ::= function --> Array <-- (Array)
+    ::MD::unnest::Array ::= function returns Array matches (Array)
         implements 2::""
-        requires (...)
+        accepts (...)
         : (args -->^ FDN__Array_unnest);
 
 I<TODO.>
 
 =head2 where (Array)
 
-    ::MD::where::Array ::= function --> Array <-- (Array, Signature)
+    ::MD::where::Array ::= function returns Array matches (Array, Signature)
         implements 2::""
         : ((args.\0, Signature_to_Function_Call_But_0::(args.\1))
             -->^ FDN__Array_where);
@@ -4688,7 +4688,7 @@ I<TODO.>
 
 =head2 map (Array)
 
-    ::MD::map::Array ::= function --> Array <-- (Array, Function_Call_But_0)
+    ::MD::map::Array ::= function returns Array matches (Array, Function_Call_But_0)
         implements 2::""
         : (args -->^ FDN__Array_map);
 
@@ -4696,7 +4696,7 @@ I<TODO.>
 
 =head2 reduce (Array)
 
-    ::MD::reduce::Array ::= function --> Any <-- (Array, Function_Call_But_0_1)
+    ::MD::reduce::Array ::= function returns Any matches (Array, Function_Call_But_0_1)
         implements 2::""
         : (args -->^ FDN__Array_reduce);
 
@@ -4704,7 +4704,7 @@ I<TODO.>
 
 =head2 to_Set (Array)
 
-    ::MD::to_Set::Array ::= function --> Set <-- (Array)
+    ::MD::to_Set::Array ::= function returns Set matches (Array)
         implements 2::""
         : (args.\0->to_Bag->to_Set);
 
@@ -4716,7 +4716,7 @@ C<Array>.
 
 =head2 to_Bag (Array)
 
-    ::MD::to_Bag::Array ::= function --> Bag <-- (Array)
+    ::MD::to_Bag::Array ::= function returns Bag matches (Array)
         implements 2::""
         : (args -->^ FDN__Array_to_Bag);
 
@@ -4727,7 +4727,7 @@ C<Array>.
 
 =head2 count (Array)
 
-    ::MD::count::Array ::= function --> Integer_NN <-- (Array)
+    ::MD::count::Array ::= function returns Integer_NN matches (Array)
         implements 2::""
         : (args -->^ FDN__Array_count);
 
@@ -4738,7 +4738,7 @@ C<Array>.
 
 =head2 order_using (Array)
 
-    ::MD::order_using::Array ::= function --> Array <-- (Array, Function_Call_But_0_1)
+    ::MD::order_using::Array ::= function returns Array matches (Array, Function_Call_But_0_1)
         implements 2::""
         : (args -->^ FDN__Array_order_using);
 
@@ -4751,9 +4751,9 @@ type C<Array>.
 
 =head2 at (Array)
 
-    ::MD::at::Array ::= function --> Any <-- (Array, Integer_NN)
+    ::MD::at::Array ::= function returns Any matches (Array, Integer_NN)
         implements 2::""
-        requires (args.\0 .? (args.\1))
+        accepts (args.\0 .? (args.\1))
         : (args -->^ FDN__Array_at);
 
 The function C<at::Array> results in the member value of its C<0> argument
@@ -4764,7 +4764,7 @@ composing type C<Array>.
 
 =head2 to_Array (Array)
 
-    ::MD::to_Array::Array ::= function --> Array <-- (Array)
+    ::MD::to_Array::Array ::= function returns Array matches (Array)
         implements 2::""
         : (args.\0);
 
@@ -4774,7 +4774,7 @@ C<~|> for the composing type C<Array>.
 
 =head2 first_possible_index (Array)
 
-    ::MD::first_possible_index::Array ::= function --> Integer_NN <-- (Array)
+    ::MD::first_possible_index::Array ::= function returns Integer_NN matches (Array)
         implements 2::""
         : (0);
 
@@ -4785,9 +4785,9 @@ C<first_possible_index> for the composing type C<Array>.
 =head2 slice_n (Array)
 
     ::MD::slice_n::Array ::= function
-        --> Array <-- (Array, NN_Integer, NN_Integer)
+        returns Array matches (Array, NN_Integer, NN_Integer)
         implements 2::""
-        requires (args.\1 + (args.\2) <= #(args.\0))
+        accepts (args.\1 + (args.\2) <= #(args.\0))
         : (args -->^ FDN__Array_slice_n);
 
 The function C<slice_n::Array> results in the C<Array> value that has
@@ -4803,7 +4803,7 @@ the composing type C<Array>.
 =head2 index_succ_all_matches (Array)
 
     ::MD::index_succ_all_matches::Array ::= function
-        --> Integer_NN <-- (Array, Array)
+        returns Integer_NN matches (Array, Array)
         implements 2::""
         is commutative
         : (args -->^ FDN__Array_index_succ_all_matches);
@@ -4851,7 +4851,7 @@ C<Set> value, C<{}>.
 
 =head2 to_Boolean (Set)
 
-    ::MD::to_Boolean::Set ::= function --> Boolean <-- (Set)
+    ::MD::to_Boolean::Set ::= function returns Boolean matches (Set)
         implements 2::""
         : (args.\0 != {});
 
@@ -4862,7 +4862,7 @@ C<?> for the composing type C<Set>.
 
 =head2 empty (Set)
 
-    ::MD::empty::Set ::= function --> Set <-- (Set)
+    ::MD::empty::Set ::= function returns Set matches (Set)
         implements 2::""
         : ({});
 
@@ -4872,7 +4872,7 @@ aka C<∅> for the composing type C<Set>.
 
 =head2 singular (Set)
 
-    ::MD::singular::Set ::= function --> Boolean <-- (Set)
+    ::MD::singular::Set ::= function returns Boolean matches (Set)
         implements 2::""
         : (args.\0->unwrap->singular);
 
@@ -4883,9 +4883,9 @@ C<Set>.
 
 =head2 only_member (Set)
 
-    ::MD::only_member::Set ::= function --> Any <-- (Set)
+    ::MD::only_member::Set ::= function returns Any matches (Set)
         implements 2::""
-        requires (singular args.\0)
+        accepts (singular args.\0)
         : (args.\0->unwrap->only_member);
 
 The function C<only_member::Set> results in its C<0> argument's only member
@@ -4895,7 +4895,7 @@ C<only_member> for the composing type C<Set>.
 
 =head2 has_n (Set)
 
-    ::MD::has_n::Set ::= function --> Boolean <-- (Set, Any, Integer_NN)
+    ::MD::has_n::Set ::= function returns Boolean matches (Set, Any, Integer_NN)
         implements 2::""
         : (has_n::(args.\0->unwrap, args.\1, args.\2));
 
@@ -4907,7 +4907,7 @@ type C<Set>.
 
 =head2 multiplicity (Set)
 
-    ::MD::multiplicity::Set ::= function --> Integer_NN <-- (Set, Any)
+    ::MD::multiplicity::Set ::= function returns Integer_NN matches (Set, Any)
         implements 2::""
         : (args.\0->unwrap multiplicity args.\1);
 
@@ -4918,7 +4918,7 @@ the composing type C<Set>.
 
 =head2 all_unique (Set)
 
-    ::MD::all_unique::Set ::= function --> Boolean <-- (Set)
+    ::MD::all_unique::Set ::= function returns Boolean matches (Set)
         implements 2::""
         : (True);
 
@@ -4928,7 +4928,7 @@ composing type C<Set>.
 
 =head2 unique (Set)
 
-    ::MD::unique::Set ::= function --> Set <-- (Set)
+    ::MD::unique::Set ::= function returns Set matches (Set)
         implements 2::""
         : (args.\0);
 
@@ -4938,7 +4938,7 @@ composing type C<Set>.
 
 =head2 subset_of (Set)
 
-    ::MD::subset_of::Set ::= function --> Boolean <-- (Set, Set)
+    ::MD::subset_of::Set ::= function returns Boolean matches (Set, Set)
         implements 2::""
         : ((args.\0->unwrap) subset_of (args.\1->unwrap));
 
@@ -4950,7 +4950,7 @@ type C<Set>.
 
 =head2 same_members (Set)
 
-    ::MD::same_members::Set ::= function --> Boolean <-- (Set, Set)
+    ::MD::same_members::Set ::= function returns Boolean matches (Set, Set)
         implements 2::""
         is commutative
         : (args.\0 = (args.\1));
@@ -4963,7 +4963,7 @@ function C<same_members> for the composing type C<Set>.
 
 =head2 overlaps_members (Set)
 
-    ::MD::overlaps_members::Set ::= function --> Boolean <-- (Set, Set)
+    ::MD::overlaps_members::Set ::= function returns Boolean matches (Set, Set)
         implements 2::""
         is commutative
         : ((args.\0->unwrap) overlaps_members (args.\1->unwrap));
@@ -4978,7 +4978,7 @@ C<overlaps_members> for the composing type C<Set>.
 
 =head2 disjoint_members (Set)
 
-    ::MD::disjoint_members::Set ::= function --> Boolean <-- (Set, Set)
+    ::MD::disjoint_members::Set ::= function returns Boolean matches (Set, Set)
         implements 2::""
         is commutative
         : ((args.\0->unwrap) disjoint_members (args.\1->unwrap));
@@ -4991,7 +4991,7 @@ C<disjoint_members> for the composing type C<Set>.
 
 =head2 any (Set)
 
-    ::MD::any::Set ::= function --> Boolean <-- (Set, Signature)
+    ::MD::any::Set ::= function returns Boolean matches (Set, Signature)
         implements 2::""
         : (args.\0->unwrap any args.\1);
 
@@ -4999,7 +4999,7 @@ I<TODO.>
 
 =head2 insert_n (Set)
 
-    ::MD::insert_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
+    ::MD::insert_n::Set ::= function returns Set matches (Set, Any, Integer_NN)
         implements 2::""
         : (args.\0 has args.\1 or args.\2 = 0 :? args.\0
             :! \Set wrap insert_n::(args.\0->unwrap, args.\1, 1));
@@ -5012,7 +5012,7 @@ function C<insert_n> for the composing type C<Set>.
 
 =head2 remove_n (Set)
 
-    ::MD::remove_n::Set ::= function --> Set <-- (Set, Any, Integer_NN)
+    ::MD::remove_n::Set ::= function returns Set matches (Set, Any, Integer_NN)
         implements 2::""
         : (\Set wrap remove_n::(args.\0->unwrap, args.\1, args.\2));
 
@@ -5024,7 +5024,7 @@ C<remove_n> for the composing type C<Set>.
 
 =head2 member_plus (Set)
 
-    ::MD::member_plus::Set ::= function --> Set <-- (Set, Set)
+    ::MD::member_plus::Set ::= function returns Set matches (Set, Set)
         implements 2::""
         is {associative,commutative,idempotent} identity ({})
         : (args.\0 union args.\1);
@@ -5036,7 +5036,7 @@ virtual function C<member_plus> aka C<⊎> for the composing type C<Set>.
 
 =head2 except (Set)
 
-    ::MD::except::Set ::= function --> Set <-- (Set, Set)
+    ::MD::except::Set ::= function returns Set matches (Set, Set)
         implements 2::""
         : (\Set wrap ((args.\0->unwrap) except (args.\1->unwrap)));
 
@@ -5049,7 +5049,7 @@ for the composing type C<Set>.
 
 =head2 intersect (Set)
 
-    ::MD::intersect::Set ::= function --> Set <-- (Set, Set)
+    ::MD::intersect::Set ::= function returns Set matches (Set, Set)
         implements 2::""
         is {associative,commutative,idempotent}
         : (\Set wrap ((args.\0->unwrap) intersect (args.\1->unwrap)));
@@ -5062,7 +5062,7 @@ function C<intersect> aka C<∩> for the composing type C<Set>.
 
 =head2 union (Set)
 
-    ::MD::union::Set ::= function --> Set <-- (Set, Set)
+    ::MD::union::Set ::= function returns Set matches (Set, Set)
         implements 2::""
         is {associative,commutative,idempotent} identity ({})
         : (\Set wrap ((args.\0->unwrap) union (args.\1->unwrap)));
@@ -5075,7 +5075,7 @@ virtual function C<union> aka C<∪> for the composing type C<Set>.
 
 =head2 exclusive (Set)
 
-    ::MD::exclusive::Set ::= function --> Set <-- (Set, Set)
+    ::MD::exclusive::Set ::= function returns Set matches (Set, Set)
         implements 2::""
         is {associative,commutative} identity ({})
         : (\Set wrap ((args.\0->unwrap) exclusive (args.\1->unwrap)));
@@ -5089,25 +5089,25 @@ aka C<symm_diff> aka C<∆> for the composing type C<Set>.
 
 =head2 nest (Set)
 
-    ::MD::nest::Set ::= function --> Set <-- (Set)
+    ::MD::nest::Set ::= function returns Set matches (Set)
         implements 2::""
-        requires (...)
+        accepts (...)
         : (\Set wrap (args.\0->unwrap->nest));
 
 I<TODO.>
 
 =head2 unnest (Set)
 
-    ::MD::unnest::Set ::= function --> Set <-- (Set)
+    ::MD::unnest::Set ::= function returns Set matches (Set)
         implements 2::""
-        requires (...)
+        accepts (...)
         : (\Set wrap (args.\0->unwrap->unnest));
 
 I<TODO.>
 
 =head2 where (Set)
 
-    ::MD::where::Set ::= function --> Set <-- (Set, Signature)
+    ::MD::where::Set ::= function returns Set matches (Set, Signature)
         implements 2::""
         : (\Set wrap (args.\0->unwrap where args.\1));
 
@@ -5115,7 +5115,7 @@ I<TODO.>
 
 =head2 map (Set)
 
-    ::MD::map::Set ::= function --> Set <-- (Set, Function_Call_But_0)
+    ::MD::map::Set ::= function returns Set matches (Set, Function_Call_But_0)
         implements 2::""
         : (\Set wrap (args.\0->unwrap map args.\1));
 
@@ -5123,7 +5123,7 @@ I<TODO.>
 
 =head2 reduce (Set)
 
-    ::MD::reduce::Set ::= function --> Any <-- (Set, Function_Call_But_0_1)
+    ::MD::reduce::Set ::= function returns Any matches (Set, Function_Call_But_0_1)
         implements 2::""
         : (\Set wrap (args.\0->unwrap reduce args.\1));
 
@@ -5131,7 +5131,7 @@ I<TODO.>
 
 =head2 to_Set (Set)
 
-    ::MD::to_Set::Set ::= function --> Set <-- (Set)
+    ::MD::to_Set::Set ::= function returns Set matches (Set)
         implements 2::""
         : (args.\0);
 
@@ -5141,7 +5141,7 @@ C<?|> for the composing type C<Set>.
 
 =head2 to_Bag (Set)
 
-    ::MD::to_Bag::Set ::= function --> Bag <-- (Set)
+    ::MD::to_Bag::Set ::= function returns Bag matches (Set)
         implements 2::""
         : (args.\0->unwrap);
 
@@ -5152,7 +5152,7 @@ C<Set>.
 
 =head2 count (Set)
 
-    ::MD::count::Set ::= function --> Integer_NN <-- (Set)
+    ::MD::count::Set ::= function returns Integer_NN matches (Set)
         implements 2::""
         : (args.\0->unwrap->count);
 
@@ -5162,7 +5162,7 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Set>.
 
 =head2 unique_count (Set)
 
-    ::MD::unique_count::Set ::= function --> Integer_NN <-- (Set)
+    ::MD::unique_count::Set ::= function returns Integer_NN matches (Set)
         implements 2::""
         : (args.\0->count);
 
@@ -5173,7 +5173,7 @@ function C<unique_count> for the composing type C<Set>.
 
 =head2 order_using (Set)
 
-    ::MD::order_using::Set ::= function --> Array <-- (Set, Function_Call_But_0_1)
+    ::MD::order_using::Set ::= function returns Array matches (Set, Function_Call_But_0_1)
         implements 2::""
         : (\Set wrap (args.\0->unwrap order_using args.\1));
 
@@ -5211,7 +5211,7 @@ C<Bag> value, C<\+{}>.
 
 =head2 to_Boolean (Bag)
 
-    ::MD::to_Boolean::Bag ::= function --> Boolean <-- (Bag)
+    ::MD::to_Boolean::Bag ::= function returns Boolean matches (Bag)
         implements 2::""
         : (args.\0 != \+{});
 
@@ -5222,7 +5222,7 @@ C<?> for the composing type C<Bag>.
 
 =head2 empty (Bag)
 
-    ::MD::empty::Bag ::= function --> Bag <-- (Bag)
+    ::MD::empty::Bag ::= function returns Bag matches (Bag)
         implements 2::""
         : (\+{});
 
@@ -5232,7 +5232,7 @@ aka C<∅> for the composing type C<Bag>.
 
 =head2 singular (Bag)
 
-    ::MD::singular::Bag ::= function --> Boolean <-- (Bag)
+    ::MD::singular::Bag ::= function returns Boolean matches (Bag)
         implements 2::""
         : (args -->^ FDN__Bag_singular);
 
@@ -5243,9 +5243,9 @@ composing type C<Bag>.
 
 =head2 only_member (Bag)
 
-    ::MD::only_member::Bag ::= function --> Any <-- (Bag)
+    ::MD::only_member::Bag ::= function returns Any matches (Bag)
         implements 2::""
-        requires (singular args.\0)
+        accepts (singular args.\0)
         : (args -->^ FDN__Bag_only_member);
 
 The function C<only_member::Bag> results in its C<0> argument's only
@@ -5256,7 +5256,7 @@ C<Bag>.
 
 =head2 has_n (Bag)
 
-    ::MD::has_n::Bag ::= function --> Boolean <-- (Bag, Any, Integer_NN)
+    ::MD::has_n::Bag ::= function returns Boolean matches (Bag, Any, Integer_NN)
         implements 2::""
         : (args -->^ FDN__Bag_has_n);
 
@@ -5268,7 +5268,7 @@ composing type C<Bag>.
 
 =head2 multiplicity (Bag)
 
-    ::MD::multiplicity::Bag ::= function --> Integer_NN <-- (Bag, Any)
+    ::MD::multiplicity::Bag ::= function returns Integer_NN matches (Bag, Any)
         implements 2::""
         : (args -->^ FDN__Bag_multiplicity);
 
@@ -5279,7 +5279,7 @@ function C<multiplicity> for the composing type C<Bag>.
 
 =head2 all_unique (Bag)
 
-    ::MD::all_unique::Bag ::= function --> Boolean <-- (Bag)
+    ::MD::all_unique::Bag ::= function returns Boolean matches (Bag)
         implements 2::""
         : (args -->^ FDN__Bag_all_unique);
 
@@ -5290,7 +5290,7 @@ the composing type C<Bag>.
 
 =head2 unique (Bag)
 
-    ::MD::unique::Bag ::= function --> Bag <-- (Bag)
+    ::MD::unique::Bag ::= function returns Bag matches (Bag)
         implements 2::""
         : (args -->^ FDN__Bag_unique);
 
@@ -5301,7 +5301,7 @@ C<Homogeneous> virtual function C<unique> for the composing type C<Bag>.
 
 =head2 subset_of (Bag)
 
-    ::MD::subset_of::Bag ::= function --> Boolean <-- (Bag, Bag)
+    ::MD::subset_of::Bag ::= function returns Boolean matches (Bag, Bag)
         implements 2::""
         : (args -->^ FDN__Bag_subset_of);
 
@@ -5313,7 +5313,7 @@ type C<Bag>.
 
 =head2 same_members (Bag)
 
-    ::MD::same_members::Bag ::= function --> Boolean <-- (Bag, Bag)
+    ::MD::same_members::Bag ::= function returns Boolean matches (Bag, Bag)
         implements 2::""
         is commutative
         : (args.\0 = (args.\1));
@@ -5326,7 +5326,7 @@ function C<same_members> for the composing type C<Bag>.
 
 =head2 overlaps_members (Bag)
 
-    ::MD::overlaps_members::Bag ::= function --> Boolean <-- (Bag, Bag)
+    ::MD::overlaps_members::Bag ::= function returns Boolean matches (Bag, Bag)
         implements 2::""
         is commutative
         : (args -->^ FDN__Bag_overlaps_members);
@@ -5341,7 +5341,7 @@ C<overlaps_members> for the composing type C<Bag>.
 
 =head2 disjoint_members (Bag)
 
-    ::MD::disjoint_members::Bag ::= function --> Boolean <-- (Bag, Bag)
+    ::MD::disjoint_members::Bag ::= function returns Boolean matches (Bag, Bag)
         implements 2::""
         is commutative
         : (args -->^ FDN__Bag_disjoint_members);
@@ -5354,7 +5354,7 @@ C<disjoint_members> for the composing type C<Bag>.
 
 =head2 any (Bag)
 
-    ::MD::any::Bag ::= function --> Boolean <-- (Bag, Signature)
+    ::MD::any::Bag ::= function returns Boolean matches (Bag, Signature)
         implements 2::""
         : ((args.\0, Signature_to_Function_Call_But_0::(args.\1)) -->^ FDN__Bag_any);
 
@@ -5362,7 +5362,7 @@ I<TODO.>
 
 =head2 insert_n (Bag)
 
-    ::MD::insert_n::Bag ::= function --> Bag <-- (Bag, Any, Integer_NN)
+    ::MD::insert_n::Bag ::= function returns Bag matches (Bag, Any, Integer_NN)
         implements 2::""
         : (args -->^ FDN__Bag_insert_n);
 
@@ -5374,7 +5374,7 @@ C<insert_n> for the composing type C<Bag>.
 
 =head2 remove_n (Bag)
 
-    ::MD::remove_n::Bag ::= function --> Bag <-- (Bag, Any, Integer_NN)
+    ::MD::remove_n::Bag ::= function returns Bag matches (Bag, Any, Integer_NN)
         implements 2::""
         : (args -->^ FDN__Bag_remove_n);
 
@@ -5387,7 +5387,7 @@ C<remove_n> for the composing type C<Bag>.
 
 =head2 member_plus (Bag)
 
-    ::MD::member_plus::Bag ::= function --> Bag <-- (Bag, Bag)
+    ::MD::member_plus::Bag ::= function returns Bag matches (Bag, Bag)
         implements 2::""
         is {associative,commutative} identity (\+{})
         : (args -->^ FDN__Bag_member_plus);
@@ -5400,7 +5400,7 @@ function C<member_plus> aka C<⊎> for the composing type C<Bag>.
 
 =head2 except (Bag)
 
-    ::MD::except::Bag ::= function --> Bag <-- (Bag, Bag)
+    ::MD::except::Bag ::= function returns Bag matches (Bag, Bag)
         implements 2::""
         : (args -->^ FDN__Bag_except);
 
@@ -5413,7 +5413,7 @@ for the composing type C<Bag>.
 
 =head2 intersect (Bag)
 
-    ::MD::intersect::Bag ::= function --> Bag <-- (Bag, Bag)
+    ::MD::intersect::Bag ::= function returns Bag matches (Bag, Bag)
         implements 2::""
         is {associative,commutative,idempotent}
         : (args -->^ FDN__Bag_intersect);
@@ -5426,7 +5426,7 @@ function C<intersect> aka C<∩> for the composing type C<Bag>.
 
 =head2 union (Bag)
 
-    ::MD::union::Bag ::= function --> Bag <-- (Bag, Bag)
+    ::MD::union::Bag ::= function returns Bag matches (Bag, Bag)
         implements 2::""
         is {associative,commutative,idempotent} identity (\+{})
         : (args -->^ FDN__Bag_union);
@@ -5439,7 +5439,7 @@ virtual function C<union> aka C<∪> for the composing type C<Bag>.
 
 =head2 exclusive (Bag)
 
-    ::MD::exclusive::Bag ::= function --> Bag <-- (Bag, Bag)
+    ::MD::exclusive::Bag ::= function returns Bag matches (Bag, Bag)
         implements 2::""
         is {associative,commutative} identity (\+{})
         : (args -->^ FDN__Bag_exclusive);
@@ -5453,25 +5453,25 @@ aka C<symm_diff> aka C<∆> for the composing type C<Bag>.
 
 =head2 nest (Bag)
 
-    ::MD::nest::Bag ::= function --> Bag <-- (Bag)
+    ::MD::nest::Bag ::= function returns Bag matches (Bag)
         implements 2::""
-        requires (...)
+        accepts (...)
         : (args -->^ FDN__Bag_nest);
 
 I<TODO.>
 
 =head2 unnest (Bag)
 
-    ::MD::unnest::Bag ::= function --> Bag <-- (Bag)
+    ::MD::unnest::Bag ::= function returns Bag matches (Bag)
         implements 2::""
-        requires (...)
+        accepts (...)
         : (args -->^ FDN__Bag_unnest);
 
 I<TODO.>
 
 =head2 where (Bag)
 
-    ::MD::where::Bag ::= function --> Bag <-- (Bag, Signature)
+    ::MD::where::Bag ::= function returns Bag matches (Bag, Signature)
         implements 2::""
         : ((args.\0, Signature_to_Function_Call_But_0::(args.\1)) -->^ FDN__Bag_where);
 
@@ -5479,7 +5479,7 @@ I<TODO.>
 
 =head2 map (Bag)
 
-    ::MD::map::Bag ::= function --> Bag <-- (Bag, Function_Call_But_0)
+    ::MD::map::Bag ::= function returns Bag matches (Bag, Function_Call_But_0)
         implements 2::""
         : (args -->^ FDN__Bag_map);
 
@@ -5487,7 +5487,7 @@ I<TODO.>
 
 =head2 reduce (Bag)
 
-    ::MD::reduce::Bag ::= function --> Any <-- (Bag, Function_Call_But_0_1)
+    ::MD::reduce::Bag ::= function returns Any matches (Bag, Function_Call_But_0_1)
         implements 2::""
         : (args -->^ FDN__Bag_reduce);
 
@@ -5495,7 +5495,7 @@ I<TODO.>
 
 =head2 to_Set (Bag)
 
-    ::MD::to_Set::Bag ::= function --> Set <-- (Bag)
+    ::MD::to_Set::Bag ::= function returns Set matches (Bag)
         implements 2::""
         : (\Set wrap (args.\0->unique));
 
@@ -5507,7 +5507,7 @@ C<Bag>.
 
 =head2 to_Bag (Bag)
 
-    ::MD::to_Bag::Bag ::= function --> Bag <-- (Bag)
+    ::MD::to_Bag::Bag ::= function returns Bag matches (Bag)
         implements 2::""
         : (args.\0);
 
@@ -5517,7 +5517,7 @@ C<+|> for the composing type C<Bag>.
 
 =head2 count (Bag)
 
-    ::MD::count::Bag ::= function --> Integer_NN <-- (Bag)
+    ::MD::count::Bag ::= function returns Integer_NN matches (Bag)
         implements 2::""
         : (args -->^ FDN__Bag_count);
 
@@ -5527,7 +5527,7 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Bag>.
 
 =head2 unique_count (Bag)
 
-    ::MD::unique_count::Bag ::= function --> Integer_NN <-- (Bag)
+    ::MD::unique_count::Bag ::= function returns Integer_NN matches (Bag)
         implements 2::""
         : (args -->^ FDN__Bag_unique_count);
 
@@ -5537,7 +5537,7 @@ C<Discrete> virtual function C<unique_count> for the composing type C<Bag>.
 
 =head2 order_using (Bag)
 
-    ::MD::order_using::Bag ::= function --> Array <-- (Bag, Function_Call_But_0_1)
+    ::MD::order_using::Bag ::= function returns Array matches (Bag, Function_Call_But_0_1)
         implements 2::""
         : (args -->^ FDN__Bag_order_using);
 
@@ -5617,7 +5617,7 @@ inputs have different headings.
 
 =head2 has_any_attrs ?@
 
-    ::MD::has_any_attrs::"" ::= function virtual --> Boolean <-- (Attributive);
+    ::MD::has_any_attrs::"" ::= function virtual returns Boolean matches (Attributive);
 
     ::MD::"?@" ::= alias of has_any_attrs;
 
@@ -5635,7 +5635,7 @@ argument has no attributes, and in C<False> iff it has any attributes.
 
 =head2 nullary
 
-    ::MD::nullary::"" ::= function virtual --> Attributive <-- (Attributive);
+    ::MD::nullary::"" ::= function virtual returns Attributive matches (Attributive);
 
 The virtual function C<nullary> results in the value of its C<0> argument's
 collection type that has zero attributes.  For C<Structural> types like
@@ -5645,14 +5645,14 @@ there are exactly 2 possible result values.
 
 =head2 is_unary
 
-    ::MD::is_unary::"" ::= function virtual --> Boolean <-- (Attributive);
+    ::MD::is_unary::"" ::= function virtual returns Boolean matches (Attributive);
 
 The virtual function C<is_unary> results in C<True> iff its C<0> argument
 has exactly 1 attribute, and C<False> otherwise.
 
 =head2 degree #@
 
-    ::MD::degree::"" ::= function virtual --> Integer_NN <-- (Attributive);
+    ::MD::degree::"" ::= function virtual returns Integer_NN matches (Attributive);
 
     ::MD::"#@" ::= alias of degree;
 
@@ -5661,7 +5661,7 @@ the attributes of its C<0> argument.
 
 =head2 heading @
 
-    ::MD::heading::"" ::= function virtual --> Heading <-- (Attributive);
+    ::MD::heading::"" ::= function virtual returns Heading matches (Attributive);
 
     ::MD::"@" ::= alias of heading;
 
@@ -5675,7 +5675,7 @@ that their headings can be reasoned about in isolation from their bodies.
 =head2 subheading_of ⊆@
 
     ::MD::subheading_of ::= function
-        --> Boolean <-- (Attributive, Attributive)
+        returns Boolean matches (Attributive, Attributive)
         : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_subheading_of);
 
     ::MD::Unicode_Aliases::"⊆@" ::= alias of subheading_of;
@@ -5704,7 +5704,7 @@ exactly 1 name.
 =head2 same_heading =@
 
     ::MD::same_heading ::= function
-        --> Boolean <-- (Attributive, Attributive)
+        returns Boolean matches (Attributive, Attributive)
         is commutative
         : (@(args.\0) = @(args.\1));
 
@@ -5717,7 +5717,7 @@ otherwise it results in C<False>.
 =head2 proper_subheading_or_superheading
 
     ::MD::proper_subheading_or_superheading ::= function
-        --> Boolean <-- (Attributive, Attributive)
+        returns Boolean matches (Attributive, Attributive)
         is commutative
         : (@(args.\0) != @(args.\1) and (args.\0 subheading_or_superheading args.\1));
 
@@ -5728,7 +5728,7 @@ the heading of its other argument; otherwise it results in C<False>.
 =head2 subheading_or_superheading
 
     ::MD::subheading_or_superheading ::= function
-        --> Boolean <-- (Attributive, Attributive)
+        returns Boolean matches (Attributive, Attributive)
         is commutative
         : ((args.\0 subheading_of args.\1) or (args.\0 superheading_of args.\1));
 
@@ -5739,7 +5739,7 @@ of its other argument; otherwise it results in C<False>.
 =head2 overlaps_heading
 
     ::MD::overlaps_heading ::= function
-        --> Boolean <-- (Attributive, Attributive)
+        returns Boolean matches (Attributive, Attributive)
         is commutative
         : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_overlaps_heading);
 
@@ -5752,7 +5752,7 @@ that the other doesn't have; otherwise it results in C<False>.
 =head2 disjoint_heading
 
     ::MD::disjoint_heading ::= function
-        --> Boolean <-- (Attributive, Attributive)
+        returns Boolean matches (Attributive, Attributive)
         is commutative
         : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_disjoint_heading);
 
@@ -5763,7 +5763,7 @@ argument; otherwise it results in C<False>.
 =head2 except_heading ∖@
 
     ::MD::except_heading ::= function
-        --> Heading <-- (Attributive, Attributive)
+        returns Heading matches (Attributive, Attributive)
         : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_except_heading);
 
     ::MD::Unicode_Aliases::"∖@" ::= alias of except_heading;
@@ -5777,7 +5777,7 @@ but not in the heading of its C<1> argument.
 =head2 intersect_heading ∩@
 
     ::MD::intersect_heading ::= function
-        --> Heading <-- (Attributive, Attributive)
+        returns Heading matches (Attributive, Attributive)
         is {associative,commutative,idempotent}
         : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_intersect_heading);
 
@@ -5793,7 +5793,7 @@ infinite number of attribute names.
 =head2 union_heading ∪@
 
     ::MD::union_heading ::= function
-        --> Heading <-- (Attributive, Attributive)
+        returns Heading matches (Attributive, Attributive)
         is {associative,commutative,idempotent} identity (())
         : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_union_heading);
 
@@ -5807,7 +5807,7 @@ the headings of the function's C<0> and C<1> arguments.
 =head2 exclusive_heading symm_diff_heading ∆@
 
     ::MD::exclusive ::= function
-        --> Heading <-- (Attributive, Attributive)
+        returns Heading matches (Attributive, Attributive)
         is {associative,commutative} identity (())
         : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_exclusive_heading);
 
@@ -5824,8 +5824,8 @@ function's C<0> or C<1> arguments.
 =head2 rename @:= ρ
 
     ::MD::rename::"" ::= function virtual
-        --> Attributive <-- (Attributive, Renaming)
-        requires (...);
+        returns Attributive matches (Attributive, Renaming)
+        accepts (...);
 
     ::MD::"@:=" ::= alias of rename;
 
@@ -5858,7 +5858,7 @@ given the same arguments in swapped positions.
 =head2 can_project_matching %=?
 
     ::MD::can_project_matching::"" ::= function virtual
-        --> Boolean <-- (Attributive, Structural);
+        returns Boolean matches (Attributive, Structural);
 
     ::MD::"%=?" ::= alias of can_project_matching;
 
@@ -5872,8 +5872,8 @@ aka C<a %:= s %=? s = True> should hold for all valid C<a> and C<s>.
 =head2 on project %= π
 
     ::MD::on::"" ::= function virtual
-        --> Attributive <-- (Attributive, Heading)
-        requires (args.\0 @? (args.\1));
+        returns Attributive matches (Attributive, Heading)
+        accepts (args.\0 @? (args.\1));
 
     ::MD::project ::= alias of on;
     ::MD::"%="    ::= alias of on;
@@ -5906,7 +5906,7 @@ when given the same arguments in swapped positions.
 
 =head2 maybe_on %!
 
-    ::MD::maybe_on ::= function --> Attributive <-- (Attributive, Heading)
+    ::MD::maybe_on ::= function returns Attributive matches (Attributive, Heading)
         : (args.\0 on (args.\0 intersect_heading args.\1));
 
     ::MD::"%!" ::= alias of maybe_on;
@@ -5919,8 +5919,8 @@ C<0> argument rather than failing.
 =head2 update %:=
 
     ::MD::update::"" ::= function virtual
-        --> Attributive <-- (Attributive, Structural)
-        requires (args.\0 @? (args.\1));
+        returns Attributive matches (Attributive, Structural)
+        accepts (args.\0 @? (args.\1));
 
     ::MD::"%:=" ::= alias of update;
 
@@ -5946,8 +5946,8 @@ subscript/postcircumfix syntax plus assignment syntax.
 =head2 extend %+
 
     ::MD::extend::"" ::= function virtual
-        --> Attributive <-- (Attributive, Structural)
-        requires (args.\0 disjoint_heading args.\1);
+        returns Attributive matches (Attributive, Structural)
+        accepts (args.\0 disjoint_heading args.\1);
 
     ::MD::"%+" ::= alias of extend;
 
@@ -5975,8 +5975,8 @@ The Structural version is commutative and associative, but not Attributive in ge
 
 =head2 but project_all_but %-
 
-    ::MD::but ::= function --> Attributive <-- (Attributive, Heading)
-        requires (args.\0 @? (args.\1))
+    ::MD::but ::= function returns Attributive matches (Attributive, Heading)
+        accepts (args.\0 @? (args.\1))
         : (args.\0 on (args.\0 except_heading args.\1));
 
     ::MD::project_all_but ::= alias of but;
@@ -6002,7 +6002,7 @@ operators I<remove>.
 =head2 update_or_extend %=+
 
     ::MD::update_or_extend ::= function
-        --> Attributive <-- (Attributive, Structural)
+        returns Attributive matches (Attributive, Structural)
         : (args.\0 on (args.\0 except_heading args.\1) extend args.\1);
 
     ::MD::"%=+" ::= alias of update_or_extend;
@@ -6016,7 +6016,7 @@ latter's names don't match.
 
 =head2 maybe_but %?-
 
-    ::MD::maybe_but ::= function --> Attributive <-- (Attributive, Heading)
+    ::MD::maybe_but ::= function returns Attributive matches (Attributive, Heading)
         : (args.\0 but (args.\0 intersect_heading args.\1));
 
     ::MD::"%?-" ::= alias of maybe_but;
@@ -6049,7 +6049,7 @@ C<Tuple>.
 =head2 can_project_matching (Structural)
 
     ::MD::can_project_matching::Structural ::= function
-        --> Boolean <-- (Structural, Structural)
+        returns Boolean matches (Structural, Structural)
         implements 2::""
         : (if args.\0 @? (args.\1) then args.\0 %= @(args.\1) = (args.\1) else False);
 
@@ -6065,7 +6065,7 @@ C<can_project_matching> aka C<%=?> for the composing type C<Structural>.
 =head2 has_any_at (Structure)
 
     ::MD::has_any_at::Structure ::= function
-        --> Boolean <-- (Structure, Attr_Name)
+        returns Boolean matches (Structure, Attr_Name)
         implements 2::""
         : (args.\0 @? (args.\1));
 
@@ -6078,7 +6078,7 @@ type C<Structure>.
 =head2 has_mapping_at (Structural)
 
     ::MD::has_mapping_at::Structural ::= function
-        --> Boolean <-- (Structural, (Attr_Name, Any))
+        returns Boolean matches (Structural, (Attr_Name, Any))
         implements 2::""
         : (if args.\0 .? (args.\1.\0) then args.\0.(args.\1.\0) = (args.\1.\1) else False);
 
@@ -6091,9 +6091,9 @@ function C<has_mapping_at> aka C<.:?> for the composing type C<Structural>.
 =head2 mapping_at (Structural)
 
     ::MD::mapping_at::Structural ::= function
-        --> (Attr_Name, Any) <-- (Structural, Attr_Name)
+        returns (Attr_Name, Any) matches (Structural, Attr_Name)
         implements 2::""
-        requires (args.\0 .? (args.\1))
+        accepts (args.\0 .? (args.\1))
         : ((args.\1, args.\0.(args.\1)));
 
 The function C<mapping_at::Structural> results in a binary C<Tuple> whose
@@ -6107,7 +6107,7 @@ type C<Structural>.
 =head2 maybe_at (Structural)
 
     ::MD::maybe_at::Structural ::= function
-        --> Any <-- (Structural, Attr_Name)
+        returns Any matches (Structural, Attr_Name)
         implements 2::""
         : (if args.\0 .? (args.\1) then args.\0.(args.\1) else Excuse::No_Such_Attr_Name());
 
@@ -6120,9 +6120,9 @@ C<.!> for the composing type C<Structural>.
 =head2 replace_at (Structure)
 
     ::MD::replace_at::Structure ::= function
-        --> Structure <-- (Structure, (Attr_Name, Any))
+        returns Structure matches (Structure, (Attr_Name, Any))
         implements 2::""
-        requires (args.\0 .? (args.\1.\0))
+        accepts (args.\0 .? (args.\1.\0))
     : (args.\0 update D1::(args.\1));
 
 The function C<replace_at::Structure> results in the value of its C<0>
@@ -6138,9 +6138,9 @@ the composing type C<Structure>.
 =head2 shiftless_insert_at (Structure)
 
     ::MD::shiftless_insert_at::Structure ::= function
-        --> Structure <-- (Structure, (Attr_Name, Any))
+        returns Structure matches (Structure, (Attr_Name, Any))
         implements 2::""
-        requires (not args.\0 .? (args.\1.\0))
+        accepts (not args.\0 .? (args.\1.\0))
         : (args.\0 extend D1::(args.\1));
 
 The function C<shiftless_insert_at::Structure> results in the value of its
@@ -6155,9 +6155,9 @@ C<Structure>.
 =head2 shiftless_remove_at (Structure)
 
     ::MD::shiftless_remove_at::Structure ::= function
-        --> Structure <-- (Structure, Attr_Name)
+        returns Structure matches (Structure, Attr_Name)
         implements 2::""
-        requires (args.\0 .? (args.\1))
+        accepts (args.\0 .? (args.\1))
         : (args.\0 but args.\1);
 
 The function C<shiftless_remove_at::Structure> results in the value of its
@@ -6171,7 +6171,7 @@ C<Structure>.
 =head2 replace_or_insert_at (Structural)
 
     ::MD::replace_or_insert_at::Structural ::= function
-        --> Structural <-- (Structural, (Attr_Name, Any))
+        returns Structural matches (Structural, (Attr_Name, Any))
         implements 2::""
         : (args.\0 update_or_extend D1::(args.\1));
 
@@ -6186,7 +6186,7 @@ C<Structural>.
 =head2 shiftless_maybe_remove_at (Structural)
 
     ::MD::shiftless_maybe_remove_at::Structural ::= function
-        --> Structural <-- (Structural, Attr_Name)
+        returns Structural matches (Structural, Attr_Name)
         implements 2::""
         : (args.\0 maybe_but args.\1);
 
@@ -6199,7 +6199,7 @@ for the composing type C<Structural>.
 
 =head2 to_Tuple %
 
-    ::MD::to_Tuple::"" ::= function virtual --> Tuple <-- (Structural);
+    ::MD::to_Tuple::"" ::= function virtual returns Tuple matches (Structural);
 
     ::MD::"%" ::= alias of to_Tuple;
 
@@ -6261,7 +6261,7 @@ has just the attribute with the name C<0> and asset value of C<False>.
 
 =head2 D1
 
-    ::MD::D1 ::= function --> Tuple_D1 <-- (Attr_Name, Any)
+    ::MD::D1 ::= function returns Tuple_D1 matches (Attr_Name, Any)
         : (args -->^ FDN__Tuple_D1_select);
 
 The function C<D1> results in the C<Tuple_D1> value whose sole attribute's
@@ -6270,7 +6270,7 @@ specified in its C<1> argument.
 
 =head2 has_any_attrs (Tuple)
 
-    ::MD::has_any_attrs::Tuple ::= function --> Boolean <-- (Tuple)
+    ::MD::has_any_attrs::Tuple ::= function returns Boolean matches (Tuple)
         implements 2::""
         : (args.\0 != ());
 
@@ -6281,7 +6281,7 @@ C<has_any_attrs> aka C<?@> for the composing type C<Tuple>.
 
 =head2 nullary (Tuple)
 
-    ::MD::nullary::Tuple ::= function --> Tuple <-- (Tuple)
+    ::MD::nullary::Tuple ::= function returns Tuple matches (Tuple)
         implements 2::""
         : (());
 
@@ -6291,7 +6291,7 @@ C<nullary> for the composing type C<Tuple>.
 
 =head2 is_unary (Tuple)
 
-    ::MD::is_unary::Tuple ::= function --> Boolean <-- (Tuple)
+    ::MD::is_unary::Tuple ::= function returns Boolean matches (Tuple)
         implements 2::""
         : (degree::(args.\0) = 1);
 
@@ -6302,7 +6302,7 @@ C<Tuple>.
 
 =head2 degree (Tuple)
 
-    ::MD::degree::Tuple ::= function --> Integer_NN <-- (Tuple)
+    ::MD::degree::Tuple ::= function returns Integer_NN matches (Tuple)
         implements 2::""
         : (args -->^ FDN__Tuple_degree);
 
@@ -6313,7 +6313,7 @@ C<Tuple>.
 
 =head2 heading (Tuple)
 
-    ::MD::heading::Tuple ::= function --> Heading <-- (Tuple)
+    ::MD::heading::Tuple ::= function returns Heading matches (Tuple)
         implements 2::""
         : (args -->^ FDN__Tuple_heading);
 
@@ -6324,9 +6324,9 @@ composing type C<Tuple>.
 
 =head2 rename (Tuple)
 
-    ::MD::rename::Tuple ::= function --> Tuple <-- (Tuple, Renaming)
+    ::MD::rename::Tuple ::= function returns Tuple matches (Tuple, Renaming)
         implements 2::""
-        requires (...)
+        accepts (...)
         : (args -->^ FDN__Tuple_rename);
 
 The function C<rename::Tuple> results results in the I<relational rename>
@@ -6345,9 +6345,9 @@ C<rename> aka C<@:=> aka C<ρ> for the composing type C<Tuple>.
 
 =head2 on (Tuple)
 
-    ::MD::on::Tuple ::= function --> Tuple <-- (Tuple, Heading)
+    ::MD::on::Tuple ::= function returns Tuple matches (Tuple, Heading)
         implements 2::""
-        requires (args.\0 @? (args.\1))
+        accepts (args.\0 @? (args.\1))
         : (args -->^ FDN__Tuple_on);
 
 The function C<on::Tuple> results in the I<relational projection> of its
@@ -6362,9 +6362,9 @@ the composing type C<Tuple>.
 
 =head2 update (Tuple)
 
-    ::MD::update::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
+    ::MD::update::Tuple ::= function returns Tuple matches (Tuple, Tuple)
         implements 2::""
-        requires (args.\0 @? (args.\1))
+        accepts (args.\0 @? (args.\1))
         : (args -->^ FDN__Tuple_update);
 
 The function C<update::Tuple> results in a C<Tuple> value that has all of
@@ -6380,9 +6380,9 @@ C<Tuple>.
 
 =head2 extend (Tuple)
 
-    ::MD::extend::Tuple ::= function --> Tuple <-- (Tuple, Tuple)
+    ::MD::extend::Tuple ::= function returns Tuple matches (Tuple, Tuple)
         implements 2::""
-        requires (args.\0 disjoint_heading args.\1)
+        accepts (args.\0 disjoint_heading args.\1)
         is {associative,commutative} identity (())
         : (args -->^ FDN__Tuple_extend);
 
@@ -6397,9 +6397,9 @@ for the composing type C<Tuple>.
 
 =head2 at (Tuple)
 
-    ::MD::at::Tuple ::= function --> Any <-- (Tuple, Attr_Name)
+    ::MD::at::Tuple ::= function returns Any matches (Tuple, Attr_Name)
         implements 2::""
-        requires (args.\0 .? (args.\1))
+        accepts (args.\0 .? (args.\1))
         : (args -->^ FDN__Tuple_at);
 
 The function C<at::Tuple> results in the attribute asset value of its C<0>
@@ -6410,7 +6410,7 @@ the composing type C<Tuple>.
 
 =head2 to_Tuple (Tuple)
 
-    ::MD::to_Tuple::Tuple ::= function --> Tuple <-- (Tuple)
+    ::MD::to_Tuple::Tuple ::= function returns Tuple matches (Tuple)
         implements 2::""
         : (args.\0);
 
@@ -6420,7 +6420,7 @@ for the composing type C<Tuple>.
 
 =head2 any_attrs
 
-    ::MD::any_attrs ::= function --> Boolean <-- (Tuple, Signature)
+    ::MD::any_attrs ::= function returns Boolean matches (Tuple, Signature)
         : ((args.\0, Signature_to_Function_Call_But_0::(args.\1))
             -->^ FDN__Tuple_any_attrs);
 
@@ -6434,7 +6434,7 @@ I<TODO.>
 
 =head2 all_attrs
 
-    ::MD::all_attrs ::= function --> Boolean <-- (Tuple, Signature)
+    ::MD::all_attrs ::= function returns Boolean matches (Tuple, Signature)
         : (args.\0 none_of_attrs \not_is_a::( 1: args.\1 ));
 
 I<TODO.>
@@ -6447,7 +6447,7 @@ I<TODO.>
 
 =head2 all_attr_assets
 
-    ::MD::all_attr_assets ::= function --> Boolean <-- (Tuple, Signature)
+    ::MD::all_attr_assets ::= function returns Boolean matches (Tuple, Signature)
         : (args.\0 all_attrs \((args.\1) <-- (args.\0.\asset,))
             \<-- (1 : Signature_to_Function_Call_But_0::(args.\1)));
 
@@ -6455,7 +6455,7 @@ I<TODO.>
 
 =head2 attrs_where
 
-    ::MD::attrs_where ::= function --> Tuple <-- (Tuple, Signature)
+    ::MD::attrs_where ::= function returns Tuple matches (Tuple, Signature)
         : ((args.\0, Signature_to_Function_Call_But_0::(args.\1))
             -->^ FDN__Tuple_attrs_where);
 
@@ -6463,14 +6463,14 @@ I<TODO.>
 
 =head2 attrs_map
 
-    ::MD::attrs_map ::= function --> Tuple <-- (Tuple, Function_Call_But_0)
+    ::MD::attrs_map ::= function returns Tuple matches (Tuple, Function_Call_But_0)
         : (args -->^ FDN__Tuple_attrs_map);
 
 I<TODO.>
 
 =head2 attrs_reduce
 
-    ::MD::attrs_reduce ::= function --> Any <-- (Tuple, Function_Call_But_0_1)
+    ::MD::attrs_reduce ::= function returns Any matches (Tuple, Function_Call_But_0_1)
         : (args -->^ FDN__Tuple_attrs_reduce);
 
 I<TODO.>
@@ -6494,7 +6494,7 @@ C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
 
 =head2 to_Boolean (Relational)
 
-    ::MD::to_Boolean::Relational ::= function --> Boolean <-- (Relational)
+    ::MD::to_Boolean::Relational ::= function returns Boolean matches (Relational)
         implements 2::""
         : (? |(args.\0));
 
@@ -6505,7 +6505,7 @@ C<so> aka C<?> for the composing type C<Relational>.
 
 =head2 empty (Relational)
 
-    ::MD::empty::Relational ::= function --> Relational <-- (Relational)
+    ::MD::empty::Relational ::= function returns Relational matches (Relational)
         implements 2::""
         : (select_Relational::( like: args.\0, heading: @(args.\0), body: empty |(args.\0) ));
 
@@ -6517,7 +6517,7 @@ C<Relational>.
 
 =head2 singular (Relational)
 
-    ::MD::singular::Relational ::= function --> Boolean <-- (Relational)
+    ::MD::singular::Relational ::= function returns Boolean matches (Relational)
         implements 2::""
         : (singular |(args.\0));
 
@@ -6528,9 +6528,9 @@ composing type C<Relational>.
 
 =head2 only_member (Relational)
 
-    ::MD::only_member::Relational ::= function --> Structural <-- (Relational)
+    ::MD::only_member::Relational ::= function returns Structural matches (Relational)
         implements 2::""
-        requires (singular args.\0)
+        accepts (singular args.\0)
         : (only_member |(args.\0));
 
 The function C<only_member::Relational> results in its C<0> argument's only
@@ -6541,8 +6541,8 @@ virtual function C<only_member> for the composing type C<Relational>.
 =head2 has_n (Relational)
 
     ::MD::has_n::Relational ::= function
-        --> {Boolean, Excuse::Not_Same_Heading}
-        <-- (Relational, Structural, Integer_NN)
+        returns {Boolean, Excuse::Not_Same_Heading}
+        matches (Relational, Structural, Integer_NN)
         implements 2::""
         : (if args.\0 =@ (args.\1) then has_n::(|(args.\0), args.\1, args.\2)
             else Excuse::Not_Same_Heading);
@@ -6560,7 +6560,7 @@ function C<has_n> for the composing type C<Relational>.
 =head2 multiplicity (Relational)
 
     ::MD::multiplicity::Relational ::= function
-        --> Integer_NN <-- (Relational, Structural)
+        returns Integer_NN matches (Relational, Structural)
         implements 2::""
         : (|(args.\0) multiplicity args.\1);
 
@@ -6572,7 +6572,7 @@ function C<multiplicity> for the composing type C<Relational>.
 
 =head2 all_unique (Relational)
 
-    ::MD::all_unique::Relational ::= function --> Boolean <-- (Relational)
+    ::MD::all_unique::Relational ::= function returns Boolean matches (Relational)
         implements 2::""
         : (all_unique |(args.\0));
 
@@ -6584,7 +6584,7 @@ composing type C<Relational>.
 
 =head2 unique (Relational)
 
-    ::MD::unique::Relational ::= function --> Relational <-- (Relational)
+    ::MD::unique::Relational ::= function returns Relational matches (Relational)
         implements 2::""
         : (select_Relational::( like: args.\0, heading: @(args.\0), body: unique |(args.\0) ));
 
@@ -6601,7 +6601,7 @@ composing type C<Relational>.
 =head2 subset_of (Relational)
 
     ::MD::subset_of::Relational ::= function
-        --> {Boolean, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        returns {Boolean, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 2::""
         : (if args.\0 =@ (args.\1) then |(args.\0) subset_of |(args.\1)
             else Excuse::Not_Same_Heading);
@@ -6616,7 +6616,7 @@ function C<subset_of> aka C<⊆> for the composing type C<Relational>.
 =head2 same_members (Relational)
 
     ::MD::same_members::Relational ::= function
-        --> {Boolean, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        returns {Boolean, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 2::""
         is commutative
         : (if args.\0 =@ (args.\1) then |(args.\0) same_members |(args.\1)
@@ -6636,7 +6636,7 @@ the composing type C<Relational>.
 =head2 overlaps_members (Relational)
 
     ::MD::overlaps_members::Relational ::= function
-        --> {Boolean, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        returns {Boolean, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 2::""
         is commutative
         : (if args.\0 =@ (args.\1) then |(args.\0) overlaps_members |(args.\1)
@@ -6655,7 +6655,7 @@ C<Relational>.
 =head2 disjoint_members (Relational)
 
     ::MD::disjoint_members::Relational ::= function
-        --> {Boolean, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        returns {Boolean, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 2::""
         is commutative
         : (if args.\0 =@ (args.\1) then |(args.\0) disjoint_members |(args.\1)
@@ -6672,7 +6672,7 @@ C<Relational>.
 =head2 any (Relational)
 
     ::MD::any::Relational ::= function
-        --> Boolean <-- (Relational, Signature)
+        returns Boolean matches (Relational, Signature)
         implements 2::""
         : (|(args.\0) any args.\1);
 
@@ -6681,8 +6681,8 @@ I<TODO.>
 =head2 insert_n (Relational)
 
     ::MD::insert_n::Relational ::= function
-        --> {Relational, Excuse::Not_Same_Heading}
-        <-- (Relational, Structural, Integer_NN)
+        returns {Relational, Excuse::Not_Same_Heading}
+        matches (Relational, Structural, Integer_NN)
         implements 2::""
         : (if args.\0 =@ (args.\1) then select_Relational::
                 ( like: args.\0, heading: @(args.\0), body: insert_n::(|(args.\0), args.\1, args.\2) )
@@ -6705,8 +6705,8 @@ C<Relational>.
 =head2 remove_n (Relational)
 
     ::MD::remove_n::Relational ::= function
-        --> {Relational, Excuse::Not_Same_Heading}
-        <-- (Relational, Structural, Integer_NN)
+        returns {Relational, Excuse::Not_Same_Heading}
+        matches (Relational, Structural, Integer_NN)
         implements 2::""
         : (if args.\0 =@ (args.\1) then select_Relational::
                 ( like: args.\0, heading: @(args.\0), body: remove_n::(|(args.\0), args.\1, args.\2) )
@@ -6727,7 +6727,7 @@ composing type C<Relational>.
 =head2 member_plus (Relational)
 
     ::MD::member_plus::Relational ::= function
-        --> {Relational, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        returns {Relational, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 2::""
         is associative
         : (if args.\0 =@ (args.\1) then select_Relational::
@@ -6756,7 +6756,7 @@ C<Relational>.
 =head2 except (Relational)
 
     ::MD::except::Relational ::= function
-        --> {Relational, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        returns {Relational, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 2::""
         : (if args.\0 =@ (args.\1) then select_Relational::
                 ( like: args.\0, heading: @(args.\0), body: |(args.\0) except |(args.\1) )
@@ -6779,7 +6779,7 @@ virtual function C<except> aka C<∖> for the composing type C<Relational>.
 =head2 intersect (Relational)
 
     ::MD::intersect::Relational ::= function
-        --> {Relational, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        returns {Relational, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 2::""
         is {associative,idempotent}
         : (if args.\0 =@ (args.\1) then select_Relational::
@@ -6804,7 +6804,7 @@ function C<intersect> aka C<∩> for the composing type C<Relational>.
 =head2 union (Relational)
 
     ::MD::union::Relational ::= function
-        --> {Relational, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        returns {Relational, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 2::""
         is idempotent
         : (if args.\0 =@ (args.\1) then select_Relational::
@@ -6831,7 +6831,7 @@ composing type C<Relational>.
 =head2 exclusive (Relational)
 
     ::MD::exclusive::Relational ::= function
-        --> {Relational, Excuse::Not_Same_Heading} <-- (Relational, Relational)
+        returns {Relational, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 2::""
         is {associative,commutative}
         : (if args.\0 =@ (args.\1) then select_Relational::
@@ -6859,18 +6859,18 @@ C<Relational>.
 
 =head2 nest (Relational)
 
-    ::MD::nest::Relational ::= function --> Relational <-- (Relational)
+    ::MD::nest::Relational ::= function returns Relational matches (Relational)
         implements 2::""
-        requires (...)
+        accepts (...)
         : (...);
 
 I<TODO.>
 
 =head2 unnest (Relational)
 
-    ::MD::unnest::Relational ::= function --> Relational <-- (Relational)
+    ::MD::unnest::Relational ::= function returns Relational matches (Relational)
         implements 2::""
-        requires (...)
+        accepts (...)
         : (...);
 
 I<TODO.>
@@ -6878,7 +6878,7 @@ I<TODO.>
 =head2 where (Relational)
 
     ::MD::where::Relational ::= function
-        --> Relational <-- (Relational, Signature)
+        returns Relational matches (Relational, Signature)
         implements 2::""
         : (select_Relational::( like: args.\0, heading: @(args.\0), body: |(args.\0) where args.\1 ));
 
@@ -6887,7 +6887,7 @@ I<TODO.>
 =head2 map (Relational)
 
     ::MD::map::Relational ::= function
-        --> Relational <-- (Relational, Function_Call_But_0)
+        returns Relational matches (Relational, Function_Call_But_0)
         implements 2::""
         : (...);
 
@@ -6896,7 +6896,7 @@ I<TODO.>
 =head2 reduce (Relational)
 
     ::MD::reduce::Relational ::= function
-        --> Any <-- (Relational, Function_Call_But_0_1)
+        returns Any matches (Relational, Function_Call_But_0_1)
         implements 2::""
         : (|(args.\0) reduce args.\1);
 
@@ -6904,7 +6904,7 @@ I<TODO.>
 
 =head2 has_any_attrs (Relational)
 
-    ::MD::has_any_attrs::Relational ::= function --> Boolean <-- (Relational)
+    ::MD::has_any_attrs::Relational ::= function returns Boolean matches (Relational)
         implements 2::""
         : (@(args.\0) != ());
 
@@ -6915,7 +6915,7 @@ C<has_any_attrs> aka C<?@> for the composing type C<Relational>.
 
 =head2 nullary (Relational)
 
-    ::MD::nullary::Relational ::= function --> Relational <-- (Relational)
+    ::MD::nullary::Relational ::= function returns Relational matches (Relational)
         implements 2::""
         : (args.\0 on ());
 
@@ -6928,7 +6928,7 @@ type C<Relational>.
 
 =head2 is_unary (Relational)
 
-    ::MD::is_unary::Relational ::= function --> Boolean <-- (Relational)
+    ::MD::is_unary::Relational ::= function returns Boolean matches (Relational)
         implements 2::""
         : (is_unary @(args.\0));
 
@@ -6939,7 +6939,7 @@ composing type C<Relational>.
 
 =head2 degree (Relational)
 
-    ::MD::degree::Relational ::= function --> Integer_NN <-- (Relational)
+    ::MD::degree::Relational ::= function returns Integer_NN matches (Relational)
         implements 2::""
         : (degree @(args.\0));
 
@@ -6951,9 +6951,9 @@ C<Relational>.
 =head2 rename (Relational)
 
     ::MD::rename::Relational ::= function
-        --> Relational <-- (Relational, Renaming)
+        returns Relational matches (Relational, Renaming)
         implements 2::""
-        requires (...)
+        accepts (...)
         : (select_Relational::( like: args.\0, heading: @(args.\0) rename args.\1,
             body: |(args.\0) map \rename::( 1: args.\1 ) ));
 
@@ -6976,7 +6976,7 @@ C<Relational>.
 =head2 can_project_matching (Relational)
 
     ::MD::can_project_matching::Relational ::= function
-        --> Boolean <-- (Relational, Structural)
+        returns Boolean matches (Relational, Structural)
         implements 2::""
         : (if args.\0 @? (args.\1)
             then |(args.\0) all \(args.\0 %= @(args.\1) = (args.\1)) \<-- (1 : args.\1,)
@@ -6994,9 +6994,9 @@ C<can_project_matching> aka C<%=?> for the composing type C<Relational>.
 =head2 on (Relational)
 
     ::MD::on::Relational ::= function
-        --> Relational <-- (Relational, Heading)
+        returns Relational matches (Relational, Heading)
         implements 2::""
-        requires (args.\0 @? (args.\1))
+        accepts (args.\0 @? (args.\1))
         : (select_Relational::( like: args.\0, heading: @(args.\0) on args.\1,
             body: |(args.\0) map \on::( 1: args.\1 ) ));
 
@@ -7019,9 +7019,9 @@ C<%=> aka C<π> for the composing type C<Relational>.
 =head2 update (Relational)
 
     ::MD::update::Relational ::= function
-        --> Relational <-- (Relational, Structural)
+        returns Relational matches (Relational, Structural)
         implements 2::""
-        requires (args.\0 @? (args.\1))
+        accepts (args.\0 @? (args.\1))
         : (select_Relational::( like: args.\0, heading: @(args.\0),
             body: |(args.\0) map \update::( 1: args.\1 ) ));
 
@@ -7047,9 +7047,9 @@ C<Relational>.
 =head2 extend (Relational)
 
     ::MD::extend::Relational ::= function
-        --> Relational <-- (Relational, Structural)
+        returns Relational matches (Relational, Structural)
         implements 2::""
-        requires (args.\0 disjoint_heading args.\1)
+        accepts (args.\0 disjoint_heading args.\1)
         : (select_Relational::( like: args.\0, heading: @(args.\0) extend args.\1,
             body: |(args.\0) map \extend::( 1: args.\1 ) ));
 
@@ -7070,7 +7070,7 @@ C<%+> for the composing type C<Relational>.
 
 =head2 body |
 
-    ::MD::body::"" ::= function virtual --> Unionable <-- (Relational);
+    ::MD::body::"" ::= function virtual returns Unionable matches (Relational);
 
     ::MD::"|" ::= alias of body;
 
@@ -7085,8 +7085,8 @@ typical C<Relational> value, and select that same value again.
 =head2 select_Relational
 
     ::MD::select_Relational::"" ::= function virtual
-        --> {Relational, Excuse::...}
-        <-- (like : Relational, heading : Heading, body : Unionable);
+        returns {Relational, Excuse::...}
+        matches (like : Relational, heading : Heading, body : Unionable);
 
 The virtual function C<select_Relational> results in the value of its
 C<like> argument's relational type that has the same I<heading> as its
@@ -7144,7 +7144,7 @@ single-tuple C<Tuple_Array> value.
 
 =head2 heading (Tuple_Array)
 
-    ::MD::heading::Tuple_Array ::= function --> Heading <-- (Tuple_Array)
+    ::MD::heading::Tuple_Array ::= function returns Heading matches (Tuple_Array)
         implements 2::""
         : (unwrap::(args.\0).\heading);
 
@@ -7155,7 +7155,7 @@ for the composing type C<Tuple_Array>.
 
 =head2 body (Tuple_Array)
 
-    ::MD::body::Tuple_Array ::= function --> Array <-- (Tuple_Array)
+    ::MD::body::Tuple_Array ::= function returns Array matches (Tuple_Array)
         implements 2::""
         : (unwrap::(args.\0).\body);
 
@@ -7167,8 +7167,8 @@ composing type C<Tuple_Array>.
 =head2 select_Relational (Tuple_Array)
 
     ::MD::select_Relational::Tuple_Array ::= function
-        --> {Relational, Excuse::...}
-        <-- (like : Tuple_Array, heading : Heading, body : Array)
+        returns {Relational, Excuse::...}
+        matches (like : Tuple_Array, heading : Heading, body : Array)
         implements 2::""
         : (\Tuple_Array wrap args %= \@(heading,body));
 
@@ -7219,7 +7219,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
 
 =head2 heading (Relation)
 
-    ::MD::heading::Relation ::= function --> Heading <-- (Relation)
+    ::MD::heading::Relation ::= function returns Heading matches (Relation)
         implements 2::""
         : (unwrap::(args.\0).\heading);
 
@@ -7230,7 +7230,7 @@ for the composing type C<Relation>.
 
 =head2 body (Relation)
 
-    ::MD::body::Relation ::= function --> Set <-- (Relation)
+    ::MD::body::Relation ::= function returns Set matches (Relation)
         implements 2::""
         : (unwrap::(args.\0).\body);
 
@@ -7242,8 +7242,8 @@ composing type C<Relation>.
 =head2 select_Relational (Relation)
 
     ::MD::select_Relational::Relation ::= function
-        --> {Relational, Excuse::...}
-        <-- (like : Relation, heading : Heading, body : Set)
+        returns {Relational, Excuse::...}
+        matches (like : Relation, heading : Heading, body : Set)
         implements 2::""
         : (\Relation wrap args %= \@(heading,body));
 
@@ -7288,7 +7288,7 @@ single-tuple C<Tuple_Bag> value.
 
 =head2 heading (Tuple_Bag)
 
-    ::MD::heading::Tuple_Bag ::= function --> Heading <-- (Tuple_Bag)
+    ::MD::heading::Tuple_Bag ::= function returns Heading matches (Tuple_Bag)
         implements 2::""
         : (unwrap::(args.\0).\heading);
 
@@ -7299,7 +7299,7 @@ for the composing type C<Tuple_Bag>.
 
 =head2 body (Tuple_Bag)
 
-    ::MD::body::Tuple_Bag ::= function --> Bag <-- (Tuple_Bag)
+    ::MD::body::Tuple_Bag ::= function returns Bag matches (Tuple_Bag)
         implements 2::""
         : (unwrap::(args.\0).\body);
 
@@ -7311,8 +7311,8 @@ composing type C<Tuple_Bag>.
 =head2 select_Relational (Tuple_Bag)
 
     ::MD::select_Relational::Tuple_Bag ::= function
-        --> {Relational, Excuse::...}
-        <-- (like : Tuple_Bag, heading : Heading, body : Bag)
+        returns {Relational, Excuse::...}
+        matches (like : Tuple_Bag, heading : Heading, body : Bag)
         implements 2::""
         : (\Tuple_Bag wrap args %= \@(heading,body));
 
@@ -7431,21 +7431,21 @@ have to prefix with Capsule:: or float that namespace to use them unqualified.
 
 =head2 Capsule::wrap
 
-    ::MD::Capsule::wrap ::= function --> Capsule <-- (Any, Any)
+    ::MD::Capsule::wrap ::= function returns Capsule matches (Any, Any)
         : (args -->^ FDN__Capsule_wrap);
 
 I<TODO.>
 
 =head2 Capsule::wrapper
 
-    ::MD::Capsule::wrapper ::= function --> Any <-- (Capsule)
+    ::MD::Capsule::wrapper ::= function returns Any matches (Capsule)
         : (args -->^ FDN__Capsule_wrapper);
 
 I<TODO.>
 
 =head2 Capsule::unwrap
 
-    ::MD::Capsule::unwrap ::= function --> Any <-- (Capsule)
+    ::MD::Capsule::unwrap ::= function returns Any matches (Capsule)
         : (args -->^ FDN__Capsule_unwrap);
 
 I<TODO.>
@@ -7453,7 +7453,7 @@ I<TODO.>
 =head2 Capsule::has_wrapped
 
     ::MD::Capsule::has_wrapped ::= function
-        --> Boolean <-- (Capsule, Any, Signature)
+        returns Boolean matches (Capsule, Any, Signature)
         : ((wrapper args.\0) = (args.\1) and
             (unwrap args.\0,) --> Signature_to_Function_Call_But_0::(args.\2));
 
@@ -7559,7 +7559,7 @@ D values.
 
 =head2 External::call_function
 
-    ::MD::External::call_function ::= function --> Any <-- (Any)
+    ::MD::External::call_function ::= function returns Any matches (Any)
         : (FDN__External_call_function ^<-- args);
 
 The function C<External::call_function> is a proxy for invoking a function
@@ -7833,11 +7833,11 @@ I<TODO.>
                 virtual : \Boolean::(),
                 commutes : \Identity_Identifier::(),
                 negates : \Identity_Identifier::(),
-                returns : \Signature::(),  `Aka "-->" or "to".`
-                matches : \Signature::Tuple(),  `Aka "<--" or "from" or "signature".`
+                returns : \Signature::(),
+                matches : \Signature::Tuple(),
                 implements : ...,
                 overrides : ...,
-                accepts : \Function_Body::(),  `Aka "requires".`
+                accepts : \Function_Body::(),
                 intends : \Function_Body::(),
                 is_associative : \Boolean::(),
                 is_commutative : \Boolean::(),
@@ -7893,11 +7893,11 @@ I<TODO.>
         (
             args.\0 is_a (
                 virtual : \Boolean::(),
-                matches : \Signature::Tuple(),  `Aka "<-->" or "signature".`
+                matches : \Signature::Tuple(),
                 updates : \Heading::(),  `TODO: Or keyword "source".`
                 implements : ...,
                 overrides : ...,
-                accepts : \Function_Body::(),  `Aka "requires".`
+                accepts : \Function_Body::(),
                 intends : \Function_Body::(),
                 vars : \Signature::Tuple(),
                 performs : \Procedure_Body::(),
@@ -8020,7 +8020,7 @@ I<TODO.  Note, this type currently isn't used anywhere.>
 =head2 Source_Code::Signature_to_Function_Call_But_0
 
     ::MD::Source_Code::Signature_to_Function_Call_But_0 ::= function
-        --> Function_Call_But_0 <-- (Signature)
+        returns Function_Call_But_0 matches (Signature)
     : (
         if Function_Call_But_0 args.\0 then
             args.\0
