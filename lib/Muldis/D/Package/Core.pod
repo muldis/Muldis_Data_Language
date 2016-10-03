@@ -1505,7 +1505,7 @@ virtual function C<multiple_of> for the composing type C<Integer>.
         n ::= (args.\0);
         d ::= (args.\1);
 
-        <-- if d = 0 then Excuse::Div_By_Zero() else q;
+        return if d = 0 then Excuse::Div_By_Zero() else q;
 
         q ::= (\Fraction wrap (
             numerator   : div::((d > 0 :? n :! -n), gcd, To_Zero::()),
@@ -1530,7 +1530,7 @@ the composing type C<Integer>.
         divisor    ::= (args.\1);
         round_meth ::= (args.\2);
 
-        <-- if divisor = 0 then Excuse::Div_By_Zero() else e1;
+        return if divisor = 0 then Excuse::Div_By_Zero() else e1;
 
         e1 ::?= 'This is the case where we are dividing by a non-zero.';
 
@@ -1551,7 +1551,7 @@ the composing type C<Integer>.
                 ^<-- (dividend, divisor));
             rtz_remainder ::= (dividend - (divisor * rtz_quotient));
 
-            <-- rtz_remainder = 0 :? rtz_quotient :! e3;
+            return rtz_remainder = 0 :? rtz_quotient :! e3;
         );
 
         e3 ::?= 'This is the case where the divisor does not divide the'
@@ -1563,7 +1563,7 @@ the composing type C<Integer>.
             rdn_quotient ::= (rtz_quotient + (real_q_is_neg :? -1 :! 0));
             rup_quotient ::= (rtz_quotient + (real_q_is_neg :?  0 :! 1));
 
-            <-- round_meth :?? {
+            return round_meth :?? {
                 Down::()    : rdn_quotient,
                 Up::()      : rup_quotient,
                 To_Zero::() : rtz_quotient,
@@ -1583,7 +1583,7 @@ the composing type C<Integer>.
             r ::= (abs::(rtz_quotient) - (2 * q));
             rtz_quotient_is_even ::= (r = 0);
 
-            <-- round_meth :?? {
+            return round_meth :?? {
                 Half_Down::()    : rdn_quotient,
                 Half_Up::()      : rup_quotient,
                 Half_To_Zero::() : rtz_quotient,
@@ -1754,7 +1754,7 @@ default and minmum value is C<0.0>; it has no maximum value.
          :!
           (
             common_d ::= lcm::(args.\0->denominator, args.\1->denominator);
-            <-- in_order::(
+            return in_order::(
                 (args.\0->numerator) * div::(common_d, args.\0->denominator, To_Zero::()),
                 (args.\1->numerator) * div::(common_d, args.\1->denominator, To_Zero::()),
             );
@@ -1828,7 +1828,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
          :!
           (
             common_d ::= lcm::(args.\0->denominator, args.\1->denominator);
-            <-- ((args.\0->numerator) * div::(common_d, args.\0->denominator, To_Zero::()))
+            return ((args.\0->numerator) * div::(common_d, args.\0->denominator, To_Zero::()))
                 + ((args.\1->numerator) * div::(common_d, args.\1->denominator, To_Zero::()))
                 / common_d;
           )
@@ -1902,7 +1902,7 @@ the composing type C<Fraction>.
         d ::= lcm::(args.\0->denominator, args.\1->denominator);
         n0 ::= ((args.\0->numerator) * div::(d, args.\0->denominator, To_Zero::()));
         n1 ::= ((args.\1->numerator) * div::(d, args.\1->denominator, To_Zero::()));
-        <-- if args.\1 = 0.0 then Excuse::Div_By_Zero()
+        return if args.\1 = 0.0 then Excuse::Div_By_Zero()
             else div::(n0 * d, n1 * d, args.\2) / 1;
     );
 
@@ -2796,7 +2796,7 @@ I<TODO.>
         --> {Text::ASCII, Excuse::ASCII::High_Bit_Not_Zero} <-- (Blob)
     : (
         octets ::= (args.\0->Blob_to_Octets);
-        <-- if String::ASCII_Chars(octets)
+        return if String::ASCII_Chars(octets)
             then octets->Text_from_ASCII_Chars
             else Excuse::ASCII::High_Bit_Not_Zero();
     );
@@ -2824,7 +2824,7 @@ I<TODO.  Note, still have to define that Excuse.>
                             \<-- (1 : repl_chars,)
                         reduce \catenate::()
         );
-        <-- result_chars->Text_from_ASCII_Chars;
+        return result_chars->Text_from_ASCII_Chars;
     );
 
 I<TODO.  Each invalid octet encountered is replaced by the substitution text
@@ -4114,7 +4114,7 @@ composing type C<Positional>.
         fi ::= first_index src;
         li ::= last_index src;
         emp ::= empty src;
-        <-- (if ri > fi then slice_range::(src, fi, --ri) else emp)
+        return (if ri > fi then slice_range::(src, fi, --ri) else emp)
             insert repl_member
             catenate (if ri < li then slice_range::(src, ++ri, li) else emp);
     );
@@ -4406,7 +4406,7 @@ C<Array> value, C<[]>.
         implements 2::""
     : (
         i ::= (args.\0 index_succ_all_matches args.\1);
-      <--
+      return
         if not args.\0 .? i then
             e1 ::= True
         else if not args.\1 .? i then
