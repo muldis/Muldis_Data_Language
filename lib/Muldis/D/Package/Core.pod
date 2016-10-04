@@ -7582,14 +7582,8 @@ I<TODO.>
 
 =head2 Source_Code::Package
 
-    ::MD::Source_Code::Package ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( args.\0, \Package, \1::_Asset() ))
-            default (\Package wrap 1::_Asset());
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Source_Code::Package ::= selection of Capsule
+        where (has_wrapped::( args.\0, \Package, \(
             if
                 args.\0 is_a (
                     identity : (selection of Pkg_Decl_Map where (is_unary args.\0)),
@@ -7603,8 +7597,8 @@ I<TODO.>
                 args.\0.\uses disjoint_heading args.\0.\identity
             else
                 False
-        );
-    };
+        ) ))
+        default (...);
 
 I<TODO.>
 I<Remember that "floating" can't search inside a binder, can only resolve to a binder or parent.>
@@ -7677,15 +7671,11 @@ I<TODO.>
 
 =head2 Source_Code::Binder
 
-    ::MD::Source_Code::Binder ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( args.\0, \Binder, \1::_Asset() ))
-            default (\Binder wrap 1::_Asset());
-
-        _Asset ::= selection of Tuple
-            where (args.\0 .? \"" and args.\0 all_attr_assets \Material::());
-    };
+    ::MD::Source_Code::Binder ::= selection of Capsule
+        where (has_wrapped::( args.\0, \Binder, (selection of Tuple
+            where (args.\0 .? \"" and args.\0 all_attr_assets \Material::())
+        ) ))
+        default (...);
 
 I<TODO.>
 
@@ -7707,74 +7697,50 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
 
 =head2 Source_Code::Constant
 
-    ::MD::Source_Code::Constant ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( args.\0, \Constant, \1::_Asset() ))
-            default (\Constant wrap 1::_Asset());
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Source_Code::Constant ::= selection of Capsule
+        where (has_wrapped::( args.\0, \Constant, \(
             args.\0 is_a (
                 folded : \Boolean::(),
                 composes : ...,
                 value : \Function_Body::(),  `Defaults to \@0 if omitted.`
             )
-        );
-    };
+        ) ))
+        default (...);
 
 I<TODO.>
 
 =head2 Source_Code::Selection
 
-    ::MD::Source_Code::Selection ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( args.\0, \Selection, \1::_Asset() ))
-            default (\Selection wrap 1::_Asset());
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Source_Code::Selection ::= selection of Capsule
+        where (has_wrapped::( args.\0, \Selection, \(
             args.\0 is_a (
                 of : ...,
                 where : \Function_Body::(),
                 default : \Function_Body::(),
                 composes : ...,
             )
-        );
-    };
+        ) ))
+        default (...);
 
 I<TODO.>
 
 =head2 Source_Code::Interface
 
-    ::MD::Source_Code::Interface ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( args.\0, \Interface, \1::_Asset() ))
-            default (\Interface wrap 1::_Asset());
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Source_Code::Interface ::= selection of Capsule
+        where (has_wrapped::( args.\0, \Interface, \(
             args.\0 is_a (
                 composes : ...,
                 requires_implements : ...,
             )
-        );
-    };
+        ) ))
+        default (...);
 
 I<TODO.>
 
 =head2 Source_Code::Function
 
-    ::MD::Source_Code::Function ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( args.\0, \Function, \1::_Asset() ))
-            default (\Function wrap 1::_Asset());
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Source_Code::Function ::= selection of Capsule
+        where (has_wrapped::( args.\0, \Function, \(
             args.\0 is_a (
                 virtual : \Boolean::(),
                 commutes : \Identity_Identifier::(),
@@ -7792,40 +7758,28 @@ I<TODO.>
                 repeater : ...,
                 map : \Function_Body::(),  `Aka ":" or "via".`
             )
-        );
-    };
+        ) ))
+        default (...);
 
 I<TODO.>
 
 =head2 Source_Code::Function_Body
 
-    ::MD::Source_Code::Function_Body ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( args.\0, \Function_Body, \1::_Asset() ))
-            default (\Function_Body wrap 1::_Asset());
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Source_Code::Function_Body ::= selection of Capsule
+        where (has_wrapped::( args.\0, \Function_Body, \(
             args.\0 is_a (
                 root_expr : \Expression::(),
                 named_exprs : \Named_Expr_List::(),
             )
-        );
-    };
+        ) ))
+        default (...);
 
 I<TODO.>
 
 =head2 Source_Code::Procedure
 
-    ::MD::Source_Code::Procedure ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( args.\0, \Procedure, \1::_Asset() ))
-            default (\Procedure wrap 1::_Asset());
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Source_Code::Procedure ::= selection of Capsule
+        where (has_wrapped::( args.\0, \Procedure, \(
             args.\0 is_a (
                 virtual : \Boolean::(),
                 matches : \Signature::Tuple(),
@@ -7837,28 +7791,22 @@ I<TODO.>
                 vars : \Signature::Tuple(),
                 performs : \Procedure_Body::(),
             )
-        );
-    };
+        ) ))
+        default (...);
 
 I<TODO.>
 
 =head2 Source_Code::Procedure_Body
 
-    ::MD::Source_Code::Procedure_Body ::= binder
-    {
-        "" ::= selection of Capsule
-            where (has_wrapped::( args.\0, \Procedure_Body, \1::_Asset() ))
-            default (\Procedure_Body wrap 1::_Asset());
-
-        _Asset ::= selection of Tuple where
-        (
+    ::MD::Source_Code::Procedure_Body ::= selection of Capsule
+        where (has_wrapped::( args.\0, \Procedure_Body, \(
             args.\0 is_a (
                 root_stmt : \Statement::(),
                 named_stmts : \Named_Stmt_List::(),
                 named_exprs : \Named_Expr_List::(),
             )
-        );
-    };
+        ) ))
+        default (...);
 
 I<TODO.>
 
