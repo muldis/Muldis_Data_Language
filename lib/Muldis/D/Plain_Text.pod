@@ -784,6 +784,9 @@ Grammar:
     <ord_attr_name> ::=
         <digit_char>+
 
+    <nesting_attr_names> ::=
+        <attr_name> % [<sp> '::' <sp>]
+
     <expr_name> ::=
         <generic_name>
 
@@ -873,22 +876,16 @@ Grammar:
             [<folder_name> <sp> ',' <sp>]*
         <sp> '}'
 
-    <pkg_materials> ::=
-        '{' <sp>
-            folders...
-            [<named_material> <sp> ';' <sp>]*
-        <sp> '}'
-
-    <named_material> ::=
-        <material_name> <sp> '::=' <sp> <material>
-
 I<TODO.  Valid attr names in the "Package" Tuple commalist are these:
 {identity, foundation, uses, entry, floating, materials};
 the 6 pkg_* above denote the attribute asset for each;
 {identity,foundation} are mandatory attrs, the rest are not.>
 
-I<TODO.  See also about folder declarations, etc.>
-I<Note that "entry" is the "entry point" for a program.  It is NOT automatically
+I<TODO.  The package attr asset for "materials" is a Tuple node each of
+whose attributes is a material definition or a folder definition; the latter
+is the case iff it is also a Tuple node or if the atter name is the format X::Y.>
+
+I<TODO.  Note that "entry" is the "entry point" for a program.  It is NOT automatically
 invoked when loading a package, but is informative for an explicit post-load call.>
 
 I<TODO.  Each entry point kind represents a distinct kind of routine or
@@ -1016,7 +1013,6 @@ Grammar:
         | <pkg_uses>
         | <pkg_entry>
         | <pkg_floating>
-        | <pkg_materials>
 
     <delimiting_expr> ::=
         '(' <sp> [
@@ -1721,13 +1717,16 @@ Grammar:
         ['\\%' <sp>]? '(' <sp> <attr_commalist> <sp> ')'
 
     <attr_commalist> ::=
-        [<anon_attr> | <named_attr> | <same_named_attr> | ''] % [<sp> ',' <sp>]
+        [<anon_attr> | <named_attr> | <nested_named_attr> | <same_named_attr> | ''] % [<sp> ',' <sp>]
 
     <anon_attr> ::=
         <attr_asset_expr>
 
     <named_attr> ::=
         <attr_name> <sp> ':' <sp> <attr_asset_expr>
+
+    <nested_named_attr> ::=
+        <nesting_attr_names> <sp> ':' <sp> <attr_asset_expr>
 
     <same_named_attr> ::=
         ':' <sp> <attr_name>
