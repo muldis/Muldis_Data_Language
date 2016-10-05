@@ -75,7 +75,7 @@ consists of exactly zero values.  It can not have any default value.
 =head2 same =
 
     same : function returns Boolean matches (Any, Any)
-        is commutative
+        is_commutative
         map (args -->^ FDN__same),
 
     "=" : alias of same,
@@ -98,7 +98,7 @@ and not if two distinct containers have the same content.
 =head2 not_same != ≠
 
     not_same : function negates same
-        is commutative,
+        is_commutative,
 
     "!=" : alias of not_same,
 
@@ -193,7 +193,7 @@ I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
 =head2 or_else coalesce
 
     or_else : function returns Any matches (Any, Any)
-        is {associative,idempotent}
+        is_associative is_idempotent
         map (Excuse args.\0 :? args.\1 :! args.\0),
 
     coalesce : alias of or_else,
@@ -208,7 +208,7 @@ I<??> or I<//> or I<?:>.
 =head2 and_then
 
     and_then : function returns Any matches (Any, Any)
-        is {associative,idempotent}
+        is_associative is_idempotent
         map (Excuse args.\0 :? args.\0 :! args.\1),
 
 The function C<and_then> results in its C<0> argument iff the latter is an
@@ -372,7 +372,7 @@ name this operator I<ge>.
 =head2 min
 
     min : function returns Orderable matches (Orderable, Orderable)
-        is {associative,commutative,idempotent} identity (+∞)
+        is_associative is_commutative is_idempotent identity (+∞)
         map (args.\0 in_order args.\1 :? args.\0 :! args.\1),
 
 The function C<min> results in whichever of its 2 arguments is first when
@@ -383,7 +383,7 @@ I<before> all of the others.
 =head2 max
 
     max : function returns Orderable matches (Orderable, Orderable)
-        is {associative,commutative,idempotent} identity (-∞)
+        is_associative is_commutative is_idempotent identity (-∞)
         map (args.\0 in_order args.\1 :? args.\1 :! args.\0),
 
 The function C<max> results in whichever of its 2 arguments is last when
@@ -395,7 +395,7 @@ I<after> all of the others.
 
     minmax : function
         returns (Orderable, Orderable) matches (Orderable, Orderable)
-        is commutative
+        is_commutative
         map (args.\0 in_order args.\1 :? args :! (args.\1, args.\0)),
 
 The function C<minmax> results in a binary C<Tuple> containing its 2
@@ -719,7 +719,7 @@ corresponding operators I<~> or I<^> or I<N>.
 =head2 and ∧
 
     and : function returns Boolean matches (Boolean, Boolean)
-        is {associative,commutative,idempotent} identity (True)
+        is_associative is_commutative is_idempotent identity (True)
         map (args.\0 :? args.\1 :! False),
 
     Unicode_Aliases::"∧" : alias of and,
@@ -732,7 +732,7 @@ operators I<&> or I<&&> or I<K>.
 =head2 nand not_and ⊼ ↑
 
     nand : function negates and
-        is commutative,
+        is_commutative,
 
     not_and : alias of nand,
 
@@ -746,7 +746,7 @@ C<1> are both C<True>, and C<True> otherwise.
 =head2 or ∨
 
     or : function returns Boolean matches (Boolean, Boolean)
-        is {associative,commutative,idempotent} identity (False)
+        is_associative is_commutative is_idempotent identity (False)
         map (args.\0 :? True :! args.\1),
 
     Unicode_Aliases::"∨" : alias of or,
@@ -759,7 +759,7 @@ corresponding operators I<|> or I<||> or I<A>.
 =head2 nor not_or ⊽ ↓
 
     nor : function negates or
-        is commutative,
+        is_commutative,
 
     not_or : alias of nor,
 
@@ -773,7 +773,7 @@ C<0> and C<1> is C<True>, and C<True> otherwise.
 =head2 xnor iff ↔
 
     xnor : function returns Boolean matches (Boolean, Boolean)
-        is {associative,commutative} identity (True)
+        is_associative is_commutative identity (True)
         map (args.\0 = (args.\1)),
 
     iff : alias of xnor,
@@ -791,7 +791,7 @@ name their corresponding operators I<E>.
 =head2 xor ⊻ ↮
 
     xor : function negates xnor
-        is {associative,commutative} identity (False),
+        is_associative is_commutative identity (False),
 
     Unicode_Aliases::"⊻" : alias of xor,
     Unicode_Aliases::"↮" : alias of xor,
@@ -1010,7 +1010,7 @@ mathematical notion writes this operator in circumfix like I<|n|>.
 
     plus::"" : function virtual
         returns Numerical matches (Numerical, Numerical)
-        is {associative,commutative}
+        is_associative is_commutative
         repeater times,
 
     "+" : alias of plus,
@@ -1044,7 +1044,7 @@ was invoked with.
 
     modulus_minus : function
         returns Numerical matches (Numerical, Numerical)
-        is commutative
+        is_commutative
         map (modulus args.\0 - (args.\1)),
 
     abs_minus : alias of modulus_minus,
@@ -1060,7 +1060,7 @@ C<1>, which is the (non-negative) distance between those arguments.
 
     times::"" : function virtual
         returns Numerical matches (Numerical, Numerical)
-        is {associative,commutative}
+        is_associative is_commutative
         repeater integral_nn_power,
 
     "*" : alias of times,
@@ -1300,7 +1300,7 @@ this operator in postfix like I<n!>.
 =head2 gcd greatest_common_divisor
 
     gcd : function returns Integral_P matches (Integral_NN, Integral_NN)
-        is {commutative,associative,idempotent}
+        is_associative is_commutative is_idempotent
         map ((if args.\1->is_zero then args.\0 else 0::(args.\1, mod::(args.\0, args.\1, To_Zero::())))
             ::?= 'Calculate using the Euclidean algorithm.'),
 
@@ -1314,7 +1314,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
 =head2 lcm least_common_multiple
 
     lcm : function returns Integral_NN matches (Integral_NN, Integral_NN)
-        is {commutative,associative,idempotent}
+        is_associative is_commutative is_idempotent
         map (if args.\0->is_zero or args.\1->is_zero then args.\0->zero
             else div::(args.\0 * (args.\1), args.\0 gcd args.\1, To_Zero::())),
 
@@ -1459,7 +1459,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Integer>.
 
     plus::Integer : function returns Integer matches (Integer, Integer)
         implements 1::""
-        is {associative,commutative} identity (0)
+        is_associative is_commutative identity (0)
         repeater times::Integer
         map (args -->^ FDN__Integer_plus),
 
@@ -1479,7 +1479,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Integer>.
 
     times::Integer : function returns Integer matches (Integer, Integer)
         implements 1::""
-        is {associative,commutative} identity (1)
+        is_associative is_commutative identity (1)
         repeater integral_nn_power::Integer
         map (args -->^ FDN__Integer_times),
 
@@ -1821,7 +1821,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
 
     plus::Fraction : function returns Fraction matches (Fraction, Fraction)
         implements 1::""
-        is {associative,commutative} identity (0.0)
+        is_associative is_commutative identity (0.0)
         repeater times::Fraction_Integer
     map (
         <-- (args.\0->denominator) = (args.\1->denominator)
@@ -1851,7 +1851,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Fraction>.
 
     times::Fraction : function returns Fraction matches (Fraction, Fraction)
         implements 1::""
-        is {associative,commutative} identity (1.0)
+        is_associative is_commutative identity (1.0)
         repeater integral_nn_power::Fraction
         map (((args.\0->numerator) * (args.\1->numerator))
             / ((args.\0->denominator) * (args.\1->denominator))),
@@ -2087,7 +2087,7 @@ rather than a boolean.
 
     proper_substring_or_superstring : function
         returns Boolean matches (String, String)
-        is commutative
+        is_commutative
         map (args.\0 != (args.\1) and (args.\0 substring_or_superstring args.\1)),
 
 The function C<proper_substring_or_superstring> results in C<True> iff the
@@ -2099,7 +2099,7 @@ results in C<False>.
 
     substring_or_superstring : function
         returns Boolean matches (String, String)
-        is commutative
+        is_commutative
         map ((args.\0 substring_of args.\1) or (args.\0 superstring_of args.\1)),
 
 The function C<substring_or_superstring> results in C<True> iff the
@@ -2111,7 +2111,7 @@ C<False>.
 
     overlaps_string::"" : function virtual
         returns Boolean matches (String, String)
-        is commutative,
+        is_commutative,
 
 The virtual function C<overlaps_string> results in C<True> iff, given I<X>
 as the sequence of members of its argument C<0> and I<Y> as the sequence of
@@ -2125,7 +2125,7 @@ otherwise it results in C<False>.
 
     disjoint_string::"" : function virtual
         returns Boolean matches (String, String)
-        is commutative,
+        is_commutative,
 
 The virtual function C<disjoint_string> results in C<True> iff the sequence
 of members of its C<0> argument can not be overlapped with the sequence of
@@ -2137,7 +2137,7 @@ C<False>.
 
     catenate::"" : function virtual
         returns Stringy matches (Stringy, Stringy)
-        is associative
+        is_associative
         repeater replicate,
 
     "~" : alias of catenate,
@@ -2234,7 +2234,7 @@ function C<substring_of> for the composing type C<Bits>.
 
     overlaps_string::Bits : function returns Boolean matches (Bits, Bits)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->Bits_to_String_Bits)
             overlaps_string (args.\1->Bits_to_String_Bits)),
 
@@ -2245,7 +2245,7 @@ function C<overlaps_string> for the composing type C<Bits>.
 
     disjoint_string::Bits : function returns Boolean matches (Bits, Bits)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->Bits_to_String_Bits)
             disjoint_string (args.\1->Bits_to_String_Bits)),
 
@@ -2256,7 +2256,7 @@ function C<disjoint_string> for the composing type C<Bits>.
 
     catenate::Bits : function returns Bits matches (Bits, Bits)
         implements 1::""
-        is associative identity (\~?'')
+        is_associative identity (\~?'')
         repeater replicate::Bits
         map (Bits_from_String_Bits::((args.\0->Bits_to_String_Bits)
             ~ (args.\1->Bits_to_String_Bits))),
@@ -2359,7 +2359,7 @@ function C<substring_of> for the composing type C<Blob>.
 
     overlaps_string::Blob : function returns Boolean matches (Blob, Blob)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->Blob_to_Octets) overlaps_string (args.\1->Blob_to_Octets)),
 
 The function C<overlaps_string::Blob> implements the C<Stringy> virtual
@@ -2369,7 +2369,7 @@ function C<overlaps_string> for the composing type C<Blob>.
 
     disjoint_string::Blob : function returns Boolean matches (Blob, Blob)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->Blob_to_Octets) disjoint_string (args.\1->Blob_to_Octets)),
 
 The function C<disjoint_string::Blob> implements the C<Stringy> virtual
@@ -2379,7 +2379,7 @@ function C<disjoint_string> for the composing type C<Blob>.
 
     catenate::Blob : function returns Blob matches (Blob, Blob)
         implements 1::""
-        is associative identity (\~+'')
+        is_associative identity (\~+'')
         repeater replicate::Blob
         map (Blob_from_Octets::((args.\0->Blob_to_Octets) ~ (args.\1->Blob_to_Octets))),
 
@@ -2608,7 +2608,7 @@ function C<substring_of> for the composing type C<Text>.
 
     overlaps_string::Text : function returns Boolean matches (Text, Text)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->Text_to_Maximal_Chars)
             overlaps_string (args.\1->Text_to_Maximal_Chars)),
 
@@ -2619,7 +2619,7 @@ function C<overlaps_string> for the composing type C<Text>.
 
     disjoint_string::Text : function returns Boolean matches (Text, Text)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->Text_to_Maximal_Chars)
             disjoint_string (args.\1->Text_to_Maximal_Chars)),
 
@@ -2630,7 +2630,7 @@ function C<disjoint_string> for the composing type C<Text>.
 
     catenate::Text : function returns Text matches (Text, Text)
         implements 1::""
-        is associative identity ('')
+        is_associative identity ('')
         repeater replicate::Text
         map (Text_from_Maximal_Chars::((args.\0->Text_to_Maximal_Chars)
             ~ (args.\1->Text_to_Maximal_Chars))),
@@ -3393,7 +3393,7 @@ of members of its C<1> argument; otherwise it results in C<False>.
 
     same_members::"" : function virtual
         returns Boolean matches (Homogeneous, Homogeneous)
-        is commutative,
+        is_commutative,
 
 The virtual function C<same_members> results in C<True> iff the multiset of
 members of its C<0> argument is the same as the multiset of members of its
@@ -3407,7 +3407,7 @@ typically the same.
 
     proper_subset_or_superset : function
         returns Boolean matches (Homogeneous, Homogeneous)
-        is commutative
+        is_commutative
         map (not (args.\0 same_members args.\1) and (args.\0 subset_or_superset args.\1)),
 
 The function C<proper_subset_or_superset> results in C<True> iff the
@@ -3419,7 +3419,7 @@ results in C<False>.
 
     subset_or_superset : function
         returns Boolean matches (Homogeneous, Homogeneous)
-        is commutative
+        is_commutative
         map ((args.\0 subset_of args.\1) or (args.\0 superset_of args.\1)),
 
 The function C<subset_or_superset> results in C<True> iff the multiset of
@@ -3430,7 +3430,7 @@ of members of its other argument; otherwise it results in C<False>.
 
     overlaps_members::"" : function virtual
         returns Boolean matches (Homogeneous, Homogeneous)
-        is commutative,
+        is_commutative,
 
 The virtual function C<overlaps_members> results in C<True> iff, given I<X> as the
 multiset of members of its argument C<0> and I<Y> as the multiset of
@@ -3442,7 +3442,7 @@ and I<Y> that the other doesn't have; otherwise it results in C<False>.
 
     disjoint_members::"" : function virtual
         returns Boolean matches (Homogeneous, Homogeneous)
-        is commutative,
+        is_commutative,
 
 The virtual function C<disjoint_members> results in C<True> iff the multiset of
 members of its C<0> argument has no member values in common with the
@@ -3586,7 +3586,7 @@ with a C<Setty> C<c> that already has an C<x> element with a nonzero C<n>.
 
     member_plus::"" : function virtual
         returns Unionable matches (Unionable, Unionable)
-        is associative,
+        is_associative,
 
     Unicode_Aliases::"⊎" : alias of member_plus,
 
@@ -3636,7 +3636,7 @@ or I<--> etc or I<subtract>.
 
     intersect::"" : function virtual
         returns Unionable matches (Unionable, Unionable)
-        is {associative,idempotent},
+        is_associative is_idempotent,
 
     Unicode_Aliases::"∩" : alias of intersect,
 
@@ -3658,7 +3658,7 @@ corresponding operators I<&> or I<*>.
 
     union::"" : function virtual
         returns Unionable matches (Unionable, Unionable)
-        is idempotent,
+        is_idempotent,
 
     Unicode_Aliases::"∪" : alias of union,
 
@@ -3979,7 +3979,7 @@ the composing type C<Positional>.
     same_members::Positional : function
         returns Boolean matches (Positional, Positional)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->to_Bag) same_members (args.\1->to_Bag)),
 
 The function C<same_members::Positional> results in C<True> iff the
@@ -3995,7 +3995,7 @@ virtual function C<same_members> for the composing type C<Positional>.
     overlaps_members::Positional : function
         returns Boolean matches (Positional, Positional)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->to_Bag) overlaps_members (args.\1->to_Bag)),
 
 The function C<overlaps_members::Positional> results in C<True> iff, given
@@ -4011,7 +4011,7 @@ C<overlaps_members> for the composing type C<Positional>.
     disjoint_members::Positional : function
         returns Boolean matches (Positional, Positional)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->to_Bag) disjoint_members (args.\1->to_Bag)),
 
 The function C<disjoint_members::Positional> results in C<True> iff the
@@ -4025,7 +4025,7 @@ C<disjoint_members> for the composing type C<Positional>.
     member_plus::Positional : function
         returns Positional matches (Positional, Positional)
         implements 1::""
-        is associative
+        is_associative
         map (args.\0 ~ (args.\1)),
 
 The function C<member_plus::Positional> results in the I<multiset sum> of
@@ -4346,7 +4346,7 @@ the argument.
 
     index_succ_all_matches::"" : function virtual
         returns Integer matches (Positional, Positional)
-        is commutative;
+        is_commutative;
 
 I<TODO.  Also consider index_first_diff_elem or index_succ_common_prefix as name.>
 
@@ -4460,7 +4460,7 @@ composing type C<Array>.
 
     overlaps_string::Array : function returns Boolean matches (Array, Array)
         implements 1::""
-        is commutative
+        is_commutative
         map (args -->^ FDN__Array_overlaps_string),
 
 The function C<overlaps_string::Array> results in C<True> iff, given I<X>
@@ -4476,7 +4476,7 @@ virtual function C<overlaps_string> for the composing type C<Array>.
 
     disjoint_string::Array : function returns Boolean matches (Array, Array)
         implements 1::""
-        is commutative
+        is_commutative
         map (args -->^ FDN__Array_disjoint_string),
 
 The function C<disjoint_string::Array> results in C<True> iff the sequence
@@ -4490,7 +4490,7 @@ C<disjoint_string> for the composing type C<Array>.
 
     catenate::Array : function returns Array matches (Array, Array)
         implements 1::""
-        is associative identity ([])
+        is_associative identity ([])
         repeater replicate::Array
         map (args -->^ FDN__Array_catenate),
 
@@ -4613,7 +4613,7 @@ C<except> aka C<∖> for the composing type C<Array>.
 
     intersect::Array : function returns Array matches (Array, Array)
         implements 1::""
-        is {associative,idempotent}
+        is_associative is_idempotent
         map (args -->^ FDN__Array_intersect),
 
 The function C<intersect::Array> results in the I<multiset intersection> of
@@ -4629,7 +4629,7 @@ aka C<∩> for the composing type C<Array>.
 
     union::Array : function returns Array matches (Array, Array)
         implements 1::""
-        is idempotent identity ([])
+        is_idempotent identity ([])
         map (args -->^ FDN__Array_union),
 
 The function C<union::Array> results in the I<multiset union> of its 2
@@ -4806,7 +4806,7 @@ the composing type C<Array>.
     index_succ_all_matches::Array : function
         returns Integer_NN matches (Array, Array)
         implements 1::""
-        is commutative
+        is_commutative
         map (args -->^ FDN__Array_index_succ_all_matches),
 
 I<TODO.  While conceivably implementable at a higher level, make low level
@@ -4953,7 +4953,7 @@ type C<Set>.
 
     same_members::Set : function returns Boolean matches (Set, Set)
         implements 1::""
-        is commutative
+        is_commutative
         map (args.\0 = (args.\1)),
 
 The function C<same_members::Set> results in C<True> iff its 2 arguments
@@ -4966,7 +4966,7 @@ function C<same_members> for the composing type C<Set>.
 
     overlaps_members::Set : function returns Boolean matches (Set, Set)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->unwrap) overlaps_members (args.\1->unwrap)),
 
 The function C<overlaps_members::Set> results in C<True> iff, given
@@ -4981,7 +4981,7 @@ C<overlaps_members> for the composing type C<Set>.
 
     disjoint_members::Set : function returns Boolean matches (Set, Set)
         implements 1::""
-        is commutative
+        is_commutative
         map ((args.\0->unwrap) disjoint_members (args.\1->unwrap)),
 
 The function C<disjoint_members::Set> results in C<True> iff the
@@ -5027,7 +5027,7 @@ C<remove_n> for the composing type C<Set>.
 
     member_plus::Set : function returns Set matches (Set, Set)
         implements 1::""
-        is {associative,commutative,idempotent} identity ({})
+        is_associative is_commutative is_idempotent identity ({})
         map (args.\0 union args.\1),
 
 The function C<member_plus::Set> results in the I<set union> of its 2
@@ -5052,7 +5052,7 @@ for the composing type C<Set>.
 
     intersect::Set : function returns Set matches (Set, Set)
         implements 1::""
-        is {associative,commutative,idempotent}
+        is_associative is_commutative is_idempotent
         map (\Set wrap ((args.\0->unwrap) intersect (args.\1->unwrap))),
 
 The function C<intersect::Set> results in the I<set intersection> of
@@ -5065,7 +5065,7 @@ function C<intersect> aka C<∩> for the composing type C<Set>.
 
     union::Set : function returns Set matches (Set, Set)
         implements 1::""
-        is {associative,commutative,idempotent} identity ({})
+        is_associative is_commutative is_idempotent identity ({})
         map (\Set wrap ((args.\0->unwrap) union (args.\1->unwrap))),
 
 The function C<union::Set> results in the I<set union> of its 2
@@ -5078,7 +5078,7 @@ virtual function C<union> aka C<∪> for the composing type C<Set>.
 
     exclusive::Set : function returns Set matches (Set, Set)
         implements 1::""
-        is {associative,commutative} identity ({})
+        is_associative is_commutative identity ({})
         map (\Set wrap ((args.\0->unwrap) exclusive (args.\1->unwrap))),
 
 The function C<exclusive::Set> results in the I<set symmetric
@@ -5316,7 +5316,7 @@ type C<Bag>.
 
     same_members::Bag : function returns Boolean matches (Bag, Bag)
         implements 1::""
-        is commutative
+        is_commutative
         map (args.\0 = (args.\1)),
 
 The function C<same_members::Bag> results in C<True> iff its 2 arguments
@@ -5329,7 +5329,7 @@ function C<same_members> for the composing type C<Bag>.
 
     overlaps_members::Bag : function returns Boolean matches (Bag, Bag)
         implements 1::""
-        is commutative
+        is_commutative
         map (args -->^ FDN__Bag_overlaps_members),
 
 The function C<overlaps_members::Bag> results in C<True> iff, given
@@ -5344,7 +5344,7 @@ C<overlaps_members> for the composing type C<Bag>.
 
     disjoint_members::Bag : function returns Boolean matches (Bag, Bag)
         implements 1::""
-        is commutative
+        is_commutative
         map (args -->^ FDN__Bag_disjoint_members),
 
 The function C<disjoint_members::Bag> results in C<True> iff the
@@ -5390,7 +5390,7 @@ C<remove_n> for the composing type C<Bag>.
 
     member_plus::Bag : function returns Bag matches (Bag, Bag)
         implements 1::""
-        is {associative,commutative} identity (\+{})
+        is_associative is_commutative identity (\+{})
         map (args -->^ FDN__Bag_member_plus),
 
 The function C<member_plus::Bag> results in the I<multiset sum> of its 2
@@ -5416,7 +5416,7 @@ for the composing type C<Bag>.
 
     intersect::Bag : function returns Bag matches (Bag, Bag)
         implements 1::""
-        is {associative,commutative,idempotent}
+        is_associative is_commutative is_idempotent
         map (args -->^ FDN__Bag_intersect),
 
 The function C<intersect::Bag> results in the I<multiset intersection> of
@@ -5429,7 +5429,7 @@ function C<intersect> aka C<∩> for the composing type C<Bag>.
 
     union::Bag : function returns Bag matches (Bag, Bag)
         implements 1::""
-        is {associative,commutative,idempotent} identity (\+{})
+        is_associative is_commutative is_idempotent identity (\+{})
         map (args -->^ FDN__Bag_union),
 
 The function C<union::Bag> results in the I<multiset union> of its 2
@@ -5442,7 +5442,7 @@ virtual function C<union> aka C<∪> for the composing type C<Bag>.
 
     exclusive::Bag : function returns Bag matches (Bag, Bag)
         implements 1::""
-        is {associative,commutative} identity (\+{})
+        is_associative is_commutative identity (\+{})
         map (args -->^ FDN__Bag_exclusive),
 
 The function C<exclusive::Bag> results in the I<multiset symmetric
@@ -5706,7 +5706,7 @@ exactly 1 name.
 
     same_heading : function
         returns Boolean matches (Attributive, Attributive)
-        is commutative
+        is_commutative
         map (@(args.\0) = @(args.\1)),
 
     "=@" : alias of same_heading,
@@ -5719,7 +5719,7 @@ otherwise it results in C<False>.
 
     proper_subheading_or_superheading : function
         returns Boolean matches (Attributive, Attributive)
-        is commutative
+        is_commutative
         map (@(args.\0) != @(args.\1) and (args.\0 subheading_or_superheading args.\1)),
 
 The function C<proper_subheading_or_superheading> results in C<True> iff
@@ -5730,7 +5730,7 @@ the heading of its other argument; otherwise it results in C<False>.
 
     subheading_or_superheading : function
         returns Boolean matches (Attributive, Attributive)
-        is commutative
+        is_commutative
         map ((args.\0 subheading_of args.\1) or (args.\0 superheading_of args.\1)),
 
 The function C<subheading_or_superheading> results in C<True> iff the
@@ -5741,7 +5741,7 @@ of its other argument; otherwise it results in C<False>.
 
     overlaps_heading : function
         returns Boolean matches (Attributive, Attributive)
-        is commutative
+        is_commutative
         map ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_overlaps_heading),
 
 The function C<overlaps_heading> results in C<True> iff, given I<X> as the
@@ -5754,7 +5754,7 @@ that the other doesn't have; otherwise it results in C<False>.
 
     disjoint_heading : function
         returns Boolean matches (Attributive, Attributive)
-        is commutative
+        is_commutative
         map ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_disjoint_heading),
 
 The function C<disjoint_heading> results in C<True> iff the heading of its
@@ -5779,7 +5779,7 @@ but not in the heading of its C<1> argument.
 
     intersect_heading : function
         returns Heading matches (Attributive, Attributive)
-        is {associative,commutative,idempotent}
+        is_associative is_commutative is_idempotent
         map ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_intersect_heading),
 
     Unicode_Aliases::"∩@" : alias of intersect_heading,
@@ -5795,7 +5795,7 @@ infinite number of attribute names.
 
     union_heading : function
         returns Heading matches (Attributive, Attributive)
-        is {associative,commutative,idempotent} identity (())
+        is_associative is_commutative is_idempotent identity (())
         map ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_union_heading),
 
     Unicode_Aliases::"∪@" : alias of union_heading,
@@ -5809,7 +5809,7 @@ the headings of the function's C<0> and C<1> arguments.
 
     exclusive : function
         returns Heading matches (Attributive, Attributive)
-        is {associative,commutative} identity (())
+        is_associative is_commutative identity (())
         map ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_exclusive_heading),
 
     symm_diff_heading : alias of exclusive_heading,
@@ -6384,7 +6384,7 @@ C<Tuple>.
     extend::Tuple : function returns Tuple matches (Tuple, Tuple)
         implements 1::""
         accepts (args.\0 disjoint_heading args.\1)
-        is {associative,commutative} identity (())
+        is_associative is_commutative identity (())
         map (args -->^ FDN__Tuple_extend),
 
 The function C<extend::Tuple> results in the I<relational extension> of its
@@ -6619,7 +6619,7 @@ function C<subset_of> aka C<⊆> for the composing type C<Relational>.
     same_members::Relational : function
         returns {Boolean, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 1::""
-        is commutative
+        is_commutative
         map (if args.\0 =@ (args.\1) then |(args.\0) same_members |(args.\1)
             else Excuse::Not_Same_Heading),
 
@@ -6639,7 +6639,7 @@ the composing type C<Relational>.
     overlaps_members::Relational : function
         returns {Boolean, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 1::""
-        is commutative
+        is_commutative
         map (if args.\0 =@ (args.\1) then |(args.\0) overlaps_members |(args.\1)
             else Excuse::Not_Same_Heading),
 
@@ -6658,7 +6658,7 @@ C<Relational>.
     disjoint_members::Relational : function
         returns {Boolean, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 1::""
-        is commutative
+        is_commutative
         map (if args.\0 =@ (args.\1) then |(args.\0) disjoint_members |(args.\1)
             else Excuse::Not_Same_Heading),
 
@@ -6730,7 +6730,7 @@ composing type C<Relational>.
     member_plus::Relational : function
         returns {Relational, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 1::""
-        is associative
+        is_associative
         map (if args.\0 =@ (args.\1) then select_Relational::
                 ( like: args.\0, heading: @(args.\0), body: |(args.\0) member_plus |(args.\1) )
             else Excuse::Not_Same_Heading),
@@ -6782,7 +6782,7 @@ virtual function C<except> aka C<∖> for the composing type C<Relational>.
     intersect::Relational : function
         returns {Relational, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 1::""
-        is {associative,idempotent}
+        is_associative is_idempotent
         map (if args.\0 =@ (args.\1) then select_Relational::
                 ( like: args.\0, heading: @(args.\0), body: |(args.\0) intersect |(args.\1) )
             else Excuse::Not_Same_Heading),
@@ -6807,7 +6807,7 @@ function C<intersect> aka C<∩> for the composing type C<Relational>.
     union::Relational : function
         returns {Relational, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 1::""
-        is idempotent
+        is_idempotent
         map (if args.\0 =@ (args.\1) then select_Relational::
                 ( like: args.\0, heading: @(args.\0), body: |(args.\0) union |(args.\1) )
             else Excuse::Not_Same_Heading),
@@ -6834,7 +6834,7 @@ composing type C<Relational>.
     exclusive::Relational : function
         returns {Relational, Excuse::Not_Same_Heading} matches (Relational, Relational)
         implements 1::""
-        is {associative,commutative}
+        is_associative is_commutative
         map (if args.\0 =@ (args.\1) then select_Relational::
                 ( like: args.\0, heading: @(args.\0), body: |(args.\0) exclusive |(args.\1) )
             else Excuse::Not_Same_Heading),
