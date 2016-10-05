@@ -1089,7 +1089,7 @@ corresponding operators I<%%>.
     nearest_multiple_of : function
         returns {Numerical, Excuse::Div_By_Zero}
         matches (Numerical, Numerical, Round_Meth)
-        map (if args.\1->is_zero then Excuse::Div_By_Zero()
+        map (if is_zero args.\1 then Excuse::Div_By_Zero()
             else args.\1 * (args.\0 div args.\1)),
 
     round : alias of nearest_multiple_of,
@@ -1150,7 +1150,7 @@ otherwise.
     modulo : function
         returns {Numerical, Excuse::Div_By_Zero}
         matches (Numerical, Numerical, Round_Meth)
-        map (if args.\1->is_zero then Excuse::Div_By_Zero()
+        map (if is_zero args.\1 then Excuse::Div_By_Zero()
             else args.\0 - (args.\0 nearest_multiple_of args.\1)),
 
     mod : alias of modulo,
@@ -1301,7 +1301,7 @@ this operator in postfix like I<n!>.
 
     gcd : function returns Integral_P matches (Integral_NN, Integral_NN)
         is_associative is_commutative is_idempotent
-        map ((if args.\1->is_zero then args.\0 else 0::(args.\1, mod::(args.\0, args.\1, To_Zero::())))
+        map ((if is_zero args.\1 then args.\0 else 0::(args.\1, mod::(args.\0, args.\1, To_Zero::())))
             ::?= 'Calculate using the Euclidean algorithm.'),
 
     greatest_common_divisor : alias of gcd,
@@ -1315,7 +1315,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
 
     lcm : function returns Integral_NN matches (Integral_NN, Integral_NN)
         is_associative is_commutative is_idempotent
-        map (if args.\0->is_zero or args.\1->is_zero then args.\0->zero
+        map (if is_zero args.\0 or is_zero args.\1 then zero args.\0
             else div::(args.\0 * (args.\1), args.\0 gcd args.\1, To_Zero::())),
 
     least_common_multiple : alias of lcm,
@@ -1328,7 +1328,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
 =head2 coprime
 
     coprime : function returns Boolean matches (Integral, Integral)
-        map ((abs::(args.\0) gcd abs::(args.\1)) = (args.\0->zero->succ)),
+        map ((abs::(args.\0) gcd abs::(args.\1)) = succ::(zero args.\0)),
 
 The function C<coprime> results in C<True> iff its 2 arguments C<0> and
 C<1> are coprime (their I<greatest common divisor> is 1), and C<False>
@@ -1750,14 +1750,14 @@ default and minmum value is C<0.0>; it has no maximum value.
     in_order::Fraction : function returns Boolean matches (Fraction, Fraction)
         implements 1::""
     map (
-        <-- (args.\0->denominator) = (args.\1->denominator)
-            :? in_order::(args.\0->numerator, args.\1->numerator)
+        <-- (denominator args.\0) = (denominator args.\1)
+            :? in_order::(numerator args.\0, numerator args.\1)
          :!
           (
-            common_d ::= lcm::(args.\0->denominator, args.\1->denominator);
+            common_d ::= lcm::(denominator args.\0, denominator args.\1);
             returns in_order::(
-                (args.\0->numerator) * div::(common_d, args.\0->denominator, To_Zero::()),
-                (args.\1->numerator) * div::(common_d, args.\1->denominator, To_Zero::()),
+                (numerator args.\0) * div::(common_d, denominator args.\0, To_Zero::()),
+                (numerator args.\1) * div::(common_d, denominator args.\1, To_Zero::()),
             );
           )
     ),
@@ -1790,7 +1790,7 @@ C<Fraction>.
 
     opposite::Fraction : function returns Fraction matches (Fraction)
         implements 1::""
-        map (-(args.\0->numerator) / (args.\0->denominator)),
+        map (-(numerator args.\0) / (denominator args.\0)),
 
 The function C<opposite::Fraction> implements the C<Numerical> virtual
 function C<opposite> aka C<additive_inverse> aka unary C<-> aka unary C<−>
@@ -1802,7 +1802,7 @@ for the composing type C<Fraction>.
         returns {Fraction, Excuse::Div_By_Zero} matches (Fraction)
         implements 1::""
         map (if args.\0 = 0.0 then Excuse::Div_By_Zero()
-            else (args.\0->denominator) / (args.\0->numerator)),
+            else (denominator args.\0) / (numerator args.\0)),
 
 The function C<reciprocal::Fraction> implements the C<Numerical> virtual
 function C<reciprocal> aka C<multiplicative_inverse> for the composing type
@@ -1812,7 +1812,7 @@ C<Fraction>.
 
     modulus::Fraction : function returns Fraction_NN matches (Fraction)
         implements 1::""
-        map (abs::(args.\0->numerator) / (args.\0->denominator)),
+        map (abs::(numerator args.\0) / (denominator args.\0)),
 
 The function C<modulus::Fraction> implements the C<Numerical>
 virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
@@ -1824,13 +1824,13 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
         is_associative is_commutative identity (0.0)
         repeater times::Fraction_Integer
     map (
-        <-- (args.\0->denominator) = (args.\1->denominator)
-            :? (args.\0->numerator) + (args.\1->numerator) / (args.\0->denominator)
+        <-- (denominator args.\0) = (denominator args.\1)
+            :? (numerator args.\0) + (numerator args.\1) / (denominator args.\0)
          :!
           (
-            common_d ::= lcm::(args.\0->denominator, args.\1->denominator);
-            returns ((args.\0->numerator) * div::(common_d, args.\0->denominator, To_Zero::()))
-                + ((args.\1->numerator) * div::(common_d, args.\1->denominator, To_Zero::()))
+            common_d ::= lcm::(denominator args.\0, denominator args.\1);
+            returns ((numerator args.\0) * div::(common_d, denominator args.\0, To_Zero::()))
+                + ((numerator args.\1) * div::(common_d, denominator args.\1, To_Zero::()))
                 / common_d;
           )
     ),
@@ -1853,8 +1853,8 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Fraction>.
         implements 1::""
         is_associative is_commutative identity (1.0)
         repeater integral_nn_power::Fraction
-        map (((args.\0->numerator) * (args.\1->numerator))
-            / ((args.\0->denominator) * (args.\1->denominator))),
+        map (((numerator args.\0) * (numerator args.\1))
+            / ((denominator args.\0) * (denominator args.\1))),
 
 The function C<times::Fraction> implements the C<Numerical> virtual function
 C<times> aka C<*> aka C<×> for the composing type C<Fraction>.
@@ -1864,7 +1864,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Fraction>.
     times::Fraction_Integer : function
         returns Fraction matches (Fraction, Integer)
         implements 1::""
-        map (((args.\0->numerator) * (args.\1)) / (args.\0->denominator)),
+        map (((numerator args.\0) * (args.\1)) / (denominator args.\0)),
 
 The function C<times::Fraction_Integer> implements the C<Numerical> virtual
 function C<times> aka C<*> aka C<×> for the composing type C<Fraction>,
@@ -1900,9 +1900,9 @@ the composing type C<Fraction>.
         matches (Fraction, Fraction, Round_Meth)
         implements 1::""
     map (
-        d ::= lcm::(args.\0->denominator, args.\1->denominator);
-        n0 ::= ((args.\0->numerator) * div::(d, args.\0->denominator, To_Zero::()));
-        n1 ::= ((args.\1->numerator) * div::(d, args.\1->denominator, To_Zero::()));
+        d ::= lcm::(denominator args.\0, denominator args.\1);
+        n0 ::= ((numerator args.\0) * div::(d, denominator args.\0, To_Zero::()));
+        n1 ::= ((numerator args.\1) * div::(d, denominator args.\1, To_Zero::()));
         returns if args.\1 = 0.0 then Excuse::Div_By_Zero()
             else div::(n0 * d, n1 * d, args.\2) / 1;
     ),
@@ -1928,7 +1928,7 @@ function C<integral_power> aka C<**> for the composing type C<Fraction>.
         returns {Fraction, Excuse::Zero_To_The_Zero} matches (Fraction, Integer_NN)
         implements 1::""
         map (if args.\0 = 0.0 and args.\1 = 0 then Excuse::Zero_To_The_Zero()
-            else ((args.\0->numerator) ** (args.\1)) / ((args.\0->denominator) ** (args.\1))),
+            else ((numerator args.\0) ** (args.\1)) / ((denominator args.\0) ** (args.\1))),
 
 The function C<integral_nn_power::Fraction> implements the C<Numerical>
 virtual function C<integral_nn_power> aka C<power> for the composing type
@@ -2195,7 +2195,7 @@ integers is in the range 0..1 inclusive.
 
     in_order::Bits : function returns Boolean matches (Bits, Bits)
         implements 1::""
-        map ((args.\0->Bits_to_String_Bits) in_order (args.\1->Bits_to_String_Bits)),
+        map ((Bits_to_String_Bits args.\0) in_order (Bits_to_String_Bits args.\1)),
 
 The function C<in_order::Bits> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Bits>.
@@ -2225,7 +2225,7 @@ type C<Bits>.
 
     substring_of::Bits : function returns Boolean matches (Bits, Bits)
         implements 1::""
-        map ((args.\0->Bits_to_String_Bits) substring_of (args.\1->Bits_to_String_Bits)),
+        map ((Bits_to_String_Bits args.\0) substring_of (Bits_to_String_Bits args.\1)),
 
 The function C<substring_of::Bits> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Bits>.
@@ -2235,8 +2235,8 @@ function C<substring_of> for the composing type C<Bits>.
     overlaps_string::Bits : function returns Boolean matches (Bits, Bits)
         implements 1::""
         is_commutative
-        map ((args.\0->Bits_to_String_Bits)
-            overlaps_string (args.\1->Bits_to_String_Bits)),
+        map ((Bits_to_String_Bits args.\0)
+            overlaps_string (Bits_to_String_Bits args.\1)),
 
 The function C<overlaps_string::Bits> implements the C<Stringy> virtual
 function C<overlaps_string> for the composing type C<Bits>.
@@ -2246,8 +2246,8 @@ function C<overlaps_string> for the composing type C<Bits>.
     disjoint_string::Bits : function returns Boolean matches (Bits, Bits)
         implements 1::""
         is_commutative
-        map ((args.\0->Bits_to_String_Bits)
-            disjoint_string (args.\1->Bits_to_String_Bits)),
+        map ((Bits_to_String_Bits args.\0)
+            disjoint_string (Bits_to_String_Bits args.\1)),
 
 The function C<disjoint_string::Bits> implements the C<Stringy> virtual
 function C<disjoint_string> for the composing type C<Bits>.
@@ -2258,8 +2258,8 @@ function C<disjoint_string> for the composing type C<Bits>.
         implements 1::""
         is_associative identity (\~?'')
         repeater replicate::Bits
-        map (Bits_from_String_Bits::((args.\0->Bits_to_String_Bits)
-            ~ (args.\1->Bits_to_String_Bits))),
+        map (Bits_from_String_Bits::((Bits_to_String_Bits args.\0)
+            ~ (Bits_to_String_Bits args.\1))),
 
 The function C<catenate::Bits> implements the C<Stringy> virtual function
 C<catenate> aka C<~> for the composing type C<Bits>.
@@ -2268,7 +2268,7 @@ C<catenate> aka C<~> for the composing type C<Bits>.
 
     replicate::Bits : function returns Bits matches (Bits, Integer_NN)
         implements 1::""
-        map (Bits_from_String_Bits::((args.\0->Bits_to_String_Bits) ~# (args.\1))),
+        map (Bits_from_String_Bits::((Bits_to_String_Bits args.\0) ~# (args.\1))),
 
 The function C<replicate::Bits> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Bits>.
@@ -2284,7 +2284,7 @@ in terms of the integer sequence of its C<0> argument.
 =head2 Bits_to_String_Bits
 
     Bits_to_String_Bits : function returns String::Bits matches (Bits)
-        map (args.\0->unwrap),
+        map (unwrap::(args.\0)),
 
 The function C<Bits_to_String_Bits> results in an integer sequence defining
 the bits of its C<Bits>-typed C<0> argument.
@@ -2320,7 +2320,7 @@ integers is in the range 0..255 inclusive.
 
     in_order::Blob : function returns Boolean matches (Blob, Blob)
         implements 1::""
-        map ((args.\0->Blob_to_Octets) in_order (args.\1->Blob_to_Octets)),
+        map ((Blob_to_Octets args.\0) in_order (Blob_to_Octets args.\1)),
 
 The function C<in_order::Blob> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Blob>.
@@ -2350,7 +2350,7 @@ type C<Blob>.
 
     substring_of::Blob : function returns Boolean matches (Blob, Blob)
         implements 1::""
-        map ((args.\0->Blob_to_Octets) substring_of (args.\1->Blob_to_Octets)),
+        map ((Blob_to_Octets args.\0) substring_of (Blob_to_Octets args.\1)),
 
 The function C<substring_of::Blob> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Blob>.
@@ -2360,7 +2360,7 @@ function C<substring_of> for the composing type C<Blob>.
     overlaps_string::Blob : function returns Boolean matches (Blob, Blob)
         implements 1::""
         is_commutative
-        map ((args.\0->Blob_to_Octets) overlaps_string (args.\1->Blob_to_Octets)),
+        map ((Blob_to_Octets args.\0) overlaps_string (Blob_to_Octets args.\1)),
 
 The function C<overlaps_string::Blob> implements the C<Stringy> virtual
 function C<overlaps_string> for the composing type C<Blob>.
@@ -2370,7 +2370,7 @@ function C<overlaps_string> for the composing type C<Blob>.
     disjoint_string::Blob : function returns Boolean matches (Blob, Blob)
         implements 1::""
         is_commutative
-        map ((args.\0->Blob_to_Octets) disjoint_string (args.\1->Blob_to_Octets)),
+        map ((Blob_to_Octets args.\0) disjoint_string (Blob_to_Octets args.\1)),
 
 The function C<disjoint_string::Blob> implements the C<Stringy> virtual
 function C<disjoint_string> for the composing type C<Blob>.
@@ -2381,7 +2381,7 @@ function C<disjoint_string> for the composing type C<Blob>.
         implements 1::""
         is_associative identity (\~+'')
         repeater replicate::Blob
-        map (Blob_from_Octets::((args.\0->Blob_to_Octets) ~ (args.\1->Blob_to_Octets))),
+        map (Blob_from_Octets::((Blob_to_Octets args.\0) ~ (Blob_to_Octets args.\1))),
 
 The function C<catenate::Blob> implements the C<Stringy> virtual function
 C<catenate> aka C<~> for the composing type C<Blob>.
@@ -2390,7 +2390,7 @@ C<catenate> aka C<~> for the composing type C<Blob>.
 
     replicate::Blob : function returns Blob matches (Blob, Integer_NN)
         implements 1::""
-        map (Blob_from_Octets::((args.\0->Blob_to_Octets) ~# (args.\1))),
+        map (Blob_from_Octets::((Blob_to_Octets args.\0) ~# (args.\1))),
 
 The function C<replicate::Blob> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Blob>.
@@ -2406,7 +2406,7 @@ terms of the integer sequence of its C<0> argument.
 =head2 Blob_to_Octets
 
     Blob_to_Octets : function returns String::Octets matches (Blob)
-        map (args.\0->unwrap),
+        map (unwrap::(args.\0)),
 
 The function C<Blob_to_Octets> results in an integer sequence defining the
 octets of its C<Blob>-typed C<0> argument.
@@ -2525,7 +2525,7 @@ which exists for convenient self-documentation of C<Text>-related code.
 =head2 Text::Unicode
 
     Text::Unicode : selection of Text
-        where (String::Unicode_Codes::(args.\0->Text_from_Maximal_Chars)),
+        where (String::Unicode_Codes::(Text_from_Maximal_Chars args.\0)),
 
 The selection contract C<Text::Unicode> represents the infinite type
 consisting just of the C<Text> values for which every one of their member
@@ -2546,7 +2546,7 @@ integers is in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
 =head2 Text::ASCII
 
     Text::ASCII : selection of Text::Unicode
-        where (String::ASCII_Chars::(args.\0->Text_from_Unicode_Codes)),
+        where (String::ASCII_Chars::(Text_from_Unicode_Codes args.\0)),
 
 The selection contract C<Text::ASCII> represents the infinite type
 consisting just of the C<Text> values for which every one of their member
@@ -2568,7 +2568,7 @@ integers is in the range 0..127 inclusive.
 
     in_order::Text : function returns Boolean matches (Text, Text)
         implements 1::""
-        map ((args.\0->Text_to_Maximal_Chars) in_order (args.\1->Text_to_Maximal_Chars)),
+        map ((Text_to_Maximal_Chars args.\0) in_order (Text_to_Maximal_Chars args.\1)),
 
 The function C<in_order::Text> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Text>.
@@ -2598,8 +2598,8 @@ type C<Text>.
 
     substring_of::Text : function returns Boolean matches (Text, Text)
         implements 1::""
-        map ((args.\0->Text_to_Maximal_Chars)
-            substring_of (args.\1->Text_to_Maximal_Chars)),
+        map ((Text_to_Maximal_Chars args.\0)
+            substring_of (Text_to_Maximal_Chars args.\1)),
 
 The function C<substring_of::Text> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Text>.
@@ -2609,8 +2609,8 @@ function C<substring_of> for the composing type C<Text>.
     overlaps_string::Text : function returns Boolean matches (Text, Text)
         implements 1::""
         is_commutative
-        map ((args.\0->Text_to_Maximal_Chars)
-            overlaps_string (args.\1->Text_to_Maximal_Chars)),
+        map ((Text_to_Maximal_Chars args.\0)
+            overlaps_string (Text_to_Maximal_Chars args.\1)),
 
 The function C<overlaps_string::Text> implements the C<Stringy> virtual
 function C<overlaps_string> for the composing type C<Text>.
@@ -2620,8 +2620,8 @@ function C<overlaps_string> for the composing type C<Text>.
     disjoint_string::Text : function returns Boolean matches (Text, Text)
         implements 1::""
         is_commutative
-        map ((args.\0->Text_to_Maximal_Chars)
-            disjoint_string (args.\1->Text_to_Maximal_Chars)),
+        map ((Text_to_Maximal_Chars args.\0)
+            disjoint_string (Text_to_Maximal_Chars args.\1)),
 
 The function C<disjoint_string::Text> implements the C<Stringy> virtual
 function C<disjoint_string> for the composing type C<Text>.
@@ -2632,8 +2632,8 @@ function C<disjoint_string> for the composing type C<Text>.
         implements 1::""
         is_associative identity ('')
         repeater replicate::Text
-        map (Text_from_Maximal_Chars::((args.\0->Text_to_Maximal_Chars)
-            ~ (args.\1->Text_to_Maximal_Chars))),
+        map (Text_from_Maximal_Chars::((Text_to_Maximal_Chars args.\0)
+            ~ (Text_to_Maximal_Chars args.\1))),
 
 The function C<catenate::Text> implements the C<Stringy> virtual function
 C<catenate> aka C<~> for the composing type C<Text>.
@@ -2642,7 +2642,7 @@ C<catenate> aka C<~> for the composing type C<Text>.
 
     replicate::Text : function returns Text matches (Text, Integer_NN)
         implements 1::""
-        map (Text_from_Maximal_Chars::((args.\0->Text_to_Maximal_Chars) ~# (args.\1))),
+        map (Text_from_Maximal_Chars::((Text_to_Maximal_Chars args.\0) ~# (args.\1))),
 
 The function C<replicate::Text> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Text>.
@@ -2671,7 +2671,7 @@ C<Maximal_Chars> character mapping of its C<0> argument.
 
     Text_to_Maximal_Chars : function
         returns String::Maximal_Chars matches (Text)
-        map (args.\0->unwrap),
+        map (unwrap::(args.\0)),
 
 The function C<Text_to_Maximal_Chars> results in an integer sequence in the
 proprietary C<Maximal_Chars> character mapping that corresponds to its
@@ -2681,7 +2681,7 @@ C<Text>-typed C<0> argument.
 
     Text_from_Unicode_Codes : function
         returns Text::Unicode matches (String::Unicode_Codes)
-        map (args.\0->Text_from_Maximal_Chars),
+        map (Text_from_Maximal_Chars args.\0),
 
 The function C<Text_from_Unicode_Codes> results in the C<Text> value selected
 in terms of an integer sequence in the standard Unicode codepoint
@@ -2691,7 +2691,7 @@ mapping of its C<0> argument.
 
     Text_to_Unicode_Codes : function
         returns String::Unicode_Codes matches (Text::Unicode)
-        map (args.\0->Text_to_Maximal_Chars),
+        map (Text_to_Maximal_Chars args.\0),
 
 The function C<Text_to_Unicode_Codes> results in an integer sequence in the
 standard Unicode codepoint mapping that corresponds to its
@@ -2701,7 +2701,7 @@ C<Text>-typed C<0> argument.
 
     Text_from_ASCII_Chars : function
         returns Text::ASCII matches (String::ASCII_Chars)
-        map (args.\0->Text_from_Unicode_Codes),
+        map (Text_from_Unicode_Codes args.\0),
 
 The function C<Text_from_ASCII_Chars> results in the C<Text> value selected
 in terms of an integer sequence in the standard 7-bit ASCII character
@@ -2711,7 +2711,7 @@ mapping of its C<0> argument.
 
     Text_to_ASCII_Chars : function
         returns String::ASCII_Chars matches (Text::ASCII)
-        map (args.\0->Text_to_Unicode_Codes),
+        map (Text_to_Unicode_Codes args.\0),
 
 The function C<Text_to_ASCII_Chars> results in an integer sequence in the
 standard 7-bit ASCII character mapping that corresponds to its
@@ -2787,7 +2787,7 @@ pairs and out of range etc stuff.>
 =head2 Blob_is_ASCII
 
     Blob_is_ASCII : function returns Boolean matches (Blob)
-        map (String::ASCII_Chars(args.\0->Blob_to_Octets)),
+        map (String::ASCII_Chars(Blob_to_Octets args.\0)),
 
 I<TODO.>
 
@@ -2796,9 +2796,9 @@ I<TODO.>
     Text_from_ASCII_Blob : function
         returns {Text::ASCII, Excuse::ASCII::High_Bit_Not_Zero} matches (Blob)
     map (
-        octets ::= (args.\0->Blob_to_Octets);
+        octets ::= (Blob_to_Octets args.\0);
         returns if String::ASCII_Chars(octets)
-            then octets->Text_from_ASCII_Chars
+            then Text_from_ASCII_Chars octets
             else Excuse::ASCII::High_Bit_Not_Zero();
     ),
 
@@ -2809,8 +2809,8 @@ I<TODO.  Note, still have to define that Excuse.>
     Text_from_ASCII_Blob_with_repl_Text : function
         returns Text::ASCII matches (Blob, Text::ASCII)
     map (
-        src_octets ::= (args.\0->Blob_to_Octets);
-        repl_chars ::= (args.\1->Text_to_ASCII_Chars);
+        src_octets ::= (Blob_to_Octets args.\0);
+        repl_chars ::= (Text_to_ASCII_Chars args.\1);
         result_chars ::= (
             given #repl_chars
                 when 0 then
@@ -2825,7 +2825,7 @@ I<TODO.  Note, still have to define that Excuse.>
                             \<-- (1 : repl_chars,)
                         reduce \catenate::()
         );
-        returns result_chars->Text_from_ASCII_Chars;
+        returns Text_from_ASCII_Chars result_chars;
     ),
 
 I<TODO.  Each invalid octet encountered is replaced by the substitution text
@@ -2836,7 +2836,7 @@ is no good implicit default in ASCII, unlike with Unicode.>
 =head2 Text_to_ASCII_Blob
 
     Text_to_ASCII_Blob : function returns Blob matches (Text::ASCII)
-        map (args.\0->Text_to_ASCII_Chars->Blob_from_Octets),
+        map (Blob_from_Octets::(Text_to_ASCII_Chars args.\0)),
 
 I<TODO.>
 
@@ -3941,7 +3941,7 @@ assuming incorrectly that I<V> already has a member whose index is I<I>.
 
     singular::Positional : function returns Boolean matches (Positional)
         implements 1::""
-        map ((args.\0->unique_count) = 1),
+        map ((unique_count args.\0) = 1),
 
 The function C<singular::Positional> results in C<True> iff its C<0>
 argument has exactly 1 distinct member value, and C<False> otherwise.  This
@@ -3966,7 +3966,7 @@ C<Positional>.
     subset_of::Positional : function
         returns Boolean matches (Positional, Positional)
         implements 1::""
-        map ((args.\0->to_Bag) subset_of (args.\1->to_Bag)),
+        map ((to_Bag args.\0) subset_of (to_Bag args.\1)),
 
 The function C<subset_of::Positional> results in C<True> iff the multiset
 of members of its C<0> argument is a subset of the multiset of members of
@@ -3980,7 +3980,7 @@ the composing type C<Positional>.
         returns Boolean matches (Positional, Positional)
         implements 1::""
         is_commutative
-        map ((args.\0->to_Bag) same_members (args.\1->to_Bag)),
+        map ((to_Bag args.\0) same_members (to_Bag args.\1)),
 
 The function C<same_members::Positional> results in C<True> iff the
 multiset of members of its C<0> argument is the same as the multiset of
@@ -3996,7 +3996,7 @@ virtual function C<same_members> for the composing type C<Positional>.
         returns Boolean matches (Positional, Positional)
         implements 1::""
         is_commutative
-        map ((args.\0->to_Bag) overlaps_members (args.\1->to_Bag)),
+        map ((to_Bag args.\0) overlaps_members (to_Bag args.\1)),
 
 The function C<overlaps_members::Positional> results in C<True> iff, given
 I<X> as the multiset of members of its argument C<0> and I<Y> as the
@@ -4012,7 +4012,7 @@ C<overlaps_members> for the composing type C<Positional>.
         returns Boolean matches (Positional, Positional)
         implements 1::""
         is_commutative
-        map ((args.\0->to_Bag) disjoint_members (args.\1->to_Bag)),
+        map ((to_Bag args.\0) disjoint_members (to_Bag args.\1)),
 
 The function C<disjoint_members::Positional> results in C<True> iff the
 multiset of members of its C<0> argument has no member values in common
@@ -4038,7 +4038,7 @@ type C<Positional>.
 
     unique_count::Positional : function returns Integer_NN matches (Positional)
         implements 1::""
-        map (args.\0->to_Set->count),
+        map (count::(to_Set args.\0)),
 
 The function C<unique_count::Positional> results in the integral count of
 the distinct member values of its C<0> argument.  This function implements
@@ -4163,7 +4163,7 @@ function's C<0> argument in the same order minus 1 existing element whose
 index position I<K> is equal to its C<1> argument.  This function will fail
 if either the C<0> argument doesn't have any members or if I<K> is not
 equal to the C<0> argument's C<last_index>.  This function implements the
-C<Accessible> virtual function C<shiftless_remove_at> aka C<.->  for the
+C<Accessible> virtual function C<shiftless_remove_at> aka C<.-> for the
 composing type C<Positional>.
 
 =head2 replace_or_insert_at (Positional)
@@ -4215,7 +4215,7 @@ effort.
 
     squish : function returns Positional matches (Positional)
         map (args.\0 map \(( group : args.\0, member : False ))
-            ->nest map \(args.\0.\group));
+            pipe nest map \(args.\0.\group));
 
 TODO CAN AVOID SECOND LAMBDA?
 The function C<squish> results in the value of its C<0> argument's
@@ -4707,7 +4707,7 @@ I<TODO.>
 
     to_Set::Array : function returns Set matches (Array)
         implements 1::""
-        map (args.\0->to_Bag->to_Set),
+        map (to_Set::(to_Bag args.\0)),
 
 The function C<to_Set::Array> results in the C<Set> value that has, for
 every distinct member value I<V> of the function's C<0> argument, exactly 1
@@ -4875,7 +4875,7 @@ aka C<∅> for the composing type C<Set>.
 
     singular::Set : function returns Boolean matches (Set)
         implements 1::""
-        map (args.\0->unwrap->singular),
+        map (singular unwrap::(args.\0)),
 
 The function C<singular::Set> results in C<True> iff its C<0> argument has
 exactly 1 member value, and C<False> otherwise.  This function implements
@@ -4887,7 +4887,7 @@ C<Set>.
     only_member::Set : function returns Any matches (Set)
         implements 1::""
         accepts (singular args.\0)
-        map (args.\0->unwrap->only_member),
+        map (only_member unwrap::(args.\0)),
 
 The function C<only_member::Set> results in its C<0> argument's only member
 value.  This function will fail if the argument doesn't have exactly 1
@@ -4898,7 +4898,7 @@ C<only_member> for the composing type C<Set>.
 
     has_n::Set : function returns Boolean matches (Set, Any, Integer_NN)
         implements 1::""
-        map (has_n::(args.\0->unwrap, args.\1, args.\2)),
+        map (has_n::(unwrap::(args.\0), args.\1, args.\2)),
 
 The function C<has_n::Set> results in C<True> iff either its C<2> argument
 is zero or its C<0> argument has a member equal to its C<1> argument and
@@ -4910,7 +4910,7 @@ type C<Set>.
 
     multiplicity::Set : function returns Integer_NN matches (Set, Any)
         implements 1::""
-        map (args.\0->unwrap multiplicity args.\1),
+        map (unwrap::(args.\0) multiplicity args.\1),
 
 The function C<multiplicity::Set> results in 1 if its C<0> argument
 has a member equal to its C<1> argument; otherwise it results in 0.  This
@@ -4941,7 +4941,7 @@ composing type C<Set>.
 
     subset_of::Set : function returns Boolean matches (Set, Set)
         implements 1::""
-        map ((args.\0->unwrap) subset_of (args.\1->unwrap)),
+        map (unwrap::(args.\0) subset_of unwrap::(args.\1)),
 
 The function C<subset_of::Set> results in C<True> iff the set of members of
 its C<0> argument is a subset of the set of members of its C<1> argument;
@@ -4967,7 +4967,7 @@ function C<same_members> for the composing type C<Set>.
     overlaps_members::Set : function returns Boolean matches (Set, Set)
         implements 1::""
         is_commutative
-        map ((args.\0->unwrap) overlaps_members (args.\1->unwrap)),
+        map (unwrap::(args.\0) overlaps_members unwrap::(args.\1)),
 
 The function C<overlaps_members::Set> results in C<True> iff, given
 I<X> as the set of members of its argument C<0> and I<Y> as the
@@ -4982,7 +4982,7 @@ C<overlaps_members> for the composing type C<Set>.
     disjoint_members::Set : function returns Boolean matches (Set, Set)
         implements 1::""
         is_commutative
-        map ((args.\0->unwrap) disjoint_members (args.\1->unwrap)),
+        map (unwrap::(args.\0) disjoint_members unwrap::(args.\1)),
 
 The function C<disjoint_members::Set> results in C<True> iff the
 set of members of its C<0> argument has no member values in common
@@ -4994,7 +4994,7 @@ C<disjoint_members> for the composing type C<Set>.
 
     any::Set : function returns Boolean matches (Set, Signature)
         implements 1::""
-        map (args.\0->unwrap any args.\1),
+        map (unwrap::(args.\0) any args.\1),
 
 I<TODO.>
 
@@ -5003,7 +5003,7 @@ I<TODO.>
     insert_n::Set : function returns Set matches (Set, Any, Integer_NN)
         implements 1::""
         map (args.\0 has args.\1 or args.\2 = 0 :? args.\0
-            :! \Set wrap insert_n::(args.\0->unwrap, args.\1, 1)),
+            :! \Set wrap insert_n::(unwrap::(args.\0), args.\1, 1)),
 
 The function C<insert_n::Set> results in the C<Set> value that has all of
 the members of the function's C<0> argument; but, if the C<2> argument is
@@ -5015,7 +5015,7 @@ function C<insert_n> for the composing type C<Set>.
 
     remove_n::Set : function returns Set matches (Set, Any, Integer_NN)
         implements 1::""
-        map (\Set wrap remove_n::(args.\0->unwrap, args.\1, args.\2)),
+        map (\Set wrap remove_n::(unwrap::(args.\0), args.\1, args.\2)),
 
 The function C<remove_n::Set> results in the C<Set> value that has all of
 the members of the function's C<0> argument; but, if the C<2> argument is
@@ -5039,7 +5039,7 @@ virtual function C<member_plus> aka C<⊎> for the composing type C<Set>.
 
     except::Set : function returns Set matches (Set, Set)
         implements 1::""
-        map (\Set wrap ((args.\0->unwrap) except (args.\1->unwrap))),
+        map (\Set wrap (unwrap::(args.\0) except unwrap::(args.\1))),
 
 The function C<except::Set> results in the I<set difference> between
 its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
@@ -5053,7 +5053,7 @@ for the composing type C<Set>.
     intersect::Set : function returns Set matches (Set, Set)
         implements 1::""
         is_associative is_commutative is_idempotent
-        map (\Set wrap ((args.\0->unwrap) intersect (args.\1->unwrap))),
+        map (\Set wrap (unwrap::(args.\0) intersect unwrap::(args.\1))),
 
 The function C<intersect::Set> results in the I<set intersection> of
 its 2 arguments C<0> and C<1>.  The result is the C<Set> value that has all
@@ -5066,7 +5066,7 @@ function C<intersect> aka C<∩> for the composing type C<Set>.
     union::Set : function returns Set matches (Set, Set)
         implements 1::""
         is_associative is_commutative is_idempotent identity ({})
-        map (\Set wrap ((args.\0->unwrap) union (args.\1->unwrap))),
+        map (\Set wrap (unwrap::(args.\0) union unwrap::(args.\1))),
 
 The function C<union::Set> results in the I<set union> of its 2
 arguments C<0> and C<1>.  The result is the C<Set> value that has all of
@@ -5079,7 +5079,7 @@ virtual function C<union> aka C<∪> for the composing type C<Set>.
     exclusive::Set : function returns Set matches (Set, Set)
         implements 1::""
         is_associative is_commutative identity ({})
-        map (\Set wrap ((args.\0->unwrap) exclusive (args.\1->unwrap))),
+        map (\Set wrap (unwrap::(args.\0) exclusive unwrap::(args.\1))),
 
 The function C<exclusive::Set> results in the I<set symmetric
 difference> of its 2 arguments C<0> and C<1>.  The result is the C<Set>
@@ -5093,7 +5093,7 @@ aka C<symm_diff> aka C<∆> for the composing type C<Set>.
     nest::Set : function returns Set matches (Set)
         implements 1::""
         accepts (...)
-        map (\Set wrap (args.\0->unwrap->nest)),
+        map (\Set wrap (nest unwrap::(args.\0))),
 
 I<TODO.>
 
@@ -5102,7 +5102,7 @@ I<TODO.>
     unnest::Set : function returns Set matches (Set)
         implements 1::""
         accepts (...)
-        map (\Set wrap (args.\0->unwrap->unnest)),
+        map (\Set wrap (unnest unwrap::(args.\0))),
 
 I<TODO.>
 
@@ -5110,7 +5110,7 @@ I<TODO.>
 
     where::Set : function returns Set matches (Set, Signature)
         implements 1::""
-        map (\Set wrap (args.\0->unwrap where args.\1)),
+        map (\Set wrap (unwrap::(args.\0) where args.\1)),
 
 I<TODO.>
 
@@ -5118,7 +5118,7 @@ I<TODO.>
 
     map::Set : function returns Set matches (Set, Function_Call_But_0)
         implements 1::""
-        map (\Set wrap (args.\0->unwrap map args.\1)),
+        map (\Set wrap (unwrap::(args.\0) map args.\1)),
 
 I<TODO.>
 
@@ -5126,7 +5126,7 @@ I<TODO.>
 
     reduce::Set : function returns Any matches (Set, Function_Call_But_0_1)
         implements 1::""
-        map (\Set wrap (args.\0->unwrap reduce args.\1)),
+        map (\Set wrap (unwrap::(args.\0) reduce args.\1)),
 
 I<TODO.>
 
@@ -5144,7 +5144,7 @@ C<?|> for the composing type C<Set>.
 
     to_Bag::Set : function returns Bag matches (Set)
         implements 1::""
-        map (args.\0->unwrap),
+        map (unwrap::(args.\0)),
 
 The function C<to_Bag::Set> results in the C<Bag> value that has all of the
 members of the function's C<0> argument.  This function implements the
@@ -5155,7 +5155,7 @@ C<Set>.
 
     count::Set : function returns Integer_NN matches (Set)
         implements 1::""
-        map (args.\0->unwrap->count),
+        map (count unwrap::(args.\0)),
 
 The function C<count::Set> results in the integral count of the members
 of its C<0> argument.  This function implements the C<Discrete> virtual
@@ -5165,7 +5165,7 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Set>.
 
     unique_count::Set : function returns Integer_NN matches (Set)
         implements 1::""
-        map (args.\0->count),
+        map (count args.\0),
 
 The function C<unique_count::Set> results in the integral count of the
 members of its C<0> argument; its behavior is identical to C<count> given
@@ -5176,7 +5176,7 @@ function C<unique_count> for the composing type C<Set>.
 
     order_using::Set : function returns Array matches (Set, Function_Call_But_0_1)
         implements 1::""
-        map (\Set wrap (args.\0->unwrap order_using args.\1)),
+        map (\Set wrap (unwrap::(args.\0) order_using args.\1)),
 
 The function C<order_using::Set> results in the C<Array> value that represents
 the same set of members as its C<0> argument but that the members are
@@ -5498,7 +5498,7 @@ I<TODO.>
 
     to_Set::Bag : function returns Set matches (Bag)
         implements 1::""
-        map (\Set wrap (args.\0->unique)),
+        map (\Set wrap (unique args.\0)),
 
 The function C<to_Set::Bag> results in the C<Set> value that has, for every
 distinct member value I<V> of the function's C<0> argument, exactly 1
