@@ -215,7 +215,7 @@ Grammar:
             <language_name> <sp> ';' <sp>
             [<foundational_indicator> <sp> ';' <sp>]?
             [<script_name> <sp> ';' <sp>]?
-            [<package> <sp> ';' <sp>]*
+            <Package> <sp> ';' <sp>
         <sp>
 
 See the sections in this file named L</LANGUAGE NAME>, L<FOUNDATIONAL
@@ -861,43 +861,32 @@ which live within a multi-level namespace.
 
 Grammar:
 
-    <package> ::=
-        package <sp>
-        '{' <sp>
-            <pkg_identity> <sp> ';' <sp>
-            <pkg_foundation> <sp> ';' <sp>
-            [<pkg_uses> <sp> ';' <sp>]?
-            [<pkg_entry_point> <sp> ';' <sp>]?
-            [<pkg_materials_floating> <sp> ';' <sp>]?
-            [<pkg_materials> <sp> ';' <sp>]?
-        <sp> '}'
+    <Package> ::=
+        package <sp> <Tuple>
 
     <pkg_identity> ::=
-        identity <sp> <x> <sp> '::=' <sp> <x>
+        '(' <sp> <x> <sp> ':' <sp> <x> <sp> ')'
 
     <pkg_foundation> ::=
-        foundation <sp> <x>
+        <x>
 
     <pkg_uses> ::=
-        uses <sp>
-        '{' <sp>
-            [<x> <sp> '::=' <sp> <x> <sp> ';' <sp>]*
-        <sp> '}'
+        '(' <sp>
+            [<x> <sp> ':' <sp> <x> <sp> ',' <sp>]*
+        <sp> ')'
 
-    <pkg_entry_point> ::=
-        entry <sp> <entry_point_kind> <sp> by <sp> <entry_point_rtn_name>
+    <pkg_entry> ::=
+        <entry_point_kind> <sp> by <sp> <entry_point_rtn_name>
 
     <entry_point_kind> ::=
         performance | value | retrieval | replacement
 
-    <pkg_materials_floating> ::=
-        floating <sp>
+    <pkg_floating> ::=
         '{' <sp>
             [<folder_name> <sp> ',' <sp>]*
         <sp> '}'
 
     <pkg_materials> ::=
-        materials <sp>
         '{' <sp>
             folders...
             binders...
@@ -906,6 +895,11 @@ Grammar:
 
     <named_material> ::=
         <material_name> <sp> '::=' <sp> <material>
+
+I<TODO.  Valid attr names in the "Package" Tuple commalist are these:
+{identity, foundation, uses, entry, floating, materials};
+the 6 pkg_* above denote the attribute asset for each;
+{identity,foundation} are mandatory attrs, the rest are not.>
 
 I<TODO.  See also about binders, folder declarations, etc.>
 I<Remember that "floating" can't search inside a binder, can only resolve to a binder or parent.>
@@ -1031,6 +1025,13 @@ Grammar:
         | <conditional_expr>
         | <fail_expr>
         | ...
+        | <Package>
+        | <pkg_identity>
+        | <pkg_foundation>
+        | <pkg_uses>
+        | <pkg_entry>
+        | <pkg_floating>
+        | <pkg_materials>
 
     <delimiting_expr> ::=
         '(' <sp> [
@@ -1830,7 +1831,7 @@ Grammar:
         <expr>
 
     <postcircumfixed_func_invo_expr> ::=
-        <generic_func_name> <sp> '::'? <sp> '(' <sp> <attr_commalist> <sp> ')'
+        <generic_func_name> <sp> '::'? <sp> <Tuple>
 
 I<TODO.>
 

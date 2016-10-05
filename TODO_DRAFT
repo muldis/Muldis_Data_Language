@@ -14,6 +14,36 @@ resources of everyone else.
 
 ----------
 
+* Notes for 2016-10-04:
+- Paradigm:
+- All Muldis D source code is a tree (or graph) of expression nodes, whose
+union type is Expression.
+- Muldis D code is composed wholly of nested lexical contexts,
+each with its own "args", each with its own namespace for "foo ::= ..." etc.
+Between each lexical context is a lexical boundary.
+Crossing a lexical boundary denotes an effective delay in execution of the
+inner context relative to the outer context.
+- A lexical context is declared by either of several kinds of expression
+nodes, those that declare a function or procedure body or something similar.
+- These nodes / syntaxes declare a nested lexical context, the ... in question:
+    package (x:y,...)     yields Package selector node
+    function (x:y,...)    yields Function selector node
+    procedure (x:y,...)   yields Procedure selector node
+    \(...;...)            yields Function_Body or x selector node
+    \[...;...]            yields Procedure_Body or x selector node
+... since we want the inner code to be written normally within such and be
+treated as a constant of sorts to the outer context.
+- In contrast, nodes like these do NOT declare a lexical context:
+    \Package wrap (...)     yields Capsule selector node or func call node
+    \Function wrap (...)    yields Capsule selector node or func call node
+    \Procedure wrap (...)   yields Capsule selector node or func call node
+... since these are generally constructing code dynamically from named nodes
+or variables declared in the outer scope.
+- A Muldis D Plain Text source code string must, at its outer level,
+aside from leading declarations to help understand the syntax,
+consist of a "package (...)" node; if one wishes to declare multiple
+packages in the file/string, they must be nested inside this single one.
+
 * Notes for 2016-10-01:
 - Major syntax changes involving generic expressions, which can be anywhere,
 and material declarations.
