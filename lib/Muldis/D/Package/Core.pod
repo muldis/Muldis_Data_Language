@@ -1503,15 +1503,15 @@ virtual function C<multiple_of> for the composing type C<Integer>.
         returns {Fraction, Excuse::Div_By_Zero} matches (Integer, Integer)
         implements 1::""
     map (
-        n ::= (args.\0);
-        d ::= (args.\1);
+        n ::= args.\0;
+        d ::= args.\1;
 
         returns if d = 0 then Excuse::Div_By_Zero() else q;
 
-        q ::= (\Fraction wrap (
+        q ::= \Fraction wrap (
             numerator   : div::((d > 0 :? n :! -n), gcd, To_Zero::()),
             denominator : div::((d > 0 :? d :! -d), gcd, To_Zero::()),
-        ));
+        );
 
         gcd ::= gcd::(abs::(n), abs::(d));
     ),
@@ -1527,30 +1527,29 @@ the composing type C<Integer>.
         matches (Integer, Integer, Round_Meth)
         implements 1::""
     map (
-        dividend   ::= (args.\0);
-        divisor    ::= (args.\1);
-        round_meth ::= (args.\2);
+        dividend   ::= args.\0;
+        divisor    ::= args.\1;
+        round_meth ::= args.\2;
 
         returns if divisor = 0 then Excuse::Div_By_Zero() else e1;
 
         e1 ::?= 'This is the case where we are dividing by a non-zero.';
 
-        e1 ::= (
-               dividend = 0       :? 0
+        e1 ::= dividend = 0       :? 0
             :! divisor  = 1       :? dividend
             :! dividend = divisor :? 1
             :! divisor  = -1      :? -dividend
             :!                       e2
-        );
+        ;
 
         e2 ::?= 'This is the case where the divisor and dividend do not'
             ' equal each other and neither of them is a zero or a one.';
 
         e2 ::= (
-            real_q_is_neg ::= (dividend < 0 xor divisor < 0);
-            rtz_quotient  ::= (FDN__Integer_divided_by_rtz
-                ^<-- (dividend, divisor));
-            rtz_remainder ::= (dividend - (divisor * rtz_quotient));
+            real_q_is_neg ::= dividend < 0 xor divisor < 0;
+            rtz_quotient  ::= FDN__Integer_divided_by_rtz
+                ^<-- (dividend, divisor);
+            rtz_remainder ::= dividend - (divisor * rtz_quotient);
 
             returns rtz_remainder = 0 :? rtz_quotient :! e3;
         );
@@ -1560,9 +1559,9 @@ the composing type C<Integer>.
             ' have a fractional part, so we decide how to round that.';
 
         e3 ::= (
-            rti_quotient ::= (rtz_quotient + (real_q_is_neg :? -1 :! 1));
-            rdn_quotient ::= (rtz_quotient + (real_q_is_neg :? -1 :! 0));
-            rup_quotient ::= (rtz_quotient + (real_q_is_neg :?  0 :! 1));
+            rti_quotient ::= rtz_quotient + (real_q_is_neg :? -1 :! 1);
+            rdn_quotient ::= rtz_quotient + (real_q_is_neg :? -1 :! 0);
+            rup_quotient ::= rtz_quotient + (real_q_is_neg :?  0 :! 1);
 
             returns round_meth :?? {
                 Down::()    : rdn_quotient,
@@ -1580,9 +1579,9 @@ the composing type C<Integer>.
             ' exactly one-half so we decide how to round that.';
 
         e4 ::= (
-            q ::= (FDN__Integer_divided_by_rtz ^<-- (abs::(rtz_quotient),2))
-            r ::= (abs::(rtz_quotient) - (2 * q));
-            rtz_quotient_is_even ::= (r = 0);
+            q ::= FDN__Integer_divided_by_rtz ^<-- (abs::(rtz_quotient),2)
+            r ::= abs::(rtz_quotient) - (2 * q);
+            rtz_quotient_is_even ::= r = 0;
 
             returns round_meth :?? {
                 Half_Down::()    : rdn_quotient,
@@ -1901,8 +1900,8 @@ the composing type C<Fraction>.
         implements 1::""
     map (
         d ::= lcm::(denominator args.\0, denominator args.\1);
-        n0 ::= ((numerator args.\0) * div::(d, denominator args.\0, To_Zero::()));
-        n1 ::= ((numerator args.\1) * div::(d, denominator args.\1, To_Zero::()));
+        n0 ::= (numerator args.\0) * div::(d, denominator args.\0, To_Zero::());
+        n1 ::= (numerator args.\1) * div::(d, denominator args.\1, To_Zero::());
         returns if args.\1 = 0.0 then Excuse::Div_By_Zero()
             else div::(n0 * d, n1 * d, args.\2) / 1;
     ),
@@ -2796,7 +2795,7 @@ I<TODO.>
     Text_from_ASCII_Blob : function
         returns {Text::ASCII, Excuse::ASCII::High_Bit_Not_Zero} matches (Blob)
     map (
-        octets ::= (Blob_to_Octets args.\0);
+        octets ::= Blob_to_Octets args.\0;
         returns if String::ASCII_Chars(octets)
             then Text_from_ASCII_Chars octets
             else Excuse::ASCII::High_Bit_Not_Zero();
@@ -2809,9 +2808,9 @@ I<TODO.  Note, still have to define that Excuse.>
     Text_from_ASCII_Blob_with_repl_Text : function
         returns Text::ASCII matches (Blob, Text::ASCII)
     map (
-        src_octets ::= (Blob_to_Octets args.\0);
-        repl_chars ::= (Text_to_ASCII_Chars args.\1);
-        result_chars ::= (
+        src_octets ::= Blob_to_Octets args.\0;
+        repl_chars ::= Text_to_ASCII_Chars args.\1;
+        result_chars ::=
             given #repl_chars
                 when 0 then
                     src_octets where \in::( 1: 0..127 )
@@ -2824,7 +2823,7 @@ I<TODO.  Note, still have to define that Excuse.>
                         map \(args.\0 in 0..127 :? [args.\0] :! args.\1)
                             \<-- (1 : repl_chars,)
                         reduce \catenate::()
-        );
+            ;
         returns Text_from_ASCII_Chars result_chars;
     ),
 
@@ -4109,9 +4108,9 @@ composing type C<Positional>.
         implements 1::""
         accepts (args.\0 .? (args.\1.\0))
     map (
-        src ::= (args.\0);
-        ri ::= (args.\1.\0);
-        repl_member ::= (args.\1.\1);
+        src ::= args.\0;
+        ri ::= args.\1.\0;
+        repl_member ::= args.\1.\1;
         fi ::= first_index src;
         li ::= last_index src;
         emp ::= empty src;
@@ -4406,14 +4405,14 @@ C<Array> value, C<[]>.
     in_order::Array : function returns Boolean matches (Array, Array)
         implements 1::""
     map (
-        i ::= (args.\0 index_succ_all_matches args.\1);
+        i ::= args.\0 index_succ_all_matches args.\1;
       returns
         if not args.\0 .? i then
             e1 ::= True
         else if not args.\1 .? i then
             False
         else
-            e2 ::= (args.\0.i in_order args.\1.i);
+            e2 ::= args.\0.i in_order args.\1.i;
 
         e1 ::?= 'This is the case where LHS is a leading subsequence of or is equal to RHS.';
         e2 ::?= 'This will succeed iff in_order() is defined for the member type.';
@@ -7668,7 +7667,8 @@ I<TODO.>
         union {Alias, Constant, Selection, Interface, Function, Procedure}
         default (...),
 
-I<TODO.  Enumeration only exists as a Plain_Text shorthand.>
+I<TODO.  Add Enumeration as its own Material kind, or otherwise have a type for it;
+Plain_Text does NOT have special syntax for Package or any Material now.>
 
 =head2 Source_Code::Alias
 
