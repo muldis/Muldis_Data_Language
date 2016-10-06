@@ -608,6 +608,8 @@ Otherwise, C<< <sp> >> must be nonempty.
 
 =back
 
+I<TODO.  Some of the above points concerning ":" are outdated and need fixing.>
+
 The secondary function of I<dividing space> is to empower users to format
 their code for easier readability through appropriate linebreaks,
 indentation, and other kinds of spacing, as they see fit; what they choose
@@ -997,6 +999,7 @@ Grammar:
         | <source_expr>
         | <opaque_literal_expr>
         | <collection_selector_expr>
+        | <collection_accessor_expr>
         | <invocation_expr>
         | <conditional_expr>
         | <fail_expr>
@@ -1742,7 +1745,7 @@ every possible C<< <delimiting_expr> >>.
 Grammar:
 
     <Capsule> ::=
-        '\\:' <sp> '(' <sp> <wrapper_expr> <sp> ',' <sp> <c_asset_expr> <sp> ')'
+        <wrapper_expr> <sp> '>:<' <sp> <c_asset_expr>
 
     <wrapper_expr> ::=
         <expr>
@@ -1755,7 +1758,7 @@ C<Capsule> type, which is ...
 
 Examples:
 
-    \:(\Fraction, (numerator : 5, denominator : 3))
+    \Fraction >:< (numerator : 5, denominator : 3)
 
 =head2 Generic Constant and Function Call Specification Selectors
 
@@ -1776,6 +1779,22 @@ I<Note that, yes, the generic_func_call input is also a Function_Call value,
 same type as the result of the Function_Call expression, so that is indeed
 recursively defined in the general case.  And so other syntax would be used
 to select the most-nested Function_Call value, often postcircumfixed_func_invo_expr.>
+
+=head1 COLLECTION ACCESSOR EXPRESSIONS
+
+Grammar:
+
+    <collection_accessor_expr> ::=
+          <Capsule_wrapper_acc>
+        | <Capsule_asset_acc>
+
+    <Capsule_wrapper_acc> ::=
+        '<:' <sp> <expr>
+
+    <Capsule_asset_acc> ::=
+        <expr> <sp> ':>'
+
+I<TODO.>
 
 =head1 INVOCATION EXPRESSIONS
 
@@ -1958,6 +1977,7 @@ I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
         including inline func/type/etc decls, or foo::bar::etc or func foo::(...) or \foo::(...)
     generic universal routine call infix: args --> rtn or rtn <-- args or args \--> rtn etc or args -->^ rtn etc
     symbolic in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
+        and also infix >:<, prefix <:, postfix :> (no 'pipe' keyword needed)
     alpha in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
     conditional ternaries or n-aries: :?:! / if-then-else / :??:!! / given-when-default
     why-binding infix ::?=

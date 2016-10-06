@@ -45,7 +45,7 @@ Standard Library> specification, of which this document is a part.
     package (
         identity : (MD : Core:"http://muldis.com":"0.201.0.-9"),
         foundation : "http://muldis.com":"0.201.0.-9",
-        floating : {::MD, ::MD::Round_Meth, ::MD::Capsule, ::MD::Source_Code},
+        floating : {::MD, ::MD::Round_Meth, ::MD::Source_Code},
         materials : (
             ...
         ),
@@ -1508,7 +1508,7 @@ virtual function C<multiple_of> for the composing type C<Integer>.
 
         returns if d = 0 then Excuse::Div_By_Zero() else q;
 
-        q ::= \Fraction wrap (
+        q ::= \Fraction >:< (
             numerator   : div::((d > 0 :? n :! -n), gcd, To_Zero::()),
             denominator : div::((d > 0 :? d :! -d), gcd, To_Zero::()),
         );
@@ -1946,7 +1946,7 @@ for the composing type C<Fraction>.
 =head2 numerator (Fraction)
 
     numerator::Fraction : function returns Integer matches (Fraction)
-        map (unwrap::(args.\0).\numerator),
+        map (args.\0:>.\numerator),
 
 The function C<numerator::Fraction> implements the C<Fractional> virtual
 function C<numerator> for the composing type C<Fraction>.
@@ -1954,7 +1954,7 @@ function C<numerator> for the composing type C<Fraction>.
 =head2 denominator (Fraction)
 
     denominator::Fraction : function returns Integer_P matches (Fraction)
-        map (unwrap::(args.\0).\denominator),
+        map (args.\0:>.\denominator),
 
 The function C<denominator::Fraction> implements the C<Fractional> virtual
 function C<denominator> for the composing type C<Fraction>.
@@ -2275,7 +2275,7 @@ C<replicate> aka C<~#> for the composing type C<Bits>.
 =head2 Bits_from_String_Bits
 
     Bits_from_String_Bits : function returns Bits matches (String::Bits)
-        map (\Bits wrap args.\0),
+        map (\Bits >:< (args.\0)),
 
 The function C<Bits_from_String_Bits> results in the C<Bits> value selected
 in terms of the integer sequence of its C<0> argument.
@@ -2283,7 +2283,7 @@ in terms of the integer sequence of its C<0> argument.
 =head2 Bits_to_String_Bits
 
     Bits_to_String_Bits : function returns String::Bits matches (Bits)
-        map (unwrap::(args.\0)),
+        map (args.\0:>),
 
 The function C<Bits_to_String_Bits> results in an integer sequence defining
 the bits of its C<Bits>-typed C<0> argument.
@@ -2397,7 +2397,7 @@ C<replicate> aka C<~#> for the composing type C<Blob>.
 =head2 Blob_from_Octets
 
     Blob_from_Octets : function returns Blob matches (String::Octets)
-        map (\Blob wrap args.\0),
+        map (\Blob >:< (args.\0)),
 
 The function C<Blob_from_Octets> results in the C<Blob> value selected in
 terms of the integer sequence of its C<0> argument.
@@ -2405,7 +2405,7 @@ terms of the integer sequence of its C<0> argument.
 =head2 Blob_to_Octets
 
     Blob_to_Octets : function returns String::Octets matches (Blob)
-        map (unwrap::(args.\0)),
+        map (args.\0:>),
 
 The function C<Blob_to_Octets> results in an integer sequence defining the
 octets of its C<Blob>-typed C<0> argument.
@@ -2660,7 +2660,7 @@ for the composing type C<Text>.
 
     Text_from_Maximal_Chars : function
         returns Text matches (String::Maximal_Chars)
-        map (\Text wrap args.\0),
+        map (\Text >:< (args.\0)),
 
 The function C<Text_from_Maximal_Chars> results in the C<Text> value
 selected in terms of an integer sequence in the proprietary
@@ -2670,7 +2670,7 @@ C<Maximal_Chars> character mapping of its C<0> argument.
 
     Text_to_Maximal_Chars : function
         returns String::Maximal_Chars matches (Text)
-        map (unwrap::(args.\0)),
+        map (args.\0:>),
 
 The function C<Text_to_Maximal_Chars> results in an integer sequence in the
 proprietary C<Maximal_Chars> character mapping that corresponds to its
@@ -4874,7 +4874,7 @@ aka C<∅> for the composing type C<Set>.
 
     singular::Set : function returns Boolean matches (Set)
         implements 1::""
-        map (singular unwrap::(args.\0)),
+        map (singular args.\0:>),
 
 The function C<singular::Set> results in C<True> iff its C<0> argument has
 exactly 1 member value, and C<False> otherwise.  This function implements
@@ -4886,7 +4886,7 @@ C<Set>.
     only_member::Set : function returns Any matches (Set)
         implements 1::""
         accepts (singular args.\0)
-        map (only_member unwrap::(args.\0)),
+        map (only_member args.\0:>),
 
 The function C<only_member::Set> results in its C<0> argument's only member
 value.  This function will fail if the argument doesn't have exactly 1
@@ -4897,7 +4897,7 @@ C<only_member> for the composing type C<Set>.
 
     has_n::Set : function returns Boolean matches (Set, Any, Integer_NN)
         implements 1::""
-        map (has_n::(unwrap::(args.\0), args.\1, args.\2)),
+        map (has_n::(args.\0:>, args.\1, args.\2)),
 
 The function C<has_n::Set> results in C<True> iff either its C<2> argument
 is zero or its C<0> argument has a member equal to its C<1> argument and
@@ -4909,7 +4909,7 @@ type C<Set>.
 
     multiplicity::Set : function returns Integer_NN matches (Set, Any)
         implements 1::""
-        map (unwrap::(args.\0) multiplicity args.\1),
+        map (args.\0:> multiplicity args.\1),
 
 The function C<multiplicity::Set> results in 1 if its C<0> argument
 has a member equal to its C<1> argument; otherwise it results in 0.  This
@@ -4940,7 +4940,7 @@ composing type C<Set>.
 
     subset_of::Set : function returns Boolean matches (Set, Set)
         implements 1::""
-        map (unwrap::(args.\0) subset_of unwrap::(args.\1)),
+        map (args.\0:> subset_of args.\1:>),
 
 The function C<subset_of::Set> results in C<True> iff the set of members of
 its C<0> argument is a subset of the set of members of its C<1> argument;
@@ -4966,7 +4966,7 @@ function C<same_members> for the composing type C<Set>.
     overlaps_members::Set : function returns Boolean matches (Set, Set)
         implements 1::""
         is_commutative
-        map (unwrap::(args.\0) overlaps_members unwrap::(args.\1)),
+        map (args.\0:> overlaps_members args.\1:>),
 
 The function C<overlaps_members::Set> results in C<True> iff, given
 I<X> as the set of members of its argument C<0> and I<Y> as the
@@ -4981,7 +4981,7 @@ C<overlaps_members> for the composing type C<Set>.
     disjoint_members::Set : function returns Boolean matches (Set, Set)
         implements 1::""
         is_commutative
-        map (unwrap::(args.\0) disjoint_members unwrap::(args.\1)),
+        map (args.\0:> disjoint_members args.\1:>),
 
 The function C<disjoint_members::Set> results in C<True> iff the
 set of members of its C<0> argument has no member values in common
@@ -4993,7 +4993,7 @@ C<disjoint_members> for the composing type C<Set>.
 
     any::Set : function returns Boolean matches (Set, Signature)
         implements 1::""
-        map (unwrap::(args.\0) any args.\1),
+        map (args.\0:> any args.\1),
 
 I<TODO.>
 
@@ -5002,7 +5002,7 @@ I<TODO.>
     insert_n::Set : function returns Set matches (Set, Any, Integer_NN)
         implements 1::""
         map (args.\0 has args.\1 or args.\2 = 0 :? args.\0
-            :! \Set wrap insert_n::(unwrap::(args.\0), args.\1, 1)),
+            :! \Set >:< insert_n::(args.\0:>, args.\1, 1)),
 
 The function C<insert_n::Set> results in the C<Set> value that has all of
 the members of the function's C<0> argument; but, if the C<2> argument is
@@ -5014,7 +5014,7 @@ function C<insert_n> for the composing type C<Set>.
 
     remove_n::Set : function returns Set matches (Set, Any, Integer_NN)
         implements 1::""
-        map (\Set wrap remove_n::(unwrap::(args.\0), args.\1, args.\2)),
+        map (\Set >:< remove_n::(args.\0:>, args.\1, args.\2)),
 
 The function C<remove_n::Set> results in the C<Set> value that has all of
 the members of the function's C<0> argument; but, if the C<2> argument is
@@ -5038,7 +5038,7 @@ virtual function C<member_plus> aka C<⊎> for the composing type C<Set>.
 
     except::Set : function returns Set matches (Set, Set)
         implements 1::""
-        map (\Set wrap (unwrap::(args.\0) except unwrap::(args.\1))),
+        map (\Set >:< (args.\0:> except args.\1:>)),
 
 The function C<except::Set> results in the I<set difference> between
 its 2 arguments C<0> (I<minuend>) and C<1> (I<subtrahend>).  The result is
@@ -5052,7 +5052,7 @@ for the composing type C<Set>.
     intersect::Set : function returns Set matches (Set, Set)
         implements 1::""
         is_associative is_commutative is_idempotent
-        map (\Set wrap (unwrap::(args.\0) intersect unwrap::(args.\1))),
+        map (\Set >:< (args.\0:> intersect args.\1:>)),
 
 The function C<intersect::Set> results in the I<set intersection> of
 its 2 arguments C<0> and C<1>.  The result is the C<Set> value that has all
@@ -5065,7 +5065,7 @@ function C<intersect> aka C<∩> for the composing type C<Set>.
     union::Set : function returns Set matches (Set, Set)
         implements 1::""
         is_associative is_commutative is_idempotent identity ({})
-        map (\Set wrap (unwrap::(args.\0) union unwrap::(args.\1))),
+        map (\Set >:< (args.\0:> union args.\1:>)),
 
 The function C<union::Set> results in the I<set union> of its 2
 arguments C<0> and C<1>.  The result is the C<Set> value that has all of
@@ -5078,7 +5078,7 @@ virtual function C<union> aka C<∪> for the composing type C<Set>.
     exclusive::Set : function returns Set matches (Set, Set)
         implements 1::""
         is_associative is_commutative identity ({})
-        map (\Set wrap (unwrap::(args.\0) exclusive unwrap::(args.\1))),
+        map (\Set >:< (args.\0:> exclusive args.\1:>)),
 
 The function C<exclusive::Set> results in the I<set symmetric
 difference> of its 2 arguments C<0> and C<1>.  The result is the C<Set>
@@ -5092,7 +5092,7 @@ aka C<symm_diff> aka C<∆> for the composing type C<Set>.
     nest::Set : function returns Set matches (Set)
         implements 1::""
         accepts (...)
-        map (\Set wrap (nest unwrap::(args.\0))),
+        map (\Set >:< (nest args.\0:>)),
 
 I<TODO.>
 
@@ -5101,7 +5101,7 @@ I<TODO.>
     unnest::Set : function returns Set matches (Set)
         implements 1::""
         accepts (...)
-        map (\Set wrap (unnest unwrap::(args.\0))),
+        map (\Set >:< (unnest args.\0:>)),
 
 I<TODO.>
 
@@ -5109,7 +5109,7 @@ I<TODO.>
 
     where::Set : function returns Set matches (Set, Signature)
         implements 1::""
-        map (\Set wrap (unwrap::(args.\0) where args.\1)),
+        map (\Set >:< (args.\0:> where args.\1)),
 
 I<TODO.>
 
@@ -5117,7 +5117,7 @@ I<TODO.>
 
     map::Set : function returns Set matches (Set, Function_Call_But_0)
         implements 1::""
-        map (\Set wrap (unwrap::(args.\0) map args.\1)),
+        map (\Set >:< (args.\0:> map args.\1)),
 
 I<TODO.>
 
@@ -5125,7 +5125,7 @@ I<TODO.>
 
     reduce::Set : function returns Any matches (Set, Function_Call_But_0_1)
         implements 1::""
-        map (\Set wrap (unwrap::(args.\0) reduce args.\1)),
+        map (\Set >:< (args.\0:> reduce args.\1)),
 
 I<TODO.>
 
@@ -5143,7 +5143,7 @@ C<?|> for the composing type C<Set>.
 
     to_Bag::Set : function returns Bag matches (Set)
         implements 1::""
-        map (unwrap::(args.\0)),
+        map (args.\0:>),
 
 The function C<to_Bag::Set> results in the C<Bag> value that has all of the
 members of the function's C<0> argument.  This function implements the
@@ -5154,7 +5154,7 @@ C<Set>.
 
     count::Set : function returns Integer_NN matches (Set)
         implements 1::""
-        map (count unwrap::(args.\0)),
+        map (count args.\0:>),
 
 The function C<count::Set> results in the integral count of the members
 of its C<0> argument.  This function implements the C<Discrete> virtual
@@ -5175,7 +5175,7 @@ function C<unique_count> for the composing type C<Set>.
 
     order_using::Set : function returns Array matches (Set, Function_Call_But_0_1)
         implements 1::""
-        map (\Set wrap (unwrap::(args.\0) order_using args.\1)),
+        map (\Set >:< (args.\0:> order_using args.\1)),
 
 The function C<order_using::Set> results in the C<Array> value that represents
 the same set of members as its C<0> argument but that the members are
@@ -5497,7 +5497,7 @@ I<TODO.>
 
     to_Set::Bag : function returns Set matches (Bag)
         implements 1::""
-        map (\Set wrap (unique args.\0)),
+        map (\Set >:< (unique args.\0)),
 
 The function C<to_Set::Bag> results in the C<Set> value that has, for every
 distinct member value I<V> of the function's C<0> argument, exactly 1
@@ -7146,7 +7146,7 @@ single-tuple C<Tuple_Array> value.
 
     heading::Tuple_Array : function returns Heading matches (Tuple_Array)
         implements 1::""
-        map (unwrap::(args.\0).\heading),
+        map (args.\0:>.\heading),
 
 The function C<heading::Tuple_Array> results in the relational I<heading>
 of its C<0> argument, that is its set of distinct attribute names.  This
@@ -7157,7 +7157,7 @@ for the composing type C<Tuple_Array>.
 
     body::Tuple_Array : function returns Array matches (Tuple_Array)
         implements 1::""
-        map (unwrap::(args.\0).\body),
+        map (args.\0:>.\body),
 
 The function C<body::Tuple_Array> results in the relational I<body> of its
 C<0> argument, that is its multiset of member tuples.  This function
@@ -7170,7 +7170,7 @@ composing type C<Tuple_Array>.
         returns {Relational, Excuse::...}
         matches (like : Tuple_Array, heading : Heading, body : Array)
         implements 1::""
-        map (\Tuple_Array wrap args %= \@(heading,body)),
+        map (\Tuple_Array >:< (args %= \@(heading,body))),
 
 The function C<select_Relational::Tuple_Array> results in the
 C<Tuple_Array> value that has the same I<heading> as its C<heading>
@@ -7221,7 +7221,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
 
     heading::Relation : function returns Heading matches (Relation)
         implements 1::""
-        map (unwrap::(args.\0).\heading),
+        map (args.\0:>.\heading),
 
 The function C<heading::Relation> results in the relational I<heading>
 of its C<0> argument, that is its set of distinct attribute names.  This
@@ -7232,7 +7232,7 @@ for the composing type C<Relation>.
 
     body::Relation : function returns Set matches (Relation)
         implements 1::""
-        map (unwrap::(args.\0).\body),
+        map (args.\0:>.\body),
 
 The function C<body::Relation> results in the relational I<body> of its
 C<0> argument, that is its set of member tuples.  This function
@@ -7245,7 +7245,7 @@ composing type C<Relation>.
         returns {Relational, Excuse::...}
         matches (like : Relation, heading : Heading, body : Set)
         implements 1::""
-        map (\Relation wrap args %= \@(heading,body)),
+        map (\Relation >:< (args %= \@(heading,body))),
 
 The function C<select_Relational::Relation> results in the
 C<Relation> value that has the same I<heading> as its C<heading>
@@ -7290,7 +7290,7 @@ single-tuple C<Tuple_Bag> value.
 
     heading::Tuple_Bag : function returns Heading matches (Tuple_Bag)
         implements 1::""
-        map (unwrap::(args.\0).\heading),
+        map (args.\0:>.\heading),
 
 The function C<heading::Tuple_Bag> results in the relational I<heading>
 of its C<0> argument, that is its set of distinct attribute names.  This
@@ -7301,7 +7301,7 @@ for the composing type C<Tuple_Bag>.
 
     body::Tuple_Bag : function returns Bag matches (Tuple_Bag)
         implements 1::""
-        map (unwrap::(args.\0).\body),
+        map (args.\0:>.\body),
 
 The function C<body::Tuple_Bag> results in the relational I<body> of its
 C<0> argument, that is its multiset of member tuples.  This function
@@ -7314,7 +7314,7 @@ composing type C<Tuple_Bag>.
         returns {Relational, Excuse::...}
         matches (like : Tuple_Bag, heading : Heading, body : Bag)
         implements 1::""
-        map (\Tuple_Bag wrap args %= \@(heading,body)),
+        map (\Tuple_Bag >:< (args %= \@(heading,body))),
 
 The function C<select_Relational::Tuple_Bag> results in the
 C<Tuple_Bag> value that has the same I<heading> as its C<heading>
@@ -7412,50 +7412,52 @@ I<TODO.>
 
 =head2 Capsule
 
-    Capsule::"" : selection where (args -->^ FDN__is_a_Capsule)
-        default (False wrap False),
+    Capsule : selection where (args -->^ FDN__is_a_Capsule)
+        default (False >:< False),
 
 The selection contract C<Capsule> represents the infinite Muldis D
 Foundation type I<FDN__Capsule>.  An C<Capsule> value is ...
 
-I<TODO.  Candidate literal syntax is `\:(wrapper,asset)`.>
+I<<TODO.  Candidate literal syntax is `wrapper >:< asset`.>>
 
 Given that almost every selection contract is a subset of
 C<Capsule>, the latter intentionally does not compose any interface
 contracts, and only has the minimal set of its own operators, so to
 minimize interference with other types' interfaces.
-For similar reasons, the Capsule-specific operators are grouped under the
-Capsule:: namespace to discourage their direct use in regular code on a
-common basis versus using type-specific accessors; any users would either
-have to prefix with Capsule:: or float that namespace to use them unqualified.
 
-=head2 Capsule::wrap
+=head2 wrap >:<
 
-    Capsule::wrap : function returns Capsule matches (Any, Any)
+    wrap : function returns Capsule matches (Any, Any)
         map (args -->^ FDN__Capsule_wrap),
 
+    ">:<" : alias of wrap,
+
 I<TODO.>
 
-=head2 Capsule::wrapper
+=head2 wrapper <:
 
-    Capsule::wrapper : function returns Any matches (Capsule)
+    wrapper : function returns Any matches (Capsule)
         map (args -->^ FDN__Capsule_wrapper),
 
+    "<:" : alias of wrapper,
+
 I<TODO.>
 
-=head2 Capsule::unwrap
+=head2 unwrap :>
 
-    Capsule::unwrap : function returns Any matches (Capsule)
+    unwrap : function returns Any matches (Capsule)
         map (args -->^ FDN__Capsule_unwrap),
 
+    ":>" : alias of unwrap,
+
 I<TODO.>
 
-=head2 Capsule::has_wrapped
+=head2 has_wrapped
 
-    Capsule::has_wrapped : function
+    has_wrapped : function
         returns Boolean matches (Capsule, Any, Signature)
-        map ((wrapper args.\0) = (args.\1) and
-            (unwrap args.\0,) --> Signature_to_Function_Call_But_0::(args.\2)),
+        map (<:(args.\0) = (args.\1) and
+            (args.\0:>,) --> Signature_to_Function_Call_But_0::(args.\2)),
 
 I<TODO.  Says wrapper equals a value and asset passes a filter.>
 
@@ -7674,7 +7676,7 @@ Plain_Text does NOT have special syntax for Package or any Material now.>
 
     Source_Code::Alias : selection of Capsule
         where (has_wrapped::( args.\0, \Alias, \Identity_Identifier::() ))
-        default (\Alias wrap Identity_Identifier::()),
+        default (\Alias >:< Identity_Identifier::()),
 
 I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
 
