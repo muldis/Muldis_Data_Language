@@ -1502,19 +1502,19 @@ virtual function C<multiple_of> for the composing type C<Integer>.
         fractional_divided_by::Integer : function (
             returns : {Fraction, Excuse::Div_By_Zero}, matches : (Integer, Integer),
             implements : 1::"",
-        map : (
-            n ::= args.\0;
-            d ::= args.\1;
+            map : (
+                n ::= args.\0;
+                d ::= args.\1;
 
-            returns if d = 0 then Excuse::Div_By_Zero() else q;
+                returns if d = 0 then Excuse::Div_By_Zero() else q;
 
-            q ::= \Fraction >:< (
-                numerator   : div::((d > 0 :? n :! -n), gcd, To_Zero::()),
-                denominator : div::((d > 0 :? d :! -d), gcd, To_Zero::()),
-            );
+                q ::= \Fraction >:< (
+                    numerator   : div::((d > 0 :? n :! -n), gcd, To_Zero::()),
+                    denominator : div::((d > 0 :? d :! -d), gcd, To_Zero::()),
+                );
 
-            gcd ::= gcd::(abs::(n), abs::(d));
-        ) ),
+                gcd ::= gcd::(abs::(n), abs::(d));
+            ) ),
 
 The function C<fractional_divided_by::Integer> implements the C<Numerical>
 virtual function C<fractional_divided_by> aka C</> aka C<÷> aka C<∕> for
@@ -1526,75 +1526,75 @@ the composing type C<Integer>.
             returns : {Integer, Excuse::Div_By_Zero},
             matches : (Integer, Integer, Round_Meth),
             implements : 1::"",
-        map : (
-            dividend   ::= args.\0;
-            divisor    ::= args.\1;
-            round_meth ::= args.\2;
+            map : (
+                dividend   ::= args.\0;
+                divisor    ::= args.\1;
+                round_meth ::= args.\2;
 
-            returns if divisor = 0 then Excuse::Div_By_Zero() else e1;
+                returns if divisor = 0 then Excuse::Div_By_Zero() else e1;
 
-            e1 ::?= 'This is the case where we are dividing by a non-zero.';
+                e1 ::?= 'This is the case where we are dividing by a non-zero.';
 
-            e1 ::= dividend = 0       :? 0
-                :! divisor  = 1       :? dividend
-                :! dividend = divisor :? 1
-                :! divisor  = -1      :? -dividend
-                :!                       e2
-            ;
-
-            e2 ::?= 'This is the case where the divisor and dividend do not'
-                ' equal each other and neither of them is a zero or a one.';
-
-            e2 ::= (
-                real_q_is_neg ::= dividend < 0 xor divisor < 0;
-                rtz_quotient  ::= FDN__Integer_divided_by_rtz
-                    ^<-- (dividend, divisor);
-                rtz_remainder ::= dividend - (divisor * rtz_quotient);
-
-                returns rtz_remainder = 0 :? rtz_quotient :! e3;
-            );
-
-            e3 ::?= 'This is the case where the divisor does not divide the'
-                ' dividend evenly and the real number division result would'
-                ' have a fractional part, so we decide how to round that.';
-
-            e3 ::= (
-                rti_quotient ::= rtz_quotient + (real_q_is_neg :? -1 :! 1);
-                rdn_quotient ::= rtz_quotient + (real_q_is_neg :? -1 :! 0);
-                rup_quotient ::= rtz_quotient + (real_q_is_neg :?  0 :! 1);
-
-                returns round_meth :?? {
-                    Down::()    : rdn_quotient,
-                    Up::()      : rup_quotient,
-                    To_Zero::() : rtz_quotient,
-                    To_Inf::()  : rti_quotient,
-                } :!!
-                       (2 * abs::(rtz_remainder)) < abs::(divisor) :? rtz_quotient
-                    :! (2 * abs::(rtz_remainder)) > abs::(divisor) :? rti_quotient
-                    :! e4
+                e1 ::= dividend = 0       :? 0
+                    :! divisor  = 1       :? dividend
+                    :! dividend = divisor :? 1
+                    :! divisor  = -1      :? -dividend
+                    :!                       e2
                 ;
-            );
 
-            e4 ::?= 'This is the case where real division remainder is'
-                ' exactly one-half so we decide how to round that.';
+                e2 ::?= 'This is the case where the divisor and dividend do not'
+                    ' equal each other and neither of them is a zero or a one.';
 
-            e4 ::= (
-                q ::= FDN__Integer_divided_by_rtz ^<-- (abs::(rtz_quotient),2)
-                r ::= abs::(rtz_quotient) - (2 * q);
-                rtz_quotient_is_even ::= r = 0;
+                e2 ::= (
+                    real_q_is_neg ::= dividend < 0 xor divisor < 0;
+                    rtz_quotient  ::= FDN__Integer_divided_by_rtz
+                        ^<-- (dividend, divisor);
+                    rtz_remainder ::= dividend - (divisor * rtz_quotient);
 
-                returns round_meth :?? {
-                    Half_Down::()    : rdn_quotient,
-                    Half_Up::()      : rup_quotient,
-                    Half_To_Zero::() : rtz_quotient,
-                    Half_To_Inf::()  : rti_quotient,
-                    Half_Even::()    :
-                      (rtz_quotient_is_even :? rtz_quotient :! rti_quotient),
-                    Half_Odd::()     :
-                      (rtz_quotient_is_even :? rti_quotient :! rtz_quotient),
-                } :!! fail  `oops, an unhandled case`
-            );
-        ) ),
+                    returns rtz_remainder = 0 :? rtz_quotient :! e3;
+                );
+
+                e3 ::?= 'This is the case where the divisor does not divide the'
+                    ' dividend evenly and the real number division result would'
+                    ' have a fractional part, so we decide how to round that.';
+
+                e3 ::= (
+                    rti_quotient ::= rtz_quotient + (real_q_is_neg :? -1 :! 1);
+                    rdn_quotient ::= rtz_quotient + (real_q_is_neg :? -1 :! 0);
+                    rup_quotient ::= rtz_quotient + (real_q_is_neg :?  0 :! 1);
+
+                    returns round_meth :?? {
+                        Down::()    : rdn_quotient,
+                        Up::()      : rup_quotient,
+                        To_Zero::() : rtz_quotient,
+                        To_Inf::()  : rti_quotient,
+                    } :!!
+                           (2 * abs::(rtz_remainder)) < abs::(divisor) :? rtz_quotient
+                        :! (2 * abs::(rtz_remainder)) > abs::(divisor) :? rti_quotient
+                        :! e4
+                    ;
+                );
+
+                e4 ::?= 'This is the case where real division remainder is'
+                    ' exactly one-half so we decide how to round that.';
+
+                e4 ::= (
+                    q ::= FDN__Integer_divided_by_rtz ^<-- (abs::(rtz_quotient),2)
+                    r ::= abs::(rtz_quotient) - (2 * q);
+                    rtz_quotient_is_even ::= r = 0;
+
+                    returns round_meth :?? {
+                        Half_Down::()    : rdn_quotient,
+                        Half_Up::()      : rup_quotient,
+                        Half_To_Zero::() : rtz_quotient,
+                        Half_To_Inf::()  : rti_quotient,
+                        Half_Even::()    :
+                          (rtz_quotient_is_even :? rtz_quotient :! rti_quotient),
+                        Half_Odd::()     :
+                          (rtz_quotient_is_even :? rti_quotient :! rtz_quotient),
+                    } :!! fail  `oops, an unhandled case`
+                );
+            ) ),
 
 The function C<integral_divided_by::Integer> implements the C<Numerical>
 virtual function C<integral_divided_by> aka C<div> for the composing type
@@ -1748,18 +1748,18 @@ default and minmum value is C<0.0>; it has no maximum value.
 
         in_order::Fraction : function ( returns : Boolean, matches : (Fraction, Fraction),
             implements : 1::"",
-        map : (
-            <-- (denominator args.\0) = (denominator args.\1)
-                :? in_order::(numerator args.\0, numerator args.\1)
-             :!
-              (
-                common_d ::= lcm::(denominator args.\0, denominator args.\1);
-                returns in_order::(
-                    (numerator args.\0) * div::(common_d, denominator args.\0, To_Zero::()),
-                    (numerator args.\1) * div::(common_d, denominator args.\1, To_Zero::()),
-                );
-              )
-        ) ),
+            map : (
+                <-- (denominator args.\0) = (denominator args.\1)
+                    :? in_order::(numerator args.\0, numerator args.\1)
+                 :!
+                  (
+                    common_d ::= lcm::(denominator args.\0, denominator args.\1);
+                    returns in_order::(
+                        (numerator args.\0) * div::(common_d, denominator args.\0, To_Zero::()),
+                        (numerator args.\1) * div::(common_d, denominator args.\1, To_Zero::()),
+                    );
+                  )
+            ) ),
 
 The function C<in_order::Fraction> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Fraction>.
@@ -1822,17 +1822,17 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
             implements : 1::"",
             is_associative : True, is_commutative : True, identity : (0.0),
             repeater : times::Fraction_Integer,
-        map : (
-            <-- (denominator args.\0) = (denominator args.\1)
-                :? (numerator args.\0) + (numerator args.\1) / (denominator args.\0)
-             :!
-              (
-                common_d ::= lcm::(denominator args.\0, denominator args.\1);
-                returns ((numerator args.\0) * div::(common_d, denominator args.\0, To_Zero::()))
-                    + ((numerator args.\1) * div::(common_d, denominator args.\1, To_Zero::()))
-                    / common_d;
-              )
-        ) ),
+            map : (
+                <-- (denominator args.\0) = (denominator args.\1)
+                    :? (numerator args.\0) + (numerator args.\1) / (denominator args.\0)
+                 :!
+                  (
+                    common_d ::= lcm::(denominator args.\0, denominator args.\1);
+                    returns ((numerator args.\0) * div::(common_d, denominator args.\0, To_Zero::()))
+                        + ((numerator args.\1) * div::(common_d, denominator args.\1, To_Zero::()))
+                        / common_d;
+                  )
+            ) ),
 
 The function C<plus::Fraction> implements the C<Numerical>
 virtual function C<plus> aka C<+> for the composing type C<Fraction>.
@@ -1898,13 +1898,13 @@ the composing type C<Fraction>.
             returns : {Fraction, Excuse::Div_By_Zero},
             matches : (Fraction, Fraction, Round_Meth),
             implements : 1::"",
-        map : (
-            d ::= lcm::(denominator args.\0, denominator args.\1);
-            n0 ::= (numerator args.\0) * div::(d, denominator args.\0, To_Zero::());
-            n1 ::= (numerator args.\1) * div::(d, denominator args.\1, To_Zero::());
-            returns if args.\1 = 0.0 then Excuse::Div_By_Zero()
-                else div::(n0 * d, n1 * d, args.\2) / 1;
-        ) ),
+            map : (
+                d ::= lcm::(denominator args.\0, denominator args.\1);
+                n0 ::= (numerator args.\0) * div::(d, denominator args.\0, To_Zero::());
+                n1 ::= (numerator args.\1) * div::(d, denominator args.\1, To_Zero::());
+                returns if args.\1 = 0.0 then Excuse::Div_By_Zero()
+                    else div::(n0 * d, n1 * d, args.\2) / 1;
+            ) ),
 
 The function C<integral_divided_by::Fraction> implements the C<Numerical>
 virtual function C<integral_divided_by> aka C<div> for the composing type
@@ -2794,12 +2794,12 @@ I<TODO.>
 
         Text_from_ASCII_Blob : function (
             returns : {Text::ASCII, Excuse::ASCII::High_Bit_Not_Zero}, matches : (Blob),
-        map : (
-            octets ::= Blob_to_Octets args.\0;
-            returns if String::ASCII_Chars(octets)
-                then Text_from_ASCII_Chars octets
-                else Excuse::ASCII::High_Bit_Not_Zero();
-        ) ),
+            map : (
+                octets ::= Blob_to_Octets args.\0;
+                returns if String::ASCII_Chars(octets)
+                    then Text_from_ASCII_Chars octets
+                    else Excuse::ASCII::High_Bit_Not_Zero();
+            ) ),
 
 I<TODO.  Note, still have to define that Excuse.>
 
@@ -2807,25 +2807,25 @@ I<TODO.  Note, still have to define that Excuse.>
 
         Text_from_ASCII_Blob_with_repl_Text : function (
             returns : Text::ASCII, matches : (Blob, Text::ASCII),
-        map : (
-            src_octets ::= Blob_to_Octets args.\0;
-            repl_chars ::= Text_to_ASCII_Chars args.\1;
-            result_chars ::=
-                given #repl_chars
-                    when 0 then
-                        src_octets where \in::( 1: 0..127 )
-                    when 1 then
-                        src_octets
-                            map \(args.\0 in 0..127 :? args.\0 :! args.\1)
-                                \<-- (1 : repl_chars.0,)
-                    default
-                        src_octets
-                            map \(args.\0 in 0..127 :? [args.\0] :! args.\1)
-                                \<-- (1 : repl_chars,)
-                            reduce \catenate::()
-                ;
-            returns Text_from_ASCII_Chars result_chars;
-        ) ),
+            map : (
+                src_octets ::= Blob_to_Octets args.\0;
+                repl_chars ::= Text_to_ASCII_Chars args.\1;
+                result_chars ::=
+                    given #repl_chars
+                        when 0 then
+                            src_octets where \in::( 1: 0..127 )
+                        when 1 then
+                            src_octets
+                                map \(args.\0 in 0..127 :? args.\0 :! args.\1)
+                                    \<-- (1 : repl_chars.0,)
+                        default
+                            src_octets
+                                map \(args.\0 in 0..127 :? [args.\0] :! args.\1)
+                                    \<-- (1 : repl_chars,)
+                                reduce \catenate::()
+                    ;
+                returns Text_from_ASCII_Chars result_chars;
+            ) ),
 
 I<TODO.  Each invalid octet encountered is replaced by the substitution text
 (which can be a single character, or several, or the empty string).
@@ -4107,17 +4107,17 @@ composing type C<Positional>.
             returns : Positional, matches : (Positional, (Integer, Any)),
             implements : 1::"",
             accepts : (args.\0 .? (args.\1.\0)),
-        map : (
-            src ::= args.\0;
-            ri ::= args.\1.\0;
-            repl_member ::= args.\1.\1;
-            fi ::= first_index src;
-            li ::= last_index src;
-            emp ::= empty src;
-            returns (if ri > fi then slice_range::(src, fi, --ri) else emp)
-                insert repl_member
-                catenate (if ri < li then slice_range::(src, ++ri, li) else emp);
-        ) ),
+            map : (
+                src ::= args.\0;
+                ri ::= args.\1.\0;
+                repl_member ::= args.\1.\1;
+                fi ::= first_index src;
+                li ::= last_index src;
+                emp ::= empty src;
+                returns (if ri > fi then slice_range::(src, fi, --ri) else emp)
+                    insert repl_member
+                    catenate (if ri < li then slice_range::(src, ++ri, li) else emp);
+            ) ),
 
 The function C<replace_at::Positional> results in the value of its C<0>
 argument's collection type that has all of the members of the function's
@@ -4404,19 +4404,19 @@ C<Array> value, C<[]>.
 
         in_order::Array : function ( returns : Boolean, matches : (Array, Array),
             implements : 1::"",
-        map : (
-            i ::= args.\0 index_succ_all_matches args.\1;
-          returns
-            if not args.\0 .? i then
-                e1 ::= True
-            else if not args.\1 .? i then
-                False
-            else
-                e2 ::= args.\0.i in_order args.\1.i;
+            map : (
+                i ::= args.\0 index_succ_all_matches args.\1;
+              returns
+                if not args.\0 .? i then
+                    e1 ::= True
+                else if not args.\1 .? i then
+                    False
+                else
+                    e2 ::= args.\0.i in_order args.\1.i;
 
-            e1 ::?= 'This is the case where LHS is a leading subsequence of or is equal to RHS.';
-            e2 ::?= 'This will succeed iff in_order() is defined for the member type.';
-        ) ),
+                e1 ::?= 'This is the case where LHS is a leading subsequence of or is equal to RHS.';
+                e2 ::?= 'This will succeed iff in_order() is defined for the member type.';
+            ) ),
 
 The function C<in_order::Array> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Array>.  This function
@@ -6123,7 +6123,7 @@ C<.!> for the composing type C<Structural>.
             returns : Structure, matches : (Structure, (Attr_Name, Any)),
             implements : 1::"",
             accepts : (args.\0 .? (args.\1.\0)),
-        map : (args.\0 update D1::(args.\1)) ),
+            map : (args.\0 update D1::(args.\1)) ),
 
 The function C<replace_at::Structure> results in the value of its C<0>
 argument's collection type that has all of the attributes of the function's
@@ -7887,26 +7887,26 @@ I<TODO.  Note, this type currently isn't used anywhere.>
 
         Source_Code::Signature_to_Function_Call_But_0 : function (
             returns : Function_Call_But_0, matches : (Signature),
-        map : (
-            if Function_Call_But_0 args.\0 then
-                args.\0
-            else if Signature::Set(args.\0) then
-                \(args.\1 any \(args.\1 is_a args.\0) \<-- (1 : args.\0))
-                    \<-- (1 : args.\0)
-            else if Signature::Tuple(args.\0) then
-                \(
-                    if Tuple args.\0 then
-                        if args.\0 =@ (args.\1) then
-                            args.\0 all_attrs
-                                \(args.\0.\asset is_a args.\1.(args.\0.\name)) \<-- ( 1: args.\1, )
+            map : (
+                if Function_Call_But_0 args.\0 then
+                    args.\0
+                else if Signature::Set(args.\0) then
+                    \(args.\1 any \(args.\1 is_a args.\0) \<-- (1 : args.\0))
+                        \<-- (1 : args.\0)
+                else if Signature::Tuple(args.\0) then
+                    \(
+                        if Tuple args.\0 then
+                            if args.\0 =@ (args.\1) then
+                                args.\0 all_attrs
+                                    \(args.\0.\asset is_a args.\1.(args.\0.\name)) \<-- ( 1: args.\1, )
+                            else
+                                False
                         else
                             False
-                    else
-                        False
-                ) \<-- (1 : args.\0)
-            else
-                fail  `We should never get here.`
-        ) ),
+                    ) \<-- (1 : args.\0)
+                else
+                    fail  `We should never get here.`
+            ) ),
 
 I<TODO.  Also double-check that all_attrs etc are not infinite-recursing
 by way of this function.  Also make sure Foundation implementations can
