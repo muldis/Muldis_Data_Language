@@ -218,8 +218,16 @@ Grammar:
             <Package> <sp> ';' <sp>
         <sp>
 
+    <Package> ::=
+        <expr>
+
 See the sections in this file named L</LANGUAGE NAME>, L<FOUNDATIONAL
-INDICATOR>, L</SCRIPT NAME>, and L</PACKAGE SPECIFICATION>, for more details.
+INDICATOR>, and L</SCRIPT NAME>, L</GENERIC VALUE EXPRESSIONS>, and
+L</Capsule Selectors> for more details.
+
+A C<< <Package> >> node is expected to evaluate to a value of the Muldis D
+C<Package> type; its canonical form is a C<< <Capsule> >> node whose
+C<< <wrapper_expr> >> is the value C<\Package>.
 
 =head1 LANGUAGE NAME
 
@@ -656,19 +664,8 @@ to the root package declaration:
     Plain_Text
     script
 
-These are keywords within the heading of a material declaration:
-
-    alias
-    enumeration
-    function
-    interface
-    procedure
-    selection
-    ::?=
-    ::=
-
-These are keywords only within an C<< <expr> >> or C<< <stmt> >>, not
-including the headings of nested material declarations:
+These are keywords only within an C<< <expr> >> or C<< <stmt> >>, that is,
+the root package declaration itself and any constituent parts thereof:
 
     args
     default
@@ -815,135 +812,6 @@ A C<< <pkg_entity_name> >> is for use when either declaring or referencing
 package entities (types, constants, functions, procedures, aliases, etc)
 which live within a multi-level namespace.
 
-=head1 PACKAGE SPECIFICATION XXX REMOVE THIS WHOLE SECTION AS HAS NO SYNTAX OF ITS OWN
-
-Grammar:
-
-    <Package> ::=
-        package <sp> <Tuple>
-
-    <pkg_identity> ::=
-        '(' <sp> <x> <sp> ':' <sp> <x> <sp> ')'
-
-    <pkg_foundation> ::=
-        <x>
-
-    <pkg_uses> ::=
-        '(' <sp>
-            [<x> <sp> ':' <sp> <x> <sp> ',' <sp>]*
-        <sp> ')'
-
-    <pkg_entry> ::=
-        <entry_point_kind> <sp> by <sp> <entry_point_rtn_name>
-
-    <entry_point_kind> ::=
-        performance | value | retrieval | replacement
-
-    <pkg_floating> ::=
-        '{' <sp>
-            [<folder_name> <sp> ',' <sp>]*
-        <sp> '}'
-
-I<TODO.  Valid attr names in the "Package" Tuple commalist are these:
-{identity, foundation, uses, entry, floating, materials};
-the 6 pkg_* above denote the attribute asset for each;
-{identity,foundation} are mandatory attrs, the rest are not.>
-
-I<TODO.  The package attr asset for "materials" is a Tuple node each of
-whose attributes is a material definition or a folder definition; the latter
-is the case iff it is also a Tuple node or if the atter name is the format X::Y.>
-
-I<TODO.  Note that "entry" is the "entry point" for a program.  It is NOT automatically
-invoked when loading a package, but is informative for an explicit post-load call.>
-
-I<TODO.  Each entry point kind represents a distinct kind of routine or
-distinct expectation for how it would be used, mainly in the context of a
-Package being passed as a message between VM processes.
-A "performance" is an ordinary main program and has no parameters.
-A "value" is a constant, such as when the Package is a response message
-or alternately represents a serialized database.
-A "retrieval" is a function that takes a current database value as its main
-input argument and results in some report derived from said.  This performs
-some pure functional read-only usage of the database and is implicitly run
-inside a repeatable-read isolation level or something.  It is a direct
-analogy to a SQL SELECT query issued to a server.
-A "replacement" is a function that takes a current database value as its main
-input argument and results primarily in a derived database value (and also
-in a result value for the client as desired).  This performs some pure
-functional read-write usage of the database and is implicitly run
-inside a serializable isolation level or something.  It is a direct
-analogy to a SQL stored procedure call or set of change statements.
-This list of entry point kinds is subject to change.>
-
-=head1 MATERIAL SPECIFICATION XXX REMOVE THIS WHOLE SECTION AS HAS NO SYNTAX OF ITS OWN
-
-Grammar:
-
-    <material> ::=
-        <alias> | <constant> | <selection> | <interface> | <enumeration> | <function> | <procedure>
-
-    <alias> ::=
-        alias <sp> of <sp> <pkg_entity_name>
-
-I<TODO.>
-
-A C<< <material> >> specifies a new material (routine or contract) that
-lives in a package.
-
-=head2 Constant Specification
-
-Grammar:
-
-    <constant> ::=
-        ...
-
-I<TODO.>
-
-=head2 Selection Specification
-
-Grammar:
-
-    <selection> ::=
-        ...
-
-I<TODO.>
-
-=head2 Interface Specification
-
-Grammar:
-
-    <interface> ::=
-        ...
-
-I<TODO.>
-
-=head2 Enumeration Specification
-
-Grammar:
-
-    <enumeration> ::=
-        ...
-
-I<TODO.>
-
-=head2 Function Specification
-
-Grammar:
-
-    <function> ::=
-        ...
-
-I<TODO.>
-
-=head2 Procedure Specification
-
-Grammar:
-
-    <procedure> ::=
-        ...
-
-I<TODO.>
-
 =head1 GENERIC VALUE EXPRESSIONS
 
 Grammar:
@@ -976,12 +844,6 @@ Grammar:
         | <conditional_expr>
         | <fail_expr>
         | ...
-        | <Package>
-        | <pkg_identity>
-        | <pkg_foundation>
-        | <pkg_uses>
-        | <pkg_entry>
-        | <pkg_floating>
 
     <delimiting_expr> ::=
         '(' <sp> [

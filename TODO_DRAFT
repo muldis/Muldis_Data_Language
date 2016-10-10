@@ -14,6 +14,90 @@ resources of everyone else.
 
 ----------
 
+* Magic numbers in the form of niladic routines for VMs that the Muldis D
+reference engine implementations conform to; testing for the declaration
+requires some kind of introspection capability, such as Perl 5's can(), or
+for languages lacking such, some nearest analogy:
+    - provides_Perl_5_API_for_VM_effective_at_Muldis_D()
+    - provides_C_Sharp_API_for_VM_effective_at_Muldis_D()
+    - etc
+- A Perl / C# / etc library that supports multiple independent API specs
+that broadly support this scheme may have a distinct such niladic for each
+one, say for example if a standards body not specific to Muldis D prefers a
+magic number that doesn't have "Muldis D" in it, while not preventing us
+from still using that string.
+    - For example:
+        - provides_Perl_5_API_for_VM_effective_at_DBI()
+- A fundamental feature is that there is no common hard dependency (such as
+a specific library) for providers of an API, not even as the means for
+declaring provision of the API; for example, declaring provision of the API
+must never require composing a particular "interface" or "parent class" or
+"role" etc.  This is in stark contrast to how the legacy Perl DBI works,
+where to use any DBD module one MUST also use the "DBI" module.  However,
+API providers may individually choose to have common hard dependencies such
+as a DBI-alike.  No mandatory common dependencies means each provider is
+truly mutually independent of the others, like with SQL or HTTP or etc.
+- See also Perl 5 module Data::CapabilityBased for a related concept,
+"Ask your data not what it is, but what it can do for your program".
+- Optimizing similar within Muldis D itself means having a foundational
+syntax analagous to that for routine calls, where one can ask, does a
+routine matching this name chain and argument signature exist?  Then common
+virtual routines can invoke that rather than is_a when more appropriate;
+that is, we ask like "can_evaluate \plus::(x,y)" etc.
+
+* Notes for 2016-10-08:
+- Specifically within possibly multi-level/:: identifiers, iff the first/only
+chain element is one of these keywords NOT QUOTED then it indicates the
+namespace for the chain as a whole (quoting them makes them not-keywords):
+    - foundation - namespace for referencing named Foundation entities
+        foundation:: - any meaning?
+        foundation::FDN__Integer_plus - how to refer to Foundation func Integer-plus from anywhere
+    - used - a root namespace for referencing entities in the linked versions of all used packages
+        used:: - any meaning?
+        used::foo - root folder of the used (or self) package linked under that short name
+        used::My_App::main - possible long name of main proc from POV of the My_App package
+        used::MD::Integer - possible long name of Core Integer from POV of some other package using it
+        - items in the "floating" declaration of a package are implicitly in this namespace without used:: prefix
+    - package - the innermost/only package definition declaring the referant
+        package:: - the root folder of that package
+        package::foo - a folder or material immediately inside that
+        package::Integer - an absolute reference by anything in the Core package to the Integer type
+    - folder - the folder that is the immediate parent of the referant (material)
+        folder:: - the folder itself, which might be the same thing as package::
+            - this obsoletes 1::
+        folder::foo - the referant
+            - this obsoletes 1::foo
+        folder::"" - how virtual routines are typically referred to by their implementers
+    - material - the material, which lives directly in a folder, whose definition includes the referant
+        material:: - how to refer to one's own material anonymously, eg for a recursive call
+            - this obsoletes 0::
+        material::foo - how to refer to a specific trait of one's own material
+            - open question - how to deal with explicitly defined vs inherited or defaulted
+        material::where - unary func testing membership in a type
+        material::default - niladic func giving default value of a type
+    - lexical - the innermost lexical context function or procedure, eg func or proc body
+        - name change?
+        lexical:: - how to refer to the innermost self anonymously, eg for a recursive call
+            - also obsoletes 0::
+        lexical::foo - an option to refer to a named lexical expr or statement
+    - relative - for a relative context - IS THIS STILL EVEN USEFUL?
+        relative::1 - refer to one's parent
+        - or don't support at all, and instead let unquoted 0::, 1:: etc mean eg "\\c<0>":: like in regular Attr_Name
+    - floating - for a floating context
+        floating:: - this by itself is meaningless
+        floating::foo - look for 'foo' in the various floated paths
+        floating::foo::bar - likewise
+- Note that without an explicit such keyword, leading :: eg ::foo always takes 'used' eg used::foo;
+otherwise, without an explicit such keyword, 'floating' is assumed.
+- Now, simple prefix/infix/postfix are all allowed to be multi-level,
+and it is explicitly the presence or absence of a trailing :: that differentiates
+a simple monadic prefix eg "foo::bar (...)" from an n-adic postcircumfix eg "foo::bar::(...)".
+    - TODO, maybe reconsider this?
+- Specifically within some lexical context as runtime information:
+    args - for referring, as a value, to the argument list of the innermost lexical context
+    callers - for referring to runtime information about the current call stack etc,
+        - about who called us this time, not where we were declared
+
 * Notes for 2016-10-04:
 - Paradigm:
 - All Muldis D source code is a tree (or graph) of expression nodes, whose
@@ -54,8 +138,10 @@ understand in casual reading and also frees up symbols for package-def ops.
 - keywords:
     - expr "evaluate x" where x is a function call spec, results in the result of executing the function
         - what any function call syntax desugars to
+        - also want eg can_evaluate eg "can_evaluate \plus::(x,y)"
     - stmt "perform x" where x is a procedure call spec, causes the procedure to execute now
         - what any procedure call syntax desugars to
+        - also want eg can_perform eg "can_evaluate \read_Text_from_STDIN::(x)"
     - expr "returns x" (nee "<-- x") marks which expr in a semicolon-list is the aggregate result
     - expr "fetch c" (or "=: c") where c is a Reference results in the current value of the variable that c points to
     - stmt "c store e" (or "c := e") where c is a Reference results in the variable it points to getting new value e
@@ -634,6 +720,32 @@ do considering Muldis D's homoiconic and generally pure functional nature.
 But from the client/user perspective they just made use of "the database"
 via the message passing, as typical application code does with a SQL DBMS
 today.
+
+* Moved from Plain_Text.pod on 20161010:
+    <pkg_entry> ::=
+        <entry_point_kind> <sp> by <sp> <entry_point_rtn_name>
+    <entry_point_kind> ::=
+        performance | value | retrieval | replacement
+- TODO.  Note that "entry" is the "entry point" for a program.  It is NOT automatically
+invoked when loading a package, but is informative for an explicit post-load call.
+- TODO.  Each entry point kind represents a distinct kind of routine or
+distinct expectation for how it would be used, mainly in the context of a
+Package being passed as a message between VM processes.
+A "performance" is an ordinary main program and has no parameters.
+A "value" is a constant, such as when the Package is a response message
+or alternately represents a serialized database.
+A "retrieval" is a function that takes a current database value as its main
+input argument and results in some report derived from said.  This performs
+some pure functional read-only usage of the database and is implicitly run
+inside a repeatable-read isolation level or something.  It is a direct
+analogy to a SQL SELECT query issued to a server.
+A "replacement" is a function that takes a current database value as its main
+input argument and results primarily in a derived database value (and also
+in a result value for the client as desired).  This performs some pure
+functional read-write usage of the database and is implicitly run
+inside a serializable isolation level or something.  It is a direct
+analogy to a SQL stored procedure call or set of change statements.
+This list of entry point kinds is subject to change.
 
 * ADDED ON 2016-08-08:
 - Muldis D should have a core security model including jails and feature
