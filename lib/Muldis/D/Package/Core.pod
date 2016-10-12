@@ -8880,17 +8880,6 @@ I<TODO.  This type is subject to be expanded to some collection or have alternat
 
 I<TODO.>
 
-=head2 Source_Code::Absolute_Name
-
-        Source_Code::Absolute_Name : \Selection >:< (
-            of : Attr_Name_List,
-            where : (#(args.\0) >= 1 and args.\0.0 != \""),
-        ),
-                `Element 0 is the package local alias.`
-                `Elements 1+ are the folder or material names nested beneath it.`
-
-I<TODO.>
-
 =head2 Source_Code::Folder
 
         Source_Code::Folder : \Selection >:< (
@@ -9103,6 +9092,36 @@ I<TODO.>
         Source_Code::Attr_Name_List : \Selection >:< (
             of : Array,
             where : (args.\0 all \Attr_Name::()),
+        ),
+
+I<TODO.>
+
+=head2 Source_Code::Local_Name
+
+        Source_Code::Local_Name : \Selection >:< (
+            of : Attr_Name_List,
+            where : (
+                if ?(args.\0) then
+                    args.\0.0 :?? {
+                        \foundation : #(args.\0) = 2,
+                        \used       : #(args.\0) ≥ 2,  `elem 2 is pkg local alias`
+                        \package    : #(args.\0) ≥ 1,
+                        \folder     : #(args.\0) ≥ 1,
+                        \material   : #(args.\0) = 1,
+                        \floating   : #(args.\0) ≥ 2,
+                    } :!! fail  `oops, an unhandled case`
+                else
+                    False
+            ),
+        ),
+
+I<TODO.>
+
+=head2 Source_Code::Absolute_Name
+
+        Source_Code::Absolute_Name : \Selection >:< (
+            of : Local_Name,
+            where : (args.\0.0 ⊆@ \@(foundation,used,package)),
         ),
 
 I<TODO.>

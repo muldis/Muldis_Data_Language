@@ -958,6 +958,7 @@ Grammar:
         | <Text>
         | <Attr_Name>
         | <Heading>
+        | <Local_Name>
         | <Renaming>
         | <Identifier>
         | <Identity_Identifier>
@@ -1377,6 +1378,57 @@ Examples:
 
     `A non-Latin name.`
     \"サンプル"
+
+=head2 Local Name Literals
+
+Grammar:
+
+    <Local_Name> ::=
+        '\\@' <sp> <nesting_attr_names>
+
+A C<< <Local_Name> >> node represents a value of the Muldis D C<Local_Name>
+type, which is an arbitrarily-long sequence of C<Attr_Name> values.  It
+serves as a (fully or partially) qualified identifier for referencing
+either a foundation entity, or a package or component of the latter, from
+the perspective of an entity in a (possibly same) package using it.
+
+Iff the first/only C<Attr_Name> in the sequence is one of the barewords
+C<{foundation,used,package,folder,material,floating}> then it is used
+as-is; otherwise the sequence will implicitly have the element C<floating>
+prepended to it.  Each of the non-first (post optional prepend) sequence
+elements corresponds in order to a level in a multi-level namespace.
+
+The C<Local_Name> type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the C<Array> type, and all
+C<Local_Name> values can be selected in terms of C<< <Array> >> grammar
+nodes.  However, C<< <Local_Name> >> is the canonical grammar for all
+C<Local_Name> values.
+
+Examples:
+
+    `The Muldis D Foundation function FDN__Integer_plus, from any perspective.`
+    \@foundation::FDN__Integer_plus
+
+    `The system-defined "Relation" type, from the perspective of some other
+    package that "uses" the "Core" package under the local alias "MD".`
+    \@used::MD::Relation
+
+    `Some user-defined "main" procedure, from the perspective of the same
+    package as that which it is defined in.`
+    \@package::main
+
+    `Some entity "foo" that has the same parent folder as the observer.`
+    \@folder::foo
+
+    `Some material from its own perspective, such as for self-recursion.`
+    \@material
+
+    `Same "Relation" as above iff \@used::MD is among in the declared
+    "floating" list of the same observer's package.`
+    \@floating::Relation
+
+    `Same thing.`
+    \@Relation
 
 =head2 Attribute Renaming Specification Literals
 
