@@ -78,7 +78,7 @@ consists of exactly zero values.  It can not have any default value.
             returns : \@Boolean,
             matches : (\@Any, \@Any),
             is_commutative : True,
-            map : (args -->^ FDN__same),
+            map : \(args -->^ FDN__same),
         ),
 
         "=" : \Alias >:< ( of : \@same ),
@@ -120,7 +120,7 @@ or I<=\=>.
         is_a : \Function >:< (
             returns : \@Boolean,
             matches : (\@Any, \@Signature),
-            map : ((args.\0) --> Signature_to_Function_Call_But_0::(args.\1)),
+            map : \((args.\0) --> Signature_to_Function_Call_But_0::(args.\1)),
         ),
 
 The function C<is_a> results in C<True> iff its C<0> argument is a
@@ -204,7 +204,7 @@ I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
             matches : (\@Any, \@Any),
             is_associative : True,
             is_idempotent : True,
-            map : (Excuse args.\0 :? args.\1 :! args.\0),
+            map : \(Excuse args.\0 :? args.\1 :! args.\0),
         ),
 
         coalesce : \Alias >:< ( of : \@or_else ),
@@ -223,7 +223,7 @@ I<??> or I<//> or I<?:>.
             matches : (\@Any, \@Any),
             is_associative : True,
             is_idempotent : True,
-            map : (Excuse args.\0 :? args.\0 :! args.\1),
+            map : \(Excuse args.\0 :? args.\0 :! args.\1),
         ),
 
 The function C<and_then> results in its C<0> argument iff the latter is an
@@ -325,28 +325,28 @@ comparisons or validation is typically much simpler with this foundation.
             returns : \@Boolean,
             matches : (\@Neg_Inf, \@Orderable),
             implements : \@folder::"",
-            map : (True),
+            map : \(True),
         ),
 
         in_order::Neg_Inf_R : \Function >:< (
             returns : \@Boolean,
             matches : (\@Orderable, \@Neg_Inf),
             implements : \@folder::"",
-            map : (args.\0 = (args.\1)),
+            map : \(args.\0 = (args.\1)),
         ),
 
         in_order::Pos_Inf_L : \Function >:< (
             returns : \@Boolean,
             matches : (\@Pos_Inf, \@Orderable),
             implements : \@folder::"",
-            map : (args.\0 = (args.\1)),
+            map : \(args.\0 = (args.\1)),
         ),
 
         in_order::Pos_Inf_R : \Function >:< (
             returns : \@Boolean,
             matches : (\@Orderable, \@Pos_Inf),
             implements : \@folder::"",
-            map : (True),
+            map : \(True),
         ),
 
 The 4 functions {C<in_order::Neg_Inf_L>, C<in_order::Neg_Inf_R>,
@@ -409,7 +409,7 @@ name this operator I<ge>.
             is_commutative : True,
             is_idempotent : True,
             identity : \(+∞),
-            map : (args.\0 in_order args.\1 :? args.\0 :! args.\1),
+            map : \(args.\0 in_order args.\1 :? args.\0 :! args.\1),
         ),
 
 The function C<min> results in whichever of its 2 arguments is first when
@@ -426,7 +426,7 @@ I<before> all of the others.
             is_commutative : True,
             is_idempotent : True,
             identity : \(-∞),
-            map : (args.\0 in_order args.\1 :? args.\1 :! args.\0),
+            map : \(args.\0 in_order args.\1 :? args.\1 :! args.\0),
         ),
 
 The function C<max> results in whichever of its 2 arguments is last when
@@ -440,7 +440,7 @@ I<after> all of the others.
             returns : (\@Orderable, \@Orderable),
             matches : (\@Orderable, \@Orderable),
             is_commutative : True,
-            map : (args.\0 in_order args.\1 :? args :! (args.\1, args.\0)),
+            map : \(args.\0 in_order args.\1 :? args :! (args.\1, args.\0)),
         ),
 
 The function C<minmax> results in a binary C<Tuple> containing its 2
@@ -519,7 +519,7 @@ programming languages may name their corresponding operators I<Current>.
         succ : \Function >:< (
             returns : {\@Successable, \@Pos_Inf},
             matches : (\@Successable),
-            map : (args.\0 nth_succ 1),
+            map : \(args.\0 nth_succ 1),
         ),
 
 The function C<succ> results in the I<successor> value of its
@@ -593,7 +593,7 @@ values and should not be conceptualized as mathematical operations.
         pred : \Function >:< (
             returns : {\@Bicessable, \@Neg_Inf},
             matches : (\@Bicessable),
-            map : (args.\0 nth_pred 1),
+            map : \(args.\0 nth_pred 1),
         ),
 
 The function C<pred> results in the I<predecessor> value of its
@@ -678,7 +678,7 @@ it results in C<False>.
 =head2 Boolean Bool
 
         Boolean : \Selection >:< (
-            where : (args -->^ FDN__is_a_Boolean),
+            where : \(args -->^ FDN__is_a_Boolean),
             default : False,
             composes : {\@Bicessable, \@Boolable and_provides_its_default},
         ),
@@ -720,7 +720,7 @@ integer 1 to represent I<true>.
             returns : \@Boolean,
             matches : (\@Boolean, \@Boolean),
             implements : \@folder::"",
-            map : (!(args.\0) or args.\1),
+            map : \(!(args.\0) or args.\1),
         ),
 
 The function C<in_order::Boolean> implements the C<Orderable> virtual
@@ -732,7 +732,7 @@ function C<in_order> for the composing type C<Boolean>.
             returns : \@Boolean,
             matches : (\@Boolean),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<asset::Boolean> simply results in its C<0> argument.
@@ -745,7 +745,7 @@ the composing type C<Boolean>.
             returns : {\@False, \@Neg_Inf},
             matches : (\@Boolean, \@Integer_NN),
             implements : \@folder::"",
-            map : (args.\1 = 0 :? args.\0 :! args.\1 = 1 and args.\0 :? False :! -∞),
+            map : \(args.\1 = 0 :? args.\0 :! args.\1 = 1 and args.\0 :? False :! -∞),
         ),
 
 The function C<nth_pred::Boolean> implements the C<Bicessable> virtual
@@ -757,7 +757,7 @@ function C<nth_pred> for the composing type C<Boolean>.
             returns : {\@True, \@Pos_Inf},
             matches : (\@Boolean, \@Integer_NN),
             implements : \@folder::"",
-            map : (args.\1 = 0 :? args.\0 :! args.\1 = 1 and !(args.\0) :? True :! +∞),
+            map : \(args.\1 = 0 :? args.\0 :! args.\1 = 1 and !(args.\0) :? True :! +∞),
         ),
 
 The function C<nth_succ::Boolean> implements the C<Successable> virtual
@@ -769,7 +769,7 @@ function C<nth_succ> for the composing type C<Boolean>.
             returns : \@Boolean,
             matches : (\@Boolean),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<to_Boolean::Boolean> performs a logical I<proposition>; it
@@ -799,7 +799,7 @@ corresponding operators I<~> or I<^> or I<N>.
             is_commutative : True,
             is_idempotent : True,
             identity : True,
-            map : (args.\0 :? args.\1 :! False),
+            map : \(args.\0 :? args.\1 :! False),
         ),
 
         Unicode_Aliases::"∧" : \Alias >:< ( of : \@and ),
@@ -834,7 +834,7 @@ C<1> are both C<True>, and C<True> otherwise.
             is_commutative : True,
             is_idempotent : True,
             identity : False,
-            map : (args.\0 :? True :! args.\1),
+            map : \(args.\0 :? True :! args.\1),
         ),
 
         Unicode_Aliases::"∨" : \Alias >:< ( of : \@or ),
@@ -868,7 +868,7 @@ C<0> and C<1> is C<True>, and C<True> otherwise.
             is_associative : True,
             is_commutative : True,
             identity : True,
-            map : (args.\0 = (args.\1)),
+            map : \(args.\0 = (args.\1)),
         ),
 
         iff : \Alias >:< ( of : \@xnor ),
@@ -908,7 +908,7 @@ corresponding operators I<^>.
         imp : \Function >:< (
             returns : \@Boolean,
             matches : (\@Boolean, \@Boolean),
-            map : (args.\0 :? args.\1 :! True),
+            map : \(args.\0 :? args.\1 :! True),
         ),
 
         implies : \Alias >:< ( of : \@imp ),
@@ -1151,7 +1151,7 @@ C<0> (I<minuend>) and C<1> (I<subtrahend>).
         "-" : \Function >:< (
             returns : \@Numerical,
             matches : {(Numerical), (Numerical, Numerical)},
-            map : (args --> (degree::(args) = 1 :? \opposite::() :! \minus::())),
+            map : \(args --> (degree::(args) = 1 :? \opposite::() :! \minus::())),
         ),
 
         Unicode_Aliases::"−" : \Alias >:< ( of : "-" ),
@@ -1166,7 +1166,7 @@ was invoked with.
             returns : \@Numerical,
             matches : (\@Numerical, \@Numerical),
             is_commutative : True,
-            map : (modulus args.\0 - (args.\1)),
+            map : \(modulus args.\0 - (args.\1)),
         ),
 
         abs_minus : \Alias >:< ( of : \@modulus_minus ),
@@ -1218,7 +1218,7 @@ corresponding operators I<%%>.
         nearest_multiple_of : \Function >:< (
             returns : {\@Numerical, \@Excuse::Div_By_Zero},
             matches : (\@Numerical, \@Numerical, \@Round_Meth),
-            map : (if is_zero args.\1 then Excuse::Div_By_Zero()
+            map : \(if is_zero args.\1 then Excuse::Div_By_Zero()
                 else args.\1 * (args.\0 div args.\1)),
         ),
 
@@ -1285,7 +1285,7 @@ otherwise.
         modulo : \Function >:< (
             returns : {\@Numerical, \@Excuse::Div_By_Zero},
             matches : (\@Numerical, \@Numerical, \@Round_Meth),
-            map : (if is_zero args.\1 then Excuse::Div_By_Zero()
+            map : \(if is_zero args.\1 then Excuse::Div_By_Zero()
                 else args.\0 - (args.\0 nearest_multiple_of args.\1)),
         ),
 
@@ -1306,7 +1306,7 @@ or I<\\> or I<div> or I<rem> or I<remainder> or various other things.
         divided_by_and_modulo::"" : \Function >:< (
             returns : ({Numerical, Excuse::Div_By_Zero}, {Numerical, Excuse::Div_By_Zero}),
             matches : (\@Numerical, \@Numerical, \@Round_Meth),
-            map : ((args.\0 div args.\1, args.\0 mod args.\1)),
+            map : \((args.\0 div args.\1, args.\0 mod args.\1)),
         ),
 
 The function C<divided_by_and_modulo> results in a binary tuple whose C<0>
@@ -1386,7 +1386,7 @@ C<Integral> is composed by C<Integer>.
 
         Integral_NN : \Selection >:< (
             of : \@Integral,
-            where : (args.\0 >= zero::(args.\0)),
+            where : \(args.\0 >= zero::(args.\0)),
         ),
 
 The selection contract C<Integral_NN> represents the infinite type
@@ -1397,7 +1397,7 @@ default and minmum value is C<0>; it has no maximum value.
 
         Integral_P : \Selection >:< (
             of : \@Integral_NN,
-            where : (args.\0 > zero::(args.\0)),
+            where : \(args.\0 > zero::(args.\0)),
             default : \(succ::(Integral::())),
         ),
 
@@ -1410,7 +1410,7 @@ default and minmum value is C<1>; it has no maximum value.
         "--" : \Function >:< (
             returns : {\@Integral, \@Neg_Inf},
             matches : (\@Integral),
-            map : (pred args.\0),
+            map : \(pred args.\0),
         ),
 
 The function C<--> results in the I<predecessor> value of its C<0>
@@ -1423,7 +1423,7 @@ programming languages may name their corresponding operators I<decrement>.
         "++" : \Function >:< (
             returns : {\@Integral, \@Pos_Inf},
             matches : (\@Integral),
-            map : (succ args.\0),
+            map : \(succ args.\0),
         ),
 
 The function C<++> results in the I<successor> value of its C<0> argument,
@@ -1460,7 +1460,7 @@ this operator in postfix like I<n!>.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            map : ((if is_zero args.\1 then args.\0 else material::(args.\1, mod::(args.\0, args.\1, To_Zero::())))
+            map : \((if is_zero args.\1 then args.\0 else material::(args.\1, mod::(args.\0, args.\1, To_Zero::())))
                 ::?= 'Calculate using the Euclidean algorithm.'),
         ),
 
@@ -1479,7 +1479,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            map : (if is_zero args.\0 or is_zero args.\1 then zero args.\0
+            map : \(if is_zero args.\0 or is_zero args.\1 then zero args.\0
                 else div::(args.\0 * (args.\1), args.\0 gcd args.\1, To_Zero::())),
         ),
 
@@ -1495,7 +1495,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
         coprime : \Function >:< (
             returns : \@Boolean,
             matches : (\@Integral, \@Integral),
-            map : ((abs::(args.\0) gcd abs::(args.\1)) = succ::(zero args.\0)),
+            map : \((abs::(args.\0) gcd abs::(args.\1)) = succ::(zero args.\0)),
         ),
 
 The function C<coprime> results in C<True> iff its 2 arguments C<0> and
@@ -1507,7 +1507,7 @@ otherwise.
 =head2 Integer
 
         Integer : \Selection >:< (
-            where : (args -->^ FDN__is_a_Integer),
+            where : \(args -->^ FDN__is_a_Integer),
             default : 0,
             composes : \@Integral and_provides_its_default,
         ),
@@ -1522,7 +1522,7 @@ Other programming languages may name their corresponding types I<BigInt>.
 
 =head2 Integer_NN
 
-        Integer_NN : \Selection >:< ( of : \@Integer, where : (args.\0 >= 0) ),
+        Integer_NN : \Selection >:< ( of : \@Integer, where : \(args.\0 >= 0) ),
 
 The selection contract C<Integer_NN> represents the infinite type
 consisting just of the C<Integer> values that are non-negative.  Its
@@ -1530,7 +1530,7 @@ default and minmum value is C<0>; it has no maximum value.
 
 =head2 Integer_P
 
-        Integer_P : \Selection >:< ( of : \@Integer_NN, where : (args.\0 > 0), default : 1 ),
+        Integer_P : \Selection >:< ( of : \@Integer_NN, where : \(args.\0 > 0), default : 1 ),
 
 The selection contract C<Integer_P> represents the infinite type consisting
 just of the C<Integer_NN> values that are positive.  Its default and minmum
@@ -1542,7 +1542,7 @@ value is C<1>; it has no maximum value.
             returns : \@Boolean,
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
-            map : (args -->^ FDN__Integer_in_order),
+            map : \(args -->^ FDN__Integer_in_order),
         ),
 
 The function C<in_order::Integer> implements the C<Orderable> virtual
@@ -1554,7 +1554,7 @@ function C<in_order> for the composing type C<Integer>.
             returns : \@Integer,
             matches : (\@Integer),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<asset::Integer> simply results in its C<0> argument.
@@ -1567,7 +1567,7 @@ the composing type C<Integer>.
             returns : \@Integer,
             matches : (\@Integer, \@Integer_NN),
             implements : \@folder::Integral,
-            map : (args.\0 - (args.\1)),
+            map : \(args.\0 - (args.\1)),
         ),
 
 The function C<nth_pred::Integer> implements the C<Bicessable>
@@ -1580,7 +1580,7 @@ virtual function C<nth_pred> for the composing type C<Integer>.
             matches : (\@Integer, \@Integer_NN),
             implements : \@folder::Integral,
             repeater : plus::Integer,
-            map : (args.\0 + (args.\1)),
+            map : \(args.\0 + (args.\1)),
         ),
 
 The function C<nth_succ::Integer> implements the C<Successable>
@@ -1592,7 +1592,7 @@ virtual function C<nth_succ> for the composing type C<Integer>.
             returns : \@Boolean,
             matches : (\@Integer),
             implements : \@folder::"",
-            map : (args.\0 != 0),
+            map : \(args.\0 != 0),
         ),
 
 The function C<to_Boolean::Integer> results in C<True> iff its C<0>
@@ -1606,7 +1606,7 @@ C<?> for the composing type C<Integer>.
             returns : \@Integer,
             matches : (\@Integer),
             implements : \@folder::"",
-            map : (0),
+            map : \(0),
         ),
 
 The function C<zero::Integer> simply results in C<0>.  This function
@@ -1619,7 +1619,7 @@ C<Integer>.
             returns : \@Integer,
             matches : (\@Integer),
             implements : \@folder::"",
-            map : (args -->^ FDN__Integer_opposite),
+            map : \(args -->^ FDN__Integer_opposite),
         ),
 
 The function C<opposite::Integer> implements the C<Numerical> virtual
@@ -1632,7 +1632,7 @@ for the composing type C<Integer>.
             returns : {\@Fraction, \@Excuse::Div_By_Zero},
             matches : (\@Integer),
             implements : \@folder::"",
-            map : (1 / (args.\0)),
+            map : \(1 / (args.\0)),
         ),
 
 The function C<reciprocal::Integer> implements the C<Numerical> virtual
@@ -1645,7 +1645,7 @@ C<Integer>.
             returns : \@Integer_NN,
             matches : (\@Integer),
             implements : \@folder::"",
-            map : (args -->^ FDN__Integer_modulus),
+            map : \(args -->^ FDN__Integer_modulus),
         ),
 
 The function C<modulus::Integer> implements the C<Numerical>
@@ -1661,7 +1661,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Integer>.
             is_commutative : True,
             identity : 0,
             repeater : times::Integer,
-            map : (args -->^ FDN__Integer_plus),
+            map : \(args -->^ FDN__Integer_plus),
         ),
 
 The function C<plus::Integer> implements the C<Numerical>
@@ -1673,7 +1673,7 @@ virtual function C<plus> aka C<+> for the composing type C<Integer>.
             returns : \@Integer,
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
-            map : (args -->^ FDN__Integer_minus),
+            map : \(args -->^ FDN__Integer_minus),
         ),
 
 The function C<minus::Integer> implements the C<Numerical> virtual function
@@ -1689,7 +1689,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Integer>.
             is_commutative : True,
             identity : 1,
             repeater : integral_nn_power::Integer,
-            map : (args -->^ FDN__Integer_times),
+            map : \(args -->^ FDN__Integer_times),
         ),
 
 The function C<times::Integer> implements the C<Numerical> virtual function
@@ -1701,7 +1701,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Integer>.
             returns : {\@Boolean, \@Excuse::Div_By_Zero},
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
-            map : (if args.\1 = 0 then Excuse::Div_By_Zero()
+            map : \(if args.\1 = 0 then Excuse::Div_By_Zero()
                 else args -->^ FDN__Integer_multiple_of),
         ),
 
@@ -1714,7 +1714,7 @@ virtual function C<multiple_of> for the composing type C<Integer>.
             returns : {\@Fraction, \@Excuse::Div_By_Zero},
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
-            map : (
+            map : \(
                 n ::= args.\0;
                 d ::= args.\1;
 
@@ -1739,7 +1739,7 @@ the composing type C<Integer>.
             returns : {\@Integer, \@Excuse::Div_By_Zero},
             matches : (\@Integer, \@Integer, \@Round_Meth),
             implements : \@folder::"",
-            map : (
+            map : \(
                 dividend   ::= args.\0;
                 divisor    ::= args.\1;
                 round_meth ::= args.\2;
@@ -1820,7 +1820,7 @@ C<Integer>.
             returns : {\@Fraction, \@Excuse::Zero_To_The_Zero},
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
-            map : (if args.\0 = 0 and args.\1 = 0 then Excuse::Zero_To_The_Zero()
+            map : \(if args.\0 = 0 and args.\1 = 0 then Excuse::Zero_To_The_Zero()
                 else args.\0 / 1 ** (args.\1)),
         ),
 
@@ -1833,7 +1833,7 @@ function C<integral_power> aka C<**> for the composing type C<Integer>.
             returns : {\@Integer, \@Excuse::Zero_To_The_Zero},
             matches : (\@Integer, \@Integer_NN),
             implements : \@folder::"",
-            map : (if args.\0 = 0 and args.\1 = 0 then Excuse::Zero_To_The_Zero()
+            map : \(if args.\0 = 0 and args.\1 = 0 then Excuse::Zero_To_The_Zero()
                 else args -->^ FDN__Integer_nn_power),
         ),
 
@@ -1847,7 +1847,7 @@ C<Integer>.
             returns : \@Integer,
             matches : (\@Integer),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<to_Integer::Integer> simply results in its C<0> argument.
@@ -1860,7 +1860,7 @@ the composing type C<Integer>.
             returns : \@Integer_P,
             matches : (\@Integer_NN),
             implements : \@folder::"",
-            map : (args -->^ FDN__Integer_factorial),
+            map : \(args -->^ FDN__Integer_factorial),
         ),
 
 The function C<factorial::Integer> implements the C<Integral> virtual
@@ -1901,7 +1901,7 @@ will have either of those.  C<Fractional> is composed by C<Fraction>.
 
         Fractional_NN : \Selection >:< (
             of : \@Fractional,
-            where : (args.\0 >= zero::(args.\0)),
+            where : \(args.\0 >= zero::(args.\0)),
         ),
 
 The selection contract C<Fractional_NN> represents the infinite type
@@ -1941,7 +1941,7 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
 
         Fraction : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Fraction, \(
+            where : \(has_wrapped::( args.\0, \Fraction, \(
                 if
                     args.\0 is_a (
                         numerator : \Integer::(),
@@ -1967,7 +1967,7 @@ Other programming languages may name their corresponding types I<BigRat>.
 
 =head2 Fraction_NN
 
-        Fraction_NN : \Selection >:< ( of : \@Fraction, where : (args.\0 >= 0.0) ),
+        Fraction_NN : \Selection >:< ( of : \@Fraction, where : \(args.\0 >= 0.0) ),
 
 The selection contract C<Fraction_NN> represents the infinite type
 consisting just of the C<Fraction> values that are non-negative.  Its
@@ -1979,7 +1979,7 @@ default and minmum value is C<0.0>; it has no maximum value.
             returns : \@Boolean,
             matches : (\@Fraction, \@Fraction),
             implements : \@folder::"",
-            map : (
+            map : \(
                 <-- (denominator args.\0) = (denominator args.\1)
                     :? in_order::(numerator args.\0, numerator args.\1)
                  :!
@@ -2002,7 +2002,7 @@ function C<in_order> for the composing type C<Fraction>.
             returns : \@Boolean,
             matches : (\@Fraction),
             implements : \@folder::"",
-            map : (args.\0 != 0.0),
+            map : \(args.\0 != 0.0),
         ),
 
 The function C<to_Boolean::Fraction> results in C<True> iff its C<0>
@@ -2016,7 +2016,7 @@ C<?> for the composing type C<Fraction>.
             returns : \@Fraction,
             matches : (\@Fraction),
             implements : \@folder::"",
-            map : (0.0),
+            map : \(0.0),
         ),
 
 The function C<zero::Fraction> simply results in C<0.0>.  This function
@@ -2029,7 +2029,7 @@ C<Fraction>.
             returns : \@Fraction,
             matches : (\@Fraction),
             implements : \@folder::"",
-            map : (-(numerator args.\0) / (denominator args.\0)),
+            map : \(-(numerator args.\0) / (denominator args.\0)),
         ),
 
 The function C<opposite::Fraction> implements the C<Numerical> virtual
@@ -2042,7 +2042,7 @@ for the composing type C<Fraction>.
             returns : {\@Fraction, \@Excuse::Div_By_Zero},
             matches : (\@Fraction),
             implements : \@folder::"",
-            map : (if args.\0 = 0.0 then Excuse::Div_By_Zero()
+            map : \(if args.\0 = 0.0 then Excuse::Div_By_Zero()
                 else (denominator args.\0) / (numerator args.\0)),
         ),
 
@@ -2056,7 +2056,7 @@ C<Fraction>.
             returns : \@Fraction_NN,
             matches : (\@Fraction),
             implements : \@folder::"",
-            map : (abs::(numerator args.\0) / (denominator args.\0)),
+            map : \(abs::(numerator args.\0) / (denominator args.\0)),
         ),
 
 The function C<modulus::Fraction> implements the C<Numerical>
@@ -2072,7 +2072,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
             is_commutative : True,
             identity : 0.0,
             repeater : times::Fraction_Integer,
-            map : (
+            map : \(
                 <-- (denominator args.\0) = (denominator args.\1)
                     :? (numerator args.\0) + (numerator args.\1) / (denominator args.\0)
                  :!
@@ -2094,7 +2094,7 @@ virtual function C<plus> aka C<+> for the composing type C<Fraction>.
             returns : \@Fraction,
             matches : (\@Fraction, \@Fraction),
             implements : \@folder::"",
-            map : (args.\0 + -(args.\1)),
+            map : \(args.\0 + -(args.\1)),
         ),
 
 The function C<minus::Fraction> implements the C<Numerical> virtual function
@@ -2110,7 +2110,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Fraction>.
             is_commutative : True,
             identity : 1.0,
             repeater : integral_nn_power::Fraction,
-            map : (((numerator args.\0) * (numerator args.\1))
+            map : \(((numerator args.\0) * (numerator args.\1))
                 / ((denominator args.\0) * (denominator args.\1))),
         ),
 
@@ -2123,7 +2123,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Fraction>.
             returns : \@Fraction,
             matches : (\@Fraction, \@Integer),
             implements : \@folder::"",
-            map : (((numerator args.\0) * (args.\1)) / (denominator args.\0)),
+            map : \(((numerator args.\0) * (args.\1)) / (denominator args.\0)),
         ),
 
 The function C<times::Fraction_Integer> implements the C<Numerical> virtual
@@ -2136,7 +2136,7 @@ specifically for multiplying one by an C<Integer>.
             returns : {\@Boolean, \@Excuse::Div_By_Zero},
             matches : (\@Fraction, \@Fraction),
             implements : \@folder::"",
-            map : (if args.\1 = 0.0 then Excuse::Div_By_Zero()
+            map : \(if args.\1 = 0.0 then Excuse::Div_By_Zero()
                 else (args.\0 mod args.\1) = 0.0),
         ),
 
@@ -2149,7 +2149,7 @@ virtual function C<multiple_of> for the composing type C<Fraction>.
             returns : {\@Fraction, \@Excuse::Div_By_Zero},
             matches : (\@Fraction, \@Fraction),
             implements : \@folder::"",
-            map : (if args.\1 = 0.0 then Excuse::Div_By_Zero()
+            map : \(if args.\1 = 0.0 then Excuse::Div_By_Zero()
                 else args.\0 * reciprocal::(args.\1)),
         ),
 
@@ -2163,7 +2163,7 @@ the composing type C<Fraction>.
             returns : {\@Fraction, \@Excuse::Div_By_Zero},
             matches : (\@Fraction, \@Fraction, \@Round_Meth),
             implements : \@folder::"",
-            map : (
+            map : \(
                 d ::= lcm::(denominator args.\0, denominator args.\1);
                 n0 ::= (numerator args.\0) * div::(d, denominator args.\0, To_Zero::());
                 n1 ::= (numerator args.\1) * div::(d, denominator args.\1, To_Zero::());
@@ -2182,7 +2182,7 @@ C<Fraction>.
             returns : {\@Fraction, \@Excuse::Zero_To_The_Zero},
             matches : (\@Fraction, \@Integer),
             implements : \@folder::"",
-            map : (\integral_nn_power::()
+            map : \(\integral_nn_power::()
                 <-- (args.\1 >= 0 :? args :! (reciprocal::(args.\0), -(args.\1)))),
         ),
 
@@ -2195,7 +2195,7 @@ function C<integral_power> aka C<**> for the composing type C<Fraction>.
             returns : {\@Fraction, \@Excuse::Zero_To_The_Zero},
             matches : (\@Fraction, \@Integer_NN),
             implements : \@folder::"",
-            map : (if args.\0 = 0.0 and args.\1 = 0 then Excuse::Zero_To_The_Zero()
+            map : \(if args.\0 = 0.0 and args.\1 = 0 then Excuse::Zero_To_The_Zero()
                 else ((numerator args.\0) ** (args.\1)) / ((denominator args.\0) ** (args.\1))),
         ),
 
@@ -2209,7 +2209,7 @@ C<Fraction>.
             returns : \@Fraction,
             matches : (\@Fraction),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<to_Fraction::Fraction> simply results in its C<0> argument.
@@ -2221,7 +2221,7 @@ for the composing type C<Fraction>.
         numerator::Fraction : \Function >:< (
             returns : \@Integer,
             matches : (\@Fraction),
-            map : (args.\0:>.\numerator),
+            map : \(args.\0:>.\numerator),
         ),
 
 The function C<numerator::Fraction> implements the C<Fractional> virtual
@@ -2232,7 +2232,7 @@ function C<numerator> for the composing type C<Fraction>.
         denominator::Fraction : \Function >:< (
             returns : \@Integer_P,
             matches : (\@Fraction),
-            map : (args.\0:>.\denominator),
+            map : \(args.\0:>.\denominator),
         ),
 
 The function C<denominator::Fraction> implements the C<Fractional> virtual
@@ -2379,7 +2379,7 @@ rather than a boolean.
             returns : \@Boolean,
             matches : (\@String, \@String),
             is_commutative : True,
-            map : (args.\0 != (args.\1) and (args.\0 substring_or_superstring args.\1)),
+            map : \(args.\0 != (args.\1) and (args.\0 substring_or_superstring args.\1)),
         ),
 
 The function C<proper_substring_or_superstring> results in C<True> iff the
@@ -2393,7 +2393,7 @@ results in C<False>.
             returns : \@Boolean,
             matches : (\@String, \@String),
             is_commutative : True,
-            map : ((args.\0 substring_of args.\1) or (args.\0 superstring_of args.\1)),
+            map : \((args.\0 substring_of args.\1) or (args.\0 superstring_of args.\1)),
         ),
 
 The function C<substring_or_superstring> results in C<True> iff the
@@ -2476,7 +2476,7 @@ languages may name their corresponding operators I<x>.
 
         Bits::"" : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Bits, \String::Bits() )),
+            where : \(has_wrapped::( args.\0, \Bits, \String::Bits() )),
             default : \~?'',
             composes : {\@Stringy and_provides_its_default},
         ),
@@ -2494,7 +2494,7 @@ corresponding types I<bit> or I<bit varying>.
 
         String::Bits : \Selection >:< (
             of : \@String,
-            where : (args.\0 all \in::( 1: 0..1 )),
+            where : \(args.\0 all \in::( 1: 0..1 )),
         ),
 
 The selection contract C<String::Bits> represents the infinite type
@@ -2507,7 +2507,7 @@ integers is in the range 0..1 inclusive.
             returns : \@Boolean,
             matches : (\@Bits, \@Bits),
             implements : \@folder::"",
-            map : ((Bits_to_String_Bits args.\0) in_order (Bits_to_String_Bits args.\1)),
+            map : \((Bits_to_String_Bits args.\0) in_order (Bits_to_String_Bits args.\1)),
         ),
 
 The function C<in_order::Bits> implements the C<Orderable> virtual
@@ -2519,7 +2519,7 @@ function C<in_order> for the composing type C<Bits>.
             returns : \@Boolean,
             matches : (\@Bits),
             implements : \@folder::"",
-            map : (args.\0 != \~?''),
+            map : \(args.\0 != \~?''),
         ),
 
 The function C<to_Boolean::Bits> results in C<True> iff its C<0> argument
@@ -2533,7 +2533,7 @@ C<?> for the composing type C<Bits>.
             returns : \@Bits,
             matches : (\@Bits),
             implements : \@folder::"",
-            map : (\~?''),
+            map : \(\~?''),
         ),
 
 The function C<empty::Bits> simply results in C<\~?''>.  This function
@@ -2546,7 +2546,7 @@ type C<Bits>.
             returns : \@Boolean,
             matches : (\@Bits, \@Bits),
             implements : \@folder::"",
-            map : ((Bits_to_String_Bits args.\0) substring_of (Bits_to_String_Bits args.\1)),
+            map : \((Bits_to_String_Bits args.\0) substring_of (Bits_to_String_Bits args.\1)),
         ),
 
 The function C<substring_of::Bits> implements the C<Stringy> virtual
@@ -2559,7 +2559,7 @@ function C<substring_of> for the composing type C<Bits>.
             matches : (\@Bits, \@Bits),
             implements : \@folder::"",
             is_commutative : True,
-            map : ((Bits_to_String_Bits args.\0)
+            map : \((Bits_to_String_Bits args.\0)
                 overlaps_string (Bits_to_String_Bits args.\1)),
         ),
 
@@ -2573,7 +2573,7 @@ function C<overlaps_string> for the composing type C<Bits>.
             matches : (\@Bits, \@Bits),
             implements : \@folder::"",
             is_commutative : True,
-            map : ((Bits_to_String_Bits args.\0)
+            map : \((Bits_to_String_Bits args.\0)
                 disjoint_string (Bits_to_String_Bits args.\1)),
         ),
 
@@ -2589,7 +2589,7 @@ function C<disjoint_string> for the composing type C<Bits>.
             is_associative : True,
             identity : \~?'',
             repeater : replicate::Bits,
-            map : (Bits_from_String_Bits::((Bits_to_String_Bits args.\0)
+            map : \(Bits_from_String_Bits::((Bits_to_String_Bits args.\0)
                 ~ (Bits_to_String_Bits args.\1))),
         ),
 
@@ -2602,7 +2602,7 @@ C<catenate> aka C<~> for the composing type C<Bits>.
             returns : \@Bits,
             matches : (\@Bits, \@Integer_NN),
             implements : \@folder::"",
-            map : (Bits_from_String_Bits::((Bits_to_String_Bits args.\0) ~# (args.\1))),
+            map : \(Bits_from_String_Bits::((Bits_to_String_Bits args.\0) ~# (args.\1))),
         ),
 
 The function C<replicate::Bits> implements the C<Stringy> virtual function
@@ -2613,7 +2613,7 @@ C<replicate> aka C<~#> for the composing type C<Bits>.
         Bits_from_String_Bits : \Function >:< (
             returns : \@Bits,
             matches : (\@String::Bits),
-            map : (\Bits >:< (args.\0)),
+            map : \(\Bits >:< (args.\0)),
         ),
 
 The function C<Bits_from_String_Bits> results in the C<Bits> value selected
@@ -2624,7 +2624,7 @@ in terms of the integer sequence of its C<0> argument.
         Bits_to_String_Bits : \Function >:< (
             returns : \@String::Bits,
             matches : (\@Bits),
-            map : (args.\0:>),
+            map : \(args.\0:>),
         ),
 
 The function C<Bits_to_String_Bits> results in an integer sequence defining
@@ -2636,7 +2636,7 @@ the bits of its C<Bits>-typed C<0> argument.
 
         Blob::"" : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Blob, \String::Octets() )),
+            where : \(has_wrapped::( args.\0, \Blob, \String::Octets() )),
             default : \~+'',
             composes : \@Stringy,
         ),
@@ -2654,7 +2654,7 @@ corresponding types I<Buf> or I<byte[]> or I<bytea>.
 
         String::Octets : \Selection >:< (
             of : \@String,
-            where : (args.\0 all \in::( 1: 0..255 )),
+            where : \(args.\0 all \in::( 1: 0..255 )),
         ),
 
 The selection contract C<String::Octets> represents the infinite type
@@ -2667,7 +2667,7 @@ integers is in the range 0..255 inclusive.
             returns : \@Boolean,
             matches : (\@Blob, \@Blob),
             implements : \@folder::"",
-            map : ((Blob_to_Octets args.\0) in_order (Blob_to_Octets args.\1)),
+            map : \((Blob_to_Octets args.\0) in_order (Blob_to_Octets args.\1)),
         ),
 
 The function C<in_order::Blob> implements the C<Orderable> virtual
@@ -2679,7 +2679,7 @@ function C<in_order> for the composing type C<Blob>.
             returns : \@Boolean,
             matches : (\@Blob),
             implements : \@folder::"",
-            map : (args.\0 != \~+''),
+            map : \(args.\0 != \~+''),
         ),
 
 The function C<to_Boolean::Blob> results in C<True> iff its C<0> argument
@@ -2693,7 +2693,7 @@ C<?> for the composing type C<Blob>.
             returns : \@Blob,
             matches : (\@Blob),
             implements : \@folder::"",
-            map : (\~+''),
+            map : \(\~+''),
         ),
 
 The function C<empty::Blob> simply results in C<\~+''>.  This function
@@ -2706,7 +2706,7 @@ type C<Blob>.
             returns : \@Boolean,
             matches : (\@Blob, \@Blob),
             implements : \@folder::"",
-            map : ((Blob_to_Octets args.\0) substring_of (Blob_to_Octets args.\1)),
+            map : \((Blob_to_Octets args.\0) substring_of (Blob_to_Octets args.\1)),
         ),
 
 The function C<substring_of::Blob> implements the C<Stringy> virtual
@@ -2719,7 +2719,7 @@ function C<substring_of> for the composing type C<Blob>.
             matches : (\@Blob, \@Blob),
             implements : \@folder::"",
             is_commutative : True,
-            map : ((Blob_to_Octets args.\0) overlaps_string (Blob_to_Octets args.\1)),
+            map : \((Blob_to_Octets args.\0) overlaps_string (Blob_to_Octets args.\1)),
         ),
 
 The function C<overlaps_string::Blob> implements the C<Stringy> virtual
@@ -2732,7 +2732,7 @@ function C<overlaps_string> for the composing type C<Blob>.
             matches : (\@Blob, \@Blob),
             implements : \@folder::"",
             is_commutative : True,
-            map : ((Blob_to_Octets args.\0) disjoint_string (Blob_to_Octets args.\1)),
+            map : \((Blob_to_Octets args.\0) disjoint_string (Blob_to_Octets args.\1)),
         ),
 
 The function C<disjoint_string::Blob> implements the C<Stringy> virtual
@@ -2747,7 +2747,7 @@ function C<disjoint_string> for the composing type C<Blob>.
             is_associative : True,
             identity : \~+'',
             repeater : replicate::Blob,
-            map : (Blob_from_Octets::((Blob_to_Octets args.\0) ~ (Blob_to_Octets args.\1))),
+            map : \(Blob_from_Octets::((Blob_to_Octets args.\0) ~ (Blob_to_Octets args.\1))),
         ),
 
 The function C<catenate::Blob> implements the C<Stringy> virtual function
@@ -2759,7 +2759,7 @@ C<catenate> aka C<~> for the composing type C<Blob>.
             returns : \@Blob,
             matches : (\@Blob, \@Integer_NN),
             implements : \@folder::"",
-            map : (Blob_from_Octets::((Blob_to_Octets args.\0) ~# (args.\1))),
+            map : \(Blob_from_Octets::((Blob_to_Octets args.\0) ~# (args.\1))),
         ),
 
 The function C<replicate::Blob> implements the C<Stringy> virtual function
@@ -2770,7 +2770,7 @@ C<replicate> aka C<~#> for the composing type C<Blob>.
         Blob_from_Octets : \Function >:< (
             returns : \@Blob,
             matches : (\@String::Octets),
-            map : (\Blob >:< (args.\0)),
+            map : \(\Blob >:< (args.\0)),
         ),
 
 The function C<Blob_from_Octets> results in the C<Blob> value selected in
@@ -2781,7 +2781,7 @@ terms of the integer sequence of its C<0> argument.
         Blob_to_Octets : \Function >:< (
             returns : \@String::Octets,
             matches : (\@Blob),
-            map : (args.\0:>),
+            map : \(args.\0:>),
         ),
 
 The function C<Blob_to_Octets> results in an integer sequence defining the
@@ -2860,7 +2860,7 @@ like national collations or fixed-size types.
 
         Text::"" : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Text, \String::Maximal_Chars() )),
+            where : \(has_wrapped::( args.\0, \Text, \String::Maximal_Chars() )),
             default : '',
             composes : {\@Textual and_provides_its_default},
         ),
@@ -2905,7 +2905,7 @@ which exists for convenient self-documentation of C<Text>-related code.
 
         Text::Unicode : \Selection >:< (
             of : \@Text,
-            where : (String::Unicode_Codes::(Text_from_Maximal_Chars args.\0)),
+            where : \(String::Unicode_Codes::(Text_from_Maximal_Chars args.\0)),
         ),
 
 The selection contract C<Text::Unicode> represents the infinite type
@@ -2919,7 +2919,7 @@ the standard Unicode codepoints for the same symbols.
 
         String::Unicode_Codes : \Selection >:< (
             of : \@String::Maximal_Chars,
-            where : (args.\0 all \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} )),
+            where : \(args.\0 all \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} )),
         ),
 
 The selection contract C<String::Unicode_Codes> represents the infinite type
@@ -2930,7 +2930,7 @@ integers is in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
 
         Text::ASCII : \Selection >:< (
             of : \@Text::Unicode,
-            where : (String::ASCII_Chars::(Text_from_Unicode_Codes args.\0)),
+            where : \(String::ASCII_Chars::(Text_from_Unicode_Codes args.\0)),
         ),
 
 The selection contract C<Text::ASCII> represents the infinite type
@@ -2944,7 +2944,7 @@ the standard ASCII codes for the same symbols.
 
         String::ASCII_Chars : \Selection >:< (
             of : \@String::Unicode_Codes,
-            where : (args.\0 all \in::( 1: 0..127 )),
+            where : \(args.\0 all \in::( 1: 0..127 )),
         ),
 
 The selection contract C<String::ASCII_Chars> represents the infinite type
@@ -2957,7 +2957,7 @@ integers is in the range 0..127 inclusive.
             returns : \@Boolean,
             matches : (\@Text, \@Text),
             implements : \@folder::"",
-            map : ((Text_to_Maximal_Chars args.\0) in_order (Text_to_Maximal_Chars args.\1)),
+            map : \((Text_to_Maximal_Chars args.\0) in_order (Text_to_Maximal_Chars args.\1)),
         ),
 
 The function C<in_order::Text> implements the C<Orderable> virtual
@@ -2969,7 +2969,7 @@ function C<in_order> for the composing type C<Text>.
             returns : \@Boolean,
             matches : (\@Text),
             implements : \@folder::"",
-            map : (args.\0 != ''),
+            map : \(args.\0 != ''),
         ),
 
 The function C<to_Boolean::Text> results in C<True> iff its C<0> argument
@@ -2983,7 +2983,7 @@ composing type C<Text>.
             returns : \@Text,
             matches : (\@Text),
             implements : \@folder::"",
-            map : (''),
+            map : \(''),
         ),
 
 The function C<empty::Text> simply results in C<''>.  This function
@@ -2996,7 +2996,7 @@ type C<Text>.
             returns : \@Boolean,
             matches : (\@Text, \@Text),
             implements : \@folder::"",
-            map : ((Text_to_Maximal_Chars args.\0)
+            map : \((Text_to_Maximal_Chars args.\0)
                 substring_of (Text_to_Maximal_Chars args.\1)),
         ),
 
@@ -3010,7 +3010,7 @@ function C<substring_of> for the composing type C<Text>.
             matches : (\@Text, \@Text),
             implements : \@folder::"",
             is_commutative : True,
-            map : ((Text_to_Maximal_Chars args.\0)
+            map : \((Text_to_Maximal_Chars args.\0)
                 overlaps_string (Text_to_Maximal_Chars args.\1)),
         ),
 
@@ -3024,7 +3024,7 @@ function C<overlaps_string> for the composing type C<Text>.
             matches : (\@Text, \@Text),
             implements : \@folder::"",
             is_commutative : True,
-            map : ((Text_to_Maximal_Chars args.\0)
+            map : \((Text_to_Maximal_Chars args.\0)
                 disjoint_string (Text_to_Maximal_Chars args.\1)),
         ),
 
@@ -3040,7 +3040,7 @@ function C<disjoint_string> for the composing type C<Text>.
             is_associative : True,
             identity : '',
             repeater : replicate::Text,
-            map : (Text_from_Maximal_Chars::((Text_to_Maximal_Chars args.\0)
+            map : \(Text_from_Maximal_Chars::((Text_to_Maximal_Chars args.\0)
                 ~ (Text_to_Maximal_Chars args.\1))),
         ),
 
@@ -3053,7 +3053,7 @@ C<catenate> aka C<~> for the composing type C<Text>.
             returns : \@Text,
             matches : (\@Text, \@Integer_NN),
             implements : \@folder::"",
-            map : (Text_from_Maximal_Chars::((Text_to_Maximal_Chars args.\0) ~# (args.\1))),
+            map : \(Text_from_Maximal_Chars::((Text_to_Maximal_Chars args.\0) ~# (args.\1))),
         ),
 
 The function C<replicate::Text> implements the C<Stringy> virtual function
@@ -3065,7 +3065,7 @@ C<replicate> aka C<~#> for the composing type C<Text>.
             returns : \@Text,
             matches : (\@Text),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<to_Text::Text> simply results in its C<0> argument.
@@ -3077,7 +3077,7 @@ for the composing type C<Text>.
         Text_from_Maximal_Chars : \Function >:< (
             returns : \@Text,
             matches : (\@String::Maximal_Chars),
-            map : (\Text >:< (args.\0)),
+            map : \(\Text >:< (args.\0)),
         ),
 
 The function C<Text_from_Maximal_Chars> results in the C<Text> value
@@ -3089,7 +3089,7 @@ C<Maximal_Chars> character mapping of its C<0> argument.
         Text_to_Maximal_Chars : \Function >:< (
             returns : \@String::Maximal_Chars,
             matches : (\@Text),
-            map : (args.\0:>),
+            map : \(args.\0:>),
         ),
 
 The function C<Text_to_Maximal_Chars> results in an integer sequence in the
@@ -3101,7 +3101,7 @@ C<Text>-typed C<0> argument.
         Text_from_Unicode_Codes : \Function >:< (
             returns : \@Text::Unicode,
             matches : (\@String::Unicode_Codes),
-            map : (Text_from_Maximal_Chars args.\0),
+            map : \(Text_from_Maximal_Chars args.\0),
         ),
 
 The function C<Text_from_Unicode_Codes> results in the C<Text> value selected
@@ -3113,7 +3113,7 @@ mapping of its C<0> argument.
         Text_to_Unicode_Codes : \Function >:< (
             returns : \@String::Unicode_Codes,
             matches : (\@Text::Unicode),
-            map : (Text_to_Maximal_Chars args.\0),
+            map : \(Text_to_Maximal_Chars args.\0),
         ),
 
 The function C<Text_to_Unicode_Codes> results in an integer sequence in the
@@ -3125,7 +3125,7 @@ C<Text>-typed C<0> argument.
         Text_from_ASCII_Chars : \Function >:< (
             returns : \@Text::ASCII,
             matches : (\@String::ASCII_Chars),
-            map : (Text_from_Unicode_Codes args.\0),
+            map : \(Text_from_Unicode_Codes args.\0),
         ),
 
 The function C<Text_from_ASCII_Chars> results in the C<Text> value selected
@@ -3137,7 +3137,7 @@ mapping of its C<0> argument.
         Text_to_ASCII_Chars : \Function >:< (
             returns : \@String::ASCII_Chars,
             matches : (\@Text::ASCII),
-            map : (Text_to_Unicode_Codes args.\0),
+            map : \(Text_to_Unicode_Codes args.\0),
         ),
 
 The function C<Text_to_ASCII_Chars> results in an integer sequence in the
@@ -3149,7 +3149,7 @@ C<Text>-typed C<0> argument.
         Blob_is_UTF_8 : \Function >:< (
             returns : \@Boolean,
             matches : (\@Blob),
-            map : (...),
+            map : \(...),
         ),
 
 I<TODO.  See also https://tools.ietf.org/html/rfc3629 for the UTF-8 definition.>
@@ -3167,7 +3167,7 @@ it is superfluous with simply trying to decode one and see if it succeeded.>
         Text_from_UTF_8_Blob : \Function >:< (
             returns : {\@Text::Unicode, \@Excuse::Unicode::..., ...},
             matches : (\@Blob),
-            map : (...),
+            map : \(...),
         ),
 
 I<TODO.  As a code/implementation comment, say the parallel design is
@@ -3193,7 +3193,7 @@ some decoder edge case testing.>
         Text_from_UTF_8_Blob_with_repl_Text : \Function >:< (
             returns : \@Text::Unicode,
             matches : (\@Blob, \@Text::Unicode),
-            map : (...),
+            map : \(...),
         ),
 
 I<TODO.  Each invalid octet encountered is replaced by the substitution text
@@ -3207,7 +3207,7 @@ not one per character.>
         Text_from_UTF_8_Blob_with_repl_char : \Function >:< (
             returns : \@Text::Unicode,
             matches : (\@Blob),
-            map : (Text_from_UTF_8_Blob_with_repl_Text::(args.\0,'\\c<0xFFFD>')),
+            map : \(Text_from_UTF_8_Blob_with_repl_Text::(args.\0,'\\c<0xFFFD>')),
         ),
 
 I<TODO.  The special Unicode char "REPLACEMENT CHARACTER" aka 0xFFFD is used.>
@@ -3217,7 +3217,7 @@ I<TODO.  The special Unicode char "REPLACEMENT CHARACTER" aka 0xFFFD is used.>
         Text_to_UTF_8_Blob : \Function >:< (
             returns : \@Blob,
             matches : (\@Text::Unicode),
-            map : (...),
+            map : \(...),
         ),
 
 I<TODO.  This should just work as Text::Unicode excludes the surrogate
@@ -3228,7 +3228,7 @@ pairs and out of range etc stuff.>
         Blob_is_ASCII : \Function >:< (
             returns : \@Boolean,
             matches : (\@Blob),
-            map : (String::ASCII_Chars(Blob_to_Octets args.\0)),
+            map : \(String::ASCII_Chars(Blob_to_Octets args.\0)),
         ),
 
 I<TODO.>
@@ -3238,7 +3238,7 @@ I<TODO.>
         Text_from_ASCII_Blob : \Function >:< (
             returns : {\@Text::ASCII, \@Excuse::ASCII::High_Bit_Not_Zero},
             matches : (\@Blob),
-            map : (
+            map : \(
                 octets ::= Blob_to_Octets args.\0;
                 returns if String::ASCII_Chars(octets)
                     then Text_from_ASCII_Chars octets
@@ -3253,7 +3253,7 @@ I<TODO.  Note, still have to define that Excuse.>
         Text_from_ASCII_Blob_with_repl_Text : \Function >:< (
             returns : \@Text::ASCII,
             matches : (\@Blob, \@Text::ASCII),
-            map : (
+            map : \(
                 src_octets ::= Blob_to_Octets args.\0;
                 repl_chars ::= Text_to_ASCII_Chars args.\1;
                 result_chars ::=
@@ -3284,7 +3284,7 @@ is no good implicit default in ASCII, unlike with Unicode.>
         Text_to_ASCII_Blob : \Function >:< (
             returns : \@Blob,
             matches : (\@Text::ASCII),
-            map : (Blob_from_Octets::(Text_to_ASCII_Chars args.\0)),
+            map : \(Blob_from_Octets::(Text_to_ASCII_Chars args.\0)),
         ),
 
 I<TODO.>
@@ -3475,7 +3475,7 @@ whose C<0> and C<1> attributes are the mapping key and asset respectively.
             virtual : True,
             returns : (\@Any, \@Any),
             matches : (\@Accessible, \@Any),
-            accepts : (args.\0 .? (args.\1)),
+            accepts : \(args.\0 .? (args.\1)),
         ),
 
         ".:" : \Alias >:< ( of : \@mapping_at ),
@@ -3492,7 +3492,7 @@ may name their corresponding operators I<assoc>.
             virtual : True,
             returns : \@Any,
             matches : (\@Accessible, \@Any),
-            accepts : (args.\0 .? (args.\1)),
+            accepts : \(args.\0 .? (args.\1)),
         ),
 
         "." : \Alias >:< ( of : \@at ),
@@ -3523,7 +3523,7 @@ common to use subscript/postcircumfix syntax.
             virtual : True,
             returns : \@Accessible,
             matches : (Accessible, (Any, Any)),
-            accepts : (args.\0 .? (args.\1.\0)),
+            accepts : \(args.\0 .? (args.\1.\0)),
         ),
 
         ".:=" : \Alias >:< ( of : \@replace_at ),
@@ -3543,7 +3543,7 @@ assignment syntax.
             virtual : True,
             returns : \@Accessible,
             matches : (Accessible, (Any, Any)),
-            accepts : (not args.\0 .? (args.\1.\0)),
+            accepts : \(not args.\0 .? (args.\1.\0)),
         ),
 
         ".+" : \Alias >:< ( of : \@shiftless_insert_at ),
@@ -3563,7 +3563,7 @@ also common to use assignment syntax.
             virtual : True,
             returns : \@Accessible,
             matches : (\@Accessible, \@Any),
-            accepts : (args.\0 .? (args.\1)),
+            accepts : \(args.\0 .? (args.\1)),
         ),
 
         ".-" : \Alias >:< ( of : \@shiftless_remove_at ),
@@ -3685,7 +3685,7 @@ has exactly 1 distinct member value, and C<False> otherwise.
             virtual : True,
             returns : \@Any,
             matches : (\@Homogeneous),
-            accepts : (singular args.\0),
+            accepts : \(singular args.\0),
         ),
 
 The virtual function C<only_member> results in its C<0> argument's only
@@ -3728,7 +3728,7 @@ C<False>.
         has : \Function >:< (
             returns : \@Boolean,
             matches : (\@Homogeneous, \@Any),
-            map : (has_n::(args.\0, args.\1, 1)),
+            map : \(has_n::(args.\0, args.\1, 1)),
         ),
 
         Unicode_Aliases::"∋" : \Alias >:< ( of : \@has ),
@@ -3801,7 +3801,7 @@ retained member's value.  See also the C<Positional> function C<squish>.
         proper_subset_of : \Function >:< (
             returns : \@Boolean,
             matches : (\@Homogeneous, \@Homogeneous),
-            map : (args.\0 != (args.\1) and (args.\0 subset_of args.\1)),
+            map : \(args.\0 != (args.\1) and (args.\0 subset_of args.\1)),
         ),
 
         Unicode_Aliases::"⊂" : \Alias >:< ( of : \@proper_subset_of ),
@@ -3909,7 +3909,7 @@ typically the same.
             returns : \@Boolean,
             matches : (\@Homogeneous, \@Homogeneous),
             is_commutative : True,
-            map : (not (args.\0 same_members args.\1) and (args.\0 subset_or_superset args.\1)),
+            map : \(not (args.\0 same_members args.\1) and (args.\0 subset_or_superset args.\1)),
         ),
 
 The function C<proper_subset_or_superset> results in C<True> iff the
@@ -3923,7 +3923,7 @@ results in C<False>.
             returns : \@Boolean,
             matches : (\@Homogeneous, \@Homogeneous),
             is_commutative : True,
-            map : ((args.\0 subset_of args.\1) or (args.\0 superset_of args.\1)),
+            map : \((args.\0 subset_of args.\1) or (args.\0 superset_of args.\1)),
         ),
 
 The function C<subset_or_superset> results in C<True> iff the multiset of
@@ -3996,7 +3996,7 @@ I<TODO.  Result is true when no member evaluates to true.>
         all : \Function >:< (
             returns : \@Boolean,
             matches : (\@Homogeneous, \@Signature),
-            map : (args.\0 none \not_is_a::( 1: args.\1 )),
+            map : \(args.\0 none \not_is_a::( 1: args.\1 )),
         ),
 
         for_all : \Alias >:< ( of : \@all ),
@@ -4049,7 +4049,7 @@ C<Unionable> closest analogy.
         insert : \Function >:< (
             returns : \@Unionable,
             matches : (\@Unionable, \@Any),
-            map : (insert_n::(args.\0, args.\1, 1)),
+            map : \(insert_n::(args.\0, args.\1, 1)),
         ),
 
 The function C<insert> results in the value of its C<0> argument's
@@ -4082,7 +4082,7 @@ members of C<0> in the same order and ends with any added instances of C<1>.
         remove : \Function >:< (
             returns : \@Unionable,
             matches : (\@Unionable, \@Any),
-            map : (remove_n::(args.\0, args.\1, 1)),
+            map : \(remove_n::(args.\0, args.\1, 1)),
         ),
 
 The function C<remove> results in the value of its C<0> argument's
@@ -4260,7 +4260,7 @@ I<symmdiff> or I<^> or I<%>.
             virtual : True,
             returns : \@Unionable,
             matches : (\@Unionable),
-            accepts : (...),
+            accepts : \(...),
         ),
 
         group : \Alias >:< ( of : \@nest ),
@@ -4273,7 +4273,7 @@ I<TODO.>
             virtual : True,
             returns : \@Unionable,
             matches : (\@Unionable),
-            accepts : (...),
+            accepts : \(...),
         ),
 
         ungroup : \Alias >:< ( of : \@unnest ),
@@ -4423,7 +4423,7 @@ distinct member values of its C<0> argument.
         order : \Function >:< (
             returns : \@Positional,
             matches : (\@Discrete),
-            map : (args.\0 order_using \in_order::()),
+            map : \(args.\0 order_using \in_order::()),
         ),
 
 The function C<order> results in the C<Positional> value that represents
@@ -4513,7 +4513,7 @@ assuming incorrectly that I<V> already has a member whose index is I<I>.
             returns : \@Boolean,
             matches : (\@Positional),
             implements : \@folder::"",
-            map : ((unique_count args.\0) = 1),
+            map : \((unique_count args.\0) = 1),
         ),
 
 The function C<singular::Positional> results in C<True> iff its C<0>
@@ -4527,8 +4527,8 @@ composing type C<Positional>.
             returns : \@Any,
             matches : (\@Positional),
             implements : \@folder::"",
-            accepts : (singular args.\0),
-            map : (first args.\0),
+            accepts : \(singular args.\0),
+            map : \(first args.\0),
         ),
 
 The function C<only_member::Positional> results in its C<0> argument's only
@@ -4543,7 +4543,7 @@ C<Positional>.
             returns : \@Boolean,
             matches : (\@Positional, \@Positional),
             implements : \@folder::"",
-            map : ((to_Bag args.\0) subset_of (to_Bag args.\1)),
+            map : \((to_Bag args.\0) subset_of (to_Bag args.\1)),
         ),
 
 The function C<subset_of::Positional> results in C<True> iff the multiset
@@ -4559,7 +4559,7 @@ the composing type C<Positional>.
             matches : (\@Positional, \@Positional),
             implements : \@folder::"",
             is_commutative : True,
-            map : ((to_Bag args.\0) same_members (to_Bag args.\1)),
+            map : \((to_Bag args.\0) same_members (to_Bag args.\1)),
         ),
 
 The function C<same_members::Positional> results in C<True> iff the
@@ -4577,7 +4577,7 @@ virtual function C<same_members> for the composing type C<Positional>.
             matches : (\@Positional, \@Positional),
             implements : \@folder::"",
             is_commutative : True,
-            map : ((to_Bag args.\0) overlaps_members (to_Bag args.\1)),
+            map : \((to_Bag args.\0) overlaps_members (to_Bag args.\1)),
         ),
 
 The function C<overlaps_members::Positional> results in C<True> iff, given
@@ -4595,7 +4595,7 @@ C<overlaps_members> for the composing type C<Positional>.
             matches : (\@Positional, \@Positional),
             implements : \@folder::"",
             is_commutative : True,
-            map : ((to_Bag args.\0) disjoint_members (to_Bag args.\1)),
+            map : \((to_Bag args.\0) disjoint_members (to_Bag args.\1)),
         ),
 
 The function C<disjoint_members::Positional> results in C<True> iff the
@@ -4611,7 +4611,7 @@ C<disjoint_members> for the composing type C<Positional>.
             matches : (\@Positional, \@Positional),
             implements : \@folder::"",
             is_associative : True,
-            map : (args.\0 ~ (args.\1)),
+            map : \(args.\0 ~ (args.\1)),
         ),
 
 The function C<member_plus::Positional> results in the I<multiset sum> of
@@ -4626,7 +4626,7 @@ type C<Positional>.
             returns : \@Integer_NN,
             matches : (\@Positional),
             implements : \@folder::"",
-            map : (count::(to_Set args.\0)),
+            map : \(count::(to_Set args.\0)),
         ),
 
 The function C<unique_count::Positional> results in the integral count of
@@ -4640,7 +4640,7 @@ C<Positional>.
             returns : \@Boolean,
             matches : (\@Positional, \@Integer),
             implements : \@folder::"",
-            map : (args.\1 >= first_possible_index::(args.\0)
+            map : \(args.\1 >= first_possible_index::(args.\0)
                 and args.\1 < first_unused_index::(args.\0)),
         ),
 
@@ -4656,7 +4656,7 @@ type C<Positional>.
             returns : \@Boolean,
             matches : (Positional, (Integer, Any)),
             implements : \@folder::"",
-            map : (if args.\0 .? (args.\1.\0) then args.\0.(args.\1.\0) = (args.\1.\1) else False),
+            map : \(if args.\0 .? (args.\1.\0) then args.\0.(args.\1.\0) = (args.\1.\1) else False),
         ),
 
 The function C<has_mapping_at::Positional> results in C<True> iff its C<0>
@@ -4672,8 +4672,8 @@ composing type C<Positional>.
             returns : (\@Integer, \@Any),
             matches : (\@Positional, \@Integer),
             implements : \@folder::"",
-            accepts : (args.\0 .? (args.\1)),
-            map : ((args.\1, args.\0.(args.\1))),
+            accepts : \(args.\0 .? (args.\1)),
+            map : \((args.\1, args.\0.(args.\1))),
         ),
 
 The function C<mapping_at::Positional> results in a binary C<Tuple> whose
@@ -4690,7 +4690,7 @@ C<Positional>.
             returns : \@Any,
             matches : (\@Positional, \@Integer),
             implements : \@folder::"",
-            map : (if args.\0 .? (args.\1) then args.\0.(args.\1) else Excuse::No_Such_Index()),
+            map : \(if args.\0 .? (args.\1) then args.\0.(args.\1) else Excuse::No_Such_Index()),
         ),
 
 The function C<maybe_at::Positional> results in the member value of its
@@ -4705,8 +4705,8 @@ composing type C<Positional>.
             returns : \@Positional,
             matches : (Positional, (Integer, Any)),
             implements : \@folder::"",
-            accepts : (args.\0 .? (args.\1.\0)),
-            map : (
+            accepts : \(args.\0 .? (args.\1.\0)),
+            map : \(
                 src ::= args.\0;
                 ri ::= args.\1.\0;
                 repl_member ::= args.\1.\1;
@@ -4735,8 +4735,8 @@ function C<replace_at> aka C<.:=> for the composing type C<Positional>.
             returns : \@Positional,
             matches : (Positional, (Integer, Any)),
             implements : \@folder::"",
-            accepts : (args.\1.\0 = first_unused_index::(args.\0)),
-            map : (args.\0 insert args.\1.\1),
+            accepts : \(args.\1.\0 = first_unused_index::(args.\0)),
+            map : \(args.\0 insert args.\1.\1),
         ),
 
 The function C<shiftless_insert_at::Positional> results in the value of its
@@ -4755,9 +4755,9 @@ composing type C<Positional>.
             returns : \@Positional,
             matches : (\@Positional, \@Integer),
             implements : \@folder::"",
-            accepts : (args.\1 >= first_possible_index::(args.\0)
+            accepts : \(args.\1 >= first_possible_index::(args.\0)
                 and args.\1 = --first_unused_index::(args.\0)),
-            map : (nonlast args.\0),
+            map : \(nonlast args.\0),
         ),
 
 The function C<shiftless_remove_at::Positional> results in the value of its
@@ -4775,9 +4775,9 @@ composing type C<Positional>.
             returns : \@Positional,
             matches : (Positional, (Integer, Any)),
             implements : \@folder::"",
-            accepts : (args.\1 >= first_possible_index::(args.\0)
+            accepts : \(args.\1 >= first_possible_index::(args.\0)
                 and args.\1 <= first_unused_index::(args.\0)),
-            map : (if args.\0 .? (args.\1.\0) then args.\0 .:= (args.\1.\0) else args.\0 .+ (args.\1.\0)),
+            map : \(if args.\0 .? (args.\1.\0) then args.\0 .:= (args.\1.\0) else args.\0 .+ (args.\1.\0)),
         ),
 
 The function C<replace_or_insert_at::Positional> behaves identically in
@@ -4794,9 +4794,9 @@ C<Positional>.
             returns : \@Positional,
             matches : (\@Positional, \@Integer),
             implements : \@folder::"",
-            accepts : (args.\1 >= first_possible_index::(args.\0)
+            accepts : \(args.\1 >= first_possible_index::(args.\0)
                 and args.\1 >= --first_unused_index::(args.\0)),
-            map : (if args.\1 = --first_unused_index::(args.\0) then nonlast args.\0 else args.\0),
+            map : \(if args.\1 = --first_unused_index::(args.\0) then nonlast args.\0 else args.\0),
         ),
 
 The function C<shiftless_maybe_remove_at::Positional> behaves identically
@@ -4823,7 +4823,7 @@ effort.
         squish : \Function >:< (
             returns : \@Positional,
             matches : (\@Positional),
-            map : (args.\0 map \(( group : args.\0, member : False ))
+            map : \(args.\0 map \(( group : args.\0, member : False ))
                 pipe nest map \(args.\0.\group)),
         ),
 
@@ -4855,7 +4855,7 @@ first member of I<C> would have.
         first_unused_index : \Function >:< (
             returns : \@Integer,
             matches : (\@Positional),
-            map : (first_possible_index::(args.\0) + #(args.\0)),
+            map : \(first_possible_index::(args.\0) + #(args.\0)),
         ),
 
 The function C<first_unused_index> results in the integral first unused
@@ -4870,8 +4870,8 @@ zero-based C<Positional>, the result is equal to its C<count>.
         first_index : \Function >:< (
             returns : \@Integer,
             matches : (\@Positional),
-            accepts : (?(args.\0)),
-            map : (first_possible_index::(args.\0)),
+            accepts : \(?(args.\0)),
+            map : \(first_possible_index::(args.\0)),
         ),
 
 The function C<first_index> results in the integral index position of its
@@ -4882,8 +4882,8 @@ nonempty C<0> argument's first member.
         last_index : \Function >:< (
             returns : \@Integer,
             matches : (\@Positional),
-            accepts : (?(args.\0)),
-            map : (--first_unused_index::(args.\0)),
+            accepts : \(?(args.\0)),
+            map : \(--first_unused_index::(args.\0)),
         ),
 
 The function C<last_index> results in the integral index position of its
@@ -4895,7 +4895,7 @@ nonempty C<0> argument's last member.
             virtual : True,
             returns : \@Positional,
             matches : (\@Positional, \@Integer, \@NN_Integer),
-            accepts : (args.\1 >= first_possible_index::(args.\0)
+            accepts : \(args.\1 >= first_possible_index::(args.\0)
                 and args.\1 + (args.\2) <= first_unused_index::(args.\0)),
         ),
 
@@ -4914,9 +4914,9 @@ their corresponding operators I<array_slice>.
         slice_range : \Function >:< (
             returns : \@Positional,
             matches : (\@Positional, \@Integer, \@Integer),
-            accepts : (?(args.\0) and args.\1 >= first_possible_index::(args.\0)
+            accepts : \(?(args.\0) and args.\1 >= first_possible_index::(args.\0)
                 and args.\2 < first_unused_index::(args.\0)),
-            map : (slice_n::(args.\0, args.\1, (args.\2) - (args.\1) + 1)),
+            map : \(slice_n::(args.\0, args.\1, (args.\2) - (args.\1) + 1)),
         ),
 
 The function C<slice_range> results in the value of its C<0> argument's
@@ -4934,8 +4934,8 @@ may instead overload their array element subscripting syntax.
         first : \Function >:< (
             returns : \@Any,
             matches : (\@Positional),
-            accepts : (?(args.\0)),
-            map : (args.\0 . first_index::(args.\0)),
+            accepts : \(?(args.\0)),
+            map : \(args.\0 . first_index::(args.\0)),
         ),
 
 The function C<first> results in its nonempty C<0> argument's first member.
@@ -4945,8 +4945,8 @@ The function C<first> results in its nonempty C<0> argument's first member.
         nonfirst : \Function >:< (
             returns : \@Positional,
             matches : (\@Positional),
-            accepts : (?(args.\0)),
-            map : (slice_range::(args.\0, ++first_index::(args.\0), last_index::(args.\0))),
+            accepts : \(?(args.\0)),
+            map : \(slice_range::(args.\0, ++first_index::(args.\0), last_index::(args.\0))),
         ),
 
 The function C<nonfirst> results in the value of its C<0> argument's
@@ -4960,8 +4960,8 @@ they did in the argument.
         last : \Function >:< (
             returns : \@Any,
             matches : (\@Positional),
-            accepts : (?(args.\0)),
-            map : (args.\0 . last_index::(args.\0)),
+            accepts : \(?(args.\0)),
+            map : \(args.\0 . last_index::(args.\0)),
         ),
 
 The function C<last> results in its nonempty C<0> argument's last member.
@@ -4971,8 +4971,8 @@ The function C<last> results in its nonempty C<0> argument's last member.
         nonlast : \Function >:< (
             returns : \@Positional,
             matches : (\@Positional),
-            accepts : (?(args.\0)),
-            map : (slice_range::(args.\0, first_index::(args.\0), --last_index::(args.\0))),
+            accepts : \(?(args.\0)),
+            map : \(slice_range::(args.\0, first_index::(args.\0), --last_index::(args.\0))),
         ),
 
 The function C<nonlast> results in the value of its C<0> argument's ordered
@@ -4997,7 +4997,7 @@ I<TODO.  Also consider index_first_diff_elem or index_succ_common_prefix as name
 =head2 Array
 
         Array : \Selection >:< (
-            where : (args -->^ FDN__is_a_Array),
+            where : \(args -->^ FDN__is_a_Array),
             default : [],
             composes : \@Positional and_provides_its_default,
         ),
@@ -5019,7 +5019,7 @@ languages may name their corresponding types I<List>.
 
 =head2 String
 
-        String::"" : \Selection >:< ( of : \@Array, where : (args.\0 all \Integer::()) ),
+        String::"" : \Selection >:< ( of : \@Array, where : \(args.\0 all \Integer::()) ),
 
 The selection contract C<String> represents the infinite type consisting
 just of the C<Array> values having just C<Integer> members.  A C<String>
@@ -5051,7 +5051,7 @@ C<Array> value, C<[]>.
             returns : \@Boolean,
             matches : (\@Array, \@Array),
             implements : \@folder::"",
-            map : (
+            map : \(
                 i ::= args.\0 index_succ_all_matches args.\1;
               returns
                 if not args.\0 .? i then
@@ -5076,7 +5076,7 @@ will succeed iff C<in_order> is also defined for the types of the members.
             returns : \@Boolean,
             matches : (\@Array),
             implements : \@folder::"",
-            map : (args.\0 != []),
+            map : \(args.\0 != []),
         ),
 
 The function C<to_Boolean::Array> results in C<True> iff its C<0> argument
@@ -5090,7 +5090,7 @@ C<?> for the composing type C<Array>.
             returns : \@Array,
             matches : (\@Array),
             implements : \@folder::"",
-            map : ([]),
+            map : \([]),
         ),
 
 The function C<empty::Array> results in the only zero-member C<Array>
@@ -5103,7 +5103,7 @@ aka C<∅> for the composing type C<Array>.
             returns : \@Boolean,
             matches : (\@Array, \@Array),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_substring_of),
+            map : \(args -->^ FDN__Array_substring_of),
         ),
 
 The function C<substring_of::Array> results in C<True> iff the sequence of
@@ -5119,7 +5119,7 @@ composing type C<Array>.
             matches : (\@Array, \@Array),
             implements : \@folder::"",
             is_commutative : True,
-            map : (args -->^ FDN__Array_overlaps_string),
+            map : \(args -->^ FDN__Array_overlaps_string),
         ),
 
 The function C<overlaps_string::Array> results in C<True> iff, given I<X>
@@ -5138,7 +5138,7 @@ virtual function C<overlaps_string> for the composing type C<Array>.
             matches : (\@Array, \@Array),
             implements : \@folder::"",
             is_commutative : True,
-            map : (args -->^ FDN__Array_disjoint_string),
+            map : \(args -->^ FDN__Array_disjoint_string),
         ),
 
 The function C<disjoint_string::Array> results in C<True> iff the sequence
@@ -5157,7 +5157,7 @@ C<disjoint_string> for the composing type C<Array>.
             is_associative : True,
             identity : [],
             repeater : replicate::Array,
-            map : (args -->^ FDN__Array_catenate),
+            map : \(args -->^ FDN__Array_catenate),
         ),
 
 The function C<catenate::Array> results in the catenation of its 2
@@ -5172,7 +5172,7 @@ C<Array>.
             returns : \@Array,
             matches : (\@Array, \@Integer_NN),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_replicate),
+            map : \(args -->^ FDN__Array_replicate),
         ),
 
 The function C<replicate::Array> results in the catenation of N instances
@@ -5187,7 +5187,7 @@ for the composing type C<Array>.
             returns : \@Boolean,
             matches : (\@Array, \@Any, \@Integer_NN),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_has_n),
+            map : \(args -->^ FDN__Array_has_n),
         ),
 
 The function C<has_n::Array> results in C<True> iff its C<0> argument has
@@ -5202,7 +5202,7 @@ C<has_n> for the composing type C<Array>.
             returns : \@Integer_NN,
             matches : (\@Array, \@Any),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_multiplicity),
+            map : \(args -->^ FDN__Array_multiplicity),
         ),
 
 The function C<multiplicity::Array> results in the integral count
@@ -5216,7 +5216,7 @@ function C<multiplicity> for the composing type C<Array>.
             returns : \@Boolean,
             matches : (\@Array),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_all_unique),
+            map : \(args -->^ FDN__Array_all_unique),
         ),
 
 The function C<all_unique::Array> results in C<True> iff its C<0> argument
@@ -5230,7 +5230,7 @@ the composing type C<Array>.
             returns : \@Array,
             matches : (\@Array),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_unique),
+            map : \(args -->^ FDN__Array_unique),
         ),
 
 The function C<unique::Array> results in the C<Array> value that has, for
@@ -5246,7 +5246,7 @@ virtual function C<unique> for the composing type C<Array>.
             returns : \@Boolean,
             matches : (\@Array, \@Signature),
             implements : \@folder::"",
-            map : ((args.\0, Signature_to_Function_Call_But_0::(args.\1)) -->^ FDN__Array_any),
+            map : \((args.\0, Signature_to_Function_Call_But_0::(args.\1)) -->^ FDN__Array_any),
         ),
 
 I<TODO.>
@@ -5257,7 +5257,7 @@ I<TODO.>
             returns : \@Array,
             matches : (\@Array, \@Any, \@Integer_NN),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_insert_n),
+            map : \(args -->^ FDN__Array_insert_n),
         ),
 
 The function C<insert_n::Array> results in the C<Array> value that has all
@@ -5274,7 +5274,7 @@ C<Array>.
             returns : \@Array,
             matches : (\@Array, \@Any, \@Integer_NN),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_remove_n),
+            map : \(args -->^ FDN__Array_remove_n),
         ),
 
 The function C<remove_n::Array> results in the C<Array> value that has all
@@ -5291,7 +5291,7 @@ C<remove_n> for the composing type C<Array>.
             returns : \@Array,
             matches : (\@Array, \@Array),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_except),
+            map : \(args -->^ FDN__Array_except),
         ),
 
 The function C<except::Array> results in the I<multiset difference> between
@@ -5310,7 +5310,7 @@ C<except> aka C<∖> for the composing type C<Array>.
             implements : \@folder::"",
             is_associative : True,
             is_idempotent : True,
-            map : (args -->^ FDN__Array_intersect),
+            map : \(args -->^ FDN__Array_intersect),
         ),
 
 The function C<intersect::Array> results in the I<multiset intersection> of
@@ -5330,7 +5330,7 @@ aka C<∩> for the composing type C<Array>.
             implements : \@folder::"",
             is_idempotent : True,
             identity : [],
-            map : (args -->^ FDN__Array_union),
+            map : \(args -->^ FDN__Array_union),
         ),
 
 The function C<union::Array> results in the I<multiset union> of its 2
@@ -5350,7 +5350,7 @@ C<union> aka C<∪> for the composing type C<Array>.
             matches : (\@Array, \@Array),
             implements : \@folder::"",
             identity : [],
-            map : (args -->^ FDN__Array_exclusive),
+            map : \(args -->^ FDN__Array_exclusive),
         ),
 
 The function C<exclusive::Array> results in the I<multiset symmetric
@@ -5370,8 +5370,8 @@ C<exclusive> aka C<symm_diff> aka C<∆> for the composing type C<Array>.
             returns : \@Array,
             matches : (\@Array),
             implements : \@folder::"",
-            accepts : (...),
-            map : (args -->^ FDN__Array_nest),
+            accepts : \(...),
+            map : \(args -->^ FDN__Array_nest),
         ),
 
 I<TODO.>
@@ -5382,8 +5382,8 @@ I<TODO.>
             returns : \@Array,
             matches : (\@Array),
             implements : \@folder::"",
-            accepts : (...),
-            map : (args -->^ FDN__Array_unnest),
+            accepts : \(...),
+            map : \(args -->^ FDN__Array_unnest),
         ),
 
 I<TODO.>
@@ -5394,7 +5394,7 @@ I<TODO.>
             returns : \@Array,
             matches : (\@Array, \@Signature),
             implements : \@folder::"",
-            map : ((args.\0, Signature_to_Function_Call_But_0::(args.\1))
+            map : \((args.\0, Signature_to_Function_Call_But_0::(args.\1))
                 -->^ FDN__Array_where),
         ),
 
@@ -5406,7 +5406,7 @@ I<TODO.>
             returns : \@Array,
             matches : (\@Array, \@Function_Call_But_0),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_map),
+            map : \(args -->^ FDN__Array_map),
         ),
 
 I<TODO.>
@@ -5417,7 +5417,7 @@ I<TODO.>
             returns : \@Any,
             matches : (\@Array, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_reduce),
+            map : \(args -->^ FDN__Array_reduce),
         ),
 
 I<TODO.>
@@ -5428,7 +5428,7 @@ I<TODO.>
             returns : \@Set,
             matches : (\@Array),
             implements : \@folder::"",
-            map : (to_Set::(to_Bag args.\0)),
+            map : \(to_Set::(to_Bag args.\0)),
         ),
 
 The function C<to_Set::Array> results in the C<Set> value that has, for
@@ -5443,7 +5443,7 @@ C<Array>.
             returns : \@Bag,
             matches : (\@Array),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_to_Bag),
+            map : \(args -->^ FDN__Array_to_Bag),
         ),
 
 The function C<to_Bag::Array> results in the C<Bag> value that has all of
@@ -5457,7 +5457,7 @@ C<Array>.
             returns : \@Integer_NN,
             matches : (\@Array),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_count),
+            map : \(args -->^ FDN__Array_count),
         ),
 
 The function C<count::Array> results in the integral count of the members
@@ -5471,7 +5471,7 @@ C<Array>.
             returns : \@Array,
             matches : (\@Array, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            map : (args -->^ FDN__Array_order_using),
+            map : \(args -->^ FDN__Array_order_using),
         ),
 
 The function C<order_using::Array> results in the C<Array> value that
@@ -5487,8 +5487,8 @@ type C<Array>.
             returns : \@Any,
             matches : (\@Array, \@Integer_NN),
             implements : \@folder::"",
-            accepts : (args.\0 .? (args.\1)),
-            map : (args -->^ FDN__Array_at),
+            accepts : \(args.\0 .? (args.\1)),
+            map : \(args -->^ FDN__Array_at),
         ),
 
 The function C<at::Array> results in the member value of its C<0> argument
@@ -5503,7 +5503,7 @@ composing type C<Array>.
             returns : \@Array,
             matches : (\@Array),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<to_Array::Array> simply results in its C<0> argument.  This
@@ -5516,7 +5516,7 @@ C<~|> for the composing type C<Array>.
             returns : \@Integer_NN,
             matches : (\@Array),
             implements : \@folder::"",
-            map : (0),
+            map : \(0),
         ),
 
 The function C<first_possible_index::Array> simply results in C<0>.  This
@@ -5529,8 +5529,8 @@ C<first_possible_index> for the composing type C<Array>.
             returns : \@Array,
             matches : (\@Array, \@NN_Integer, \@NN_Integer),
             implements : \@folder::"",
-            accepts : (args.\1 + (args.\2) <= #(args.\0)),
-            map : (args -->^ FDN__Array_slice_n),
+            accepts : \(args.\1 + (args.\2) <= #(args.\0)),
+            map : \(args -->^ FDN__Array_slice_n),
         ),
 
 The function C<slice_n::Array> results in the C<Array> value that has
@@ -5550,7 +5550,7 @@ the composing type C<Array>.
             matches : (\@Array, \@Array),
             implements : \@folder::"",
             is_commutative : True,
-            map : (args -->^ FDN__Array_index_succ_all_matches),
+            map : \(args -->^ FDN__Array_index_succ_all_matches),
         ),
 
 I<TODO.  While conceivably implementable at a higher level, make low level
@@ -5574,7 +5574,7 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
 
         Set : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Set,
+            where : \(has_wrapped::( args.\0, \Set,
                 \(if Bag args.\0 then all_unique args.\0 else False) )),
             default : {},
             composes : {\@Discrete, \@Setty and_provides_its_default},
@@ -5602,7 +5602,7 @@ C<Set> value, C<{}>.
             returns : \@Boolean,
             matches : (\@Set),
             implements : \@folder::"",
-            map : (args.\0 != {}),
+            map : \(args.\0 != {}),
         ),
 
 The function C<to_Boolean::Set> results in C<True> iff its C<0> argument
@@ -5616,7 +5616,7 @@ C<?> for the composing type C<Set>.
             returns : \@Set,
             matches : (\@Set),
             implements : \@folder::"",
-            map : ({}),
+            map : \({}),
         ),
 
 The function C<empty::Set> results in the only zero-member C<Set>
@@ -5629,7 +5629,7 @@ aka C<∅> for the composing type C<Set>.
             returns : \@Boolean,
             matches : (\@Set),
             implements : \@folder::"",
-            map : (singular args.\0:>),
+            map : \(singular args.\0:>),
         ),
 
 The function C<singular::Set> results in C<True> iff its C<0> argument has
@@ -5643,8 +5643,8 @@ C<Set>.
             returns : \@Any,
             matches : (\@Set),
             implements : \@folder::"",
-            accepts : (singular args.\0),
-            map : (only_member args.\0:>),
+            accepts : \(singular args.\0),
+            map : \(only_member args.\0:>),
         ),
 
 The function C<only_member::Set> results in its C<0> argument's only member
@@ -5658,7 +5658,7 @@ C<only_member> for the composing type C<Set>.
             returns : \@Boolean,
             matches : (\@Set, \@Any, \@Integer_NN),
             implements : \@folder::"",
-            map : (has_n::(args.\0:>, args.\1, args.\2)),
+            map : \(has_n::(args.\0:>, args.\1, args.\2)),
         ),
 
 The function C<has_n::Set> results in C<True> iff either its C<2> argument
@@ -5673,7 +5673,7 @@ type C<Set>.
             returns : \@Integer_NN,
             matches : (\@Set, \@Any),
             implements : \@folder::"",
-            map : (args.\0:> multiplicity args.\1),
+            map : \(args.\0:> multiplicity args.\1),
         ),
 
 The function C<multiplicity::Set> results in 1 if its C<0> argument
@@ -5687,7 +5687,7 @@ the composing type C<Set>.
             returns : \@Boolean,
             matches : (\@Set),
             implements : \@folder::"",
-            map : (True),
+            map : \(True),
         ),
 
 The function C<all_unique::Set> simply results in C<True>.  This function
@@ -5700,7 +5700,7 @@ composing type C<Set>.
             returns : \@Set,
             matches : (\@Set),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<unique::Set> simply results in its C<0> argument.  This
@@ -5713,7 +5713,7 @@ composing type C<Set>.
             returns : \@Boolean,
             matches : (\@Set, \@Set),
             implements : \@folder::"",
-            map : (args.\0:> subset_of args.\1:>),
+            map : \(args.\0:> subset_of args.\1:>),
         ),
 
 The function C<subset_of::Set> results in C<True> iff the set of members of
@@ -5729,7 +5729,7 @@ type C<Set>.
             matches : (\@Set, \@Set),
             implements : \@folder::"",
             is_commutative : True,
-            map : (args.\0 = (args.\1)),
+            map : \(args.\0 = (args.\1)),
         ),
 
 The function C<same_members::Set> results in C<True> iff its 2 arguments
@@ -5745,7 +5745,7 @@ function C<same_members> for the composing type C<Set>.
             matches : (\@Set, \@Set),
             implements : \@folder::"",
             is_commutative : True,
-            map : (args.\0:> overlaps_members args.\1:>),
+            map : \(args.\0:> overlaps_members args.\1:>),
         ),
 
 The function C<overlaps_members::Set> results in C<True> iff, given
@@ -5763,7 +5763,7 @@ C<overlaps_members> for the composing type C<Set>.
             matches : (\@Set, \@Set),
             implements : \@folder::"",
             is_commutative : True,
-            map : (args.\0:> disjoint_members args.\1:>),
+            map : \(args.\0:> disjoint_members args.\1:>),
         ),
 
 The function C<disjoint_members::Set> results in C<True> iff the
@@ -5778,7 +5778,7 @@ C<disjoint_members> for the composing type C<Set>.
             returns : \@Boolean,
             matches : (\@Set, \@Signature),
             implements : \@folder::"",
-            map : (args.\0:> any args.\1),
+            map : \(args.\0:> any args.\1),
         ),
 
 I<TODO.>
@@ -5789,7 +5789,7 @@ I<TODO.>
             returns : \@Set,
             matches : (\@Set, \@Any, \@Integer_NN),
             implements : \@folder::"",
-            map : (args.\0 has args.\1 or args.\2 = 0 :? args.\0
+            map : \(args.\0 has args.\1 or args.\2 = 0 :? args.\0
                 :! \Set >:< insert_n::(args.\0:>, args.\1, 1)),
         ),
 
@@ -5805,7 +5805,7 @@ function C<insert_n> for the composing type C<Set>.
             returns : \@Set,
             matches : (\@Set, \@Any, \@Integer_NN),
             implements : \@folder::"",
-            map : (\Set >:< remove_n::(args.\0:>, args.\1, args.\2)),
+            map : \(\Set >:< remove_n::(args.\0:>, args.\1, args.\2)),
         ),
 
 The function C<remove_n::Set> results in the C<Set> value that has all of
@@ -5824,7 +5824,7 @@ C<remove_n> for the composing type C<Set>.
             is_commutative : True,
             is_idempotent : True,
             identity : {},
-            map : (args.\0 union args.\1),
+            map : \(args.\0 union args.\1),
         ),
 
 The function C<member_plus::Set> results in the I<set union> of its 2
@@ -5838,7 +5838,7 @@ virtual function C<member_plus> aka C<⊎> for the composing type C<Set>.
             returns : \@Set,
             matches : (\@Set, \@Set),
             implements : \@folder::"",
-            map : (\Set >:< (args.\0:> except args.\1:>)),
+            map : \(\Set >:< (args.\0:> except args.\1:>)),
         ),
 
 The function C<except::Set> results in the I<set difference> between
@@ -5857,7 +5857,7 @@ for the composing type C<Set>.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            map : (\Set >:< (args.\0:> intersect args.\1:>)),
+            map : \(\Set >:< (args.\0:> intersect args.\1:>)),
         ),
 
 The function C<intersect::Set> results in the I<set intersection> of
@@ -5876,7 +5876,7 @@ function C<intersect> aka C<∩> for the composing type C<Set>.
             is_commutative : True,
             is_idempotent : True,
             identity : {},
-            map : (\Set >:< (args.\0:> union args.\1:>)),
+            map : \(\Set >:< (args.\0:> union args.\1:>)),
         ),
 
 The function C<union::Set> results in the I<set union> of its 2
@@ -5894,7 +5894,7 @@ virtual function C<union> aka C<∪> for the composing type C<Set>.
             is_associative : True,
             is_commutative : True,
             identity : {},
-            map : (\Set >:< (args.\0:> exclusive args.\1:>)),
+            map : \(\Set >:< (args.\0:> exclusive args.\1:>)),
         ),
 
 The function C<exclusive::Set> results in the I<set symmetric
@@ -5910,8 +5910,8 @@ aka C<symm_diff> aka C<∆> for the composing type C<Set>.
             returns : \@Set,
             matches : (\@Set),
             implements : \@folder::"",
-            accepts : (...),
-            map : (\Set >:< (nest args.\0:>)),
+            accepts : \(...),
+            map : \(\Set >:< (nest args.\0:>)),
         ),
 
 I<TODO.>
@@ -5922,8 +5922,8 @@ I<TODO.>
             returns : \@Set,
             matches : (\@Set),
             implements : \@folder::"",
-            accepts : (...),
-            map : (\Set >:< (unnest args.\0:>)),
+            accepts : \(...),
+            map : \(\Set >:< (unnest args.\0:>)),
         ),
 
 I<TODO.>
@@ -5934,7 +5934,7 @@ I<TODO.>
             returns : \@Set,
             matches : (\@Set, \@Signature),
             implements : \@folder::"",
-            map : (\Set >:< (args.\0:> where args.\1)),
+            map : \(\Set >:< (args.\0:> where args.\1)),
         ),
 
 I<TODO.>
@@ -5945,7 +5945,7 @@ I<TODO.>
             returns : \@Set,
             matches : (\@Set, \@Function_Call_But_0),
             implements : \@folder::"",
-            map : (\Set >:< (args.\0:> map args.\1)),
+            map : \(\Set >:< (args.\0:> map args.\1)),
         ),
 
 I<TODO.>
@@ -5956,7 +5956,7 @@ I<TODO.>
             returns : \@Any,
             matches : (\@Set, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            map : (\Set >:< (args.\0:> reduce args.\1)),
+            map : \(\Set >:< (args.\0:> reduce args.\1)),
         ),
 
 I<TODO.>
@@ -5967,7 +5967,7 @@ I<TODO.>
             returns : \@Set,
             matches : (\@Set),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<to_Set::Set> simply results in its C<0> argument.  This
@@ -5980,7 +5980,7 @@ C<?|> for the composing type C<Set>.
             returns : \@Bag,
             matches : (\@Set),
             implements : \@folder::"",
-            map : (args.\0:>),
+            map : \(args.\0:>),
         ),
 
 The function C<to_Bag::Set> results in the C<Bag> value that has all of the
@@ -5994,7 +5994,7 @@ C<Set>.
             returns : \@Integer_NN,
             matches : (\@Set),
             implements : \@folder::"",
-            map : (count args.\0:>),
+            map : \(count args.\0:>),
         ),
 
 The function C<count::Set> results in the integral count of the members
@@ -6007,7 +6007,7 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Set>.
             returns : \@Integer_NN,
             matches : (\@Set),
             implements : \@folder::"",
-            map : (count args.\0),
+            map : \(count args.\0),
         ),
 
 The function C<unique_count::Set> results in the integral count of the
@@ -6021,7 +6021,7 @@ function C<unique_count> for the composing type C<Set>.
             returns : \@Array,
             matches : (\@Set, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            map : (\Set >:< (args.\0:> order_using args.\1)),
+            map : \(\Set >:< (args.\0:> order_using args.\1)),
         ),
 
 The function C<order_using::Set> results in the C<Array> value that represents
@@ -6035,7 +6035,7 @@ C<Discrete> virtual function C<order_using> for the composing type C<Set>.
 =head2 Bag
 
         Bag : \Selection >:< (
-            where : (args -->^ FDN__is_a_Bag),
+            where : \(args -->^ FDN__is_a_Bag),
             default : \+{},
             composes : \@Discrete,
         ),
@@ -6064,7 +6064,7 @@ C<Bag> value, C<\+{}>.
             returns : \@Boolean,
             matches : (\@Bag),
             implements : \@folder::"",
-            map : (args.\0 != \+{}),
+            map : \(args.\0 != \+{}),
         ),
 
 The function C<to_Boolean::Bag> results in C<True> iff its C<0> argument
@@ -6078,7 +6078,7 @@ C<?> for the composing type C<Bag>.
             returns : \@Bag,
             matches : (\@Bag),
             implements : \@folder::"",
-            map : (\+{}),
+            map : \(\+{}),
         ),
 
 The function C<empty::Bag> results in the only zero-member C<Bag>
@@ -6091,7 +6091,7 @@ aka C<∅> for the composing type C<Bag>.
             returns : \@Boolean,
             matches : (\@Bag),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_singular),
+            map : \(args -->^ FDN__Bag_singular),
         ),
 
 The function C<singular::Bag> results in C<True> iff its C<0> argument has
@@ -6105,8 +6105,8 @@ composing type C<Bag>.
             returns : \@Any,
             matches : (\@Bag),
             implements : \@folder::"",
-            accepts : (singular args.\0),
-            map : (args -->^ FDN__Bag_only_member),
+            accepts : \(singular args.\0),
+            map : \(args -->^ FDN__Bag_only_member),
         ),
 
 The function C<only_member::Bag> results in its C<0> argument's only
@@ -6121,7 +6121,7 @@ C<Bag>.
             returns : \@Boolean,
             matches : (\@Bag, \@Any, \@Integer_NN),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_has_n),
+            map : \(args -->^ FDN__Bag_has_n),
         ),
 
 The function C<has_n::Bag> results in C<True> iff its C<0> argument has at
@@ -6136,7 +6136,7 @@ composing type C<Bag>.
             returns : \@Integer_NN,
             matches : (\@Bag, \@Any),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_multiplicity),
+            map : \(args -->^ FDN__Bag_multiplicity),
         ),
 
 The function C<multiplicity::Bag> results in the integral count
@@ -6150,7 +6150,7 @@ function C<multiplicity> for the composing type C<Bag>.
             returns : \@Boolean,
             matches : (\@Bag),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_all_unique),
+            map : \(args -->^ FDN__Bag_all_unique),
         ),
 
 The function C<all_unique::Bag> results in C<True> iff its C<0> argument
@@ -6164,7 +6164,7 @@ the composing type C<Bag>.
             returns : \@Bag,
             matches : (\@Bag),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_unique),
+            map : \(args -->^ FDN__Bag_unique),
         ),
 
 The function C<unique::Bag> results in the C<Bag> value that has, for every
@@ -6178,7 +6178,7 @@ C<Homogeneous> virtual function C<unique> for the composing type C<Bag>.
             returns : \@Boolean,
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_subset_of),
+            map : \(args -->^ FDN__Bag_subset_of),
         ),
 
 The function C<subset_of::Bag> results in C<True> iff the multiset of
@@ -6194,7 +6194,7 @@ type C<Bag>.
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
             is_commutative : True,
-            map : (args.\0 = (args.\1)),
+            map : \(args.\0 = (args.\1)),
         ),
 
 The function C<same_members::Bag> results in C<True> iff its 2 arguments
@@ -6210,7 +6210,7 @@ function C<same_members> for the composing type C<Bag>.
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
             is_commutative : True,
-            map : (args -->^ FDN__Bag_overlaps_members),
+            map : \(args -->^ FDN__Bag_overlaps_members),
         ),
 
 The function C<overlaps_members::Bag> results in C<True> iff, given
@@ -6228,7 +6228,7 @@ C<overlaps_members> for the composing type C<Bag>.
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
             is_commutative : True,
-            map : (args -->^ FDN__Bag_disjoint_members),
+            map : \(args -->^ FDN__Bag_disjoint_members),
         ),
 
 The function C<disjoint_members::Bag> results in C<True> iff the
@@ -6243,7 +6243,7 @@ C<disjoint_members> for the composing type C<Bag>.
             returns : \@Boolean,
             matches : (\@Bag, \@Signature),
             implements : \@folder::"",
-            map : ((args.\0, Signature_to_Function_Call_But_0::(args.\1)) -->^ FDN__Bag_any),
+            map : \((args.\0, Signature_to_Function_Call_But_0::(args.\1)) -->^ FDN__Bag_any),
         ),
 
 I<TODO.>
@@ -6254,7 +6254,7 @@ I<TODO.>
             returns : \@Bag,
             matches : (\@Bag, \@Any, \@Integer_NN),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_insert_n),
+            map : \(args -->^ FDN__Bag_insert_n),
         ),
 
 The function C<insert_n::Bag> results in the C<Bag> value that has all of
@@ -6269,7 +6269,7 @@ C<insert_n> for the composing type C<Bag>.
             returns : \@Bag,
             matches : (\@Bag, \@Any, \@Integer_NN),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_remove_n),
+            map : \(args -->^ FDN__Bag_remove_n),
         ),
 
 The function C<remove_n::Bag> results in the C<Bag> value that has all of
@@ -6288,7 +6288,7 @@ C<remove_n> for the composing type C<Bag>.
             is_associative : True,
             is_commutative : True,
             identity : \+{},
-            map : (args -->^ FDN__Bag_member_plus),
+            map : \(args -->^ FDN__Bag_member_plus),
         ),
 
 The function C<member_plus::Bag> results in the I<multiset sum> of its 2
@@ -6303,7 +6303,7 @@ function C<member_plus> aka C<⊎> for the composing type C<Bag>.
             returns : \@Bag,
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_except),
+            map : \(args -->^ FDN__Bag_except),
         ),
 
 The function C<except::Bag> results in the I<multiset difference> between
@@ -6322,7 +6322,7 @@ for the composing type C<Bag>.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            map : (args -->^ FDN__Bag_intersect),
+            map : \(args -->^ FDN__Bag_intersect),
         ),
 
 The function C<intersect::Bag> results in the I<multiset intersection> of
@@ -6341,7 +6341,7 @@ function C<intersect> aka C<∩> for the composing type C<Bag>.
             is_commutative : True,
             is_idempotent : True,
             identity : \+{},
-            map : (args -->^ FDN__Bag_union),
+            map : \(args -->^ FDN__Bag_union),
         ),
 
 The function C<union::Bag> results in the I<multiset union> of its 2
@@ -6359,7 +6359,7 @@ virtual function C<union> aka C<∪> for the composing type C<Bag>.
             is_associative : True,
             is_commutative : True,
             identity : \+{},
-            map : (args -->^ FDN__Bag_exclusive),
+            map : \(args -->^ FDN__Bag_exclusive),
         ),
 
 The function C<exclusive::Bag> results in the I<multiset symmetric
@@ -6375,8 +6375,8 @@ aka C<symm_diff> aka C<∆> for the composing type C<Bag>.
             returns : \@Bag,
             matches : (\@Bag),
             implements : \@folder::"",
-            accepts : (...),
-            map : (args -->^ FDN__Bag_nest),
+            accepts : \(...),
+            map : \(args -->^ FDN__Bag_nest),
         ),
 
 I<TODO.>
@@ -6387,8 +6387,8 @@ I<TODO.>
             returns : \@Bag,
             matches : (\@Bag),
             implements : \@folder::"",
-            accepts : (...),
-            map : (args -->^ FDN__Bag_unnest),
+            accepts : \(...),
+            map : \(args -->^ FDN__Bag_unnest),
         ),
 
 I<TODO.>
@@ -6399,7 +6399,7 @@ I<TODO.>
             returns : \@Bag,
             matches : (\@Bag, \@Signature),
             implements : \@folder::"",
-            map : ((args.\0, Signature_to_Function_Call_But_0::(args.\1)) -->^ FDN__Bag_where),
+            map : \((args.\0, Signature_to_Function_Call_But_0::(args.\1)) -->^ FDN__Bag_where),
         ),
 
 I<TODO.>
@@ -6410,7 +6410,7 @@ I<TODO.>
             returns : \@Bag,
             matches : (\@Bag, \@Function_Call_But_0),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_map),
+            map : \(args -->^ FDN__Bag_map),
         ),
 
 I<TODO.>
@@ -6421,7 +6421,7 @@ I<TODO.>
             returns : \@Any,
             matches : (\@Bag, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_reduce),
+            map : \(args -->^ FDN__Bag_reduce),
         ),
 
 I<TODO.>
@@ -6432,7 +6432,7 @@ I<TODO.>
             returns : \@Set,
             matches : (\@Bag),
             implements : \@folder::"",
-            map : (\Set >:< (unique args.\0)),
+            map : \(\Set >:< (unique args.\0)),
         ),
 
 The function C<to_Set::Bag> results in the C<Set> value that has, for every
@@ -6447,7 +6447,7 @@ C<Bag>.
             returns : \@Bag,
             matches : (\@Bag),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<to_Bag::Bag> simply results in its C<0> argument.  This
@@ -6460,7 +6460,7 @@ C<+|> for the composing type C<Bag>.
             returns : \@Integer_NN,
             matches : (\@Bag),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_count),
+            map : \(args -->^ FDN__Bag_count),
         ),
 
 The function C<count::Bag> results in the integral count of the members
@@ -6473,7 +6473,7 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Bag>.
             returns : \@Integer_NN,
             matches : (\@Bag),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_unique_count),
+            map : \(args -->^ FDN__Bag_unique_count),
         ),
 
 The function C<unique_count::Bag> results in the integral count of the
@@ -6486,7 +6486,7 @@ C<Discrete> virtual function C<unique_count> for the composing type C<Bag>.
             returns : \@Array,
             matches : (\@Bag, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            map : (args -->^ FDN__Bag_order_using),
+            map : \(args -->^ FDN__Bag_order_using),
         ),
 
 The function C<order_using::Bag> results in the C<Array> value that represents
@@ -6626,7 +6626,7 @@ that their headings can be reasoned about in isolation from their bodies.
         subheading_of : \Function >:< (
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
-            map : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_subheading_of),
+            map : \((@(args.\0), @(args.\1)) -->^ FDN__Tuple_subheading_of),
         ),
 
         Unicode_Aliases::"⊆@" : \Alias >:< ( of : \@subheading_of ),
@@ -6658,7 +6658,7 @@ exactly 1 name.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            map : (@(args.\0) = @(args.\1)),
+            map : \(@(args.\0) = @(args.\1)),
         ),
 
         "=@" : \Alias >:< ( of : \@same_heading ),
@@ -6673,7 +6673,7 @@ otherwise it results in C<False>.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            map : (@(args.\0) != @(args.\1) and (args.\0 subheading_or_superheading args.\1)),
+            map : \(@(args.\0) != @(args.\1) and (args.\0 subheading_or_superheading args.\1)),
         ),
 
 The function C<proper_subheading_or_superheading> results in C<True> iff
@@ -6686,7 +6686,7 @@ the heading of its other argument; otherwise it results in C<False>.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            map : ((args.\0 subheading_of args.\1) or (args.\0 superheading_of args.\1)),
+            map : \((args.\0 subheading_of args.\1) or (args.\0 superheading_of args.\1)),
         ),
 
 The function C<subheading_or_superheading> results in C<True> iff the
@@ -6699,7 +6699,7 @@ of its other argument; otherwise it results in C<False>.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            map : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_overlaps_heading),
+            map : \((@(args.\0), @(args.\1)) -->^ FDN__Tuple_overlaps_heading),
         ),
 
 The function C<overlaps_heading> results in C<True> iff, given I<X> as the
@@ -6714,7 +6714,7 @@ that the other doesn't have; otherwise it results in C<False>.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            map : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_disjoint_heading),
+            map : \((@(args.\0), @(args.\1)) -->^ FDN__Tuple_disjoint_heading),
         ),
 
 The function C<disjoint_heading> results in C<True> iff the heading of its
@@ -6726,7 +6726,7 @@ argument; otherwise it results in C<False>.
         except_heading : \Function >:< (
             returns : \@Heading,
             matches : (\@Attributive, \@Attributive),
-            map : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_except_heading),
+            map : \((@(args.\0), @(args.\1)) -->^ FDN__Tuple_except_heading),
         ),
 
         Unicode_Aliases::"∖@" : \Alias >:< ( of : \@except_heading ),
@@ -6745,7 +6745,7 @@ but not in the heading of its C<1> argument.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            map : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_intersect_heading),
+            map : \((@(args.\0), @(args.\1)) -->^ FDN__Tuple_intersect_heading),
         ),
 
         Unicode_Aliases::"∩@" : \Alias >:< ( of : \@intersect_heading ),
@@ -6766,7 +6766,7 @@ infinite number of attribute names.
             is_commutative : True,
             is_idempotent : True,
             identity : (),
-            map : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_union_heading),
+            map : \((@(args.\0), @(args.\1)) -->^ FDN__Tuple_union_heading),
         ),
 
         Unicode_Aliases::"∪@" : \Alias >:< ( of : \@union_heading ),
@@ -6784,7 +6784,7 @@ the headings of the function's C<0> and C<1> arguments.
             is_associative : True,
             is_commutative : True,
             identity : (),
-            map : ((@(args.\0), @(args.\1)) -->^ FDN__Tuple_exclusive_heading),
+            map : \((@(args.\0), @(args.\1)) -->^ FDN__Tuple_exclusive_heading),
         ),
 
         symm_diff_heading : \Alias >:< ( of : \@exclusive_heading ),
@@ -6803,7 +6803,7 @@ function's C<0> or C<1> arguments.
             virtual : True,
             returns : \@Attributive,
             matches : (\@Attributive, \@Renaming),
-            accepts : (...),
+            accepts : \(...),
         ),
 
         "@:=" : \Alias >:< ( of : \@rename ),
@@ -6857,7 +6857,7 @@ aka C<a %:= s %=? s = True> should hold for all valid C<a> and C<s>.
             virtual : True,
             returns : \@Attributive,
             matches : (\@Attributive, \@Heading),
-            accepts : (args.\0 @? (args.\1)),
+            accepts : \(args.\0 @? (args.\1)),
         ),
 
         project : \Alias >:< ( of : \@on ),
@@ -6894,7 +6894,7 @@ when given the same arguments in swapped positions.
         maybe_on : \Function >:< (
             returns : \@Attributive,
             matches : (\@Attributive, \@Heading),
-            map : (args.\0 on (args.\0 intersect_heading args.\1)),
+            map : \(args.\0 on (args.\0 intersect_heading args.\1)),
         ),
 
         "%!" : \Alias >:< ( of : \@maybe_on ),
@@ -6910,7 +6910,7 @@ C<0> argument rather than failing.
             virtual : True,
             returns : \@Attributive,
             matches : (\@Attributive, \@Structural),
-            accepts : (args.\0 @? (args.\1)),
+            accepts : \(args.\0 @? (args.\1)),
         ),
 
         "%:=" : \Alias >:< ( of : \@update ),
@@ -6940,7 +6940,7 @@ subscript/postcircumfix syntax plus assignment syntax.
             virtual : True,
             returns : \@Attributive,
             matches : (\@Attributive, \@Structural),
-            accepts : (args.\0 disjoint_heading args.\1),
+            accepts : \(args.\0 disjoint_heading args.\1),
         ),
 
         "%+" : \Alias >:< ( of : \@extend ),
@@ -6972,8 +6972,8 @@ The Structural version is commutative and associative, but not Attributive in ge
         but : \Function >:< (
             returns : \@Attributive,
             matches : (\@Attributive, \@Heading),
-            accepts : (args.\0 @? (args.\1)),
-            map : (args.\0 on (args.\0 except_heading args.\1)),
+            accepts : \(args.\0 @? (args.\1)),
+            map : \(args.\0 on (args.\0 except_heading args.\1)),
         ),
 
         project_all_but : \Alias >:< ( of : \@but ),
@@ -7001,7 +7001,7 @@ operators I<remove>.
         update_or_extend : \Function >:< (
             returns : \@Attributive,
             matches : (\@Attributive, \@Structural),
-            map : (args.\0 on (args.\0 except_heading args.\1) extend args.\1),
+            map : \(args.\0 on (args.\0 except_heading args.\1) extend args.\1),
         ),
 
         "%=+" : \Alias >:< ( of : \@update_or_extend ),
@@ -7018,7 +7018,7 @@ latter's names don't match.
         maybe_but : \Function >:< (
             returns : \@Attributive,
             matches : (\@Attributive, \@Heading),
-            map : (args.\0 but (args.\0 intersect_heading args.\1)),
+            map : \(args.\0 but (args.\0 intersect_heading args.\1)),
         ),
 
         "%?-" : \Alias >:< ( of : \@maybe_but ),
@@ -7055,7 +7055,7 @@ C<Tuple>.
             returns : \@Boolean,
             matches : (\@Structural, \@Structural),
             implements : \@folder::"",
-            map : (if args.\0 @? (args.\1) then args.\0 %= @(args.\1) = (args.\1) else False),
+            map : \(if args.\0 @? (args.\1) then args.\0 %= @(args.\1) = (args.\1) else False),
         ),
 
 The function C<can_project_matching::Structural> results in C<True> iff the
@@ -7073,7 +7073,7 @@ C<can_project_matching> aka C<%=?> for the composing type C<Structural>.
             returns : \@Boolean,
             matches : (\@Structure, \@Attr_Name),
             implements : \@folder::"",
-            map : (args.\0 @? (args.\1)),
+            map : \(args.\0 @? (args.\1)),
         ),
 
 The function C<has_any_at::Structure> results in C<True> iff its C<0>
@@ -7088,7 +7088,7 @@ type C<Structure>.
             returns : \@Boolean,
             matches : (Structural, (Attr_Name, Any)),
             implements : \@folder::"",
-            map : (if args.\0 .? (args.\1.\0) then args.\0.(args.\1.\0) = (args.\1.\1) else False),
+            map : \(if args.\0 .? (args.\1.\0) then args.\0.(args.\1.\0) = (args.\1.\1) else False),
         ),
 
 The function C<has_mapping_at::Structural> results in C<True> iff its C<0>
@@ -7103,8 +7103,8 @@ function C<has_mapping_at> aka C<.:?> for the composing type C<Structural>.
             returns : (\@Attr_Name, \@Any),
             matches : (\@Structural, \@Attr_Name),
             implements : \@folder::"",
-            accepts : (args.\0 .? (args.\1)),
-            map : ((args.\1, args.\0.(args.\1))),
+            accepts : \(args.\0 .? (args.\1)),
+            map : \((args.\1, args.\0.(args.\1))),
         ),
 
 The function C<mapping_at::Structural> results in a binary C<Tuple> whose
@@ -7121,7 +7121,7 @@ type C<Structural>.
             returns : \@Any,
             matches : (\@Structural, \@Attr_Name),
             implements : \@folder::"",
-            map : (if args.\0 .? (args.\1) then args.\0.(args.\1) else Excuse::No_Such_Attr_Name()),
+            map : \(if args.\0 .? (args.\1) then args.\0.(args.\1) else Excuse::No_Such_Attr_Name()),
         ),
 
 The function C<maybe_at::Structural> results in the attribute asset value
@@ -7136,8 +7136,8 @@ C<.!> for the composing type C<Structural>.
             returns : \@Structure,
             matches : (Structure, (Attr_Name, Any)),
             implements : \@folder::"",
-            accepts : (args.\0 .? (args.\1.\0)),
-            map : (args.\0 update D1::(args.\1)),
+            accepts : \(args.\0 .? (args.\1.\0)),
+            map : \(args.\0 update D1::(args.\1)),
         ),
 
 The function C<replace_at::Structure> results in the value of its C<0>
@@ -7156,8 +7156,8 @@ the composing type C<Structure>.
             returns : \@Structure,
             matches : (Structure, (Attr_Name, Any)),
             implements : \@folder::"",
-            accepts : (not args.\0 .? (args.\1.\0)),
-            map : (args.\0 extend D1::(args.\1)),
+            accepts : \(not args.\0 .? (args.\1.\0)),
+            map : \(args.\0 extend D1::(args.\1)),
         ),
 
 The function C<shiftless_insert_at::Structure> results in the value of its
@@ -7175,8 +7175,8 @@ C<Structure>.
             returns : \@Structure,
             matches : (\@Structure, \@Attr_Name),
             implements : \@folder::"",
-            accepts : (args.\0 .? (args.\1)),
-            map : (args.\0 but args.\1),
+            accepts : \(args.\0 .? (args.\1)),
+            map : \(args.\0 but args.\1),
         ),
 
 The function C<shiftless_remove_at::Structure> results in the value of its
@@ -7193,7 +7193,7 @@ C<Structure>.
             returns : \@Structural,
             matches : (Structural, (Attr_Name, Any)),
             implements : \@folder::"",
-            map : (args.\0 update_or_extend D1::(args.\1)),
+            map : \(args.\0 update_or_extend D1::(args.\1)),
         ),
 
 The function C<replace_or_insert_at::Structural> behaves identically in
@@ -7210,7 +7210,7 @@ C<Structural>.
             returns : \@Structural,
             matches : (\@Structural, \@Attr_Name),
             implements : \@folder::"",
-            map : (args.\0 maybe_but args.\1),
+            map : \(args.\0 maybe_but args.\1),
         ),
 
 The function C<shiftless_maybe_remove_at::Structural> behaves identically
@@ -7236,7 +7236,7 @@ be treated abstractly as sets of attributes with minimal effort.
 =head2 Tuple
 
         Tuple::"" : \Selection >:< (
-            where : (args -->^ FDN__is_a_Tuple),
+            where : \(args -->^ FDN__is_a_Tuple),
             default : (),
             composes : \@Structural and_provides_its_default,
         ),
@@ -7278,7 +7278,7 @@ C<Tuple> value.
 
         Tuple_D1 : \Selection >:< (
             of : \@Tuple,
-            where : (is_unary args.\0),
+            where : \(is_unary args.\0),
             default : (False,),
         ),
 
@@ -7291,7 +7291,7 @@ has just the attribute with the name C<0> and asset value of C<False>.
         D1 : \Function >:< (
             returns : \@Tuple_D1,
             matches : (\@Attr_Name, \@Any),
-            map : (args -->^ FDN__Tuple_D1_select),
+            map : \(args -->^ FDN__Tuple_D1_select),
         ),
 
 The function C<D1> results in the C<Tuple_D1> value whose sole attribute's
@@ -7304,7 +7304,7 @@ specified in its C<1> argument.
             returns : \@Boolean,
             matches : (\@Tuple),
             implements : \@folder::"",
-            map : (args.\0 != ()),
+            map : \(args.\0 != ()),
         ),
 
 The function C<has_any_attrs::Tuple> results in C<True> iff its C<0>
@@ -7318,7 +7318,7 @@ C<has_any_attrs> aka C<?@> for the composing type C<Tuple>.
             returns : \@Tuple,
             matches : (\@Tuple),
             implements : \@folder::"",
-            map : (()),
+            map : \(()),
         ),
 
 The function C<nullary::Tuple> results in the only zero-attribute C<Tuple>
@@ -7331,7 +7331,7 @@ C<nullary> for the composing type C<Tuple>.
             returns : \@Boolean,
             matches : (\@Tuple),
             implements : \@folder::"",
-            map : (degree::(args.\0) = 1),
+            map : \(degree::(args.\0) = 1),
         ),
 
 The function C<is_unary::Tuple> results in C<True> iff its C<0> argument
@@ -7345,7 +7345,7 @@ C<Tuple>.
             returns : \@Integer_NN,
             matches : (\@Tuple),
             implements : \@folder::"",
-            map : (args -->^ FDN__Tuple_degree),
+            map : \(args -->^ FDN__Tuple_degree),
         ),
 
 The function C<degree::Tuple> results in the integral count of the
@@ -7359,7 +7359,7 @@ C<Tuple>.
             returns : \@Heading,
             matches : (\@Tuple),
             implements : \@folder::"",
-            map : (args -->^ FDN__Tuple_heading),
+            map : \(args -->^ FDN__Tuple_heading),
         ),
 
 The function C<heading::Tuple> results in the relational I<heading> of its
@@ -7373,8 +7373,8 @@ composing type C<Tuple>.
             returns : \@Tuple,
             matches : (\@Tuple, \@Renaming),
             implements : \@folder::"",
-            accepts : (...),
-            map : (args -->^ FDN__Tuple_rename),
+            accepts : \(...),
+            map : \(args -->^ FDN__Tuple_rename),
         ),
 
 The function C<rename::Tuple> results results in the I<relational rename>
@@ -7397,8 +7397,8 @@ C<rename> aka C<@:=> aka C<ρ> for the composing type C<Tuple>.
             returns : \@Tuple,
             matches : (\@Tuple, \@Heading),
             implements : \@folder::"",
-            accepts : (args.\0 @? (args.\1)),
-            map : (args -->^ FDN__Tuple_on),
+            accepts : \(args.\0 @? (args.\1)),
+            map : \(args -->^ FDN__Tuple_on),
         ),
 
 The function C<on::Tuple> results in the I<relational projection> of its
@@ -7417,8 +7417,8 @@ the composing type C<Tuple>.
             returns : \@Tuple,
             matches : (\@Tuple, \@Tuple),
             implements : \@folder::"",
-            accepts : (args.\0 @? (args.\1)),
-            map : (args -->^ FDN__Tuple_update),
+            accepts : \(args.\0 @? (args.\1)),
+            map : \(args -->^ FDN__Tuple_update),
         ),
 
 The function C<update::Tuple> results in a C<Tuple> value that has all of
@@ -7438,11 +7438,11 @@ C<Tuple>.
             returns : \@Tuple,
             matches : (\@Tuple, \@Tuple),
             implements : \@folder::"",
-            accepts : (args.\0 disjoint_heading args.\1),
+            accepts : \(args.\0 disjoint_heading args.\1),
             is_associative : True,
             is_commutative : True,
             identity : (),
-            map : (args -->^ FDN__Tuple_extend),
+            map : \(args -->^ FDN__Tuple_extend),
         ),
 
 The function C<extend::Tuple> results in the I<relational extension> of its
@@ -7460,8 +7460,8 @@ for the composing type C<Tuple>.
             returns : \@Any,
             matches : (\@Tuple, \@Attr_Name),
             implements : \@folder::"",
-            accepts : (args.\0 .? (args.\1)),
-            map : (args -->^ FDN__Tuple_at),
+            accepts : \(args.\0 .? (args.\1)),
+            map : \(args -->^ FDN__Tuple_at),
         ),
 
 The function C<at::Tuple> results in the attribute asset value of its C<0>
@@ -7476,7 +7476,7 @@ the composing type C<Tuple>.
             returns : \@Tuple,
             matches : (\@Tuple),
             implements : \@folder::"",
-            map : (args.\0),
+            map : \(args.\0),
         ),
 
 The function C<to_Tuple::Tuple> simply results in its C<0> argument.  This
@@ -7488,7 +7488,7 @@ for the composing type C<Tuple>.
         any_attrs : \Function >:< (
             returns : \@Boolean,
             matches : (\@Tuple, \@Signature),
-            map : ((args.\0, Signature_to_Function_Call_But_0::(args.\1))
+            map : \((args.\0, Signature_to_Function_Call_But_0::(args.\1))
                 -->^ FDN__Tuple_any_attrs),
         ),
 
@@ -7505,7 +7505,7 @@ I<TODO.>
         all_attrs : \Function >:< (
             returns : \@Boolean,
             matches : (\@Tuple, \@Signature),
-            map : (args.\0 none_of_attrs \not_is_a::( 1: args.\1 )),
+            map : \(args.\0 none_of_attrs \not_is_a::( 1: args.\1 )),
         ),
 
 I<TODO.>
@@ -7521,7 +7521,7 @@ I<TODO.>
         all_attr_assets : \Function >:< (
             returns : \@Boolean,
             matches : (\@Tuple, \@Signature),
-            map : (args.\0 all_attrs \((args.\1) <-- (args.\0.\asset,))
+            map : \(args.\0 all_attrs \((args.\1) <-- (args.\0.\asset,))
                 \<-- (1 : Signature_to_Function_Call_But_0::(args.\1))),
         ),
 
@@ -7532,7 +7532,7 @@ I<TODO.>
         attrs_where : \Function >:< (
             returns : \@Tuple,
             matches : (\@Tuple, \@Signature),
-            map : ((args.\0, Signature_to_Function_Call_But_0::(args.\1))
+            map : \((args.\0, Signature_to_Function_Call_But_0::(args.\1))
                 -->^ FDN__Tuple_attrs_where),
         ),
 
@@ -7543,7 +7543,7 @@ I<TODO.>
         attrs_map : \Function >:< (
             returns : \@Tuple,
             matches : (\@Tuple, \@Function_Call_But_0),
-            map : (args -->^ FDN__Tuple_attrs_map),
+            map : \(args -->^ FDN__Tuple_attrs_map),
         ),
 
 I<TODO.>
@@ -7553,7 +7553,7 @@ I<TODO.>
         attrs_reduce : \Function >:< (
             returns : \@Any,
             matches : (\@Tuple, \@Function_Call_But_0_1),
-            map : (args -->^ FDN__Tuple_attrs_reduce),
+            map : \(args -->^ FDN__Tuple_attrs_reduce),
         ),
 
 I<TODO.>
@@ -7582,7 +7582,7 @@ C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
             returns : \@Boolean,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : (? |(args.\0)),
+            map : \(? |(args.\0)),
         ),
 
 The function C<to_Boolean::Relational> results in C<True> iff its C<0>
@@ -7596,7 +7596,7 @@ C<so> aka C<?> for the composing type C<Relational>.
             returns : \@Relational,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : (select_Relational::( like: args.\0, heading: @(args.\0), body: empty |(args.\0) )),
+            map : \(select_Relational::( like: args.\0, heading: @(args.\0), body: empty |(args.\0) )),
         ),
 
 The function C<empty::Relational> results in the only value of its C<0>
@@ -7611,7 +7611,7 @@ C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : (singular |(args.\0)),
+            map : \(singular |(args.\0)),
         ),
 
 The function C<singular::Relational> results in C<True> iff its C<0>
@@ -7625,8 +7625,8 @@ composing type C<Relational>.
             returns : \@Structural,
             matches : (\@Relational),
             implements : \@folder::"",
-            accepts : (singular args.\0),
-            map : (only_member |(args.\0)),
+            accepts : \(singular args.\0),
+            map : \(only_member |(args.\0)),
         ),
 
 The function C<only_member::Relational> results in its C<0> argument's only
@@ -7640,7 +7640,7 @@ virtual function C<only_member> for the composing type C<Relational>.
             returns : {\@Boolean, \@Excuse::Not_Same_Heading},
             matches : (\@Relational, \@Structural, \@Integer_NN),
             implements : \@folder::"",
-            map : (if args.\0 =@ (args.\1) then has_n::(|(args.\0), args.\1, args.\2)
+            map : \(if args.\0 =@ (args.\1) then has_n::(|(args.\0), args.\1, args.\2)
                 else Excuse::Not_Same_Heading),
         ),
 
@@ -7660,7 +7660,7 @@ function C<has_n> for the composing type C<Relational>.
             returns : \@Integer_NN,
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
-            map : (|(args.\0) multiplicity args.\1),
+            map : \(|(args.\0) multiplicity args.\1),
         ),
 
 The function C<multiplicity::Relational> results in the integral count
@@ -7675,7 +7675,7 @@ function C<multiplicity> for the composing type C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : (all_unique |(args.\0)),
+            map : \(all_unique |(args.\0)),
         ),
 
 The function C<all_unique::Relational> results in C<True> iff its C<0>
@@ -7690,7 +7690,7 @@ composing type C<Relational>.
             returns : \@Relational,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : (select_Relational::( like: args.\0, heading: @(args.\0), body: unique |(args.\0) )),
+            map : \(select_Relational::( like: args.\0, heading: @(args.\0), body: unique |(args.\0) )),
         ),
 
 The function C<unique::Relational> results in the value of its C<0>
@@ -7709,7 +7709,7 @@ composing type C<Relational>.
             returns : {\@Boolean, \@Excuse::Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
-            map : (if args.\0 =@ (args.\1) then |(args.\0) subset_of |(args.\1)
+            map : \(if args.\0 =@ (args.\1) then |(args.\0) subset_of |(args.\1)
                 else Excuse::Not_Same_Heading),
         ),
 
@@ -7727,7 +7727,7 @@ function C<subset_of> aka C<⊆> for the composing type C<Relational>.
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_commutative : True,
-            map : (if args.\0 =@ (args.\1) then |(args.\0) same_members |(args.\1)
+            map : \(if args.\0 =@ (args.\1) then |(args.\0) same_members |(args.\1)
                 else Excuse::Not_Same_Heading),
         ),
 
@@ -7749,7 +7749,7 @@ the composing type C<Relational>.
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_commutative : True,
-            map : (if args.\0 =@ (args.\1) then |(args.\0) overlaps_members |(args.\1)
+            map : \(if args.\0 =@ (args.\1) then |(args.\0) overlaps_members |(args.\1)
                 else Excuse::Not_Same_Heading),
         ),
 
@@ -7770,7 +7770,7 @@ C<Relational>.
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_commutative : True,
-            map : (if args.\0 =@ (args.\1) then |(args.\0) disjoint_members |(args.\1)
+            map : \(if args.\0 =@ (args.\1) then |(args.\0) disjoint_members |(args.\1)
                 else Excuse::Not_Same_Heading),
         ),
 
@@ -7788,7 +7788,7 @@ C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational, \@Signature),
             implements : \@folder::"",
-            map : (|(args.\0) any args.\1),
+            map : \(|(args.\0) any args.\1),
         ),
 
 I<TODO.>
@@ -7799,7 +7799,7 @@ I<TODO.>
             returns : {\@Relational, \@Excuse::Not_Same_Heading},
             matches : (\@Relational, \@Structural, \@Integer_NN),
             implements : \@folder::"",
-            map : (if args.\0 =@ (args.\1) then select_Relational::
+            map : \(if args.\0 =@ (args.\1) then select_Relational::
                     ( like: args.\0, heading: @(args.\0), body: insert_n::(|(args.\0), args.\1, args.\2) )
                 else Excuse::Not_Same_Heading),
         ),
@@ -7824,7 +7824,7 @@ C<Relational>.
             returns : {\@Relational, \@Excuse::Not_Same_Heading},
             matches : (\@Relational, \@Structural, \@Integer_NN),
             implements : \@folder::"",
-            map : (if args.\0 =@ (args.\1) then select_Relational::
+            map : \(if args.\0 =@ (args.\1) then select_Relational::
                     ( like: args.\0, heading: @(args.\0), body: remove_n::(|(args.\0), args.\1, args.\2) )
                 else Excuse::Not_Same_Heading),
         ),
@@ -7848,7 +7848,7 @@ composing type C<Relational>.
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_associative : True,
-            map : (if args.\0 =@ (args.\1) then select_Relational::
+            map : \(if args.\0 =@ (args.\1) then select_Relational::
                     ( like: args.\0, heading: @(args.\0), body: |(args.\0) member_plus |(args.\1) )
                 else Excuse::Not_Same_Heading),
         ),
@@ -7878,7 +7878,7 @@ C<Relational>.
             returns : {\@Relational, \@Excuse::Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
-            map : (if args.\0 =@ (args.\1) then select_Relational::
+            map : \(if args.\0 =@ (args.\1) then select_Relational::
                     ( like: args.\0, heading: @(args.\0), body: |(args.\0) except |(args.\1) )
                 else Excuse::Not_Same_Heading),
         ),
@@ -7905,7 +7905,7 @@ virtual function C<except> aka C<∖> for the composing type C<Relational>.
             implements : \@folder::"",
             is_associative : True,
             is_idempotent : True,
-            map : (if args.\0 =@ (args.\1) then select_Relational::
+            map : \(if args.\0 =@ (args.\1) then select_Relational::
                     ( like: args.\0, heading: @(args.\0), body: |(args.\0) intersect |(args.\1) )
                 else Excuse::Not_Same_Heading),
         ),
@@ -7932,7 +7932,7 @@ function C<intersect> aka C<∩> for the composing type C<Relational>.
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_idempotent : True,
-            map : (if args.\0 =@ (args.\1) then select_Relational::
+            map : \(if args.\0 =@ (args.\1) then select_Relational::
                     ( like: args.\0, heading: @(args.\0), body: |(args.\0) union |(args.\1) )
                 else Excuse::Not_Same_Heading),
         ),
@@ -7962,7 +7962,7 @@ composing type C<Relational>.
             implements : \@folder::"",
             is_associative : True,
             is_commutative : True,
-            map : (if args.\0 =@ (args.\1) then select_Relational::
+            map : \(if args.\0 =@ (args.\1) then select_Relational::
                     ( like: args.\0, heading: @(args.\0), body: |(args.\0) exclusive |(args.\1) )
                 else Excuse::Not_Same_Heading),
         ),
@@ -7992,8 +7992,8 @@ C<Relational>.
             returns : \@Relational,
             matches : (\@Relational),
             implements : \@folder::"",
-            accepts : (...),
-            map : (...),
+            accepts : \(...),
+            map : \(...),
         ),
 
 I<TODO.>
@@ -8004,8 +8004,8 @@ I<TODO.>
             returns : \@Relational,
             matches : (\@Relational),
             implements : \@folder::"",
-            accepts : (...),
-            map : (...),
+            accepts : \(...),
+            map : \(...),
         ),
 
 I<TODO.>
@@ -8016,7 +8016,7 @@ I<TODO.>
             returns : \@Relational,
             matches : (\@Relational, \@Signature),
             implements : \@folder::"",
-            map : (select_Relational::( like: args.\0, heading: @(args.\0), body: |(args.\0) where args.\1 )),
+            map : \(select_Relational::( like: args.\0, heading: @(args.\0), body: |(args.\0) where args.\1 )),
         ),
 
 I<TODO.>
@@ -8027,7 +8027,7 @@ I<TODO.>
             returns : \@Relational,
             matches : (\@Relational, \@Function_Call_But_0),
             implements : \@folder::"",
-            map : (...),
+            map : \(...),
         ),
 
 I<TODO.>
@@ -8038,7 +8038,7 @@ I<TODO.>
             returns : \@Any,
             matches : (\@Relational, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            map : (|(args.\0) reduce args.\1),
+            map : \(|(args.\0) reduce args.\1),
         ),
 
 I<TODO.>
@@ -8049,7 +8049,7 @@ I<TODO.>
             returns : \@Boolean,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : (@(args.\0) != ()),
+            map : \(@(args.\0) != ()),
         ),
 
 The function C<has_any_attrs::Relational> results in C<True> iff its C<0>
@@ -8063,7 +8063,7 @@ C<has_any_attrs> aka C<?@> for the composing type C<Relational>.
             returns : \@Relational,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : (args.\0 on ()),
+            map : \(args.\0 on ()),
         ),
 
 The function C<nullary::Relational> results in the value of its C<0>
@@ -8079,7 +8079,7 @@ type C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : (is_unary @(args.\0)),
+            map : \(is_unary @(args.\0)),
         ),
 
 The function C<is_unary::Relational> results in C<True> iff its C<0>
@@ -8093,7 +8093,7 @@ composing type C<Relational>.
             returns : \@Integer_NN,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : (degree @(args.\0)),
+            map : \(degree @(args.\0)),
         ),
 
 The function C<degree::Relational> results in the integral count of the
@@ -8107,8 +8107,8 @@ C<Relational>.
             returns : \@Relational,
             matches : (\@Relational, \@Renaming),
             implements : \@folder::"",
-            accepts : (...),
-            map : (select_Relational::( like: args.\0, heading: @(args.\0) rename args.\1,
+            accepts : \(...),
+            map : \(select_Relational::( like: args.\0, heading: @(args.\0) rename args.\1,
                 body: |(args.\0) map \rename::( 1: args.\1 ) )),
         ),
 
@@ -8134,7 +8134,7 @@ C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
-            map : (if args.\0 @? (args.\1)
+            map : \(if args.\0 @? (args.\1)
                 then |(args.\0) all \(args.\0 %= @(args.\1) = (args.\1)) \<-- (1 : args.\1,)
                 else False),
         ),
@@ -8154,8 +8154,8 @@ C<can_project_matching> aka C<%=?> for the composing type C<Relational>.
             returns : \@Relational,
             matches : (\@Relational, \@Heading),
             implements : \@folder::"",
-            accepts : (args.\0 @? (args.\1)),
-            map : (select_Relational::( like: args.\0, heading: @(args.\0) on args.\1,
+            accepts : \(args.\0 @? (args.\1)),
+            map : \(select_Relational::( like: args.\0, heading: @(args.\0) on args.\1,
                 body: |(args.\0) map \on::( 1: args.\1 ) )),
         ),
 
@@ -8181,8 +8181,8 @@ C<%=> aka C<π> for the composing type C<Relational>.
             returns : \@Relational,
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
-            accepts : (args.\0 @? (args.\1)),
-            map : (select_Relational::( like: args.\0, heading: @(args.\0),
+            accepts : \(args.\0 @? (args.\1)),
+            map : \(select_Relational::( like: args.\0, heading: @(args.\0),
                 body: |(args.\0) map \update::( 1: args.\1 ) )),
         ),
 
@@ -8211,8 +8211,8 @@ C<Relational>.
             returns : \@Relational,
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
-            accepts : (args.\0 disjoint_heading args.\1),
-            map : (select_Relational::( like: args.\0, heading: @(args.\0) extend args.\1,
+            accepts : \(args.\0 disjoint_heading args.\1),
+            map : \(select_Relational::( like: args.\0, heading: @(args.\0) extend args.\1,
                 body: |(args.\0) map \extend::( 1: args.\1 ) )),
         ),
 
@@ -8271,7 +8271,7 @@ types that restrict their possible headings at the type level.>
 
         Tuple_Array : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Tuple_Array, \(
+            where : \(has_wrapped::( args.\0, \Tuple_Array, \(
                 if args.\0 is_a ( heading : \Heading::(), body : \Array::() ) then
                     if args.\0.\body all \Tuple::() then
                         args.\0.\body all \(@(args.\0) = (args.\1)) \<-- (args.\0.\heading)
@@ -8315,7 +8315,7 @@ single-tuple C<Tuple_Array> value.
             returns : \@Heading,
             matches : (\@Tuple_Array),
             implements : \@folder::"",
-            map : (args.\0:>.\heading),
+            map : \(args.\0:>.\heading),
         ),
 
 The function C<heading::Tuple_Array> results in the relational I<heading>
@@ -8329,7 +8329,7 @@ for the composing type C<Tuple_Array>.
             returns : \@Array,
             matches : (\@Tuple_Array),
             implements : \@folder::"",
-            map : (args.\0:>.\body),
+            map : \(args.\0:>.\body),
         ),
 
 The function C<body::Tuple_Array> results in the relational I<body> of its
@@ -8343,7 +8343,7 @@ composing type C<Tuple_Array>.
             returns : {\@Relational, \@Excuse::...},
             matches : (like : \@Tuple_Array, heading : \@Heading, body : \@Array),
             implements : \@folder::"",
-            map : (\Tuple_Array >:< (args %= \@(heading,body))),
+            map : \(\Tuple_Array >:< (args %= \@(heading,body))),
         ),
 
 The function C<select_Relational::Tuple_Array> results in the
@@ -8358,7 +8358,7 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
 
         Relation : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Relation, \(
+            where : \(has_wrapped::( args.\0, \Relation, \(
                 if args.\0 is_a ( heading : \Heading::(), body : \Set::() ) then
                     if args.\0.\body all \Tuple::() then
                         args.\0.\body all \(@(args.\0) = (args.\1)) \<-- (args.\0.\heading)
@@ -8399,7 +8399,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DEE>.
             returns : \@Heading,
             matches : (\@Relation),
             implements : \@folder::"",
-            map : (args.\0:>.\heading),
+            map : \(args.\0:>.\heading),
         ),
 
 The function C<heading::Relation> results in the relational I<heading>
@@ -8413,7 +8413,7 @@ for the composing type C<Relation>.
             returns : \@Set,
             matches : (\@Relation),
             implements : \@folder::"",
-            map : (args.\0:>.\body),
+            map : \(args.\0:>.\body),
         ),
 
 The function C<body::Relation> results in the relational I<body> of its
@@ -8427,7 +8427,7 @@ composing type C<Relation>.
             returns : {\@Relational, \@Excuse::...},
             matches : (like : \@Relation, heading : \@Heading, body : \@Set),
             implements : \@folder::"",
-            map : (\Relation >:< (args %= \@(heading,body))),
+            map : \(\Relation >:< (args %= \@(heading,body))),
         ),
 
 The function C<select_Relational::Relation> results in the
@@ -8442,7 +8442,7 @@ function C<select_Relational> for the composing type C<Relation>.
 
         Tuple_Bag : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Tuple_Bag, \(
+            where : \(has_wrapped::( args.\0, \Tuple_Bag, \(
                 if args.\0 is_a ( heading : \Heading::(), body : \Bag::() ) then
                     if args.\0.\body all \Tuple::() then
                         args.\0.\body all \(@(args.\0) = (args.\1)) \<-- (args.\0.\heading)
@@ -8477,7 +8477,7 @@ single-tuple C<Tuple_Bag> value.
             returns : \@Heading,
             matches : (\@Tuple_Bag),
             implements : \@folder::"",
-            map : (args.\0:>.\heading),
+            map : \(args.\0:>.\heading),
         ),
 
 The function C<heading::Tuple_Bag> results in the relational I<heading>
@@ -8491,7 +8491,7 @@ for the composing type C<Tuple_Bag>.
             returns : \@Bag,
             matches : (\@Tuple_Bag),
             implements : \@folder::"",
-            map : (args.\0:>.\body),
+            map : \(args.\0:>.\body),
         ),
 
 The function C<body::Tuple_Bag> results in the relational I<body> of its
@@ -8505,7 +8505,7 @@ composing type C<Tuple_Bag>.
             returns : {\@Relational, \@Excuse::...},
             matches : (like : \@Tuple_Bag, heading : \@Heading, body : \@Bag),
             implements : \@folder::"",
-            map : (\Tuple_Bag >:< (args %= \@(heading,body))),
+            map : \(\Tuple_Bag >:< (args %= \@(heading,body))),
         ),
 
 The function C<select_Relational::Tuple_Bag> results in the
@@ -8531,7 +8531,7 @@ I<TODO.>
 
         Interval : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Interval, \Tuple::Interval() )),
+            where : \(has_wrapped::( args.\0, \Interval, \Tuple::Interval() )),
             default : \((-∞)..(+∞)),
             composes : {\@Intervalish, \@Setty},
         ),
@@ -8542,7 +8542,7 @@ I<TODO.>
 
         Tuple::Interval : \Selection >:< (
             of : \@Tuple,
-            where : (...),
+            where : \(...),
         ),
 
 I<TODO.>
@@ -8564,7 +8564,7 @@ I<TODO.>
 
         Interval_Set : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Interval_Set,
+            where : \(has_wrapped::( args.\0, \Interval_Set,
                 \(if Interval_Bag args.\0 then all_unique args.\0 else False) )),
             default : ...,
             composes : {\@Unionable_Intervalish, \@Setty},
@@ -8578,7 +8578,7 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
 
         Interval_Bag : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Interval_Bag, \(
+            where : \(has_wrapped::( args.\0, \Interval_Bag, \(
                 if Tuple_Bag args.\0 then ... else False
             ) )),
             default : ...,
@@ -8604,7 +8604,7 @@ I<TODO.>
 
         Quantity : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Quantity, \(
+            where : \(has_wrapped::( args.\0, \Quantity, \(
                 if Relation args.\0 then ... else False
             ) )),
             default : ...,
@@ -8618,7 +8618,7 @@ I<TODO.>
 =head2 Capsule
 
         Capsule : \Selection >:< (
-            where : (args -->^ FDN__is_a_Capsule),
+            where : \(args -->^ FDN__is_a_Capsule),
             default : False >:< False,
         ),
 
@@ -8637,7 +8637,7 @@ minimize interference with other types' interfaces.
         wrap : \Function >:< (
             returns : \@Capsule,
             matches : (\@Any, \@Any),
-            map : (args -->^ FDN__Capsule_wrap),
+            map : \(args -->^ FDN__Capsule_wrap),
         ),
 
         ">:<" : \Alias >:< ( of : \@wrap ),
@@ -8649,7 +8649,7 @@ I<TODO.>
         wrapper : \Function >:< (
             returns : \@Any,
             matches : (\@Capsule),
-            map : (args -->^ FDN__Capsule_wrapper),
+            map : \(args -->^ FDN__Capsule_wrapper),
         ),
 
         "<:" : \Alias >:< ( of : \@wrapper ),
@@ -8661,7 +8661,7 @@ I<TODO.>
         unwrap : \Function >:< (
             returns : \@Any,
             matches : (\@Capsule),
-            map : (args -->^ FDN__Capsule_unwrap),
+            map : \(args -->^ FDN__Capsule_unwrap),
         ),
 
         ":>" : \Alias >:< ( of : \@unwrap ),
@@ -8673,7 +8673,7 @@ I<TODO.>
         has_wrapped : \Function >:< (
             returns : \@Boolean,
             matches : (\@Capsule, \@Any, \@Signature),
-            map : (<:(args.\0) = (args.\1) and
+            map : \(<:(args.\0) = (args.\1) and
                 (args.\0:>,) --> Signature_to_Function_Call_But_0::(args.\2)),
         ),
 
@@ -8684,7 +8684,7 @@ I<TODO.  Says wrapper equals a value and asset passes a filter.>
 =head2 Reference
 
         Reference::"" : \Selection >:< (
-            where : (args -->^ FDN__is_a_Reference),
+            where : \(args -->^ FDN__is_a_Reference),
             default : () -->^ FDN__default_Reference,
         ),
 
@@ -8763,7 +8763,7 @@ that this points to to hold the value of its right-hand argument.>>
 =head2 External
 
         External::"" : \Selection >:< (
-            where : (args -->^ FDN__is_a_External),
+            where : \(args -->^ FDN__is_a_External),
             default : () -->^ FDN__default_External,
         ),
 
@@ -8786,7 +8786,7 @@ D values.
         External::call_function : \Function >:< (
             returns : \@Any,
             matches : (\@Any),
-            map : (FDN__External_call_function ^<-- args),
+            map : \(FDN__External_call_function ^<-- args),
         ),
 
 The function C<External::call_function> is a proxy for invoking a function
@@ -8804,10 +8804,10 @@ I<TODO.>
 
         Source_Code::Package : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Package, \(
+            where : \(has_wrapped::( args.\0, \Package, \(
                 if
                     args.\0 is_a (
-                        identity : \Selection >:< ( of : \@Pkg_Decl_Map, where : (is_unary args.\0)),
+                        identity : \Selection >:< ( of : \@Pkg_Decl_Map, where : \(is_unary args.\0)),
                         foundation : \Fdn_Canon_Name::(),
                         uses : \Pkg_Decl_Map::(),
                         entry : \Entry_Point::(),
@@ -8828,7 +8828,7 @@ I<TODO.>
 
         Source_Code::Pkg_Decl_Map : \Selection >:< (
             of : \@Tuple,
-            where : (args.\0 .!? \"" and args.\0 all_attr_assets \Pkg_Canon_Name::()),
+            where : \(args.\0 .!? \"" and args.\0 all_attr_assets \Pkg_Canon_Name::()),
         ),
 
 I<TODO.  Each attribute name declares a single-element composing-package-local
@@ -8858,7 +8858,7 @@ I<TODO.>
 
         Source_Code::Fdn_Canon_Name : \Selection >:< (
             of : \@Attr_Name_List,
-            where : (#(args.\0) >= 2 and args.\0 ∌ \""),
+            where : \(#(args.\0) >= 2 and args.\0 ∌ \""),
         ),
                 `Element 0 is the Foundation authority.`
                 `Element 1 is the Foundation version number.`
@@ -8875,7 +8875,7 @@ I<TODO.  This type is subject to be expanded to some collection or have alternat
 
         Source_Code::Floating : \Selection >:< (
             of : \@Set,
-            where : (args.\0 all \Absolute_Name::()),
+            where : \(args.\0 all \Absolute_Name::()),
         ),
 
 I<TODO.>
@@ -8884,7 +8884,7 @@ I<TODO.>
 
         Source_Code::Folder : \Selection >:< (
             of : \@Tuple,
-            where : (args.\0 all_attr_assets {\Folder::(), \Material::()}),
+            where : \(args.\0 all_attr_assets {\Folder::(), \Material::()}),
         ),
 
 I<TODO.>
@@ -8903,7 +8903,7 @@ Plain_Text does NOT have special syntax for Package or any Material now.>
 
         Source_Code::Alias : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Alias, \Identity_Identifier::() )),
+            where : \(has_wrapped::( args.\0, \Alias, \Identity_Identifier::() )),
             default : \(\Alias >:< Identity_Identifier::()),
         ),
 
@@ -8913,7 +8913,7 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
 
         Source_Code::Constant : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Constant, \(
+            where : \(has_wrapped::( args.\0, \Constant, \(
                 args.\0 is_a (
                     folded : \Boolean::(),
                     composes : ...,
@@ -8929,7 +8929,7 @@ I<TODO.>
 
         Source_Code::Selection : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Selection, \(
+            where : \(has_wrapped::( args.\0, \Selection, \(
                 args.\0 is_a (
                     of : ...,
                     where : \Function_Body::(),
@@ -8948,7 +8948,7 @@ I<TODO.  Still have to figure syntax to handle and-provides-its-default marker.>
 
         Source_Code::Interface : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Interface, \(
+            where : \(has_wrapped::( args.\0, \Interface, \(
                 args.\0 is_a (
                     composes : ...,
                     requires_implements : ...,
@@ -8963,7 +8963,7 @@ I<TODO.>
 
         Source_Code::Function : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Function, \(
+            where : \(has_wrapped::( args.\0, \Function, \(
                 args.\0 is_a (
                     virtual : \Boolean::(),
                     commutes : \Identity_Identifier::(),
@@ -8991,7 +8991,7 @@ I<TODO.>
 
         Source_Code::Function_Body : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Function_Body, \(
+            where : \(has_wrapped::( args.\0, \Function_Body, \(
                 args.\0 is_a (
                     root_expr : \Expression::(),
                     named_exprs : \Named_Expr_List::(),
@@ -9006,7 +9006,7 @@ I<TODO.>
 
         Source_Code::Procedure : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Procedure, \(
+            where : \(has_wrapped::( args.\0, \Procedure, \(
                 args.\0 is_a (
                     virtual : \Boolean::(),
                     matches : \Signature::Tuple(),
@@ -9028,7 +9028,7 @@ I<TODO.>
 
         Source_Code::Procedure_Body : \Selection >:< (
             of : \@Capsule,
-            where : (has_wrapped::( args.\0, \Procedure_Body, \(
+            where : \(has_wrapped::( args.\0, \Procedure_Body, \(
                 args.\0 is_a (
                     root_stmt : \Statement::(),
                     named_stmts : \Named_Stmt_List::(),
@@ -9053,7 +9053,7 @@ I<TODO.>
 
         Source_Code::Signature::Set : \Selection >:< (
             of : \@Set,
-            where : (args.\0 all \Signature::()),
+            where : \(args.\0 all \Signature::()),
         ),
 
 I<TODO.>
@@ -9062,7 +9062,7 @@ I<TODO.>
 
         Source_Code::Signature::Tuple : \Selection >:< (
             of : \@Tuple,
-            where : (args.\0 all_attr_assets \Signature::()),
+            where : \(args.\0 all_attr_assets \Signature::()),
         ),
 
 I<TODO.>
@@ -9071,7 +9071,7 @@ I<TODO.>
 
         Source_Code::Heading : \Selection >:< (
             of : \@Tuple,
-            where : (args.\0 all_attr_assets \False::()),
+            where : \(args.\0 all_attr_assets \False::()),
         ),
 
 I<TODO.>
@@ -9084,7 +9084,7 @@ a thing for opening tuples as for creating them.>
 
         Source_Code::Attr_Name : \Selection >:< (
             of : \@Heading,
-            where : (is_unary args.\0),
+            where : \(is_unary args.\0),
         ),
 
 I<TODO.>
@@ -9093,7 +9093,7 @@ I<TODO.>
 
         Source_Code::Attr_Name_List : \Selection >:< (
             of : \@Array,
-            where : (args.\0 all \Attr_Name::()),
+            where : \(args.\0 all \Attr_Name::()),
         ),
 
 I<TODO.>
@@ -9102,7 +9102,7 @@ I<TODO.>
 
         Source_Code::Local_Name : \Selection >:< (
             of : \@Attr_Name_List,
-            where : (
+            where : \(
                 if ?(args.\0) then
                     args.\0.0 :?? {
                         \foundation : #(args.\0) = 2,
@@ -9123,7 +9123,7 @@ I<TODO.>
 
         Source_Code::Absolute_Name : \Selection >:< (
             of : \@Local_Name,
-            where : (args.\0.0 ⊆@ \@(foundation,used,package)),
+            where : \(args.\0.0 ⊆@ \@(foundation,used,package)),
         ),
 
 I<TODO.>
@@ -9132,7 +9132,7 @@ I<TODO.>
 
         Source_Code::Named_Expr_List : \Selection >:< (
             of : \@Tuple,
-            where : (args.\0 .!? \"" and args.\0 all_attr_assets \Expression::()),
+            where : \(args.\0 .!? \"" and args.\0 all_attr_assets \Expression::()),
         ),
 
 I<TODO.>
@@ -9154,7 +9154,7 @@ I<TODO.  Actually, rewrite most of the above list.>
 
         Source_Code::Named_Stmt_List : \Selection >:< (
             of : \@Tuple,
-            where : (args.\0 .!? \"" and args.\0 all_attr_assets \Statement::()),
+            where : \(args.\0 .!? \"" and args.\0 all_attr_assets \Statement::()),
         ),
 
 I<TODO.>
@@ -9172,7 +9172,7 @@ I<TODO..>
 
         Source_Code::Key_Asset_Pair : \Selection >:< (
             of : \@Tuple,
-            where : (@(args.\0) = \@(key,asset)),
+            where : \(@(args.\0) = \@(key,asset)),
         ),
 
 I<TODO.  Note, this type currently isn't used anywhere.>
@@ -9182,7 +9182,7 @@ I<TODO.  Note, this type currently isn't used anywhere.>
         Source_Code::Signature_to_Function_Call_But_0 : \Function >:< (
             returns : \@Function_Call_But_0,
             matches : (\@Signature),
-            map : (
+            map : \(
                 if Function_Call_But_0 args.\0 then
                     args.\0
                 else if Signature::Set(args.\0) then
