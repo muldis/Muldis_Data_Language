@@ -16,10 +16,21 @@ This document is Muldis::D::Package::Core version 0.201.0.-9.
  Muldis_D;;Plain_Text;;"http://muldis.com";;"0.201.0.-9";
  script Unicode;;9.0;;UTF-8;
  \Package >:< (
-    identity : (My_App : My_App;;"http://mycorp.com";;"0"),
-    foundation : "http://muldis.com";;"0.201.0.-9",
+    identity : (
+        package_base_name : [\My_App],
+        authority : \"http://mycorp.com",
+        version_number : [0],
+    ),
+    foundation : (
+        authority : \"http://muldis.com",
+        version_number : [0,201,0,-9],
+    ),
     uses : (
-        MD : Core;;"http://muldis.com";;"0.201.0.-9",
+        MD : (
+            package_base_name : [\Core],
+            authority : \"http://muldis.com",
+            version_number : [0,201,0,-9],
+        ),
     ),
     entry : \@package::main,
     floating : {\@package, \@used::MD, \@used::MD::Unicode_Aliases},
@@ -43,8 +54,15 @@ Standard Library> specification, of which this document is a part.
  Muldis_D;;Plain_Text;;"http://muldis.com";;"0.201.0.-9";
  script Unicode;;9.0;;UTF-8;
  \Package >:< (
-    identity : (MD : Core;;"http://muldis.com";;"0.201.0.-9"),
-    foundation : "http://muldis.com";;"0.201.0.-9",
+    identity : (
+        package_base_name : [\Core],
+        authority : \"http://muldis.com",
+        version_number : [0,201,0,-9],
+    ),
+    foundation : (
+        authority : \"http://muldis.com",
+        version_number : [0,201,0,-9],
+    ),
     floating : {\@package, \@package::Round_Meth, \@package::Source_Code},
     materials : (
         ...
@@ -8805,86 +8823,120 @@ I<TODO.>
         Source_Code::Package : \Selection >:< (
             of : \@Capsule,
             where : \(has_wrapped::( args.\0, \Package, \(
-                if
-                    args.\0 is_a (
-                        identity : \Selection >:< ( of : \@Pkg_Decl_Map, where : \(is_unary args.\0)),
-                        foundation : \Fdn_Canon_Name::(),
-                        uses : \Pkg_Decl_Map::(),
-                        entry : \Entry_Point::(),
-                        floating : \Floating::(),
-                        materials : \Folder::(),
-                    )
-                then
-                    args.\0.\uses disjoint_heading args.\0.\identity
-                else
-                    False
+                args.\0 is_a (
+                    identity : \Package::Identity::(),
+                    foundation : \Package::Foundation::(),
+                    uses : \Package::Uses_Map::(),
+                    entry : \Package::Entry_Point::(),
+                    floating : \Package::Floating::(),
+                    materials : \Package::Folder::(),
+                )
             ) )),
             default : ...,
         ),
 
 I<TODO.>
 
-=head2 Source_Code::Pkg_Decl_Map
+=head2 Source_Code::Package::Identity
 
-        Source_Code::Pkg_Decl_Map : \Selection >:< (
+        Source_Code::Package::Identity : \Selection >:< (
             of : \@Tuple,
-            where : \(args.\0 .!? \"" and args.\0 all_attr_assets \Pkg_Canon_Name::()),
+            where : \(
+                args.\0 is_a (
+                    package_base_name : \Package::Base_Name::(),
+                    authority : \Package::Canon_Authority::(),
+                    version_number : \Package::Canon_Version_Number::(),
+                )
+            ),
+        ),
+
+=head2 Source_Code::Package::Foundation
+
+        Source_Code::Package::Foundation : \Selection >:< (
+            of : \@Tuple,
+            where : \(
+                args.\0 is_a (
+                    authority : \Package::Canon_Authority::(),
+                    version_number : \Package::Canon_Version_Number::(),
+                )
+            ),
+        ),
+
+=head2 Source_Code::Package::Base_Name
+
+        Source_Code::Package::Base_Name : \Selection >:< (
+            of : \@Attr_Name_List,
+            where : \(?(args.\0) and args.\0 ∌ \""),
+        ),
+
+I<TODO.>
+
+=head2 Source_Code::Package::Canon_Authority
+
+        Source_Code::Package::Canon_Authority : \Alias >:< (
+            of : \@Attr_Name,
+            where : \(args.\0 != \""),
+        ),
+
+I<TODO.>
+
+=head2 Source_Code::Package::Canon_Version_Number
+
+        Source_Code::Package::Canon_Version_Number : \Selection >:< (
+            of : \@String,
+            where : \(?(args.\0)),
+        ),
+
+I<TODO.>
+
+=head2 Source_Code::Package::Uses_Map
+
+        Source_Code::Package::Uses_Map : \Selection >:< (
+            of : \@Tuple,
+            where : \(args.\0 .!? \"" and args.\0 all_attr_assets \Package::Uses_Item::()),
         ),
 
 I<TODO.  Each attribute name declares a single-element composing-package-local
-alias for (itself or) the used package.>
+alias for the used package.>
 
-=head2 Source_Code::Pkg_Canon_Name
+=head2 Source_Code::Package::Uses_Item
 
-        Source_Code::Pkg_Canon_Name : \Selection >:< ( of : \@Tuple, where :
-        (
-            if
+        Source_Code::Package::Uses_Item : \Selection >:< (
+            of : \@Tuple,
+            where : \(
                 args.\0 is_a (
-                    pkg_name_base : \Attr_Name_List::(),
-                    pkg_name_ext  : \Attr_Name_List::(),
-                        `Element 0 is the package authority.`
-                        `Element 1 is the package version number.`
+                    package_base_name : \Package::Base_Name::(),
+                    authority : \Package::Canon_Authority::(),
+                    version_number : \Package::Canon_Version_Number::(),
                 )
-            then
-                    #@(args.\0.\pkg_name_base) >= 1 and args.\0.\pkg_name_base ∌ \""
-                and #@(args.\0.\pkg_name_ext)  >= 2 and args.\0.\pkg_name_ext  ∌ \""
-            else
-                False
-        ) ),
-
-I<TODO.>
-
-=head2 Source_Code::Fdn_Canon_Name
-
-        Source_Code::Fdn_Canon_Name : \Selection >:< (
-            of : \@Attr_Name_List,
-            where : \(#(args.\0) >= 2 and args.\0 ∌ \""),
+            ),
         ),
-                `Element 0 is the Foundation authority.`
-                `Element 1 is the Foundation version number.`
 
-I<TODO.>
+I<TODO.  This type should be more complicated in order to support indicating
+eg multiple authorities or version numbers including in interval format and
+also indicate both positive or negative assertions of compatibility.
+Until then, this type just represents a single positive assertion.>
 
-=head2 Source_Code::Entry_Point
+=head2 Source_Code::Package::Entry_Point
 
-        Source_Code::Entry_Point : \Selection >:< ( of : \@Absolute_Name ),
+        Source_Code::Package::Entry_Point : \Selection >:< ( of : \@Absolute_Name ),
 
 I<TODO.  This type is subject to be expanded to some collection or have alternatives.>
 
-=head2 Source_Code::Floating
+=head2 Source_Code::Package::Floating
 
-        Source_Code::Floating : \Selection >:< (
+        Source_Code::Package::Floating : \Selection >:< (
             of : \@Set,
             where : \(args.\0 all \Absolute_Name::()),
         ),
 
 I<TODO.>
 
-=head2 Source_Code::Folder
+=head2 Source_Code::Package::Folder
 
-        Source_Code::Folder : \Selection >:< (
+        Source_Code::Package::Folder : \Selection >:< (
             of : \@Tuple,
-            where : \(args.\0 all_attr_assets {\Folder::(), \Material::()}),
+            where : \(args.\0 all_attr_assets {\Package::Folder::(), \Material::()}),
         ),
 
 I<TODO.>
