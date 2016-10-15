@@ -15,7 +15,43 @@ resources of everyone else.
 ----------
 
 * Notes for 2016-10-13:
-- ... context dependent on what values embedded in vs context free, latter are Capsule ...
+- General rule of thumb, every context-free type should be defined as a
+Capsule with its own wrapper, and every named type should be thusly
+context-free unless there is a good reason for it not to be.
+- Context-free means a value of the type can appear anywhere and it is
+trivially easy/cheap to know that the value is of the type, even when we don't
+have the actual type definition available, such as at the Foundation level.
+- In contrast, context-dependent types, such as subtypes of Tuple or Array,
+should generally only be used in very specific contexts, such as used as a
+direct component of a context-free type, and thus defining this as a type
+at all is merely for the purpose of code factoring, more or less.
+- Idiomatically, a context-dependent type should be named in a namespace
+beneath the context-free type it exists to serve, such as Package::Identity
+to go with Package.  Generally every type directly in Core:: or
+Core::Source_Code:: should either be an alias of a Foundation type, or it
+should be an Interface, or it should be a context-free type.
+- Interfaces and virtual routines are conveniences for factoring code in
+context of the full Muldis D environment, but at the Foundation level
+neither exists and values should all be declaring what they are and how to
+interpret them strictly in a structural manner, an appropriate nested
+combination of specific Capsule wrappers and specific attribute names.
+- Nesting is also used for general-purpose proper subtypes.
+
+* Simple rules for expression folding, particularly at MDPT parse time:
+1. Each "opaque literal" parse node turns into 1 constant value node.
+2. Each "collection selector" parse node is folded into 1 constant value
+node iff every one of its child parse nodes can be folded into 1 constant value.
+3. Folding does NOT occur across a naming expression, or annotating or decorating etc.
+4. Folding does NOT occur for a node that is an invocation of a material.
+5. Folding might occur across special operators specifically recognized by
+the MDPT grammar and directly correspond to a Foundation op, examples being
+>:< etc can be folded if both inputs can be folded.
+6. We do not fold across special references like 'args' or any reference to a name.
+- Following these rules can give the best tradeoff between preserving the
+user's original structure of the code and storage/execution efficiency as
+well as keeping parsing quite simple and easy.
+- Further folding can be done at runtime or cross-compilation time, but the
+parsing of MDPT into the "canonical" source form would respect the above rules.
 
 * Magic numbers in the form of niladic routines for VMs that the Muldis D
 reference engine implementations conform to; testing for the declaration
