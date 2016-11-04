@@ -213,8 +213,7 @@ Grammar:
     <versioned_source_code> ::=
         <sp>
             <language_name> <sp> ';' <sp>
-            [<foundational_indicator> <sp> ';' <sp>]?
-            <script_name> <sp> ';' <sp>
+            [<foundational_indicator> | <script_name>] <sp> ';' <sp>
             <Package> <sp> ';' <sp>
         <sp>
 
@@ -288,9 +287,6 @@ specified by C<< <script_name> >>.
 Iff C<< <foundational_indicator> >> is present, then the following grammar
 definitions are in effect:
 
-    <script_name> ::=
-        <script_name__minimal>
-
     <regular_symbolic_char> ::=
         <regular_symbolic_char__minimal>
 
@@ -304,9 +300,6 @@ I<TODO.>
 
 Alternately, iff C<< <foundational_indicator> >> is absent, then the
 following grammar definitions are in effect:
-
-    <script_name> ::=
-        <script_name__maximal>
 
     <regular_symbolic_char> ::=
         <regular_symbolic_char__maximal>
@@ -323,10 +316,7 @@ I<TODO.>
 
 Grammar:
 
-    <script_name__minimal> ::=
-        script ASCII
-
-    <script_name__maximal> ::=
+    <script_name> ::=
         script ...
 
 The Script Name indicates the primary script of the Muldis D code,
@@ -354,6 +344,15 @@ times filtering by a variety of text encodings until it can read a Muldis D
 language name declaring the same encoding that the name is itself written
 in, and then from that point it would expect the whole file to be that
 declared encoding or it would consider the code invalid.
+
+Iff C<< <foundational_indicator> >> is present, then C<< <script_name> >>
+is absent, and the Muldis D code as binary data is expected to be valid
+UTF-8 according to the latest Unicode standard of the time, and it will be
+treated literally without applying any Unicode normalization.  In practice,
+such code will often just be ASCII, a proper subset of UTF-8, but it is not
+required to be so limited.  In practice, having a specific implied Unicode
+version not be fixed shouldn't be a problem, as the definition of UTF-8
+tends to be both simple and very stable over time.
 
 Examples:
 
