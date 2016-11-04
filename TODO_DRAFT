@@ -14,6 +14,103 @@ resources of everyone else.
 
 ----------
 
+* Notes for 2016-11-01:
+- Support Package types at the Foundation level after all.
+- Canonical unit of code given to "evaluate" or "perform" at the Foundation
+level is now a Package with a entry-routine that is either a Function or a
+Procedure, similarly to a Package being the unit for passing work to a remote
+process to execute.  In either case this Package should be self-contained
+and a Package is used in order partly for code to be well factored.  But
+when used as an index generator it is still serialized to produce its hashing
+identity for the index.
+- While Foundation supports/wants Packages, it is still strictly fully-qualified
+entity names, no floatings, and also 100% structural typing, no interfaces
+etc, so an interpreter/compiler layered on top still would desugar any interface
+defs to not having such.
+- At Foundation level, Packages still have identities, but we might consider
+supporting the concept of pseudo-or-actual-anonymous packages, which can not
+be dependencies of other packages, and can be suitable for main programs or
+particularly generated packages; on the other hand we might want to have
+generated UUIDs or something for those, see also what .Net does.
+- So, the main sugar then that Foundation doesn't support and is layered on
+top is any support for overloading polymorphism, floating names, entity declarations
+representing types, etc, probably aliases; Foundation has Package,Function,Procedure.
+- Make Foundation version of Packages just have the attributes
+{foundation, entry, materials} and maybe "identity"; not "using" or "floating";
+"identity" is not actually used per se but it is expected or allowed in
+contexts where packages are kept in depots and should be identified therein.
+
+* Part of selecting a Reference value is, optionally, selecting a type
+constraint and default value for it.  Perhaps type definitions don't need
+to include default values in the general case, and these can instead just
+be set per variable or in particular selection functions.
+
+* Notes for 2016-10-28:
+- Declare a predicate function in Foundation for every type that is
+considered special enough to name either to the main
+runtime/interpreter/compiler or Plain_Text parser or Perl etc interfaces
+etc.  A type is in this list if and only if it is either a Foundation type
+or it is a system-defined Capsule type whose wrapper is just an Attr_Name
+rather than being package-qualified, or maybe a few special cases.  So, we
+DO now declare Text, Blob, etc in Foundation this way.  Part of the idea
+also is to make the Core package more of a luxury than a necessity.  The
+Foundation still does NOT declare eg Text-specific operators in general,
+one still does longhand with Capsule pack/unpack plus Foundation Array ops.
+- Structural vs nominal vs duck vs algebraic typing... metamodel...
+- Low level MD is 100% structural (?) while High level MD adds duck and
+algebraic and or its kind of hard to know what are right terms to use.
+
+* Call variants Less Muldis D / Less Muldis D Plain Text and More Muldis D
+/ More Muldis D Plain Text.  The Less is analagous to Not Quite Perl.
+- http://pmichaud.com/2010/pres/yapcna-nqp/slides/slide8.html
+"NQP's goal is regularity more than DWIM"
+
+* Low level expression node types:
+- Opaque(x) - Expression would simply evaluate to the value of x, which has
+already been completely folded.
+- Args() - Expression would simply evaluate to the argument list for its context.
+- Evaluation(x,y) - Expression would evaluate the context-defining sub-expression
+or function defined by x, such that the value of y is its args.
+	- x may optionally be the name of a Foundation function.
+	- x may optionally be a special 'self' name indicating a recursive call.
+- Performance(x,y) - Statement would perform the context-defining sub-statement
+or procedure defined by x, such that the value of y is its args.
+	- x may optionally be the name of a Foundation procedure.
+	- x may optionally be a special 'self' name indicating a recursive call.
+- If-Else-NoShort-Expr(x,y,z)
+- If-Else-Short-Expr(x,y,z)
+- If-Else-Short-Stmt(x,y,z)
+- ... name, naming, anno, deco, ...
+- ... sel for array, set, bag, tuple ...
+
+* Notes for 2016-10-21:
+- The concept of the "hosted data" class of languages could just go away,
+or be strictly limited to representing data and not code.  That is, no one
+would declare eg Perl 5 Hosted Data as a command language.
+- What we do for a VM interface like MDCDBI is that everything native is
+converted into a "Value" object with relatively little indirection, and THEN, one
+does the prepare/execute with a Value object where an optional input to
+prepare/execute is the spec of the language already represented by a
+Muldis D data type value (either Text or something else), so the language
+name then is orthogonal to what exact eg Perl 5 types the values were represented
+as prior to conversion to Value.
+- So all finer details of Perl 5 types to Muldis D / MDCDBI types are strictly
+on resolving to eg integers, texts, tuples, etc.
+- If a distinct Hosted Data source type exists, it is possibly more like a concrete
+parse tree that might vary by host.
+- Use Function/Procedure dichotomy, not Command; use keywords evaluate/perform to run them.
+- The External type is what it is for when one wants to pass regular Perl/etc
+values including sub refs etc through the API unadulterated, eg if the DBMS
+has a mechanism for callback hooks these may be options for passing to them.
+- Similarly to MD Plain Text or SQL, one can parse JSON or XML etc via MDCDBI
+as a language option.
+
+* For consistency and understandability, use "-" with ".." to mean open
+endpoint rather than "^"; so: {x..y, x-..y, x..-y, x-..-y}.  Regardless of
+the change, one still has to say eg "-5..(-2)" because we don't special
+case a leading "-" on a digit to indicate a negative as far as parsing
+precedence goes.
+
 * Notes for 2016-10-16:
 - Rewrite part of Foundation.pod declaring the Foundation types/routines so
 it looks more like Core.pod, but providing pseudo-source-code (conforming
@@ -235,6 +332,8 @@ https://rfc.zeromq.org/spec:42/C4/ (Collective Code Construction Contract) does 
 * Note that http://kripken.github.io/emscripten-site/ may be useful with LLVM or JavaScript.
 
 * Note see also http://bedrockdb.com .
+
+* Note see also https://code.google.com/archive/p/northwindextended/ .
 
 * Generalize the Foo::Bar syntax so it implies drilling through nested
 Tuples, and also special case support for nested tuples so that the same
