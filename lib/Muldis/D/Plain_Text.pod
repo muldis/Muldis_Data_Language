@@ -104,7 +104,68 @@ keep in mind that the grammar is inspired by both EBNF and Perl 6 rules.>
     - % takes list item separator on right, eg allows "x,y" but not "x,y,"
     - %% is like % but allows separator to end the list, eg allows "x,y,"
 
+=head1 PARSING UNITS
+
+A I<parsing unit> of Muldis D Plain Text source code is composed of two
+main parts, the I<parsing unit subject> and the I<parsing unit predicate>,
+in this context abbreviated as I<subject> and I<predicate>.
+
+A I<parsing unit subject> is the meat-and-potatoes of Muldis D Plain Text
+source code, and generally takes the form in memory of a Muldis D C<Blob>
+or C<Text> value I<S>; parsing a well-formed I<S> results in some other
+Muldis D value I<N>.  Typically I<N> is a value of the C<Package> type and
+thus comprises a Muldis D I<compilation unit>, but it might also be a value
+of some other type.
+
+A I<parsing unit predicate> is a guide for I<how> to unambiguously parse
+the I<subject>, and generally takes the form in memory of a Muldis D
+C<Blob> or C<Text> value; it includes such details as a grammar version
+declaration and a text encoding declaration.
+
+When Muldis D Plain Text source code is kept in its own self-describing
+file, typically one with the C<.mdpt> standard filename extension, as per
+library or project conventions for typical general-purpose programming
+languages or structured data files, the entire I<parsing unit> is combined
+into the single file, with the I<parsing unit predicate> appearing first as
+a file heading, and the I<parsing unit subject> following that.
+
+In this combined-file situation, a primary role of the I<predicate> is to
+serve as a "magic number" that identifies the file as being MDPT source
+code.  Its secondary role is to explicitly state the character encoding and
+similar details of the file so that the file can be correctly converted
+from octets (a C<Blob>) to character data (a C<Text>) which most of the
+MDPT grammar assumes it is taking as input; this means the parser does not
+have to rely on hueristics or other methods of determining encoding that
+could be wrong.  Its tertiary role is to explicitly state what versions of
+the MDPT grammar the author of the MDPT code believes it is known to be
+compatible or incompatible with, so that the grammar can be more free to
+evolve without that leading to parsers wrongly interpreting code.
+
+When Muldis D Plain Text source code is not kept in its own self-describing
+file, typically when a source code repository is in use that provides
+context externally to each I<parsing unit subject> on how to interpret it,
+then the I<subject> and I<predicate> are typically given to the parser as
+separate inputs.  This is particularly likely in situations where the
+virtual machine environment running the Muldis D code is a library of some
+host language that is feeding in Muldis D code piecemeal (possibly
+generated), such as a typical DBMS client application may do.  Such uses
+would be served by not having to provide the I<predicate> boilerplate every
+time they want to run I<subject> code, which often is very small itself.
+
+The root grammar token for a Muldis D Plain Text self-describing file is
+C<< <parsing_unit> >>.
+
+Grammar:
+
+    <parsing_unit> ::=
+        ^ <parsing_unit_predicate> <sp__minimal> <parsing_unit_subject> $
+
+See the sections in this file named L<PARSING UNIT PREDICATES> and
+L</PARSING UNIT SUBJECTS> for more details.
+
 =head1 GENERAL STRUCTURE
+
+I<TODO: This section needs to be replaced.>
 
 I<TODO: Rewrite the following to just use "package".>
 
@@ -166,17 +227,19 @@ they were actually looking at.  A further reason is it means declarations
 can be grouped more logically for human reading than being forced to put
 everything with a common namespace together.>
 
-The root grammar token for Muldis D Plain Text is C<< <MDPT> >>.
-
-=head1 START
+=head1 PARSING UNIT PREDICATES
 
 Grammar:
 
-    <MDPT> ::=
-        ^ <shebang_line>? <versioned_source_code> $
+    <parsing_unit_predicate> ::=
+        <shebang_line>?
+        <sp__minimal>
+        <language_name> <sp__minimal> ';'
+        <sp__minimal>
+        [<foundational_indicator> | <script_name>] <sp__minimal> ';'
 
-See the sections in this file named L<SHEBANG LINE> and L</VERSIONED
-SOURCE CODE> for more details.
+See the sections in this file named L<SHEBANG LINE>, L</LANGUAGE NAME>,
+L<FOUNDATIONAL INDICATOR>, and L</SCRIPT NAME> for more details.
 
 =head1 SHEBANG LINE
 
@@ -205,28 +268,6 @@ following it, which is how we know where the Muldis D code begins.
 Examples:
 
     #!/usr/bin/env muldisdre
-
-=head1 VERSIONED SOURCE CODE
-
-Grammar:
-
-    <versioned_source_code> ::=
-        <sp>
-            <language_name> <sp> ';' <sp>
-            [<foundational_indicator> | <script_name>] <sp> ';' <sp>
-            <Package> <sp> ';' <sp>
-        <sp>
-
-    <Package> ::=
-        <expr>
-
-See the sections in this file named L</LANGUAGE NAME>, L<FOUNDATIONAL
-INDICATOR>, L</SCRIPT NAME>, L</GENERIC VALUE EXPRESSIONS>, and
-L</Capsule Selectors> for more details.
-
-A C<< <Package> >> node is expected to evaluate to a value of the Muldis D
-C<Package> type; its canonical form is a C<< <Capsule> >> node whose
-C<< <wrapper_expr> >> is the value C<\Package>.
 
 =head1 LANGUAGE NAME
 
@@ -359,6 +400,23 @@ Examples:
     script ASCII;
 
     script Unicode;;9.0;;UTF-8;;canon;
+
+=head1 PARSING UNIT SUBJECTS
+
+Grammar:
+
+    <parsing_unit_subject> ::=
+        <Package> <sp> ';' <sp>
+
+    <Package> ::=
+        <expr>
+
+See the sections in this file named L</GENERIC VALUE EXPRESSIONS> and
+L</Capsule Selectors> for more details.
+
+A C<< <Package> >> node is expected to evaluate to a value of the Muldis D
+C<Package> type; its canonical form is a C<< <Capsule> >> node whose
+C<< <wrapper_expr> >> is the value C<\Package>.
 
 =head1 CHARACTER CLASSES
 
