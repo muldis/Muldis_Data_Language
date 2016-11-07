@@ -1622,12 +1622,17 @@ Grammar:
 A C<< <Set> >> node represents a value of the Muldis D
 C<Set> type, which is ...
 
+A C<< <Set> >> is subject to the additional rule that, either its C<<
+<member_commalist> >> must not have any C<< <multiplied_member> >>
+elements, or the C<< <Set> >> must have the C<\?> prefix, so that the C<<
+<Set> >> can be distinguished from every possible C<< <Bag> >>.
+
 =head2 Bag Selectors
 
 Grammar:
 
     <Bag> ::=
-        '\\+' <sp> '{' <sp> <member_commalist> <sp> '}'
+        ['\\+' <sp>]? '{' <sp> <member_commalist> <sp> '}'
 
     <member_commalist> ::=
         [<single_member> | <multiplied_member> | ''] % [<sp> ',' <sp>]
@@ -1646,6 +1651,13 @@ Grammar:
 
 A C<< <Bag> >> node represents a value of the Muldis D
 C<Bag> type, which is ...
+
+A C<< <Bag> >> is subject to the additional rule that, either its C<<
+<member_commalist> >> must have at least 1 C<< <multiplied_member> >>
+element, or the C<< <Bag> >> must have the C<\+> prefix, so that the C<<
+<Bag> >> can be distinguished from every possible C<< <Set> >>.  An
+idiomatic way to represent an empty C<Bag> is to have exactly 1 C<<
+<multiplied_member> >> whose C<< <multiplicity_expr> >> is zero.
 
 =head2 Tuple Selectors
 
