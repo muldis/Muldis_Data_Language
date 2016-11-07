@@ -14,6 +14,63 @@ resources of everyone else.
 
 ----------
 
+* Consider parser unit predicate more like this:
+    #!foo
+    Muldis_D;;Plain_Text;;(
+        authority : "http://muldis.com",
+        version_number : "0,201,0,-9",
+        script_encoding : "UTF-8",
+    );
+- The quasi-tuple-format list, or actual tuple format?, can be free to
+omit elements not relevant at a particular stage, such as encoding, or that
+are chosen not to apply, such as Unicode normalization etc.
+- Strictly speaking one can declare UTF-8 or any encoding without declaring
+a repertoire, as technically UTF-8 is just a mapping between 2 integer arrays,
+using it on its own doesn't have to imply the repertoire is Unicode, or something.
+
+* Actually drop all double-semicolons and single-semicolons between sections:
+    #!foo
+    Muldis_D Plain_Text  `magic cookie`
+    (w:x,y:"z","a":"b",...)  `rest of predicate`
+    ...  `subject`
+- The above 4/5 are each separated by <sp>, except the shebang is determined by Unix rules instead.
+- The magic cookie must be simple ASCII alpha barewords.
+- The predicate remainder must be a pair of parens with simplified Tuple lit syntax;
+actually, it MUST be 0..N named pairs where each key/asset of a pair must be
+either an alpha bareword or a plain double-quoted string, contents escaped
+per name/text literals but no leading backslash, no trailing comma needed this time for single pair.
+- The subject can be anything at all, it is everything that follows the closing paren of predicate.
+
+* IDEA, tricky...
+- Perhaps a Capsule literal could be:
+    (<expr>:<expr>)
+... where the parens DO contain a colon and DON'T have a comma.
+- Whereas, these are Tuple:
+    ()
+    (w,)
+    (x:y,)
+    (:y,)
+- And this is a compound expression:
+    (x)
+- If I do that then >:< <: :> can just be like regular operators / options.
+- Bu-u-u-ut, a main problem with this is that traditionally a plain : has
+always meant an attribute name on the left, not just Any value.
+- On the other hand, a wrapper is like a name, so its probably ok.
+- I should have a look at how Perl 6 differentiates Pair literals with named arguments etc.
+    f named => 35;    # Also a named argument.
+    f 'named' => 35;  # Not a named argument, a Pair in a positional argument
+
+* At Foundation level, a Function has the "accepts" trait and not the
+"matches" trait; the idea is that "accepts" in general takes all the same
+formats as "matches" but is more strict; "matches" is more applicable in an
+environment with operator overloading, while "accepts" is more for an
+environment that isn't necessarily overloaded, maybe.
+- Actually no, at the Foundation level a Function is still just its body
+plus some hint bits like commutative etc; any matches/accepts concepts are
+just integrated into its body.
+- At Foundation level, allow some special value results, eg when input is
+not valid UTF-8, rather than dying.  Also for divide by zero etc I suppose.
+
 * Notes for 2016-11-01:
 - Support Package types at the Foundation level after all.
 - Canonical unit of code given to "evaluate" or "perform" at the Foundation
