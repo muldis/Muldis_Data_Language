@@ -14,6 +14,9 @@ resources of everyone else.
 
 ----------
 
+* Do something about the special postfix syntax :> which can't simply be
+replaced with a postfix regular operator call.
+
 * Consider parser unit predicate more like this:
     #!foo
     Muldis_D;;Plain_Text;;(
@@ -40,25 +43,6 @@ actually, it MUST be 0..N named pairs where each key/asset of a pair must be
 either an alpha bareword or a plain double-quoted string, contents escaped
 per name/text literals but no leading backslash, no trailing comma needed this time for single pair.
 - The subject can be anything at all, it is everything that follows the closing paren of predicate.
-
-* IDEA, tricky...
-- Perhaps a Capsule literal could be:
-    (<expr>:<expr>)
-... where the parens DO contain a colon and DON'T have a comma.
-- Whereas, these are Tuple:
-    ()
-    (w,)
-    (x:y,)
-    (:y,)
-- And this is a compound expression:
-    (x)
-- If I do that then >:< <: :> can just be like regular operators / options.
-- Bu-u-u-ut, a main problem with this is that traditionally a plain : has
-always meant an attribute name on the left, not just Any value.
-- On the other hand, a wrapper is like a name, so its probably ok.
-- I should have a look at how Perl 6 differentiates Pair literals with named arguments etc.
-    f named => 35;    # Also a named argument.
-    f 'named' => 35;  # Not a named argument, a Pair in a positional argument
 
 * At Foundation level, a Function has the "accepts" trait and not the
 "matches" trait; the idea is that "accepts" in general takes all the same
@@ -4563,7 +4547,7 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    Is a set of named attributes where each attribute name is
                   |    a string (isomorphic to Array of Integer).
                   |    - Tuple literal must contain a comma to differentiate
-                  |    from generic grouping parenthesis, unless it has the \% prefix;
+                  |    from generic grouping parenthesis and Capsule, unless it has the \% prefix;
                   |    eg, `(x,)` is a unary tuple while `(x)` is an expression with the value of `x`;
                   |    as an exception, `()` is always the niladic Tuple, and is invalid expr group.
                   |    - Signature is proper subtype of Tuple where the value for
@@ -4583,9 +4567,9 @@ aka "\\c[0,0]" and "\\c[0,1]".
                   |    - Key_Asset_Pair is proper subtype of Tuple
                   |    with exactly 2 attributes named 'key' and 'asset';
                   |    When working element-wise with a collection, how each element represented.
-    Capsule       | wrapper >:< asset, eg \Set >:< \+{...}
+    Capsule       | (wrapper : asset) or \:(wrapper : asset), eg (\Set : \+{...})
                   |    This is the parent of most types, analogous to an 'object', namespacing things.
-                  |    Identity_Identifier is subtype like \Identity_Identifier >:< \%(...).
+                  |    Identity_Identifier is subtype like (\Identity_Identifier : \%(...)).
                   |    There are no symbolic ops on purpose so to not interfere with subtypes,
                   |    and any alpha ops should have names unlikely to interfere.
                   |    Examples, wrap(wrapper,asset), wrapper(capsule), unwrap(capsule).
