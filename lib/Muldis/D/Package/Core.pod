@@ -13,23 +13,23 @@ This document is Muldis::D::Package::Core version 0.201.0.-9.
 
 =head1 SYNOPSIS
 
- Muldis_D;;Plain_Text;;"http://muldis.com";;"0.201.0.-9";
- script Unicode;;9.0;;UTF-8;
+ Muldis_D Plain_Text 'http://muldis.com' '0.201.0.-9'
+ meta script 'Unicode 9.0 UTF-8'
  (\Package : (
     identity : (
         package_base_name : [\My_App],
-        authority : \"http://mycorp.com",
-        version_number : [0],
+        authority : 'http://mycorp.com',
+        version_number : '0',
     ),
     foundation : (
-        authority : \"http://muldis.com",
-        version_number : [0,201,0,-9],
+        authority : 'http://muldis.com',
+        version_number : '0.201.0.-9',
     ),
     uses : (
         MD : (
             package_base_name : [\Core],
-            authority : \"http://muldis.com",
-            version_number : [0,201,0,-9],
+            authority : 'http://muldis.com',
+            version_number : '0.201.0.-9',
         ),
     ),
     entry : \@package::main,
@@ -37,12 +37,12 @@ This document is Muldis::D::Package::Core version 0.201.0.-9.
     materials : (
         `TODO: Put example routines etc here, one is a procedure named "main".`
     ),
- ));
+ ))
 
 =head1 DESCRIPTION
 
 This document defines the Muldis D package
-C<Core;;"http://muldis.com";;"0.201.0.-9"> which provides the common core
+C<Core 'http://muldis.com' '0.201.0.-9'> which provides the common core
 system-defined data types and operators that regular users of the language
 would employ directly in their applications and schemas.
 
@@ -51,23 +51,23 @@ Standard Library> specification, of which this document is a part.
 
 =head1 PACKAGE
 
- Muldis_D;;Plain_Text;;"http://muldis.com";;"0.201.0.-9";
- script Unicode;;9.0;;UTF-8;
+ Muldis_D Plain_Text 'http://muldis.com' '0.201.0.-9'
+ meta script 'Unicode 9.0 UTF-8'
  (\Package : (
     identity : (
         package_base_name : [\Core],
-        authority : \"http://muldis.com",
-        version_number : [0,201,0,-9],
+        authority : 'http://muldis.com',
+        version_number : '0.201.0.-9',
     ),
     foundation : (
-        authority : \"http://muldis.com",
-        version_number : [0,201,0,-9],
+        authority : 'http://muldis.com',
+        version_number : '0.201.0.-9',
     ),
     floating : {\@package, \@package::Round_Meth, \@package::Source_Code},
     materials : (
         ...
     ),
- ));
+ ))
 
 =head1 MAXIMAL AND MINIMAL DATA TYPES
 
@@ -4886,7 +4886,7 @@ zero-based C<Positional>, the result is equal to its C<count>.
         first_index : (\Function : (
             returns : \@Integer,
             matches : (\@Positional),
-            accepts : \(?(args.\0)),
+            accepts : \(so args.\0),
             map : \(first_possible_index::(args.\0)),
         )),
 
@@ -4898,7 +4898,7 @@ nonempty C<0> argument's first member.
         last_index : (\Function : (
             returns : \@Integer,
             matches : (\@Positional),
-            accepts : \(?(args.\0)),
+            accepts : \(so args.\0),
             map : \(--first_unused_index::(args.\0)),
         )),
 
@@ -4930,7 +4930,7 @@ their corresponding operators I<array_slice>.
         slice_range : (\Function : (
             returns : \@Positional,
             matches : (\@Positional, \@Integer, \@Integer),
-            accepts : \(?(args.\0) and args.\1 >= first_possible_index::(args.\0)
+            accepts : \(so args.\0 and args.\1 >= first_possible_index::(args.\0)
                 and args.\2 < first_unused_index::(args.\0)),
             map : \(slice_n::(args.\0, args.\1, (args.\2) - (args.\1) + 1)),
         )),
@@ -4950,7 +4950,7 @@ may instead overload their array element subscripting syntax.
         first : (\Function : (
             returns : \@Any,
             matches : (\@Positional),
-            accepts : \(?(args.\0)),
+            accepts : \(so args.\0),
             map : \(args.\0 . first_index::(args.\0)),
         )),
 
@@ -4961,7 +4961,7 @@ The function C<first> results in its nonempty C<0> argument's first member.
         nonfirst : (\Function : (
             returns : \@Positional,
             matches : (\@Positional),
-            accepts : \(?(args.\0)),
+            accepts : \(so args.\0),
             map : \(slice_range::(args.\0, ++first_index::(args.\0), last_index::(args.\0))),
         )),
 
@@ -4976,7 +4976,7 @@ they did in the argument.
         last : (\Function : (
             returns : \@Any,
             matches : (\@Positional),
-            accepts : \(?(args.\0)),
+            accepts : \(so args.\0),
             map : \(args.\0 . last_index::(args.\0)),
         )),
 
@@ -4987,7 +4987,7 @@ The function C<last> results in its nonempty C<0> argument's last member.
         nonlast : (\Function : (
             returns : \@Positional,
             matches : (\@Positional),
-            accepts : \(?(args.\0)),
+            accepts : \(so args.\0),
             map : \(slice_range::(args.\0, first_index::(args.\0), --last_index::(args.\0))),
         )),
 
@@ -8859,16 +8859,16 @@ I<TODO.>
 
         Source_Code::Package::Base_Name : (\Selection : (
             of : \@Attr_Name_List,
-            where : \(?(args.\0) and args.\0 ∌ \""),
+            where : \(so args.\0 and args.\0 ∌ \""),
         )),
 
 I<TODO.>
 
 =head2 Source_Code::Package::Canon_Authority
 
-        Source_Code::Package::Canon_Authority : (\Alias : (
-            of : \@Attr_Name,
-            where : \(args.\0 != \""),
+        Source_Code::Package::Canon_Authority : (\Selection : (
+            of : \@Text,
+            where : \(so args.\0),
         )),
 
 I<TODO.>
@@ -8876,8 +8876,8 @@ I<TODO.>
 =head2 Source_Code::Package::Canon_Version_Number
 
         Source_Code::Package::Canon_Version_Number : (\Selection : (
-            of : \@String,
-            where : \(?(args.\0)),
+            of : \@Text,
+            where : \(so args.\0),
         )),
 
 I<TODO.>
@@ -9148,7 +9148,7 @@ I<TODO.>
         Source_Code::Local_Name : (\Selection : (
             of : \@Attr_Name_List,
             where : \(
-                if ?(args.\0) then
+                if so args.\0 then
                     args.\0.0 :?? {
                         \foundation : #(args.\0) = 2,
                         \used       : #(args.\0) ≥ 2,  `elem 2 is pkg local alias`

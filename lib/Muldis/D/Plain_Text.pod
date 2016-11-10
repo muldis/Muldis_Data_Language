@@ -16,7 +16,7 @@ This document is Muldis::D::Plain_Text version 0.201.0.-9.
 This document is the human readable authoritative formal specification of
 the B<Muldis D Plain Text> (B<MDPT>) primary component of the B<Muldis D>
 language.  The fully-qualified name of this document and the specification
-it contains is C<Muldis_D_Plain_Text;;"http://muldis.com";;"0.201.0.-9">.
+it contains is C<Muldis_D_Plain_Text 'http://muldis.com' '0.201.0.-9'>.
 
 See also L<Muldis::D> to read the B<Muldis D> language meta-specification.
 
@@ -38,7 +38,7 @@ language environments or SQL DBMSs.
 
 This document defines the grammar that all non-hosted plain-text Muldis D
 source code must conform to when it claims to be written in the
-C<Muldis_D;;Plain_Text;;"http://muldis.com";;"0.201.0.-9"> (B<MDPT>) language.
+C<Muldis_D Plain_Text 'http://muldis.com' '0.201.0.-9'> (B<MDPT>) language.
 
 This grammar is meant to be more illustrative to human readers than
 executable, as is typical for standards documents; you wouldn't likely be
@@ -152,6 +152,8 @@ generated), such as a typical DBMS client application may do.  Such uses
 would be served by not having to provide the I<predicate> boilerplate every
 time they want to run I<subject> code, which often is very small itself.
 
+The root grammar token for Muldis D Plain Text is C<< <MDPT> >>.
+
 The root grammar token for a Muldis D Plain Text self-describing file is
 C<< <parsing_unit> >>.
 
@@ -163,11 +165,14 @@ in isolation is C<< <parsing_unit_subject> >>.
 
 Grammar:
 
-    <parsing_unit> ::=
-        ^ <parsing_unit_predicate> <sp__minimal> <parsing_unit_subject> $
+    <MDPT> ::=
+        ^ <parsing_unit> | <parsing_unit_predicate> | <parsing_unit_subject> $
 
-See the sections in this file named L<PARSING UNIT PREDICATES> and
-L</PARSING UNIT SUBJECTS> for more details.
+    <parsing_unit> ::=
+        <shebang_line>? <sp> <parsing_unit_predicate> <sp> <parsing_unit_subject>
+
+See the sections in this file named L<SHEBANG LINE>,
+L<PARSING UNIT PREDICATES>, and L</PARSING UNIT SUBJECTS> for more details.
 
 =head1 GENERAL STRUCTURE
 
@@ -233,20 +238,6 @@ they were actually looking at.  A further reason is it means declarations
 can be grouped more logically for human reading than being forced to put
 everything with a common namespace together.>
 
-=head1 PARSING UNIT PREDICATES
-
-Grammar:
-
-    <parsing_unit_predicate> ::=
-        <shebang_line>?
-        <sp__minimal>
-        <language_name> <sp__minimal> ';'
-        <sp__minimal>
-        [<foundational_indicator> | <script_name>] <sp__minimal> ';'
-
-See the sections in this file named L<SHEBANG LINE>, L</LANGUAGE NAME>,
-L<FOUNDATIONAL INDICATOR>, and L</SCRIPT NAME> for more details.
-
 =head1 SHEBANG LINE
 
 Grammar:
@@ -275,15 +266,26 @@ Examples:
 
     #!/usr/bin/env muldisdre
 
+=head1 PARSING UNIT PREDICATES
+
+Grammar:
+
+    <parsing_unit_predicate> ::=
+        <language_name> <sp>
+        [<foundational_indicator> | <script_name>]
+
+See the sections in this file named L</LANGUAGE NAME>, L<FOUNDATIONAL
+INDICATOR>, and L</SCRIPT NAME> for more details.
+
 =head1 LANGUAGE NAME
 
 Grammar:
 
     <language_name> ::=
         <ln_family_name>
-        ';;' <ln_syntax_name>
-        ';;' <ln_authority>
-        ';;' <ln_version_number>
+        <sp> <ln_syntax_name>
+        <sp> <ln_authority>
+        <sp> <ln_version_number>
 
     <ln_family_name> ::=
         Muldis_D
@@ -292,10 +294,10 @@ Grammar:
         Plain_Text
 
     <ln_authority> ::=
-        <gen_ctx_name>
+        <Text_seg>
 
     <ln_version_number> ::=
-        <gen_ctx_name>
+        <Text_seg>
 
 As per the VERSIONING section of L<Muldis::D>, code written in Muldis D
 Plain Text, whether I<module> or I<depot>, must start by declaring the
@@ -306,16 +308,16 @@ SEE ALSO http://design.perl6.org/S11.html#Versioning FOR GUIDANCE...
 
 Examples:
 
-    Muldis_D;;Plain_Text;;"http://muldis.com";;"0.201.0.-9"
+    Muldis_D Plain_Text 'http://muldis.com' '0.201.0.-9'
 
-    Muldis_D;;Plain_Text;;"http://example.com";;"42"
+    Muldis_D Plain_Text 'http://example.com' '42'
 
 =head1 FOUNDATIONAL INDICATOR
 
 Grammar:
 
     <foundational_indicator> ::=
-        foundational
+        meta foundational
 
 The C<< <foundational_indicator> >> pragma determines with a broad
 granularity how large the effective Muldis D Plain Text grammar is that a
@@ -364,11 +366,11 @@ I<TODO.>
 Grammar:
 
     <script_name> ::=
-        script ...
+        meta script <Text_seg>
 
 The Script Name indicates the primary script of the Muldis D code,
 meaning is character repertoire and/or character encoding and/or character
-normalization.  Under the assumption that a C<Muldis_D;;Plain_Text> parser
+normalization.  Under the assumption that a C<Muldis_D Plain_Text> parser
 might be reading the source code as binary data or otherwise as
 unnormalized character data, declaring the Script Name makes it completely
 unambiguous as to what characters it is to be treating the input as.
@@ -376,7 +378,7 @@ unambiguous as to what characters it is to be treating the input as.
 For a simple example, a Script Name of C<ASCII> says every literal source
 code character is a 7-bit ASCII character (and representing any non-ASCII
 characters is being done with escape sequences), and this is recommended
-for any C<Muldis_D;;Plain_Text> file that doesn't need to be something else.
+for any C<Muldis_D Plain_Text> file that doesn't need to be something else.
 For various legacy 8-bit formats the Script Name can tell us if we're using
 C<Latin1> or C<CP1252> or C<EBCDIC> etc.  For Unicode the Script Name would
 have multiple parts, such as C<Unicode(9.0,UTF-8,canon)>, indicating
@@ -403,16 +405,16 @@ tends to be both simple and very stable over time.
 
 Examples:
 
-    script ASCII;
+    meta script 'ASCII'
 
-    script Unicode;;9.0;;UTF-8;;canon;
+    meta script 'Unicode 9.0 UTF-8 canon'
 
 =head1 PARSING UNIT SUBJECTS
 
 Grammar:
 
     <parsing_unit_subject> ::=
-        <Package> <sp> ';' <sp>
+        <Package>
 
     <Package> ::=
         <expr>
@@ -756,7 +758,6 @@ These are used as list/pair separators in various places:
 
     ::
     :
-    ;;
     ;
     ,
 
@@ -2064,7 +2065,6 @@ Grammar:
         | '::'
         | ':='
         | ':'
-        | ';;'
         | ';'
         | '\\'
 
