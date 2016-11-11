@@ -235,10 +235,13 @@ Grammar:
     <ln_version_number> ::=
         <Text_seg>
 
-As per the VERSIONING section of L<Muldis::D>, code written in Muldis D
-Plain Text, whether I<module> or I<depot>, must start by declaring the
-fully-qualified Muldis D language name it is written in.
-This is effectively a "magic number" for identifying source code as MDPT.
+As per the VERSIONING section of L<Muldis::D>, every source code or data
+expression as Muldis D Plain Text must be accompanied by an explicit
+declaration that it is MDPT, and specify at least 1 version of the MDPT
+standard that its author intends that it conforms with; this declaration is
+called a fully-qualified I<language name> and serves as a "magic number".
+
+I<Note that the terminology "language name" might be renamed soon.>
 
 SEE ALSO http://design.perl6.org/S11.html#Versioning FOR GUIDANCE...
 
@@ -259,43 +262,43 @@ The C<< <foundational_indicator> >> pragma determines with a broad
 granularity how large the effective Muldis D Plain Text grammar is that a
 programmer may employ with their Muldis D code.
 
-When C<< <foundational_indicator> >> is present, the effective grammar is a
-reasonably minimal subset capable of representing all Muldis D code in a
-highly normalized manner, meaning that when the full Muldis D Plain Text
-grammer gives multiple syntax options that all parse into the same
-C<Package> values ignoring the optional I<decoration> attributes, just the
-most generic of each set of alternate syntax options will be supported;
-when C<< <foundational_indicator> >> is absent, the full Muldis D Plain
-Text grammar is supported, albeit still limited by the character repertoire
-specified by C<< <script_name> >>.
+When C<< <foundational_indicator> >> is present, the effective grammar for
+each I<parsing unit> is a reasonably minimized subset capable of
+representing all Muldis D code or data in a highly normalized manner,
+meaning that when the full Muldis D Plain Text grammer gives a larger set
+of syntax options to represent the same Muldis D I<value> as a I<parsing
+unit subject>, just a smaller most-generic subset of alternate syntax
+options will be supported; when C<< <foundational_indicator> >> is absent,
+the full Muldis D Plain Text grammar is supported, albeit still limited by
+the character repertoire specified by C<< <script_name> >>.
 
 Iff C<< <foundational_indicator> >> is present, then the following grammar
 definitions are in effect:
 
     <regular_symbolic_char> ::=
-        <regular_symbolic_char__minimal>
+        <regular_symbolic_char__less>
 
-    <escaped_char> ::=
-        <escaped_char__minimal>
-
-    <sp> ::=
-        <sp__minimal>
-
-I<TODO.>
+    <expr> ::=
+        <expr__less>
 
 Alternately, iff C<< <foundational_indicator> >> is absent, then the
 following grammar definitions are in effect:
 
     <regular_symbolic_char> ::=
-        <regular_symbolic_char__maximal>
+        <regular_symbolic_char__more>
 
-    <escaped_char> ::=
-        <escaped_char__maximal>
+    <expr> ::=
+        <expr__more>
 
-    <sp> ::=
-        <sp__maximal>
-
-I<TODO.>
+The namesake of the C<< <foundational_indicator> >> pragma is the intent
+that any implementation of the B<Muldis D Foundation> would only be
+required to support parsing of the smaller B<Muldis D Plain Text> grammar
+that is in force when C<< <foundational_indicator> >> is present (and the
+only required text encoding for a B<Foundation> would be UTF-8).  Whereas,
+the larger full grammar would only need to be implemented at a higher level
+by a bootstrapped parser written in Muldis D, and those additional portions
+are the ones more likely to be complicated or more likely to change over
+time (and only that parser would need to handle other text encodings).
 
 =head1 SCRIPT NAME
 
@@ -304,19 +307,19 @@ Grammar:
     <script_name> ::=
         meta script <Text_seg>
 
-The Script Name indicates the primary script of the Muldis D code,
+The C<< <script_name> >> indicates the primary script of the Muldis D code,
 meaning is character repertoire and/or character encoding and/or character
 normalization.  Under the assumption that a C<Muldis_D Plain_Text> parser
 might be reading the source code as binary data or otherwise as
-unnormalized character data, declaring the Script Name makes it completely
+unnormalized character data, declaring the I<script name> makes it completely
 unambiguous as to what characters it is to be treating the input as.
 
-For a simple example, a Script Name of C<ASCII> says every literal source
+For a simple example, a I<script name> of C<ASCII> says every literal source
 code character is a 7-bit ASCII character (and representing any non-ASCII
 characters is being done with escape sequences), and this is recommended
 for any C<Muldis_D Plain_Text> file that doesn't need to be something else.
-For various legacy 8-bit formats the Script Name can tell us if we're using
-C<Latin1> or C<CP1252> or C<EBCDIC> etc.  For Unicode the Script Name would
+For various legacy 8-bit formats the I<script name> can tell us if we're using
+C<Latin1> or C<CP1252> or C<EBCDIC> etc.  For Unicode the I<script name> would
 have multiple parts, such as C<Unicode(9.0,UTF-8,canon)>, indicating
 expected repertoire, and encoding (useful more with ones lacking BOMs); but
 at the very least it is useful with normalization; if C<compat> is declared
@@ -350,17 +353,9 @@ Examples:
 Grammar:
 
     <parsing_unit_subject> ::=
-        <Package>
-
-    <Package> ::=
         <expr>
 
-See the sections in this file named L</GENERIC VALUE EXPRESSIONS> and
-L</Capsule Selectors> for more details.
-
-A C<< <Package> >> node is expected to evaluate to a value of the Muldis D
-C<Package> type; its canonical form is a C<< <Capsule> >> node whose
-C<< <wrapper_expr> >> is the value C<\Package>.
+See the section in this file named L</GENERIC VALUE EXPRESSIONS> for more details.
 
 =head1 CHARACTER CLASSES
 
@@ -395,12 +390,12 @@ Grammar:
     <special_symbolic_char> ::=
         ',' | ':' | ';' | '\\'
 
-    <regular_symbolic_char__minimal> ::=
+    <regular_symbolic_char__less> ::=
           '!' | '#' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/'
         | '<' | '=' | '>' | '?' | '@' | '^' | '|' | '~'
 
-    <regular_symbolic_char__maximal> ::=
-          <regular_symbolic_char__minimal>
+    <regular_symbolic_char__more> ::=
+          <regular_symbolic_char__less>
         | '¬' | '±' | '×' | '÷'
         | 'π' | 'ρ' | 'σ'
         | '←' | '↑' | '→' | '↓' | '↔' | '↚' | '↛' | '↮'
@@ -437,7 +432,7 @@ Grammar:
 The Muldis D Plain Text grammar recognizes 7 distinct character codepoint
 (hereafter referred to as I<character>) classes,
 which are mutually disjoint proper subsets of the character repertoire
-identified by the Script Name: I<alphanumeric>, I<quoting>, I<bracketing>,
+identified by the I<script name>: I<alphanumeric>, I<quoting>, I<bracketing>,
 I<symbolic>, I<whitespace>, I<illegal>, I<nonenumerated>; the first 6 are
 collectively I<enumerated>.
 
@@ -494,19 +489,10 @@ UPDATE: A select few Greek letters are supported bareword, enumerated above.
 
 Grammar:
 
-    <escaped_char__minimal> ::=
+    <escaped_char> ::=
           '\\q' | '\\a' | '\\g'
         | '\\t' | '\\n' | '\\r'
-        | ['\\c<' <nc10>+ '>']
-
-    <escaped_char__maximal> ::=
-          <escaped_char__minimal>
-        | '\\c<' [
-              ['0b' <nc2>+]
-            | ['0o' <nc8>+]
-            | ['0d' <nc10>+]
-            | ['0x' <nc16>+]
-          ] '>'
+        | ['\\c<' <asigned_int> '>']
 
 The meanings of the simple character escape sequences are:
 
@@ -547,10 +533,7 @@ that is the Unicode character database.
 
 Grammar:
 
-    <sp__minimal> ::=
-        <whitespace>*
-
-    <sp__maximal> ::=
+    <sp> ::=
         [<whitespace> | <quoted_sp_comment_str>]*
 
     <whitespace> ::=
@@ -810,7 +793,10 @@ which live within a multi-level namespace.
 
 Grammar:
 
-    <expr> ::=
+    <expr__less> ::=
+        <opaque_literal_expr> | <collection_selector_expr>
+
+    <expr__more> ::=
         <expr_name> | <naming_expr> | <annotating_expr> | <anon_expr>
 
     <naming_expr> ::=
