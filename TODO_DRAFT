@@ -14,8 +14,130 @@ resources of everyone else.
 
 ----------
 
+* For now, treat Perl 6 like it is the only Perl; just co-develop for Perl
+6 and C# generally ignoring Perl 5; later on, when the Perl 6 version
+works, it can be back-ported to Perl 5.  Generally speaking the new "DBI"
+and other works are aiming to get in on the ground floor while Perl 6
+database stuff is fairly immature and has no defacto standard, so it can be
+the defacto standard, and help boost the fortunes of Perl 6 in general.
+
+* Probably rename +/-Inf singletons to something more appropriate for their
+use of Orderable, and leave "infinity" for use in math specific situations
+etc.  See also recent Perl 6 forum talk.
+
+* Replace ::= with "let" or "be" or "let ... be" and replace ::?= with "note".
+- Actually, keep ::= as is (or keyword is "naming", or perhaps "label" is more accurate).
+- Still use "note", and also use "decor", for annotation and decoration in turn.
+
+* While intended meaning of ::= as a macro definer works for most cases,
+it clearly doesn't account for various things with Reference values.
+- When one does "x ::= new" to create a variable and give it a name for
+referring to, this actually is expecting different behavior because by normal
+rules every use of "x" would actually create a new variable, same as having
+"new" in its place would, and this isn't what we actually want.
+- Therefore we actually do need a different kind of lexical name or
+declaration syntax such that x can be used multiple times and keep its
+meaning of referring to the same variable, that is, not like a macro.
+- Perhaps a thing to do is reintroduce sigils in a manner of speaking;
+eg :&foo is a lexical name for a variable itself, or automatic dereferencer;
+also :~foo say is a format for a label for a statement such as for control flow.
+
+* Don't have _Expr or _Stmt in type names unless needed for disambiguation.
+
+* Lets say (\Labelling : (foo,bar)) is what "foo ::= bar" desugars to,
+and that   (\Embedding : foo) is what "foo" in a generic context desugars to.
+- The "bar" in the above example could either be an expression or a statement,
+we reuse the syntax and desugared types for both, and within a routine both
+of those kinds of labelled things share the same label namespace.
+- The key thing to emphasize here is that what ::= declares is effectively
+a macro, and the semantics of ::= are always that wherever the label appears,
+it is as if the full expression or statement that it applies to were written
+there in full instead, meaning that any occurrance of the \Embeddeing Capsule
+can be replaced with bar and program semantics are identical.
+- And so we generally need to deal with variables using a different mechanism,
+where "deal" means binding a lexical alias to a variable, or using the
+current value of a variable in an expression, or updating a variable, etc.
+When a "bar" refers to a variable, the "foo" is expressly NOT guaranteed to
+be deterministic in the general case.
+- Lexical aliases for variables share the same namespace as the ::= macros,
+but they are NOT labels for macros.  In some sense, operations with
+lexical aliases are eager, while operations with the macros are lazy.
+- Given a lexical alias for a variable, we need syntax to select the Reference
+value corresponding to that variable.  Also, given a Reference value, we need
+syntax to bind a lexical alias to the same variable.  Also, what variable
+an alias binds to should be changeable over time.
+- It should be possible to anonymously select a Reference value, meaning
+create a new variable, and use that same Reference in multiple places, but
+also it should be possible to reuse the same code snippit for anonymously
+selecting a Reference value such that each usage produces a different
+Reference value.  Actually, requiring use of a lexical alias as an intermediary,
+meaning not anonymous per se, could handle the first case, while regular ::=
+and no use of the lexical alias could handle the second case.
+
+* Maybe :. and :.? (both infix) as special syntax for tuple attr accessor / exists,
+and :< plus :> (both prefix) for capsule wrapper/asset and :>. plus :>.? (both infix) to combine
+capsule asset tuple attr accessor if asset is a tuple.
+- Check that none of the above aren't already in used by eg Attributive.
+- Make all of the above high priority operators, higher than nearly everything.
+
 * Do something about the special postfix syntax :> which can't simply be
 replaced with a postfix regular operator call.
+
+* Lets say the contract system is modelled as a directed graph where each
+node represents a contract, which corresponds to a set of values, and each
+arc represents a direct definer relationship and each path represents a
+possibly indirect definer relationship; for simplicity we are only thinking
+about defining what values comprise the contract and we ignore stuff like
+default values, which can be overlayed over the otherwise complete system.
+- The identity of every contract is the source code that declares it, which
+may optionally have an identifier label on it, but regardless it is
+referred to somehow either by a label or by being embedded; this is also
+like how an expression is identified.
+- Contracts come in two varieties, which are nominal and structural.
+- A nominal contract must have a label for identifying it and its
+definition must not be declared with the label, but rather its definition
+is always separate and refers to the label externally.  When other
+contracts declare that they compose a nominal contract, they are extending
+the definition of the contract; perhaps even the term "extends" should be
+used rather than "composes", since that is what is actually happening, akin
+to tuple extend.
+- A structural contract is identified by its source code and not by its
+label, in contrast to the nominal, and it declares for itself its complete
+value set, in terms of set operations on other contracts' types, and its
+meaning can NOT be extended by some other contract it doesn't explicitly
+define itself in terms of.
+- In the contract graph, a nominal fundamentally has arrows pointing TO it
+while a structural fundamentally has arrows pointing FROM it.
+
+* Rework the interface/virtual/etc thing.
+- Formally make virtuals and implementers their own standalone concept,
+expressed as they are now essentially.  By default, a virtual is declared
+in terms of any type, and an implementer in terms of a regular subtype by
+constraint of said.  But formally speaking the relationship is nominal,
+the implementer refers to the virtual it implements by name, and an
+invocation on the virtual only ever dispatches to implementers that refer
+to the virtual by name.
+- An interface is defined largely in terms of a list of routines that it "provides",
+this being a list of qualified names that resolves to actual specific
+routine declarations, which may be either virtual or non-virtual, and this
+is analagous to declaring the public methods of a (super)class.
+- A type that composes an interface also declares a list of routines that it
+"provides", each of which may or may not be an implementer of a virtual
+from the interface it is composing; the composing type may refer to routines
+declared for the composed interface, in which case it is saying that it
+doesn't implement that one itself, and expects its own composers to do so.
+- Some terminology may need further changes.
+
+* Note, SQL has about 825 reserved words according to
+https://www.drupal.org/docs/develop/coding-standards/list-of-sql-reserved-words
+so its not just a few dozen; in contrast Muldis D has maybe 2 dozen.
+
+* Note, see https://wiki.haskell.org/Keywords which shows like our
+Plain_Text.pod the Haskell keyword list includes both alpha words and symbols.
+
+* Note, many languages have the "let" keyword, which derives from maths or
+is popular in functional languages, for declaring either functions or scopes,
+such as "let foo = some_expr" (C#, Swift, others) or "let (...) ..." etc (Haskell).
 
 * Or do this ... somewhat reminiscient of HTTP/etc requests/responses actually:
     #!foo
@@ -139,14 +261,14 @@ or procedure defined by x, such that the value of y is its args.
 - The concept of the "hosted data" class of languages could just go away,
 or be strictly limited to representing data and not code.  That is, no one
 would declare eg Perl 5 Hosted Data as a command language.
-- What we do for a VM interface like MDCDBI is that everything native is
+- What we do for a VM interface like MDBP is that everything native is
 converted into a "Value" object with relatively little indirection, and THEN, one
 does the prepare/execute with a Value object where an optional input to
 prepare/execute is the spec of the language already represented by a
 Muldis D data type value (either Text or something else), so the language
 name then is orthogonal to what exact eg Perl 5 types the values were represented
 as prior to conversion to Value.
-- So all finer details of Perl 5 types to Muldis D / MDCDBI types are strictly
+- So all finer details of Perl 5 types to Muldis D / MDBP types are strictly
 on resolving to eg integers, texts, tuples, etc.
 - If a distinct Hosted Data source type exists, it is possibly more like a concrete
 parse tree that might vary by host.
@@ -154,7 +276,7 @@ parse tree that might vary by host.
 - The External type is what it is for when one wants to pass regular Perl/etc
 values including sub refs etc through the API unadulterated, eg if the DBMS
 has a mechanism for callback hooks these may be options for passing to them.
-- Similarly to MD Plain Text or SQL, one can parse JSON or XML etc via MDCDBI
+- Similarly to MD Plain Text or SQL, one can parse JSON or XML etc via MDBP
 as a language option.
 
 * For consistency and understandability, use "-" with ".." to mean open
@@ -386,6 +508,9 @@ https://rfc.zeromq.org/spec:42/C4/ (Collective Code Construction Contract) does 
 * Note see also http://bedrockdb.com .
 
 * Note see also https://code.google.com/archive/p/northwindextended/ .
+
+* Note see http://tdan.com/data-architecture-comn-sense-the-missing-logical-layer-in-data-management/20569
+and http://www.tewdur.com for something related to multi-model DBMSs.
 
 * Generalize the Foo::Bar syntax so it implies drilling through nested
 Tuples, and also special case support for nested tuples so that the same
