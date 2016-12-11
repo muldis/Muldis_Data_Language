@@ -270,43 +270,45 @@ programming languages may name their corresponding types I<IComparable> or
 I<Ord> or I<ordered> or I<ordinal>.
 
 The default value of C<Orderable> is the C<Integer> value C<0>.  The
-minimum and maximum values of C<Orderable> are C<Orderable::Neg_Inf> and C<Orderable::Pos_Inf>,
-respectively; these 2 C<Excuse> values are canonically considered to be
-before and after, respectively, I<every> other value of the Muldis D type
-system, regardless of whether those values are members a type for which an
-C<Orderable>-composing contract exists.  The primary reason for having
-these values C<Orderable::Neg_Inf> and C<Orderable::Pos_Inf> is so Muldis D has an easy
-consistent way to define an C<Interval> that is partially or completely
-unbounded, and to use as identity values for chained order-comparisons.
+minimum and maximum values of C<Orderable> are C<Excuse::Before_All_Others>
+and C<Excuse::After_All_Others>, respectively; these 2 C<Excuse> values are
+canonically considered to be before and after, respectively, I<every> other
+value of the Muldis D type system, regardless of whether those values are
+members a type for which an C<Orderable>-composing contract exists.  The
+primary reason for having these values C<Excuse::Before_All_Others> and
+C<Excuse::After_All_Others> is so Muldis D has an easy consistent way to
+define an C<Interval> that is partially or completely unbounded, and to use
+as identity values for chained order-comparisons.
 
-C<Orderable> is composed, directly or indirectly, by: C<Orderable::Neg_Inf>,
-C<Orderable::Pos_Inf>, C<Bicessable>, C<Boolean>, C<Integral>, C<Integer>,
-C<Fractional>, C<Fraction>, C<Stringy>, C<Bits>, C<Blob>, C<Textual>,
-C<Text>, C<Positional>, C<Array>, C<String>, C<Tuple_Array>.
+C<Orderable> is composed, directly or indirectly, by:
+C<Excuse::Before_All_Others>, C<Excuse::After_All_Others>, C<Bicessable>,
+C<Boolean>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>,
+C<Stringy>, C<Bits>, C<Blob>, C<Textual>, C<Text>, C<Positional>, C<Array>,
+C<String>, C<Tuple_Array>.
 
-=head2 Orderable::Neg_Inf -∞
+=head2 Excuse::Before_All_Others
 
-        Orderable::Neg_Inf : (\Constant : ( composes : {\@Orderable, \@Excuse} )),
+        Excuse::Before_All_Others : (\Constant : ( composes : {\@Excuse, \@Orderable} )),
 
-        Unicode_Aliases::"-∞" : (\Alias : ( of : \@Orderable::Neg_Inf )),
+The constant C<Excuse::Before_All_Others> represents a type-agnostic
+analogy of negative infinity, an C<Orderable> value that sorts I<before>
+all other values in the Muldis D type system, and that is its only meaning.
+This value is expressly I<not> meant to represent any specific mathematical
+or physical concept of I<infinity> or I<∞> (of which there are many),
+including those of the IEEE floating-point standards; such things should be
+defined in other, not-C<Core>, Muldis D packages for the relevant domains.
 
-The constant C<Orderable::Neg_Inf> aka C<-∞> represents the type-agnostic concept of
-negative infinity, an C<Orderable> value that sorts I<before> all other
-values in the Muldis D type system.  This value is also an C<Excuse> that
-says the result of some operation is infinite in the negative direction.
-Note that IEEE floating-point standards define a negative infinity value.
+=head2 Excuse::After_All_Others
 
-=head2 Orderable::Pos_Inf +∞
+        Excuse::After_All_Others : (\Constant : ( composes : {\@Excuse, \@Orderable} )),
 
-        Orderable::Pos_Inf : (\Constant : ( composes : {\@Orderable, \@Excuse} )),
-
-        Unicode_Aliases::"+∞" : (\Alias : ( of : \@Orderable::Pos_Inf )),
-
-The constant C<Orderable::Pos_Inf> aka C<-∞> represents the type-agnostic concept of
-positive infinity, an C<Orderable> value that sorts I<after> all other
-values in the Muldis D type system.  This value is also an C<Excuse> that
-says the result of some operation is infinite in the positive direction.
-Note that IEEE floating-point standards define a positive infinity value.
+The constant C<Excuse::After_All_Others> represents a type-agnostic
+analogy of positive infinity, an C<Orderable> value that sorts I<after>
+all other values in the Muldis D type system, and that is its only meaning.
+This value is expressly I<not> meant to represent any specific mathematical
+or physical concept of I<infinity> or I<∞> (of which there are many),
+including those of the IEEE floating-point standards; such things should be
+defined in other, not-C<Core>, Muldis D packages for the relevant domains.
 
 =head2 in_order
 
@@ -337,40 +339,42 @@ partly to keep its core type system simpler (it would have gone the
 enumeration route) and partly because the logic for doing sorting or
 comparisons or validation is typically much simpler with this foundation.
 
-=head2 in_order (Orderable::Neg_Inf, Orderable::Pos_Inf)
+=head2 in_order (Excuse::Before_All_Others, Excuse::After_All_Others)
 
-        in_order::Neg_Inf_L : (\Function : (
+        in_order::Before_All_Others_L : (\Function : (
             returns : \@Boolean,
-            matches : (\@Orderable::Neg_Inf, \@Orderable),
+            matches : (\@Excuse::Before_All_Others, \@Orderable),
             implements : \@folder::"",
             map : \(True),
         )),
 
-        in_order::Neg_Inf_R : (\Function : (
+        in_order::Before_All_Others_R : (\Function : (
             returns : \@Boolean,
-            matches : (\@Orderable, \@Orderable::Neg_Inf),
+            matches : (\@Orderable, \@Excuse::Before_All_Others),
             implements : \@folder::"",
             map : \(args.\0 = (args.\1)),
         )),
 
-        in_order::Pos_Inf_L : (\Function : (
+        in_order::After_All_Others_L : (\Function : (
             returns : \@Boolean,
-            matches : (\@Orderable::Pos_Inf, \@Orderable),
+            matches : (\@Excuse::After_All_Others, \@Orderable),
             implements : \@folder::"",
             map : \(args.\0 = (args.\1)),
         )),
 
-        in_order::Pos_Inf_R : (\Function : (
+        in_order::After_All_Others_R : (\Function : (
             returns : \@Boolean,
-            matches : (\@Orderable, \@Orderable::Pos_Inf),
+            matches : (\@Orderable, \@Excuse::After_All_Others),
             implements : \@folder::"",
             map : \(True),
         )),
 
-The 4 functions {C<in_order::Neg_Inf_L>, C<in_order::Neg_Inf_R>,
-C<in_order::Pos_Inf_L>, C<in_order::Pos_Inf_R>} implement the C<Orderable>
-virtual function C<in_order> for the composing types C<Orderable::Neg_Inf> and
-C<Orderable::Pos_Inf>, specifically for comparing either value with any C<Orderable>.
+The 4 functions {C<in_order::Before_All_Others_L>,
+C<in_order::Before_All_Others_R>, C<in_order::After_All_Others_L>,
+C<in_order::After_All_Others_R>} implement the C<Orderable> virtual
+function C<in_order> for the composing types C<Excuse::Before_All_Others>
+and C<Excuse::After_All_Others>, specifically for comparing either value
+with any C<Orderable>.
 
 =head2 before <
 
@@ -426,7 +430,7 @@ name this operator I<ge>.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            identity : \(+∞),
+            identity : \(Excuse::After_All_Others()),
             map : \(args.\0 in_order args.\1 :? args.\0 :! args.\1),
         )),
 
@@ -443,7 +447,7 @@ I<before> all of the others.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            identity : \(-∞),
+            identity : \(Excuse::Before_All_Others()),
             map : \(args.\0 in_order args.\1 :? args.\1 :! args.\0),
         )),
 
@@ -535,26 +539,27 @@ programming languages may name their corresponding operators I<Current>.
 =head2 succ
 
         succ : (\Function : (
-            returns : {\@Successable, \@Orderable::Pos_Inf},
+            returns : {\@Successable, \@Excuse::After_All_Others},
             matches : (\@Successable),
             map : \(args.\0 nth_succ 1),
         )),
 
-The function C<succ> results in the I<successor> value of its
-C<0> argument, or in C<Orderable::Pos_Inf> if there is none.  Other programming
-languages may name their corresponding operators I<next> or I<MoveNext>.
+The function C<succ> results in the I<successor> value of its C<0>
+argument, or in C<Excuse::After_All_Others> if there is none.  Other
+programming languages may name their corresponding operators I<next> or
+I<MoveNext>.
 
 =head2 nth_succ
 
         nth_succ::"" : (\Function : (
             virtual : True,
-            returns : {\@Successable, \@Orderable::Pos_Inf},
+            returns : {\@Successable, \@Excuse::After_All_Others},
             matches : (\@Successable, \@Integer::NN),
         )),
 
 The virtual function C<nth_succ> results in the Nth I<successor> value of
-its C<0> argument, where N is its C<1> argument, or in C<Orderable::Pos_Inf> if there
-is none.
+its C<0> argument, where N is its C<1> argument, or in
+C<Excuse::After_All_Others> if there is none.
 
 =head1 BICESSABLE DATA TYPES
 
@@ -609,26 +614,27 @@ values and should not be conceptualized as mathematical operations.
 =head2 pred
 
         pred : (\Function : (
-            returns : {\@Bicessable, \@Orderable::Neg_Inf},
+            returns : {\@Bicessable, \@Excuse::Before_All_Others},
             matches : (\@Bicessable),
             map : \(args.\0 nth_pred 1),
         )),
 
-The function C<pred> results in the I<predecessor> value of its
-C<0> argument, or in C<Orderable::Neg_Inf> if there is none.  Other programming
-languages may name their corresponding operators I<prior> or I<previous>.
+The function C<pred> results in the I<predecessor> value of its C<0>
+argument, or in C<Excuse::Before_All_Others> if there is none.  Other
+programming languages may name their corresponding operators I<prior> or
+I<previous>.
 
 =head2 nth_pred
 
         nth_pred::"" : (\Function : (
             virtual : True,
-            returns : {\@Bicessable, \@Orderable::Neg_Inf},
+            returns : {\@Bicessable, \@Excuse::Before_All_Others},
             matches : (\@Bicessable, \@Integer::NN),
         )),
 
 The virtual function C<nth_pred> results in the Nth I<predecessor> value of
-its C<0> argument, where N is its C<1> argument, or in C<Orderable::Neg_Inf> if there
-is none.
+its C<0> argument, where N is its C<1> argument, or in
+C<Excuse::Before_All_Others> if there is none.
 
 =head1 BOOLABLE DATA TYPES
 
@@ -758,10 +764,10 @@ the composing type C<Boolean>.
 =head2 nth_pred (Boolean)
 
         nth_pred::Boolean : (\Function : (
-            returns : {\@False, \@Orderable::Neg_Inf},
+            returns : {\@False, \@Excuse::Before_All_Others},
             matches : (\@Boolean, \@Integer::NN),
             implements : \@folder::"",
-            map : \(args.\1 = 0 :? args.\0 :! args.\1 = 1 and args.\0 :? False :! -∞),
+            map : \(args.\1 = 0 :? args.\0 :! args.\1 = 1 and args.\0 :? False :! Excuse::Before_All_Others()),
         )),
 
 The function C<nth_pred::Boolean> implements the C<Bicessable> virtual
@@ -770,10 +776,10 @@ function C<nth_pred> for the composing type C<Boolean>.
 =head2 nth_succ (Boolean)
 
         nth_succ::Boolean : (\Function : (
-            returns : {\@True, \@Orderable::Pos_Inf},
+            returns : {\@True, \@Excuse::After_All_Others},
             matches : (\@Boolean, \@Integer::NN),
             implements : \@folder::"",
-            map : \(args.\1 = 0 :? args.\0 :! args.\1 = 1 and !(args.\0) :? True :! +∞),
+            map : \(args.\1 = 0 :? args.\0 :! args.\1 = 1 and !(args.\0) :? True :! Excuse::After_All_Others()),
         )),
 
 The function C<nth_succ::Boolean> implements the C<Successable> virtual
@@ -1424,26 +1430,26 @@ default and minmum value is C<1>; it has no maximum value.
 =head2 --
 
         "--" : (\Function : (
-            returns : {\@Integral, \@Orderable::Neg_Inf},
+            returns : {\@Integral, \@Excuse::Before_All_Others},
             matches : (\@Integral),
             map : \(pred args.\0),
         )),
 
 The function C<--> results in the I<predecessor> value of its C<0>
-argument, or in C<Orderable::Neg_Inf> if there is none.  It is an integral numeric
+argument, or in C<Excuse::Before_All_Others> if there is none.  It is an integral numeric
 specific alias for the C<Bicessable> virtual function C<pred>.  Other
 programming languages may name their corresponding operators I<decrement>.
 
 =head2 ++
 
         "++" : (\Function : (
-            returns : {\@Integral, \@Orderable::Pos_Inf},
+            returns : {\@Integral, \@Excuse::After_All_Others},
             matches : (\@Integral),
             map : \(succ args.\0),
         )),
 
 The function C<++> results in the I<successor> value of its C<0> argument,
-or in C<Orderable::Pos_Inf> if there is none.  It is an integral numeric specific
+or in C<Excuse::After_All_Others> if there is none.  It is an integral numeric specific
 alias for the C<Successable> virtual function C<succ>.  Other programming
 languages may name their corresponding operators I<increment>.
 
@@ -8543,7 +8549,7 @@ I<TODO.>
         Interval::"" : (\Selection : (
             of : \@Capsule,
             where : \(has_wrapped::( args.\0, \Interval, \Interval::Attrs() )),
-            default : \((-∞)..(+∞)),
+            default : \(Excuse::Before_All_Others()..Excuse::After_All_Others()),
             composes : {\@Intervalish, \@Setty},
         )),
 
