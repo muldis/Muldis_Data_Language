@@ -21,6 +21,21 @@ and other works are aiming to get in on the ground floor while Perl 6
 database stuff is fairly immature and has no defacto standard, so it can be
 the defacto standard, and help boost the fortunes of Perl 6 in general.
 
+* A useful key differentiator of Muldis D (and Perl 6) from probably most
+other languages is declaring use of modules by their identity rather than
+by where they live, an example of the latter is paths in the filesystem.
+
+* Explicitly add ordered indexes such that an indexing function would yield
+an Array of Integer which is then ordered as per a String, or alternately
+each Array elem could be an Array likewise, thus defining a tree; the rools
+are such that an Integer is always ordered before an Array at the same position.
+- Behind the scenes this can be flattened into a plain Array of Integer
+using appropriate one-way encoding where eg a zero means the following
+element was originally an Integer and a one means the following was
+originally the first element of an Array, or alternately we keep the
+Foundation a simple String and any such complexity must be boosted to upper
+levels, is probably best.
+
 * Replace ::= with "let" or "be" or "let ... be" and replace ::?= with "note".
 - Actually, keep ::= as is (or keyword is "naming", or perhaps "label" is more accurate).
 - Still use "note", and also use "decor", for annotation and decoration in turn.
@@ -3932,14 +3947,14 @@ corresponding to those of Perl or many other languages.
     - generate(state[func,args,list],nninteger)->state
     - ...
 - The additional fundamental Array ops:
-    - has_index(list,nninteger)->boolean
+    - has_ord_pos(list,nninteger)->boolean
     - elem(list,nninteger)->universal
     - replace_elem(list,nninteger,universal)->list
     - slice(list,range)->list
     - replace_slice(list,range,list)->list
     - sort(list,func)->list
     - zip(list-of-list)->list-of-list
-    - index_first_diff_elem(list,list)->nnint
+    - ord_pos_first_diff_elem(list,list)->nnint
         # For making in_order(list,list) efficient in both cpu, stack use,
         # result index may be just after last element of either input.
         # Alternately we could maybe express by piping simpler ops if we
@@ -6886,7 +6901,7 @@ of the join is the indexes into the original string of where tokens are.
 Filtering out say escaped chars from unescaped ones is easy; find all
 occurrences of the char and then set-minus those with a "\" just before.
 It is useful to do edge detection early by joining a folded (to char kind)
-string to itself offset by one index position and seeing where the pairwise
+string to itself offset by one ordinal position and seeing where the pairwise
 characters are not of the same character kind.
 The static relation of characters may be best stored in code in a compacted
 range-defined form, and if expanding is needed, do it when needed;
