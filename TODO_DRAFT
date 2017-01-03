@@ -21,11 +21,65 @@ and other works are aiming to get in on the ground floor while Perl 6
 database stuff is fairly immature and has no defacto standard, so it can be
 the defacto standard, and help boost the fortunes of Perl 6 in general.
 
+* So Rakudo Perl 6 especially as of the 2017-01 release loads "use" modules
+lexically on purpose not globally like Perl 5, or like Perl 6 did as a bug
+thru 2016-12, because that prevented use of multiple versions in different
+contexts etc.  Perl 6 intended is much like Muldis D has been for awhile.
+See http://rakudo.org/2016/12/17/lexical-module-loading/ for more.
+
+* Add a language hint for declaring when an enumeration is starting and
+when it is ending.  These would be invoked for example by parsers that are
+converting non-trivial literals or collection selector syntaxes to the
+values they represent, particularly strings or arrays or bags etc, which
+would likely be implemented as first calling an empty collection singleton
+followed by a series of insertion dyadics.  Likewise invoked by a MDBP API
+routine converting a host collection data structure into a DBMS native one.
+- Firstly, the hint declares that all Muldis D collection values
+intermediate to the completed structure are transient and won't be directly
+used again upon completion of the structure.  For example, once an array of
+N+1 has been selected by adding an element to an array of N, the former
+array value may be forgotten.  Declaring an enumeration start sets up that
+prior condition and declaring an enumeration end obsoletes that condition,
+so further ops on the value don't assume the pre-op value won't be reused.
+- For safety all intermediate values actually will be retained until any
+refs to them go out of scope, but the hints mean we will optimize their
+storage structure to assume they are transient, such as by using a simple
+linked list.  Moreover, no indexes will be produced during intermediate.
+- When the hint appears saying the enumeration is done, an implementation
+would likely do an eager internal compacting at that point, generating a
+new simple array from the linked list with a copy of the elements and then
+dereferencing the linked list which should all be garbage collected, though
+if another reference actually still existed then that intermediate value
+would still be safe.
+- A value implementation would have a boolean probably saying that the hint
+is in effect, copying that to each new value in the linked list, and then
+later then rewritten array would declare the hint is not in effect.
+- This feature may also be used for adding to an existing collection, not
+just an empty one, in which case the compacting would normally just collect
+the added values into a new array so the result in memory is the pre-hint
+value structure plus 1 more value structure with all the new elements.
+- The hint may also take metadata regarding the widest element type or
+otherwise saying it expects all elements to be eg octets or characters, and
+then the storage can use optimized versions for those from the start; but
+declaring such metadata may also be a constraint such that if some other
+value is given than declared the inserting process would throw an exception.
+- For that matter, we could say that this "hint" as a whole is more of an
+inherited constraint such that any attempt to refer to a value appearance
+once another value has been derived from it will throw an exception.
+- Maybe (or not) generalize or supplement this with a "transient"
+hint/flag/constraint that can be used on any expression to declare that its
+result would just be used once and then could be discarded.  This would
+come in pairs such as to start that condition, which is then inherited by
+results, and to stop that condition.  In a sense this is almost like an
+assertion as well that can be enforced at compile or runtime perhaps.
+Perhaps normal grammar could just cause either state, such as a Labelling
+and an Embedding for example.
+
 * A useful key differentiator of Muldis D (and Perl 6) from probably most
 other languages is declaring use of modules by their identity rather than
 by where they live, an example of the latter is paths in the filesystem.
 
-* Explicitly add ordered indexes such that an indexing function would yield
+* Explicitly add ordered indexes such that an indexing (serializing) function would yield
 an Array of Integer which is then ordered as per a String, or alternately
 each Array elem could be an Array likewise, thus defining a tree; the rools
 are such that an Integer is always ordered before an Array at the same position.
@@ -35,6 +89,83 @@ element was originally an Integer and a one means the following was
 originally the first element of an Array, or alternately we keep the
 Foundation a simple String and any such complexity must be boosted to upper
 levels, is probably best.
+- Alternately, or in addition to this normalizing/serializing function, we
+still need an in_order() dyadic because we can't assume that many or even
+most data type values can be serialized in a meaningful way, such as Fraction.
+So an in_order() is required anyway, and a serializer can be optionally
+provided assuming we can key/cache by that.
+- All ordered indexes would necessarily have to be designed as partial
+indexes with an associated predicate such that they only index collection
+members that are passed by the predicate; they're only a total index if the
+collection as a whole has a constraint requiring that all collection
+members pass the predicate; in practice the predicate would be one and the
+same as the type constraint on each of the in_order() arguments, or this
+can be required.
+
+* Have support for constraint predicate metadata on values, which includes
+stuff related to key inference I suppose.  This can effectively support
+stronger typing or constraints at the expression level such that attempts
+to perform some operations would fail if the result would violate the
+constraints.  Mainly this feature is meant for things like assuring that
+all elements of a collection pass a predicate / are members of a type so
+that some indexing operations can be total and such.
+
+* Implementations should fold/normalize any source code that defines indexes
+etc so that where possible we can detect when independently written source
+code has identical behavior and thus recognize that two things are the same
+predicate or same in_order() or same serializer etc, and thus increase the
+odds we actually use or reuse existing indexes than making redundant ones.
+- This can be done at several levels including both per host implementation
+or in a bootstrapped interpreter or both at the same time but the key thing
+is that over the lifetime of a program / the relevant data structures, this
+folding is deterministic and unchanging, or at least ensure that two functions
+with different behaviour never normalize to the same thing.
+- Examples of normalizing include commuting commutable arguments or renaming
+labels to something generated etc.
+
+* Implementations can cache the source code of any predicates, that source
+being the identity of the predicate, that each given Muldis D value
+satisfies, associated with the value as metadata.  Once a value is known to
+satisfy a predicate, the predicate source is associated with it, so the
+next time one asks the same question of the value, we can just see if the
+predicate source matches a cache entry, and if so then don't need ask again.
+- Optionally cache all questions asked regardless of answer, and record
+boolean of the answer, so we also don't have to keep asking questions known
+to be false; we could say that in practice repeated 'no' are less common?
+- For efficiency, an implementation Memory object could maintain a tree or
+graph of predicate sources where supertype/subtype relationships are known,
+and then each Value object only has to point to a single leaf or few; in
+that sense we effectively do have TTM's "most specific type" concept but
+that these are automatically generated and hidden from the user, and the
+identity of each type is its expression source code.
+- Each Value could still mention several types directly, but in theory
+using the graph should allow shorthands where naming one indirectly names
+several others, so its a shorthand.
+- The Memory object type graph would generally be such that each node is
+defined as parents along with "and"/"or" connectives, typically "and"
+chaining a parent type with an extra restriction, while "or" mainly comes
+about when types are defined using "or".
+- The Memory object graph would likely be rooted in, first pick the
+foundation type, next pick the Capsule key if applicable, each probably a
+dictionary lookup, and then it goes from there.
+- The memory object graph can be a version 2 optimization, and for version
+1 we could hash all tests with the Value maybe, still to decide.
+- Generally speaking the triggering of a type cache usage is by the value
+in question being an argument to a boolean operation, either directly or
+via use in an argument test or a collection index-related operation.
+- While having all these MSTs can mean a combinatorial explosion of types
+in theory, the likely actual scale of this is more of an issue for users
+having to manually name them, but for an automatic behind the scenes
+system, where we likely would only see a few hundred of these at most, in
+theory the caching should work.
+- For this graph, each final predicate should be factored into pieces as
+small as possible, particularly split on "and" and "or" type logic,
+which fundamentally take the form of if-then-else, particularly any resulting from
+explicit selection-of-where and interface composition, though those would
+have been reformed into functions by the time the internals see them.
+And so the graph would have a leaf or something node for each smallest-possible
+piece and other nodes would connect them with 'and' or 'or' etc, where these
+connectors should probably be n-ary sets maybe or otherwise be sorted.
 
 * Replace ::= with "let" or "be" or "let ... be" and replace ::?= with "note".
 - Actually, keep ::= as is (or keyword is "naming", or perhaps "label" is more accurate).
@@ -84,6 +215,26 @@ selecting a Reference value such that each usage produces a different
 Reference value.  Actually, requiring use of a lexical alias as an intermediary,
 meaning not anonymous per se, could handle the first case, while regular ::=
 and no use of the lexical alias could handle the second case.
+
+* As far as balancing the fact that ::= results should only need to be
+calculated once despite semantically being embedded and that they might
+have different results for different inner statements, and they need to be
+evaluated only conditionally, I think I figured out a design that could
+actually allow Muldis D code to be more in the way of compiled and less of
+an interpreted requirement, maybe, or maybe these thoughts are simply about
+making the interpreter logic simpler.
+- Implementation-wise about some "x ::= y", we can use a lexical variable x
+which starts out undefined; when we want to use the value of x we then
+evaluate the y and assign the result to x, and any other places in the same
+statement that x is referred to we just use it, thus avoiding the
+recalculation; when the statement ends and we transition to the next
+statement, the lexical variable x is made undefined again.  This is the
+default simple logic, but a simple optimizer can check if y refers to any
+actual variables, and if it does not (or we are inside a function), then x
+is not undefined and can be safely reused.  A more complex optimizer could
+deal with, in the case variables are referenced, did they change meanwhile,
+which could only in general be guaranteed if a consistent lock was on the
+variable.
 
 * Maybe :. and :.? (both infix) as special syntax for tuple attr accessor / exists,
 and :< plus :> (both prefix) for capsule wrapper/asset and :>. plus :>.? (both infix) to combine
@@ -1339,6 +1490,8 @@ and their fixity changed within a module."
 * See this on how to release a Perl 6 module including metadata examples,
 we can adopt such things:
 https://doc.perl6.org/language/modules
+aka
+https://docs.perl6.org/language/modules.html
 
 * Valuable to read: https://doc.perl6.org/language/faq
 - Including the start about versioning.
