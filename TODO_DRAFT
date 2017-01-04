@@ -21,6 +21,26 @@ and other works are aiming to get in on the ground floor while Perl 6
 database stuff is fairly immature and has no defacto standard, so it can be
 the defacto standard, and help boost the fortunes of Perl 6 in general.
 
+* Note per https://perl6advent.wordpress.com/2015/12/11/day-12-i-just-felt-a-disturbance-in-the-switch/
+what the Perl 6 'given' and 'when' constructs actually do.
+- Each 'when' doesn't just take a value to match, it takes an expression for the implicit topic.
+- Each 'when' will implicitly end its parent block on completion;
+an explicit 'proceed' will reverse this.
+- Can nest 'when' in other 'when' such as for drilling down.
+
+* Factor out the short-circuiting vs non aspects of ternary and n-ary
+conditionals, where the results are all alpha and not symbolic.
+- For example:
+    if x != 0 then guard y/x else 42
+- Or:
+    given #x when 0 then 'empty' when 1 then guard only_member x default 'too many'
+- The 'guard' should have the same precedence level as the if/given/etc.
+- A guard forces short-circuiting in an expression where otherwise an
+expression makes no guarantee as to whether anything is eager or lazy;
+in contrast, a conditional statement is implicitly always short-circuiting.
+- A guard is also a barrier for compile-time type checking.
+- Alternately for ternaries we could have gone with leading 'iff' vs 'if'.
+
 * So Rakudo Perl 6 especially as of the 2017-01 release loads "use" modules
 lexically on purpose not globally like Perl 5, or like Perl 6 did as a bug
 thru 2016-12, because that prevented use of multiple versions in different
