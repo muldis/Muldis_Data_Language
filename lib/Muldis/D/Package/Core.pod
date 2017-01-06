@@ -138,7 +138,7 @@ or I<=\=>.
         is_a : (\Function : (
             returns : \@Boolean,
             matches : (\@Any, \@Signature),
-            map : \((args:.\0) --> Signature_to_Function_Call_But_0::(args:.\1)),
+            map : \((args:.\0,) --> Signature_to_Function_Call_But_0::(args:.\1)),
         )),
 
 The function C<is_a> results in C<True> iff its C<0> argument is a
@@ -352,14 +352,14 @@ comparisons or validation is typically much simpler with this foundation.
             returns : \@Boolean,
             matches : (\@Orderable, \@Excuse::Before_All_Others),
             implements : \@folder::"",
-            map : \(args:.\0 = (args:.\1)),
+            map : \(args:.\0 = args:.\1),
         )),
 
         in_order::After_All_Others_L : (\Function : (
             returns : \@Boolean,
             matches : (\@Excuse::After_All_Others, \@Orderable),
             implements : \@folder::"",
-            map : \(args:.\0 = (args:.\1)),
+            map : \(args:.\0 = args:.\1),
         )),
 
         in_order::After_All_Others_R : (\Function : (
@@ -742,7 +742,7 @@ integer 1 to represent I<true>.
             returns : \@Boolean,
             matches : (\@Boolean, \@Boolean),
             implements : \@folder::"",
-            map : \(!(args:.\0) or args:.\1),
+            map : \(!args:.\0 or args:.\1),
         )),
 
 The function C<in_order::Boolean> implements the C<Orderable> virtual
@@ -779,7 +779,7 @@ function C<nth_pred> for the composing type C<Boolean>.
             returns : {\@True, \@Excuse::After_All_Others},
             matches : (\@Boolean, \@Integer::NN),
             implements : \@folder::"",
-            map : \(if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and !(args:.\0) then True else Excuse::After_All_Others()),
+            map : \(if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and !args:.\0 then True else Excuse::After_All_Others()),
         )),
 
 The function C<nth_succ::Boolean> implements the C<Successable> virtual
@@ -890,7 +890,7 @@ C<0> and C<1> is C<True>, and C<True> otherwise.
             is_associative : True,
             is_commutative : True,
             identity : True,
-            map : \(args:.\0 = (args:.\1)),
+            map : \(args:.\0 = args:.\1),
         )),
 
         iff : (\Alias : ( of : \@xnor )),
@@ -1188,7 +1188,7 @@ was invoked with.
             returns : \@Numerical,
             matches : (\@Numerical, \@Numerical),
             is_commutative : True,
-            map : \(modulus args:.\0 - (args:.\1)),
+            map : \(modulus args:.\0 - args:.\1),
         )),
 
         abs_minus : (\Alias : ( of : \@modulus_minus )),
@@ -1502,7 +1502,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
             is_commutative : True,
             is_idempotent : True,
             map : \(if is_zero args:.\0 or is_zero args:.\1 then zero args:.\0
-                else guard div::(args:.\0 * (args:.\1), args:.\0 gcd args:.\1, To_Zero::())),
+                else guard div::(args:.\0 * args:.\1, args:.\0 gcd args:.\1, To_Zero::())),
         )),
 
         least_common_multiple : (\Alias : ( of : \@lcm )),
@@ -1589,7 +1589,7 @@ the composing type C<Integer>.
             returns : \@Integer,
             matches : (\@Integer, \@Integer::NN),
             implements : \@folder::Integral,
-            map : \(args:.\0 - (args:.\1)),
+            map : \(args:.\0 - args:.\1),
         )),
 
 The function C<nth_pred::Integer> implements the C<Bicessable>
@@ -1602,7 +1602,7 @@ virtual function C<nth_pred> for the composing type C<Integer>.
             matches : (\@Integer, \@Integer::NN),
             implements : \@folder::Integral,
             repeater : plus::Integer,
-            map : \(args:.\0 + (args:.\1)),
+            map : \(args:.\0 + args:.\1),
         )),
 
 The function C<nth_succ::Integer> implements the C<Successable>
@@ -1654,7 +1654,7 @@ for the composing type C<Integer>.
             returns : {\@Fraction, \@Excuse::Div_By_Zero},
             matches : (\@Integer),
             implements : \@folder::"",
-            map : \(1 / (args:.\0)),
+            map : \(1 / args:.\0),
         )),
 
 The function C<reciprocal::Integer> implements the C<Numerical> virtual
@@ -1844,7 +1844,7 @@ C<Integer>.
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
             map : \(if args:.\0 = 0 and args:.\1 = 0 then Excuse::Zero_To_The_Zero()
-                else guard args:.\0 / 1 ** (args:.\1)),
+                else guard args:.\0 / 1 ** args:.\1),
         )),
 
 The function C<integral_power::Integer> implements the C<Numerical> virtual
@@ -2117,7 +2117,7 @@ virtual function C<plus> aka C<+> for the composing type C<Fraction>.
             returns : \@Fraction,
             matches : (\@Fraction, \@Fraction),
             implements : \@folder::"",
-            map : \(args:.\0 + -(args:.\1)),
+            map : \(args:.\0 + -args:.\1),
         )),
 
 The function C<minus::Fraction> implements the C<Numerical> virtual function
@@ -2146,7 +2146,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Fraction>.
             returns : \@Fraction,
             matches : (\@Fraction, \@Integer),
             implements : \@folder::"",
-            map : \(((numerator args:.\0) * (args:.\1)) / (denominator args:.\0)),
+            map : \(((numerator args:.\0) * args:.\1) / (denominator args:.\0)),
         )),
 
 The function C<times::Fraction_Integer> implements the C<Numerical> virtual
@@ -2206,7 +2206,7 @@ C<Fraction>.
             matches : (\@Fraction, \@Integer),
             implements : \@folder::"",
             map : \(\integral_nn_power::()
-                <-- (if args:.\1 >= 0 then args else (reciprocal::(args:.\0), -(args:.\1)))),
+                <-- (if args:.\1 >= 0 then args else (reciprocal::(args:.\0), -args:.\1))),
         )),
 
 The function C<integral_power::Fraction> implements the C<Numerical> virtual
@@ -2219,7 +2219,7 @@ function C<integral_power> aka C<**> for the composing type C<Fraction>.
             matches : (\@Fraction, \@Integer::NN),
             implements : \@folder::"",
             map : \(if args:.\0 = 0.0 and args:.\1 = 0 then Excuse::Zero_To_The_Zero()
-                else guard ((numerator args:.\0) ** (args:.\1)) / ((denominator args:.\0) ** (args:.\1))),
+                else guard ((numerator args:.\0) ** args:.\1) / ((denominator args:.\0) ** args:.\1)),
         )),
 
 The function C<integral_nn_power::Fraction> implements the C<Numerical>
@@ -2402,7 +2402,7 @@ rather than a boolean.
             returns : \@Boolean,
             matches : (\@String, \@String),
             is_commutative : True,
-            map : \(args:.\0 != (args:.\1) and (args:.\0 substring_or_superstring args:.\1)),
+            map : \(args:.\0 != args:.\1 and (args:.\0 substring_or_superstring args:.\1)),
         )),
 
 The function C<proper_substring_or_superstring> results in C<True> iff the
@@ -2625,7 +2625,7 @@ C<catenate> aka C<~> for the composing type C<Bits>.
             returns : \@Bits,
             matches : (\@Bits, \@Integer::NN),
             implements : \@folder::"",
-            map : \(Bits_from_String_Bits::((Bits_to_String_Bits args:.\0) ~# (args:.\1))),
+            map : \(Bits_from_String_Bits::((Bits_to_String_Bits args:.\0) ~# args:.\1)),
         )),
 
 The function C<replicate::Bits> implements the C<Stringy> virtual function
@@ -2636,7 +2636,7 @@ C<replicate> aka C<~#> for the composing type C<Bits>.
         Bits_from_String_Bits : (\Function : (
             returns : \@Bits,
             matches : (\@String::Bits),
-            map : \((\Bits : (args:.\0))),
+            map : \((\Bits : args:.\0)),
         )),
 
 The function C<Bits_from_String_Bits> results in the C<Bits> value selected
@@ -2782,7 +2782,7 @@ C<catenate> aka C<~> for the composing type C<Blob>.
             returns : \@Blob,
             matches : (\@Blob, \@Integer::NN),
             implements : \@folder::"",
-            map : \(Blob_from_Octets::((Blob_to_Octets args:.\0) ~# (args:.\1))),
+            map : \(Blob_from_Octets::((Blob_to_Octets args:.\0) ~# args:.\1)),
         )),
 
 The function C<replicate::Blob> implements the C<Stringy> virtual function
@@ -2793,7 +2793,7 @@ C<replicate> aka C<~#> for the composing type C<Blob>.
         Blob_from_Octets : (\Function : (
             returns : \@Blob,
             matches : (\@String::Octets),
-            map : \((\Blob : (args:.\0))),
+            map : \((\Blob : args:.\0)),
         )),
 
 The function C<Blob_from_Octets> results in the C<Blob> value selected in
@@ -3076,7 +3076,7 @@ C<catenate> aka C<~> for the composing type C<Text>.
             returns : \@Text,
             matches : (\@Text, \@Integer::NN),
             implements : \@folder::"",
-            map : \(Text_from_Maximal_Chars::((Text_to_Maximal_Chars args:.\0) ~# (args:.\1))),
+            map : \(Text_from_Maximal_Chars::((Text_to_Maximal_Chars args:.\0) ~# args:.\1)),
         )),
 
 The function C<replicate::Text> implements the C<Stringy> virtual function
@@ -3100,7 +3100,7 @@ for the composing type C<Text>.
         Text_from_Maximal_Chars : (\Function : (
             returns : \@Text,
             matches : (\@String::Maximal_Chars),
-            map : \((\Text : (args:.\0))),
+            map : \((\Text : args:.\0)),
         )),
 
 The function C<Text_from_Maximal_Chars> results in the C<Text> value
@@ -3498,7 +3498,7 @@ whose C<0> and C<1> attributes are the mapping key and asset respectively.
             virtual : True,
             returns : (\@Any, \@Any),
             matches : (\@Accessible, \@Any),
-            accepts : \(args:.\0 .? (args:.\1)),
+            accepts : \(args:.\0 .? args:.\1),
         )),
 
         ".:" : (\Alias : ( of : \@mapping_at )),
@@ -3515,7 +3515,7 @@ may name their corresponding operators I<assoc>.
             virtual : True,
             returns : \@Any,
             matches : (\@Accessible, \@Any),
-            accepts : \(args:.\0 .? (args:.\1)),
+            accepts : \(args:.\0 .? args:.\1),
         )),
 
         "." : (\Alias : ( of : \@at )),
@@ -3586,7 +3586,7 @@ also common to use assignment syntax.
             virtual : True,
             returns : \@Accessible,
             matches : (\@Accessible, \@Any),
-            accepts : \(args:.\0 .? (args:.\1)),
+            accepts : \(args:.\0 .? args:.\1),
         )),
 
         ".-" : (\Alias : ( of : \@shiftless_remove_at )),
@@ -3824,7 +3824,7 @@ retained member's value.  See also the C<Positional> function C<squish>.
         proper_subset_of : (\Function : (
             returns : \@Boolean,
             matches : (\@Homogeneous, \@Homogeneous),
-            map : \(args:.\0 != (args:.\1) and (args:.\0 subset_of args:.\1)),
+            map : \(args:.\0 != args:.\1 and (args:.\0 subset_of args:.\1)),
         )),
 
         Unicode_Aliases::"⊂" : (\Alias : ( of : \@proper_subset_of )),
@@ -4634,7 +4634,7 @@ C<disjoint_members> for the composing type C<Positional>.
             matches : (\@Positional, \@Positional),
             implements : \@folder::"",
             is_associative : True,
-            map : \(args:.\0 ~ (args:.\1)),
+            map : \(args:.\0 ~ args:.\1),
         )),
 
 The function C<member_plus::Positional> results in the I<multiset sum> of
@@ -4695,8 +4695,8 @@ composing type C<Positional>.
             returns : (\@Integer, \@Any),
             matches : (\@Positional, \@Integer),
             implements : \@folder::"",
-            accepts : \(args:.\0 .? (args:.\1)),
-            map : \((args:.\1, args:.\0.(args:.\1))),
+            accepts : \(args:.\0 .? args:.\1),
+            map : \((args:.\1, args:.\0.args:.\1)),
         )),
 
 The function C<mapping_at::Positional> results in a binary C<Tuple> whose
@@ -4713,7 +4713,7 @@ C<Positional>.
             returns : \@Any,
             matches : (\@Positional, \@Integer),
             implements : \@folder::"",
-            map : \(if args:.\0 .? (args:.\1) then guard args:.\0.(args:.\1) else Excuse::No_Such_Ord_Pos()),
+            map : \(if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else Excuse::No_Such_Ord_Pos()),
         )),
 
 The function C<maybe_at::Positional> results in the member value of its
@@ -4878,7 +4878,7 @@ first member of I<C> would have.
         first_unused_ord_pos : (\Function : (
             returns : \@Integer,
             matches : (\@Positional),
-            map : \(first_possible_ord_pos::(args:.\0) + #(args:.\0)),
+            map : \(first_possible_ord_pos::(args:.\0) + #args:.\0),
         )),
 
 The function C<first_unused_ord_pos> results in the integral first unused
@@ -4919,7 +4919,7 @@ nonempty C<0> argument's last member.
             returns : \@Positional,
             matches : (\@Positional, \@Integer, \@NN_Integer),
             accepts : \(args:.\1 >= first_possible_ord_pos::(args:.\0)
-                and args:.\1 + (args:.\2) <= first_unused_ord_pos::(args:.\0)),
+                and args:.\1 + args:.\2 <= first_unused_ord_pos::(args:.\0)),
         )),
 
 The virtual function C<slice_n> results in the value of its C<0> argument's
@@ -4939,7 +4939,7 @@ their corresponding operators I<array_slice>.
             matches : (\@Positional, \@Integer, \@Integer),
             accepts : \(so args:.\0 and args:.\1 >= first_possible_ord_pos::(args:.\0)
                 and args:.\2 < first_unused_ord_pos::(args:.\0)),
-            map : \(slice_n::(args:.\0, args:.\1, (args:.\2) - (args:.\1) + 1)),
+            map : \(slice_n::(args:.\0, args:.\1, args:.\2 - args:.\1 + 1)),
         )),
 
 The function C<slice_range> results in the value of its C<0> argument's
@@ -5511,7 +5511,7 @@ type C<Array>.
             returns : \@Any,
             matches : (\@Array, \@Integer::NN),
             implements : \@folder::"",
-            accepts : \(args:.\0 .? (args:.\1)),
+            accepts : \(args:.\0 .? args:.\1),
             map : \(args --> \foundation::Array_at::()),
         )),
 
@@ -5553,7 +5553,7 @@ C<first_possible_ord_pos> for the composing type C<Array>.
             returns : \@Array,
             matches : (\@Array, \@NN_Integer, \@NN_Integer),
             implements : \@folder::"",
-            accepts : \(args:.\1 + (args:.\2) <= #(args:.\0)),
+            accepts : \(args:.\1 + args:.\2 <= #args:.\0),
             map : \(args --> \foundation::Array_slice_n::()),
         )),
 
@@ -5753,7 +5753,7 @@ type C<Set>.
             matches : (\@Set, \@Set),
             implements : \@folder::"",
             is_commutative : True,
-            map : \(args:.\0 = (args:.\1)),
+            map : \(args:.\0 = args:.\1),
         )),
 
 The function C<same_members::Set> results in C<True> iff its 2 arguments
@@ -6218,7 +6218,7 @@ type C<Bag>.
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
             is_commutative : True,
-            map : \(args:.\0 = (args:.\1)),
+            map : \(args:.\0 = args:.\1),
         )),
 
 The function C<same_members::Bag> results in C<True> iff its 2 arguments
@@ -6650,7 +6650,7 @@ that their headings can be reasoned about in isolation from their bodies.
         subheading_of : (\Function : (
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
-            map : \((@(args:.\0), @(args:.\1)) --> \foundation::Tuple_subheading_of::()),
+            map : \((@args:.\0, @args:.\1) --> \foundation::Tuple_subheading_of::()),
         )),
 
         Unicode_Aliases::"⊆@" : (\Alias : ( of : \@subheading_of )),
@@ -6682,7 +6682,7 @@ exactly 1 name.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            map : \(@(args:.\0) = @(args:.\1)),
+            map : \(@args:.\0 = @args:.\1),
         )),
 
         "=@" : (\Alias : ( of : \@same_heading )),
@@ -6697,7 +6697,7 @@ otherwise it results in C<False>.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            map : \(@(args:.\0) != @(args:.\1) and (args:.\0 subheading_or_superheading args:.\1)),
+            map : \(@args:.\0 != @args:.\1 and (args:.\0 subheading_or_superheading args:.\1)),
         )),
 
 The function C<proper_subheading_or_superheading> results in C<True> iff
@@ -6723,7 +6723,7 @@ of its other argument; otherwise it results in C<False>.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            map : \((@(args:.\0), @(args:.\1)) --> \foundation::Tuple_overlaps_heading::()),
+            map : \((@args:.\0, @args:.\1) --> \foundation::Tuple_overlaps_heading::()),
         )),
 
 The function C<overlaps_heading> results in C<True> iff, given I<X> as the
@@ -6738,7 +6738,7 @@ that the other doesn't have; otherwise it results in C<False>.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            map : \((@(args:.\0), @(args:.\1)) --> \foundation::Tuple_disjoint_heading::()),
+            map : \((@args:.\0, @args:.\1) --> \foundation::Tuple_disjoint_heading::()),
         )),
 
 The function C<disjoint_heading> results in C<True> iff the heading of its
@@ -6750,7 +6750,7 @@ argument; otherwise it results in C<False>.
         except_heading : (\Function : (
             returns : \@Heading,
             matches : (\@Attributive, \@Attributive),
-            map : \((@(args:.\0), @(args:.\1)) --> \foundation::Tuple_except_heading::()),
+            map : \((@args:.\0, @args:.\1) --> \foundation::Tuple_except_heading::()),
         )),
 
         Unicode_Aliases::"∖@" : (\Alias : ( of : \@except_heading )),
@@ -6769,7 +6769,7 @@ but not in the heading of its C<1> argument.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            map : \((@(args:.\0), @(args:.\1)) --> \foundation::Tuple_intersect_heading::()),
+            map : \((@args:.\0, @args:.\1) --> \foundation::Tuple_intersect_heading::()),
         )),
 
         Unicode_Aliases::"∩@" : (\Alias : ( of : \@intersect_heading )),
@@ -6790,7 +6790,7 @@ infinite number of attribute names.
             is_commutative : True,
             is_idempotent : True,
             identity : (),
-            map : \((@(args:.\0), @(args:.\1)) --> \foundation::Tuple_union_heading::()),
+            map : \((@args:.\0, @args:.\1) --> \foundation::Tuple_union_heading::()),
         )),
 
         Unicode_Aliases::"∪@" : (\Alias : ( of : \@union_heading )),
@@ -6808,7 +6808,7 @@ the headings of the function's C<0> and C<1> arguments.
             is_associative : True,
             is_commutative : True,
             identity : (),
-            map : \((@(args:.\0), @(args:.\1)) --> \foundation::Tuple_exclusive_heading::()),
+            map : \((@args:.\0, @args:.\1) --> \foundation::Tuple_exclusive_heading::()),
         )),
 
         symm_diff_heading : (\Alias : ( of : \@exclusive_heading )),
@@ -6881,7 +6881,7 @@ aka C<a %:= s %=? s = True> should hold for all valid C<a> and C<s>.
             virtual : True,
             returns : \@Attributive,
             matches : (\@Attributive, \@Heading),
-            accepts : \(args:.\0 @? (args:.\1)),
+            accepts : \(args:.\0 @? args:.\1),
         )),
 
         project : (\Alias : ( of : \@on )),
@@ -6934,7 +6934,7 @@ C<0> argument rather than failing.
             virtual : True,
             returns : \@Attributive,
             matches : (\@Attributive, \@Structural),
-            accepts : \(args:.\0 @? (args:.\1)),
+            accepts : \(args:.\0 @? args:.\1),
         )),
 
         "%:=" : (\Alias : ( of : \@update )),
@@ -6996,7 +6996,7 @@ The Structural version is commutative and associative, but not Attributive in ge
         but : (\Function : (
             returns : \@Attributive,
             matches : (\@Attributive, \@Heading),
-            accepts : \(args:.\0 @? (args:.\1)),
+            accepts : \(args:.\0 @? args:.\1),
             map : \(args:.\0 on (args:.\0 except_heading args:.\1)),
         )),
 
@@ -7079,7 +7079,7 @@ C<Tuple>.
             returns : \@Boolean,
             matches : (\@Structural, \@Structural),
             implements : \@folder::"",
-            map : \(if args:.\0 @? (args:.\1) then guard args:.\0 %= @(args:.\1) = (args:.\1) else False),
+            map : \(if args:.\0 @? args:.\1 then guard args:.\0 %= @args:.\1 = args:.\1 else False),
         )),
 
 The function C<can_project_matching::Structural> results in C<True> iff the
@@ -7097,7 +7097,7 @@ C<can_project_matching> aka C<%=?> for the composing type C<Structural>.
             returns : \@Boolean,
             matches : (\@Structure, \@Attr_Name),
             implements : \@folder::"",
-            map : \(args:.\0 @? (args:.\1)),
+            map : \(args:.\0 @? args:.\1),
         )),
 
 The function C<has_any_at::Structure> results in C<True> iff its C<0>
@@ -7127,8 +7127,8 @@ function C<has_mapping_at> aka C<.:?> for the composing type C<Structural>.
             returns : (\@Attr_Name, \@Any),
             matches : (\@Structural, \@Attr_Name),
             implements : \@folder::"",
-            accepts : \(args:.\0 .? (args:.\1)),
-            map : \((args:.\1, args:.\0.(args:.\1))),
+            accepts : \(args:.\0 .? args:.\1),
+            map : \((args:.\1, args:.\0.args:.\1)),
         )),
 
 The function C<mapping_at::Structural> results in a binary C<Tuple> whose
@@ -7145,7 +7145,7 @@ type C<Structural>.
             returns : \@Any,
             matches : (\@Structural, \@Attr_Name),
             implements : \@folder::"",
-            map : \(if args:.\0 .? (args:.\1) then guard args:.\0.(args:.\1) else Excuse::No_Such_Attr_Name()),
+            map : \(if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else Excuse::No_Such_Attr_Name()),
         )),
 
 The function C<maybe_at::Structural> results in the attribute asset value
@@ -7199,7 +7199,7 @@ C<Structure>.
             returns : \@Structure,
             matches : (\@Structure, \@Attr_Name),
             implements : \@folder::"",
-            accepts : \(args:.\0 .? (args:.\1)),
+            accepts : \(args:.\0 .? args:.\1),
             map : \(args:.\0 but args:.\1),
         )),
 
@@ -7419,7 +7419,7 @@ C<rename> aka C<@:=> aka C<ρ> for the composing type C<Tuple>.
             returns : \@Tuple,
             matches : (\@Tuple, \@Heading),
             implements : \@folder::"",
-            accepts : \(args:.\0 @? (args:.\1)),
+            accepts : \(args:.\0 @? args:.\1),
             map : \(args --> \foundation::Tuple_on::()),
         )),
 
@@ -7439,7 +7439,7 @@ the composing type C<Tuple>.
             returns : \@Tuple,
             matches : (\@Tuple, \@Tuple),
             implements : \@folder::"",
-            accepts : \(args:.\0 @? (args:.\1)),
+            accepts : \(args:.\0 @? args:.\1),
             map : \(args --> \foundation::Tuple_update::()),
         )),
 
@@ -7482,8 +7482,8 @@ for the composing type C<Tuple>.
             returns : \@Any,
             matches : (\@Tuple, \@Attr_Name),
             implements : \@folder::"",
-            accepts : \(args:.\0 .? (args:.\1)),
-            map : \((args:.\0) :. (args:.\1)),
+            accepts : \(args:.\0 .? args:.\1),
+            map : \(args:.\0 :. args:.\1),
         )),
 
 The function C<at::Tuple> results in the attribute asset value of its C<0>
@@ -7548,7 +7548,7 @@ I<TODO.>
         all_attr_assets : (\Function : (
             returns : \@Boolean,
             matches : (\@Tuple, \@Signature),
-            map : \(args:.\0 all_attrs \((args:.\1) <-- (args:.\0.\asset,))
+            map : \(args:.\0 all_attrs \(args:.\1 <-- (args:.\0.\asset,))
                 \<-- (1 : Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
@@ -7609,7 +7609,7 @@ C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
             returns : \@Boolean,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : \(? |(args:.\0)),
+            map : \(? |args:.\0),
         )),
 
 The function C<to_Boolean::Relational> results in C<True> iff its C<0>
@@ -7623,7 +7623,7 @@ C<so> aka C<?> for the composing type C<Relational>.
             returns : \@Relational,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : \(select_Relational::( like: args:.\0, heading: @(args:.\0), body: empty |(args:.\0) )),
+            map : \(select_Relational::( like: args:.\0, heading: @args:.\0, body: empty |args:.\0 )),
         )),
 
 The function C<empty::Relational> results in the only value of its C<0>
@@ -7638,7 +7638,7 @@ C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : \(singular |(args:.\0)),
+            map : \(singular |args:.\0),
         )),
 
 The function C<singular::Relational> results in C<True> iff its C<0>
@@ -7653,7 +7653,7 @@ composing type C<Relational>.
             matches : (\@Relational),
             implements : \@folder::"",
             accepts : \(singular args:.\0),
-            map : \(only_member |(args:.\0)),
+            map : \(only_member |args:.\0),
         )),
 
 The function C<only_member::Relational> results in its C<0> argument's only
@@ -7667,7 +7667,7 @@ virtual function C<only_member> for the composing type C<Relational>.
             returns : {\@Boolean, \@Excuse::Not_Same_Heading},
             matches : (\@Relational, \@Structural, \@Integer::NN),
             implements : \@folder::"",
-            map : \(if args:.\0 =@ (args:.\1) then guard has_n::(|(args:.\0), args:.\1, args:.\2)
+            map : \(if args:.\0 =@ args:.\1 then guard has_n::(|args:.\0, args:.\1, args:.\2)
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7687,7 +7687,7 @@ function C<has_n> for the composing type C<Relational>.
             returns : \@Integer::NN,
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
-            map : \(|(args:.\0) multiplicity args:.\1),
+            map : \(|args:.\0 multiplicity args:.\1),
         )),
 
 The function C<multiplicity::Relational> results in the integral count
@@ -7702,7 +7702,7 @@ function C<multiplicity> for the composing type C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : \(all_unique |(args:.\0)),
+            map : \(all_unique |args:.\0),
         )),
 
 The function C<all_unique::Relational> results in C<True> iff its C<0>
@@ -7717,7 +7717,7 @@ composing type C<Relational>.
             returns : \@Relational,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : \(select_Relational::( like: args:.\0, heading: @(args:.\0), body: unique |(args:.\0) )),
+            map : \(select_Relational::( like: args:.\0, heading: @args:.\0, body: unique |args:.\0 )),
         )),
 
 The function C<unique::Relational> results in the value of its C<0>
@@ -7736,7 +7736,7 @@ composing type C<Relational>.
             returns : {\@Boolean, \@Excuse::Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
-            map : \(if args:.\0 =@ (args:.\1) then guard |(args:.\0) subset_of |(args:.\1)
+            map : \(if args:.\0 =@ args:.\1 then guard |args:.\0 subset_of |args:.\1
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7754,7 +7754,7 @@ function C<subset_of> aka C<⊆> for the composing type C<Relational>.
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_commutative : True,
-            map : \(if args:.\0 =@ (args:.\1) then guard |(args:.\0) same_members |(args:.\1)
+            map : \(if args:.\0 =@ args:.\1 then guard |args:.\0 same_members |args:.\1
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7776,7 +7776,7 @@ the composing type C<Relational>.
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_commutative : True,
-            map : \(if args:.\0 =@ (args:.\1) then guard |(args:.\0) overlaps_members |(args:.\1)
+            map : \(if args:.\0 =@ args:.\1 then guard |args:.\0 overlaps_members |args:.\1
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7797,7 +7797,7 @@ C<Relational>.
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_commutative : True,
-            map : \(if args:.\0 =@ (args:.\1) then guard |(args:.\0) disjoint_members |(args:.\1)
+            map : \(if args:.\0 =@ args:.\1 then guard |args:.\0 disjoint_members |args:.\1
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7815,7 +7815,7 @@ C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational, \@Signature),
             implements : \@folder::"",
-            map : \(|(args:.\0) any args:.\1),
+            map : \(|args:.\0 any args:.\1),
         )),
 
 I<TODO.>
@@ -7826,8 +7826,8 @@ I<TODO.>
             returns : {\@Relational, \@Excuse::Not_Same_Heading},
             matches : (\@Relational, \@Structural, \@Integer::NN),
             implements : \@folder::"",
-            map : \(if args:.\0 =@ (args:.\1) then guard select_Relational::
-                    ( like: args:.\0, heading: @(args:.\0), body: insert_n::(|(args:.\0), args:.\1, args:.\2) )
+            map : \(if args:.\0 =@ args:.\1 then guard select_Relational::
+                    ( like: args:.\0, heading: @args:.\0, body: insert_n::(|args:.\0, args:.\1, args:.\2) )
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7851,8 +7851,8 @@ C<Relational>.
             returns : {\@Relational, \@Excuse::Not_Same_Heading},
             matches : (\@Relational, \@Structural, \@Integer::NN),
             implements : \@folder::"",
-            map : \(if args:.\0 =@ (args:.\1) then guard select_Relational::
-                    ( like: args:.\0, heading: @(args:.\0), body: remove_n::(|(args:.\0), args:.\1, args:.\2) )
+            map : \(if args:.\0 =@ args:.\1 then guard select_Relational::
+                    ( like: args:.\0, heading: @args:.\0, body: remove_n::(|args:.\0, args:.\1, args:.\2) )
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7875,8 +7875,8 @@ composing type C<Relational>.
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_associative : True,
-            map : \(if args:.\0 =@ (args:.\1) then guard select_Relational::
-                    ( like: args:.\0, heading: @(args:.\0), body: |(args:.\0) member_plus |(args:.\1) )
+            map : \(if args:.\0 =@ args:.\1 then guard select_Relational::
+                    ( like: args:.\0, heading: @args:.\0, body: |args:.\0 member_plus |args:.\1 )
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7905,8 +7905,8 @@ C<Relational>.
             returns : {\@Relational, \@Excuse::Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
-            map : \(if args:.\0 =@ (args:.\1) then guard select_Relational::
-                    ( like: args:.\0, heading: @(args:.\0), body: |(args:.\0) except |(args:.\1) )
+            map : \(if args:.\0 =@ args:.\1 then guard select_Relational::
+                    ( like: args:.\0, heading: @args:.\0, body: |args:.\0 except |args:.\1 )
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7932,8 +7932,8 @@ virtual function C<except> aka C<∖> for the composing type C<Relational>.
             implements : \@folder::"",
             is_associative : True,
             is_idempotent : True,
-            map : \(if args:.\0 =@ (args:.\1) then guard select_Relational::
-                    ( like: args:.\0, heading: @(args:.\0), body: |(args:.\0) intersect |(args:.\1) )
+            map : \(if args:.\0 =@ args:.\1 then guard select_Relational::
+                    ( like: args:.\0, heading: @args:.\0, body: |args:.\0 intersect |args:.\1 )
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7959,8 +7959,8 @@ function C<intersect> aka C<∩> for the composing type C<Relational>.
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_idempotent : True,
-            map : \(if args:.\0 =@ (args:.\1) then guard select_Relational::
-                    ( like: args:.\0, heading: @(args:.\0), body: |(args:.\0) union |(args:.\1) )
+            map : \(if args:.\0 =@ args:.\1 then guard select_Relational::
+                    ( like: args:.\0, heading: @args:.\0, body: |args:.\0 union |args:.\1 )
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -7989,8 +7989,8 @@ composing type C<Relational>.
             implements : \@folder::"",
             is_associative : True,
             is_commutative : True,
-            map : \(if args:.\0 =@ (args:.\1) then guard select_Relational::
-                    ( like: args:.\0, heading: @(args:.\0), body: |(args:.\0) exclusive |(args:.\1) )
+            map : \(if args:.\0 =@ args:.\1 then guard select_Relational::
+                    ( like: args:.\0, heading: @args:.\0, body: |args:.\0 exclusive |args:.\1 )
                 else Excuse::Not_Same_Heading),
         )),
 
@@ -8043,7 +8043,7 @@ I<TODO.>
             returns : \@Relational,
             matches : (\@Relational, \@Signature),
             implements : \@folder::"",
-            map : \(select_Relational::( like: args:.\0, heading: @(args:.\0), body: |(args:.\0) where args:.\1 )),
+            map : \(select_Relational::( like: args:.\0, heading: @args:.\0, body: |args:.\0 where args:.\1 )),
         )),
 
 I<TODO.>
@@ -8065,7 +8065,7 @@ I<TODO.>
             returns : \@Any,
             matches : (\@Relational, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            map : \(|(args:.\0) reduce args:.\1),
+            map : \(|args:.\0 reduce args:.\1),
         )),
 
 I<TODO.>
@@ -8076,7 +8076,7 @@ I<TODO.>
             returns : \@Boolean,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : \(@(args:.\0) != ()),
+            map : \(@args:.\0 != ()),
         )),
 
 The function C<has_any_attrs::Relational> results in C<True> iff its C<0>
@@ -8106,7 +8106,7 @@ type C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : \(is_unary @(args:.\0)),
+            map : \(is_unary @args:.\0),
         )),
 
 The function C<is_unary::Relational> results in C<True> iff its C<0>
@@ -8120,7 +8120,7 @@ composing type C<Relational>.
             returns : \@Integer::NN,
             matches : (\@Relational),
             implements : \@folder::"",
-            map : \(degree @(args:.\0)),
+            map : \(degree @args:.\0),
         )),
 
 The function C<degree::Relational> results in the integral count of the
@@ -8135,8 +8135,8 @@ C<Relational>.
             matches : (\@Relational, \@Renaming),
             implements : \@folder::"",
             accepts : \(...),
-            map : \(select_Relational::( like: args:.\0, heading: @(args:.\0) rename args:.\1,
-                body: |(args:.\0) map \rename::( 1: args:.\1 ) )),
+            map : \(select_Relational::( like: args:.\0, heading: @args:.\0 rename args:.\1,
+                body: |args:.\0 map \rename::( 1: args:.\1 ) )),
         )),
 
 The function C<rename::Relational> results results in the I<relational
@@ -8161,8 +8161,8 @@ C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
-            map : \(if args:.\0 @? (args:.\1)
-                then guard |(args:.\0) all \(args:.\0 %= @(args:.\1) = (args:.\1)) \<-- (1 : args:.\1,)
+            map : \(if args:.\0 @? args:.\1
+                then guard |args:.\0 all \(args:.\0 %= @args:.\1 = args:.\1) \<-- (1 : args:.\1,)
                 else False),
         )),
 
@@ -8181,9 +8181,9 @@ C<can_project_matching> aka C<%=?> for the composing type C<Relational>.
             returns : \@Relational,
             matches : (\@Relational, \@Heading),
             implements : \@folder::"",
-            accepts : \(args:.\0 @? (args:.\1)),
-            map : \(select_Relational::( like: args:.\0, heading: @(args:.\0) on args:.\1,
-                body: |(args:.\0) map \on::( 1: args:.\1 ) )),
+            accepts : \(args:.\0 @? args:.\1),
+            map : \(select_Relational::( like: args:.\0, heading: @args:.\0 on args:.\1,
+                body: |args:.\0 map \on::( 1: args:.\1 ) )),
         )),
 
 The function C<on::Relational> results in the I<relational projection> of
@@ -8208,9 +8208,9 @@ C<%=> aka C<π> for the composing type C<Relational>.
             returns : \@Relational,
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
-            accepts : \(args:.\0 @? (args:.\1)),
-            map : \(select_Relational::( like: args:.\0, heading: @(args:.\0),
-                body: |(args:.\0) map \update::( 1: args:.\1 ) )),
+            accepts : \(args:.\0 @? args:.\1),
+            map : \(select_Relational::( like: args:.\0, heading: @args:.\0,
+                body: |args:.\0 map \update::( 1: args:.\1 ) )),
         )),
 
 The function C<update::Relational> results in the value of its C<0>
@@ -8239,8 +8239,8 @@ C<Relational>.
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
             accepts : \(args:.\0 disjoint_heading args:.\1),
-            map : \(select_Relational::( like: args:.\0, heading: @(args:.\0) extend args:.\1,
-                body: |(args:.\0) map \extend::( 1: args:.\1 ) )),
+            map : \(select_Relational::( like: args:.\0, heading: @args:.\0 extend args:.\1,
+                body: |args:.\0 map \extend::( 1: args:.\1 ) )),
         )),
 
 The function C<extend::Relational> results in the I<relational extension>
@@ -8301,7 +8301,7 @@ types that restrict their possible headings at the type level.>
             where : \(has_wrapped::( args:.\0, \Tuple_Array, \(
                 if args:.\0 is_a ( heading : \Heading::(), body : \Array::() ) then guard
                     if args:.\0.\body all \Tuple::() then guard
-                        args:.\0.\body all \(@(args:.\0) = (args:.\1)) \<-- (args:.\0.\heading)
+                        args:.\0.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0.\heading)
                     else
                         False
                 else
@@ -8388,7 +8388,7 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
             where : \(has_wrapped::( args:.\0, \Relation, \(
                 if args:.\0 is_a ( heading : \Heading::(), body : \Set::() ) then guard
                     if args:.\0.\body all \Tuple::() then guard
-                        args:.\0.\body all \(@(args:.\0) = (args:.\1)) \<-- (args:.\0.\heading)
+                        args:.\0.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0.\heading)
                     else
                         False
                 else
@@ -8468,7 +8468,7 @@ function C<select_Relational> for the composing type C<Relation>.
             where : \(has_wrapped::( args:.\0, \Tuple_Bag, \(
                 if args:.\0 is_a ( heading : \Heading::(), body : \Bag::() ) then guard
                     if args:.\0.\body all \Tuple::() then guard
-                        args:.\0.\body all \(@(args:.\0) = (args:.\1)) \<-- (args:.\0.\heading)
+                        args:.\0.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0.\heading)
                     else
                         False
                 else
@@ -8658,7 +8658,7 @@ minimize interference with other types' interfaces.
         has_wrapped : (\Function : (
             returns : \@Boolean,
             matches : (\@Capsule, \@Any, \@Signature),
-            map : \((args:.\0):< = (args:.\1) and
+            map : \(args:.\0:< = args:.\1 and
                 (args:.\0:>,) --> Signature_to_Function_Call_But_0::(args:.\2)),
         )),
 
@@ -9124,12 +9124,12 @@ I<TODO.>
             where : \(
                 if so args:.\0 then guard
                     given args:.\0.0
-                        when \foundation then #(args:.\0) = 2
-                        when \used       then #(args:.\0) ≥ 2  `elem 2 is pkg local alias`
-                        when \package    then #(args:.\0) ≥ 1
-                        when \folder     then #(args:.\0) ≥ 1
-                        when \material   then #(args:.\0) = 1
-                        when \floating   then #(args:.\0) ≥ 2
+                        when \foundation then #args:.\0 = 2
+                        when \used       then #args:.\0 ≥ 2  `elem 2 is pkg local alias`
+                        when \package    then #args:.\0 ≥ 1
+                        when \folder     then #args:.\0 ≥ 1
+                        when \material   then #args:.\0 = 1
+                        when \floating   then #args:.\0 ≥ 2
                         default False
                 else
                     False
@@ -9191,7 +9191,7 @@ I<TODO.>
 
         Source_Code::Key_Asset_Pair : (\Selection : (
             of : \@Tuple,
-            where : \(@(args:.\0) = \@(key,asset)),
+            where : \(@args:.\0 = \@(key,asset)),
         )),
 
 I<TODO.  Note, this type currently isn't used anywhere.>
@@ -9204,13 +9204,13 @@ I<TODO.  Note, this type currently isn't used anywhere.>
             map : \(
                 if Function_Call_But_0 args:.\0 then
                     args:.\0
-                else if Signature::Set(args:.\0) then guard
+                else if Signature::Set args:.\0 then guard
                     \(args:.\1 any \(args:.\1 is_a args:.\0) \<-- (1 : args:.\0))
                         \<-- (1 : args:.\0)
-                else if Signature::Tuple(args:.\0) then guard
+                else if Signature::Tuple args:.\0 then guard
                     \(
                         if Tuple args:.\0 then guard
-                            if args:.\0 =@ (args:.\1) then guard
+                            if args:.\0 =@ args:.\1 then guard
                                 args:.\0 all_attrs
                                     \(args:.\0.\asset is_a args:.\1.(args:.\0.\name)) \<-- ( 1: args:.\1, )
                             else
