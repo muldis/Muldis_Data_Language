@@ -664,6 +664,10 @@ These are keywords only within a I<parsing unit subject>:
     ::?=
     ::=
     :=
+    :.
+    :<
+    :>
+    :>.
     -->
     <--
 
@@ -1660,14 +1664,22 @@ to select the most-nested Function_Call value, often postcircumfixed_func_invo_e
 Grammar:
 
     <collection_accessor_expr> ::=
-          <Capsule_wrapper_acc>
-        | <Capsule_asset_acc>
+          <Tuple_at>
+        | <Capsule_wrapper>
+        | <Capsule_unwrap>
+        | <Capsule_unwrap_Tuple_at>
 
-    <Capsule_wrapper_acc> ::=
-        '<:' <sp> <expr>
+    <Tuple_at> ::=
+        <expr> <sp> ':.' <sp> <expr>
 
-    <Capsule_asset_acc> ::=
+    <Capsule_wrapper> ::=
+        <expr> <sp> ':<'
+
+    <Capsule_unwrap> ::=
         <expr> <sp> ':>'
+
+    <Capsule_unwrap_Tuple_at> ::=
+        <expr> <sp> ':>.' <sp> <expr>
 
 I<TODO.>
 
@@ -1773,13 +1785,21 @@ Grammar:
 
 =head2 If-Else Expressions
 
-I<TODO.  Make 'if' keyword optional/noiseword.>
+I<TODO.  Make 'if' keyword optional/noiseword, or not.>
 
 =head2 Given-When-Default Expressions
 
-I<TODO.  Make 'given' keyword optional/noiseword.>
+I<TODO.  Make 'given' keyword optional/noiseword, or not.>
 
 =head2 Guard Expressions
+
+I<TODO.  A guard forces short-circuiting in an expression where otherwise an
+expression makes no guarantee as to whether anything is eager or lazy;
+in contrast, a conditional statement is implicitly always short-circuiting.>
+
+    if x != 0 then guard y/x else 42
+
+    given #x when 0 then 'empty' when 1 then guard only_member x default 'too many'
 
 I<TODO.  Note that 'fail' is implicitly guarded.>
 
@@ -1829,9 +1849,9 @@ I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
 
     terms - base literals or delimited anything or special selector syntax,
         including inline func/type/etc decls, or foo::bar::etc or func foo::(...) or \foo::(...)
+    special symbolic accessor post/infix :. :< :> :>.
     generic universal routine call infix: args --> rtn or rtn <-- args or args \--> rtn etc
     symbolic in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
-        and also prefix <:, postfix :> (no 'pipe' keyword needed)
     alpha in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
     conditional ternaries or n-aries or guards: if-then-else / given-when-default / guard
     why-binding infix ::?=
