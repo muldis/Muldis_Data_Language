@@ -1964,7 +1964,7 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
 
         Fraction::"" : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Fraction, \(
+            where : \(Capsule_subtype::( args:.\0, \Fraction, \(
                 if
                     args:.\0 is_a (
                         numerator : \Integer::(),
@@ -2499,7 +2499,7 @@ languages may name their corresponding operators I<x>.
 
         Bits : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Bits, \String::Bits() )),
+            where : \(Capsule_subtype::( args:.\0, \Bits, \String::Bits() )),
             default : \~?'',
             composes : {\@Stringy and_provides_its_default},
         )),
@@ -2659,7 +2659,7 @@ the bits of its C<Bits>-typed C<0> argument.
 
         Blob : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Blob, \String::Octets() )),
+            where : \(Capsule_subtype::( args:.\0, \Blob, \String::Octets() )),
             default : \~+'',
             composes : \@Stringy,
         )),
@@ -2883,7 +2883,7 @@ like national collations or fixed-size types.
 
         Text::"" : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Text, \String::Maximal_Chars() )),
+            where : \(Capsule_subtype::( args:.\0, \Text, \String::Maximal_Chars() )),
             default : '',
             composes : {\@Textual and_provides_its_default},
         )),
@@ -5598,7 +5598,7 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
 
         Set::"" : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Set,
+            where : \(Capsule_subtype::( args:.\0, \Set,
                 \(if Bag args:.\0 then guard all_unique args:.\0 else False) )),
             default : {},
             composes : {\@Discrete, \@Setty and_provides_its_default},
@@ -8298,7 +8298,7 @@ types that restrict their possible headings at the type level.>
 
         Tuple_Array::"" : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Tuple_Array, \(
+            where : \(Capsule_subtype::( args:.\0, \Tuple_Array, \(
                 if args:.\0 is_a ( heading : \Heading::(), body : \Array::() ) then guard
                     if args:.\0.\body all \Tuple::() then guard
                         args:.\0.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0.\heading)
@@ -8385,7 +8385,7 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
 
         Relation::"" : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Relation, \(
+            where : \(Capsule_subtype::( args:.\0, \Relation, \(
                 if args:.\0 is_a ( heading : \Heading::(), body : \Set::() ) then guard
                     if args:.\0.\body all \Tuple::() then guard
                         args:.\0.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0.\heading)
@@ -8465,7 +8465,7 @@ function C<select_Relational> for the composing type C<Relation>.
 
         Tuple_Bag::"" : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Tuple_Bag, \(
+            where : \(Capsule_subtype::( args:.\0, \Tuple_Bag, \(
                 if args:.\0 is_a ( heading : \Heading::(), body : \Bag::() ) then guard
                     if args:.\0.\body all \Tuple::() then guard
                         args:.\0.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0.\heading)
@@ -8554,7 +8554,7 @@ I<TODO.>
 
         Interval::"" : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Interval, \Interval::Attrs() )),
+            where : \(Capsule_subtype::( args:.\0, \Interval, \Interval::Attrs() )),
             default : \(Excuse::Before_All_Others()..Excuse::After_All_Others()),
             composes : {\@Intervalish, \@Setty},
         )),
@@ -8587,7 +8587,7 @@ I<TODO.>
 
         Interval_Set : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Interval_Set,
+            where : \(Capsule_subtype::( args:.\0, \Interval_Set,
                 \(if Interval_Bag args:.\0 then guard all_unique args:.\0 else False) )),
             default : ...,
             composes : {\@Unionable_Intervalish, \@Setty},
@@ -8601,7 +8601,7 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
 
         Interval_Bag : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Interval_Bag, \(
+            where : \(Capsule_subtype::( args:.\0, \Interval_Bag, \(
                 if Tuple_Bag args:.\0 then guard ... else False
             ) )),
             default : ...,
@@ -8627,7 +8627,7 @@ I<TODO.>
 
         Quantity : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Quantity, \(
+            where : \(Capsule_subtype::( args:.\0, \Quantity, \(
                 if Relation args:.\0 then guard ... else False
             ) )),
             default : ...,
@@ -8653,16 +8653,21 @@ C<Capsule>, the latter intentionally does not compose any interface
 contracts, and only has the minimal set of its own operators, so to
 minimize interference with other types' interfaces.
 
-=head2 has_wrapped
+=head2 Capsule_subtype
 
-        has_wrapped : (\Function : (
+        Capsule_subtype : (\Function : (
             returns : \@Boolean,
-            matches : (\@Capsule, \@Any, \@Signature),
-            map : \(args:.\0:< = args:.\1 and
-                (args:.\0:>,) --> Signature_to_Function_Call_But_0::(args:.\2)),
+            matches : (\@Any, \@Any, \@Signature),
+            map : \(
+                if Capsule args:.\0 then guard
+                    args:.\0:< = args:.\1 and
+                        (args:.\0:>,) --> Signature_to_Function_Call_But_0::(args:.\2)
+                else
+                    False
+            ),
         )),
 
-I<TODO.  Says wrapper equals a value and asset passes a filter.>
+I<TODO.  When given a Capsule, says if its wrapper equals a value and its asset passes a filter.>
 
 =head1 REFERENCE DATA TYPES
 
@@ -8789,7 +8794,7 @@ I<TODO.>
 
         Source_Code::Package : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Package, \(
+            where : \(Capsule_subtype::( args:.\0, \Package, \(
                 args:.\0 is_a (
                     identity : \Package::Identity::(),
                     foundation : \Package::Foundation::(),
@@ -8922,7 +8927,7 @@ Plain_Text does NOT have special syntax for Package or any Material now.>
 
         Source_Code::Alias : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Alias, \Identity_Identifier::() )),
+            where : \(Capsule_subtype::( args:.\0, \Alias, \Identity_Identifier::() )),
             default : \((\Alias : Identity_Identifier::())),
         )),
 
@@ -8932,7 +8937,7 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
 
         Source_Code::Constant : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Constant, \(
+            where : \(Capsule_subtype::( args:.\0, \Constant, \(
                 args:.\0 is_a (
                     folded : \Boolean::(),
                     composes : ...,
@@ -8948,7 +8953,7 @@ I<TODO.>
 
         Source_Code::Selection : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Selection, \(
+            where : \(Capsule_subtype::( args:.\0, \Selection, \(
                 args:.\0 is_a (
                     of : ...,
                     where : \Function_Body::(),
@@ -8967,7 +8972,7 @@ I<TODO.  Still have to figure syntax to handle and-provides-its-default marker.>
 
         Source_Code::Interface : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Interface, \(
+            where : \(Capsule_subtype::( args:.\0, \Interface, \(
                 args:.\0 is_a (
                     composes : ...,
                     requires_implements : ...,
@@ -8982,7 +8987,7 @@ I<TODO.>
 
         Source_Code::Function : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Function, \(
+            where : \(Capsule_subtype::( args:.\0, \Function, \(
                 args:.\0 is_a (
                     virtual : \Boolean::(),
                     commutes : \Identity_Identifier::(),
@@ -9010,7 +9015,7 @@ I<TODO.>
 
         Source_Code::Function_Body : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Function_Body, \(
+            where : \(Capsule_subtype::( args:.\0, \Function_Body, \(
                 args:.\0 is_a (
                     root_expr : \Expression::(),
                     named_exprs : \Named_Expr_List::(),
@@ -9025,7 +9030,7 @@ I<TODO.>
 
         Source_Code::Procedure : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Procedure, \(
+            where : \(Capsule_subtype::( args:.\0, \Procedure, \(
                 args:.\0 is_a (
                     virtual : \Boolean::(),
                     matches : \Signature::Tuple(),
@@ -9047,7 +9052,7 @@ I<TODO.>
 
         Source_Code::Procedure_Body : (\Selection : (
             of : \@Capsule,
-            where : \(has_wrapped::( args:.\0, \Procedure_Body, \(
+            where : \(Capsule_subtype::( args:.\0, \Procedure_Body, \(
                 args:.\0 is_a (
                     root_stmt : \Statement::(),
                     named_stmts : \Named_Stmt_List::(),
@@ -9212,7 +9217,7 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                         if Tuple args:.\0 then guard
                             if args:.\0 =@ args:.\1 then guard
                                 args:.\0 all_attrs
-                                    \(args:.\0.\asset is_a args:.\1.(args:.\0.\name)) \<-- ( 1: args:.\1, )
+                                    \(args:.\0:.\asset is_a args:.\1:.(args:.\0:.\name)) \<-- ( 1: args:.\1, )
                             else
                                 False
                         else
