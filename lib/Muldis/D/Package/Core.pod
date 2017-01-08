@@ -63,7 +63,7 @@ Standard Library> specification, of which this document is a part.
         authority : 'http://muldis.com',
         version_number : '0.201.0.-9',
     ),
-    floating : {\@package, \@package::Round_Meth, \@package::Source_Code},
+    floating : {\@package, \@package::Source_Code},
     materials : (
         ...
     ),
@@ -980,11 +980,10 @@ and its C<1> argument is C<True>, and C<False> otherwise.
 
 =head2 Round_Meth
 
-        Round_Meth : (\Enumeration : (
-            union : \@(Down,Up,To_Zero,To_Inf
-                ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
-                ,Half_Even,Half_Odd),
-            default : \To_Zero,
+        Round_Meth::"" : (\Selection : (
+            of : \@Capsule,
+            where : \(Capsule_subtype::( args:.\0, \@material, \folder::Attr_Name::() )),
+            default : (\@material : \To_Zero),
         )),
 
 The selection contract C<Round_Meth> is finite.  When a value of some
@@ -1013,6 +1012,32 @@ towards the nearest "even" or "odd" target respectively.
 The default value of C<Round_Meth> is C<To_Zero>, which is the simplest.
 Other programming languages may name their corresponding types
 I<RoundingMode> (Java) or I<MidpointRounding> (C#).
+
+=head2 Round_Meth::Attr_Name
+
+        Round_Meth::Attr_Name : (\Selection : (
+            of : \@Attr_Name,
+            where : \(args:.\0 ⊆@ \@(Down,Up,To_Zero,To_Inf
+                ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
+                ,Half_Even,Half_Odd)
+            ),
+            default : \To_Zero,
+        )),
+
+The selection contract C<Round_Meth::Attr_Name> represents the finite type
+consisting just of the C<Attr_Name> values that are valid Capsule assets of
+C<Round_Meth> values.
+
+=head2 RM
+
+        RM : (\Function : (
+            returns : \@Round_Meth,
+            matches : (\@Round_Meth::Attr_Name),
+            evaluates : \((\@Round_Meth : args:.\0)),
+        )),
+
+The function C<RM> results in the C<Round_Meth> value selected in
+terms of the C<Attr_Name> of its C<0> argument.
 
 =head1 NUMERICAL DATA TYPES
 
@@ -1482,7 +1507,7 @@ this operator in postfix like I<n!>.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            evaluates : \((if is_zero args:.\1 then args:.\0 else guard material::(args:.\1, mod::(args:.\0, args:.\1, To_Zero::())))
+            evaluates : \((if is_zero args:.\1 then args:.\0 else guard material::(args:.\1, mod::(args:.\0, args:.\1, RM::(\To_Zero))))
                 ::?= 'Calculate using the Euclidean algorithm.'),
         )),
 
@@ -1502,7 +1527,7 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
             is_commutative : True,
             is_idempotent : True,
             evaluates : \(if is_zero args:.\0 or is_zero args:.\1 then zero args:.\0
-                else guard div::(args:.\0 * args:.\1, args:.\0 gcd args:.\1, To_Zero::())),
+                else guard div::(args:.\0 * args:.\1, args:.\0 gcd args:.\1, RM::(\To_Zero))),
         )),
 
         least_common_multiple : (\Alias : ( of : \@lcm )),
@@ -1743,8 +1768,8 @@ virtual function C<multiple_of> for the composing type C<Integer>.
                 returns if d = 0 then Excuse::Div_By_Zero() else guard q;
 
                 q ::= (\Fraction : (
-                    numerator   : div::((if d > 0 then n else -n), gcd, To_Zero::()),
-                    denominator : div::((if d > 0 then d else -d), gcd, To_Zero::()),
+                    numerator   : div::((if d > 0 then n else -n), gcd, RM::(\To_Zero)),
+                    denominator : div::((if d > 0 then d else -d), gcd, RM::(\To_Zero)),
                 ));
 
                 gcd ::= gcd::(abs::(n), abs::(d));
@@ -1799,10 +1824,10 @@ the composing type C<Integer>.
                     rup_quotient ::= rtz_quotient + (if real_q_is_neg then  0 else 1);
 
                     returns given round_meth
-                        when Down::()    then rdn_quotient
-                        when Up::()      then rup_quotient
-                        when To_Zero::() then rtz_quotient
-                        when To_Inf::()  then rti_quotient
+                        when RM::(\Down)    then rdn_quotient
+                        when RM::(\Up)      then rup_quotient
+                        when RM::(\To_Zero) then rtz_quotient
+                        when RM::(\To_Inf)  then rti_quotient
                         default
                                  if (2 * abs::(rtz_remainder)) < abs::(divisor) then rtz_quotient
                             else if (2 * abs::(rtz_remainder)) > abs::(divisor) then rti_quotient
@@ -1819,13 +1844,13 @@ the composing type C<Integer>.
                     rtz_quotient_is_even ::= r = 0;
 
                     returns given round_meth
-                        when Half_Down::()    then rdn_quotient
-                        when Half_Up::()      then rup_quotient
-                        when Half_To_Zero::() then rtz_quotient
-                        when Half_To_Inf::()  then rti_quotient
-                        when Half_Even::()    then
+                        when RM::(\Half_Down)    then rdn_quotient
+                        when RM::(\Half_Up)      then rup_quotient
+                        when RM::(\Half_To_Zero) then rtz_quotient
+                        when RM::(\Half_To_Inf)  then rti_quotient
+                        when RM::(\Half_Even)    then
                             (if rtz_quotient_is_even then rtz_quotient else rti_quotient)
-                        when Half_Odd::()     then
+                        when RM::(\Half_Odd)     then
                             (if rtz_quotient_is_even then rti_quotient else rtz_quotient)
                         default fail  `oops, an unhandled case`
                     ;
@@ -2009,8 +2034,8 @@ default and minmum value is C<0.0>; it has no maximum value.
                   (
                     common_d ::= lcm::(denominator args:.\0, denominator args:.\1);
                     returns in_order::(
-                        (numerator args:.\0) * div::(common_d, denominator args:.\0, To_Zero::()),
-                        (numerator args:.\1) * div::(common_d, denominator args:.\1, To_Zero::()),
+                        (numerator args:.\0) * div::(common_d, denominator args:.\0, RM::(\To_Zero)),
+                        (numerator args:.\1) * div::(common_d, denominator args:.\1, RM::(\To_Zero)),
                     );
                   )
             ),
@@ -2101,8 +2126,8 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
                  else
                   (
                     common_d ::= lcm::(denominator args:.\0, denominator args:.\1);
-                    returns ((numerator args:.\0) * div::(common_d, denominator args:.\0, To_Zero::()))
-                        + ((numerator args:.\1) * div::(common_d, denominator args:.\1, To_Zero::()))
+                    returns ((numerator args:.\0) * div::(common_d, denominator args:.\0, RM::(\To_Zero)))
+                        + ((numerator args:.\1) * div::(common_d, denominator args:.\1, RM::(\To_Zero)))
                         / common_d;
                   )
             ),
@@ -2188,8 +2213,8 @@ the composing type C<Fraction>.
             implements : \@folder::"",
             evaluates : \(
                 d ::= lcm::(denominator args:.\0, denominator args:.\1);
-                n0 ::= (numerator args:.\0) * div::(d, denominator args:.\0, To_Zero::());
-                n1 ::= (numerator args:.\1) * div::(d, denominator args:.\1, To_Zero::());
+                n0 ::= (numerator args:.\0) * div::(d, denominator args:.\0, RM::(\To_Zero));
+                n1 ::= (numerator args:.\1) * div::(d, denominator args:.\1, RM::(\To_Zero));
                 returns if args:.\1 = 0.0 then Excuse::Div_By_Zero()
                     else guard div::(n0 * d, n1 * d, args:.\2) / 1;
             ),
@@ -8919,9 +8944,6 @@ I<TODO.>
             union : {\@Alias, \@Constant, \@Selection, \@Interface, \@Function, \@Procedure},
             default : ...,
         )),
-
-I<TODO.  Add Enumeration as its own Material kind, or otherwise have a type for it;
-Plain_Text does NOT have special syntax for Package or any Material now.>
 
 =head2 Source_Code::Alias
 
