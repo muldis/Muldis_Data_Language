@@ -1172,7 +1172,7 @@ mathematical notion writes this operator in circumfix like I<|n|>.
             matches : (\@Numerical, \@Numerical),
             is_associative : True,
             is_commutative : True,
-            repeater : times,
+            repeater : \@times,
         )),
 
         "+" : (\Alias : ( of : \@plus )),
@@ -1191,7 +1191,8 @@ C<1> (I<addend>).  This operation has a I<two-sided identity element> value of a
 
 The virtual function C<minus> aka binary C<-> aka binary C<−> results in
 the numeric I<difference> from performing I<subtraction> of its 2 arguments
-C<0> (I<minuend>) and C<1> (I<subtrahend>).
+C<0> (I<minuend>) and C<1> (I<subtrahend>).  This operation has a I<right
+identity element> value of a number zero.
 
 =head2 - −
 
@@ -1233,7 +1234,7 @@ C<1>, which is the (non-negative) distance between those arguments.
             matches : (\@Numerical, \@Numerical),
             is_associative : True,
             is_commutative : True,
-            repeater : integral_nn_power,
+            repeater : \@integral_nn_power,
         )),
 
         "*" : (\Alias : ( of : \@times )),
@@ -1304,7 +1305,8 @@ The result is always C<Fractional> for both C<Integral> and C<Fractional>
 arguments; as such, C<fractional_divided_by> is the idiomatic way to select
 any C<Fraction> values in terms of C<Integer> values.  The result is only
 I<defined> when the C<1> argument is a nonzero number; it is an C<Excuse>
-otherwise.
+otherwise.  This operation has a I<right identity element> value of a
+number positive one.
 
 =head2 integral_divided_by div
 
@@ -1325,7 +1327,8 @@ is determined by the rounding method specified by the C<2> argument.  The
 result is C<Integral> for C<Integral> arguments and is C<Fractional> with a
 I<denominator> of one for C<Fractional> arguments.  The result is only
 I<defined> when the C<1> argument is a nonzero number; it is an C<Excuse>
-otherwise.
+otherwise.  This operation has a I<right identity element> value of a
+number positive one.
 
 =head2 modulo mod
 
@@ -1620,7 +1623,7 @@ virtual function C<nth_pred> for the composing type C<Integer>.
             returns : \@Integer,
             matches : (\@Integer, \@Integer::NN),
             implements : \@folder::Integral,
-            repeater : plus::Integer,
+            repeater : \@plus::Integer,
             evaluates : \(args:.\0 + args:.\1),
         )),
 
@@ -1701,7 +1704,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Integer>.
             is_associative : True,
             is_commutative : True,
             identity : 0,
-            repeater : times::Integer,
+            repeater : \@times::Integer,
             evaluates : \(args --> \foundation::Integer_plus::()),
         )),
 
@@ -1714,6 +1717,7 @@ virtual function C<plus> aka C<+> for the composing type C<Integer>.
             returns : \@Integer,
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
+            right_identity : 0,
             evaluates : \(args --> \foundation::Integer_minus::()),
         )),
 
@@ -1729,7 +1733,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Integer>.
             is_associative : True,
             is_commutative : True,
             identity : 1,
-            repeater : integral_nn_power::Integer,
+            repeater : \@integral_nn_power::Integer,
             evaluates : \(args --> \foundation::Integer_times::()),
         )),
 
@@ -1755,6 +1759,7 @@ virtual function C<multiple_of> for the composing type C<Integer>.
             returns : {\@Fraction, \@Excuse::Div_By_Zero},
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
+            right_identity : 1,
             evaluates : \(
                 n ::= args:.\0;
                 d ::= args:.\1;
@@ -1780,6 +1785,7 @@ the composing type C<Integer>.
             returns : {\@Integer, \@Excuse::Div_By_Zero},
             matches : (\@Integer, \@Integer, \@Round_Meth),
             implements : \@folder::"",
+            right_identity : 1,
             evaluates : \(
                 dividend   ::= args:.\0;
                 divisor    ::= args:.\1;
@@ -2107,7 +2113,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
             is_associative : True,
             is_commutative : True,
             identity : 0.0,
-            repeater : times::Fraction_Integer,
+            repeater : \@times::Fraction_Integer,
             evaluates : \(
                 <-- if (denominator args:.\0) = (denominator args:.\1)
                     then (numerator args:.\0) + (numerator args:.\1) / (denominator args:.\0)
@@ -2130,6 +2136,7 @@ virtual function C<plus> aka C<+> for the composing type C<Fraction>.
             returns : \@Fraction,
             matches : (\@Fraction, \@Fraction),
             implements : \@folder::"",
+            right_identity : 0.0,
             evaluates : \(args:.\0 + -args:.\1),
         )),
 
@@ -2145,7 +2152,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Fraction>.
             is_associative : True,
             is_commutative : True,
             identity : 1.0,
-            repeater : integral_nn_power::Fraction,
+            repeater : \@integral_nn_power::Fraction,
             evaluates : \(((numerator args:.\0) * (numerator args:.\1))
                 / ((denominator args:.\0) * (denominator args:.\1))),
         )),
@@ -2185,6 +2192,7 @@ virtual function C<multiple_of> for the composing type C<Fraction>.
             returns : {\@Fraction, \@Excuse::Div_By_Zero},
             matches : (\@Fraction, \@Fraction),
             implements : \@folder::"",
+            right_identity : 1.0,
             evaluates : \(if args:.\1 = 0.0 then Excuse::Div_By_Zero()
                 else guard args:.\0 * reciprocal::(args:.\1)),
         )),
@@ -2199,6 +2207,7 @@ the composing type C<Fraction>.
             returns : {\@Fraction, \@Excuse::Div_By_Zero},
             matches : (\@Fraction, \@Fraction, \@Round_Meth),
             implements : \@folder::"",
+            right_identity : 1.0,
             evaluates : \(
                 d ::= lcm::(denominator args:.\0, denominator args:.\1);
                 n0 ::= (numerator args:.\0) * div::(d, denominator args:.\0, RM::(\To_Zero));
@@ -2474,7 +2483,7 @@ C<False>.
             returns : \@Stringy,
             matches : (\@Stringy, \@Stringy),
             is_associative : True,
-            repeater : replicate,
+            repeater : \@replicate,
         )),
 
         "~" : (\Alias : ( of : \@catenate )),
@@ -2622,7 +2631,7 @@ function C<disjoint_string> for the composing type C<Bits>.
             implements : \@folder::"",
             is_associative : True,
             identity : \~?'',
-            repeater : replicate::Bits,
+            repeater : \@replicate::Bits,
             evaluates : \(Bits_from_String_Bits::((Bits_to_String_Bits args:.\0)
                 ~ (Bits_to_String_Bits args:.\1))),
         )),
@@ -2780,7 +2789,7 @@ function C<disjoint_string> for the composing type C<Blob>.
             implements : \@folder::"",
             is_associative : True,
             identity : \~+'',
-            repeater : replicate::Blob,
+            repeater : \@replicate::Blob,
             evaluates : \(Blob_from_Octets::((Blob_to_Octets args:.\0) ~ (Blob_to_Octets args:.\1))),
         )),
 
@@ -3070,7 +3079,7 @@ function C<disjoint_string> for the composing type C<Text>.
             implements : \@folder::"",
             is_associative : True,
             identity : '',
-            repeater : replicate::Text,
+            repeater : \@replicate::Text,
             evaluates : \(Text_from_Maximal_Chars::((Text_to_Maximal_Chars args:.\0)
                 ~ (Text_to_Maximal_Chars args:.\1))),
         )),
@@ -4178,6 +4187,7 @@ those closest to the end of C<0>.  Note that C<except> is designed to
 mirror C<member_plus>, so the identity C<x = except::(member_plus::(x,y),y)>
 should hold for any C<Unionable> type, even a C<Positional> one, except
 with C<Setty> C<x> and C<y> that have any members that are the same value.
+This operation has a I<right identity element> value of a collection with zero members.
 Other programming languages may name their corresponding operators I<minus>
 or I<-> or I<difference> or I<\\> or I<complement> or I<setdiff> or I<diff>
 or I<--> etc or I<subtract>.
@@ -5153,7 +5163,7 @@ C<disjoint_string> for the composing type C<Array>.
             implements : \@folder::"",
             is_associative : True,
             identity : [],
-            repeater : replicate::Array,
+            repeater : \@replicate::Array,
             evaluates : \(args --> \foundation::Array_catenate::()),
         )),
 
@@ -5288,6 +5298,7 @@ C<remove_n> for the composing type C<Array>.
             returns : \@Array,
             matches : (\@Array, \@Array),
             implements : \@folder::"",
+            right_identity : [],
             evaluates : \(args --> \foundation::Array_except::()),
         )),
 
@@ -5837,6 +5848,7 @@ virtual function C<member_plus> aka C<⊎> for the composing type C<Set>.
             returns : \@Set,
             matches : (\@Set, \@Set),
             implements : \@folder::"",
+            right_identity : {},
             evaluates : \((\Set : (args:.\0:> except args:.\1:>))),
         )),
 
@@ -6302,6 +6314,7 @@ function C<member_plus> aka C<⊎> for the composing type C<Bag>.
             returns : \@Bag,
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
+            right_identity : {0:0},
             evaluates : \(args --> \foundation::Bag_except::()),
         )),
 
@@ -7888,7 +7901,8 @@ multiplicity is the integral difference of the multiplicities of that same
 tuple of each of the 2 arguments (when subtracting the I<subtrahend> from
 the I<minuend>); a multiplicity is zero when it would otherwise be
 negative.  If the result's type is C<Positional>, then the removed
-instances of any distinct tuple are those closest to the end of C<0>.  The
+instances of any distinct tuple are those closest to the end of C<0>.  This
+operation has a I<right identity element> value of a collection with zero members.  The
 result is only I<defined> when the 2 arguments have the same I<heading>; it
 is an C<Excuse> otherwise.  This function implements the C<Unionable>
 virtual function C<except> aka C<∖> for the composing type C<Relational>.
@@ -8945,10 +8959,12 @@ I<TODO.  Re-add the 'folded' of a 'constant' into an expression type or such.>
                     overrides : ...,
                     accepts : \Function_Body::(),
                     intends : \Function_Body::(),
-                    is_associative : \Boolean::(),
+                    is_associative : \Boolean::(),  `two-way associative`
                     is_commutative : \Boolean::(),
                     is_idempotent : \Boolean::(),
-                    identity : \Function_Body::(),  `two-sided identity element`
+                    identity : \Function_Body::(),  `iff two-sided identity element exists`
+                    left_identity : \Function_Body::(),  `iff only left-identity element exists`
+                    right_identity : \Function_Body::(),  `iff only right-identity element exists`
                     repeater : ...,
                     evaluates : \Function_Body::(),
                 )
