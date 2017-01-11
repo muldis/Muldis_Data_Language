@@ -162,7 +162,9 @@ member of the type specified by its C<1> argument, and C<True> otherwise.
 
 =head2 Excuse
 
-        Excuse::"" : (\Interface : ()),
+        Excuse::"" : (\Selection : (
+            is_generalization : True,
+        )),
 
 The semantic contract C<Excuse> is semifinite.  An C<Excuse> value is an
 explicitly stated reason for why, given some particular problem domain, a
@@ -202,7 +204,7 @@ automatically halt blocks of code.>
 
 =head2 Excuse::No_Reason
 
-        Excuse::No_Reason : (\Constant : ( composes : \@Excuse and_provides_its_default )),
+        Excuse::No_Reason : (\Selection : ( composes : \@Excuse and_provides_its_default, value : \@material )),
 
 The constant C<Excuse::No_Reason> represents the C<Excuse> value which
 simply says that an ordinary value for any given domain is missing and that
@@ -253,7 +255,8 @@ the first C<Excuse> in a list.
 
 =head2 Orderable
 
-        Orderable::"" : (\Interface : (
+        Orderable::"" : (\Selection : (
+            is_generalization : True,
         )),
 
 The interface contract C<Orderable> is semifinite.  An C<Orderable> value has
@@ -287,7 +290,7 @@ C<String>, C<Tuple_Array>.
 
 =head2 Excuse::Before_All_Others
 
-        Excuse::Before_All_Others : (\Constant : ( composes : {\@Excuse, \@Orderable} )),
+        Excuse::Before_All_Others : (\Selection : ( composes : {\@Excuse, \@Orderable}, value : \@material )),
 
 The constant C<Excuse::Before_All_Others> represents a type-agnostic
 analogy of negative infinity, an C<Orderable> value that sorts I<before>
@@ -299,7 +302,7 @@ defined in other, not-C<Core>, Muldis D packages for the relevant domains.
 
 =head2 Excuse::After_All_Others
 
-        Excuse::After_All_Others : (\Constant : ( composes : {\@Excuse, \@Orderable} )),
+        Excuse::After_All_Others : (\Selection : ( composes : {\@Excuse, \@Orderable}, value : \@material )),
 
 The constant C<Excuse::After_All_Others> represents a type-agnostic
 analogy of positive infinity, an C<Orderable> value that sorts I<after>
@@ -473,7 +476,8 @@ otherwise, meaning the values of C<0> and C<1> are swapped.
 
 =head2 Successable
 
-        Successable : (\Interface : (
+        Successable : (\Selection : (
+            is_generalization : True,
         )),
 
 The interface contract C<Successable> is semifinite.  A C<Successable> value
@@ -563,7 +567,8 @@ C<Excuse::After_All_Others> if there is none.
 
 =head2 Bicessable
 
-        Bicessable : (\Interface : (
+        Bicessable : (\Selection : (
+            is_generalization : True,
             composes : {\@Orderable and_provides_its_default,
                 \@Successable and_provides_its_default},
         )),
@@ -637,7 +642,9 @@ C<Excuse::Before_All_Others> if there is none.
 
 =head2 Boolable
 
-        Boolable : (\Interface : ()),
+        Boolable : (\Selection : (
+            is_generalization : True,
+        )),
 
 The interface contract C<Boolable> is semifinite.  A C<Boolable> value has a
 canonical way of being cast to a C<Boolean> value in a context-free manner,
@@ -699,9 +706,9 @@ it results in C<False>.
 =head2 Boolean
 
         Boolean : (\Selection : (
+            composes : {\@Bicessable, \@Boolable and_provides_its_default},
             where : \(args --> \foundation::is_a_Boolean::()),
             default : False,
-            composes : {\@Bicessable, \@Boolable and_provides_its_default},
         )),
 
 The selection contract C<Boolean> represents the finite Muldis
@@ -715,7 +722,7 @@ typically integer types, to be I<false> or I<true>.
 
 =head2 False ⊥
 
-        False : (\Constant : ( value : False )),
+        False : (\Selection : ( value : False )),
 
         Unicode_Aliases::"⊥" : (\Alias : ( of : \@False )),
 
@@ -725,7 +732,7 @@ the integer 0 to represent I<false>.
 
 =head2 True ⊤
 
-        True : (\Constant : ( value : True )),
+        True : (\Selection : ( value : True )),
 
         Unicode_Aliases::"⊤" : (\Alias : ( of : \@True )),
 
@@ -1040,7 +1047,8 @@ terms of the C<Attr_Name> of its C<0> argument.
 
 =head2 Numerical
 
-        Numerical : (\Interface : (
+        Numerical : (\Selection : (
+            is_generalization : True,
             composes : \@Boolable,
         )),
 
@@ -1071,7 +1079,7 @@ floating-point types and so on.
 
 =head2 Excuse::Div_By_Zero
 
-        Excuse::Div_By_Zero : (\Constant : ( composes : \@Excuse )),
+        Excuse::Div_By_Zero : (\Selection : ( composes : \@Excuse, value : \@material )),
 
 The constant C<Excuse::Div_By_Zero> represents the I<undefined> result of
 attempting to divide a simple number by a simple, unsigned, number zero.
@@ -1081,7 +1089,7 @@ positive) zero, but the Muldis D C<Core> package lacks those concepts.
 
 =head2 Excuse::Zero_To_The_Zero
 
-        Excuse::Zero_To_The_Zero : (\Constant : ( composes : \@Excuse )),
+        Excuse::Zero_To_The_Zero : (\Selection : ( composes : \@Excuse, value : \@material )),
 
 The constant C<Excuse::Zero_To_The_Zero> represents the I<undefined> result
 of attempting to exponentiate a number zero to the power of a number zero.
@@ -1393,7 +1401,8 @@ otherwise.
 
 =head2 Integral
 
-        Integral::"" : (\Interface : (
+        Integral::"" : (\Selection : (
+            is_generalization : True,
             composes : {\@Bicessable and_provides_its_default,
                 \@Numerical and_provides_its_default},
         )),
@@ -1539,9 +1548,9 @@ otherwise.
 =head2 Integer
 
         Integer::"" : (\Selection : (
+            composes : \@Integral and_provides_its_default,
             where : \(args --> \foundation::is_a_Integer::()),
             default : 0,
-            composes : \@Integral and_provides_its_default,
         )),
 
 The selection contract C<Integer> represents
@@ -1903,7 +1912,8 @@ function C<factorial> for the composing type C<Integer>.
 
 =head2 Fractional
 
-        Fractional::"" : (\Interface : (
+        Fractional::"" : (\Selection : (
+            is_generalization : True,
             composes : {\@Orderable and_provides_its_default,
                 \@Numerical and_provides_its_default},
         )),
@@ -1966,6 +1976,7 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
 =head2 Fraction
 
         Fraction::"" : (\Selection : (
+            composes : \@Fractional and_provides_its_default,
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Fraction, \(
                 if
@@ -1979,7 +1990,6 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
                     False
             ) )),
             default : 0.0,
-            composes : \@Fractional and_provides_its_default,
         )),
 
 The selection contract C<Fraction> is infinite.  A
@@ -2268,7 +2278,8 @@ function C<denominator> for the composing type C<Fraction>.
 
 =head2 Emptyable
 
-        Emptyable : (\Interface : (
+        Emptyable : (\Selection : (
+            is_generalization : True,
             composes : \@Boolable,
         )),
 
@@ -2287,7 +2298,7 @@ C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
 
 =head2 Excuse::No_Empty_Value
 
-        Excuse::No_Empty_Value : (\Constant : ( composes : \@Excuse )),
+        Excuse::No_Empty_Value : (\Selection : ( composes : \@Excuse, value : \@material )),
 
 The constant C<Excuse::No_Empty_Value> represents the I<undefined> result
 of attempting to request the value with zero members of some collection
@@ -2340,7 +2351,8 @@ Other programming languages may name their corresponding operators I<clear>.
 
 =head2 Stringy
 
-        Stringy : (\Interface : (
+        Stringy : (\Selection : (
+            is_generalization : True,
             composes : {\@Orderable, \@Emptyable and_provides_its_default},
         )),
 
@@ -2497,10 +2509,10 @@ languages may name their corresponding operators I<x>.
 =head2 Bits
 
         Bits : (\Selection : (
+            composes : {\@Stringy and_provides_its_default},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Bits, \String::Bits() )),
             default : \~?'',
-            composes : {\@Stringy and_provides_its_default},
         )),
 
 The selection contract C<Bits> is infinite.  A C<Bits> value is an
@@ -2657,10 +2669,10 @@ the bits of its C<Bits>-typed C<0> argument.
 =head2 Blob
 
         Blob : (\Selection : (
+            composes : \@Stringy,
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Blob, \String::Octets() )),
             default : \~+'',
-            composes : \@Stringy,
         )),
 
 The selection contract C<Blob> is infinite.  A C<Blob> value is an
@@ -2813,7 +2825,8 @@ octets of its C<Blob>-typed C<0> argument.
 
 =head2 Textual
 
-        Textual : (\Interface : (
+        Textual : (\Selection : (
+            is_generalization : True,
             composes : \@Stringy,
         )),
 
@@ -2877,10 +2890,10 @@ like national collations or fixed-size types.
 =head2 Text
 
         Text::"" : (\Selection : (
+            composes : {\@Textual and_provides_its_default},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Text, \String::Maximal_Chars() )),
             default : '',
-            composes : {\@Textual and_provides_its_default},
         )),
 
 The selection contract C<Text> is infinite.  A C<Text> value is an
@@ -3407,7 +3420,8 @@ respectively for said dimensions.
 
 =head2 Accessible
 
-        Accessible : (\Interface : (
+        Accessible : (\Selection : (
+            is_generalization : True,
         )),
 
 The interface contract C<Accessible> is semifinite.  An C<Accessible> value
@@ -3628,7 +3642,8 @@ I<delete> or I<unset>.
 
 =head2 Homogeneous
 
-        Homogeneous : (\Interface : (
+        Homogeneous : (\Selection : (
+            is_generalization : True,
             composes : \@Emptyable,
         )),
 
@@ -4025,7 +4040,8 @@ I<TODO.  Result is true when at least one member evaluates to false.>
 
 =head2 Unionable
 
-        Unionable : (\Interface : (
+        Unionable : (\Selection : (
+            is_generalization : True,
             composes : \@Homogeneous,
         )),
 
@@ -4352,7 +4368,8 @@ otherwise the reduce is a serial operation, at least naively.>
 
 =head2 Discrete
 
-        Discrete : (\Interface : (
+        Discrete : (\Selection : (
+            is_generalization : True,
             composes : \@Unionable and_provides_its_default,
         )),
 
@@ -4442,7 +4459,8 @@ of any type, both C<Orderable> or not.
 
 =head2 Positional
 
-        Positional : (\Interface : (
+        Positional : (\Selection : (
+            is_generalization : True,
             composes : {\@Stringy, \@Discrete and_provides_its_default, \@Accessible},
         )),
 
@@ -4477,7 +4495,7 @@ composed, directly or indirectly, by: C<Array>, C<String>, C<Tuple_Array>.
 
 =head2 Excuse::No_Such_Ord_Pos
 
-        Excuse::No_Such_Ord_Pos : (\Constant : ( composes : \@Excuse )),
+        Excuse::No_Such_Ord_Pos : (\Selection : ( composes : \@Excuse, value : \@material )),
 
 The constant C<Excuse::No_Such_Ord_Pos> represents the I<undefined> result of
 attempting to use a member ordinal position I<P> of C<Positional> value I<V> while
@@ -4973,9 +4991,9 @@ I<TODO.  Also consider ord_pos_first_diff_elem or ord_pos_succ_common_prefix as 
 =head2 Array
 
         Array::"" : (\Selection : (
+            composes : \@Positional and_provides_its_default,
             where : \(args --> \foundation::is_a_Array::()),
             default : [],
-            composes : \@Positional and_provides_its_default,
         )),
 
 The selection contract C<Array> represents the infinite Muldis D Foundation
@@ -5015,7 +5033,7 @@ I<string> that may represent either octets or characters.
 
 =head2 Array::Empty ~∅
 
-        Array::Empty : (\Constant : ( value : [] )),
+        Array::Empty : (\Selection : ( value : [] )),
 
         Unicode_Aliases::"~∅" : (\Alias : ( of : \@Array::Empty )),
 
@@ -5537,7 +5555,9 @@ for perceived efficiency.>
 
 =head2 Setty
 
-        Setty : (\Interface : ()),
+        Setty : (\Selection : (
+            is_generalization : True,
+        )),
 
 The semantic contract C<Setty> is semifinite.  A C<Setty> value is a
 I<collective> value such that every one of its component I<members> is a
@@ -5550,11 +5570,11 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
 =head2 Set
 
         Set::"" : (\Selection : (
+            composes : {\@Discrete, \@Setty and_provides_its_default},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Set,
                 \(if Bag args:.\0 then guard all_unique args:.\0 else False) )),
             default : {},
-            composes : {\@Discrete, \@Setty and_provides_its_default},
         )),
 
 The selection contract C<Set> is infinite.  A C<Set> value is a general
@@ -5566,7 +5586,7 @@ the only zero-member C<Set> value.
 
 =head2 Set::Empty ?∅
 
-        Set::Empty : (\Constant : ( value : {} )),
+        Set::Empty : (\Selection : ( value : {} )),
 
         Unicode_Aliases::"?∅" : (\Alias : ( of : \@Set::Empty )),
 
@@ -6012,9 +6032,9 @@ C<Discrete> virtual function C<order_using> for the composing type C<Set>.
 =head2 Bag
 
         Bag::"" : (\Selection : (
+            composes : \@Discrete,
             where : \(args --> \foundation::is_a_Bag::()),
             default : {0:0},
-            composes : \@Discrete,
         )),
 
 The selection contract C<Bag> represents the infinite Muldis D Foundation
@@ -6028,7 +6048,7 @@ corresponding types I<Multiset>.
 
 =head2 Bag::Empty +∅
 
-        Bag::Empty : (\Constant : ( value : {0:0} )),
+        Bag::Empty : (\Selection : ( value : {0:0} )),
 
         Unicode_Aliases::"+∅" : (\Alias : ( of : \@Bag::Empty )),
 
@@ -6476,7 +6496,8 @@ C<Discrete> virtual function C<order_using> for the composing type C<Bag>.
 
 =head2 Attributive
 
-        Attributive : (\Interface : (
+        Attributive : (\Selection : (
+            is_generalization : True,
         )),
 
 The interface contract C<Attributive> is semifinite.  An C<Attributive> value
@@ -6522,7 +6543,7 @@ C<Tuple>, C<Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
 
 =head2 Excuse::No_Such_Attr_Name
 
-        Excuse::No_Such_Attr_Name : (\Constant : ( composes : \@Excuse )),
+        Excuse::No_Such_Attr_Name : (\Selection : ( composes : \@Excuse, value : \@material )),
 
 The constant C<Excuse::No_Such_Attr_Name> represents the I<undefined>
 result of attempting to use an attribute named I<N> of C<Attributive> value
@@ -6531,7 +6552,7 @@ name is I<N>.
 
 =head2 Excuse::Not_Same_Heading
 
-        Excuse::Not_Same_Heading : (\Constant : ( composes : \@Excuse )),
+        Excuse::Not_Same_Heading : (\Selection : ( composes : \@Excuse, value : \@material )),
 
 The constant C<Excuse::Not_Same_Heading> represents the I<undefined> result
 of attempting to perform an operation that takes 2 C<Attributive> inputs
@@ -7006,7 +7027,8 @@ C<0> argument rather than failing.
 
 =head2 Structural
 
-        Structural : (\Interface : (
+        Structural : (\Selection : (
+            is_generalization : True,
             composes : {\@Attributive and_provides_its_default,
                 \@Accessible and_provides_its_default},
         )),
@@ -7205,9 +7227,9 @@ be treated abstractly as sets of attributes with minimal effort.
 =head2 Tuple
 
         Tuple::"" : (\Selection : (
+            composes : \@Structural and_provides_its_default,
             where : \(args --> \foundation::is_a_Tuple::()),
             default : (),
-            composes : \@Structural and_provides_its_default,
         )),
 
 The selection contract C<Tuple> represents the infinite Muldis D Foundation
@@ -7236,7 +7258,7 @@ I<Stash> or I<record> or I<struct> or I<row> or I<DataRow> or I<Hash>.
 
 =head2 Tuple::D0
 
-        Tuple::D0 : (\Constant : ( value : () )),
+        Tuple::D0 : (\Selection : ( value : () )),
 
 The constant C<Tuple::D0> represents the only zero-attribute
 C<Tuple> value.
@@ -7534,7 +7556,8 @@ I<TODO.>
 
 =head2 Relational
 
-        Relational : (\Interface : (
+        Relational : (\Selection : (
+            is_generalization : True,
             composes : {\@Unionable, \@Attributive},
         )),
 
@@ -8241,6 +8264,7 @@ types that restrict their possible headings at the type level.>
 =head2 Tuple_Array
 
         Tuple_Array::"" : (\Selection : (
+            composes : {\@Relational, \@Positional},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Tuple_Array, \(
                 if args:.\0 is_a ( heading : \Heading::(), body : \Array::() ) then guard
@@ -8252,7 +8276,6 @@ types that restrict their possible headings at the type level.>
                     False
             ) )),
             default : \(~%@()),
-            composes : {\@Relational, \@Positional},
         )),
 
 I<TODO.>
@@ -8268,14 +8291,14 @@ or a subtype of it does.>
 
 =head2 Tuple_Array::D0C0
 
-        Tuple_Array::D0C0 : (\Constant : ( value : ~%@() )),
+        Tuple_Array::D0C0 : (\Selection : ( value : ~%@() )),
 
 The constant C<Tuple_Array::D0C0> represents the only zero-attribute,
 zero-tuple C<Tuple_Array> value.
 
 =head2 Tuple_Array::D0C1
 
-        Tuple_Array::D0C1 : (\Constant : ( value : ~%[()] )),
+        Tuple_Array::D0C1 : (\Selection : ( value : ~%[()] )),
 
 The constant C<Tuple_Array::D0C1> represents the only zero-attribute,
 single-tuple C<Tuple_Array> value.
@@ -8328,6 +8351,7 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
 =head2 Relation
 
         Relation::"" : (\Selection : (
+            composes : {\@Relational and_provides_its_default, \@Discrete, \@Setty},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Relation, \(
                 if args:.\0 is_a ( heading : \Heading::(), body : \Set::() ) then guard
@@ -8339,14 +8363,13 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
                     False
             ) )),
             default : \(?%@()),
-            composes : {\@Relational and_provides_its_default, \@Discrete, \@Setty},
         )),
 
 I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
 
 =head2 Relation::D0C0
 
-        Relation::D0C0 : (\Constant : ( value : ?%@() )),
+        Relation::D0C0 : (\Selection : ( value : ?%@() )),
 
 The constant C<Relation::D0C0> represents the only
 zero-attribute, zero-tuple C<Relation> value.  Note that I<The Third
@@ -8354,7 +8377,7 @@ Manifesto> also refers to this value by the special name I<TABLE_DUM>.
 
 =head2 Relation::D0C1
 
-        Relation::D0C1 : (\Constant : ( value : ?%{()} )),
+        Relation::D0C1 : (\Selection : ( value : ?%{()} )),
 
 The constant C<Relation::D0C1> represents the only
 zero-attribute, single-tuple C<Relation> value.  Note that I<The Third
@@ -8408,6 +8431,7 @@ function C<select_Relational> for the composing type C<Relation>.
 =head2 Tuple_Bag
 
         Tuple_Bag::"" : (\Selection : (
+            composes : {\@Relational, \@Discrete},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Tuple_Bag, \(
                 if args:.\0 is_a ( heading : \Heading::(), body : \Bag::() ) then guard
@@ -8419,21 +8443,20 @@ function C<select_Relational> for the composing type C<Relation>.
                     False
             ) )),
             default : \(+%@()),
-            composes : {\@Relational, \@Discrete},
         )),
 
 I<TODO.>
 
 =head2 Tuple_Bag::D0C0
 
-        Tuple_Bag::D0C0 : (\Constant : ( value : +%@() )),
+        Tuple_Bag::D0C0 : (\Selection : ( value : +%@() )),
 
 The constant C<Tuple_Bag::D0C0> represents the only zero-attribute,
 zero-tuple C<Tuple_Bag> value.
 
 =head2 Tuple_Bag::D0C1
 
-        Tuple_Bag::D0C1 : (\Constant : ( value : +%{()} )),
+        Tuple_Bag::D0C1 : (\Selection : ( value : +%{()} )),
 
 The constant C<Tuple_Bag::D0C1> represents the only zero-attribute,
 single-tuple C<Tuple_Bag> value.
@@ -8485,7 +8508,8 @@ function C<select_Relational> for the composing type C<Tuple_Bag>.
 
 =head2 Intervalish
 
-        Intervalish : (\Interface : (
+        Intervalish : (\Selection : (
+            is_generalization : True,
             composes : \@Homogeneous,
         )),
 
@@ -8496,10 +8520,10 @@ I<TODO.>
 =head2 Interval
 
         Interval::"" : (\Selection : (
+            composes : {\@Intervalish, \@Setty},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Interval, \Interval::Attrs() )),
             default : \(Excuse::Before_All_Others()..Excuse::After_All_Others()),
-            composes : {\@Intervalish, \@Setty},
         )),
 
 I<TODO.>
@@ -8517,7 +8541,8 @@ I<TODO.>
 
 =head2 Unionable_Intervalish
 
-        Unionable_Intervalish : (\Interface : (
+        Unionable_Intervalish : (\Selection : (
+            is_generalization : True,
             composes : {\@Intervalish, \@Unionable},
         )),
 
@@ -8528,11 +8553,11 @@ I<TODO.>
 =head2 Interval_Set
 
         Interval_Set : (\Selection : (
+            composes : {\@Unionable_Intervalish, \@Setty},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Interval_Set,
                 \(if Interval_Bag args:.\0 then guard all_unique args:.\0 else False) )),
             default : ...,
-            composes : {\@Unionable_Intervalish, \@Setty},
         )),
 
 I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.>
@@ -8542,12 +8567,12 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
 =head2 Interval_Bag
 
         Interval_Bag : (\Selection : (
+            composes : \@Unionable_Intervalish,
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Interval_Bag, \(
                 if Tuple_Bag args:.\0 then guard ... else False
             ) )),
             default : ...,
-            composes : \@Unionable_Intervalish,
         )),
 
 I<TODO.>
@@ -8556,7 +8581,8 @@ I<TODO.>
 
 =head2 Quantitative
 
-        Quantitative : (\Interface : (
+        Quantitative : (\Selection : (
+            is_generalization : True,
             composes : \@Numerical,
         )),
 
@@ -8567,12 +8593,12 @@ I<TODO.>
 =head2 Quantity
 
         Quantity : (\Selection : (
+            composes : \@Quantitative,
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Quantity, \(
                 if Relation args:.\0 then guard ... else False
             ) )),
             default : ...,
-            composes : \@Quantitative,
         )),
 
 I<TODO.>
@@ -8857,7 +8883,7 @@ I<TODO.>
 =head2 Source_Code::Material
 
         Source_Code::Material : (\Selection : (
-            union : {\@Alias, \@Constant, \@Selection, \@Interface, \@Function, \@Procedure},
+            union : {\@Alias, \@Selection, \@Function, \@Procedure},
             default : ...,
         )),
 
@@ -8871,32 +8897,18 @@ I<TODO.>
 
 I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
 
-=head2 Source_Code::Constant
-
-        Source_Code::Constant : (\Selection : (
-            of : \@Capsule,
-            where : \(Capsule_subtype::( args:.\0, \Constant, \(
-                args:.\0 is_a (
-                    folded : \Boolean::(),
-                    composes : ...,
-                    value : \Function_Body::(),  `Defaults to \@0 if omitted.`
-                )
-            ) )),
-            default : ...,
-        )),
-
-I<TODO.>
-
 =head2 Source_Code::Selection
 
         Source_Code::Selection : (\Selection : (
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Selection, \(
                 args:.\0 is_a (
+                    is_generalization : \Boolean::(),
+                    composes : ...,
+                    value : \Function_Body::(),
                     of : ...,
                     where : \Function_Body::(),
                     default : \Function_Body::(),
-                    composes : ...,
                 )
             ) )),
             default : ...,
@@ -8906,19 +8918,15 @@ I<TODO.>
 
 I<TODO.  Still have to figure syntax to handle and-provides-its-default marker.>
 
-=head2 Source_Code::Interface
+I<TODO.  A "constant" always has a "value" attribute and optionally has a
+"composes" attribute; it is always lacking in the other attributes.
+An "interface contract" always has a True "is_generalization" attribute and
+optionally has a "composes" attribute; it is always lacking in the other attributes.
+A "selection contract" always lacks an "is_generalization" attribute
+(or has a False one) and always lacks a "value" attribute; it may have any
+of the other attributes.>
 
-        Source_Code::Interface : (\Selection : (
-            of : \@Capsule,
-            where : \(Capsule_subtype::( args:.\0, \Interface, \(
-                args:.\0 is_a (
-                    composes : ...,
-                )
-            ) )),
-            default : ...,
-        )),
-
-I<TODO.>
+I<TODO.  Re-add the 'folded' of a 'constant' into an expression type or such.>
 
 =head2 Source_Code::Function
 
@@ -9175,7 +9183,9 @@ I<TODO.>
 
 =head2 Source_Code::Annotation
 
-        Source_Code::Annotation::"" : (\Interface : ()),
+        Source_Code::Annotation::"" : (\Selection : (
+            is_generalization : True,
+        )),
 
 I<TODO.>
 
@@ -9202,7 +9212,9 @@ and would not cause a problem if missing.>
 
 =head2 Source_Code::Decoration
 
-        Source_Code::Decoration::"" : (\Interface : ()),
+        Source_Code::Decoration::"" : (\Selection : (
+            is_generalization : True,
+        )),
 
 I<TODO.>
 
