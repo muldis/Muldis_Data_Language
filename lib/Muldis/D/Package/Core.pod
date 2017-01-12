@@ -208,7 +208,11 @@ automatically halt blocks of code.>
 =head2 Excuse::No_Reason
 
         Excuse::No_Reason : (\Function : (
-            is_type_definer : True, composes : \@Excuse and_provides_its_default, value : \@material )),
+            is_type_definer : True,
+            composes : {\@Excuse},
+            provides_default_for : {\@Excuse},
+            value : \@material,
+        )),
 
 The constant C<Excuse::No_Reason> represents the C<Excuse> value which
 simply says that an ordinary value for any given domain is missing and that
@@ -580,8 +584,8 @@ C<Excuse::After_All_Others> if there is none.
         Bicessable : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : {\@Orderable and_provides_its_default,
-                \@Successable and_provides_its_default},
+            composes : {\@Orderable, \@Successable},
+            provides_default_for : {\@Orderable, \@Successable},
         )),
 
 The interface contract C<Bicessable> is semifinite.  A C<Bicessable> value
@@ -719,7 +723,8 @@ it results in C<False>.
 
         Boolean : (\Function : (
             is_type_definer : True,
-            composes : {\@Bicessable, \@Boolable and_provides_its_default},
+            composes : {\@Bicessable, \@Boolable},
+            provides_default_for : {\@Boolable},
             where : \(args --> \foundation::is_a_Boolean::()),
             default : False,
         )),
@@ -1067,7 +1072,7 @@ terms of the C<Attr_Name> of its C<0> argument.
         Numerical : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : \@Boolable,
+            composes : {\@Boolable},
         )),
 
 The interface contract C<Numerical> is semifinite.  A C<Numerical> value
@@ -1098,7 +1103,7 @@ floating-point types and so on.
 =head2 Excuse::Div_By_Zero
 
         Excuse::Div_By_Zero : (\Function : (
-            is_type_definer : True, composes : \@Excuse, value : \@material )),
+            is_type_definer : True, composes : {\@Excuse}, value : \@material )),
 
 The constant C<Excuse::Div_By_Zero> represents the I<undefined> result of
 attempting to divide a simple number by a simple, unsigned, number zero.
@@ -1109,7 +1114,7 @@ positive) zero, but the Muldis D C<Core> package lacks those concepts.
 =head2 Excuse::Zero_To_The_Zero
 
         Excuse::Zero_To_The_Zero : (\Function : (
-            is_type_definer : True, composes : \@Excuse, value : \@material )),
+            is_type_definer : True, composes : {\@Excuse}, value : \@material )),
 
 The constant C<Excuse::Zero_To_The_Zero> represents the I<undefined> result
 of attempting to exponentiate a number zero to the power of a number zero.
@@ -1427,8 +1432,8 @@ otherwise.
         Integral::"" : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : {\@Bicessable and_provides_its_default,
-                \@Numerical and_provides_its_default},
+            composes : {\@Bicessable, \@Numerical},
+            provides_default_for : {\@Bicessable, \@Numerical},
         )),
 
 The interface contract C<Integral> is semifinite.  An C<Integral> value
@@ -1575,7 +1580,8 @@ otherwise.
 
         Integer::"" : (\Function : (
             is_type_definer : True,
-            composes : \@Integral and_provides_its_default,
+            composes : {\@Integral},
+            provides_default_for : {\@Integral},
             where : \(args --> \foundation::is_a_Integer::()),
             default : 0,
         )),
@@ -1947,8 +1953,7 @@ function C<factorial> for the composing type C<Integer>.
         Fractional::"" : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : {\@Orderable and_provides_its_default,
-                \@Numerical and_provides_its_default},
+            composes : {\@Orderable, \@Numerical},
         )),
 
 The interface contract C<Fractional> is semifinite.  A C<Fractional> value
@@ -2011,7 +2016,8 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
 
         Fraction::"" : (\Function : (
             is_type_definer : True,
-            composes : \@Fractional and_provides_its_default,
+            composes : {\@Fractional},
+            provides_default_for : {\@Fractional},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Fraction, \(
                     args:.\0 is_a (
@@ -2317,7 +2323,7 @@ function C<denominator> for the composing type C<Fraction>.
         Emptyable : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : \@Boolable,
+            composes : {\@Boolable},
         )),
 
 The interface contract C<Emptyable> is semifinite.  An C<Emptyable> value is
@@ -2336,7 +2342,7 @@ C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
 =head2 Excuse::No_Empty_Value
 
         Excuse::No_Empty_Value : (\Function : (
-            is_type_definer : True, composes : \@Excuse, value : \@material )),
+            is_type_definer : True, composes : {\@Excuse}, value : \@material )),
 
 The constant C<Excuse::No_Empty_Value> represents the I<undefined> result
 of attempting to request the value with zero members of some collection
@@ -2392,7 +2398,8 @@ Other programming languages may name their corresponding operators I<clear>.
         Stringy : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : {\@Orderable, \@Emptyable and_provides_its_default},
+            composes : {\@Orderable, \@Emptyable},
+            provides_default_for : {\@Emptyable},
         )),
 
 The interface contract C<Stringy> is semifinite.  A C<Stringy> value is a
@@ -2549,7 +2556,8 @@ languages may name their corresponding operators I<x>.
 
         Bits : (\Function : (
             is_type_definer : True,
-            composes : {\@Stringy and_provides_its_default},
+            composes : {\@Stringy},
+            provides_default_for : {\@Stringy},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Bits, \String::Bits() )),
             default : \~?'',
@@ -2711,7 +2719,7 @@ the bits of its C<Bits>-typed C<0> argument.
 
         Blob : (\Function : (
             is_type_definer : True,
-            composes : \@Stringy,
+            composes : {\@Stringy},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Blob, \String::Octets() )),
             default : \~+'',
@@ -2871,7 +2879,7 @@ octets of its C<Blob>-typed C<0> argument.
         Textual : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : \@Stringy,
+            composes : {\@Stringy},
         )),
 
 The interface contract C<Textual> is semifinite.  A C<Textual> value is a
@@ -2935,7 +2943,8 @@ like national collations or fixed-size types.
 
         Text::"" : (\Function : (
             is_type_definer : True,
-            composes : {\@Textual and_provides_its_default},
+            composes : {\@Textual},
+            provides_default_for : {\@Textual},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Text, \String::Maximal_Chars() )),
             default : '',
@@ -3695,7 +3704,7 @@ I<delete> or I<unset>.
         Homogeneous : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : \@Emptyable,
+            composes : {\@Emptyable},
         )),
 
 The interface contract C<Homogeneous> is semifinite.  A C<Homogeneous> value
@@ -4094,7 +4103,7 @@ I<TODO.  Result is true when at least one member evaluates to false.>
         Unionable : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : \@Homogeneous,
+            composes : {\@Homogeneous},
         )),
 
 The interface contract C<Unionable> is semifinite.  A C<Unionable> value is a
@@ -4426,7 +4435,8 @@ otherwise the reduce is a serial operation, at least naively.>
         Discrete : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : \@Unionable and_provides_its_default,
+            composes : {\@Unionable},
+            provides_default_for : {\@Unionable},
         )),
 
 The interface contract C<Discrete> is semifinite.  A C<Discrete> value is a
@@ -4518,7 +4528,8 @@ of any type, both C<Orderable> or not.
         Positional : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : {\@Stringy, \@Discrete and_provides_its_default, \@Accessible},
+            composes : {\@Stringy, \@Discrete, \@Accessible},
+            provides_default_for : {\@Discrete},
         )),
 
 The interface contract C<Positional> is semifinite.  A C<Positional> value is
@@ -4553,7 +4564,7 @@ composed, directly or indirectly, by: C<Array>, C<String>, C<Tuple_Array>.
 =head2 Excuse::No_Such_Ord_Pos
 
         Excuse::No_Such_Ord_Pos : (\Function : (
-            is_type_definer : True, composes : \@Excuse, value : \@material )),
+            is_type_definer : True, composes : {\@Excuse}, value : \@material )),
 
 The constant C<Excuse::No_Such_Ord_Pos> represents the I<undefined> result of
 attempting to use a member ordinal position I<P> of C<Positional> value I<V> while
@@ -5050,7 +5061,8 @@ I<TODO.  Also consider ord_pos_first_diff_elem or ord_pos_succ_common_prefix as 
 
         Array::"" : (\Function : (
             is_type_definer : True,
-            composes : \@Positional and_provides_its_default,
+            composes : {\@Positional},
+            provides_default_for : {\@Positional},
             where : \(args --> \foundation::is_a_Array::()),
             default : [],
         )),
@@ -5634,7 +5646,8 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
 
         Set::"" : (\Function : (
             is_type_definer : True,
-            composes : {\@Discrete, \@Setty and_provides_its_default},
+            composes : {\@Discrete, \@Setty},
+            provides_default_for : {\@Setty},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Set,
                 \(Bag args:.\0 and_then guard all_unique args:.\0) )),
@@ -6099,7 +6112,7 @@ C<Discrete> virtual function C<order_using> for the composing type C<Set>.
 
         Bag::"" : (\Function : (
             is_type_definer : True,
-            composes : \@Discrete,
+            composes : {\@Discrete},
             where : \(args --> \foundation::is_a_Bag::()),
             default : {0:0},
         )),
@@ -6614,7 +6627,7 @@ C<Tuple>, C<Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
 =head2 Excuse::No_Such_Attr_Name
 
         Excuse::No_Such_Attr_Name : (\Function : (
-            is_type_definer : True, composes : \@Excuse, value : \@material )),
+            is_type_definer : True, composes : {\@Excuse}, value : \@material )),
 
 The constant C<Excuse::No_Such_Attr_Name> represents the I<undefined>
 result of attempting to use an attribute named I<N> of C<Attributive> value
@@ -6624,7 +6637,7 @@ name is I<N>.
 =head2 Excuse::Not_Same_Heading
 
         Excuse::Not_Same_Heading : (\Function : (
-            is_type_definer : True, composes : \@Excuse, value : \@material )),
+            is_type_definer : True, composes : {\@Excuse}, value : \@material )),
 
 The constant C<Excuse::Not_Same_Heading> represents the I<undefined> result
 of attempting to perform an operation that takes 2 C<Attributive> inputs
@@ -7102,8 +7115,8 @@ C<0> argument rather than failing.
         Structural : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : {\@Attributive and_provides_its_default,
-                \@Accessible and_provides_its_default},
+            composes : {\@Attributive, \@Accessible},
+            provides_default_for : {\@Attributive, \@Accessible},
         )),
 
 The interface contract C<Structural> is semifinite.  A C<Structural> value is
@@ -7301,7 +7314,8 @@ be treated abstractly as sets of attributes with minimal effort.
 
         Tuple::"" : (\Function : (
             is_type_definer : True,
-            composes : \@Structural and_provides_its_default,
+            composes : {\@Structural},
+            provides_default_for : {\@Structural},
             where : \(args --> \foundation::is_a_Tuple::()),
             default : (),
         )),
@@ -8428,7 +8442,8 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
 
         Relation::"" : (\Function : (
             is_type_definer : True,
-            composes : {\@Relational and_provides_its_default, \@Discrete, \@Setty},
+            composes : {\@Relational, \@Discrete, \@Setty},
+            provides_default_for : {\@Relational},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Relation, \(
                 args:.\0 is_a ( heading : \Heading::(), body : \Set::() ) and_then guard
@@ -8585,7 +8600,7 @@ function C<select_Relational> for the composing type C<Tuple_Bag>.
         Intervalish : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : \@Homogeneous,
+            composes : {\@Homogeneous},
         )),
 
 I<TODO.>
@@ -8647,7 +8662,7 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
 
         Interval_Bag : (\Function : (
             is_type_definer : True,
-            composes : \@Unionable_Intervalish,
+            composes : {\@Unionable_Intervalish},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Interval_Bag, \(
                 Tuple_Bag args:.\0 and_then guard ...
@@ -8664,7 +8679,7 @@ I<TODO.>
         Quantitative : (\Function : (
             is_type_definer : True,
             is_generalization : True,
-            composes : \@Numerical,
+            composes : {\@Numerical},
         )),
 
 I<TODO.>
@@ -8675,7 +8690,7 @@ I<TODO.>
 
         Quantity : (\Function : (
             is_type_definer : True,
-            composes : \@Quantitative,
+            composes : {\@Quantitative},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Quantity, \(
                 Relation args:.\0 and_then guard ...
@@ -9001,7 +9016,8 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
             where : \(Capsule_subtype::( args:.\0, \Function, \(
                 args:.\0 is_a (
                     is_generalization : \Boolean::(),
-                    composes : ...,
+                    composes : ...,  `set of 0..N type name`
+                    provides_default_for : ...,  `subset 0..M of prior set`
                     value : \Function_Body::(),
                     of : ...,
                     where : \Function_Body::(),
