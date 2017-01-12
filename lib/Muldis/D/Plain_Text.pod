@@ -650,6 +650,7 @@ These are keywords only within a I<parsing unit predicate>:
 
 These are keywords only within a I<parsing unit subject>:
 
+    and_then
     args
     default
     else
@@ -657,6 +658,7 @@ These are keywords only within a I<parsing unit subject>:
     given
     guard
     if
+    or_else
     pipe
     returns
     then
@@ -1780,12 +1782,44 @@ Grammar:
 
     <conditional_expr> ::=
           <if_else_expr>
+        | <and_then_expr>
+        | <or_else_expr>
         | <given_when_def_expr>
         | <guard_expr>
 
 =head2 If-Else Expressions
 
+    if P then X else Y
+
 I<TODO.  Make 'if' keyword optional/noiseword, or not.>
+
+=head2 And-Then Expressions
+
+This short-hand:
+
+    P and_then X
+
+Is semantically equivalent to:
+
+    if P then X else False
+
+It is functionally a generalized non-associative non-commutative logical
+"and" suited in particular for situations where X needs to be guarded based
+on P, but an explicit "guard" is still needed to actually have a guard.
+
+=head2 Or-Else Expressions
+
+This short-hand:
+
+    P or_else X
+
+Is semantically equivalent to:
+
+    if P then True else X
+
+It is functionally a generalized non-associative non-commutative logical
+"or" suited in particular for situations where X needs to be guarded based
+on P, but an explicit "guard" is still needed to actually have a guard.
 
 =head2 Given-When-Default Expressions
 
@@ -1798,6 +1832,8 @@ expression makes no guarantee as to whether anything is eager or lazy;
 in contrast, a conditional statement is implicitly always short-circuiting.>
 
     if x != 0 then guard y/x else 42
+
+    Numeric x and_then guard x multiple_of 2
 
     given #x when 0 then 'empty' when 1 then guard only_member x default 'too many'
 
@@ -1853,7 +1889,8 @@ I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
     generic universal routine call infix: args --> rtn or rtn <-- args or args \--> rtn etc
     symbolic in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
     alpha in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
-    conditional ternaries or n-aries or guards: if-then-else / given-when-default / guard
+    conditional binaries or ternaries or n-aries or guards:
+        and_then / or_else / if-then-else / given-when-default / guard
     why-binding infix ::?=
     what-expr-binding infix ::=
     "returns" expression prefix

@@ -840,7 +840,7 @@ corresponding operators I<~> or I<^> or I<N>.
             is_commutative : True,
             is_idempotent : True,
             identity : True,
-            evaluates : \(if args:.\0 then args:.\1 else False),
+            evaluates : \(args:.\0 and_then args:.\1),
         )),
 
         Unicode_Aliases::"∧" : (\Alias : ( of : \@and )),
@@ -875,7 +875,7 @@ C<1> are both C<True>, and C<True> otherwise.
             is_commutative : True,
             is_idempotent : True,
             identity : False,
-            evaluates : \(if args:.\0 then True else args:.\1),
+            evaluates : \(args:.\0 or_else args:.\1),
         )),
 
         Unicode_Aliases::"∨" : (\Alias : ( of : \@or )),
@@ -2014,15 +2014,12 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
             composes : \@Fractional and_provides_its_default,
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Fraction, \(
-                if
                     args:.\0 is_a (
                         numerator : \Integer::(),
                         denominator : \Integer::P::(),
                     )
-                then guard
+                and_then guard
                     args:.\0.\numerator coprime args:.\0.\denominator
-                else
-                    False
             ) )),
             default : 0.0,
         )),
@@ -4711,7 +4708,7 @@ type C<Positional>.
             returns : \@Boolean,
             matches : (Positional, (Integer, Any)),
             implements : \@folder::"",
-            evaluates : \(if args:.\0 .? (args:.\1.\0) then guard args:.\0.(args:.\1.\0) = (args:.\1.\1) else False),
+            evaluates : \(args:.\0 .? (args:.\1.\0) and_then guard args:.\0.(args:.\1.\0) = (args:.\1.\1)),
         )),
 
 The function C<has_mapping_at::Positional> results in C<True> iff its C<0>
@@ -5640,7 +5637,7 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
             composes : {\@Discrete, \@Setty and_provides_its_default},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Set,
-                \(if Bag args:.\0 then guard all_unique args:.\0 else False) )),
+                \(Bag args:.\0 and_then guard all_unique args:.\0) )),
             default : {},
         )),
 
@@ -7122,7 +7119,7 @@ C<Tuple>.
             returns : \@Boolean,
             matches : (\@Structural, \@Structural),
             implements : \@folder::"",
-            evaluates : \(if args:.\0 @? args:.\1 then guard args:.\0 %= @args:.\1 = args:.\1 else False),
+            evaluates : \(args:.\0 @? args:.\1 and_then guard args:.\0 %= @args:.\1 = args:.\1),
         )),
 
 The function C<can_project_matching::Structural> results in C<True> iff the
@@ -7155,7 +7152,7 @@ type C<Structure>.
             returns : \@Boolean,
             matches : (Structural, (Attr_Name, Any)),
             implements : \@folder::"",
-            evaluates : \(if args:.\0 .? (args:.\1.\0) then guard args:.\0.(args:.\1.\0) = (args:.\1.\1) else False),
+            evaluates : \(args:.\0 .? (args:.\1.\0) and_then guard args:.\0.(args:.\1.\0) = (args:.\1.\1)),
         )),
 
 The function C<has_mapping_at::Structural> results in C<True> iff its C<0>
@@ -8209,9 +8206,8 @@ C<Relational>.
             returns : \@Boolean,
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
-            evaluates : \(if args:.\0 @? args:.\1
-                then guard |args:.\0 all \(args:.\0 %= @args:.\1 = args:.\1) \<-- (1 : args:.\1,)
-                else False),
+            evaluates : \(args:.\0 @? args:.\1
+                and_then guard |args:.\0 all \(args:.\0 %= @args:.\1 = args:.\1) \<-- (1 : args:.\1,)),
         )),
 
 The function C<can_project_matching::Relational> results in C<True> iff the
@@ -8349,13 +8345,9 @@ types that restrict their possible headings at the type level.>
             composes : {\@Relational, \@Positional},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Tuple_Array, \(
-                if args:.\0 is_a ( heading : \Heading::(), body : \Array::() ) then guard
-                    if args:.\0.\body all \Tuple::() then guard
+                args:.\0 is_a ( heading : \Heading::(), body : \Array::() ) and_then guard
+                    args:.\0.\body all \Tuple::() and_then guard
                         args:.\0.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0.\heading)
-                    else
-                        False
-                else
-                    False
             ) )),
             default : \(~%@()),
         )),
@@ -8439,13 +8431,9 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
             composes : {\@Relational and_provides_its_default, \@Discrete, \@Setty},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Relation, \(
-                if args:.\0 is_a ( heading : \Heading::(), body : \Set::() ) then guard
-                    if args:.\0.\body all \Tuple::() then guard
+                args:.\0 is_a ( heading : \Heading::(), body : \Set::() ) and_then guard
+                    args:.\0.\body all \Tuple::() and_then guard
                         args:.\0.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0.\heading)
-                    else
-                        False
-                else
-                    False
             ) )),
             default : \(?%@()),
         )),
@@ -8522,13 +8510,9 @@ function C<select_Relational> for the composing type C<Relation>.
             composes : {\@Relational, \@Discrete},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Tuple_Bag, \(
-                if args:.\0 is_a ( heading : \Heading::(), body : \Bag::() ) then guard
-                    if args:.\0.\body all \Tuple::() then guard
+                args:.\0 is_a ( heading : \Heading::(), body : \Bag::() ) and_then guard
+                    args:.\0.\body all \Tuple::() and_then guard
                         args:.\0.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0.\heading)
-                    else
-                        False
-                else
-                    False
             ) )),
             default : \(+%@()),
         )),
@@ -8651,7 +8635,7 @@ I<TODO.>
             composes : {\@Unionable_Intervalish, \@Setty},
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Interval_Set,
-                \(if Interval_Bag args:.\0 then guard all_unique args:.\0 else False) )),
+                \(Interval_Bag args:.\0 and_then guard all_unique args:.\0) )),
             default : ...,
         )),
 
@@ -8666,7 +8650,7 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
             composes : \@Unionable_Intervalish,
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Interval_Bag, \(
-                if Tuple_Bag args:.\0 then guard ... else False
+                Tuple_Bag args:.\0 and_then guard ...
             ) )),
             default : ...,
         )),
@@ -8694,7 +8678,7 @@ I<TODO.>
             composes : \@Quantitative,
             of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Quantity, \(
-                if Relation args:.\0 then guard ... else False
+                Relation args:.\0 and_then guard ...
             ) )),
             default : ...,
         )),
@@ -8725,11 +8709,9 @@ minimize interference with other types' interfaces.
             returns : \@Boolean,
             matches : (\@Any, \@Any, \@Signature),
             evaluates : \(
-                if Capsule args:.\0 then guard
+                Capsule args:.\0 and_then guard
                     args:.\0:< = args:.\1 and
                         (args:.\0:>,) --> Signature_to_Function_Call_But_0::(args:.\2)
-                else
-                    False
             ),
         )),
 
@@ -9186,7 +9168,7 @@ I<TODO.>
             is_type_definer : True,
             of : \@Attr_Name_List,
             where : \(
-                if so args:.\0 then guard
+                so args:.\0 and_then guard
                     given args:.\0.0
                         when \foundation then #args:.\0 = 2
                         when \used       then #args:.\0 ≥ 2  `elem 2 is pkg local alias`
@@ -9195,8 +9177,6 @@ I<TODO.>
                         when \material   then #args:.\0 = 1
                         when \floating   then #args:.\0 ≥ 2
                         default False
-                else
-                    False
             ),
         )),
 
@@ -9279,14 +9259,10 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                         \<-- (1 : args:.\0)
                 else if Signature::Tuple args:.\0 then guard
                     \(
-                        if Tuple args:.\0 then guard
-                            if args:.\0 =@ args:.\1 then guard
+                        Tuple args:.\0 and_then guard
+                            args:.\0 =@ args:.\1 and_then guard
                                 args:.\0 all_attrs
                                     \(args:.\0:.\asset is_a args:.\1:.(args:.\0:.\name)) \<-- ( 1: args:.\1, )
-                            else
-                                False
-                        else
-                            False
                     ) \<-- (1 : args:.\0)
                 else
                     fail  `We should never get here.`
