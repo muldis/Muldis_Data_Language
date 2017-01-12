@@ -74,7 +74,10 @@ Standard Library> specification, of which this document is a part.
 =head2 Any
 
         Any : (\Function : (
-            is_type_definer : True, default : False )),
+            is_type_definer : True,
+            evaluates : True,
+            default : False,
+        )),
 
 The selection contract C<Any> represents the infinite
 I<universal type>, which is the maximal data type of the entire Muldis D
@@ -86,7 +89,9 @@ corresponding types I<Object> or I<Universal>.
 =head2 None
 
         None : (\Function : (
-            is_type_definer : True, of : {} )),
+            is_type_definer : True,
+            evaluates : False,
+        )),
 
 The selection contract C<None> represents the finite I<empty type>,
 which is the minimal data type of the entire Muldis D type system and
@@ -1006,7 +1011,6 @@ and its C<1> argument is C<True>, and C<False> otherwise.
 
         Round_Meth::"" : (\Function : (
             is_type_definer : True,
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \@material, \folder::Attr_Name::() )),
             default : (\@material : \To_Zero),
         )),
@@ -1042,8 +1046,8 @@ I<RoundingMode> (Java) or I<MidpointRounding> (C#).
 
         Round_Meth::Attr_Name : (\Function : (
             is_type_definer : True,
-            of : \@Attr_Name,
-            where : \(args:.\0 ⊆@ \@(Down,Up,To_Zero,To_Inf
+            where : \(Attr_Name args:.\0 and_then guard
+                args:.\0 ⊆@ \@(Down,Up,To_Zero,To_Inf
                 ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
                 ,Half_Even,Half_Odd)
             ),
@@ -1456,8 +1460,8 @@ C<Integral> is composed by C<Integer>.
 
         Integral::NN : (\Function : (
             is_type_definer : True,
-            of : \@Integral,
-            where : \(args:.\0 >= zero::(args:.\0)),
+            where : \(Integral args:.\0 and_then guard
+                args:.\0 >= zero::(args:.\0)),
         )),
 
 The selection contract C<Integral::NN> represents the infinite type
@@ -1468,8 +1472,8 @@ default and minmum value is C<0>; it has no maximum value.
 
         Integral::P : (\Function : (
             is_type_definer : True,
-            of : \@Integral::NN,
-            where : \(args:.\0 > zero::(args:.\0)),
+            where : \(Integral::NN::(args:.\0) and_then guard
+                args:.\0 > zero::(args:.\0)),
             default : \(succ::(Integral::())),
         )),
 
@@ -1597,7 +1601,9 @@ Other programming languages may name their corresponding types I<BigInt>.
 =head2 Integer::NN
 
         Integer::NN : (\Function : (
-            is_type_definer : True, of : \@Integer, where : \(args:.\0 >= 0) )),
+            is_type_definer : True,
+            where : \(Integer args:.\0 and_then guard args:.\0 >= 0),
+        )),
 
 The selection contract C<Integer::NN> represents the infinite type
 consisting just of the C<Integer> values that are non-negative.  Its
@@ -1606,7 +1612,10 @@ default and minmum value is C<0>; it has no maximum value.
 =head2 Integer::P
 
         Integer::P : (\Function : (
-            is_type_definer : True, of : \@Integer::NN, where : \(args:.\0 > 0), default : 1 )),
+            is_type_definer : True,
+            where : \(Integer::NN::(args:.\0) and_then guard args:.\0 > 0),
+            default : 1,
+        )),
 
 The selection contract C<Integer::P> represents the infinite type consisting
 just of the C<Integer::NN> values that are positive.  Its default and minmum
@@ -1975,8 +1984,8 @@ will have either of those.  C<Fractional> is composed by C<Fraction>.
 
         Fractional::NN : (\Function : (
             is_type_definer : True,
-            of : \@Fractional,
-            where : \(args:.\0 >= zero::(args:.\0)),
+            where : \(Fractional args:.\0 and_then guard
+                args:.\0 >= zero::(args:.\0)),
         )),
 
 The selection contract C<Fractional::NN> represents the infinite type
@@ -2018,7 +2027,6 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
             is_type_definer : True,
             composes : {\@Fractional},
             provides_default_for : {\@Fractional},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Fraction, \(
                     args:.\0 is_a (
                         numerator : \Integer::(),
@@ -2042,7 +2050,9 @@ Other programming languages may name their corresponding types I<BigRat>.
 =head2 Fraction::NN
 
         Fraction::NN : (\Function : (
-            is_type_definer : True, of : \@Fraction, where : \(args:.\0 >= 0.0) )),
+            is_type_definer : True,
+            where : \(Fraction args:.\0 and_then guard args:.\0 >= 0.0),
+        )),
 
 The selection contract C<Fraction::NN> represents the infinite type
 consisting just of the C<Fraction> values that are non-negative.  Its
@@ -2558,7 +2568,6 @@ languages may name their corresponding operators I<x>.
             is_type_definer : True,
             composes : {\@Stringy},
             provides_default_for : {\@Stringy},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Bits, \String::Bits() )),
             default : \~?'',
         )),
@@ -2576,8 +2585,8 @@ corresponding types I<bit> or I<bit varying>.
 
         String::Bits : (\Function : (
             is_type_definer : True,
-            of : \@String,
-            where : \(args:.\0 all \in::( 1: 0..1 )),
+            where : \(String args:.\0 and_then guard
+                args:.\0 all \in::( 1: 0..1 )),
         )),
 
 The selection contract C<String::Bits> represents the infinite type
@@ -2720,7 +2729,6 @@ the bits of its C<Bits>-typed C<0> argument.
         Blob : (\Function : (
             is_type_definer : True,
             composes : {\@Stringy},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Blob, \String::Octets() )),
             default : \~+'',
         )),
@@ -2738,8 +2746,8 @@ corresponding types I<Buf> or I<byte[]> or I<bytea>.
 
         String::Octets : (\Function : (
             is_type_definer : True,
-            of : \@String,
-            where : \(args:.\0 all \in::( 1: 0..255 )),
+            where : \(String args:.\0 and_then guard
+                args:.\0 all \in::( 1: 0..255 )),
         )),
 
 The selection contract C<String::Octets> represents the infinite type
@@ -2945,7 +2953,6 @@ like national collations or fixed-size types.
             is_type_definer : True,
             composes : {\@Textual},
             provides_default_for : {\@Textual},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Text, \String::Maximal_Chars() )),
             default : '',
         )),
@@ -2990,8 +2997,8 @@ which exists for convenient self-documentation of C<Text>-related code.
 
         Text::Unicode : (\Function : (
             is_type_definer : True,
-            of : \@Text,
-            where : \(String::Unicode_Codes::(Text_from_Maximal_Chars args:.\0)),
+            where : \(Text args:.\0 and_then guard
+                String::Unicode_Codes::(Text_from_Maximal_Chars args:.\0)),
         )),
 
 The selection contract C<Text::Unicode> represents the infinite type
@@ -3005,8 +3012,8 @@ the standard Unicode codepoints for the same symbols.
 
         String::Unicode_Codes : (\Function : (
             is_type_definer : True,
-            of : \@String::Maximal_Chars,
-            where : \(args:.\0 all \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} )),
+            where : \(String::Maximal_Chars::(args:.\0) and_then guard
+                args:.\0 all \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} )),
         )),
 
 The selection contract C<String::Unicode_Codes> represents the infinite type
@@ -3017,8 +3024,8 @@ integers is in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
 
         Text::ASCII : (\Function : (
             is_type_definer : True,
-            of : \@Text::Unicode,
-            where : \(String::ASCII_Chars::(Text_from_Unicode_Codes args:.\0)),
+            where : \(Text::Unicode::(args:.\0) and_then guard
+                String::ASCII_Chars::(Text_from_Unicode_Codes args:.\0)),
         )),
 
 The selection contract C<Text::ASCII> represents the infinite type
@@ -3032,8 +3039,8 @@ the standard ASCII codes for the same symbols.
 
         String::ASCII_Chars : (\Function : (
             is_type_definer : True,
-            of : \@String::Unicode_Codes,
-            where : \(args:.\0 all \in::( 1: 0..127 )),
+            where : \(String::Unicode_Codes::(args:.\0) and_then guard
+                args:.\0 all \in::( 1: 0..127 )),
         )),
 
 The selection contract C<String::ASCII_Chars> represents the infinite type
@@ -5085,7 +5092,9 @@ languages may name their corresponding types I<List>.
 =head2 String
 
         String::"" : (\Function : (
-            is_type_definer : True, of : \@Array, where : \(args:.\0 all \Integer::()) )),
+            is_type_definer : True,
+            where : \(Array args:.\0 and_then guard args:.\0 all \Integer::()),
+        )),
 
 The selection contract C<String> represents the infinite type consisting
 just of the C<Array> values having just C<Integer> members.  A C<String>
@@ -5648,7 +5657,6 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
             is_type_definer : True,
             composes : {\@Discrete, \@Setty},
             provides_default_for : {\@Setty},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Set,
                 \(Bag args:.\0 and_then guard all_unique args:.\0) )),
             default : {},
@@ -7356,8 +7364,7 @@ C<Tuple> value.
 
         Tuple::D1 : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(is_unary args:.\0),
+            where : \(Tuple args:.\0 and_then guard is_unary args:.\0),
             default : (False,),
         )),
 
@@ -8357,7 +8364,6 @@ types that restrict their possible headings at the type level.>
         Tuple_Array::"" : (\Function : (
             is_type_definer : True,
             composes : {\@Relational, \@Positional},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Tuple_Array, \(
                 args:.\0 is_a ( heading : \Heading::(), body : \Array::() ) and_then guard
                     args:.\0.\body all \Tuple::() and_then guard
@@ -8444,7 +8450,6 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
             is_type_definer : True,
             composes : {\@Relational, \@Discrete, \@Setty},
             provides_default_for : {\@Relational},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Relation, \(
                 args:.\0 is_a ( heading : \Heading::(), body : \Set::() ) and_then guard
                     args:.\0.\body all \Tuple::() and_then guard
@@ -8523,7 +8528,6 @@ function C<select_Relational> for the composing type C<Relation>.
         Tuple_Bag::"" : (\Function : (
             is_type_definer : True,
             composes : {\@Relational, \@Discrete},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Tuple_Bag, \(
                 args:.\0 is_a ( heading : \Heading::(), body : \Bag::() ) and_then guard
                     args:.\0.\body all \Tuple::() and_then guard
@@ -8612,7 +8616,6 @@ I<TODO.>
         Interval::"" : (\Function : (
             is_type_definer : True,
             composes : {\@Intervalish, \@Setty},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Interval, \Interval::Attrs() )),
             default : \(Excuse::Before_All_Others()..Excuse::After_All_Others()),
         )),
@@ -8623,8 +8626,7 @@ I<TODO.>
 
         Interval::Attrs : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(...),
+            where : \(Tuple args:.\0 and_then guard ...),
         )),
 
 I<TODO.>
@@ -8648,7 +8650,6 @@ I<TODO.>
         Interval_Set : (\Function : (
             is_type_definer : True,
             composes : {\@Unionable_Intervalish, \@Setty},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Interval_Set,
                 \(Interval_Bag args:.\0 and_then guard all_unique args:.\0) )),
             default : ...,
@@ -8663,7 +8664,6 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
         Interval_Bag : (\Function : (
             is_type_definer : True,
             composes : {\@Unionable_Intervalish},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Interval_Bag, \(
                 Tuple_Bag args:.\0 and_then guard ...
             ) )),
@@ -8691,7 +8691,6 @@ I<TODO.>
         Quantity : (\Function : (
             is_type_definer : True,
             composes : {\@Quantitative},
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Quantity, \(
                 Relation args:.\0 and_then guard ...
             ) )),
@@ -8725,7 +8724,7 @@ minimize interference with other types' interfaces.
             matches : (\@Any, \@Any, \@Signature),
             evaluates : \(
                 Capsule args:.\0 and_then guard
-                    args:.\0:< = args:.\1 and
+                    args:.\0:< = args:.\1 and_then
                         (args:.\0:>,) --> Signature_to_Function_Call_But_0::(args:.\2)
             ),
         )),
@@ -8859,7 +8858,6 @@ I<TODO.>
 
         Source_Code::Package : (\Function : (
             is_type_definer : True,
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Package, \(
                 args:.\0 is_a (
                     identity : \Package::Identity::(),
@@ -8879,8 +8877,7 @@ I<TODO.>
 
         Source_Code::Package::Identity : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(
+            where : \(Tuple args:.\0 and_then guard
                 args:.\0 is_a (
                     package_base_name : \Package::Base_Name::(),
                     authority : \Package::Canon_Authority::(),
@@ -8893,8 +8890,7 @@ I<TODO.>
 
         Source_Code::Package::Foundation : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(
+            where : \(Tuple args:.\0 and_then guard
                 args:.\0 is_a (
                     authority : \Package::Canon_Authority::(),
                     version_number : \Package::Canon_Version_Number::(),
@@ -8906,8 +8902,8 @@ I<TODO.>
 
         Source_Code::Package::Base_Name : (\Function : (
             is_type_definer : True,
-            of : \@Attr_Name_List,
-            where : \(so args:.\0 and args:.\0 ∌ \""),
+            where : \(Attr_Name_List args:.\0 and_then guard
+                so args:.\0 and args:.\0 ∌ \""),
         )),
 
 I<TODO.>
@@ -8916,8 +8912,7 @@ I<TODO.>
 
         Source_Code::Package::Canon_Authority : (\Function : (
             is_type_definer : True,
-            of : \@Text,
-            where : \(so args:.\0),
+            where : \(Text args:.\0 and_then guard so args:.\0),
         )),
 
 I<TODO.>
@@ -8926,8 +8921,7 @@ I<TODO.>
 
         Source_Code::Package::Canon_Version_Number : (\Function : (
             is_type_definer : True,
-            of : \@Text,
-            where : \(so args:.\0),
+            where : \(Text args:.\0 and_then guard so args:.\0),
         )),
 
 I<TODO.>
@@ -8936,8 +8930,8 @@ I<TODO.>
 
         Source_Code::Package::Uses_Map : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(args:.\0 .!? \"" and args:.\0 all_attr_assets \Package::Uses_Item::()),
+            where : \(Tuple args:.\0 and_then guard
+                args:.\0 .!? \"" and args:.\0 all_attr_assets \Package::Uses_Item::()),
         )),
 
 I<TODO.  Each attribute name declares a single-element composing-package-local
@@ -8947,8 +8941,7 @@ alias for the used package.>
 
         Source_Code::Package::Uses_Item : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(
+            where : \(Tuple args:.\0 and_then guard
                 args:.\0 is_a (
                     package_base_name : \Package::Base_Name::(),
                     authority : \Package::Canon_Authority::(),
@@ -8965,7 +8958,9 @@ Until then, this type just represents a single positive assertion.>
 =head2 Source_Code::Package::Entry_Point
 
         Source_Code::Package::Entry_Point : (\Function : (
-            is_type_definer : True, of : \@Absolute_Name )),
+            is_type_definer : True,
+            where : \(Absolute_Name args:.\0)
+        )),
 
 I<TODO.  This type is subject to be expanded to some collection or have alternatives.>
 
@@ -8973,8 +8968,8 @@ I<TODO.  This type is subject to be expanded to some collection or have alternat
 
         Source_Code::Package::Floating : (\Function : (
             is_type_definer : True,
-            of : \@Set,
-            where : \(args:.\0 all \Absolute_Name::()),
+            where : \(Set args:.\0 and_then guard
+                args:.\0 all \Absolute_Name::()),
         )),
 
 I<TODO.>
@@ -8983,8 +8978,8 @@ I<TODO.>
 
         Source_Code::Package::Folder : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(args:.\0 all_attr_assets {\Package::Folder::(), \Material::()}),
+            where : \(Tuple args:.\0 and_then guard
+                args:.\0 all_attr_assets {\Package::Folder::(), \Material::()}),
         )),
 
 I<TODO.>
@@ -9001,7 +8996,6 @@ I<TODO.>
 
         Source_Code::Alias : (\Function : (
             is_type_definer : True,
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Alias, \Identity_Identifier::() )),
             default : \((\Alias : Identity_Identifier::())),
         )),
@@ -9012,14 +9006,12 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
 
         Source_Code::Function : (\Function : (
             is_type_definer : True,
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Function, \(
                 args:.\0 is_a (
                     is_generalization : \Boolean::(),
                     composes : ...,  `set of 0..N type name`
                     provides_default_for : ...,  `subset 0..M of prior set`
                     value : \Function_Body::(),
-                    of : ...,
                     where : \Function_Body::(),
                     default : \Function_Body::(),
                     virtual : \Boolean::(),
@@ -9062,7 +9054,6 @@ I<TODO.  Re-add the 'folded' of a 'constant' into an expression type or such.>
 
         Source_Code::Function_Body : (\Function : (
             is_type_definer : True,
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Function_Body, \(
                 args:.\0 is_a (
                     root_expr : \Expression::(),
@@ -9078,7 +9069,6 @@ I<TODO.>
 
         Source_Code::Procedure : (\Function : (
             is_type_definer : True,
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Procedure, \(
                 args:.\0 is_a (
                     virtual : \Boolean::(),
@@ -9101,7 +9091,6 @@ I<TODO.>
 
         Source_Code::Procedure_Body : (\Function : (
             is_type_definer : True,
-            of : \@Capsule,
             where : \(Capsule_subtype::( args:.\0, \Procedure_Body, \(
                 args:.\0 is_a (
                     root_stmt : \Statement::(),
@@ -9128,8 +9117,8 @@ I<TODO.>
 
         Source_Code::Signature::Set : (\Function : (
             is_type_definer : True,
-            of : \@Set,
-            where : \(args:.\0 all \Signature::()),
+            where : \(Set args:.\0 and_then guard
+                args:.\0 all \Signature::()),
         )),
 
 I<TODO.>
@@ -9138,8 +9127,8 @@ I<TODO.>
 
         Source_Code::Signature::Tuple : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(args:.\0 all_attr_assets \Signature::()),
+            where : \(Tuple args:.\0 and_then guard
+                args:.\0 all_attr_assets \Signature::()),
         )),
 
 I<TODO.>
@@ -9148,8 +9137,8 @@ I<TODO.>
 
         Source_Code::Heading : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(args:.\0 all_attr_assets \False::()),
+            where : \(Tuple args:.\0 and_then guard
+                args:.\0 all_attr_assets \False::()),
         )),
 
 I<TODO.>
@@ -9162,8 +9151,7 @@ a thing for opening tuples as for creating them.>
 
         Source_Code::Attr_Name : (\Function : (
             is_type_definer : True,
-            of : \@Heading,
-            where : \(is_unary args:.\0),
+            where : \(Heading args:.\0 and_then guard is_unary args:.\0),
         )),
 
 I<TODO.>
@@ -9172,8 +9160,8 @@ I<TODO.>
 
         Source_Code::Attr_Name_List : (\Function : (
             is_type_definer : True,
-            of : \@Array,
-            where : \(args:.\0 all \Attr_Name::()),
+            where : \(Array args:.\0 and_then guard
+                args:.\0 all \Attr_Name::()),
         )),
 
 I<TODO.>
@@ -9182,8 +9170,7 @@ I<TODO.>
 
         Source_Code::Local_Name : (\Function : (
             is_type_definer : True,
-            of : \@Attr_Name_List,
-            where : \(
+            where : \(Attr_Name_List args:.\0 and_then guard
                 so args:.\0 and_then guard
                     given args:.\0.0
                         when \foundation then #args:.\0 = 2
@@ -9202,8 +9189,8 @@ I<TODO.>
 
         Source_Code::Absolute_Name : (\Function : (
             is_type_definer : True,
-            of : \@Local_Name,
-            where : \(args:.\0.0 ⊆@ \@(foundation,used,package)),
+            where : \(Local_Name args:.\0 and_then guard
+                args:.\0.0 ⊆@ \@(foundation,used,package)),
         )),
 
 I<TODO.>
@@ -9212,8 +9199,8 @@ I<TODO.>
 
         Source_Code::Named_Expr_List : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(args:.\0 .!? \"" and args:.\0 all_attr_assets \Expression::()),
+            where : \(Tuple args:.\0 and_then guard
+                args:.\0 .!? \"" and args:.\0 all_attr_assets \Expression::()),
         )),
 
 I<TODO.>
@@ -9236,8 +9223,8 @@ I<TODO.  Actually, rewrite most of the above list.>
 
         Source_Code::Named_Stmt_List : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(args:.\0 .!? \"" and args:.\0 all_attr_assets \Statement::()),
+            where : \(Tuple args:.\0 and_then guard
+                args:.\0 .!? \"" and args:.\0 all_attr_assets \Statement::()),
         )),
 
 I<TODO.>
@@ -9256,8 +9243,8 @@ I<TODO.>
 
         Source_Code::Key_Asset_Pair : (\Function : (
             is_type_definer : True,
-            of : \@Tuple,
-            where : \(@args:.\0 = \@(key,asset)),
+            where : \(Tuple args:.\0 and_then guard
+                @args:.\0 = \@(key,asset)),
         )),
 
 I<TODO.  Note, this type currently isn't used anywhere.>
