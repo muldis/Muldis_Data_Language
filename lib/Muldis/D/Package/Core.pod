@@ -1047,9 +1047,14 @@ and its C<1> argument is C<True>, and C<False> otherwise.
 
         Round_Meth::"" : (\Function : (
             is_type_definer : True,
-            where : \(Capsule args:.\0 and_then guard args:.\0:< = \@material
-                and_then folder::Attr_Name(args:.\0:>)),
-            default : (\@material : \To_Zero),
+            where : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \folder::Attr_Name(),
+                )
+            ),
+            default : (\@material : (\To_Zero,)),
         )),
 
 The selection contract C<Round_Meth> is finite.  When a value of some
@@ -1100,7 +1105,7 @@ C<Round_Meth> values.
         RM : (\Function : (
             returns : \@Round_Meth,
             matches : (\@Round_Meth::Attr_Name),
-            evaluates : \((\@Round_Meth : args:.\0)),
+            evaluates : \((\@Round_Meth : (args:.\0,))),
         )),
 
 The function C<RM> results in the C<Round_Meth> value selected in
@@ -2655,8 +2660,13 @@ languages may name their corresponding operators I<x>.
             is_type_definer : True,
             composes : {\@Stringy},
             provides_default_for : {\@Stringy},
-            where : \(Capsule args:.\0 and_then guard args:.\0:< = \Bits
-                and_then String::Bits(args:.\0:>)),
+            where : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \Bits
+                and_then guard args:.\0:> is_a (
+                    bits : \String::Bits(),
+                )
+            ),
             default : \~?'',
         )),
 
@@ -2793,7 +2803,7 @@ C<replicate> aka C<~#> for the composing type C<Bits>.
         Bits_from_String_Bits : (\Function : (
             returns : \@Bits,
             matches : (\@String::Bits),
-            evaluates : \((\Bits : args:.\0)),
+            evaluates : \((\Bits : (bits : args:.\0,))),
         )),
 
 The function C<Bits_from_String_Bits> results in the C<Bits> value selected
@@ -2804,7 +2814,7 @@ in terms of the integer sequence of its C<0> argument.
         Bits_to_String_Bits : (\Function : (
             returns : \@String::Bits,
             matches : (\@Bits),
-            evaluates : \(args:.\0:>),
+            evaluates : \(args:.\0:>.\bits),
         )),
 
 The function C<Bits_to_String_Bits> results in an integer sequence defining
@@ -2817,8 +2827,13 @@ the bits of its C<Bits>-typed C<0> argument.
         Blob : (\Function : (
             is_type_definer : True,
             composes : {\@Stringy},
-            where : \(Capsule args:.\0 and_then guard args:.\0:< = \Blob
-                and_then String::Octets(args:.\0:>)),
+            where : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \Blob
+                and_then guard args:.\0:> is_a (
+                    octets : \String::Octets(),
+                )
+            ),
             default : \~+'',
         )),
 
@@ -2952,7 +2967,7 @@ C<replicate> aka C<~#> for the composing type C<Blob>.
         Blob_from_Octets : (\Function : (
             returns : \@Blob,
             matches : (\@String::Octets),
-            evaluates : \((\Blob : args:.\0)),
+            evaluates : \((\Blob : (octets : args:.\0,))),
         )),
 
 The function C<Blob_from_Octets> results in the C<Blob> value selected in
@@ -2963,7 +2978,7 @@ terms of the integer sequence of its C<0> argument.
         Blob_to_Octets : (\Function : (
             returns : \@String::Octets,
             matches : (\@Blob),
-            evaluates : \(args:.\0:>),
+            evaluates : \(args:.\0:>.\octets),
         )),
 
 The function C<Blob_to_Octets> results in an integer sequence defining the
@@ -3046,8 +3061,13 @@ like national collations or fixed-size types.
             is_type_definer : True,
             composes : {\@Textual},
             provides_default_for : {\@Textual},
-            where : \(Capsule args:.\0 and_then guard args:.\0:< = \Text
-                and_then String::Maximal_Chars(args:.\0:>)),
+            where : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \Text
+                and_then guard args:.\0:> is_a (
+                    maximal_chars : \String::Maximal_Chars(),
+                )
+            ),
             default : '',
         )),
 
@@ -3267,7 +3287,7 @@ for the composing type C<Text>.
         Text_from_Maximal_Chars : (\Function : (
             returns : \@Text,
             matches : (\@String::Maximal_Chars),
-            evaluates : \((\Text : args:.\0)),
+            evaluates : \((\Text : (maximal_chars : args:.\0,))),
         )),
 
 The function C<Text_from_Maximal_Chars> results in the C<Text> value
@@ -3279,7 +3299,7 @@ C<Maximal_Chars> character mapping of its C<0> argument.
         Text_to_Maximal_Chars : (\Function : (
             returns : \@String::Maximal_Chars,
             matches : (\@Text),
-            evaluates : \(args:.\0:>),
+            evaluates : \(args:.\0:>.\maximal_chars),
         )),
 
 The function C<Text_to_Maximal_Chars> results in an integer sequence in the
@@ -5821,8 +5841,10 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
             where : \(
                 Capsule args:.\0
                 and_then guard args:.\0:< = \Set
-                and_then guard Bag args:.\0:>
-                and_then guard all_unique args:.\0:>
+                and_then guard args:.\0:> is_a (
+                    members : \Bag(),
+                )
+                and_then guard all_unique args:.\0:>.\members
             ),
             default : {},
         )),
@@ -5879,7 +5901,7 @@ aka C<∅> for the composing type C<Set>.
             returns : \@Boolean,
             matches : (\@Set),
             implements : \@folder::"",
-            evaluates : \(singular args:.\0:>),
+            evaluates : \(singular args:.\0:>.\members),
         )),
 
 The function C<singular::Set> results in C<True> iff its C<0> argument has
@@ -5894,7 +5916,7 @@ C<Set>.
             matches : (\@Set),
             implements : \@folder::"",
             accepts : \(singular args:.\0),
-            evaluates : \(only_member args:.\0:>),
+            evaluates : \(only_member args:.\0:>.\members),
         )),
 
 The function C<only_member::Set> results in its C<0> argument's only member
@@ -5908,7 +5930,7 @@ C<only_member> for the composing type C<Set>.
             returns : \@Boolean,
             matches : (\@Set, \@Any, \@Integer::NN),
             implements : \@folder::"",
-            evaluates : \(has_n::(args:.\0:>, args:.\1, args:.\2)),
+            evaluates : \(has_n::(args:.\0:>.\members, args:.\1, args:.\2)),
         )),
 
 The function C<has_n::Set> results in C<True> iff either its C<2> argument
@@ -5923,7 +5945,7 @@ type C<Set>.
             returns : \@Integer::NN,
             matches : (\@Set, \@Any),
             implements : \@folder::"",
-            evaluates : \(args:.\0:> multiplicity args:.\1),
+            evaluates : \(args:.\0:>.\members multiplicity args:.\1),
         )),
 
 The function C<multiplicity::Set> results in 1 if its C<0> argument
@@ -5963,7 +5985,7 @@ composing type C<Set>.
             returns : \@Boolean,
             matches : (\@Set, \@Set),
             implements : \@folder::"",
-            evaluates : \(args:.\0:> subset_of args:.\1:>),
+            evaluates : \(args:.\0:>.\members subset_of args:.\1:>.\members),
         )),
 
 The function C<subset_of::Set> results in C<True> iff the set of members of
@@ -5995,7 +6017,7 @@ function C<same_members> for the composing type C<Set>.
             matches : (\@Set, \@Set),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : \(args:.\0:> overlaps_members args:.\1:>),
+            evaluates : \(args:.\0:>.\members overlaps_members args:.\1:>.\members),
         )),
 
 The function C<overlaps_members::Set> results in C<True> iff, given
@@ -6013,7 +6035,7 @@ C<overlaps_members> for the composing type C<Set>.
             matches : (\@Set, \@Set),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : \(args:.\0:> disjoint_members args:.\1:>),
+            evaluates : \(args:.\0:>.\members disjoint_members args:.\1:>.\members),
         )),
 
 The function C<disjoint_members::Set> results in C<True> iff the
@@ -6028,7 +6050,7 @@ C<disjoint_members> for the composing type C<Set>.
             returns : \@Boolean,
             matches : (\@Set, \@Signature),
             implements : \@folder::"",
-            evaluates : \(args:.\0:> any args:.\1),
+            evaluates : \(args:.\0:>.\members any args:.\1),
         )),
 
 I<TODO.>
@@ -6040,7 +6062,7 @@ I<TODO.>
             matches : (\@Set, \@Any, \@Integer::NN),
             implements : \@folder::"",
             evaluates : \(if args:.\0 has args:.\1 or args:.\2 = 0 then args:.\0
-                else (\Set : insert_n::(args:.\0:>, args:.\1, 1))),
+                else (\Set : (members : insert_n::(args:.\0:>.\members, args:.\1, 1),))),
         )),
 
 The function C<insert_n::Set> results in the C<Set> value that has all of
@@ -6055,7 +6077,7 @@ function C<insert_n> for the composing type C<Set>.
             returns : \@Set,
             matches : (\@Set, \@Any, \@Integer::NN),
             implements : \@folder::"",
-            evaluates : \((\Set : remove_n::(args:.\0:>, args:.\1, args:.\2))),
+            evaluates : \((\Set : (members : remove_n::(args:.\0:>.\members, args:.\1, args:.\2),))),
         )),
 
 The function C<remove_n::Set> results in the C<Set> value that has all of
@@ -6089,7 +6111,7 @@ virtual function C<member_plus> aka C<⊎> for the composing type C<Set>.
             matches : (\@Set, \@Set),
             implements : \@folder::"",
             right_identity : {},
-            evaluates : \((\Set : (args:.\0:> except args:.\1:>))),
+            evaluates : \((\Set : (members : args:.\0:>.\members except args:.\1:>.\members,))),
         )),
 
 The function C<except::Set> results in the I<set difference> between
@@ -6108,7 +6130,7 @@ for the composing type C<Set>.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            evaluates : \((\Set : (args:.\0:> intersect args:.\1:>))),
+            evaluates : \((\Set : (members : args:.\0:>.\members intersect args:.\1:>.\members,))),
         )),
 
 The function C<intersect::Set> results in the I<set intersection> of
@@ -6127,7 +6149,7 @@ function C<intersect> aka C<∩> for the composing type C<Set>.
             is_commutative : True,
             is_idempotent : True,
             identity : {},
-            evaluates : \((\Set : (args:.\0:> union args:.\1:>))),
+            evaluates : \((\Set : (members : args:.\0:>.\members union args:.\1:>.\members,))),
         )),
 
 The function C<union::Set> results in the I<set union> of its 2
@@ -6145,7 +6167,7 @@ virtual function C<union> aka C<∪> for the composing type C<Set>.
             is_associative : True,
             is_commutative : True,
             identity : {},
-            evaluates : \((\Set : (args:.\0:> exclusive args:.\1:>))),
+            evaluates : \((\Set : (members : args:.\0:>.\members exclusive args:.\1:>.\members,))),
         )),
 
 The function C<exclusive::Set> results in the I<set symmetric
@@ -6162,7 +6184,7 @@ aka C<symm_diff> aka C<∆> for the composing type C<Set>.
             matches : (\@Set),
             implements : \@folder::"",
             accepts : \(...),
-            evaluates : \((\Set : (nest args:.\0:>))),
+            evaluates : \((\Set : (members : nest args:.\0:>.\members,))),
         )),
 
 I<TODO.>
@@ -6174,7 +6196,7 @@ I<TODO.>
             matches : (\@Set),
             implements : \@folder::"",
             accepts : \(...),
-            evaluates : \((\Set : (unnest args:.\0:>))),
+            evaluates : \((\Set : (members : unnest args:.\0:>.\members,))),
         )),
 
 I<TODO.>
@@ -6185,7 +6207,7 @@ I<TODO.>
             returns : \@Set,
             matches : (\@Set, \@Signature),
             implements : \@folder::"",
-            evaluates : \((\Set : (args:.\0:> where args:.\1))),
+            evaluates : \((\Set : (members : args:.\0:>.\members where args:.\1,))),
         )),
 
 I<TODO.>
@@ -6196,7 +6218,7 @@ I<TODO.>
             returns : \@Set,
             matches : (\@Set, \@Function_Call_But_0),
             implements : \@folder::"",
-            evaluates : \((\Set : (args:.\0:> map args:.\1))),
+            evaluates : \((\Set : (members : args:.\0:>.\members map args:.\1,))),
         )),
 
 I<TODO.>
@@ -6207,7 +6229,7 @@ I<TODO.>
             returns : \@Any,
             matches : (\@Set, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            evaluates : \((\Set : (args:.\0:> reduce args:.\1))),
+            evaluates : \((\Set : (members : args:.\0:>.\members reduce args:.\1,))),
         )),
 
 I<TODO.>
@@ -6231,7 +6253,7 @@ C<?|> for the composing type C<Set>.
             returns : \@Bag,
             matches : (\@Set),
             implements : \@folder::"",
-            evaluates : \(args:.\0:>),
+            evaluates : \(args:.\0:>.\members),
         )),
 
 The function C<to_Bag::Set> results in the C<Bag> value that has all of the
@@ -6245,7 +6267,7 @@ C<Set>.
             returns : \@Integer::NN,
             matches : (\@Set),
             implements : \@folder::"",
-            evaluates : \(count args:.\0:>),
+            evaluates : \(count args:.\0:>.\members),
         )),
 
 The function C<count::Set> results in the integral count of the members
@@ -6272,7 +6294,7 @@ function C<unique_count> for the composing type C<Set>.
             returns : \@Array,
             matches : (\@Set, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            evaluates : \((\Set : (args:.\0:> order_using args:.\1))),
+            evaluates : \(args:.\0:>.\members order_using args:.\1),
         )),
 
 The function C<order_using::Set> results in the C<Array> value that represents
@@ -6688,7 +6710,7 @@ I<TODO.>
             returns : \@Set,
             matches : (\@Bag),
             implements : \@folder::"",
-            evaluates : \((\Set : (unique args:.\0))),
+            evaluates : \((\Set : (members : unique args:.\0,))),
         )),
 
 The function C<to_Set::Bag> results in the C<Set> value that has, for every
@@ -8851,8 +8873,11 @@ I<TODO.>
         Interval::"" : (\Function : (
             is_type_definer : True,
             composes : {\@Intervalish, \@Setty},
-            where : \(Capsule args:.\0 and_then guard args:.\0:< = \Interval
-                and_then Interval::Attrs(args:.\0:>)),
+            where : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \Interval
+                and_then guard args:.\0:> is_a \Interval::Attrs()
+            ),
             default : \(Excuse::Before_All_Others()..Excuse::After_All_Others()),
         )),
 
@@ -8889,8 +8914,10 @@ I<TODO.>
             where : \(
                 Capsule args:.\0
                 and_then guard args:.\0:< = \Interval_Set
-                and_then guard Interval_Bag args:.\0:>
-                and_then guard all_unique args:.\0:>
+                and_then guard args:.\0:> is_a (
+                    members : \Interval_Bag(),
+                )
+                and_then guard all_unique args:.\0:>.\members
             ),
             default : ...,
         )),
@@ -8907,7 +8934,9 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
             where : \(
                 Capsule args:.\0
                 and_then guard args:.\0:< = \Interval_Bag
-                and_then guard Tuple_Bag args:.\0:>
+                and_then guard args:.\0:> is_a (
+                    members : \Tuple_Bag(),
+                )
                 and_then guard ...
             ),
             default : ...,
@@ -8937,8 +8966,9 @@ I<TODO.>
             where : \(
                 Capsule args:.\0
                 and_then guard args:.\0:< = \Quantity
-                and_then guard Relation args:.\0:>
-                and_then guard ...
+                and_then guard args:.\0:> is_a (
+                    0 : \Relation(),
+                )
             ),
             default : ...,
         )),
@@ -8952,11 +8982,20 @@ I<TODO.>
         Capsule : (\Function : (
             is_type_definer : True,
             where : \(args --> \foundation::is_a_Capsule::()),
-            default : (False : False),
+            default : (False : ()),
         )),
 
 The selection contract C<Capsule> represents the infinite Muldis D
 Foundation type C<foundation::Capsule>.  An C<Capsule> value is ...
+
+A C<Capsule> is more constrained than it conceptually needs to be such that
+its I<asset> may only be a value of the C<Tuple> type and not some other
+value.  This is for the purpose of avoiding unnecessary complication for
+the design and users of the language.  The idiomatic way to have an
+I<asset> I<AV> that is conceptually of some non-C<Tuple> type is to have a
+single-attribute I<asset> whose attribute value is I<AV>.  The idiomatic
+default attribute name for a single-attribute I<asset> is C<0> when there
+isn't an actual meaningful name to give it.
 
 Given that almost every selection contract is a subset of
 C<Capsule>, the latter intentionally does not compose any interface
@@ -9230,9 +9269,14 @@ I<TODO.>
 
         Source_Code::Alias : (\Function : (
             is_type_definer : True,
-            where : \(Capsule args:.\0 and_then guard args:.\0:< = \Alias
-                and_then Identity_Identifier::(args:.\0:>)),
-            default : \((\Alias : Identity_Identifier::())),
+            where : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \Alias
+                and_then guard args:.\0:> is_a (
+                    of : \Identity_Identifier(),
+                )
+            ),
+            default : \((\Alias : (of : Identity_Identifier::(),))),
         )),
 
 I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
