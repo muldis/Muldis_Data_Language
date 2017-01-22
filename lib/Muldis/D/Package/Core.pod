@@ -1097,8 +1097,8 @@ I<RoundingMode> (Java) or I<MidpointRounding> (C#).
         )),
 
 The selection contract C<Round_Meth::Attr_Name> represents the finite type
-consisting just of the C<Attr_Name> values that are valid Capsule assets of
-C<Round_Meth> values.
+consisting just of the C<Attr_Name> values that are valid Capsule attribute
+assets of C<Round_Meth> values.
 
 =head2 RM
 
@@ -4530,7 +4530,7 @@ I<TODO.>
 
         Unicode_Aliases::"σ" : (\Alias : ( of : \@where )),
 
-I<TODO.  The function-call is expected to be a Capsule with 2 asset attrs
+I<TODO.  The function-call is expected to be a Capsule with 2 attributes
 named 'func' and 'args', which are a Function_Name and a Tuple respectively.
 The 'args' can be any Tuple that doesn't have a '0' attr.
 The function referenced by 'func' is expected to take a Tuple argument
@@ -4579,7 +4579,7 @@ multiply with integers.>
             matches : (\@Unionable, \@Function_Call_But_0_1),
         )),
 
-I<TODO.  The function-call is expected to be a Capsule with 2 asset attrs
+I<TODO.  The function-call is expected to be a Capsule with 2 attributes
 named 'func' and 'args', which are a Function_Name and a Tuple respectively.
 The 'args' can be any Tuple that doesn't have either '0' or '1' attrs.
 The function referenced by 'func' is expected to take a Tuple argument
@@ -8988,19 +8988,25 @@ I<TODO.>
 The selection contract C<Capsule> represents the infinite Muldis D
 Foundation type C<foundation::Capsule>.  An C<Capsule> value is ...
 
-A C<Capsule> is more constrained than it conceptually needs to be such that
-its I<asset> may only be a value of the C<Tuple> type and not some other
-value.  This is for the purpose of avoiding unnecessary complication for
-the design and users of the language.  The idiomatic way to have an
-I<asset> I<AV> that is conceptually of some non-C<Tuple> type is to have a
-single-attribute I<asset> whose attribute value is I<AV>.  The idiomatic
-default attribute name for a single-attribute I<asset> is C<0> when there
+A C<Capsule> value consists of a I<label> paired with a set of 0..N
+I<attributes> where that set must be represented by a C<Tuple>.  While
+conceptually a C<Capsule> could pair a I<label> with an I<asset> of any
+type, restricting the latter to a C<Tuple> helps avoid unnecessary
+complication for the design and users of the language.  The idiomatic way
+to have an I<attributes> I<AV> that is conceptually of some non-C<Tuple>
+type is to have a single attribute whose asset is I<AV>.  The idiomatic
+default attribute name for a single-attribute C<Capsule> is C<0> when there
 isn't an actual meaningful name to give it.
 
-Given that almost every selection contract is a subset of
-C<Capsule>, the latter intentionally does not compose any interface
-contracts, and only has the minimal set of its own operators, so to
-minimize interference with other types' interfaces.
+Given that almost every selection contract is a subset of C<Capsule>, the
+latter intentionally does not compose any interface contracts, and also
+does not have any of its own C<Core> package operators, so to minimize
+interference with other types' interfaces.
+
+Generic means for selecting C<Capsule> values in terms of a
+I<label>/I<attributes> pair, or for extracting the I<label> or
+I<attributes> of a C<Capsule>, are provided by dedicated language
+expression node types and concrete syntax (and Foundation functions).
 
 =head1 REFERENCE DATA TYPES
 
