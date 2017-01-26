@@ -232,41 +232,49 @@ Other programming languages may name their corresponding values or
 quasi-values I<null> or I<nil> or I<none> or I<nothing> or I<undef> or
 I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
 
-=head2 Excuse_or_else coalesce
+=head2 coalesce ??
 
-        Excuse_or_else : (\Function : (
+        coalesce : (\Function : (
             returns : \@Any,
             matches : (\@Any, \@Any),
             is_associative : True,
             is_idempotent : True,
+            left_identity : \(Excuse::No_Reason()),
             evaluates : \(if Excuse args:.\0 then args:.\1 else args:.\0),
         )),
 
-        coalesce : (\Alias : ( of : \@Excuse_or_else )),
+        "??" : (\Alias : ( of : \@coalesce )),
 
-The function C<Excuse_or_else> aka C<coalesce> results in its C<0>
-argument iff the latter is not an C<Excuse>, and results in its C<1>
-argument otherwise.  This function is designed to be chained for any number
-of sequenced values in order to pick the first non-C<Excuse> in a list.
-Other programming languages may name their corresponding operators
-I<??> or I<//> or I<?:>.
-I<Note, this function's name is a placeholder and subject to change.>
+The function C<coalesce> aka C<??> results in its C<0> argument iff the
+latter is not an C<Excuse>, and results in its C<1> argument otherwise.
+This function is designed to be chained for any number of sequenced values
+in order to pick the first non-C<Excuse> in a list.
+This function has analogous stop-or-continue behavior to the Muldis D
+special syntax C<or_else> where any C<Excuse> or non-C<Excuse> stands in
+for C<False> and C<True> respectively but it has the opposite associativity.
+Other programming languages may name their corresponding I<null coalescing>
+operators I<?:> or I<//> or I<NVL> or I<ISNULL>.
 
-=head2 Excuse_and_then
+=head2 anticoalesce !!
 
-        Excuse_and_then : (\Function : (
+        anticoalesce : (\Function : (
             returns : \@Any,
             matches : (\@Any, \@Any),
             is_associative : True,
             is_idempotent : True,
+            left_identity : True,
             evaluates : \(if Excuse args:.\0 then args:.\0 else args:.\1),
         )),
 
-The function C<Excuse_and_then> results in its C<0> argument iff the latter is an
-C<Excuse>, and results in its C<1> argument otherwise.  This function is
-designed to be chained for any number of sequenced values in order to pick
-the first C<Excuse> in a list.
-I<Note, this function's name is a placeholder and subject to change.>
+        "!!" : (\Alias : ( of : \@anticoalesce )),
+
+The function C<anticoalesce> aka C<!!> results in its C<0> argument iff the
+latter is an C<Excuse>, and results in its C<1> argument otherwise.
+This function is designed to be chained for any number of sequenced values
+in order to pick the first C<Excuse> in a list.
+This function has analogous stop-or-continue behavior to the Muldis D
+special syntax C<and_then> where any C<Excuse> or non-C<Excuse> stands in
+for C<False> and C<True> respectively but it has the opposite associativity.
 
 =head1 ORDERABLE DATA TYPES
 
@@ -3390,7 +3398,7 @@ represents codepoints greater than 0x10FFFF or it represents illegal
 codepoints in the 0xD800..0xDFFF range of UTF-16 surrogates, or it has the
 wrong number of continuation bytes following an ASCII char or starting byte
 etc.  If a Blob contains multiple errors, the returned Excuse is for the
-error closest to the start of the Blob; that is, chained Excuse_and_then() is
+error closest to the start of the Blob; that is, chained anticoalesce() is
 used. TODO, perhaps declare a union type collecting the Unicode errors like
 we have with rounding methods, or we actually may have multiple Unicode sets.>
 
