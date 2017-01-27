@@ -9275,7 +9275,7 @@ I<TODO.>
 
         Source_Code::Material : (\Function : (
             is_type_definer : True,
-            union : {\@Alias, \@Function, \@Procedure},
+            evaluates : \(args:.\0 is_a {\@Alias, \@Function, \@Procedure}),
             default : ...,
         )),
 
@@ -9302,31 +9302,31 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
             evaluates : \(
                 Capsule args:.\0
                 and_then guard args:.\0:< = \Function
-                and_then guard args:.\0:> is_a (
-                    is_type_definer : \Boolean::(),
-                    is_generalization : \Boolean::(),
-                    composes : ...,  `set of 0..N type name`
-                    provides_default_for : ...,  `subset 0..M of prior set`
-                    constant : \Function_Body::(),
-                    virtual : \Boolean::(),
-                    commutes : \Identity_Identifier::(),
-                    negates : \Identity_Identifier::(),
-                    returns : \Signature::(),
-                    matches : \Signature::Tuple(),
-                    implements : ...,
-                    overrides : ...,
-                    accepts : \Function_Body::(),
-                    intends : \Function_Body::(),
-                    is_associative : \Boolean::(),  `two-way associative`
-                    is_commutative : \Boolean::(),
-                    is_idempotent : \Boolean::(),
-                    identity : \Function_Body::(),  `iff two-sided identity element exists`
-                    left_identity : \Function_Body::(),  `iff only left-identity element exists`
-                    right_identity : \Function_Body::(),  `iff only right-identity element exists`
-                    repeater : ...,
-                    evaluates : \Function_Body::(),
-                    default : \Function_Body::(),
-                )
+                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
+                    is_type_definer : (type : \Boolean::(), optional : True),
+                    is_generalization : (type : \Boolean::(), optional : True),
+                    composes : (type : ..., optional : True),  `set of 0..N type name`
+                    provides_default_for : (type : ..., optional : True),  `subset 0..M of prior set`
+                    constant : (type : \Function_Body::(), optional : True),
+                    virtual : (type : \Boolean::(), optional : True),
+                    commutes : (type : \Identity_Identifier::(), optional : True),
+                    negates : (type : \Identity_Identifier::(), optional : True),
+                    returns : (type : \Signature::(), optional : True),
+                    matches : (type : \Signature::Tuple_Attrs_Match_Simple(), optional : True),
+                    implements : (type : ..., optional : True),
+                    overrides : (type : ..., optional : True),
+                    accepts : (type : \Function_Body::(), optional : True),
+                    intends : (type : \Function_Body::(), optional : True),
+                    is_associative : (type : \Boolean::(), optional : True),  `two-way associative`
+                    is_commutative : (type : \Boolean::(), optional : True),
+                    is_idempotent : (type : \Boolean::(), optional : True),
+                    identity : (type : \Function_Body::(), optional : True),  `iff two-sided identity element exists`
+                    left_identity : (type : \Function_Body::(), optional : True),  `iff only left-identity element exists`
+                    right_identity : (type : \Function_Body::(), optional : True),  `iff only right-identity element exists`
+                    repeater : (type : ..., optional : True),
+                    evaluates : (type : \Function_Body::(), optional : True),
+                    default : (type : \Function_Body::(), optional : True),
+                ))
             ),
             default : ...,
         )),
@@ -9371,13 +9371,13 @@ I<TODO.>
                 and_then guard args:.\0:< = \Procedure
                 and_then guard args:.\0:> is_a (
                     virtual : \Boolean::(),
-                    matches : \Signature::Tuple(),
+                    matches : \Signature::Tuple_Attrs_Match_Simple(),
                     updates : \Heading::(),  `TODO: Or keyword "source".`
                     implements : ...,
                     overrides : ...,
                     accepts : \Function_Body::(),
                     intends : \Function_Body::(),
-                    vars : \Signature::Tuple(),
+                    vars : \Signature::Tuple_Attrs_Match_Simple(),
                     performs : \Procedure_Body::(),
                 )
             ),
@@ -9408,15 +9408,20 @@ I<TODO.>
 
         Source_Code::Signature::"" : (\Function : (
             is_type_definer : True,
-            union : {\@Function_Call_But_0, \@folder::Set, \@folder::Tuple},
+            evaluates : \(args:.\0 is_a {
+                \@Function_Call_But_0,
+                \@folder::Disjunction,
+                \@folder::Tuple_Attrs_Match_Simple,
+                \@folder::Tuple_Attrs_Match,
+            }),
             default : \Any::(),
         )),
 
 I<TODO.>
 
-=head2 Source_Code::Signature::Set
+=head2 Source_Code::Signature::Disjunction
 
-        Source_Code::Signature::Set : (\Function : (
+        Source_Code::Signature::Disjunction : (\Function : (
             is_type_definer : True,
             evaluates : \(Set args:.\0 and_then guard
                 args:.\0 all \Signature::()),
@@ -9424,12 +9429,38 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Source_Code::Signature::Tuple
+=head2 Source_Code::Signature::Tuple_Attrs_Match_Simple
 
-        Source_Code::Signature::Tuple : (\Function : (
+        Source_Code::Signature::Tuple_Attrs_Match_Simple : (\Function : (
             is_type_definer : True,
             evaluates : \(Tuple args:.\0 and_then guard
                 args:.\0 all_attr_assets \Signature::()),
+        )),
+
+I<TODO.>
+
+=head2 Source_Code::Signature::Tuple_Attrs_Match
+
+        Source_Code::Signature::Tuple_Attrs_Match : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                tuple_sig ::= args:.\0;
+                returns Capsule tuple_sig
+                    and_then guard tuple_sig:< = \@material
+                    and_then guard tuple_sig:> all_attr_assets \(
+                        attr_sig ::= args:.\0;
+                        returns Tuple attr_sig
+                            and_then guard
+                                attr_sig ⊆@ \@(type,optional)
+                                and
+                                (attr_sig.?\type and_then guard Signature attr_sig.\type)
+                                and
+                                if attr_sig.?\optional
+                                    then guard Boolean attr_sig.\optional
+                                    else True
+                            ;
+                    );
+            ),
         )),
 
 I<TODO.>
@@ -9510,11 +9541,13 @@ I<TODO.>
 
         Source_Code::Expression : (\Function : (
             is_type_definer : True,
-            union : {\@Expr_Name_Expr, \@Naming_Expr, \@Annotating_Expr
+            evaluates : \(args:.\0 is_a {
+                \@Expr_Name_Expr, \@Naming_Expr, \@Annotating_Expr
                 , ...
                 , \@delimiting_expr, \@source_expr
                 , \@opaque_literal_expr, \@collection_selector_expr
-                , \@invocation_expr, \@conditional_expr, \@fail_expr, ...},
+                , \@invocation_expr, \@conditional_expr, \@fail_expr, ...
+            }),
             default : ...,
         )),
 
@@ -9534,7 +9567,7 @@ I<TODO.>
 
         Source_Code::Statement : (\Function : (
             is_type_definer : True,
-            union : {...},
+            evaluates : \(args:.\0 is_a {...}),
             default : ...,
         )),
 
@@ -9556,20 +9589,51 @@ I<TODO.  Note, this type currently isn't used anywhere.>
             returns : \@Function_Call_But_0,
             matches : (\@Signature),
             evaluates : \(
-                if Function_Call_But_0 args:.\0 then
-                    args:.\0
-                else if Signature::Set args:.\0 then guard
-                    \(args:.\1 any \(args:.\1 is_a args:.\0) \<-- (1 : args:.\0))
-                        \<-- (1 : args:.\0)
-                else if Signature::Tuple args:.\0 then guard
-                    \(
-                        Tuple args:.\0 and_then guard
-                            args:.\0 =@ args:.\1 and_then guard
-                                args:.\0 all_attrs
-                                    \(args:.\0:.\asset is_a args:.\1:.(args:.\0:.\name)) \<-- ( 1: args:.\1, )
-                    ) \<-- (1 : args:.\0)
-                else
-                    fail  `We should never get here.`
+                sig ::= args:.\0;
+                returns
+                    if Function_Call_But_0 sig then
+                        sig
+                    else if Signature::Disjunction sig then guard
+                        \(
+                            topic    ::= args:.\0;
+                            disj_sig ::= args:.\sig;
+                            returns disj_sig any \(args:.\topic is_a args:.\0) \<-- (:topic,)
+                        ) \<-- (:sig,)
+                    else if Signature::Tuple_Attrs_Match_Simple sig then guard
+                        \(
+                            topic     ::= args:.\0;
+                            tuple_sig ::= args:.\sig;
+                            returns Tuple topic
+                                and_then guard topic =@ tuple_sig
+                                and_then guard
+                                    tuple_sig all_attrs \(
+                                        name     ::= args:.\0:.\name;
+                                        attr_sig ::= args:.\0:.\asset;
+                                        topic    ::= args:.\topic;
+                                        returns topic.name is_a attr_sig;
+                                    ) \<-- (:topic,)
+                        ) \<-- (:sig,)
+                    else if Signature::Tuple_Attrs_Match sig then guard
+                        \(
+                            topic     ::= args:.\0;
+                            tuple_sig ::= args:.\sig;
+                            returns Tuple topic
+                                and_then guard
+                                    topic ⊆@ tuple_sig
+                                    and
+                                    tuple_sig all_attrs \(
+                                        name     ::= args:.\0:.\name;
+                                        attr_sig ::= args:.\0:.\asset;
+                                        topic    ::= args:.\topic;
+                                        returns if topic.?name
+                                            then guard topic.name is_a attr_sig
+                                            else attr_sig.?\optional
+                                        ;
+                                    ) \<-- (:topic,)
+                        ) \<-- (:sig,)
+                    else
+                        fail  `We should never get here.`
+                    ;
             ),
         )),
 
