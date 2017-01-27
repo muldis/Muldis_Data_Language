@@ -9300,33 +9300,84 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
         Source_Code::Function : (\Function : (
             is_type_definer : True,
             evaluates : \(
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Function
-                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
-                    is_type_definer : (type : \Boolean::(), optional : True),
-                    is_generalization : (type : \Boolean::(), optional : True),
-                    composes : (type : ..., optional : True),  `set of 0..N type name`
-                    provides_default_for : (type : ..., optional : True),  `subset 0..M of prior set`
-                    constant : (type : \Function_Body::(), optional : True),
-                    virtual : (type : \Boolean::(), optional : True),
-                    commutes : (type : \Identity_Identifier::(), optional : True),
-                    negates : (type : \Identity_Identifier::(), optional : True),
-                    returns : (type : \Signature::(), optional : True),
-                    matches : (type : \Signature::Tuple_Attrs_Match_Simple(), optional : True),
-                    implements : (type : ..., optional : True),
-                    overrides : (type : ..., optional : True),
-                    accepts : (type : \Function_Body::(), optional : True),
-                    intends : (type : \Function_Body::(), optional : True),
-                    is_associative : (type : \Boolean::(), optional : True),  `two-way associative`
-                    is_commutative : (type : \Boolean::(), optional : True),
-                    is_idempotent : (type : \Boolean::(), optional : True),
-                    identity : (type : \Function_Body::(), optional : True),  `iff two-sided identity element exists`
-                    left_identity : (type : \Function_Body::(), optional : True),  `iff only left-identity element exists`
-                    right_identity : (type : \Function_Body::(), optional : True),  `iff only right-identity element exists`
-                    repeater : (type : ..., optional : True),
-                    evaluates : (type : \Function_Body::(), optional : True),
-                    default : (type : \Function_Body::(), optional : True),
-                ))
+                function ::= args:.\0;
+
+                returns Capsule function
+                    and_then guard function:< = \Function
+                    and_then guard when_well_formed_Capsule;
+
+                traits ::= function:>;
+
+                when_well_formed_Capsule ::=
+                    if traits .:? (\is_type_definer, True) then
+                        if traits .:? (\is_generalization, True) then
+                            when_generalized_type_definer
+                        else if traits.?\constant then
+                            when_singleton_type_definer
+                        else
+                            when_regular_type_definer
+                    else
+                        when_regular_function;
+
+                when_generalized_type_definer ::=
+                    traits is_a (\@Signature::Tuple_Attrs_Match : (
+                        is_type_definer : (type : \True::(),),
+                        is_generalization : (type : \True::(),),
+                        default : (type : \Function_Body::(), optional : True),
+                    ) %+ type_specialization_attrs_template)
+                    and_then type_specialization_attrs_constraint;
+
+                when_singleton_type_definer ::=
+                    traits is_a (\@Signature::Tuple_Attrs_Match : (
+                        is_type_definer : (type : \True::(),),
+                        is_generalization : (type : \False::(), optional : True),
+                        constant : (type : \Function_Body::(),),
+                    ) %+ type_specialization_attrs_template)
+                    and_then type_specialization_attrs_constraint;
+
+                when_regular_type_definer ::=
+                    traits is_a (\@Signature::Tuple_Attrs_Match : (
+                        is_type_definer : (type : \True::(),),
+                        is_generalization : (type : \False::(), optional : True),
+                        evaluates : (type : \Function_Body::(),),
+                        default : (type : \Function_Body::(), optional : True),
+                    ) %+ type_specialization_attrs_template)
+                    and_then type_specialization_attrs_constraint;
+
+                type_specialization_attrs_template ::=
+                    (
+                        composes : (type : \Set_of_Identity_Identifier::(), optional : True),
+                        provides_default_for : (type : \Set_of_Identity_Identifier::(), optional : True),
+                    );
+
+                type_specialization_attrs_constraint ::=
+                    if traits.?\provides_default_for then
+                        traits.?\composes
+                        and_then guard traits:.\provides_default_for ⊆ traits:.\composes
+                    else
+                        True;
+
+                when_regular_function ::=
+                    traits is_a (\@Signature::Tuple_Attrs_Match : (
+                        is_type_definer : (type : \False::(), optional : True),
+                        virtual : (type : \Boolean::(), optional : True),
+                        commutes : (type : \Identity_Identifier::(), optional : True),
+                        negates : (type : \Identity_Identifier::(), optional : True),
+                        returns : (type : \Signature::(), optional : True),
+                        matches : (type : \Signature::Tuple_Attrs_Match_Simple(), optional : True),
+                        implements : (type : ..., optional : True),
+                        overrides : (type : ..., optional : True),
+                        accepts : (type : \Function_Body::(), optional : True),
+                        intends : (type : \Function_Body::(), optional : True),
+                        is_associative : (type : \Boolean::(), optional : True),  `two-way associative`
+                        is_commutative : (type : \Boolean::(), optional : True),
+                        is_idempotent : (type : \Boolean::(), optional : True),
+                        identity : (type : \Function_Body::(), optional : True),  `iff two-sided identity element exists`
+                        left_identity : (type : \Function_Body::(), optional : True),  `iff only left-identity element exists`
+                        right_identity : (type : \Function_Body::(), optional : True),  `iff only right-identity element exists`
+                        repeater : (type : ..., optional : True),
+                        evaluates : (type : \Function_Body::(), optional : True),
+                    ));
             ),
             default : ...,
         )),
