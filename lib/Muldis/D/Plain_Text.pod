@@ -783,13 +783,13 @@ any named entity or with general type/routine/etc invocation syntax that
 allows any entity of the respective kind, or for attr names.
 
 A C<< <fixed_name> >> is for use within value expressions with certain
-common cases of function (or constant) invocations where an unqualified
+common cases of function (or singleton type definer) invocations where an unqualified
 operator name appears next to its operands without any parenthesis to group
 the operands under the operator.  The I<fixed> name comes from such
 invocations being usually qualified as I<prefix> or I<infix> or I<postfix>.
 
 A C<< <pkg_entity_name> >> is for use when either declaring or referencing
-package entities (types, constants, functions, procedures, aliases, etc)
+package entities (types, singleton type definers, functions, procedures, aliases, etc)
 which live within a multi-level namespace.
 
 =head1 GENERIC VALUE EXPRESSIONS
@@ -874,7 +874,7 @@ annotation is an internal code comment expressed as a C<Text> literal,
 or it may be a C<Tuple> of what would otherwise be individual annotations.
 
 An C<< <annotation_expr> >> is subject to the additional rule that it must
-be a completely foldable constant.  It may not contain a C<< <source_expr> >>.
+be a completely foldable singleton type definer.  It may not contain a C<< <source_expr> >>.
 
 Iff an C<< <expr> >> is a C<< <delimiting_expr> >>, then it is interpreted
 simply as if it were its child C<< <expr> >> element; the primary reason
@@ -1509,7 +1509,7 @@ Grammar:
     <Identity_Identifier> ::=
         ...
 
-I<TODO.  Note that Function_Name and Contract_Name are aliases for Identity_Identifier.>
+I<TODO.  Note that Function_Name and ..._Name are aliases for Identity_Identifier.>
 
 =head1 COLLECTION SELECTOR EXPRESSIONS
 
@@ -1641,7 +1641,7 @@ Examples:
 
     (\Fraction : (numerator : 5, denominator : 3))
 
-=head2 Generic Constant and Function Call Specification Selectors
+=head2 Generic Singleton Type Definer and Function Call Specification Selectors
 
 Grammar:
 
@@ -1698,7 +1698,7 @@ I<TODO.>
 I<Also TODO is adding things like -->? and -->! etc to test if something
 is invokable or indicate a result if one isn't invokable.>
 
-=head2 Generic Constant and Function Invocation Expressions
+=head2 Generic Singleton Type Definer and Function Invocation Expressions
 
 Grammar:
 
@@ -1721,32 +1721,32 @@ Grammar:
 I<TODO.>
 
 A C<< <generic_func_call> >> denotes a C<Function_Call> value, which pairs
-a C<Function_Name> (C<Identity_Identifier>) value naming a function (or constant or
+a C<Function_Name> (C<Identity_Identifier>) value naming a function (or singleton type definer or
 type) with a C<Tuple> value giving arguments to pass to it; typically this
 is defined either with a C<< <Function_Call> >> selector expression or with
 an inline-defined C<function>; the C<< <generic_func_args> >> gives more args.
 
-Note that explicitly passing a nullary tuple will also match a constant,
+Note that explicitly passing a nullary tuple will also match a singleton type definer,
 and explicitly passing a unary tuple with a positional argument will also
 match a type.
 
 I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF -->/<-- WHERE THE FUNCTION
-OR (INTERNALLY RECURSIVE) CONSTANT IS DECLARED INLINE WITH ITS CALL! >>
+OR (INTERNALLY RECURSIVE) SINGLETON TYPE DEFINER IS DECLARED INLINE WITH ITS CALL! >>
 
 A C<< <postcircumfixed_func_invo_expr> >> is subject to the additional rule
 that, iff its C<< <generic_func_name> >> element has no C<::> within
 itself, then that element must have a trailing C<::> element.
 
-A C<< <generic_func_name> >> may alternately be a constant name or a type
+A C<< <generic_func_name> >> may alternately be a singleton type definer name or a type
 name, and not just a function name, because those can be invoked like
 functions under certain circumstances.  When the C<< <attr_commalist> >>
-has exactly zero C<< <*_attr> >> elements, either a constant or a niladic
+has exactly zero C<< <*_attr> >> elements, either a singleton type definer or a niladic
 function or a type (implicitly its default value) may be invoked; for
 exactly 1 C<< <*_attr> >> element which is positional, either a monadic
 function or a type (implicitly its membership predicate) may be invoked;
 for other arguments, only a function of corrisponding arity may be invoked.
 
-=head2 Fixed Constant and Function Invocation Expressions
+=head2 Fixed Singleton Type Definer and Function Invocation Expressions
 
 Grammar:
 

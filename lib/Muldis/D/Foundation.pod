@@ -170,7 +170,7 @@ from or writing to the external environment of the application, including
 its users or various external systems.
 
 All other Muldis D concepts relate directly to or are defined in terms of
-those 4, including I<types>, I<contracts>, I<packages>, I<constants>,
+those 4, including I<types>, I<type definers>, I<packages>, I<singleton type definers>,
 I<databases>, I<expressions>, I<statements>, and so on.
 
 =head1 ENVIRONMENT
@@ -284,18 +284,18 @@ throw exceptions; as far as Muldis D is concerned, all explicit results,
 even the likes of NaN, are considered to be normal termination.
 
 For any context in Muldis D where a reference to or a definition of a
-function is allowed, a reference to or a definition of a contract is
+function is allowed, a reference to or a definition of a type definer is
 allowed in its place.  An invocation as if it were a function of a given
-contract for type I<T1>, where the invocation has exactly 1 argument whose
+type definer for type I<T1>, where the invocation has exactly 1 argument whose
 name is C<0> and whose asset is value I<V1>, is semantically identical to
 (and is idiomatic for) testing if I<V1> is a member of the type I<T1>; the
 result is I<true> if so and I<false> otherwise.  An invocation as if it
-were a function of a given contract I<C1>, where the invocation has exactly
+were a function of a given type definer I<C1>, where the invocation has exactly
 zero arguments, is semantically identical to (and is idiomatic for)
 selecting the I<default value> of I<C1>.  Likewise, a reference to a
-I<constant> is allowed to be invoked as if it were a function, in both of
-the same ways that a contract is allowed to be.  Frequently, it is
-appropriate to treat both contracts and constants simply as being special
+I<singleton type definer> is allowed to be invoked as if it were a function, in both of
+the same ways that a type definer is allowed to be.  Frequently, it is
+appropriate to treat both type definers and singleton type definers simply as being special
 cases of functions, with zero or 1 arguments, rather than distinct things.
 
 I<TODO: Other related notes.  Especially the parts of a function definition.>
@@ -373,7 +373,7 @@ computed with finite time and memory resources.  An I<infinite type> is a
 data type whose cardinality is known to be I<countably infinite>.
 A I<semifinite type> is a data type whose cardinality might be either
 finite or infinite, because its membership is only partially defined at any
-given time, typically because it corresponds to an I<interface contract>.
+given time, typically because it corresponds to an I<interface type definer>.
 The universal type is an infinite type and the empty type is a finite type.
 
 Data types in Muldis D are fundamentally unordered sets of values, and so
@@ -384,21 +384,21 @@ functions) applied to it in particular contexts, and so fake the type being
 ordered, in either one or multiple ways.  Moreover, many of the common use
 cases here have system-defined functionality to support them.
 
-=head2 Contracts
+=head2 Type Definers
 
-A I<contract> is an association with a I<data type> of various metadata
-which can be applied where that contract is used.  The most common such
+A I<type definer> is an association with a I<data type> of various metadata
+which can be applied where that type definer is used.  The most common such
 metadata are an explicit name or alias for the type, or a default value
 (the latter not valid for the I<empty type>).
 
-Every I<contract> is of exactly 1 of 2 kinds based on how it is declared;
-it is either a I<selection contract> or an I<interface contract>; these
+Every I<type definer> is of exactly 1 of 2 kinds based on how it is declared;
+it is either a I<selection type definer> or an I<interface type definer>; these
 two declaration methods are polar opposites of each other.
 
-Each given I<selection contract>, I<R1>, explicitly declares for itself
+Each given I<selection type definer>, I<R1>, explicitly declares for itself
 what its associated type / value set is.  The form this takes in the
 general case is a set of
-(typically exactly one) other contracts' names, I<S1>, plus a predicate
+(typically exactly one) other type definers' names, I<S1>, plus a predicate
 expression, I<P1>.  The type of I<R1> is defined as taking the union of the
 types of I<S1> as source values and then applying I<P1> as a filter; the
 type of I<R1> consists of just the values for which I<P1> results in
@@ -409,39 +409,39 @@ I<true>.  The canonical way to associate an I<R1> with the universal type
 is to omit both its I<S1> and I<P1>; the canonical way to associate with
 the empty type is to have an explicit empty I<S1> and omit I<P1>.
 
-A selection contract associated with a I<singleton type> is
-idiomatically declared in a different way, by declaring a I<constant> whose
+A selection type definer associated with a I<singleton type> is
+idiomatically declared in a different way, by declaring a I<singleton type definer> whose
 value is the type's only value.  For any context in Muldis D where a
-reference to or a definition of a selection contract is allowed, a
-reference to or a definition of a constant is allowed in its place.  A
-given constant for value I<V1> is semantically identical for such uses as a
-general form selection contract with an omitted I<S1>, a I<P1> that tests
+reference to or a definition of a selection type definer is allowed, a
+reference to or a definition of a singleton type definer is allowed in its place.  A
+given singleton type definer for value I<V1> is semantically identical for such uses as a
+general form selection type definer with an omitted I<S1>, a I<P1> that tests
 its sole argument for equality with I<V1>, and a default value of I<V1>.
 
-Each given I<interface contract>, I<I1>, explicitly does I<not> declare its
-associated type.  Instead, I<I1> relies on other contracts, I<S1>, to
+Each given I<interface type definer>, I<I1>, explicitly does I<not> declare its
+associated type.  Instead, I<I1> relies on other type definers, I<S1>, to
 explicitly declare that they I<compose> I<I1>, and that therefore I<I1> is
 a type union that includes all of the values of I<S1>.
 
-Each given contract, with the sole exception of one associating with the
+Each given type definer, with the sole exception of one associating with the
 empty type, must have exactly 1 associated I<default value>.  Any
-selection contract, I<R1>, may explicitly declare this value for itself;
+selection type definer, I<R1>, may explicitly declare this value for itself;
 if I<R1> does not do this, then the default value of its immediate sources
 is implicitly inherited as its own; if the set of default values of the
 direct sources of I<R1>, after being filtered by the predicate of I<R1>, is
-not a singleton, this is an error.  Any interface contract I<I1> must have
-exactly 1 composing contract I<S1> that also explicitly declares that it
+not a singleton, this is an error.  Any interface type definer I<I1> must have
+exactly 1 composing type definer I<S1> that also explicitly declares that it
 provides the default value of I<I1>; that is, the default value of I<S1> is
 also the default value of I<I1>.
 
-Any kind of contract may compose an I<interface contract>, and so the
+Any kind of type definer may compose an I<interface type definer>, and so the
 latter may be chained, but ultimately each end composer must be a
-I<selection contract> as only they can originate default values.  For
-example, one may have 2 interface contracts and a selection contract to
+I<selection type definer> as only they can originate default values.  For
+example, one may have 2 interface type definers and a selection type definer to
 represent, respectively, a general numeric type, a rational numeric type,
 and a 64-bit fraction type; these ordered from most general to most specific.
 
-Each interface contract I<I1> declares a set of zero or more virtual
+Each interface type definer I<I1> declares a set of zero or more virtual
 routine (function or procedure) names I<N1>.  For each name of I<N1> there
 must exist a virtual routine I<R1> of that name which takes at least 1
 conceptual argument I<A1> of the type associated with I<I1>.  For each
@@ -449,11 +449,11 @@ given composing type I<S1> of I<I1>, for each virtual routine I<R1>, there
 must exist a (possibly virtual) routine I<R2> which explicitly declares
 that it I<implements> I<R1>, where the conceptual argument I<A2>
 corresponding to I<A1> is of the type associated with I<S1>.  That is, any
-contract composing an interface contract must implement the latter's
+type definer composing an interface type definer must implement the latter's
 required interface; failing to do so is an error.
 
 And so, regardless of whether types are manifested in a program by way of a
-a selection contract or an interface contract, users can be confident
+a selection type definer or an interface type definer, users can be confident
 that if some code declares acceptance of a particular supertype, they
 should be able to easily predict the manners and circumstances where they
 may use all of its subtypes interchangeably, with more general code,
@@ -465,54 +465,54 @@ I<T1>, in which case I<R2> is declaring itself to be a more optimal
 implementation for its specific subtype than is the more general
 implementation of I<R1>.
 
-An interface contract which declares zero required virtual routines is also
-called a I<semantic contract>.  A semantic contract just exists for
-providing a semantic label to the contracts that compose it, and doesn't
-otherwise imply anything about their API.  Examples of semantic contracts
+An interface type definer which declares zero required virtual routines is also
+called a I<semantic type definer>.  A semantic type definer just exists for
+providing a semantic label to the type definers that compose it, and doesn't
+otherwise imply anything about their API.  Examples of semantic type definers
 are ones that declare a number is either ordinal or cardinal or nominal.
-In contrast, an interface contract which declares at least one required
+In contrast, an interface type definer which declares at least one required
 virtual routine exists mainly to aid generic code reuse, but may optionally
 provide a semantic label as well.
 
-The primary determinant for whether you would declare a contract as a
-selection contract or an interface contract is whether you want the
-contract's definition to be closed, or open, respectively.  If you use a
-selection contract, then assuming you have control over all the types it
+The primary determinant for whether you would declare a type definer as a
+selection type definer or an interface type definer is whether you want the
+type definer's definition to be closed, or open, respectively.  If you use a
+selection type definer, then assuming you have control over all the types it
 unions (or they are system-defined), you are fairly guaranteed that your
-contract will remain static and continue to contain exactly the same values
+type definer will remain static and continue to contain exactly the same values
 indefinitely, or in other words that the type will continue to mean exactly
 what you intended no matter what anyone else does with types outside your
-control.  If you use an interface contract, in contrast, you are expressly
+control.  If you use an interface type definer, in contrast, you are expressly
 empowering others to alter the meaning of that type by adding new values to
-it from their own new contracts, and so your contract is flexible to
+it from their own new type definers, and so your type definer is flexible to
 accommodate new uses automatically, at the cost that you can't always
 assume when you ask for a value of that type that you'll know in advance
 all the possible values you might get.  A particularly important use of
-interface contracts is doing operator overloading between disjoint types,
+interface type definers is doing operator overloading between disjoint types,
 which would be considerably more difficult without them.
 
 One might say that Muldis D is using I<progressive nominal typing>; or at
 least Larry Wall made up that term on the spot in reference to how Muldis D
 was perceived to work, L<http://irclog.perlgeek.de/perl6/2010-05-06/text>.
 Users can choose to select values before or without at all declaring the
-types of (that is, contracts for) those values, and not just after; the
-values alternately do or don't belong to named types/contracts; values can
+types of (that is, type definers for) those values, and not just after; the
+values alternately do or don't belong to named types/type definers; values can
 often include a declaration of a nominal type in their composition,
-regardless of whether such a type/contract exists at the time.
+regardless of whether such a type/type definer exists at the time.
 
-=head1 CONSTANTS
+=head1 SINGLETON TYPE DEFINERS
 
-A I<constant> is similar to a I<function> but that it takes no arguments at
+A I<singleton type definer> is similar to a I<function> but that it takes no arguments at
 all (its I<source> is the sole nullary/zero-attribute I<tuple>) and it
-always gives the same result.  A constant may be invoked anywhere that a
-function may be, and a constant may invoke functions.  The single value a
-constant denotes may be arbitrarily complex, and repeated portions may be
+always gives the same result.  A singleton type definer may be invoked anywhere that a
+function may be, and a singleton type definer may invoke functions.  The single value a
+singleton type definer denotes may be arbitrarily complex, and repeated portions may be
 factored under their own names, like in a function.
 
-A primary use of a Muldis D I<constant> is for code factoring, so that
-multiple routines or dependent packages may share a common named constant.
+A primary use of a Muldis D I<singleton type definer> is for code factoring, so that
+multiple routines or dependent packages may share a common named singleton type definer.
 
-In Muldis D, an additional idiomatic purpose of a I<constant> is to support
+In Muldis D, an additional idiomatic purpose of a I<singleton type definer> is to support
 representing the current value of any arbitrary database (or data dump) in
 the form of Muldis D source code, where it is a named entity in a package.
 Such a form allows one to bundle up all the type definitions the database
@@ -526,27 +526,27 @@ source-code-as-data, at runtime.
 Normally, when Muldis D source code is parsed, the details of its actual
 user-written syntax are preserved as data, so that it is possible to
 losslessly round trip the source code to a form identical to what the users
-wrote.  However, in the case of constants used to represent a database,
+wrote.  However, in the case of singleton type definers used to represent a database,
 especially one previously created or changed at runtime as ordinary user
 data values, there is no benefit to maintaining that syntax meta-data when
-parsing such constants, and it takes up a lot of extra space.  For a given
-I<constant>, since the Muldis D parser can never otherwise know for sure of
-its source code's origin or purpose, the constant can explicitly declare
+parsing such singleton type definers, and it takes up a lot of extra space.  For a given
+I<singleton type definer>, since the Muldis D parser can never otherwise know for sure of
+its source code's origin or purpose, the singleton type definer can explicitly declare
 that it is I<folded>, in which case the parser can throw away any syntax
-meta-data and just store the constant's result value.  It is idiomatic for
-a constant that is produced with a database dump to be declared I<folded>
-while a constant hand-written by a user to not be declared so.
+meta-data and just store the singleton type definer's result value.  It is idiomatic for
+a singleton type definer that is produced with a database dump to be declared I<folded>
+while a singleton type definer hand-written by a user to not be declared so.
 
-A third idiomatic purpose of a I<constant> is to provide a terse alternate
-means to define a selection contract associated with a singleton type;
-as such a reference to a constant can be used both where a contract or a
+A third idiomatic purpose of a I<singleton type definer> is to provide a terse alternate
+means to define a selection type definer associated with a singleton type;
+as such a reference to a singleton type definer can be used both where a type definer or a
 value is expected.
 
 For any context in Muldis D where a reference to or a definition of a
-constant is allowed, a reference to or a definition of a contract is
-allowed in its place.  An invocation as if it were a constant of a given
-contract is semantically identical to (and is idiomatic for) selecting the
-default value of the contract.
+singleton type definer is allowed, a reference to or a definition of a type definer is
+allowed in its place.  An invocation as if it were a singleton type definer of a given
+type definer is semantically identical to (and is idiomatic for) selecting the
+default value of the type definer.
 
 =head2 Type Safety
 
@@ -557,12 +557,12 @@ The Muldis D type system is used to prevent certain erroneous or
 undesirable program behaviour.  Type errors are usually those that result
 from attempts to perform an operation on some values that is not
 appropriate to their data types; or any contravention of the programmer's
-intent (as communicated via contract annotations) are erroneous and to be
+intent (as communicated via type definer annotations) are erroneous and to be
 prevented by the system.
 
 Every value is of a type.  Every literal, expression, function result,
 routine parameter, type component, and variable has a declared type by way
-of a contract; the system ensures that a variable will only ever hold a
+of a type definer; the system ensures that a variable will only ever hold a
 value of its declared type, that a routine parameter will only take an
 argument of its declared type, and a function will only ever result in a
 value of its declared type.  There are no implicit type conversions, only
@@ -738,12 +738,12 @@ I<TODO.  Update the following, and some preceding, which are now outdated.>
 Formally speaking, all low-level data types are anonymous, and this
 documentation refers to them italicized like I<foo>; any I<foo> is for
 human reference and that name doesn't physically exist as part of the
-low-level API as a type or contract name.  In contrast, all low-level
+low-level API as a type or type definer name.  In contrast, all low-level
 operators/routines are named, and the documentation refers to them like
 C<foo> as they do physically exist as part of the low-level API.
 
 The high-level API gives more user-friendly physical C<foo> names to all of
-the above in its own contract/routine wrappers for the low-level entities,
+the above in its own type definer/routine wrappers for the low-level entities,
 but those names won't be used in this Muldis D Foundation document.
 
 The low-level entity names given here, whether anonymous or not, are
@@ -811,43 +811,43 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 FOUNDATION CONSTANTS
+=head1 FOUNDATION SINGLETON TYPE DEFINERS
 
 I<TODO.>
 
 =head2 False
 
-The Foundation constant C<False> represents the C<Boolean>
+The Foundation singleton type definer C<False> represents the C<Boolean>
 value I<false>.
 
 =head2 True
 
-The Foundation constant C<True> represents the C<Boolean>
+The Foundation singleton type definer C<True> represents the C<Boolean>
 value I<true>.
 
 =head2 Neg_One
 
-The Foundation constant C<Neg_One> represents the C<Integer>
+The Foundation singleton type definer C<Neg_One> represents the C<Integer>
 value negative-one.
 
 =head2 Zero
 
-The Foundation constant C<Zero> represents the C<Integer>
+The Foundation singleton type definer C<Zero> represents the C<Integer>
 value zero.
 
 =head2 Pos_One
 
-The Foundation constant C<Pos_One> represents the C<Integer>
+The Foundation singleton type definer C<Pos_One> represents the C<Integer>
 value positive-one.
 
 =head2 default_Reference
 
-The Foundation constant C<default_Reference> represents the default
+The Foundation singleton type definer C<default_Reference> represents the default
 value of the C<Reference> type, ...
 
 =head2 default_External
 
-The Foundation constant C<default_External> represents the default
+The Foundation singleton type definer C<default_External> represents the default
 value of the C<External> type, which exists soley that said type has a
 defined default value; the actual value of this is implementation-dependent.
 
