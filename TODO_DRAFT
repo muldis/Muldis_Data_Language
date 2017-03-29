@@ -27,6 +27,24 @@ thru 2016-12, because that prevented use of multiple versions in different
 contexts etc.  Perl 6 intended is much like Muldis D has been for awhile.
 See http://rakudo.org/2016/12/17/lexical-module-loading/ for more.
 
+* Consider the security consequences of any code including functional being
+effectively Turning complete by being able to send a message to anything;
+the functional code itself is very restricted and deterministic, but what
+about if some message receiver process/service exists that isn't so
+securely written and a specially crafted data processing job is given us by
+someone who knows we may be causing side effects by sending a message and
+exploiting some weakness in the recipient process?
+- Perhaps a way to take care of this is for generic expression evaluation
+syntax to suppress / not attempt message sending, and that this is only
+permitted if an extra flag is explicitly given saying it is ok.
+- Alternately or better yet, generalize that feature into a whitelist that
+defaults empty saying which services may receive messages from function
+calls, and this whitelist can be different with different senders.
+- Having this also at procedure level means in general better explicit
+supports for analogy to the plPerl, plPerlU duality in Postgres.
+- That would be analagous to how an explicit extra flag is needed for a
+package "entry" routine to automatically execute where otherwise it isn't.
+
 * Add a language hint for declaring when an enumeration is starting and
 when it is ending.  These would be invoked for example by parsers that are
 converting non-trivial literals or collection selector syntaxes to the

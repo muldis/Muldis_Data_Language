@@ -9497,6 +9497,11 @@ I<TODO.>
                 \@folder::Embedding,
                 \@folder::Literal,
                 \@folder::Args,
+                \@folder::If_Then_Else,
+                \@folder::And_Then,
+                \@folder::Or_Else,
+                \@folder::Given_When_Default,
+                \@folder::Guard,
             }),
             default : (\@folder::Literal : (False,)),
         )),
@@ -9571,6 +9576,119 @@ input arguments given to the current call of the Function/Procedure
 that this Args node is part of.
 Written in Plain_Text with the token `args`.>
 
+=head2 Source_Code::Expression::If_Then_Else
+
+        Source_Code::Expression::If_Then_Else : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                    1 : \Expression::(),
+                    2 : \Expression::(),
+                )
+            ),
+            default : (\@material : ((\@folder::Literal : (False,)),
+                (\@folder::Literal : (False,)), (\@folder::Literal : (False,)))),
+        )),
+
+I<TODO.  This represents an if-then-else expression,
+written in Plain_Text with special syntax example `if P then X else Y`.>
+
+=head2 Source_Code::Expression::And_Then
+
+        Source_Code::Expression::And_Then : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                    1 : \Expression::(),
+                )
+            ),
+            default : (\@material : ((\@folder::Literal : (False,)),
+                (\@folder::Literal : (False,)))),
+        )),
+
+I<TODO.  This represents an and-then expression,
+written in Plain_Text with special syntax example `P and_then X`.>
+
+=head2 Source_Code::Expression::Or_Else
+
+        Source_Code::Expression::Or_Else : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                    1 : \Expression::(),
+                )
+            ),
+            default : (\@material : ((\@folder::Literal : (False,)),
+                (\@folder::Literal : (False,)))),
+        )),
+
+I<TODO.  This represents an or-else expression,
+written in Plain_Text with special syntax example `P or_else X`.>
+
+=head2 Source_Code::Expression::Given_When_Default
+
+        Source_Code::Expression::Given_When_Default : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                    1 : \folder::When_Then(),
+                    2 : \Expression::(),
+                )
+            ),
+            default : (\@material : ((\@folder::Literal : (False,)),
+                [], (\@folder::Literal : (False,)))),
+        )),
+
+I<TODO.  This represents a given-when-default expression,
+written in Plain_Text with special syntax example
+`given X when A then B when C then D default Y`.>
+
+=head2 Source_Code::Expression::When_Then
+
+        Source_Code::Expression::When_Then : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Array args:.\0
+                and_then guard args:.\0 all (
+                    0 : \Expression::(),
+                    1 : \Expression::(),
+                )
+            ),
+            default : ((\@folder::Literal : (False,)),
+                (\@folder::Literal : (False,))),
+        )),
+
+I<TODO.  This represents part of a given-when-default expression.>
+
+=head2 Source_Code::Expression::Guard
+
+        Source_Code::Expression::Guard : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                )
+            ),
+            default : (\@material : ((\@folder::Literal : (False,)),)),
+        )),
+
+I<TODO.  This represents a guard expression,
+written in Plain_Text with special syntax example `guard X`.>
+
 =head2 Source_Code::Statement
 
         Source_Code::Statement::"" : (\Function : (
@@ -9578,6 +9696,8 @@ Written in Plain_Text with the token `args`.>
             evaluates : \(args:.\0 is_a {
                 \@folder::Labelling,
                 \@folder::Embedding,
+                \@folder::If_Then_Else,
+                \@folder::Given_When_Default,
                 \@folder::Variable,
             }),
             default : ...,
@@ -9622,6 +9742,61 @@ I<TODO.  This represents a logical embedding of a statement at this
 spot that was previously declared with a Labelling, written in Plain_Text
 as an unqualified alphanumeric or quoted identifier example `foo`.>
 
+=head2 Source_Code::Statement::If_Then_Else
+
+        Source_Code::Statement::If_Then_Else : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                    1 : \Statement::(),
+                    2 : \Statement::(),
+                )
+            ),
+            default : (\@material : ((\@folder::Literal : (False,)), ..., ...)),
+        )),
+
+I<TODO.  This represents an if-then-else statement,
+written in Plain_Text with special syntax example `if P then X else Y`.>
+
+=head2 Source_Code::Statement::Given_When_Default
+
+        Source_Code::Statement::Given_When_Default : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                    1 : \folder::When_Then(),
+                    2 : \Statement::(),
+                )
+            ),
+            default : (\@material : ((\@folder::Literal : (False,)), [], ...)),
+        )),
+
+I<TODO.  This represents a given-when-default statement,
+written in Plain_Text with special syntax example
+`given X when A then B when C then D default Y`.>
+
+=head2 Source_Code::Statement::When_Then
+
+        Source_Code::Statement::When_Then : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Array args:.\0
+                and_then guard args:.\0 all (
+                    0 : \Expression::(),
+                    1 : \Statement::(),
+                )
+            ),
+            default : ((\@folder::Literal : (False,)), ...),
+        )),
+
+I<TODO.  This represents part of a given-when-default statement.>
+
 =head2 Source_Code::Statement::Variable
 
         Source_Code::Statement::Variable : (\Function : (
@@ -9639,7 +9814,8 @@ as an unqualified alphanumeric or quoted identifier example `foo`.>
 I<TODO.  This represents a lexically labelled variable reference
 which can then be bound to one or more variables to facilitate work with
 those variables.  Either this or another thing might be for binding to
-other things such handles to processes or whatever.>
+other things such handles to processes or whatever.  A generic paradigm
+is that one uses message passing to talk to anything with a handle.>
 
 =head2 Source_Code::Heading
 
