@@ -1615,7 +1615,7 @@ this operator in postfix like I<n!>.
             is_commutative : True,
             is_idempotent : True,
             evaluates : \((if is_zero args:.\1 then args:.\0 else guard material::(args:.\1, mod::(args:.\0, args:.\1, RM::(\To_Zero))))
-                ::?= 'Calculate using the Euclidean algorithm.'),
+                note 'Calculate using the Euclidean algorithm.'),
         )),
 
         greatest_common_divisor : (\Alias : ( of : \@gcd )),
@@ -1912,7 +1912,7 @@ the composing type C<Integer>.
 
                 returns if divisor = 0 then Excuse::Div_By_Zero() else guard e1;
 
-                e1 ::?= 'This is the case where we are dividing by a non-zero.';
+                e1 note 'This is the case where we are dividing by a non-zero.';
 
                 e1 ::=   if dividend = 0       then 0
                     else if divisor  = 1       then dividend
@@ -1921,7 +1921,7 @@ the composing type C<Integer>.
                     else                            e2
                 ;
 
-                e2 ::?= 'This is the case where the divisor and dividend do not'
+                e2 note 'This is the case where the divisor and dividend do not'
                     ' equal each other and neither of them is a zero or a one.';
 
                 e2 ::= (
@@ -1933,7 +1933,7 @@ the composing type C<Integer>.
                     returns if rtz_remainder = 0 then rtz_quotient else e3;
                 );
 
-                e3 ::?= 'This is the case where the divisor does not divide the'
+                e3 note 'This is the case where the divisor does not divide the'
                     ' dividend evenly and the real number division result would'
                     ' have a fractional part, so we decide how to round that.';
 
@@ -1954,7 +1954,7 @@ the composing type C<Integer>.
                     ;
                 );
 
-                e4 ::?= 'This is the case where real division remainder is'
+                e4 note 'This is the case where real division remainder is'
                     ' exactly one-half so we decide how to round that.';
 
                 e4 ::= (
@@ -5327,8 +5327,8 @@ C<Array> value, C<[]>.
                 else guard
                     e2 ::= args:.\0.i in_order args:.\1.i;
 
-                e1 ::?= 'This is the case where LHS is a leading subsequence of or is equal to RHS.';
-                e2 ::?= 'This will succeed iff in_order() is defined for the member type.';
+                e1 note 'This is the case where LHS is a leading subsequence of or is equal to RHS.';
+                e2 note 'This will succeed iff in_order() is defined for the member type.';
             ),
         )),
 
@@ -9648,7 +9648,7 @@ written in Plain_Text with special syntax example `P or_else X`.>
                 )
             ),
             default : (\@material : ((\@folder::Literal : (False,)),
-                [], (\@folder::Literal : (False,)))),
+                {}, (\@folder::Literal : (False,)))),
         )),
 
 I<TODO.  This represents a given-when-default expression,
@@ -9660,7 +9660,7 @@ written in Plain_Text with special syntax example
         Source_Code::Expression::When_Then : (\Function : (
             is_type_definer : True,
             evaluates : \(
-                Array args:.\0
+                Set args:.\0
                 and_then guard args:.\0 all (
                     0 : \Expression::(),
                     1 : \Expression::(),
@@ -9715,7 +9715,7 @@ Its lexical scope and `args` context is the innermost Procedure (trait) containi
                 and_then guard args:.\0:< = \@material
                 and_then guard args:.\0:> is_a (
                     0 : \Attr_Name::(),
-                    1 : \Expression::(),
+                    1 : \Statement::(),
                 )
             ),
             default : (\@material : (\"",...)),
@@ -9755,7 +9755,7 @@ as an unqualified alphanumeric or quoted identifier example `foo`.>
                     2 : \Statement::(),
                 )
             ),
-            default : (\@material : ((\@folder::Literal : (False,)), ..., ...)),
+            default : (\@material : ((\@Expression::Literal : (False,)), ..., ...)),
         )),
 
 I<TODO.  This represents an if-then-else statement,
@@ -9774,7 +9774,7 @@ written in Plain_Text with special syntax example `if P then X else Y`.>
                     2 : \Statement::(),
                 )
             ),
-            default : (\@material : ((\@folder::Literal : (False,)), [], ...)),
+            default : (\@material : ((\@Expression::Literal : (False,)), {}, ...)),
         )),
 
 I<TODO.  This represents a given-when-default statement,
@@ -9786,13 +9786,13 @@ written in Plain_Text with special syntax example
         Source_Code::Statement::When_Then : (\Function : (
             is_type_definer : True,
             evaluates : \(
-                Array args:.\0
+                Set args:.\0
                 and_then guard args:.\0 all (
                     0 : \Expression::(),
                     1 : \Statement::(),
                 )
             ),
-            default : ((\@folder::Literal : (False,)), ...),
+            default : ((\@Expression::Literal : (False,)), ...),
         )),
 
 I<TODO.  This represents part of a given-when-default statement.>
@@ -9927,7 +9927,7 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                                 and_then guard
                                     topic ⊆@ tuple_sig
                                     and
-                                    tuple_sig all_attrs \(
+                                    (tuple_sig all_attrs \(
                                         name     ::= args:.\0:.\name;
                                         attr_sig ::= args:.\0:.\asset;
                                         topic    ::= args:.\topic;
@@ -9935,7 +9935,7 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                                             then guard topic.name is_a attr_sig
                                             else attr_sig.?\optional
                                         ;
-                                    ) \<-- (:topic,)
+                                    ) \<-- (:topic,))
                         ) \<-- (:sig,)
                     else
                         fail  `We should never get here.`

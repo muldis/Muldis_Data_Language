@@ -355,7 +355,7 @@ Grammar:
     <parsing_unit_subject> ::=
         <expr>
 
-See the section in this file named L</GENERIC VALUE EXPRESSIONS> for more details.
+See the section in this file named L</GENERIC EXPRESSIONS> for more details.
 
 =head1 CHARACTER CLASSES
 
@@ -658,12 +658,12 @@ These are keywords only within a I<parsing unit subject>:
     given
     guard
     if
+    note
     or_else
     pipe
     returns
     then
     when
-    ::?=
     ::=
     :=
     :.
@@ -792,7 +792,7 @@ A C<< <pkg_entity_name> >> is for use when either declaring or referencing
 package entities (types, singleton type definers, functions, procedures, aliases, etc)
 which live within a multi-level namespace.
 
-=head1 GENERIC VALUE EXPRESSIONS
+=head1 GENERIC EXPRESSIONS
 
 Grammar:
 
@@ -809,7 +809,7 @@ Grammar:
         <expr>
 
     <annotating_expr> ::=
-        <annotated_expr> '::?=' <annotation_expr>
+        <annotated_expr> note <annotation_expr>
 
     <annotated_expr> ::=
         <expr>
@@ -867,7 +867,7 @@ be used in the one place where it is declared.
 Iff an C<< <expr> >> is an C<< <annotating_expr> >>, then the C<<
 <annotated_expr> >> element of the C<< <annotating_expr> >> is being given
 an explicit introspectable code annotation whose value is the C<<
-<annotation_expr> >> element.  Keep in mind that C<::?=> binds tighter than
+<annotation_expr> >> element.  Keep in mind that C<note> binds tighter than
 nearly anything, so you may have to use parenthesis when you want the
 annotation to associate with a non-leaf node.  The most typical kind of
 annotation is an internal code comment expressed as a C<Text> literal,
@@ -910,9 +910,9 @@ Examples:
     `a naming_expr node`
     bar_expr ::= factorial::( foo_expr )
 
-    5 + 42 ::?= 'this is an introspectable comment attached to the 42'
+    5 + 42 note 'this is an introspectable comment attached to the 42'
 
-    myfoo ::?= 'this is a comment on the elsewhere-declared node named myfoo'
+    myfoo note 'this is a comment on the elsewhere-declared node named myfoo'
 
     `a delimiting_expr node`
     (x ::= y + 2; returns x * x)
@@ -1840,7 +1840,7 @@ in contrast, a conditional statement is implicitly always short-circuiting.>
 
 I<TODO.  Note that 'fail' is implicitly guarded.>
 
-=head1 GENERIC PERFORMANCE STATEMENTS
+=head1 GENERIC STATEMENTS
 
 I<TODO.>
 
@@ -1854,7 +1854,7 @@ shared traits with other languages.
 
 I<TODO.>
 
-A C<::=> is I<what-binding> while a C<::?=> is I<why-binding>.
+A C<::=> is I<what-binding> while a C<note> is I<why-binding>.
 
     : - key/asset separator in most pairwise collections
     ? - booleans or sets (and bits and relations) or some predicate eg for existence or non-excuses
@@ -1892,10 +1892,11 @@ I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
     L - alpha in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
     R - conditional binaries or ternaries or n-aries or guards:
         and_then / or_else / if-then-else / given-when-default / guard
-    R - why-binding infix ::?=
+    R - why-expr-binding infix 'note'
     R - what-expr-binding infix ::=
     N - "returns" expression prefix
     R - assignment infix := and assignment meta-op :=foo and proc foo()
+    R - why-stmt-binding infix 'note'
     R - what-stmt-binding infix ::&=
     L - list separators ; , :
 
@@ -2037,7 +2038,6 @@ Grammar:
 
     <ps5_nonquoted_symbolic_grouping> ::=
           ','
-        | '::?='
         | '::='
         | '::'
         | ':='
