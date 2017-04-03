@@ -9493,6 +9493,7 @@ I<TODO.>
         Source_Code::Expression::"" : (\Function : (
             is_type_definer : True,
             evaluates : \(args:.\0 is_a {
+                \@folder::Compound,
                 \@folder::Labelling,
                 \@folder::Embedding,
                 \@folder::Literal,
@@ -9508,6 +9509,47 @@ I<TODO.>
 
 I<TODO.  This represents a generic expression to be evaluated at a future date.
 Its lexical scope and `args` context is the innermost Function/Procedure (trait) containing it.>
+
+=head2 Source_Code::Expression::Compound
+
+        Source_Code::Expression::Compound : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Set::(),
+                )
+                and_then guard
+                    args:.\0:>.\0 all {
+                        \@folder::Returns,
+                        \@folder::Labelling,
+                    }
+                    and
+                    (args:.\0:>.\0 where \folder::Returns() pipe singular)
+            ),
+            default : (\@material : ({},)),
+        )),
+
+I<TODO.  This represents a compound expression, which consists of a single
+"returns" component plus a list of 0..N lexically labelled expressions,
+written in Plain_Text with special syntax example `(x ::= y+3; returns 2*x)`.>
+
+=head2 Source_Code::Expression::Returns
+
+        Source_Code::Expression::Returns : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                )
+            ),
+            default : (\@material : ((\@folder::Literal : (False,)),)),
+        )),
+
+I<TODO.  This represents the sole "returns" component of a compound expression.>
 
 =head2 Source_Code::Expression::Labelling
 
@@ -9694,17 +9736,37 @@ written in Plain_Text with special syntax example `guard X`.>
         Source_Code::Statement::"" : (\Function : (
             is_type_definer : True,
             evaluates : \(args:.\0 is_a {
+                \@folder::Compound,
                 \@folder::Labelling,
                 \@folder::Embedding,
                 \@folder::If_Then_Else,
                 \@folder::Given_When_Default,
                 \@folder::Variable,
             }),
-            default : ...,
+            default : (\@folder::Compound : ([],)),
         )),
 
 I<TODO.  This represents a generic statement to be performed at a future date.
 Its lexical scope and `args` context is the innermost Procedure (trait) containing it.>
+
+=head2 Source_Code::Statement::Compound
+
+        Source_Code::Statement::Compound : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Array::(),
+                )
+                and_then guard args:.\0:>.\0 all \Statement::()
+            ),
+            default : (\@material : ([],)),
+        )),
+
+I<TODO.  This represents a compound statement, which consists of
+an ordered list of 0..N statements,
+written in Plain_Text with special syntax example `[var x; x := 42; print(x);]`.>
 
 =head2 Source_Code::Statement::Labelling
 
@@ -9718,7 +9780,7 @@ Its lexical scope and `args` context is the innermost Procedure (trait) containi
                     1 : \Statement::(),
                 )
             ),
-            default : (\@material : (\"",...)),
+            default : (\@material : (\"", (\@folder::Compound : ([],)))),
         )),
 
 I<TODO.  This represents a lexically labelled statement,
@@ -9755,7 +9817,8 @@ as an unqualified alphanumeric or quoted identifier example `foo`.>
                     2 : \Statement::(),
                 )
             ),
-            default : (\@material : ((\@Expression::Literal : (False,)), ..., ...)),
+            default : (\@material : ((\@Expression::Literal : (False,)),
+                (\@folder::Compound : ([],)), (\@folder::Compound : ([],)))),
         )),
 
 I<TODO.  This represents an if-then-else statement,
@@ -9774,7 +9837,8 @@ written in Plain_Text with special syntax example `if P then X else Y`.>
                     2 : \Statement::(),
                 )
             ),
-            default : (\@material : ((\@Expression::Literal : (False,)), {}, ...)),
+            default : (\@material : ((\@Expression::Literal : (False,)),
+                {}, (\@folder::Compound : ([],)))),
         )),
 
 I<TODO.  This represents a given-when-default statement,
@@ -9792,7 +9856,8 @@ written in Plain_Text with special syntax example
                     1 : \Statement::(),
                 )
             ),
-            default : ((\@Expression::Literal : (False,)), ...),
+            default : ((\@Expression::Literal : (False,)),
+                (\@folder::Compound : ([],))),
         )),
 
 I<TODO.  This represents part of a given-when-default statement.>
