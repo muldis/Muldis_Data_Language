@@ -9586,7 +9586,9 @@ written in Plain_Text with special syntax example `foo ::= 42`.>
 
 I<TODO.  This represents a logical embedding of an expression at this
 spot that was previously declared with a Labelling, written in Plain_Text
-as an unqualified alphanumeric or quoted identifier example `foo`.>
+as an unqualified alphanumeric or quoted identifier example `foo`.
+Note that it is an error for a Labelling to contain any Embedding referring
+to itself, either directly or indirectly.>
 
 =head2 Source_Code::Expression::Literal
 
@@ -9763,6 +9765,8 @@ written in Plain_Text with special syntax example `guard X`.>
                 \@folder::Performs,
                 \@folder::If_Then_Else,
                 \@folder::Given_When_Default,
+                \@folder::Leave,
+                \@folder::Iterate,
                 \@folder::Variable,
             }),
             default : (\@folder::Compound : ([],)),
@@ -9787,7 +9791,7 @@ Its lexical scope and `args` context is the innermost Procedure (trait) containi
         )),
 
 I<TODO.  This represents a compound statement, which consists of
-an ordered list of 0..N statements,
+an ordered list of 0..N statements, which optionally may be iterated,
 written in Plain_Text with special syntax example `[var x; x := 42; print(x);]`.>
 
 =head2 Source_Code::Statement::Labelling
@@ -9824,7 +9828,9 @@ written in Plain_Text with special syntax example `foo ::= ...`.>
 
 I<TODO.  This represents a logical embedding of a statement at this
 spot that was previously declared with a Labelling, written in Plain_Text
-as an unqualified alphanumeric or quoted identifier example `foo`.>
+as an unqualified alphanumeric or quoted identifier example `foo`.
+Note that it is an error for a Labelling to contain any Embedding referring
+to itself, either directly or indirectly.>
 
 =head2 Source_Code::Statement::Performs
 
@@ -9864,7 +9870,9 @@ See also Routine_Call or its replacement which defines the type of X.>
         )),
 
 I<TODO.  This represents an if-then-else statement,
-written in Plain_Text with special syntax example `if P then X else Y`.>
+written in Plain_Text with special syntax example `if P then X else Y`.
+Note that a plain if-then statement is shorthand for this, in which case
+the 'else' is an empty compound statement.>
 
 =head2 Source_Code::Statement::Given_When_Default
 
@@ -9903,6 +9911,46 @@ written in Plain_Text with special syntax example
         )),
 
 I<TODO.  This represents part of a given-when-default statement.>
+
+=head2 Source_Code::Statement::Leave
+
+        Source_Code::Statement::Leave : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Attr_Name::(),
+                )
+            ),
+            default : (\@material : (\"",)),
+        )),
+
+I<TODO.  This represents an instruction to abnormally exit the compound
+statement defined by a specified parent node (a normal exit is to simply
+execute to the end of the compound statement); a Labelling applied to the
+compound statement in question allows it to be controlled in this way;
+written in Plain_Text with special syntax example `leave foo`.>
+
+=head2 Source_Code::Statement::Iterate
+
+        Source_Code::Statement::Iterate : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Attr_Name::(),
+                )
+            ),
+            default : (\@material : (\"",)),
+        )),
+
+I<TODO.  This represents an instruction to immediately exit, and then
+continue execution at the start of, the compound
+statement defined by a specified parent node; a Labelling applied to the
+compound statement in question allows it to be controlled in this way;
+written in Plain_Text with special syntax example `iterate foo`.>
 
 =head2 Source_Code::Statement::Variable
 
