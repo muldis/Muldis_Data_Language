@@ -9410,17 +9410,17 @@ its own isolated lexical scope and its own `args` context where generally the
             evaluates : \(
                 Capsule args:.\0
                 and_then guard args:.\0:< = \Procedure
-                and_then guard args:.\0:> is_a (
-                    virtual : \Boolean::(),
-                    matches : \Signature::Tuple_Attrs_Match_Simple(),
-                    updates : \Heading::(),  `TODO: Or keyword "source".`
-                    implements : ...,
-                    overrides : ...,
-                    accepts : \Expression::(),
-                    intends : \Expression::(),
-                    vars : \Signature::Tuple_Attrs_Match_Simple(),
-                    performs : \Statement::(),
-                )
+                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
+                    virtual : (type : \Boolean::(), optional : True),
+                    matches : (type : \Signature::Tuple_Attrs_Match_Simple(), optional : True),
+                    updates : (type : \Heading::(), optional : True),  `TODO: Or keyword "source".`
+                    implements : (type : ..., optional : True),
+                    overrides : (type : ..., optional : True),
+                    accepts : (type : \Expression::(), optional : True),
+                    intends : (type : \Expression::(), optional : True),
+                    vars : (type : \Signature::Tuple_Attrs_Match_Simple(), optional : True),
+                    performs : (type : \Statement::(), optional : True),
+                ))
             ),
             default : ...,
         )),
@@ -9498,6 +9498,7 @@ I<TODO.>
                 \@folder::Embedding,
                 \@folder::Literal,
                 \@folder::Args,
+                \@folder::Evaluates,
                 \@folder::If_Then_Else,
                 \@folder::And_Then,
                 \@folder::Or_Else,
@@ -9617,6 +9618,26 @@ I<TODO.  This represents an expression that evaluates to the Tuple of
 input arguments given to the current call of the Function/Procedure
 that this Args node is part of.
 Written in Plain_Text with the token `args`.>
+
+=head2 Source_Code::Expression::Evaluates
+
+        Source_Code::Expression::Evaluates : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                )
+            ),
+            default : (\@material : ((\@folder::Embedding : (\"",)),)),
+        )),
+
+I<TODO.  This represents a generic function invocation expression,
+where its sole sub-expression names or defines the function to invoke and
+also defines the arguments to pass to said function while invoking it,
+written in Plain_Text with special syntax example `evaluates X`.
+See also Routine_Call or its replacement which defines the type of X.>
 
 =head2 Source_Code::Expression::If_Then_Else
 
@@ -9739,6 +9760,7 @@ written in Plain_Text with special syntax example `guard X`.>
                 \@folder::Compound,
                 \@folder::Labelling,
                 \@folder::Embedding,
+                \@folder::Performs,
                 \@folder::If_Then_Else,
                 \@folder::Given_When_Default,
                 \@folder::Variable,
@@ -9803,6 +9825,26 @@ written in Plain_Text with special syntax example `foo ::= ...`.>
 I<TODO.  This represents a logical embedding of a statement at this
 spot that was previously declared with a Labelling, written in Plain_Text
 as an unqualified alphanumeric or quoted identifier example `foo`.>
+
+=head2 Source_Code::Statement::Performs
+
+        Source_Code::Statement::Performs : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                )
+            ),
+            default : (\@material : ((\@Expression::Embedding : (\"",)),)),
+        )),
+
+I<TODO.  This represents a generic procedure invocation statement,
+where its sole sub-expression names or defines the procedure to invoke and
+also defines the arguments to pass to said procedure while invoking it,
+written in Plain_Text with special syntax example `performs X`.
+See also Routine_Call or its replacement which defines the type of X.>
 
 =head2 Source_Code::Statement::If_Then_Else
 
@@ -9943,6 +9985,27 @@ I<TODO.>
         )),
 
 I<TODO.>
+
+=head2 Source_Code::Routine_Call
+
+        Source_Code::Routine_Call : (\Function : (
+            is_type_definer : True,
+            evaluates : \(
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    rtn : {\Local_Name::(), \Function::(), \Procedure::()},
+                    args : \Tuple::(),
+                )
+            ),
+            default : (\@material : (...,)),
+        )),
+
+I<TODO.  This represents a specification of a routine invocation,
+and names or defines the routine to invoke and
+also defines the arguments to pass to said routine while invoking it,
+written in Plain_Text with special syntax example `\foo::()` or `\(...)` or `\[...]`.
+Note, this type is subject to be rewritten as a group of types.>
 
 =head2 Source_Code::Key_Asset_Pair
 
