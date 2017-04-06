@@ -660,6 +660,7 @@ These are keywords only within a I<parsing unit subject>:
     if
     iterate
     leave
+    literal
     note
     or_else
     pipe
@@ -822,6 +823,7 @@ Grammar:
     <anon_expr> ::=
           <delimiting_expr>
         | <source_expr>
+        | <literal_expr>
         | <opaque_literal_expr>
         | <collection_selector_expr>
         | <collection_accessor_expr>
@@ -843,6 +845,9 @@ Grammar:
 
     <source_expr> ::=
         args
+
+    <literal_expr> ::=
+        literal <expr>
 
     <fail_expr> ::=
         fail
@@ -891,6 +896,11 @@ contain exactly one C<< <result_expr> >> element, which provides its value.
 Iff an C<< <expr> >> is a C<< <source_expr> >>, then it represents the value
 of the expression-containing routine's I<source> / read-only arguments.
 
+Iff an C<< <expr> >> is a C<< <literal_expr> >>, then its child C<< <expr> >>
+is treated as completely foldable to a C<Source_Code::Expression::Literal>
+value even if it otherwise wouldn't be, such as when a descendant C<< <expr> >>
+is an C<< <args_expr> >>; useful for nested routine definitions.
+
 Iff an C<< <expr> >> is a C<< <fail_expr> >>, then any attempt at runtime
 to take that node's value will throw an exception, and so it should only
 appear as a child of a C<< <conditional_expr> >> node, one that is
@@ -924,6 +934,9 @@ Examples:
 
     `this is the routine's argument list`
     args
+
+    `nested definition of function that adds 42 to its sole argument`
+    literal (\Function : (evaluates : (args:.\0 + 42)))
 
     `some assertion failed`
     fail
@@ -1888,6 +1901,7 @@ I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
 
     N - terms - base literals or delimited anything or special selector syntax,
         including inline func/type/etc decls, or foo::bar::etc or func foo::(...) or \foo::(...)
+    L - "literal" expression prefix
     L - special symbolic accessor post/infix :. :< :> :>.
     L - generic universal routine call infix: args --> rtn or rtn <-- args or args \--> rtn etc
     L - symbolic in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)

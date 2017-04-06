@@ -9609,6 +9609,14 @@ same value as its payload attribute value in the source code.  Typically a
 Literal node is the result of constant expression folding which in the
 trivial case is just the result of a normal source code literal like `3`.>
 
+I<However one can use the Plain_Text `literal` prefix keyword to turn
+anything that might be interpreted as a non-literal expression into a
+literal expression, in particular nested routine definitions with their
+own `args` that one wants to execute "later" rather than "now"; for example
+`add_42 ::= literal (\Function : (evaluates : (args:.\0 + 42)))`; without
+the `literal` the `args` would be interpreted as the `args` of the routine
+containing the `add_42` and not the `args` of the nested routine.>
+
 =head2 Source_Code::Expression::Args
 
         Source_Code::Expression::Args : (\Function : (
@@ -10020,6 +10028,7 @@ I<TODO.>
                         when \floating   then #args:.\0 ≥ 2
                         default False
             ),
+            default : [\foundation, ...],
         )),
 
 I<TODO.>
@@ -10042,11 +10051,16 @@ I<TODO.>
                 Capsule args:.\0
                 and_then guard args:.\0:< = \@material
                 and_then guard args:.\0:> is_a (
-                    rtn : {\Local_Name::(), \Function::(), \Procedure::()},
+                    routine : {\Absolute_Name::(), \Function::(), \Procedure::()},
                     args : \Tuple::(),
+                    context : ...,
                 )
             ),
-            default : (\@material : (...,)),
+            default : (\@material : (
+                routine : (\Function : (evaluates : (False))),
+                args : (),
+                context : ...,
+            )),
         )),
 
 I<TODO.  This represents a specification of a routine invocation,
@@ -10054,6 +10068,14 @@ and names or defines the routine to invoke and
 also defines the arguments to pass to said routine while invoking it,
 written in Plain_Text with special syntax example `\foo::()` or `\(...)` or `\[...]`.
 Note, this type is subject to be rewritten as a group of types.>
+
+I<The 'context' component or its replacements would, as applicable,
+give the fully-qualified name of the material in which the routine being
+invoked was either defined or called from, and also a copy of the package
+source or current Package_Tree for said.>
+
+I<TODO.  We maybe also want a 'context' expression node or such that gives
+us package source for ourselves maybe?>
 
 =head2 Source_Code::Key_Asset_Pair
 
