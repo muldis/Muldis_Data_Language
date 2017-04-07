@@ -9646,8 +9646,8 @@ Written in Plain_Text with the token `args`.>
 I<TODO.  This represents a generic function invocation expression,
 where its sole sub-expression names or defines the function to invoke and
 also defines the arguments to pass to said function while invoking it,
-written in Plain_Text with special syntax example `evaluates X`.
-See also Routine_Call or its replacement which defines the type of X.>
+written in Plain_Text with special syntax example `evaluates X`
+where X denotes a Function_Call value.>
 
 =head2 Source_Code::Expression::If_Then_Else
 
@@ -9857,8 +9857,8 @@ to itself, either directly or indirectly.>
 I<TODO.  This represents a generic procedure invocation statement,
 where its sole sub-expression names or defines the procedure to invoke and
 also defines the arguments to pass to said procedure while invoking it,
-written in Plain_Text with special syntax example `performs X`.
-See also Routine_Call or its replacement which defines the type of X.>
+written in Plain_Text with special syntax example `performs X`
+where X denotes a Procedure_Call value.>
 
 =head2 Source_Code::Statement::If_Then_Else
 
@@ -10043,39 +10043,86 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Source_Code::Routine_Call
+=head2 Source_Code::Function_Call
 
-        Source_Code::Routine_Call : (\Function : (
+        Source_Code::Function_Call : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
                 and_then guard args:.\0:< = \@material
                 and_then guard args:.\0:> is_a (
-                    routine : {\Absolute_Name::(), \Function::(), \Procedure::()},
+                    func : {\Local_Name::(), \Function::()},
                     args : \Tuple::(),
-                    context : ...,
                 )
             ),
             default : (\@material : (
-                routine : (\Function : (evaluates : (False))),
+                func : (\Function : (evaluates : (False))),
                 args : (),
-                context : ...,
             )),
         )),
 
-I<TODO.  This represents a specification of a routine invocation,
-and names or defines the routine to invoke and
-also defines the arguments to pass to said routine while invoking it,
-written in Plain_Text with special syntax example `\foo::()` or `\(...)` or `\[...]`.
-Note, this type is subject to be rewritten as a group of types.>
+I<TODO.  This represents a specification of a function invocation,
+and names or defines the function to invoke and
+also defines the arguments to pass to said function while invoking it,
+written in Plain_Text with special syntax example `\foo::()` or `\(...)`.>
 
-I<The 'context' component or its replacements would, as applicable,
-give the fully-qualified name of the material in which the routine being
-invoked was either defined or called from, and also a copy of the package
-source or current Package_Tree for said.>
+I<TODO.  See also and update the documentation or bodies of Homogeneous or
+Unionable or etc other operators to more explicitly take/use Function_Call
+where they have better knowledge of its structure now that its more nailed
+down than before.>
 
-I<TODO.  We maybe also want a 'context' expression node or such that gives
-us package source for ourselves maybe?>
+I<TODO.  Consider whether Function_Call needs to be stricter eg requiring
+Absolute_Name rather than Local_Name, or whether or not it needs any extra
+attributes for caller context.  But to avoid over-engineering, don't worry
+about those / assume they are not needed here, until such time we actually
+are trying to make the code execute.  Users shouldn't have to be writing
+such manually anyhow, the runtime environment should fill them in as needed.>
+
+=head2 Source_Code::Function_Call_But_0
+
+        Source_Code::Function_Call_But_0 : (\Function : (
+            is_type_definer : True,
+            evaluates : (Function_Call args:.\0 and_then guard
+                args:.\0.\args disjoint_heading \0),
+        )),
+
+I<TODO.>
+
+=head2 Source_Code::Function_Call_But_0_1
+
+        Source_Code::Function_Call_But_0_1 : (\Function : (
+            is_type_definer : True,
+            evaluates : (Function_Call args:.\0 and_then guard
+                args:.\0.\args disjoint_heading \@(0..1)),
+        )),
+
+I<TODO.>
+
+=head2 Source_Code::Procedure_Call
+
+        Source_Code::Procedure_Call : (\Procedure : (
+            is_type_definer : True,
+            evaluates : (
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    proc : {\Local_Name::(), \Procedure::()},
+                    args : \Tuple::(),
+                )
+            ),
+            default : (\@material : (
+                proc : (\Procedure : (performs : [])),
+                args : (),
+            )),
+        )),
+
+I<TODO.  This represents a specification of a procedure invocation,
+and names or defines the procedure to invoke and
+also defines the arguments to pass to said procedure while invoking it,
+written in Plain_Text with special syntax example `\&foo::()` or `\[...]`.>
+
+I<TODO.  Consider whether Procedure_Call needs to be stricter in similar
+ways to how Function_Call does.>
 
 =head2 Source_Code::Key_Asset_Pair
 
