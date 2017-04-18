@@ -9498,30 +9498,30 @@ I<TODO.>
 
 =head2 Source_Code::Expression
 
-        Source_Code::Expression::"" : (\Function : (
+        Source_Code::Expression : (\Function : (
             is_type_definer : True,
             evaluates : (args:.\0 is_a {
-                \@folder::Compound,
-                \@folder::Factor,
-                \@folder::Expansion,
-                \@folder::Literal,
-                \@folder::Args,
-                \@folder::Evaluates,
-                \@folder::If_Then_Else,
-                \@folder::And_Then,
-                \@folder::Or_Else,
-                \@folder::Given_When_Default,
-                \@folder::Guard,
+                \@Compound,
+                \@Factor,
+                \@Expansion,
+                \@Literal,
+                \@Args,
+                \@Evaluates,
+                \@If_Then_Else_Expr,
+                \@And_Then,
+                \@Or_Else,
+                \@Given_When_Default_Expr,
+                \@Guard,
             }),
-            default : (\@folder::Literal : (False,)),
+            default : (\@Literal : (False,)),
         )),
 
 I<TODO.  This represents a generic expression to be evaluated at a future date.
 Its lexical scope and `args` context is the innermost Function/Procedure (trait) containing it.>
 
-=head2 Source_Code::Expression::Compound
+=head2 Source_Code::Compound
 
-        Source_Code::Expression::Compound : (\Function : (
+        Source_Code::Compound : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9531,11 +9531,11 @@ Its lexical scope and `args` context is the innermost Function/Procedure (trait)
                 )
                 and_then guard
                     args:.\0:>.\0 all {
-                        \@folder::Returns,
-                        \@folder::Factor,
+                        \@Returns,
+                        \@Factor,
                     }
                     and
-                    (args:.\0:>.\0 where \folder::Returns() pipe singular)
+                    (args:.\0:>.\0 where \Returns::() pipe singular)
             ),
             default : (\@material : ({},)),
         )),
@@ -9544,9 +9544,9 @@ I<TODO.  This represents a compound expression, which consists of a single
 "returns" component plus a list of 0..N lexically labelled expressions,
 written in Plain_Text with special syntax example `(x ::= y+3; returns 2*x)`.>
 
-=head2 Source_Code::Expression::Returns
+=head2 Source_Code::Returns
 
-        Source_Code::Expression::Returns : (\Function : (
+        Source_Code::Returns : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9555,14 +9555,14 @@ written in Plain_Text with special syntax example `(x ::= y+3; returns 2*x)`.>
                     0 : \Expression::(),
                 )
             ),
-            default : (\@material : ((\@folder::Literal : (False,)),)),
+            default : (\@material : ((\@Literal : (False,)),)),
         )),
 
 I<TODO.  This represents the sole "returns" component of a compound expression.>
 
-=head2 Source_Code::Expression::Factor
+=head2 Source_Code::Factor
 
-        Source_Code::Expression::Factor : (\Function : (
+        Source_Code::Factor : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9572,15 +9572,15 @@ I<TODO.  This represents the sole "returns" component of a compound expression.>
                     1 : \Expression::(),
                 )
             ),
-            default : (\@material : (\"", (\@folder::Literal : (False,)))),
+            default : (\@material : (\"", (\@Literal : (False,)))),
         )),
 
 I<TODO.  This represents a lexically labelled expression factor,
 written in Plain_Text with special syntax example `foo ::= 42`.>
 
-=head2 Source_Code::Expression::Expansion
+=head2 Source_Code::Expansion
 
-        Source_Code::Expression::Expansion : (\Function : (
+        Source_Code::Expansion : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9598,9 +9598,9 @@ as an unqualified alphanumeric or quoted identifier example `foo`.
 Note that it is an error for a Factor to contain any Expansion referring
 to itself, either directly or indirectly.>
 
-=head2 Source_Code::Expression::Literal
+=head2 Source_Code::Literal
 
-        Source_Code::Expression::Literal : (\Function : (
+        Source_Code::Literal : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9625,9 +9625,9 @@ own `args` that one wants to execute "later" rather than "now"; for example
 the `literal` the `args` would be interpreted as the `args` of the routine
 containing the `add_42` and not the `args` of the nested routine.>
 
-=head2 Source_Code::Expression::Args
+=head2 Source_Code::Args
 
-        Source_Code::Expression::Args : (\Function : (
+        Source_Code::Args : (\Function : (
             is_type_definer : True,
             constant : \@material,
         )),
@@ -9637,9 +9637,9 @@ input arguments given to the current call of the Function/Procedure
 that this Args node is part of.
 Written in Plain_Text with the token `args`.>
 
-=head2 Source_Code::Expression::Evaluates
+=head2 Source_Code::Evaluates
 
-        Source_Code::Expression::Evaluates : (\Function : (
+        Source_Code::Evaluates : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9648,7 +9648,7 @@ Written in Plain_Text with the token `args`.>
                     0 : \Expression::(),
                 )
             ),
-            default : (\@material : ((\@folder::Expansion : (\"",)),)),
+            default : (\@material : ((\@Expansion : (\"",)),)),
         )),
 
 I<TODO.  This represents a generic function invocation expression,
@@ -9657,9 +9657,9 @@ also defines the arguments to pass to said function while invoking it,
 written in Plain_Text with special syntax example `evaluates X`
 where X denotes a Function_Call value.>
 
-=head2 Source_Code::Expression::If_Then_Else
+=head2 Source_Code::If_Then_Else_Expr
 
-        Source_Code::Expression::If_Then_Else : (\Function : (
+        Source_Code::If_Then_Else_Expr : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9670,16 +9670,16 @@ where X denotes a Function_Call value.>
                     2 : \Expression::(),
                 )
             ),
-            default : (\@material : ((\@folder::Literal : (False,)),
-                (\@folder::Literal : (False,)), (\@folder::Literal : (False,)))),
+            default : (\@material : ((\@Literal : (False,)),
+                (\@Literal : (False,)), (\@Literal : (False,)))),
         )),
 
 I<TODO.  This represents an if-then-else expression,
 written in Plain_Text with special syntax example `if P then X else Y`.>
 
-=head2 Source_Code::Expression::And_Then
+=head2 Source_Code::And_Then
 
-        Source_Code::Expression::And_Then : (\Function : (
+        Source_Code::And_Then : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9689,16 +9689,16 @@ written in Plain_Text with special syntax example `if P then X else Y`.>
                     1 : \Expression::(),
                 )
             ),
-            default : (\@material : ((\@folder::Literal : (False,)),
-                (\@folder::Literal : (False,)))),
+            default : (\@material : ((\@Literal : (False,)),
+                (\@Literal : (False,)))),
         )),
 
 I<TODO.  This represents an and-then expression,
 written in Plain_Text with special syntax example `P and_then X`.>
 
-=head2 Source_Code::Expression::Or_Else
+=head2 Source_Code::Or_Else
 
-        Source_Code::Expression::Or_Else : (\Function : (
+        Source_Code::Or_Else : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9708,16 +9708,16 @@ written in Plain_Text with special syntax example `P and_then X`.>
                     1 : \Expression::(),
                 )
             ),
-            default : (\@material : ((\@folder::Literal : (False,)),
-                (\@folder::Literal : (False,)))),
+            default : (\@material : ((\@Literal : (False,)),
+                (\@Literal : (False,)))),
         )),
 
 I<TODO.  This represents an or-else expression,
 written in Plain_Text with special syntax example `P or_else X`.>
 
-=head2 Source_Code::Expression::Given_When_Default
+=head2 Source_Code::Given_When_Default_Expr
 
-        Source_Code::Expression::Given_When_Default : (\Function : (
+        Source_Code::Given_When_Default_Expr : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9734,17 +9734,17 @@ written in Plain_Text with special syntax example `P or_else X`.>
                     2 : \Expression::(),
                 )
             ),
-            default : (\@material : ((\@folder::Literal : (False,)),
-                {}, (\@folder::Literal : (False,)))),
+            default : (\@material : ((\@Literal : (False,)),
+                {}, (\@Literal : (False,)))),
         )),
 
 I<TODO.  This represents a given-when-default expression,
 written in Plain_Text with special syntax example
 `given X when A then B when C then D default Y`.>
 
-=head2 Source_Code::Expression::Guard
+=head2 Source_Code::Guard
 
-        Source_Code::Expression::Guard : (\Function : (
+        Source_Code::Guard : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9753,7 +9753,7 @@ written in Plain_Text with special syntax example
                     0 : \Expression::(),
                 )
             ),
-            default : (\@material : ((\@folder::Literal : (False,)),)),
+            default : (\@material : ((\@Literal : (False,)),)),
         )),
 
 I<TODO.  This represents a guard expression,
@@ -9761,26 +9761,26 @@ written in Plain_Text with special syntax example `guard X`.>
 
 =head2 Source_Code::Statement
 
-        Source_Code::Statement::"" : (\Function : (
+        Source_Code::Statement : (\Function : (
             is_type_definer : True,
             evaluates : (args:.\0 is_a {
-                \@folder::Performs,
-                \@folder::If_Then_Else,
-                \@folder::Given_When_Default,
-                \@folder::Block,
-                \@folder::Leave,
-                \@folder::Iterate,
-                \@folder::Declare,
+                \@Performs,
+                \@If_Then_Else_Stmt,
+                \@Given_When_Default_Stmt,
+                \@Block,
+                \@Leave,
+                \@Iterate,
+                \@Declare,
             }),
-            default : (\@folder::Block : ([],)),
+            default : (\@Block : ([],)),
         )),
 
 I<TODO.  This represents a generic statement to be performed at a future date.
 Its lexical scope and `args` context is the innermost Procedure (trait) containing it.>
 
-=head2 Source_Code::Statement::Performs
+=head2 Source_Code::Performs
 
-        Source_Code::Statement::Performs : (\Function : (
+        Source_Code::Performs : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9789,7 +9789,7 @@ Its lexical scope and `args` context is the innermost Procedure (trait) containi
                     0 : \Expression::(),
                 )
             ),
-            default : (\@material : ((\@Expression::Expansion : (\"",)),)),
+            default : (\@material : ((\@Expansion : (\"",)),)),
         )),
 
 I<TODO.  This represents a generic procedure invocation statement,
@@ -9798,9 +9798,9 @@ also defines the arguments to pass to said procedure while invoking it,
 written in Plain_Text with special syntax example `performs X`
 where X denotes a Procedure_Call value.>
 
-=head2 Source_Code::Statement::If_Then_Else
+=head2 Source_Code::If_Then_Else_Stmt
 
-        Source_Code::Statement::If_Then_Else : (\Function : (
+        Source_Code::If_Then_Else_Stmt : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9811,8 +9811,8 @@ where X denotes a Procedure_Call value.>
                     2 : \Statement::(),
                 )
             ),
-            default : (\@material : ((\@Expression::Literal : (False,)),
-                (\@folder::Block : ([],)), (\@folder::Block : ([],)))),
+            default : (\@material : ((\@Literal : (False,)),
+                (\@Block : ([],)), (\@Block : ([],)))),
         )),
 
 I<TODO.  This represents an if-then-else statement,
@@ -9820,9 +9820,9 @@ written in Plain_Text with special syntax example `if P then X else Y`.
 Note that a plain if-then statement is shorthand for this, in which case
 the 'else' is an empty compound statement.>
 
-=head2 Source_Code::Statement::Given_When_Default
+=head2 Source_Code::Given_When_Default_Stmt
 
-        Source_Code::Statement::Given_When_Default : (\Function : (
+        Source_Code::Given_When_Default_Stmt : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9839,17 +9839,17 @@ the 'else' is an empty compound statement.>
                     2 : \Statement::(),
                 )
             ),
-            default : (\@material : ((\@Expression::Literal : (False,)),
-                {}, (\@folder::Block : ([],)))),
+            default : (\@material : ((\@Literal : (False,)),
+                {}, (\@Block : ([],)))),
         )),
 
 I<TODO.  This represents a given-when-default statement,
 written in Plain_Text with special syntax example
 `given X when A then B when C then D default Y`.>
 
-=head2 Source_Code::Statement::Block
+=head2 Source_Code::Block
 
-        Source_Code::Statement::Block : (\Function : (
+        Source_Code::Block : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9870,9 +9870,9 @@ consists of an ordered list of 0..N statements, which optionally may be
 iterated, written in Plain_Text with special syntax example
 `[declare x; x := 42; print(x);]` or `do_work block [foo(); bar();]`.>
 
-=head2 Source_Code::Statement::Leave
+=head2 Source_Code::Leave
 
-        Source_Code::Statement::Leave : (\Function : (
+        Source_Code::Leave : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9891,9 +9891,9 @@ the ancestor Block with that label is the one abnormally exited, and
 otherwise the most immediate parent Block is the one; written in Plain_Text
 with special syntax examples `leave` or `leave do_work`.>
 
-=head2 Source_Code::Statement::Iterate
+=head2 Source_Code::Iterate
 
-        Source_Code::Statement::Iterate : (\Function : (
+        Source_Code::Iterate : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9912,9 +9912,9 @@ Block with that label is the one iterated, and otherwise the most immediate
 parent Block is the one; written in Plain_Text
 with special syntax examples `iterate` or `iterate do_work`.>
 
-=head2 Source_Code::Statement::Declare
+=head2 Source_Code::Declare
 
-        Source_Code::Statement::Declare : (\Function : (
+        Source_Code::Declare : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
