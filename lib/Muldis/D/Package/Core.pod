@@ -9764,78 +9764,19 @@ written in Plain_Text with special syntax example `guard X`.>
         Source_Code::Statement::"" : (\Function : (
             is_type_definer : True,
             evaluates : (args:.\0 is_a {
-                \@folder::Compound,
-                \@folder::Factor,
-                \@folder::Expansion,
                 \@folder::Performs,
                 \@folder::If_Then_Else,
                 \@folder::Given_When_Default,
+                \@folder::Block,
                 \@folder::Leave,
                 \@folder::Iterate,
                 \@folder::Declare,
             }),
-            default : (\@folder::Compound : ([],)),
+            default : (\@folder::Block : ([],)),
         )),
 
 I<TODO.  This represents a generic statement to be performed at a future date.
 Its lexical scope and `args` context is the innermost Procedure (trait) containing it.>
-
-=head2 Source_Code::Statement::Compound
-
-        Source_Code::Statement::Compound : (\Function : (
-            is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
-                    0 : \Array::(),
-                )
-                and_then guard args:.\0:>.\0 all \Statement::()
-            ),
-            default : (\@material : ([],)),
-        )),
-
-I<TODO.  This represents a compound statement, which consists of
-an ordered list of 0..N statements, which optionally may be iterated,
-written in Plain_Text with special syntax example `[var x; x := 42; print(x);]`.>
-
-=head2 Source_Code::Statement::Factor
-
-        Source_Code::Statement::Factor : (\Function : (
-            is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
-                    0 : \Attr_Name::(),
-                    1 : \Statement::(),
-                )
-            ),
-            default : (\@material : (\"", (\@folder::Compound : ([],)))),
-        )),
-
-I<TODO.  This represents a lexically labelled statement factor,
-written in Plain_Text with special syntax example `foo ::= ...`.>
-
-=head2 Source_Code::Statement::Expansion
-
-        Source_Code::Statement::Expansion : (\Function : (
-            is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
-                    0 : \Attr_Name::(),
-                )
-            ),
-            default : (\@material : (\"",)),
-        )),
-
-I<TODO.  This represents a logical expansion of a statement factor at this
-spot that was previously declared with a Factor, written in Plain_Text
-as an unqualified alphanumeric or quoted identifier example `foo`.
-Note that it is an error for a Factor to contain any Expansion referring
-to itself, either directly or indirectly.>
 
 =head2 Source_Code::Statement::Performs
 
@@ -9871,7 +9812,7 @@ where X denotes a Procedure_Call value.>
                 )
             ),
             default : (\@material : ((\@Expression::Literal : (False,)),
-                (\@folder::Compound : ([],)), (\@folder::Compound : ([],)))),
+                (\@folder::Block : ([],)), (\@folder::Block : ([],)))),
         )),
 
 I<TODO.  This represents an if-then-else statement,
@@ -9899,12 +9840,35 @@ the 'else' is an empty compound statement.>
                 )
             ),
             default : (\@material : ((\@Expression::Literal : (False,)),
-                {}, (\@folder::Compound : ([],)))),
+                {}, (\@folder::Block : ([],)))),
         )),
 
 I<TODO.  This represents a given-when-default statement,
 written in Plain_Text with special syntax example
 `given X when A then B when C then D default Y`.>
+
+=head2 Source_Code::Statement::Block
+
+        Source_Code::Statement::Block : (\Function : (
+            is_type_definer : True,
+            evaluates : (
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
+                    0 : (type : \(
+                        Array args:.\0
+                        and_then guard args:.\0 all \Statement::()
+                    )),
+                    label : (type : \Attr_Name::(), optional : True),
+                ))
+            ),
+            default : (\@material : ([],)),
+        )),
+
+I<TODO.  This represents an optionally labelled statement block, which
+consists of an ordered list of 0..N statements, which optionally may be
+iterated, written in Plain_Text with special syntax example
+`[declare x; x := 42; print(x);]` or `do_work block [foo(); bar();]`.>
 
 =head2 Source_Code::Statement::Leave
 
@@ -9913,18 +9877,19 @@ written in Plain_Text with special syntax example
             evaluates : (
                 Capsule args:.\0
                 and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
-                    0 : \Attr_Name::(),
-                )
+                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
+                    label : (type : \Attr_Name::(), optional : True),
+                ))
             ),
             default : (\@material : (\"",)),
         )),
 
-I<TODO.  This represents an instruction to abnormally exit the compound
-statement defined by a specified parent node (a normal exit is to simply
-execute to the end of the compound statement); a Factor applied to the
-compound statement in question allows it to be controlled in this way;
-written in Plain_Text with special syntax example `leave foo`.>
+I<TODO.  This represents an instruction to abnormally exit the statement
+block defined by a specified parent Block node (a normal exit is to simply
+execute to the end of the statement block); if an explicit label is given,
+the ancestor Block with that label is the one abnormally exited, and
+otherwise the most immediate parent Block is the one; written in Plain_Text
+with special syntax examples `leave` or `leave do_work`.>
 
 =head2 Source_Code::Statement::Iterate
 
@@ -9933,18 +9898,19 @@ written in Plain_Text with special syntax example `leave foo`.>
             evaluates : (
                 Capsule args:.\0
                 and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
-                    0 : \Attr_Name::(),
-                )
+                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
+                    label : (type : \Attr_Name::(), optional : True),
+                ))
             ),
             default : (\@material : (\"",)),
         )),
 
 I<TODO.  This represents an instruction to immediately exit, and then
-continue execution at the start of, the compound
-statement defined by a specified parent node; a Factor applied to the
-compound statement in question allows it to be controlled in this way;
-written in Plain_Text with special syntax example `iterate foo`.>
+continue execution at the start of, the statement block defined by a
+specified parent Block node; if an explicit label is given, the ancestor
+Block with that label is the one iterated, and otherwise the most immediate
+parent Block is the one; written in Plain_Text
+with special syntax examples `iterate` or `iterate do_work`.>
 
 =head2 Source_Code::Statement::Declare
 
