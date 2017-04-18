@@ -9441,11 +9441,22 @@ I<TODO.>
             is_type_definer : True,
             evaluates : (args:.\0 is_a {
                 \@Function_Call_But_0,
+                \@folder::Conjunction,
                 \@folder::Disjunction,
                 \@folder::Tuple_Attrs_Match_Simple,
                 \@folder::Tuple_Attrs_Match,
             }),
             default : \Any::(),
+        )),
+
+I<TODO.>
+
+=head2 Source_Code::Signature::Conjunction
+
+        Source_Code::Signature::Conjunction : (\Function : (
+            is_type_definer : True,
+            evaluates : (Array args:.\0 and_then guard
+                args:.\0 all \Signature::()),
         )),
 
 I<TODO.>
@@ -9527,15 +9538,12 @@ Its lexical scope and `args` context is the innermost Function/Procedure (trait)
                 Capsule args:.\0
                 and_then guard args:.\0:< = \@material
                 and_then guard args:.\0:> is_a (
-                    0 : \Set::(),
+                    0 : [
+                        \Set::(),
+                        \all::( 1: { \@Returns, \@Factor } ),
+                        \(args:.\0 where \Returns::() pipe singular),
+                    ],
                 )
-                and_then guard
-                    args:.\0:>.\0 all {
-                        \@Returns,
-                        \@Factor,
-                    }
-                    and
-                    (args:.\0:>.\0 where \Returns::() pipe singular)
             ),
             default : (\@material : ({},)),
         )),
@@ -9724,13 +9732,10 @@ written in Plain_Text with special syntax example `P or_else X`.>
                 and_then guard args:.\0:< = \@material
                 and_then guard args:.\0:> is_a (
                     0 : \Expression::(),
-                    1 : \(
-                        Set args:.\0
-                        and_then guard args:.\0 all (
-                            0 : \Expression::(),
-                            1 : \Expression::(),
-                        )
-                    ),
+                    1 : [\Set::(), \all::( 1: (
+                        0 : \Expression::(),
+                        1 : \Expression::(),
+                    ) )],
                     2 : \Expression::(),
                 )
             ),
@@ -9829,13 +9834,10 @@ the 'else' is an empty compound statement.>
                 and_then guard args:.\0:< = \@material
                 and_then guard args:.\0:> is_a (
                     0 : \Expression::(),
-                    1 : \(
-                        Set args:.\0
-                        and_then guard args:.\0 all (
-                            0 : \Expression::(),
-                            1 : \Statement::(),
-                        )
-                    ),
+                    1 : [\Set::(), \all::( 1: (
+                        0 : \Expression::(),
+                        1 : \Statement::(),
+                    ) )],
                     2 : \Statement::(),
                 )
             ),
@@ -9855,10 +9857,7 @@ written in Plain_Text with special syntax example
                 Capsule args:.\0
                 and_then guard args:.\0:< = \@material
                 and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
-                    0 : (type : \(
-                        Array args:.\0
-                        and_then guard args:.\0 all \Statement::()
-                    )),
+                    0 : (type : [\Array::(), \all::( 1: \Statement::() )]),
                     label : (type : \Attr_Name::(), optional : True),
                 ))
             ),
@@ -10097,6 +10096,14 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                 returns
                     if Function_Call_But_0 sig then
                         sig
+                    else if Signature::Conjunction sig then guard
+                        \(
+                            topic    ::= args:.\0;
+                            conj_sig ::= args:.\sig;
+                            returns empty::(conj_sig)
+                                or_else guard topic is_a first::(conj_sig)
+                                and_then guard topic is_a nonfirst::(conj_sig)
+                        ) \<-- (:sig,)
                     else if Signature::Disjunction sig then guard
                         \(
                             topic    ::= args:.\0;
