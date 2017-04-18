@@ -4587,6 +4587,14 @@ multiply with integers.>
             matches : (\@Unionable, \@Function_Call_But_0_1),
         )),
 
+I<TODO.  Restrict "reduce" to take dyadic functions which are commutative
+plus associative only, corresponding to more formal common usage of the
+term "reduce".  Then add a pair of other operators, foo() and bar(),
+to Positional where foo() requires associative but not commutative, and
+is used for catenation, and bar() requires neither assoc/commut, and is used
+for more esoteric things perhaps resembling a common meaning of "fold".
+The next paragraph is partly obsoleted by this.>
+
 I<TODO.  The function-call is expected to be a Capsule with 2 attributes
 named 'func' and 'args', which are a Function_Name and a Tuple respectively.
 The 'args' can be any Tuple that doesn't have either '0' or '1' attrs.
@@ -9494,8 +9502,8 @@ I<TODO.>
             is_type_definer : True,
             evaluates : (args:.\0 is_a {
                 \@folder::Compound,
-                \@folder::Labelling,
-                \@folder::Embedding,
+                \@folder::Factor,
+                \@folder::Expansion,
                 \@folder::Literal,
                 \@folder::Args,
                 \@folder::Evaluates,
@@ -9524,7 +9532,7 @@ Its lexical scope and `args` context is the innermost Function/Procedure (trait)
                 and_then guard
                     args:.\0:>.\0 all {
                         \@folder::Returns,
-                        \@folder::Labelling,
+                        \@folder::Factor,
                     }
                     and
                     (args:.\0:>.\0 where \folder::Returns() pipe singular)
@@ -9552,9 +9560,9 @@ written in Plain_Text with special syntax example `(x ::= y+3; returns 2*x)`.>
 
 I<TODO.  This represents the sole "returns" component of a compound expression.>
 
-=head2 Source_Code::Expression::Labelling
+=head2 Source_Code::Expression::Factor
 
-        Source_Code::Expression::Labelling : (\Function : (
+        Source_Code::Expression::Factor : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9567,12 +9575,12 @@ I<TODO.  This represents the sole "returns" component of a compound expression.>
             default : (\@material : (\"", (\@folder::Literal : (False,)))),
         )),
 
-I<TODO.  This represents a lexically labelled expression,
+I<TODO.  This represents a lexically labelled expression factor,
 written in Plain_Text with special syntax example `foo ::= 42`.>
 
-=head2 Source_Code::Expression::Embedding
+=head2 Source_Code::Expression::Expansion
 
-        Source_Code::Expression::Embedding : (\Function : (
+        Source_Code::Expression::Expansion : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9584,10 +9592,10 @@ written in Plain_Text with special syntax example `foo ::= 42`.>
             default : (\@material : (\"",)),
         )),
 
-I<TODO.  This represents a logical embedding of an expression at this
-spot that was previously declared with a Labelling, written in Plain_Text
+I<TODO.  This represents a logical expansion of an expression factor at this
+spot that was previously declared with a Factor, written in Plain_Text
 as an unqualified alphanumeric or quoted identifier example `foo`.
-Note that it is an error for a Labelling to contain any Embedding referring
+Note that it is an error for a Factor to contain any Expansion referring
 to itself, either directly or indirectly.>
 
 =head2 Source_Code::Expression::Literal
@@ -9640,7 +9648,7 @@ Written in Plain_Text with the token `args`.>
                     0 : \Expression::(),
                 )
             ),
-            default : (\@material : ((\@folder::Embedding : (\"",)),)),
+            default : (\@material : ((\@folder::Expansion : (\"",)),)),
         )),
 
 I<TODO.  This represents a generic function invocation expression,
@@ -9768,14 +9776,14 @@ written in Plain_Text with special syntax example `guard X`.>
             is_type_definer : True,
             evaluates : (args:.\0 is_a {
                 \@folder::Compound,
-                \@folder::Labelling,
-                \@folder::Embedding,
+                \@folder::Factor,
+                \@folder::Expansion,
                 \@folder::Performs,
                 \@folder::If_Then_Else,
                 \@folder::Given_When_Default,
                 \@folder::Leave,
                 \@folder::Iterate,
-                \@folder::Variable,
+                \@folder::Declare,
             }),
             default : (\@folder::Compound : ([],)),
         )),
@@ -9802,9 +9810,9 @@ I<TODO.  This represents a compound statement, which consists of
 an ordered list of 0..N statements, which optionally may be iterated,
 written in Plain_Text with special syntax example `[var x; x := 42; print(x);]`.>
 
-=head2 Source_Code::Statement::Labelling
+=head2 Source_Code::Statement::Factor
 
-        Source_Code::Statement::Labelling : (\Function : (
+        Source_Code::Statement::Factor : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9817,12 +9825,12 @@ written in Plain_Text with special syntax example `[var x; x := 42; print(x);]`.
             default : (\@material : (\"", (\@folder::Compound : ([],)))),
         )),
 
-I<TODO.  This represents a lexically labelled statement,
+I<TODO.  This represents a lexically labelled statement factor,
 written in Plain_Text with special syntax example `foo ::= ...`.>
 
-=head2 Source_Code::Statement::Embedding
+=head2 Source_Code::Statement::Expansion
 
-        Source_Code::Statement::Embedding : (\Function : (
+        Source_Code::Statement::Expansion : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9834,10 +9842,10 @@ written in Plain_Text with special syntax example `foo ::= ...`.>
             default : (\@material : (\"",)),
         )),
 
-I<TODO.  This represents a logical embedding of a statement at this
-spot that was previously declared with a Labelling, written in Plain_Text
+I<TODO.  This represents a logical expansion of a statement factor at this
+spot that was previously declared with a Factor, written in Plain_Text
 as an unqualified alphanumeric or quoted identifier example `foo`.
-Note that it is an error for a Labelling to contain any Embedding referring
+Note that it is an error for a Factor to contain any Expansion referring
 to itself, either directly or indirectly.>
 
 =head2 Source_Code::Statement::Performs
@@ -9851,7 +9859,7 @@ to itself, either directly or indirectly.>
                     0 : \Expression::(),
                 )
             ),
-            default : (\@material : ((\@Expression::Embedding : (\"",)),)),
+            default : (\@material : ((\@Expression::Expansion : (\"",)),)),
         )),
 
 I<TODO.  This represents a generic procedure invocation statement,
@@ -9936,7 +9944,7 @@ I<TODO.  This represents part of a given-when-default statement.>
 
 I<TODO.  This represents an instruction to abnormally exit the compound
 statement defined by a specified parent node (a normal exit is to simply
-execute to the end of the compound statement); a Labelling applied to the
+execute to the end of the compound statement); a Factor applied to the
 compound statement in question allows it to be controlled in this way;
 written in Plain_Text with special syntax example `leave foo`.>
 
@@ -9956,13 +9964,13 @@ written in Plain_Text with special syntax example `leave foo`.>
 
 I<TODO.  This represents an instruction to immediately exit, and then
 continue execution at the start of, the compound
-statement defined by a specified parent node; a Labelling applied to the
+statement defined by a specified parent node; a Factor applied to the
 compound statement in question allows it to be controlled in this way;
 written in Plain_Text with special syntax example `iterate foo`.>
 
-=head2 Source_Code::Statement::Variable
+=head2 Source_Code::Statement::Declare
 
-        Source_Code::Statement::Variable : (\Function : (
+        Source_Code::Statement::Declare : (\Function : (
             is_type_definer : True,
             evaluates : (
                 Capsule args:.\0
@@ -9974,11 +9982,12 @@ written in Plain_Text with special syntax example `iterate foo`.>
             default : (\@material : (\"",)),
         )),
 
-I<TODO.  This represents a lexically labelled variable reference
+I<TODO.  This represents a lexically labelled variable reference declaration
 which can then be bound to one or more variables to facilitate work with
 those variables.  Either this or another thing might be for binding to
 other things such handles to processes or whatever.  A generic paradigm
-is that one uses message passing to talk to anything with a handle.>
+is that one uses message passing to talk to anything with a handle.
+written in Plain_Text with special syntax example `declare foo`.>
 
 =head2 Source_Code::Heading
 
