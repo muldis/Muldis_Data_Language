@@ -9512,9 +9512,6 @@ I<TODO.>
         Source_Code::Expression : (\Function : (
             is_type_definer : True,
             evaluates : (args:.\0 is_a {
-                \@Compound,
-                \@Factor,
-                \@Expansion,
                 \@Literal,
                 \@Args,
                 \@Evaluates,
@@ -9523,88 +9520,15 @@ I<TODO.>
                 \@Or_Else,
                 \@Given_When_Default_Expr,
                 \@Guard,
+                \@Compound,
+                \@Factor,
+                \@Expansion,
             }),
             default : (\@Literal : (False,)),
         )),
 
 I<TODO.  This represents a generic expression to be evaluated at a future date.
 Its lexical scope and `args` context is the innermost Function/Procedure (trait) containing it.>
-
-=head2 Source_Code::Compound
-
-        Source_Code::Compound : (\Function : (
-            is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
-                    0 : [
-                        \Set::(),
-                        \all::( 1: { \@Returns, \@Factor } ),
-                        \(args:.\0 where \Returns::() pipe singular),
-                    ],
-                )
-            ),
-            default : (\@material : ({},)),
-        )),
-
-I<TODO.  This represents a compound expression, which consists of a single
-"returns" component plus a list of 0..N lexically labelled expressions,
-written in Plain_Text with special syntax example `(x ::= y+3; returns 2*x)`.>
-
-=head2 Source_Code::Returns
-
-        Source_Code::Returns : (\Function : (
-            is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
-                    0 : \Expression::(),
-                )
-            ),
-            default : (\@material : ((\@Literal : (False,)),)),
-        )),
-
-I<TODO.  This represents the sole "returns" component of a compound expression.>
-
-=head2 Source_Code::Factor
-
-        Source_Code::Factor : (\Function : (
-            is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
-                    0 : \Attr_Name::(),
-                    1 : \Expression::(),
-                )
-            ),
-            default : (\@material : (\"", (\@Literal : (False,)))),
-        )),
-
-I<TODO.  This represents a lexically labelled expression factor,
-written in Plain_Text with special syntax example `foo ::= 42`.>
-
-=head2 Source_Code::Expansion
-
-        Source_Code::Expansion : (\Function : (
-            is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
-                    0 : \Attr_Name::(),
-                )
-            ),
-            default : (\@material : (\"",)),
-        )),
-
-I<TODO.  This represents a logical expansion of an expression factor at this
-spot that was previously declared with a Factor, written in Plain_Text
-as an unqualified alphanumeric or quoted identifier example `foo`.
-Note that it is an error for a Factor to contain any Expansion referring
-to itself, either directly or indirectly.>
 
 =head2 Source_Code::Literal
 
@@ -9763,6 +9687,82 @@ written in Plain_Text with special syntax example
 
 I<TODO.  This represents a guard expression,
 written in Plain_Text with special syntax example `guard X`.>
+
+=head2 Source_Code::Compound
+
+        Source_Code::Compound : (\Function : (
+            is_type_definer : True,
+            evaluates : (
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : [
+                        \Set::(),
+                        \all::( 1: { \@Returns, \@Factor } ),
+                        \(args:.\0 where \Returns::() pipe singular),
+                    ],
+                )
+            ),
+            default : (\@material : ({},)),
+        )),
+
+I<TODO.  This represents a compound expression, which consists of a single
+"returns" component plus a list of 0..N lexically labelled expressions,
+written in Plain_Text with special syntax example `(x ::= y+3; returns 2*x)`.>
+
+=head2 Source_Code::Returns
+
+        Source_Code::Returns : (\Function : (
+            is_type_definer : True,
+            evaluates : (
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Expression::(),
+                )
+            ),
+            default : (\@material : ((\@Literal : (False,)),)),
+        )),
+
+I<TODO.  This represents the sole "returns" component of a compound expression.>
+
+=head2 Source_Code::Factor
+
+        Source_Code::Factor : (\Function : (
+            is_type_definer : True,
+            evaluates : (
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Attr_Name::(),
+                    1 : \Expression::(),
+                )
+            ),
+            default : (\@material : (\"", (\@Literal : (False,)))),
+        )),
+
+I<TODO.  This represents a lexically labelled expression factor,
+written in Plain_Text with special syntax example `foo ::= 42`.>
+
+=head2 Source_Code::Expansion
+
+        Source_Code::Expansion : (\Function : (
+            is_type_definer : True,
+            evaluates : (
+                Capsule args:.\0
+                and_then guard args:.\0:< = \@material
+                and_then guard args:.\0:> is_a (
+                    0 : \Attr_Name::(),
+                )
+            ),
+            default : (\@material : (\"",)),
+        )),
+
+I<TODO.  This represents a logical expansion of an expression factor at this
+spot that was previously declared with a Factor, written in Plain_Text
+as an unqualified alphanumeric or quoted identifier example `foo`.
+Note that it is an error for a Factor to contain any Expansion referring
+to itself, either directly or indirectly.>
 
 =head2 Source_Code::Statement
 
