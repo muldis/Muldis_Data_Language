@@ -9327,28 +9327,28 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
                         when_regular_function;
 
                 when_generalized_type_definer ::=
-                    traits is_a (\@Signature::Tuple_Attrs_Match : (
+                    traits is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : \True::(),),
                         is_generalization : (type : \True::(),),
                         default : (type : \Expression::(), optional : True),
-                    ) %+ type_specialization_attrs_template)
+                    ) %+ type_specialization_attrs_template,))
                     and_then type_specialization_attrs_constraint;
 
                 when_singleton_type_definer ::=
-                    traits is_a (\@Signature::Tuple_Attrs_Match : (
+                    traits is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : \True::(),),
                         is_generalization : (type : \False::(), optional : True),
                         constant : (type : \Expression::(),),
-                    ) %+ type_specialization_attrs_template)
+                    ) %+ type_specialization_attrs_template,))
                     and_then type_specialization_attrs_constraint;
 
                 when_regular_type_definer ::=
-                    traits is_a (\@Signature::Tuple_Attrs_Match : (
+                    traits is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : \True::(),),
                         is_generalization : (type : \False::(), optional : True),
                         evaluates : (type : {\Expression::(), \Signature::()},),
                         default : (type : \Expression::(), optional : True),
-                    ) %+ type_specialization_attrs_template)
+                    ) %+ type_specialization_attrs_template,))
                     and_then type_specialization_attrs_constraint;
 
                 type_specialization_attrs_template ::=
@@ -9365,7 +9365,7 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
                         True;
 
                 when_regular_function ::=
-                    traits is_a (\@Signature::Tuple_Attrs_Match : (
+                    traits is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : \False::(), optional : True),
                         virtual : (type : \Boolean::(), optional : True),
                         commutes : (type : \Identity_Identifier::(), optional : True),
@@ -9384,7 +9384,7 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
                         right_identity : (type : \Expression::(), optional : True),  `iff only right-identity element exists`
                         repeater : (type : ..., optional : True),
                         evaluates : (type : \Expression::(), optional : True),
-                    ));
+                    ),));
             ),
             default : ...,
         )),
@@ -9414,7 +9414,7 @@ its own isolated lexical scope and its own `args` context where generally the
             evaluates : (
                 Capsule args:.\0
                 and_then guard args:.\0:< = \Procedure
-                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
+                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
                     virtual : (type : \Boolean::(), optional : True),
                     matches : (type : \Signature::Tuple_Attrs_Match_Simple(), optional : True),
                     implements : (type : ..., optional : True),
@@ -9422,7 +9422,7 @@ its own isolated lexical scope and its own `args` context where generally the
                     accepts : (type : \Expression::(), optional : True),
                     intends : (type : \Expression::(), optional : True),
                     performs : (type : \Statement::(), optional : True),
-                ))
+                ),))
             ),
             default : ...,
         )),
@@ -9480,10 +9480,10 @@ I<TODO.>
                 tuple_sig ::= args:.\0;
                 returns Capsule tuple_sig
                     and_then guard tuple_sig:< = \@material
-                    and_then guard tuple_sig:> all_attr_assets \(
-                        attr_sig ::= args:.\0;
-                        returns Tuple attr_sig
-                            and_then guard
+                    and_then guard tuple_sig:> is_a (
+                        attrs : [\Tuple::(), \all_attr_assets::( 1: \(
+                            attr_sig ::= args:.\0;
+                            returns
                                 attr_sig ⊆@ \@(type,optional)
                                 and
                                 (attr_sig.?\type and_then guard Signature attr_sig.\type)
@@ -9492,7 +9492,8 @@ I<TODO.>
                                     then guard Boolean attr_sig.\optional
                                     else True
                             ;
-                    );
+                        ) )],
+                    )
             ),
         )),
 
@@ -9812,10 +9813,10 @@ written in Plain_Text with special syntax example
             evaluates : (
                 Capsule args:.\0
                 and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
+                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
                     0 : (type : [\Array::(), \all::( 1: \Statement::() )]),
                     label : (type : \Attr_Name::(), optional : True),
-                ))
+                ),))
             ),
             default : (\@material : ([],)),
         )),
@@ -9832,9 +9833,9 @@ iterated, written in Plain_Text with special syntax example
             evaluates : (
                 Capsule args:.\0
                 and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
+                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
                     label : (type : \Attr_Name::(), optional : True),
-                ))
+                ),))
             ),
             default : (\@material : ()),
         )),
@@ -9853,9 +9854,9 @@ with special syntax examples `leave` or `leave do_work`.>
             evaluates : (
                 Capsule args:.\0
                 and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (
+                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
                     label : (type : \Attr_Name::(), optional : True),
-                ))
+                ),))
             ),
             default : (\@material : ()),
         )),
@@ -10081,11 +10082,12 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                         \(
                             topic     ::= args:.\0;
                             tuple_sig ::= args:.\sig;
+                            attrs_sig ::= tuple_sig:>.\attrs;
                             returns Tuple topic
                                 and_then guard
-                                    topic ⊆@ tuple_sig
+                                    topic ⊆@ attrs_sig
                                     and
-                                    (tuple_sig all_attrs \(
+                                    (attrs_sig all_attrs \(
                                         name     ::= args:.\0:.\name;
                                         attr_sig ::= args:.\0:.\asset;
                                         topic    ::= args:.\topic;
