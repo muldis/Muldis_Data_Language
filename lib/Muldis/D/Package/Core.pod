@@ -173,13 +173,12 @@ member of the type specified by its C<1> argument, and C<True> otherwise.
 
         Excuse::"" : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Excuse
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Excuse,
+                asset : (
                     0 : \Any(),
-                )
-            ),
+                ),
+            )),
             default : (\Excuse : (\@Excuse::No_Reason,)),
         )),
 
@@ -1068,13 +1067,12 @@ and its C<1> argument is C<True>, and C<False> otherwise.
 
         Round_Meth::"" : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \folder::Attr_Name(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : (\To_Zero,)),
         )),
 
@@ -2128,17 +2126,16 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
             is_type_definer : True,
             composes : {\@Fractional},
             provides_default_for : {\@Fractional},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Fraction
-                and_then guard
-                    args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Fraction,
+                asset : [
+                    (
                         numerator : \Integer::(),
                         denominator : \Integer::P(),
-                    )
-                and_then guard
-                    args:.\0:>.\numerator coprime args:.\0:>.\denominator
-            ),
+                    ),
+                    \(args:.\0:.\numerator coprime args:.\0:.\denominator),
+                ],
+            )),
             default : 0.0,
         )),
 
@@ -2678,13 +2675,12 @@ languages may name their corresponding operators I<x>.
             is_type_definer : True,
             composes : {\@Stringy},
             provides_default_for : {\@Stringy},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Bits
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Bits,
+                asset : (
                     bits : \String::Bits(),
-                )
-            ),
+                ),
+            )),
             default : \~?'',
         )),
 
@@ -2844,13 +2840,12 @@ the bits of its C<Bits>-typed C<0> argument.
         Blob : (\Function : (
             is_type_definer : True,
             composes : {\@Stringy},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Blob
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Blob,
+                asset : (
                     octets : \String::Octets(),
-                )
-            ),
+                ),
+            )),
             default : \~+'',
         )),
 
@@ -3077,13 +3072,12 @@ like national collations or fixed-size types.
             is_type_definer : True,
             composes : {\@Textual},
             provides_default_for : {\@Textual},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Text
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Text,
+                asset : (
                     maximal_chars : \String::Maximal_Chars(),
-                )
-            ),
+                ),
+            )),
             default : '',
         )),
 
@@ -5860,14 +5854,12 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
             is_type_definer : True,
             composes : {\@Discrete, \@Setty},
             provides_default_for : {\@Setty},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Set
-                and_then guard args:.\0:> is_a (
-                    members : \Bag(),
-                )
-                and_then guard all_unique args:.\0:>.\members
-            ),
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Set,
+                asset : (
+                    members : [\Bag::(), \all_unique::()],
+                ),
+            )),
             default : {},
         )),
 
@@ -8623,13 +8615,16 @@ types that restrict their possible headings at the type level.>
         Tuple_Array::"" : (\Function : (
             is_type_definer : True,
             composes : {\@Relational, \@Positional},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Tuple_Array
-                and_then guard args:.\0:> is_a ( heading : \Heading::(), body : \Array::() )
-                and_then guard args:.\0:>.\body all \Tuple::()
-                and_then guard args:.\0:>.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0:>.\heading)
-            ),
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Tuple_Array,
+                asset : [
+                    (
+                        heading : \Heading::(),
+                        body : [\Array::(), \all::( 1: \Tuple::() )],
+                    ),
+                    \(args:.\0:.\body all \(@args:.\0 = args:.\1) \<-- (1: args:.\0:.\heading,)),
+                ],
+            )),
             default : (~%@()),
         )),
 
@@ -8715,13 +8710,16 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
             is_type_definer : True,
             composes : {\@Relational, \@Discrete, \@Setty},
             provides_default_for : {\@Relational},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Relation
-                and_then guard args:.\0:> is_a ( heading : \Heading::(), body : \Set::() )
-                and_then guard args:.\0:>.\body all \Tuple::()
-                and_then guard args:.\0:>.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0:>.\heading)
-            ),
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Relation,
+                asset : [
+                    (
+                        heading : \Heading::(),
+                        body : [\Set::(), \all::( 1: \Tuple::() )],
+                    ),
+                    \(args:.\0:.\body all \(@args:.\0 = args:.\1) \<-- (1: args:.\0:.\heading,)),
+                ],
+            )),
             default : (?%@()),
         )),
 
@@ -8799,13 +8797,16 @@ function C<select_Relational> for the composing type C<Relation>.
         Tuple_Bag::"" : (\Function : (
             is_type_definer : True,
             composes : {\@Relational, \@Discrete},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Tuple_Bag
-                and_then guard args:.\0:> is_a ( heading : \Heading::(), body : \Bag::() )
-                and_then guard args:.\0:>.\body all \Tuple::()
-                and_then guard args:.\0:>.\body all \(@args:.\0 = args:.\1) \<-- (args:.\0:>.\heading)
-            ),
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Tuple_Bag,
+                asset : [
+                    (
+                        heading : \Heading::(),
+                        body : [\Bag::(), \all::( 1: \Tuple::() )],
+                    ),
+                    \(args:.\0:.\body all \(@args:.\0 = args:.\1) \<-- (1: args:.\0:.\heading,)),
+                ],
+            )),
             default : (+%@()),
         )),
 
@@ -8893,11 +8894,10 @@ I<TODO.>
         Interval::"" : (\Function : (
             is_type_definer : True,
             composes : {\@Intervalish, \@Setty},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Interval
-                and_then guard args:.\0:> is_a \Interval::Attrs()
-            ),
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Interval,
+                asset : \Interval::Attrs(),
+            )),
             default : (Excuse::Before_All_Others()..Excuse::After_All_Others()),
         )),
 
@@ -8931,14 +8931,12 @@ I<TODO.>
         Interval_Set : (\Function : (
             is_type_definer : True,
             composes : {\@Unionable_Intervalish, \@Setty},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Interval_Set
-                and_then guard args:.\0:> is_a (
-                    members : \Interval_Bag(),
-                )
-                and_then guard all_unique args:.\0:>.\members
-            ),
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Interval_Set,
+                asset : (
+                    members : [\Interval_Bag::(), \all_unique::()],
+                ),
+            )),
             default : ...,
         )),
 
@@ -8951,14 +8949,12 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
         Interval_Bag : (\Function : (
             is_type_definer : True,
             composes : {\@Unionable_Intervalish},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Interval_Bag
-                and_then guard args:.\0:> is_a (
-                    members : \Tuple_Bag(),
-                )
-                and_then guard ...
-            ),
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Interval_Bag,
+                asset : (
+                    members : [\Tuple_Bag::(), ...],
+                ),
+            )),
             default : ...,
         )),
 
@@ -8983,13 +8979,12 @@ I<TODO.>
         Quantity : (\Function : (
             is_type_definer : True,
             composes : {\@Quantitative},
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Quantity
-                and_then guard args:.\0:> is_a (
-                    0 : \Relation(),
-                )
-            ),
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Quantity,
+                asset : (
+                    0 : [\Relation::(), ...],
+                ),
+            )),
             default : ...,
         )),
 
@@ -9158,18 +9153,17 @@ I<TODO.>
 
         Source_Code::Package : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Package
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Package,
+                asset : (
                     identity : \Package::Identity::(),
                     foundation : \Package::Foundation::(),
                     uses : \Package::Uses_Map::(),
                     entry : \Package::Entry_Point::(),
                     floating : \Package::Floating::(),
                     materials : \Package::Folder::(),
-                )
-            ),
+                ),
+            )),
             default : ...,
         )),
 
@@ -9290,13 +9284,12 @@ I<TODO.>
 
         Source_Code::Alias : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Alias
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Alias,
+                asset : (
                     of : \Identity_Identifier(),
-                )
-            ),
+                ),
+            )),
             default : ((\Alias : (of : Identity_Identifier::(),))),
         )),
 
@@ -9411,10 +9404,9 @@ its own isolated lexical scope and its own `args` context where generally the
 
         Source_Code::Procedure : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \Procedure
-                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Procedure,
+                asset : (\@Signature::Tuple_Attrs_Match : (attrs : (
                     virtual : (type : \Boolean::(), optional : True),
                     matches : (type : \Signature::Tuple_Attrs_Match_Simple(), optional : True),
                     implements : (type : ..., optional : True),
@@ -9422,8 +9414,8 @@ its own isolated lexical scope and its own `args` context where generally the
                     accepts : (type : \Expression::(), optional : True),
                     intends : (type : \Expression::(), optional : True),
                     performs : (type : \Statement::(), optional : True),
-                ),))
-            ),
+                ),)),
+            )),
             default : ...,
         )),
 
@@ -9439,6 +9431,7 @@ I<TODO.>
                 \@folder::Disjunction,
                 \@folder::Tuple_Attrs_Match_Simple,
                 \@folder::Tuple_Attrs_Match,
+                \@folder::Capsule_Match,
             },
             default : \Any::(),
         )),
@@ -9476,12 +9469,12 @@ I<TODO.>
 
         Source_Code::Signature::Tuple_Attrs_Match : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                tuple_sig ::= args:.\0;
-                returns Capsule tuple_sig
-                    and_then guard tuple_sig:< = \@material
-                    and_then guard tuple_sig:> is_a (
-                        attrs : [\Tuple::(), \all_attr_assets::( 1: \(
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
+                    attrs : [
+                        \Tuple::(),
+                        \all_attr_assets::( 1: \(
                             attr_sig ::= args:.\0;
                             returns
                                 attr_sig ⊆@ \@(type,optional)
@@ -9492,9 +9485,22 @@ I<TODO.>
                                     then guard Boolean attr_sig.\optional
                                     else True
                             ;
-                        ) )],
-                    )
-            ),
+                        ) )
+                    ],
+                ),
+            )),
+        )),
+
+I<TODO.>
+
+=head2 Source_Code::Signature::Capsule_Match
+
+        Source_Code::Signature::Capsule_Match : (\Function : (
+            is_type_definer : True,
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Any::(),
+                asset : \Signature::(),
+            )),
         )),
 
 I<TODO.>
@@ -9525,13 +9531,12 @@ Its lexical scope and `args` context is the innermost Function/Procedure (trait)
 
         Source_Code::Literal : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Any::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : (False,)),
         )),
 
@@ -9564,13 +9569,12 @@ Written in Plain_Text with the token `args`.>
 
         Source_Code::Evaluates : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Expression::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : ...),
         )),
 
@@ -9584,15 +9588,14 @@ where X denotes a Function_Call value.>
 
         Source_Code::If_Then_Else_Expr : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Expression::(),
                     1 : \Expression::(),
                     2 : \Expression::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : ((\@Literal : (False,)),
                 (\@Literal : (False,)), (\@Literal : (False,)))),
         )),
@@ -9604,14 +9607,13 @@ written in Plain_Text with special syntax example `if P then X else Y`.>
 
         Source_Code::And_Then : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Expression::(),
                     1 : \Expression::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : ((\@Literal : (False,)),
                 (\@Literal : (False,)))),
         )),
@@ -9623,14 +9625,13 @@ written in Plain_Text with special syntax example `P and_then X`.>
 
         Source_Code::Or_Else : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Expression::(),
                     1 : \Expression::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : ((\@Literal : (False,)),
                 (\@Literal : (False,)))),
         )),
@@ -9642,18 +9643,17 @@ written in Plain_Text with special syntax example `P or_else X`.>
 
         Source_Code::Given_When_Default_Expr : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Expression::(),
                     1 : [\Set::(), \all::( 1: (
                         0 : \Expression::(),
                         1 : \Expression::(),
                     ) )],
                     2 : \Expression::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : ((\@Literal : (False,)),
                 {}, (\@Literal : (False,)))),
         )),
@@ -9666,13 +9666,12 @@ written in Plain_Text with special syntax example
 
         Source_Code::Guard : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Expression::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : ((\@Literal : (False,)),)),
         )),
 
@@ -9683,14 +9682,13 @@ written in Plain_Text with special syntax example `guard X`.>
 
         Source_Code::Factorization : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     factors : [\Tuple::(), \all_attr_assets::( 1: \Expression::() )],
                     returns : \Expression::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : (factors : (), returns : (\@Literal : (False,)))),
         )),
 
@@ -9705,13 +9703,12 @@ example `foo ::= 42` is shorthand for `(foo ::= 42; returns foo)`.>
 
         Source_Code::Expansion : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     factor : \Attr_Name::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : (factor : \"",)),
         )),
 
@@ -9744,13 +9741,12 @@ Its lexical scope and `args` context is the innermost Procedure (trait) containi
 
         Source_Code::Performs : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Expression::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : ...),
         )),
 
@@ -9764,15 +9760,14 @@ where X denotes a Procedure_Call value.>
 
         Source_Code::If_Then_Else_Stmt : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Expression::(),
                     1 : \Statement::(),
                     2 : \Statement::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : ((\@Literal : (False,)),
                 (\@Block : ([],)), (\@Block : ([],)))),
         )),
@@ -9786,18 +9781,17 @@ the 'else' is an empty compound statement.>
 
         Source_Code::Given_When_Default_Stmt : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Expression::(),
                     1 : [\Set::(), \all::( 1: (
                         0 : \Expression::(),
                         1 : \Statement::(),
                     ) )],
                     2 : \Statement::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : ((\@Literal : (False,)),
                 {}, (\@Block : ([],)))),
         )),
@@ -9810,14 +9804,13 @@ written in Plain_Text with special syntax example
 
         Source_Code::Block : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (\@Signature::Tuple_Attrs_Match : (attrs : (
                     0 : (type : [\Array::(), \all::( 1: \Statement::() )]),
                     label : (type : \Attr_Name::(), optional : True),
-                ),))
-            ),
+                ),)),
+            )),
             default : (\@material : ([],)),
         )),
 
@@ -9830,13 +9823,12 @@ iterated, written in Plain_Text with special syntax example
 
         Source_Code::Leave : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (\@Signature::Tuple_Attrs_Match : (attrs : (
                     label : (type : \Attr_Name::(), optional : True),
-                ),))
-            ),
+                ),)),
+            )),
             default : (\@material : ()),
         )),
 
@@ -9851,13 +9843,12 @@ with special syntax examples `leave` or `leave do_work`.>
 
         Source_Code::Iterate : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (\@Signature::Tuple_Attrs_Match : (attrs : (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (\@Signature::Tuple_Attrs_Match : (attrs : (
                     label : (type : \Attr_Name::(), optional : True),
-                ),))
-            ),
+                ),)),
+            )),
             default : (\@material : ()),
         )),
 
@@ -9872,13 +9863,12 @@ with special syntax examples `iterate` or `iterate do_work`.>
 
         Source_Code::Declare : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     0 : \Attr_Name::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : (\"",)),
         )),
 
@@ -9953,14 +9943,13 @@ I<TODO.>
 
         Source_Code::Function_Call : (\Function : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     func : {\Local_Name::(), \Function::()},
                     args : \Tuple::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : (
                 func : (\Function : (evaluates : (False))),
                 args : (),
@@ -10008,14 +9997,13 @@ I<TODO.>
 
         Source_Code::Procedure_Call : (\Procedure : (
             is_type_definer : True,
-            evaluates : (
-                Capsule args:.\0
-                and_then guard args:.\0:< = \@material
-                and_then guard args:.\0:> is_a (
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
                     proc : {\Local_Name::(), \Procedure::()},
                     args : \Tuple::(),
-                )
-            ),
+                ),
+            )),
             default : (\@material : (
                 proc : (\Procedure : (performs : [])),
                 args : (),
@@ -10097,6 +10085,14 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                                         ;
                                     ) \<-- (:topic,))
                         ) \<-- (:sig,)
+                    else if Signature::Capsule_Match sig then guard
+                        \(
+                            topic       ::= args:.\0;
+                            capsule_sig ::= args:.\sig:>;
+                            returns Capsule topic
+                                and_then guard topic:< = capsule_sig:.\label
+                                and_then guard topic:> is_a capsule_sig:.\asset
+                        ) \<-- (:sig,)
                     else
                         fail  `We should never get here.`
                     ;
@@ -10106,6 +10102,14 @@ I<TODO.  Note, this type currently isn't used anywhere.>
 I<TODO.  Also double-check that all_attrs etc are not infinite-recursing
 by way of this function.  Also make sure Foundation implementations can
 recognize and short-circuit the simple boolean signatures.>
+
+I<WARNING/TODO.  Actually, now that regular types are largely defined in
+terms of Signature, it is very likely we would have infinite recursion at
+runtime due to for example any code asking "is this a Signature::foo" which
+includes Signature_to_Function_Call_But_0 would be calling
+Signature_to_Function_Call_But_0 in order to answer that question, at least
+until something is changed that the compiler folds the type definitions to
+no longer use Signature_to_Function_Call_But_0.>
 
 =head1 SOURCE CODE ANNOTATION DATA TYPES
 
