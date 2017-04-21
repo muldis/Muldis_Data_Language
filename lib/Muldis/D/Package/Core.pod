@@ -775,7 +775,7 @@ it results in C<False>.
             is_type_definer : True,
             composes : {\@Bicessable, \@Boolable},
             provides_default_for : {\@Boolable},
-            evaluates : (args --> \foundation::is_a_Boolean::()),
+            evaluates : \foundation::is_a_Boolean::(),
             default : False,
         )),
 
@@ -1109,11 +1109,11 @@ I<RoundingMode> (Java) or I<MidpointRounding> (C#).
 
         Round_Meth::Attr_Name : (\Function : (
             is_type_definer : True,
-            evaluates : (Attr_Name args:.\0 and_then guard
-                args:.\0 ⊆@ \@(Down,Up,To_Zero,To_Inf
+            evaluates : [\Attr_Name::(), \"⊆@"::( 1:
+                \@(Down,Up,To_Zero,To_Inf
                 ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
                 ,Half_Even,Half_Odd)
-            ),
+            )],
             default : \To_Zero,
         )),
 
@@ -1675,7 +1675,7 @@ otherwise.
             is_type_definer : True,
             composes : {\@Integral},
             provides_default_for : {\@Integral},
-            evaluates : (args --> \foundation::is_a_Integer::()),
+            evaluates : \foundation::is_a_Integer::(),
             default : 0,
         )),
 
@@ -1691,7 +1691,7 @@ Other programming languages may name their corresponding types I<BigInt>.
 
         Integer::NN : (\Function : (
             is_type_definer : True,
-            evaluates : (Integer args:.\0 and_then guard args:.\0 >= 0),
+            evaluates : [\Integer::(), \">="::( 1: 0 )],
         )),
 
 The selection type definer C<Integer::NN> represents the infinite type
@@ -1702,7 +1702,7 @@ default and minmum value is C<0>; it has no maximum value.
 
         Integer::P : (\Function : (
             is_type_definer : True,
-            evaluates : (Integer::NN::(args:.\0) and_then guard args:.\0 > 0),
+            evaluates : [\Integer::NN(), \">"::( 1: 0 )],
             default : 1,
         )),
 
@@ -2155,7 +2155,7 @@ Other programming languages may name their corresponding types I<BigRat>.
 
         Fraction::NN : (\Function : (
             is_type_definer : True,
-            evaluates : (Fraction args:.\0 and_then guard args:.\0 >= 0.0),
+            evaluates : [\Fraction::(), \">="::( 1: 0.0 )],
         )),
 
 The selection type definer C<Fraction::NN> represents the infinite type
@@ -2701,8 +2701,7 @@ corresponding types I<bit> or I<bit varying>.
 
         String::Bits : (\Function : (
             is_type_definer : True,
-            evaluates : (String args:.\0 and_then guard
-                args:.\0 all \in::( 1: 0..1 )),
+            evaluates : [\String::(), \all::( 1: \in::( 1: 0..1 ) )],
         )),
 
 The selection type definer C<String::Bits> represents the infinite type
@@ -2868,8 +2867,7 @@ corresponding types I<Buf> or I<byte[]> or I<bytea>.
 
         String::Octets : (\Function : (
             is_type_definer : True,
-            evaluates : (String args:.\0 and_then guard
-                args:.\0 all \in::( 1: 0..255 )),
+            evaluates : [\String::(), \all::( 1: \in::( 1: 0..255 ) )],
         )),
 
 The selection type definer C<String::Octets> represents the infinite type
@@ -3144,8 +3142,8 @@ the standard Unicode codepoints for the same symbols.
 
         String::Unicode_Codes : (\Function : (
             is_type_definer : True,
-            evaluates : (String::Maximal_Chars::(args:.\0) and_then guard
-                args:.\0 all \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} )),
+            evaluates : [\String::Maximal_Chars(),
+                \all::( 1: \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} ) )],
         )),
 
 The selection type definer C<String::Unicode_Codes> represents the infinite type
@@ -3171,8 +3169,7 @@ the standard ASCII codes for the same symbols.
 
         String::ASCII_Chars : (\Function : (
             is_type_definer : True,
-            evaluates : (String::Unicode_Codes::(args:.\0) and_then guard
-                args:.\0 all \in::( 1: 0..127 )),
+            evaluates : [\String::Unicode_Codes(), \all::( 1: \in::( 1: 0..127 ) )],
         )),
 
 The selection type definer C<String::ASCII_Chars> represents the infinite type
@@ -5274,7 +5271,7 @@ I<TODO.  Also consider ord_pos_first_diff_elem or ord_pos_succ_common_prefix as 
             is_type_definer : True,
             composes : {\@Positional},
             provides_default_for : {\@Positional},
-            evaluates : (args --> \foundation::is_a_Array::()),
+            evaluates : \foundation::is_a_Array::(),
             default : [],
         )),
 
@@ -5297,7 +5294,7 @@ languages may name their corresponding types I<List>.
 
         String::"" : (\Function : (
             is_type_definer : True,
-            evaluates : (Array args:.\0 and_then guard args:.\0 all \Integer::()),
+            evaluates : [\Array::(), \all::( 1: \Integer::() )],
         )),
 
 The selection type definer C<String> represents the infinite type consisting
@@ -6335,7 +6332,7 @@ C<Discrete> virtual function C<order_using> for the composing type C<Set>.
         Bag::"" : (\Function : (
             is_type_definer : True,
             composes : {\@Discrete},
-            evaluates : (args --> \foundation::is_a_Bag::()),
+            evaluates : \foundation::is_a_Bag::(),
             default : {0:0},
         )),
 
@@ -7576,7 +7573,7 @@ be treated abstractly as sets of attributes with minimal effort.
             is_type_definer : True,
             composes : {\@Structural},
             provides_default_for : {\@Structural},
-            evaluates : (args --> \foundation::is_a_Tuple::()),
+            evaluates : \foundation::is_a_Tuple::(),
             default : (),
         )),
 
@@ -7618,7 +7615,7 @@ C<Tuple> value.
 
         Tuple::D1 : (\Function : (
             is_type_definer : True,
-            evaluates : (Tuple args:.\0 and_then guard is_unary args:.\0),
+            evaluates : [\Tuple::(), \is_unary::()],
             default : (False,),
         )),
 
@@ -8910,7 +8907,7 @@ I<TODO.>
 
         Interval::Attrs : (\Function : (
             is_type_definer : True,
-            evaluates : (Tuple args:.\0 and_then guard ...),
+            evaluates : [\Tuple::(), ...],
         )),
 
 I<TODO.>
@@ -9004,7 +9001,7 @@ I<TODO.>
 
         Capsule : (\Function : (
             is_type_definer : True,
-            evaluates : (args --> \foundation::is_a_Capsule::()),
+            evaluates : \foundation::is_a_Capsule::(),
             default : (False : ()),
         )),
 
@@ -9037,7 +9034,7 @@ expression node types and concrete syntax (and Foundation functions).
 
         Reference::"" : (\Function : (
             is_type_definer : True,
-            evaluates : (args --> \foundation::is_a_Reference::()),
+            evaluates : \foundation::is_a_Reference::(),
             default : () --> \foundation::default_Reference::(),
         )),
 
@@ -9117,7 +9114,7 @@ that this points to to hold the value of its right-hand argument.>>
 
         External::"" : (\Function : (
             is_type_definer : True,
-            evaluates : (args --> \foundation::is_a_External::()),
+            evaluates : \foundation::is_a_External::(),
             default : () --> \foundation::default_External::(),
         )),
 
@@ -9182,12 +9179,10 @@ I<TODO.>
 
         Source_Code::Package::Identity : (\Function : (
             is_type_definer : True,
-            evaluates : (Tuple args:.\0 and_then guard
-                args:.\0 is_a (
-                    package_base_name : \Package::Base_Name::(),
-                    authority : \Package::Canon_Authority::(),
-                    version_number : \Package::Canon_Version_Number::(),
-                )
+            evaluates : (
+                package_base_name : \Package::Base_Name::(),
+                authority : \Package::Canon_Authority::(),
+                version_number : \Package::Canon_Version_Number::(),
             ),
         )),
 
@@ -9195,11 +9190,9 @@ I<TODO.>
 
         Source_Code::Package::Foundation : (\Function : (
             is_type_definer : True,
-            evaluates : (Tuple args:.\0 and_then guard
-                args:.\0 is_a (
-                    authority : \Package::Canon_Authority::(),
-                    version_number : \Package::Canon_Version_Number::(),
-                )
+            evaluates : (
+                authority : \Package::Canon_Authority::(),
+                version_number : \Package::Canon_Version_Number::(),
             ),
         )),
 
@@ -9207,8 +9200,7 @@ I<TODO.>
 
         Source_Code::Package::Base_Name : (\Function : (
             is_type_definer : True,
-            evaluates : (Attr_Name_List args:.\0 and_then guard
-                so args:.\0 and args:.\0 ∌ \""),
+            evaluates : [\Attr_Name_List::(), \so::(), \"∌"::( 1: \"" )],
         )),
 
 I<TODO.>
@@ -9217,7 +9209,7 @@ I<TODO.>
 
         Source_Code::Package::Canon_Authority : (\Function : (
             is_type_definer : True,
-            evaluates : (Text args:.\0 and_then guard so args:.\0),
+            evaluates : [\Text::(), \so::()],
         )),
 
 I<TODO.>
@@ -9226,7 +9218,7 @@ I<TODO.>
 
         Source_Code::Package::Canon_Version_Number : (\Function : (
             is_type_definer : True,
-            evaluates : (Text args:.\0 and_then guard so args:.\0),
+            evaluates : [\Text::(), \so::()],
         )),
 
 I<TODO.>
@@ -9235,8 +9227,8 @@ I<TODO.>
 
         Source_Code::Package::Uses_Map : (\Function : (
             is_type_definer : True,
-            evaluates : (Tuple args:.\0 and_then guard
-                args:.\0 .!? \"" and args:.\0 all_attr_assets \Package::Uses_Item::()),
+            evaluates : [\Tuple::(), \".!?"::( 1: \"" ),
+                \all_attr_assets::( 1: \Package::Uses_Item() )],
         )),
 
 I<TODO.  Each attribute name declares a single-element composing-package-local
@@ -9246,12 +9238,10 @@ alias for the used package.>
 
         Source_Code::Package::Uses_Item : (\Function : (
             is_type_definer : True,
-            evaluates : (Tuple args:.\0 and_then guard
-                args:.\0 is_a (
-                    package_base_name : \Package::Base_Name::(),
-                    authority : \Package::Canon_Authority::(),
-                    version_number : \Package::Canon_Version_Number::(),
-                )
+            evaluates : (
+                package_base_name : \Package::Base_Name::(),
+                authority : \Package::Canon_Authority::(),
+                version_number : \Package::Canon_Version_Number::(),
             ),
         )),
 
@@ -9264,7 +9254,7 @@ Until then, this type just represents a single positive assertion.>
 
         Source_Code::Package::Entry_Point : (\Function : (
             is_type_definer : True,
-            evaluates : (Absolute_Name args:.\0)
+            evaluates : \Absolute_Name::(),
         )),
 
 I<TODO.  This type is subject to be expanded to some collection or have alternatives.>
@@ -9273,8 +9263,7 @@ I<TODO.  This type is subject to be expanded to some collection or have alternat
 
         Source_Code::Package::Floating : (\Function : (
             is_type_definer : True,
-            evaluates : (Set args:.\0 and_then guard
-                args:.\0 all \Absolute_Name::()),
+            evaluates : [\Set::(), \all::( 1: \Absolute_Name::() )],
         )),
 
 I<TODO.>
@@ -9283,8 +9272,8 @@ I<TODO.>
 
         Source_Code::Package::Folder : (\Function : (
             is_type_definer : True,
-            evaluates : (Tuple args:.\0 and_then guard
-                args:.\0 all_attr_assets {\Package::Folder::(), \Material::()}),
+            evaluates : [\Tuple::(),
+                \all_attr_assets::( 1: {\Package::Folder(), \Material::()} )],
         )),
 
 I<TODO.>
@@ -9293,7 +9282,7 @@ I<TODO.>
 
         Source_Code::Material : (\Function : (
             is_type_definer : True,
-            evaluates : (args:.\0 is_a {\@Alias, \@Function, \@Procedure}),
+            evaluates : {\@Alias, \@Function, \@Procedure},
             default : ...,
         )),
 
@@ -9357,7 +9346,7 @@ I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
                     traits is_a (\@Signature::Tuple_Attrs_Match : (
                         is_type_definer : (type : \True::(),),
                         is_generalization : (type : \False::(), optional : True),
-                        evaluates : (type : \Expression::(),),
+                        evaluates : (type : {\Expression::(), \Signature::()},),
                         default : (type : \Expression::(), optional : True),
                     ) %+ type_specialization_attrs_template)
                     and_then type_specialization_attrs_constraint;
@@ -9444,13 +9433,13 @@ I<TODO.>
 
         Source_Code::Signature::"" : (\Function : (
             is_type_definer : True,
-            evaluates : (args:.\0 is_a {
+            evaluates : {
                 \@Function_Call_But_0,
                 \@folder::Conjunction,
                 \@folder::Disjunction,
                 \@folder::Tuple_Attrs_Match_Simple,
                 \@folder::Tuple_Attrs_Match,
-            }),
+            },
             default : \Any::(),
         )),
 
@@ -9460,8 +9449,7 @@ I<TODO.>
 
         Source_Code::Signature::Conjunction : (\Function : (
             is_type_definer : True,
-            evaluates : (Array args:.\0 and_then guard
-                args:.\0 all \Signature::()),
+            evaluates : [\Array::(), \all::( 1: \Signature::() )],
         )),
 
 I<TODO.>
@@ -9470,8 +9458,7 @@ I<TODO.>
 
         Source_Code::Signature::Disjunction : (\Function : (
             is_type_definer : True,
-            evaluates : (Set args:.\0 and_then guard
-                args:.\0 all \Signature::()),
+            evaluates : [\Set::(), \all::( 1: \Signature::() )],
         )),
 
 I<TODO.>
@@ -9480,8 +9467,7 @@ I<TODO.>
 
         Source_Code::Signature::Tuple_Attrs_Match_Simple : (\Function : (
             is_type_definer : True,
-            evaluates : (Tuple args:.\0 and_then guard
-                args:.\0 all_attr_assets \Signature::()),
+            evaluates : [\Tuple::(), \all_attr_assets::( 1: \Signature::() )],
         )),
 
 I<TODO.>
@@ -9516,7 +9502,7 @@ I<TODO.>
 
         Source_Code::Expression : (\Function : (
             is_type_definer : True,
-            evaluates : (args:.\0 is_a {
+            evaluates : {
                 \@Literal,
                 \@Args,
                 \@Evaluates,
@@ -9527,7 +9513,7 @@ I<TODO.>
                 \@Guard,
                 \@Factorization,
                 \@Expansion,
-            }),
+            },
             default : (\@Literal : (False,)),
         )),
 
@@ -9738,7 +9724,7 @@ to itself, either directly or indirectly (except via a routine call).>
 
         Source_Code::Statement : (\Function : (
             is_type_definer : True,
-            evaluates : (args:.\0 is_a {
+            evaluates : {
                 \@Performs,
                 \@If_Then_Else_Stmt,
                 \@Given_When_Default_Stmt,
@@ -9746,7 +9732,7 @@ to itself, either directly or indirectly (except via a routine call).>
                 \@Leave,
                 \@Iterate,
                 \@Declare,
-            }),
+            },
             default : (\@Block : ([],)),
         )),
 
@@ -9906,8 +9892,7 @@ written in Plain_Text with special syntax example `declare foo`.>
 
         Source_Code::Heading : (\Function : (
             is_type_definer : True,
-            evaluates : (Tuple args:.\0 and_then guard
-                args:.\0 all_attr_assets \False::()),
+            evaluates : [\Tuple::(), \all_attr_assets::( 1: \False::() )],
         )),
 
 I<TODO.>
@@ -9920,7 +9905,7 @@ a thing for opening tuples as for creating them.>
 
         Source_Code::Attr_Name : (\Function : (
             is_type_definer : True,
-            evaluates : (Heading args:.\0 and_then guard is_unary args:.\0),
+            evaluates : [\Heading::(), \is_unary::()],
         )),
 
 I<TODO.>
@@ -9929,8 +9914,7 @@ I<TODO.>
 
         Source_Code::Attr_Name_List : (\Function : (
             is_type_definer : True,
-            evaluates : (Array args:.\0 and_then guard
-                args:.\0 all \Attr_Name::()),
+            evaluates : [\Array::(), \all::( 1: \Attr_Name::() )],
         )),
 
 I<TODO.>
@@ -9939,17 +9923,16 @@ I<TODO.>
 
         Source_Code::Local_Name : (\Function : (
             is_type_definer : True,
-            evaluates : (Attr_Name_List args:.\0 and_then guard
-                so args:.\0 and_then guard
-                    given args:.\0.0
-                        when \foundation then #args:.\0 = 2
-                        when \used       then #args:.\0 ≥ 2  `elem 2 is pkg local alias`
-                        when \package    then #args:.\0 ≥ 1
-                        when \folder     then #args:.\0 ≥ 1
-                        when \material   then #args:.\0 = 1
-                        when \floating   then #args:.\0 ≥ 2
-                        default False
-            ),
+            evaluates : [\Attr_Name_List::(), \so::(), \(
+                given args:.\0.0
+                    when \foundation then #args:.\0 = 2
+                    when \used       then #args:.\0 ≥ 2  `elem 2 is pkg local alias`
+                    when \package    then #args:.\0 ≥ 1
+                    when \folder     then #args:.\0 ≥ 1
+                    when \material   then #args:.\0 = 1
+                    when \floating   then #args:.\0 ≥ 2
+                    default False
+            )],
             default : [\foundation, ...],
         )),
 
